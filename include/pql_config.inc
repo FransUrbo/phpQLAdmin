@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.56 2004-03-02 07:27:41 turbo Exp $
+// $Id: pql_config.inc,v 1.57 2004-03-11 20:04:57 turbo Exp $
 //
 
 // include the API files
@@ -61,111 +61,6 @@ function pql_get_define($define, $dn = NULL) {
 // }}}
 
 // ----------------------------
-// SINGLE VALUED ATTRIBUTES
-
-// {{{ BOOLean values (true/false - 0/1)
-
-$PQL_ATTRIBUTE["PQL_CONF_SHOW_USERS"] = 'showUsers';
-$PQL_ATTRIBUTE["PQL_GLOB_CONTROL_USE"] = 'useControls';
-$PQL_ATTRIBUTE["PQL_GLOB_EZMLM_USE"] = 'useEzmlm';
-$PQL_ATTRIBUTE["PQL_GLOB_AUTO_RELOAD"] = 'autoReload';
-$PQL_ATTRIBUTE["PQL_CONF_TESTMAIL_AUTOSEND"] = 'autoSend';
-$PQL_ATTRIBUTE["PQL_GLOB_CONTROL_AUTOADDLOCALS"] = 'autoAddLocals';
-$PQL_ATTRIBUTE["PQL_GLOB_CONTROL_AUTOADDRCPTHOSTS"] = 'autoAddRCPTHosts';
-$PQL_ATTRIBUTE["PQL_GLOB_CONTROL_AUTOADDHOSTNAME"] = 'autoAddHostName';
-$PQL_ATTRIBUTE["PQL_GLOB_CHANGE_SERVER"] = 'allowServerChange';
-$PQL_ATTRIBUTE["PQL_CONF_ALLOW_ABSOLUTE_PATH"] = 'allowAbsoluteMailPath';
-$PQL_ATTRIBUTE["PQL_CONF_VERIFY_DELETE"] = 'deleteVerification';
-$PQL_ATTRIBUTE["PQL_CONF_MINIMUM_UIDNUMBER"] = 'minimumUIDNumber';
-$PQL_ATTRIBUTE["PQL_CONF_MINIMUM_GIDNUMBER"] = 'minimumGIDNumber';
-$PQL_ATTRIBUTE["PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER"] = 'forwardUIDNumber';
-$PQL_ATTRIBUTE["PQL_GLOB_BIND9_USE"] = 'useBind9';
-$PQL_ATTRIBUTE["PQL_GLOB_WEBSRV_USE"] = 'useWebSrv';
-
-// }}}
-
-// {{{ phpQLAdmin setup
-$PQL_ATTRIBUTE["PQL_GLOB_WHOAREWE"] = 'whoAreWe';
-$PQL_ATTRIBUTE["PQL_GLOB_LANG"] = 'language';
-$PQL_ATTRIBUTE["PQL_GLOB_HOSTMASTER"] = 'hostMaster';
-$PQL_ATTRIBUTE["PQL_CONF_TESTMAIL_SUBJECT"] = 'testMailSubject';
-$PQL_ATTRIBUTE["PQL_CONF_TESTMAIL_MAILTEXT"] = 'testMailText';
-$PQL_ATTRIBUTE["PQL_CONF_CATCHALLUSER"] = 'catchAllUser';
-$PQL_ATTRIBUTE["PQL_GLOB_EZMLM_PATH"] = 'ezmlmBinaryPath';
-$PQL_ATTRIBUTE["PQL_CONF_PASSWORD_SCHEMES"] = 'passWordScheme';
-$PQL_ATTRIBUTE["PQL_CONF_SCRIPT_CREATE_USER"] = 'externalScriptUser';
-$PQL_ATTRIBUTE["PQL_CONF_SCRIPT_CREATE_DOMAIN"] = 'externalScriptDomain';
-
-$PQL_ATTRIBUTE["PQL_GLOB_KRB5_REALM"] = 'krb5RealmName';
-$PQL_ATTRIBUTE["PQL_GLOB_KRB5_ADMIN_SERVER"] = 'krb5AdminServer';
-$PQL_ATTRIBUTE["PQL_GLOB_KRB5_ADMIN_PRINCIPAL"] = 'krb5PrincipalName';
-$PQL_ATTRIBUTE["PQL_GLOB_KRB5_ADMIN_KEYTAB"] = 'krb5AdminKeytab';
-$PQL_ATTRIBUTE["PQL_GLOB_KRB5_ADMIN_COMMAND_PATH"] = 'krb5AdminCommandPath';
-// }}}
-
-// {{{ Save path for users and groups
-$PQL_ATTRIBUTE["PQL_CONF_SUBTREE"]["USERS"] = 'subTreeUsers';
-$PQL_ATTRIBUTE["PQL_CONF_SUBTREE"]["GROUPS"] = 'subTreeGroups';
-// }}}
-
-// {{{ The webserver administrator attributes
-$PQL_ATTRIBUTE["PQL_CONF_WEBSRV_SRV_IP"] = 'webServerIP';
-$PQL_ATTRIBUTE["PQL_CONF_WEBSRV_SRV_URL"] = 'webServerURL';
-$PQL_ATTRIBUTE["PQL_CONF_WEBSRV_SRV_ADMIN"] = 'webServerAdmin';
-$PQL_ATTRIBUTE["PQL_CONF_WEBSRV_DOCROOT"] = 'webDocumentRoot';
-$PQL_ATTRIBUTE["PQL_CONF_WEBSRV_SRV_ALIAS"] = 'webServerAlias';
-$PQL_ATTRIBUTE["PQL_CONF_WEBSRV_SCRIPT_URL"] = 'webScriptAliasURL';
-$PQL_ATTRIBUTE["PQL_CONF_WEBSRV_SCRIPT_PATH"] = 'WebScriptAliasPath';
-$PQL_ATTRIBUTE["PQL_CONF_WEBSRV_LOG_ERROR"] = 'webLogError';
-$PQL_ATTRIBUTE["PQL_CONF_WEBSRV_LOG_TRANSFER"] = 'webLogTransfer';
-$PQL_ATTRIBUTE["PQL_CONF_WEBSRV_OPTIONS"] = 'webOptions';
-// }}} 
-
-// {{{ References
-$PQL_ATTRIBUTE["PQL_CONF_REFERENCE_USERS_WITH"] = 'userReference';
-$PQL_ATTRIBUTE["PQL_CONF_REFERENCE_DOMAINS_WITH"] = 'branchReference';
-$PQL_ATTRIBUTE["PQL_CONF_USER_RDN_ATTRIBUTE"] = $PQL_ATTRIBUTE["PQL_CONF_REFERENCE_USERS_WITH"];
-$PQL_ATTRIBUTE["PQL_GLOB_CONTROL_DN"] = 'controlBaseDN'; 
-$PQL_ATTRIBUTE["PQL_CONF_MAX_DOMAIN_USERS"] = 'maximumDomainUsers';
-$PQL_ATTRIBUTE["PQL_CONF_MAX_LISTS"] = 'maximumMailingLists';
-$PQL_ATTRIBUTE["PQL_CONF_ADDITIONAL_DOMAIN_NAME"] = 'additionalDomainName';
-// }}}
-
-// ---------------------------
-// - MULTI VALUED ATTRIBUTES -
-
-// {{{ Objectclasses for domain/branches and users
-$PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_DOMAIN"] = 'branchObjectClass';
-$PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_USER"] = 'userObjectClass';
-// }}}
-
-// {{{ Attribute configuration
-$PQL_ATTRIBUTE["PQL_CONF_ATTR"]["MAIL"] = 'userAttribute';
-$PQL_ATTRIBUTE["PQL_CONF_ATTR"]["FORWARDS"] = 'userAttribute';
-$PQL_ATTRIBUTE["PQL_CONF_ATTR"]["MAILALTERNATE"] = 'userAttribute';
-$PQL_ATTRIBUTE["PQL_CONF_ATTR"]["QMAILUID"] = 'userAttribute';
-$PQL_ATTRIBUTE["PQL_CONF_ATTR"]["QMAILGID"] = 'userAttribute';
-$PQL_ATTRIBUTE["PQL_CONF_ATTR"]["MAILSTORE"] = 'userAttribute';
-$PQL_ATTRIBUTE["PQL_CONF_ATTR"]["HOMEDIR"] = 'userAttribute';
-$PQL_ATTRIBUTE["PQL_CONF_ATTR"]["QUOTA"] = 'userAttribute';
-$PQL_ATTRIBUTE["PQL_CONF_ATTR"]["PROGRAM"] = 'userAttribute';
-$PQL_ATTRIBUTE["PQL_CONF_ATTR"]["MAILHOST"] = 'userAttribute';
-$PQL_ATTRIBUTE["PQL_CONF_ATTR"]["MODE"] = 'userAttribute';
-$PQL_ATTRIBUTE["PQL_CONF_ATTR"]["REPLYTEXT"] = 'userAttribute';
-$PQL_ATTRIBUTE["PQL_CONF_ATTR"]["DOTMODE"] = 'userAttribute';
-$PQL_ATTRIBUTE["PQL_CONF_ATTR"]["UID"] = 'userAttribute';
-$PQL_ATTRIBUTE["PQL_CONF_ATTR"]["PASSWD"] = 'userAttribute';
-$PQL_ATTRIBUTE["PQL_CONF_ATTR"][pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")] = 'userAttribute';
-$PQL_ATTRIBUTE["PQL_CONF_ATTR"]["ISACTIVE"] = 'userAttribute';
-$PQL_ATTRIBUTE["PQL_CONF_ATTR"]["PURGE"] = 'userAttribute';
-$PQL_ATTRIBUTE["PQL_CONF_ATTR"][pql_get_define("PQL_GLOB_ATTR_CN")] = 'userAttribute';
-$PQL_ATTRIBUTE["PQL_CONF_ATTR"]["SN"] = 'userAttribute';
-$PQL_ATTRIBUTE["PQL_CONF_ATTR"]["DESCRIPTION"] = 'userAttribute';
-$PQL_ATTRIBUTE["PQL_CONF_ATTR"]["GIVENNAME"] = 'userAttribute';
-$PQL_ATTRIBUTE["PQL_CONF_ATTR"]["DOMAIN"] = 'userAttribute';
-// }}}
-
-// ----------------------------
 // 1. Load site specific configuration
 require("./include/config.inc");				// Generic site configuration
 
@@ -174,12 +69,12 @@ require("./include/config_attributes.inc");		// Attribute definitions
 
 // 3. Load configurations from LDAP base DN
 if(!$_SESSION["USER_HOST"]) {
-	if(! eregi('\+', PQL_GLOB_HOST)) {
-		$host = split(';', PQL_GLOB_HOST);
+	if(! eregi('\+', PQL_CONF_HOST)) {
+		$host = split(';', PQL_CONF_HOST);
 		$_SESSION["USER_HOST"] = $host[0] . ";" . $host[1] . ";" . $host[2];
 	} else {
 		// TODO: We have multiple hosts defined
-		$servers = split('\+', PQL_GLOB_HOST);
+		$servers = split('\+', PQL_CONF_HOST);
 
 		// For the time beeing, use the first value
 		$host = split(';', $servers[0]);
@@ -196,37 +91,35 @@ foreach($_pql->ldap_basedn as $dn)  {
 	$info = ldap_get_entries($_pql->ldap_linkid, $sr)
 	  or pql_format_error(1);
 
+	// Below I use two variables with VERY 'strange' names. I can't call them what I WANT to call
+	// them or what's obvious because I'm afraid of variable overloading...
+	// That is, if I use the variable name _ANY_ (!!) where else, and I need to remember that,
+	// it will be 'destroyed' (or at least contain a value which have nothing to do with the
+	// original value...
+	//
+	// Hence the name's "pql_config_private_{variable,array}_which_irritates_me".
+	// - The "variable" variable will contain the LDAP attribute name.
+	// - The "array" variable will contain the value(s) for this array from the db.
+
 	// If we got something, retreive the attributes
 	for ($i=0; $i<$info["count"]; $i++) {
-		foreach($PQL_ATTRIBUTE as $key => $pql_config_private_variable_which_irritates_me) {
-			if(is_array($pql_config_private_variable_which_irritates_me)) {
-				foreach($pql_config_private_variable_which_irritates_me as $k => $v) {
-					$v = strtolower($v);
-					$nkey = $key."_".$k;
-					
-					if(isset($info[$i][$v][0])) {
-						if($pql_config_private_array_which_irritates_me)
-						  $pql_config_private_array_which_irritates_me .= ",".$info[$i][$v][0];
-						else
-						  $pql_config_private_array_which_irritates_me = $info[$i][$v][0];
-					}
-				}
-			} else {
+		foreach($PQL_ATTRIBUTE as $level => $array) {
+			foreach($array as $key => $pql_config_private_variable_which_irritates_me) {
 				$pql_config_private_variable_which_irritates_me = strtolower($pql_config_private_variable_which_irritates_me);
 				$pql_config_private_array_which_irritates_me = NULL;
-
+				
 				for($k=0; isset($info[$i][$pql_config_private_variable_which_irritates_me][$k]); $k++) {
 					if($pql_config_private_array_which_irritates_me)
 					  $pql_config_private_array_which_irritates_me .= ",".$info[$i][$pql_config_private_variable_which_irritates_me][$k];
 					else
 					  $pql_config_private_array_which_irritates_me = $info[$i][$pql_config_private_variable_which_irritates_me][$k];
 				}
-
-				if(ereg("_GLOB_", $key)) 
+				
+				if($level == 'GLOBAL')
 				  pql_set_define($key, $pql_config_private_array_which_irritates_me, true);
 				else
 				  pql_set_define($key, $pql_config_private_array_which_irritates_me, true, $dn);
-
+				
 				unset($pql_config_private_array_which_irritates_me);
 			}
 		}
@@ -266,13 +159,13 @@ if((empty($_SESSION["ACI_SUPPORT_ENABLED"]) and function_exists("user_generate_a
 	// 9a. Check ifthe attribute openLdapAci exists - ACI support is enabled in the LDAP server.
 	if(empty($_SESSION["ACI_SUPPORT_ENABLED"]) and
 	   function_exists("user_generate_aci") and
-	   $ocs[lc(pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI"))]["OID"])
+	   $ocs[pql_get_define("PQL_ATTR_LDAPACI")]["OID"])
 	  $_SESSION["ACI_SUPPORT_ENABLED"] = 1;
 
 	// 9b. Check to see if the attributes mailQuotaSize and mailQuotaCount exists - new stype quota.
-	if(empty($ocs[lc(pql_get_define("PQL_GLOB_ATTR_QUOTA_VALUE"))]["OID"]) and
-	   !empty($ocs[lc(pql_get_define("PQL_GLOB_ATTR_QUOTA_SIZE"))]["OID"]) and
-	   !empty($ocs[lc(pql_get_define("PQL_GLOB_ATTR_QUOTA_COUNT"))]["OID"]))
+	if(empty($ocs[pql_get_define("PQL_ATTR_QUOTA_VALUE")]["OID"]) and
+	   !empty($ocs[pql_get_define("PQL_ATTR_QUOTA_SIZE")]["OID"]) and
+	   !empty($ocs[pql_get_define("PQL_ATTR_QUOTA_COUNT")]["OID"]))
 	  $_SESSION["NEW_STYLE_QUOTA"] = 1;
 }
 
@@ -287,8 +180,7 @@ if(!$MONITOR_BACKEND_ENABLED) {
 // variable name space!
 unset($host); unset($servers); unset($i);
 unset($pql_config_private_variable_which_irritates_me); unset($sr); unset($info);
-unset($key); unset($v); unset($nkey);
-unset($k);
+unset($v); unset($nkey); unset($k);
 
 /*
  * Local variables:
