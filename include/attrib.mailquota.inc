@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mailquota.inc,v 2.10 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.mailquota.inc,v 2.11 2003-09-04 16:56:16 turbo Exp $
 
 function attribute_check($type) {
 	global $options, $use_maxsize, $use_maxmails, $maxsize, $maxmails, $error, $LANG;
@@ -189,7 +189,7 @@ function attribute_save($type) {
 			if(! pql_set_domain_value($_pql->ldap_linkid, $domain, 'baseQuota', array($mailquota)))
 			  $msg = pql_complete_constant($LANG->_('Successfully changed %what% for domain %domain%'),
 										   array('what'   => $LANG->_('default quota'),
-												 'domain' => $domain)) . ": " . pql_ldap_error($_pql->ldap_linkid);
+												 'domain' => urldecode($domain))) . ": " . pql_ldap_error($_pql->ldap_linkid);
 		} else {
 			// We're setting quota for a user
 			if(! pql_replace_userattribute($_pql->ldap_linkid, $user,

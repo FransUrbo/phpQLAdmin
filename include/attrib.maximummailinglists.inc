@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // maximumDomainUsers
-// $Id: attrib.maximummailinglists.inc,v 2.3 2003-07-02 07:59:01 turbo Exp $
+// $Id: attrib.maximummailinglists.inc,v 2.4 2003-09-04 16:56:16 turbo Exp $
 
 function attribute_check($type = '') {
 	global $error, $attrib, $$attrib, $LANG;
@@ -67,11 +67,11 @@ function attribute_save($type) {
 		if(pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, $$attrib))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% for domain %domain%'),
 									   array('what'   => $LANG->_('maximum allowed mailinglists'),
-											 'domain' => $domain));
+											 'domain' => urldecode($domain)));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what% for domain %domain%'),
 									   array('what'   => $LANG->_('maximum allowed mailinglists'),
-											 'domain' => $domain)) . ": " . ldap_error($_pql->ldap_linkid);
+											 'domain' => urldecode($domain))) . ": " . ldap_error($_pql->ldap_linkid);
 	
 		attribute_forward($msg);
 		break;
