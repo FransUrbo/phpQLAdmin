@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // accountstatus (status of mailaccount)
-// $Id: attrib.accountstatus.inc,v 2.21 2004-10-19 10:40:40 turbo Exp $
+// $Id: attrib.accountstatus.inc,v 2.22 2004-11-05 11:13:29 turbo Exp $
 
 /* DLW: When the calendar gets a value of 2003.12.25, it gets stored or displayed as 2003/12/24 (@7am)
  *      I think it's having problems with time zones.  Look into it. */
@@ -117,7 +117,7 @@ function attribute_save($type) {
     switch($type) {
       case "fulldomain":
       case "modify":
-		if(eregi(pql_get_define("PQL_CONF_EXPIRATION"), $_REQUEST["attrib"])) {
+		if($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_EXPIRATION")) {
 			// Set the shadowExpire attribute for this user
 			
 			// Get the objectClasses of this user
@@ -127,7 +127,7 @@ function attribute_save($type) {
 			for($i=0; $entry[$i]; $i++) {
 				$new_entry["objectclass"][] = $entry[$i];
 
-				if(eregi(pql_get_define("PQL_CONF_EXPIRATION"), $entry[$i]))
+				if($entry[$i] == pql_get_define("PQL_ATTR_EXPIRATION"))
 				  $got_objectclass = 1;
 			}
 
