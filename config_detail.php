@@ -129,10 +129,6 @@ if(PQL_VERIFY_DELETE){
 	<td class="title">LDAP control base dn</td>
 	<td class="<?php table_bgcolor(); ?>"><?=$USER_SEARCH_DN_CTR?>&nbsp;</td>
 </tr>
-<tr>
-	<td class="title">Password encryption schemes</td>
-	<td class="<?php table_bgcolor(); ?>"><?php echo PQL_PASSWORD_SCHEMES; ?>&nbsp;</td>
-</tr>
 <?php
 	}
 	if(defined(PQL_DEFAULT_PATH)) {
@@ -147,21 +143,77 @@ if(PQL_VERIFY_DELETE){
 
 <tr></tr>
 
+<?php
+	$new_tr = 0;
+	$schemes = split(",", PQL_PASSWORD_SCHEMES);
+	foreach($schemes as $s) {
+	    if($new_tr) {
+?>
+<tr>
+	<td class="title"></td>
+<?php
+	    } else {
+?>
+<tr>
+	<td class="title">Password encryption schemes</td>
+<?php
+	    }
+	    $new_tr = 1;
+?>
+	<td class="<?php table_bgcolor(); ?>"><?=$s?>&nbsp;</td>
+<?php
+	}
+?>
+</tr>
+
+<tr></tr>
+
 <tr>
 	<td class="title">User objectclasses</td>
 	<td class="<?php table_bgcolor(); ?>"><?php echo PQL_LDAP_OBJECTCLASS_USERID; ?>&nbsp;</td>
 </tr>
 <?php
-$objectclasses = split(" ", PQL_LDAP_OBJECTCLASS_USER_EXTRA);
-foreach($objectclasses as $oc) {
+	$new_tr = 0;
+	$objectclasses = split(" ", PQL_LDAP_OBJECTCLASS_USER_EXTRA);
+	foreach($objectclasses as $oc) {
 ?>
 <tr>
 	<td class="title"></td>
 	<td class="<?php table_bgcolor(); ?>"><?=$oc?>&nbsp;</td>
 </tr>
 <?php
-}
+	}
 ?>
+
+<tr></tr>
+
+<?php
+	$objectclasses = '';
+	if(eregi(" ", PQL_LDAP_OBJECTCLASS_DOMAIN)) {
+	    $objectclasses = split(" ", PQL_LDAP_OBJECTCLASS_DOMAIN);
+	} else {
+	    $objectclasses[] = PQL_LDAP_OBJECTCLASS_DOMAIN;
+	}
+
+	foreach($objectclasses as $oc) {
+	    if($new_tr) {
+?>
+<tr>
+	<td class="title"></td>
+<?php
+	    } else {
+?>
+<tr>
+	<td class="title">Domain objectclasses</td>
+<?php
+	    }
+	    $new_tr = 1;
+?>
+	<td class="<?php table_bgcolor(); ?>"><?=$oc?>&nbsp;</td>
+<?php
+	}
+?>
+</tr>
 
 <tr></tr>
 
@@ -172,7 +224,7 @@ foreach($objectclasses as $oc) {
 
 <tr>
 	<td class="title">Reference domains with</td>
-	<td class="<?php table_bgcolor(); ?>"><?=PQL_LDAP_ATTR_DOMAIN?> (<?=PQL_LDAP_OBJECTCLASS_DOMAIN?>)</td>
+	<td class="<?php table_bgcolor(); ?>"><?=PQL_LDAP_ATTR_DOMAIN?></td>
 </tr>
 	
 <tr class="subtitle">
