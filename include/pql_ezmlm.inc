@@ -3,20 +3,17 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ezmlm.inc,v 1.24 2004-05-06 15:40:01 turbo Exp $
+// $Id: pql_ezmlm.inc,v 1.25 2004-05-10 13:31:16 turbo Exp $
 session_start();
 
 class ezmlm {
 	// ===================================================
-	// Private section
-	var $_option		= array();
-	var $_paths			= array();
-
-	// Public section
-	var $user_name		= '';
-	var $user_home		= '';
+	// {{{ Private section
+	var $_option					= array();
+	var $_paths						= array();
 
 	// {{{ _getfsentries(dir)
+
 	// Get filesystem entries (files or directories) recursively.
 	function _getfsentries($dir) {
 		if(!(($directory = @opendir($dir)) !=0)) {
@@ -46,6 +43,7 @@ class ezmlm {
 
 		return $entries;
 	}
+
 	// }}}
 	
 	// {{{ _getdotlinks(dir, base)
@@ -288,7 +286,7 @@ class ezmlm {
 	// Chown and Chmod directory recursive
 	function _chmodown($directory, $username, $dirmode = '0770', $filemode = '0660') {
 		// Find user id for the username
-		$uidnr = posix_getpwnam($username);
+		$uidnr = @posix_getpwnam($username);
 		$uidnr = $uidnr["uid"];
 
 		umask(0011);
@@ -312,9 +310,13 @@ class ezmlm {
 //		pql_execute('./sub_ezmlm_create.pl', 1);
 	}
 	// }}}
+	// }}}
 
 	// ===================================================
-	// Public section
+	// {{{ Public section
+	var $user_name					= "";
+	var $user_home					= "";
+
 	var $error_message				= "";
 	var $error						= "";
 	var $debug						= 0;
@@ -458,11 +460,32 @@ class ezmlm {
 			$listname = $this->mailing_lists[$listno]["name"];
 		} else {
 			$listpath = $this->user_home . $listname;
-			// Find the absolute path to the home directory of the user
-			$home = posix_getpwnam($this->user_name);
-			$home = $home["dir"];
 
-			$dotpath  = $home . "/.qmail-" . $listname;
+			// Find the absolute path to the home directory of the user
+			$line = @posix_getpwnam($this->user_name);
+			if($line["dir"])
+			  // A system user with a home directory
+			  $dot_home = $line["dir"];
+			else {
+				// Not a system user. Is it a qmail virtual user?
+				$fp = fopen("/var/qmail/users/assign", "r");
+				while($line = fgetcsv($fp, 1000, ":")) {
+					list($user, $alias, $uid, $gid, $dot_home, $x1, $fw, $x2) = $line;
+					$user = preg_replace('/^=/', '',  $user);
+					if($user == $this->user_name)
+					  break;
+				}
+				fclose($fp);
+
+//				if(!$dot_home) {
+//					// TODO: It's not a qmail virtual user either!
+//				}
+			}
+
+			if(! ereg("/$", $dot_home))
+			  $dotpath  = $dot_home . "/.qmail-" . $listname;
+			else
+			  $dotpath  = $dot_home . ".qmail-" . $listname;
 		}
 
 		$command = ($this->_paths["make"] . " 2>&1 -"
@@ -497,6 +520,7 @@ class ezmlm {
 	// }}}
 
 	// {{{ deletelistentry(listnumber)
+
 	// Delete a mailinglist
 	function deletelistentry($listnumber) {
 		$lstname = $this->mailing_lists[$listnumber]["name"];
@@ -557,6 +581,7 @@ class ezmlm {
 			return 1;
 		}
 	}
+
 	// }}}
 
 	// {{{ savelistentrytexts(listname, text, contents)
@@ -675,6 +700,7 @@ class ezmlm {
 		$this->unsubscribe($listname."/deny", $address);
 	}
 	// }}}
+	// }}}
 }
 
 /*
@@ -682,6 +708,7 @@ class ezmlm {
  * mode: php
  * mode: font-lock
  * tab-width: 4
+ * folded-file: t
  * End:
  */
 ?>
