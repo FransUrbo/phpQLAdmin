@@ -1,0 +1,60 @@
+This file is technically not an LDIF. Remove empty
+lines and comments (starting with ';'), and this note,
+THEN it will be an LDIF...
+
+This 'semi-ldif' shows ONE of my development databases
+and shows what a base DN can look like when using phpQLAdmin.
+
+It have not been updated for ACI usage. I don't see the point.
+Read the doc/README.aci file instead...
+
+----- s n i p -----
+dn: o=Turbo Fredriksson
+objectClass: top
+objectClass: phpQLAdminBranch
+objectClass: phpQLAdminConfig
+objectClass: phpQLAdminGlobal
+;
+; Global values
+krb5RealmName: BAYOUR.COM
+whoAreWe: Bayour.COM User Administration
+controlBaseDn: ou=QmailLDAP,dc=bayour,dc=com
+ezmlmAdministrator: cn=Turbo Fredriksson,ou=People,o=Turbo Fredriksson
+ezmlmAdministrator: uid=ma,ou=People,dc=bayour,dc=com
+controlsAdministrator: cn=Turbo Fredriksson,ou=People,o=Turbo Fredriksson
+allowServerChange: FALSE
+autoReload: FALSE
+language: se
+useEzmlm: FALSE
+useBind9: TRUE
+useControls: TRUE
+;
+; Branch values
+defaultDomain: bayour.com
+additionalDomainName:: YmrDtnJuLmNvbQ==
+baseHomeDir: /afs/bayour.com/user/users/
+baseMailDir: /var/mail/fredriksson/
+administrator: cn=Turbo Fredriksson,ou=People,o=Turbo Fredriksson
+seeAlso: cn=Turbo Fredriksson,ou=People,o=Turbo Fredriksson
+branchReference: o
+userReference: cn
+autoAddHostName: FALSE		; Automatically add hostname to domain for ~controls/rcpthosts attribute [True/False]?
+autoAddRCPTHosts: FALSE		; Automatically add domain to ~controls/rcpthosts attribute [True/False]?
+autoAddLocals: TRUE		; Automatically add domain to ~controls/locals attribute [True/False]?
+maximumMailingLists: 20
+defaultPasswordScheme: MD5
+autoCreateUsername: TRUE
+autoCreateMailAddress: TRUE
+allowAbsoluteMailPath: FALSE
+showUsers: TRUE
+minimumUIDNumber: 5000
+userNamePrefix: trb
+passWordScheme: KERBEROS
+passWordScheme: SHA
+passWordScheme: MD5
+branchObjectClass: organization
+branchObjectClass: phpQLAdminBranch
+userObjectClass: mailrecipient
+userObjectClass: inetorgperson
+userObjectClass: pilotperson
+----- s n i p -----

@@ -1,0 +1,80 @@
+<html>
+<head>
+  <!-- This script was originally developed for
+       phpMyAdmin (phpmyadmin.sourceforge.net)
+
+       See tools/left.js in this directory for a complete
+       list of authors.
+  -->
+
+  <!-- Collapsable user list scripts -->
+  <script type="text/javascript" language="javascript"><!--
+    var isDOM      = (typeof(document.getElementsByTagName) != 'undefined'
+                      && typeof(document.createElement) != 'undefined')
+                   ? 1 : 0;
+    var isIE4      = (typeof(document.all) != 'undefined'
+                      && parseInt(navigator.appVersion) >= 4)
+                   ? 1 : 0;
+    var isNS4      = (typeof(document.layers) != 'undefined')
+                   ? 1 : 0;
+    var isOpera    = (navigator.userAgent.indexOf('Opera') >= 0)
+                   ? 1 : 0;
+    var capable    = (isDOM || isIE4 || isNS4)
+                   ? 1 : 0;
+    // Uggly fix for Opera and Konqueror 2.2 that are half DOM compliant
+    if (capable) {
+        if (typeof(window.opera) != 'undefined') {
+            capable = 0;
+        }
+        else if (typeof(navigator.userAgent) != 'undefined') {
+            var browserName = ' ' + navigator.userAgent.toLowerCase();
+            if (browserName.indexOf('konqueror') > 0) {
+                capable = 0;
+            }
+        } // end if... else if...
+    } // end if
+
+    var fontFamily = 'verdana, helvetica, arial, geneva, sans-serif';
+    var fontSize   = 'small';
+    var fontBig    = 'medium';
+    var fontSmall  = 'x-small';
+    var isServer   = true;
+  //--></script>
+
+  <script src="tools/frames.js" type="text/javascript" language="javascript1.2"></script>
+  <script src="tools/left.js" type="text/javascript" language="javascript1.2"></script>
+<?php
+  $br = strtolower(getenv("HTTP_USER_AGENT"));
+  $_SESSION["lynx"] = eregi("lynx", $br);
+  $_SESSION["konqueror"] = eregi("konqueror", $br);
+  $_SESSION["opera"] = eregi("opera", $br);
+  $_SESSION["mozilla"] = eregi("mozilla", $br);
+  if($_SESSION["opera"]) {
+      $_SESSION["opera"]=true;
+?>
+  <script src="tools/opera.js" type="text/javascript" language="javascript1.2"></script>
+<?php } ?>
+
+  <base target="pqlmain">
+  <noscript>
+    <style type="text/css">
+    <!--
+      div {color: #000000}
+      .heada {font-family: verdana, helvetica, arial, geneva, sans-serif; font-size: small; color: #000000}
+      .headaCnt {font-family: verdana, helvetica, arial, geneva, sans-serif; font-size: x-small; color: #000000}
+      .parent {font-family: verdana, helvetica, arial, geneva, sans-serif; color: #000000; text-decoration: none}
+      .child {font-family: verdana, helvetica, arial, geneva, sans-serif; font-size: x-small; color: #333399; text-decoration: none}
+      .item, .item:active, .item:hover, .tblItem, .tblItem:active {color: #333399; text-decoration: none}
+      .tblItem:hover {color: #FF0000; text-decoration: underline}
+    //-->
+    </style>
+  </noscript>
+
+  <style type="text/css">
+  <!--
+    body {  font-family: Arial, Helvetica, sans-serif; font-size: 10pt}
+  //-->
+  </style>
+</head>
+
+<body bgcolor="#D0DCE0">

@@ -1,0 +1,39 @@
+As of phpQLAdmin version 2.0.18 CVS (as of 'Thu Apr 1 14:00' -
+hmm... NO, not an aprils fools joke! :), phpQLAdmin now supports
+TRUE virtual accounts...
+
+The only REQUIRED object class is now 'qmailUser'. However, I
+_URGE_ (!!) you to seriously consider adding 'person' and
+'inetOrgPerson'. This because neither one of them have a MUST,
+only three very usefull MAY's - full name (=> 'cn'), Lastname
+(=> 'sn') for the 'person' objectclass and firstname (=> givenName)
+for the 'inetOrgPerson' objectclass. Adding these three attributes
+will make the left frame look a lot better!
+
+If you do NOT add the 'person' object class, it won't be possible
+to reference users with 'cn', only 'uid' which is the default
+behaviour in phpQLAdmin but don't look as good according to some...
+
+For more information, look at the mailing list (URL below). That
+have an example on how a VERY minimal 'virtual mail' account might
+look like (verified to work).
+
+The tread starts at
+http://apache.bayour.com/list/phpQLAdmin/?action=show_msg&actionargs[]=78&actionargs[]=88
+
+But the interesting part is:
+http://apache.bayour.com/list/phpQLAdmin/?action=show_msg&actionargs[]=8&actionargs[]=24
+
+
+As of phpQLAdmin version 2.0.19-pre CVS Mon May 10 2004, the EZMLM
+manager now first looks in /etc/passwd for the defined user (which
+in turn is now set in the 'phpQLAdmin Configuration->BRANCH' instead
+of include/config.inc as previous) and it's home directory. If that
+fails, it will look in '/var/qmail/users/assign' for the users home
+directory.
+
+It (phpQLAdmin) will use this home directory value to write it's
+dot files. This so that one doesn't need to have ALL dot files
+used by ezmlm/qmail in ONE place. This means that now we can have
+the same listname in/for multiple branches (which was not possible
+previosly).

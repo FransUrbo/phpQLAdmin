@@ -1,0 +1,42 @@
+#
+#    Translators, if you are not familiar with the PO format, gettext
+#    documentation is worth reading, especially sections dedicated to
+#    this format, e.g. by running:
+#         info -n '(gettext)PO Files'
+#         info -n '(gettext)Header Entry'
+#
+#    Some information specific to po-debconf are available at
+#            /usr/share/doc/po-debconf/README-trans
+#         or http://www.debian.org/intl/l10n/po-debconf/README-trans
+#
+#    Developers do not need to manually edit POT or PO files.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2003-09-23 14:18+0200\n"
+"PO-Revision-Date: 2003-11-20 11:13+0900\n"
+"Last-Translator: Hideki Yamane <henrich@samba.gr.jp>\n"
+"Language-Team: Japanese <debian-japanese@lists.debian.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=EUC-JP\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Choices
+#: ../templates:3
+msgid "Apache, Apache-SSL, Both, None"
+msgstr "Apache, Apache-SSL, 両方, どれでも無い"
+
+#. Description
+#: ../templates:5
+msgid "Which web server would you like to reconfigure automatically?"
+msgstr "どの web サーバを自動的に再設定しますか?"
+
+#. Description
+#: ../templates:5
+msgid ""
+"phpQLAdmin supports any web server that PHP4 does, but this automatic "
+"configuration process only supports Apache and Apache-SSL."
+msgstr "phpQLAdmin は php4 が動作する web サーバをサポートしていますが、この自動設定プロセスは Apache と Apache-SSL のみサポートしています。"
