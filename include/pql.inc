@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.165 2004-03-18 13:54:12 turbo Exp $
+// $Id: pql.inc,v 2.166 2004-03-19 10:09:39 turbo Exp $
 //
 
 // ----------------------------
@@ -549,6 +549,7 @@ function pql_user_exist($linkid, $user, $domain = NULL, $rootdn = NULL) {
 		  // User does not exist in LDAP tree
 		  return(false); 
 	}
+
 	return(true);
 }
 // }}}
@@ -1289,7 +1290,6 @@ function pql_email_exists($ldap, $email) {
 // }}}
 
 // {{{ pql_get_next_ugidnumber(ldap, type)
-
 // Returns the next free UID/GID number
 function pql_get_next_ugidnumber($ldap, $type) {
     //: Get the minimum allowable ID.
@@ -1410,39 +1410,40 @@ function pql_get_valid_shells() {
 
 // {{{ pql_get_mx(domainname)
 function pql_get_mx($domainname) {
-	$res = getmxrr($domainname, $rec, $weight);
-	if(count($rec) == 0) {
-		// Not found in the DNS, 
+	$mx = array();
 
-		if(pql_get_define("PQL_CONF_CONTROL_USE")) {
-			// Look for a qmailControl object which lists this domain...
-		
-			// Initiate a connection to the QmailLDAP/Controls DN
-			$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
-			if($_pql_control->ldap_linkid) {
-				$filter = "(&(objectclass=qmailControl)(".pql_get_define("PQL_ATTR_LOCALS")."=$domainname))";
-				$info = pql_search($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $filter, '');
-				for($i=0; $i<$info["count"]; $i++) {
-					for($j=0; $j<$info[$i][pql_get_define("PQL_ATTR_LOCALS")]["count"]; $j++) {
-						if($info[$i][pql_get_define("PQL_ATTR_LOCALS")][$j] == $domainname)
-						  return($info[$i][pql_get_define("PQL_ATTR_CN")][0]);
-					}
-				}
-			}
-		}
-				
-		return(0);
-	} else {
+	$res = getmxrr($domainname, $rec, $weight);
+	if(count($rec) > 0) {
 		// Take the MX with _LOWEST_ priority/weight.
 		asort($weight); $old_prio = 65555;
-		foreach($weight as $key => $prio){
+		foreach($weight as $key => $prio) {
 			if($prio < $old_prio) {
 				$old_prio = $prio; $prio_key = $key;
 			}
 		}
-		
-		return($rec[$prio_key]);
+		$mx["dns"] = $rec[$prio_key];
 	}
+
+	// It's possible that we have a QmailLDAP/Controls object as well...
+	if(pql_get_define("PQL_CONF_CONTROL_USE")) {
+		// Look for a qmailControl object which lists this domain...
+		
+		// Initiate a connection to the QmailLDAP/Controls DN
+		$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
+		if($_pql_control->ldap_linkid) {
+			$filter = "(&(objectclass=qmailControl)(".pql_get_define("PQL_ATTR_LOCALS")."=$domainname))";
+			$info = pql_search($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $filter, '');
+			for($i=0; is_array($info[$i]); $i++) {
+				if($info[$i]["cn"][0])
+				  $mx["qlc"][] = $info[$i]["cn"][0];
+			}
+
+			// Make sure we don't use it any more than we have to...
+			ldap_close($_pql_control->ldap_linkid);
+		}
+	}
+
+	return($mx);
 }
 // }}}
 
