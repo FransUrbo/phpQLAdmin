@@ -7,14 +7,18 @@ require("./include/pql_config.inc");
 
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
+if(!$rootdn) {
+	$rootdn = pql_get_rootdn($user);
+}
+
 // Get default domain name for this domain
 $defaultdomain = pql_get_domain_value($_pql, $domain, "defaultdomain");
 
 include("./header.html");
 
 // print status message, if one is available
-if(isset($msg)){
-    print_status_msg($msg);
+if(isset($msg)) {
+	print_status_msg($msg);
 }
 
 // reload navigation bar if needed
@@ -33,8 +37,7 @@ if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
     // reload navigation frame
     parent.frames.pqlnav.location.reload();
   //--></script>
-<?php
-	}
+<?php   }
 }
 
 $username = pql_get_userattribute($_pql->ldap_linkid, $user, 'cn');
@@ -48,17 +51,19 @@ $username = $username[0];
   <span class="title1"><?=$username?></span>
   <br><br>
 <?php
-
 // check if user exists
-if(!pql_user_exist($_pql->ldap_linkid, $user)){
-	echo "user &quot;$user&quot; does not exist";
-	exit();
+if(!pql_user_exist($_pql->ldap_linkid, $user)) {
+    echo "User &quot;$user&quot; does not exist";
+    exit();
 }
 
 // Get basic user information
 // Some of these (everything after the 'homedirectory')
 // uses 'objectClass: pilotPerson' -> http://rfc-1274.rfcindex.net/
-$attribs = array('cn', 'sn', 'uidNumber', 'gidNumber', 'loginShell', 'uid', 'userPassword', 'mailMessageStore', 'mailHost', 'homeDirectory', 'roomNumber', 'telePhoneNumber', 'homePhone', 'homePostalAddress', 'secretary', 'personalTitle', 'mobile', 'pager');
+$attribs = array('cn', 'sn', 'uidNumber', 'gidNumber', 'loginShell', 'uid',
+				 'userPassword', 'mailMessageStore', 'mailHost', 'homeDirectory',
+				 'roomNumber', 'telePhoneNumber', 'homePhone', 'homePostalAddress',
+				 'secretary', 'personalTitle', 'mobile', 'pager');
 foreach($attribs as $attrib) {
     $attrib = strtolower($attrib);
 
@@ -72,22 +77,22 @@ foreach($attribs as $attrib) {
 }
 $quota = pql_get_userquota($_pql->ldap_linkid, $user);
 
-if($userpassword == ""){
+if($userpassword == "") {
     $userpassword = PQL_LANG_USERPASSWORD_NONE;
 } else {
     if(eregi("{KERBEROS}", $userpassword)) {
-	$princ = split("}", $userpassword);
-	$userpassword = $princ[1] . " " . PQL_LANG_USERPASSWORD_KERBEROS;
+		$princ = split("}", $userpassword);
+		$userpassword = $princ[1] . " " . PQL_LANG_USERPASSWORD_KERBEROS;
     } else {
-	$userpassword = PQL_LANG_USERPASSWORD_ENCRYPTED;
+		$userpassword = PQL_LANG_USERPASSWORD_ENCRYPTED;
     }
 }
 
-if($mailmessagestore == ""){
+if($mailmessagestore == "") {
     $mailmessagestore = PQL_LANG_MAILMESSAGESTORE_NONE;
 }
 
-if($mailhost == ""){
+if($mailhost == "") {
     $mailhost = PQL_LANG_MAILHOST_NONE;
 }
 ?>
@@ -497,7 +502,7 @@ if(empty($forwarders)){
     <th colspan="2" align="left">User access</th>
 <?php
     foreach($_pql->ldap_basedn as $branch) {
-	$dom = pql_get_domain_value($_pql, $branch, 'administrator', $USER_DN);
+	$dom = pql_get_domain_value($_pql, $branch, 'administrator', $user);
 	if($dom) {
 	    foreach($dom as $d) {
 		$domains[] = $d;
@@ -505,12 +510,11 @@ if(empty($forwarders)){
 	}
     }
     
+    $class=table_bgcolor(0);
     if(isset($domains)) {
 	asort($domains);
 	$new_tr = 0;
 	foreach($domains as $key => $branch) {
-	    $class=table_bgcolor(0);
-
 	    if($new_tr) {
 ?>
 
@@ -526,35 +530,56 @@ if(empty($forwarders)){
 	    $new_tr = 1;
 ?>
         <td><?=$branch?></td>
+        <td>
+          <a href="domain_edit_attributes.php?attrib=administrator&domain=<?=$branch?>&user=<?=$user?>&submit=4&action=delete"><img src="images/del.png" width="12" height="12" border="0" alt="Deny user admin access to domain"></a>
+        </td>
       </tr>
-<?php
-	}
-    }
-
-    if($ALLOW_BRANCH_CREATE) {
-	$class=table_bgcolor(0);
+<?php   } ?>
+      <tr class="<?=$class?>">
+        <td class="title"></td>
+        <td>
+          <a href="domain_edit_attributes.php?attrib=administrator&user=<?=$user?>&submit=3&action=add">Give (more) admin rights</a>
+        </td>
+        <td></td>
+      </tr>
+<?php   if($ALLOW_BRANCH_CREATE) {
+	    $class=table_bgcolor(0);
 ?>
 
       <tr class="<?=$class?>">
         <td class="title">Create branches</td>
-<?php
-	if(pql_validate_administrator($_pql->ldap_linkid, $_pql->ldap_basedn[0], $user)) {
-?>
+<?php       if(pql_validate_administrator($_pql->ldap_linkid, $rootdn, $user)) { ?>
         <td>Yes</td>
-        <td><a href="domain_edit_attributes.php?attrib=administrator&domain=<?=$_pql->ldap_basedn[0]?>&administrator=<?=$user?>&submit=4&action=delete"><img src="images/del.png" width="12" height="12" border="0" alt="Disallow user to create domains"></a></td>
-<?php
-	} else {
-?>
+        <td>
+          <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&user=<?=$user?>&submit=4&action=delete">
+            <img src="images/del.png" width="12" height="12" border="0" alt="Disallow user to create domains below <?=$rootdn?>">
+          </a>
+        </td>
+<?php       } else { ?>
         <td>No</td>
-        <td><a href="domain_edit_attributes.php?attrib=administrator&domain=<?=$_pql->ldap_basedn[0]?>&administrator=<?=$user?>&submit=4&action=add"><img src="images/edit.png" width="12" height="12" border="0" alt="Allow user to create domains"></a></td>
-<?php
-	}
-?>
+        <td>
+          <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&user=<?=$user?>&submit=4&action=add">
+            <img src="images/edit.png" width="12" height="12" border="0" alt="Allow user to create domains below <?=$rootdn?>">
+          </a>
+        </td>
+<?php      } ?>
       </tr>
-    </th>
-  </table>
+<?php   }
+    } else {
+?>
+      <tr class="<?=$class?>">
+        <td class="title">Access to DN:</td>
+        <td>
+          <a href="domain_edit_attributes.php?attrib=administrator&user=<?=$user?>&submit=3&action=add">Give admin rights</a>
+        </td>
+        <td></td>
+      </tr>
 <?php
     }
+?>
+    </th>
+  </table>
+<?
 }
 
 if(!$SINGLE_USER) {
@@ -571,6 +596,14 @@ if(!$SINGLE_USER) {
   </table>
 <?php
 }
+
+/*
+ * Local variables:
+ * mode: php
+ * mode: font-lock
+ * tab-width: 4
+ * End:
+ */
 ?>
 </body>
 </html>
