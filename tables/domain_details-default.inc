@@ -3,14 +3,14 @@
 <?php if($ALLOW_BRANCH_CREATE) { ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?=$LANG->_('Branch DN')?></td>
-        <td><?php echo maybe_decode(urldecode($domain)); ?></td>
+        <td><?php echo pql_maybe_decode(urldecode($domain)); ?></td>
         <td><?=// TODO: Should we be able to rename the RDN? ?></td>
       </tr>
   
 <?php } ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?=$LANG->_('Default domain name')?></td>
-        <td><?php if($defaultdomain){echo $defaultdomain;}else{echo $LANG->_('Not set');} ?></td>
+        <td><?php if($defaultdomain){echo pql_maybe_idna_decode($defaultdomain);}else{echo $LANG->_('Not set');} ?></td>
 <?php if($ALLOW_BRANCH_CREATE) { ?>
         <td><?=$defaultdomain_link?></td>
 <?php } else { ?>
@@ -23,6 +23,8 @@
 <?php if(is_array($additionaldomainname)) {
 		$new_tr = 0;
 		foreach($additionaldomainname as $additional) {
+			$additional = pql_maybe_idna_decode($additional);
+
 			if($new_tr) {
 ?>
       <tr class="<?php table_bgcolor(); ?>">
@@ -128,7 +130,7 @@
 <?php if(is_array($domain_admins)) {
 		$new_tr = 0;
 		foreach($domain_admins as $admin) {
-			$admin = maybe_encode($admin); // Re-encode value that we got earlier from pql_get_domain_value().
+			$admin = pql_maybe_encode($admin); // Re-encode value that we got earlier from pql_get_domain_value().
 
 			$username = pql_get_userattribute($_pql->ldap_linkid, $admin, pql_get_define("PQL_GLOB_ATTR_CN"));
 			if(!$username[0])

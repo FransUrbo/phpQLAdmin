@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.24 2003-10-11 16:51:15 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.25 2003-11-12 09:33:32 turbo Exp $
 
 require("./left-head.html");
 
@@ -84,7 +84,7 @@ function attribute_print_form($action) {
 					foreach($domains as $key => $branch) {
 						// Get domain part from the DN (Example: 'dc=test,dc=net' => 'test').
 						$d = split(',', $branch); $d = split('=', $d[0]); $d = $d[1];
-						$d = maybe_decode($d);
+						$d = pql_maybe_decode($d);
 ?>
 
 <?php if($opera) { ?>

@@ -16,7 +16,7 @@
 		// Part of the DN might be URL/UTF8 encoded...
 		$dnparts    = split(",", $user);							// Split up the DN to get the very first part
 		$userparts  = split("=", $dnparts[0]);						// Split the DN part into two parts - attribute and value.
-		$userdnpart = maybe_decode($userparts[1], $userparts[0]);	// Maybe URL/UTF8 decode the value
+		$userdnpart = pql_maybe_decode($userparts[1], $userparts[0]);	// Maybe URL/UTF8 decode the value
 		$user = $userparts[0]."=".$userdnpart.",";					// Create a new DN part
 		for($i=1; $dnparts[$i]; $i++) {								// Add the rest of the DN
 			$user .= $dnparts[$i];

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for changing/renaming the DN
 //
-// $Id: attrib.modrdn.inc,v 2.3 2003-08-18 14:20:12 turbo Exp $
+// $Id: attrib.modrdn.inc,v 2.4 2003-11-12 09:33:32 turbo Exp $
 
 function attribute_check($type) {
 	global $user, $oldvalue, $rdn, $view, $domain, $rootdn, $attrib;
@@ -38,7 +38,7 @@ function attribute_print_form() {
       <th colspan="3" align="left"><?=$LANG->_('Rename this RDN')?></th>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"><?=$LANG->_('Old RDN')?></td>
-          <td><?php echo maybe_decode($oldvalue); ?></td>
+          <td><?php echo pql_maybe_decode($oldvalue); ?></td>
         </tr>
 
         <tr class="<?php table_bgcolor(); ?>">
@@ -84,7 +84,7 @@ function attribute_save($type) {
 	$dnattr = split("=", $user);
 
 	// URL/UTF8 encode the value, not the attribute
-	$dn = maybe_encode($dnattr[1], $dnattr[0]);
+	$dn = pql_maybe_encode($dnattr[1], $dnattr[0]);
 
 	// Create a new DN part
 	$user = $dnattr[0]."=".$dn;
