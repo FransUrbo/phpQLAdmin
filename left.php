@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.62 2003-11-19 16:20:27 turbo Exp $
+// $Id: left.php,v 2.63 2003-11-19 19:31:34 turbo Exp $
 //
 session_start();
 
@@ -126,7 +126,7 @@ if(!isset($domains)) {
     // No domain defined -> 'ordinary' user (only show this user)
     $SINGLE_USER = 1; session_register("SINGLE_USER");
 
-    $cn = pql_get_userattribute($_pql->ldap_linkid, $USER_DN, pql_get_define("PQL_GLOB_ATTR_CN")); $cn = $cn[0];
+    $cn = pql_get_attribute($_pql->ldap_linkid, $USER_DN, pql_get_define("PQL_GLOB_ATTR_CN")); $cn = $cn[0];
 
     // Try to get the DN of the domain
     $dnparts = ldap_explode_dn($USER_DN, 0);
@@ -222,8 +222,8 @@ if(!isset($domains)) {
 	      foreach ($users as $dn) {
 		  unset($cn); unset($sn); unset($gecos);
 
-		  $cn = pql_get_userattribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_GIVENNAME"));
-		  $sn = pql_get_userattribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_SN"));
+		  $cn = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_GIVENNAME"));
+		  $sn = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_SN"));
 		  if($cn[0] && $sn[0]) {
 		      // We have a givenName (first name) and a surName (last name) - combine the two
 		      if($sn[0] != '_') 
@@ -232,7 +232,7 @@ if(!isset($domains)) {
 			$cns[$dn] = $cn[0];
 		  } else {
 		      // Probably don't have a givenName - get the commonName
-		      $cn = pql_get_userattribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_CN"));
+		      $cn = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_CN"));
 		      if($cn[0]) {
 			  // We have a commonName - split it up into two parts (which should be first and last name)
 			  $cn = split(" ", $cn[0]);
@@ -245,7 +245,7 @@ if(!isset($domains)) {
 			  }
 		      } else {
 			  // No givenName, surName or commonName - last try, get the gecos
-			  $gecos = pql_get_userattribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_GECOS"));
+			  $gecos = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_GECOS"));
 			  if($gecos[0])
 			    // We have a gecos - use that as is
 			    $cns[$dn] = $gecos[0];
@@ -257,10 +257,10 @@ if(!isset($domains)) {
               asort($cns);
 
 	      foreach($cns as $dn => $cn) {
-		  $uid = pql_get_userattribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_UID"));
+		  $uid = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_UID"));
 		  $uid = $uid[0];
 
-		  $uidnr = pql_get_userattribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_QMAILUID"));
+		  $uidnr = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_QMAILUID"));
 		  $uidnr = $uidnr[0];
 
 		  if(($uid != 'root') or ($uidnr != '0')) {
