@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.19 2004-02-14 17:06:55 turbo Exp $
+// $Id: left-control.php,v 2.20 2004-02-15 16:39:50 turbo Exp $
 //
 session_start();
 
@@ -63,12 +63,12 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 		// for each host, get LDAP/Control plugins
 		foreach($hosts as $host) {
 ?>
-  <!-- start server control host: <?=$host?> -->
+  <!-- start server control host: <?=pql_maybe_idna_encode($host)?> -->
 <?php if($_SESSION["opera"]) { ?>
   <div id="el<?=$j?>Parent" class="parent" onclick="showhide(el<?=$j?>Spn, el<?=$j?>Img)">
     <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$j?>Img">
     <a class="item" href="control_detail.php?mxhost=<?=$host?>">
-      <font color="black" class="heada"><?=$host?></font>
+      <font color="black" class="heada"><?=pql_maybe_idna_encode($host)?></font>
     </a>
   </div>
 <?php } else { ?>
@@ -78,7 +78,7 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
     </a>
 
     <a class="item" href="control_detail.php?mxhost=<?=$host?>">
-      <font color="black" class="heada"><?=$host?></font>
+      <font color="black" class="heada"><?=pql_maybe_idna_encode($host)?></font>
     </a>
   </div>
 <?php } ?>
