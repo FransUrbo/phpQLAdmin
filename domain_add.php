@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: domain_add.php,v 2.42 2004-01-20 07:47:11 turbo Exp $
+// $Id: domain_add.php,v 2.43 2004-01-20 08:46:20 turbo Exp $
 //
 session_start();
 
@@ -64,6 +64,12 @@ if($dns[0]) {
 	// it's bound to break SOMEWHERE!
 	$defaultmaildir = preg_replace('/ /', '_', $defaultmaildir);
 	$defaulthomedir = preg_replace('/ /', '_', $defaulthomedir);
+
+	// Remove any occurences of '&'
+	$defaultmaildir = preg_replace('/&_/', '', $defaultmaildir);
+	$defaultmaildir = preg_replace('/&/', '',  $defaultmaildir);
+	$defaulthomedir = preg_replace('/&_/', '', $defaulthomedir);
+	$defaulthomedir = preg_replace('/&/', '',  $defaulthomedir);
 
 	$msg = "";
 	
