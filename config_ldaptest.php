@@ -1,6 +1,6 @@
 <?php
 // make some simple tests on ldap connection
-// $Id: config_ldaptest.php,v 2.27 2004-03-11 18:13:32 turbo Exp $
+// $Id: config_ldaptest.php,v 2.28 2004-10-20 06:15:41 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -10,7 +10,6 @@ function check_domain_value($linkid, $dn, $attrib, $value) {
 	global $LANG;
 
 	$entry[$attrib] = $value;
-
 	if(! @ldap_mod_replace($linkid, $dn, $entry)) {
 		if(ldap_errno($linkid) == 21)
 		  // Invalid syntax
@@ -43,24 +42,29 @@ if(!function_exists("ldap_connect")){
 	$_pql = new pql($_SESSION["USER_HOST"], '', '', true);
 	if(!$_pql->connect($_SESSION["USER_HOST"])) {
 		$connection = $LANG->_('Failed');
+
+		$server = split(';', $_SESSION["USER_HOST"]);
+		$server = urldecode($server[0]); 	// If it's an LDAP URI, replace "%2f" with "/" -> URLdecode
 		
 		// do additional tests
-		if(!gethostbyname($_SESSION["USER_HOST"])) {
-			// not resolved
-			$connection .= ", " . pql_complete_constant($LANG->_('The hostname %host% could not be resolved') ,array("host" => $_SESSION["USER_HOST"] ));
-		} else {
-			// try to open a connection
-			if(!fsockopen($_SESSION["USER_HOST"], 389)) {
-				// impossible to connect
-				$connection .= ", " . pql_complete_constant($LANG->_('Could not connect to port 389 at %host%, please make sure the service is up and that it\'s not blocked with a firewall'), array("host" => $_SESSION["USER_HOST"] ));
+		if(!eregi('^ldap', $_SESSION["USER_HOST"])) {
+			if(!gethostbyname($_SESSION["USER_HOST"]))
+			  // not resolved
+			  $connection .= ", " . pql_complete_constant($LANG->_('The hostname %host% could not be resolved'),
+														  array("host" => $_SESSION["USER_HOST"] ));
+			else {
+				// try to open a connection
+				if(!fsockopen($_SESSION["USER_HOST"], 389))
+				  // impossible to connect
+				  $connection .= ", " . pql_complete_constant($LANG->_('Could not connect to port 389 at %host%, please make sure the service is up and that it\'s not blocked with a firewall'),
+															  array("host" => $_SESSION["USER_HOST"] ));
 			}
 		}
 	} else {
-		if(!$_pql->bind('', '')) {
-			$connection = $LANG->_('Connection ok, but could not bind to the directory');
-		} else {
-			$connection = $LANG->_('Yes');
-		}
+		if(!$_pql->bind('', ''))
+		  $connection = $LANG->_('Connection ok, but could not bind to the directory');
+		else
+		  $connection = $LANG->_('Yes');
 	}
 
 	// =======================================
@@ -77,26 +81,28 @@ if(!function_exists("ldap_connect")){
 			$port = $host[1];
 
 			// do additional tests
-			if(!gethostbyname($fqdn)) {
-				// not resolved
-				$connection_control .= ", " . pql_complete_constant($LANG->_('The hostname %host% could not be resolved'), array("host" => $fqdn ));
-			} else {
-				// try to open a connection
-				if(!fsockopen($fqdn, $port)) {
-					// impossible to connect
-					$connection_control .= ", " . pql_complete_constant($LANG->_('Could not connect to port 389 at %host%, please make sure the service is up and it is not blocked with a firewall'), array("host" => $_SESSION["USER_HOST"]));
+			if(!eregi('^ldap', $_SESSION["USER_HOST"])) {
+				if(!gethostbyname($fqdn)) {
+					// not resolved
+					$connection_control .= ", " . pql_complete_constant($LANG->_('The hostname %host% could not be resolved'),
+																		array("host" => $fqdn ));
+				} else {
+					// try to open a connection
+					if(!fsockopen($fqdn, $port)) {
+						// impossible to connect
+						$connection_control .= ", " . pql_complete_constant($LANG->_('Could not connect to port 389 at %host%, please make sure the service is up and it is not blocked with a firewall'),
+																			array("host" => $_SESSION["USER_HOST"]));
+					}
 				}
 			}
 		} else {
-			if(!$_pql_control->bind()) {
-				$connection_control = $LANG->_('Connection ok, but could not bind to the directory');
-			} else {
-				$connection_control = $LANG->_('Yes');
-			}
+			if(!$_pql_control->bind())
+			  $connection_control = $LANG->_('Connection ok, but could not bind to the directory');
+			else
+			  $connection_control = $LANG->_('Yes');
 		}
-	} else {
-		$connection_control = $LANG->_('Control extension deactivated');
-	}
+	} else
+	  $connection_control = $LANG->_('Control extension deactivated');
 
 	// =======================================
 	// Access rights
@@ -108,11 +114,10 @@ if(!function_exists("ldap_connect")){
 			// ----------------------
 			// Try to set the attribute 'test' in the top DN
 			$fail = check_domain_value($_pql->ldap_linkid, $basedn, 'test', 'TRUE');
-			if($fail) {
-				$TEST["basedn"][$basedn] = $fail;
-			} else {
-				$TEST["basedn"][$basedn] = $LANG->_('Yes');
-			}
+			if($fail)
+			  $TEST["basedn"][$basedn] = $fail;
+			else
+			  $TEST["basedn"][$basedn] = $LANG->_('Yes');
 			
 			// ----------------------
 			// Test to see if we have access to create domain/branches
@@ -228,7 +233,11 @@ include("./header.html");
   <script type="text/javascript" language="javascript"><!--
     function ldifWindow(string) {
       myWindow = window.open("", "LDIFWindow", 'toolbar,width=350,height=200');
-      myWindow.document.write(string);
+
+	  myWindow.document.write('<html>\n  <body>\n');
+      myWindow.document.write('    '+string+'\n');
+	  myWindow.document.write('  </body>\n</html>');
+
       myWindow.document.bgColor="white";
       myWindow.document.close();
     }
