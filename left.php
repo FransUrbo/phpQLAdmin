@@ -194,12 +194,20 @@ if(!isset($domains)) {
 		  $cn = pql_get_userattribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_GIVENNAME"));
 		  $sn = pql_get_userattribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_SN"));
 
+		  // Only remember users that have both a first and lastname.
 		  if($cn[0] && $sn[0])
-		    // Only remember users that have both a first and lastname.
+		    // We have a 'givenName' and a 'sn'
 		    $cns[$dn] = $sn[0].", ".$cn[0];
 		  else {
+		      // Probably don't have a 'givenName' - get the CN
 		      $cn = pql_get_userattribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_CN"));
-		      $cns[$dn] = "System - ".$cn[0];
+		      if($cn[0]) {
+			  // Split it up in two based on space - This isn't perfect, but...
+			  $cn = split(" ", $cn[0]);
+			  $cns[$dn] = $cn[1].", ".$cn[0];
+		      } else
+			// Don't have a 'cn' either. MUST be a system 'user'.
+			$cns[$dn] = "System - ".$cn[0];
 		  }
 	      }
               asort($cns);
