@@ -26,7 +26,7 @@ if(isset($ok) || !PQL_CONF_VERIFY_DELETE) {
     $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
     
     // delete the user attribute
-    if(pql_remove_userattribute($_pql->ldap_linkid, $user, $attrib, $value)){
+    if(pql_replace_userattribute($_pql->ldap_linkid, $user, $attrib, $value)){
 	$msg = PQL_LANG_USER_DEL_ATTRIBUTE_OK;
 	$success = true;
     } else {
@@ -50,7 +50,7 @@ if(isset($ok) || !PQL_CONF_VERIFY_DELETE) {
 	    var_dump($forwarders);
 	    foreach($forwarders as $forward) {
 		// we found a forward -> remove it 
-		pql_remove_userattribute($_pql->ldap_linkid, $forward['reference'], $config["PQL_GLOB_ATTR_FORWARDS"], $value);
+		pql_replace_userattribute($_pql->ldap_linkid, $forward['reference'], $config["PQL_GLOB_ATTR_FORWARDS"], $value);
 	    }
 	}
     }
