@@ -87,10 +87,18 @@
         <td class="title"></td>
 <?php		} ?>
         <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$admin?>"><?=urldecode($username)?></a></td>
+<?php		if(pql_validate_administrator($_pql->ldap_linkid, $_pql->ldap_basedn[0], $admin) and
+			   !$ALLOW_GLOBAL_CONFIG_SAVE) {
+				// This is a super-admin, and we (user logged in) isn't super-admin.
+				// Don't allow to remove this admin
+?>
+        <td></td>
+<?php		} else { ?>
         <td>
           <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&administrator=<?=$admin?>&submit=3&action=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify administrators for <?=$domain?>"></a>
           <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&administrator=<?=$admin?>&submit=4&action=delete"><img src="images/del.png" width="12" height="12" alt="<?=PQL_LANG_DOMAIN_ADMIN_DELETE?>" border="0"></a>
         </td>
+<?php		} ?>
       </tr>
 
 <?php
