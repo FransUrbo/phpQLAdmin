@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.27 2004-11-12 13:58:35 turbo Exp $
+// $Id: pql_search.inc,v 2.28 2004-11-13 11:14:37 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -273,12 +273,37 @@ function pql_validate_administrator($linkid, $dn, $attrib, $admin) {
 }
 // }}}
 
-// {{{ pql_setup_object_objectclasses(linkid, ocs, $object)
-// This function takes a known set of object classes that's to be
-// used for an object and comparing that with all the attributes
-// used. If a MUST attribute is missing, it will issue a warning
-// that/what attributes that's missing...
-function pql_setup_object_objectclasses($linkid, $ocs, $object) {
+// {{{ pql_validate_object(linkid, dn, object, type)
+// Verify that the object have what it needs to be added:
+// 1. All object classes choosen have their MUST attributes defined.
+// 2. All attributes have a object class specified (TODO).
+// 3. The ACI attribute is defined in the object
+// Returns a new, improved/correct object.
+// NOTE: $dn and $type is only used/needed for the ACI's...
+function pql_validate_object($linkid, $dn, $object, $type) {
+	// ---------------------------------
+	// Encode values that needs to encoded and extract the object classes
+    foreach($object as $key => $value) {
+		// Check if we have a MUST in the objectclasses choosen
+		// for creation for this attribute...
+		if(is_array($value)) {
+			foreach($value as $val) {
+				if(eregi(pql_get_define("PQL_ATTR_OBJECTCLASS"), $key))
+				  // Remember the object class for later
+				  $ocs[] = $val;
+				else
+				  $entry[$key][] = pql_maybe_encode(trim($val), $key, $linkid);
+			}
+		} else {
+			if(eregi(pql_get_define("PQL_ATTR_OBJECTCLASS"), $key))
+			  // Remember the object class for later
+			  $ocs[] = $value;
+			else			
+			  $entry[$key] = pql_maybe_encode(trim($value), $key, $linkid);
+		}
+    }
+
+	// ---------------------------------
 	// Retreive all objectclasses the LDAP server knows about
 	$ldap = pql_get_subschema($linkid, "objectclasses");
 
@@ -290,7 +315,7 @@ function pql_setup_object_objectclasses($linkid, $ocs, $object) {
 
 		if(!$ldap[$oc]['MUST']['count'])
 		  // An objectclass with no MUST, add this directly
-		  $entry[] = $oc;
+		  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = $oc;
 		else {
 			// This objectclass have one or more MUST attributes
 			// Do we have any of those MUST attributes defined?
@@ -323,7 +348,7 @@ function pql_setup_object_objectclasses($linkid, $ocs, $object) {
 			  // This objectclass don't contain MUST attributes which
 			  // isn't defined in the user object. Add this to the list
 			  // of objectclasses to add
-			  $entry[] = $oc;
+			  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = $oc;
 			else {
 				// Objectclass which have been removed from the list because
 				// there's an MUST attribute missing
@@ -355,6 +380,11 @@ function pql_setup_object_objectclasses($linkid, $ocs, $object) {
 			// TODO: How do we check that this attribute have a object class specified in $entry!?
 		}
 	}
+
+	// ---------------------------------
+	// Add the OpenLDAPaci attribute (maybe)
+	if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci"))
+	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($linkid, $dn, $type);
 
 	return($entry);
 }
