@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.25 2004-03-21 16:35:12 turbo Exp $
+// $Id: left-control.php,v 2.26 2004-04-04 07:01:47 turbo Exp $
 //
 session_start();
 
@@ -32,9 +32,6 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 		// If it's an LDAP URI, replace "%2f" with "/" -> URLdecode
 		$host[0] = urldecode($host[0]);
 ?>
-  <font color="black" class="heada"><?=$LANG->_('LDAP Server')?>: <b><?=pql_maybe_idna_decode($host[0])?><?php if(!eregi('^ldapi:', $host[0])) { echo ":".$host[1]; } ?></b></font>
-  <p>
-
   <div id="el2Parent" class="parent">
     <nobr>
       <a href="control_add_server.php">Add mail server</a>
