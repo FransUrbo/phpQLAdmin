@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.81 2004-03-15 05:17:55 turbo Exp $
+// $Id: domain_detail.php,v 2.82 2004-03-16 10:51:06 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -146,14 +146,20 @@ $basequota	= pql_ldap_mailquota($quota);
 $additionaldomainname = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
 
 // Setup the buttons
-$buttons = array('default'	=> 'Branch Defaults',
-				 'users'	=> 'Registred Users',
-				 'chval'	=> 'Change values of all users');
+$buttons = array('default'	=> 'Branch Defaults');
 
 if($_SESSION["ADVANCED_MODE"]) {
 	$new = array('details'	=> 'Branch Details',
-				 'owner'	=> 'Branch Owner',
-				 'dnsinfo'	=> 'MX Information',
+				 'owner'	=> 'Branch Owner');
+	$buttons = $buttons + $new;
+}
+
+$new = array('users'	=> 'Registred Users',
+			 'chval'	=> 'Change values of all users');
+$buttons = $buttons + $new;
+
+if($_SESSION["ADVANCED_MODE"]) {
+	$new = array('dnsinfo'	=> 'MX Information',
 				 'aci'		=> 'Access Control Information');
 	$buttons = $buttons + $new;
 
