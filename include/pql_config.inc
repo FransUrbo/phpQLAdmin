@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.10 2003-03-31 08:10:17 turbo Exp $
+// $Id: pql_config.inc,v 1.11 2003-04-02 15:51:24 turbo Exp $
 //
 
 // We need this instead of define(), so that we can get rid
@@ -15,6 +15,8 @@ function pql_define($define, $value, $case_insensitive = false, $dn = NULL) {
 
 	if($value == "1")
 	  $value = 'true';
+	elseif($value == "0")
+	  $value = 'false';
 
 	if(! @constant($define))
 	  define($define, $value, $case_insensitive);
@@ -22,8 +24,10 @@ function pql_define($define, $value, $case_insensitive = false, $dn = NULL) {
 	// Create a global two dimensional array with the config values
 	//	Dimension 1: define name
 	//	Dimension 2: root DN
-	if($dn)
-	  $config[$define][$dn] = $value;
+	if($dn && !$config[$define][$dn]) {
+		//echo "config[$define][$dn] = $value<br>";
+		$config[$define][$dn] = $value;
+	}
 }
 
 // ----------------------------
@@ -59,14 +63,14 @@ $PQL_ATTRIBUTE["PQL_LDAP_SUBTREE"]["GROUPS"] = 'subTreeGroups';
 $PQL_ATTRIBUTE["PQL_LDAP_REFERENCE_USERS_WITH"] = 'userReference';
 $PQL_ATTRIBUTE["PQL_LDAP_REFERENCE_DOMAINS_WITH"] = 'branchReference';
 $PQL_ATTRIBUTE["PQL_LDAP_USER_RDN_ATTRIBUTE"] = $PQL_ATTRIBUTE["PQL_LDAP_REFERENCE_USERS_WITH"];
+$PQL_ATTRIBUTE["PQL_LDAP_CONTROL_DN"] = 'controlBaseDN'; 
 
 // ---------------------------
 // - MULTI VALUED ATTRIBUTES -
 
 // Objectclasses for domain/branches and users
 $PQL_ATTRIBUTE["PQL_LDAP_OBJECTCLASS_DOMAIN"] = 'branchObjectClass';
-$PQL_ATTRIBUTE["PQL_LDAP_OBJECTCLASS_USERID"] = 'userObjectClass';
-$PQL_ATTRIBUTE["PQL_LDAP_OBJECTCLASS_USER_EXTRA"] = 'userObjectClass';
+$PQL_ATTRIBUTE["PQL_LDAP_OBJECTCLASS_USER"] = 'userObjectClass';
 
 // Attribute configuration
 $PQL_ATTRIBUTE["PQL_LDAP_ATTR"]["MAIL"] = 'userAttribute';
@@ -144,43 +148,56 @@ foreach($_pql->ldap_basedn as $dn)  {
 							else
 							  $V = $info[$i][$v][0];
 							
-							pql_define($nkey, $info[$i][$v][0], true, $dn);
+							pql_define($nkey, $V, true, $dn);
 						}
 					}
 				}
 			} else {
 				$value = strtolower($value);
-				if(isset($info[$i][$value][0])) {
-					if($info[$i][$value][0] != '') {
-						if($info[$i][$value][0]=='0')
-						  $V = 'false';
-						elseif($info[$i][$value][0]=='1')
-						  $V = 'true';
-						else
-						  $V = $info[$i][$value][0];
-						
-						pql_define($key, $info[$i][$value][0], true, $dn);
+				for($k=0; $info[$i][$value][$k]; $k++) {
+					if(isset($info[$i][$value][$k])) {
+						if($info[$i][$value][$k] != '') {
+							if($info[$i][$value][$k]=='0')
+							  $V = 'false';
+							elseif($info[$i][$value][$k]=='1')
+							  $V = 'true';
+							else
+							  $V = $info[$i][$value][$k];
+
+							if($values)
+							  $values .= ",$V";
+							else
+							  $values = $V;
+						}
 					}
 				}
+
+				pql_define($key, $values, true, $dn);
+				unset($values);
 			}
 		}
 	}
 
 	// 3. Load 'resonable defaults' for each top DN
 	require("./include/defaults.inc");
+
+	// Check some builtin ACL's
+	$ALLOW_BRANCH_CREATE[$dn] = 0; $ALLOW_CONTROL_CREATE[$dn] = 0;
+	if($USER_DN) {
+		// Verify that the user is administrator on the topmost DN -> Allow creation of domain/branches.
+		$ALLOW_BRANCH_CREATE[$dn] = pql_validate_administrator($_pql->ldap_linkid, $dn, $USER_DN);
+		
+		// Check the Control DN if the user is there -> Allow management of Controls information
+		$ALLOW_CONTROL_CREATE[$dn] = pql_validate_administrator($_pql->ldap_linkid, $USER_SEARCH_DN_CTR, $USER_DN);
+	}
+	
+	session_register("ALLOW_BRANCH_CREATE[$dn]", "ALLOW_CONTROL_CREATE[$dn]");
 }
 
-// Check some builtin ACL's
-$ALLOW_BRANCH_CREATE = 0; $ALLOW_CONTROL_CREATE = 0;
-if($USER_DN) {
-	// Verify that the user is administrator on the topmost DN -> Allow creation of domain/branches.
-	$ALLOW_BRANCH_CREATE = pql_validate_administrator($_pql->ldap_linkid, $_pql->ldap_basedn[0], $USER_DN);
-
-	// Check the Control DN if the user is there -> Allow management of Controls information
-	$ALLOW_CONTROL_CREATE = pql_validate_administrator($_pql->ldap_linkid, $USER_SEARCH_DN_CTR, $USER_DN);
-}
-
-session_register("ALLOW_BRANCH_CREATE", "ALLOW_CONTROL_CREATE");
+// Verify that the user have access to write the global phpQLAdmin config
+// in the first base DN
+$ALLOW_GLOBAL_CONFIG_SAVE = pql_validate_administrator($_pql->ldap_linkid, $_pql->ldap_basedn[0], $USER_DN);
+session_register("ALLOW_GLOBAL_CONFIG_SAVE");
 
 /*
  * Local variables:
