@@ -16,7 +16,9 @@ if(!$rootdn) {
 }
 
 // Get default domain name for this domain
-$defaultdomain = pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
+if($domain) {
+	$defaultdomain = pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
+}
 
 include("./header.html");
 
@@ -64,10 +66,24 @@ if(!pql_user_exist($_pql->ldap_linkid, $user)) {
 // Get basic user information
 // Some of these (everything after the 'homedirectory')
 // uses 'objectClass: pilotPerson' -> http://rfc-1274.rfcindex.net/
-$attribs = array('cn', 'sn', 'uidNumber', 'gidNumber', 'loginShell', 'uid',
-				 'userPassword', 'mailMessageStore', 'mailHost', 'homeDirectory',
-				 'roomNumber', 'telePhoneNumber', 'homePhone', 'homePostalAddress',
-				 'secretary', 'personalTitle', 'mobile', 'pager');
+$attribs = array(pql_get_define("PQL_GLOB_ATTR_CN"),
+				 pql_get_define("PQL_GLOB_ATTR_SN"),
+				 pql_get_define("PQL_GLOB_ATTR_QMAILUID"),
+				 pql_get_define("PQL_GLOB_ATTR_QMAILGID"),
+				 pql_get_define("PQL_GLOB_ATTR_LOGINSHELL"),
+				 pql_get_define("PQL_GLOB_ATTR_UID"),
+				 pql_get_define("PQL_GLOB_ATTR_PASSWD"),
+				 pql_get_define("PQL_GLOB_ATTR_MAILSTORE"),
+				 pql_get_define("PQL_GLOB_ATTR_MAILHOST"),
+				 pql_get_define("PQL_GLOB_ATTR_HOMEDIR"),
+				 pql_get_define("PQL_GLOB_ATTR_ROOMNUMBER"),
+				 pql_get_define("PQL_GLOB_ATTR_TELEPHONENUMBER"),
+				 pql_get_define("PQL_GLOB_ATTR_HOMEPHONE"),
+				 pql_get_define("PQL_GLOB_ATTR_HOMEPOSTALADDRESS"),
+				 pql_get_define("PQL_GLOB_ATTR_SECRETARY"),
+				 pql_get_define("PQL_GLOB_ATTR_PERSONALTITLE"),
+				 pql_get_define("PQL_GLOB_ATTR_MOBILE"),
+				 pql_get_define("PQL_GLOB_ATTR_PAGER"));
 foreach($attribs as $attrib) {
     $attrib = strtolower($attrib);
 
