@@ -2,6 +2,14 @@ Upgrading from 2.0.8
 	The schema have been updated, so don't forget to load the new
 	version!
 
+	If this is the first setup, go to the config details page and
+	setup your user and domain objectclasses to use when creating
+	an object.
+
+Upgrading from 2.0.8
+	The schema have been updated, so don't forget to load the new
+	version!
+
 	Separation of LDAP servers in the PQL_LDAP_HOST define is now
 	done with the plus (=> +) character instead of space. This so
 	that we can have spaces within our search/base DN. This means
