@@ -2,10 +2,28 @@ phpQLAdmin 2.2 Change Log
 
 phpQLAdmin 2.2.1 TO BE ANNOUNCED
 	Bug fixes
+	  - If we can't find the givenName, surName, commonName nor the gecos
+	    in the user object we have one last chance - the 'user reference'
+	    attribute. It might not be pretty, but we see the user...
+	  - Include the displayed 'cn' value (in 'tables/user_details-basic.inc')
+	    in the call to 'user_edit_attribute.php'. This so that we change a
+	    _specific_ value, not the whole attribute list.
+	    + Make sure we only replace that value and not the whole thing in
+	      'include/attrib.cn.inc'.
+	  - Check if inclusion of home directory should be done outside the check
+	    if mail host is allowed. Two separate things...
+
 	GUI layout changes
-	Documentation changes
-	Schema changes
+	  - User addition errors is 'tabbed' to the right (aligned with the input
+	    fields etc).
+	  - If 'MAY' attributes in a user template is empty/unset, we specify
+	    'None' instead of an empty line.
+
 	Misc changes
+	  - More folding tags added 
+	  - Rewrite/Simplify the password encrypt scheme thing. Retreive the
+	    values ONES (in 'user_add.php') instead of every time we need to know
+	    if a specific value is there (in 'tables/user_add-details.inc').
 
 phpQLAdmin 2.2.0 Release (Mar  2 2005)
 	This new stable version is more or less a complete rewrite since 2.0.
