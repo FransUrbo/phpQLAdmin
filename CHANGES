@@ -8,6 +8,8 @@ phpQLAdmin 2.0.18d Release (May 19 2004)
 	    we're comparing 'count > NULL' which will always be true. To go around this,
 	    use 'count + 1' as maximum value (will make the form continue).
 	  - PHP parse error in include/attrib.aci.inc fixed.
+	  - Use the URL encoded value of domain, rootdn and user in the hidden HTML values.
+	    This so that it (the value) will survive a form POST.
 
 	GUI layout change
 	  - Don't show the minus image before 'no domains' (left-ezmlm.php) if there's
