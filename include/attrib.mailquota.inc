@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mailquota.inc,v 2.28 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.mailquota.inc,v 2.29 2004-11-05 12:09:44 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -146,27 +146,41 @@ function attribute_save($type) {
     global $_pql, $LANG;
 
 	// Just incase user 'forgets' to tick in the 'User defined' field...
-	if(empty($_REQUEST["options"]) and (!empty($_REQUEST["maxsize"]) or !empty($_REQUEST["maxmails"]))) {
-		// Neither 'Standard' nor 'User defined' entered, but we have value(s) for quota
-		$_REQUEST["options"] = "user";
-	}
+	if(empty($_REQUEST["options"]) and (!empty($_REQUEST["maxsize"]) or !empty($_REQUEST["maxmails"])))
+	  // Neither 'Standard' nor 'User defined' entered, but we have value(s) for quota
+	  $_REQUEST["options"] = "user";
 
 	switch($_REQUEST["options"]) {
 	  case "user":
-		if($_REQUEST["maxsize"] != "") {
-			$_REQUEST["maxsize"] = $_REQUEST["maxsize"] * 1024;
-			$mailquota[] = $_REQUEST["maxsize"] . "S";
-		} else
-		  $_REQUEST["maxsize"] = $LANG->_('Unlimited size');
-		
-		if($_REQUEST["maxmails"] != "")
-		  $mailquota[] = $_REQUEST["maxmails"] . "C";
-		else
-		  $_REQUEST["maxmails"] = $LANG->_('Unlimited amount');
-		
-		if(is_array($mailquota))
-		  $mailquota = join(",", $mailquota);
-		
+		// It's possible to support both old AND new style quota at the same time!
+		// Hence no 'elseif()' below!
+		// ------------------------------------
+
+		if($_SESSION["OLD_STYLE_QUOTA"]) {
+			$mailquota[pql_get_define("PQL_ATTR_QUOTA_VALUE")] = '';
+
+			// Set the old style quota value
+			if($_REQUEST["maxsize"] != "") {
+				$_REQUEST["maxsize"] = $_REQUEST["maxsize"] * 1024;
+				$mailquota[pql_get_define("PQL_ATTR_QUOTA_VALUE")] .= $_REQUEST["maxsize"] . "S";
+			}
+			
+			if($mailquota[pql_get_define("PQL_ATTR_QUOTA_VALUE")] != '')
+			  $mailquota[pql_get_define("PQL_ATTR_QUOTA_VALUE")] .= ',';
+
+			if($_REQUEST["maxmails"] != "")
+			  $mailquota[pql_get_define("PQL_ATTR_QUOTA_VALUE")] .= $_REQUEST["maxmails"] . "C";
+		}
+
+		if($_SESSION["NEW_STYLE_QUOTA"]) {
+			// Set the new style quota values
+			if($_REQUEST["maxsize"])
+			  $mailquota[pql_get_define("PQL_ATTR_QUOTA_SIZE")]  = $_REQUEST["maxsize"];
+			
+			if($_REQUEST["maxmails"] != "")
+			  $mailquota[pql_get_define("PQL_ATTR_QUOTA_COUNT")] = $_REQUEST["maxmails"];
+		}
+
 		$msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									 array('what' => $LANG->_('quota'),
 										   'new'  => pql_ldap_mailquota(array('maxsize'  => $_REQUEST["maxsize"] / 1024,
@@ -197,13 +211,21 @@ function attribute_save($type) {
 						// Retreive default quota for this QmailLDAP/Controls object.
 						$quota = ldapdefaultquota_init($host);
 						if(is_array($quota)) {
-							$mailquota = $quota["maxsize"]."S,".$quota["maxmails"]."C";
+							if($_SESSION["OLD_STYLE_QUOTA"])
+							  $mailquota[pql_get_define("PQL_ATTR_QUOTA_VALUE")] = $quota[0]."S,".$quota[1]."C";
+
+							if($_SESSION["NEW_STYLE_QUOTA"]) {
+								$mailquota[pql_get_define("PQL_ATTR_QUOTA_SIZE")]  = $quota[0];
+								$mailquota[pql_get_define("PQL_ATTR_QUOTA_COUNT")] = $quota[1];
+							}
 						}
 					}
 				}
 			}
-		} else
-		  $mailquota = "";
+		}
+// Eh?
+//		else
+//		  $mailquota = "";
 
 		$msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									 array('what' => $LANG->_('quota'),
@@ -224,8 +246,7 @@ function attribute_save($type) {
 	    $users   = pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], $filter);
 		if(is_array($users)) {
 			foreach($users as $user)
-			  $return[] = pql_modify_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_QUOTA_VALUE"),
-											   '', $_REQUEST["mailquota"]);
+			  $return[] = pql_modify_attribute($_pql->ldap_linkid, $user, '', '', $mailquota);
 
 			if(in_array(false, $return)) 
 			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
@@ -253,29 +274,9 @@ function attribute_save($type) {
 												 'domain' => $domaindn)) . ": " . pql_ldap_error(0);
 			// The success msg is set above (in the switch($type) code).
 		} else {
-			// We're setting quota for a user
-			if($_SESSION["OLD_STYLE_QUOTA"]) {
-				// Set the old style quota value
-				if(!pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_QUOTA_VALUE"),
-										 '', $mailquota))
-				  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-											   array('what' => $LANG->_('quota'))) . ": " . pql_format_error(0);
-			}
-
-			if($_SESSION["NEW_STYLE_QUOTA"]) {
-				// Set the new style quota values
-				if($_REQUEST["maxsize"] != "")
-				  if(!pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_QUOTA_SIZE"),
-										   '', $_REQUEST["maxsize"]))
-					$msg  = pql_complete_constant($LANG->_('Failed to change %what%'),
-												 array('what' => $LANG->_('quota size'))) . ": " . pql_format_error(0);
-				
-				if($_REQUEST["maxmails"] != "")
-				  if(!pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_QUOTA_COUNT"),
-										   '', $_REQUEST["maxmails"]))
-					$msg .= "<br>".pql_complete_constant($LANG->_('Failed to change %what%'),
-														 array('what' => $LANG->_('quota count'))) . ": " . pql_format_error(0);
-			}
+			if(!pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], '', '', $mailquota))
+			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+										   array('what' => $LANG->_('quota'))) . ": " . pql_format_error(0);
 		}
 		
 		attribute_forward($msg);
