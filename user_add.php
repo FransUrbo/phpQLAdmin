@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.89 2004-03-18 12:48:05 turbo Exp $
+// $Id: user_add.php,v 2.90 2004-03-18 13:53:12 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -178,7 +178,7 @@ switch($_REQUEST["page_curr"]) {
 		
 		// Verify username
 		if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_CN")
-		   and pql_user_exist($_pql->ldap_linkid, $user)) {
+		   and pql_user_exist($_pql->ldap_linkid, $user, $_REQUEST["domain"], $_REQUEST["rootdn"])) {
 			$error = true;
 			$error_text["username"] = pql_complete_constant($LANG->_('User %user% already exists'), array("user" => $user));
 		}
