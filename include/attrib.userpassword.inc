@@ -1,11 +1,11 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.8 2003-05-04 12:15:59 turbo Exp $
+// $Id: attrib.userpassword.inc,v 2.9 2003-05-08 06:10:36 turbo Exp $
 
 function attribute_check($type){
 	global $userpassword, $userpassword_check, $error, $pwscheme;
-	
+
 	// is typed in ?
 	if($userpassword == ""){
 		$error["userpassword"] = PQL_LANG_MISSING;
@@ -14,15 +14,9 @@ function attribute_check($type){
 	
 	// valid - A KERBEROS scheme is ALWAYS valid! We only check
 	// password validity if it ISN'T a kerberos scheme...
-	if($pwscheme != "{KERBEROS}") {
+	if(!eregi('KERBEROS', $pwscheme)) {
 		if(preg_match("/[^a-z0-9]/i", $userpassword)){
 			$error["userpassword"] = PQL_LANG_INVALID;
-			return false;
-		}
-		
-		// exactly retyped ?
-		if($userpassword != $userpassword_check){
-			$error["userpassword_check"] = PQL_LANG_FAILED_RETYPE;
 			return false;
 		}
 	}
@@ -35,7 +29,7 @@ function attribute_init(){
 }
 
 function attribute_print_form(){
-	global $domain, $user, $PHP_SELF, $attrib, $error, $config, $rootdn;
+	global $domain, $user, $PHP_SELF, $attrib, $error, $config, $rootdn, $pwscheme;
 
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
@@ -53,6 +47,7 @@ function attribute_print_form(){
 			if(!eregi('KERBEROS', $scheme)) {
 ?>
             <input type="radio" name="pwscheme" value="<?=$scheme?>"><?=$scheme?>
+
 <?php		}
 		}
 	  } else { ?>
