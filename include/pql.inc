@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.172.2.1.6.3.2.2.2.3.4.2 2004-11-11 08:55:42 turbo Exp $
+// $Id: pql.inc,v 2.172.2.1.6.3.2.2.2.3.4.2.2.1 2004-12-19 10:19:53 turbo Exp $
 //
 
 // ----------------------------
@@ -177,6 +177,10 @@ class pql {
 
 	// {{{ bool bind(binddn, bindpw)
 	function bind($binddn = "", $bindpw = "") {
+		if(!$binddn and $bindpw)
+		  // Can't specify a password if we don't have a bind DN!
+		  unset($bindpw);
+
 		// If we haven't set the DN/PW -> do a anonymous bind
 		if($this->ldap_linkid and @ldap_bind($this->ldap_linkid, $binddn, $bindpw)) {
 			return true;
@@ -984,8 +988,11 @@ function pql_domain_set_value($linkid, $dn, $type, $value) {
 	}
 
 	// Add the OpenLDAPaci attribute (maybe)
-	if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci"))
-	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($ldap_linkid, $userdn, 'user');
+	if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci")) {
+		$acis = pql_search($linkid, $dn, 'objectclass=*', pql_get_define("PQL_ATTR_LDAPACI"), 'BASE');
+		if(!$acis)
+		  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($linkid, $dn, 'user');
+	}
 
 	// Create a LDIF object to print in case of error
 	$account_type = $type;
@@ -1039,7 +1046,6 @@ function pql_domain_set_value($linkid, $dn, $type, $value) {
 // }}}
 
 // {{{ pql_domain_replace_admins(ldap, old, new)
-
 // Look for 'administrator/seealso = old value',
 // replace with 'administrator/seealso = new value'.
 function pql_domain_replace_admins($ldap, $old, $new) {
