@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.12 2003-04-10 08:16:16 turbo Exp $
+// $Id: attrib.config.inc,v 1.13 2003-04-23 12:22:24 turbo Exp $
 
 function attribute_check() {
     global $administrator, $domain, $oldvalue, $_pql, $error;
@@ -104,6 +104,10 @@ function attribute_print_form() {
     }
   //--></script>
 
+  <span class="title1">Change configuration value</span>
+
+  <br><br>
+
   <form action="<?php echo $PHP_SELF ?>" method="post" name="phpqladmin_modify">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">Set/Modify <?=$attrib."\n"?>
@@ -170,7 +174,6 @@ function attribute_print_form() {
 			}
         } else {
 ?>
-          <td class="title"><?=$attrib?></td>
           <td>
             <?php echo format_error($error[$attrib]); ?><input type="text" name="<?=$attrib?>" value="<?php if(($test != 'passwordscheme') and ($test != 'whoarewe')) { echo $oldvalue; } ?>" size="40">
           </td>
@@ -182,7 +185,9 @@ function attribute_print_form() {
     <input type="hidden" name="submit"   value="1">
     <input type="hidden" name="attrib"   value="<?=$attrib?>">
     <input type="hidden" name="rootdn"   value="<?=$rootdn?>">
+<?php if($toggle) { ?>
     <input type="hidden" name="oldvalue" value="<?=$oldvalue?>">
+<?php } ?>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
@@ -228,23 +233,31 @@ function attribute_print_form() {
 
 function attribute_save() {
     global $domain, $attrib, $$attrib, $oldvalue, $administrator, $_pql, $rootdn;
-	if(strtolower($attrib) == 'passwordscheme') 
-	  $value[$attrib][] = strtoupper($$attrib);
-	else
-	  $value[$attrib][] = $$attrib;
+	global $delval;
 
-	if($value[$attrib] == $oldvalue){
-		// don't change if new value equal to old one
-		$msg = PQL_LANG_CN_UNCHANGED;
-		attribute_forward($msg);
-		break;
-	}
+	if($$attrib) {
+		if(strtolower($attrib) == 'passwordscheme') {
+			$value[$attrib][] = strtoupper($$attrib);
+		} else {
+			$value[$attrib][] = $$attrib;
+		}
+    }
 
 	// If we HAVE an old value, add it...
 	if($oldvalue and $toggle) {
 		$values = pql_split_oldvalues($oldvalue);
 		for($i=0; $values[$i]; $i++)
 		  $value[$attrib][] = $values[$i];
+	} else {
+		// No old value, and it's not a toggle...
+		// Fetch old values from DB
+		$oldvalues = pql_get_domain_value($_pql, $rootdn, $attrib);
+		foreach($oldvalues as $val) {
+			if(!@eregi($delval, $val)) {
+			   // Remove the one we don't want
+			   $value[$attrib][] = $val;
+            }
+        }
 	}
 
 	if(! $rootdn) {
