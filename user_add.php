@@ -132,7 +132,9 @@ if ($submit == "save") {
 
 // ------------------------------------------------
 // Page 3b: 
-if($submit == "save" and ($account_type == "normal" or $account_type == "system")){
+if($submit == "save" and
+   ($account_type == "normal" or $account_type == "system" or $account_type == "shell"))
+{
     if($password == ""){
 		$error = true;
 		$error_text["password"] = PQL_LANG_MISSING;
@@ -145,12 +147,6 @@ if($submit == "save" and ($account_type == "normal" or $account_type == "system"
 			$error = true;
 			$error_text["password"] = PQL_LANG_INVALID;
 		}
-
-		if(! eregi('{', $pwscheme))
-		  $pwscheme = '{'.$pwscheme;
-
-		if(! eregi('}', $pwscheme))
-		  $pwscheme .= '}';
     } else {
 		if(preg_match("/[^a-z0-9]/i", $password)){
 			$error = true;
@@ -191,6 +187,14 @@ if($submit == "save" and $error == true and !$ADVANCED_MODE) {
 	$submit = "two";
 }
 
+if($pwscheme) {
+	if(! eregi('{', $pwscheme))
+	  $pwscheme = '{'.$pwscheme;
+
+	if(! eregi('}', $pwscheme))
+	  $pwscheme .= '}';
+}
+
 include("./header.html");
 ?>
   <span class="title1">
@@ -201,6 +205,8 @@ if($ADVANCED_MODE && $account_type) {
 	  echo " - Mail";
 	elseif($account_type == 'system')
 	  echo " - System";
+	elseif($account_type == 'shell')
+	  echo " - Shell";
 	else
 	  echo " - Forwarding";
 
@@ -229,6 +235,7 @@ switch($submit){
             <option value="normal" SELECTED><?php echo PQL_LANG_DELIVERYMODE_PROFILE_LOCAL; ?></option>
             <option value="system"><?php echo PQL_LANG_DELIVERYMODE_PROFILE_SYSTEM; ?></option>
             <option value="forward"><?php echo PQL_LANG_DELIVERYMODE_PROFILE_FORWARD; ?></option>
+            <option value="shell"><?php echo PQL_LANG_DELIVERYMODE_PROFILE_SHELL; ?></option>
           </select>
         </td>
       </tr>
@@ -262,6 +269,17 @@ switch($submit){
           <table>
 <?php echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_FORWARD . PQL_LANG_DELIVERYMODE_PROFILE_INC .
   PQL_LANG_DELIVERYMODE_PROFILE_FORWARD_INFO . ".";?>
+          </table>
+        </td>
+      </tr>
+
+      <tr>
+        <td></td>
+        <td>
+          <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
+          <table>
+<?php echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_SHELL . PQL_LANG_DELIVERYMODE_PROFILE_INC .
+  PQL_LANG_DELIVERYMODE_PROFILE_SHELL_INFO;?>
           </table>
         </td>
       </tr>
@@ -332,7 +350,7 @@ switch($submit){
 <?php	}
     } // account_type != forward
 
-    if($account_type == "system") {
+    if(($account_type == "system") or ($account_type == "shell")) {
 		// display forms for SYSTEM account
 
 		if($ADVANCED_MODE) {
@@ -481,6 +499,7 @@ switch($submit){
   
     <br>
   
+<?php if($account_type != 'shell') { ?>
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo PQL_LANG_USER_ACCOUNT_PROPERTIES; ?></th>
         <!-- Account status -->
@@ -499,7 +518,10 @@ switch($submit){
   
     <br>
   
-<?php
+<?php } else { ?>
+    <input type="hidden" name="account_status" value="">
+<?php }
+
 	if(($ADVANCED_MODE == 0) or ($account_type == "forward")) {
 		// Go to save, no next form...
 		if($ADVANCED_MODE == 0) {
@@ -518,9 +540,15 @@ switch($submit){
     <input type="hidden" name="submit" value="save">
 <?php
 	} else {
+		if($account_type != 'shell') {
 ?>
     <input type="hidden" name="submit" value="two">
 <?php
+		} else {
+?>
+    <input type="hidden" name="submit" value="save">
+<?php
+		}
 	} // account_type == forward
 ?>
     <input type="hidden" name="domain" value="<?=$domain?>">
@@ -671,7 +699,7 @@ switch($submit){
 		// convert uid, email to lowercase
 		$uid = strtolower($uid);
 
-		if(! ereg("@", $email)) {
+		if(! ereg("@", $email) and ($account_type != 'shell')) {
 			// Build the COMPLETE email address
 			$email = strtolower($email . "@" . $defaultdomain);
 		} else {
@@ -683,12 +711,14 @@ switch($submit){
 		$entry[$config["PQL_GLOB_ATTR_CN"]]			= trim($surname) . " " . trim($name);
 		$entry[$config["PQL_GLOB_ATTR_SN"]]			= $surname;
 		$entry[$config["PQL_GLOB_ATTR_GIVENNAME"]]	= $name;
-		$entry[$config["PQL_GLOB_ATTR_MAIL"]]		= $email;
 		$entry[$config["PQL_GLOB_ATTR_UID"]]		= $uid;
+		if($account_type != 'shell') {
+			$entry[$config["PQL_GLOB_ATTR_MAIL"]]		 = $email;
 		$entry[$config["PQL_GLOB_ATTR_ISACTIVE"]]	= $account_status;
+		}
 
         // ------------------
-		if($account_type == "system") {
+		if(($account_type == "system") or ($account_type == "shell")) {
 			// Normal system account
 
 			// set SYSTEM attributes
@@ -711,15 +741,21 @@ switch($submit){
 		}
 
         // ------------------
-		if($account_type == "normal" or $account_type == "system"){
-			// normal mailbox account
-
+		if(($account_type == "shell") or
+		   ($account_type == "system") or
+		   ($account_type == "normal"))
+		{
 			// set attributes
 			$entry[$config["PQL_GLOB_ATTR_PASSWD"]]   = pql_password_hash($password, $pwscheme);
 			if($pwscheme == "{KERBEROS}")
 			  // Make sure that 'User objectclasses' contain krb5Principal (in the domain/branch config).
 			  // See the 'Show phpQLAdmin configuration' page...
 			  $entry["krb5PrincipalName"] = $password;
+		}
+
+        // ------------------
+		if($account_type == "normal" or $account_type == "system") {
+			// normal mailbox account
 
 			if($host == 'default') {
 				// TODO: If there is no defaultDomain for the domain, get MX of the domain in the email address
@@ -744,7 +780,7 @@ switch($submit){
 			} else {
 				$entry[$config["PQL_GLOB_ATTR_MAILSTORE"]] = $maildirectory;
 			}
-		} else {
+		} elseif($account_type != "shell") {
 			// forwardonly account
 
 			// convert forwardingaddress to lowercase
