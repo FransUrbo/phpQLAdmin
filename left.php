@@ -105,8 +105,8 @@ if(!isset($domains)) {
     }
 ?>
   <!-- start domain parent -->
-  <a href="user_detail.php?domain=<?=$domain?>&user=<?=$USER_DN?>"><img src="images/mail_small.png" border="0" alt="<?=$cn?>"></a>&nbsp;
-  <a class="item" href="user_detail.php?domain=<?=$domain?>&user=<?=$USER_DN?>"><?=$cn?></a>
+  <a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$USER_DN?>"><img src="images/mail_small.png" border="0" alt="<?=$cn?>"></a>&nbsp;
+  <a class="item" href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$USER_DN?>"><?=$cn?></a>
   <!-- end domain parent -->
 
 <?php
@@ -118,15 +118,18 @@ if(!isset($domains)) {
 	// Get domain part from the DN (Example: 'dc=test,dc=net' => 'test').
 	$d = split(',', $domain); $d = split('=', $d[0]); $d = $d[1];
 
+	// Get Root DN
+	$rootdn = pql_get_rootdn($domain);
+
 	$j = $key + 2;
 ?>
   <!-- start domain parent -->
   <div id="el<?=$j?>Parent" class="parent">
-    <a class="item" href="domain_detail.php?domain=<?=$domain?>" onClick="if (capable) {expandBase('el<?=$j?>', true); return false;}">
+    <a class="item" href="domain_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>" onClick="if (capable) {expandBase('el<?=$j?>', true); return false;}">
       <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$j?>Img">
     </a>
 
-    <a class="item" href="domain_detail.php?domain=<?=$domain?>">
+    <a class="item" href="domain_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>">
       <font color="black" class="heada"><?=$d?></font>
     </a>
   </div>
@@ -148,7 +151,7 @@ if(!isset($domains)) {
 ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
       <img src="images/mail_small.png" border="0" alt="no user defined">&nbsp;
-      <a href="user_add.php?domain=<?=$domain?>">no user(s)</a>
+      <a href="user_add.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>">no user(s)</a>
     </nobr>
 
     <br>
@@ -157,7 +160,7 @@ if(!isset($domains)) {
           } else {
 ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
-      <a href="user_add.php?domain=<?=$domain?>">Add a user</a>
+      <a href="user_add.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>">Add a user</a>
     </nobr>
 
     <br>
@@ -177,8 +180,8 @@ if(!isset($domains)) {
 		      // not be availible to administrate through phpQLAdmin!
 ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
-      <a href="user_detail.php?domain=<?=$domain?>&user=<?=$user?>"><img src="images/mail_small.png" border="0" alt="<?=$cn?>"></a>&nbsp;
-      <a class="item" href="user_detail.php?domain=<?=$domain?>&user=<?=$user?>"><?=$cn?></a>
+      <a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$user?>"><img src="images/mail_small.png" border="0" alt="<?=$cn?>"></a>&nbsp;
+      <a class="item" href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$user?>"><?=$cn?></a>
     </nobr>
 
     <br>

@@ -55,11 +55,11 @@ foreach($attribs as $attrib) {
 	  {
 		  // A dcOrganizationNameForm attribute
 
-		  $$link = "<a href=\"domain_edit_attributes.php?type=modify&attrib=$attrib&domain=$domain&$attrib=". urlencode($value) ."\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify attribute $attrib for $domain\"></a>&nbsp;<a href=\"domain_edit_attributes.php?type=delete&submit=2&attrib=$attrib&domain=$domain&$attrib=". urlencode($value) ."\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Delete attribute $attrib for $domain\"></a>";
+		  $$link = "<a href=\"domain_edit_attributes.php?type=modify&attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=". urlencode($value) ."\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify attribute $attrib for $domain\"></a>&nbsp;<a href=\"domain_edit_attributes.php?type=delete&submit=2&attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=". urlencode($value) ."\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Delete attribute $attrib for $domain\"></a>";
 	  } else {
 		  // A phpQLAdminBranch attribute
 
-		  $$link = "<a href=\"domain_edit_attributes.php?attrib=$attrib&domain=$domain&$attrib=$value\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify $attrib for $domain\"></a>";
+		  $$link = "<a href=\"domain_edit_attributes.php?attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=$value\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify $attrib for $domain\"></a>";
 	  }
 }
 $admins	 = pql_get_domain_value($_pql, $domain, "administrator");
@@ -68,7 +68,7 @@ $seealso = pql_get_domain_value($_pql, $domain, "seealso");
 // Get the organization name, or show 'Not set' with an URL to set it
 $domainname = pql_get_domain_value($_pql, $domain, 'o');
 if(!$domainname) {
-	$domainname = "<a href=\"domain_edit_attributes.php?type=modify&attrib=o&domain=$domain\">".PQL_UNSET."</a>";
+	$domainname = "<a href=\"domain_edit_attributes.php?type=modify&attrib=o&rootdn=$rootdn&domain=$domain\">".PQL_UNSET."</a>";
 }
 ?>
   <span class="title1">Organization: <?=urldecode($domainname)?></span>
@@ -126,10 +126,10 @@ if($ADVANCED_MODE == 1) {
 <?php
 			}
 ?>
-        <td><a href="user_detail.php?domain=<?=$domain?>&user=<?=$admin?>"><?=urldecode($username)?></a></td>
+        <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$admin?>"><?=urldecode($username)?></a></td>
         <td>
-          <a href="domain_edit_attributes.php?attrib=administrator&domain=<?=$domain?>&administrator=<?=$admin?>&submit=3&action=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify administrators for <?=$domain?>"></a>&nbsp;
-          <a href="domain_edit_attributes.php?attrib=administrator&domain=<?=$domain?>&administrator=<?=$admin?>&submit=4&action=delete"><img src="images/del.png" width="12" height="12" alt="<?=PQL_DOMAIN_ADMIN_DELETE?>" border="0"></a>
+          <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&administrator=<?=$admin?>&submit=3&action=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify administrators for <?=$domain?>"></a>&nbsp;
+          <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&administrator=<?=$admin?>&submit=4&action=delete"><img src="images/del.png" width="12" height="12" alt="<?=PQL_DOMAIN_ADMIN_DELETE?>" border="0"></a>
         </td>
       </tr>
 
@@ -140,7 +140,7 @@ if($ADVANCED_MODE == 1) {
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"></td>
         <td colspan="4">
-          <a href="domain_edit_attributes.php?attrib=administrator&domain=<?=$domain?>&submit=3&action=add"><?=PQL_DOMAIN_ADMIN_ADD?></a>
+          <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add"><?=PQL_DOMAIN_ADMIN_ADD?></a>
         </td>
       </tr>
 <?php
@@ -227,10 +227,10 @@ if($ADVANCED_MODE == 1) {
 <?php
 			}
 ?>
-        <td><a href="user_detail.php?domain=<?=$domain?>&user=<?=$sa?>"><?=urldecode($username)?></a></td>
+        <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$sa?>"><?=urldecode($username)?></a></td>
         <td>
-          <a href="domain_edit_attributes.php?attrib=seealso&seealso=<?=$sa?>&submit=3&action=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify contact persons for <?=$o?>"></a>&nbsp;
-          <a href="domain_edit_attributes.php?attrib=seealso&seealso=<?=$sa?>&submit=4&action=delete"><img src="images/del.png" width="12" height="12" alt="Remove contact person from <?=$o?>" border="0"></a>
+          <a href="domain_edit_attributes.php?attrib=seealso&rootdn=<?=$rootdn?>&domain=<?=$domain?>&seealso=<?=$sa?>&submit=3&action=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify contact persons for <?=$o?>"></a>&nbsp;
+          <a href="domain_edit_attributes.php?attrib=seealso&rootdn=<?=$rootdn?>&domain=<?=$domain?>&seealso=<?=$sa?>&submit=4&action=delete"><img src="images/del.png" width="12" height="12" alt="Remove contact person from <?=$o?>" border="0"></a>
         </td>
       </tr>
 
@@ -247,7 +247,7 @@ if($ADVANCED_MODE == 1) {
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"></td>
         <td colspan="4">
-          <a href="domain_edit_attributes.php?attrib=seealso&domain=<?=$domain?>&submit=3&action=add">Add contact person for domain</a>
+          <a href="domain_edit_attributes.php?attrib=seealso&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add">Add contact person for domain</a>
         </td>
       </tr>
     </th>
@@ -283,10 +283,10 @@ if(is_array($users)){
 			// not be availible to administrate through phpQLAdmin!
 ?>
       <tr class="<?php table_bgcolor(); ?>">
-        <td><a href="user_detail.php?domain=<?=$domain?>&user=<?=urlencode($user)?>"><?=$cn?></a></td>
+        <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=urlencode($user)?>"><?=$cn?></a></td>
         <td><?=$uid?></td>
         <td><?=$status?></td>
-        <td><a href="user_detail.php?domain=<?=$domain?>&user=<?=$user?>"><img src="images/edit.png" width="12" height="12" alt="<?=PQL_USER_EDIT?>" border="0"></a>&nbsp;&nbsp;<a href="user_del.php?domain=<?=$domain?>&user=<?=$user?>"><img src="images/del.png" width="12" height="12" alt="<?=PQL_USER_DELETE?>" border="0"></a></td>
+        <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$user?>"><img src="images/edit.png" width="12" height="12" alt="<?=PQL_USER_EDIT?>" border="0"></a>&nbsp;&nbsp;<a href="user_del.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$user?>"><img src="images/del.png" width="12" height="12" alt="<?=PQL_USER_DELETE?>" border="0"></a></td>
       </tr>
 
 <?php
@@ -303,7 +303,7 @@ if(is_array($users)){
 ?>
 
       <tr class="subtitle">
-        <td colspan="4"><a href="user_add.php?domain=<?=$domain?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"> <?=PQL_USER_NEW?></a></td>
+        <td colspan="4"><a href="user_add.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"> <?=PQL_USER_NEW?></a></td>
       </tr>
     </th>
   </table>
@@ -322,25 +322,25 @@ if(is_array($users)){
   
       <tr class="<?php table_bgcolor(); ?>">
         <td><?=PQL_LDAP_ACCOUNTSTATUS_STATUS?></td>
-        <td><a href="domain_edit_attributes.php?attrib=accountstatus&domain=<?=$domain?>&set=active"><?=PQL_LDAP_ACCOUNTSTATUS_CHANGE_ACTIVE?></a>
-  	| <a href="domain_edit_attributes.php?attrib=accountstatus&domain=<?=$domain?>&set=nopop"><?=PQL_LDAP_ACCOUNTSTATUS_CHANGE_NOPOP?></a>
-  	| <a href="domain_edit_attributes.php?attrib=accountstatus&domain=<?=$domain?>&set=disabled"><?=PQL_LDAP_ACCOUNTSTATUS_CHANGE_DISABLE?></a>
+        <td><a href="domain_edit_attributes.php?attrib=accountstatus&rootdn=<?=$rootdn?>&domain=<?=$domain?>&set=active"><?=PQL_LDAP_ACCOUNTSTATUS_CHANGE_ACTIVE?></a>
+  	| <a href="domain_edit_attributes.php?attrib=accountstatus&rootdn=<?=$rootdn?>&domain=<?=$domain?>&set=nopop"><?=PQL_LDAP_ACCOUNTSTATUS_CHANGE_NOPOP?></a>
+  	| <a href="domain_edit_attributes.php?attrib=accountstatus&rootdn=<?=$rootdn?>&domain=<?=$domain?>&set=disabled"><?=PQL_LDAP_ACCOUNTSTATUS_CHANGE_DISABLE?></a>
         </td>
       </tr>
   
       <tr class="<?php table_bgcolor(); ?>">
         <td><?=PQL_LDAP_MAILQUOTA_TITLE?></td>
-        <td><a href="domain_edit_attributes.php?attrib=mailquota&domain=<?=$domain?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
+        <td><a href="domain_edit_attributes.php?attrib=mailquota&rootdn=<?=$rootdn?>&domain=<?=$domain?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
       </tr>
   
       <tr class="<?php table_bgcolor(); ?>">
         <td><?=PQL_LDAP_MAILHOST_TITLE?></td>
-        <td><a href="domain_edit_attributes.php?attrib=mailhost&domain=<?=$domain?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
+        <td><a href="domain_edit_attributes.php?attrib=mailhost&rootdn=<?=$rootdn?>&domain=<?=$domain?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
       </tr>
   
       <tr class="<?php table_bgcolor(); ?>">
         <td><?=PQL_LDAP_DELIVERYMODE_TITLE?></td>
-        <td><a href="domain_edit_attributes.php?attrib=deliverymode&domain=<?=$domain?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
+        <td><a href="domain_edit_attributes.php?attrib=deliverymode&rootdn=<?=$rootdn?>&domain=<?=$domain?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
       </tr>
     </th>
   </table>
@@ -384,7 +384,7 @@ if($ADVANCED_MODE == 1) {
 ?>
 
       <tr class="subtitle">
-        <td colspan="4"><a href="dnszonetemplate.php?domain=<?=$domain?>&defaultdomain=<?=$defaultdomain?>"><img src="images/edit.png" width="12" height="12" border="0">Create DNS template zone file</a></td>
+        <td colspan="4"><a href="dnszonetemplate.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&defaultdomain=<?=$defaultdomain?>"><img src="images/edit.png" width="12" height="12" border="0">Create DNS template zone file</a></td>
       </tr>
     </th>
   </table>
@@ -396,14 +396,14 @@ if($ADVANCED_MODE == 1) {
 		if(pql_control_search_attribute($_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR, "locals", $defaultdomain)){
 			$locals = PQL_YES;
 			if(!defined(PQL_LDAP_CONTROL_AUTOADDLOCALS)) {
-				$locals_link = "<a href=\"control_edit_attribute.php?attrib=locals&type=del&set=$defaultdomain&submit=1\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"remove $defaultdomain from locals\"></a>";
+				$locals_link = "<a href=\"control_edit_attribute.php?attrib=locals&rootdn=<?=$rootdn?>&type=del&set=$defaultdomain&submit=1\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"remove $defaultdomain from locals\"></a>";
 			} else {
 				$locals_link = "&nbsp;";
 			}
 		} else {
 			$locals = PQL_NO;
 			if(!defined(PQL_LDAP_CONTROL_AUTOADDLOCALS)) {
-				$locals_link = "<a href=\"control_edit_attribute.php?attrib=locals&type=add&set=$defaultdomain&submit=1\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"add $defaultdomain to locals\"></a>";
+				$locals_link = "<a href=\"control_edit_attribute.php?attrib=locals&rootdn=<?=$rootdn?>&type=add&set=$defaultdomain&submit=1\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"add $defaultdomain to locals\"></a>";
 			} else {
 				$locals_link = "&nbsp;";
 			}
@@ -411,10 +411,10 @@ if($ADVANCED_MODE == 1) {
 		
 		if(pql_control_search_attribute($_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR, "rcpthosts", $defaultdomain)){
 			$rcpthosts = PQL_YES;
-			$rcpthosts_link = "<a href=\"control_edit_attribute.php?attrib=rcpthosts&type=del&set=$defaultdomain&submit=1\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"remove $defaultdomain from rcpthosts\"></a>";
+			$rcpthosts_link = "<a href=\"control_edit_attribute.php?attrib=rcpthosts&rootdn=<?=$rootdn?>&type=del&set=$defaultdomain&submit=1\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"remove $defaultdomain from rcpthosts\"></a>";
 		} else {
 			$rcpthosts = PQL_NO;
-			$rcpthosts_link = "<a href=\"control_edit_attribute.php?attrib=rcpthosts&type=add&set=$defaultdomain&submit=1\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"add $defaultdomain to rcpthosts\"></a>";
+			$rcpthosts_link = "<a href=\"control_edit_attribute.php?attrib=rcpthosts&rootdn=<?=$rootdn?>&type=add&set=$defaultdomain&submit=1\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"add $defaultdomain to rcpthosts\"></a>";
 		}
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
@@ -441,7 +441,7 @@ if($ADVANCED_MODE == 1) {
   <table cellspacing="0" cellpadding="3" border="0">
     <th align="left"><?=PQL_ACTIONS?></th>
       <tr class="<?php table_bgcolor(); ?>">
-        <td><a href="domain_del.php?domain=<?=$domain?>"><?=PQL_DOMAIN_DEL?></a></td>
+        <td><a href="domain_del.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>"><?=PQL_DOMAIN_DEL?></a></td>
       </tr>
     </th>
   </table>

@@ -12,7 +12,7 @@ function attribute_forward($msg){
     global $domain;
     
     $msg = urlencode($msg);
-    $url = "domain_detail.php?domain=$domain&msg=$msg";
+    $url = "domain_detail.php?rootdn=$rootdn&domain=$domain&msg=$msg";
     header("Location: " . PQL_URI . "$url");
 }
 
