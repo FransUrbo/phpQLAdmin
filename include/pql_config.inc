@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.67 2004-08-27 08:49:33 turbo Exp $
+// $Id: pql_config.inc,v 1.68 2004-09-24 06:42:41 turbo Exp $
 //
 
 // include the API files
@@ -76,9 +76,14 @@ require("./include/config.inc");			// Generic site configuration
 // 2. Include the attribute configuration
 require("./include/config_attributes.inc");		// Attribute definitions
 
+// 3. Load configurations from LDAP base DN
 if($_SESSION["USER_HOST"]) {
 	if(!$_pql)
+	  // Open a connection to the LDAP server
 	  $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
+
+	// Remember the base DN's
+	$_SESSION["BASE_DN"] = $_pql->ldap_basedn;
 
 	foreach($_pql->ldap_basedn as $dn)  {
 		$dn = urldecode($dn);
@@ -158,12 +163,16 @@ if($_SESSION["USER_HOST"]) {
 	$_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"] = pql_validate_administrator($_pql->ldap_linkid, $_pql->ldap_basedn[0], $_SESSION["USER_DN"]);
 	
 	if((empty($_SESSION["ACI_SUPPORT_ENABLED"]) and function_exists("user_generate_aci")) or empty($_SESSION["NEW_STYLE_QUOTA"])) {
-		$ocs = pql_get_subschema($_pql->ldap_linkid, attributeTypes);
+		$ocs = pql_get_subschema($_pql->ldap_linkid, 'attributeTypes');
 		
-		// 9a. Check ifthe attribute openLdapAci exists - ACI support is enabled in the LDAP server.
-		if(empty($_SESSION["ACI_SUPPORT_ENABLED"]) and
-		   function_exists("user_generate_aci") and
-		   $ocs[pql_get_define("PQL_ATTR_LDAPACI")]["OID"])
+		// 9a. Check ifthe attribute OpenLDAPaci exists - ACI support is enabled in the LDAP server.
+		//     OR: We've specified (manually) to (en)force the use of ACI's via the baseDN attribute
+		//         'useACI'.
+		//     -> Just make sure that useACI isn't equal to 'FALSE' which means the user/admin have
+		//        elected to NOT use ACI's!
+		if(empty($_SESSION["ACI_SUPPORT_ENABLED"]) and function_exists("user_generate_aci") and
+		   ($ocs[pql_get_define("PQL_ATTR_LDAPACI")]["OID"] or pql_get_define("PQL_CONF_ACI_USE")) and
+		   (pql_get_define("PQL_CONF_ACI_USE") != 'FALSE'))
 		  $_SESSION["ACI_SUPPORT_ENABLED"] = 1;
 		
 		// 9b. Check to see if the attributes mailQuotaSize and mailQuotaCount exists - new style quota.
