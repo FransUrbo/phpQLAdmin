@@ -75,7 +75,7 @@ if (empty($uname) or empty($passwd)) {
 			// We're only interssted in the HOST entry (othervise the list will be to long)
 			$host = split(';', $server);
 ?>
-            <option><?=$host[0]?></option>
+            <option value="<?=$server?>"><?=$host[0]?></option>
 <?php
 		}
 ?>
