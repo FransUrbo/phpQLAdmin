@@ -1,10 +1,9 @@
 <?php
 // delete a domain and all users within
-// $Id: domain_del.php,v 2.27 2004-03-11 18:13:32 turbo Exp $
+// $Id: domain_del.php,v 2.28 2004-04-01 06:22:13 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
-require("./include/pql_control.inc");
 
 include("./header.html");
 
@@ -19,8 +18,13 @@ $domain = urldecode($domain);
 <?php
 if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST["rootdn"])) {
 	$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
-	$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
-	
+
+	if(pql_get_define("PQL_CONF_CONTROL_USE")) {
+		// include control api if control is used
+		include("./include/pql_control.inc");
+		$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
+	}
+
 	$delete_forwards = (isset($_REQUEST["delete_forwards"]) || pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST["rootdn"])) ? true : false;
 
 	// Before we delete the domain/branch, we need to get the defaultDomain, additionalDomainName
