@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailforwardingaddress (forward all mails to this address)
-// $Id: attrib.mailforwardingaddress.inc,v 2.8 2003-05-28 07:23:38 turbo Exp $
+// $Id: attrib.mailforwardingaddress.inc,v 2.9 2003-06-10 12:13:39 turbo Exp $
 
 function attribute_check($type){
 	global $mailforwardingaddress, $error;
@@ -53,19 +53,19 @@ function attribute_print_form(){
     </table>
 
     <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
-    <input type="hidden" name="domain" value="<?php echo $domain; ?>">
-    <input type="hidden" name="user" value="<?php echo $user ?>">
+    <input type="hidden" name="attrib" value="<?=$attrib?>">
+    <input type="hidden" name="oldvalue" value="<?=$oldvalue?>">
+    <input type="hidden" name="domain" value="<?=$domain?>">
+    <input type="hidden" name="user" value="<?=$user?>">
     <input type="hidden" name="view" value="<?=$view?>">
     <br>
-    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
+    <input type="submit" value="<?=PQL_LANG_SAVE?>">
   </form>
 
 <?php
 }
 
-function attribute_save($type){
+function attribute_save($type) {
 	global $domain, $user, $attrib, $oldvalue, $view;
 	global $mailforwardingaddress, $_pql, $config;
 

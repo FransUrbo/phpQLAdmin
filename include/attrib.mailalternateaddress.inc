@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailalternateaddress (emailaddress alias)
-// $Id: attrib.mailalternateaddress.inc,v 2.10 2003-05-28 07:23:38 turbo Exp $
+// $Id: attrib.mailalternateaddress.inc,v 2.11 2003-06-10 12:13:39 turbo Exp $
 
 function attribute_check($type){
     global $mailalternateaddress, $oldvalue, $domain, $_pql, $error, $defaultdomain, $email_domain;
@@ -93,13 +93,13 @@ function attribute_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
-    <input type="hidden" name="domain" value="<?php echo $domain; ?>">
-    <input type="hidden" name="user" value="<?php echo $user ?>">
+    <input type="hidden" name="attrib" value="<?=$attrib?>">
+    <input type="hidden" name="oldvalue" value="<?=$oldvalue?>">
+    <input type="hidden" name="domain" value="<?=$domain?>">
+    <input type="hidden" name="user" value="<?=$user?>">
     <input type="hidden" name="view" value="<?=$view?>">
     <br>
-    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
+    <input type="submit" value="<?=PQL_LANG_SAVE?>">
   </form>
 
 <?php
