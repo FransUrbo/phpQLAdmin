@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.3 2003-01-21 14:20:20 turbo Exp $
+// $Id: pql_config.inc,v 1.4 2003-01-22 10:25:43 turbo Exp $
 //
 
 // ----------------------------
@@ -88,6 +88,8 @@ if(!$USER_HOST) {
 		// TODO: We have multiple hosts defined
 	}
 }
+
+if($USER_DN) session_register("USER_DN");
 
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 $sr   = @ldap_read($_pql->ldap_linkid, $_pql->ldap_basedn[0], $_pql->ldap_basedn[0])
