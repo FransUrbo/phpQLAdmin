@@ -450,19 +450,19 @@ if($ADVANCED_MODE == 1) {
   <br><br>
 
 <?php
-	if($config["PQL_GLOB_CONTROL_USE"]) {
+	if($config["PQL_GLOB_CONTROL_USE"] && $defaultdomain) {
 		// Link(s) for 'locals'
 		if(pql_control_search_attribute($_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR, "locals", $defaultdomain)){
 			$locals = PQL_LANG_YES;
 			if(!$config["PQL_GLOB_CONTROL_AUTOADDLOCALS"][$rootdn]) {
-				$locals_link = "<a href=\"control_edit_attribute.php?attrib=locals&rootdn=<?=$rootdn?>&type=del&set=$defaultdomain&submit=1\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"remove $defaultdomain from locals\"></a>";
+				$locals_link = "<a href=\"control_edit_attribute.php?attrib=locals&rootdn=$rootdn&domain=$domain&type=del&set=$defaultdomain&submit=1\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"remove $defaultdomain from locals\"></a>";
 			} else {
 				$locals_link = "&nbsp;";
 			}
 		} else {
 			$locals = PQL_LANG_NO;
 			if(!$config["PQL_GLOB_CONTROL_AUTOADDLOCALS"][$rootdn]) {
-				$locals_link = "<a href=\"control_edit_attribute.php?attrib=locals&rootdn=<?=$rootdn?>&type=add&set=$defaultdomain&submit=1\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"add $defaultdomain to locals\"></a>";
+				$locals_link = "<a href=\"control_edit_attribute.php?attrib=locals&rootdn=$rootdn&domain=$domain&type=add&set=$defaultdomain&submit=1\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"add $defaultdomain to locals\"></a>";
 			} else {
 				$locals_link = "&nbsp;";
 			}
