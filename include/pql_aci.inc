@@ -2,7 +2,7 @@
 // ----------------------------
 // Retreive, modify and delete ACIs (per-object access control lists)
 //
-// $Id: pql_aci.inc,v 2.4 2003-11-11 07:21:33 turbo Exp $
+// $Id: pql_aci.inc,v 2.5 2003-11-19 17:01:35 turbo Exp $
 
 // {{{ pql_aci_get(linkid, dn, number)
 // Get ACI entries from object
@@ -25,9 +25,12 @@ function pql_aci_get($linkid, $dn, $number = 0) {
 		$n = 0; 
 
 		for($j=0; $j < $info[0][pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")]["count"]; $j++) {
+			$ACI[$n]["LINE"]   = $info[0][pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")][$j];
+
 			$got_more_rights = 0;
-			
-			$tmp1 = split("#", $info[0][pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")][$j]); // Split up the attribute value into it's (five) parts
+			// Split up the attribute value into it's (five) parts
+			$tmp1 = split("#", $info[0][pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")][$j]);
+
 			$ACI[$n]["OID"]		= $tmp1[0]; // Irrelevant: Counter or dummy OID (Ex: 1.2.3)
 			$ACI[$n]["SCOPE"]	= $tmp1[1]; // Irrelevant: Always 'entry'
 			
