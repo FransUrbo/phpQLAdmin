@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for changing/renaming the DN
 //
-// $Id: attrib.modrdn.inc,v 2.4 2003-11-12 09:33:32 turbo Exp $
+// $Id: attrib.modrdn.inc,v 2.5 2003-11-20 08:01:37 turbo Exp $
 
 function attribute_check($type) {
 	global $user, $oldvalue, $rdn, $view, $domain, $rootdn, $attrib;
@@ -36,17 +36,17 @@ function attribute_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Rename this RDN')?></th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Old RDN')?></td>
           <td><?php echo pql_maybe_decode($oldvalue); ?></td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('New RDN')?></td>
           <td><b><input type="text" name="user" size="<?=$len+1?>"><b>,<?=$rdn?></b></td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Keep old RDN')?></td>
           <td><input type="checkbox" name="keepold">Yes</td>
         </tr>

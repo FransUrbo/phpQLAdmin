@@ -3,7 +3,7 @@
 // concurrencylocal (may simultaneous local deliveries)
 // concurrencyremote (may simultaneous remote deliveries)
 //
-// $Id: attrib.control.concurrencylocal.inc,v 2.11 2003-10-31 07:22:56 turbo Exp $
+// $Id: attrib.control.concurrencylocal.inc,v 2.12 2003-11-20 08:01:36 turbo Exp $
 
 function concurrencylocal_check($type) {
 	global $error, $concurrencylocal, $concurrencyremote, $view, $LANG;
@@ -63,12 +63,12 @@ function concurrencylocal_print_view($host) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">concurrencylocal, concurrencyremote (<?=$LANG->_('Maximum simultaneous deliveries')?>)</th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Local')?></td>
         <td><?=$concurrencylocal?></td>
       </tr>
 
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Remote')?></td>
         <td><?=$concurrencyremote?></td>
       </tr>
@@ -87,14 +87,14 @@ function concurrencylocal_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">concurrencylocal, concurrencyremote (<?=$LANG->_('Maximum simultaneous deliveries')?>)</th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Local')?></td>
-          <td><?php echo format_error($error["concurrencylocal"]); ?><input type="text" name="concurrencylocal" value="<?=$concurrencylocal?>"> <?=$LANG->_('Default')?>: 10</td>
+          <td><?php echo pql_format_error_span($error["concurrencylocal"]); ?><input type="text" name="concurrencylocal" value="<?=$concurrencylocal?>"> <?=$LANG->_('Default')?>: 10</td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Remote')?></td>
-          <td><?php echo format_error($error["concurrencyremote"]); ?><input type="text" name="concurrencyremote" value="<?=$concurrencyremote?>"> <?=$LANG->_('Default')?>: 20</td>
+          <td><?php echo pql_format_error_span($error["concurrencyremote"]); ?><input type="text" name="concurrencyremote" value="<?=$concurrencyremote?>"> <?=$LANG->_('Default')?>: 20</td>
         </tr>
 
         <tr class="subtitle">

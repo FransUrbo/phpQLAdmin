@@ -2,13 +2,13 @@
 // control attribute plugin for
 // idhost (host name for message id's)
 //
-// $Id: attrib.control.idhost.inc,v 2.11 2003-11-06 06:47:41 turbo Exp $
+// $Id: attrib.control.idhost.inc,v 2.12 2003-11-20 08:01:36 turbo Exp $
 
 function idhost_check($type) {
 	global $error, $idhost, $view, $LANG;
 
 	// validity
-	if($idhost != "" and !check_hostaddress($idhost)) {
+	if($idhost != "" and !pql_check_hostaddress($idhost)) {
 		$error["idhost"] = $LANG->_('Invalid');
 		return false;
 	}
@@ -43,7 +43,7 @@ function idhost_print_view($host) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">idhost (<?=$LANG->_('Host name for Message-ID\'s')?>)</th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Host')?></td>
         <td><?=$idhost?></td>
       </tr>
@@ -62,9 +62,9 @@ function idhost_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">idhost (<?=$LANG->_('Host name for Message-ID\'s')?>)</th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Host')?></td>
-          <td><?php echo format_error($error["idhost"]); ?><input type="text" name="idhost" value="<?=$idhost?>"> <?=$LANG->_('Default')?>: <?=$mxhost?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
+          <td><?php echo pql_format_error_span($error["idhost"]); ?><input type="text" name="idhost" value="<?=$idhost?>"> <?=$LANG->_('Default')?>: <?=$mxhost?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
         </tr>
 
         <tr>

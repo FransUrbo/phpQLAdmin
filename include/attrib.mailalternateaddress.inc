@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailalternateaddress (emailaddress alias)
-// $Id: attrib.mailalternateaddress.inc,v 2.17 2003-11-19 16:20:50 turbo Exp $
+// $Id: attrib.mailalternateaddress.inc,v 2.18 2003-11-20 08:01:37 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -22,7 +22,7 @@ function attribute_check($type) {
 	}
 
     // valid
-    if(!check_email($mailalternateaddress)) {
+    if(!pql_check_email($mailalternateaddress)) {
 		$error["mailalternateaddress"] = $LANG->_('Invalid');
 		return false;
     }
@@ -73,10 +73,10 @@ function attribute_print_form() {
 		echo "</tr>";
     }
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Email')?></td>
         <td>
-          <?php echo format_error($error["mailalternateaddress"]); ?>
+          <?php echo pql_format_error_span($error["mailalternateaddress"]); ?>
           <input type="text" name="mailalternateaddress" value="">
 <?php 	if(is_array($additionaldomainname)) { ?>
             <b>@ <select name="email_domain"></b>

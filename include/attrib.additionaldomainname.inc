@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.16 2003-11-19 16:20:50 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.17 2003-11-20 08:01:36 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -40,9 +40,9 @@ function attribute_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what% for domain %domain%'), array('what' => $LANG->_('additional domain name'), 'domain' => $orgname)); ?></th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Additional domain name')?></td>
-          <td><?php echo format_error($error["additionaldomainname"]); ?><input type="text" name="additionaldomainname" value="<?=$additionaldomainname?>" size="20"></td>
+          <td><?php echo pql_format_error_span($error["additionaldomainname"]); ?><input type="text" name="additionaldomainname" value="<?=$additionaldomainname?>" size="20"></td>
         </tr>
 <?php if(!function_exists("pql_control"))
 		require("./include/pql_control.inc");
@@ -56,7 +56,7 @@ function attribute_print_form() {
 
         <tr></tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain to '.pql_get_define("PQL_GLOB_ATTR_LOCALS").' in following objects'))); ?>:</td>
           <td>
 <?php		if(!pql_get_define("PQL_GLOB_CONTROL_AUTOADDLOCALS")) {
@@ -81,7 +81,7 @@ function attribute_print_form() {
           </td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain to '.pql_get_define('PQL_GLOB_ATTR_RCPTHOSTS').' in following objects'))); ?>:</td>
           <td>
 <?php		if(!pql_get_define("PQL_GLOB_CONTROL_AUTOADDRCPTHOSTS")) {
@@ -106,7 +106,7 @@ function attribute_print_form() {
 <?php } ?>
 <?php if(pql_get_define("PQL_GLOB_BIND9_USE")) { ?>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Additional domain name')?></td>
           <td><input type="checkbox" name="template"> Yes</td>
         </tr>

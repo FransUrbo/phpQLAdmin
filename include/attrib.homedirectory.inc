@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // homedirectory (path to homedirectory)
-// $Id: attrib.homedirectory.inc,v 2.11 2003-11-18 13:16:38 turbo Exp $
+// $Id: attrib.homedirectory.inc,v 2.12 2003-11-20 08:01:37 turbo Exp $
 
 function attribute_check($type) {
     global $homedirectory, $domain, $oldvalue, $_pql, $error, $LANG;
@@ -32,9 +32,9 @@ function attribute_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Change home directory')?></th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Change home directory')?></td>
-          <td><?php echo format_error($error["homedirectory"]); ?><input type="text" name="homedirectory" value="<?=$homedirectory?>" size="50"></td>
+          <td><?php echo pql_format_error_span($error["homedirectory"]); ?><input type="text" name="homedirectory" value="<?=$homedirectory?>" size="50"></td>
         </tr>
       </th>
     </table>

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliverymode (delivery preferences)
-// $Id: attrib.deliverymode.inc,v 2.16 2003-11-19 19:38:33 turbo Exp $
+// $Id: attrib.deliverymode.inc,v 2.17 2003-11-20 08:01:37 turbo Exp $
 
 function attribute_check($type) {
 	global $error, $reply, $mailreplytext, $LANG;
@@ -43,10 +43,10 @@ function attribute_print_form($type = "modify") {
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Delivery mode')?></th>
 <?php if(!$GLOBALS["SINGLE_USER"]) { ?>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Delivery mode')?></td>
           <td>
-            <?php echo format_error($error["deliverymode"]); ?>
+            <?php echo pql_format_error_span($error["deliverymode"]); ?>
             <select name="deliverymode">
               <option value="local" <?php if($deliverymode == "local"){ echo "SELECTED";} ?>><?=$LANG->_('Mail account')?>
               <option value="forward" <?php if($deliverymode == "forward"){ echo "SELECTED";} ?>><?=$LANG->_('Forward account')?>
@@ -55,17 +55,17 @@ function attribute_print_form($type = "modify") {
         </tr>
 
 <?php } ?>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Do auto reply')?></td>
           <td><input type="checkbox" name="reply" value="ok" <?php if($reply=="ok"){ echo "checked";} ?>><?=$LANG->_('Send an auto reply')?></td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Text for replying')?></td>
-          <td valign="center"><?php echo format_error($error["mailreplytext"]); ?> <textarea name="mailreplytext" cols="40" rows="10"><?=$mailreplytext?></textarea></td>
+          <td valign="center"><?php echo pql_format_error_span($error["mailreplytext"]); ?> <textarea name="mailreplytext" cols="40" rows="10"><?=$mailreplytext?></textarea></td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <table>
             <td><img src="images/info.png" width="16" height="16" border="0" align="left"></td>
             <td>

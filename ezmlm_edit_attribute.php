@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_edit_attribute.php,v 1.17 2003-11-19 16:20:27 turbo Exp $
+// $Id: ezmlm_edit_attribute.php,v 1.18 2003-11-20 08:01:29 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -53,7 +53,7 @@ if($ezmlm = new ezmlm(pql_get_define("PQL_GLOB_EZMLM_USER"), $path)) {
   <form action="<?=$PHP_SELF?>" method="post">
 	<table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$title2?></th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Email')?></td>
 <?php
 			if($attrib == 'subscriber') {

@@ -15,7 +15,7 @@
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=$LANG->_('Advanced delivery properties')?></th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Dot mode')?></td>
         <td><?=$qmaildotmode?></td>
         <td>
@@ -23,7 +23,7 @@
         </td>
       </tr>
 
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Delivery program')?></td>
         <td><?=$deliveryprogrampath?></td>
         <td>

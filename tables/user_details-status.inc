@@ -17,13 +17,13 @@ $status = pql_ldap_accountstatus($status);
   <!-- accountstatus -->
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="2" align="left"><?=$LANG->_('Account status')?></th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td>Account expiration date</td>
         <td><?=$time_expiration?></td>
         <td><a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=<?=pql_get_define("PQL_GLOB_ATTR_EXPIRATION")?>&user=<?=$userdn?>&set=expiration&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Set expiration date"></a></td>
       </tr>
 
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td>Status</td>
 <?php if(eregi('Active', $status)) { ?>
         <td><b><?=$LANG->_('Active')?></b></td>

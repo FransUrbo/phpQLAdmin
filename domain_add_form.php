@@ -1,6 +1,6 @@
 <?php
 // Input form page to create a domain branch in database
-// $Id: domain_add_form.php,v 1.16 2003-11-12 14:10:05 turbo Exp $
+// $Id: domain_add_form.php,v 1.17 2003-11-20 08:01:29 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -20,7 +20,7 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
          // We have more than one Root DN (namingContexts), show
          // a drop down with every Root DN...
 ?>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Branch base')?></td>
           <td>
             <select name="rootdn">
@@ -41,7 +41,7 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 <?php if(! $_pql->ldap_basedn[1]) { ?>
             <table cellspacing="0" cellpadding="3" border="0">
               <th>
-                <tr class="<?php table_bgcolor(); ?>">
+                <tr class="<?php pql_format_table(); ?>">
                   <td><img src="images/info.png" width="16" height="16" alt="" border="0"></td>
                   <td>
 <?php

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.17 2003-11-19 16:20:50 turbo Exp $
+// $Id: attrib.userpassword.inc,v 2.18 2003-11-20 08:01:37 turbo Exp $
 
 function attribute_check($type) {
 	global $userpassword, $userpassword_check, $error, $pwscheme, $LANG;
@@ -39,10 +39,10 @@ function attribute_print_form() {
       <th colspan="3" align="left"><?=$LANG->_('Set password')?></th>
 <?php if(!$defaultpasswordscheme or $GLOBALS["ADVANCED_MODE"]) { ?>
         <!-- Password schema -->
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Password encryption scheme')?></td>
           <td>
-            <?php echo format_error($error["pwscheme"]); ?>
+            <?php echo pql_format_error_span($error["pwscheme"]); ?>
 <?php	if(eregi(',', pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn))) {
 			// We got more than one password scheme...
 			$schemes = split(",", pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn));
@@ -64,10 +64,10 @@ function attribute_print_form() {
 <?php } ?>
 
         <!-- Password -->
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Password')?></td>
           <td>
-            <?php echo format_error($error["userpassword"]) . "\n"; ?>
+            <?php echo pql_format_error_span($error["userpassword"]) . "\n"; ?>
             <!-- Ugly hack. Should realy have type=password here, but what's the use. Really!? -->
             <input type="input" name="userpassword">
           </td>

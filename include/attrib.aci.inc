@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for OpenLDAPaci
-// $Id: attrib.aci.inc,v 1.3 2003-11-19 19:55:36 turbo Exp $
+// $Id: attrib.aci.inc,v 1.4 2003-11-20 08:01:36 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -57,24 +57,24 @@ function attribute_print_form($action) {
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Access Control Information')?>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Object DN')?></td>
           <td><?php if($user) { echo "$user"; } else { echo "$domain"; } ?></td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('OID')?></td>
           <td><b>1.2.3</b></td>
         </tr>
         <input type="hidden" name="aci_oid" value="1.2.3">
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Scope')?></td>
           <td><b>entry</b></td>
         </tr>
         <input type="hidden" name="aci_scope" value="entry">
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Action')?></td>
           <td>
             <select name="aci_action">
@@ -84,7 +84,7 @@ function attribute_print_form($action) {
           </td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Permissions')?></td>
           <td>
             <input type="checkbox" name="aci_permission_read"><u>r</u>ead
@@ -94,7 +94,7 @@ function attribute_print_form($action) {
           </td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Target')?></td>
           <td>
             <select name="aci_target">
@@ -105,7 +105,7 @@ function attribute_print_form($action) {
           </td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Type')?></td>
           <td>
             <select name="aci_type">
@@ -116,7 +116,7 @@ function attribute_print_form($action) {
           </td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Subject')?></td>
           <td><input type="text" name="aci_subject" size="30"></td>
         </tr>

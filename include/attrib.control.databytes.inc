@@ -2,7 +2,7 @@
 // control attribute plugin for
 // databytes (max number of bytes in message)
 //
-// $Id: attrib.control.databytes.inc,v 2.9 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.databytes.inc,v 2.10 2003-11-20 08:01:36 turbo Exp $
 
 function databytes_check($type) {
 	global $error, $databytes, $view, $LANG;
@@ -46,7 +46,7 @@ function databytes_print_view($host) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">databytes (<?=$LANG->_('Maximum number databytes in message')?>)</th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Maximum')?></td>
         <td><?="$databytes $hr_databytes"?></td>
       </tr>
@@ -65,9 +65,9 @@ function databytes_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">databytes (<?=$LANG->_('Maximum number databytes in message')?>)</th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Maximum')?></td>
-          <td><?php echo format_error($error["databytes"]); ?><input type="text" name="databytes" value="<?=$databytes?>"> <?=$LANG->_('Bytes')?></td>
+          <td><?php echo pql_format_error_span($error["databytes"]); ?><input type="text" name="databytes" value="<?=$databytes?>"> <?=$LANG->_('Bytes')?></td>
         </tr>
 
         <tr class="subtitle">

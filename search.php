@@ -1,6 +1,6 @@
 <?php
 // shows results of search
-// $Id: search.php,v 2.20 2003-11-19 19:38:15 turbo Exp $
+// $Id: search.php,v 2.21 2003-11-20 08:01:29 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -9,7 +9,7 @@ include("./header.html");
 
 // print status message, if one is available
 if(isset($msg)) {
-    print_status_msg($msg);
+    pql_format_status_msg($msg);
 }
 
 // reload navigation bar if needed
@@ -140,7 +140,7 @@ if(!$GLOBALS["SINGLE_USER"]) {
 			$rootdn = pql_get_rootdn($user);
 ?>
 
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=urlencode($user)?>"><?=$cn?></a></td>
         <td><?=$uid?></td>
         <td><?=$mail?></td>
@@ -155,7 +155,7 @@ if(!$GLOBALS["SINGLE_USER"]) {
 	  } else {
 		  // no users registred
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td colspan="5"><?=$LANG->_('No users registred')?></td>
       </tr>
 <?php }

@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: domain_add.php,v 2.40 2003-11-14 11:55:52 turbo Exp $
+// $Id: domain_add.php,v 2.41 2003-11-20 08:01:28 turbo Exp $
 //
 session_start();
 
@@ -31,7 +31,7 @@ if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $rootdn) == "dc" or
 }
 
 // check if domain is valid
-//if(!check_hostaddress($domain, $force_dot)) {
+//if(!pql_check_hostaddress($domain, $force_dot)) {
 //	$msg = urlencode($LANG->_('Invalid domain name! Use: domain.tld (e.g. adfinis.com)'));
 //	header("Location: " . pql_get_define("PQL_GLOB_URI") . "home.php?msg=$msg");
 //	exit();
@@ -57,8 +57,8 @@ if($dns[0]) {
 	}
 
 	// Default values we can easily figure out
-	$defaultmaildir = non_internationalize(user_generate_mailstore('', '', '', $entry, 'branch'));
-	$defaulthomedir = non_internationalize(user_generate_homedir('', '', '', $entry, 'branch'));
+	$defaultmaildir = pql_format_international(user_generate_mailstore('', '', '', $entry, 'branch'));
+	$defaulthomedir = pql_format_international(user_generate_homedir('', '', '', $entry, 'branch'));
 
 	// Replace spaces with underscore - can't create dirs with spaces,
 	// it's bound to break SOMEWHERE!

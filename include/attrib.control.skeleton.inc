@@ -58,7 +58,7 @@
 //
 // Please look at other plugins to see which standard header text is recommanded.
 //
-// $Id: attrib.control.skeleton.inc,v 2.9 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.skeleton.inc,v 2.10 2003-11-20 08:01:36 turbo Exp $
 //
 
 function xxx_check($type) {
@@ -108,7 +108,7 @@ function xxx_print_view($host) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">XXX title</th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title">XXX attribute</td>
         <td><?=$helohost?></td>
       </tr>
@@ -134,9 +134,9 @@ function xxx_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">XXX title</th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title">XXX attribute</td>
-          <td><?php echo format_error($error["xxx"]); ?><input type="text" name="xxx" value="<?=$xxx?>"> <?=$LANG->_('Default')?>: write default value here</td>
+          <td><?php echo pql_format_error_span($error["xxx"]); ?><input type="text" name="xxx" value="<?=$xxx?>"> <?=$LANG->_('Default')?>: write default value here</td>
         </tr>
 
         <tr>

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // relaymailfrom (allowed sender addresses for relaying)
 //
-// $Id: attrib.control.relaymailfrom.inc,v 2.12 2003-11-19 16:32:48 turbo Exp $
+// $Id: attrib.control.relaymailfrom.inc,v 2.13 2003-11-20 08:01:36 turbo Exp $
 
 function relaymailfrom_check($type) {
 	global $error, $relaymailfrom, $view, $LANG;
@@ -15,12 +15,12 @@ function relaymailfrom_check($type) {
 			
 			if(preg_match("/^@/", $badmail)) {
 				// retry with added user
-				if(!check_email("user" . $badmail)) {
+				if(!pql_check_email("user" . $badmail)) {
 					$is_error = true;
 					$error["relaymailfrom_$key"] = $LANG->_('Invalid');
 				}
 			} else {
-				if(!check_email($badmail)) {
+				if(!pql_check_email($badmail)) {
 					$is_error = true;
 					$error["relaymailfrom_$key"] = $LANG->_('Invalid');
 				}
@@ -69,14 +69,14 @@ function relaymailfrom_print_view($host) {
 <?php
 	if(!is_array($relaymailfrom)) {
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td><?=$LANG->_('No address defined')?></td>
       </tr>
 <?php
 	} else {
 		foreach($relaymailfrom as $mail) {
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td><?=$mail?></td>
       </tr>
 <?php
@@ -104,15 +104,15 @@ function relaymailfrom_print_form() {
           <td><?=$LANG->_('Address')?></td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
-          <td><?php echo format_error($error["relaymailfrom_0"]); ?><input type="text" name="relaymailfrom[0]" value="<?=$relaymailfrom[0]?>"></td>
+        <tr class="<?php pql_format_table(); ?>">
+          <td><?php echo pql_format_error_span($error["relaymailfrom_0"]); ?><input type="text" name="relaymailfrom[0]" value="<?=$relaymailfrom[0]?>"></td>
         </tr>
 
 <?php
   for($i = 1; $i <= $relaycount; $i++){
 ?>
-        <tr class="<?php table_bgcolor(); ?>">
-          <td><?php echo format_error($error["relaymailfrom_$i"]); ?><input type="text" name="relaymailfrom[<?=$i?>]" value="<?=$relaymailfrom[$i]?>"></td>
+        <tr class="<?php pql_format_table(); ?>">
+          <td><?php echo pql_format_error_span($error["relaymailfrom_$i"]); ?><input type="text" name="relaymailfrom[<?=$i?>]" value="<?=$relaymailfrom[$i]?>"></td>
         </tr>
 
 <?php	} ?>

@@ -3,7 +3,7 @@
 // timeoutconnect (how long to wait for smtp connection)
 // timeoutremote (how long to wait for remote server)
 //
-// $Id: attrib.control.timeoutconnect.inc,v 2.10 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.timeoutconnect.inc,v 2.11 2003-11-20 08:01:36 turbo Exp $
 
 function timeoutconnect_check($type) {
 	global $error, $timeoutconnect, $timeoutremote, $view, $LANG;
@@ -73,12 +73,12 @@ function timeoutconnect_print_view($host) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">Timeoutconnect, timeoutremote (<?=$LANG->_('Timeouts')?>)</th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('SMTP connection')?></td>
         <td><?=$timeoutconnect?></td>
       </tr>
 
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Remote server')?></td>
         <td><?=$timeoutremote?></td>
       </tr>
@@ -99,14 +99,14 @@ function timeoutconnect_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">timeoutconnect, timeoutremote (<?=$LANG->_('Timeouts')?>)</th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('SMTP connection')?></td>
-          <td><?php echo format_error($error["timeoutconnect"]); ?><input type="text" name="timeoutconnect" value="<?=$timeoutconnect?>"><?=$string?>: 60</td>
+          <td><?php echo pql_format_error_span($error["timeoutconnect"]); ?><input type="text" name="timeoutconnect" value="<?=$timeoutconnect?>"><?=$string?>: 60</td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Remote server')?></td>
-          <td><?php echo format_error($error["timeoutremote"]); ?><input type="text" name="timeoutremote" value="<?=$timeoutremote?>"> <?=$string?>: 1200</td>
+          <td><?php echo pql_format_error_span($error["timeoutremote"]); ?><input type="text" name="timeoutremote" value="<?=$timeoutremote?>"> <?=$string?>: 1200</td>
         </tr>
 
         <tr class="subtitle">

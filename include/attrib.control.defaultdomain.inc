@@ -3,25 +3,25 @@
 // defaultdomain (default domain)
 // defaulthost (default hostname)
 //
-// $Id: attrib.control.defaultdomain.inc,v 2.9 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.defaultdomain.inc,v 2.10 2003-11-20 08:01:36 turbo Exp $
 
 function defaultdomain_check($type) {
 	global $error, $defaultdomain, $defaulthost, $plusdomain, $view, $LANG;
 
 	// check validity
-	if($defaultdomain != "" and !check_hostaddress($defaultdomain)) {
+	if($defaultdomain != "" and !pql_check_hostaddress($defaultdomain)) {
 		$error["defaultdomain"] = $LANG->_('Invalid');
 		$is_error = true;
 	}
 
 	// check validity
-	if($defaulthost != "" and !check_hostaddress($defaulthost)) {
+	if($defaulthost != "" and !pql_check_hostaddress($defaulthost)) {
 		$error["defaulthost"] = $LANG->_('Invalid');
 		$is_error = true;
 	}
 
 	// check validity
-	if($plusdomain != "" and !check_hostaddress($plusdomain)) {
+	if($plusdomain != "" and !pql_check_hostaddress($plusdomain)) {
 		$error["plusdomain"] = $LANG->_('Invalid');
 		$is_error = true;
 	}
@@ -67,17 +67,17 @@ function defaultdomain_print_view($host) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">defaultdomain, defaulthost, plusdomain (<?=$LANG->_('Default domain / host')?>)</th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Default domain')?></td>
         <td><?=$defaultdomain?></td>
       </tr>
 
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Default host')?></td>
         <td><?=$defaulthost?></td>
       </tr>
 
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Plus domain')?></td>
         <td><?=$plusdomain?></td>
       </tr>
@@ -96,19 +96,19 @@ function defaultdomain_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">defaultdomain, defaulthost, plusdomain (<?=$LANG->_('Default domain / host')?>)</th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Default domain')?></td>
-          <td><?php echo format_error($error["defaultdomain"]); ?><input type="text" name="defaultdomain" value="<?=$defaultdomain?>"> <?=$LANG->_('Default')?>: <?=$host?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
+          <td><?php echo pql_format_error_span($error["defaultdomain"]); ?><input type="text" name="defaultdomain" value="<?=$defaultdomain?>"> <?=$LANG->_('Default')?>: <?=$host?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Default host')?></td>
-          <td><?php echo format_error($error["defaulthost"]); ?><input type="text" name="defaulthost" value="<?=$defaulthost?>"> <?=$LANG->_('Default')?>: <?=$host?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
+          <td><?php echo pql_format_error_span($error["defaulthost"]); ?><input type="text" name="defaulthost" value="<?=$defaulthost?>"> <?=$LANG->_('Default')?>: <?=$host?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Plus domain')?></td>
-          <td><?php echo format_error($error["plusdomain"]); ?><input type="text" name="plusdomain" value="<?=$plusdomain?>"> <?=$LANG->_('Default')?>: <?=$host?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
+          <td><?php echo pql_format_error_span($error["plusdomain"]); ?><input type="text" name="plusdomain" value="<?=$plusdomain?>"> <?=$LANG->_('Default')?>: <?=$host?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
         </tr>
 
         <tr class="subtitle">

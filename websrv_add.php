@@ -1,6 +1,6 @@
 <?php
 // add a webserver configuration to the LDAP db
-// $Id: websrv_add.php,v 2.1 2003-10-11 11:55:39 turbo Exp $
+// $Id: websrv_add.php,v 2.2 2003-11-20 08:01:29 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -51,24 +51,24 @@ if(($error == 'true') or !$serverip or !serverurl or !$serveradmin or !$document
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('webserver configuration'))); ?>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Server IP[:PORT]')?></td>
-          <td><?php echo format_error($error_text["serverip"]); ?><input type="text" name="serverip" size="40" value="<?=$serverip?>"></td>
+          <td><?php echo pql_format_error_span($error_text["serverip"]); ?><input type="text" name="serverip" size="40" value="<?=$serverip?>"></td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Server URL')?></td>
-          <td><?php echo format_error($error_text["serverurl"]); ?><input type="text" name="serverurl" size="40" value="<?=$serverurl?>"></td>
+          <td><?php echo pql_format_error_span($error_text["serverurl"]); ?><input type="text" name="serverurl" size="40" value="<?=$serverurl?>"></td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Server Administrator')?></td>
-          <td><?php echo format_error($error_text["serveradmin"]); ?><input type="text" name="serveradmin" size="40" value="<?=$serveradmin?>"></td>
+          <td><?php echo pql_format_error_span($error_text["serveradmin"]); ?><input type="text" name="serveradmin" size="40" value="<?=$serveradmin?>"></td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Document root')?></td>
-          <td><?php echo format_error($error_text["documentroot"]); ?><input type="text" name="documentroot" size="40" value="<?=$documentroot?>"></td>
+          <td><?php echo pql_format_error_span($error_text["documentroot"]); ?><input type="text" name="documentroot" size="40" value="<?=$documentroot?>"></td>
         </tr>
       </th>
     </table>

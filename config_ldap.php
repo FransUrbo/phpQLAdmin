@@ -1,6 +1,6 @@
 <?php
 // shows configuration of phpQLAdmin
-// $Id: config_ldap.php,v 1.7 2003-11-14 11:55:52 turbo Exp $
+// $Id: config_ldap.php,v 1.8 2003-11-20 08:01:28 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -30,7 +30,7 @@ foreach($ldap as $x => $array) {
         </tr>
 
 <?php    foreach($array as $value) { ?>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
 <?php       echo "          <td>".$value['NAME']."</td>\n";
 			echo "          <td>".$value['OID']."</td>\n";
 			echo "          <td>".$value['SINGLE-VALUE']."</td>\n";
@@ -43,7 +43,7 @@ foreach($ldap as $x => $array) {
 <?php
 	} else {
 		// Objectclasses
-		$class = table_bgcolor(0);
+		$class = pql_format_table(0);
 ?>
         <br>
         <font size="1"><?=$LANG->_('Text in bold is a MUST, and non-bold is MAY')?>.</font>
@@ -143,7 +143,7 @@ foreach($ldap as $x => $array) {
           <td><?=$value['DESC']?></td>
         </tr>
 
-<?php	$class = table_bgcolor(0); $j++;
+<?php	$class = pql_format_table(0); $j++;
         }
 	}
 }

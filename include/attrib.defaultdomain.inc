@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // default domain name (the default domainname for a domain)
-// $Id: attrib.defaultdomain.inc,v 2.22 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.defaultdomain.inc,v 2.23 2003-11-20 08:01:37 turbo Exp $
 
 function attribute_check() {
     global $defaultdomain, $domain, $oldvalue, $_pql, $error, $rootdn, $LANG;
@@ -35,9 +35,9 @@ function attribute_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Change %what% for domain %domain%'), array('what' => $LANG->_('default domain name'), 'domain' => $orgname)); ?></th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Default domain name')?></td>
-          <td><?php echo format_error($error[pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN")]); ?><input type="text" name="defaultdomain" value="<?=$defaultdomain?>" size="20"></td>
+          <td><?php echo pql_format_error_span($error[pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN")]); ?><input type="text" name="defaultdomain" value="<?=$defaultdomain?>" size="20"></td>
         </tr>
 <?php if(!function_exists("pql_control"))
 		require("./include/pql_control.inc");
@@ -51,7 +51,7 @@ function attribute_print_form() {
 
         <tr></tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain to '.pql_get_define("PQL_GLOB_ATTR_LOCALS").' in following objects'))); ?>:</td>
           <td>
 <?php		if(!pql_get_define("PQL_GLOB_CONTROL_AUTOADDLOCALS")) {
@@ -76,7 +76,7 @@ function attribute_print_form() {
           </td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain to '.pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS").' in following objects'))); ?>:</td>
           <td>
 <?php		if(!pql_get_define("PQL_GLOB_CONTROL_AUTOADDRCPTHOSTS")) {

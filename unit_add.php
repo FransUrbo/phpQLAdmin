@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: unit_add.php,v 2.12 2003-11-14 11:55:52 turbo Exp $
+// $Id: unit_add.php,v 2.13 2003-11-20 08:01:29 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -18,7 +18,7 @@ $_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
 $domain = strtolower($domain);
 
 // check if domain is valid
-if(!check_hostaddress($domain)) {
+if(!pql_check_hostaddress($domain)) {
 	$msg = urlencode($LANG->_('Invalid domain name! Use: domain.tld (e.g. adfinis.com)'));
 	header("Location: home.php?msg=$msg");
 	exit();

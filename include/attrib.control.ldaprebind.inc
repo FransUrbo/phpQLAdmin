@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldaprebind (don't retrieve password, try to bind to dn)
 //
-// $Id: attrib.control.ldaprebind.inc,v 2.9 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.ldaprebind.inc,v 2.10 2003-11-20 08:01:36 turbo Exp $
 
 // check values
 function ldaprebind_check($type) {
@@ -39,7 +39,7 @@ function ldaprebind_print_view($host) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="2" align="left">ldaprebind (<?=$LANG->_('Rebind to LDAP server')?>)</th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td><?=$ldaprebind?></td>
       </tr>
 

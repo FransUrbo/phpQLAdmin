@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldapcluster (clustering support)
 //
-// $Id: attrib.control.ldapcluster.inc,v 2.8 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.ldapcluster.inc,v 2.9 2003-11-20 08:01:36 turbo Exp $
 
 // check values
 function ldapcluster_check($type) {
@@ -39,7 +39,7 @@ function ldapcluster_print_view($host) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="2" align="left">ldapcluster (<?=$LANG->_('Clustering support')?>)</th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td><?=$ldapcluster?></td>
       </tr>
 

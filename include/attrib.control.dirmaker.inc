@@ -2,7 +2,7 @@
 // control attribute plugin for
 // dirmaker (default prefix for mailbox paths)
 //
-// $Id: attrib.control.dirmaker.inc,v 2.9 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.dirmaker.inc,v 2.10 2003-11-20 08:01:36 turbo Exp $
 
 function dirmaker_check($type) {
 	global $error, $dirmaker, $view, $LANG;
@@ -47,7 +47,7 @@ function dirmaker_print_view($host) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">dirmaker (<?=$LANG->_('Path to homedir creating script')?>)</th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Path')?></td>
         <td><?=$dirmaker?></td>
       </tr>
@@ -66,9 +66,9 @@ function dirmaker_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">dirmaker (<?=$LANG->_('Path to homedir creating script')?>)</th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Path')?></td>
-          <td><?php echo format_error($error["dirmaker"]); ?><input type="text" name="dirmaker" value="<?=$dirmaker?>"></td>
+          <td><?php echo pql_format_error_span($error["dirmaker"]); ?><input type="text" name="dirmaker" value="<?=$dirmaker?>"></td>
         </tr>
       </th>
     </table>

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for the Webserver Configuration editor
 //
-// $Id: attrib.websrv.inc,v 1.1 2003-10-11 11:55:49 turbo Exp $
+// $Id: attrib.websrv.inc,v 1.2 2003-11-20 08:01:37 turbo Exp $
 
 function attribute_check() {
     global $rootdn, $domain, $view, $action, $attrib, $$attrib, $server, $oldvalue;
@@ -20,19 +20,19 @@ function attribute_print_form() {
     <form action="<?=$PHP_SELF?>" method="post">
       <table cellspacing="0" cellpadding="3" border="0">
         <th colspan="3" align="left"><?=$LANG->_('Change webserver configuration')?></th>
-          <tr class="<?php table_bgcolor(); ?>">
+          <tr class="<?php pql_format_table(); ?>">
             <td class="title"><?=$LANG->_('Server configuration DN')?>:</td>
             <td><?=$server?></td>
           </tr>
 
 <?php if($oldvalue) { ?>
-          <tr class="<?php table_bgcolor(); ?>">
+          <tr class="<?php pql_format_table(); ?>">
             <td class="title"><?=$LANG->_('Old value')?>:</td>
             <td><?=$oldvalue?></td>
           </tr>
 
 <?php } ?>
-          <tr class="<?php table_bgcolor(); ?>">
+          <tr class="<?php pql_format_table(); ?>">
 <?php if($oldvalue) { ?>
             <td class="title"><?php echo pql_complete_constant($LANG->_('Change attribute %attribute%'), array('attribute' => $attrib)); ?></td>
 <?php } else { ?>
@@ -67,7 +67,7 @@ function attribute_save($action) {
 		$filter = "(&(objectclass=phpQLAdminWebsrv)($attrib=*))";
 		$sr   = ldap_read($_pql->ldap_linkid, $server, $filter, array($attrib));
 		$info = ldap_get_entries($_pql->ldap_linkid, $sr)
-		  or pql_errormsg($_pql->ldap_linkid);
+		  or pql_format_error_msg($_pql->ldap_linkid);
 		for($i=0; $i < $info[0][$attrib]["count"]; $i++) {
 			// Add the old value(s) to the array
 			$entry[$attrib][] = $info[0][$attrib][$i];

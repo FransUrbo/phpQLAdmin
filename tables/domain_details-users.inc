@@ -30,7 +30,7 @@
 					// Do NOT show root user(s) here! This should (for safty's sake)
 					// not be availible to administrate through phpQLAdmin!
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$userdn?>"><?=$cn?></a></td>
 <?php if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) == pql_get_define("PQL_GLOB_ATTR_UID")) { ?>
         <td><?=$uid?></td>

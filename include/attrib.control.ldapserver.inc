@@ -5,7 +5,7 @@
 // ldaplogin (cn of a database user)
 // ldappassword (password to bind to ldaplogin)
 //
-// $Id: attrib.control.ldapserver.inc,v 2.9 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.ldapserver.inc,v 2.10 2003-11-20 08:01:36 turbo Exp $
 
 function ldapserver_check($type) {
 	global $error, $ldapserver, $ldappassword, $ldapbasedn, $ldaplogin_use, $ldaplogin, $ldap_test, $view, $LANG;
@@ -19,7 +19,7 @@ function ldapserver_check($type) {
 	// check for valid fqdn for all servers
 	if(is_array($ldapserver)) {
 		foreach($ldapserver as $key => $server) {
-			if($server != "" and !check_hostaddress($server, true)) {
+			if($server != "" and !pql_check_hostaddress($server, true)) {
 				$error["ldapserver_$key"] = $LANG->_('Invalid');
 				$is_error = true;
 			}
@@ -142,22 +142,22 @@ function ldapserver_print_view($host) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=$LANG->_('Server connection options')?></th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Host(s)')?></td>
         <td><?php echo join(", ", $ldapserver); ?></td>
       </tr>
 
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Base DN')?></td>
         <td><?=$ldapbasedn?></td>
       </tr>
 
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Login')?></td>
         <td><?=$ldaplogin?></td>
       </tr>
 
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Password')?></td>
         <td><?=$ldappassword?></td>
       </tr>
@@ -183,46 +183,46 @@ function ldapserver_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('LDAP server connection option')?></th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Host(s)')?></td>
-          <td><?php echo format_error($error["ldapserver_0"]); ?><input type="text" name="ldapserver[0]" value="<?=$ldapserver[0]?>">
+          <td><?php echo pql_format_error_span($error["ldapserver_0"]); ?><input type="text" name="ldapserver[0]" value="<?=$ldapserver[0]?>">
 		    <br>
 <?php for($i = 1; $i <= $srvcount; $i++){ ?>
-			<?php echo format_error($error["ldapserver_$i"]); ?><input type="text" name="ldapserver[<?=$i?>]" value="<?=$ldapserver[$i]?>"><br>
+			<?php echo pql_format_error_span($error["ldapserver_$i"]); ?><input type="text" name="ldapserver[<?=$i?>]" value="<?=$ldapserver[$i]?>"><br>
 <?php } ?>
             <br>
             <a href="<?=$PHP_SELF?>?attrib=<?=$attrib?>&srvcount=<?php echo ($srvcount + 1); ?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('more servers'))); ?></a>
           </td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Base DN')?></td>
-          <td><?php echo format_error($error["ldapbasedn"]); ?><input type="text" name="ldapbasedn" value="<?=$ldapbasedn?>"></td>
+          <td><?php echo pql_format_error_span($error["ldapbasedn"]); ?><input type="text" name="ldapbasedn" value="<?=$ldapbasedn?>"></td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td colspan="2"><input type="checkbox" name="ldaplogin_use" value="1" <?php if($ldaplogin_use == "1"){ echo "checked"; } ?>> <?=$LANG->_('Use login and password')?></td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Login (valid dn)')?></td>
-          <td><?php echo format_error($error["ldaplogin"]); ?><input type="text" name="ldaplogin" value="<?=$ldaplogin?>"></td>
+          <td><?php echo pql_format_error_span($error["ldaplogin"]); ?><input type="text" name="ldaplogin" value="<?=$ldaplogin?>"></td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Password')?></td>
-          <td><?php echo format_error($error["ldappassword"]); ?><input type="password" name="ldappassword"></td>
+          <td><?php echo pql_format_error_span($error["ldappassword"]); ?><input type="password" name="ldappassword"></td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td colspan="2"><input type="checkbox" name="ldap_test" value="1" <?php if($ldap_test == "1"){ echo "checked"; } //" ?>>
 			<?=$LANG->_('Test connection after submitting form (it will be tested for each server seperatly)')?>
           </td>
         </tr>
 
 <?php if($error["ldap_test"] != ""){ ?>
-        <tr class="<?php table_bgcolor(); ?>">
-          <td colspan="2"><?php echo format_error($error["ldap_test"]); ?></td>
+        <tr class="<?php pql_format_table(); ?>">
+          <td colspan="2"><?php echo pql_format_error_span($error["ldap_test"]); ?></td>
         </tr>
 <?php } ?>
       </th>

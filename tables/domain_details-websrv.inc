@@ -21,25 +21,25 @@
 
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=$LANG->_('Webserver administration')?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Server IP')?></td>
         <td><?=$servers[$server]["webserverip"]?></td>
         <td><a href="<?=$url?>&action=mod&attrib=<?=lc($PQL_ATTRIBUTE["PQL_CONF_WEBSRV_SRV_IP"]);?>&oldvalue=<?=$servers[$server]["webserverip"]?>"><?=$img["mod"]?></a></td>
       </tr>
 
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Server URL')?></td>
         <td><?=$servers[$server]["webserverurl"]?></td>
         <td><a href="<?=$url?>&action=mod&attrib=<?=lc($PQL_ATTRIBUTE["PQL_CONF_WEBSRV_SRV_URL"]);?>&oldvalue=<?=$servers[$server]["webserverurl"]?>"><?=$img["mod"]?></a></td>
       </tr>
 
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Server administrator')?></td>
         <td><?=$servers[$server]["webserveradmin"]?></td>
         <td><a href="<?=$url?>&action=mod&attrib=<?=lc($PQL_ATTRIBUTE["PQL_CONF_WEBSRV_SRV_ADMIN"]);?>&oldvalue=<?=$servers[$server]["webserveradmin"]?>"><?=$img["mod"]?></a></td>
       </tr>
 
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Document root')?></td>
         <td><?=$servers[$server]["webdocumentroot"]?></td>
         <td><a href="<?=$url?>&action=mod&attrib=<?=lc($PQL_ATTRIBUTE["PQL_CONF_WEBSRV_DOCROOT"]);?>&oldvalue=<?=$servers[$server]["webdocumentroot"]?>"><?=$img["mod"]?></a></td>
@@ -53,10 +53,10 @@
         foreach($servers[$server]["webserveralias"] as $srv) {
            if($new_tr) { $new_tr = 0;
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Server alias')?></td>
 <?php      } else { ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"></td>
 <?php      } ?>
         <td><?=$srv?></td>
@@ -67,7 +67,7 @@
       </tr>
 <?php	} // END: foreach ?>
 
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"></td>
         <td><a href="<?=$url?>&action=add&attrib=<?=lc($PQL_ATTRIBUTE["PQL_CONF_WEBSRV_SRV_ALIAS"]);?>"><?= pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('server alias')))?></a></td>
         <td></td>
@@ -75,14 +75,14 @@
 <?php } else {
 	  // No Alias array
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Server alias')?></td>
         <td><a href="<?=$url?>&action=add&attrib=<?=lc($PQL_ATTRIBUTE["PQL_CONF_WEBSRV_SRV_ALIAS"]);?>"><?= pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('server alias')))?></a></td>
         <td></td>
       </tr>
 <?php } ?>
 
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Script alias URL')?></td>
         <td><?=$servers[$server]["webscriptaliasurl"]?></td>
         <td>
@@ -91,7 +91,7 @@
         </td>
       </tr>
 
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Script alias path')?></td>
         <td><?=$servers[$server]["webscriptaliaspath"]?></td>
         <td>
@@ -100,7 +100,7 @@
         </td>
       </tr>
 
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Error logfile')?></td>
         <td><?=$servers[$server]["weblogerror"]?></td>
         <td>
@@ -109,7 +109,7 @@
         </td>
       </tr>
 
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Transfer logfile')?></td>
         <td><?=$servers[$server]["weblogtransfer"]?></td>
         <td>
@@ -124,10 +124,10 @@
         foreach($servers[$server]["weboptions"] as $srv) {
            if($new_tr) { $new_tr = 0;
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Additional option')?></td>
 <?php      } else { ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"></td>
 <?php      } ?>
         <td><?=$srv?></td>
@@ -138,7 +138,7 @@
       </tr>
 <?php	} // END: foreach ?>
 
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Additional option')?></td>
         <td><a href="<?=$url?>&action=add&type=weboptions"><?= pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('server option')))?></a></td>
         <td></td>
@@ -146,7 +146,7 @@
 <?php } else {
 	  // No Alias array
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Additional option')?></td>
         <td><a href="<?=$url?>&action=add&type=weboptions"><?= pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('server option')))?></a></td>
         <td></td>
@@ -165,7 +165,7 @@
 
   <table cellspacing="0" cellpadding="3" border="0">
     <th align="left"><?=$LANG->_('Actions')?></th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td><a href="websrv_add.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('webserver configuration'))); ?></a></td>
       </tr>
     </th>

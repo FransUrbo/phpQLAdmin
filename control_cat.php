@@ -1,6 +1,6 @@
 <?php
 // shows details of specified category of attributes
-// $Id: control_cat.php,v 2.12 2003-11-14 11:55:52 turbo Exp $
+// $Id: control_cat.php,v 2.13 2003-11-20 08:01:28 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -26,7 +26,7 @@ include("./header.html");
 
 // print status message, if one is available
 if(isset($msg)) {
-    print_status_msg($msg);
+    pql_format_status_msg($msg);
 }
 ?>
   <span class="title1"><?=$cat?></span>

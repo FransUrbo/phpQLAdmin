@@ -2,7 +2,7 @@
 // control attribute plugin for
 // badmailfrom (blocked from addresses)
 //
-// $Id: attrib.control.badmailfrom.inc,v 2.12 2003-11-19 16:32:47 turbo Exp $
+// $Id: attrib.control.badmailfrom.inc,v 2.13 2003-11-20 08:01:36 turbo Exp $
 
 function badmailfrom_check($type) {
     global $error, $badmailfrom, $view, $LANG;
@@ -15,12 +15,12 @@ function badmailfrom_check($type) {
 	    
 			if(preg_match("/^@/", $badmail)) {
 				// retry with added user
-				if(!check_email("user" . $badmail)) {
+				if(!pql_check_email("user" . $badmail)) {
 					$is_error = true;
 					$error["badmailfrom_$key"] = $LANG->_('Invalid');
 				}
 			} else {
-				if(!check_email($badmail)) {
+				if(!pql_check_email($badmail)) {
 					$is_error = true;
 					$error["badmailfrom_$key"] = $LANG->_('Invalid');
 				}
@@ -68,14 +68,14 @@ function badmailfrom_print_view($host) {
  <?php
 	if(!is_array($badmailfrom)) {
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td><?=$LANG->_('Not set')?></td>
       </tr>
 <?php
 	} else {
 		foreach($badmailfrom as $mail) {
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td><?=$mail?></td>
       </tr>
 <?php
@@ -103,13 +103,13 @@ function badmailfrom_print_form() {
           <td><?=$LANG->_('Email')?></td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
-          <td><?php echo format_error($error["badmailfrom_0"]); ?><input type="text" name="badmailfrom[0]" value="<?=$badmailfrom[0]?>"></td>
+        <tr class="<?php pql_format_table(); ?>">
+          <td><?php echo pql_format_error_span($error["badmailfrom_0"]); ?><input type="text" name="badmailfrom[0]" value="<?=$badmailfrom[0]?>"></td>
         </tr>
 
 <?php for($i = 1; $i <= $badcount; $i++) { ?>
-        <tr class="<?php table_bgcolor(); ?>">
-          <td><?php echo format_error($error["badmailfrom_$i"]); ?><input type="text" name="badmailfrom[<?=$i?>]" value="<?=$badmailfrom[$i]?>"></td>
+        <tr class="<?php pql_format_table(); ?>">
+          <td><?php echo pql_format_error_span($error["badmailfrom_$i"]); ?><input type="text" name="badmailfrom[<?=$i?>]" value="<?=$badmailfrom[$i]?>"></td>
         </tr>
 
 <?php } ?>

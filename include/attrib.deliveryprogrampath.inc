@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliveryprogrampath (path to program running on delivery)
-// $Id: attrib.deliveryprogrampath.inc,v 2.12 2003-11-19 19:38:33 turbo Exp $
+// $Id: attrib.deliveryprogrampath.inc,v 2.13 2003-11-20 08:01:37 turbo Exp $
 
 function attribute_check($type) {
 	global $deliveryprogrampath, $domain, $oldvalue, $_pql, $error, $LANG;
@@ -30,14 +30,14 @@ function attribute_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Change path to deliveryprogram')?></th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Change path to deliveryprogram')?></td>
-          <td><?php echo format_error($error["deliveryprogrampath"]); ?><input type="text" name="deliveryprogrampath" value="<?=$deliveryprogrampath?>"></td>
+          <td><?php echo pql_format_error_span($error["deliveryprogrampath"]); ?><input type="text" name="deliveryprogrampath" value="<?=$deliveryprogrampath?>"></td>
         </tr>
 
         <tr class="subtitle">
           <td colspan="2">
-            <?php echo format_error($error["general"]); ?>
+            <?php echo pql_format_error_span($error["general"]); ?>
             <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?=$LANG->_('This is the same as \'|/path/to/someprog\' in a .qmail file. Only used if qmailDotMode is set to ldapwithprog or both')?>.
           </td>
         </tr>

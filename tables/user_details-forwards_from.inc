@@ -10,14 +10,14 @@
 <?php
 if(empty($forwarders)) {
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td colspan="3"><?=$LANG->_('None')?></td>
       </tr>
 <?php
 } else {
 	foreach($forwarders as $forwarder){
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td><a href="mailto:<?=$forwarder["email"]?>"><?=pql_maybe_idna_decode($forwarder["email"])?></a></td>
         <td>
           <a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?php echo urlencode($forwarder["reference"]); ?>"><?=$forwarder[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)]?></a>

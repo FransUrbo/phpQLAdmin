@@ -35,7 +35,7 @@ if(!is_array($aci)) {
 <?php for($i=0; $aci[$i]; $i++) {
 		$url = $URL . pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI") . "=" . urlencode($aci[$i]["LINE"]);
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td><?=$aci[$i]["OID"]?></td>
         <td><?=$aci[$i]["SCOPE"]?></td>
 

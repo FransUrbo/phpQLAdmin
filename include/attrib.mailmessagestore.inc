@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailmessagestore (path to mailbox)
-// $Id: attrib.mailmessagestore.inc,v 2.12 2003-11-18 13:16:38 turbo Exp $
+// $Id: attrib.mailmessagestore.inc,v 2.13 2003-11-20 08:01:37 turbo Exp $
 
 function attribute_check($type) {
 	global $mailmessagestore, $domain, $oldvalue, $_pql, $error, $rootdn, $LANG;
@@ -38,17 +38,17 @@ function attribute_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Change path to mailbox')?></th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Change path to mailbox')?></td>
           <td>
-            <?php echo format_error($error["mailmessagestore"]); ?>
+            <?php echo pql_format_error_span($error["mailmessagestore"]); ?>
             <input type="text" name="mailmessagestore" value="<?php echo $mailmessagestore; ?>">
           </td>
         </tr>
 
         <tr class="subtitle">
           <td colspan="2">
-            <?php echo format_error($error["general"]); ?>
+            <?php echo pql_format_error_span($error["general"]); ?>
             <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?=$LANG->_('If you don\'t provide an absolute path, it will be prefixed with the value in qmail/control/ldapmessagestore. \'..\' (double dotts) are not allowed')?>.
           </td>
         </tr>

@@ -8,14 +8,14 @@
 <?php	$deliverymode = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_MODE"));
 	if(empty($deliverymode)) {
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td><?=$LANG->_('Default properties')?></td>
       </tr>
 <?php	} else {
 		foreach($deliverymode as $mode) {
 		    $mode_text = pql_ldap_deliverymode($mode);
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td><?=$mode_text?></td>
       </tr>
 <?php	} // end of foreach

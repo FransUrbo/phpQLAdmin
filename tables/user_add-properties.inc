@@ -1,8 +1,8 @@
-<?php /* $Id: user_add-properties.inc,v 1.3 2003-11-15 12:25:36 turbo Exp $ */ ?>
+<?php /* $Id: user_add-properties.inc,v 1.4 2003-11-20 08:01:46 turbo Exp $ */ ?>
 <form action="<?=$PHP_SELF?>" method="post" accept-charset="UTF-8">
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=$LANG->_('Account properties')?></th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Type')?></td>
 
         <td>

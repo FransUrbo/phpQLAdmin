@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtproutes (max number of bytes in message)
 //
-// $Id: attrib.control.smtproutes.inc,v 2.13 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.smtproutes.inc,v 2.14 2003-11-20 08:01:36 turbo Exp $
 
 function smtproutes_check($type) {
 	global $error, $domain, $relay, $port, $view, $LANG;
@@ -23,7 +23,7 @@ function smtproutes_check($type) {
 	// relay hosts
 	if(is_array($relay)) {
 		foreach($relay as $key => $rel) {
-			if($rel != "" and !check_hostaddress($rel, true)) {
+			if($rel != "" and !pql_check_hostaddress($rel, true)) {
 				$error["relay_$key"] = $LANG->_('Invalid');
 				$is_error = true;
 			}
@@ -113,14 +113,14 @@ function smtproutes_print_view($host) {
 <?php
 	if(!is_array($routes)) {
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td colspan="5"><?=$LANG->_('No routes defined')?></td>
       </tr>
 <?php
 	} else {
 		foreach($routes as $route) {
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td><?=$route[0]?></td>
         <td><b>=&gt;</b></td>
         <td><?=$route[1]?></td>
@@ -270,8 +270,8 @@ function smtproutes_print_form() {
               </tr>
 
               <!-- B --------------------------------- -->
-              <tr class="<?php table_bgcolor(); ?>">
-                <td><?php echo format_error($error["domainname_$counter"]); ?><input type="text" name="domainname[<?=$counter?>]" value="<?=$domainname[$objnr]?>">&nbsp;&nbsp;<b><?php if($type != 'del') { ?>=><?php } ?></b></td>
+              <tr class="<?php pql_format_table(); ?>">
+                <td><?php echo pql_format_error_span($error["domainname_$counter"]); ?><input type="text" name="domainname[<?=$counter?>]" value="<?=$domainname[$objnr]?>">&nbsp;&nbsp;<b><?php if($type != 'del') { ?>=><?php } ?></b></td>
 <?php if($attrib && $rootdn && $set) { ?>
                 <td>
                   <select name="relay[]" size="1" multiple>
@@ -282,19 +282,19 @@ function smtproutes_print_form() {
                   </select>
                 </td>
 <?php } else { ?>
-                <td><?php echo format_error($error["relay_$counter"]); ?><input type="text" name="relay[<?=$counter?>]" value="<?=$relay[$objnr]?>">&nbsp;&nbsp;<b>:</b></td>
+                <td><?php echo pql_format_error_span($error["relay_$counter"]); ?><input type="text" name="relay[<?=$counter?>]" value="<?=$relay[$objnr]?>">&nbsp;&nbsp;<b>:</b></td>
 <?php } ?>
 <?php if($type != 'del') { ?>
-                <td><?php echo format_error($error["port_$counter"]); ?><input type="text" size="4" maxlength="4" name="port[<?=$counter?>]" value="<?=$port[$objnr]?>"></td>
+                <td><?php echo pql_format_error_span($error["port_$counter"]); ?><input type="text" size="4" maxlength="4" name="port[<?=$counter?>]" value="<?=$port[$objnr]?>"></td>
 <?php } ?>
               </tr>
 
 <?php for($i = 1, $j = $counter; $i <= $routecount; $i++, $counter++) { ?>
               <!-- C --------------------------------- -->
-              <tr class="<?php table_bgcolor(); ?>">
-                <td><?php echo format_error($error["domainname_$i"]); ?><input type="text" name="domainname[<?=$i?>]" value="<?=$domainname[$i]?>">&nbsp;&nbsp;<b>=></b></td>
-                <td><?php echo format_error($error["relay_$i"]); ?><input type="text" name="relay[<?=$i?>]" value="<?$relay[$i]?>">&nbsp;&nbsp;<b>:</b></td>
-                <td><?php echo format_error($error["port_$i"]); ?><input type="text" size="4" maxlength="4" name="port[<?=$i?>]" value="<?=$port[$i]?>"></td>
+              <tr class="<?php pql_format_table(); ?>">
+                <td><?php echo pql_format_error_span($error["domainname_$i"]); ?><input type="text" name="domainname[<?=$i?>]" value="<?=$domainname[$i]?>">&nbsp;&nbsp;<b>=></b></td>
+                <td><?php echo pql_format_error_span($error["relay_$i"]); ?><input type="text" name="relay[<?=$i?>]" value="<?$relay[$i]?>">&nbsp;&nbsp;<b>:</b></td>
+                <td><?php echo pql_format_error_span($error["port_$i"]); ?><input type="text" size="4" maxlength="4" name="port[<?=$i?>]" value="<?=$port[$i]?>"></td>
               </tr>
 
 <?php } ?>

@@ -1,6 +1,6 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.26 2003-11-19 16:20:27 turbo Exp $
+// $Id: ezmlm_add.php,v 1.27 2003-11-20 08:01:29 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -158,9 +158,9 @@ if(!$domain) {
     <!-- Base configuration -->
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Base configuration')?></th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('List name')?></td>
-          <td><?php echo format_error($error_text["listname"]); ?>
+          <td><?php echo pql_format_error_span($error_text["listname"]); ?>
 
 <?php
 if(!$domain) {
@@ -197,7 +197,7 @@ if(!$domain) {
           </td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('List owner')?></td>
           <td>
             <input name="listowner" value="<?=$listowner?>">
@@ -205,7 +205,7 @@ if(!$domain) {
           </td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('From address')?></td>
           <td>
             <input name="fromaddress" value="<?=$fromaddress?>">
@@ -213,7 +213,7 @@ if(!$domain) {
           </td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Parent list')?></td>
           <td>
             <input name="listparent" value="<?=$listparent?>">
@@ -230,37 +230,37 @@ if(!$domain) {
       <th valign="top" align="left"><?=$LANG->_('Subscription options')?>
         <table cellspacing="0" cellpadding="3" border="0">
           <th>
-            <tr class="<?php table_bgcolor(); ?>">
+            <tr class="<?php pql_format_table(); ?>">
               <td><input type="checkbox" name="subhelp" accesskey="h"<?=$onchg?><?=$checked["subhelp"]?>></td>
               <td class="title"><?=$LANG->_('Subscription verification')?></td>
             </tr>
 
-            <tr class="<?php table_bgcolor(); ?>">
+            <tr class="<?php pql_format_table(); ?>">
               <td><input type="checkbox" name="subjump" accesskey="j"<?=$onchg?><?=$checked["subjump"]?>></td>
               <td class="title"><?=$LANG->_('Unsubscription verification')?></td>
             </tr>
 
-            <tr class="<?php table_bgcolor(); ?>">
+            <tr class="<?php pql_format_table(); ?>">
               <td><input type="checkbox" name="submoderated" accesskey="s"<?=$onchg?><?=$checked["submoderated"]?>></td>
               <td class="title"><?=$LANG->_('<u>S</u>ubscription moderation')?></td>
             </tr>
 
-            <tr class="<?php table_bgcolor(); ?>">
+            <tr class="<?php pql_format_table(); ?>">
               <td><input type="checkbox" name="sublistable" accesskey="l"<?=$onchg?><?=$checked["sublistable"]?>></td>
               <td class="title"><?=$LANG->_('Subscriber <u>l</u>istable')?></td>
             </tr>
 
-            <tr class="<?php table_bgcolor(); ?>">
+            <tr class="<?php pql_format_table(); ?>">
               <td><input type="checkbox" name="reqaddress" accesskey="q"<?=$onchg?><?=$checked["reqaddress"]?>></td>
               <td class="title"><?=$LANG->_('Enable re<u>q</u>uest address')?></td>
             </tr>
 
-            <tr class="<?php table_bgcolor(); ?>">
+            <tr class="<?php pql_format_table(); ?>">
               <td><input type="checkbox" name="subonly" accesskey="u"<?=$onchg?><?=$checked["subonly"]?>></td>
               <td class="title"><?=$LANG->_('Allow only s<u>u</u>bscribers posts')?></td>
             </tr>
 
-            <tr class="<?php table_bgcolor(); ?>">
+            <tr class="<?php pql_format_table(); ?>">
               <td><input type="checkbox" name="modonly" accesskey="o"<?=$onchg?><?=$checked["modonly"]?>></td>
               <td class="title"><?=$LANG->_('Allow only m<u>o</u>derator posts')?></td>
             </tr>
@@ -271,32 +271,32 @@ if(!$domain) {
       <th valign="top" align="left"><?=$LANG->_('Basic List options')?>
         <table cellspacing="0" cellpadding="3" border="0">
           <th>
-            <tr class="<?php table_bgcolor(); ?>">
+            <tr class="<?php pql_format_table(); ?>">
               <td><input type="checkbox" name="moderated" accesskey="m"<?=$onchg?><?=$checked["moderated"]?>></td>
               <td class="title"><?=$LANG->_('Moderation - <u>M</u>essage')?></td>
             </tr>
 
-            <tr class="<?php table_bgcolor(); ?>">
+            <tr class="<?php pql_format_table(); ?>">
               <td><input type="checkbox" name="prefix" accesskey="f"<?=$onchg?><?=$checked["prefix"]?>></td>
               <td class="title"><?=$LANG->_('Subject pre<u>f</u>ix')?></td>
             </tr>
 
-            <tr class="<?php table_bgcolor(); ?>">
+            <tr class="<?php pql_format_table(); ?>">
               <td><input type="checkbox" name="remotecfg" accesskey="c"<?=$onchg?><?=$checked["remotecfg"]?>></td>
               <td class="title"><?=$LANG->_('Enable remote <u>c</u>onfiguration')?></td>
             </tr>
 
-            <tr class="<?php table_bgcolor(); ?>">
+            <tr class="<?php pql_format_table(); ?>">
               <td><input type="checkbox" name="remoteadm" accesskey="r"<?=$onchg?><?=$checked["remoteadm"]?>></td>
               <td class="title"><?=$LANG->_('Enable <u>r</u>emote administration')?></td>
             </tr>
 
-            <tr class="<?php table_bgcolor(); ?>">
+            <tr class="<?php pql_format_table(); ?>">
               <td><input type="checkbox" name="archived" accesskey="a"<?=$onchg?><?=$checked["archived"]?>></td>
               <td class="title"><?=$LANG->_('<u>A</u>rchived')?></td>
             </tr>
 
-            <tr class="<?php table_bgcolor(); ?>">
+            <tr class="<?php pql_format_table(); ?>">
               <td><input type="checkbox" name="guardedarchive" accesskey="g"<?=$onchg?><?=$guardarch?>></td>
               <td class="title"><?=$LANG->_('<u>G</u>uarded archive')?></td>
             </tr>
@@ -307,32 +307,32 @@ if(!$domain) {
       <th valign="top" align="left"><?=$LANG->_('Extra List options')?>
         <table cellspacing="0" cellpadding="3" border="0">
           <th>
-            <tr class="<?php table_bgcolor(); ?>">
+            <tr class="<?php pql_format_table(); ?>">
               <td><input type="checkbox" name="digest" accesskey="d"<?=$onchg?><?=$checked["digest"]?>></td>
               <td class="title"><?=$LANG->_('Enable <u>d</u>igest')?></td>
             </tr>
 
-            <tr class="<?php table_bgcolor(); ?>">
+            <tr class="<?php pql_format_table(); ?>">
               <td><input type="checkbox" name="indexed" accesskey="i"<?=$onchg?><?=$checked["indexed"]?>></td>
               <td class="title"><?=$LANG->_('<u>I</u>ndexed')?></td>
             </tr>
 
-            <tr class="<?php table_bgcolor(); ?>">
+            <tr class="<?php pql_format_table(); ?>">
               <td><input type="checkbox" name="trailers" accesskey="t"<?=$onchg?><?=$checked["trailers"]?>></td>
               <td class="title"><?=$LANG->_('Add <u>t</u>railers to messages')?></td>
             </tr>
 
-            <tr class="<?php table_bgcolor(); ?>">
+            <tr class="<?php pql_format_table(); ?>">
               <td><input type="checkbox" name="extras" accesskey="x"<?=$onchg?><?=$checked["extras"]?>></td>
               <td class="title"><?=$LANG->_('Enable list e<u>x</u>tras')?></td>
             </tr>
 
-            <tr class="<?php table_bgcolor(); ?>">
+            <tr class="<?php pql_format_table(); ?>">
               <td><input type="radio" name="pubpriv" accesskey="p"<?=$onchg?> value="public"<?=$checked["public"]?>></td>
               <td class="title"><?=$LANG->_('<u>P</u>ublic')?></td>
             </tr>
 
-            <tr class="<?php table_bgcolor(); ?>">
+            <tr class="<?php pql_format_table(); ?>">
               <td><input type="radio" name="pubpriv" accesskey="p"<?=$onchg?> value="private"<?=$checked["private"]?>></td>
               <td class="title"><?=$LANG->_('<u>P</u>rivate')?></td>
             </tr>
@@ -349,7 +349,7 @@ if(!$domain) {
 <?php
 	for($i = 1; $i <= $subscribercount; $i++) {
 ?>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Subscriber')?></td>
           <td><input type="text" name="subscriber[<?=$i?>]" value="<?=$subscriber[$i]?>"<?=$onchg?>></td>
         </tr>
@@ -371,7 +371,7 @@ if(!$domain) {
 <?php
 	for($i = 1; $i <= $killcount; $i++) {
 ?>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Address')?></td>
           <td><input type="text" name="killlist[<?=$i?>]" value="<?=$killlist[$i]?>"<?=$onchg?>></td>
         </tr>

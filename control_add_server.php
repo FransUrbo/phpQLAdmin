@@ -1,6 +1,6 @@
 <?php
 // Add a new mailserver to the database
-// $Id: control_add_server.php,v 2.13 2003-11-18 12:56:55 turbo Exp $
+// $Id: control_add_server.php,v 2.14 2003-11-20 08:01:28 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -97,7 +97,7 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 
   <table cellspacing="0" cellpadding="3" border="0">
     <th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td><img src="images/info.png" width="16" height="16" alt="" border="0"></td>
         <td>You can either CLONE an existing server (<u>without</u> the <?php echo pql_get_define("PQL_GLOB_ATTR_LOCALS");?>/<?php echo pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"); ?> information)<br><b>or</b> CREATE a new server object.</td>
       </tr>
@@ -109,14 +109,14 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">Clone mailserver object</th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title">Fully qualified domain name<br>of new mail server</td>
-          <td><?php echo format_error($error_text["fqdn_clone"]); ?>
+          <td><?php echo pql_format_error_span($error_text["fqdn_clone"]); ?>
             <input type="text" name="fqdn" value="<?=$fqdn?>" size="30">
           </td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title">Clone server</td>
           <td>
 <?php
@@ -143,17 +143,17 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
           </td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"></td>
           <td><input type="checkbox" name="include_locals">Include all <u><?php echo pql_get_define("PQL_GLOB_ATTR_LOCALS"); ?></u> information in clone</td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"></td>
           <td><input type="checkbox" name="include_rcpthosts">Include all <u><?php echo pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS");?></u> information in clone</td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"></td>
           <td><input type="checkbox" name="include_password">Include <u><?php echo pql_get_define("PQL_GLOB_ATTR_LDAPPASSWORD");?></u> in clone</td>
         </tr>
@@ -168,16 +168,16 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">Create mailserver object</th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title">Fully qualified domain name</td>
-          <td><?php echo format_error($error_text["fqdn_create"]); ?>
+          <td><?php echo pql_format_error_span($error_text["fqdn_create"]); ?>
             <input type="text" name="fqdn" value="<?=$fqdn?>" size="30">
           </td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title">Default domainname</td>
-          <td><?php echo format_error($error_text["defaultdomain"]); ?>
+          <td><?php echo pql_format_error_span($error_text["defaultdomain"]); ?>
               <input type="text" name="defaultdomain" value="<?=$defaultdomain?>" size="30">
           </td>
         </tr>
@@ -185,46 +185,46 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 <?php
 	if($ADVANCED_MODE) {
 ?>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title">Plusdomain</td>
           <td><input type="text" name="plusdomain" value="<?=$plusdomain?>" size="30">
         </tr>
   
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title">LDAP Server</td>
-          <td><?php echo format_error($error_text["ldapserver"]); ?>
+          <td><?php echo pql_format_error_span($error_text["ldapserver"]); ?>
               <input type="text" name="ldapserver" value="<?=$ldapserver?>" size="30">
           </td>
         </tr>
   
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title">LDAP Search base</td>
-          <td><?php echo format_error($error_text["ldapbasedn"]); ?>
+          <td><?php echo pql_format_error_span($error_text["ldapbasedn"]); ?>
               <input type="text" name="ldapbasedn" value="<?=$ldapbasedn?>" size="30">
           </td>
         </tr>
   
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title">Default quota</td>
           <td><input type="text" name="ldapdefaultquota" value="<?=$ldapdefaultquota?>" size="30">
         </tr>
   
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title">Default DOT mode</td>
           <td><input type="text" name="ldapdefaultdotmode" value="<?=$ldapdefaultdotmode?>" size="30">
         </tr>
   
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title">Directory maker</td>
           <td><input type="text" name="dirmaker" value="<?=$dirmaker?>" size="30">
         </tr>
   
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title">Default quota warning</td>
           <td><input type="text" name="quotawarning" value="<?=$quotawarning?>" size="30">
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title">LDAP Rebind</td>
           <td>
             <select name="ldaprebind">

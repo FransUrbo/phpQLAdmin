@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for web server configuration)
 //
-// $Id: pql_websrv.inc,v 1.3 2003-11-18 12:57:08 turbo Exp $
+// $Id: pql_websrv.inc,v 1.4 2003-11-20 08:01:37 turbo Exp $
 //
 
 // {{{ pql_websrv_get_servers(linkid, dn)
@@ -15,7 +15,7 @@ function pql_websrv_get_servers($linkid, $dn) {
     if($sr) {
 		// Oki, we have webserver configuration(s) in LDAP.
 		$info = ldap_get_entries($linkid, $sr)
-		  or pql_errormsg($linkid);
+		  or pql_format_error_msg($linkid);
 
 		$attribs = array('webServerIP', 'webServerURL', 'webServerAdmin',
 						 'webDocumentRoot', 'webServerAlias', 'webScriptAliasURL',
@@ -73,7 +73,7 @@ function pql_websrv_add_server($linkid, $domain, $server) {
 
 		if(! ldap_add($linkid, $dn, $entry)) {
 			// Can't add the organizational unit
-			pql_errormsg($linkid);
+			pql_format_error_msg($linkid);
 			echo "Can't add the organizational unit...<br>\n";
 			die($LDIF);
 		}
@@ -100,7 +100,7 @@ function pql_websrv_add_server($linkid, $domain, $server) {
     // Add the server configuration to the database
     if(! ldap_add($linkid, $dn, $entry)) {
 		// failed to add configuration
-		pql_errormsg($linkid);
+		pql_format_error_msg($linkid);
 		die("$LDIF");
 	}
 
@@ -122,7 +122,7 @@ function pql_websrv_set_record($linkid, $dn, $record, $value = '') {
 	$LDIF = pql_create_ldif("pql_websrv_set_record", $dn, $entry);
 
     if(!ldap_mod_replace($linkid, $dn, $entry)) {
-		pql_errormsg($linkid);
+		pql_format_error_msg($linkid);
 		die($LDIF);
 	}
 

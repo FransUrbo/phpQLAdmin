@@ -23,7 +23,7 @@
 			if(($key != 'subscribers') and ($key != 'directory') and ($key != 'dotpath')) {
 ?>
 
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td><?=$key?></td>
         <td><?=$value?></td>
 <?php		}
@@ -33,7 +33,7 @@
 			// Only output the key value once (the first entry)
 			foreach($value as $x) {
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
 <?php			if($j == 0) { ?>
         <td><?=$key?></td>
 <?php			} else { ?>
@@ -57,7 +57,7 @@
 ?>
       </tr>
 <?php } ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td></td>
         <td><a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&domainname=<?=$domainname?>&listno=<?=$listno?>&attrib=subscriber"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('subscriber'))); ?></a></td>
         <td></td>
@@ -69,7 +69,7 @@
 
   <table cellspacing="0" cellpadding="3" border="0">
     <th align="left"><?=$LANG->_('Actions')?></th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td><a href="ezmlm_del.php?domain=<?=$domain?>&listno=<?=$listno?>"><?=$LANG->_('Delete list')?></a></td>
       </tr>
     </th>

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.20 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.21 2003-11-20 08:01:36 turbo Exp $
 
 function locals_check($type) {
     global $error, $locals, $rootdn, $domain, $view, $LANG;
@@ -13,7 +13,7 @@ function locals_check($type) {
 			if($host == "")
 			  continue;
 			
-			if(!check_hostaddress($host)) {
+			if(!pql_check_hostaddress($host)) {
 				$error[pql_get_define("PQL_GLOB_ATTR_LOCALS")."_".$key] = $LANG->_('Invalid');
 				$is_error = true;
 			}
@@ -52,13 +52,13 @@ function locals_print_view($host) {
 <?php
     if(!is_array($locals)) {
 ?>
-      <tr class="<?php table_bgcolor(); ?>"><td><?=$LANG->_('Not set')?></td></tr>
+      <tr class="<?php pql_format_table(); ?>"><td><?=$LANG->_('Not set')?></td></tr>
 <?php
     } else {
 		asort($locals);
 		foreach($locals as $localdomain) {
 ?>
-      <tr class="<?php table_bgcolor(); ?>"><td><?=$localdomain?></td></tr>
+      <tr class="<?php pql_format_table(); ?>"><td><?=$localdomain?></td></tr>
 <?php
         } // end foreach
     } // end if is_array
@@ -105,7 +105,7 @@ function locals_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain'))); ?></th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td><input type="text" name="set" size="30"></td>
         </tr>
       </th>

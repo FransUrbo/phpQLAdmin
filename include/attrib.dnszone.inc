@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.3 2003-07-02 07:59:00 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.4 2003-11-20 08:01:37 turbo Exp $
 
 function attribute_check() {
     global $domain, $rootdn, $rdn, $view, $action, $type, $action;
@@ -27,7 +27,7 @@ function attribute_print_form() {
     <form action="<?=$PHP_SELF?>" method="post">
       <table cellspacing="0" cellpadding="3" border="0">
         <th colspan="3" align="left"><?=$LANG->_('Change Bind9 value')?></th>
-          <tr class="<?php table_bgcolor(); ?>">
+          <tr class="<?php pql_format_table(); ?>">
             <td class="title"><?php echo pql_complete_constant($LANG->_('Change attribute %attribute%'), array('attribute' => $attrib)); ?></td>
             <td><input type="text" name="<?=$attrib?>" value="<?=$oldvalue?>" size="20"></td>
 <?php	if(lc($attrib) == 'dnsttl') { ?>
@@ -47,7 +47,7 @@ function attribute_print_form() {
           </tr>
 <?php	if(lc($attrib) == 'mxrecord') { ?>
 
-          <tr class="<?php table_bgcolor(); ?>">
+          <tr class="<?php pql_format_table(); ?>">
             <td class="title"><?=$LANG->_('MX Priority')?>:</td>
             <td><input type="text" name="priority" value="10" size="20"></td>
             <td></td>

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // maxrcptcount (maximum number of RCPT TO's)
 //
-// $Id: attrib.control.maxrcptcount.inc,v 2.9 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.maxrcptcount.inc,v 2.10 2003-11-20 08:01:36 turbo Exp $
 
 function maxrcptcount_check($type) {
 	global $error, $maxrcptcount, $view, $LANG;
@@ -48,7 +48,7 @@ function maxrcptcount_print_view($host) {
 
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">maxrcptcount (<?=$LANG->_('Maximum number of RCPT TO\'s')?>)</th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Maximum RCPT TO\'s')?></td>
         <td><?=$maxrcptcount?></td>
       </tr>
@@ -67,9 +67,9 @@ function maxrcptcount_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">maxrcptcount (<?=$LANG->_('Maximum number of RCPT TO\'s')?>)</th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Maximum RCPT TO\'s')?></td>
-          <td><?php echo format_error($error["maxrcptcount"]); ?><input type="text" name="maxrcptcount" value="<?=$maxrcptcount?>"></td>
+          <td><?php echo pql_format_error_span($error["maxrcptcount"]); ?><input type="text" name="maxrcptcount" value="<?=$maxrcptcount?>"></td>
         </tr>
 
         <tr class="subtitle">

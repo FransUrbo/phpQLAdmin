@@ -2,7 +2,7 @@
 // control attribute plugin for
 // percenthack (allowed domains for %-relaying)
 //
-// $Id: attrib.control.percenthack.inc,v 2.11 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.percenthack.inc,v 2.12 2003-11-20 08:01:36 turbo Exp $
 
 function percenthack_check($type) {
 	global $error, $percenthack, $view, $LANG;
@@ -14,7 +14,7 @@ function percenthack_check($type) {
 			  continue;
 			
 			// it is a valid domain name
-			if(!check_hostaddress($server)) {
+			if(!pql_check_hostaddress($server)) {
 				$is_error = true;
 				$error["percenthack_$key"] = $LANG->_('Invalid');
 			}
@@ -55,14 +55,14 @@ function percenthack_print_view($host) {
  <?php
 	if(!is_array($percenthack)) {
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td><?=$LANG->_('Not set')?></td>
       </tr>
 <?php
 	} else {
 		foreach($percenthack as $domain) {
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td><?=$domain?></td>
       </tr>
 <?php
@@ -90,13 +90,13 @@ function percenthack_print_form() {
           <td><?=$LANG->_('Domains')?></td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
-          <td><?php echo format_error($error["percenthack_0"]); ?><input type="text" name="percenthack[0]" value="<?=$percenthack[0]?>"></td>
+        <tr class="<?php pql_format_table(); ?>">
+          <td><?php echo pql_format_error_span($error["percenthack_0"]); ?><input type="text" name="percenthack[0]" value="<?=$percenthack[0]?>"></td>
         </tr>
 
 <?php for($i = 1; $i <= $percentcount; $i++) { ?>
-        <tr class="<?php table_bgcolor(); ?>">
-          <td><?php echo format_error($error["percenthack_$i"]); ?><input type="text" name="percenthack[<?=$i?>]" value="<?=$percenthack[$i]?>"></td>
+        <tr class="<?php pql_format_table(); ?>">
+          <td><?php echo pql_format_error_span($error["percenthack_$i"]); ?><input type="text" name="percenthack[<?=$i?>]" value="<?=$percenthack[$i]?>"></td>
         </tr>
 
 <?php } ?>

@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.28 2003-11-19 16:20:50 turbo Exp $
+// $Id: attrib.config.inc,v 1.29 2003-11-20 08:01:36 turbo Exp $
 
 function attribute_check() {
     global $administrator, $domain, $oldvalue, $_pql, $error, $LANG;
@@ -106,7 +106,7 @@ function attribute_print_form() {
 <?php	} ?>
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?php echo pql_complete_constant($LANG->_('Add to attribute %attribute%'), array('attribute' => $attrib))."\n"; ?>
 <?php   if(($attrib == lc($PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_USER"])) or
  		   ($attrib == lc($PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_DOMAIN"]))) {
@@ -129,7 +129,7 @@ function attribute_print_form() {
                     }
 
                     if($print) {
-					    $class=table_bgcolor(0);
+					    $class=pql_format_table(0);
 						if($new_tr) {
 ?>
 
@@ -186,7 +186,7 @@ function attribute_print_form() {
 			} else {
 ?>
           <td>
-            <?php echo format_error($error[$attrib]); ?><input type="text" name="<?=$attrib?>" value="<?php if($attrib != 'whoarewe') { echo $oldvalue; } ?>" size="40">
+            <?php echo pql_format_error_span($error[$attrib]); ?><input type="text" name="<?=$attrib?>" value="<?php if($attrib != 'whoarewe') { echo $oldvalue; } ?>" size="40">
           </td>
 <?php		}
 	   }
@@ -387,7 +387,7 @@ function attribute_verify_objectclass($ldap) {
 	// Get all object classes of the DN, making sure it
 	// contains the phpQLAdminBranch
 	$sr  = @ldap_read($ldap->ldap_linkid, $rootdn, $rootdn, array('objectclass'));
-	$ocs = @ldap_get_entries($ldap->ldap_linkid, $sr) or pql_errormsg($ldap->ldap_linkid);
+	$ocs = @ldap_get_entries($ldap->ldap_linkid, $sr) or pql_format_error_msg($ldap->ldap_linkid);
 	for($j=0; $j < $ocs[0][pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")]["count"]; $j++) {
 		if(eregi('phpQLAdminConfig', $ocs[0][pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][$j]))
 		  return 1;

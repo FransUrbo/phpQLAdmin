@@ -2,7 +2,7 @@
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=$LANG->_('DNS informations')?></th>
 <?php if(count($rec) == 0) { ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td colspan="2"><?=$LANG->_('This domain isn\'t registred within the DNS system')?></td>
       </tr>
 <?php } else { ?>
@@ -13,7 +13,7 @@
 <?php	asort($weight);
 		foreach($weight as $key => $prio) {
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td><?=$rec[$key]?></td>
         <td align="right"><?=$prio?></td>
       </tr>

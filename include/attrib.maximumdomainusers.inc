@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // maximumDomainUsers
-// $Id: attrib.maximumdomainusers.inc,v 2.8 2003-09-04 16:56:16 turbo Exp $
+// $Id: attrib.maximumdomainusers.inc,v 2.9 2003-11-20 08:01:37 turbo Exp $
 
 function attribute_check($type = '') {
 	global $error, $attrib, $$attrib, $LANG;
@@ -21,15 +21,15 @@ function attribute_print_form($type = "modify") {
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Maximum allowed users in branch')?></th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Maximum allowed users in branch')?></td>
           <td>
-            <?php echo format_error($error[$attrib]); ?>
+            <?php echo pql_format_error_span($error[$attrib]); ?>
             <input type="text" name="<?=$attrib?>" value="<?=$$attrib?>" size="50">
           </td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"></td>
           <td>
             <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // base homedirectory for domain
-// $Id: attrib.basehomedir.inc,v 2.5 2003-07-02 07:59:00 turbo Exp $
+// $Id: attrib.basehomedir.inc,v 2.6 2003-11-20 08:01:36 turbo Exp $
 
 function attribute_check() {
     global $basehomedir, $domain, $oldvalue, $_pql, $error, $LANG;
@@ -32,9 +32,9 @@ function attribute_print_form() {
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Change %what% for domain %domain%'), array('what' => $LANG->_('default homedirectory base'), 'domain' => $orgname)); ?></th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Home directory')." (".$LANG->_('Base', 4).")"; ?></td>
-          <td><?php echo format_error($error["basehomedir"]); ?><input type="text" name="basehomedir" value="<?=$basehomedir?>" size="50"></td>
+          <td><?php echo pql_format_error_span($error["basehomedir"]); ?><input type="text" name="basehomedir" value="<?=$basehomedir?>" size="50"></td>
         </tr>
       </th>
     </table>

@@ -2,13 +2,13 @@
 // control attribute plugin for
 // localiphost (name substituted for local IP address)
 //
-// $Id: attrib.control.localiphost.inc,v 2.10 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.localiphost.inc,v 2.11 2003-11-20 08:01:36 turbo Exp $
 
 function localiphost_check($type) {
 	global $error, $localiphost, $view, $LANG;
 
 	// validity
-	if($localiphost != "" and !check_hostaddress($localiphost)) {
+	if($localiphost != "" and !pql_check_hostaddress($localiphost)) {
 		$error["localiphost"] = $LANG->_('Invalid');
 		return false;
 	}
@@ -41,7 +41,7 @@ function localiphost_print_view($host) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">localiphost (<?=$LANG->_('Substitution for local IP')?>)</th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Host')?></td>
         <td><?=$localiphost?></td>
       </tr>
@@ -60,9 +60,9 @@ function localiphost_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">localiphost (<?=$LANG->_('Substitution for local IP')?>)</th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Host')?></td>
-          <td><?php echo format_error($error["localiphost"]); ?><input type="text" name="localiphost" value="<?php echo $localiphost; ?>"> <?=$LANG->_('Default')?>: <?=$mxhost?> (<?=$LANG->_('Value in \'me\'')?>)</td>
+          <td><?php echo pql_format_error_span($error["localiphost"]); ?><input type="text" name="localiphost" value="<?php echo $localiphost; ?>"> <?=$LANG->_('Default')?>: <?=$mxhost?> (<?=$LANG->_('Value in \'me\'')?>)</td>
         </tr>
 
         <tr>

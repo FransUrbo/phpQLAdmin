@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-additional.inc,v 1.4 2003-11-19 16:44:07 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.5 2003-11-20 08:01:46 turbo Exp $ */ ?>
   <form action="<?=$PHP_SELF?>" method="post" accept-charset="UTF-8">
     <input type="hidden" name="surname" value="<?=$surname?>">
     <input type="hidden" name="name" value="<?=$name?>">
@@ -17,7 +17,7 @@
       <th colspan="3" align="left"><?=$LANG->_('Additional account properties')?></th>
 <?php if($homedirectory) { ?>
         <!-- Home directory -->
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Home directory')?></td>
           <td><?=$homedirectory?></td>
         </tr>
@@ -29,7 +29,7 @@
         <input type="hidden" name="loginshell" value="<?=$loginshell?>">
 
         <!-- MailMessageStore -->
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Path to mailbox')?></td>
           <td><?=$maildirectory?></td>
         </tr>
@@ -40,14 +40,14 @@
 <?php
 		if($error_text["userhost"]) {
 ?>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"></td>
-          <td><?php echo format_error($error_text["userhost"]); ?></td>
+          <td><?php echo pql_format_error_span($error_text["userhost"]); ?></td>
         </tr>
 <?php
 		}
 ?>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Mail server')?></td>
           <td>
 <?php	if(is_array($userhost)) { ?>
@@ -71,7 +71,7 @@
 			// It's defined, but it comes from LDAP
 ?>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"></td>
           <td>
             <input type="radio" name="host" value="user" checked><?=$LANG->_('QmailLDAP/Controls object')?>: <b><?=$userhost[1]?></b>
@@ -81,7 +81,7 @@
 		}
 ?>
   
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"></td>
           <td>
             <input type="radio" name="host" value="user" <?php if((!$userhost[0] and !$userhost[1]) or ($host == "user")){ echo "checked";}?>>

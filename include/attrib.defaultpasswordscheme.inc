@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // defaultPasswordScheme
-// $Id: attrib.defaultpasswordscheme.inc,v 2.8 2003-11-12 09:33:32 turbo Exp $
+// $Id: attrib.defaultpasswordscheme.inc,v 2.9 2003-11-20 08:01:37 turbo Exp $
 
 function attribute_check($type = '') {
 	global $error, $attrib, $$attrib, $LANG;
@@ -21,10 +21,10 @@ function attribute_print_form($type = "modify") {
   <form action="<?$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Password scheme to use if not specifically specified')?></th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Default password scheme')?></td>
           <td>
-            <?php echo format_error($error[$attrib]); ?>
+            <?php echo pql_format_error_span($error[$attrib]); ?>
             <select name="<?=$attrib?>">
 <?php // Convert the array to a index
 	  $schemes = pql_split_oldvalues(pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn));

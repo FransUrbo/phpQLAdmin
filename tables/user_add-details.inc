@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-details.inc,v 1.4 2003-11-19 16:21:09 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.5 2003-11-20 08:01:46 turbo Exp $ */ ?>
   <form action="<?=$PHP_SELF?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
@@ -8,18 +8,18 @@
 		   $ADVANCED_MODE) {
 ?>
         <!-- Username (UID) -->
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Username')?></td>
-          <td><?php echo format_error($error_text["uid"]); ?><input type="text" name="uid" value="<?=$uid?>"></td>
+          <td><?php echo pql_format_error_span($error_text["uid"]); ?><input type="text" name="uid" value="<?=$uid?>"></td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
           <td><?=$LANG->_('Numbers, letters and the following special chars: @, %, . (dot), _, -.\nIf left out, a username will be created automatically')?>.</td>
         </tr>
 
 <?php	} else { ?>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
           <td><?php echo pql_complete_constant($LANG->_('Automatically generate %what%'), array('what' => $LANG->_('username'))); ?>.</td>
         </tr>
@@ -28,19 +28,19 @@
 	  }
 ?>
         <!-- Firstname -->
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Surname')?></td>
           <td>
-              <?php echo format_error($error_text["surname"]); ?>
+              <?php echo pql_format_error_span($error_text["surname"]); ?>
               <input type="text" name="surname" value="<?=$surname?>">
           </td>
         </tr>
 
         <!-- Lastname -->
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Lastname')?></td>
           <td>
-            <?php echo format_error($error_text["name"]); ?>
+            <?php echo pql_format_error_span($error_text["name"]); ?>
             <input type="text" name="name" value="<?=$name?>">
           </td>
         </tr>
@@ -53,7 +53,7 @@
 ?>
 
         <!-- Password schema -->
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Password encryption scheme')?></td>
           <td>
 <?php		if(eregi(',', pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn))) {
@@ -76,24 +76,24 @@
 <?php	} ?>
 
         <!-- Password -->
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Password')?></td>
           <!-- Crude hackery. Using type=password won't be so good if we're using {KERBEROS} -->
           <td>
-            <?php echo format_error($error_text["password"]); ?>
+            <?php echo pql_format_error_span($error_text["password"]); ?>
             <input type="input" name="password">
             <input type="checkbox" name="crypted"><?=$LANG->_('Password is already encrypted')?>
-            <?php echo format_error($error["pwscheme"]); ?>
+            <?php echo pql_format_error_span($error["pwscheme"]); ?>
           </td>
         </tr>
 
 <?php	if(eregi('KERBEROS', pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn))) { ?>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
           <td><?=$LANG->_('If using {KERBEROS} as password scheme, make sure you include the correct REALM (principal@REALM.TLD)')?></td>
         </tr>
 <?php	} ?>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
           <td><?=$LANG->_('If you enter an already encrypted password, you must make sure that the password scheme you\'ve choosen is the correct one. Also, choose the checkbox \uPassword is already encrypted\U')?></td>
         </tr>
@@ -113,9 +113,9 @@
 ?>
 
         <!-- Loginshell -->
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Login shell')?></td>
-          <td><?php echo format_error($error["loginshell"]); ?>
+          <td><?php echo pql_format_error_span($error["loginshell"]); ?>
 
             <select name="loginshell">
               <option value="/bin/false" SELECTED>/bin/false</option>
@@ -140,10 +140,10 @@
 		   $ADVANCED_MODE or $error_text["email"]) {
 ?>
         <!-- Email address -->
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Main address')?></td>
           <td>
-            <?php echo format_error($error_text["email"]); ?>
+            <?php echo pql_format_error_span($error_text["email"]); ?>
             <input type="text" name="email" value="<?=$email?>">
 <?php 		if(is_array($additionaldomainname)) { ?>
             <b>@ <select name="email_domain"></b>
@@ -160,7 +160,7 @@
         </tr>
 
 <?php 		if(is_array($additionaldomainname)) { ?>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Alias')?></td>
           <td>
             <table>
@@ -181,7 +181,7 @@
 <?php 		}
 		} else {
 ?>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
           <td><?php echo pql_complete_constant($LANG->_('Automatically generate %what%'), array('what' => $LANG->_('email address'))); ?>.</td>
         </tr>
@@ -196,7 +196,7 @@
 		if($branches[1]) {
 			// More than one subbranch - show a select menu
 ?>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Put user in subbranch')?></td>
           <td>
             <select name="subbranch">
@@ -240,10 +240,10 @@
 ?>
 
         <!-- Forwarding address -->
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Forwarding address')?></td>
           <td>
-            <?php echo format_error($error_text["forwardingaddress"]); ?>
+            <?php echo pql_format_error_span($error_text["forwardingaddress"]); ?>
             <input type="text" name="forwardingaddress" value="<?=$forwardingaddress?>"><?=$LANG->_('Email')?>
           </td>
         </tr>
@@ -257,7 +257,7 @@
     if($account_type != 'shell') {
 ?>
         <!-- Account status -->
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Status')?></td>
           <td>
             <select name="account_status">

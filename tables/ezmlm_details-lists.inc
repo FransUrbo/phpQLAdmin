@@ -16,7 +16,7 @@
 			// Go through each list in the domain
 			foreach($listarray as $listname => $listno) {
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td><?=$listname."@".$listdomain?></td>
         <td align="right"><?=$ezmlm->mailing_lists[$listno]["subscribers"]?></td>
         <td><?=$ezmlm->mailing_lists[$listno]["owner"]?></td>

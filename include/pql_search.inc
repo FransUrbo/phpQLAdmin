@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.10 2003-11-19 19:38:33 turbo Exp $
+// $Id: pql_search.inc,v 2.11 2003-11-20 08:01:37 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -16,8 +16,8 @@ function pql_search($linkid, $basedn, $filter, $attrib = 'dn') {
 	// URL decode the object DN if it's URL ENcoded
 	$basedn = urldecode($basedn);
 
-	$sr   = ldap_search($linkid, $basedn, $filter) or pql_errormsg($linkid);
-	$info = ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
+	$sr   = ldap_search($linkid, $basedn, $filter) or pql_format_error_msg($linkid);
+	$info = ldap_get_entries($linkid, $sr) or pql_format_error_msg($linkid);
 
 	for($i=0; $i < $info["count"]; $i++) {
 		if($attrib == '')

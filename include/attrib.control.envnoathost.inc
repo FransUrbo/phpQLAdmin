@@ -2,7 +2,7 @@
 // control attribute plugin for
 // envnoathost (default prefix for mailbox paths)
 //
-// $Id: attrib.control.envnoathost.inc,v 2.10 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.envnoathost.inc,v 2.11 2003-11-20 08:01:36 turbo Exp $
 
 function envnoathost_check($type) {
 	global $error, $envnoathost, $view, $LANG;
@@ -14,7 +14,7 @@ function envnoathost_check($type) {
 	}
 
 	// validity
-	if(!check_hostaddress($envnoathost)) {
+	if(!pql_check_hostaddress($envnoathost)) {
 		$error["envnoathost"] = $LANG->_('Invalid');
 		return false;
 	}
@@ -47,7 +47,7 @@ function envnoathost_print_view($host) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">envnoathost (<?=$LANG->_('Default domain for addresses without @')?>)</th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Email')?></td>
         <td><?=$envnoathost?></td>
       </tr>
@@ -66,9 +66,9 @@ function envnoathost_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">envnoathost (<?=$LANG->_('Default domain for addresses without @')?>)</th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Email')?></td>
-          <td><?php echo format_error($error["envnoathost"]); ?><input type="text" name="envnoathost" value="<?=$envnoathost?>"> <?=$LANG->_('Default')?>: <?=$mxhost?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
+          <td><?php echo pql_format_error_span($error["envnoathost"]); ?><input type="text" name="envnoathost" value="<?=$envnoathost?>"> <?=$LANG->_('Default')?>: <?=$mxhost?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
         </tr>
 
         <tr>

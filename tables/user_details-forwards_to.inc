@@ -8,13 +8,13 @@
       </tr>
 
 <?php if(empty($forwarders)) { ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td colspan="2"><?=$LANG->_('None')?></td>
       </tr>
 <?php } else { 
 	foreach($forwarders as $forwarder) {
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td><?=pql_maybe_idna_decode($forwarder)?></td>
         <td>
           <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=mailforwardingaddress&user=<?=$userdn?>&mailforwardingaddress=<?=$forwarder?>&oldvalue=<?=$forwarder?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="user_del_attribute.php?attrib=mailforwardingaddress&user=<?=$userdn?>&oldvalue=<?=$forwarder?>&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a>

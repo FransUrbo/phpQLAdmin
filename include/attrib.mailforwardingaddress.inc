@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailforwardingaddress (forward all mails to this address)
-// $Id: attrib.mailforwardingaddress.inc,v 2.14 2003-11-12 14:05:18 turbo Exp $
+// $Id: attrib.mailforwardingaddress.inc,v 2.15 2003-11-20 08:01:37 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -17,7 +17,7 @@ function attribute_check($type) {
 	$mailforwardingaddress = pql_maybe_idna_encode($mailforwardingaddress);
 
 	// valid
-	if(!check_email($mailforwardingaddress)) {
+	if(!pql_check_email($mailforwardingaddress)) {
 		$error["mailforwardingaddress"] = $LANG->_('Invalid');
 		return false;
 	}
@@ -51,10 +51,10 @@ function attribute_print_form() {
 		echo "</tr>";
 	}
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Email')?></td>
         <td>
-          <?php echo format_error($error["mailforwardingaddress"]); ?><input type="text" name="mailforwardingaddress" value="">
+          <?php echo pql_format_error_span($error["mailforwardingaddress"]); ?><input type="text" name="mailforwardingaddress" value="">
         </td>
       </tr>
     </table>

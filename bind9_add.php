@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.8 2003-11-12 09:28:29 turbo Exp $
+// $Id: bind9_add.php,v 2.9 2003-11-20 08:01:27 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -23,7 +23,7 @@ if(($action == 'add') and ($type == 'domain')) {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain to branch'))); ?>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Domain name')?></td>
           <td><input type="text" name="domainname" size="40"></td>
         </tr>
@@ -83,31 +83,31 @@ if(($action == 'add') and ($type == 'domain')) {
         </tr>
 
 <?php	  if($error == true) { ?>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"></td>
 <?php		if($error_text["hostname"]) { ?>
-          <td><?php echo format_error($error_text["hostname"]); ?></td>
+          <td><?php echo pql_format_error_span($error_text["hostname"]); ?></td>
 <?php		} else { ?>
           <td></td>
 <?php		}
 
 			if($error_text["record_type"]) {
 ?>
-          <td><?php echo format_error($error_text["record_type"]); ?></td>
+          <td><?php echo pql_format_error_span($error_text["record_type"]); ?></td>
 <?php		} else { ?>
           <td></td>
 <?php		}
 
 			if($error_text["dest"]) {
 ?>
-          <td><?php echo format_error($error_text["dest"]); ?></td>
+          <td><?php echo pql_format_error_span($error_text["dest"]); ?></td>
 <?php		} else { ?>
           <td></td>
 <?php		} ?>
         </tr>
 
 <?php	  } ?>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title">Host name</td>
           <td><input type="text" name="hostname" value="<?=$hostname?>" size="15"></td>
           <td>

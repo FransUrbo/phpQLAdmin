@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.45 2003-11-19 16:41:05 turbo Exp $
+// $Id: pql_config.inc,v 1.46 2003-11-20 08:01:37 turbo Exp $
 //
 
 // {{{ pql_set_define(define, value, case_insensitive, dn)
@@ -167,8 +167,9 @@ require("./include/config.inc");
 // 2. Include the attribute configuration
 require("./include/config_attributes.inc");
 
-// include and check configuration
+// include the API files
 require("./include/pql.inc");
+require("./include/pql_formating.inc");
 require("./include/pql_cache.inc");
 require("./include/pql_search.inc");
 
@@ -199,9 +200,9 @@ foreach($_pql->ldap_basedn as $dn)  {
 	$dn = urldecode($dn);
 
 	$sr = @ldap_read($_pql->ldap_linkid, $dn, ('objectClass=*'))
-	  or pql_errormsg($_pql->ldap_linkid);
+	  or pql_format_error_msg($_pql->ldap_linkid);
 	$info = ldap_get_entries($_pql->ldap_linkid, $sr)
-	  or pql_errormsg($_pql->ldap_linkid);
+	  or pql_format_error_msg($_pql->ldap_linkid);
 
 	// If we got something, retreive the attributes
 	for ($i=0; $i<$info["count"]; $i++) {

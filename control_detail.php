@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.23 2003-08-15 08:06:04 turbo Exp $
+// $Id: control_detail.php,v 1.24 2003-11-20 08:01:28 turbo Exp $
 session_start();
 require("./include/pql_config.inc");
 
@@ -57,7 +57,7 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 
 	// print status message, if one is available
 	if(isset($msg)) {
-		print_status_msg($msg);
+		pql_format_status_msg($msg);
 	}
 
 	// reload navigation bar if needed

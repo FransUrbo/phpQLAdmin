@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailhost (host address which resides the mailhost)
-// $Id: attrib.mailhost.inc,v 2.12 2003-11-19 16:20:50 turbo Exp $
+// $Id: attrib.mailhost.inc,v 2.13 2003-11-20 08:01:37 turbo Exp $
 
 function attribute_check($type) {
 	global $options, $mailhost, $domain, $error, $LANG;
@@ -55,19 +55,19 @@ function attribute_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Mail server')?></th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Options')?></td>
           <td><input type="radio" name="options" value="dns" <?php if($options=="dns"){ echo "checked"; }?>><?=$LANG->_('Standard (DNS entry)')?><input type="radio" name="options" value="user" <?php if($options=="user"){ echo "checked"; }?>><?=$LANG->_('User defined')?><input type="radio" name="options" value="none" <?php if($options=="none"){ echo "checked"; }?>><?=$LANG->_('None')?></td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Host address (FQDN)')?></td>
-          <td><?php echo format_error($error["mailhost"]); ?><input type="text" name="mailhost" value="<?=$mailhost?>"></td>
+          <td><?php echo pql_format_error_span($error["mailhost"]); ?><input type="text" name="mailhost" value="<?=$mailhost?>"></td>
         </tr>
 
         <tr class="subtitle">
           <td colspan="2">
-            <?php echo format_error($error["dns"]); ?>
+            <?php echo pql_format_error_span($error["dns"]); ?>
             <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?=$LANG->_('With option DNS, the first MX record of this domain will be taken')?>
           </td>
         </tr>

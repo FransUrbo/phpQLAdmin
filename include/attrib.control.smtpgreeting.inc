@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtpgreeting (SMTP greeting message)
 //
-// $Id: attrib.control.smtpgreeting.inc,v 2.10 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.smtpgreeting.inc,v 2.11 2003-11-20 08:01:36 turbo Exp $
 
 function smtpgreeting_check($type) {
     global $error, $smtpgreeting, $view;
@@ -36,7 +36,7 @@ function smtpgreeting_print_view($host) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">smtpgreeting (<?=$LANG->_('SMTP greeting message')?>)</th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Message')?></td>
         <td><?=$smtpgreeting?></td>
       </tr>
@@ -55,9 +55,9 @@ function smtpgreeting_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">smtpgreeting (<?=$LANG->_('SMTP greeting message')?>)</th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Message')?></td>
-          <td><?php echo format_error($error["smtpgreeting"]); ?><input type="text" name="smtpgreeting" value="<?=$smtpgreeting?>"> <?=$LANG->_('Default')?>: <?=$mxhost?> (<?=$LANG->_('Value in \'me\'', 4)?>)</td>
+          <td><?php echo pql_format_error_span($error["smtpgreeting"]); ?><input type="text" name="smtpgreeting" value="<?=$smtpgreeting?>"> <?=$LANG->_('Default')?>: <?=$mxhost?> (<?=$LANG->_('Value in \'me\'', 4)?>)</td>
         </tr>
 
         <tr>

@@ -2,13 +2,13 @@
 // control attribute plugin for
 // helohost (host name used in SMTP HELO command)
 //
-// $Id: attrib.control.helohost.inc,v 2.9 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.helohost.inc,v 2.10 2003-11-20 08:01:36 turbo Exp $
 
 function helohost_check($type) {
 	global $error, $helohost, $view, $LANG;
 
 	// validity
-	if($helohost != "" and !check_hostaddress($helohost)) {
+	if($helohost != "" and !pql_check_hostaddress($helohost)) {
 		$error["helohost"] = $LANG->_('Invalid');
 		return false;
 	}
@@ -41,7 +41,7 @@ function helohost_print_view($host) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">helohost (Helo host)</th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Host')?></td>
         <td><?=$helohost?></td>
       </tr>
@@ -60,9 +60,9 @@ function helohost_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">helohost (Helo host)</th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Host')?></td>
-          <td><?php echo format_error($error["helohost"]); ?><input type="text" name="helohost" value="<?=$helohost?>"> <?=$LANG->_('Default')?>: <?=$mxhost?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
+          <td><?php echo pql_format_error_span($error["helohost"]); ?><input type="text" name="helohost" value="<?=$helohost?>"> <?=$LANG->_('Default')?>: <?=$mxhost?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
         </tr>
 
         <tr>

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // timeoutsmtpd (how long to wait for smtp client)
 //
-// $Id: attrib.control.timeoutsmtpd.inc,v 2.10 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.timeoutsmtpd.inc,v 2.11 2003-11-20 08:01:37 turbo Exp $
 
 function timeoutsmtpd_check($type) {
 	global $error, $timeoutsmtpd, $LANG;
@@ -49,7 +49,7 @@ function timeoutsmtpd_print_view($host) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=$LANG->_('Timeoutsmtpd (How long to wait for SMTP client)')?></th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Wait')?></td>
         <td><?=$timeoutsmtpd?></td>
       </tr>
@@ -69,9 +69,9 @@ function timeoutsmtpd_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Timeoutsmtpd (How long to wait for SMTP client)')?></th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Wait')?></td>
-          <td><?php echo format_error($error["timeoutsmtpd"]); ?><input type="text" name="timeoutsmtpd" value="<?=$timeoutsmtpd?>"><?=$LANG->_('Seconds', 4)?></td>
+          <td><?php echo pql_format_error_span($error["timeoutsmtpd"]); ?><input type="text" name="timeoutsmtpd" value="<?=$timeoutsmtpd?>"><?=$LANG->_('Seconds', 4)?></td>
         </tr>
 
         <tr class="subtitle">

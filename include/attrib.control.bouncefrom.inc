@@ -3,19 +3,19 @@
 // bouncefrom (username of bounce sender)
 // bouncehost (hostname of bounce sender)
 //
-// $Id: attrib.control.bouncefrom.inc,v 2.10 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.bouncefrom.inc,v 2.11 2003-11-20 08:01:36 turbo Exp $
 
 function bouncefrom_check($type) {
 	global $error, $bouncefrom, $bouncehost, $view, $LANG;
 
 	// check validity
-	if($bouncefrom != "" and !check_email($bouncefrom . "@domain.tld")) {
+	if($bouncefrom != "" and !pql_check_email($bouncefrom . "@domain.tld")) {
 		$error["bouncefrom"] = $LANG->_('Invalid');
 		$is_error = true;
 	}
 
 	// check validity
-	if($bouncehost != "" and !check_hostaddress($bouncehost)) {
+	if($bouncehost != "" and !pql_check_hostaddress($bouncehost)) {
 		$error["bouncehost"] = $LANG->_('Invalid');
 		$is_error = true;
 	}
@@ -57,12 +57,12 @@ function bouncefrom_print_view($host) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">bouncefrom, bouncehost (<?=$LANG->_('Bouncing source')?>)</th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('User for bouncing')?></td>
         <td><?=$bouncefrom?></td>
       </tr>
 
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Host for bouncing')?></td>
         <td><?=$bouncehost?></td>
       </tr>
@@ -81,14 +81,14 @@ function bouncefrom_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">bouncefrom, bouncehost (<?=$LANG->_('Bouncing source')?>)</th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('User for bouncing')?></td>
-          <td><?php echo format_error($error["bouncefrom"]); ?><input type="text" name="bouncefrom" value="<?=$bouncefrom?>"> <?=$LANG->_('Default')?>: MAILER-DAEMON</td>
+          <td><?php echo pql_format_error_span($error["bouncefrom"]); ?><input type="text" name="bouncefrom" value="<?=$bouncefrom?>"> <?=$LANG->_('Default')?>: MAILER-DAEMON</td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Host for bouncing')?></td>
-          <td><?php echo format_error($error["bouncehost"]); ?><input type="text" name="bouncehost" value="<?=$bouncehost?>"> <?=$LANG->_('Default')?>: <?=$mxhost?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
+          <td><?php echo pql_format_error_span($error["bouncehost"]); ?><input type="text" name="bouncehost" value="<?=$bouncehost?>"> <?=$LANG->_('Default')?>: <?=$mxhost?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
         </tr>
 
         <tr class="subtitle">

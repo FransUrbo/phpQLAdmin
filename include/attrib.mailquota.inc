@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mailquota.inc,v 2.13 2003-11-19 16:20:50 turbo Exp $
+// $Id: attrib.mailquota.inc,v 2.14 2003-11-20 08:01:37 turbo Exp $
 
 function attribute_check($type) {
 	global $options, $use_maxsize, $use_maxmails, $maxsize, $maxmails, $error, $LANG;
@@ -85,24 +85,24 @@ function attribute_print_form($type = "modify") {
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Change quota')?></th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Options')?></td>
           <td><input type="radio" name="options" value="default" <?php if($options == "default"){ echo "checked"; } //" ?>><?=$LANG->_('Standard')?><input type="radio" name="options" value="user" <?php if($options == "user"){ echo "checked"; } //" ?>><?=$LANG->_('User defined')?></td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Maximum size of mailbox')?></td>
-          <td><input type="checkbox" name="use_maxsize" value="1" <?php if($use_maxsize == "1"){ echo "checked"; } //" ?>> <?php echo format_error($error["maxsize"]); ?><input type="text" name="maxsize" value="<?php echo $maxsize; ?>"> KB</td>
+          <td><input type="checkbox" name="use_maxsize" value="1" <?php if($use_maxsize == "1"){ echo "checked"; } //" ?>> <?php echo pql_format_error_span($error["maxsize"]); ?><input type="text" name="maxsize" value="<?php echo $maxsize; ?>"> KB</td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Maximum number of mails')?></td>
-          <td><input type="checkbox" name="use_maxmails" value="1" <?php if($use_maxmails == "1"){ echo "checked"; } //" ?>> <?php echo format_error($error["maxmails"]); ?><input type="text" name="maxmails" value="<?php echo $maxmails; ?>"> <?=$LANG->_('Mails')?></td>
+          <td><input type="checkbox" name="use_maxmails" value="1" <?php if($use_maxmails == "1"){ echo "checked"; } //" ?>> <?php echo pql_format_error_span($error["maxmails"]); ?><input type="text" name="maxmails" value="<?php echo $maxmails; ?>"> <?=$LANG->_('Mails')?></td>
         </tr>
 
         <tr class="subtitle">
           <td colspan="2">
-            <?php echo format_error($error["selected"]); ?>
+            <?php echo pql_format_error_span($error["selected"]); ?>
             <img src="images/info.png" width="16" height="16" alt="" border="0">
             &nbsp;<?=$LANG->_('With \'Standard\', QmailLDAP will get quotas from its configuration file')?>
           </td>

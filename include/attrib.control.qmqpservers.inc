@@ -2,7 +2,7 @@
 // control attribute plugin for
 // qmqpservers (max number of bytes in message)
 //
-// $Id: attrib.control.qmqpservers.inc,v 2.12 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.qmqpservers.inc,v 2.13 2003-11-20 08:01:36 turbo Exp $
 
 function qmqpservers_check($type) {
 	global $error, $qmqpservers, $view, $LANG;
@@ -75,14 +75,14 @@ function qmqpservers_print_view($host) {
 <?php
 	if(!is_array($qmqpservers)) {
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td><?=$LANG->_('Not set')?></td>
       </tr>
 <?php
 	} else {
 		foreach($qmqpservers as $server) {
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td><?=$server?></td>
       </tr>
 <?php
@@ -111,13 +111,13 @@ function qmqpservers_print_form() {
           <td><?=$LANG->_('IP Address')?></td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
-          <td><?php echo format_error($error["qmqpservers_0"]); ?><input type="text" name="qmqpservers[0]" value="<?=$qmqpservers[0]?>"></td>
+        <tr class="<?php pql_format_table(); ?>">
+          <td><?php echo pql_format_error_span($error["qmqpservers_0"]); ?><input type="text" name="qmqpservers[0]" value="<?=$qmqpservers[0]?>"></td>
         </tr>
 
 <?php for($i = 1; $i <= $qmqpcount; $i++) { ?>
-        <tr class="<?php table_bgcolor(); ?>">
-          <td><?php echo format_error($error["qmqpservers_$i"]); ?><input type="text" name="qmqpservers[<?=$i?>]" value="<?=$qmqpservers[$i]?>"></td>
+        <tr class="<?php pql_format_table(); ?>">
+          <td><?php echo pql_format_error_span($error["qmqpservers_$i"]); ?><input type="text" name="qmqpservers[<?=$i?>]" value="<?=$qmqpservers[$i]?>"></td>
         </tr>
 
 <?php } ?>

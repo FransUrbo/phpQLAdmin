@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_detail.php,v 1.20 2003-11-19 16:20:27 turbo Exp $
+// $Id: ezmlm_detail.php,v 1.21 2003-11-20 08:01:29 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -9,7 +9,7 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 // print status message, if one is available
 if(isset($msg)){
-    print_status_msg($msg);
+    pql_format_status_msg($msg);
 }
 
 if($domain) {

@@ -3,19 +3,19 @@
 // doublebouncehost (username of bounce sender)
 // doublebounceto (hostname of bounce sender)
 //
-// $Id: attrib.control.doublebouncehost.inc,v 2.10 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.doublebouncehost.inc,v 2.11 2003-11-20 08:01:36 turbo Exp $
 
 function doublebouncehost_check($type) {
 	global $error, $doublebouncehost, $doublebounceto, $view, $LANG;
 
 	// check validity
-	if($doublebounceto != "" and !check_email($doublebounceto . "@domain.tld")) {
+	if($doublebounceto != "" and !pql_check_email($doublebounceto . "@domain.tld")) {
 		$error["doublebounceto"] = $LANG->_('Invalid');
 		$is_error = true;
 	}
 
 	// check validity
-	if($doublebouncehost != "" and !check_hostaddress($doublebouncehost)) {
+	if($doublebouncehost != "" and !pql_check_hostaddress($doublebouncehost)) {
 		$error["doublebouncehost"] = $LANG->_('Invalid');
 		$is_error = true;
 	}
@@ -57,12 +57,12 @@ function doublebouncehost_print_view($host) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">doublebouncehost, doublebounceto (Double bounce)</th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Host')?></td>
         <td><?=$doublebouncehost?></td>
       </tr>
 
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Receiver')?></td>
         <td><?=$doublebounceto?></td>
       </tr>
@@ -82,14 +82,14 @@ function doublebouncehost_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">Double bounce</th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Host')?></td>
-          <td><?php echo format_error($error["doublebouncehost"]); ?><input type="text" name="doublebouncehost" value="<?=$doublebouncehost?>"> <?=$LANG->_('Default')?>: <?=$mxhost?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
+          <td><?php echo pql_format_error_span($error["doublebouncehost"]); ?><input type="text" name="doublebouncehost" value="<?=$doublebouncehost?>"> <?=$LANG->_('Default')?>: <?=$mxhost?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Receiver')?></td>
-          <td><?php echo format_error($error["doublebounceto"]); ?><input type="text" name="doublebounceto" value="<?=$doublebounceto?>"> <?=$LANG->_('Default')?>: postmaster</td>
+          <td><?php echo pql_format_error_span($error["doublebounceto"]); ?><input type="text" name="doublebounceto" value="<?=$doublebounceto?>"> <?=$LANG->_('Default')?>: postmaster</td>
         </tr>
 
         <tr class="subtitle">

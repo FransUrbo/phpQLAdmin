@@ -2,7 +2,7 @@
 // control attribute plugin for
 // custombouncetext (additional bounce message)
 //
-// $Id: attrib.control.custombouncetext.inc,v 2.11 2003-11-05 10:59:29 turbo Exp $
+// $Id: attrib.control.custombouncetext.inc,v 2.12 2003-11-20 08:01:36 turbo Exp $
 
 function custombouncetext_check($type) {
 	global $error, $custombouncetext, $use_custombouncetext, $view, $LANG;
@@ -46,7 +46,7 @@ function custombouncetext_print_view($host) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">custombouncetext (<?=$LANG->_('Additional bounce text')?>) for host <u><?=$host?></u></th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Message')?></td>
         <td><?php echo nl2br($custombouncetext); ?></td>
       </tr>
@@ -65,7 +65,7 @@ function custombouncetext_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">custombouncetext (<?=$LANG->_('Additional bounce text')?>)</th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Use additional message')?></td>
           <td>
             <input type="radio" name="use_custombouncetext" value="0" <?php if($use_custombouncetext == "0"){ echo "checked"; } //" ?>> <?=$LANG->_('No')?>
@@ -73,9 +73,9 @@ function custombouncetext_print_form() {
           </td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Message')?></td>
-          <td><?php echo format_error($error["custombouncetext"]); ?><textarea cols="40" rows="10" name="custombouncetext"><?=$custombouncetext?></textarea></td>
+          <td><?php echo pql_format_error_span($error["custombouncetext"]); ?><textarea cols="40" rows="10" name="custombouncetext"><?=$custombouncetext?></textarea></td>
         </tr>
 
         <tr class="subtitle">

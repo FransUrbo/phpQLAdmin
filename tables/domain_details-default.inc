@@ -1,14 +1,14 @@
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=$LANG->_('Default domain values')?>
 <?php if($ALLOW_BRANCH_CREATE) { ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Branch DN')?></td>
         <td><?php echo pql_maybe_decode(urldecode($domain)); ?></td>
         <td><?=// TODO: Should we be able to rename the RDN? ?></td>
       </tr>
   
 <?php } ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Default domain name')?></td>
         <td><?php if($defaultdomain){echo pql_maybe_idna_decode($defaultdomain);}else{echo $LANG->_('Not set');} ?></td>
 <?php if($ALLOW_BRANCH_CREATE) { ?>
@@ -18,7 +18,7 @@
 <?php } ?>
       </tr>
 
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Additional domain name')?></td>
 <?php if(is_array($additionaldomainname)) {
 		$new_tr = 0;
@@ -27,7 +27,7 @@
 
 			if($new_tr) {
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"></td>
 <?php		} ?>
         <td><?=$additional?></td>
@@ -43,7 +43,7 @@
 			$new_tr = 1;
 		} // if new_tr
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"></td>
         <td colspan="4">
           <a href="domain_edit_attributes.php?attrib=<?=lc($PQL_ATTRIBUTE["PQL_CONF_ADDITIONAL_DOMAIN_NAME"])?>&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional domain name'))); ?></a>
@@ -55,7 +55,7 @@
         </td>
 <?php } ?>
 
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Default homedirectory for users')?></td>
         <td><?php if($basehomedir){echo $basehomedir;}else{echo $LANG->_('Not set');} ?></td>
 <?php if($ALLOW_BRANCH_CREATE) { ?>
@@ -65,7 +65,7 @@
 <?php } ?>
       </tr>
   
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Default maildirectory for users')?></td>
         <td><?php if($basemaildir){echo $basemaildir;}else{echo $LANG->_('Not set');} ?></td>
 <?php if($ALLOW_BRANCH_CREATE) { ?>
@@ -75,7 +75,7 @@
 <?php } ?>
       </tr>
   
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Default quota')?></td>
         <td><?php if($basequota){echo $basequota;}else{echo $LANG->_('Not set');} ?></td>
 <?php if($ALLOW_BRANCH_CREATE) { ?>
@@ -86,46 +86,46 @@
       </tr>
 
 <?php if($ALLOW_BRANCH_CREATE) { ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Maximum allowed users in branch')?></td>
         <td><?php if($maximumdomainusers){echo $maximumdomainusers;}else{echo $LANG->_('Unlimited');} ?></td>
         <td><?=$maximumdomainusers_link?></td>
       </tr>
 
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Maximum allowed mailinglists in branch')?></td>
         <td><?php if($maximummailinglists){echo $maximummailinglists;}else{echo $LANG->_('Unlimited');} ?></td>
         <td><?=$maximummailinglists_link?></td>
       </tr>
 
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Default password scheme')?></td>
         <td><?php if($defaultpasswordscheme){echo $defaultpasswordscheme;}else{echo $LANG->_('No default');} ?></td>
         <td><?=$defaultpasswordscheme_link?></td>
       </tr>
 
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?php echo pql_complete_constant($LANG->_('Automatically generate %what%'), array('what' => $LANG->_('username'))); ?></td>
         <td><?php if($autocreateusername){echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
         <td><?=$autocreateusername_link?></td>
       </tr>
 
 <?php if($autocreateusername) { ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?php echo pql_complete_constant($LANG->_('Automatically generate %what%'), array('what' => $LANG->_('username prefix'))); ?></td>
         <td><?php if($usernameprefix){echo $usernameprefix;}else{echo "<i>".$LANG->_('Not set')."</i>";} ?></td>
         <td><?=$usernameprefix_link?></td>
       </tr>
 
 <?php } ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?php echo pql_complete_constant($LANG->_('Automatically generate %what%'), array('what' => $LANG->_('email address'))); ?></td>
         <td><?php if($autocreatemailaddress){echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
         <td><?=$autocreatemailaddress_link?></td>
       </tr>
 
 <?php } ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Domain administrator')?></td>
 <?php if(is_array($domain_admins)) {
 		$new_tr = 0;
@@ -140,7 +140,7 @@
 
 			if($new_tr) {
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"></td>
 <?php		} ?>
         <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$admin?>&view=<?=$view?>"><?=urldecode($username)?></a></td>
@@ -162,7 +162,7 @@
 			$new_tr = 1;
 		}
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"></td>
         <td colspan="4">
           <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR");?>&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain administrator for domain'))); ?></a>
@@ -179,7 +179,7 @@
 ?>
 
 <?php if(pql_get_define("maximummailinglists") >= 0) { ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Mailinglist administrators')?></td>
 <?php	if(is_array($mailinglist_admins)) {
 			$new_tr = 0;
@@ -192,7 +192,7 @@
 				
 				if($new_tr) {
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"></td>
 <?php			} ?>
         <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$admin?>&view=<?=$view?>"><?=urldecode($username)?></a></td>
@@ -214,7 +214,7 @@
 				$new_tr = 1;
 			}
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"></td>
         <td colspan="4">
           <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR");?>&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('mailinglist administrator for domain'))); ?></a>

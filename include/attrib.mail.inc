@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mail.inc,v 2.13 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.mail.inc,v 2.14 2003-11-20 08:01:37 turbo Exp $
 
 function attribute_check($type) {
     global $mail, $domain, $oldvalue, $_pql, $error, $defaultdomain, $LANG;
@@ -17,7 +17,7 @@ function attribute_check($type) {
 	  $mail = $mail . "@" . $defaultdomain;
     
     // valid
-    if(!check_email($mail)) {
+    if(!pql_check_email($mail)) {
 		$error[pql_get_define("PQL_GLOB_ATTR_MAIL")] = $LANG->_('Invalid');
 		return false;
     }
@@ -50,9 +50,9 @@ function attribute_print_form() {
 		echo "</tr>";
     }
   ?>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Email')?></td>
-          <td><?php echo format_error($error[pql_get_define("PQL_GLOB_ATTR_MAIL")]); ?><input type="text" name="mail" value=""><b>@<?=$defaultdomain?></b></td>
+          <td><?php echo pql_format_error_span($error[pql_get_define("PQL_GLOB_ATTR_MAIL")]); ?><input type="text" name="mail" value=""><b>@<?=$defaultdomain?></b></td>
         </tr>
 
         <tr class="subtitle">

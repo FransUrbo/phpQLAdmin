@@ -2,7 +2,7 @@
 // control attribute plugin for
 // rcpthosts (blocked local addresses)
 //
-// $Id: attrib.control.rcpthosts.inc,v 2.16 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.rcpthosts.inc,v 2.17 2003-11-20 08:01:36 turbo Exp $
 
 function rcpthosts_check($type) {
     global $error, $rcpthosts, $domain, $rootdn, $view, $LANG;
@@ -13,7 +13,7 @@ function rcpthosts_check($type) {
 			if($host == "")
 			  continue;
 			
-			if(!check_hostaddress($host)) {
+			if(!pql_check_hostaddress($host)) {
 				$error[pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS")."_".$key] = $LANG->_('Invalid');
 				$is_error = true;
 			}
@@ -49,12 +49,12 @@ function rcpthosts_print_view($host) {
     <th align="left"><?php echo pql_complete_constant($LANG->_('Allowed '.pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS").' for host %host%'), array('host' => $host)); ?></th>
       <tr class="title"><td><?=$LANG->_('Domain')?></td></tr>
 <?php if(!is_array($rcpthosts)) { ?>
-      <tr class="<?php table_bgcolor(); ?>"><td><?=$LANG->_('No '.pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS").' defined')?></td></tr>
+      <tr class="<?php pql_format_table(); ?>"><td><?=$LANG->_('No '.pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS").' defined')?></td></tr>
 <?php } else {
 		asort($rcpthosts);
 		foreach($rcpthosts as $rcpt) {
 ?>
-      <tr class="<?php table_bgcolor(); ?>"><td><?=$rcpt?></td></tr>
+      <tr class="<?php pql_format_table(); ?>"><td><?=$rcpt?></td></tr>
 <?php   } // end foreach
     } // end if is_array
 
@@ -92,7 +92,7 @@ function rcpthosts_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain'))); ?>:</th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td><input type="text" name="set" size="30"></td>
         </tr>
       </th>

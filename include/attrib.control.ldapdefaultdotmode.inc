@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldapdefaultdotmode (default mode how to interpret .qmail files)
 //
-// $Id: attrib.control.ldapdefaultdotmode.inc,v 2.10 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.ldapdefaultdotmode.inc,v 2.11 2003-11-20 08:01:36 turbo Exp $
 
 function ldapdefaultdotmode_check($type) {
 	global $error, $ldapdefaultdotmode, $view, $LANG;
@@ -54,7 +54,7 @@ function ldapdefaultdotmode_print_view($host) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">ldapdefaultdotmode (<?=$LANG->_('Default dot mode')?>)</th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Mode')?></td>
         <td><?=$ldapdefaultdotmode?></td>
       </tr>
@@ -73,9 +73,9 @@ function ldapdefaultdotmode_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">ldapdefaultdotmode (<?=$LANG->_('Default dot mode')?>)</th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Mode')?></td>
-          <td><?php echo format_error($error["ldapdefaultdotmode"]); ?>
+          <td><?php echo pql_format_error_span($error["ldapdefaultdotmode"]); ?>
             <select name="ldapdefaultdotmode">
               <option value="ldaponly" <?php if($ldapdefaultdotmode == "ldaponly"){ echo "SELECTED"; }?>>ldaponly (<?=$LANG->_('LDAP attribute "deliveryProgramPath" and .qmail files are ignored')?>)</option>
               <option value="dotonly" <?php if($ldapdefaultdotmode == "dotonly"){ echo "SELECTED"; }?>>dotonly (<?=$LANG->_('only .qmail')?>)</option>

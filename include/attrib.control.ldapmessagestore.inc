@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldapmessagestore (default prefix for mailbox paths)
 //
-// $Id: attrib.control.ldapmessagestore.inc,v 2.9 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.ldapmessagestore.inc,v 2.10 2003-11-20 08:01:36 turbo Exp $
 
 function ldapmessagestore_check($type) {
 	global $error, $ldapmessagestore, $view, $LANG;
@@ -47,7 +47,7 @@ function ldapmessagestore_print_view($host) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">ldapmessagestore (<?=$LANG->_('Default mailbox prefix path')?>)</th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Path')?></td>
         <td><?=$ldapmessagestore?></td>
       </tr>
@@ -66,9 +66,9 @@ function ldapmessagestore_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">ldapmessagestore (<?=$LANG->_('Default mailbox prefix path')?>)</th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Path')?></td>
-          <td><?php echo format_error($error["ldapmessagestore"]); ?><input type="text" name="ldapmessagestore" value="<?=$ldapmessagestore?>"></td>
+          <td><?php echo pql_format_error_span($error["ldapmessagestore"]); ?><input type="text" name="ldapmessagestore" value="<?=$ldapmessagestore?>"></td>
         </tr>
       </th>
     </table>

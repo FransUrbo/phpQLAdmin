@@ -18,7 +18,7 @@
 		  }
     }
     
-    $class=table_bgcolor(0);
+    $class=pql_format_table(0);
     if(isset($domains)) {
 		asort($domains);
 		$new_tr = 0;
@@ -49,7 +49,7 @@
         <td></td>
       </tr>
 <?php   if($ALLOW_BRANCH_CREATE) {
-	    $class=table_bgcolor(0);
+	    $class=pql_format_table(0);
 ?>
 
       <tr class="<?=$class?>">

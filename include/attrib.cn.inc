@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // cn (Full name)
-// $Id: attrib.cn.inc,v 2.17 2003-11-19 19:38:33 turbo Exp $
+// $Id: attrib.cn.inc,v 2.18 2003-11-20 08:01:36 turbo Exp $
 
 function attribute_check($type) {
     global $cn, $oldvalue, $_pql, $error, $LANG;
@@ -26,9 +26,9 @@ function attribute_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Common name')?></th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Common name')?></td>
-          <td><?php echo format_error($error[pql_get_define("PQL_GLOB_ATTR_CN")]); ?><input type="text" name="cn"></td>
+          <td><?php echo pql_format_error_span($error[pql_get_define("PQL_GLOB_ATTR_CN")]); ?><input type="text" name="cn"></td>
         </tr>
       </th>
     </table>

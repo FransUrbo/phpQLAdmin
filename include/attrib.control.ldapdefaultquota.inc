@@ -2,7 +2,7 @@
 // control attribute plugin for
 // $ldapdefaultquota (default quota for all mail users)
 
-// $Id: attrib.control.ldapdefaultquota.inc,v 2.10 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.ldapdefaultquota.inc,v 2.11 2003-11-20 08:01:36 turbo Exp $
 
 function ldapdefaultquota_check($type) {
     global $options, $use_maxsize, $use_maxmails, $maxsize, $maxmails, $error, $view, $LANG;
@@ -88,7 +88,7 @@ function ldapdefaultquota_print_view($host) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="2" align="left">ldapdefaultquota (<?=$LANG->_('Default quota')?>)</th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td><?=$ldapdefaultquota?></td>
       </tr>
 
@@ -108,23 +108,23 @@ function ldapdefaultquota_print_form($type = "modify") {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Change quota')?></th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Options')?></td>
           <td><input type="radio" name="options" value="default" <?php if($options == "default"){ echo "checked"; }?>> Unlimited <input type="radio" name="options" value="user" <?php if($options == "user"){ echo "checked"; }?>> <?=$LANG->_('User defined')?></td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Maximum size of mailbox')?></td>
-          <td><input type="checkbox" name="use_maxsize" value="1" <?php if($use_maxsize == "1"){ echo "checked"; }?>> <?php echo format_error($error["maxsize"]); ?><input type="text" name="maxsize" value="<?=$maxsize?>"> KB</td>
+          <td><input type="checkbox" name="use_maxsize" value="1" <?php if($use_maxsize == "1"){ echo "checked"; }?>> <?php echo pql_format_error_span($error["maxsize"]); ?><input type="text" name="maxsize" value="<?=$maxsize?>"> KB</td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Maximum number of mails')?></td>
-          <td><input type="checkbox" name="use_maxmails" value="1" <?php if($use_maxmails == "1"){ echo "checked"; }?>> <?php echo format_error($error["maxmails"]); ?><input type="text" name="maxmails" value="<?=$maxmails?>"> Mails</td>
+          <td><input type="checkbox" name="use_maxmails" value="1" <?php if($use_maxmails == "1"){ echo "checked"; }?>> <?php echo pql_format_error_span($error["maxmails"]); ?><input type="text" name="maxmails" value="<?=$maxmails?>"> Mails</td>
         </tr>
 
         <tr class="subtitle">
-          <td colspan="2"><?php echo format_error($error["selected"]); ?><img src="images/info.png" width="16" height="16" border="0"> Note: This affects to all user which have set quota to standard.<br>It's recommended that you set both, max mails and max size for default quota.</td>
+          <td colspan="2"><?php echo pql_format_error_span($error["selected"]); ?><img src="images/info.png" width="16" height="16" border="0"> Note: This affects to all user which have set quota to standard.<br>It's recommended that you set both, max mails and max size for default quota.</td>
         </tr>
       </th>
     </table>

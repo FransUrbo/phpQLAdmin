@@ -1,7 +1,7 @@
   <!-- Basic user details - Full name (sn), Login shell etc -->
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Username')?></td>
 <?php $ref = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn); ?>
         <td><?=$$ref?></td>
@@ -24,7 +24,7 @@
 			  $user .= ",";
 		}
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('User DN')?></td>
         <td><?=$user?></td>
         <td>
@@ -41,7 +41,7 @@
       </tr>
 
 <?php } ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Password')?></td>
         <td><?=$userpassword?></td>
         <td>
@@ -49,14 +49,14 @@
         </td>
       </tr>
 
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Surname').", ".$LANG->_('Lastname')?></td>
         <td><?=$cn?></td>
         <td><a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=cn&user=<?=$userdn?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change common name')?>" border="0"></a></td>
       </tr>
 
 <?php if($ADVANCED_MODE) { ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Login shell')?></td>
         <td><?php if($loginshell){echo $loginshell;}else{echo $LANG->_('None');} ?></td>
         <td>
@@ -66,7 +66,7 @@
         </td>
       </tr>
 
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Home directory')?></td>
         <td><?php if($homedirectory){echo $homedirectory;}else{echo $LANG->_('None');} ?></td>
         <td>
@@ -79,7 +79,7 @@
 <?php
 	if(($uidnumber != '') && ($gidnumber != '')) {
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?="UID;GID"?></td>
         <td><?=$uidnumber . ";" . $gidnumber?></td>
         <td></td>

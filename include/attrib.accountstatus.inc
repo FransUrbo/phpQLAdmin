@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // accountstatus (status of mailaccount)
-// $Id: attrib.accountstatus.inc,v 2.13 2003-11-19 19:38:32 turbo Exp $
+// $Id: attrib.accountstatus.inc,v 2.14 2003-11-20 08:01:36 turbo Exp $
 
 function attribute_check($type) {
     global $error, $view, $set, $domain, $rootdn, $attrib, $user, $date, $days, $LANG, $_pql;
@@ -61,7 +61,7 @@ function attribute_print_form($type = "set") {
   <form action="<?=$PHP_SLEF?>" method="post">
     <table cellspacing="0" cellpadding="3">
       <th colspan="3" align="left"><?=$LANG->_('Time when the account is disabled')?></th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Expiration date')?></td>
           <td><input type="text" name="date" id="f_date_c" readonly="1" /></td>
           <td><img src="jscalendar/img.gif" id="f_trigger_c" style="cursor: pointer; border: 1px solid red;" title="Date selector"

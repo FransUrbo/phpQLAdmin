@@ -3,7 +3,7 @@
 // tarpitcount (user id of virtual user)
 // tarpitdelay (group id of virtual user)
 //
-// $Id: attrib.control.tarpitcount.inc,v 2.10 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.tarpitcount.inc,v 2.11 2003-11-20 08:01:36 turbo Exp $
 
 function tarpitcount_check($type) {
 	global $error, $tarpitcount, $tarpitdelay, $view, $LANG;
@@ -78,12 +78,12 @@ function tarpitcount_print_view($host) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">tarpitcount, tarpitdelay (<?=$LANG->_('Tarpitting settings')?>)</th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Tarpitting settings')?></td>
         <td><?=$tarpitcount?></td>
       </tr>
 
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Tarpit delay')?></td>
         <td><?=$tarpitdelay?> <?=$LANG->_('Seconds', 4)?></td>
       </tr>
@@ -103,14 +103,14 @@ function tarpitcount_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">tarpitcount, tarpitdelay (<?=$LANG->_('Tarpitting settings')?>)</th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Tarpit count')?></td>
-          <td><?php echo format_error($error["tarpitcount"]); ?><input type="text" name="tarpitcount" value="<?=$tarpitcount?>"> RCPTO's</td>
+          <td><?php echo pql_format_error_span($error["tarpitcount"]); ?><input type="text" name="tarpitcount" value="<?=$tarpitcount?>"> RCPTO's</td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Tarpit delay')?></td>
-          <td><?php echo format_error($error["tarpitdelay"]); ?><input type="text" name="tarpitdelay" value="<?=$tarpitdelay?>"> <?=$LANG->_('Seconds', 4)?></td>
+          <td><?php echo pql_format_error_span($error["tarpitdelay"]); ?><input type="text" name="tarpitdelay" value="<?=$tarpitdelay?>"> <?=$LANG->_('Seconds', 4)?></td>
         </tr>
 
         <tr class="subtitle">

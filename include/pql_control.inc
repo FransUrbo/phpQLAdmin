@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.31 2003-11-19 16:20:50 turbo Exp $
+// $Id: pql_control.inc,v 2.32 2003-11-20 08:01:37 turbo Exp $
 //
 
 // {{{ control connection class
@@ -46,11 +46,11 @@ function pql_control_get_hosts($ldap_linkid, $ldap_basedn) {
 					   array('cn', 'dn'));
 
     if($sr == false) {
-		pql_errormsg($ldap_linkid);
+		pql_format_error_msg($ldap_linkid);
 		return false;
     }
 
-	$info = @ldap_get_entries($ldap_linkid, $sr) or pql_errormsg($ldap_linkid);
+	$info = @ldap_get_entries($ldap_linkid, $sr) or pql_format_error_msg($ldap_linkid);
 
 	for ($i=0; $i<$info["count"]; $i++) {
 		$hosts[] = pql_maybe_decode($info[$i]['cn'][0]);
@@ -97,7 +97,7 @@ function pql_control_replace_attribute($ldap_linkid, $ldap_control_basedn, $attr
 		if(!ldap_mod_del($ldap_linkid, $ldap_control_basedn, $del)) {
 			echo "Can't delete attribute $attrib<br>";
 
-			pql_errormsg($ldap_linkid);
+			pql_format_error_msg($ldap_linkid);
 			die("$LDIF");
 			return false;
 		}
@@ -106,7 +106,7 @@ function pql_control_replace_attribute($ldap_linkid, $ldap_control_basedn, $attr
 		if(!ldap_mod_add($ldap_linkid, $ldap_control_basedn, $entry)) {
 			echo "Can't add attribute $attrib<br>";
 
-			pql_errormsg($ldap_linkid);
+			pql_format_error_msg($ldap_linkid);
 			die("$LDIF");
 			return false;
 		}
@@ -127,7 +127,7 @@ function pql_control_search_attribute($ldap_linkid, $ldap_basedn, $attribute, $v
     $sr = @ldap_search($ldap_linkid, $ldap_basedn, $filter, array($attribute));
     
     if($sr == false) {
-		pql_errormsg($ldap_linkid);
+		pql_format_error_msg($ldap_linkid);
 		return false;
     }
 
@@ -136,7 +136,7 @@ function pql_control_search_attribute($ldap_linkid, $ldap_basedn, $attribute, $v
 			$ed = ldap_first_entry($ldap_linkid, $sr);
 			return ldap_get_dn($ldap_linkid,$ed);
 		} else {
-			$info = ldap_get_entries($ldap_linkid, $sr) or pql_errormsg($linkid);
+			$info = ldap_get_entries($ldap_linkid, $sr) or pql_format_error_msg($linkid);
 			for($i=0; $i < $info["count"]; $i++)
 			  $retval[] = $info[$i]["dn"];
 
@@ -154,7 +154,7 @@ function pql_control_add_attribute($ldap_linkid, $ldap_control_basedn, $attrib, 
     $entry[$attrib] = pql_maybe_encode($value);
 
     if(!@ldap_mod_add($ldap_linkid, $ldap_control_basedn, $entry)) {
-		pql_errormsg($ldap_linkid);
+		pql_format_error_msg($ldap_linkid);
 		return false;
     }
     
@@ -168,7 +168,7 @@ function pql_control_remove_attribute($ldap_linkid, $dn, $attrib, $value) {
     $entry[$attrib] = pql_maybe_encode($value);
     
     if(!ldap_mod_del($ldap_linkid, $dn, $entry)) {
-		pql_errormsg($ldap_linkid);
+		pql_format_error_msg($ldap_linkid);
 		return false;
     }
     
@@ -183,7 +183,7 @@ function pql_control_remove_whole_attribute($ldap_linkid, $ldap_control_basedn, 
 	$entry[$attrib] = array();
 
     if(!@ldap_mod_replace($ldap_linkid, $ldap_control_basedn, $entry)) {
-		pql_errormsg($ldap_linkid);
+		pql_format_error_msg($ldap_linkid);
 		return false;
     }
     

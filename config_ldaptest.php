@@ -1,6 +1,6 @@
 <?php
 // make some simple tests on ldap connection
-// $Id: config_ldaptest.php,v 2.23 2003-11-14 11:55:52 turbo Exp $
+// $Id: config_ldaptest.php,v 2.24 2003-11-20 08:01:28 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -152,16 +152,16 @@ if(!function_exists("ldap_connect")){
 			  . "(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) . "=*))";
 			
 			$sr = @ldap_list($_pql->ldap_linkid, $basedn, $filter)
-			  or pql_errormsg($_pql->ldap_linkid);
+			  or pql_format_error_msg($_pql->ldap_linkid);
 			$info = @ldap_get_entries($_pql->ldap_linkid, $sr)
-			  or pql_errormsg($_pql->ldap_linkid);
+			  or pql_format_error_msg($_pql->ldap_linkid);
 
 			if(! $info["count"]) {
 				// Didn't find anything on a one-level search, try a global one...
 				$sr = @ldap_search($_pql->ldap_linkid, $basedn, $filter)
-				  or pql_errormsg($_pql->ldap_linkid);
+				  or pql_format_error_msg($_pql->ldap_linkid);
 				$info = @ldap_get_entries($_pql->ldap_linkid, $sr)
-				  or pql_errormsg($_pql->ldap_linkid);
+				  or pql_format_error_msg($_pql->ldap_linkid);
 			}
 
 			for ($i=0; $i<$info["count"]; $i++) {
@@ -242,17 +242,17 @@ include("./header.html");
     <th colspan="3" align="left"><?=$LANG->_('LDAP server connection and setup tests')?>
       <tr>
         <td class="title"><?=$LANG->_('PHP LDAP extension')?></td>
-        <td class="<?php table_bgcolor(); ?>"><?=$ldap_ext?>&nbsp;</td>
+        <td class="<?php pql_format_table(); ?>"><?=$ldap_ext?>&nbsp;</td>
       </tr>
 
       <tr>
         <td class="title"><?=$LANG->_('User directory connection')?></td>
-        <td class="<?php table_bgcolor(); ?>"><?=$connection?>&nbsp;</td>
+        <td class="<?php pql_format_table(); ?>"><?=$connection?>&nbsp;</td>
       </tr>
 
       <tr>
         <td class="title"><?=$LANG->_('Control directory connection')?></td>
-        <td class="<?php table_bgcolor(); ?>"><?=$connection_control?>&nbsp;</td>
+        <td class="<?php pql_format_table(); ?>"><?=$connection_control?>&nbsp;</td>
       </tr>
 <?php if($ADVANCED_MODE == 1) { ?>
 
@@ -261,27 +261,27 @@ include("./header.html");
       <tr>
         <td class="title"><?=$LANG->_('LDAP server contains phpQLAdminConfig objectclass')?></td>
 <?php    if(pql_get_subschemas($_pql->ldap_linkid, "phpQLAdminConfig")) { ?>
-        <td class="<?php table_bgcolor(); ?>"><?=$LANG->_('Yes')?></td>
+        <td class="<?php pql_format_table(); ?>"><?=$LANG->_('Yes')?></td>
 <?php    } else { ?>
-        <td class="<?php table_bgcolor(); ?>"><?=$LANG->_('No')?>. <?=$LANG->_('Please load file')?> <a href="phpQLAdmin.schema">phpQLAdmin.schema</a>&nbsp;</td>
+        <td class="<?php pql_format_table(); ?>"><?=$LANG->_('No')?>. <?=$LANG->_('Please load file')?> <a href="phpQLAdmin.schema">phpQLAdmin.schema</a>&nbsp;</td>
 <?php    } ?>
       </tr>
 
       <tr>
         <td class="title"><?=$LANG->_('LDAP server contains phpQLAdminBranch objectclass')?></td>
 <?php    if(pql_get_subschemas($_pql->ldap_linkid, "phpQLAdminBranch")) { ?>
-        <td class="<?php table_bgcolor(); ?>"><?=$LANG->_('Yes')?></td>
+        <td class="<?php pql_format_table(); ?>"><?=$LANG->_('Yes')?></td>
 <?php    } else { ?>
-	<td class="<?php table_bgcolor(); ?>"><?=$LANG->_('No')?>. <?=$LANG->_('Please load file')?> <a href="phpQLAdmin.schema">phpQLAdmin.schema</a>&nbsp;</td>
+	<td class="<?php pql_format_table(); ?>"><?=$LANG->_('No')?>. <?=$LANG->_('Please load file')?> <a href="phpQLAdmin.schema">phpQLAdmin.schema</a>&nbsp;</td>
 <?php    } ?>
       </tr>
 
       <tr>
         <td class="title">LDAP server contains schema for <a href="http://www.ietf.org/rfc/rfc2377.txt" target="_new">RFC 2377</a></td>
 <?php    if(pql_get_subschemas($_pql->ldap_linkid, "dcOrganizationNameForm")) { ?>
-        <td class="<?php table_bgcolor(); ?>"><?=$LANG->_('Yes')?></td>
+        <td class="<?php pql_format_table(); ?>"><?=$LANG->_('Yes')?></td>
 <?php    } else { ?>
-        <td class="<?php table_bgcolor(); ?>"><?=$LANG->_('No')?>. <?=$LANG->_('Please load file')?> <a href="rfc2377.schema">rfc2377.schema</a>&nbsp;</td>
+        <td class="<?php pql_format_table(); ?>"><?=$LANG->_('No')?>. <?=$LANG->_('Please load file')?> <a href="rfc2377.schema">rfc2377.schema</a>&nbsp;</td>
 <?php    }
       }
 ?>
@@ -295,7 +295,7 @@ include("./header.html");
 ?>
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Access to write phpQLAdmin configuration in DN %dn%'), array('dn' => $dn)); ?></td>
-        <?php $class=table_bgcolor(0); ?>
+        <?php $class=pql_format_table(0); ?>
         <td class="<?=$class?>"><?=$TEST["basedn"][$dn]?></td>
       </tr>
 
@@ -308,13 +308,13 @@ include("./header.html");
 ?>
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Access to create branches in DN %dn%'), array('dn' => $dn)); ?></td>
-        <?php $class=table_bgcolor(0); ?>
+        <?php $class=pql_format_table(0); ?>
         <td class="<?=$class?>"><?=$TEST["branches"][$dn]?></td>
       </tr>
 
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Access to create branch with ACIs in DN %dn%'), array('dn' => $dn)); ?></td>
-        <?php $class=table_bgcolor(0); ?>
+        <?php $class=pql_format_table(0); ?>
         <td class="<?=$class?>"><?=$TEST["acis"][$dn]?></td>
       </tr>
 
@@ -330,7 +330,7 @@ include("./header.html");
 ?>
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Access to modify DN \b%dn%\B'), array('dn' => $domain)); ?></b></td>
-        <?php $class=table_bgcolor(0); ?>
+        <?php $class=pql_format_table(0); ?>
         <td class="<?=$class?>"><?=$TEST["branches"][$domain]?></td>
       </tr>
 

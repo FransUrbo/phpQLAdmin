@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.77 2003-11-19 16:20:27 turbo Exp $
+// $Id: user_add.php,v 2.78 2003-11-20 08:01:29 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -116,7 +116,7 @@ switch($page_curr) {
 	}
 
 	// Second test if email is valid
-    if(!check_email($email)) {
+    if(!pql_check_email($email)) {
 		$error = true;
 
 		$error_text["email"] = $LANG->_('Invalid');
@@ -161,7 +161,7 @@ switch($page_curr) {
 		}
 	} else {
 		// Forwarding accounts - make sure the forwarding mail address is ok
-		if(!check_email($forwardingaddress)) {
+		if(!pql_check_email($forwardingaddress)) {
 			$error = true;
 			$error_text["forwardingaddress"] = $LANG->_('Invalid');
 		}

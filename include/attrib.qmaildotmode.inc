@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // qmaildotmode (interpretation of .qmail-files)
-// $Id: attrib.qmaildotmode.inc,v 2.11 2003-11-18 13:16:38 turbo Exp $
+// $Id: attrib.qmaildotmode.inc,v 2.12 2003-11-20 08:01:37 turbo Exp $
 
 function attribute_check($type) {
 	global $qmaildotmode, $domain, $oldvalue, $_pql, $error, $LANG;
@@ -42,10 +42,10 @@ function attribute_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Change dotmode')?></th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Change dotmode')?></td>
           <td>
-            <?php echo format_error($error["qmaildotmode"]); ?>
+            <?php echo pql_format_error_span($error["qmaildotmode"]); ?>
             <select name="qmaildotmode">
 			  <option value="default" <?=$qmaildotmode_select["default"]?>><?=$LANG->_('Default (taken from ldapDefaultDotMode)')?></option>
 			  <option value="both" <?=$qmaildotmode_select["both"]?>><?=$LANG->_('Both (deliveryProgramPath + .qmail)')?></option>
@@ -59,7 +59,7 @@ function attribute_print_form() {
 
         <tr class="subtitle">
           <td colspan="2">
-            <?php echo format_error($error["general"]); ?>
+            <?php echo pql_format_error_span($error["general"]); ?>
             <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?=$LANG->_('If you set dotmode to both or ldapwithprog you should add a deliveryprogram too')?>
           </td>
         </tr>

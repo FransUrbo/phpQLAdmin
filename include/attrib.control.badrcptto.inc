@@ -2,7 +2,7 @@
 // control attribute plugin for
 // badrcptto (blocked local addresses)
 //
-// $Id: attrib.control.badrcptto.inc,v 2.13 2003-11-19 16:32:48 turbo Exp $
+// $Id: attrib.control.badrcptto.inc,v 2.14 2003-11-20 08:01:36 turbo Exp $
 
 function badrcptto_check($type) {
 	global $error, $badrcptto, $view, $LANG;
@@ -13,7 +13,7 @@ function badrcptto_check($type) {
 		 	if($badmail == "")
 			  continue;
 			
-			if(!check_email($badmail)) {
+			if(!pql_check_email($badmail)) {
 				$is_error = true;
 				$error["badrcptto_$key"] = $LANG->_('Invalid');
 			}
@@ -62,14 +62,14 @@ function badrcptto_print_view($host) {
 <?php
 	if(!is_array($badrcptto)) {
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td><?=$LANG->_('Not set')?></td>
       </tr>
 <?php
 	} else {
 		foreach($badrcptto as $mail) {
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td><?=$mail?></td>
       </tr>
 
@@ -98,13 +98,13 @@ function badrcptto_print_form() {
           <td><?=$LANG->_('Address')?></td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
-          <td><?php echo format_error($error["badrcptto_0"]); ?><input type="text" name="badrcptto[0]" value="<?=$badrcptto[0]?>"></td>
+        <tr class="<?php pql_format_table(); ?>">
+          <td><?php echo pql_format_error_span($error["badrcptto_0"]); ?><input type="text" name="badrcptto[0]" value="<?=$badrcptto[0]?>"></td>
         </tr>
 
 <?php for($i = 1; $i <= $badcount; $i++) { ?>
-        <tr class="<?php table_bgcolor(); ?>">
-          <td><?php echo format_error($error["badrcptto_$i"]); ?><input type="text" name="badrcptto[<?=$i?>]" value="<?=$badrcptto[$i]?>"></td>
+        <tr class="<?php pql_format_table(); ?>">
+          <td><?php echo pql_format_error_span($error["badrcptto_$i"]); ?><input type="text" name="badrcptto[<?=$i?>]" value="<?=$badrcptto[$i]?>"></td>
         </tr>
 
 <?php } ?>

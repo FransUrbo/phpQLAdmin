@@ -38,7 +38,7 @@
   <table cellspacing="0" cellpadding="3" border="0">
     <th align="left"><?=$LANG->_('Control options')?>: <?php echo pql_complete_constant($LANG->_('Defined in %attribute%'), array('attribute' => $attrib)); ?>
 <?php		foreach($domainnames as $d) { ?>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$d?></td>
         <td><?=$DEFINED[$attrib][$d]?></td>
         <td><?=$LINKS[$attrib][$d]?></td>

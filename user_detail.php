@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.59 2003-11-19 19:38:19 turbo Exp $
+// $Id: user_detail.php,v 2.60 2003-11-20 08:01:29 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -24,7 +24,7 @@ include("./header.html");
 
 // print status message, if one is available
 if(isset($msg)) {
-	print_status_msg($msg);
+	pql_format_status_msg($msg);
 }
 
 // reload navigation bar if needed

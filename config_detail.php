@@ -1,6 +1,6 @@
 <?php
 // shows configuration of phpQLAdmin
-// $Id: config_detail.php,v 2.47 2003-11-16 09:05:17 turbo Exp $
+// $Id: config_detail.php,v 2.48 2003-11-20 08:01:28 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -11,7 +11,7 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 // print status message, if one is available
 if(isset($msg)) {
-    print_status_msg($msg);
+    pql_format_status_msg($msg);
 }
 
 // reload navigation bar if needed

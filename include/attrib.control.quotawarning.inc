@@ -2,7 +2,7 @@
 // control attribute plugin for
 // quotawarning (additional quota warning message)
 //
-// $Id: attrib.control.quotawarning.inc,v 2.9 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.quotawarning.inc,v 2.10 2003-11-20 08:01:36 turbo Exp $
 
 function quotawarning_check($type) {
 	global $error, $quotawarning, $use_quotawarning, $view, $LANG;
@@ -46,7 +46,7 @@ function quotawarning_print_view($host) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">quotawarning (<?=$LANG->_('Additional quota warning message')?>)</th>
-      <tr class="<?php table_bgcolor(); ?>">
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Message')?></td>
         <td><?php echo nl2br($quotawarning); ?></td>
       </tr>
@@ -65,7 +65,7 @@ function quotawarning_print_form() {
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">quotawarning (<?=$LANG->_('Additional quota warning message')?>)</th>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Send quota warnings')?></td>
           <td>
             <input type="radio" name="use_quotawarning" value="0" <?php if($use_quotawarning == "0"){ echo "checked"; } //" ?>> no
@@ -73,9 +73,9 @@ function quotawarning_print_form() {
           </td>
         </tr>
 
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Message')?></td>
-          <td><?php echo format_error($error["quotawarning"]); ?><textarea cols="40" rows="10" name="quotawarning"><?=$quotawarning?></textarea></td>
+          <td><?php echo pql_format_error_span($error["quotawarning"]); ?><textarea cols="40" rows="10" name="quotawarning"><?=$quotawarning?></textarea></td>
         </tr>
       </th>
     </table>

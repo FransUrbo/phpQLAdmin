@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.28 2003-11-19 19:38:32 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.29 2003-11-20 08:01:36 turbo Exp $
 
 require("./left-head.html");
 
@@ -36,7 +36,7 @@ function attribute_print_form($action) {
 <?php } else { ?>
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what% for domain %domain%'), array('what' => $LANG->_('domain administrator'), 'domain' => $orgname)); ?></th>
 <?php } ?>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
 <?php
 	if(($attrib == pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR")) and $rootdn and $domain) {
 		// We're should give a user access to THIS branch
@@ -57,7 +57,7 @@ function attribute_print_form($action) {
 	}
 ?>
           <td>
-            <?php echo format_error($error[$$attrib]) . "\n"; ?>
+            <?php echo pql_format_error_span($error[$$attrib]) . "\n"; ?>
 <?php if($action != 'add') { ?>
             <input type="text" name="<?=$$attrib?>" value="<?=$$attrib?>" size="50"></td>
 <?php } else {
@@ -183,7 +183,7 @@ function attribute_print_form($action) {
 	}
 ?>
 <?php if($shown_first_rootdn) { ?>
-        <tr class="<?php table_bgcolor(); ?>">
+        <tr class="<?php pql_format_table(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
           <td>
             <?=$LANG->_('The DN with the asterisk (*) is the DN where phpQLAdmin configurations are stored. If you add a user to that DN, the user will get \'Super Administration Rights\'')?>!
