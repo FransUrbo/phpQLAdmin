@@ -1,6 +1,6 @@
 <?php
 // navigation bar - ezmlm mailinglists manager
-// $Id: left-ezmlm.php,v 2.25 2004-03-11 18:13:32 turbo Exp $
+// $Id: left-ezmlm.php,v 2.26 2004-04-01 07:00:24 turbo Exp $
 //
 session_start();
 
@@ -25,16 +25,22 @@ require("./left-head.html");
 // Initialize
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"], false, 0);
 
-// Get ALL domains we have access to.
-//	administrator: USER_DN
-// in the domain object
-foreach($_pql->ldap_basedn as $dn)  {
-	$dn = urldecode($dn);
-
-    $dom = pql_domain_get_value($_pql, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"), $_SESSION["USER_DN"]);
-    if($dom) {
-		foreach($dom as $d) {
-			$domains[] = urlencode($d);
+// ---------------- GET THE DOMAINS/BRANCHES
+if($_SESSION["ALLOW_BRANCH_CREATE"]) {
+    // This is a 'super-admin'. Should be able to read EVERYTHING!
+    $domains = pql_domain_get($_pql);
+} else {
+	// Get ALL domains we have access to.
+	//	administrator: USER_DN
+	// in the domain object
+	foreach($_pql->ldap_basedn as $dn)  {
+		$dn = urldecode($dn);
+		
+		$dom = pql_domain_get_value($_pql, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"), $_SESSION["USER_DN"]);
+		if($dom) {
+			foreach($dom as $d) {
+				$domains[] = urlencode($d);
+			}
 		}
 	}
 }
