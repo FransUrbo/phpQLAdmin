@@ -131,19 +131,6 @@ if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
         <td class="<?=$class?>"><?php if($config["PQL_GLOB_CHANGE_SERVER"]) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
       </tr>
     </th>
-
-    <th colspan="3" align="left">
-      <tr>
-        <table> 
-          <th>
-            <tr>
-              <td colspan="2"><img src="images/info.png" width="16" height="16" border="0" align="left"></td>
-              <td>The global phpQLAdmin configuration values are stored in <u><?=$_pql->ldap_basedn[0]?></u><br>(this is the first backend in the LDAP server!)</td>
-            </tr>
-          </th>
-        </table>
-      </tr>
-    </th>
   </table>
 
   <br><!-- ================================== --!>
