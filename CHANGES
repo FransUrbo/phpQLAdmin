@@ -37,6 +37,8 @@ phpQLAdmin 2.0.18d TO BE ANNOUNCED
 	  - New option to list_forward() - the list number. This so that when modifying
 	    a specific list, we're forwarded to this list's details (and not the domain
 	    list list :).
+	  - Make sure that the 'tarball' target (used when releasing) removes any '.DEBUG_ME'
+	    file. That file should not be included. It's up to the user(s) to create...
 
 phpQLAdmin 2.0.18c (May  5 2004)
 	Bug fixes
