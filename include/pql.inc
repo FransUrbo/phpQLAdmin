@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.7 2002-12-24 12:01:55 turbo Exp $
+// $Id: pql.inc,v 2.8 2003-01-03 10:46:21 turbo Exp $
 //
 // ----------------------------
 // Note: There are a few " followed after PHP comment
@@ -159,8 +159,11 @@ function pql_add_user($ldap_linkid, $ldap_basedn, $domain, $cn, $attribs, $accou
 		}
     }
     
+	if(PQL_LDAP_SUBTREE_USERS)
+	  $subrdn = "," . PQL_LDAP_SUBTREE_USERS;
+
     // dn of the user
-    $dn = PQL_LDAP_USER_RDN_ATTRIBUTE . "=" . $entry[PQL_LDAP_USER_RDN_ATTRIBUTE] . "," . PQL_LDAP_SUBTREE_USERS
+    $dn = PQL_LDAP_USER_RDN_ATTRIBUTE . "=" . $entry[PQL_LDAP_USER_RDN_ATTRIBUTE] . $subrdn
       . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . "," . $GLOBALS["USER_SEARCH_DN_USR"];
 
 //	// --------------------------
@@ -200,7 +203,10 @@ function pql_add_user($ldap_linkid, $ldap_basedn, $domain, $cn, $attribs, $accou
 		$entry["cn"] = $attribs["uid"];
 		$entry["gidnumber"] = $gidnr;
 		
-		$dn = "cn=" . $attribs["uid"] . "," . PQL_LDAP_SUBTREE_GROUPS . ","
+		if(PQL_LDAP_SUBTREE_GROUPS)
+		  $subrdn = "," . PQL_LDAP_SUBTREE_GROUPS;
+
+		$dn = "cn=" . $attribs["uid"] . $subrdn . ","
 		  . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . "," . $GLOBALS["USER_SEARCH_DN_USR"];
 
 //	// --------------------------
@@ -687,7 +693,10 @@ function pql_get_user($ldap_linkid, $ldap_basedn, $domain){
 function pql_get_group($ldap_linkid, $ldap_basedn, $domain){
     // get all groups of a domain
     
-    $dn = PQL_LDAP_SUBTREE_GROUPS . "," . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . "," . $ldap_basedn;
+	if(PQL_LDAP_SUBTREE_GROUPS)
+	  $subrdn = PQL_LDAP_SUBTREE_GROUPS . ",";
+
+    $dn = $subrdn . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . "," . $ldap_basedn;
     $filter = "(&(cn=*)(objectclass=posixgroup))";
     
     $sr = @ldap_list($ldap_linkid, $dn, $filter) or pql_errormsg($ldap_linkid);
@@ -999,12 +1008,15 @@ function pql_search_forwarders($ldap_linkid, $ldap_basedn, $domain, $user){
 			if((string)$key != "count"){
 				$ref = $result[PQL_LDAP_REFERENCE_USERS_WITH][0];
 				$cn = $result["cn"][0];
+
+				if(PQL_LDAP_SUBTREE_USERS)
+				  $subrdn = "," . PQL_LDAP_SUBTREE_USERS;
 				
 				// Find the 'domain' of the user by removing some parts of the DN
 				// This must be done if the user forwarding to the specified user,
 				// is located under another tree/domain.
 				// WARNING: CRUDE HACK!
-				$replace = PQL_LDAP_REFERENCE_USERS_WITH . "=.*," . PQL_LDAP_SUBTREE_USERS;
+				$replace = PQL_LDAP_REFERENCE_USERS_WITH . "=.*" . $subrdn;
 				$domain = eregi_replace($replace, "", $result["dn"]);
 				$domain = eregi_replace("," . $GLOBALS["USER_SEARCH_DN_USR"], "", $domain);
 				$domain = eregi_replace(PQL_LDAP_ATTR_DOMAIN . "=", "", $domain);
