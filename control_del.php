@@ -1,6 +1,6 @@
 <?php
 // Delete a mailserver controls object
-// $Id: control_del.php,v 2.17 2005-02-25 14:45:31 turbo Exp $
+// $Id: control_del.php,v 2.18 2005-03-01 09:30:02 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -29,7 +29,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
     // {{{ include control api if control is used
     include($_SESSION["path"]."/include/pql_control.inc");
     $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
-	// }}}
+// }}}
 
 	if(!$_REQUEST["submit"] or $_REQUEST["error"]) {
 		include($_SESSION["path"]."/header.html");
@@ -173,10 +173,14 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 	  else {
 		if(! ldap_delete($_pql_control->ldap_linkid, $dn)) {
 		  // Could not delete object
-		  $url = "control_detail.php?mxhost=".$mxhost."&msg=".urlencode("Failed to delete mailserver $mxhost.");
+		  $url = "control_detail.php?mxhost=".$mxhost."&msg=";
+		  $url .= urlencode(pql_complete_constant($LANG->_("Failed to delete mailserver %host%.",
+														   array('host' => $mxhost))));
 		} else {
 		  // Successfully deleted object
-		  $url = "home.php?rlnb=2&msg=".urlencode("Successfully deleted mailserver $mxhost.");
+		  $url = "home.php?rlnb=2&msg=";
+		  $url .= urlencode(pql_complete_constant($LANG->_("Successfully deleted mailserver %host%.",
+														   array('host' => $mxhost))));
 		}
 
 		header("Location: " . $_SESSION["URI"] . $url);
