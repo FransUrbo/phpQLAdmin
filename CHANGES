@@ -77,6 +77,17 @@ phpQLAdmin 2.0.15 Release (TO BE ANNOUNCED)
 	    true. Required a new attribute to the phpQLAdminBranch
 	    objectclass. The OID is:
 		userNamePrefix          1.3.6.1.4.1.8767.3.2.4.13
+	  - Duplicate the 'Defined in {rcpthosts,locals}' in the domain
+	    details page. This new option is 'Defined in smtproutes'.
+	    + To make this work, it is nessesary that the 'smtpRoutes'
+	      (OID: 1.3.6.1.4.1.7006.1.2.1.35) attribute have a matching
+	      rule of caseIgnoreIA5SubstringsMatch. What this means
+	      in plain English is that the line:
+		'SUBSTR caseIgnoreIA5SubstringsMatch'
+	      is added to the attribute definition in qmailControl.schema
+	      of your LDAP server. If this is not done, we won't be able
+	      to do a regexp search of the attribute...
+	    Closes bug 25
 
 	Misc changes
 	  - Configurable define in config.inc which dictate what user

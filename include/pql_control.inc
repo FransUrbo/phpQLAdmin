@@ -4,31 +4,19 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.24 2003-06-25 07:07:02 turbo Exp $
+// $Id: pql_control.inc,v 2.25 2003-06-28 09:21:07 turbo Exp $
 //
 // version history:
 // $Log: pql_control.inc,v $
-// Revision 2.24  2003-06-25 07:07:02  turbo
-// Close bug 23.
-//
-// The 'reason' for this bug is that '&' is a URL character that indicates
-// an option. For example:
-//
-//      /cgi-bin/somescript.cgi?first=option&second=other&etc=something
-//
-// Now, when the URL contains 'Falu Bil- & Industrifarg' (which, in
-// English would be 'Falu Car- & Industrycoulor'), the browser thinks
-// that ' Industrifarg' is an option to 'Falu bil- '. Hence the error...
-//
-// The fix is to URL encode (exchange speciall URL characters like '=', '&'
-// etc) with a special character. The '=' character would be '%3D' etc...
-//
-// The problem with this (URL encode branch and rootdn) is that I use that
-// (the root and branch DN) in the global config variable to distinguish
-// variables between branches.
-//
-// The fix is to create a function - pql_get_define() - that will decode the
-// DN (if supplied - a branch option) and send the result back to the caller.
+// Revision 2.25  2003-06-28 09:21:07  turbo
+// Implement a 'Defined in smtproutes' in the domain details page.
+// - To make this work, it is nessesary that the 'smtpRoutes'
+//   (OID: 1.3.6.1.4.1.7006.1.2.1.35) attribute have a matching rule of
+//   caseIgnoreIA5SubstringsMatch. What this means in plain English is that the
+//   line: 'SUBSTR caseIgnoreIA5SubstringsMatch' is added to the attribute
+//   definition in qmailControl.schema of your LDAP server. If this is not done,
+//   we won't be able to do a regexp search of the attribute...
+// Closes bug 25
 //
 // Revision 1.2  2001/09/06 11:36:24  mb
 // added no_connect option to pql_control-class
@@ -145,24 +133,31 @@ function pql_control_replace_attribute($ldap_linkid, $ldap_control_basedn, $attr
 
 // ------------------------------------------------
 
-function pql_control_search_attribute($ldap_linkid, $ldap_basedn, $attribute, $value) {
-	if(!$ldap_basedn) {
-		// Just incase there is no QmailLDAP/Controls object/DN
-		return false;
-	}
+function pql_control_search_attribute($ldap_linkid, $ldap_basedn, $attribute, $value, $multiple = 0) {
+	if(!$ldap_basedn)
+	  // Just incase there is no QmailLDAP/Controls object/DN
+	  return false;
 
     // search $attribute with $value in whole ldap tree, returns dn or false
     $filter = "(" . $attribute . "=" . $value . ")";
     $sr = @ldap_search($ldap_linkid, $ldap_basedn, $filter, array($attribute));
     
-    if($sr == false){
+    if($sr == false) {
 		pql_errormsg($ldap_linkid);
 		return false;
     }
-    
-    if(ldap_count_entries($ldap_linkid,$sr) > 0){
-		$ed = ldap_first_entry($ldap_linkid,$sr);
-		return ldap_get_dn($ldap_linkid,$ed);
+
+    if(ldap_count_entries($ldap_linkid, $sr) > 0) {
+		if(!$multiple) {
+			$ed = ldap_first_entry($ldap_linkid, $sr);
+			return ldap_get_dn($ldap_linkid,$ed);
+		} else {
+			$info = ldap_get_entries($ldap_linkid, $sr) or pql_errormsg($linkid);
+			for($i=0; $i < $info["count"]; $i++)
+			  $retval[] = $info[$i]["dn"];
+
+			return $retval;
+		}
     } else {
 		return false;
     }

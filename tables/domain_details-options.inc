@@ -30,6 +30,15 @@
 			else
 			  $rcpthosts_link = "&nbsp;";
 		}
+
+		// Link(s) for 'smtroutes'
+		if(pql_control_search_attribute($_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR, "smtproutes", $defaultdomain.'*')) {
+			$smtproutes = PQL_LANG_YES;
+			$smtproutes_link = "<a href=\"control_edit_attribute.php?rootdn=$rootdn&domain=$domain&attrib=smtproutes&type=del&set=$defaultdomain&view=$view\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"remove $defaultdomain from smtproutes\"></a>";
+		} else {
+			$smtproutes = PQL_LANG_NO;
+			$smtproutes_link = "<a href=\"control_edit_attribute.php?rootdn=$rootdn&domain=$domain&attrib=smtproutes&type=add&set=$defaultdomain&view=$view\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"add $defaultdomain to smtproutes\"></a>";
+		}
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th align="left"><?=PQL_LANG_OPTIONS?></th>
@@ -43,6 +52,12 @@
         <td class="title">Defined in rcpthosts</td>
         <td><?=$rcpthosts?></td>
         <td><?=$rcpthosts_link?></td>
+      </tr>
+  
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Defined in smtproutes</td>
+        <td><?=$smtproutes?></td>
+        <td><?=$smtproutes_link?></td>
       </tr>
     </th>
   </table>

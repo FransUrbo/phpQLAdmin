@@ -112,6 +112,7 @@ attributetype ( 1.3.6.1.4.1.7006.1.2.1.34 NAME 'smtpGreeting'
 attributetype ( 1.3.6.1.4.1.7006.1.2.1.35 NAME 'smtpRoutes'
 	DESC 'Artificial SMTP routes.'
 	EQUALITY caseIgnoreIA5Match
+	SUBSTR caseIgnoreIA5SubstringsMatch
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
 
 attributetype ( 1.3.6.1.4.1.7006.1.2.1.36 NAME 'timeoutConnect'
