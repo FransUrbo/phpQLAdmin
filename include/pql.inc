@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.98 2003-08-12 13:35:40 turbo Exp $
+// $Id: pql.inc,v 2.99 2003-08-12 14:39:35 turbo Exp $
 //
 
 // ----------------------------
@@ -1965,13 +1965,52 @@ function pql_validate_administrator($linkid, $dn, $admin) {
 }
 
 function pql_get_rootdn($dn) {
-	$rootdn = split(',', urldecode($dn));
+	global $_pql;
 
-	if($rootdn[1]) {
-		unset($rootdn[0]);
-		$dn = implode(",", $rootdn);
-	} else
-	  $dn = $rootdn[count($rootdn)-1];
+	if(is_array($_pql->ldap_basedn)) {
+		$counts = 0;
+		foreach($_pql->ldap_basedn as $base) {
+			$base = urldecode($base);
+			
+			if(eregi("$base\$", $dn))  {
+				$counts++;
+				$DNs[] = $base;
+			}
+		}
+		
+		if($counts >= 2) {
+			// We have more than one hit!!
+			// TODO: What do do with more than one hit!?
+			echo "This is weird. We have more than one hit ($counts to be exact) in our pql_get_rootdn() check!<br>";
+			echo "<br>";
+			echo "These are the DNs that matches the <u>$dn</u> DN. Please report this at the ";
+			echo '<a href="http://papadoc.bayour.com:23000/anthill/" target="_new">Bugtracker</a>.';
+			echo "<br>";
+			printr($DNs);
+			die();
+		} elseif($counts < 1) {
+			// BUG! We don't have a hit!
+			echo "This is weird. We couldn't find the root dn for some reason. The DN we're trying to find a root DN for is: ";
+			echo "$dn.<p>Please report this at the ";
+			echo '<a href="http://papadoc.bayour.com:23000/anthill/" target="_new">Bugtracker</a>.';
+			die();
+		} else
+		  $dn = $DNs[0];
+	} else {
+		// We don't have any base dn's. Maybe because
+		// we're included from a file which doesn't
+		// have a connection to the LDAP server.
+		//
+		// Find the root dn the 'old fasioned' (ie,
+		// broken!) way.
+		$rootdn = split(',', urldecode($dn));
+		
+		if($rootdn[1]) {
+			unset($rootdn[0]);
+			$dn = implode(",", $rootdn);
+		} else
+		  $dn = $rootdn[count($rootdn)-1];
+	}
 
 	return(urlencode($dn));
 }
