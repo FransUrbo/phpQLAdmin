@@ -1,6 +1,6 @@
 <?php
 // Add a webserver configuration to the LDAP db
-// $Id: websrv_add.php,v 2.12 2005-03-09 09:59:03 turbo Exp $
+// $Id: websrv_add.php,v 2.13 2005-03-14 19:38:45 turbo Exp $
 //
 // {{{ Setup session
 require("./include/pql_session.inc");
@@ -60,7 +60,7 @@ if(($error == 'true') or !$_REQUEST["serverip"] or !$_REQUEST["serverurl"] or !$
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('webserver configuration'))); ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Server URL')?></td>
+          <td class="title"><?=$LANG->_('Server FQDN')?></td>
           <td><?php echo pql_format_error_span($error_text["serverurl"]); ?><input type="text" name="serverurl" size="40" value="<?=$_REQUEST["serverurl"]?>"></td>
         </tr>
 
