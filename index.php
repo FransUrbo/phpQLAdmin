@@ -1,6 +1,6 @@
 <?php
 // logins to the system
-// $Id: index.php,v 1.3 2002-12-12 21:52:08 turbo Exp $
+// $Id: index.php,v 1.4 2002-12-13 13:55:38 turbo Exp $
 //
 session_start();
 
@@ -8,22 +8,24 @@ require("pql.inc");
 require("pql_control.inc");
 require("pql_control_plugins.inc");
 
-// These variables will be NULL the first time,
-// so we will bind anonymously...
-$_pql = new pql($USER_DN, $USER_PASS);
-
 if ($logout == 1 or !empty($msg)) {
 	if ($logout == 1) {
 		$log = date("M d H:i:s");
 		$log .= " : Logged out ($USER_DN)\n";
 		error_log($log, 3, "phpQLadmin.log");
 	}
+
 	session_unset();
 	session_destroy();
+
 	if ($logout == 1) {
 		header("Location:index.php");
 	}
 }
+
+// These variables will be NULL the first time,
+// so we will bind anonymously...
+$_pql = new pql($USER_DN, $USER_PASS);
 
 if ($LOGIN_PASS == 1) {
 	Header("Location:index2.php");
@@ -63,7 +65,7 @@ if (empty($uname) or empty($passwd)) {
     <td class="title1"><? echo PQL_LOGIN; ?></td>
   </tr>
 </table>
-<form action="<?php echo $PHP_SELF; ?>" method=post>
+<form action="<?php echo $PHP_SELF; ?>" method=post name="phpqladmin">
   <table cellspacing="0" cellpadding="3" border="0" align=center>
 <?php
 	if (!empty($invalid)) {
@@ -120,6 +122,11 @@ if (empty($uname) or empty($passwd)) {
     </tr>
   </table>
 </form>
+<script language="JavaScript">
+  <!--
+    document.phpqladmin.uname.focus();
+  // -->
+</script>
 </body></html>
 
 <?php
@@ -130,12 +137,13 @@ if (empty($uname) or empty($passwd)) {
 	//
 	// NOTE:
 	// For the very first time, we have bound anonymously,
-	// so we must have read access as anonymously here!
-	$rootdn = pql_get_dn($_pql->ldap_linkid, PQL_LDAP_BASEDN, $USER_ID);
-	$_pql->close();
+	// so we must have read access (to the DN and CN/UID =>
+	// the PQL_LDAP_REFERENCE_USERS_WITH define entry) as
+	// anonymous here!
+	$rootdn = pql_get_dn($_pql->ldap_linkid, PQL_LDAP_BASEDN, $uname);
 
-	// Connecting, selecting database
-	$_pql = new pql($rootdn, $USER_PASS);
+	// Rebind as user
+	$_pql->bind($rootdn, $USER_PASS);
 	$error = ldap_errno($_pql->ldap_linkid);
 	if( $error != 0 ){
 		$msg = PQL_ERROR . ": " . ldap_err2str($error);
@@ -153,7 +161,7 @@ if (empty($uname) or empty($passwd)) {
 	}
 
 	$log = date("M d H:i:s");
-	$log .= " : Logged in ($USER_DN)\n";
+	$log .= " : Logged in ($rootdn)\n";
 	error_log($log, 3, "phpQLadmin.log");
 	Header("Location:index2.php");
 }
