@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // uid (user id)
-// $Id: attrib.uid.inc,v 2.18 2004-02-14 14:25:36 turbo Exp $
+// $Id: attrib.uid.inc,v 2.19 2004-02-14 15:27:08 turbo Exp $
 
 function attribute_check($type){
     global $error, $LANG, $_pql;
@@ -67,10 +67,6 @@ function attribute_print_form() {
 
 function attribute_save($type) {
     global $_pql, $LANG;
-	
-	// recontrol values
-	if(!attribute_check($type))
-	  return false;
 	
 	switch($type) {
 	  case "add":

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // qmaildotmode (interpretation of .qmail-files)
-// $Id: attrib.qmaildotmode.inc,v 2.14 2004-02-14 14:25:36 turbo Exp $
+// $Id: attrib.qmaildotmode.inc,v 2.15 2004-02-14 15:27:08 turbo Exp $
 
 function attribute_check($type) {
     global $error, $LANG;
@@ -80,10 +80,6 @@ function attribute_print_form() {
 
 function attribute_save($type) {
     global $_pql, $LANG;
-	
-	// recontrol values
-	if(!attribute_check($type))
-	  return false;
 	
 	switch($type) {
 	  case "add":

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.19 2004-02-14 14:25:35 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.20 2004-02-14 15:27:08 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -126,6 +126,7 @@ function attribute_print_form() {
 // }}}
 
 // {{{ attribute_save(type)
+
 function attribute_save($type) {
     global $_pql, $LANG;
 
@@ -133,10 +134,6 @@ function attribute_save($type) {
 	$oldvalue = @$_REQUEST["oldvalue"];
 	$additionaldomainname = $_REQUEST["additionaldomainname"];
 	$delval = @$_REQUEST["delval"];
-
-    // recontrol values
-    if(!attribute_check($type) and !$delval)
-	  return false;
 
 	if(($additionaldomainname == $oldvalue) and !$delval) {
 		// don't change if new value equal to old one
@@ -277,6 +274,7 @@ function attribute_save($type) {
 								  array('type' => $type, 'file' => __FILE__)));
     }
 }
+
 // }}}
 
 // Local variables:

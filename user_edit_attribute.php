@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of user
-// $Id: user_edit_attribute.php,v 2.31 2004-02-14 14:01:00 turbo Exp $
+// $Id: user_edit_attribute.php,v 2.32 2004-02-14 15:26:47 turbo Exp $
 //
 // This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
 //   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -76,10 +76,6 @@ print $_REQUEST["attrib"] . ": " . pql_plugin_get_filename(pql_plugin_get($_REQU
 <?php
 // select what to do
 if(($_POST["submit"] == 1) or ($_POST["submit"] == 2)) {
-    // DLW: Some of the attribute_save function do an attribute_check try to return status if the save failed.
-    //      It might be a good change to document that attribute_save HAS to call attribute_check
-    //      and have it return true IF it succeeded.  If it failes then attribute_print_form can
-    //      print out the reason.
     if(attribute_check("modify")){
 	attribute_save("modify");
     } else {

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mailquota.inc,v 2.17 2004-02-14 14:25:36 turbo Exp $
+// $Id: attrib.mailquota.inc,v 2.18 2004-02-14 15:27:08 turbo Exp $
 
 function attribute_check($type) {
     global $error, $LANG;
@@ -138,10 +138,6 @@ function attribute_print_form($type = "modify") {
 function attribute_save($type) {
     global $_pql, $LANG;
 	
-	// recontrol values
-	if(!attribute_check($type))
-	  return false;
-
 	switch($_REQUEST["options"]) {
 	  case "user":
 		if($_REQUEST["use_maxsize"] != "") {
