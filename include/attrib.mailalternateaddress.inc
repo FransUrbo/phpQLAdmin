@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailalternateaddress (emailaddress alias)
-// $Id: attrib.mailalternateaddress.inc,v 2.23.6.1 2004-05-25 13:57:51 turbo Exp $
+// $Id: attrib.mailalternateaddress.inc,v 2.23.6.1.2.1 2004-10-04 09:10:02 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -118,7 +118,7 @@ function attribute_save($type) {
     
     switch($type) {
       case "add":
-		if(pql_modify_userattribute($_pql->ldap_linkid, $_REQUEST["user"],
+		if(pql_modify_userattribute($_pql->ldap_linkid, urldecode($_REQUEST["user"]),
 									pql_get_define("PQL_ATTR_MAILALTERNATE"),
 									'', $_REQUEST["mailalternateaddress"])) {
 			$tmp  = split('@', $_REQUEST["mailalternateaddress"]);
@@ -148,7 +148,7 @@ function attribute_save($type) {
 			break;
 		}
 		
-		if(pql_modify_userattribute($_pql->ldap_linkid, $_REQUEST["user"],
+		if(pql_modify_userattribute($_pql->ldap_linkid, urldecode($_REQUEST["user"]),
 									pql_get_define("PQL_ATTR_MAILALTERNATE"),
 									$_REQUEST["oldvalue"], $_REQUEST["mailalternateaddress"])) {
 			$tmp  = split('@', $_REQUEST["mailalternateaddress"]);
