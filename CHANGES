@@ -5,10 +5,20 @@ phpQLAdmin 2.0.10 TO BE ANNOUNCED
 	  - Got multiple backends (namingContexts) to work properly
 	    Include reference to the root dn wherever we're referencing
 	    the domain DN.
+	  - When showing what the user have access to (in the user details
+	    page), DON'T (!) do it with the USER_DN as reference! That's
+	    the user who have logged in!
+	  - With new SYNTAX of bool values (came with the new schema) we
+	    must set TRUE/FALSE in the db, not 1/0.
 
 	GUI layout change
 	  - Show the user DN in the left frame and in user details
 	    if in advanced mode
+	  - Cleanup of the table/table row etc for 'Access to DN' (user
+	    details page).
+	    + If we have access, the URL should be named 'Give (more)
+	      admin rights', else 'Give admin rights'.
+	    + Possibility to remove access to domain/branch (trashcan).
 	  - New structure/layout in the config_details page:
 	    + Show each Top DN (namingContexts) as a separate
 	      column (actually two - one small for edit/delete
@@ -30,11 +40,16 @@ phpQLAdmin 2.0.10 TO BE ANNOUNCED
 	    + Don't set default {user,domain} objectclass(es). This
 	      is configured in the config_details page and is site
 	      and domain/branch specific.
+	    + If it's a GLOBal value, set the option in each of the
+	      root/top DN's availible (namingContexts).
 	  - If we find more than one object when we're looking for
 	    user we're loggin in as (example: one in each namingContexts),
 	    then try each DN with bind() -> Success is a keeper!
 	  - Cleanup of pql_get_domain_value() and pql_setup_branch_objectclasses().
 	    + Redundant (ie, never executed) code removed.
+	  - Prefix defines with either 'PQL_CONF_', 'PQL_GLOB_' or 'PQL_LANG_'
+	    depending on type of define -  Configuration, Global or Language
+	    constant/variable/reference...
 
 phpQLAdmin 2.0.9 Release (Mar 29 2003)
 	Highlights
