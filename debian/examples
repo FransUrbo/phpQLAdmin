@@ -1,2 +1,2 @@
-phpQLAdmin.schema
-rfc2377.schema
+schemas/phpQLAdmin.schema
+schemas/rfc2377.schema
