@@ -16,7 +16,10 @@
 # PQL_UIDNUMBER="1001"
 # PQL_USERPASSWORD="{KERBEROS}test@TEST.ORG"
 # PQL_KADMIN_CMD="/usr/sbin/kadmin"
-# PQL_KADMIN_CL="-r TEST.ORG -p phpQLAdmin -s kerberos.test.org -k -t /etc/krb5.keytab.phpQLAdmin"
+# PQL_KADMIN_REALM="TEST.ORG"
+# PQL_KADMIN_PRINC="phpQLAdmin"
+# PQL_KADMIN_SERVR="kerberos.test.org"
+# PQL_KADMIN_KEYTB="/etc/krb5.keytab.phpQLAdmin"
 
 $ENV{PATH} = "/bin:/usr/bin:/usr/sbin";
 
@@ -48,10 +51,34 @@ if(!$error) {
 }
 
 # Add the Kerberos principal
-if(-x $ENV{"PQL_KADMIN_CMD"} && $ENV{"PQL_USERPASSWORD"} && $ENV{"PQL_KADMIN_CL"}) {
+if(-x $ENV{"PQL_KADMIN_CMD"} && $ENV{"PQL_USERPASSWORD"}) {
     $principal = (split('}', $ENV{"PQL_USERPASSWORD"}))[1];
     $principal = (split('\@', $principal))[0];
 
-    @args = ($ENV{"PQL_KADMIN_CMD"}, $ENV{"PQL_KADMIN_CL"}, "-q 'ank -randkey $principal'");
+    push(@args, $ENV{"PQL_KADMIN_CMD"});
+    if($ENV{"PQL_KADMIN_REALM"}) {
+	push(@args, "-r");
+	push(@args, $ENV{"PQL_KADMIN_REALM"});
+    }
+
+    if($ENV{"PQL_KADMIN_PRINC"}) {
+	push(@args, "-p");
+	push(@args, $ENV{"PQL_KADMIN_PRINC"});
+    }
+
+    if($ENV{"PQL_KADMIN_SERVR"}) {
+	push(@args, "-s");
+	push(@args, $ENV{"PQL_KADMIN_SERVR"});
+    }
+
+    if($ENV{"PQL_KADMIN_KEYTB"}) {
+	push(@args, "-k");
+	push(@args, "-t");
+	push(@args, $ENV{"PQL_KADMIN_KEYTB"});
+    }
+
+    push(@args, "-q");
+    push(@args, "ank -randkey $principal");
+
     system(@args) == 0 or die "system command '@args' failed: $?"
 }
