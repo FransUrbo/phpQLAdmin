@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.0 2002-12-13 14:34:58 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.1 2002-12-14 21:02:39 turbo Exp $
 //
 session_start();
 // ----------------------------
@@ -346,6 +346,19 @@ function user_generate_mailstore($ldap_linkid, $ldap_basedn, $email, $domain, $e
 	//	$mailstore = strtoupper($mailstore);													
 
 	return($mailstore);
+}
+
+// ----------------------------
+// home directory generation
+// ----------------------------
+// See information about function user_generate_mailstore()
+// Above. Exact same options apply
+function user_generate_homedir($ldap_linkid, $ldap_basedn, $email, $domain, $entry) {
+	// $homedir = "/home/%d%/%u%";
+	// $homedir = pql_complete_constant($homedir, array("d" => $domain, 
+													 "u" => $entry[PQL_LDAP_ATTR_UID], 
+													 "h" => $entry[PQL_LDAP_ATTR_MAILHOST]));
+	return($homedir);
 }
 
 // ----------------------------
