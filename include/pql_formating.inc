@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.6 2003-11-26 16:45:59 turbo Exp $
+// $Id: pql_formating.inc,v 2.7 2003-11-27 21:00:11 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -176,9 +176,10 @@ function pql_format_tree_other($cnt, $text, $url, $level, $parent, $child) {
 		  $nbsp .= "&nbsp;";
 	}
 
-	if($url) {
-		$url = "href=\"$url\"";
-	}
+// Can't remember why I did this. Uncommenting it until I do...
+//	if($url) {
+//		$url = "href=\"$url\"";
+//	}
 ?>
   <div id="el<?=$cnt?><?=$parent?>" class="parent">
     <a class="item" <?=$url?> onClick="if (capable) {expandBase('el<?=$cnt?>', true); return false;}">
