@@ -4,12 +4,21 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.15 2003-05-06 12:48:44 turbo Exp $
+// $Id: pql_control.inc,v 2.16 2003-05-08 11:45:18 turbo Exp $
 //
 // version history:
 // $Log: pql_control.inc,v $
-// Revision 2.15  2003-05-06 12:48:44  turbo
-// Replicate domain to RCPTHosts to host which have it defined.
+// Revision 2.16  2003-05-08 11:45:18  turbo
+// * When writing a domain to locals/rcpthosts, make sure it doesn't already
+//   exists (if it does, return immediately)
+// * To be able to specify specific QmailLDAP/Controls object to write
+//   locals/rcpthosts, we need a fifth argument to the function pql_control_update_domains().
+//   This is used to select WHAT attribute to change (locals OR rcpthosts if it's
+//   set, BOTH if it's unset - default).
+// * Don't re-create the object DN if it begins with '^cn'. If it does, we
+//   have already specified a DN to begin with...
+// * If there is no previous locals/rcpthosts value, add one (with the domain
+//   name of choice).
 //
 // Revision 1.2  2001/09/06 11:36:24  mb
 // added no_connect option to pql_control-class
@@ -196,7 +205,7 @@ function pql_control_remove_whole_attribute($ldap_linkid, $ldap_control_basedn, 
 // replicate all registred domains to locals
 //
 // domain is array as: 'oldvalue', 'newvalue'
-function pql_control_update_domains($ldap, $dn, $host, $domain = "") {
+function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "") {
 	global $config;
 
     if(!$config["PQL_GLOB_CONTROL_USE"] or
@@ -257,61 +266,89 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "") {
 		if(is_array($hosts)) {
 			// Go through each QmailLDAP control object
 			foreach($hosts as $h) {
-				$hostdn = "cn=$h,$dn";
+				if(!eregi('^cn', $dn))
+				  $hostdn = "cn=$h,$dn";
+				else
+				  $hostdn = $dn;
+
 				unset($entry);
 
 				// --------------------------------
-				// Get current locals for this host
-				$locals = pql_control_get_attribute($ldap->ldap_linkid, $hostdn, "locals");
-				if(!is_null($locals)) {
-					// Do not set locals for hosts which HAVE no locals (ie, slaves)
-					foreach($locals as $local) {
-						// As long as local isn't equal to domain to add, create the LDIF entry
-						if($domain[0]) {
-							if(!eregi($domain[0], $local))
+				if(($type == 'locals') or !$type) {
+					// Get current locals for this host
+					$locals = pql_control_get_attribute($ldap->ldap_linkid, $hostdn, "locals");
+					if(!is_null($locals)) {
+						// Do not set locals for hosts which HAVE no locals (ie, slaves)
+						foreach($locals as $local) {
+							// Make sure the domain don't already exists...
+							if($domain[1] == $locals)
+							  return false;
+
+							// As long as local isn't equal to domain to add, create the LDIF entry
+							if($domain[0]) {
+								if(!eregi($domain[0], $local))
+								  $entry[] = $local;
+							} else
 							  $entry[] = $local;
-						} else
-						  $entry[] = $local;
-					}
-
-					// Add the domain to the LDIF entry
-					if($domain[1])
-					  $entry[] = $domain[1];
-
-					// Add 'hostname.newdomain' to LDIF entry
-					if($h and $domain[1]) {
-						$hostname = split("\.", $h);
-						$entry[] = $hostname[0] . "." . $domain[1];
-					}
-
-					pql_control_replace_attribute($ldap->ldap_linkid, $hostdn, "locals", $entry);
+						}
+						
+						// Add the domain to the LDIF entry
+						if($domain[1])
+						  $entry[] = $domain[1];
+						
+						// Add 'hostname.newdomain' to LDIF entry
+						if($h and $domain[1]) {
+							$hostname = split("\.", $h);
+							$entry[] = $hostname[0] . "." . $domain[1];
+						}
+						
+						pql_control_replace_attribute($ldap->ldap_linkid, $hostdn, "locals", $entry);
+					} else
+					  // No previous values, add domain
+					  pql_control_add_attribute($ldap->ldap_linkid, $hostdn, "locals", $domain[1]);
 				}
 
 				// --------------------------------
-				// Get current rcpthosts for this host
-				$rcpthosts = pql_control_get_attribute($ldap->ldap_linkid, $hostdn, "rcpthosts");
-				if(!is_null($rcpthosts)) {
-					// Do not set rcpthosts for hosts which HAVE no rcpthosts (ie, masters)
-					foreach($rcpthosts as $rcpt) {
-						// As long as local isn't equal to domain to add, create the LDIF entry
-						if($domain[0]) {
-							if(!eregi($domain[0], $rcpt))
+				if(($type == 'rcpthosts') or !$type) {
+					// Check this object if the domain is in locals. If it is, don't add it to rcpthosts.
+					$locals = pql_control_get_attribute($ldap->ldap_linkid, $hostdn, "locals");
+					if(!is_null($locals)) {
+						foreach($locals as $local)
+						  if($domain[1] == $local)
+							return false;
+					}
+
+					// Get current rcpthosts for this host
+					$rcpthosts = pql_control_get_attribute($ldap->ldap_linkid, $hostdn, "rcpthosts");
+					if(!is_null($rcpthosts)) {
+						// Do not set rcpthosts for hosts which HAVE no rcpthosts (ie, masters)
+						foreach($rcpthosts as $rcpt) {
+							// Make sure the domain don't already exists...
+							if($domain[1] == $rcpt)
+							  return false;
+
+							// As long as local isn't equal to domain to add, create the LDIF entry
+							if($domain[0]) {
+								if(!eregi($domain[0], $rcpt))
+								  $entry[] = $rcpt;
+							} else
 							  $entry[] = $rcpt;
-						} else
-						  $entry[] = $rcpt;
-					}
-
-					// Add the domain to the LDIF entry
-					if($domain[1])
-					  $entry[] = $domain[1];
-
-					// Add 'hostname.newdomain' to LDIF entry
-					if($h and $domain[1]) {
-						$hostname = split("\.", $h);
-						$entry[] = $hostname[0] . "." . $domain[1];
-					}
-
-					pql_control_replace_attribute($ldap->ldap_linkid, $hostdn, "rcpthosts", $entry);
+						}
+						
+						// Add the domain to the LDIF entry
+						if($domain[1])
+						  $entry[] = $domain[1];
+						
+						// Add 'hostname.newdomain' to LDIF entry
+						if($h and $domain[1]) {
+							$hostname = split("\.", $h);
+							$entry[] = $hostname[0] . "." . $domain[1];
+						}
+						
+						pql_control_replace_attribute($ldap->ldap_linkid, $hostdn, "rcpthosts", $entry);
+					} else
+					  // No previous values, add domain
+					  pql_control_add_attribute($ldap->ldap_linkid, $hostdn, "rcpthosts", $domain[1]);
 				}
 			}
 		}
