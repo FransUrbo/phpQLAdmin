@@ -1,6 +1,6 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.47.2.1 2005-03-04 11:59:44 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.47.2.2 2005-03-17 08:23:01 turbo Exp $
 //
 // {{{ Initialize and setup
 require("./include/pql_session.inc");
@@ -47,7 +47,7 @@ function attribute_forward($msg) {
 	  echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
 	  die("<b>".$_SESSION["URI"].$link."</b>");
 	} else
-	  header("Location: " . $_SESSION["URI"] . $link);
+	  pql_header($link);
 }
 // }}}
 
