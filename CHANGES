@@ -38,6 +38,7 @@ phpQLAdmin 2.0.18c TO BE ANNOUNCED
 	GUI layout change
 	  - Require the pql_config.inc file to avoid PHP errors in the right frame
 	    when choosing control.php or ezmlm.php.
+	  - Don't show the radio input for 'user specified MX' if it's our only option.
 
 	Misc changes	
 	  - The file 'doc/INSTALL' was moved to '.' so that it's easily seen.
@@ -45,6 +46,11 @@ phpQLAdmin 2.0.18c TO BE ANNOUNCED
 	    if one's referencing users with the 'cn' attribute.
 	  - Don't show the 'undefined variable' warnings if not running a CVS version.
 	  - Don't add the 'deliveryMode: localdelivery' if we're running with newer QmailLDAP.
+	  - If the file '.DEBUG_ME' exists in the root directory, don't create domain/users.
+	    Instead, die with the LDIF that should have been added to the LDAP database.
+	  - Get the knowledge on what object classess to use when creating user(s) ONCE
+	    (from user_add.php instead of all over the place), and use this knowledge when
+	    deciding what input field to show
 
 phpQLAdmin 2.0.18b Release (Apr  6 2004)
 	Bug fixes
