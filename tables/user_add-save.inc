@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.16.4.2.2.6 2004-05-05 12:37:38 turbo Exp $
+// $Id: user_add-save.inc,v 1.16.4.2.2.6.4.1 2004-09-17 14:21:14 turbo Exp $
 
 // URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
 $_REQUEST["surname"] = urldecode($_REQUEST["surname"]);
@@ -80,11 +80,17 @@ if($_REQUEST["account_type"] == "forward") {
 	
 	// set attributes
 	$entry[pql_get_define("PQL_ATTR_FORWARDS")]	= $forwardingaddress;
-	$entry[pql_get_define("PQL_ATTR_MODE")][]	= "forwardonly";
-	$entry[pql_get_define("PQL_ATTR_MODE")][]	= "nombox";
+
+	if($_SESSION["NEW_STYLE_QUOTA"]) {
+		// With newer QmailLDAP, the 'deliveryMode' have changed.
+		$entry[pql_get_define("PQL_ATTR_MODE")][]	= "nolocal";
+	} else {
+		$entry[pql_get_define("PQL_ATTR_MODE")][]	= "forwardonly";
+		$entry[pql_get_define("PQL_ATTR_MODE")][]	= "nombox";
+	}
 	
 	if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
-	  $entry[pql_get_define("PQL_ATTR_HOMEDIR")]= "/tmp";
+	  $entry[pql_get_define("PQL_ATTR_HOMEDIR")]= pql_get_define("PQL_CONF_VIRTUAL_BASEHOME");
 } else {
 	// Any other account than 'forwarding'.
 
