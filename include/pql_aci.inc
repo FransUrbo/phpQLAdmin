@@ -2,7 +2,7 @@
 // ----------------------------
 // Retreive, modify and delete ACIs (per-object access control lists)
 //
-// $Id: pql_aci.inc,v 2.2 2003-08-15 08:06:17 turbo Exp $
+// $Id: pql_aci.inc,v 2.3 2003-08-18 12:19:02 turbo Exp $
 
 // Get ACI entries from object
 function pql_aci_get($linkid, $dn, $number = 0) {
@@ -78,7 +78,9 @@ function pql_aci_get($linkid, $dn, $number = 0) {
 			}
 		}
 		
-		$ACI["count"] = $n;
+		$ACI["count"] = $n;	// How many ACIs do we have?
+		$ACI["dn"] = $dn;	// Remember the DN, just in case!
+
 		return $ACI;
     }
 	
