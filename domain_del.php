@@ -16,20 +16,30 @@ if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
 	
 	$delete_forwards = (isset($delete_forwards) || pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) ? true : false;
 	
-	// Before we delete the domain/branch, get the defaultDomain value
-	// so we can delete it from locals
+	// Before we delete the domain/branch, we need to get the defaultDomain, additionalDomainName
+	// and smtpRoutes value(s) so that we can remove it from the QmailLDAP/Controls object(s)
 	$domainname  = pql_get_domain_value($_pql, $domain, 'defaultdomain');
 	$additionals = pql_get_domain_value($_pql, $domain, 'additionaldomainname');
+	$routes		 = pql_get_domain_value($_pql, $domain, 'smtproutes');
 
 	// delete the domain
 	if(pql_domain_del($_pql, $domain, $delete_forwards)) {
-	    // update locals if control patch is enabled
+	    // Deletion of the branch was successfull - Update the QmailLDAP/Controls object(s)
+
+		// Remove the domain name
 		if($domainname)
 		  pql_control_update_domains($_pql, $USER_SEARCH_DN_CTR, '*', array($domainname, ''));
 
+		// Remove the additional domain name(s)
 		if(is_array($additionals)) {
 			foreach($additionals as $additional)
 			  pql_control_update_domains($_pql, $USER_SEARCH_DN_CTR, '*', array($additional, ''));
+		}
+	    
+		// Remove the SMTP route(s)
+		if(is_array($routes)) {
+			foreach($routes as $route)
+			  pql_control_update_domains($_pql, $USER_SEARCH_DN_CTR, '*', array($route, ''));
 		}
 	    
 	    $msg = $LANG->_('Successfully removed the domain');
