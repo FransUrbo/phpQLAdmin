@@ -17,6 +17,9 @@ Upgrading from 2.0.13
 	there are others that might have done updates to it, please verify
 	that it's correct before use!
 
+	The config file have changed again. If you want ezmlm mailinglist
+	creation to work, you will have to update the 'config.inc' file.
+
 Upgrading from 2.0.10
 	The schema have been updated, so don't forget to load the new
 	version! Please re-read the file README (subjects 'Schema issues'
