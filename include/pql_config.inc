@@ -3,8 +3,10 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.13 2003-04-04 16:46:23 turbo Exp $
+// $Id: pql_config.inc,v 1.14 2003-04-07 08:21:30 turbo Exp $
 //
+
+global $config;
 
 // We need this instead of define(), so that we can get rid
 // of 'Constant ... already defined' if running with
@@ -13,10 +15,10 @@
 function pql_define($define, $value, $case_insensitive = false, $dn = NULL) {
 	global $config;
 
-	if($value == "1")
-	  $value = 'true';
-	elseif($value == "0")
-	  $value = 'false';
+	if($value == 'TRUE')
+	  $value = '1';
+	elseif($value == 'FALSE')
+	  $value = '0';
 
 	if(! @constant($define))
 	  define($define, $value, $case_insensitive);
@@ -25,15 +27,15 @@ function pql_define($define, $value, $case_insensitive = false, $dn = NULL) {
 	//	Dimension 1: define name
 	//	Dimension 2: root DN
 	if($dn) {
-//		echo "config[$define][$dn] = $value<br>"; // DEBUG
-
-		if(!$config[$define][$dn])
-		  $config[$define][$dn] = $value;
+		if(!isset($config[$define][$dn])) {
+			$config[$define][$dn] = $value;
+//			echo "config[$define][$dn] = $value<br>"; // DEBUG
+		}
 	} else {
-//		echo "config[$define] = $value<br>"; // DEBUG
-
-		if(!$config[$define])
-		  $config[$define] = $value;
+		if(!isset($config[$define])) {
+			$config[$define] = $value;
+//			echo "config[$define] = $value<br>"; // DEBUG
+		}
 	}
 }
 
@@ -147,34 +149,20 @@ foreach($_pql->ldap_basedn as $dn)  {
 					$nkey = $key."_".$k;
 					
 					if(isset($info[$i][$v][0])) {
-						if($info[$i][$v][0]=='0')
-						  $V = 'false';
-						elseif($info[$i][$v][0]=='1')
-						  $V = 'true';
-						else
-						  $V = $info[$i][$v][0];
-						
 						if($values)
-						  $values .= ",$V";
+						  $values .= ",".$info[$i][$v][0];
 						else
-						  $values = $V;
+						  $values = $info[$i][$v][0];
 					}
 				}
 			} else {
 				$value = strtolower($value);
 
 				for($k=0; isset($info[$i][$value][$k]); $k++) {
-					if($info[$i][$value][$k]=='0')
-					  $V = 'false';
-					elseif($info[$i][$value][$k]=='1')
-					  $V = 'true';
-					else
-					  $V = $info[$i][$value][$k];
-					
 					if($values)
-					  $values .= ",$V";
+					  $values .= ",".$info[$i][$value][$k];
 					else
-					  $values = $V;
+					  $values = $info[$i][$value][$k];
 				}
 
 				if(($key == "PQL_GLOB_HOSTMASTER") or
