@@ -1,23 +1,16 @@
 <?php
 // navigation bar - ezmlm mailinglists manager
-// $Id: left-ezmlm.php,v 2.3 2002-12-21 11:52:35 turbo Exp $
+// $Id: left-ezmlm.php,v 2.4 2002-12-22 20:28:00 turbo Exp $
 //
 session_start();
 
 require("include/pql.inc");
 require("include/pql_ezmlm.inc");
 
-// Ezmlm mailing list manager class(es) and depends
-// http://www.phpclasses.org/browse.html/package/177
-require("ezmlmmgr/library/forms.php");
-require("ezmlmmgr/library/common/tableclass.php");
-require("ezmlmmgr/library/links.php");
-require("ezmlmmgr/library/ezmlm/editezmlmlistclass.php");
-
 // Initialize
-$ezmlm = new edit_ezmlm_list_class();
-
+$ezmlm = new ezmlm();
 require("ezmlm-hardcoded.php");
+
 require("left-head.html");
 ?>
   <!-- EZMLM Mailinglists -->
@@ -33,29 +26,21 @@ require("left-head.html");
     </nobr>
   </div>
 
-
 <?php
-if(!($ezmlm->load())) {
-    $error = $ezmlm->error;
-}
-
-if(!($hosts = pql_get_ezmlm_host($ezmlm))) {
+// Load list of mailinglists
+if(! $ezmlm->readlists()) {
 ?>
   <div id="el1Parent" class="parent">
     <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el1Img">
-    <font color="black" class="heada">no lists</font></a>
+    <font color="black" class="heada">no lists<br>(<?=$ezmlm->error?>)</font></a>
   </div>
 <?php
 } else {
     $j = 2;
 
-	global $hosts;
-
-	// Domains
-    foreach($hosts as $host => $value) {
+	// Sorted by domainname
+	foreach($ezmlm->mailing_lists_hostsindex as $host => $listarray) {
 ?>
-  </form>
-
   <!-- start ezmlm mailing list domain -->
   <div id="el<?=$j?>Parent" class="parent">
     <a class="item" href="ezmlm_detail.php?domain=<?=$host?>" onClick="if (capable) {expandBase('el<?=$j?>', true); return false;}">
@@ -78,23 +63,22 @@ if(!($hosts = pql_get_ezmlm_host($ezmlm))) {
 
 <?php
 		// List names
-		foreach($value as $name => $val) {
+		foreach($listarray as $name => $no) {
 ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
-      <a href="ezmlm_detail.php?domain=<?=$host?>&list=<?=$name?>"><img src="images/navarrow.png" width="9" height="9" border="0"></a>&nbsp;
-      <a class="item" href="ezmlm_detail.php?domain=<?=$host?>&list=<?=$name?>"><?=$name?></a>
+      <a href="ezmlm_detail.php?domain=<?=$host?>&listno=<?=$no?>"><img src="images/navarrow.png" width="9" height="9" border="0"></a>&nbsp;
+      <a class="item" href="ezmlm_detail.php?domain=<?=$host?>&listno=<?=$no?>"><?=$name?></a>
     </nobr>
 
     <br>
 <?php			
-			$j++;
-
-		}    
+		}
 ?>
   </div>
   <!-- end ezmlm mailing list children -->
 <?php
-    }
+		$j++;
+	}
 }
 
 require("left-trailer.html");

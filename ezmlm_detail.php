@@ -1,33 +1,21 @@
 <?php
-// $Id: ezmlm_detail.php,v 1.1 2002-12-21 12:29:33 turbo Exp $
+// $Id: ezmlm_detail.php,v 1.2 2002-12-22 20:28:00 turbo Exp $
 //
 session_start();
 
 require("include/pql.inc");
 require("include/pql_ezmlm.inc");
 
-// Ezmlm mailing list manager class(es) and depends
-// http://www.phpclasses.org/browse.html/package/177
-require("ezmlmmgr/library/forms.php");
-require("ezmlmmgr/library/common/tableclass.php");
-require("ezmlmmgr/library/links.php");
-require("ezmlmmgr/library/ezmlm/editezmlmlistclass.php");
-
 // Initialize
-$ezmlm = new edit_ezmlm_list_class();
-
+$ezmlm = new ezmlm();
 require("ezmlm-hardcoded.php");
+
 include("header.html");
 
-// Get the list of mailinglists
-if(!($ezmlm->load())) {
-    $error = $ezmlm->error;
-}
-
-// Convert the array we got from ezmlm->load().
-if($hosts = pql_get_ezmlm_host($ezmlm)) {
-	if(!$list) {
-		// We're interested on all lists in the domain
+// Load list of mailinglists
+if($ezmlm->readlists()) {
+	if(!is_numeric($listno)) {
+		// No list, show all lists in the domain
 ?>
   <span class="title1">Domain: <?=$domain?></span>
   <br><br>
@@ -42,16 +30,18 @@ if($hosts = pql_get_ezmlm_host($ezmlm)) {
       </tr>
 
 <?php
-		foreach($hosts[$domain] as $list => $array) {
+		foreach($ezmlm->mailing_lists_hostsindex as $listdomain => $listarray) {
 			// Go through each list in the domain
+			foreach($listarray as $listname => $listno) {
 ?>
       <tr class="<?php table_bgcolor(); ?>">
-        <td><?=$list."@".$domain?></td>
-        <td align="right"><?=$hosts[$domain][$list]["subscribers"]?></td>
-        <td><?=$hosts[$domain][$list]["owner"]?></td>
-        <td><a href="ezmlm_detail.php?domain=<?=$domain?>&list=<?=$list?>"><img src="images/edit.png" width="12" height="12" alt="edit attribute" border="0"></a>&nbsp;&nbsp;<a href="ezmlm_del.php?domain=<?=$domain?>&list=<?=$list?>"><img src="images/del.png" width="12" height="12" alt="delete attribute" border="0"></a></td>
+        <td><?=$listname."@".$listdomain?></td>
+        <td align="right"><?=$ezmlm->mailing_lists[$listno]["subscribers"]?></td>
+        <td><?=$ezmlm->mailing_lists[$listno]["owner"]?></td>
+        <td><a href="ezmlm_detail.php?domain=<?=$domain?>&listno=<?=$listno?>"><img src="images/edit.png" width="12" height="12" alt="edit attribute" border="0"></a>&nbsp;&nbsp;<a href="ezmlm_del.php?domain=<?=$domain?>&listno=<?=$listno?>"><img src="images/del.png" width="12" height="12" alt="delete attribute" border="0"></a></td>
       </tr>
 <?php
+			}
 		}
 ?>
 
@@ -62,9 +52,9 @@ if($hosts = pql_get_ezmlm_host($ezmlm)) {
   </table>
 <?php
 	} else {
-		// We got a list, show details on the list
+		// We got a list, show if's details
 ?>
-  <span class="title1">List: <?=$list."@".$domain?></span>
+  <span class="title1">List: <?=$ezmlm->mailing_lists[$listno]["name"]."@".$domain?></span>
   <br><br>
 
   <table cellspacing="0" cellpadding="3" border="0">
@@ -74,40 +64,77 @@ if($hosts = pql_get_ezmlm_host($ezmlm)) {
         <td class="title">Value</td>
         <td class="title">Options</td>
       </tr>
-
 <?php
-		foreach($hosts[$domain][$list] as $key => $value) {
+		foreach($ezmlm->mailing_lists[$listno] as $key => $value) {
+			// Defined value
+			if(!is_array($value)) {
+				// Not an array (ie, not subscriber/text value)
+
+				if($value == 1)
+				  $value = 'Yes';
+				elseif(!$value)
+				  $value = 'No';
+
+				// if this is number of subscribers, don't output it
+				if($key != 'subscribers') {
 ?>
+
       <tr class="<?php table_bgcolor(); ?>">
         <td><?=$key?></td>
+        <td><?=$value?></td>
 <?php
-			if($hosts[$domain][$list][$key]) {
-				// Defined value
-?>
-        <td><?=$hosts[$domain][$list][$key]?></td>
-<?php
+				}
 			} else {
-				// Undefined value
+				$j = 0;
+
+				// Only output the key value once (the first entry)
+				foreach($value as $x) {
 ?>
-        <td><i>not defined</i></td>
+      <tr class="<?php table_bgcolor(); ?>">
 <?php
-			}
+					if($j == 0) {
 ?>
+        <td><?=$key?></td>
 <?php
-			if(($key == 'name') or ($key == 'local') or ($key == 'subscribers')) {
-				// Special circumstances - not editable/deletable
+					} else {
 ?>
         <td></td>
 <?php
-			} else {
+					}
+?>
+        <td><?=$x?></td>
+        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="ezmlm_del_attribute.php?domain=<?=$domain?>&listno=<?=$listno?>&attrib=<?=$key?>&value=<?=$x?>"><img src="images/del.png" width="12" height="12" alt="delete attribute" border="0"></a></td>
+<?php
+					$j++;
+				}
+			}
+
+			if($key != 'subscriber') {
+				if(($key == 'name') or ($key == 'local') or ($key == 'subscribers')) {
+					// Special circumstances - not editable/deletable
+?>
+        <td></td>
+<?php
+				} else {
 				// Editable/Deletable values
 ?>
-        <td><a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&list=<?=$list?>&attrib=<?=$key?>"><img src="images/edit.png" width="12" height="12" alt="edit attribute" border="0"></a>&nbsp;&nbsp;<a href="ezmlm_del_attribute.php?domain=<?=$domain?>&list=<?=$list?>&attrib=<?=$key?>"><img src="images/del.png" width="12" height="12" alt="delete attribute" border="0"></a></td>
+        <td><a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&listno=<?=$listno?>&attrib=<?=$key?>"><img src="images/edit.png" width="12" height="12" alt="edit attribute" border="0"></a>&nbsp;&nbsp;<a href="ezmlm_del_attribute.php?domain=<?=$domain?>&listno=<?=$listno?>&attrib=<?=$key?>"><img src="images/del.png" width="12" height="12" alt="delete attribute" border="0"></a></td>
 <?php
+				}
 			}
 ?>
       </tr>
 <?php
+			if($key == 'subscriber') {
+				// It's a list of subscribers - show 'add new subscriber'
+?>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td></td>
+        <td><a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&listno=<?=$listno?>&attrib=subscriber">add subscriber</a></td>
+        <td></td>
+      </tr>
+<?php
+			}
 		}
 ?>
     </th>
