@@ -1,6 +1,6 @@
 phpQLAdmin 2.1 Change Log
 
-phpQLAdmin 2.1.2 Release (Nov 17 2004)
+phpQLAdmin 2.1.2 TO BE ANNOUNCED
 	Bug fixes
 	  - De-globalization (in a LOT of places, to numeros to name!)
 	  - The whole thing that deals with cloning a QmailLDAP/Control object was faulty.
