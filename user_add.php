@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.73 2003-11-15 12:19:01 turbo Exp $
+// $Id: user_add.php,v 2.74 2003-11-15 20:37:26 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -47,9 +47,7 @@ $error = false; $error_text = array();
 switch($page_curr) {
   case "":
 	// ------------------------------------------------
-	// Step 1: We're just starting (choose account type)
-
-	// See how many users there can be
+	// Step 1: Selected account type (see how many users there can be)
 	if($maxusers) {
 		if(count(pql_get_user($_pql->ldap_linkid, $domain)) >= $maxusers) {
 			// We have reached the maximum amount of users.
@@ -67,38 +65,33 @@ switch($page_curr) {
 
   case "one":
 	// ------------------------------------------------
-	// Step 2a: Process name, email etc
+	// Step 2a: Check user details - surname, name, email, account_type, account_status
 
 	// Verify surname
     if($surname == "") {
 		$error = true;
 		$error_text["surname"] = $LANG->_('Missing');
     }
+	$user = $surname;
 	
 	// Verify lastname
     if($name == "") {
 		$error = true;
 		$error_text["name"] = $LANG->_('Missing');
     }
-
-	if($surname and $name)
-	  $user = $surname . " " . $name;
+	$user .= " " . $name;
 
 	// Verify username
     if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) == pql_get_define("PQL_GLOB_ATTR_CN")
        and pql_user_exist($_pql->ldap_linkid, $user)) {
 		$error = true;
-
 		$error_text["username"] = pql_complete_constant($LANG->_('User %user% already exists'), array("user" => $user));
     }
 	
 	// Check if the email address is supplied
     if($email == "") {
-		$error = true;
-		$error_text["email"] = $LANG->_('Missing');
-	} else {
-		// It's not supplied, generate one email address
-		if(!$email and function_exists('user_generate_email')) {
+		// It's not supplied - generate one
+		if(function_exists('user_generate_email')) {
 			$email = strtolower(user_generate_email($_pql, $surname, $name, $defaultdomain, $domain, $account_type));
 			
 			// Replace spaces with underscore
@@ -107,34 +100,168 @@ switch($page_curr) {
 			// Check again. There must be a email address.
 			if(!$email) {
 				$page_next = "one";
-				
+
 				$error = true;
-				$error_text["email"] = $LANG->_('Not supplied and could not auto generate');
+				$error_text["email"] = $LANG->_('Missing');
 			}
 		}
 	}
 
 	// First test if email is valid - must contain an '@'.
 	if(! ereg("@", $email)) {
-		// Build the COMPLETE email address
 		if($email_domain)
 		  $email = $email . "@" . $email_domain;
 		else
 		  $email = $email . "@" . $defaultdomain;
 	}
-	
-	// Second test if email is valid
-	if(!check_email($email)) {
-		$error = true;
-		$error_text["email"] = $LANG->_('Invalid');
-	}
 
+	// Second test if email is valid
+    if(!check_email($email)) {
+		$error = true;
+
+		$error_text["email"] = $LANG->_('Invalid');
+    }
+	
 	// It exists, it's valid. Does it already exists?
-	if($error_text["email"] == "" and pql_email_exists($_pql, $email)) {
+    if($error_text["email"] == "" and pql_email_exists($_pql, $email)) {
 		$error = true;
 		$error_text["email"] = $LANG->_('Already exists');
+    }
+	
+	// Verify the password
+	if($account_type != "forward") {
+		// Only forward accounts is ok without password
+		if($password == "") {
+			$error = true;
+			$error_text["password"] = $LANG->_('Missing');
+		}
+		
+		if(eregi("KERBEROS", $pwscheme)) {
+			// Should be in the form: userid@DOMAIN.LTD
+			// TODO: Is this regexp correct!?
+			if(! preg_match("/^[a-zA-Z0-9]+[\._-a-z0-9]*[a-zA-Z0-9]+@[A-Z0-9][-A-Z0-9]+(\.[-A-Z0-9]+)+$/", $password)) {
+				$error = true;
+				$error_text["password"] = $LANG->_('Invalid');
+			}
+		} elseif(!$crypted) {
+			// A password in cleartext, NOT already encrypted
+			if(preg_match("/[^a-z0-9]/i", $password)) {
+				$error = true;
+				$error_text["password"] = $LANG->_('Invalid');
+			}
+		}
+
+		// Write the password scheme in a way the LDAP server will understand - within {SCHEME}.
+		if($pwscheme) {
+			if(! eregi('\{', $pwscheme))
+			  $pwscheme = '{'.$pwscheme;
+			
+			if(! eregi('\}', $pwscheme))
+			  $pwscheme .= '}';
+		}
+	} else {
+		// Forwarding accounts - make sure the forwarding mail address is ok
+		if(!check_email($forwardingaddress)) {
+			$error = true;
+			$error_text["forwardingaddress"] = $LANG->_('Invalid');
+		}
+		
+		if($forwardingaddress == "") {
+			$error = true;
+			$error_text["forwardingaddress"] = $LANG->_('Missing');
+		}
+	}
+		
+	// ------------------------------------------------
+	// Step 2b: Autogenerate some stuff for the next form
+	// Verify/Create uid - But only if we're referencing users with UID...
+	if(!$uid) {
+		if(function_exists('user_generate_uid') and
+		   pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) == pql_get_define("PQL_GLOB_ATTR_UID")) {
+			// Generate the username
+			$uid = strtolower(user_generate_uid($_pql, $surname, $name, $email, $domain, $account_type));
+			
+			// Check again. There should be a user name, either from the input
+			// form OR from the user_generate_uid() function above...
+			if(!$uid) {
+				$page_next = "two";
+
+				$error = true;
+				$error_text["uid"] = $LANG->_('Missing');
+			} else {
+				if(preg_match("/[^a-z0-9\.@%_-]/i", $uid)) {
+					$page_next = "two";
+
+					$error = true;
+					$error_text["uid"] = $LANG->_('Invalid');
+				}
+			}
+		} else {
+			$error = true;
+			$error_text["uid"] = $LANG->_('Missing') . " (" . $LANG->_('can\'t autogenerate') . ")";
+		}
+	} else {
+		$error = true;
+		$error_text["uid"] = $LANG->_('Missing');
+	}
+	
+	// Check the mailHost attribute/value
+	if(($account_type != "shell") and pql_get_define("PQL_GLOB_CONTROL_USE")) {
+		// Initiate a connection to the QmailLDAP/Controls DN
+		$_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
+		
+		if($_pql_control->ldap_linkid) {
+			// Find MX (or QmailLDAP/Controls with locals=$email_domain)
+			$mx = pql_get_mx($_pql_control->ldap_linkid, $email_domain);
+			if(!$mx[1]) {
+				// There is no MX and no QmailLDAP/Controls with this
+				// domain name in locals. Die!
+				$page_next = "two";
+				
+				$error = true;
+				$error_text["userhost"] = pql_complete_constant($LANG->_('Sorry, I can\'t find any MX or any QmailLDAP/Controls object that listens to the domain <u>%domain%</u>.<br>You will have to specify one manually.'),
+																array('domain' => pql_maybe_idna_decode($email_domain)));
+			} else {
+				// We got a MX or QmailLDAP/Controls object. Use it.
+				$userhost[1] = $mx[1];
+				$host = "default";
+			}
+		}
 	}
 
+	// Generate the mail directory value
+	if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) == pql_get_define("PQL_GLOB_ATTR_UID")) {
+		$maildirectory = user_generate_mailstore($_pql, $email, $domain,
+												 array(pql_get_define("PQL_GLOB_ATTR_UID") => $uid),
+												 'user');
+	} else {
+		$maildirectory = user_generate_mailstore($_pql, $email, $domain,
+												 array(pql_get_define("PQL_GLOB_ATTR_UID") => $surname." ".$name),
+												 'user');
+	}
+
+	if($maildirectory) {
+		// Replace space(s) with underscore(s)
+		$maildirectory = preg_replace('/ /', '_', $maildirectory, -1);
+	}
+	break;
+
+  case "two":
+	// Step 3: Verify additional information (currently only mailhost)
+
+	if(!$host or !$userhost) {
+		// No host
+		$error = true;
+
+		if($_pql_control->ldap_linkid)
+		  $error_text["userhost"] = $LANG->_('Missing') . " (" . $LANG->_('can\'t autogenerate') . ")";
+		else
+		  $error_text["userhost"] = $LANG->_('Missing') . " (" . $LANG->_('not using QmailLDAP/Controls') . ")";
+	}
+}
+
+include("./header.html");
+?>
   <span class="title1">
     <?php echo pql_complete_constant($LANG->_('Create user in domain %domain%'), array("domain" => $orgname)); ?>
 <?php
