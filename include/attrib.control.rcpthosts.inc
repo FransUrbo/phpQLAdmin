@@ -2,12 +2,11 @@
 // control attribute plugin for
 // rcpthosts (blocked local addresses)
 //
-// $Id: attrib.control.rcpthosts.inc,v 2.27 2004-11-12 09:30:40 turbo Exp $
+// $Id: attrib.control.rcpthosts.inc,v 2.28 2005-03-02 09:33:57 turbo Exp $
 
 // {{{ rcpthosts_check(type)
-
 function rcpthosts_check($type) {
-    global $error, $LANG;
+    global $LANG;
 
     // check validity
     if(is_array($_REQUEST["rcpthosts"])) {
@@ -27,11 +26,9 @@ function rcpthosts_check($type) {
     
     return true;
 }
-
 // }}}
 
 // {{{ rcpthosts_init(host)
-
 // init values
 function rcpthosts_init($host) {
     global $_pql_control;
@@ -40,11 +37,10 @@ function rcpthosts_init($host) {
     $_REQUEST["rcpthosts"] = pql_get_attribute($_pql_control->ldap_linkid,
 											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 											   pql_get_define("PQL_ATTR_RCPTHOSTS"));
-    
+
     if(is_null($_REQUEST["rcpthosts"]))
 	  return true;
 }
-
 // }}}
 
 
@@ -128,7 +124,7 @@ function rcpthosts_save($type, $host) {
     global $_pql_control, $LANG;
 
 	if(!$host) {
-		// Get all QmailLDAP/Control hosts.
+		// {{{ Get all QmailLDAP/Control hosts.
 		$result = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
 		for($i=0; $result[$i]; $i++)
@@ -160,6 +156,7 @@ function rcpthosts_save($type, $host) {
 				  $HOSTS[] = $host;
 			}
 		}
+		// }}}
 	} else
 	  $HOSTS[] = $host;
 
@@ -168,8 +165,8 @@ function rcpthosts_save($type, $host) {
 	  $all = ' all';
 
     switch($type) {
+	  // {{{ Start replication manually
       case "replicate":
-		// start replication manually
 		if(pql_control_update_domains($_pql_control, $_REQUEST["rootdn"],
 									  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 									  $host, '', 'rcpthosts'))
@@ -182,9 +179,10 @@ function rcpthosts_save($type, $host) {
 	
 		attribute_forward($msg);
 		break;
+		// }}}
 
+	  // {{{ Delete entry
       case "del":
-		// delete entry
 		foreach($HOSTS as $host) {
 			// remove specified domain from rcpthosts in host object
 			if(pql_modify_attribute($_pql_control->ldap_linkid,
@@ -200,30 +198,34 @@ function rcpthosts_save($type, $host) {
 				. ": " . pql_format_error(0);
 		}
 		break;
+		// }}}
 
+	  // {{{ Add entry
       case "add":
-		// add entry
 		foreach($HOSTS as $host) {
 			// adding specified domain to rcpthosts in host object
 			if(pql_modify_attribute($_pql_control->ldap_linkid,
 									pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-									pql_get_define("PQL_ATTR_RCPTHOSTS"), 1, $_REQUEST["set"]))
+									$_REQUEST["attrib"], '', $_REQUEST["set"]))
 			  $msg = pql_complete_constant($LANG->_('Successfully added %domain% to %value% %what%'),
-										   array('what'   => pql_get_define("PQL_ATTR_RCPTHOSTS"),
+										   array('what'   => $_REQUEST["attrib"],
 												 'domain' => $_REQUEST["set"],
 												 'value'  => $all));
 			else
 			  $msg = pql_complete_constant($LANG->_('Failed adding %domain% to %value% %what%'),
-										   array('what'   => pql_get_define("PQL_ATTR_RCPTHOSTS"),
+										   array('what'   => $_REQUEST["attrib"],
 												 'domain' => $_REQUEST["set"],
 												 'value'  => $all))
 				. ": " . pql_format_error(0);
 		}
 		break;
+		// }}}
 
+	  // {{{ Default
       default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
 								  array('type' => $type, 'file' => __FILE__)));
+		// }}}
     }
 		
 	if($msg)
