@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.2 2003-05-06 11:34:08 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.3 2003-05-06 12:50:12 turbo Exp $
 
 function attribute_check() {
     global $additionaldomainname, $domain, $oldvalue, $_pql, $error, $rootdn;
@@ -94,8 +94,12 @@ function attribute_save($type) {
 			$_pql_control = new pql_control($GLOBALS["USER_HOST"], $GLOBALS["USER_DN"], $GLOBALS["USER_PASS"]);
 			
 			// update locals if control patch is enabled
-			pql_control_update_domains($_pql_control, $GLOBALS["USER_SEARCH_DN_CTR"],
-									   '*', array($oldvalue, $additionaldomainname));
+			if($type == 'delete')
+			  pql_control_update_domains($_pql_control, $GLOBALS["USER_SEARCH_DN_CTR"],
+										 '*', array($delval, ''));
+			else
+			  pql_control_update_domains($_pql_control, $GLOBALS["USER_SEARCH_DN_CTR"],
+										 '*', array($oldvalue, $additionaldomainname));
 		} else
 		  $msg = PQL_LANG_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 		
