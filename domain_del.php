@@ -16,6 +16,9 @@ if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
 	
 	$delete_forwards = (isset($delete_forwards) || pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) ? true : false;
 	
+	// Make sure we can have a ' in branch
+	$domain = eregi_replace("\\\'", "'", $domain);
+
 	// Before we delete the domain/branch, we need to get the defaultDomain, additionalDomainName
 	// and smtpRoutes value(s) so that we can remove it from the QmailLDAP/Controls object(s)
 	$domainname  = pql_get_domain_value($_pql, $domain, 'defaultdomain');

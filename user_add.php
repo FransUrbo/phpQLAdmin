@@ -8,6 +8,10 @@ require("./include/pql_control.inc");
 
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
+// Make sure we can have a ' in branch (also affects the user DN).
+$user   = eregi_replace("\\\'", "'", $user);
+$domain = eregi_replace("\\\'", "'", $domain);
+
 // Look for a URL encoded '=' (%3D). If one isn't found, encode the DN
 // These variables ISN'T encoded "the first time", but they are after
 // the attribute_print_form() have been executed, so we don't want to

@@ -7,6 +7,10 @@ require("./include/pql_config.inc");
 
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
+// Make sure we can have a ' in branch (also affects the user DN).
+$user   = eregi_replace("\\\'", "'", $user);
+$domain = eregi_replace("\\\'", "'", $domain);
+
 // Get default domain name for this domain
 $defaultdomain = pql_get_domain_value($_pql, $domain, "defaultdomain");
 
@@ -22,6 +26,8 @@ $username = $username[0];
 function attribute_forward($msg, $rlnb = false) {
     global $domain, $user, $rootdn;
 
+    // URL Encode some of the most important information
+    // (root DN, domain/branch DN and user DN)
     $domain = urlencode($domain);
     $user   = urlencode($user);
     $rootdn = urlencode($rootdn);

@@ -7,10 +7,20 @@ require("./include/pql_config.inc");
 
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
+// Make sure we can have a ' in branch (also affects the user DN).
+$user   = eregi_replace("\\\'", "'", $user);
+$domain = eregi_replace("\\\'", "'", $domain);
+
 // forward back to users detail page
 function attribute_forward($msg) {
-    global $domain, $user, $view;
+    global $domain, $user, $rootdn, $view;
 
+    // URL Encode some of the most important information
+    // (root DN, domain/branch DN and user DN)
+    $domain = urlencode($domain);
+    $user   = urlencode($user);
+    $rootdn = urlencode($rootdn);
+    
     $url = "user_detail.php?domain=$domain&user=".urlencode($user)."&view=$view&msg=".urlencode($msg);
     header("Location: " . pql_get_define("PQL_GLOB_URI") . "$url");
 }
