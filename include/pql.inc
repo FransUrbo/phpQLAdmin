@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.99 2003-08-12 14:39:35 turbo Exp $
+// $Id: pql.inc,v 2.100 2003-08-12 18:30:39 turbo Exp $
 //
 
 // ----------------------------
@@ -1966,6 +1966,7 @@ function pql_validate_administrator($linkid, $dn, $admin) {
 
 function pql_get_rootdn($dn) {
 	global $_pql;
+	$dn = urldecode($dn);
 
 	if(is_array($_pql->ldap_basedn)) {
 		$counts = 0;
@@ -2003,8 +2004,8 @@ function pql_get_rootdn($dn) {
 		//
 		// Find the root dn the 'old fasioned' (ie,
 		// broken!) way.
-		$rootdn = split(',', urldecode($dn));
-		
+		$rootdn = split(',', $dn);
+
 		if($rootdn[1]) {
 			unset($rootdn[0]);
 			$dn = implode(",", $rootdn);
