@@ -3,7 +3,7 @@
 // control.php,v 1.2 2002/12/12 11:50:27 turbo Exp
 //
 
-include("header.html");
+include("./header.html");
 ?>
 <span class="title1">Server Control</span>
 <br>

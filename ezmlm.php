@@ -1,8 +1,8 @@
 <?php
-// $Id: ezmlm.php,v 1.2 2002-12-21 10:37:59 turbo Exp $
+// $Id: ezmlm.php,v 1.3 2002-12-24 19:08:58 turbo Exp $
 //
 
-include("header.html");
+include("./header.html");
 ?>  
   <span class="title1">Ezmlm Mailinglist Control</span>
 
