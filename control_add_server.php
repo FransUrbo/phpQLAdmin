@@ -1,6 +1,6 @@
 <?php
 // Add a new mailserver to the database
-// $Id: control_add_server.php,v 2.2 2002-12-29 01:55:00 turbo Exp $
+// $Id: control_add_server.php,v 2.3 2002-12-29 10:37:25 turbo Exp $
 //
 session_start();
 
@@ -17,7 +17,11 @@ if(PQL_LDAP_CONTROL_USE){
 		if($submit == "Create") {
 			if($fqdn and $defaultdomain and $ldapserver and $ldapbasedn) {
 				// We're ready to add the server object
+				// TODO
 				die("we're ready to <b>create</b>, but can't do anything yet!<br>");
+
+				$msg = urlencode("Successfully created mailserver $fqdn.");
+				header("Location: " . PQL_URI . "control_detail.php?host=$fqdn&msg=$msg&rlnb=1");
 			} else {
 				if(! $fqdn)
 				  $error_text["fqdn_create"] = 'missing';
@@ -30,7 +34,42 @@ if(PQL_LDAP_CONTROL_USE){
 			}
 		} elseif($submit == "Clone") {
 			if($fqdn) {
-				die("we're ready to <b>clone</b>, but can't do anything yet!<br>");
+
+				// Get the values of the mailserver
+				$attribs = array("defaultdomain", "plusdomain", "ldapserver",
+								 "ldaprebind", "ldapbasedn", "ldapdefaultquota",
+								 "ldapdefaultdotmode", "dirmaker", "quotawarning",
+								 "ldapuid", "ldapgid");
+				$cn = "cn=" . $cloneserver . "," . $USER_SEARCH_DN_CTR;
+				foreach($attribs as $attrib) {
+					$value = pql_control_get_attribute($_pql_control->ldap_linkid, $cn, $attrib);
+					if(!is_null($value)) {
+						for($i=0; $value[$i]; $i++) {
+							$values[$attrib][] = $value[$i];
+						}
+					}
+				}
+
+				// Create the 'LDIF'
+				$dn						= "cn=" . $fqdn . "," . $USER_SEARCH_DN_CTR;
+				$entry["objectClass"][] = "top";
+				$entry["objectClass"][] = "qmailControl";
+				$entry["cn"]			= $fqdn;
+				foreach($values as $attrib => $val) {
+					foreach($val as $value) {
+						$entry[$attrib][] = $value;
+					}
+				}
+
+				if(! ldap_add($_pql_control->ldap_linkid, $dn, $entry)) {
+					unset($submit);
+
+					$msg = urlencode("Failed to created mailserver $fqdn.");
+					header("Location: <?=$PHP_SELF?>");
+				} else {
+					$msg = urlencode("Successfully created mailserver $fqdn.");
+					header("Location: " . PQL_URI . "control_detail.php?host=$fqdn&msg=$msg&rlnb=1");
+				}
 			} else {
 				$error_text["fqdn_clone"] = 'missing';
 			}
