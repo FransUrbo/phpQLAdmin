@@ -1,8 +1,15 @@
 <?php $_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
 
       require("./include/pql_bind9.inc");
-      $zones = pql_bind9_get_zone($_pql_control->ldap_linkid, "ou=DNS,".$domain);
+      $zones = pql_bind9_get_zone($_pql_control->ldap_linkid, "ou=DNS,".urldecode($domain));
       if(is_array($zones)) {
+	if(!$domainname) {
+	    // Use the first zone as default (ie, if we're not called with a specific zone to show)
+	    $i=0;
+	    foreach($zones as $domainname => $data) {
+		if($i > 0) last;
+	    }
+	}
 ?>
   <br>
   <table cellspacing="0" border="0" width="100%" cellpadding="0" size="100%">
