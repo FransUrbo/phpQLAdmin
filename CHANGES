@@ -34,6 +34,14 @@ phpQLAdmin 2.0.5 Release - TO BE RELEASED
 	    + Add 'branchReference' attribute
 	  - Tripple check that we have an MX (userHost attribute) before creating
 	    the user.
+	  - Case insensitive search for {KERBEROS} when showing user details.
+	  - To make sure we really check for a define, we don't do "if(PQL_DEFINE)"
+	    but use "if(defined(PQL_DEFINE))" which is correct. If the define wasn't
+	    defined at all (ie, uncommented not just set to true/false etc) we'd get
+	    an error with the first string...
+	  - ./manual is the PHP/Apache manual!?!?! Remove it!
+	  - Delete all directories named CVS recursivly and all files named .cvsignore
+	    when doing a release tarball.
 
 	GUI layout change
 	  - Only show following information if ADVANCED_MODE is set (in the
