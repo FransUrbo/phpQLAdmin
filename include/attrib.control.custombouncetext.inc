@@ -2,7 +2,7 @@
 // control attribute plugin for
 // custombouncetext (additional bounce message)
 //
-// $Id: attrib.control.custombouncetext.inc,v 2.10 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.custombouncetext.inc,v 2.11 2003-11-05 10:59:29 turbo Exp $
 
 function custombouncetext_check($type) {
 	global $error, $custombouncetext, $use_custombouncetext, $view, $LANG;
@@ -52,7 +52,7 @@ function custombouncetext_print_view($host) {
       </tr>
 
       <tr class="subtitle">
-        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>attrib=custombouncetext"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
+        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=custombouncetext"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
       </tr>
     </th>
   </table>
