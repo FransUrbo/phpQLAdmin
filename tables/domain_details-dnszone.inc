@@ -5,16 +5,17 @@
 	    // Use the first zone as default (ie, if we're not called with a specific zone to show)
 	    foreach($zones as $dns_domain_name => $data) break;
 	}
+
+	// Create the button array with domain buttons
+	$buttons = array();
+	foreach($zones as $dname => $zone_data) {
+	    $button = array($dname => $dname);
+	    $buttons += $button;
+	}
+
+	// Output the buttons to the browser
+	pql_generate_button($buttons);
 ?>
-  <br>
-  <table cellspacing="0" border="0" width="100%" cellpadding="0" size="100%">
-    <tr>
-      <td colspan="2" valign="bottom" align="left" width="100%"><?php $i=1; foreach($zones as $dname => $zone_data) { ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=dnszone&dns_domain_name=$dname&view=$view"?>"><img alt="/ Domain <?=$dname?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$dname?>"></a><?php if(!($i%2)) { ?><br><?php }; $i++; } ?></td>
-    </tr>
-  </table>
-
-  <br>
-
   <table cellspacing="0" cellpadding="3" border="0" size="100%">
     <th colspan="3" align="left"><?=$LANG->_('Domainname')?>: <?=pql_maybe_idna_decode($dns_domain_name)?>
       <tr class="title">

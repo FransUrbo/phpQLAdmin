@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.117 2003-11-12 14:09:31 turbo Exp $
+// $Id: pql.inc,v 2.118 2003-11-13 12:10:59 turbo Exp $
 //
 
 // ----------------------------
@@ -2275,15 +2275,26 @@ function lc($string) {
 }
 // }}}
 
-// {{{ pql_generate_button(link, text, data)
-function pql_generate_button($link, $text, $data) {
+// {{{ pql_generate_button(button array)
+function pql_generate_button($buttons) {
 	global $PHP_SELF, $LANG, $rootdn, $domain;
+?>
 
-	echo '<a href="'.$PHP_SELF."?rootdn=$rootdn&domain=$domain&$data";
-	if($data) echo "&";
-	echo "view=$link".'">';
-    echo '<img alt="/ '.$LANG->_($text).' \\" vspace="0" hspace="0" border="0" src="navbutton.php?';
-	echo $LANG->_($text).'"></a>';
+  <table cellspacing="0" border="0" width="100%" cellpadding="0">
+<?php
+	  $i=0; // A button counter.
+	  foreach($buttons as $link => $text) {
+		  // Generate the button link etc
+?>
+    <a href="<?=$PHP_SELF?>?rootdn=<?=$rootdn?>&domain=<?=$domain?>&view=<?=$link?>"><img alt="/ <?=$LANG->_($text)?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_($text)?>"></a>
+<?php
+		  // Increase button counter
+		  $i++;
+	  }
+?>
+  </table>
+
+<?php
 }
 // }}}
 

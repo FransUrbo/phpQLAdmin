@@ -155,27 +155,9 @@ if(!$SINGLE_USER) {
 	$new = array('actions'			=> 'Actions');
 	$buttons = $buttons + $new;
 }
-?>
 
-  <table cellspacing="0" border="0" width="100%" cellpadding="0">
-    <tr>
-      <td colspan="2" valign="bottom" align="left" width="100%" colspan="2"><?php
-	  $i=0; // A button counter.
-	  foreach($buttons as $link => $text) {
-		  // Generate the button link etc
-		  pql_generate_button($link, $text, "user=".urlencode($user));
+pql_generate_button($buttons); echo "  <br>\n";
 
-		  // Increase button counter
-		  $i++;
-
-		  // If we have outputted an even number of buttons, break line
-		  if(!($i % 2))	echo "<br>";
-	  } ?></td>
-  </tr>
-</table>
-
-<br>
-<?php
 if($view == '')
 	$view = 'basic';
 
