@@ -1,5 +1,23 @@
 phpQLAdmin 2.0 Change Log
 
+phpQLAdmin 2.0.18 TO BE ANNOUNCED
+	Bug fixes
+	  - PHP parse errors fixed.
+	    Closes bug 67
+	  - Don't use the Control class for Bind9. It looks in the wrong place
+	    Closes bug 10
+	  - Variable name overloading fixed.
+
+	GUI layout change
+	  - Smaller text font in buttons.
+	  - Allow for international characters in buttons.
+
+	Misc changes	
+	  - With the resent definition international characters in the DNS system (and
+	    availibility of this in the .se zone), we need to correctly decode and encode
+	    domain- and hostnames (etc) with international characters. This is done with
+	    the PHP-IDN module (also by yours truly).
+
 phpQLAdmin 2.0.17 Release (Oct 30 2003)
 	Bug fixes
 	  - Missing inclusion of the domain and/or rootdn value in URLs.
