@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.25 2003-01-21 14:15:19 turbo Exp $
+// $Id: pql.inc,v 2.26 2003-01-22 09:10:47 turbo Exp $
 //
 
 // ----------------------------
@@ -729,18 +729,16 @@ function pql_get_userattribute($ldap_linkid, $user, $attribute) {
     // check whether this user is cached
     $value = '';
     
-    // the user is cached  -> return the value for the requested attribute  
-	if (pql_cache_userentry_get($user, $attribute, $value)) {
-		return($value);
-    }
+	if(pql_cache_userentry_get($user, $attribute, $value))
+	  // the user is cached  -> return the value for the requested attribute  
+	  return($value);
 
     // not yet cached -> get the userentry and cache it
     $entries = pql_get_userentry($ldap_linkid, $user);
-    if ($entries) {
-		pql_cache_userentry_add($user, $entries);
-    } else {
-		return(false);
-    }
+    if($entries)
+	  pql_cache_userentry_add($user, $entries);
+	else
+	  return(false);
 
     return($entries[$attribute]);	
 }
@@ -756,10 +754,9 @@ function pql_get_userentry($ldap_linkid, $user) {
     // build array of all attributes
     $rid = @ldap_first_entry($ldap_linkid, $sr);
     $attribs[] = strtolower(@ldap_first_attribute($ldap_linkid, $rid, $berid));
-    
-    while($attrib = @ldap_next_attribute($ldap_linkid, $rid, $berid)){
+    while($attrib = @ldap_next_attribute($ldap_linkid, $rid, $berid)) {
 		$attribs[] = strtolower($attrib);
-    }
+	}
     
     // build entry array with all attributes and values
     foreach($attribs as $attrib){
@@ -767,7 +764,7 @@ function pql_get_userentry($ldap_linkid, $user) {
 		unset($values["count"]);
 		$entry[$attrib] = $values;
     }
-    
+
     // free result
     //@ldap_free_result($rid):
     
