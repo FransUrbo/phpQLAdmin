@@ -1,7 +1,7 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 2.7 2003-01-10 18:14:04 turbo Exp $
+// $Id: lang.en.inc,v 2.8 2003-01-12 12:31:44 turbo Exp $
 //
 // if you have a translation to another language, please contact
 // me --> Matthias Blaser <mb@adfinis.ch>
@@ -123,7 +123,7 @@ define("PQL_DOMAIN_DEL_OK", "Successfully removed the $DOMAIN");
 define("PQL_DOMAIN_DEL_FAILED", "Failed removing $DOMAIN");
 define("PQL_DOMAIN_DEFAULT_TITLE", "Change default values for this $DOMAIN");
 define("PQL_DOMAIN_DEFAULT_VALUES", "Default $DOMAIN values");
-define("PQL_DOMAIN_DEFAULT_NAME", "Default $DOMAIN name");
+define("PQL_DOMAIN_DEFAULT_NAME", "Default domain name");
 define("PQL_DOMAIN_DEFAULT_HOMEDIR", "Default homedirectory for users");
 define("PQL_DOMAIN_DEFAULT_MAILDIR", "Default maildirectory for users");
 define("PQL_DOMAIN_DEFAULT_CHANGE_NAME", "Change default $DOMAIN name for $DOMAIN ");
