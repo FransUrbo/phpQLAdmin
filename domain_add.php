@@ -91,7 +91,7 @@ if($dns[0]) {
 	// redirect to domain-details
 	if($msg == "")
 	  $msg = urlencode(pql_complete_constant(PQL_LANG_DOMAIN_ADD_OK, array("domain" => $dns[0])));
-	$url = "domain_detail.php?domain=$dns[0]&msg=$msg&rlnb=1";
+	$url = "domain_detail.php?rootdn=$rootdn&domain=$dns[0]&msg=$msg&rlnb=1";
 
 	// Now it's time to run the special adduser script if defined...
 	if($config["PQL_CONF_SCRIPT_CREATE_DOMAIN"][$rootdn]) {
@@ -112,7 +112,7 @@ if($dns[0]) {
 			$msg .= " " . urlencode(PQL_LANG_DOMAIN_ADD_SCRIPT_OK);
 		}
 
-		$url = "domain_detail.php?domain=$dns[0]&";
+		$url = "domain_detail.php?rootdn=$rootdn&domain=$dns[0]&";
 ?>
 
     <form action="<?=$url?>&msg=<?=$msg?>&rlnb=1" method="post">
