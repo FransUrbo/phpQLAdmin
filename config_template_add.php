@@ -1,6 +1,6 @@
 <?php
 // Add a user template
-// $Id: config_template_add.php,v 2.1 2005-02-24 17:04:00 turbo Exp $
+// $Id: config_template_add.php,v 2.2 2005-02-25 14:33:18 turbo Exp $
 //
 // {{{ Setup session etc
 session_start();
@@ -15,7 +15,7 @@ $url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 // }}}
 
 // {{{ Verify all submitted values
-if($submit) {
+if($_REQUEST["submit"]) {
 	$error = false;
 	$error_text = array();
 	
