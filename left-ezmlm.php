@@ -1,6 +1,6 @@
 <?php
 // navigation bar - ezmlm mailinglists manager
-// $Id: left-ezmlm.php,v 2.28 2004-05-06 14:22:06 turbo Exp $
+// $Id: left-ezmlm.php,v 2.29 2004-05-10 15:12:59 turbo Exp $
 //
 session_start();
 
@@ -66,6 +66,7 @@ if(!is_array($domains)) {
 <?php
 	die(); // No point in continuing from here!
 } else {
+    // We got at least one domain - get it's mailing lists
 	asort($domains);
 	foreach($domains as $key => $domain) {
 		$number_of_lists = -1; // So that we end up with 0 for first list!
@@ -73,7 +74,8 @@ if(!is_array($domains)) {
 		// Get base directory for mails
 		if(($basemaildir = pql_domain_get_value($_pql, $domain, pql_get_define("PQL_ATTR_BASEMAILDIR")))) {
 			// Get (and remember) lists in this directory
-			if($ezmlm = new ezmlm(pql_get_define("PQL_CONF_EZMLM_USER"), $basemaildir)) {
+			$user = pql_domain_get_value($_pql, $domain, pql_get_define("PQL_ATTR_EZMLM_USER"));
+			if($ezmlm = new ezmlm($user, $basemaildir)) {
 				if($ezmlm->mailing_lists[0]["name"]) {
 					$lists[$domain] = $ezmlm->mailing_lists;
 				}
@@ -81,24 +83,7 @@ if(!is_array($domains)) {
 		}
 	}
 
-	if(!is_array($lists)) {
-		// no mailinglists defined - report it
-?>
-  <!-- start domain parent -->
-<?php if($_SESSION["opera"]) { ?>
-  <div id="el0000Parent" class="parent" onclick="showhide(el0000Spn, el0000Img)">
-    <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el0000Img">
-    <font color="black" class="heada">no lists</font></a>
-  </div>
-<?php } else { ?>
-  <div id="el0000Parent" class="parent">
-    <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el0000Img">
-    <font color="black" class="heada">no lists</font></a>
-  </div>
-<?php } ?>
-  <!-- end domain parent -->
-<?php
-	} else {
+	if(is_array($lists)) {
 		foreach($lists as $dom => $entry) {
 			$index = array();
 
@@ -124,69 +109,33 @@ if(!is_array($domains)) {
 			}
 		}
 		
-		$j = 2;
-
 		if($mailinglists_hostsindex) {
 			// Sorted by domainname
-			foreach($mailinglists_hostsindex as $host => $listnames) {
-				foreach($listnames as $domain => $listarray) {
-					;
+			foreach($mailinglists_hostsindex as $domainname => $listnames) {
+				foreach($listnames as $branch => $listarray) {
+					// Get Root DN
+					$rootdn = pql_get_rootdn($branch, 'left-ezmlm.php');
+
+					// URL encode the branch DN so it survives intact
+					$branch = urlencode($branch);
+
+					$links = array(pql_complete_constant($LANG->_('Add a mailinglist to %domainname%'),
+														 array('domainname' => $domainname)) =>
+								   "ezmlm_add.php?rootdn=$rootdn&domain=$branch&domainname=$domainname");
+
+					// Go through each list in this branch/domain
+					foreach($listarray as $listname => $listnumber) {
+						$new = array($listname => "ezmlm_detail.php?rootdn=$rootdn&domain=$branch&domainname=$domainname&listno=$listnumber");
+
+						// Add the link to the main array
+						$links = $links + $new;
+					}
+
+					pql_format_tree($domainname, "ezmlm_detail.php?rootdn=$rootdn&domain=$branch&domainname=$domainname", $links, 0);
+
+					// This an ending for the domain tree
+					pql_format_tree_end();
 				}
-?>
-  <!-- start ezmlm mailing list domain -->
-<?php if($_SESSION["opera"]) { ?>
-  <div id="el<?=$j?>Parent" class="parent" onclick="showhide(el<?=$j?>Spn, el<?=$j?>Img)">
-    <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$j?>Img">
-    <a class="item" href="ezmlm_detail.php?rootdn=<?=$domain?>&domainname=<?=$host?>">
-      <font color="black" class="heada"><?=$host?></font>
-    </a>
-  </div>
-<?php } else { ?>
-  <div id="el<?=$j?>Parent" class="parent">
-    <a class="item" href="ezmlm_detail.php?rootdn=<?=$domain?>&domainname=<?=$host?>" onClick="if (capable) {expandBase('el<?=$j?>', true); return false;}">
-      <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$j?>Img">
-    </a>
-
-    <a class="item" href="ezmlm_detail.php?rootdn=<?=$domain?>&domainname=<?=$host?>">
-      <font color="black" class="heada"><?=$host?></font>
-    </a>
-  </div>
-<?php } ?>
-  <!-- end ezmlm mailing list domain -->
-
-  <!-- start ezmlm mailing list children -->
-<?php if($_SESSION["opera"]) { ?>
-  <span id="el<?=$j?>Spn" style="display:''">
-<?php } else { ?>
-  <div id="el<?=$j?>Child" class="child">
-<?php } ?>
-    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
-      <a href="ezmlm_add.php?rootdn=<?=$domain?>&domainname=<?=$host?>">Add a mailing list</a>
-    </nobr>
-
-    <br>
-
-<?php
-				// List names
-				foreach($listarray as $name => $no) {
-?>
-    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
-      <a href="ezmlm_detail.php?rootdn=<?=$domain?>&domainname=<?=$host?>&listno=<?=$no?>"><img src="images/navarrow.png" width="9" height="9" border="0"></a>&nbsp;
-      <a class="item" href="ezmlm_detail.php?rootdn=<?=$domain?>&domainname=<?=$host?>&listno=<?=$no?>"><?=$name?></a>
-    </nobr>
-
-    <br>
-<?php			
-				}
-?>
-<?php if($_SESSION["opera"]) { ?>
-  </span>
-<?php } else { ?>
-  </div>
-<?php } ?>
-  <!-- end ezmlm mailing list children -->
-<?php
-				$j++;
 			}
 		}
 	} 
