@@ -1,10 +1,14 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.102 2004-10-09 16:30:01 turbo Exp $
+// $Id: user_add.php,v 2.103 2004-10-11 07:54:24 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 require("./include/pql_control.inc");
+
+if(!$_REQUEST["account_type"]) {
+	$_REQUEST["account_type"] = 'object';
+}
 
 $url["domain"]		= pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"]		= pql_format_urls($_REQUEST["rootdn"]);
@@ -401,7 +405,9 @@ if(is_array($error_text)) {
 include("./header.html");
 ?>
   <span class="title1">
-    <?php echo pql_complete_constant($LANG->_('Create user in domain %domain%'), array("domain" => $orgname)); ?>
+    <?php echo pql_complete_constant($LANG->_('Create %type% in domain %domain%'),
+									 array("type"   => $_REQUEST["account_type"],
+										   "domain" => $orgname)); ?>
 <?php
 if($_SESSION["ADVANCED_MODE"] && $_REQUEST["account_type"]) {
 	if($_REQUEST["account_type"] == 'mail')
