@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.172.2.1.6.3 2004-05-05 09:54:09 turbo Exp $
+// $Id: pql.inc,v 2.172.2.1.6.3.2.1 2004-07-07 12:27:44 turbo Exp $
 //
 
 // ----------------------------
@@ -1262,6 +1262,12 @@ function pql_replace_attribute($ldap_linkid, $objectdn, $attrib, $value) {
 	  $entry = $value;
 	else
 	  $entry[$attrib] = pql_maybe_encode($value, $attrib, $ldap_linkid);
+
+	// Create a LDIF object to print in case of error
+	$LDIF = pql_create_ldif("pql_replace_attribute", $objectdn, $entry);
+
+	if(file_exists("./.DEBUG_ME"))
+	  die($LDIF);
 
 	// replace the attribute
 	if(!@ldap_mod_replace($ldap_linkid, $objectdn, $entry)) {
