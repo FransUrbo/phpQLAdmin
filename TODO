@@ -11,6 +11,10 @@ Things left to do
 	* Create, delete or modify the Kerberos principal if using {KERBEROS}
 	  password scheme.
 	* Allow for (Open)AFS creation, deletion and modification.
+	* If we're modifying a value and we're missing an objectclass and the
+	  objectclass we find that REQUIRE (MAY) some attributes which we're
+	  missing, ask user/admin to fill in the missing attributes, THEN retry
+	  to add/modify the object.
 
 	EZMLM mailinglist
 	* Remove hardcoded texts (attributes and such).
