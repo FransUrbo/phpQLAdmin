@@ -85,7 +85,7 @@ if (empty($uname) or empty($passwd)) {
 	} else {
 		$server = $USER_HOST;
 ?>
-        <b><?=$server?></b>
+        <b><?=$server.";".$_pql->ldap_basedn[0]?></b>
         <input type="hidden" name="server" value="<?=PQL_LDAP_HOST?>">
 <?php
 	}
