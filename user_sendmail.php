@@ -12,7 +12,8 @@ include("./header.html");
   <span class="title1"><?php echo PQL_SENDMAIL ?></span>
   <br><br>
 <?php
-if(!pql_user_exist($_pql->ldap_linkid, $domain, $user)){
+echo "User: $user<br>";
+if(!pql_user_exist($_pql->ldap_linkid, $user)) {
     echo "user &quot;$user&quot; does not exist";
     exit();
 }
@@ -67,7 +68,7 @@ if (!empty($msg)) {
 } else {
     $msg = '';
 }
-	
+
 if(mail($email, $subject, $message, $header)){
     $msg .= pql_complete_constant(PQL_SENDMAIL_OK, array("email" => $email));
 } else {
@@ -75,10 +76,10 @@ if(mail($email, $subject, $message, $header)){
 }
 
 $msg = urlencode($msg);
-$user = urlencode($user);
-$url = "user_detail.php?domain=$domain&user=" . urlencode($user) . "&msg=$msg";
+$url = "user_detail.php?domain=$domain&user=$user&msg=$msg";
 
-if (isset($rlnb)) $url .= "&rlnb=" . urlencode($rlnb);
+if(isset($rlnb))
+     $url .= "&rlnb=$rlnb";
 
 header("Location: " . PQL_URI . $url);
 ?>
