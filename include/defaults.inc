@@ -156,7 +156,7 @@ define("PQL_LDAP_OBJECTCLASS_USERID", "qmailuser");
 // 	- SHA		mhash library support needed
 // 	- CLEAR		no encryption, works only if qmail-ldap is compiled w/ cleartext password support, BAD IDEA !!
 //	- KERBEROS	use OpenLDAP Kerberos V mapping ({KERBEROS}PRINCIPAL@REALM)
-define("PQL_PASSWORD_SCHEMES", "crypt,md5,sha,clear,kerberos");
+define("PQL_PASSWORD_SCHEMES", "CRYPT,MD5,SHA,CLEAR,KERBEROS");
 
 // ----------------------------
 // PQL_LDAP_REFERENCE_USERS_WITH (LDAP attribute name)
