@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.9 2003-11-20 08:01:27 turbo Exp $
+// $Id: bind9_add.php,v 2.10 2004-02-14 14:01:00 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -10,7 +10,7 @@ require("./include/pql_bind9.inc");
 include("./header.html");
 
 if($domainname) {
-	$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
+	$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 }
 
 if(($action == 'add') and ($type == 'domain')) {
@@ -20,7 +20,7 @@ if(($action == 'add') and ($type == 'domain')) {
 
   <br><br>
 
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain to branch'))); ?>
         <tr class="<?php pql_format_table(); ?>">
@@ -72,7 +72,7 @@ if(($action == 'add') and ($type == 'domain')) {
 
   <br><br>
 
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">Add host to domain
         <tr class="title">

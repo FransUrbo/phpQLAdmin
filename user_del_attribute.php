@@ -1,47 +1,47 @@
 <?php
 // delete attribute of a user
-// $Id: user_del_attribute.php,v 2.24 2003-11-14 11:55:52 turbo Exp $
+// $Id: user_del_attribute.php,v 2.25 2004-02-14 14:01:00 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 
-switch ($attrib) {
+switch ($_REQUEST["attrib"]) {
   case "mailalternateaddress":
-    $attrib = pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE");
+    $_REQUEST["attrib"] = pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE");
     break;	
     
   case "mailforwardingaddress";
-    $attrib = pql_get_define("PQL_GLOB_ATTR_FORWARDS");
+    $_REQUEST["attrib"] = pql_get_define("PQL_GLOB_ATTR_FORWARDS");
     break;
     
   default:
-    die(pql_complete_constant($LANG->_('Unknown attribute %attribute% in %file%'), array('attribute' => $attrib, 'file' => __FILE__)));
+    die(pql_complete_constant($LANG->_('Unknown attribute %attribute% in %file%'), array('attribute' => $_REQUEST["attrib"], 'file' => __FILE__)));
 }
 
 include("./header.html");
 
-if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
-    $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
+if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST["rootdn"])) {
+    $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
     
     // delete the user attribute
-    if(pql_modify_userattribute($_pql->ldap_linkid, $user, $attrib, $oldvalue, '')) {
-	$msg = pql_complete_constant($LANG->_('Successfully removed alias %mail%'), array("mail" => pql_maybe_idna_decode($oldvalue)));
+    if(pql_modify_userattribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], $_REQUEST["oldvalue"], '')) {
+	$msg = pql_complete_constant($LANG->_('Successfully removed alias %mail%'), array("mail" => pql_maybe_idna_decode($_REQUEST["oldvalue"])));
 	$success = true;
     } else {
-    	$msg = pql_complete_constant($LANG->_('Failed to removed alias %mail%'), array("mail" => pql_maybe_idna_decode($oldvalue))) . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+    	$msg = pql_complete_constant($LANG->_('Failed to removed alias %mail%'), array("mail" => pql_maybe_idna_decode($_REQUEST["oldvalue"]))) . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	$success = false;
     }
     
-    if (lc($attrib) == 'mailalternateaddress' and $success and isset($delete_forwards)) {
+    if (lc($_REQUEST["attrib"]) == 'mailalternateaddress' and $success and isset($_REQUEST["delete_forwards"])) {
 	// does another account forward to this alias?
-	$sr = ldap_search($_pql->ldap_linkid, "(|(" . pql_get_define("PQL_GLOB_ATTR_FORWARDS") ."=" . $oldvalue . "))");
+	$sr = ldap_search($_pql->ldap_linkid, "(|(" . pql_get_define("PQL_GLOB_ATTR_FORWARDS") ."=" . $_REQUEST["oldvalue"] . "))");
 	if (ldap_count_entries($_pql->ldap_linkid,$sr) > 0) {
 	    $results = ldap_get_entries($_pql->ldap_linkid, $sr);
 	    foreach($results as $key => $result){
 		if ((string)$key != "count") {
-		    $ref = $result[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", pql_get_rootdn($user))][0];
-		    $domain = pql_strip_username($result[pql_get_define("PQL_GLOB_ATTR_MAIL")][0]);
-		    $forwarders[]  = array("domain" => $domain, "reference" => $ref, "cn" => $cn,  "email" => $result[pql_get_define("PQL_GLOB_ATTR_MAIL")][0]);
+		    $ref = $result[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", pql_get_rootdn($_REQUEST["user"]))][0];
+		    $_REQUEST["domain"] = pql_strip_username($result[pql_get_define("PQL_GLOB_ATTR_MAIL")][0]);
+		    $forwarders[]  = array("domain" => $_REQUEST["domain"], "reference" => $ref, "cn" => $_REQUEST["cn"],  "email" => $result[pql_get_define("PQL_GLOB_ATTR_MAIL")][0]);
 		}
 	    }
 	    var_dump($forwarders);
@@ -50,26 +50,27 @@ if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
 		pql_replace_userattribute($_pql->ldap_linkid,
 					  $forward['reference'],
 					  pql_get_define("PQL_GLOB_ATTR_FORWARDS"),
-					  $oldvalue);
+					  $_REQUEST["oldvalue"]);
 	    }
 	}
     }
     
     // redirect to users detail page
-    $url = "user_detail.php?rootdn=$rootdn&domain=$domain&user=".urlencode($user)."&msg=".urlencode($msg);
+    $url = "user_detail.php?rootdn=" . $_REQUEST["rootdn"] . "&domain=" . $_REQUEST["domain"]
+      . "&user=" . urlencode($_REQUEST["user"]) . "&msg=" . urlencode($msg);
     header("Location: " . pql_get_define("PQL_GLOB_URI") . "$url");
 } else {
 ?>
-  <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove attribute %attribute% for user %user%'), array('attribute' => $attrib, 'user' => $user)); ?></span>
+  <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove attribute %attribute% for user %user%'), array('attribute' => $_REQUEST["attrib"], 'user' => $_REQUEST["user"])); ?></span>
   <br><br>
   <?=$LANG->_('Are you really sure')?>
-  <form action="<?php echo $PHP_SELF; ?>" method="GET">
-    <input type="hidden" name="user" value="<?=$user?>">
-    <input type="hidden" name="domain" value="<?=$domain?>">
-    <input type="hidden" name="attrib" value="<?=$attrib?>">
-    <input type="hidden" name="oldvalue" value="<?=$oldvalue?>">
+  <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="GET">
+    <input type="hidden" name="user" value="<?=$_REQUEST["user"]?>">
+    <input type="hidden" name="domain" value="<?=$_REQUEST["domain"]?>">
+    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="oldvalue" value="<?=$_REQUEST["oldvalue"]?>">
 <?php
-  if ($attrib == 'mailalternateaddress') {
+  if ($_REQUEST["attrib"] == 'mailalternateaddress') {
 ?>	
     <input type="checkbox" name="delete_forwards" checked><?=$LANG->_('Also delete forwards to this alias')?><br><br>
 <?php

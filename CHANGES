@@ -63,6 +63,11 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	      global variable ACI_SUPPORT_ENABLED to check if to use ACIs.
 	  - Shutup PHP errors by tripple-check (use isset()).
 	  - Adding strings is done with dot, not plus.
+	  - Dale Wiles have been working on removing the dependency for the PHP setting
+	    'register_globals'. This means that all occurences of $GLOBALS (and all other
+	    session variables set with session_register()) and values sent from one page
+	    to the next in the URL needs to be referenced with $_SESSION and $_GET (or
+	    $_REQUEST) respectivly. Also, $PHP_SELF needs to be changed to $_SERVER["PHP_SELF"].
 
 	API changes
 	  - Rearrange functions and group them. Functions dealing with users in one

@@ -1,6 +1,6 @@
 <?php
 // Delete a mailserver controls object
-// $Id: control_del.php,v 2.7 2003-06-25 07:06:25 turbo Exp $
+// $Id: control_del.php,v 2.8 2004-02-14 14:01:00 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -8,12 +8,12 @@ require("./include/pql_config.inc");
 if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
     // include control api if control is used
     include("./include/pql_control.inc");
-    $_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
+    $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
     include("./header.html");
 
     // Check to see if this object exists
-    $sr = ldap_search($_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR,
+    $sr = ldap_search($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 		      "(cn=" . $host . ")", array("cn"));
     if(ldap_count_entries($_pql_control->ldap_linkid, $sr) > 0) {
 	// Exists - get DN

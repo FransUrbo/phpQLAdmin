@@ -4,6 +4,11 @@ Upgrading from 2.0.18
 
 	Also update the schema, that to have changed.
 
+	Dale Wiles have removed the dependency for the register_globals
+	PHP configuration option, so this can now be turned of if you
+	so desire (PHP ships this turned off by default). Previosly
+	you had to enable this...
+
 Upgrading from 2.0.17
 	There's been some API code modifications that will break
 	an upgrade to 2.0.18. You will have to re-configure (copy

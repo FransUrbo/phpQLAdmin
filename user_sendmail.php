@@ -1,11 +1,11 @@
 <?php
 // send a testmail to an emailaddress
-// $Id: user_sendmail.php,v 2.18 2004-01-14 12:20:24 turbo Exp $
+// $Id: user_sendmail.php,v 2.19 2004-02-14 14:01:00 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 
-$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
+$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 include("./header.html");
 ?>
@@ -23,10 +23,10 @@ if($email == "") {
 
 $subject = PQL_CONF_TESTMAIL_SUBJECT;
 $from = "From: " . pql_get_define("PQL_GLOB_HOSTMASTER") . "\n";
-$xmailer = "X-Mailer: phpQLAdmin $VERSION\n";
+$xmailer = "X-Mailer: phpQLAdmin ".$_SESSION["VERSION"]."\n";
 $vars['MAIL'] = $email;
 $vars['UID'] = $user;
-$vars['VERSION'] = $VERSION;
+$vars['VERSION'] = $_SESSION["VERSION"];
 
 $cn = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_CN"));
 $vars['CN'] = $cn[0];
@@ -47,9 +47,9 @@ if (is_array($quota)) {
     } else {
 	// QmailLDAP/Controls patch is used - get the standard quota
 	require("./include/pql_control.inc");
-	$_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
+	$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 	
-	$quota = pql_control_get_attribute($_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR,
+	$quota = pql_control_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 					   pql_get_define("PQL_GLOB_ATTR_LDAPDEFAULTQUOTA"));
 	
 	$vars['QUOTA'] = pql_ldap_mailquota($quota);

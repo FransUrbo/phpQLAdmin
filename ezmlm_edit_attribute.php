@@ -1,11 +1,11 @@
 <?php
-// $Id: ezmlm_edit_attribute.php,v 1.18 2003-11-20 08:01:29 turbo Exp $
+// $Id: ezmlm_edit_attribute.php,v 1.19 2004-02-14 14:01:00 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 require("./include/pql_ezmlm.inc");
 
-$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS, false, 0);
+$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"], false, 0);
 
 // forward back to list detail page
 function list_forward($domainname, $msg) {
@@ -50,7 +50,7 @@ if($ezmlm = new ezmlm(pql_get_define("PQL_GLOB_EZMLM_USER"), $path)) {
 
   <br><br>
 
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
 	<table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$title2?></th>
         <tr class="<?php pql_format_table(); ?>">

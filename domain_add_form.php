@@ -1,15 +1,15 @@
 <?php
 // Input form page to create a domain branch in database
-// $Id: domain_add_form.php,v 1.18 2003-11-24 13:19:53 turbo Exp $
+// $Id: domain_add_form.php,v 1.19 2004-02-14 14:01:00 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 
 include("./header.html");
 
-$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
+$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 ?>
-  <span class="title1"><?php echo pql_complete_constant($LANG->_('Create domain branch in LDAP server %server%'), array('server' => $USER_HOST)); ?></span>
+  <span class="title1"><?php echo pql_complete_constant($LANG->_('Create domain branch in LDAP server %server%'), array('server' => $_SESSION["USER_HOST"])); ?></span>
 
   <br><br>
 
@@ -31,13 +31,13 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
           </td>
         </tr>
 <?php } else { ?>
-        <input type="hidden" name="rootdn" value="<?=$rootdn?>">
+        <input type="hidden" name="rootdn" value="<?=$_REQUEST["rootdn"]?>">
 <?php } ?>
 
         <tr>
           <td class="title"><?=$LANG->_('Branch name')?></td>
           <td>
-            <input type="text" name="domain" value="<?=$domain?>" size="30">
+            <input type="text" name="domain" value="<?=$_REQUEST["domain"]?>" size="30">
 <?php if(! $_pql->ldap_basedn[1]) { ?>
             <table cellspacing="0" cellpadding="3" border="0">
               <th>
@@ -45,10 +45,10 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
                   <td><img src="images/info.png" width="16" height="16" alt="" border="0"></td>
                   <td>
 <?php
-	    if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $rootdn) == "dc") {
+	    if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $_REQUEST["rootdn"]) == "dc") {
 		// We're using a domain object
 		echo $LANG->_('Using domain mode (dc separated). Don\'t use \'.\' (dots) in domain name');
-	    } elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $rootdn) == "o") {
+	    } elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $_REQUEST["rootdn"]) == "o") {
 		// We're using organization layout
 		echo $LANG->_('Using organization layout (o separated)');
 	    } else {

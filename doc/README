@@ -192,8 +192,9 @@ file (as example below) won't help.
 
 Apache configuration
 ~~~~~~~~~~~~~~~~~~~~
-You will have to enable register_globals in your php.ini file (don't
-forget to restart the apache server).
+As of phpQLAdmin version 2.0.18, there is no need to do any modifications
+to the PHP configuration (php.ini file). Previosly, you had to enable
+'register_globals', but this is not needed any more.
 
 QmailLDAP/Controls restart
 ~~~~~~~~~~~~~~~~~~~~~~~~~~

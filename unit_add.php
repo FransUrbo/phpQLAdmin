@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: unit_add.php,v 2.14 2003-11-24 11:36:25 turbo Exp $
+// $Id: unit_add.php,v 2.15 2004-02-14 14:01:00 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -40,7 +40,7 @@ if($unit) {
 } else {
     // Show form
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Create unit')?></th>
         <tr>

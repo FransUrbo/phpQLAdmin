@@ -1,7 +1,7 @@
 <?php
 // This creates a script to be executed on the new mailserver,
 // and configures all the nessesary files for QmailLDAP/Controls.
-// $Id: installmailserver.php,v 1.4 2003-08-15 08:06:04 turbo Exp $
+// $Id: installmailserver.php,v 1.5 2004-02-14 14:01:00 turbo Exp $
 //
 // Creates the following files
 //	ldapserver
@@ -13,11 +13,11 @@ session_start();
 require("./include/pql_config.inc");
 include("./include/pql_control.inc");
 
-$_pql = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
+$_pql = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 $ldap = $_pql->ldap_linkid;
 
 $me = $host;
-$cn = pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $me . "," . $USER_SEARCH_DN_CTR;
+$cn = pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $me . "," . $_SESSION["USER_SEARCH_DN_CTR"];
 
 $attribs = array(pql_get_define("PQL_GLOB_ATTR_LDAPSERVER"),
 		 pql_get_define("PQL_GLOB_ATTR_LDAPLOGIN"),
@@ -42,7 +42,7 @@ exit 1
 <?php	} ?>
 cd ~qmaild/control || exit 1
 echo > me		"<?php if($me) { echo $me; } else { echo "<b>DON'T FORGET THIS</b>"; }?>"
-echo > ldapcontroldn	"<?php if($USER_SEARCH_DN_CTR) { echo $USER_SEARCH_DN_CTR; } else { echo "<b>DON'T FORGET THIS</b>"; }?>"
+echo > ldapcontroldn	"<?php if($_SESSION["USER_SEARCH_DN_CTR"]) { echo $_SESSION["USER_SEARCH_DN_CTR"]; } else { echo "<b>DON'T FORGET THIS</b>"; }?>"
 echo > ldapserver	"<?php if($ldapserver) { echo $ldapserver; } else { echo "<b>DON'T FORGET THIS</b>"; }?>"
 echo > ldaplogin	"<?php if($ldaplogin) { echo $ldaplogin; } else { echo "<b>DON'T FORGET THIS</b>"; }?>"
 echo > ldappassword	"<?php if($ldappassword) { echo $ldappassword; } else { echo "<b>DON'T FORGET THIS</b>"; }?>"

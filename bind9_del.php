@@ -1,6 +1,6 @@
 <?php
 // remove a domain from a bind9 ldap db
-// $Id: bind9_del.php,v 2.1 2004-01-15 07:51:36 turbo Exp $
+// $Id: bind9_del.php,v 2.2 2004-02-14 14:01:00 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -27,7 +27,7 @@ if(($action == 'del') and ($type == 'domain') and $dns_domain_name and $domain) 
 		header("Location: " . pql_get_define("PQL_GLOB_URI") . $url);
     } else {
 ?>
-  <form action="<?=$PHP_SELF?>" method="GET">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="GET">
     <input type="hidden" name="rootdn" value="<?=$rootdn?>">
     <input type="hidden" name="domain" value="<?=$domain?>">
     <input type="hidden" name="dns_domain_name" value="<?=$dns_domain_name?>">

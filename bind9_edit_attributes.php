@@ -1,12 +1,12 @@
 <?php
 // edit attributes of a BIND9 DNS zone
-// $Id: bind9_edit_attributes.php,v 2.2 2003-06-25 07:06:24 turbo Exp $
+// $Id: bind9_edit_attributes.php,v 2.3 2004-02-14 14:01:00 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 require("./include/pql_bind9.inc");
 
-$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
+$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 // forward back to domain detail page
 function attribute_forward($msg) {

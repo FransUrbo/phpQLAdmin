@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.71 2003-12-11 06:04:06 turbo Exp $
+// $Id: domain_detail.php,v 2.72 2004-02-14 14:01:00 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -8,18 +8,18 @@ require("./include/pql_config.inc");
 if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
     // include control api if control is used
     include("./include/pql_control.inc");
-    $_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
+    $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 }
 
 include("./header.html");
 
 // print status message, if one is available
-if(isset($msg)) {
-    pql_format_status_msg($msg);
+if(isset($_REQUEST["msg"])) {
+    pql_format_status_msg($_REQUEST["msg"]);
 }
 
 // reload navigation bar if needed
-if(isset($rlnb) and pql_get_define("PQL_GLOB_AUTO_RELOAD")) {
+if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_GLOB_AUTO_RELOAD")) {
 ?>
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
   <script language="JavaScript1.2"><!--
@@ -29,15 +29,15 @@ if(isset($rlnb) and pql_get_define("PQL_GLOB_AUTO_RELOAD")) {
 <?php
 }
 
-$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
+$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 // Make sure we can have a ' in branch (also affects the user DN).
-$user   = eregi_replace("\\\'", "'", $user);
-$domain = eregi_replace("\\\'", "'", $domain);
+$_REQUEST["user"]   = eregi_replace("\\\'", "'", $_REQUEST["user"]);
+$_REQUEST["domain"] = eregi_replace("\\\'", "'", $_REQUEST["domain"]);
 
 // check if domain exist
-if(!pql_domain_exist($_pql, $domain)) {
-    echo "Domain &quot;$domain&quot; does not exists<br><br>";
+if(!pql_domain_exist($_pql, $_REQUEST["domain"])) {
+    echo "Domain &quot;" . $_REQUEST["domain"] . "&quot; does not exists<br><br>";
 	echo "Is this perhaps a Top Level DN (namingContexts), and you haven't configured ";
 	echo "how to reference domains/branches in this database!?<br><br>";
 	echo "Please go to <a href=\"config_detail.php\">Show configuration</a> and double check.<br>";
@@ -48,20 +48,24 @@ if(!pql_domain_exist($_pql, $domain)) {
 // Look for a URL encoded '=' (%3D). If one isn't found, encode the DN
 // These variables ISN'T encoded "the first time", but they are after
 // a successfull/failed modification, so we don't want to encode them twice!
-if(! ereg("%3D", $rootdn)) {
+if(! ereg("%3D", $_REQUEST["rootdn"])) {
 	// URL encode namingContexts
-	$rootdn = urlencode($rootdn);
+	$_REQUEST["rootdn"] = urlencode($_REQUEST["rootdn"]);
 }
-if(! ereg("%3D", $domain)) {
+if(! ereg("%3D", $_REQUEST["domain"])) {
 	// .. and/or domain DN
-	$domain = urlencode($domain);
+	$_REQUEST["domain"] = urlencode($_REQUEST["domain"]);
 }
 
 // Get the organization name, or show 'Not set' with an URL to set it
-$domainname = pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_O"));
-//if(!$domainname) {
-// TODO: Resonable default!
-//}
+$domainname = pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_O"));
+if(!$domainname) {
+  // TODO: Resonable default!
+  $domainname = '';				// DLW: Just to shut off some warnings.
+}
+
+if(empty($_REQUEST["view"]))
+  $_REQUEST["view"] = 'default';
 
 // Get some default values for this domain
 // Some of these (everything after the 'o' attribute)
@@ -88,7 +92,7 @@ $attribs = array(pql_get_define("PQL_GLOB_ATTR_AUTOCREATEMAILADDRESS"),
 				 pql_get_define("PQL_GLOB_ATTR_USERNAMEPREFIX_LENGTH"));
 foreach($attribs as $attrib) {
 	// Get default value
-	$value = pql_domain_value($_pql, $domain, $attrib);
+	$value = pql_domain_value($_pql, $_REQUEST["domain"], $attrib);
 	$$attrib = $value;
 
 	// Setup edit links. If it's a dcOrganizationNameForm attribute, then
@@ -118,28 +122,37 @@ foreach($attribs as $attrib) {
 		$alt2 = pql_complete_constant($LANG->_('Delete attribute %attribute% for %domainname%'),
 									  array('attribute' => $attrib, 'domainname' => $domainname));
 
-		$$link = "<a href=\"domain_edit_attributes.php?type=modify&attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=". urlencode($value) ."\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt1."\"></a>&nbsp;<a href=\"domain_edit_attributes.php?type=delete&submit=2&attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=". urlencode($value) ."\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt2."\"></a>";
+		$$link = "<a href=\"domain_edit_attributes.php?type=modify&attrib=$attrib&rootdn="
+		  . $_REQUEST["rootdn"] . "&domain=" . $_REQUEST["domain"] . "&$attrib=". urlencode($value)
+		  . "&view=" . $_REQUEST["view"] . "\"><img src=\"images/edit.png\" width=\"12\" height=\"12\""
+		  . "border=\"0\" alt=\"$alt1\"></a>&nbsp;<a href=\"domain_edit_attributes.php?type=delete&"
+		  . "submit=2&attrib=$attrib&rootdn=" . $_REQUEST["rootdn"] . "&domain=" . $_REQUEST["domain"]
+		  . "&$attrib=". urlencode($value) . "&view=" . $_REQUEST["view"] . "\"><img src=\"images/del.png\""
+		  . "width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt2."\"></a>";
 	} else {
 		$alt1 = pql_complete_constant($LANG->_('Modify attribute %attribute% for %domainname%'),
 									  array('attribute' => $attrib, 'domainname' => $domainname));
 
 		// A phpQLAdminBranch attribute
-		$$link = "<a href=\"domain_edit_attributes.php?attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=$value\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt1."\"></a>";
+		$$link = "<a href=\"domain_edit_attributes.php?attrib=$attrib&rootdn="
+		  . $_REQUEST["rootdn"] . "&domain=" . $_REQUEST["domain"] . "&$attrib=$value&view="
+		  . $_REQUEST["view"] . "\"><img src=\"images/edit.png\" width=\"12\" height=\"12\""
+		  . "border=\"0\" alt=\"".$alt1."\"></a>";
 	}
 }
-$domain_admins		= pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"));
-$mailinglist_admins	= pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR"));
-$seealso   			= pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_SEEALSO"));
+$domain_admins		= pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"));
+$mailinglist_admins	= pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR"));
+$seealso   			= pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_SEEALSO"));
 $basequota			= pql_ldap_mailquota(pql_parse_quota($basequota));
 
-$additionaldomainname = pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_ADDITIONALDOMAINNAME"));
+$additionaldomainname = pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_ADDITIONALDOMAINNAME"));
 
 // Setup the buttons
 $buttons = array('default'	=> 'Default Branch Values',
 				 'users'	=> 'Registred users',
 				 'chval'	=> 'Change values of all users');
 
-if($ADVANCED_MODE) {
+if($_SESSION["ADVANCED_MODE"]) {
 	$new = array('owner'	=> 'Branch Owner',
 				 'dnsinfo'	=> 'MX Information',
 				 'aci'		=> 'Access Control Information');
@@ -168,38 +181,35 @@ $buttons = $buttons + $new;
 
   <br><br>
 <?php
-pql_generate_button($buttons, "domain=$domain"); echo "  <br>\n";
+pql_generate_button($buttons, "domain=" . $_REQUEST["domain"]); echo "  <br>\n";
 
-if(!$view)
-  $view = 'default';
-
-if($view == 'default') {
-	if($ADVANCED_MODE) {
+if($_REQUEST["view"] == 'default') {
+	if($_SESSION["ADVANCED_MODE"]) {
 		include("./tables/domain_details-default.inc");
 	} else {
 		include("./tables/domain_details-owner.inc");
 	}
 }
 
-if($view == 'owner') {
+if($_REQUEST["view"] == 'owner') {
 	include("./tables/domain_details-owner.inc");
-} elseif($view == 'chval') {
+} elseif($_REQUEST["view"] == 'chval') {
 	include("./tables/domain_details-users_chval.inc");
-} elseif($view == 'users') {
-	$users = pql_user_get($_pql->ldap_linkid, $domain);
+} elseif($_REQUEST["view"] == 'users') {
+	$users = pql_user_get($_pql->ldap_linkid, $_REQUEST["domain"]);
 	include("./tables/domain_details-users.inc");
-} elseif($view == 'action') {
+} elseif($_REQUEST["view"] == 'action') {
 	include("./tables/domain_details-action.inc");
-} elseif($ADVANCED_MODE == 1) {
-	if($view == 'dnsinfo')
+} elseif($_SESSION["ADVANCED_MODE"] == 1) {
+	if($_REQUEST["view"] == 'dnsinfo')
 	  include("./tables/domain_details-dnsinfo.inc");
-	elseif($view == 'dnszone')
+	elseif($_REQUEST["view"] == 'dnszone')
 	  include("./tables/domain_details-dnszone.inc");
-	elseif($view == 'options')
+	elseif($_REQUEST["view"] == 'options')
 	  include("./tables/domain_details-options.inc");
-	elseif($view == 'aci')
+	elseif($_REQUEST["view"] == 'aci')
 	  include("./tables/domain_details-aci.inc");
-	elseif($view == 'websrv')
+	elseif($_REQUEST["view"] == 'websrv')
 	  include("./tables/domain_details-websrv.inc");
 }
 ?>

@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.79 2004-01-14 12:17:56 turbo Exp $
+// $Id: user_add.php,v 2.80 2004-02-14 14:01:00 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -48,7 +48,7 @@ switch($page_curr) {
   case "":
 	// ------------------------------------------------
 	// Step 1: Selected account type (see how many users there can be)
-	if($maxusers and !$ALLOW_BRANCH_CREATE) {
+	if($maxusers and !$_SESSION["ALLOW_BRANCH_CREATE"]) {
 		if(count(pql_user_get($_pql->ldap_linkid, $domain)) >= $maxusers) {
 			// We have reached the maximum amount of users.
 			include("./header.html");
@@ -276,7 +276,7 @@ include("./header.html");
   <span class="title1">
     <?php echo pql_complete_constant($LANG->_('Create user in domain %domain%'), array("domain" => $orgname)); ?>
 <?php
-if($ADVANCED_MODE && $account_type) {
+if($_SESSION["ADVANCED_MODE"] && $account_type) {
 	if($account_type == 'normal')
 	  echo " - ".$LANG->_('Mail account');
 	elseif($account_type == 'system')

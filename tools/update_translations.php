@@ -2,7 +2,7 @@
 // ----------------------------
 // pql_update_translations.php
 //
-// $Id: update_translations.php,v 2.2 2003-07-03 07:30:23 turbo Exp $
+// $Id: update_translations.php,v 2.3 2004-02-14 14:01:00 turbo Exp $
 //
 
 // ----------------------------
@@ -28,11 +28,11 @@ $user_lang = isset( $_POST['user_lang'] ) ? $_POST['user_lang'] : '';
   </head>
 
   <body>
-<?php if ($_REQUEST['total_keys'] == "") { ?>
+<?php if (empty($_REQUEST['total_keys'])) { ?>
   Before saving the translation, make sure the directory 'translations'
   exists in the phpQLAdmin root and that it's writable by the webserver.
   <p>  
-  <form action="<?=$PHP_SELF?>" method="POST">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="POST">
     <input type="hidden" name="mode" value="select">
 <?php
 	if($user_lang)
@@ -67,7 +67,7 @@ $user_lang = isset( $_POST['user_lang'] ) ? $_POST['user_lang'] : '';
   <input type=submit value="Load File">
 </form>
 
-<form action="<?=$PHP_SELF?>" method=POST>
+<form action="<?=$_SERVER["PHP_SELF"]?>" method=POST>
   <input type="hidden" name="mode" value="save">
   <input type="hidden" name="lang" value="<?php echo $lang;?>">
   <input type="submit" value="Save Translation"><p>

@@ -1,40 +1,36 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.70 2004-01-26 05:27:52 turbo Exp $
+// $Id: left.php,v 2.71 2004-02-14 14:01:00 turbo Exp $
 //
 session_start();
 
 require("./include/pql_config.inc");
 require("./left-head.html");
 
-$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS, false, 0);
+$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"], false, 0);
 if($_pql->ldap_error) {
-    session_unregister("USER_ID");
-    session_unregister("USER_PASS");
-    session_unregister("USER_DN");
+    unset($_SESSION["USER_ID"]);
+    unset($_SESSION["USER_PASS"]);
+    unset($_SESSION["USER_DN"]);
 
     die("$_pql->ldap_error<br><a href=\"index.php\" target=\"_top\">".$LANG->_('Login again')."</a>");
 }
 
 // find out if we're to run in ADVANCE/SIMPLE mode
-if($advanced == 1) {
+if($_REQUEST["advanced"] == 1) {
     $checked  = " CHECKED";
-    $ADVANCED_MODE = 1;
-
-    session_register("ADVANCED_MODE");
+    $_SESSION["ADVANCED_MODE"] = 1;
 } else {
     $checked  = "";
-    $ADVANCED_MODE = 0;
-
-    session_register("ADVANCED_MODE");
+    $_SESSION["ADVANCED_MODE"] = 0;
 }
 ?>
   <font color="black" class="heada">
-    <?=$LANG->_('User')?>: <b><a href="user_detail.php?rootdn=<?php echo pql_get_rootdn($USER_DN)?>&user=<?=$USER_DN?>"><?=$USER_ID?></a></b>
+    <?=$LANG->_('User')?>: <b><a href="user_detail.php?rootdn=<?php echo pql_get_rootdn($_SESSION["USER_DN"])?>&user=<?=$_SESSION["USER_DN"]?>"><?=$_SESSION["USER_ID"]?></a></b>
   </font>
   <br>
-<?php if($ADVANCED_MODE) {
-	$host = split(';', $USER_HOST);
+<?php if($_SESSION["ADVANCED_MODE"]) {
+	$host = split(';', $_SESSION["USER_HOST"]);
 ?>
 
   <font color="black" class="heada"><?=$LANG->_('LDAP Server')?>: <b><?=$host[0]?>:<?=$host[1]?></b></font>
@@ -51,15 +47,13 @@ if($advanced == 1) {
   <form method=post action="index2.php" target="_top">
     <input type="checkbox" name="advanced" accesskey="a" onChange="this.form.submit()"<?=$checked?>><?=$LANG->_('\uA\Udvanced mode')."\n"?>
   </form>
-
-<?php if($ALLOW_BRANCH_CREATE and $ADVANCED_MODE) { ?>
+<?php if($_SESSION["ALLOW_BRANCH_CREATE"] and $_SESSION["ADVANCED_MODE"]) { ?>
 
   <div id="el2Parent" class="parent">
     <a href="domain_add_form.php?rootdn=<?=$_pql->ldap_basedn[0]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain branch'))); ?></a><br>
   </div>
 
 <?php } ?>
-
 
   <!-- Home branch -->
 <?php
@@ -72,8 +66,8 @@ pql_format_tree("<b>".$LANG->_('Home')."</b>", 'home.php');
 $links = array($LANG->_('Find user') => 'user_search.php');
 pql_format_tree($LANG->_('Search'), 0, $links, 1);
 
-if($ADVANCED_MODE) {
-    if($ALLOW_BRANCH_CREATE) {
+if($_SESSION["ADVANCED_MODE"]) {
+    if($_SESSION["ALLOW_BRANCH_CREATE"]) {
 	// Level 2b: Configuration and tests
 	$links = array($LANG->_('phpQLAdmin Configuration')	=> 'config_detail.php',
 		       $LANG->_('Test LDAP-Connection')		=> 'config_ldaptest.php');
@@ -84,7 +78,7 @@ if($ADVANCED_MODE) {
 		       $LANG->_('LDAP Matching rules')		=> 'config_ldap.php?type=matchingrules',
 		       $LANG->_('LDAP Attribute types')		=> 'config_ldap.php?type=attributetypes',
 		       $LANG->_('LDAP Object classes')		=> 'config_ldap.php?type=objectclasses');
-	if($MONITOR_BACKEND_ENABLED and $ALLOW_GLOBAL_CONFIG_SAVE) {
+	if($_SESSION["MONITOR_BACKEND_ENABLED"] and $_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
 	    $new = array(0					=> 0,
 			 $LANG->_('LDAP Server Status')		=> 'status_ldap.php?type=basics',
 			 $LANG->_('LDAP Connection Status')	=> 'status_ldap.php?type=connections',
@@ -101,7 +95,7 @@ if($ADVANCED_MODE) {
 		   $LANG->_('Language translator')		=> 'update_translations.php');
     pql_format_tree($LANG->_('Documentation'), 0, $links, 1);
 
-    if($ALLOW_BRANCH_CREATE) {
+    if($_SESSION["ALLOW_BRANCH_CREATE"]) {
 	// Level 2e: Main site and general phpQLAdmin links
 	$links = array('phpQLAdmin @ Bayour'			=> 'http://phpqladmin.bayour.com/',
 		       $LANG->_('Bugtracker')			=> 'http://apache.bayour.com/anthill/');
@@ -113,7 +107,7 @@ if($ADVANCED_MODE) {
 pql_format_tree_end();
 
 // ---------------- GET THE DOMAINS/BRANCHES
-if($ALLOW_BRANCH_CREATE) {
+if($_SESSION["ALLOW_BRANCH_CREATE"]) {
     // This is a 'super-admin'. Should be able to read EVERYTHING!
     $domains = pql_domain_get($_pql);
 } else {
@@ -123,7 +117,7 @@ if($ALLOW_BRANCH_CREATE) {
     foreach($_pql->ldap_basedn as $dn)  {
 	$dn = urldecode($dn);
 
-	$dom = pql_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $USER_DN);
+	$dom = pql_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]);
 	if($dom) {
 	    foreach($dom as $d) {
 		$domains[] = urlencode($d);
@@ -135,12 +129,12 @@ if($ALLOW_BRANCH_CREATE) {
 // ---------------- GET THE USERS OF THE BRANCH
 if(!isset($domains)) {
     // No domain defined -> 'ordinary' user (only show this user)
-    $SINGLE_USER = 1; session_register("SINGLE_USER");
+    $_SESSION["SINGLE_USER"] = 1;
 
-    $cn = pql_get_attribute($_pql->ldap_linkid, $USER_DN, pql_get_define("PQL_GLOB_ATTR_CN")); $cn = $cn[0];
+    $cn = pql_get_attribute($_pql->ldap_linkid, $_SESSION["USER_DN"], pql_get_define("PQL_GLOB_ATTR_CN")); $cn = $cn[0];
 
     // Try to get the DN of the domain
-    $dnparts = ldap_explode_dn($USER_DN, 0);
+    $dnparts = ldap_explode_dn($_SESSION["USER_DN"], 0);
     for($i=1; $dnparts[$i]; $i++) {
 	// Traverse the users DN backwards
 	$DN = $dnparts[$i];
@@ -156,12 +150,11 @@ if(!isset($domains)) {
 	}
     }
 
-    $links = array($cn => "user_detail.php?rootdn=$rootdn&domain=$domain&user=".urlencode($USER_DN));
+    $links = array($cn => "user_detail.php?rootdn=".$_REQUEST["rootdn"]."&domain=domain&user=".urlencode($_SESSION["USER_DN"]));
     pql_format_tree_span($cn, $links, -1);
 } else {
-    $SINGLE_USER = 0; session_register("SINGLE_USER");
+    $_SESSION["SINGLE_USER"] = 0;
 ?>
-
 
   <!-- Domain branches -->
 <?php

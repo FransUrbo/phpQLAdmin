@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of a control option
-// $Id: control_edit_attribute.php,v 2.20 2003-11-14 11:55:52 turbo Exp $
+// $Id: control_edit_attribute.php,v 2.21 2004-02-14 14:01:00 turbo Exp $
 //
 session_start();
 
@@ -17,8 +17,8 @@ require("./include/pql_config.inc");
 require("./include/pql_control.inc");
 require("./include/pql_control_plugins.inc");
 
-$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
-$_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
+$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
+$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 // Register all attribute plugins here
 $plugin = pql_plugin_get($attrib);

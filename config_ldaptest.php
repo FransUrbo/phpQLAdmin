@@ -1,6 +1,6 @@
 <?php
 // make some simple tests on ldap connection
-// $Id: config_ldaptest.php,v 2.25 2004-01-01 12:35:25 turbo Exp $
+// $Id: config_ldaptest.php,v 2.26 2004-02-14 14:01:00 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -40,19 +40,19 @@ if(!function_exists("ldap_connect")){
 	
 	// =======================================
 	// User directory connection
-	$_pql = new pql($USER_HOST, '', '', true);
-	if(!$_pql->connect($USER_HOST)) {
+	$_pql = new pql($_SESSION["USER_HOST"], '', '', true);
+	if(!$_pql->connect($_SESSION["USER_HOST"])) {
 		$connection = $LANG->_('Failed');
 		
 		// do additional tests
-		if(!gethostbyname($USER_HOST)) {
+		if(!gethostbyname($_SESSION["USER_HOST"])) {
 			// not resolved
-			$connection .= ", " . pql_complete_constant($LANG->_('The hostname %host% could not be resolved') ,array("host" => $USER_HOST ));
+			$connection .= ", " . pql_complete_constant($LANG->_('The hostname %host% could not be resolved') ,array("host" => $_SESSION["USER_HOST"] ));
 		} else {
 			// try to open a connection
-			if(!fsockopen($USER_HOST, 389)) {
+			if(!fsockopen($_SESSION["USER_HOST"], 389)) {
 				// impossible to connect
-				$connection .= ", " . pql_complete_constant($LANG->_('Could not connect to port 389 at %host%, please make sure the service is up and that it\'s not blocked with a firewall'), array("host" => $USER_HOST ));
+				$connection .= ", " . pql_complete_constant($LANG->_('Could not connect to port 389 at %host%, please make sure the service is up and that it\'s not blocked with a firewall'), array("host" => $_SESSION["USER_HOST"] ));
 			}
 		}
 	} else {
@@ -66,8 +66,8 @@ if(!function_exists("ldap_connect")){
 	// =======================================
 	// Control directory connection
 	if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
-		$_pql_control = new pql_control($USER_HOST, '', '', true);
-		if(!$_pql_control->connect($USER_HOST)) {
+		$_pql_control = new pql_control($_SESSION["USER_HOST"], '', '', true);
+		if(!$_pql_control->connect($_SESSION["USER_HOST"])) {
 			$connection_control = $LANG->_('Failed');
 
 			$host = split('\+', pql_get_define("PQL_GLOB_HOST"));
@@ -84,7 +84,7 @@ if(!function_exists("ldap_connect")){
 				// try to open a connection
 				if(!fsockopen($fqdn, $port)) {
 					// impossible to connect
-					$connection_control .= ", " . pql_complete_constant($LANG->_('Could not connect to port 389 at %host%, please make sure the service is up and it is not blocked with a firewall'), array("host" => $USER_HOST));
+					$connection_control .= ", " . pql_complete_constant($LANG->_('Could not connect to port 389 at %host%, please make sure the service is up and it is not blocked with a firewall'), array("host" => $_SESSION["USER_HOST"]));
 				}
 			}
 		} else {
@@ -100,8 +100,8 @@ if(!function_exists("ldap_connect")){
 
 	// =======================================
 	// Access rights
-	if($USER_DN and $USER_PASS) {
-		$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
+	if($_SESSION["USER_DN"] and $_SESSION["USER_PASS"]) {
+		$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 		foreach($_pql->ldap_basedn as $basedn) {
 			$basedn = urldecode($basedn);
 
@@ -204,7 +204,7 @@ if(!function_exists("ldap_connect")){
 			// Add the ACI entries to the object
 			$entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")][0] = "OpenLDAPaci: 1.2.3#entry#grant;r;[entry]#public#";
 			$entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")][1] = "OpenLDAPaci: 1.2.3#entry#grant;r,s,c;objectClass,entry#public#";
-			$entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")][2] = "OpenLDAPaci: 1.2.3#entry#grant;w,r,s,c;[all]#access-id#$USER_DN";
+			$entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")][2] = "OpenLDAPaci: 1.2.3#entry#grant;w,r,s,c;[all]#access-id#" . $_SESSION["USER_DN"];
 			
 			// Setup the DN
 			$dn = pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)."=phpQLAdmin_Branch_Test,".$basedn;
@@ -254,7 +254,7 @@ include("./header.html");
         <td class="title"><?=$LANG->_('Control directory connection')?></td>
         <td class="<?php pql_format_table(); ?>"><?=$connection_control?>&nbsp;</td>
       </tr>
-<?php if($ADVANCED_MODE == 1) { ?>
+<?php if($_SESSION["ADVANCED_MODE"] == 1) { ?>
 
       <tr></tr>
 

@@ -1,11 +1,11 @@
 <?php
-// $Id: index2.php,v 2.26 2003-11-19 16:20:27 turbo Exp $
+// $Id: index2.php,v 2.27 2004-02-14 14:01:00 turbo Exp $
 
 session_start();
 require("./include/pql_config.inc");
 
 $frames = 2; // Default 2 frames - left and main
-$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
+$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 // -----------------
 // Count how many frames we should open
@@ -18,9 +18,9 @@ if(pql_get_define("PQL_GLOB_EZMLM_USE")) {
 $controladmins = pql_domain_value($_pql, $_pql->ldap_basedn[0], pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR"));
 if(is_array($controladmins)) {
     foreach($controladmins as $admin)
-      if($admin == $USER_DN)
+      if($admin == $_SESSION["USER_DN"])
 	$controlsadministrator = 1;
-} elseif($controladmins == $USER_DN) {
+} elseif($controladmins == $_SESSION["USER_DN"]) {
     $controlsadministrator = 1;
 }
 
@@ -31,9 +31,9 @@ $counted = 0; // Don't count each of the Control usage more than once
 foreach($_pql->ldap_basedn as $dn)  {
     $dn = urldecode($dn);
 
-    $ALLOW_CONTROL_CREATE = 1; // DEBUG
+    $_SESSION["ALLOW_CONTROL_CREATE"] = 1; // DEBUG
 
-    if(pql_get_define("PQL_GLOB_CONTROL_USE") and $ALLOW_CONTROL_CREATE and $controlsadministrator) {
+    if(pql_get_define("PQL_GLOB_CONTROL_USE") and $_SESSION["ALLOW_CONTROL_CREATE"] and $controlsadministrator) {
 	$SHOW_FRAME["controls"] = 1;
 	if(!$counted) {
 	    $frames++;
@@ -61,7 +61,7 @@ $size = sprintf("%d", $size);
 
   <!-- frames == <?=$frames?> --!>
 
-<?php if(isset($advanced) and !$SINGLE_USER) { // Advance mode - show controls and mailinglist managers ?>
+<?php if(isset($_REQUEST["advanced"]) and !$_SESSION["SINGLE_USER"]) { // Advance mode - show controls and mailinglist managers ?>
   <frameset cols="260,*" rows="*" border="1" frameborder="0"><!-- $frames >= 2 --!>
     <!-- LEFT frame --!>
 <?php   if($frames >= 3) { ?>

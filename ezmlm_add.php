@@ -1,11 +1,11 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.27 2003-11-20 08:01:29 turbo Exp $
+// $Id: ezmlm_add.php,v 1.28 2004-02-14 14:01:00 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 
-$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
+$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 // forward back to list detail page
 function list_forward($domainname, $msg) {
@@ -28,7 +28,7 @@ if(!$domainname) {
 	foreach($_pql->ldap_basedn as $dn)  {
 		$dn = urldecode($dn);
 
-		$dom = pql_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $USER_DN);
+		$dom = pql_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]);
 		foreach($dom as $d)
 		  $domains[] = $d;
 	}
@@ -126,7 +126,7 @@ if(!$domain) {
   <span class="title1"><?=$LANG->_('Create mailinglist')?></span>
 <?php
 } else {
-	$dom = pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR"), $USER_DN);
+	$dom = pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR"), $_SESSION["USER_DN"]);
 	if(is_array($dom)) {
 		if($ezmlm->mailing_lists_hostsindex["COUNT"] > pql_get_define("PQL_CONF_MAX_LISTS", $domain)) {
 ?>
@@ -154,7 +154,7 @@ if(!$domain) {
 ?>
   <br><br>
 
-  <form action="<?=$PHP_SELF?>" method="post" name="addlist">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" name="addlist">
     <!-- Base configuration -->
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Base configuration')?></th>
@@ -357,7 +357,7 @@ if(!$domain) {
 	}
 ?>
         <tr class="subtitle">
-          <td><a href="<?php echo $PHP_SELF; ?>?subscribercount=<?php echo ($subscribercount + 1); ?>">add <?php if($subscribercount) {echo $LANG->_('Additional');}?>address</a></td>
+          <td><a href="<?php echo $_SERVER["PHP_SELF"]; ?>?subscribercount=<?php echo ($subscribercount + 1); ?>">add <?php if($subscribercount) {echo $LANG->_('Additional');}?>address</a></td>
         </tr>
       </th>
     </table>
@@ -380,7 +380,7 @@ if(!$domain) {
 	}
 ?>
         <tr class="subtitle">
-          <td><a href="<?php echo $PHP_SELF; ?>?killcount=<?php echo ($killcount + 1); ?>">add <?php if($killcount) {echo $LANG->_('Additional');}?>address</a></td>
+          <td><a href="<?php echo $_SERVER["PHP_SELF"]; ?>?killcount=<?php echo ($killcount + 1); ?>">add <?php if($killcount) {echo $LANG->_('Additional');}?>address</a></td>
         </tr>
       </th>
     </table>
