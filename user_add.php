@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.78 2003-11-20 08:01:29 turbo Exp $
+// $Id: user_add.php,v 2.79 2004-01-14 12:17:56 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -83,7 +83,7 @@ switch($page_curr) {
 
 	// Verify username
     if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) == pql_get_define("PQL_GLOB_ATTR_CN")
-       and pql_user_exist($_pql->ldap_linkid, $user)) {
+       and pql_user_exist($_pql->ldap_linkid, $rootdn, $user)) {
 		$error = true;
 		$error_text["username"] = pql_complete_constant($LANG->_('User %user% already exists'), array("user" => $user));
     }
@@ -206,26 +206,21 @@ switch($page_curr) {
 	}
 	
 	// Check the mailHost attribute/value
-	if(($account_type != "shell") and pql_get_define("PQL_GLOB_CONTROL_USE")) {
-		// Initiate a connection to the QmailLDAP/Controls DN
-		$_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
-		
-		if($_pql_control->ldap_linkid) {
-			// Find MX (or QmailLDAP/Controls with locals=$email_domain)
-			$mx = pql_get_mx($_pql_control->ldap_linkid, $email_domain);
-			if(!$mx[1]) {
-				// There is no MX and no QmailLDAP/Controls with this
-				// domain name in locals. Die!
-				$page_next = "two";
-				
-				$error = true;
-				$error_text["userhost"] = pql_complete_constant($LANG->_('Sorry, I can\'t find any MX or any QmailLDAP/Controls object that listens to the domain <u>%domain%</u>.<br>You will have to specify one manually.'),
-																array('domain' => pql_maybe_idna_decode($email_domain)));
-			} else {
-				// We got a MX or QmailLDAP/Controls object. Use it.
-				$userhost[1] = $mx[1];
-				$host = "default";
-			}
+	if($account_type != "shell") {
+		// Find MX (or QmailLDAP/Controls with locals=$email_domain)
+		$mx = pql_get_mx($email_domain);
+		if(!$mx) {
+			// There is no MX and no QmailLDAP/Controls with this
+			// domain name in locals. Die!
+			$page_next = "two";
+			
+			$error = true;
+			$error_text["userhost"] = pql_complete_constant($LANG->_('Sorry, I can\'t find any MX or any QmailLDAP/Controls object that listens to the domain <u>%domain%</u>.<br>You will have to specify one manually.'),
+															array('domain' => pql_maybe_idna_decode($email_domain)));
+		} else {
+			// We got a MX or QmailLDAP/Controls object. Use it.
+			$userhost[1] = $mx;
+			$host = "default";
 		}
 	}
 
@@ -269,7 +264,7 @@ switch($page_curr) {
 		// No host
 		$error = true;
 
-		if($_pql_control->ldap_linkid)
+		if(!pql_get_define("PQL_GLOB_CONTROL_USE"))
 		  $error_text["userhost"] = $LANG->_('Missing') . " (" . $LANG->_('can\'t autogenerate') . ")";
 		else
 		  $error_text["userhost"] = $LANG->_('Missing') . " (" . $LANG->_('not using QmailLDAP/Controls') . ")";

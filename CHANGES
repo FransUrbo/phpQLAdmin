@@ -101,6 +101,9 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	    Opera and non-opera, as well as 'top' and 'link' funcs. Should be much
 	    more generic and most of all - higher code redability!
 	  - Implemented pql_unit_exist() and pql_unit_add()
+	  - pql_get_mx() now only takes one arg (the domainname to check). The
+	    QmailLDAP/Controls connection is done within this function instead
+	    of externaly (makes more sence - we might want to only check DNS).
 
 phpQLAdmin 2.0.17 Release (Oct 30 2003)
 	Bug fixes
