@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for web server configuration)
 //
-// $Id: pql_websrv.inc,v 1.11 2004-11-05 13:44:41 turbo Exp $
+// $Id: pql_websrv.inc,v 1.12 2004-11-15 12:50:35 turbo Exp $
 //
 
 // {{{ pql_websrv_add_server(linkid, domain, server)
@@ -17,47 +17,25 @@ function pql_websrv_add_server($linkid, $domain, $server) {
 		$entry['objectclass'][] = 'organizationalUnit';
 		$entry['ou'] = 'WEB';
 
-		// Add the OpenLDAPaci attribute (maybe)
-		if($_SESSION["ACI_SUPPORT_ENABLED"])
-		  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($linkid, $_SESSION["USER_DN"], 'websrv');
-
-		// Create a LDIF object to print in case of error
-		$LDIF = pql_create_ldif("pql_websrv_add_server - ou", $dn, $entry);
-		if(file_exists("./.DEBUG_ME")) {
-			echo "$LDIF";
-		} else {
-			if(!ldap_add($linkid, $dn, $entry)) {
-				// Can't add the organizational unit
-				pql_format_error(1);
-				echo "Can't add the organizational unit...<br>\n";
-				die($LDIF);
-			}
+		if(!pql_write_add($linkid, $dn, $entry, 'websrv', 'pql_websrv_add_server/1')) {
+			// Can't add the organizational unit
+			pql_format_error(1);
+			die("Can't add the organizational unit leading up to ".$server[pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")]);
 		}
 	}
 
 	// ----------------
-	unset($entry);
 	$entry = $server;
 	$entry["objectclass"][] = pql_get_define("PQL_ATTR_WEBSRV_OC");
-	$entry[pql_get_define("PQL_ATTR_CN")] = $entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")];
-
-	// Add the OpenLDAPaci attribute (maybe)
-	if($_SESSION["ACI_SUPPORT_ENABLED"])
-	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($linkid, $_SESSION["USER_DN"], 'websrv');
 
 	$dn = pql_get_define("PQL_ATTR_CN")."=".$entry[pql_get_define("PQL_ATTR_CN")].",$dn";
+	$entry[pql_get_define("PQL_ATTR_CN")] = $entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")];
 
-	// Create a LDIF object to print in case of error
-	$LDIF = pql_create_ldif("pql_websrv_add_server", $dn, $entry);
-	if(file_exists("./.DEBUG_ME")) {
-		echo "$LDIF";
-	} else {
-		// Add the server configuration to the database
-		if(!ldap_add($linkid, $dn, $entry)) {
-			// failed to add configuration
-			pql_format_error(1);
-			die("$LDIF");
-		}
+	// Add the server configuration to the database
+	if(!pql_write_add($linkid, $dn, $entry, 'websrv', 'pql_websrv_add_server/2')) {
+		// failed to add configuration
+		pql_format_error(1);
+		die("Can't add webserver object ".$entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")]);
 	}
 
 	return true;
