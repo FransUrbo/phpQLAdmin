@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.116.2.9 2005-02-22 09:20:52 turbo Exp $
+// $Id: user_add.php,v 2.116.2.10 2005-02-24 15:08:30 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -451,15 +451,23 @@ switch($_REQUEST["page_curr"]) {
 				// Absolute path is ok - create 'baseMailDir/username/'
 				$ref = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]);
 				if($_REQUEST[$ref])
-				  $_REQUEST["maildirectory"] = $basemaildir.$_REQUEST[$ref]."/";
+				  $_REQUEST["maildirectory"] = $basemaildir.$_REQUEST[$ref];
 			  } else
 				// We're not allowing an absolute path - don't use the baseMailDir.
-				$_REQUEST["maildirectory"] = $_REQUEST["uid"]."/";
+				$_REQUEST["maildirectory"] = $_REQUEST["uid"];
 			}
 			
-			if($_REQUEST["maildirectory"])
+			if($_REQUEST["maildirectory"]) {
+			  if(!pql_get_define("PQL_CONF_CREATE_MBOX"))
+				// We're not putting mails in a MBox - add a slash at the end to make it a Maildir.
+				$_REQUEST["maildirectory"] .= '/';
+
 			  // Replace space(s) with underscore(s)
 			  $_REQUEST["maildirectory"] = preg_replace('/ /', '_', $_REQUEST["maildirectory"], -1);
+
+			  // Replace '&' with underscore(s)
+			  $_REQUEST["maildirectory"] = preg_replace('/&/', '_', $_REQUEST["maildirectory"], -1);
+			}
 		  } else {
 			// Can't autogenerate!
 			$error_text["maildirectory"] = pql_complete_constant($LANG->_('Attribute <u>%what%</u> is missing. Can\'t autogenerate %type%.'),

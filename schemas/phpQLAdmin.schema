@@ -39,6 +39,7 @@
 #            useWebSrv                       17
 #            startWithAdvancedMode           18
 #            useACI                          19
+#            useMBox                         20
 #
 #          System texts                     2
 #            whoAreWe                         1
@@ -110,7 +111,7 @@
 # availible from http://sourceforge.net/projects/modcfgldap/
 # See doc/README.apache for more information.
 
-# $Id: phpQLAdmin.schema,v 2.51.4.1 2005-02-12 05:19:16 turbo Exp $
+# $Id: phpQLAdmin.schema,v 2.51.4.2 2005-02-24 15:08:30 turbo Exp $
 
 # PQL_ATTR_SHOW_USERS (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.1 NAME 'showUsers'
@@ -240,6 +241,13 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.1.18 NAME 'startWithAdvancedMode'
 # PQL_ATTR_ACI_USE (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.19 NAME 'useACI'
         DESC 'Manage Access Control Informations [True/False]?'
+        EQUALITY booleanMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+        SINGLE-VALUE )
+
+# PQL_ATTR_CREATE_MBOX (true | false)
+attributetype ( 1.3.6.1.4.1.8767.3.2.1.20 NAME 'useMBox'
+        DESC 'Create MBox instead of Maildir mail boxes [True/False]?'
         EQUALITY booleanMatch
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
         SINGLE-VALUE )
@@ -660,7 +668,7 @@ objectclass ( 1.3.6.1.4.1.8767.3.1.2
         krb5RealmName $ krb5AdminServer $ krb5PrincipalName $
         krb5AdminKeytab $ krb5AdminCommandPath $
         controlBaseDn $ ezmlmAdministrator $ 
-        controlsAdministrator $ useACI )
+        controlsAdministrator $ useACI $ useMBox )
   SUP top AUXILIARY )
 
 objectclass ( 1.3.6.1.4.1.8767.3.1.3

@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.28.2.1 2005-02-12 05:19:14 turbo Exp $
+// $Id: config_attributes.inc,v 2.28.2.2 2005-02-24 15:08:30 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -223,6 +223,7 @@ pql_set_define("PQL_ATTR_BIND9_USE", 						strtolower('useBind9'),						false);
 pql_set_define("PQL_ATTR_ACI_USE", 							strtolower('useACI'),						false);
 pql_set_define("PQL_ATTR_AUTO_RELOAD", 						strtolower('autoReload'),					false);
 pql_set_define("PQL_ATTR_CHANGE_SERVER", 					strtolower('allowServerChange'),			false);
+pql_set_define("PQL_ATTR_CREATE_MBOX", 						strtolower('useMBox'),						false);
 
 // Setup
 pql_set_define("PQL_ATTR_WHOAREWE", 						strtolower('whoAreWe'),						false);
@@ -262,7 +263,8 @@ $PQL_ATTRIBUTE["GLOBAL"] = array("PQL_CONF_CONTROL_USE"					=> pql_get_define("P
 								 "PQL_CONF_ADMINISTRATOR"				=> pql_get_define("PQL_ATTR_ADMINISTRATOR"),
 								 "PQL_CONF_ADMINISTRATOR_EZMLM"	    	=> pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"),
 								 "PQL_CONF_ADMINISTRATOR_CONTROLS"		=> pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
-								 "PQL_CONF_VIRTUAL_BASEHOME"			=> pql_get_define("PQL_ATTR_VIRTUAL_BASEHOME"));
+								 "PQL_CONF_VIRTUAL_BASEHOME"			=> pql_get_define("PQL_ATTR_VIRTUAL_BASEHOME"),
+								 "PQL_CONF_CREATE_MBOX"					=> pql_get_define("PQL_ATTR_CREATE_MBOX"));
 // }}}
 
 // {{{ These are the internal phpQLAdmin attributes - BRANCH configuration
