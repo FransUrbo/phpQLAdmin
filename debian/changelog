@@ -30,8 +30,9 @@ phpqladmin (2.0.18d-1) unstable; urgency=low
     Closes bug 186
   * Make sure that the 'tarball' target (used when releasing) removes any '.DEBUG_ME'
     file. That file should not be included. It's up to the user(s) to create...
+  * PHP parse error in include/attrib.aci.inc fixed.
 
- -- Turbo Fredriksson <turbo@debian.org>  Sun,  9 May 2004 12:05:34 +0200
+ -- Turbo Fredriksson <turbo@debian.org>  Thu, 13 May 2004 07:37:50 +0200
 
 phpqladmin (2.0.18c-1) unstable; urgency=low
 
