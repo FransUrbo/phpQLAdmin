@@ -7,7 +7,8 @@ Standards-Version: 3.5.10
 
 Package: phpqladmin
 Architecture: all
-Depends: php4 | php4-cgi, php4-ldap | php4-ldap-cgi, php4-mhash | php4-mhash-cgi, php4-gd | php4-gd2, apache | httpd, wwwconfig-common (>= 0.0.7), debconf
+Depends: php4 | php4-cgi, php4-ldap | php4-ldap-cgi, php4-mhash | php4-mhash-cgi, php4-gd2, apache | apache-ssl | apache2 | httpd, wwwconfig-common (>= 0.0.7), debconf
+Recomends: php4-idn
 Description: LDAP user administration interface
  Designed primarily for administration of a QmailLDAP user database,
  but also have EZMLM and QmailLDAP/Controls managers.
