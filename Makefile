@@ -38,17 +38,19 @@ tag:
 	)
 
 install: $(INSTDIR)
-	@(echo -n "Instdir:   $(INSTDIR): "; find | cpio -p $(INSTDIR))
+	@(echo -n "Instdir:   $(INSTDIR): "; \
+	  find | cpio -p $(INSTDIR); \
+	  cd $(INSTDIR) && \
+	  rm -Rf Makefile .version.old manual include/config.inc \
+		phpQLadmin.log README.Monitor .DEBUG_ME; \
+	  find . -name '.#*' -o -name '#*' -o -name '*~' \
+	    -o -name '.*~' -o -type d -name CVS -o -name '.cvsignore' | \
+	    xargs --no-run-if-empty rm -rf)
 
 tarball: install
-	@(rm -Rf $(INSTDIR)/Makefile $(INSTDIR)/.version.old \
-		$(INSTDIR)/manual $(INSTDIR)/include/config.inc \
-		$(INSTDIR)/phpQLadmin.log $(INSTDIR)/README.Monitor \
-		$(INSTDIR)/.DEBUG_ME; \
-	  cd $(INSTDIR) && find -type d -name CVS -o -name '.cvsignore' -o -name '*~' | \
-		xargs rm -rf; \
-	  echo -n "Tarball 1: $(TMPDIR)/phpQLAdmin-$(VERSION).tar.gz: "; \
-	  cd $(TMPDIR) && tar -cz --exclude=README.cvs -f phpQLAdmin-$(VERSION).tar.gz phpQLAdmin-$(VERSION); \
+	@(echo -n "Tarball 1: $(TMPDIR)/phpQLAdmin-$(VERSION).tar.gz: "; \
+	  cd $(TMPDIR) && tar -cz --exclude=README.cvs \
+	    -f phpQLAdmin-$(VERSION).tar.gz phpQLAdmin-$(VERSION); \
 	  echo "done."; \
 	  echo -n "Tarball 2: $(TMPDIR)/phpQLAdmin-$(VERSION).tar.bz2: "; \
 	  cd $(TMPDIR) && tar -cj --exclude=README.cvs --exclude=debian \
