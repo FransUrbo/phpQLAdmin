@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_templates.inc,v 1.1.2.2 2005-02-13 12:24:00 turbo Exp $
+// $Id: pql_templates.inc,v 1.1.2.3 2005-02-14 10:49:33 turbo Exp $
 //
 
 // {{{ pql_get_templates(linkid)
@@ -116,6 +116,14 @@ function pql_templates_attributes($linkid, $objectclasses) {
 // Template can be either the template array OR a template name
 // Returns '1' if it's a MUST and '2' if it's a MAY.
 function pql_templates_check_attribute($linkid, $template, $attribute, $type = NULL) {
+  // This is quite ugly and maybe a little 'fuzzy'. But we're always (?) called from within
+  // (or between) forms where the root DN is specified in the request so it should be safe
+  // to do it this way...
+  if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == $attribute) {
+	// We're referencing users with this attribute - require this!
+	return 1;
+  }
+
   if(is_array($template)) {
 	$template_def = $template;
   } else {
