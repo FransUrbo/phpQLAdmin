@@ -15,7 +15,7 @@ switch ($attrib) {
     break;
     
   default:
-    die(pql_complete_constant($LANG->_('Unknown attribute %attribute% in %file%'), array('attrib' => $attrib, 'file' => __FILE__));
+    die(pql_complete_constant($LANG->_('Unknown attribute %attribute% in %file%'), array('attribute' => $attrib, 'file' => __FILE__));
 }
 
 include("./header.html");
