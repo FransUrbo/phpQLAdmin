@@ -2,8 +2,8 @@ phpQLAdmin 2.0 Change Log
 
 phpQLAdmin 2.0.20 TO BE ANNOUNCED
 	Bug fixes
-	GUI layout change
-	Misc changes
+	  - De-globalize view variable in controls, user, ezmlm and domain manager/view.
+	  - Slight change in release management - delete more files that shouldn't be there.
 
 phpQLAdmin 2.0.19 Release (Nov 14 2004)
 	Bug fixes
