@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliverymode (delivery preferences)
-// $Id: attrib.deliverymode.inc,v 2.23 2004-06-10 05:37:43 turbo Exp $
+// $Id: attrib.deliverymode.inc,v 2.24 2004-07-07 12:39:07 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -176,9 +176,10 @@ function attribute_save($type) {
 	if($_REQUEST["reply"] == "ok")
 	  $entry[pql_get_define("PQL_ATTR_MODE")][] = "reply";
 	
-	if (!empty($_REQUEST["mailreplytext"])) 
-	  $entry[pql_get_define("PQL_ATTR_REPLYTEXT")] = preg_replace('/\\\/', "", $_REQUEST["mailreplytext"]);
-	else {
+	if (!empty($_REQUEST["mailreplytext"])) {
+		$tmp = preg_replace('/\\\/', "", $_REQUEST["mailreplytext"]);
+		$entry[pql_get_define("PQL_ATTR_REPLYTEXT")] = pql_maybe_encode($tmp, 'mailreplytext', $_pql->ldap_linkid);
+	} else {
 		// Check if the entry in database is empty. 
 		// If not, we have choosen to DELETE the value
 		$mrt_db = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_REPLYTEXT"));
