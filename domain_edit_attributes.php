@@ -47,12 +47,12 @@ switch($attrib){
 	$include = "attrib.administrator.inc";
 	break;
   case "o":
-  case "postalCode":
-  case "postalAddress":
+  case "postalcode":
+  case "postaladdress":
   case "l":
   case "st":
   case "c":
-  case "telephoneNumber":
+  case "telephonenumber":
   case "facsimiletelephonenumber":
   case "postofficebox":
     $include = "attrib.outlook.inc";
