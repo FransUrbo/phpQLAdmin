@@ -61,6 +61,37 @@ if(PQL_VERIFY_DELETE){
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">Configuration</th>
 <tr>
+	<td class="title">LDAP host</td>
+	<td class="<?php table_bgcolor(); ?>"><?=$USER_HOST?>&nbsp;</td>
+</tr>
+
+<tr>
+	<td class="title">LDAP base dn</td>
+	<td class="<?php table_bgcolor(); ?>"><?=$USER_SEARCH_DN_USR?>&nbsp;</td>
+</tr>
+
+<?php
+	if(PQL_LDAP_CONTROL_USE) {
+?>
+<tr>
+	<td class="title">LDAP control base dn</td>
+	<td class="<?php table_bgcolor(); ?>"><?=$USER_SEARCH_DN_CTR?>&nbsp;</td>
+</tr>
+<?php
+	}
+	if(defined(PQL_DEFAULT_PATH)) {
+?>
+<tr>
+	<td class="title">Default mailbox path</td>
+	<td class="<?php table_bgcolor(); ?>"><?php echo PQL_DEFAULT_PATH; ?>&nbsp;</td>
+</tr>
+<?php
+	}
+?>
+
+<tr></tr>
+
+<tr>
         <td class="title">Language</td>
         <td class="<?php table_bgcolor(); ?>"><?php echo PQL_LANG; ?>&nbsp;</td>
 </tr>
@@ -114,55 +145,32 @@ if(PQL_VERIFY_DELETE){
 
 <tr></tr>
 
-<tr>
-	<td class="title">LDAP host</td>
-	<td class="<?php table_bgcolor(); ?>"><?=$USER_HOST?>&nbsp;</td>
-</tr>
-
-<tr>
-	<td class="title">LDAP base dn</td>
-	<td class="<?php table_bgcolor(); ?>"><?=$USER_SEARCH_DN_USR?>&nbsp;</td>
-</tr>
-
-<?php if(PQL_LDAP_CONTROL_USE) { ?>
-<tr>
-	<td class="title">LDAP control base dn</td>
-	<td class="<?php table_bgcolor(); ?>"><?=$USER_SEARCH_DN_CTR?>&nbsp;</td>
-</tr>
 <?php
-	}
-	if(defined(PQL_DEFAULT_PATH)) {
-?>
-<tr>
-	<td class="title">Default mailbox path</td>
-	<td class="<?php table_bgcolor(); ?>"><?php echo PQL_DEFAULT_PATH; ?>&nbsp;</td>
-</tr>
-<?php
-	}
+	if($ADVANCED_MODE) {
 ?>
 
 <tr></tr>
 
 <?php
-	$new_tr = 0;
-	$schemes = split(",", PQL_PASSWORD_SCHEMES);
-	foreach($schemes as $s) {
-	    if($new_tr) {
+		$new_tr = 0;
+		$schemes = split(",", PQL_PASSWORD_SCHEMES);
+		foreach($schemes as $s) {
+		    if($new_tr) {
 ?>
 <tr>
 	<td class="title"></td>
 <?php
-	    } else {
+		    } else {
 ?>
 <tr>
 	<td class="title">Password encryption schemes</td>
 <?php
-	    }
-	    $new_tr = 1;
+		    }
+		    $new_tr = 1;
 ?>
 	<td class="<?php table_bgcolor(); ?>"><?=$s?>&nbsp;</td>
 <?php
-	}
+		}
 ?>
 </tr>
 
@@ -173,45 +181,45 @@ if(PQL_VERIFY_DELETE){
 	<td class="<?php table_bgcolor(); ?>"><?php echo PQL_LDAP_OBJECTCLASS_USERID; ?>&nbsp;</td>
 </tr>
 <?php
-	$new_tr = 0;
-	$objectclasses = split(" ", PQL_LDAP_OBJECTCLASS_USER_EXTRA);
-	foreach($objectclasses as $oc) {
+		$new_tr = 0;
+		$objectclasses = split(" ", PQL_LDAP_OBJECTCLASS_USER_EXTRA);
+		foreach($objectclasses as $oc) {
 ?>
 <tr>
 	<td class="title"></td>
 	<td class="<?php table_bgcolor(); ?>"><?=$oc?>&nbsp;</td>
 </tr>
 <?php
-	}
+		}
 ?>
 
 <tr></tr>
 
 <?php
-	$objectclasses = '';
-	if(eregi(" ", PQL_LDAP_OBJECTCLASS_DOMAIN)) {
-	    $objectclasses = split(" ", PQL_LDAP_OBJECTCLASS_DOMAIN);
-	} else {
-	    $objectclasses[] = PQL_LDAP_OBJECTCLASS_DOMAIN;
-	}
+		$objectclasses = '';
+		if(eregi(" ", PQL_LDAP_OBJECTCLASS_DOMAIN)) {
+		    $objectclasses = split(" ", PQL_LDAP_OBJECTCLASS_DOMAIN);
+		} else {
+		    $objectclasses[] = PQL_LDAP_OBJECTCLASS_DOMAIN;
+		}
 
-	foreach($objectclasses as $oc) {
-	    if($new_tr) {
+		foreach($objectclasses as $oc) {
+		    if($new_tr) {
 ?>
 <tr>
 	<td class="title"></td>
 <?php
-	    } else {
+		    } else {
 ?>
 <tr>
 	<td class="title">Domain objectclasses</td>
 <?php
-	    }
-	    $new_tr = 1;
+		    }
+		    $new_tr = 1;
 ?>
 	<td class="<?php table_bgcolor(); ?>"><?=$oc?>&nbsp;</td>
 <?php
-	}
+		}
 ?>
 </tr>
 
@@ -226,6 +234,9 @@ if(PQL_VERIFY_DELETE){
 	<td class="title">Reference domains with</td>
 	<td class="<?php table_bgcolor(); ?>"><?=PQL_LDAP_ATTR_DOMAIN?></td>
 </tr>
+<?php
+	}
+?>
 	
 <tr class="subtitle">
 	<td colspan="2"><img src="images/info.png" width="16" height="16" border="0">the phpQLAdmin configuration values are stored in config.inc&nbsp;</td>
