@@ -621,30 +621,36 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 			// Now it's time to run the special adduser script if defined...
 			if(PQL_EXTRA_SCRIPT_CREATE_USER) {
 				// Setup the environment with the user details
-				putenv("PQL_DOMAIN=\"$domain\"");
-				putenv("PQL_WEBUSER=\"".posix_getuid()."\"");
+				putenv("PQL_DOMAIN=$domain");
+				putenv("PQL_WEBUSER=".posix_getuid());
 				foreach($entry as $key => $e) {
 					$key = "PQL_" . strtoupper($key);
 					if($key != 'PQL_OBJECTCLASS')
-					  putenv("$key=\"$e\"");
+					  putenv("$key=$e");
 				}
 
 				// Execute the user add script (0 => show output)
 				if(pql_execute(PQL_EXTRA_SCRIPT_CREATE_USER, 0)) {
-					$msg = urlencode(PQL_USER_ADD_SCRIPT_FAILED);
-					$url = "domain_detail.php?domain=$domain&msg=$msg";
-					header("Location: " . PQL_URI . "$url");
+					echo PQL_USER_ADD_SCRIPT_FAILED;
+					$msg = urlencode(PQL_USER_ADD_SCRIPT_FAILED) . ".&nbsp;";
+				} else {
+					echo "<b>" . PQL_USER_ADD_SCRIPT_OK . "</b><br>";
+					$msg = urlencode(PQL_USER_ADD_SCRIPT_OK) . ".&nbsp;";
 				}
+
+				$url = "domain_detail.php?domain=$domain&msg=$msg";
 			}
 
-			$msg = urlencode(PQL_USER_ADD_OK);
+			$msg .= urlencode(PQL_USER_ADD_OK);
+
 			if (PQL_TESTMAIL_AUTOSEND) {
-				$url = "user_sendmail.php?email=" . urlencode($email) . "&";
+				$url  = "user_sendmail.php?email=" . urlencode($email) . "&";
+				$url .= "domain=$domain&user=" . urlencode($entry[PQL_LDAP_REFERENCE_USERS_WITH]) . "&rlnb=2&msg=$msg";
 			} else {
-				$url = "user_detail.php?";
+				$url  = "user_detail.php?";
+				$url .= "domain=$domain&user=" . urlencode($entry[PQL_LDAP_REFERENCE_USERS_WITH]) . "&rlnb=2&msg=$msg";
 			}
 
-	   		$url .= "domain=$domain&user=" . urlencode($entry[PQL_LDAP_REFERENCE_USERS_WITH]) . "&rlnb=2&msg=$msg";
 			if(PQL_EXTRA_SCRIPT_CREATE_USER) {
 ?>
     <form action="<?=$url?>" method="post">
