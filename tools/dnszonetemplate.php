@@ -1,8 +1,8 @@
 <?php
 // Create a DNS zone file
-// $Id: dnszonetemplate.php,v 1.6.8.1 2005-02-12 05:19:17 turbo Exp $
+// $Id: dnszonetemplate.php,v 1.6.8.2 2005-02-16 13:49:50 turbo Exp $
 session_start();
-require("./include/pql_config.inc");
+require("../include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_bind9.inc");
 
 $zone = pql_bind9_get_zone($_pql->ldap_linkid, $domain, $defaultdomain);
@@ -33,6 +33,10 @@ if(is_array($zone)) {
     $retry   = $zone[$defaultdomain]["@"]["SOA"]["RETRY"];
     $expire  = $zone[$defaultdomain]["@"]["SOA"]["EXPIRE"];
     $negttl  = $zone[$defaultdomain]["@"]["SOA"]["TTL"];
+
+    if($zone[$defaultdomain]["@"]["A"]) {
+      $primaryip = $zone[$defaultdomain]["@"]["A"];
+    }
 } else {
     // Create a serial number for zone
     $date = date("Ymd01");
@@ -85,31 +89,33 @@ if($origin == $defaultdomain) {
 $basedomain = eregi_replace("\.".$origin, "", $defaultdomain);
 ?>
 <pre>
-; LDAP DN: <?="'ou=DNS,".pql_maybe_decode($domain)."'\n"?>
-;
-$ORIGIN <?=$origin?>.
-<?=$basedomain?>	604800	IN	SOA	<?=$nameservers[0]?> <?=$admin?> (
-<?php printf("%46d", $date);?>  ; Serial number
-<?php printf("%46d", $refresh);?>  ; Refresh
-<?php printf("%46d", $retry);?>  ; Retry
-<?php printf("%46d", $expire);?>  ; Expire
-<?php printf("%46d", $negttl);?>) ; Negative Cache TTL
-
-			<?=$retry?>	IN	A	<?=$primaryip."\n"?>
-<?php foreach($nameservers as $ns) { ?>
-			<?=$retry?>	IN	NS	<?=$ns."\n"?>
-<?php } ?>
-<?php foreach($mailservers as $key => $prio) { ?>
-			<?=$retry?>	IN	MX	<?=$prio?> <?=$key."\n"?>
-<?php }?>
-
-$ORIGIN <?=$defaultdomain?>.
 <?php
+echo "; LDAP DN: 'ou=DNS,".pql_maybe_decode($domain)."'\n";
+echo "\$ORIGIN $origin.\n";
+printf("%-15s %8s	IN	SOA	%s %s. (\n", $basedomain, "604800", $nameservers[0], $admin);
+printf("%58d  ; Serial number\n", $date);
+printf("%58d  ; Refresh\n", $refresh);
+printf("%58d  ; Retry\n", $retry);
+printf("%58d  ; Expire\n", $expire);
+printf("%58d) ; Negative Cache TTL\n", $negttl);
+
+echo "; ------------------------------\n";
+printf("%15s %8s	IN	A	$primaryip\n", " ", $retry);
+foreach($nameservers as $ns) {
+  printf("%15s %8s	IN	NS	$ns\n", " ", $retry);
+}
+foreach($mailservers as $prio => $key) {
+  printf("%15s %8s	IN	MX	%-4s $key\n", " ", $retry, $prio);
+}
+
+echo "; ------------------------------\n";
+echo "\$ORIGIN $defaultdomain.\n";
 $printed_hosts = 0;
 if(is_array($zone[$defaultdomain])) {
     foreach($zone[$defaultdomain] as $data) {
 	if($data['HOST'] != '@') {
-	    printf("%-20s %8d	IN	", $data['HOST'], $data['TTL']);
+	    printf("%-15s %8d	IN	", $data['HOST'], $data['TTL']);
+
 	    if($data['CNAME']) {
 		printf("%-6s	%s\n", 'CNAME', $data['CNAME']);
 	    } elseif($data['A']) {
@@ -126,7 +132,7 @@ if(is_array($zone[$defaultdomain])) {
 }
 if(!$printed_hosts) {
     // Just for show :)
-    echo "; [add your hosts here]\n";
+    echo "; [add your host(s) here]\n";
 }
 ?>
 </pre>
