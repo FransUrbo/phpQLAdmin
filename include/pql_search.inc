@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.16 2004-03-16 16:31:06 turbo Exp $
+// $Id: pql_search.inc,v 2.17 2004-03-16 17:08:27 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -17,14 +17,16 @@ function pql_search($linkid, $basedn, $filter, $attrib = 'dn', $level = "SUBTREE
 	$basedn = urldecode($basedn);
 
 	if($level == "SUBTREE") 
-	  $sr   = ldap_search($linkid, $basedn, $filter) or pql_format_error(1);
+	  $sr = ldap_search($linkid, $basedn, $filter);
 	elseif($level == "ONELEVEL")
-	  $sr   = ldap_list($linkid, $basedn, $filter) or pql_format_error(1);
+	  $sr = ldap_list($linkid, $basedn, $filter);
 	else  // $level == "BASE"
-	  $sr   = ldap_read($linkid, $basedn, $filter) or pql_format_error(1);
+	  $sr = ldap_read($linkid, $basedn, $filter);
+
+	if(!$sr)
+	  pql_format_error(1);
 
 	$info = ldap_get_entries($linkid, $sr) or pql_format_error(1);
-
 	for($i=0; $i < $info["count"]; $i++) {
 		if($attrib == '')
 		  $dn[] = $info[$i];
