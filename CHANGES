@@ -32,6 +32,10 @@ phpQLAdmin 2.2.2 TO BE ANNOUNCED
 	    array with the MX value and QLC object(s) (avoiding duplicates) THEN
 	    output this array in the form.
 	    Closes: 243
+	  - Adding a value (a mail alias for example) for a user and the user have
+	    multiple 'cn' values the informational text was 'Array'. Take the first
+	    value we have.
+	    Closes: 244
 
 	GUI layout changes
 	Misc changes
