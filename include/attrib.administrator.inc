@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.11 2003-04-07 11:40:35 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.12 2003-04-28 10:56:25 turbo Exp $
 
 require("./left-head.html");
 
@@ -120,6 +120,13 @@ function attribute_print_form($action) {
               <option value="<?=$branch?>"><?=$branch?></option>
 <?php
                 }
+			}
+
+			// Include the top-most DN's (namingContexts) as well
+			foreach($_pql->ldap_basedn as $dn) {
+?>
+              <option value="<?=$dn?>"><?=$dn?></option>
+<?php
 			}
 ?>
             </select>
