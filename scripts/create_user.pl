@@ -37,6 +37,7 @@ if($ENV{"PQL_MAILMESSAGESTORE"}) {
 	$directory .= $dirs[$i+1] . '/';
     }
 }
+chown($ENV{"PQL_UIDNUMBER"}, "mail", $DIR);
 
 #print "// beg ($0)\n";
 #system('/usr/bin/env | grep ^PQL | sort');
