@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.28 2003-11-11 07:21:34 turbo Exp $
+// $Id: pql_control.inc,v 2.29 2003-11-11 13:54:50 turbo Exp $
 //
 
 // {{{ control connection class
@@ -25,7 +25,7 @@ class pql_control extends pql {
 // ------------------------------------------------
 
 // {{{ pql_control_get_attribute(linkid, dn, attribute)
-function pql_control_get_attribute($linkid, $dn, $attribute) {pql_control_get_attribute($linkid, $dn, $attribute) {
+function pql_control_get_attribute($linkid, $dn, $attribute) {
     // get a specified option
     $sr   = ldap_read($linkid, $dn, "(objectClass=qmailControl)", array($attribute));
     $info = ldap_get_entries($linkid, $sr);
