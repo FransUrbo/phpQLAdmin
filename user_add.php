@@ -102,7 +102,7 @@ if($submit == "two"){
 }
 
 if(($submit == "two") or (($submit == "one") and !$ADVANCED_MODE)) {
-	// fetch dns information
+	// fetch DNS information
 	$userhost = pql_get_mx($_pql, $defaultdomain);
 	if(!$userhost[0]) {
 		$error_text["userhost"] = PQL_LANG_DNS_NONE;
@@ -732,12 +732,12 @@ echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_FORWARD
 
         // ------------------
 		// Add the user to the database
-		$dns = pql_user_add($_pql->ldap_linkid, $domain, $cn, $entry, $account_type, $subbranch);
-		if($dns[0]) {
-			// TODO: dns[1] (the group object) might still be empty -> failed to add it.
+		$DNs = pql_user_add($_pql->ldap_linkid, $domain, $cn, $entry, $account_type, $subbranch);
+		if($DNs[0]) {
+			// TODO: DNs[1] (the group object) might still be empty -> failed to add it.
 
 			// Now it's time to run the special adduser script if defined...
-			if($config["PQL_CONF_EXTRA_SCRIPT_CREATE_USER"][$rootdn]) {
+			if($config["PQL_CONF_SCRIPT_CREATE_USER"][$rootdn]) {
 				// Setup the environment with the user details
 				putenv("PQL_CONF_DOMAIN=$domain");
 				putenv("PQL_CONF_WEBUSER=".posix_getuid());
@@ -747,8 +747,17 @@ echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_FORWARD
 					  putenv("$key=$e");
 				}
 
+				if($config["PQL_GLOB_KRB5_ADMIN_COMMAND_PATH"] and 
+				   $config["PQL_GLOB_KRB5_REALM"] and
+				   $config["PQL_GLOB_KRB5_ADMIN_PRINCIPAL"] and
+				   $config["PQL_GLOB_KRB5_ADMIN_SERVER"] and 
+				   $config["PQL_GLOB_KRB5_ADMIN_KEYTAB"]) {
+					putenv("PQL_KADMIN_CMD=".$config["PQL_GLOB_KRB5_ADMIN_COMMAND_PATH"]."/kadmin");
+					putenv("PQL_KADMIN_CL=-r ".$config["PQL_GLOB_KRB5_REALM"]." -p ".$config["PQL_GLOB_KRB5_ADMIN_PRINCIPAL"]." -s ".$config["PQL_GLOB_KRB5_ADMIN_SERVER"]." -k -t ".$config["PQL_GLOB_KRB5_ADMIN_KEYTAB"]);
+				}
+
 				// Execute the user add script (0 => show output)
-				if(pql_execute($config["PQL_CONF_EXTRA_SCRIPT_CREATE_USER"][$rootdn], 0)) {
+				if(pql_execute($config["PQL_CONF_SCRIPT_CREATE_USER"][$rootdn], 0)) {
 					echo PQL_LANG_USER_ADD_SCRIPT_FAILED;
 					$msg = urlencode(PQL_LANG_USER_ADD_SCRIPT_FAILED) . ".&nbsp;";
 				} else {
@@ -763,13 +772,13 @@ echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_FORWARD
 
 			if($config["PQL_CONF_TESTMAIL_AUTOSEND"][$rootdn]) {
 				$url  = "user_sendmail.php?email=" . urlencode($email) . "&";
-				$url .= "domain=$domain&user=" . urlencode($dns[0]) . "&rlnb=2&msg=$msg";
+				$url .= "domain=$domain&user=" . urlencode($DNs[0]) . "&rlnb=2&msg=$msg";
 			} else {
 				$url  = "user_detail.php?";
-				$url .= "domain=$domain&user=" . urlencode($dns[0]) . "&rlnb=2&msg=$msg";
+				$url .= "domain=$domain&user=" . urlencode($DNs[0]) . "&rlnb=2&msg=$msg";
 			}
 
-			if($config["PQL_CONF_EXTRA_SCRIPT_CREATE_USER"][$rootdn]) {
+			if($config["PQL_CONF_SCRIPT_CREATE_USER"][$rootdn]) {
 ?>
     <form action="<?=$url?>" method="post">
       <input type="submit" value="Continue">
