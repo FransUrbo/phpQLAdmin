@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.172.2.1.6.2 2004-05-05 09:43:11 turbo Exp $
+// $Id: pql.inc,v 2.172.2.1.6.3 2004-05-05 09:54:09 turbo Exp $
 //
 
 // ----------------------------
@@ -1718,7 +1718,9 @@ function pql_get_rootdn($dn, $function = '') {
 		} elseif($counts < 1) {
 			// BUG! We don't have a hit!
 			echo "This is weird. We couldn't find the root dn for some reason. The DN we're trying to find a root DN for is: ";
-			echo "'$dn'.<p>$tracker";
+			echo "'$dn'.<p>$tracker<p>";
+			echo "Note that you <u><b>MUST</b></u> include exact details on how you got this error.";
+			echo "Every single mouse click etc - an URL won't suffice!";
 			die();
 		} else
 		  $dn = $DNs[0];
