@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.77 2003-06-07 12:50:28 turbo Exp $
+// $Id: pql.inc,v 2.78 2003-06-10 12:20:18 turbo Exp $
 //
 
 // ----------------------------
@@ -38,35 +38,32 @@ class pql {
 	var $ldap_linkid = 0;					// ldap connection identifier
 	var $ldap_error  = 0;					// error message incase of failiure
 	var $ldap_basedn = 0;					// array of base dns for future searches etc
-
+	
 	function _find_base_option($attrib) {
 	    $attrib = lc($attrib);
-
+		
 	    $sr = @ldap_read($this->ldap_linkid, NULL, '(objectClass=*)', array($attrib));
 	    if(! $sr) die("Can't find base dn - ".ldap_error($this->ldap_linkid));
 	    $entry = ldap_get_entries($this->ldap_linkid, $sr);
 	    
 	    // Build an array of base dn's. It's possible to have multiple in a database
 	    for($i=0; $i < $entry["count"]; $i++) {
-		if(is_array($entry[$i][$attrib])) {
-		    for($j=0; $j < $entry[$i][$attrib]["count"]; $j++ ) {
-			$val[] = $entry[$i][$attrib][$j];
-		    }
-		} else {
-		    $val[] = $entry[$i][$attrib][0];
-		}
-
-		$success = 1;
+			if(is_array($entry[$i][$attrib])) {
+				for($j=0; $j < $entry[$i][$attrib]["count"]; $j++ )
+				  $val[] = maybe_encode($entry[$i][$attrib][$j]);
+			} else
+			  $val[] = maybe_encode($entry[$i][$attrib][0]);
+			
+			$success = 1;
 	    }
 	    
 	    // If we got at least one DN, return the array. Else return false
-	    if($success) {
-		return $val;
-	    } else {
-		return false;
-	    }
+	    if($success)
+		  return $val;
+		else
+		  return false;
 	}
-
+	
 	function _find_basedn() {
 	    // /usr/bin/ldapsearch -x -LLL -h localhost -s base -b '' objectclass=* namingContexts
 	    return $this->_find_base_option("namingContexts");
@@ -74,9 +71,8 @@ class pql {
 
 	function pql($host, $binddn = "", $bindpw = "", $no_connect = false, $do_die = 1) {
 		// constructor, connect to ldap host
-		if($no_connect == true){
-			return false;
-		}
+		if($no_connect == true)
+		  return false;
 
 		// Open a connection to the host
 		$this->connect($host) or die("<b>could not connect to ldap server</b>");
@@ -179,7 +175,7 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 
 	// -----
 	// Setup user entry variable
-    foreach($attribs as $key => $value){
+    foreach($attribs as $key => $value) {
 		// Check if we have a MUST in the objectclasses choosen
 		// for creation for this attribute...
 		if(is_array($value))
@@ -298,10 +294,9 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 
 	$linkid = $ldap->ldap_linkid;
 
-    if(!pql_user_exist($linkid, $user)) {
-		// user does not exist
-		return false;
-    }
+    if(!pql_user_exist($linkid, $user))
+	  // user does not exist
+	  return false;
 
 	// Remove all administrator entries which contain the user DN
 	foreach($ldap->ldap_basedn as $dn) {
@@ -388,16 +383,16 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 }
 
 // adds a domain into ldap-tree (o|ou|dc-record)
-function pql_domain_add($ldap_linkid, $basedn, $branch_name){
+function pql_domain_add($ldap_linkid, $basedn, $branch_name) {
 	global $config;
 
-    $entry[$config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn]] = $branch_name;
+    $entry[$config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn]] = maybe_encode($branch_name); // INTERNATIONALIZE
 	$dn = $config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn] . "=" . $branch_name . "," . $basedn;
 
 	// Setup objectclasses
 	$entry["objectClass"] = pql_setup_branch_objectclasses(0, $basedn);
 	if($config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn] == "o")
-	  $entry["o"] = $branch_name;
+	  $entry["o"] = maybe_encode($branch_name);  // INTERNATIONALIZE
 	else
 	  $entry["o"] = 0;
 
@@ -423,8 +418,8 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name){
 		$entry["ou"] = $ou;
 		
 		$dn = $config["PQL_GLOB_SUBTREE_USERS"] . "," .
-              $config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn] .
-              "=" . $branch_name . "," . $basedn;
+			  $config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn] .
+			  "=" . $branch_name . "," . $basedn;
 
 		// Create a LDIF object to print in case of error
 		$LDIF = pql_create_ldif("pql_domain_add - create subtree users", $dn, $entry);
@@ -447,8 +442,8 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name){
 		$entry["ou"] = $config["PQL_GLOB_SUBTREE_GROUPS"];
 		
 		$dn = $config["PQL_GLOB_SUBTREE_GROUPS"] . "," .
-              $config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn] .
-              "=" . $branch_name . "," . $basedn;
+			  $config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn] .
+			  "=" . $branch_name . "," . $basedn;
 
 		// Create a LDIF object to print in case of error
 		$LDIF = pql_create_ldif("pql_domain_add - create subtree groups", $dn, $entry);
@@ -523,7 +518,7 @@ function pql_domain_del($ldap, $domain, $delete_forwards) {
 
 // ------------------------------------------------
 
-function pql_modify_user_addressbook($ldap_linkid, $user, $attribs){
+function pql_modify_user_addressbook($ldap_linkid, $user, $attribs) {
 	global $config;
 
     // check if addressbook is disabled
@@ -576,21 +571,20 @@ function pql_modify_user_addressbook($ldap_linkid, $user, $attribs){
 // check if domain exists
 function pql_domain_exist($ldap, $domain, $rootdn = '') {
 	global $config;
+	$domain = maybe_encode($domain); // INTERNATIONALIZE
 
 	if(!$rootdn) {
 		foreach($ldap->ldap_basedn as $dn) {
 			$filter = '('.$config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$dn].'='.$domain.')';
 			$sr = ldap_search($ldap->ldap_linkid, $dn, $filter);
-			if(ldap_count_entries($ldap->ldap_linkid, $sr) > 0) {
-				return true;
-			}
+			if(ldap_count_entries($ldap->ldap_linkid, $sr) > 0)
+			  return true;
 		}
 	} else {
 		$filter = '('.$config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$rootdn].'='.$domain.')';
 		$sr = ldap_search($ldap->ldap_linkid, $rootdn, $filter);
-		if(ldap_count_entries($ldap->ldap_linkid, $sr) > 0) {
-			return true;
-		}
+		if(ldap_count_entries($ldap->ldap_linkid, $sr) > 0)
+		  return true;
 	}
     
     return false;
@@ -610,7 +604,7 @@ function pql_user_exist($ldap_linkid, $user) {
 // ------------------------------------------------
 
 // check if any mail or mailalternateaddress record with this email exists in the ldap tree
-function pql_email_exists($ldap, $email){
+function pql_email_exists($ldap, $email) {
 	global $config;
 
 	$filter = "(|(" . $config["PQL_GLOB_ATTR_MAIL"] . "=" . $email . ")(" . $config["PQL_GLOB_ATTR_MAILALTERNATE"] . "=" . $email . "))";
@@ -773,7 +767,7 @@ function pql_replace_userattribute($ldap_linkid, $user, $attrib, $value) {
 					die();
 				}
 
-				$url = "user_add_missing_attributes.php?user=$user";
+				$url = "user_add_missing_attributes.php?user=".urlencode($user);
 				require("./user_add_missing_attributes.php");
 				die();
 			}
@@ -808,7 +802,7 @@ function pql_get_domains($ldap) {
 		}
 		
 		for ($i=0; $i<$info["count"]; $i++) {
-			$domains[] = $info[$i]["dn"];
+			$domains[] = maybe_encode($info[$i]["dn"]);
 		}
 		
 	}
@@ -819,7 +813,7 @@ function pql_get_domains($ldap) {
 // ------------------------------------------------
 
 // get all users of a domain
-function pql_get_user($ldap_linkid, $dn){
+function pql_get_user($ldap_linkid, $dn) {
 	global $config;
 
 	// Filter out any object which is a posixGroup.
@@ -961,13 +955,13 @@ function pql_get_dn($ldap, $reference, $multiples = 0) {
 }
 
 // ------------------------------------------------
-function pql_errormsg($ldap_linkid){
+function pql_errormsg($ldap_linkid) {
 	if($ldap_linkid)
 	  echo format_error("LDAP-Error: ") . ldap_error($ldap_linkid) . "<br>";
 }
 
 // ------------------------------------------------
-function pql_ldap_error($ldap_linkid, $attrib = ""){
+function pql_ldap_error($ldap_linkid, $attrib = "") {
     // an error-message wrapper for adding special comments to some
     // error conditions
     
@@ -1013,9 +1007,10 @@ function pql_parse_quota($quota_string) {
 
 // search $attribute with $value in whole ldap tree, returns dn or false
 function pql_search_attribute($ldap_linkid, $basedn, $attribute, $value) {
-    $filter = "(" . $attribute . "=" . $value . ")";
+	$value = maybe_encode($value); // INTERNATIONALIZE
+
+    $filter = '('.$attribute.'='.$value.')';
     $sr = ldap_search($ldap_linkid, $basedn, $filter, array($attribute));
-	
     if(ldap_count_entries($ldap_linkid, $sr) > 0) {
 		$ed = ldap_first_entry($ldap_linkid, $sr);
 		return ldap_get_dn($ldap_linkid, $ed);
@@ -1027,7 +1022,7 @@ function pql_search_attribute($ldap_linkid, $basedn, $attribute, $value) {
 // ------------------------------------------------
 
 // search all accounts with forwarders to $user@$domain
-function pql_search_forwarders($ldap, $user){
+function pql_search_forwarders($ldap, $user) {
 	global $config;
 
 	$return = '';
@@ -1083,7 +1078,7 @@ function pql_search_forwarders($ldap, $user){
 
 // ------------------------------------------------
 
-function pql_password_hash($password, $hash){
+function pql_password_hash($password, $hash) {
     // creates a hash of a password
     // - {SSHA}askdfjklödjfnddnu
     // - {SHA}kldfaldkjadsfdsad=
@@ -1094,25 +1089,27 @@ function pql_password_hash($password, $hash){
     switch($hash){
       case "{SSHA}":
 		// SHA1 hashing (salted)
-		if(function_exists("mhash")){
-			return "{SSHA}" . base64_encode(mhash(MHASH_SHA1, $password, uniqid(microtime())));
-		}
+		if(function_exists("mhash"))
+		  return "{SSHA}" . base64_encode(mhash(MHASH_SHA1, $password, uniqid(microtime())));
+
       case "{SHA}":
 		// SHA1 hashing
-		if(function_exists("mhash")){
-			return "{SHA}" . base64_encode(mhash(MHASH_SHA1, $password));
-		}
+		if(function_exists("mhash"))
+		  return "{SHA}" . base64_encode(mhash(MHASH_SHA1, $password));
+
       case "{MD5}":
 		// MD5 hashing
-		if(function_exists("mhash")){
-			return "{MD5}" . base64_encode(mhash(MHASH_MD5, $password));
-		}
+		if(function_exists("mhash"))
+		  return "{MD5}" . base64_encode(mhash(MHASH_MD5, $password));
+
       case "{CLEAR}":
 		// Password in the clear (JUCK! :)
 		return $password;
+
       case "{KERBEROS}":
 		// Kerberos V mapping
 		return $hash . $password;
+
       default:
 		return "{crypt}" . crypt($password);
     }
@@ -1211,7 +1208,7 @@ function check_hostaddress($host, $force_dot) {
 
 // ------------------------------------------------
 
-function pql_print_filesize($bytes){
+function pql_print_filesize($bytes) {
     // print out human readable filesizes
     
     // at which byte/kb/mb count switch to the next upper level
@@ -1237,26 +1234,24 @@ function pql_print_filesize($bytes){
 
 // ------------------------------------------------
 
-function pql_strip_domain($email){
+function pql_strip_domain($email) {
     // get username of an email address
     $email = split("@", $email);
     
-    if(count($email) == 2){
-		return $email[0];
-    }
+    if(count($email) == 2)
+	  return $email[0];
     
     return false;
 }
 
 // ------------------------------------------------
 
-function pql_strip_username($email){
+function pql_strip_username($email) {
     // get domainname of an email address
     $email = split("@", $email);
     
-    if(count($email) == 2){
-		return $email[1];
-    }
+    if(count($email) == 2)
+	  return $email[1];
     
     return false;
 }
@@ -1284,10 +1279,9 @@ function pql_check_config(&$result, $enhanced = false) {
     if(!defined("PQL_LANG_LANG"))
 	  $result[] = "no language definition file included!!";
     
-    if($enhanced){
-		// enhance configuration check
-        // --> to be done
-    }
+// TODO: enhance configuration check
+//    if($enhanced) {
+//    }
     
     if(count($result) > 0)
 	  return false;
@@ -1307,7 +1301,7 @@ function pql_ldap_mailquota($quota) {
 	else
 	  $txt = pql_complete_constant(PQL_LANG_MAILQUOTA_ECHO_MAXMAILS, array("maxmails" => $quota["maxmails"]));
     
-    $txt .= ", ";
+    $txt .= ",<br>";
     
     if($quota["maxsize"] == "")
 	  $txt .= PQL_LANG_MAILQUOTA_ECHO_MAXSIZE_UNLIMITED;
@@ -1319,18 +1313,20 @@ function pql_ldap_mailquota($quota) {
 
 // ------------------------------------------------
 
-function pql_ldap_accountstatus($status){
+function pql_ldap_accountstatus($status) {
     // returns text of account-status
     
     // active [default]
     // nopop
     // disabled
     
-    switch($status){
+    switch($status) {
       case "nopop":
 		return PQL_LANG_ACCOUNTSTATUS_NOPOP;
+
       case "disabled":
 		return PQL_LANG_ACCOUNTSTATUS_DISABLE;
+
       default:
 		return PQL_LANG_ACCOUNTSTATUS_ACTIVE;
     }
@@ -1338,7 +1334,7 @@ function pql_ldap_accountstatus($status){
 
 // ------------------------------------------------
 
-function pql_ldap_deliverymode($mode){
+function pql_ldap_deliverymode($mode) {
     // returns text of delivery mode
     
     // normal [default]
@@ -1348,17 +1344,22 @@ function pql_ldap_deliverymode($mode){
     // reply
     // echo
     
-    switch($mode){
+    switch($mode) {
       case "forwardonly":
 		return PQL_LANG_DELIVERYMODE_FORWARDONLY;
+
       case "nombox":
 		return PQL_LANG_DELIVERYMODE_NOMBOX;
+
       case "localdelivery":
 		return PQL_LANG_DELIVERYMODE_LOCALDELIVERY;
+
       case "reply":
 		return PQL_LANG_DELIVERYMODE_REPLY;
+
       case "echo":
 		return PQL_LANG_DELIVERYMODE_ECHO;
+
       default:
 		return PQL_LANG_DELIVERYMODE_NORMAL;
     }
@@ -1492,7 +1493,7 @@ function pql_set_domain_value($linkid, $dn, $type, $value) {
 			// We're supplied with an array, add those values
 			foreach($value as $val) {
 				if(($type != 'administrator') and ($type != 'seealso')) {
-					$entry[$type][] = $val;
+					$entry[$type][] = maybe_encode($val);
 				} else {
 					$entry[$type][] = $val;
 				}
@@ -1500,15 +1501,13 @@ function pql_set_domain_value($linkid, $dn, $type, $value) {
 		} else {
 			// Add the single value
 			if(($type != 'administrator') and ($type != 'seealso')) {
-				$entry[$type] = $value;
+				$entry[$type] = maybe_encode($value);
 			} else {
 				$entry[$type] = $value;
 			}
 		}
-	} else {
-		// We're only supplied with an array of entries to add/modify
-		$entry = $value;
-	}
+	} else
+	  $entry = $value;
 
 	if($value) {
 		// Setup objectclasses
@@ -1924,9 +1923,8 @@ function pql_create_ldif($func, $dn, $entry) {
 	foreach($entry as $key => $e) {
 		if(is_array($entry[$key])) {
 			// ... in an array. Go through each one, creating the LDAP entry
-			foreach($entry[$key] as $x) {
-				$LDIF .= "$key: $x<br>";
-			}
+			foreach($entry[$key] as $x)
+			  $LDIF .= "$key: $x<br>";
 		} else {
 			$LDIF .= "$key: $entry[$key]<br>";
 		}
@@ -1968,6 +1966,35 @@ function printr($string) {
 // I'm a perlhacker really, does it show!? :)
 function lc($string) {
 	return(strtolower($string));
+}
+
+// --------------------------
+// Check if we SHOULD encode the string...
+function maybe_encode($string, $return_new = 0) {
+	$old = $string;
+
+	$new = strtr($old,
+				 "ÁÉÍÓÚÑÀÈÌÒÙÄËÏÖÜÂÊÎÔÛáéíóúñàèìòùäëïöüâêîôûç",
+				 "AEIOUNAEIOUAEIOYAEIOUaeiounaeiouaeioyaeiouc");
+	if($old != $new)
+	  if(!$return_new)
+		// The two strings isn't equal -> something have been replaced
+		return(utf8_encode($string));
+	  else
+		return($new);
+
+	return($string);
+}
+
+// --------------------------
+// Check if we SHOULD decode the string...
+function maybe_decode($string) {
+	if(eregi("\=$", $string))
+	  // It's a BASE64 string, decode it
+	  return(base64_decode($string));
+	else
+	  // It seems quite safe to UTF8 decode a non UTF8 string
+	  return(utf8_decode($string));
 }
 
 /*
