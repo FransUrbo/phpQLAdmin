@@ -6,7 +6,23 @@ $string = ereg_replace("\r\n", "\n", $string) ;
 $string = ereg_replace("%20",  " ", $string);
 
 // Create the image
-$myimage = ImageCreateFromGif("images/unselected.gif");
+if(function_exists('ImageCreateFromPng')) {
+    $myimage = ImageCreateFromPng("images/unselected.png");
+
+    if($myimage)
+      $imgtype = 'png';
+} elseif(function_exists('ImageCreateFromGif')) {
+    $myimage = ImageCreateFromGif("images/unselected.gif");
+
+    if($myimage)
+      $imgtype = 'gif';
+} elseif(function_exists('ImageCreateFromJpeg')) {
+    $myimage = ImageCreateFromJpeg("images/unselected.jpeg");
+
+    if($myimage)
+      $imgtype = 'jpeg';
+}
+
 if(!$myimage) {
     // No image, create a blank one
     $myimage = ImageCreate(255, 19);
@@ -22,8 +38,17 @@ $width = (ImageSX($myimage)-7.5*strlen($string))/2;
 ImageString($myimage, 3, $width, 3, $string, $black);
     
 // Show image
-Header("Content-Type: image/gif");
-ImageGif($myimage);
+if($imgtype == 'png') {
+    Header("Content-Type: image/png");
+    ImagePng($myimage);
+} elseif($imgtype == 'gif') {
+    Header("Content-Type: image/gif");
+    ImageGif($myimage);
+} elseif($imgtype == 'jpeg') {
+    Header("Content-Type: image/jpeg");
+    ImageJpeg($myimage);
+}
+
 ImageDestroy($myimage);
 ?>
 

@@ -10,6 +10,11 @@ phpQLAdmin 2.0.15 Release (TO BE ANNOUNCED)
 	    branch AND we're not running in advanced mode, don't show
 	    the password scheme question.
 	    Closes bug 6
+	  - If we have the function ImageCreateFromPng(), then create
+	    and output the image using PNG. If not, but we have
+	    ImageCreateFromGif(), use GIF. If neither, try
+	    ImageCreateFromJpeg() and output as JPEG.
+	    Closes bug 11
 
 	GUI layout change
 	  - Possibility to set a value in the domain branch saying we
