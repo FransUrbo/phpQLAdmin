@@ -44,7 +44,7 @@
       <tr class="<?=$class?>">
         <td class="title"></td>
         <td>
-          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR");?>&user=<?=$userdn?>&submit=3&action=add"><?=$LANG->_('Give (more) admin rights')?></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR");?>&rootdn=<?=$rootdn?>&domain=<?=$branch?>&user=<?=$userdn?>&submit=3&action=add"><?=$LANG->_('Give (more) admin rights')?></a>
         </td>
         <td></td>
       </tr>
@@ -76,7 +76,7 @@
       <tr class="<?=$class?>">
         <td class="title"><?=$LANG->_('Access to DN')?>:</td>
         <td>
-          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR");?>&user=<?=$userdn?>&submit=3&action=add&view=<?=$view?>"><?=$LANG->_('Give admin rights')?></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR");?>&rootdn=<?=$rootdn?>&domain=<?=$branch?>&user=<?=$userdn?>&submit=3&action=add&view=<?=$view?>"><?=$LANG->_('Give admin rights')?></a>
         </td>
         <td></td>
       </tr>
