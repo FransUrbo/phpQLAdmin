@@ -1,3 +1,10 @@
+phpqladmin (2.0.18b-1) unstable; urgency=low
+
+  * New config option - PQL_CONF_USE_TLS (true/false) which have to be true
+    for ldap_start_tls() to take place.
+
+ -- Turbo Fredriksson <turbo@debian.org>  Tue,  6 Apr 2004 08:26:51 +0200
+
 phpqladmin (2.0.18-1) unstable; urgency=low
 
   * New release. IDNA encoding and smaller bugfixes.
