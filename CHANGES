@@ -145,6 +145,8 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	  - When error occures, try to catch the most common once (those most occuring
 	    on the mailinglist) and give a short description/remedy.
 	  - Add minimumGIDNumber (OID: 1.3.6.1.4.1.8767.3.2.3.6) for auto user generation.
+	  - Create a new object class phpQLAdminInfo (OID: 1.3.6.1.4.1.8767.3.1.4) which
+	    will host DOMAIN/Branch informations (such as VAT-Number etc) for the domain.
  
 	API changes
 	  - Rearrange functions and group them. Functions dealing with users in one
@@ -163,6 +165,12 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	    + check_hostaddress()		-> pql_check_hostaddress
 	    + check_email()			-> pql_check_email
 	    + non_internationalize()		-> pql_format_international
+	    + pql_set_domain_value()		-> pql_domain_set_value()
+	    + pql_domain_value()		-> pql_domain_get_value()
+	    + pql_replace_admins()		-> pql_domain_replace_admins()
+	    + pql_get_userquota()		-> pql_user_get_quota()
+	    + pql_get_user_letter()		-> pql_user_get_letter()
+	    + pql_get_user_number()		-> pql_user_get_number()
 	  - Functions removed:
 	    + pql_search_attribute()
 	  - Functions renamed and moved to pql_search file:
