@@ -45,7 +45,7 @@ define("PQL_ALLOW_ABSOLUTE_PATH", false);
 // Should we verify deletes of user objects?
 // If you KNOW exactly what you're doing (like me :),
 // you might find all these 'are you really sure' etc
-// VERY ANNOYING! :)
+// VERY ANNOYING, set this to 'false'! :)
 define("PQL_VERIFY_DELETE", true);
 
 // ----------------------------
