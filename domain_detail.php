@@ -240,7 +240,7 @@ if($ADVANCED_MODE == 1) {
       </tr>
 <?php
 		asort($weight);
-		foreach($weight as $key => $prio){
+		foreach($weight as $key => $prio) {
 ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td><?=$rec[$key]?></td>
@@ -250,6 +250,10 @@ if($ADVANCED_MODE == 1) {
 		} // end foreach
 	} // end if (count($rec) == 0)
 ?>
+
+      <tr class="subtitle">
+        <td colspan="4"><a href="dnszonetemplate.php?domain=<?=$domain?>&defaultdomain=<?=$defaultdomain?>"><img src="images/edit.png" width="12" height="12" border="0">Create DNS template zone file</a></td>
+      </tr>
     </th>
   </table>
 
