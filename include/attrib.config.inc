@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.43.2.1 2005-02-12 05:19:14 turbo Exp $
+// $Id: attrib.config.inc,v 1.43.2.2 2005-02-14 21:33:58 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -121,7 +121,11 @@ function attribute_print_form() {
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?php echo pql_complete_constant($LANG->_('Add to attribute %attribute%'), array('attribute' => $attrib))."\n"; ?>
+          <td class="title">
+            <?=pql_complete_constant($LANG->_('Add to attribute %attribute%'), array('attribute' => $attrib))."\n"; ?>
+          </td>
+<?php	$class=pql_format_table(0); ?>
+          <td class="<?=$class?>">
 <?php   if(($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) or
  		   ($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN"))) {
             if($attrib == 'userobjectclass')
@@ -136,6 +140,8 @@ function attribute_print_form() {
             $objectclasses = pql_get_subschema($_pql->ldap_linkid, "objectclasses");
 			if(is_array($objectclasses)) {
 				$i = 0; $new_tr = 0;
+				$div_counter = 10; // Initialize the global counter
+
 				foreach($objectclasses as $key => $oc) {
                     $print = 1; $gotit = 0;
 
@@ -152,17 +158,47 @@ function attribute_print_form() {
 
         <tr>
           <td class="title"></td>
+          <td class="<?=$class?>">
 <?php					}
 						$new_tr = 1;
+
+						$txt  = '<input type="checkbox" name="'.$attrib.'_'.$i.'" value="'.$key.'" size="50">';
+						$txt .= $objectclasses[$key]["NAME"];
+						pql_format_tree($txt, '');
+
+						if($objectclasses[$key]["MUST"]["count"]) {
 ?>
-          <td class="<?=$class?>">
-            <input type="checkbox" name="<?=$attrib?>_<?=$i?>" value="<?=$key?>" size="50"><?=$objectclasses[$key]["NAME"]."\n"?>
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Must:</b>
+<?php						echo "            ";
+							for($counter=0; $counter < $objectclasses[$key]["MUST"]["count"]; $counter++) {
+								echo $objectclasses[$key]["MUST"][$counter];
+								if($objectclasses[$key]["MUST"][$counter+1]) {
+								  echo ", ";
+								}
+							}
+						}
+
+						if($objectclasses[$key]["MAY"]["count"]) {
+?>
+
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>May:</b> &nbsp;
+<?php						echo "            ";
+							for($counter=0; $counter < $objectclasses[$key]["MAY"]["count"]; $counter++) {
+								echo $objectclasses[$key]["MAY"][$counter];
+								if($objectclasses[$key]["MAY"][$counter+1]) {
+								  echo ", ";
+								}
+							}
+						}
+
+						// This an ending for the domain tree
+						echo "\n"; pql_format_tree_end();
+?>
           </td>
         </tr>
-
-<?php                   $i++;
-					}
-                }
+<?php					$i++;
+					} // if(print) 
+                } // foreach(objectclasses)
 ?>
       <input type="hidden" name="<?=$attrib?>_<?=$i?>" value="on">
       <input type="hidden" name="<?=$attrib?>" value="<?=$i?>">
