@@ -33,6 +33,15 @@ phpQLAdmin 2.0.9 - TO BE ANNOUNCED
 	    instead!
 	  - Do a v3 bind by default. Fall back to a v2 bind if that didn't
 	    work.
+	  - Falty calling of ldap_read() when we where checking for the
+	    base DN of the LDAP server (namingContexts). If '' is used,
+	    the LDAP server starts the read from 'dc=com' (might be a 
+	    faulty configuration on my part, but it seems strange non the
+	    less). The base DN should have been NULL, not ''!
+	  - If we have more than one domain (ie, branch in the tree), then
+	    everything was shown as supposed. But if we only had one
+	    (I tried a db with 'o=Turbo Fredriksson' as base, and no other
+	    branches etc under this DN) we didn't get the whole tree.
 
 	GUI layout change
 	  - Dissalow the ezmlm frame if ordinary user.
