@@ -133,7 +133,6 @@
         <td class="<?=$class?>"><?php if($config["PQL_GLOB_CONTROL_AUTOADDRCPTHOSTS"]) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
       </tr>
 
-<?php if($config["PQL_GLOB_CONTROL_AUTOADDLOCALS"] or $config["PQL_GLOB_CONTROL_AUTOADDRCPTHOSTS"]) { ?>
       <tr>
         <td class="title">Automatically add hostname to domain for replication</td>
 <?php $class=table_bgcolor(0);
@@ -146,7 +145,6 @@
         <td class="<?=$class?>"><?php if($config["PQL_GLOB_CONTROL_AUTOADDHOSTNAME"]) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
       </tr>
 
-<?php } ?>
       <tr>
         <td class="title">Allow change of LDAP server</td>
 <?php $class=table_bgcolor(0);
