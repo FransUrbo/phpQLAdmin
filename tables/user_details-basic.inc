@@ -18,16 +18,14 @@
         <td></td>
       </tr>
 
+<?php } ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?php echo PQL_LANG_USERPASSWORD_TITLE; ?></td>
         <td><?=$userpassword?></td>
         <td>
-<?php if(!$SINGLE_USER) { ?>
           <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=userpassword&user=<?=$user?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LANG_USERPASSWORD_NEW; ?>" border="0"></a>
-<?php } ?>
         </td>
       </tr>
-<?php } ?>
 
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?php echo PQL_LANG_USER_DATA_SURNAME . ", " . PQL_LANG_USER_DATA_LASTNAME; ?></td>
