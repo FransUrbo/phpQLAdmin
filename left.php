@@ -48,17 +48,6 @@ $_pql = new pql($USER_DN, $USER_PASS);
     var fontBig    = 'large';
     var fontSmall  = 'x-small';
     var isServer   = true;
-<?php
-if($USER_BASE == 'everything') {
-?>
-    var isExpanded = false;
-<?php
-} else {
-?>
-    var isExpanded = true;
-<?php
-}
-?>
     //-->
   </script>
 
@@ -83,24 +72,23 @@ if(isset($advanced)) {
 }
 ?>
 <body bgcolor="#D0DCE0">
-  <font color="black" class="heada"><?=PQL_USER; ?>: <b><?=$USER_ID?></b></font>
-  <br>
-  <font color="black" size=2>
-    <a href="home.php"><?=PQL_HOME?></A> | <a href="index.php?logout=1" target="_parent"><?=PQL_LOGOUT?></a>
-    <form method=post action="left.php" target="pqlnav">
-      <input type="checkbox" name="advanced" accesskey="a" onChange="this.form.submit(); parent.frames.pqlmain.location.reload();"<?=$checked?>><u>A</u>dvanced mode
-    </form>
+  <font color="black" class="heada">
+    <?=PQL_USER; ?>: <b><?=$USER_ID?></b> |
+    <a href="index.php?logout=1" target="_parent"><?=PQL_LOGOUT?></a>
   </font>
+
+  <br><br>
 
   <div id="el1Parent" class="parent">
     <!-- HOME -->
     <a class="item" href="home.php">
-      <font color="black" class="heada"><b>Home</b></font>
+      <font color="black" class="heada"><b><?=PQL_HOME?></b></font>
     </a>
   </div>
 
 <?php
-// Get ALL domains
+// Get ALL domains we have access.
+// 'description: administrator=USER_DN' in the domain object
 $domains = pql_get_domain_value($_pql->ldap_linkid, '*', 'administrator', "=" . $USER_DN);
 if(is_array($domains)){
     asort($domains);
@@ -108,9 +96,9 @@ if(is_array($domains)){
     // if no domain defined, report it
 ?>
   <!-- start domain parent -->
-  <div id="el<?php echo $j;?>Parent" class="parent">
-    <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?php echo $j;?>Img">
-    <font color="black" class="heada"> no domains</font></a>
+  <div id="el0000Parent" class="parent">
+    <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el0000Img">
+    <font color="black" class="heada">no domains</font></a>
   </div>
   <!-- end domain parent -->
 
@@ -122,19 +110,19 @@ if(is_array($domains)){
 	$j = $key + 2;
 ?>
   <!-- start domain parent -->
-  <div id="el<?php echo $j;?>Parent" class="parent">
-    <a class="item" href="domain_detail.php?domain=<?php echo $domain;?>" onClick="if (capable) {expandBase('el<?php echo $j;?>', true); return false;}">
-      <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?php echo $j;?>Img">
+  <div id="el<?=$j?>Parent" class="parent">
+    <a class="item" href="domain_detail.php?domain=<?=$domain?>" onClick="if (capable) {expandBase('el<?=$j?>', true); return false;}">
+      <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$j?>Img">
     </a>
 
-    <a class="item" href="domain_detail.php?domain=<?php echo $domain;?>" onClick="if (capable) {expandBase('el<?php echo $j;?>', false)}">
-      <font color="black" class="heada"><?php echo $domain;?></font>
+    <a class="item" href="domain_detail.php?domain=<?=$domain?>" onClick="if (capable) {expandBase('el<?=$j?>', false)}">
+      <font color="black" class="heada"><?=$domain?></font>
     </a>
   </div>
   <!-- end domain parent -->
 
   <!-- start domain children -->
-  <div id="el<?php echo $j;?>Child" CLASS="child">
+  <div id="el<?=$j?>Child" class="child">
 <?php
       // iterate trough all users
       if(PQL_SHOW_USERS) {
@@ -174,7 +162,7 @@ if(is_array($domains)){
               foreach($cns as $user => $cn){
 ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
-      <a href="user_detail.php?domain=<?php echo $domain;?>&user=<?php echo urlencode($user);?>"><img src="images/mail_small.png" border="0" alt="<?php echo $cn;?>"></a>&nbsp;
+      <a href="user_detail.php?domain=<?php echo $domain;?>&user=<?php echo urlencode($user);?>"><img src="images/mail_small.png" border="0" alt="<?=$cn?>"></a>&nbsp;
       <a class="item" href="user_detail.php?domain=<?php echo $domain;?>&user=<?php echo urlencode($user);?>"><?php echo $cn;?></a>
     </nobr>
 
@@ -189,16 +177,23 @@ if(is_array($domains)){
   <!-- end domain children -->
 
 <?php
+	if($j > $max) {
+	    $max = $j;
+	}
     } // end foreach ($domains)
 } // end if(is_array($domains))
 
-if(PQL_LDAP_CONTROL_USE && ($USER_BASE == 'everything')) {
+// TODO: How do we know if the user is allowed to add domains?
+//       In the domain description we don't have that info...
+//if(PQL_LDAP_CONTROL_USE && ($USER_BASE == 'everything')) {
+if(PQL_LDAP_CONTROL_USE) {
+	$j = $max + 1;
 ?>
 
   <!-- ========================== -->
 
   <!-- Server Control -->
-  <div id="el10000Parent" class="parent">
+  <div id="el<?=$j?>Parent" class="parent">
     <br>
     <a class="item" href="control.php">
       <font color="black" class="heada"><b>Control</b></font>
@@ -206,35 +201,80 @@ if(PQL_LDAP_CONTROL_USE && ($USER_BASE == 'everything')) {
   </div>
 
 <?php
-  $j = 10001;
-  $control_cats = pql_control_plugin_get_cats();
-  if(!is_array($control_cats)) {
+	$j++;
+
+	$hosts = pql_control_get_hosts($_pql->ldap_linkid, PQL_LDAP_CONTROL_BASEDN);
+	if(!is_array($hosts)) {
 ?>
-  <div id="el<?php echo $j; ?>Parent" CLASS="parent">
+  <div id="el<?=$j?>Parent" class="parent">
     <img src="images/navarrow.png" width="9" height="9" border="0">
-    <font color="black" class="heada">no plugins defined</font>
+    <font color="black" class="heada">no LDAP control hosts defined</font>
   </div>
 
 <?php
-  } else {
-    asort($control_cats);
-    foreach($control_cats as $cat){
+	} else {
+		// for each host, get LDAP/Control plugins
+		foreach($hosts as $host) {
+?>
+  <!-- start server control host: <?=$host?> -->
+  <div id="el<?=$j?>Parent" class="parent">
+    <a class="item" href="control_detail.php?host=<?=$host?>" onClick="if (capable) {expandBase('el<?=$j?>', true); return false;}">
+      <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$j?>Img">
+    </a>
+
+    <a class="item" href="control_detail.php?host=<?=$host?>" onClick="if (capable) {expandBase('el<?=$j?>', false)}">
+      <font color="black" class="heada"><?=$host?></font>
+    </a>
+  </div>
+  <!-- end server control host -->
+
+<?php
+			$control_cats = pql_control_plugin_get_cats();
+			if(!is_array($control_cats)) {
 ?>
   <!-- start server control attribute -->
-  <div id="el<?php echo $j; ?>Parent" CLASS="parent">
-    <a class="item" href="control_cat.php?cat=<?php echo urlencode($cat); ?>">
+  <div id="el<?=$j?>Child" class="child">
+    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
       <img src="images/navarrow.png" width="9" height="9" border="0">
-      <font color="black" class="heada"><?php echo $cat; ?></font>
-    </a>
+      <font color="black" class="heada">no plugins defined</font>
+    </nobr>
   </div>
   <!-- end server control attribute -->
 
 <?php
-	$j++;
-    } // end foreach
-  } // end if is_array
+			} else {
+				asort($control_cats);
+?>
+  <!-- start server control attribute: <?=$cat?> -->
+  <div id="el<?=$j?>Child" class="child">
+<?php
+
+				foreach($control_cats as $cat){
+?>
+    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
+      <a href="control_cat.php?host=<?=$host?>&cat=<?=urlencode($cat)?>"><img src="images/navarrow.png" width="9" height="9" border="0"></a>&nbsp;
+      <a class="item" href="control_cat.php?host=<?=$host?>&cat=<?=urlencode($cat)?>"><?=$cat?></a>
+    </nobr>
+
+    <br>
+
+<?php
+				} // end foreach controls
+?>
+  </div>
+  <!-- end server control attribute -->
+<?php
+			} // end if is_array($control_cats)
+
+			$j++;
+		} // end foreach host
+	} // end if is_array($hosts)
 } // end if PQL_LDAP_CONTROL_USE
 ?>
+
+  <form method=post action="left.php" target="pqlnav">
+    <input type="checkbox" name="advanced" accesskey="a" onChange="this.form.submit(); parent.frames.pqlmain.location.reload();"<?=$checked?>><u>A</u>dvanced mode
+  </form>
 
   <!-- Arrange collapsible/expandable db list at startup -->
   <script type="text/javascript" language="javascript1.2">
