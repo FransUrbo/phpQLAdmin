@@ -22,7 +22,7 @@ include("./header.html");
 ?>
   <span class="title1"><?php pql_complete_constant(PQL_LANG_USER_DEL_ATTRIBUTE_TITLE, array("value" => $oldvalue));?></span>
 <?php
-if(isset($ok) || !PQL_CONF_VERIFY_DELETE) {
+if(isset($ok) || !$config["PQL_CONF_VERIFY_DELETE"][$rootdn]) {
     $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
     
     // delete the user attribute
@@ -68,7 +68,7 @@ if(isset($ok) || !PQL_CONF_VERIFY_DELETE) {
     <input type="hidden" name="user" value="<?php echo $user; ?>">
     <input type="hidden" name="domain" value="<?php echo $domain; ?>">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="hidden" name="value" value="<?php echo $oldvalue; ?>">
+    <input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
 <?php
   if ($attrib == 'mailalternateaddress') {
 ?>	
