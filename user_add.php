@@ -376,31 +376,34 @@ switch($submit) {
 
 <?php
     if($account_type != "forward") {
-                // display forms for SYSTEM/MAIL account
+		// Get the default password scheme for branch
+		$defaultpasswordscheme = pql_get_domain_value($_pql, $domain, "defaultpasswordscheme");
+
+		if(!$defaultpasswordscheme or $ADVANCED_MODE)  {
+			// We have no default password scheme - display forms for SYSTEM/MAIL account
 ?>
         <!-- Password schema -->
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title">Password scheme</td>
           <td>
-<?php
-		if(eregi(',', $config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn])) {
-			// We got more than one password scheme...
+<?php		if(eregi(',', $config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn])) {
+				// We got more than one password scheme...
 
-			// Get the default password scheme for branch
-			$defaultpasswordscheme = pql_get_domain_value($_pql, $domain, "defaultpasswordscheme");
-
-			// Show each of the schemes as radio buttons
-			$schemes = split(",", $config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn]);
-			foreach($schemes as $scheme) {
+				// Show each of the schemes as radio buttons
+				$schemes = split(",", $config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn]);
+				foreach($schemes as $scheme) {
 ?>
             <input type="radio" name="pwscheme" value="<?=$scheme?>" <?php if($defaultpasswordscheme == $scheme) { echo "CHECKED"; } ?>><?=$scheme?>
-<?php		}
-		} else { ?>
+<?php			}
+			} else { ?>
             Scheme: <b>{<?=$config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn]?>}</b>
             <input type="hidden" name="pwscheme" value="<?=$config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn]?>">
-<?php	} ?>
+<?php		} ?>
           </td>
         </tr>
+<?php	} else { ?>
+        <input type="hidden" name="pwscheme" value="<?=$defaultpasswordscheme?>">
+<?php	} ?>
 
         <!-- Password -->
         <tr class="<?php table_bgcolor(); ?>">
