@@ -1,6 +1,6 @@
 phpQLAdmin 2.0 Change Log
 
-phpQLAdmin 2.0.9 - TO BE ANNOUNCED
+phpQLAdmin 2.0.9 Release (Mar 29 2003)
 	Highlights
 	Bug fixes
 	  - When ordinary user logs in, we don't know the domain.
