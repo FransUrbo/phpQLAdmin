@@ -8,6 +8,14 @@ Upgrading from 2.0.13
 	It is now possible to UTF-8 encode branches. That is, use national
 	characters! This is however not possible if using 'dc' branches.
 	That's a 'problem' (?) in the schema, not phpQLAdmin.
+	To be able to UTF-8 encode locals/rcpthosts attributes in a
+	QmailLDAP/Controls object, those attribute definitions have to
+	be changed. This is done by changing the SYNTAX value to
+		1.3.6.1.4.1.1466.115.121.1.15{32768}
+	I have included MY copy of the QmailLDAP/Controls schema file.
+	But since I haven't done a release 'in ages' of this patch, and
+	there are others that might have done updates to it, please verify
+	that it's correct before use!
 
 Upgrading from 2.0.10
 	The schema have been updated, so don't forget to load the new
