@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.86 2005-02-24 17:04:01 turbo Exp $
+// $Id: user_detail.php,v 2.87 2005-03-04 09:47:52 turbo Exp $
 //
 // {{{ Setup session
 session_start();
@@ -121,8 +121,12 @@ foreach($attribs as $key => $attrib) {
 	  $got_user_reference_attribute = 1;
 
     $value = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], $attrib);
-	if(is_array($value))
+	if(is_array($value) and ($attrib != 'cn'))
+	  // Only 'cn' is allowed to be multi-valued
 	  $value = $value[0];
+	elseif(!is_array($value) and ($attrib == 'cn'))
+	  // He! 'cn' MUST be an array for the view to work!
+	  $value = array($value);
 
 	$$key = $value;
 	$value = urlencode($value);

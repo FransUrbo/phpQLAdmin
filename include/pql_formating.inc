@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.37 2005-02-24 17:04:01 turbo Exp $
+// $Id: pql_formating.inc,v 2.38 2005-03-04 09:47:53 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -226,7 +226,10 @@ function pql_format_table_single($linkid, $text, $url, $array, $attrib, $class =
 			$new_tr = 1;
 ?>
         <td class="<?=$class?>"><?=$username?></td>
-        <td class="<?=$class?>"><?php if($url["del"]) { ?><a href="<?=$url["del"]?>&<?=$attrib?>=<?=$value?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$text["del"]?>"></a><?php } ?></td>
+        <td class="<?=$class?>">
+          <?php if($url["mod"]) { ?><a href="<?=$url["mod"]?>&<?=$attrib?>=<?=$value?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$text["mod"]?>"></a><?php } ?>
+          <?php if($url["del"]) { ?><a href="<?=$url["del"]?>&<?=$attrib?>=<?=$value?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$text["del"]?>"></a><?php } ?>
+        </td>
       </tr>
 <?php	}
 	}

@@ -50,14 +50,30 @@
         </td>
       </tr>
 
-<?php } ?>
-      <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Surname').", ".$LANG->_('Lastname')?></td>
-        <td><?=$cn?></td>
-        <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=cn&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>&oldvalue=<?=$cn?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change common name')?>" border="0"></a></td>
-      </tr>
+<?php }
 
-<?php if($_SESSION["ADVANCED_MODE"] and !$USER_IS_GROUP) { ?>
+// {{{ Surname and Lastname
+// - Can/'should' be multi-valued, hence pql_format_table_single()
+$class=pql_format_table(0);
+
+$tmp  = "user_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&attrib=cn";
+$tmp .= "&user=".$url["user"]."&view=".$_GET["view"];
+
+$txt  = array('tit' => $LANG->_('Surname').", ".$LANG->_('Lastname'),
+			  'add' => $LANG->_('Add name'),
+			  'del' => $LANG->_('Delete name'),
+			  'mod' => $LANG->_('Modify name'));
+
+$link = array('add' => $tmp."&type=add",
+			  'del' => $tmp."&submit=1&type=del",
+			  'mod' => $tmp); unset($tmp);
+
+pql_format_table_single($_pql->ldap_linkid, $txt, $link, $cn,
+						pql_get_define("PQL_ATTR_CN"), $class);
+// }}}
+
+	  if($_SESSION["ADVANCED_MODE"] and !$USER_IS_GROUP) {
+?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Login shell')?></td>
         <td><?php if($loginshell){echo $loginshell;}else{echo $LANG->_('None');} ?></td>

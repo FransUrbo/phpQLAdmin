@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of user
-// $Id: user_edit_attribute.php,v 2.48 2005-02-24 17:04:01 turbo Exp $
+// $Id: user_edit_attribute.php,v 2.49 2005-03-04 09:47:53 turbo Exp $
 //
 // This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
 //   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -49,6 +49,8 @@ $username = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_def
 if(!$username) {
     // No common name, use uid field
     $username = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_UID"));
+} elseif(is_array($username)) {
+  $username = $username[0];
 }
 
 // {{{ Forward back to users detail page (called by attribute_save).
