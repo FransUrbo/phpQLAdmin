@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.14 2004-02-27 12:13:02 turbo Exp $
+// $Id: pql_formating.inc,v 2.15 2004-03-02 07:28:21 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -291,6 +291,18 @@ function pql_format_urls(&$string) {
 	$tmp = urlencode($tmp);
 
 	return($tmp);
+}
+// }}}
+
+// {{{ pql_format_bool(string)
+function pql_format_bool(&$value) {
+	if($value == 'TRUE') {
+		settype($value, "boolean");
+		$value = '1';
+	} elseif($value == 'FALSE') {
+		settype($value, "boolean");
+		$value = '0';
+	}
 }
 // }}}
 
