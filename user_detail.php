@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.81 2004-11-05 11:00:52 turbo Exp $
+// $Id: user_detail.php,v 2.82 2004-11-15 13:04:57 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -99,6 +99,7 @@ $attribs = array("cn"					=> pql_get_define("PQL_ATTR_CN"),
 				 "userpassword"			=> pql_get_define("PQL_ATTR_PASSWD"),
 				 "mailmessagestore"		=> pql_get_define("PQL_ATTR_MAILSTORE"),
 				 "mailhost"				=> pql_get_define("PQL_ATTR_MAILHOST"),
+				 "mail"					=> pql_get_define("PQL_ATTR_MAIL"),
 				 "homedirectory"		=> pql_get_define("PQL_ATTR_HOMEDIR"),
 				 "roomnumber"			=> pql_get_define("PQL_ATTR_ROOMNUMBER"),
 				 "telephonenumber"		=> pql_get_define("PQL_ATTR_TELEPHONENUMBER"),
