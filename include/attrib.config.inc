@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.32 2004-03-03 07:59:28 turbo Exp $
+// $Id: attrib.config.inc,v 1.33 2004-03-11 19:57:43 turbo Exp $
 
 function attribute_check() {
     global $error, $LANG;
@@ -17,9 +17,7 @@ function attribute_check() {
 }
 
 function attribute_print_form() {
-	global $_pql, $error, $LANG;
-	global $PQL_ATTRIBUTE;
-	global $toggle;				// DLW: I'm not sure where this gets set.
+	global $_pql, $error, $LANG, $PQL_ATTRIBUTE;
 
 	// DLW: This form doesn't print the "$error" entries.
 
@@ -27,13 +25,16 @@ function attribute_print_form() {
 	$attrib = strtolower($_REQUEST["attrib"]);
 	$oldvalue = @$_REQUEST["oldvalue"];
 	$rootdn = $_REQUEST["rootdn"];
+	$toggle = $_REQUEST["toggle"];
 
 	// Get the old values from the define
-	foreach($PQL_ATTRIBUTE as $key => $value) {
-		$value = strtolower($value);
-		if(($value == $attrib) and pql_get_define($key, $rootdn)) {
-			$oldvalue = pql_get_define($key, $rootdn);
-			break;
+	foreach($PQL_ATTRIBUTE as $level => $array) {
+		foreach($array as $key => $value) {
+			$value = strtolower($value);
+			if(($value == $attrib) and pql_get_define($key, $rootdn)) {
+				$oldvalue = pql_get_define($key, $rootdn);
+				break;
+			}
 		}
 	}
 
@@ -95,8 +96,8 @@ function attribute_print_form() {
   <br><br>
 
   <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="phpqladmin_modify">
-<?php   if(($attrib == lc($PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_USER"])) or
- 		   ($attrib == lc($PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_DOMAIN"]))) {
+<?php   if(($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) or
+ 		   ($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN"))) {
 ?>
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Set/Modify attribute %attribute%'), array('attribute' => $attrib))."\n"; ?>
@@ -116,8 +117,8 @@ function attribute_print_form() {
       <th colspan="3" align="left">
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?php echo pql_complete_constant($LANG->_('Add to attribute %attribute%'), array('attribute' => $attrib))."\n"; ?>
-<?php   if(($attrib == lc($PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_USER"])) or
- 		   ($attrib == lc($PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_DOMAIN"]))) {
+<?php   if(($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) or
+ 		   ($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN"))) {
             if($attrib == 'userobjectclass')
                 $existing = pql_get_define("PQL_CONF_OBJECTCLASS_USER", $dn);
             else
@@ -163,7 +164,7 @@ function attribute_print_form() {
           <td class="<?=$class?>"><i><a href="javascript:errorWindow()"><?=$LANG->_('No objectclasses')?>!</i></a></td
 <?php
 			}
-        } elseif($attrib == lc($PQL_ATTRIBUTE["PQL_GLOB_LANG"])) {
+        } elseif($attrib == pql_get_define("PQL_ATTR_LANG")) {
 			// We're to change the language -> show a select box with existing languages
 			$languages = $LANG->get_supported();
 ?>
@@ -175,7 +176,7 @@ function attribute_print_form() {
 <?php
         } else {
 			// Not a userObjectClass or branchObjectClass
-			if($attrib == lc($PQL_ATTRIBUTE["PQL_CONF_PASSWORD_SCHEMES"])) {
+			if($attrib == pql_get_define("PQL_ATTR_PASSWORD_SCHEMES")) {
 				$values = array('CRYPT', 'MD5', 'SHA', 'CLEAR', 'KERBEROS');
 				if(is_array($values)) {
 ?>
@@ -223,8 +224,7 @@ function attribute_print_form() {
 }
 
 function attribute_save() {
-    global $_pql, $LANG;
-	global $PQL_ATTRIBUTE;
+    global $_pql, $LANG, $PQL_ATTRIBUTE;
 
 	$attrib = lc($_REQUEST["attrib"]);
 	$attrib_val = @$_REQUEST[$attrib];
@@ -238,7 +238,7 @@ function attribute_save() {
 	$entry = array();
 
 	if($attrib_val) {
-		if($attrib == 'passwordscheme') {
+		if($attrib == pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME")) {
 			$entry[$attrib][] = strtoupper($attrib_val);
 		} elseif(is_array($_POST)) {
 			for($i=0; $i < $_POST[$attrib]; $i++) {
@@ -270,12 +270,14 @@ function attribute_save() {
 		for($i=0; $values[$i]; $i++)
 		  if(! eregi($delval, $values[$i]))
 			$entry[$attrib][] = $values[$i];
-	} elseif($attrib_val and ($attrib != 'passwordscheme') and
-			($attrib != 'userobjectclass') and ($attrib != 'branchobjectclass')) {
+	} elseif($attrib_val and
+			 ($attrib != pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME")) and
+			 ($attrib != pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) and
+			 ($attrib != pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN"))) {
 		$entry[$attrib][] = $attrib_val;
 	} else {
 		if($rootdn) {
-			if($attrib != pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR")) {
+			if($attrib != pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")) {
 				// Fetch old values from DB
 				unset($oldvalues); $oldvalues = pql_domain_get_value($_pql, $rootdn, $attrib);
 				if(is_array($oldvalues)) {
@@ -297,39 +299,45 @@ function attribute_save() {
 					}
 				} elseif($toggle) {
 					// No old values and it's a toggle -> check default and reverse it
-					foreach($PQL_ATTRIBUTE as $key => $value) {
-						if(!is_array($value)) {
-							if(lc($value) == $attrib) {
-								if(pql_get_define($key, $rootdn) or (pql_get_define($key, $rootdn) == 'TRUE'))
-								  $entry[$attrib][] = 'FALSE';
-								else
-								  $entry[$attrib][] = 'TRUE';
-
-								break;
+					foreach($PQL_ATTRIBUTE as $level => $array) {
+						foreach($array as $key => $value) {
+							if(!is_array($value)) {
+								if(lc($value) == $attrib) {
+									if(pql_get_define($key, $rootdn) or (pql_get_define($key, $rootdn) == 'TRUE'))
+									  $entry[$attrib][] = 'FALSE';
+									else
+									  $entry[$attrib][] = 'TRUE';
+									
+									break;
+								}
 							}
 						}
 					}
 				} // ELSIF it's a toggle.
 			} // IF attrib != controlsadministrator
-		} elseif(($attrib == 'passwordscheme') or ($attrib == 'userobjectclass') or ($attrib == 'branchobjectclass')) {
+		} elseif(($attrib == pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME")) or
+				 ($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) or
+				 ($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN"))) {
 			// We don't have any values in the LDAP database, we're using
 			// the default values - get the old values from the define
 
-			foreach($PQL_ATTRIBUTE as $key => $value) {
-				if(!is_array($value)) {
-					if((lc($value) == lc($attrib)) and pql_get_define($key, $rootdn) and !eregi('_GLOB_', $key)) {
-						// Split this value into an array
-						$values = pql_split_oldvalues(pql_get_define($key, $rootdn));
-						foreach($values as $val) {
-							// Add all values EXEPT the one to remove
-							if(lc($val) != lc($delval))
-							  $entry[$attrib][] = $val;
+			foreach($PQL_ATTRIBUTE as $level => $array) {
+				foreach($array as $key => $value) {
+					if(!is_array($value)) {
+						if((lc($value) == lc($attrib)) and pql_get_define($key, $rootdn) and !eregi('_GLOB_', $key)) {
+							// Split this value into an array
+							$values = pql_split_oldvalues(pql_get_define($key, $rootdn));
+							foreach($values as $val) {
+								// Add all values EXEPT the one to remove
+								if(lc($val) != lc($delval))
+								  $entry[$attrib][] = $val;
+							}
+							
+							break;
 						}
-
-						break;
+					} else {
+						$entry[$attrib][] = $attrib_val;
 					}
-	            } else {
-					$entry[$attrib][] = $attrib_val;
 				}
 			}
         } elseif($toggle) {
@@ -346,15 +354,14 @@ function attribute_save() {
 
 	// -----------------------------
 	// Do the actual modification(s)
-	if(!$rootdn or ($attrib == pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR")) or $toggle) {
+	if(!$rootdn or ($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")) or $toggle) {
 		// We don't have a root DN, we're changing controlsAdministrator OR
 		// it's a toggle. This means it's a global variable, and should be
 		// set in every namingContexts
 		foreach($_pql->ldap_basedn as $dn) {
 			$dn = urldecode($dn);
 
-			if($attrib == pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR")) {
-
+			if($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")) {
 				unset($entry);
 				if($attrib_val)
 				  $entry[$attrib][] = $attrib_val;
@@ -401,22 +408,6 @@ function attribute_save() {
 
 	attribute_forward($msg, $rlnb);
 	break;
-}
-
-// DLW: I don't see where in the code this is called.
-function attribute_verify_objectclass($ldap) {
-	global $rootdn;
-
-	// Get all object classes of the DN, making sure it
-	// contains the phpQLAdminBranch
-	$sr  = @ldap_read($ldap->ldap_linkid, $rootdn, $rootdn, array('objectclass'));
-	$ocs = @ldap_get_entries($ldap->ldap_linkid, $sr) or pql_format_error(1);
-	for($j=0; $j < $ocs[0][pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")]["count"]; $j++) {
-		if(eregi('phpQLAdminConfig', $ocs[0][pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][$j]))
-		  return 1;
-	}
-
-	return 0;
 }
 
 // Local variables:
