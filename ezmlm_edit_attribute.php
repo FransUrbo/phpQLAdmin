@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_edit_attribute.php,v 1.25 2004-10-18 13:39:30 turbo Exp $
+// $Id: ezmlm_edit_attribute.php,v 1.26 2004-11-17 07:30:06 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -11,11 +11,11 @@ $url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 // forward back to list detail page
 function list_forward($domainname, $listno, $msg) {
     $msg    = urlencode($msg);
-	$domain = urlencode($domain);
+	$domain = urlencode($_REQUEST["domain"]);
 	if($listno)
-	  $url = "ezmlm_detail.php?domain=".$_REQUEST["domain"]."&domainname=$domainname&listno=$listno&msg=$msg";
+	  $url = "ezmlm_detail.php?domain=$domain&domainname=$domainname&listno=$listno&msg=$msg";
 	else
-	  $url = "ezmlm_detail.php?domain=".$_REQUEST["domain"]."&domainname=$domainname&msg=$msg";
+	  $url = "ezmlm_detail.php?domain=$domain&domainname=$domainname&msg=$msg";
 
     header("Location: " . pql_get_define("PQL_CONF_URI") . "$url");
 }
@@ -39,7 +39,7 @@ if($ezmlm = new ezmlm($user, $path)) {
 	if(($_REQUEST["attrib"] == 'subscriber') or ($_REQUEST["attrib"] == 'owner')) {
 		include("./header.html");
 
-		if(($submit != 'save') and !$value) {
+		if(($_REQUEST["submit"] != 'save') and !$value) {
 			if($_REQUEST["attrib"] == 'subscriber') {
 				$title1 = $LANG->_('Add email address to subscription list');
 				$title2 = $LANG->_('Subscription address');
@@ -62,11 +62,11 @@ if($ezmlm = new ezmlm($user, $path)) {
 <?php
 			if($_REQUEST["attrib"] == 'subscriber') {
 ?>
-          <td><input type="text" name="subscriber" value="<?=$subscriber?>" size="50"></td>
+          <td><input type="text" name="subscriber" value="<?=$_REQUEST["subscriber"]?>" size="50"></td>
 <?php
 			} elseif($_REQUEST["attrib"] == 'owner') {
 ?>
-          <td><input type="text" name="owner" value="<?=$owner?>"></td>
+          <td><input type="text" name="owner" value="<?=$_REQUEST["owner"]?>"></td>
 <?php
 			}
 ?>
@@ -91,10 +91,11 @@ if($ezmlm = new ezmlm($user, $path)) {
 				if($value) {
 					$ezmlm->unsubscribe($listname, $value);
 				} else {
-					$ezmlm->subscribe($listname, $subscriber);
+					$ezmlm->subscribe($listname, $_REQUEST["subscriber"]);
 				}
 			} elseif($_REQUEST["attrib"] == 'owner') {
-				$ezmlm->updatelistentry(0, $_REQUEST["listno"], $_REQUEST["domainname"], $_REQUEST["attrib"], $owner);
+				$ezmlm->updatelistentry(0, $_REQUEST["listno"], $_REQUEST["domainname"], $_REQUEST["attrib"],
+										$_REQUEST["owner"]);
 			}
 		}
 	} else {

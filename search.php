@@ -1,6 +1,6 @@
 <?php
 // shows results of search
-// $Id: search.php,v 2.27 2004-11-05 11:00:18 turbo Exp $
+// $Id: search.php,v 2.28 2004-11-17 07:30:06 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -165,14 +165,14 @@ if(!$_SESSION["SINGLE_USER"]) {
 ?>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=urlencode($user)?>" target="_new"><?=$cn?></a></td>
+        <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$_REQUEST["domain"]?>&user=<?=urlencode($user)?>" target="_new"><?=$cn?></a></td>
         <td><?=$uid?></td>
         <td><?=$mail?></td>
         <td><?=$status?></td>
         <td>
-          <a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?php echo urlencode($user)?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change user data')?>" border="0"></a>
+          <a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$_REQUEST["domain"]?>&user=<?php echo urlencode($user)?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change user data')?>" border="0"></a>
           &nbsp;
-          <a href="user_del.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?php echo urlencode($user); ?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete user')?>" border="0"></a>
+          <a href="user_del.php?rootdn=<?=$rootdn?>&domain=<?=$_REQUEST["domain"]?>&user=<?php echo urlencode($user); ?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete user')?>" border="0"></a>
         </td>
       </tr>
 <?php	}

@@ -1,6 +1,6 @@
 <?php
 // delete a user
-// $Id: user_del.php,v 2.34 2004-10-19 10:40:40 turbo Exp $
+// $Id: user_del.php,v 2.35 2004-11-17 07:30:07 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -27,10 +27,10 @@ $cn = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("P
   <br><br>
 <?php
 
-if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
-	$delete_forwards = (isset($_REQUEST["delete_forwards"]) || pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) ? true : false;
-	$delete_admins   = (isset($_REQUEST["delete_admins"])   || pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) ? true : false;
-	$unsubscribe     = (isset($_REQUEST["unsubscribe"])     || pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) ? true : false;
+if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST["rootdn"])) {
+	$delete_forwards = (isset($_REQUEST["delete_forwards"]) || pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST["rootdn"])) ? true : false;
+	$delete_admins   = (isset($_REQUEST["delete_admins"])   || pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST["rootdn"])) ? true : false;
+	$unsubscribe     = (isset($_REQUEST["unsubscribe"])     || pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST["rootdn"])) ? true : false;
 
 	if($unsubscribe) {
 		// We want to unsubscribe user from (all) mailing list(s).

@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_del.php,v 1.22 2004-10-18 13:39:30 turbo Exp $
+// $Id: ezmlm_del.php,v 1.23 2004-11-17 07:30:06 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -13,18 +13,16 @@ $url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 include("./header.html");
 
 // forward back to list detail page
-function list_forward($domainname, $msg){
-	global $domain;
-
+function list_forward($domainname, $msg) {
     $msg = urlencode($msg);
     $url = "home.php?msg=$msg&rlnb=3";
     header("Location: " . pql_get_define("PQL_CONF_URI") . "$url");
 }
 
 // Get base directory for mails
-if(!($path = pql_get_attribute($_pql->ldap_linkid, $domain, pql_get_define("PQL_ATTR_BASEMAILDIR")))) {
+if(!($path = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEMAILDIR")))) {
 	// TODO: What if we can't find the base maildir path!?
-	die("Can't get ".pql_get_define("PQL_ATTR_BASEMAILDIR")." path from domain '$domain'!");
+	die("Can't get ".pql_get_define("PQL_ATTR_BASEMAILDIR")." path from domain '".$_REQUEST["domain"]."'!");
 }
 
 // Load list of mailinglists
