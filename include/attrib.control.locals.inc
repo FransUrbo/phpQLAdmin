@@ -2,7 +2,7 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.27 2004-05-04 08:16:42 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.28 2004-05-05 11:07:37 turbo Exp $
 
 // {{{ locals_check(type)
 function locals_check($type) {
@@ -91,7 +91,7 @@ function locals_print_view($host) {
     } else {
   ?>
       <tr class="subtitle">
-        <td><a href="control_edit_attribute.php?rootdn=<?=$_REQUEST["rootdn"]?>&attrib=<?=pql_get_define("PQL_ATTR_LOCALS")?>&mxhost=<?=$host?>"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a> (<?=$LANG->_('The automatic replication with domain is disabled')?>)</td>
+        <td><a href="control_edit_attribute.php?rootdn=<?=$_REQUEST["rootdn"]?>&attrib=<?=pql_get_define("PQL_ATTR_LOCALS")?>&mxhost=<?=$host?>&view=hosts"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a> (<?=$LANG->_('The automatic replication with domain is disabled')?>)</td>
       </tr>
     </th>
 <?php }	?>
