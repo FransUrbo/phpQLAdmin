@@ -1,6 +1,6 @@
 <?php
 // logins to the system
-// $Id: index.php,v 2.32 2004-02-14 15:57:56 turbo Exp $
+// $Id: index.php,v 2.33 2004-02-14 16:01:04 turbo Exp $
 //
 // Start debuging
 // http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0
@@ -206,11 +206,6 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 		header("Location:index.php?msg=" . urlencode($msg) . "&uname=$uname");
 		exit;
 	}
-
-if(is_array($rootdn)) {
-	printr($rootdn);
-}
-die("RootDN: $rootdn, Error: $error");
 
 	// We made it, so set all the session variables.
 	if($_POST["passwd"] and !$_SESSION["USER_PASS"])
