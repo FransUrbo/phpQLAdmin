@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.22 2004-03-11 18:13:41 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.23 2004-03-19 10:03:46 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -48,7 +48,7 @@ function attribute_print_form() {
 
 	  // Initiate a connection to the QmailLDAP/Controls DN
 	  $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
-		
+
 	  $hosts = pql_control_get_hosts($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"]);
 	  if(is_array($hosts)) {
 ?>
@@ -56,14 +56,14 @@ function attribute_print_form() {
         <tr></tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain to '.pql_get_define("PQL_ATTR_LOCALS").' in following objects'))); ?>:</td>
+          <td class="title" valign="top"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain to '.pql_get_define("PQL_ATTR_LOCALS").' in following objects'))); ?>:</td>
           <td>
 <?php		if(!pql_get_define("PQL_CONF_CONTROL_AUTOADDLOCALS", $_REQUEST["rootdn"])) {
 				$i = 0;
 
 		  		foreach($hosts as $host) {
 ?>
-            <input type="checkbox" name="<?php echo pql_get_define('PQL_ATTR_LOCALS');?>_<?=$i?>" value="<?=$host?>"><?=$host?><br>
+            <input type="checkbox" name="<?php echo pql_get_define('PQL_ATTR_LOCALS');?>_<?=$i?>" value="<?=$host?>"><?=pql_maybe_idna_decode($host)?><br>
 <?php	  			$i++;
 		  		}
 ?>
@@ -81,12 +81,12 @@ function attribute_print_form() {
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain to '.pql_get_define('PQL_ATTR_RCPTHOSTS').' in following objects'))); ?>:</td>
+          <td class="title" valign="top"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain to '.pql_get_define('PQL_ATTR_RCPTHOSTS').' in following objects'))); ?>:</td>
           <td>
 <?php		if(!pql_get_define("PQL_CONF_CONTROL_AUTOADDRCPTHOSTS", $_REQUEST["rootdn"])) {
 		  		foreach($hosts as $host) {
 ?>
-            <input type="checkbox" name="<?php echo pql_get_define('PQL_ATTR_RCPTHOSTS');?>_<?=$i?>" value="<?=$host?>"><?=$host?><br>
+            <input type="checkbox" name="<?php echo pql_get_define('PQL_ATTR_RCPTHOSTS');?>_<?=$i?>" value="<?=$host?>"><?=pql_maybe_idna_decode($host)?><br>
 <?php	  			$i++;
 		  		}
 ?>
@@ -170,7 +170,7 @@ function attribute_save($type) {
 		elseif(!is_array($entry)) 
 		  // We're deleting the last entry...
 		  $entry[$attrib] = array();
-		
+
 		if(pql_domain_set_value($_pql->ldap_linkid, $_REQUEST["domain"], '', $entry)) {
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										 array('what' => $LANG->_('Additional domain name')));
