@@ -2,6 +2,12 @@ phpQLAdmin 2.0 Change Log
 
 phpQLAdmin 2.0.19 TO BE ANNOUNCED
 	Bug fixes
+	  - Rewrite the part that figures out if we should show the controls frame or
+	    not.
+	    + A 'super admin' should be able to manage the QmailLDAP/Controls
+	      information, even if he/she isn't a controls administrator.
+	    + Simplify - cyckle through the root DN's _once_ (not twice).
+
 	GUI layout change
 	Misc changes	
 
