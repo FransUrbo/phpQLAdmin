@@ -195,6 +195,36 @@ Apache configuration
 You will have to enable register_globals in your php.ini file (don't
 forget to restart the apache server).
 
+QmailLDAP/Controls restart
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+Unfortunatly, QmailLDAP/Controls needs to be restarted every time
+a configuration option have changed (if they are in LDAP as a
+QmailLDAP/Controls object). This is done by creating a cron job
+that looks something like the following. The example checks locals
+and rcpthosts every five minutes. If a change have been made, it
+will restart qmail.
+
+# Check for new locals/rcpthosts in the QmailLDAP/Controls object
+5,15,25,35,45,55 * * * * root /var/www/phpQLAdmin/restart_qmail.pl
+
+This example require that phpQLAdmin is installed into /var/www/phpQLAdmin/.
+If it isn't on your system, change the path to restart_qmail.pl.
+
+This script require a config file that's named /etc/qmail/.restart_qmail.conf,
+and will look like this:
+
+LDAP_SERVER="ldap.example.com"
+LDAP_SEARCH="/usr/bin/ldapsearch"
+LDAP_CTRLDN="ou=QmailLDAP,dc=example,dc=com"
+QMAIL_INIT="/etc/init.d/qmail"
+HOSTNAME="qmail.example.com"
+
+You must have the QmailLDAP/Controls object named
+
+cn=qmail.example.com,ou=QmailLDAP,dc=example,dc=com
+
+for this to work.
+
 
 For more information on installations, please view doc/index.php
 through the webbrowser. Note though that documentation is not my
