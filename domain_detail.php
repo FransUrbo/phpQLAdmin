@@ -1,10 +1,10 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.92 2005-03-04 11:55:32 turbo Exp $
+// $Id: domain_detail.php,v 2.93 2005-03-09 10:47:13 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
-require("./include/pql_config.inc");
+require($_SESSION["path"]."/include/pql_config.inc");
 
 $url["domain"] = pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
@@ -85,7 +85,6 @@ $attribs = array("autocreatemailaddress"	=> pql_get_define("PQL_ATTR_AUTOCREATE_
 				 "st"						=> pql_get_define("PQL_ATTR_ST"),
 				 "street"					=> pql_get_define("PQL_ATTR_STREET"),
 				 "telephonenumber"			=> pql_get_define("PQL_ATTR_TELEPHONENUMBER"),
-				 "facsimiletelephonenumber"	=> pql_get_define("PQL_ATTR_FACSIMILETELEPHONENUMBER"),
 				 "mobile"					=> pql_get_define("PQL_ATTR_MOBILE"),
 				 "usernameprefix"			=> pql_get_define("PQL_ATTR_USERNAME_PREFIX"),
 				 "usernameprefixlength"		=> pql_get_define("PQL_ATTR_USERNAME_PREFIX_LENGTH"),
