@@ -24,29 +24,29 @@
       <tr class="<?php table_bgcolor(); ?>">
         <td></td>
         <td>SOA DN</td>
-        <td><?=$zones[$domainname]['@']['RDN']?></td>
+        <td>&nbsp;&nbsp;&nbsp;&nbsp;<?=$zones[$domainname]['@']['RDN']?></td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
         <td></td>
         <td>SOA</td>
-        <td><?=$zones[$domainname]['@']['SOA']?></td>
+        <td>&nbsp;&nbsp;&nbsp;&nbsp;<?=$zones[$domainname]['@']['SOA']?></td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
         <td>
-          <a href="bind9_edit_attributes?type=del&rdn=<?=$zones[$domainname]['@']['RDN']?>&type=a"><img src="images/del.png" width="12" height="12" border="0" alt="Delete host"></a>
+          <a href="bind9_edit_attributes.php?action=del&rdn=<?=$zones[$domainname]['@']['RDN']?>&type=a"><img src="images/del.png" width="12" height="12" border="0" alt="Delete host"></a>
         </td>
         <td>A</td>
-        <td><?=$zones[$domainname]['@']['A']?></td>
+        <td><a href="bind9_edit_attributes.php?action=modify&rdn=<?=$zones[$domainname]['@']['RDN']?>&type=a"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify SOA value"></a>&nbsp;<?=$zones[$domainname]['@']['A']?></td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
         <td>
-          <a href="bind9_edit_attributes?type=del&rdn=<?=$zones[$domainname]['@']['RDN']?>&type=ttl"><img src="images/del.png" width="12" height="12" border="0" alt="Delete host"></a>
+          <a href="bind9_edit_attributes.php?action=del&rdn=<?=$zones[$domainname]['@']['RDN']?>&type=ttl"><img src="images/del.png" width="12" height="12" border="0" alt="Delete host"></a>
         </td>
         <td>TTL</td>
-        <td><?=$zones[$domainname]['@']['TTL']?></td>
+        <td><a href="bind9_edit_attributes.php?action=modify&rdn=<?=$zones[$domainname]['@']['RDN']?>&type=ttl"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify SOA value"></a>&nbsp;<?=$zones[$domainname]['@']['TTL']?></td>
       </tr>
 
       <tr></tr>
@@ -57,10 +57,10 @@
 
       <tr class="<?php table_bgcolor(); ?>">
         <td>
-          <a href="bind9_edit_attributes?type=del&rdn=<?=$zones[$domainname]['@']['RDN']?>&type=ns&value=<?=$ns?>"><img src="images/del.png" width="12" height="12" border="0" alt="Delete host"></a>
+          <a href="bind9_edit_attributes.php?action=del&rdn=<?=$zones[$domainname]['@']['RDN']?>&type=ns&value=<?=$ns?>"><img src="images/del.png" width="12" height="12" border="0" alt="Delete host"></a>
         </td>
         <td>NS</td>
-        <td><?=$ns?></td>
+        <td><a href="bind9_edit_attributes.php?action=modify&rdn=<?=$zones[$domainname]['@']['RDN']?>&type=ns"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify SOA value"></a>&nbsp;<?=$ns?></td>
       </tr>
 <?php	  }
       } else {
@@ -68,10 +68,10 @@
 
       <tr class="<?php table_bgcolor(); ?>">
         <td>
-          <a href="bind9_edit_attributes?type=del&rdn=<?=$zones[$domainname]['@']['RDN']?>&type=ns&value=<?=$zones[$domainname]['@']['NS']?>"><img src="images/del.png" width="12" height="12" border="0" alt="Delete host"></a>
+          <a href="bind9_edit_attributes.php?action=del&rdn=<?=$zones[$domainname]['@']['RDN']?>&type=ns&value=<?=$zones[$domainname]['@']['NS']?>"><img src="images/del.png" width="12" height="12" border="0" alt="Delete host"></a>
         </td>
         <td>NS</td>
-        <td><?=$zones[$domainname]['@']['NS']?></td>
+        <td><a href="bind9_edit_attributes.php?action=modify&rdn=<?=$zones[$domainname]['@']['RDN']?>&type=ns"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify SOA value"></a>&nbsp;<?=$zones[$domainname]['@']['NS']?></td>
       </tr>
 <?php } ?>
 
@@ -83,10 +83,10 @@
 
       <tr class="<?php table_bgcolor(); ?>">
         <td>
-          <a href="bind9_edit_attributes?type=del&rdn=<?=$zones[$domainname]['@']['RDN']?>&type=mx&value=<?=$mx?>"><img src="images/del.png" width="12" height="12" border="0" alt="Delete host"></a>
+          <a href="bind9_edit_attributes.php?action=del&rdn=<?=$zones[$domainname]['@']['RDN']?>&type=mx&value=<?=$mx?>"><img src="images/del.png" width="12" height="12" border="0" alt="Delete host"></a>
         </td>
         <td>MX</td>
-        <td><?=$mx?></td>
+        <td><a href="bind9_edit_attributes.php?action=modify&rdn=<?=$zones[$domainname]['@']['RDN']?>&type=mx"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify SOA value"></a>&nbsp;<?=$mx?></td>
       </tr>
 <?php	  }
       } else {
@@ -94,10 +94,10 @@
 
       <tr class="<?php table_bgcolor(); ?>">
         <td>
-          <a href="bind9_edit_attributes?type=del&rdn=<?=$zones[$domainname]['@']['RDN']?>&type=mx&value=<?=$zones[$domainname]['@']['MX']?>"><img src="images/del.png" width="12" height="12" border="0" alt="Delete host"></a>
+          <a href="bind9_edit_attributes.php?action=del&rdn=<?=$zones[$domainname]['@']['RDN']?>&type=mx&value=<?=$zones[$domainname]['@']['MX']?>"><img src="images/del.png" width="12" height="12" border="0" alt="Delete host"></a>
         </td>
         <td>MX</td>
-        <td><?=$zones[$domainname]['@']['MX']?></td>
+        <td><a href="bind9_edit_attributes.php?action=modify&rdn=<?=$zones[$domainname]['@']['RDN']?>&type=mx"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify SOA value"></a>&nbsp;<?=$zones[$domainname]['@']['MX']?></td>
       </tr>
 <?php } ?>
     </th>
@@ -120,44 +120,44 @@
 ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td>
-          <a href="bind9_edit_attributes?type=del&rdn=<?=$data['RDN']?>"><img src="images/del.png" width="12" height="12" border="0" alt="Delete host"></a>
+          <a href="bind9_edit_attributes.php?action=del&rdn=<?=$data['RDN']?>"><img src="images/del.png" width="12" height="12" border="0" alt="Delete host"></a>
         </td>
 
         <td>
-          <a href="bind9_edit_attributes?type=modify&attrib=host&rdn=<?=$data['RDN']?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify host value"></a>
+          <a href="bind9_edit_attributes.php?action=modify&attrib=host&rdn=<?=$data['RDN']?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify host value"></a>
           <?=$data['HOST']?>
         </td>
 
         <td>
-          <a href="bind9_edit_attributes?type=modify&attrib=ttl&rdn=<?=$data['RDN']?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify host value"></a>
+          <a href="bind9_edit_attributes.php?action=modify&attrib=ttl&rdn=<?=$data['RDN']?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify host value"></a>
           <?=$data['TTL']?>
         </td>
 
 <?php		if($data['CNAME']) { ?>
         <td>CNAME</td>
         <td>
-          <a href="bind9_edit_attributes?type=modify&attrib=cname&rdn=<?=$data['RDN']?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify host value"></a>
+          <a href="bind9_edit_attributes.php?action=modify&attrib=cname&rdn=<?=$data['RDN']?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify host value"></a>
           <?=$data['CNAME']?>
         </td>
 
 <?php		} elseif($data['A']) { ?>
         <td>A</td>
         <td>
-          <a href="bind9_edit_attributes?type=modify&attrib=a&rdn=<?=$data['RDN']?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify host value"></a>
+          <a href="bind9_edit_attributes.php?action=modify&attrib=a&rdn=<?=$data['RDN']?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify host value"></a>
           <?=$data['A']?>
         </td>
 
 <?php		} elseif($data['SRV']) { ?>
         <td>SRV</td>
         <td>
-          <a href="bind9_edit_attributes?type=modify&attrib=srv&rdn=<?=$data['RDN']?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify host value"></a>
+          <a href="bind9_edit_attributes.php?action=modify&attrib=srv&rdn=<?=$data['RDN']?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify host value"></a>
           <?=$data['SRV']?>
         </td>
 
 <?php		} elseif($data['TXT']) { ?>
         <td>TXT</td>
         <td>
-          <a href="bind9_edit_attributes?type=modify&attrib=txt&rdn=<?=$data['RDN']?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify host value"></a>
+          <a href="bind9_edit_attributes.php?action=modify&attrib=txt&rdn=<?=$data['RDN']?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify host value"></a>
           <?=$data['TXT']?>
         </td>
 <?php		} ?>
@@ -168,7 +168,7 @@
 
       <tr class="subtitle">
         <td></td>
-        <td><a href="bind9_edit_attributes?type=add"><img src="images/edit.png" width="12" height="12" border="0" alt="Add host">Add host</a></td>
+        <td><a href="bind9_add.php?action=add&type=host&domain=<?=$domain?>&domainname=<?=$domainname?>&submit=1"><img src="images/edit.png" width="12" height="12" border="0" alt="Add host">Add host</a></td>
         <td></td>
         <td></td>
         <td></td>
@@ -177,5 +177,7 @@
   </table>
 <?php } else { ?>
   <br>
-  No zones configure for this branch. <a href="bind9_add.php?domain=<?=$domain?>">Add DNS zone</a>
+  No zones configure for this branch. 
 <?php } ?>
+  <br>
+  <a href="bind9_add.php?action=add&type=domain&domain=<?=$domain?>">Add DNS zone</a>
