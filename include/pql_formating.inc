@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.21 2004-03-26 11:28:49 turbo Exp $
+// $Id: pql_formating.inc,v 2.22 2004-03-29 07:56:29 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -200,7 +200,7 @@ function pql_format_tree_other($cnt, $text, $url, $level, $parent, $child) {
 	}
 
 	if($url) {
-		$url = "href=\"$url\"";
+		$url = "href=\"$url\" target=\"_top\"";
 	}
 ?>
   <div id="el<?=$cnt?>Parent" class="parent" <?=$mouse["over"]." ".$mouse["out"]?>>
@@ -240,7 +240,7 @@ function pql_format_tree_span($text, $links, $level) {
     <nobr>
       <?=$nbsp?>
       <?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>"><?php } ?>
-      <a class="tblItem" title="<?=$text?>" href="<?=$link?>" <?php if(eregi('^http://', $link)) { echo 'target=_top" '; } else { echo 'target="pqlmain" '; } ?>><?=$text?></a>
+      <a class="tblItem" title="<?=$text?>" href="<?=$link?>" <?php if(eregi('^http://', $link)) { echo 'target="_top"'; } else { echo 'target="pqlmain"'; } ?>><?=$text?></a>
     </nobr>
 <?php			if($counter < ($count - 1)) { ?>
 
@@ -337,6 +337,59 @@ function pql_format_bool(&$value) {
 	}
 
 	return($value);
+}
+// }}}
+
+// {{{ pql_parse_quota(quota_string)
+function pql_parse_quota($quota_string) {
+	$quota = '';
+
+	// get max bytes
+	preg_match("/([0-9]*)S/", $quota_string, $matches);
+	if(isset($matches[1])) {
+		$quota["maxsize"] = intval($matches[1] / 1024);
+		
+		// get max mails
+		preg_match("/([0-9]*)C/", $quota_string, $matches);
+		$quota["maxmails"] =  $matches[1];
+	} else
+	  // The quota value isn't correct. Whing it!
+	  // Asume that the value in there is SIZE, and set AMOUNT to 0
+	  // ('should mean' unlimited if I remember correctly).
+	  return(array($quota_string, "0"));
+	
+	return $quota;
+}
+// }}}
+
+// {{{ pql_ldap_mailquota(quota, newline)
+// Returns human readable version of users quota
+// NOTE: I can remember that there's ONE place where
+//       one does NOT want the newline. But I can't remember
+//		 where, so this is TRUE by default. I'll deal with
+//		 that single instance when I find it...
+// UPDATE: Right! It's when the message "Successfully changed quota ..."
+//		   is shown. Then we want a comma instead...
+function pql_ldap_mailquota($quota, $newline = 1) {
+    global $LANG;
+
+    if($quota["maxmails"] == "")
+	  $txt = $LANG->_('Unlimited amount');
+	else
+	  $txt = pql_complete_constant($LANG->_('Max %maxmails% mails'), array("maxmails" => $quota["maxmails"]));
+
+	// The HTML newline
+	if($newline)
+	  $txt .= "<br>";
+	else
+	  $txt .= ", ";
+    
+    if($quota["maxsize"] == "")
+	  $txt .= $LANG->_('Unlimited size');
+	else
+	  $txt .= pql_complete_constant($LANG->_('Max %maxsize% KB'), array("maxsize" => $quota["maxsize"]));
+    
+    return $txt;
 }
 // }}}
 
