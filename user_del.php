@@ -17,6 +17,9 @@ if(!$o) {
 	$o = $domain;
 }
 $cn = pql_get_userattribute($_pql->ldap_linkid, $user, 'cn'); $cn = $cn[0];
+
+$o  = maybe_decode($o);
+$cn = maybe_decode($cn);
 ?>
   <span class="title1"><?php echo pql_complete_constant(PQL_LANG_USER_DEL_TITLE, array("domain" => $o, "user" => $cn)); ?></span>
   <br><br>
@@ -52,11 +55,13 @@ if(isset($ok) || !$config["PQL_CONF_VERIFY_DELETE"][$rootdn]) {
         
     <span class="title3">What should we do with forwards to this user?</span><br>
     <input type="checkbox" name="delete_forwards" checked> Delete all forwards<br><br>
+<?php if(0) { ?>
 
     <span class="title3">What should we do with the users mailbox?</span><br>
     <input type="radio" name="mail" value="delete_mail"> Delete it<br>
     <input type="radio" name="mail" value="archive_mail" checked> Archive it<br>
     <input type="radio" name="mail" value="donate_mail"> Donate it to another user<br><br>
+<?php } ?>
 
     <span class="title2"><?=PQL_LANG_SURE?></span>
     <input type="submit" name="ok" value="<?php echo PQL_LANG_YES; ?>">
