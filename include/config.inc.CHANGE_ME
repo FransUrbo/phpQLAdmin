@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.55 2004-10-05 07:52:22 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.56 2004-10-10 12:03:52 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -10,9 +10,10 @@
 //
 
 // ----------------------------
-// PQL_CONF_HOST (FQDN|IP)
-// the host, port and base DN which is running the ldap-server
-// for the USERS database - separated with semi colon (;)
+// PQL_CONF_HOST (FQDN|IP|URI)
+// the host, port and base DN to the QmailLDAP/Controls object which is
+// running the ldap-server for the USERS database - separated with semi
+// colon (;)
 //
 // Fields:
 //	LDAP host		Fully Qualified Hostname
@@ -40,7 +41,7 @@
 // configuration (HOME->phpQLAdmin Configuration in Advanced mode) for this
 // to take effect.
 //
-// These two examples works directly with the demo database(s) distributed
+// These examples works directly with the demo database(s) distributed
 // in the demo directory. Don't use on live server, since my account and
 // password (quite easily cracked though :) is in there...
 //pql_set_define("PQL_CONF_HOST","ldaps://localhost/;;ou=QmailLDAP,c=SE");
