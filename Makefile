@@ -40,19 +40,35 @@ tag:
 install: $(INSTDIR)
 	@(echo -n "Instdir:   $(INSTDIR): "; find | cpio -p $(INSTDIR))
 
-tarball: install
-	@(rm -Rf $(INSTDIR)/Makefile $(INSTDIR)/.version.old \
+excludelist:
+	@(cd $(TMPDIR); \
+	  find -type d -name CVS -exec find {} \; \
+	    | sed 's@\./@@'  > exclude.list; \
+	  find -type d -name debian -exec find {} \; \
+	    | sed 's@\./@@' >> exclude.list; \
+	  find -type f -name '.cvsignore' -o -name 'README.cvs' \
+	    -o -name '*.new' -o -name '*.orig' -o -name '*~' \
+	    -o -name '.#*' | sed 's@\./@@' >> exclude.list; \
+	  cat exclude.list | sort | uniq > new; \
+	  echo	$(INSTDIR)/Makefile $(INSTDIR)/.version.old \
 		$(INSTDIR)/manual $(INSTDIR)/include/config.inc \
 		$(INSTDIR)/phpQLadmin.log $(INSTDIR)/README.Monitor \
-		$(INSTDIR)/.DEBUG_ME; \
-	  cd $(INSTDIR) && find -type d -name CVS -o -name '.cvsignore' -o -name '*~' | \
-		xargs rm -rf; \
-	  echo -n "Tarball 1: $(TMPDIR)/phpQLAdmin-$(VERSION).tar.gz: "; \
+		$(INSTDIR)/.DEBUG_ME >> new; \
+	  mv new exclude.list; \
+	  cat exclude.list | xargs rm -rf; \
+	  cd $(INSTDIR) && mv -f *.pl scripts/; \
+	  mkdir schemas && mv -f *.schema schemas/)
+
+tarball: install excludelist
+	@(echo -n "Tarball 1: $(TMPDIR)/phpQLAdmin-$(VERSION).tar.gz: "; \
 	  cd $(TMPDIR) && tar -cz --exclude=README.cvs -f phpQLAdmin-$(VERSION).tar.gz phpQLAdmin-$(VERSION); \
 	  echo "done."; \
 	  echo -n "Tarball 2: $(TMPDIR)/phpQLAdmin-$(VERSION).tar.bz2: "; \
 	  cd $(TMPDIR) && tar -cj --exclude=README.cvs --exclude=debian \
 		-f phpQLAdmin-$(VERSION).tar.bz2 phpQLAdmin-$(VERSION); \
+	  echo "done."; \
+	  echo -n "ZIP file:  $(TMPDIR)/phpQLAdmin-$(VERSION).zip: "; \
+	  cd $(TMPDIR) && zip -r phpQLAdmin-$(VERSION).zip phpQLAdmin-$(VERSION) > /dev/null; \
 	  echo "done.")
 
 debian: install
@@ -62,8 +78,9 @@ debian: install
 	  echo "Files is in: "$(DESTDIR))
 
 release: changes tag tarball debian
-	@(mv -v $(TMPDIR)/phpQLAdmin-$(VERSION).tar.gz /var/www/phpqladmin/; \
-	  mv -v $(TMPDIR)/phpQLAdmin-$(VERSION).tar.bz2 /var/www/phpqladmin/; \
+	@(rcp -x $(TMPDIR)/phpQLAdmin-$(VERSION).tar.gz  aurora:/var/www/phpqladmin/; \
+	  rcp -x $(TMPDIR)/phpQLAdmin-$(VERSION).tar.bz2 aurora:/var/www/phpqladmin/; \
+	  rcp -x $(TMPDIR)/phpQLAdmin-$(VERSION).zip     aurora:/var/www/phpqladmin/; \
 	  cat /var/www/phpqladmin/index.html.in | \
 		sed -e "s@%VERSION%@$(VERSION)@g" -e "s@%CVSTAG%@`cat .tag`@g" \
 		> /var/www/phpqladmin/index.html.out; \
