@@ -1,8 +1,8 @@
 <?php
 // shows results of search
-// $Id: search.php,v 2.31 2005-02-24 17:04:00 turbo Exp $
+// $Id: search.php,v 2.31.2.2 2005-03-17 08:23:01 turbo Exp $
 //
-session_start();
+require("./include/pql_session.inc");
 require("./include/pql_config.inc");
 
 include($_SESSION["path"]."/header.html");
@@ -34,8 +34,7 @@ $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PA
 if (empty($_REQUEST["attribute"]) || empty($_REQUEST["filter_type"]) || empty($_REQUEST["search_string"])) {
     // invalid form submission
     $msg = urlencode($LANG->_('You have to provide a value to search for'));
-    header("Location: " . $_SESSION["URI"] . "home.php?msg=$msg");
-    exit();
+    pql_header("home.php?msg=$msg");
 }
 
 if($_REQUEST["attribute"] == pql_get_define("PQL_ATTR_MAILHOST")) {

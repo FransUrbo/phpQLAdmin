@@ -1,8 +1,17 @@
 <?php
-// $Id: index2.php,v 2.39 2004-11-17 07:32:36 turbo Exp $
-
-session_start();
+// $Id: index2.php,v 2.39.6.2 2005-03-04 11:59:45 turbo Exp $
+// {{{ Setup session etc
+require("./include/pql_session.inc");
 require("./include/pql_config.inc");
+// }}}
+
+// {{{ Find out what browser we're using
+$br = strtolower(getenv("HTTP_USER_AGENT"));
+$_SESSION["lynx"]	= (eregi("lynx", $br))		? true : false;
+$_SESSION["konqueror"]	= (eregi("konqueror", $br))	? true : false;
+$_SESSION["opera"]	= (eregi("opera", $br))		? true : false;
+$_SESSION["mozilla"]	= (eregi("mozilla", $br))	? true : false;
+// }}}
 
 if(pql_get_define("PQL_CONF_START_ADVANCED", $_SESSION["USER_DN"])) {
     $_REQUEST["advanced"] = $_SESSION["ADVANCED_MODE"] = 1;

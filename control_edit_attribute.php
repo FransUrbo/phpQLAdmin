@@ -1,8 +1,8 @@
 <?php
 // edit an attribute of a control option
-// $Id: control_edit_attribute.php,v 2.27 2005-03-02 09:32:14 turbo Exp $
+// $Id: control_edit_attribute.php,v 2.27.2.2 2005-03-17 08:23:01 turbo Exp $
 //
-session_start();
+require("./include/pql_session.inc");
 
 // initial check
 if($_REQUEST["attrib"] == "") {
@@ -39,7 +39,7 @@ function attribute_forward($msg) {
 	  echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
 	  die("<b>".$_SESSION["URI"].$link."</b>");
 	} else
-	  header("Location: " . $_SESSION["URI"] . "$url");
+	  pql_header($url);
 }
 
 include($_SESSION["path"]."/header.html");

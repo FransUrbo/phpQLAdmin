@@ -1,11 +1,11 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.119 2005-03-02 09:08:02 turbo Exp $
+// $Id: user_add.php,v 2.119.2.3 2005-03-17 08:23:01 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
 // {{{ Setup session etc
-session_start();
+require("./include/pql_session.inc");
 require("./include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_control.inc");
 require($_SESSION["path"]."/include/pql_templates.inc");
@@ -62,6 +62,30 @@ if($_REQUEST["template"] and !is_array($template)) {
   $templates = pql_get_templates($_pql->ldap_linkid);
 }
 // }}}
+
+// {{{ Retreive password encryption schemes
+function pql_user_add_retreive_encryption_schemes($linkid, $template, $rootdn) {
+  if(pql_templates_check_attribute($linkid, $template, pql_get_define("PQL_ATTR_PASSWD"))) {
+	if(is_array($template["passwordscheme"])) {
+	  // There's schemes specified in the template we're using - use them!
+	  $schemes = $template["passwordscheme"];
+	} else {
+	  $tmp = pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn);
+	  if(eregi(',', $tmp)) {
+		// We got more than one password scheme...
+		$schemes = split(",", $tmp);
+	  } else {
+		$schemes = array($tmp);
+	  }
+	  
+	  unset($tmp); // We're done with the temp variable...
+	}
+  }
+
+  return($schemes);
+}
+// }}}
+
 
 // --------------- Verification and action(s).
 
@@ -136,6 +160,12 @@ switch($_REQUEST["page_curr"]) {
 			  // Replace spaces with underscore
 			  $_REQUEST["mail"] = preg_replace(" ", "_", $_REQUEST["mail"], -1);
 		}
+		// }}}
+
+		// {{{ Get the default password scheme for branch
+		$_REQUEST["defaultpasswordscheme"] = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"],
+															   pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"));
+		$schemes = pql_user_add_retreive_encryption_schemes($_pql->ldap_linkid, $template, $_REQUEST["rootdn"]);
 		// }}}
 
 		// {{{ Generate a password
@@ -260,7 +290,7 @@ switch($_REQUEST["page_curr"]) {
 				$msg = urlencode($LANG->_('Successfully created the new user'));
 				$link  = "user_detail.php?rootdn=".$url["rootdn"]."&";
 				$link .= "domain=".$url["domain"]."&user=".$_REQUEST["destination"]."&msg=$msg&rlnb=2";
-				header("Location: " . $_SESSION["URI"] . "$link");
+				pql_header($link);
 			}
 		}
 		// }}}
@@ -365,6 +395,9 @@ switch($_REQUEST["page_curr"]) {
 				if(! preg_match("/^[a-zA-Z0-9]+[\._-a-z0-9]*[a-zA-Z0-9]+@[A-Z0-9][-A-Z0-9]+(\.[-A-Z0-9]+)+$/", $_REQUEST["password"])) {
 					$error = true;
 					$error_text["password"] = $LANG->_('Invalid');
+
+					// Try generating a new value. We SHOULD know all we need
+					$_REQUEST["password"] = $_REQUEST["uid"]."@".pql_get_define("PQL_CONF_KRB5_REALM");
 				}
 			} elseif(empty($_REQUEST["crypted"])) {
 				// A password in cleartext, NOT already encrypted
@@ -382,6 +415,9 @@ switch($_REQUEST["page_curr"]) {
 				if(! eregi('\}', $_REQUEST["pwscheme"]))
 				  $_REQUEST["pwscheme"] .= '}';
 			}
+
+			if($error and $error_text["password"])
+			  $schemes = pql_user_add_retreive_encryption_schemes($_pql->ldap_linkid, $template, $_REQUEST["rootdn"]);
 		}
 		// }}}
 
@@ -575,7 +611,7 @@ switch($_REQUEST["page_curr"]) {
 if(is_array($error_text)) {
 	// Add a HTML newline to (all) the error text(s)
 	foreach($error_text as $key => $msg)
-	  $error_text[$key] .= "<br>";
+	  $error_text[$key] = "&nbsp;&nbsp;".$error_text[$key]."<br>";
 }
 // }}}
 

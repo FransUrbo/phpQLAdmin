@@ -1,9 +1,9 @@
 <?php
 // add a domain
-// $Id: unit_add.php,v 2.23 2005-03-01 20:28:49 turbo Exp $
+// $Id: unit_add.php,v 2.23.2.2 2005-03-17 08:23:01 turbo Exp $
 //
 // {{{ Setup session etc
-session_start();
+require("./include/pql_session.inc");
 require("./include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_control.inc");
 
@@ -34,7 +34,7 @@ if($_REQUEST["unit"]) {
       $filter = "(&(ou=".$_REQUEST["unit"].")(objectclass=organizationalUnit))";
     if(pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], $filter, 'ONELEVEL')) {
 	$msg = urlencode($LANG->_('This sub unit already exists'));
-	header("Location: home.php?msg=$msg");
+	pql_header("home.php?msg=$msg");
     }
 // }}}
     
@@ -52,14 +52,14 @@ if($_REQUEST["unit"]) {
     if(pql_unit_add($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["unit"])) {
       if(!file_exists($_SESSION["path"]."/.DEBUG_ME")) {
 	// Redirect to domain-details
-	header("Location: ".$_SESSION["URI"] . $url);
+	pql_header($url);
       } else {
 	echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
 	die("<b>$url</b>");
       }
     } else {
       $msg = urlencode($LANG->_('Failed to create the sub unit') . ":&nbsp;" . ldap_error($_pql->ldap_linkid));
-      header("Location: home.php?msg=$msg");
+      pql_header("home.php?msg=$msg");
     }
 // }}}
 } else {

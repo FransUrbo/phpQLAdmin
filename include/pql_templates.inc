@@ -3,8 +3,32 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_templates.inc,v 2.1 2005-02-24 17:04:02 turbo Exp $
+// $Id: pql_templates.inc,v 2.1.2.2 2005-03-07 06:26:10 turbo Exp $
 //
+
+// {{{ Generate the group template (hardcoded for the moment)
+function pql_templates_group() {
+  if($_SESSION["NEW_STYLE_QUOTA"]) {
+	$TEMPLATE["dn"]    = 'internal';
+	$TEMPLATE["name"]  = 'group';
+	$TEMPLATE["short"] = 'Group account';
+	$TEMPLATE["long"]  = 'Group delivery with verification (~ mailinglists)';
+
+	// We need the 'person' object class because 'qmailGroup' (and 'qmailUser')
+	// is AUXILIARY, and OpenLDAP >2.2 _require one_ STRUCTURAL.
+	if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
+	  // Need 'uidObject' because of the 'uid' attribute we're referencing users with...
+	  $TEMPLATE["userobjectclass"] = array('person', 'uidObject', 'qmailGroup');
+	else
+	  // Not using 'uid' as reference - do it the QmailLDAP way :(
+	  // Let's hope that any one of the MAY in either one of these three object
+	  // classes allow the attribute we're referencing users with...
+	  $TEMPLATE["userobjectclass"] = array('person', 'qmailUser', 'qmailGroup');
+  }
+
+  return($TEMPLATE);
+}
+// }}}
 
 // {{{ pql_get_templates(linkid)
 function pql_get_templates($linkid) {
@@ -60,24 +84,32 @@ function pql_get_templates($linkid) {
 	}
 	// }}}
   }
-  
+
+  // {{{ Add the group template to the list of templates
+  $TEMPLATE[$i] = pql_templates_group();
+  // }}}
+
   return($TEMPLATE);
 }
 // }}}
 
 // {{{ pql_get_template(linkid, name)
 function pql_get_template($linkid, $name) {
-  // Get ALL templates
-  $templates = pql_get_templates($linkid);
-
-  // Get the one we where asked for
-  for($i=0; $templates[$i]; $i++) {
-  	if($templates[$i]["name"] == lc($name)) {
-	  return $templates[$i];
+  if($name == 'group') {
+	return pql_templates_group();
+  } else {
+	// Get ALL templates
+	$templates = pql_get_templates($linkid);
+	
+	// Get the one we where asked for
+	for($i=0; $templates[$i]; $i++) {
+	  if($templates[$i]["name"] == lc($name)) {
+		return $templates[$i];
+	  }
 	}
-  }
 
-  return false;
+	return false;
+  }
 }
 // }}}
 
@@ -88,7 +120,7 @@ function pql_templates_attributes($linkid, $objectclasses) {
   
   // Get all the MUST attributes for all the included object classes
   for($j=0; $objectclasses[$j]; $j++) {
-	$oc = $objectclasses[$j]; // short form
+	$oc = lc($objectclasses[$j]); // short form
 	if($schema[$oc]["MUST"]) {
 	  for($k=0; $schema[$oc]["MUST"][$k]; $k++) {
 		$must[] = $schema[$oc]["MUST"][$k];

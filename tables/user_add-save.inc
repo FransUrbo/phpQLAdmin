@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.32 2005-03-01 18:11:27 turbo Exp $
+// $Id: user_add-save.inc,v 1.32.2.2 2005-03-17 08:23:02 turbo Exp $
 
 // {{{ URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
 if($_REQUEST["surname"]) {
@@ -204,7 +204,7 @@ if($_REQUEST["mail"] and $_REQUEST["maildirectory"] and !$_REQUEST["forwardingad
 }
 // }}}
 
-// {{{ Add mail host, home directory and add local delivery to delivery mode
+// {{{ Add mail host
 // 'host' can be zero (0) hence isset().
 if($_REQUEST["mail"] and isset($_REQUEST["host"]) and
    pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILHOST")))
@@ -226,19 +226,16 @@ if($_REQUEST["mail"] and isset($_REQUEST["host"]) and
 	  // The new QmailLDAP have a changed 'deliveryMode' setup.
 	  // Don't add this automaticly.
 	  $entry[pql_get_define("PQL_ATTR_MODE")] = "localdelivery";
+}
+// }}}
 	
-	// Add home directory to the entry array
+// {{{ Add home directory to the entry array
 	if($_REQUEST["homedirectory"] and
 	   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_HOMEDIR")))
 	{
 		// No auto generation - that's done in 'user_add.php'.
 		$entry[pql_get_define("PQL_ATTR_HOMEDIR")] = $_REQUEST["homedirectory"];
 	  }
-} elseif($_REQUEST["template"] == "group") {
-	// Because we require the 'posixAccount' ('uid' attrib) when creating a
-	// group object, we just add the virtual homedirectory
-	$entry[pql_get_define("PQL_ATTR_HOMEDIR")] = pql_get_define("PQL_CONF_VIRTUAL_BASEHOME");
-}
 // }}}
 
 // {{{ Add the mail quota
@@ -356,12 +353,12 @@ if($DNs[0]) {
 <?php
 	   die();
   } else {
-	header("Location: " . $_SESSION["URI"] . "$link");
+	pql_header($link);
   }
 } else {
   $msg = urlencode($LANG->_('Failed to create the new user') . ":&nbsp;" . ldap_error($_pql->ldap_linkid));
   $link = "domain_detail.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&msg=$msg";
-  header("Location: " . $_SESSION["URI"] . "$link");
+  pql_header($link);
 }
 // }}}
 

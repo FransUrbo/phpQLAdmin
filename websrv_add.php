@@ -1,9 +1,9 @@
 <?php
 // Add a webserver configuration to the LDAP db
-// $Id: websrv_add.php,v 2.10 2005-03-01 09:33:22 turbo Exp $
+// $Id: websrv_add.php,v 2.10.2.2 2005-03-17 08:23:01 turbo Exp $
 //
 // {{{ Setup session
-session_start();
+require("./include/pql_session.inc");
 require("./include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_control.inc");
 require($_SESSION["path"]."/include/pql_websrv.inc");
@@ -160,7 +160,7 @@ if(($error == 'true') or !$_REQUEST["serverip"] or !$_REQUEST["serverurl"] or !$
 		echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
 		die("<b>$url</b>");
 	} else
-	  header("Location: ".$_SESSION["URI"] . "$url");
+	  pql_header($url);
 // }}}
 }
 ?>

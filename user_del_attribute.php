@@ -1,8 +1,8 @@
 <?php
 // delete attribute of a user
-// $Id: user_del_attribute.php,v 2.31 2005-02-24 17:04:01 turbo Exp $
+// $Id: user_del_attribute.php,v 2.31.2.2 2005-03-17 08:23:01 turbo Exp $
 //
-session_start();
+require("./include/pql_session.inc");
 require("./include/pql_config.inc");
 
 switch ($_REQUEST["attrib"]) {
@@ -83,7 +83,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
     // redirect to users detail page
     $url = "user_detail.php?rootdn=" . $_REQUEST["rootdn"] . "&domain=" . $_REQUEST["domain"]
       . "&user=" . urlencode($_REQUEST["user"]) . "&msg=" . urlencode($msg) . "&view=" . $_REQUEST["view"];
-    header("Location: " . $_SESSION["URI"] . "$url");
+    pql_header($url);
 } else {
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove attribute %attribute% for user %user%'), array('attribute' => $_REQUEST["attrib"], 'user' => $_REQUEST["user"])); ?></span>

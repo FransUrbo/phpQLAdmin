@@ -1,8 +1,8 @@
 <?php
 // send a testmail to an emailaddress
-// $Id: user_sendmail.php,v 2.26 2005-02-24 17:04:01 turbo Exp $
+// $Id: user_sendmail.php,v 2.26.2.2 2005-03-17 08:23:01 turbo Exp $
 //
-session_start();
+require("./include/pql_session.inc");
 require("./include/pql_config.inc");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
@@ -74,11 +74,9 @@ if(mail($email, $subject, $message, $header)){
 }
 
 $url = "user_detail.php?domain=".$_REQUEST["domain"]."&user=".urlencode($_REQUEST["user"])."&msg=".urlencode($msg);
-
 if(isset($_REQUEST["rlnb"]))
      $url .= "&rlnb=".$_REQUEST["rlnb"];
-
-header("Location: " . $_SESSION["URI"] . $url);
+pql_header($url);
 ?>
 </body>
 </html>

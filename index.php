@@ -1,32 +1,12 @@
 <?php
 // logins to the system
-// $Id: index.php,v 2.42 2005-02-25 14:45:40 turbo Exp $
+// $Id: index.php,v 2.42.2.2 2005-03-17 08:27:59 turbo Exp $
 //
 // Start debuging
 // http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0
 //apd_set_pprof_trace();
 require_once("./include/dlw_porting.inc");
-session_start();
-
-// {{{ Get 'PWD' so we can find our include files
-if(!$_SESSION["path"] and $_SERVER["PATH_TRANSLATED"]) {
-  $path = $_SERVER["PATH_TRANSLATED"];
-  $path = preg_replace('/\/index.php/', '', $path);
-  $_SESSION["path"] = $path;
-
-  unset($path);
-}
-// }}}
-
-// {{{ Find out our location in the URL
-if(!$_SESSION["URI"]) {
-  $tmp1 = preg_quote($_SERVER["DOCUMENT_ROOT"], '/');
-  $tmp2 = preg_replace("/$tmp1/", "", $_SESSION["path"]);
-  $_SESSION["URI"] = '/'.$tmp2.'/';
-
-  unset($tmp1); unset($tmp2);
-}
-// }}}
+require("./include/pql_session.inc");
 
 // DLW: I'm not sure if $msg ever gets set in a _POST, but for now I'll play it safe.
 if (!empty($_POST["msg"])) {
@@ -50,13 +30,24 @@ if ($_GET["logout"] == 1 or !empty($_GET["msg"])) {
 	session_destroy();
 
 	if ($_GET["logout"] == 1) {
-		if(!empty($_POST["msg"]))
-		  header("Location:index.php?msg=".urlencode($_POST["msg"]));
-		elseif(!empty($_GET["msg"]))
-		  header("Location:index.php?msg=".urlencode($_GET["msg"]));
-		else
-		  header("Location:index.php");
+		session_write_close();
+
+		// To early (haven't loaded the API's) to use pql_header(), so we
+		// do it the hard way...
+		if(!empty($_POST["msg"])) {
+			header("Location: index.php?msg=".urlencode($_POST["msg"]));
+			exit;
+		} elseif(!empty($_GET["msg"])) {
+			header("Location: index.php?msg=".urlencode($_GET["msg"]));
+			exit;
+		} else {
+			header("Location: index.php");
+			exit;
+		}
 	}
+
+	// Create a new session
+	require("./include/pql_session.inc");
 }
 
 require("./include/pql_config.inc");
@@ -83,12 +74,15 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 
 <?php
 	}
+
+if(!($whoarewe = pql_get_define("PQL_CONF_WHOAREWE")))
+  $whoarewe = "<br>phpQLAdmin @ ".$_SERVER["SERVER_NAME"];
 ?>
   <br><br>
 
   <table cellspacing="0" cellpadding="3" border="0" align=center>
     <tr>
-      <td bgcolor="#D0DCE0"><FONT size=3><?php echo pql_complete_constant($LANG->_('Welcome to \b%whoarewe%\B'), array('whoarewe' => pql_get_define("PQL_CONF_WHOAREWE"))); ?></FONT></td>
+      <td bgcolor="#D0DCE0"><center><FONT size=3><?php echo pql_complete_constant($LANG->_('Welcome to \b%whoarewe%\B'), array('whoarewe' => $whoarewe)); ?></FONT></center></td>
     </tr>
 
     <tr align="center">
@@ -123,7 +117,7 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 		$server[0] = urldecode($server[0]);
 ?>
         <b><?=$server[0].":".$server[1]?></b>
-        <input type="hidden" name="server" value="<?php echo pql_get_define("PQL_CONF_HOST"); ?>">
+        <input type="hidden" name="server" value="<?=$_SESSION["USER_HOST"]?>">
 <?php
 	}
 ?>
@@ -170,18 +164,12 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 	// -------------------------------------
 	if($_POST["server"]) {
 		// Get the LDAP server
-		if(!$_SESSION["USER_HOST"]) {
-			$host = split(';', $_POST["server"]);
-			$_SESSION["USER_HOST"] = $host[0] . ";" . $host[1];
-		}
+		if(!$_SESSION["USER_HOST"])
+		  $_SESSION["USER_HOST"] = $_POST["server"];
 
 		// Get the search base - controls database
 		if(!$_SESSION["USER_SEARCH_DN_CTR"]) {
-			// Get first entry -> default server:port
-			$host = split('\+', $_POST["server"]);
-			
-			// Get hostname and base DN
-			$dn   = split(';', $host[0]);
+			$dn = split(';', $_SESSION["USER_HOST"]);
 			$_SESSION["USER_SEARCH_DN_CTR"] = $dn[2];
 		}
 	} else
@@ -215,8 +203,9 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 			} else {
 				// Authentication problem (probably!).
 				$msg = $LANG->_('Error') . ": " . ldap_err2str($error);
-				header("Location:index.php?msg=" . urlencode($msg) . "&uname=$uname");
-				exit;
+
+				session_write_close();
+				pql_header("index.php?msg=" . urlencode($msg) . "&uname=$uname");
 			}
 		  }
 		}
@@ -224,7 +213,10 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 
 	if(!$user_found) {
 		$msg = urlencode($LANG->_('Error') . ": " . $LANG->_("Can't find you in the database"));
-		header("Location: " . $_SESSION["URI"] . "index.php?msg=$msg");
+
+		unset($_POST);
+		session_write_close();
+		pql_header($_SESSION["URI"] . "index.php?msg=$msg");
 	}
 
 	// We made it, so set all the session variables.
@@ -238,13 +230,12 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 	$log .= " : Logged in ($userdn)\n";
 	error_log($log, 3, "phpQLadmin.log");
 
+	session_write_close();
 	if(pql_get_attribute($_pql->ldap_linkid, $_SESSION["USER_DN"], pql_get_define("PQL_ATTR_START_ADVANCED")))
-	  Header("Location:index2.php?advanced=1");
+	  pql_header("index2.php?advanced=1");
 	else
-	  Header("Location:index2.php");
+	  pql_header("index2.php");
 }
-
-// Closing connection
 
 /*
  * Local variables:

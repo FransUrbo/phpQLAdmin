@@ -1,8 +1,8 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.104 2005-02-24 17:04:00 turbo Exp $
+// $Id: left.php,v 2.104.2.2 2005-03-04 11:59:45 turbo Exp $
 //
-session_start();
+require("./include/pql_session.inc");
 
 require("./include/pql_config.inc");
 require($_SESSION["path"]."/left-head.html");
@@ -50,8 +50,11 @@ function left_htmlify_userlist($linkid, $rootdn, $domain, $subbranch, $users, &$
 		if($gecos)
 		  // We have a gecos - use that as is
 		  $cns[$dn] = $gecos;
-//		else
-//		  // No gecos either. Now what!?
+		else {
+		  // No gecos either. Last chance - use the user reference attribute
+		  $ref = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn);
+		  $cns[$dn] = pql_get_attribute($linkid, $dn, $ref);
+		}
 	    }
 	}
     }

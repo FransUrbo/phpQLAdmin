@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.64 2005-03-01 18:07:51 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.64.2.1 2005-03-07 09:51:18 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -385,12 +385,20 @@ function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $do
 //	
 //	// Non-public entries
 //	if($type == 'user') {
-//		$aci[$i] = "$i#entry#grant;x;userPassword,krb5PrincipalName#public#"; $i++;
-//		$aci[$i] = "$i#entry#grant;r,s,c;uid,cn,accountStatus,uidNumber,gidNumber,gecos,homeDirectory,loginShell#public#"; $i++;
+//		$aci[$i] = "$i#entry#grant;x;cn,mail,mailAlternateAddress#public#"; $i++;
+//		$aci[$i] = "$i#entry#grant;r,s,c;uid,cn,accountStatus,uidNumber,gidNumber,gecos,homeDirectory,loginShell,trustModel,accessTo,mailMessageStore#public#"; $i++;
+//	  
+//		# What the Qmail user have access to
+//		$aci[$i] = "$i#entry#grant;r,s,c;mail,mailAlternateAddress,mailHost,mailQuotaSize,mailQuotaCount,accountStatus,deliveryMode,userPassword,mailMessageStore,deliveryProgramPath,mailForwardingAddress,mailReplyText#access-id#ENTER_WHOEVER_YOUR_QMAILSERVER_USES"; $i++;
 //
-//		// 'user'/'self' writable/readable entries
+//		# What the QmailGroup user have access to
+//		$aci[$i] = "$i#entry#grant;r,s,c;membersOnly,senderConfirm,confirmText,moderatorText,dnModerator,dnMember,dnSender,rfc822Moderator,rfc822Member,rfc822Sender,filterMember,filterSender#access-id#ENTER_WHOEVER_YOUR_QMAILSERVER_USES"; $i++;
+//
+//		# What authenticated users have access to
 //		$aci[$i] = "$i#entry#grant;r,s,c;sn,givenName,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,mailMessageStore,o,l,st,telephoneNumber,postalCode,title#users#"; $i++;
-//		$aci[$i] = "$i#entry#grant;r,s,c;sn,givenName,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,mailMessageStore,o,l,st,telephoneNumber,postalCode,title#self#"; $i++;
+//
+//		# What users themselfs have access to in their own object
+//	$aci[$i] = "$i#entry#grant;w,r,s,c;sn,givenName,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,o,l,st,telephoneNumber,postalCode,title,deliveryMode,userPassword#self#"; $i++;
 //	} elseif($type == 'group') {
 //		$aci[$i] = "$i#entry#grant;r,s,c;cn,gidNumber#public#"; $i++;
 //	} elseif($type == 'dnszone') {

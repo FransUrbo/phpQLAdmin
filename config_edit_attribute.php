@@ -1,9 +1,9 @@
 <?php
 // Edit and set configuration values in the LDAP database
-// $Id: config_edit_attribute.php,v 1.16 2005-02-24 17:04:00 turbo Exp $
+// $Id: config_edit_attribute.php,v 1.16.2.2 2005-03-17 08:23:01 turbo Exp $
 //
 // {{{ Setup session etc
-session_start();
+require("./include/pql_session.inc");
 
 require("./include/pql_config.inc");
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
@@ -44,7 +44,7 @@ function attribute_forward($msg, $rlnb = false) {
 		echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
 		die("<b>$url</b>");
 	} else
-	  header("Location: " . $_SESSION["URI"] . "$url");
+	  pql_header($url);
 }
 // }}}
 

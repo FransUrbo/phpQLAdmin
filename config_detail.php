@@ -2,7 +2,7 @@
 // shows configuration of phpQLAdmin
 // config_detail.php,v 2.51 2004/03/11 18:13:32 turbo Exp
 //
-session_start();
+require("./include/pql_session.inc");
 require("./include/pql_config.inc");
 
 include($_SESSION["path"]."/header.html");
@@ -23,7 +23,7 @@ if($_REQUEST["action"] == "clear_session") {
     session_destroy();
 
     // Start a new session
-    session_start();
+    require("./include/pql_session.inc");
     $_SESSION["USER_HOST"]		= $user_host;
     $_SESSION["USER_DN"]		= $user_dn;
     $_SESSION["USER_PASS"]		= $user_pass;
@@ -33,7 +33,7 @@ if($_REQUEST["action"] == "clear_session") {
     $msg = "Successfully deleted the session variable. Will reload from scratch.";
     $link = "config_detail.php?view=$view&msg=".urlencode($msg);
 
-    header("Location: " . $_SESSION["URI"] . $link);
+    pql_header($link);
 }
 // }}}
 
@@ -96,7 +96,7 @@ if(empty($_REQUEST["view"]) or $_REQUEST["view"] == 'default') {
     else
       $link .= "?advanced=0";
 
-    header("Location: " . $_SESSION["URI"] . $link);
+    pql_header($link);
 } else {
     if (empty($_REQUEST["branch"])) {
       $_REQUEST["branch"] = $_REQUEST["view"];
