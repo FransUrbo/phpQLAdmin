@@ -1,6 +1,6 @@
 <?php
 // shows configuration of phpQLAdmin
-// $Id: config_detail.php,v 2.46 2003-11-14 12:59:32 turbo Exp $
+// $Id: config_detail.php,v 2.47 2003-11-16 09:05:17 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -47,14 +47,12 @@ foreach($_pql->ldap_basedn as $dn) {
 // Output the buttons to the browser
 pql_generate_button($buttons);
 
-if($view == '')
-     $view = 'default';
-
-if($view == 'default')
-     include("./tables/config_details-global.inc");
-
-if(($view == 'branch') and $branch)
-     include("./tables/config_details-branch.inc");
+if(($view == '') or ($view == 'default')) {
+    include("./tables/config_details-global.inc");
+} else {
+    $branch = $view;
+    include("./tables/config_details-branch.inc");
+}
 ?>
 </body>
 </html>
