@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.35 2003-01-29 08:44:03 turbo Exp $
+// $Id: pql.inc,v 2.36 2003-01-29 13:24:19 turbo Exp $
 //
 
 // ----------------------------
@@ -1622,7 +1622,9 @@ function pql_get_subbranch($linkid, $dn, $filter = 1) {
 	for ($i=0; $i<$info["count"]; $i++) {
 		if($filter) {
 			// Filter out the most obvious subbranches we don't put users in...
-			if(!eregi('group', $info[$i]["dn"]) and !eregi('qmail', $info[$i]["dn"]))
+			if(!eregi('group', $info[$i]["dn"]) and
+			   !eregi('qmail', $info[$i]["dn"]) and
+			   !eregi('auto\.', $info[$i]["dn"]))
 			  $branches[] = $info[$i]["dn"];
 		} else
 		  $branches[] = $info[$i]["dn"];
