@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.46 2003-11-20 08:01:37 turbo Exp $
+// $Id: pql_config.inc,v 1.47 2003-11-20 09:32:40 turbo Exp $
 //
 
 // {{{ pql_set_define(define, value, case_insensitive, dn)
@@ -221,6 +221,7 @@ foreach($_pql->ldap_basedn as $dn)  {
 				}
 			} else {
 				$pql_config_private_variable_which_irritates_me = strtolower($pql_config_private_variable_which_irritates_me);
+				$pql_config_private_array_which_irritates_me = NULL;
 
 				for($k=0; isset($info[$i][$pql_config_private_variable_which_irritates_me][$k]); $k++) {
 					if($pql_config_private_array_which_irritates_me)
