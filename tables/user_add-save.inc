@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.16 2004-04-01 11:59:37 turbo Exp $
+// $Id: user_add-save.inc,v 1.16.4.2 2004-04-06 16:48:51 turbo Exp $
 
 // Find out what objectclasses to use when creating user
 $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"]));
@@ -93,16 +93,23 @@ if($_REQUEST["account_type"] == "forward") {
 
 	// -----------------
 	// Add [ug]id number to the entry array
-	if($_REQUEST["account_type"] != "mail") {
-		// Get a free UserID number (which we also use for GroupID number)
-		$uidnr = pql_get_next_ugidnumber($_pql, 'uid');
-		if($uidnr > 0)
-		  $entry[pql_get_define("PQL_ATTR_QMAILUID")] = $uidnr;
+	if(($_REQUEST["account_type"] != "mail") or in_array('posixaccount', $objectclasses_included)) {
+		// We COULD end up here, EVEN if it's a mail account! So we have to tripple check again,
+		// and again so that we only add the [ug]idNumber if it's supposed to be added...
+		$virtual_uid_number = pql_get_define("PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER", $_REQUEST["rootdn"]);
+		if(($_REQUEST["account_type"] != "mail") and !empty($virtual_uid_number)) {
+			// Get a free UserID number (which we also use for GroupID number)
+			$uidnr = pql_get_next_ugidnumber($_pql, 'uid');
+			if($uidnr > 0)
+			  $entry[pql_get_define("PQL_ATTR_QMAILUID")] = $uidnr;
+		}
 		
-		$gidnr = pql_get_next_ugidnumber($_pql, 'gid');
-		if($gidnr > 0)
-		  $entry[pql_get_define("PQL_ATTR_QMAILGID")] = $gidnr;
-	
+		if(($_REQUEST["account_type"] != "mail") and !empty($virtual_uid_number)) {
+			$gidnr = pql_get_next_ugidnumber($_pql, 'gid');
+			if($gidnr > 0)
+			  $entry[pql_get_define("PQL_ATTR_QMAILGID")] = $gidnr;
+		}
+
 		// -----------------
 		// Gecos is needed to do PAM/NSS LDAP login 
 		if($_REQUEST["surname"] && $_REQUEST["name"] &&
@@ -169,7 +176,7 @@ if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "mai
 	  $entry[pql_get_define("PQL_ATTR_MAILSTORE")] .= "/";
 	
 	// -----------------
-	if($_REQUEST["account_type"] == "system") {
+	if(($_REQUEST["account_type"] == "system") or in_array('posixaccount', $objectclasses_included)) {
 		// Add home directory to the entry array
 		if(!$_REQUEST["homedirectory"]) {
 			if(($_REQUEST["account_type"] == "mail") and !$_SESSION["ADVANCED_MODE"])
