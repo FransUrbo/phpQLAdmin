@@ -9,7 +9,13 @@
 		// ------------------------------
 		foreach($attributes as $attrib) {
 			foreach($domainnames as $d) {
-				if(pql_control_search_attribute($_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR, $attrib, $d)) {
+				if($attrib == 'smtproutes')
+				  // Special circumstances - An smtproute isn't just the domain, so we need a wildcard.
+				  $val = $d."*";
+				else
+				  $val = $d;
+
+				if(pql_control_search_attribute($_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR, $attrib, $val)) {
 					$DEFINED[$attrib][$d] = $LANG->_('Yes');
 
 					$alt = pql_complete_constant($LANG->_('Remove %domain% from %attribute%'),
@@ -22,7 +28,7 @@
 					$alt = pql_complete_constant($LANG->_('Add %what% to %attribute%'),
 												 array('what' => $d, 'attribute' => $attrib));
 					
-					$LINKS[$attrib][$d] = "<a href=\"control_edit_attribute.php?attrib=$attrib&rootdn=$rootdn&domain=$domain&type=add&set=$d&submit=1&view=$view\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"$alt\"></a>";
+					$LINKS[$attrib][$d] = "<a href=\"control_edit_attribute.php?attrib=$attrib&rootdn=$rootdn&domain=$domain&type=add&set=$d&view=$view\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"$alt\"></a>";
 				}
 			}
 		}
