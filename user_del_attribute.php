@@ -20,25 +20,24 @@ switch ($attrib) {
 
 include("./header.html");
 ?>
-  <span class="title1"><?php pql_complete_constant(PQL_LANG_USER_DEL_ATTRIBUTE_TITLE, array("value" => $value));?></span>
+  <span class="title1"><?php pql_complete_constant(PQL_LANG_USER_DEL_ATTRIBUTE_TITLE, array("value" => $oldvalue));?></span>
 <?php
 if(isset($ok) || !PQL_CONF_VERIFY_DELETE) {
     $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
     
     // delete the user attribute
-    if(pql_replace_userattribute($_pql->ldap_linkid, $user, $attrib, $value)){
-	$msg = PQL_LANG_USER_DEL_ATTRIBUTE_OK;
+    if(pql_modify_userattribute($_pql->ldap_linkid, $user, $attrib, $oldvalue, '')) {
+	$msg = pql_complete_constant(PQL_LANG_MAILALTERNATEADDRESS_DEL_OK, array("mail" => $oldvalue));
 	$success = true;
     } else {
-    	$msg = PQL_LANG_USER_DEL_ATTRIBUTE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+    	$msg = PQL_LANG_MAILALTERNATEADDRESS_DEL_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	$success = false;
     }
     
     if ($attrib == 'mailalternateaddress' and $success and isset($delete_forwards)) {
 	// does another account forward to this alias?
-	$sr = ldap_search($_pql->ldap_linkid, "(|(" . $config["PQL_GLOB_ATTR_FORWARDS"] ."=" . $value . "))");
+	$sr = ldap_search($_pql->ldap_linkid, "(|(" . $config["PQL_GLOB_ATTR_FORWARDS"] ."=" . $oldvalue . "))");
 	if (ldap_count_entries($_pql->ldap_linkid,$sr) > 0) {
-	    
 	    $results = ldap_get_entries($_pql->ldap_linkid, $sr);
 	    foreach($results as $key => $result){
 		if ((string)$key != "count") {
@@ -50,16 +49,15 @@ if(isset($ok) || !PQL_CONF_VERIFY_DELETE) {
 	    var_dump($forwarders);
 	    foreach($forwarders as $forward) {
 		// we found a forward -> remove it 
-		pql_replace_userattribute($_pql->ldap_linkid, $forward['reference'], $config["PQL_GLOB_ATTR_FORWARDS"], $value);
+		pql_replace_userattribute($_pql->ldap_linkid, $forward['reference'], $config["PQL_GLOB_ATTR_FORWARDS"], $oldvalue);
 	    }
 	}
     }
     
     // redirect to users detail page
     $msg = urlencode($msg);
-    $url = "user_detail.php?domain=$domain&msg=$msg&user=" . urlencode($user);
+    $url = "user_detail.php?rootdn=$rootdn&domain=$domain&user=" . urlencode($user) . "&msg=$msg";
     header("Location: " . $config["PQL_GLOB_URI"] . "$url");
-    echo $value;
 } else {
 ?>
 <br>
@@ -70,7 +68,7 @@ if(isset($ok) || !PQL_CONF_VERIFY_DELETE) {
     <input type="hidden" name="user" value="<?php echo $user; ?>">
     <input type="hidden" name="domain" value="<?php echo $domain; ?>">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="hidden" name="value" value="<?php echo $value; ?>">
+    <input type="hidden" name="value" value="<?php echo $oldvalue; ?>">
 <?php
   if ($attrib == 'mailalternateaddress') {
 ?>	
