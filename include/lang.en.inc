@@ -1,7 +1,7 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 2.27 2003-06-10 12:15:59 turbo Exp $
+// $Id: lang.en.inc,v 2.28 2003-06-19 11:42:20 turbo Exp $
 //
 // if you have a translation to another language, please contact
 // me --> Turbo Fredriksson <phpqladmin@bayour.com>
@@ -282,7 +282,7 @@ if(!isset($INCLUDE_LANG_EN_INC)) {
 	define("PQL_LANG_MAILQUOTA_ECHO_MAXSIZE", "max %maxsize% KB");
 	define("PQL_LANG_MAILQUOTA_ECHO_MAXSIZE_UNLIMITED", "unlimited size");
 	define("PQL_LANG_MAILQUOTA_ECHO_MAXMAILS", "max %maxmails% mails");
-	define("PQL_LANG_MAILQUOTA_ECHO_MAXMAILS_UNLIMITED", "unlimited number of mails");
+	define("PQL_LANG_MAILQUOTA_ECHO_MAXMAILS_UNLIMITED", "unlimited amount");
 	define("PQL_LANG_MAILQUOTA_HELP", "With 'Standard', qmail/ldap will get quotas from its configuration file");
 	define("PQL_LANG_MAILQUOTA_NONESELECTED", "You must select at least one type of quota");
 	define("PQL_LANG_MAILQUOTA_MAXSIZE_TITLE", "Max. size of mailbox");
