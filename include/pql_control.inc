@@ -4,14 +4,12 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.19 2003-05-18 15:36:59 turbo Exp $
+// $Id: pql_control.inc,v 2.20 2003-05-18 16:48:26 turbo Exp $
 //
 // version history:
 // $Log: pql_control.inc,v $
-// Revision 2.19  2003-05-18 15:36:59  turbo
-// Differentiate between locals and rcpthosts when doing manual replication (ie,
-// when we've choosen to replicate either locals or rcpthosts manually for a
-// specific QMailLDAP/Controls object).
+// Revision 2.20  2003-05-18 16:48:26  turbo
+// Add additional domain name(s) to QmailLDAP/Controls object when doing manual replication.
 //
 // Revision 1.2  2001/09/06 11:36:24  mb
 // added no_connect option to pql_control-class
@@ -224,6 +222,13 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 					$temp[]  = $domainname;
 					$entry[] = $domainname;
 				}
+			}
+
+			// Get additional domain names
+			$additional = pql_get_domain_value($ldap, $domain, "additionalDomainName");
+			if(is_array($additional)) {
+				for($i=0; $i < count($additional); $i++) 
+				  $entry[] = $additional[$i];
 			}
 		}    
 	}
