@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.50.2.1.8.3.2.1 2004-12-19 10:14:24 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.50.2.1.8.3.2.2 2004-12-20 09:01:25 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -111,8 +111,13 @@ function user_generate_mailstore($ldap, $email, $dn, $entry, $type) {
 	//
 	// -------------- example: domains baseMailDir/uid
 	//	if($dn) {
-	//		$mailstore = pql_domain_get_value($ldap, $dn, pql_get_define("PQL_ATTR_BASEMAILDIR"));
-	//		$domain    = pql_domain_get_value($ldap, $dn, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+	//		$mailstore = pql_get_attribute($ldap, $dn, pql_get_define("PQL_ATTR_BASEMAILDIR"));
+	//		if(is_array($mailstore))
+	//		  $mailstore = $mailstore[0];
+	//
+	//		$domain    = pql_get_attribute($ldap, $dn, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+	//		if(is_array($domain))
+	//		  $domain = $domain[0];
 	//	} else {
 	//		$mailstore = "/var/mail";
 	//		$domain    = $entry["BRANCH_NAME"];
@@ -196,8 +201,13 @@ function user_generate_mailstore($ldap, $email, $dn, $entry, $type) {
 // Above. Exact same options apply
 function user_generate_homedir($ldap, $email, $dn, $entry, $type) {
 	//	if($dn) {
-	//		$homedir = pql_domain_get_value($ldap, $dn, pql_get_define("PQL_ATTR_BASEHOMEDIR"));
-	//		$domain  = pql_domain_get_value($ldap, $dn, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+	//		$homedir = pql_get_attribute($ldap, $dn, pql_get_define("PQL_ATTR_BASEHOMEDIR"));
+	//		if(is_array($homedir))
+	//		  $homedir = $homedir[0];
+	//
+	//		$domain  = pql_get_attribute($ldap, $dn, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+	//		if(is_array($domain))
+	//		  $domain = $domain[0];
 	//	} else {
 	//		$homedir = "/home";
 	//		$domain  = $entry["BRANCH_NAME"];
@@ -316,6 +326,9 @@ function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $do
 //	} elseif($type == 'dnszone') {
 //		$aci[$i] = "$i#entry#grant;r,s,c;dc#public#"; $i++;
 //		$aci[$i] = "$i#entry#grant;w,r,s,c;[all]#access-id#ENTER_WHOEVER_YOUR_DNSSERVER_USES"; $i++;
+//	} elseif($type == 'websrv') {
+//		$aci[$i] = "$i#entry#grant;r,s,c;cn#public#"; $i++;
+//		$aci[$i] = "$i#entry#grant;w,r,s,c;[all]#access-id#ENTER_WHOEVER_YOUR_WEBSERVER_USES"; $i++;
 //	} elseif($type == 'qmail') {
 //		$aci[$i] = "$i#entry#grant;r,s;[all]#access-id#ENTER_WHOEVER_YOUR_QMAILSERVER_USES"; $i++;
 //	} elseif($type == 'branch') {
@@ -332,7 +345,8 @@ function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $do
 //		foreach($admins as $admin) {
 //			$aci[$i] = "$i#entry#grant;w,r,s,c,x;[all]#access-id#$admin"; $i++;
 //		}
-//	}
+//	} elseif($admins)
+//	  $aci[$i] = "$i#entry#grant;w,r,s,c,x;[all]#access-id#$admins"; $i++;
 //
 //	return($aci);
 //}
