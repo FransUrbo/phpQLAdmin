@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.5 2004-02-14 14:25:36 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.6 2004-07-07 14:17:06 turbo Exp $
 
 function attribute_check() {
     global $domain, $rootdn, $rdn, $view, $action, $type, $action;
@@ -62,11 +62,11 @@ function attribute_print_form() {
 <?php	} ?>
       <input type="hidden" name="attrib"   value="<?=$attrib?>">
       <input type="hidden" name="type"     value="<?=$type?>">
-      <input type="hidden" name="domain"   value="<?=$domain?>">
-      <input type="hidden" name="rootdn"   value="<?=$rootdn?>">
+      <input type="hidden" name="domain"   value="<?=urlencode($domain)?>">
+      <input type="hidden" name="rootdn"   value="<?=urlencode($rootdn)?>">
       <input type="hidden" name="view"     value="<?=$view?>">
       <input type="hidden" name="action"   value="<?=$action?>">
-      <input type="hidden" name="rdn"      value="<?=$rdn?>">
+      <input type="hidden" name="rdn"      value="<?=urlencode($rdn)?>">
       <br>
       <input type="submit" value="<?=$LANG->_('Save')?>">
     </form>
