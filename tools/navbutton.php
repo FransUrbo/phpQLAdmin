@@ -1,6 +1,5 @@
 <? // http://www.thescripts.com/serversidescripting/php/articles/dynamicimagesinphp3.0/page0.html
 include("./include/pql.inc");
-include("./include/pql_bind9.inc");
 
 $string = implode($argv," ");
 
@@ -21,7 +20,7 @@ if(function_exists('ImageCreateFromPng') && (imagetypes() & IMG_PNG)) {
     if($myimage)
       $imgtype = 'gif';
 } elseif(function_exists('ImageCreateFromJpeg') && (imagetypes() & IMG_JPG)) {
-    $myimage = ImageCreateFromJpeg("images/unselected.jpeg");
+    $myimage = ImageCreateFromJpeg("images/unselected.jpg");
 
     if($myimage)
       $imgtype = 'jpeg';
