@@ -26,6 +26,3 @@ Things left to do
 	  - How can I create/delete lists in domain's baseMailDir/mailinglists,
 	    AND create the directories if they don't exists - ie, when creating
 	    a new domain.
-	* If a user is deleted, check all local mailinglists for subscription and
-	  unsubscribe mail address(es).
-
