@@ -13,7 +13,6 @@ Things left to do
 
 	EZMLM mailinglist
 	* Remove hardcoded texts (attributes and such).
-	* Stresstest list creation and modification.
 	* What about access control to directories etc?
 	  - How can I create/delete lists in domain's baseMailDir/mailinglists,
 	    AND create the directories if they don't exists - ie, when creating
