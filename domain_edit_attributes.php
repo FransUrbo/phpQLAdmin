@@ -1,6 +1,6 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.41 2004-03-12 17:35:25 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.41.12.1 2004-12-19 10:12:54 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -15,6 +15,7 @@ $url["user"]   = pql_format_urls($_REQUEST["user"]);
 // forward back to users detail page
 function attribute_forward($msg) {
 	global $url;
+	$msg = urlencode($msg);
 
 	if($_REQUEST["user"])
 	  $link = "user_detail.php?rootdn=" . $url["rootdn"]
