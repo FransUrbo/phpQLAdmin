@@ -16,7 +16,7 @@ if(isset($msg)){
 }
 
 // reload navigation bar if needed
-if(isset($rlnb) and PQL_CONF_AUTO_RELOAD) {
+if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
 ?>
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
   <script language="JavaScript1.2"><!--
@@ -43,22 +43,22 @@ if(isset($rlnb) and PQL_CONF_AUTO_RELOAD) {
         <td class="title">Language</td>
         <?php $class=table_bgcolor(0); ?>
 <?php    if($ALLOW_GLOBAL_CONFIG_SAVE and 0) { // TODO: Sorry, phpQLAdmin isn't translated propperly to anything else than English! ?>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$_pql->ldap_basedn[0]?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_LANG"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=$PQL_ATTRIBUTE["PQL_LANG"]?>"></a></td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_LANG"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=$PQL_ATTRIBUTE["PQL_CONF_LANG"]?>"></a></td>
 <?php    } else { ?>
         <td class="<?=$class?>"></td>
 <?php    } ?>
-        <td class="<?=$class?>"><?php echo PQL_LANG_LANG; ?>&nbsp;</td>
+        <td class="<?=$class?>"><?=PQL_LANG_LANG?>&nbsp;</td>
       </tr>
 
       <tr>
         <td class="title">Hostmaster</td>
         <?php $class=table_bgcolor(0); ?>
 <?php    if($ALLOW_GLOBAL_CONFIG_SAVE) { ?>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$_pql->ldap_basedn[0]?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_HOSTMASTER"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=$PQL_ATTRIBUTE["PQL_HOSTMASTER"]?>"></a></td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_HOSTMASTER"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=$PQL_ATTRIBUTE["PQL_GLOB_HOSTMASTER"]?>"></a></td>
 <?php    } else { ?>
         <td class="<?=$class?>"></td>
 <?php    } ?>
-        <td class="<?=$class?>"><?=$config["PQL_CONF_HOSTMASTER"][$_pql->ldap_basedn[0]]?>&nbsp;</td>
+        <td class="<?=$class?>"><?=$config["PQL_GLOB_HOSTMASTER"]?>&nbsp;</td>
       </tr>
 
 <?php if($ALLOW_GLOBAL_CONFIG_SAVE) { ?>
@@ -66,11 +66,11 @@ if(isset($rlnb) and PQL_CONF_AUTO_RELOAD) {
         <td class="title">Manage Controls DB</td>
         <?php $class=table_bgcolor(0); ?>
 <?php       if($ALLOW_GLOBAL_CONFIG_SAVE) { ?>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$_pql->ldap_basedn[0]?>&toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_CONTROL_USE"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_CONF_CONTROL_USE"]?>"></a></td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_CONTROL_USE"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_CONF_CONTROL_USE"]?>"></a></td>
 <?php       } else { ?>
         <td class="<?=$class?>"></td>
 <?php       } ?>
-        <td class="<?=$class?>"><?=$config["PQL_CONF_CONTROL_USE"][$_pql->ldap_basedn[0]]?>&nbsp;</td>
+        <td class="<?=$class?>"><?=$config["PQL_GLOB_CONTROL_USE"]?>&nbsp;</td>
       </tr>
 <?php    } ?>
 
@@ -78,44 +78,44 @@ if(isset($rlnb) and PQL_CONF_AUTO_RELOAD) {
         <td class="title">Manage EZMLM mailinglists</td>
         <?php $class=table_bgcolor(0); ?>
 <?php    if($ALLOW_GLOBAL_CONFIG_SAVE) { ?>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$_pql->ldap_basedn[0]?>&toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_EZMLM_USE"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_CONF_EZMLM_USE"]?>"></a></td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_EZMLM_USE"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_CONF_EZMLM_USE"]?>"></a></td>
 <?php    } else { ?>
         <td class="<?=$class?>"></td>
 <?php    } ?>
-        <td class="<?=$class?>"><?=$config["PQL_CONF_EZMLM_USE"][$_pql->ldap_basedn[0]]?>&nbsp;</td>
+        <td class="<?=$class?>"><?=$config["PQL_GLOB_EZMLM_USE"]?>&nbsp;</td>
       </tr>
 
       <tr>
         <td class="title">Automatic reload of navigation bar</td>
         <?php $class=table_bgcolor(0); ?>
 <?php    if($ALLOW_GLOBAL_CONFIG_SAVE) { ?>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$_pql->ldap_basedn[0]?>&toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_AUTO_RELOAD"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_AUTO_RELOAD"]?>"></a></td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_AUTO_RELOAD"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_CONF_AUTO_RELOAD"]?>"></a></td>
 <?php    } else { ?>
         <td class="<?=$class?>"></td>
 <?php    } ?>
-        <td class="<?=$class?>"><?=$config["PQL_CONF_AUTO_RELOAD"][$_pql->ldap_basedn[0]]?>&nbsp;</td>
+        <td class="<?=$class?>"><?=$config["PQL_GLOB_AUTO_RELOAD"]?>&nbsp;</td>
       </tr>
 
       <tr>
         <td class="title">Automatically replicate domains to locals</td>
         <?php $class=table_bgcolor(0); ?>
 <?php    if($ALLOW_GLOBAL_CONFIG_SAVE) { ?>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$_pql->ldap_basedn[0]?>&toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_CONTROL_AUTOADDLOCALS"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_CONF_CONTROL_AUTOADDLOCALS"]?>"></a></td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_CONTROL_AUTOADDLOCALS"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_CONF_CONTROL_AUTOADDLOCALS"]?>"></a></td>
 <?php    } else { ?>
         <td class="<?=$class?>"></td>
 <?php    } ?>
-        <td class="<?=$class?>"><?=$config["PQL_CONF_CONTROL_AUTOADDLOCALS"][$_pql->ldap_basedn[0]]?>&nbsp;</td>
+        <td class="<?=$class?>"><?=$config["PQL_GLOB_CONTROL_AUTOADDLOCALS"]?>&nbsp;</td>
       </tr>
 
       <tr>
         <td class="title">Allow change of LDAP server</td>
         <?php $class=table_bgcolor(0); ?>
 <?php    if($ALLOW_GLOBAL_CONFIG_SAVE) { ?>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$_pql->ldap_basedn[0]?>&toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_CHANGE_SERVER"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_CONF_CHANGE_SERVER"]?>"></a></td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_CHANGE_SERVER"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_CONF_CHANGE_SERVER"]?>"></a></td>
 <?php    } else { ?>
         <td class="<?=$class?>"></td>
 <?php    } ?>
-        <td class="<?=$class?>"><?=$config["PQL_CONF_CHANGE_SERVER"][$_pql->ldap_basedn[0]]?>&nbsp;</td>
+        <td class="<?=$class?>"><?=$config["PQL_GLOB_CHANGE_SERVER"]?>&nbsp;</td>
       </tr>
     </th>
 
@@ -178,7 +178,7 @@ if(isset($rlnb) and PQL_CONF_AUTO_RELOAD) {
         <?php $class=table_bgcolor(0); ?>
 <?php foreach($_pql->ldap_basedn as $dn) { ?>
 <?php    if($ALLOW_GLOBAL_CONFIG_SAVE) { ?>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$dn?>&toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_ALLOW_ABSOLUTE_PATH"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_ALLOW_ABSOLUTE_PATH"]?>"></a></td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$dn?>&toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_ALLOW_ABSOLUTE_PATH"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_CONF_ALLOW_ABSOLUTE_PATH"]?>"></a></td>
 <?php    } else { ?>
         <td class="<?=$class?>"></td>
 <?php    } ?>
@@ -367,47 +367,44 @@ if(isset($rlnb) and PQL_CONF_AUTO_RELOAD) {
 
       <tr></tr>
 
-<?php if($config["PQL_CONF_OBJECTCLASS_DOMAIN"][$_pql->ldap_basedn[0]]) {
-	  $new_tr = 0; $class=table_bgcolor(0); unset($oc); $max = 0;
+<?php $new_tr = 0; $class=table_bgcolor(0); unset($oc); $max = 0;
 
-	  // Convert the array to a index
-	  foreach($_pql->ldap_basedn as $dn) {
-	      unset($o); unset($objectclasses);
-	      
-	      $objectclasses = pql_split_oldvalues($config["PQL_CONF_OBJECTCLASS_DOMAIN"][$dn]);
-	      
-	      $i = 0;
-	      foreach($objectclasses as $key) {
-		  $oc[$i][$dn] = $key;
-		  $i++;
-	      }
+      // Convert the array to a index
+      foreach($_pql->ldap_basedn as $dn) {
+	  unset($o); unset($objectclasses);
+	  
+	  $objectclasses = pql_split_oldvalues($config["PQL_CONF_OBJECTCLASS_DOMAIN"][$dn]);
+	  
+	  $i = 0;
+	  foreach($objectclasses as $key) {
+	      $oc[$i][$dn] = $key;
+	      $i++;
+	  }
+	  
+	  if($max < $i-1)
+	    $max = $i-1;
+      }
 
-	      if($max < $i-1)
-		$max = $i-1;
-	   }
-
-	   for($i=0; $i <= $max; $i++) {
-	       if($new_tr) {
+      for($i=0; $i <= $max; $i++) {
+	  if($new_tr) {
 ?>
       <tr>
         <td class="title"></td>
-<?php          } else { ?>
+<?php     } else { ?>
       <tr>
         <td class="title">Domain objectclasses</td>
-<?php          }
-	       $new_tr = 1;
+<?php     }
+	  $new_tr = 1;
 
-	       foreach($_pql->ldap_basedn as $dn) {
-		   if($ALLOW_GLOBAL_CONFIG_SAVE and $oc[$i][$dn]) {
+	  foreach($_pql->ldap_basedn as $dn) {
+	      if($ALLOW_GLOBAL_CONFIG_SAVE and $oc[$i][$dn]) {
 ?>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$dn?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_DOMAIN"]?>&delval=<?=$oc[$i][$dn]?>"><img src="images/del.png" width="12" height="12" border="0" alt="Delete attrib <?=$PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_DOMAIN"]?>=<?=$oc[$i][$dn]?>"></a></td>
-<?php              } else { ?>
+<?php         } else { ?>
         <td class="<?=$class?>"></td>
-<?php              } ?>
+<?php         } ?>
         <td class="<?=$class?>"><?=$oc[$i][$dn]?>&nbsp;</td>
-<?php
-               }
-	    }
+<?php       }
          }
 ?>
       </tr>
