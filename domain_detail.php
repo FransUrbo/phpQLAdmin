@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.91.2.1 2005-03-04 11:59:44 turbo Exp $
+// $Id: domain_detail.php,v 2.91.2.2 2005-03-17 18:58:16 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -173,6 +173,9 @@ $quota		= array(); $quota["maxmails"] = $temp[1]; $quota["maxsize"]  = $temp[0];
 $basequota	= pql_ldap_mailquota($quota);
 
 $additionaldomainname = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
+if($additionaldomainname && !is_array($additionaldomainname)) {
+  $additionaldomainname = array($additionaldomainname);
+}
 // }}}
 
 // {{{ Setup the buttons
