@@ -1,24 +1,11 @@
 Things left to do
-	EASY
-	* As of version 1.61.10.2.4.1.2.1 of include/pql_config.inc,
-	  the base DN is availible in a session variable. Make any and
-	  all functions that uses or needs this value to use the variable
-	  instead of retreive it from the LDAP database.
-	* New schema attribute/value and corresponding config option
-	  (global or branch!?): 'Generate Maildirs instead of MBoxes'.
-
 	IMPORTANT
-	* Get proper (!) 'user templates' to work. It's getting more
-	  and more difficult to get the schema enforcement to work
-	  properly. I just wish I had an idea on HOW to do it :)
 	* Delete or modify the Kerberos principal if using {KERBEROS}
 	  password scheme.
 	* If we're modifying a value and we're missing an objectclass
 	  and the objectclass we find that REQUIRE (MAY) some attributes
 	  which we're missing, ask user/admin to fill in the missing
 	  attributes, THEN retry to add/modify the object.
-	* Finish the new QmailLDAP/Controls values
-	  http://apache.bayour.com/list/cvs-phpqladmin/?action=show_msg&actionargs[]=22&actionargs[]=30
 
 	WISHLIST/Not so very important
 	* Support for alias-domains: phpQLAdmin will be able to create
