@@ -46,10 +46,10 @@ open(SEARCH, "$CMD |")
     || die("Can't search, $!\n");
 while(!eof(SEARCH)) {
     $line = <SEARCH>; chomp($line);
-    if($line =~ /^locals: /) {
+    if($line =~ /^locals: /i) {
 	$line =~ s/^locals: //;
 	$LOCALS{$line} = $line;
-    } elsif($line =~ /^rcpthosts/) {
+    } elsif($line =~ /^rcpthosts: /i) {
 	$line =~ s/^rcpthosts: //i;
 	$RCPTHOSTS{$line} = $line;
     }
