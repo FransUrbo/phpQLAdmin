@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.16 2004-03-12 13:17:11 turbo Exp $
+// $Id: pql_formating.inc,v 2.17 2004-03-12 13:44:07 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -240,7 +240,7 @@ function pql_format_tree_span($text, $links, $level) {
     <nobr>
       <?=$nbsp?>
       <?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>"><?php } ?>
-      <a class="tblItem" title="<?=$text?>" target="pqlmain" href="<?=$link?>"><?=$text?></a>
+      <a class="tblItem" title="<?=$text?>" href="<?=$link?>" <?php if(eregi('^http://', $link)) { echo 'target=_top" '; } else { echo 'target="pqlmain" '; } ?>><?=$text?></a>
     </nobr>
 <?php			if($counter < ($count - 1)) { ?>
 
