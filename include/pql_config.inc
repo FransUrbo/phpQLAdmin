@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.57 2004-03-11 20:04:57 turbo Exp $
+// $Id: pql_config.inc,v 1.58 2004-03-15 05:14:27 turbo Exp $
 //
 
 // include the API files
@@ -69,12 +69,12 @@ require("./include/config_attributes.inc");		// Attribute definitions
 
 // 3. Load configurations from LDAP base DN
 if(!$_SESSION["USER_HOST"]) {
-	if(! eregi('\+', PQL_CONF_HOST)) {
-		$host = split(';', PQL_CONF_HOST);
+	if(! eregi('\+', pql_get_define("PQL_CONF_HOST"))) {
+		$host = split(';', pql_get_define("PQL_CONF_HOST"));
 		$_SESSION["USER_HOST"] = $host[0] . ";" . $host[1] . ";" . $host[2];
 	} else {
 		// TODO: We have multiple hosts defined
-		$servers = split('\+', PQL_CONF_HOST);
+		$servers = split('\+', pql_get_define("PQL_CONF_HOST"));
 
 		// For the time beeing, use the first value
 		$host = split(';', $servers[0]);
