@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.94 2003-07-04 09:49:04 turbo Exp $
+// $Id: pql.inc,v 2.95 2003-07-11 14:03:38 turbo Exp $
 //
 
 // ----------------------------
@@ -1543,6 +1543,7 @@ function pql_set_domain_value($linkid, $dn, $type, $value) {
 	}
 		
 	// Create a LDIF object to print in case of error
+	$account_type = $type;
 	$LDIF = pql_create_ldif("pql_set_domain_value", $dn, $entry);
 	
 	// --------------------------
