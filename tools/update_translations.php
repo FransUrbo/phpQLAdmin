@@ -2,7 +2,7 @@
 // ----------------------------
 // pql_update_translations.php
 //
-// $Id: update_translations.php,v 2.1 2003-07-02 07:58:30 turbo Exp $
+// $Id: update_translations.php,v 2.2 2003-07-03 07:30:23 turbo Exp $
 //
 
 // ----------------------------
@@ -42,7 +42,7 @@ $user_lang = isset( $_POST['user_lang'] ) ? $_POST['user_lang'] : '';
 	  $lang = $LANG->_choosen;
 ?>
     <select class="field_listbox" name="user_lang" size="1">
-<?php $supp = $LANG->_get_supported();
+<?php $supp = $LANG->get_supported();
 	  while(list($k, $v) = each($supp)) {
 ?>
       <option value="<?=$k?>"><?=$v?></option>
