@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.11 2003-06-02 07:52:09 turbo Exp $
+// $Id: attrib.userpassword.inc,v 2.12 2003-06-14 10:20:52 turbo Exp $
 
 function attribute_check($type){
 	global $userpassword, $userpassword_check, $error, $pwscheme;
@@ -29,39 +29,45 @@ function attribute_init(){
 }
 
 function attribute_print_form(){
-	global $domain, $user, $PHP_SELF, $attrib, $error, $config, $rootdn, $pwscheme, $view;
+	global $domain, $user, $PHP_SELF, $attrib, $error, $config, $rootdn, $pwscheme, $view, $_pql;
 
+	// Get the default password scheme for branch
+	$defaultpasswordscheme = pql_get_domain_value($_pql, $domain, "defaultpasswordscheme");
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo PQL_LANG_USERPASSWORD_NEW; ?></th>
+<?php if(!$defaultpasswordscheme or $GLOBALS["ADVANCED_MODE"]) { ?>
         <!-- Password schema -->
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title">Password scheme</td>
           <td>
             <?php echo format_error($error["pwscheme"]); ?>
-<?php if(eregi(',', $config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn])) {
-		// We got more than one password scheme...
-		$schemes = split(",", $config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn]);
-		foreach($schemes as $scheme) {
-			if(!eregi('KERBEROS', $scheme)) {
+<?php	if(eregi(',', $config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn])) {
+			// We got more than one password scheme...
+			$schemes = split(",", $config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn]);
+			foreach($schemes as $scheme) {
+				if(!eregi('KERBEROS', $scheme)) {
 ?>
-            <input type="radio" name="pwscheme" value="<?=$scheme?>"><?=$scheme?>
+            <input type="radio" name="pwscheme" value="<?=$scheme?>" <?php if($defaultpasswordscheme == $scheme) { echo "CHECKED"; } ?>><?=$scheme?>
 
-<?php		}
-		}
-	  } else { ?>
+<?php			}
+			}
+	  	} else { ?>
             Scheme: <b>{<?=$config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn]?>}</b>
             <input type="hidden" name="pwscheme" value="<?=$config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn]?>">
-<?php } ?>
+<?php 	} ?>
           </td>
         </tr>
+<?php } elseif($defaultpasswordscheme) { ?>
+        <input type="hidden" name="pwscheme" value="<?=$defaultpasswordscheme?>">
+<?php } ?>
 
         <!-- Password -->
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"><?php echo PQL_LANG_USERPASSWORD_TITLE; ?></td>
           <td>
-            <?php echo format_error($error["userpassword"]); ?>
+            <?php echo format_error($error["userpassword"]) . "\n"; ?>
             <!-- Ugly hack. Should realy have type=password here, but what's the use. Really!? -->
             <input type="input" name="userpassword">
           </td>
@@ -69,8 +75,11 @@ function attribute_print_form(){
 
         <tr class="subtitle">
           <td></td>
-          <td colspan="2">
-            <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_LANG_USERPASSWORD_HELP; ?></td>
+          <td>
+            <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
+            <table>
+              <?php echo PQL_LANG_USERPASSWORD_HELP; ?>
+            </table>
           </td>
         </tr>
       </th>
