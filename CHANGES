@@ -47,6 +47,16 @@ phpQLAdmin 2.0.18d TO BE ANNOUNCED
 	GUI layout change
 	  - Don't show the minus image before 'no domains' (left-ezmlm.php) if there's
 	    no mailing lists to display
+	  - Don't allow setting subscriber/rejected addresses when creating a ezmlm
+	    mailinglist. That part of the code is badly broken (fixing this in DEVEL instead).
+	  - Allow for reloading of the left frame when new list is create AND 'auto
+	    reload' is set to true/yes.
+	    + Do not reload the left frame just because a list have CHANGED!
+	  - Don't allow deletion of list from the domain lists list. Only from the list details.
+	  - Failure to auto generate {mail,home}Directory doesn't warrant a reload of
+	    the user data page. We should get to the next page, which will give the user
+	    a chance to input a correct value.
+	    Closes bug 186
 
 	Misc changes	
 
