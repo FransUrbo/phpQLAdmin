@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.66 2003-05-02 09:00:58 turbo Exp $
+// $Id: pql.inc,v 2.67 2003-05-04 08:46:14 turbo Exp $
 //
 
 // ----------------------------
@@ -574,13 +574,20 @@ function pql_modify_user_addressbook($ldap_linkid, $user, $attribs){
 // ------------------------------------------------
 
 // check if domain exists
-function pql_domain_exist($ldap, $domain) {
+function pql_domain_exist($ldap, $domain, $rootdn = '') {
 	global $config;
 
-	foreach($ldap->ldap_basedn as $dn) {
-		$filter = '('.$config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$dn].'='.$domain.')';
-
-		$sr = ldap_search($ldap->ldap_linkid, $dn, $filter);
+	if(!$rootdn) {
+		foreach($ldap->ldap_basedn as $dn) {
+			$filter = '('.$config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$dn].'='.$domain.')';
+			$sr = ldap_search($ldap->ldap_linkid, $dn, $filter);
+			if(ldap_count_entries($ldap->ldap_linkid, $sr) > 0) {
+				return true;
+			}
+		}
+	} else {
+		$filter = '('.$config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$rootdn].'='.$domain.')';
+		$sr = ldap_search($ldap->ldap_linkid, $rootdn, $filter);
 		if(ldap_count_entries($ldap->ldap_linkid, $sr) > 0) {
 			return true;
 		}
