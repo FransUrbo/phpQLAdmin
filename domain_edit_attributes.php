@@ -48,12 +48,16 @@ switch($attrib){
   case "basequota";
 	$include = "attrib.mailquota.inc";
 	break;
+  case "ezmlmadministrator";
   case "administrator";
   case "seealso":
 	$include = "attrib.administrator.inc";
 	break;
   case "maximumdomainusers":
 	$include = "attrib.maximumdomainusers.inc";
+	break;
+  case "maximummailinglists":
+	$include = "attrib.maximummailinglists.inc";
 	break;
   case "o":
   case "postalcode":

@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.81 2003-06-12 11:05:25 turbo Exp $
+// $Id: pql.inc,v 2.82 2003-06-12 15:26:51 turbo Exp $
 //
 
 // ----------------------------
@@ -1437,7 +1437,8 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '', $all = 0) {
 	// Go through the result, if there is any
 	for($i=0; $i < $result["count"]; $i++) {
 		// Extract all the descriptor fields
-		if((($value == 'administrator') or ($value == 'seealso') or ($value == 'additionaldomainname'))) {
+		if((($value == 'administrator') or ($value == 'seealso') or
+			($value == 'additionaldomainname') or ($value == 'ezmlmadministrator'))) {
 			if($match != "*") {
 				// Return multiple values. If we're looking for 'administrator', return the DN
 				if(!$all) {
@@ -1475,11 +1476,13 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '', $all = 0) {
 		}
 	} // end for($i)
 
-	if(!$success and (($value != 'administrator') and ($value != 'seealso') or ($value == 'additionaldomainname'))) {
+	if(!$success and (($value != 'administrator') and ($value != 'seealso') and
+					  ($value != 'ezmlmadministrator') or ($value == 'additionaldomainname'))) {
 		return;
 	}
 
-	if($success and (($value == 'administrator') or ($value == 'seealso') or ($value == 'additionaldomainname'))
+	if($success and (($value == 'administrator') or ($value == 'seealso') or
+					 ($value == 'additionaldomainname') or ($value == 'ezmlmadministrator'))
 	   and !is_array($results)) {
 		// Convert a flat variable to a array
 		$tmp = $results; unset($results);

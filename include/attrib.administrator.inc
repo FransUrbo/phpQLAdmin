@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.17 2003-05-28 07:23:37 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.18 2003-06-12 15:26:51 turbo Exp $
 
 require("./left-head.html");
 
@@ -30,6 +30,8 @@ function attribute_print_form($action) {
     <table cellspacing="0" cellpadding="3" border="0">
 <?php if($attrib == 'seealso') { ?>
       <th colspan="3" align="left">Add contact person for domain <?=$domain?></th>
+<?php } elseif($attrib == 'ezmlmadministrator') { ?>
+      <th colspan="3" align="left">Add mailinglist administrator for domain <?=$domain?></th>
 <?php } else { ?>
       <th colspan="3" align="left"><?php echo PQL_LANG_DOMAIN_ADMIN_ADD . $domain; ?></th>
 <?php } ?>
@@ -40,14 +42,15 @@ function attribute_print_form($action) {
 ?>
           <td class="title"><?=PQL_LANG_DOMAIN_ADMIN_CHANGE?></td>
 <?php
-	} elseif(($attrib == 'administrator') and !$rootdn and !$domain and $user) {
+	} elseif((($attrib == 'administrator') or ($attrib == 'ezmlmadministrator'))
+			 and !$rootdn and !$domain and $user) {
 		// We're giving a user access to ('random') branch
 ?>
           <td class="title">Branch DN</td>
 <?php
 	} else {
 ?>
-          <td class="title">See also DN</td>
+          <td class="title">User</td>
 <?php
 	}
 ?>
@@ -254,13 +257,9 @@ function attribute_save($type) {
 
 		$success = 0;
 		if($domain and (($$attrib and !$user) or ($$attrib and $user) or (!$$attrib and $user))) {
-			echo "1: pql_set_domain_value(linkid, $domain, $attrib, $ADMs)<br>";
-
 			if(pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, $ADMs))
 			  $success = 1;
 		} elseif($rootdn and $user) {
-			echo "2: pql_set_domain_value(linkid, $rootdn, $attrib, $ADMs)<br>";
-
 			if(pql_set_domain_value($_pql->ldap_linkid, $rootdn, $attrib, $ADMs))
 			  $success = 1;
 		}
@@ -289,7 +288,7 @@ function attribute_save($type) {
     }
 }
 
-if(($attrib == 'administrator') or ($attrib == 'seealso')) {
+if(($attrib == 'administrator') or ($attrib == 'seealso') or ($attrib == 'ezmlmadministrator')) {
 	require("./left-trailer.html");
 }
 /*

@@ -48,7 +48,7 @@ if(!pql_domain_exist($_pql, $dc[1])){
 $attribs = array('defaultdomain', 'basehomedir', 'basemaildir', 'o', 'l',
 				 'postalcode', 'postaladdress', 'telephonenumber', 'street',
 				 'facsimiletelephonenumber', 'postofficebox', 'st', 'basequota',
-				 'maximumdomainusers', 'defaultpasswordscheme');
+				 'maximumdomainusers', 'defaultpasswordscheme', 'maximummailinglists');
 foreach($attribs as $attrib) {
 	// Get default value
 	$value = pql_get_domain_value($_pql, $domain, $attrib);
@@ -58,7 +58,7 @@ foreach($attribs as $attrib) {
 	// we add a delete link as well.
 	$link = $attrib . "_link";
 	if(($attrib != 'defaultdomain') and ($attrib != 'basehomedir') and ($attrib != 'basemaildir')) {
-		if(($attrib == 'maximumdomainusers') and !$value)
+		if((($attrib == 'maximumdomainusers') or ($attrib == 'maximummailinglists')) and !$value)
 		  $value = 0;
 
 		// A dcOrganizationNameForm attribute
@@ -68,9 +68,10 @@ foreach($attribs as $attrib) {
 		$$link = "<a href=\"domain_edit_attributes.php?attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=$value\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify $attrib for $domain\"></a>";
 	}
 }
-$admins	   = pql_get_domain_value($_pql, $domain, "administrator");
-$seealso   = pql_get_domain_value($_pql, $domain, "seealso");
-$basequota = pql_ldap_mailquota(pql_parse_quota($basequota));
+$domain_admins		= pql_get_domain_value($_pql, $domain, "administrator");
+$mailinglist_admins	= pql_get_domain_value($_pql, $domain, "ezmlmadministrator");
+$seealso   			= pql_get_domain_value($_pql, $domain, "seealso");
+$basequota			= pql_ldap_mailquota(pql_parse_quota($basequota));
 
 // Get the organization name, or show 'Not set' with an URL to set it
 $domainname = pql_get_domain_value($_pql, $domain, 'o');

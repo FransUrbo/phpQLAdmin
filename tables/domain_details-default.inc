@@ -70,6 +70,12 @@
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Maximum allowed mailinglist in branch</td>
+        <td><?php if($maximummailinglists){echo $maximummailinglists;}else{echo "unlimited";} ?></td>
+        <td><?=$maximummailinglists_link?></td>
+      </tr>
+
+      <tr class="<?php table_bgcolor(); ?>">
         <td class="title">Default password scheme</td>
         <td><?php if($defaultpasswordscheme){echo $defaultpasswordscheme;}else{echo "no default";} ?></td>
         <td><?=$defaultpasswordscheme_link?></td>
@@ -78,9 +84,9 @@
 <?php } ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?=PQL_LANG_DOMAIN_ADMIN_TITLE?></td>
-<?php if(is_array($admins)) {
+<?php if(is_array($domain_admins)) {
 		$new_tr = 0;
-		foreach($admins as $admin) {
+		foreach($domain_admins as $admin) {
 			$username = pql_get_userattribute($_pql->ldap_linkid, $admin, 'cn');
 			if(!$username[0])
 			  $username = $admin;
@@ -125,6 +131,58 @@
         </td>
 <?php
 	}
+?>
+
+<?php if($config["maximummailinglists"] >= 0) { ?>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Mailinglist administrator(s)</td>
+<?php	if(is_array($mailinglist_admins)) {
+			$new_tr = 0;
+			foreach($mailinglist_admins as $admin) {
+				$username = pql_get_userattribute($_pql->ldap_linkid, $admin, 'cn');
+				if(!$username[0])
+				  $username = $admin;
+				else
+				  $username = $username[0];
+				
+				if($new_tr) {
+?>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title"></td>
+<?php			} ?>
+        <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$admin?>&view=<?=$view?>"><?=urldecode($username)?></a></td>
+<?php			if(pql_validate_administrator($_pql->ldap_linkid, $_pql->ldap_basedn[0], $admin) and
+				   !$ALLOW_GLOBAL_CONFIG_SAVE) {
+					// This is a super-admin, and we (user logged in) isn't super-admin.
+					// Don't allow to remove this admin
+?>
+        <td></td>
+<?php			} else { ?>
+        <td>
+          <a href="domain_edit_attributes.php?attrib=ezmlmadministrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&administrator=<?=$admin?>&submit=3&action=modify&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify administrators for <?=$domain?>"></a>
+          <a href="domain_edit_attributes.php?attrib=ezmlmadministrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&administrator=<?=$admin?>&submit=4&action=delete&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="<?=PQL_LANG_DOMAIN_ADMIN_DELETE?>" border="0"></a>
+        </td>
+<?php			} ?>
+      </tr>
+
+<?php
+				$new_tr = 1;
+			}
+?>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title"></td>
+        <td colspan="4">
+          <a href="domain_edit_attributes.php?attrib=ezmlmadministrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add&view=<?=$view?>">Add mailinglist administrator for domain</a>
+        </td>
+      </tr>
+<?php
+		} else {
+?>
+        <td colspan="4">
+          <a href="domain_edit_attributes.php?attrib=ezmlmadministrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add&view=<?=$view?>">Add mailinglist administrator for domain</a>
+        </td>
+<?php	}
+      }
 ?>
     </th>
   </table>
