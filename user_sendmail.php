@@ -1,13 +1,13 @@
 <?php
 // send a testmail to an emailaddress
-// $Id: user_sendmail.php,v 2.25 2004-11-17 07:30:07 turbo Exp $
+// $Id: user_sendmail.php,v 2.25.8.1 2005-02-12 05:19:13 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
-include("./header.html");
+include($_SESSION["path"]."/header.html");
 ?>
   <span class="title1"><?=$LANG->_('Send testmail')?></span>
   <br><br>
@@ -46,7 +46,7 @@ if (is_array($quota)) {
 	$vars['QUOTA'] = $LANG->_('Standard');
     } else {
 	// QmailLDAP/Controls patch is used - get the standard quota
-	require("./include/pql_control.inc");
+	require($_SESSION["path"]."/include/pql_control.inc");
 	$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 	
 	$quota = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
@@ -78,7 +78,7 @@ $url = "user_detail.php?domain=".$_REQUEST["domain"]."&user=".urlencode($_REQUES
 if(isset($_REQUEST["rlnb"]))
      $url .= "&rlnb=".$_REQUEST["rlnb"];
 
-header("Location: " . pql_get_define("PQL_CONF_URI") . $url);
+header("Location: " . $_SESSION["URI"] . $url);
 ?>
 </body>
 </html>

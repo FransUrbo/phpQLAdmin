@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.18 2005-02-05 13:54:08 turbo Exp $
+// $Id: pql_write.inc,v 2.18.2.1 2005-02-12 05:19:15 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -19,7 +19,7 @@ function pql_write_add($linkid, $dn, $entry, $type, $caller) {
 	// -----
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif($caller, $dn, $entry);
-	if(file_exists("./.DEBUG_ME"))
+	if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
 	  echo $LDIF;
 	else {
 		// -----
@@ -59,7 +59,7 @@ function pql_write_mod($linkid, $dn, $entry, $caller = NULL, $count = 0) {
 
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif($caller, $dn, $entry);
-	if(file_exists("./.DEBUG_ME"))
+	if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
 	  echo $LDIF;
 	else {
 		// Modify this object
@@ -127,7 +127,7 @@ function pql_write_mod($linkid, $dn, $entry, $caller = NULL, $count = 0) {
 
 // {{{ pql_write_ren(linkid, old, parent, new, keepold)
 function pql_write_ren($linkid, $old, $parent, $new, $keepold = TRUE) {
-  if(file_exists("./.DEBUG_ME")) {
+  if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
 	echo "Renaming<br>'<b>$old</b>'<br>to<br>'<b>$new,$parent</b>'<br>";
 	return true;
   } else {
@@ -393,7 +393,7 @@ function pql_user_add($ldap_linkid, $domain, $dn, $entry, $type, $branch) {
 	}
 	// }}}
 	
-	if(file_exists("./.DEBUG_ME")) {
+	if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
 		echo "DNs added: ";
 		printr($dns);
 		die();
@@ -513,7 +513,7 @@ function pql_domain_del($ldap, $domain, $delete_forwards) {
 	// domain/branch being deleted...
 	if(eregi($domain, $_SESSION["USER_DN"])) {
 		$msg=urlencode(pql_format_error_span("Sorry, I can't allow you to delete the branch under which you yourself is situated!"));
-		header("Location: " . pql_get_define("PQL_CONF_URI") . "domain_detail.php?domain=$domain&msg=$msg");
+		header("Location: " . $_SESSION["URI"] . "domain_detail.php?domain=$domain&msg=$msg");
 	}
 
 	// Searching for sub entries

@@ -1,13 +1,13 @@
 <?php
 // remove a domain from a bind9 ldap db
-// $Id: bind9_del.php,v 2.4 2004-11-17 07:30:06 turbo Exp $
+// $Id: bind9_del.php,v 2.4.8.1 2005-02-12 05:19:12 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
-require("./include/pql_control.inc");
-require("./include/pql_bind9.inc");
+require($_SESSION["path"]."/include/pql_control.inc");
+require($_SESSION["path"]."/include/pql_bind9.inc");
 
-include("./header.html");
+include($_SESSION["path"]."/header.html");
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove DNS zone %domainname%'), array('domainname' => $_REQUEST["dns_domain_name"])); ?></span>
   <br><br>
@@ -24,7 +24,7 @@ if(($_REQUEST["action"] == 'del') and ($_REQUEST["type"] == 'domain') and $_REQU
 		// redirect to domain-detail page
 		$url  = "domain_detail.php?rootdn=".urlencode($_REQUEST["rootdn"])."&domain=".urlencode($_REQUEST["domain"]);
 		$url .= "&view=".$_REQUEST["view"]."&msg=".urlencode($msg);
-		header("Location: " . pql_get_define("PQL_CONF_URI") . $url);
+		header("Location: " . $_SESSION["URI"] . $url);
     } else {
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>"      method="GET">

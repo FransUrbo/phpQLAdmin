@@ -1,6 +1,6 @@
 <?php
 // adds an attribute 
-// $Id: user_add_attribute.php,v 2.29 2004-10-18 13:39:31 turbo Exp $
+// $Id: user_add_attribute.php,v 2.29.8.1 2005-02-12 05:19:13 turbo Exp $
 //
 /* This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
  *   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -42,7 +42,7 @@ function attribute_forward($msg) {
     
     $url = "user_detail.php?rootdn=" . $_REQUEST["rootdn"] . "&domain=" . $_REQUEST["domain"]
       . "&user=" . $_REQUEST["user"] . "&view=" . $_REQUEST["view"] . "&msg=".urlencode($msg);
-    header("Location: " . pql_get_define("PQL_CONF_URI") . "$url");
+    header("Location: " . $_SESSION["URI"] . "$url");
 }
 
 // Get default domain name for this domain
@@ -69,8 +69,8 @@ switch($_REQUEST["attrib"]) {
 			      array('attribute' => $_REQUEST["attrib"], 'file' => __FILE__)));
 }
 
-include("./include/".$include);
-include("./header.html");
+include($_SESSION["path"]."/include/".$include);
+include($_SESSION["path"]."/header.html");
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Change user data for %user%'),
 							array('user' => $username)); ?></span>

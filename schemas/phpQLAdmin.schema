@@ -16,6 +16,7 @@
 #          phpQLAdminWebsrv                 4      *mod_cfg_ldap: apacheConfig
 #          phpQLAdminInfo                   5
 #          phpQLAdminUser                   6
+#          phpQLAdminUserTemplate           7
 #
 #        Attributes                       2
 #          Toggles                          1
@@ -84,6 +85,9 @@
 #            userNamePrefixLength            14
 #            vatNumber                       15
 #            virtualBaseHomeDir              16
+#            userTemplateName                17
+#            userTemplateDescriptionShort    18
+#            userTemplateDescriptionLong     19
 #
 #          Apache configurations            5
 #            webServerIP                      1
@@ -106,7 +110,7 @@
 # availible from http://sourceforge.net/projects/modcfgldap/
 # See doc/README.apache for more information.
 
-# $Id: phpQLAdmin.schema,v 2.51 2005-01-12 14:53:55 turbo Exp $
+# $Id: phpQLAdmin.schema,v 2.51.4.1 2005-02-12 05:19:16 turbo Exp $
 
 # PQL_ATTR_SHOW_USERS (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.1 NAME 'showUsers'
@@ -513,6 +517,27 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.4.16 NAME 'virtualBaseHomeDir'
   SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{64}
   SINGLE-VALUE )
 
+# PQL_ATTR_USER_TEMPLATE_NAME
+attributetype ( 1.3.6.1.4.1.8767.3.2.4.17 NAME 'userTemplateName'
+  DESC 'Short name of of user template'
+  EQUALITY caseIgnoreMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{64}
+  SINGLE-VALUE )
+
+# PQL_ATTR_USER_TEMPLATE_DESC_SHORT
+attributetype ( 1.3.6.1.4.1.8767.3.2.4.18 NAME 'userTemplateDescriptionShort'
+  DESC 'Short description of a user template'
+  EQUALITY caseIgnoreMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{64}
+  SINGLE-VALUE )
+
+# PQL_ATTR_USER_TEMPLATE_DESC_LONG
+attributetype ( 1.3.6.1.4.1.8767.3.2.4.19 NAME 'userTemplateDescriptionLong'
+  DESC 'Long description of a user template'
+  EQUALITY caseIgnoreMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{64}
+  SINGLE-VALUE )
+
 # -----------------------------------------
 
 # PQL_ATTR_WEBSRV_SRV_IP
@@ -671,8 +696,16 @@ objectclass ( 1.3.6.1.4.1.8767.3.1.5
 objectclass ( 1.3.6.1.4.1.8767.3.1.6
   NAME 'phpQLAdminUser'
   DESC 'phpQLAdmin user settings'
-  MAY ( startWithAdvancedMode )
-  SUP top AUXILIARY )
+  MAY  ( startWithAdvancedMode )
+  SUP  top AUXILIARY )
+
+objectclass ( 1.3.6.1.4.1.8767.3.1.7
+  NAME 'phpQLAdminUserTemplate'
+  DESC 'phpQLAdmin user template'
+  MUST ( userTemplateName $ userTemplateDescriptionShort )
+  MAY  ( userTemplateDescriptionLong $ userObjectClass $
+         passWordScheme )
+  SUP top STRUCTURAL )
 
 #
 # Local variables:

@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.28 2005-02-05 13:51:58 turbo Exp $
+// $Id: config_attributes.inc,v 2.28.2.1 2005-02-12 05:19:14 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -350,10 +350,16 @@ $PQL_ATTRIBUTE["BRANCH"] = array("PQL_CONF_SHOW_USERS"					=> pql_get_define("PQ
 
 // {{{ These are the internal phpQLAdmin attributes - USER configuration
 // Toggles
-pql_set_define("PQL_ATTR_START_ADVANCED",					strtolower("startWithAdvancedMode"),		false);
+pql_set_define("PQL_ATTR_START_ADVANCED",					strtolower("startWithAdvancedMode"),	false);
 
 // Map attribute to configuration define
-$PQL_ATTRIBUTE["USER"] = array("PQL_CONF_START_ADVANCED"				=> pql_get_define("PQL_ATTR_START_ADVANCED"));
+$PQL_ATTRIBUTE["USER"] = array("PQL_CONF_START_ADVANCED"	=> pql_get_define("PQL_ATTR_START_ADVANCED"));
+// }}}
+
+// {{{ These are the internal phpQLAdmin attributes - TEMPLATE configuration
+pql_set_define("PQL_ATTR_USER_TEMPLATE_NAME",				strtolower("userTemplateName"),				false);
+pql_set_define("PQL_ATTR_USER_TEMPLATE_DESC_SHORT",			strtolower("userTemplateDescriptionShort"),	false);
+pql_set_define("PQL_ATTR_USER_TEMPLATE_DESC_LONG",			strtolower("userTemplateDescriptionLong"),	false);
 // }}}
 
 // Local variables:

@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.30 2005-02-01 07:33:23 turbo Exp $
+// $Id: user_add-save.inc,v 1.30.2.1 2005-02-12 05:19:17 turbo Exp $
 
 // URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
 $_REQUEST["surname"] = urldecode($_REQUEST["surname"]);
@@ -16,9 +16,8 @@ if($_REQUEST["uid"]) {
 // }}}
 
 // {{{ Add Firstname and/or Lastname (if object classes allow etc)
-$res = pql_check_attribute($objectclasses_schema, $objectclasses_included, pql_get_define("PQL_ATTR_SN"));
-if(($_REQUEST["account_type"] != "mail") or $res[0]) {
-	if($_REQUEST["account_type"] != "group") {
+if(pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_SN"))) {
+	if($_REQUEST["template"] != "group") {
 		// Firstname
 		if($_REQUEST["surname"]) {
 			$entry[pql_get_define("PQL_ATTR_GIVENNAME")]	= $_REQUEST["surname"];
@@ -44,11 +43,10 @@ if(($_REQUEST["account_type"] != "mail") or $res[0]) {
 // }}}
 
 // {{{ Add mail and/or mail aliases (if object classes allow etc)
-if($_REQUEST["account_type"] != 'shell') {
-	if($_REQUEST["account_type"] != "group") {
-		$res = pql_check_attribute($objectclasses_schema, $objectclasses_included, pql_get_define("PQL_ATTR_ISACTIVE"));
-		if($res[0])
-		  $entry[pql_get_define("PQL_ATTR_ISACTIVE")]	= $_REQUEST["account_status"];
+if($_REQUEST["template"] != 'shell') {
+	if($_REQUEST["template"] != "group") {
+	  if(pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_ISACTIVE")))
+		$entry[pql_get_define("PQL_ATTR_ISACTIVE")]	= $_REQUEST["account_status"];
 	}
 
 	// Cleanup the email address a bit
@@ -70,7 +68,7 @@ if($_REQUEST["account_type"] != 'shell') {
 	// Add the primary mail address to the entry array
 	$entry[pql_get_define("PQL_ATTR_MAIL")]	= $_REQUEST["email"];
 
-	if($_REQUEST["account_type"] == "group") {
+	if($_REQUEST["template"] == "group") {
 		// For group objects, we need a 'catchall' mail alias as well.
 		if($_REQUEST["email_domain"]) {
 			$entry[pql_get_define("PQL_ATTR_MAILALTERNATE")][]       = $email_temp . "-catchall@" . $_REQUEST["email_domain"];
@@ -87,7 +85,7 @@ if($_REQUEST["account_type"] != 'shell') {
 }
 // }}}
 
-if($_REQUEST["account_type"] == "forward") {
+if($_REQUEST["template"] == "forward") {
 	// {{{ Add and convert forwardingaddress to lowercase
 	$forwardingaddress = strtolower($forwardingaddress);
 	
@@ -112,11 +110,10 @@ if($_REQUEST["account_type"] == "forward") {
 	// Any other account than 'forwarding'.
 
 	// {{{ Add [ug]id number, gecos etc to the entry array
-	$res = pql_check_attribute($objectclasses_schema, $objectclasses_included, pql_get_define("PQL_ATTR_QMAILUID"));
-	if(($_REQUEST["account_type"] != "mail") or $res[0]) {
+	if(pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_QMAILUID"))) {
 		// We COULD end up here, EVEN if it's a mail account! So we have to tripple check again,
 		// and again so that we only add the [ug]idNumber if it's supposed to be added...
-		if($_REQUEST["account_type"] == "mail") {
+		if($_REQUEST["template"] == "mail") {
 			// It's a mail account but we've decided to use 'posixAccount' when creating users,
 			// so use the predefined uid/gid number for this user...
 			$virtual_uid_number = pql_get_define("PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER", $_REQUEST["rootdn"]);
@@ -180,16 +177,16 @@ if($_REQUEST["account_type"] == "forward") {
 }
 
 // {{{ Add login shell if requested
-if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "shell")) {
+if(($_REQUEST["template"] == "system") or ($_REQUEST["template"] == "shell")) {
 	$entry[pql_get_define("PQL_ATTR_LOGINSHELL")] = $_REQUEST["loginshell"];
 }
 // }}}
 
 // {{{ Add mail store directory if requested
 if($_REQUEST["maildirectory"] and
-   (($_REQUEST["account_type"] == "system") or
-	($_REQUEST["account_type"] == "mail")   or
-	($_REQUEST["account_type"] == "group")))
+   (($_REQUEST["template"] == "system") or
+	($_REQUEST["template"] == "mail")   or
+	($_REQUEST["template"] == "group")))
 {
   // No auto generation - that's done in 'user_add.php'.
   $entry[pql_get_define("PQL_ATTR_MAILSTORE")] = $_REQUEST["maildirectory"];
@@ -202,7 +199,7 @@ if($_REQUEST["maildirectory"] and
 // }}}
 
 // {{{ Add mail host, home directory and add local delivery to delivery mode if requested
-if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "mail")) {
+if(($_REQUEST["template"] == "system") or ($_REQUEST["template"] == "mail")) {
 	// normal mailbox account
 	
 	if($_REQUEST["host"])
@@ -227,8 +224,7 @@ if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "mai
 	
 	// Add home directory to the entry array
 	if($_REQUEST["homedirectory"] and
-	   (($_REQUEST["account_type"] == "system") or
-		in_array('posixaccount', $objectclasses_included)))
+	   pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_HOMEDIR")))
 	  {
 		// No auto generation - that's done in 'user_add.php'.
 		$entry[pql_get_define("PQL_ATTR_HOMEDIR")] = $_REQUEST["homedirectory"];
@@ -237,7 +233,7 @@ if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "mai
 		if(! ereg("/$", $entry[pql_get_define("PQL_ATTR_HOMEDIR")]))
 		  $entry[pql_get_define("PQL_ATTR_HOMEDIR")] .= "/";
 	  }
-} elseif($_REQUEST["account_type"] == "group") {
+} elseif($_REQUEST["template"] == "group") {
 	// Because we require the 'posixAccount' ('uid' attrib) when creating a
 	// group object, we just add the virtual homedirectory
 	$entry[pql_get_define("PQL_ATTR_HOMEDIR")] = pql_get_define("PQL_CONF_VIRTUAL_BASEHOME");
@@ -285,7 +281,7 @@ $userdn = pql_maybe_encode($userdn);
 // Hence, we must reverse this here ($_REQUEST["subbranch"] is already
 // URL decoded).
 $branch = pql_maybe_decode($_REQUEST["subbranch"]);
-$DNs = pql_user_add($_pql->ldap_linkid, $_REQUEST["domain"], $userdn, $entry, $_REQUEST["account_type"], $branch);
+$DNs = pql_user_add($_pql->ldap_linkid, $_REQUEST["domain"], $userdn, $entry, $_REQUEST["template"], $branch);
 if($DNs[0]) {
 	// TODO: DNs[1] (the group object) might still be empty -> failed to add it.
 	
@@ -344,12 +340,12 @@ if($DNs[0]) {
 <?php
 		die();
 	} else {
-		header("Location: " . pql_get_define("PQL_CONF_URI") . "$link");
+		header("Location: " . $_SESSION["URI"] . "$link");
 	}
 } else {
 	$msg = urlencode($LANG->_('Failed to create the new user') . ":&nbsp;" . ldap_error($_pql->ldap_linkid));
 	$link = "domain_detail.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&msg=$msg";
-	header("Location: " . pql_get_define("PQL_CONF_URI") . "$link");
+	header("Location: " . $_SESSION["URI"] . "$link");
 }
 
 /*

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.15 2005-01-31 11:47:28 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.15.2.1 2005-02-12 05:19:14 turbo Exp $
 
 // {{{ attribute_translate_type(attrib)
 function attribute_translate_type($attrib) {
@@ -239,7 +239,7 @@ function attribute_save($action) {
 				  $parent .= ",";
 			}
 
-			if(file_exists("./.DEBUG_ME")) {
+			if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
 				echo "Renaming<br>'<b>$dn</b>'<br>to<br>'<b>$new_dn,$parent</b>'<br>";
 				$dn = $new_dn.','.$parent;
 			} else {
@@ -338,7 +338,7 @@ function attribute_save($action) {
 		die("failed to update ".$soa["dn"].":".pql_get_define("PQL_ATTR_SOARECORD")." with value $serial_new<br>");  
 	}
 
-	if(!file_exists("./.DEBUG_ME")) 
+	if(!file_exists($_SESSION["path"]."/.DEBUG_ME")) 
 	  attribute_forward($msg);
 }
 

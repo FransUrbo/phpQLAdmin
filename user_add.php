@@ -1,17 +1,14 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.116 2005-02-07 11:51:31 turbo Exp $
+// $Id: user_add.php,v 2.116.2.1 2005-02-12 05:19:13 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
 // {{{ Setup session etc
 session_start();
 require("./include/pql_config.inc");
-require("./include/pql_control.inc");
-
-if(!$_REQUEST["account_type"]) {
-	$_REQUEST["account_type"] = 'object';
-}
+require($_SESSION["path"]."/include/pql_control.inc");
+require($_SESSION["path"]."/include/pql_templates.inc");
 
 $url["domain"]		= pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"]		= pql_format_urls($_REQUEST["rootdn"]);
@@ -54,10 +51,6 @@ foreach($attribs as $key => $attrib) {
 }
 // }}}
 
-// {{{ Find out what objectclasses to use when creating user
-$objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"]));
-// }}}
-
 // {{{ Get all objectclasses the LDAP server understand
 $objectclasses_schema   = pql_get_subschema($_pql->ldap_linkid, 'objectclasses');
 // }}}
@@ -65,57 +58,22 @@ $objectclasses_schema   = pql_get_subschema($_pql->ldap_linkid, 'objectclasses')
 // --------------- Verification and action(s).
 
 // {{{ Verify the input from the current page.  Autogen input for the next page.
+if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+  echo "page_curr: '".$_REQUEST["page_curr"]."'<br>";
+  echo "page_next: '".$_REQUEST["page_next"]."'<br>";
+}
+
 // Check the input
 $error = false; $error_text = array();
 switch($_REQUEST["page_curr"]) {
-  // {{{ case: "" (make sure a new user can be added.)
-
+  // {{{ Make sure a new user can be added OR that we autogenerate stuff for the very first page)
   case "":
-	// ------------------------------------------------
-	// Step 1: Make sure that the attribute we're using for user reference(s)
-	//		   is availible in at least ONE object class we've choosen to use
-	//		   when creating users...
-	$res = pql_check_attribute($objectclasses_schema, $objectclasses_included,
-							   pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]));
-	if(!$res[0]) {
-		include("./header.html");
-?>
-  <span class="title1"><?=pql_complete_constant($LANG->_('Attribute %attrib% is not availible.'), array("attrib" => pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])))?></span>
-  <br><br>
-  Sorry, but the attribute you're choosen to use to reference users with isn't availible in any
-  of the userObjectclasses specified to be used when creating users.<p>
-  There's little point in continuing from here. Please go to the <a href="config_detail.php?view=<?=$url["rootdn"]?>">configuration</a> and setup the
-  correct attribute/objectclass match.
-<?php
-		die();
-	}
-
-	// ------------------------------------------------
-	// Step 2: Selected account type (see how many users there can be)
-	if($maxusers and !$_SESSION["ALLOW_BRANCH_CREATE"]) {
-		// Create a user search filter (only look for mail users - !?!?).
-		$filter  = "(&(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*)(";
-		$filter .= pql_get_define("PQL_ATTR_MAIL")."=*))";
-
-		// Retreive all users in this branch/domain.
-	    $users   = pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], $filter);
-		if(count($users) >= $maxusers) {
-			// We have reached the maximum amount of users.
-			include("./header.html");
-?>
-  <span class="title1"><?=pql_complete_constant($LANG->_('Maximum amount (%max%) of users reached'), array("max" => $maxusers))?></span>
-  <br><br>
-  Sorry, but the maximum amount of users have been reached in this domain. You are not allowed
-  to create more. Please talk to your administrator if you think this is wrong.
-<?php
-			die();
-		}
-	}
-
 	if($_REQUEST["page_next"] == "one") {
-		// ------------------------------------------------
-		// Step 3b: Autogenerate some stuff for the next form
+		// {{{ Retreive the template definition
+		$template = pql_get_template($_pql->ldap_linkid, $_REQUEST["template"]);
+		// }}}
 
+		// {{{ Retreive some stuff for autogeneration
 		$attribs = array("autocreatemailaddress" => pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS"),
 						 "autocreateusername"	 => pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"),
 						 "autocreatepassword"	 => pql_get_define("PQL_ATTR_AUTOCREATE_PASSWORD"));
@@ -124,18 +82,21 @@ switch($_REQUEST["page_curr"]) {
 			$value = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib);
 			$$key  = pql_format_bool($value);
 		}
+		// }}}
 
-		// Verify/Create uid - But only if:
+		// {{{ Verify/Create uid
+		// But only if:
 		// 1. We haven't specified this ourself (Hmmm, how could we!? We have not been given a choice before this! TODO)
 		// 2. We have set autoCreateUserName to TRUE for this branch/domain
 		// 3. The function 'user_generate_uid()' is defined in include/config.inc.
 		// 4. At least one of the objects we've choosen to use when creating users MAY or MUST the 'uid' attribute..
-		$res = pql_check_attribute($objectclasses_schema, $objectclasses_included, 'uid');
-		if(empty($_REQUEST["uid"]) and $autocreateusername and function_exists('user_generate_uid') and $res) {
+		if(empty($_REQUEST["uid"]) and $autocreateusername and function_exists('user_generate_uid') and
+		   pql_templates_check_attribute($_pql->ldap_linkid, $template, 'uid'))
+		{
 			// Generate the username
 			$_REQUEST["uid"] = strtolower(user_generate_uid($_pql, $_REQUEST["surname"],
 															$_REQUEST["name"], $email,
-															$_REQUEST["domain"], $_REQUEST["account_type"]));
+															$_REQUEST["domain"], $_REQUEST["template"]));
 			
 			// Check again. There should be a user name, either from the input
 			// form OR from the user_generate_uid() function above...
@@ -149,33 +110,104 @@ switch($_REQUEST["page_curr"]) {
 				}
 			}
 		}
+		// }}}
 		
-		// Verify/Create email address
-		if(empty($_REQUEST["email"]) and $autocreatemailaddress and function_exists('user_generate_email')) {
+		// {{{ Verify/Create email address
+		if(empty($_REQUEST["email"]) and $autocreatemailaddress and function_exists('user_generate_email')
+		   and pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAIL"))) {
 			// It's not supplied - generate one
 			$_REQUEST["email"] = strtolower(user_generate_email($_pql, $_REQUEST["uid"], "", "",
-																$_REQUEST["domain"], $_REQUEST["account_type"]));
+																$_REQUEST["domain"], $_REQUEST["template"]));
 			
 			if(ereg(" ", $_REQUEST["email"]))
 			  // Replace spaces with underscore
 			  $_REQUEST["email"] = preg_replace(" ", "_", $_REQUEST["email"], -1);
 		}
+		// }}}
 
-		if(($_REQUEST["account_type"] != "group") and empty($_REQUEST["password"]) and
-		   $autocreatepassword and function_exists('pql_generate_password'))
+		// {{{ Generate a password
+		if(($_REQUEST["template"] != "group") and empty($_REQUEST["password"]) and
+		   $autocreatepassword and function_exists('pql_generate_password') and
+		   pql_templates_check_attribute($_pql->ldap_linkid, $template,
+										 pql_get_define("PQL_ATTR_PASSWD")))
 		  $_REQUEST["password"] = pql_generate_password();
+		// }}}
+	} else {
+	  // {{{ Step 1: Get user template definitions
+	  $templates = pql_get_templates($_pql->ldap_linkid);
+	  // }}}
+	  
+	  // {{{ Step 2: Make sure we have at least one user template
+	  if(!is_array($templates)) {
+		include($_SESSION["path"]."/header.html");
+?>
+  <span class="title1"><?=$LANG->_('No user templates')?></span>
+  <br><br>
+  <?=$LANG->_('You do not have any user templates defined. As of phpQLAdmin version 2.1.4, this is the new way of doing things. No more hard coded stuff! Please go to <a href="config_detail.php?view=template">the template editor</a> and define some...')?>
+<?php
+		die();
+	  }
+	  // }}}
+
+	  // {{{ Step 3: Make sure that the attribute we're using for user reference(s) is availible
+	  //             in at least ONE object class we've choosen to use when creating users...
+	  $attrib_is_availible = 0;
+	  for($i=0; $templates[$i]; $i++) {
+		if(pql_templates_check_attribute($_pql->ldap_linkid, $templates[$i],
+										 pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])))
+		{
+		  $attrib_is_availible = 1;
+		  last;
+		}
+	  }
+
+	  if(!$attrib_is_availible) {
+		include("./header.html");
+?>
+  <span class="title1"><?=pql_complete_constant($LANG->_('Attribute %attrib% is not availible.'), array("attrib" => pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])))?></span>
+  <br><br>
+  Sorry, but the attribute you're choosen to use to reference users 
+  (<b><?=pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])?></b>)
+  with isn't availible as a <i>MUST</i> nor a <i>MAY</i> in any of the defined
+  user templates.
+  <p>
+  There's little point in continuing from here, please go to the
+  <a href="config_detail.php?view=template">configuration</a>
+  and setup a correct user template...
+<?php
+		die();
+	  }
+	  // }}}
+	  
+	  // {{{ Step 4: Selected account type (see how many users there can be)
+	  if($maxusers and !$_SESSION["ALLOW_BRANCH_CREATE"]) {
+		// Create a user search filter (only look for mail users - !?!?).
+		$filter  = "(&(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*)(";
+		$filter .= pql_get_define("PQL_ATTR_MAIL")."=*))";
+
+		// Retreive all users in this branch/domain.
+	    $users   = pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], $filter);
+		if(count($users) >= $maxusers) {
+			// We have reached the maximum amount of users.
+			include($_SESSION["path"]."/header.html");
+?>
+  <span class="title1"><?=pql_complete_constant($LANG->_('Maximum amount (%max%) of users reached'), array("max" => $maxusers))?></span>
+  <br><br>
+  Sorry, but the maximum amount of users have been reached in this domain. You are not allowed
+  to create more. Please talk to your administrator if you think this is wrong.
+<?php
+			die();
+		}
+	  }
+	  // }}}
 	}
 	break;
-
 	// }}}
 
-  // {{{ case: one (validate user_add-details.inc)
-
+  // {{{ Validate all user details specified in the very first page
+  // Values such as: surname, name, email, template, account_status etc
   case "one":
-	// ------------------------------------------------
-	// Step 3a: Check user details - surname, name, email, account_type, account_status
-
-	if($_REQUEST["account_type"] == "alias") {
+	if($_REQUEST["template"] == "alias") {
 		// {{{ Verify the 'alias' account type
 		if($_REQUEST["source"] == "") {
 			$error = true;
@@ -219,18 +251,16 @@ switch($_REQUEST["page_curr"]) {
 				$msg = urlencode($LANG->_('Successfully created the new user'));
 				$link  = "user_detail.php?rootdn=".$url["rootdn"]."&";
 				$link .= "domain=".$url["domain"]."&user=".$_REQUEST["destination"]."&msg=$msg&rlnb=2";
-				header("Location: " . pql_get_define("PQL_CONF_URI") . "$link");
+				header("Location: " . $_SESSION["URI"] . "$link");
 			}
 		}
-
 		// }}}
 	} else {
 		// {{{ Verify all account types EXEPT 'alias'
 		// ------------------------
 
 		// {{{ Verify surname
-		$res = pql_check_attribute($objectclasses_schema, $objectclasses_included, 'sn');
-		if(($_REQUEST["surname"] == "") and $res[0]) {
+		if(!$_REQUEST["surname"] and pql_templates_check_attribute($_pql->ldap_linkid, $template, 'sn')) {
 			$error = true;
 			$error_text["surname"] = $LANG->_('Missing');
 		}
@@ -238,7 +268,7 @@ switch($_REQUEST["page_curr"]) {
 		// }}}
 
 		// {{{ Verify lastname
-		if(($_REQUEST["name"] == "") and $res[0]) {
+		if(($_REQUEST["name"] == "") and pql_templates_check_attribute($_pql->ldap_linkid, $template, 'sn')) {
 			$error = true;
 			$error_text["name"] = $LANG->_('Missing');
 		}
@@ -246,39 +276,41 @@ switch($_REQUEST["page_curr"]) {
 		// }}}
 
 		// {{{ Verify username
-		$res = pql_check_attribute($objectclasses_schema, $objectclasses_included, 'sn');
 		$filter = "(&(objectclass=*)(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=$user))";
-		if(((pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_CN"))
-			or $res[0]) and pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], $filter, 'BASE')) {
+		if(pql_templates_check_attribute($_pql->ldap_linkid, $template, 'sn') and
+		   (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_CN")) and
+		   pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], $filter, 'BASE')) {
 			$error = true;
 			$error_text["username"] = pql_complete_constant($LANG->_('User %user% already exists'), array("user" => $user));
 		}
 		// }}}
 
 		// {{{ Test if email is valid - must contain an '@'.
-		if(! ereg("@", $_REQUEST["email"])) {
+		if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAIL"))) {
+		  if(!ereg("@", $_REQUEST["email"])) {
 			if($_REQUEST["email_domain"])
 			  $_REQUEST["email"] = $_REQUEST["email"] . "@" . $_REQUEST["email_domain"];
 			else
 			  $_REQUEST["email"] = $_REQUEST["email"] . "@" . $defaultdomain;
-		}
-
-		if(!pql_check_email($_REQUEST["email"])) {
-			$error = true;
-			$error_text["email"] = $LANG->_('Invalid');
-		}
+			
+			if(!pql_check_email($_REQUEST["email"])) {
+			  $error = true;
+			  $error_text["email"] = $LANG->_('Invalid');
+			}
+		  }
 		
-		// It exists, it's valid. Does it already exists in the database?
-		if($error_text["email"] == "" and pql_email_exists($_pql, $_REQUEST["email"])) {
+		  // It exists, it's valid. Does it already exists in the database?
+		  if($error_text["email"] == "" and pql_email_exists($_pql, $_REQUEST["email"])) {
 			$error = true;
 			$error_text["email"] = pql_complete_constant($LANG->_('Mail address %address% already exists'),
 														 array("address" => '<i>'.$_REQUEST["email"].'</i>'));
 			unset($_REQUEST["email"]);
+		  }
 		}
 		// }}}
 
 		// {{{ Verify (and/or generate) the password
-		if(($_REQUEST["account_type"] != "forward") and ($_REQUEST["account_type"] != "group")) {
+		if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_PASSWD"))) {
 			// Only forward and group accounts is ok without password
 			if(!$_REQUEST["password"]) {
 				if(!$_REQUEST["autogenerate"]) {
@@ -313,8 +345,11 @@ switch($_REQUEST["page_curr"]) {
 				if(! eregi('\}', $_REQUEST["pwscheme"]))
 				  $_REQUEST["pwscheme"] .= '}';
 			}
-		} elseif($_REQUEST["account_type"] != "group") {
-			// Forwarding accounts - make sure the forwarding mail address is ok
+		}
+		// }}}
+
+		// {{{ If it's a forwarding accounts (allowing 'mailForwardingAddress') make sure the forwarding mail address is ok
+		if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_FORWARDS"), "MUST")) {
 			if(!pql_check_email($_REQUEST["forwardingaddress"])) {
 				$error = true;
 				$error_text["forwardingaddress"] = $LANG->_('Invalid');
@@ -328,7 +363,7 @@ switch($_REQUEST["page_curr"]) {
 		// }}}
 
 		// {{{ Check the mailHost attribute/value
-		if($_REQUEST["account_type"] != "shell") {
+		if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILHOST"))) {
 			// Find MX (or QmailLDAP/Controls with locals=$email_domain)
 			$mx = pql_get_mx($_REQUEST["email_domain"]);
 			if(!$mx) {
@@ -346,94 +381,98 @@ switch($_REQUEST["page_curr"]) {
 		// }}}
 
 		// {{{ Generate the mail directory value
-		if(!empty($basemaildir)) {
-		  if(function_exists("user_generate_mailstore")) {
-			if((pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
-			   and $_REQUEST["uid"])
-			  $reference = $_REQUEST["uid"];
-			elseif($_REQUEST["surname"] and $_REQUEST["name"])
-			  $reference = $_REQUEST["surname"]." ".$_REQUEST["name"];
-			elseif($_REQUEST["surname"])
-			  $reference = $_REQUEST["surname"];
-			elseif($_REQUEST["name"])
-			  $reference = $_REQUEST["name"];
-			elseif($_REQUEST["email"]) {
+		if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILSTORE"))) {
+		  if(!empty($basemaildir)) {
+			if(function_exists("user_generate_mailstore")) {
+			  if((pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
+				 and $_REQUEST["uid"])
+				$reference = $_REQUEST["uid"];
+			  elseif($_REQUEST["surname"] and $_REQUEST["name"])
+				$reference = $_REQUEST["surname"]." ".$_REQUEST["name"];
+			  elseif($_REQUEST["surname"])
+				$reference = $_REQUEST["surname"];
+			  elseif($_REQUEST["name"])
+				$reference = $_REQUEST["name"];
+			  elseif($_REQUEST["email"]) {
 				$reference = split('@', $_REQUEST["email"]);
 				$reference = $reference[0];
+			  }
+			  
+			  $_REQUEST["maildirectory"] = user_generate_mailstore($_pql, $_REQUEST["email"], $_REQUEST["domain"],
+																   array(pql_get_define("PQL_ATTR_UID") => $reference),
+																   'user');
+			} else {
+			  // Function user_generate_mailstore() doesn't exists but we have a base mail directory.
+			  // Try creating the mail directory manually, using the username.
+			  
+			  if(pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["rootdn"]))
+				// Absolute path is ok - create 'baseMailDir/username/'
+				$_REQUEST["maildirectory"] = $basemaildir.$_REQUEST["uid"]."/";
+			  else
+				// We're not allowing an absolute path - don't use the baseMailDir.
+				$_REQUEST["maildirectory"] = $_REQUEST["uid"]."/";
 			}
-
-			$_REQUEST["maildirectory"] = user_generate_mailstore($_pql, $_REQUEST["email"], $_REQUEST["domain"],
-																 array(pql_get_define("PQL_ATTR_UID") => $reference),
-																 'user');
+			
+			if($_REQUEST["maildirectory"])
+			  // Replace space(s) with underscore(s)
+			  $_REQUEST["maildirectory"] = preg_replace('/ /', '_', $_REQUEST["maildirectory"], -1);
 		  } else {
-			// Function user_generate_mailstore() doesn't exists but we have a base mail directory.
-			// Try creating the mail directory manually, using the username.
-
-			if(pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["rootdn"]))
-			  // Absolute path is ok - create 'baseMailDir/username/'
-			  $_REQUEST["maildirectory"] = $basemaildir.$_REQUEST["uid"]."/";
-			else
-			  // We're not allowing an absolute path - don't use the baseMailDir.
-			  $_REQUEST["maildirectory"] = $_REQUEST["uid"]."/";
-		  }
-
-		  if($_REQUEST["maildirectory"])
-			// Replace space(s) with underscore(s)
-			$_REQUEST["maildirectory"] = preg_replace('/ /', '_', $_REQUEST["maildirectory"], -1);
-		} else {
 			// Can't autogenerate!
 			$error_text["maildirectory"] = pql_complete_constant($LANG->_('Attribute <u>%what%</u> is missing. Can\'t autogenerate %type%.'),
 																 array('what' => pql_get_define("PQL_ATTR_BASEMAILDIR"), 
 																	   'type' => 'Path to mailbox'));
+		  }
 		}
 		// }}}
 
 		// {{{ Generate the home directory value
-		if(!empty($basehomedir)) {
-		  if(function_exists("user_generate_homedir")) {
-			if((pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
-			   and $_REQUEST["uid"])
-			  $reference = $_REQUEST["uid"];
-			elseif($_REQUEST["surname"] and $_REQUEST["name"])
-			  $reference = $_REQUEST["surname"]." ".$_REQUEST["name"];
-			elseif($_REQUEST["surname"])
-			  $reference = $_REQUEST["surname"];
-			elseif($_REQUEST["name"])
-			  $reference = $_REQUEST["name"];
-			elseif($_REQUEST["email"]) {
+		if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_HOMEDIR"))) {
+		  if(!empty($basehomedir)) {
+			if(function_exists("user_generate_homedir")) {
+			  if((pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
+				 and $_REQUEST["uid"])
+				$reference = $_REQUEST["uid"];
+			  elseif($_REQUEST["surname"] and $_REQUEST["name"])
+				$reference = $_REQUEST["surname"]." ".$_REQUEST["name"];
+			  elseif($_REQUEST["surname"])
+				$reference = $_REQUEST["surname"];
+			  elseif($_REQUEST["name"])
+				$reference = $_REQUEST["name"];
+			  elseif($_REQUEST["email"]) {
 				$reference = split('@', $_REQUEST["email"]);
 				$reference = $reference[0];
+			  }
+			  
+			  $_REQUEST["homedirectory"] = user_generate_homedir($_pql, $_REQUEST["email"], $_REQUEST["domain"],
+																 array(pql_get_define("PQL_ATTR_UID") => $reference),
+																 'user');
+			} else {
+			  // Function user_generate_homedir() doesn't exists but we have a base home directory.
+			  // Try creating the home directory manually, using the username.
+			  
+			  if(pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["rootdn"]))
+				// Absolute path is ok - create 'baseHomeDir/username/'
+				$_REQUEST["homedirectory"] = $basehomedir.$_REQUEST["uid"]."/";
+			  else
+				// We're not allowing an absolute path - don't use the baseHomeDir.
+				$_REQUEST["homedirectory"] = $_REQUEST["uid"]."/";
 			}
-
-			$_REQUEST["homedirectory"] = user_generate_homedir($_pql, $_REQUEST["email"], $_REQUEST["domain"],
-															   array(pql_get_define("PQL_ATTR_UID") => $reference),
-															   'user');
-		  } else {
-			// Function user_generate_homedir() doesn't exists but we have a base home directory.
-			// Try creating the home directory manually, using the username.
-
-			if(pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["rootdn"]))
-			  // Absolute path is ok - create 'baseHomeDir/username/'
-			  $_REQUEST["homedirectory"] = $basehomedir.$_REQUEST["uid"]."/";
-			else
-			  // We're not allowing an absolute path - don't use the baseHomeDir.
-			  $_REQUEST["homedirectory"] = $_REQUEST["uid"]."/";
-		  }
 			
-		  if($_REQUEST["homedirectory"]) {
-			// Replace space(s) with underscore(s)
-			$_REQUEST["homedirectory"] = preg_replace('/ /', '_', $_REQUEST["homedirectory"], -1);
-		  }
-		} else {
+			if($_REQUEST["homedirectory"]) {
+			  // Replace space(s) with underscore(s)
+			  $_REQUEST["homedirectory"] = preg_replace('/ /', '_', $_REQUEST["homedirectory"], -1);
+			}
+		  } else {
 			// Can't autogenerate!
 			$error_text["homedirectory"] = pql_complete_constant($LANG->_('Attribute <u>%what%</u> is missing. Can\'t autogenerate %type%'),
 																 array('what' => pql_get_define("PQL_ATTR_BASEHOMEDIR"), 
 																	   'type' => 'Path to homedirectory'));
+		  }
 		}
 		// }}}
 
+		// {{{ If we have an error, what page should come after this?
 		if($error and !empty($error_text)) {
-			// We have an error. What page should come after this?
 			if(ereg("mx", $error)) {
 				// This is the only case where we really SHOULD go to the next page - MX problems.
 				$_REQUEST["page_next"] = 'two';
@@ -442,6 +481,7 @@ switch($_REQUEST["page_curr"]) {
 				$_REQUEST["page_next"] = 'one';
 			}
 		}
+		// }}}
 		// }}}
 	}
 	break;
@@ -456,25 +496,14 @@ if(is_array($error_text)) {
 // }}}
 
 // {{{ Process the next page ($page_next).
-include("./header.html");
+include($_SESSION["path"]."/header.html");
 ?>
   <span class="title1">
     <?php echo pql_complete_constant($LANG->_('Create account in domain %domain%'),
-									 array("domain" => $_REQUEST["orgname"])); ?>
+									 array("domain" => $_REQUEST["orgname"])); ?>: 
 <?php
-if($_SESSION["ADVANCED_MODE"] && $_REQUEST["account_type"]) {
-	if($_REQUEST["account_type"] == 'mail')
-	  echo " - ".$LANG->_('Mail account');
-	elseif($_REQUEST["account_type"] == 'system')
-	  echo " - ".$LANG->_('System account');
-	elseif($_REQUEST["account_type"] == 'shell')
-	  echo " - ".$LANG->_('Shell account');
-	elseif($_REQUEST["account_type"] == 'alias')
-	  echo " - ".$LANG->_('Alias object');
-	elseif($_REQUEST["account_type"] == 'group')
-	  echo " - ".$LANG->_('Group object');
-	else
-	  echo " - ".$LANG->_('Forwarding account');
+if($_SESSION["ADVANCED_MODE"] && $_REQUEST["template"]) {
+  echo $template["short"];
 }
 ?>
   </span>
@@ -486,7 +515,11 @@ if($_SESSION["ADVANCED_MODE"] && $_REQUEST["account_type"]) {
 // Select next form to display using 'page_next'.
 // This will be set correctly above if there's
 // an error.
-//printr($_REQUEST); printr($error_text);
+if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+  echo "Request array: "; printr($_REQUEST);
+  echo "Error array: "; printr($error_text);
+}
+
 switch($_REQUEST["page_next"]) {
   case "":
 	// Step 1 - Choose account properties (type of account)
@@ -495,7 +528,7 @@ switch($_REQUEST["page_next"]) {
 	
   case "one":
 	// Step 2 - Choose user details (name, password etc)
-	if($_REQUEST["account_type"] == "alias")
+	if($_REQUEST["template"] == "alias")
 	  include("./tables/user_add-alias.inc");
 	else
 	  include("./tables/user_add-details.inc");

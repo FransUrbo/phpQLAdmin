@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.90 2005-01-31 11:44:39 turbo Exp $
+// $Id: domain_detail.php,v 2.90.2.1 2005-02-12 05:19:12 turbo Exp $
 //
 // {{{ Setup session etc
 session_start();
@@ -9,14 +9,14 @@ require("./include/pql_config.inc");
 $url["domain"] = pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 
-include("./header.html");
+include($_SESSION["path"]."/header.html");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 // }}}
 
 // {{{ Include control api if control is used
 if(pql_get_define("PQL_CONF_CONTROL_USE")) {
-    include("./include/pql_control.inc");
+    include($_SESSION["path"]."/include/pql_control.inc");
     $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 }
 // }}}

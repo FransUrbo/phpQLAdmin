@@ -1,11 +1,11 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.103 2005-02-01 07:26:02 turbo Exp $
+// $Id: left.php,v 2.103.2.1 2005-02-12 05:19:13 turbo Exp $
 //
 session_start();
 
 require("./include/pql_config.inc");
-require("./left-head.html");
+require($_SESSION["path"]."/left-head.html");
 
 // {{{ left_htmlify_userlist(linkid, rootdn, domain, subbranch, users, &links)
 function left_htmlify_userlist($linkid, $rootdn, $domain, $subbranch, $users, &$links) {

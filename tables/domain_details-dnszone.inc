@@ -1,4 +1,4 @@
-<?php require("./include/pql_bind9.inc");
+<?php require($_SESSION["path"]."/include/pql_bind9.inc");
       $zones = pql_bind9_get_zone($_pql->ldap_linkid, $_REQUEST["domain"]);
       if(is_array($zones)) {
 ?>

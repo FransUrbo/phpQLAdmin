@@ -3,12 +3,12 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.200 2005-02-05 12:50:51 turbo Exp $
+// $Id: pql.inc,v 2.200.2.1 2005-02-12 05:19:15 turbo Exp $
 //
 
 // ----------------------------
 // Get release version
-$fp = fopen("./.version", "r");
+$fp = fopen($_SESSION["path"]."/.version", "r");
 $_SESSION["VERSION"] = fgets($fp, 20);
 $_SESSION["VERSION"] = rtrim($_SESSION["VERSION"], "\n");
 fclose($fp);
@@ -91,12 +91,18 @@ class pql {
 		// Setup connection (set options etc)
 		$this->set_options($this->ldap_linkid);
 
+		// It's possible to be called without binddn, but with a password.
+		// Can't use the password in that case...
+		if(!$binddn && $bindpw)
+		  unset($bindpw);
+
 		// Bind to the host
 		if(!$this->bind($binddn, $bindpw)) {
 			$this->ldap_error = "<b>Could not bind to ldap server</b>: ";
 			$this->ldap_error = $this->ldap_error . ldap_error($this->ldap_linkid) . "<p>" .
 			  "Host: $host, Port: $port<br>" .
-			  "Please <a href=\"index.php?logout=1\" target=\"_top\">relogin</a>.";
+			  "Please <a href=\"index.php?logout=1\" target=\"_top\">relogin</a>.<p>" .
+			  "binddn='$binddn', bindpw='$bindpw'.";
 
 			if($do_die)
 			  die($this->ldap_error);
@@ -721,62 +727,6 @@ function pql_split_oldvalues($value) {
 		return($values);
 	} else
 	  return false;
-}
-// }}}
-
-// {{{ pql_check_attribute(ldap_ocs, incl_ocs, attrib)
-// Check wanted objectclasses if any of them require/allows
-// the specific attribute
-//
-// Input:
-//	1. Objectclasses the LDAP server understands
-//	2. Objectclasses we have choosen to use when creating object
-//	3. Attribute we like to check
-//
-// Output:
-//	A two dimensional array.
-//	First dimension:
-//		0. No match (attrib is neither a MUST or a MAY - we're missing
-//		   an objectclass for this attribute!)
-//		1. This attribute is a MUST
-//		2. This attribute is a MAY
-//		3. This attribute is found in either a MUST or a MAY, but from
-//		   a SUP object class...
-//
-//	Second dimension:
-//		The objectclass we found the attribute (MUST or MAY) in
-function pql_check_attribute($ldap_ocs, $incl_ocs, $attrib) {
-	for($i=0; $incl_ocs[$i]; $i++) {
-		// -----------------------------------------------------
-		// Check if there is a MUST for this attribute in one of
-		// the included objectclasses
-		for($j=0; $j < $ldap_ocs[$incl_ocs[$i]]['MUST']['count']; $j++) {
-			if(lc($attrib) == lc($ldap_ocs[$incl_ocs[$i]]['MUST'][$j])) {
-				return array(1, $incl_ocs[$i]);
-			}
-		}
-
-		// -----------------------------------------------------
-		// Check if there is a MAY for this attribute in one of
-		// the included objectclasses
-		for($j=0; $j < $ldap_ocs[$incl_ocs[$i]]['MAY']['count']; $j++) {
-			if(lc($attrib) == lc($ldap_ocs[$incl_ocs[$i]]['MAY'][$j])) {
-				return array(2, $incl_ocs[$i]);
-			}
-		}
-
-		// -----------------------------------------------------
-		// We couldn't find a MUST or a MAY. Let's follow SUP's
-		if($ldap_ocs[$incl_ocs[$i]]['SUP']) {
-			// This objectClass from the LDAP server HAVE a SUP. Call ourself
-			// recursivly looking for a MUST/MAY...
-			$ret = pql_check_attribute($ldap_ocs, array(lc($ldap_ocs[$incl_ocs[$i]]['SUP'])), $attrib);
-			if($ret[0])
-			  return array(3, $incl_ocs[$i]);
-		}
-	}
-
-	return(0);
 }
 // }}}
 

@@ -1,10 +1,10 @@
 <?php
 // make some simple tests on ldap connection
-// $Id: config_ldaptest.php,v 2.31 2005-01-31 11:39:44 turbo Exp $
+// $Id: config_ldaptest.php,v 2.31.2.1 2005-02-12 05:19:12 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
-require("./include/pql_control.inc");
+require($_SESSION["path"]."/include/pql_control.inc");
 
 // {{{ Check a domain value
 function check_domain_value($linkid, $dn, $attrib, $value) {
@@ -227,7 +227,7 @@ if(!function_exists("ldap_connect")){
 	// }}}
 } // end if(function_exists...
 
-include("./header.html");
+include($_SESSION["path"]."/header.html");
 ?>
   <script type="text/javascript" language="javascript"><!--
     function ldifWindow(string) {

@@ -1,11 +1,11 @@
 <?php
 // shows details of specified category of attributes
-// $Id: control_cat.php,v 2.16 2004-11-12 09:00:17 turbo Exp $
+// $Id: control_cat.php,v 2.16.8.1 2005-02-12 05:19:12 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
-require("./include/pql_control.inc");
-require("./include/pql_control_plugins.inc");
+require($_SESSION["path"]."/include/pql_control.inc");
+require($_SESSION["path"]."/include/pql_control_plugins.inc");
 
 $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
@@ -19,10 +19,10 @@ if(!is_array($plugins)) {
 
 // include each defined plugin
 foreach($plugins as $plugin) {
-	include("./include/".pql_plugin_get_filename($plugin));
+	include($_SESSION["path"]."/include/".pql_plugin_get_filename($plugin));
 }
 
-include("./header.html");
+include($_SESSION["path"]."/header.html");
 
 // print status message, if one is available
 if(isset($msg)) {

@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.85 2005-01-31 11:39:44 turbo Exp $
+// $Id: user_detail.php,v 2.85.2.1 2005-02-12 05:19:13 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -17,7 +17,7 @@ if(!$_GET and ($_REQUEST["view"] == "antispam")) {
 		// We're committing the SpamAssassin configuration
 		// -> save changes (call an include which have all
 		//    the logic).
-		require("./include/attrib.spamassassin.inc");
+		require($_SESSION["path"]."/include/attrib.spamassassin.inc");
 		attribute_save($_REQUEST);
 	}
 }
@@ -41,7 +41,7 @@ if($_GET["domain"]) {
 	$defaultdomain = pql_get_attribute($_pql->ldap_linkid, $url["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 }
 
-include("./header.html");
+include($_SESSION["path"]."/header.html");
 
 // print status message, if one is available
 if(isset($_GET["msg"])) {

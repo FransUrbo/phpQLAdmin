@@ -1,13 +1,13 @@
 <?php
 // Show Connection/Suffixes status of LDAP server
-// $Id: status_ldap.php,v 2.5 2004-10-09 16:38:53 turbo Exp $
+// $Id: status_ldap.php,v 2.5.8.1 2005-02-12 05:19:13 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
-require("./include/pql_status.inc");
+require($_SESSION["path"]."/include/pql_status.inc");
 
 require("./left-head.html");
-include("./header.html");
+include($_SESSION["path"]."/header.html");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 

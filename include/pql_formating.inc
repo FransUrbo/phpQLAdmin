@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.36 2005-02-05 12:48:08 turbo Exp $
+// $Id: pql_formating.inc,v 2.36.2.1 2005-02-12 05:19:15 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -16,19 +16,26 @@ function pql_create_ldif($func, $dn, $entry) {
 	$LDIF .= "dn: $dn\n";
 	if(is_array($entry)) {
 		foreach($entry as $key => $e) {
-//			$LDIF .= "replace: $key\n";
 			if(is_array($entry[$key])) {
 				// ... in an array. Go through each one, creating the LDAP entry
-				foreach($entry[$key] as $x)
-				  $LDIF .= "$key: $x\n";
+				if($entry[$key]) {
+				  $LDIF .= "replace: $key\n";
+				  foreach($entry[$key] as $x)
+					$LDIF .= "$key: $x\n";
+				} else
+				  $LDIF .= "delete: $key\n";
 			} else {
-				$LDIF .= "$key: $entry[$key]\n";
+				if($entry[$key]) {
+				  $LDIF .= "replace: $key\n";
+				  $LDIF .= "$key: $entry[$key]\n";
+				} else
+				  $LDIF .= "delete: $key\n";
 			}
 		}
 	}
 
 	if($func)
-	  $LDIF .= "--- DEBUG ---\n</pre><p>";	
+	  $LDIF .= "--- DEBUG ---\n</pre>\n";	
 
 	return($LDIF);
 }
@@ -209,7 +216,7 @@ function pql_format_table_single($linkid, $text, $url, $array, $attrib, $class =
 			$new_tr = 1;
 ?>
         <td class="<?=$class?>"><?=$username?></td>
-        <td class="<?=$class?>"><a href="<?=$url["del"]?>&<?=$attrib?>=<?=$value?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$text["del"]?>"></a></td>
+        <td class="<?=$class?>"><?php if($url["del"]) { ?><a href="<?=$url["del"]?>&<?=$attrib?>=<?=$value?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$text["del"]?>"></a><?php } ?></td>
       </tr>
 <?php	}
 	}
@@ -225,7 +232,7 @@ function pql_format_table_single($linkid, $text, $url, $array, $attrib, $class =
 <?php } else { ?>
         <td class="title"></td>
 <?php } ?>
-        <td colspan="2"><a href="<?=$url["add"]?>"><?=$text["add"]?></a></td>
+        <td colspan="2"><?php if($url["add"]) { ?><a href="<?=$url["add"]?>"><?=$text["add"]?></a><?php } ?></td>
       </tr>
 <?php
 }

@@ -4,6 +4,8 @@ Things left to do
 	  the base DN is availible in a session variable. Make any and
 	  all functions that uses or needs this value to use the variable
 	  instead of retreive it from the LDAP database.
+	* New schema attribute/value and corresponding config option
+	  (global or branch!?): 'Generate Maildirs instead of MBoxes'.
 
 	IMPORTANT
 	* Get proper (!) 'user templates' to work. It's getting more

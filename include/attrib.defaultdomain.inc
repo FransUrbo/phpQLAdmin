@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // default domain name (the default domainname for a domain)
-// $Id: attrib.defaultdomain.inc,v 2.32 2005-01-12 13:50:55 turbo Exp $
+// $Id: attrib.defaultdomain.inc,v 2.32.4.1 2005-02-12 05:19:14 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -43,7 +43,7 @@ function attribute_print_form() {
           <td><?php echo pql_format_error_span($error[pql_get_define("PQL_ATTR_DEFAULTDOMAIN")]); ?><input type="text" name="defaultdomain" value="<?=$defaultdomain?>" size="20"></td>
         </tr>
 <?php if(!function_exists("pql_control"))
-		require("./include/pql_control.inc");
+		require($_SESSION["path"]."/include/pql_control.inc");
 
 	  // Initiate a connection to the QmailLDAP/Controls DN
 	  $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
@@ -145,7 +145,7 @@ function attribute_save($type) {
 										 array('what' => $LANG->_('Default domainname', 4),
 											   'new'  => $defaultdomain));
 			
-			require("./include/pql_control.inc");
+			require($_SESSION["path"]."/include/pql_control.inc");
 			$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 			// -----------------------------------------

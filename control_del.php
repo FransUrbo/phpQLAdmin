@@ -1,6 +1,6 @@
 <?php
 // Delete a mailserver controls object
-// $Id: control_del.php,v 2.15 2005-01-31 11:39:44 turbo Exp $
+// $Id: control_del.php,v 2.15.2.1 2005-02-12 05:19:12 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -27,12 +27,12 @@ function control_del_find_users($link, $host) {
 
 if(pql_get_define("PQL_CONF_CONTROL_USE")) {
     // {{{ include control api if control is used
-    include("./include/pql_control.inc");
+    include($_SESSION["path"]."/include/pql_control.inc");
     $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 	// }}}
 
 	if(!$_REQUEST["submit"] or $_REQUEST["error"]) {
-		include("./header.html");
+		include($_SESSION["path"]."/header.html");
 		
 		// Check to see if this object exists
 		$filter = "(".pql_get_define("PQL_ATTR_CN") . "=" . $_REQUEST["mxhost"] . ")";
@@ -122,14 +122,14 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 				  $oldmx = $_REQUEST["oldmx"]; unset($_REQUEST);
 				  $url = $_SERVER["PHP_SELF"]."?mxhost=$oldmx&error=1";
 
-				  header("Location: " . pql_get_define("PQL_CONF_URI") . $url);
+				  header("Location: " . $_SESSION["URI"] . $url);
 			  } else {
 				  if(($_REQUEST["newmx"] == 'user') and !$_REQUEST["mxhost"]) {
 					  // No (user specified) MX/host specified - do over!
 					  $oldmx = $_REQUEST["oldmx"]; unset($_REQUEST);
 					  $url = $_SERVER["PHP_SELF"]."?mxhost=$oldmx&error=1";
 
-					  header("Location: " . pql_get_define("PQL_CONF_URI") . $url);
+					  header("Location: " . $_SESSION["URI"] . $url);
 				  } else {
 					  // Move the user(s) to user specified server
 					  // OR
@@ -176,7 +176,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 		$url = "home.php?rlnb=2&msg=".urlencode("Successfully deleted mailserver $mxhost.");
 	  }
 
-	  header("Location: " . pql_get_define("PQL_CONF_URI") . $url);
+	  header("Location: " . $_SESSION["URI"] . $url);
 	}
 	// }}}
 }

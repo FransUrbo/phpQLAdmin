@@ -1,12 +1,12 @@
 <?php
 // shows configuration of phpQLAdmin
-// $Id: config_ldap.php,v 1.13 2004-11-05 10:46:04 turbo Exp $
+// $Id: config_ldap.php,v 1.13.8.1 2005-02-12 05:19:12 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 
 require("./left-head.html");
-include("./header.html");
+include($_SESSION["path"]."/header.html");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 

@@ -1,17 +1,17 @@
 <?php
 // Add a webserver configuration to the LDAP db
-// $Id: websrv_add.php,v 2.8 2005-02-07 12:05:32 turbo Exp $
+// $Id: websrv_add.php,v 2.8.2.1 2005-02-12 05:19:13 turbo Exp $
 //
 // {{{ Setup session
 session_start();
 require("./include/pql_config.inc");
-require("./include/pql_control.inc");
-require("./include/pql_websrv.inc");
+require($_SESSION["path"]."/include/pql_control.inc");
+require($_SESSION["path"]."/include/pql_websrv.inc");
 
 $url["domain"] = pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 
-include("./header.html");
+include($_SESSION["path"]."/header.html");
 // }}}
 
 // {{{ Verify all submitted values
@@ -120,7 +120,7 @@ if(($error == 'true') or !$_REQUEST["serverip"] or !$_REQUEST["serverurl"] or !$
 		$msg = "Successfully added webserver configuration ".$_REQUEST["serverurl"];
 
 		if($_REQUEST["dns"] and pql_get_define("PQL_CONF_BIND9_USE")) {
-			require("./include/pql_bind9.inc");
+			require($_SESSION["path"]."/include/pql_bind9.inc");
 
 			// Separate the domainname and hostname from the FQDN by removing the FIRST part of the FQDN.
 			$tmp = split('\.', $fqdn); $domainname = ''; $hostname = $tmp[0];
@@ -154,11 +154,11 @@ if(($error == 'true') or !$_REQUEST["serverip"] or !$_REQUEST["serverurl"] or !$
 	$url =  "domain_detail.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"];
 	$url .= "&view=".$_REQUEST["view"]."&msg=".urlencode($msg);
 
-	if(file_exists("./.DEBUG_ME")) {
+	if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
 		echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
 		die("<b>$url</b>");
 	} else
-	  header("Location: ".pql_get_define("PQL_CONF_URI") . "$url");
+	  header("Location: ".$_SESSION["URI"] . "$url");
 // }}}
 }
 ?>

@@ -5,8 +5,9 @@
 session_start();
 require("./include/pql_config.inc");
 
-include("./header.html");
+include($_SESSION["path"]."/header.html");
 
+// {{{ Possibly clear session
 if($_REQUEST["action"] == "clear_session") {
     $view	= $_REQUEST["view"];
 
@@ -32,15 +33,17 @@ if($_REQUEST["action"] == "clear_session") {
     $msg = "Successfully deleted the session variable. Will reload from scratch.";
     $link = "config_detail.php?view=$view&msg=".urlencode($msg);
 
-    header("Location: " . pql_get_define("PQL_CONF_URI") . $link);
+    header("Location: " . $_SESSION["URI"] . $link);
 }
+// }}}
 
-// print status message, if one is available
+// {{{ Print status message, if one is available
 if(isset($_REQUEST["msg"])) {
     pql_format_status_msg($_REQUEST["msg"]);
 }
+// }}}
 
-// reload navigation bar if needed
+// {{{ Reload navigation bar if needed
 if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
 ?>
   <script src="tools/frames.js" type="text/javascript" language="javascript1.2"></script>
@@ -50,21 +53,26 @@ if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
   //--></script>
 <?php
 }
+// }}}
 
 foreach($_SESSION["BASE_DN"] as $dn) {
     if(eregi('KERBEROS', pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $dn)))
       $show_kerberos_info = 1;
 }
 
-// Create the button array with domain buttons
-$buttons = array('default' => 'Global configuration');
+// {{{ Create the button array with domain buttons
+$buttons    = array('default'  => 'Global configuration');
+if($_SESSION["ALLOW_BRANCH_CREATE"]) {
+  $button   = array('template' => 'User templates');
+  $buttons += $button;
+}
 foreach($_SESSION["BASE_DN"] as $dn) {
-    $button = array($dn => $dn);
-    $buttons += $button;
+  $button   = array($dn => $dn);
+  $buttons += $button;
 }
 if($_SESSION["lynx"]) {
-    $button = array('index2' => 'Back to index');
-    $buttons += $button;
+  $button   = array('index2' => 'Back to index');
+  $buttons += $button;
 }
 ?>
   <span class="title1"><?=$LANG->_('phpQLAdmin configuration')?></span>
@@ -74,9 +82,13 @@ if($_SESSION["lynx"]) {
 <?php
 // Output the buttons to the browser
 pql_generate_button($buttons);
+// }}}
 
+// {{{ Include table view
 if(empty($_REQUEST["view"]) or $_REQUEST["view"] == 'default') {
     include("./tables/config_details-global.inc");
+} elseif($_REQUEST["view"] == 'template') {
+    include("./tables/config_details-template.inc");
 } elseif($_SESSION["lynx"] and ($_REQUEST["view"] == 'index2')) {
     $link = "index2.php";
     if(isset($_SESSION["ADVANCED_MODE"]))
@@ -84,13 +96,14 @@ if(empty($_REQUEST["view"]) or $_REQUEST["view"] == 'default') {
     else
       $link .= "?advanced=0";
 
-    header("Location: " . pql_get_define("PQL_CONF_URI") . $link);
+    header("Location: " . $_SESSION["URI"] . $link);
 } else {
     if (empty($_REQUEST["branch"])) {
       $_REQUEST["branch"] = $_REQUEST["view"];
     }
     include("./tables/config_details-branch.inc");
 }
+// }}}
 ?>
-</body>
+  </body>
 </html>

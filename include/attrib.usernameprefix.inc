@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // userNamePrefix/userNamePrefixLength
-// $Id: attrib.usernameprefix.inc,v 2.15 2005-01-31 21:01:35 turbo Exp $
+// $Id: attrib.usernameprefix.inc,v 2.15.2.1 2005-02-12 05:19:14 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type = '') {
@@ -99,7 +99,7 @@ function attribute_save($type) {
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_($lang))) . ": ".ldap_error($_pql->ldap_linkid);
 
-		if(!file_exists("./.DEBUG_ME"))
+		if(!file_exists($_SESSION["path"]."/.DEBUG_ME"))
 		  attribute_forward($msg);
 		break;
 		

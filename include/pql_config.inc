@@ -3,16 +3,16 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.74 2005-02-01 08:06:40 turbo Exp $
+// $Id: pql_config.inc,v 1.74.2.1 2005-02-12 05:19:15 turbo Exp $
 //
 
 // {{{ Include the API files
-require("./include/pql.inc");				// Main API file
-require("./include/pql_formating.inc");		// Output formating API
-require("./include/pql_cache.inc");			// Cache API
-require("./include/pql_search.inc");		// Search API
-require("./include/pql_write.inc");			// Write API
-require("./include/pql_units.inc");			// Sub branch API
+require($_SESSION["path"]."/include/pql.inc");					// Main API file
+require($_SESSION["path"]."/include/pql_formating.inc");		// Output formating API
+require($_SESSION["path"]."/include/pql_cache.inc");			// Cache API
+require($_SESSION["path"]."/include/pql_search.inc");			// Search API
+require($_SESSION["path"]."/include/pql_write.inc");			// Write API
+require($_SESSION["path"]."/include/pql_units.inc");			// Sub branch API
 // }}}
 
 // {{{ pql_set_define(define, value, case_insensitive, dn)
@@ -76,10 +76,10 @@ function pql_get_define($define, $dn = NULL) {
 
 // ----------------------------
 // 1. Load site specific configuration
-require("./include/config.inc");			// Generic site configuration
+require($_SESSION["path"]."/include/config.inc");			// Generic site configuration
 
 // 2. Include the attribute configuration
-require("./include/config_attributes.inc");		// Attribute definitions
+require($_SESSION["path"]."/include/config_attributes.inc");		// Attribute definitions
 
 if($_SESSION["USER_HOST"]) {
 	if(!$_pql)
@@ -152,6 +152,11 @@ if($_SESSION["USER_HOST"]) {
 		  $_SESSION["ALLOW_CONTROL_CREATE"] = pql_validate_administrator($_pql->ldap_linkid, $dn,
 																		 pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
 																		 $_SESSION["USER_DN"]);
+
+		if(!pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $dn)) {
+		  $ref = pql_get_attribute($_pql->ldap_linkid, $dn, pql_set_define("PQL_ATTR_REFERENCE_USERS_WITH"));
+		  pql_set_define("PQL_CONF_REFERENCE_USERS_WITH", $ref, false, $dn);
+		}
 	}
 
 	// 4c. Check the Control DN if the user is there -> Allow management of Controls information
@@ -161,7 +166,7 @@ if($_SESSION["USER_HOST"]) {
 																	 $_SESSION["USER_DN"]);
 
 	// 5. Load 'resonable defaults' for each top DN
-	require("./include/defaults.inc");
+	require($_SESSION["path"]."/include/defaults.inc");
 	
 	// 6. Get user configuration for phpQLAdmin
 	$user_object = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_DN"], "(objectClass=*)", 'BASE');
@@ -171,11 +176,11 @@ if($_SESSION["USER_HOST"]) {
 }
 
 // 7. Get language translation
-require("./include/pql_lang.inc");
+require($_SESSION["path"]."/include/pql_lang.inc");
 $LANG = new pql_lang($_pql);
 
 // 8. Include the plugin API
-require("./include/pql_plugins.inc");
+require($_SESSION["path"]."/include/pql_plugins.inc");
 
 if($_SESSION["USER_HOST"]) {
 	// 9. Verify that the user have access to write the global phpQLAdmin config
@@ -214,7 +219,7 @@ if($_SESSION["USER_HOST"]) {
 }
 
 if(@$_SESSION["ACI_SUPPORT_ENABLED"])
-	 require("./include/pql_aci.inc");
+	 require($_SESSION["path"]."/include/pql_aci.inc");
 
 if($_SESSION["USER_HOST"]) {
 	// 10. Check to see if the cn=Monitor backend is availble/readable
@@ -225,11 +230,10 @@ if($_SESSION["USER_HOST"]) {
 	}
 }
 
-// Remove some variables so we don't clutter the global
-// variable name space!
+// Remove some variables so we don't clutter the global variable name space!
 unset($host); unset($servers); unset($i);
 unset($pql_config_private_variable_which_irritates_me); unset($sr); unset($info);
-unset($v); unset($nkey); unset($k);
+unset($v); unset($nkey); unset($k); unset($ref);
 
 // See bug #203...
 ($_REQUEST["domain"] = $_GET["domain"] ) || ($_REQUEST["domain"] = $_POST["domain"]);

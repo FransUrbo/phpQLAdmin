@@ -1,15 +1,15 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.39 2005-01-13 05:33:37 turbo Exp $
+// $Id: control_detail.php,v 1.39.4.1 2005-02-12 05:19:12 turbo Exp $
 session_start();
 require("./include/pql_config.inc");
 
 if(pql_get_define("PQL_CONF_CONTROL_USE")) {
     // include control api if control is used
-    include("./include/pql_control.inc");
+    include($_SESSION["path"]."/include/pql_control.inc");
     $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
-	include("./header.html");
+	include($_SESSION["path"]."/header.html");
 
 	// Get the values of the mailserver
 	$attribs = array("defaultdomain"		=> pql_get_define("PQL_ATTR_DEFAULTDOMAIN"),

@@ -184,35 +184,6 @@
 
       <!-- -------------------- -->
 <?php	$class=pql_format_table(0);
-		$url_tmp = "config_edit_attribute.php?rootdn=".$_REQUEST["branch"]."&attrib=".pql_get_define("PQL_ATTR_PASSWORD_SCHEMES")."&view=".$_REQUEST["branch"];
-
-		$schemes = pql_split_oldvalues(pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["branch"]));
-		$txt = array('tit' => $LANG->_('Allowed password encryption scheme'),
-					 'add' => $LANG->_('Add encryption scheme'),
-					 'del' => $LANG->_('Delete encryption scheme'));
-		$url = array('add' => $url_tmp, 'del' => $url_tmp."&delval=1&submit=2");
-//&delval=".$sc[$i][$_REQUEST["branch"]]
-		pql_format_table_single($_pql->ldap_linkid, $txt, $url, $schemes, pql_get_define("PQL_ATTR_PASSWORD_SCHEMES"), $class);
-?>
-
-      <tr></tr>
-
-      <!-- -------------------- -->
-<?php	$class=pql_format_table(0);
-		$url_tmp = "config_edit_attribute.php?rootdn=".$_REQUEST["branch"]."&attrib=".pql_get_define("PQL_ATTR_OBJECTCLASS_USER")."&view=".$_REQUEST["branch"];
-
-		$objectclasses = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["branch"]));
-		$txt = array('tit' => $LANG->_('Allowed user objectclasses'),
-					 'add' => $LANG->_('Add objectclass'),
-					 'del' => $LANG->_('Delete objectclass'));
-		$url = array('add' => $url_tmp, 'del' => $url_tmp."&delval=1&submit=2");
-//&delval=".$oc[$i][$_REQUEST["branch"]]
-		pql_format_table_single($_pql->ldap_linkid, $txt, $url, $objectclasses, pql_get_define("PQL_ATTR_OBJECTCLASS_USER"), $class);
-?>
-      <tr></tr>
-
-      <!-- -------------------- -->
-<?php	$class=pql_format_table(0);
 		$url_tmp = "config_edit_attribute.php?rootdn=".$_REQUEST["branch"]."&attrib=".pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN")."&view=".$_REQUEST["branch"];
 
 		$objectclasses = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_DOMAIN", $_REQUEST["branch"]));

@@ -1,11 +1,11 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.46 2005-01-12 13:50:54 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.46.4.1 2005-02-12 05:19:12 turbo Exp $
 //
 // {{{ Initialize and setup
 session_start();
 require("./include/pql_config.inc");
-require("./include/config_plugins.inc");
+require($_SESSION["path"]."/include/config_plugins.inc");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
@@ -43,7 +43,7 @@ function attribute_forward($msg) {
 		. "&domain=" . $url["domain"]
 		. "&view=" . $_REQUEST["view"] . "&msg=$msg";
 
-	header("Location: " . pql_get_define("PQL_CONF_URI") . $link);
+	header("Location: " . $_SESSION["URI"] . $link);
 }
 // }}}
 
@@ -51,10 +51,10 @@ function attribute_forward($msg) {
 $plugin = pql_plugin_get_filename(pql_plugin_get($_REQUEST["attrib"]));
 if(!$plugin) {
     die("<span class=\"error\">ERROR: No plugin file defined for attribute '<i>".$_REQUEST["attrib"]."</i>'</span>");
-} elseif(!file_exists("./include/$plugin")) {
+} elseif(!file_exists($_SESSION["path"]."/include/$plugin")) {
     die("<span class=\"error\">ERROR: Plugin file defined for attribute '<i>".$_REQUEST["attrib"]."</i>' does not exists!</span>");
 }
-include("./include/$plugin");
+include($_SESSION["path"]."/include/$plugin");
 // }}}
 
 // {{{ Get the organization name, or the DN if it's unset
@@ -70,7 +70,7 @@ $_REQUEST["orgname"] = $orgname;
 
 // }}}
 
-include("./header.html");
+include($_SESSION["path"]."/header.html");
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Change %what% for domain %domain%'), array('what' => $LANG->_('default values'), 'domain' => $_REQUEST["orgname"])); ?>
   </span>

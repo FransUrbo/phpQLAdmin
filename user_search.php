@@ -1,11 +1,11 @@
 <?php
 // start page
-// $Id: user_search.php,v 2.8 2004-03-27 12:50:28 turbo Exp $
+// $Id: user_search.php,v 2.8.22.1 2005-02-12 05:19:13 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 
-include("./header.html");
+include($_SESSION["path"]."/header.html");
 ?>
   <span class="title2"><?=$LANG->_('Find user(s) whose')?></span>
   <form method=post action="search.php">

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailalternateaddress (emailaddress alias)
-// $Id: attrib.mailalternateaddress.inc,v 2.30 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.mailalternateaddress.inc,v 2.30.2.1 2005-02-12 05:19:14 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -160,7 +160,7 @@ function attribute_save($type) {
 			$url = "user_sendmail.php?root=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["branch"]."&email="
 			  . urlencode($_REQUEST[$attrib]) . "&user=" . urlencode($_REQUEST["user"])
 			  . "&msg=" . urlencode($msg);
-			header("Location: " . pql_get_define("PQL_CONF_URI") . $url);
+			header("Location: " . $_SESSION["URI"] . $url);
 		} else
 		  attribute_forward($msg);
 		break;
@@ -189,7 +189,7 @@ function attribute_save($type) {
 			$url = "user_sendmail.php?root=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["branch"]."&email="
 			  . urlencode($_REQUEST[$attrib]) . "&user=" . urlencode($_REQUEST["user"])
 			  . "&msg=" . urlencode($msg);
-			header("Location: " . pql_get_define("PQL_CONF_URI") . $url);
+			header("Location: " . $_SESSION["URI"] . $url);
 		} else
 		  attribute_forward($msg);
 		break;

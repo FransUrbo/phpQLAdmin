@@ -1,12 +1,12 @@
 <?php
 // delete a domain and all users within
-// $Id: unit_del.php,v 2.14 2004-05-04 08:16:16 turbo Exp $
+// $Id: unit_del.php,v 2.14.8.1 2005-02-12 05:19:13 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
-require("./include/pql_control.inc");
+require($_SESSION["path"]."/include/pql_control.inc");
 
-include("./header.html");
+include($_SESSION["path"]."/header.html");
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove the domain %domain%'), array("domain" => $domain))?></span>
 <?php

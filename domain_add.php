@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: domain_add.php,v 2.54 2004-11-14 10:49:23 turbo Exp $
+// $Id: domain_add.php,v 2.54.8.1 2005-02-12 05:19:12 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -11,11 +11,11 @@ $url["defaultdomain"] = pql_format_urls($_REQUEST["rootdn"]);
 
 // {{{ Include control api if control is used
 if(pql_get_define("PQL_CONF_CONTROL_USE")) {
-    include("./include/pql_control.inc");
+    include($_SESSION["path"]."/include/pql_control.inc");
     $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 }
 
-include("./header.html");
+include($_SESSION["path"]."/header.html");
 // }}}
 ?>
   <span class="title1"><?=$LANG->_('Create domain')?>: <?=$_REQUEST["domain"]?></span>
@@ -39,7 +39,7 @@ if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $_REQUEST["rootdn"]) == "dc
 // {{{ Check if domain is valid
 //if(!pql_check_hostaddress($_REQUEST["domain"], $force_dot)) {
 //	$msg = urlencode($LANG->_('Invalid domain name! Use: domain.tld (e.g. adfinis.com)'));
-//	header("Location: " . pql_get_define("PQL_CONF_URI") . "home.php?msg=$msg");
+//	header("Location: " . $_SESSION["URI"] . "home.php?msg=$msg");
 //	exit();
 //}
 // }}}
@@ -49,7 +49,7 @@ $filter  = '(&(objectclass=*)('.pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH"
 $filter .= '='.$_REQUEST["domain"].'))';
 if(pql_get_dn($_pql->ldap_linkid, $_REQUEST["rootdn"], $filter, 'ONELEVEL')) {
 	$msg = urlencode($LANG->_('This domain already exists'));
-	header("Location: " . pql_get_define("PQL_CONF_URI") . "home.php?msg=$msg");
+	header("Location: " . $_SESSION["URI"] . "home.php?msg=$msg");
 	exit();
 }
 // }}}
@@ -135,7 +135,7 @@ if(pql_write_add($_pql->ldap_linkid, $dn, $entry, 'branch', 'domain_add.php')) {
 	
 	// {{{ Create a template DNS zone
 	if($_REQUEST["template"] && $_REQUEST["defaultdomain"] && pql_get_define("PQL_CONF_BIND9_USE")) {
-		require("./include/pql_bind9.inc");
+		require($_SESSION["path"]."/include/pql_bind9.inc");
 
 		if(! pql_bind9_add_zone($_pql->ldap_linkid, $dn, $_REQUEST["defaultdomain"]))
 		  $msg = pql_complete_constant($LANG->_("Failed to add domain %domainname%"), array("domainname" => $_REQUEST["defaultdomain"]));
@@ -180,15 +180,15 @@ if(pql_write_add($_pql->ldap_linkid, $dn, $entry, 'branch', 'domain_add.php')) {
 
 		die();
 		// }}}
-	} elseif(file_exists("./.DEBUG_ME")) {
+	} elseif(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
 		echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
 		die("<b>$url</b>");
 	} else {
-		header("Location: " . pql_get_define("PQL_CONF_URI") . $url);
+		header("Location: " . $_SESSION["URI"] . $url);
 	}
 } else {
 	$msg = urlencode($LANG->_('Failed to create the domain') . ":&nbsp;" . ldap_error($_pql->ldap_linkid));
-	header("Location: " . pql_get_define("PQL_CONF_URI") . "home.php?msg=$msg");
+	header("Location: " . $_SESSION["URI"] . "home.php?msg=$msg");
 }
 ?>
 

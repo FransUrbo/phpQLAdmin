@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for web server configuration)
 //
-// $Id: pql_websrv.inc,v 1.13 2005-01-13 12:27:46 turbo Exp $
+// $Id: pql_websrv.inc,v 1.13.4.1 2005-02-12 05:19:15 turbo Exp $
 //
 
 // {{{ pql_websrv_add_server(linkid, domain, server)
@@ -23,7 +23,7 @@ function pql_websrv_add_server($linkid, $domain, $server) {
 
 		// Create a LDIF object to print in case of error
 		$LDIF = pql_create_ldif("pql_websrv_add_server - ou", $dn, $entry);
-		if(file_exists("./.DEBUG_ME"))
+		if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
 		  echo $LDIF;
 		else {
 		  if(!pql_write_add($linkid, $dn, $entry, 'websrv', 'pql_websrv_add_server/1')) {
@@ -44,7 +44,7 @@ function pql_websrv_add_server($linkid, $domain, $server) {
 
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_websrv_add_server", $dn, $entry);
-	if(file_exists("./.DEBUG_ME"))
+	if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
 	  die($LDIF);
 
 	// Add the server configuration to the database
