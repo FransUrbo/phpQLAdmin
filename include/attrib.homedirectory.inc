@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // homedirectory (path to homedirectory)
-// $Id: attrib.homedirectory.inc,v 2.5 2003-05-28 07:23:38 turbo Exp $
+// $Id: attrib.homedirectory.inc,v 2.6 2003-06-10 12:21:23 turbo Exp $
 
 function attribute_check($type){
     global $homedirectory, $domain, $oldvalue, $_pql, $error;
@@ -76,7 +76,7 @@ function attribute_save($type){
     	}
 		
 		if(pql_replace_userattribute($_pql->ldap_linkid, $user, $attrib,$homedirectory)) {
-			$msg = pql_complete_constant(PQL_LANG_HOMEDIRECTORY_CHANGE_OK, array("path" => $homedirectory));
+			$msg = pql_complete_constant(PQL_LANG_HOMEDIRECTORY_CHANGE_OK, array("new" => $homedirectory));
 		} else {
 			$msg = PQL_LANG_HOMEDIRECTORY_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 		}
