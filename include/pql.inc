@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.106 2003-08-19 07:34:19 turbo Exp $
+// $Id: pql.inc,v 2.107 2003-08-19 08:02:19 turbo Exp $
 //
 
 // ----------------------------
@@ -2002,10 +2002,12 @@ function pql_replace_admins($ldap, $old, $new) {
 			foreach($attribs as $attrib) {
 				for($j=0; $j < $info[$i][$attrib]["count"]; $j++) {
 					// TODO: Only replace the attribute(s) if it have changed
-					if($old == $info[$i][$attrib][$j])
-					  // Got a match - replace this attribute
-					  $entry[$attrib][] = $new;
-					else
+					if($old == $info[$i][$attrib][$j]) {
+						// Got a match ...
+						if($new)
+						  // ... we have something to replace with - replace this attribute
+						  $entry[$attrib][] = $new;
+					} else
 					  // Remember the old value
 					  $entry[$attrib][] = $info[$i][$attrib][$j];
 				}
