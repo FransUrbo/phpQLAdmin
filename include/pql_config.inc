@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.71 2004-10-19 10:40:42 turbo Exp $
+// $Id: pql_config.inc,v 1.72 2004-11-08 10:31:22 turbo Exp $
 //
 
 // include the API files
@@ -76,7 +76,6 @@ require("./include/config.inc");			// Generic site configuration
 // 2. Include the attribute configuration
 require("./include/config_attributes.inc");		// Attribute definitions
 
-// 3. Load configurations from LDAP base DN
 if($_SESSION["USER_HOST"]) {
 	if(!$_pql)
 	  // Open a connection to the LDAP server
@@ -85,9 +84,12 @@ if($_SESSION["USER_HOST"]) {
 	// Remember the base DN's
 	$_SESSION["BASE_DN"] = $_pql->ldap_basedn;
 
+	$_SESSION["ALLOW_BRANCH_CREATE"] = 0; $_SESSION["ALLOW_CONTROL_CREATE"] = 0;
+
 	foreach($_pql->ldap_basedn as $dn)  {
 		$dn = urldecode($dn);
 		
+		// 3. Load configurations from LDAP base DN
 		$sr = @ldap_read($_pql->ldap_linkid, $dn, ('objectClass=*'))
 		  or pql_format_error(1);
 		$info = ldap_get_entries($_pql->ldap_linkid, $sr)
@@ -128,43 +130,53 @@ if($_SESSION["USER_HOST"]) {
 				}
 			}
 		}
+
+		// 4a. Verify if the user is administrator on the topmost DN (i.e. 'super admin') -> Allow creation of domain/branches.
+		if($_SESSION["USER_DN"] && !$_SESSION["ALLOW_BRANCH_CREATE"]) {
+			$_SESSION["ALLOW_BRANCH_CREATE"] = pql_validate_administrator($_pql->ldap_linkid, $dn,
+																		  pql_get_define("PQL_ATTR_ADMINISTRATOR"),
+																		  $_SESSION["USER_DN"]);
+
+			// User is super administrator - allow for administrating QmailLDAP/Control objects as well.
+			$_SESSION["ALLOW_CONTROL_CREATE"] = 1;
+		}
+		
+		// 4b. Verify if the user is controlsAdministrator in the topmost DN -> Allow administration of QmailLDAP/Control objects.
+		if($_SESSION["USER_DN"] && !$_SESSION["ALLOW_CONTROL_CREATE"])
+		  $_SESSION["ALLOW_CONTROL_CREATE"] = pql_validate_administrator($_pql->ldap_linkid, $dn,
+																		 pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
+																		 $_SESSION["USER_DN"]);
 	}
 
-	// 3. Load 'resonable defaults' for each top DN
+	// 4c. Check the Control DN if the user is there -> Allow management of Controls information
+	if(!$_SESSION["ALLOW_CONTROL_CREATE"])
+	  $_SESSION["ALLOW_CONTROL_CREATE"] = pql_validate_administrator($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+																	 pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
+																	 $_SESSION["USER_DN"]);
+
+	// 5. Load 'resonable defaults' for each top DN
 	require("./include/defaults.inc");
 	
-	// 4. Check some builtin ACL's
-	$_SESSION["ALLOW_BRANCH_CREATE"] = 0; $_SESSION["ALLOW_CONTROL_CREATE"] = 0;
-	if($_SESSION["USER_DN"] && (!$_SESSION["ALLOW_BRANCH_CREATE"] or !$_SESSION["ALLOW_CONTROL_CREATE"])) {
-		// Verify that the user is administrator on the topmost DN (i.e. 'super admin') -> Allow creation of domain/branches.
-		$_SESSION["ALLOW_BRANCH_CREATE"] = pql_validate_administrator($_pql->ldap_linkid, $dn, $_SESSION["USER_DN"]);
-		
-		// Check the Control DN if the user is there -> Allow management of Controls information
-		if(!$_SESSION["ALLOW_BRANCH_CREATE"])
-		  $_SESSION["ALLOW_CONTROL_CREATE"] = pql_validate_administrator($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $_SESSION["USER_DN"]);
-		else
-		  // User is super administrator. Full access!
-		  $_SESSION["ALLOW_CONTROL_CREATE"] = 1;
-	}
-	
-	// 5. Get user configuration for phpQLAdmin
+	// 6. Get user configuration for phpQLAdmin
 	$user_object = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_DN"], "(objectClass=*)", 'BASE');
 	foreach($PQL_ATTRIBUTE["USER"] as $key => $attrib) {
 		pql_set_define($key, $user_object[$attrib][0], true, $_SESSION["USER_DN"]);
 	}
 }
 
-// 6. Get language translation
+// 7. Get language translation
 require("./include/pql_lang.inc");
 $LANG = new pql_lang($_pql);
 
-// 7. Include the plugin API
+// 8. Include the plugin API
 require("./include/pql_plugins.inc");
 
 if($_SESSION["USER_HOST"]) {
-	// 8. Verify that the user have access to write the global phpQLAdmin config
+	// 9. Verify that the user have access to write the global phpQLAdmin config
 	//    in the first base DN
-	$_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"] = pql_validate_administrator($_pql->ldap_linkid, $_pql->ldap_basedn[0], $_SESSION["USER_DN"]);
+	$_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"] = pql_validate_administrator($_pql->ldap_linkid, $_pql->ldap_basedn[0],
+																	   pql_get_define("PQL_ATTR_ADMINISTRATOR"),
+																	   $_SESSION["USER_DN"]);
 	
 	if((empty($_SESSION["ACI_SUPPORT_ENABLED"]) and function_exists("user_generate_aci")) or empty($_SESSION["NEW_STYLE_QUOTA"])) {
 		$ocs = pql_get_subschema($_pql->ldap_linkid, 'attributeTypes');
