@@ -1,6 +1,6 @@
 <?php
 // navigation bar - ezmlm mailinglists manager
-// $Id: left-ezmlm.php,v 2.13 2003-01-21 13:39:40 turbo Exp $
+// $Id: left-ezmlm.php,v 2.14 2003-01-31 13:22:58 turbo Exp $
 //
 session_start();
 
@@ -30,9 +30,11 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS, false, 0);
 // in the domain object
 foreach($_pql->ldap_basedn as $dn)  {
     $dom = pql_get_domain_value($_pql, $dn, 'administrator', $USER_DN);
-    foreach($dom as $d) {
-        $domains[] = $d;
-    }
+    if($dom) {
+		foreach($dom as $d) {
+			$domains[] = $d;
+		}
+	}
 }
 
 if(!is_array($domains)) {
@@ -44,7 +46,8 @@ if(!is_array($domains)) {
     <font color="black" class="heada">no domains</font></a>
   </div>
   <!-- end domain parent -->
-
+</body>
+</html>
 <?php
 	die(); // No point in continuing from here!
 } else {
