@@ -1,4 +1,7 @@
-<?php $forwarders = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_FORWARDS")); ?>
+<?php $forwarders = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_FORWARDS"));
+	  if(!is_array($forwarders))
+		$forwarders = array($forwarders);
+?>
   <!-- Forwarders (mailalternateaddress) -->
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="2" align="left"><?=$LANG->_('Forward')?></th>

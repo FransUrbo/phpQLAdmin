@@ -2,6 +2,8 @@
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="2" align="left"><?=$LANG->_('Delivery mode')?></th></th>
 <?php	$deliverymode = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_MODE"));
+		if(!is_array($deliverymode))
+			$deliverymode = array($deliverymode);	 
 	    $class = pql_format_table(0);
 
 		if(empty($deliverymode)) {
