@@ -1,4 +1,4 @@
-  <span class="title1">Domain: <?=$domain?> (domainname: <?=$domainname?>)</span>
+  <span class="title1">Domain: <?=$_REQUEST["domain"]?> (domainname: <?=$domainname?>)</span>
 
   <br><br>
 
@@ -20,7 +20,7 @@
         <td><?=$listname."@".$listdomain?></td>
         <td align="right"><?=$ezmlm->mailing_lists[$listno]["subscribers"]?></td>
         <td><?=$ezmlm->mailing_lists[$listno]["owner"]?></td>
-        <td><a href="ezmlm_detail.php?domain=<?=$domain?>&domainname=<?=$domainname?>&listno=<?=$listno?>"><img src="images/edit.png" width="12" height="12" alt="edit list" border="0"></a>&nbsp;&nbsp;<a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&domainname=<?=$domainname?>&listno=<?=$listno?>&attrib=subscriber">add subscriber</a></td>
+        <td><a href="ezmlm_detail.php?domain=<?=$_REQUEST["domain"]?>&domainname=<?=$domainname?>&listno=<?=$listno?>"><img src="images/edit.png" width="12" height="12" alt="edit list" border="0"></a>&nbsp;&nbsp;<a href="ezmlm_edit_attribute.php?domain=<?=$_REQUEST["domain"]?>&domainname=<?=$domainname?>&listno=<?=$listno?>&attrib=subscriber">add subscriber</a></td>
       </tr>
 <?php		}
 	  	}
@@ -28,7 +28,7 @@
 ?>
 
       <tr class="subtitle">
-        <td colspan="4"><a href="ezmlm_add.php?domain=<?=$domain?>&domainname=<?=$domainname?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"> Register new list</a></td>
+        <td colspan="4"><a href="ezmlm_add.php?domain=<?=$_REQUEST["domain"]?>&domainname=<?=$domainname?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"> Register new list</a></td>
       </tr>
     </th>
   </table>

@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.11 2004-03-11 18:13:32 turbo Exp $
+// $Id: bind9_add.php,v 2.11.16.1 2004-11-15 10:27:17 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -32,9 +32,9 @@ if(($action == 'add') and ($type == 'domain')) {
 
     <input type="hidden" name="action" value="add">
     <input type="hidden" name="type"   value="domain">
-    <input type="hidden" name="view"   value="<?=$view?>">
-    <input type="hidden" name="rootdn" value="<?=$rootdn?>">
-    <input type="hidden" name="domain" value="<?=$domain?>">
+    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="rootdn" value="<?=$_REQUEST["rootdn"]?>">
+    <input type="hidden" name="domain" value="<?=$_REQUEST["domain"]?>">
     <input type="submit" value="<?php echo "--&gt;&gt;"; ?>">
   </form>
 <?php } else {
@@ -43,7 +43,7 @@ if(($action == 'add') and ($type == 'domain')) {
 		  else
 			$msg = "Failed to add domain $domainname";
 
-		  $url = "domain_detail.php?rootdn=$rootdn&domain=$domain&view=$view&msg=".urlencode($msg);
+		  $url = "domain_detail.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"]".&view=".$_REQUEST["view"]."&msg=".urlencode($msg);
 		  header("Location: ".pql_get_define("PQL_CONF_URI") . "$url");
 	  }
 } elseif(($action == 'add') and ($type == 'host')) {

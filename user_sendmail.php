@@ -1,6 +1,6 @@
 <?php
 // send a testmail to an emailaddress
-// $Id: user_sendmail.php,v 2.22.6.1 2004-05-06 05:14:29 turbo Exp $
+// $Id: user_sendmail.php,v 2.22.6.1.4.1 2004-11-15 10:27:17 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -12,8 +12,8 @@ include("./header.html");
   <span class="title1"><?=$LANG->_('Send testmail')?></span>
   <br><br>
 <?php
-if(!pql_user_exist($_pql->ldap_linkid, $user)) {
-    echo pql_complete_constant($LANG->_('User %user% does not exist'), array('user', $user));
+if(!pql_user_exist($_pql->ldap_linkid, $_REQUEST["user"])) {
+    echo pql_complete_constant($LANG->_('User %user% does not exist'), array('user', $_REQUEST["user"]));
     exit();
 }
 
@@ -25,15 +25,15 @@ $subject = pql_get_define("PQL_ATTR_TESTMAIL_SUBJECT");
 $from = "From: " . pql_get_define("PQL_ATTR_HOSTMASTER") . "\n";
 $xmailer = "X-Mailer: phpQLAdmin ".$_SESSION["VERSION"]."\n";
 $vars['MAIL'] = $email;
-$vars['UID'] = $user;
+$vars['UID'] = $_REQUEST["user"];
 $vars['VERSION'] = $_SESSION["VERSION"];
 
-$cn = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_CN"));
+$cn = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_CN"));
 $vars['CN'] = $cn[0];
-$sn = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_SN"));
+$sn = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_SN"));
 $vars['SN'] = $sn[0];
 
-$quota = pql_user_get_quota($_pql->ldap_linkid, $user);
+$quota = pql_user_get_quota($_pql->ldap_linkid, $_REQUEST["user"]);
 
 // Does the user have an individual mailbox quota?
 if (is_array($quota)) {
@@ -73,7 +73,7 @@ if(mail($email, $subject, $message, $header)){
     $msg .= $LANG->_('Failed sending mail');
 }
 
-$url = "user_detail.php?domain=$domain&user=".urlencode($user)."&msg=".urlencode($msg);
+$url = "user_detail.php?domain=".$_REQUEST["domain"]."&user=".urlencode($_REQUEST["user"])."&msg=".urlencode($msg);
 
 if(isset($_REQUEST["rlnb"]))
      $url .= "&rlnb=".$_REQUEST["rlnb"];

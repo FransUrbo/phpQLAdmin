@@ -40,7 +40,7 @@
         <td></td>
 <?php			} ?>
         <td><?=$x?></td>
-        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&domainname=<?=$domainname?>&listno=<?=$listno?>&attrib=<?=$key?>&value=<?=$x?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete attribute')?>" border="0"></a></td>
+        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="ezmlm_edit_attribute.php?domain=<?=$_REQUEST["domain"]?>&domainname=<?=$domainname?>&listno=<?=$listno?>&attrib=<?=$key?>&value=<?=$x?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete attribute')?>" border="0"></a></td>
 <?php			$j++;
 			}
 		}
@@ -51,7 +51,7 @@
 ?>
         <td></td>
 <?php		} else { // Editable/Deletable values ?>
-        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&domainname=<?=$domainname?>&listno=<?=$listno?>&attrib=<?=$key?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Toggle')?>" border="0"></a>&nbsp;&nbsp;<a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&domainname=<?=$domainname?>&listno=<?=$listno?>&attrib=<?=$key?>"></a></td>
+        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="ezmlm_edit_attribute.php?domain=<?=$_REQUEST["domain"]?>&domainname=<?=$domainname?>&listno=<?=$listno?>&attrib=<?=$key?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Toggle')?>" border="0"></a>&nbsp;&nbsp;<a href="ezmlm_edit_attribute.php?domain=<?=$_REQUEST["domain"]?>&domainname=<?=$domainname?>&listno=<?=$listno?>&attrib=<?=$key?>"></a></td>
 <?php		}
 		}
 ?>
@@ -59,7 +59,7 @@
 <?php } ?>
       <tr class="<?php pql_format_table(); ?>">
         <td></td>
-        <td><a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&domainname=<?=$domainname?>&listno=<?=$listno?>&attrib=subscriber"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('subscriber'))); ?></a></td>
+        <td><a href="ezmlm_edit_attribute.php?domain=<?=$_REQUEST["domain"]?>&domainname=<?=$domainname?>&listno=<?=$listno?>&attrib=subscriber"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('subscriber'))); ?></a></td>
         <td></td>
       </tr>
     </th>
@@ -70,7 +70,7 @@
   <table cellspacing="0" cellpadding="3" border="0">
     <th align="left"><?=$LANG->_('Actions')?></th>
       <tr class="<?php pql_format_table(); ?>">
-        <td><a href="ezmlm_del.php?domain=<?=$domain?>&listno=<?=$listno?>"><?=$LANG->_('Delete list')?></a></td>
+        <td><a href="ezmlm_del.php?domain=<?=$_REQUEST["domain"]?>&listno=<?=$listno?>"><?=$LANG->_('Delete list')?></a></td>
       </tr>
     </th>
   </table>
