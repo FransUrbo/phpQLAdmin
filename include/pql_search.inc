@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.11 2003-11-20 08:01:37 turbo Exp $
+// $Id: pql_search.inc,v 2.12 2003-11-20 11:12:27 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -21,7 +21,7 @@ function pql_search($linkid, $basedn, $filter, $attrib = 'dn') {
 
 	for($i=0; $i < $info["count"]; $i++) {
 		if($attrib == '')
-		  $dn = $dn + $info[$i];
+		  $dn .= $info[$i];
 		else
 		  $dn[] = $info[$i][$attrib];
 	}
@@ -77,7 +77,7 @@ function pql_get_attribute($ldap_linkid, $user, $attribute) {
     if($entries) {
 		// INTERNATIONALIZE values
 		foreach($entries as $attrib => $e) {
-			for($i=0; $e[$i]; $i++)
+			for($i=0; isset($e[$i]); $i++)
 			  $values[$attrib][] = pql_maybe_decode($e[$i]);
 		}
 
