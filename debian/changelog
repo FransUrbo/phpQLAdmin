@@ -5,6 +5,8 @@ phpqladmin (2.0.18-1) unstable; urgency=low
     Closes: #222286
   * New french debconf template
     Closes: #238013
+  * Add Brazilian Portuguese po-debconf template - patch by Andre Luis Lopes.
+    Closes: #231718
 
  --
 
