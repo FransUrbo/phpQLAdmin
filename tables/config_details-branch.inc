@@ -235,14 +235,14 @@
 ?>
 
         <td class="<?=$class?>">
-          <a href="config_edit_attribute.php?rootdn=<?=$branch?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_USER"]?>&delval=<?=$oc[$i][$dn]?>">
-            <img src="images/del.png" width="12" height="12" border="0" alt="Delete attrib <?=$PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_USER"]?>=<?=$oc[$i][$dn]?>">
+          <a href="config_edit_attribute.php?rootdn=<?=$branch?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_USER"]?>&delval=<?=$oc[$i][$branch]?>">
+            <img src="images/del.png" width="12" height="12" border="0" alt="Delete attrib <?=$PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_USER"]?>=<?=$oc[$i][$branch]?>">
           </a>
         </td>
 <?php             } else { ?>
         <td class="<?=$class?>"></td>
 <?php             } ?>
-        <td class="<?=$class?>"><?=$oc[$i][$dn]?>&nbsp;</td>
+        <td class="<?=$class?>"><?=$oc[$i][$branch]?>&nbsp;</td>
       </tr>
 <?php         } // for() ?>
       </tr>
@@ -252,7 +252,7 @@
 <?php     if($ALLOW_GLOBAL_CONFIG_SAVE) { ?>
         <td class="<?=$class?>"></td>
         <td class="<?=$class?>">
-          <a href="config_edit_attribute.php?rootdn=<?=$dn?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_USER"]?>">Add user objectClass
+          <a href="config_edit_attribute.php?rootdn=<?=$branch?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_USER"]?>">Add user objectClass
         </td>
 <?php	  } ?>
       </tr>
@@ -260,7 +260,7 @@
         <td class="<?=$class?>"></td>
 <?php         if($ALLOW_GLOBAL_CONFIG_SAVE) { ?>
         <td class="<?=$class?>">
-          <a href="config_edit_attribute.php?rootdn=<?=$dn?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_USER"]?>">Add user objectClass</a>
+          <a href="config_edit_attribute.php?rootdn=<?=$branch?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_USER"]?>">Add user objectClass</a>
         </td>
 <?php         } else { ?>
         <td class="<?=$class?>"></td>
@@ -278,12 +278,12 @@
           // Convert the array to a index
 		  unset($o); unset($objectclasses);
 			  
-		  $objectclasses = pql_split_oldvalues($config["PQL_CONF_OBJECTCLASS_DOMAIN"][$dn]);
+		  $objectclasses = pql_split_oldvalues($config["PQL_CONF_OBJECTCLASS_DOMAIN"][$branch]);
 			  
 		  $i = 0;
 		  foreach($objectclasses as $key) {
 			  if($key) {
-				  $oc[$i][$dn] = $key;
+				  $oc[$i][$branch] = $key;
 				  $i++;
 			  }
 		  }
@@ -300,17 +300,17 @@
 <?php             }
 	          $new_tr = 1;
 
-			  if($ALLOW_GLOBAL_CONFIG_SAVE and $oc[$i][$dn]) {
+			  if($ALLOW_GLOBAL_CONFIG_SAVE and $oc[$i][$branch]) {
 ?>
         <td class="<?=$class?>">
-           <a href="config_edit_attribute.php?rootdn=<?=$dn?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_DOMAIN"]?>&delval=<?=$oc[$i][$dn]?>">
-               <img src="images/del.png" width="12" height="12" border="0" alt="Delete attrib <?=$PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_DOMAIN"]?>=<?=$oc[$i][$dn]?>">
+           <a href="config_edit_attribute.php?rootdn=<?=$branch?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_DOMAIN"]?>&delval=<?=$oc[$i][$branch]?>">
+               <img src="images/del.png" width="12" height="12" border="0" alt="Delete attrib <?=$PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_DOMAIN"]?>=<?=$oc[$i][$branch]?>">
            </a>
         </td>
 <?php		  } else { ?>
         <td class="<?=$class?>"></td>
 <?php         } ?>
-        <td class="<?=$class?>"><?=$oc[$i][$dn]?>&nbsp;</td>
+        <td class="<?=$class?>"><?=$oc[$i][$branch]?>&nbsp;</td>
 <?php	      } ?>
       </tr>
 
@@ -320,7 +320,7 @@
 ?>
         <td class="<?=$class?>"></td>
         <td class="<?=$class?>">
-          <a href="config_edit_attribute.php?rootdn=<?=$dn?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_DOMAIN"]?>">Add domain objectClass</a>
+          <a href="config_edit_attribute.php?rootdn=<?=$branch?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_DOMAIN"]?>">Add domain objectClass</a>
         </td>
 <?php	  	  }
 		  }
