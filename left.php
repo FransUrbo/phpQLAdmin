@@ -80,7 +80,7 @@ foreach($_pql->ldap_basedn as $dn)  {
     }
 }
 
-if(!is_array($domains)){
+if(!isset($domains)) {
     // No domain defined -> 'ordinary' user (only show this user)
     $SINGLE_USER = 1; session_register("SINGLE_USER");
 
@@ -96,6 +96,8 @@ if(!is_array($domains)){
 	
 	// Look in DN for attribute 'defaultdomain'.
 	$defaultdomain = pql_get_domain_value($_pql, $DN, 'defaultdomain');
+// DEBUG
+echo "Defaultdomain: $defaultdomain ($DN)<br>";
 	if($defaultdomain) {
 	    // A hit. This is the domain under which the user is located.
 	    $domain = $DN;
@@ -109,9 +111,9 @@ if(!is_array($domains)){
   <!-- end domain parent -->
 
 <?php
-}
+} else {
+    $SINGLE_USER = 0; session_register("SINGLE_USER");
 
-if(is_array($domains)){
     asort($domains);
     foreach($domains as $key => $domain) {
 	// Get domain part from the DN (Example: 'dc=test,dc=net' => 'test').
