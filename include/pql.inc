@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 1.4 2002-12-12 21:52:14 turbo Exp $
+// $Id: pql.inc,v 2.0 2002-12-13 14:34:58 turbo Exp $
 //
 // ----------------------------
 // Note: There are a few " followed after PHP comment
@@ -49,16 +49,14 @@ class pql {
 	// changed in the PQL_LDAP_HOST 
 	// define...
 	var $ldap_basedn = PQL_LDAP_BASEDN; 	// base dn
-	var $ldap_rootdn = "";				 	// DN for binding to LDAP server
-	var $ldap_rootpw = "";				 	// Password for binding to LDAP server
 	var $ldap_linkid = 0;					// ldap connection identifier
 
-	function pql($binddn = "",$bindpw = "", $no_connect = false) {
+	function pql($binddn = "", $bindpw = "", $no_connect = false) {
 		// constructor, connect to ldap host
 		if($no_connect == true){
 			return false;
 		}
-		
+
 		$this->connect() or die("<b>could not connect to ldap server</b>");
 		$this->bind($binddn, $bindpw) or die("<b>could not bind to ldap server</b>: " . ldap_error($this->ldap_linkid));
 	}
@@ -76,6 +74,9 @@ class pql {
 		$this->ldap_linkid = @ldap_connect($this->ldap_host, $this->ldap_port);
 		
 		if($this->ldap_linkid){
+			// Set the LDAP protocol version to 3 (LDAPv3).
+			//@ldap_set_option($this->ldap_linkid, LDAP_OPT_PROTOCOL_VERSION, 3);
+
 			return true;
 		}
 		
@@ -84,10 +85,7 @@ class pql {
 	
 	function bind($binddn = "", $bindpw = "") {
 		// If we haven't set the DN/PW -> do a anonymous bind
-		$this->$ldap_rootdn = $binddn;
-		$this->$ldap_rootpw = $rootpw;
-
-		if($this->ldap_linkid and @ldap_bind($this->ldap_linkid, $this->$ldap_rootdn, $this->$ldap_rootpw)) {
+		if($this->ldap_linkid and @ldap_bind($this->ldap_linkid, $binddn, $bindpw)) {
 			return true;
 		}
 		
@@ -158,7 +156,7 @@ function pql_add_user($ldap_linkid, $ldap_basedn, $domain, $cn, $attribs, $accou
 
 //	// --------------------------
 //	// DEBUG mode: Print the LDIF
-//	echo "<br>--- DEBUG ---<br>";
+//	echo "<br>--- DEBUG: pql_add_user() ---<br>";
 //	echo "dn: $dn<br>";
 //	foreach($entry as $key => $e) {
 //		if(eregi("objectclass", $key)) {
@@ -293,20 +291,35 @@ function pql_email_exists($ldap_linkid, $ldap_basedn, $email){
 
 // ------------------------------------------------
 
-function pql_add_domain($ldap_linkid,$ldap_basedn,$domain){
+function pql_add_domain($ldap_linkid, $ldap_basedn, $domain){
     // adds a domain into ldap-tree (ou|dc-record)
     
-    if(pql_domain_exist($ldap_linkid,$ldap_basedn,$domain)){
-		// domain already exist
-		return false;
-    }
-    
-    // add domain
     $entry["objectClass"][] = "top";
     $entry["objectClass"][] = PQL_LDAP_OBJECTCLASS_DOMAIN;
     $entry[PQL_LDAP_ATTR_DOMAIN] = $domain;
-    $entry[PQL_LDAP_ATTR_DESCRIPTION] = $domain;
-    if(!@ldap_add($ldap_linkid, PQL_LDAP_ATTR_DOMAIN . "=" . $domain . "," . $ldap_basedn, $entry)){
+	$dn = PQL_LDAP_ATTR_DOMAIN . "=" . $domain . "," . $ldap_basedn;
+
+//	// --------------------------
+//	// DEBUG mode: Print the LDIF
+//	echo "<br>--- DEBUG: pql_add_domain() ---<br>";
+//	echo "dn: '$dn'<br>";
+//	foreach($entry as $key => $e) {
+//		if(eregi("objectclass", $key)) {
+//			// We have a objectClass
+//			if(is_array($entry[$key])) {
+//				// ... in an array. Go through each one, creating the LDAP entry
+//				foreach($entry[$key] as $oc) {
+//					echo "$key: '$oc'<br>";
+//				}
+//			}
+//		} else {
+//			echo "$key: '$entry[$key]'<br>";
+//		}
+//	}
+//	die("--- DEBUG ---");
+//	// --------------------------
+
+    if(! @ldap_add($ldap_linkid, $dn, $entry)) {
 		pql_errormsg($ldap_linkid);
 		return false;
     }
@@ -1043,7 +1056,7 @@ function table_bgcolor(){
 // ------------------------------------------------
 
 function format_error($msg){
-    return "<span class=\"error\">" . $msg . " </span>";
+    return "  <span class=\"error\">" . $msg . " </span>";
 }
 
 // ------------------------------------------------
