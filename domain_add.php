@@ -72,7 +72,7 @@ if(pql_add_domain($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain)) {
 	}
 	
 	// Save the attributes - Default quota
-	if($defaultquota && !pql_set_domain_value($_pql->ldap_linkid, $domain, 'defaultQuota', $defaultquota)) {
+	if($defaultquota && !pql_set_domain_value($_pql->ldap_linkid, $domain, 'baseQuota', $defaultquota)) {
 		$msg = PQL_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	}
 	
