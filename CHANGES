@@ -44,6 +44,9 @@ phpQLAdmin 2.0.10 TO BE ANNOUNCED
 	    problems with getting the subschemaSubentry attribute from BASE.
 	  - Support for managing a Bind9 DNSSEC server. New schema attribute
 	    'useBind9' with OID: 1.3.6.1.4.1.8767.3.2.1.10.
+	  - New page (LDAP server configuration) which shows what
+	    attributes and objectclasses the LDAP server knows about
+	    (OID and descriptions etc).
 
 	Misc changes
 	  - Replace all previous defines (constant variables) for
@@ -64,6 +67,8 @@ phpQLAdmin 2.0.10 TO BE ANNOUNCED
 	  - Prefix defines with either 'PQL_CONF_', 'PQL_GLOB_' or 'PQL_LANG_'
 	    depending on type of define -  Configuration, Global or Language
 	    constant/variable/reference...
+	  - When adding a user to the LDAP database, double check with the
+	    LDAP server that we can add the user...
 
 phpQLAdmin 2.0.9 Release (Mar 29 2003)
 	Highlights
