@@ -1,8 +1,8 @@
 <?php
 // edit an attribute of a control option
-// $Id: control_edit_attribute.php,v 2.27 2005-03-02 09:32:14 turbo Exp $
+// $Id: control_edit_attribute.php,v 2.27.2.1 2005-03-04 11:59:44 turbo Exp $
 //
-session_start();
+require("./include/pql_session.inc");
 
 // initial check
 if($_REQUEST["attrib"] == "") {
