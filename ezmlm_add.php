@@ -1,6 +1,6 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.35 2005-02-24 17:04:00 turbo Exp $
+// $Id: ezmlm_add.php,v 1.36 2005-03-01 18:07:19 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -107,7 +107,7 @@ if(!$_REQUEST["domainname"]) {
 	}
 
 	// Get basemaildir path for domain
-	if(!($path = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEMAILDIR"))))
+	if(!($basemaildir = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEMAILDIR"))))
 	  die(pql_complete_constant($LANG->_('Can\'t get %what% path from domain \'%domain%\'!'),
 								array('what'   => pql_get_define("PQL_ATTR_BASEMAILDIR"),
 									  'domain' => $_REQUEST["domainname"])));
@@ -115,7 +115,7 @@ if(!$_REQUEST["domainname"]) {
 	require($_SESSION["path"]."/include/pql_ezmlm.inc");
 
 	$user  = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_EZMLM_USER"));
-	$ezmlm = new ezmlm($user, $path);
+	$ezmlm = new ezmlm($user, $basemaildir);
 
 	// How many domains do we have in this branch/domain?
 	$count = $ezmlm->mailing_lists_hostsindex["COUNT"];
