@@ -120,17 +120,6 @@ foreach($_pql->ldap_basedn as $dn) {
 </tr>
 <?php
 	}
-	if(PQL_DEFAULT_PATH) {
-?>
-<tr>
-	<td class="title">Default mailbox path</td>
-	<?php $class=table_bgcolor(0); ?>
-	<td class="<?=$class?>"><?php echo PQL_DEFAULT_PATH; ?>&nbsp;</td>
-        <td class="<?=$class?>"></td>
-</tr>
-<?php
-	}
-?>
 
 <tr></tr>
 
