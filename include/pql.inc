@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.21 2003-01-16 16:26:29 turbo Exp $
+// $Id: pql.inc,v 2.22 2003-01-17 14:47:24 turbo Exp $
 //
 // ----------------------------
 // Note: There are a few " followed after PHP comment
@@ -401,7 +401,8 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name){
 function pql_domain_del($ldap, $domain, $delete_forwards) {
 	$linkid = $ldap->ldap_linkid;
 
-    if(!pql_domain_exist($linkid, $domain)) {
+	$dc = ldap_explode_dn($domain, 0); $dc = split('=', $dc[0]);
+    if(!pql_domain_exist($ldap, $dc[1])) {
 		// domain does not exist
 		return false;
     }
@@ -505,13 +506,17 @@ function pql_modify_user_addressbook($ldap_linkid, $user, $attribs){
 // ------------------------------------------------
 
 // check if domain exists
-function pql_domain_exist($ldap_linkid, $dn) {
-    if(!pql_search_attribute($ldap_linkid, $dn, 'objectclass', 'domain')) {
-		// Domain does not exist in LDAP tree
-		return false;
-    }
+function pql_domain_exist($ldap, $domain) {
+	$filter = '(&'.pql_branch_objectclasses().'('.PQL_LDAP_ATTR_DOMAIN.'='.$domain.'))';
+
+	foreach($ldap->ldap_basedn as $dn) {
+		$sr = ldap_search($ldap->ldap_linkid, $dn, $filter);
+		if(ldap_count_entries($ldap->ldap_linkid, $sr) > 0) {
+			return true;
+		}
+	}
     
-    return true;
+    return false;
 }
 
 // ------------------------------------------------
@@ -818,21 +823,19 @@ function pql_get_userquota($ldap_linkid, $user){
 
 // ------------------------------------------------
 
-function pql_get_dn($ldap_linkid, $reference){
-    // retrieve the dn for a given reference
-    
+// retrieve the dn for a given reference
+function pql_get_dn($ldap, $reference) {
     // check if we already have the dn for this user chached
     $dn = '';
-    if (pql_cache_userdn_get($reference, $dn)) {
-		return($dn);
-    }
+    if(pql_cache_userdn_get($reference, $dn))
+	  return($dn);
     
     // dn not in cache -> search for it
-    $dn = pql_search_attribute($ldap_linkid, $ldap_basedn, PQL_LDAP_REFERENCE_USERS_WITH, $reference);
+	foreach($ldap->ldap_basedn as $base)
+	  $dn = pql_search_attribute($ldap->ldap_linkid, $base, PQL_LDAP_REFERENCE_USERS_WITH, $reference);
 
-    if (!$dn) {
-		return(false);
-    }
+    if(!$dn)
+	  return(false);
     
     // we got the dn -> remember it
     pql_cache_userdn_add($reference, $dn);
@@ -844,7 +847,6 @@ function pql_get_dn($ldap_linkid, $reference){
 function pql_errormsg($ldap_linkid){
     echo format_error("LDAP-Error:") . ldap_error($ldap_linkid) . "<br>";
 }
-
 
 // ------------------------------------------------
 function pql_ldap_error($ldap_linkid, $attrib = ""){
@@ -890,14 +892,16 @@ function pql_parse_quota($quota_string){
 // ------------------------------------------------
 
 // search $attribute with $value in whole ldap tree, returns dn or false
-function pql_search_attribute($ldap_linkid, $dn, $attribute, $value) {
-    $sr = ldap_search($ldap_linkid, $dn, $attribute . "=" . $value, array($attribute));
+function pql_search_attribute($ldap_linkid, $basedn, $attribute, $value) {
+    $filter = "(" . $attribute . "=" . $value . ")";
+    $sr = ldap_search($ldap_linkid, $basedn, $filter, array($attribute));
+	
     if(ldap_count_entries($ldap_linkid, $sr) > 0) {
 		$ed = ldap_first_entry($ldap_linkid, $sr);
 		return ldap_get_dn($ldap_linkid, $ed);
-    } else {
+	} else {
 		return false;
-    }
+	}
 }
 
 // ------------------------------------------------
@@ -1236,12 +1240,12 @@ function pql_ldap_deliverymode($mode){
 }
 
 // Returns the next free UID/GID number
-function pql_get_next_uidnumber($ldap_linkid) {
+function pql_get_next_uidnumber($ldap) {
     $filter = "(&(" . PQL_LDAP_ATTR_QMAILUID . "=*)(objectclass=posixaccount))";
 
 	foreach($ldap->ldap_basedn as $dn) {
-		$sr = ldap_search($ldap_linkid, $dn, $filter);
-		$results = @ldap_get_entries($ldap_linkid, $sr) or pql_errormsg($ldap_linkid);
+		$sr = ldap_search($ldap->ldap_linkid, $dn, $filter);
+		$results = @ldap_get_entries($ldap->ldap_linkid, $sr) or pql_errormsg($ldap->ldap_linkid);
 	
 		// Find the highest availible UIDNUMBER
 		$highest = 0;
@@ -1407,6 +1411,166 @@ function pql_get_mx($domainname) {
 		
 		return $rec[$prio_key];
 	}
+}
+
+function pql_get_subschema($ldap_linkid, $attrib) {
+    $attrib = strtolower($attrib);
+	
+    // Get the DN for the subSchema
+    $sr    = ldap_read($ldap_linkid, '', '(objectClass=*)', array('subschemaSubentry'));
+    $entry = ldap_get_entries($ldap_linkid, $sr);
+    if($entry["count"]) {
+		// Get the subSchemaAttributes from the subSchema
+		$sr     = ldap_read($ldap_linkid,
+							$entry[0]["subschemasubentry"][0],
+							'(objectClass=*)', array($attrib));
+		$entry  = ldap_get_entries($ldap_linkid, $sr);
+		for($i=0; $i < $entry[0][$attrib]["count"]; $i++) {
+			// ------------------------
+			// Retreive NAME
+			$words = split("NAME", $entry[0][$attrib][$i]);
+			if($words[1]) {
+				if(ereg("^ \(", $words[1])) {
+					$words = split("\)", $words[1]);
+					$words = ereg_replace("\'", "", $words[0]);
+					$words = split(" ", $words);
+					$name  = strtolower($words[2]);
+					
+					$VALUE[$name]["NAME"] = $words[2];
+					for($j=3; $words[$j]; $j++) {
+						$VALUE[$name]["ALIAS"][] = $words[$j];
+					}
+				} else {
+					$words = split("\' ", $words[1]);
+					$words = split(" \'", $words[0]);
+					$name  = strtolower($words[1]);
+					
+					$VALUE[$name]["NAME"] = $words[1];
+				}
+			}
+			
+			// ------------------------
+			// Get the OID number
+			$words = split(" ", $entry[0][$attrib][$i]);
+			$VALUE[$name]["OID"] = $words[1];
+			
+			// ------------------------
+			// Retreive DESC
+			$words = split("DESC", $entry[0][$attrib][$i]);
+			if($words[1]) {
+				$words = split("\' ", $words[1]);
+				$words = split(" \'", $words[0]);
+				
+				$VALUE[$name]["DESC"] = $words[1];
+			}
+			
+			// ------------------------
+			// Retreive MAY's
+			$words = split("MAY", $entry[0][$attrib][$i]);
+			if($words[1]) {
+				if(ereg("\(", $words[1])) {
+					$words = split("\(", $words[1]);
+					$words = split("\)", $words[1]);
+				} else {
+					$words = split("\)", $words[1]);
+				}
+				
+				// Remove spaces
+				$words = ereg_replace(" ", "", $words[0]);
+				$words = split('\$', $words);
+				
+				$j = 0;
+				foreach($words as $may) {
+					$VALUE[$name]["MAY"][] = $may;
+					$j++;
+				}
+				$VALUE[$name]["MAY"]["count"] = $j;
+			}
+			
+			// ------------------------
+			// Retreive MUST's
+			$words = split("MUST", $entry[0][$attrib][$i]);
+			if($words[1]) {
+				if(ereg("^ \(", $words[1])) {
+					$words = split("\(", $words[1]);
+					$words = split("\)", $words[1]);
+					$word  = $words[0];
+				} else {
+					$words = split(" ", $words[1]);
+					$word  = $words[1];
+				}
+				
+				// Remove spaces
+				$words = ereg_replace(" ", "", $word);
+				$words = split('\$', $words);
+				
+				$j = 0;
+				foreach($words as $must) {
+					$VALUE[$name]["MUST"][] = $must;
+					$j++;
+				}
+				$VALUE[$name]["MUST"]["count"] = $j;
+			}
+			
+			// ------------------------
+			// Retreive EQUALITY
+			$words = split("EQUALITY", $entry[0][$attrib][$i]);
+			if($words[1]) {
+				$words = split(" ", $words[1]);
+				$VALUE[$name]["EQUALITY"] = $words[1];
+			}
+			
+			// ------------------------
+			// Retreive SYNTAX
+			$words = split("SYNTAX", $entry[0][$attrib][$i]);
+			if($words[1]) {
+				$words = split(" ", $words[1]);
+				$VALUE[$name]["SYNTAX"] = $words[1];
+			}
+			
+			// ------------------------
+			// Retreive USAGE
+			$words = split("USAGE", $entry[0][$attrib][$i]);
+			if($words[1]) {
+				$words = split(" ", $words[1]);
+				$VALUE[$name]["USAGE"] = $words[1];
+			}
+			
+			// ------------------------
+			// Retreive SINGLE-VALUE
+			if(eregi("SINGLE-VALUE", $entry[0][$attrib][$i]))
+			  $VALUE[$name]["SINGLE-VALUE"] = 'true';
+			
+			// ------------------------
+			// Retreive NO-USER-MODIFICATION
+			if(eregi("NO-USER-MODIFICATION", $entry[0][$attrib][$i]))
+			  $VALUE[$name]["NO-USER-MODIFICATION"] = 'true';
+			
+			// ------------------------
+			// Retreive X-BINARY-TRANSFER-REQUIRED
+			if(eregi("X-BINARY-TRANSFER-REQUIRED", $entry[0][$attrib][$i]))
+			  $VALUE[$name]["X-BINARY-TRANSFER-REQUIRED"] = 'true';
+			
+			// ------------------------
+			// Retreive X-NOT-HUMAN-READABLE
+			if(eregi("X-NOT-HUMAN-READABLE", $entry[0][$attrib][$i]))
+			  $VALUE[$name]["X-NOT-HUMAN-READABLE"] = 'true';
+		}
+		
+		return $VALUE;
+    }
+}
+
+function pql_get_subschemas($ldap_linkid) {
+    $attribs = array("ldapsyntaxes", "matchingrules", "attributetypes", "objectclasses");
+    foreach($attribs as $attrib) {
+		$result = pql_get_subschema($ldap_linkid, $attrib);
+		if($result) {
+			$entry[$attrib] = $result;
+		}
+    }
+	
+    return $entry;
 }
 
 /*
