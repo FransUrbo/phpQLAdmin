@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for administrator and seealso modification
 // Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
-// $Id: attrib.administrator.inc,v 1.48.4.1 2004-11-19 08:43:57 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.48.4.2 2005-01-12 12:32:25 turbo Exp $
 
 // There is serious problems with this. I fix for one usage and break another
 // one! Let's try to remember (and document) how it's called. It's called from
@@ -22,7 +22,7 @@ require("./left-head.html");
 
 // {{{ attribute_setup_aci(linkid, dn, userdn, action)
 // Options: dn		-> what object to modify ACI's for
-//			user	-> array with user(s) to add/delete from ACI list
+//			userdn	-> array with user(s) to add/delete from ACI list
 //			action	-> 'add' or 'delete' (only!). Changing an RDN for a
 //					   user isn't done with this function, but in
 //					   the file 'attrib.modrdn.inc'.
@@ -59,7 +59,7 @@ function attribute_setup_aci($linkid, $dn, $userdn, $action) {
 			// }}}
 
 			if($action == 'add') {
-				// {{{ We're adding an administrator - add the user DN(s) to the ACI list as well.
+				// {{{ We're adding an administrator - add the user DN(s) to the '[entry]' ACI list as well.
 				// (Re)create new ACI's.
 				if($old_acis[$i+1]["TYPE"] == "access-id") {
 					if(in_array('[entry]', $old_acis[$i+1]["RIGHTS"]["TARGET"]) and !$added_child) {
@@ -78,7 +78,7 @@ function attribute_setup_aci($linkid, $dn, $userdn, $action) {
 				  $new_acis[] = $line;
 				// }}}
 			} else {
-				// BUG: We're removing an administrator - find the user(s) and remove them from the ACI list.
+				// {{{ We're removing an administrator - find the user(s) and remove them from the ACI list.
 				if($old_acis[$i]['SUBJECT']) {
 					for($j=0; $userdn[$j]; $j++) {
 						if(lc($old_acis[$i]['SUBJECT']) != lc($userdn[$j]))
@@ -86,21 +86,25 @@ function attribute_setup_aci($linkid, $dn, $userdn, $action) {
 					}
 				} else
 				  $new_acis[] = $line;
+				// }}}
 			}
-
-// BUG: This won't work correctly. Not all user might exists, but it's a flat value...
-//			for($j=0; $userdn[$j]; $j++) {
-//				// Just make sure the user don't already exists in the ACI list...
-//				if(lc($old_acis[$i]["SUBJECT"]) == lc($userdn[$j]))
-//				  $added_user_full = 1;
-//			}
 		}
 
 		if(!$added_user_full and ($action == 'add')) {
-			for($j=0; $userdn[$j]; $j++) {
-				$new_acis[] = "$oid#entry#grant;w,r,s,c,x;[all]#access-id#".$userdn[$j];
-				$oid++;
+		  for($j=0; $userdn[$j]; $j++) {
+			// Just make sure the user don't already exists in the ACI list...
+			$add_user = 1;
+
+			for($i=0; $old_acis[$i]; $i++) {
+			  if(lc($old_acis[$i]["SUBJECT"]) == lc($userdn[$j]))
+				$add_user = 0;
 			}
+			
+			if($add_user) {
+			  $new_acis[] = "$oid#entry#grant;w,r,s,c;[all]#access-id#".$userdn[$j];
+			  $oid++;
+			}
+		  }
 		}
 
 		return($new_acis);
@@ -461,6 +465,9 @@ function attribute_save($type) {
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'), array('what' => $what))
 			. ": " . ldap_error($_pql->ldap_linkid);
 		
+		if(file_exists("./.DEBUG_ME"))
+		  die("MSG: $msg");
+
 		attribute_forward($msg);
 	}
 	// }}}
