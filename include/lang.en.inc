@@ -1,7 +1,7 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 2.11 2003-01-24 09:06:57 turbo Exp $
+// $Id: lang.en.inc,v 2.12 2003-01-27 13:23:41 turbo Exp $
 //
 // if you have a translation to another language, please contact
 // me --> Matthias Blaser <mb@adfinis.ch>
@@ -351,19 +351,20 @@ define("PQL_SEARCH_FINDBUTTON","find");
 // ldap connection test texts
 define("PQL_TEST_TITLE", "phpQLAdmin ldap connection");
 define("PQL_TEST_TESTS", "Tests");
-define("PQL_TEST_HELP", "This is a simple test to show if the ldap extension is loaded<br>and the connections are working. It does not provide tests<br>on access rights in the directory.");
-define("PQL_TEST_LDAP_EXT_TITLE", "php ldap extension");
+define("PQL_TEST_HELP", "This is a simple test to show if the ldap extension is loaded<br>and the connections are working.");
+define("PQL_TEST_LDAP_EXT_TITLE", "PHP LDAP extension");
 define("PQL_TEST_LDAP_EXT_NA", "not available");
 define("PQL_TEST_LDAP_EXT_OK", "built in (loaded)");
 define("PQL_TEST_CONNECTION_FAILED", "failed");
 define("PQL_TEST_CONNECTION_RESOLVE_ERR", "the hostname %host% could not be resolved");
 define("PQL_TEST_CONNECTION_CONNECT_ERR", "could not connect to port 389 at %host%, please make sure the service is up and it is not blocked with a firewall");
-define("PQL_TEST_CONNECTION_CONNECT_OK", "ok, have fun ;-)");
-define("PQL_TEST_CONNECTION_USER_TITLE", "user directory connection");
-define("PQL_TEST_CONNECTION_USER_BIND_ERR", "connection ok, but could not bind to the directory.");
-define("PQL_TEST_CONNECTION_CONROL_TITLE", "control directory connection");
-define("PQL_TEST_CONNECTION_CONTROL_BIND_ERR", "connection ok, but could not bind to the directory. please check PQL_LDAP_CONTROL_ROOTDN and PQL_LDAP_CONTROL_ROOTPW");
-define("PQL_TEST_CONNECTION_CONROL_INACTIVE", "control extension deactivated");
+define("PQL_TEST_CONNECTION_CONNECT_OK", "Yes, working");
+define("PQL_TEST_CONNECTION_OCEXISTS_OK", "Yes, it does");
+define("PQL_TEST_CONNECTION_USER_TITLE", "User directory connection");
+define("PQL_TEST_CONNECTION_USER_BIND_ERR", "Connection ok, but could not bind to the directory.");
+define("PQL_TEST_CONNECTION_CONROL_TITLE", "Control directory connection");
+define("PQL_TEST_CONNECTION_CONTROL_BIND_ERR", "Connection ok, but could not bind to the directory. Please check PQL_LDAP_CONTROL_ROOTDN and PQL_LDAP_CONTROL_ROOTPW");
+define("PQL_TEST_CONNECTION_CONROL_INACTIVE", "Control extension deactivated");
 
 /*
  * Local variables:
