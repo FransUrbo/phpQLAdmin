@@ -18,6 +18,19 @@ phpQLAdmin 2.0.5 Release - TO BE RELEASED
 	    + Had to rewrite it so that it adds 'dc=' (dc configurable with
 	      PQL_LDAP_ATTR_DOMAIN define) as prefix to the branch in the
 	      search for existing domain/branch. Search from each base DN.
+	  - Call pql_domain_exist() with only the branch name, not the DN to
+	    correctly find if the branch exists.
+	  - Bug fixes in pql_set_domain_value() to get it working with saving
+	    config in the base DN object. 
+	    + Make sure the object contains the object class 'phpQLAdminBranch'
+	      by doing a search, checking each object class, and if not found
+	      in object, add the objectclass (and all previous objectclasses)
+	      to the entry before doing a modify.
+	  - Wrong SYNTAX in the BOOL phpQLAdminConfig attributes.
+	    + OID numbers changed
+	    + Objectclass name changed (from phpQLAdmin to phpQLAdminConfig)
+	    + Removed attribute ldapHost. What's the point!?
+	    + Add 'language' attribute
 
 	GUI layout change
 	  - Only show following information if ADVANCED_MODE is set (in the
@@ -29,6 +42,11 @@ phpQLAdmin 2.0.5 Release - TO BE RELEASED
 	        Reference domains with
 	    + Move 'LDAP {host,base dn,control base dn}' etc to the top (more
 	      important).
+	  - Small function - pql_get_subbranch() - to get any
+		'objectclass=organizationalUnit'
+	    below our search DN's. If finding more than one, show a select box
+	    when specifying MX for the new user with the sub branches and as
+	    where to put the user.
 
 	Misc changes
 	  - A while ago I changed the way one specify LDAP server(s). There is
@@ -67,6 +85,20 @@ phpQLAdmin 2.0.5 Release - TO BE RELEASED
 	      fullfilled, we (phpQLAdmin) must know which MUST belong to which
 	      object class (only the LDAP can tell us the truth, the whole truth
 	      and nothing BUT the truth).
+	  - When deleting the domain branch, don't check for PQL_LDAP_SUBTREE_GROUPS.
+	    Search for a group with the gidNumber of the user and objectclass=posixGroup.
+	    If found, just delete it. Also, search for sub branches (objectclass=organizationalUnit)
+	    under the domain branch. If anyone found, find all objects and delete
+	    them (including the organizationalUnits).
+	    + Removed pql_get_group() since it's no longer needed.
+	  - Changed how pql_get_mx() works. If we can't find an MX for the domain in
+	    the DNS system, look for a qmailControls object that lists this domain
+	    in their locals/rcpthosts attribute field.
+	  - Allow for configuration changes to be saved in the LDAP database (in
+	    the first Base DN). Ship with 'reasonable defaults', site specifics
+	    is changed in the web interface and save in the base dn. This give us
+	    the possibility to have different configuration for different LDAP
+	    hosts.
 
 phpQLAdmin 2.0.4 Release (Jan 14 2003)
 	Bug fixes
