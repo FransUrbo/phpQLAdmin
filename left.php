@@ -4,9 +4,9 @@
 //
 session_start();
 
-require("pql.inc");
-require("pql_control.inc");
-require("pql_control_plugins.inc");
+require("include/pql.inc");
+require("include/pql_control.inc");
+require("include/pql_control_plugins.inc");
 
 require("left-head.html");
 

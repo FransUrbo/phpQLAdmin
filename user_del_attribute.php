@@ -4,7 +4,7 @@
 //
 session_start();
 
-require("pql.inc");
+require("include/pql.inc");
 
 switch ($attrib) {
   case "mailalternateaddress":

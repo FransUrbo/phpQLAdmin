@@ -4,7 +4,7 @@
 //
 session_start();
 
-require("pql.inc");
+require("include/pql.inc");
 
 include("header.html");
 

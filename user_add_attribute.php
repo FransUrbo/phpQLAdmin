@@ -3,7 +3,7 @@
 // user_add_attribute.php,v 1.3 2002/12/12 21:52:08 turbo Exp
 //
 session_start();
-require("pql.inc");
+require("include/pql.inc");
 $_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
 
 // forward back to users detail page

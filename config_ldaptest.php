@@ -4,8 +4,8 @@
 //
 session_start();
 
-require("pql.inc");
-require("pql_control.inc");
+require("include/pql.inc");
+require("include/pql_control.inc");
 
 if(!function_exists("ldap_connect")){
 	$ldap_ext = PQL_TEST_LDAP_EXT_NA;

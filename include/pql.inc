@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.5 2002-12-18 16:28:46 turbo Exp $
+// $Id: pql.inc,v 2.6 2002-12-20 01:34:24 turbo Exp $
 //
 // ----------------------------
 // Note: There are a few " followed after PHP comment
@@ -15,7 +15,7 @@
 // ----------------------------
 // include and check configuration
 // ----------------------------
-require("config.inc");
+require("include/config.inc");
 
 // make a simple configuration check
 if(!pql_check_config(&$result)){
@@ -78,7 +78,7 @@ class pql {
 			$host = $host;
 			$port = 389;
 		}
-		
+
 		// connect to ldap host and bind to root_dn
 		$this->ldap_linkid = @ldap_connect($host, $port);
 		

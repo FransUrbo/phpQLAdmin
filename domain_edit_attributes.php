@@ -4,7 +4,7 @@
 //
 session_start();
 
-require("pql.inc");
+require("include/pql.inc");
 $_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
 
 // forward back to users detail page

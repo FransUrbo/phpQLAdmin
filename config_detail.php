@@ -4,7 +4,7 @@
 //
 session_start();
 
-require("pql.inc");
+require("include/pql.inc");
 include("header.html");
 ?>
   <span class="title1">phpQLAdmin configuration</span>
