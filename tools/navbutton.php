@@ -1,9 +1,9 @@
 <? // http://www.thescripts.com/serversidescripting/php/articles/dynamicimagesinphp3.0/page0.html
-// $Id: navbutton.php,v 2.15 2004-04-07 14:17:16 dlw Exp $
+// $Id: navbutton.php,v 2.16 2004-11-12 15:57:01 turbo Exp $
 
 include("./include/pql_formating.inc");
 
-$string = implode($argv," ");
+$string = implode($_SERVER["argv"]," ");
 $string = urldecode($string);
 
 // Prepare the text - remove unwanted characters etc
