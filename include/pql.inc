@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.141 2004-01-16 06:28:32 turbo Exp $
+// $Id: pql.inc,v 2.142 2004-01-19 08:17:04 turbo Exp $
 //
 
 // ----------------------------
@@ -85,6 +85,9 @@ class pql {
 		// Open a connection to the host
 		$this->connect($host) or die("<b>could not connect to ldap server</b>");
 
+		// Setup connection (set options etc)
+		$this->set_options($this->ldap_linkid);
+
 		// Bind to the host
 		if(!$this->bind($binddn, $bindpw)) {
 			$this->ldap_error = "<b>Could not bind to ldap server</b>: ";
@@ -104,6 +107,48 @@ class pql {
 	}
 	// }}}
 
+	// {{{ bool set_options() {
+	function set_options() {
+		// LDAP_OPT_REFERRALS
+		//	Automatically follow referrals returned by LDAP server?
+		//	LDAP_OPT_OFF			 0
+		//	LDAP_OPT_ON				!0 (default)
+		ldap_set_option($this->ldap_linkid, LDAP_OPT_REFERRALS,	0);
+
+		// LDAP_OPT_DEREF
+		//	Deterime how aliases are handled during search.
+		//	LDAP_DEREF_NEVER		 0 (default)
+		//	LDAP_DEREF_SEARCHING	 1
+		//	LDAP_DEREF_FINDING		 2
+		//	LDAP_DEREF_ALWAYS		 3
+		ldap_set_option($this->ldap_linkid, LDAP_OPT_DEREF,     0);
+
+		if($this->ldap_linkid) {
+			// Start with a LDAPv3 bind
+			if(! @ldap_set_option($this->ldap_linkid, LDAP_OPT_PROTOCOL_VERSION, 3)) {
+				// Didn't work. Try a LDAPv2 bind...
+				echo "Don't support v3 bind, trying to do a v2 bind.<br>";
+				
+				if(! @ldap_set_option($this->ldap_linkid, LDAP_OPT_PROTOCOL_VERSION, 2))
+				  echo "Neither protocol LDAPv3 nor LDAPv2 worked, strange!<p>LDAP Error: ".ldap_error($this->ldap_linkid);
+				
+				return false;
+			}
+
+			// We're using LDAPv3, so try a TLS initialization.
+			// Only availible in PHP v4.2.0, hence tripple check
+			// that that function is availible before trying to
+			// use it.
+			if(function_exists("ldap_start_tls")) {
+				if(! ldap_start_tls($this->ldap_linkid))
+				  echo "TLS initialization failed: ".ldap_error($this->ldap_linkid);
+			}
+
+			return true;
+		}
+	}
+	// }}}
+
 	// {{{ bool connect(hostname)
 	function connect($host) {
 		// Check to see if we have a port defined in the host.
@@ -119,23 +164,8 @@ class pql {
 
 		// connect to ldap host and bind to root_dn
 		$this->ldap_linkid = @ldap_connect($host, $port);
-		
-		ldap_set_option($this->ldap_linkid, LDAP_OPT_DEREF, 3); // Always
 
-		if($this->ldap_linkid) {
-			// Start with a LDAPv3 bind
-			if(! @ldap_set_option($this->ldap_linkid, LDAP_OPT_PROTOCOL_VERSION, 3)) {
-				// Didn't work. Try a LDAPv2 bind...
-				echo "Don't support v3 bind, trying to do a v2 bind.<br>";
-				
-				if(! @ldap_set_option($this->ldap_linkid, LDAP_OPT_PROTOCOL_VERSION, 2))
-				  echo "Neither protocol LDAPv3 nor LDAPv2 worked, strange!<p>LDAP Error: ".ldap_error($this->ldap_linkid);
-				
-				return false;
-			}
-
-			return true;
-		}
+		return true;
 	}
 	// }}}
 
