@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.4 2003-04-04 06:54:32 turbo Exp $
+// $Id: pql_search.inc,v 2.5 2003-04-26 13:16:16 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -19,16 +19,8 @@ function pql_search($ldap_linkid, $ldap_basedn, $filter){
 	$sr = ldap_search($ldap_linkid, $ldap_basedn, $filter);
 	$info = ldap_get_entries($ldap_linkid, $sr);
 
-	for ($i=0; $i<$info["count"]; $i++) {
-		$temp_dn = ldap_explode_dn($info[$i]["dn"], 1);
-
-		$dn[$i]["reference"] = $info[$i][$config["PQL_CONF_REFERENCE_USERS_WITH"][$ldap_basedn]][0];
-		if($config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$ldap_basedn] == "dc") {
-			$dn[$i]["domain"] = $temp_dn[2];
-		} else {
-			$dn[$i]["domain"] = $temp_dn[1];
-		}
-	}
+	for ($i=0; $i<$info["count"]; $i++)
+	  $dn[] = $info[$i]["dn"];
 
 	return $dn;
 }
