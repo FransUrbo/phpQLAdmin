@@ -16,6 +16,8 @@ phpQLAdmin 2.0.10 TO BE ANNOUNCED
 	    userhost and host was set, which lead to incorrect creation of
 	    the mailHost attribute.
 	  - Fixing the search engine. Must have been broken for quite a while!
+	  - Remove some variables so we don't clutter the global variable
+	    name space!
 
 	GUI layout change
 	  - Show the user DN in the left frame and in user details
@@ -74,6 +76,8 @@ phpQLAdmin 2.0.10 TO BE ANNOUNCED
 	  - Instead of showing the search engine on the 'home' page,
 	    it is now located in it's own page, with a link belowed the
 	    Home tree (left frame).
+	  - Only show the 'home' page trailer if we're running in advanced
+	    mode - a luser shouldn't see this, it's for the admin only...
 
 	Misc changes
 	  - Replace all previous defines (constant variables) for
