@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.172.2.1.6.3.2.2.2.1 2004-09-17 14:38:50 turbo Exp $
+// $Id: pql.inc,v 2.172.2.1.6.3.2.2.2.2 2004-10-04 09:15:23 turbo Exp $
 //
 
 // ----------------------------
@@ -1703,7 +1703,11 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 			  $VALUE[$name]["X-NOT-HUMAN-READABLE"] = 'TRUE';
 		}
 
-		ksort($VALUE);
+		/* If there's no anonymous read access to the 'cn=Subschema',
+		 * phpQLAdmin will fail here...  */
+		if(is_array($VALUE))
+		  ksort($VALUE);
+
 		return $VALUE;
     } else
 	  return false;
@@ -2130,22 +2134,40 @@ function pql_split_oldvalues($value) {
 //		   an objectclass for this attribute!)
 //		1. This attribute is a MUST
 //		2. This attribute is a MAY
+//		3. This attribute is found in either a MUST or a MAY, but from
+//		   a SUP object class...
 //
 //	Second dimension:
-//		The objectclass we found a match (MUST or MAY) in
+//		The objectclass we found the attribute (MUST or MAY) in
 function pql_check_attribute($ldap_ocs, $incl_ocs, $attrib) {
 	for($i=0; $incl_ocs[$i]; $i++) {
+		// -----------------------------------------------------
 		// Check if there is a MUST for this attribute in one of
 		// the included objectclasses
-		for($j=0; $j < $ldap_ocs[$incl_ocs[$i]]['MUST']['count']; $j++)
-		  if(lc($ldap_ocs[$incl_ocs[$i]]['MUST'][$j]) == lc($attrib))
-			return array(1, $incl_ocs[$i]);
+		for($j=0; $j < $ldap_ocs[$incl_ocs[$i]]['MUST']['count']; $j++) {
+			if(lc($attrib) == lc($ldap_ocs[$incl_ocs[$i]]['MUST'][$j])) {
+				return array(1, $incl_ocs[$i]);
+			}
+		}
 
+		// -----------------------------------------------------
 		// Check if there is a MAY for this attribute in one of
 		// the included objectclasses
-		for($j=0; $j < $ldap_ocs[$incl_ocs[$i]]['MAY']['count']; $j++)
-		  if(lc($ldap_ocs[$incl_ocs[$i]]['MAY'][$j]) == lc($attrib))
-			return array(2, $incl_ocs[$i]);
+		for($j=0; $j < $ldap_ocs[$incl_ocs[$i]]['MAY']['count']; $j++) {
+			if(lc($attrib) == lc($ldap_ocs[$incl_ocs[$i]]['MAY'][$j])) {
+				return array(2, $incl_ocs[$i]);
+			}
+		}
+
+		// -----------------------------------------------------
+		// We couldn't find a MUST or a MAY. Let's follow SUP's
+		if($ldap_ocs[$incl_ocs[$i]]['SUP']) {
+			// This objectClass from the LDAP server HAVE a SUP. Call ourself
+			// recursivly looking for a MUST/MAY...
+			$ret = pql_check_attribute($ldap_ocs, array(lc($ldap_ocs[$incl_ocs[$i]]['SUP'])), $attrib);
+			if($ret[0])
+			  return array(3, $incl_ocs[$i]);
+		}
 	}
 
 	return(0);
