@@ -1,6 +1,6 @@
 <?php
 // delete a user
-// $Id: user_del.php,v 2.31 2004-03-30 06:24:03 turbo Exp $
+// $Id: user_del.php,v 2.32 2004-05-10 14:44:07 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -68,7 +68,8 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn))
 					// Get base directory for mails in all domains
 					if(($basemaildir = pql_domain_get_value($_pql, $this_domain, pql_get_define("PQL_ATTR_BASEMAILDIR")))) {
 						// Get the lists in this directory
-						$ezmlm = new ezmlm(pql_get_define("PQL_CONF_EZMLM_USER"), $basemaildir);
+						$user  = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_EZMLM_USER"));
+						$ezmlm = new ezmlm($user, $basemaildir);
 						if(is_array($ezmlm->mailing_lists[0])) {
 							// Go through each list in this domain
 							foreach($ezmlm->mailing_lists as $number => $data) {
