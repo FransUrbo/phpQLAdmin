@@ -1,3 +1,9 @@
+# Created by Turbo Fredriksson <turbo@bayour.com>
+#   - Original creation (dd/mm/yyyy)
+#
+# Modified by Leonardo Fialho <leonardo@stc.com.br>
+#   - Now it works with OpenLDAP 2.x OIDs (08/10/2002)
+#
 # Attributes that are qmail specific
 
 attributetype ( 1.3.6.1.4.1.7006.1.2.1.13 NAME 'badMailFrom'
@@ -72,7 +78,7 @@ attributetype ( 1.3.6.1.4.1.7006.1.2.1.26 NAME 'localIpHost'
 attributetype ( 1.3.6.1.4.1.7006.1.2.1.27 NAME 'locals'
 	DESC 'List of domain names that the current host receives mail for.'
 	EQUALITY caseIgnoreIA5Match
-	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{32768} )
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
 
 attributetype ( 1.3.6.1.4.1.7006.1.2.1.28 NAME 'moreRcptHosts'
 	DESC 'Extra allowed RCPT domains.'
@@ -102,7 +108,7 @@ attributetype ( 1.3.6.1.4.1.7006.1.2.1.32 NAME 'queueLifetime'
 attributetype ( 1.3.6.1.4.1.7006.1.2.1.33 NAME 'rcptHosts'
 	DESC 'Allowed RCPT domains.'
 	EQUALITY caseIgnoreIA5Match
-	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{32768} )
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
 
 attributetype ( 1.3.6.1.4.1.7006.1.2.1.34 NAME 'smtpGreeting'
 	DESC 'SMTP greeting message.'
@@ -112,7 +118,6 @@ attributetype ( 1.3.6.1.4.1.7006.1.2.1.34 NAME 'smtpGreeting'
 attributetype ( 1.3.6.1.4.1.7006.1.2.1.35 NAME 'smtpRoutes'
 	DESC 'Artificial SMTP routes.'
 	EQUALITY caseIgnoreIA5Match
-	SUBSTR caseIgnoreIA5SubstringsMatch
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
 
 attributetype ( 1.3.6.1.4.1.7006.1.2.1.36 NAME 'timeoutConnect'
@@ -140,22 +145,22 @@ attributetype ( 1.3.6.1.4.1.7006.1.2.1.39 NAME 'virtualDomains'
 attributetype ( 1.3.6.1.4.1.7006.1.2.1.40 NAME 'ldapBaseDN'
 	DESC 'The base DN from where the search in the LDAP tree begins.'
 	EQUALITY caseIgnoreIA5Match
-	SUP distinguishedName SINGLE-VALUE )
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
 
 attributetype ( 1.3.6.1.4.1.7006.1.2.1.41 NAME 'ldapLogin'
 	DESC 'Username for the LDAP server connection.'
 	EQUALITY caseIgnoreIA5Match
-	SUP distinguishedName SINGLE-VALUE )  
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
 
 attributetype ( 1.3.6.1.4.1.7006.1.2.1.42 NAME 'ldapPassword'
 	DESC 'Password for the LDAP server connection.'
 	EQUALITY caseExactMatch
-	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 SINGLE-VALUE )
 
 attributetype ( 1.3.6.1.4.1.7006.1.2.1.43 NAME 'ldapLocalDelivery'
-	DESC 'If on do a lookup on the local passwd file.'
+	DESC 'If to do a lookup on the local passwd file.'
 	EQUALITY integerMatch
-	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7 SINGLE-VALUE )
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 SINGLE-VALUE )
 
 attributetype ( 1.3.6.1.4.1.7006.1.2.1.44 NAME 'ldapRebind'
 	DESC 'Use the possibility of rebinding to the ldap-server to compare pop3 and imap passwords.'
@@ -193,12 +198,12 @@ attributetype ( 1.3.6.1.4.1.7006.1.2.1.50 NAME 'ldapGid'
 attributetype ( 1.3.6.1.4.1.7006.1.2.1.51 NAME 'customBounceText'
 	DESC 'Additional custom text in bounce messages.'
 	EQUALITY caseIgnoreIA5Match
-	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024} SINGLE-VALUE )
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26{1024} SINGLE-VALUE )
 
 attributetype ( 1.3.6.1.4.1.7006.1.2.1.52 NAME 'quotaWarning'
 	DESC 'Custom text in quota warning message.'
 	EQUALITY caseIgnoreIA5Match
-	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024} SINGLE-VALUE )
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26{1024} SINGLE-VALUE )
 
 attributetype ( 1.3.6.1.4.1.7006.1.2.1.53 NAME 'tarpitCount'
 	DESC 'Number of RCPT TOs you accept before you start tarpitting.'
@@ -234,32 +239,31 @@ attributetype ( 1.3.6.1.4.1.7006.1.2.1.58 NAME 'tlsClients'
 
 # Support for this have to be coded first
 #attributetype ( 1.3.6.1.4.1.7006.1.2.1.59 NAME 'certificateFile'
-#	DESC 'Path to the cert.pem file.'
-#	EQUALITY caseExactIA5Match
-#	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+#      DESC 'Path to the cert.pem file.'
+#      EQUALITY caseExactIA5Match
+#      SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
 # -> Example: /var/qmail/control/cert.pem
-#	
+#
 #attributetype ( 1.3.6.1.4.1.7006.1.2.1.60 NAME 'certificateFile'
-#	DESC 'Path to the cert.pem file.'
-#	EQUALITY caseExactIA5Match
-#	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+#      DESC 'Path to the cert.pem file.'
+#      EQUALITY caseExactIA5Match
+#      SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
 # -> Example: /var/qmail/control/rsa512.pem
-#	
+#
 #attributetype ( 1.3.6.1.4.1.7006.1.2.1.61 NAME 'clientCAFile'
-#	DESC 'Path to the certificate CA list file.'
-#	EQUALITY caseExactIA5Match
-#	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+#      DESC 'Path to the certificate CA list file.'
+#      EQUALITY caseExactIA5Match
+#      SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
 # -> Example: /var/qmail/control/clientca.pem
-#	
+#
 
 # Object Class Definitions
 
-objectclass ( 1.3.6.1.4.1.7006.1.2.2.2
-	NAME 'qmailControl'
+objectclass ( 1.3.6.1.4.1.7006.1.2.2.2 NAME 'qmailControl'
 	DESC 'QMail-LDAP Server Control Information'
-	SUP top
+	SUP top STRUCTURAL
 	MUST cn
-        MAY ( badMailFrom $ bounceFrom $ bounceHost $ concurrencyLocal $
+	MAY ( badMailFrom $ bounceFrom $ bounceHost $ concurrencyLocal $
 	      concurrencyRemote $ defaultDomain $ defaultHost $ dataBytes $
 	      doubleBounceHost $ doubleBounceTo $ envNoAtHost $ heloHost $
 	      idHost $ localIpHost $ locals $ moreRcptHosts $ percentHack $
