@@ -63,34 +63,34 @@ if($dns[0]) {
 	$msg = "";
 	
 	// Save the attributes - Default domain
-	if($defaultdomain && !pql_set_domain_value($_pql->ldap_linkid, $dns[0], 'defaultDomain', $defaultdomain)) {
-		$msg = PQL_LANG_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
-	}
+	if($defaultdomain && !pql_set_domain_value($_pql->ldap_linkid,
+											   $dns[0], 'defaultDomain',
+											   maybe_encode($defaultdomain)))
+	  $msg = PQL_LANG_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	
 	// Save the attributes - Default home directory
-	if($defaulthomedir && !pql_set_domain_value($_pql->ldap_linkid, $dns[0], 'baseHomeDir', $defaulthomedir)) {
-		$msg = PQL_LANG_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
-	}
+	if($defaulthomedir && !pql_set_domain_value($_pql->ldap_linkid,
+												$dns[0], 'baseHomeDir',
+												maybe_encode($defaulthomedir)))
+	  $msg = PQL_LANG_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	
 	// Save the attributes - Default mail directory
-	if($defaultmaildir && !pql_set_domain_value($_pql->ldap_linkid, $dns[0], 'baseMailDir', $defaultmaildir)) {
-		$msg = PQL_LANG_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
-	}
+	if($defaultmaildir && !pql_set_domain_value($_pql->ldap_linkid,
+												$dns[0], 'baseMailDir',
+												maybe_encode($defaultmaildir)))
+	  $msg = PQL_LANG_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	
 	// Save the attributes - Default quota
-	if($defaultquota && !pql_set_domain_value($_pql->ldap_linkid, $dns[0], 'baseQuota', $defaultquota)) {
-		$msg = PQL_LANG_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
-	}
+	if($defaultquota && !pql_set_domain_value($_pql->ldap_linkid, $dns[0], 'baseQuota', $defaultquota))
+	  $msg = PQL_LANG_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	
 	// The creator is by default the administrator
-	if(! pql_set_domain_value($_pql->ldap_linkid, $dns[0], 'administrator', $USER_DN)) {
-		$msg = PQL_LANG_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
-	}
+	if(! pql_set_domain_value($_pql->ldap_linkid, $dns[0], 'administrator', $USER_DN))
+	  $msg = PQL_LANG_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 
 	// redirect to domain-details
-	if($msg == "") {
-		$msg = urlencode(pql_complete_constant(PQL_LANG_DOMAIN_ADD_OK, array("domain" => $dns[0])));
-	}
+	if($msg == "")
+	  $msg = urlencode(pql_complete_constant(PQL_LANG_DOMAIN_ADD_OK, array("domain" => $dns[0])));
 	$url = "domain_detail.php?domain=$dns[0]&msg=$msg&rlnb=1";
 
 	// Now it's time to run the special adduser script if defined...
@@ -121,9 +121,8 @@ if($dns[0]) {
 <?php
 
 		die();
-	} else {
-		header("Location: " . $config["PQL_GLOB_URI"] . $url);
-	}
+	} else
+	  header("Location: " . $config["PQL_GLOB_URI"] . $url);
 } else {
 	$msg = urlencode(PQL_LANG_DOMAIN_ADD_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid));
 	header("Location: " . $config["PQL_GLOB_URI"] . "home.php?msg=$msg");
