@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.93 2003-07-03 09:40:49 turbo Exp $
+// $Id: pql.inc,v 2.94 2003-07-04 09:49:04 turbo Exp $
 //
 
 // ----------------------------
@@ -2074,10 +2074,15 @@ function maybe_encode($string, $attrib = '', $linkid = '') {
 function maybe_decode($string) {
 	if(eregi("\=$", $string))
 	  // It's a BASE64 string, decode it
-	  return(base64_decode($string));
+	  $decoded = base64_decode($string);
 	else
 	  // It seems quite safe to UTF8 decode a non UTF8 string
-	  return(utf8_decode($string));
+	  $decoded = utf8_decode($string);
+
+	if($decoded)
+	  return($decoded);
+	else
+	  return($string);
 }
 
 /*
