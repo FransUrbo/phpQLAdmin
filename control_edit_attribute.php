@@ -15,6 +15,7 @@ if($type == "") {
 
 require("./include/pql_config.inc");
 require("./include/pql_control.inc");
+require("./include/pql_control_plugins.inc");
 
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 $_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
