@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.45 2003-03-29 09:17:25 turbo Exp $
+// $Id: pql.inc,v 2.46 2003-03-29 12:39:58 turbo Exp $
 //
 
 // ----------------------------
@@ -39,25 +39,46 @@ class pql {
 	var $ldap_error  = 0;					// error message incase of failiure
 	var $ldap_basedn = 0;					// array of base dns for future searches etc
 
-	function _find_basedn() {
-		// /usr/bin/ldapsearch -x -LLL -h localhost -s base -b '' objectclass=* namingContexts
+	function _find_base_option($attrib) {
+	    $attrib = strtolower($attrib);
 
-		$sr = ldap_read($this->ldap_linkid, '', '(objectClass=*)', array('namingContexts'));
-		if(! $sr) die("Can't find base dn - ".ldap_error($this->ldap_linkid));
-		$entry = ldap_get_entries($this->ldap_linkid, $sr);
-
-		// Build an array of base dn's. It's possible to have multiple in a database
-		for($i=0; $i < $entry["count"]; $i++) {
-			$dn[] = $entry[$i]["dn"];
-			$success = 1;
-		}
-		
-		// If we got at least one DN, return the array. Else return false
-		if($success) {
-			return $dn;
+	    $sr = @ldap_read($this->ldap_linkid, NULL, 'objectClass=*', array($attrib));
+	    if(! $sr) die("Can't find base dn - ".ldap_error($this->ldap_linkid));
+	    $entry = ldap_get_entries($this->ldap_linkid, $sr);
+	    
+	    // Build an array of base dn's. It's possible to have multiple in a database
+	    for($i=0; $i < $entry["count"]; $i++) {
+		if(is_array($entry[$i][$attrib])) {
+		    for($j=0; $j < $entry[$i][$attrib]["count"]; $j++ ) {
+			$val[] = $entry[$i][$attrib][$j];
+		    }
 		} else {
-			return false;
+		    $val[] = $entry[$i][$attrib][0];
 		}
+
+		$success = 1;
+	    }
+	    
+	    // If we got at least one DN, return the array. Else return false
+	    if($success) {
+		return $val;
+	    } else {
+		return false;
+	    }
+	}
+
+	function _find_basedn() {
+	    // /usr/bin/ldapsearch -x -LLL -h localhost -s base -b '' objectclass=* namingContexts
+	    return $this->_find_base_option("namingContexts");
+	}
+
+	function _supports_v3_bind() {
+	    $ver = $this->_find_base_option("supportedLDAPVersion");
+	    foreach($ver as $v)
+	      if($v == 3)
+		return true;
+
+	    return false;
 	}
 	
 	function pql($host, $binddn = "", $bindpw = "", $no_connect = false, $do_die = 1) {
@@ -69,6 +90,12 @@ class pql {
 		// Open a connection to the host
 		$this->connect($host) or die("<b>could not connect to ldap server</b>");
 
+		if(! $this->_supports_v3_bind()) {
+		    // LDAP server don't support a v3 bind. Make sure we do a v2 bind!
+		    echo "Don't support v3 bind<br>";
+		    @ldap_set_option($this->ldap_linkid, LDAP_OPT_PROTOCOL_VERSION, 2);
+		}
+
 		// Bind to the host
 		if(!$this->bind($binddn, $bindpw)) {
 // TODO: Sometimes we get wrongfully logged out here!?
@@ -76,27 +103,8 @@ class pql {
 //			session_destroy();
 
 			$this->ldap_error = "<b>Could not bind to ldap server</b>: ";
-			if(ldap_errno($this->ldap_linkid) != 2) {
-				$this->ldap_error = $this->ldap_error . ldap_error($this->ldap_linkid) . "<br>" .
-				  "Please <a href=\"index.php\" target=\"_top\">relogin</a>.";
-			} else {
-			    // Does not allow v3 bind, try a v2 bind 
-			    @ldap_set_option($this->ldap_linkid, LDAP_OPT_PROTOCOL_VERSION, 2);
-
-			    // Try to bind again 
-			    if(!$this->bind($binddn, $bindpw)) {
-				$this->ldap_error = "<b>Could not bind to ldap server</b>: ";
-				if(ldap_errno($this->ldap_linkid) != 2) {
-				    $this->ldap_error = $this->ldap_error . ldap_error($this->ldap_linkid) . "<br>" .
-				      "Please <a href=\"index.php\" target=\"_top\">relogin</a>.";
-				}
-			    } else {
-				// A v2 bind worked, we're bound to the server!
-				// Find the base DN(s)
-				$this->ldap_basedn = $this->_find_basedn();
-				return true;
-			    }
-			}
+			$this->ldap_error = $this->ldap_error . ldap_error($this->ldap_linkid) . "<br>" .
+			  "Please <a href=\"index.php\" target=\"_top\">relogin</a>.";
 
 			if($do_die) {
 				die($this->ldap_error);
