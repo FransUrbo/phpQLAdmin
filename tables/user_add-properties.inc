@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-properties.inc,v 1.8 2004-03-18 12:48:33 turbo Exp $ */ ?>
+<?php /* $Id: user_add-properties.inc,v 1.9 2004-03-26 11:23:32 turbo Exp $ */ ?>
 <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=$LANG->_('Account properties')?></th>
@@ -71,8 +71,8 @@
 
   <input type="hidden" name="page_next" value="one">
   <input type="hidden" name="page_curr" value="">
-  <input type="hidden" name="domain" value="<?=$_REQUEST["domain"]?>">
-  <input type="hidden" name="rootdn" value="<?=$_REQUEST["rootdn"]?>">
+  <input type="hidden" name="domain" value="<?=$url["domain"]?>">
+  <input type="hidden" name="rootdn" value="<?=$url["rootdn"]?>">
 
   <input type="submit" value="<?php echo "--&gt;&gt;"; ?>">
 </form>

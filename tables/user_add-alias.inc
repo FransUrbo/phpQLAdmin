@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-alias.inc,v 1.1 2004-03-18 12:49:33 turbo Exp $ */
+<?php /* $Id: user_add-alias.inc,v 1.2 2004-03-26 11:21:00 turbo Exp $ */
       // Retreive domain branches for this domain (for the subbranch value below)
       $branches = pql_unit_get($_pql->ldap_linkid, $_REQUEST["domain"]);
 ?>
@@ -106,8 +106,8 @@
     <input type="hidden" name="page_curr"    value="one">
     <input type="hidden" name="page_next"    value="save">
     <input type="hidden" name="account_type" value="<?=$_REQUEST["account_type"]?>">
-    <input type="hidden" name="domain"       value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="rootdn"       value="<?=$_REQUEST["rootdn"]?>">
+    <input type="hidden" name="domain"       value="<?=$url["domain"]?>">
+    <input type="hidden" name="rootdn"       value="<?=$url["rootdn"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
