@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.199 2005-01-31 11:39:44 turbo Exp $
+// $Id: pql.inc,v 2.200 2005-02-05 12:50:51 turbo Exp $
 //
 
 // ----------------------------
@@ -622,9 +622,10 @@ function pql_ldap_accountstatus($status) {
     global $LANG;
 
     // active [default]
-    // nopop
+    // nopop		(not availible in newer QmailLDAP it seems).
 	// noaccess
     // disabled
+	// deleted
     
     switch($status) {
       case "nopop":
@@ -635,6 +636,9 @@ function pql_ldap_accountstatus($status) {
 
       case "disabled":
 		return $LANG->_('Locked/Disabled');
+
+	  case "deleted":
+		return $LANG->_('Deleted');
 
       default:
 		return $LANG->_('Active');
