@@ -2,11 +2,18 @@ phpQLAdmin 2.0 Change Log
 
 phpQLAdmin 2.0.8 - TO BE ANNOUNCED
 	Bug fixes
+	  - LDIF example and documentation (README*) cleanup.
+	  - OpenLDAP ACL example to allow 'dynamic' administrator access
+	  - Don't use 'if(defined("PQL_LDAP_*"))' - false equals defined
+	  - Duplicate 'owner' attribute for 'administrator' (removed SYNTAX/EQUALITY)
+	    in schema.
+	  - Filter out 'auto\.' from groups to allow user creation in.
 
 	GUI layout change
 
 	Misc changes
 	  - Write protect user's top domain/branch.
+	  - Some files filtered through dos2unix to get rid of ^M
 
 phpQLAdmin 2.0.7 Release (Jan 28 2003)
 	Bug fixes
