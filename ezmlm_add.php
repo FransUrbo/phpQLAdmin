@@ -1,6 +1,6 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.13 2003-01-27 13:18:24 turbo Exp $
+// $Id: ezmlm_add.php,v 1.14 2003-01-30 08:32:15 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -24,8 +24,7 @@ if(!$killcount) {
 }
 
 if(!$domainname) {
-	// Get list of domain
-
+	// Get list of domains
 	foreach($_pql->ldap_basedn as $dn)  {
 		$dom = pql_get_domain_value($_pql, $dn, 'administrator', $USER_DN);
 		foreach($dom as $d) {
@@ -57,7 +56,7 @@ if(!$domainname) {
 				}
 				
 				if(!$dont_add) {
-					$domain_list[] = $domainname;
+					$domain_list = $domainname;
 				}
 			}
 		}
@@ -78,18 +77,6 @@ $checked["public"]		= " CHECKED";							// -p
 // Create list
 if(isset($submit)) {
 	if($listname and $domainname) {
-		if(!$domain) {
-			// Get domain tree
-			$domains = pql_get_domains($_pql);
-			foreach($domains as $key => $name) {
-				$defaultdomain = pql_get_domain_value($_pql, $name, 'defaultdomain');
-				if($domainname == $defaultdomain) {
-					$domain = $name;
-					break;
-				}
-			}
-		}
-
 		// Get basemaildir path for domain
 		if(!($path = pql_get_domain_value($_pql, $domain, "basemaildir"))) {
 			die("Can't get baseMailDir path from domain '$domain'!");
@@ -130,17 +117,25 @@ if(!$domain) {
 if(!$domain) {
 	// No domain - select box with existing domains
 ?>
-            <input name="listname" value="<?=$listname?>">@
+            <input name="listname" value="<?=$listname?>"><b>@<?php
+	if(is_array($domain_list)) {
+?></b>
             <select name="domainname">
 <?php
-	for($i=0; $domain_list[$i]; $i++) {
+		for($i=0; $domain_list[$i]; $i++) {
 ?>
 	          <option value="<?=$domain_list[$i]?>"><?=$domain_list[$i]?></option>
 <?php
-	}
+		}
 ?>
             </select>
 <?php
+	} else {
+		echo "$domain_list</b>\n";
+?>
+            <input type="hidden" name="domainname" value="<?=$domain_list?>">
+<?php
+	}
 } else {
 	// Got domainname, show that (and remember it!)
 ?>
