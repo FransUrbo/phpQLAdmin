@@ -1,5 +1,9 @@
 <?php
-// $Id: user_add-save.inc,v 1.16.4.2.2.5 2004-05-05 09:46:59 turbo Exp $
+// $Id: user_add-save.inc,v 1.16.4.2.2.6 2004-05-05 12:37:38 turbo Exp $
+
+// URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
+$_REQUEST["surname"] = urldecode($_REQUEST["surname"]);
+$_REQUEST["name"]    = urldecode($_REQUEST["name"]);
 
 // ============================================================================================
 // ============== PREPARE THE USERS ATTRIBUTE(S)
@@ -114,8 +118,14 @@ if($_REQUEST["account_type"] == "forward") {
 		// -----------------
 		// Gecos is needed to do PAM/NSS LDAP login 
 		if($_REQUEST["surname"] && $_REQUEST["name"] &&
-		   (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))) {
-			$entry[pql_get_define("PQL_ATTR_GECOS")] = $_REQUEST["surname"] . " " . $_REQUEST["name"];
+		   (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")))
+		{
+			// Gecos is one attribute that can't be internationalized!
+			// Decode in two steps: UTF8 decoding and then translate international chars to non-us chars
+			$tmp1 = pql_maybe_decode($_REQUEST["surname"]); $tmp1 = pql_format_international($tmp1);
+			$tmp2 = pql_maybe_decode($_REQUEST["name"]);    $tmp2 = pql_format_international($tmp2);
+
+			$entry[pql_get_define("PQL_ATTR_GECOS")]  = $tmp1 . " " . $tmp2;
 		}
 	}
 	
@@ -161,10 +171,10 @@ if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "mai
 	  $entry[pql_get_define("PQL_ATTR_MAILHOST")]   = $_REQUEST["host"];
 	elseif($_REQUEST["userhost"]) {
 		// We've specified a host, but we never ticked the 'User defined' checkbox.
-		if($_REQUEST["userhost"]["dns"])
+		if(is_array($_REQUEST["userhost"]) and $_REQUEST["userhost"]["dns"])
 		  // We have a DNS entry. This is default!
 		  $entry[pql_get_define("PQL_ATTR_MAILHOST")]   = $_REQUEST["userhost"]["dns"];
-		elseif($_REQUEST["userhost"]["qlc"][0])
+		elseif(is_array($_REQUEST["userhost"]) and $_REQUEST["userhost"]["qlc"][0])
 		  // No DNS entry, but we have at least one QLC host. Take the first one we find...
 		  $entry[pql_get_define("PQL_ATTR_MAILHOST")]   = $_REQUEST["userhost"]["qlc"][0];
 		else
