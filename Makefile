@@ -38,14 +38,16 @@ install: $(INSTDIR)
 	@(echo -n "Instdir: $(INSTDIR): "; find | cpio -p $(INSTDIR))
 
 tarball: install
-	@(rm -Rf $(INSTDIR)/Makefile $(INSTDIR)/.version.old $(INSTDIR)/README.cvs \
-		$(INSTDIR)/manual $(INSTDIR)/include/config.inc $(INSTDIR)/phpQLadmin.log; \
-	  cd $(INSTDIR) && find -type d -name CVS -o -name '.cvsignore' -o -name '*~' | xargs rm -rf; \
+	@(rm -Rf $(INSTDIR)/Makefile $(INSTDIR)/.version.old \
+		$(INSTDIR)/manual $(INSTDIR)/include/config.inc \
+		$(INSTDIR)/phpQLadmin.log; \
+	  cd $(INSTDIR) && find -type d -name CVS -o -name '.cvsignore' -o -name '*~' | \
+		xargs rm -rf; \
 	  echo -n "Tarball 1: $(TMPDIR)/phpQLAdmin-$(VERSION).tar.gz: "; \
-	  cd $(TMPDIR) && tar czf phpQLAdmin-$(VERSION).tar.gz phpQLAdmin-$(VERSION); \
+	  cd $(TMPDIR) && tar -cz --exclude=README.cvs -f phpQLAdmin-$(VERSION).tar.gz phpQLAdmin-$(VERSION); \
 	  echo "done."; \
 	  echo -n "Tarball 2: $(TMPDIR)/phpQLAdmin-$(VERSION).tar.bz2: "; \
-	  cd $(TMPDIR) && tar cjf phpQLAdmin-$(VERSION).tar.bz2 phpQLAdmin-$(VERSION); \
+	  cd $(TMPDIR) && tar -cj --exclude=README.cvs -f phpQLAdmin-$(VERSION).tar.bz2 phpQLAdmin-$(VERSION); \
 	  echo "done.")
 
 debian: install
@@ -54,9 +56,12 @@ debian: install
 	  debuild; \
 	  echo "Files is in: "$(DESTDIR))
 
-release: tarball
+release: tag tarball debian
 	@(mv $(TMPDIR)/phpQLAdmin-$(VERSION).tar.gz /var/www/phpqladmin/; \
-	  mv $(TMPDIR)/phpQLAdmin-$(VERSION).tar.bz2 /var/www/phpqladmin/)
+	  mv $(TMPDIR)/phpQLAdmin-$(VERSION).tar.bz2 /var/www/phpqladmin/; \
+	  cat /var/www/phpqladmin/index.html.in | \
+		sed -e "s@%VERSION%@$(VERSION)@" -e "s@%CVSTAG%@$(TAG)@" \
+		> /var/www/phpqladmin/index.html.out)
 
 $(INSTDIR):
 	@rm -f $(TMPDIR) && mkdir -p $(INSTDIR)
