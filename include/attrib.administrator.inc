@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.6 2003-01-30 16:04:56 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.7 2003-03-31 08:03:50 turbo Exp $
 
 function attribute_check() {
     global $$attrib, $domain, $oldvalue, $_pql, $error, $$attrib;
@@ -22,7 +22,7 @@ function attribute_check() {
 }
 
 function attribute_print_form($action) {
-    global $$attrib, $domain, $PHP_SELF, $attrib, $oldvalue, $error, $_pql;
+    global $$attrib, $domain, $rootdn, $PHP_SELF, $attrib, $oldvalue, $error, $_pql;
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -95,15 +95,16 @@ function attribute_print_form($action) {
     <input type="hidden" name="domain" value="<?=$domain?>">
     <input type="hidden" name="action" value="<?=$action?>">
     <input type="hidden" name="oldvalue" value="<?=$$attrib?>">
+    <input type="hidden" name="rootdn" value="<?=$rootdn?>">
     <input type="submit" value="<?=PQL_SAVE?>">
   </form>
 <?php
 }
 
 function attribute_save($type) {
-    global $domain, $attrib, $oldvalue, $$attrib, $_pql;
+    global $domain, $rootdn, $attrib, $oldvalue, $$attrib, $_pql;
 	$value = $$attrib;
-    
+
     switch($type) {
       case "add":
       case "modify":
