@@ -58,7 +58,7 @@
 //
 // Please look at other plugins to see which standard header text is recommanded.
 //
-// $Id: attrib.control.skeleton.inc,v 2.1 2002-12-17 06:21:05 turbo Exp $
+// $Id: attrib.control.skeleton.inc,v 2.2 2002-12-17 12:24:35 turbo Exp $
 //
 
 function xxx_check($type){
@@ -86,7 +86,7 @@ function xxx_init(){
 	// available for the other functions
 
 	// fetch data from ldap server
-	$value = pql_control_get_attribute($_pql_control->ldap_linkid, PQL_LDAP_CONTROL_BASEDN, "xxx");
+	$value = pql_control_get_attribute($_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR, "xxx");
 
 	if(!is_null($value)){
 		$xxx = $value[0];
@@ -171,7 +171,7 @@ function xxx_save($type){
 		case "modify";
 			// save entries
 
-			if(pql_control_replace_attribute($_pql_control->ldap_linkid, PQL_LDAP_CONTROL_BASEDN, "xxx", $xxx)){
+			if(pql_control_replace_attribute($_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR, "xxx", $xxx)){
       	$msg = "Successfully saved xxx options";
 			} else {
 				$msg = "Failed saving xxx: " . pql_ldap_error($_pql_control->ldap_linkid);

@@ -3,6 +3,7 @@
 // domain_del.php,v 1.3 2002/12/12 21:52:08 turbo Exp
 //
 session_start();
+
 require("pql.inc");
 require("pql_control.inc");
 
@@ -11,15 +12,15 @@ include("header.html");
   <span class="title1"><?php echo pql_complete_constant(PQL_DOMAIN_DEL_TITLE, array("domain" => $domain))?></span>
 <?php
     if(isset($ok) || PQL_VERIFY_DELETE){
-	$_pql = new pql($USER_DN, $USER_PASS);
-	$_pql_control = new pql_control($USER_DN, $USER_PASS);
+	$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
+	$_pql_control = new pql_control($USER_HOST_CTR, $USER_DN, $USER_PASS);
 	
 	$delete_forwards = (isset($delete_forwards)) ? true : false;
 	
 	// delete the domain
-	if(pql_remove_domain($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $delete_forwards)) {
+	if(pql_remove_domain($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $delete_forwards)) {
 	    // update locals if control patch is enabled
-	    if(pql_control_update_domains($_pql->ldap_linkid, PQL_LDAP_BASEDN, $_pql_control->ldap_linkid,
+	    if(pql_control_update_domains($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $_pql_control->ldap_linkid,
 					  PQL_LDAP_CONTROL_BASEDN)){
 		// message ??
 	    }

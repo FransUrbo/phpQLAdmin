@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // qmaildotmode (interpretation of .qmail-files)
-// $Id: attrib.qmaildotmode.inc,v 2.0 2002-12-13 14:34:58 turbo Exp $
+// $Id: attrib.qmaildotmode.inc,v 2.1 2002-12-17 12:24:35 turbo Exp $
 
 function attribute_check($type){
 	global $qmaildotmode, $domain, $oldvalue, $_pql, $error;
@@ -104,7 +104,7 @@ function attribute_save($type){
 				$qmaildotmode = "";
     	}
 
-			if(pql_replace_userattribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user, PQL_LDAP_ATTR_DOTMODE, $qmaildotmode)){
+			if(pql_replace_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_DOTMODE, $qmaildotmode)){
 				$msg = pql_complete_constant(PQL_LDAP_QMAILDOTMODE_CHANGE_OK, array("mode" => $qmaildotmode));
 			} else {
 				$msg = PQL_LDAP_QMAILDOTMODE_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);

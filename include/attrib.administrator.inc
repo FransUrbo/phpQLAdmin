@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator modification
-// $Id: attrib.administrator.inc,v 1.1 2002-12-17 06:53:23 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.2 2002-12-17 12:24:35 turbo Exp $
 
 function attribute_check() {
     global $administrator, $domain, $oldvalue, $_pql, $error;
@@ -41,7 +41,7 @@ function attribute_print_form($action) {
 		// (hundred, thousands or more users, this will take AGES!)
 
 		// Get ALL domains
-		$domains = pql_get_domains($_pql->ldap_linkid, PQL_LDAP_BASEDN);
+		$domains = pql_get_domains($_pql->ldap_linkid, $USER_SEARCH_DN_USR);
 		if(is_array($domains)){
 			asort($domains);
 ?>
@@ -49,16 +49,16 @@ function attribute_print_form($action) {
 <?php
 			foreach($domains as $dom) {
 				// Get all users in all the domains
-				$users = pql_get_user($_pql->ldap_linkid, PQL_LDAP_BASEDN, $dom);
+				$users = pql_get_user($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $dom);
 
 				foreach($users as $user) {
-					$cn = pql_get_userattribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user, PQL_LDAP_ATTR_CN);
+					$cn = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_CN);
 					$cns[$user] = $cn[0];
 				}
 				asort($cns);
 
 				foreach($cns as $user => $cn){
-					$dn = pql_search_attribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, 'cn', $cn);
+					$dn = pql_search_attribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, 'cn', $cn);
 ?>
               <option value="<?=$dn?>"><?php echo $dom . ": " . $cn?></option>
 <?php

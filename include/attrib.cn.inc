@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // cn (Full name)
-// $Id: attrib.cn.inc,v 2.0 2002-12-13 14:34:57 turbo Exp $
+// $Id: attrib.cn.inc,v 2.1 2002-12-17 12:24:35 turbo Exp $
 
 function attribute_check($type){
     global $cn, $oldvalue, $_pql, $error;
@@ -66,7 +66,7 @@ function attribute_save($type){
 	    break;
     	}
 	
-	if(pql_replace_userattribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user, $attrib, $cn)){
+	if(pql_replace_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, $attrib, $cn)){
 	    $msg = pql_complete_constant(PQL_LDAP_CN_CHANGE_OK, array("old" => $oldvalue, "new" => $cn));
 	} else {
 	    $msg = PQL_LDAP_CN_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);

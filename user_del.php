@@ -3,6 +3,7 @@
 // user_del.php,v 1.3 2002/12/12 21:52:08 turbo Exp
 //
 session_start();
+
 require("pql.inc");
 
 include("header.html");
@@ -12,10 +13,10 @@ include("header.html");
 <?php
 	if(isset($ok) || PQL_VERIFY_DELETE){
 	$delete_forwards = (isset($delete_forwards) || PQL_VERIFY_DELETE) ? true : false;
-  	$_pql = new pql($USER_DN, $USER_PASS);
+  	$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
 
 	// delete the user
-	if(pql_remove_user($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user, $delete_forwards)){
+	if(pql_remove_user($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, $delete_forwards)){
 		$msg = PQL_USER_DEL_OK . ": <b>" . $user . "</b>";
 		$rlnb = "&rlnb=1";
   	} else {

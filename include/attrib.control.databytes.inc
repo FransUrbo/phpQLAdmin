@@ -2,7 +2,7 @@
 // control attribute plugin for
 // databytes (max number of bytes in message)
 //
-// $Id: attrib.control.databytes.inc,v 2.1 2002-12-17 06:21:05 turbo Exp $
+// $Id: attrib.control.databytes.inc,v 2.2 2002-12-17 12:24:35 turbo Exp $
 
 function databytes_check($type) {
 	global $error, $databytes;
@@ -22,7 +22,7 @@ function databytes_init($host) {
 	
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   "cn=" . $host . "," . PQL_LDAP_CONTROL_BASEDN,
+									   "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
 									   "databytes");
 	
 	if(!is_null($value)){
@@ -99,7 +99,7 @@ function databytes_save($type, $host) {
 	  case "modify";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 "cn=" . $host . "," . PQL_LDAP_CONTROL_BASEDN,
+										 "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
 										 "databytes", $databytes)){
 			$msg = "Successfully saved databytes options";
 		} else {

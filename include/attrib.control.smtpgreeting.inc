@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtpgreeting (SMTP greeting message)
 //
-// $Id: attrib.control.smtpgreeting.inc,v 2.1 2002-12-17 06:21:05 turbo Exp $
+// $Id: attrib.control.smtpgreeting.inc,v 2.2 2002-12-17 12:24:35 turbo Exp $
 
 function smtpgreeting_check($type) {
 	global $error, $smtpgreeting;
@@ -18,7 +18,7 @@ function smtpgreeting_init($host) {
 
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   "cn=" . $host . "," . PQL_LDAP_CONTROL_BASEDN,
+									   "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
 									   "smtpgreeting");
 
 	if(!is_null($value)){
@@ -91,7 +91,7 @@ function smtpgreeting_save($type){
 	  case "modify";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 "cn=" . $host . "," . PQL_LDAP_CONTROL_BASEDN,
+										 "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
 										 "smtpgreeting", $smtpgreeting)){
 			$msg = "Successfully saved smtpgreeting options";
 		} else {

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldapmessagestore (default prefix for mailbox paths)
 //
-// $Id: attrib.control.ldapmessagestore.inc,v 2.1 2002-12-17 06:21:05 turbo Exp $
+// $Id: attrib.control.ldapmessagestore.inc,v 2.2 2002-12-17 12:24:35 turbo Exp $
 
 function ldapmessagestore_check($type){
 	global $error, $ldapmessagestore;
@@ -28,7 +28,7 @@ function ldapmessagestore_init($host){
 	
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   "cn=" . $host . "," . PQL_LDAP_CONTROL_BASEDN,
+									   "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
 									   "ldapmessagestore");
 	
 	if(!is_null($value)){
@@ -98,7 +98,7 @@ function ldapmessagestore_save($type, $host){
 	  case "modify";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 "cn=" . $host . "," . PQL_LDAP_CONTROL_BASEDN,
+										 "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
 										 "ldapmessagestore", $ldapmessagestore)){
 			$msg = "Successfully saved ldapserver options";
 		} else {

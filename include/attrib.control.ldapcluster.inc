@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldapcluster (clustering support)
 //
-// $Id: attrib.control.ldapcluster.inc,v 2.1 2002-12-17 06:21:05 turbo Exp $
+// $Id: attrib.control.ldapcluster.inc,v 2.2 2002-12-17 12:24:35 turbo Exp $
 
 function ldapcluster_check($type){
 	// check values
@@ -14,7 +14,7 @@ function ldapcluster_init(){
 	global $_pql_control, $ldapcluster;
 
 	// fetch data from ldap server
-	$value = pql_control_get_attribute($_pql_control->ldap_linkid, PQL_LDAP_CONTROL_BASEDN, "ldapcluster");
+	$value = pql_control_get_attribute($_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR, "ldapcluster");
 	
 	if(!is_null($value)){
 		$ldapcluster = $value[0];
@@ -76,7 +76,7 @@ function ldapcluster_save($type){
 	switch($type) {
 	  case "modify";
 		// save entries
-		if(pql_control_replace_attribute($_pql_control->ldap_linkid, PQL_LDAP_CONTROL_BASEDN, "ldapcluster", $set)){
+		if(pql_control_replace_attribute($_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR, "ldapcluster", $set)){
 			$msg = "Successfully saved ldapcluster options";
     	} else {
 			$msg = "Failed saving ldapcluster options: " . pql_ldap_error($_pql_control->ldap_linkid);

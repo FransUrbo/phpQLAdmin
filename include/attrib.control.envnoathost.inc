@@ -2,7 +2,7 @@
 // control attribute plugin for
 // envnoathost (default prefix for mailbox paths)
 //
-// $Id: attrib.control.envnoathost.inc,v 2.1 2002-12-17 06:21:05 turbo Exp $
+// $Id: attrib.control.envnoathost.inc,v 2.2 2002-12-17 12:24:35 turbo Exp $
 
 function envnoathost_check($type) {
 	global $error, $envnoathost;
@@ -29,7 +29,7 @@ function envnoathost_init($host) {
 
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   "cn=" . $host . "," . PQL_LDAP_CONTROL_BASEDN,
+									   "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
 									   "envnoathost");
 
 	if(!is_null($value)){
@@ -104,7 +104,7 @@ function envnoathost_save($type, $host) {
 		// save entries
 		
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 "cn=" . $host . "," . PQL_LDAP_CONTROL_BASEDN,
+										 "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
 										 "envnoathost", $envnoathost)){
 			$msg = "Successfully saved envnotathost options";
 		} else {

@@ -13,12 +13,14 @@ if($type == ""){
 }
 
 // requires
+session_start();
+
 require("pql.inc");
 require("pql_control.inc");
 require("pql_control_plugins.inc");
 
-$_pql = new pql($USER_DN, $USER_PASS);
-$_pql_control = new pql_control();
+$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
+$_pql_control = new pql_control($USER_HOST_CTR, $USER_DN, $USER_PASS);
 
 // register all attribute plugins here (require)
 $control_plugin = pql_control_plugin_get($attrib);

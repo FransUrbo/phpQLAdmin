@@ -34,7 +34,51 @@ if(isset($rlnb) and PQL_AUTO_RELOAD){
 	if($ADVANCED_MODE == 1) {
 	    // We're administrating the whole domain,
 	    // show the Create domain option...
+
+	    if(eregi(" ", PQL_LDAP_HOST)) {
+		$servers_usr = split(" ", PQL_LDAP_HOST);
 ?>
+    <li>
+      <form action="<?=$PHP_SELF?>" target="pqlmain">
+	Change LDAP server (user database)<br>
+        <select name="ldapserver">
+<?php
+		foreach($servers_usr as $server) {
+?>
+          <option value="<?=$server?>"><?=$server?></option>
+<?php
+		}
+	    }
+?>
+        </select>
+        <input type="submit" value="<?="--&gt;&gt;"?>">
+      </form>
+    </li>
+
+<?php
+	    if(PQL_LDAP_CONTROL_USE and eregi(" ", PQL_LDAP_CONTROL_HOST)) {
+		$servers_ctr = split(" ", PQL_LDAP_CONTROL_HOST);
+?>
+    <li>
+      <form action="<?=$PHP_SELF?>" target="pqlmain">
+        Change LDAP server (controls database)<br>
+        <select name="controlserver">
+<?php
+                foreach($servers_ctr as $server) {
+?>
+          <option value="<?=$server?>"><?=$server?></option>
+<?php
+                }
+?>
+        </select>
+        <input type="submit" value="<?="--&gt;&gt;"?>">
+      </form>
+    </li>
+<?php
+	    }
+?>
+
+
     <li>
       <form action="domain_add.php" method="post">
 	<?=PQL_DOMAIN_ADD?>

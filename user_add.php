@@ -3,12 +3,13 @@
 // user_add.php,v 1.5 2002/12/13 13:58:04 turbo Exp
 //
 session_start();
+
 require("pql.inc");
 
-$_pql = new pql($USER_DN, $USER_PASS);
+$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
 
 // check if domain exist
-if(!pql_domain_exist($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain)){
+if(!pql_domain_exist($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain)){
 	echo "domain &quot;$domain&quot; does not exists";
 	exit();
 }
@@ -39,7 +40,7 @@ if($submit == "") {
     $user = $surname . " " . $name;
     if($error == false
        and PQL_LDAP_REFERENCE_USERS_WITH == PQL_LDAP_ATTR_CN
-       and pql_user_exist($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user)){
+       and pql_user_exist($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user)){
 		$error = true;
 		$error_text["username"] = pql_complete_constant(PQL_USER_EXIST, array("user" => $user));
 		$error_text["name"] = PQL_EXISTS;
@@ -56,7 +57,7 @@ if($submit == "") {
 		$error_text["email"] = PQL_INVALID;
     }
 	
-    if($error_text["email"] == "" and pql_email_exists($_pql->ldap_linkid, PQL_LDAP_BASEDN, $email)){
+    if($error_text["email"] == "" and pql_email_exists($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $email)){
 		$error = true;
 		$error_text["email"] = PQL_EXISTS;
     }
@@ -78,7 +79,7 @@ if($submit == "two"){
 	// Verify/Create uid
 	if(!$uid) {
 		if (function_exists('user_generate_uid')) {
-			$uid = strtolower(user_generate_uid($_pql->ldap_linkid, PQL_LDAP_BASEDN, $surname, $name, $email, $domain, $account_type));
+			$uid = strtolower(user_generate_uid($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $surname, $name, $email, $domain, $account_type));
 		} else {
 			$submit = "one";
 			$error = true;
@@ -131,7 +132,7 @@ if ($submit == "save") {
 		$error = true;
 		$error_text["uid"] = PQL_INVALID;
 	}
-	if($error_text["uid"] == "" and pql_search_attribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, PQL_LDAP_ATTR_UID, $uid)) {
+	if($error_text["uid"] == "" and pql_search_attribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, PQL_LDAP_ATTR_UID, $uid)) {
 		$error = true;
 		$error_text["uid"] = PQL_EXISTS;
 	}
@@ -582,7 +583,7 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 			// set SYSTEM attributes
 			$entry[PQL_LDAP_ATTR_LOGINSHELL] = $loginshell;
 			if(!$homedirectory) {
-				$entry[PQL_LDAP_ATTR_HOMEDIR] = user_generate_homedir($_pql->ldap_linkid, PQL_LDAP_BASEDN, $email, $domain, $entry);
+				$entry[PQL_LDAP_ATTR_HOMEDIR] = user_generate_homedir($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $email, $domain, $entry);
 			} else {
 				$entry[PQL_LDAP_ATTR_HOMEDIR] = $homedirectory;
 			}
@@ -606,7 +607,7 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 			$entry[PQL_LDAP_ATTR_MAILHOST]	= $host_user;
 			$entry[PQL_LDAP_ATTR_MODE]		= "localdelivery";
 			if(!$maildirectory) {
-				$entry[PQL_LDAP_ATTR_MAILSTORE] = user_generate_mailstore($_pql->ldap_linkid, PQL_LDAP_BASEDN, $email, $domain, $entry);
+				$entry[PQL_LDAP_ATTR_MAILSTORE] = user_generate_mailstore($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $email, $domain, $entry);
 			} else {
 				$entry[PQL_LDAP_ATTR_MAILSTORE] = $maildirectory;
 			}
@@ -624,7 +625,7 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 
         // ------------------
 		// Add the user to the database
-		if(pql_add_user($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $cn, $entry, $account_type)){
+		if(pql_add_user($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $cn, $entry, $account_type)){
 			// Now it's time to run the special adduser script if defined...
 			if(PQL_EXTRA_SCRIPT_CREATE) {
 				// Open a bi-directional pipe, so we can write AND read

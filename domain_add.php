@@ -3,6 +3,7 @@
 // domain_add.php,v 1.3 2002/12/12 21:52:08 turbo Exp
 //
 session_start();
+
 require("pql.inc");
 require("pql_control.inc");
 
@@ -11,8 +12,8 @@ include("header.html");
   <span class="title1"><?=PQL_DOMAIN_ADD?>: <?=$domain?></span>
   <br><br>
 <?php
-$_pql = new pql($USER_DN, $USER_PASS);
-$_pql_control = new pql_control($USER_DN, $USER_PASS);
+$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
+$_pql_control = new pql_control($USER_HOST_CTR, $USER_DN, $USER_PASS);
 
 // convert domain to lowercase
 $domain = strtolower($domain);
@@ -34,7 +35,7 @@ if(!check_hostaddress($domain, $nodot)){
 }
 
 // check if domain exist
-if(pql_domain_exist($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain)){
+if(pql_domain_exist($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain)){
 	$msg = urlencode(PQL_DOMAIN_EXISTS);
 	header("Location: " . PQL_URI . "home.php?msg=$msg");
 	exit();
@@ -44,10 +45,10 @@ if(pql_domain_exist($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain)){
 $defaulthomedir = user_generate_homedir('', '', '', $domain, '');
 $defaultmaildir = user_generate_mailstore('', '', '', $domain, '');
 
-if(pql_add_domain($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain)) {
+if(pql_add_domain($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain)) {
 	if($defaultdomain != "") {
 		// update locals if control patch is enabled
-		if(pql_control_update_domains($_pql->ldap_linkid, PQL_LDAP_BASEDN,
+		if(pql_control_update_domains($_pql->ldap_linkid, $USER_SEARCH_DN_USR,
 									  $_pql_control->ldap_linkid,
 									  PQL_LDAP_CONTROL_BASEDN)) {
 			// message ??

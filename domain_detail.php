@@ -1,14 +1,15 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.2 2002-12-17 06:28:26 turbo Exp $
+// domain_detail.php,v 2.2 2002/12/17 06:28:26 turbo Exp
 //
 session_start();
+
 require("pql.inc");
 
 if(PQL_LDAP_CONTROL_USE){
     // include control api if control is used
     include("pql_control.inc");
-    $_pql_control = new pql_control($USER_DN, $USER_PASS);
+    $_pql_control = new pql_control($USER_HOST_CTR, $USER_DN, $USER_PASS);
 
     // Get default domain name for this domain
     $defaultdomain = pql_get_domain_value($_pql_control->ldap_linkid, $domain, "defaultdomain");
@@ -33,10 +34,10 @@ if(isset($rlnb) and PQL_AUTO_RELOAD) {
 <?php
 }
 
-$_pql = new pql($USER_DN, $USER_PASS);
+$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
 
 // check if domain exist
-if(!pql_domain_exist($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain)){
+if(!pql_domain_exist($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain)){
     echo "domain &quot;$domain&quot; does not exists";
     exit();
 }
@@ -129,7 +130,7 @@ $basequota_link     = "<a href=\"domain_edit_attributes.php?attrib=basequota&dom
 
 <?php
 }
-$users = pql_get_user($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain);
+$users = pql_get_user($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=PQL_USER_REGISTRED?></th>
@@ -146,12 +147,12 @@ if(is_array($users)){
 <?php
 	asort($users);
 	foreach($users as $user){
-		$uid = pql_get_userattribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user, PQL_LDAP_ATTR_UID);
+		$uid = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_UID);
 		$uid = $uid[0];
-		$cn = pql_get_userattribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user, PQL_LDAP_ATTR_CN);
+		$cn = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_CN);
 		$cn = $cn[0];
 		
-		$status = pql_get_userattribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user, PQL_LDAP_ATTR_ISACTIVE);
+		$status = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_ISACTIVE);
 		$status = pql_ldap_accountstatus($status[0]);
 ?>
       <tr class="<?php table_bgcolor(); ?>">

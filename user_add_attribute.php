@@ -4,14 +4,14 @@
 //
 session_start();
 require("pql.inc");
-$_pql = new pql($USER_DN, $USER_PASS);
+$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
 
 // forward back to users detail page
 function attribute_forward($msg){
-	global $domain, $user;
-
-	$msg = urlencode($msg);
-	$url = "user_detail.php?domain=$domain&user=" . urlencode($user) . "&msg=$msg";
+    global $domain, $user;
+    
+    $msg = urlencode($msg);
+    $url = "user_detail.php?domain=$domain&user=" . urlencode($user) . "&msg=$msg";
     header("Location: " . PQL_URI . "$url");
 }
 
@@ -20,14 +20,14 @@ $defaultdomain = pql_get_domain_value($_pql->ldap_linkid, $domain, "defaultdomai
  
 // select which attribute have to be included
 switch($attrib){
-	case "mailalternateaddress":
-		$include = "attrib.mailalternateaddress.inc";
-		break;
-	case "mailforwardingaddress":
-		$include = "attrib.mailforwardingaddress.inc";
-		break;
-    default:
-		die("unknown attribute");
+  case "mailalternateaddress":
+    $include = "attrib.mailalternateaddress.inc";
+    break;
+  case "mailforwardingaddress":
+    $include = "attrib.mailforwardingaddress.inc";
+    break;
+  default:
+    die("unknown attribute");
 }
 
 include($include);

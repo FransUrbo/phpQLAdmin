@@ -2,6 +2,8 @@
 // add a domain
 // unit_add.php,v 1.3 2002/12/12 21:52:08 turbo Exp
 //
+session_start();
+
 require("pql.inc");
 require("pql_control.inc");
 
@@ -10,8 +12,8 @@ include("header.html");
   <span class="title1"><?php echo PQL_DOMAIN_ADD; ?>: <?php echo $domain ?></span>
   <br><br>
 <?php
-$_pql = new pql($USER_DN, $USER_PASS);
-$_pql_control = new pql_control($USER_DN, $USER_PASS);
+$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
+$_pql_control = new pql_control($USER_HOST_CTR, $USER_DN, $USER_PASS);
 
 // convert domain to lowercase
 $domain = strtolower($domain);
@@ -25,15 +27,15 @@ if(!check_hostaddress($domain)){
 
 // "
 // check if unit exist
-if(pql_unit_exist($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $unit)){
+if(pql_unit_exist($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $unit)){
 	$msg = urlencode(PQL_DOMAIN_EXISTS);
 	header("Location: home.php?msg=$msg");
 	exit();
 }
 
-if(pql_add_unit($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $unit)){
+if(pql_add_unit($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $unit)){
 	// update locals if control patch is enabled
-	if(pql_control_update_domains($_pql->ldap_linkid, PQL_LDAP_BASEDN, $_pql_control->ldap_linkid, PQL_LDAP_CONTROL_BASEDN)){
+	if(pql_control_update_domains($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR)){
 		// message ??
   }
 

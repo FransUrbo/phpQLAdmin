@@ -4,12 +4,15 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.1 2002-12-17 06:21:06 turbo Exp $
+// $Id: pql_control.inc,v 2.2 2002-12-17 12:24:36 turbo Exp $
 //
 // version history:
 // $Log: pql_control.inc,v $
-// Revision 2.1  2002-12-17 06:21:06  turbo
-// Sort the control information on host instead of showing it flat..
+// Revision 2.2  2002-12-17 12:24:36  turbo
+// * Removed hardcoded values for LDAP host, user/controls database, and for
+//   the search base for these.
+//   Allow choosing from a predefined set of LDAP hosts at runtime (independent
+//   server choosing for user and controls database).
 //
 // Revision 1.2  2001/09/06 11:36:24  mb
 // added no_connect option to pql_control-class
@@ -57,10 +60,7 @@
 // ----------------------------
 
 class pql_control extends pql {
-    var $ldap_host	 = PQL_LDAP_CONTROL_HOST;		// host to connect to
-    var $ldap_basedn = PQL_LDAP_CONTROL_BASEDN; 	// base dn
-    
-    function pql_control($binddn = "", $bindpw = "", $no_connect = false){
+    function pql_control($host, $binddn = "", $bindpw = "", $no_connect = false){
 		// call constructor of parent class
 	
 		if(PQL_LDAP_CONTROL_USE == false){
@@ -68,7 +68,7 @@ class pql_control extends pql {
 			return false;
 		}
 		
-		$this->pql($binddn, $bindpw, $no_connect);
+		$this->pql($host, $binddn, $bindpw, $no_connect);
     }
 }
 
@@ -262,7 +262,7 @@ function pql_control_update_domains($ldap_linkid, $ldap_basedn, $ldap_control_li
 // ------------------------------------------------
 
 function pql_control_get_hosts($ldap_linkid, $ldap_basedn) {
-	// Find all hosts below the PQL_LDAP_CONTROL_BASEDN
+	// Find all hosts below the $USER_SEARCH_DN_CTR
 	$sr = @ldap_search($ldap_linkid, $ldap_basedn,
 					   '(&(cn=*)(objectclass=qmailControl))',
 					   array('cn', 'dn'));

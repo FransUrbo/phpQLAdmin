@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.3 2002-12-17 06:28:29 turbo Exp $
+// $Id: pql.inc,v 2.4 2002-12-17 12:24:36 turbo Exp $
 //
 // ----------------------------
 // Note: There are a few " followed after PHP comment
@@ -42,36 +42,32 @@ $pql_cache_userentry = array();
 
 // PQL - main class (connection handling)
 class pql {
-	// runtime vars
-	var $ldap_host = PQL_LDAP_HOST;			// host to connect to
-	var $ldap_port = 389;					// Port of host to connect to,
-											// Default is 389, but can be
-	// changed in the PQL_LDAP_HOST 
-	// define...
-	var $ldap_basedn = PQL_LDAP_BASEDN; 	// base dn
 	var $ldap_linkid = 0;					// ldap connection identifier
 
-	function pql($binddn = "", $bindpw = "", $no_connect = false) {
+	function pql($host, $binddn = "", $bindpw = "", $no_connect = false) {
 		// constructor, connect to ldap host
 		if($no_connect == true){
 			return false;
 		}
 
-		$this->connect() or die("<b>could not connect to ldap server</b>");
+		$this->connect($host) or die("<b>could not connect to ldap server</b>");
 		$this->bind($binddn, $bindpw) or die("<b>could not bind to ldap server</b>: " . ldap_error($this->ldap_linkid));
 	}
 	
-	function connect(){
+	function connect($host) {
 		// Check to see if we have a port defined in the host.
-		if(ereg(":", $this->ldap_host)) {
-			$ldap = split(":", $this->ldap_host);
+		if(ereg(";", $host)) {
+			$ldap = split(";", $host);
 			
-			$this->ldap_host = $ldap[0];
-			$this->ldap_port = $ldap[1];
+			$host = $ldap[0];
+			$port = $ldap[1];
+		} else {
+			$host = $host;
+			$port = 389;
 		}
 		
 		// connect to ldap host and bind to root_dn
-		$this->ldap_linkid = @ldap_connect($this->ldap_host, $this->ldap_port);
+		$this->ldap_linkid = @ldap_connect($host, $port);
 		
 		if($this->ldap_linkid){
 			// Set the LDAP protocol version to 3 (LDAPv3).
@@ -152,7 +148,7 @@ function pql_add_user($ldap_linkid, $ldap_basedn, $domain, $cn, $attribs, $accou
     
     // dn of the user
     $dn = PQL_LDAP_USER_RDN_ATTRIBUTE . "=" . $entry[PQL_LDAP_USER_RDN_ATTRIBUTE] . "," . PQL_LDAP_SUBTREE_USERS
-      . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . "," . PQL_LDAP_BASEDN;
+      . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . "," . $USER_SEARCH_DN_USR;
 
 //	// --------------------------
 //	// DEBUG mode: Print the LDIF
@@ -192,7 +188,7 @@ function pql_add_user($ldap_linkid, $ldap_basedn, $domain, $cn, $attribs, $accou
 		$entry["gidnumber"] = $gidnr;
 		
 		$dn = "cn=" . $attribs["uid"] . "," . PQL_LDAP_SUBTREE_GROUPS . ","
-		  . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . "," . PQL_LDAP_BASEDN;
+		  . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . "," . $USER_SEARCH_DN_USR;
 
 //	// --------------------------
 //	// DEBUG mode: Print the LDIF
@@ -355,7 +351,7 @@ function pql_add_domain($ldap_linkid, $ldap_basedn, $domain){
 		$ou = eregi_replace(",$", "", PQL_LDAP_SUBTREE_USERS);
 		$entry["ou"] = $ou;
 		
-		$dn = PQL_LDAP_SUBTREE_USERS . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . "," . PQL_LDAP_BASEDN;
+		$dn = PQL_LDAP_SUBTREE_USERS . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . "," . $USER_SEARCH_DN_USR;
 		if(!@ldap_add($ldap_linkid, $dn, $entry)){
 			pql_errormsg($ldap_linkid);
 			return false;
@@ -369,7 +365,7 @@ function pql_add_domain($ldap_linkid, $ldap_basedn, $domain){
 		$entry["objectClass"][] = "organizationalUnit";
 		$entry["ou"] = PQL_LDAP_SUBTREE_GROUPS;
 		
-		$dn = PQL_LDAP_SUBTREE_GROUPS . "," . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . "," . PQL_LDAP_BASEDN;
+		$dn = PQL_LDAP_SUBTREE_GROUPS . "," . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . "," . $USER_SEARCH_DN_USR;
 		if(!@ldap_add($ldap_linkid, $dn, $entry)){
 			pql_errormsg($ldap_linkid);
 			return false;
@@ -495,7 +491,7 @@ function pql_remove_domain($ldap_linkid, $ldap_basedn, $domain, $delete_forwards
     
     // Remove the USER subtrees if defined
     if(PQL_LDAP_SUBTREE_USERS) {
-		$dn = PQL_LDAP_SUBTREE_USERS . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . "," . PQL_LDAP_BASEDN;
+		$dn = PQL_LDAP_SUBTREE_USERS . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . "," . $USER_SEARCH_DN_USR;
 		if(!ldap_delete($ldap_linkid, $dn)){
 			pql_errormsg($ldap_linkid);
 			return false;
@@ -518,7 +514,7 @@ function pql_remove_domain($ldap_linkid, $ldap_basedn, $domain, $delete_forwards
 		}
 		
 		// Remove the group object
-		$dn = PQL_LDAP_SUBTREE_GROUPS . "," . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . "," . PQL_LDAP_BASEDN;
+		$dn = PQL_LDAP_SUBTREE_GROUPS . "," . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . "," . $USER_SEARCH_DN_USR;
 		if(!ldap_delete($ldap_linkid, $dn)){
 			pql_errormsg($ldap_linkid);
 			return false;
@@ -997,7 +993,7 @@ function pql_search_forwarders($ldap_linkid, $ldap_basedn, $domain, $user){
 				// WARNING: CRUDE HACK!
 				$replace = PQL_LDAP_REFERENCE_USERS_WITH . "=.*," . PQL_LDAP_SUBTREE_USERS;
 				$domain = eregi_replace($replace, "", $result["dn"]);
-				$domain = eregi_replace("," . PQL_LDAP_BASEDN, "", $domain);
+				$domain = eregi_replace("," . $USER_SEARCH_DN_USR, "", $domain);
 				$domain = eregi_replace(PQL_LDAP_ATTR_DOMAIN . "=", "", $domain);
 				
 				$return[] = array("domain" => $domain,
@@ -1221,15 +1217,6 @@ function pql_check_config(&$result, $enhanced = false){
 		$result[] = "no language definition file included!!";
     }
     
-    // ldap server configuration
-    if(!defined("PQL_LDAP_HOST") or PQL_LDAP_HOST == ""){
-		$result[] = "no ldap host defined!!";
-    }
-    
-    if(!defined("PQL_LDAP_BASEDN") or PQL_LDAP_BASEDN == ""){
-		$result[] = "no base dn defined";
-    }
-    
     if($enhanced){
 		// enhance configuration check
         // --> to be done
@@ -1318,7 +1305,7 @@ function pql_get_next_uidnumber($ldap_linkid) {
     // Returns the next free UID/GID number
     
     $filter = "(&(uidnumber=*)(objectclass=posixaccount))";
-    $sr = ldap_search($ldap_linkid, PQL_LDAP_BASEDN, $filter);
+    $sr = ldap_search($ldap_linkid, $USER_SEARCH_DN_USR, $filter);
     $results = @ldap_get_entries($ldap_linkid, $sr) or pql_errormsg($ldap_linkid);
 	
     // Find the highest availible UIDNUMBER
@@ -1346,7 +1333,7 @@ function pql_get_domain_value($linkid, $domain, $value, $match = "") {
     // (&(dc=bayour)(objectclass=domain)(description=defaultdomainMATCH))
     $filter = "(&(" . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . ")(objectclass=" . 
       PQL_LDAP_OBJECTCLASS_DOMAIN . ")(description=" . $value . $match . "))";
-    $sr = ldap_search($linkid, PQL_LDAP_BASEDN, $filter, $attrib);
+    $sr = ldap_search($linkid, $USER_SEARCH_DN_USR, $filter, $attrib);
     $result = @ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
 
     // Extract all the descriptor fields
@@ -1399,7 +1386,7 @@ function pql_set_domain_value($linkid, $domain, $type, $value) {
 	
     $filter = "(&(" . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . ")(objectclass=" .
       PQL_LDAP_OBJECTCLASS_DOMAIN . "))";
-    $sr = ldap_search($linkid, PQL_LDAP_BASEDN, $filter);
+    $sr = ldap_search($linkid, $USER_SEARCH_DN_USR, $filter);
     $results = @ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
 	
     $dn = $results[0]["dn"];

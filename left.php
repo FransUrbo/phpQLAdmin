@@ -3,11 +3,12 @@
 // left.php,v 1.3 2002/12/12 21:52:08 turbo Exp
 //
 session_start();
+
 require("pql.inc");
 require("pql_control.inc");
 require("pql_control_plugins.inc");
 
-$_pql = new pql($USER_DN, $USER_PASS);
+$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
 ?>
 <html>
 <head>
@@ -87,6 +88,14 @@ if(isset($advanced)) {
   </div>
 
 <?php
+if($ADVANCED_MODE) {
+?>
+  <font color="black" class="heada">
+    Host: <font color="black" size=-4><b><?=$USER_HOST_USR?></b></font>
+  </font>
+<?php
+}
+
 // Get ALL domains we have access.
 // 'description: administrator=USER_DN' in the domain object
 $domains = pql_get_domain_value($_pql->ldap_linkid, '*', 'administrator', "=" . $USER_DN);
@@ -129,9 +138,9 @@ if(is_array($domains)){
 	  // Zero out the variables, othervise we won't get users in
 	  // specified domain, but also in the PREVIOUS domain shown!
 	  $users = ""; $cns = "";
-	  
+
 	  // Get all users in the domain
-	  $users = pql_get_user($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain);
+	  $users = pql_get_user($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain);
 	  
 	  if(!is_array($users)){
 	      // no user available for this domain
@@ -154,7 +163,7 @@ if(is_array($domains)){
 
 <?php
               foreach ($users as $user) {
-		  $cn = pql_get_userattribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user, PQL_LDAP_ATTR_CN);
+		  $cn = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_CN);
 		  $cns[$user] = $cn[0];
 	      }
 	      asort($cns);
@@ -201,9 +210,17 @@ if(PQL_LDAP_CONTROL_USE) {
   </div>
 
 <?php
+	if($ADVANCED_MODE) {
+?>
+  <font color="black" class="heada">
+    Host: <font color="black" size=-4><b><?=$USER_HOST_CTR?></b></font>
+  </font>
+<?php
+	}
+
 	$j++;
 
-	$hosts = pql_control_get_hosts($_pql->ldap_linkid, PQL_LDAP_CONTROL_BASEDN);
+	$hosts = pql_control_get_hosts($_pql->ldap_linkid, $USER_SEARCH_DN_CTR);
 	if(!is_array($hosts)) {
 ?>
   <div id="el<?=$j?>Parent" class="parent">
@@ -272,7 +289,7 @@ if(PQL_LDAP_CONTROL_USE) {
 } // end if PQL_LDAP_CONTROL_USE
 ?>
 
-  <form method=post action="left.php" target="pqlnav">
+  <form method=post action="<?=$PHP_SELF?>" target="pqlnav">
     <input type="checkbox" name="advanced" accesskey="a" onChange="this.form.submit(); parent.frames.pqlmain.location.reload();"<?=$checked?>><u>A</u>dvanced mode
   </form>
 

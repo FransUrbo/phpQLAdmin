@@ -3,6 +3,7 @@
 // search.php,v 1.3 2002/12/12 21:52:08 turbo Exp
 //
 session_start();
+
 require("pql.inc");
 require("pql_search.inc");
 
@@ -30,7 +31,7 @@ if(isset($rlnb) and PQL_AUTO_RELOAD){
   <br><br>
 
 <?php
-$_pql = new pql($USER_DN, $USER_PASS);
+$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
 
 // test for submission of variables
 if ($attribute == "" || $filter_type == "" || $search_string == "") {
@@ -58,7 +59,7 @@ switch($filter_type) {
 }
 
 // get userlist that matches filter
-$users = pql_search($_pql->ldap_linkid, PQL_LDAP_BASEDN, $filter);
+$users = pql_search($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $filter);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="4" align="left"><?php echo PQL_USER_REGISTRED ?> (<?php echo sizeof($users); ?>)</th>
@@ -78,13 +79,13 @@ if(is_array($users)){
       // don't know domain, so must figure it out
       $domain = $user["ou"];
       $reference = $user["reference"];
-      $uid = pql_get_userattribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $reference, PQL_LDAP_ATTR_UID);
+      $uid = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $reference, PQL_LDAP_ATTR_UID);
       $uid = $uid[0];
-      $cn = pql_get_userattribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $reference, PQL_LDAP_ATTR_CN);
+      $cn = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $reference, PQL_LDAP_ATTR_CN);
       $cn = $cn[0];
-      $mail = pql_get_userattribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $reference, PQL_LDAP_ATTR_MAIL);
+      $mail = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $reference, PQL_LDAP_ATTR_MAIL);
       $mail = $mail[0];
-      $status = pql_get_userattribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $reference, PQL_LDAP_ATTR_ISACTIVE);
+      $status = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $reference, PQL_LDAP_ATTR_ISACTIVE);
       $status = pql_ldap_accountstatus($status[0]);
 ?>
     <tr class="<?php table_bgcolor(); ?>">

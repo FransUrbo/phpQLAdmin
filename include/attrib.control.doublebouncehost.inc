@@ -3,7 +3,7 @@
 // doublebouncehost (username of bounce sender)
 // doublebounceto (hostname of bounce sender)
 //
-// $Id: attrib.control.doublebouncehost.inc,v 2.1 2002-12-17 06:21:05 turbo Exp $
+// $Id: attrib.control.doublebouncehost.inc,v 2.2 2002-12-17 12:24:35 turbo Exp $
 
 function doublebouncehost_check($type) {
 	global $error, $doublebouncehost, $doublebounceto;
@@ -35,7 +35,7 @@ function doublebouncehost_init($host) {
 	
 	foreach($attribs as $attrib){
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-										   "cn=" . $host . "," . PQL_LDAP_CONTROL_BASEDN,
+										   "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
 										   $attrib);
 		
 		if(!is_null($value)){
@@ -126,10 +126,10 @@ function doublebouncehost_save($type, $host) {
 	  case "modify";
 		// save entries
 		$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-												  "cn=" . $host . "," . PQL_LDAP_CONTROL_BASEDN,
+												  "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
 												  "doublebouncehost", $doublebouncehost);
     	$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-												  "cn=" . $host . "," . PQL_LDAP_CONTROL_BASEDN,
+												  "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
 												  "doublebounceto", $doublebounceto);
 		
 		if(in_array(false, $return)){

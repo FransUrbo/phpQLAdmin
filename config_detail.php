@@ -2,6 +2,8 @@
 // shows configuration of phpQLAdmin
 // config_detail.php,v 1.3 2002/12/12 21:52:08 turbo Exp
 //
+session_start();
+
 require("pql.inc");
 include("header.html");
 ?>
@@ -42,11 +44,11 @@ include("header.html");
 </tr>
 <tr>
 	<td class="title">LDAP host</td>
-	<td class="<?php table_bgcolor(); ?>"><?php echo PQL_LDAP_HOST; ?>&nbsp;</td>
+	<td class="<?php table_bgcolor(); ?>"><?=$USER_HOST_USR?>&nbsp;</td>
 </tr>
 <tr>
 	<td class="title">LDAP base dn</td>
-	<td class="<?php table_bgcolor(); ?>"><?php echo PQL_LDAP_BASEDN; ?>&nbsp;</td>
+	<td class="<?php table_bgcolor(); ?>"><?=$USER_SEARCH_DN_USR?>&nbsp;</td>
 </tr>
 <tr>
 	<td class="title">use control db</td>
@@ -62,7 +64,7 @@ include("header.html");
 <?php if(PQL_LDAP_CONTROL_USE) { ?>
 <tr>
 	<td class="title">LDAP control host</td>
-	<td class="<?php table_bgcolor(); ?>"><?php echo PQL_LDAP_CONTROL_HOST; ?>&nbsp;</td>
+	<td class="<?php table_bgcolor(); ?>"><?=$$USER_HOST_CTR?>&nbsp;</td>
 </tr>
 <tr>
 	<td class="title">LDAP control base dn</td>

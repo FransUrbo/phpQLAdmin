@@ -3,7 +3,7 @@
 // concurrencylocal (may simultaneous local deliveries)
 // concurrencyremote (may simultaneous remote deliveries)
 //
-// $Id: attrib.control.concurrencylocal.inc,v 2.1 2002-12-17 06:21:05 turbo Exp $
+// $Id: attrib.control.concurrencylocal.inc,v 2.2 2002-12-17 12:24:35 turbo Exp $
 
 function concurrencylocal_check($type) {
 	global $error, $concurrencylocal, $concurrencyremote;
@@ -34,7 +34,7 @@ function concurrencylocal_init($host) {
 
 	foreach($attribs as $attrib){
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-										   "cn=" . $host . "," . PQL_LDAP_CONTROL_BASEDN,
+										   "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
 										   $attrib);
 		
 		if(!is_null($value)){
@@ -131,10 +131,10 @@ function concurrencylocal_save($type){
 	  case "modify";
 		// save entries
 		$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-												  "cn=" . $host . "," . PQL_LDAP_CONTROL_BASEDN,
+												  "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
 												  "concurrencylocal", $concurrencylocal);
     	$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-												  "cn=" . $host . "," . PQL_LDAP_CONTROL_BASEDN,
+												  "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
 												  "concurrencyremote", $concurrencyremote);
 		
 		if(in_array(false, $return)){

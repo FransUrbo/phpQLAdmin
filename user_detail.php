@@ -3,8 +3,10 @@
 // user_detail.php,v 1.3 2002/12/12 21:52:08 turbo Exp
 //
 session_start();
+
 require("pql.inc");
-$_pql = new pql($USER_DN, $USER_PASS);
+
+$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
 
 // Get default domain name for this domain
 $defaultdomain = pql_get_domain_value($_pql->ldap_linkid, $domain, "defaultdomain");
@@ -33,29 +35,29 @@ if(isset($rlnb) and PQL_AUTO_RELOAD){
   <br><br>
 <?php
 // check if domain exists
-if(!pql_domain_exist($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain)){
+if(!pql_domain_exist($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain)){
     echo "domain &quot;$domain&quot; does not exists";
     exit();
 }
 
 // check if user exists
-if(!pql_user_exist($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user)){
+if(!pql_user_exist($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user)){
 	echo "user &quot;$user&quot; does not exist";
 	exit();
 }
 
 // Get basic user information
-$cn = pql_get_userattribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user,"cn");
-$sn = pql_get_userattribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user,"sn");
-$uidnr = pql_get_userattribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user,"uidnumber");
-$gidnr = pql_get_userattribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user,"gidnumber");
-$shell = pql_get_userattribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user,"loginshell");
-$uid = pql_get_userattribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user,"uid");
-$pw = pql_get_userattribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user,"userpassword");
-$mailbox = pql_get_userattribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user,"mailmessagestore");
-$mailhost = pql_get_userattribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user,"mailhost");
-$homedir = pql_get_userattribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user,"homedirectory");
-$quota = pql_get_userquota($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user);
+$cn = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user,"cn");
+$sn = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user,"sn");
+$uidnr = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user,"uidnumber");
+$gidnr = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user,"gidnumber");
+$shell = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user,"loginshell");
+$uid = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user,"uid");
+$pw = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user,"userpassword");
+$mailbox = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user,"mailmessagestore");
+$mailhost = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user,"mailhost");
+$homedir = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user,"homedirectory");
+$quota = pql_get_userquota($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user);
 
 $uid = $uid[0]; $pw = $pw[0]; $mailbox = $mailbox[0]; $mailhost = $mailhost[0];
 $homedir = $homedir[0]; $shell = $shell[0];
@@ -128,8 +130,8 @@ if($mailhost == ""){
   <br>
 
 <?php
-$email = pql_get_userattribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user, PQL_LDAP_ATTR_MAIL);
-$aliases = pql_get_userattribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user, PQL_LDAP_ATTR_MAILALTERNATE);
+$email = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_MAIL);
+$aliases = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_MAILALTERNATE);
 ?>
   <!-- Addresses (mail, mailalternateaddress) -->
   <table cellspacing="0" cellpadding="3" border="0">
@@ -169,7 +171,7 @@ if(is_array($aliases)){
   <br>
 
 <?php
-$forwarders = pql_search_forwarders($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user);
+$forwarders = pql_search_forwarders($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user);
 ?>
   <!-- forwarders in other accounts to this user  -->
   <table cellspacing="0" cellpadding="3" border="0">
@@ -205,7 +207,7 @@ if(empty($forwarders)) {
   <br>
 
 <?php
-	$status = pql_get_userattribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user, PQL_LDAP_ATTR_ISACTIVE);
+	$status = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_ISACTIVE);
 	$status = pql_ldap_accountstatus($status[0]);
 ?>
   <!-- accountstatus -->
@@ -238,7 +240,7 @@ if($ADVANCED_MODE) {
       </tr>
 
 <?php
-  $deliverymode = pql_get_userattribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user, PQL_LDAP_ATTR_MODE);
+  $deliverymode = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_MODE);
 
   if(empty($deliverymode)){
 ?>
@@ -270,8 +272,8 @@ if($ADVANCED_MODE) {
 
   <!-- advanced delivery options -->
 <?php
-  $qmaildotmode = pql_get_userattribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user, PQL_LDAP_ATTR_DOTMODE);
-  $deliveryprogrampath = pql_get_userattribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user, PQL_LDAP_ATTR_PROGRAM);
+  $qmaildotmode = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_DOTMODE);
+  $deliveryprogrampath = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_PROGRAM);
 
   $qmaildotmode = $qmaildotmode[0];
   $deliveryprogrampath = $deliveryprogrampath[0];
@@ -347,7 +349,7 @@ if($ADVANCED_MODE) {
 
 <?php
 } // end if ADVANCED mode
-  $forwarders = pql_get_userattribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user, PQL_LDAP_ATTR_FORWARDS);
+  $forwarders = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_FORWARDS);
 ?>
   <!-- Forwarders (mailalternateaddress) -->
   <table cellspacing="0" cellpadding="3" border="0">

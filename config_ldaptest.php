@@ -2,6 +2,8 @@
 // make some simple tests on ldap connection
 // config_ldaptest.php,v 1.4 2002/12/13 13:47:10 turbo Exp
 //
+session_start();
+
 require("pql.inc");
 require("pql_control.inc");
 
@@ -13,19 +15,19 @@ if(!function_exists("ldap_connect")){
 	$ldap_ext = PQL_TEST_LDAP_EXT_OK;
 	
 	// user directory connection
-	$_pql = new pql('', '', true);
-	if(!$_pql->connect()){
+	$_pql = new pql($USER_HOST_USR, '', '', true);
+	if(!$_pql->connect($USER_HOST_USR)){
 		$connection = PQL_TEST_CONNECTION_FAILED;
 		
 		// do additional tests
-		if(!gethostbyname(PQL_LDAP_HOST)){
+		if(!gethostbyname($USER_HOST_USR)){
 			// not resolved
-			$connection .= ", " . pql_complete_constant(PQL_TEST_CONNECTION_RESOLVE_ERR ,array("host" => PQL_LDAP_HOST ));
+			$connection .= ", " . pql_complete_constant(PQL_TEST_CONNECTION_RESOLVE_ERR ,array("host" => $USER_HOST_USR ));
 		} else {
 			// try to open a connection
-			if(!fsockopen(PQL_LDAP_HOST, 389)){
+			if(!fsockopen($USER_HOST_USR, 389)){
 				// impossible to connect
-				$connection .= ", " . pql_complete_constant(PQL_TEST_CONNECTION_CONNECT_ERR ,array("host" => PQL_LDAP_HOST ));
+				$connection .= ", " . pql_complete_constant(PQL_TEST_CONNECTION_CONNECT_ERR ,array("host" => $USER_HOST_USR ));
 			}
 		}
 	} else {
@@ -39,8 +41,8 @@ if(!function_exists("ldap_connect")){
 
 	if(PQL_LDAP_CONTROL_USE){
 		// control directory connection
-		$_pql_control = new pql_control('', '', true);
-		if(!$_pql_control->connect()) {
+		$_pql_control = new pql_control($USER_HOST_CTR, '', '', true);
+		if(!$_pql_control->connect($USER_HOST_CTR)) {
 			$connection_control = PQL_TEST_CONNECTION_FAILED;
 
 			// do additional tests
@@ -51,7 +53,7 @@ if(!function_exists("ldap_connect")){
 				// try to open a connection
 				if(!fsockopen(PQL_LDAP_CONTROL_HOST, 389)){
 					// impossible to connect
-					$connection_control .= ", " . pql_complete_constant(PQL_TEST_CONNECTION_CONNECT_ERR ,array("host" => PQL_LDAP_HOST ));
+					$connection_control .= ", " . pql_complete_constant(PQL_TEST_CONNECTION_CONNECT_ERR ,array("host" => $USER_HOST_CTR));
 				}
 			}
 		} else {

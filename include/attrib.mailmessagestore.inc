@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailmessagestore (path to mailbox)
-// $Id: attrib.mailmessagestore.inc,v 2.0 2002-12-13 14:34:58 turbo Exp $
+// $Id: attrib.mailmessagestore.inc,v 2.1 2002-12-17 12:24:35 turbo Exp $
 
 function attribute_check($type){
 	global $mailmessagestore, $domain, $oldvalue, $_pql, $error;
@@ -86,7 +86,7 @@ function attribute_save($type){
 				break;
     	}
 
-			if(pql_replace_userattribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user, PQL_LDAP_ATTR_MAILSTORE, $mailmessagestore)){
+			if(pql_replace_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_MAILSTORE, $mailmessagestore)){
 				$msg = pql_complete_constant(PQL_LDAP_MAILMESSAGESTORE_CHANGE_OK, array("path" => $mailmessagestore));
 			} else {
 				$msg = PQL_LDAP_MAILMESSAGESTORE_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);

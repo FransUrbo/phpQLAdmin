@@ -23,9 +23,25 @@ if ($logout == 1 or !empty($msg)) {
 	}
 }
 
+// Start with default value of USER_HOST_USR
+// LDAP server to connect to - first one
+// as default.
+if(!$USER_HOST_USR) {
+	$host = split(' ', PQL_LDAP_HOST);
+	$host = split(';', $host[0]);
+	$USER_HOST_USR = $host[0] . ";" . $host[1];
+
+	session_register("USER_HOST_USR");
+} elseif(is_array($USER_HOST_USR)) {
+	$host = $USER_HOST_USR[0];
+	$USER_HOST_USR = $host;
+
+	session_register("USER_HOST_USR");
+}
+
 // These variables will be NULL the first time,
 // so we will bind anonymously...
-$_pql = new pql($USER_DN, $USER_PASS);
+$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
 
 if ($LOGIN_PASS == 1) {
 	Header("Location:index2.php");
@@ -109,6 +125,54 @@ if (empty($uname) or empty($passwd)) {
 } else {
 	$uname = strtolower($uname);	
 
+	// -------------------------------------
+	// Get the search base - user database
+	if(!$USER_SEARCH_DN_USR) {
+		$host = split(' ', PQL_LDAP_HOST);
+		$dn   = split(';', $host[0]);
+		$USER_SEARCH_DN_USR = $dn[2];
+		
+		session_register("USER_SEARCH_DN_USR");
+	} elseif(is_array($USER_SEARCH_DN_USR)) {
+		$host = $USER_HOST_USR[2];
+		$USER_SEARCH_DN_USR = $host;
+		
+		session_register("USER_SEARCH_DN_USR");
+	}
+
+	// -------------------------------------
+	// Start with default value of USER_HOST_CTR
+	// LDAP server to connect to - first one
+	// as default.
+	if(!$USER_HOST_CTR) {
+		$host = split(' ', PQL_LDAP_CONTROL_HOST);
+		$host = split(';', $host[0]);
+		$USER_HOST_CTR = $host[0] . ";" . $host[1];
+		
+		session_register("USER_HOST_CTR");
+	} elseif(is_array($USER_HOST_CTR)) {
+		$host = $USER_HOST_CTR[0];
+		$USER_HOST_CTR = $host;
+		
+		session_register("USER_HOST_CTR");
+	}
+
+	// -------------------------------------
+	// Get the search base - controls database
+	if(!$USER_SEARCH_DN_CTR) {
+		$host = split(' ', PQL_LDAP_CONTROL_HOST);
+		$dn   = split(';', $host[0]);
+		$USER_SEARCH_DN_CTR = $dn[2];
+		
+		session_register("USER_SEARCH_DN_CTR");
+	} elseif(is_array($USER_SEARCH_DN_CTR)) {
+		$host = $USER_HOST_CTR[2];
+		$USER_SEARCH_DN_CTR = $host;
+		
+		session_register("USER_SEARCH_DN_CTR");
+	}
+
+	// -------------------------------------
 	// Get DN of user
 	//
 	// NOTE:
@@ -116,7 +180,7 @@ if (empty($uname) or empty($passwd)) {
 	// so we must have read access (to the DN and CN/UID =>
 	// the PQL_LDAP_REFERENCE_USERS_WITH define entry) as
 	// anonymous here!
-	$rootdn = pql_get_dn($_pql->ldap_linkid, PQL_LDAP_BASEDN, $uname);
+	$rootdn = pql_get_dn($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $uname);
 
 	// Rebind as user
 	$_pql->bind($rootdn, $USER_PASS);
@@ -130,9 +194,8 @@ if (empty($uname) or empty($passwd)) {
 	$USER_ID	= $uname;
 	$USER_PASS	= $passwd;
 	$USER_DN	= $rootdn;
-	$USER_BASE	= $base;
 
-	if (!session_register("USER_ID", "USER_PASS", "USER_DN", "USER_BASE")) {
+	if (!session_register("USER_ID", "USER_PASS", "USER_DN")) {
 		die (PQL_SESSION_REG);
 	}
 
