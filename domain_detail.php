@@ -126,19 +126,19 @@ if($view == 'owner') {
 if(($view == 'users') or ($view == 'chval')) {
 	$users = pql_get_user($_pql->ldap_linkid, $domain);
 
-	if($view == 'users')
-		include("./tables/domain_details-users.inc");
-
-	if(is_array($users) and ($view == 'chval'))
-	  include("./tables/domain_details-users_chval.inc");
-	else {
+	if(is_array($users)) {
+		if($view == 'chval')
+		  include("./tables/domain_details-users_chval.inc");
+		elseif($view == 'users')
+		  include("./tables/domain_details-users.inc");
+	} else {
 ?>
   <br><br>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="2" align="left">No users in this branch!</th>
   </table>
 <?php
-    }
+	}
 }
 
 if($ADVANCED_MODE == 1) {

@@ -21,6 +21,11 @@ phpQLAdmin 2.0.15 Release (TO BE ANNOUNCED)
 	  - Show the Actions (delete branch) button if we're running
 	    in advanced mode.
 	    Closes bug 15
+	  - Correct the Domain information -> Registered users table
+	    (showed 'No users in this branch!' even if there WAS users).
+	    + Correct the links to the user(s) detail page (missing user
+	      DN).
+	    Closes bug 18
 
 	GUI layout change
 	  - Possibility to set a value in the domain branch saying we
