@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.24 2004-03-11 18:13:42 turbo Exp $
+// $Id: pql_bind9.inc,v 2.24.16.1 2004-12-19 10:21:17 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -302,8 +302,14 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 	$entry['objectClass'][] = 'top';
 	$entry['objectClass'][] = 'dNSZone';
 
+	// Add the OpenLDAPaci attribute (maybe)
+	if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci"))
+	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($linkid, $_SESSION["USER_DN"], 'dnszone');
+
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_bind9_add_host", $dn, $entry);
+	if(file_exists("./.DEBUG_ME"))
+	  die($LDIF);
 
 	if(! ldap_add($linkid, $dn, $entry)) {
 		pql_format_error(1);
