@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.166 2004-03-19 10:09:39 turbo Exp $
+// $Id: pql.inc,v 2.167 2004-03-26 09:46:05 turbo Exp $
 //
 
 // ----------------------------
@@ -926,13 +926,15 @@ function pql_domain_set_value($linkid, $dn, $type, $value) {
 		if(!($entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_setup_branch_objectclasses(0, $dn, $linkid)))
 		  unset($entry[pql_get_define("PQL_ATTR_OBJECTCLASS")]);
 
-		// There's TWO config object classes. A BRANCH and a GLOBAL.
-		// If this is a GLOBAL attribute, pql_setup_branch_objectclasses()
-		// doesn't catch this. Do it manually here instead...
-		global $PQL_ATTRIBUTE;
-		foreach($value as $attrib => $val) {
-			if(in_array($attrib, $PQL_ATTRIBUTE["GLOBAL"]))
-			  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "phpQLAdminGlobal";
+		if(!in_array("phpQLAdminGlobal", $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")])) {
+			// There's TWO config object classes. A BRANCH and a GLOBAL.
+			// If this is a GLOBAL attribute, pql_setup_branch_objectclasses()
+			// doesn't catch this. Do it manually here instead...
+			global $PQL_ATTRIBUTE;
+			foreach($value as $attrib => $val) {
+				if(in_array($attrib, $PQL_ATTRIBUTE["GLOBAL"]))
+				  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "phpQLAdminGlobal";
+			}
 		}
 	}
 		
@@ -2037,7 +2039,6 @@ function pql_setup_branch_objectclasses($filter = 0, $dn, $linkid = '') {
 		$object = ldap_explode_dn($dn, 0);
 		$sr     = @ldap_read($linkid, $dn, $object[0], array(pql_get_define("PQL_ATTR_OBJECTCLASS")));
 		$ocs    = @ldap_get_entries($linkid, $sr) or pql_format_error(1);
-		
 		for($j=0; $j < $ocs[0][pql_get_define("PQL_ATTR_OBJECTCLASS")]["count"]; $j++) {
 			if(eregi('phpQLAdminBranch', $ocs[0][pql_get_define("PQL_ATTR_OBJECTCLASS")][$j]))
 				$got_phpqladmin_objectclass_branch = 1;
