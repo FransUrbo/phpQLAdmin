@@ -1,10 +1,10 @@
 <?php
 // attribute plugin for
 // default domain name (the default domainname for a domain)
-// $Id: attrib.defaultdomain.inc,v 2.12 2003-04-04 06:54:31 turbo Exp $
+// $Id: attrib.defaultdomain.inc,v 2.13 2003-05-04 10:11:47 turbo Exp $
 
 function attribute_check(){
-    global $defaultdomain, $domain, $oldvalue, $_pql, $error;
+    global $defaultdomain, $domain, $oldvalue, $_pql, $error, $rootdn;
     
     // is typed in ?
     if($defaultdomain == ""){
@@ -22,13 +22,13 @@ function attribute_check(){
 }
 
 function attribute_init(){
-    global $defaultdomain, $oldvalue;
+    global $defaultdomain, $oldvalue, $rootdn;
     
     $defaultdomain = $oldvalue;
 }
 
 function attribute_print_form(){
-    global $defaultdomain, $domain, $PHP_SELF, $attrib, $oldvalue, $error;
+    global $defaultdomain, $domain, $PHP_SELF, $attrib, $oldvalue, $error, $rootdn;
 	$oldvalue = $defaultdomain;
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
@@ -45,36 +45,36 @@ function attribute_print_form(){
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
     <input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
     <input type="hidden" name="domain" value="<?php echo $domain; ?>">
+    <input type="hidden" name="rootdn" value="<?=$rootdn?>">
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 <?php
 }
 
 function attribute_save($type){
-    global $domain, $attrib, $oldvalue, $defaultdomain, $_pql;
+    global $domain, $attrib, $oldvalue, $defaultdomain, $_pql, $config, $rootdn;
     
     // recontrol values
-    if(!attribute_check($type)){
-		return false;
-    }
-    
+    if(!attribute_check($type))
+	  return false;
+
+	if($defaultdomain == $oldvalue) {
+		// don't change if new value equal to old one
+		$msg = PQL_LANG_DOMAIN_DEFAULT_CHANGE_UNCHANGED;
+		attribute_forward($msg);
+		break;
+	}
+		
     switch($type){
       case "add":
       case "modify":
-		if($defaultdomain == $oldvalue){
-			// don't change if new value equal to old one
-			$msg = PQL_LANG_DOMAIN_DEFAULT_CHANGE_UNCHANGED;
-			attribute_forward($msg);
-			break;
-    	}
-		
 		if(pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, $defaultdomain)){
 			$msg = pql_complete_constant(PQL_LANG_DOMAIN_DEFAULT_CHANGE_OK, array("name" => $defaultdomain));
 		} else {
 			$msg = PQL_LANG_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 		}
 		
-		if(PQL_CONF_REFERENCE_DOMAINS_WITH == "dc") {
+		if($config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$rootdn] == "dc") {
 			require("./include/pql_control.inc");
 			$_pql_control = new pql_control($GLOBALS["USER_HOST"], $GLOBALS["USER_DN"], $GLOBALS["USER_PASS"]);
 			
