@@ -63,6 +63,12 @@ phpQLAdmin will add the two objectclasses 'phpQLAdminConfig' and
 backward compability should be ok with an non-phpQLAdmin created domain/branch.
 If it's not, please report a bug at the mailinglist phpqladmin@bayour.com.
 
+One attribute in the phpQLAdminBranch objectclass that's a little troublesome
+is the defaultDomain attribute. It exists in the qmailControl.schema distributed
+with the QmailLDAP/Controls patch. If you don't use this patch, you will have
+to uncomment the attribute from the phpQLAdmin.schema before you restart your
+LDAP server. The attribute is defined on lines 237 to 241 in the phpQLAdmin.schema,
+so remove the leading dashes (#) on those lines.
 
 The PHP/LDAP module does an LDAPv2 bind, which means that you will have to
 allow a version 2 bind. In OpenLDAP version 2.0, this is done by making sure
