@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.35 2004-11-11 14:41:01 turbo Exp $
+// $Id: control_detail.php,v 1.36 2004-11-12 09:20:40 turbo Exp $
 session_start();
 require("./include/pql_config.inc");
 
@@ -32,36 +32,35 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 
 	foreach($attribs as $key => $attrib) {
 		$value = pql_get_attribute($_pql_control->ldap_linkid, $cn, $attrib);
-		if(is_array($value)) {
-			if($key == "locals") {
-				asort($value);
-				foreach($value as $val) {
-					$locals[] = $val;
-				}
-			} elseif($key == "rcpthosts") {
-				asort($value);
-				foreach($value as $val) {
-					$rcpthosts[] = $val;
-				}
-			}
-		} else {
-			if($key == "ldapserver")
-			  $$key = "<i>".$_SESSION["USER_HOST"]."</i>";
-			elseif($key == "ldapbasedn")
-			  $$key = "<i>".$_SESSION["USER_SEARCH_DN_CTR"]."</i>";
-			elseif($key == "ldappassword")
-			  $$key = "encrypted";
-			elseif(!$value)
-			  $$key = "<i>".$LANG->_('Not set')."</i>";
-			else
-			  $$key = $value;
-		}
+		if($key == "locals") {
+			if(!is_array($value))
+			  $value = array($value);
+
+			asort($value);
+			foreach($value as $val)
+			  $locals[] = $val;
+		} elseif($key == "rcpthosts") {
+			if(!is_array($value))
+			  $value = array($value);
+
+			asort($value);
+			foreach($value as $val)
+			  $rcpthosts[] = $val;
+		} elseif($key == "ldapserver")
+		  $$key = "<i>".$_SESSION["USER_HOST"]."</i>";
+		elseif($key == "ldapbasedn")
+		  $$key = "<i>".$_SESSION["USER_SEARCH_DN_CTR"]."</i>";
+		elseif($key == "ldappassword")
+		  $$key = "encrypted";
+		elseif(!$value)
+		  $$key = "<i>".$LANG->_('Not set')."</i>";
+		else
+		  $$key = $value;
 	}
 
 	// print status message, if one is available
-	if(isset($msg)) {
-		pql_format_status_msg($msg);
-	}
+	if(isset($msg))
+	  pql_format_status_msg($msg);
 
 	// Just incase we have a new style quota, but not an old one...
 	if(($defaultquotasize and !eregi('not set', $defaultquotasize)) and
@@ -92,16 +91,16 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 </table>
 
 <?php
-	if($view == '')
-		$view = 'default';
+	if($_REQUEST["view"] == '')
+		$_REQUEST["view"] = 'default';
 
-	if($view == 'default')
+	if($_REQUEST["view"] == 'default')
 		include("./tables/control_details-base.inc");
 
-	if($view == 'hosts')
+	if($_REQUEST["view"] == 'hosts')
 		include("./tables/control_details-hosts.inc");
 
-	if($view == 'action')
+	if($_REQUEST["view"] == 'action')
 		include("./tables/control_details-action.inc");
 } else {
 ?>
