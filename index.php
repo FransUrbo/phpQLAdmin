@@ -4,6 +4,11 @@
 //
 session_start();
 
+// Include this for completness (and to get an early
+// warning if it's missing - browser goes blank, no
+// error!).
+require("./include/config.inc");
+
 require("./include/pql.inc");
 require("./include/pql_control.inc");
 require("./include/pql_control_plugins.inc");
