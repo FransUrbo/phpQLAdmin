@@ -3,7 +3,7 @@
 // This file contains what I think is 'resonable defaults'.
 // Don't change here, change any values in the web interface!
 //
-// $Id: defaults.inc,v 2.26 2003-12-11 06:08:17 turbo Exp $
+// $Id: defaults.inc,v 2.27 2004-01-13 18:55:44 turbo Exp $
 
 // NOTE: Some of these defines isn't called with the (root/top)
 //       DN. They are (site) global variables, not per branch.
@@ -11,6 +11,10 @@
 // ----------------------------
 // PQL_GLOB_WHOAREWE
 pql_set_define("PQL_GLOB_WHOAREWE", "phpQLAdmin", false);
+
+// ----------------------------
+// Default language (is changed through the GUI)
+pql_set_define("PQL_GLOB_LANG", "en", false);
 
 // ----------------------------
 // PQL_CONF_SHOW_USERS (true | false)
@@ -91,7 +95,7 @@ pql_set_define("PQL_GLOB_EZMLM_USE", false, false);
 
 // ----------------------------
 // Path to EZMLM commands
-pql_set_define("PQL_GLOB_EZMLM_PATH", "/usr/bin", false);
+pql_set_define("PQL_GLOB_EZMLM_PATH", "/usr/sbin", false);
 
 // ----------------------------
 // Should we enable the domain (Bind 9) editor?
