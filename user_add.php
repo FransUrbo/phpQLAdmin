@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.116.2.7 2005-02-21 07:41:57 turbo Exp $
+// $Id: user_add.php,v 2.116.2.8 2005-02-22 09:17:32 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -66,7 +66,7 @@ if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
 // Check the input
 $error = false; $error_text = array();
 switch($_REQUEST["page_curr"]) {
-  // {{{ Make sure a new user can be added OR that we autogenerate stuff for the very first page)
+  // {{{ '':    Make sure a new user can be added OR that we autogenerate stuff for the very first page)
   case "":
 	if($_REQUEST["page_next"] == "one") {
 		// {{{ Retreive the template definition
@@ -213,7 +213,7 @@ switch($_REQUEST["page_curr"]) {
 	break;
 	// }}}
 
-  // {{{ Validate all user details specified in the very first page
+  // {{{ 'one': Validate all user details specified in the very first page
   // Values such as: surname, name, email, template, account_status etc
   case "one":
 	if($_REQUEST["template"] == "alias") {
@@ -529,6 +529,18 @@ switch($_REQUEST["page_curr"]) {
 		}
 		// }}}
 		// }}}
+	}
+	break;
+	// }}}
+
+  // {{{ 'two': Tripplecheck the mail host value
+  case "two":
+	if($_REQUEST["mail"] and ($_REQUEST["page_next"] == 'save') and
+	   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILHOST")))
+	{
+	  $error = true;
+	  $error_text["userhost"] = $LANG->_('Missing');
+	  $_REQUEST["page_next"] = 'two';
 	}
 	break;
 	// }}}

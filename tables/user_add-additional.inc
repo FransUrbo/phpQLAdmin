@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-additional.inc,v 1.24.2.5 2005-02-22 07:57:33 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.24.2.6 2005-02-22 09:17:33 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <!-- Some hidden values from previous page(s) -->
 <?php if($_REQUEST["surname"] and pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_CN"))) { ?>
@@ -100,6 +100,15 @@
         <tr class="<?php pql_format_table(); ?>">
           <td class="title" valign="top"><?=$LANG->_('Mail server')?></td>
           <td>
+<?php	if(($_REQUEST["mail"] and 
+			pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILHOST")))
+		   or
+		   ($_REQUEST["mail"] or
+			pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILHOST"), 'MUST')))
+		{
+			 echo pql_templates_mark_importance(1);
+		}
+?>
             <?php echo pql_format_error_span($error_text["userhost"]); ?>
 <?php	$i=0;
 		if($_REQUEST["userhost"]["qlc"]) {
