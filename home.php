@@ -85,8 +85,10 @@ fclose($fp);
         <select name="ldapserver">
 <?php
 		foreach($servers as $server) {
+		    // We're only interssted in the HOST entry (othervise the list will be to long)
+		    $host = split(';', $server);
 ?>
-          <option value="<?=$server?>"><?=$server?></option>
+          <option value="<?=$server?>"><?=$host[0]?></option>
 <?php
 		}
 ?>
