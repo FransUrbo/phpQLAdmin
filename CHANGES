@@ -12,6 +12,9 @@ phpQLAdmin 2.2.1 TO BE ANNOUNCED
 	      'include/attrib.cn.inc'.
 	  - Check if inclusion of home directory should be done outside the check
 	    if mail host is allowed. Two separate things...
+	  - [Merge from HEAD]
+	    + Session was started with the path specified in php.ini:session.cookie_path
+	      which overwrote session from other installation(s).
 
 	GUI layout changes
 	  - User addition errors is 'tabbed' to the right (aligned with the input
