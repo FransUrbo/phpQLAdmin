@@ -15,7 +15,7 @@ function check_domain_value($linkid, $dn, $attrib, $value) {
 		// Success - delete it again
 		unset($entry);
 		$entry['test'] = array();
-		ldap_mod_del($linkid, $basedn, $entry);
+		ldap_mod_del($linkid, $dn, $entry);
 
 		return(0);
 	}
@@ -224,14 +224,14 @@ if($basedn) {
 <tr></tr>
 
 <tr>
-	<td class="title">Write access to top DN (<?=$basedn?>)</td>
+	<td class="title">Access to write phpQLAdmin configuration</td>
     <?php $class=table_bgcolor(0); ?>
 	<td class="<?=$class?>"><?=$TEST["basedn"]?></td>
 </tr>
 	
 
 <tr>
-	<td class="title">Write access to create domains/branches</td>
+	<td class="title">Access to create domains/branches</td>
     <?php $class=table_bgcolor(0); ?>
 	<td class="<?=$class?>"><?=$TEST["branches"][$basedn]?></td>
 </tr>
@@ -242,7 +242,7 @@ if($basedn) {
 		foreach($domains as $key => $domain) {
 ?>
 <tr>
-	<td class="title">Write access to DN <b><?=$domain?></b></td>
+	<td class="title">Access to modify DN <b><?=$domain?></b></td>
     <?php $class=table_bgcolor(0); ?>
 	<td class="<?=$class?>"><?=$TEST["branches"][$domain]?></td>
 </tr>
