@@ -1,6 +1,6 @@
 <?php
 // shows results of search
-// $Id: search.php,v 2.26 2004-03-27 12:50:28 turbo Exp $
+// $Id: search.php,v 2.27 2004-11-05 11:00:18 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -92,7 +92,7 @@ if(!$_SESSION["SINGLE_USER"]) {
 		if($_REQUEST["debug"])
 		  echo "$dn: $filter<br>";
 
-		$usrs = pql_search($_pql->ldap_linkid, $dn, $filter);
+		$usrs = pql_get_dn($_pql->ldap_linkid, $dn, $filter, 'SUBTREE');
 		for($i=0; $usrs[$i]; $i++) {
 			$is_group = 0;
 			
@@ -152,23 +152,20 @@ if(!$_SESSION["SINGLE_USER"]) {
 		asort($users);
 		foreach($users as $user) {
 			$uid    = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_UID"));
-			$uid    = $uid[0];
 
 			// DLW: I think displayname would be a better choice.
 			$cn     = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_CN"));
-			$cn     = $cn[0];
-			
+			if(is_array($cn)) $cn = $cn[0];
 			$mail   = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_MAIL"));
-			$mail   = $mail[0];
 			
 			$status = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_ISACTIVE"));
-			$status = pql_ldap_accountstatus($status[0]);
+			$status = pql_ldap_accountstatus($status);
 
 			$rootdn = pql_get_rootdn($user, 'search.php');
 ?>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=urlencode($user)?>"><?=$cn?></a></td>
+        <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=urlencode($user)?>" target="_new"><?=$cn?></a></td>
         <td><?=$uid?></td>
         <td><?=$mail?></td>
         <td><?=$status?></td>
@@ -183,7 +180,7 @@ if(!$_SESSION["SINGLE_USER"]) {
 		  // no users registred
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td colspan="5"><?=$LANG->_('No users registred')?></td>
+        <td colspan="5"><?=$LANG->_('No users found')?></td>
       </tr>
 <?php }
 
