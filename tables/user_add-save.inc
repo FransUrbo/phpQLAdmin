@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.22 2004-09-24 06:20:41 turbo Exp $
+// $Id: user_add-save.inc,v 1.23 2004-10-09 16:23:56 turbo Exp $
 
 // URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
 $_REQUEST["surname"] = urldecode($_REQUEST["surname"]);
@@ -8,14 +8,14 @@ $_REQUEST["name"]    = urldecode($_REQUEST["name"]);
 // ============================================================================================
 // ============== PREPARE THE USERS ATTRIBUTE(S)
 
-// ------------------
-// convert uid, email to lowercase
+// {{{ Convert uid, email to lowercase
 if($_REQUEST["uid"]) {
 	$_REQUEST["uid"] = strtolower($_REQUEST["uid"]);
 	$entry[pql_get_define("PQL_ATTR_UID")] = $_REQUEST["uid"];
 }
+// }}}
 
-// ------------------
+// {{{ Add Firstname and/or Lastname (if object classes allow etc)
 $res = pql_check_attribute($objectclasses_schema, $objectclasses_included, pql_get_define("PQL_ATTR_SN"));
 if(($_REQUEST["account_type"] != "mail") or $res[0]) {
 	if($_REQUEST["account_type"] != "group") {
@@ -41,8 +41,9 @@ if(($_REQUEST["account_type"] != "mail") or $res[0]) {
 		$entry[pql_get_define("PQL_ATTR_CN")] = $_REQUEST["uid"];
 	}
 }
+// }}}
 
-// ------------------
+// {{{ Add mail and/or mail aliases (if object classes allow etc)
 if($_REQUEST["account_type"] != 'shell') {
 	if($_REQUEST["account_type"] != "group") {
 		$res = pql_check_attribute($objectclasses_schema, $objectclasses_included, pql_get_define("PQL_ATTR_ISACTIVE"));
@@ -84,15 +85,17 @@ if($_REQUEST["account_type"] != 'shell') {
 		  $entry[pql_get_define("PQL_ATTR_MAILALTERNATE")][] = strtolower($email_temp . "@" . $additional);
 	}
 }
+// }}}
 
-// ------------------
 if($_REQUEST["account_type"] == "forward") {
-	// convert forwardingaddress to lowercase
+	// {{{ Add and convert forwardingaddress to lowercase
 	$forwardingaddress = strtolower($forwardingaddress);
 	
 	// set attributes
 	$entry[pql_get_define("PQL_ATTR_FORWARDS")]	= $forwardingaddress;
+	// }}}
 
+	// {{{ Setup the delivery modes
 	if(!$_SESSION["NEW_STYLE_QUOTA"]) {
 		// The new QmailLDAP have a changed 'deliveryMode' setup.
 		// Don't add this automaticly.
@@ -104,11 +107,11 @@ if($_REQUEST["account_type"] == "forward") {
 	
 	if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
 	  $entry[pql_get_define("PQL_ATTR_HOMEDIR")]= pql_get_define("PQL_CONF_VIRTUAL_BASEHOME");
+	// }}}
 } else {
 	// Any other account than 'forwarding'.
 
-	// -----------------
-	// Add [ug]id number to the entry array
+	// {{{ Add [ug]id number, gecos etc to the entry array
 	$res = pql_check_attribute($objectclasses_schema, $objectclasses_included, pql_get_define("PQL_ATTR_QMAILUID"));
 	if(($_REQUEST["account_type"] != "mail") or $res[0]) {
 		// We COULD end up here, EVEN if it's a mail account! So we have to tripple check again,
@@ -134,7 +137,6 @@ if($_REQUEST["account_type"] == "forward") {
 			  $entry[pql_get_define("PQL_ATTR_QMAILGID")] = $gidnr;
 		}
 		
-		// -----------------
 		// Gecos is needed to do PAM/NSS LDAP login 
 		if($_REQUEST["surname"] && $_REQUEST["name"] &&
 		   (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")))
@@ -147,9 +149,9 @@ if($_REQUEST["account_type"] == "forward") {
 			$entry[pql_get_define("PQL_ATTR_GECOS")]  = $tmp1 . " " . $tmp2;
 		}
 	}
+	// }}}
 	
-	// -----------------
-	// Add password (crypted w/ salt) to the entry array
+	// {{{ Add the password to the entry array
 	if(eregi('KERBEROS', $_REQUEST["pwscheme"])) {
 		// We're using the {KERBEROS} password scheme. Special circumstances.
 		// The userPassword and krb5PrincipalName needs to be set. This is 
@@ -167,21 +169,23 @@ if($_REQUEST["account_type"] == "forward") {
 		// Encrypt and create the hash using the krb5PrincipalName attribute
 		$entry[pql_get_define("PQL_ATTR_PASSWD")] = pql_password_hash($entry[pql_get_define("PQL_ATTR_KRB5PRINCIPALNAME")], $_REQUEST["pwscheme"]);
 	} else {
-		if($_REQUEST["crypted"])
+		if($_REQUEST["crypted"] and !$_REQUEST["autogenerate"])
 		  // Password is already encrypted, prefix with choosen password scheme
 		  $entry[pql_get_define("PQL_ATTR_PASSWD")] = $_REQUEST["pwscheme"] . $_REQUEST["password"];
 		else
 		  // Password isn't already encrypted, create the hash using the password value
 		  $entry[pql_get_define("PQL_ATTR_PASSWD")] = pql_password_hash($_REQUEST["password"], $_REQUEST["pwscheme"]);
 	}
+	// }}}
 }
 
-// ------------------
+// {{{ Add login shell if requested
 if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "shell")) {
 	$entry[pql_get_define("PQL_ATTR_LOGINSHELL")] = $_REQUEST["loginshell"];
 }
+// }}}
 
-// ------------------
+// {{{ Add mail store directory if requested
 if(($_REQUEST["account_type"] == "system") or
    ($_REQUEST["account_type"] == "mail") or
    ($_REQUEST["account_type"] == "group"))
@@ -197,8 +201,9 @@ if(($_REQUEST["account_type"] == "system") or
     if(! ereg("/$", $entry[pql_get_define("PQL_ATTR_MAILSTORE")]))
 	  $entry[pql_get_define("PQL_ATTR_MAILSTORE")] .= "/";
 }
+// }}}
 
-// ------------------
+// {{{ Add mail host, home directory and add local delivery to delivery mode if requested
 if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "mail")) {
 	// normal mailbox account
 	
@@ -244,8 +249,9 @@ if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "mai
 		  $entry[pql_get_define("PQL_ATTR_HOMEDIR")] .= "/";
 	}
 }
+// }}}
 
-// ------------------
+// {{{ Add the mail quota
 $default_quota = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEQUOTA"));
 if(!empty($default_quota)) {
 	if($_SESSION["NEW_STYLE_QUOTA"]) {
@@ -256,6 +262,7 @@ if(!empty($default_quota)) {
 	} else
 	  $entry[pql_get_define("PQL_ATTR_QUOTA_VALUE")]   = $default_quota;
 }
+// }}}
 
 // ============================================================================================
 // ============== ADD THE USER TO THE DATABASE
