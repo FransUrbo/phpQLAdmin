@@ -2,6 +2,20 @@ phpQLAdmin 2.0 Change Log
 
 phpQLAdmin 2.0.19 TO BE ANNOUNCED
 	Bug fixes
+	  - Don't create a new connection to the LDAP db in files located in '.'.
+	    This is done sufficently in pql_config.inc
+	  - More de-globalization.
+	  - If the function mhash() isn't availible AND we're about to generate
+	    a {MD5} (in pql_password_hash()) password, we can't do this. Fall back
+	    to using CRYPT. Everything should still work, just not as secure...
+	    + Log this error using error_log()...
+	  - Include uidNumber, gidNumber and homeDirectory even if we shouldn't
+	    do this. When we're using 'posixAccount' that is..
+	  - When saving the user (from tables/user_add-save.inc), we should get
+	    a free {User,Group}ID if: It's NOT an mail account OR: we're using
+	    posixAccount when creating user(s) AND we have a 'forwarding account
+	    uid number for this branch.
+
 	GUI layout change
 	Misc changes	
 	API changes
