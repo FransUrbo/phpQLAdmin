@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.28 2003-06-12 15:37:35 turbo Exp $
+// $Id: pql_config.inc,v 1.29 2003-06-12 16:48:44 turbo Exp $
 //
 global $config;
 
@@ -88,6 +88,7 @@ $PQL_ATTRIBUTE["PQL_CONF_REFERENCE_DOMAINS_WITH"] = 'branchReference';
 $PQL_ATTRIBUTE["PQL_CONF_USER_RDN_ATTRIBUTE"] = $PQL_ATTRIBUTE["PQL_CONF_REFERENCE_USERS_WITH"];
 $PQL_ATTRIBUTE["PQL_GLOB_CONTROL_DN"] = 'controlBaseDN'; 
 $PQL_ATTRIBUTE["PQL_CONF_MAX_DOMAIN_USERS"] = 'maximumDomainUsers';
+$PQL_ATTRIBUTE["PQL_CONF_MAX_LISTS"] = 'maximumMailingLists';
 $PQL_ATTRIBUTE["PQL_CONF_ADDITIONAL_DOMAIN_NAME"] = 'additionalDomainName';
 
 // ---------------------------
