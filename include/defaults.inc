@@ -64,6 +64,17 @@ pql_define("PQL_GLOB_EZMLM_USE", false, false);
 pql_define("PQL_CONF_EZMLM_PATH", "/usr/bin", false);
 
 // ----------------------------
+// Should we enable the domain (Bind 9) editor?
+// This require that Bind 9 (and ONLY Bind 9) works
+// with DNSSEC and that you (the webserver/phpQLAdmin)
+// have access to a 'root' key that have access to
+// update the DNS.
+//
+// NOTE: Do not enable this. This code isn't even
+//       started!!
+pql_define("PQL_GLOB_BIND9_USE", false, false);
+
+// ----------------------------
 // PQL_CONF_TESTMAIL_SUBJECT (text)
 // The subject of testmails
 pql_define("PQL_CONF_TESTMAIL_SUBJECT", "test", false, $dn);

@@ -71,6 +71,8 @@ if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
         <td class="<?=$class?>"><?=$config["PQL_GLOB_HOSTMASTER"]?>&nbsp;</td>
       </tr>
 
+      <tr></tr>
+
       <tr>
         <td class="title">Manage Controls DB</td>
 <?php $class=table_bgcolor(0);
@@ -94,6 +96,20 @@ if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
 <?php    } ?>
         <td class="<?=$class?>"><?php if($config["PQL_GLOB_EZMLM_USE"]) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
       </tr>
+
+<?php if($ADVANCED_MODE and 0) { // TODO: Currently disabled. Not even started. ?>
+      <tr>
+        <td class="title">Manage Bind 9 DNSSEC domains</td>
+<?php $class=table_bgcolor(0);
+      if($ALLOW_GLOBAL_CONFIG_SAVE) {
+?>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_BIND9_USE"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_GLOB_BIND9_USE"]?>"></a></td>
+<?php    } else { ?>
+        <td class="<?=$class?>"></td>
+<?php    } ?>
+        <td class="<?=$class?>"><?php if($config["PQL_GLOB_BIND9_USE"]) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
+      </tr>
+<?php } ?>
 
       <tr>
         <td class="title">Automatic reload of navigation bar</td>

@@ -3,9 +3,8 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.15 2003-04-08 08:29:06 turbo Exp $
+// $Id: pql_config.inc,v 1.16 2003-04-10 08:12:24 turbo Exp $
 //
-
 global $config;
 
 // We need this instead of define(), so that we can get rid
@@ -54,6 +53,7 @@ $PQL_ATTRIBUTE["PQL_GLOB_CHANGE_SERVER"] = 'allowServerChange';
 $PQL_ATTRIBUTE["PQL_CONF_ALLOW_ABSOLUTE_PATH"] = 'allowAbsoluteMailPath';
 $PQL_ATTRIBUTE["PQL_CONF_VERIFY_DELETE"] = 'deleteVerification';
 $PQL_ATTRIBUTE["PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER"] = 'forwardUIDNumber';
+$PQL_ATTRIBUTE["PQL_GLOB_BIND9_USE"] = 'useBind9';
 
 // phpQLAdmin setup
 $PQL_ATTRIBUTE["PQL_CONF_LANG"] = 'language';

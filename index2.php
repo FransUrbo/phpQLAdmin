@@ -3,86 +3,112 @@ session_start();
 require("./include/pql_config.inc");
 global $config;
 
+$frames = 2; // Default 2 frames - left and main
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
-foreach($_pql->ldap_basedn as $dn)  {
-    // Check to see if we have write access for the EZMLM/Controls
-    // information in ANY of the domain (one is enough to show the
-    // frame!)
 
-    if($config["PQL_GLOB_EZMLM_USE"])
-      $SHOW_FRAME["ezmlm"] = 1;
-
-    if($config["PQL_GLOB_CONTROL_USE"] and $ALLOW_CONTROL_CREATE[$dn])
-      $SHOW_FRAME["controls"] = 1;
+// -----------------
+// Count how many frames we should open
+if($config["PQL_GLOB_EZMLM_USE"]) {
+    $frames++;
 }
+
+if($config["PQL_GLOB_BIND9_USE"]) {
+    $frames++;
+}
+
+// -----------------
+// Should we show the controls frame (ie, is controls configured
+// in ANY of the namingContexts)?
+$counted = 0; // Don't count each of the Control usage more than once
+foreach($_pql->ldap_basedn as $dn)  {
+    $ALLOW_CONTROL_CREATE[$dn] = 1; // DEBUG
+
+    if($config["PQL_GLOB_CONTROL_USE"] and $ALLOW_CONTROL_CREATE[$dn]) {
+	$SHOW_FRAME["controls"] = 1;
+	if(!$counted) {
+	    $frames++;
+	    $counted = 1;
+	}
+    }
+}
+
+// -----------------
+// Calculate left framesizes depending on how many
+// frames we're opening. There's a maximum of 5 frames
+// (Four on the left + main frame) and a minimum of two
+// (one on the left + main frame).
+if($frames > 2) {
+    $size = 100 / ($frames - 1);
+} else {
+    $size = 100;
+}
+$size = sprintf("%d", $size);
 ?>
 <html>
   <head>
     <title><?php echo PQL_GLOB_WHOAREWE;?></title>
   </head>
 
-<?php
-if(isset($advanced)) {
-    // Advance mode - show controls and mailinglist managers
-?>
-  <frameset cols="250,*" rows="*" border="1" frameborder="0">
-<?php
-	if((!$SINGLE_USER and $SHOW_FRAME["ezmlm"]) or $SHOW_FRAME["controls"]) {
-?>
-    <frameset cols="*" rows="60%,*" border="1" frameborder="0">
-<?php
-	}
-?>
+  <!-- frames == <?=$frames?> --!>
+
+<?php if(isset($advanced) and !$SINGLE_USER) { // Advance mode - show controls and mailinglist managers ?>
+  <frameset cols="260,*" rows="*" border="1" frameborder="0"><!-- $frames >= 2 --!>
+    <!-- LEFT frame --!>
+<?php   if($frames >= 3) { ?>
+    <frameset cols="*" rows="<?=$size?>%,*" border="1" frameborder="0"><!-- $frames >= 3 --!>
+<?php   } ?>
       <frame src="left.php?advanced=1" name="pqlnav">
-<?php
-	if((!$SINGLE_USER and $SHOW_FRAME["ezmlm"]) and $SHOW_FRAME["controls"]) {
-?>
-      <frameset cols="*" rows="50%,*" border="1" frameborder="0">
-<?php
-	}
 
-	if($SHOW_FRAME["controls"]) {
-?>
-        <frame src="left-control.php" name="pqlnavctrl">
-<?php
-	}
+<?php   if($frames >= 4) { ?>
+      <frameset cols="*" rows="<?=$size?>%,*" border="1" frameborder="0"><!-- $frames >= 4 --!>
+<?php   } 
 
-	if(!$SINGLE_USER and $SHOW_FRAME["ezmlm"]) {
-?>
-        <frame src="left-ezmlm.php" name="pqlnavezmlm">
-<?php
-	}
-	if(!$SINGLE_USER and $SHOW_FRAME["ezmlm"] and $SHOW_FRAME["controls"]) {
-?>
-      </frameset>
-<?php
-	}
-
-	if($SHOW_FRAME["controls"]) {
+        if($SHOW_FRAME["controls"]) {
 ?>
       <frame src="left-control.php" name="pqlnavctrl">
-<?php
-	}
-	if((!$SINGLE_USER and $SHOW_FRAME["ezmlm"]) or $SHOW_FRAME["controls"]) {
+<?php   }
+
+        if($frames >= 5) {
 ?>
-    </frameset>
-<?php
-	}
+      <frameset cols="*" rows="<?=$size?>%,*" border="1" frameborder="0"><!-- $frames >= 5 --!>
+<?php   }
+
+       if($config["PQL_GLOB_EZMLM_USE"]) { ?>
+      <frame src="left-ezmlm.php"   name="pqlnavezmlm">
+<?php   }
+
+        if($config["PQL_GLOB_BIND9_USE"]) {
 ?>
+      <frame src="left-bind9.php"   name="pqlnavbind9">
+<?php   }
+
+        if($frames >= 5) {
+?>
+      </frameset><!-- $frames >= 5 --!>
+<?php   }
+
+         if($frames >= 4) {
+?>
+      </frameset><!-- $frames >= 4 --!>
+<?php    } 
+
+         if($frames >= 3) {
+?>
+    </frameset><!-- $frames >= 3 --!>
+<?php    }  ?>
+
+    <!-- RIGHT frame --!>
     <frame src="home.php?advanced=1" name="pqlmain">
   </frameset>
-<?php
-} else {
-    // Not running in advanced mode, don't show the
-    // controls/mailinglist managers
+<?php } else {
+          // Not running in advanced mode, don't show the
+          // controls/mailinglist managers
 ?>
   <frameset cols="250,*" rows="*" border="0" frameborder="0"> 
     <frame src="left.php?advanced=0" name="pqlnav">
     <frame src="home.php?advanced=0" name="pqlmain">
   </frameset>
-<?php
-}
-?>
+<?php } ?>
 
   <noframes>
     <body bgcolor="#FFFFFF">
