@@ -1,4 +1,4 @@
-#!/usr/bin/suidperl -w
+#!/usr/bin/suidperl -U
 
 # Environment variables of interest
 # PQL_ACCOUNTSTATUS="active"
@@ -18,6 +18,26 @@
 
 $ENV{PATH} = "/bin:/usr/bin";
 
-print "// beg ($0)\n";
-system('/usr/bin/env | grep ^PQL | sort');
-print "// end\n";
+# One thing that we might want to do is
+# create the mail directory:
+#	$PQL_MAILMESSAGESTORE
+if($ENV{"PQL_MAILMESSAGESTORE"}) {
+    $DIR = $ENV{"PQL_MAILMESSAGESTORE"};
+    @dirs = split('/', $DIR);
+
+    $directory = '/' . $dirs[1] . '/';
+    for($i=1; $dirs[$i]; $i++) {
+	if(! -d $directory) {
+	    print "Creating $directory\n";
+	    if(! mkdir($directory) ) {
+		print "Unsuccessfull in creating $dir, $!\n";
+	    }
+	}
+
+	$directory .= $dirs[$i+1] . '/';
+    }
+}
+
+#print "// beg ($0)\n";
+#system('/usr/bin/env | grep ^PQL | sort');
+#print "// end\n";
