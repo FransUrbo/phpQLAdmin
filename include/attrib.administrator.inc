@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.36 2004-03-26 08:24:22 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.37 2004-03-26 09:04:05 turbo Exp $
 
 require("./left-head.html");
 
@@ -39,7 +39,7 @@ function attribute_print_form($action) {
 		if($_REQUEST["user"]) {
 			$_REQUEST[$attrib] = $_REQUEST["user"];
 ?>
-      <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %user% as administrator for domain'), array('user' => $_REQUEST["user"])); ?></th>
+      <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %user% as administrator for domain'), array('user' => pql_maybe_decode($_REQUEST["user"]))); ?></th>
 <?php	} else {
 ?>
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what% for domain %domain%'), array('what' => $LANG->_('domain administrator'), 'domain' => $orgname)); ?></th>
