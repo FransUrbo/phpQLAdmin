@@ -1,7 +1,7 @@
 <?php
-// $Id: ezmlm_edit_attribute.php,v 1.27 2005-02-24 17:04:00 turbo Exp $
+// $Id: ezmlm_edit_attribute.php,v 1.27.2.1 2005-03-04 11:59:45 turbo Exp $
 //
-session_start();
+require("./include/pql_session.inc");
 require("./include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_ezmlm.inc");
 
