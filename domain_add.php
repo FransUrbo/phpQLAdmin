@@ -82,26 +82,37 @@ if(pql_add_domain($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain)) {
 		$msg = PQL_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	}
 
-	// Now it's time to run the special adduser script if defined...
-	if(PQL_EXTRA_SCRIPT_CREATE_DOMAIN) {
-		// Open a bi-directional pipe, so we can write AND read
-		$fh = popen(escapeshellcmd(PQL_EXTRA_SCRIPT_CREATE_DOMAIN), "w+");
-		if($fh) {
-			
-			// We're done, close the command file handle...
-			pclose($fh);
-		} else {
-			$msg = urlencode(PQL_USER_DOMAIN_SCRIPT_FAILED);
-			$url = "domain_detail.php?domain=$domain&msg=$msg";
-			header("Location: " . PQL_URI . "$url");
-		}
-	}
-	
 	// redirect to domain-details
 	if($msg == "") {
 		$msg = urlencode(pql_complete_constant(PQL_DOMAIN_ADD_OK, array("domain" => $domain)));
 	}
-	header("Location: " . PQL_URI . "domain_detail.php?domain=$domain&msg=$msg&rlnb=1");
+	$url = "domain_detail.php?domain=$domain&msg=$msg&rlnb=1";
+
+	// Now it's time to run the special adduser script if defined...
+	if(PQL_EXTRA_SCRIPT_CREATE_DOMAIN) {
+		// Setup the environment with the user details
+		putenv("PQL_DOMAIN=\"$domain\"");
+		putenv("PQL_DOMAINNAME=\"$defaultdomain\"");
+		putenv("PQL_HOMEDIRS=\"$defaulthomedir\"");
+		putenv("PQL_MAILDIRS=\"$defaultmaildir\"");
+		putenv("PQL_QUOTA=\"$defaultquota\"");
+		
+		// Execute the domain add script (0 => show output)
+		if(pql_execute(PQL_EXTRA_SCRIPT_CREATE_DOMAIN, 0)) {
+			$msg = urlencode(PQL_DOMAIN_ADD_SCRIPT_FAILED);
+			$url = "home.php?msg=$msg";
+			header("Location: " . PQL_URI . $url);
+		}
+
+?>
+    <form action="<?=$url?>" method="post">
+      <input type="submit" value="Continue">
+    </form>
+<?php
+		die();
+	} else {
+		header("Location: " . PQL_URI . $url);
+	}
 } else {
 	$msg = urlencode(PQL_DOMAIN_ADD_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid));
 	header("Location: " . PQL_URI . "home.php?msg=$msg");

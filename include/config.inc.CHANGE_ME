@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.9 2003-01-07 08:01:18 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.10 2003-01-10 17:44:27 turbo Exp $
 //
 session_start();
 // ----------------------------
@@ -387,6 +387,16 @@ function user_generate_uid($ldap_linkid, $ldap_basedn, $surname, $name, $email, 
 //	return($surname . $name);				// "Surname Name"
 //	return(substr($surname, 0, 1) . $name);	// First character of ther surname + complete name
 }
+
+// ----------------------------
+// External scripts to execute when creating user/domain
+// This script (usually) must be set uid root, so that it can do stuff
+// the webserver isn't allowed to do, therefor you can't use a shell script
+// (most OS don't allow suid shell scripts).
+//
+// !!! BIG FAT WARNING: DO NOT USE UNLESS YOU KNOW WHAT YOU'RE DOING !!!
+//define("PQL_EXTRA_SCRIPT_CREATE_USER", "./create_user.pl");
+//define("PQL_EXTRA_SCRIPT_CREATE_DOMAIN", "./create_domain.pl");
 
 // ----------------------------
 // -- !Don't change values below! --

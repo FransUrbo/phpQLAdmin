@@ -620,13 +620,16 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 		if(pql_add_user($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $cn, $entry, $account_type)){
 			// Now it's time to run the special adduser script if defined...
 			if(PQL_EXTRA_SCRIPT_CREATE_USER) {
-				// Open a bi-directional pipe, so we can write AND read
-				$fh = popen(escapeshellcmd(PQL_EXTRA_SCRIPT_CREATE_USER), "w+");
-				if($fh) {
+				// Setup the environment with the user details
+				putenv("PQL_DOMAIN=\"$domain\"");
+				foreach($entry as $key => $e) {
+					$key = "PQL_" . strtoupper($key);
+					if($key != 'PQL_OBJECTCLASS')
+					  putenv("$key=\"$e\"");
+				}
 
-					// We're done, close the command file handle...
-					pclose($fh);
-				} else {
+				// Execute the user add script (0 => show output)
+				if(pql_execute(PQL_EXTRA_SCRIPT_CREATE_USER, 0)) {
 					$msg = urlencode(PQL_USER_ADD_SCRIPT_FAILED);
 					$url = "domain_detail.php?domain=$domain&msg=$msg";
 					header("Location: " . PQL_URI . "$url");
@@ -639,9 +642,18 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 			} else {
 				$url = "user_detail.php?";
 			}
-			
+
 	   		$url .= "domain=$domain&user=" . urlencode($entry[PQL_LDAP_REFERENCE_USERS_WITH]) . "&rlnb=2&msg=$msg";
-			header("Location: " . PQL_URI . "$url");
+			if(PQL_EXTRA_SCRIPT_CREATE_USER) {
+?>
+    <form action="<?=$url?>" method="post">
+      <input type="submit" value="Continue">
+    </form>
+<?php
+				die();
+			} else {
+				header("Location: " . PQL_URI . "$url");
+			}
 		} else {
 			$msg = urlencode(PQL_USER_ADD_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid));
 	   		$url = "domain_detail.php?domain=$domain&msg=$msg";
@@ -657,5 +669,5 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
  * End:
  */
 ?>
-</body>
+  </body>
 </html>
