@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-details.inc,v 1.14 2004-03-19 10:38:14 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.15 2004-03-26 11:23:16 turbo Exp $ */ ?>
 <?php $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"])); ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -213,23 +213,43 @@
 		} else {
 			// Only one subbranch
 			if(pql_get_define("PQL_CONF_SUBTREE_USERS")) {
+				$branch = pql_get_define("PQL_CONF_SUBTREE_USERS").",".$_REQUEST["domain"];
+				$branch = pql_format_urls($branch);
+
+				// Just to make sure - does this subbranch exists?!
+				$xyz = pql_search($_pql->ldap_linkid, $branch, 'objectclass=*', 'dn', "BASE");
+				if(is_array($xyz)) {
 ?>
-        <input type="hidden" name="subbranch" value="<?php echo pql_get_define("PQL_CONF_SUBTREE_USERS").",".$_REQUEST["domain"]?>">
+        <input type="hidden" name="subbranch" value="<?=$branch?>">
 <?php
+				} else {
+?>
+        <input type="hidden" name="subbranch" value="<?=$url["domain"]?>">
+<?php			}
 			} else {
 ?>
-        <input type="hidden" name="subbranch" value="<?=$_REQUEST["domain"]?>">
+        <input type="hidden" name="subbranch" value="<?=$url["domain"]?>">
 <?php
 			}
 		}
 	} else {
 		if(pql_get_define("PQL_CONF_SUBTREE_USERS")) {
+			$branch = pql_get_define("PQL_CONF_SUBTREE_USERS").",".$_REQUEST["domain"];
+			$branch = pql_format_urls($branch);
+			
+			// Just to make sure - does this subbranch exists?!
+			$xyz = pql_search($_pql->ldap_linkid, $branch, 'objectclass=*', 'dn', "BASE");
+			if(is_array($xyz)) {
 ?>
-        <input type="hidden" name="subbranch" value="<?php echo pql_get_define("PQL_CONF_SUBTREE_USERS").",".$_REQUEST["domain"]?>">
+        <input type="hidden" name="subbranch" value="<?=$branch?>">
 <?php
+			} else {
+?>
+        <input type="hidden" name="subbranch" value="<?=$url["domain"]?>">
+<?php		}
 		} else {
 ?>
-        <input type="hidden" name="subbranch" value="<?=$_REQUEST["domain"]?>">
+        <input type="hidden" name="subbranch" value="<?=$url["domain"]?>">
 <?php
 		}
 	} // end if ADVANCED mode
@@ -272,35 +292,35 @@
       </th>
     </table>
 
-    <input type="hidden" name="page_curr" value="one">
+    <input type="hidden" name="page_curr"    value="one">
 <?php
 	if(($_SESSION["ADVANCED_MODE"] == 0) or ($_REQUEST["account_type"] == "forward")) {
 		// Go to save, no next form...
 		if($_SESSION["ADVANCED_MODE"] == 0) {
 			// Autocreate some values by using 'safe' (?) defaults
 ?>
-    <input type="hidden" name="loginshell" value="/bin/false">
+    <input type="hidden" name="loginshell"    value="/bin/false">
     <input type="hidden" name="homedirectory" value="">
     <input type="hidden" name="maildirectory" value="">
-    <input type="hidden" name="host" value="default">
+    <input type="hidden" name="host"          value="default">
 <?php	} ?>
-    <input type="hidden" name="page_next" value="save">
+    <input type="hidden" name="page_next"     value="save">
 <?php
 	} else {
 		if($_REQUEST["account_type"] != 'shell') {
 ?>
-    <input type="hidden" name="page_next" value="two">
+    <input type="hidden" name="page_next"     value="two">
 <?php
 		} else {
 ?>
-    <input type="hidden" name="page_next" value="save">
+    <input type="hidden" name="page_next"     value="save">
 <?php
 		}
 	} // account_type == forward
 ?>
-    <input type="hidden" name="domain"       value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="account_type" value="<?=$_REQUEST["account_type"]?>">
-    <input type="hidden" name="rootdn"       value="<?=$_REQUEST["rootdn"]?>">
+    <input type="hidden" name="rootdn"        value="<?=$url["rootdn"]?>">
+    <input type="hidden" name="domain"        value="<?=$url["domain"]?>">
+    <input type="hidden" name="account_type"  value="<?=$_REQUEST["account_type"]?>">
 
     <br>
 
