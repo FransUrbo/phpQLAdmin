@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.2 2003-11-22 16:09:19 turbo Exp $
+// $Id: pql_formating.inc,v 2.3 2003-11-24 08:22:33 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -187,7 +187,7 @@ function pql_format_tree_other($cnt, $text, $url, $links, $level, $parent, $chil
 }
 // }}}
 
-// {{{ pql_format_tree_span(text, links)
+// {{{ pql_format_tree_span(text, links, level)
 function pql_format_tree_span($text, $links, $level) {
 	$nbsp = '';
 	for($i=0; $i < (($level + 1) * 4); $i++)
