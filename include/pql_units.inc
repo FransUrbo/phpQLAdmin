@@ -3,7 +3,7 @@
 // pql_units.inc
 // Sub units (ou=People, ou=Users, dc=host) etc
 //
-// $Id: pql_units.inc,v 1.12 2004-10-18 13:39:33 turbo Exp $
+// $Id: pql_units.inc,v 1.13 2004-11-05 13:42:37 turbo Exp $
 //
 
 // {{{ pql_unit_get(linkid, dn, filter)
@@ -66,13 +66,16 @@ function pql_unit_add($linkid, $domain, $unit) {
 
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_unit_add", $dn, $entry);
-
-    // Add the unit to the database
-    if(! ldap_add($linkid, $dn, $entry)) {
-		// failed to add unit
-		pql_format_error(1);
-		die("$LDIF");
-		return false;
+	if(file_exists("./.DEBUG_ME"))
+	  echo $LDIF;
+	else {
+		// Add the unit to the database
+		if(!ldap_add($linkid, $dn, $entry)) {
+			// failed to add unit
+			pql_format_error(1);
+			die("$LDIF");
+			return false;
+		}
 	}
 
 	return(true);
