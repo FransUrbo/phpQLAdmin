@@ -1,5 +1,5 @@
 <? // http://www.thescripts.com/serversidescripting/php/articles/dynamicimagesinphp3.0/page0.html
-// $Id: navbutton.php,v 2.14 2003-11-24 15:20:28 turbo Exp $
+// $Id: navbutton.php,v 2.15 2004-04-07 14:17:16 dlw Exp $
 
 include("./include/pql_formating.inc");
 
@@ -37,7 +37,9 @@ if(function_exists('ImageCreateFromPng') && (imagetypes() & IMG_PNG)) {
 // and how many lower cased characters there is.
 // The reason for this is that the upper cased
 // letters are twice as wide as the lower cased...
-for($i = 0; $string[$i]; $i++) {
+$upper_case_chars = 0;
+$lower_case_chars = 0;
+for($i = 0; isset($string[$i]); $i++) {
     $tmp = pql_format_international($string[$i]);
 
     // Correct: The letter 'I' is NOT counted here! It's wide as a small character.
@@ -58,6 +60,7 @@ $newimg = ImageCreateTrueColor($new_width, $new_height);
 ImageCopyResized($newimg, $myimage, 0, 0, 0, 0, $new_width, 
 		 $new_height, ImageSX($myimage), ImageSY($myimage));
 
+$black = imagecolorallocate($newimg, 0, 0, 0);
 // Write text to image (after decoding it to fix international characters)
 ImageTTFText($newimg, 10, 0, 10, 14, $black, realpath("include/thryn.ttf"), $string);
     
