@@ -1,8 +1,8 @@
-<?php /* $Id: user_add-details.inc,v 1.29.2.3 2005-02-14 10:55:42 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.29.2.4 2005-02-15 09:38:30 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
-<?php if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], 'uid')) {
+<?php if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $template, 'uid')) {
 		if((!pql_get_define("PQL_CONF_AUTOCREATE_USERNAME", $_REQUEST["rootdn"]) and $_SESSION["ADVANCED_MODE"]) or
 		   empty($_REQUEST["uid"]))
 		{
@@ -32,7 +32,7 @@
 <?php	}
 	  }
 
-	  if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], 'sn')) {
+	  if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $template, 'sn')) {
 ?>
         <!-- Firstname -->
         <tr class="<?php pql_format_table(); ?>">
@@ -45,7 +45,7 @@
         </tr>
 <?php }
 
-	  if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], 'cn')) {
+	  if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $template, 'cn')) {
 ?>
 
         <!-- Lastname -->
@@ -59,7 +59,7 @@
         </tr>
 <?php }
 
-	  if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_PASSWD"))) {
+	  if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_PASSWD"))) {
 		// Get the default password scheme for branch
 		$_REQUEST["defaultpasswordscheme"] = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"],
 															   pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"));
@@ -147,9 +147,9 @@
 		$branches = pql_unit_get($_pql->ldap_linkid, $_REQUEST["domain"]);
 	  }
 
-	  if(pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_LOGINSHELL")) or
-		 pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_MAIL"))       or
-		 pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_ISACTIVE"))   or
+	  if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_LOGINSHELL")) or
+		 pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAIL"))       or
+		 pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_ISACTIVE"))   or
 		 (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_MAIL"))       or
 		 ($_SESSION["ADVANCED_MODE"] and ($_REQUEST["subbranch"] or $branches[1]))                                       or
 		 ($_SESSION["ADVANCED_MODE"] and ($_SESSION["NEW_STYLE_QUOTA"] and ($_REQUEST["template"] == 'forward')))        or
@@ -159,7 +159,7 @@
       <th colspan="3" align="left"><?=$LANG->_('Account properties')?></th>
 <?php }
 
-	  if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_LOGINSHELL"))) {
+	  if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_LOGINSHELL"))) {
 		// display forms for SYSTEM account
 
 		if($_SESSION["ADVANCED_MODE"]) {
@@ -186,7 +186,7 @@
 <?php	} // end if ADVANCED mode
 	  } // end if account type == system
 
-	  if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_MAIL"))) {
+	  if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAIL"))) {
 		if(!pql_get_define("PQL_CONF_CREATE_ADDRESS", $_REQUEST["domain"]) or
 		   (pql_get_define("PQL_CONF_CREATE_ADDRESS", $_REQUEST["domain"]) and !function_exists('user_generate_email')) or
 		   $_SESSION["ADVANCED_MODE"] or $error_text["email"]) {
@@ -333,7 +333,7 @@
         </tr>
 <?php } // template == forward
   
-      if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_ISACTIVE"))) {
+      if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_ISACTIVE"))) {
 		// Template require 'accountStatus'
 ?>
 
