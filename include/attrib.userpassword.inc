@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.7 2003-04-28 10:59:56 turbo Exp $
+// $Id: attrib.userpassword.inc,v 2.8 2003-05-04 12:15:59 turbo Exp $
 
 function attribute_check($type){
 	global $userpassword, $userpassword_check, $error, $pwscheme;
@@ -41,35 +41,34 @@ function attribute_print_form(){
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo PQL_LANG_USERPASSWORD_NEW; ?></th>
+        <!-- Password schema -->
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_LANG_USERPASSWORD_TITLE; ?></td>
-
-          <!-- Ugly hack. Should realy have type=password here, but what's the use. Really!? -->
+          <td class="title">Password scheme</td>
           <td>
-          <?php echo format_error($error["userpassword"]); ?>
-
-            <input type="input" name="userpassword">
-          </td>
-
-          <td>
-          <?php echo format_error($error["pwscheme"]); ?>
-
+            <?php echo format_error($error["pwscheme"]); ?>
 <?php if(eregi(',', $config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn])) {
 		// We got more than one password scheme...
-?>
-            <select name="pwscheme">
-              <option value="none">Choose password scheme to use
-<?php
 		$schemes = split(",", $config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn]);
-	foreach($schemes as $scheme) {
+		foreach($schemes as $scheme) {
+			if(!eregi('KERBEROS', $scheme)) {
 ?>
-              <option value="{<?=$scheme?>}"><?=$scheme?>
-<?php	}
+            <input type="radio" name="pwscheme" value="<?=$scheme?>"><?=$scheme?>
+<?php		}
+		}
 	  } else { ?>
             Scheme: <b>{<?=$config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn]?>}</b>
             <input type="hidden" name="pwscheme" value="<?=$config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn]?>">
 <?php } ?>
-            </select>
+          </td>
+        </tr>
+
+        <!-- Password -->
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"><?php echo PQL_LANG_USERPASSWORD_TITLE; ?></td>
+          <td>
+            <?php echo format_error($error["userpassword"]); ?>
+            <!-- Ugly hack. Should realy have type=password here, but what's the use. Really!? -->
+            <input type="input" name="userpassword">
           </td>
         </tr>
 

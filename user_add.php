@@ -323,31 +323,33 @@ switch($submit){
     if($account_type != "forward") {
                 // display forms for SYSTEM/MAIL account
 ?>
+        <!-- Password schema -->
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title">Password scheme</td>
+          <td>
+<?php
+		if(eregi(',', $config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn])) {
+			// We got more than one password scheme...
+			$schemes = split(",", $config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn]);
+			foreach($schemes as $scheme) {
+?>
+            <input type="radio" name="pwscheme" value="<?=$scheme?>"><?=$scheme?>
+<?php		}
+		} else { ?>
+            Scheme: <b>{<?=$config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn]?>}</b>
+            <input type="hidden" name="pwscheme" value="<?=$config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn]?>">
+<?php	} ?>
+          </td>
+        </tr>
+
         <!-- Password -->
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"><?php echo PQL_LANG_USERPASSWORD_TITLE; ?></td>
           <!-- Crude hackery. Using type=password won't be so good if we're using {KERBEROS} -->
-          <td><?php echo format_error($error_text["password"]); ?>
-
+          <td>
+            <?php echo format_error($error_text["password"]); ?>
             <input type="input" name="password">
             <?php echo format_error($error["pwscheme"]); ?>
-
-<?php
-		if(eregi(',', $config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn])) {
-			// We got more than one password scheme...
-?>
-            <select name="pwscheme">
-              <option value="none">Choose password scheme to use</option>
-<?php		$schemes = split(",", $config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn]);
-			foreach($schemes as $scheme) {
-?>
-              <option value="{<?=$scheme?>}"><?=$scheme?></option>
-<?php		} ?>
-            </select>
-<?php	} else { ?>
-            Scheme: <b>{<?=$config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn]?>}</b>
-            <input type="hidden" name="pwscheme" value="<?=$config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn]?>">
-<?php	} ?>
           </td>
         </tr>
 
@@ -750,17 +752,30 @@ switch($submit){
         // ------------------
 		if($account_type != "forward") {
 			// set attributes
-			$entry[$config["PQL_GLOB_ATTR_PASSWD"]]   = pql_password_hash($password, $pwscheme);
-			if($pwscheme == "{KERBEROS}")
-			  // Make sure that 'User objectclasses' contain krb5Principal (in the domain/branch config).
-			  // See the 'Show phpQLAdmin configuration' page...
-			  $entry["krb5PrincipalName"] = $password;
+			if(eregi('KERBEROS', $pwscheme)) {
+				// We're using the {KERBEROS} password scheme. Special circumstances.
+				// The userPassword and krb5PrincipalName needs to be set. This is 
+				// automagicly created with the help of the username (uid) value and
+				// the REALM name.
+				if(eregi('@', $password))
+				  // Use know what he/she's doing. We specified the full principal
+				  // name directly in the password field! Use that as userPassword
+				  // and krb5PrincipalName.
+				  $entry["krb5PrincipalName"] = $password;
+				else
+				  // The password really IS a password!
+				  $entry["krb5PrincipalName"] = $uid . "@" . $config["PQL_GLOB_KRB5_REALM"];
 
-			if(!$homedirectory) {
-				$entry[$config["PQL_GLOB_ATTR_HOMEDIR"]] = user_generate_homedir($_pql, $email, $domain, $entry);
-			} else {
-				$entry[$config["PQL_GLOB_ATTR_HOMEDIR"]] = $homedirectory;
-			}
+				// Encrypt and create the hash using the krb5PrincipalName attribute
+				$entry[$config["PQL_GLOB_ATTR_PASSWD"]] = pql_password_hash($entry["krb5PrincipalName"], $pwscheme);
+			} else
+			  // Encrypt and create the hash using the password value
+			  $entry[$config["PQL_GLOB_ATTR_PASSWD"]]   = pql_password_hash($password, $pwscheme);
+
+			if(!$homedirectory)
+			  $entry[$config["PQL_GLOB_ATTR_HOMEDIR"]] = user_generate_homedir($_pql, $email, $domain, $entry);
+			else
+			  $entry[$config["PQL_GLOB_ATTR_HOMEDIR"]] = $homedirectory;
 		}
 
         // ------------------
@@ -771,7 +786,9 @@ switch($submit){
 			  $entry[$config["PQL_GLOB_ATTR_MAILHOST"]] = $userhost;
 			else {
 				$domainname = split('@', $entry[$config["PQL_GLOB_ATTR_MAIL"]]);
-				$entry[$config["PQL_GLOB_ATTR_MAILHOST"]] = pql_get_mx($domainname[1], $defaultdomain);
+				$mx = pql_get_mx($domainname[1], $defaultdomain);
+				if(is_array($mx))
+				  $entry[$config["PQL_GLOB_ATTR_MAILHOST"]] = $mx[1];
 			}
 
 			$entry[$config["PQL_GLOB_ATTR_MODE"]]     = "localdelivery";
