@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.61.10.2.4.1 2004-08-27 07:39:46 turbo Exp $
+// $Id: pql_config.inc,v 1.61.10.2.4.1.2.1 2004-09-17 14:43:32 turbo Exp $
 //
 
 // include the API files
@@ -89,7 +89,13 @@ if(!$_SESSION["USER_HOST"]) {
 	}
 }
 
+// Open a connection to the LDAP server
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
+
+// Remember the base DN's
+$_SESSION["BASE_DN"] = $_pql->ldap_basedn;
+
+// Get base configurations
 foreach($_pql->ldap_basedn as $dn)  {
 	$dn = urldecode($dn);
 
@@ -158,12 +164,16 @@ require("./include/pql_plugins.inc");
 $_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"] = pql_validate_administrator($_pql->ldap_linkid, $_pql->ldap_basedn[0], $_SESSION["USER_DN"]);
 
 if((empty($_SESSION["ACI_SUPPORT_ENABLED"]) and function_exists("user_generate_aci")) or empty($_SESSION["NEW_STYLE_QUOTA"])) {
-	$ocs = pql_get_subschema($_pql->ldap_linkid, attributeTypes);
+	$ocs = pql_get_subschema($_pql->ldap_linkid, 'attributeTypes');
 
-	// 9a. Check ifthe attribute openLdapAci exists - ACI support is enabled in the LDAP server.
-	if(empty($_SESSION["ACI_SUPPORT_ENABLED"]) and
-	   function_exists("user_generate_aci") and
-	   $ocs[pql_get_define("PQL_ATTR_LDAPACI")]["OID"])
+	// 9a. Check if the attribute openLdapAci exists - ACI support is enabled in the LDAP server
+	//     OR: We've specified (manually) to (en)force the use of ACI's via the baseDN attribute
+	//         'useACI'.
+	//     -> Just make sure that useACI isn't equal to 'FALSE' which means the user/admin have
+	//        elected to NOT use ACI's!
+	if(empty($_SESSION["ACI_SUPPORT_ENABLED"]) and function_exists("user_generate_aci") and
+	   ($ocs[pql_get_define("PQL_ATTR_LDAPACI")]["OID"] or pql_get_define("PQL_CONF_ACI_USE")) and
+	   (pql_get_define("PQL_CONF_ACI_USE") != 'FALSE'))
 	  $_SESSION["ACI_SUPPORT_ENABLED"] = 1;
 
 	// 9b. Check to see if the attributes mailQuotaSize and mailQuotaCount exists - new style quota.
