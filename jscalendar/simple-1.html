@@ -1,6 +1,7 @@
 <html style="background-color: buttonface; color: buttontext;">
 
 <head>
+<meta http-equiv="content-type" content="text/xml; charset=utf-8" />
 
 <title>Simple calendar setups [popup calendar]</title>
 
@@ -46,21 +47,48 @@
 
 <hr />
 
-<p><b>Basic setup: one input field only.</b> Clicking in the input field
-activates the calendar.  Default date format is "y/mm/dd".  The calendar
-defaults to "single-click mode".</p>
+<p><b>Basic setup: one input per calendar.</b> Clicking in the input field
+activates the calendar.  The date format is "%m/%d/%Y %I:%M %p".  The
+calendar defaults to "single-click mode".</p>
 
-<p><span style="color:red">Note:</span> for some reason this example works
-only with Mozilla.  It seems that IE and Opera can't set the onclick handler
-correctly for the input field.</p>
+<p>The example below has been updated to show you how to create "linked"
+fields.  Basically, when some field is filled with a date, the other
+is updated so that the difference between them remains one week.  The
+property useful here is "onUpdate".</p>
 
 <form action="#" method="get">
 <input type="text" name="date" id="f_date_a" />
+<input type="text" name="date" id="f_calcdate" />
 </form>
 
 <script type="text/javascript">
+    function catcalc(cal) {
+        var date = cal.date;
+        var time = date.getTime()
+        // use the _other_ field
+        var field = document.getElementById("f_calcdate");
+        if (field == cal.params.inputField) {
+            field = document.getElementById("f_date_a");
+            time -= Date.WEEK; // substract one week
+        } else {
+            time += Date.WEEK; // add one week
+        }
+        var date2 = new Date(time);
+        field.value = date2.print("%Y-%m-%d %H:%M");
+    }
     Calendar.setup({
         inputField     :    "f_date_a",   // id of the input field
+        ifFormat       :    "%Y-%m-%d %H:%M",       // format of the input field
+        showsTime      :    true,
+        timeFormat     :    "24",
+        onUpdate       :    catcalc
+    });
+    Calendar.setup({
+        inputField     :    "f_calcdate",
+        ifFormat       :    "%Y-%m-%d %H:%M",
+        showsTime      :    true,
+        timeFormat     :    "24",
+        onUpdate       :    catcalc
     });
 </script>
 
@@ -70,7 +98,9 @@ correctly for the input field.</p>
 
 <p><b>Input field with a trigger button.</b> Clicking the button activates
 the calendar.  Note that this one needs double-click (singleClick parameter
-is explicitely set to false).</p>
+is explicitely set to false).  Also demonstrates the "step" parameter
+introduced in 0.9.6 (show all years in drop-down boxes, instead of every
+other year as default).</p>
 
 <form action="#" method="get">
 <input type="text" name="date" id="f_date_b" /><button type="reset" id="f_trigger_b">...</button>
@@ -79,9 +109,11 @@ is explicitely set to false).</p>
 <script type="text/javascript">
     Calendar.setup({
         inputField     :    "f_date_b",      // id of the input field
-        ifFormat       :    "mm/dd/y",       // format of the input field
+        ifFormat       :    "%m/%d/%Y %I:%M %p",       // format of the input field
+        showsTime      :    true,            // will display a time selector
         button         :    "f_trigger_b",   // trigger for the calendar (button ID)
-        singleClick    :    false            // double-click mode
+        singleClick    :    false,           // double-click mode
+        step           :    1                // show all years in drop-down boxes (instead of every other year as default)
     });
 </script>
 
@@ -105,7 +137,7 @@ done.  The input field is read-only (that is set from HTML).</p>
 <script type="text/javascript">
     Calendar.setup({
         inputField     :    "f_date_c",     // id of the input field
-        ifFormat       :    "MM d, y",      // format of the input field
+        ifFormat       :    "%B %e, %Y",      // format of the input field
         button         :    "f_trigger_c",  // trigger for the calendar (button ID)
         align          :    "Tl",           // alignment (defaults to "Bl")
         singleClick    :    true
@@ -139,9 +171,9 @@ field) but we wanna show a friendlier format to the end-user.</p>
 <script type="text/javascript">
     Calendar.setup({
         inputField     :    "f_date_d",     // id of the input field
-        ifFormat       :    "y/dd/mm",      // format of the input field (even if hidden, this format will be honored)
+        ifFormat       :    "%Y/%d/%m",     // format of the input field (even if hidden, this format will be honored)
         displayArea    :    "show_d",       // ID of the span where the date is to be shown
-        daFormat       :    "DD, MM d, y",  // format of the displayed date
+        daFormat       :    "%A, %B %d, %Y",// format of the displayed date
         align          :    "Tl",           // alignment (defaults to "Bl")
         singleClick    :    true
     });
@@ -166,9 +198,9 @@ onmouseout="this.style.background=''" />.</p>
 <script type="text/javascript">
     Calendar.setup({
         inputField     :    "f_date_e",     // id of the input field
-        ifFormat       :    "y/dd/mm",      // format of the input field (even if hidden, this format will be honored)
+        ifFormat       :    "%Y/%d/%m",     // format of the input field (even if hidden, this format will be honored)
         displayArea    :    "show_e",       // ID of the span where the date is to be shown
-        daFormat       :    "DD, MM d, y",  // format of the displayed date
+        daFormat       :    "%A, %B %d, %Y",// format of the displayed date
         button         :    "f_trigger_e",  // trigger button (well, IMG in our case)
         align          :    "Tl",           // alignment (defaults to "Bl")
         singleClick    :    true
@@ -197,12 +229,12 @@ Sundays).</p>
 <script type="text/javascript">
     Calendar.setup({
         inputField     :    "f_date_f",     // id of the input field
-        ifFormat       :    "y/dd/mm",      // format of the input field (even if hidden, this format will be honored)
+        ifFormat       :    "%Y/%d/%m",     // format of the input field (even if hidden, this format will be honored)
         displayArea    :    "show_f",       // ID of the span where the date is to be shown
-        daFormat       :    "DD, MM d, y",  // format of the displayed date
+        daFormat       :    "%A, %B %d, %Y",// format of the displayed date
         align          :    "Tl",           // alignment (defaults to "Bl")
-        disableFunc    :    function (date) { // disable weekend days (Saturdays == 6 and Subdays == 0)
-                              return (date.getDay() == 6 || date.getDay() == 0);
+        dateStatusFunc :    function (date) { // disable weekend days (Saturdays == 6 and Subdays == 0)
+                              return (date.getDay() == 6 || date.getDay() == 0) ? true : false;
                             }
     });
 </script>

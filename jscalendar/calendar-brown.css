@@ -18,6 +18,10 @@ div.calendar { position: relative; }
   padding: 2px;          /* Make the buttons seem like they're pressing */
 }
 
+.calendar .nav {
+  background: #edc url(menuarrow.gif) no-repeat 100% 100%;
+}
+
 .calendar thead .title { /* This holds the current "month, year" */
   font-weight: bold;      /* Pressing it will take you to the current date */
   text-align: center;
@@ -43,14 +47,14 @@ div.calendar { position: relative; }
 }
 
 .calendar thead .hilite { /* How do the buttons in header appear when hover */
-  background: #faa;
+  background-color: #faa;
   color: #000;
   border: 1px solid #f40;
   padding: 1px;
 }
 
 .calendar thead .active { /* Active (pressed) buttons in header */
-  background: #c77;
+  background-color: #c77;
   padding: 2px 0px 0px 2px;
 }
 
@@ -64,6 +68,13 @@ div.calendar { position: relative; }
   width: 2em;
   text-align: right;
   padding: 2px 4px 2px 2px;
+}
+.calendar tbody .day.othermonth {
+  font-size: 80%;
+  color: #bbb;
+}
+.calendar tbody .day.othermonth.oweekend {
+  color: #fbb;
 }
 
 .calendar table .wn {
@@ -141,7 +152,7 @@ div.calendar { position: relative; }
 
 /* Combo boxes (menus that display months/years for direct selection) */
 
-.combo {
+.calendar .combo {
   position: absolute;
   display: none;
   top: 0px;
@@ -151,21 +162,63 @@ div.calendar { position: relative; }
   border: 1px solid #655;
   background: #ffe;
   color: #000;
-  font-size: smaller;
+  font-size: 90%;
 }
 
-.combo .label {
-  width: 100%;
+.calendar .combo .label,
+.calendar .combo .label-IEfix {
   text-align: center;
+  padding: 1px;
 }
 
-.combo .hilite {
+.calendar .combo .label-IEfix {
+  width: 4em;
+}
+
+.calendar .combo .hilite {
   background: #fc8;
 }
 
-.combo .active {
+.calendar .combo .active {
   border-top: 1px solid #a64;
   border-bottom: 1px solid #a64;
   background: #fee;
   font-weight: bold;
+}
+
+.calendar td.time {
+  border-top: 1px solid #a88;
+  padding: 1px 0px;
+  text-align: center;
+  background-color: #fed;
+}
+
+.calendar td.time .hour,
+.calendar td.time .minute,
+.calendar td.time .ampm {
+  padding: 0px 3px 0px 4px;
+  border: 1px solid #988;
+  font-weight: bold;
+  background-color: #fff;
+}
+
+.calendar td.time .ampm {
+  text-align: center;
+}
+
+.calendar td.time .colon {
+  padding: 0px 2px 0px 3px;
+  font-weight: bold;
+}
+
+.calendar td.time span.hilite {
+  border-color: #000;
+  background-color: #866;
+  color: #fff;
+}
+
+.calendar td.time span.active {
+  border-color: #f00;
+  background-color: #000;
+  color: #0f0;
 }
