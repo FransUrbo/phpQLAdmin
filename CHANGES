@@ -17,6 +17,11 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	    availibility of this in the .se zone), we need to correctly decode and encode
 	    domain- and hostnames (etc) with international characters. This is done with
 	    the PHP-IDN module (also by yours truly).
+	  - Offer to create a DNS zone in ldap when adding both default and additional
+	    domain names.
+	  - Prefix functions maybe_{decode,encode} with the phpQLAdmin prefix 'pql_'.
+	  - Variable lenght icons with better looking font.
+	    Closes bug 8
 
 phpQLAdmin 2.0.17 Release (Oct 30 2003)
 	Bug fixes
