@@ -1,6 +1,6 @@
 <?php
 // adds an attribute 
-// $Id: user_add_attribute.php,v 2.30 2005-02-24 17:04:01 turbo Exp $
+// $Id: user_add_attribute.php,v 2.30.2.1 2005-03-04 11:59:45 turbo Exp $
 //
 /* This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
  *   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -8,7 +8,7 @@
  *   2) $submit is 1: Validate the input. The name of the input variable changes depending on
  *      which attribute is being edited.
  *      If the input is valid, save it, else print out the form again and return to step 2. */
-session_start();
+require("./include/pql_session.inc");
 require("./include/pql_config.inc");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
