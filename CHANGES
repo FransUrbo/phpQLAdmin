@@ -52,6 +52,12 @@ phpQLAdmin 2.0.14 TO BE ANNOUNCED
 	  - When changing common name (CN), givenName is NOT the same as
 	    CN so update givenName with the firstname and SN with the
 	    lastname.
+	  - If mailHost is unset when saving (and not advanced mode),
+	    we still want the question. This is done by checking the
+	    existence of the value, and if not create an error text
+	    (etc) which is shown togheter with the input question.
+	    + If we DO have a MX or QmailLDAP/Controls object, use
+	      it! Oups.
 
 	GUI layout change
 	  - Add/Change/Delete additional domain name(s) into the
@@ -96,6 +102,12 @@ phpQLAdmin 2.0.14 TO BE ANNOUNCED
 	  - Possibility to enter a already encrypted password when
 	    creating a user. This password could (for example) come
 	    from /etc/{passwd,shadow} etc.
+	  - Allow to set/modify/delete the new ezmlmAdministrator
+	    and maximumMailingLists attributes. These are intended
+	    to control who can create/delete/modify mailinglists and
+	    how many mailinglists that's allowed in a branch. ISP stuff.
+	    + If we have used up all our 'mailinglist count quota',
+	      we can't create more.
 
 	Misc changes
 	  - Replicate domain to RCPTHosts to host which have it
@@ -145,6 +157,13 @@ phpQLAdmin 2.0.14 TO BE ANNOUNCED
 	    branch (subbranch ou=DNS). This is primarily for Bind9 SDB
 	    LDAP driver (http://www.venaas.no/ldap/bind-sdb/ for driver
 	    information).
+	  - Allow for changing deliverymode (autoreply) even for ordinary
+	    user(s).
+	  - Full (?) international support. National characters allowed in
+	    more (most?) attributes AS WELL AS in the (R)DN.
+	  - Allow for having '%' in the username (uid attribute). This so
+	    that we can replace '@' with '%' to get the same username as
+	    email address - '@' is not allowed in username...
 
 phpQLAdmin 2.0.13 Release (May 5 2003)
 	Bug fixes
