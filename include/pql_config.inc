@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.32 2003-06-25 07:07:02 turbo Exp $
+// $Id: pql_config.inc,v 1.33 2003-06-28 15:11:30 turbo Exp $
 //
 
 // We need this instead of define(), so that we can get rid
@@ -228,6 +228,10 @@ foreach($_pql->ldap_basedn as $dn)  {
 	
 	session_register("ALLOW_BRANCH_CREATE", "ALLOW_CONTROL_CREATE");
 }
+
+// Get language translation
+require("./include/pql_lang.inc");
+$LANG = new pql_lang($_pql);
 
 // Remove some variables so we don't clutter the global
 // variable name space!

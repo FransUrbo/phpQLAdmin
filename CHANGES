@@ -92,6 +92,9 @@ phpQLAdmin 2.0.15 Release (TO BE ANNOUNCED)
 	Misc changes
 	  - Configurable define in config.inc which dictate what user
 	    (system account) ezmlm mailinglists is owned by.
+	  - Started a new language system taken from phpRecipeBook by
+	    Todd Rogers <nazgul26@users.sourceforge.net>
+		http://sourceforge.net/projects/phprecipebook
 
 phpQLAdmin 2.0.14 Release (jun 12 2003)
 	Bug fixes
