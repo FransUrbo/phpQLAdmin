@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.56 2004-10-10 12:03:52 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.57 2004-10-11 08:28:32 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -342,6 +342,7 @@ function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $do
 // These are the ACI's that I use in my development system. Might not be
 // perfect, but it works for me...
 //function user_generate_aci($ldap_linkid, $user, $type) {
+//	global $_SESSION;
 //	$i = 0;
 //
 //	// Public entries
@@ -365,13 +366,18 @@ function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $do
 //		} else {
 //			$aci[$i] = "$i#entry#grant;r,s,c;dc#public#"; $i++;
 //		}
-//
-//		$aci[$i] = "$i#entry#grant;w,r,s,c,x;[all]#access-id#$user"; $i++;
 //	}
 //
 //	// Non-public entries
 //	$aci[$i] = "$i#entry#grant;w,r,s,c;[children]#access-id#$user"; $i++;
-//	$aci[$i] = "$i#entry#grant;w,r,s,c,x;[all]#access-id#$user"; $i++;
+//
+//	// Add all the super admins with full access.
+//	$admins = pql_get_attribute($ldap_linkid, urldecode($_SESSION["BASE_DN"][0]), pql_get_define("PQL_ATTR_ADMINISTRATOR"));
+//	if(is_array($admins)) {
+//		foreach($admins as $admin) {
+//			$aci[$i] = "$i#entry#grant;w,r,s,c,x;[all]#access-id#$admin"; $i++;
+//		}
+//	}
 //
 //	return($aci);
 //}
