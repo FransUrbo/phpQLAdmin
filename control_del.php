@@ -1,8 +1,8 @@
 <?php
 // Delete a mailserver controls object
-// $Id: control_del.php,v 2.18 2005-03-01 09:30:02 turbo Exp $
+// $Id: control_del.php,v 2.18.2.1 2005-03-04 11:59:44 turbo Exp $
 //
-session_start();
+require("./include/pql_session.inc");
 require("./include/pql_config.inc");
 
 // {{{ Get users that uses this mailserver - we need to know this twice.
