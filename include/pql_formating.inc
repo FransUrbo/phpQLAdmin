@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.23 2004-03-30 07:57:26 turbo Exp $
+// $Id: pql_formating.inc,v 2.24 2004-05-06 16:41:37 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -243,7 +243,7 @@ function pql_format_tree_span($text, $links, $level) {
     <nobr>
       <?=$nbsp?>
       <?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>"><?php } ?>
-      <a class="tblItem" title="<?=$text?>" href="<?=$link?>" <?php if(eregi('^http://', $link)) { echo 'target="_top"'; } else { echo 'target="pqlmain"'; } ?>><?=$text?></a>
+      <a class="tblItem" title="<?=$text?>" href="<?=$link?>" <?php if(eregi('^http://', $link)) { echo 'target="_new"'; } else { echo 'target="pqlmain"'; } ?>><?=$text?></a>
     </nobr>
 <?php			if($counter < ($count - 1)) { ?>
 
@@ -280,6 +280,52 @@ function pql_format_tree_end() {
 	  echo "  </span>\n\n";
 	else
 	  echo "  </div>\n\n";
+}
+// }}}
+
+// {{{ pql_format_table_single(linkid, text, url, array, attribute)
+function pql_format_table_single($linkid, $text, $url, $array, $attrib) {
+	if(is_array($array)) { 
+		$new_tr = 0;
+		asort($array);
+		foreach($array as $value) {
+			$class  = pql_format_table(0);
+
+			$username = pql_get_attribute($linkid, $value, pql_get_define("PQL_ATTR_CN"));
+			if(!$username[0])
+			  $username = $value;
+			else
+			  $username = $username[0];
+			
+			if($new_tr) {
+?>
+
+      <tr class="<?=$class?>">
+        <td class="title"></td>
+<?php		} else { ?>
+      <tr class="<?=$class?>">
+        <td class="title"><?=$text["tit"]?>:</td>
+<?php		}
+
+			$new_tr = 1;
+?>
+        <td class="<?=$class?>"><?=$username?></td>
+        <td class="<?=$class?>"><a href="<?=$url["del"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$text["del"]?>"></a></td>
+      </tr>
+<?php	}
+	}
+?>
+
+      <tr class="<?=pql_format_table(0)?>">
+<?php if(!is_array($array)) { ?>
+        <td class="title"><?=$text["tit"]?>:</td>
+<?php } else { ?>
+        <td class="title"></td>
+<?php } ?>
+        <td><a href="<?=$url["add"]?>"><?=$text["add"]?></a></td>
+        <td></td>
+      </tr>
+<?php
 }
 // }}}
 
