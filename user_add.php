@@ -644,6 +644,9 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 				$entry[PQL_LDAP_ATTR_QMAILUID] = $uidnr;
 				$entry[PQL_LDAP_ATTR_QMAILGID] = $uidnr;
 			}
+
+			// Gecos is needed to do PAM/NSS LDAP login 
+			$entry["gecos"] = $surname . " " . $name;
 		}
 
         // ------------------
