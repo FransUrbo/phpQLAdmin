@@ -3,8 +3,20 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.7 2003-01-30 08:23:15 turbo Exp $
+// $Id: pql_config.inc,v 1.8 2003-02-04 08:06:41 turbo Exp $
 //
+
+// We need this instead of define(), so that we can get rid
+// of 'Constant ... already defined' if running with
+//	error_reporting=E_ALL
+// in PHP...
+function pql_define($define, $value, $case_insensitive = false) {
+	if($value == "1")
+	  $value = 'true';
+
+	if(! @constant($define))
+	  define($define, $value, $case_insensitive);
+}
 
 // ----------------------------
 // - SINGLE VALUED ATTRIBUTES -
@@ -90,8 +102,7 @@ if(!$USER_HOST) {
 	}
 }
 
-if($USER_DN) session_register("USER_DN");
-
+if(isset($USER_DN)) session_register("USER_DN");
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 $sr   = @ldap_read($_pql->ldap_linkid, $_pql->ldap_basedn[0], $_pql->ldap_basedn[0])
 	 or pql_errormsg($_pql->ldap_linkid);
@@ -106,28 +117,32 @@ for ($i=0; $i<$info["count"]; $i++) {
 				$v = strtolower($v);
 				$nkey = $key."_".$k;
 
-				if($info[$i][$v][0] != '') {
-					if($info[$i][$v][0]=='0')
-					  $V = 'false';
-					elseif($info[$i][$v][0]=='1')
-					  $V = 'true';
-					else
-					  $V = $info[$i][$v][0];
-
-					define($nkey, $info[$i][$v][0], true);
+				if(isset($info[$i][$v][0])) {
+					if($info[$i][$v][0] != '') {
+						if($info[$i][$v][0]=='0')
+						  $V = 'false';
+						elseif($info[$i][$v][0]=='1')
+						  $V = 'true';
+						else
+						  $V = $info[$i][$v][0];
+						
+						pql_define($nkey, $info[$i][$v][0], true);
+					}
 				}
 			}
 		} else {
 			$value = strtolower($value);
-			if($info[$i][$value][0] != '') {
-				if($info[$i][$value][0]=='0')
-				  $V = 'false';
-				elseif($info[$i][$value][0]=='1')
-				  $V = 'true';
-				else
-				  $V = $info[$i][$value][0];
-
-				define($key, $info[$i][$value][0], true);
+			if(isset($info[$i][$value][0])) {
+				if($info[$i][$value][0] != '') {
+					if($info[$i][$value][0]=='0')
+					  $V = 'false';
+					elseif($info[$i][$value][0]=='1')
+					  $V = 'true';
+					else
+					  $V = $info[$i][$value][0];
+					
+					pql_define($key, $info[$i][$value][0], true);
+				}
 			}
 		}
 	}

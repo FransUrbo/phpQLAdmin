@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.17 2003-01-22 09:08:35 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.18 2003-02-04 08:06:41 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -15,7 +15,7 @@ if(!$PQL_CONFIG_INCLUDED) {
 	// ----------------------------
 	// PQL_HOSTMASTER (emailaddress)
 	// this is the sender of testmails
-	define("PQL_HOSTMASTER", "hostmaster@adfinis.ch");
+	pql_define("PQL_HOSTMASTER", "hostmaster@adfinis.ch");
 	
 	// ----------------------------
 	// PQL_LDAP_HOST (FQDN|IP)
@@ -35,8 +35,8 @@ if(!$PQL_CONFIG_INCLUDED) {
 	// Stack these with space and you'll get a list of host you can
 	// administrate. If only one, then you can obiously only configure
 	// that :)
-	//define("PQL_LDAP_HOST","ldaps://localhost/;;ou=QmailLDAP,dc=example,dc=com");
-	define("PQL_LDAP_HOST","localhost;389;ou=QmailLDAP,dc=example,dc=com");
+	//pql_define("PQL_LDAP_HOST","ldaps://localhost/;;ou=QmailLDAP,dc=example,dc=com");
+	pql_define("PQL_LDAP_HOST","localhost;389;ou=QmailLDAP,dc=example,dc=com");
 	
 	// ----------------------------
 	// PQL_LDAP_SUBTREE_USERS
@@ -45,7 +45,7 @@ if(!$PQL_CONFIG_INCLUDED) {
 	// or in a subtree like
 	//	uid=username,ou=People,PQL_LDAP_REFERENCE_DOMAINS_WITH=example,<LDAP_BASEDN>
 	// -> If the former (no subtree), leave this empty!
-	//define("PQL_LDAP_SUBTREE_USERS", "ou=People");
+	//pql_define("PQL_LDAP_SUBTREE_USERS", "ou=People");
 	
 	// ----------------------------
 	// PQL_LDAP_SUBTREE_GROUPS
@@ -53,13 +53,13 @@ if(!$PQL_CONFIG_INCLUDED) {
 	// etc, you'd need a group for the user as well. Under
 	// what subtree is the groups located?
 	// -> Do not add a comma after this, not needed.
-	//define("PQL_LDAP_SUBTREE_GROUPS", "ou=Groups");
+	//pql_define("PQL_LDAP_SUBTREE_GROUPS", "ou=Groups");
 	
 	// ----------------------------
 	// PQL_LDAP_OBJECTCLASS_USER_EXTRA
 	// What objectclasses to use when creating a user object?
-	//define("PQL_LDAP_OBJECTCLASS_USER_EXTRA", "person pilotPerson organizationalPerson krb5Principal trustAccount inetOrgPerson posixAccount mailRecipient shadowAccount");
-	define("PQL_LDAP_OBJECTCLASS_USER_EXTRA", "person pilotPerson organizationalPerson");
+	//pql_define("PQL_LDAP_OBJECTCLASS_USER_EXTRA", "person pilotPerson organizationalPerson krb5Principal trustAccount inetOrgPerson posixAccount mailRecipient shadowAccount");
+	pql_define("PQL_LDAP_OBJECTCLASS_USER_EXTRA", "person pilotPerson organizationalPerson");
 
 	// ----------------------------
 	// mail(message)store generation
@@ -225,8 +225,8 @@ if(!$PQL_CONFIG_INCLUDED) {
 	// (most OS don't allow suid shell scripts).
 	//
 	// !!! BIG FAT WARNING: DO NOT USE UNLESS YOU KNOW WHAT YOU'RE DOING !!!
-	//define("PQL_EXTRA_SCRIPT_CREATE_USER", "./create_user.pl");
-	//define("PQL_EXTRA_SCRIPT_CREATE_DOMAIN", "./create_domain.pl");
+	//pql_define("PQL_EXTRA_SCRIPT_CREATE_USER", "./create_user.pl");
+	//pql_define("PQL_EXTRA_SCRIPT_CREATE_DOMAIN", "./create_domain.pl");
 }
 
 /*
