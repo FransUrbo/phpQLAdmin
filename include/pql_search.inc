@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.35.2.1 2005-02-12 05:19:15 turbo Exp $
+// $Id: pql_search.inc,v 2.35.2.2 2005-02-23 16:51:43 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -14,7 +14,8 @@
 // Return all users (whole object!!) matching filter.
 function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $operational = 0) {
 	// URL decode the object DN if it's URL ENcoded
-	$dn = urldecode($dn);
+	$dn = pql_maybe_encode(urldecode($dn));
+
 	if(eregi("^dNSTTL=", $dn))
 	  $dn = pql_recreate_dnsttl($dn);
 
