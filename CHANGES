@@ -276,6 +276,7 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	    + pql_get_userquota()		-> pql_user_get_quota()
 	    + pql_get_user_letter()		-> pql_user_get_letter()
 	    + pql_get_user_number()		-> pql_user_get_number()
+	    + pql_print_filesize()		-> pql_control_print_filesize()
 	  - Functions removed:
 	    + pql_search_attribute()
 	    + attribute_verify_objectclass()

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // databytes (max number of bytes in message)
 //
-// $Id: attrib.control.databytes.inc,v 2.14 2004-03-28 18:58:02 turbo Exp $
+// $Id: attrib.control.databytes.inc,v 2.15 2004-04-01 06:27:59 turbo Exp $
 
 // {{{ databytes_check(type)
 function databytes_check($type) {
@@ -45,7 +45,7 @@ function databytes_print_view($host) {
 	if($_REQUEST["databytes"] == "" or $_REQUEST["databytes"] == 0)
 	  $_REQUEST["databytes"] = "unlimited";
 	else {
-		$hr_databytes = "(" . pql_print_filesize($databytes) . ")";
+		$hr_databytes = "(" . pql_control_print_filesize($databytes) . ")";
 		$_REQUEST["databytes"] .= " ".$LANG->_('Bytes');
 	}
 	
