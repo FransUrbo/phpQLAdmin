@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.41 2004-09-24 06:20:40 turbo Exp $
+// $Id: pql_control.inc,v 2.42 2004-10-15 15:06:35 turbo Exp $
 //
 
 // {{{ control connection class
@@ -87,21 +87,17 @@ function pql_control_replace_attribute($ldap_linkid, $ldap_control_basedn, $attr
     
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_control_replace_attribute", $ldap_control_basedn, $entry);
+	if(file_exists("./.DEBUG_ME"))
+	  die($LDIF);
 
     // replace
-    if(!ldap_mod_replace($ldap_linkid, $ldap_control_basedn, $entry)) {
+    if(!@ldap_mod_replace($ldap_linkid, $ldap_control_basedn, $entry)) {
 		// Try to delete the attribute from the object
 		$del[$attrib] = array();
-		if(!ldap_mod_del($ldap_linkid, $ldap_control_basedn, $del)) {
-			echo "Can't delete attribute $attrib<br>";
-
-			pql_format_error(1);
-			die("$LDIF");
-			return false;
-		}
+		@ldap_mod_del($ldap_linkid, $ldap_control_basedn, $del);
 
 		// Now add the attribute again (this time with the new value(s))
-		if(!ldap_mod_add($ldap_linkid, $ldap_control_basedn, $entry)) {
+		if(!@ldap_mod_add($ldap_linkid, $ldap_control_basedn, $entry)) {
 			echo "Can't add attribute $attrib<br>";
 
 			pql_format_error(1);
