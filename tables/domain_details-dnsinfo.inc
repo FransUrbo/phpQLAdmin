@@ -14,7 +14,7 @@
 		foreach($weight as $key => $prio) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td><?=$rec[$key]?></td>
+        <td><?=pql_maybe_idna_decode($rec[$key])?></td>
         <td align="right"><?=$prio?></td>
       </tr>
 <?php	} // end foreach
