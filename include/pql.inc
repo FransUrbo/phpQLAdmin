@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.177 2004-04-29 12:42:46 turbo Exp $
+// $Id: pql.inc,v 2.178 2004-04-29 13:47:51 dlw Exp $
 //
 
 // ----------------------------
@@ -22,6 +22,7 @@ ob_start();
 // ----------------------------
 
 // {{{ PQL - main class (connection handling)
+
 class pql {
 	var $ldap_linkid = 0;					// ldap connection identifier
 	var $ldap_error  = 0;					// error message incase of failiure
@@ -153,6 +154,7 @@ class pql {
 			return true;
 		}
 	}
+
 	// }}}
 
 	// {{{ bool connect(hostname)
@@ -201,6 +203,7 @@ class pql {
 	}
 	// }}}
 }
+
 // }}}
 
 // ------------------------------------------------
@@ -1632,7 +1635,7 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 						$words = ereg_replace(" ", "", $words[0]);
 						$words = split('\$', $words);
 
-						for($j = 0; $words[$j]; $j++)
+						for($j = 0; isset($words[$j]); $j++)
 						  $VALUE[$name]["SUP"][] = $words[$j];
 					} else {
 						$words = split(" ",  $words[1]);
