@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.95.10.2 2004-05-05 07:56:53 turbo Exp $
+// $Id: user_add.php,v 2.95.10.3 2004-05-05 13:13:35 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -284,7 +284,7 @@ switch($_REQUEST["page_curr"]) {
 			if((pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
 			   and $_REQUEST["uid"])
 			  $reference = $_REQUEST["uid"];
-			if($_REQUEST["surname"] and $_REQUEST["name"])
+			elseif($_REQUEST["surname"] and $_REQUEST["name"])
 			  $reference = $_REQUEST["surname"]." ".$_REQUEST["name"];
 			elseif($_REQUEST["surname"])
 			  $reference = $_REQUEST["surname"];
@@ -316,7 +316,7 @@ switch($_REQUEST["page_curr"]) {
 			if((pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
 			   and $_REQUEST["uid"])
 			  $reference = $_REQUEST["uid"];
-			if($_REQUEST["surname"] and $_REQUEST["name"])
+			elseif($_REQUEST["surname"] and $_REQUEST["name"])
 			  $reference = $_REQUEST["surname"]." ".$_REQUEST["name"];
 			elseif($_REQUEST["surname"])
 			  $reference = $_REQUEST["surname"];
