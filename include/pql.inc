@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.122 2003-11-15 09:29:18 turbo Exp $
+// $Id: pql.inc,v 2.123 2003-11-15 12:22:16 turbo Exp $
 //
 
 // ----------------------------
@@ -1680,24 +1680,22 @@ function pql_parse_quota($quota_string) {
 // }}}
 
 // {{{ check_email(email)
-function check_email($email){
+function check_email($email) {
     $split = split("@", $email);
     
-    if(count($split) != 2){
-		// does not contain @ or has to much of it
-		return false;
-    }
+    if(count($split) != 2)
+	  // does not contain @ or has to much of it
+	  return false;
     
     // check user part
-    if(!preg_match("/^[a-z0-9-+=#]+([\._a-z0-9-+=#]?[a-z0-9]+)*$/i", $split[0])){
-		// user part is not valid:
-		// - must start with a valid character (a-Z, 0-9)
-		// - may contain a special char (. _ + = # -), but not at start and end
-		//   and following another special char
-		// - must end with a valid character (a-Z, 0-9)
-		// - must contain at least 1 character
-		return false;
-    }
+    if(!preg_match("/^[a-z0-9-+=#]+([\._a-z0-9-+=#]?[a-z0-9]+)*$/i", $split[0]))
+	  // user part is not valid:
+	  // - must start with a valid character (a-Z, 0-9)
+	  // - may contain a special char (. _ + = # -), but not at start and end
+	  //   and following another special char
+	  // - must end with a valid character (a-Z, 0-9)
+	  // - must contain at least 1 character
+	  return false;
     
     // check host part
 	return check_hostaddress($split[1]);
@@ -1705,7 +1703,7 @@ function check_email($email){
 // }}}
 
 // {{{ check_hostaddress(host, force_dot)
-function check_hostaddress($host, $force_dot) {
+function check_hostaddress($host, $force_dot = 0) {
     // checks an fqdn - if force_dot is true, it must contain a dot
     if($force_dot)
 	  return preg_match("/^([0-9a-z-]+\.[0-9a-z-]+)+$/i", $host);
