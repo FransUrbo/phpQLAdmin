@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.71 2003-05-08 09:20:44 turbo Exp $
+// $Id: pql.inc,v 2.72 2003-05-20 07:22:17 turbo Exp $
 //
 
 // ----------------------------
@@ -1115,8 +1115,8 @@ function table_bgcolor($echo = 1) {
 
 // ------------------------------------------------
 
-function format_error($msg){
-    return "<span class=\"error\">" . $msg . "</span>\n";
+function format_error($msg) {
+    return "<span class=\"error\">" . $msg . "</span>";
 }
 
 // ------------------------------------------------
