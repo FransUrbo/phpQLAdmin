@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.128 2003-11-20 08:01:37 turbo Exp $
+// $Id: pql.inc,v 2.129 2003-11-20 09:43:47 turbo Exp $
 //
 
 // ----------------------------
@@ -37,7 +37,7 @@ class pql {
 
 	    // Build an array of base dn's. It's possible to have multiple in a database
 	    for($i=0; $i < $entry["count"]; $i++) {
-			if(is_array($entry[$i][$attrib])) {
+			if(is_array(@$entry[$i][$attrib])) {
 				for($j=0; $j < $entry[$i][$attrib]["count"]; $j++ )
 				  $val[] = urlencode(pql_maybe_encode($entry[$i][$attrib][$j], $attrib, $this->ldap_linkid));
 			} elseif($entry[$i]["dn"]) {
@@ -50,6 +50,8 @@ class pql {
 	    
 	    // If we got at least one DN, return the array. Else return false
 	    if($success) {
+			$new = NULL;
+
 			// Remove any spaces after the RDN separator
 			foreach($val as $dn) {
 				while(eregi("%2C\+", $dn)) {
@@ -240,7 +242,7 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 				if(!is_array($value)) {
 					// Go through the MUST attributes for this objctclass,
 					// looking for an attribute we have NOT defined
-					for($i=0; $MUST[$i]; $i++)
+					for($i=0; isset($MUST[$i]); $i++)
 					  if(lc($MUST[$i]) == lc($attrib))
 						unset($MUST[$i]);
 					
@@ -1371,7 +1373,7 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 			// ------------------------
 			// Retreive NAME
 			$words = split("NAME", $entry[0][$attrib][$i]);
-			if($words[1]) {
+			if(! empty($words[1])) {
 				if(ereg("^ \(", $words[1])) {
 					$words = split("\)", $words[1]);
 					$words = ereg_replace("\'", "", $words[0]);
@@ -1399,7 +1401,7 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 			// ------------------------
 			// Retreive DESC
 			$words = split("DESC", $entry[0][$attrib][$i]);
-			if($words[1]) {
+			if(! empty($words[1])) {
 				$words = split("\' ", $words[1]);
 				$words = split(" \'", $words[0]);
 				
@@ -1409,7 +1411,7 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 			// ------------------------
 			// Retreive MAY's
 			$words = split("MAY", $entry[0][$attrib][$i]);
-			if($words[1]) {
+			if(! empty($words[1])) {
 				if(ereg("\(", $words[1])) {
 					$words = split("\(", $words[1]);
 					$words = split("\)", $words[1]);
@@ -1432,7 +1434,7 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 			// ------------------------
 			// Retreive MUST's
 			$words = split("MUST", $entry[0][$attrib][$i]);
-			if($words[1]) {
+			if(! empty($words[1])) {
 				if(ereg("^ \(", $words[1])) {
 					$words = split("\(", $words[1]);
 					$words = split("\)", $words[1]);
@@ -1457,7 +1459,7 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 			// ------------------------
 			// Retreive EQUALITY
 			$words = split("EQUALITY", $entry[0][$attrib][$i]);
-			if($words[1]) {
+			if(! empty($words[1])) {
 				$words = split(" ", $words[1]);
 				$VALUE[$name]["EQUALITY"] = $words[1];
 			}
@@ -1465,7 +1467,7 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 			// ------------------------
 			// Retreive SYNTAX
 			$words = split("SYNTAX", $entry[0][$attrib][$i]);
-			if($words[1]) {
+			if(! empty($words[1])) {
 				$words = split(" ", $words[1]);
 				$VALUE[$name]["SYNTAX"] = $words[1];
 			}
@@ -1473,7 +1475,7 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 			// ------------------------
 			// Retreive USAGE
 			$words = split("USAGE", $entry[0][$attrib][$i]);
-			if($words[1]) {
+			if(! empty($words[1])) {
 				$words = split(" ", $words[1]);
 				$VALUE[$name]["USAGE"] = $words[1];
 			}
@@ -1482,7 +1484,7 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 			// Retreive SUP
 			if(eregi("SUP", $entry[0][$attrib][$i])) {
 				$words = split("SUP", $entry[0][$attrib][$i]);
-				if($words[1]) {
+				if(! empty($words[1])) {
 					if(ereg("^ \(", $words[1])) {
 						$words = split("\(", $words[1]);
 						$words = split("\)", $words[1]);
