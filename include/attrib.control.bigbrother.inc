@@ -2,50 +2,13 @@
 // control attribute plugin for
 // bigbrother (max number of bytes in message)
 //
-// $Id: attrib.control.bigbrother.inc,v 2.2 2004-07-08 11:37:53 turbo Exp $
+// $Id: attrib.control.bigbrother.inc,v 2.3 2004-10-15 15:23:02 turbo Exp $
 
 // {{{ bigbrother_check(type)
 function bigbrother_check($type) {
 	global $error, $LANG;
 
-	// check each field
-	if(is_array($_REQUEST["bigbrother"])) {
-		foreach($_REQUEST["bigbrother"] as $key => $server) {
-			if($server == "")
-			  continue;
-			
-			// it is an ip address
-			if(!preg_match("/([0-9]{1,3}\.){3,3}[0-9]{1,1}/", $server)) {
-				$is_error = true;
-				$error["bigbrother_$key"] = $LANG->_('Invalid');
-			} else {
-				// ip format ok, check validity of matched ip address
-				$ip = explode(".", $server);
-				
-				foreach($ip as $ip_key => $ip_part) {
-					switch((int)$ip_key) {
-					  case 0:
-					  case 3:
-						if($ip_part <= 0 or $ip_part > 254) {
-							$is_error = true;
-							$error["bigbrother_$key"] = $LANG->_('Invalid');
-						}
-						break;
-						
-					  default:
-						if($ip_part < 0 or $ip_part > 255) {
-							$is_error = true;
-							$error["bigbrother_$key"] = $LANG->_('Invalid');
-						}
-					} // end switch
-				} // end foreach
-			} // end if !preg_match...
-		} // end foreach
-	} // end if is_array...
-
-	if($is_error)
-	  return false;
-	
+	// dummy function
 	return true;
 }
 // }}}
@@ -57,8 +20,8 @@ function bigbrother_init($host) {
 
 	// fetch data from ldap server
 	$_REQUEST["bigbrother"] = pql_control_get_attribute($_pql_control->ldap_linkid,
-														 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-														 pql_get_define("PQL_ATTR_QMQPSERVERS"));
+														 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+														 pql_get_define("PQL_ATTR_BIGBROTHER"));
 
 	if(is_null($_REQUEST["bigbrother"]))
 	  return true;
@@ -74,29 +37,32 @@ function bigbrother_print_view($host) {
 	bigbrother_init($host);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th align="left">bigbrother (<?=$LANG->_('_CHANGE THIS_')?>)</th>
+    <th colspan="2" align="left">bigbrother (<?=$LANG->_('Global mail forwarding/surveillance')?>)
       <tr class="title">
-        <td>IP</td>
+        <td><?=$LANG->_('Mail sent to')?></td>
+        <td><?=$LANG->_('Forward to')?></td>
       </tr>
 <?php
 	if(!is_array($_REQUEST["bigbrother"])) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td><?=$LANG->_('Not set')?></td>
+        <td colspan="2"><?=$LANG->_('Not set')?></td>
       </tr>
 <?php
 	} else {
-		foreach($_REQUEST["bigbrother"] as $server) {
+		foreach($_REQUEST["bigbrother"] as $addresses) {
+			$address = split(':', $addresses);
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td><?=pql_maybe_idna_decode($server)?></td>
+        <td><?=$address[0]?></td>
+        <td><?=$address[1]?></td>
       </tr>
 <?php
 		} // end foreach
 	} // end if is_array
 ?>
       <tr class="subtitle">
-        <td><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=bigbrother"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
+        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=bigbrother"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
       </tr>
     </th>
   </table>
@@ -109,8 +75,8 @@ function bigbrother_print_view($host) {
 function bigbrother_print_form() {
 	global $error, $LANG;
 
-	if(($_REQUEST["qmqpcount"] < count($_REQUEST["bigbrother"]) - 1) and count($_REQUEST["qmqpservers"]) != 0)
-	  $_REQUEST["qmqpcount"] = count($_REQUEST["bigbrother"]) - 1;
+	if(($_REQUEST["bbcount"] < count($_REQUEST["bigbrother"]) - 1) and count($_REQUEST["qmqpservers"]) != 0)
+	  $_REQUEST["bbcount"] = count($_REQUEST["bigbrother"]) - 1;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -123,14 +89,14 @@ function bigbrother_print_form() {
           <td><?php echo pql_format_error_span($error["bigbrother_0"]); ?><input type="text" name="qmqpservers[0]" value="<?=$_REQUEST["qmqpservers"][0]?>"></td>
         </tr>
 
-<?php for($i = 1; $i <= $_REQUEST["qmqpcount"]; $i++) { ?>
+<?php for($i = 1; $i <= $_REQUEST["bbcount"]; $i++) { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td><?php echo pql_format_error_span($error["bigbrother_$i"]); ?><input type="text" name="qmqpservers[<?=$i?>]" value="<?=$_REQUEST["qmqpservers"][$i]?>"></td>
         </tr>
 
 <?php } ?>
         <tr class="subtitle">
-          <td><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&qmqpcount=<?=($_REQUEST["qmqpcount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
+          <td><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&bbcount=<?=($_REQUEST["bbcount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
         </tr>
 
         <tr class="subtitle">
@@ -159,8 +125,8 @@ function bigbrother_save($type, $host)  {
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_ATTR_QMQPSERVERS"),
+										 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_ATTR_BIGBROTHER"),
 										 $_REQUEST["bigbrother"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('bigbrother options')));
@@ -183,9 +149,15 @@ function bigbrother_save($type, $host)  {
 function bigbrother_help() {
 	global $LANG;
 ?>
-	IP addresses of QMQP servers, one address per line.
-	qmail-qmqpc will try each address in turn until it
-	establishes a QMQP connection or runs out of addresses.
+    This file is only used if BIGBROTHER was defined in the Makefile.
+    For ISP that need to implement some surveillance method because of some
+    beloved authoroties (like here in switzerland), you can enable a per
+    address queue extra feature. To automatically forward all mail to and from
+    badguy@badplace.ch to bigbrother@admin.ch you need to add followong line to
+    ~control/bigbrother: <u>badguy@badplace.ch:bigbrother@admin.ch</u>.<br>
+    The address <b>bigbrother@admin.ch</b> can be a local, ldap or remote address.<br>
+    <b>NOTE</b>: An extra recipient will be added in qmail-send. If the bigbrother
+          address causes a bounce the sender will see this bounce.
 <?php
 }
 // }}}
