@@ -159,8 +159,8 @@
         <td></td>
 <?php			} else { ?>
         <td>
-          <a href="domain_edit_attributes.php?attrib=ezmlmadministrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&administrator=<?=$admin?>&submit=3&action=modify&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify administrators for <?=$domain?>"></a>
-          <a href="domain_edit_attributes.php?attrib=ezmlmadministrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&administrator=<?=$admin?>&submit=4&action=delete&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="<?=PQL_LANG_DOMAIN_ADMIN_DELETE?>" border="0"></a>
+          <a href="domain_edit_attributes.php?attrib=ezmlmadministrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&ezmlmadministrator=<?=$admin?>&submit=3&action=modify&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify administrators for <?=$domain?>"></a>
+          <a href="domain_edit_attributes.php?attrib=ezmlmadministrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&ezmlmadministrator=<?=$admin?>&submit=4&action=delete&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="<?=PQL_LANG_DOMAIN_ADMIN_DELETE?>" border="0"></a>
         </td>
 <?php			} ?>
       </tr>
