@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for the Webserver Configuration editor
 //
-// $Id: attrib.websrv.inc,v 1.7 2005-01-12 13:50:55 turbo Exp $
+// $Id: attrib.websrv.inc,v 1.8 2005-01-13 12:19:32 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -87,6 +87,11 @@ function attribute_save($action) {
 
 		// Add the new value to the array
 		$entry[$attrib][] = $_REQUEST[$attrib];
+
+		// Create a LDIF object to print in case of error
+		$LDIF = pql_create_ldif("attrib.websrv.inc", $_REQUEST["server"], $entry);
+		if(file_exists("./.DEBUG_ME"))
+		  die($LDIF);
 
 		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["server"], '', '', $entry))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
