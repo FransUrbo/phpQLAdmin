@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.17 2003-01-15 07:12:04 turbo Exp $
+// $Id: pql.inc,v 2.18 2003-01-15 07:29:17 turbo Exp $
 //
 // ----------------------------
 // Note: There are a few " followed after PHP comment
@@ -44,7 +44,26 @@ $pql_cache_userentry = array();
 class pql {
 	var $ldap_linkid = 0;					// ldap connection identifier
 	var $ldap_error  = 0;					// error message incase of failiure
+	var $ldap_basedn = 0;					// array of base dns for future searches etc
 
+	function _find_basedn() {
+		$sr = ldap_read($this->ldap_linkid, '', '(objectClass=*)', array('namingContexts'));
+		$entry = ldap_get_entries($this->ldap_linkid, $sr);
+		
+		// Build an array of base dn's. It's possible to have multiple in a database
+		for($i=0; $i < $entry["count"]; $i++) {
+			$dn[] = $entry[$i]["dn"];
+			$success = 1;
+		}
+		
+		// If we got at least one DN, return the array. Else return false
+		if($success) {
+			return $dn;
+		} else {
+			return false;
+		}
+	}
+	
 	function pql($host, $binddn = "", $bindpw = "", $no_connect = false, $do_die = 1) {
 		// constructor, connect to ldap host
 		if($no_connect == true){
@@ -68,6 +87,9 @@ class pql {
 
 			return false;
 		}
+
+		// Find the base DN(s)
+		$this->ldap_basedn = $this->_find_basedn();
 
 		return true;
 	}
@@ -1530,16 +1552,6 @@ function pql_branch_objectclasses() {
 	return $filter;
 }
 
-
-function pql_find_basedn($ldap_linkid) {
-	$sr = ldap_read($ldap_linkid, '', '(objectClass=*)', array('namingContexts'));
-	$entry = ldap_get_entries($ldap_linkid, $sr);
-
-	for($i=0; $i < $entry["count"]; $i++)
-	  $dn[] = $entry[$i]["dn"];
-
-	return $dn;
-}
 
 /*
  * Local variables:
