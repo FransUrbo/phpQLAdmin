@@ -19,7 +19,7 @@ from the LDAP database.
 Brian Ferris seems to have quit/graduated from NCSU and his page(s)
 have been removed the documentation for the module with it...  I
 however managed to save the tarball on my own site
-(http://phpqladmin.bayour.com/mod_ldap_cfg-turbo.tar.gz) if someone
+(http://phpqladmin.com/mod_ldap_cfg-turbo.tar.gz) if someone
 can manage to get it working (I'm currently having a chat on the
 apache-modules list about this).
 
@@ -49,7 +49,7 @@ ApacheSectionName: VirtualHost
 ApacheSectionArg: 192.168.1.4
 ApacheServerName: testing.bayour.com
 ApacheDocumentRoot: /var/www/testing
-ApacheServerAdmin: turbo@bayour.com
+ApacheServerAdmin: turbo@phpqladmin.com
 ApacheErrorLog: /var/log/apache/testing_error.log
 ApacheTransferLog: /var/log/apache/testing_access.log
 ----- s n i p -----
@@ -61,6 +61,6 @@ This will create a vhost entry that looks like:
         DocumentRoot /var/www/testing/
         ErrorLog /var/log/apache/testing-error.log
         TransferLog /var/log/apache/testing-trans.log
-        ServerAdmin turbo@bayour.com
+        ServerAdmin turbo@phpqladmin.com
 </VirtualHost>
 ----- s n i p -----
