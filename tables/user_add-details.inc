@@ -1,11 +1,9 @@
-<?php /* $Id: user_add-details.inc,v 1.13 2004-03-17 20:42:14 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.14 2004-03-19 10:38:14 turbo Exp $ */ ?>
+<?php $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"])); ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
-<?php if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")) {
-		if(!pql_get_define("PQL_CONF_AUTOCREATE_USERNAME", $_REQUEST["rootdn"]) or
-		   (pql_get_define("PQL_CONF_AUTOCREATE_USERNAME", $_REQUEST["rootdn"]) and !function_exists('user_generate_uid')) or
-		   $_SESSION["ADVANCED_MODE"]) {
+<?php if((!pql_get_define("PQL_CONF_AUTOCREATE_USERNAME", $_REQUEST["rootdn"]) and $_SESSION["ADVANCED_MODE"]) or !$_REQUEST["uid"]) {
 ?>
         <!-- Username (UID) -->
         <tr class="<?php pql_format_table(); ?>">
@@ -18,16 +16,14 @@
           <td><?=$LANG->_('Numbers, letters and the following special chars: @, %, . (dot), _, -.\nIf left out, a username will be created automatically')?>.</td>
         </tr>
 
-<?php	} else { ?>
+<?php } else { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
-          <td><?php echo pql_complete_constant($LANG->_('Automatically generate %what%'), array('what' => $LANG->_('username'))); ?>.</td>
+          <td><?php echo pql_complete_constant($LANG->_('Automatically generated %what%'), array('what' => $LANG->_('username'))); ?> => <b><?=$_REQUEST["uid"]?></b>.</td>
         </tr>
         <input type="hidden" name="uid" value="<?=$_REQUEST["uid"]?>">
 
-<?php	}
-	  }
-?>
+<?php } ?>
         <!-- Firstname -->
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Surname')?></td>
@@ -77,6 +73,13 @@
         <input type="hidden" name="pwscheme" value="<?=$_REQUEST["defaultpasswordscheme"]?>">
 <?php	} ?>
 
+<?php	if(eregi('KERBEROS', pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"])) and (!$_REQUEST["defaultpasswordscheme"] or $_SESSION["ADVANCED_MODE"])) { ?>
+        <tr class="<?php pql_format_table(); ?>">
+          <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
+          <td><?=$LANG->_('If using {KERBEROS} as password scheme, make sure you include the correct REALM (principal@REALM.TLD)')?></td>
+        </tr>
+<?php	} ?>
+
         <!-- Password -->
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Password')?></td>
@@ -89,12 +92,6 @@
           </td>
         </tr>
 
-<?php	if(eregi('KERBEROS', pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"]))) { ?>
-        <tr class="<?php pql_format_table(); ?>">
-          <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
-          <td><?=$LANG->_('If using {KERBEROS} as password scheme, make sure you include the correct REALM (principal@REALM.TLD)')?></td>
-        </tr>
-<?php	} ?>
         <tr class="<?php pql_format_table(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
           <td><?=$LANG->_('If you enter an already encrypted password, you must make sure that the password scheme you\'ve choosen is the correct one. Also, choose the checkbox \uPassword is already encrypted\U')?></td>
@@ -185,7 +182,7 @@
 ?>
         <tr class="<?php pql_format_table(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
-          <td><?php echo pql_complete_constant($LANG->_('Automatically generate %what%'), array('what' => $LANG->_('email address'))); ?>.</td>
+          <td><?php echo pql_complete_constant($LANG->_('Automatically generated %what%'), array('what' => $LANG->_('email address'))); ?>.</td>
         </tr>
 <?php	}
 	}
@@ -256,7 +253,7 @@
 <?php
 	} // account_type == forward
   
-    if($_REQUEST["account_type"] != 'shell') {
+    if(($_REQUEST["account_type"] != 'shell') and in_array('trustaccount', $objectclasses_included)) {
 ?>
         <!-- Account status -->
         <tr class="<?php pql_format_table(); ?>">
