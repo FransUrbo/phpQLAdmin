@@ -1,6 +1,7 @@
 <?php
-// $Id: ezmlm_del.php,v 1.24 2005-02-24 17:04:00 turbo Exp $
+// $Id: ezmlm_del.php,v 1.25 2005-03-01 20:26:46 turbo Exp $
 //
+// {{{ Setup session etc
 session_start();
 require("./include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_ezmlm.inc");
@@ -11,23 +12,26 @@ $url["domain"] = pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 
 include($_SESSION["path"]."/header.html");
+// }}}
 
-// forward back to list detail page
+// {{{ Forward back to list detail page
 function list_forward($domainname, $msg) {
     $msg = urlencode($msg);
     $url = "home.php?msg=$msg&rlnb=3";
     header("Location: " . $_SESSION["URI"] . "$url");
 }
+// }}}
 
-// Get base directory for mails
-if(!($path = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEMAILDIR")))) {
+// {{{ Get base directory for mails
+if(!($basedir = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEMAILDIR")))) {
 	// TODO: What if we can't find the base maildir path!?
 	die("Can't get ".pql_get_define("PQL_ATTR_BASEMAILDIR")." path from domain '".$_REQUEST["domain"]."'!");
 }
+// }}}
 
-// Load list of mailinglists
+// {{{ Load list of mailinglists
 $user = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_EZMLM_USER"));
-if($ezmlm = new ezmlm($user, $path)) {
+if($ezmlm = new ezmlm($user, $basedir)) {
 	if(is_array($ezmlm->mailing_lists[$listno])) {
 		$listname = $ezmlm->mailing_lists[$listno]["name"] . "@" . $ezmlm->mailing_lists[$listno]["host"];
 		$listpath = $ezmlm->mailing_lists[$listno]["directory"];
@@ -37,6 +41,7 @@ if($ezmlm = new ezmlm($user, $path)) {
 		echo "List does not exists<br>";
 	}
 }
+// }}}
 
 /*
  * Local variables:
