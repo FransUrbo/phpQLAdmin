@@ -64,10 +64,11 @@ foreach($attribs as $attrib) {
 
     $value = pql_get_userattribute($_pql->ldap_linkid, $user, $attrib);
     $$attrib = utf8_decode($value[0]);
+    $value = urlencode($$attrib);
 
     // Setup edit links
     $link = $attrib . "_link";
-    $$link = "<a href=\"user_edit_attribute.php?domain=<?=$domain?>&attrib=$attrib&user=$user\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify $attrib for $username\"></a>";
+    $$link = "<a href=\"user_edit_attribute.php?domain=$domain&attrib=$attrib&user=$user&$attrib=$value\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify $attrib for $username\"></a>";
 }
 $quota = pql_get_userquota($_pql->ldap_linkid, $user);
 
