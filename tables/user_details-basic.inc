@@ -18,9 +18,9 @@
 		$userparts  = split("=", $dnparts[0]);						// Split the DN part into two parts - attribute and value.
 		$userdnpart = pql_maybe_decode($userparts[1], $userparts[0]);	// Maybe URL/UTF8 decode the value
 		$_GET["user"] = $userparts[0]."=".$userdnpart.",";					// Create a new DN part
-		for($i=1; $dnparts[$i]; $i++) {								// Add the rest of the DN
+		for($i=1; isset($dnparts[$i]); $i++) {								// Add the rest of the DN
 			$_GET["user"] .= $dnparts[$i];
-			if($dnparts[$i+1])
+			if(isset($dnparts[$i+1]))
 			  $_GET["user"] .= ",";
 		}
 ?>
@@ -88,7 +88,7 @@
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Additional group(s)')?></td>
-<?php if($memberuid[1]) {
+<?php if(isset($memberuid[1])) {
 		$new_tr = 0;
 		foreach($memberuid as $muid) {
 			$muid = pql_maybe_idna_decode($muid);
@@ -100,7 +100,7 @@
 <?php		} ?>
         <td><?=$muid?></td>
         <td>
-          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=lc(pql_get_define("PQL_GLOB_ATTR_ADDITIONAL_GROUP"))?>&<?=lc(pql_get_define("PQL_GLOB_ATTR_ADDITIONAL_GROUP"))?>=<?=$muid?>&submit=4&action=delete&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Remove user from group')?>" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=lc(pql_get_define("PQL_GLOB_ATTR_ADDITIONAL_GROUP"))?>&<?=lc(pql_get_define("PQL_GLOB_ATTR_ADDITIONAL_GROUP"))?>=<?=$muid?>&submit=4&action=delete&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Remove user from group')?>" border="0"></a>
         </td>
 <?php		$new_tr = 1;
 		} // if new_tr
@@ -108,12 +108,12 @@
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"></td>
         <td colspan="4">
-          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=lc(pql_get_define("PQL_GLOB_ATTR_ADDITIONAL_GROUP"))?>&submit=3&action=add&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional group'))); ?></a>
+          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=lc(pql_get_define("PQL_GLOB_ATTR_ADDITIONAL_GROUP"))?>&submit=3&action=add&view=<?=$_GET["view"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional group'))); ?></a>
         </td>
       </tr>
 <?php } else { ?>
         <td colspan="4">
-          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=lc(pql_get_define("PQL_GLOB_ATTR_ADDITIONAL_GROUP"))?>&submit=3&action=add&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional group'))); ?></a>
+          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=lc(pql_get_define("PQL_GLOB_ATTR_ADDITIONAL_GROUP"))?>&submit=3&action=add&view=<?=$_GET["view"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional group'))); ?></a>
         </td>
 <?php }
 	}
