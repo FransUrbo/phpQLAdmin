@@ -1,0 +1,81 @@
+<?php $_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
+
+      require("./include/pql_bind9.inc");
+      $zones = pql_bind9_get_zone($_pql_control->ldap_linkid, "ou=DNS,".$domain);
+      if(is_array($zones)) {
+?>
+  <br>
+  <table cellspacing="0" border="0" width="100%" cellpadding="0">
+    <tr>
+      <td colspan="2" valign="bottom" align="left" width="100%"><?php foreach($zones as $domainname => $zone_data) { ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=dnszone&domainname=$domainname"?>"><img alt="/ Domain <?=$domainname?> \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><?php } ?></td>
+    </tr>
+  </table>
+
+  <br>
+  <table cellspacing="0" cellpadding="3" border="0">
+    <th colspan="3" align="left">Domainname: <?=$domainname?>
+      <tr class="title">
+        <td></td>
+        <td>Hostname</td>
+        <td>TTL</td>
+        <td>Type</td>
+        <td>Record</td>
+      </tr>
+
+<?php	  foreach($zones[$domainname] as $data) { ?>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td>
+          <a href="bind9_edit_attributes?type=del&rdn=<?=$data['RDN']?>"><img src="images/del.png" width="12" height="12" border="0" alt="Delete host"></a>
+        </td>
+
+        <td>
+          <a href="bind9_edit_attributes?type=modify&attrib=host&rdn=<?=$data['RDN']?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify host value"></a>
+          <?=$data['HOST']?>
+        </td>
+
+        <td>
+          <a href="bind9_edit_attributes?type=modify&attrib=ttl&rdn=<?=$data['RDN']?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify host value"></a>
+          <?=$data['TTL']?>
+        </td>
+
+<?php		if($data['CNAME']) { ?>
+        <td>CNAME</td>
+        <td>
+          <a href="bind9_edit_attributes?type=modify&attrib=cname&rdn=<?=$data['RDN']?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify host value"></a>
+          <?=$data['CNAME']?>
+        </td>
+
+<?php		} elseif($data['A']) { ?>
+        <td>A</td>
+        <td>
+          <a href="bind9_edit_attributes?type=modify&attrib=a&rdn=<?=$data['RDN']?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify host value"></a>
+          <?=$data['A']?>
+        </td>
+
+<?php		} elseif($data['SRV']) { ?>
+        <td>SRV</td>
+        <td>
+          <a href="bind9_edit_attributes?type=modify&attrib=srv&rdn=<?=$data['RDN']?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify host value"></a>
+          <?=$data['SRV']?>
+        </td>
+
+<?php		} elseif($data['TXT']) { ?>
+        <td>TXT</td>
+        <td>
+          <a href="bind9_edit_attributes?type=modify&attrib=txt&rdn=<?=$data['RDN']?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify host value"></a>
+          <?=$data['TXT']?>
+        </td>
+<?php		} ?>
+      </tr>
+<?php	  } // foreach $zones ?>
+
+      <tr class="subtitle">
+        <td></td>
+        <td><a href="bind9_edit_attributes?type=add"><img src="images/edit.png" width="12" height="12" border="0" alt="Add host">Add host</a></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+    </th>
+  </table>
+<?php } ?>
