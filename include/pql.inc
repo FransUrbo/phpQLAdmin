@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.16 2003-01-14 19:23:44 turbo Exp $
+// $Id: pql.inc,v 2.17 2003-01-15 07:12:04 turbo Exp $
 //
 // ----------------------------
 // Note: There are a few " followed after PHP comment
@@ -1528,6 +1528,17 @@ function pql_branch_objectclasses() {
 	}
 
 	return $filter;
+}
+
+
+function pql_find_basedn($ldap_linkid) {
+	$sr = ldap_read($ldap_linkid, '', '(objectClass=*)', array('namingContexts'));
+	$entry = ldap_get_entries($ldap_linkid, $sr);
+
+	for($i=0; $i < $entry["count"]; $i++)
+	  $dn[] = $entry[$i]["dn"];
+
+	return $dn;
 }
 
 /*
