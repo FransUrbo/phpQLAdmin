@@ -30,7 +30,7 @@ include("./header.html");
       // delete the unit 
       if(pql_remove_unit($_pql->ldap_linkid, $domain, $unit)){
 	  // update locals if control patch is enabled
-	  if(pql_control_update_domains($_pql->ldap_linkid, $_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR)){
+	  if(pql_control_update_domains($_pql, $_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR)) {
 	      // message ??
 	  }
 	  

@@ -34,9 +34,9 @@ if(pql_unit_exist($_pql->ldap_linkid, $domain, $unit)){
 
 if(pql_add_unit($_pql->ldap_linkid, $domain, $unit)){
 	// update locals if control patch is enabled
-	if(pql_control_update_domains($_pql->ldap_linkid, $_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR)){
-		// message ??
-  }
+	if(pql_control_update_domains($_pql, $_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR)) {
+	    // message ??
+	}
 
 	// redirect to domain-details
 	$msg = urlencode(pql_complete_constant(PQL_DOMAIN_ADD_OK, array("domain" => $domain)));

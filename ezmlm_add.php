@@ -1,6 +1,6 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.12 2003-01-21 13:39:40 turbo Exp $
+// $Id: ezmlm_add.php,v 1.13 2003-01-27 13:18:24 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -80,7 +80,7 @@ if(isset($submit)) {
 	if($listname and $domainname) {
 		if(!$domain) {
 			// Get domain tree
-			$domains = pql_get_domains($_pql->ldap_linkid);
+			$domains = pql_get_domains($_pql);
 			foreach($domains as $key => $name) {
 				$defaultdomain = pql_get_domain_value($_pql, $name, 'defaultdomain');
 				if($domainname == $defaultdomain) {

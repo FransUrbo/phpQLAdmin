@@ -4,15 +4,14 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.5 2003-01-23 08:01:55 turbo Exp $
+// $Id: pql_control.inc,v 2.6 2003-01-27 13:18:28 turbo Exp $
 //
 // version history:
 // $Log: pql_control.inc,v $
-// Revision 2.5  2003-01-23 08:01:55  turbo
-// To make sure we really check for a define, we don't do "if(PQL_DEFINE)" but
-// use "if(defined(PQL_DEFINE))" which is correct. If the define wasn't defined
-// at all (ie, uncommented not just set to true/false etc) we'd get an error with
-// the first string...
+// Revision 2.6  2003-01-27 13:18:28  turbo
+// Functions pql_control_update_domains() and pql_get_domains() have change
+// somewhat. Send the full class initialization to functions, not just the link
+// ID.
 //
 // Revision 1.2  2001/09/06 11:36:24  mb
 // added no_connect option to pql_control-class
@@ -199,7 +198,7 @@ function pql_control_remove_whole_attribute($ldap_linkid, $ldap_control_basedn, 
 
 // ------------------------------------------------
 
-function pql_control_update_domains($ldap_linkid, $ldap_basedn, $ldap_control_linkid, $ldap_control_basedn, $host = ""){
+function pql_control_update_domains($ldap, $ldap_basedn, $ldap_control_linkid, $ldap_control_basedn, $host = ""){
     // replicate all registred domains to locals
     
     if(!defined("PQL_LDAP_CONTROL_USE")) {
@@ -212,10 +211,10 @@ function pql_control_update_domains($ldap_linkid, $ldap_basedn, $ldap_control_li
 		return false;
     }
 	
-    $domains = pql_get_domains($ldap_linkid);
+    $domains = pql_get_domains($ldap);
     foreach($domains as $domain) {
 		// Get default domain name for this domain
-		$domainname = pql_get_domain_value($ldap_linkid, $domain, "defaultdomain");
+		$domainname = pql_get_domain_value($ldap->ldap_linkid, $domain, "defaultdomain");
 		if($domainname) {
 			// Before we add this domain to the list, make sure it don't already exist
 			$ent_exists = 0;
@@ -252,7 +251,7 @@ function pql_control_update_domains($ldap_linkid, $ldap_basedn, $ldap_control_li
 		echo "Entry: $val<br>";
 	}
 
-    if(pql_control_replace_attribute($ldap_linkid, $ldap_control_basedn, "locals", $entry)){
+    if(pql_control_replace_attribute($ldap->ldap_linkid, $ldap_control_basedn, "locals", $entry)) {
 		return true;
     }
     
