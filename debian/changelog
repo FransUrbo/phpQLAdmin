@@ -31,8 +31,10 @@ phpqladmin (2.0.18d-1) unstable; urgency=low
   * Make sure that the 'tarball' target (used when releasing) removes any '.DEBUG_ME'
     file. That file should not be included. It's up to the user(s) to create...
   * PHP parse error in include/attrib.aci.inc fixed.
+  * Use the URL encoded value of domain, rootdn and user in the hidden HTML values.
+    This so that it (the value) will survive a form POST.
 
- -- Turbo Fredriksson <turbo@debian.org>  Thu, 13 May 2004 07:37:50 +0200
+ -- Turbo Fredriksson <turbo@papadoc.bayour.com>  Tue, 25 May 2004 15:55:58 +0200
 
 phpqladmin (2.0.18c-1) unstable; urgency=low
 

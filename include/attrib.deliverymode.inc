@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliverymode (delivery preferences)
-// $Id: attrib.deliverymode.inc,v 2.21 2004-03-13 07:37:12 turbo Exp $
+// $Id: attrib.deliverymode.inc,v 2.21.6.1 2004-05-25 13:57:51 turbo Exp $
 
 function attribute_check($type) {
     global $error, $LANG;
@@ -42,7 +42,7 @@ function attribute_init() {
 }
 
 function attribute_print_form($type = "modify") {
-    global $error, $LANG;
+    global $url, $error, $LANG;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -107,9 +107,9 @@ function attribute_print_form($type = "modify") {
     <input type="hidden" name="attrib"       value="<?=$_REQUEST["attrib"]?>">
 	<!-- DLW: oldvalue should be 3 values for the 3 fields. -->
     <input type="hidden" name="oldvalue"     value="<?=$_REQUEST["oldvalue"]?>">
-    <input type="hidden" name="domain"       value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="rootdn"       value="<?=$_REQUEST["rootdn"]?>">
-    <input type="hidden" name="user"         value="<?=$_REQUEST["user"]?>">
+    <input type="hidden" name="domain"       value="<?=$url["domain"]?>">
+    <input type="hidden" name="rootdn"       value="<?=$url["rootdn"]?>">
+    <input type="hidden" name="user"         value="<?=$url["user"]?>">
     <input type="hidden" name="view"         value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">

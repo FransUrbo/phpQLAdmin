@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for changing/renaming the DN
 //
-// $Id: attrib.modrdn.inc,v 2.8 2004-03-03 08:14:08 turbo Exp $
+// $Id: attrib.modrdn.inc,v 2.8.6.1 2004-05-25 13:57:51 turbo Exp $
 
 function attribute_check($type) {
     global $error, $LANG;
@@ -19,7 +19,7 @@ function attribute_init() {
 }
 
 function attribute_print_form() {
-    global $LANG, $error;
+    global $url, $LANG, $error;
 
 	$dnparts = split(",", $_REQUEST["oldvalue"]);
 	for($i=1; $dnparts[$i]; $i++) {
@@ -55,8 +55,8 @@ function attribute_print_form() {
     <input type="hidden" name="submit"   value="1">
     <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="oldvalue" value="<?=$_REQUEST["oldvalue"]?>">
-    <input type="hidden" name="domain"   value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="rootdn"   value="<?=$_REQUEST["rootdn"]?>">
+    <input type="hidden" name="domain"   value="<?=$url["domain"]?>">
+    <input type="hidden" name="rootdn"   value="<?=$url["rootdn"]?>">
     <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
     <input type="hidden" name="rdn"      value="<?=$rdn?>">
     <img src="images/info.png" width="16" height="16" border="0">&nbsp;It is only possible to change the RDN within the same base.

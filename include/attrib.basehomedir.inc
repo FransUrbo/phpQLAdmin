@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // base homedirectory for domain
-// $Id: attrib.basehomedir.inc,v 2.8 2004-03-03 07:59:28 turbo Exp $
+// $Id: attrib.basehomedir.inc,v 2.8.6.1 2004-05-25 13:57:50 turbo Exp $
 
 function attribute_check() {
     global $error, $LANG;
@@ -26,7 +26,7 @@ function attribute_init() {
 }
 
 function attribute_print_form() {
-    global $error, $LANG;
+    global $url, $error, $LANG;
 	global $orgname;			// Set by domain_edit_attributes.php.
 
 	// DLW: Add code to delete the default home directory.  Once it's set, it can't be removed.
@@ -46,8 +46,8 @@ function attribute_print_form() {
     <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
     <!-- DLW: Check to make sure I didnt set oldvalue to oldvalue in any of the attributes. -->
     <input type="hidden" name="oldvalue" value="<?=$_REQUEST["basehomedir"]?>">
-    <input type="hidden" name="domain"   value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="rootdn"   value="<?=$_REQUEST["rootdn"]?>">
+    <input type="hidden" name="domain"   value="<?=$url["domain"]?>">
+    <input type="hidden" name="rootdn"   value="<?=$url["rootdn"]?>">
     <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">

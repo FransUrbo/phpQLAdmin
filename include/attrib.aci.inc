@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for OpenLDAPaci
-// $Id: attrib.aci.inc,v 1.6.6.1 2004-05-13 05:43:34 turbo Exp $
+// $Id: attrib.aci.inc,v 1.6.6.2 2004-05-25 13:57:50 turbo Exp $
 
 /* DLW: This has valid syntax, but I don't know how to test it. */
 
@@ -53,7 +53,7 @@ function attribute_check() {
 
 // {{{ attribute_print_form(action)
 function attribute_print_form($action) {
-    global $LANG;
+    global $url, $LANG;
 
 ?>
   <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post">
@@ -125,9 +125,9 @@ function attribute_print_form($action) {
       </th>
     </table>
 
-    <input type="hidden" name="rootdn"        value="<?=$_REQUEST["rootdn"]?>">
-    <input type="hidden" name="domain"        value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="user"          value="<?=$_REQUEST["user"]?>">
+    <input type="hidden" name="rootdn"        value="<?=$url["rootdn"]?>">
+    <input type="hidden" name="domain"        value="<?=$url["domain"]?>">
+    <input type="hidden" name="user"          value="<?=$url["user"]?>">
     <input type="hidden" name="attrib"        value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="view"          value="<?=$_REQUEST["view"]?>">
     <input type="hidden" name="type"          value="<?=$action?>">

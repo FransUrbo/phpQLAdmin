@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailalternateaddress (emailaddress alias)
-// $Id: attrib.mailalternateaddress.inc,v 2.23 2004-03-26 08:55:43 turbo Exp $
+// $Id: attrib.mailalternateaddress.inc,v 2.23.6.1 2004-05-25 13:57:51 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -54,7 +54,7 @@ function attribute_init() {
 
 // {{{ attribute_print_form(void)
 function attribute_print_form() {
-    global $error, $_pql, $LANG;
+    global $url, $error, $_pql, $LANG;
 
 	$defaultdomain		  = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 	$additionaldomainname = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
@@ -100,9 +100,9 @@ function attribute_print_form() {
     <input type="hidden" name="submit"        value="1">
     <input type="hidden" name="attrib"        value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="oldvalue"      value="<?=$_REQUEST["oldvalue"]?>">
-    <input type="hidden" name="domain"        value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="rootdn"        value="<?=$_REQUEST["rootdn"]?>">
-    <input type="hidden" name="user"          value="<?=$_REQUEST["user"]?>">
+    <input type="hidden" name="domain"        value="<?=$url["domain"]?>">
+    <input type="hidden" name="rootdn"        value="<?=$url["rootdn"]?>">
+    <input type="hidden" name="user"          value="<?=$url["user"]?>">
     <input type="hidden" name="view"          value="<?=$_REQUEST["view"]?>">
     <input type="hidden" name="defaultdomain" value="<?=$defaultdomain?>">
     <br>

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mailquota.inc,v 2.25 2004-03-29 07:52:55 turbo Exp $
+// $Id: attrib.mailquota.inc,v 2.25.6.1 2004-05-25 13:57:51 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -78,7 +78,7 @@ function attribute_init() {
 
 // {{{ attribute_print_form(type)
 function attribute_print_form($type = "modify") {
-    global $error, $LANG;
+    global $url, $error, $LANG;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -127,10 +127,10 @@ function attribute_print_form($type = "modify") {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="domain" value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="rootdn" value="<?=$_REQUEST["rootdn"]?>">
+    <input type="hidden" name="domain" value="<?=$url["domain"]?>">
+    <input type="hidden" name="rootdn" value="<?=$url["rootdn"]?>">
 <?php if($_REQUEST["attrib"] == 'mailquota') { ?>
-    <input type="hidden" name="user" value="<?=$_REQUEST["user"]?>">
+    <input type="hidden" name="user" value="<?=$url["user"]?>">
 <?php } ?>
     <input type="hidden" name="view" value="<?=$_REQUEST["view"]?>">
     <br>

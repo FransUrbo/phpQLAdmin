@@ -1,6 +1,6 @@
 <?php
 // Attribute plugin for additional group (memberUID)
-// $Id: attrib.additionalgroup.inc,v 2.6 2004-03-17 16:25:00 turbo Exp $
+// $Id: attrib.additionalgroup.inc,v 2.6.6.1 2004-05-25 13:57:50 turbo Exp $
 
 // {{{ attribute_init(void)...
 
@@ -25,7 +25,7 @@ function attribute_check() {
 // {{{ attribute_print_form(void)...
 
 function attribute_print_form() {
-    global $_pql, $LANG;
+    global $url, $_pql, $LANG;
 
 	// Initialize variables etc
 	attribute_init();
@@ -101,9 +101,9 @@ function attribute_print_form() {
     </table>
 
     <input type="hidden" name="<?=$_REQUEST["attrib"]?>" value="<?=$j?>">
-    <input type="hidden" name="domain"   value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="rootdn"   value="<?=$_REQUEST["rootdn"]?>">
-    <input type="hidden" name="user"     value="<?=$_REQUEST["user"]?>">
+    <input type="hidden" name="domain"   value="<?=$url["domain"]?>">
+    <input type="hidden" name="rootdn"   value="<?=$url["rootdn"]?>">
+    <input type="hidden" name="user"     value="<?=$url["user"]?>">
     <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
     <input type="hidden" name="action"   value="<?=$_REQUEST["action"]?>">
