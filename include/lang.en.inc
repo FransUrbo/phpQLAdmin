@@ -1,7 +1,7 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 2.10 2003-01-21 13:52:18 turbo Exp $
+// $Id: lang.en.inc,v 2.11 2003-01-24 09:06:57 turbo Exp $
 //
 // if you have a translation to another language, please contact
 // me --> Matthias Blaser <mb@adfinis.ch>
@@ -351,7 +351,7 @@ define("PQL_SEARCH_FINDBUTTON","find");
 // ldap connection test texts
 define("PQL_TEST_TITLE", "phpQLAdmin ldap connection");
 define("PQL_TEST_TESTS", "Tests");
-define("PQL_TEST_HELP", "This is a simple test to show if the ldap extension is loaded and the connections are working. It does not provide tests on access rights in the directory.");
+define("PQL_TEST_HELP", "This is a simple test to show if the ldap extension is loaded<br>and the connections are working. It does not provide tests<br>on access rights in the directory.");
 define("PQL_TEST_LDAP_EXT_TITLE", "php ldap extension");
 define("PQL_TEST_LDAP_EXT_NA", "not available");
 define("PQL_TEST_LDAP_EXT_OK", "built in (loaded)");
