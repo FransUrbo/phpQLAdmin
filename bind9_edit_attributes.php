@@ -1,6 +1,6 @@
 <?php
 // edit attributes of a BIND9 DNS zone
-// $Id: bind9_edit_attributes.php,v 2.5 2004-11-05 10:41:07 turbo Exp $
+// $Id: bind9_edit_attributes.php,v 2.6 2005-01-30 09:24:36 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -10,8 +10,9 @@ $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PA
 
 // forward back to domain detail page
 function attribute_forward($msg) {
-    $msg = urlencode($msg);
-    $url = "domain_detail.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"]."&view=".$_REQUEST["view"]."&msg=$msg";
+    $msg  = urlencode($msg);
+    $url  = "domain_detail.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"]."&view=".$_REQUEST["view"];
+	$url .= "&dns_domain_name=".$_REQUEST["dns_domain_name"]."&msg=$msg";
 
     header("Location: " . pql_get_define("PQL_CONF_URI") . "$url");
 }
