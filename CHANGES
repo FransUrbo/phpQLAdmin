@@ -1,6 +1,6 @@
 phpQLAdmin 2.0 Change Log
 
-phpQLAdmin 2.1.1 TO BE ANNOUNCED
+phpQLAdmin 2.1.1 Release (Oct 16 2004)
 	Bug fixes
 	  - Don't create a new connection to the LDAP db in files located in '.'.
 	    This is done sufficently in pql_config.inc
