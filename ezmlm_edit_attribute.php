@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_edit_attribute.php,v 1.23 2004-05-06 08:23:05 turbo Exp $
+// $Id: ezmlm_edit_attribute.php,v 1.24 2004-05-10 14:35:43 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -27,7 +27,8 @@ if(!($path = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQ
 }
 
 // Load list of mailinglists
-if($ezmlm = new ezmlm(pql_get_define("PQL_CONF_EZMLM_USER"), $path)) {
+$user = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_EZMLM_USER"));
+if($ezmlm = new ezmlm($user, $path)) {
 	if($ezmlm->mailing_lists[$_REQUEST["listno"]]["name"]) {
 		$listname = $ezmlm->mailing_lists[$_REQUEST["listno"]]["name"];
 	} else {

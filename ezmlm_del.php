@@ -1,11 +1,14 @@
 <?php
-// $Id: ezmlm_del.php,v 1.20 2004-03-11 18:13:32 turbo Exp $
+// $Id: ezmlm_del.php,v 1.21 2004-05-10 14:35:43 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 require("./include/pql_ezmlm.inc");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"], false, 0);
+
+$url["domain"] = pql_format_urls($_REQUEST["domain"]);
+$url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 
 include("./header.html");
 
@@ -25,7 +28,8 @@ if(!($path = pql_domain_get_value($_pql, $domain, pql_get_define("PQL_ATTR_BASEM
 }
 
 // Load list of mailinglists
-if($ezmlm = new ezmlm(pql_get_define("PQL_CONF_EZMLM_USER"), $path)) {
+$user = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_EZMLM_USER"));
+if($ezmlm = new ezmlm($user, $path)) {
 	if(is_array($ezmlm->mailing_lists[$listno])) {
 		$listname = $ezmlm->mailing_lists[$listno]["name"] . "@" . $ezmlm->mailing_lists[$listno]["host"];
 		$listpath = $ezmlm->mailing_lists[$listno]["directory"];
