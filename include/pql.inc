@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.42 2003-02-04 08:32:35 turbo Exp $
+// $Id: pql.inc,v 2.43 2003-03-25 07:09:19 turbo Exp $
 //
 
 // ----------------------------
@@ -40,6 +40,8 @@ class pql {
 	var $ldap_basedn = 0;					// array of base dns for future searches etc
 
 	function _find_basedn() {
+		// /usr/bin/ldapsearch -x -LLL -h ldap1 -s base -b '' objectclass=* namingContexts
+
 		$sr = ldap_read($this->ldap_linkid, '', '(objectClass=*)', array('namingContexts'));
 		$entry = ldap_get_entries($this->ldap_linkid, $sr);
 		
