@@ -3,7 +3,7 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ezmlm.inc,v 1.22 2004-03-11 18:13:42 turbo Exp $
+// $Id: pql_ezmlm.inc,v 1.22.6.1 2004-05-06 07:10:11 turbo Exp $
 session_start();
 
 class ezmlm {
@@ -458,7 +458,7 @@ class ezmlm {
 					. " " . $listname
 					. " " . $domain);
 
-		if(! $this->debug) {
+		if(!$this->debug and !file_exists("./.DEBUG_ME")) {
 			$output = do_exec($command, $output_array, $result);
 			if($result != 0) {
 				// Failed to create list
@@ -504,7 +504,7 @@ class ezmlm {
 		$files[] = $lstpath;
 		for($i=0; $files[$i]; $i++) {
 			if(is_dir($files[$i])) {
-				if(! $this->debug) {
+				if(!$this->debug and !file_exists("./.DEBUG_ME")) {
 					if(! rmdir($files[$i]) ) {
 						echo "Could not delete dir $files[$i]<br>";
 						$unsuccessful = 1;
@@ -513,7 +513,7 @@ class ezmlm {
 					echo "DEBUG: deleting <b>dir</b> : $files[$i]<br>";
 				}
 			} else {
-				if(! $this->debug) {
+				if(!$this->debug and !file_exists("./.DEBUG_ME")) {
 					if(! unlink($files[$i]) ) {
 						echo "Could not delete file $files[$i]<br>";
 						$unsuccessful = 1;
@@ -530,7 +530,7 @@ class ezmlm {
 		// Now time for dot files in ~alias/.qmail-LISTNAME
 		$links = $this->_getdotlinks($dotpath, $dotfile);
 		for($i=0; $links[$i]; $i++) {
-			if(! $this->debug) {
+			if(!$this->debug and !file_exists("./.DEBUG_ME")) {
 				if(! unlink($links[$i]) ) {
 					echo "Could not delete link $links[$i]<br>";
 					$unsuccessful = 1;
@@ -603,7 +603,7 @@ class ezmlm {
 		}
 
 		$command		= $this->_paths["sub"] . " 2>&1 " . $listpath . " " . $subscriber;
-		if(! $this->debug) {
+		if(!$this->debug and !file_exists("./.DEBUG_ME")) {
 			$output    = do_exec($command, $output_array, $result);
 			if($result != 0) {
 				// Failed to subscribe user
@@ -643,7 +643,7 @@ class ezmlm {
 		}
 
 		$command		= $this->_paths["unsub"] . " 2>&1 " . $listpath . " " . $subscriber;
-		if(! $this->debug) {
+		if(!$this->debug and !file_exists("./.DEBUG_ME")) {
 			$output    = do_exec($command, $output_array, $result);
 			if($result != 0) {
 				// Failed to unsubscribe user
