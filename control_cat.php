@@ -36,7 +36,7 @@ if(isset($msg)){
 foreach($control_plugins as $plugin_name){
     $func = $plugin_name . "_print_view";
     if(function_exists($func)){
-		call_user_func($func, $host);
+		call_user_func($func, $mxhost);
 		echo "<br><br>";
     }
 }
