@@ -82,7 +82,7 @@ if($advanced == 1) {
 <?php	} ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="doc/index.php"><?=PQL_LANG_DOCUMENTATION?></a></nobr><br>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="TODO">What's left todo</a></nobr><br>
-    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="CHANGES">What's been done</a></nobr>
+    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="CHANGES">What's been done</a></nobr><br>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://phpqladmin.bayour.com/">phpqladmin.bayour.com</a></nobr><br>
 <?php } ?>
   </div>
