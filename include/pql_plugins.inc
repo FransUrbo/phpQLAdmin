@@ -3,7 +3,7 @@
 // pql_plugins.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_plugins.inc,v 2.1 2003-08-15 08:06:17 turbo Exp $
+// $Id: pql_plugins.inc,v 2.2 2003-11-11 07:21:34 turbo Exp $
 
 // Plugin register class
 class pql_plugin_storage {
@@ -11,6 +11,7 @@ class pql_plugin_storage {
     var $cats	 = array();
     var $attribs = array();
     
+	// {{{ add_plugin(name, file, cat)
     // Add an attribute plugin to the plugin storage
     function add_plugin($name, $file, $cat) {
 		
@@ -27,7 +28,9 @@ class pql_plugin_storage {
 	
 		return true;
     }
+	// }}}
     
+	// {{{ add_attrib(attrib, name)
     // Add an attribute to a registred plugin
     function add_attrib($attrib, $name) {
 		
@@ -38,7 +41,9 @@ class pql_plugin_storage {
 		$this->attribs[$attrib] = $name;
 		return true;
     }
+	// }}}
     
+	// {{{ get_plugin(attrib)
     // Returns name of plugin for $attrib
     function get_plugin($attrib) {
 		if(!isset($this->attribs[$attrib]))
@@ -48,7 +53,9 @@ class pql_plugin_storage {
 		$name = $this->attribs[$attrib];
 		return $name;
     }
+	// }}}
     
+	// {{{ get_plugin_filename(name)
     // Return filename of plugin for specified plugin name
     function get_plugin_filename($name) {
 		if(!isset($this->plugins[$name]))
@@ -57,12 +64,16 @@ class pql_plugin_storage {
 		
 		return $this->plugins[$name]["file"];
     }
+	// }}}
     
+	// {{{ get_plugin_cat(name)
     // Returns category of plugin name
     function get_plugin_cat($name) {
 		return $this->plugins[$name]["cat"];
     }
+	// }}}
     
+	// {{{ get_cat_plugins(cat)
     // Return all plugin names of category
     function get_cat_plugins($cat) {
 		foreach($this->plugins as $name => $data) {
@@ -73,7 +84,9 @@ class pql_plugin_storage {
 		
 		return $plugins;
     }
+	// }}}
     
+	// {{{ !get_cats()
     // Return all registred categories
     function get_cats() {
 		foreach($this->cats as $cat => $value)
@@ -81,45 +94,57 @@ class pql_plugin_storage {
 		
 		return $cats;
     }
+	// }}}
 }
 
 // =======================================
 
+// {{{ pql_plugin_cat(name)
 // Gets the category name of plugin
 function pql_plugin_cat($name) {
     global $_pql_plugins;
     
     return $_pql_plugins->get_plugin_cat($name);
 }
+// }}}
 
+// {{{ pql_plugin_get(attrib)
 // Get a filename for $attrib
 function pql_plugin_get($attrib) {
     global $_pql_plugins;
     
     return $_pql_plugins->get_plugin($attrib);
 }
+// }}}
 
+// {{{ pql_plugin_get_catplugins(cat)
 // Gets all plugin names for specified category
 function pql_plugin_get_catplugins($cat) {
     global $_pql_plugins;
     
     return $_pql_plugins->get_cat_plugins($cat);
 }
+// }}}
 
+// {{{ !pql_plugin_get_cats()
 // Get all plugin categories
 function pql_plugin_get_cats() {
     global $_pql_plugins;
     
     return $_pql_plugins->get_cats();
 }
+// }}}
 
+// {{{ pql_plugin_get_filename(name)
 // Get all plugin names for specified category
 function pql_plugin_get_filename($name) {
     global $_pql_plugins;
     
     return $_pql_plugins->get_plugin_filename($name);
 }
+// }}}
 
+// {{{ pql_plugin_register(name, file, cat, attribs)
 // Register a plugin for specified attribute
 function pql_plugin_register($name, $file, $cat, $attribs) {
     global $_pql_plugins;
@@ -132,6 +157,7 @@ function pql_plugin_register($name, $file, $cat, $attribs) {
 	} else
 	  $_pql_plugins->add_attrib($attribs, $name);
 }
+// }}}
 
 $_pql_plugins = new pql_plugin_storage();
 

@@ -4,9 +4,10 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.7 2003-09-15 11:23:54 turbo Exp $
+// $Id: pql_bind9.inc,v 2.8 2003-11-11 07:21:33 turbo Exp $
 //
 
+// {{{ pql_bind9_get_zone(linkid, dn)
 function pql_bind9_get_zone($linkid, $dn) {
     $sr = @ldap_search($linkid, $dn, 'objectClass=dNSZone');
     if($sr) {
@@ -97,7 +98,9 @@ function pql_bind9_get_zone($linkid, $dn) {
 		return($ZONE);
     }
 }
+// }}}
 
+// {{{ pql_bind9_add_zone(linkid, dn, zone)
 function pql_bind9_add_zone($linkid, $dn, $zone) {
 	$MASTER_DN = $dn;
 	$dn = 'ou=DNS,'.$dn;
@@ -202,7 +205,9 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 
 	return true;
 }
+// }}}
 
+// {{{ pql_bind9_add_host(linkid, basedn, entry)
 function pql_bind9_add_host($linkid, $basedn, $entry) {
 	// Create each of the domain components in the domainname
 	$dc = split('\.', $entry[pql_get_define("PQL_GLOB_ATTR_ZONENAME")]);
@@ -228,7 +233,9 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 
 	return true;
 }
+// }}}
 
+// {{{ pql_bind9_get_record(linkid, dn, record)
 function pql_bind9_get_record($linkid, $dn, $record = '') {
 	if($record) {
 		$record = lc($record);
@@ -273,7 +280,9 @@ function pql_bind9_get_record($linkid, $dn, $record = '') {
 
 	return($ret);
 }
+// }}}
 
+// {{{ pql_bind9_set_record(linkid, dn, record, value)
 function pql_bind9_set_record($linkid, $dn, $record, $value = '') {
 	if(!is_array($record)) {
 		$record = lc($record);
@@ -293,6 +302,7 @@ function pql_bind9_set_record($linkid, $dn, $record, $value = '') {
 
 	return true;
 }
+// }}}
 
 /*
  * Local variables:

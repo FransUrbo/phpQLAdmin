@@ -1,14 +1,15 @@
 <?php
 // phpQLAdmin cache Application Programming Interface (API)
 //
-// $Id: pql_cache.inc,v 2.1 2003-01-16 15:08:15 turbo Exp $
+// $Id: pql_cache.inc,v 2.2 2003-11-11 07:21:33 turbo Exp $
 //
 
 // global variables
 $pql_cache_userdn = array();
 $pql_cache_userentry = array();
 
-// adds an userentry to the cache
+// {{{ pql_cache_userentry_add(dn, entries)
+// Adds an userentry to the cache
 function pql_cache_userentry_add($dn, $entries) {
     global $pql_cache_userentry;
     
@@ -16,8 +17,10 @@ function pql_cache_userentry_add($dn, $entries) {
 		$pql_cache_userentry[$dn][$attribute] = $value;
     }
 }
+// }}}
 
-// searches the cache for an attribute and returns it if found 
+// {{{ pql_cache_userentry_get(dn, attribute, value)
+// Searches the cache for an attribute and returns it if found 
 function pql_cache_userentry_get($dn, $attribute, &$value) {
     global $pql_cache_userentry;
     
@@ -35,22 +38,28 @@ function pql_cache_userentry_get($dn, $attribute, &$value) {
     $value = $pql_cache_userentry[$dn][$attribute]; 
     return(true);
 }
+// }}}
 
-// removes an userentry from the cache
+// {{{ pql_cache_userentry_remove(dn)
+// Removes an userentry from the cache
 function pql_cache_userentry_remove($dn) {
     global $pql_cache_userentry;
     
     unset($pql_cache_userentry[$dn]);
 }
+// }}}
 
-// add the dn of an user to the cache
+// {{{ pql_cache_userdn_add(reference, dn)
+// Add the dn of an user to the cache
 function pql_cache_userdn_add($reference, $dn) {
     global $pql_cache_userdn;
     
     $pql_cache_userdn[$reference] = $dn;
 }
+// }}}
 
-// searches the cache for an user and returns his dn if found
+// {{{ pql_cache_userdn_get(reference, &dn)
+// Searches the cache for an user and returns his dn if found
 function pql_cache_userdn_get($reference, &$dn) {
     global $pql_cache_userdn;
     
@@ -61,13 +70,16 @@ function pql_cache_userdn_get($reference, &$dn) {
 		return(false);
     }
 }
+// }}}
 
-// removes an dn from the cache
+// {{{ pql_cache_userdn_remove(reference)
+// Removes an dn from the cache
 function pql_cache_userdn_remove($reference) {
     global $pql_cache_userdn;
     
     unset($pql_cache_userdn[$reference]);
 }
+// }}}
 
 /*
  * Local variables:

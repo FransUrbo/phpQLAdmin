@@ -4,78 +4,10 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.27 2003-08-15 08:06:17 turbo Exp $
-//
-// version history:
-// $Log: pql_control.inc,v $
-// Revision 2.27  2003-08-15 08:06:17  turbo
-// This humungus change (diff is 221k!) is because of hardcoding attributes
-// into the code. This isn't THAT big a'deal, but IF someone wants to use
-// phpQLAdmin for something else than QmailLDAP/Controls (SendmailLDAP comes
-// to mind), then THEY would have to do this fix. And the original idea with
-// taking over phpQLAdmin was to remove _ALL_ hardcoded design and database
-// structure. It is NOT up to the tool to describe the database. It is the
-// database who should describe the tool!!
-// - This change was accomplished by replacing EVERY SINGLE occurence of a
-//   attribute reference in an array ($variable["locals"] for example) to
-//   a 'define' made in include/config_attributes.inc (required from
-//   include/pql_config.inc). Getting this value (the attribute name) is done
-//   with the function pql_get_define().
-// - To make this work, I had to move all the plugin stuff from include/pql_control.inc
-//   to include/pql_plugins.inc AND make it general. Previosly it was 'controls'
-//   oriented. This because {domain,user}_edit_attributes.php did a 'switch()'
-//   against the attribute, and this is no longer possible (can't use
-//   'case pql_get_define():').
-// Unfortunatly, all this calling to pql_get_define() will make it (phpQLAdmin)
-// a little slower (how much I don't know), but it must be worth it (see above
-// on hardcoding).
-// Closes bug 26.
-//
-// Revision 1.2  2001/09/06 11:36:24  mb
-// added no_connect option to pql_control-class
-//
-// Revision 1.1  2001/05/31 06:49:18  mb
-// merged differences from branch phpQLAdmin_1_0release
-//
-// Revision 1.0.2.3  2001/05/22 14:52:30  mb
-// fixed error reporting in some functions
-//
-// Revision 1.0.2.2  2001/05/21 14:42:32  mb
-// fixed bug in pql_control_replace_attribute
-//
-// Revision 1.0.2.1  2001/05/21 13:49:45  mb
-// bug in pql_control_delete_whole_attribute fixed
-//
-// Revision 1.0  2001/05/21 09:52:17  mb
-// update version info to 1.0
-//
-// Revision 0.13  2001/05/21 08:40:46  mb
-// added remove_whole_attribute function
-//
-// Revision 0.12  2001/05/18 12:49:19  mb
-// many things changed
-//
-// Revision 0.11  2001/05/11 07:42:24  mb
-// added pql_control_update_domains function
-//
-// Revision 0.10  2001/05/01 15:14:08  mb
-// added check for unknown attributes
-//
-// Revision 0.9  2001/04/25 11:54:20  mb
-// initial add
-//
-//
-// ----------------------------
-// Note: There are a few " followed after PHP comment
-// instructions like // in this code . They are
-// here to prevent Quanta+ highlighting all following
-// code as a string. A dirty workaround, I know :)
+// $Id: pql_control.inc,v 2.28 2003-11-11 07:21:34 turbo Exp $
 //
 
-// ----------------------------
-// control connection class
-// ----------------------------
-
+// {{{ control connection class
 class pql_control extends pql {
     function pql_control($host, $binddn = "", $bindpw = "", $no_connect = false) {
 		if(!pql_get_define("PQL_GLOB_CONTROL_USE"))
@@ -86,12 +18,14 @@ class pql_control extends pql {
 		$this->pql($host, $binddn, $bindpw, $no_connect);
     }
 }
+// }}}
 
 // ------------------------------------------------
 // PQL - Control - API functions
 // ------------------------------------------------
 
-function pql_control_get_attribute($linkid, $dn, $attribute) {
+// {{{ pql_control_get_attribute(linkid, dn, attribute)
+function pql_control_get_attribute($linkid, $dn, $attribute) {pql_control_get_attribute($linkid, $dn, $attribute) {
     // get a specified option
     $sr   = ldap_read($linkid, $dn, "(objectClass=qmailControl)", array($attribute));
     $info = ldap_get_entries($linkid, $sr);
@@ -102,9 +36,31 @@ function pql_control_get_attribute($linkid, $dn, $attribute) {
     
     return $attrib;
 }
+// }}}
 
-// ------------------------------------------------
+// {{{ pql_control_get_hosts(ldap_linkid, ldap_basedn)
+function pql_control_get_hosts($ldap_linkid, $ldap_basedn) {
+	// Find all hosts below the $GLOBALS["USER_SEARCH_DN_CTR"]
+	$sr = @ldap_search($ldap_linkid, $ldap_basedn,
+					   '(&(cn=*)(objectclass=qmailControl))',
+					   array('cn', 'dn'));
 
+    if($sr == false) {
+		pql_errormsg($ldap_linkid);
+		return false;
+    }
+
+	$info = @ldap_get_entries($ldap_linkid, $sr) or pql_errormsg($ldap_linkid);
+
+	for ($i=0; $i<$info["count"]; $i++) {
+		$hosts[] = maybe_decode($info[$i]['cn'][0]);
+	}
+
+	return $hosts;
+}
+// }}}
+
+// {{{ pql_control_replace_attribute(ldap_linkid, ldap_control_basedn, attrib, value)
 function pql_control_replace_attribute($ldap_linkid, $ldap_control_basedn, $attrib, $value) {
     // replaces an attribute
 
@@ -158,9 +114,9 @@ function pql_control_replace_attribute($ldap_linkid, $ldap_control_basedn, $attr
     
     return true;
 }
+// }}}
 
-// ------------------------------------------------
-
+// {{{ pql_control_search_attribute(ldap_linkid, ldap_basedn, attribute, value, multiple = 0)
 function pql_control_search_attribute($ldap_linkid, $ldap_basedn, $attribute, $value, $multiple = 0) {
 	if(!$ldap_basedn)
 	  // Just incase there is no QmailLDAP/Controls object/DN
@@ -190,9 +146,9 @@ function pql_control_search_attribute($ldap_linkid, $ldap_basedn, $attribute, $v
 		return false;
     }
 }
+// }}}
 
-// ------------------------------------------------
-
+// {{{ pql_control_add_attribute(ldap_linkid, ldap_control_basedn, attrib, value)
 function pql_control_add_attribute($ldap_linkid, $ldap_control_basedn, $attrib, $value) {
     // adds an attribute of a control property
     $entry[$attrib] = maybe_encode($value);
@@ -204,10 +160,10 @@ function pql_control_add_attribute($ldap_linkid, $ldap_control_basedn, $attrib, 
     
     return true;
 }
+// }}}
 
-// ------------------------------------------------
-
-// removes an attribute of a QmailLDAP object
+// {{{ pql_control_remove_attribute(ldap_linkid, dn, attrib, value)
+// Removes an attribute of a QmailLDAP object
 function pql_control_remove_attribute($ldap_linkid, $dn, $attrib, $value) {
     $entry[$attrib] = maybe_encode($value);
     
@@ -218,10 +174,10 @@ function pql_control_remove_attribute($ldap_linkid, $dn, $attrib, $value) {
     
     return true;
 }
+// }}}
 
-// ------------------------------------------------
-
-// removes whole attribute from control tree
+// {{{ pql_control_remove_whole_attribute(ldap_linkid, ldap_control_basedn, attrib)
+// Removes whole attribute from control tree
 function pql_control_remove_whole_attribute($ldap_linkid, $ldap_control_basedn, $attrib) {
 	// Delete all attributes of this type, regardless of value
 	$entry[$attrib] = array();
@@ -233,10 +189,10 @@ function pql_control_remove_whole_attribute($ldap_linkid, $ldap_control_basedn, 
     
     return true;
 }
+// }}}
 
-// ------------------------------------------------
-
-// replicate all registred domains to locals
+// {{{ pql_control_update_domains(ldap, dn, host, domain = "", type = "")
+// Replicate all registred domains to locals
 //
 // domain is array as: 'oldvalue', 'newvalue'
 function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "") {
@@ -418,28 +374,7 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 
     return true;
 }
-
-// ------------------------------------------------
-
-function pql_control_get_hosts($ldap_linkid, $ldap_basedn) {
-	// Find all hosts below the $GLOBALS["USER_SEARCH_DN_CTR"]
-	$sr = @ldap_search($ldap_linkid, $ldap_basedn,
-					   '(&(cn=*)(objectclass=qmailControl))',
-					   array('cn', 'dn'));
-
-    if($sr == false) {
-		pql_errormsg($ldap_linkid);
-		return false;
-    }
-
-	$info = @ldap_get_entries($ldap_linkid, $sr) or pql_errormsg($ldap_linkid);
-
-	for ($i=0; $i<$info["count"]; $i++) {
-		$hosts[] = maybe_decode($info[$i]['cn'][0]);
-	}
-
-	return $hosts;
-}
+// }}}
 
 /*
  * Local variables:

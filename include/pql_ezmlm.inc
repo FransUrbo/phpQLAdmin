@@ -3,7 +3,7 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ezmlm.inc,v 1.20 2003-08-20 08:27:02 turbo Exp $
+// $Id: pql_ezmlm.inc,v 1.21 2003-11-11 07:21:34 turbo Exp $
 session_start();
 
 class ezmlm {
@@ -16,6 +16,7 @@ class ezmlm {
 	var $user_name		= '';
 	var $user_home		= '';
 
+	// {{{ _getfsentries(dir)
 	// Get filesystem entries (files or directories) recursively.
 	function _getfsentries($dir) {
 		if(!(($directory = @opendir($dir)) !=0)) {
@@ -45,7 +46,9 @@ class ezmlm {
 
 		return $entries;
 	}
+	// }}}
 	
+	// {{{ _getdotlinks(dir, base)
 	// Get DOTqmail links linked to specified directory
 	function _getdotlinks($dir, $base) {
 		// We're looking for some file that starts with this regexp:
@@ -86,7 +89,9 @@ class ezmlm {
 
 		return $entries;
 	}
+	// }}}
 
+	// {{{ _readlists(loadtexts)
 	// load list of mailinglists in directory
 	function _readlists($loadtexts = 0) {
 		if(!(($directory = @opendir($this->user_home)) !=0)) {
@@ -122,7 +127,9 @@ class ezmlm {
 		$this->mailing_lists_hostsindex["COUNT"] = count($this->mailing_lists_hostsindex[$host]);
 		return 1;
 	}
+	// }}}
 
+	// {{{ _readlistconfiguration(list, configuration, loadtexts)
 	// Read list configuration
 	function _readlistconfiguration($list, &$configuration, $loadtexts) {
 		if(! ereg("/$", $user_home))
@@ -238,7 +245,9 @@ class ezmlm {
 
 		return 1;
 	}
+	// }}}
 
+	// {{{ _verifysubscriber(list, subscriber)
 	// Verify subscriber (is the address subscribed?)
 	function _verifysubscriber($list, $subscriber) {
 		$list_path = $this->user_home."/".$list;
@@ -262,7 +271,9 @@ class ezmlm {
 
 		return 0;
 	}
+	// }}}
 
+	// {{{ _chmodown(directory, username, dirmode, filemode)
 	// Chown and Chmod directory recursive
 	function _chmodown($directory, $username, $dirmode = '0770', $filemode = '0660') {
 		// Find user id for the username
@@ -289,6 +300,7 @@ class ezmlm {
 		putenv("PQL_DIRECTORY=".$directory);
 		pql_execute('./sub_ezmlm_create.pl', 1);
 	}
+	// }}}
 
 	// ===================================================
 	// Public section
@@ -300,6 +312,7 @@ class ezmlm {
 	var $mailing_lists_index		= array();
 	var $mailing_lists_hostindex	= array();
 
+	// {{{ ezmlm(user_name, user_home, paths)
 	// Constructor. Intialize the variable array of
 	// attribute and what command line option to ezmlm-make
 	// this corresponds to when on or off.
@@ -359,7 +372,9 @@ class ezmlm {
 		// Load list of mailinglists
 		$this->_readlists();
 	}
+	// }}}
 
+	// {{{ updatelistentry(add, listname, domain, options, curropts)
 	// Create/Modify mailinglist
 	function updatelistentry($add, $listname, $domain, $options, $curropts = 0) {
 		// * If we should create a list, set $add to 1/TRUE
@@ -472,8 +487,10 @@ class ezmlm {
 
 		return 1;
 	}
+	// }}}
 
-	// delete a mailinglist
+	// {{{ deletelistentry(listnumber)
+	// Delete a mailinglist
 	function deletelistentry($listnumber) {
 		$lstname = $this->mailing_lists[$listnumber]["name"];
 		$lstpath = $this->mailing_lists[$listnumber]["directory"];
@@ -536,7 +553,9 @@ class ezmlm {
 			  list_forward($domain, "Successfully deleted mailinglist");
 		}
 	}
+	// }}}
 
+	// {{{ savelistentrytexts(listname, text, contents)
 	// Create/Modify list text
 	function savelistentrytexts($listname, $text, $contents) {
 		// Create a temp file
@@ -567,7 +586,9 @@ class ezmlm {
 
 		return $success;
 	}
+	// }}}
 
+	// {{{ subscribe(listname, subscriber)
 	// Add subscriber
 	function subscribe($listname, $subscriber) {
 		if(is_numeric($listname)) {
@@ -608,7 +629,9 @@ class ezmlm {
 
 		return 1;
 	}
+	// }}}
  
+	// {{{ unsubscribe(listname, subscriber)
 	// Remove subscriber
 	function unsubscribe($listname, $subscriber) {
 		if(is_numeric($listname)) {
@@ -646,6 +669,7 @@ class ezmlm {
 
 		return 1;
 	}
+	// }}}
 }
 
 /*

@@ -3,9 +3,10 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.41 2003-10-21 13:38:54 turbo Exp $
+// $Id: pql_config.inc,v 1.42 2003-11-11 07:21:33 turbo Exp $
 //
 
+// {{{ pql_set_define(define, value, case_insensitive, dn)
 // We need this instead of define(), so that we can get rid
 // of 'Constant ... already defined' if running with
 //	error_reporting=E_ALL
@@ -41,7 +42,9 @@ function pql_set_define($define, $value, $case_insensitive = false, $dn = NULL) 
 		}
 	}
 }
+// }}}
 
+// {{{ pql_get_define(define, dn)
 function pql_get_define($define, $dn = NULL) {
 	global $config;
 
@@ -51,12 +54,12 @@ function pql_get_define($define, $dn = NULL) {
 	} else
 	  return($config[$define]);
 }
+// }}}
 
 // ----------------------------
-// - SINGLE VALUED ATTRIBUTES -
-$PQL_ATTRIBUTE["PQL_GLOB_WHOAREWE"] = 'whoAreWe';
+// SINGLE VALUED ATTRIBUTES
 
-// BOOLean values (true/false - 0/1)
+// {{{ BOOLean values (true/false - 0/1)
 $PQL_ATTRIBUTE["PQL_CONF_SHOW_USERS"] = 'showUsers';
 $PQL_ATTRIBUTE["PQL_GLOB_CONTROL_USE"] = 'useControls';
 $PQL_ATTRIBUTE["PQL_GLOB_EZMLM_USE"] = 'useEzmlm';
@@ -74,8 +77,10 @@ $PQL_ATTRIBUTE["PQL_GLOB_BIND9_USE"] = 'useBind9';
 $PQL_ATTRIBUTE["PQL_GLOB_WEBSRV_USE"] = 'useWebSrv';
 $PQL_ATTRIBUTE["PQL_CONF_CREATE_USERNAME"] = 'autoCreateUsername';
 $PQL_ATTRIBUTE["PQL_CONF_CREATE_ADDRESS"] = 'autoCreateMailAddress';
+// }}}
 
-// phpQLAdmin setup
+// {{{ phpQLAdmin setup
+$PQL_ATTRIBUTE["PQL_GLOB_WHOAREWE"] = 'whoAreWe';
 $PQL_ATTRIBUTE["PQL_GLOB_LANG"] = 'language';
 $PQL_ATTRIBUTE["PQL_GLOB_HOSTMASTER"] = 'hostMaster';
 $PQL_ATTRIBUTE["PQL_CONF_TESTMAIL_SUBJECT"] = 'testMailSubject';
@@ -91,12 +96,14 @@ $PQL_ATTRIBUTE["PQL_GLOB_KRB5_ADMIN_SERVER"] = 'krb5AdminServer';
 $PQL_ATTRIBUTE["PQL_GLOB_KRB5_ADMIN_PRINCIPAL"] = 'krb5PrincipalName';
 $PQL_ATTRIBUTE["PQL_GLOB_KRB5_ADMIN_KEYTAB"] = 'krb5AdminKeytab';
 $PQL_ATTRIBUTE["PQL_GLOB_KRB5_ADMIN_COMMAND_PATH"] = 'krb5AdminCommandPath';
+// }}}
 
-// Save path for users and groups
+// {{{ Save path for users and groups
 $PQL_ATTRIBUTE["PQL_CONF_SUBTREE"]["USERS"] = 'subTreeUsers';
 $PQL_ATTRIBUTE["PQL_CONF_SUBTREE"]["GROUPS"] = 'subTreeGroups';
+// }}}
 
-// The webserver administrator attributes
+// {{{ The webserver administrator attributes
 $PQL_ATTRIBUTE["PQL_CONF_WEBSRV_SRV_IP"] = 'webServerIP';
 $PQL_ATTRIBUTE["PQL_CONF_WEBSRV_SRV_URL"] = 'webServerURL';
 $PQL_ATTRIBUTE["PQL_CONF_WEBSRV_SRV_ADMIN"] = 'webServerAdmin';
@@ -107,8 +114,9 @@ $PQL_ATTRIBUTE["PQL_CONF_WEBSRV_SCRIPT_PATH"] = 'WebScriptAliasPath';
 $PQL_ATTRIBUTE["PQL_CONF_WEBSRV_LOG_ERROR"] = 'webLogError';
 $PQL_ATTRIBUTE["PQL_CONF_WEBSRV_LOG_TRANSFER"] = 'webLogTransfer';
 $PQL_ATTRIBUTE["PQL_CONF_WEBSRV_OPTIONS"] = 'webOptions';
+// }}} 
 
-// References
+// {{{ References
 $PQL_ATTRIBUTE["PQL_CONF_REFERENCE_USERS_WITH"] = 'userReference';
 $PQL_ATTRIBUTE["PQL_CONF_REFERENCE_DOMAINS_WITH"] = 'branchReference';
 $PQL_ATTRIBUTE["PQL_CONF_USER_RDN_ATTRIBUTE"] = $PQL_ATTRIBUTE["PQL_CONF_REFERENCE_USERS_WITH"];
@@ -116,15 +124,17 @@ $PQL_ATTRIBUTE["PQL_GLOB_CONTROL_DN"] = 'controlBaseDN';
 $PQL_ATTRIBUTE["PQL_CONF_MAX_DOMAIN_USERS"] = 'maximumDomainUsers';
 $PQL_ATTRIBUTE["PQL_CONF_MAX_LISTS"] = 'maximumMailingLists';
 $PQL_ATTRIBUTE["PQL_CONF_ADDITIONAL_DOMAIN_NAME"] = 'additionalDomainName';
+// }}}
 
 // ---------------------------
 // - MULTI VALUED ATTRIBUTES -
 
-// Objectclasses for domain/branches and users
+// {{{ Objectclasses for domain/branches and users
 $PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_DOMAIN"] = 'branchObjectClass';
 $PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_USER"] = 'userObjectClass';
+// }}}
 
-// Attribute configuration
+// {{{ Attribute configuration
 $PQL_ATTRIBUTE["PQL_CONF_ATTR"]["MAIL"] = 'userAttribute';
 $PQL_ATTRIBUTE["PQL_CONF_ATTR"]["FORWARDS"] = 'userAttribute';
 $PQL_ATTRIBUTE["PQL_CONF_ATTR"]["MAILALTERNATE"] = 'userAttribute';
@@ -148,6 +158,7 @@ $PQL_ATTRIBUTE["PQL_CONF_ATTR"]["SN"] = 'userAttribute';
 $PQL_ATTRIBUTE["PQL_CONF_ATTR"]["DESCRIPTION"] = 'userAttribute';
 $PQL_ATTRIBUTE["PQL_CONF_ATTR"]["GIVENNAME"] = 'userAttribute';
 $PQL_ATTRIBUTE["PQL_CONF_ATTR"]["DOMAIN"] = 'userAttribute';
+// }}}
 
 // ----------------------------
 // 1. Load site specific configuration

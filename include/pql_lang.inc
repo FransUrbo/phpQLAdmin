@@ -3,7 +3,7 @@
 // pql_lang.inc
 // phpQLAdmin Language Application Programming Interface (API)
 //
-// $Id: pql_lang.inc,v 2.5 2003-08-15 08:06:17 turbo Exp $
+// $Id: pql_lang.inc,v 2.6 2003-11-11 07:21:34 turbo Exp $
 //
 
 // ----------------------------
@@ -27,11 +27,14 @@ class pql_lang {
 	var $_language	= NULL;
 	var $_choosen   = NULL;
 	
+	// {{{ function _set_array(larr)
 	function _set_array($larr) {
 		// set the lang array for translations
 		$this->_language =& $larr;
 	}
+	// }}}
 
+	// {{{ _get_database_language(ldap)
 	// Get default language from database
 	function _get_database_language($ldap) {
 		foreach($ldap->ldap_basedn as $dn) {
@@ -49,7 +52,9 @@ class pql_lang {
 			  return $info[0][pql_get_define("PQL_GLOB_ATTR_LANGUAGE")][0];
 		}
 	}
+	// }}}
 
+	// {{{ !_get_browser_language()
 	// Get default language from browser
 	function _get_browser_language() {
         $server_langs = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
@@ -70,9 +75,11 @@ class pql_lang {
 
         return NULL;
 	}
+	// }}}
 
 	// =================================================== Public section
 
+	// {{{ pql_lang(ldap)
 	// Constructor.
 	function pql_lang($ldap) {
 		// Get the default language from the database
@@ -97,11 +104,15 @@ class pql_lang {
 		// Initiate the language array.
 		$this->_set_array($language);
 	}
+	// }}}
 	
+	// {{{ !get_supported()
 	function get_supported() {
 		return $this->_supported;
 	}
+	// }}}
 
+	// {{{ _(str, case = 0)
 	// Translate string to the local language [same form as the gettext abbreviation]
 	// This is the order of precedence:
 	//	* If the key exists in the lang array, return the value of the key
@@ -150,6 +161,7 @@ class pql_lang {
 
 		return $str;
 	}
+	// }}}
 }
 
 /*

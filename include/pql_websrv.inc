@@ -4,9 +4,10 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for web server configuration)
 //
-// $Id: pql_websrv.inc,v 1.1 2003-10-11 11:55:49 turbo Exp $
+// $Id: pql_websrv.inc,v 1.2 2003-11-11 07:21:34 turbo Exp $
 //
 
+// {{{ pql_websrv_get_servers(linkid, dn)
 function pql_websrv_get_servers($linkid, $dn) {
 	global $PQL_ATTRIBUTE;
 
@@ -48,7 +49,9 @@ function pql_websrv_get_servers($linkid, $dn) {
 
 	return $CONF;
 }
+// }}}
 
+// {{{ pql_websrv_add_server(linkid, domain, server)
 function pql_websrv_add_server($linkid, $domain, $server) {
 	$dn = "ou=WEB,".$domain;
 
@@ -103,7 +106,9 @@ function pql_websrv_add_server($linkid, $domain, $server) {
 
 	return true;
 }
+// }}}
 
+// {{{ pql_websrv_set_record(linkid, dn, record, value)
 // This is an exact (!) copy of the pql_bind9_set_record() function
 function pql_websrv_set_record($linkid, $dn, $record, $value = '') {
 	if(!is_array($record)) {
@@ -123,6 +128,7 @@ function pql_websrv_set_record($linkid, $dn, $record, $value = '') {
 
 	return true;
 }
+// }}}
 
 /*
  * Local variables:

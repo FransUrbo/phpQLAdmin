@@ -4,54 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control plugins)
 //
-// $Id: pql_control_plugins.inc,v 2.2 2003-08-15 08:06:17 turbo Exp $
-//
-// version history:
-// $Log: pql_control_plugins.inc,v $
-// Revision 2.2  2003-08-15 08:06:17  turbo
-// This humungus change (diff is 221k!) is because of hardcoding attributes
-// into the code. This isn't THAT big a'deal, but IF someone wants to use
-// phpQLAdmin for something else than QmailLDAP/Controls (SendmailLDAP comes
-// to mind), then THEY would have to do this fix. And the original idea with
-// taking over phpQLAdmin was to remove _ALL_ hardcoded design and database
-// structure. It is NOT up to the tool to describe the database. It is the
-// database who should describe the tool!!
-// - This change was accomplished by replacing EVERY SINGLE occurence of a
-//   attribute reference in an array ($variable["locals"] for example) to
-//   a 'define' made in include/config_attributes.inc (required from
-//   include/pql_config.inc). Getting this value (the attribute name) is done
-//   with the function pql_get_define().
-// - To make this work, I had to move all the plugin stuff from include/pql_control.inc
-//   to include/pql_plugins.inc AND make it general. Previosly it was 'controls'
-//   oriented. This because {domain,user}_edit_attributes.php did a 'switch()'
-//   against the attribute, and this is no longer possible (can't use
-//   'case pql_get_define():').
-// Unfortunatly, all this calling to pql_get_define() will make it (phpQLAdmin)
-// a little slower (how much I don't know), but it must be worth it (see above
-// on hardcoding).
-// Closes bug 26.
-//
-// Revision 1.0  2001/05/21 09:52:17  mb
-// update version info to 1.0
-//
-// Revision 0.12  2001/05/18 14:22:18  mb
-// reorganize categories
-//
-// Revision 0.11  2001/05/03 11:01:02  mb
-// added some new attributes
-//
-// Revision 0.10  2001/05/01 15:13:50  mb
-// added all newly created plugins
-//
-// Revision 0.9  2001/04/25 11:54:20  mb
-// initial add
-//
-//
-// ----------------------------
-// Note: There are a few " followed after PHP comment
-// instructions like // in this code . They are
-// here to prevent Quanta+ highlighting all following
-// code as a string. A dirty workaround, I know :)
+// $Id: pql_control_plugins.inc,v 2.3 2003-11-11 07:21:34 turbo Exp $
 //
 
 // ----------------------------

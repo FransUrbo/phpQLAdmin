@@ -2,6 +2,10 @@
 // logins to the system
 // index.php,v 1.4 2002/12/13 13:55:38 turbo Exp
 //
+// Start debuging
+// http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0
+//apd_set_pprof_trace();
+
 session_start();
 require("./include/pql_config.inc");
 
