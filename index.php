@@ -1,6 +1,6 @@
 <?php
 // logins to the system
-// $Id: index.php,v 2.31 2004-02-14 14:01:00 turbo Exp $
+// $Id: index.php,v 2.32 2004-02-14 15:57:56 turbo Exp $
 //
 // Start debuging
 // http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0
@@ -26,17 +26,18 @@ if ($_GET["logout"] == 1 or !empty($_GET["msg"])) {
 		error_log($log, 3, "phpQLadmin.log");
 	}
 
+	if(!empty($_POST["msg"]))
+	  $msg = $_POST["msg"];
+
 	$_SESSION = array();
-	session_destroy();			// DLW: Should you destroy the session if there is a $_POST["msg"]?
+	session_destroy();
 
 	if ($_GET["logout"] == 1) {
-		header("Location:index.php");
+		if(!empty($_POST["msg"]))
+		  header("Location:index.php?msg=".urlencode($msg));
+		else
+		  header("Location:index.php");
 	}
-}
-
-// DLW: Does this ever get set?
-if ($LOGIN_PASS == 1) {
-	Header("Location:index2.php");
 }
 
 if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
@@ -104,7 +105,7 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 
           <tr>
             <td bgcolor="#D0DCE0"><b><?=$LANG->_('Login ID')?>:</b></td>
-            <td><input type=text name="uname" size="30"></td>
+            <td><input type=text name="uname" value="<?=$_GET["uname"]?>" size="30"></td>
           </tr>
 
           <tr>
@@ -127,7 +128,11 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 
   <script language="JavaScript">
   <!--
+<?php if(empty($_GET["uname"]) and empty($_POST["uname"])) { ?>
     document.phpqladmin.uname.focus();
+<?php } else { ?>
+    document.phpqladmin.passwd.focus();
+<?php } ?>
 	// -->
   </script>
 </body>
@@ -176,9 +181,10 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 	//       users with the same uid in the database
 	//       (under different branches/trees).
 	$rootdn = pql_get_dn($_pql, $_POST["uname"], 1);
-	if(!$rootdn and !is_array($rootdn))
-	  die($LANG->_('Can\'t find you in the database')."!");	// DLW: This should be a $msg error.
-	elseif(is_array($rootdn)) {
+	if(!$rootdn and !is_array($rootdn)) {
+		$msg = urlencode($LANG->_("Can't find you in the database"));
+		header("Location: " . pql_get_define("PQL_GLOB_URI") . "index.php?msg=$msg");
+	} elseif(is_array($rootdn)) {
 		// We got multiple DN's. Try to bind as each one, keeping
 		// the one that succeeded.
 
@@ -196,11 +202,15 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 	}
 
 	if($error) {
-	    // DLW: Maybe hand the uname back through so the user doesn't have to type it again.
 		$msg = $LANG->_('Error') . ": " . ldap_err2str($error);
-		header("Location:index.php?msg=" . urlencode($msg));
+		header("Location:index.php?msg=" . urlencode($msg) . "&uname=$uname");
 		exit;
 	}
+
+if(is_array($rootdn)) {
+	printr($rootdn);
+}
+die("RootDN: $rootdn, Error: $error");
 
 	// We made it, so set all the session variables.
 	if($_POST["passwd"] and !$_SESSION["USER_PASS"])
