@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.4 2004-11-05 13:47:20 turbo Exp $
+// $Id: pql_write.inc,v 2.5 2004-11-08 09:02:09 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -12,7 +12,9 @@
 
 // {{{ pql_write_mod(linkid, dn, entry, caller)
 // MODIFY an object - called with an 'ldif' for modification.
-function pql_write_mod($linkid, $dn, $entry, $caller = NULL) {
+function pql_write_mod($linkid, $dn, $entry, $caller = NULL, $count = 0) {
+	$count++;
+
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif($caller, $dn, $entry);
 	if(file_exists("./.DEBUG_ME"))
@@ -22,6 +24,10 @@ function pql_write_mod($linkid, $dn, $entry, $caller = NULL) {
 		if(!ldap_mod_replace($linkid, $dn, $entry)) {
 			// Modify failed. Why? Can't support every single
 			// failure, but some I CAN rectify (I think :).
+
+			// TODO: In some cases I've ldap_mod_del() the attribute
+			//       and then ldap_mod_add() it...
+
 			$errno = ldap_errno($linkid);
 			switch($errno) {
 			  case "65":
@@ -40,8 +46,18 @@ function pql_write_mod($linkid, $dn, $entry, $caller = NULL) {
 				
 				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_uniq($ocs);
 				
-				// Recursion... Hopfully there's a limit on how many (max_execution_time in php.ini)!
-				pql_write_mod($linkid, $dn, $entry, $caller);
+				// Recursion... Only try five times...
+				if($count >= 6) { // The very first time $count=1, so...
+					$msg = "We're looping in pql_write.inc:pql_write_mod()";
+					if($caller)
+					  $msg .= " (from $caller)";
+					$msg .= ". No point in trying again. I've got errno=65 (Object class violation) every time...<br>";
+					$msg .= "This is the LDIF I'm trying to write to the LDAP server. Please report this problem at the ";
+					$msg .= '<a href="http://bugs.bayour.com/" target="_new">bugtracker</a>.';
+
+					die("$msg<p>".$LDIF);
+				} else
+				  pql_write_mod($linkid, $dn, $entry, $caller, $count);
 				break;
 				
 //		  case "17": // Undefined attribute type
