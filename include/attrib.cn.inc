@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // cn (Full name)
-// $Id: attrib.cn.inc,v 2.7 2003-05-04 18:42:55 turbo Exp $
+// $Id: attrib.cn.inc,v 2.8 2003-05-05 05:14:44 turbo Exp $
 
 function attribute_check($type){
     global $cn, $oldvalue, $_pql, $error;
@@ -65,16 +65,20 @@ function attribute_save($type){
 			break;
     	}
 		
-		// TODO: Should this be configurable? What if we don't
-		//       use gecos and/or givenName!?!?
-//		$attribs = array($attrib, 'gecos', 'givenName');
-		$attribs = array($attrib);
+		// Well. Gecos and givenName is the same thing as CN,
+		// so we should try to change those as well... But only
+		// if they already exist in the object.
+		$attribs = array($attrib, 'gecos', 'givenName');
 		foreach($attribs as $attrib) {
-			if(pql_replace_userattribute($_pql->ldap_linkid, $user, $attrib, $cn))
-			  $msg = pql_complete_constant(PQL_LANG_CN_CHANGE_OK, array("old" => $oldvalue, "new" => $cn));
-			else
-			  $msg = PQL_LANG_CN_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
-
+			$old = pql_get_userattribute($_pql->ldap_linkid, $user, $attrib);
+			if(is_array($old)) {
+				// We have an old value of this array, try to change it...
+				if(pql_replace_userattribute($_pql->ldap_linkid, $user, $attrib, $cn))
+				  $msg = pql_complete_constant(PQL_LANG_CN_CHANGE_OK, array("old" => $oldvalue, "new" => $cn));
+				else
+				  $msg = PQL_LANG_CN_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+			}
+				
 			attribute_forward($msg, true);
 		}
 		break;
