@@ -56,29 +56,28 @@
 
       <tr></tr>
 
+<?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
+      <tr>
+        <td class="title"><?=$LANG->_('Manage Access Control Information')?></td>
+<?php $class=pql_format_table(0); ?>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=pql_get_define("PQL_ATTR_ACI_USE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_ACI_USE")?>"></a></td>
+        <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_ACI_USE")) {echo 'Yes';} else {echo 'No';}?>&nbsp;</td>
+      </tr>
+
       <tr>
         <td class="title"><?=$LANG->_('Manage Controls DB')?></td>
-<?php $class=pql_format_table(0);
-      if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
-?>
+<?php $class=pql_format_table(0); ?>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=pql_get_define("PQL_ATTR_CONTROL_USE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_CONTROL_USE")?>"></a></td>
-<?php } else { ?>
-        <td class="<?=$class?>"></td>
-<?php } ?>
         <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_CONTROL_USE")) {echo 'Yes';} else {echo 'No';}?>&nbsp;</td>
       </tr>
 
       <tr>
         <td class="title"><?=$LANG->_('Manage EZMLM mailinglists')?></td>
-<?php $class=pql_format_table(0);
-      if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
-?>
+<?php $class=pql_format_table(0); ?>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=pql_get_define("PQL_ATTR_EZMLM_USE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_EZMLM_USE")?>"></a></td>
-<?php } else { ?>
-        <td class="<?=$class?>"></td>
-<?php } ?>
         <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_EZMLM_USE")) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
       </tr>
+<?php } ?>
 <?php if(pql_get_define("PQL_CONF_EZMLM_USE")) { ?>
 
       <tr>
@@ -134,6 +133,12 @@
         <td class="<?=$class?>"></td>
 <?php } ?>
         <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_CHANGE_SERVER")) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
+      </tr>
+
+      <tr>
+        <td class="title"><?=$LANG->_('Virtual users base home directory')?></td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=pql_get_define("PQL_ATTR_VIRTUAL_BASEHOME")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_VIRTUAL_BASEHOME")?>"></a></td>
+        <td class="<?=$class?>"><?php echo pql_get_define("PQL_CONF_VIRTUAL_BASEHOME"); ?>&nbsp;</td>
       </tr>
 <?php if($show_kerberos_info) { ?>
 

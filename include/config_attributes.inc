@@ -16,9 +16,10 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.15 2004-04-03 06:31:09 turbo Exp $
+// $Id: config_attributes.inc,v 2.15.8.1 2004-09-17 13:45:23 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
+
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
 pql_set_define("PQL_ATTR_FORWARDS",							strtolower("mailForwardingAddress"),		false);
 pql_set_define("PQL_ATTR_GECOS",							strtolower("gecos"),						false);
@@ -42,9 +43,11 @@ pql_set_define("PQL_ATTR_QUOTA_COUNT",						strtolower("mailQuotaCount"),				fal
 pql_set_define("PQL_ATTR_QUOTA_WARNING",					strtolower("quotaWarning"),					false);
 pql_set_define("PQL_ATTR_REPLYTEXT",						strtolower("mailReplyText"),				false);
 pql_set_define("PQL_ATTR_UID",								strtolower("uid"),							false);
+
 // }}}
 
 // {{{ These are the QmailLDAP/Controls attributes.
+
 pql_set_define("PQL_ATTR_BADMAILFROM",						strtolower("badMailFrom"),					false);
 pql_set_define("PQL_ATTR_BADRCPTTO",						strtolower("badRcptTo"),					false);
 pql_set_define("PQL_ATTR_BOUNCEFROM",						strtolower("bounceFrom"),					false);
@@ -100,6 +103,7 @@ pql_set_define("PQL_ATTR_TIMEOUTSMTPD",						strtolower("timeOutSmtpd"),					fal
 pql_set_define("PQL_ATTR_BIGBROTHER",						strtolower("bigBrother"),					false);
 pql_set_define("PQL_ATTR_RBLLIST",							strtolower("rblList"),						false);
 pql_set_define("PQL_ATTR_GOODADDRESS",						strtolower("goodMailAddr"),					false);
+
 // }}}
 
 // {{{ PopBeforeSMTP attributes in QmailLDAP
@@ -162,6 +166,7 @@ pql_set_define("PQL_ATTR_ZONENAME",							strtolower("zoneName"),						false);
 // }}}
 
 // {{{ Attributes used by the Apache config
+
 pql_set_define("PQL_ATTR_WEBSRV_USE", 						strtolower('useWebSrv'),					false);
 pql_set_define("PQL_ATTR_WEBSRV_SRV_IP", 					strtolower('webServerIP'),					false);
 pql_set_define("PQL_ATTR_WEBSRV_SRV_URL", 					strtolower('webServerURL'),					false);
@@ -184,13 +189,16 @@ pql_set_define("PQL_ATTR_WEBSRV_SRV_NAME", 					strtolower('webServerName'),				
 //pql_set_define("PQL_ATTR_WEBSRV_SRV_ALIAS", 				strtolower('apacheServerAlias'),			false);
 //pql_set_define("PQL_ATTR_WEBSRV_SRV_ADMIN", 				strtolower('apacheServerAdmin'),			false);
 //pql_set_define("PQL_ATTR_WEBSRV_SRV_NAME",					strtolower('apacheServerName'),				false);
+
 // }}}
 
 // {{{ These are the internal phpQLAdmin attributes - GLOBAL configuration
+
 // Toggles
 pql_set_define("PQL_ATTR_CONTROL_USE", 						strtolower('useControls'),					false);
 pql_set_define("PQL_ATTR_EZMLM_USE", 						strtolower('useEzmlm'),						false);
 pql_set_define("PQL_ATTR_BIND9_USE", 						strtolower('useBind9'),						false);
+pql_set_define("PQL_ATTR_ACI_USE", 							strtolower('useACI'),						false);
 pql_set_define("PQL_ATTR_AUTO_RELOAD", 						strtolower('autoReload'),					false);
 pql_set_define("PQL_ATTR_CHANGE_SERVER", 					strtolower('allowServerChange'),			false);
 
@@ -208,11 +216,13 @@ pql_set_define("PQL_ATTR_KRB5_ADMIN_COMMAND_PATH", 			strtolower('krb5AdminComma
 pql_set_define("PQL_ATTR_ADMINISTRATOR",					strtolower("administrator"),				false);
 pql_set_define("PQL_ATTR_ADMINISTRATOR_EZMLM",				strtolower("ezmlmAdministrator"),			false);
 pql_set_define("PQL_ATTR_ADMINISTRATOR_CONTROLS",			strtolower("controlsAdministrator"),		false);
+pql_set_define("PQL_ATTR_VIRTUAL_BASEHOME",					strtolower('virtualBaseHomeDir'),			false);
 
 // Map attribute to configuration define
 $PQL_ATTRIBUTE["GLOBAL"] = array("PQL_CONF_CONTROL_USE"					=> pql_get_define("PQL_ATTR_CONTROL_USE"),
 								 "PQL_CONF_EZMLM_USE"					=> pql_get_define("PQL_ATTR_EZMLM_USE"),
 								 "PQL_CONF_BIND9_USE"					=> pql_get_define("PQL_ATTR_BIND9_USE"),
+								 "PQL_CONF_ACI_USE"						=> pql_get_define("PQL_ATTR_ACI_USE"),
 								 "PQL_CONF_WEBSRV_USE"					=> pql_get_define("PQL_ATTR_WEBSRV_USE"),
 								 "PQL_CONF_AUTO_RELOAD"					=> pql_get_define("PQL_ATTR_AUTO_RELOAD"),
 								 "PQL_CONF_CHANGE_SERVER"				=> pql_get_define("PQL_ATTR_CHANGE_SERVER"),
@@ -228,10 +238,13 @@ $PQL_ATTRIBUTE["GLOBAL"] = array("PQL_CONF_CONTROL_USE"					=> pql_get_define("P
 								 "PQL_CONF_KRB5_ADMIN_COMMAND_PATH"		=> pql_get_define("PQL_ATTR_KRB5_ADMIN_COMMAND_PATH"),
 								 "PQL_CONF_ADMINISTRATOR"				=> pql_get_define("PQL_ATTR_ADMINISTRATOR"),
 								 "PQL_CONF_ADMINISTRATOR_EZMLM"	    	=> pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"),
-								 "PQL_CONF_ADMINISTRATOR_CONTROLS"		=> pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"));
+								 "PQL_CONF_ADMINISTRATOR_CONTROLS"		=> pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
+								 "PQL_CONF_VIRTUAL_BASEHOME"			=> pql_get_define("PQL_ATTR_VIRTUAL_BASEHOME"));
+
 // }}}
 
 // {{{ These are the internal phpQLAdmin attributes - BRANCH configuration
+
 // Toggles
 pql_set_define("PQL_ATTR_SHOW_USERS", 						strtolower('showUsers'),					false);
 pql_set_define("PQL_ATTR_TESTMAIL_AUTOSEND", 				strtolower('autoSend'),						false);
@@ -309,6 +322,7 @@ $PQL_ATTRIBUTE["BRANCH"] = array("PQL_CONF_SHOW_USERS"					=> pql_get_define("PQ
 								 "PQL_CONF_SUBTREE_USERS"				=> pql_get_define("PQL_ATTR_SUBTREE_USERS"),
 								 "PQL_CONF_SUBTREE_GROUPS"				=> pql_get_define("PQL_ATTR_SUBTREE_GROUPS"),
 								 "PQL_CONF_VAT_NUMBER"					=> pql_get_define("PQL_ATTR_VAT_NUMBER"));
+
 // }}}
 
 pql_set_define("PQL_ATTR_USER_RDN_ATTRIBUTE",	strtolower(pql_get_define("PQL_ATTR_REFERENCE_USERS_WITH")),	false);
