@@ -28,6 +28,13 @@ pql_define("PQL_GLOB_AUTO_RELOAD", true, false);
 // set to true, if QmailLDAP/Control patch is supported by your system
 pql_define("PQL_GLOB_CONTROL_USE", false, false);
 
+// ============================
+// The trick with the next two entries (PQL_GLOB_CONTROL_AUTOADD{LOCALS,RCPTHOSTS}),
+// is that the master (email/qmail) server should only have 'locals', and the
+// slaves should only have 'rcpthosts' attributes.
+// This will make phpQLAdmin add the new domain (or the additionalDomainName
+// in 'locals' on the master, and in the 'rcpthosts' on the slave(s).
+
 // ----------------------------
 // PQL_GLOB_CONTROL_AUTOADDLOCALS (true | false)
 // set this to true, if phpQLAdmin should automatically add all domains to
@@ -35,6 +42,14 @@ pql_define("PQL_GLOB_CONTROL_USE", false, false);
 // and they're not identical (ie, not hosting the same domains)
 // Currently, the application do not support more than one control database.
 pql_define("PQL_GLOB_CONTROL_AUTOADDLOCALS", false, false);
+
+// ----------------------------
+// PQL_GLOB_CONTROL_AUTOADDRCPTHOSTS (true | false)
+// set this to true, if phpQLAdmin should automatically add all domains to
+// rcpthosts. Disable this (false), if you have more than one qmail-ldap server
+// and they're not identical (ie, not hosting the same domains)
+// Currently, the application do not support more than one control database.
+pql_define("PQL_GLOB_CONTROL_AUTOADDRCPTHOSTS", false, false);
 
 // ----------------------------
 // Should we enable changing of LDAP server?

@@ -21,6 +21,7 @@
 #					deleteVerification	   9
 #					useBind9		  10
 #					test			  11
+#					autoAddRCPTHosts	  12
 #
 #                               System texts            	 2
 #					whoAreWe		   1
@@ -59,7 +60,7 @@
 #					additionalDomainName	   8
 # -----------------------------------------
 
-# $Id: phpQLAdmin.schema,v 2.24 2003-05-05 17:35:51 turbo Exp $
+# $Id: phpQLAdmin.schema,v 2.25 2003-05-06 12:43:51 turbo Exp $
 
 # PQL_CONF_SHOW_USERS (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.1 NAME 'showUsers'
@@ -132,6 +133,13 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.1.10 NAME 'useBind9'
 
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.11 NAME 'test'
 	DESC 'Used to test write access, dont set yourself'
+	EQUALITY booleanMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+	SINGLE-VALUE )
+
+# PQL_GLOB_CONTROL_AUTOADDRCPTHOSTS (true | false)
+attributetype ( 1.3.6.1.4.1.8767.3.2.1.12 NAME 'autoAddRCPTHosts'
+	DESC 'Automatically add domain to ~controls/rcpthosts attribute [True/False]?'
 	EQUALITY booleanMatch
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
 	SINGLE-VALUE )
@@ -369,7 +377,7 @@ objectclass ( 1.3.6.1.4.1.8767.3.1.1
 		externalScriptDomain $ krb5RealmName $
 	        krb5PrincipalName $ krb5AdminServer $
 	        krb5AdminKeytab $ krb5AdminCommandPath $
-	        minimumUIDNumber )
+	        minimumUIDNumber $ autoAddRCPTHosts )
 	SUP top AUXILIARY )
 
 objectclass ( 1.3.6.1.4.1.8767.3.1.2
