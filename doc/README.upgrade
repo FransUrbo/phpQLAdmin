@@ -1,3 +1,7 @@
+Upgrading from 2.0.9
+	The schema have been updated, so don't forget to load the new
+	version!
+
 Upgrading from 2.0.8
 	The schema have been updated, so don't forget to load the new
 	version!
