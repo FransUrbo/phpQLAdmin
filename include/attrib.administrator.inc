@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.13 2003-05-01 11:18:32 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.14 2003-05-08 06:08:46 turbo Exp $
 
 require("./left-head.html");
 
@@ -111,29 +111,51 @@ function attribute_print_form($action) {
 		} elseif($user) {
 ?>
             <select name="domain">
-<?php
-			// We're giving a user access to ('random') branch
-			$domains = pql_get_domains($_pql);
-			if($domains) {
-				foreach($domains as $branch) {
-?>
-              <option value="<?=$branch?>"><?=$branch?></option>
-<?php
-                }
+<?php		if($GLOBALS["ALLOW_GLOBAL_CONFIG_SAVE"]) {
+				// We're a super-admin, we can give/take
+				// adminstration on ANY branch/domain
+				// that exists in the system
+				$domains = pql_get_domains($_pql);
+			} else {
+				// We can only give user access to a branch we (the logged in user)
+				// have access to. Otherwise, we could 'steal' access to any domain
+				// in the system. Only a branch owner/admin can give someone access
+				// to the current branch. Am I making myself clear?
+				foreach($_pql->ldap_basedn as $dn)  {
+					$dom = pql_get_domain_value($_pql, $dn, 'administrator', $GLOBALS["USER_DN"], 1);
+					if($dom)
+					  foreach($dom as $d)
+						$domains[] = $d;
+				}
 			}
 
-			// Include the top-most DN's (namingContexts) as well
-			foreach($_pql->ldap_basedn as $dn) {
+			if(is_array($domains)) {
+				$domains = array_values(array_unique($domains));
+				asort($domains);
+				foreach($domains as $branch) {
+					if($branch == $_pql->ldap_basedn[0]) {
+						$shown_first_rootdn = 1;
 ?>
-              <option value="<?=$dn?>"><?=$dn?></option>
-<?php
+              <option value="<?=$branch?>">*&nbsp;<?=$branch?></option>
+<?php				} else { ?>
+              <option value="<?=$branch?>">&nbsp;&nbsp;&nbsp;<?=$branch?></option>
+<?php				}
+				}
 			}
 ?>
             </select>
 <?php	}
 	}
 ?>
+<?php if($shown_first_rootdn) { ?>
+        <tr class="<?php table_bgcolor(); ?>">
+          <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
+          <td>
+            The DN with the asterisk (*) is the DN where phpQLAdmin configurations are stored.
+            If you add a user to that DN, the user will get 'Super Administration Rights'!
+          </td>
         </tr>
+<?php } ?>
       </th>
     </table>
 
