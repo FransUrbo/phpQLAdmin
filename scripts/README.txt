@@ -33,3 +33,10 @@ files, and restarts qmail if/when a change have been done.
 Run it from cron every now and then (every thirty minute is
 a nice value):
      restart_qmail.pl
+
+I have failed to get virtual hosting for Apache into LDAP
+working, so instead (to get SOMETHING going), I created a
+script that extracts the needed information and creates
+the virtual hosting part of httpd.conf. This script
+can/should be used from a cron script to create a file that
+is then included from Apache's httpd.conf.
