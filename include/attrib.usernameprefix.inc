@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
-// usernamePrefix/usernamePrefixLength
-// $Id: attrib.usernameprefix.inc,v 2.9 2004-03-03 07:59:28 turbo Exp $
+// userNamePrefix/userNamePrefixLength
+// $Id: attrib.usernameprefix.inc,v 2.9.10.1 2004-05-05 07:23:10 turbo Exp $
 
 function attribute_check($type = '') {
     global $error, $LANG;
@@ -20,7 +20,7 @@ function attribute_print_form($type = "modify") {
 	global $orgname;			// Set by domain_edit_attributes.php.
 
     $attrib = $_REQUEST["attrib"];
-	if(empty($_REQUEST[$attrib]))
+	if(empty($_REQUEST[$attrib]) and ($attrib == 'usernameprefixlength'))
 	  $_REQUEST[$attrib] = 4;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">

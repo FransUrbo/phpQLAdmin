@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.50 2004-03-11 18:13:41 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.50.2.1 2004-04-06 06:20:37 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -46,6 +46,10 @@
 //pql_set_define("PQL_CONF_HOST","ldaps://localhost/;;ou=QmailLDAP,c=SE");
 //pql_set_define("PQL_CONF_HOST","ldapi://%2fvar%2frun%2fldapi;;ou=QmailLDAP,c=SE");
 pql_set_define("PQL_CONF_HOST","localhost;389;ou=QmailLDAP,c=SE");
+
+// Either you use TLS (=> 'true') or you don't (=> 'false') when connecting
+// to the LDAP database...
+pql_set_define("PQL_CONF_USE_TLS", false);
 
 // ----------------------------
 // PQL_CONF_SUBTREE_USERS
