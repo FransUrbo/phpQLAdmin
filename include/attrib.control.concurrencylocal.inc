@@ -3,7 +3,7 @@
 // concurrencylocal (may simultaneous local deliveries)
 // concurrencyremote (may simultaneous remote deliveries)
 //
-// $Id: attrib.control.concurrencylocal.inc,v 2.10 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.concurrencylocal.inc,v 2.11 2003-10-31 07:22:56 turbo Exp $
 
 function concurrencylocal_check($type) {
 	global $error, $concurrencylocal, $concurrencyremote, $view, $LANG;
@@ -129,11 +129,11 @@ function concurrencylocal_save($type, $host) {
 		
 		if(in_array(false, $return))
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('bouncing options')))
+									   array('what' => $LANG->_('bouncing options')));
 			. ": " . pql_ldap_error($_pql_control->ldap_linkid);
 		else
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
-									   array('what' => $LANG->_('bouncing options')))
+									   array('what' => $LANG->_('bouncing options')));
 		
 		attribute_forward($msg);
 		break;
