@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.10 2005-01-13 12:42:04 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.11 2005-01-29 18:57:04 turbo Exp $
 
 // {{{ attribute_translate_type(attrib)
 function attribute_translate_type($attrib) {
@@ -23,7 +23,7 @@ function attribute_translate_type($attrib) {
 	case "txt":
 	  return 'tXTRecord';
 	default:
-	  die("unknown zone type '".$_REQUEST["type"]."'.");
+	  return $_REQUEST["attrib"];
   }
 }
 // }}}
@@ -45,12 +45,12 @@ function attribute_print_form() {
 	if($_REQUEST["action"] != 'add') {
 		// Get old value
 		$dn = urldecode($_REQUEST["rdn"]);
-		$_REQUEST["oldvalue"] = pql_get_attribute($_pql->ldap_linkid, $dn, $_REQUEST["attrib"]);
+		$_REQUEST["oldvalue"] = pql_get_attribute($_pql->ldap_linkid, $dn, $attrib);
 		if(is_array($_REQUEST["oldvalue"]))
 		  $_REQUEST["oldvalue"] = $_REQUEST["oldvalue"][0];
 	}
 
-	if((lc($_REQUEST["attrib"]) == 'mxrecord')) {
+	if((lc($attrib) == 'mxrecord')) {
 		if($_REQUEST["oldvalue"]) {
 			$tmp  = split(' ', $_REQUEST["oldvalue"]);
 			$prio = $tmp[0];
@@ -67,12 +67,20 @@ function attribute_print_form() {
 	if(is_array($domain))
 	  $domain = $domain[0];
 
-	$host = $host.".".$domain;
+	if($host != "@")
+	  $host = $host.".".$domain;
 ?>
     <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
       <table cellspacing="0" cellpadding="3" border="0">
-        <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Change Bind9 value for %host%'), array('host' => $host))?></th>
-<?php	if(lc($_REQUEST["attrib"]) == 'mxrecord') { ?>
+        <th colspan="3" align="left"><?php
+	   if($host != "@") {
+		 echo pql_complete_constant($LANG->_('Change Bind9 value for %host%'), array('host' => $host));
+	   } else {
+		 echo pql_complete_constant($LANG->_("Change Bind9 SOA value for %domain%"), array('domain' => $domain));
+	   }
+?>
+        </th>
+<?php	if(lc($attrib) == 'mxrecord') { ?>
           <tr class="<?php pql_format_table(); ?>">
             <td class="title"><?=$LANG->_('MX Priority')?>:</td>
             <td><input type="text" name="priority" value="<?=$prio?>" size="20"></td>
@@ -81,9 +89,9 @@ function attribute_print_form() {
 
 <?php	} ?>
           <tr class="<?php pql_format_table(); ?>">
-            <td class="title"><?php echo pql_complete_constant($LANG->_('Change attribute %attribute%'), array('attribute' => $_REQUEST["attrib"])); ?></td>
-            <td><input type="text" name="<?=$_REQUEST["attrib"]?>" value="<?=$_REQUEST["oldvalue"]?>" size="20"></td>
-<?php	if(lc($_REQUEST["attrib"]) == 'dnsttl') { ?>
+            <td class="title"><?php echo pql_complete_constant($LANG->_('Change attribute %attribute%'), array('attribute' => $attrib)); ?></td>
+            <td><input type="text" name="newvalue" value="<?=$_REQUEST["oldvalue"]?>" size="20"></td>
+<?php	if(lc($attrib) == 'dnsttl') { ?>
             <td>
               <select name="time">
                 <option value="seconds" SELECTED><?=$LANG->_('Seconds')?></option>
@@ -98,8 +106,8 @@ function attribute_print_form() {
             <td></td>
 <?php	} ?>
           </tr>
-<?php	if(lc($_REQUEST["attrib"]) == 'mxrecord') { ?>
 
+<?php	if(lc($attrib) == 'mxrecord') { ?>
           <tr class="<?php pql_format_table(); ?>">
             <td class="title" align="right">
               <img src="images/info.png" width="16" height="16" alt="" border="0" align="right">
@@ -107,6 +115,19 @@ function attribute_print_form() {
             <td><?=$LANG->_("If this is an FQDN not in this zone,<br>don't forget the trailing dot!")?></td>
             <td></td>
           </tr>
+<?php	} elseif((lc($attrib) != 'nsrecord') and (lc($attrib) != 'dnsttl')) { ?>
+          <tr class="<?php pql_format_table(); ?>">
+            <td class="title">New record type</td>
+            <td>
+              <select name="type">
+                <option value="a" <?php     if($_REQUEST[$attrib] == 'a')     { echo "SELECTED"; } ?>>A</option>
+                <option value="cname" <?php if($_REQUEST[$attrib] == 'cname') { echo "SELECTED"; } ?>>CNAME</option>
+                <option value="hinfo" <?php if($_REQUEST[$attrib] == 'hinfo') { echo "SELECTED"; } ?>>HINFO</option>
+                <option value="mx" <?php    if($_REQUEST[$attrib] == 'mx')    { echo "SELECTED"; } ?>>MX</option>
+                <option value="ns" <?php    if($_REQUEST[$attrib] == 'ns')    { echo "SELECTED"; } ?>>NS</option>
+              </select>
+            </td>
+            <td></td>
 <?php   } ?>
         </th>
       </table>
@@ -114,9 +135,8 @@ function attribute_print_form() {
       <input type="hidden" name="submit"   value="1">
 <?php	if($action != 'add') { ?>
       <input type="hidden" name="oldvalue" value="<?=$_REQUEST["oldvalue"]?>">
+      <input type="hidden" name="oldtype"  value="<?=$attrib?>">
 <?php	} ?>
-      <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
-      <input type="hidden" name="type"     value="<?=$_REQUEST["type"]?>">
       <input type="hidden" name="domain"   value="<?=urlencode($_REQUEST["domain"])?>">
       <input type="hidden" name="rootdn"   value="<?=urlencode($_REQUEST["rootdn"])?>">
       <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
@@ -134,15 +154,15 @@ function attribute_save($action) {
 	global $_pql, $LANG;
 
 	$dn = urldecode($_REQUEST["rdn"]);
-	$attrib = $_REQUEST["attrib"];
-	$value  = $_REQUEST[$attrib];
 
-	if($_REQUEST["attrib"])
-	  $attrib_search = attribute_translate_type($_REQUEST["attrib"]);
+	if($_REQUEST["type"])
+	  $attrib = attribute_translate_type($_REQUEST["type"]);
+	$value = $_REQUEST["newvalue"];
 
 	if((lc($attrib) == 'mxrecord') && $_REQUEST["priority"])
 	  $value = $_REQUEST["priority"] . " " . $value;
 
+	// {{{ if($attrib == 'dnsttl')
 	if((lc($attrib) == 'dnsttl') && $_REQUEST["time"]) {
 	  if($_REQUEST["time"] == "minutes")
 		$value = $value * 60;
@@ -155,6 +175,7 @@ function attribute_save($action) {
 	  elseif($_REQUEST["time"] == "months")
 		$value = $value * 60 * 60 * 24 * 7 * 4;
 	}
+	// }}}
 
     switch($action) {
 	  case "add":
@@ -182,6 +203,8 @@ function attribute_save($action) {
 
 	  case "modify":
 		// {{{ mod
+
+		// {{{ if($attrib == relativeDomainName)
 		if($attrib == pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")) {
 			// We must also change the RDN!
 			$dnattrs = explode(",", urldecode($dn));
@@ -205,7 +228,14 @@ function attribute_save($action) {
 				}
 			}
 		}
+		// }}}
 
+	  	// {{{ if(oldtype != newtype)
+		// Remove the 'oldtype' value
+		if(!pql_modify_attribute($_pql->ldap_linkid, $dn, $_REQUEST["oldtype"], '', ''))
+		  // This shouldn't really be possible, but until I find out that/if I'm wrong, I'll just die here!
+		  die("Failed to remove the old attribute ".$_REQUEST["oldtype"]." with value ".$_REQUEST["oldvalue"]);
+		// }}}
 
 		if(pql_modify_attribute($_pql->ldap_linkid, $dn, $attrib, 1, $value))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
@@ -241,7 +271,8 @@ function attribute_save($action) {
 		// }}}
 	}
 
-    attribute_forward($msg);
+	if(!file_exists("./.DEBUG_ME"))
+	  attribute_forward($msg);
 }
 // }}}
 
