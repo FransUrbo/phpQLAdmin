@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.4 2002-12-20 01:50:19 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.5 2002-12-23 11:55:53 turbo Exp $
 //
 session_start();
 // ----------------------------
@@ -219,6 +219,11 @@ define("PQL_LDAP_CONTROL_AUTOADDLOCALS", true);
 // 'replicated' (ie, round-robbing etc), then you'll
 // have to do this manually (at the moment).
 define("PQL_LDAP_EZMLM_USE", false);
+
+// ----------------------------
+// Should we enable changing of LDAP server?
+// NOTE: Not currently working, so don't use (yet)
+define("PQL_LDAP_CHANGE_SERVER", false);
 
 // ----------------------------
 // password encryption schemes to allow
