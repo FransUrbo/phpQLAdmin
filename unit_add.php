@@ -34,7 +34,7 @@ if(pql_unit_exist($_pql->ldap_linkid, $domain, $unit)){
 
 if(pql_add_unit($_pql->ldap_linkid, $domain, $unit)){
 	// update locals if control patch is enabled
-	if(pql_control_update_domains($_pql, $_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR)) {
+	if(pql_control_update_domains($_pql, $USER_SEARCH_DN_CTR)) {
 	    // message ??
 	}
 

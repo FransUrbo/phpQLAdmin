@@ -51,7 +51,7 @@ if($dns[0]) {
 
 	if($defaultdomain != "") {
 		// update locals if control patch is enabled
-		if(pql_control_update_domains($_pql, $_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR)) {
+		if(pql_control_update_domains($_pql, $USER_SEARCH_DN_CTR, '*', array('', $defaultdomain))) {
 			// message ??
 		}
 	}

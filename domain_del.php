@@ -16,12 +16,16 @@ if(isset($ok) || !PQL_VERIFY_DELETE) {
 	
 	$delete_forwards = (isset($delete_forwards) || PQL_VERIFY_DELETE) ? true : false;
 	
+	// Before we delete the domain/branch, get the defaultDomain value
+	// so we can delete it from locals
+	$domainname = pql_get_domain_value($_pql, $domain, 'defaultdomain');
+
 	// delete the domain
 	if(pql_domain_del($_pql, $domain, $delete_forwards)) {
 	    // update locals if control patch is enabled
-	    if(pql_control_update_domains($_pql, $_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR)) {
-			// message ??
-	    }
+		if($domainname) {
+			pql_control_update_domains($_pql, $USER_SEARCH_DN_CTR, '*', array($domainname, ''));
+		}
 	    
 	    $msg = PQL_DOMAIN_DEL_OK;
 		

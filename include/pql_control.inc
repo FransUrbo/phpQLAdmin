@@ -4,14 +4,18 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.6 2003-01-27 13:18:28 turbo Exp $
+// $Id: pql_control.inc,v 2.7 2003-01-28 13:09:41 turbo Exp $
 //
 // version history:
 // $Log: pql_control.inc,v $
-// Revision 2.6  2003-01-27 13:18:28  turbo
-// Functions pql_control_update_domains() and pql_get_domains() have change
-// somewhat. Send the full class initialization to functions, not just the link
-// ID.
+// Revision 2.7  2003-01-28 13:09:41  turbo
+// * Functions pql_control_update_domains() and pql_control_remove_attribute()
+//   changed quite drastically, update all references to them.
+// * Function pql_control_update_domains() was rewritten to work with new
+//   domain/branch/user reference system, and to allow for changing ALL QmailLDAP
+//   server objects in one go and to get automatic locals update working (ie,
+//   update locals when modifying defaultDomain for a branch, or when adding
+//   a new domain/branch).
 //
 // Revision 1.2  2001/09/06 11:36:24  mb
 // added no_connect option to pql_control-class
@@ -161,12 +165,11 @@ function pql_control_add_attribute($ldap_linkid, $ldap_control_basedn, $attrib, 
 
 // ------------------------------------------------
 
-function pql_control_remove_attribute($ldap_linkid, $ldap_control_basedn, $attrib, $value){
-    // removes an attribute of a user
-    
+// removes an attribute of a QmailLDAP object
+function pql_control_remove_attribute($ldap_linkid, $dn, $attrib, $value) {
     $entry[$attrib] = $value;
     
-    if(!@ldap_mod_del($ldap_linkid, $ldap_control_basedn, $entry)){
+    if(!ldap_mod_del($ldap_linkid, $dn, $entry)) {
 		pql_errormsg($ldap_linkid);
 		return false;
     }
@@ -198,43 +201,46 @@ function pql_control_remove_whole_attribute($ldap_linkid, $ldap_control_basedn, 
 
 // ------------------------------------------------
 
-function pql_control_update_domains($ldap, $ldap_basedn, $ldap_control_linkid, $ldap_control_basedn, $host = ""){
-    // replicate all registred domains to locals
-    
+// replicate all registred domains to locals
+//
+// domain is array as: 'oldvalue', 'newvalue'
+function pql_control_update_domains($ldap, $dn, $host, $domain = "") {
     if(!defined("PQL_LDAP_CONTROL_USE")) {
 		// control patch is not enabled
 		return false;
     }
-    
-    if(!defined("PQL_LDAP_CONTROL_AUTOADDLOCALS")) {
-		// do not replicate by myself, this is sysadmin's problem for now :)
+
+	if(!PQL_LDAP_CONTROL_AUTOADDLOCALS and $domain) {
+		// do not replicate automatically
 		return false;
-    }
-	
-    $domains = pql_get_domains($ldap);
-    foreach($domains as $domain) {
-		// Get default domain name for this domain
-		$domainname = pql_get_domain_value($ldap->ldap_linkid, $domain, "defaultdomain");
-		if($domainname) {
-			// Before we add this domain to the list, make sure it don't already exist
-			$ent_exists = 0;
-			if(is_array($entry)) {
-				foreach($entry as $ent) {
-					if($ent == $domainname) {
-						$ent_exists = 1;
+	}
+
+	if(($host != '*') and !$domain) {
+		$domains = pql_get_domains($ldap);
+		foreach($domains as $domain) {
+			// Get default domain name for this domain
+			$domainname = pql_get_domain_value($ldap, $domain, "defaultdomain");
+			if($domainname) {
+				// Before we add this domain to the list, make sure it don't already exist
+				$ent_exists = 0;
+				if(is_array($entry)) {
+					foreach($entry as $ent) {
+						if($ent == $domainname) {
+							$ent_exists = 1;
+						}
 					}
 				}
+				
+				if(!$ent_exists) {
+					$temp[]  = $domainname;
+					$entry[] = $domainname;
+				}
 			}
-
-			if(!$ent_exists) {
-				$temp[]  = $domainname;
-				$entry[] = $domainname;
-			}
-		}
-    }    
+		}    
+	}
 
     // Get the hostname
-    if((PQL_LDAP_CONTROL_AUTOADDLOCALS == true) and $host) {
+    if($host and ($host != '*')) {
 		$hostname = split("\.", $host);
 		$hostname = $hostname[0];
 	
@@ -247,14 +253,46 @@ function pql_control_update_domains($ldap, $ldap_basedn, $ldap_control_linkid, $
 		$entry[] = "localhost";
     }
 
-	foreach($entry as $val) {
-		echo "Entry: $val<br>";
+	if($host != '*') {
+		if(pql_control_replace_attribute($ldap->ldap_linkid, $dn, "locals", $entry))
+		  return true;
+	} else {
+		// $host=* && $domain => Modify ALL servers
+		$hosts = pql_control_get_hosts($ldap->ldap_linkid, $dn);
+		if(is_array($hosts)) {
+			// Go through each QmailLDAP control object
+			foreach($hosts as $h) {
+				$hostdn = "cn=$h,$dn";
+				unset($entry);
+
+				// Get current locals for this host
+				$locals = pql_control_get_attribute($ldap->ldap_linkid, $hostdn, "locals");
+				if(!is_null($locals)) {
+					foreach($locals as $local) {
+						// As long as local isn't equal to domain to add, create the LDIF entry
+						if($domain[0]) {
+							if(!eregi($domain[0], $local))
+							  $entry[] = $local;
+						} else
+						  $entry[] = $local;
+					}
+
+					// Add the domain to the LDIF entry
+					if($domain[1])
+					  $entry[] = $domain[1];
+
+					// Add 'hostname.newdomain' to LDIF entry
+					if($h and $domain[1]) {
+						$hostname = split("\.", $h);
+						$entry[] = $hostname[0] . "." . $domain[1];
+					}
+
+					pql_control_replace_attribute($ldap->ldap_linkid, $hostdn, "locals", $entry);
+				}
+			}
+		}
 	}
 
-    if(pql_control_replace_attribute($ldap->ldap_linkid, $ldap_control_basedn, "locals", $entry)) {
-		return true;
-    }
-    
     return false;
 }
 
