@@ -1,6 +1,6 @@
 <?php
 // adds an attribute 
-// $Id: user_add_attribute.php,v 2.34 2005-03-19 10:58:49 turbo Exp $
+// $Id: user_add_attribute.php,v 2.35 2005-03-19 15:12:22 turbo Exp $
 //
 /* This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
  *   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -59,12 +59,10 @@ $defaultdomain = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_
 
 // ... user name
 $username = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_CN"));
-if(!$username[0]) {
+if(!$username) {
     // No common name, use uid field
     $username = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_UID"));
 }
-$username = $username[0];
-// }}}
 
 // {{{ Select which attribute have to be included
 switch($_REQUEST["attrib"]) {
