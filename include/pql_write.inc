@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.11 2005-01-12 13:50:55 turbo Exp $
+// $Id: pql_write.inc,v 2.12 2005-01-13 12:30:45 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -38,7 +38,8 @@ function pql_write_add($linkid, $dn, $entry, $type, $caller) {
 			}
 			
 			pql_format_error(1);
-			die("Error: #$errno ($error)");
+			echo "Error: #$errno ($error)<p>";
+			die($LDIF);
 		}
 	}
 
@@ -51,6 +52,9 @@ function pql_write_add($linkid, $dn, $entry, $type, $caller) {
 // MODIFY an object - called with an 'ldif' for modification.
 function pql_write_mod($linkid, $dn, $entry, $caller = NULL, $count = 0) {
 	$dn = urldecode($dn);
+	if(eregi("^dNSTTL=", $dn))
+	  $dn = pql_recreate_dnsttl($dn);
+
 	$count++;
 
 	// Create a LDIF object to print in case of error
