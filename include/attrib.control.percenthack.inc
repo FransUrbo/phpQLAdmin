@@ -2,7 +2,7 @@
 // control attribute plugin for
 // percenthack (allowed domains for %-relaying)
 //
-// $Id: attrib.control.percenthack.inc,v 2.13 2004-01-01 12:35:34 turbo Exp $
+// $Id: attrib.control.percenthack.inc,v 2.14 2004-02-12 11:27:30 turbo Exp $
 
 function percenthack_check($type) {
 	global $error, $percenthack, $view, $LANG;
@@ -63,7 +63,7 @@ function percenthack_print_view($host) {
 		foreach($percenthack as $domain) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td><?=$domain?></td>
+        <td><?=pql_maybe_idna_decode($domain)?></td>
       </tr>
 <?php
 		} // end foreach

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // helohost (host name used in SMTP HELO command)
 //
-// $Id: attrib.control.helohost.inc,v 2.11 2004-01-01 12:35:33 turbo Exp $
+// $Id: attrib.control.helohost.inc,v 2.12 2004-02-12 11:27:30 turbo Exp $
 
 function helohost_check($type) {
 	global $error, $helohost, $view, $LANG;
@@ -43,7 +43,7 @@ function helohost_print_view($host) {
     <th colspan="3" align="left">helohost (Helo host)</th>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Host')?></td>
-        <td><?=$helohost?></td>
+        <td><?=pql_maybe_idna_decode($helohost)?></td>
       </tr>
 
       <tr class="subtitle">

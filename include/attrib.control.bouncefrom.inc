@@ -3,7 +3,7 @@
 // bouncefrom (username of bounce sender)
 // bouncehost (hostname of bounce sender)
 //
-// $Id: attrib.control.bouncefrom.inc,v 2.12 2004-01-01 12:35:33 turbo Exp $
+// $Id: attrib.control.bouncefrom.inc,v 2.13 2004-02-12 11:27:30 turbo Exp $
 
 function bouncefrom_check($type) {
 	global $error, $bouncefrom, $bouncehost, $view, $LANG;
@@ -64,7 +64,7 @@ function bouncefrom_print_view($host) {
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Host for bouncing')?></td>
-        <td><?=$bouncehost?></td>
+        <td><?=pql_maybe_idna_decode($bouncehost)?></td>
       </tr>
 
       <tr class="subtitle">

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // localiphost (name substituted for local IP address)
 //
-// $Id: attrib.control.localiphost.inc,v 2.12 2004-01-01 12:35:34 turbo Exp $
+// $Id: attrib.control.localiphost.inc,v 2.13 2004-02-12 11:27:30 turbo Exp $
 
 function localiphost_check($type) {
 	global $error, $localiphost, $view, $LANG;
@@ -43,7 +43,7 @@ function localiphost_print_view($host) {
     <th colspan="3" align="left">localiphost (<?=$LANG->_('Substitution for local IP')?>)</th>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Host')?></td>
-        <td><?=$localiphost?></td>
+        <td><?=pql_maybe_idna_decode($localiphost)?></td>
       </tr>
 
       <tr class="subtitle">

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // envnoathost (default prefix for mailbox paths)
 //
-// $Id: attrib.control.envnoathost.inc,v 2.12 2004-01-01 12:35:33 turbo Exp $
+// $Id: attrib.control.envnoathost.inc,v 2.13 2004-02-12 11:27:30 turbo Exp $
 
 function envnoathost_check($type) {
 	global $error, $envnoathost, $view, $LANG;
@@ -49,7 +49,7 @@ function envnoathost_print_view($host) {
     <th colspan="3" align="left">envnoathost (<?=$LANG->_('Default domain for addresses without @')?>)</th>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Email')?></td>
-        <td><?=$envnoathost?></td>
+        <td><?=pql_maybe_idna_decode($envnoathost)?></td>
       </tr>
 
       <tr class="subtitle">

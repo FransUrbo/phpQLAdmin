@@ -3,7 +3,7 @@
 // doublebouncehost (username of bounce sender)
 // doublebounceto (hostname of bounce sender)
 //
-// $Id: attrib.control.doublebouncehost.inc,v 2.12 2004-01-01 12:35:33 turbo Exp $
+// $Id: attrib.control.doublebouncehost.inc,v 2.13 2004-02-12 11:27:30 turbo Exp $
 
 function doublebouncehost_check($type) {
 	global $error, $doublebouncehost, $doublebounceto, $view, $LANG;
@@ -59,7 +59,7 @@ function doublebouncehost_print_view($host) {
     <th colspan="3" align="left">doublebouncehost, doublebounceto (Double bounce)</th>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Host')?></td>
-        <td><?=$doublebouncehost?></td>
+        <td><?=pql_maybe_idna_decode($doublebouncehost)?></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.22 2004-01-01 12:35:34 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.23 2004-02-12 11:27:30 turbo Exp $
 
 function locals_check($type) {
     global $error, $locals, $rootdn, $domain, $view, $LANG;
@@ -58,7 +58,7 @@ function locals_print_view($host) {
 		asort($locals);
 		foreach($locals as $localdomain) {
 ?>
-      <tr class="<?php pql_format_table(); ?>"><td><?=$localdomain?></td></tr>
+      <tr class="<?php pql_format_table(); ?>"><td><?=pql_maybe_idna_decode($localdomain)?></td></tr>
 <?php
         } // end foreach
     } // end if is_array

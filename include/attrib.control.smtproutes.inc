@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtproutes (max number of bytes in message)
 //
-// $Id: attrib.control.smtproutes.inc,v 2.15 2004-01-01 12:35:34 turbo Exp $
+// $Id: attrib.control.smtproutes.inc,v 2.16 2004-02-12 11:27:30 turbo Exp $
 
 function smtproutes_check($type) {
 	global $error, $domain, $relay, $port, $view, $LANG;
@@ -121,11 +121,11 @@ function smtproutes_print_view($host) {
 		foreach($routes as $route) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td><?=$route[0]?></td>
+        <td><?=pql_maybe_idna_decode($route[0])?></td>
         <td><b>=&gt;</b></td>
-        <td><?=$route[1]?></td>
+        <td><?=pql_maybe_idna_decode($route[1])?></td>
         <td><b>:</b></td>
-        <td><?=$route[2]?></td>
+        <td><?=pql_maybe_idna_decode($route[2])?></td>
         <td>
           <a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=smtproutes&type=modify&set=<?=$route[0].":".$route[1].":".$route[2]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options')?>"></a>
           <a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=smtproutes&type=del&submit=1&set=<?=$route[0].":".$route[1].":".$route[2]?>"><img src="images/del.png"  width="12" height="12" border="0" alt="<?=$LANG->_('Delete options')?>"></a>

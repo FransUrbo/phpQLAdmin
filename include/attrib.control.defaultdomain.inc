@@ -3,7 +3,7 @@
 // defaultdomain (default domain)
 // defaulthost (default hostname)
 //
-// $Id: attrib.control.defaultdomain.inc,v 2.11 2004-01-01 12:35:33 turbo Exp $
+// $Id: attrib.control.defaultdomain.inc,v 2.12 2004-02-12 11:27:30 turbo Exp $
 
 function defaultdomain_check($type) {
 	global $error, $defaultdomain, $defaulthost, $plusdomain, $view, $LANG;
@@ -57,13 +57,13 @@ function defaultdomain_print_view($host) {
 
 	// set empty fields to their default value
 	if($defaultdomain == "")
-	  $defaultdomain = $host . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";
+	  $defaultdomain = pql_maybe_idna_decode($host) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";
 	
 	if($defaulthost == "")
-	  $defaulthost = $host . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";
+	  $defaulthost = pql_maybe_idna_decode($host) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";
 	
 	if($plusdomain == "") 
-	  $plusdomain = $host . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";
+	  $plusdomain = pql_maybe_idna_decode($host) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">defaultdomain, defaulthost, plusdomain (<?=$LANG->_('Default domain / host')?>)</th>

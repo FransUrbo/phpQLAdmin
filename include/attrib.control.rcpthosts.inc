@@ -2,7 +2,7 @@
 // control attribute plugin for
 // rcpthosts (blocked local addresses)
 //
-// $Id: attrib.control.rcpthosts.inc,v 2.18 2004-01-01 12:35:34 turbo Exp $
+// $Id: attrib.control.rcpthosts.inc,v 2.19 2004-02-12 11:27:30 turbo Exp $
 
 function rcpthosts_check($type) {
     global $error, $rcpthosts, $domain, $rootdn, $view, $LANG;
@@ -54,7 +54,7 @@ function rcpthosts_print_view($host) {
 		asort($rcpthosts);
 		foreach($rcpthosts as $rcpt) {
 ?>
-      <tr class="<?php pql_format_table(); ?>"><td><?=$rcpt?></td></tr>
+      <tr class="<?php pql_format_table(); ?>"><td><?=pql_maybe_idna_decode($rcpt)?></td></tr>
 <?php   } // end foreach
     } // end if is_array
 

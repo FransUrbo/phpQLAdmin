@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtpgreeting (SMTP greeting message)
 //
-// $Id: attrib.control.smtpgreeting.inc,v 2.12 2004-01-01 12:35:34 turbo Exp $
+// $Id: attrib.control.smtpgreeting.inc,v 2.13 2004-02-12 11:27:30 turbo Exp $
 
 function smtpgreeting_check($type) {
     global $error, $smtpgreeting, $view;
@@ -32,7 +32,9 @@ function smtpgreeting_print_view($host) {
     
     // set empty field to default value
     if($smtpgreeting == "")
-      $smtpgreeting = $host . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";
+      $smtpgreeting = pql_maybe_idna_decode($host) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";
+	else
+	  $smtpgreeting = pql_maybe_idna_decode($smtpgreeting);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">smtpgreeting (<?=$LANG->_('SMTP greeting message')?>)</th>

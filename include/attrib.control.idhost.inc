@@ -2,7 +2,7 @@
 // control attribute plugin for
 // idhost (host name for message id's)
 //
-// $Id: attrib.control.idhost.inc,v 2.13 2004-01-01 12:35:33 turbo Exp $
+// $Id: attrib.control.idhost.inc,v 2.14 2004-02-12 11:27:30 turbo Exp $
 
 function idhost_check($type) {
 	global $error, $idhost, $view, $LANG;
@@ -45,7 +45,7 @@ function idhost_print_view($host) {
     <th colspan="3" align="left">idhost (<?=$LANG->_('Host name for Message-ID\'s')?>)</th>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Host')?></td>
-        <td><?=$idhost?></td>
+        <td><?=pql_maybe_idna_decode($idhost)?></td>
       </tr>
 
       <tr class="subtitle">

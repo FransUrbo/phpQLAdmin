@@ -2,7 +2,7 @@
 // control attribute plugin for
 // qmqpservers (max number of bytes in message)
 //
-// $Id: attrib.control.qmqpservers.inc,v 2.14 2004-01-01 12:35:34 turbo Exp $
+// $Id: attrib.control.qmqpservers.inc,v 2.15 2004-02-12 11:27:30 turbo Exp $
 
 function qmqpservers_check($type) {
 	global $error, $qmqpservers, $view, $LANG;
@@ -83,7 +83,7 @@ function qmqpservers_print_view($host) {
 		foreach($qmqpservers as $server) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td><?=$server?></td>
+        <td><?=pql_maybe_idna_decode($server)?></td>
       </tr>
 <?php
 		} // end foreach
