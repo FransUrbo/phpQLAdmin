@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.86 2004-03-30 05:18:54 turbo Exp $
+// $Id: left.php,v 2.87 2004-03-30 06:20:56 turbo Exp $
 //
 session_start();
 
@@ -249,7 +249,7 @@ if(!isset($domains)) {
 		    // not the complete DN.
 		    $dnparts = ldap_explode_dn($branches[$i], 0);
 		    $dnparts = split('=', $dnparts[0]);
-		    $subbranch = pql_maybe_decode($dnparts[1]);
+		    $subbranch = urlencode($dnparts[1]);
 		    
 		    $links = array(pql_complete_constant($LANG->_('Add %what%'),
 							 array('what' => $LANG->_('user')))
@@ -328,7 +328,7 @@ if(!isset($domains)) {
 
 	    // Level 1: The domain name with it's users
 	    if((count($branches) > 1) and $subbranch)
-		pql_format_tree($subbranch, $url, $links, 1);
+		pql_format_tree(pql_maybe_decode(urldecode($subbranch)), $url, $links, 1);
 	    else {
 		pql_format_tree($d, "domain_detail.php?rootdn=$rootdn&domain=$domain", $links, 0);
 		echo "\n";
