@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.30 2003-01-24 09:15:39 turbo Exp $
+// $Id: pql.inc,v 2.31 2003-01-24 11:47:52 turbo Exp $
 //
 
 // ----------------------------
@@ -68,11 +68,12 @@ class pql {
 
 		// Bind to the host
 		if(!$this->bind($binddn, $bindpw)) {
-			session_unset();
-			session_destroy();
+// TODO: Sometimes we get wrongfully logged out here!?
+//			session_unset();
+//			session_destroy();
 
 			$this->ldap_error = "<b>Could not bind to ldap server</b>: " . ldap_error($this->ldap_linkid) . "<br>" .
-			  "Please <a href=\"index.php\">relogin</a>.";
+			  "Please <a href=\"index.php\" target=\"_top\">relogin</a>.";
 
 			if($do_die) {
 				die($this->ldap_error);
@@ -139,6 +140,11 @@ class pql {
 
 // Add a user to the LDAP database
 function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $branch) {
+	$DEBUG = 0;
+
+	if($DEBUG >= 2)
+	  echo "pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $branch)<br>";
+
     // Setup the objectclass entries
     $entry["objectClass"][] = "top";
     $entry["objectClass"][] = PQL_LDAP_OBJECTCLASS_USERID;
@@ -177,35 +183,30 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 		}
     }
     
-	$userdn = PQL_LDAP_ATTR_UID . "=" . $entry[PQL_LDAP_USER_RDN_ATTRIBUTE] . ",";
+	$userdn = PQL_LDAP_ATTR_UID . "=" . $entry[PQL_LDAP_ATTR_UID] . ",";
 	if($branch)
 	  $userdn .= $branch;
-	else {
-		if(defined("PQL_LDAP_SUBTREE_USERS"))
-          $subrdn = PQL_LDAP_SUBTREE_USERS . ",";
+	else
+	  $userdn .= $domain;
 
-		$userdn .= $subrdn . $domain;
+	// --------------------------
+	// DEBUG mode: Print the LDIF
+	if($DEBUG >= 1) {
+		echo "<br>--- DEBUG: pql_user_add() ---<br>";
+		echo "dn: $userdn<br>";
+		foreach($entry as $key => $e) {
+			if(is_array($entry[$key])) {
+				// ... in an array. Go through each one, creating the LDAP entry
+				foreach($entry[$key] as $x) {
+					echo "$key: $x<br>";
+				}
+			} else {
+				echo "$key: $entry[$key]<br>";
+			}
+		}
+		die("--- DEBUG ---");
 	}
-
-//	// --------------------------
-//	// DEBUG mode: Print the LDIF
-//	echo "<br>--- DEBUG: pql_user_add() ---<br>";
-//	echo "dn: $userdn<br>";
-//	foreach($entry as $key => $e) {
-//		if(eregi("objectclass", $key)) {
-//			// We have a objectClass
-//			if(is_array($entry[$key])) {
-//				// ... in an array. Go through each one, creating the LDAP entry
-//				foreach($entry[$key] as $oc) {
-//					echo "$key: $oc<br>";
-//				}
-//			}
-//		} else {
-//			echo "$key: $entry[$key]<br>";
-//		}
-//	}
-//	die("--- DEBUG ---");
-//	// --------------------------
+	// --------------------------
     
     // adds the user
     if(! ldap_add($ldap_linkid, $userdn, $entry)){
@@ -232,10 +233,10 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 
 		// --------------------------
 		
-		if(! ldap_add($ldap_linkid, $groupdn, $entry)){
-			return $dns;
-		}
-		$dns[]   = $groupdn;
+		if(! ldap_add($ldap_linkid, $groupdn, $entry))
+		  return $dns;
+
+		$dns[] = $groupdn;
 	}
 	
     return $dns;
@@ -245,7 +246,7 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 	$linkid = $ldap->ldap_linkid;
 
-    if(!pql_user_exist($linkid, $domain, $user)) {
+    if(!pql_user_exist($linkid, $user)) {
 		// user does not exist
 		return false;
     }
@@ -508,13 +509,11 @@ function pql_domain_exist($ldap, $domain) {
 
 // ------------------------------------------------
 
-function pql_user_exist($ldap_linkid, $user){
+function pql_user_exist($ldap_linkid, $user) {
     // check if user exists
-    
-    if(!pql_search_attribute($ldap_linkid, $dn, 'objectclass', '*')) {
-		// User does not exist in LDAP tree
-		return(false); 
-	}
+    if(!pql_search_attribute($ldap_linkid, $user, 'objectclass', '*'))
+	  // User does not exist in LDAP tree
+	  return(false); 
 
 	return(true);
 }
