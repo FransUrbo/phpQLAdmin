@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // default domain name (the default domainname for a domain)
-// $Id: attrib.defaultdomain.inc,v 2.17 2003-05-15 08:02:15 turbo Exp $
+// $Id: attrib.defaultdomain.inc,v 2.18 2003-05-18 13:15:26 turbo Exp $
 
 function attribute_check(){
     global $defaultdomain, $domain, $oldvalue, $_pql, $error, $rootdn;
@@ -97,9 +97,7 @@ function attribute_print_form(){
 <?php 		} ?>
           </td>
         </tr>
-<?php	} // if(is_array($hosts))
-	  } // if PQL_GLOB_CONTROL_AUTOADDLOCALS || PQL_GLOB_CONTROL_AUTOADDRCPTHOSTS
-?>
+<?php	} // if(is_array($hosts)) ?>
       </th>
     </table>
 
