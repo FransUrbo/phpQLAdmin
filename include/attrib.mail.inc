@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mail.inc,v 2.4 2003-01-16 14:58:38 turbo Exp $
+// $Id: attrib.mail.inc,v 2.5 2003-01-24 09:01:23 turbo Exp $
 
 function attribute_check($type){
     global $mail, $domain, $oldvalue, $_pql, $error, $defaultdomain;
@@ -24,7 +24,7 @@ function attribute_check($type){
     }
     
     // if type is modify, check existance of old value, else the new one
-    if($oldvalue != $mail and pql_email_exists($_pql->ldap_linkid, $mail)){
+    if($oldvalue != $mail and pql_email_exists($_pql, $mail)) {
 	$error["mail"] = PQL_EXISTS;
 	return false;
     }
@@ -43,9 +43,18 @@ function attribute_print_form(){
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo PQL_LDAP_MAIL_CHANGE; ?></th>
+  <?php
+    // We're changing the Main address. Give the old as reference
+    if($oldvalue != "") {
+	echo "<tr class=\"c2\">";
+	echo "  <td class=\"title\">Old address</td>";
+	echo "  <td>" . $mail . "</td>";
+	echo "</tr>";
+    }
+  ?>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"><?php echo PQL_EMAIL; ?></td>
-          <td><?php echo format_error($error["mail"]); ?><input type="text" name="mail" value="<?php echo $mail; ?>"><b>@<?php echo $defaultdomain; ?></b></td>
+          <td><?php echo format_error($error["mail"]); ?><input type="text" name="mail" value=""><b>@<?=$defaultdomain?></b></td>
         </tr>
 
         <tr class="subtitle">
@@ -74,7 +83,7 @@ function attribute_save($type){
     if(!attribute_check($type)){
 	return false;
     }
-    
+
     switch($type){
       case "add":
 	// no add operation possible with mail
