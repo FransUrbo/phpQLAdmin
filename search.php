@@ -1,6 +1,6 @@
 <?php
 // shows results of search
-// $Id: search.php,v 2.25 2004-03-27 12:09:52 turbo Exp $
+// $Id: search.php,v 2.26 2004-03-27 12:50:28 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -50,16 +50,36 @@ if($_REQUEST["attribute"] == pql_get_define("PQL_ATTR_MAILHOST")) {
 $filter = "";
 switch($_REQUEST["filter_type"]) {
   case "is":
-    $filter = $_REQUEST["attribute"] . "=" . $_REQUEST["search_string"];
+	if($_REQUEST["attribute"] == pql_get_define("PQL_ATTR_MAIL")) {
+		$filter  = '(|('.pql_get_define("PQL_ATTR_MAIL").'='.$_REQUEST["search_string"];
+		$filter .= ')('.pql_get_define("PQL_ATTR_MAILALTERNATE").'='.$_REQUEST["search_string"];
+		$filter .= '))';
+	} else
+	  $filter = $_REQUEST["attribute"] . "=" . $_REQUEST["search_string"];
     break;
   case "ends_with":
-    $filter = $_REQUEST["attribute"] . "=*" . $_REQUEST["search_string"];
+	if($_REQUEST["attribute"] == pql_get_define("PQL_ATTR_MAIL")) {
+		$filter  = '(|('.pql_get_define("PQL_ATTR_MAIL").'=*'.$_REQUEST["search_string"];
+		$filter .= ')('.pql_get_define("PQL_ATTR_MAILALTERNATE").'=*'.$_REQUEST["search_string"];
+		$filter .= '))';
+	} else
+	  $filter = $_REQUEST["attribute"] . "=*" . $_REQUEST["search_string"];
     break;
   case "starts_with":
-    $filter = $_REQUEST["attribute"] . "=" . $_REQUEST["search_string"] . "*";
+	if($_REQUEST["attribute"] == pql_get_define("PQL_ATTR_MAIL")) {
+		$filter  = '(|('.pql_get_define("PQL_ATTR_MAIL").'='.$_REQUEST["search_string"].'*';
+		$filter .= ')('.pql_get_define("PQL_ATTR_MAILALTERNATE").'='.$_REQUEST["search_string"].'*';
+		$filter .= '))';
+	} else
+	  $filter = $_REQUEST["attribute"] . "=" . $_REQUEST["search_string"] . "*";
     break;
   default:
-    $filter = $_REQUEST["attribute"] . "=*" . $_REQUEST["search_string"] . "*";
+	if($_REQUEST["attribute"] == pql_get_define("PQL_ATTR_MAIL")) {
+		$filter  = '(|('.pql_get_define("PQL_ATTR_MAIL").'=*'.$_REQUEST["search_string"].'*';
+		$filter .= ')('.pql_get_define("PQL_ATTR_MAILALTERNATE").'=*'.$_REQUEST["search_string"].'*';
+		$filter .= '))';
+	} else
+	  $filter = $_REQUEST["attribute"] . "=*" . $_REQUEST["search_string"] . "*";
     break;
 }
 
