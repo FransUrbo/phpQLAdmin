@@ -2,7 +2,7 @@
 // control attribute plugin for
 // $ldapdefaultquota (default quota for all mail users)
 
-// $Id: attrib.control.ldapdefaultquota.inc,v 2.13 2004-02-14 14:25:35 turbo Exp $
+// $Id: attrib.control.ldapdefaultquota.inc,v 2.14 2004-02-14 18:59:44 turbo Exp $
 
 function ldapdefaultquota_check($type) {
     global $options, $use_maxsize, $use_maxmails, $maxsize, $maxmails, $error, $view, $LANG;
@@ -61,7 +61,6 @@ function ldapdefaultquota_init($host) {
     $quota = pql_control_get_attribute($_pql_control->ldap_linkid,
 									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 									   pql_get_define("PQL_GLOB_ATTR_LDAPDEFAULTQUOTA"));
-    
     if(!is_null($quota)) {
 		$quota = pql_parse_quota($quota[0]);
 		
@@ -74,6 +73,7 @@ function ldapdefaultquota_init($host) {
 		  $use_maxsize = "1";
 		
 		$options = "user";
+		return($quota);
     } else
       $options = "default";
 }
