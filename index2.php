@@ -1,5 +1,5 @@
 <?php
-// $Id: index2.php,v 2.36 2004-11-07 08:39:44 turbo Exp $
+// $Id: index2.php,v 2.37 2004-11-08 10:23:37 turbo Exp $
 
 session_start();
 require("./include/pql_config.inc");
@@ -18,40 +18,13 @@ if(pql_get_define("PQL_CONF_EZMLM_USE")) {
 }
 
 // -----------------
-// Check if this user is a QmailLDAP/Controls administrator
-$counted = 0; // Don't count each of the Control usage more than once
-if(pql_get_define("PQL_CONF_CONTROL_USE")) {
-    foreach($_pql->ldap_basedn as $dn)  {
-	$dn = urldecode($dn);
-	
-	$controladmins = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"));
-	if(is_array($controladmins)) {
-	    foreach($controladmins as $admin)
-	      if($admin == $_SESSION["USER_DN"]) {
-		  $controlsadministrator = 1;
-		  continue;
-	      }
-	} elseif($controladmins == $_SESSION["USER_DN"]) {
-	    $controlsadministrator = 1;
-	    continue;
-	}
-	
-	if(pql_validate_administrator($_pql->ldap_linkid, $dn, $_SESSION["USER_DN"]))
-	  // User is super administrator. Full access!
-	  $controlsadministrator = 1;
-    }
-}
-
 // Should we show the controls frame (ie, is controls configured
 // in ANY of the namingContexts)?
-if($_SESSION["ALLOW_CONTROL_CREATE"] and $controlsadministrator) {
-    $SHOW_FRAME["controls"] = 1;
-    if(!$counted) {
-	$frames++;
-	$counted = 1;
-    }
+if(pql_get_define("PQL_CONF_CONTROL_USE") and $_SESSION["ALLOW_CONTROL_CREATE"] and $_SESSION["ADVANCED_MODE"]) {
+    $frames++;
     
     // We need this value for the quota change at least/well...
+    // include/attrib.{control.ldapdefaultquota,mailquota}.inc
     $_SESSION["USE_CONTROLS"] = 1;
 }
 
@@ -95,7 +68,7 @@ if($_SESSION["mozilla"]) {
       <frameset cols="*" rows="<?=$size?>%,*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 4 -->
 <?php   } 
 
-        if($SHOW_FRAME["controls"]) {
+        if($_SESSION["USE_CONTROLS"]) {
 ?>
       <frame src="left-control.php" name="pqlnavctrl">
 <?php   }
