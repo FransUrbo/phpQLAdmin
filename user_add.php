@@ -19,6 +19,8 @@ $defaultdomain = pql_get_domain_value($_pql, $domain, "defaultdomain");
 $basehomedir   = pql_get_domain_value($_pql, $domain, "basehomedir");
 $basemaildir   = pql_get_domain_value($_pql, $domain, "basemaildir");
 
+$additionaldomainname = pql_get_domain_value($_pql, $domain, "additionaldomainname");
+
 // check formdata
 
 // ------------------------------------------------
@@ -112,7 +114,10 @@ if($submit == "two"){
 	
 	// Build the COMPLETE email address
 	if(! ereg("@", $email)) {
-		$email = $email . "@" . $defaultdomain;
+		if($email_domain)
+		  $email = $email . "@" . $email_domain;
+		else
+		  $email = $email . "@" . $defaultdomain;
 	}
 }
 
@@ -463,22 +468,42 @@ switch($submit){
 
         <!-- Email address -->
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_LANG_EMAIL; ?></td>
+          <td class="title"><?php echo PQL_LANG_MAIL_TITLE; ?></td>
           <td>
             <?php echo format_error($error_text["email"]); ?>
-            <input type="text" name="email" value="<?=$email?>"><b>@<?=$defaultdomain?></b>
+            <input type="text" name="email" value="<?=$email?>">
+<?php if(is_array($additionaldomainname)) { ?>
+            <b>@ <select name="email_domain"></b>
+              <option value="<?=$defaultdomain?>"><?=$defaultdomain?></option>
+<?php	foreach($additionaldomainname as $additional) { ?>
+              <option value="<?=$additional?>"><?=$additional?></option>
+<?php   } ?>
+            </select>
+<?php } else { ?>
+            <b>@<?=$defaultdomain?></b>
+<?php } ?>
           </td>
         </tr>
 
-<?php if (isset($error_text["username"])){ ?>
-        <tr class="subtitle">
-          <td colspan="2"><?php echo format_error($error_text["username"]); ?></td>
-        </tr>
-<?php } ?>
-        <tr class="subtitle">
-          <td colspan="2">
-            <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_LANG_USER_ADD_HELP2;?>
+<?php if(is_array($additionaldomainname)) { ?>
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"><?php echo PQL_LANG_MAILALTERNATEADDRESS_TITLE; ?></td>
+          <td>
+            <table>
+              <td colspan="2"><input type="checkbox" name="include_additional" checked></td>
+              <td>
+                Include username in additional domains as alias/aliases
+              </td>
+            </table>
           </td>
+        </tr>
+
+<?php } ?>
+        <tr></tr>
+
+        <tr class="subtitle">
+          <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
+          <td><?php echo PQL_LANG_USER_ADD_HELP2; ?></td>
         </tr>
       </th>
     </table>
@@ -593,6 +618,8 @@ switch($submit){
     <input type="hidden" name="pwscheme" value="<?=$pwscheme?>">
 <?php } ?>
     <input type="hidden" name="subbranch" value="<?=$subbranch?>">
+    <input type="hidden" name="email_domain" value="<?=$email_domain?>">
+    <input type="hidden" name="include_additional" value="<?=$include_additional?>">
 
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo PQL_LANG_USER_ACCOUNT_PROPERTIES_MORE; ?></th>
@@ -711,11 +738,16 @@ switch($submit){
 		// convert uid, email to lowercase
 		$uid = strtolower($uid);
 
-		if(! ereg("@", $email) and ($account_type != 'shell')) {
-			// Build the COMPLETE email address
-			$email = strtolower($email . "@" . $defaultdomain);
-		} else {
-			$email = strtolower($email);
+        if($account_type != 'shell') {
+			if(! ereg("@", $email)) {
+				// Build the COMPLETE email address
+				if($email_domain)
+				  $email = strtolower($email . "@" . $email_domain);
+				else
+				  $email = strtolower($email . "@" . $defaultdomain);
+			} else {
+				$email = strtolower($email);
+			}
 		}
 
 		// prepare the users attributes
@@ -727,8 +759,18 @@ switch($submit){
 
         // ------------------
 		if($account_type != 'shell') {
-			$entry[$config["PQL_GLOB_ATTR_MAIL"]]		= $email;
 			$entry[$config["PQL_GLOB_ATTR_ISACTIVE"]]	= $account_status;
+			$entry[$config["PQL_GLOB_ATTR_MAIL"]]		= $email;
+			if($include_additional == 'on' and is_array($additionaldomainname)) {
+				if(ereg("@", $email)) {
+					$email_temp = split('@', $email);
+					$email_temp = $email_temp[0];
+				} else
+				  $email_temp = $email;
+
+				foreach($additionaldomainname as $additional)
+				  $entry[$config["PQL_GLOB_ATTR_MAILALTERNATE"]][] = strtolower($email_temp . "@" . $additional);
+			}
 		}
 
         // ------------------
