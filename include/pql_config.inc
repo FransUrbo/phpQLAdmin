@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.40 2003-10-12 17:03:18 turbo Exp $
+// $Id: pql_config.inc,v 1.41 2003-10-21 13:38:54 turbo Exp $
 //
 
 // We need this instead of define(), so that we can get rid
@@ -18,7 +18,7 @@ function pql_set_define($define, $value, $case_insensitive = false, $dn = NULL) 
 	elseif($value == 'FALSE')
 	  $value = '0';
 
-	if(! @constant($define))
+	if(! defined($define))
 	  define($define, $value, $case_insensitive);
 
 	if($dn) {
