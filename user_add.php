@@ -595,8 +595,8 @@ switch($submit){
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo PQL_LANG_USER_ACCOUNT_PROPERTIES_MORE; ?></th>
 <?php
-	if($account_type == "system"){
-		// Show homedirectory
+	if($account_type == "normal" or $account_type == "system") {
+		// display forms for SYSTEM/MAIL account(s)
 ?>
         <!-- Home directory -->
         <tr class="<?php table_bgcolor(); ?>">
@@ -610,14 +610,9 @@ switch($submit){
 	  echo $homedirectory . "/";
 	  ?></td>
         </tr>
+
         <input type="hidden" name="loginshell" value="<?=$loginshell?>">
         <input type="hidden" name="homedirectory" value="<?=$homedirectory?>">
-<?php
-	}
-
-	if($account_type == "normal" or $account_type == "system") {
-		// display forms for SYSTEM/MAIL account(s)
-?>
 
         <!-- MailMessageStore -->
         <tr class="<?php table_bgcolor(); ?>">
@@ -727,9 +722,11 @@ switch($submit){
 		$entry[$config["PQL_GLOB_ATTR_SN"]]			= $surname;
 		$entry[$config["PQL_GLOB_ATTR_GIVENNAME"]]	= $name;
 		$entry[$config["PQL_GLOB_ATTR_UID"]]		= $uid;
+
+        // ------------------
 		if($account_type != 'shell') {
-			$entry[$config["PQL_GLOB_ATTR_MAIL"]]		 = $email;
-		$entry[$config["PQL_GLOB_ATTR_ISACTIVE"]]	= $account_status;
+			$entry[$config["PQL_GLOB_ATTR_MAIL"]]		= $email;
+			$entry[$config["PQL_GLOB_ATTR_ISACTIVE"]]	= $account_status;
 		}
 
         // ------------------
@@ -738,11 +735,6 @@ switch($submit){
 
 			// set SYSTEM attributes
 			$entry[$config["PQL_GLOB_ATTR_LOGINSHELL"]] = $loginshell;
-			if(!$homedirectory) {
-				$entry[$config["PQL_GLOB_ATTR_HOMEDIR"]] = user_generate_homedir($_pql, $email, $domain, $entry);
-			} else {
-				$entry[$config["PQL_GLOB_ATTR_HOMEDIR"]] = $homedirectory;
-			}
 
 			// Get a free UserID number (which we also use for GroupID number)
 			$uidnr = pql_get_next_uidnumber($_pql);
@@ -756,20 +748,23 @@ switch($submit){
 		}
 
         // ------------------
-		if(($account_type == "shell") or
-		   ($account_type == "system") or
-		   ($account_type == "normal"))
-		{
+		if($account_type != "forward") {
 			// set attributes
 			$entry[$config["PQL_GLOB_ATTR_PASSWD"]]   = pql_password_hash($password, $pwscheme);
 			if($pwscheme == "{KERBEROS}")
 			  // Make sure that 'User objectclasses' contain krb5Principal (in the domain/branch config).
 			  // See the 'Show phpQLAdmin configuration' page...
 			  $entry["krb5PrincipalName"] = $password;
+
+			if(!$homedirectory) {
+				$entry[$config["PQL_GLOB_ATTR_HOMEDIR"]] = user_generate_homedir($_pql, $email, $domain, $entry);
+			} else {
+				$entry[$config["PQL_GLOB_ATTR_HOMEDIR"]] = $homedirectory;
+			}
 		}
 
         // ------------------
-		if($account_type == "normal" or $account_type == "system") {
+		if(($account_type == "system") or ($account_type == "normal")) {
 			// normal mailbox account
 
 			if($userhost)
@@ -780,6 +775,7 @@ switch($submit){
 			}
 
 			$entry[$config["PQL_GLOB_ATTR_MODE"]]     = "localdelivery";
+
 			if(!$maildirectory) {
 				$entry[$config["PQL_GLOB_ATTR_MAILSTORE"]] = user_generate_mailstore($_pql, $email, $domain, $entry);
 			} else {
