@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.35 2004-03-11 18:13:41 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.36 2004-03-26 08:24:22 turbo Exp $
 
 require("./left-head.html");
 
@@ -169,9 +169,9 @@ function attribute_print_form($action) {
 					if($branch == $_pql->ldap_basedn[0]) {
 						$shown_first_rootdn = 1;
 ?>
-              <option value="<?=$branch?>">*&nbsp;<?=$branch?></option>
+              <option value="<?=$branch?>">*&nbsp;<?=pql_maybe_decode($branch)?></option>
 <?php				} else { ?>
-              <option value="<?=$branch?>">&nbsp;&nbsp;&nbsp;<?=$branch?></option>
+              <option value="<?=$branch?>">&nbsp;&nbsp;&nbsp;<?=pql_maybe_decode($branch)?></option>
 <?php				}
 				}
 			}
