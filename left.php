@@ -1,12 +1,13 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.101 2005-01-12 20:08:39 turbo Exp $
+// $Id: left.php,v 2.102 2005-01-31 11:44:39 turbo Exp $
 //
 session_start();
 
 require("./include/pql_config.inc");
 require("./left-head.html");
 
+// {{{ left_htmlify_userlist(linkid, rootdn, domain, subbranch, users, &links)
 function left_htmlify_userlist($linkid, $rootdn, $domain, $subbranch, $users, &$links) {
     // Iterate trough all users in this domain/branch
     for($i=0; $users[$i]; $i++) {
@@ -75,6 +76,7 @@ function left_htmlify_userlist($linkid, $rootdn, $domain, $subbranch, $users, &$
 	}
     }
 }
+// }}}
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"], false, 0);
 if($_pql->ldap_error) {
@@ -85,7 +87,7 @@ if($_pql->ldap_error) {
     die("$_pql->ldap_error<br><a href=\"index.php\" target=\"_top\">".$LANG->_('Login again')."</a>");
 }
 
-// find out if we're to run in ADVANCE/SIMPLE mode
+// {{{ Find out if we're to run in ADVANCE/SIMPLE mode
 if($_REQUEST["advanced"] == 1) {
     $checked  = " CHECKED";
     $_SESSION["ADVANCED_MODE"] = 1;
@@ -93,6 +95,9 @@ if($_REQUEST["advanced"] == 1) {
     $checked  = "";
     $_SESSION["ADVANCED_MODE"] = 0;
 }
+// }}}
+
+// {{{ ---------------- LDAP host, user, login/logout information etc
 ?>
   <!-- Link to the logged in user information page -->
   <div id="el1Parent" class="parent" style="margin-bottom: 5px">
@@ -151,18 +156,22 @@ if($_REQUEST["advanced"] == 1) {
 
   <!-- Add domain branch link -->
   <div id="el5Parent" class="parent">
-    <a href="domain_add_form.php?rootdn=<?=$_pql->ldap_basedn[0]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain branch'))); ?></a><br>
+    <a href="domain_add_form.php?rootdn=<?=$_SESSION["BASE_DN"][0]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain branch'))); ?></a><br>
   </div>
 
-<?php } ?>
+<?php }
+// }}}
+?>
 
   <!-- Home branch -->
 <?php
-// ---------------- HOME BRANCH (PROJECT URLS ETC)
-// Level 1: phpQLAdmin configuration etc
+// {{{ ---------------- HOME BRANCH (PROJECT URLS ETC)
+// {{{ Level 1:      phpQLAdmin configuration etc
 $div_counter = 10; // Initialize the global counter
 pql_format_tree("<b>".$LANG->_('Home')."</b>", 'home.php');
+// }}}
 
+// {{{ Level 2[abc]: Search links, configuration and tests and setup
 // Level 2a: Search links
 $links = array($LANG->_('Find user') => 'user_search.php');
 pql_format_tree($LANG->_('Search'), 0, $links, 1);
@@ -188,8 +197,9 @@ if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {
 	pql_format_tree($LANG->_('LDAP Server Statistics'), 0, $links, 1);
     }
 }
+// }}}
 
-// Level 2d: Documentation etc
+// {{{ Level 2d:     Documentation etc
 $links = array($LANG->_('Documentation')		=> 'doc/index.php');
 if($_SESSION["ADVANCED_MODE"]) {
     $new = array($LANG->_('What\'s left todo')		=> 'TODO',
@@ -202,7 +212,9 @@ if($_SESSION["ADVANCED_MODE"]) {
     }
 }
 pql_format_tree($LANG->_('Documentation'), 0, $links, 1);
+// }}}
 
+// {{{ Level 2[ef]:  Main site and misc QmailLDAP links
 if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {
     // Level 2e: Main site and general phpQLAdmin links
     $links = array('phpQLAdmin @ Bayour'			=> 'http://phpqladmin.bayour.com/',
@@ -215,33 +227,35 @@ if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {
 		   'Life with Qmail'				=> 'http://www.lifewithqmail.org/');
     pql_format_tree($LANG->_('Misc Qmail & Qmail-LDAP'), 0, $links, 1);
 }
+// }}}
 
 // This an ending for the initial parent (level 0)
 pql_format_tree_end();
+// }}}
 
-// ---------------- GET THE DOMAINS/BRANCHES
+// {{{ ---------------- GET THE DOMAINS/BRANCHES
 if($_SESSION["ALLOW_BRANCH_CREATE"]) {
     // This is a 'super-admin'. Should be able to read EVERYTHING!
     $domains = pql_get_domains($_pql);
 } else {
-    // Get ALL domains we have access.
+    // {{{ Get ALL domains we have access.
     //	'administrator: USER_DN'
     // in the domain object
-    foreach($_pql->ldap_basedn as $dn)  {
-	$dn = urldecode($dn);
-
-	$dom = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]);
+    foreach($_SESSION["BASE_DN"] as $dn)  {
+	$dom = pql_get_dn($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR")."=".$_SESSION["USER_DN"]);
 	if($dom) {
 	    foreach($dom as $d) {
 		$domains[] = urlencode($d);
 	    }
 	}
     }
+    // }}}
 }
+// }}}
 
-// ---------------- GET THE USERS OF THE BRANCH
+// {{{ ---------------- GET THE USERS OF THE BRANCH
 if(!isset($domains)) {
-    // No domain defined -> 'ordinary' user (only show this user)
+    // {{{ No domain defined -> 'ordinary' user (only show this user)
     $_SESSION["SINGLE_USER"] = 1;
 
     $cn = pql_get_attribute($_pql->ldap_linkid, $_SESSION["USER_DN"], pql_get_define("PQL_ATTR_CN"));
@@ -274,13 +288,14 @@ if(!isset($domains)) {
     $links = array($cn => "user_detail.php?rootdn=".$rootdn."&domain=$domain&user=".urlencode($_SESSION["USER_DN"]));
     echo "<br>";
     pql_format_tree_span($cn, $links, -1);
+    // }}}
 } else {
     $_SESSION["SINGLE_USER"] = 0;
 ?>
 
   <!-- Domain branches -->
 <?php
-    // We got at least one domain - get it's users
+    // {{{ We got at least one domain - get it's users
     asort($domains);
     foreach($domains as $key => $domain) {
 	// Get domain part from the DN (Example: 'dc=test,dc=net' => 'test').
@@ -369,7 +384,9 @@ if(!isset($domains)) {
 	// This an ending for the domain tree
 	pql_format_tree_end();
     } // end foreach ($domains)
+    // }}}
 } // end if(is_array($domains))
+// }}}
 
 require("./left-trailer.html");
 ?>

@@ -1,27 +1,33 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.89 2005-01-12 20:08:39 turbo Exp $
+// $Id: domain_detail.php,v 2.90 2005-01-31 11:44:39 turbo Exp $
 //
+// {{{ Setup session etc
 session_start();
 require("./include/pql_config.inc");
 
 $url["domain"] = pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 
+include("./header.html");
+
+$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
+// }}}
+
+// {{{ Include control api if control is used
 if(pql_get_define("PQL_CONF_CONTROL_USE")) {
-    // include control api if control is used
     include("./include/pql_control.inc");
     $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 }
+// }}}
 
-include("./header.html");
-
-// print status message, if one is available
+// {{{ Print status message, if one is available
 if(isset($_REQUEST["msg"])) {
     pql_format_status_msg($_REQUEST["msg"]);
 }
+// }}}
 
-// reload navigation bar if needed
+// {{{ Reload navigation bar if needed
 if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
 ?>
   <script src="tools/frames.js" type="text/javascript" language="javascript1.2"></script>
@@ -31,10 +37,9 @@ if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
   //--></script>
 <?php
 }
+// }}}
 
-$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
-
-// check if domain exist
+// {{{ Check if domain exist
 if(!pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], '(objectclass=*)', 'BASE')) {
     echo "Domain &quot;" . $_REQUEST["domain"] . "&quot; does not exists<br><br>";
 	echo "Is this perhaps a Top Level DN (namingContexts), and you haven't configured ";
@@ -43,18 +48,20 @@ if(!pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], '(objectclass=*)', 'BASE
 	echo "Look at the config option 'Reference domains with'.";
     exit();
 }
+// }}}
 
-// Get the organization name, or show 'Not set' with an URL to set it
+// {{{ Get the organization name, or show 'Not set' with an URL to set it
 $domainname = pql_get_attribute($_pql->ldap_linkid, $domain, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 if(!$domainname) {
   // TODO: Resonable default!
   $domainname = '';				// DLW: Just to shut off some warnings.
 }
+// }}}
 
 if(empty($_REQUEST["view"]))
   $_REQUEST["view"] = 'default';
 
-// Get some default values for this domain
+// {{{ Get all needed default values for this domain
 // Some of these (everything after the 'o' attribute)
 // uses 'objectClass: dcOrganizationNameForm' -> http://rfc-2377.rfcindex.net/
 $attribs = array("autocreatemailaddress"	=> pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS"),
@@ -156,7 +163,7 @@ if($seealso and !is_array($seealso)) {
 	$seealso = array($seealso);
 }
 
-// The value retreived from the object is a one liner.
+// The quota value retreived from the object is a one liner.
 // Split it up into it's parts (SIZE and AMOUNT) and
 // create an array that pql_ldap_mailquota() understands.
 $temp		= split(',', $basequota);
@@ -166,8 +173,9 @@ $quota		= array(); $quota["maxmails"] = $temp[1]; $quota["maxsize"]  = $temp[0];
 $basequota	= pql_ldap_mailquota($quota);
 
 $additionaldomainname = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
+// }}}
 
-// Setup the buttons
+// {{{ Setup the buttons
 $buttons = array('default'	=> 'Branch Defaults');
 
 if($_SESSION["ADVANCED_MODE"]) {
@@ -210,7 +218,9 @@ $buttons = $buttons + $new;
   <br><br>
 <?php
 pql_generate_button($buttons, "domain=" . $url["domain"]); echo "  <br>\n";
+// }}}
 
+// {{{ Load the requested domain details page
 if($_REQUEST["view"] == 'default') {
 	if($_SESSION["ADVANCED_MODE"]) {
 		include("./tables/domain_details-default.inc");
@@ -241,6 +251,7 @@ if($_REQUEST["view"] == 'owner') {
 	elseif($_REQUEST["view"] == 'websrv')
 	  include("./tables/domain_details-websrv.inc");
 }
+// }}}
 ?>
 </body>
 </html>
