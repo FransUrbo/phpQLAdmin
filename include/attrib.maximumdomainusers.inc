@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // maximumDomainUsers
-// $Id: attrib.maximumdomainusers.inc,v 2.4 2003-05-28 07:23:38 turbo Exp $
+// $Id: attrib.maximumdomainusers.inc,v 2.5 2003-06-07 09:43:59 turbo Exp $
 
 function attribute_check($type = '') {
 	global $error, $attrib, $$attrib;
@@ -26,6 +26,16 @@ function attribute_print_form($type = "modify") {
           <td>
             <?php echo format_error($error[$attrib]); ?>
             <input type="text" name="<?=$attrib?>" value="<?=$$attrib?>" size="50">
+          </td>
+        </tr>
+
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"></td>
+          <td>
+            <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
+            <table>
+              A limit of 0 (zero) means unlimited accounts.
+            </table>
           </td>
         </tr>
       </th>
