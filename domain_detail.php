@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.72 2004-02-14 14:01:00 turbo Exp $
+// $Id: domain_detail.php,v 2.73 2004-02-14 19:26:20 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -143,7 +143,13 @@ foreach($attribs as $attrib) {
 $domain_admins		= pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"));
 $mailinglist_admins	= pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR"));
 $seealso   			= pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_SEEALSO"));
-$basequota			= pql_ldap_mailquota(pql_parse_quota($basequota));
+
+// The value retreived from the object is a one liner.
+// Split it up into it's parts (SIZE and AMOUNT) and
+// create an array that pql_ldap_mailquota() understands.
+$temp			   = split(',', $basequota);
+$quota = array(); $quota["maxmails"] = $temp[1]; $quota["maxsize"]  = $temp[0];
+$basequota		   = pql_ldap_mailquota($quota);
 
 $additionaldomainname = pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_ADDITIONALDOMAINNAME"));
 
