@@ -1,6 +1,6 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.42 2004-04-29 12:42:09 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.43 2004-05-10 13:09:04 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -41,7 +41,14 @@ function attribute_forward($msg) {
 }
 
 // Select which attribute have to be included
-include("./include/".pql_plugin_get_filename(pql_plugin_get($_REQUEST["attrib"])));
+$plugin = pql_plugin_get_filename(pql_plugin_get($_REQUEST["attrib"]));
+if(!$plugin) {
+    die("<span class=\"error\">ERROR: No plugin file defined for attribute '<i>".$_REQUEST["attrib"]."</i>'</span>");
+} elseif(!file_exists("./include/$plugin")) {
+    die("<span class=\"error\">ERROR: Plugin file defined for attribute '<i>".$_REQUEST["attrib"]."</i>' does not exists!</span>");
+}
+
+include("./include/$plugin");
 
 // Get the organization name, or the DN if it's unset
 $orgname = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_O"));
