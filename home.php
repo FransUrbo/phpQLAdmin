@@ -1,6 +1,6 @@
 <?php
 // start page
-// $Id: home.php,v 2.38.2.1 2005-03-04 11:59:45 turbo Exp $
+// $Id: home.php,v 2.38.2.2 2005-03-17 08:23:01 turbo Exp $
 //
 require("./include/pql_session.inc");
 require("./include/pql_config.inc");
@@ -51,7 +51,7 @@ if(isset($submit)) {
 
     // We need to disable advanced mode so that only the user frame
     // is shown, hence no 'advanced=...' in the url.
-    header("Location: " . $_SESSION["URI"] . "index2.php");
+    pql_header("index2.php");
 }
 ?>
 
