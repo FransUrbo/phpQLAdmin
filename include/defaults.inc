@@ -3,7 +3,7 @@
 // This file contains what I think is 'resonable defaults'.
 // Don't change here, change any values in the web interface!
 //
-// $Id: defaults.inc,v 2.32 2005-03-07 10:58:08 turbo Exp $
+// $Id: defaults.inc,v 2.33 2005-03-14 19:39:40 turbo Exp $
 
 // NOTE: Some of these defines isn't called with the (root/top)
 //       DN. They are (site) global variables, not per branch.
@@ -194,6 +194,15 @@ pql_set_define("PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER", 500, false, $dn);
 // Maximum amount of users allowed in a domain branch
 // If zero (0) or 'FALSE', then unlimited
 pql_set_define("PQL_CONF_MAXIMUM_DOMAIN_USERS", 'FALSE', false);
+
+// ----------------------------
+// PQL_CONF_WEBSRV_OC
+// Object classess to use for webserver creation
+pql_set_define("PQL_CONF_WEBSRV_OC", array(strtolower('device'),
+										   strtolower('ApacheSectionObj'),
+										   strtolower('ApacheVirtualHostObj'),
+										   strtolower('ApacheModLogConfigObj')),
+			   false);
 
 // ----------------------------
 // PQL_CONF_URI (URL)
