@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // uid (user id)
-// $Id: attrib.uid.inc,v 2.3 2003-01-16 14:58:38 turbo Exp $
+// $Id: attrib.uid.inc,v 2.4 2003-02-04 08:03:11 turbo Exp $
 
 function attribute_check($type){
 	global $uid, $oldvalue, $_pql, $error, $domain;
@@ -19,7 +19,7 @@ function attribute_check($type){
 	}
 	
 	// if type is modify, check existance of old value, else the new one
-	if($oldvalue != $uid and pql_search_attribute($_pql->ldap_linkid, $domain "uid", $uid)){
+	if($oldvalue != $uid and pql_search_attribute($_pql->ldap_linkid, $domain, "uid", $uid)) {
 		$error["uid"] = PQL_EXISTS;
 		return false;
 	}
