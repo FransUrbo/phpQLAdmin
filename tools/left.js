@@ -1,4 +1,4 @@
-/* $Id: left.js,v 1.14 2003/03/10 13:48:10 garvinhicking Exp $ */
+/* $Id: left.js,v 1.6 2001/12/27 15:06:25 loic1 Exp $ */
 
 
 // These scripts were originally found on cooltype.com.
@@ -10,15 +10,15 @@
 // Rewritten and put in a libray 2nd May 2001 by Loïc Chapeaux
 
 // Test passed with:
-// - Mozilla 0.8.1 to 1.0-RC1 for Windows (js enabled & disabled)
+// - Mozilla 0.8.1-0.9.6 for Windows (js enabled & disabled)
 // - IE5, 5.01, 5.5, 6.0 for Windows
-// - Netscape 4.75 to 4.78 for Windows
+// - Netscape 4.75 for Windows
 
 // Test failed (crappy DOM implementations) with:
 // - Opera 5.02 for windows: 'getElementsByTagName' is unsupported
-// - Opera 5.10 to 6.01 for windows, Opera 5+ for Linux: 'style.display' can't
+// - Opera 5.10 to 5.12 for windows, Opera 5+ for Linux: 'style.display' can't
 //   be changed
-// - Konqueror 2+, 3: 'style.display' can't be changed
+// - Konqueror 2+: 'style.display' can't be changed
 
 
 var isExpanded   = false;
@@ -116,14 +116,10 @@ function initIt()
   if (!capable || !isServer)
     return;
 
-  var tempColl    = null;
-  var tempCollCnt = null;
-  var i           = 0;
-
   if (isDOM) {
-    tempColl    = document.getElementsByTagName('DIV');
-    tempCollCnt = tempColl.length;
-    for (i = 0; i < tempCollCnt; i++) {
+    var tempColl    = document.getElementsByTagName('DIV');
+    var tempCollCnt = tempColl.length;
+    for (var i = 0; i < tempCollCnt; i++) {
       if (tempColl[i].id == expandedDb)
         tempColl[i].style.display = 'block';
       else if (tempColl[i].className == 'child')
@@ -131,9 +127,9 @@ function initIt()
     }
   } // end of the DOM case
   else if (isIE4) {
-    tempColl    = document.all.tags('DIV');
-    tempCollCnt = tempColl.length;
-    for (i = 0; i < tempCollCnt; i++) {
+    tempColl        = document.all.tags('DIV');
+    var tempCollCnt = tempColl.length;
+    for (var i = 0; i < tempCollCnt; i++) {
       if (tempColl(i).id == expandedDb)
         tempColl(i).style.display = 'block';
       else if (tempColl(i).className == 'child')
@@ -143,7 +139,7 @@ function initIt()
   else if (isNS4) {
     var theLayers  = document.layers;
     var layersCnt  = theLayers.length;
-    for (i = 0; i < layersCnt; i++) {
+    for (var i = 0; i < layersCnt; i++) {
       if (theLayers[i].id == expandedDb)
         theLayers[i].visibility   = 'show';
       else if (theLayers[i].id.indexOf('Child') != -1)
@@ -169,12 +165,9 @@ function expandBase(el, unexpand)
   if (!capable)
     return;
 
-  var whichEl = null;
-  var whichIm = null;
-
   if (isDOM) {
-    whichEl = document.getElementById(el + 'Child');
-    whichIm = document.getElementById(el + 'Img');
+    var whichEl = document.getElementById(el + 'Child');
+    var whichIm = document.getElementById(el + 'Img');
     if (whichEl.style.display == 'none' && whichIm) {
       whichEl.style.display  = 'block';
       whichIm.src            = imgOpened.src;
@@ -185,8 +178,8 @@ function expandBase(el, unexpand)
     }
   } // end of the DOM case
   else if (isIE4) {
-    whichEl = document.all(el + 'Child');
-    whichIm = document.images.item(el + 'Img');
+    var whichEl = document.all(el + 'Child');
+    var whichIm = document.images.item(el + 'Img');
     if (whichEl.style.display == 'none') {
       whichEl.style.display  = 'block';
       whichIm.src            = imgOpened.src;
@@ -197,8 +190,8 @@ function expandBase(el, unexpand)
     }
   } // end of the IE4 case
   else if (isNS4) {
-    whichEl = document.layers[el + 'Child'];
-    whichIm = document.layers[el + 'Parent'].document.images['imEx'];
+    var whichEl = document.layers[el + 'Child'];
+    var whichIm = document.layers[el + 'Parent'].document.images['imEx'];
     if (whichEl.visibility == 'hide') {
       whichEl.visibility  = 'show';
       whichIm.src         = imgOpened.src;
@@ -223,23 +216,20 @@ function expandBase(el, unexpand)
 function hilightBase(el, theColor)
 {
   if (!isDOM && !isIE4) {
-    return null;
+    return;
   }
-
-  var whichDb     = null;
-  var whichTables = null;
 
   if (isDOM) {
-    whichDb       = document.getElementById(el + 'Parent');
-    whichTables   = document.getElementById(el + 'Child');
+    var whichDb     = document.getElementById(el + 'Parent');
+    var whichTables = document.getElementById(el + 'Child');
   }
   else if (isIE4) {
-    whichDb       = document.all(el + 'Parent');
-    whichTables   = document.all(el + 'Child');
+    var whichDb     = document.all(el + 'Parent');
+    var whichTables = document.all(el + 'Child');
   }
 
   if (typeof(whichDb.style) == 'undefined') {
-    return null;
+    return;
   }
   else if (whichTables) {
     whichDb.style.backgroundColor     = theColor;
@@ -252,4 +242,68 @@ function hilightBase(el, theColor)
   return true;
 } // end of the 'hilightBase()' function
 
-window.onload = initIt;
+
+/**
+ * Add styles for positioned layers
+ */
+if (capable) {
+  with (document) {
+    // Brian Birtles : This is not the ideal method of doing this
+    // but under the 7th June '00 Mozilla build (and many before
+    // it) Mozilla did not treat text between <style> tags as
+    // style information unless it was written with the one call
+    // to write().
+    if (isDOM) {
+      var lstyle = '<style type="text\/css">'
+                 + '<!--'
+                 + 'div {color: #000000}'
+                 + '.heada {font-family: ' + fontFamily + '; font-size: ' + fontSize + '; color: #000000}'
+                 + '.headaCnt {font-family: ' + fontFamily + '; font-size: ' + fontSmall + '; color: #000000}'
+                 + '.parent {font-family: ' + fontFamily + '; color: #000000; text-decoration: none; display: block}'
+                 + '.child {font-family: ' + fontFamily + '; font-size: ' + fontSmall + '; color: #333399; text-decoration: none; display: none}'
+                 + '.item, .item:active, .item:hover, .tblItem, .tblItem:active {font-size: ' + fontSmall + '; color: #333399; text-decoration: none}'
+                 + '.tblItem:hover {color: #FF0000; text-decoration: underline}'
+                 + '\/\/-->'
+                 + '<\/style>';
+      write(lstyle);
+    }
+    else {
+      writeln('<style type="text\/css">');
+      writeln('<!--');
+      writeln('div {color: #000000}');
+      writeln('.heada {font-family: ' + fontFamily + '; font-size: ' + fontSize + '; color: #000000}');
+      writeln('.headaCnt {font-family: ' + fontFamily + '; font-size: ' + fontSmall + '; color: #000000}');
+      if (isIE4) {
+        writeln('.parent {font-family: ' + fontFamily + '; color: #000000; text-decoration: none; display: block}');
+        writeln('.child {font-family: ' + fontFamily + '; font-size: ' + fontSmall + '; color: #333399; text-decoration: none; display: none}');
+        writeln('.item, .item:active, .item:hover, .tblItem, .tblItem:active {font-size: ' + fontSmall + '; color: #333399; text-decoration: none}');
+        writeln('.tblItem:hover {color: #FF0000; text-decoration: underline}');
+      }
+      else {
+        writeln('.parent {font-family: ' + fontFamily + '; color: #000000; text-decoration: none; position: absolute; visibility: hidden}');
+        writeln('.child {font-family: ' + fontFamily + '; font-size: ' + fontSmall + '; color: #333399; position: absolute; visibility: hidden}');
+        writeln('.item, .tblItem {font-size: ' + fontSmall + '; color: #333399; text-decoration: none}');
+      }
+      writeln('\/\/-->');
+      writeln('<\/style>');
+    }
+  }
+}
+else {
+  with (document) {
+    writeln('<style type="text\/css">');
+    writeln('<!--');
+    writeln('div {color: #000000}');
+    writeln('.heada {font-family: ' + fontFamily + '; font-size: ' + fontSize + '; color: #000000}');
+    writeln('.headaCnt {font-family: ' + fontFamily + '; font-size: ' + fontSmall + '; color: #000000}');
+    writeln('.parent {font-family: ' + fontFamily + '; color: #000000; text-decoration: none}');
+    writeln('.child {font-family: ' + fontFamily + '; font-size: ' + fontSmall + '; color: #333399; text-decoration: none}');
+    writeln('.item, .item:active, .item:hover, .tblItem, .tblItem:active {font-size: ' + fontSmall + '; color: #333399; text-decoration: none}');
+    writeln('.tblItem:hover {color: #FF0000; text-decoration: underline}');
+    writeln('\/\/-->');
+    writeln('<\/style>');
+  }
+} // end of adding styles
+
+
+onload = initIt;
