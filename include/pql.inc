@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.169 2004-03-29 07:54:56 turbo Exp $
+// $Id: pql.inc,v 2.170 2004-03-31 06:31:33 turbo Exp $
 //
 
 // ----------------------------
@@ -207,9 +207,9 @@ class pql {
 // API functions - core
 // ------------------------------------------------
 
-// {{{ pql_user_get(ldap_linkid, dn)
+// {{{ pql_user_get(ldap_linkid, dn, level)
 // Get all users (and referrals) in a domain
-function pql_user_get($ldap_linkid, $dn) {
+function pql_user_get($ldap_linkid, $dn, $level = 'SUBTREE') {
 	$dn = urldecode($dn);
 
 	// What's the Root DN (namingContexts) for this domain
@@ -219,7 +219,13 @@ function pql_user_get($ldap_linkid, $dn) {
 	// (&(cn=*)(!(objectclass=posixgroup)))
 	$filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) . "=*)(!(objectclass=posixgroup)))";
 	
-	$sr = ldap_search($ldap_linkid, $dn, $filter) or pql_format_error(1);
+	if($level == 'SUBTREE')
+	  $sr = ldap_search($ldap_linkid, $dn, $filter) or pql_format_error(1);
+	elseif($level == 'ONELEVEL')
+	  $sr = ldap_list($ldap_linkid, $dn, $filter) or pql_format_error(1);
+	// BASE is of no point here, so not allowed!
+	else
+	  die("pql_user_get(): Unknown level!");
 	$info = ldap_get_entries($ldap_linkid, $sr) or pql_format_error(1);
 	for ($i=0; $i<$info["count"]; $i++) {
 		$user[] = $info[$i]["dn"];
