@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.108 2005-01-12 13:50:54 turbo Exp $
+// $Id: user_add.php,v 2.109 2005-01-28 11:47:31 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -329,7 +329,7 @@ switch($_REQUEST["page_curr"]) {
 		}
 		
 		// Generate the mail directory value
-		if(!empty($basemaildir)) {
+		if(!empty($basemaildir) and function_exists("user_generate_mailstore")) {
 			if((pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
 			   and $_REQUEST["uid"])
 			  $reference = $_REQUEST["uid"];
@@ -360,7 +360,7 @@ switch($_REQUEST["page_curr"]) {
 		}
 		
 		// Generate the home directory value
-		if(!empty($basehomedir)) {
+		if(!empty($basehomedir) and function_exists("user_generate_homedir")) {
 			if((pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
 			   and $_REQUEST["uid"])
 			  $reference = $_REQUEST["uid"];
