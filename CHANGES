@@ -93,6 +93,9 @@ phpQLAdmin 2.0.14 TO BE ANNOUNCED
 	  - Allow for setting default password scheme in a branch.
 	    This required a new attribute, defaultPasswordScheme
 	    with the OID 1.3.6.1.4.1.8767.3.2.4.9
+	  - Possibility to enter a already encrypted password when
+	    creating a user. This password could (for example) come
+	    from /etc/{passwd,shadow} etc.
 
 	Misc changes
 	  - Replicate domain to RCPTHosts to host which have it

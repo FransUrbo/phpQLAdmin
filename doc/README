@@ -7,7 +7,7 @@ no matter HOW you configure it.
 
 Upgrading
 ~~~~~~~~~
-If you're upgrading from a phpQLAdmin version older than 2.0.10,
+If you're upgrading from a phpQLAdmin version older than 2.0.13,
 then you MUST read the README.upgrade file! It contains important
 information that will break your admin interface (phpQLAdmin) if
 not fully understood.
