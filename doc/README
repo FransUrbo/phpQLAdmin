@@ -225,6 +225,28 @@ cn=qmail.example.com,ou=QmailLDAP,dc=example,dc=com
 
 for this to work.
 
+Automatic updating locals/rcpthosts
+attributes in QmailLDAP/Controls object
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+As of 2.0.14, phpQLAdmin will automaticly add the domain to any
+rcpthosts attribute of your QmailLDAP/Controls object(s).
+
+The trick with the this is that the master (email/qmail) server
+should only have 'locals', and the slaves should only have 'rcpthosts'
+attributes. This because the master have all the domains as local
+domains and the slaves should accept mails for those domains (but
+forward them to the master).
+
+This will make phpQLAdmin add the new domain (or the additionalDomainName
+in 'locals' on the master, and in the 'rcpthosts' on the slave(s).
+
+If you have a mixed setup (master have both locals and rcpthosts,
+as does the slaves) and don't want the new domain to be added to
+both locals and rcpthosts on all your QmailLDAP/Controls objects,
+you will have to disable the 'Automatically replicate domains to locals'
+and 'Automatically replicate domains to rcpthosts' in the
+'Show configuration' page.
+
 
 For more information on installations, please view doc/index.php
 through the webbrowser. Note though that documentation is not my
