@@ -1,6 +1,6 @@
 phpQLAdmin 2.0 Change Log
 
-phpQLAdmin 2.0.19 TO BE ANNOUNCED
+phpQLAdmin 2.1.1 TO BE ANNOUNCED
 	Bug fixes
 	  - Don't create a new connection to the LDAP db in files located in '.'.
 	    This is done sufficently in pql_config.inc
@@ -78,6 +78,55 @@ phpQLAdmin 2.0.19 TO BE ANNOUNCED
 	    is void, since I'm not interessted in the value, only the attribute name.
 	  - Don't use the user_generate_aci() function just because the session variable
 	    'ACI_SUPPORT_ENABLED' is set. Check that the function actually exists as well!
+	  - pql_control_get_attribute() does a BASE search, so we must include the
+	    MX/mail host part in the base/search DN.
+
+	EZMLM manager (re)write
+	  - Additional option to list_forward() - list number. This is used so that
+	    we can get to the LIST view instead of the 'domain lists view'.
+	  - Domain value changed to 'rootdn' to correspond with rest of phpQLAdmin.
+	  - Make sure we can add subscribers and 'rejected addresses'. This is done
+	    via a 'submit' to the form.
+	  - Only set defaults if we haven't 'reloaded' (such as when adding subscriber
+	    or rejected address). In that case, make sure that the checkbox STAYS
+	    checked!
+	  - If we where successfull in creating list we subscribe subscribers, and
+	    'kill subscribe' any rejected addresses.
+	  - Remove duplicating code - ezmlm-list was called twice. Once to get number
+	    of subscribers, and one to get addresses subscribed! Once should be enough!
+	  - Get rejected addresses (availible in LIST/deny/).
+	  - Don't execute the './sub_ezmlm_create.pl' script. No point!
+	  - Allow to add '-k' to 'ezmlm-make'. This is used only if we're creating a
+	    list and supplies 'rejected addresses'.
+	  - Don't execute the ezmlm commands if DEBUG is set OR the file .DEBUG_ME exists.
+	  - The ezmlm functions should not forward view (anywhere!). This should be
+	    done by the calling page. This so that we could add subscribers (etc) at
+	    the same time as list creation....
+	  - Implement the functions 'subscribe_kill()' and 'unsubscribe_kill()' which
+	    'subscribes' a user to the 'LIST/deny' - a systemwide kill file!
+	  - Support view of 'rejected addresses' in the ezmlm details page. Slight
+	    rewrite of HTML output.
+          - Add more folding tags so that the whole {Private,Public} section can be
+            folded/unfolded.
+          - Move public variable initialization to the public section... Bah!
+          - Make sure that errors from posix_getpwnam() doesn't interfere with the GUI.
+          - If the Qmail Virtual User (by default 'alias') isn't found in the system
+            database (/etc/passwd), then we'll try the Qmail virtual database (which
+            is /var/qmail/users/assign). We need this so that we know where to put
+            DOT files (man ezmlm-make => second option)
+          - Remove all the tree structure HTML code. Use the 'old and trusted'
+            pql_format_tree() and pql_format_tree_end() to create the HTML code
+            instead. More versitale and works more like left.php.
+          - Rearranging code, so we can get rid of multiple/similar 'if() {}'s.
+            Code is more readable now.
+          - Duplication code removed. Only get domains (and it's values) ONCE.
+          - If we're 'super-admin', we should be allowed to create lists in ANY
+            domain/branch.
+          - IDNA decode any/all domain names.
+          - De-globalization. Rewrite of left-ezmlm.php lead to CORRECT usage and
+            inclution of the rootdn and domain values.
+          - The EZMLM constructor no longer uses a global value. Get the 'ezmlmVirtualUser'
+            from the branch object...
 
 	GUI layout change
 	  - Allow setting ldapGroup{Login,Password} attributes (availible in newer
@@ -117,6 +166,19 @@ phpQLAdmin 2.0.19 TO BE ANNOUNCED
 	  - Support SpamAssassin configuration for each user in the LDAP database. This
 	    is accomplished using the included 'schema' (actually only an attributeType
 	    definition) included with SpamAssassin.
+          - Rewrite the part that figures out if we should show the controls frame or
+            not.
+            + A 'super admin' should be able to manage the QmailLDAP/Controls information,
+              even if he/she isn't a controls administrator.
+            + Simplify - cyckle through the root DN's _once_ (not twice).
+          - In the pql_control_replace_attribute() function, die and output an LDIF
+            before doing the LDAP modification if the file ./.DEBUG_ME file exists.
+          - The pql_control_replace_attribute() works in three ways: Try modification.
+            If that fails, it tries to delete the attribute and if that works, add the
+            new attribute. Previosly it died if it couldn't delete the value which
+            is/was wrong.
+          - Finish up some of the new QmailLDAP/Controls attributes.
+	    Closes bug #199.
  
 	Misc changes	
 	  - Support the new/changed accountStatus value 'noaccess'. Only if NEW_STYLE_QUOTA
@@ -161,6 +223,7 @@ phpQLAdmin 2.0.19 TO BE ANNOUNCED
 	    in all objects being created
 	  - Cleanup the demo database files. Add better/newer ACI configuration, ACI
 	    attributes in the objects etc.
+	  - Generate a ZIP file when doing a release.
 
 	API changes
 	Schema changes:
@@ -190,6 +253,7 @@ phpQLAdmin 2.0.19 TO BE ANNOUNCED
 	    which is more in line with functions specified in include/config.inc.
 	  - Replace the array_values(array_unique()) combo with the 'new' pql_uniq()
 	    function.
+	  - Update the qmailControl.schema file...
 
 phpQLAdmin 2.0.18e Release (Oct 14 2004)
 	Bug fixes
