@@ -1,6 +1,6 @@
 <?php
 // Add a webserver configuration to the LDAP db
-// $Id: websrv_add.php,v 2.9 2005-02-24 17:04:01 turbo Exp $
+// $Id: websrv_add.php,v 2.10 2005-03-01 09:33:22 turbo Exp $
 //
 // {{{ Setup session
 session_start();
@@ -106,14 +106,16 @@ if(($error == 'true') or !$_REQUEST["serverip"] or !$_REQUEST["serverurl"] or !$
 	$entry[pql_get_define("PQL_ATTR_WEBSRV_DOCROOT")]	= $_REQUEST["documentroot"];
 
 	// Extract the host FQDN from the URL. A little crude...
-	if(eregi('.*://', $_REQUEST["serverurl"])) {
-		$fqdn = eregi_replace('.*://', '', $_REQUEST["serverurl"]);
-	}
+	if(eregi('.*://', $_REQUEST["serverurl"]))
+	  $fqdn = eregi_replace('.*://', '', $_REQUEST["serverurl"]);
+	else
+	  $fqdn = $_REQUEST["serverurl"];
 	if(eregi(':', $fqdn)) { $fqdn = eregi_replace(':.*', '', $fqdn); }
 	if(eregi('/', $fqdn)) { $fqdn = eregi_replace('/.*', '', $fqdn); }
 
 	// Add the host FQDN to the entry array.
 	$entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")]	= $fqdn;
+	$entry[pql_get_define("PQL_ATTR_CN")] = $fqdn;
 
 	// Add the web server object
 	if(pql_websrv_add_server($_pql->ldap_linkid, $_REQUEST["domain"], $entry)) {
