@@ -145,6 +145,18 @@ foreach($_pql->ldap_basedn as $dn) {
       </tr>
 
       <tr>
+        <td class="title">Automatically replicate domains to rcpthosts</td>
+<?php $class=table_bgcolor(0);
+      if($ALLOW_GLOBAL_CONFIG_SAVE) {
+?>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_CONTROL_AUTOADDRCPTHOSTS"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_CONF_CONTROL_AUTOADDRCPTHOSTS"]?>"></a></td>
+<?php    } else { ?>
+        <td class="<?=$class?>"></td>
+<?php    } ?>
+        <td class="<?=$class?>"><?php if($config["PQL_GLOB_CONTROL_AUTOADDRCPTHOSTS"]) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
+      </tr>
+
+      <tr>
         <td class="title">Allow change of LDAP server</td>
 <?php $class=table_bgcolor(0);
       if($ALLOW_GLOBAL_CONFIG_SAVE) {
