@@ -2,14 +2,14 @@
 <head>
 	<title>phpQL</title>
 	<link rel="stylesheet" href="../normal.css" type="text/css">
-	<!-- $Id: index.php,v 2.1 2003-01-04 11:24:50 turbo Exp $ -->
+	<!-- $Id: index.php,v 2.2 2003-04-07 12:35:22 turbo Exp $ -->
 </head>
 
 <body bgcolor="#e7e7e7" background="../images/bkg.png">
 <span class="title1">phpQLAdmin Documentation</span>
 <br>
 <br>
-<img src="../images/arrow.png" width="8" height="8" border="0"><a href="README">README</a><br>
+<img src="../images/arrow.png" width="8" height="8" border="0"><a href="../README">README</a><br>
 <img src="../images/arrow.png" width="8" height="8" border="0"><a href="INSTALL">INSTALL (installation guide)</a><br>
 <img src="../images/arrow.png" width="8" height="8" border="0"><a href="conf.php">Configuration</a><br>
 <img src="../images/arrow.png" width="8" height="8" border="0"><a href="troubleshoot.php">Troubleshooting</a><br>
@@ -32,10 +32,8 @@ This program is distributed under the terms of the GPL (GNU General Public Licen
 <br>
 phpQLAdmin was initially developped by <a href="http://www.adfinis.com/">adfinis GmbH (Bern, Switzerland)</a>.
 <ul>
-	<li><b>core development, API, some design things</b>
-		<br>Matthias Blaser (mb@adfinis.ch)
-  <li><b>additional development, testing</b>
-		<br>Michael Moser (mm@adfinis.ch)
+	<li><b>core development, API, some design things</b> - Matthias Blaser (mb@adfinis.ch)
+  <li><b>additional development, testing</b> - Michael Moser (mm@adfinis.ch)
 </ul>
 phpQLAdmin was taken over by Turbo Fredriksson on 11 Dec 2002, and is now relocated to <a href="http://phpqladmin.bayour.com/">phpqladmin.bayour.com</a>.
 <br><br>
@@ -51,7 +49,6 @@ You can help to make this a useful tool.
 	<li>Luca Pescatore (l.pescatore@network.it), for italian translating
 	<li>Swen Veckes (s.veckes@de.kddi.com), for japanese translating
 </ul>
-<br>
 <br>
 <span class="title2">Known Bugs</span>
 <ul>
