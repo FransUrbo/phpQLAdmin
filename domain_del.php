@@ -8,7 +8,8 @@ require("./include/pql_control.inc");
 
 include("./header.html");
 ?>
-  <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove domain %domain%'), array("domain" => $domain))?></span>
+  <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove domain %domain%'),
+														array("domain" => maybe_decode($domain)))?></span>
 <?php
 if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
 	$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);

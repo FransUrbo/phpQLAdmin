@@ -90,7 +90,8 @@ if($dns[0]) {
 
 	// redirect to domain-details
 	if($msg == "")
-	  $msg = urlencode(pql_complete_constant($LANG->_('Domain %domain% successfully created'), array("domain" => $dns[0]))) . ".";
+	  $msg = urlencode(pql_complete_constant($LANG->_('Domain %domain% successfully created'),
+											 array("domain" => maybe_decode($dns[0])))) . ".";
 	$url = "domain_detail.php?rootdn=$rootdn&domain=$dns[0]&msg=$msg&rlnb=1";
 
 	// Now it's time to run the special adduser script if defined...
