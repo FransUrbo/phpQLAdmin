@@ -1,4 +1,3 @@
-<?php if($quota) { $quota = pql_ldap_mailquota(pql_parse_quota($quota)); } ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">Base values</th>
       <tr class="<?php pql_format_table(); ?>">
