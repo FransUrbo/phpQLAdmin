@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for administrator and seealso modification
 // Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
-// $Id: attrib.administrator.inc,v 1.47 2004-11-05 12:04:20 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.48 2004-11-06 23:25:51 turbo Exp $
 
 // There is serious problems with this. I fix for one usage and break another
 // one! Let's try to remember (and document) how it's called. It's called from
@@ -360,7 +360,6 @@ function attribute_save($type) {
 	// Get the old values, so we can remove the one we're modifying
 	// (delete the one we want to delete, keep the others etc)
 	$admins = pql_get_attribute($_pql->ldap_linkid, $DN, $attrib);
-	if($admins and is_array($admins))
 
 	// {{{ Add the old values to the resulting array.
 	$ADMs[$attrib] = array();
@@ -381,7 +380,7 @@ function attribute_save($type) {
 		if(is_array($adms))
 		  $ADMs[$attrib] = $adms;
 		else
-		  unset($ADMs);
+		  $ADMs[$attrib] = array();
 
 		if(!$_REQUEST["user"] and !$_REQUEST["branchdn"])
 		  unset($_REQUEST[$attrib]);
