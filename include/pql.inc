@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.190 2004-10-11 08:03:41 turbo Exp $
+// $Id: pql.inc,v 2.191 2004-10-11 08:30:48 turbo Exp $
 //
 
 // ----------------------------
@@ -446,9 +446,8 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 		$groupdn = pql_get_define("PQL_ATTR_CN") . "=" . $attribs[pql_get_define("PQL_ATTR_USER_RDN_ATTRIBUTE", $rootdn)] . $subrdn . "," . urldecode($domain);
 
 		// Add the OpenLDAPaci attribute (maybe)
-		if($_SESSION["ACI_SUPPORT_ENABLED"])
-		  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($ldap_linkid,
-																				  $_SESSION["USER_DN"], 'group');
+		if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci"))
+		  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($ldap_linkid, $_SESSION["USER_DN"], 'group');
 
 		// Create a LDIF object to print in case of error
 		$LDIF = pql_create_ldif("pql_user_add - group creation", $groupdn, $entry);
@@ -732,7 +731,7 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name) {
 	  $entry[pql_get_define("PQL_ATTR_O")] = 0;
 
 	// Add the OpenLDAPaci attribute (maybe)
-	if($_SESSION["ACI_SUPPORT_ENABLED"])
+	if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci"))
 	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($ldap_linkid, $_SESSION["USER_DN"], 'branch');
 
 	// Create a LDIF object to print in case of error
