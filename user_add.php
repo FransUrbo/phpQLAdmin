@@ -20,8 +20,8 @@ $basemaildir   = pql_get_domain_value($_pql->ldap_linkid, $domain, "basemaildir"
 
 // check formdata
 
-// 1: surname, name, email, account_type, account_status
-// Check on 2nd Page too
+// ------------------------------------------------
+// Page 1: surname, name, email, account_type, account_status
 if($submit == "") {
     $error = false;
     $error_text = array();
@@ -70,11 +70,12 @@ if($submit == "") {
 }
 
 // ------------------------------------------------
-// 2a: uid, password, host, quota, host_user, quota_user
+// Page 2: uid, password, host, quota, host_user, quota_user
 if($submit == "two"){
 	$error_text = array();
 	$error = false;
-	
+
+	// Verify/Create uid
 	if(!$uid) {
 		if (function_exists('user_generate_uid')) {
 			$uid = strtolower(user_generate_uid($_pql->ldap_linkid, PQL_LDAP_BASEDN, $surname, $name, $email, $domain, $account_type));
@@ -93,28 +94,51 @@ if($submit == "two"){
 		$error_text["uid"] = PQL_MISSING;
 	}
 	
+	// Build the COMPLETE email address
 	if(! ereg("@", $email)) {
-		// Build the COMPLETE email address
 		$email = $email . "@" . $defaultdomain;
 	}
 }
 
+if(($submit == "two") or (($submit == "one") and !$ADVANCED_MODE)) {
+	// fetch dns information
+	$res = getmxrr($defaultdomain, $rec, $weight);
+	if(count($rec) == 0) {
+		$error_text["host_user"] = PQL_DNS_NONE;
+		$error = true;
+	} else {
+		// Take the MX with _LOWEST_ priority/weight.
+		asort($weight); $old_prio = 65555;
+		foreach($weight as $key => $prio){
+			if($prio < $old_prio) {
+				$old_prio = $prio; $prio_key = $key;
+			}
+		}
+
+		$host_user = $rec[$prio_key];
+	}
+}
+
+// ------------------------------------------------
+// Page 3a: 
 if ($submit == "save") {
 	if($uid == ""){
 		$error = true;
 		$error_text["uid"] = PQL_MISSING;
 	}
 	
-	if(preg_match("/[^a-z0-9\.@_-]/i",$uid)){
+	if(preg_match("/[^a-z0-9\.@_-]/i", $uid)) {
 		$error = true;
 		$error_text["uid"] = PQL_INVALID;
 	}
-	if($error_text["uid"] == "" and pql_search_attribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, PQL_LDAP_ATTR_UID, $uid)){
+	if($error_text["uid"] == "" and pql_search_attribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, PQL_LDAP_ATTR_UID, $uid)) {
 		$error = true;
 		$error_text["uid"] = PQL_EXISTS;
 	}
 }
 
+// ------------------------------------------------
+// Page 3b: 
 if($submit == "save" and ($account_type == "normal" or $account_type == "system")){
     if($password == ""){
 		$error = true;
@@ -146,15 +170,6 @@ if($submit == "save" and ($account_type == "normal" or $account_type == "system"
 				$error = true;
 			}
 		}
-    } else {
-		// fetch dns information
-		$res = getmxrr($defaultdomain, $rec, $weight);
-		if(count($rec) == 0) {
-			$error_text["host_user"] = PQL_DNS_NONE;
-			$error = true;
-		} else {
-			$host_user = $rec[0];
-		}
     }
 }
 
@@ -173,7 +188,7 @@ if($submit == "save" and $account_type == "forward"){
 }
 
 // if an error occurs, display the 2nd form again
-if($submit == "save" and $error == true){
+if($submit == "save" and $error == true and !$ADVANCED_MODE) {
 	$submit = "two";
 }
 
@@ -202,9 +217,7 @@ switch($submit){
           </select>
         </td>
       </tr>
-    </th>
 
-    </th>
       <tr>
         <td></td>
         <td>
@@ -213,9 +226,7 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_LOCAL .
   PQL_LDAP_DELIVERYMODE_PROFILE_LOCAL_INFO . ".";?>
         </td>
       </tr>
-    </th>
 
-    </th>
       <tr>
         <td></td>
         <td>
@@ -224,9 +235,7 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_SYSTEM 
   PQL_LDAP_DELIVERYMODE_PROFILE_SYSTEM_INFO . ", " . PQL_LDAP_DELIVERYMODE_PROFILE_LOCAL_INFO;?>
         </td>
       </tr>
-    </th>
 
-    </th>
       <tr>
         <td></td>
         <td>
@@ -245,183 +254,207 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 <?php
       break;
     case "one":
-          // second form
+	  // second form
 ?>
-<form action="<?php echo $PHP_SELF ?>" method="post">
-  <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left"><?php echo PQL_USER_ACCOUNT_PROPERTIES_MORE; ?></th>
-      <tr class="<?php table_bgcolor(); ?>">
-        <td class="title"><?php echo PQL_USER_ID; ?></td>
-        <td><?php echo format_error($error_text["uid"]); ?><input type="text" name="uid" value="<?php echo $uid; ?>"></td>
-      </tr>
+  <form action="<?php echo $PHP_SELF ?>" method="post">
+    <table cellspacing="0" cellpadding="3" border="0">
+      <th colspan="3" align="left"><?php echo PQL_USER_ACCOUNT_PROPERTIES_MORE; ?></th>
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"><?php echo PQL_USER_ID; ?></td>
+          <td><?php echo format_error($error_text["uid"]); ?><input type="text" name="uid" value="<?php echo $uid; ?>"></td>
+        </tr>
 
-      <tr class="<?php table_bgcolor(); ?>">
-        <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
-        <td><?php echo "<b>" . PQL_USER_ID . ":</b> " . PQL_LDAP_UID_HELP_SHORT; ?></td>
-      </tr>
+        <tr class="<?php table_bgcolor(); ?>">
+          <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
+          <td><?php echo "<b>" . PQL_USER_ID . ":</b> " . PQL_LDAP_UID_HELP_SHORT; ?></td>
+        </tr>
 
 <?php
     if($account_type != "forward") {
                 // display forms for SYSTEM/MAIL account
 ?>
-      <!-- Password -->
-      <tr class="<?php table_bgcolor(); ?>">
-        <td class="title"><?php echo PQL_LDAP_USERPASSWORD_TITLE; ?></td>
-        <!-- Crude hackery. Using type=password won't be so good if we're using {KERBEROS} -->
-        <td><?php echo format_error($error_text["password"]); ?>
+        <!-- Password -->
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"><?php echo PQL_LDAP_USERPASSWORD_TITLE; ?></td>
+          <!-- Crude hackery. Using type=password won't be so good if we're using {KERBEROS} -->
+          <td><?php echo format_error($error_text["password"]); ?>
 
-          <input type="input" name="password">
-          <?php echo format_error($error["pwscheme"]); ?>
+            <input type="input" name="password">
+            <?php echo format_error($error["pwscheme"]); ?>
 
-          <select name="pwscheme">
-            <option value="none">Choose password scheme to use</option>
+            <select name="pwscheme">
+              <option value="none">Choose password scheme to use</option>
 <?php
               $schemes = split(",", PQL_PASSWORD_SCHEMES);
               foreach($schemes as $scheme) {
 ?>
-            <option value="{<?php echo $scheme; ?>}"><?php echo $scheme; ?></option>
+              <option value="{<?php echo $scheme; ?>}"><?php echo $scheme; ?></option>
 <?php } ?>
-          </select>
-        </td>
-      </tr>
+            </select>
+          </td>
+        </tr>
 
-      <tr class="<?php table_bgcolor(); ?>">
-        <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
-        <td><?php echo "<b>" . PQL_LDAP_USERPASSWORD_TITLE . ":</b> " . PQL_LDAP_USERPASSWORD_HELP_KRB; ?></td>
-      </tr>
+        <tr class="<?php table_bgcolor(); ?>">
+          <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
+          <td><?php echo "<b>" . PQL_LDAP_USERPASSWORD_TITLE . ":</b> " . PQL_LDAP_USERPASSWORD_HELP_KRB; ?></td>
+        </tr>
 <?php
     } // account_type != forward
 
     if($account_type == "system") {
 		// display forms for SYSTEM account
 
-		// Load list of allowed shells from /etc/shells
-		$fp = fopen("/etc/shells", "r");
-		while (!feof ($fp)) {
-			$buffer = fgets($fp, 4096);
-			$shell = split(" ", $buffer);
-
-			if(!eregi("^#", $shell[0]) and !eregi("^$", $shell[0])) {
-				$shells[] = $shell[0];
+		if($ADVANCED_MODE) {
+			// Load list of allowed shells from /etc/shells
+			$fp = fopen("/etc/shells", "r");
+			while (!feof ($fp)) {
+				$buffer = fgets($fp, 4096);
+				$shell = split(" ", $buffer);
+				
+				if(!eregi("^#", $shell[0]) and !eregi("^$", $shell[0])) {
+					$shells[] = rtrim($shell[0]);
+				}
 			}
-		}
-		fclose ($fp);
-		asort($shells);
+			fclose ($fp);
+			asort($shells);
 ?>
 
-      <!-- Loginshell -->
-      <tr class="<?php table_bgcolor(); ?>">
-        <td class="title"><?php echo PQL_USER_LOGINSHELL; ?></td>
-        <td><?php echo format_error($error["loginshell"]); ?>
-          <select name="loginshell">
-			<option value="/bin/false" SELECTED>/bin/false</option>
+        <!-- Loginshell -->
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"><?php echo PQL_USER_LOGINSHELL; ?></td>
+          <td><?php echo format_error($error["loginshell"]); ?>
+
+            <select name="loginshell">
+              <option value="/bin/false" SELECTED>/bin/false</option>
 <?php
-		foreach($shells as $shell) {
+			foreach($shells as $shell) {
 ?>
-            <option value="<?=$shell?>"><?=$shell?></option>
+              <option value="<?=$shell?>"><?=$shell?></option>
 <?php
-		}
+			}
 ?>
-          </select>
-        </td>
-      </tr>
-<?php } ?>
-    </th>
-  </table>
+            </select>
+          </td>
+        </tr>
+<?php
+		} // end if ADVANCED mode
+	} // end if account type == system
+?>
+      </th>
+    </table>
 
-  <br>
+    <br>
 
-  <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left"><?php echo PQL_USER_DATA; ?></th>
-      <!-- Firstname -->
-      <tr class="<?php table_bgcolor(); ?>">
-        <td class="title"><?php echo PQL_USER_DATA_SURNAME; ?></td>
-        <td><?php echo format_error($error_text["surname"]); ?><input type="text" name="surname" value="<?php echo $surname; ?>"></td>
-      </tr>
+    <table cellspacing="0" cellpadding="3" border="0">
+      <th colspan="3" align="left"><?php echo PQL_USER_DATA; ?></th>
+        <!-- Firstname -->
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"><?php echo PQL_USER_DATA_SURNAME; ?></td>
+          <td><?php echo format_error($error_text["surname"]); ?><input type="text" name="surname" value="<?php echo $surname; ?>"></td>
+        </tr>
 
-      <!-- Lastname -->
-      <tr class="<?php table_bgcolor(); ?>">
-        <td class="title"><?php echo PQL_USER_DATA_LASTNAME; ?></td>
-        <td><?php echo format_error($error_text["name"]); ?><input type="text" name="name" value="<?php echo $name; ?>"></td>
-      </tr>
+        <!-- Lastname -->
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"><?php echo PQL_USER_DATA_LASTNAME; ?></td>
+          <td><?php echo format_error($error_text["name"]); ?><input type="text" name="name" value="<?php echo $name; ?>"></td>
+        </tr>
 
-      <!-- Email address -->
-      <tr class="<?php table_bgcolor(); ?>">
-        <td class="title"><?php echo PQL_EMAIL; ?></td>
-        <td><?php echo format_error($error_text["email"]); ?><input type="text" name="email" value="<?php echo $email; ?>"><b>@<?php echo $defaultdomain; ?></b></td>
-      </tr>
+        <!-- Email address -->
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"><?php echo PQL_EMAIL; ?></td>
+          <td><?php echo format_error($error_text["email"]); ?><input type="text" name="email" value="<?php echo $email; ?>"><b>@<?php echo $defaultdomain; ?></b></td>
+        </tr>
 
 <?php if (isset($error_text["username"])){ ?>
-      <tr class="subtitle">
-        <td colspan="2"><?php echo format_error($error_text["username"]); ?></td>
-      </tr>
+        <tr class="subtitle">
+          <td colspan="2"><?php echo format_error($error_text["username"]); ?></td>
+        </tr>
 <?php } ?>
-      <tr class="subtitle">
-        <td colspan="2">
-          <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_USER_ADD_HELP2;?>
-        </td>
-      </tr>
-    </th>
-  </table>
+        <tr class="subtitle">
+          <td colspan="2">
+            <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_USER_ADD_HELP2;?>
+          </td>
+        </tr>
+      </th>
+    </table>
 <?php
 	if($account_type == "forward") {
 		// display forms for FORWARDING account
 ?>
 
-  <br>
-
-  <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left">Forward mails to</th>
-      <!-- Forwarding address -->
-      <tr class="<?php table_bgcolor(); ?>">
-        <td class="title"><?php echo PQL_SEARCH_MAILFORWARDINGADDRESS; ?></td>
-        <td><?php echo format_error($error_text["forwardingaddress"]); ?><input type="text" name="forwardingaddress" value="<?php echo $forwardingaddress; ?>"> <?php echo PQL_EMAIL; ?></td>
-      </tr>
-      <tr class="subtitle">
-        <td colspan="2"><img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_LDAP_MAILFORWARDINGADDRESS_ADD_HELP; ?></td>
-      </tr>
-    </th>
+    <br>
+  
+    <table cellspacing="0" cellpadding="3" border="0">
+      <th colspan="3" align="left">Forward mails to</th>
+        <!-- Forwarding address -->
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"><?php echo PQL_SEARCH_MAILFORWARDINGADDRESS; ?></td>
+          <td><?php echo format_error($error_text["forwardingaddress"]); ?><input type="text" name="forwardingaddress" value="<?php echo $forwardingaddress; ?>"> <?php echo PQL_EMAIL; ?></td>
+        </tr>
+        <tr class="subtitle">
+          <td colspan="2"><img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_LDAP_MAILFORWARDINGADDRESS_ADD_HELP; ?></td>
+        </tr>
+      </th>
 <?php
 	} // account_type == forward
  ?>
-  </table>
-
-  <br>
-
-  <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left"><?php echo PQL_USER_ACCOUNT_PROPERTIES; ?></th>
-      <!-- Account status -->
-      <tr class="<?php table_bgcolor(); ?>">
-        <td class="title"><?php echo PQL_LDAP_ACCOUNTSTATUS_STATUS; ?></td>
-        <td>
-          <select name="account_status">
-            <option value="active" SELECTED><?php echo PQL_LDAP_ACCOUNTSTATUS_ACTIVE; ?></option>
-            <option value="nopop"><?php echo PQL_LDAP_ACCOUNTSTATUS_NOPOP; ?></option>
-            <option value="disabled"><?php echo PQL_LDAP_ACCOUNTSTATUS_DISABLE; ?></option>
-          </select>
-        </td>
-      </tr>
-    </th>
-  </table>
-
-  <br>
-
+    </table>
+  
+    <br>
+  
+    <table cellspacing="0" cellpadding="3" border="0">
+      <th colspan="3" align="left"><?php echo PQL_USER_ACCOUNT_PROPERTIES; ?></th>
+        <!-- Account status -->
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"><?php echo PQL_LDAP_ACCOUNTSTATUS_STATUS; ?></td>
+          <td>
+            <select name="account_status">
+              <option value="active" SELECTED><?php echo PQL_LDAP_ACCOUNTSTATUS_ACTIVE; ?></option>
+              <option value="nopop"><?php echo PQL_LDAP_ACCOUNTSTATUS_NOPOP; ?></option>
+              <option value="disabled"><?php echo PQL_LDAP_ACCOUNTSTATUS_DISABLE; ?></option>
+            </select>
+          </td>
+        </tr>
+      </th>
+    </table>
+  
+    <br>
+  
 <?php
-	if($account_type == "forward") {
+	if(($ADVANCED_MODE == 0) or ($account_type == "forward")) {
 		// Go to save, no next form...
+		if($ADVANCED_MODE == 0) {
 ?>
-  <input type="hidden" name="submit" value="save">
+    <input type="hidden" name="loginshell" value="/bin/false">
+    <input type="hidden" name="homedirectory" value="">
+    <input type="hidden" name="maildirectory" value="">
+    <input type="hidden" name="host_user" value="<?=$host_user?>">
+    <input type="hidden" name="host" value="default">
+<?php
+		}
+?>
+    <input type="hidden" name="submit" value="save">
 <?php
 	} else {
 ?>
-  <input type="hidden" name="submit" value="two">
+    <input type="hidden" name="submit" value="two">
 <?php
 	} // account_type == forward
 ?>
-  <input type="hidden" name="domain" value="<?php echo $domain; ?>">
-  <input type="hidden" name="account_type" value="<?php echo $account_type;?>">
-  <input type="submit" value="--&gt;&gt;">
-</form>
+    <input type="hidden" name="domain" value="<?php echo $domain; ?>">
+    <input type="hidden" name="account_type" value="<?php echo $account_type;?>">
+<?php
+	if($ADVANCED_MODE == 1) {
+?>
+    <input type="submit" value="--&gt;&gt;">
+<?php
+	} else {
+?>
+    <input type="submit" value="<?=PQL_SAVE?>">
+<?php
+	}
+?>
+  </form>
 
 <?php
 		break;
@@ -429,86 +462,88 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 		// third
 ?>
 
-<form action="<?php echo $PHP_SELF ?>" method="post">
-  <input type="hidden" name="surname" value="<?php echo $surname;?>">
-  <input type="hidden" name="name" value="<?php echo $name;?>">
-  <input type="hidden" name="email" value="<?php echo $email;?>">
-  <input type="hidden" name="uid" value="<?php echo $uid;?>">
-  <?php	if($account_type != "forward"){?>
-  <input type="hidden" name="password" value="<?php echo $password;?>">
-  <input type="hidden" name="pwscheme" value="<?php echo $pwscheme;?>">
+  <form action="<?php echo $PHP_SELF ?>" method="post">
+    <input type="hidden" name="surname" value="<?php echo $surname;?>">
+    <input type="hidden" name="name" value="<?php echo $name;?>">
+    <input type="hidden" name="email" value="<?php echo $email;?>">
+    <input type="hidden" name="uid" value="<?php echo $uid;?>">
+<?php if($account_type != "forward") { ?>
+    <input type="hidden" name="password" value="<?php echo $password;?>">
+    <input type="hidden" name="pwscheme" value="<?php echo $pwscheme;?>">
   <?php	}?>
 
-  <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left"><?php echo PQL_USER_ACCOUNT_PROPERTIES_MORE; ?></th>
+    <table cellspacing="0" cellpadding="3" border="0">
+      <th colspan="3" align="left"><?php echo PQL_USER_ACCOUNT_PROPERTIES_MORE; ?></th>
 <?php
 	if($account_type == "system"){
 		// Show homedirectory
 ?>
-      <!-- Home directory -->
-      <tr class="<?php table_bgcolor(); ?>">
-	<td class="title"><?php echo PQL_USER_HOMEDIR; ?></td>
-	<td><?php
-	    if(! ereg("/$", $basehomedir)) {
-		$homedirectory = $basehomedir . "/" . $uid;
-	    } else {
-		$homedirectory = $basehomedir . $uid;
-	    }
-	    echo $homedirectory . "/";
+        <!-- Home directory -->
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"><?php echo PQL_USER_HOMEDIR; ?></td>
+          <td><?php
+	  if(! ereg("/$", $basehomedir)) {
+		  $homedirectory = $basehomedir . "/" . $uid;
+	  } else {
+		  $homedirectory = $basehomedir . $uid;
+	  }
+	  echo $homedirectory . "/";
 	  ?></td>
-      </tr>
-      <input type="hidden" name="loginshell" value="<?php echo $loginshell; ?>">
-      <input type="hidden" name="homedirectory" value="<?php echo $homedirectory; ?>">
+        </tr>
+        <input type="hidden" name="loginshell" value="<?php echo $loginshell; ?>">
+        <input type="hidden" name="homedirectory" value="<?php echo $homedirectory; ?>">
 <?php
 	}
 
-	if($account_type == "normal" or $account_type == "system"){
+	if($account_type == "normal" or $account_type == "system") {
 		// display forms for SYSTEM/MAIL account(s)
 ?>
-      <!-- MailMessageStore -->
-      <tr class="<?php table_bgcolor(); ?>">
-	<td class="title"><?php echo PQL_LDAP_MAILMESSAGESTORE_TITLE; ?></td>
-	<td><?php
-	    if(! ereg("/$", $basemaildir)) {
-		$maildirectory = $basemaildir . "/" . $uid;
-	    } else {
-		$maildirectory = $basemaildir . $uid;
-	    }
-	    echo $maildirectory . "/";
+        <!-- MailMessageStore -->
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"><?php echo PQL_LDAP_MAILMESSAGESTORE_TITLE; ?></td>
+          <td><?php
+	  if(! ereg("/$", $basemaildir)) {
+		  $maildirectory = $basemaildir . "/" . $uid;
+	  } else {
+		  $maildirectory = $basemaildir . $uid;
+	  }
+	  echo $maildirectory . "/";
 	  ?></td>
-      </tr>
-      <br><br>
+        </tr>
 
-      <!-- Mailhost -->
-      <tr class="<?php table_bgcolor(); ?>">
-        <td class="title"><?php echo PQL_LDAP_MAILHOST_TITLE; ?></td>
-        <td>
-          <input type="radio" name="host" value="default" <?php if($host != "user"){ echo "checked";}?>><?php echo PQL_LDAP_MAILHOST_DEFAULT . ": " . $host_user;?>
-        </td>
-      </tr>
+        <br><br>
 
-      <tr class="<?php table_bgcolor(); ?>">
-        <td class="title"></td>
-        <td>
-          <input type="radio" name="host" value="user" <?php if($host == "user"){ echo "checked";}?>><?php echo PQL_LDAP_MAILQUOTA_USERDEFINED;?> <?php echo format_error($error_text["host_user"]); ?><input type="text" name="host_user" value="<?php echo $host_user; ?>">
-        </td>
-      </tr>
+        <!-- Mailhost -->
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"><?php echo PQL_LDAP_MAILHOST_TITLE; ?></td>
+          <td>
+            <input type="radio" name="host" value="default" <?php if($host != "user"){ echo "checked";}?>><?php echo PQL_LDAP_MAILHOST_DEFAULT . ": <b>" . $host_user . "</b>";?>
+          </td>
+        </tr>
+  
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"></td>
+          <td>
+            <input type="radio" name="host" value="user" <?php if($host == "user"){ echo "checked";}?>><?php echo PQL_LDAP_MAILQUOTA_USERDEFINED;?> <?php echo format_error($error_text["host_user"]); ?><input type="text" name="host_user">
+          </td>
+        </tr>
 <?php
 	} // end of if-else
 ?>
-    </th>
-  </table>
+      </th>
+    </table>
+  
+    <br>
 
-  <br>
 <?php	if($account_type != "forward") {?>
-  <input type="hidden" name="maildirectory" value="<?php echo $maildirectory; ?>">
+    <input type="hidden" name="maildirectory" value="<?php echo $maildirectory; ?>">
 <?php	}?>
-  <input type="hidden" name="account_type" value="<?php echo $account_type;?>">
-  <input type="hidden" name="account_status" value="<?php echo $account_status;?>">
-  <input type="hidden" name="submit" value="save">
-  <input type="hidden" name="domain" value="<?php echo $domain; ?>">
-  <input type="submit" value="<?php echo PQL_SAVE; ?>">
-</form>
+    <input type="hidden" name="account_type" value="<?php echo $account_type;?>">
+    <input type="hidden" name="account_status" value="<?php echo $account_status;?>">
+    <input type="hidden" name="submit" value="save">
+    <input type="hidden" name="domain" value="<?php echo $domain; ?>">
+    <input type="submit" value="<?=PQL_SAVE?>">
+  </form>
 <?php
 		break;
 	case "save":
@@ -545,8 +580,12 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 			$entry["objectClass"][] = "posixAccount";
 
 			// set SYSTEM attributes
-			$entry[PQL_LDAP_ATTR_HOMEDIR] = $homedirectory;
 			$entry[PQL_LDAP_ATTR_LOGINSHELL] = $loginshell;
+			if(!$homedirectory) {
+				$entry[PQL_LDAP_ATTR_HOMEDIR] = user_generate_homedir($_pql->ldap_linkid, PQL_LDAP_BASEDN, $email, $domain, $entry);
+			} else {
+				$entry[PQL_LDAP_ATTR_HOMEDIR] = $homedirectory;
+			}
 
 			// Get a free UserID number (which we also use for GroupID number)
 			$uidnr = pql_get_next_uidnumber($_pql->ldap_linkid);
