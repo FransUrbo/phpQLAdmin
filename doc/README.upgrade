@@ -2,12 +2,15 @@ Upgrading from 2.0.18
 	There's been more API changes that will break the upgrade
 	to 2.0.19. Update your include/config.inc file....
 
-	Also update the schema, that to have changed.
+	Also update the schema, that have changed as well.
 
 	Dale Wiles have removed the dependency for the register_globals
 	PHP configuration option, so this can now be turned of if you
 	so desire (PHP ships this turned off by default). Previosly
 	you had to enable this...
+
+	include/config.inc.CHANGE_ME have changed user_generate_email()
+	(smarter - some variables isn't needed sometimes).
 
 Upgrading from 2.0.17
 	There's been some API code modifications that will break
