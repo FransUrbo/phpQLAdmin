@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // uid (user id)
-// $Id: attrib.uid.inc,v 2.12 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.uid.inc,v 2.13 2003-10-11 11:59:25 turbo Exp $
 
 function attribute_check($type){
 	global $uid, $oldvalue, $_pql, $error, $domain, $LANG;
@@ -14,7 +14,7 @@ function attribute_check($type){
 	
 	// valid
 	if(preg_match("/[^a-z0-9\.@_-]/i",$uid)) {
-		$error["uid"] = $LANG->_('Invalid')
+		$error["uid"] = $LANG->_('Invalid');
 		return false;
 	}
 	
