@@ -19,8 +19,20 @@ phpQLAdmin 2.0.19 TO BE ANNOUNCED
 	GUI layout change
 	  - Allow setting ldapGroup{Login,Password} attributes (availible in newer
 	    QmailLDAP/Controls).
+	  - If the attribute we use to reference users with isn't availible in any of
+	    the object classes we've choosen to create users with, we die with a message.
+	    The user creation will break, sooner than later!
 
 	Misc changes	
+	  - Support the new/changed accountStatus value 'noaccess'. Only if NEW_STYLE_QUOTA
+	    is set though, it's not availible in the LDAP server othervise...
+	  - When creating a user, don't check the surname, name, mailMessageStore
+	    or homeDirectory if that's not needed (because we haven't the corresponding
+	    object class).
+	  - We should care less what OBJECT CLASS is used when creating users, and more
+	    the fact what ATTRIBUTE is availible (in these object classes). Hence,
+	    don't use in_array(), but pql_check_attribute().
+
 	API changes
 	Schema changes:
 
