@@ -185,9 +185,18 @@ if(!isset($domains)) {
 
 <?php         // From the user DN, get the CN.
 	      foreach ($users as $dn) {
+		  unset($cn); unset($sn);
+
 		  $cn = pql_get_userattribute($_pql->ldap_linkid, $dn, $config["PQL_GLOB_ATTR_GIVENNAME"]);
 		  $sn = pql_get_userattribute($_pql->ldap_linkid, $dn, $config["PQL_GLOB_ATTR_SN"]);
-		  $cns[$dn] = $sn[0].", ".$cn[0];
+
+		  if($cn[0] && $sn[0])
+		    // Only remember users that have both a first and lastname.
+		    $cns[$dn] = $sn[0].", ".$cn[0];
+		  else {
+		      $cn = pql_get_userattribute($_pql->ldap_linkid, $dn, $config["PQL_GLOB_ATTR_CN"]);
+		      $cns[$dn] = "System - ".$cn[0];
+		  }
 	      }
               asort($cns);
 
