@@ -65,8 +65,9 @@ if($ADVANCED_MODE) {
 }
 
 // Get ALL domains we have access.
-// 'description: administrator=USER_DN' in the domain object
-$domains = pql_get_domain_value($_pql->ldap_linkid, '*', 'administrator', "=" . $USER_DN);
+//	'administrator: USER_DN'
+// in the domain object
+$domains = pql_get_domain_value($_pql->ldap_linkid, '*', 'administrator', $USER_DN);
 if(is_array($domains)){
     asort($domains);
 } else {
