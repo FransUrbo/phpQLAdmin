@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.25 2004-11-11 09:13:28 turbo Exp $
+// $Id: pql_search.inc,v 2.26 2004-11-11 11:12:29 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -145,62 +145,54 @@ function pql_get_dn($linkid, $dn, $filter, $level = 'SUBTREE') {
 // {{{ pql_get_domains(ldap)
 // Get all domains listed in ldap-tree (ou|dc-records)
 function pql_get_domains($ldap) {
+	$domains = array();
+
 	foreach($ldap->ldap_basedn as $TOP_DN)  {
-		$TOP_DN   = urldecode($TOP_DN); unset($info);
-		if(pql_get_define("PQL_CONF_SUBTREE_USERS"))
-		  $dn     = pql_get_define("PQL_CONF_SUBTREE_USERS").",$TOP_DN";
-		else
-		  $dn	  = $TOP_DN;
-		$ocs      = pql_setup_branch_objectclasses(1, $TOP_DN);
+		$TOP_DN     = urldecode($TOP_DN);
 
-		// -------------------
-		// Does this top DN contain the ou=People object?
-		$filter = pql_get_define("PQL_ATTR_OBJECTCLASS").'=*';
-		$result = pql_get_dn($ldap->ldap_linkid, $dn, $filter, 'BASE');
-		if(is_array($result)) {
-			// ------------------- BUG: THIS IS YET UNTESTED AFTER REWRITE!
-			// Yes it does - Is there any users just below the ou=People object?
-			$filter  = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $TOP_DN)."=*";
-			$domains = pql_get_dn($ldap->ldap_linkid, $dn, $filter, 'ONELEVEL');
-			if(is_array($domains)) {
-				// Just to be safe - is there any branches here?
-				$filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN) . "=*)$ocs)";
-				$new = pql_get_dn($ldap->ldap_linkid, $dn, $filter, 'ONELEVEL');
-				if(is_array($new))
-				  $domains = $domains + $new;
-			} else {
-				// No users below the ou=People objects. Any users directly below the top DN then?
-				$filter = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $TOP_DN)."=*";
-				$new    = pql_get_dn($ldap->ldap_linkid, $TOP_DN, $filter, 'ONELEVEL');
+		if(pql_get_define("PQL_CONF_SUBTREE_USERS")) {
+			// There's a subtree defined - look if it's there
+			$dn     = pql_get_define("PQL_CONF_SUBTREE_USERS").",$TOP_DN";
+
+			$filter = pql_get_define("PQL_ATTR_OBJECTCLASS").'=*';
+			$result = pql_get_dn($ldap->ldap_linkid, $dn, $filter, 'BASE');
+			if(is_array($result)) {
+				// ------------------- BUG: THIS IS YET UNTESTED AFTER API (2.1.1-2.1.2) REWRITE!
+				// Yes it does - Is there any users just below the ou=People object?
+				$filter  = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $TOP_DN)."=*";
+				$domains = pql_get_dn($ldap->ldap_linkid, $dn, $filter, 'ONELEVEL');
 				if(is_array($domains)) {
-					$domains = $domains + $new;
-
 					// Just to be safe - is there any branches here?
 					$filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN) . "=*)$ocs)";
-					$new = pql_get_dn($ldap->ldap_linkid, $TOP_DN, $filter, 'ONELEVEL');
+					$new = pql_get_dn($ldap->ldap_linkid, $dn, $filter, 'ONELEVEL');
 					if(is_array($new))
 					  $domains = $domains + $new;
 				}
 			}
-		} else {
-			// -------------------
-			// No ou=People object - Is there any users just below the top DN then?
-			$filter  = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $TOP_DN)."=*";
-			$domains = pql_get_dn($ldap->ldap_linkid, $TOP_DN, $filter, 'ONELEVEL');
-
-			// Just to be safe - is there any branches here?
-			$filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN) . "=*)$ocs)";
-			$new = pql_get_dn($ldap->ldap_linkid, $TOP_DN, $filter, 'ONELEVEL');
-			if(is_array($new)) {
-				if(is_array($domains))
-				  $domains = $domains + $new;
-				else
-				  $domains = $new;
-			}
 		}
+
+		// -------------------
+		// Is there any users just below the top DN then?
+		$dn	    = $TOP_DN;
+		$ocs    = pql_setup_branch_objectclasses(1, $TOP_DN);
+		
+		$filter = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $TOP_DN)."=*";
+		$new    = pql_get_dn($ldap->ldap_linkid, $TOP_DN, $filter, 'ONELEVEL');
+
+		if(is_array($new))
+		  $domains = $domains + $new;
+		
+		// Just to be safe - is there any branches here?
+		$filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN) . "=*)$ocs)";
+		$new    = pql_get_dn($ldap->ldap_linkid, $TOP_DN, $filter, 'ONELEVEL');
+		if(is_array($new))
+		  $domains = $domains + $new;
 	}
 
-	return $domains;
+	if($domains[0])
+	  return $domains;
+	else
+	  return false;
 }
 // }}}
 
