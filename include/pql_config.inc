@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.52 2004-02-14 14:25:36 turbo Exp $
+// $Id: pql_config.inc,v 1.53 2004-02-27 12:13:32 turbo Exp $
 //
 
 // {{{ pql_set_define(define, value, case_insensitive, dn)
@@ -72,6 +72,7 @@ $PQL_ATTRIBUTE["PQL_GLOB_CHANGE_SERVER"] = 'allowServerChange';
 $PQL_ATTRIBUTE["PQL_CONF_ALLOW_ABSOLUTE_PATH"] = 'allowAbsoluteMailPath';
 $PQL_ATTRIBUTE["PQL_CONF_VERIFY_DELETE"] = 'deleteVerification';
 $PQL_ATTRIBUTE["PQL_CONF_MINIMUM_UIDNUMBER"] = 'minimumUIDNumber';
+$PQL_ATTRIBUTE["PQL_CONF_MINIMUM_GIDNUMBER"] = 'minimumGIDNumber';
 $PQL_ATTRIBUTE["PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER"] = 'forwardUIDNumber';
 $PQL_ATTRIBUTE["PQL_GLOB_BIND9_USE"] = 'useBind9';
 $PQL_ATTRIBUTE["PQL_GLOB_WEBSRV_USE"] = 'useWebSrv';

@@ -74,7 +74,7 @@
 
       <!-- -------------------- --!>
       <tr>
-        <td class="title"><?=$LANG->_('Minimum UID/GID Number to be used for shell and system accounts')?></td>
+        <td class="title"><?=$LANG->_('Minimum UID Number to be used for shell and system accounts')?></td>
 <?php $class=pql_format_table(0);
       if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
 ?>
@@ -87,6 +87,28 @@
         <td class="<?=$class?>"></td>
 <?php } ?>
         <td class="<?=$class?>"><?php echo pql_get_define("PQL_CONF_MINIMUM_UIDNUMBER", $_REQUEST["branch"]); ?></td>
+      </tr>
+
+      <!-- -------------------- --!>
+      <tr>
+        <td class="title"><?=$LANG->_('Minimum GID Number to be used for shell and system accounts')?></td>
+<?php $class=pql_format_table(0);
+	  $gidnr = pql_get_define("PQL_CONF_MINIMUM_GIDNUMBER", $_REQUEST["branch"]);
+	  if(empty($gidnr)) {
+		  $gidnr = pql_get_define("PQL_CONF_MINIMUM_UIDNUMBER", $_REQUEST["branch"]);
+	  }
+
+      if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
+?>
+        <td class="<?=$class?>">
+          <a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_MINIMUM_GIDNUMBER"]?>">
+            <img src="images/edit.png" width="12" height="12" border="0" alt="Set <?=$PQL_ATTRIBUTE["PQL_CONF_MINIMUM_GIDNUMBER"]?>">
+          </a>
+        </td>
+<?php } else { ?>
+        <td class="<?=$class?>"></td>
+<?php } ?>
+        <td class="<?=$class?>"><?=$gidnr?></td>
       </tr>
 
       <tr>
