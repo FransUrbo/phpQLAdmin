@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-details.inc,v 1.20 2004-04-01 11:59:37 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.21 2004-04-02 09:33:07 turbo Exp $ */ ?>
 <?php $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"])); ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -65,9 +65,14 @@
 				// Show each of the schemes as radio buttons
 				$schemes = split(",", pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"]));
 				foreach($schemes as $scheme) {
+					if(!(($_REQUEST["account_type"] == "mail") and ($scheme == "KERBEROS"))) {
+						// Do not show the KERBEROS scheme if it's a mail account! We don't have
+						// uidNumber and/or gidNumber for that account type, so we can't mapp the
+						// user correctly if using KERBEROS!
 ?>
             <input type="radio" name="pwscheme" value="<?=$scheme?>" <?php if($_REQUEST["defaultpasswordscheme"] == $scheme) { echo "CHECKED"; } ?>><?=$scheme?>
-<?php			}
+<?php				}
+				}
 			} else { ?>
             Scheme: <b>{<?php echo pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"]); ?>}</b>
             <input type="hidden" name="pwscheme" value="<?php echo pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"]); ?>">
@@ -78,7 +83,7 @@
         <input type="hidden" name="pwscheme" value="<?=$_REQUEST["defaultpasswordscheme"]?>">
 <?php	} ?>
 
-<?php	if(eregi('KERBEROS', pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"])) and (!$_REQUEST["defaultpasswordscheme"] or $_SESSION["ADVANCED_MODE"])) { ?>
+<?php	if(eregi('KERBEROS', pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"])) and (!$_REQUEST["defaultpasswordscheme"] or $_SESSION["ADVANCED_MODE"]) and ($_REQUEST["account_type"] != "mail")) { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
           <td><?=$LANG->_('If using {KERBEROS} as password scheme, make sure you include the correct REALM (principal@REALM.TLD)')?></td>
