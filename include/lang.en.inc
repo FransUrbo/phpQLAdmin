@@ -1,10 +1,17 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 2.6 2003-01-10 07:35:42 turbo Exp $
+// $Id: lang.en.inc,v 2.7 2003-01-10 18:14:04 turbo Exp $
 //
 // if you have a translation to another language, please contact
 // me --> Matthias Blaser <mb@adfinis.ch>
+
+// Should we refere to the LDAP branch as 'branch' or 'domain'?
+if(PQL_LDAP_ATTR_DOMAIN == "dc") {
+	$DOMAIN = "domain";
+} else {
+	$DOMAIN = "branch";
+}
 
 // language definition
 define("PQL_LANG","en");
@@ -70,8 +77,8 @@ define("PQL_USER_EXIST", "User %user% already exists");
 define("PQL_USER_NONE", "No users registred");
 define("PQL_USER_MAILBOXPROPERTIES", "Mailbox properties");
 define("PQL_USER_ADD", "Create user");
-define("PQL_USER_ADD_TITLE", "Create user for domain %domain%");
-define("PQL_USER_ADD_HELP1", "The combination of surname and name (e.g. Zaphod Beeblebrox) must be unique in whole domain. The username must be unique in whole system.");
+define("PQL_USER_ADD_TITLE", "Create user in $DOMAIN %domain%");
+define("PQL_USER_ADD_HELP1", "The combination of surname and name (e.g. Zaphod Beeblebrox) must be unique in whole $DOMAIN. The username must be unique in whole system.");
 define("PQL_USER_ADD_HELP2", "The email address and the username will be automatically converted to lowercase");
 define("PQL_USER_ADD_OK", "Successfully created the new user");
 define("PQL_USER_ADD_FAILED", "Failed to create the new user");
@@ -80,7 +87,7 @@ define("PQL_USER_ADD_SCRIPT_FAILED", "The user add script failed!");
 define("PQL_USER_ACCOUNT_PROPERTIES", "Account properties");
 define("PQL_USER_ACCOUNT_PROPERTIES_MORE", "Additional account properties");
 define("PQL_USER_ACCOUNT_TYPE", "Type");
-define("PQL_USER_DEL_TITLE", "Remove user '%user%' from domain '%domain%'");
+define("PQL_USER_DEL_TITLE", "Remove user '%user%' from $DOMAIN '%domain%'");
 define("PQL_USER_DEL_OK", "Successfully removed user");
 define("PQL_USER_DEL_FAILED", "Failed removing the user");
 define("PQL_USER_DEL_ATTRIBUTE_TITLE", "Remove attribute (%value%)");
@@ -93,31 +100,35 @@ define("PQL_DNS_MAILHOST", "Mailhost");
 define("PQL_DNS_PRIORITY", "Priority");
 define("PQL_DNS_NONE", "This domain isn't registred within the DNS system");
 
-define("PQL_DOMAIN_CHANGE_ATTRIBUTE_TITLE", "Change values of all users in this domain");
+define("PQL_DOMAIN_CHANGE_ATTRIBUTE_TITLE", "Change values of all users in this $DOMAIN");
 define("PQL_DOMAIN_CHANGE_ATTRIBUTE", "Attribute");
 define("PQL_DOMAIN_INVALID", "Invalid domain name !! use: domain.tld (e.g. adfinis.com)");
-define("PQL_DOMAIN_EXISTS", "This domain already exists");
-define("PQL_DOMAIN_ADD", "Create domain");
-define("PQL_DOMAIN_ADD_OK", "Domain %domain% successfully created.<br>You have to manually add this domain to the rpcthosts and locals files in the qmail/control directory !!");
-define("PQL_DOMAIN_ADD_SCRIPT_OK", "Successfully executed the domain add script");
-define("PQL_DOMAIN_ADD_SCRIPT_FAILED", "The domain add script failed!");
-define("PQL_DOMAIN_ADD_FAILED", "Failed creating the domain");
-define("PQL_DOMAIN_ADD_INFO_DC", "Using domain mode (dc separated).<br>Don't use '.' (dots) in domain name");
+define("PQL_DOMAIN_EXISTS", "This $DOMAIN already exists");
+define("PQL_DOMAIN_ADD", "Create $DOMAIN");
+if(PQL_LDAP_ATTR_DOMAIN == "dc") {
+	define("PQL_DOMAIN_ADD_OK", "Domain %domain% successfully created.<br>You have to manually add this domain to the rpcthosts and locals files in the qmail/control directory !!");
+} else {
+	define("PQL_DOMAIN_ADD_OK", "Branch %domain% successfully created.");
+}
+define("PQL_DOMAIN_ADD_SCRIPT_OK", "Successfully executed the $DOMAIN add script");
+define("PQL_DOMAIN_ADD_SCRIPT_FAILED", "The $DOMAIN add script failed!");
+define("PQL_DOMAIN_ADD_FAILED", "Failed creating the $DOMAIN");
+define("PQL_DOMAIN_ADD_INFO_DC", "Using $DOMAIN mode (dc separated).<br>Don't use '.' (dots) in $DOMAIN name");
 define("PQL_DOMAIN_ADD_INFO_OU", "Using organization layout (ou separated).<br>Make sure youre using 'domain.tld' for domain name");
-define("PQL_DOMAIN_DEL", "Remove domain");
-define("PQL_DOMAIN_DEL_FORWARDS", "Also delete forwards to users in this domain");
-define("PQL_DOMAIN_DEL_TITLE", "Remove domain %domain%");
-define("PQL_DOMAIN_DEL_WARNING", "<b>Attention:</b> If you deleted a domain, all users within this domain will be deleted too !!");
-define("PQL_DOMAIN_DEL_OK", "Successfully removed the domain");
-define("PQL_DOMAIN_DEL_FAILED", "Failed removing domain");
-define("PQL_DOMAIN_DEFAULT_TITLE", "Change default values for this domain");
-define("PQL_DOMAIN_DEFAULT_VALUES", "Default domain values");
-define("PQL_DOMAIN_DEFAULT_NAME", "Default domain name");
+define("PQL_DOMAIN_DEL", "Remove $DOMAIN");
+define("PQL_DOMAIN_DEL_FORWARDS", "Also delete forwards to users in this $DOMAIN");
+define("PQL_DOMAIN_DEL_TITLE", "Remove $DOMAIN %domain%");
+define("PQL_DOMAIN_DEL_WARNING", "<b>Attention:</b> If you deleted a $DOMAIN, all users within this $DOMAIN will be deleted too !!");
+define("PQL_DOMAIN_DEL_OK", "Successfully removed the $DOMAIN");
+define("PQL_DOMAIN_DEL_FAILED", "Failed removing $DOMAIN");
+define("PQL_DOMAIN_DEFAULT_TITLE", "Change default values for this $DOMAIN");
+define("PQL_DOMAIN_DEFAULT_VALUES", "Default $DOMAIN values");
+define("PQL_DOMAIN_DEFAULT_NAME", "Default $DOMAIN name");
 define("PQL_DOMAIN_DEFAULT_HOMEDIR", "Default homedirectory for users");
 define("PQL_DOMAIN_DEFAULT_MAILDIR", "Default maildirectory for users");
-define("PQL_DOMAIN_DEFAULT_CHANGE_NAME", "Change default domain name for domain ");
-define("PQL_DOMAIN_DEFAULT_CHANGE_HOMEDIR", "Change default homedirectory base for domain ");
-define("PQL_DOMAIN_DEFAULT_CHANGE_MAILDIR", "Change default maildirectory base for domain ");
+define("PQL_DOMAIN_DEFAULT_CHANGE_NAME", "Change default $DOMAIN name for $DOMAIN ");
+define("PQL_DOMAIN_DEFAULT_CHANGE_HOMEDIR", "Change default homedirectory base for $DOMAIN ");
+define("PQL_DOMAIN_DEFAULT_CHANGE_MAILDIR", "Change default maildirectory base for $DOMAIN ");
 define("PQL_DOMAIN_DEFAULT_CHANGE_OK", "Successfully changed default domainname");
 define("PQL_DOMAIN_DEFAULT_CHANGE_FAILED", "Failed to change the default domainname");
 define("PQL_DOMAIN_DEFAULT_CHANGE_UNCHANGED", "Default domainname unchanged");
