@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: domain_add.php,v 2.47 2004-04-01 06:19:29 turbo Exp $
+// $Id: domain_add.php,v 2.48 2004-04-19 12:47:01 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -52,7 +52,7 @@ $dns = pql_domain_add($_pql->ldap_linkid, $_REQUEST["rootdn"], $_REQUEST["domain
 if($dns[0]) {
 	$entry["BRANCH_NAME"] = $_REQUEST["domain"];
 
-	if($_REQUEST["defaultdomain"] != "") {
+	if(($_REQUEST["defaultdomain"] != "") and pql_get_define("PQL_CONF_CONTROL_USE")) {
 		// update locals if control patch is enabled
 		pql_control_update_domains($_pql, $_SESSION["USER_SEARCH_DN_CTR"], '*', array('', $_REQUEST["defaultdomain"]));
 	}
