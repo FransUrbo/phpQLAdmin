@@ -30,7 +30,7 @@ if($advanced == 1) {
 }
 ?>
   <font color="black" class="heada">
-    <?=$LANG->_('User')?>: <b><a href="user_detail.php?user=<?=$USER_DN?>"><?=$USER_ID?></a></b>
+    <?=$LANG->_('User')?>: <b><a href="user_detail.php?rootdn=<?php echo pql_get_rootdn($USER_DN)?>&user=<?=$USER_DN?>"><?=$USER_ID?></a></b>
   </font>
   <br>
 <?php if($ADVANCED_MODE) {
