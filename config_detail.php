@@ -1,6 +1,6 @@
 <?php
 // shows configuration of phpQLAdmin
-// $Id: config_detail.php,v 2.45 2003-11-14 11:55:52 turbo Exp $
+// $Id: config_detail.php,v 2.46 2003-11-14 12:59:32 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -31,21 +31,22 @@ foreach($_pql->ldap_basedn as $dn) {
     if(eregi('KERBEROS', pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $dn)))
       $show_kerberos_info = 1;
 }
+
+// Create the button array with domain buttons
+$buttons = array('default' => 'Global configuration');
+foreach($_pql->ldap_basedn as $dn) {
+    $button = array($dn => urldecode($dn));
+    $buttons += $button;
+}
 ?>
   <span class="title1"><?=$LANG->_('phpQLAdmin configuration')?></span>
 
   <br><br>
 
-  <table cellspacing="0" border="0" width="100%" cellpadding="0">
-    <tr>
-      <td valign="bottom" align="left" width="100%" colspan="2"><a href="<?=$PHP_SELF."?view=default"?>"><img alt="/ <?=$LANG->_('Global configuration')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Global configuration')?>"></a><?php $i=1; foreach($_pql->ldap_basedn as $dn) { $dn = urldecode($dn); if(!($i%2)) { ?><br><?php } ?><a href="<?=$PHP_SELF."?view=branch&branch=$dn"?>"><img alt="/ <?=$LANG->_('Top branch')?> <?=$dn?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$dn?>"></a><?php $i++; } ?>
-      </td>
-    </tr>
-  </table>
-
-  <br>
-
 <?php
+// Output the buttons to the browser
+pql_generate_button($buttons);
+
 if($view == '')
      $view = 'default';
 
