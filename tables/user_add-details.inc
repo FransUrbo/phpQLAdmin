@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-details.inc,v 1.5 2003-11-20 08:01:46 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.6 2003-11-24 11:29:32 turbo Exp $ */ ?>
   <form action="<?=$PHP_SELF?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
@@ -192,7 +192,7 @@
         <!-- sub branch -->
 <?php
 	if($ADVANCED_MODE) {
-		$branches = pql_get_subbranch($_pql->ldap_linkid, $domain);
+		$branches = pql_unit_get($_pql->ldap_linkid, $domain);
 		if($branches[1]) {
 			// More than one subbranch - show a select menu
 ?>

@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.130 2003-11-24 08:26:25 turbo Exp $
+// $Id: pql.inc,v 2.131 2003-11-24 11:29:43 turbo Exp $
 //
 
 // ----------------------------
@@ -600,7 +600,7 @@ function pql_domain_del($ldap, $domain, $delete_forwards) {
     }
 
 	// Get subbranches
-	$branches = pql_get_subbranch($linkid, $domain, 0);
+	$branches = pql_unit_get($linkid, $domain, 0);
 	if(is_array($branches)) {
 		for($i=0; $branches[$i]; $i++) {
 			// Find every object under this DN and delete it
@@ -1529,35 +1529,6 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 		return $VALUE;
     } else
 	  return false;
-}
-// }}}
-
-// {{{ pql_get_subbranch(linkid, dn, filter)
-function pql_get_subbranch($linkid, $dn, $filter = 1) {
-	// What's the Root DN (namingContexts) for this domain
-	$rootdn = pql_get_rootdn($dn); $rootdn = urldecode($rootdn);
-
-	if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $rootdn) == "dc") {
-		$ocb = "domain";
-	} else {
-		$ocb = "organizationalUnit";
-	}
-	
-	$info = pql_search($linkid, $dn, 'objectclass='.$ocb);
-	for($i=0; $info[$i]; $i++) {
-		if($filter) {
-			// Filter out the most obvious subbranches we don't put users in...
-			if(!eregi('group',  $info[$i]) and
-			   !eregi('qmail',  $info[$i]) and
-			   !eregi('auto\.', $info[$i]) and
-			   !eregi('web',    $info[$i]) and
-			   !eregi('dns',	$info[$i]))
-			  $branches[] = $info[$i];
-		} else
-		  $branches[] = $info[$i];
-	}
-
-	return $branches;
 }
 // }}}
 
