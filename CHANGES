@@ -7,6 +7,22 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	  - Don't use the Control class for Bind9. It looks in the wrong place
 	    Closes bug 10
 	  - Variable name overloading fixed.
+	  - URL decode the domain value when creating the Group DN (pql_user_add()
+	    function).
+	    Closes bug 57, 70
+	  - Wrongfull use of '$ACI_SUPPORT_ENABLED' (should have been
+	    '$GLOBALS["ACI_SUPPORT_ENABLED"]'.
+	  - Fix folding for non-opera. Closes bug 76
+	  - Create an array with the URL encoded values for user, rootdn and domain.
+	    This is used in every (?) place where there's a distinction between value
+	    and URL value (basicly in every 'a href')...
+	  - Ability to view, add and delete additional groups (adding the users 'uid'
+	    to the groups 'memberUid' attribute).
+	    + Only visible if running in advanced mode.
+	    Closes bug 71
+	  - Move the initialization of the java variable expandedDb from trailer to
+	    head.
+	    Closes bug 61
 
 	GUI layout change
 	  - Variable lenght icons with better looking font.
@@ -14,8 +30,19 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	    + Allow for international characters in buttons.
 	    + Relative (to the font string length) button width.
 	    Closes bug 8
-	  - API editor written - change, delete and add API entries for an object
+	  - ACI editor written - change, delete and add ACI entries for an object
 	    through the point-and-click interface (web browser).
+	  - Generate variable length buttons depending on number of characters.
+	  - The add user page have been rewritten
+	    + Super admin should always be able to create users, even if the limit of
+	      max users have been reached!
+	    + Show the homedirectory in the verification page if it's defined.
+	    + Move all user add forms to separate files in tables/ to minimize loading
+	      time and ease readability.
+	  - Do not say 'No users defined' in the left frame - quite pointless actually,
+	    that should be obvious if there's no users! :).
+	  - 'Add sub unit' link (just above the 'Add user' link). This link should be
+	    in the 'main tree branch' (ie, not within a sub unit tree branch).
 
 	Misc changes	
 	  - With the resent definition international characters in the DNS system (and
@@ -24,9 +51,56 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	    the PHP-IDN module (also by yours truly).
 	  - Offer to create a DNS zone in ldap when adding both default and additional
 	    domain names.
-	  - API changes - functions have been removed and changed name. This to simplify
+	  - Move all button generation to a PQL function - pql_generate_button(). That
+	    way it's easier to generate buttons without poluting the code to much with
+	    mixed HTML/PHP code...
+	  - Add missing (or faulty) CVS Id tags in some files.
+	  - Change URL link to anthill (Bug Tracker) and list server (it's now run on
+	    separate IP to avoid using port 23000).
+	  - Only show the ACI button if ACI_SUPPORT_ENABLED is set.
+	    + Instead of checking that the user_generate_aci() function exists every
+	      time, we do that in the pql_config.inc file (at the bottom) and use the
+	      global variable ACI_SUPPORT_ENABLED to check if to use ACIs.
+	  - Shutup PHP errors by tripple-check (use isset()).
+	  - Adding strings is done with dot, not plus.
+
+	API changes
+	  - Rearrange functions and group them. Functions dealing with users in one
+	    place in the file, functions dealing with domains in their etc...
+	  - Functions have been removed, moved and/or changed name. This to simplify
 	    the API.
-	    + Prefix functions maybe_{decode,encode} with the phpQLAdmin prefix 'pql_'.
+	    + maybe_{decode,encode}		-> pql_maybe_{decode,encode}
+	    + pql_replace_userattribute() 	-> pql_replace_attribute()
+	    + pql_get_domains()			-> pql_domain_get()
+	    + pql_get_user()			-> pql_user_get()
+	    + pql_get_domain_value()		-> pql_domain_value()
+	    + table_bgcolor()			-> pql_format_table
+	    + format_error()			-> pql_format_error_span
+	    + pql_errormsg()			-> pql_format_error_msg
+	    + print_status_msg()		-> pql_format_status_msg
+	    + check_hostaddress()		-> pql_check_hostaddress
+	    + check_email()			-> pql_check_email
+	    + non_internationalize()		-> pql_format_international
+	  - Functions removed:
+	    + pql_search_attribute()
+	  - Functions renamed and moved to pql_search file:
+	    + Function pql_get_dn()
+	    + pql_get_userattribute()		-> pql_get_attribute()
+	    + pql_get_userentry()		-> pql_get_object()
+	  - Functions renamed and moved to pql_units file:
+	    + pql_get_subbranch()		-> pql_unit_get()
+	  - Functions moved to pql_formating file:
+	    + pql_create_ldif()			pql_complete_constant()
+	    + pql_ldap_error()			pql_format_error_msg()
+	    + pql_format_error_span()		pql_format_status_msg()
+	    + pql_format_table()		pql_format_international()
+	    + pql_maybe_encode()		pql_maybe_decode()
+	    + pql_maybe_idna_encode()		pql_maybe_idna_decode()
+	    + printr()                		lc()
+	  - Simplify the creation of the tree view - moved to separate functions.
+	    Opera and non-opera, as well as 'top' and 'link' funcs. Should be much
+	    more generic and most of all - higher code redability!
+	  - Implemented pql_unit_exist() and pql_unit_add()
 
 phpQLAdmin 2.0.17 Release (Oct 30 2003)
 	Bug fixes
