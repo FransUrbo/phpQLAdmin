@@ -33,7 +33,7 @@ if($_REQUEST["action"] == "clear_session") {
     $msg = "Successfully deleted the session variable. Will reload from scratch.";
     $link = "config_detail.php?view=$view&msg=".urlencode($msg);
 
-    header("Location: " . $_SESSION["URI"] . $link);
+    pql_header($link);
 }
 // }}}
 
@@ -96,7 +96,7 @@ if(empty($_REQUEST["view"]) or $_REQUEST["view"] == 'default') {
     else
       $link .= "?advanced=0";
 
-    header("Location: " . $_SESSION["URI"] . $link);
+    pql_header($link);
 } else {
     if (empty($_REQUEST["branch"])) {
       $_REQUEST["branch"] = $_REQUEST["view"];
