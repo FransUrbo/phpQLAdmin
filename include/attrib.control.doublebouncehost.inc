@@ -3,21 +3,21 @@
 // doublebouncehost (username of bounce sender)
 // doublebounceto (hostname of bounce sender)
 //
-// $Id: attrib.control.doublebouncehost.inc,v 2.3 2002-12-18 16:28:45 turbo Exp $
+// $Id: attrib.control.doublebouncehost.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
 
 function doublebouncehost_check($type) {
 	global $error, $doublebouncehost, $doublebounceto;
 
 	// check validity
 	if($doublebounceto != "" and !check_email($doublebounceto . "@domain.tld")){
-		$error["doublebounceto"] = PQL_INVALID;
+		$error["doublebounceto"] = PQL_LANG_INVALID;
 		$is_error = true;
 	}
 
 	// check validity
 	if($doublebouncehost != "" and !check_hostaddress($doublebouncehost)){
 		// "
-		$error["doublebouncehost"] = PQL_INVALID;
+		$error["doublebouncehost"] = PQL_LANG_INVALID;
 		$is_error = true;
 	}
 
@@ -108,7 +108,7 @@ function doublebouncehost_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="submit" value="<?php echo PQL_SAVE; ?>">
+    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
 <?php

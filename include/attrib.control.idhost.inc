@@ -2,14 +2,14 @@
 // control attribute plugin for
 // idhost (host name for message id's)
 //
-// $Id: attrib.control.idhost.inc,v 2.3 2002-12-18 16:28:45 turbo Exp $
+// $Id: attrib.control.idhost.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
 
 function idhost_check($type){
 	global $error, $idhost;
 
 	// validity
 	if($idhost != "" and !check_hostaddress($idhost)){
-		$error["idhost"] = PQL_INVALID;
+		$error["idhost"] = PQL_LANG_INVALID;
 		return false;
 	}
 
@@ -69,7 +69,7 @@ function idhost_print_form(){
       <th colspan="3" align="left">idhost (host name for Message-ID's)</th>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title">Host</td>
-          <td><?php echo format_error($error["idhost"]); ?><input type="text" name="idhost" value="<?php echo $idhost; ?>"> Default: <?php echo PQL_LDAP_CONTROL_ME; ?> (value in 'me')</td>
+          <td><?php echo format_error($error["idhost"]); ?><input type="text" name="idhost" value="<?php echo $idhost; ?>"> Default: <?php echo PQL_CONF_CONTROL_ME; ?> (value in 'me')</td>
         </tr>
 
         <tr>
@@ -80,7 +80,7 @@ function idhost_print_form(){
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="submit" value="<?php echo PQL_SAVE; ?>">
+    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
 <?php

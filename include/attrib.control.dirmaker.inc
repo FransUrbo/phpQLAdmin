@@ -2,20 +2,20 @@
 // control attribute plugin for
 // dirmaker (default prefix for mailbox paths)
 //
-// $Id: attrib.control.dirmaker.inc,v 2.3 2002-12-18 16:28:45 turbo Exp $
+// $Id: attrib.control.dirmaker.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
 
 function dirmaker_check($type){
 	global $error, $dirmaker;
 
 	// missing
 	if($dirmaker == ""){
-		$error["dirmaker"] = PQL_MISSING;
+		$error["dirmaker"] = PQL_LANG_MISSING;
 		return false;
 	}
 
 	// trailing slash ?
 	if(!preg_match ("/^(\/)/", $dirmaker)){
-		$error["dirmaker"] = PQL_INVALID;
+		$error["dirmaker"] = PQL_LANG_INVALID;
 		return false;
 	}
 
@@ -80,7 +80,7 @@ function dirmaker_print_form(){
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="submit" value="<?php echo PQL_SAVE; ?>">
+    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
 <?php

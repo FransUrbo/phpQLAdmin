@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mailquota.inc,v 2.3 2003-01-16 14:58:38 turbo Exp $
+// $Id: attrib.mailquota.inc,v 2.4 2003-04-04 06:54:31 turbo Exp $
 
 function attribute_check($type){
 	global $options, $use_maxsize, $use_maxmails, $maxsize, $maxmails, $error;
@@ -12,43 +12,43 @@ function attribute_check($type){
 	
 	// empty
 	if($maxsize == "" and $options == "user" and $use_maxsize != ""){
-		$error["maxsize"] = PQL_MISSING;
+		$error["maxsize"] = PQL_LANG_MISSING;
 		$failed = true;
 	}
 	
 	// valid (numeric)
 	if($maxsize != "" and preg_match("/[^0-9]/", $maxsize) and $options == "user" and $use_maxsize != ""){
-		$error["maxsize"] = PQL_INVALID;
+		$error["maxsize"] = PQL_LANG_INVALID;
 		$failed = true;
 	}
 	
 	// bigger than 0
 	if($error["maxsize"] == "" and $maxsize <= 0 and $options == "user" and $use_maxsize != ""){
-		$error["maxsize"] = PQL_GREATER_ZERO;
+		$error["maxsize"] = PQL_LANG_GREATER_ZERO;
 		$failed = true;
 	}
 	
 	// empty
 	if($maxmails == ""  and $options == "user" and $use_maxmails != ""){
-		$error["maxmails"] = PQL_MISSING;
+		$error["maxmails"] = PQL_LANG_MISSING;
 		$failed = true;
 	}
 	
 	// valid (numeric)
 	if($maxmails != "" and preg_match("/[^0-9]/", $maxmails)  and $options == "user" and $use_maxmails != ""){
-		$error["maxmails"] = PQL_INVALID;
+		$error["maxmails"] = PQL_LANG_INVALID;
 		$failed = true;
 	}
 	
 	// bigger than 0
 	if($error["maxmails"] == "" and $maxmails <= 0 and $options == "user" and $use_maxmails != ""){
-		$error["maxmails"] = PQL_GREATER_ZERO;
+		$error["maxmails"] = PQL_LANG_GREATER_ZERO;
 		$failed = true;
 	}
 	
 	// userdefined, but no quota selected;
 	if($options == "user" and $use_maxsize == "" and $use_maxmails == ""){
-		$error["selected"] = PQL_LDAP_MAILQUOTA_NONESELECTED . "<br>";
+		$error["selected"] = PQL_LANG_MAILQUOTA_NONESELECTED . "<br>";
 		$failed = true;
 	}
 	
@@ -88,24 +88,24 @@ function attribute_print_form($type = "modify"){
 ?>
 	<form action="<?php echo $PHP_SELF ?>" method="post">
 	<table cellspacing="0" cellpadding="3" border="0">
-	<th colspan="3" align="left"><?php echo PQL_LDAP_MAILQUOTA_CHANGE; ?></th>
+	<th colspan="3" align="left"><?php echo PQL_LANG_MAILQUOTA_CHANGE; ?></th>
 	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title"><?php echo PQL_OPTIONS; ?></td>
-		<td><input type="radio" name="options" value="default" <?php if($options == "default"){ echo "checked"; } //" ?>> <?php echo PQL_LDAP_MAILQUOTA_DEFAULT; ?> <input type="radio" name="options" value="user" <?php if($options == "user"){ echo "checked"; } //" ?>> <?php echo PQL_LDAP_MAILQUOTA_USERDEFINED; ?></td>
+		<td class="title"><?php echo PQL_LANG_OPTIONS; ?></td>
+		<td><input type="radio" name="options" value="default" <?php if($options == "default"){ echo "checked"; } //" ?>> <?php echo PQL_LANG_MAILQUOTA_DEFAULT; ?> <input type="radio" name="options" value="user" <?php if($options == "user"){ echo "checked"; } //" ?>> <?php echo PQL_LANG_MAILQUOTA_USERDEFINED; ?></td>
 	</tr>
 	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title"><?php echo PQL_LDAP_MAILQUOTA_MAXSIZE_TITLE; ?></td>
+		<td class="title"><?php echo PQL_LANG_MAILQUOTA_MAXSIZE_TITLE; ?></td>
 		<td><input type="checkbox" name="use_maxsize" value="1" <?php if($use_maxsize == "1"){ echo "checked"; } //" ?>> <?php echo format_error($error["maxsize"]); ?><input type="text" name="maxsize" value="<?php echo $maxsize; ?>"> KB</td>
 	</tr>
 	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title"><?php echo PQL_LDAP_MAILQUOTA_MAXMAILS_TITLE; ?></td>
+		<td class="title"><?php echo PQL_LANG_MAILQUOTA_MAXMAILS_TITLE; ?></td>
 		<td><input type="checkbox" name="use_maxmails" value="1" <?php if($use_maxmails == "1"){ echo "checked"; } //" ?>> <?php echo format_error($error["maxmails"]); ?><input type="text" name="maxmails" value="<?php echo $maxmails; ?>"> Mails</td>
 	</tr>
   <tr class="subtitle">
 		<td colspan="2">
 		<?php echo format_error($error["selected"]); ?>
 		<img src="images/info.png" width="16" height="16" alt="" border="0">
-		&nbsp;<?php echo PQL_LDAP_MAILQUOTA_HELP; ?></td>
+		&nbsp;<?php echo PQL_LANG_MAILQUOTA_HELP; ?></td>
 	</tr>
 	</table>
 	<input type="hidden" name="submit" value="1">
@@ -114,7 +114,7 @@ function attribute_print_form($type = "modify"){
 	<input type="hidden" name="user" value="<?php echo $user ?>">
 	<br>
 	<br>
-	<input type="submit" value="<?php echo PQL_SAVE; ?>">
+	<input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
 	</form>
 
 <?php
@@ -134,26 +134,26 @@ function attribute_save($type){
 			$maxsize = $maxsize * 1024;
 			$mailquota[] = $maxsize . "S";
 		} else {
-			$maxsize = PQL_LDAP_MAILQUOTA_ECHO_MAXSIZE_UNLIMITED;
+			$maxsize = PQL_LANG_MAILQUOTA_ECHO_MAXSIZE_UNLIMITED;
 		}
 		
 		if($use_maxmails != ""){
 			$mailquota[] = $maxmails . "C";
 		} else {
-			$maxmails = PQL_LDAP_MAILQUOTA_ECHO_MAXMAILS_UNLIMITED;
+			$maxmails = PQL_LANG_MAILQUOTA_ECHO_MAXMAILS_UNLIMITED;
     	}
 		
 		if(is_array($mailquota)){
 			$mailquota = join(",", $mailquota);
 		}
 		
-		$msg = pql_complete_constant(PQL_LDAP_MAILQUOTA_CHANGE_OK, array("quota" =>  pql_ldap_mailquota(array("maxsize" => $maxsize / 1024, "maxmails" => $maxmails))));
+		$msg = pql_complete_constant(PQL_LANG_MAILQUOTA_CHANGE_OK, array("quota" =>  pql_ldap_mailquota(array("maxsize" => $maxsize / 1024, "maxmails" => $maxmails))));
 		break;
 
 	  case "default":
 		$mailquota = "";
 		
-		$msg = pql_complete_constant(PQL_LDAP_MAILQUOTA_CHANGE_OK, array("quota" => PQL_LDAP_MAILQUOTA_DEFAULT));
+		$msg = pql_complete_constant(PQL_LANG_MAILQUOTA_CHANGE_OK, array("quota" => PQL_LANG_MAILQUOTA_DEFAULT));
 	}
 	
 	switch($type){
@@ -165,11 +165,11 @@ function attribute_save($type){
 		$users = pql_get_user($_pql->ldap_linkid, $domain);
 		if(is_array($users)){
 			foreach($users as $user){
-				$return[] = pql_replace_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_QUOTA, $mailquota);
+				$return[] = pql_replace_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_QUOTA, $mailquota);
 			}
 			
 			if(in_array(false, $return)){
-				$msg = PQL_LDAP_MAILQUOTA_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
+				$msg = PQL_LANG_MAILQUOTA_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
 			}
 			
 			attribute_forward($msg);
@@ -177,10 +177,10 @@ function attribute_save($type){
 		
 	  case "modify";
 		// remove attribute if it is set to ""
-		$return = pql_replace_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_QUOTA, $mailquota);
+		$return = pql_replace_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_QUOTA, $mailquota);
 		
 		if($return == false){
-			$msg = PQL_LDAP_MAILQUOTA_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
+			$msg = PQL_LANG_MAILQUOTA_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
 		}
 		
 		attribute_forward($msg);

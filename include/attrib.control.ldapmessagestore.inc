@@ -2,20 +2,20 @@
 // control attribute plugin for
 // ldapmessagestore (default prefix for mailbox paths)
 //
-// $Id: attrib.control.ldapmessagestore.inc,v 2.3 2002-12-18 16:28:46 turbo Exp $
+// $Id: attrib.control.ldapmessagestore.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
 
 function ldapmessagestore_check($type){
 	global $error, $ldapmessagestore;
 
 	// missing
 	if($ldapmessagestore == ""){
-		$error["ldapmessagestore"] = PQL_MISSING;
+		$error["ldapmessagestore"] = PQL_LANG_MISSING;
 		return false;
 	}
 
 	// trailing slash ?
 	if(!preg_match ("/^(\/)/", $ldapmessagestore)){
-		$error["ldapmessagestore"] = PQL_INVALID;
+		$error["ldapmessagestore"] = PQL_LANG_INVALID;
 		return false;
 	}
 
@@ -80,7 +80,7 @@ function ldapmessagestore_print_form(){
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="submit" value="<?php echo PQL_SAVE; ?>">
+    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
 <?php

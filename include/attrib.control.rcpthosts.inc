@@ -2,7 +2,7 @@
 // control attribute plugin for
 // rcpthosts (blocked local addresses)
 //
-// $Id: attrib.control.rcpthosts.inc,v 2.4 2003-01-28 13:32:45 turbo Exp $
+// $Id: attrib.control.rcpthosts.inc,v 2.5 2003-04-04 06:54:30 turbo Exp $
 
 function rcpthosts_check($type){
     global $error, $rcpthosts, $host;
@@ -15,7 +15,7 @@ function rcpthosts_check($type){
 			}
 			
 			if(!check_hostaddress($host)){
-				$error["rcpthosts_$key"] = PQL_INVALID;
+				$error["rcpthosts_$key"] = PQL_LANG_INVALID;
 				$is_error = true;
 			}
 		} // end foreach
@@ -108,7 +108,7 @@ function rcpthosts_print_form(){
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
     <input type="hidden" name="host" value="<?=$host?>">
-    <input type="submit" value="<?php echo PQL_SAVE; ?>">
+    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 <?php
 }

@@ -3,20 +3,20 @@
 // bouncefrom (username of bounce sender)
 // bouncehost (hostname of bounce sender)
 //
-// $Id: attrib.control.bouncefrom.inc,v 2.3 2002-12-18 16:28:45 turbo Exp $
+// $Id: attrib.control.bouncefrom.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
 
 function bouncefrom_check($type) {
 	global $error, $bouncefrom, $bouncehost;
 
 	// check validity
 	if($bouncefrom != "" and !check_email($bouncefrom . "@domain.tld")){
-		$error["bouncefrom"] = PQL_INVALID;
+		$error["bouncefrom"] = PQL_LANG_INVALID;
 		$is_error = true;
 	}
 
 	// check validity
 	if($bouncehost != "" and !check_hostaddress($bouncehost)){
-		$error["bouncehost"] = PQL_INVALID;
+		$error["bouncehost"] = PQL_LANG_INVALID;
 		$is_error = true;
 	}
 	
@@ -108,7 +108,7 @@ function bouncefrom_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="submit" value="<?php echo PQL_SAVE; ?>">
+    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
 <?php

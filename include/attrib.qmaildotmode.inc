@@ -1,14 +1,14 @@
 <?php
 // attribute plugin for
 // qmaildotmode (interpretation of .qmail-files)
-// $Id: attrib.qmaildotmode.inc,v 2.3 2003-01-16 14:58:38 turbo Exp $
+// $Id: attrib.qmaildotmode.inc,v 2.4 2003-04-04 06:54:31 turbo Exp $
 
 function attribute_check($type){
 	global $qmaildotmode, $domain, $oldvalue, $_pql, $error;
 	
 	// is typed in ?
 	if($qmaildotmode == ""){
-		$error["qmaildotmode"] = PQL_MISSING;
+		$error["qmaildotmode"] = PQL_LANG_MISSING;
 		return false;
 	}
 	
@@ -22,7 +22,7 @@ function attribute_check($type){
 	  case "none":
 		break;
 	  default:
-		$error["qmaildotmode"] = PQL_INVALID;
+		$error["qmaildotmode"] = PQL_LANG_INVALID;
 		return false;
 	}
 	
@@ -43,17 +43,17 @@ function attribute_print_form(){
 ?>
 	<form action="<?php echo $PHP_SELF ?>" method="post">
 	<table cellspacing="0" cellpadding="3" border="0">
-	<th colspan="3" align="left"><?php echo PQL_LDAP_QMAILDOTMODE_CHANGE; ?></th>
+	<th colspan="3" align="left"><?php echo PQL_LANG_QMAILDOTMODE_CHANGE; ?></th>
 	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title"><?php echo PQL_LDAP_QMAILDOTMODE_CHANGE; ?></td>
+		<td class="title"><?php echo PQL_LANG_QMAILDOTMODE_CHANGE; ?></td>
 		<td><?php echo format_error($error["qmaildotmode"]); ?>
     <select name="qmaildotmode">
-			<option value="default" <?php echo $qmaildotmode_select["default"]; ?>><?php echo PQL_LDAP_QMAILDOTMODE_MODE_DEFAULT; ?></option>
-			<option value="both" <?php echo $qmaildotmode_select["both"]; ?>><?php echo PQL_LDAP_QMAILDOTMODE_MODE_BOTH; ?></option>
-			<option value="dotonly" <?php echo $qmaildotmode_select["dotonly"]; ?>><?php echo PQL_LDAP_QMAILDOTMODE_MODE_DOTONLY; ?></option>
-			<option value="ldaponly" <?php echo $qmaildotmode_select["ldaponly"]; ?>><?php echo PQL_LDAP_QMAILDOTMODE_MODE_LDAPONLY; ?></option>
-			<option value="ldapwithprog" <?php echo $qmaildotmode_select["ldapwithprog"]; ?>><?php echo PQL_LDAP_QMAILDOTMODE_MODE_LDAPWITHPROG; ?></option>
-			<option value="none" <?php echo $qmaildotmode_select["none"]; ?>><?php echo PQL_LDAP_QMAILDOTMODE_MODE_NONE; ?></option>
+			<option value="default" <?php echo $qmaildotmode_select["default"]; ?>><?php echo PQL_LANG_QMAILDOTMODE_MODE_DEFAULT; ?></option>
+			<option value="both" <?php echo $qmaildotmode_select["both"]; ?>><?php echo PQL_LANG_QMAILDOTMODE_MODE_BOTH; ?></option>
+			<option value="dotonly" <?php echo $qmaildotmode_select["dotonly"]; ?>><?php echo PQL_LANG_QMAILDOTMODE_MODE_DOTONLY; ?></option>
+			<option value="ldaponly" <?php echo $qmaildotmode_select["ldaponly"]; ?>><?php echo PQL_LANG_QMAILDOTMODE_MODE_LDAPONLY; ?></option>
+			<option value="ldapwithprog" <?php echo $qmaildotmode_select["ldapwithprog"]; ?>><?php echo PQL_LANG_QMAILDOTMODE_MODE_LDAPWITHPROG; ?></option>
+			<option value="none" <?php echo $qmaildotmode_select["none"]; ?>><?php echo PQL_LANG_QMAILDOTMODE_MODE_NONE; ?></option>
     </select>
 
 		</td>
@@ -61,7 +61,7 @@ function attribute_print_form(){
 	<tr class="subtitle">
 		<td colspan="2">
 		<?php echo format_error($error["general"]); ?>
-		<img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_LDAP_QMAILDOTMODE_HELP; ?></td>
+		<img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_LANG_QMAILDOTMODE_HELP; ?></td>
 	</tr>
 	</table>
 	<input type="hidden" name="submit" value="1">
@@ -71,7 +71,7 @@ function attribute_print_form(){
 	<input type="hidden" name="user" value="<?php echo $user ?>">
 	<br>
 	<br>
-	<input type="submit" value="<?php echo PQL_SAVE; ?>">
+	<input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
 	</form>
 
 <?php
@@ -93,7 +93,7 @@ function attribute_save($type){
 	  case "modify";
 		if($qmaildotmode == $oldvalue){
 			// don't change if new value equal to old one
-			$msg = PQL_LDAP_QMAILDOTMODE_UNCHANGED;
+			$msg = PQL_LANG_QMAILDOTMODE_UNCHANGED;
 			attribute_forward($msg);
 			break;
     	}
@@ -102,10 +102,10 @@ function attribute_save($type){
 			$qmaildotmode = "";
     	}
 		
-		if(pql_replace_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_DOTMODE, $qmaildotmode)){
-			$msg = pql_complete_constant(PQL_LDAP_QMAILDOTMODE_CHANGE_OK, array("mode" => $qmaildotmode));
+		if(pql_replace_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_DOTMODE, $qmaildotmode)){
+			$msg = pql_complete_constant(PQL_LANG_QMAILDOTMODE_CHANGE_OK, array("mode" => $qmaildotmode));
 		} else {
-			$msg = PQL_LDAP_QMAILDOTMODE_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
+			$msg = PQL_LANG_QMAILDOTMODE_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
 		}
 		
 		attribute_forward($msg);

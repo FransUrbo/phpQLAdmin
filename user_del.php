@@ -14,34 +14,34 @@ $o = pql_get_domain_value($_pql, $domain, 'o');
 $cn = pql_get_userattribute($_pql->ldap_linkid, $user, 'cn');
 $cn = $cn[0];
 ?>
-  <span class="title1"><?php echo pql_complete_constant(PQL_USER_DEL_TITLE, array("domain" => $o, "user" => $cn)); ?></span>
+  <span class="title1"><?php echo pql_complete_constant(PQL_LANG_USER_DEL_TITLE, array("domain" => $o, "user" => $cn)); ?></span>
   <br><br>
 <?php
-if(isset($ok) || !PQL_VERIFY_DELETE) {
-	$delete_forwards = (isset($delete_forwards) || PQL_VERIFY_DELETE) ? true : false;
+if(isset($ok) || !PQL_CONF_VERIFY_DELETE) {
+	$delete_forwards = (isset($delete_forwards) || PQL_CONF_VERIFY_DELETE) ? true : false;
 	
 	// delete the user
 	if(pql_user_del($_pql, $domain, $user, $delete_forwards)){
-		$msg = PQL_USER_DEL_OK . ": <b>" . $cn . "</b>";
+		$msg = PQL_LANG_USER_DEL_OK . ": <b>" . $cn . "</b>";
 		$rlnb = "&rlnb=1";
 	} else {
-		$msg = PQL_USER_DEL_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+		$msg = PQL_LANG_USER_DEL_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	}
 	
 	// redirect to domain-detail page
 	$msg = urlencode($msg);
-	header("Location: " . PQL_URI . "domain_detail.php?domain=$domain&msg=$msg$rlnb");
+	header("Location: " . PQL_CONF_URI . "domain_detail.php?domain=$domain&msg=$msg$rlnb");
 } else {
-	echo PQL_SURE;
+	echo PQL_LANG_SURE;
 ?>
 <br>
   <form action="<?php echo $PHP_SELF; ?>" method="GET">
     <input type="hidden" name="user" value="<?php echo $user; ?>">
     <input type="hidden" name="domain" value="<?php echo $domain; ?>">
         
-    <input type="checkbox" name="delete_forwards" checked> <?php echo PQL_USER_DELETE_FORWARDS; ?><br><br>
-    <input type="submit" name="ok" value="<?php echo PQL_YES; ?>">
-    <input type="button" name="back" value="<?php echo PQL_NO; ?>" onClick="history.back();">
+    <input type="checkbox" name="delete_forwards" checked> <?php echo PQL_LANG_USER_DELETE_FORWARDS; ?><br><br>
+    <input type="submit" name="ok" value="<?php echo PQL_LANG_YES; ?>">
+    <input type="button" name="back" value="<?php echo PQL_LANG_NO; ?>" onClick="history.back();">
   </form>
 <br>
 <?php

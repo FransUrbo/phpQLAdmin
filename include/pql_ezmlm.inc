@@ -3,7 +3,7 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ezmlm.inc,v 1.13 2003-01-14 07:32:12 turbo Exp $
+// $Id: pql_ezmlm.inc,v 1.14 2003-04-04 06:54:32 turbo Exp $
 session_start();
 
 class ezmlm {
@@ -281,8 +281,8 @@ class ezmlm {
 			//chown($files[$i], $uidnr);
 		}
 
-		putenv("PQL_USERGROUP=$uidnr.".posix_getuid());
-		putenv("PQL_DIRECTORY=".$directory);
+		putenv("PQL_LANG_USERGROUP=$uidnr.".posix_getuid());
+		putenv("PQL_CONF_DIRECTORY=".$directory);
 		pql_execute('./sub_ezmlm_create.pl', 1);
 	}
 
@@ -326,10 +326,10 @@ class ezmlm {
 		// This SHOULD allow us to be able to 'replace' the commands with something
 		// that will do remote configuration - scripts that uses rsh/ssh perhaps?
 		if(! $paths) {
-			$this->_paths["make"]	= PQL_LDAP_EZMLM_PATH . "/ezmlm-make";
-			$this->_paths["list"]	= PQL_LDAP_EZMLM_PATH . "/ezmlm-list";
-			$this->_paths["sub"]	= PQL_LDAP_EZMLM_PATH . "/ezmlm-sub";
-			$this->_paths["unsub"]	= PQL_LDAP_EZMLM_PATH . "/ezmlm-unsub";
+			$this->_paths["make"]	= PQL_CONF_EZMLM_PATH . "/ezmlm-make";
+			$this->_paths["list"]	= PQL_CONF_EZMLM_PATH . "/ezmlm-list";
+			$this->_paths["sub"]	= PQL_CONF_EZMLM_PATH . "/ezmlm-sub";
+			$this->_paths["unsub"]	= PQL_CONF_EZMLM_PATH . "/ezmlm-unsub";
 		} else {
 			// Assign EXISTING values
 			foreach($paths as $key => $val) {
@@ -340,7 +340,7 @@ class ezmlm {
 			$keys = array('make', 'list', 'sub', 'unsub');
 			foreach($keys as $key) {
 				if(! $this->_paths[$key]) {
-					$this->_paths[$key] = PQL_LDAP_EZMLM_PATH . "/ezmlm-" . $key;
+					$this->_paths[$key] = PQL_CONF_EZMLM_PATH . "/ezmlm-" . $key;
 				}
 			}
 		}

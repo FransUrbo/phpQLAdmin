@@ -2,14 +2,14 @@
 // control attribute plugin for
 // helohost (host name used in SMTP HELO command)
 //
-// $Id: attrib.control.helohost.inc,v 2.3 2002-12-18 16:28:45 turbo Exp $
+// $Id: attrib.control.helohost.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
 
 function helohost_check($type) {
 	global $error, $helohost;
 
 	// validity
 	if($helohost != "" and !check_hostaddress($helohost)){
-		$error["helohost"] = PQL_INVALID;
+		$error["helohost"] = PQL_LANG_INVALID;
 		return false;
 	}
 	
@@ -38,7 +38,7 @@ function helohost_print_view($host) {
 
 	// set empty field to default value
 	if($helohost == ""){
-		$helohost = PQL_LDAP_CONTROL_ME . ", (default, taken from 'me')";
+		$helohost = PQL_CONF_CONTROL_ME . ", (default, taken from 'me')";
  	}
 	
 ?>
@@ -67,7 +67,7 @@ function helohost_print_form() {
       <th colspan="3" align="left">helohost (Helo host)</th>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title">Host</td>
-          <td><?php echo format_error($error["helohost"]); ?><input type="text" name="helohost" value="<?php echo $helohost; ?>"> Default: <?php echo PQL_LDAP_CONTROL_ME; ?> (value in 'me')</td>
+          <td><?php echo format_error($error["helohost"]); ?><input type="text" name="helohost" value="<?php echo $helohost; ?>"> Default: <?php echo PQL_CONF_CONTROL_ME; ?> (value in 'me')</td>
         </tr>
 
         <tr>
@@ -78,7 +78,7 @@ function helohost_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="submit" value="<?php echo PQL_SAVE; ?>">
+    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
 <?php

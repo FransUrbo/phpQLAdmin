@@ -13,7 +13,7 @@ function attribute_forward($msg){
     
     $msg = urlencode($msg);
     $url = "domain_detail.php?rootdn=$rootdn&domain=$domain&msg=$msg";
-    header("Location: " . PQL_URI . "$url");
+    header("Location: " . PQL_CONF_URI . "$url");
 }
 
 // select which attribute have to be included
@@ -67,9 +67,9 @@ include("./header.html");
 ?>
   <span class="title1"><?php
   if(eregi("defaultdomain|basehomedir|basemaildir|administrator", $include)) {
-      echo PQL_DOMAIN_DEFAULT_TITLE;
+      echo PQL_LANG_DOMAIN_DEFAULT_TITLE;
   } else {
-      echo PQL_DOMAIN_CHANGE_ATTRIBUTE_TITLE;
+      echo PQL_LANG_DOMAIN_CHANGE_ATTRIBUTE_TITLE;
   }
 ?>
   </span>

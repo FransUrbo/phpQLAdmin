@@ -58,7 +58,7 @@
 //
 // Please look at other plugins to see which standard header text is recommanded.
 //
-// $Id: attrib.control.skeleton.inc,v 2.3 2002-12-18 16:28:46 turbo Exp $
+// $Id: attrib.control.skeleton.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
 //
 
 function xxx_check($type){
@@ -146,7 +146,7 @@ function xxx_print_form(){
 	<input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
 	<br>
 	<br>
-	<input type="submit" value="<?php echo PQL_SAVE; ?>">
+	<input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
 	</form>
 
 	<?php

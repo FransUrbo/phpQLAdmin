@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtproutes (max number of bytes in message)
 //
-// $Id: attrib.control.smtproutes.inc,v 2.3 2002-12-18 16:28:46 turbo Exp $
+// $Id: attrib.control.smtproutes.inc,v 2.4 2003-04-04 06:54:31 turbo Exp $
 
 function smtproutes_check($type) {
 	global $error, $domain, $relay, $port;
@@ -11,7 +11,7 @@ function smtproutes_check($type) {
 	if(is_array($domain)) {
 		foreach($domain as $key => $dom) {
 			if(preg_match("/[^0-9a-z-\.]+/i",$dom)) {
-				$error["domain_$key"] = PQL_INVALID;
+				$error["domain_$key"] = PQL_LANG_INVALID;
 				$is_error = true;
 			}
 		}
@@ -21,7 +21,7 @@ function smtproutes_check($type) {
 	if(is_array($relay)) {
 		foreach($relay as $key => $rel) {
 			if($rel != "" and !check_hostaddress($rel)) {
-				$error["relay_$key"] = PQL_INVALID;
+				$error["relay_$key"] = PQL_LANG_INVALID;
 				$is_error = true;
 			}
 		}
@@ -31,7 +31,7 @@ function smtproutes_check($type) {
 	if(is_array($port)){
 		foreach($port as $key => $prt){
 			if(preg_match("/[^0-9]+/i", $prt)){
-				$error["port_$key"] = PQL_INVALID;
+				$error["port_$key"] = PQL_LANG_INVALID;
 				$is_error = true;
 			}
 		}
@@ -178,7 +178,7 @@ function smtproutes_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="submit" value="<?php echo PQL_SAVE; ?>">
+    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
 <?php

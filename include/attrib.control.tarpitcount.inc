@@ -3,38 +3,38 @@
 // tarpitcount (user id of virtual user)
 // tarpitdelay (group id of virtual user)
 //
-// $Id: attrib.control.tarpitcount.inc,v 2.3 2002-12-18 16:28:46 turbo Exp $
+// $Id: attrib.control.tarpitcount.inc,v 2.4 2003-04-04 06:54:31 turbo Exp $
 
 function tarpitcount_check($type) {
 	global $error, $tarpitcount, $tarpitdelay;
 
 	// missing
 	if($tarpitcount == ""){
-		$error["tarpitcount"] = PQL_MISSING;
+		$error["tarpitcount"] = PQL_LANG_MISSING;
 		$is_error = true;
 	}
 	
 	// check validity
 	if(preg_match("/[^0-9]/", $tarpitcount)){
-		$error["tarpitcount"] = PQL_INVALID;
+		$error["tarpitcount"] = PQL_LANG_INVALID;
 		$is_error = true;
 	}
 	
 	// missing
 	if($tarpitdelay == ""){
-		$error["tarpitdelay"] = PQL_MISSING;
+		$error["tarpitdelay"] = PQL_LANG_MISSING;
 		$is_error = true;
 	}
 	
 	// check validity
 	if(preg_match("/[^0-9]/", $tarpitdelay)){
-		$error["tarpitdelay"] = PQL_INVALID;
+		$error["tarpitdelay"] = PQL_LANG_INVALID;
 		$is_error = true;
 	}
 	
 	// must be > 0
 	if($error["tarpitdelay"] == "" and $tarpitdelay <= 0){
-		$error["tarpitdelay"] = PQL_GREATER_ZERO;
+		$error["tarpitdelay"] = PQL_LANG_GREATER_ZERO;
 		$is_error = true;
 	}
 	
@@ -126,7 +126,7 @@ function tarpitcount_print_form() {
     </table>
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="submit" value="<?php echo PQL_SAVE; ?>">
+    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
    </form>
 <?php
 }

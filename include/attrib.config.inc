@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.6 2003-04-02 15:29:59 turbo Exp $
+// $Id: attrib.config.inc,v 1.7 2003-04-04 06:54:30 turbo Exp $
 
 function attribute_check() {
     global $administrator, $domain, $oldvalue, $_pql, $error;
@@ -8,7 +8,7 @@ function attribute_check() {
 
     // is typed in ?
     if($$attrib == ""){
-		$error[$attrib] = PQL_MISSING;
+		$error[$attrib] = PQL_LANG_MISSING;
 		return false;
     }
     
@@ -84,7 +84,7 @@ if(($test != 'passwordscheme') and ($test != 'userobjectclass') and ($test != 'b
     <input type="hidden" name="attrib"   value="<?=$attrib?>">
     <input type="hidden" name="rootdn"   value="<?=$rootdn?>">
     <input type="hidden" name="oldvalue" value="<?=$oldvalue?>">
-    <input type="submit" value="<?php echo PQL_SAVE; ?>">
+    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
   <script language="JavaScript">
@@ -115,7 +115,7 @@ function attribute_save() {
 
 	if($value[$attrib] == $oldvalue){
 		// don't change if new value equal to old one
-		$msg = PQL_LDAP_CN_UNCHANGED;
+		$msg = PQL_LANG_CN_UNCHANGED;
 		attribute_forward($msg);
 		break;
 	}

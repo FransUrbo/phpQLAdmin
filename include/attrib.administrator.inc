@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.7 2003-03-31 08:03:50 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.8 2003-04-04 06:54:29 turbo Exp $
 
 function attribute_check() {
     global $$attrib, $domain, $oldvalue, $_pql, $error, $$attrib;
@@ -8,13 +8,13 @@ function attribute_check() {
     
     // is typed in ?
     if($value == "") {
-		$error[$attrib] = PQL_MISSING;
+		$error[$attrib] = PQL_LANG_MISSING;
 		return false;
     }
     
     // don't use ".."
     if(preg_match("/(\.){2,}/", $value)) {
-		$error[$attrib] = PQL_INVALID;
+		$error[$attrib] = PQL_LANG_INVALID;
 		return false;
     }
     
@@ -26,12 +26,12 @@ function attribute_print_form($action) {
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?php echo PQL_DOMAIN_ADMIN_ADD . $domain; ?></th>
+      <th colspan="3" align="left"><?php echo PQL_LANG_DOMAIN_ADMIN_ADD . $domain; ?></th>
         <tr class="<?php table_bgcolor(); ?>">
 <?php
 	if($attrib == 'administrator') {
 ?>
-          <td class="title"><?=PQL_DOMAIN_ADMIN_CHANGE?></td>
+          <td class="title"><?=PQL_LANG_DOMAIN_ADMIN_CHANGE?></td>
 <?php
 	} else {
 ?>
@@ -63,7 +63,7 @@ function attribute_print_form($action) {
 				$users = pql_get_user($_pql->ldap_linkid, $dom);
 				if($users) {
 					foreach($users as $user) {
-						$cn = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_CN);
+						$cn = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_CN);
 						$cns[$user] = $cn[0];
 					}
 					asort($cns);
@@ -96,7 +96,7 @@ function attribute_print_form($action) {
     <input type="hidden" name="action" value="<?=$action?>">
     <input type="hidden" name="oldvalue" value="<?=$$attrib?>">
     <input type="hidden" name="rootdn" value="<?=$rootdn?>">
-    <input type="submit" value="<?=PQL_SAVE?>">
+    <input type="submit" value="<?=PQL_LANG_SAVE?>">
   </form>
 <?php
 }
@@ -111,7 +111,7 @@ function attribute_save($type) {
       case "delete":
 		if($value == $oldvalue) {
 			// don't change if new value equal to old one
-			$msg = PQL_DOMAIN_ADMIN_UNCHANGED;
+			$msg = PQL_LANG_DOMAIN_ADMIN_UNCHANGED;
 			attribute_forward($msg);
 			break;
     	}
@@ -137,24 +137,24 @@ function attribute_save($type) {
 
 		if(pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, $ADMs)) {
 			if($type == 'add') {
-				$msg = pql_complete_constant(PQL_DOMAIN_ADMIN_ADD_OK, array("value" => $value));
+				$msg = pql_complete_constant(PQL_LANG_DOMAIN_ADMIN_ADD_OK, array("value" => $value));
 			} elseif($type == 'delete') {
-				$msg = pql_complete_constant(PQL_DOMAIN_ADMIN_DELETE_OK, array("value" => $value));
+				$msg = pql_complete_constant(PQL_LANG_DOMAIN_ADMIN_DELETE_OK, array("value" => $value));
 			} else {
-				$msg = pql_complete_constant(PQL_DOMAIN_ADMIN_CHANGE_OK, array("value" => $value));
+				$msg = pql_complete_constant(PQL_LANG_DOMAIN_ADMIN_CHANGE_OK, array("value" => $value));
 			}
 		} else {
 			if($type == 'add') {
-				$msg = PQL_DOMAIN_ADMIN_ADD_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+				$msg = PQL_LANG_DOMAIN_ADMIN_ADD_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 			} elseif($type == 'delete') {
-				$msg = PQL_DOMAIN_ADMIN_DELETE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+				$msg = PQL_LANG_DOMAIN_ADMIN_DELETE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 			} else {
-				$msg = PQL_DOMAIN_ADMIN_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+				$msg = PQL_LANG_DOMAIN_ADMIN_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 			}
 		}
 
 		if($domain == $_pql->ldap_basedn[0])
-		  header("Location: " . PQL_URI . "home.php?msg=".urlencode($msg));
+		  header("Location: " . PQL_CONF_URI . "home.php?msg=".urlencode($msg));
 		else
 		  attribute_forward($msg);
 		break;

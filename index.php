@@ -28,8 +28,8 @@ if (empty($uname) or empty($passwd)) {
 	include("./header.html");
 
 	if(!$USER_HOST) {
-		if(! eregi('\+', PQL_LDAP_HOST)) {
-			$host = split(';', PQL_LDAP_HOST);
+		if(! eregi('\+', PQL_CONF_HOST)) {
+			$host = split(';', PQL_CONF_HOST);
 			$USER_HOST = $host[0] . ";" . $host[1];
 			
 			session_register("USER_HOST");
@@ -53,11 +53,11 @@ if (empty($uname) or empty($passwd)) {
 
   <table cellspacing="0" cellpadding="3" border="0" align=center>
     <tr>
-      <td bgcolor="#D0DCE0"><FONT size=3><?php echo PQL_WELCOME . " <B>" . PQL_DESCRIPTION; ?></B></FONT></td>
+      <td bgcolor="#D0DCE0"><FONT size=3><?php echo PQL_LANG_WELCOME . " <B>" . PQL_LANG_DESCRIPTION; ?></B></FONT></td>
     </tr>
 
     <tr align="center">
-      <td class="title1"><? echo PQL_LOGIN; ?></td>
+      <td class="title1"><? echo PQL_LANG_LOGIN; ?></td>
     </tr>
   </table>
 
@@ -67,8 +67,8 @@ if (empty($uname) or empty($passwd)) {
         <td>LDAP Server:</td>
         <td align="left">
 <?php
-	if(eregi('\+', PQL_LDAP_HOST)) {
-		$servers = split('\+', PQL_LDAP_HOST);
+	if(eregi('\+', PQL_CONF_HOST)) {
+		$servers = split('\+', PQL_CONF_HOST);
 ?>
           <select name="server">
 <?php
@@ -86,7 +86,7 @@ if (empty($uname) or empty($passwd)) {
 		$server = $USER_HOST;
 ?>
         <b><?=$server.";".$_pql->ldap_basedn[0]?></b>
-        <input type="hidden" name="server" value="<?=PQL_LDAP_HOST?>">
+        <input type="hidden" name="server" value="<?=PQL_CONF_HOST?>">
 <?php
 	}
 ?>
@@ -94,12 +94,12 @@ if (empty($uname) or empty($passwd)) {
       <tr>
 
           <tr>
-            <td bgcolor="#D0DCE0"><b><?=PQL_USERNAME?>:</b></td>
+            <td bgcolor="#D0DCE0"><b><?=PQL_LANG_USERNAME?>:</b></td>
             <td><input type=text name="uname"></td>
           </tr>
 
           <tr>
-             <td bgcolor="#D0DCE0"><b><?=PQL_USERPASS?>:</b></td>
+             <td bgcolor="#D0DCE0"><b><?=PQL_LANG_USERPASS?>:</b></td>
              <td><input type=password name="passwd" onChange="this.form.submit()" autocomplete="OFF"></td>
           </tr>
 
@@ -164,7 +164,7 @@ if (empty($uname) or empty($passwd)) {
 	// These variables will be NULL the first time,
 	// so we will bind anonymously... 
 	// We must have read access (to the DN and CN/UID =>
-	// the PQL_LDAP_REFERENCE_USERS_WITH define entry) as
+	// the PQL_CONF_REFERENCE_USERS_WITH define entry) as
 	// anonymous here!
 	$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
@@ -196,7 +196,7 @@ if (empty($uname) or empty($passwd)) {
 	  $USER_PASS = $passwd;
 
 	if($error) {
-		$msg = PQL_ERROR . ": " . ldap_err2str($error);
+		$msg = PQL_LANG_ERROR . ": " . ldap_err2str($error);
 		header("Location:index.php?msg=" . urlencode($msg));
 		exit;
 	}
@@ -205,7 +205,7 @@ if (empty($uname) or empty($passwd)) {
 	$USER_DN	= $rootdn;
 
 	if(! session_register("USER_ID", "USER_PASS", "USER_DN"))
-	  die (PQL_SESSION_REG);
+	  die (PQL_LANG_SESSION_REG);
 
 	$log = date("M d H:i:s");
 	$log .= " : Logged in ($rootdn)\n";

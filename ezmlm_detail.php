@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_detail.php,v 1.14 2003-01-21 13:39:40 turbo Exp $
+// $Id: ezmlm_detail.php,v 1.15 2003-04-04 06:53:47 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -147,7 +147,7 @@ if($domain) {
   <br>
 
   <table cellspacing="0" cellpadding="3" border="0">
-    <th align="left"><?=PQL_ACTIONS?></th>
+    <th align="left"><?=PQL_LANG_ACTIONS?></th>
       <tr class="<?php table_bgcolor(); ?>">
         <td><a href="ezmlm_del.php?domain=<?=$domain?>&listno=<?=$listno?>">Delete list</a></td>
       </tr>

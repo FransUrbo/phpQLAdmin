@@ -7,11 +7,11 @@ require("./include/pql_config.inc");
 
 switch ($attrib) {
   case "mailalternateaddress":
-    $attrib = PQL_LDAP_ATTR_MAILALTERNATE;
+    $attrib = PQL_CONF_ATTR_MAILALTERNATE;
     break;	
     
   case "mailforwardingaddress";
-    $attrib = PQL_LDAP_ATTR_FORWARDS;
+    $attrib = PQL_CONF_ATTR_FORWARDS;
     break;
     
   default:
@@ -20,37 +20,37 @@ switch ($attrib) {
 
 include("./header.html");
 ?>
-  <span class="title1"><?php pql_complete_constant(PQL_USER_DEL_ATTRIBUTE_TITLE, array("value" => $value));?></span>
+  <span class="title1"><?php pql_complete_constant(PQL_LANG_USER_DEL_ATTRIBUTE_TITLE, array("value" => $value));?></span>
 <?php
-if(isset($ok) || !PQL_VERIFY_DELETE) {
+if(isset($ok) || !PQL_CONF_VERIFY_DELETE) {
     $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
     
     // delete the user attribute
     if(pql_remove_userattribute($_pql->ldap_linkid, $user, $attrib, $value)){
-	$msg = PQL_USER_DEL_ATTRIBUTE_OK;
+	$msg = PQL_LANG_USER_DEL_ATTRIBUTE_OK;
 	$success = true;
     } else {
-    	$msg = PQL_USER_DEL_ATTRIBUTE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+    	$msg = PQL_LANG_USER_DEL_ATTRIBUTE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	$success = false;
     }
     
     if ($attrib == 'mailalternateaddress' and $success and isset($delete_forwards)) {
 	// does another account forward to this alias?
-	$sr = ldap_search($_pql->ldap_linkid, "(|(" . PQL_LDAP_ATTR_FORWARDS ."=" . $value . "))");
+	$sr = ldap_search($_pql->ldap_linkid, "(|(" . PQL_CONF_ATTR_FORWARDS ."=" . $value . "))");
 	if (ldap_count_entries($_pql->ldap_linkid,$sr) > 0) {
 	    
 	    $results = ldap_get_entries($_pql->ldap_linkid, $sr);
 	    foreach($results as $key => $result){
 		if ((string)$key != "count") {
-		    $ref = $result[$config["PQL_LDAP_REFERENCE_USERS_WITH"][pql_get_rootdn($user)]][0];
-		    $domain = pql_strip_username($result[PQL_LDAP_ATTR_MAIL][0]);
+		    $ref = $result[$config["PQL_CONF_REFERENCE_USERS_WITH"][pql_get_rootdn($user)]][0];
+		    $domain = pql_strip_username($result[PQL_CONF_ATTR_MAIL][0]);
 		    $forwarders[]  = array("domain" => $domain, "reference" => $ref, "cn" => $cn,  "email" => $result["mail"][0]);
 		}
 	    }
 	    var_dump($forwarders);
 	    foreach($forwarders as $forward) {
 		// we found a forward -> remove it 
-		pql_remove_userattribute($_pql->ldap_linkid, $forward['reference'], PQL_LDAP_ATTR_FORWARDS, $value);
+		pql_remove_userattribute($_pql->ldap_linkid, $forward['reference'], PQL_CONF_ATTR_FORWARDS, $value);
 	    }
 	}
     }
@@ -58,13 +58,13 @@ if(isset($ok) || !PQL_VERIFY_DELETE) {
     // redirect to users detail page
     $msg = urlencode($msg);
     $url = "user_detail.php?domain=$domain&msg=$msg&user=" . urlencode($user);
-    header("Location: " . PQL_URI . "$url");
+    header("Location: " . PQL_CONF_URI . "$url");
     echo $value;
 } else {
 ?>
 <br>
 <br>
-<?php echo PQL_SURE; ?>
+<?php echo PQL_LANG_SURE; ?>
 <br>
   <form action="<?php echo $PHP_SELF; ?>" method="GET">
     <input type="hidden" name="user" value="<?php echo $user; ?>">
@@ -74,12 +74,12 @@ if(isset($ok) || !PQL_VERIFY_DELETE) {
 <?php
   if ($attrib == 'mailalternateaddress') {
 ?>	
-    <input type="checkbox" name="delete_forwards" checked> <?php echo PQL_LDAP_MAILALTERNATEADDRESS_DEL_FORWARDS; ?><br><br>
+    <input type="checkbox" name="delete_forwards" checked> <?php echo PQL_LANG_MAILALTERNATEADDRESS_DEL_FORWARDS; ?><br><br>
 <?php
   }
 ?>
-    <input type="submit" name="ok" value="<?php echo PQL_YES; ?>">
-    <input type="button" name="back" value="<?php echo PQL_NO; ?>" onClick="history.back();">
+    <input type="submit" name="ok" value="<?php echo PQL_LANG_YES; ?>">
+    <input type="button" name="back" value="<?php echo PQL_LANG_NO; ?>" onClick="history.back();">
   </form>
   <br>
 <?php

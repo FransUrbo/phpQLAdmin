@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtpgreeting (SMTP greeting message)
 //
-// $Id: attrib.control.smtpgreeting.inc,v 2.3 2002-12-18 16:28:46 turbo Exp $
+// $Id: attrib.control.smtpgreeting.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
 
 function smtpgreeting_check($type) {
 	global $error, $smtpgreeting;
@@ -73,7 +73,7 @@ function smtpgreeting_print_form(){
     </table>
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="submit" value="<?php echo PQL_SAVE; ?>">
+    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
 <?php

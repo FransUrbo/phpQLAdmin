@@ -14,7 +14,7 @@ if(isset($msg)){
 }
 
 // reload navigation bar if needed
-if(isset($rlnb) and PQL_AUTO_RELOAD){
+if(isset($rlnb) and PQL_CONF_AUTO_RELOAD){
 ?>
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
   <script language="JavaScript1.2"><!--
@@ -25,7 +25,7 @@ if(isset($rlnb) and PQL_AUTO_RELOAD){
 <?php
 }
 ?>
-  <span class="title1"><?php echo PQL_SEARCH_TITLE2; ?></span>
+  <span class="title1"><?php echo PQL_LANG_SEARCH_TITLE2; ?></span>
   <br><br>
 
 <?php
@@ -35,7 +35,7 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 if ($attribute == "" || $filter_type == "" || $search_string == "") {
     // invalid form submission
     $msg = urlencode("You have to provide a value to search");
-    header("Location: " . PQL_URI . "home.php?msg=$msg");
+    header("Location: " . PQL_CONF_URI . "home.php?msg=$msg");
     exit();
 }
 
@@ -60,16 +60,16 @@ switch($filter_type) {
 $users = pql_search($_pql->ldap_linkid, $filter);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="4" align="left"><?php echo PQL_USER_REGISTRED ?> (<?php echo sizeof($users); ?>)</th>
+    <th colspan="4" align="left"><?php echo PQL_LANG_USER_REGISTRED ?> (<?php echo sizeof($users); ?>)</th>
 <?php
 if(is_array($users)){
 ?>
 <tr>
-      <td class="title"><?php echo PQL_USER ?></td>
-      <td class="title"><?php echo PQL_USER_ID ?></td>
-      <td class="title"><?php echo PQL_EMAIL ?></td>
-      <td class="title"><?php echo PQL_LDAP_ACCOUNTSTATUS_STATUS ?></td>
-      <td class="title"><?php echo PQL_OPTIONS ?></td>
+      <td class="title"><?php echo PQL_LANG_USER ?></td>
+      <td class="title"><?php echo PQL_LANG_USER_ID ?></td>
+      <td class="title"><?php echo PQL_LANG_EMAIL ?></td>
+      <td class="title"><?php echo PQL_LANG_ACCOUNTSTATUS_STATUS ?></td>
+      <td class="title"><?php echo PQL_LANG_OPTIONS ?></td>
     </tr>
 <?php
   asort($users);
@@ -77,13 +77,13 @@ if(is_array($users)){
       // don't know domain, so must figure it out
       $domain = $user["domain"];
       $reference = $user["reference"];
-      $uid = pql_get_userattribute($_pql->ldap_linkid, $reference, PQL_LDAP_ATTR_UID);
+      $uid = pql_get_userattribute($_pql->ldap_linkid, $reference, PQL_CONF_ATTR_UID);
       $uid = $uid[0];
-      $cn = pql_get_userattribute($_pql->ldap_linkid, $reference, PQL_LDAP_ATTR_CN);
+      $cn = pql_get_userattribute($_pql->ldap_linkid, $reference, PQL_CONF_ATTR_CN);
       $cn = $cn[0];
-      $mail = pql_get_userattribute($_pql->ldap_linkid, $reference, PQL_LDAP_ATTR_MAIL);
+      $mail = pql_get_userattribute($_pql->ldap_linkid, $reference, PQL_CONF_ATTR_MAIL);
       $mail = $mail[0];
-      $status = pql_get_userattribute($_pql->ldap_linkid, $reference, PQL_LDAP_ATTR_ISACTIVE);
+      $status = pql_get_userattribute($_pql->ldap_linkid, $reference, PQL_CONF_ATTR_ISACTIVE);
       $status = pql_ldap_accountstatus($status[0]);
 ?>
     <tr class="<?php table_bgcolor(); ?>">
@@ -94,11 +94,11 @@ if(is_array($users)){
       <td><?=$status?></td>
       <td>
         <a href="user_detail.php?domain=<?php echo $domain ?>&user=<?php echo urlencode($reference)?>">
-          <img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_USER_EDIT ?>" border="0">
+          <img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LANG_USER_EDIT ?>" border="0">
         </a>
         &nbsp;&nbsp;
         <a href="user_del.php?domain=<?php echo $domain;?>&user=<?php echo urlencode($reference); ?>">
-          <img src="images/del.png" width="12" height="12" alt="<?php echo PQL_USER_DELETE ?>" border="0">
+          <img src="images/del.png" width="12" height="12" alt="<?php echo PQL_LANG_USER_DELETE ?>" border="0">
         </a>
       </td>
     </tr>
@@ -108,7 +108,7 @@ if(is_array($users)){
 	// no users registred
 ?>
 <tr class="<?php table_bgcolor(); ?>">
-	<td colspan="5"><?php echo PQL_USER_NONE ?></td>
+	<td colspan="5"><?php echo PQL_LANG_USER_NONE ?></td>
 </tr>
 <?php
 }

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // badmailfrom (blocked from addresses)
 //
-// $Id: attrib.control.badmailfrom.inc,v 2.3 2002-12-18 16:28:45 turbo Exp $
+// $Id: attrib.control.badmailfrom.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
 
 function badmailfrom_check($type) {
 	global $error, $badmailfrom;
@@ -18,12 +18,12 @@ function badmailfrom_check($type) {
 				// retry with added user
 				if(!check_email("user" . $badmail)){
 					$is_error = true;
-					$error["badmailfrom_$key"] = PQL_INVALID;
+					$error["badmailfrom_$key"] = PQL_LANG_INVALID;
 				}
 			} else {
 				if(!check_email($badmail)){
 					$is_error = true;
-					$error["badmailfrom_$key"] = PQL_INVALID;
+					$error["badmailfrom_$key"] = PQL_LANG_INVALID;
 				}
 			} // end if preg_match...
 		} // end foreach
@@ -134,7 +134,7 @@ function badmailfrom_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="submit" value="<?php echo PQL_SAVE; ?>">
+    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
 <?php

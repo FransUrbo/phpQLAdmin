@@ -1,20 +1,20 @@
 <?php
 // attribute plugin for
 // mailforwardingaddress (forward all mails to this address)
-// $Id: attrib.mailforwardingaddress.inc,v 2.3 2003-01-16 14:58:38 turbo Exp $
+// $Id: attrib.mailforwardingaddress.inc,v 2.4 2003-04-04 06:54:31 turbo Exp $
 
 function attribute_check($type){
 	global $mailforwardingaddress, $error;
 
 	// is typed in ?
 	if($mailforwardingaddress == ""){
-		$error["mailforwardingaddress"] = PQL_MISSING;
+		$error["mailforwardingaddress"] = PQL_LANG_MISSING;
 		return false;
   	}
 
 	// valid
 	if(!check_email($mailforwardingaddress)){
-		$error["mailforwardingaddress"] = PQL_INVALID;
+		$error["mailforwardingaddress"] = PQL_LANG_INVALID;
 		return false;
 	}
 
@@ -32,7 +32,7 @@ function attribute_print_form(){
 	?>
 	<form action="<?php echo $PHP_SELF ?>" method="post">
 	<table cellspacing="0" cellpadding="3" border="0">
-	<th colspan="3" align="left"><?php if($oldvalue == ""){echo PQL_LDAP_MAILFORWARDINGADDRESS_NEW;}else{echo PQL_LDAP_MAILFORWARDINGADDRESS_CHANGE;} ?></th>
+	<th colspan="3" align="left"><?php if($oldvalue == ""){echo PQL_LANG_MAILFORWARDINGADDRESS_NEW;}else{echo PQL_LANG_MAILFORWARDINGADDRESS_CHANGE;} ?></th>
 	<?php
 	  // We're changing a MailForwardingAddress. Give the old as reference
 	  if($oldvalue != "") {
@@ -43,7 +43,7 @@ function attribute_print_form(){
 	  }
 	?>
 	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title"><?php echo PQL_EMAIL; ?></td>
+		<td class="title"><?php echo PQL_LANG_EMAIL; ?></td>
 		<td><?php echo format_error($error["mailforwardingaddress"]); ?><input type="text" name="mailforwardingaddress" value=""></td>
 	</tr>
 	</table>
@@ -54,7 +54,7 @@ function attribute_print_form(){
 	<input type="hidden" name="user" value="<?php echo $user ?>">
 	<br>
 	<br>
-	<input type="submit" value="<?php echo PQL_SAVE; ?>">
+	<input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
 	</form>
 
 	<?php
@@ -70,10 +70,10 @@ function attribute_save($type){
 	
 	switch($type){
 	  case "add":
-		if(pql_add_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_FORWARDS, $mailforwardingaddress)){
-			$msg = pql_complete_constant(PQL_LDAP_MAILFORWARDINGADDRESS_ADD_OK, array("mail" => $mailforwardingaddress));
+		if(pql_add_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_FORWARDS, $mailforwardingaddress)){
+			$msg = pql_complete_constant(PQL_LANG_MAILFORWARDINGADDRESS_ADD_OK, array("mail" => $mailforwardingaddress));
 		} else {
-			$msg = PQL_LDAP_MAILFORWARDINGADDRESS_ADD_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
+			$msg = PQL_LANG_MAILFORWARDINGADDRESS_ADD_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
 		}
 		
 		attribute_forward($msg);
@@ -83,15 +83,15 @@ function attribute_save($type){
 		
 		if($email == $oldvalue){
 			// don't change if new value equal to old one
-			$msg = PQL_LDAP_MAILFORWARDINGADDRESS_UNCHANGED;
+			$msg = PQL_LANG_MAILFORWARDINGADDRESS_UNCHANGED;
 			attribute_forward($msg);
 			break;
     	}
 		
-		if(pql_modify_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_FORWARDS, $oldvalue, $email)){
-			$msg = pql_complete_constant(PQL_LDAP_MAILFORWARDINGADDRESS_CHANGE_OK, array("old" => $oldvalue, "new" => $email));
+		if(pql_modify_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_FORWARDS, $oldvalue, $email)){
+			$msg = pql_complete_constant(PQL_LANG_MAILFORWARDINGADDRESS_CHANGE_OK, array("old" => $oldvalue, "new" => $email));
 		} else {
-			$msg = PQL_LDAP_MAILFORWARDINGADDRESS_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
+			$msg = PQL_LANG_MAILFORWARDINGADDRESS_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
 		}
 		
 		attribute_forward($msg);

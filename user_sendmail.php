@@ -9,7 +9,7 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 include("./header.html");
 ?>
-  <span class="title1"><?php echo PQL_SENDMAIL ?></span>
+  <span class="title1"><?php echo PQL_LANG_SENDMAIL ?></span>
   <br><br>
 <?php
 echo "User: $user<br>";
@@ -22,16 +22,16 @@ if($email == ""){
     die("no email address given...");
 }
 
-$subject = PQL_TESTMAIL_SUBJECT;
-$from = "From: " . PQL_HOSTMASTER . "\n";
+$subject = PQL_CONF_TESTMAIL_SUBJECT;
+$from = "From: " . PQL_CONF_HOSTMASTER . "\n";
 $xmailer = "X-Mailer: phpQLAdmin $VERSION\n";
 $vars['MAIL'] = $email;
 $vars['UID'] = $user;
 $vars['VERSION'] = $VERSION;
 
-$cn = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_CN);
+$cn = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_CN);
 $vars['CN'] = $cn[0];
-$sn = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_SN);
+$sn = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_SN);
 $vars['SN'] = $sn[0];
 
 $quota = pql_get_userquota($_pql->ldap_linkid, $user);
@@ -42,9 +42,9 @@ if (is_array($quota)) {
 } else {
     // No quota for this mailbox.
     // Do we use the qmail-ldap/control patch?
-    if (!PQL_LDAP_CONTROL_USE) {
+    if (!PQL_CONF_CONTROL_USE) {
 	// No -> quota is 'standard'
-	$vars['QUOTA'] = PQL_LDAP_MAILQUOTA_DEFAULT;
+	$vars['QUOTA'] = PQL_LANG_MAILQUOTA_DEFAULT;
     } else {
 	// qmail-ldap/control patch is used
 	// search the standard quota...
@@ -58,7 +58,7 @@ if (is_array($quota)) {
     }
 }
 	
-$message = pql_complete_constant(PQL_TESTMAIL_MAILTEXT, $vars);
+$message = pql_complete_constant(PQL_CONF_TESTMAIL_MAILTEXT, $vars);
 	
 $header = $from . $xmailer;
 
@@ -70,9 +70,9 @@ if (!empty($msg)) {
 }
 
 if(mail($email, $subject, $message, $header)){
-    $msg .= pql_complete_constant(PQL_SENDMAIL_OK, array("email" => $email));
+    $msg .= pql_complete_constant(PQL_LANG_SENDMAIL_OK, array("email" => $email));
 } else {
-    $msg .= PQL_SENDMAIL_FAILED;
+    $msg .= PQL_LANG_SENDMAIL_FAILED;
 }
 
 $msg = urlencode($msg);
@@ -81,7 +81,7 @@ $url = "user_detail.php?domain=$domain&user=$user&msg=$msg";
 if(isset($rlnb))
      $url .= "&rlnb=$rlnb";
 
-header("Location: " . PQL_URI . $url);
+header("Location: " . PQL_CONF_URI . $url);
 ?>
 </body>
 </html>

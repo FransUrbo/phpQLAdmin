@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailalternateaddress (emailaddress alias)
-// $Id: attrib.mailalternateaddress.inc,v 2.4 2003-01-24 08:56:51 turbo Exp $
+// $Id: attrib.mailalternateaddress.inc,v 2.5 2003-04-04 06:54:31 turbo Exp $
 
 // Construct the emailaddress if it don't contain an at character. Needed later...
 if(($mailalternateaddress != "") && !ereg("@", $mailalternateaddress)) {
@@ -13,13 +13,13 @@ function attribute_check($type){
     
     // is typed in ?
     if($mailalternateaddress == ""){
-	$error["mailalternateaddress"] = PQL_MISSING;
+	$error["mailalternateaddress"] = PQL_LANG_MISSING;
 	return false;
     }
     
     // valid
     if(!check_email($mailalternateaddress)){
-	$error["mailalternateaddress"] = PQL_INVALID;
+	$error["mailalternateaddress"] = PQL_LANG_INVALID;
 	return false;
     }
     
@@ -27,13 +27,13 @@ function attribute_check($type){
     if($type == "add"){
 	// add
 	if(pql_email_exists($_pql, $mailalternateaddress)) {
-	    $error["mailalternateaddress"] = PQL_EXISTS;
+	    $error["mailalternateaddress"] = PQL_LANG_EXISTS;
 	    return false;
 	}
     } else {
 	// modify
 	if($oldvalue != $mailalternateaddress and pql_email_exists($_pql, $mailalternateaddress)) {
-	    $error["mailalternateaddress"] = PQL_EXISTS;
+	    $error["mailalternateaddress"] = PQL_LANG_EXISTS;
 	    return false;
 	}
     }
@@ -51,7 +51,7 @@ function attribute_print_form(){
   ?>
 	<form action="<?php echo $PHP_SELF ?>" method="post">
 	<table cellspacing="0" cellpadding="3" border="0">
-	<th colspan="3" align="left"><?php if($oldvalue == ""){echo PQL_LDAP_MAILALTERNATEADDRESS_NEW;}else{echo PQL_LDAP_MAILALTERNATEADDRESS_CHANGE;} ?></th>
+	<th colspan="3" align="left"><?php if($oldvalue == ""){echo PQL_LANG_MAILALTERNATEADDRESS_NEW;}else{echo PQL_LANG_MAILALTERNATEADDRESS_CHANGE;} ?></th>
   <?php
     // We're changing a MailAlternateAddress. Give the old as reference
     if($oldvalue != "") {
@@ -62,12 +62,12 @@ function attribute_print_form(){
     }
   ?>
 	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title"><?php echo PQL_EMAIL; ?></td>
+		<td class="title"><?php echo PQL_LANG_EMAIL; ?></td>
 		<td><?php echo format_error($error["mailalternateaddress"]); ?><input type="text" name="mailalternateaddress" value=""><b>@<?php echo $defaultdomain; ?></b></td>
 	</tr>
 	<tr class="subtitle">
 		<td colspan="2">
-		<img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_LDAP_MAILALTERNATEADDRESS_HELP; ?></td>
+		<img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_LANG_MAILALTERNATEADDRESS_HELP; ?></td>
 	</tr>
 	</table>
 	<input type="hidden" name="submit" value="1">
@@ -77,7 +77,7 @@ function attribute_print_form(){
 	<input type="hidden" name="user" value="<?php echo $user ?>">
 	<br>
 	<br>
-	<input type="submit" value="<?php echo PQL_SAVE; ?>">
+	<input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
 	</form>
   <?php
 }
@@ -94,15 +94,15 @@ function attribute_save($type){
       case "add":
 	$email = $mailalternateaddress;
 	
-	if(pql_add_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_MAILALTERNATE, $email)){
-	    $msg = pql_complete_constant(PQL_LDAP_MAILALTERNATEADDRESS_ADD_OK, array("mail" => $email));
+	if(pql_add_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_MAILALTERNATE, $email)){
+	    $msg = pql_complete_constant(PQL_LANG_MAILALTERNATEADDRESS_ADD_OK, array("mail" => $email));
 	} else {
-	    $msg = PQL_LDAP_MAILALTERNATEADDRESS_ADD_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
+	    $msg = PQL_LANG_MAILALTERNATEADDRESS_ADD_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
 	}
 	
-	if (PQL_TESTMAIL_AUTOSEND) {
+	if (PQL_CONF_TESTMAIL_AUTOSEND) {
 	    $url = "user_sendmail.php?email=" . urlencode($email) . "&domain=$domain&user=" . urlencode($user) . "&msg=" . urlencode($msg);
-	    header("Location: " . PQL_URI . $url);
+	    header("Location: " . PQL_CONF_URI . $url);
 	} else {
 	    attribute_forward($msg);
 	}
@@ -113,20 +113,20 @@ function attribute_save($type){
 	
 	if($email == $oldvalue){
 	    // don't change if new value equal to old one
-	    $msg = PQL_LDAP_MAILALTERNATEADDRESS_UNCHANGED;
+	    $msg = PQL_LANG_MAILALTERNATEADDRESS_UNCHANGED;
 	    attribute_forward($msg);
 	    break;
 	}
 	
-	if(pql_modify_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_MAILALTERNATE, $oldvalue, $email)){
-	    $msg = pql_complete_constant(PQL_LDAP_MAILALTERNATEADDRESS_CHANGE_OK, array("old" => $oldvalue, "new" => $email));
+	if(pql_modify_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_MAILALTERNATE, $oldvalue, $email)){
+	    $msg = pql_complete_constant(PQL_LANG_MAILALTERNATEADDRESS_CHANGE_OK, array("old" => $oldvalue, "new" => $email));
 	} else {
-	    $msg = PQL_LDAP_MAILALTERNATEADDRESS_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
+	    $msg = PQL_LANG_MAILALTERNATEADDRESS_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
 	}
 	
-	if (PQL_TESTMAIL_AUTOSEND) {
+	if (PQL_CONF_TESTMAIL_AUTOSEND) {
 	    $url = "user_sendmail.php?email=" . urlencode($email) . "&domain=$domain&user=" . urlencode($user) . "&msg=" . urlencode($msg);
-	    header("Location: " . PQL_URI . $url);
+	    header("Location: " . PQL_CONF_URI . $url);
 	} else {
 	    attribute_forward($msg);
 	}

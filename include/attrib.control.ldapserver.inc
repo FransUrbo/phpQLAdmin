@@ -5,14 +5,14 @@
 // ldaplogin (cn of a database user)
 // ldappassword (password to bind to ldaplogin)
 //
-// $Id: attrib.control.ldapserver.inc,v 2.3 2002-12-18 16:28:46 turbo Exp $
+// $Id: attrib.control.ldapserver.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
 
 function ldapserver_check($type){
 	global $error, $ldapserver, $ldappassword, $ldapbasedn, $ldaplogin_use, $ldaplogin, $ldap_test;
 
 	// missing
 	if($ldapserver[0] == ""){
-		$error["ldapserver_0"] = PQL_MISSING;
+		$error["ldapserver_0"] = PQL_LANG_MISSING;
 		$is_error = true;
 	}
 
@@ -20,7 +20,7 @@ function ldapserver_check($type){
 	if(is_array($ldapserver)){
 		foreach($ldapserver as $key => $server){
 			if($server != "" and !check_hostaddress($server, true)){
-				$error["ldapserver_$key"] = PQL_INVALID;
+				$error["ldapserver_$key"] = PQL_LANG_INVALID;
 				$is_error = true;
 			}
 		}
@@ -28,7 +28,7 @@ function ldapserver_check($type){
 	
 	// missing
 	if($ldapbasedn == ""){
-		$error["ldapbasedn"] = PQL_MISSING;
+		$error["ldapbasedn"] = PQL_LANG_MISSING;
 		$is_error = true;
 	}
 	
@@ -38,7 +38,7 @@ function ldapserver_check($type){
 	if($ldaplogin_use == "1"){
 		// missing
 		if($ldaplogin == ""){
-			$error["ldaplogin"] = PQL_MISSING;
+			$error["ldaplogin"] = PQL_LANG_MISSING;
 			$is_error = true;
 		}
 		
@@ -46,7 +46,7 @@ function ldapserver_check($type){
 		
 		// missing
 		if($ldappassword == ""){
-			$error["ldappassword"] = PQL_MISSING;
+			$error["ldappassword"] = PQL_LANG_MISSING;
 			$is_error = true;
 		}
 	}
@@ -161,7 +161,7 @@ function ldapserver_print_view($host) {
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title"><?php echo PQL_LDAP_USERPASSWORD_TITLE; ?></td>
+        <td class="title"><?php echo PQL_LANG_USERPASSWORD_TITLE; ?></td>
         <td><?php echo $ldappassword; ?></td>
       </tr>
 
@@ -214,7 +214,7 @@ function ldapserver_print_form(){
         </tr>
 
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_LDAP_USERPASSWORD_TITLE; ?></td>
+          <td class="title"><?php echo PQL_LANG_USERPASSWORD_TITLE; ?></td>
           <td><?php echo format_error($error["ldappassword"]); ?><input type="password" name="ldappassword"></td>
         </tr>
 
@@ -235,7 +235,7 @@ function ldapserver_print_form(){
     <input type="hidden" name="srvcount" value="<?php echo $srvcount; ?>">
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="submit" value="<?php echo PQL_SAVE; ?>">
+    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
 <?php
@@ -312,7 +312,7 @@ function ldapserver_help(){
 	If you need to authentificate against your ldap server to retrieve the user information, this is the username to do so.
 	Note: this is a ldap dn, not a unix username.
 	<br><br>
-  <b><?php echo PQL_LDAP_USERPASSWORD_TITLE; ?></b><br>
+  <b><?php echo PQL_LANG_USERPASSWORD_TITLE; ?></b><br>
 	The password for the user defined in ldaplogin if needed. Cleartext.
 	<?php
 }

@@ -8,19 +8,19 @@ require("./include/pql_control.inc");
 
 include("./header.html");
 ?>
-  <span class="title1"><?php echo pql_complete_constant(PQL_DOMAIN_DEL_TITLE, array("domain" => $domain))?></span>
+  <span class="title1"><?php echo pql_complete_constant(PQL_LANG_DOMAIN_DEL_TITLE, array("domain" => $domain))?></span>
 <?php
 	if($ok != 1){
 ?>
 <br>
 <br>
 <img src="images/info.png" width="16" height="16" border="0">
-<?php echo PQL_DOMAIN_DEL_WARNING; ?>
+<?php echo PQL_LANG_DOMAIN_DEL_WARNING; ?>
 <br>
 <br>
-<?php echo PQL_SURE; ?>
+<?php echo PQL_LANG_SURE; ?>
 <br>
-<a href="domain_del.php?domain=<?php echo $domain; ?>&unit=<?php echo $unit; ?>&ok=1"><?php echo PQL_YES; ?></a>, <a href="javascript:history.back()"><?php echo PQL_NO; ?></a>
+<a href="domain_del.php?domain=<?php echo $domain; ?>&unit=<?php echo $unit; ?>&ok=1"><?php echo PQL_LANG_YES; ?></a>, <a href="javascript:history.back()"><?php echo PQL_LANG_NO; ?></a>
 <br>
 <?php
   } else {
@@ -35,11 +35,11 @@ include("./header.html");
 	  }
 	  
 	  // redirect to home page
-	  $msg = PQL_DOMAIN_DEL_OK;
+	  $msg = PQL_LANG_DOMAIN_DEL_OK;
 	  $msg = urlencode($msg);
 	  header("Location: home.php?msg=$msg&rlnb=1");
       } else {
-	  $msg = PQL_DOMAIN_DEL_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+	  $msg = PQL_LANG_DOMAIN_DEL_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	  // redirect to domain detail page
 	  $msg = urlencode($msg);
 	  header("Location: domain_detail.php?domain=$domain&unit=$unit&msg=$msg");

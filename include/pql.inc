@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.50 2003-04-03 12:25:10 turbo Exp $
+// $Id: pql.inc,v 2.51 2003-04-04 06:54:31 turbo Exp $
 //
 
 // ----------------------------
@@ -166,8 +166,8 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 	  echo "pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $branch)<br>";
 
     // Setup the objectclass entries
-	if($config["PQL_LDAP_OBJECTCLASS_USER"][$rootdn]) {
-		foreach(pql_split_oldvalues($config["PQL_LDAP_OBJECTCLASS_USER"][$rootdn]) as $oc)
+	if($config["PQL_CONF_OBJECTCLASS_USER"][$rootdn]) {
+		foreach(pql_split_oldvalues($config["PQL_CONF_OBJECTCLASS_USER"][$rootdn]) as $oc)
 		  $entry["objectClass"][] = $oc;
 	}
     
@@ -197,7 +197,7 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 		}
     }
     
-	$userdn = PQL_LDAP_ATTR_UID . "=" . $entry[PQL_LDAP_ATTR_UID] . ",";
+	$userdn = PQL_CONF_ATTR_UID . "=" . $entry[PQL_CONF_ATTR_UID] . ",";
 	if($branch)
 	  $userdn .= $branch;
 	else
@@ -240,10 +240,10 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 		$entry["cn"] = $attribs["uid"];
 		$entry["gidnumber"] = $gidnr;
 		
-		if(defined("PQL_LDAP_SUBTREE_GROUPS"))
-		  $subrdn = "," . PQL_LDAP_SUBTREE_GROUPS . ",";
+		if(defined("PQL_CONF_SUBTREE_GROUPS"))
+		  $subrdn = "," . PQL_CONF_SUBTREE_GROUPS . ",";
 
-		$groupdn = PQL_LDAP_ATTR_CN . "=" . $attribs[PQL_LDAP_USER_RDN_ATTRIBUTE] . $subrdn . $domain;
+		$groupdn = PQL_CONF_ATTR_CN . "=" . $attribs[PQL_CONF_USER_RDN_ATTRIBUTE] . $subrdn . $domain;
 
 		// --------------------------
 		
@@ -289,7 +289,7 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 	}
 
 	// Get uidnr of user
-	$uidnr = pql_get_userattribute($linkid, $user, PQL_LDAP_ATTR_QMAILUID);
+	$uidnr = pql_get_userattribute($linkid, $user, PQL_CONF_ATTR_QMAILUID);
 	$uidnr = $uidnr[0];
     
 	// Delete the group object if it exists
@@ -309,8 +309,8 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 		$forwarders = pql_search_forwarders($ldap, $user);
 		if ($forwarders) {
 			// someone forwards to this user. Now we need to know which addresses we're removing
-			$email = pql_get_userattribute($linkid, $user, PQL_LDAP_ATTR_MAIL);
-			$aliases = pql_get_userattribute($linkid, $user, PQL_LDAP_ATTR_MAILALTERNATE);
+			$email = pql_get_userattribute($linkid, $user, PQL_CONF_ATTR_MAIL);
+			$aliases = pql_get_userattribute($linkid, $user, PQL_CONF_ATTR_MAILALTERNATE);
 			
 			$addresses[] = $email[0];
 			if(is_array($aliases)){
@@ -332,14 +332,14 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
     if ($delete_forwards and $forwarders) {
 		foreach($forwarders as $forward) {
 			// get the forwarding addresses of this user
-			$fwd_addresses = pql_get_userattribute($linkid, $forward['reference'], PQL_LDAP_ATTR_FORWARDS);
+			$fwd_addresses = pql_get_userattribute($linkid, $forward['reference'], PQL_CONF_ATTR_FORWARDS);
 			foreach($addresses as $address) {
 				// does this user forward to the removed user or one of his aliases?
 				$rem_key = array_search($address, $fwd_addresses);
 				if ($rem_key !== false) {
 					// we found a forward -> remove it 
 					pql_remove_userattribute($linkid, $forward['reference'],
-											 PQL_LDAP_ATTR_FORWARDS,
+											 PQL_CONF_ATTR_FORWARDS,
 											 $fwd_addresses[$rem_key]);
 				}
 			}
@@ -353,8 +353,8 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 function pql_domain_add($ldap_linkid, $basedn, $branch_name){
 	global $config;
 
-    $entry[$config["PQL_LDAP_REFERENCE_DOMAINS_WITH"][$basedn]] = $branch_name;
-	$dn = $config["PQL_LDAP_REFERENCE_DOMAINS_WITH"][$basedn] . "=" . $branch_name . "," . $basedn;
+    $entry[$config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn]] = $branch_name;
+	$dn = $config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn] . "=" . $branch_name . "," . $basedn;
 
 	// Setup objectclasses
 	$entry["objectClass"] = pql_setup_branch_objectclasses(0, $basedn);
@@ -387,16 +387,16 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name){
 	$dns[] = $dn;
 
     // Add the USER subtree if defined
-    if(defined("PQL_LDAP_SUBTREE_USERS")) {
+    if(defined("PQL_CONF_SUBTREE_USERS")) {
 		$entry = "";
 		$entry["objectClass"][] = "top";
 		$entry["objectClass"][] = "organizationalUnit";
 		
-		$ou = eregi_replace(",$", "", PQL_LDAP_SUBTREE_USERS . ",");
+		$ou = eregi_replace(",$", "", PQL_CONF_SUBTREE_USERS . ",");
 		$entry["ou"] = $ou;
 		
-		$dn = PQL_LDAP_SUBTREE_USERS . "," .
-              $config["PQL_LDAP_REFERENCE_DOMAINS_WITH"][$basedn] .
+		$dn = PQL_CONF_SUBTREE_USERS . "," .
+              $config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn] .
               "=" . $branch_name . "," . $basedn;
 		if(!@ldap_add($ldap_linkid, $dn, $entry)){
 			pql_errormsg($ldap_linkid);
@@ -406,14 +406,14 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name){
     }
     
     // Add the GROUPS subtree if defined
-    if(defined("PQL_LDAP_SUBTREE_GROUPS")) {
+    if(defined("PQL_CONF_SUBTREE_GROUPS")) {
 		$entry = "";
 		$entry["objectClass"][] = "top";
 		$entry["objectClass"][] = "organizationalUnit";
-		$entry["ou"] = PQL_LDAP_SUBTREE_GROUPS;
+		$entry["ou"] = PQL_CONF_SUBTREE_GROUPS;
 		
-		$dn = PQL_LDAP_SUBTREE_GROUPS . "," .
-              $config["PQL_LDAP_REFERENCE_DOMAINS_WITH"][$basedn] .
+		$dn = PQL_CONF_SUBTREE_GROUPS . "," .
+              $config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn] .
               "=" . $branch_name . "," . $basedn;
 		if(!@ldap_add($ldap_linkid, $dn, $entry)){
 			pql_errormsg($ldap_linkid);
@@ -433,7 +433,7 @@ function pql_domain_del($ldap, $domain, $delete_forwards) {
 	// domain/branch being deleted...
 	if(eregi($domain, $GLOBALS["USER_DN"])) {
 		$msg=urlencode(format_error("Sorry, I can't allow you to delete the branch under which you yourself is situated!"));
-		header("Location: " . PQL_URI . "domain_detail.php?domain=$domain&msg=$msg");
+		header("Location: " . PQL_CONF_URI . "domain_detail.php?domain=$domain&msg=$msg");
 	}
 
 	$dc = ldap_explode_dn($domain, 0); $dc = split('=', $dc[0]);
@@ -484,7 +484,7 @@ function pql_domain_del($ldap, $domain, $delete_forwards) {
 
 function pql_modify_user_addressbook($ldap_linkid, $user, $attribs){
     // check if addressbook is disabled
-    if(!defined("PQL_USE_ADDRESSBOOK")) {
+    if(!defined("PQL_CONF_USE_ADDRESSBOOK")) {
 		return false;
     }
     
@@ -536,7 +536,7 @@ function pql_domain_exist($ldap, $domain) {
 	global $config;
 
 	foreach($ldap->ldap_basedn as $dn) {
-		$filter = '('.$config["PQL_LDAP_REFERENCE_DOMAINS_WITH"][$dn].'='.$domain.')';
+		$filter = '('.$config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$dn].'='.$domain.')';
 
 		$sr = ldap_search($ldap->ldap_linkid, $dn, $filter);
 		if(ldap_count_entries($ldap->ldap_linkid, $sr) > 0) {
@@ -562,7 +562,7 @@ function pql_user_exist($ldap_linkid, $user) {
 
 // check if any mail or mailalternateaddress record with this email exists in the ldap tree
 function pql_email_exists($ldap, $email){
-	$filter = "(|(" . PQL_LDAP_ATTR_MAIL . "=" . $email . ")(" . PQL_LDAP_ATTR_MAILALTERNATE . "=" . $email . "))";
+	$filter = "(|(" . PQL_CONF_ATTR_MAIL . "=" . $email . ")(" . PQL_CONF_ATTR_MAILALTERNATE . "=" . $email . "))";
 
 	foreach($ldap->ldap_basedn as $dn) {
 		$sr = ldap_search($ldap->ldap_linkid, $dn, $filter);
@@ -645,7 +645,7 @@ function pql_modify_userattribute($ldap_linkid, $user, $attrib, $oldvalue, $newv
     
     // user entry has changed -> remove the cached version
     pql_cache_userentry_remove($user);
-    if ($attrib == $config["PQL_LDAP_REFERENCE_USERS_WITH"][pql_get_rootdn($user)]) {
+    if ($attrib == $config["PQL_CONF_REFERENCE_USERS_WITH"][pql_get_rootdn($user)]) {
 		pql_cache_userdn_remove($user);
     }
     
@@ -711,7 +711,7 @@ function pql_get_domains($ldap) {
 	global $config;
 
 	foreach($ldap->ldap_basedn as $dn)  {
-		$filter = "(&(" . $config["PQL_LDAP_REFERENCE_DOMAINS_WITH"][$dn] .
+		$filter = "(&(" . $config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$dn] .
                   "=*)" . pql_setup_branch_objectclasses(1, $dn) . ")";
 
 		$sr = @ldap_list($ldap->ldap_linkid, $dn, $filter) or pql_errormsg($ldap->ldap_linkid);
@@ -734,7 +734,7 @@ function pql_get_user($ldap_linkid, $dn){
 
 	// Filter out any object which is a posixGroup.
 	// (&(cn=*)(!(objectclass=posixgroup)))
-	$filter = "(&(" . $config["PQL_LDAP_REFERENCE_USERS_WITH"][pql_get_rootdn($dn)] . "=*)(!(objectclass=posixgroup)))";
+	$filter = "(&(" . $config["PQL_CONF_REFERENCE_USERS_WITH"][pql_get_rootdn($dn)] . "=*)(!(objectclass=posixgroup)))";
 	
 	$sr = @ldap_search($ldap_linkid, $dn, $filter) or pql_errormsg($ldap_linkid);
 	$info = ldap_get_entries($ldap_linkid, $sr) or pql_errormsg($ldap_linkid);
@@ -746,9 +746,9 @@ function pql_get_user($ldap_linkid, $dn){
 }
 
 // ------------------------------------------------
-// function based in PQL_GET_USER to search by the cn first letter
+// function based in PQL_CONF_GET_USER to search by the cn first letter
 function pql_get_user_letter($ldap_linkid, $domain, $letra) {
-    $sr = ldap_search($ldap_linkid, $domain, "(".PQL_LDAP_ATTR_UID."=".$letra."*)");
+    $sr = ldap_search($ldap_linkid, $domain, "(".PQL_CONF_ATTR_UID."=".$letra."*)");
     $info = ldap_get_entries($ldap_linkid, $sr);
     
     for ($i=0; $i<$info["count"]; $i++) {
@@ -759,16 +759,16 @@ function pql_get_user_letter($ldap_linkid, $domain, $letra) {
 }
 
 // ------------------------------------------------
-// function based in PQL_GET_USER to search by an initial number at cn attribute
+// function based in PQL_CONF_GET_USER to search by an initial number at cn attribute
 function pql_get_user_number($ldap_linkid, $domain) {
 	global $config;
 
     for($numero=0; $numero <= 9; $numero++) {
-		$sr = ldap_search($ldap_linkid, $domain, "(".PQL_LDAP_ATTR_UID."=".$numero."*)");
+		$sr = ldap_search($ldap_linkid, $domain, "(".PQL_CONF_ATTR_UID."=".$numero."*)");
 		$info = ldap_get_entries($ldap_linkid, $sr);
 		
 		for ($i=0; $i<$info["count"]; $i++) {
-			$user[] = $info[$i][$config["PQL_LDAP_REFERENCE_USERS_WITH"][pql_get_rootdn($dn)]][0];
+			$user[] = $info[$i][$config["PQL_CONF_REFERENCE_USERS_WITH"][pql_get_rootdn($dn)]][0];
 		}
     }
     
@@ -829,7 +829,7 @@ function pql_get_userentry($ldap_linkid, $user) {
 function pql_get_userquota($ldap_linkid, $user){
     // get formated quota of a user
     
-    $quota = pql_get_userattribute($ldap_linkid, $user, PQL_LDAP_ATTR_QUOTA);
+    $quota = pql_get_userattribute($ldap_linkid, $user, PQL_CONF_ATTR_QUOTA);
     
     if(!is_array($quota)){
 		return false;
@@ -852,7 +852,7 @@ function pql_get_dn($ldap, $reference, $multiples = 0) {
     // dn not in cache -> search for it
 	foreach($ldap->ldap_basedn as $base) {
 		$dn = pql_search_attribute($ldap->ldap_linkid, $base,
-								   $config["PQL_LDAP_REFERENCE_USERS_WITH"][$base],
+								   $config["PQL_CONF_REFERENCE_USERS_WITH"][$base],
 								   $reference);
 		if($multiples and $dn)
 		  $dns[] = $dn;
@@ -943,8 +943,8 @@ function pql_search_forwarders($ldap, $user){
 	$linkid = $ldap->ldap_linkid;
 
     // get all email addresses of a user
-    $email = pql_get_userattribute($linkid, $user, PQL_LDAP_ATTR_MAIL);
-    $aliases = pql_get_userattribute($linkid, $user, PQL_LDAP_ATTR_MAILALTERNATE);
+    $email = pql_get_userattribute($linkid, $user, PQL_CONF_ATTR_MAIL);
+    $aliases = pql_get_userattribute($linkid, $user, PQL_CONF_ATTR_MAILALTERNATE);
     
     $addresses[] = $email[0];
     if(is_array($aliases)){
@@ -954,7 +954,7 @@ function pql_search_forwarders($ldap, $user){
     // create filter
     $filter = "(|";
     foreach($addresses as $add){
-		$filter .= "(" . PQL_LDAP_ATTR_FORWARDS ."=" . $add . ")";
+		$filter .= "(" . PQL_CONF_ATTR_FORWARDS ."=" . $add . ")";
     }
     $filter .= ")";
 
@@ -970,14 +970,14 @@ function pql_search_forwarders($ldap, $user){
 			foreach($results as $key => $result){
 				if((string)$key != "count"){
 					$return[] = array("reference" => $result["dn"],
-									  $config["PQL_LDAP_REFERENCE_USERS_WITH"][$dn] => $result["cn"][0],
+									  $config["PQL_CONF_REFERENCE_USERS_WITH"][$dn] => $result["cn"][0],
 									  "email" => $result["mail"][0]);
 					
-					if(is_array($result[PQL_LDAP_ATTR_MAILALTERNATE])){
-						foreach($result[PQL_LDAP_ATTR_MAILALTERNATE] as $key => $mailalternateaddress){
+					if(is_array($result[PQL_CONF_ATTR_MAILALTERNATE])){
+						foreach($result[PQL_CONF_ATTR_MAILALTERNATE] as $key => $mailalternateaddress){
 							if((string)$key != "count"){
 								$return[] = array("reference" => $result["dn"],
-												  $config["PQL_LDAP_REFERENCE_USERS_WITH"][$dn] => $result["cn"][0],
+												  $config["PQL_CONF_REFERENCE_USERS_WITH"][$dn] => $result["cn"][0],
 												  "email" => $mailalternateaddress);
 							}
 						} // end foreach results
@@ -1189,7 +1189,7 @@ function pql_check_config(&$result, $enhanced = false){
     $result = array();
     
     // language definition
-    if(!defined("PQL_LANG")){
+    if(!defined("PQL_LANG_LANG")){
 		$result[] = "no language definition file included!!";
     }
     
@@ -1214,17 +1214,17 @@ function pql_ldap_mailquota($quota){
     // returns human readable version of users quota
     
     if($quota["maxmails"] == ""){
-		$txt = PQL_LDAP_MAILQUOTA_ECHO_MAXMAILS_UNLIMITED;
+		$txt = PQL_LANG_MAILQUOTA_ECHO_MAXMAILS_UNLIMITED;
     } else {
-		$txt = pql_complete_constant(PQL_LDAP_MAILQUOTA_ECHO_MAXMAILS, array("maxmails" => $quota["maxmails"]));
+		$txt = pql_complete_constant(PQL_LANG_MAILQUOTA_ECHO_MAXMAILS, array("maxmails" => $quota["maxmails"]));
     }
     
     $txt .= ", ";
     
     if($quota["maxsize"] == ""){
-		$txt .= PQL_LDAP_MAILQUOTA_ECHO_MAXSIZE_UNLIMITED;
+		$txt .= PQL_LANG_MAILQUOTA_ECHO_MAXSIZE_UNLIMITED;
     } else {
-		$txt .= pql_complete_constant(PQL_LDAP_MAILQUOTA_ECHO_MAXSIZE, array("maxsize" => $quota["maxsize"]));
+		$txt .= pql_complete_constant(PQL_LANG_MAILQUOTA_ECHO_MAXSIZE, array("maxsize" => $quota["maxsize"]));
     }
     
     return $txt;
@@ -1241,11 +1241,11 @@ function pql_ldap_accountstatus($status){
     
     switch($status){
       case "nopop":
-		return PQL_LDAP_ACCOUNTSTATUS_NOPOP;
+		return PQL_LANG_ACCOUNTSTATUS_NOPOP;
       case "disabled":
-		return PQL_LDAP_ACCOUNTSTATUS_DISABLE;
+		return PQL_LANG_ACCOUNTSTATUS_DISABLE;
       default:
-		return PQL_LDAP_ACCOUNTSTATUS_ACTIVE;
+		return PQL_LANG_ACCOUNTSTATUS_ACTIVE;
     }
 }
 
@@ -1263,23 +1263,23 @@ function pql_ldap_deliverymode($mode){
     
     switch($mode){
       case "forwardonly":
-		return PQL_LDAP_DELIVERYMODE_FORWARDONLY;
+		return PQL_LANG_DELIVERYMODE_FORWARDONLY;
       case "nombox":
-		return PQL_LDAP_DELIVERYMODE_NOMBOX;
+		return PQL_LANG_DELIVERYMODE_NOMBOX;
       case "localdelivery":
-		return PQL_LDAP_DELIVERYMODE_LOCALDELIVERY;
+		return PQL_LANG_DELIVERYMODE_LOCALDELIVERY;
       case "reply":
-		return PQL_LDAP_DELIVERYMODE_REPLY;
+		return PQL_LANG_DELIVERYMODE_REPLY;
       case "echo":
-		return PQL_LDAP_DELIVERYMODE_ECHO;
+		return PQL_LANG_DELIVERYMODE_ECHO;
       default:
-		return PQL_LDAP_DELIVERYMODE_NORMAL;
+		return PQL_LANG_DELIVERYMODE_NORMAL;
     }
 }
 
 // Returns the next free UID/GID number
 function pql_get_next_uidnumber($ldap) {
-    $filter = "(&(" . PQL_LDAP_ATTR_QMAILUID . "=*)(objectclass=posixaccount))";
+    $filter = "(&(" . PQL_CONF_ATTR_QMAILUID . "=*)(objectclass=posixaccount))";
 
 	foreach($ldap->ldap_basedn as $dn) {
 		$sr = ldap_search($ldap->ldap_linkid, $dn, $filter);
@@ -1288,10 +1288,10 @@ function pql_get_next_uidnumber($ldap) {
 		// Find the highest availible UIDNUMBER
 		$highest = 0;
 		for($i=0; $i < $results["count"]; $i++) {
-			if(($results[$i][PQL_LDAP_ATTR_QMAILUID][0] > $highest) &&
-			   ($results[$i][PQL_LDAP_ATTR_QMAILUID][0] < 64000))
+			if(($results[$i][PQL_CONF_ATTR_QMAILUID][0] > $highest) &&
+			   ($results[$i][PQL_CONF_ATTR_QMAILUID][0] < 64000))
 			  {
-				  $highest = $results[$i][PQL_LDAP_ATTR_QMAILUID][0];
+				  $highest = $results[$i][PQL_CONF_ATTR_QMAILUID][0];
 			  }
 		}
 	}
@@ -1311,7 +1311,7 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '') {
 	}
 
 	// Setup a filter to look for DOMAINS (branches)
-	$filter  = "(&($value=$match)(".$config["PQL_LDAP_REFERENCE_DOMAINS_WITH"][pql_get_rootdn($dn)]."=*))";
+	$filter  = "(&($value=$match)(".$config["PQL_CONF_REFERENCE_DOMAINS_WITH"][pql_get_rootdn($dn)]."=*))";
 
 	// Search from the DN
 	if(!$recursive)
@@ -1358,7 +1358,7 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '') {
 		return;
 	}
 
-	if($success and (($value == 'administrator') or ($value == 'seealso')) and !is_array($value)) {
+	if($success and (($value == 'administrator') or ($value == 'seealso')) and !is_array($results)) {
 		// Convert a flat variable to a array
 		$tmp = $results; unset($results);
 		$results[] = $tmp;
@@ -1671,7 +1671,7 @@ function pql_get_subschemas($ldap_linkid, $match = "") {
 function pql_get_subbranch($linkid, $dn, $filter = 1) {
 	global $config;
 
-	if($config["PQL_LDAP_REFERENCE_DOMAINS_WITH"][pql_get_rootdn($dn)] == "dc") {
+	if($config["PQL_CONF_REFERENCE_DOMAINS_WITH"][pql_get_rootdn($dn)] == "dc") {
 		$ocb = "domain";
 	} else {
 		$ocb = "organizationalUnit";
@@ -1715,9 +1715,9 @@ function pql_setup_branch_objectclasses($filter = 0, $dn, $linkid = '') {
 
 		// ObjectClasses for this root DN
 		if($dn)
-		  $ocs = $config["PQL_LDAP_OBJECTCLASS_DOMAIN"][pql_get_rootdn($dn)];
+		  $ocs = $config["PQL_CONF_OBJECTCLASS_DOMAIN"][pql_get_rootdn($dn)];
 		elseif($linkid->ldap_basedn[0])
-		  $ocs = $config["PQL_LDAP_OBJECTCLASS_DOMAIN"][$linkid->ldap_basedn[0]];
+		  $ocs = $config["PQL_CONF_OBJECTCLASS_DOMAIN"][$linkid->ldap_basedn[0]];
 		else
 		  $ocs = '';
 
@@ -1777,7 +1777,9 @@ function pql_validate_administrator($linkid, $dn, $admin) {
 }
 
 function pql_get_rootdn($dn) {
-	$rootdn = split(',', $dn); $rootdn = $rootdn[count($rootdn)-1];
+	$rootdn = split(',', $dn);
+	$rootdn = $rootdn[count($rootdn)-1];
+
 	return($rootdn);
 }
 

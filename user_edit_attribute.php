@@ -20,7 +20,7 @@ function attribute_forward($msg, $rlnb = false){
 	$url .= "&rlnb=1";
     }
     
-    header("Location: " . PQL_URI . "$url");
+    header("Location: " . PQL_CONF_URI . "$url");
 }
 
 // select which attribute have to be included
@@ -95,7 +95,7 @@ switch($attrib){
 include("./include/".$include);
 include("./header.html");
 ?>
-  <span class="title1"><?php echo PQL_USER_EDIT; ?> - <u><?=$user?></u></span>
+  <span class="title1"><?php echo PQL_LANG_USER_EDIT; ?> - <u><?=$user?></u></span>
   <br><br>
 <?php
 // select what to do

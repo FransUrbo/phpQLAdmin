@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.8 2003-01-23 08:01:51 turbo Exp $
+// $Id: left-control.php,v 2.9 2003-04-04 06:53:47 turbo Exp $
 //
 session_start();
 
@@ -14,8 +14,8 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS, false, 0);
 
 // TODO: How do we know if the user is allowed to add domains?
 //       In the domain description we don't have that info...
-//if(PQL_LDAP_CONTROL_USE && ($USER_BASE == 'everything')) {
-if(defined("PQL_LDAP_CONTROL_USE")) {
+//if(PQL_CONF_CONTROL_USE && ($USER_BASE == 'everything')) {
+if(defined("PQL_CONF_CONTROL_USE")) {
 	$j = 1;
 ?>
   <!-- Server Control -->
@@ -109,6 +109,6 @@ if(defined("PQL_LDAP_CONTROL_USE")) {
 			$j++;
 		} // end foreach host
 	} // end if is_array($hosts)
-} // end if PQL_LDAP_CONTROL_USE
+} // end if PQL_CONF_CONTROL_USE
 
 require("./left-trailer.html");

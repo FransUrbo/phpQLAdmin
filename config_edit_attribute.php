@@ -1,6 +1,6 @@
 <?php
 // Edit and set configuration values in the LDAP database
-// $Id: config_edit_attribute.php,v 1.3 2003-01-21 13:32:38 turbo Exp $
+// $Id: config_edit_attribute.php,v 1.4 2003-04-04 06:53:47 turbo Exp $
 //
 session_start();
 
@@ -17,7 +17,7 @@ function attribute_forward($msg, $rlnb = false) {
 	if($rlnb)
 	  $url .= "&rlnb=1";
 
-    header("Location: " . PQL_URI . "$url");
+    header("Location: " . PQL_CONF_URI . "$url");
 }
 ?>
   <span class="title1">Change configuration value</span>

@@ -32,7 +32,7 @@ function attribute_forward($msg){
 	$msg = urlencode($msg);
 	$cat = pql_control_plugin_cat($attrib);
 	$url = "control_detail.php?host=$host&msg=$msg";
-	header("Location: " . PQL_URI . "$url");
+	header("Location: " . PQL_CONF_URI . "$url");
 }
 
 include("./header.html");

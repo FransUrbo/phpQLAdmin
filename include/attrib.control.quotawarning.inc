@@ -2,14 +2,14 @@
 // control attribute plugin for
 // quotawarning (additional quota warning message)
 //
-// $Id: attrib.control.quotawarning.inc,v 2.3 2002-12-18 16:28:46 turbo Exp $
+// $Id: attrib.control.quotawarning.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
 
 function quotawarning_check($type) {
 	global $error, $quotawarning, $use_quotawarning;
 
 	// missing
 	if($use_quotawarning == 1 and $quotawarning == ""){
-		$error["quotawarning"] = PQL_MISSING;
+		$error["quotawarning"] = PQL_LANG_MISSING;
 		return false;
 	}
 
@@ -88,7 +88,7 @@ function quotawarning_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="submit" value="<?php echo PQL_SAVE; ?>">
+    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
 <?php

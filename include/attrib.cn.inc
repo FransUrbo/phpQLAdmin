@@ -1,14 +1,14 @@
 <?php
 // attribute plugin for
 // cn (Full name)
-// $Id: attrib.cn.inc,v 2.4 2003-01-16 14:58:38 turbo Exp $
+// $Id: attrib.cn.inc,v 2.5 2003-04-04 06:54:30 turbo Exp $
 
 function attribute_check($type){
     global $cn, $oldvalue, $_pql, $error;
     
     // is typed in ?
     if($cn == ""){
-		$error["cn"] = PQL_MISSING;
+		$error["cn"] = PQL_LANG_MISSING;
 		return false;
     }
     
@@ -27,9 +27,9 @@ function attribute_print_form(){
 ?>
 	<form action="<?php echo $PHP_SELF ?>" method="post">
 	<table cellspacing="0" cellpadding="3" border="0">
-	<th colspan="3" align="left"><?php echo PQL_SEARCH_CN; ?></th>
+	<th colspan="3" align="left"><?php echo PQL_LANG_SEARCH_CN; ?></th>
 	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title"><?php echo PQL_SEARCH_CN; ?></td>
+		<td class="title"><?php echo PQL_LANG_SEARCH_CN; ?></td>
 		<td><?php echo format_error($error["cn"]); ?><input type="text" name="cn"></td>
 	</tr>
 	</table>
@@ -40,7 +40,7 @@ function attribute_print_form(){
 	<input type="hidden" name="user" value="<?php echo $user ?>">
 	<br>
 	<br>
-	<input type="submit" value="<?php echo PQL_SAVE; ?>">
+	<input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
 	</form>
 
 <?php
@@ -62,7 +62,7 @@ function attribute_save($type){
       case "modify";
 		if($cn == $oldvalue){
 			// don't change if new value equal to old one
-			$msg = PQL_LDAP_CN_UNCHANGED;
+			$msg = PQL_LANG_CN_UNCHANGED;
 			attribute_forward($msg);
 			break;
     	}
@@ -72,9 +72,9 @@ function attribute_save($type){
 		$attribs = array($attrib, 'gecos', 'givenName');
 		foreach($attribs as $attrib) {
 			if(pql_replace_userattribute($_pql->ldap_linkid, $user, $attrib, $cn)) {
-				$msg = pql_complete_constant(PQL_LDAP_CN_CHANGE_OK, array("old" => $oldvalue, "new" => $cn)) . "&rlnb=1";
+				$msg = pql_complete_constant(PQL_LANG_CN_CHANGE_OK, array("old" => $oldvalue, "new" => $cn)) . "&rlnb=1";
 			} else {
-				$msg = PQL_LDAP_CN_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+				$msg = PQL_LANG_CN_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 				attribute_forward($msg);
 			}
 		}

@@ -3,32 +3,32 @@
 // timeoutconnect (how long to wait for smtp connection)
 // timeoutremote (how long to wait for remote server)
 //
-// $Id: attrib.control.timeoutconnect.inc,v 2.3 2002-12-18 16:28:46 turbo Exp $
+// $Id: attrib.control.timeoutconnect.inc,v 2.4 2003-04-04 06:54:31 turbo Exp $
 
 function timeoutconnect_check($type) {
 	global $error, $timeoutconnect, $timeoutremote;
 
 	// check validity
 	if(preg_match("/[^0-9]/", $timeoutconnect)){
-		$error["timeoutconnect"] = PQL_INVALID;
+		$error["timeoutconnect"] = PQL_LANG_INVALID;
 		$is_error = true;
 	}
 
 	// must be > 0
 	if($error["timeoutconnect"] == "" and $timeoutconnect != "" and $timeoutconnect <= 0){
-		$error["timeoutconnect"] = PQL_GREATER_ZERO;
+		$error["timeoutconnect"] = PQL_LANG_GREATER_ZERO;
 		$is_error = true;
 	}
 
 	// check validity
 	if(preg_match("/[^0-9]/", $timeoutremote)){
-		$error["timeoutremote"] = PQL_INVALID;
+		$error["timeoutremote"] = PQL_LANG_INVALID;
 		$is_error = true;
 	}
 
 	// must be > 0
 	if($error["timeoutremote"] == "" and $timeoutremote != "" and $timeoutremote <= 0){
-		$error["timeoutremote"] = PQL_GREATER_ZERO;
+		$error["timeoutremote"] = PQL_LANG_GREATER_ZERO;
 		$is_error = true;
 	}
 
@@ -121,7 +121,7 @@ function timeoutconnect_print_form(){
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="submit" value="<?php echo PQL_SAVE; ?>">
+    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
 <?php

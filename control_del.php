@@ -1,11 +1,11 @@
 <?php
 // Delete a mailserver controls object
-// $Id: control_del.php,v 2.4 2003-01-23 08:01:51 turbo Exp $
+// $Id: control_del.php,v 2.5 2003-04-04 06:53:47 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 
-if(defined("PQL_LDAP_CONTROL_USE")) {
+if(defined("PQL_CONF_CONTROL_USE")) {
     // include control api if control is used
     include("./include/pql_control.inc");
     $_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
@@ -22,15 +22,15 @@ if(defined("PQL_LDAP_CONTROL_USE")) {
 	if(! ldap_delete($_pql_control->ldap_linkid, $dn)) {
 	    // could not delete object
 	    $msg = urlencode("Failed to delete mailserver $host.");
-	    header("Location: " . PQL_URI . "control_detail.php?host=$host&msg=$msg");
+	    header("Location: " . PQL_CONF_URI . "control_detail.php?host=$host&msg=$msg");
 	} else {
 	    // successfully deleted object
 	    $msg = urlencode("Successfully deleted mailserver $host.");
-	    header("Location: " . PQL_URI . "home.php?msg=$msg&rlnb=2");
+	    header("Location: " . PQL_CONF_URI . "home.php?msg=$msg&rlnb=2");
 	}
     }
 }
-// else - PQL_LDAP_CONTROL_USE isn't set!
+// else - PQL_CONF_CONTROL_USE isn't set!
 
 /*
  * Local variables:

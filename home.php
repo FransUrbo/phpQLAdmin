@@ -13,7 +13,7 @@ if(isset($msg)){
 }
 
 // reload navigation bar if needed
-if(isset($rlnb) and PQL_AUTO_RELOAD) {
+if(isset($rlnb) and PQL_CONF_AUTO_RELOAD) {
 ?>
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
   <script language="JavaScript1.2"><!--
@@ -54,18 +54,18 @@ if(isset($submit)) {
 
     // We need to disable advanced mode so that only the user frame
     // is shown, hence no 'advanced=...' in the url.
-    header("Location: " . PQL_URI . "index2.php");
+    header("Location: " . PQL_CONF_URI . "index2.php");
 }
 ?>
 
-  <br><span class="title1"><?=PQL_DESCRIPTION?> - v<?=$VERSION?></span><br>
+  <br><span class="title1"><?=PQL_LANG_DESCRIPTION?> - v<?=$VERSION?></span><br>
 
   <ul>
 <?php
 	if($ADVANCED_MODE == 1) {
 	    // Should we show the 'change server' choices
-	    if(defined("PQL_LDAP_CHANGE_SERVER") and eregi('\+', PQL_LDAP_HOST)) {
-		$servers = split('\+', PQL_LDAP_HOST);
+	    if(defined("PQL_CONF_CHANGE_SERVER") and eregi('\+', PQL_CONF_HOST)) {
+		$servers = split('\+', PQL_CONF_HOST);
 ?>
     <li>
       <form action="<?=$PHP_SELF?>" target="_top">
@@ -92,27 +92,27 @@ if(isset($submit)) {
     <!-- begin search engine snippet -->
     <li>
       <form method=post action="search.php">
-        <?php echo PQL_SEARCH_TITLE; ?>
+        <?php echo PQL_LANG_SEARCH_TITLE; ?>
         <br>
         <select name=attribute>
-          <option value=<?php echo PQL_LDAP_ATTR_UID; ?> SELECTED><?php echo PQL_SEARCH_UID; ?></option>
-          <option value=<?php echo PQL_LDAP_ATTR_CN; ?>><?php echo PQL_SEARCH_CN; ?></option>
-          <option value=<?php echo PQL_LDAP_ATTR_MAIL; ?>><?php echo PQL_SEARCH_MAIL; ?></option>
-          <option value=<?php echo PQL_LDAP_ATTR_MAILALTERNATE; ?>><?php echo PQL_SEARCH_MAILALTERNATEADDRESS; ?></option>
-          <option value=<?php echo PQL_LDAP_ATTR_FORWARDS; ?>><?php echo PQL_SEARCH_MAILFORWARDINGADDRESS; ?></option>
+          <option value=<?php echo PQL_CONF_ATTR_UID; ?> SELECTED><?php echo PQL_LANG_SEARCH_UID; ?></option>
+          <option value=<?php echo PQL_CONF_ATTR_CN; ?>><?php echo PQL_LANG_SEARCH_CN; ?></option>
+          <option value=<?php echo PQL_CONF_ATTR_MAIL; ?>><?php echo PQL_LANG_SEARCH_MAIL; ?></option>
+          <option value=<?php echo PQL_CONF_ATTR_MAILALTERNATE; ?>><?php echo PQL_LANG_SEARCH_MAILALTERNATEADDRESS; ?></option>
+          <option value=<?php echo PQL_CONF_ATTR_FORWARDS; ?>><?php echo PQL_LANG_SEARCH_MAILFORWARDINGADDRESS; ?></option>
         </select>
 
         <select name=filter_type>
-       	  <option value=contains SELECTED><?php echo PQL_SEARCH_CONTAINS; ?></option>
-          <option value=is><?php echo PQL_SEARCH_IS; ?></option>
-          <option value=starts_with><?php echo PQL_SEARCH_STARTSWITH; ?></option>
-          <option value=ends_with><?php echo PQL_SEARCH_ENDSWITH; ?></option>
+       	  <option value=contains SELECTED><?php echo PQL_LANG_SEARCH_CONTAINS; ?></option>
+          <option value=is><?php echo PQL_LANG_SEARCH_IS; ?></option>
+          <option value=starts_with><?php echo PQL_LANG_SEARCH_STARTSWITH; ?></option>
+          <option value=ends_with><?php echo PQL_LANG_SEARCH_ENDSWITH; ?></option>
         </select>
 
 	<br>
 
         <input type="text" name="search_string" size="32">
-        <input type="submit" value="<?php echo PQL_SEARCH_FINDBUTTON; ?>">
+        <input type="submit" value="<?php echo PQL_LANG_SEARCH_FINDBUTTON; ?>">
       </form>
     </li>
     <!-- end of search engine snippet -->

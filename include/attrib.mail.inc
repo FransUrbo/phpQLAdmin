@@ -1,14 +1,14 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mail.inc,v 2.6 2003-04-02 15:30:47 turbo Exp $
+// $Id: attrib.mail.inc,v 2.7 2003-04-04 06:54:31 turbo Exp $
 
 function attribute_check($type){
     global $mail, $domain, $oldvalue, $_pql, $error, $defaultdomain;
     
     // is typed in ?
     if($mail == ""){
-	$error["mail"] = PQL_MISSING;
+	$error["mail"] = PQL_LANG_MISSING;
 	return false;
     }
     
@@ -19,13 +19,13 @@ function attribute_check($type){
     
     // valid
     if(!check_email($mail)){
-	$error["mail"] = PQL_INVALID;
+	$error["mail"] = PQL_LANG_INVALID;
 	return false;
     }
     
     // if type is modify, check existance of old value, else the new one
     if($oldvalue != $mail and pql_email_exists($_pql, $mail)) {
-	$error["mail"] = PQL_EXISTS;
+	$error["mail"] = PQL_LANG_EXISTS;
 	return false;
     }
     
@@ -42,7 +42,7 @@ function attribute_print_form(){
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?php echo PQL_LDAP_MAIL_CHANGE; ?></th>
+      <th colspan="3" align="left"><?php echo PQL_LANG_MAIL_CHANGE; ?></th>
   <?php
     // We're changing the Main address. Give the old as reference
     if($oldvalue != "") {
@@ -53,13 +53,13 @@ function attribute_print_form(){
     }
   ?>
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_EMAIL; ?></td>
+          <td class="title"><?php echo PQL_LANG_EMAIL; ?></td>
           <td><?php echo format_error($error["mail"]); ?><input type="text" name="mail" value=""><b>@<?=$defaultdomain?></b></td>
         </tr>
 
         <tr class="subtitle">
           <td colspan="2">
-            <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_LDAP_MAIL_HELP; ?>
+            <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_LANG_MAIL_HELP; ?>
           </td>
         </tr>
       </th>
@@ -71,7 +71,7 @@ function attribute_print_form(){
     <input type="hidden" name="domain" value="<?=$domain?>">
     <input type="hidden" name="user" value="<?=$user ?>">
     <br><br>
-    <input type="submit" value="<?=PQL_SAVE?>">
+    <input type="submit" value="<?=PQL_LANG_SAVE?>">
   </form>
 <?php
 }
@@ -89,14 +89,14 @@ function attribute_save($type){
 	// no add operation possible with mail
 	break;
       case "modify";
-	if(pql_modify_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_MAIL, $oldvalue, $mail)){
-	    $msg = pql_complete_constant(PQL_LDAP_MAIL_CHANGE_OK, array("old" => $oldvalue, "new" => $mail));
+	if(pql_modify_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_MAIL, $oldvalue, $mail)){
+	    $msg = pql_complete_constant(PQL_LANG_MAIL_CHANGE_OK, array("old" => $oldvalue, "new" => $mail));
 	} else {
-	    $msg = PQL_LDAP_MAIL_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
+	    $msg = PQL_LANG_MAIL_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
 	}
 	
 	// We use the mail attribute to reference users and it has just changed...
-	if ($config["PQL_LDAP_REFERENCE_USERS_WITH"][pql_get_rootdn($user)] == PQL_LDAP_ATTR_MAIL) {
+	if ($config["PQL_CONF_REFERENCE_USERS_WITH"][pql_get_rootdn($user)] == PQL_CONF_ATTR_MAIL) {
 	    $user = $mail;
 	    // Reload the navigation bar (if allowed by config)
 	    attribute_forward($msg, true);

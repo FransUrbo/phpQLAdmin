@@ -29,37 +29,37 @@ if($submit == "") {
 
     if($surname == ""){
 		$error = true;
-		$error_text["surname"] = PQL_MISSING;
+		$error_text["surname"] = PQL_LANG_MISSING;
     }
 	
     if($name == ""){
 		$error = true;
-		$error_text["name"] = PQL_MISSING;
+		$error_text["name"] = PQL_LANG_MISSING;
     }
 	
     $user = $surname . " " . $name;
     if($error == false
-       and PQL_LDAP_REFERENCE_USERS_WITH == PQL_LDAP_ATTR_CN
+       and PQL_CONF_REFERENCE_USERS_WITH == PQL_CONF_ATTR_CN
        and pql_user_exist($_pql->ldap_linkid, $user)) {
 		$error = true;
-		$error_text["username"] = pql_complete_constant(PQL_USER_EXIST, array("user" => $user));
-		$error_text["name"] = PQL_EXISTS;
-		$error_text["surname"] = PQL_EXISTS;
+		$error_text["username"] = pql_complete_constant(PQL_LANG_USER_EXIST, array("user" => $user));
+		$error_text["name"] = PQL_LANG_EXISTS;
+		$error_text["surname"] = PQL_LANG_EXISTS;
     }
 	
     if($email == ""){
 		$error = true;
-		$error_text["email"] = PQL_MISSING;
+		$error_text["email"] = PQL_LANG_MISSING;
     }
 
     if(!check_email($email)){
 		$error = true;
-		$error_text["email"] = PQL_INVALID;
+		$error_text["email"] = PQL_LANG_INVALID;
     }
 	
     if($error_text["email"] == "" and pql_email_exists($_pql, $email)) {
 		$error = true;
-		$error_text["email"] = PQL_EXISTS;
+		$error_text["email"] = PQL_LANG_EXISTS;
     }
 	
     // if an error occured, set displaying form to '' (initial display)
@@ -83,7 +83,7 @@ if($submit == "two"){
 		} else {
 			$submit = "one";
 			$error = true;
-			$error_text["uid"] = PQL_MISSING . "(can't autogenerate)";
+			$error_text["uid"] = PQL_LANG_MISSING . "(can't autogenerate)";
 		}
 	}
 	
@@ -92,7 +92,7 @@ if($submit == "two"){
 	if($uid == ""){
 		$submit = "one";
 		$error = true;
-		$error_text["uid"] = PQL_MISSING;
+		$error_text["uid"] = PQL_LANG_MISSING;
 	}
 	
 	// Build the COMPLETE email address
@@ -105,7 +105,7 @@ if(($submit == "two") or (($submit == "one") and !$ADVANCED_MODE)) {
 	// fetch dns information
 	$userhost = pql_get_mx($_pql, $defaultdomain);
 	if(!$userhost[0]) {
-		$error_text["userhost"] = PQL_DNS_NONE;
+		$error_text["userhost"] = PQL_LANG_DNS_NONE;
 		$error = true;
 	}
 }
@@ -115,16 +115,17 @@ if(($submit == "two") or (($submit == "one") and !$ADVANCED_MODE)) {
 if ($submit == "save") {
 	if($uid == ""){
 		$error = true;
-		$error_text["uid"] = PQL_MISSING;
+		$error_text["uid"] = PQL_LANG_MISSING;
 	}
 	
 	if(preg_match("/[^a-z0-9\.@_-]/i", $uid)) {
 		$error = true;
-		$error_text["uid"] = PQL_INVALID;
+		$error_text["uid"] = PQL_LANG_INVALID;
 	}
-	if($error_text["uid"] == "" and pql_search_attribute($_pql->ldap_linkid, $domain, PQL_LDAP_ATTR_UID, $uid)) {
+	if($error_text["uid"] == "" and pql_search_attribute($_pql->ldap_linkid, $domain,
+														 $config["PQL_CONF_ATTR_UID, $uid"][get_root_dn($domain)])) {
 		$error = true;
-		$error_text["uid"] = PQL_EXISTS;
+		$error_text["uid"] = PQL_LANG_EXISTS;
 	}
 }
 
@@ -133,7 +134,7 @@ if ($submit == "save") {
 if($submit == "save" and ($account_type == "normal" or $account_type == "system")){
     if($password == ""){
 		$error = true;
-		$error_text["password"] = PQL_MISSING;
+		$error_text["password"] = PQL_LANG_MISSING;
     }
     
     if($pwscheme == "{KERBEROS}") {
@@ -141,23 +142,23 @@ if($submit == "save" and ($account_type == "normal" or $account_type == "system"
 		// TODO: Is this regexp correct!?
 		if(! preg_match("/^[a-zA-Z0-9]+[\._-a-z0-9]*[a-zA-Z0-9]+@[A-Z0-9][-A-Z0-9]+(\.[-A-Z0-9]+)+$/", $password)) {
 			$error = true;
-			$error_text["password"] = PQL_INVALID;
+			$error_text["password"] = PQL_LANG_INVALID;
 		}
     } else {
 		if(preg_match("/[^a-z0-9]/i", $password)){
 			$error = true;
-			$error_text["password"] = PQL_INVALID;
+			$error_text["password"] = PQL_LANG_INVALID;
 		}
     }
 	
     if($host != "default"){
 		if($userhost[0] == ""){
 			$error = true;
-			$error_text["userhost"] = PQL_MISSING;
+			$error_text["userhost"] = PQL_LANG_MISSING;
 		} else {
 			if(!preg_match("/^([a-z0-9]+\.{1,1}[a-z0-9]+)+$/i",$userhost[1])) {
 				//
-				$error_text["userhost"] = PQL_INVALID;
+				$error_text["userhost"] = PQL_LANG_INVALID;
 				$error = true;
 			}
 		}
@@ -169,12 +170,12 @@ if($submit == "save" and ($account_type == "normal" or $account_type == "system"
 if($submit == "save" and $account_type == "forward"){
 	if(!check_email($forwardingaddress)){
 		$error = true;
-		$error_text["forwardingaddress"] = PQL_INVALID;
+		$error_text["forwardingaddress"] = PQL_LANG_INVALID;
 	}
 	
 	if($forwardingaddress == ""){
 		$error = true;
-		$error_text["forwardingaddress"] = PQL_MISSING;
+		$error_text["forwardingaddress"] = PQL_LANG_MISSING;
 	}
 }
 
@@ -185,7 +186,7 @@ if($submit == "save" and $error == true and !$ADVANCED_MODE) {
 
 include("./header.html");
 ?>
-  <span class="title1"><?php echo pql_complete_constant(PQL_USER_ADD_TITLE,array("domain" => $domain)); ?></span>
+  <span class="title1"><?php echo pql_complete_constant(PQL_LANG_USER_ADD_TITLE,array("domain" => $domain)); ?></span>
   <br><br>
 
 <?php
@@ -196,15 +197,15 @@ switch($submit){
 ?>
 <form action="<?php echo $PHP_SELF ?>" method="post">
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left"><?php echo PQL_USER_ACCOUNT_PROPERTIES; ?></th>
+    <th colspan="3" align="left"><?php echo PQL_LANG_USER_ACCOUNT_PROPERTIES; ?></th>
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title"><?php echo PQL_USER_ACCOUNT_TYPE; ?></td>
+        <td class="title"><?php echo PQL_LANG_USER_ACCOUNT_TYPE; ?></td>
 
         <td>
           <select name="account_type">
-            <option value="normal" SELECTED><?php echo PQL_LDAP_DELIVERYMODE_PROFILE_LOCAL; ?></option>
-            <option value="system"><?php echo PQL_LDAP_DELIVERYMODE_PROFILE_SYSTEM; ?></option>
-            <option value="forward"><?php echo PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD; ?></option>
+            <option value="normal" SELECTED><?php echo PQL_LANG_DELIVERYMODE_PROFILE_LOCAL; ?></option>
+            <option value="system"><?php echo PQL_LANG_DELIVERYMODE_PROFILE_SYSTEM; ?></option>
+            <option value="forward"><?php echo PQL_LANG_DELIVERYMODE_PROFILE_FORWARD; ?></option>
           </select>
         </td>
       </tr>
@@ -213,8 +214,8 @@ switch($submit){
         <td></td>
         <td>
           <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php
-echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_LOCAL . PQL_LDAP_DELIVERYMODE_PROFILE_INC .
-  PQL_LDAP_DELIVERYMODE_PROFILE_LOCAL_INFO . ".";?>
+echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_LOCAL . PQL_LANG_DELIVERYMODE_PROFILE_INC .
+  PQL_LANG_DELIVERYMODE_PROFILE_LOCAL_INFO . ".";?>
         </td>
       </tr>
 
@@ -222,8 +223,8 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_LOCAL .
         <td></td>
         <td>
           <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php
-echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_SYSTEM . PQL_LDAP_DELIVERYMODE_PROFILE_INC .
-  PQL_LDAP_DELIVERYMODE_PROFILE_SYSTEM_INFO . ", " . PQL_LDAP_DELIVERYMODE_PROFILE_LOCAL_INFO;?>
+echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_SYSTEM . PQL_LANG_DELIVERYMODE_PROFILE_INC .
+  PQL_LANG_DELIVERYMODE_PROFILE_SYSTEM_INFO . ", " . PQL_LANG_DELIVERYMODE_PROFILE_LOCAL_INFO;?>
         </td>
       </tr>
 
@@ -231,8 +232,8 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_SYSTEM 
         <td></td>
         <td>
           <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php
-echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD . PQL_LDAP_DELIVERYMODE_PROFILE_INC .
-  PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD_INFO . ".";?>
+echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_FORWARD . PQL_LANG_DELIVERYMODE_PROFILE_INC .
+  PQL_LANG_DELIVERYMODE_PROFILE_FORWARD_INFO . ".";?>
         </td>
       </tr>
     </th>
@@ -249,15 +250,15 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?php echo PQL_USER_ACCOUNT_PROPERTIES_MORE; ?></th>
+      <th colspan="3" align="left"><?php echo PQL_LANG_USER_ACCOUNT_PROPERTIES_MORE; ?></th>
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_USER_ID; ?></td>
+          <td class="title"><?php echo PQL_LANG_USER_ID; ?></td>
           <td><?php echo format_error($error_text["uid"]); ?><input type="text" name="uid" value="<?php echo $uid; ?>"></td>
         </tr>
 
         <tr class="<?php table_bgcolor(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
-          <td><?php echo "<b>" . PQL_USER_ID . ":</b> " . PQL_LDAP_UID_HELP_SHORT; ?></td>
+          <td><?php echo "<b>" . PQL_LANG_USER_ID . ":</b> " . PQL_LANG_UID_HELP_SHORT; ?></td>
         </tr>
 
 <?php
@@ -266,7 +267,7 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 ?>
         <!-- Password -->
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_LDAP_USERPASSWORD_TITLE; ?></td>
+          <td class="title"><?php echo PQL_LANG_USERPASSWORD_TITLE; ?></td>
           <!-- Crude hackery. Using type=password won't be so good if we're using {KERBEROS} -->
           <td><?php echo format_error($error_text["password"]); ?>
 
@@ -276,7 +277,7 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
             <select name="pwscheme">
               <option value="none">Choose password scheme to use</option>
 <?php
-              $schemes = split(",", PQL_PASSWORD_SCHEMES);
+              $schemes = split(",", PQL_CONF_PASSWORD_SCHEMES);
               foreach($schemes as $scheme) {
 ?>
               <option value="{<?php echo $scheme; ?>}"><?php echo $scheme; ?></option>
@@ -287,7 +288,7 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 
         <tr class="<?php table_bgcolor(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
-          <td><?php echo "<b>" . PQL_LDAP_USERPASSWORD_TITLE . ":</b> " . PQL_LDAP_USERPASSWORD_HELP_KRB; ?></td>
+          <td><?php echo "<b>" . PQL_LANG_USERPASSWORD_TITLE . ":</b> " . PQL_LANG_USERPASSWORD_HELP_KRB; ?></td>
         </tr>
 <?php
     } // account_type != forward
@@ -301,7 +302,7 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 
         <!-- Loginshell -->
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_USER_LOGINSHELL; ?></td>
+          <td class="title"><?php echo PQL_LANG_USER_LOGINSHELL; ?></td>
           <td><?php echo format_error($error["loginshell"]); ?>
 
             <select name="loginshell">
@@ -343,9 +344,9 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
         </tr>
 <?php
 		} else {
-			if(defined("PQL_LDAP_SUBTREE_USERS")) {
+			if(defined("PQL_CONF_SUBTREE_USERS")) {
 ?>
-        <input type="hidden" name="subbranch" value="<?php echo PQL_LDAP_SUBTREE_USERS . "," . $domain;?>">
+        <input type="hidden" name="subbranch" value="<?php echo PQL_CONF_SUBTREE_USERS . "," . $domain;?>">
 <?php
 			} else {
 ?>
@@ -354,9 +355,9 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 			}
 		}
 	} else {
-		if(defined("PQL_LDAP_SUBTREE_USERS")) {
+		if(defined("PQL_CONF_SUBTREE_USERS")) {
 ?>
-        <input type="hidden" name="subbranch" value="<?php echo PQL_LDAP_SUBTREE_USERS . "," . $domain;?>">
+        <input type="hidden" name="subbranch" value="<?php echo PQL_CONF_SUBTREE_USERS . "," . $domain;?>">
 <?php
 		} else {
 ?>
@@ -371,22 +372,22 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
     <br>
 
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?php echo PQL_USER_DATA; ?></th>
+      <th colspan="3" align="left"><?php echo PQL_LANG_USER_DATA; ?></th>
         <!-- Firstname -->
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_USER_DATA_SURNAME; ?></td>
+          <td class="title"><?php echo PQL_LANG_USER_DATA_SURNAME; ?></td>
           <td><?php echo format_error($error_text["surname"]); ?><input type="text" name="surname" value="<?php echo $surname; ?>"></td>
         </tr>
 
         <!-- Lastname -->
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_USER_DATA_LASTNAME; ?></td>
+          <td class="title"><?php echo PQL_LANG_USER_DATA_LASTNAME; ?></td>
           <td><?php echo format_error($error_text["name"]); ?><input type="text" name="name" value="<?php echo $name; ?>"></td>
         </tr>
 
         <!-- Email address -->
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_EMAIL; ?></td>
+          <td class="title"><?php echo PQL_LANG_EMAIL; ?></td>
           <td><?php echo format_error($error_text["email"]); ?><input type="text" name="email" value="<?php echo $email; ?>"><b>@<?php echo $defaultdomain; ?></b></td>
         </tr>
 
@@ -397,7 +398,7 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 <?php } ?>
         <tr class="subtitle">
           <td colspan="2">
-            <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_USER_ADD_HELP2;?>
+            <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_LANG_USER_ADD_HELP2;?>
           </td>
         </tr>
       </th>
@@ -413,11 +414,11 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
       <th colspan="3" align="left">Forward mails to</th>
         <!-- Forwarding address -->
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_SEARCH_MAILFORWARDINGADDRESS; ?></td>
-          <td><?php echo format_error($error_text["forwardingaddress"]); ?><input type="text" name="forwardingaddress" value="<?php echo $forwardingaddress; ?>"> <?php echo PQL_EMAIL; ?></td>
+          <td class="title"><?php echo PQL_LANG_SEARCH_MAILFORWARDINGADDRESS; ?></td>
+          <td><?php echo format_error($error_text["forwardingaddress"]); ?><input type="text" name="forwardingaddress" value="<?php echo $forwardingaddress; ?>"> <?php echo PQL_LANG_EMAIL; ?></td>
         </tr>
         <tr class="subtitle">
-          <td colspan="2"><img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_LDAP_MAILFORWARDINGADDRESS_ADD_HELP; ?></td>
+          <td colspan="2"><img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_LANG_MAILFORWARDINGADDRESS_ADD_HELP; ?></td>
         </tr>
       </th>
 <?php
@@ -428,15 +429,15 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
     <br>
   
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?php echo PQL_USER_ACCOUNT_PROPERTIES; ?></th>
+      <th colspan="3" align="left"><?php echo PQL_LANG_USER_ACCOUNT_PROPERTIES; ?></th>
         <!-- Account status -->
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_LDAP_ACCOUNTSTATUS_STATUS; ?></td>
+          <td class="title"><?php echo PQL_LANG_ACCOUNTSTATUS_STATUS; ?></td>
           <td>
             <select name="account_status">
-              <option value="active" SELECTED><?php echo PQL_LDAP_ACCOUNTSTATUS_ACTIVE; ?></option>
-              <option value="nopop"><?php echo PQL_LDAP_ACCOUNTSTATUS_NOPOP; ?></option>
-              <option value="disabled"><?php echo PQL_LDAP_ACCOUNTSTATUS_DISABLE; ?></option>
+              <option value="active" SELECTED><?php echo PQL_LANG_ACCOUNTSTATUS_ACTIVE; ?></option>
+              <option value="nopop"><?php echo PQL_LANG_ACCOUNTSTATUS_NOPOP; ?></option>
+              <option value="disabled"><?php echo PQL_LANG_ACCOUNTSTATUS_DISABLE; ?></option>
             </select>
           </td>
         </tr>
@@ -475,7 +476,7 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 <?php
 	} else {
 ?>
-    <input type="submit" value="<?=PQL_SAVE?>">
+    <input type="submit" value="<?=PQL_LANG_SAVE?>">
 <?php
 	}
 ?>
@@ -499,14 +500,14 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
     <input type="hidden" name="subbranch" value="<?=$subbranch?>">
 
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?php echo PQL_USER_ACCOUNT_PROPERTIES_MORE; ?></th>
+      <th colspan="3" align="left"><?php echo PQL_LANG_USER_ACCOUNT_PROPERTIES_MORE; ?></th>
 <?php
 	if($account_type == "system"){
 		// Show homedirectory
 ?>
         <!-- Home directory -->
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_USER_HOMEDIR; ?></td>
+          <td class="title"><?php echo PQL_LANG_USER_HOMEDIR; ?></td>
           <td><?php
 	  if(! ereg("/$", $basehomedir)) {
 		  $homedirectory = $basehomedir . "/" . $uid;
@@ -526,7 +527,7 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 ?>
         <!-- MailMessageStore -->
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_LDAP_MAILMESSAGESTORE_TITLE; ?></td>
+          <td class="title"><?php echo PQL_LANG_MAILMESSAGESTORE_TITLE; ?></td>
           <td><?php
 	  if(! ereg("/$", $basemaildir)) {
 		  $maildirectory = $basemaildir . "/" . $uid;
@@ -551,11 +552,11 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 		}
 ?>
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_LDAP_MAILHOST_TITLE; ?></td>
+          <td class="title"><?php echo PQL_LANG_MAILHOST_TITLE; ?></td>
           <td>
             <input type="hidden" name="mx" value="<?=$userhost[1]?>">
             <input type="radio" name="host" value="default" <?php if($userhost[0] and ($host != "user")){ echo "checked";}?>><?php
-		echo PQL_LDAP_MAILHOST_DEFAULT . ": <b>";
+		echo PQL_LANG_MAILHOST_DEFAULT . ": <b>";
 		if($userhost[0]) {
 			echo "$userhost[1]";
 		}
@@ -581,7 +582,7 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"></td>
           <td>
-            <input type="radio" name="userhost" value="user" <?php if((!$userhost[0] and !$userhost[1]) or ($host == "user")){ echo "checked";}?>><?php echo PQL_LDAP_MAILQUOTA_USERDEFINED;?>  <input type="text" name="userhost"><br>
+            <input type="radio" name="userhost" value="user" <?php if((!$userhost[0] and !$userhost[1]) or ($host == "user")){ echo "checked";}?>><?php echo PQL_LANG_MAILQUOTA_USERDEFINED;?>  <input type="text" name="userhost"><br>
           </td>
         </tr>
 
@@ -600,7 +601,7 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
     <input type="hidden" name="account_status" value="<?php echo $account_status;?>">
     <input type="hidden" name="submit" value="save">
     <input type="hidden" name="domain" value="<?php echo $domain; ?>">
-    <input type="submit" value="<?=PQL_SAVE?>">
+    <input type="submit" value="<?=PQL_LANG_SAVE?>">
   </form>
 <?php
 		break;
@@ -619,14 +620,14 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 
 		// prepare the users attributes
 		$cn = $surname . " " . $name;
-		$entry[PQL_LDAP_ATTR_CN]			= trim($surname) . " " . trim($name);
-		$entry[PQL_LDAP_ATTR_SN]			= $surname;
+		$entry[PQL_CONF_ATTR_CN]			= trim($surname) . " " . trim($name);
+		$entry[PQL_CONF_ATTR_SN]			= $surname;
 		
-		// $entry[PQL_LDAP_ATTR_GIVENNAME]	= $name;
+		// $entry[PQL_CONF_ATTR_GIVENNAME]	= $name;
 		
-		$entry[PQL_LDAP_ATTR_MAIL]			= $email;
-		$entry[PQL_LDAP_ATTR_UID]			= $uid;
-		$entry[PQL_LDAP_ATTR_ISACTIVE]		= $account_status;
+		$entry[PQL_CONF_ATTR_MAIL]			= $email;
+		$entry[PQL_CONF_ATTR_UID]			= $uid;
+		$entry[PQL_CONF_ATTR_ISACTIVE]		= $account_status;
 
         // ------------------
 		$entry["objectClass"][] = "person";
@@ -643,18 +644,18 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 			$entry["objectClass"][] = "inetOrgPerson";
 
 			// set SYSTEM attributes
-			$entry[PQL_LDAP_ATTR_LOGINSHELL] = $loginshell;
+			$entry[PQL_CONF_ATTR_LOGINSHELL] = $loginshell;
 			if(!$homedirectory) {
-				$entry[PQL_LDAP_ATTR_HOMEDIR] = user_generate_homedir($_pql, $email, $domain, $entry);
+				$entry[PQL_CONF_ATTR_HOMEDIR] = user_generate_homedir($_pql, $email, $domain, $entry);
 			} else {
-				$entry[PQL_LDAP_ATTR_HOMEDIR] = $homedirectory;
+				$entry[PQL_CONF_ATTR_HOMEDIR] = $homedirectory;
 			}
 
 			// Get a free UserID number (which we also use for GroupID number)
 			$uidnr = pql_get_next_uidnumber($_pql);
 			if($uidnr > 0) {
-				$entry[PQL_LDAP_ATTR_QMAILUID] = $uidnr;
-				$entry[PQL_LDAP_ATTR_QMAILGID] = $uidnr;
+				$entry[PQL_CONF_ATTR_QMAILUID] = $uidnr;
+				$entry[PQL_CONF_ATTR_QMAILGID] = $uidnr;
 			}
 
 			// Gecos is needed to do PAM/NSS LDAP login 
@@ -666,7 +667,7 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 			// normal mailbox account
 
 			// set attributes
-			$entry[PQL_LDAP_ATTR_PASSWD]   = pql_password_hash($password, $pwscheme);
+			$entry[PQL_CONF_ATTR_PASSWD]   = pql_password_hash($password, $pwscheme);
 			if($pwscheme == "{KERBEROS}") {
 				$entry["krb5PrincipalName"] = $password;
 				$entry["objectClass"][] = "krb5Principal";
@@ -675,22 +676,22 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 			if($host == 'default') {
 				// TODO: If there is no defaultDomain for the domain, get MX of the domain in the email address
 				if($mx)
-				  $entry[PQL_LDAP_ATTR_MAILHOST] = $mx;
+				  $entry[PQL_CONF_ATTR_MAILHOST] = $mx;
 				else {
-					$domainname = split('@', $entry[PQL_LDAP_ATTR_MAIL]);
-					$entry[PQL_LDAP_ATTR_MAILHOST] = pql_get_mx($domainname[1], $defaultdomain);
+					$domainname = split('@', $entry[PQL_CONF_ATTR_MAIL]);
+					$entry[PQL_CONF_ATTR_MAILHOST] = pql_get_mx($domainname[1], $defaultdomain);
 				}
 			} else {
 				if($mx)
-				  $entry[PQL_LDAP_ATTR_MAILHOST] = $mx;
+				  $entry[PQL_CONF_ATTR_MAILHOST] = $mx;
 				else
-				  $entry[PQL_LDAP_ATTR_MAILHOST] = $userhost[1];
+				  $entry[PQL_CONF_ATTR_MAILHOST] = $userhost[1];
 			}
-			$entry[PQL_LDAP_ATTR_MODE]     = "localdelivery";
+			$entry[PQL_CONF_ATTR_MODE]     = "localdelivery";
 			if(!$maildirectory) {
-				$entry[PQL_LDAP_ATTR_MAILSTORE] = user_generate_mailstore($_pql, $email, $domain, $entry);
+				$entry[PQL_CONF_ATTR_MAILSTORE] = user_generate_mailstore($_pql, $email, $domain, $entry);
 			} else {
-				$entry[PQL_LDAP_ATTR_MAILSTORE] = $maildirectory;
+				$entry[PQL_CONF_ATTR_MAILSTORE] = $maildirectory;
 			}
 		} else {
 			// forwardonly account
@@ -699,14 +700,14 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 			$forwardingaddress = strtolower($forwardingaddress);
 
 			// set attributes
-			$entry[PQL_LDAP_ATTR_FORWARDS]	= $forwardingaddress;
-			$entry[PQL_LDAP_ATTR_MODE][]	= "forwardonly";
-			$entry[PQL_LDAP_ATTR_MODE][]	= "nombox";
+			$entry[PQL_CONF_ATTR_FORWARDS]	= $forwardingaddress;
+			$entry[PQL_CONF_ATTR_MODE][]	= "forwardonly";
+			$entry[PQL_CONF_ATTR_MODE][]	= "nombox";
 
 			// Even forward accounts need UIDNumber! (?!?)
-			$entry[PQL_LDAP_ATTR_QMAILUID] = PQL_LDAP_FORWARDINGACCOUNT_UIDNUMBER;
-			$entry[PQL_LDAP_ATTR_QMAILGID] = PQL_LDAP_FORWARDINGACCOUNT_UIDNUMBER;
-			$entry[PQL_LDAP_ATTR_HOMEDIR]  = "/tmp";
+			$entry[PQL_CONF_ATTR_QMAILUID] = PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER;
+			$entry[PQL_CONF_ATTR_QMAILGID] = PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER;
+			$entry[PQL_CONF_ATTR_HOMEDIR]  = "/tmp";
 		}
 
         // ------------------
@@ -716,31 +717,31 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 			// TODO: dns[1] (the group object) might still be empty -> failed to add it.
 
 			// Now it's time to run the special adduser script if defined...
-			if(defined("PQL_EXTRA_SCRIPT_CREATE_USER")) {
+			if(defined("PQL_CONF_EXTRA_SCRIPT_CREATE_USER")) {
 				// Setup the environment with the user details
-				putenv("PQL_DOMAIN=$domain");
-				putenv("PQL_WEBUSER=".posix_getuid());
+				putenv("PQL_CONF_DOMAIN=$domain");
+				putenv("PQL_CONF_WEBUSER=".posix_getuid());
 				foreach($entry as $key => $e) {
 					$key = "PQL_" . strtoupper($key);
-					if($key != 'PQL_OBJECTCLASS')
+					if($key != 'PQL_CONF_OBJECTCLASS')
 					  putenv("$key=$e");
 				}
 
 				// Execute the user add script (0 => show output)
-				if(pql_execute(PQL_EXTRA_SCRIPT_CREATE_USER, 0)) {
-					echo PQL_USER_ADD_SCRIPT_FAILED;
-					$msg = urlencode(PQL_USER_ADD_SCRIPT_FAILED) . ".&nbsp;";
+				if(pql_execute(PQL_CONF_EXTRA_SCRIPT_CREATE_USER, 0)) {
+					echo PQL_LANG_USER_ADD_SCRIPT_FAILED;
+					$msg = urlencode(PQL_LANG_USER_ADD_SCRIPT_FAILED) . ".&nbsp;";
 				} else {
-					echo "<b>" . PQL_USER_ADD_SCRIPT_OK . "</b><br>";
-					$msg = urlencode(PQL_USER_ADD_SCRIPT_OK) . ".&nbsp;";
+					echo "<b>" . PQL_LANG_USER_ADD_SCRIPT_OK . "</b><br>";
+					$msg = urlencode(PQL_LANG_USER_ADD_SCRIPT_OK) . ".&nbsp;";
 				}
 
 				$url = "domain_detail.php?domain=$domain&msg=$msg";
 			}
 
-			$msg .= urlencode(PQL_USER_ADD_OK);
+			$msg .= urlencode(PQL_LANG_USER_ADD_OK);
 
-			if (PQL_TESTMAIL_AUTOSEND) {
+			if (PQL_CONF_TESTMAIL_AUTOSEND) {
 				$url  = "user_sendmail.php?email=" . urlencode($email) . "&";
 				$url .= "domain=$domain&user=" . urlencode($dns[0]) . "&rlnb=2&msg=$msg";
 			} else {
@@ -748,7 +749,7 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 				$url .= "domain=$domain&user=" . urlencode($dns[0]) . "&rlnb=2&msg=$msg";
 			}
 
-			if(defined("PQL_EXTRA_SCRIPT_CREATE_USER")) {
+			if(defined("PQL_CONF_EXTRA_SCRIPT_CREATE_USER")) {
 ?>
     <form action="<?=$url?>" method="post">
       <input type="submit" value="Continue">
@@ -756,12 +757,12 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 <?php
 				die();
 			} else {
-				header("Location: " . PQL_URI . "$url");
+				header("Location: " . PQL_CONF_URI . "$url");
 			}
 		} else {
-			$msg = urlencode(PQL_USER_ADD_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid));
+			$msg = urlencode(PQL_LANG_USER_ADD_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid));
 	   		$url = "domain_detail.php?domain=$domain&msg=$msg";
-			header("Location: " . PQL_URI . "$url");
+			header("Location: " . PQL_CONF_URI . "$url");
 		}
 	} // end of switch($submit)
 

@@ -1,26 +1,26 @@
 <?php
 // attribute plugin for
 // uid (user id)
-// $Id: attrib.uid.inc,v 2.5 2003-04-02 15:30:47 turbo Exp $
+// $Id: attrib.uid.inc,v 2.6 2003-04-04 06:54:31 turbo Exp $
 
 function attribute_check($type){
 	global $uid, $oldvalue, $_pql, $error, $domain;
 	
 	// is typed in ?
 	if($uid == ""){
-		$error["mail"] = PQL_MISSING;
+		$error["mail"] = PQL_LANG_MISSING;
 		return false;
 	}
 	
 	// valid
 	if(preg_match("/[^a-z0-9\.@_-]/i",$uid)){
-		$error["uid"] = PQL_INVALID;
+		$error["uid"] = PQL_LANG_INVALID;
 		return false;
 	}
 	
 	// if type is modify, check existance of old value, else the new one
 	if($oldvalue != $uid and pql_search_attribute($_pql->ldap_linkid, $domain, "uid", $uid)) {
-		$error["uid"] = PQL_EXISTS;
+		$error["uid"] = PQL_LANG_EXISTS;
 		return false;
 	}
 	
@@ -39,14 +39,14 @@ function attribute_print_form(){
 ?>
 	<form action="<?php echo $PHP_SELF ?>" method="post">
 	<table cellspacing="0" cellpadding="3" border="0">
-	<th colspan="3" align="left"><?php echo PQL_LDAP_UID_CHANGE; ?></th>
+	<th colspan="3" align="left"><?php echo PQL_LANG_UID_CHANGE; ?></th>
 	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title"><?php echo PQL_LDAP_UID_TITLE; ?></td>
+		<td class="title"><?php echo PQL_LANG_UID_TITLE; ?></td>
 		<td><?php echo format_error($error["uid"]); ?><input type="text" name="uid" value="<?php echo $uid; ?>"></td>
 	</tr>
 	<tr class="subtitle">
 		<td colspan="2">
-		<img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_LDAP_UID_HELP; ?></td>
+		<img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_LANG_UID_HELP; ?></td>
 	</tr>
 	</table>
 	<input type="hidden" name="submit" value="1">
@@ -56,7 +56,7 @@ function attribute_print_form(){
 	<input type="hidden" name="user" value="<?php echo $user ?>">
 	<br>
 	<br>
-	<input type="submit" value="<?php echo PQL_SAVE; ?>">
+	<input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
 	</form>
 
 <?php
@@ -78,19 +78,19 @@ function attribute_save($type){
 	  case "modify";
 		if($uid == $oldvalue){
 			// don't change if new value equal to old one
-			$msg = PQL_LDAP_UID_UNCHANGED;
+			$msg = PQL_LANG_UID_UNCHANGED;
 			attribute_forward($msg);
 			break;
     	}
 		
-		if(pql_replace_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_UID, $uid)){
-			$msg = pql_complete_constant(PQL_LDAP_UID_CHANGE_OK, array("old" => $oldvalue, "new" => $uid));
+		if(pql_replace_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_UID, $uid)){
+			$msg = pql_complete_constant(PQL_LANG_UID_CHANGE_OK, array("old" => $oldvalue, "new" => $uid));
 		} else {
-			$msg = PQL_LDAP_UID_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
+			$msg = PQL_LANG_UID_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
 		}
 		
 		// We use the uid to reference users and it has just changed...
-		if ($config["PQL_LDAP_REFERENCE_USERS_WITH"][pql_get_rootdn($user)] == PQL_LDAP_ATTR_UID) {
+		if ($config["PQL_CONF_REFERENCE_USERS_WITH"][pql_get_rootdn($user)] == PQL_CONF_ATTR_UID) {
 			$user = $uid;
 			// Reload the navigation bar (if allowed by config)
 			attribute_forward($msg, true);

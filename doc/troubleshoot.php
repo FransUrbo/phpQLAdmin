@@ -2,7 +2,7 @@
 <head>
 	<title>phpQL</title>
 	<link rel="stylesheet" href="../normal.css" type="text/css">
-	<!-- $Id: troubleshoot.php,v 2.1 2003-01-04 11:24:50 turbo Exp $ -->
+	<!-- $Id: troubleshoot.php,v 2.2 2003-04-04 06:54:09 turbo Exp $ -->
 </head>
 
 <body bgcolor="#e7e7e7" background="../images/bkg.png">
@@ -44,7 +44,7 @@ issues of qmail-ldap and qmail-ldap/control, <a href="http://www.lifewithqmail.o
 	<tr class="c2" valign="top">
     <td>LDAP Error: no such object</td>
     <td>This error is typically caused by an invalid base dn.</td>
-		<td>check that the <u>third</u> field in PQL_LDAP_HOST (in config.inc) is correctly set. The base dn must be a valid dn of your ldap server and have to point to the base dn of your qmail-ldap database. If this error raised in the control section of phpQLAdmin, then check the <u>fourth</u> field in the PQL_LDAP_HOST define</td>
+		<td>check that the <u>third</u> field in PQL_CONF_HOST (in config.inc) is correctly set. The base dn must be a valid dn of your ldap server and have to point to the base dn of your qmail-ldap database. If this error raised in the control section of phpQLAdmin, then check the <u>fourth</u> field in the PQL_CONF_HOST define</td>
   </tr>
   <tr class="c1" valign="top">
     <td>Failed setting xxx: Insufficient access</td>

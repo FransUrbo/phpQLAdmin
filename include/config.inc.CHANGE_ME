@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.21 2003-04-02 15:31:59 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.22 2003-04-04 06:54:31 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -18,7 +18,7 @@ if(!$PQL_CONFIG_INCLUDED) {
 	pql_define("PQL_HOSTMASTER", "hostmaster@adfinis.ch");
 	
 	// ----------------------------
-	// PQL_LDAP_HOST (FQDN|IP)
+	// PQL_CONF_HOST (FQDN|IP)
 	// the host, port and base DN which is running the ldap-server
 	// for the USERS database - separated with semi colon (;)
 	//
@@ -37,25 +37,25 @@ if(!$PQL_CONFIG_INCLUDED) {
 	// Stack these with the + (plus) character and you'll get a list of
 	// host you can administrate. If only one, then you can obiously only
 	// configure that :)
-	//pql_define("PQL_LDAP_HOST","ldaps://localhost/;;ou=QmailLDAP,dc=example,dc=com");
-	pql_define("PQL_LDAP_HOST","localhost;389;ou=QmailLDAP,dc=example,dc=com");
+	//pql_define("PQL_CONF_HOST","ldaps://localhost/;;ou=QmailLDAP,dc=example,dc=com");
+	pql_define("PQL_CONF_HOST","localhost;389;ou=QmailLDAP,dc=example,dc=com");
 	
 	// ----------------------------
-	// PQL_LDAP_SUBTREE_USERS
+	// PQL_CONF_SUBTREE_USERS
 	// Is your users organized DIRECTLY under your 'dc' object like
-	//	uid=username,PQL_LDAP_REFERENCE_DOMAINS_WITH=example,<LDAP_BASEDN>
+	//	uid=username,PQL_CONF_REFERENCE_DOMAINS_WITH=example,<LDAP_BASEDN>
 	// or in a subtree like
-	//	uid=username,ou=People,PQL_LDAP_REFERENCE_DOMAINS_WITH=example,<LDAP_BASEDN>
+	//	uid=username,ou=People,PQL_CONF_REFERENCE_DOMAINS_WITH=example,<LDAP_BASEDN>
 	// -> If the former (no subtree), leave this empty!
-	//pql_define("PQL_LDAP_SUBTREE_USERS", "ou=People");
+	//pql_define("PQL_CONF_SUBTREE_USERS", "ou=People");
 	
 	// ----------------------------
-	// PQL_LDAP_SUBTREE_GROUPS
+	// PQL_CONF_SUBTREE_GROUPS
 	// If you're using your LDAP database for authentication
 	// etc, you'd need a group for the user as well. Under
 	// what subtree is the groups located?
 	// -> Do not add a comma after this, not needed.
-	//pql_define("PQL_LDAP_SUBTREE_GROUPS", "ou=Groups");
+	//pql_define("PQL_CONF_SUBTREE_GROUPS", "ou=Groups");
 	
 	// ----------------------------
 	// mail(message)store generation
@@ -101,29 +101,29 @@ if(!$PQL_CONFIG_INCLUDED) {
 		//		$mailstore = $mailstore . "%u%";
 		//	}
 		//	$mailstore = pql_complete_constant($mailstore, array("d" => $domain, 
-		//														 "u" => $entry[PQL_LDAP_ATTR_UID], 
-		//														 "h" => $entry[PQL_LDAP_ATTR_MAILHOST]));
+		//														 "u" => $entry[PQL_CONF_ATTR_UID], 
+		//														 "h" => $entry[PQL_CONF_ATTR_MAILHOST]));
 		//
 		// example: "%d/%u" (=> domain.tld/username) 
 		//	$mailstore = "%d%/%u%"; 
 		//	$mailstore = pql_complete_constant($mailstore, array(	"d" => $domain, 
-		//															"u" => $entry[PQL_LDAP_ATTR_UID], 
-		//															"h" => $entry[PQL_LDAP_ATTR_MAILHOST]));
+		//															"u" => $entry[PQL_CONF_ATTR_UID], 
+		//															"h" => $entry[PQL_CONF_ATTR_MAILHOST]));
 		// domainname / uid
 		// example: domain.tld/username
-		//	$mailstore = $domain . '/'. $entry[PQL_LDAP_ATTR_UID]; 					
+		//	$mailstore = $domain . '/'. $entry[PQL_CONF_ATTR_UID]; 					
 		//
 		// first character of the domainname / domainname / uid
 		// example: d/domain.tld/username
-		//	$mailstore = substr($domain, 0, 1) . '/' . $domain . '/'. $entry[PQL_LDAP_ATTR_UID]; 					
+		//	$mailstore = substr($domain, 0, 1) . '/' . $domain . '/'. $entry[PQL_CONF_ATTR_UID]; 					
 		//
 		// mailhost / domainname / uid
 		// example: mail.host.tld/domain.tld/username
-		//	$mailstore = $entry[PQL_LDAP_ATTR_MAILHOST] . '/' . $domain . '/'. $entry[PQL_LDAP_ATTR_UID]; 					
+		//	$mailstore = $entry[PQL_CONF_ATTR_MAILHOST] . '/' . $domain . '/'. $entry[PQL_CONF_ATTR_UID]; 					
 		//
 		// complete email-address 
 		// example: mail@domain.tld
-		//	$mailstore = $entry[PQL_LDAP_ATTR_MAIL]; 					
+		//	$mailstore = $entry[PQL_CONF_ATTR_MAIL]; 					
 		//
 		// generate a random (6 digit) number and make sure 
 		// no other user has the same mailstore 
@@ -141,7 +141,7 @@ if(!$PQL_CONFIG_INCLUDED) {
 		//		$mailstore = mt_rand(100000, 999999);
 		//		// check whether another user already has this mailstore. If yes, generate another random number.
 		//		// TODO: ldap_basedn isn't availible any more (it's an array of base DN's)!
-		//		if (!pql_search_attribute($ldap, $ldap_basedn, PQL_LDAP_ATTR_MAILSTORE, $mailstore)) {
+		//		if (!pql_search_attribute($ldap, $ldap_basedn, PQL_CONF_ATTR_MAILSTORE, $mailstore)) {
 		//			break;
 		//		}
 		//	}
@@ -182,8 +182,8 @@ if(!$PQL_CONFIG_INCLUDED) {
 		//	$homedir = $homedir . "%u%";
 		//}
 		//$homedir = pql_complete_constant($homedir, array("d" => $domain, 
-		//												 "u" => $entry[PQL_LDAP_ATTR_UID], 
-		//												 "h" => $entry[PQL_LDAP_ATTR_MAILHOST]));
+		//												 "u" => $entry[PQL_CONF_ATTR_UID], 
+		//												 "h" => $entry[PQL_CONF_ATTR_MAILHOST]));
 
 		return($homedir);
 	}

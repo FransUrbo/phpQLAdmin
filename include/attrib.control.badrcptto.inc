@@ -2,7 +2,7 @@
 // control attribute plugin for
 // badrcptto (blocked local addresses)
 //
-// $Id: attrib.control.badrcptto.inc,v 2.3 2002-12-18 16:28:45 turbo Exp $
+// $Id: attrib.control.badrcptto.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
 
 function badrcptto_check($type) {
 	global $error, $badrcptto;
@@ -16,7 +16,7 @@ function badrcptto_check($type) {
 			
 			if(!check_email($badmail)){
 				$is_error = true;
-				$error["badrcptto_$key"] = PQL_INVALID;
+				$error["badrcptto_$key"] = PQL_LANG_INVALID;
 			}
 		} // end foreach
 	} // end if is_array
@@ -128,7 +128,7 @@ function badrcptto_print_form(){
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="submit" value="<?php echo PQL_SAVE; ?>">
+    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
 <?php

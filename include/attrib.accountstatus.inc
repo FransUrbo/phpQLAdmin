@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // accountstatus (status of mailaccount)
-// $Id: attrib.accountstatus.inc,v 2.3 2003-01-16 14:58:38 turbo Exp $
+// $Id: attrib.accountstatus.inc,v 2.4 2003-04-04 06:54:29 turbo Exp $
 
 function attribute_check($type){
 	// attribute should be
@@ -52,13 +52,13 @@ function attribute_save($type){
 		
 		if(is_array($users)){
 			foreach($users as $user){
-				$return[] = pql_replace_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_ISACTIVE, $set);
+				$return[] = pql_replace_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_ISACTIVE, $set);
 			}
 			
 			if(in_array(false, $return)){
-				$msg = PQL_LDAP_ACCOUNTSTATUS_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
+				$msg = PQL_LANG_ACCOUNTSTATUS_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
       		} else {
-				$msg = pql_complete_constant(PQL_LDAP_ACCOUNTSTATUS_CHANGE_OK, array("status" => pql_ldap_accountstatus($set)));
+				$msg = pql_complete_constant(PQL_LANG_ACCOUNTSTATUS_CHANGE_OK, array("status" => pql_ldap_accountstatus($set)));
       		}
 			
 			attribute_forward($msg);
@@ -67,10 +67,10 @@ function attribute_save($type){
 		break;
 
 	  case "set":
-		if(pql_replace_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_ISACTIVE, $set)){
-			$msg = pql_complete_constant(PQL_LDAP_ACCOUNTSTATUS_CHANGE_OK, array("status" => pql_ldap_accountstatus($set)));
+		if(pql_replace_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_ISACTIVE, $set)){
+			$msg = pql_complete_constant(PQL_LANG_ACCOUNTSTATUS_CHANGE_OK, array("status" => pql_ldap_accountstatus($set)));
 		} else {
-			$msg = PQL_LDAP_ACCOUNTSTATUS_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
+			$msg = PQL_LANG_ACCOUNTSTATUS_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
 		}
 		
 		attribute_forward($msg);

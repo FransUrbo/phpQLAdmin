@@ -1,10 +1,10 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.11 2003-01-28 13:00:46 turbo Exp $
+// $Id: control_detail.php,v 1.12 2003-04-04 06:53:47 turbo Exp $
 session_start();
 require("./include/pql_config.inc");
 
-if(defined("PQL_LDAP_CONTROL_USE")) {
+if(defined("PQL_CONF_CONTROL_USE")) {
     // include control api if control is used
     include("./include/pql_control.inc");
     $_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
@@ -45,7 +45,7 @@ if(defined("PQL_LDAP_CONTROL_USE")) {
 	}
 
 	// reload navigation bar if needed
-	if(isset($rlnb) and PQL_AUTO_RELOAD) {
+	if(isset($rlnb) and PQL_CONF_AUTO_RELOAD) {
 ?>
 
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
@@ -274,7 +274,7 @@ if(defined("PQL_LDAP_CONTROL_USE")) {
   <br>
 
   <table cellspacing="0" cellpadding="3" border="0">
-    <th align="left"><?=PQL_ACTIONS?></th>
+    <th align="left"><?=PQL_LANG_ACTIONS?></th>
       <tr class="subtitle">
         <td colspan="4"><a href="installmailserver.php?domain=<?=$domain?>&host=<?=$host?>"><img src="images/edit.png" width="12" height="12" border="0">Create mailserver install script</a></td>
       </tr>
@@ -286,9 +286,9 @@ if(defined("PQL_LDAP_CONTROL_USE")) {
   </table>
 <?php  
 } else {
-	// PQL_LDAP_CONTROL_USE isn't set!
+	// PQL_CONF_CONTROL_USE isn't set!
 ?>
-  <span class="title1">PQL_LDAP_CONTROL_USE isn't set, won't show control information</span>
+  <span class="title1">PQL_CONF_CONTROL_USE isn't set, won't show control information</span>
 <?php
 }
 

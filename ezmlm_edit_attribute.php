@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_edit_attribute.php,v 1.10 2003-01-21 13:39:40 turbo Exp $
+// $Id: ezmlm_edit_attribute.php,v 1.11 2003-04-04 06:53:47 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -14,7 +14,7 @@ function list_forward($domainname, $msg){
     $msg = urlencode($msg);
 	// TODO: We need the '$domainname' value to show the LIST, not lists in domain
     $url = "ezmlm_detail.php?domain=$domain&domainname=$domainname&msg=$msg&rlnb=3";
-    header("Location: " . PQL_URI . "$url");
+    header("Location: " . PQL_CONF_URI . "$url");
 }
 
 // Get base directory for mails
@@ -54,7 +54,7 @@ if($ezmlm = new ezmlm('alias', $path)) {
 	<table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$title2?></th>
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?=PQL_EMAIL?></td>
+          <td class="title"><?=PQL_LANG_EMAIL?></td>
 <?php
 			if($attrib == 'subscriber') {
 ?>

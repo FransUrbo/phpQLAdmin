@@ -49,7 +49,7 @@
 #					controlBaseDN		   5
 # -----------------------------------------
 
-# $Id: phpQLAdmin.schema,v 2.13 2003-04-02 15:27:00 turbo Exp $
+# $Id: phpQLAdmin.schema,v 2.14 2003-04-04 06:53:47 turbo Exp $
 
 # PQL_SHOW_USERS (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.1 NAME 'showUsers'
@@ -58,14 +58,14 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.1.1 NAME 'showUsers'
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
 	SINGLE-VALUE )
 
-# PQL_LDAP_CONTROL_USE (true | false)
+# PQL_CONF_CONTROL_USE (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.2 NAME 'useControls'
 	DESC 'Is ~controls information stored in LDAP database [True/False]?'
 	EQUALITY booleanMatch
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
 	SINGLE-VALUE )
 
-# PQL_LDAP_EZMLM_USE (true | false)
+# PQL_CONF_EZMLM_USE (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.3 NAME 'useEzmlm'
 	DESC 'Manage ezmlm mailinglists [True/False]?'
 	EQUALITY booleanMatch
@@ -86,14 +86,14 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.1.5 NAME 'autoSend'
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
 	SINGLE-VALUE )
 
-# PQL_LDAP_CONTROL_AUTOADDLOCALS (true | false)
+# PQL_CONF_CONTROL_AUTOADDLOCALS (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.6 NAME 'autoAddLocals'
 	DESC 'Automatically add domain to ~controls/locals attribute [True/False]?'
 	EQUALITY booleanMatch
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
 	SINGLE-VALUE )
 
-# PQL_LDAP_CHANGE_SERVER (true | false)
+# PQL_CONF_CHANGE_SERVER (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.7 NAME 'allowServerChange'
 	DESC 'Should we allow LDAP server change [True/False]?'
 	EQUALITY booleanMatch
@@ -129,47 +129,47 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.2.1 NAME 'whoAreWe'
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
 	SINGLE-VALUE )
 
-# PQL_LDAP_SUBTREE_USERS
+# PQL_CONF_SUBTREE_USERS
 attributetype ( 1.3.6.1.4.1.8767.3.2.2.2 NAME 'subTreeUsers'
 	DESC 'Subtree value - Users'
 	EQUALITY caseIgnoreMatch
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
 	SINGLE-VALUE )
 
-# PQL_LDAP_SUBTREE_GROUPS
+# PQL_CONF_SUBTREE_GROUPS
 attributetype ( 1.3.6.1.4.1.8767.3.2.2.3 NAME 'subTreeGroups'
 	DESC 'Subtree value - Groups'
 	EQUALITY caseIgnoreMatch
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
 	SINGLE-VALUE )
 
-# PQL_LDAP_OBJECTCLASS_DOMAIN (LDAP object classes)
+# PQL_CONF_OBJECTCLASS_DOMAIN (LDAP object classes)
 attributetype ( 1.3.6.1.4.1.8767.3.2.2.4 NAME 'branchObjectClass'
 	DESC 'Domain/Branch object classes'
 	EQUALITY caseExactIA5Match
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
 
-# PQL_LDAP_OBJECTCLASS_* (LDAP object classes)
+# PQL_CONF_OBJECTCLASS_* (LDAP object classes)
 attributetype ( 1.3.6.1.4.1.8767.3.2.2.5 NAME 'userObjectClass'
 	DESC 'User object classes'
 	EQUALITY caseExactIA5Match
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
 
-# PQL_LDAP_REFERENCE_USERS_WITH (LDAP attribute name)
+# PQL_CONF_REFERENCE_USERS_WITH (LDAP attribute name)
 attributetype ( 1.3.6.1.4.1.8767.3.2.2.6 NAME 'userReference'
 	DESC 'Defines which attribute phpQLAdmin passes to various functions when it needs to reference users'
 	EQUALITY caseIgnoreMatch
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
 	SINGLE-VALUE )
 
-# PQL_LDAP_REFERENCE_BRANCHES_WITH (LDAP attribute name)
+# PQL_CONF_REFERENCE_BRANCHES_WITH (LDAP attribute name)
 attributetype ( 1.3.6.1.4.1.8767.3.2.2.7 NAME 'branchReference'
 	DESC 'Defines which attribute phpQLAdmin passes to various functions when it needs to reference branches'
 	EQUALITY caseIgnoreMatch
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
 	SINGLE-VALUE )
 
-# PQL_LDAP_EZMLM_PATH
+# PQL_CONF_EZMLM_PATH
 attributetype ( 1.3.6.1.4.1.8767.3.2.2.8 NAME 'ezmlmBinaryPath'
 	DESC 'Path to ezmlm-* binaries'
 	EQUALITY caseExactIA5Match
@@ -189,7 +189,7 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.2.10 NAME 'catchAllUser'
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26
 	SINGLE-VALUE )
 
-# PQL_LDAP_ATTR_*
+# PQL_CONF_ATTR_*
 attributetype ( 1.3.6.1.4.1.8767.3.2.2.11 NAME 'userAttribute'
         DESC ''
         EQUALITY caseIgnoreMatch
@@ -225,7 +225,7 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.3.3 NAME 'testMailText'
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
 	SINGLE-VALUE )
 
-# PQL_LDAP_FORWARDINGACCOUNT_UIDNUMBER (integer)
+# PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER (integer)
 attributetype ( 1.3.6.1.4.1.8767.3.2.3.4 NAME 'forwardUIDNumber'
 	DESC 'UIDNumber of every forwarding account'
 	EQUALITY integerMatch

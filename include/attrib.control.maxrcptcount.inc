@@ -2,20 +2,20 @@
 // control attribute plugin for
 // maxrcptcount (maximum number of RCPT TO's)
 //
-// $Id: attrib.control.maxrcptcount.inc,v 2.3 2002-12-18 16:28:46 turbo Exp $
+// $Id: attrib.control.maxrcptcount.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
 
 function maxrcptcount_check($type) {
 	global $error, $maxrcptcount;
 
 	// missing
 	if($maxrcptcount == ""){
-		$error["maxrcptcount"] = PQL_MISSING;
+		$error["maxrcptcount"] = PQL_LANG_MISSING;
 		return false;
 	}
 
 	// number ?
 	if(preg_match ("/[^0-9]/", $maxrcptcount)){
-		$error["maxrcptcount"] = PQL_INVALID;
+		$error["maxrcptcount"] = PQL_LANG_INVALID;
 		return false;
 	}
 
@@ -84,7 +84,7 @@ function maxrcptcount_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?=$attrib?>">
-    <input type="submit" value="<?=PQL_SAVE?>">
+    <input type="submit" value="<?=PQL_LANG_SAVE?>">
   </form>
 <?php
 }

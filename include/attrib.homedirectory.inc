@@ -1,20 +1,20 @@
 <?php
 // attribute plugin for
 // homedirectory (path to homedirectory)
-// $Id: attrib.homedirectory.inc,v 2.3 2003-01-16 14:58:38 turbo Exp $
+// $Id: attrib.homedirectory.inc,v 2.4 2003-04-04 06:54:31 turbo Exp $
 
 function attribute_check($type){
     global $homedirectory, $domain, $oldvalue, $_pql, $error;
     
     // is typed in ?
     if($homedirectory == ""){
-		$error["homedirectory"] = PQL_MISSING;
+		$error["homedirectory"] = PQL_LANG_MISSING;
 		return false;
     }
     
     // don't use ".."
     if(preg_match("/(\.){2,}/", $homedirectory)){
-		$error["homedirectory"] = PQL_INVALID;
+		$error["homedirectory"] = PQL_LANG_INVALID;
 		return false;
     }
     
@@ -33,9 +33,9 @@ function attribute_print_form(){
 ?>
 	<form action="<?php echo $PHP_SELF ?>" method="post">
 	<table cellspacing="0" cellpadding="3" border="0">
-	<th colspan="3" align="left"><?php echo PQL_LDAP_HOMEDIRECTORY_CHANGE; ?></th>
+	<th colspan="3" align="left"><?php echo PQL_LANG_HOMEDIRECTORY_CHANGE; ?></th>
 	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title"><?php echo PQL_LDAP_HOMEDIRECTORY_CHANGE; ?></td>
+		<td class="title"><?php echo PQL_LANG_HOMEDIRECTORY_CHANGE; ?></td>
 		<td><?php echo format_error($error["homedirectory"]); ?><input type="text" name="homedirectory" value="<?php echo $homedirectory; ?>" size="50"></td>
 	</tr>
 	</table>
@@ -46,7 +46,7 @@ function attribute_print_form(){
 	<input type="hidden" name="user" value="<?php echo $user ?>">
 	<br>
 	<br>
-	<input type="submit" value="<?php echo PQL_SAVE; ?>">
+	<input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
 	</form>
 
   
@@ -69,15 +69,15 @@ function attribute_save($type){
       case "modify";
 		if($homedirectory == $oldvalue){
 			// don't change if new value equal to old one
-			$msg = PQL_LDAP_HOMEDIRECTORY_UNCHANGED;
+			$msg = PQL_LANG_HOMEDIRECTORY_UNCHANGED;
 			attribute_forward($msg);
 			break;
     	}
 		
 		if(pql_replace_userattribute($_pql->ldap_linkid, $user, $attrib,$homedirectory)) {
-			$msg = pql_complete_constant(PQL_LDAP_HOMEDIRECTORY_CHANGE_OK, array("path" => $homedirectory));
+			$msg = pql_complete_constant(PQL_LANG_HOMEDIRECTORY_CHANGE_OK, array("path" => $homedirectory));
 		} else {
-			$msg = PQL_LDAP_HOMEDIRECTORY_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+			$msg = PQL_LANG_HOMEDIRECTORY_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 		}
 		
 		attribute_forward($msg);

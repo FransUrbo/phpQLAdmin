@@ -1,26 +1,26 @@
 <?php
 // attribute plugin for
 // mailmessagestore (path to mailbox)
-// $Id: attrib.mailmessagestore.inc,v 2.4 2003-01-23 08:01:55 turbo Exp $
+// $Id: attrib.mailmessagestore.inc,v 2.5 2003-04-04 06:54:31 turbo Exp $
 
 function attribute_check($type){
 	global $mailmessagestore, $domain, $oldvalue, $_pql, $error;
 	
 	// is typed in ?
 	if($mailmessagestore == ""){
-		$error["mailmessagestore"] = PQL_MISSING;
+		$error["mailmessagestore"] = PQL_LANG_MISSING;
 		return false;
 	}
 	
 	// check for absolute paths
-	if(!defined("PQL_ALLOW_ABSOLUTE_PATH") and preg_match("/^\//", $mailmessagestore)) {
-		$error["general"] = PQL_LDAP_MAILMESSAGESTORE_ABSOLUTE_NOTALLOWED . "<br>";
+	if(!defined("PQL_CONF_ALLOW_ABSOLUTE_PATH") and preg_match("/^\//", $mailmessagestore)) {
+		$error["general"] = PQL_LANG_MAILMESSAGESTORE_ABSOLUTE_NOTALLOWED . "<br>";
 		return false;
 	}
 	
 	// don't use ".."
 	if(preg_match("/(\.){2,}/", $mailmessagestore)){
-		$error["mailmessagestore"] = PQL_INVALID;
+		$error["mailmessagestore"] = PQL_LANG_INVALID;
 		return false;
 	}
 	
@@ -39,15 +39,15 @@ function attribute_print_form(){
 ?>
 	<form action="<?php echo $PHP_SELF ?>" method="post">
 	<table cellspacing="0" cellpadding="3" border="0">
-	<th colspan="3" align="left"><?php echo PQL_LDAP_MAILMESSAGESTORE_CHANGE; ?></th>
+	<th colspan="3" align="left"><?php echo PQL_LANG_MAILMESSAGESTORE_CHANGE; ?></th>
 	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title"><?php echo PQL_LDAP_MAILMESSAGESTORE_CHANGE; ?></td>
+		<td class="title"><?php echo PQL_LANG_MAILMESSAGESTORE_CHANGE; ?></td>
 		<td><?php echo format_error($error["mailmessagestore"]); ?><input type="text" name="mailmessagestore" value="<?php echo $mailmessagestore; ?>"></td>
 	</tr>
 	<tr class="subtitle">
 		<td colspan="2">
 		<?php echo format_error($error["general"]); ?>
-		<img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_LDAP_MAILMESSAGESTORE_HELP; ?></td>
+		<img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_LANG_MAILMESSAGESTORE_HELP; ?></td>
 	</tr>
 	</table>
 	<input type="hidden" name="submit" value="1">
@@ -57,7 +57,7 @@ function attribute_print_form(){
 	<input type="hidden" name="user" value="<?php echo $user ?>">
 	<br>
 	<br>
-	<input type="submit" value="<?php echo PQL_SAVE; ?>">
+	<input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
 	</form>
 
 <?php
@@ -79,15 +79,15 @@ function attribute_save($type){
 	  case "modify";
 		if($mailmessagestore == $oldvalue){
 			// don't change if new value equal to old one
-			$msg = PQL_LDAP_MAILMESSAGESTORE_UNCHANGED;
+			$msg = PQL_LANG_MAILMESSAGESTORE_UNCHANGED;
 			attribute_forward($msg);
 			break;
     	}
 		
-		if(pql_replace_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_MAILSTORE, $mailmessagestore)){
-			$msg = pql_complete_constant(PQL_LDAP_MAILMESSAGESTORE_CHANGE_OK, array("path" => $mailmessagestore));
+		if(pql_replace_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_MAILSTORE, $mailmessagestore)){
+			$msg = pql_complete_constant(PQL_LANG_MAILMESSAGESTORE_CHANGE_OK, array("path" => $mailmessagestore));
 		} else {
-			$msg = PQL_LDAP_MAILMESSAGESTORE_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
+			$msg = PQL_LANG_MAILMESSAGESTORE_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
 		}
 		
 		attribute_forward($msg);

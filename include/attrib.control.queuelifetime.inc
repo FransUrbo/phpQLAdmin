@@ -2,20 +2,20 @@
 // control attribute plugin for
 // queuelifetime (maximum number of RCPT TO's)
 //
-// $Id: attrib.control.queuelifetime.inc,v 2.3 2002-12-18 16:28:46 turbo Exp $
+// $Id: attrib.control.queuelifetime.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
 
 function queuelifetime_check($type) {
 	global $error, $queuelifetime;
 
 	// number ?
 	if(preg_match ("/[^0-9]/", $queuelifetime)){
-		$error["queuelifetime"] = PQL_INVALID;
+		$error["queuelifetime"] = PQL_LANG_INVALID;
 		return false;
 	}
 	
 	// must be > 0
 	if($queuelifetime != "" and $error["queuelifetime"] == "" and $queuelifetime <= 0){
-		$error["queuelifetime"] = PQL_GREATER_ZERO;
+		$error["queuelifetime"] = PQL_LANG_GREATER_ZERO;
 		return false;
 	}
 
@@ -86,7 +86,7 @@ function queuelifetime_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="submit" value="<?php echo PQL_SAVE; ?>">
+    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
 <?php

@@ -2,7 +2,7 @@
 <head>
 	<title>phpQL</title>
 	<link rel="stylesheet" href="../normal.css" type="text/css">
-	<!-- $Id: conf.php,v 2.3 2003-03-06 10:40:44 turbo Exp $ -->
+	<!-- $Id: conf.php,v 2.4 2003-04-04 06:54:09 turbo Exp $ -->
 </head>
 
 <body bgcolor="#e7e7e7" background="../images/bkg.png">
@@ -19,7 +19,7 @@ Edit the config.inc file to configure phpQLAdmin.
 <br>
 <br>
 Note: the configuration values beginning
-with PQL_LDAP_CONTROL_ are only required for qmail-ldap/control support within phpQLAdmin. You don't
+with PQL_CONF_CONTROL_ are only required for qmail-ldap/control support within phpQLAdmin. You don't
 have to set unless you want support for qmail-ldap/control.
 <br>
 <br>
@@ -38,25 +38,25 @@ language that's been keept up to date is the english one. Also, there's quite a 
 of stuff hardcoded in the PHP files.
 <br>
 <br>
-<b>PQL_SHOW_USERS</b>
+<b>PQL_CONF_SHOW_USERS</b>
 <br>
 (true or false). set to false, if the domain users should not be shown in the navigation
 frame. this results in better performance on servers with large amount of users.
 <br>
 <br>
-<b>PQL_AUTO_RELOAD</b>
+<b>PQL_CONF_AUTO_RELOAD</b>
 <br>
 (true or false). true, if the navigation bar should automatically be reloaded, if a domain
 or user was added or deleted. with large amount of domains / users reloading the navigation
-bar could get slow, at least if PQL_SHOW_USERS is turned on.
+bar could get slow, at least if PQL_CONF_SHOW_USERS is turned on.
 <br>
 <br>
-<b>PQL_HOSTMASTER</b>
+<b>PQL_CONF_HOSTMASTER</b>
 <br>
 (email address). this is the sender of testmails.
 <br>
 <br>
-<b>PQL_LDAP_HOST</b>
+<b>PQL_CONF_HOST</b>
 <br>
 (full qualified domain name, e.g ldap.foo.bar). the host which is running the
 ldap-server for the users database.<p>
@@ -83,15 +83,15 @@ namingContexts: dc=com
 This say that my base DN (what I've entered as <b>defaultsearchbase</b> and <b>suffix</b>
 configuration in my slapd.conf file) is <u>dc=com</u>.
 <p>
-<b>PQL_LDAP_CONTROL_USE</b>
+<b>PQL_CONF_CONTROL_USE</b>
 <br>
 (true | false) set to true, if qmail-ldap/control patch is supported by your system. Make sure
 you have complied all requirements listed in INSTALL. Configuration values which are beginning with
-PQL_LDAP_CONTROL_ are only required if you need qmail-ldap/control support and set
-PQL_LDAP_CONTROL_USE to true, otherwise they will be ignored.
+PQL_CONF_CONTROL_ are only required if you need qmail-ldap/control support and set
+PQL_CONF_CONTROL_USE to true, otherwise they will be ignored.
 <br>
 <br>
-<b>PQL_LDAP_CONTROL_AUTOADDLOCALS</b>
+<b>PQL_CONF_CONTROL_AUTOADDLOCALS</b>
 <br>
 (true | false). set this to true, if phpQLAdmin should automatically add all domains to
 locals. Disable this (false), if you have more than one qmail-ldap server
@@ -99,7 +99,7 @@ and don't want that phpQLAdmin register all domains on this server. Currently, t
 application do not support more than one control database.
 <br>
 <br>
-<b>PQL_PASSWORD_SCHEMES</b>
+<b>PQL_CONF_PASSWORD_SCHEMES</b>
 <br>
 (CRYPT | CLEAR | SHA | MD5 | KERBEROS). defines the password encryption type which is allowd to
 encrypt passwords in the ldap database. qmail/ldap is supporting SHA, MD5, CRYPT and cleartext
@@ -114,7 +114,7 @@ You can define all of them, separated with comma (,) and you'll get a selectable
 when creating a user.
 <br>
 <br>
-<b>PQL_ALLOW_ABSOLUTE_PATH</b>
+<b>PQL_CONF_ALLOW_ABSOLUTE_PATH</b>
 <br>
 (true | false). set this to true, if absolute paths are allowed to set
 the mailbox directory.

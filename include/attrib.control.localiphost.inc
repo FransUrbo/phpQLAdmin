@@ -2,14 +2,14 @@
 // control attribute plugin for
 // localiphost (name substituted for local IP address)
 //
-// $Id: attrib.control.localiphost.inc,v 2.3 2002-12-18 16:28:46 turbo Exp $
+// $Id: attrib.control.localiphost.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
 
 function localiphost_check($type) {
 	global $error, $localiphost;
 
 	// validity
 	if($localiphost != "" and !check_hostaddress($localiphost)){
-		$error["localiphost"] = PQL_INVALID;
+		$error["localiphost"] = PQL_LANG_INVALID;
 		return false;
 	}
 	
@@ -78,7 +78,7 @@ function localiphost_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="submit" value="<?php echo PQL_SAVE; ?>">
+    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
 <?php

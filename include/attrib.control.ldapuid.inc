@@ -3,32 +3,32 @@
 // ldapuid (user id of virtual user)
 // ldapgid (group id of virtual user)
 //
-// $Id: attrib.control.ldapuid.inc,v 2.3 2002-12-18 16:28:46 turbo Exp $
+// $Id: attrib.control.ldapuid.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
 
 function ldapuid_check($type) {
 	global $error, $ldapuid, $ldapgid;
 
 	// missing
 	if($ldapuid == ""){
-		$error["ldapuid"] = PQL_MISSING;
+		$error["ldapuid"] = PQL_LANG_MISSING;
 		$is_error = true;
 	}
 	
 	// check validity
 	if(preg_match("/[^0-9]/", $ldapuid)){
-		$error["ldapuid"] = PQL_INVALID;
+		$error["ldapuid"] = PQL_LANG_INVALID;
 		$is_error = true;
 	}
 	
 	// missing
 	if($ldapgid == ""){
-		$error["ldapgid"] = PQL_MISSING;
+		$error["ldapgid"] = PQL_LANG_MISSING;
 		$is_error = true;
 	}
 	
 	// check validity
 	if(preg_match("/[^0-9]/", $ldapgid)){
-		$error["ldapgid"] = PQL_INVALID;
+		$error["ldapgid"] = PQL_LANG_INVALID;
 		$is_error = true;
 	}
 	
@@ -118,7 +118,7 @@ function ldapuid_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="submit" value="<?php echo PQL_SAVE; ?>">
+    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
 <?php

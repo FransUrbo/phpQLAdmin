@@ -8,13 +8,13 @@ require("./include/pql_control.inc");
 
 include("./header.html");
 ?>
-  <span class="title1"><?php echo pql_complete_constant(PQL_DOMAIN_DEL_TITLE, array("domain" => $domain))?></span>
+  <span class="title1"><?php echo pql_complete_constant(PQL_LANG_DOMAIN_DEL_TITLE, array("domain" => $domain))?></span>
 <?php
-if(isset($ok) || !PQL_VERIFY_DELETE) {
+if(isset($ok) || !PQL_CONF_VERIFY_DELETE) {
 	$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 	$_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
 	
-	$delete_forwards = (isset($delete_forwards) || PQL_VERIFY_DELETE) ? true : false;
+	$delete_forwards = (isset($delete_forwards) || PQL_CONF_VERIFY_DELETE) ? true : false;
 	
 	// Before we delete the domain/branch, get the defaultDomain value
 	// so we can delete it from locals
@@ -27,34 +27,34 @@ if(isset($ok) || !PQL_VERIFY_DELETE) {
 			pql_control_update_domains($_pql, $USER_SEARCH_DN_CTR, '*', array($domainname, ''));
 		}
 	    
-	    $msg = PQL_DOMAIN_DEL_OK;
+	    $msg = PQL_LANG_DOMAIN_DEL_OK;
 		
 	    // redirect to home page
 	    $msg = urlencode($msg);
-	    header("Location: " . PQL_URI . "home.php?msg=$msg&rlnb=1");
+	    header("Location: " . PQL_CONF_URI . "home.php?msg=$msg&rlnb=1");
 	} else {
-	    $msg = PQL_DOMAIN_DEL_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+	    $msg = PQL_LANG_DOMAIN_DEL_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 		
 	    // redirect to domain detail page
 	    $msg = urlencode($msg);
-	    header("Location: " . PQL_URI . "domain_detail.php?domain=$domain&msg=$msg");
+	    header("Location: " . PQL_CONF_URI . "domain_detail.php?domain=$domain&msg=$msg");
 	}
 } else {
 ?>
 <br>
 <br>
 <img src="images/info.png" width="16" height="16" border="0">
-<?php echo PQL_DOMAIN_DEL_WARNING; ?>
+<?php echo PQL_LANG_DOMAIN_DEL_WARNING; ?>
 <br>
 <br>
-<?php echo PQL_SURE; ?>
+<?php echo PQL_LANG_SURE; ?>
 <br>
 <form action="<?php echo $PHP_SELF; ?>" method="GET">
 	<input type="hidden" name="domain" value="<?php echo $domain; ?>">
 	
-	<input type="checkbox" name="delete_forwards" checked> <?php echo PQL_DOMAIN_DEL_FORWARDS; ?><br><br>
-	<input type="submit" name="ok" value="<?php echo PQL_YES; ?>">
-	<input type="button" name="back" value="<?php echo PQL_NO; ?>" onClick="history.back();">
+	<input type="checkbox" name="delete_forwards" checked> <?php echo PQL_LANG_DOMAIN_DEL_FORWARDS; ?><br><br>
+	<input type="submit" name="ok" value="<?php echo PQL_LANG_YES; ?>">
+	<input type="button" name="back" value="<?php echo PQL_LANG_NO; ?>" onClick="history.back();">
 </form>
 <br>
 <?php

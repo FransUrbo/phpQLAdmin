@@ -1,20 +1,20 @@
 <?php
 // attribute plugin for
 // base homedirectory for domain
-// $Id: attrib.basemaildir.inc,v 2.0 2002-12-13 14:34:57 turbo Exp $
+// $Id: attrib.basemaildir.inc,v 2.1 2003-04-04 06:54:29 turbo Exp $
 
 function attribute_check(){
     global $basemaildir, $domain, $oldvalue, $_pql, $error;
     
     // is typed in ?
     if($basemaildir == ""){
-	$error["basemaildir"] = PQL_MISSING;
+	$error["basemaildir"] = PQL_LANG_MISSING;
 	return false;
     }
     
     // don't use ".."
     if(preg_match("/(\.){2,}/", $basemaildir)){
-	$error["basemaildir"] = PQL_INVALID;
+	$error["basemaildir"] = PQL_LANG_INVALID;
 	return false;
     }
     
@@ -33,9 +33,9 @@ function attribute_print_form(){
     ?>
 	<form action="<?php echo $PHP_SELF ?>" method="post">
 	<table cellspacing="0" cellpadding="3" border="0">
-	<th colspan="3" align="left"><?php echo PQL_DOMAIN_DEFAULT_CHANGE_MAILDIR . $domain; ?></th>
+	<th colspan="3" align="left"><?php echo PQL_LANG_DOMAIN_DEFAULT_CHANGE_MAILDIR . $domain; ?></th>
 	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title"><?php echo PQL_USER_MAILDIR; ?></td>
+		<td class="title"><?php echo PQL_LANG_USER_MAILDIR; ?></td>
 		<td><?php echo format_error($error["basemaildir"]); ?><input type="text" name="basemaildir" value="<?php echo $basemaildir; ?>" size="50"></td>
 	</tr>
 	</table>
@@ -45,7 +45,7 @@ function attribute_print_form(){
 	<input type="hidden" name="domain" value="<?php echo $domain; ?>">
 	<br>
 	<br>
-	<input type="submit" value="<?php echo PQL_SAVE; ?>">
+	<input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
 	</form>
     <?php
 }
@@ -63,15 +63,15 @@ function attribute_save($type){
       case "modify":
 	if($basemaildir == $oldvalue){
 	    // don't change if new value equal to old one
-	    $msg = PQL_LDAP_MAILMESSAGESTORE_UNCHANGED;
+	    $msg = PQL_LANG_MAILMESSAGESTORE_UNCHANGED;
 	    attribute_forward($msg);
 	    break;
     	}
 	
 	if(pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, $basemaildir)){
-	    $msg = pql_complete_constant(PQL_LDAP_DELIVERYPROGRAMPATH_CHANGE_OK, array("path" => $basemaildir));
+	    $msg = pql_complete_constant(PQL_LANG_DELIVERYPROGRAMPATH_CHANGE_OK, array("path" => $basemaildir));
 	} else {
-	    $msg = PQL_LDAP_DELIVERYPROGRAMPATH_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+	    $msg = PQL_LANG_DELIVERYPROGRAMPATH_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	}
 	
 	attribute_forward($msg);

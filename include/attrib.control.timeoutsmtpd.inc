@@ -2,20 +2,20 @@
 // control attribute plugin for
 // timeoutsmtpd (how long to wait for smtp client)
 //
-// $Id: attrib.control.timeoutsmtpd.inc,v 2.3 2002-12-18 16:28:46 turbo Exp $
+// $Id: attrib.control.timeoutsmtpd.inc,v 2.4 2003-04-04 06:54:31 turbo Exp $
 
 function timeoutsmtpd_check($type) {
 	global $error, $timeoutsmtpd;
 
 	// number ?
 	if(preg_match ("/[^0-9]/", $timeoutsmtpd)){
-		$error["timeoutsmtpd"] = PQL_INVALID;
+		$error["timeoutsmtpd"] = PQL_LANG_INVALID;
 		return false;
 	}
 
 	// must be > 0
 	if($error["timeoutsmtpd"] == "" and $timeoutsmtpd <= 0){
-		$error["timeoutsmtpd"] = PQL_GREATER_ZERO;
+		$error["timeoutsmtpd"] = PQL_LANG_GREATER_ZERO;
 		return false;
 	}
 
@@ -85,7 +85,7 @@ function timeoutsmtpd_print_form(){
     </table>
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="submit" value="<?php echo PQL_SAVE; ?>">
+    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
 <?php

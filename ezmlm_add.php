@@ -1,6 +1,6 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.15 2003-01-30 16:07:18 turbo Exp $
+// $Id: ezmlm_add.php,v 1.16 2003-04-04 06:53:47 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -13,7 +13,7 @@ function list_forward($domainname, $msg){
 
     $msg = urlencode($msg);
     $url = "ezmlm_detail.php?domain=$domain&domainname=$domainname&msg=$msg&rlnb=3";
-    header("Location: " . PQL_URI . "$url");
+    header("Location: " . PQL_CONF_URI . "$url");
 }
 
 if(!$subscribercount) {

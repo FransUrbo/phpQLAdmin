@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for pilotPerson objects etc
-// $Id: attrib.outlook.inc,v 1.6 2003-03-31 08:03:50 turbo Exp $
+// $Id: attrib.outlook.inc,v 1.7 2003-04-04 06:54:31 turbo Exp $
 
 /*
 	Attributes managed here:
@@ -35,7 +35,7 @@ function attribute_check() {
 
     // is typed in ?
     if($$attrib == ""){
-		$error[$attrib] = PQL_MISSING;
+		$error[$attrib] = PQL_LANG_MISSING;
 		return false;
     }
     
@@ -68,7 +68,7 @@ function attribute_print_form() {
 	<input type="hidden" name="domain" value="<?=$domain?>">
 	<input type="hidden" name="user" value="<?=$user?>">
     <input type="hidden" name="rootdn" value="<?=$rootdn?>">
-	<input type="submit" value="<?php echo PQL_SAVE; ?>">
+	<input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
   <script language="JavaScript">
