@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of user
-// $Id: user_edit_attribute.php,v 2.45 2005-01-12 14:39:35 turbo Exp $
+// $Id: user_edit_attribute.php,v 2.46 2005-02-01 07:27:06 turbo Exp $
 //
 // This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
 //   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -57,7 +57,10 @@ function attribute_forward($msg, $rlnb = false) {
     if ($rlnb)
       $link .= "&rlnb=2";
 
-    header("Location: " . pql_get_define("PQL_CONF_URI") . "$link");
+    if(!file_exists("./.DEBUG_ME"))
+      header("Location: " . pql_get_define("PQL_CONF_URI") . "$link");
+    else
+      die($link);
 }
 // }}}
 
