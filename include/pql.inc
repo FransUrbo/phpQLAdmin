@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.140 2004-01-16 05:38:03 turbo Exp $
+// $Id: pql.inc,v 2.141 2004-01-16 06:28:32 turbo Exp $
 //
 
 // ----------------------------
@@ -442,7 +442,14 @@ function pql_user_exist($linkid, $dn, $user) {
 	$dn = urldecode($dn);
 
     // check if user exists
-	$filter = "(&(objectclass=*)(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $dn)."=$user))";
+	$user_parts = ldap_explode_dn($user, 0);
+	if($user_parts[1])
+	  // It's a DN, only use the first part (it already contain the correct user reference
+	  $filter = "(&(objectclass=*)(".$user_parts[0]."))";
+	else
+	  // It's not a DN, construct part of it
+	  $filter = "(&(objectclass=*)(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $dn)."=$user))";
+
     if(!pql_search($linkid, $dn, $filter))
 	  // User does not exist in LDAP tree
 	  return(false); 
