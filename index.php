@@ -1,21 +1,18 @@
 <?php
 // logins to the system
-// $Id: index.php,v 2.35 2004-03-15 07:09:56 turbo Exp $
+// $Id: index.php,v 2.36 2004-03-16 10:53:27 turbo Exp $
 //
 // Start debuging
 // http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0
 //apd_set_pprof_trace();
-
 require_once("./dlw_porting.inc");
-
 session_start();
-require("./include/pql_config.inc");
 
 // DLW: I'm not sure if $msg ever gets set in a _POST, but for now I'll play it safe.
 if (!empty($_POST["msg"])) {
-		$log = date("M d H:i:s");
-		$log .= " : Unexpected _POST[msg])\n";
-		error_log($log, 3, "phpQLadmin.log");
+	$log = date("M d H:i:s");
+	$log .= " : Unexpected _POST[msg])\n";
+	@error_log($log, 3, "phpQLadmin.log");
 }
 
 // DLW: I think !empty($_GET["logout"]) will work here better than $_GET["logout"] == 1.
@@ -23,12 +20,12 @@ if ($_GET["logout"] == 1 or !empty($_GET["msg"])) {
 	if ($_GET["logout"] == 1) {
 		$log = date("M d H:i:s");
 		$log .= " : Logged out (" . $_SESSION["USER_DN"] . ")\n";
-		error_log($log, 3, "phpQLadmin.log");
+		@error_log($log, 3, "phpQLadmin.log");
 	}
-
+	
 	if(!empty($_POST["msg"]))
 	  $msg = $_POST["msg"];
-
+	
 	$_SESSION = array();
 	session_destroy();
 
@@ -39,6 +36,8 @@ if ($_GET["logout"] == 1 or !empty($_GET["msg"])) {
 		  header("Location:index.php");
 	}
 }
+
+require("./include/pql_config.inc");
 
 if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 	include("./header.html");
