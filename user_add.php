@@ -24,6 +24,21 @@ $basemaildir   = pql_get_domain_value($_pql, $domain, "basemaildir");
 // ------------------------------------------------
 // Page 1: surname, name, email, account_type, account_status
 if($submit == "") {
+	// Before continuing, let's see how many users there can be
+	if($config["PQL_CONF_MAX_DOMAIN_USERS"][$rootdn]) {
+		if(count(pql_get_user($_pql->ldap_linkid, $domain)) >= $config["PQL_CONF_MAX_DOMAIN_USERS"][$rootdn]) {
+			// We have reached the maximum amount of users.
+			include("./header.html");
+?>
+  <span class="title1">Maximum amount of users reached</span>
+  <br><br>
+  Sorry, but the maximum amount of users have been reached in this domain. You are not allowed
+  to create more. Please talk to your administrator if you think this is wrong.
+<?php
+			die();
+		}
+	}
+
     $error = false;
     $error_text = array();
 
