@@ -1,6 +1,6 @@
 <?php
 // Add a new mailserver to the database
-// $Id: control_add_server.php,v 2.22 2004-11-12 14:03:05 turbo Exp $
+// $Id: control_add_server.php,v 2.23 2004-11-13 11:10:35 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -13,15 +13,14 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
     include("./header.html");
 
 	if(isset($_REQUEST["submit"])) {
-		if($_REQUEST["fqdn"])
-		  $_REQUEST["fqdn"] = pql_maybe_idna_encode($_REQUEST["fqdn"]);
-
 		if($_REQUEST["submit"] == "Create") {
-
 			if($_REQUEST["fqdn"] and $_REQUEST["defaultdomain"] and $_REQUEST["ldapserver"] and $_REQUEST["ldapbasedn"]) {
 				// We're ready to add the server object
-				$dn = pql_get_define("PQL_ATTR_CN").'='.$_REQUEST["fqdn"].','.$_REQUEST["ldapbasedn"];
+				if($_REQUEST["fqdn"])
+				  $_REQUEST["fqdn"] = pql_maybe_idna_encode($_REQUEST["fqdn"]);
 
+				// Create an 'LDIF' that we can add to the databaes.
+				$dn = pql_get_define("PQL_ATTR_CN").'='.$_REQUEST["fqdn"].','.$_REQUEST["ldapbasedn"];
 				$entry[pql_get_define("PQL_ATTR_CN")] = $_REQUEST["fqdn"];
 				if($_REQUEST["defaultdomain"])
 				  $entry[pql_get_define("PQL_ATTR_DEFAULTDOMAIN")]			= $_REQUEST["defaultdomain"];
@@ -64,74 +63,64 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 			}
 		} elseif($_REQUEST["submit"] == "Clone") {
 			if($_REQUEST["fqdn"]) {
-				// Get the values of the mailserver
-				$attribs = array('defaultdomain'		=> pql_get_define("PQL_ATTR_DEFAULTDOMAIN"),
-								 'plusdomain'			=> pql_get_define("PQL_ATTR_PLUSDOMAIN"),
-								 'ldapserver'			=> pql_get_define("PQL_ATTR_LDAPSERVER"),
-								 'ldaprebind'			=> pql_get_define("PQL_ATTR_LDAPREBIND"),
-								 'ldapbasedn'			=> pql_get_define("PQL_ATTR_LDAPBASEDN"),
-								 'ldapdefaultdotmode'	=> pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"),
-								 'ldapdefaultquota'		=> pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"),
-								 'ldapdefaultquotasize'	=> pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA_SIZE"),
-								 'ldapdefaultquotacount'=> pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA_COUNT"),
-								 'dirmaker'				=> pql_get_define("PQL_ATTR_DIRMAKER"),
-								 'quotawarning'			=> pql_get_define("PQL_ATTR_QUOTA_WARNING"),
-								 'ldapuid'				=> pql_get_define("PQL_ATTR_LDAPUID"),
-								 'ldapgid'				=> pql_get_define("PQL_ATTR_LDAPGID"));
+				// Retreive the 'original' (object to be cloned).
+				$dn = pql_get_define("PQL_ATTR_CN").'='.$_REQUEST["cloneserver"].','.$_SESSION["USER_SEARCH_DN_CTR"];
+				$object = pql_search($_pql_control->ldap_linkid, $dn, 'objectclass=*', 'BASE');
+				if($object) {
+					// pql_search() is retreiving a too deep array. The one we're looking for is at 'position' 0
+					$object = $object[0];
 
-				if(isset($include_locals)) {
-					$new = array('locals'				=> pql_get_define("PQL_ATTR_LOCALS"));
-					$attribs = $attribs + $new;
-				}
-				if(isset($include_rcpthosts)) {
-					$new = array('rcpthosts'			=> pql_get_define("PQL_ATTR_RCPTHOSTS"));
-					$attribs = $attribs + $new;
-				}
-				if(isset($include_password)) {
-					$new = array('ldappassword'			=> pql_get_define("PQL_ATTR_LDAPPASSWORD"));
-					$attribs = $attribs + $new;
-				}
-
-				$cn = pql_get_define("PQL_ATTR_CN") . "=" . $cloneserver . "," . $_SESSION["USER_SEARCH_DN_CTR"];
-				foreach($attribs as $key => $attrib) {
-					$value = pql_get_attribute($_pql_control->ldap_linkid, $cn, $attrib);
-					if(is_array($value)) {
-						for($i=0; $value[$i]; $i++)
-						  $values[$key][] = $value[$i];
-					} else
-					  $values[$key] = $value;
-				}
-
-				// Create the 'LDIF'
-				$dn	= pql_get_define("PQL_ATTR_CN") . "=" . $_REQUEST["fqdn"] . "," . $_SESSION["USER_SEARCH_DN_CTR"];
-				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "top";
-				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "qmailControl";
-				$entry[pql_get_define("PQL_ATTR_CN")]			 = $_REQUEST["fqdn"];
-				foreach($values as $key => $val) {
-					foreach($val as $value) {
-						$entry[$key][] = $value;
+					// Create an 'LDIF' for the new object, that we can add to the databaes.
+					foreach($object as $key => $tmp) {
+						if(!is_array($tmp))
+						  // Make the attribute value an array. Simpler than duplicating code below...
+						  $value = array($tmp);
+						else
+						  // It's already an array. Good.
+						  $value = $tmp;
+						
+						foreach($value as $val) {
+							if(($key == pql_get_define("PQL_ATTR_RCPTHOSTS")) or ($key == pql_get_define("PQL_ATTR_LOCALS"))) {
+								if(($key == pql_get_define("PQL_ATTR_RCPTHOSTS")) and isset($_REQUEST["include_rcpthosts"])) {
+									if($val == $_REQUEST["cloneserver"]) {
+										// rcptHosts have the FQDN of the cloned server -
+										// Replace that with the FQDN of the resulting server.
+										$entry[$key][] = ereg_replace($_REQUEST["cloneserver"], $_REQUEST["fqdn"], $val);
+									} else
+									  $entry[$key][] = $val;
+								} elseif(($key == pql_get_define("PQL_ATTR_LOCALS")) and isset($_REQUEST["include_locals"])) {
+									if($val == $_REQUEST["cloneserver"]) {
+										// locals have the FQDN of the cloned server -
+										// Replace that with the FQDN of the resulting server.
+										$entry[$key][] = ereg_replace($_REQUEST["cloneserver"], $_REQUEST["fqdn"], $val);
+									} else
+									  $entry[$key][] = $val;
+								}
+							} elseif((($key == pql_get_define("PQL_ATTR_LDAPPASSWORD"))
+									  or
+									  ($key == pql_get_define("PQL_ATTR_LDAPLOGIN")))
+									 and
+									 !isset($_REQUEST["include_password"])) {
+								next;
+							} elseif($key == pql_get_define("PQL_ATTR_CN")) {
+								$entry[$key] = $_REQUEST["fqdn"];
+							} elseif($key != 'dn')
+							  $entry[$key][] = $val;
+						}
 					}
 				}
-
-				// Add the OpenLDAPaci attribute (maybe)
-				if($_SESSION["ACI_SUPPORT_ENABLED"])
-				  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($_pql_control->ldap_linkid, $_SESSION["USER_DN"], 'qmail');
 				
-				// Create a LDIF object to print in case of error
-				$LDIF = pql_create_ldif("control_add_server.php", $dn, $entry);
-				
-				if(! ldap_add($_pql_control->ldap_linkid, $dn, $entry)) {
-					unset($_REQUEST["submit"]);
-
-					echo "Failed to created mailserver ".$_REQUEST["fqdn"].".";
-					die($LDIF);
-				} else {
+				// Add the new object to the database.
+				$dn	= pql_get_define("PQL_ATTR_CN").'='.$_REQUEST["fqdn"].','.$_SESSION["USER_SEARCH_DN_CTR"];
+				if(pql_write_add($_pql_control->ldap_linkid, $dn, $entry, 'qmail', 'control_add_server.php')) {
 					$msg = urlencode("Successfully created mailserver ".pql_maybe_idna_decode($_REQUEST["fqdn"]).".");
-					header("Location: " . pql_get_define("PQL_CONF_URI") . "control_detail.php?mxhost=".$_REQUEST["fqdn"]."&msg=$msg&rlnb=1");
-				}
-			} else {
-				$error_text["fqdn_clone"] = 'missing';
-			}
+					$url = "control_detail.php?mxhost=".$_REQUEST["fqdn"]."&msg=$msg&rlnb=2";
+
+					header("Location: " . pql_get_define("PQL_CONF_URI") . $url);
+				} else
+				  die("Failed to clone QmailLDAP/Control object <b>".$_REQUEST["fqdn"]."</b>.");
+			} else
+			  $error_text["fqdn_clone"] = 'missing';
 		}
 	}
 ?>
