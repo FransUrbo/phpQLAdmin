@@ -14,7 +14,7 @@ if(isset($msg)){
 }
 
 // reload navigation bar if needed
-if(isset($rlnb) and PQL_CONF_AUTO_RELOAD){
+if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
 ?>
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
   <script language="JavaScript1.2"><!--
@@ -35,7 +35,7 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 if ($attribute == "" || $filter_type == "" || $search_string == "") {
     // invalid form submission
     $msg = urlencode("You have to provide a value to search");
-    header("Location: " . PQL_CONF_URI . "home.php?msg=$msg");
+    header("Location: " . $config["PQL_GLOB_URI"] . "home.php?msg=$msg");
     exit();
 }
 
@@ -77,13 +77,13 @@ if(is_array($users)){
       // don't know domain, so must figure it out
       $domain = $user["domain"];
       $reference = $user["reference"];
-      $uid = pql_get_userattribute($_pql->ldap_linkid, $reference, PQL_CONF_ATTR_UID);
+      $uid = pql_get_userattribute($_pql->ldap_linkid, $reference, $config["PQL_GLOB_ATTR_UID"]);
       $uid = $uid[0];
-      $cn = pql_get_userattribute($_pql->ldap_linkid, $reference, PQL_CONF_ATTR_CN);
+      $cn = pql_get_userattribute($_pql->ldap_linkid, $reference, $config["PQL_GLOB_ATTR_CN"]);
       $cn = $cn[0];
-      $mail = pql_get_userattribute($_pql->ldap_linkid, $reference, PQL_CONF_ATTR_MAIL);
+      $mail = pql_get_userattribute($_pql->ldap_linkid, $reference, $config["PQL_GLOB_ATTR_MAIL"]);
       $mail = $mail[0];
-      $status = pql_get_userattribute($_pql->ldap_linkid, $reference, PQL_CONF_ATTR_ISACTIVE);
+      $status = pql_get_userattribute($_pql->ldap_linkid, $reference, $config["PQL_GLOB_ATTR_ISACTIVE"]);
       $status = pql_ldap_accountstatus($status[0]);
 ?>
     <tr class="<?php table_bgcolor(); ?>">

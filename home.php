@@ -13,7 +13,7 @@ if(isset($msg)){
 }
 
 // reload navigation bar if needed
-if(isset($rlnb) and PQL_CONF_AUTO_RELOAD) {
+if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
 ?>
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
   <script language="JavaScript1.2"><!--
@@ -54,7 +54,7 @@ if(isset($submit)) {
 
     // We need to disable advanced mode so that only the user frame
     // is shown, hence no 'advanced=...' in the url.
-    header("Location: " . PQL_CONF_URI . "index2.php");
+    header("Location: " . $config["PQL_GLOB_URI"] . "index2.php");
 }
 ?>
 
@@ -64,8 +64,8 @@ if(isset($submit)) {
 <?php
 	if($ADVANCED_MODE == 1) {
 	    // Should we show the 'change server' choices
-	    if(defined("PQL_CONF_CHANGE_SERVER") and eregi('\+', PQL_CONF_HOST)) {
-		$servers = split('\+', PQL_CONF_HOST);
+	    if($config["PQL_GLOB_CHANGE_SERVER"] and eregi('\+', $config["PQL_GLOB_HOST"])) {
+		$servers = split('\+', $config["PQL_GLOB_HOST"]);
 ?>
     <li>
       <form action="<?=$PHP_SELF?>" target="_top">
@@ -95,11 +95,11 @@ if(isset($submit)) {
         <?php echo PQL_LANG_SEARCH_TITLE; ?>
         <br>
         <select name=attribute>
-          <option value=<?php echo PQL_CONF_ATTR_UID; ?> SELECTED><?php echo PQL_LANG_SEARCH_UID; ?></option>
-          <option value=<?php echo PQL_CONF_ATTR_CN; ?>><?php echo PQL_LANG_SEARCH_CN; ?></option>
-          <option value=<?php echo PQL_CONF_ATTR_MAIL; ?>><?php echo PQL_LANG_SEARCH_MAIL; ?></option>
-          <option value=<?php echo PQL_CONF_ATTR_MAILALTERNATE; ?>><?php echo PQL_LANG_SEARCH_MAILALTERNATEADDRESS; ?></option>
-          <option value=<?php echo PQL_CONF_ATTR_FORWARDS; ?>><?php echo PQL_LANG_SEARCH_MAILFORWARDINGADDRESS; ?></option>
+          <option value=<?=$config["PQL_GLOB_ATTR_UID"]?> SELECTED><?php echo PQL_LANG_SEARCH_UID; ?></option>
+          <option value=<?=$config["PQL_GLOB_ATTR_CN"]?>><?php echo PQL_LANG_SEARCH_CN; ?></option>
+          <option value=<?=$config["PQL_GLOB_ATTR_MAIL"]?>><?php echo PQL_LANG_SEARCH_MAIL; ?></option>
+          <option value=<?=$config["PQL_GLOB_ATTR_MAILALTERNATE"]?>><?php echo PQL_LANG_SEARCH_MAILALTERNATEADDRESS; ?></option>
+          <option value=<?=$config["PQL_GLOB_ATTR_FORWARDS"]?>><?php echo PQL_LANG_SEARCH_MAILFORWARDINGADDRESS; ?></option>
         </select>
 
         <select name=filter_type>

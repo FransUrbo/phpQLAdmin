@@ -13,7 +13,7 @@ function attribute_forward($msg){
     
     $msg = urlencode($msg);
     $url = "user_detail.php?domain=$domain&user=$user&msg=$msg";
-    header("Location: " . PQL_CONF_URI . "$url");
+    header("Location: " . $config["PQL_GLOB_URI"] . "$url");
 }
 
 // Get default domain name for this domain

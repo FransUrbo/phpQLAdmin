@@ -18,7 +18,7 @@ if(isset($msg)){
 }
 
 // reload navigation bar if needed
-if(isset($rlnb) and PQL_CONF_AUTO_RELOAD){
+if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
 	if($rlnb == 1) {
 ?>
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
@@ -216,8 +216,8 @@ if($mailhost == ""){
   <br><br>
 
 <?php
-$email   = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_MAIL); $email = $email[0];
-$aliases = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_MAILALTERNATE);
+$email   = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_MAIL"]); $email = $email[0];
+$aliases = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_MAILALTERNATE"]);
 ?>
   <!-- Addresses (mail, mailalternateaddress) -->
   <table cellspacing="0" cellpadding="3" border="0">
@@ -298,7 +298,7 @@ if(empty($forwarders)) {
   <br><br>
 
 <?php
-	$status = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_ISACTIVE);
+	$status = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_ISACTIVE"]);
 	$status = $status[0];
 
 	$status = pql_ldap_accountstatus($status);
@@ -333,7 +333,7 @@ if(empty($forwarders)) {
       </tr>
 
 <?php
-  $deliverymode = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_MODE);
+  $deliverymode = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_MODE"]);
 
   if(empty($deliverymode)){
 ?>
@@ -367,10 +367,10 @@ if(empty($forwarders)) {
 
   <!-- advanced delivery options -->
 <?php
-  $qmaildotmode = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_DOTMODE);
+  $qmaildotmode = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_DOTMODE"]);
   $qmaildotmode = $qmaildotmode[0];
 
-  $deliveryprogrampath = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_PROGRAM);
+  $deliveryprogrampath = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_PROGRAM"]);
   $deliveryprogrampath = $deliveryprogrampath[0];
 
   if($qmaildotmode == ""){
@@ -450,7 +450,7 @@ if(empty($forwarders)) {
 
 <?php
 } // end if ADVANCED mode
-  $forwarders = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_FORWARDS);
+  $forwarders = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_FORWARDS"]);
 ?>
   <!-- Forwarders (mailalternateaddress) -->
   <table cellspacing="0" cellpadding="3" border="0">

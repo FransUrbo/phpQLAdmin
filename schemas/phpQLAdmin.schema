@@ -49,7 +49,7 @@
 #					controlBaseDN		   5
 # -----------------------------------------
 
-# $Id: phpQLAdmin.schema,v 2.14 2003-04-04 06:53:47 turbo Exp $
+# $Id: phpQLAdmin.schema,v 2.15 2003-04-04 16:37:20 turbo Exp $
 
 # PQL_SHOW_USERS (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.1 NAME 'showUsers'
@@ -58,14 +58,14 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.1.1 NAME 'showUsers'
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
 	SINGLE-VALUE )
 
-# PQL_CONF_CONTROL_USE (true | false)
+# PQL_GLOB_CONTROL_USE (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.2 NAME 'useControls'
 	DESC 'Is ~controls information stored in LDAP database [True/False]?'
 	EQUALITY booleanMatch
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
 	SINGLE-VALUE )
 
-# PQL_CONF_EZMLM_USE (true | false)
+# PQL_GLOB_EZMLM_USE (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.3 NAME 'useEzmlm'
 	DESC 'Manage ezmlm mailinglists [True/False]?'
 	EQUALITY booleanMatch
@@ -86,14 +86,14 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.1.5 NAME 'autoSend'
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
 	SINGLE-VALUE )
 
-# PQL_CONF_CONTROL_AUTOADDLOCALS (true | false)
+# PQL_GLOB_CONTROL_AUTOADDLOCALS (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.6 NAME 'autoAddLocals'
 	DESC 'Automatically add domain to ~controls/locals attribute [True/False]?'
 	EQUALITY booleanMatch
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
 	SINGLE-VALUE )
 
-# PQL_CONF_CHANGE_SERVER (true | false)
+# PQL_GLOB_CHANGE_SERVER (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.7 NAME 'allowServerChange'
 	DESC 'Should we allow LDAP server change [True/False]?'
 	EQUALITY booleanMatch
@@ -189,7 +189,7 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.2.10 NAME 'catchAllUser'
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26
 	SINGLE-VALUE )
 
-# PQL_CONF_ATTR_*
+# PQL_GLOB_ATTR_*
 attributetype ( 1.3.6.1.4.1.8767.3.2.2.11 NAME 'userAttribute'
         DESC ''
         EQUALITY caseIgnoreMatch

@@ -1,10 +1,11 @@
 <?php
 // attribute plugin for
 // mailmessagestore (path to mailbox)
-// $Id: attrib.mailmessagestore.inc,v 2.5 2003-04-04 06:54:31 turbo Exp $
+// $Id: attrib.mailmessagestore.inc,v 2.6 2003-04-04 16:37:50 turbo Exp $
 
 function attribute_check($type){
 	global $mailmessagestore, $domain, $oldvalue, $_pql, $error;
+	global $rootdn, $config;
 	
 	// is typed in ?
 	if($mailmessagestore == ""){
@@ -13,7 +14,7 @@ function attribute_check($type){
 	}
 	
 	// check for absolute paths
-	if(!defined("PQL_CONF_ALLOW_ABSOLUTE_PATH") and preg_match("/^\//", $mailmessagestore)) {
+	if(!$config["PQL_CONF_ALLOW_ABSOLUTE_PATH"][$rootdn] and preg_match("/^\//", $mailmessagestore)) {
 		$error["general"] = PQL_LANG_MAILMESSAGESTORE_ABSOLUTE_NOTALLOWED . "<br>";
 		return false;
 	}
@@ -64,7 +65,8 @@ function attribute_print_form(){
 }
 
 function attribute_save($type){
-	global $domain, $user, $attrib, $oldvalue, $mailmessagestore, $_pql;
+	global $domain, $user, $attrib, $oldvalue;
+	global $mailmessagestore, $_pql, $config;
 	
 	// recontrol values
 	if(!attribute_check($type)){
@@ -84,7 +86,7 @@ function attribute_save($type){
 			break;
     	}
 		
-		if(pql_replace_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_MAILSTORE, $mailmessagestore)){
+		if(pql_replace_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_MAILSTORE"], $mailmessagestore)){
 			$msg = pql_complete_constant(PQL_LANG_MAILMESSAGESTORE_CHANGE_OK, array("path" => $mailmessagestore));
 		} else {
 			$msg = PQL_LANG_MAILMESSAGESTORE_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);

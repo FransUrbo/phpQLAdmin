@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mailquota.inc,v 2.4 2003-04-04 06:54:31 turbo Exp $
+// $Id: attrib.mailquota.inc,v 2.5 2003-04-04 16:37:50 turbo Exp $
 
 function attribute_check($type){
 	global $options, $use_maxsize, $use_maxmails, $maxsize, $maxmails, $error;
@@ -121,7 +121,8 @@ function attribute_print_form($type = "modify"){
 }
 
 function attribute_save($type){
-	global $_pql, $attrib, $domain, $user, $maxsize, $maxmails, $options, $use_maxmails, $use_maxsize;
+	global $_pql, $attrib, $domain, $user, $maxsize, $maxmails;
+	global $options, $use_maxmails, $use_maxsize, $config;
 	
 	// recontrol values
 	if(!attribute_check($type)){
@@ -165,7 +166,7 @@ function attribute_save($type){
 		$users = pql_get_user($_pql->ldap_linkid, $domain);
 		if(is_array($users)){
 			foreach($users as $user){
-				$return[] = pql_replace_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_QUOTA, $mailquota);
+				$return[] = pql_replace_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_QUOTA"], $mailquota);
 			}
 			
 			if(in_array(false, $return)){
@@ -177,7 +178,7 @@ function attribute_save($type){
 		
 	  case "modify";
 		// remove attribute if it is set to ""
-		$return = pql_replace_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_QUOTA, $mailquota);
+		$return = pql_replace_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_QUOTA"], $mailquota);
 		
 		if($return == false){
 			$msg = PQL_LANG_MAILQUOTA_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);

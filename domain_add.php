@@ -18,7 +18,7 @@ $_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
 $domain = strtolower($domain);
 
 // Should we force a dot in the domainname or not?
-if(PQL_CONF_REFERENCE_DOMAINS_WITH == "dc") {
+if($config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$rootdn] == "dc") {
 	// We're using a domain object, which means we should allow
 	// a domain name to be without dot.
 	$nodot = 1;
@@ -29,14 +29,14 @@ if(PQL_CONF_REFERENCE_DOMAINS_WITH == "dc") {
 // check if domain is valid
 if(!check_hostaddress($domain, $nodot)){
 	$msg = urlencode(PQL_LANG_DOMAIN_INVALID);
-	header("Location: " . PQL_CONF_URI . "home.php?msg=$msg");
+	header("Location: " . $config["PQL_GLOB_URI"] . "home.php?msg=$msg");
 	exit();
 }
 
 // check if domain exist
 if(pql_domain_exist($_pql, $domain)) {
 	$msg = urlencode(PQL_LANG_DOMAIN_EXISTS);
-	header("Location: " . PQL_CONF_URI . "home.php?msg=$msg");
+	header("Location: " . $config["PQL_GLOB_URI"] . "home.php?msg=$msg");
 	exit();
 }
 
@@ -90,17 +90,17 @@ if($dns[0]) {
 	$url = "domain_detail.php?domain=$dns[0]&msg=$msg&rlnb=1";
 
 	// Now it's time to run the special adduser script if defined...
-	if(defined("PQL_CONF_EXTRA_SCRIPT_CREATE_DOMAIN")) {
+	if($config["PQL_CONF_EXTRA_SCRIPT_CREATE_DOMAIN"][$rootdn])) {
 		// Setup the environment with the user details
-		putenv("PQL_CONF_DOMAIN=$domain");
-		putenv("PQL_CONF_DOMAINNAME=$defaultdomain");
-		putenv("PQL_LANG_HOMEDIRS=$defaulthomedir");
-		putenv("PQL_CONF_MAILDIRS=$defaultmaildir");
-		putenv("PQL_CONF_QUOTA=$defaultquota");
-		putenv("PQL_CONF_WEBUSER=".posix_getuid());
+		putenv("PQL_DOMAIN=$domain");
+		putenv("PQL_DOMAINNAME=$defaultdomain");
+		putenv("PQL_HOMEDIRS=$defaulthomedir");
+		putenv("PQL_MAILDIRS=$defaultmaildir");
+		putenv("PQL_QUOTA=$defaultquota");
+		putenv("PQL_WEBUSER=".posix_getuid());
 		
 		// Execute the domain add script (0 => show output)
-		if(pql_execute(PQL_CONF_EXTRA_SCRIPT_CREATE_DOMAIN, 0)) {
+		if(pql_execute($config["PQL_CONF_EXTRA_SCRIPT_CREATE_DOMAIN"][$rootdn], 0)) {
 			echo PQL_LANG_DOMAIN_ADD_SCRIPT_FAILED;
 			$msg .= " " . urlencode(PQL_LANG_DOMAIN_ADD_SCRIPT_FAILED);
 		} else {
@@ -118,11 +118,11 @@ if($dns[0]) {
 
 		die();
 	} else {
-		header("Location: " . PQL_CONF_URI . $url);
+		header("Location: " . $config["PQL_GLOB_URI"] . $url);
 	}
 } else {
 	$msg = urlencode(PQL_LANG_DOMAIN_ADD_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid));
-	header("Location: " . PQL_CONF_URI . "home.php?msg=$msg");
+	header("Location: " . $config["PQL_GLOB_URI"] . "home.php?msg=$msg");
 }
 ?>
 

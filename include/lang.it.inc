@@ -275,6 +275,6 @@ define("PQL_LANG_TEST_CONNECTION_CONNECT_OK", "ok, have fun ;-)"); // to transla
 define("PQL_LANG_TEST_CONNECTION_USER_TITLE", "user directory connection"); // to translate
 define("PQL_LANG_TEST_CONNECTION_USER_BIND_ERR", "connection ok, but could not bind to the directory.");
 define("PQL_LANG_TEST_CONNECTION_CONROL_TITLE", "control directory connection"); // to translate
-define("PQL_LANG_TEST_CONNECTION_CONTROL_BIND_ERR", "connection ok, but could not bind to the directory. please check PQL_CONF_CONTROL_ROOTDN and PQL_LDAP_CONTROL_ROOTPW"); // to translate
+define("PQL_LANG_TEST_CONNECTION_CONTROL_BIND_ERR", "connection ok, but could not bind to the directory. please check PQL_CONF_CONTROL_ROOTDN and PQL_CONF_CONTROL_ROOTPW"); // to translate
 define("PQL_LANG_TEST_CONNECTION_CONROL_INACTIVE", "control extension deactivated"); // to translate
 ?>

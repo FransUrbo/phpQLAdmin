@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mail.inc,v 2.7 2003-04-04 06:54:31 turbo Exp $
+// $Id: attrib.mail.inc,v 2.8 2003-04-04 16:37:50 turbo Exp $
 
 function attribute_check($type){
     global $mail, $domain, $oldvalue, $_pql, $error, $defaultdomain;
@@ -89,14 +89,14 @@ function attribute_save($type){
 	// no add operation possible with mail
 	break;
       case "modify";
-	if(pql_modify_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_MAIL, $oldvalue, $mail)){
+	if(pql_modify_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_MAIL"], $oldvalue, $mail)){
 	    $msg = pql_complete_constant(PQL_LANG_MAIL_CHANGE_OK, array("old" => $oldvalue, "new" => $mail));
 	} else {
 	    $msg = PQL_LANG_MAIL_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
 	}
 	
 	// We use the mail attribute to reference users and it has just changed...
-	if ($config["PQL_CONF_REFERENCE_USERS_WITH"][pql_get_rootdn($user)] == PQL_CONF_ATTR_MAIL) {
+	if ($config["PQL_CONF_REFERENCE_USERS_WITH"][pql_get_rootdn($user)] == $config["PQL_GLOB_ATTR_MAIL"]) {
 	    $user = $mail;
 	    // Reload the navigation bar (if allowed by config)
 	    attribute_forward($msg, true);
@@ -109,3 +109,12 @@ function attribute_save($type){
 	die("unknown save type $type in " . __FILE__ . ", function save()");
     }
 }
+
+/*
+ * Local variables:
+ * mode: php
+ * mode: font-lock
+ * tab-width: 4
+ * End:
+ */
+?>

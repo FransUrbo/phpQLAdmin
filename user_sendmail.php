@@ -23,15 +23,15 @@ if($email == ""){
 }
 
 $subject = PQL_CONF_TESTMAIL_SUBJECT;
-$from = "From: " . PQL_CONF_HOSTMASTER . "\n";
+$from = "From: " . $config["PQL_GLOB_HOSTMASTER"] . "\n";
 $xmailer = "X-Mailer: phpQLAdmin $VERSION\n";
 $vars['MAIL'] = $email;
 $vars['UID'] = $user;
 $vars['VERSION'] = $VERSION;
 
-$cn = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_CN);
+$cn = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_CN"]);
 $vars['CN'] = $cn[0];
-$sn = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_SN);
+$sn = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_SN"]);
 $vars['SN'] = $sn[0];
 
 $quota = pql_get_userquota($_pql->ldap_linkid, $user);
@@ -42,7 +42,7 @@ if (is_array($quota)) {
 } else {
     // No quota for this mailbox.
     // Do we use the qmail-ldap/control patch?
-    if (!PQL_CONF_CONTROL_USE) {
+    if (!$config["PQL_GLOB_CONTROL_USE"]) {
 	// No -> quota is 'standard'
 	$vars['QUOTA'] = PQL_LANG_MAILQUOTA_DEFAULT;
     } else {
@@ -81,7 +81,7 @@ $url = "user_detail.php?domain=$domain&user=$user&msg=$msg";
 if(isset($rlnb))
      $url .= "&rlnb=$rlnb";
 
-header("Location: " . PQL_CONF_URI . $url);
+header("Location: " . $config["PQL_GLOB_URI"] . $url);
 ?>
 </body>
 </html>

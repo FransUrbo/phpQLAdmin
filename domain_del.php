@@ -10,11 +10,11 @@ include("./header.html");
 ?>
   <span class="title1"><?php echo pql_complete_constant(PQL_LANG_DOMAIN_DEL_TITLE, array("domain" => $domain))?></span>
 <?php
-if(isset($ok) || !PQL_CONF_VERIFY_DELETE) {
+if(isset($ok) || !$config["PQL_CONF_VERIFY_DELETE"][$rootdn]) {
 	$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 	$_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
 	
-	$delete_forwards = (isset($delete_forwards) || PQL_CONF_VERIFY_DELETE) ? true : false;
+	$delete_forwards = (isset($delete_forwards) || $config["PQL_CONF_VERIFY_DELETE"][$rootdn]) ? true : false;
 	
 	// Before we delete the domain/branch, get the defaultDomain value
 	// so we can delete it from locals
@@ -31,13 +31,13 @@ if(isset($ok) || !PQL_CONF_VERIFY_DELETE) {
 		
 	    // redirect to home page
 	    $msg = urlencode($msg);
-	    header("Location: " . PQL_CONF_URI . "home.php?msg=$msg&rlnb=1");
+	    header("Location: " . $config["PQL_GLOB_URI"] . "home.php?msg=$msg&rlnb=1");
 	} else {
 	    $msg = PQL_LANG_DOMAIN_DEL_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 		
 	    // redirect to domain detail page
 	    $msg = urlencode($msg);
-	    header("Location: " . PQL_CONF_URI . "domain_detail.php?domain=$domain&msg=$msg");
+	    header("Location: " . $config["PQL_GLOB_URI"] . "domain_detail.php?domain=$domain&msg=$msg");
 	}
 } else {
 ?>

@@ -1,7 +1,7 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 2.16 2003-04-04 06:54:31 turbo Exp $
+// $Id: lang.en.inc,v 2.17 2003-04-04 16:37:50 turbo Exp $
 //
 // if you have a translation to another language, please contact
 // me --> Matthias Blaser <mb@adfinis.ch>
@@ -119,7 +119,8 @@ if(!isset($INCLUDE_LANG_EN_INC)) {
 	define("PQL_LANG_DOMAIN_ADD_SCRIPT_FAILED", "The $DOMAIN add script failed!");
 	define("PQL_LANG_DOMAIN_ADD_FAILED", "Failed creating the $DOMAIN");
 	define("PQL_LANG_DOMAIN_ADD_INFO_DC", "Using $DOMAIN mode (dc separated).<br>Don't use '.' (dots) in $DOMAIN name");
-	define("PQL_LANG_DOMAIN_ADD_INFO_OU", "Using organization layout (ou separated).<br>Make sure youre using 'domain.tld' for domain name");
+	define("PQL_LANG_DOMAIN_ADD_INFO_OU", "Using organizationUnit layout (ou separated).<br>Make sure youre using 'domain.tld' for domain name");
+	define("PQL_LANG_DOMAIN_ADD_INFO_O", "Using organization layout (o separated).<br>Make sure youre using 'domain.tld' for domain name");
 	define("PQL_LANG_DOMAIN_DEL", "Remove $DOMAIN");
 	define("PQL_LANG_DOMAIN_DEL_FORWARDS", "Also delete forwards to users in this $DOMAIN");
 	define("PQL_LANG_DOMAIN_DEL_TITLE", "Remove $DOMAIN %domain%");

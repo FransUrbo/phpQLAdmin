@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.51 2003-04-04 06:54:31 turbo Exp $
+// $Id: pql.inc,v 2.52 2003-04-04 16:37:51 turbo Exp $
 //
 
 // ----------------------------
@@ -159,6 +159,8 @@ class pql {
 
 // Add a user to the LDAP database
 function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $branch) {
+	global $config;
+
 	$DEBUG = 0;
 	$rootdn = pql_get_rootdn($domain);
 
@@ -197,7 +199,7 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 		}
     }
     
-	$userdn = PQL_CONF_ATTR_UID . "=" . $entry[PQL_CONF_ATTR_UID] . ",";
+	$userdn = $config["PQL_GLOB_ATTR_UID"] . "=" . $entry[$config["PQL_GLOB_ATTR_UID"]] . ",";
 	if($branch)
 	  $userdn .= $branch;
 	else
@@ -243,7 +245,7 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 		if(defined("PQL_CONF_SUBTREE_GROUPS"))
 		  $subrdn = "," . PQL_CONF_SUBTREE_GROUPS . ",";
 
-		$groupdn = PQL_CONF_ATTR_CN . "=" . $attribs[PQL_CONF_USER_RDN_ATTRIBUTE] . $subrdn . $domain;
+		$groupdn = $config["PQL_GLOB_ATTR_CN"] . "=" . $attribs[PQL_CONF_USER_RDN_ATTRIBUTE] . $subrdn . $domain;
 
 		// --------------------------
 		
@@ -289,7 +291,7 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 	}
 
 	// Get uidnr of user
-	$uidnr = pql_get_userattribute($linkid, $user, PQL_CONF_ATTR_QMAILUID);
+	$uidnr = pql_get_userattribute($linkid, $user, $config["PQL_GLOB_ATTR_QMAILUID"]);
 	$uidnr = $uidnr[0];
     
 	// Delete the group object if it exists
@@ -309,8 +311,8 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 		$forwarders = pql_search_forwarders($ldap, $user);
 		if ($forwarders) {
 			// someone forwards to this user. Now we need to know which addresses we're removing
-			$email = pql_get_userattribute($linkid, $user, PQL_CONF_ATTR_MAIL);
-			$aliases = pql_get_userattribute($linkid, $user, PQL_CONF_ATTR_MAILALTERNATE);
+			$email = pql_get_userattribute($linkid, $user, $config["PQL_GLOB_ATTR_MAIL"]);
+			$aliases = pql_get_userattribute($linkid, $user, $config["PQL_GLOB_ATTR_MAILALTERNATE"]);
 			
 			$addresses[] = $email[0];
 			if(is_array($aliases)){
@@ -332,14 +334,14 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
     if ($delete_forwards and $forwarders) {
 		foreach($forwarders as $forward) {
 			// get the forwarding addresses of this user
-			$fwd_addresses = pql_get_userattribute($linkid, $forward['reference'], PQL_CONF_ATTR_FORWARDS);
+			$fwd_addresses = pql_get_userattribute($linkid, $forward['reference'], $config["PQL_GLOB_ATTR_FORWARDS"]);
 			foreach($addresses as $address) {
 				// does this user forward to the removed user or one of his aliases?
 				$rem_key = array_search($address, $fwd_addresses);
 				if ($rem_key !== false) {
 					// we found a forward -> remove it 
 					pql_remove_userattribute($linkid, $forward['reference'],
-											 PQL_CONF_ATTR_FORWARDS,
+											 $config["PQL_GLOB_ATTR_FORWARDS"],
 											 $fwd_addresses[$rem_key]);
 				}
 			}
@@ -433,7 +435,7 @@ function pql_domain_del($ldap, $domain, $delete_forwards) {
 	// domain/branch being deleted...
 	if(eregi($domain, $GLOBALS["USER_DN"])) {
 		$msg=urlencode(format_error("Sorry, I can't allow you to delete the branch under which you yourself is situated!"));
-		header("Location: " . PQL_CONF_URI . "domain_detail.php?domain=$domain&msg=$msg");
+		header("Location: " . $config["PQL_GLOB_URI"] . "domain_detail.php?domain=$domain&msg=$msg");
 	}
 
 	$dc = ldap_explode_dn($domain, 0); $dc = split('=', $dc[0]);
@@ -562,7 +564,7 @@ function pql_user_exist($ldap_linkid, $user) {
 
 // check if any mail or mailalternateaddress record with this email exists in the ldap tree
 function pql_email_exists($ldap, $email){
-	$filter = "(|(" . PQL_CONF_ATTR_MAIL . "=" . $email . ")(" . PQL_CONF_ATTR_MAILALTERNATE . "=" . $email . "))";
+	$filter = "(|(" . $config["PQL_GLOB_ATTR_MAIL"] . "=" . $email . ")(" . $config["PQL_GLOB_ATTR_MAILALTERNATE"] . "=" . $email . "))";
 
 	foreach($ldap->ldap_basedn as $dn) {
 		$sr = ldap_search($ldap->ldap_linkid, $dn, $filter);
@@ -748,7 +750,7 @@ function pql_get_user($ldap_linkid, $dn){
 // ------------------------------------------------
 // function based in PQL_CONF_GET_USER to search by the cn first letter
 function pql_get_user_letter($ldap_linkid, $domain, $letra) {
-    $sr = ldap_search($ldap_linkid, $domain, "(".PQL_CONF_ATTR_UID."=".$letra."*)");
+    $sr = ldap_search($ldap_linkid, $domain, "(".$config["PQL_GLOB_ATTR_UID"]."=".$letra."*)");
     $info = ldap_get_entries($ldap_linkid, $sr);
     
     for ($i=0; $i<$info["count"]; $i++) {
@@ -764,7 +766,7 @@ function pql_get_user_number($ldap_linkid, $domain) {
 	global $config;
 
     for($numero=0; $numero <= 9; $numero++) {
-		$sr = ldap_search($ldap_linkid, $domain, "(".PQL_CONF_ATTR_UID."=".$numero."*)");
+		$sr = ldap_search($ldap_linkid, $domain, "(".$config["PQL_GLOB_ATTR_UID"]."=".$numero."*)");
 		$info = ldap_get_entries($ldap_linkid, $sr);
 		
 		for ($i=0; $i<$info["count"]; $i++) {
@@ -829,7 +831,7 @@ function pql_get_userentry($ldap_linkid, $user) {
 function pql_get_userquota($ldap_linkid, $user){
     // get formated quota of a user
     
-    $quota = pql_get_userattribute($ldap_linkid, $user, PQL_CONF_ATTR_QUOTA);
+    $quota = pql_get_userattribute($ldap_linkid, $user, $config["PQL_GLOB_ATTR_QUOTA"]);
     
     if(!is_array($quota)){
 		return false;
@@ -872,7 +874,8 @@ function pql_get_dn($ldap, $reference, $multiples = 0) {
 
 // ------------------------------------------------
 function pql_errormsg($ldap_linkid){
-    echo format_error("LDAP-Error:") . ldap_error($ldap_linkid) . "<br>";
+	if($ldap_linkid)
+	  echo format_error("LDAP-Error:") . ldap_error($ldap_linkid) . "<br>";
 }
 
 // ------------------------------------------------
@@ -943,8 +946,8 @@ function pql_search_forwarders($ldap, $user){
 	$linkid = $ldap->ldap_linkid;
 
     // get all email addresses of a user
-    $email = pql_get_userattribute($linkid, $user, PQL_CONF_ATTR_MAIL);
-    $aliases = pql_get_userattribute($linkid, $user, PQL_CONF_ATTR_MAILALTERNATE);
+    $email = pql_get_userattribute($linkid, $user, $config["PQL_GLOB_ATTR_MAIL"]);
+    $aliases = pql_get_userattribute($linkid, $user, $config["PQL_GLOB_ATTR_MAILALTERNATE"]);
     
     $addresses[] = $email[0];
     if(is_array($aliases)){
@@ -954,7 +957,7 @@ function pql_search_forwarders($ldap, $user){
     // create filter
     $filter = "(|";
     foreach($addresses as $add){
-		$filter .= "(" . PQL_CONF_ATTR_FORWARDS ."=" . $add . ")";
+		$filter .= "(" . $config["PQL_GLOB_ATTR_FORWARDS"] ."=" . $add . ")";
     }
     $filter .= ")";
 
@@ -973,8 +976,8 @@ function pql_search_forwarders($ldap, $user){
 									  $config["PQL_CONF_REFERENCE_USERS_WITH"][$dn] => $result["cn"][0],
 									  "email" => $result["mail"][0]);
 					
-					if(is_array($result[PQL_CONF_ATTR_MAILALTERNATE])){
-						foreach($result[PQL_CONF_ATTR_MAILALTERNATE] as $key => $mailalternateaddress){
+					if(is_array($result[$config["PQL_GLOB_ATTR_MAILALTERNATE"]])){
+						foreach($result[$config["PQL_GLOB_ATTR_MAILALTERNATE"]] as $key => $mailalternateaddress){
 							if((string)$key != "count"){
 								$return[] = array("reference" => $result["dn"],
 												  $config["PQL_CONF_REFERENCE_USERS_WITH"][$dn] => $result["cn"][0],
@@ -1279,7 +1282,7 @@ function pql_ldap_deliverymode($mode){
 
 // Returns the next free UID/GID number
 function pql_get_next_uidnumber($ldap) {
-    $filter = "(&(" . PQL_CONF_ATTR_QMAILUID . "=*)(objectclass=posixaccount))";
+    $filter = "(&(" . $config["PQL_GLOB_ATTR_QMAILUID"] . "=*)(objectclass=posixaccount))";
 
 	foreach($ldap->ldap_basedn as $dn) {
 		$sr = ldap_search($ldap->ldap_linkid, $dn, $filter);
@@ -1288,10 +1291,10 @@ function pql_get_next_uidnumber($ldap) {
 		// Find the highest availible UIDNUMBER
 		$highest = 0;
 		for($i=0; $i < $results["count"]; $i++) {
-			if(($results[$i][PQL_CONF_ATTR_QMAILUID][0] > $highest) &&
-			   ($results[$i][PQL_CONF_ATTR_QMAILUID][0] < 64000))
+			if(($results[$i][$config["PQL_GLOB_ATTR_QMAILUID"]][0] > $highest) &&
+			   ($results[$i][$config["PQL_GLOB_ATTR_QMAILUID"]][0] < 64000))
 			  {
-				  $highest = $results[$i][PQL_CONF_ATTR_QMAILUID][0];
+				  $highest = $results[$i][$config["PQL_GLOB_ATTR_QMAILUID"]][0];
 			  }
 		}
 	}

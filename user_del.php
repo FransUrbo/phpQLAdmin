@@ -30,7 +30,7 @@ if(isset($ok) || !PQL_CONF_VERIFY_DELETE) {
 	
 	// redirect to domain-detail page
 	$msg = urlencode($msg);
-	header("Location: " . PQL_CONF_URI . "domain_detail.php?domain=$domain&msg=$msg$rlnb");
+	header("Location: " . $config["PQL_GLOB_URI"] . "domain_detail.php?domain=$domain&msg=$msg$rlnb");
 } else {
 	echo PQL_LANG_SURE;
 ?>

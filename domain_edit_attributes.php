@@ -13,7 +13,7 @@ function attribute_forward($msg){
     
     $msg = urlencode($msg);
     $url = "domain_detail.php?rootdn=$rootdn&domain=$domain&msg=$msg";
-    header("Location: " . PQL_CONF_URI . "$url");
+    header("Location: " . $config["PQL_GLOB_URI"] . "$url");
 }
 
 // select which attribute have to be included

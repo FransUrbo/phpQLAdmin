@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.8 2003-04-04 06:54:29 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.9 2003-04-04 16:37:50 turbo Exp $
 
 function attribute_check() {
     global $$attrib, $domain, $oldvalue, $_pql, $error, $$attrib;
@@ -22,7 +22,8 @@ function attribute_check() {
 }
 
 function attribute_print_form($action) {
-    global $$attrib, $domain, $rootdn, $PHP_SELF, $attrib, $oldvalue, $error, $_pql;
+    global $$attrib, $domain, $rootdn, $PHP_SELF, $attrib, $oldvalue;
+	global $error, $_pql, $config;
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -63,7 +64,7 @@ function attribute_print_form($action) {
 				$users = pql_get_user($_pql->ldap_linkid, $dom);
 				if($users) {
 					foreach($users as $user) {
-						$cn = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_CN);
+						$cn = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_CN"]);
 						$cns[$user] = $cn[0];
 					}
 					asort($cns);
@@ -154,7 +155,7 @@ function attribute_save($type) {
 		}
 
 		if($domain == $_pql->ldap_basedn[0])
-		  header("Location: " . PQL_CONF_URI . "home.php?msg=".urlencode($msg));
+		  header("Location: " . $config["PQL_GLOB_URI"] . "home.php?msg=".urlencode($msg));
 		else
 		  attribute_forward($msg);
 		break;

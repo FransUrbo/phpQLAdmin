@@ -28,8 +28,8 @@ if (empty($uname) or empty($passwd)) {
 	include("./header.html");
 
 	if(!$USER_HOST) {
-		if(! eregi('\+', PQL_CONF_HOST)) {
-			$host = split(';', PQL_CONF_HOST);
+		if(! eregi('\+', $config["PQL_GLOB_HOST"])) {
+			$host = split(';', $config["PQL_GLOB_HOST"]);
 			$USER_HOST = $host[0] . ";" . $host[1];
 			
 			session_register("USER_HOST");
@@ -67,8 +67,8 @@ if (empty($uname) or empty($passwd)) {
         <td>LDAP Server:</td>
         <td align="left">
 <?php
-	if(eregi('\+', PQL_CONF_HOST)) {
-		$servers = split('\+', PQL_CONF_HOST);
+	if(eregi('\+', $config["PQL_GLOB_HOST"])) {
+		$servers = split('\+', $config["PQL_GLOB_HOST"]);
 ?>
           <select name="server">
 <?php
@@ -86,7 +86,7 @@ if (empty($uname) or empty($passwd)) {
 		$server = $USER_HOST;
 ?>
         <b><?=$server.";".$_pql->ldap_basedn[0]?></b>
-        <input type="hidden" name="server" value="<?=PQL_CONF_HOST?>">
+        <input type="hidden" name="server" value="<?=$config["PQL_GLOB_HOST"]?>">
 <?php
 	}
 ?>

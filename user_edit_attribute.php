@@ -20,7 +20,7 @@ function attribute_forward($msg, $rlnb = false){
 	$url .= "&rlnb=1";
     }
     
-    header("Location: " . PQL_CONF_URI . "$url");
+    header("Location: " . $config["PQL_GLOB_URI"] . "$url");
 }
 
 // select which attribute have to be included

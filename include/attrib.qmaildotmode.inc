@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // qmaildotmode (interpretation of .qmail-files)
-// $Id: attrib.qmaildotmode.inc,v 2.4 2003-04-04 06:54:31 turbo Exp $
+// $Id: attrib.qmaildotmode.inc,v 2.5 2003-04-04 16:37:50 turbo Exp $
 
 function attribute_check($type){
 	global $qmaildotmode, $domain, $oldvalue, $_pql, $error;
@@ -78,7 +78,8 @@ function attribute_print_form(){
 }
 
 function attribute_save($type){
-	global $domain, $user, $attrib, $oldvalue, $qmaildotmode, $_pql;
+	global $domain, $user, $attrib, $oldvalue;
+	global $qmaildotmode, $_pql, $config;
 	
 	// recontrol values
 	if(!attribute_check($type)){
@@ -102,7 +103,7 @@ function attribute_save($type){
 			$qmaildotmode = "";
     	}
 		
-		if(pql_replace_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_DOTMODE, $qmaildotmode)){
+		if(pql_replace_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_DOTMODE"], $qmaildotmode)){
 			$msg = pql_complete_constant(PQL_LANG_QMAILDOTMODE_CHANGE_OK, array("mode" => $qmaildotmode));
 		} else {
 			$msg = PQL_LANG_QMAILDOTMODE_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);

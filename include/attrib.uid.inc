@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // uid (user id)
-// $Id: attrib.uid.inc,v 2.6 2003-04-04 06:54:31 turbo Exp $
+// $Id: attrib.uid.inc,v 2.7 2003-04-04 16:37:50 turbo Exp $
 
 function attribute_check($type){
 	global $uid, $oldvalue, $_pql, $error, $domain;
@@ -83,14 +83,14 @@ function attribute_save($type){
 			break;
     	}
 		
-		if(pql_replace_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_UID, $uid)){
+		if(pql_replace_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_UID"], $uid)){
 			$msg = pql_complete_constant(PQL_LANG_UID_CHANGE_OK, array("old" => $oldvalue, "new" => $uid));
 		} else {
 			$msg = PQL_LANG_UID_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
 		}
 		
 		// We use the uid to reference users and it has just changed...
-		if ($config["PQL_CONF_REFERENCE_USERS_WITH"][pql_get_rootdn($user)] == PQL_CONF_ATTR_UID) {
+		if ($config["PQL_CONF_REFERENCE_USERS_WITH"][pql_get_rootdn($user)] == $config["PQL_GLOB_ATTR_UID"]) {
 			$user = $uid;
 			// Reload the navigation bar (if allowed by config)
 			attribute_forward($msg, true);

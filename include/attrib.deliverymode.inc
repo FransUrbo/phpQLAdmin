@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliverymode (delivery preferences)
-// $Id: attrib.deliverymode.inc,v 2.5 2003-04-04 06:54:31 turbo Exp $
+// $Id: attrib.deliverymode.inc,v 2.6 2003-04-04 16:37:50 turbo Exp $
 
 function attribute_check($type){
 	global $error, $reply, $mailreplytext;
@@ -16,10 +16,11 @@ function attribute_check($type){
 }
 
 function attribute_init(){
-	global $reply, $mailreplytext, $deliverymode, $domain, $user, $_pql;
+	global $reply, $mailreplytext, $deliverymode, $domain;
+	global $user, $_pql, $config;
 
 	// initialize values directly from ldap
-	$mode = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_MODE);
+	$mode = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_MODE"]);
 
 	// delivery profile
 	if(is_array($mode) and in_array("forwardonly",$mode)){
@@ -33,7 +34,7 @@ function attribute_init(){
 		$reply = "ok";
 	}
 	
-	$mailreplytext = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_REPLYTEXT);
+	$mailreplytext = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_REPLYTEXT"]);
 	$mailreplytext = $mailreplytext[0];
 }
 
@@ -77,7 +78,8 @@ function attribute_print_form($type = "modify"){
 }
 
 function attribute_save($type){
-	global $domain, $user, $attrib, $reply, $mailreplytext, $deliverymode, $_pql;
+	global $domain, $user, $attrib, $reply, $mailreplytext;
+	global $deliverymode, $_pql, $config;
 	
 	// recontrol values
 	if(!attribute_check($type)){
@@ -86,25 +88,25 @@ function attribute_save($type){
 	
 	switch($deliverymode){
 	  case "forward":
-		$entry[PQL_CONF_ATTR_MODE][] = "forwardonly";
-		$entry[PQL_CONF_ATTR_MODE][] = "nombox";
+		$entry[$config["PQL_GLOB_ATTR_MODE"]][] = "forwardonly";
+		$entry[$config["PQL_GLOB_ATTR_MODE"]][] = "nombox";
 		break;
 	  case "local":
-		$entry[PQL_CONF_ATTR_MODE][] = "localdelivery";
+		$entry[$config["PQL_GLOB_ATTR_MODE"]][] = "localdelivery";
 	}
 	
 	if($reply == "ok"){
-		$entry[PQL_CONF_ATTR_MODE][] = "reply";
+		$entry[$config["PQL_GLOB_ATTR_MODE"]][] = "reply";
 	}
 	if (!empty($mailreplytext)) {
-		$entry[PQL_CONF_ATTR_REPLYTEXT] = $mailreplytext;
+		$entry[$config["PQL_GLOB_ATTR_REPLYTEXT"]] = $mailreplytext;
 	} else {
 		// Check if the entry in database is empty. 
 		// If not, we have choosen to DELETE the value
 		$mrt_db = pql_get_userattribute($_pql->ldap_linkid,
-										$user, PQL_CONF_ATTR_REPLYTEXT);
+										$user, $config["PQL_GLOB_ATTR_REPLYTEXT"]);
 		if($mrt_db[0]) {
-			pql_remove_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_REPLYTEXT, '');
+			pql_remove_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_REPLYTEXT"], '');
 		}
 	}
 	

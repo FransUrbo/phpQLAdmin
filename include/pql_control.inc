@@ -4,13 +4,13 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.9 2003-04-04 06:54:32 turbo Exp $
+// $Id: pql_control.inc,v 2.10 2003-04-04 16:37:51 turbo Exp $
 //
 // version history:
 // $Log: pql_control.inc,v $
-// Revision 2.9  2003-04-04 06:54:32  turbo
-// Prefix defines with either PQL_CONF_ or PQL_LANG_ depending on type of
-// define - Language or Configuration constant/variable/reference...
+// Revision 2.10  2003-04-04 16:37:51  turbo
+// * Prefix global settings with PQL_GLOB_ (not mix with PQL_CONF_)
+//   + Use $config variable instead of old constants
 //
 // Revision 1.2  2001/09/06 11:36:24  mb
 // added no_connect option to pql_control-class
@@ -61,7 +61,7 @@ class pql_control extends pql {
     function pql_control($host, $binddn = "", $bindpw = "", $no_connect = false){
 		// call constructor of parent class
 	
-		if(!defined("PQL_CONF_CONTROL_USE")) {
+		if(!$config["PQL_GLOB_CONTROL_USE"]) {
 			// control patch is not enabled, leave
 			return false;
 		}
@@ -205,12 +205,14 @@ function pql_control_remove_whole_attribute($ldap_linkid, $ldap_control_basedn, 
 //
 // domain is array as: 'oldvalue', 'newvalue'
 function pql_control_update_domains($ldap, $dn, $host, $domain = "") {
-    if(!defined("PQL_CONF_CONTROL_USE")) {
+	global $config;
+
+    if(!$config["PQL_GLOB_CONTROL_USE"]) {
 		// control patch is not enabled
 		return false;
     }
 
-	if(!PQL_CONF_CONTROL_AUTOADDLOCALS and $domain) {
+	if(!$config["PQL_GLOB_CONTROL_AUTOADDLOCALS"] and $domain) {
 		// do not replicate automatically
 		return false;
 	}
@@ -249,7 +251,7 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "") {
 		}
 	}
 	
-    if(defined("PQL_CONF_CONTROL_AUTOADDLOCALS")) {
+    if($config["PQL_GLOB_CONTROL_AUTOADDLOCALS"]) {
 		$entry[] = "localhost";
     }
 

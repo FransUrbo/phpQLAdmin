@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_del.php,v 1.12 2003-04-04 06:53:47 turbo Exp $
+// $Id: ezmlm_del.php,v 1.13 2003-04-04 16:37:20 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -15,7 +15,7 @@ function list_forward($domainname, $msg){
 
     $msg = urlencode($msg);
     $url = "home.php?msg=$msg&rlnb=3";
-    header("Location: " . PQL_CONF_URI . "$url");
+    header("Location: " . $config["PQL_GLOB_URI"] . "$url");
 }
 
 // Get base directory for mails

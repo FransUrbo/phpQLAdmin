@@ -7,11 +7,11 @@ require("./include/pql_config.inc");
 
 switch ($attrib) {
   case "mailalternateaddress":
-    $attrib = PQL_CONF_ATTR_MAILALTERNATE;
+    $attrib = $config["PQL_GLOB_ATTR_MAILALTERNATE"];
     break;	
     
   case "mailforwardingaddress";
-    $attrib = PQL_CONF_ATTR_FORWARDS;
+    $attrib = $config["PQL_GLOB_ATTR_FORWARDS"];
     break;
     
   default:
@@ -36,21 +36,21 @@ if(isset($ok) || !PQL_CONF_VERIFY_DELETE) {
     
     if ($attrib == 'mailalternateaddress' and $success and isset($delete_forwards)) {
 	// does another account forward to this alias?
-	$sr = ldap_search($_pql->ldap_linkid, "(|(" . PQL_CONF_ATTR_FORWARDS ."=" . $value . "))");
+	$sr = ldap_search($_pql->ldap_linkid, "(|(" . $config["PQL_GLOB_ATTR_FORWARDS"] ."=" . $value . "))");
 	if (ldap_count_entries($_pql->ldap_linkid,$sr) > 0) {
 	    
 	    $results = ldap_get_entries($_pql->ldap_linkid, $sr);
 	    foreach($results as $key => $result){
 		if ((string)$key != "count") {
 		    $ref = $result[$config["PQL_CONF_REFERENCE_USERS_WITH"][pql_get_rootdn($user)]][0];
-		    $domain = pql_strip_username($result[PQL_CONF_ATTR_MAIL][0]);
+		    $domain = pql_strip_username($result[$config["PQL_GLOB_ATTR_MAIL"]][0]);
 		    $forwarders[]  = array("domain" => $domain, "reference" => $ref, "cn" => $cn,  "email" => $result["mail"][0]);
 		}
 	    }
 	    var_dump($forwarders);
 	    foreach($forwarders as $forward) {
 		// we found a forward -> remove it 
-		pql_remove_userattribute($_pql->ldap_linkid, $forward['reference'], PQL_CONF_ATTR_FORWARDS, $value);
+		pql_remove_userattribute($_pql->ldap_linkid, $forward['reference'], $config["PQL_GLOB_ATTR_FORWARDS"], $value);
 	    }
 	}
     }
@@ -58,7 +58,7 @@ if(isset($ok) || !PQL_CONF_VERIFY_DELETE) {
     // redirect to users detail page
     $msg = urlencode($msg);
     $url = "user_detail.php?domain=$domain&msg=$msg&user=" . urlencode($user);
-    header("Location: " . PQL_CONF_URI . "$url");
+    header("Location: " . $config["PQL_GLOB_URI"] . "$url");
     echo $value;
 } else {
 ?>

@@ -86,7 +86,7 @@ if(!isset($domains)) {
     // No domain defined -> 'ordinary' user (only show this user)
     $SINGLE_USER = 1; session_register("SINGLE_USER");
 
-    $cn = pql_get_userattribute($_pql->ldap_linkid, $USER_DN, PQL_CONF_ATTR_CN); $cn = $cn[0];
+    $cn = pql_get_userattribute($_pql->ldap_linkid, $USER_DN, $config["PQL_GLOB_ATTR_CN"]); $cn = $cn[0];
 
     // Try to get the DN of the domain
     $dnparts = ldap_explode_dn($USER_DN, 0);
@@ -169,16 +169,16 @@ if(!isset($domains)) {
 <?php
               // From the user DN, get the CN.
 	      foreach ($users as $dn) {
-		  $cn = pql_get_userattribute($_pql->ldap_linkid, $dn, $config["PQL_CONF_ATTR_CN"][$rootdn]);
+		  $cn = pql_get_userattribute($_pql->ldap_linkid, $dn, $config["PQL_GLOB_ATTR_CN"]);
 		  $cns[$dn] = $cn[0];
 	      }
               asort($cns);
 
 	      foreach($cns as $dn => $cn) {
-		  $uid   = pql_get_userattribute($_pql->ldap_linkid, $dn, $config["PQL_CONF_ATTR_UID"][$rootdn]);
+		  $uid   = pql_get_userattribute($_pql->ldap_linkid, $dn, $config["PQL_GLOB_ATTR_UID"]);
 		  $uid = $uid[0];
 
-		  $uidnr = pql_get_userattribute($_pql->ldap_linkid, $dn, $config["PQL_CONF_ATTR_QMAILUID"][$rootdn]);
+		  $uidnr = pql_get_userattribute($_pql->ldap_linkid, $dn, $config["PQL_GLOB_ATTR_QMAILUID"]);
 		  $uidnr = $uidnr[0];
 
 		  if(($uid != 'root') or ($uidnr != '0')) {

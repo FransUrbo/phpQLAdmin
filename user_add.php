@@ -39,7 +39,7 @@ if($submit == "") {
 	
     $user = $surname . " " . $name;
     if($error == false
-       and PQL_CONF_REFERENCE_USERS_WITH == PQL_CONF_ATTR_CN
+       and PQL_CONF_REFERENCE_USERS_WITH == $config["PQL_GLOB_ATTR_CN"]
        and pql_user_exist($_pql->ldap_linkid, $user)) {
 		$error = true;
 		$error_text["username"] = pql_complete_constant(PQL_LANG_USER_EXIST, array("user" => $user));
@@ -123,7 +123,7 @@ if ($submit == "save") {
 		$error_text["uid"] = PQL_LANG_INVALID;
 	}
 	if($error_text["uid"] == "" and pql_search_attribute($_pql->ldap_linkid, $domain,
-														 $config["PQL_CONF_ATTR_UID, $uid"][get_root_dn($domain)])) {
+														 $config["PQL_GLOB_ATTR_UID, $uid"][get_root_dn($domain)])) {
 		$error = true;
 		$error_text["uid"] = PQL_LANG_EXISTS;
 	}
@@ -620,14 +620,14 @@ echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_FORWARD
 
 		// prepare the users attributes
 		$cn = $surname . " " . $name;
-		$entry[PQL_CONF_ATTR_CN]			= trim($surname) . " " . trim($name);
-		$entry[PQL_CONF_ATTR_SN]			= $surname;
+		$entry[$config["PQL_GLOB_ATTR_CN"]]			= trim($surname) . " " . trim($name);
+		$entry[$config["PQL_GLOB_ATTR_SN"]]			= $surname;
 		
-		// $entry[PQL_CONF_ATTR_GIVENNAME]	= $name;
+		// $entry[$config["PQL_GLOB_ATTR_GIVENNAME"]]	= $name;
 		
-		$entry[PQL_CONF_ATTR_MAIL]			= $email;
-		$entry[PQL_CONF_ATTR_UID]			= $uid;
-		$entry[PQL_CONF_ATTR_ISACTIVE]		= $account_status;
+		$entry[$config["PQL_GLOB_ATTR_MAIL"]]			= $email;
+		$entry[$config["PQL_GLOB_ATTR_UID"]]			= $uid;
+		$entry[$config["PQL_GLOB_ATTR_ISACTIVE"]]		= $account_status;
 
         // ------------------
 		$entry["objectClass"][] = "person";
@@ -644,18 +644,18 @@ echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_FORWARD
 			$entry["objectClass"][] = "inetOrgPerson";
 
 			// set SYSTEM attributes
-			$entry[PQL_CONF_ATTR_LOGINSHELL] = $loginshell;
+			$entry[$config["PQL_GLOB_ATTR_LOGINSHELL"]] = $loginshell;
 			if(!$homedirectory) {
-				$entry[PQL_CONF_ATTR_HOMEDIR] = user_generate_homedir($_pql, $email, $domain, $entry);
+				$entry[$config["PQL_GLOB_ATTR_HOMEDIR"]] = user_generate_homedir($_pql, $email, $domain, $entry);
 			} else {
-				$entry[PQL_CONF_ATTR_HOMEDIR] = $homedirectory;
+				$entry[$config["PQL_GLOB_ATTR_HOMEDIR"]] = $homedirectory;
 			}
 
 			// Get a free UserID number (which we also use for GroupID number)
 			$uidnr = pql_get_next_uidnumber($_pql);
 			if($uidnr > 0) {
-				$entry[PQL_CONF_ATTR_QMAILUID] = $uidnr;
-				$entry[PQL_CONF_ATTR_QMAILGID] = $uidnr;
+				$entry[$config["PQL_GLOB_ATTR_QMAILUID"]] = $uidnr;
+				$entry[$config["PQL_GLOB_ATTR_QMAILGID"]] = $uidnr;
 			}
 
 			// Gecos is needed to do PAM/NSS LDAP login 
@@ -667,7 +667,7 @@ echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_FORWARD
 			// normal mailbox account
 
 			// set attributes
-			$entry[PQL_CONF_ATTR_PASSWD]   = pql_password_hash($password, $pwscheme);
+			$entry[$config["PQL_GLOB_ATTR_PASSWD"]]   = pql_password_hash($password, $pwscheme);
 			if($pwscheme == "{KERBEROS}") {
 				$entry["krb5PrincipalName"] = $password;
 				$entry["objectClass"][] = "krb5Principal";
@@ -676,22 +676,22 @@ echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_FORWARD
 			if($host == 'default') {
 				// TODO: If there is no defaultDomain for the domain, get MX of the domain in the email address
 				if($mx)
-				  $entry[PQL_CONF_ATTR_MAILHOST] = $mx;
+				  $entry[$config["PQL_GLOB_ATTR_MAILHOST"]] = $mx;
 				else {
-					$domainname = split('@', $entry[PQL_CONF_ATTR_MAIL]);
-					$entry[PQL_CONF_ATTR_MAILHOST] = pql_get_mx($domainname[1], $defaultdomain);
+					$domainname = split('@', $entry[$config["PQL_GLOB_ATTR_MAIL"]]);
+					$entry[$config["PQL_GLOB_ATTR_MAILHOST"]] = pql_get_mx($domainname[1], $defaultdomain);
 				}
 			} else {
 				if($mx)
-				  $entry[PQL_CONF_ATTR_MAILHOST] = $mx;
+				  $entry[$config["PQL_GLOB_ATTR_MAILHOST"]] = $mx;
 				else
-				  $entry[PQL_CONF_ATTR_MAILHOST] = $userhost[1];
+				  $entry[$config["PQL_GLOB_ATTR_MAILHOST"]] = $userhost[1];
 			}
-			$entry[PQL_CONF_ATTR_MODE]     = "localdelivery";
+			$entry[$config["PQL_GLOB_ATTR_MODE"]]     = "localdelivery";
 			if(!$maildirectory) {
-				$entry[PQL_CONF_ATTR_MAILSTORE] = user_generate_mailstore($_pql, $email, $domain, $entry);
+				$entry[$config["PQL_GLOB_ATTR_MAILSTORE"]] = user_generate_mailstore($_pql, $email, $domain, $entry);
 			} else {
-				$entry[PQL_CONF_ATTR_MAILSTORE] = $maildirectory;
+				$entry[$config["PQL_GLOB_ATTR_MAILSTORE"]] = $maildirectory;
 			}
 		} else {
 			// forwardonly account
@@ -700,14 +700,14 @@ echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_FORWARD
 			$forwardingaddress = strtolower($forwardingaddress);
 
 			// set attributes
-			$entry[PQL_CONF_ATTR_FORWARDS]	= $forwardingaddress;
-			$entry[PQL_CONF_ATTR_MODE][]	= "forwardonly";
-			$entry[PQL_CONF_ATTR_MODE][]	= "nombox";
+			$entry[$config["PQL_GLOB_ATTR_FORWARDS"]]	= $forwardingaddress;
+			$entry[$config["PQL_GLOB_ATTR_MODE"]][]	= "forwardonly";
+			$entry[$config["PQL_GLOB_ATTR_MODE"]][]	= "nombox";
 
 			// Even forward accounts need UIDNumber! (?!?)
-			$entry[PQL_CONF_ATTR_QMAILUID] = PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER;
-			$entry[PQL_CONF_ATTR_QMAILGID] = PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER;
-			$entry[PQL_CONF_ATTR_HOMEDIR]  = "/tmp";
+			$entry[$config["PQL_GLOB_ATTR_QMAILUID"]] = PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER;
+			$entry[$config["PQL_GLOB_ATTR_QMAILGID"]] = PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER;
+			$entry[$config["PQL_GLOB_ATTR_HOMEDIR"]]  = "/tmp";
 		}
 
         // ------------------
@@ -757,12 +757,12 @@ echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_FORWARD
 <?php
 				die();
 			} else {
-				header("Location: " . PQL_CONF_URI . "$url");
+				header("Location: " . $config["PQL_GLOB_URI"] . "$url");
 			}
 		} else {
 			$msg = urlencode(PQL_LANG_USER_ADD_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid));
 	   		$url = "domain_detail.php?domain=$domain&msg=$msg";
-			header("Location: " . PQL_CONF_URI . "$url");
+			header("Location: " . $config["PQL_GLOB_URI"] . "$url");
 		}
 	} // end of switch($submit)
 

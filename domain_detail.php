@@ -5,7 +5,7 @@
 session_start();
 require("./include/pql_config.inc");
 
-if(defined("PQL_CONF_CONTROL_USE")) {
+if($config["PQL_GLOB_CONTROL_USE"]) {
     // include control api if control is used
     include("./include/pql_control.inc");
     $_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
@@ -19,7 +19,7 @@ if(isset($msg)){
 }
 
 // reload navigation bar if needed
-if(isset($rlnb) and PQL_CONF_AUTO_RELOAD) {
+if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
 ?>
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
   <script language="JavaScript1.2"><!--
@@ -259,7 +259,7 @@ if($ADVANCED_MODE == 1) {
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=PQL_LANG_USER_REGISTRED?></th>
 <?php
-if(is_array($users)){
+if(is_array($users)) {
 ?>
       <tr>
         <td class="title"><?=PQL_LANG_USER?></td>
@@ -271,11 +271,11 @@ if(is_array($users)){
 <?php
 	asort($users);
 	foreach($users as $user){
-		$uid   = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_CONF_ATTR_UID"][$rootdn]); $uid = $uid[0];
-		$cn    = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_CONF_ATTR_CN"][$rootdn]); $cn = $cn[0];
-		$uidnr = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_CONF_ATTR_QMAILUID"][$rootdn]); $uidnr = $uidnr[0];
+		$uid   = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_UID"]); $uid = $uid[0];
+		$cn    = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_CN"]); $cn = $cn[0];
+		$uidnr = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_QMAILUID"]); $uidnr = $uidnr[0];
 		
-		$status = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_CONF_ATTR_ISACTIVE);
+		$status = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_ISACTIVE"]);
 		$status = pql_ldap_accountstatus($status[0]);
 
 		if(($uid != 'root') or ($uidnr != '0')) {
@@ -392,17 +392,17 @@ if($ADVANCED_MODE == 1) {
   <br><br>
 
 <?php
-	if(defined("PQL_CONF_CONTROL_USE")) {
+	if($config["PQL_GLOB_CONTROL_USE"]) {
 		if(pql_control_search_attribute($_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR, "locals", $defaultdomain)){
 			$locals = PQL_LANG_YES;
-			if(!defined(PQL_CONF_CONTROL_AUTOADDLOCALS)) {
+			if(!$config["PQL_GLOB_CONTROL_AUTOADDLOCALS"][$rootdn]) {
 				$locals_link = "<a href=\"control_edit_attribute.php?attrib=locals&rootdn=<?=$rootdn?>&type=del&set=$defaultdomain&submit=1\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"remove $defaultdomain from locals\"></a>";
 			} else {
 				$locals_link = "&nbsp;";
 			}
 		} else {
 			$locals = PQL_LANG_NO;
-			if(!defined(PQL_CONF_CONTROL_AUTOADDLOCALS)) {
+			if(!$config["PQL_GLOB_CONTROL_AUTOADDLOCALS"][$rootdn]) {
 				$locals_link = "<a href=\"control_edit_attribute.php?attrib=locals&rootdn=<?=$rootdn?>&type=add&set=$defaultdomain&submit=1\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"add $defaultdomain to locals\"></a>";
 			} else {
 				$locals_link = "&nbsp;";
@@ -436,7 +436,7 @@ if($ADVANCED_MODE == 1) {
   <br><br>
 
 <?php
-	} // end if(PQL_CONF_CONTROL_USE) ...
+	} // end if(PQL_GLOB_CONTROL_USE) ...
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th align="left"><?=PQL_LANG_ACTIONS?></th>
