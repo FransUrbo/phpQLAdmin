@@ -9,8 +9,8 @@ Things left to do
 	  and the objectclass we find that REQUIRE (MAY) some attributes
 	  which we're missing, ask user/admin to fill in the missing
 	  attributes, THEN retry to add/modify the object.
-	* Only add an attribute if we have a suitable objectClass
-	  (see the accountStatus check in user_add.php)
+	* Finish the new QmailLDAP/Controls values
+	  http://apache.bayour.com/list/cvs-phpqladmin/?action=show_msg&actionargs[]=22&actionargs[]=30
 
 	WISHLIST/Not so very important
 	* Support for alias-domains: phpQLAdmin will be able to create
