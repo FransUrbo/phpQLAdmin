@@ -3,7 +3,7 @@
 <?php if($ALLOW_BRANCH_CREATE) { ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?=$LANG->_('Branch DN')?></td>
-        <td><?php echo urldecode($domain); ?></td>
+        <td><?php echo maybe_decode(urldecode($domain)); ?></td>
         <td><?=// TODO: Should we be able to rename the RDN? ?></td>
       </tr>
   
