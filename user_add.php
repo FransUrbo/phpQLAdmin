@@ -222,10 +222,10 @@ if ($submit == "save") {
 }
 
 if($pwscheme) {
-	if(! eregi('{', $pwscheme))
+	if(! eregi('\{', $pwscheme))
 	  $pwscheme = '{'.$pwscheme;
 
-	if(! eregi('}', $pwscheme))
+	if(! eregi('\}', $pwscheme))
 	  $pwscheme .= '}';
 }
 

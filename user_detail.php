@@ -80,8 +80,8 @@ $quota = pql_get_userquota($_pql->ldap_linkid, $user);
 if($userpassword == "") {
     $userpassword = PQL_LANG_USERPASSWORD_NONE;
 } else {
-    if(eregi("{KERBEROS}", $userpassword)) {
-		$princ = split("}", $userpassword);
+    if(eregi("\{KERBEROS\}", $userpassword)) {
+		$princ = split("\}", $userpassword);
 		$userpassword = $princ[1] . " " . PQL_LANG_USERPASSWORD_KERBEROS;
     } else {
 		$userpassword = PQL_LANG_USERPASSWORD_ENCRYPTED;
