@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.18 2003-05-18 13:14:53 turbo Exp $
+// $Id: control_detail.php,v 1.19 2003-05-28 10:13:15 turbo Exp $
 session_start();
 require("./include/pql_config.inc");
 
@@ -68,7 +68,7 @@ if($config["PQL_GLOB_CONTROL_USE"]) {
 
   <table cellspacing="0" border="0" width="100%" cellpadding="0">
     <tr>
-      <td colspan="2" valign="bottom" align="left" width="100%"><a href="<?=$PHP_SELF."?mxhost=$mxhost&view=default"?>"><img alt="/ Base Values \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><a href="<?=$PHP_SELF."?mxhost=$mxhost&view=hosts"?>"><img alt="/ Locals and RCPT Hosts \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><a href="<?=$PHP_SELF."?mxhost=$mxhost&view=action"?>"><img alt="/ Action \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a></td>
+      <td colspan="2" valign="bottom" align="left" width="100%"><a href="<?=$PHP_SELF."?mxhost=$mxhost&view=default"?>"><img alt="/ Base Values \" vspace="0" hspace="0" border="0" src="navbutton.php?Base Values"></a><a href="<?=$PHP_SELF."?mxhost=$mxhost&view=hosts"?>"><img alt="/ Locals and RCPT Hosts \" vspace="0" hspace="0" border="0" src="navbutton.php?Locals and RCPT Hosts"></a><br><a href="<?=$PHP_SELF."?mxhost=$mxhost&view=action"?>"><img alt="/ Action \" vspace="0" hspace="0" border="0" src="navbutton.php?Action"></a></td>
   </tr>
 </table>
 
