@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // confirmText and moderatorText (Qmail-GROUP object texts)
-// $Id: attrib.confirmtexts.inc,v 2.2 2004-06-10 05:37:43 turbo Exp $
+// $Id: attrib.confirmtexts.inc,v 2.3 2004-10-14 09:53:32 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -31,7 +31,7 @@ function attribute_print_form($type = "modify") {
 <?php } ?>
         <tr class="<?php pql_format_table(); ?>">
           <td valign="center">
-            <textarea name="<?=$_REQUEST["attrib"]?>" cols="40" rows="10"><?=$oldvalue?></textarea>
+            <textarea name="<?=$_REQUEST["attrib"]?>" cols="40" rows="10"><?=$_REQUEST["oldvalue"]?></textarea>
           </td>
         </tr>
       </th>
