@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for web server configuration)
 //
-// $Id: pql_websrv.inc,v 1.8 2004-04-02 12:46:46 turbo Exp $
+// $Id: pql_websrv.inc,v 1.8.16.1 2004-12-20 09:02:23 turbo Exp $
 //
 
 // {{{ pql_websrv_get_servers(linkid, dn)
@@ -71,12 +71,15 @@ function pql_websrv_add_server($linkid, $domain, $server) {
 
 		// Create a LDIF object to print in case of error
 		$LDIF = pql_create_ldif("pql_websrv_add_server - ou", $dn, $entry);
-
-		if(! ldap_add($linkid, $dn, $entry)) {
+		if(file_exists("./.DEBUG_ME"))
+		  echo $LDIF;
+		else {
+		  if(! ldap_add($linkid, $dn, $entry)) {
 			// Can't add the organizational unit
 			pql_format_error(1);
 			echo "Can't add the organizational unit...<br>\n";
 			die($LDIF);
+		  }
 		}
 	}
 
@@ -94,12 +97,14 @@ function pql_websrv_add_server($linkid, $domain, $server) {
 
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_websrv_add_server", $dn, $entry);
+	if(file_exists("./.DEBUG_ME"))
+	  die($LDIF);
 
-    // Add the server configuration to the database
-    if(! ldap_add($linkid, $dn, $entry)) {
-		// failed to add configuration
-		pql_format_error(1);
-		die("$LDIF");
+	// Add the server configuration to the database
+	if(! ldap_add($linkid, $dn, $entry)) {
+	  // failed to add configuration
+	  pql_format_error(1);
+	  die("$LDIF");
 	}
 
 	return true;
