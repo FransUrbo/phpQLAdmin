@@ -13,10 +13,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: phpqladmin_2.0.16-1\n"
+"Project-Id-Version: phpqladmin_2.0.17-1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-09-11 11:21+0200\n"
-"PO-Revision-Date: 2003-09-11 11:29+0200\n"
+"POT-Creation-Date: 2003-09-23 14:18+0200\n"
+"PO-Revision-Date: 2004-03-10 10:12+0100\n"
 "Last-Translator: Michel Grentzinger <mic.grentz@online.fr>\n"
 "Language-Team: French <debian-l10n-french@lists.debian.org>\n"
 "MIME-Version: 1.0\n"
@@ -25,28 +25,13 @@ msgstr ""
 
 #. Choices
 #: ../templates:3
-msgid "Apache"
-msgstr "Apache"
-
-#. Choices
-#: ../templates:3
-msgid "Apache-SSL"
-msgstr "Apache-SSL"
-
-#. Choices
-#: ../templates:3
-msgid "Both"
-msgstr "Les deux"
-
-#. Choices
-#: ../templates:3
-msgid "None"
-msgstr "Aucun"
+msgid "Apache, Apache-SSL, Both, None"
+msgstr "Apache, Apache-SSL, Les deux, Aucun"
 
 #. Description
 #: ../templates:5
 msgid "Which web server would you like to reconfigure automatically?"
-msgstr "Quel serveur web souhaitez-vous reconfigurer automatiquement ?"
+msgstr "Serveur web à reconfigurer automatiquement ?"
 
 #. Description
 #: ../templates:5
@@ -54,6 +39,18 @@ msgid ""
 "phpQLAdmin supports any web server that PHP4 does, but this automatic "
 "configuration process only supports Apache and Apache-SSL."
 msgstr ""
-"phpQLAdmin gère tous les serveurs web supportés par PHP3 ou PHP4, mais cette "
+"PhpQLAdmin gère tous les serveurs web supportés par PHP3 ou PHP4, mais cette "
 "procédure automatique de configuration ne prend en charge qu'Apache et "
 "Apache-SSL."
+
+#~ msgid "Apache"
+#~ msgstr "Apache"
+
+#~ msgid "Apache-SSL"
+#~ msgstr "Apache-SSL"
+
+#~ msgid "Both"
+#~ msgstr "Les deux"
+
+#~ msgid "None"
+#~ msgstr "Aucun"
