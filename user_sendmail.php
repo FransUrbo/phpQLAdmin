@@ -43,7 +43,7 @@ if (is_array($quota)) {
     // Do we use the qmail-ldap/control patch?
     if (!pql_get_define("PQL_GLOB_CONTROL_USE")) {
 	// No -> quota is 'standard'
-	$vars['QUOTA'] = $LANG->('Standard');
+	$vars['QUOTA'] = $LANG->_('Standard');
     } else {
 	// qmail-ldap/control patch is used
 	// search the standard quota...
