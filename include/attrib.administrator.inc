@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.37.6.1 2004-05-25 13:57:50 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.37.6.1.2.1 2004-09-17 13:29:39 turbo Exp $
 
 require("./left-head.html");
 
@@ -163,7 +163,7 @@ function attribute_print_form($action) {
 			}
 
 			if(is_array($domains)) {
-				$domains = array_values(array_unique($domains));
+				$domains = pql_uniq($domains);
 				asort($domains);
 				foreach($domains as $branch) {
 					if($branch == $_pql->ldap_basedn[0]) {

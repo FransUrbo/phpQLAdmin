@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.39.10.1 2004-05-04 08:03:17 turbo Exp $
+// $Id: pql_control.inc,v 2.39.10.1.4.1 2004-09-17 13:29:39 turbo Exp $
 //
 
 // {{{ control connection class
@@ -284,7 +284,7 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 						asort($locals); reset($locals);
 						
 						// Rearrange the array
-						$locals = array_values(array_unique($locals));
+						$locals = pql_uniq($locals);
 
 						// Do not set locals for hosts which HAVE no locals (ie, slaves)
 						foreach($locals as $local) {
@@ -333,7 +333,7 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 						asort($rcpthosts); reset($rcpthosts);
 
 						// Rearrange the array
-						$rcpthosts = array_values(array_unique($rcpthosts));
+						$rcpthosts = pql_uniq($rcpthosts);
 						
 						// Do not set rcpthosts for hosts which HAVE no rcpthosts (ie, masters)
 						foreach($rcpthosts as $rcpt) {
