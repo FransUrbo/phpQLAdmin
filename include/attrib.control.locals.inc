@@ -2,7 +2,7 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.32 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.33 2004-11-05 12:29:44 turbo Exp $
 
 // {{{ locals_check(type)
 
@@ -161,13 +161,11 @@ function locals_save($type, $host) {
 		if(!$host) {
 			// Find the object(s) which contain this string
 			$ctrls = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-								"(&(cn=*)(objectclass=qmailControl)(".pql_set_define("PQL_ATTR_LOCALS")."=".$_REQUEST["set"]."))",
+								"(&(cn=*)(objectclass=qmailControl)(".pql_get_define("PQL_ATTR_LOCALS")."=".$_REQUEST["set"]."))",
 								'ONELEVEL');
 			// If it isn't an array, but it IS set -> make it an array!
-			if($ctrls && !is_array($ctrls)) {
-				$tmp = $ctrls; unset($ctrls);
-				$ctrls[] = $tmp;
-			}
+			if($ctrls && !is_array($ctrls))
+			  $ctrls = array($ctrls);
 			
 			foreach($ctrls as $ctrl) {
 				// Retreive this QmailLDAP/Controls object current value(s)

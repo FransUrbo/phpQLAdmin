@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtproutes (max number of bytes in message)
 //
-// $Id: attrib.control.smtproutes.inc,v 2.23 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.control.smtproutes.inc,v 2.24 2004-11-05 12:30:45 turbo Exp $
 
 // {{{ smtproutes_check(type)
 
@@ -419,9 +419,9 @@ function smtproutes_save($type, $host) {
 						$values = pql_get_attribute($_pql_control->ldap_linkid,
 													pql_get_define("PQL_ATTR_CN")."=$relay,".$_SESSION["USER_SEARCH_DN_CTR"],
 													pql_get_define("PQL_ATTR_SMTPROUTES"));
-						foreach($values as $route)
-						  $values[] = $route;
-						
+						if($values and !is_array($values))
+						  $values = array($values);
+
 						// Add the new value
 						$values[] = $_REQUEST["domainname"][0].":".$_REQUEST["relay"][$i].":".$_REQUEST["port"][0];
 						
