@@ -1,11 +1,16 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.2 2002-12-22 16:32:50 turbo Exp $
+// $Id: ezmlm_add.php,v 1.3 2002-12-23 11:43:21 turbo Exp $
 //
 session_start();
 
 require("include/pql.inc");
 $_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
+
+// Initialize
+require("include/pql_ezmlm.inc");
+$ezmlm = new ezmlm();
+require("ezmlm-hardcoded.php");
 
 if(!$subscribercount) {
 	$subscribercount = 0;
@@ -49,31 +54,39 @@ if(!$domain) {
 }
 
 // Remember values between reloads
-if($moderated)		$checked["moderated"]		= " CHECKED";
-if($submoderated)	$checked["submoderated"]	= " CHECKED";
-if($prefix)			$checked["prefix"]			= " CHECKED";
-if($digest)			$checked["digest"]			= " CHECKED";
-if($remote)			$checked["remote"]			= " CHECKED";
-if($indexed)		$checked["indexed"]			= " CHECKED";
-if($sublistable)	$checked["sublistable"]		= " CHECKED";
-if($reqaddress)		$checked["reqaddress"]		= " CHECKED";
-if($trailers)		$checked["trailers"]		= " CHECKED";
-if($subonly)		$checked["subonly"]			= " CHECKED";
-if($emptysubjects)	$checked["emptysubjects"]	= " CHECKED";
-if($extras)			$checked["extras"]			= " CHECKED";
-if($archived)		$checked["archived"]		= " CHECKED";
+if($archived)		$checked["archived"]		= " CHECKED";	// -aA
+if($remotecfg)		$checked["remotecfg"]		= " CHECKED";	// -cC
+if($digest)			$checked["digest"]			= " CHECKED";	// -dD
+if($prefix)			$checked["prefix"]			= " CHECKED";	// -fF
 if(!$archived) {
-	$checked["guardedarchive"] = " DISABLED";
+	$checked["guardedarchive"] = " DISABLED";					// -gG
 } else {
 	if($guardedarchive)
 	  $checked["guardedarchive"] = " CHECKED";
 }
+if($indexed)		$checked["indexed"]			= " CHECKED";	// -iI
+if($sublistable)	$checked["sublistable"]		= " CHECKED";	// -lL
+if($moderated)		$checked["moderated"]		= " CHECKED";	// -mM
 if($pubpriv == 'public') {
-	$checked["public"]  = " CHECKED";
+	$checked["public"]  = " CHECKED";							// -p
 	$checked["private"] = "";
 } elseif($pubpriv == 'private') {
 	$checked["public"]  = "";
-	$checked["private"] = " CHECKED";
+	$checked["private"] = " CHECKED";							// -P
+}
+if($reqaddress)		$checked["reqaddress"]		= " CHECKED";	// -qQ
+if($remoteadm)		$checked["remoteadm"]		= " CHECKED";	// -rR
+if($submoderated)	$checked["submoderated"]	= " CHECKED";	// -sS
+if($trailers)		$checked["trailers"]		= " CHECKED";	// -tT
+if($subonly)		$checked["subonly"]			= " CHECKED";	// -uU
+if($extras)			$checked["extras"]			= " CHECKED";	// -x
+
+// Create list
+if($submit == 'Create list') {
+	if($listname)
+	  $ezmlm->updatelistentry(1, $listname, $domain, $checked);
+	else
+	  $error_text["listname"] = 'missing';
 }
 
 // Create the mailinglist creation form
@@ -97,7 +110,7 @@ if(!$domain) {
       <th colspan="3" align="left">Base configuration</th>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title">List name</td>
-          <td>
+          <td><?php echo format_error($error_text["listname"]); ?>
 <?php
 if(!$domain) {
 	// No domain - select box with existing domains
@@ -126,12 +139,26 @@ if(!$domain) {
 
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title">List owner</td>
-          <td><input name="listowner" value="<?=$listowner?>"></td>
+          <td>
+            <input name="listowner" value="<?=$listowner?>">
+            <i>(<b>optional</b>: if not mailbox in list directory)</i>
+          </td>
+        </tr>
+
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title">From address</td>
+          <td>
+            <input name="fromaddress" value="<?=$fromaddress?>">
+            <i>(<b>optional</b>: if not same as listname)</i>
+          </td>
         </tr>
 
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title">Parent list</td>
-          <td><input name="listparent" value="<?=$listparent?>"></td>
+          <td>
+            <input name="listparent" value="<?=$listparent?>">
+            <i>(<b>optional</b>: Make the list a sublist of list)</i>
+          </td>
         </tr>
       </th>
     </table>
@@ -159,13 +186,13 @@ if(!$domain) {
             </tr>
 
             <tr class="<?php table_bgcolor(); ?>">
-              <td><input type="checkbox" name="digest" accesskey="d" onChange="this.form.submit()"<?=$checked["digest"]?>></td>
-              <td class="title">Enable <u>d</u>igest</td>
+              <td><input type="checkbox" name="remotecfg" accesskey="c" onChange="this.form.submit()"<?=$checked["remotecfg"]?>></td>
+              <td class="title">Enable remote <u>c</u>onfiguration</td>
             </tr>
 
             <tr class="<?php table_bgcolor(); ?>">
-              <td><input type="checkbox" name="remote" accesskey="c" onChange="this.form.submit()"<?=$checked["remote"]?>></td>
-              <td class="title">Enable remote <u>c</u>onfiguration</td>
+              <td><input type="checkbox" name="remoteadm" accesskey="r" onChange="this.form.submit()"<?=$checked["remoteadm"]?>></td>
+              <td class="title">Enable <u>r</u>emote administration</td>
             </tr>
 
             <tr class="<?php table_bgcolor(); ?>">
@@ -190,6 +217,11 @@ if(!$domain) {
         <table cellspacing="0" cellpadding="3" border="0">
           <th>
             <tr class="<?php table_bgcolor(); ?>">
+              <td><input type="checkbox" name="digest" accesskey="d" onChange="this.form.submit()"<?=$checked["digest"]?>></td>
+              <td class="title">Enable <u>d</u>igest</td>
+            </tr>
+
+            <tr class="<?php table_bgcolor(); ?>">
               <td><input type="checkbox" name="sublistable" accesskey="l" onChange="this.form.submit()"<?=$checked["sublistable"]?>></td>
               <td class="title">Subscriber <u>l</u>istable</td>
             </tr>
@@ -207,11 +239,6 @@ if(!$domain) {
             <tr class="<?php table_bgcolor(); ?>">
               <td><input type="checkbox" name="subonly" accesskey="u" onChange="this.form.submit()"<?=$checked["trailers"]?>></td>
               <td class="title">Allow only s<u>u</u>bscribers posts</td>
-            </tr>
-
-            <tr class="<?php table_bgcolor(); ?>">
-              <td><input type="checkbox" name="emptysubjects" accesskey="a" onChange="this.form.submit()"<?=$checked["emptysubjects"]?>></td>
-              <td class="title"><u>A</u>ccept empty subjects</td>
             </tr>
 
             <tr class="<?php table_bgcolor(); ?>">
@@ -285,7 +312,7 @@ if(!$domain) {
 <?php } for($i = 1; $i <= $killcount; $i++) { ?>
     <input type="hidden" name="killlist[<?=$i?>]" value="<?=$killlist[$i]?>">
 <?php } ?>
-    <input type="submit" value="create list">
+    <input type="submit" name="submit" value="Create list">
   </form>
 <?php
 /*
