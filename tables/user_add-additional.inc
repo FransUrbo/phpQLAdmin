@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-additional.inc,v 1.25 2005-02-24 17:04:02 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.26 2005-03-01 18:09:08 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <!-- Some hidden values from previous page(s) -->
 <?php if($_REQUEST["surname"] and pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_CN"))) { ?>
@@ -61,7 +61,7 @@
             <?=$_REQUEST["homedirectory"]?>
             <input type="hidden" name="homedirectory" value="<?=$_REQUEST["homedirectory"]?>">
 <?php   } else { ?>
-            <input type="text" name="homedirectory" size="30">
+            <input type="text" name="homedirectory" size="60">
 <?php   } ?>
           </td>
         </tr>
@@ -81,7 +81,7 @@
             <?=$_REQUEST["maildirectory"]?>
             <input type="hidden" name="maildirectory" value="<?=$_REQUEST["maildirectory"]?>">
 <?php   	} else { ?>
-            <input type="text" name="maildirectory" size="30">
+            <input type="text" name="maildirectory" size="60">
 <?php   	} ?>
           </td>
         </tr>
@@ -90,7 +90,25 @@
 <?php	} else { ?>
         <input type="hidden" name="maildirectory" value="<?=$_REQUEST["maildirectory"]?>">
 <?php	}
-	  }
+	  } // Allowing mailbox path
+
+	  if($_REQUEST["mail"] and
+		 pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_FORWARDS")))
+      {
+?>
+        <tr class="<?php pql_format_table(); ?>">
+          <td class="title" valign="top"><?=$LANG->_('Forward mail to')?></td>
+          <td>
+<?php   if($_REQUEST["forwardingaddress"]) { ?>
+            <?=$_REQUEST["forwardingaddress"]?>
+            <input type="hidden" name="forwardingaddress" value="<?=$_REQUEST["forwardingaddress"]?>">
+<?php   } else { ?>
+            <input type="text" name="forwardingaddress" size="60">
+<?php   } ?>
+          </td>
+        </tr>
+
+<?php } // Allowing mail forwarding address
 
 	  if($_REQUEST["mail"] and
 		 pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_MAILHOST")))
@@ -146,7 +164,7 @@
             <input type="radio"  name="host"   value="<?=$i?>" <?php if(!$checked) { $checked = 1; ?>CHECKED<?php } ?>>
             <b><?=$LANG->_('User defined')?></b>:<br>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="text"   name="host_<?=$i?>" size="30">
+            <input type="text"   name="host_<?=$i?>" size="56">
             <input type="hidden" name="text_host" value="<?=$i?>">
           </td>
         </tr>
