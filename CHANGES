@@ -57,6 +57,8 @@ phpQLAdmin 2.0.18e TO BE ANNOUNCED
 	  - I want the server statistics in its own subbranch. Have nothing (?) to do
 	    with configuration, so it makes more sense...
 	  - Non-java browser advanced/simple mode toggle.
+	  - When adding a user-type object, make sure the page title correctly shows
+	    what type of object being created (mail, group, system etc).
 
 	Misc changes	
 	  - Remove some redundant printr() debug messages.
