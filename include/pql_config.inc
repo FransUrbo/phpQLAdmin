@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.50 2004-01-01 12:35:34 turbo Exp $
+// $Id: pql_config.inc,v 1.51 2004-01-26 05:19:02 turbo Exp $
 //
 
 // {{{ pql_set_define(define, value, case_insensitive, dn)
@@ -272,10 +272,19 @@ session_register("ALLOW_GLOBAL_CONFIG_SAVE");
 
 // 9. Check if ACI support is enabled in LDAP server
 if(!$ACI_SUPPORT_ENABLED and function_exists("user_generate_aci")) {
-	$ocs = pql_get_subschema($_pql->ldap_linkid, attributeTypes);
+	$ocs = pql_get_subschema($_pql->ldap_linkid, 'attributeTypes');
 	if($ocs["openldapaci"]["OID"]) {
 		$ACI_SUPPORT_ENABLED = 1;
 		session_register("ACI_SUPPORT_ENABLED");
+	}
+}
+
+// 10. Check to see if the cn=Monitor backend is availble/readable
+if(!$MONITOR_BACKEND_ENABLED) {
+    $sr = @ldap_read($_pql->ldap_linkid, "cn=Monitor", 'objectClass=*');
+    if($sr) {
+		$MONITOR_BACKEND_ENABLED = 1;
+		session_register("MONITOR_BACKEND_ENABLED");
 	}
 }
 
