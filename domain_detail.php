@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.77 2004-03-03 07:58:54 turbo Exp $
+// $Id: domain_detail.php,v 2.78 2004-03-03 13:01:53 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -87,6 +87,11 @@ foreach($attribs as $attrib) {
 	// Get default value
 	$value = pql_domain_get_value($_pql, $_REQUEST["domain"], $attrib);
 	$$attrib = $value;
+
+	if($attrib == pql_get_define("PQL_GLOB_ATTR_INFO")) {
+		// Special circumstance - multiple lines...
+		$$attrib = eregi_replace("\n", "<br>", $$attrib);
+	}
 
 	// Setup edit links. If it's a dcOrganizationNameForm attribute, then
 	// we add a delete link as well.
