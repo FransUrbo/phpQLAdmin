@@ -151,7 +151,7 @@ if(!isset($domains)) {
   <div id="el<?=$j?>Child" class="child">
 <?php
       // iterate trough all users
-      if($config["PQL_CONF_SHOW_USERS"][$rootdn] != 'false') {
+      if($config["PQL_CONF_SHOW_USERS"][$rootdn]) {
 	  // Zero out the variables, othervise we won't get users in
 	  // specified domain, but also in the PREVIOUS domain shown!
 	  $users = ""; $cns = "";

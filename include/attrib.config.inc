@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.10 2003-04-08 08:31:28 turbo Exp $
+// $Id: attrib.config.inc,v 1.11 2003-04-08 10:35:19 turbo Exp $
 
 function attribute_check() {
     global $administrator, $domain, $oldvalue, $_pql, $error;
@@ -60,7 +60,7 @@ function attribute_print_form() {
 
 	if($toggle) {
 		// A togglable value, reverse state
-		if(!$oldvalue or ($oldvalue == 'false'))
+		if(!$oldvalue or ($oldvalue == 'FALSE'))
 		  $entry[$attrib] = 'TRUE';
 		else
 		  $entry[$attrib] = 'FALSE';

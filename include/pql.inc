@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.55 2003-04-08 07:40:51 turbo Exp $
+// $Id: pql.inc,v 2.56 2003-04-08 10:35:19 turbo Exp $
 //
 
 // ----------------------------
@@ -1607,22 +1607,22 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 			// ------------------------
 			// Retreive SINGLE-VALUE
 			if(eregi("SINGLE-VALUE", $entry[0][$attrib][$i]))
-			  $VALUE[$name]["SINGLE-VALUE"] = 'true';
+			  $VALUE[$name]["SINGLE-VALUE"] = 'TRUE';
 			
 			// ------------------------
 			// Retreive NO-USER-MODIFICATION
 			if(eregi("NO-USER-MODIFICATION", $entry[0][$attrib][$i]))
-			  $VALUE[$name]["NO-USER-MODIFICATION"] = 'true';
+			  $VALUE[$name]["NO-USER-MODIFICATION"] = 'TRUE';
 			
 			// ------------------------
 			// Retreive X-BINARY-TRANSFER-REQUIRED
 			if(eregi("X-BINARY-TRANSFER-REQUIRED", $entry[0][$attrib][$i]))
-			  $VALUE[$name]["X-BINARY-TRANSFER-REQUIRED"] = 'true';
+			  $VALUE[$name]["X-BINARY-TRANSFER-REQUIRED"] = 'TRUE';
 			
 			// ------------------------
 			// Retreive X-NOT-HUMAN-READABLE
 			if(eregi("X-NOT-HUMAN-READABLE", $entry[0][$attrib][$i]))
-			  $VALUE[$name]["X-NOT-HUMAN-READABLE"] = 'true';
+			  $VALUE[$name]["X-NOT-HUMAN-READABLE"] = 'TRUE';
 		}
 
 		ksort($VALUE);

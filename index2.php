@@ -9,10 +9,10 @@ foreach($_pql->ldap_basedn as $dn)  {
     // information in ANY of the domain (one is enough to show the
     // frame!)
 
-    if($config["PQL_GLOB_EZMLM_USE"] == 'true')
+    if($config["PQL_GLOB_EZMLM_USE"])
       $SHOW_FRAME["ezmlm"] = 1;
 
-    if($config["PQL_GLOB_CONTROL_USE"] and $ALLOW_CONTROL_CREATE[$dn] == 'true')
+    if($config["PQL_GLOB_CONTROL_USE"] and $ALLOW_CONTROL_CREATE[$dn])
       $SHOW_FRAME["controls"] = 1;
 }
 ?>
