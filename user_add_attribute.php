@@ -17,11 +17,11 @@ function attribute_forward($msg) {
 
     // URL Encode some of the most important information
     // (root DN, domain/branch DN and user DN)
+    $rootdn = urlencode($rootdn);
     $domain = urlencode($domain);
     $user   = urlencode($user);
-    $rootdn = urlencode($rootdn);
     
-    $url = "user_detail.php?domain=$domain&user=".urlencode($user)."&view=$view&msg=".urlencode($msg);
+    $url = "user_detail.php?rootdn=$rootdn&domain=$domain&user=".urlencode($user)."&view=$view&msg=".urlencode($msg);
     header("Location: " . pql_get_define("PQL_GLOB_URI") . "$url");
 }
 
@@ -51,7 +51,7 @@ switch($attrib) {
 include("./include/".$include);
 include("./header.html");
 ?>
-  <span class="title1"><?php echo pql_complete_constant($LANG->_('Change user data for %user%'), array('user', $username)); ?></span>
+  <span class="title1"><?php echo pql_complete_constant($LANG->_('Change user data for %user%'), array('user' => $username)); ?></span>
   <br><br>
 <?php
 // select what to do
