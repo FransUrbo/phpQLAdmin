@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.172.2.1.6.3.2.2.2.3 2004-10-14 11:04:07 turbo Exp $
+// $Id: pql.inc,v 2.172.2.1.6.3.2.2.2.3.4.1 2004-11-11 07:37:50 turbo Exp $
 //
 
 // ----------------------------
@@ -636,7 +636,10 @@ function pql_domain_get($ldap) {
 		// -------------------
 		// Does this top DN contain the ou=People object?
 		$filter = pql_get_define("PQL_ATTR_OBJECTCLASS").'=*';
-		$dn = pql_get_define("PQL_CONF_SUBTREE_USERS").",$TOP_DN";
+		if(pql_get_define("PQL_CONF_SUBTREE_USERS"))
+		  $dn = pql_get_define("PQL_CONF_SUBTREE_USERS").",$TOP_DN";
+		else
+		  $dn = $TOP_DN;
 
 		$sr = @ldap_read($ldap->ldap_linkid, $dn, $filter);
 		if(@ldap_count_entries($ldap->ldap_linkid, $sr) > 0) {
