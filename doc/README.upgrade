@@ -3,6 +3,12 @@ Upgrading from 2.0.18
 	to 2.0.19. Update your include/config.inc file....
 
 	Also update the schema, that have changed as well.
+	Note that if you have been using phpQLAdmin for a while on your
+	LDAP database, you must run the script 'scripts/modify_objectclasses.sh'
+	to update all your base DN's. This is because I've moved some
+	attributes from the 'phpQLAdminConfig' object class to the new
+	'phpQLAdminGlobal'. Do this AFTER you've updated the schema file
+	in the LDAP server...
 
 	Dale Wiles have removed the dependency for the register_globals
 	PHP configuration option, so this can now be turned of if you
