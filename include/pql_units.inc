@@ -3,7 +3,7 @@
 // pql_units.inc
 // Sub units (ou=People, ou=Users, dc=host) etc
 //
-// $Id: pql_units.inc,v 1.9 2004-03-16 16:31:06 turbo Exp $
+// $Id: pql_units.inc,v 1.10 2004-03-16 17:07:56 turbo Exp $
 //
 
 // {{{ pql_unit_get(linkid, dn, filter)
@@ -11,13 +11,18 @@ function pql_unit_get($linkid, $dn, $filter = 1) {
 	// What's the Root DN (namingContexts) for this domain
 	$rootdn = pql_get_rootdn($dn, 'pql_unit_get'); $rootdn = urldecode($rootdn);
 
-	if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $rootdn) == "dc") {
-		$ocb = "domain";
-	} else {
-		$ocb = "organizationalUnit";
-	}
-	
-	$info = pql_search($linkid, $dn, 'objectclass='.$ocb, "BASE");
+	if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $rootdn) == "dc")
+	  // Look for sub-domains below this domain branch.
+	  $subd = pql_search($linkid, $dn, 'objectclass=domain', 'dn', "ONELEVEL");
+
+	// Either we couldn't find any sub-domains below the domain branch, OR
+	// we have the database layout organized with organization.
+	// -> Either way, look for organizational unit below the DN as well.
+	$ocs = pql_search($linkid, $dn, 'objectclass=organizationalUnit', 'dn', "ONELEVEL");
+
+	// Join the two values
+	$info = array_merge($subd, $ocs);
+
 	for($i=0; $info[$i]; $i++) {
 		if($filter) {
 			// Filter out the most obvious subbranches we don't put users in...
