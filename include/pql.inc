@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.109 2003-08-20 09:42:06 turbo Exp $
+// $Id: pql.inc,v 2.110 2003-08-26 18:03:01 turbo Exp $
 //
 
 // ----------------------------
@@ -2194,13 +2194,21 @@ function lc($string) {
 }
 
 // --------------------------
+// Force a non-internationalization of a string
+// (for directories and files for example)
+function non_internationalize($string) {
+	$new = strtr($string,
+				 "ÁÉÍÓÚÑÀÈÌÒÙÅÄËÏÖÜÂÊÎÔÛáéíóúñàèìòùåäëïöüâêîôûç",
+				 "AEIOUNAEIOUAAEIOYAEIOUaeiounaeiouaaeioyaeiouc");
+	return($new);
+}
+
+// --------------------------
 // Check if we SHOULD encode the string...
 function maybe_encode($string, $attrib = '', $linkid = '') {
 	$old = $string;
 
-	$new = strtr($old,
-				 "ÁÉÍÓÚÑÀÈÌÒÙÅÄËÏÖÜÂÊÎÔÛáéíóúñàèìòùåäëïöüâêîôûç",
-				 "AEIOUNAEIOUAAEIOYAEIOUaeiounaeiouaaeioyaeiouc");
+	$new = non_internationalize($old);
 	if($old != $new) {
 		// The two strings isn't equal -> something have been replaced
 
