@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.2 2003-05-19 14:29:44 turbo Exp $
+// $Id: pql_bind9.inc,v 2.3 2003-05-20 10:37:55 turbo Exp $
 //
 
 function pql_bind9_get_zone($linkid, $dn) {
@@ -156,6 +156,33 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 		return false;
 	} else
 	  $DNs[] = $dn;
+
+	return true;
+}
+
+function pql_bind9_add_host($linkid, $basedn, $entry) {
+	// Create each of the domain components in the domainname
+	$dc = split('\.', $entry["zoneName"]);
+	for($i=count($dc)-1; $dc[$i]; $i--) {
+		if($dn)
+		  $dn = "dc=".$dc[$i].",".$dn;
+		else
+		  $dn = "dc=".$dc[$i];
+	}
+	$dn = "relativeDomainName=".$entry["relativeDomainName"].",$dn,ou=DNS,$basedn";
+
+	$entry['objectClass'][] = 'top';
+	$entry['objectClass'][] = 'dNSZone';
+
+	// Create a LDIF object to print in case of error
+	$LDIF = pql_create_ldif("pql_bind9_add_host", $dn, $entry);
+	if(! ldap_add($linkid, $dn, $entry)) {
+		// Can't add SOA record
+		pql_errormsg($linkid);
+		
+		die($LDIF);
+		return false;
+	}
 
 	return true;
 }
