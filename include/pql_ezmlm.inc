@@ -3,7 +3,7 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ezmlm.inc,v 1.12 2003-01-06 11:48:23 turbo Exp $
+// $Id: pql_ezmlm.inc,v 1.13 2003-01-14 07:32:12 turbo Exp $
 session_start();
 
 class ezmlm {
@@ -259,11 +259,38 @@ class ezmlm {
 		return 0;
 	}
 
+	// Chown and Chmod directory recursive
+	function _chmodown($directory, $username, $dirmode = '0770', $filemode = '0660') {
+		// Find user id for the username
+		$uidnr = posix_getpwnam($this->user_name);
+		$uidnr = $uidnr["uid"];
+
+		umask(0011);
+
+		chmod($directory, octdec($dirmode));
+
+		$files = $this->_getfsentries($directory);
+		for($i=0; $files[$i]; $i++) {
+			if(is_dir($files[$i])) {
+				chmod($files[$i], octdec($dirmode));
+			} else {
+				chmod($files[$i], octdec($filemode));
+			}
+
+			// TODO: We don't have access to do this!!!!
+			//chown($files[$i], $uidnr);
+		}
+
+		putenv("PQL_USERGROUP=$uidnr.".posix_getuid());
+		putenv("PQL_DIRECTORY=".$directory);
+		pql_execute('./sub_ezmlm_create.pl', 1);
+	}
+
 	// ===================================================
 	// Public section
 	var $error_message				= "";
 	var $error						= "";
-	var $debug						= 1;
+	var $debug						= 0;
 
 	var $mailing_lists				= array();
 	var $mailing_lists_index		= array();
@@ -321,9 +348,9 @@ class ezmlm {
 		$this->user_name = $user_name;
 
 		if(! ereg("/$", $user_home))
-		  $this->user_home = $user_home."/mailinglists";
+		  $this->user_home = $user_home."/mailinglists/";
 		else
-		  $this->user_home = $user_home."mailinglists";
+		  $this->user_home = $user_home."mailinglists/";
 
 		// Load list of mailinglists
 		$this->_readlists();
@@ -397,7 +424,11 @@ class ezmlm {
 			$listname = $this->mailing_lists[$listname]["name"];
 		} else {
 			$listpath = $this->user_home . $listname;
-			$dotpath  = "~" . $this->user_name . "/.qmail-" . $listname;
+			// Find the absolute path to the home directory of the user
+			$home = posix_getpwnam($this->user_name);
+			$home = $home["dir"];
+
+			$dotpath  = $home . "/.qmail-" . $listname;
 		}
 
 		$command = ($this->_paths["make"] . " 2>&1 -"
@@ -411,12 +442,22 @@ class ezmlm {
 		if(! $this->debug) {
 			$output = @Exec($command, $output_array, $result);
 			if($result != 0) {
-				$this->error = "could not execute system command: " . $command 
-				  . (!strcmp($output, "") ? "" : " (" . $output . ")");
-				return 0;
+				// Failed to create list
+
+				$this->error = "could not execute system command.<br><font size=-4>"
+				  . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $command
+				  . "</font><br>&nbsp;&nbsp;&nbsp;&nbsp;"
+				  . (!strcmp($output, "") ? "" : " (" . $output . ")</b>");
+
+				list_forward($domain, $this->error);
+			} else {
+				// Successfully created list
+
+				$this->_chmodown($listpath, $this->user_name);
+				list_forward($domain, "Successfully created list " . $listname . "<br>");
 			}
 		} else {
-			die("DEBUG:<br>Command: <br><pre>$command</pre><br>");
+			die("DEBUG Command:<br><pre>$command</pre><br>");
 		}
 
 		return 1;
@@ -426,6 +467,7 @@ class ezmlm {
 	function deletelistentry($listnumber) {
 		$lstname = $this->mailing_lists[$listnumber]["name"];
 		$lstpath = $this->mailing_lists[$listnumber]["directory"];
+		$domain  = $this->mailing_lists[$listnumber]["host"];
 
 		$dotpath = dirname($this->mailing_lists[$listnumber]["dotpath"]);
 		$dotfile = basename($this->mailing_lists[$listnumber]["dotpath"]);
@@ -475,9 +517,10 @@ class ezmlm {
 		}
 
 		if($unsuccessful) {
-			return 0;
+			$this->error = "Could not delete mailinglist $lstname from directory $lstpath";
+			list_forward($domain, $this->error);
 		} else {
-			return 1;
+			list_forward($domain, "Successfully deleted mailinglist");
 		}
 	}
 
@@ -517,9 +560,11 @@ class ezmlm {
 		if(is_numeric($listname)) {
 			$listno		= $listname;
 
+			$domain     = $this->mailing_lists[$listname]["host"];
 			$listname	= $this->mailing_lists[$listname]["name"];
 			$listpath	= $this->mailing_lists[$listname]["directory"] . "/" . $listname;
 		} else {
+			$domain     = $this->mailing_lists[0]["host"];
 			$listpath	= $this->user_home . "/" . $listname;
 		}
 
@@ -527,12 +572,21 @@ class ezmlm {
 		if(! $this->debug) {
 			$output    = @Exec($command, $output_array, $result);
 			if($result != 0) {
-				$this->error = "could not execute system command: ".$command
-				  . ((!strcmp($output,"")) ? "" : (" (".$output.")"));
-				return 0;
+				// Failed to subscribe user
+
+				$this->error = "could not execute system command.<br><font size=-4>"
+				  . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $command
+				  . "</font><br>&nbsp;&nbsp;&nbsp;&nbsp;"
+				  . (!strcmp($output, "") ? "" : " (" . $output . ")</b>");
+
+				list_forward($domain, $this->error);
+			} else {
+				// Successfully subscribed user
+
+				list_forward($domain, "Successfully created list " . $listname . "<br>");
 			}
 		} else {
-			die("DEBUG:<br>Command: <br><pre>$command</pre><br>");
+			die("DEBUG Command:<br><pre>$command</pre><br>");
 		}
 
 		return 1;
@@ -545,7 +599,9 @@ class ezmlm {
 
 			$listname	= $this->mailing_lists[$listname]["name"];
 			$listpath	= $this->mailing_lists[$listname]["directory"] . "/" . $listname;
+			$domain     = $this->mailing_lists[$listname]["host"];
 		} else {
+			$domain     = $this->mailing_lists[0]["host"];
 			$listpath	= $this->user_home . "/" . $listname;
 		}
 
@@ -553,12 +609,21 @@ class ezmlm {
 		if(! $this->debug) {
 			$output    = @Exec($command, $output_array, $result);
 			if($result != 0) {
-				$this->error = "could not execute system command: ".$command
-				  . ((!strcmp($output,"")) ? "" : (" (".$output.")"));
-				return 0;
+				// Failed to unsubscribe user
+
+				$this->error = "could not execute system command.<br><font size=-4>"
+				  . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $command
+				  . "</font><br>&nbsp;&nbsp;&nbsp;&nbsp;"
+				  . (!strcmp($output, "") ? "" : " (" . $output . ")</b>");
+
+				list_forward($domain, $this->error);
+			} else {
+				// Successfully subscribed user
+				
+				list_forward($domain, "Successfully created list " . $listname . "<br>");
 			}
 		} else {
-			die("DEBUG:<br>Command: <br><pre>$command</pre><br>");
+			die("DEBUG Command:<br><pre>$command</pre><br>");
 		}
 
 		return 1;
