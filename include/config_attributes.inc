@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.27 2005-02-05 12:45:08 turbo Exp $
+// $Id: config_attributes.inc,v 2.28 2005-02-05 13:51:58 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -355,8 +355,6 @@ pql_set_define("PQL_ATTR_START_ADVANCED",					strtolower("startWithAdvancedMode"
 // Map attribute to configuration define
 $PQL_ATTRIBUTE["USER"] = array("PQL_CONF_START_ADVANCED"				=> pql_get_define("PQL_ATTR_START_ADVANCED"));
 // }}}
-
-pql_set_define("PQL_ATTR_USER_RDN_ATTRIBUTE",	strtolower(pql_get_define("PQL_ATTR_REFERENCE_USERS_WITH")),	false);
 
 // Local variables:
 // mode: php
