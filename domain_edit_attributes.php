@@ -1,6 +1,6 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.46.4.1 2005-02-12 05:19:12 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.46.4.2 2005-02-22 08:19:22 turbo Exp $
 //
 // {{{ Initialize and setup
 session_start();
@@ -43,7 +43,11 @@ function attribute_forward($msg) {
 		. "&domain=" . $url["domain"]
 		. "&view=" . $_REQUEST["view"] . "&msg=$msg";
 
-	header("Location: " . $_SESSION["URI"] . $link);
+	if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+	  echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
+	  die("<b>".$_SESSION["URI"].$link."</b>");
+	} else
+	  header("Location: " . $_SESSION["URI"] . $link);
 }
 // }}}
 
