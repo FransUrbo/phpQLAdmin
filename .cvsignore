@@ -1,2 +1,3 @@
 .ht*
 phpQLadmin.log
+include/config.inc
