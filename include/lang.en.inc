@@ -1,7 +1,7 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 2.22 2003-04-28 11:00:34 turbo Exp $
+// $Id: lang.en.inc,v 2.23 2003-04-30 09:54:52 turbo Exp $
 //
 // if you have a translation to another language, please contact
 // me --> Turbo Fredriksson <phpqladmin@bayour.com>
@@ -71,7 +71,7 @@ if(!isset($INCLUDE_LANG_EN_INC)) {
 	define("PQL_LANG_USER_MAILDIR", "Mail directory");
 	define("PQL_LANG_USER_LOGINSHELL", "Login shell");
 	
-	define("PQL_LANG_USER_REGISTRED","Registred user");
+	define("PQL_LANG_USER_REGISTRED","Registred users");
 	define("PQL_LANG_USER_NEW", "Register new user");
 	define("PQL_LANG_USER_DELETE", "Delete user");
 	define("PQL_LANG_USER_DELETE_FORWARDS", "Also delete forwards to this user");
