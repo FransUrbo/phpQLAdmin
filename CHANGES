@@ -9,6 +9,8 @@ phpQLAdmin 2.1.5 TO BE ANNOUNCED
 	    'LDAP Search base' that I asked about in the 'create server' page).
 	    + Use the session value of 'USER_SEARCH_DN_CTR'.
 	    + If debugging, die with a message, not redirect to server view page.
+	  - Managed to forget to check if user wants to start in advanced mode or
+	    not! It's now done in index.php (just before it forwards to index2.php).
 
 	GUI layout change
 	  - Two new branch attributes to support user/branch deletion scripts:
