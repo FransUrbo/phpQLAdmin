@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.103 2003-08-18 08:19:32 turbo Exp $
+// $Id: pql.inc,v 2.104 2003-08-18 14:14:38 turbo Exp $
 //
 
 // ----------------------------
@@ -1970,6 +1970,53 @@ function pql_validate_administrator($linkid, $dn, $admin) {
 	}
 
 	return false;
+}
+
+// --------------------------
+// Look for 'administrator/seealso = old value',
+// replace with 'administrator/seealso = new value'.
+function pql_replace_admins($ldap, $old, $new) {
+	// Setup the search filter
+	$filter  = '(|' . '('.pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR")."=$old".')';
+	$filter .= '('.pql_get_define("PQL_GLOB_ATTR_SEEALSO")."=$old".'))';
+
+	// We're only interested in these attributes
+	$attribs = array(pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"),
+					 pql_get_define("PQL_GLOB_ATTR_SEEALSO"));
+
+	// Go through the namingContexts one by one
+	foreach($ldap->ldap_basedn as $base) {
+		$base = urldecode($base);
+		
+		$sr   = ldap_search($ldap->ldap_linkid, $base, $filter, $attribs);
+		$info = ldap_get_entries($ldap->ldap_linkid, $sr) or pql_errormsg($ldap->ldap_linkid);
+		for($i=0; $i < $info["count"]; $i++) {
+			unset($dn); unset($entry); unset($LDIF);
+			
+			// Go through the attributes we're interested in, looking for
+			// the (old) user DN
+			foreach($attribs as $attrib) {
+				for($j=0; $j < $info[$i][$attrib]["count"]; $j++) {
+					// TODO: Only replace the attribute(s) if it have changed
+					if($old == $info[$i][$attrib][$j])
+					  // Got a match - replace this attribute
+					  $entry[$attrib][] = $new;
+					else
+					  // Remember the old value
+					  $entry[$attrib][] = $info[$i][$attrib][$j];
+				}
+			}
+			
+			// Create a LDIF object to print in case of error
+			$LDIF = pql_create_ldif("pql_replace_admins", $info[$i]["dn"], $entry);
+			
+			// Modify this object
+			if(!ldap_mod_replace($ldap->ldap_linkid, $info[$i]["dn"], $entry)) {
+				pql_errormsg($ldap->ldap_linkid);
+				die($LDIF);
+			}
+		}
+	}
 }
 
 function pql_get_rootdn($dn) {
