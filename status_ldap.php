@@ -1,6 +1,6 @@
 <?php
 // Show Connection/Suffixes status of LDAP server
-// $Id: status_ldap.php,v 2.2 2004-01-26 05:27:52 turbo Exp $
+// $Id: status_ldap.php,v 2.3 2004-01-28 05:17:35 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -10,6 +10,27 @@ require("./left-head.html");
 include("./header.html");
 
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
+
+// Get the LDAP server bootup time
+$tmp = pql_get_status($_pql->ldap_linkid, "cn=Start,cn=Time,cn=Monitor", "createTimeStamp");
+$timestamp_start = preg_replace('/Z$/', '', $tmp);
+$time_start = pql_format_timestamp($tmp);
+
+// Get the current LDAP server time
+$tmp = pql_get_status($_pql->ldap_linkid, "cn=Current,cn=Time,cn=Monitor", "modifyTimeStamp");
+if($tmp) {
+	$timestamp_current = preg_replace('/Z$/', '', $tmp);
+	$time_current = pql_format_timestamp($tmp);
+} else {
+	$timestamp_current = $time_current = "n/a";
+}
+
+// Calculate the uptime
+if($timestamp_current and $timestamp_start) {
+	$time_uptime  = round(($timestamp_current - $timestamp_start) / 60, 2);
+} else {
+	$time_uptime  = "n/a";
+}
 
 if($type == 'basics') {
 	include("./tables/status_ldap-basic.inc");

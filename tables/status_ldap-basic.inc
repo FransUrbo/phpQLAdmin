@@ -3,27 +3,6 @@
 $tmp = pql_get_status($_pql->ldap_linkid, "cn=Monitor", "description");
 $tmp = split('\$', $tmp);
 $version = $tmp[1];
-
-// Get the LDAP server bootup time
-$tmp = pql_get_status($_pql->ldap_linkid, "cn=Start,cn=Time,cn=Monitor", "createTimeStamp");
-$timestamp_start = preg_replace('/Z$/', '', $tmp);
-$time_start = pql_format_timestamp($tmp);
-
-// Get the current LDAP server time
-$tmp = pql_get_status($_pql->ldap_linkid, "cn=Current,cn=Time,cn=Monitor", "modifyTimeStamp");
-if($tmp) {
-	$timestamp_current = preg_replace('/Z$/', '', $tmp);
-	$time_current = pql_format_timestamp($tmp);
-} else {
-	$timestamp_current = $time_current = "n/a";
-}
-
-// Calculate the uptime
-if($timestamp_current and $timestamp_start) {
-	$time_uptime  = round(($timestamp_current - $timestamp_start) / 60, 2);
-} else {
-	$time_uptime  = "n/a";
-}
 ?>
 
   <span class="title1"><?=$LANG->_('Basic LDAP Server Status')?></span>
