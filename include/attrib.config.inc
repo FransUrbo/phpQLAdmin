@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.17 2003-05-01 13:38:49 turbo Exp $
+// $Id: attrib.config.inc,v 1.18 2003-05-04 15:58:21 turbo Exp $
 
 function attribute_check() {
     global $administrator, $domain, $oldvalue, $_pql, $error;
@@ -125,7 +125,8 @@ function attribute_print_form() {
       <th colspan="3" align="left">
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title">Add to <?=$attrib?>
-<?php   if(($test == 'userobjectclass') or ($test == 'branchobjectclass')) {
+<?php   if(($test == lc($PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_USER"])) or
+ 		   ($test == lc($PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_DOMAIN"]))) {
             if($test == 'userobjectclass')
                 $existing = $config["PQL_CONF_OBJECTCLASS_USER"][$dn];
             else
@@ -171,11 +172,31 @@ function attribute_print_form() {
 <?php
 			}
         } else {
+			// Not a userObjectClass or branchObjectClass
+			if($test == lc($PQL_ATTRIBUTE["PQL_CONF_PASSWORD_SCHEMES"])) {
+				$values = array('CRYPT', 'MD5', 'SHA', 'CLEAR', 'KERBEROS');
+				if(is_array($values)) {
 ?>
           <td>
-            <?php echo format_error($error[$attrib]); ?><input type="text" name="<?=$attrib?>" value="<?php if(($test != 'passwordscheme') and ($test != 'whoarewe')) { echo $oldvalue; } ?>" size="40">
+<?php				for($i=0; $values[$i]; $i++) {
+						if(!eregi($values[$i], $config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn])) {
+							// We don't want to include schemes we've already
+							// configured branch to use...
+?>
+            <input type="radio" name="<?=$attrib?>" value="<?=$values[$i]?>"><?=$values[$i]?><br>
+<?php					}
+					}
+?>
           </td>
-<?php   } ?>
+<?php			}
+			} else {
+?>
+          <td>
+            <?php echo format_error($error[$attrib]); ?><input type="text" name="<?=$attrib?>" value="<?php if($test != 'whoarewe') { echo $oldvalue; } ?>" size="40">
+          </td>
+<?php		}
+	   }
+?>
         </tr>
       </th>
     </table>
