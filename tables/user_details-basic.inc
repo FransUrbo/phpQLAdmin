@@ -54,7 +54,7 @@
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Surname').", ".$LANG->_('Lastname')?></td>
         <td><?=$cn?></td>
-        <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=cn&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change common name')?>" border="0"></a></td>
+        <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=cn&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>&oldvalue=<?=$cn?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change common name')?>" border="0"></a></td>
       </tr>
 
 <?php if($_SESSION["ADVANCED_MODE"] and !$USER_IS_GROUP) { ?>
