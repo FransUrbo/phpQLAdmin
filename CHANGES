@@ -13,7 +13,9 @@ phpQLAdmin 2.0.10 TO BE ANNOUNCED
 
 	GUI layout change
 	  - Show the user DN in the left frame and in user details
-	    if in advanced mode
+	    if in advanced mode. Also, if the users are using CN (ie, not
+	    UID) in the RDN (but HAVE a UID attribute), don't show BOTH.
+	    Filter out duplicates.
 	  - Cleanup of the table/table row etc for 'Access to DN' (user
 	    details page).
 	    + If we have access, the URL should be named 'Give (more)
