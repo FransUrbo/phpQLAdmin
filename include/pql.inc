@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.39 2003-01-30 16:11:04 turbo Exp $
+// $Id: pql.inc,v 2.40 2003-01-30 18:06:37 turbo Exp $
 //
 
 // ----------------------------
@@ -250,6 +250,29 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 		// user does not exist
 		return false;
     }
+
+	// Remove all administrator entries which contain the user DN
+	foreach($ldap->ldap_basedn as $dn) {
+		$sr = ldap_search($linkid, $dn, "administrator=$user");
+		$info = ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
+		for($i=0; $i<$info["count"]; $i++) {
+			unset($entry); unset($adms);
+
+			// Get administrator attributes for this domain/branch DN
+			$admins	= pql_get_domain_value($ldap, $info[$i]["dn"], 'administrator');
+			for($j=0; $admins[$j]; $j++) {
+				if($admins[$j] != $user)
+				  $adms[] = $admins[$j];
+			}
+				  
+			if(is_array($adms)) {
+				// Add the administrators that's left to the DN
+				$entry["administrator"] = $adms;
+				if(! ldap_mod_replace($linkid, $info[$i]["dn"], $entry))
+				  pql_errormsg($linkid);
+			}
+		}
+	}
 
 	// Get uidnr of user
 	$uidnr = pql_get_userattribute($linkid, $user, PQL_LDAP_ATTR_QMAILUID);
