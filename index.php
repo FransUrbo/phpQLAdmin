@@ -1,11 +1,11 @@
 <?php
 // logins to the system
-// $Id: index.php,v 2.38 2004-10-18 13:39:30 turbo Exp $
+// $Id: index.php,v 2.39 2005-01-12 14:39:35 turbo Exp $
 //
 // Start debuging
 // http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0
 //apd_set_pprof_trace();
-require_once("./dlw_porting.inc");
+require_once("./include/dlw_porting.inc");
 session_start();
 
 // DLW: I'm not sure if $msg ever gets set in a _POST, but for now I'll play it safe.

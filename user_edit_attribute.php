@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of user
-// $Id: user_edit_attribute.php,v 2.44 2004-11-05 11:10:59 turbo Exp $
+// $Id: user_edit_attribute.php,v 2.45 2005-01-12 14:39:35 turbo Exp $
 //
 // This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
 //   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -16,7 +16,7 @@ $url["domain"] = pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 $url["user"]   = pql_format_urls($_REQUEST["user"]);
 
-require_once("./dlw_porting.inc");
+require_once("./include/dlw_porting.inc");
 // These variable are "_GET" the first time, and "_POST" the other times.
 if (empty($session)) {
   dlw_expect_from(__FILE__, __LINE__, '_REQUEST', array('domain', 'user', 'rootdn', 'oldvalue', 'view', 'attrib', 'PHPSESSID'));
