@@ -6,6 +6,7 @@ phpQLAdmin 2.0.12 TO BE ANNOUNCED
 	    got invalid syntax when doing ldap modify).
 	  - Variable overload in controls manager fixed.
 	  - Deletion of attribute in pql_set_domain_value() (re-)fixed.
+	  - Java script error when changing domain/branch admin/contact fixed.
 
 	GUI layout change
 	  - User details page:
