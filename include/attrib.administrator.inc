@@ -1,9 +1,44 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.37 2004-03-26 09:04:05 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.38 2004-06-16 07:45:48 turbo Exp $
 
 require("./left-head.html");
 
+// {{{ attribute_setup_aci(old_acis, userdn)
+function attribute_setup_aci($old_acis, $userdn) {
+	if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci")) {
+		// Insert the NEW aci in the right place of the OLD.
+		// The user entries should be inserted if
+		//	$old_acis[?][RIGHTS][TARGET][?] == [children]
+		// Then the user we're giving admin access should be inserted in
+		//	$old_acis[?][SUBJECT]
+		for($i=0; $old_acis[$i]; $i++) {
+			if($old_acis[$i+1]["TYPE"] == "access-id") {
+				if(in_array('[entry]', $old_acis[$i+1]["RIGHTS"]["TARGET"]) and !$added_child) {
+					// Next ACI entry is an 'access-id/entry'. Put the 'access-id/children' here...
+
+					$new_acis[] = $old_acis[$i]["LINE"];
+					$new_acis[] = "1.2.3#entry#grant;w,r,s,c;[children]#access-id#".$userdn;
+					$added_child = 1;
+				} elseif(in_array('[all]', $old_acis[$i+1]["RIGHTS"]["TARGET"]) and !$added_entry) {
+					// Next ACI entry is an 'access-id/all'. Put the 'access-id/entry' here...
+
+					$new_acis[] = $old_acis[$i]["LINE"];
+					$new_acis[] = "1.2.3#entry#grant;w,r,s,c,x;[entry]#access-id#".$userdn;
+					$added_entry = 1;
+				} else
+				  $new_acis[] = $old_acis[$i]["LINE"];
+			} else
+			  $new_acis[] = $old_acis[$i]["LINE"];
+		}
+		$new_acis[] = "1.2.3#entry#grant;w,r,s,c,x;[all]#access-id#".$userdn;
+
+		return($new_acis);
+	}
+}
+// }}}
+
+// {{{ attribute_check(void)
 function attribute_check() {
     global $error, $LANG;
 	$attrib = $_REQUEST["attrib"];
@@ -22,7 +57,9 @@ function attribute_check() {
     
     return true;
 }
+// }}}
 
+// {{{ attribute_print_form(action)
 function attribute_print_form($action) {
     global $_pql, $error, $LANG;
     global $orgname; 			// Set by domain_edit_attributes.php
@@ -206,7 +243,9 @@ function attribute_print_form($action) {
   </form>
 <?php
 }
+// }}}
 
+// {{{ attribute_save(type)
 function attribute_save($type) {
     global $_pql, $LANG;
 
@@ -251,18 +290,38 @@ function attribute_save($type) {
 			  unset($_REQUEST[$attrib]);
 		} else {
 			// Add user 
-			if($_REQUEST["user"])
-			  $ADMs[$attrib][] = $_REQUEST["user"];
-			elseif($value) {
+			if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci"))
+			  $old_acis = pql_aci_get($_pql->ldap_linkid, $_REQUEST["domain"]);
+
+			if($_REQUEST["user"]) {
+				$ADMs[$attrib][] = $_REQUEST["user"];
+
+				// Add the OpenLDAPaci attribute (maybe)
+				if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci"))
+				  $ACIs = attribute_setup_aci($old_acis, $_REQUEST["user"]);
+			} elseif($value) {
 				$amount = $value;
 				for($i=0; $i < $amount; $i++) {
 					$var_name = $attrib . "_$i";
-					if($_POST[$var_name]) 
-					  $ADMs[$attrib][] = $_POST[$var_name];
+					if($_POST[$var_name])  {
+						$ADMs[$attrib][] = $_POST[$var_name];
+
+						// Add the OpenLDAPaci attribute (maybe)
+						if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci")) {
+							if(!is_array($ACIs))
+							  $ACIs = array();
+
+							$new  = attribute_setup_aci($old_acis, $_POST[$var_name]);
+							$ACIs = $ACIs + $new;
+						}
+					}
 				}
 
 				unset($_REQUEST[$attrib]);
 			}
+
+			if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci") and is_array($ACIs))
+			  $ADMs[pql_get_define("PQL_ATTR_LDAPACI")] = $ACIs;
 		}
 
 		$success = 0;
@@ -292,6 +351,7 @@ function attribute_save($type) {
 								  array('type' => $type, 'file' => __FILE__)));
     }
 }
+// }}}
 
 if(($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_ADMINISTRATOR")) or
    ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_SEEALSO")) or

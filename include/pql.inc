@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.181 2004-05-10 13:25:58 turbo Exp $
+// $Id: pql.inc,v 2.182 2004-06-16 07:45:48 turbo Exp $
 //
 
 // ----------------------------
@@ -372,11 +372,10 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 
 	// Add the OpenLDAPaci attribute (maybe)
 	if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci"))
-	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($ldap_linkid, $_SESSION["USER_DN"], 'user');
+	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($ldap_linkid, $userdn, 'user');
 
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_user_add - user creation", $userdn, $entry);
-//die($LDIF);
 
 	if(file_exists("./.DEBUG_ME"))
 	  die($LDIF);
@@ -995,8 +994,8 @@ function pql_domain_set_value($linkid, $dn, $type, $value) {
 
 	// --------------------------
 	// DEBUG mode: Print the LDIF
-	if($DEBUG >= 1)
-	  die("$LDIF");
+	if(file_exists("./.DEBUG_ME"))
+	  die($LDIF);
 
 	// Do the LDAP modification
 	if($value != '') {
