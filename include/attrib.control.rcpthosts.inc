@@ -2,7 +2,7 @@
 // control attribute plugin for
 // rcpthosts (blocked local addresses)
 //
-// $Id: attrib.control.rcpthosts.inc,v 2.25 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.control.rcpthosts.inc,v 2.26 2004-10-20 06:11:52 turbo Exp $
 
 // {{{ rcpthosts_check(type)
 
@@ -204,9 +204,9 @@ function rcpthosts_save($type, $host) {
 		// add entry
 		foreach($HOSTS as $host) {
 			// adding specified domain to rcpthosts in host object
-			if(pql_control_add_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_ATTR_RCPTHOSTS"), $_REQUEST["set"]))
+			if(pql_modify_attribute($_pql_control->ldap_linkid,
+									pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+									pql_get_define("PQL_ATTR_RCPTHOSTS"), 1, $_REQUEST["set"]))
 			  $msg = pql_complete_constant($LANG->_('Successfully added %domain% to %value% %what%'),
 										   array('what'   => pql_get_define("PQL_ATTR_RCPTHOSTS"),
 												 'domain' => $_REQUEST["set"],

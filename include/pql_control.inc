@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.44 2004-10-19 10:40:42 turbo Exp $
+// $Id: pql_control.inc,v 2.45 2004-10-20 06:11:52 turbo Exp $
 //
 
 // {{{ control connection class
@@ -25,20 +25,6 @@ class pql_control extends pql {
 // ------------------------------------------------
 // PQL - Control - API functions
 // ------------------------------------------------
-
-// {{{ pql_control_add_attribute(ldap_linkid, ldap_control_basedn, attrib, value)
-function pql_control_add_attribute($ldap_linkid, $ldap_control_basedn, $attrib, $value) {
-    // adds an attribute of a control property
-    $entry[$attrib] = pql_maybe_encode($value);
-
-    if(!@ldap_mod_add($ldap_linkid, $ldap_control_basedn, $entry)) {
-		pql_format_error(1);
-		return false;
-    }
-    
-    return true;
-}
-// }}}
 
 // {{{ pql_control_update_domains(ldap, rootdn, dn, host, domain = "", type = "")
 // Replicate all registred domains to locals
@@ -166,9 +152,7 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 						  pql_modify_attribute($ldap->ldap_linkid, $hostdn, pql_get_define("PQL_ATTR_LOCALS"), '', $entry);
 					} else
 					  // No previous values, add domain
-					  pql_control_add_attribute($ldap->ldap_linkid, $hostdn,
-												pql_get_define("PQL_ATTR_LOCALS"),
-												$domain[1]);
+					  pql_modify_attribute($ldap->ldap_linkid, $hostdn, pql_get_define("PQL_ATTR_LOCALS"), 1, $domain[1]);
 				}
 
 				// --------------------------------
@@ -212,9 +196,7 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 						  pql_modify_attribute($ldap->ldap_linkid, $hostdn, pql_get_define("PQL_ATTR_RCPTHOSTS"), '', $entry);
 					} else
 					  // No previous values, add domain
-					  pql_control_add_attribute($ldap->ldap_linkid, $hostdn,
-												pql_get_define("PQL_ATTR_RCPTHOSTS"),
-												$domain[1]);
+					  pql_modify_attribute($ldap->ldap_linkid, $hostdn, pql_get_define("PQL_ATTR_RCPTHOSTS"), 1, $domain[1]);
 				}
 			}
 		}

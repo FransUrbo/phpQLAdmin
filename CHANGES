@@ -30,6 +30,7 @@ phpQLAdmin 2.1.2 TO BE ANNOUNCED
 	    + pql_control.inc:pql_control_replace_attribute()
 	    + pql_control.inc:pql_control_remove_whole_attribute()
 	    + pql_control.inc:pql_control_remove_attribute()
+	    + pql_control.inc:pql_control_add_attribute()
 	  - Moved the following functions from pql.inc to pql_search.inc (and modified
 	    or rewrote it in the process):
 	    + pql_search_forwarders()
