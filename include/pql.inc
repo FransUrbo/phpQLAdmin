@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.105 2003-08-18 14:26:57 turbo Exp $
+// $Id: pql.inc,v 2.106 2003-08-19 07:34:19 turbo Exp $
 //
 
 // ----------------------------
@@ -1017,6 +1017,10 @@ function pql_parse_quota($quota_string) {
 // search $attribute with $value in whole ldap tree, returns dn or false
 function pql_search_attribute($ldap_linkid, $basedn, $attribute, $value) {
 	$value = maybe_encode($value, $attribute, $ldap_linkid);
+
+	// URL decode the object DN if it's URL ENcoded
+	if(ereg("%3D", $basedn))
+	  $basedn = urldecode($basedn);
 
     $filter = '('.$attribute.'='.$value.')';
 //echo "$basedn: $filter ($attribute)<br>\n";
