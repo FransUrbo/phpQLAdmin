@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of user
-// $Id: user_edit_attribute.php,v 2.29 2003-11-19 19:38:19 turbo Exp $
+// $Id: user_edit_attribute.php,v 2.30 2003-11-26 16:31:14 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -66,6 +66,9 @@ if(($submit == 1) or ($submit == 2)) {
     } else {
 	attribute_print_form();
     }
+} elseif($submit == 4) {
+	// SAVE change directly, no need for a form
+	attribute_save($action);
 } else {
     attribute_init();
     attribute_print_form();
