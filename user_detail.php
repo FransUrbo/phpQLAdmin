@@ -163,7 +163,7 @@ if(!$SINGLE_USER) {
 	  $i=0; // A button counter.
 	  foreach($buttons as $link => $text) {
 		  // Generate the button link etc
-		  pql_generate_button($link, $text);
+		  pql_generate_button($link, $text, "user=".urlencode($user));
 
 		  // Increase button counter
 		  $i++;

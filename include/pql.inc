@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.112 2003-10-02 17:41:12 turbo Exp $
+// $Id: pql.inc,v 2.113 2003-10-11 11:53:00 turbo Exp $
 //
 
 // ----------------------------
@@ -2266,10 +2266,12 @@ function maybe_decode($string) {
 }
 
 // --------------------------
-function pql_generate_button($link, $text) {
-	global $PHP_SELF, $LANG, $rootdn, $domain, $userdn;
+function pql_generate_button($link, $text, $data) {
+	global $PHP_SELF, $LANG, $rootdn, $domain;
 
-	echo '<a href="'.$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=$link".'">';
+	echo '<a href="'.$PHP_SELF."?rootdn=$rootdn&domain=$domain&$data";
+	if($data) echo "&";
+	echo "view=$link".'">';
     echo '<img alt="/ '.$LANG->_($text).' \\" vspace="0" hspace="0" border="0" src="navbutton.php?';
 	echo $LANG->_($text).'"></a>';
 }
