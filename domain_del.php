@@ -10,11 +10,11 @@ include("./header.html");
 ?>
   <span class="title1"><?php echo pql_complete_constant(PQL_DOMAIN_DEL_TITLE, array("domain" => $domain))?></span>
 <?php
-    if(isset($ok) || PQL_VERIFY_DELETE){
+if(isset($ok) || !PQL_VERIFY_DELETE) {
 	$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 	$_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
 	
-	$delete_forwards = (isset($delete_forwards)) ? true : false;
+	$delete_forwards = (isset($delete_forwards) || PQL_VERIFY_DELETE) ? true : false;
 	
 	// delete the domain
 	if(pql_domain_del($_pql, $domain, $delete_forwards)) {
@@ -22,22 +22,22 @@ include("./header.html");
 	    if(pql_control_update_domains($_pql->ldap_linkid,
 									  $_pql_control->ldap_linkid,
 									  $USER_SEARCH_DN_CTR)){
-		// message ??
+			// message ??
 	    }
 	    
 	    $msg = PQL_DOMAIN_DEL_OK;
-
+		
 	    // redirect to home page
 	    $msg = urlencode($msg);
 	    header("Location: " . PQL_URI . "home.php?msg=$msg&rlnb=1");
 	} else {
 	    $msg = PQL_DOMAIN_DEL_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
-
+		
 	    // redirect to domain detail page
 	    $msg = urlencode($msg);
 	    header("Location: " . PQL_URI . "domain_detail.php?domain=$domain&msg=$msg");
 	}
-    } else {
+} else {
 ?>
 <br>
 <br>
@@ -56,7 +56,7 @@ include("./header.html");
 </form>
 <br>
 <?php
-      }
+}
 ?>
 </body>
 </html>

@@ -17,7 +17,7 @@ $cn = $cn[0];
   <span class="title1"><?php echo pql_complete_constant(PQL_USER_DEL_TITLE, array("domain" => $o, "user" => $cn)); ?></span>
   <br><br>
 <?php
-if(isset($ok) || PQL_VERIFY_DELETE){
+if(isset($ok) || !PQL_VERIFY_DELETE) {
 	$delete_forwards = (isset($delete_forwards) || PQL_VERIFY_DELETE) ? true : false;
 	
 	// delete the user

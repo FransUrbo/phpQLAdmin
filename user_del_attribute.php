@@ -22,7 +22,7 @@ include("./header.html");
 ?>
   <span class="title1"><?php pql_complete_constant(PQL_USER_DEL_ATTRIBUTE_TITLE, array("value" => $value));?></span>
 <?php
-if(isset($ok) || PQL_VERIFY_DELETE) {
+if(isset($ok) || !PQL_VERIFY_DELETE) {
     $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
     
     // delete the user attribute
