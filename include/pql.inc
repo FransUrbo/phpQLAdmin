@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.26 2003-01-22 09:10:47 turbo Exp $
+// $Id: pql.inc,v 2.27 2003-01-22 10:30:38 turbo Exp $
 //
 
 // ----------------------------
@@ -1250,18 +1250,16 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '') {
 
 	for($i=0; $i < $result["count"]; $i++) {
 		// Extract all the descriptor fields
-		if(($value == 'administrator') or ($value == 'seealso')) {
+		if((($value == 'administrator') or ($value == 'seealso')) and ($match != "*")) {
 			// Return multiple values. If we're looking for 'administrator', return the DN
 			for($j=0; $j < $result[$i][$value]["count"]; $j++) {
-				if($match != "*") {
-					if($result[$i][$value][$j] == $match) {
-						$results[] = $result[$i]["dn"];
-						$success = 1;
-					}
-				} else {
-					$results[] = $result[$i][$value][$j]; $success = 1;
+				if($result[$i][$value][$j] == $match) {
+					$results[] = $result[$i]["dn"]; $success = 1;
 				}
 			}
+		} elseif((($value == 'administrator') or ($value == 'seealso')) and ($match == "*")) {
+			$results[] = $result[$i]["dn"]; $success = 1;
+
 		} else {
 			// Return the value we're looking for (single valued).
 			$results = $result[0][$value][0]; $success = 1;
