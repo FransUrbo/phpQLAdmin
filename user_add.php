@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.113 2005-02-04 09:26:57 turbo Exp $
+// $Id: user_add.php,v 2.114 2005-02-05 09:05:26 turbo Exp $
 //
 // {{{ Setup session etc
 session_start();
@@ -365,7 +365,8 @@ switch($_REQUEST["page_curr"]) {
 			// Function user_generate_mailstore() doesn't exists but we have a base mail directory.
 			// Try creating the mail directory manually, using the username.
 
-			if(pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["rootdn"]))
+			if(pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["rootdn"]) and
+			   (!ereg('^/', $basemaildir)))
 			  // Absolute path is ok - create 'baseMailDir/username/'
 			  $_REQUEST["maildirectory"] = $basemaildir.$_REQUEST["uid"]."/";
 			else
@@ -408,7 +409,8 @@ switch($_REQUEST["page_curr"]) {
 			// Function user_generate_homedir() doesn't exists but we have a base home directory.
 			// Try creating the home directory manually, using the username.
 
-			if(pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["rootdn"]))
+			if(pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["rootdn"])
+			   (!ereg('^/', $basehomedir)))
 			  // Absolute path is ok - create 'baseHomeDir/username/'
 			  $_REQUEST["homedirectory"] = $basehomedir.$_REQUEST["uid"]."/";
 			else
