@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.24 2004-11-08 10:26:56 turbo Exp $
+// $Id: pql_search.inc,v 2.25 2004-11-11 09:13:28 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -147,7 +147,10 @@ function pql_get_dn($linkid, $dn, $filter, $level = 'SUBTREE') {
 function pql_get_domains($ldap) {
 	foreach($ldap->ldap_basedn as $TOP_DN)  {
 		$TOP_DN   = urldecode($TOP_DN); unset($info);
-		$dn       = pql_get_define("PQL_CONF_SUBTREE_USERS").",$TOP_DN";
+		if(pql_get_define("PQL_CONF_SUBTREE_USERS"))
+		  $dn     = pql_get_define("PQL_CONF_SUBTREE_USERS").",$TOP_DN";
+		else
+		  $dn	  = $TOP_DN;
 		$ocs      = pql_setup_branch_objectclasses(1, $TOP_DN);
 
 		// -------------------
