@@ -49,13 +49,6 @@ $username = $username[0];
   <br><br>
 <?php
 
-// check if domain exists
-$dc = ldap_explode_dn($domain, 0); $dc = split('=', $dc[0]);
-if(!pql_domain_exist($_pql, $dc[1])) {
-    echo "domain &quot;$domain&quot; does not exists";
-    exit();
-}
-
 // check if user exists
 if(!pql_user_exist($_pql->ldap_linkid, $user)){
 	echo "user &quot;$user&quot; does not exist";
@@ -65,14 +58,16 @@ if(!pql_user_exist($_pql->ldap_linkid, $user)){
 // Get basic user information
 // Some of these (everything after the 'homedirectory')
 // uses 'objectClass: pilotPerson' -> http://rfc-1274.rfcindex.net/
-$attribs = array('cn', 'sn', 'uidnumber', 'gidnumber', 'loginshell', 'uid', 'userpassword', 'mailmessagestore', 'mailhost', 'homedirectory', 'roomnumber', 'homephone', 'homepostaladdress', 'secretary', 'personaltitle', 'mobile', 'pager');
+$attribs = array('cn', 'sn', 'uidNumber', 'gidNumber', 'loginShell', 'uid', 'userPassword', 'mailMessageStore', 'mailHost', 'homeDirectory', 'roomNumber', 'telePhoneNumber', 'homePhone', 'homePostalAddress', 'secretary', 'personalTitle', 'mobile', 'pager');
 foreach($attribs as $attrib) {
+    $attrib = strtolower($attrib);
+
     $value = pql_get_userattribute($_pql->ldap_linkid, $user, $attrib);
     $$attrib = $value[0];
 
     // Setup edit links
     $link = $attrib . "_link";
-    $$link = "<a href=\"user_edit_attribute.php?attrib=$attrib&user=<?=$user?>\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify $attrib for $username\"></a>";
+    $$link = "<a href=\"user_edit_attribute.php?attrib=$attrib&user=$user\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify $attrib for $username\"></a>";
 }
 $quota = pql_get_userquota($_pql->ldap_linkid, $user);
 
@@ -164,6 +159,12 @@ if($mailhost == ""){
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Work telephone number</td>
+        <td><?php if($telephonenumber) { echo $telephonenumber; } else { echo PQL_UNSET; }?></td>
+        <td><?=$telephonenumber_link?></td>
+      </tr>
+
+      <tr class="<?php table_bgcolor(); ?>">
         <td class="title">Home telephone number</td>
         <td><?php if($homephone) { echo $homephone; } else { echo PQL_UNSET; }?></td>
         <td><?=$homephone_link?></td>
@@ -211,7 +212,7 @@ if(is_array($aliases)){
 ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td><?php echo PQL_LDAP_MAILALTERNATEADDRESS_TITLE; ?></td>
-        <td><?$alias?></td>
+        <td><?=$alias?></td>
         <td><a href="user_edit_attribute.php?attrib=mailalternateaddress&user=<?=$user?>&mailalternateaddress=<?php echo pql_strip_domain($alias); ?>&oldvalue=<?=$alias?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LDAP_MAILALTERNATEADDRESS_CHANGE; ?>" border="0"></a>&nbsp;&nbsp;<a href="user_del_attribute.php?attrib=mailalternateaddress&user=<?=$user?>&value=<?=$alias?>"><img src="images/del.png" width="12" height="12" alt="<?php echo PQL_LDAP_MAILALTERNATEADDRESS_DEL; ?>" border="0"></a>&nbsp;&nbsp;<a href="user_sendmail.php?email=<?=$alias?>&user=<?=$user?>"><img src="images/mail.png" width="16" height="11" alt="<?php echo PQL_SENDMAIL; ?>" border="0"></a></td>
       </tr>
 <?php
