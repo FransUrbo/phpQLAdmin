@@ -3,10 +3,17 @@ phpQLAdmin 2.0 Change Log
 phpQLAdmin 2.0.16 TO BE ANNOUNCED
 	Bug fixes
 	  - PHP parse errors fixed.
-	    Closes bug 35
+	    Closes bugs 35, 39 and 40.
+	  - Set PQL_CONF_REFERENCE_USERS_WITH to 'uid', don't get
+	    the PQL_GLOB_ATTR_UID and THEN set PQL_CONF_REFERENCE_USERS_WITH.
+	    Closes bug 41.
 
 	GUI layout change
+
 	Misc changes
+	  - Update of README.acl (using double quotes, not single
+	    for 'by dn=...' ACL directive).
+	    Closes bug 34
 
 phpQLAdmin 2.0.15 Release (Release (Jul 15 2003))
 	Bug fixes
