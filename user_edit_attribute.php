@@ -10,15 +10,21 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 // Get default domain name for this domain
 $defaultdomain = pql_get_domain_value($_pql, $domain, "defaultdomain");
 
+// Get the username. Prettier than the DN
+$username = pql_get_userattribute($_pql->ldap_linkid, $user, 'cn');
+if(!$username[0]) {
+    // No common name, use uid field
+    $username = pql_get_userattribute($_pql->ldap_linkid, $user, 'uid');
+}
+$username = maybe_decode($username[0]);
+
 // forward back to users detail page
 function attribute_forward($msg, $rlnb = false){
     global $domain, $user;
     
-    $msg = urlencode($msg);
-    $url = "user_detail.php?domain=$domain&user=$user&view=$view&msg=$msg";
-    if ($rlnb) {
-	$url .= "&rlnb=2";
-    }
+    $url = "user_detail.php?domain=$domain&user=".urlencode($user)."&view=$view&msg=".urlencode($msg);
+    if ($rlnb)
+      $url .= "&rlnb=2";
     
     header("Location: " . $config["PQL_GLOB_URI"] . "$url");
 }
@@ -95,7 +101,7 @@ switch($attrib){
 include("./include/".$include);
 include("./header.html");
 ?>
-  <span class="title1"><?php echo PQL_LANG_USER_EDIT; ?> - <u><?=$user?></u></span>
+  <span class="title1"><?php echo PQL_LANG_USER_EDIT; ?> for <?=$username?></span>
   <br><br>
 <?php
 // select what to do
