@@ -3,7 +3,7 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ezmlm.inc,v 1.4 2002-12-23 12:13:22 turbo Exp $
+// $Id: pql_ezmlm.inc,v 1.5 2002-12-23 19:17:32 turbo Exp $
 class ezmlm {
 	// Public variables
 	var $error_message				= "";
@@ -67,22 +67,25 @@ class ezmlm {
 		}
 
 		$command = ($this->srch_path."/ezmlm-make 2>&1 -"
-					. ($options["archived"]			? "a" : "A")
-					. ($options["remotecfg"]		? "c" : "C")
-					. ($options["digest"]			? "d" : "D")
-					. ($add							? "E" : "e")
-					. ($options["prefix"]			? "f" : "F")
-					. ($options["guardedarchive"]	? "g" : "G")
-					. ($options["indexed"]			? "i" : "I")
-					. ($options["sublistable"]		? "l" : "L")
-					. ($options["moderated"]		? "m" : "M")
-					. ($p							? $p  : "")
-					. ($options["reqaddress"]		? "q" : "Q")
-					. ($options["remoteadm"]		? "r" : "R")
-					. ($options["submoderated"]		? "s" : "S")
-					. ($options["trailers"]			? "t" : "T")
-					. ($options["subonly"]			? "u" : "U")
-					. ($options["extras"]			? "x" : "")
+					. ($add							? "E"  : "+ -")
+					. ($options["archived"]			? "a"  : "")
+					. ($options["remotecfg"]		? "c"  : "")
+					. ($options["digest"]			? "d"  : "")
+					. ($options["prefix"]			? "f"  : "")
+					. ($options["guardedarchive"]	? "g"  : "")
+					. ($options["subhelp"]			? "h"  : "")
+					. ($options["indexed"]			? "i"  : "")
+					. ($options["subjump"]			? "j"  : "")
+					. ($options["sublistable"]		? "l"  : "")
+					. ($options["moderated"]		? "m"  : "")
+					. ($options["modonly"]			? "o"  : "")
+					. ($p							? $p   : "")
+					. ($options["reqaddress"]		? "q"  : "")
+					. ($options["remoteadm"]		? "rn" : "")
+					. ($options["submoderated"]		? "s"  : "")
+					. ($options["trailers"]			? "t"  : "")
+					. ($options["subonly"]			? "u"  : "")
+					. ($options["extras"]			? "x"  : "")
 					. ($options["listparent"]		? " -0 ".$options["listparent"]  : "")
 					. ($options["fromaddress"]		? " -3 ".$options["fromaddress"] : "")
 					. ($options["listowner"]		? " -5 ".$options["listowner"]   : "")
@@ -144,21 +147,53 @@ class ezmlm {
 
 			$value = substr($line, ($colon+1));
 			switch(substr($line, 0, $colon)) {
+			  case "0":
+				$configuration["listparent"]	= $value;
+				break;
+
+			  case "3":
+				$configuration["fromaddress"]	= $value;
+				break;
+
 			  case "5":
-				$configuration["owner"] = $value;
+				$configuration["owner"]			= $value;
+				break;
+
+			  case "D":
+				$configuration["directory"]		= $value;
 				break;
 
 			  case "F":
-				$configuration["moderated"] = GetType(strpos($value, "m")) == "integer";
-				$configuration["archived"]  = GetType(strpos($value, "a")) == "integer";
+				$configuration["archived"]  	= GetType(strpos($value, "a")) == "integer";
+				$configuration["remotecfg"]		= GetType(strpos($value, "c")) == "integer";
+				$configuration["digest"]		= GetType(strpos($value, "d")) == "integer";
+				$configuration["prefix"]		= GetType(strpos($value, "f")) == "integer";
+				$configuration["subhelp"]		= GetType(strpos($value, "h")) == "integer";
+				$configuration["indexed"]		= GetType(strpos($value, "i")) == "integer";
+				$configuration["subjump"]		= GetType(strpos($value, "j")) == "integer";
+				$configuration["sublistable"]	= GetType(strpos($value, "l")) == "integer";
+				$configuration["moderated"]		= GetType(strpos($value, "m")) == "integer";
+				$configuration["modonly"]		= GetType(strpos($value, "o")) == "integer";
+				$configuration["public"]		= GetType(strpos($value, "p")) == "integer";
+				$configuration["private"]		= GetType(strpos($value, "P")) == "integer";
+				$configuration["reqaddress"]	= GetType(strpos($value, "q")) == "integer";
+				$configuration["remoteadm"]		= GetType(strpos($value, "r")) == "integer";
+				$configuration["submoderated"]	= GetType(strpos($value, "s")) == "integer";
+				$configuration["trailers"]		= GetType(strpos($value, "t")) == "integer";
+				$configuration["subonly"]		= GetType(strpos($value, "u")) == "integer";
+				$configuration["extras"]		= GetType(strpos($value, "x")) == "integer";
 				break;
 
 			  case "H":
-				$configuration["host"] = $value;
+				$configuration["host"]			= $value;
 				break;
 
 			  case "L":
-				$configuration["local"] = $value;
+				$configuration["local"]			= $value;
+				break;
+
+			  case "T":
+				$configuration["dotpath"]		= $value;
 				break;
 			}
 		}
