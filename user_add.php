@@ -119,8 +119,8 @@ if($submit == "two"){
 if(($submit == "two") or (($submit == "one") and !$ADVANCED_MODE)) {
 	// fetch DNS information
 	$userhost = pql_get_mx($_pql, $defaultdomain);
-	if(!$userhost[0]) {
-		$error_text["userhost"] = PQL_LANG_DNS_NONE;
+	if(!is_array($userhost)) {
+		$error_text["host"] = PQL_LANG_DNS_NONE;
 		$error = true;
 	}
 }
@@ -169,16 +169,10 @@ if($submit == "save" and
 		}
     }
 	
-    if(($host != "default") and !$userhost[1]) {
-		if($userhost[0] == ""){
+    if(($host != "default") and is_array($userhost)) {
+		if(!preg_match("/^([a-z0-9]+\.{1,1}[a-z0-9]+)+$/i",$userhost[1])) {
+			$error_text["userhost"] = PQL_LANG_INVALID;
 			$error = true;
-			$error_text["userhost"] = PQL_LANG_MISSING;
-		} else {
-			if(!preg_match("/^([a-z0-9]+\.{1,1}[a-z0-9]+)+$/i",$userhost[1])) {
-				//
-				$error_text["userhost"] = PQL_LANG_INVALID;
-				$error = true;
-			}
 		}
     }
 }
@@ -544,12 +538,10 @@ switch($submit){
     <input type="hidden" name="loginshell" value="/bin/false">
     <input type="hidden" name="homedirectory" value="">
     <input type="hidden" name="maildirectory" value="">
-<?php		if($userhost[1]) { ?>
-    <input type="hidden" name="userhost" value="<?=$userhost[1]?>">
-<?php		} else { ?>
     <input type="hidden" name="host" value="default">
-<?php		} ?>
-<?php
+<?php		if(is_array($userhost)) { ?>
+    <input type="hidden" name="userhost" value="<?=$userhost[1]?>">
+<?php		}
 		}
 ?>
     <input type="hidden" name="submit" value="save">
@@ -656,13 +648,20 @@ switch($submit){
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"><?php echo PQL_LANG_MAILHOST_TITLE; ?></td>
           <td>
-            <input type="hidden" name="mx" value="<?=$userhost[1]?>">
-            <input type="radio" name="host" value="default" <?php if($userhost[0] and ($host != "user")){ echo "checked";}?>><?php
-		echo PQL_LANG_MAILHOST_DEFAULT . ": <b>";
-		if($userhost[0]) {
-			echo "$userhost[1]";
-		}
-		echo "</b>";?>
+<?php	if(is_array($userhost)) { ?>
+            <input type="hidden" name="userhost" value="<?=$userhost[1]?>">
+            <input type="radio" name="host" value="default" <?php if($userhost[0] and ($host != "user")){ echo "checked";}?>>
+<?php	} else { ?>
+            <input type="hidden" name="userhost" value="<?=$userhost?>">
+            <input type="radio" name="host" value="default" <?php if($userhost and ($host != "user")){ echo "checked";}?>>
+<?php	}
+		echo "            " . PQL_LANG_MAILHOST_DEFAULT . ": <b>";
+		if(is_array($userhost))
+		  echo $userhost[1];
+		else
+		  echo $userhost;
+
+		echo "</b>\n";?>
           </td>
         </tr>
 <?php
@@ -673,7 +672,7 @@ switch($submit){
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"></td>
           <td>
-            <input type="radio" name="userhost" value="user" checked>qmailControls object: <b><?=$userhost[1]?></b>
+            <input type="radio" name="host" value="user" checked>qmailControls object: <b><?=$userhost[1]?></b>
           </td>
         </tr>
 <?php
@@ -683,7 +682,8 @@ switch($submit){
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"></td>
           <td>
-            <input type="radio" name="userhost" value="user" <?php if((!$userhost[0] and !$userhost[1]) or ($host == "user")){ echo "checked";}?>><?php echo PQL_LANG_MAILQUOTA_USERDEFINED;?>  <input type="text" name="userhost"><br>
+            <input type="radio" name="host" value="user" <?php if((!$userhost[0] and !$userhost[1]) or ($host == "user")){ echo "checked";}?>>
+            <?php echo PQL_LANG_MAILQUOTA_USERDEFINED;?><input type="text" name="userhost"><br>
           </td>
         </tr>
 
@@ -772,21 +772,11 @@ switch($submit){
 		if($account_type == "normal" or $account_type == "system") {
 			// normal mailbox account
 
-			if($host == 'default') {
-				// TODO: If there is no defaultDomain for the domain, get MX of the domain in the email address
-				if($mx)
-				  $entry[$config["PQL_GLOB_ATTR_MAILHOST"]] = $mx;
-				else {
-					$domainname = split('@', $entry[$config["PQL_GLOB_ATTR_MAIL"]]);
-					$entry[$config["PQL_GLOB_ATTR_MAILHOST"]] = pql_get_mx($domainname[1], $defaultdomain);
-				}
-			} else {
-				if($mx)
-				  $entry[$config["PQL_GLOB_ATTR_MAILHOST"]] = $mx;
-				elseif($userhost)
-				  $entry[$config["PQL_GLOB_ATTR_MAILHOST"]] = $userhost;
-				else
-				  $entry[$config["PQL_GLOB_ATTR_MAILHOST"]] = $userhost[1];
+			if($userhost)
+			  $entry[$config["PQL_GLOB_ATTR_MAILHOST"]] = $userhost;
+			else {
+				$domainname = split('@', $entry[$config["PQL_GLOB_ATTR_MAIL"]]);
+				$entry[$config["PQL_GLOB_ATTR_MAILHOST"]] = pql_get_mx($domainname[1], $defaultdomain);
 			}
 
 			$entry[$config["PQL_GLOB_ATTR_MODE"]]     = "localdelivery";
