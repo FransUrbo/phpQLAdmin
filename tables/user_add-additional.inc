@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-additional.inc,v 1.8 2004-02-27 12:17:55 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.9 2004-03-01 10:46:49 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <input type="hidden" name="surname" value="<?=$_REQUEST["surname"]?>">
     <input type="hidden" name="name" value="<?=$_REQUEST["name"]?>">
@@ -8,6 +8,8 @@
     <input type="hidden" name="password" value="<?=$_REQUEST["password"]?>">
     <input type="hidden" name="pwscheme" value="<?=$_REQUEST["pwscheme"]?>">
     <input type="hidden" name="crypted" value="<?=$_REQUEST["crypted"]?>">
+<?php } else { ?>
+    <input type="hidden" name="forwardingaddress" value="<?=$_REQUEST["forwardingaddress"]?>">
 <?php } ?>
     <input type="hidden" name="subbranch" value="<?=$_REQUEST["subbranch"]?>">
     <input type="hidden" name="email_domain" value="<?=$_REQUEST["email_domain"]?>">
