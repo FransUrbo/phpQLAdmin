@@ -807,7 +807,6 @@ switch($submit) {
 		$entry[$config["PQL_GLOB_ATTR_UID"]]			= $uid;
 		if($surname) {
 			// Firstname
-			$cn											= $surname . " " . $name;
 			$entry[$config["PQL_GLOB_ATTR_GIVENNAME"]]	= $surname;
 		} else {
 			$entry[$config["PQL_GLOB_ATTR_GIVENNAME"]]	= $uid;
@@ -859,9 +858,6 @@ switch($submit) {
 			// Gecos is needed to do PAM/NSS LDAP login 
 			if($surname && $name) {
 				$entry["gecos"]							  = $surname . " " . $name;
-				$entry[$config["PQL_GLOB_ATTR_CN"]]		  = trim($surname) . " " . trim($name);
-			} else {
-				$entry[$config["PQL_GLOB_ATTR_CN"]]		  = $uid;
 			}
 
 			// set attributes
@@ -943,9 +939,12 @@ switch($submit) {
 		}
 
         // ------------------
-		if($cn) {
-			$cn = maybe_encode($cn);
+		if($surname && $name) {
+			$entry[$config["PQL_GLOB_ATTR_CN"]]	= maybe_encode(trim($surname) . " " . trim($name));
+		} else {
+			$entry[$config["PQL_GLOB_ATTR_CN"]] = $uid;
 		}
+
 		if($entry[$config["PQL_GLOB_ATTR_GIVENNAME"]]) {
 			$entry[$config["PQL_GLOB_ATTR_GIVENNAME"]]	= maybe_encode($entry[$config["PQL_GLOB_ATTR_GIVENNAME"]]);
 		}
