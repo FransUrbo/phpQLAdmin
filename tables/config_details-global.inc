@@ -79,12 +79,12 @@
 <?php } ?>
         <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_EZMLM_USE")) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
       </tr>
-<?php if(pql_get_define("PQL_CONF_EZMLM_USE")) { ?>
+<?php if(pql_get_define("PQL_CONF_EZMLM_USE")) { $class=pql_format_table(0); ?>
 
       <tr>
         <td class="title"><?=$LANG->_('Path to EZMLM commands')?></td>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=pql_get_define("PQL_ATTR_EZMLM_PATH")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_EZMLM_PATH")?>"></a></td>
-        <td class="<?=$class?>"><?php echo pql_get_define("PQL_CONF_EZMLM_PATH"); ?>&nbsp;</td>
+        <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_EZMLM_PATH"); ?>&nbsp;</td>
       </tr>
 <?php } ?>
 
@@ -140,34 +140,39 @@
       <tr></tr>
 
       <!-- -------------------- --!>
+<?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Kerberos realm')?></td>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=pql_get_define("PQL_ATTR_KRB5_REALM")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_KRB5_REALM")?>"></a></td>
-        <td class="<?=$class?>"><?php echo pql_get_define("PQL_CONF_KRB5_REALM"); ?>&nbsp;</td>
+        <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_KRB5_REALM"); ?>&nbsp;</td>
       </tr>
 
+<?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Kerberos admin server')?></td>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=pql_get_define("PQL_ATTR_KRB5_ADMIN_SERVER")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_KRB5_ADMIN_SERVER")?>"></a></td>
-        <td class="<?=$class?>"><?php echo pql_get_define("PQL_CONF_KRB5_ADMIN_SERVER"); ?>&nbsp;</td>
+        <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_KRB5_ADMIN_SERVER"); ?>&nbsp;</td>
       </tr>
 
+<?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Kerberos admin principal')?></td>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=pql_get_define("PQL_ATTR_KRB5_ADMIN_PRINCIPAL")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_KRB5_ADMIN_PRINCIPAL")?>"></a></td>
-        <td class="<?=$class?>"><?php echo pql_get_define("PQL_CONF_KRB5_ADMIN_PRINCIPAL"); ?>&nbsp;</td>
+        <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_KRB5_ADMIN_PRINCIPAL"); ?>&nbsp;</td>
       </tr>
 
+<?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Kerberos admin keytab')?></td>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=pql_get_define("PQL_ATTR_KRB5_ADMIN_KEYTAB")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_KRB5_ADMIN_KEYTAB")?>"></a></td>
-        <td class="<?=$class?>"><?php echo pql_get_define("PQL_CONF_KRB5_ADMIN_KEYTAB"); ?>&nbsp;</td>
+        <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_KRB5_ADMIN_KEYTAB"); ?>&nbsp;</td>
       </tr>
 
+<?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Path to Kerberos \ukadmin\U command')?></td>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=pql_get_define("PQL_ATTR_KRB5_ADMIN_COMMAND_PATH")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_KRB5_ADMIN_COMMAND_PATH")?>"></a></td>
-        <td class="<?=$class?>"><?php echo pql_get_define("PQL_CONF_KRB5_ADMIN_COMMAND_PATH"); ?>&nbsp;</td>
+        <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_KRB5_ADMIN_COMMAND_PATH"); ?>&nbsp;</td>
       </tr>
 <?php } ?>
     </th>

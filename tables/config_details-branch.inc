@@ -252,6 +252,7 @@
       <tr></tr>
 
       <!-- -------------------- --!>
+<?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('User objectclasses')?></td>
 <?php     $new_tr = 0; $max = 0;
