@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.10 2004-03-14 08:26:55 turbo Exp $
+// $Id: config_attributes.inc,v 2.11 2004-03-26 09:45:36 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -158,6 +158,7 @@ pql_set_define("PQL_ATTR_KRB5_ADMIN_SERVER", 				strtolower('krb5AdminServer'),	
 pql_set_define("PQL_ATTR_KRB5_ADMIN_PRINCIPAL", 			strtolower('krb5PrincipalName'),			false);
 pql_set_define("PQL_ATTR_KRB5_ADMIN_KEYTAB", 				strtolower('krb5AdminKeytab'),				false);
 pql_set_define("PQL_ATTR_KRB5_ADMIN_COMMAND_PATH", 			strtolower('krb5AdminCommandPath'),			false);
+pql_set_define("PQL_ATTR_ADMINISTRATOR",					strtolower("administrator"),				false);
 pql_set_define("PQL_ATTR_ADMINISTRATOR_EZMLM",				strtolower("ezmlmAdministrator"),			false);
 pql_set_define("PQL_ATTR_ADMINISTRATOR_CONTROLS",			strtolower("controlsAdministrator"),		false);
 
@@ -178,6 +179,7 @@ $PQL_ATTRIBUTE["GLOBAL"] = array("PQL_CONF_CONTROL_USE"					=> pql_get_define("P
 								 "PQL_CONF_KRB5_ADMIN_PRINCIPAL"		=> pql_get_define("PQL_ATTR_KRB5_ADMIN_PRINCIPAL"),
 								 "PQL_CONF_KRB5_ADMIN_KEYTAB"			=> pql_get_define("PQL_ATTR_KRB5_ADMIN_KEYTAB"),
 								 "PQL_CONF_KRB5_ADMIN_COMMAND_PATH"		=> pql_get_define("PQL_ATTR_KRB5_ADMIN_COMMAND_PATH"),
+								 "PQL_CONF_ADMINISTRATOR"				=> pql_get_define("PQL_ATTR_ADMINISTRATOR"),
 								 "PQL_CONF_ADMINISTRATOR_EZMLM"	    	=> pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"),
 								 "PQL_CONF_ADMINISTRATOR_CONTROLS"		=> pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"));
 // }}}
