@@ -4,14 +4,13 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.22 2003-05-19 15:18:01 turbo Exp $
+// $Id: pql_control.inc,v 2.23 2003-06-12 09:26:14 turbo Exp $
 //
 // version history:
 // $Log: pql_control.inc,v $
-// Revision 2.22  2003-05-19 15:18:01  turbo
-// Don't enforce locals/rcpthosts integrity. A machine
-// with local(s) will also need rcpthost(s) to be able
-// to receive mail for the domain...
+// Revision 2.23  2003-06-12 09:26:14  turbo
+// * Encode/Decode as much data directly in the API functions so that we don't
+//   miss to encode/decode a value in the program at large..
 //
 // Revision 1.2  2001/09/06 11:36:24  mb
 // added no_connect option to pql_control-class
@@ -81,7 +80,7 @@ function pql_control_get_attribute($linkid, $dn, $attribute) {
     $info = ldap_get_entries($linkid, $sr);
     
     for ($i=0; $i < $info[0][$attribute]["count"]; $i++) {
-		$attrib[] = $info[0][$attribute][$i];
+		$attrib[] = maybe_decode($info[0][$attribute][$i]);
     }
     
     return $attrib;
@@ -109,7 +108,11 @@ function pql_control_replace_attribute($ldap_linkid, $ldap_control_basedn, $attr
     }
     
     // format entry
-    $entry[$attrib] = $value;
+	if(is_array($value)) {
+		foreach($value as $val)
+		  $entry[$attrib][] = maybe_encode($val);
+	} else
+	  $entry[$attrib] = $value;
     
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_control_replace_attribute", $ldap_control_basedn, $entry);
@@ -153,7 +156,7 @@ function pql_control_search_attribute($ldap_linkid, $ldap_basedn, $attribute, $v
 
 function pql_control_add_attribute($ldap_linkid, $ldap_control_basedn, $attrib, $value){
     // adds an attribute of a control property
-    $entry[$attrib] = $value;
+    $entry[$attrib] = maybe_encode($value);
 
     if(!@ldap_mod_add($ldap_linkid, $ldap_control_basedn, $entry)){
 		pql_errormsg($ldap_linkid);
@@ -167,7 +170,7 @@ function pql_control_add_attribute($ldap_linkid, $ldap_control_basedn, $attrib, 
 
 // removes an attribute of a QmailLDAP object
 function pql_control_remove_attribute($ldap_linkid, $dn, $attrib, $value) {
-    $entry[$attrib] = $value;
+    $entry[$attrib] = maybe_encode($value);
     
     if(!ldap_mod_del($ldap_linkid, $dn, $entry)) {
 		pql_errormsg($ldap_linkid);
@@ -239,7 +242,7 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
     // Get the hostname
     if($host and ($host != '*') and $config["PQL_GLOB_CONTROL_AUTOADDHOSTNAME"]) {
 		$hostname = split("\.", $host);
-		$hostname = $hostname[0];
+		$hostname = maybe_encode($hostname[0]);
 	
 		foreach($temp as $tmp)
 		  $entry[] = $hostname . "." . $tmp;
@@ -365,7 +368,7 @@ function pql_control_get_hosts($ldap_linkid, $ldap_basedn) {
 	$info = @ldap_get_entries($ldap_linkid, $sr) or pql_errormsg($ldap_linkid);
 
 	for ($i=0; $i<$info["count"]; $i++) {
-		$hosts[] = $info[$i]['cn'][0];
+		$hosts[] = maybe_decode($info[$i]['cn'][0]);
 	}
 
 	return $hosts;
