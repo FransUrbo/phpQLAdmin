@@ -1,16 +1,21 @@
 <?php
-if($domain) {
-    // Get the ACIs in this branch object
-    $aci = pql_aci_get($_pql->ldap_linkid, urldecode($domain));
-} elseif($user) {
+// Setup the URL redirection
+$url  = "domain_edit_attributes.php?rootdn=".urlencode($rootdn)."&domain=".urlencode($domain);
+$url .= "&attrib=".pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")."&view=$view&";
+
+if($user) {
     // Get the ACIs in this user object
     $aci = pql_aci_get($_pql->ldap_linkid, $user);
+
+	$url .= "user=".urlencode($user);
+} else {
+    // Get the ACIs in this branch object
+    $aci = pql_aci_get($_pql->ldap_linkid, urldecode($domain));
 }
 
 if(!is_array($aci)) {
     die("No ACIs availible for this branch.");
 }
-
 ?>
   <table cellspacing="0" cellpadding="4" border="0">
     <th colspan="8" align="left"><?=$LANG->_('Access control values')?>
@@ -27,36 +32,35 @@ if(!is_array($aci)) {
         <td class="title"><?=$LANG->_('Options')?></td>
       </tr>
 
-<?php for($i=0; $aci[$i]; $i++) { ?>
+<?php for($i=0; $aci[$i]; $i++) {
+?>
       <tr class="<?php table_bgcolor(); ?>">
         <td><?=$aci[$i]["OID"]?></td>
         <td><?=$aci[$i]["SCOPE"]?></td>
 
-<?php
- 	foreach($aci[$i]["RIGHTS"] as $right) {
-	    if(is_array($right)) {
-		if(ereg('\[', $right[0]) and ereg('\]', $right[0])) {
-		    $right = ereg_replace('\[', '', $right[0]);
-		    $right = ereg_replace('\]', '', $right);
-
-		    $right = "<i>$right</i>";
-		} else
-		  $right = $right[0];
-	    }
+<?php 	foreach($aci[$i]["RIGHTS"] as $right) {
+	 	   if(is_array($right)) {
+			   if(ereg('\[', $right[0]) and ereg('\]', $right[0])) {
+				   $right = ereg_replace('\[', '', $right[0]);
+				   $right = ereg_replace('\]', '', $right);
+				   
+				   $right = "<i>$right</i>";
+			   } else {
+				   $right = $right[0];
+			   }
+		   }
 ?>
         <td><?=$right?></td>
-<?php
-	}
-?>
+<?php	} ?>
 
         <td><?=$aci[$i]["TYPE"]?></td>
         <td><?=$aci[$i]["SUBJECT"]?></td>
-        <td align="center"><a href="aci_edit.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change value')?>" border="0"></a>&nbsp;&nbsp;<a href="aci_del.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete value')?>" border="0"></a></td>
+        <td align="center"><a href="<?=$url?>&submit=3&type=edit&<?=pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")?>=<?=urlencode($aci[$i]["LINE"])?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change value')?>" border="0"></a>&nbsp;&nbsp;<a href="<?=$url?>&submit=2&type=delete&<?=pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")?>=<?=urlencode($aci[$i]["LINE"])?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete value')?>" border="0"></a>&nbsp;&nbsp;<?php if($i==0) { ?><img src="images/spacer_12x12.png" width="12" height="12" border="0"><?php } else { ?><a href="move_up"><img src="images/up.png" width="12" height="12" alt="move up" border="0"></a><?php } ?><?php if(!$aci[$i+1]["LINE"]) { ?><img src="images/spacer_12x12.png" width="12" height="12" border="0"><?php } else { ?><a href="move_down"><img src="images/down.png" width="12" height="12" alt="move down" border="0"></a><?php } ?></td>
       </tr>
 <?php } ?>
 
       <tr class="subtitle">
-        <td colspan="8"><a href="aci_add.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"> <?=$LANG->_('Register new ACI')?></a></td>
+        <td colspan="8"><a href="<?=$url?>&type=add"><img src="images/edit.png" width="12" height="12" alt="" border="0"> <?=$LANG->_('Register new ACI')?></a></td>
       </tr>
     </th>
   </table>
