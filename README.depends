@@ -1,0 +1,15 @@
+To fully utilize phpQLAdmin, you will need (in addition
+to PHP4 version >= 4.0) to have the following PHP module(s)
+installed:
+
+	php4-ldap	For the LDAP connection(s)
+
+The following modules are somewhat semi-required. If you don't 
+need to generate encrypted passwords, then you don't
+need 'php4-mhash'. If you don't care about the nav buttons
+looking 'weird' (i.e. no icons :), then you don't need
+php4-gd2 etc, etc...
+
+	php4-mhash	For (MD5/SHA) password generation
+	php4-gd2	For the navigation icons
+	php4-idn	For translating of international characters
