@@ -27,7 +27,7 @@ tag:
 	  echo "$$MAJOR.$$MINOR.$$NEWLV" > .version; \
 	  echo -n "We are now at version "; \
 	  cat  < .version; \
-	  TAG="`echo REL_`echo $$MAJOR`_`echo $$MINOR`_`echo $$LEVEL`"; \
+	  TAG="REL_`echo $$MAJOR`_`echo $$MINOR`_`echo $$LEVEL`"; \
 	  echo cvs tag: $$TAG; \
 	  cvs commit -m "New release - $$MAJOR.$$MINOR.$$NEWLV." .version .version.old; \
 	  cvs tag -RF $$TAG; \
@@ -36,6 +36,7 @@ tag:
 install: $(INSTDIR)
 	@(echo -n "Instdir: $(INSTDIR): "; \
 	  find | cpio -p $(INSTDIR); \
+	  rm $(INSTDIR)/Makefile; \
 	  echo -n "Tarball 1: $(TMPDIR)/phpQLAdmin-$(VERSION).tar.gz: "; \
 	  cd $(TMPDIR) && tar czf phpQLAdmin-$(VERSION).tar.gz phpQLAdmin-$(VERSION); \
 	  echo "done."; \
