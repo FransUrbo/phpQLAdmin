@@ -3,13 +3,14 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.148 2004-03-01 10:09:08 turbo Exp $
+// $Id: pql.inc,v 2.149 2004-03-01 10:42:11 turbo Exp $
 //
 
 // ----------------------------
 // Get release version
 $fp = fopen("./.version", "r");
 $_SESSION["VERSION"] = fgets($fp, 20);
+$_SESSION["VERSION"] = rtrim($_SESSION["VERSION"], "\n");
 fclose($fp);
 
 // ----------------------------
@@ -318,7 +319,7 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 	$userdn = pql_maybe_encode($userdn);
 
 	// Add the OpenLDAPaci attribute (maybe)
-	if($_SESSION["ACI_SUPPORT_ENABLED"])
+	if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci"))
 	  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($ldap_linkid, $_SESSION["USER_DN"], 'user');
 
 	// Create a LDIF object to print in case of error
@@ -497,6 +498,7 @@ function pql_user_exist($linkid, $dn, $user) {
 // ------------------------------------------------
 
 // {{{ pql_domain_get(ldap)
+
 // Get all domains listed in ldap-tree (ou|dc-records)
 function pql_domain_get($ldap) {
 	foreach($ldap->ldap_basedn as $dn)  {
@@ -528,6 +530,7 @@ function pql_domain_get($ldap) {
 	
 	return $domains;
 }
+
 // }}}
 
 // {{{ pql_domain_add(ldap_linkid, basedn, branch_name)
@@ -1794,6 +1797,7 @@ function pql_execute($command, $hide=true) {
 // }}}
 
 // {{{ pql_generate_button(button array)
+
 function pql_generate_button($buttons, $link = '') {
     global $LANG;
 
@@ -1826,6 +1830,7 @@ function pql_generate_button($buttons, $link = '') {
 
 <?php
 }
+
 // }}}
 
 // {{{ pql_ldap_mailquota(quota)
