@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.116.2.2 2005-02-13 13:04:22 turbo Exp $
+// $Id: user_add.php,v 2.116.2.3 2005-02-14 10:43:59 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -90,9 +90,12 @@ switch($_REQUEST["page_curr"]) {
 		// 2. We have set autoCreateUserName to TRUE for this branch/domain
 		// 3. The function 'user_generate_uid()' is defined in include/config.inc.
 		// 4. At least one of the objects we've choosen to use when creating users MAY or MUST the 'uid' attribute..
-		if(empty($_REQUEST["uid"]) and $autocreateusername and function_exists('user_generate_uid') and
-		   pql_templates_check_attribute($_pql->ldap_linkid, $template, 'uid', 'MUST'))
-		{
+		if(empty($_REQUEST["uid"]) and pql_templates_check_attribute($_pql->ldap_linkid, $template, 'uid')) {
+		  if(function_exists('user_generate_uid') and empty($_REQUEST["uid"]) and
+			 (($autocreateusername and pql_templates_check_attribute($_pql->ldap_linkid, $template, 'uid', 'MUST'))
+			  or
+			  (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == 'uid')))
+		  {
 			// Generate the username
 			$_REQUEST["uid"] = strtolower(user_generate_uid($_pql, $_REQUEST["surname"],
 															$_REQUEST["name"], $email,
@@ -102,13 +105,18 @@ switch($_REQUEST["page_curr"]) {
 			// form OR from the user_generate_uid() function above...
 			if(empty($_REQUEST["uid"])) {
 				$error = true;
-				$error_text["uid"] = $LANG->_('Can\'t autogenerate.');
+
+				if(pql_templates_check_attribute($_pql->ldap_linkid, $template, 'uid', 'MUST'))
+				  $error_text["uid"] = "&nbsp;&nbsp;".$LANG->_("Can't autogenerate, but this value is required.");
+				else
+				  $error_text["uid"] = $LANG->_("Can't autogenerate.");
 			} else {
 				if(preg_match("/[^a-z0-9\.@%_-]/i", $_REQUEST["uid"])) {
 					$error = true;
 					$error_text["uid"] = $LANG->_('Invalid');
 				}
 			}
+		  }
 		}
 		// }}}
 		
