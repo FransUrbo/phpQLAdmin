@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.27 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.userpassword.inc,v 2.28 2005-03-23 11:51:13 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -54,18 +54,18 @@ function attribute_print_form() {
 			foreach($schemes as $scheme) {
 				if(!eregi('KERBEROS', $scheme)) {
 ?>
-            <input type="radio" name="pwscheme" value="<?=$scheme?>" <?php if($defaultpasswordscheme == $scheme) { echo "CHECKED"; } ?>><?=$scheme?>
+            <input type="radio" name="pwscheme" value="{<?=$scheme?>}" <?php if($defaultpasswordscheme == $scheme) { echo "CHECKED"; } ?>><?=$scheme?>
 
 <?php			}
 			}
 	  	} else { ?>
-            <?=$LANG->_('Scheme')?>: <b>{<?=pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"])?>}</b>
-            <input type="hidden" name="pwscheme" value="<?=pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"])?>">
+            <?=$LANG->_('Scheme')?>: <b><?=pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"])?></b>
+            <input type="hidden" name="pwscheme" value="{<?=pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"])?>}">
 <?php 	} ?>
           </td>
         </tr>
 <?php } elseif($defaultpasswordscheme) { ?>
-        <input type="hidden" name="pwscheme" value="<?=$defaultpasswordscheme?>">
+        <input type="hidden" name="pwscheme" value="{<?=$defaultpasswordscheme?>}">
 <?php } ?>
 
         <!-- Password -->
@@ -113,8 +113,8 @@ function attribute_save($type) {
 
 	  case "modify":
 		$pw = pql_password_hash($_REQUEST["userpassword"], $_REQUEST["pwscheme"]);
-		
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_PASSWD"), '', $pw)) {
+	
+		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_PASSWD"), 1, $pw)) {
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										 array('what' => $LANG->_('password')));
 			
