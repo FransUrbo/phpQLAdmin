@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.27 2004-11-14 09:42:52 turbo Exp $
+// $Id: user_add-save.inc,v 1.28 2004-11-15 15:25:54 turbo Exp $
 
 // URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
 $_REQUEST["surname"] = urldecode($_REQUEST["surname"]);
@@ -230,18 +230,11 @@ if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "mai
 	// -----------------
 	if(($_REQUEST["account_type"] == "system") or in_array('posixaccount', $objectclasses_included)) {
 		// Add home directory to the entry array
-		if(!$_REQUEST["homedirectory"]) {
-			if(($_REQUEST["account_type"] == "mail") and !$_SESSION["ADVANCED_MODE"])
-			  // It's a mail account, and we where/is not running in
-			  // advanced mode. Use the maildirectory as homedirectory.
-			  $entry[pql_get_define("PQL_ATTR_HOMEDIR")] = user_generate_homedir($_pql, $_REQUEST["email"],
-																				 $_REQUEST["domain"], $entry,
-																				 'user');
-			else
-			  $entry[pql_get_define("PQL_ATTR_HOMEDIR")] = user_generate_homedir($_pql, $_REQUEST["email"],
-																				 $_REQUEST["domain"], $entry,
-																				 'user');
-		} else
+		if(!$_REQUEST["homedirectory"])
+		  $entry[pql_get_define("PQL_ATTR_HOMEDIR")] = user_generate_homedir($_pql, $_REQUEST["email"],
+																			 $_REQUEST["domain"], $entry,
+																			 'user');
+		else
 		  $entry[pql_get_define("PQL_ATTR_HOMEDIR")] = $_REQUEST["homedirectory"];
 
 		// Verify trailing slash!
