@@ -2,10 +2,10 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.13 2003-05-08 09:11:14 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.14 2003-05-08 20:00:54 turbo Exp $
 
 function locals_check($type){
-    global $error, $locals;
+    global $error, $locals, $rootdn, $domain;
     
     // check validity
     if(is_array($locals)){
@@ -122,13 +122,9 @@ function locals_print_form(){
 }
 
 function locals_save($type, $host){
-    global $_pql, $_pql_control, $attrib, $locals, $set, $error;
+    global $_pql, $_pql_control, $attrib, $locals, $set, $error, $rootdn, $domain;
 
-    // recontrol values
-    if(!locals_check($type))
-	  return false;
-    
-    switch($type){
+    switch($type) {
       case "replicate":
 		// start replication manually
 
@@ -141,12 +137,9 @@ function locals_save($type, $host){
 		break;
 
       case "del":
-		// delete entry
-
 		// remove specified domain from locals, redirect back to host details
-		if(pql_control_remove_attribute($_pql_control->ldap_linkid,
-										"cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-										"locals", $set))
+		if(pql_control_update_domains($_pql_control, $GLOBALS["USER_SEARCH_DN_CTR"],
+									  '*', array($set, ''), "locals"))
 		  $msg = "Successfully removed $set from locals";
 		else
 		  $msg = "Failed removing $set from locals: " . pql_ldap_error($_pql_control->ldap_linkid);
@@ -155,16 +148,12 @@ function locals_save($type, $host){
 		break;
 
       case "add":
-		// add entry
-		
 		// adding specified domain to rcpthosts, redirect back to domain details
-		if(pql_control_add_attribute($_pql_control->ldap_linkid,
-									 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-									 "locals", $set)){
-			$msg = "Successfully added $set to locals";
-		} else {
-			$msg = "Failed adding $set to locals: " . pql_ldap_error($_pql_control->ldap_linkid);
-    	}
+		if(pql_control_update_domains($_pql_control, $GLOBALS["USER_SEARCH_DN_CTR"],
+									  '*', array('', $set), "locals"))
+		  $msg = "Successfully added $set to locals";
+		else
+		  $msg = "Failed adding $set to locals: " . pql_ldap_error($_pql_control->ldap_linkid);
 		
 		attribute_forward($msg);
 		break;
