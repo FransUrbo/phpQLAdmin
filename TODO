@@ -10,6 +10,9 @@ Things left to do
 	* Create, delete or modify the Kerberos principal if using {KERBEROS}
 	  password scheme.
 	* Allow for (Open)AFS creation, deletion and modification.
+	* Store phpQLAdmin configuration values in LDAP database (in the base DN
+	  object).
+	* Find base DN automaticly - only need hostname(s) and port in PQL_LDAP_HOST.
 
 	EZMLM mailinglist
 	* Remove hardcoded texts (attributes and such).
