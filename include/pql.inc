@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.172.2.1.6.3.2.2 2004-07-08 10:11:39 turbo Exp $
+// $Id: pql.inc,v 2.172.2.1.6.3.2.2.2.1 2004-09-17 14:38:50 turbo Exp $
 //
 
 // ----------------------------
@@ -320,7 +320,7 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 					unset($MUST['count']);
 					
 					// Rearrange the array
-					$MUST = array_values(array_unique($MUST));
+					$MUST = pql_uniq($MUST);
 					
 					// Readd the count entry
 					$MUST['count'] = count($MUST);
@@ -912,7 +912,6 @@ function pql_domain_get_value($ldap, $dn, $value, $match = '', $all = 0) {
 // {{{ pql_domain_set_value(linkid, dn, type, value)
 // Set a embedded domain default value
 function pql_domain_set_value($linkid, $dn, $type, $value) {
-	$DEBUG = 0;
 	$dn = urldecode($dn);
 
 	$entry = array();
@@ -949,11 +948,25 @@ function pql_domain_set_value($linkid, $dn, $type, $value) {
 		  $entry = $value;
 	}
 
-	if($value and !$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")]) {
+	// Find out if the phpQLAdmin* object classes exists in the object
+	$OC_EXISTS = 0;
+	$object_ocs = pql_uniq(pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_OBJECTCLASS")));
+	if(is_array($object_ocs)) {
+		foreach($object_ocs as $oc) {
+			if(!eregi('phpQLAdmin', $object_ocs)) {
+				$OC_EXISTS = 1;
+				last;
+			}
+		}
+	}
+
+	// Add the phpQLAdmin* object classes if we haven't specified object class(es) and
+	// the phpQLAdmin* object class(es) are missing.
+	if($value and !$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] and !$OC_EXISTS) {
 		// Setup objectclasses
 		if(!($entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_setup_branch_objectclasses(0, $dn, $linkid)))
 		  unset($entry[pql_get_define("PQL_ATTR_OBJECTCLASS")]);
-
+		
 		if(!in_array("phpQLAdminGlobal", $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")])) {
 			// There's TWO config object classes. A BRANCH and a GLOBAL.
 			// If this is a GLOBAL attribute, pql_setup_branch_objectclasses()
@@ -964,15 +977,17 @@ function pql_domain_set_value($linkid, $dn, $type, $value) {
 				  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "phpQLAdminGlobal";
 			}
 		}
+
+		$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_uniq($entry[pql_get_define("PQL_ATTR_OBJECTCLASS")]);
 	}
-		
+	
 	// Create a LDIF object to print in case of error
 	$account_type = $type;
 	$LDIF = pql_create_ldif("pql_domain_set_value", $dn, $entry);
 
 	// --------------------------
 	// DEBUG mode: Print the LDIF
-	if($DEBUG >= 1)
+    if(file_exists("./.DEBUG_ME"))
 	  die("$LDIF");
 
 	// Do the LDAP modification
@@ -1131,6 +1146,7 @@ function pql_modify_user_addressbook($ldap_linkid, $user, $attribs) {
 // }}}
 
 // {{{ pql_search_forwarders(ldap, user)
+
 // Search all accounts with forwarders to $user@$domain
 function pql_search_forwarders($ldap, $user) {
 	$return = '';
@@ -1185,9 +1201,11 @@ function pql_search_forwarders($ldap, $user) {
     
     return $return;
 }
+
 // }}}
 
 // {{{ pql_modify_userattribute(ldap_linkid, user, attrib, oldvalue, newvalue)
+
 // Change an attribute of a user
 function pql_modify_userattribute($ldap_linkid, $user, $attrib, $oldvalue, $newvalue) {
     // get all attributes first
@@ -1249,6 +1267,7 @@ function pql_modify_userattribute($ldap_linkid, $user, $attrib, $oldvalue, $newv
     
     return true;
 }
+
 // }}}
 
 // {{{ pql_replace_attribute(ldap_linkid, objectdn, attrib, value)
@@ -1523,10 +1542,10 @@ function pql_get_subschema($ldap_linkid, $attrib) {
     $entry = ldap_get_entries($ldap_linkid, $sr);
     if($entry[0][pql_get_define("PQL_ATTR_SUBSCHEMASUBENTRY")][0]) {
 		// Get the subSchemaAttributes from the subSchema
-		// CMD: /usr/bin/ldapsearch -x -LLL -h localhost -s base -b 'cn=Subschema' 'objectClass=*' $attrib
+		// CMD: /usr/bin/ldapsearch -x -LLL -h localhost -s base -b 'cn=Subschema' 'objectClass=subSchema' $attrib
 		$sr     = ldap_read($ldap_linkid,
 							$entry[0][pql_get_define("PQL_ATTR_SUBSCHEMASUBENTRY")][0],
-							pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', array($attrib));
+							pql_get_define("PQL_ATTR_OBJECTCLASS").'=subSchema', array($attrib));
 		$entry  = ldap_get_entries($ldap_linkid, $sr);
 		for($i=0; $i < $entry[0][$attrib]["count"]; $i++) {
 			// ------------------------
