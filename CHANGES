@@ -36,6 +36,11 @@ phpQLAdmin 2.0.15 Release (TO BE ANNOUNCED)
 	  - The minimumUIDNumber attribute is a branch configuration
 	    option, not a global one (hence the 's/_GLOB_/_CONF_/g'
 	    change).
+	  - When creating a user or domain, include the root dn when
+	    redirecting to the corresponding details page. If it isn't
+	    included, we won't see/get all the branch defaults we might
+	    need.
+	    Closes bug 20
  
 	GUI layout change
 	  - Possibility to set a value in the domain branch saying we
