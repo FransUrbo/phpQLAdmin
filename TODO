@@ -8,9 +8,8 @@ Things left to do
 	  - Give away the deleted users mailbox to another user.
 
 	IMPORTANT
-	* Create, delete or modify the Kerberos principal if using {KERBEROS}
+	* Delete or modify the Kerberos principal if using {KERBEROS}
 	  password scheme.
-	* Allow for (Open)AFS creation, deletion and modification.
 	* If we're modifying a value and we're missing an objectclass and the
 	  objectclass we find that REQUIRE (MAY) some attributes which we're
 	  missing, ask user/admin to fill in the missing attributes, THEN retry
