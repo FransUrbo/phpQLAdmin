@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.13 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.14 2003-10-11 13:33:39 turbo Exp $
 
 function attribute_check() {
     global $additionaldomainname, $domain, $oldvalue, $_pql, $error, $rootdn, $LANG;
@@ -115,7 +115,7 @@ function attribute_print_form() {
 }
 
 function attribute_save($type) {
-    global $domain, $attrib, $oldvalue, $additionaldomainname, $_pql, $domain, $delval, $view, $LANG;
+    global $domain, $attrib, $oldvalue, $additionaldomainname, $_pql, $delval, $view, $LANG;
 
     // recontrol values
     if(!attribute_check($type) and !delval)
@@ -132,7 +132,6 @@ function attribute_save($type) {
       case "add":
       case "modify":
 		$delval = $oldvalue;
-		$entry[$attrib][] = $additionaldomainname;
 		// fall through here, so that we ADD this new value
 
       case "delete":
