@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.27 2004-10-14 08:54:10 turbo Exp $
+// $Id: pql_formating.inc,v 2.28 2004-10-15 15:01:12 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -11,21 +11,22 @@ function pql_create_ldif($func, $dn, $entry) {
 	global $account_type;
 
 	if($func)
-	  $LDIF .= "<br>--- DEBUG: $func($account_type) ---<br>";
+	  $LDIF .= "<br>\n<pre>\n--- DEBUG: $func($account_type) ---\n";
 
-	$LDIF .= "dn: $dn<br>";
+	$LDIF .= "dn: $dn\n";
 	foreach($entry as $key => $e) {
+		$LDIF .= "replace: $key\n";
 		if(is_array($entry[$key])) {
 			// ... in an array. Go through each one, creating the LDAP entry
 			foreach($entry[$key] as $x)
-			  $LDIF .= "$key: $x<br>";
+			  $LDIF .= "$key: $x\n";
 		} else {
-			$LDIF .= "$key: $entry[$key]<br>";
+			$LDIF .= "$key: $entry[$key]\n";
 		}
 	}
 
 	if($func)
-	  $LDIF .= "--- DEBUG ---<p>";	
+	  $LDIF .= "--- DEBUG ---\n</pre><p>";	
 
 	return($LDIF);
 }
