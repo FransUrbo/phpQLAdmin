@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.90.8.4 2004-10-10 08:34:35 turbo Exp $
+// left.php,v 2.90.8.4 2004/10/10 08:34:35 turbo Exp
 //
 session_start();
 
@@ -126,11 +126,7 @@ if($_REQUEST["advanced"] == 1) {
 
   <!-- Advanced Mode selector -->
   <div id="el4Parent" class="parent">
-<?php if($_SESSION["lynx"]) { ?>
-    <form method=post action="left.php" target="_top">
-<?php } else { ?>
     <form method=post action="index2.php" target="_top">
-<?php } ?>
 <?php if($_SESSION["konqueror"]) { ?>
       <input type="checkbox" name="advanced" accesskey="a" onClick="this.form.submit()"<?=$checked?>><?=$LANG->_('\uA\Udvanced mode')."\n"?>
 <?php } elseif($_SESSION["lynx"]) { ?>
