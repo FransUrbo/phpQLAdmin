@@ -1,3 +1,7 @@
+Upgrading from 2.0.18d
+	More schema updates, make sure the schema file is updated on the LDAP
+	server(s)!
+
 Upgrading from 2.0.18
 	There's been more API changes that will break the upgrade
 	to 2.0.19. Update your include/config.inc file....

@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.35 2004-04-01 09:43:36 turbo Exp $
+// $Id: attrib.config.inc,v 1.36 2004-09-24 06:20:40 turbo Exp $
 
 function attribute_check() {
     global $error, $LANG;
@@ -234,7 +234,6 @@ function attribute_save() {
 	$toggle = @$_REQUEST["toggle"];
 	$rootdn = @$_REQUEST["rootdn"];
 	$delval = @$_REQUEST["delval"];
-printr($_REQUEST);
 
 	// DLW: This should be chopped up into functions to make it more readable.
 	

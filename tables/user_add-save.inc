@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.21 2004-05-06 18:20:59 turbo Exp $
+// $Id: user_add-save.inc,v 1.22 2004-09-24 06:20:41 turbo Exp $
 
 // URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
 $_REQUEST["surname"] = urldecode($_REQUEST["surname"]);
@@ -103,9 +103,9 @@ if($_REQUEST["account_type"] == "forward") {
 	}
 	
 	if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
-	  $entry[pql_get_define("PQL_ATTR_HOMEDIR")]= "/tmp";
-} elseif($_REQUEST["account_type"] != "group") {
-	// Any other account than 'forwarding' and 'group'.
+	  $entry[pql_get_define("PQL_ATTR_HOMEDIR")]= pql_get_define("PQL_CONF_VIRTUAL_BASEHOME");
+} else {
+	// Any other account than 'forwarding'.
 
 	// -----------------
 	// Add [ug]id number to the entry array

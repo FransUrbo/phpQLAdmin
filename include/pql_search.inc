@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.19 2004-05-13 06:00:27 turbo Exp $
+// $Id: pql_search.inc,v 2.20 2004-09-24 06:20:40 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -136,6 +136,17 @@ function pql_get_object($ldap_linkid, $user) {
     
     // return entry
     return $entry;
+}
+// }}}
+
+// {{{ pql_uniq(array)
+function pql_uniq($array) {
+	if(is_array($array)) {
+		$array = array_values(array_unique($array));
+		asort($array);
+	}
+
+	return($array);
 }
 // }}}
 

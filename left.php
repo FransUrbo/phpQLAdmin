@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.91 2004-04-30 11:23:03 turbo Exp $
+// $Id: left.php,v 2.92 2004-09-24 06:20:40 turbo Exp $
 //
 session_start();
 
@@ -46,24 +46,27 @@ function left_htmlify_userlist($linkid, $rootdn, $domain, $subbranch, $users, &$
 	    }
 	}
     }
-    asort($cns);
+
+    if(is_array($cns)) {
+	asort($cns);
     
-    foreach($cns as $dn => $cn) {
-	$uid = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_UID"));
-	$uid = $uid[0];
-	
-	$uidnr = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_QMAILUID"));
-	$uidnr = $uidnr[0];
-	
-	if(($uid != 'root') or ($uidnr != '0')) {
-	    // Do NOT show root user(s) here! This should (for safty's sake)
-	    // not be availible to administrate through phpQLAdmin!
-	    if($subbranch)
-	      $new = array($cn => "user_detail.php?rootdn=$rootdn&domain=$domain&subbranch=$subbranch&user=".urlencode($dn));
-	    else
-	      $new = array($cn => "user_detail.php?rootdn=$rootdn&domain=$domain&user=".urlencode($dn));
-	    // Add the link to the main array
-	    $links = $links + $new;
+	foreach($cns as $dn => $cn) {
+	    $uid = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_UID"));
+	    $uid = $uid[0];
+	    
+	    $uidnr = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_QMAILUID"));
+	    $uidnr = $uidnr[0];
+	    
+	    if(($uid != 'root') or ($uidnr != '0')) {
+		// Do NOT show root user(s) here! This should (for safty's sake)
+		// not be availible to administrate through phpQLAdmin!
+		if($subbranch)
+		  $new = array($cn => "user_detail.php?rootdn=$rootdn&domain=$domain&subbranch=$subbranch&user=".urlencode($dn));
+		else
+		  $new = array($cn => "user_detail.php?rootdn=$rootdn&domain=$domain&user=".urlencode($dn));
+		// Add the link to the main array
+		$links = $links + $new;
+	    }
 	}
     }
 }

@@ -58,10 +58,30 @@ phpQLAdmin 2.0.18e TO BE ANNOUNCED
 	    Closes bug 204.
 	  - Somethimes the domain value is in $_GET, sometimes in $_POST. Either way,
 	    $_REQUEST is always used (but not initialized/correct). Closes bug 203.
+	  - Don't add the phpQLAdmin* objectclassess if they already exists, especially
+	    not two of the same type! This is not allowed with OpenLDAP 2.2.
 
 	GUI layout change
 	  - Folding tags added in attrib.mail.inc.
 	  - URL DEcode the user DN before calling pql_modify_userattribute().
+	  - Only go through the users (creating user links etc) if there ARE users.
+	    In some branches, there IS no users. This will lead to no errors being
+	    shown if there's no users in the branch...
+	  - In the newest version of OpenLDAP (v2.2.14), the OpenLDAPaci attribute is
+	    hidden in the 'cn=Subschema'. Therefor allow for this to be set manually
+	    through the useACI attribute in the base DN(s).
+
+	Misc changes	
+	  - Remove some redundant printr() debug messages.
+	  - Replace the 'array_values(array_unique())' combo with wrapper pql_uniq().
+	  - Two new attributes: useACI and virtualBaseHomeDir that helps in creating
+	    and/or modifying users etc.
+	  - With newer QmailLDAP, the value(s) for 'deliveryMode' have changed.
+	    (fix tables/user_add-save.inc).
+	  - Remember the base DN(s) in the session variable BASE_DN. I needed it in
+	    include/config.inc:user_generate_aci() and this was the simplest way to
+	    do it... Eventually all functions that need the base dn will use this variable
+	    in stead...
 
 phpQLAdmin 2.0.18d Release (May 19 2004)
 	Bug fixes

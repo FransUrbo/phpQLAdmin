@@ -3,7 +3,7 @@
 // This file contains what I think is 'resonable defaults'.
 // Don't change here, change any values in the web interface!
 //
-// $Id: defaults.inc,v 2.29 2004-04-07 14:02:29 dlw Exp $
+// $Id: defaults.inc,v 2.30 2004-09-24 06:20:40 turbo Exp $
 
 // NOTE: Some of these defines isn't called with the (root/top)
 //       DN. They are (site) global variables, not per branch.
@@ -33,6 +33,11 @@ pql_set_define("PQL_CONF_AUTO_RELOAD", true, false);
 // PQL_CONF_CONTROL_USE (true | false)
 // set to true, if QmailLDAP/Control patch is supported by your system
 pql_set_define("PQL_CONF_CONTROL_USE", false, false);
+
+// ----------------------------
+// PQL_CONF_ACI_USE (true | false)
+// set to true, if you're using OpenLDAP >2.2.14 and you'd like to use ACI's.
+pql_set_define("PQL_CONF_ACI_USE", false, false);
 
 // ============================
 // The trick with the next two entries (PQL_CONF_CONTROL_AUTOADD{LOCALS,RCPTHOSTS}),
@@ -204,6 +209,13 @@ pql_set_define("PQL_CONF_MAXIMUM_DOMAIN_USERS", 'FALSE', false);
 // the full url where phpQLAdmin resides
 // ie: http://www.yourdomain.com/phpQLAdmin/
 pql_set_define("PQL_CONF_URI", "", false);
+
+// ----------------------------
+// PQL_ATTR_VIRTUAL_BASEHOME (string)
+// The (base directory of) virtual users home directory
+// Doesn not need to exists, but it is not allowed to be world writable
+// (Qmail thingie, not phpQLAdmin!).
+pql_set_define("PQL_CONF_VIRTUAL_BASEHOME", "/tmp/virtual", false);
 
 // ----------------------------
 if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $dn) == "dc") {
