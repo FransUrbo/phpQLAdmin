@@ -1,20 +1,14 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.31 2004-05-06 14:20:41 turbo Exp $
+// $Id: ezmlm_add.php,v 1.32 2004-05-10 15:10:49 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
-// forward back to list detail page
-function list_forward($domainname, $listno, $msg) {
-    $msg    = urlencode($msg);
-	$domain = urlencode($_REQUEST["rootdn"]);
-
-    $url = "ezmlm_detail.php?rootdn=$domain&domainname=$domainname&listno=$listno&msg=$msg&rlnb=3";
-    header("Location: " . pql_get_define("PQL_CONF_URI") . "$url");
-}
+$url["domain"] = pql_format_urls($_REQUEST["domain"]);
+$url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 
 if($_REQUEST["add_subs"]) {
 	$_REQUEST["subscribercount"]++;
@@ -33,13 +27,22 @@ if($_REQUEST["add_kill"]) {
 }
 
 if(!$_REQUEST["domainname"]) {
-	// Get list of domains
-	foreach($_pql->ldap_basedn as $dn)  {
-		$dn = urldecode($dn);
+	// We're not called with a specific domain name to add list to/in
 
-		$dom = pql_domain_get_value($_pql, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]);
-		foreach($dom as $d)
-		  $domains[] = $d;
+	if($_SESSION["ALLOW_BRANCH_CREATE"]) {
+		// This is a 'super-admin' - get ALL branches
+		$domains = pql_domain_get($_pql);
+	} else {
+		// Get list of domains where we are listed in the ezmlmAdministrator attribute
+		foreach($_pql->ldap_basedn as $dn)  {
+			$dn = urldecode($dn);
+			
+			$dom = pql_domain_get_value($_pql, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"), $_SESSION["USER_DN"]);
+			if(is_array($dom)) {
+				foreach($dom as $d)
+				  $domains[] = $d;
+			}
+		}
 	}
 
     if(!is_array($domains))
@@ -47,105 +50,95 @@ if(!$_REQUEST["domainname"]) {
 	  die("<b>".$LANG->_('Can\'t find any domains!')."</b><br>");
 	else {
 		asort($domains);
-		
-		if(is_array($domains)) {
-			// Get the domainname from the domain object
-			foreach($domains as $key => $d) {
-				$dont_add = 0;
-				
-				// Get the default domainname for the domain
-				$defaultdomainname = pql_domain_get_value($_pql, $d, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 
-				// Remove duplicates
-				if($domain_list)
-				  foreach($domain_list as $branch => $data)
-					for($i=0; $data[$i]; $i++)
-					  if($data[$i] == $defaultdomainname)
-						$dont_add = 1;
-				
-				if(!$dont_add)
-				  $domain_list[$d][] = $defaultdomainname;
+		// Get the domainname from the domain object
+		foreach($domains as $key => $d) {
+			$dont_add = 0;
+			
+			// Get the default domainname for the domain
+			$defaultdomainname = pql_domain_get_value($_pql, $d, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+			
+			// Remove duplicates
+			if($domain_list) {
+				foreach($domain_list as $branch => $data)
+				  for($i=0; $data[$i]; $i++)
+					if($data[$i] == $defaultdomainname)
+					  $dont_add = 1;
 			}
-
-			foreach($domains as $key => $d) {
-				$dont_add = 0;
-				
-				// Get any additional domainname(s) for the domain
-				$additionaldomainnames = pql_domain_get_value($_pql, $d, pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
-
-				if(is_array($additionaldomainnames)) {
-					foreach($additionaldomainnames as $additional) {
-						// Remove duplicates
-						if($domain_list)
-						  foreach($domain_list as $branch => $data)
-							for($i=0; $data[$i]; $i++)
-							  if($data[$i] == $additional)
-								$dont_add = 1;
-						
-						if(!$dont_add)
-						  $domain_list[$d][] = $additional;
+			
+			if(!$dont_add)
+			  $domain_list[$d][] = pql_maybe_idna_decode($defaultdomainname);
+		}
+		
+		foreach($domains as $key => $d) {
+			$dont_add = 0;
+			
+			// Get any additional domainname(s) for the domain
+			$additionaldomainnames = pql_domain_get_value($_pql, $d, pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
+			
+			if(is_array($additionaldomainnames)) {
+				foreach($additionaldomainnames as $additional) {
+					// Remove duplicates
+					if($domain_list) {
+						foreach($domain_list as $branch => $data)
+						  for($i=0; $data[$i]; $i++)
+							if($data[$i] == $additional)
+							  $dont_add = 1;
 					}
+					
+					if(!$dont_add)
+					  $domain_list[$d][] = pql_maybe_idna_decode($additional);
 				}
 			}
 		}
 	}
-}
-
-if(!$_REQUEST["add_subs"] and !$_REQUEST["add_kill"]) {
-	// These should be reasonable defaults I think...
-	// But only the first time page is loaded!
-	$checked["subhelp"]		= " CHECKED";	// -hH
-	$checked["subjump"]		= " CHECKED";	// -jJ
-	$checked["reqaddress"]	= " CHECKED";	// -qQ
-	$checked["subonly"]		= " CHECKED";	// -uU
-	$checked["prefix"]		= " CHECKED";	// -fF
-	$checked["archived"]	= " CHECKED";	// -aA
-	$checked["indexed"]		= " CHECKED";	// -iI
-	$checked["trailers"]	= " CHECKED";	// -tT
-	$checked["public"]		= " CHECKED";	// -p
 } else {
-	// This is a reload (adding subscriber or reject address).
-	// Set the values CHECKED if they where when submitting...
-	if($_REQUEST["archived"])		$checked["archived"]		= " CHECKED";	// -aA
-	if($_REQUEST["remotecfg"])		$checked["remotecfg"]		= " CHECKED";	// -cC
-	if($_REQUEST["digest"])			$checked["digest"]			= " CHECKED";	// -dD
-	if($_REQUEST["prefix"])			$checked["prefix"]			= " CHECKED";	// -fF
-	if($_REQUEST["guardedarchive"])	$checked["guardedarchive"]	= " CHECKED";	// -gG
-	if($_REQUEST["subhelp"])		$checked["subhelp"]			= " CHECKED";	// -hH
-	if($_REQUEST["indexed"])		$checked["indexed"]			= " CHECKED";	// -iI
-	if($_REQUEST["subjump"])		$checked["subjump"]			= " CHECKED";	// -jJ
-	if($_REQUEST["sublistable"])	$checked["sublistable"]		= " CHECKED";	// -lL
-	if($_REQUEST["moderated"])		$checked["moderated"]		= " CHECKED";	// -mM
-	if($_REQUEST["modonly"])		$checked["modonly"]			= " CHECKED";	// -oO
-	if($_REQUEST["reqaddress"])		$checked["reqaddress"]		= " CHECKED";	// -qQ
-	if($_REQUEST["remoteadm"])		$checked["remoteadm"]		= " CHECKED";	// -{rn,RN}
-	if($_REQUEST["submoderated"])	$checked["submoderated"]	= " CHECKED";	// -sS
-	if($_REQUEST["trailers"])		$checked["trailers"]		= " CHECKED";	// -tT
-	if($_REQUEST["subonly"])		$checked["subonly"]			= " CHECKED";	// -uU
-	if($_REQUEST["extras"])			$checked["extras"]			= " CHECKED";	// -xX
-	if($_REQUEST["pubpriv"] == 'public')
-	  $checked["public"]			= " CHECKED";	// -p
-	elseif($_REQUEST["pubpriv"] == 'private')
-	  $checked["private"]			= " CHECKED";	// -P
-}
+	// We're called with a specific domain name to add list to/in
 
-if($_REQUEST["domainname"]) {
-	if(ereg(';', $_REQUEST["domainname"]))
-	  $data = split(';', $_REQUEST["domainname"]);
-	else {
-		$data[0] = $_REQUEST["rootdn"];
-		$data[1] = $_REQUEST["domainname"];
+	// Get domain branch and root DN(s)
+	if(!$_REQUEST["rootdn"] and !$_REQUEST["domain"] and $_REQUEST["domainname"]) {
+		$tmp = split(';', $_REQUEST["domainname"]);
+
+		$_REQUEST["domain"]     = $tmp[0];
+		$_REQUEST["domainname"] = $tmp[1];
+
+		$_REQUEST["rootdn"] = pql_get_rootdn($_REQUEST["domain"]);
+
+		$url["domain"] = pql_format_urls($_REQUEST["domain"]);
+		$url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 	}
-	
+
 	// Get basemaildir path for domain
-	if(!($path = pql_domain_get_value($_pql, $data[0], pql_get_define("PQL_ATTR_BASEMAILDIR"))))
+	if(!($path = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEMAILDIR"))))
 	  die(pql_complete_constant($LANG->_('Can\'t get %what% path from domain \'%domain%\'!'),
 								array('what'   => pql_get_define("PQL_ATTR_BASEMAILDIR"),
-									  'domain' => $data[1])));
+									  'domain' => $_REQUEST["domainname"])));
 	
 	require("./include/pql_ezmlm.inc");
-	$ezmlm = new ezmlm(pql_get_define("PQL_CONF_EZMLM_USER"), $path);
-}	
+
+	$user  = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_EZMLM_USER"));
+	$ezmlm = new ezmlm($user, $path);
+
+	// How many domains do we have in this branch/domain?
+	$count = $ezmlm->mailing_lists_hostsindex["COUNT"];
+
+	// How many do we allow?
+	$max   = pql_get_define("PQL_CONF_MAXIMUM_MAILING_LISTS", $_REQUEST["rootdn"]);
+		
+	// Incase maximum allowed is NULL, we allow unlimited (count + 1 is a good value :).
+	$max = $max ? $max : $count + 1;
+	if($count > $max) {
+?>
+  <span class="title2">
+    <?=$LANG->_('Sorry, you have reached the maximum allowed mailinglists in this domain')?><br>
+    <?php echo pql_complete_constant($LANG->_('You have %count% mailinglists, but only %allowed% is allowed.'),
+									 array('count' => $count, 'allowed' => $max)); ?>
+
+  </span>
+<?php
+		die();
+	}
+}
 
 // Create list
 if(isset($_REQUEST["submit"])) {
@@ -159,7 +152,7 @@ if(isset($_REQUEST["submit"])) {
 		if(is_array($_REQUEST["killlist"]))
 		  $checked["kill"] = 1;
 
-		if($ezmlm->updatelistentry(1, $_REQUEST["listname"], $data[1], $checked)) {
+		if($ezmlm->updatelistentry(1, $_REQUEST["listname"], $_REQUEST["domainname"], $checked)) {
 			for($i=1; $i <= $_REQUEST["subscribercount"]; $i++) {
 				if($_REQUEST["subscriber"][$i])
 				  $ezmlm->subscribe($_REQUEST["listname"], $_REQUEST["subscriber"][$i]);
@@ -170,52 +163,68 @@ if(isset($_REQUEST["submit"])) {
 				  $ezmlm->subscribe_kill($_REQUEST["listname"], $_REQUEST["killlist"][$i]);
 			}
 
-			$msg = "Successfully created list ".$_REQUEST["listname"]."<br>";
-			list_forward($data[1], $_REQUEST["listname"], $msg);
+			$msg  = urlencode("Successfully created list ".$_REQUEST["listname"]."<br>");
 		} else
-		  list_forward($domain, NULL, $ezmlm->error);
+		  $msg  = urlencode($ezmlm->error);
+
+		$url  = "ezmlm_detail.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&domainname=".$_REQUEST["domainname"];
+		$url .= "&listno=".$_REQUEST["listname"]."&msg=$msg&rlnb=3";
+		header("Location: " . pql_get_define("PQL_CONF_URI") . "$url");
 	} else
-	  $error_text["listname"] = $LANG->_('Missing');
+	  $error_text["listname"] = $LANG->_('Missing')."<br>";
+} else {
+	if(!$_REQUEST["add_subs"] and !$_REQUEST["add_kill"]) {
+		// These should be reasonable defaults I think...
+		// But only the first time page is loaded!
+		$checked["subhelp"]		= " CHECKED";	// -hH
+		$checked["subjump"]		= " CHECKED";	// -jJ
+		$checked["reqaddress"]	= " CHECKED";	// -qQ
+		$checked["subonly"]		= " CHECKED";	// -uU
+		$checked["prefix"]		= " CHECKED";	// -fF
+		$checked["archived"]	= " CHECKED";	// -aA
+		$checked["indexed"]		= " CHECKED";	// -iI
+		$checked["trailers"]	= " CHECKED";	// -tT
+		$checked["public"]		= " CHECKED";	// -p
+	} else {
+		// This is a reload (adding subscriber or reject address).
+		// Set the values CHECKED if they where when submitting...
+		if($_REQUEST["archived"])		$checked["archived"]		= " CHECKED";	// -aA
+		if($_REQUEST["remotecfg"])		$checked["remotecfg"]		= " CHECKED";	// -cC
+		if($_REQUEST["digest"])			$checked["digest"]			= " CHECKED";	// -dD
+		if($_REQUEST["prefix"])			$checked["prefix"]			= " CHECKED";	// -fF
+		if($_REQUEST["guardedarchive"])	$checked["guardedarchive"]	= " CHECKED";	// -gG
+		if($_REQUEST["subhelp"])		$checked["subhelp"]			= " CHECKED";	// -hH
+		if($_REQUEST["indexed"])		$checked["indexed"]			= " CHECKED";	// -iI
+		if($_REQUEST["subjump"])		$checked["subjump"]			= " CHECKED";	// -jJ
+		if($_REQUEST["sublistable"])	$checked["sublistable"]		= " CHECKED";	// -lL
+		if($_REQUEST["moderated"])		$checked["moderated"]		= " CHECKED";	// -mM
+		if($_REQUEST["modonly"])		$checked["modonly"]			= " CHECKED";	// -oO
+		if($_REQUEST["reqaddress"])		$checked["reqaddress"]		= " CHECKED";	// -qQ
+		if($_REQUEST["remoteadm"])		$checked["remoteadm"]		= " CHECKED";	// -{rn,RN}
+		if($_REQUEST["submoderated"])	$checked["submoderated"]	= " CHECKED";	// -sS
+		if($_REQUEST["trailers"])		$checked["trailers"]		= " CHECKED";	// -tT
+		if($_REQUEST["subonly"])		$checked["subonly"]			= " CHECKED";	// -uU
+		if($_REQUEST["extras"])			$checked["extras"]			= " CHECKED";	// -xX
+		if($_REQUEST["pubpriv"] == 'public')
+		  $checked["public"]			= " CHECKED";	// -p
+		elseif($_REQUEST["pubpriv"] == 'private')
+		  $checked["private"]			= " CHECKED";	// -P
+	}
 }
 
-require("./header.html");
+// --------------------------------------------
+// We haven't submitted (or we're missing listname and/or domain name) - show 'add list form'.
 
-if(!$_REQUEST["rootdn"]) {
+require("./header.html");
+if(!$_REQUEST["domainname"]) {
 ?>
-  <span class="title1"><?=$LANG->_('Create mailinglist')?></span>
+  <span class="title1"><?=$LANG->_('Create mailinglist to system')?></span>
 <?php
 } else {
-	$dom = pql_domain_get_value($_pql, $_REQUEST["rootdn"], pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"), $_SESSION["USER_DN"]);
-	if(is_array($dom)) {
-		// How many domains do we have in this branch/domain?
-		$count = $ezmlm->mailing_lists_hostsindex["COUNT"];
-		
-		// How many do we allow?
-		$max   = pql_get_define("PQL_CONF_MAXIMUM_MAILING_LISTS", $_REQUEST["rootdn"]);
-		
-		// Incase maximum allowed is NULL, we allow unlimited (count + 1 is a good value :).
-		$max = $max ? $max : $count + 1;
-		if($count > $max) {
 ?>
-  <span class="title2">
-    <?=$LANG->_('Sorry, you have reached the maximum allowed mailinglists in this domain')?><br>
-    <?php echo pql_complete_constant($LANG->_('You have %count% mailinglists, but only %allowed% is allowed.'),
-									 array('count'   => $count, 'allowed' => $max)); ?>
-
-  </span>
-<?php
-			die();
-		} else { ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Create mailinglist in domain %domain%'),
 														array('domain' => $_REQUEST["domainname"]))?></span>
 <?php
-		}
-	} else {
-?>
-  <span class="title2"><?=$LANG->_('Sorry, you do not have access to create mailinglists in this domain')?></span>
-<?php
-		die();
-	}
 }
 ?>
   <br><br>
@@ -229,7 +238,7 @@ if(!$_REQUEST["rootdn"]) {
           <td><?php echo pql_format_error_span($error_text["listname"]); ?>
 
 <?php
-if(!$_REQUEST["rootdn"]) {
+if(!$_REQUEST["domainname"]) {
 	// No domain - select box with existing domains
 ?>
             <input name="listname" value="<?=$_REQUEST["listname"]?>"><b>@<?php
@@ -267,7 +276,7 @@ if(!$_REQUEST["rootdn"]) {
           <td class="title"><?=$LANG->_('List owner')?></td>
           <td>
             <input name="listowner" value="<?=$_REQUEST["listowner"]?>">
-            <i>(<b><?=$LANG->_('Optional')?></b>: <?=$LANG->_('If not mailbox in list directory')?>)</i>
+            <i>(<b><?=$LANG->_('Optional')?></b>: <?=$LANG->_('If not set, mailbox in list directory')?>)</i>
           </td>
         </tr>
 
@@ -275,7 +284,7 @@ if(!$_REQUEST["rootdn"]) {
           <td class="title"><?=$LANG->_('From address')?></td>
           <td>
             <input name="fromaddress" value="<?=$_REQUEST["fromaddress"]?>">
-            <i>(<b><?=$LANG->_('Optional')?></b>: <?=$LANG->_('If not same as listname')?>)</i>
+            <i>(<b><?=$LANG->_('Optional')?></b>: <?=$LANG->_('If not set, same as listname')?>)</i>
           </td>
         </tr>
 
@@ -413,7 +422,7 @@ if(!$_REQUEST["rootdn"]) {
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Subscriber address(es)')?></th>
 <?php
-	for($i = 1; $i < $_REQUEST["subscribercount"]; $i++) {
+	for($i = 1; $i <= $_REQUEST["subscribercount"]; $i++) {
 ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Subscriber')?></td>
@@ -457,6 +466,10 @@ if(!$_REQUEST["rootdn"]) {
 <?php
 	}
 ?>
+        <tr class="<?php pql_format_table(); ?>">
+          <td class="title"><?=$LANG->_('Address')?></td>
+          <td><input type="text" name="killlist[<?=$i?>]" value="<?=$killlist[$i]?>"<?=$onchg?> size="50"></td>
+        </tr>
       </th>
     </table>
 
@@ -476,6 +489,7 @@ if(!$_REQUEST["rootdn"]) {
     <input type="hidden" name="subscribercount" value="<?=$_REQUEST["subscribercount"]?>">
     <input type="hidden" name="killcount"       value="<?=$_REQUEST["killcount"]?>">
     <input type="hidden" name="rootdn"          value="<?=$_REQUEST["rootdn"]?>">
+    <input type="hidden" name="domain"          value="<?=$_REQUEST["domain"]?>">
 
     <p>
 
