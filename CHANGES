@@ -1,17 +1,77 @@
 phpQLAdmin 2.0 Change Log
 
 phpQLAdmin 2.0.3 Release - TO BE RELEASED
-	- Documentation update
-	- EZMLM Manager class(es) removed. Re-implemented what I needed.
-	- Possibility to set path/command for ezmlm management (should be
-	  possible to use scripts/commands that do remote administration).
-	- Small bug fix in include statements (prefix with './include/').
-	- GUI layout change
-	  + 'Tablify' the home links (original/new maintainers etc).
-	  + Show what user to modify in user_edit_attribute, so we don't
+	Bug fixes
+	  - Documentation update
+	  - Missed some include($include) line (prefix with './include/').
+	  - Foundation for changing LDAP server(s). If we can't connect/bind
+	    to the LDAP server, this must mean we changed server, and we need
+	    to reauthenticate. 
+	  - The 'Advance mode' checkbox should reload index2.php, not self,
+	    and send it to _top.
+	  - Fixed the 'are you sure you want to delete ...'. Isn't outputted
+	    when PQL_VERIFY_DELETE is true, so I missed this :)
+	  - Forgot to increase the created UID Number with one, so we ended up
+	    with the same number as the highest one in the database.
+	  - Don't build the email@domain TWICE, and the variable is called
+	    '$mail', not '$email'!
+	  - Make sure we only include the config file (include/config.inc)
+	    ONCE (with a simple if() at the top).
+	  - Correctly reference the LDAP branch as 'branch' or 'domain'
+	    depending on what type of database layout we're using.
+	  - If we couldn't bind to the LDAP server, destroy and unset the
+	    session completly.
+	  - Delete the users group object after we created the user object.
+
+	EZMLM Mailinglist management
+	  - EZMLM Manager class(es) removed. Re-implemented what I needed
+	    in my own 'include/pql_ezmlm.inc'.
+	  - Possibility to set path/command for ezmlm management (should be
+	    possible to use scripts/commands that do remote administration).
+	  - Search all 'baseMailDirs' for accessible domain (ie, domain tree
+	    one have access to) for ezmlm lists. This gives that each domain
+	    have lists in there own directory, instead of every single list
+	    in something like /var/lists.
+
+	GUI layout change
+	  - 'Tablify' the home links (original/new maintainers etc).
+	  - Show what user to modify in user_edit_attribute, so we don't
 	    modify 'in the blind'.
-	- Replace/Modify 'gecos' and 'givenName' entries at the same time
-	  we're modifying the 'cn' entry.
+	  - Show more information
+	    + Allow change of LDAP server [y/n]
+	    + Verify user/domain deletions [y/n]
+	    + Objectclasses used to create users
+	    + Domain/Users reference attribute (uid/cn, dc/ou etc)
+	    + Domain/Branch owner (telephone number, Contact person etc) in
+	      the domain details view.
+		Uses the objectclass 'dcOrganizationNameForm' (schema file
+		included)
+	    + Personal details (telephone number, cell phone etc) in the
+	      user details view.
+		Uses the objectclass 'pilotPerson'.
+	  - Add delete icon/func to each attribute view in the mail server
+	    controls view.
+	  - Separate form page to create new branch/domain.
+	  - Only create the 'controls' and/or 'ezmlm' frames if either of
+	    the PQL_LDAP_CONTROL_USE or PQL_LDAP_EZMLM_USE is enabled. It
+	    looked funny when both where disabled...
+	  - Slightly more information on the 'front page'.
+	    - Version number is displayed in bold at the top
+	    - Link to CHANGES and the new phpQLAdmin page
+
+	Misc changes
+	  - Replace/Modify 'gecos' and 'givenName' entries at the same time
+	    we're modifying the 'cn' entry.
+	  - Action to create and delete a mailserver. When adding a new
+	    mailserver, if we clone an existing one, include all
+	    {locals,rcpthosts,passwd} info in clone (configurable with
+	    checkboxes).
+	  - Enable execution of external add user/domain scripts. Two example
+	    scripts is included.
+	  - Reasonable zone file creation template included and correctly called.
+	  - Use specific attributes to store domain/branch default values and
+	    domain/branch administrator. Schema file (phpQLAdmin.schema included).
+	    This will break an upgrade - read README.upgrade!!
 
 phpQLAdmin 2.0.2 Release
 	- Documentation update

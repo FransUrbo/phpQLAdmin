@@ -3,6 +3,10 @@ through phpQLAdmin, it is a requirenment that you read README.acl.
 If you don't (and fully understand it! :), you won't see your database,
 no matter HOW you configure it.
 
+If you're upgrading from phpQLAdmin version 2.0.2, then you MUST read
+the README.upgrade file! It contains important information that will
+break your admin interface (phpQLAdmin) if not fully understood.
+
 
 Version 2.0 of phpQLAdmin was (re)designed to be more forgiving on how
 the layout of the LDAP database is layed out. It does however dictate
