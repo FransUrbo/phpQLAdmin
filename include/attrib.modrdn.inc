@@ -1,7 +1,29 @@
 <?php
 // attribute plugin for changing/renaming the DN
 //
-// $Id: attrib.modrdn.inc,v 2.10 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.modrdn.inc,v 2.11 2004-11-05 12:15:32 turbo Exp $
+
+// {{{ attribute_setup_aci(linkid, dn, old, new)
+function attribute_setup_aci($linkid, $dn, $old, $new) {
+	// Get the old ACI's for this object
+	$old_acis = pql_aci_get($linkid, $dn);
+
+	// Look for the user
+	for($i=0, $oid=0; $old_acis[$i]; $i++, $oid++) {
+		if($old_acis[$i]['SUBJECT']) {
+			if(lc($old_acis[$i]['SUBJECT']) == lc($old)) {
+				// Replace the old value with the new.
+				$new_acis[] = eregi_replace($old, $new, $old_acis[$i]['LINE']);
+			} else
+			  $new_acis[] = $old_acis[$i]['LINE'];
+		} else
+		  $new_acis[] = $old_acis[$i]['LINE'];
+	}
+
+	// Return the new ACI list.
+	return($new_acis);
+}
+// }}}
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -82,30 +104,33 @@ function attribute_save($type) {
 	else
 	  $keepold = 'false';
 
-	// Remember it for the fail/success story
-	$olduser = $_REQUEST["user"];
-
 	// Split the value into two parts - attribute and value
-	$dnattr = split("=", $_REQUEST["user"]);
-
-	// URL/UTF8 encode the value, not the attribute
-	$dn = pql_maybe_encode($dnattr[1], $dnattr[0]);
+	$dnattr = explode("=", $_REQUEST["oldvalue"]);
 
 	// Create a new DN part
-	$user = $dnattr[0]."=".$dn;
+	$user = $dnattr[0]."=".$_REQUEST["user"];
 
-	// Make sure we can have a ' in the branch
-	$oldvalue = eregi_replace("\\\'", "'", $_REQUEST["oldvalue"]);
-	$rdn = eregi_replace("\\\'", "'", $_REQUEST["rdn"]);
+	// {{{ Rename the RDN
+	$success = 0;
+    if(file_exists("./.DEBUG_ME")) {
+		echo "Renaming<br>'<b>".$_REQUEST["oldvalue"]."</b>'<br>to<br>'<b>$user,".$_REQUEST["rdn"]."</b>'<br>";
+		$user = $user.",".$_REQUEST["rdn"];
 
-	if(ldap_rename($_pql->ldap_linkid, $oldvalue, $user, $rdn, $keepold)) {
-		$msg = pql_complete_constant($LANG->_('Successfully renamed RDN %user%'),
-									 array('user' => $olduser));
+		$success = 1;
+	} else {
+		if(ldap_rename($_pql->ldap_linkid, $_REQUEST["oldvalue"], $user, $_REQUEST["rdn"], $keepold)) {
+			$user = $user.",".$_REQUEST["rdn"];
 
-		// Since the DN have change, replace the 'user' value (which is used in
-		// the attribute_forward() function later on).
-		$user = $user.",".$rdn;
+			$success = 1;
+		}
+	}
+	
+	if($success) {
+		$msg = pql_complete_constant($LANG->_('Successfully renamed RDN %old% to %new%'),
+									 array('old' => $_REQUEST["oldvalue"],
+										   'new' => $user));
 
+		// {{{ Replace all references to this user in the admin attributes
 		// We're only interested in these attributes
 		$attribs = array(pql_get_define("PQL_ATTR_ADMINISTRATOR"),
 						 pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
@@ -114,10 +139,26 @@ function attribute_save($type) {
 
 		// Replace all administrator/seealso attributes that reference the old
 		// user DN with the new DN.
-		pql_replace_values($_pql, $attribs, $oldvalue, $user);
+		pql_replace_values($_pql, $attribs, $_REQUEST["oldvalue"], $user);
+		// }}}
+		
+		// {{{ Change all ACI's in all the objects in all the base DN's.
+		if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci")) {
+			foreach($_pql->ldap_basedn as $dn) {
+				$objects = pql_get_dn($_pql->ldap_linkid, $dn, 'objectClass=*');
+				for($i=0; $objects[$i]; $i++) {
+					$ACIs = attribute_setup_aci($_pql->ldap_linkid, $objects[$i], $_REQUEST["oldvalue"], $user);
+
+					// Modify this object. BUG: Should we care about failure/successes?!
+					pql_modify_attribute($_pql->ldap_linkid, $objects[$i], pql_get_define("PQL_ATTR_LDAPACI"), '', $ACIs);
+				}
+			}
+		}
+		// }}}
 	} else
 	  $msg = pql_complete_constant($LANG->_('Failed to rename RDN %user%'),
-				       array('user' => $olduser)) . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+								   array('user' => $_REQUEST["oldvalue"])) . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+	// }}}
 
 	// Redirect to the user details page...
 	attribute_forward($msg, true);
