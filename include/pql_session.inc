@@ -1,6 +1,6 @@
 <?php
 // Manage PHP sessions per phpQLAdmin instance
-// $Id: pql_session.inc,v 1.2 2005-03-08 05:40:13 turbo Exp $
+// $Id: pql_session.inc,v 1.3 2005-03-09 09:52:13 turbo Exp $
 
 // {{{ Start session
 if(!ereg('/$', $_SERVER["REQUEST_URI"])) {
@@ -40,6 +40,15 @@ if(!$_SESSION["URI"]) {
 
   unset($tmp1); unset($tmp2);
 }
+// }}}
+
+// {{{ Get user agent
+$br = strtolower($_SERVER["HTTP_USER_AGENT"]);
+$_SESSION["lynx"]      = eregi("lynx", $br);
+$_SESSION["konqueror"] = eregi("konqueror", $br);
+$_SESSION["opera"]     = eregi("opera", $br);
+$_SESSION["mozilla"]   = eregi("mozilla", $br);
+unset($br);
 // }}}
 
 /*
