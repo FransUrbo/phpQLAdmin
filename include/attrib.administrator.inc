@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.23 2003-08-20 14:21:51 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.24 2003-10-11 16:51:15 turbo Exp $
 
 require("./left-head.html");
 
@@ -84,8 +84,14 @@ function attribute_print_form($action) {
 					foreach($domains as $key => $branch) {
 						// Get domain part from the DN (Example: 'dc=test,dc=net' => 'test').
 						$d = split(',', $branch); $d = split('=', $d[0]); $d = $d[1];
+						$d = maybe_decode($d);
 ?>
 
+<?php if($opera) { ?>
+            <div id="el2Parent" class="parent" onclick="showhide(el<?=$j?>Spn, el<?=$j?>Img)">
+              <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$j?>Img">
+            </div>
+<?php } else { ?>
             <div id="el<?=$j?>Parent" class="parent">
               <a class="item" onClick="if (capable) {expandBase('el<?=$j?>', true); return false;}">
                 <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$j?>Img">
@@ -95,8 +101,13 @@ function attribute_print_form($action) {
                 <font color="black" class="heada"><?=$d?></font>
               </a>
             </div>
+<?php } ?>
         
+<?php if($opera) { ?>
+            <span id="el<?=$j?>Spn" style="display:'none'">
+<?php } else { ?>
             <div id="el<?=$j?>Child" class="child">
+<?php } ?>
 <?php					// Get all users (their DN) in this domain
 						$users = pql_get_user($_pql->ldap_linkid, $branch);
 						if(is_array($users)) {
@@ -117,7 +128,11 @@ function attribute_print_form($action) {
 
 						$j++;
 ?>
+<?php if($opera) { ?>
+            </span>
+<?php } else { ?>
             </div>
+<?php } ?>
 <?php				}
 				}
 			}

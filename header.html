@@ -3,6 +3,26 @@
   <head>
     <title><?php echo pql_get_define("PQL_GLOB_WHOAREWE"); ?></title>
     <link rel="stylesheet" href="normal.css" type="text/css">
+
+<?php
+  $opera==0;
+  $br = strtolower(getenv("HTTP_USER_AGENT"));
+  if(ereg("opera", $br)) {
+      $opera=true;
+?>
+    <script language="Javascript"><!--
+      var Open   = "";
+      var Closed = "";
+
+      function showhide(what, what2) {
+	  if (what.style.display == 'none') {
+	      what.style.display = '';
+	  } else {
+	      what.style.display = 'none';
+	  }
+      }
+    //--></script>
+<?php } ?>
   </head>
 
   <body bgcolor="#e7e7e7" background="images/bkg.png">
