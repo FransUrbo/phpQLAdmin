@@ -8,6 +8,10 @@ Things left to do
 	  - Give away the deleted users mailbox to another user.
 
 	IMPORTANT
+	* Automatic ACL update when adding a user as administrator for domain/branch.
+	  Currently the LDAP server ACL have to be updated, and the LDAP server
+	  restarted. This is naturaly not desired behaviour...
+	* Disallow administrator to create/modify mailinglists.
 	* Delete or modify the Kerberos principal if using {KERBEROS}
 	  password scheme.
 	* If we're modifying a value and we're missing an objectclass and the
