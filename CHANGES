@@ -49,6 +49,7 @@ phpQLAdmin 2.2.2 TO BE ANNOUNCED
 	Misc changes
 	  - Remove 'tables/.htaccess' and 'include/.htaccess'. These are left overs
 	    from phpQLAdmin <1.1 (when there was no login system other than htpasswd).
+	  - Don't start with the second branch ('el1Child') unfolded.
 
 phpQLAdmin 2.2.1 Release (Mar 17 2005)
 	Bug fixes
