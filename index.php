@@ -1,6 +1,6 @@
 <?php
 // logins to the system
-// $Id: index.php,v 2.36 2004-03-16 10:53:27 turbo Exp $
+// $Id: index.php,v 2.37 2004-05-13 05:40:35 turbo Exp $
 //
 // Start debuging
 // http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0
@@ -146,34 +146,27 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 <?php
 } else {
 	// -------------------------------------
-	// Get the LDAP server
-	if(!$_SESSION["USER_HOST"]) {
-	    // DLW: This code assumes that $_POST["server"] is set, but lower down it check to see if $_POST["server"] is set.
-		$host = split(';', $_POST["server"]);
-		$_SESSION["USER_HOST"] = $host[0] . ";" . $host[1];
-	} elseif(is_array($_SESSION["USER_HOST"])) {
-		$host = $_SESSION["USER_HOST"][0];
-		$_SESSION["USER_HOST"] = $host;
-	} elseif($_POST["server"]) {
-		$_SESSION["USER_HOST"]=$_POST["server"];
-	}
+	if($_POST["server"]) {
+		// Get the LDAP server
+		if(!$_SESSION["USER_HOST"]) {
+			$host = split(';', $_POST["server"]);
+			$_SESSION["USER_HOST"] = $host[0] . ";" . $host[1];
+		}
 
-	// -------------------------------------
-	// Get the search base - controls database
-	if(!$_SESSION["USER_SEARCH_DN_CTR"]) {
-		// Get first entry -> default server:port
-		$host = split('\+', $_POST["server"]);
-
-		// Get hostname and base DN
-		$dn   = split(';', $host[0]);
-		$_SESSION["USER_SEARCH_DN_CTR"] = $dn[2];
-	} elseif(is_array($_SESSION["USER_SEARCH_DN_CTR"])) {
-		$host = $_SESSION["USER_HOST"][2];
-		$_SESSION["USER_SEARCH_DN_CTR"] = $host;
-	}
+		// Get the search base - controls database
+		if(!$_SESSION["USER_SEARCH_DN_CTR"]) {
+			// Get first entry -> default server:port
+			$host = split('\+', $_POST["server"]);
+			
+			// Get hostname and base DN
+			$dn   = split(';', $host[0]);
+			$_SESSION["USER_SEARCH_DN_CTR"] = $dn[2];
+		}
+	} else
+	  die("No LDAP server to login to is defined. Weird.");
 
 	// NOTE:
-	// These variables will be NULL the first time,
+	// User DN and password will be NULL the first time,
 	// so we will bind anonymously... 
 	// We must have read access (to the DN and CN/UID =>
 	// the PQL_CONF_REFERENCE_USERS_WITH define entry) as
