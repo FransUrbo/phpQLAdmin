@@ -166,19 +166,20 @@ If you want this, install the schema file 'rfc2377.schema' into your
 LDAP server.
 
 
-
+Anonymous read to attributes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Another issue with LDAP ACL's is that you _absolutly_ need anonymous
-read to the 'namingContexts' attribute(s) in the '' DN. One way to
-find out if you have this, is to execute the following command:
+read to the 'namingContexts', 'subschemaSubentry' attribute(s) in the
+'' (base) DN. One way to find out if you have this, is to execute the
+following command:
 
------ s n i p -----
-ldapsearch -x -LLL -h localhost -s base -b '' objectclass=* namingContexts
------ s n i p -----
+	ldapsearch -x -LLL -h localhost -s base -b '' objectclass=* \
+		namingContexts subschemaSubentry
 
 If this only returns one line, such as:
 
 ----- s n i p -----
-[tuzjfi.tty2]$ ldapsearch -x -LLL -h localhost -s base -b '' objectclass=* namingContexts
+[tuzjfi.tty2]$ ldapsearch -x -LLL -h localhost -s base -b '' objectclass=* namingContexts subschemaSubentry
 dn:
 
 [tuzjfi.tty2]$
@@ -188,10 +189,11 @@ then you do not have anonymous read access to namingContexts. It should
 look something like:
 
 ----- s n i p -----
-[tuzjfi.tty2]$ ldapsearch -x -LLL -h localhost -s base -b '' objectclass=* namingContexts
+[tuzjfi.tty2]$ ldapsearch -x -LLL -h localhost -s base -b '' objectclass=* namingContexts subschemaSubentry
 dn:
 namingContexts: c=SE
 namingContexts: dc=com
+subschemaSubentry: cn=Subschema
 
 [tuzjfi.tty2]$
 ----- s n i p -----
@@ -204,6 +206,15 @@ To allow anonymous read access to the namingContexts in a OpenLDAP
 
 ----- s n i p -----
 # We need to allow anonymous read access to the namingContexts attribute
-access to dn.base="" attrs=namingContexts,objectClass,entry
+access to dn.base="" attrs=namingContexts,subschemaSubentry,objectClass,entry
 	by peername="IP=127\.0\.0\.1:.*" read
+
+# We need to allow anonymous to read the schema definitions the LDAP
+# server knows about. But only from localhost!
+access to dn.subtree="cn=Subschema"
+        by peername="IP=127\.0\.0\.1:.*" read
 ----- s n i p -----
+
+The reason why we (phpQLAdmin) needs anonymous read access to namingContexts
+and subschemaSubentry is because phpQLAdmin does a lot of 'automatic discovering'
+(of what the database look like etc).
