@@ -10,6 +10,10 @@ only three very usefull MAY's - full name (=> 'cn'), Lastname
 for the 'inetOrgPerson' objectclass. Adding these three attributes
 will make the left frame look a lot better!
 
+If you do NOT add the 'person' object class, it won't be possible
+to reference users with 'cn', only 'uid' which is the default
+behaviour in phpQLAdmin but don't look as good according to some...
+
 For more information, look at the mailing list (URL below). That
 have an example on how a VERY minimal 'virtual mail' account might
 look like (verified to work).
