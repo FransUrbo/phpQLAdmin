@@ -59,6 +59,12 @@ if($advanced == 1) {
 <?php  } ?>
 
   <!-- HOME -->
+<?php if($opera) { ?>
+  <div id="el2Parent" class="parent" onclick="showhide(el1Spn, el1Img)">
+    <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el1Img">
+    <a href="home.php"><font color="black" class="heada"><b><?=$LANG->_('Home')?></b></font></a>
+  </div>
+<?php } else { ?>
   <div id="el1Parent" class="parent">
     <a class="item" href="home.php" onClick="if (capable) {expandBase('el1', true); return false;}">
       <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el1Img">
@@ -68,8 +74,13 @@ if($advanced == 1) {
       <font color="black" class="heada"><b><?=$LANG->_('Home')?></b></font>
     </a>
   </div>
+<?php } ?>
 
+<?php if($opera) { ?>
+  <span id="el1Spn" style="display:'none'">
+<?php } else { ?>
   <div id="el1Child" class="child">
+<?php } ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="user_search.php"><?=$LANG->_('Find user')?></a></nobr><br>
 <?php if($ADVANCED_MODE) { ?>
 <?php	if($ALLOW_BRANCH_CREATE) { ?>
@@ -84,7 +95,11 @@ if($advanced == 1) {
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://phpqladmin.bayour.com/">phpqladmin.bayour.com</a></nobr><br>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://papadoc.bayour.com:23000/anthill/" target="_new"><?=$LANG->_('Bugtracker')?></a></nobr><br>
 <?php } ?>
+<?php if($opera) { ?>
+  </span>
+<?php } else { ?>
   </div>
+<?php } ?>
   <!-- HOME -->
 
 <?php
@@ -151,6 +166,12 @@ if(!isset($domains)) {
 	$j = $key + 2;
 ?>
   <!-- start domain parent -->
+<?php if($opera) { ?>
+  <div id="el<?=$j?>Parent" class="parent" onclick="showhide(el<?=$j?>Spn, el<?=$j?>Img)">
+    <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$j?>Img">
+    <a href="domain_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>"><font color="black" class="heada"><?=$d?></font></a>
+  </div>
+<?php } else { ?>
   <div id="el<?=$j?>Parent" class="parent">
     <a class="item" href="domain_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>" onClick="if (capable) {expandBase('el<?=$j?>', true); return false;}">
       <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$j?>Img">
@@ -160,10 +181,15 @@ if(!isset($domains)) {
       <font color="black" class="heada"><?=$d?></font>
     </a>
   </div>
+<?php } ?>
   <!-- end domain parent -->
 
   <!-- start domain children -->
+<?php if($opera) { ?>
+  <span id="el<?=$j?>Spn" style="display:'none'">
+<?php } else { ?>
   <div id="el<?=$j?>Child" class="child">
+<?php } ?>
 <?php
       // iterate trough all users
       if(pql_get_define("PQL_CONF_SHOW_USERS", $rootdn)) {
@@ -252,7 +278,11 @@ if(!isset($domains)) {
           }
       }
 ?>
+<?php if($opera) { ?>
+  </span>
+<?php } else { ?>
   </div>
+<?php } ?>
   <!-- end domain children -->
 
 <?php

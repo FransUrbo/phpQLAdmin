@@ -48,6 +48,26 @@
     body {  font-family: Arial, Helvetica, sans-serif; font-size: 10pt}
     //-->
   </style>
+
+<?php
+  $opera==0;
+  $br = strtolower(getenv("HTTP_USER_AGENT"));
+  if(ereg("opera", $br)) {
+      $opera=true;
+?>
+  <script language="Javascript"><!--
+    var Open   = "";
+    var Closed = "";
+
+    function showhide(what, what2) {
+	if (what.style.display == 'none') {
+	    what.style.display = '';
+	} else {
+	    what.style.display = 'none';
+	}
+    }
+  //--></script>
+<? } ?>
 </head>
 
 <body bgcolor="#D0DCE0">
