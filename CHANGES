@@ -2,11 +2,23 @@ phpQLAdmin 2.0 Change Log
 
 phpQLAdmin 2.0.6 Release - TO BE ANNOUNCED
 	Bug fixes
-	  - Calls to pql_email_exists() and pql_modify_userattribute() where
-	    modified to work with the new 'user/branch reference system' (using
-	    the RDN directly). But the code inside the function wasn't changed
-	    completly.
+	  - Calls to pql_email_exists(), pql_user_exist(), pql_get_mx() and
+	    pql_modify_userattribute() was called with the wrong/wrong number
+	    of parameter due to redesign of how domains/branches and users where
+	    references but code within functions wasn't changed fully.
 	  - Get the Administrator/SeeAlso values correctly.
+	  - Add UID and GID number (along with homedirectory=/tmp) by using the
+	    'posixAccount' objectclass when we create a Forwarding account.
+	  - Include the domain to the 'subbranch' variable so we get the full path
+	    to where the user should be created (got problems with/without ADVANCED
+	    mode etc) in the user_add page.
+	  - Include the domain/branch in the url when deleting a user (so we get
+	    redirected correctly).
+	  - Add forwardUIDNumber (PQL_LDAP_FORWARDINGACCOUNT_UIDNUMBER define)
+	    to objectclass phpQLAdminConfig so we can have the same (configurable)
+	    UID/GID number for forwarding accounts.
+	  - Don't destroy the session if we can't bind. For some reason, every now
+	    and then I'll get logged out for no apparent reason... This is a TODO.
 
 	GUI layout change
 	  - Test for 'required' objectclasses in the LDAP test page.
