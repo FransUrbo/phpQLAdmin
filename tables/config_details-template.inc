@@ -68,9 +68,10 @@ $templates = pql_get_templates($_pql->ldap_linkid);
 
       <!-- -------------------- -->
 <?php		$attribs = pql_templates_attributes($_pql->ldap_linkid, $templates[$i]["userobjectclass"]);
-			if(!is_array($attribs["must"])) {
+			if(!is_array($attribs["must"]))
 			  $attribs["must"] = array("<i>None</i>");
-			}
+			if(!is_array($attribs["may"]))
+			  $attribs["may"]  = array("<i>None</i>");
 
 			// Show the list of required attributes. It's always read only, so no frills.
 			pql_format_table_single($_pql->ldap_linkid, array('tit' => $LANG->_('Required attributes')),
