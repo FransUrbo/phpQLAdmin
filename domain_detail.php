@@ -86,13 +86,16 @@ $additionaldomainname = pql_get_domain_value($_pql, $domain, "additionaldomainna
 
   <table cellspacing="0" border="0" width="100%" cellpadding="0">
     <tr>
-      <td colspan="2" valign="bottom" align="left" width="100%"><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=default"?>"><img alt="/ Default Branch Values \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=owner"?>"><img alt="/ Branch Owner \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=users"?>"><img alt="/ Registred Users \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=chval"?>"><img alt="/ Change values of all users in this branch \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=dnsinfo"?>"><img alt="/ DNS Information \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=options"?>"><img alt="/ Control Options \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=action"?>"><img alt="/ Actions \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a></td>
+      <td colspan="2" valign="bottom" align="left" width="100%"><?php if($ADVANCED_MODE) { ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=default"?>"><img alt="/ Default Branch Values \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><?php } ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=owner"?>"><img alt="/ Branch Owner \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=users"?>"><img alt="/ Registred Users \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><?php if($ADVANCED_MODE) { ?><br><?php } ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=chval"?>"><img alt="/ Change values of all users in this branch \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><?php if(!$ADVANCED_MODE) { ?><br><?php } ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=dnsinfo"?>"><img alt="/ DNS Information \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><?php if($ADVANCED_MODE) { ?><br><?php } ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=options"?>"><img alt="/ Control Options \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><?php if($ADVANCED_MODE) { ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=action"?>"><img alt="/ Actions \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><?php } ?></td>
   </tr>
 </table>
 
 <?php
 if($ADVANCED_MODE and (($view == 'default') or ($view == ''))) {
 	include("./tables/domain_details-default.inc");
+} elseif($view == '') {
+	// Fallback if we're not running in advanced mode
+	$view = 'owner';
 }
 if($view == 'owner') {
 	include("./tables/domain_details-owner.inc");
