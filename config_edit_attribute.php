@@ -1,6 +1,6 @@
 <?php
 // Edit and set configuration values in the LDAP database
-// $Id: config_edit_attribute.php,v 1.12 2004-11-05 10:42:26 turbo Exp $
+// $Id: config_edit_attribute.php,v 1.13 2004-11-06 22:04:16 turbo Exp $
 //
 session_start();
 
@@ -10,7 +10,7 @@ $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PA
 include("./include/attrib.config.inc");
 include("./header.html");
 
-// forward back to configuration detail page
+// {{{ Forward back to configuration detail page
 function attribute_forward($msg, $rlnb = false) {
     $attrib = $_REQUEST["attrib"];
 
@@ -35,8 +35,9 @@ function attribute_forward($msg, $rlnb = false) {
 
     header("Location: " . pql_get_define("PQL_CONF_URI") . "$url");
 }
+// }}}
 
-// select what to do
+// {{{ Select what to do
 if(@$_REQUEST["submit"] == 1) {
     if(attribute_check()) {
 		attribute_save();
@@ -50,6 +51,7 @@ if(@$_REQUEST["submit"] == 1) {
 } else {
     attribute_print_form();
 }
+// }}}
 
 /*
  * Local variables:
