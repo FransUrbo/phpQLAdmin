@@ -64,35 +64,37 @@ if($ENV{"PQL_HOMEDIRECTORY"}) {
 }
 chown($ENV{"PQL_UIDNUMBER"}, $ENV{"PQL_GIDNUMBER"}, $DIR);
 
-# Add the Kerberos principal
-if(-x $ENV{"PQL_KADMIN_CMD"} && $ENV{"PQL_USERPASSWORD"}) {
-    $principal = (split('}', $ENV{"PQL_USERPASSWORD"}))[1];
-    $principal = (split('\@', $principal))[0];
-
-    push(@args, $ENV{"PQL_KADMIN_CMD"});
-    if($ENV{"PQL_KADMIN_REALM"}) {
-	push(@args, "-r");
-	push(@args, $ENV{"PQL_KADMIN_REALM"});
+if($ENV{"PQL_USERPASSWORD"} =~ /kerberos/i) {
+    # Add the Kerberos principal
+    if(-x $ENV{"PQL_KADMIN_CMD"} && $ENV{"PQL_USERPASSWORD"}) {
+	$principal = (split('}', $ENV{"PQL_USERPASSWORD"}))[1];
+	$principal = (split('\@', $principal))[0];
+	
+	push(@args, $ENV{"PQL_KADMIN_CMD"});
+	if($ENV{"PQL_KADMIN_REALM"}) {
+	    push(@args, "-r");
+	    push(@args, $ENV{"PQL_KADMIN_REALM"});
+	}
+	
+	if($ENV{"PQL_KADMIN_PRINC"}) {
+	    push(@args, "-p");
+	    push(@args, $ENV{"PQL_KADMIN_PRINC"});
+	}
+	
+	if($ENV{"PQL_KADMIN_SERVR"}) {
+	    push(@args, "-s");
+	    push(@args, $ENV{"PQL_KADMIN_SERVR"});
+	}
+	
+	if($ENV{"PQL_KADMIN_KEYTB"}) {
+	    push(@args, "-k");
+	    push(@args, "-t");
+	    push(@args, $ENV{"PQL_KADMIN_KEYTB"});
+	}
+	
+	push(@args, "-q");
+	push(@args, "ank -randkey $principal");
+	
+	system(@args) == 0 or die "system command '@args' failed: $?"
     }
-
-    if($ENV{"PQL_KADMIN_PRINC"}) {
-	push(@args, "-p");
-	push(@args, $ENV{"PQL_KADMIN_PRINC"});
-    }
-
-    if($ENV{"PQL_KADMIN_SERVR"}) {
-	push(@args, "-s");
-	push(@args, $ENV{"PQL_KADMIN_SERVR"});
-    }
-
-    if($ENV{"PQL_KADMIN_KEYTB"}) {
-	push(@args, "-k");
-	push(@args, "-t");
-	push(@args, $ENV{"PQL_KADMIN_KEYTB"});
-    }
-
-    push(@args, "-q");
-    push(@args, "ank -randkey $principal");
-
-    system(@args) == 0 or die "system command '@args' failed: $?"
 }
