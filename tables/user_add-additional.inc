@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-additional.inc,v 1.12 2004-03-27 09:41:43 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.13 2004-03-30 06:24:59 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <input type="hidden" name="surname"            value="<?=$_REQUEST["surname"]?>">
     <input type="hidden" name="name"               value="<?=$_REQUEST["name"]?>">
@@ -11,7 +11,7 @@
 <?php } else { ?>
     <input type="hidden" name="forwardingaddress"  value="<?=$_REQUEST["forwardingaddress"]?>">
 <?php } ?>
-    <input type="hidden" name="subbranch"          value="<?=$_REQUEST["subbranch"]?>">
+    <input type="hidden" name="subbranch"          value="<?=$url["subbranch"]?>">
     <input type="hidden" name="email_domain"       value="<?=$_REQUEST["email_domain"]?>">
     <input type="hidden" name="include_additional" value="<?=$_REQUEST["include_additional"]?>">
 
