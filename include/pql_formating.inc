@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.18 2004-03-13 09:13:01 turbo Exp $
+// $Id: pql_formating.inc,v 2.19 2004-03-14 13:30:20 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -403,7 +403,14 @@ function pql_maybe_encode($string, $attrib = '', $linkid = '') {
 			}
 		
 			// Does this attribute allow a UTF-8 encoded string?
-			if(eregi('1\.3\.6\.1\.4\.1\.1466\.115\.121\.1\.15', $syntax))
+			// 1.3.6.1.4.1.1466.115.121.1.15	UTF-8 encoded string
+			// 1.3.6.1.4.1.1466.115.121.1.41	? - not listed...
+			//		Only attributes that uses .41 are:
+			//		postalAddress, registeredAddress and homePostalAddress
+			//		-> I hope that it's ok to UTF-8 encode these values.
+			//		   The database (OpenLDAP 2.0) accepts it anyway.
+			if(eregi('1\.3\.6\.1\.4\.1\.1466\.115\.121\.1\.15', $syntax) or
+			   eregi('1\.3\.6\.1\.4\.1\.1466\.115\.121\.1\.41', $syntax))
 			  return(utf8_encode($string));
 			else
 			  // Oups, no! Replace any national character with it's
