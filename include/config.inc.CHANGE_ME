@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.18 2003-02-04 08:06:41 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.19 2003-03-06 09:21:27 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -32,9 +32,9 @@ if(!$PQL_CONFIG_INCLUDED) {
 	//
 	// Note: URI and SSL support were added in PHP v4.0.4.
 	//
-	// Stack these with space and you'll get a list of host you can
-	// administrate. If only one, then you can obiously only configure
-	// that :)
+	// Stack these with the + (plus) character and you'll get a list of
+	// host you can administrate. If only one, then you can obiously only
+	// configure that :)
 	//pql_define("PQL_LDAP_HOST","ldaps://localhost/;;ou=QmailLDAP,dc=example,dc=com");
 	pql_define("PQL_LDAP_HOST","localhost;389;ou=QmailLDAP,dc=example,dc=com");
 	

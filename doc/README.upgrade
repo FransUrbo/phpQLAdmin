@@ -1,3 +1,13 @@
+Upgrading from 2.0.8
+	The schema have been updated, so don't forget to load the new
+	version!
+
+	Separation of LDAP servers in the PQL_LDAP_HOST define is now
+	done with the plus (=> +) character instead of space. This so
+	that we can have spaces within our search/base DN. This means
+	that you'll have to update the include/config.inc file yet
+	again!
+
 Upgrading from 2.0.7
 	The schema have been updated, so don't forget to load the new
 	version!
