@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.163 2004-03-18 07:41:15 turbo Exp $
+// $Id: pql.inc,v 2.164 2004-03-18 12:48:29 turbo Exp $
 //
 
 // ----------------------------
@@ -117,6 +117,8 @@ class pql {
 		//	Automatically follow referrals returned by LDAP server?
 		//	LDAP_OPT_OFF			 0
 		//	LDAP_OPT_ON				!0 (default)
+		//
+		// NOTE: Enabling this if the LDAP server is an AD is a bad idea
 		ldap_set_option($this->ldap_linkid, LDAP_OPT_REFERRALS,	0);
 
 		// LDAP_OPT_DEREF
@@ -206,8 +208,7 @@ class pql {
 // ------------------------------------------------
 
 // {{{ pql_user_get(ldap_linkid, dn)
-
-// Get all users of a domain
+// Get all users (and referrals) in a domain
 function pql_user_get($ldap_linkid, $dn) {
 	$dn = urldecode($dn);
 
@@ -223,10 +224,36 @@ function pql_user_get($ldap_linkid, $dn) {
 	for ($i=0; $i<$info["count"]; $i++) {
 		$user[] = $info[$i]["dn"];
 	}
-	
+
+	// Get any referrals in this branch
+	$resource = ldap_first_reference($ldap_linkid, $sr);
+	if($resource) {
+		ldap_parse_reference($ldap_linkid, $resource, $referrals);
+
+		while($resource = ldap_next_reference($ldap_linkid, $resource)) {
+			if($resource) {
+				ldap_parse_reference($ldap_linkid, $resource, $new);
+				$referrals = array_merge($referrals, $new);
+			}
+		}
+	}
+
+	// Add all referral references to the user array
+	if(is_array($referrals)) {
+		$host = split(';', $_SESSION["USER_HOST"]);
+
+		foreach($referrals as $ref) {
+			// Remove the LDAP host from the reference.
+			// TODO: What if it's a referral to outside this host!?!?
+			$reference = eregi_replace($host[0]."/", "", $ref);
+
+			// Store the URL DEcoded value in the array.
+			$user[] = urldecode($reference);
+		}
+	}
+
 	return $user;
 }
-
 // }}}
 
 // {{{ pql_user_add(ldap_linkid, domain, cn, attribs, account_type, branch)
@@ -417,7 +444,7 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 	$linkid = $ldap->ldap_linkid;
 
-    if(!pql_user_exist($linkid, $domain, $user))
+    if(!pql_user_exist($linkid, $user))
 	  // user does not exist
 	  return false;
 
@@ -509,23 +536,13 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 // }}}
 
 // {{{ pql_user_exist(ldap_linkid, user)
-function pql_user_exist($linkid, $dn, $user) {
-	$dn = urldecode($dn);
-
+function pql_user_exist($linkid, $user) {
     // check if user exists
-	$user_parts = ldap_explode_dn($user, 0);
-	if($user_parts[1])
-	  // It's a DN, only use the first part (it already contain the correct user reference
-	  $filter = "(&(objectclass=*)(".$user_parts[0]."))";
-	else
-	  // It's not a DN, construct part of it
-	  $filter = "(&(objectclass=*)(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $dn)."=$user))";
-
-    if(!pql_search($linkid, $dn, $filter))
+    if(!pql_search($linkid, $user, pql_get_define("PQL_ATTR_OBJECTCLASS")."=*", 'dn', 'BASE'))
 	  // User does not exist in LDAP tree
 	  return(false); 
-
-	return(true);
+	else
+	  return(true);
 }
 // }}}
 
