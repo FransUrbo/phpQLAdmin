@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.42 2003-09-15 11:43:35 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.43 2003-11-18 13:20:50 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -263,6 +263,7 @@ function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $do
 // (string)		type			-	Type of object being created. Currently one of:
 //									branch	A branch object
 //									user	A user object
+//									group	A system group object
 //									dnszone	A Bind 9 DNS zone object
 //									websrv	A webserver configuration object
 //									qmail	A QmailLDAP/Controls object
@@ -286,6 +287,8 @@ function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $do
 //		// 'user'/'self' writable/readable entries
 //		$aci[$i] = "1.2.3#entry#grant;r,s,c;sn,givenName,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,mailMessageStore,o,l,st,telephoneNumber,postalCode,title#users#"; $i++;
 //		$aci[$i] = "1.2.3#entry#grant;r,s,c;sn,givenName,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,mailMessageStore,o,l,st,telephoneNumber,postalCode,title#self#"; $i++;
+//	} elseif($type == 'group') {
+//		$aci[$i] = "1.2.3#entry#grant;r,s,c;cn,gidNumber#public#"; $i++;
 //	} elseif($type == 'qmail') {
 //		$aci[$i] = "1.2.3#entry#grant;r,s;[all]#access-id#ENTER_WHOEVER_YOUR_QMAILSERVER_USES"; $i++;
 //	}
