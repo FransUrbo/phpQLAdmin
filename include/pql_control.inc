@@ -4,12 +4,14 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.18 2003-05-18 13:39:19 turbo Exp $
+// $Id: pql_control.inc,v 2.19 2003-05-18 15:36:59 turbo Exp $
 //
 // version history:
 // $Log: pql_control.inc,v $
-// Revision 2.18  2003-05-18 13:39:19  turbo
-// Don't add hostname to domain if we haven't set autoAddHostName.
+// Revision 2.19  2003-05-18 15:36:59  turbo
+// Differentiate between locals and rcpthosts when doing manual replication (ie,
+// when we've choosen to replicate either locals or rcpthosts manually for a
+// specific QMailLDAP/Controls object).
 //
 // Revision 1.2  2001/09/06 11:36:24  mb
 // added no_connect option to pql_control-class
@@ -239,8 +241,13 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 	  $entry[] = "localhost";
 
 	if($host != '*') {
-		if(pql_control_replace_attribute($ldap->ldap_linkid, $dn, "locals", $entry))
-		  return true;
+		if(($type == 'locals') or !$type) {
+			if(pql_control_replace_attribute($ldap->ldap_linkid, $dn, "locals", $entry))
+			  return true;
+		} elseif($type == 'rcpthosts') {
+			if(pql_control_replace_attribute($ldap->ldap_linkid, $dn, "rcpthosts", $entry))
+			  return true;
+		}
 	} else {
 		// $host=* && $domain => Modify ALL servers
 		// domain[0] => oldvalue
