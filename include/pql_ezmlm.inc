@@ -3,7 +3,7 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ezmlm.inc,v 1.19 2003-07-02 07:59:01 turbo Exp $
+// $Id: pql_ezmlm.inc,v 1.20 2003-08-20 08:27:02 turbo Exp $
 session_start();
 
 class ezmlm {
@@ -245,7 +245,7 @@ class ezmlm {
 		$command   = $this->_paths["list"] . " 2>&1 ".$list_path;
 		$output    = do_exec($command, $output_array, $result);
 		if($result != 0) {
-			$this->error = "could not execute system command: ".$command
+			$this->error = "Could not execute system command: ".$command
 			  . ((!strcmp($output,"")) ? "" : (" (".$output.")"));
 			return 0;
 		}
@@ -266,7 +266,7 @@ class ezmlm {
 	// Chown and Chmod directory recursive
 	function _chmodown($directory, $username, $dirmode = '0770', $filemode = '0660') {
 		// Find user id for the username
-		$uidnr = posix_getpwnam($this->user_name);
+		$uidnr = posix_getpwnam($username);
 		$uidnr = $uidnr["uid"];
 
 		umask(0011);
@@ -447,18 +447,24 @@ class ezmlm {
 			$output = do_exec($command, $output_array, $result);
 			if($result != 0) {
 				// Failed to create list
+				$cmd = eregi_replace(" ",
+									 " \\<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;",
+									 $command);
 
-				$this->error = "could not execute system command.<br><font size=-4>"
-				  . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $command
-				  . "</font><br>&nbsp;&nbsp;&nbsp;&nbsp;"
-				  . (!strcmp($output, "") ? "" : " (" . $output . ")</b>");
+				$this->error = "Could not execute system command.<br><font size=-4>"
+				  . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $cmd
+				  . "</font><br>Error returned: "
+				  . (!strcmp($output, "") ? "" : " " . $output . "</b>");
 
-				list_forward($domain, $this->error);
+				if(function_exists("list_forward"))
+				  list_forward($domain, $this->error);
 			} else {
 				// Successfully created list
 
 				$this->_chmodown($listpath, $this->user_name);
-				list_forward($domain, "Successfully created list " . $listname . "<br>");
+
+				if(function_exists("list_forward"))
+				  list_forward($domain, "Successfully created list " . $listname . "<br>");
 			}
 		} else {
 			die("DEBUG Command:<br><pre>$command</pre><br>");
@@ -522,9 +528,12 @@ class ezmlm {
 
 		if($unsuccessful) {
 			$this->error = "Could not delete mailinglist $lstname from directory $lstpath";
-			list_forward($domain, $this->error);
+
+			if(function_exists("list_forward"))
+			  list_forward($domain, $this->error);
 		} else {
-			list_forward($domain, "Successfully deleted mailinglist");
+			if(function_exists("list_forward"))
+			  list_forward($domain, "Successfully deleted mailinglist");
 		}
 	}
 
@@ -577,17 +586,21 @@ class ezmlm {
 			$output    = do_exec($command, $output_array, $result);
 			if($result != 0) {
 				// Failed to subscribe user
+				$cmd = eregi_replace(" ",
+									 " \\<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;",
+									 $command);
 
-				$this->error = "could not execute system command.<br><font size=-4>"
-				  . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $command
-				  . "</font><br>&nbsp;&nbsp;&nbsp;&nbsp;"
-				  . (!strcmp($output, "") ? "" : " (" . $output . ")</b>");
+				$this->error = "Could not execute system command.<br><font size=-4>"
+				  . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $cmd
+				  . "</font><br>Error returned: "
+				  . (!strcmp($output, "") ? "" : " " . $output . "</b>");
 
-				list_forward($domain, $this->error);
+				if(function_exists("list_forward"))
+				  list_forward($domain, $this->error);
 			} else {
 				// Successfully subscribed user
-
-				list_forward($domain, "Successfully created list " . $listname . "<br>");
+				if(function_exists("list_forward"))
+				  list_forward($domain, "Successfully subscribed user to " . $listname . "<br>");
 			}
 		} else {
 			die("DEBUG Command:<br><pre>$command</pre><br>");
@@ -599,11 +612,8 @@ class ezmlm {
 	// Remove subscriber
 	function unsubscribe($listname, $subscriber) {
 		if(is_numeric($listname)) {
-			$listno		= $listname;
-
-			$listname	= $this->mailing_lists[$listname]["name"];
-			$listpath	= $this->mailing_lists[$listname]["directory"] . "/" . $listname;
 			$domain     = $this->mailing_lists[$listname]["host"];
+			$listpath	= $this->mailing_lists[$listname]["directory"];
 		} else {
 			$domain     = $this->mailing_lists[0]["host"];
 			$listpath	= $this->user_home . "/" . $listname;
@@ -614,17 +624,21 @@ class ezmlm {
 			$output    = do_exec($command, $output_array, $result);
 			if($result != 0) {
 				// Failed to unsubscribe user
+				$cmd = eregi_replace(" ",
+									 " \\<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;",
+									 $command);
 
-				$this->error = "could not execute system command.<br><font size=-4>"
-				  . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $command
-				  . "</font><br>&nbsp;&nbsp;&nbsp;&nbsp;"
-				  . (!strcmp($output, "") ? "" : " (" . $output . ")</b>");
+				$this->error = "Could not execute system command.<br><font size=-4>"
+				  . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $cmd
+				  . "</font><br>Error returned: "
+				  . (!strcmp($output, "") ? "" : " " . $output . "</b>");
 
-				list_forward($domain, $this->error);
+				if(function_exists("list_forward"))
+				  list_forward($domain, $this->error);
 			} else {
 				// Successfully subscribed user
-				
-				list_forward($domain, "Successfully created list " . $listname . "<br>");
+				if(function_exists("list_forward"))
+				  list_forward($domain, "Successfully unsubscribed user from " . $listname . "<br>");
 			}
 		} else {
 			die("DEBUG Command:<br><pre>$command</pre><br>");
