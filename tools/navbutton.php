@@ -1,7 +1,7 @@
 <? // http://www.thescripts.com/serversidescripting/php/articles/dynamicimagesinphp3.0/page0.html
-// $Id: navbutton.php,v 2.13 2003-11-20 11:10:25 turbo Exp $
+// $Id: navbutton.php,v 2.14 2003-11-24 15:20:28 turbo Exp $
 
-include("./include/pql.inc");
+include("./include/pql_formating.inc");
 
 $string = implode($argv," ");
 $string = urldecode($string);
