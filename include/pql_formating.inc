@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.35 2005-01-13 05:33:38 turbo Exp $
+// $Id: pql_formating.inc,v 2.36 2005-02-05 12:48:08 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -446,17 +446,28 @@ function pql_format_timestamp_human($beg, $end) {
 }
 // }}}
 
-// {{{ pql_format_timestamp_unixtime(timestamp)
-function pql_format_timestamp_unixtime($timestamp) {
-	$timestamp = preg_replace('/Z$/', '', $timestamp);
+// {{{ pql_format_timestamp_unixtime(date)
+// Input: YYYYMMDD[[HHMM]SS]
+function pql_format_timestamp_unixtime($date) {
+	$date = preg_replace('/Z$/', '', $date);
 
-	$year   = $timestamp[0].$timestamp[1].$timestamp[2].$timestamp[3];
-	$month  = $timestamp[4].$timestamp[5];
-	$day    = $timestamp[6].$timestamp[7];
+	$year   = $date[0].$date[1].$date[2].$date[3];
+	$month  = $date[4].$date[5];
+	$day    = $date[6].$date[7];
 
-	$hour   = $timestamp[8].$timestamp[9];
-	$minute = $timestamp[10].$timestamp[11];
-	$second = $timestamp[12].$timestamp[13];
+	if($date[8] and $date[9]) {
+	  $hour   = $date[8].$date[9];
+	  $minute = $date[10].$date[11];
+
+	  if($date[12] and $date[13])
+		$second = $date[12].$date[13];
+	  else
+		// Not called with seconds, fake it.
+		$second = "00";
+	} else {
+	  // Only YYMMDD specified, fake it.
+	  $hour = "00"; $minute = "00"; $second = "00";
+	}
 
 	return(mktime($hour, $minute, $second, $month, $day, $year));
 }
