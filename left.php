@@ -53,6 +53,7 @@ if($ADVANCED_MODE) {
   <font color="black" class="heada">
     Host: <font color="black" size=-4><b><?=$USER_HOST?></b></font>
   </font>
+  <br>
 
 <?php
 	if($ALLOW_BRANCH_CREATE) {
@@ -102,8 +103,6 @@ if(!is_array($domains)){
 	}
     }
 ?>
-  <br>
-
   <!-- start domain parent -->
   <a href="user_detail.php?domain=<?=$domain?>&user=<?=$USER_DN?>"><img src="images/mail_small.png" border="0" alt="<?=$cn?>"></a>&nbsp;
   <a class="item" href="user_detail.php?domain=<?=$domain?>&user=<?=$USER_DN?>"><?=$cn?></a>
