@@ -1,6 +1,6 @@
 <?php
 // shows results of search
-// $Id: search.php,v 1.3 2002-12-12 21:52:08 turbo Exp $
+// search.php,v 1.3 2002/12/12 21:52:08 turbo Exp
 //
 session_start();
 require("pql.inc");

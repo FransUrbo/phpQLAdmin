@@ -1,6 +1,6 @@
 <?php
 // logins to the system
-// $Id: index.php,v 1.4 2002-12-13 13:55:38 turbo Exp $
+// index.php,v 1.4 2002/12/13 13:55:38 turbo Exp
 //
 session_start();
 

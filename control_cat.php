@@ -1,6 +1,6 @@
 <?php
 // shows details of specified category of attributes
-// $Id: control_cat.php,v 1.3 2002-12-12 21:52:08 turbo Exp $
+// control_cat.php,v 1.3 2002/12/12 21:52:08 turbo Exp
 //
 require("pql.inc");
 require("pql_control.inc");

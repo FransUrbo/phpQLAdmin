@@ -1,6 +1,6 @@
 <?php
 // shows configuration of phpQLAdmin
-// $Id: config_detail.php,v 1.3 2002-12-12 21:52:08 turbo Exp $
+// config_detail.php,v 1.3 2002/12/12 21:52:08 turbo Exp
 //
 require("pql.inc");
 include("header.html");

@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 1.5 2002-12-12 21:52:08 turbo Exp $
+// domain_detail.php,v 1.5 2002/12/12 21:52:08 turbo Exp
 //
 session_start();
 require("pql.inc");

@@ -1,6 +1,6 @@
 <?php
 // delete a domain and all users within
-// $Id: unit_del.php,v 1.3 2002-12-12 21:52:08 turbo Exp $
+// unit_del.php,v 1.3 2002/12/12 21:52:08 turbo Exp
 //
 require("pql.inc");
 require("pql_control.inc");

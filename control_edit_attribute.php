@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of a control option
-// $Id: control_edit_attribute.php,v 1.3 2002-12-12 21:52:08 turbo Exp $
+// control_edit_attribute.php,v 1.3 2002/12/12 21:52:08 turbo Exp
 //
 
 // initial check

@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 1.3 2002-12-12 21:52:08 turbo Exp $
+// user_detail.php,v 1.3 2002/12/12 21:52:08 turbo Exp
 //
 session_start();
 require("pql.inc");

@@ -1,6 +1,6 @@
 <?php
 // show details of control
-// $Id: control.php,v 1.2 2002-12-12 11:50:27 turbo Exp $
+// control.php,v 1.2 2002/12/12 11:50:27 turbo Exp
 //
 
 include("header.html");

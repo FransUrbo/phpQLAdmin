@@ -1,6 +1,6 @@
 <?php
 // make some simple tests on ldap connection
-// $Id: config_ldaptest.php,v 1.4 2002-12-13 13:47:10 turbo Exp $
+// config_ldaptest.php,v 1.4 2002/12/13 13:47:10 turbo Exp
 //
 require("pql.inc");
 require("pql_control.inc");

@@ -1,4 +1,4 @@
-/* $Id: left.js,v 1.1 2002/02/12 17:42:57 mb Exp $ */
+/* left.js,v 1.1.1.1 2002/12/11 15:09:23 turbo Exp */
 
 
 // These scripts were originally found on cooltype.com.

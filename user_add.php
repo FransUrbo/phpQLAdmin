@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 1.5 2002-12-13 13:58:04 turbo Exp $
+// user_add.php,v 1.5 2002/12/13 13:58:04 turbo Exp
 //
 session_start();
 require("pql.inc");
