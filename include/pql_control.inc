@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.45 2004-10-20 06:11:52 turbo Exp $
+// $Id: pql_control.inc,v 2.45.6.1 2005-03-28 10:23:11 turbo Exp $
 //
 
 // {{{ control connection class
@@ -61,6 +61,7 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 			// Get additional domain names
 			$additional = pql_get_attribute($ldap->ldap_linkid, $domain, pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
 			if(is_array($additional)) {
+				$additional = pql_uniq($additional); // Remove duplicates (which was allowed in OpenLDAP <2.1).
 				for($i=0; $i < count($additional); $i++) 
 				  $entry[] = $additional[$i];
 			}
