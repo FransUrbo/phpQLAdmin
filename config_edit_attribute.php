@@ -1,6 +1,6 @@
 <?php
 // Edit and set configuration values in the LDAP database
-// $Id: config_edit_attribute.php,v 1.15.8.1 2005-02-12 05:19:12 turbo Exp $
+// $Id: config_edit_attribute.php,v 1.15.8.2 2005-02-15 09:00:11 turbo Exp $
 //
 // {{{ Setup session etc
 session_start();
@@ -10,6 +10,9 @@ $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PA
 
 include($_SESSION["path"]."/include/attrib.config.inc");
 include($_SESSION["path"]."/header.html");
+if($_REQUEST["view"] == "template") {
+  include($_SESSION["path"]."/left-head.html");
+}
 // }}}
 
 // {{{ Forward back to configuration detail page
