@@ -93,13 +93,6 @@ pql_define("PQL_CONF_TESTMAIL_AUTOSEND", false, false, $dn);
 pql_define("PQL_CONF_CATCHALLUSER", "catchall", false);
 
 // ----------------------------
-// Host configuration - who are we?
-// This is what's going to be the title
-// of the page - in the dragbar of the
-// web browser...
-pql_define("PQL_GLOB_WHOAREWE", "QmailLDAP administration", false);
-
-// ----------------------------
 // PQL_GLOB_ATTR_* (LDAP attribute names)
 // You should provide the same names here as in your qmail-ldap.h
 pql_define("PQL_GLOB_ATTR_MAIL", strtolower("mail"), false);
