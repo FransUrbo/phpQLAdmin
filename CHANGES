@@ -12,9 +12,6 @@ phpQLAdmin 2.2.1 TO BE ANNOUNCED
 	      'include/attrib.cn.inc'.
 	  - Check if inclusion of home directory should be done outside the check
 	    if mail host is allowed. Two separate things...
-	  - [Merge from HEAD]
-	    + Session was started with the path specified in php.ini:session.cookie_path
-	      which overwrote session from other installation(s).
 	  - Hardcode the group account template into include/pql_templates.inc:pql_get_templates()
 	    This because the user add part needs object classes etc to be able to
 	    work.
@@ -41,6 +38,10 @@ phpQLAdmin 2.2.1 TO BE ANNOUNCED
 	  - Rewrite/Simplify the password encrypt scheme thing. Retreive the
 	    values ONES (in 'user_add.php') instead of every time we need to know
 	    if a specific value is there (in 'tables/user_add-details.inc').
+	  - After using header() one MUST (!) use 'exit' so that the following code
+	    isn't executed! Had no idea, just saw it in the manuall.
+	    Replace all calls to header() with my own wrapper that does just that -
+	    Calls header() (including the URI session value) and then 'exit'...
 
 phpQLAdmin 2.2.0 Release (Mar  2 2005)
 	This new stable version is more or less a complete rewrite since 2.0.
