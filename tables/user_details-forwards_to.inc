@@ -17,7 +17,7 @@
       <tr class="<?php table_bgcolor(); ?>">
         <td><?=$forwarder?></td>
         <td>
-          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=mailforwardingaddress&user=<?=$user?>&mailforwardingaddress=<?=$forwarder?>&oldvalue=<?=$forwarder?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="user_del_attribute.php?attrib=mailforwardingaddress&user=<?=$user?>&oldvalue=<?=$forwarder?>&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=mailforwardingaddress&user=<?=$userdn?>&mailforwardingaddress=<?=$forwarder?>&oldvalue=<?=$forwarder?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="user_del_attribute.php?attrib=mailforwardingaddress&user=<?=$userdn?>&oldvalue=<?=$forwarder?>&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a>
         </td>
       </tr>
 <?php	} // end of foreach
@@ -26,7 +26,7 @@
 
       <tr class="subtitle">
         <td colspan="2">
-          <a href="user_add_attribute.php?attrib=mailforwardingaddress&user=<?=$user?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"> <?php echo PQL_LANG_MAILFORWARDINGADDRESS_NEW; ?></a>
+          <a href="user_add_attribute.php?attrib=mailforwardingaddress&user=<?=$userdn?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"> <?php echo PQL_LANG_MAILFORWARDINGADDRESS_NEW; ?></a>
         </td>
       </tr>
     </th>

@@ -33,7 +33,7 @@
 <?php			} $new_tr = 1; ?>
         <td><a href="domain_detail.php?rootdn=<?=$rootdn?>&domain=<?=$branch?>"><?=$branch?></a></td>
         <td>
-          <a href="domain_edit_attributes.php?attrib=administrator&domain=<?=$branch?>&user=<?=$user?>&submit=4&action=delete&view=<?=$view?>"><img src="images/del.png" width="12" height="12" border="0" alt="Deny user admin access to domain"></a>
+          <a href="domain_edit_attributes.php?attrib=administrator&domain=<?=$branch?>&user=<?=$userdn?>&submit=4&action=delete&view=<?=$view?>"><img src="images/del.png" width="12" height="12" border="0" alt="Deny user admin access to domain"></a>
         </td>
       </tr>
 <?php		}
@@ -42,7 +42,7 @@
       <tr class="<?=$class?>">
         <td class="title"></td>
         <td>
-          <a href="domain_edit_attributes.php?attrib=administrator&user=<?=$user?>&submit=3&action=add">Give (more) admin rights</a>
+          <a href="domain_edit_attributes.php?attrib=administrator&user=<?=$userdn?>&submit=3&action=add">Give (more) admin rights</a>
         </td>
         <td></td>
       </tr>
@@ -55,14 +55,14 @@
 <?php       if(pql_validate_administrator($_pql->ldap_linkid, $rootdn, $user)) { ?>
         <td>Yes</td>
         <td>
-          <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&user=<?=$user?>&submit=4&action=delete&view=<?=$view?>">
+          <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&user=<?=$userdn?>&submit=4&action=delete&view=<?=$view?>">
             <img src="images/del.png" width="12" height="12" border="0" alt="Disallow user to create domains below <?=$rootdn?>">
           </a>
         </td>
 <?php       } else { ?>
         <td>No</td>
         <td>
-          <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&user=<?=$user?>&submit=4&action=add&view=<?=$view?>">
+          <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&user=<?=$userdn?>&submit=4&action=add&view=<?=$view?>">
             <img src="images/edit.png" width="12" height="12" border="0" alt="Allow user to create domains below <?=$rootdn?>">
           </a>
         </td>
@@ -74,7 +74,7 @@
       <tr class="<?=$class?>">
         <td class="title">Access to DN:</td>
         <td>
-          <a href="domain_edit_attributes.php?attrib=administrator&user=<?=$user?>&submit=3&action=add&view=<?=$view?>">Give admin rights</a>
+          <a href="domain_edit_attributes.php?attrib=administrator&user=<?=$userdn?>&submit=3&action=add&view=<?=$view?>">Give admin rights</a>
         </td>
         <td></td>
       </tr>

@@ -19,7 +19,7 @@
         <td class="title"><?php echo PQL_LANG_QMAILDOTMODE_TITLE; ?></td>
         <td><?=$qmaildotmode?></td>
         <td>
-          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=qmaildotmode&user=<?=$user?>&oldvalue=<?=$qmaildotmode?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=qmaildotmode&user=<?=$userdn?>&oldvalue=<?=$qmaildotmode?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
         </td>
       </tr>
 
@@ -27,7 +27,7 @@
         <td class="title"><?php echo PQL_LANG_DELIVERYPROGRAMPATH_TITLE; ?></td>
         <td><?=$deliveryprogrampath?></td>
         <td>
-          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=deliveryprogrampath&user=<?=$user?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=deliveryprogrampath&user=<?=$userdn?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
         </td>
       </tr>
     </th>

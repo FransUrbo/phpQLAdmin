@@ -75,8 +75,7 @@ if(mail($email, $subject, $message, $header)){
     $msg .= PQL_LANG_SENDMAIL_FAILED;
 }
 
-$msg = urlencode($msg);
-$url = "user_detail.php?domain=$domain&user=$user&msg=$msg";
+$url = "user_detail.php?domain=$domain&user=".urlencode($user)."&msg=".urlencode($msg);
 
 if(isset($rlnb))
      $url .= "&rlnb=$rlnb";

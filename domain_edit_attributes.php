@@ -8,12 +8,12 @@ require("./include/pql_config.inc");
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 // forward back to users detail page
-function attribute_forward($msg){
+function attribute_forward($msg) {
     global $domain, $user, $rootdn;
 
     $msg = urlencode($msg);
 	if($user)
-	  $url = "user_detail.php?rootdn=$rootdn&domain=$domain&user=$user&view=$view&msg=$msg";
+	  $url = "user_detail.php?rootdn=$rootdn&domain=$domain&user=".urlencode($user)."&view=$view&msg=$msg";
 	elseif($administrator)
 	  $url = "user_detail.php?rootdn=$rootdn&domain=$domain&user=$administrator&view=$view&msg=$msg";
 	else

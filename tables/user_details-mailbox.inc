@@ -12,7 +12,7 @@
         <td><?=$mailmessagestore?></td>
         <td>
 <?php if(!$SINGLE_USER) { ?>
-          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=mailmessagestore&user=<?=$user?>&oldvalue=<?=$mailmessagestore?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=mailmessagestore&user=<?=$userdn?>&oldvalue=<?=$mailmessagestore?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
 <?php } ?>
         </td>
       </tr>
@@ -22,7 +22,7 @@
         <td><?=$mailhost?></td>
         <td>
 <?php if(!$SINGLE_USER) { ?>
-          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=mailhost&user=<?=$user?>&oldvalue=<?=$mailhost?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=mailhost&user=<?=$userdn?>&oldvalue=<?=$mailhost?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
 <?php } ?>
         </td>
       </tr>
@@ -32,7 +32,7 @@
         <td><?=$quota?></td>
         <td>
 <?php if(!$SINGLE_USER) { ?>
-          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=mailquota&user=<?=$user?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=mailquota&user=<?=$userdn?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
 <?php } ?>
         </td>
       </tr>

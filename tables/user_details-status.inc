@@ -13,9 +13,9 @@
 <?php if(!$SINGLE_USER) { ?>
       <tr class="subtitle">
         <td>
-          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=accountstatus&user=<?=$user?>&set=active&view=<?=$view?>"><?php echo PQL_LANG_ACCOUNTSTATUS_CHANGE_ACTIVE; ?></a>
-	| <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=accountstatus&user=<?=$user?>&set=nopop&view=<?=$view?>"><?php echo PQL_LANG_ACCOUNTSTATUS_CHANGE_NOPOP; ?></a>
-	| <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=accountstatus&user=<?=$user?>&set=disabled&view=<?=$view?>"><?php echo PQL_LANG_ACCOUNTSTATUS_CHANGE_DISABLE; ?></a>
+          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=accountstatus&user=<?=$userdn?>&set=active&view=<?=$view?>"><?php echo PQL_LANG_ACCOUNTSTATUS_CHANGE_ACTIVE; ?></a>
+	| <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=accountstatus&user=<?=$userdn?>&set=nopop&view=<?=$view?>"><?php echo PQL_LANG_ACCOUNTSTATUS_CHANGE_NOPOP; ?></a>
+	| <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=accountstatus&user=<?=$userdn?>&set=disabled&view=<?=$view?>"><?php echo PQL_LANG_ACCOUNTSTATUS_CHANGE_DISABLE; ?></a>
 	</td>
       </tr>
 <?php } ?>

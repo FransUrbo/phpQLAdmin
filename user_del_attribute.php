@@ -55,20 +55,18 @@ if(isset($ok) || !$config["PQL_CONF_VERIFY_DELETE"][$rootdn]) {
     }
     
     // redirect to users detail page
-    $msg = urlencode($msg);
-    $url = "user_detail.php?rootdn=$rootdn&domain=$domain&user=" . urlencode($user) . "&msg=$msg";
+    $url = "user_detail.php?rootdn=$rootdn&domain=$domain&user=".urlencode($user)."&msg=".urlencode($msg);
     header("Location: " . $config["PQL_GLOB_URI"] . "$url");
 } else {
 ?>
-<br>
-<br>
-<?php echo PQL_LANG_SURE; ?>
-<br>
+  <span class="title1">Remove attribute '<?=$attrib?>' for user <?=$username?></span>
+  <br><br>
+  <?php echo PQL_LANG_SURE; ?>
   <form action="<?php echo $PHP_SELF; ?>" method="GET">
-    <input type="hidden" name="user" value="<?php echo $user; ?>">
-    <input type="hidden" name="domain" value="<?php echo $domain; ?>">
-    <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
+    <input type="hidden" name="user" value="<?=$user?>">
+    <input type="hidden" name="domain" value="<?=$domain?>">
+    <input type="hidden" name="attrib" value="<?=$attrib?>">
+    <input type="hidden" name="oldvalue" value="<?=$oldvalue?>">
 <?php
   if ($attrib == 'mailalternateaddress') {
 ?>	

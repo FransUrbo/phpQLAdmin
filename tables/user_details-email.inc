@@ -15,9 +15,9 @@
         <td><a href="mailto:<?=$email?>"><?=$email?></a></td>
         <td>
 <?php if(!$SINGLE_USER) { ?>
-          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=mail&user=<?=$user?>&mail=<?=$email?>&oldvalue=<?=$email?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LANG_MAIL_CHANGE; ?>" border="0"></a>&nbsp;&nbsp;&nbsp;
+          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=mail&user=<?=$userdn?>&mail=<?=$email?>&oldvalue=<?=$email?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LANG_MAIL_CHANGE; ?>" border="0"></a>&nbsp;&nbsp;&nbsp;
 <?php } ?>
-          <a href="user_sendmail.php?email=<?=$email?>&user=<?=$user?>&view=<?=$view?>"><img src="images/mail.png" width="16" height="11" alt="<?php echo PQL_LANG_SENDMAIL; ?>" border="0"></a>
+          <a href="user_sendmail.php?email=<?=$email?>&user=<?=$userdn?>&view=<?=$view?>"><img src="images/mail.png" width="16" height="11" alt="<?php echo PQL_LANG_SENDMAIL; ?>" border="0"></a>
         </td>
       </tr>
 
@@ -29,14 +29,14 @@ if(is_array($aliases)){
       <tr class="<?php table_bgcolor(); ?>">
         <td><?php echo PQL_LANG_MAILALTERNATEADDRESS_TITLE; ?></td>
         <td><a href="mailto:<?=$alias?>"><?=$alias?></a></td>
-        <td><a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=mailalternateaddress&domain=<?=$domain?>&user=<?=$user?>&mailalternateaddress=<?php echo pql_strip_domain($alias); ?>&oldvalue=<?=$alias?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LANG_MAILALTERNATEADDRESS_CHANGE; ?>" border="0"></a>&nbsp;&nbsp;<a href="user_del_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=mailalternateaddress&user=<?=$user?>&oldvalue=<?=$alias?>&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="<?php echo PQL_LANG_MAILALTERNATEADDRESS_DEL; ?>" border="0"></a>&nbsp;&nbsp;<a href="user_sendmail.php?email=<?=$alias?>&user=<?=$user?>&view=<?=$view?>"><img src="images/mail.png" width="16" height="11" alt="<?php echo PQL_LANG_SENDMAIL; ?>" border="0"></a></td>
+        <td><a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=mailalternateaddress&domain=<?=$domain?>&user=<?=$userdn?>&mailalternateaddress=<?php echo pql_strip_domain($alias); ?>&oldvalue=<?=$alias?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LANG_MAILALTERNATEADDRESS_CHANGE; ?>" border="0"></a>&nbsp;&nbsp;<a href="user_del_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=mailalternateaddress&user=<?=$userdn?>&oldvalue=<?=$alias?>&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="<?php echo PQL_LANG_MAILALTERNATEADDRESS_DEL; ?>" border="0"></a>&nbsp;&nbsp;<a href="user_sendmail.php?email=<?=$alias?>&user=<?=$userdn?>&view=<?=$view?>"><img src="images/mail.png" width="16" height="11" alt="<?php echo PQL_LANG_SENDMAIL; ?>" border="0"></a></td>
       </tr>
 <?php
     }
 }
 ?>
       <tr>
-        <td class="subtitle" colspan="3"><a href="user_add_attribute.php?attrib=mailalternateaddress&domain=<?=$domain?>&user=<?=$user?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"> <?php echo PQL_LANG_MAILALTERNATEADDRESS_NEW; ?></a></td>
+        <td class="subtitle" colspan="3"><a href="user_add_attribute.php?attrib=mailalternateaddress&domain=<?=$domain?>&user=<?=$userdn?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"> <?php echo PQL_LANG_MAILALTERNATEADDRESS_NEW; ?></a></td>
       </tr>
     </th>
   </table>

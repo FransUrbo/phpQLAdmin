@@ -22,10 +22,10 @@
 				// not be availible to administrate through phpQLAdmin!
 ?>
       <tr class="<?php table_bgcolor(); ?>">
-        <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=urlencode($user)?>&view=<?=$view?>"><?=$cn?></a></td>
+        <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$userdn?>&view=<?=$view?>"><?=$cn?></a></td>
         <td><?=$uid?></td>
         <td><?=$status?></td>
-        <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$user?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?=PQL_LANG_USER_EDIT?>" border="0"></a>&nbsp;&nbsp;<a href="user_del.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$user?>&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="<?=PQL_LANG_USER_DELETE?>" border="0"></a></td>
+        <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$userdn?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?=PQL_LANG_USER_EDIT?>" border="0"></a>&nbsp;&nbsp;<a href="user_del.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$userdn?>&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="<?=PQL_LANG_USER_DELETE?>" border="0"></a></td>
       </tr>
 
 <?php		}
