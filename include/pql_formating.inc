@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.32 2004-11-05 13:39:24 turbo Exp $
+// $Id: pql_formating.inc,v 2.33 2004-11-08 11:26:41 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -186,11 +186,14 @@ function pql_format_table_single($linkid, $text, $url, $array, $attrib, $class =
 			if(!$class)
 			  $class  = pql_format_table(0);
 
-			$username = pql_get_attribute($linkid, $value, pql_get_define("PQL_ATTR_CN"));
-			if(!$username[0])
-			  $username = $value;
-			elseif(is_array($username))
-			  $username = $username[0];
+			if(ereg('=', $value)) {
+				// Hopfully this is a DN
+				$username = pql_get_attribute($linkid, $value, pql_get_define("PQL_ATTR_CN"));
+				if(!$username[0])
+				  $username = $value;
+				elseif(is_array($username))
+				  $username = $username[0];
+			}
 
 			if($new_tr) {
 ?>
