@@ -1,8 +1,6 @@
 Things left to do
-	* Enable re-login to other LDAP server - choose LDAP server at
-	  runtime.
-	* Support for user templates (predefined attributes
-	  for a group of users) .
+	* Enable re-login to other LDAP server - choose LDAP server at runtime.
+	* Support for user templates (predefined attributes for a group of users).
 	* Support for alias-domains: phpQLAdmin will be able to create
 	  domain aliases e.g domain.ch will forward all registred
 	  accounts to the equal account of domain.com.
@@ -18,3 +16,7 @@ Things left to do
 	EZMLM mailinglist
 	* Remove hardcoded texts (attributes and such).
 	* Stresstest list creation and modification.
+	* What about access control to directories etc?
+	  - How can I create/delete lists in domain's baseMailDir/mailinglists,
+	    AND create the directories if they don't exists - ie, when creating
+	    a new domain.
