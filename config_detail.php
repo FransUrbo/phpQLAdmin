@@ -5,9 +5,15 @@
 session_start();
 
 require("./include/pql.inc");
+require("./include/pql_config.inc");
 include("./header.html");
 
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
+
+// print status message, if one is available
+if(isset($msg)){
+    print_status_msg($msg);
+}
 
 if(PQL_SHOW_USERS){
     $show_users = "yes";
@@ -64,7 +70,9 @@ if(PQL_VERIFY_DELETE){
     <th colspan="3" align="left">Configuration</th>
 <tr>
 	<td class="title">LDAP host</td>
-	<td class="<?php table_bgcolor(); ?>"><?=$USER_HOST?>&nbsp;</td>
+	<?php $class=table_bgcolor(0); ?>
+	<td class="<?=$class?>"><?=$USER_HOST?>&nbsp;</td>
+        <td class="<?=$class?>"></td>
 </tr>
 
 <?php
@@ -83,7 +91,9 @@ foreach($_pql->ldap_basedn as $dn) {
     }
     $new_tr = 1;
 ?>
-	<td class="<?php table_bgcolor(); ?>"><?=$dn?>&nbsp;</td>
+	<?php $class=table_bgcolor(0); ?>
+	<td class="<?=$class?>"><?=$dn?>&nbsp;</td>
+        <td class="<?=$class?>"></td>
 <?php
 		}
 ?>
@@ -94,7 +104,9 @@ foreach($_pql->ldap_basedn as $dn) {
 ?>
 <tr>
 	<td class="title">LDAP control base dn</td>
-	<td class="<?php table_bgcolor(); ?>"><?=$USER_SEARCH_DN_CTR?>&nbsp;</td>
+	<?php $class=table_bgcolor(0); ?>
+	<td class="<?=$class?>"><?=$USER_SEARCH_DN_CTR?>&nbsp;</td>
+        <td class="<?=$class?>"></td>
 </tr>
 <?php
 	}
@@ -102,7 +114,9 @@ foreach($_pql->ldap_basedn as $dn) {
 ?>
 <tr>
 	<td class="title">Default mailbox path</td>
-	<td class="<?php table_bgcolor(); ?>"><?php echo PQL_DEFAULT_PATH; ?>&nbsp;</td>
+	<?php $class=table_bgcolor(0); ?>
+	<td class="<?=$class?>"><?php echo PQL_DEFAULT_PATH; ?>&nbsp;</td>
+        <td class="<?=$class?>"></td>
 </tr>
 <?php
 	}
@@ -112,54 +126,74 @@ foreach($_pql->ldap_basedn as $dn) {
 
 <tr>
         <td class="title">Language</td>
-        <td class="<?php table_bgcolor(); ?>"><?php echo PQL_LANG; ?>&nbsp;</td>
+	<?php $class=table_bgcolor(0); ?>
+        <td class="<?=$class?>"><?php echo PQL_LANG; ?>&nbsp;</td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_LANG"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle"></a></td>
 </tr>
 
 <tr>
 	<td class="title">Hostmaster</td>
-	<td class="<?php table_bgcolor(); ?>"><?php echo PQL_HOSTMASTER; ?>&nbsp;</td>
+	<?php $class=table_bgcolor(0); ?>
+	<td class="<?=$class?>"><?php echo PQL_HOSTMASTER; ?>&nbsp;</td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_HOSTMASTER"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle"></a></td>
 </tr>
 
 <tr></tr>
 
 <tr>
 	<td class="title">Manage Controls DB</td>
-	<td class="<?php table_bgcolor(); ?>"><?php echo $control_use; ?>&nbsp;</td>
+	<?php $class=table_bgcolor(0); ?>
+	<td class="<?=$class?>"><?php echo $control_use; ?>&nbsp;</td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_LDAP_CONTROL_USE"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle"></a></td>
 </tr>
 
 <tr>
 	<td class="title">Manage EZMLM mailinglists</td>
-	<td class="<?php table_bgcolor(); ?>"><?=$ezmlm_use?>&nbsp;</td>
+	<?php $class=table_bgcolor(0); ?>
+	<td class="<?=$class?>"><?=$ezmlm_use?>&nbsp;</td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_LDAP_EZMLM_USE"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle"></a></td>
 </tr>
 
 <tr>
         <td class="title">Show users (navigation bar)</td>
-	<td class="<?php table_bgcolor(); ?>"><?php echo $show_users; ?>&nbsp;</td>
+	<?php $class=table_bgcolor(0); ?>
+	<td class="<?=$class?>"><?php echo $show_users; ?>&nbsp;</td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_SHOW_USERS"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle"></a></td>
 </tr>
 
 <tr>
 	<td class="title">Automatic reload of navigation bar</td>
-	<td class="<?php table_bgcolor(); ?>"><?php echo $auto_reload; ?>&nbsp;</td>
+	<?php $class=table_bgcolor(0); ?>
+	<td class="<?=$class?>"><?php echo $auto_reload; ?>&nbsp;</td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_AUTO_RELOAD"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle"></a></td>
 </tr>
 
 <tr>
 	<td class="title">Automatically replicate domains to locals</td>
-	<td class="<?php table_bgcolor(); ?>"><?php echo $control_autoaddlocals; ?>&nbsp;</td>
+	<?php $class=table_bgcolor(0); ?>
+	<td class="<?=$class?>"><?php echo $control_autoaddlocals; ?>&nbsp;</td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_LDAP_CONTROL_AUTOADDLOCALS"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle"></a></td>
 </tr>
 
 <tr>
 	<td class="title">Allow absolute mailbox paths</td>
-	<td class="<?php table_bgcolor(); ?>"><?php echo $allow_absolute_path; ?>&nbsp;</td>
+	<?php $class=table_bgcolor(0); ?>
+	<td class="<?=$class?>"><?php echo $allow_absolute_path; ?>&nbsp;</td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_ALLOW_ABSOLUTE_PATH"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle"></a></td>
 </tr>
 
 <tr>
 	<td class="title">Allow change of LDAP server</td>
-	<td class="<?php table_bgcolor(); ?>"><?=$allow_change_server?>&nbsp;</td>
+	<?php $class=table_bgcolor(0); ?>
+	<td class="<?=$class?>"><?=$allow_change_server?>&nbsp;</td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_LDAP_CHANGE_SERVER"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle"></a></td>
 </tr>
 
 <tr>
 	<td class="title">Verify user/domain deletions etc <b>[recomended!]</b></td>
-	<td class="<?php table_bgcolor(); ?>"><?=$verify_delete?>&nbsp;</td>
+	<?php $class=table_bgcolor(0); ?>
+	<td class="<?=$class?>"><?=$verify_delete?>&nbsp;</td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_VERIFY_DELETE"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle"></a></td>
 </tr>
 
 <tr></tr>
@@ -171,6 +205,7 @@ foreach($_pql->ldap_basedn as $dn) {
 <tr></tr>
 
 <?php
+		$class=table_bgcolor(0);
 		$new_tr = 0;
 		$schemes = split(",", PQL_PASSWORD_SCHEMES);
 		foreach($schemes as $s) {
@@ -187,7 +222,8 @@ foreach($_pql->ldap_basedn as $dn) {
 		    }
 		    $new_tr = 1;
 ?>
-	<td class="<?php table_bgcolor(); ?>"><?=$s?>&nbsp;</td>
+	<td class="<?=$class?>"><?=$s?>&nbsp;</td>
+        <td class="<?=$class?>"></td>
 <?php
 		}
 ?>
@@ -197,7 +233,9 @@ foreach($_pql->ldap_basedn as $dn) {
 
 <tr>
 	<td class="title">User objectclasses</td>
-	<td class="<?php table_bgcolor(); ?>"><?php echo PQL_LDAP_OBJECTCLASS_USERID; ?>&nbsp;</td>
+        <?php $class=table_bgcolor(0); ?>
+	<td class="<?=$class?>"><?php echo PQL_LDAP_OBJECTCLASS_USERID; ?>&nbsp;</td>
+        <td class="<?=$class?>"></td>
 </tr>
 <?php
 		$new_tr = 0;
@@ -206,7 +244,8 @@ foreach($_pql->ldap_basedn as $dn) {
 ?>
 <tr>
 	<td class="title"></td>
-	<td class="<?php table_bgcolor(); ?>"><?=$oc?>&nbsp;</td>
+	<td class="<?=$class?>"><?=$oc?>&nbsp;</td>
+        <td class="<?=$class?>"></td>
 </tr>
 <?php
 		}
@@ -215,6 +254,7 @@ foreach($_pql->ldap_basedn as $dn) {
 <tr></tr>
 
 <?php
+		$class=table_bgcolor(0);
 		$objectclasses = '';
 		if(eregi(" ", PQL_LDAP_OBJECTCLASS_DOMAIN)) {
 		    $objectclasses = split(" ", PQL_LDAP_OBJECTCLASS_DOMAIN);
@@ -236,7 +276,8 @@ foreach($_pql->ldap_basedn as $dn) {
 		    }
 		    $new_tr = 1;
 ?>
-	<td class="<?php table_bgcolor(); ?>"><?=$oc?>&nbsp;</td>
+	<td class="<?=$class?>"><?=$oc?>&nbsp;</td>
+        <td class="<?=$class?>"></td>
 <?php
 		}
 ?>
@@ -246,12 +287,16 @@ foreach($_pql->ldap_basedn as $dn) {
 
 <tr>
 	<td class="title">Reference users with</td>
-	<td class="<?php table_bgcolor(); ?>"><?=PQL_LDAP_REFERENCE_USERS_WITH?></td>
+        <?php $class=table_bgcolor(0); ?>
+	<td class="<?=$class?>"><?=PQL_LDAP_REFERENCE_USERS_WITH?></td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_LDAP_REFERENCE_USERS_WITH"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle"></a></td>
 </tr>
 
 <tr>
 	<td class="title">Reference domains with</td>
-	<td class="<?php table_bgcolor(); ?>"><?=PQL_LDAP_ATTR_DOMAIN?></td>
+        <?php $class=table_bgcolor(0); ?>
+	<td class="<?=$class?>"><?=PQL_LDAP_ATTR_DOMAIN?></td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_LDAP_ATTR_DOMAIN"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle"></a></td>
 </tr>
 <?php
 	}
@@ -259,6 +304,7 @@ foreach($_pql->ldap_basedn as $dn) {
 	
 <tr class="subtitle">
 	<td colspan="2"><img src="images/info.png" width="16" height="16" border="0">the phpQLAdmin configuration values are stored in config.inc&nbsp;</td>
+        <td></td>
 </tr>
 </table>
 
