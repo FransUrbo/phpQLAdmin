@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.81 2004-03-16 06:51:04 turbo Exp $
+// $Id: left.php,v 2.82 2004-03-16 09:02:29 turbo Exp $
 //
 session_start();
 
@@ -113,12 +113,16 @@ if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {
 }
 
 // Level 2d: Documentation etc
-$links = array($LANG->_('Documentation')		=> 'doc/index.php',
-	       $LANG->_('What\'s left todo')		=> 'TODO',
-	       $LANG->_('What\'s been done')		=> 'CHANGES');
-if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {
-    $new = array($LANG->_('Language translator')	=> 'update_translations.php');
+$links = array($LANG->_('Documentation')		=> 'doc/index.php');
+if($_SESSION["ADVANCED_MODE"]) {
+    $new = array($LANG->_('What\'s left todo')		=> 'TODO',
+		 $LANG->_('What\'s been done')		=> 'CHANGES');
     $links = $links + $new;
+
+    if($_SESSION["ALLOW_BRANCH_CREATE"]) {
+	$new = array($LANG->_('Language translator')	=> 'update_translations.php');
+	$links = $links + $new;
+    }
 }
 pql_format_tree($LANG->_('Documentation'), 0, $links, 1);
 
