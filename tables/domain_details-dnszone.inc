@@ -161,7 +161,8 @@
         <td class="title"></td>
       </tr>
 
-<?php	  foreach($zones[$domainname] as $data) {
+<?php	if(is_array($zones[$domainname])) {
+	  foreach($zones[$domainname] as $data) {
 		if($data['HOST'] != '@') {
 ?>
       <tr class="<?php table_bgcolor(); ?>">
@@ -209,6 +210,7 @@
       </tr>
 <?php		}
 	  } // foreach $zones
+	}
 ?>
 
       <tr class="subtitle">
