@@ -7,7 +7,7 @@
   <br>
   <table cellspacing="0" border="0" width="100%" cellpadding="0" size="100%">
     <tr>
-      <td colspan="2" valign="bottom" align="left" width="100%"><?php foreach($zones as $domainname => $zone_data) { ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=dnszone&domainname=$domainname&view=$view"?>"><img alt="/ Domain <?=$domainname?> \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><?php } ?></td>
+      <td colspan="2" valign="bottom" align="left" width="100%"><?php $i=1; foreach($zones as $domainname => $zone_data) { ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=dnszone&domainname=$domainname&view=$view"?>"><img alt="/ Domain <?=$domainname?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$domainname?>"></a><?php if(!($i%2)) { ?><br><?php }; $i++; } ?></td>
     </tr>
   </table>
 
