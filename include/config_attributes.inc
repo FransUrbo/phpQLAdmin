@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.13 2004-04-01 06:56:07 turbo Exp $
+// $Id: config_attributes.inc,v 2.14 2004-04-02 12:45:50 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -149,6 +149,7 @@ pql_set_define("PQL_ATTR_ADDITIONAL_GROUP",					strtolower("memberUid"),					fal
 // }}}
 
 // {{{ Attributes used by the Bind9/LDAP sdb driver
+
 pql_set_define("PQL_ATTR_ARECORD",							strtolower("aRecord"),						false);
 pql_set_define("PQL_ATTR_CNAMERECORD",						strtolower("cNameRecord"),					false);
 pql_set_define("PQL_ATTR_DNSTTL",							strtolower("dnsTtl"),						false);
@@ -157,6 +158,32 @@ pql_set_define("PQL_ATTR_MXRECORD",							strtolower("mxRecord"),						false);
 pql_set_define("PQL_ATTR_NSRECORD",							strtolower("nsRecord"),						false);
 pql_set_define("PQL_ATTR_RELATIVEDOMAINNAME",				strtolower("relativeDomainName"),			false);
 pql_set_define("PQL_ATTR_ZONENAME",							strtolower("zoneName"),						false);
+
+// }}}
+
+// {{{ Attributes used by the Apache config
+pql_set_define("PQL_ATTR_WEBSRV_USE", 						strtolower('useWebSrv'),					false);
+pql_set_define("PQL_ATTR_WEBSRV_SRV_IP", 					strtolower('webServerIP'),					false);
+pql_set_define("PQL_ATTR_WEBSRV_SRV_URL", 					strtolower('webServerURL'),					false);
+pql_set_define("PQL_ATTR_WEBSRV_SCRIPT_URL", 				strtolower('webScriptAliasURL'),			false);
+pql_set_define("PQL_ATTR_WEBSRV_SCRIPT_PATH", 				strtolower('WebScriptAliasPath'),			false);
+pql_set_define("PQL_ATTR_WEBSRV_LOG_ERROR", 				strtolower('webLogError'),					false);
+pql_set_define("PQL_ATTR_WEBSRV_LOG_TRANSFER", 				strtolower('webLogTransfer'),				false);
+pql_set_define("PQL_ATTR_WEBSRV_OPTIONS", 					strtolower('webOptions'),					false);
+
+// If not using 'mod_cfg_ldap.schema', then enable these (default)
+pql_set_define("PQL_ATTR_WEBSRV_OC",	 					strtolower('phpQLAdminWebsrv'),				false);
+pql_set_define("PQL_ATTR_WEBSRV_DOCROOT", 					strtolower('webDocumentRoot'),				false);
+pql_set_define("PQL_ATTR_WEBSRV_SRV_ALIAS", 				strtolower('webServerAlias'),				false);
+pql_set_define("PQL_ATTR_WEBSRV_SRV_ADMIN", 				strtolower('webServerAdmin'),				false);
+pql_set_define("PQL_ATTR_WEBSRV_SRV_NAME", 					strtolower('webServerName'),				false);
+
+// If you're using the 'mod_cfg_ldap.schema' (see README.apache), then enable these instead.
+//pql_set_define("PQL_ATTR_WEBSRV_OC",	 					strtolower('apacheConfig'),					false);
+//pql_set_define("PQL_ATTR_WEBSRV_DOCROOT", 					strtolower('apacheDocumentRoot'),			false);
+//pql_set_define("PQL_ATTR_WEBSRV_SRV_ALIAS", 				strtolower('apacheServerAlias'),			false);
+//pql_set_define("PQL_ATTR_WEBSRV_SRV_ADMIN", 				strtolower('apacheServerAdmin'),			false);
+//pql_set_define("PQL_ATTR_WEBSRV_SRV_NAME",					strtolower('apacheServerName'),				false);
 // }}}
 
 // {{{ These are the internal phpQLAdmin attributes - GLOBAL configuration
@@ -164,7 +191,6 @@ pql_set_define("PQL_ATTR_ZONENAME",							strtolower("zoneName"),						false);
 pql_set_define("PQL_ATTR_CONTROL_USE", 						strtolower('useControls'),					false);
 pql_set_define("PQL_ATTR_EZMLM_USE", 						strtolower('useEzmlm'),						false);
 pql_set_define("PQL_ATTR_BIND9_USE", 						strtolower('useBind9'),						false);
-pql_set_define("PQL_ATTR_WEBSRV_USE", 						strtolower('useWebSrv'),					false);
 pql_set_define("PQL_ATTR_AUTO_RELOAD", 						strtolower('autoReload'),					false);
 pql_set_define("PQL_ATTR_CHANGE_SERVER", 					strtolower('allowServerChange'),			false);
 
@@ -242,16 +268,6 @@ pql_set_define("PQL_ATTR_SCRIPT_CREATE_USER", 				strtolower('externalScriptUser
 pql_set_define("PQL_ATTR_SCRIPT_CREATE_DOMAIN", 			strtolower('externalScriptDomain'),			false);
 pql_set_define("PQL_ATTR_REFERENCE_USERS_WITH", 			strtolower('userReference'),				false);
 pql_set_define("PQL_ATTR_REFERENCE_DOMAINS_WITH", 			strtolower('branchReference'),				false);
-pql_set_define("PQL_ATTR_WEBSRV_SRV_IP", 					strtolower('webServerIP'),					false);
-pql_set_define("PQL_ATTR_WEBSRV_SRV_URL", 					strtolower('webServerURL'),					false);
-pql_set_define("PQL_ATTR_WEBSRV_SRV_ADMIN", 				strtolower('webServerAdmin'),				false);
-pql_set_define("PQL_ATTR_WEBSRV_DOCROOT", 					strtolower('webDocumentRoot'),				false);
-pql_set_define("PQL_ATTR_WEBSRV_SRV_ALIAS", 				strtolower('webServerAlias'),				false);
-pql_set_define("PQL_ATTR_WEBSRV_SCRIPT_URL", 				strtolower('webScriptAliasURL'),			false);
-pql_set_define("PQL_ATTR_WEBSRV_SCRIPT_PATH", 				strtolower('WebScriptAliasPath'),			false);
-pql_set_define("PQL_ATTR_WEBSRV_LOG_ERROR", 				strtolower('webLogError'),					false);
-pql_set_define("PQL_ATTR_WEBSRV_LOG_TRANSFER", 				strtolower('webLogTransfer'),				false);
-pql_set_define("PQL_ATTR_WEBSRV_OPTIONS", 					strtolower('webOptions'),					false);
 pql_set_define("PQL_ATTR_SUBTREE_USERS", 					strtolower('subTreeUsers'),					false);
 pql_set_define("PQL_ATTR_SUBTREE_GROUPS", 					strtolower('subTreeGroups'),				false);
 pql_set_define("PQL_ATTR_VAT_NUMBER",						strtolower('vatNumber'),					false);
