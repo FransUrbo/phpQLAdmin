@@ -21,3 +21,7 @@ Things left to do
 	  - How can I create/delete lists in domain's baseMailDir/mailinglists,
 	    AND create the directories if they don't exists - ie, when creating
 	    a new domain.
+	* Mailinglists on another host than the one phpQLAdmin runs on...
+	  Problem is 'include/pql_ezmlm.inc:ezmlm->_readlists()'. It uses
+	  opendir() and readdir() (etc) to load list information. This needs
+	  rewriting, maybe with some kind of wrapper...
