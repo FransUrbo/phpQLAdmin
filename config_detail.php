@@ -318,7 +318,7 @@ foreach($_pql->ldap_basedn as $dn) {
 ?>
 	
 <tr class="subtitle">
-	<td colspan="2"><img src="images/info.png" width="16" height="16" border="0">the phpQLAdmin configuration values are stored in config.inc&nbsp;</td>
+	<td colspan="2"><img src="images/info.png" width="16" height="16" border="0">the phpQLAdmin configuration values are stored in config.inc and <b><?=$_pql->ldap_basedn[0]?></b>&nbsp;</td>
         <td></td>
 </tr>
 </table>
