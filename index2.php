@@ -31,6 +31,8 @@ if(is_array($controladmins)) {
 // in ANY of the namingContexts)?
 $counted = 0; // Don't count each of the Control usage more than once
 foreach($_pql->ldap_basedn as $dn)  {
+    $dn = urldecode($dn);
+
     $ALLOW_CONTROL_CREATE = 1; // DEBUG
 
     if(pql_get_define("PQL_GLOB_CONTROL_USE") and $ALLOW_CONTROL_CREATE and $controlsadministrator) {

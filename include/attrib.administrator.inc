@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.22 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.23 2003-08-20 14:21:51 turbo Exp $
 
 require("./left-head.html");
 
@@ -69,6 +69,7 @@ function attribute_print_form($action) {
 
 			// We're should give a user access to THIS branch	
 			foreach($_pql->ldap_basedn as $dn) {
+				$dn = urldecode($dn);
 				unset($dom); unset($domains);
 
 				$dom = pql_get_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $GLOBALS["USER_DN"]);
@@ -137,6 +138,8 @@ function attribute_print_form($action) {
 				// in the system. Only a branch owner/admin can give someone access
 				// to the current branch. Am I making myself clear?
 				foreach($_pql->ldap_basedn as $dn)  {
+					$dn = urldecode($dn);
+
 					$dom = pql_get_domain_value($_pql,
 												$dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"),
 												$GLOBALS["USER_DN"], 1);

@@ -3,6 +3,8 @@
     <th colspan="2" align="left"><?=$LANG->_('User access')?></th>
 <?php
     foreach($_pql->ldap_basedn as $branch) {
+		$branch = urldecode($branch);
+
 		// Check the top-most (namingContexts) DN's if user is admin of that...
 		if(pql_validate_administrator($_pql->ldap_linkid, $branch, $user))
 		  $domains[$branch][] = $branch;

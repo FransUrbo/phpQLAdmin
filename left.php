@@ -96,6 +96,8 @@ if($ALLOW_BRANCH_CREATE) {
     //	'administrator: USER_DN'
     // in the domain object
     foreach($_pql->ldap_basedn as $dn)  {
+	$dn = urldecode($dn);
+
 	$dom = pql_get_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $USER_DN);
 	if($dom) {
 	    foreach($dom as $d) {

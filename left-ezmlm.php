@@ -1,6 +1,6 @@
 <?php
 // navigation bar - ezmlm mailinglists manager
-// $Id: left-ezmlm.php,v 2.18 2003-08-20 08:35:14 turbo Exp $
+// $Id: left-ezmlm.php,v 2.19 2003-08-20 14:21:42 turbo Exp $
 //
 session_start();
 
@@ -29,7 +29,9 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS, false, 0);
 //	administrator: USER_DN
 // in the domain object
 foreach($_pql->ldap_basedn as $dn)  {
-    $dom = pql_get_domain_value($_pql, urldecode($dn), pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR"), $USER_DN);
+	$dn = urldecode($dn);
+
+    $dom = pql_get_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR"), $USER_DN);
     if($dom) {
 		foreach($dom as $d) {
 			$domains[] = urlencode($d);

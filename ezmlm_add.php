@@ -1,6 +1,6 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.24 2003-08-20 08:32:19 turbo Exp $
+// $Id: ezmlm_add.php,v 1.25 2003-08-20 14:21:42 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -26,6 +26,8 @@ if(!$killcount) {
 if(!$domainname) {
 	// Get list of domains
 	foreach($_pql->ldap_basedn as $dn)  {
+		$dn = urldecode($dn);
+
 		$dom = pql_get_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $USER_DN);
 		foreach($dom as $d)
 		  $domains[] = $d;

@@ -26,6 +26,8 @@ if(isset($rlnb) and pql_get_define("PQL_GLOB_AUTO_RELOAD")) {
 }
 
 foreach($_pql->ldap_basedn as $dn) {
+    $dn = urldecode($dn);
+
     if(eregi('KERBEROS', pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $dn)))
       $show_kerberos_info = 1;
 }

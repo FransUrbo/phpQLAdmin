@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.26 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.config.inc,v 1.27 2003-08-20 14:21:51 turbo Exp $
 
 function attribute_check() {
     global $administrator, $domain, $oldvalue, $_pql, $error, $LANG;
@@ -335,6 +335,8 @@ function attribute_save() {
 		// set in every namingContexts
 
 		foreach($_pql->ldap_basedn as $dn) {
+			$dn = urldecode($dn);
+
 			if($attrib == pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR")) {
 				unset($entry);
 				if($$attrib)
