@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.95 2003-07-11 14:03:38 turbo Exp $
+// $Id: pql.inc,v 2.96 2003-08-10 08:40:47 turbo Exp $
 //
 
 // ----------------------------
@@ -32,10 +32,11 @@ class pql {
 	
 	function _find_base_option($attrib) {
 	    $attrib = lc($attrib);
-		
+
 	    $sr = @ldap_read($this->ldap_linkid, NULL, '(objectClass=*)', array($attrib));
 	    if(! $sr) die("Can't find base dn - ".ldap_error($this->ldap_linkid));
 	    $entry = ldap_get_entries($this->ldap_linkid, $sr);
+//printr($entry); die();
 	    
 	    // Build an array of base dn's. It's possible to have multiple in a database
 	    for($i=0; $i < $entry["count"]; $i++) {
@@ -70,15 +71,6 @@ class pql {
 		// Open a connection to the host
 		$this->connect($host) or die("<b>could not connect to ldap server</b>");
 
-		// Start with a LDAPv3 bind
-		if(! @ldap_set_option($this->ldap_linkid, LDAP_OPT_PROTOCOL_VERSION, 3)) {
-			// Didn't work. Try a LDAPv2 bind...
-			echo "Don't support v3 bind<br>";
-
-			if(! @ldap_set_option($this->ldap_linkid, LDAP_OPT_PROTOCOL_VERSION, 2))
-			  die("Neither protocol LDAPv3 nor LDAPv2 worked, strange!<p>LDAP Error: ".ldap_error($this->ldap_linkid));
-		}
-
 		// Bind to the host
 		if(!$this->bind($binddn, $bindpw)) {
 			$this->ldap_error = "<b>Could not bind to ldap server</b>: ";
@@ -93,6 +85,7 @@ class pql {
 
 		// Find the base DN(s)
 		$this->ldap_basedn = $this->_find_basedn();
+
 		return true;
 	}
 	
@@ -111,14 +104,22 @@ class pql {
 		// connect to ldap host and bind to root_dn
 		$this->ldap_linkid = @ldap_connect($host, $port);
 		
-		if($this->ldap_linkid){
-		    // Set the LDAP protocol version to 3 (LDAPv3).
-		    @ldap_set_option($this->ldap_linkid, LDAP_OPT_PROTOCOL_VERSION, 3);
+		ldap_set_option($this->ldap_linkid, LDAP_OPT_DEREF, 3); // Always
 
-		    return true;
+		if($this->ldap_linkid) {
+			// Start with a LDAPv3 bind
+			if(! @ldap_set_option($this->ldap_linkid, LDAP_OPT_PROTOCOL_VERSION, 3)) {
+				// Didn't work. Try a LDAPv2 bind...
+				echo "Don't support v3 bind, trying to do a v2 bind.<br>";
+				
+				if(! @ldap_set_option($this->ldap_linkid, LDAP_OPT_PROTOCOL_VERSION, 2))
+				  echo "Neither protocol LDAPv3 nor LDAPv2 worked, strange!<p>LDAP Error: ".ldap_error($this->ldap_linkid);
+				
+				return false;
+			}
+
+			return true;
 		}
-		
-		return false;
 	}
 	
 	function bind($binddn = "", $bindpw = "") {
@@ -1006,6 +1007,7 @@ function pql_search_attribute($ldap_linkid, $basedn, $attribute, $value) {
 	$value = maybe_encode($value, $attribute, $ldap_linkid);
 
     $filter = '('.$attribute.'='.$value.')';
+//echo "$basedn: $filter ($attribute)<br>\n";
     $sr = ldap_search($ldap_linkid, $basedn, $filter, array($attribute));
     if(ldap_count_entries($ldap_linkid, $sr) > 0) {
 		$ed = ldap_first_entry($ldap_linkid, $sr);
