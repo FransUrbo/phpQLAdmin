@@ -1,6 +1,6 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.40 2004-03-11 18:13:32 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.41 2004-03-12 17:35:25 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -10,6 +10,7 @@ $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PA
 
 $url["domain"] = pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
+$url["user"]   = pql_format_urls($_REQUEST["user"]);
 
 // forward back to users detail page
 function attribute_forward($msg) {
