@@ -954,10 +954,6 @@ switch($submit) {
 		if($entry[$config["PQL_GLOB_ATTR_CN"]]) {
 			$entry[$config["PQL_GLOB_ATTR_CN"]]			= $entry[$config["PQL_GLOB_ATTR_CN"]];
 		}
-		if($entry["gecos"]) {
-			// Remove the international characters from gecos, isn't allowed
-			$entry["gecos"]								= maybe_encode($entry["gecos"], 1);
-		}
 
         // ------------------
 		// Add the user to the database
