@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.72 2003-05-20 07:22:17 turbo Exp $
+// $Id: pql.inc,v 2.73 2003-05-20 13:02:54 turbo Exp $
 //
 
 // ----------------------------
@@ -635,20 +635,31 @@ function pql_modify_userattribute($ldap_linkid, $user, $attrib, $oldvalue, $newv
     // get all attributes first
     $entry = pql_get_userattribute($ldap_linkid, $user, $attrib);
 
-    // If we found an entry, make it's not overwritten,
-    // otherwise ADD the attribute.
+    // If we found an entry, make sure it isn't
+    // not overwritten, otherwise ADD the attribute.
     if($entry) {
 		// array_search workaround
-		foreach($entry as $value){
-			if($value == $oldvalue){
-				$value = $newvalue;
+		foreach($entry as $value) {
+			echo "Value: $value ($oldvalue/$newvalue)<br>";
+			if($value == $oldvalue) {
+				if($newvalue)
+				  // Replace this value with a new one
+				  $value = $newvalue;
+				else
+				  // We want to delete this value
+				  unset($value);
 			}
-			
-			$entry_new[$attrib][] = $value;
+
+			if($value)
+			  $entry_new[$attrib][] = $value;
 		}
-    } else {
-		$entry_new[$attrib][] = $newvalue;
-    }
+
+		// If we're not called with a OLD value, then we
+		// want to add a new value to the attribute
+		if(!$oldvalue and $newvalue)
+		  $entry_new[$attrib][] = $newvalue;
+    } else
+	  $entry_new[$attrib][] = $newvalue;
 
     if(!ldap_mod_replace($ldap_linkid, $user, $entry_new)) {
 		pql_errormsg($ldap_linkid);
