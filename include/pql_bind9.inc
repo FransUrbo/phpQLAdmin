@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.18 2004-01-01 12:35:34 turbo Exp $
+// $Id: pql_bind9.inc,v 2.19 2004-01-15 07:50:13 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, dn)
@@ -102,55 +102,6 @@ function pql_bind9_get_zone($linkid, $dn) {
 }
 // }}}
 
-// {{{ pql_bind9_get_record(linkid, dn, record)
-
-function pql_bind9_get_record($linkid, $dn, $record = '') {
-	if($record) {
-		$record = lc($record);
-
-		$filter = "(&(objectclass=dNSZone)($record=*)";
-		$attrs  = array($record);
-	} else {
-		$filter = "(&(objectclass=dNSZone)";
-		$attrs  = array();
-	}
-
-	if(ereg('@', $dn)) {
-		// It's a SOA record. This is encoded differently in the DN and
-		// inside the object -> Only the @ is INSIDE the object. Search
-		// one level above the exact DN.
-		$object = ldap_explode_dn($dn, 0);
-		$len    = count($object)-2;
-
-		unset($dn);
-		for($i=$len; $object[$i]; $i--)
-		  if($i > 0)
-			$dn = ",".$object[$i].$dn;
-
-		$dn = ereg_replace("^,", "", $dn);
-
-		$filter .= "(relativeDomainName=@))";
-
-		$sr = @ldap_list($linkid, $dn, $filter, $attrs) or pql_format_error(1);
-	} else {
-		$filter .= ")";
-		$sr = @ldap_read($linkid, $dn, $filter, $attrs) or pql_format_error(1);
-	}
-
-	$info = @ldap_get_entries($linkid, $sr) or pql_format_error(1);
-
-	if($info[0][$record]["count"] == 1)
-	  $ret[] = $info[0][$record][0];
-	else {
-		for($i=0; $i < $info[0][$record]["count"]; $i++)
-		  $ret[] = $info[0][$record][$i];
-	}
-
-	return($ret);
-}
-
-// }}}
-
 
 // {{{ pql_bind9_add_zone(linkid, dn, zone)
 function pql_bind9_add_zone($linkid, $dn, $zone) {
@@ -246,6 +197,87 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 }
 // }}}
 
+// {{{ pql_bind9_del_zone(linkid, dn, zone)
+function pql_bind9_del_zone($linkid, $dn, $zone) {
+	$dnsparts = split('\.', $zone);
+	for($i=0; $dnsparts[$i]; $i++) {
+	    $dn_to_remove .= "dc=".$dnsparts[$i].",";
+	}
+	$dn_to_remove .= "ou=DNS,".$dn;
+
+	$lc_zone = lc($dn_to_remove);
+	
+	// Retreive ALL objects below this DN
+	$sr = ldap_search($linkid, $dn_to_remove, 'objectClass=*');
+	$info = ldap_get_entries($linkid, $sr) or pql_format_error(1);
+	for ($i=0; $i < $info["count"]; $i++) {
+		$lc_dn = lc($info[$i]["dn"]);
+
+		if($lc_dn != $lc_zone) {
+			// Don't delete the acctuall zone quite yet
+			if(!ldap_delete($linkid, $info[$i]["dn"]))
+			  pql_format_error(1);
+		}
+	}
+
+	// Delete the zone itself
+	if(!ldap_delete($linkid, $dn_to_remove)) {
+		pql_format_error(1);
+		return false;
+	}
+
+
+	// -------------------------------------------------------------
+	// If this was the last zone in this TLD, remove the TLD as well
+
+	// Get the TLD DN
+	$dnparts = split(',', $dn_to_remove);
+	for($i=1; $dnparts[$i]; $i++) {
+		$tld .= $dnparts[$i];
+		if($dnparts[$i+1])
+		  $tld .= ",";
+	}
+
+	// Look in this DN if there's objects.
+    $sr = ldap_search($linkid, $tld, 'objectClass=*');
+    $info = ldap_get_entries($linkid, $sr) or pql_format_error(1);
+	if(! $info[1]) {
+		// We don't have more than the DN object, delete it.
+		if(!ldap_delete($linkid, $tld)) {
+			pql_format_error(1);
+			return false;
+		}
+	}
+
+
+	// -------------------------------------------------------------
+	// If this was the last TLD in this branch, remove the organiztionalUnit
+	// ou=DNS as well.
+
+	// Get the ou DN
+	$dnparts = split(',', $tld);
+	for($i=1; $dnparts[$i]; $i++) {
+		$ou .= $dnparts[$i];
+		if($dnparts[$i+1])
+		  $ou .= ",";
+	}
+
+	// Look in this DN if there's objects.
+    $sr = ldap_search($linkid, $ou, 'objectClass=*');
+    $info = ldap_get_entries($linkid, $sr) or pql_format_error(1);
+	if(! $info[1]) {
+		// We don't have more than the DN object, delete it.
+		if(!ldap_delete($linkid, $ou)) {
+			pql_format_error(1);
+			return false;
+		}
+	}
+
+	return true;
+}
+// }}}
+
+
 // {{{ pql_bind9_add_host(linkid, basedn, entry)
 function pql_bind9_add_host($linkid, $basedn, $entry) {
 	// Create each of the domain components in the domainname
@@ -276,6 +308,55 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 }
 // }}}
 
+
+// {{{ pql_bind9_get_record(linkid, dn, record)
+
+function pql_bind9_get_record($linkid, $dn, $record = '') {
+	if($record) {
+		$record = lc($record);
+
+		$filter = "(&(objectclass=dNSZone)($record=*)";
+		$attrs  = array($record);
+	} else {
+		$filter = "(&(objectclass=dNSZone)";
+		$attrs  = array();
+	}
+
+	if(ereg('@', $dn)) {
+		// It's a SOA record. This is encoded differently in the DN and
+		// inside the object -> Only the @ is INSIDE the object. Search
+		// one level above the exact DN.
+		$object = ldap_explode_dn($dn, 0);
+		$len    = count($object)-2;
+
+		unset($dn);
+		for($i=$len; $object[$i]; $i--)
+		  if($i > 0)
+			$dn = ",".$object[$i].$dn;
+
+		$dn = ereg_replace("^,", "", $dn);
+
+		$filter .= "(relativeDomainName=@))";
+
+		$sr = @ldap_list($linkid, $dn, $filter, $attrs) or pql_format_error(1);
+	} else {
+		$filter .= ")";
+		$sr = @ldap_read($linkid, $dn, $filter, $attrs) or pql_format_error(1);
+	}
+
+	$info = @ldap_get_entries($linkid, $sr) or pql_format_error(1);
+
+	if($info[0][$record]["count"] == 1)
+	  $ret[] = $info[0][$record][0];
+	else {
+		for($i=0; $i < $info[0][$record]["count"]; $i++)
+		  $ret[] = $info[0][$record][$i];
+	}
+
+	return($ret);
+}
+
+// }}}
 
 // {{{ pql_bind9_set_record(linkid, dn, record, value)
 function pql_bind9_set_record($linkid, $dn, $record, $value = '') {
