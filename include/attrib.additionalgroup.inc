@@ -1,6 +1,6 @@
 <?php
 // Attribute plugin for additional group (memberUID)
-// $Id: attrib.additionalgroup.inc,v 2.5 2004-03-11 18:13:41 turbo Exp $
+// $Id: attrib.additionalgroup.inc,v 2.6 2004-03-17 16:25:00 turbo Exp $
 
 // {{{ attribute_init(void)...
 
@@ -8,7 +8,7 @@ function attribute_init() {
     global $_pql, $LANG;
 
 	// Get the UID value for this user
-	$uid = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], lc(pql_get_define("PQL_GLOB_ATTR_UID")));
+	$uid = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], lc(pql_get_define("PQL_ATTR_UID")));
 	$_REQUEST["uid"] = $uid[0];
 }
 
@@ -132,7 +132,7 @@ function attribute_save($action) {
 
 	  case "delete":
 		// Setup the search filter to get the exact DN of the group
-		$filter  = "(&($attrib_name=" . $_REQUEST["uid"] . ")(".pql_get_define("PQL_GLOB_ATTR_CN")
+		$filter  = "(&($attrib_name=" . $_REQUEST["uid"] . ")(".pql_get_define("PQL_ATTR_CN")
 		  ."=".$_REQUEST[$attrib_name]."))";
 
 		// Get the DN of the group we're removing the user from
