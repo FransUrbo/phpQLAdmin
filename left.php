@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.96 2004-10-18 13:39:31 turbo Exp $
+// $Id: left.php,v 2.97 2004-11-05 10:56:56 turbo Exp $
 //
 session_start();
 
@@ -57,13 +57,9 @@ function left_htmlify_userlist($linkid, $rootdn, $domain, $subbranch, $users, &$
 
     if(is_array($cns)) {
 	asort($cns);
-    
 	foreach($cns as $dn => $cn) {
-	    $uid = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_UID"));
-	    $uid = $uid[0];
-	    
+	    $uid   = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_UID"));
 	    $uidnr = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_QMAILUID"));
-	    $uidnr = $uidnr[0];
 	    
 	    if(($uid != 'root') or ($uidnr != '0')) {
 		// Do NOT show root user(s) here! This should (for safty's sake)
@@ -72,6 +68,7 @@ function left_htmlify_userlist($linkid, $rootdn, $domain, $subbranch, $users, &$
 		  $new = array($cn => "user_detail.php?rootdn=$rootdn&domain=$domain&subbranch=$subbranch&user=".urlencode($dn));
 		else
 		  $new = array($cn => "user_detail.php?rootdn=$rootdn&domain=$domain&user=".urlencode($dn));
+
 		// Add the link to the main array
 		$links = $links + $new;
 	    }
@@ -177,8 +174,7 @@ pql_format_tree($LANG->_('Search'), 0, $links, 1);
 if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {
     // Level 2b: Configuration and tests
     $links = array($LANG->_('phpQLAdmin Configuration')	=> 'config_detail.php',
-		   $LANG->_('Test LDAP-Connection')	=> 'config_ldaptest.php',
-		   $LANG->_('Translate phpQLAdmin')	=> 'update_translations.php');
+		   $LANG->_('Test LDAP-Connection')	=> 'config_ldaptest.php');
     pql_format_tree($LANG->_('phpQLAdmin Configuration'), 0, $links, 1);
     
     // Level 2c: LDAP server setup etc
