@@ -1,12 +1,32 @@
 <?php
 // logins to the system
-// $Id: index.php,v 2.40 2005-01-31 11:39:44 turbo Exp $
+// $Id: index.php,v 2.41 2005-02-24 17:04:00 turbo Exp $
 //
 // Start debuging
 // http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0
 //apd_set_pprof_trace();
 require_once("./include/dlw_porting.inc");
 session_start();
+
+// {{{ Get 'PWD' so we can find our include files
+if(!$_SESSION["path"] and $_SERVER["PATH_TRANSLATED"]) {
+  $path = $_SERVER["PATH_TRANSLATED"];
+  $path = preg_replace('/\/index.php/', '', $path);
+  $_SESSION["path"] = $path;
+
+  unset($path);
+}
+// }}}
+
+// {{{ Find out our location in the URL
+if(!$_SESSION["URI"]) {
+  $tmp1 = preg_quote($_SERVER["DOCUMENT_ROOT"], '/');
+  $tmp2 = preg_replace("/$tmp1/", "", $_SESSION["path"]);
+  $_SESSION["URI"] = '/'.$tmp2.'/';
+
+  unset($tmp1); unset($tmp2);
+}
+// }}}
 
 // DLW: I'm not sure if $msg ever gets set in a _POST, but for now I'll play it safe.
 if (!empty($_POST["msg"])) {
@@ -31,7 +51,9 @@ if ($_GET["logout"] == 1 or !empty($_GET["msg"])) {
 
 	if ($_GET["logout"] == 1) {
 		if(!empty($_POST["msg"]))
-		  header("Location:index.php?msg=".urlencode($msg));
+		  header("Location:index.php?msg=".urlencode($_POST["msg"]));
+		elseif(!empty($_GET["msg"]))
+		  header("Location:index.php?msg=".urlencode($_GET["msg"]));
 		else
 		  header("Location:index.php");
 	}
@@ -40,7 +62,7 @@ if ($_GET["logout"] == 1 or !empty($_GET["msg"])) {
 require("./include/pql_config.inc");
 
 if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
-	include("./header.html");
+	include($_SESSION["path"]."/header.html");
 
 	if(!$_SESSION["USER_HOST"]) {
 		if(! eregi('\+', pql_get_define("PQL_CONF_HOST"))) {
@@ -171,7 +193,6 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 	// We must have read access (to the DN and CN/UID =>
 	// the PQL_CONF_REFERENCE_USERS_WITH define entry) as
 	// anonymous here!
-echo "anonymous binding... (".$_SESSION["USER_DN"].")<br>";
 	$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 	// -------------------------------------
@@ -183,7 +204,8 @@ echo "anonymous binding... (".$_SESSION["USER_DN"].")<br>";
 	foreach($_SESSION["BASE_DN"] as $base) {
 		$objects = pql_get_dn($_pql->ldap_linkid, $base,
 							  pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $base).'='.$_POST["uname"]);
-		foreach($objects as $userdn) {
+		if(is_array($objects)) {
+		  foreach($objects as $userdn) {
 			$_pql->bind($userdn, $_POST["passwd"]);
 			$error = ldap_errno($_pql->ldap_linkid);
 			if(!$error) {
@@ -196,12 +218,13 @@ echo "anonymous binding... (".$_SESSION["USER_DN"].")<br>";
 				header("Location:index.php?msg=" . urlencode($msg) . "&uname=$uname");
 				exit;
 			}
+		  }
 		}
 	}
 
 	if(!$user_found) {
 		$msg = urlencode($LANG->_('Error') . ": " . $LANG->_("Can't find you in the database"));
-		header("Location: " . pql_get_define("PQL_CONF_URI") . "index.php?msg=$msg");
+		header("Location: " . $_SESSION["URI"] . "index.php?msg=$msg");
 	}
 
 	// We made it, so set all the session variables.

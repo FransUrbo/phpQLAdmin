@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for administrator and seealso modification
 // Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
-// $Id: attrib.administrator.inc,v 1.50 2005-01-31 11:39:44 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.51 2005-02-24 17:04:01 turbo Exp $
 
 // There is serious problems with this. I fix for one usage and break another
 // one! Let's try to remember (and document) how it's called. It's called from
@@ -463,7 +463,7 @@ function attribute_save($type) {
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'), array('what' => $what))
 			. ": " . ldap_error($_pql->ldap_linkid);
 		
-		if(file_exists("./.DEBUG_ME"))
+		if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
 		  die("MSG: $msg");
 
 		attribute_forward($msg);

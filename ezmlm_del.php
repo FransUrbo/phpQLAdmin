@@ -1,22 +1,22 @@
 <?php
-// $Id: ezmlm_del.php,v 1.23 2004-11-17 07:30:06 turbo Exp $
+// $Id: ezmlm_del.php,v 1.24 2005-02-24 17:04:00 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
-require("./include/pql_ezmlm.inc");
+require($_SESSION["path"]."/include/pql_ezmlm.inc");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"], false, 0);
 
 $url["domain"] = pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 
-include("./header.html");
+include($_SESSION["path"]."/header.html");
 
 // forward back to list detail page
 function list_forward($domainname, $msg) {
     $msg = urlencode($msg);
     $url = "home.php?msg=$msg&rlnb=3";
-    header("Location: " . pql_get_define("PQL_CONF_URI") . "$url");
+    header("Location: " . $_SESSION["URI"] . "$url");
 }
 
 // Get base directory for mails

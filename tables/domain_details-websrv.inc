@@ -1,4 +1,4 @@
-<?php require("./include/pql_websrv.inc");
+<?php require($_SESSION["path"]."/include/pql_websrv.inc");
 	  $result = pql_search($_pql->ldap_linkid, $dn, 'objectClass='.pql_get_define("PQL_ATTR_WEBSRV_OC"));
 	  for($i=0; $result[$i]; $i++) {
 		  // Oki, we have webserver configuration(s) in LDAP.

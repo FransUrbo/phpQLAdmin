@@ -1,11 +1,11 @@
 <?php
 // start page
-// $Id: home.php,v 2.37 2005-01-12 20:08:39 turbo Exp $
+// $Id: home.php,v 2.38 2005-02-24 17:04:00 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 
-include("./header.html");
+include($_SESSION["path"]."/header.html");
 
 // print status message, if one is available
 if(isset($msg)){
@@ -51,7 +51,7 @@ if(isset($submit)) {
 
     // We need to disable advanced mode so that only the user frame
     // is shown, hence no 'advanced=...' in the url.
-    header("Location: " . pql_get_define("PQL_CONF_URI") . "index2.php");
+    header("Location: " . $_SESSION["URI"] . "index2.php");
 }
 ?>
 

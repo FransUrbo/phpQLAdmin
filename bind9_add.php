@@ -1,14 +1,14 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.17 2005-01-31 11:41:48 turbo Exp $
+// $Id: bind9_add.php,v 2.18 2005-02-24 17:04:00 turbo Exp $
 //
 // {{{ Setup session etc
 session_start();
 require("./include/pql_config.inc");
-require("./include/pql_control.inc");
-require("./include/pql_bind9.inc");
+require($_SESSION["path"]."/include/pql_control.inc");
+require($_SESSION["path"]."/include/pql_bind9.inc");
 
-include("./header.html");
+include($_SESSION["path"]."/header.html");
 
 if($_REQUEST["domainname"]) {
 	$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
@@ -53,10 +53,10 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 		  $url  = "domain_detail.php?rootdn=".urlencode($_REQUEST["rootdn"])."&domain=".urlencode($_REQUEST["domain"]);
 		  $url .= "&dns_domain_name=".$_REQUEST["dns_domain_name"]."&view=".$_REQUEST["view"]."&msg=".urlencode($msg);
 
-		  if(file_exists("./.DEBUG_ME"))
+		  if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
 			die($url);
 		  else
-			header("Location: ".pql_get_define("PQL_CONF_URI") . "$url");
+			header("Location: ".$_SESSION["URI"] . "$url");
 		  // }}}
 	  }
 } elseif(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'host')) {
@@ -179,7 +179,7 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 		  if($dn) {
 			$msg = "Successfully added host <u>".$_REQUEST["hostname"].".".pql_maybe_idna_decode($_REQUEST["domainname"])."</u>";
 
-			if(!file_exists("./.DEBUG_ME")) {
+			if(!file_exists($_SESSION["path"]."/.DEBUG_ME")) {
 			  // We can't do this if we're debuging. The object don't exists in the db, hence
 			  // we can't figure out zone name etc...
 			  if(!pql_bind9_update_serial($_pql->ldap_linkid, $dn))
@@ -192,7 +192,7 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 		  $url  = "domain_detail.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"]."&view=".$_REQUEST["view"];
 		  $url .= "&dns_domain_name=".$_REQUEST["dns_domain_name"]."&msg=$msg";
 
-		  if(file_exists("./.DEBUG_ME"))
+		  if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
 			die($url);
 		  else
 			header("Location: $url");

@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.62 2005-02-07 11:42:39 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.63 2005-02-24 17:04:01 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -363,13 +363,14 @@ function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $do
 // (string)		user	 		- 	The DN of the user adding/creating the
 //									object (or to have the access specified)
 // (string)		type			-	Type of object being created. Currently one of:
-//									branch	A branch object
-//									unit	A sub branch object (ou or another dc)
-//									user	A user object
-//									group	A system group object
-//									dnszone	A Bind 9 DNS zone object
-//									websrv	A webserver configuration object
-//									qmail	A QmailLDAP/Controls object
+//									branch	 A branch object
+//									unit	 A sub branch object (ou or another dc)
+//									user	 A user object
+//									group	 A system group object
+//									dnszone	 A Bind 9 DNS zone object
+//									websrv	 A webserver configuration object
+//									qmail	 A QmailLDAP/Controls object
+//									template A user template object
 //
 // Returns: (array) ACI entry in LDIF format
 //
@@ -406,6 +407,8 @@ function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $do
 //		} else {
 //			$aci[$i] = "$i#entry#grant;r,s,c;dc#public#"; $i++;
 //		}
+//	} elseif($type == 'template') {
+//		// No defaults for this, the public and 'access-id#me' stuff is perfectly ok for me...
 //	}
 //
 //	// Non-public entries

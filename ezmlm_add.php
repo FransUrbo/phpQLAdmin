@@ -1,6 +1,6 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.34 2005-01-31 11:39:44 turbo Exp $
+// $Id: ezmlm_add.php,v 1.35 2005-02-24 17:04:00 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -112,7 +112,7 @@ if(!$_REQUEST["domainname"]) {
 								array('what'   => pql_get_define("PQL_ATTR_BASEMAILDIR"),
 									  'domain' => $_REQUEST["domainname"])));
 	
-	require("./include/pql_ezmlm.inc");
+	require($_SESSION["path"]."/include/pql_ezmlm.inc");
 
 	$user  = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_EZMLM_USER"));
 	$ezmlm = new ezmlm($user, $path);
@@ -167,7 +167,7 @@ if(isset($_REQUEST["submit"])) {
 
 		$url  = "ezmlm_detail.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&domainname=".$_REQUEST["domainname"];
 		$url .= "&listno=".$_REQUEST["listname"]."&msg=$msg&rlnb=3";
-		header("Location: " . pql_get_define("PQL_CONF_URI") . "$url");
+		header("Location: " . $_SESSION["URI"] . "$url");
 	} else
 	  $error_text["listname"] = $LANG->_('Missing')."<br>";
 } else {
@@ -213,7 +213,7 @@ if(isset($_REQUEST["submit"])) {
 // --------------------------------------------
 // We haven't submitted (or we're missing listname and/or domain name) - show 'add list form'.
 
-require("./header.html");
+require($_SESSION["path"]."/header.html");
 if(!$_REQUEST["domainname"]) {
 ?>
   <span class="title1"><?=$LANG->_('Create mailinglist to system')?></span>

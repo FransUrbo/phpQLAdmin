@@ -2,7 +2,7 @@
 // ----------------------------
 // pql_update_translations.php
 //
-// $Id: update_translations.php,v 2.5 2005-01-12 20:08:40 turbo Exp $
+// $Id: update_translations.php,v 2.6 2005-02-24 17:04:03 turbo Exp $
 //
 
 // ----------------------------
@@ -15,7 +15,7 @@
 // be more in line with the rest of the phpQLAdmin
 // package.
 
-require_once("./include/pql_config.inc");
+require_once("../include/pql_config.inc");
 	
 $outputFile = "translations/lang.new.inc";
 $baseDir = ".\/"; // were we start searching for strings
@@ -50,11 +50,11 @@ $user_lang = isset( $_POST['user_lang'] ) ? $_POST['user_lang'] : '';
     </select>
 <?php
 	// Now we should load up the language file select by the user or by browser detection
-	$fp = @fopen("./include/lang.$lang.inc", "r");
+	$fp = @fopen($_SESSION["path"]."/include/lang.$lang.inc", "r");
 	if(!$fp) {
 	  die("<p>Can't open language file 'include/lang.$lang.inc' for read. Does it exists?");
 	}
-	require ("./include/lang.$lang.inc");
+	require ($_SESSION["path"]."/include/lang.$lang.inc");
 	$buffer = fgets($fp, 4096); // chop off the php start part
 	$read = true;
 	$file_text = "";

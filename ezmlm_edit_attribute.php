@@ -1,9 +1,9 @@
 <?php
-// $Id: ezmlm_edit_attribute.php,v 1.26 2004-11-17 07:30:06 turbo Exp $
+// $Id: ezmlm_edit_attribute.php,v 1.27 2005-02-24 17:04:00 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
-require("./include/pql_ezmlm.inc");
+require($_SESSION["path"]."/include/pql_ezmlm.inc");
 
 $url["domain"] = pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
@@ -17,7 +17,7 @@ function list_forward($domainname, $listno, $msg) {
 	else
 	  $url = "ezmlm_detail.php?domain=$domain&domainname=$domainname&msg=$msg";
 
-    header("Location: " . pql_get_define("PQL_CONF_URI") . "$url");
+    header("Location: " . $_SESSION["URI"] . "$url");
 }
 
 // Get base directory for mails
@@ -37,7 +37,7 @@ if($ezmlm = new ezmlm($user, $path)) {
 
 	// TODO: Same for 'listparent' and 'fromaddress' when/if we need it...
 	if(($_REQUEST["attrib"] == 'subscriber') or ($_REQUEST["attrib"] == 'owner')) {
-		include("./header.html");
+		include($_SESSION["path"]."/header.html");
 
 		if(($_REQUEST["submit"] != 'save') and !$value) {
 			if($_REQUEST["attrib"] == 'subscriber') {

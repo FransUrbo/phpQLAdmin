@@ -1,11 +1,11 @@
 <?php
 // shows results of search
-// $Id: search.php,v 2.30 2005-01-31 11:39:44 turbo Exp $
+// $Id: search.php,v 2.31 2005-02-24 17:04:00 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 
-include("./header.html");
+include($_SESSION["path"]."/header.html");
 
 // print status message, if one is available
 if(isset($msg)) {
@@ -34,7 +34,7 @@ $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PA
 if (empty($_REQUEST["attribute"]) || empty($_REQUEST["filter_type"]) || empty($_REQUEST["search_string"])) {
     // invalid form submission
     $msg = urlencode($LANG->_('You have to provide a value to search for'));
-    header("Location: " . pql_get_define("PQL_CONF_URI") . "home.php?msg=$msg");
+    header("Location: " . $_SESSION["URI"] . "home.php?msg=$msg");
     exit();
 }
 

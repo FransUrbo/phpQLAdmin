@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.15 2005-01-31 11:47:28 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.16 2005-02-24 17:04:01 turbo Exp $
 
 // {{{ attribute_translate_type(attrib)
 function attribute_translate_type($attrib) {
@@ -179,23 +179,26 @@ function attribute_save($action) {
 
 	if($_REQUEST["type"])
 	  $attrib = attribute_translate_type($_REQUEST["type"]);
-	$newvalue = $_REQUEST["newvalue"];
 
-	if((lc($attrib) == 'mxrecord') && $_REQUEST["priority"])
-	  $newvalue = $_REQUEST["priority"] . " " . $newvalue;
+	if($_REQUEST["newvalue"]) {
+	  $newvalue = $_REQUEST["newvalue"];
+	  
+	  if(@(lc($attrib) == 'mxrecord') && $_REQUEST["priority"])
+		$newvalue = $_REQUEST["priority"] . " " . $newvalue;
+	}
 
 	// {{{ if($attrib == 'dnsttl')
 	if((lc($attrib) == 'dnsttl') && $_REQUEST["time"]) {
 	  if($_REQUEST["time"] == "minutes")
-		$newvalue = $value * 60;
+		$newvalue = $newvalue * 60;
 	  elseif($_REQUEST["time"] == "hours")
-		$newvalue = $value * 60 * 60;
+		$newvalue = $newvalue * 60 * 60;
 	  elseif($_REQUEST["time"] == "days")
-		$newvalue = $value * 60 * 60 * 24;
+		$newvalue = $newvalue * 60 * 60 * 24;
 	  elseif($_REQUEST["time"] == "weeks")
-		$newvalue = $value * 60 * 60 * 24 * 7;
+		$newvalue = $newvalue * 60 * 60 * 24 * 7;
 	  elseif($_REQUEST["time"] == "months")
-		$newvalue = $value * 60 * 60 * 24 * 7 * 4;
+		$newvalue = $newvalue * 60 * 60 * 24 * 7 * 4;
 	}
 	// }}}
 
@@ -212,7 +215,7 @@ function attribute_save($action) {
 		  $entry[$attrib][] = $oldvalues[$i];
 
 		// Add the new value to the array
-		$entry[$attrib][] = $value;
+		$entry[$attrib][] = $newvalue;
 
 		if(pql_modify_attribute($_pql->ldap_linkid, $dn, '', '', $entry)) {
 		  $success = 1;
@@ -239,7 +242,7 @@ function attribute_save($action) {
 				  $parent .= ",";
 			}
 
-			if(file_exists("./.DEBUG_ME")) {
+			if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
 				echo "Renaming<br>'<b>$dn</b>'<br>to<br>'<b>$new_dn,$parent</b>'<br>";
 				$dn = $new_dn.','.$parent;
 			} else {
@@ -319,15 +322,47 @@ function attribute_save($action) {
 				if($oldvalues[$i] != $_REQUEST["oldvalue"])
 				  $entry[$attrib][] = $oldvalues[$i];
 			}
-		}
 
-		if(pql_modify_attribute($_pql->ldap_linkid, $dn, '', '', $entry)) {
-		  $success = 1;
-		  $msg = pql_complete_constant($LANG->_('Successfully removed %value%'),
-									   array('value' => $_REQUEST["oldvalue"]));
-		} else
-		  $msg = pql_complete_constant($LANG->_('Failed to remove %value%'),
-									   array('value' => $_REQUEST["oldvalue"])) . ": " . ldap_error($_pql->ldap_linkid);
+			if(pql_modify_attribute($_pql->ldap_linkid, $dn, '', '', $entry)) {
+			  $success = 1;
+			  $msg = pql_complete_constant($LANG->_('Successfully removed %value%'),
+										   array('value' => $_REQUEST["oldvalue"]));
+			} else
+			  $msg = pql_complete_constant($LANG->_('Failed to remove %value%'),
+										   array('value' => $_REQUEST["oldvalue"])) . ": " . ldap_error($_pql->ldap_linkid);
+		} else {
+		  // Delete a whole object
+		  if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+			$success = 1;
+			echo "Deleting a whole object: '$dn'";
+		  } else {
+			if(ldap_delete($_pql->ldap_linkid, $dn))
+			  $success = 1;
+			else
+			  pql_format_error(1);
+		  }
+
+		  // Extact the host part of the DN
+		  $host = split(',', $dn); $host = split('=', $host[0]); $host = $host[1];
+
+		  if($success) {
+			// {{{ Recreate a new DN for pql_bind9_update_serial() below.
+			$dn_parts = split(',', $dn);
+			for($i=1; $dn_parts[$i]; $i++) {
+			  $newdn .= $dn_parts[$i];
+			  if($dn_parts[$i+1])
+				$newdn .= ',';
+			}
+			$dn = 'relativeDomainName=@,'.$newdn;
+			// }}}
+
+			$msg = pql_complete_constant($LANG->_('Successfully removed %value%'),
+										 array('value' => $host.'.'.$_REQUEST["dns_domain_name"]));
+		  } else 
+			$msg = pql_complete_constant($LANG->_('Failed to remove %value%'),
+										 array('value' => $host.'.'.$_REQUEST["dns_domain_name"]))
+			  . ": " . ldap_error($_pql->ldap_linkid);
+		}
 		break;
 		// }}}
 	}
@@ -338,8 +373,10 @@ function attribute_save($action) {
 		die("failed to update ".$soa["dn"].":".pql_get_define("PQL_ATTR_SOARECORD")." with value $serial_new<br>");  
 	}
 
-	if(!file_exists("./.DEBUG_ME")) 
+	if(!file_exists($_SESSION["path"]."/.DEBUG_ME")) 
 	  attribute_forward($msg);
+	else
+	  echo "$msg";
 }
 
 // }}}

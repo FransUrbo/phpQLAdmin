@@ -65,7 +65,7 @@
           is not necessary, it is hardcoded into the code itself.
 
 * To add the basic ACIs to all objects in your database, you can use the
-  perl script named 'add_aci_support_to_all_objects_in_database.pl' in
+  perl script named 'scripts/add_aci_support_to_all_objects_in_database.pl' in
   this directory. Modify it before use (the top few lines). It will
   retreive ALL (!) objects in your database below the specified base
   DN(s).
@@ -78,7 +78,7 @@
   The script will output an LDIF which you can pipe to ldapmodify, like
   this:
 
-	./add_aci_support_to_all_objects_in_database.pl | ldapmodify
+	./scripts/add_aci_support_to_all_objects_in_database.pl | ldapmodify
 
   When the database has been modify, you can restore you old ACLs.
   But since you now have ACI support (if that's compiled into the

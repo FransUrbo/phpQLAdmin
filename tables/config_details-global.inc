@@ -133,6 +133,13 @@
         <td class="<?=$class?>"><?php echo pql_get_define("PQL_CONF_VIRTUAL_BASEHOME"); ?>&nbsp;</td>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=pql_get_define("PQL_ATTR_VIRTUAL_BASEHOME")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_VIRTUAL_BASEHOME")?>"></a></td>
       </tr>
+
+<?php $class=pql_format_table(0); ?>
+      <tr>
+        <td class="title"><?=$LANG->_('Use MBox format instead of Maildir for mail store')?></td>
+        <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_CREATE_MBOX")) {echo 'Yes';} else {echo 'No';}?>&nbsp;</td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=pql_get_define("PQL_ATTR_CREATE_MBOX")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_CREATE_MBOX")?>"></a></td>
+      </tr>
 <?php if($show_kerberos_info) { ?>
 
       <tr></tr>

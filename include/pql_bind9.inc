@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.31 2005-01-31 11:49:49 turbo Exp $
+// $Id: pql_bind9.inc,v 2.32 2005-02-24 17:04:01 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -213,7 +213,7 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 		if(!pql_get_dn($linkid, $dn, 'objectClass=domain', 'BASE')) {
 			// Doesn't already exists. Create a LDIF object to print in case of error
 			$LDIF = pql_create_ldif("pql_bind9_add_zone - dc=".$dc_tmp, $dn, $entry);
-			if(file_exists("./.DEBUG_ME"))
+			if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
 			  echo $LDIF;
 			else {
 				if(!ldap_add($linkid, $dn, $entry)) {
@@ -255,7 +255,7 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 	if(!pql_get_dn($linkid, $dn, 'objectClass=dNSZone', 'BASE')) {
 		// Doesn't already exists. Create a LDIF object to print in case of error
 		$LDIF = pql_create_ldif("pql_bind9_add_zone - @", $dn, $entry);
-		if(file_exists("./.DEBUG_ME"))
+		if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
 		  echo $LDIF;
 		else {
 			if(!ldap_add($linkid, $dn, $entry)) {
@@ -299,7 +299,7 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 	// {{{ Add the object to the database
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_bind9_add_host", $dn, $entry);
-	if(file_exists("./.DEBUG_ME")) {
+	if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
 		echo $LDIF;
 	} else {
 		if(!ldap_add($linkid, $dn, $entry)) {

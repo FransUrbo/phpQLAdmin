@@ -1,11 +1,11 @@
 <?php
 // Input form page to create a domain branch in database
-// $Id: domain_add_form.php,v 1.22 2005-01-31 11:39:44 turbo Exp $
+// $Id: domain_add_form.php,v 1.23 2005-02-24 17:04:00 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 
-include("./header.html");
+include($_SESSION["path"]."/header.html");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 $server = split(';', $_SESSION["USER_HOST"]);

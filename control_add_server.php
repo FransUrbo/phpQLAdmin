@@ -1,16 +1,16 @@
 <?php
 // Add a new mailserver to the database
-// $Id: control_add_server.php,v 2.23 2004-11-13 11:10:35 turbo Exp $
+// $Id: control_add_server.php,v 2.24 2005-02-24 17:04:00 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 
 if(pql_get_define("PQL_CONF_CONTROL_USE")) {
     // include control api if control is used
-    include("./include/pql_control.inc");
+    include($_SESSION["path"]."/include/pql_control.inc");
     $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
-    include("./header.html");
+    include($_SESSION["path"]."/header.html");
 
 	if(isset($_REQUEST["submit"])) {
 		if($_REQUEST["submit"] == "Create") {
@@ -48,7 +48,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 					$msg = urlencode("Successfully created mailserver ".$_REQUEST["fqdn"].".");
 					$url = "control_detail.php?mxhost=".$_REQUEST["fqdn"]."&msg=$msg&rlnb=2";
 
-					header("Location: " . pql_get_define("PQL_CONF_URI") . $url);
+					header("Location: " . $_SESSION["URI"] . $url);
 				} else
 				  die("Failed to add QmailLDAP/Control object <b>".$_REQUEST["fqdn"]."</b>");
 			} else {
@@ -116,7 +116,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 					$msg = urlencode("Successfully created mailserver ".pql_maybe_idna_decode($_REQUEST["fqdn"]).".");
 					$url = "control_detail.php?mxhost=".$_REQUEST["fqdn"]."&msg=$msg&rlnb=2";
 
-					header("Location: " . pql_get_define("PQL_CONF_URI") . $url);
+					header("Location: " . $_SESSION["URI"] . $url);
 				} else
 				  die("Failed to clone QmailLDAP/Control object <b>".$_REQUEST["fqdn"]."</b>.");
 			} else

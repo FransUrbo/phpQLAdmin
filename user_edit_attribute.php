@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of user
-// $Id: user_edit_attribute.php,v 2.47 2005-02-05 12:39:25 turbo Exp $
+// $Id: user_edit_attribute.php,v 2.48 2005-02-24 17:04:01 turbo Exp $
 //
 // This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
 //   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -12,13 +12,13 @@
 // {{{ Setup session etc
 session_start();
 require("./include/pql_config.inc");
-require("./include/config_plugins.inc");
+require($_SESSION["path"]."/include/config_plugins.inc");
 
 $url["domain"] = pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 $url["user"]   = pql_format_urls($_REQUEST["user"]);
 
-require_once("./include/dlw_porting.inc");
+require_once($_SESSION["path"]."/include/dlw_porting.inc");
 // These variable are "_GET" the first time, and "_POST" the other times.
 if (empty($session)) {
   dlw_expect_from(__FILE__, __LINE__, '_REQUEST', array('domain', 'user', 'rootdn', 'oldvalue', 'view', 'attrib', 'PHPSESSID'));
@@ -60,24 +60,24 @@ function attribute_forward($msg, $rlnb = false) {
     if ($rlnb)
       $link .= "&rlnb=2";
 
-    if(!file_exists("./.DEBUG_ME"))
-      header("Location: " . pql_get_define("PQL_CONF_URI") . "$link");
+    if(!file_exists($_SESSION["path"]."/.DEBUG_ME"))
+      header("Location: " . $_SESSION["URI"] . "$link");
     else
       die($link);
 }
 // }}}
 
-include("./header.html");
+include($_SESSION["path"]."/header.html");
 
 // {{{ Select (and load) which attribute have to be included
 $plugin = pql_plugin_get_filename(pql_plugin_get($_REQUEST["attrib"]));
 if(!$plugin) {
     die("<span class=\"error\">ERROR: No plugin file defined for attribute '<i>".$_REQUEST["attrib"]."</i>'</span>");
-} elseif(!file_exists("./include/$plugin")) {
+} elseif(!file_exists($_SESSION["path"]."/include/$plugin")) {
     die("<span class=\"error\">ERROR: Plugin file defined for attribute '<i>".$_REQUEST["attrib"]."</i>' does not exists!</span>");
 }
 
-include("./include/$plugin");
+include($_SESSION["path"]."/include/$plugin");
 // }}}
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Change user data for %user%'), array('user' => $username)); ?></span>

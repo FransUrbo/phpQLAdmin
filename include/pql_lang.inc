@@ -3,7 +3,7 @@
 // pql_lang.inc
 // phpQLAdmin Language Application Programming Interface (API)
 //
-// $Id: pql_lang.inc,v 2.10 2004-05-13 05:56:01 turbo Exp $
+// $Id: pql_lang.inc,v 2.11 2005-02-24 17:04:01 turbo Exp $
 //
 
 // ----------------------------
@@ -93,13 +93,13 @@ class pql_lang {
 			$lang = $this->_get_browser_language();
 		}
 
-		if(!$lang && file_exists("include/lang.".$lang.".inc")) {
+		if(!$lang && file_exists($_SESSION["path"]."include/lang.".$lang.".inc")) {
 			// We have a language (either from the database or the browser)
-			include("./include/lang.".$lang.".inc");
+			include($_SESSION["path"]."/include/lang.".$lang.".inc");
 			$this->_choosen = $lang;
 		} else {
 			// No default language. Load the English default
-			include("./include/lang.en.inc");
+			include($_SESSION["path"]."/include/lang.en.inc");
 			$this->_choosen = 'en';
 		}
 

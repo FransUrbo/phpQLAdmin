@@ -1,14 +1,14 @@
 <?php
 // delete a user
-// $Id: user_del.php,v 2.35 2004-11-17 07:30:07 turbo Exp $
+// $Id: user_del.php,v 2.36 2005-02-24 17:04:01 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
-require("./include/pql_ezmlm.inc");
+require($_SESSION["path"]."/include/pql_ezmlm.inc");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
-include("./header.html");
+include($_SESSION["path"]."/header.html");
 
 $url["domain"]		= pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"]		= pql_format_urls($_REQUEST["rootdn"]);
@@ -114,7 +114,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 	$msg = urlencode($msg);
 	$url = "domain_detail.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&view=basic&msg=$msg$rlnb";
 
-	header("Location: " . pql_get_define("PQL_CONF_URI") . $url);
+	header("Location: " . $_SESSION["URI"] . $url);
 } else {
 ?>
 <br>

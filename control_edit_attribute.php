@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of a control option
-// $Id: control_edit_attribute.php,v 2.25 2004-11-17 07:33:28 turbo Exp $
+// $Id: control_edit_attribute.php,v 2.26 2005-02-24 17:04:00 turbo Exp $
 //
 session_start();
 
@@ -14,8 +14,8 @@ if($_REQUEST["type"] == "") {
 }
 
 require("./include/pql_config.inc");
-require("./include/pql_control.inc");
-require("./include/pql_control_plugins.inc");
+require($_SESSION["path"]."/include/pql_control.inc");
+require($_SESSION["path"]."/include/pql_control_plugins.inc");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
@@ -24,7 +24,7 @@ $url["domain"] = pql_format_urls($_REQUEST["domain"]);
 
 // Register all attribute plugins here
 $plugin = pql_plugin_get($_REQUEST["attrib"]);
-include("./include/".pql_plugin_get_filename($plugin));
+include($_SESSION["path"]."/include/".pql_plugin_get_filename($plugin));
 
 // forward back to users detail page
 function attribute_forward($msg) {
@@ -35,10 +35,10 @@ function attribute_forward($msg) {
 	else
 	  $url = "domain_detail.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"]."&view=".$_REQUEST["view"]."&msg=$msg";
 
-	header("Location: " . pql_get_define("PQL_CONF_URI") . "$url");
+	header("Location: " . $_SESSION["URI"] . "$url");
 }
 
-include("./header.html");
+include($_SESSION["path"]."/header.html");
 ?>
   <span class="title1">Change control values</span>
   <br><br>

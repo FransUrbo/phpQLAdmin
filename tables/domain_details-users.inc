@@ -73,6 +73,9 @@
 					$forwards = pql_get_attribute($_pql->ldap_linkid, $user,
 												  pql_get_define("PQL_ATTR_FORWARDS"));
 					if($forwards) {
+						if(!is_array($forwards))
+						  $forwards = array($forwards);
+
 						foreach($forwards as $forward) {
 							$new = array("=> $forward" =>
 										 $urledit."&attrib=".pql_get_define("PQL_ATTR_FORWARDS")."&".pql_get_define("PQL_ATTR_FORWARDS")."=$forward&oldvalue=$forward&view=email");

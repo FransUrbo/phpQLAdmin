@@ -1,11 +1,11 @@
 <?php
 // delete a domain and all users within
-// $Id: domain_del.php,v 2.31 2004-10-18 13:39:30 turbo Exp $
+// $Id: domain_del.php,v 2.32 2005-02-24 17:04:00 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 
-include("./header.html");
+include($_SESSION["path"]."/header.html");
 
 $domain = $_REQUEST["domain"];
 
@@ -34,7 +34,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 		if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 			// -------------------------
 			// Include control API
-			include("./include/pql_control.inc");
+			include($_SESSION["path"]."/include/pql_control.inc");
 			$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 			// -------------------------
@@ -65,13 +65,13 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 		
 	    // redirect to home page
 	    $msg = urlencode($msg);
-	    header("Location: " . pql_get_define("PQL_CONF_URI") . "home.php?msg=$msg&rlnb=1");
+	    header("Location: " . $_SESSION["URI"] . "home.php?msg=$msg&rlnb=1");
 	} else {
 	    $msg = $LANG->_('Failed to remove the domain') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 		
 	    // redirect to domain detail page
 	    $msg = urlencode($msg);
-	    header("Location: " . pql_get_define("PQL_CONF_URI") . "domain_detail.php?domain=$domain&msg=$msg");
+	    header("Location: " . $_SESSION["URI"] . "domain_detail.php?domain=$domain&msg=$msg");
 	}
 } else {
 ?>

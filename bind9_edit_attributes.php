@@ -1,10 +1,10 @@
 <?php
 // edit attributes of a BIND9 DNS zone
-// $Id: bind9_edit_attributes.php,v 2.7 2005-01-30 10:35:39 turbo Exp $
+// $Id: bind9_edit_attributes.php,v 2.8 2005-02-24 17:04:00 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
-require("./include/pql_bind9.inc");
+require($_SESSION["path"]."/include/pql_bind9.inc");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
@@ -14,12 +14,12 @@ function attribute_forward($msg) {
     $url  = "domain_detail.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"]."&view=".$_REQUEST["view"];
 	$url .= "&dns_domain_name=".$_REQUEST["dns_domain_name"]."&msg=$msg";
 
-    header("Location: " . pql_get_define("PQL_CONF_URI") . "$url");
+    header("Location: " . $_SESSION["URI"] . "$url");
 }
 // }}}
 
-include("./header.html");
-include("./include/attrib.dnszone.inc");
+include($_SESSION["path"]."/header.html");
+include($_SESSION["path"]."/include/attrib.dnszone.inc");
 ?>
     <span class="title1">Change DNS zone value</span>
     <br><br>
@@ -52,12 +52,14 @@ switch($_REQUEST["type"]) {
 	$_REQUEST["attrib"] = pql_get_define("PQL_ATTR_TXTRECORD");
 	break;
   default:
-	die("unknown zone type '".$_REQUEST["type"]."'.");
+	if($_REQUEST["action"] != "del") {
+	  die("unknown zone type '".$_REQUEST["type"]."'.");
+	}
 }
 // }}}
 
 // {{{ Select what to do
-if(($_REQUEST["action"] == 'del') && $_REQUEST["oldvalue"]) {
+if(($_REQUEST["action"] == 'del') && $_REQUEST["rdn"]) {
 	attribute_save($_REQUEST["action"]);
 } elseif($_REQUEST["submit"] == 1) {
     if(attribute_check())

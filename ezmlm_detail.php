@@ -1,9 +1,9 @@
 <?php
-// $Id: ezmlm_detail.php,v 1.29 2005-01-12 20:08:39 turbo Exp $
+// $Id: ezmlm_detail.php,v 1.30 2005-02-24 17:04:00 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
-require("./include/pql_ezmlm.inc");
+require($_SESSION["path"]."/include/pql_ezmlm.inc");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
@@ -27,7 +27,7 @@ if($_REQUEST["domain"]) {
 	$user  = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_EZMLM_USER"));
 	$ezmlm = new ezmlm($user, $basemaildir);
 	
-	include("./header.html");
+	include($_SESSION["path"]."/header.html");
 
 	// reload navigation bar if needed
 	if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {

@@ -3,7 +3,7 @@
 // This file contains what I think is 'resonable defaults'.
 // Don't change here, change any values in the web interface!
 //
-// $Id: defaults.inc,v 2.30 2004-09-24 06:20:40 turbo Exp $
+// $Id: defaults.inc,v 2.31 2005-02-24 17:04:01 turbo Exp $
 
 // NOTE: Some of these defines isn't called with the (root/top)
 //       DN. They are (site) global variables, not per branch.
@@ -169,15 +169,6 @@ pql_set_define("PQL_CONF_CATCHALLUSER", "catchall", false);
 // 	- CLEAR		no encryption, works only if qmail-ldap is compiled w/ cleartext password support, BAD IDEA !!
 //	- KERBEROS	use OpenLDAP Kerberos V mapping ({KERBEROS}PRINCIPAL@REALM)
 pql_set_define("PQL_CONF_PASSWORD_SCHEMES", "CRYPT,MD5,SHA,CLEAR,KERBEROS", false, $dn);
-
-// ----------------------------
-// PQL_CONF_REFERENCE_USERS_WITH (LDAP attribute name)
-// Defines which attribute phpQLAdmin passes to various functions when it needs to reference users.
-// This attribute is used to retrieve the dn for the referenced user account. So it's
-// obvious that this attribute must be unique!  
-//
-// By default this is PQL_CONF_UID ('uid').
-pql_set_define("PQL_CONF_REFERENCE_USERS_WITH", "uid", false, $dn);
 
 // ----------------------------
 // PQL_CONF_REFERENCE_DOMAINS_WITH (dc | ou | o)

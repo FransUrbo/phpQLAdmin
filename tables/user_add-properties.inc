@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-properties.inc,v 1.13 2004-05-06 17:45:33 turbo Exp $ */ ?>
+<?php /* $Id: user_add-properties.inc,v 1.14 2005-02-24 17:04:03 turbo Exp $ */ ?>
 <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=$LANG->_('Account properties')?></th>
@@ -6,78 +6,49 @@
         <td class="title"><?=$LANG->_('Type')?></td>
 
         <td>
-          <select name="account_type">
-            <option value="mail" SELECTED><?=$LANG->_('Mail account')?></option>
+          <select name="template">
+<?php for($i=0; $templates[$i]; $i++) { ?>
+            <option value="<?=$templates[$i]["name"]?>"><?=$templates[$i]["short"]?></option>
+<?php } ?>
 <?php if($_SESSION["NEW_STYLE_QUOTA"]) { ?>
             <option value="group"><?=$LANG->_('Group account')?></option>
 <?php } ?>
-            <option value="system"><?=$LANG->_('System account')?></option>
-            <option value="forward"><?=$LANG->_('Forward account')?></option>
-            <option value="shell"><?=$LANG->_('Shell account')?></option>
             <option value="alias"><?=$LANG->_('Alias object')?></option>
           </select>
         </td>
       </tr>
 
+<?php for($i=0; $templates[$i]; $i++) { ?>
       <tr>
         <td></td>
         <td>
           <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
           <table>
-            <?php echo pql_complete_constant($LANG->_('Profile %type% account includes'), array('type' => $LANG->_('mail'))); ?>: <?=$LANG->_('local mailbox, POP account')?>.
+            <?php echo pql_complete_constant($LANG->_('Profile \b%type%\B account'), array('type' => $templates[$i]["short"])); ?>: <?=$templates[$i]["long"]?>.
           </table>
         </td>
       </tr>
 
+<?php } ?>
 <?php if($_SESSION["NEW_STYLE_QUOTA"]) { ?>
       <tr>
         <td></td>
         <td>
           <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
           <table>
-            <?php echo pql_complete_constant($LANG->_('Profile %type% account includes'), array('type' => $LANG->_('group'))); ?>: <?=$LANG->_('group delivery with verification (~ mailinglist)')?>.
+            <?php echo pql_complete_constant($LANG->_('Profile \b%type%\B account'), array('type' => $LANG->_('group'))); ?>: <?=$LANG->_('Group delivery with verification (~ mailinglist)')?>.
           </table>
         </td>
       </tr>
 
 <?php } ?>
-      <tr>
-        <td></td>
-        <td colspan="2">
-          <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
-          <table>
-            <?php echo pql_complete_constant($LANG->_('Profile %type% account includes'), array('type' => $LANG->_('system'))); ?>: <?=$LANG->_('loginshell, homedirectory')?>, <?=$LANG->_('local mailbox, POP account')?>.
-          </table>
-        </td>
-      </tr>
 
       <tr>
         <td></td>
         <td>
           <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
           <table>
-            <?php echo pql_complete_constant($LANG->_('Profile %type% account includes'), array('type' => $LANG->_('forward'))); ?>: <?=$LANG->_('forward only, no local mailbox')?>.
-          </table>
-        </td>
-      </tr>
-
-      <tr>
-        <td></td>
-        <td>
-          <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
-          <table>
-            <?php echo pql_complete_constant($LANG->_('Profile %type% account includes'), array('type' => $LANG->_('shell'))); ?>: <?=$LANG->_('loginshell, homedirectory, no mail etc')?>.
-          </table>
-        </td>
-      </tr>
-
-      <tr>
-        <td></td>
-        <td>
-          <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
-          <table>
-            An alias object is a <i>link</i> from one object to the real object. In LDAP terms,
-            this is called a <u>reference</u>.
+	        <?=$LANG->_('An \balias object\B is a \ilink\I from one object to the real object - in LDAP terms: this is called a \ureference\U.')?>
           </table>
         </td>
       </tr>

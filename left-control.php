@@ -1,12 +1,12 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.29 2004-11-08 10:25:01 turbo Exp $
+// $Id: left-control.php,v 2.30 2005-02-24 17:04:00 turbo Exp $
 //
 session_start();
 
 require("./include/pql_config.inc");
-require("./include/pql_control.inc");
-require("./include/pql_control_plugins.inc");
+require($_SESSION["path"]."/include/pql_control.inc");
+require($_SESSION["path"]."/include/pql_control_plugins.inc");
 
 require("./left-head.html");
 

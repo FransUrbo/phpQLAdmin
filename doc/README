@@ -12,10 +12,10 @@ If you don't (and fully understand this! :), you won't see your database
 
 Upgrading
 ~~~~~~~~~
-If you're upgrading from a phpQLAdmin version older than 2.0.13,
-then you MUST read the README.upgrade file! It contains important
-information that will break your admin interface (phpQLAdmin) if
-not fully understood.
+If you're upgrading from a previous phpQLAdmin version, then you MUST
+read the doc/README.upgrade file! It contains important information on
+things that will/might break your admin interface (phpQLAdmin) if not
+fully understood.
 
 
 LDAP layout independence
@@ -72,6 +72,15 @@ should do, is configure multiple top suffixes in your LDAP database
 (multiple database backends with different suffixes). phpQLAdmin is
 since version 2.0.10 able to cope with that, and show all database as
 one.
+
+The next step in the modification of the existing database for use
+with phpQLAdmin is the inclusion of the 'userReference' and 'administrator'
+attributes in the base object ('dc=com' or 'c=SE' in the above examples).
+If you're using ACI's, you must make the 'userReference' attribute
+publicly readable...
+The 'administrator' attribute should contain the full DN of your
+object. Once the first/initial administrator (you!) is entered, you
+can add more via the GUI.
 
 
 Problematic database layout
@@ -273,6 +282,10 @@ works!
 Also look at the file README.virtual for some more examples and notes
 on schema issues.
 
+As of 2.1.4, phpQLAdmin have a MUCH better templates system! This is
+the future, so please read doc/README.Templates for SOME information
+on this...
+
 
 Administrator login
 ~~~~~~~~~~~~~~~~~~~
@@ -303,7 +316,7 @@ and rcpthosts every five minutes. If a change have been made, it
 will restart qmail.
 
 # Check for new locals/rcpthosts in the QmailLDAP/Controls object
-5,15,25,35,45,55 * * * * root /var/www/phpQLAdmin/restart_qmail.pl
+5,15,25,35,45,55 * * * * root /var/www/phpQLAdmin/scripts/restart_qmail.pl
 
 This example require that phpQLAdmin is installed into /var/www/phpQLAdmin/.
 If it isn't on your system, change the path to restart_qmail.pl.
@@ -422,6 +435,11 @@ schema. See more in the README.upgrade file (see the 'Upgrading from 2.0.13'
 section). Wether QmailLDAP/Controls in itself will allow UTF-8 encoded
 email addresses is not known to me at this time. You will have to test
 it yourself. If it works, please let me know...
+
+You will have to have the php-idn module loaded in your Apache server
+for this to work. I've made my own which can be found at the URL
+http://php-idn.bayour.com/. I do know that there are at least one more
+PHP IDN module out there, but that have not been verified to work.
 
 
 LDAP Server monitoring and status retreival

@@ -1,9 +1,9 @@
 <?php
 // Create a DNS zone file
-// $Id: dnszonetemplate.php,v 1.6 2004-10-18 13:39:30 turbo Exp $
+// $Id: dnszonetemplate.php,v 1.7 2005-02-24 17:04:03 turbo Exp $
 session_start();
-require("./include/pql_config.inc");
-require("./include/pql_bind9.inc");
+require("../include/pql_config.inc");
+require($_SESSION["path"]."/include/pql_bind9.inc");
 
 $zone = pql_bind9_get_zone($_pql->ldap_linkid, $domain, $defaultdomain);
 if(is_array($zone)) {
@@ -33,6 +33,10 @@ if(is_array($zone)) {
     $retry   = $zone[$defaultdomain]["@"]["SOA"]["RETRY"];
     $expire  = $zone[$defaultdomain]["@"]["SOA"]["EXPIRE"];
     $negttl  = $zone[$defaultdomain]["@"]["SOA"]["TTL"];
+
+    if($zone[$defaultdomain]["@"]["A"]) {
+      $primaryip = $zone[$defaultdomain]["@"]["A"];
+    }
 } else {
     // Create a serial number for zone
     $date = date("Ymd01");
@@ -84,32 +88,34 @@ if($origin == $defaultdomain) {
 // This is the domain, but with the TLD removed. For use in the SOA record.
 $basedomain = eregi_replace("\.".$origin, "", $defaultdomain);
 ?>
-<pre>
-; LDAP DN: <?="'ou=DNS,".pql_maybe_decode($domain)."'\n"?>
-;
-$ORIGIN <?=$origin?>.
-<?=$basedomain?>	604800	IN	SOA	<?=$nameservers[0]?> <?=$admin?> (
-<?php printf("%46d", $date);?>  ; Serial number
-<?php printf("%46d", $refresh);?>  ; Refresh
-<?php printf("%46d", $retry);?>  ; Retry
-<?php printf("%46d", $expire);?>  ; Expire
-<?php printf("%46d", $negttl);?>) ; Negative Cache TTL
-
-			<?=$retry?>	IN	A	<?=$primaryip."\n"?>
-<?php foreach($nameservers as $ns) { ?>
-			<?=$retry?>	IN	NS	<?=$ns."\n"?>
-<?php } ?>
-<?php foreach($mailservers as $key => $prio) { ?>
-			<?=$retry?>	IN	MX	<?=$prio?> <?=$key."\n"?>
-<?php }?>
-
-$ORIGIN <?=$defaultdomain?>.
+    <pre>
 <?php
+echo "; LDAP DN: 'ou=DNS,".pql_maybe_decode($domain)."'\n";
+echo "\$ORIGIN $origin.\n";
+printf("%-15s %8s	IN	SOA	%s %s. (\n", $basedomain, $negttl, $nameservers[0], $admin);
+printf("%58d  ; Serial number\n", $date);
+printf("%58d  ; Refresh\n", $refresh);
+printf("%58d  ; Retry\n", $retry);
+printf("%58d  ; Expire\n", $expire);
+printf("%58d) ; Negative Cache TTL\n", $negttl);
+
+echo "; ------------------------------\n";
+printf("%15s %8s	IN	A	$primaryip\n", " ", $retry);
+foreach($nameservers as $ns) {
+  printf("%15s %8s	IN	NS	$ns\n", " ", $retry);
+}
+foreach($mailservers as $prio => $key) {
+  printf("%15s %8s	IN	MX	%-4s $key\n", " ", $retry, $prio);
+}
+
+echo "; ------------------------------\n";
+echo "\$ORIGIN $defaultdomain.\n";
 $printed_hosts = 0;
 if(is_array($zone[$defaultdomain])) {
     foreach($zone[$defaultdomain] as $data) {
 	if($data['HOST'] != '@') {
-	    printf("%-20s %8d	IN	", $data['HOST'], $data['TTL']);
+	    printf("%-15s %8d	IN	", $data['HOST'], $data['TTL']);
+
 	    if($data['CNAME']) {
 		printf("%-6s	%s\n", 'CNAME', $data['CNAME']);
 	    } elseif($data['A']) {
@@ -126,9 +132,17 @@ if(is_array($zone[$defaultdomain])) {
 }
 if(!$printed_hosts) {
     // Just for show :)
-    echo "; [add your hosts here]\n";
+    echo "; [add your host(s) here]\n";
 }
+
+$link  = $_SESSION["URI"]."domain_detail.php?rootdn=".urlencode($_REQUEST["rootdn"]);
+$link .= "&domain=".urlencode($_REQUEST["domain"])."&view=".$_REQUEST["view"];
+$link .= "&dns_domain_name=$defaultdomain";
 ?>
-</pre>
-</body>
+    </pre>
+
+    <form action="<?=$link?>" method="post">
+      <input type="submit" value="Continue">
+    </form>
+  </body>
 </html>

@@ -1,10 +1,10 @@
 <?php
 // edit attributes of a webserver configuration
-// $Id: websrv_edit_attributes.php,v 2.5 2005-01-12 13:50:54 turbo Exp $
+// $Id: websrv_edit_attributes.php,v 2.6 2005-02-24 17:04:01 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
-require("./include/pql_websrv.inc");
+require($_SESSION["path"]."/include/pql_websrv.inc");
 
 // forward back to domain detail page
 function attribute_forward($msg) {
@@ -20,15 +20,15 @@ function attribute_forward($msg) {
     $LINK_URL  = "domain_detail.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&server=$server";
 	$LINK_URL .= "&view=".$_REQUEST["view"]."&msg=$msg";
 
-	if(file_exists("./.DEBUG_ME")) {
+	if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
 		echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
 		die("<b>$LINK_URL</b>");
 	} else
-	  header("Location: " . pql_get_define("PQL_CONF_URI") . $LINK_URL);
+	  header("Location: " . $_SESSION["URI"] . $LINK_URL);
 }
 
-include("./header.html");
-include("./include/attrib.websrv.inc");
+include($_SESSION["path"]."/header.html");
+include($_SESSION["path"]."/include/attrib.websrv.inc");
 ?>
     <span class="title1">Change a weberver configuration value</span>
     <br><br>

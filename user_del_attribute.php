@@ -1,6 +1,6 @@
 <?php
 // delete attribute of a user
-// $Id: user_del_attribute.php,v 2.30 2005-01-29 18:46:56 turbo Exp $
+// $Id: user_del_attribute.php,v 2.31 2005-02-24 17:04:01 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -26,7 +26,7 @@ switch ($_REQUEST["attrib"]) {
     die(pql_complete_constant($LANG->_('Unknown attribute %attribute% in %file%'), array('attribute' => $_REQUEST["attrib"], 'file' => __FILE__)));
 }
 
-include("./header.html");
+include($_SESSION["path"]."/header.html");
 
 if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST["rootdn"])) {
     $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
@@ -83,7 +83,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
     // redirect to users detail page
     $url = "user_detail.php?rootdn=" . $_REQUEST["rootdn"] . "&domain=" . $_REQUEST["domain"]
       . "&user=" . urlencode($_REQUEST["user"]) . "&msg=" . urlencode($msg) . "&view=" . $_REQUEST["view"];
-    header("Location: " . pql_get_define("PQL_CONF_URI") . "$url");
+    header("Location: " . $_SESSION["URI"] . "$url");
 } else {
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove attribute %attribute% for user %user%'), array('attribute' => $_REQUEST["attrib"], 'user' => $_REQUEST["user"])); ?></span>

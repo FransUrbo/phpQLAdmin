@@ -1,6 +1,6 @@
 phpQLAdmin - Installation Guide
 -------------------------------
-$Id: INSTALL,v 2.5 2005-01-12 14:53:54 turbo Exp $
+$Id: INSTALL,v 2.6 2005-02-24 17:04:00 turbo Exp $
 
 Software Requirements:
 ----------------------
@@ -38,19 +38,22 @@ Install:
    LDAP database (have a look at the configuration section in the
    documentation)
 
-3. Configure your webserver to answer to PHP calls, setup a directory
+3. Add the 'userReference' and 'administrator' attributes to the LDAP
+   database - as described in the doc/README file.
+
+4. Configure your webserver to answer to PHP calls, setup a directory
    configuration and alias for the URL you want phpQLAdmin.
 
-4. Setup the ACI/ACL in your LDAP database to allow you to read and
+5. Setup the ACI/ACL in your LDAP database to allow you to read and
    write to the database.
 
-5. Point your webbrowser to the phpQLAdmin page and login with your
+6. Point your webbrowser to the phpQLAdmin page and login with your
    name/userid and password.
 
-6. Setup phpQLAdmin by choosing 'Advanced mode' in the left frame
-   and click on the 'phpQLAdmin Configuration' link. There's two
-   types of configuration - GLOBAL and BRANCH.
+7. Setup phpQLAdmin by choosing 'Advanced mode' in the left frame
+   and click on the 'phpQLAdmin Configuration' link. There's three
+   types of configuration - Global, User Templates and Branch.
 
-7. Try it out and report bugs :)
+8. Try it out and report bugs :)
 
 Also read the doc/README* files for more information...

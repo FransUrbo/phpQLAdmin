@@ -1,9 +1,9 @@
     <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
       <input type="hidden" name="surname"            value="<?=urlencode($_REQUEST["surname"])?>">
       <input type="hidden" name="name"               value="<?=urlencode($_REQUEST["name"])?>">
-      <input type="hidden" name="email"              value="<?=$_REQUEST["email"]?>">
+      <input type="hidden" name="mail"               value="<?=$_REQUEST["mail"]?>">
       <input type="hidden" name="uid"                value="<?=$_REQUEST["uid"]?>">
-<?php if($account_type != "forward") { ?>
+<?php if($_REQUEST["template"] != "forward") { ?>
       <input type="hidden" name="autogenerate"       value="<?=$_REQUEST["autogenerate"]?>">
       <input type="hidden" name="password"           value="<?=$_REQUEST["password"]?>">
       <input type="hidden" name="pwscheme"           value="<?=$_REQUEST["pwscheme"]?>">
@@ -26,7 +26,7 @@
       </table>
 
       <input type="hidden" name="password_shown" value="1">
-      <input type="hidden" name="account_type"   value="<?=$_REQUEST["account_type"]?>">
+      <input type="hidden" name="template"       value="<?=$_REQUEST["template"]?>">
       <input type="hidden" name="account_status" value="<?=$_REQUEST["account_status"]?>">
       <input type="hidden" name="page_curr"      value="two">
       <input type="hidden" name="page_next"      value="save">
