@@ -43,8 +43,20 @@ switch($attrib){
 	$include = "attrib.basequota.inc";
 	break;
   case "administrator";
+  case "seealso":
 	$include = "attrib.administrator.inc";
 	break;
+  case "o":
+  case "postalCode":
+  case "postalAddress":
+  case "l":
+  case "st":
+  case "c":
+  case "telephoneNumber":
+  case "facsimiletelephonenumber":
+  case "postofficebox":
+    $include = "attrib.outlook.inc";
+    break;
   default:
     die("unknown attribute");
 }
@@ -73,11 +85,15 @@ if($submit == 1){
     }
 } elseif($submit == 2) {
     // Support for changing domain defaults
-    if(attribute_check()){
-		attribute_save("modify");
-    } else {
-		attribute_print_form();
-    }
+	if($type != 'delete') {
+		if(attribute_check()) {
+			attribute_save("modify");
+		} else {
+			attribute_print_form();
+		}
+	} else {
+		attribute_save("delete");
+	}
 } elseif($submit == 3) {
 	// Support for changing domain administrator
 	attribute_print_form($action);
