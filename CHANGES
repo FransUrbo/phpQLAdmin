@@ -4,12 +4,35 @@ phpQLAdmin 2.0.18d TO BE ANNOUNCED
 	Bug fixes
 	  - De-globalize the 'reload left frame' value so that the reloading can acctually
 	    happen! Closes bug 182
+	  - If the 'maximum mailinglist count' is unset (in ezmlm creation form), then
+	    we're comparing 'count > NULL' which will always be true. To go around this,
+	    use 'count + 1' as maximum value (will make the form continue).
 
 	GUI layout change
 	  - Don't show the minus image before 'no domains' (left-ezmlm.php) if there's
 	    no mailing lists to display
+	  - Don't allow setting subscriber/rejected addresses when creating a ezmlm
+	    mailinglist. That part of the code is badly broken (fixing this in DEVEL instead).
+	  - Allow for reloading of the left frame when new list is create AND 'auto
+	    reload' is set to true/yes.
+	    + Do not reload the left frame just because a list have CHANGED!
+	  - Don't allow deletion of list from the domain lists list. Only from the list details.
 
 	Misc changes	
+	  - De-globalize ezmlm pages.
+	  - If the 'maximum mailinglist count' is unset, then we're comparing
+	    'count > NULL' which will always be true. To go around this, use 'count + 1'
+	    as maximum value (will make the form continue).
+	  - Don't execute ezmlm commands if debug variable is true OR the file .DEBUG_ME
+	    exists.
+	  - When deleting a branch, only update the QLC objects (i.e. call pql_control_update_domains())
+	    if 'Use Controls DB' is set to TRUE. The function isn't availible if
+	    'Use Controls DB' is set to FALSE...
+	  - Don't execute ezmlm commands if debug variable is true OR the file .DEBUG_ME
+	    exists.
+	  - New option to list_forward() - the list number. This so that when modifying
+	    a specific list, we're forwarded to this list's details (and not the domain
+	    list list :).
 
 phpQLAdmin 2.0.18c (May  5 2004)
 	Bug fixes
