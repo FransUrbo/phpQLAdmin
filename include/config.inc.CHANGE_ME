@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.53 2004-05-08 08:08:47 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.54 2004-05-10 13:19:48 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -67,14 +67,6 @@ pql_set_define("PQL_CONF_USE_TLS", false);
 // what subtree is the groups located?
 // -> Do not add a comma after this, not needed.
 //pql_set_define("PQL_CONF_SUBTREE_GROUPS", "ou=Groups");
-
-// ----------------------------
-// PQL_CONF_EZMLM_USER
-// If you're using the ezmlm manager, you might have to configure
-// what user ezmlm is running as. That is, who "own's" (ie, the
-// directories) the mailinglist. This is usually 'alias', as in
-// '~alias/.qmail-LISTNAME' but can also be 'vmail'...
-pql_set_define("PQL_CONF_EZMLM_USER", "alias");
 
 // ----------------------------
 // mail(message)store generation
