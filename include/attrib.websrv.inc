@@ -1,56 +1,61 @@
 <?php
 // attribute plugin for the Webserver Configuration editor
 //
-// $Id: attrib.websrv.inc,v 1.4 2004-02-14 14:25:36 turbo Exp $
+// $Id: attrib.websrv.inc,v 1.5 2004-04-02 12:43:18 turbo Exp $
 
 function attribute_check() {
-    global $rootdn, $domain, $view, $action, $attrib, $$attrib, $server, $oldvalue;
     global $_pql, $LANG;
 
-    if($attrib && ($$attrib != $oldvalue))
+    if($_REQUEST["attrib"] && ($_REQUEST[$_REQUEST["attrib"]] != $_REQUEST["oldvalue"]))
       return true;
 
     return false;
 }
 
 function attribute_print_form() {
-    global $rootdn, $domain, $view, $action, $attrib, $server, $oldvalue;
-	global $_pql, $LANG;
+    global $_pql, $LANG;
+
+	$url["domain"] = pql_format_urls($_REQUEST["domain"]);
+	$url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
+	$url["server"] = pql_format_urls($_REQUEST["server"]);
+
+	// Slightly ugly, but what the heck! :)
+	$attr_val	   = $_REQUEST[$_REQUEST["attrib"]];
 ?>
     <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
       <table cellspacing="0" cellpadding="3" border="0">
         <th colspan="3" align="left"><?=$LANG->_('Change webserver configuration')?></th>
           <tr class="<?php pql_format_table(); ?>">
             <td class="title"><?=$LANG->_('Server configuration DN')?>:</td>
-            <td><?=$server?></td>
+            <td><?=$_REQUEST["server"]?></td>
           </tr>
 
-<?php if($oldvalue) { ?>
+<?php if($_REQUEST["oldvalue"]) { ?>
           <tr class="<?php pql_format_table(); ?>">
             <td class="title"><?=$LANG->_('Old value')?>:</td>
-            <td><?=$oldvalue?></td>
+            <td><?=$_REQUEST["oldvalue"]?></td>
           </tr>
 
 <?php } ?>
           <tr class="<?php pql_format_table(); ?>">
-<?php if($oldvalue) { ?>
-            <td class="title"><?php echo pql_complete_constant($LANG->_('Change attribute %attribute%'), array('attribute' => $attrib)); ?></td>
+<?php if($_REQUEST["oldvalue"]) { ?>
+            <td class="title"><?php echo pql_complete_constant($LANG->_('Change attribute %attribute%'), array('attribute' => $_REQUEST["attrib"])); ?></td>
 <?php } else { ?>
-            <td class="title"><?php echo pql_complete_constant($LANG->_('Set attribute %attribute%'), array('attribute' => $attrib)); ?></td>
+            <td class="title"><?php echo pql_complete_constant($LANG->_('Set attribute %attribute%'), array('attribute' => $_REQUEST["attrib"])); ?></td>
 <?php } ?>
-            <td><input type="text" name="<?=$attrib?>" value="<?=$$attrib?>" size="20"></td>
+            <td><input type="text" name="<?=$_REQUEST["attrib"]?>" value="<?=$attr_val?>" size="50"></td>
           </tr>
         </th>
       </table>
 
       <input type="hidden" name="submit"   value="1">
-      <input type="hidden" name="rootdn"   value="<?=$rootdn?>">
-      <input type="hidden" name="domain"   value="<?=$domain?>">
-      <input type="hidden" name="server"   value="<?=$server?>">
-      <input type="hidden" name="attrib"   value="<?=$attrib?>">
-      <input type="hidden" name="view"     value="<?=$view?>">
-      <input type="hidden" name="action"   value="<?=$action?>">
-      <input type="hidden" name="oldvalue" value="<?=$oldvalue?>">
+      <input type="hidden" name="rootdn"   value="<?=$url["rootdn"]?>">
+      <input type="hidden" name="domain"   value="<?=$url["domain"]?>">
+      <input type="hidden" name="server"   value="<?=$url["server"]?>">
+      <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
+      <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
+      <input type="hidden" name="action"   value="<?=$_REQUEST["action"]?>">
+      <input type="hidden" name="oldvalue" value="<?=$_REQUEST["oldvalue"]?>">
       <br>
       <input type="submit" value="<?=$LANG->_('Save')?>">
     </form>
@@ -58,50 +63,50 @@ function attribute_print_form() {
 }
 
 function attribute_save($action) {
-    global $rootdn, $domain, $view, $action, $attrib, $$attrib, $server, $oldvalue;
     global $_pql, $LANG;
 
     switch($action) {
 	  case "add":
 		// Fetch the old values from the DB
-		$filter = "(&(objectclass=phpQLAdminWebsrv)($attrib=*))";
-		$sr   = ldap_read($_pql->ldap_linkid, $server, $filter, array($attrib));
+		$filter = "(&(objectclass=".pql_get_define("PQL_ATTR_WEBSRV_OC").")(".$_REQUEST["attrib"]."=*))";
+		$sr   = ldap_read($_pql->ldap_linkid, $_REQUEST["server"], $filter, array($_REQUEST["attrib"]));
 		$info = ldap_get_entries($_pql->ldap_linkid, $sr)
 		  or pql_format_error(0);
-		for($i=0; $i < $info[0][$attrib]["count"]; $i++) {
+		for($i=0; $i < $info[0][$_REQUEST["attrib"]]["count"]; $i++) {
 			// Add the old value(s) to the array
-			$entry[$attrib][] = $info[0][$attrib][$i];
+			$entry[$_REQUEST["attrib"]][] = $info[0][$_REQUEST["attrib"]][$i];
 		}
 
 		// Add the new value to the array
-		$entry[$attrib][] = $$attrib;
+		$entry[$_REQUEST["attrib"]][] = $_REQUEST[$_REQUEST["attrib"]];
 
-		if(pql_websrv_set_record($_pql->ldap_linkid, $server, $entry))
+		if(pql_websrv_set_record($_pql->ldap_linkid, $_REQUEST["server"], $entry))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
-									   array('what' => $$attrib)).".";
+									   array('what' => $_REQUEST[$_REQUEST["attrib"]])).".";
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $$attrib)) . ": " . ldap_error($_pql->ldap_linkid);
+									   array('what' => $_REQUEST[$_REQUEST["attrib"]])) . ": "
+										 . ldap_error($_pql->ldap_linkid);
 		break;
 
 	  case "mod":
-		if(pql_websrv_set_record($_pql->ldap_linkid, $server, $attrib, $$attrib))
+		if(pql_websrv_set_record($_pql->ldap_linkid, $_REQUEST["server"], $_REQUEST["attrib"], $_REQUEST[$_REQUEST["attrib"]]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
-									   array('what' => $attrib));
+									   array('what' => $_REQUEST["attrib"]));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
+									   array('what' => $_REQUEST["attrib"])) . ": " . ldap_error($_pql->ldap_linkid);
 		break;
 
 	  case "del":
-		$entry[$attrib] = array();
+		$entry[$_REQUEST["attrib"]] = array();
 
-		if(ldap_mod_del($_pql->ldap_linkid, $server, $entry))
+		if(ldap_mod_del($_pql->ldap_linkid, $_REQUEST["server"], $entry))
 		  $msg = pql_complete_constant($LANG->_('Successfully removed %value%'),
-									   array('value' => $attrib));
+									   array('value' => $_REQUEST["attrib"]));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to remove %value%'),
-									   array('value' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
+									   array('value' => $_REQUEST["attrib"])) . ": " . ldap_error($_pql->ldap_linkid);
 		break;
 	}
 
