@@ -1,6 +1,6 @@
 <?php
 // Create a DNS zone file
-// $Id: dnszonetemplate.php,v 1.4 2004-02-12 14:04:52 turbo Exp $
+// $Id: dnszonetemplate.php,v 1.5 2004-02-14 15:17:34 turbo Exp $
 session_start();
 require("./include/pql_config.inc");
 require("./include/pql_bind9.inc");
@@ -76,12 +76,15 @@ for($i=0; $dnsparts[$i]; $i++) {
 if($origin == $defaultdomain) {
     $origin = '';
 }
+
+// This is the domain, but with the TLD removed. For use in the SOA record.
+$basedomain = eregi_replace("\.".$origin, "", $defaultdomain);
 ?>
 <pre>
 ; LDAP DN: <?="'ou=DNS,".pql_maybe_decode($domain)."'\n"?>
 ;
 $ORIGIN <?=$origin?>.
-<?=$defaultdomain?>	604800	IN	SOA	<?=$nameservers[0]?> <?=$admin?> (
+<?=$basedomain?>	604800	IN	SOA	<?=$nameservers[0]?> <?=$admin?> (
 <?php printf("%46d", $date);?>  ; Serial number
 <?php printf("%46d", $refresh);?>  ; Refresh
 <?php printf("%46d", $retry);?>  ; Retry
