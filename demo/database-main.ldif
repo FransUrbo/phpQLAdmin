@@ -14,26 +14,49 @@ userObjectClass: posixaccount
 userObjectClass: inetorgperson
 userObjectClass: organizationalperson
 userObjectClass: pilotperson
-administrator: uid=demo1,ou=Main Branch,c=SE
-administrator: uid=turbo,ou=Main Branch,c=SE
+administrator: uid=demo1,o=Main Branch,c=SE
+OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
+OpenLDAPaci: 1#entry#grant;r,s,c;c,userReference,branchReference,administrator#public#
+OpenLDAPaci: 3#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
 
-dn: ou=Main Branch,c=SE
+dn: o=Main Branch,c=SE
 objectClass: top
-objectClass: organizationalUnit
+objectClass: organization
 objectClass: phpQLAdminBranch
-ou: Main Branch
+o: Main Branch
 defaultDomain: phpqladmin.bayour.com
 baseHomeDir: /var/www.ldap/phpQLAdmin-CVS.demo/Users
 baseMailDir: /var/www.ldap/phpQLAdmin-CVS.demo/Mail
-o: phpQLAdmin demo site
-administrator: uid=turbo,ou=Main Branch,c=SE
+administrator: uid=demo2,o=Main Branch,c=SE
+OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
+OpenLDAPaci: 1#entry#grant;r,s,c;o#public#
+OpenLDAPaci: 2#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
+OpenLDAPaci: 3#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo2,o=Main Branch,c=SE
 
-dn: ou=QmailLDAP,c=SE
+dn: o=QmailLDAP,c=SE
 objectClass: top
-objectClass: organizationalUnit
-ou: QmailLDAP
+objectClass: organization
+o: QmailLDAP
+OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
+OpenLDAPaci: 1#entry#grant;r,s,c;o#public#
+OpenLDAPaci: 2#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
+OpenLDAPaci: 3#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo2,o=Main Branch,c=SE
 
-dn: uid=demo1,ou=Main Branch,c=SE
+dn: uid=qmail,o=QmailLDAP,c=SE
+uid: qmail
+objectClass: simpleSecurityObject
+objectClass: account
+userPassword: {CRYPT}iECiHE6IwsabI
+OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
+OpenLDAPaci: 1#entry#grant;x;userPassword,krb5PrincipalName#public#
+OpenLDAPaci: 2#entry#grant;r,s,c;uid,cn,accountStatus,uidNumber,gidNumber,gecos,homeDirectory,loginShell,trustModel,accessTo,mailMessageStore#public#
+OpenLDAPaci: 3#entry#grant;r,s,c;mail,mailAlternateAddress,mailHost,mailQuotaSize,mailQuotaCount,accountStatus,deliveryMode,userPassword,mailMessageStore,deliveryProgramPath#access-id#uid=qmail,o=QmailLDAP,c=SE
+OpenLDAPaci: 4#entry#grant;r,s,c;sn,givenName,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,mailMessageStore,o,l,st,telephoneNumber,postalCode,title#users#
+OpenLDAPaci: 5#entry#grant;w,r,s,c;sn,givenName,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,o,l,st,telephoneNumber,postalCode,title,deliveryMode,userPassword#self#
+OpenLDAPaci: 6#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
+OpenLDAPaci: 7#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo2,o=Main Branch,c=SE
+
+dn: uid=demo1,o=Main Branch,c=SE
 cn: Demo User 1
 sn: Demo
 givenName: User 1
@@ -48,8 +71,15 @@ objectClass: inetorgperson
 objectClass: organizationalperson
 objectClass: pilotperson
 objectClass: posixaccount
+OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
+OpenLDAPaci: 1#entry#grant;x;userPassword,krb5PrincipalName#public#
+OpenLDAPaci: 2#entry#grant;r,s,c;uid,cn,accountStatus,uidNumber,gidNumber,gecos,homeDirectory,loginShell,trustModel,accessTo,mailMessageStore#public#
+OpenLDAPaci: 3#entry#grant;r,s,c;mail,mailAlternateAddress,mailHost,mailQuotaSize,mailQuotaCount,accountStatus,deliveryMode,userPassword,mailMessageStore,deliveryProgramPath#access-id#uid=qmail,o=QmailLDAP,c=SE
+OpenLDAPaci: 4#entry#grant;r,s,c;sn,givenName,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,mailMessageStore,o,l,st,telephoneNumber,postalCode,title#users#
+OpenLDAPaci: 5#entry#grant;w,r,s,c;sn,givenName,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,o,l,st,telephoneNumber,postalCode,title,deliveryMode,userPassword#self#
+OpenLDAPaci: 6#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
 
-dn: uid=demo2,ou=Main Branch,c=SE
+dn: uid=demo2,o=Main Branch,c=SE
 cn: Demo User 2
 sn: Demo
 givenName: User 2
@@ -64,8 +94,16 @@ objectClass: inetorgperson
 objectClass: organizationalperson
 objectClass: pilotperson
 objectClass: posixaccount
+OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
+OpenLDAPaci: 1#entry#grant;x;userPassword,krb5PrincipalName#public#
+OpenLDAPaci: 2#entry#grant;r,s,c;uid,cn,accountStatus,uidNumber,gidNumber,gecos,homeDirectory,loginShell,trustModel,accessTo,mailMessageStore#public#
+OpenLDAPaci: 3#entry#grant;r,s,c;mail,mailAlternateAddress,mailHost,mailQuotaSize,mailQuotaCount,accountStatus,deliveryMode,userPassword,mailMessageStore,deliveryProgramPath#access-id#uid=qmail,o=QmailLDAP,c=SE
+OpenLDAPaci: 4#entry#grant;r,s,c;sn,givenName,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,mailMessageStore,o,l,st,telephoneNumber,postalCode,title#users#
+OpenLDAPaci: 5#entry#grant;w,r,s,c;sn,givenName,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,o,l,st,telephoneNumber,postalCode,title,deliveryMode,userPassword#self#
+OpenLDAPaci: 6#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
+OpenLDAPaci: 7#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo2,o=Main Branch,c=SE
 
-dn: uid=demo3,ou=Main Branch,c=SE
+dn: uid=demo3,o=Main Branch,c=SE
 cn: Demo User 3
 sn: Demo
 givenName: User 3
@@ -80,30 +118,24 @@ objectClass: inetorgperson
 objectClass: organizationalperson
 objectClass: pilotperson
 objectClass: posixaccount
+OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
+OpenLDAPaci: 1#entry#grant;x;userPassword,krb5PrincipalName#public#
+OpenLDAPaci: 2#entry#grant;r,s,c;uid,cn,accountStatus,uidNumber,gidNumber,gecos,homeDirectory,loginShell,trustModel,accessTo,mailMessageStore#public#
+OpenLDAPaci: 3#entry#grant;r,s,c;mail,mailAlternateAddress,mailHost,mailQuotaSize,mailQuotaCount,accountStatus,deliveryMode,userPassword,mailMessageStore,deliveryProgramPath#access-id#uid=qmail,o=QmailLDAP,c=SE
+OpenLDAPaci: 4#entry#grant;r,s,c;sn,givenName,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,mailMessageStore,o,l,st,telephoneNumber,postalCode,title#users#
+OpenLDAPaci: 5#entry#grant;w,r,s,c;sn,givenName,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,o,l,st,telephoneNumber,postalCode,title,deliveryMode,userPassword#self#
+OpenLDAPaci: 6#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
+OpenLDAPaci: 7#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo2,o=Main Branch,c=SE
 
-dn: ou=Test Branch 1,c=SE
-ou: Test Branch 1
-objectClass: organizationalUnit
+dn: o=Test Branch 1,c=SE
+o: Test Branch 1
+objectClass: organization
 objectClass: phpQLAdminBranch
-o: 0
 baseHomeDir: /home/Test_Branch_1/
 baseMailDir: /var/mail/Test_Branch_1/
-administrator: uid=demo1,ou=Main Branch,c=SE
-administrator: uid=turbo,ou=Main Branch,c=SE
-administrator: uid=demo2,ou=Main Branch,c=SE
-
-dn: uid=turbo,ou=Main Branch,c=SE
-cn: Turbo Fredriksson
-sn: Turbo
-givenName: Fredriksson
-uid: turbo
-loginShell: /bin/false
-homeDirectory: /var/www.ldap/phpQLAdmin-CVS.demo/Users/phpqladmin.bayour.com/
-uidNumber: 1003
-gidNumber: 1003
-gecos: Turbo Fredriksson
-userPassword:: e01ENX1qVWJvaHV1QXlrN3ZEcVJJdml3QmpRPT0=
-objectClass: inetorgperson
-objectClass: organizationalperson
-objectClass: pilotperson
-objectClass: posixaccount
+administrator: uid=demo1,o=Main Branch,c=SE
+administrator: uid=demo2,o=Main Branch,c=SE
+OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
+OpenLDAPaci: 1#entry#grant;r,s,c;o#public#
+OpenLDAPaci: 2#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
+OpenLDAPaci: 3#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo2,o=Main Branch,c=SE
