@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_detail.php,v 1.30.2.1 2005-03-04 11:59:45 turbo Exp $
+// $Id: ezmlm_detail.php,v 1.30.2.2 2005-03-19 14:15:43 turbo Exp $
 //
 require("./include/pql_session.inc");
 require("./include/pql_config.inc");
@@ -45,6 +45,7 @@ if($_REQUEST["domain"]) {
 		include("./tables/ezmlm_details-lists.inc");
 	} else {
 		// We got a list, show if's details
+		$listno = $_REQUEST["listno"];
 		include("./tables/ezmlm_details-detail.inc");
 	}
 }
