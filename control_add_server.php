@@ -1,6 +1,6 @@
 <?php
 // Add a new mailserver to the database
-// $Id: control_add_server.php,v 2.15 2004-02-14 14:01:00 turbo Exp $
+// $Id: control_add_server.php,v 2.16 2004-02-15 17:15:01 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -13,7 +13,11 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
     include("./header.html");
 
 	if(isset($submit)) {
+		if($fqdn)
+		  $fqdn = pql_maybe_idna_encode($fqdn);
+
 		if($submit == "Create") {
+
 			if($fqdn and $defaultdomain and $ldapserver and $ldapbasedn) {
 				// We're ready to add the server object
 				// TODO
@@ -33,7 +37,6 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 			}
 		} elseif($submit == "Clone") {
 			if($fqdn) {
-
 				// Get the values of the mailserver
 				$attribs = array(pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"),
 								 pql_get_define("PQL_GLOB_ATTR_PLUSDOMAIN"),
@@ -84,8 +87,8 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 					echo "Failed to created mailserver $fqdn.";
 					die($LDIF);
 				} else {
-					$msg = urlencode("Successfully created mailserver $fqdn.");
-					header("Location: " . pql_get_define("PQL_GLOB_URI") . "control_detail.php?host=$fqdn&msg=$msg&rlnb=1");
+					$msg = urlencode("Successfully created mailserver ".pql_maybe_idna_decode($fqdn).".");
+					header("Location: " . pql_get_define("PQL_GLOB_URI") . "control_detail.php?mxhost=$fqdn&msg=$msg&rlnb=1");
 				}
 			} else {
 				$error_text["fqdn_clone"] = 'missing';
