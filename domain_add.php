@@ -92,7 +92,7 @@ if($dns[0]) {
 	$url = "domain_detail.php?domain=$dns[0]&msg=$msg&rlnb=1";
 
 	// Now it's time to run the special adduser script if defined...
-	if(PQL_EXTRA_SCRIPT_CREATE_DOMAIN) {
+	if(defined("PQL_EXTRA_SCRIPT_CREATE_DOMAIN")) {
 		// Setup the environment with the user details
 		putenv("PQL_DOMAIN=$domain");
 		putenv("PQL_DOMAINNAME=$defaultdomain");
@@ -104,10 +104,10 @@ if($dns[0]) {
 		// Execute the domain add script (0 => show output)
 		if(pql_execute(PQL_EXTRA_SCRIPT_CREATE_DOMAIN, 0)) {
 			echo PQL_DOMAIN_ADD_SCRIPT_FAILED;
-			$msg .= urlencode(PQL_DOMAIN_ADD_SCRIPT_FAILED);
+			$msg .= " " . urlencode(PQL_DOMAIN_ADD_SCRIPT_FAILED);
 		} else {
 			echo "<b>" . PQL_DOMAIN_ADD_SCRIPT_OK . "</b><br>";
-			$msg .= urlencode(PQL_DOMAIN_ADD_SCRIPT_OK);
+			$msg .= " " . urlencode(PQL_DOMAIN_ADD_SCRIPT_OK);
 		}
 
 		$url = "domain_detail.php?domain=$dns[0]&";
