@@ -1,6 +1,8 @@
 phpQLAdmin 2.0 Change Log
 
-phpQLAdmin 2.0.3 Release
+phpQLAdmin 2.0.4 Release - TO BE RELEASED
+
+phpQLAdmin 2.0.3
 	Bug fixes
 	  - Documentation update
 	  - Missed some include($include) line (prefix with './include/').
