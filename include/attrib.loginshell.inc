@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // loginshell
-// $Id: attrib.loginshell.inc,v 2.8 2003-07-02 07:59:00 turbo Exp $
+// $Id: attrib.loginshell.inc,v 2.9 2003-08-11 19:49:52 turbo Exp $
 
 function attribute_check($type) {
     global $loginshell, $oldvalue, $_pql, $error, $LANG;
@@ -21,7 +21,7 @@ function attribute_init() {
 }
 
 function attribute_print_form() {
-    global $loginshell, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $view, $LANG;
+    global $loginshell, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $rootdn, $view, $LANG;
       
     $shells = pql_get_valid_shells();
 ?>

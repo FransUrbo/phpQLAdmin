@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // qmaildotmode (interpretation of .qmail-files)
-// $Id: attrib.qmaildotmode.inc,v 2.8 2003-07-02 07:59:01 turbo Exp $
+// $Id: attrib.qmaildotmode.inc,v 2.9 2003-08-11 19:49:52 turbo Exp $
 
 function attribute_check($type) {
 	global $qmaildotmode, $domain, $oldvalue, $_pql, $error, $LANG;
@@ -35,7 +35,7 @@ function attribute_init() {
 }
 
 function attribute_print_form() {
-	global $qmaildotmode, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $LANG;
+	global $qmaildotmode, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $rootdn, $error, $LANG;
 	
 	$qmaildotmode_select[$qmaildotmode] = "selected";
 ?>

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailhost (host address which resides the mailhost)
-// $Id: attrib.mailhost.inc,v 2.8 2003-07-02 07:59:01 turbo Exp $
+// $Id: attrib.mailhost.inc,v 2.9 2003-08-11 19:49:52 turbo Exp $
 
 function attribute_check($type) {
 	global $options, $mailhost, $domain, $error, $LANG;
@@ -50,7 +50,7 @@ function attribute_init() {
 }
 
 function attribute_print_form() {
-	global $mailhost, $options, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $view, $LANG;
+	global $mailhost, $options, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $rootdn, $view, $LANG;
 ?>
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -76,7 +76,7 @@ function attribute_print_form() {
 
     <input type="hidden" name="submit"   value="1">
     <input type="hidden" name="attrib"   value="<?=$attrib?>">
-    <input type="hidden" name="oldvalue" value="<?$oldvalue?>">
+    <input type="hidden" name="oldvalue" value="<?=$oldvalue?>">
     <input type="hidden" name="domain"   value="<?=$domain?>">
     <input type="hidden" name="rootdn"   value="<?=$rootdn?>">
     <input type="hidden" name="user"     value="<?=$user?>">

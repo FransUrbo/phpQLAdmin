@@ -20,12 +20,16 @@ $username = $username[0];
 
 // forward back to users detail page
 function attribute_forward($msg, $rlnb = false) {
-    global $domain, $user;
+    global $domain, $user, $rootdn;
+
+    $domain = urlencode($domain);
+    $user   = urlencode($user);
+    $rootdn = urlencode($rootdn);
     
-    $url = "user_detail.php?domain=$domain&user=".urlencode($user)."&view=$view&msg=".urlencode($msg);
+    $url = "user_detail.php?rootdn=$rootdn&domain=$domain&user=$user&view=$view&msg=".urlencode($msg);
     if ($rlnb)
       $url .= "&rlnb=2";
-    
+
     header("Location: " . pql_get_define("PQL_GLOB_URI") . "$url");
 }
 

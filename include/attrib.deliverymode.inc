@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliverymode (delivery preferences)
-// $Id: attrib.deliverymode.inc,v 2.12 2003-07-13 09:16:00 turbo Exp $
+// $Id: attrib.deliverymode.inc,v 2.13 2003-08-11 19:49:52 turbo Exp $
 
 function attribute_check($type) {
 	global $error, $reply, $mailreplytext, $LANG;
@@ -37,7 +37,7 @@ function attribute_init() {
 }
 
 function attribute_print_form($type = "modify") {
-	global $reply, $mailreplytext, $deliverymode, $domain, $user, $PHP_SELF, $attrib, $error, $view, $LANG;
+	global $reply, $mailreplytext, $deliverymode, $domain, $user, $PHP_SELF, $attrib, $error, $rootdn, $view, $LANG;
 ?>
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">

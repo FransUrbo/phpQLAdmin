@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliveryprogrampath (path to program running on delivery)
-// $Id: attrib.deliveryprogrampath.inc,v 2.8 2003-07-02 07:59:00 turbo Exp $
+// $Id: attrib.deliveryprogrampath.inc,v 2.9 2003-08-11 19:49:52 turbo Exp $
 
 function attribute_check($type) {
 	global $deliveryprogrampath, $domain, $oldvalue, $_pql, $error, $LANG;
@@ -25,7 +25,7 @@ function attribute_init() {
 }
 
 function attribute_print_form() {
-	global $deliveryprogrampath, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $view, $LANG;
+	global $deliveryprogrampath, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $rootdn, $view, $LANG;
 ?>
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">

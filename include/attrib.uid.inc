@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // uid (user id)
-// $Id: attrib.uid.inc,v 2.10 2003-07-02 07:59:01 turbo Exp $
+// $Id: attrib.uid.inc,v 2.11 2003-08-11 19:49:52 turbo Exp $
 
 function attribute_check($type){
 	global $uid, $oldvalue, $_pql, $error, $domain, $LANG;
@@ -33,7 +33,7 @@ function attribute_init() {
 }
 
 function attribute_print_form() {
-	global $uid, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $view, $LANG;
+	global $uid, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $rootdn, $view, $LANG;
 ?>
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // cn (Full name)
-// $Id: attrib.cn.inc,v 2.13 2003-07-03 10:10:38 turbo Exp $
+// $Id: attrib.cn.inc,v 2.14 2003-08-11 19:49:52 turbo Exp $
 
 function attribute_check($type) {
     global $cn, $oldvalue, $_pql, $error, $LANG;
@@ -21,7 +21,7 @@ function attribute_init() {
 }
 
 function attribute_print_form() {
-    global $cn, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $view, $LANG;
+    global $cn, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $rootdn, $view, $LANG;
 ?>
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
