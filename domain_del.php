@@ -1,10 +1,10 @@
 <?php
 // delete a domain and all users within
-// $Id: domain_del.php,v 2.34 2005-03-04 11:55:32 turbo Exp $
+// $Id: domain_del.php,v 2.35 2005-03-09 09:59:03 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
-require("./include/pql_config.inc");
+require($_SESSION["path"]."/include/pql_config.inc");
 
 include($_SESSION["path"]."/header.html");
 

@@ -1,13 +1,13 @@
 <?php
 // Convert the old ways of storing 'user template' information
 // 
-// $Id: update_templates.php,v 1.2 2005-02-24 17:04:02 turbo Exp $
+// $Id: update_templates.php,v 1.3 2005-03-09 09:59:03 turbo Exp $
 
 // {{{ Setup session etc
-session_start();
+require("../include/pql_session.inc");
 
 // Load configuration etc
-require("../include/pql_config.inc");
+require($_SESSION["path"]."/include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_templates.inc");
 // }}}
 

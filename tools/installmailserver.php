@@ -1,7 +1,7 @@
 <?php
 // This creates a script to be executed on the new mailserver,
 // and configures all the nessesary files for QmailLDAP/Controls.
-// $Id: installmailserver.php,v 1.10 2005-02-24 17:04:03 turbo Exp $
+// $Id: installmailserver.php,v 1.11 2005-03-09 09:59:04 turbo Exp $
 //
 // Creates the following files
 //	ldapserver
@@ -9,12 +9,14 @@
 //	ldappassword
 //	ldapcontroldn
 //	me
-session_start();
-require("../include/pql_config.inc");
+// {{{ Setup session etc
+require("../include/pql_session.inc");
+require($_SESSION["path"]."/include/pql_config.inc");
 include($_SESSION["path"]."/include/pql_control.inc");
 
 $_pql = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 $ldap = $_pql->ldap_linkid;
+// }}}
 
 $me = $_REQUEST["mxhost"];
 $cn = pql_get_define("PQL_ATTR_CN") . "=" . $me . "," . $_SESSION["USER_SEARCH_DN_CTR"];

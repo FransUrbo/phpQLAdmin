@@ -1,8 +1,8 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.42 2005-03-04 11:55:32 turbo Exp $
+// $Id: control_detail.php,v 1.43 2005-03-09 09:59:03 turbo Exp $
 require("./include/pql_session.inc");
-require("./include/pql_config.inc");
+require($_SESSION["path"]."/include/pql_config.inc");
 
 if(pql_get_define("PQL_CONF_CONTROL_USE")) {
     // {{{ Include control api if control is used

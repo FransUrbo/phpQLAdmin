@@ -1,10 +1,10 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.88 2005-03-04 11:55:32 turbo Exp $
+// $Id: user_detail.php,v 2.89 2005-03-09 09:59:03 turbo Exp $
 //
 // {{{ Setup session
 require("./include/pql_session.inc");
-require("./include/pql_config.inc");
+require($_SESSION["path"]."/include/pql_config.inc");
 
 if(!$_GET and ($_REQUEST["view"] == "antispam")) {
 	// We're coming from "./tables/user_details-antispam.inc",

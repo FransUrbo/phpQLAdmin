@@ -1,9 +1,11 @@
 <?php
 // Create a DNS zone file
-// $Id: dnszonetemplate.php,v 1.7 2005-02-24 17:04:03 turbo Exp $
-session_start();
-require("../include/pql_config.inc");
+// $Id: dnszonetemplate.php,v 1.8 2005-03-09 09:59:04 turbo Exp $
+// {{{ Setup session etc
+require("../include/pql_session.inc");
+require($_SESSION["path"]."/include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_bind9.inc");
+// }}}
 
 $zone = pql_bind9_get_zone($_pql->ldap_linkid, $domain, $defaultdomain);
 if(is_array($zone)) {

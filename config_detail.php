@@ -3,8 +3,7 @@
 // config_detail.php,v 2.51 2004/03/11 18:13:32 turbo Exp
 //
 require("./include/pql_session.inc");
-require("./include/pql_config.inc");
-
+require($_SESSION["path"]."/include/pql_config.inc");
 include($_SESSION["path"]."/header.html");
 
 // {{{ Possibly clear session

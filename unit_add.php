@@ -1,10 +1,10 @@
 <?php
 // add a domain
-// $Id: unit_add.php,v 2.24 2005-03-04 11:55:32 turbo Exp $
+// $Id: unit_add.php,v 2.25 2005-03-09 09:59:03 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
-require("./include/pql_config.inc");
+require($_SESSION["path"]."/include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_control.inc");
 
 $url["domain"] = pql_format_urls($_REQUEST["domain"]);

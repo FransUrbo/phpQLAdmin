@@ -1,6 +1,6 @@
 <?php
 // logins to the system
-// $Id: index.php,v 2.43 2005-03-04 11:55:32 turbo Exp $
+// $Id: index.php,v 2.44 2005-03-09 09:59:03 turbo Exp $
 //
 // Start debuging
 // http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0
@@ -41,7 +41,7 @@ if ($_GET["logout"] == 1 or !empty($_GET["msg"])) {
 	}
 }
 
-require("./include/pql_config.inc");
+require($_SESSION["path"]."/include/pql_config.inc");
 
 if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 	include($_SESSION["path"]."/header.html");

@@ -1,9 +1,9 @@
 <?php
 // shows results of search
-// $Id: search.php,v 2.32 2005-03-04 11:55:32 turbo Exp $
+// $Id: search.php,v 2.33 2005-03-09 09:59:03 turbo Exp $
 //
 require("./include/pql_session.inc");
-require("./include/pql_config.inc");
+require($_SESSION["path"]."/include/pql_config.inc");
 
 include($_SESSION["path"]."/header.html");
 

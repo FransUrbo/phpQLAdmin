@@ -1,13 +1,13 @@
 <?php
 // navigation bar - ezmlm mailinglists manager
-// $Id: left-ezmlm.php,v 2.34 2005-03-04 11:55:32 turbo Exp $
+// $Id: left-ezmlm.php,v 2.35 2005-03-09 09:59:03 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
 
-require("./include/pql_config.inc");
+require($_SESSION["path"]."/include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_ezmlm.inc");
-require("./left-head.html");
+require($_SESSION["path"]."/left-head.html");
 // }}}
 ?>
   <!-- EZMLM Mailinglists -->

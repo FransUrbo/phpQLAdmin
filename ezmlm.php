@@ -1,7 +1,7 @@
 <?php
-// $Id: ezmlm.php,v 1.6 2005-02-24 17:04:00 turbo Exp $
+// $Id: ezmlm.php,v 1.7 2005-03-09 09:59:03 turbo Exp $
 //
-require("./include/pql_config.inc");
+require($_SESSION["path"]."/include/pql_config.inc");
 include($_SESSION["path"]."/header.html");
 ?>  
   <span class="title1">Ezmlm Mailinglist Control</span>

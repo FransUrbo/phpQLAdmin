@@ -1,10 +1,10 @@
 <?php
 // Add a webserver configuration to the LDAP db
-// $Id: websrv_add.php,v 2.11 2005-03-04 11:55:32 turbo Exp $
+// $Id: websrv_add.php,v 2.12 2005-03-09 09:59:03 turbo Exp $
 //
 // {{{ Setup session
 require("./include/pql_session.inc");
-require("./include/pql_config.inc");
+require($_SESSION["path"]."/include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_control.inc");
 require($_SESSION["path"]."/include/pql_websrv.inc");
 

@@ -1,12 +1,17 @@
 <?php
 // edit attributes of a BIND9 DNS zone
-// $Id: bind9_edit_attributes.php,v 2.9 2005-03-04 11:55:32 turbo Exp $
+// $Id: bind9_edit_attributes.php,v 2.10 2005-03-09 09:59:03 turbo Exp $
 //
+// {{{ Setup session etc
 require("./include/pql_session.inc");
-require("./include/pql_config.inc");
+require($_SESSION["path"]."/include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_bind9.inc");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
+
+include($_SESSION["path"]."/header.html");
+include($_SESSION["path"]."/include/attrib.dnszone.inc");
+// }}}
 
 // {{{ Forward back to domain detail page
 function attribute_forward($msg) {
@@ -17,9 +22,6 @@ function attribute_forward($msg) {
     header("Location: " . $_SESSION["URI"] . "$url");
 }
 // }}}
-
-include($_SESSION["path"]."/header.html");
-include($_SESSION["path"]."/include/attrib.dnszone.inc");
 ?>
     <span class="title1">Change DNS zone value</span>
     <br><br>
@@ -61,7 +63,7 @@ switch($_REQUEST["type"]) {
 // {{{ Select what to do
 if(($_REQUEST["action"] == 'del') && $_REQUEST["rdn"]) {
 	attribute_save($_REQUEST["action"]);
-} elseif($_REQUEST["submit"] == 1) {
+} elseif(@$_REQUEST["submit"]) {
     if(attribute_check())
       attribute_save($_REQUEST["action"]);
     else

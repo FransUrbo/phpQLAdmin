@@ -1,9 +1,9 @@
 <?php
 // add a domain
-// $Id: domain_add.php,v 2.57 2005-03-04 11:55:32 turbo Exp $
+// $Id: domain_add.php,v 2.58 2005-03-09 09:59:03 turbo Exp $
 //
 require("./include/pql_session.inc");
-require("./include/pql_config.inc");
+require($_SESSION["path"]."/include/pql_config.inc");
 
 $url["domain"]		  = pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"]		  = pql_format_urls($_REQUEST["rootdn"]);
