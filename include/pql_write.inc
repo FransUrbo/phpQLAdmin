@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.18.2.1 2005-02-12 05:19:15 turbo Exp $
+// $Id: pql_write.inc,v 2.18.2.2 2005-02-14 10:50:50 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -301,25 +301,27 @@ function pql_user_add($ldap_linkid, $domain, $dn, $entry, $type, $branch) {
 	$rootdn = pql_get_rootdn($domain, 'pql_user_add'); $rootdn = urldecode($rootdn);
 
 	// {{{ Setup the objectclasses
-	if($type == "group") {
+	if(empty($entry[pql_get_define("PQL_ATTR_OBJECTCLASS")])) {
+	  if($type == "group") {
 		// OpenLDAP version >2.2 REQUIRE one structural objectclass.
 		$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'person';
-
 		$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'qmailgroup';
 
 		// We need the uid attribute (etc);
 		$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'posixAccount';
-	} else {
+	  } else {
 		if(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $rootdn)) {
 			foreach(pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $rootdn)) as $oc) {
-				// BUG: I really hate this. No hardcoding!!
-				if((($type == 'mail') and ($oc == 'krb5principal')) or
-				   (($type == 'mail') and ($oc == 'trustaccount')))
-				  next;
-				else
-				  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = $oc;
+			  // BUG: I really hate this. No hardcoding!!
+			  // BUG 2: Even worse: I don't even remember why I did this in the first place!
+			  if((($type == 'mail') and ($oc == 'krb5principal')) or
+				 (($type == 'mail') and ($oc == 'trustaccount')))
+				next;
+			  else
+				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = $oc;
 			}
 		}
+	  }
 	}
 	// }}}
 
