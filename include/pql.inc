@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.34 2003-01-28 13:23:35 turbo Exp $
+// $Id: pql.inc,v 2.35 2003-01-29 08:44:03 turbo Exp $
 //
 
 // ----------------------------
@@ -398,6 +398,13 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name){
 // removes a domain with all listed users
 function pql_domain_del($ldap, $domain, $delete_forwards) {
 	$linkid = $ldap->ldap_linkid;
+
+	// Make sure that the logged in user isn't located under the
+	// domain/branch being deleted...
+	if(eregi($domain, $GLOBALS["USER_DN"])) {
+		$msg=urlencode(format_error("Sorry, I can't allow you to delete the branch under which you yourself is situated!"));
+		header("Location: " . PQL_URI . "domain_detail.php?domain=$domain&msg=$msg");
+	}
 
 	$dc = ldap_explode_dn($domain, 0); $dc = split('=', $dc[0]);
     if(!pql_domain_exist($ldap, $dc[1])) {
