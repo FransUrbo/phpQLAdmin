@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.5.12.2 2004-12-20 17:49:52 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.5.12.3 2004-12-20 21:20:32 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -19,6 +19,7 @@ function attribute_print_form() {
     global $_pql, $LANG;
 
 	// {{{ Translate the TYPE to dNSZone objectclass attribute
+
 	if($_REQUEST["attrib"]) {
 	  switch($_REQUEST["attrib"]) {
       case "a":
@@ -47,13 +48,23 @@ function attribute_print_form() {
 		die("unknown zone type '".$_REQUEST["type"]."'.");
 	  }
 	}
+
 	// }}}
 
 	if($_REQUEST["action"] != 'add') {
-		// Get old value
-		$dn = urldecode($_REQUEST["rdn"]);
-		$oldvalue = pql_bind9_get_record($_pql->ldap_linkid, $dn, $attrib);
-		$oldvalue = $oldvalue[0];
+	  // Get old value
+	  $dn = urldecode($_REQUEST["rdn"]);
+
+	  $oldvalue = pql_bind9_get_record($_pql->ldap_linkid, $dn, $attrib);
+	  $oldvalue = $oldvalue[0];
+
+	  if(lc($_REQUEST["attrib"]) == 'srv') {
+		$tmp = split(' ', $oldvalue);
+		$old["prio"]   = $tmp[0];
+		$old["weight"] = $tmp[1];
+		$old["port"]   = $tmp[2];
+		$old["target"] = $tmp[3];
+	  }
 	}
 
 	// relativeDomainName zoneName
@@ -64,9 +75,26 @@ function attribute_print_form() {
     <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
       <table cellspacing="0" cellpadding="3" border="0">
         <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Change Bind9 value for %host%'), array('host' => $host))?></th>
+<?php	if(lc($_REQUEST["attrib"]) == 'srv') { ?>
+          <tr class="title">
+            <td></td>
+            <td>Prio</td>
+            <td>Weight</td>
+            <td>Port</td>
+            <td>Target</td>
+            <td></td>
+          </tr>
+<?php	} ?>
           <tr class="<?php pql_format_table(); ?>">
             <td class="title"><?php echo pql_complete_constant($LANG->_('Change attribute %attribute%'), array('attribute' => $_REQUEST["attrib"])); ?></td>
+<?php	if(lc($_REQUEST["attrib"]) == 'srv') { ?>
+            <td><input type="text" name="prio"   value="<?=$old["prio"]?>" size="3"></td>
+            <td><input type="text" name="weight" value="<?=$old["weight"]?>" size="3"></td>
+            <td><input type="text" name="port"   value="<?=$old["port"]?>" size="3"></td>
+            <td><input type="text" name="<?=$_REQUEST["attrib"]?>" value="<?=$old["target"]?>" size="20"></td>
+<?php	} else { ?>
             <td><input type="text" name="<?=$_REQUEST["attrib"]?>" value="<?=$oldvalue?>" size="20"></td>
+<?php	} ?>
 <?php	if(lc($_REQUEST["attrib"]) == 'dnsttl') { ?>
             <td>
               <select name="time">
@@ -94,7 +122,7 @@ function attribute_print_form() {
       </table>
 
       <input type="hidden" name="submit"   value="1">
-<?php	if($_REQUEST["action"] != 'add') { ?>
+<?php	if(($_REQUEST["action"] != 'add') and (lc($_REQUEST["attrib"]) != 'srv')) { ?>
       <input type="hidden" name="oldvalue" value="<?=$oldvalue?>">
 <?php	} ?>
       <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
@@ -161,6 +189,8 @@ function attribute_save($action) {
 		$_REQUEST[$attrib] = $_REQUEST[$attrib] * 60 * 60 * 24 * 7;
 	  elseif($_REQUEST["time"] == "months")
 		$_REQUEST[$attrib] = $_REQUEST[$attrib] * 60 * 60 * 24 * 7 * 4;
+	} elseif(lc($attrib) == 'srv' && $_REQUEST["prio"] && $_REQUEST["weight"] && $_REQUEST["port"]) {
+	  $_REQUEST[$attrib] = $_REQUEST["prio"]." ".$_REQUEST["weight"]." ".$_REQUEST["port"]." ".$_REQUEST[$attrib];
 	}
 
     switch($action) {
