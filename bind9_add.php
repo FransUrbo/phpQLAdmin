@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.14 2005-01-30 09:23:45 turbo Exp $
+// $Id: bind9_add.php,v 2.15 2005-01-30 10:34:59 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -168,8 +168,12 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 		  if($dn) {
 			$msg = "Successfully added host <u>".$_REQUEST["hostname"].".".pql_maybe_idna_decode($_REQUEST["domainname"])."</u>";
 
-			if(!pql_bind9_update_serial($_pql, $dn))
-			  die("failed to update SOA serial number");
+			if(!file_exists("./.DEBUG_ME")) {
+			  // We can't do this if we're debuging. The object don't exists in the db, hence
+			  // we can't figure out zone name etc...
+			  if(!pql_bind9_update_serial($_pql, $dn))
+				die("failed to update SOA serial number");
+			}
 		  } else
 			$msg = "Failed to add ".$_REQUEST["hostname"]." to ".$_REQUEST["domainname"];
 
