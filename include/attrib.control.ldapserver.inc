@@ -5,7 +5,7 @@
 // ldaplogin (cn of a database user)
 // ldappassword (password to bind to ldaplogin)
 //
-// $Id: attrib.control.ldapserver.inc,v 2.13 2004-03-11 16:31:54 turbo Exp $
+// $Id: attrib.control.ldapserver.inc,v 2.14 2004-03-29 08:09:02 turbo Exp $
 
 // {{{ ldapserver_check(type)
 function ldapserver_check($type) {
@@ -36,7 +36,7 @@ function ldapserver_check($type) {
 	// check for valid dn
 	
 	// login / password
-	if($_REQUEST["ldaplogin"]_use == "1") {
+	if($_REQUEST["ldaplogin_use"] == "1") {
 		// missing
 		if($_REQUEST["ldaplogin"] == "") {
 			$error["ldaplogin"] = $LANG->_('Missing');
@@ -53,7 +53,7 @@ function ldapserver_check($type) {
 	}
 
 	// test connection
-	if($_REQUEST["ldap"]_test == "1" and $is_error == false) {
+	if($_REQUEST["ldap_test"] == "1" and $is_error == false) {
 		foreach($_REQUEST["ldapserver"] as $server) {
 			if($server == "")
 			  continue;
@@ -61,7 +61,7 @@ function ldapserver_check($type) {
 			$linkid = @ldap_connect($server);
 			
 			if($linkid) {
-				if($_REQUEST["ldaplogin"]_use == "1") {
+				if($_REQUEST["ldaplogin_use"] == "1") {
 					if(!@ldap_bind($linkid, $_REQUEST["ldaplogin"], $_REQUEST["ldappassword"])) {
 						$error["ldap_test"] .= pql_complete_constant($LANG->_('Failed running a test connection to %server%'),
 																	 array('server' => $server)) . ": " . ldap_error($linkid) . "<br>";
