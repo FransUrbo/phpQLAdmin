@@ -4,6 +4,8 @@ phpQLAdmin 2.0.12 TO BE ANNOUNCED
 	Bug fixes
 	  - In attrib.deliverymode.inc, remove all backslashes in mailReplyText (we
 	    got invalid syntax when doing ldap modify).
+	  - Variable overload in controls manager fixed.
+	  - Deletion of attribute in pql_set_domain_value() (re-)fixed.
 
 	GUI layout change
 	  - User details page:
@@ -13,6 +15,7 @@ phpQLAdmin 2.0.12 TO BE ANNOUNCED
 	  - In the 'LDAP server configuration' page, show each MUST/MAY attribute
 	    (and it's OID number) in a foldable list for each of the attributes the
 	    LDAP server knows about.
+	  - Allow for setting a limit on how many users allowed under a domain branch
 
 	Misc changes
 	  - Removed functions pql_remove_userattribute(), pql_replace_userattributes()
