@@ -321,6 +321,39 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 		} // end if ADVANCED mode
 	} // end if account type == system
 ?>
+
+        <!-- sub branch -->
+<?php
+	if($ADVANCED_MODE) {
+		$branches = pql_get_subbranch($_pql->ldap_linkid, $domain);
+		if(is_array($branches)) {
+?>
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title">Put user in subbranch</td>
+          <td>
+            <select name="subbranch">
+<?php
+			for($i=0; $branches[$i]; $i++) {
+?>
+              <option value="<?=$branches[$i]?>"><?=$branches[$i]?></option>
+<?php
+			}
+?>
+            </select>
+          </td>
+        </tr>
+<?php
+		} else {
+?>
+        <input type="hidden" name="subbranch" value="<?php echo PQL_LDAP_SUBTREE_USERS;?>">
+<?php
+		}
+	} else {
+?>
+        <input type="hidden" name="subbranch" value="<?php echo PQL_LDAP_SUBTREE_USERS;?>">
+<?php
+	} // end if ADVANCED mode
+?>
       </th>
     </table>
 
