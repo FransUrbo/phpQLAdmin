@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.26 2004-10-05 07:52:22 turbo Exp $
+// $Id: pql_formating.inc,v 2.27 2004-10-14 08:54:10 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -310,7 +310,7 @@ function pql_format_table_single($linkid, $text, $url, $array, $attrib) {
 			$new_tr = 1;
 ?>
         <td class="<?=$class?>"><?=$username?></td>
-        <td class="<?=$class?>"><a href="<?=$url["del"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$text["del"]?>"></a></td>
+        <td class="<?=$class?>"><a href="<?=$url["del"]?>&<?=$attrib?>=<?=$value?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$text["del"]?>"></a></td>
       </tr>
 <?php	}
 	}
