@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of user
-// $Id: user_edit_attribute.php,v 2.41 2004-05-07 07:39:46 turbo Exp $
+// $Id: user_edit_attribute.php,v 2.42 2004-10-14 07:45:20 turbo Exp $
 //
 // This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
 //   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -86,8 +86,12 @@ if(($_REQUEST["submit"] == 1) or ($_REQUEST["submit"] == 2)) {
 	attribute_print_form();
     }
 } elseif($_REQUEST["submit"] == 4) {
-	// SAVE change directly, no need for a form
-	attribute_save($action);
+    // SAVE change directly, no need for a form
+    attribute_save($action);
+} elseif(($_REQUEST["submit"] == 3) and (($_REQUEST["attrib"] == 'dnmember') or
+					 ($_REQUEST["attrib"] == 'dnmoderator') or
+					 ($_REQUEST["attrib"] == 'dnsender'))) {
+    attribute_print_form($_REQUEST["action"]);
 } else {
     if(($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_GROUP_CONFIRM")) or
        ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_GROUP_MEMBERS_ONLY")) or
