@@ -64,5 +64,16 @@ backward compability should be ok with an non-phpQLAdmin created domain/branch.
 If it's not, please report a bug at the mailinglist phpqladmin@bayour.com.
 
 
+The PHP/LDAP module does an LDAPv2 bind, which means that you will have to
+allow a version 2 bind. In OpenLDAP version 2.0, this is done by making sure
+that you DON'T (!) have 'disallow bind_v2' in your slapd.conf file. In 
+OpenLDAP version 2.1, disallowing v2 bind is the default and you will have
+to enable v2 bind by putting 'allow bind_v2' in the slapd.conf file.
+If slapd does not allow v2 bind, you will get the following error in your
+logfile:
+
+	Could not bind to ldap server: Protocol error
+
+
 For more information on installations, please view doc/index.php through
 the webbrowser.
