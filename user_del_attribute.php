@@ -19,18 +19,16 @@ switch ($attrib) {
 }
 
 include("./header.html");
-?>
-  <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove attribute %attribute%'), array('attribute' => $oldvalue));?></span>
-<?php
+
 if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
     $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
     
     // delete the user attribute
     if(pql_modify_userattribute($_pql->ldap_linkid, $user, $attrib, $oldvalue, '')) {
-	$msg = pql_complete_constant($LANG->_('Successfully removed alias %mail%'), array("mail" => $oldvalue));
+	$msg = pql_complete_constant($LANG->_('Successfully removed alias %mail%'), array("mail" => pql_maybe_idna_decode($oldvalue)));
 	$success = true;
     } else {
-    	$msg = pql_complete_constant($LANG->_('Failed to removed alias %mail%'), array("mail" => $oldvalue)) . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+    	$msg = pql_complete_constant($LANG->_('Failed to removed alias %mail%'), array("mail" => pql_maybe_idna_decode($oldvalue))) . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	$success = false;
     }
     
@@ -62,7 +60,7 @@ if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
     header("Location: " . pql_get_define("PQL_GLOB_URI") . "$url");
 } else {
 ?>
-  <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove attribute %attribute% for user %user%'), array('attribute' => $attrib, 'user' => $username)); ?></span>
+  <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove attribute %attribute% for user %user%'), array('attribute' => $attrib, 'user' => $user)); ?></span>
   <br><br>
   <?=$LANG->_('Are you really sure')?>
   <form action="<?php echo $PHP_SELF; ?>" method="GET">
