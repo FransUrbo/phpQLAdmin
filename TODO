@@ -1,4 +1,10 @@
 Things left to do
+	EASY
+	* As of version 1.61.10.2.4.1.2.1 of include/pql_config.inc,
+	  the base DN is availible in a session variable. Make any and
+	  all functions that uses or needs this value to use the variable
+	  instead of retreive it from the LDAP database.
+
 	IMPORTANT
 	* Get proper (!) 'user templates' to work. It's getting more
 	  and more difficult to get the schema enforcement to work
