@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.17 2004-04-29 12:42:45 turbo Exp $
+// $Id: config_attributes.inc,v 2.18 2004-05-06 14:29:58 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -110,14 +110,14 @@ pql_set_define("PQL_ATTR_GROUP_MEMBERS_ONLY",				strtolower("membersOnly"),					
 pql_set_define("PQL_ATTR_GROUP_CONFIRM",					strtolower("senderConfirm"),				false);
 pql_set_define("PQL_ATTR_GROUP_CONFIRM_TEXT",				strtolower("confirmText"),					false);
 pql_set_define("PQL_ATTR_GROUP_MODERATOR_TEXT",				strtolower("moderatorText"),				false);
-pql_set_define("PQL_ATTR_GROUP_DN_MODERATOR",				strtolower("dnmoderator"),					false);
+pql_set_define("PQL_ATTR_GROUP_DN_MODERATOR",				strtolower("dnModerator"),					false);
 pql_set_define("PQL_ATTR_GROUP_DN_MEMBER",					strtolower("dnMember"),						false);
-pql_set_define("PQL_ATTR_GROUP_DN_SENDER",					strtolower("dnsender"),						false);
+pql_set_define("PQL_ATTR_GROUP_DN_SENDER",					strtolower("dnSender"),						false);
 pql_set_define("PQL_ATTR_GROUP_822_MODERATOR",				strtolower("rfc822Moderator"),				false);
 pql_set_define("PQL_ATTR_GROUP_822_MEMBER",					strtolower("rfc822Member"),					false);
-pql_set_define("PQL_ATTR_GROUP_822_SENDER",					strtolower("rfc822sender"),					false);
+pql_set_define("PQL_ATTR_GROUP_822_SENDER",					strtolower("rfc822Sender"),					false);
 pql_set_define("PQL_ATTR_GROUP_FILTER_MEMBER",				strtolower("filterMember"),					false);
-pql_set_define("PQL_ATTR_GROUP_FILTER_SENDER",				strtolower("filtersender"),					false);
+pql_set_define("PQL_ATTR_GROUP_FILTER_SENDER",				strtolower("filterSender"),					false);
 // }}}
 
 // {{{ PopBeforeSMTP attributes in QmailLDAP
