@@ -113,7 +113,7 @@ if($submit == 1) {
 	// Support for changing domain administrator
 	attribute_print_form($action);
 } elseif($submit == 4) {
-	// SAVE change of domain administrator
+	// SAVE change of domain administrator, mailinglist admin and contact person
 	attribute_save($action);
 } else {
 	if($attrib == 'basequota')
