@@ -2,7 +2,7 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.26.10.2.2.1 2004-08-26 18:14:02 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.26.10.2.2.1.6.1 2004-11-08 11:09:45 turbo Exp $
 
 // {{{ locals_check(type)
 
@@ -199,6 +199,7 @@ function locals_save($type, $host) {
 												 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 												 pql_get_define("PQL_ATTR_LOCALS"), $LOCALS))
 				  $success = 1;
+			}
 		}
 
 		if($success)
