@@ -1,20 +1,14 @@
 <?php
 // add a domain
-// $Id: unit_add.php,v 1.1 2002-12-12 06:23:19 turbo Exp $
+// $Id: unit_add.php,v 1.2 2002-12-12 11:50:27 turbo Exp $
 //
 require("pql.inc");
 require("pql_control.inc");
 
+include("header.html");
 ?>
-<html>
-<head>
-	<title>phpQL</title>
-	<link rel="stylesheet" href="normal.css" type="text/css">
-</head>
-
-<body bgcolor="#e7e7e7" background="images/bkg.png">
-<span class="title1"><?php echo PQL_DOMAIN_ADD; ?>: <?php echo $domain ?></span>
-<br><br>
+  <span class="title1"><?php echo PQL_DOMAIN_ADD; ?>: <?php echo $domain ?></span>
+  <br><br>
 <?php
 $_pql = new pql();
 $_pql_control = new pql_control();

@@ -1,7 +1,8 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 1.1 2002-12-11 15:09:23 turbo Exp $
+// $Id: domain_detail.php,v 1.2 2002-12-12 11:50:27 turbo Exp $
 //
+session_start();
 require("pql.inc");
 
 if(PQL_LDAP_CONTROL_USE){
@@ -13,15 +14,8 @@ if(PQL_LDAP_CONTROL_USE){
     $defaultdomain = pql_get_domain_value($_pql_control->ldap_linkid, $domain, "defaultdomain");
 }
 
-?>
-<html>
-<head>
-	<title>phpQL</title>
-	<link rel="StyleSheet" href="normal.css" type="text/css">
-</head>
+include("header.html");
 
-<body bgcolor="#e7e7e7" background="images/bkg.png">
-<?php
 // print status message, if one is available
 if(isset($msg)){
     print_status_msg($msg);

@@ -1,7 +1,8 @@
 <?php
 // adds an attribute 
-// $Id: user_add_attribute.php,v 1.1 2002-12-11 15:09:23 turbo Exp $
+// $Id: user_add_attribute.php,v 1.2 2002-12-12 11:50:27 turbo Exp $
 //
+session_start();
 require("pql.inc");
 $_pql = new pql();
 
@@ -30,29 +31,21 @@ switch($attrib){
 }
 
 include($include);
+include("header.html");
 ?>
-
-<html>
-<head>
-	<title>phpQL</title>
-	<link rel="stylesheet" href="normal.css" type="text/css">
-</head>
-
-<body bgcolor="#e7e7e7" background="images/bkg.png">
-<span class="title1"><?php echo PQL_USER_EDIT; ?></span>
-<br>
-<br>
+  <span class="title1"><?php echo PQL_USER_EDIT; ?></span>
+  <br><br>
 <?php
-	// select what to do
-	if($submit == 1){
-		if(attribute_check("add")){
-			attribute_save("add");
-		} else {
-			attribute_print_form();
-   		}
-  	} else {
-		attribute_print_form();
-  	}
+// select what to do
+if($submit == 1){
+    if(attribute_check("add")){
+	attribute_save("add");
+    } else {
+	attribute_print_form();
+    }
+} else {
+    attribute_print_form();
+}
 ?>
 </body>
 </html>

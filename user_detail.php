@@ -1,47 +1,41 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 1.1 2002-12-11 15:09:23 turbo Exp $
+// $Id: user_detail.php,v 1.2 2002-12-12 11:50:27 turbo Exp $
 //
+session_start();
 require("pql.inc");
 $_pql = new pql();
 
 // Get default domain name for this domain
 $defaultdomain = pql_get_domain_value($_pql->ldap_linkid, $domain, "defaultdomain");
+
+include("header.html");
+
+// print status message, if one is available
+if(isset($msg)){
+    print_status_msg($msg);
+}
+
+// reload navigation bar if needed
+if(isset($rlnb) and PQL_AUTO_RELOAD){
 ?>
-
-<html>
-<head>
-	<title>phpQL</title>
-	<link rel="stylesheet" href="normal.css" type="text/css">
-</head>
-
-<body bgcolor="#e7e7e7" background="images/bkg.png">
+  <script language="JavaScript1.2">
+  <!--
+    // reload navigation frame
+    parent.frames.pqlnav.location.reload();
+  //-->
+  </script>
 <?php
-	// print status message, if one is available
-	if(isset($msg)){
-		print_status_msg($msg);
-	}
-
-	// reload navigation bar if needed
-	if(isset($rlnb) and PQL_AUTO_RELOAD){
-		?>
-		<script language="JavaScript1.2">
-			<!--
-			// reload navigation frame
-				parent.frames.pqlnav.location.reload();
-			//-->
-		</script>
-		<?php
-	}
+}
 ?>
 
-<span class="title1"><?php echo $user; ?> (<?php echo $defaultdomain; ?>)</span>
-<br><br>
+  <span class="title1"><?php echo $user; ?> (<?php echo $defaultdomain; ?>)</span>
+  <br><br>
 <?php
 // check if domain exists
 if(!pql_domain_exist($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain)){
-	echo "domain &quot;$domain&quot; does not exists";
-	exit();
+    echo "domain &quot;$domain&quot; does not exists";
+    exit();
 }
 
 // check if user exists

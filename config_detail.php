@@ -1,27 +1,21 @@
 <?php
 // shows configuration of phpQLAdmin
-// $Id: config_detail.php,v 1.1 2002-12-11 15:09:23 turbo Exp $
+// $Id: config_detail.php,v 1.2 2002-12-12 11:50:27 turbo Exp $
 //
 require("pql.inc");
-
+include("header.html");
 ?>
-<html>
-<head>
-	<title>phpQL</title>
-	<link rel="StyleSheet" href="normal.css" type="text/css">
-</head>
+  <span class="title1">phpQLAdmin configuration</span>
+  <br><br>
+  <table cellspacing="0" cellpadding="3" border="0">
+    <th colspan="3" align="left">Configuration</th>
+      <tr>
+        <td class="title">Language</td>
+        <td class="<?php table_bgcolor(); ?>"><?php echo PQL_LANG; ?>&nbsp;</td>
+      </tr>
 
-<body bgcolor="#e7e7e7" background="images/bkg.png">
-<span class="title1">phpQLAdmin configuration</span>
-<br><br>
-<table cellspacing="0" cellpadding="3" border="0">
-<th colspan="3" align="left">Configuration</th>
-<tr>
-	<td class="title">Language</td>
-	<td class="<?php table_bgcolor(); ?>"><?php echo PQL_LANG; ?>&nbsp;</td>
-</tr>
-<tr>
-	<td class="title">Show users (navigation bar)</td>
+      <tr>
+        <td class="title">Show users (navigation bar)</td>
 	<?php
 		if(PQL_SHOW_USERS){
 			$show_users = "yes";

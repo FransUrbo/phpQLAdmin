@@ -1,6 +1,6 @@
 <?php
 // make some simple tests on ldap connection
-// $Id: config_ldaptest.php,v 1.1 2002-12-11 15:09:23 turbo Exp $
+// $Id: config_ldaptest.php,v 1.2 2002-12-12 11:50:27 turbo Exp $
 //
 require("pql.inc");
 require("pql_control.inc");
@@ -67,19 +67,14 @@ if(!function_exists("ldap_connect")){
 	}
 } // end if(function_exists...
 
+include("header.html");
 ?>
-<html>
-<head>
-	<title>phpQL</title>
-	<link rel="StyleSheet" href="normal.css" type="text/css">
-</head>
+  <span class="title1"><?php echo PQL_TEST_TITLE; ?></span>
+  <br><br>
 
-<body bgcolor="#e7e7e7" background="images/bkg.png">
-<span class="title1"><?php echo PQL_TEST_TITLE; ?></span>
-<br><br>
-<table cellspacing="0" cellpadding="3" border="0">
-<th colspan="3" align="left"><?php echo PQL_TEST_TESTS; ?></th>
-<tr>
+  <table cellspacing="0" cellpadding="3" border="0">
+    <th colspan="3" align="left"><?php echo PQL_TEST_TESTS; ?></th>
+      <tr>
 	<td class="title"><?php echo PQL_TEST_LDAP_EXT_TITLE; ?></td>
 	<td class="<?php table_bgcolor(); ?>"><?php echo $ldap_ext; ?>&nbsp;</td>
 </tr>

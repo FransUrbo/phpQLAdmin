@@ -1,6 +1,6 @@
 <?php
 // shows details of specified category of attributes
-// $Id: control_cat.php,v 1.1 2002-12-11 15:09:23 turbo Exp $
+// $Id: control_cat.php,v 1.2 2002-12-12 11:50:27 turbo Exp $
 //
 require("pql.inc");
 require("pql_control.inc");
@@ -21,35 +21,25 @@ foreach($control_plugins as $plugin){
 	include(pql_control_plugin_get_filename($plugin));
 }
 
-?>
-<html>
-<head>
-	<title>phpQL</title>
-	<link rel="StyleSheet" href="normal.css" type="text/css">
-</head>
+include("header.html");
 
-<body bgcolor="#e7e7e7" background="images/bkg.png">
-<?php
-	// print status message, if one is available
-	if(isset($msg)){
-		print_status_msg($msg);
-	}
+// print status message, if one is available
+if(isset($msg)){
+    print_status_msg($msg);
+}
 ?>
-<span class="title1"><?php echo $cat; ?></span>
-<br><br>
+  <span class="title1"><?php echo $cat; ?></span>
+  <br><br>
 <?php
-
 // call print_view functions for each plugin
 foreach($control_plugins as $plugin_name){
-	$func = $plugin_name . "_print_view";
-	if(function_exists($func)){
-		call_user_func($func);
-		echo "<br><br>";
-	}
+    $func = $plugin_name . "_print_view";
+    if(function_exists($func)){
+	call_user_func($func);
+	echo "<br><br>";
+    }
 }
 
-
 ?>
-
 </body>
 </html>

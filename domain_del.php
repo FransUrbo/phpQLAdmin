@@ -1,19 +1,14 @@
 <?php
 // delete a domain and all users within
-// $Id: domain_del.php,v 1.1 2002-12-11 15:09:23 turbo Exp $
+// $Id: domain_del.php,v 1.2 2002-12-12 11:50:27 turbo Exp $
 //
+session_start();
 require("pql.inc");
 require("pql_control.inc");
+
+include("header.html");
 ?>
-
-<html>
-<head>
-	<title>phpQL</title>
-	<link rel="stylesheet" href="normal.css" type="text/css">
-</head>
-
-<body bgcolor="#e7e7e7" background="images/bkg.png">
-<span class="title1"><?php echo pql_complete_constant(PQL_DOMAIN_DEL_TITLE, array("domain" => $domain))?></span>
+  <span class="title1"><?php echo pql_complete_constant(PQL_DOMAIN_DEL_TITLE, array("domain" => $domain))?></span>
 <?php
     if(isset($ok) || PQL_VERIFY_DELETE){
 	$_pql = new pql();

@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 1.1 2002-12-11 15:09:23 turbo Exp $
+// $Id: pql.inc,v 1.2 2002-12-12 11:50:31 turbo Exp $
 //
 // ----------------------------
 // Note: There are a few " followed after PHP comment
@@ -229,10 +229,10 @@ function pql_modify_user_addressbook($ldap_linkid, $ldap_basedn, $domain, $user,
 
 // ------------------------------------------------
 
-function pql_domain_exist($ldap_linkid,$ldap_basedn,$domain){
+function pql_domain_exist($ldap_linkid, $ldap_basedn, $domain){
     // check if domain exists
     
-    if(!pql_search_attribute($ldap_linkid,$ldap_basedn,PQL_LDAP_ATTR_DOMAIN,$domain)){
+    if(!pql_search_attribute($ldap_linkid, $ldap_basedn, PQL_LDAP_ATTR_DOMAIN, $domain)) {
 		// domain does not exist in ldap-tree
 		return false;
     }
