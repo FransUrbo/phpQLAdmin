@@ -98,7 +98,7 @@ if($submit == "two"){
 	// Verify/Create uid
 	if(!$uid) {
 		if (function_exists('user_generate_uid')) {
-			$uid = strtolower(user_generate_uid($_pql, $surname, $name, $email, $email_domain, $account_type));
+			$uid = strtolower(user_generate_uid($_pql, $surname, $name, $email, $domain, $account_type));
 
 			// Check again. There should be a user name, either from the input
 			// form OR from the user_generate_uid() function above...
@@ -134,7 +134,7 @@ if ($submit == "save") {
 	// Verify/Create uid
 	if(!$uid) {
 		if (function_exists('user_generate_uid')) {
-			$uid = strtolower(user_generate_uid($_pql, $surname, $name, $email, $email_domain, $account_type));
+			$uid = strtolower(user_generate_uid($_pql, $surname, $name, $email, $domain, $account_type));
 
 			// Check again. There should be a user name, either from the input
 			// form OR from the user_generate_uid() function above...
