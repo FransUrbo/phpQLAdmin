@@ -41,9 +41,9 @@ if(!pql_domain_exist($_pql, $dc[1])){
 // Get some default values for this domain
 // Some of these (everything after the 'o' attribute)
 // uses 'objectClass: dcOrganizationNameForm' -> http://rfc-2377.rfcindex.net/
-$attribs = array('defaultdomain', 'basehomedir', 'basemaildir', 'basequota', 'o',
-				 'postalcode', 'postaladdress', 'l', 'telephonenumber',
-				 'facsimiletelephonenumber', 'postofficebox', 'st', 'street');
+$attribs = array('defaultdomain', 'basehomedir', 'basemaildir', 'o', 'l',
+				 'postalcode', 'postaladdress', 'telephonenumber', 'street',
+				 'facsimiletelephonenumber', 'postofficebox', 'st', 'basequota');
 foreach($attribs as $attrib) {
 	// Get default value
 	$value = pql_get_domain_value($_pql, $domain, $attrib);
@@ -52,20 +52,17 @@ foreach($attribs as $attrib) {
 	// Setup edit links. If it's a dcOrganizationNameForm attribute, then
 	// we add a delete link as well.
 	$link = $attrib . "_link";
-	if(($attrib != 'defaultdomain') and ($attrib != 'basehomedir') and
-	   ($attrib != 'basemaildir') and ($attrib != 'basequota'))
-	  {
-		  // A dcOrganizationNameForm attribute
-
-		  $$link = "<a href=\"domain_edit_attributes.php?type=modify&attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=". urlencode($value) ."\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify attribute $attrib for $domain\"></a>&nbsp;<a href=\"domain_edit_attributes.php?type=delete&submit=2&attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=". urlencode($value) ."\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Delete attribute $attrib for $domain\"></a>";
-	  } else {
-		  // A phpQLAdminBranch attribute
-
-		  $$link = "<a href=\"domain_edit_attributes.php?attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=$value\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify $attrib for $domain\"></a>";
-	  }
+	if(($attrib != 'defaultdomain') and ($attrib != 'basehomedir') and ($attrib != 'basemaildir')) {
+		// A dcOrganizationNameForm attribute
+		$$link = "<a href=\"domain_edit_attributes.php?type=modify&attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=". urlencode($value) ."\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify attribute $attrib for $domain\"></a>&nbsp;<a href=\"domain_edit_attributes.php?type=delete&submit=2&attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=". urlencode($value) ."\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Delete attribute $attrib for $domain\"></a>";
+	} else {
+		// A phpQLAdminBranch attribute
+		$$link = "<a href=\"domain_edit_attributes.php?attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=$value\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify $attrib for $domain\"></a>";
+	}
 }
-$admins	 = pql_get_domain_value($_pql, $domain, "administrator");
-$seealso = pql_get_domain_value($_pql, $domain, "seealso");
+$admins	   = pql_get_domain_value($_pql, $domain, "administrator");
+$seealso   = pql_get_domain_value($_pql, $domain, "seealso");
+$basequota = pql_ldap_mailquota(pql_parse_quota($basequota));
 
 // Get the organization name, or show 'Not set' with an URL to set it
 $domainname = pql_get_domain_value($_pql, $domain, 'o');
