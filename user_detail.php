@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.82 2004-11-15 13:04:57 turbo Exp $
+// $Id: user_detail.php,v 2.83 2004-11-15 13:10:06 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -98,8 +98,8 @@ $attribs = array("cn"					=> pql_get_define("PQL_ATTR_CN"),
 				 "uid"					=> pql_get_define("PQL_ATTR_UID"),
 				 "userpassword"			=> pql_get_define("PQL_ATTR_PASSWD"),
 				 "mailmessagestore"		=> pql_get_define("PQL_ATTR_MAILSTORE"),
-				 "mailhost"				=> pql_get_define("PQL_ATTR_MAILHOST"),
 				 "mail"					=> pql_get_define("PQL_ATTR_MAIL"),
+				 "mailhost"				=> pql_get_define("PQL_ATTR_MAILHOST"),
 				 "homedirectory"		=> pql_get_define("PQL_ATTR_HOMEDIR"),
 				 "roomnumber"			=> pql_get_define("PQL_ATTR_ROOMNUMBER"),
 				 "telephonenumber"		=> pql_get_define("PQL_ATTR_TELEPHONENUMBER"),
@@ -111,6 +111,9 @@ $attribs = array("cn"					=> pql_get_define("PQL_ATTR_CN"),
 				 "pager"				=> pql_get_define("PQL_ATTR_PAGER"),
 				 "startwithadvancedmode"=> pql_get_define("PQL_ATTR_START_ADVANCED"));
 foreach($attribs as $key => $attrib) {
+	if($attrib == pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_GET["rootdn"]))
+	  $got_user_reference_attribute = 1;
+
     $value = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], $attrib);
 	if(is_array($value))
 	  $value = $value[0];
@@ -129,6 +132,15 @@ foreach($attribs as $key => $attrib) {
     $$link = "<a href=\"user_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&attrib=$attrib&user=".$url["user"]."&$attrib=$value&view=" . $_GET["view"] . "\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt."\"></a>";
 }
 $quota = pql_user_get_quota($_pql->ldap_linkid, $_GET["user"]);
+
+if(!$got_user_reference_attribute) {
+	$key = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_GET["rootdn"]);
+	$$key = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], $key);
+
+	if(!$$key) {
+		$$key = "<i>You're referencing users with the attribute <u>$key</u>, but it's not in the object</i>";
+	}
+}
 
 // Some of these get set from the "$$key = $value[0]" line above.
 if($userpassword == "") {
