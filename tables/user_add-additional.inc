@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-additional.inc,v 1.16 2004-05-01 07:27:40 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.17 2004-05-05 08:07:14 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <input type="hidden" name="surname"            value="<?=$_REQUEST["surname"]?>">
     <input type="hidden" name="name"               value="<?=$_REQUEST["name"]?>">
@@ -87,7 +87,10 @@
             <input type="radio" name="host" value="<?=$_REQUEST["userhost"]["dns"]?>" CHECKED>
             <b><?=$_REQUEST["userhost"]["dns"]?></b><br>
 <?php	} ?>
-            <input type="radio" name="host" value="usr"><input type="text" name="userhost" size="30">
+<?php	if($_REQUEST["userhost"]["dns"] or $_REQUEST["userhost"]["qlc"]) { ?>
+            <input type="radio" name="host" value="usr">
+<?php	} ?>
+            <input type="text" name="userhost" size="30">
           </td>
         </tr>
 <?php } ?>
