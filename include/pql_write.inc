@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.17 2005-02-01 07:32:32 turbo Exp $
+// $Id: pql_write.inc,v 2.18 2005-02-05 13:54:08 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -369,13 +369,13 @@ function pql_user_add($ldap_linkid, $domain, $dn, $entry, $type, $branch) {
 	if($type == "system" and $entry[pql_get_define("PQL_ATTR_QMAILGID")]) {
 		// Remember this for the NEW entry object...
 		$gidnr   = $entry[pql_get_define("PQL_ATTR_QMAILGID")];
-		$rdnattr = $entry[pql_get_define("PQL_ATTR_USER_RDN_ATTRIBUTE", $rootdn)];
+		$rdnattr = $entry[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)];
 		
 		// Create a new LDAP object
 		$entry = array();
 		$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = "posixGroup";
-		$entry[pql_get_define("PQL_ATTR_CN")] = $attribs[pql_get_define("PQL_ATTR_UID")];
-		$entry[pql_get_define("PQL_ATTR_QMAILGID")] = $gidnr;
+		$entry[pql_get_define("PQL_ATTR_CN")]          = $rdnattr;
+		$entry[pql_get_define("PQL_ATTR_QMAILGID")]    = $gidnr;
 		
 		if(pql_get_define("PQL_CONF_SUBTREE_GROUPS"))
 		  $subrdn = "," . pql_get_define("PQL_CONF_SUBTREE_GROUPS");
