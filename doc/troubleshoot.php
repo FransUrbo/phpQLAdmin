@@ -2,7 +2,7 @@
 <head>
 	<title>phpQL</title>
 	<link rel="stylesheet" href="../normal.css" type="text/css">
-	<!-- $Id: troubleshoot.php,v 2.5 2004-03-18 07:34:33 turbo Exp $ -->
+	<!-- $Id: troubleshoot.php,v 2.6 2004-03-18 12:51:19 turbo Exp $ -->
 </head>
 
 <body bgcolor="#e7e7e7" background="../images/bkg.png">
@@ -119,24 +119,24 @@ issues of qmail-ldap and qmail-ldap/control, <a href="http://www.lifewithqmail.o
   <tr class="c2" valign="top">
     <td>This is weird. We're called (from <i>faulty function</i>) with an empty DN</td>
     <td>Bug in phpQLAdmin</td>
-    <td>There's not much you can do (unless you're a PHP coder) other than reporting the
-        bug (at the <a href="http://apache.bayour.com/anthill/" target="_new">bug tracker</a>
-        <i>please</i>, including the exact ways to reproduce the problem. Everything from
-        the URL you clicked on in the left frame all the way up to where you got the problem.
-    </td>
+    <td>See below</td>
   </tr>
 
   <tr class="c1" valign="top">
     <td>This is weird. We couldn't find the root dn for some reason</td>
     <td>Bug in phpQLAdmin</td>
-    <td>There's not much you can do (unless you're a PHP coder) other than reporting the
-        bug (at the <a href="http://apache.bayour.com/anthill/" target="_new">bug tracker</a>
-        <i>please</i>, including the exact ways to reproduce the problem. Everything from
-        the URL you clicked on in the left frame all the way up to where you got the problem.
-    </td>
+    <td>See below</td>
   </tr>
 
   <tr class="c2" valign="top">
+    <td>Supplied argument is not a valid ldap result resource</td>
+    <td>Bug in phpQLAdmin</td>
+    <td>This usually happens when a previous search in the code failed, but phpQLAdmin
+        could not deal with this. See below.
+    </td>
+  </tr>
+
+  <tr class="c1" valign="top">
     <td>Document contains no data</td>
     <td>Incorrect PHP/PHP-LDAP installation</td>
     <td>Please reinstall the ldap libraries and rebuild PHP. If it still no work, try to ask
@@ -147,6 +147,11 @@ issues of qmail-ldap and qmail-ldap/control, <a href="http://www.lifewithqmail.o
 <br>
 <br>
 Please <a href="mailto:phpqladmin@bayour.com">contact us</a> if you found a bug or have seen another error we can describe here.
-
+<p>
+<b>For bugs in phpQLAdmin:</b>
+There's not much you can do (unless you're a PHP coder) other than reporting the
+bug (at the <a href="http://apache.bayour.com/anthill/" target="_new">bug tracker</a>
+<i>please</i>, including the exact ways to reproduce the problem. Everything from
+the URL you clicked on in the left frame all the way up to where you got the problem.
 </body>
 </html>
