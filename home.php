@@ -3,6 +3,7 @@
 // home.php,v 1.3 2002/12/13 13:50:12 turbo Exp
 //
 session_start();
+
 require("pql.inc");
 
 include("header.html");
@@ -12,21 +13,30 @@ if(isset($msg)){
     print_status_msg($msg);
 }
 
-// reload navigation bar if needed
-if(isset($rlnb) and PQL_AUTO_RELOAD){
+// find out which LDAP server(s) to use
+if($change_ldap_server_users or $change_ldap_server_controls) {
+    // Change LDAP server for user database?
+    if($ldapserver) {
+	$host = split(';', $ldapserver);
+	$USER_HOST_USR = $host[0] . ";" . $host[1];
+	$USER_SEARCH_DN_USR = $host[2];
+
+	session_register("USER_HOST_USR", "USER_SEARCH_DN_USR");
+    }
+
+    // Change LDAP server for controls database?
+    if($controlserver) {
+	$host = split(';', $ldapserver);
+	$USER_HOST_CTR = $host[0] . ";" . $host[1];
+	$USER_SEARCH_DN_CTR = $host[2];
+	session_register("USER_HOST_CTR", "USER_SEARCH_DN_CTR");
+    }
+}
 ?>
-  <script language="JavaScript1.2">
-  <!--
-  // reload navigation frame
-     parent.frames.pqlnav.location.reload();
-  //-->
-  </script>
-<?php } ?>
 
   <br><span class="title1"><?php echo PQL_DESCRIPTION ?></span><br>
 
   <ul>
-
 <?php
 	// TODO: How do we know if the user is allowed to add domains?
 	//       In the domain description we don't have that info...
@@ -51,7 +61,8 @@ if(isset($rlnb) and PQL_AUTO_RELOAD){
 	    }
 ?>
         </select>
-        <input type="submit" value="<?="--&gt;&gt;"?>">
+        <input type="hidden" name="change_ldap_server_users" value=1>
+        <input type="submit" value="<?="--&gt;&gt;"?>" onChange="refreshFrames();">
       </form>
     </li>
 
@@ -71,7 +82,8 @@ if(isset($rlnb) and PQL_AUTO_RELOAD){
                 }
 ?>
         </select>
-        <input type="submit" value="<?="--&gt;&gt;"?>">
+        <input type="hidden" name="change_ldap_server_controls" value=1>
+        <input type="submit" value="<?="--&gt;&gt;"?>" onChange="refreshFrames();">
       </form>
     </li>
 <?php
@@ -137,6 +149,7 @@ if(isset($rlnb) and PQL_AUTO_RELOAD){
     <!-- end of search engine snippet -->
   </ul>
   <br>
-  <?php include("trailer.html"); ?>
+
+<?php include("trailer.html"); ?>
 </body>
 </html>
