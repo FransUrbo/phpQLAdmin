@@ -1,6 +1,6 @@
 <?php
 // Add a new mailserver to the database
-// $Id: control_add_server.php,v 2.25.2.1 2005-03-04 11:59:44 turbo Exp $
+// $Id: control_add_server.php,v 2.25.2.2 2005-03-17 08:23:01 turbo Exp $
 //
 require("./include/pql_session.inc");
 require("./include/pql_config.inc");
@@ -52,7 +52,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 					  echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
 					  die("<b>$link</b>");
 					} else
-					  header("Location: " . $_SESSION["URI"] . $link);
+					  pql_header($link);
 				} else
 				  die("Failed to add QmailLDAP/Control object <b>".$_REQUEST["fqdn"]."</b>");
 			} else {
@@ -124,7 +124,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 					  echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
 					  die("<b>$link</b>");
 					} else
-					  header("Location: " . $_SESSION["URI"] . $link);
+					  pql_header($link);
 				} else
 				  die("Failed to clone QmailLDAP/Control object <b>".$_REQUEST["fqdn"]."</b>.");
 			} else
