@@ -48,20 +48,14 @@ if(isset($submit)) {
 	$host = split(';', $ldapserver);
 
 	$USER_HOST = $host[0] . ";" . $host[1];
-	$USER_SEARCH_DN_USR = $host[2];
 
-	session_register("USER_HOST", "USER_SEARCH_DN_USR", "USER_SEARCH_DN_CTR");
+	session_register("USER_HOST", "USER_SEARCH_DN_CTR");
     }
 
     // We need to disable advanced mode so that only the user frame
     // is shown, hence no 'advanced=...' in the url.
     header("Location: " . PQL_URI . "index2.php");
 }
-
-// Get release version
-$fp = fopen(".version", "r");
-$VERSION = fgets($fp, 20);
-fclose($fp);
 ?>
 
   <br><span class="title1"><?=PQL_DESCRIPTION?> - v<?=$VERSION?></span><br>
