@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.10 2003-04-04 16:37:20 turbo Exp $
+// $Id: left-control.php,v 2.11 2003-04-10 08:14:54 turbo Exp $
 //
 session_start();
 
@@ -112,3 +112,12 @@ if($config["PQL_GLOB_CONTROL_USE"]) {
 } // end if PQL_GLOB_CONTROL_USE
 
 require("./left-trailer.html");
+
+/*
+ * Local variables:
+ * mode: php
+ * mode: font-lock
+ * tab-width: 4
+ * End:
+ */
+?>
