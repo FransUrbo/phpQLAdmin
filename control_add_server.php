@@ -1,6 +1,6 @@
 <?php
 // Add a new mailserver to the database
-// $Id: control_add_server.php,v 2.3 2002-12-29 10:37:25 turbo Exp $
+// $Id: control_add_server.php,v 2.4 2002-12-29 18:24:34 turbo Exp $
 //
 session_start();
 
@@ -40,6 +40,10 @@ if(PQL_LDAP_CONTROL_USE){
 								 "ldaprebind", "ldapbasedn", "ldapdefaultquota",
 								 "ldapdefaultdotmode", "dirmaker", "quotawarning",
 								 "ldapuid", "ldapgid");
+				if(isset($include_locals)) 	  $attribs[] = "locals";
+				if(isset($include_rcpthosts)) $attribs[] = "rcpthosts";
+				if(isset($include_password))  $attribs[] = "ldapPassword";
+
 				$cn = "cn=" . $cloneserver . "," . $USER_SEARCH_DN_CTR;
 				foreach($attribs as $attrib) {
 					$value = pql_control_get_attribute($_pql_control->ldap_linkid, $cn, $attrib);
@@ -124,6 +128,21 @@ if(PQL_LDAP_CONTROL_USE){
 	}
 ?>
           </td>
+        </tr>
+
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"></td>
+          <td><input type="checkbox" name="include_locals">Include all <u>locals</u> information in clone</td>
+        </tr>
+
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"></td>
+          <td><input type="checkbox" name="include_rcpthosts">Include all <u>rcpthosts</u> information in clone</td>
+        </tr>
+
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"></td>
+          <td><input type="checkbox" name="include_password">Include <u>ldappassword</u> in clone</td>
         </tr>
       </th>
     </table>
