@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.38 2003-08-16 10:08:27 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.39 2003-08-16 11:47:03 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -193,9 +193,9 @@ function user_generate_homedir($ldap, $email, $dn, $entry, $type) {
 	//	  $branch = '%d%/';
 	//	
 	//	if(! ereg("/$", $basemaildir)) {
-	//		$homedir = $homedir . "/" . "%u%";
+	//		$homedir = $homedir . "/" . $branch . "%u%";
 	//	} else {
-	//		$homedir = $homedir . "%u%";
+	//		$homedir = $homedir . $branch . "%u%";
 	//	}
 	//	$homedir = pql_complete_constant($homedir, array("d" => $domain, 
 	//													 "u" => $entry[pql_get_define("PQL_GLOB_ATTR_UID")],
