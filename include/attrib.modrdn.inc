@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for changing/renaming the DN
 //
-// $Id: attrib.modrdn.inc,v 2.6 2004-02-14 14:25:36 turbo Exp $
+// $Id: attrib.modrdn.inc,v 2.7 2004-02-14 16:13:59 turbo Exp $
 
 function attribute_check($type) {
     global $error, $LANG;
@@ -102,7 +102,6 @@ function attribute_save($type) {
 		// Replace all administrator/seealso attributes that reference the old
 		// user DN with the new DN.
 		pql_replace_admins($_pql, $oldvalue, $user);
-		// DLW: This should force a reload of the ldap user index on the left side.
 	} else
 	  $msg = pql_complete_constant($LANG->_('Failed to rename RDN %user%'),
 				       array('user' => $olduser)) . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
