@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.72 2004-03-17 14:58:21 dlw Exp $
+// $Id: user_detail.php,v 2.73 2004-03-18 12:45:54 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -56,7 +56,7 @@ $username = $username[0];
   <br><br>
 <?php
 // check if user exists
-if(!pql_user_exist($_pql->ldap_linkid, $_GET["rootdn"], $_GET["user"])) {
+if(!pql_user_exist($_pql->ldap_linkid, $_GET["user"])) {
     echo pql_complete_constant($LANG->_('User %user% does not exist'), array('user' => '<u>'.$_GET["user"].'</u>'));
     exit();
 }

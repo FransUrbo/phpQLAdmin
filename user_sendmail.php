@@ -1,6 +1,6 @@
 <?php
 // send a testmail to an emailaddress
-// $Id: user_sendmail.php,v 2.21 2004-03-11 18:13:32 turbo Exp $
+// $Id: user_sendmail.php,v 2.22 2004-03-18 12:45:54 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -12,7 +12,7 @@ include("./header.html");
   <span class="title1"><?=$LANG->_('Send testmail')?></span>
   <br><br>
 <?php
-if(!pql_user_exist($_pql->ldap_linkid, $domain, $user)) {
+if(!pql_user_exist($_pql->ldap_linkid, $user)) {
     echo pql_complete_constant($LANG->_('User %user% does not exist'), array('user', $user));
     exit();
 }
