@@ -3,117 +3,17 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ezmlm.inc,v 1.5 2002-12-23 19:17:32 turbo Exp $
+// $Id: pql_ezmlm.inc,v 1.6 2002-12-25 01:23:50 turbo Exp $
 class ezmlm {
-	// Public variables
-	var $error_message				= "";
-	var $error						= "";
-	var $debug						= 1;
-
-	var $mailing_lists				= array();
-	var $mailing_lists_index		= array();
-	var $mailing_lists_hostindex	= array();
-
-	var $srch_path = '/usr/bin';
-	var $user_name = 'newsletters';
-	var $user_home = '/home/newsletters';
-
-	// Load list of mailinglists in directory
-	function readlists($loadtexts = 0) {
-		if(!(($directory = @opendir($this->user_home)) !=0)) {
-			$this->error="could not open the ezmlm user home directory";
-			return 0;
-		}
-
-		for(;GetType($entry_name = readdir($directory)) == "string";) {
-			if((strcmp(substr($entry_name, 0, 1),".") &&
-				@is_dir($this->user_home."/".$entry_name) &&
-				file_exists($this->user_home."/".$entry_name."/config")))
-			  {
-				$list_index = Count($this->mailing_lists);
-				if(!$this->readlistconfiguration($entry_name,
-												 $this->mailing_lists[$list_index],
-												 $loadtexts))
-				  {
-					  closedir($directory);
-					  return 0;
-				  }
-
-				$this->mailing_lists_index[$entry_name] = $list_index;
-			}
-		}
-		closedir($directory);
-
-		ksort($this->mailing_lists_index);
-		foreach($this->mailing_lists_index as $name => $no) {
-			$host = $this->mailing_lists[$no]["host"];
-			$this->mailing_lists_hostsindex[$host][$name] = $no;
-		}
-
-		return 1;
-	}
-
-	// Create/Modify mailinglist
-	function updatelistentry($add, $listname, $domain, $options) {
-		// Public or Private
-		if($options["pubpriv"]) {
-			if($options["pubpriv"] == 'public') {
-				$p = "p";
-			} elseif($options["pubpriv"] == 'private') {
-				$p = "P";
-			}
-		} else {
-			$p = "";
-		}
-
-		$command = ($this->srch_path."/ezmlm-make 2>&1 -"
-					. ($add							? "E"  : "+ -")
-					. ($options["archived"]			? "a"  : "")
-					. ($options["remotecfg"]		? "c"  : "")
-					. ($options["digest"]			? "d"  : "")
-					. ($options["prefix"]			? "f"  : "")
-					. ($options["guardedarchive"]	? "g"  : "")
-					. ($options["subhelp"]			? "h"  : "")
-					. ($options["indexed"]			? "i"  : "")
-					. ($options["subjump"]			? "j"  : "")
-					. ($options["sublistable"]		? "l"  : "")
-					. ($options["moderated"]		? "m"  : "")
-					. ($options["modonly"]			? "o"  : "")
-					. ($p							? $p   : "")
-					. ($options["reqaddress"]		? "q"  : "")
-					. ($options["remoteadm"]		? "rn" : "")
-					. ($options["submoderated"]		? "s"  : "")
-					. ($options["trailers"]			? "t"  : "")
-					. ($options["subonly"]			? "u"  : "")
-					. ($options["extras"]			? "x"  : "")
-					. ($options["listparent"]		? " -0 ".$options["listparent"]  : "")
-					. ($options["fromaddress"]		? " -3 ".$options["fromaddress"] : "")
-					. ($options["listowner"]		? " -5 ".$options["listowner"]   : "")
-					. " "
-					. $this->user_home."/".$listname
-					. " "
-					. "~".$this->user_name."/.qmail-".$listname
-					. " "
-					. $listname
-					. " "
-					. $domain);
-
-		if(! $this->debug) {
-			$output = @Exec($command, $output_array, $result);
-			if($result != 0) {
-				$this->error = "could not execute system command: " . $command 
-				  . (!strcmp($output, "") ? "" : " (" . $output . ")");
-				return 0;
-			}
-		} else {
-			die("Command: <br><pre>$command</pre><br>");
-		}
-
-		return 1;
-	}
+	// ===================================================
+	// Private section
+	var $_option   = array();
+	var $srch_path = '';
+	var $user_name = '';
+	var $user_home = '';
 
 	// Read list configuration
-	function readlistconfiguration($list, &$configuration, $loadtexts) {
+	function _readlistconfiguration($list, &$configuration, $loadtexts) {
 		$list_path = ($this->user_home."/".$list);
 		if(!( ($file = @fopen($list_path."/config", "r")) !=0)) {
 			$this->error="could not open the mailing list configuration file";
@@ -164,24 +64,9 @@ class ezmlm {
 				break;
 
 			  case "F":
-				$configuration["archived"]  	= GetType(strpos($value, "a")) == "integer";
-				$configuration["remotecfg"]		= GetType(strpos($value, "c")) == "integer";
-				$configuration["digest"]		= GetType(strpos($value, "d")) == "integer";
-				$configuration["prefix"]		= GetType(strpos($value, "f")) == "integer";
-				$configuration["subhelp"]		= GetType(strpos($value, "h")) == "integer";
-				$configuration["indexed"]		= GetType(strpos($value, "i")) == "integer";
-				$configuration["subjump"]		= GetType(strpos($value, "j")) == "integer";
-				$configuration["sublistable"]	= GetType(strpos($value, "l")) == "integer";
-				$configuration["moderated"]		= GetType(strpos($value, "m")) == "integer";
-				$configuration["modonly"]		= GetType(strpos($value, "o")) == "integer";
-				$configuration["public"]		= GetType(strpos($value, "p")) == "integer";
-				$configuration["private"]		= GetType(strpos($value, "P")) == "integer";
-				$configuration["reqaddress"]	= GetType(strpos($value, "q")) == "integer";
-				$configuration["remoteadm"]		= GetType(strpos($value, "r")) == "integer";
-				$configuration["submoderated"]	= GetType(strpos($value, "s")) == "integer";
-				$configuration["trailers"]		= GetType(strpos($value, "t")) == "integer";
-				$configuration["subonly"]		= GetType(strpos($value, "u")) == "integer";
-				$configuration["extras"]		= GetType(strpos($value, "x")) == "integer";
+				foreach($this->_option as $attrib => $x) {
+					$configuration[$attrib] = GetType(strpos($value, $this->_option[$attrib]["on"])) == "integer";
+				}
 				break;
 
 			  case "H":
@@ -235,6 +120,195 @@ class ezmlm {
 											"trailer"			=> HtmlEntities("Message-trailer"),
 											"mod-sub-confirm"	=> HtmlEntities("Confirm-moderated-subscription"),
 											"mod-unsub-confirm"	=> HtmlEntities("Confirm-moderated-unsubscription"));
+		}
+
+		return 1;
+	}
+
+	// Verify subscriber (is the address subscribed?)
+	function _verifysubscriber($list, $subscriber) {
+		$list_path = $this->user_home."/".$list;
+		$command   = $this->srch_path."/ezmlm-list 2>&1 ".$list_path;
+		$output    = @Exec($command, $output_array, $result);
+		if($result != 0) {
+			$this->error = "could not execute system command: ".$command
+			  . ((!strcmp($output,"")) ? "" : (" (".$output.")"));
+			return 0;
+		}
+
+		$subscriber_address = strtolower($subscriber);
+		$address = 0;
+		$addresses = Count($output_array);
+		for(; $address < $addresses;) {
+			if(! strcmp($subscriber_address, strtolower($output_array[$address]))) {
+				return 1;
+			}
+			$address++;
+		}
+
+		return 0;
+	}
+
+	// ===================================================
+	// Public section
+	var $error_message				= "";
+	var $error						= "";
+	var $debug						= 1;
+
+	var $mailing_lists				= array();
+	var $mailing_lists_index		= array();
+	var $mailing_lists_hostindex	= array();
+
+	// Constructor. Intialize the variable array of
+	// attribute and what command line option to ezmlm-make
+	// this corresponds to when on or off.
+	// Couldn't do this 'globaly', at variable declaration
+	// above, so I had to do it in the costructor. I don't
+	// have a better use for it anyway :)
+	function ezmlm($srch_path = '/usr/bin', $user_name = 'newsletters', $user_home = '/home/newsletters') {
+		$this->_option["archived"]["on"]		= "a";	$this->_option["archived"]["off"]		= "A";
+		$this->_option["remotecfg"]["on"]		= "c";	$this->_option["remotecfg"]["off"]		= "C";
+		$this->_option["digest"]["on"]			= "d";	$this->_option["digest"]["off"]			= "D";
+		$this->_option["prefix"]["on"]			= "f";	$this->_option["prefix"]["off"]			= "F";
+		$this->_option["guardedarchive"]["on"]	= "g";	$this->_option["guardedarchive"]["off"]	= "G";
+		$this->_option["subhelp"]["on"]			= "h";	$this->_option["subhelp"]["off"]		= "H";
+		$this->_option["indexed"]["on"]			= "i";	$this->_option["indexed"]["off"]		= "I";
+		$this->_option["subjump"]["on"]			= "j";	$this->_option["subjump"]["off"]		= "J";
+		$this->_option["sublistable"]["on"]		= "l";	$this->_option["sublistable"]["off"]	= "L";
+		$this->_option["moderated"]["on"]		= "m";	$this->_option["moderated"]["off"]		= "M";
+		$this->_option["modonly"]["on"]			= "o";	$this->_option["modonly"]["off"]		= "O";
+		$this->_option["public"]["on"]			= "p";	$this->_option["public"]["off"]			= "";
+		$this->_option["private"]["on"]			= "P";	$this->_option["private"]["off"]		= "";
+		$this->_option["reqaddress"]["on"]		= "q";	$this->_option["reqaddress"]["off"]		= "Q";
+		$this->_option["remoteadm"]["on"]		= "rn";	$this->_option["remoteadm"]["off"]		= "RN";
+		$this->_option["submoderated"]["on"]	= "s";	$this->_option["submoderated"]["off"]	= "S";
+		$this->_option["trailers"]["on"]		= "t";	$this->_option["trailers"]["off"]		= "T";
+		$this->_option["subonly"]["on"]			= "u";	$this->_option["subonly"]["off"]		= "U";
+		$this->_option["extras"]["on"]			= "x";	$this->_option["extras"]["off"]			= "X";
+
+		$this->srch_path = $srch_path;
+		$this->user_name = $user_name;
+		$this->user_home = $user_home;
+	}
+
+	// Load list of mailinglists in directory
+	function readlists($loadtexts = 0) {
+		if(!(($directory = @opendir($this->user_home)) !=0)) {
+			$this->error="could not open the ezmlm user home directory";
+			return 0;
+		}
+
+		for(;GetType($entry_name = readdir($directory)) == "string";) {
+			if((strcmp(substr($entry_name, 0, 1),".") &&
+				@is_dir($this->user_home."/".$entry_name) &&
+				file_exists($this->user_home."/".$entry_name."/config")))
+			  {
+				$list_index = Count($this->mailing_lists);
+				if(!$this->_readlistconfiguration($entry_name,
+												 $this->mailing_lists[$list_index],
+												 $loadtexts))
+				  {
+					  closedir($directory);
+					  return 0;
+				  }
+
+				$this->mailing_lists_index[$entry_name] = $list_index;
+			}
+		}
+		closedir($directory);
+
+		ksort($this->mailing_lists_index);
+		foreach($this->mailing_lists_index as $name => $no) {
+			$host = $this->mailing_lists[$no]["host"];
+			$this->mailing_lists_hostsindex[$host][$name] = $no;
+		}
+
+		return 1;
+	}
+
+	// Create/Modify mailinglist
+	function updatelistentry($add, $listname, $domain, $options, $curropts = 0) {
+		// * If we should create a list, set $add to 1/TRUE
+		//   and $options should contain the options to enable.
+		//
+		// * To modify (ie, toggle) a value on an existing list,
+		//   set $add to 0/FALSE, $options to the attribute to
+		//   change and $curropts to the current list options
+
+		if($add) {
+			// Create a list
+
+			// Public or Private list
+			if($options["pubpriv"]) {
+				if($options["pubpriv"] == 'public') {
+					$private = 0;
+				} elseif($options["pubpriv"] == 'private') {
+					$private = 1;
+				}
+			}
+			
+			// TODO: We should be able to use the $_option variable
+			//       array here some how (probably in a foreach()
+			//       loop or something)
+			$opts = (  ($options["archived"]		? "a"  : "")
+					 . ($options["remotecfg"]		? "c"  : "")
+					 . ($options["digest"]			? "d"  : "")
+					 . ($options["prefix"]			? "f"  : "")
+					 . ($options["guardedarchive"]	? "g"  : "")
+					 . ($options["subhelp"]			? "h"  : "")
+					 . ($options["indexed"]			? "i"  : "")
+					 . ($options["subjump"]			? "j"  : "")
+					 . ($options["sublistable"]		? "l"  : "")
+					 . ($options["moderated"]		? "m"  : "")
+					 . ($options["modonly"]			? "o"  : "")
+					 . ($private					? $p   : "")
+					 . ($options["reqaddress"]		? "q"  : "")
+					 . ($options["remoteadm"]		? "rn" : "")
+					 . ($options["submoderated"]	? "s"  : "")
+					 . ($options["trailers"]		? "t"  : "")
+					 . ($options["subonly"]			? "u"  : "")
+					 . ($options["extras"]			? "x"  : "")
+					 . ($options["listparent"]	? " -0 ".$options["listparent"]  : "")
+					 . ($options["fromaddress"]	? " -3 ".$options["fromaddress"] : "")
+					 . ($options["listowner"]	? " -5 ".$options["listowner"]   : ""));
+		} else {
+			// Toggle a value
+			// Change listowner, fromaddress or listparent - address is in $curropts
+			if($options == 'listparent') {
+				$opts = "0 $curropts";
+			} elseif($options == 'fromaddress') {
+				$opts = "3 $curropts";
+			} elseif($options == 'owner') {
+				$opts = "5 $curropts";
+			} else {
+				// A 'togglable' option
+				$opts = ($curropts[$options]
+						 ? $this->_option[$options]["off"]
+						 : $this->_option[$options]["on"]);
+			}
+		}
+
+		$command = ($this->srch_path."/ezmlm-make 2>&1 -"
+					. ($add		? "E"		: "+ ")
+					. ($opts	? "-$opts"	: "")
+					. " "
+					. $this->user_home."/".$listname
+					. " "
+					. "~".$this->user_name."/.qmail-".$listname
+					. " "
+					. $listname
+					. " "
+					. $domain);
+
+		if(! $this->debug) {
+			$output = @Exec($command, $output_array, $result);
+			if($result != 0) {
+				$this->error = "could not execute system command: " . $command 
+				  . (!strcmp($output, "") ? "" : " (" . $output . ")");
+				return 0;
+			}
+		} else {
+			die("Command: <br><pre>$command</pre><br>");
 		}
 
 		return 1;
@@ -305,30 +379,6 @@ class ezmlm {
 		}
 
 		return 1;
-	}
-
-	// Verify subscriber (is the address subscribed?)
-	function verifysubscriber($list, $subscriber) {
-		$list_path = $this->user_home."/".$list;
-		$command   = $this->srch_path."/ezmlm-list 2>&1 ".$list_path;
-		$output    = @Exec($command, $output_array, $result);
-		if($result != 0) {
-			$this->error = "could not execute system command: ".$command
-			  . ((!strcmp($output,"")) ? "" : (" (".$output.")"));
-			return 0;
-		}
-
-		$subscriber_address = strtolower($subscriber);
-		$address = 0;
-		$addresses = Count($output_array);
-		for(; $address < $addresses;) {
-			if(! strcmp($subscriber_address, strtolower($output_array[$address]))) {
-				return 1;
-			}
-			$address++;
-		}
-
-		return 0;
 	}
 }
 
