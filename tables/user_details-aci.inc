@@ -1,13 +1,8 @@
 <?php
-// Get the ACIs in this user object
-$aci = pql_aci_get($_pql->ldap_linkid, $user);
-
-if(is_array($aci)) {
-	echo "These are the ACIs that's configured for this object. Not that I know what I would like to do with them, but anyway...";
-	printr($aci);
-} else {
-	echo "No ACIs availible for this user.";
-}
+// The domain/branch ACI values are basicly the same as
+// a user ACI... Therefor there's no point in duplicating
+// code -> use the domain_details ACI page.
+include("./tables/domain_details-aci.inc");
 /*
  * Local variables:
  * mode: php
