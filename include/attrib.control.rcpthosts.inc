@@ -2,7 +2,7 @@
 // control attribute plugin for
 // rcpthosts (blocked local addresses)
 //
-// $Id: attrib.control.rcpthosts.inc,v 2.26 2004-10-20 06:11:52 turbo Exp $
+// $Id: attrib.control.rcpthosts.inc,v 2.27 2004-11-12 09:30:40 turbo Exp $
 
 // {{{ rcpthosts_check(type)
 
@@ -115,6 +115,7 @@ function rcpthosts_print_form() {
     <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
     <input type="hidden" name="rootdn" value="<?=$_REQUEST["rootdn"]?>">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="type"   value="<?=$_REQUEST["type"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
