@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.95 2004-04-04 07:03:33 turbo Exp $
+// $Id: user_add.php,v 2.96 2004-04-07 18:50:10 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -368,7 +368,7 @@ if($_SESSION["ADVANCED_MODE"] && $_REQUEST["account_type"]) {
 <?php
 // ------------------------------------------------
 // Select next form to display
-switch($_REQUEST["page_next"]) {
+switch(empty($error_text) ? $_REQUEST["page_next"] : $_REQUEST["page_curr"]) {
   case "":
 	// Step 1 - Choose account properties (type of account)
 	include("./tables/user_add-properties.inc");
