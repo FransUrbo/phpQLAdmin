@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.83 2004-11-15 13:10:06 turbo Exp $
+// $Id: user_detail.php,v 2.84 2005-01-12 20:08:39 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -52,7 +52,7 @@ if(isset($_GET["msg"])) {
 if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
 	if($_REQUEST["rlnb"] == 1) {
 ?>
-  <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
+  <script src="tools/frames.js" type="text/javascript" language="javascript1.2"></script>
   <script language="JavaScript1.2"><!--
     // reload navigation frame
     refreshFrames();

@@ -2,7 +2,7 @@
 // ----------------------------
 // pql_update_translations.php
 //
-// $Id: update_translations.php,v 2.4 2004-03-14 10:33:08 turbo Exp $
+// $Id: update_translations.php,v 2.5 2005-01-12 20:08:40 turbo Exp $
 //
 
 // ----------------------------
@@ -24,7 +24,7 @@ $user_lang = isset( $_POST['user_lang'] ) ? $_POST['user_lang'] : '';
 ?>
 <html>
   <head>
-    <link rel="stylesheet" href="normal.css" type="text/css">
+    <link rel="stylesheet" href="tools/normal.css" type="text/css">
   </head>
 
   <body>

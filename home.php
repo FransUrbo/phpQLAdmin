@@ -1,6 +1,6 @@
 <?php
 // start page
-// $Id: home.php,v 2.36 2004-05-06 05:34:09 turbo Exp $
+// $Id: home.php,v 2.37 2005-01-12 20:08:39 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -15,7 +15,7 @@ if(isset($msg)){
 // reload navigation bar if needed
 if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
 ?>
-  <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
+  <script src="tools/frames.js" type="text/javascript" language="javascript1.2"></script>
   <script language="JavaScript1.2"><!--
 	// reload navigation frame
 <?php

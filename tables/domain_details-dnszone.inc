@@ -235,7 +235,7 @@
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td><a href="dnszonetemplate.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&defaultdomain=<?=$dns_domain_name?>&view=<?=$_REQUEST["view"]?>"><?=$LANG->_('Create DNS template zone file')?></a></td>
+        <td><a href="tools/dnszonetemplate.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&defaultdomain=<?=$dns_domain_name?>&view=<?=$_REQUEST["view"]?>"><?=$LANG->_('Create DNS template zone file')?></a></td>
       </tr>
 <?php } ?>
     </th>

@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.37 2004-11-12 13:51:39 turbo Exp $
+// $Id: control_detail.php,v 1.38 2005-01-12 20:08:39 turbo Exp $
 session_start();
 require("./include/pql_config.inc");
 
@@ -80,7 +80,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 	if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
 ?>
 
-  <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
+  <script src="tools/frames.js" type="text/javascript" language="javascript1.2"></script>
   <script language="JavaScript1.2"><!--
 	// reload navigation frame
 	parent.frames.pqlnavctrl.location.reload();

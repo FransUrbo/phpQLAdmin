@@ -3,7 +3,7 @@
   <!-- This script was originally developed for
        phpMyAdmin (phpmyadmin.sourceforge.net)
 
-       See left.js in this directory for a complete
+       See tools/left.js in this directory for a complete
        list of authors.
   -->
 
@@ -41,8 +41,8 @@
     var isServer   = true;
   //--></script>
 
-  <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
-  <script src="left.js" type="text/javascript" language="javascript1.2"></script>
+  <script src="tools/frames.js" type="text/javascript" language="javascript1.2"></script>
+  <script src="tools/left.js" type="text/javascript" language="javascript1.2"></script>
 <?php
   $br = strtolower(getenv("HTTP_USER_AGENT"));
   $_SESSION["lynx"] = eregi("lynx", $br);
@@ -52,7 +52,7 @@
   if($_SESSION["opera"]) {
       $_SESSION["opera"]=true;
 ?>
-  <script src="opera.js" type="text/javascript" language="javascript1.2"></script>
+  <script src="tools/opera.js" type="text/javascript" language="javascript1.2"></script>
 <?php } ?>
 
   <base target="pqlmain">

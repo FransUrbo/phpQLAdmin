@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.100 2004-11-12 09:31:40 turbo Exp $
+// $Id: left.php,v 2.101 2005-01-12 20:08:39 turbo Exp $
 //
 session_start();
 
@@ -197,7 +197,7 @@ if($_SESSION["ADVANCED_MODE"]) {
     $links = $links + $new;
 
     if($_SESSION["ALLOW_BRANCH_CREATE"]) {
-	$new = array($LANG->_('Language translator')	=> 'update_translations.php');
+	$new = array($LANG->_('Language translator')	=> 'tools/update_translations.php');
 	$links = $links + $new;
     }
 }

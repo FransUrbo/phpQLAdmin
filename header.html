@@ -3,7 +3,7 @@
 <html>
   <head>
     <title><?php echo pql_get_define("PQL_CONF_WHOAREWE"); ?></title>
-    <link rel="stylesheet" href="normal.css" type="text/css">
+    <link rel="stylesheet" href="tools/normal.css" type="text/css">
 
 <?php
   $br = strtolower(getenv("HTTP_USER_AGENT"));
@@ -11,7 +11,7 @@
   $_SESSION["opera"] = eregi("opera", $br);
   if($_SESSION["opera"]) {
 ?>
-    <script src="opera.js" type="text/javascript" language="javascript1.2"></script>
+    <script src="tools/opera.js" type="text/javascript" language="javascript1.2"></script>
 <?php } ?>
 
 <?php
