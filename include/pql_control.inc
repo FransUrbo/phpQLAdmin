@@ -4,21 +4,15 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.16 2003-05-08 11:45:18 turbo Exp $
+// $Id: pql_control.inc,v 2.17 2003-05-08 20:07:23 turbo Exp $
 //
 // version history:
 // $Log: pql_control.inc,v $
-// Revision 2.16  2003-05-08 11:45:18  turbo
-// * When writing a domain to locals/rcpthosts, make sure it doesn't already
-//   exists (if it does, return immediately)
-// * To be able to specify specific QmailLDAP/Controls object to write
-//   locals/rcpthosts, we need a fifth argument to the function pql_control_update_domains().
-//   This is used to select WHAT attribute to change (locals OR rcpthosts if it's
-//   set, BOTH if it's unset - default).
-// * Don't re-create the object DN if it begins with '^cn'. If it does, we
-//   have already specified a DN to begin with...
-// * If there is no previous locals/rcpthosts value, add one (with the domain
-//   name of choice).
+// Revision 2.17  2003-05-08 20:07:23  turbo
+// * Sometimes, we don't want automatic replication of locals and/or rcpthosts,
+//   but do it manually (such as with the new checkbox system in attribute.locals
+//   etc). Don't return just because we don't have automatic replication enabled.
+// * Return true as default...
 //
 // Revision 1.2  2001/09/06 11:36:24  mb
 // added no_connect option to pql_control-class
@@ -160,7 +154,6 @@ function pql_control_search_attribute($ldap_linkid, $ldap_basedn, $attribute, $v
 
 function pql_control_add_attribute($ldap_linkid, $ldap_control_basedn, $attrib, $value){
     // adds an attribute of a control property
-    
     $entry[$attrib] = $value;
     
     if(!@ldap_mod_add($ldap_linkid, $ldap_control_basedn, $entry)){
@@ -208,14 +201,8 @@ function pql_control_remove_whole_attribute($ldap_linkid, $ldap_control_basedn, 
 function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "") {
 	global $config;
 
-    if(!$config["PQL_GLOB_CONTROL_USE"] or
-	   (!$config["PQL_GLOB_CONTROL_AUTOADDLOCALS"] and $domain) or
-	   (!$config["PQL_GLOB_CONTROL_AUTOADDRCPTHOSTS"] and $domain))
+    if(!$config["PQL_GLOB_CONTROL_USE"])
 	  // control patch is not enabled
-	  // or
-	  // do not replicate locals automatically and domain isn't set
-	  // or
-	  // do not replicate rcpthosts automatically and domain isn't set
 	  return false;
 
 	if(($host != '*') and !$domain) {
@@ -354,7 +341,7 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 		}
 	}
 
-    return false;
+    return true;
 }
 
 // ------------------------------------------------
