@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.16 2005-01-31 21:12:02 turbo Exp $
+// $Id: pql_write.inc,v 2.17 2005-02-01 07:32:32 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -90,7 +90,7 @@ function pql_write_mod($linkid, $dn, $entry, $caller = NULL, $count = 0) {
 				
 				// Recursion... Only try five times...
 				if($count >= 6) { // The very first time $count=1, so...
-					$msg = "We're looping in pql_write.inc:pql_write_mod()";
+					$msg = "<p>We're looping in pql_write.inc:pql_write_mod()";
 					if($caller)
 					  $msg .= " (from $caller)";
 					$msg .= ". No point in trying again. I've got errno=65 (Object class violation) every time...<br>";
