@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.11 2003-04-10 08:14:54 turbo Exp $
+// $Id: left-control.php,v 2.12 2003-04-30 07:30:49 turbo Exp $
 //
 session_start();
 
@@ -58,11 +58,11 @@ if($config["PQL_GLOB_CONTROL_USE"]) {
 ?>
   <!-- start server control host: <?=$host?> -->
   <div id="el<?=$j?>Parent" class="parent">
-    <a class="item" href="control_detail.php?host=<?=$host?>" onClick="if (capable) {expandBase('el<?=$j?>', true); return false;}">
+    <a class="item" href="control_detail.php?mxhost=<?=$host?>" onClick="if (capable) {expandBase('el<?=$j?>', true); return false;}">
       <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$j?>Img">
     </a>
 
-    <a class="item" href="control_detail.php?host=<?=$host?>">
+    <a class="item" href="control_detail.php?mxhost=<?=$host?>">
       <font color="black" class="heada"><?=$host?></font>
     </a>
   </div>
@@ -92,8 +92,8 @@ if($config["PQL_GLOB_CONTROL_USE"]) {
 				foreach($control_cats as $cat){
 ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
-      <a href="control_cat.php?host=<?=$host?>&cat=<?=urlencode($cat)?>"><img src="images/navarrow.png" width="9" height="9" border="0"></a>&nbsp;
-      <a class="item" href="control_cat.php?host=<?=$host?>&cat=<?=urlencode($cat)?>"><?=$cat?></a>
+      <a href="control_cat.php?mxhost=<?=$host?>&cat=<?=urlencode($cat)?>"><img src="images/navarrow.png" width="9" height="9" border="0"></a>&nbsp;
+      <a class="item" href="control_cat.php?mxhost=<?=$host?>&cat=<?=urlencode($cat)?>"><?=$cat?></a>
     </nobr>
 
     <br>
