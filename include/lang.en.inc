@@ -1,7 +1,7 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 2.24 2003-05-06 06:39:38 turbo Exp $
+// $Id: lang.en.inc,v 2.25 2003-05-20 12:59:47 turbo Exp $
 //
 // if you have a translation to another language, please contact
 // me --> Turbo Fredriksson <phpqladmin@bayour.com>
@@ -225,6 +225,8 @@ if(!isset($INCLUDE_LANG_EN_INC)) {
 	define("PQL_LANG_MAILALTERNATEADDRESS_TITLE","Alias");
 	define("PQL_LANG_MAILALTERNATEADDRESS_NEW","Create new alias");
 	define("PQL_LANG_MAILALTERNATEADDRESS_DEL", "Delete alias");
+	define("PQL_LANG_MAILALTERNATEADDRESS_DEL_OK", "Successfully removed alias %mail%");
+	define("PQL_LANG_MAILALTERNATEADDRESS_DEL_FAILED", "Failed to removed alias %mail%");
 	define("PQL_LANG_MAILALTERNATEADDRESS_DEL_FORWARDS", "Also delete forwards to this alias");
 	define("PQL_LANG_MAILALTERNATEADDRESS_HELP", "An alias must be unique in whole domain");
 	define("PQL_LANG_MAILALTERNATEADDRESS_ADD_OK", "Successfully created alias %mail%");
