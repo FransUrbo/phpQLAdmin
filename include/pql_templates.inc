@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_templates.inc,v 1.1.2.1 2005-02-12 05:19:15 turbo Exp $
+// $Id: pql_templates.inc,v 1.1.2.2 2005-02-13 12:24:00 turbo Exp $
 //
 
 // {{{ pql_get_templates(linkid)
@@ -114,6 +114,7 @@ function pql_templates_attributes($linkid, $objectclasses) {
 
 // {{{ pql_templates_check_attribute(linkid, template, attribute, type)
 // Template can be either the template array OR a template name
+// Returns '1' if it's a MUST and '2' if it's a MAY.
 function pql_templates_check_attribute($linkid, $template, $attribute, $type = NULL) {
   if(is_array($template)) {
 	$template_def = $template;
@@ -128,18 +129,32 @@ function pql_templates_check_attribute($linkid, $template, $attribute, $type = N
   if(!$type or (lc($type) == "must")) {
 	for($i=0; $attribs['must'][$i]; $i++) {
 	  if(lc($attribs['must'][$i]) == lc($attribute))
-		return true;
+		return 1;
 	}
   }
 
   if(!$type or (lc($type) == "may")) {
 	for($i=0; $attribs['may'][$i]; $i++) {
 	  if(lc($attribs['may'][$i]) == lc($attribute))
-		return true;
+		return 2;
 	}
   }
 
   return false;
+}
+// }}}
+
+// {{{ pql_templates_mark_importance(importance)
+// Bah. I'm lazy. This is just here because I wanted some
+// simplicity in my life :)
+// Look at 'tables/user_add-details.inc' for it's usage
+// in real life...
+// Called with '1' (MUST) or '2' (MAY).
+function pql_templates_mark_importance($importance) {
+  if($importance == 1)
+	return "<font color=red>*</font> ";
+  else
+	return "&nbsp;&nbsp;";
 }
 // }}}
 
