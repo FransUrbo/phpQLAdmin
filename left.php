@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.64 2003-11-22 16:09:09 turbo Exp $
+// $Id: left.php,v 2.65 2003-11-24 09:05:49 turbo Exp $
 //
 session_start();
 
@@ -63,7 +63,7 @@ if($advanced == 1) {
 
   <!-- Home branch -->
 <?php
-// ----------------
+// ---------------- HOME BRANCH (PROJECT URLS ETC)
 // Level 1: phpQLAdmin configuration etc
 $div_counter = 3; // Initialize the global counter
 pql_format_tree("<b>".$LANG->_('Home')."</b>", 'home.php');
@@ -97,7 +97,7 @@ if($ADVANCED_MODE) {
 // This an ending for the initial parent (level 0)
 pql_format_tree_end();
 
-// ----------------
+// ---------------- GET THE DOMAINS/BRANCHES
 if($ALLOW_BRANCH_CREATE) {
     // This is a 'super-admin'. Should be able to read EVERYTHING!
     $domains = pql_domain_get($_pql);
@@ -117,6 +117,7 @@ if($ALLOW_BRANCH_CREATE) {
     }
 }
 
+// ---------------- GET THE USERS OF THE BRANCH
 if(!isset($domains)) {
     // No domain defined -> 'ordinary' user (only show this user)
     $SINGLE_USER = 1; session_register("SINGLE_USER");
@@ -140,13 +141,8 @@ if(!isset($domains)) {
 	}
     }
 
-?>
-  <!-- start domain parent -->
-  <a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?php echo urlencode($USER_DN); ?>"><img src="images/mail_small.png" border="0" alt="<?=$cn?>"></a>&nbsp;
-  <a class="item" href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?php echo urlencode($USER_DN); ?>"><?=$cn?></a>
-  <!-- end domain parent -->
-
-<?php
+    $links = array("user_detail.php?rootdn=$rootdn&domain=$domain&user=".urlencode($USER_DN) => $cn);
+    pql_format_tree_span($cn, $links, -1);
 } else {
     $SINGLE_USER = 0; session_register("SINGLE_USER");
 ?>
@@ -154,6 +150,7 @@ if(!isset($domains)) {
 
   <!-- Domain branches -->
 <?php
+    // We got at least one domain - get it's users
     asort($domains);
     foreach($domains as $key => $domain) {
 	// Get domain part from the DN (Example: 'dc=test,dc=net' => 'test').
@@ -165,87 +162,120 @@ if(!isset($domains)) {
 	// Get Root DN
 	$rootdn = pql_get_rootdn($domain);
 
-	// iterate trough all users
-	if(pql_get_define("PQL_CONF_SHOW_USERS", $rootdn)) {
-	    // Zero out the variables, othervise we won't get users in
-	    // specified domain, but also in the PREVIOUS domain shown!
-	    $users = ""; $cns = ""; unset($links);
-	    
-	    // Get all users (their DN) in this domain
-	    $users = pql_user_get($_pql->ldap_linkid, $domain);
-	    if(!is_array($users)) {
-		// No user available in this domain
+	// Get the subbranches in this domain
+	$branches = pql_get_subbranch($_pql->ldap_linkid, $domain);
 
-		// Level 2: The users
-		$links = array("user_add.php?rootdn=$rootdn&domain=$domain" => $LANG->_('No users defined'));
-	    } else {
-		// We have users in this domain
+	if((count($branches) > 1))
+	  pql_format_tree($d, "domain_detail.php?rootdn=$rootdn&domain=$domain");
 
-		// Level 2: The users
-		$links = array("user_add.php?rootdn=$rootdn&domain=$domain" =>
-			       pql_complete_constant($LANG->_('Add %what%'),
-						     array('what' => $LANG->_('user'))));
+	for($i = 0; $branches[$i]; $i++) {
+	    unset($subbranch);
 
-		// From the user DN, get the CN.
-		foreach ($users as $dn) {
-		    unset($cn); unset($sn); unset($gecos);
+	    if(pql_get_define("PQL_CONF_SHOW_USERS", $rootdn)) {
+		// Zero out the variables, othervise we won't get users in
+		// specified domain, but also in the PREVIOUS domain shown!
+		$users = ""; $cns = ""; unset($links);
+		
+		// Get all users (their DN) in this domain (sub)branch
+		if(count($branches) > 1) {
+		    $users = pql_user_get($_pql->ldap_linkid, $branches[$i]);
+		} else {
+		    // We only have one subbranch, don't show the subbranch, list the users
+		    // under the domain branch
+		    $users = pql_user_get($_pql->ldap_linkid, $domain);
+		}
+
+		if(!is_array($users)) {
+		    // No user available in this domain
 		    
-		    $cn = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_GIVENNAME"));
-		    $sn = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_SN"));
-		    if($cn[0] && $sn[0]) {
-			// We have a givenName (first name) and a surName (last name) - combine the two
-			if($sn[0] != '_') 
-			  $cns[$dn] = $sn[0].", ".$cn[0];
-			else
-			  $cns[$dn] = $cn[0];
+		    // Level 2: The users
+		    $links = array("user_add.php?rootdn=$rootdn&domain=$domain" => $LANG->_('No users defined'));
+		} else {
+		    // We have users in this domain
+
+		    // Level 2: The users
+		    if(count($branches) > 1) {
+			// We're only interested in the 'People', 'Users' etc value,
+			// not the complete DN.
+			$dnparts = ldap_explode_dn($branches[$i], 0);
+			$dnparts = split('=', $dnparts[0]);
+			$subbranch = $dnparts[1];
+			
+			$links = array("user_add.php?rootdn=$rootdn&domain=$domain&subbranch=$subbranch" =>
+				       pql_complete_constant($LANG->_('Add %what%'),
+							     array('what' => $LANG->_('user'))));
 		    } else {
-			// Probably don't have a givenName - get the commonName
-			$cn = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_CN"));
-			if($cn[0]) {
-			    // We have a commonName - split it up into two parts (which should be first and last name)
-			    $cn = split(" ", $cn[0]);
-			    if(!$cn[1])
-			      // Don't have second part (last name) of the commonName - MUST be a system 'user'.
-			      $cns[$dn] = "System - ".$cn[0];
-			    else {
-				// We have two parts - combine into 'Lastname, Firstname'
-				$cns[$dn] = $cn[1].", ".$cn[0];
+			$links = array("user_add.php?rootdn=$rootdn&domain=$domain" =>
+				       pql_complete_constant($LANG->_('Add %what%'),
+							     array('what' => $LANG->_('user'))));
+		    }
+		    
+		    // Iterate trough all users in this domain/branch
+		    foreach ($users as $dn) {
+			unset($cn); unset($sn); unset($gecos);
+			
+			// From the user DN, get the CN and SN.
+			$cn = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_GIVENNAME"));
+			$sn = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_SN"));
+			if($cn[0] && $sn[0]) {
+			    // We have a givenName (first name) and a surName (last name) - combine the two
+			    if($sn[0] != '_') {
+				$cns[$dn] = $sn[0].", ".$cn[0];
+			    } else {
+				$cns[$dn] = $cn[0];
 			    }
 			} else {
-			    // No givenName, surName or commonName - last try, get the gecos
-			    $gecos = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_GECOS"));
-			    if($gecos[0])
-			      // We have a gecos - use that as is
-			      $cns[$dn] = $gecos[0];
-//			    else
-//			      // No gecos either. Now what!?
+			    // Probably don't have a givenName - get the commonName
+			    $cn = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_CN"));
+			    if($cn[0]) {
+				// We have a commonName - split it up into two parts (which should be first and last name)
+				$cn = split(" ", $cn[0]);
+				if(!$cn[1]) {
+				    // Don't have second part (last name) of the commonName - MUST be a system 'user'.
+				    $cns[$dn] = "System - ".$cn[0];
+				} else {
+				    // We have two parts - combine into 'Lastname, Firstname'
+				    $cns[$dn] = $cn[1].", ".$cn[0];
+				}
+			    } else {
+				// No givenName, surName or commonName - last try, get the gecos
+				$gecos = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_GECOS"));
+				if($gecos[0])
+				  // We have a gecos - use that as is
+				  $cns[$dn] = $gecos[0];
+				//			    else
+				//			      // No gecos either. Now what!?
+			    }
+			}
+		    }
+		    asort($cns);
+		    
+		    foreach($cns as $dn => $cn) {
+			$uid = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_UID"));
+			$uid = $uid[0];
+			
+			$uidnr = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_QMAILUID"));
+			$uidnr = $uidnr[0];
+			
+			if(($uid != 'root') or ($uidnr != '0')) {
+			    // Do NOT show root user(s) here! This should (for safty's sake)
+			    // not be availible to administrate through phpQLAdmin!
+			    $new = array("user_detail.php?rootdn=$rootdn&domain=$domain&subbranch=$subbranch&user=".urlencode($dn) => $cn);
+			    
+			    // Add the link to the main array
+			    $links = $links + $new;
 			}
 		    }
 		}
-		asort($cns);
-		
-		foreach($cns as $dn => $cn) {
-		    $uid = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_UID"));
-		    $uid = $uid[0];
-		    
-		    $uidnr = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_QMAILUID"));
-		    $uidnr = $uidnr[0];
-		    
-		    if(($uid != 'root') or ($uidnr != '0')) {
-			// Do NOT show root user(s) here! This should (for safty's sake)
-			// not be availible to administrate through phpQLAdmin!
-			$new = array("user_detail.php?rootdn=$rootdn&domain=$domain&user=".urlencode($dn) => $cn);
-
-			// Add the link to the main array
-			$links = $links + $new;
-		    }
-		}
 	    }
-	}
 
-	// Level 1: The domain name with it's users
-	$url = "domain_detail.php?rootdn=$rootdn&domain=$domain";
-	pql_format_tree($d, $url, $links, 0);
+	    // Level 1: The domain name with it's users
+	    if((count($branches) > 1) and $subbranch) {
+		pql_format_tree($subbranch, $url, $links, 1);
+	    } else {
+		pql_format_tree($d, "domain_detail.php?rootdn=$rootdn&domain=$domain", $links, 0);
+	    }
+	} // end foreach ($branches)
 
 	// This an ending for the initial parent (level 0)
 	pql_format_tree_end();
