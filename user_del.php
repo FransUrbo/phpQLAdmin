@@ -23,7 +23,7 @@ $cn = pql_get_userattribute($_pql->ldap_linkid, $user, 'cn'); $cn = $cn[0];
 <?php
 if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
 	$delete_forwards = (isset($delete_forwards) || pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) ? true : false;
-	
+
 	// delete the user
 	if(pql_user_del($_pql, $domain, $user, $delete_forwards)) {
 		$msg = $LANG->_('Successfully removed user') . ": <b>" . $cn . "</b>";
@@ -41,12 +41,13 @@ if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
 	
 	// redirect to domain-detail page
 	$msg = urlencode($msg);
-	header("Location: " . pql_get_define("PQL_GLOB_URI") . "domain_detail.php?domain=$domain&view=$view&msg=$msg$rlnb");
+	header("Location: " . pql_get_define("PQL_GLOB_URI") . "domain_detail.php?rootdn=$rootdn&domain=$domain&view=$view&msg=$msg$rlnb");
 } else {
 ?>
 <br>
   <form action="<?=$PHP_SELF?>" method="GET">
-    <input type="hidden" name="user" value="<?=$user?>">
+    <input type="hidden" name="user"   value="<?=$user?>">
+    <input type="hidden" name="rootdn" value="<?=$rootdn?>">
     <input type="hidden" name="domain" value="<?=$domain?>">
         
     <span class="title3"><?=$LANG->_('What should we do with forwards to this user')?>?</span><br>
@@ -61,7 +62,7 @@ if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
 
     <span class="title2"><?=$LANG->_('Are you really sure')?>?</span>
     <input type="hidden" name="view" value="<?=$view?>">
-    <input type="submit" name="ok" value="<?=$LANG->_('Yes')?>">
+    <input type="submit" name="ok"   value="<?=$LANG->_('Yes')?>">
     <input type="button" name="back" value="<?=$LANG->_('No')?>" onClick="history.back();">
   </form>
 <br>
