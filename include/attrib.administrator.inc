@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for administrator and seealso modification
 // Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
-// $Id: attrib.administrator.inc,v 1.43 2004-10-14 08:50:32 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.44 2004-10-14 11:02:09 turbo Exp $
 
 require("./left-head.html");
 
@@ -318,12 +318,15 @@ function attribute_save($type) {
 	// Get the old values, so we can remove the one we're modifying
 	// (delete the one we want to delete, keep the others etc)
 	$admins = pql_domain_get_value($_pql, $DN, $attrib);
-	
+
 	// Add the old values to the resulting array.
 	$ADMs[$attrib] = array();
 	if(is_array($admins)) {
-		foreach($admins as $admin)
-		  $ADMs[$attrib][] = $admin;
+		// In come cases, the value is empty array, catch that...
+		if($admins[0]) {
+			foreach($admins as $admin)
+			  $ADMs[$attrib][] = $admin;
+		}
 	} elseif($admins)
 	  $ADMs[$attrib][] = $admins;
 	
@@ -334,8 +337,11 @@ function attribute_save($type) {
 			  $adms[] = $adm;
 		}
 		
-		$ADMs[$attrib] = $adms;
-		
+		if(is_array($adms))
+		  $ADMs[$attrib] = $adms;
+		else
+		  unset($ADMs);
+
 		if(!$_REQUEST["user"] and !$_REQUEST["branchdn"])
 		  unset($_REQUEST[$attrib]);
 	} else {
