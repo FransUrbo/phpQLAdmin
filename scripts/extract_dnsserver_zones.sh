@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: extract_dnsserver_zones.sh,v 1.2 2005-02-24 17:04:02 turbo Exp $
+# $Id: extract_dnsserver_zones.sh,v 1.3 2005-03-01 09:31:27 turbo Exp $
 
 # Uncomment for real live action!!
 # -> BE CAREFULL!!
@@ -56,6 +56,8 @@ for zone in $ZONES; do
 	if [ "$5" == "differ" ]; then
 	    # No matter what, LDAP _always_ overrides the filesystem!!
 	    $echo cp -v db.$zone $BIND9PATH/db.$zone
+	    $echo chown root.bind9 $BIND9PATH/db.$zone
+	    $echo chmod 640 $BIND9PATH/db.$zone
 
 	    error=1 # Make sure the DNS is reloaded
 	elif [ ! -z "$DEBUG" ]; then
@@ -64,6 +66,8 @@ for zone in $ZONES; do
     else
 	# Does not exist previosly
 	$echo cp -v db.$zone $BIND9PATH/db.$zone
+	$echo chown root.bind9 $BIND9PATH/db.$zone
+	$echo chmod 640 $BIND9PATH/db.$zone
 
 	error=1 # Make sure the DNS is reloaded
     fi
@@ -89,7 +93,6 @@ if [ ! -z "$error" ]; then
 	*) echo "Unknown error: '$error'"; break;;
     esac
     
-    rm -Rf $TMPDIR
-
     exit $error
 fi
+rm -Rf $TMPDIR
