@@ -1,8 +1,9 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.14 2003-10-11 13:33:39 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.15 2003-11-12 14:03:17 turbo Exp $
 
+// {{{ attribute_check(void)
 function attribute_check() {
     global $additionaldomainname, $domain, $oldvalue, $_pql, $error, $rootdn, $LANG;
     
@@ -20,12 +21,16 @@ function attribute_check() {
     
     return true;
 }
+// }}}
 
+// {{{ attribute_init(void)
 function attribute_init() {
     global $additionaldomainname, $oldvalue, $rootdn;
     $additionaldomainname = $oldvalue;
 }
+// }}}
 
+// {{{ attribute_print_form(void)
 function attribute_print_form() {
     global $additionaldomainname, $domain, $PHP_SELF, $attrib, $oldvalue, $error, $rootdn, $view, $LANG;
 	global $orgname;
@@ -99,6 +104,13 @@ function attribute_print_form() {
           </td>
         </tr>
 <?php } ?>
+<?php if(pql_get_define("PQL_GLOB_BIND9_USE")) { ?>
+
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"><?=$LANG->_('Additional domain name')?></td>
+          <td><input type="checkbox" name="template"> Yes</td>
+        </tr>
+<?php } ?>
       </th>
     </table>
 
@@ -113,9 +125,11 @@ function attribute_print_form() {
   </form>
 <?php
 }
+// }}}
 
+// {{{ attribute_save(type)
 function attribute_save($type) {
-    global $domain, $attrib, $oldvalue, $additionaldomainname, $_pql, $delval, $view, $LANG;
+    global $domain, $attrib, $oldvalue, $additionaldomainname, $_pql, $delval, $view, $LANG, $template;
 
     // recontrol values
     if(!attribute_check($type) and !delval)
@@ -148,7 +162,7 @@ function attribute_save($type) {
 
 		if(!$delval)
 		  // Add the new value
-		  $entry[$attrib][] = $additionaldomainname;
+		  $entry[$attrib][] = pql_maybe_idna_encode($additionaldomainname);
 		elseif(!is_array($entry)) 
 		  // We're deleting the last entry...
 		  $entry[$attrib] = array();
@@ -156,6 +170,14 @@ function attribute_save($type) {
 		if(pql_set_domain_value($_pql->ldap_linkid, $domain, '', $entry)) {
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										 array('what' => $LANG->_('Additional domain name')));
+
+			// Create a template DNS zone
+			if($template && $additionaldomainname && pql_get_define("PQL_GLOB_BIND9_USE")) {
+				require("./include/pql_bind9.inc");
+				
+				if(! pql_bind9_add_zone($_pql->ldap_linkid, $domain, $additionaldomainname))
+				  $msg = pql_complete_constant($LANG->_("Failed to add domain %domainname%"), array("domainname" => $defaultdomain));
+			}
 
 			require("./include/pql_control.inc");
 			$_pql_control = new pql_control($GLOBALS["USER_HOST"], $GLOBALS["USER_DN"], $GLOBALS["USER_PASS"]);
@@ -250,6 +272,7 @@ function attribute_save($type) {
 								  array('type' => $type, 'file' => __FILE__)));
     }
 }
+// }}}
 
 // Local variables:
 // mode: php
