@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.3 2003-01-20 08:55:36 turbo Exp $
+// $Id: attrib.config.inc,v 1.4 2003-01-21 13:50:30 turbo Exp $
 
 function attribute_check() {
     global $administrator, $domain, $oldvalue, $_pql, $error, $attrib, $$attrib;
@@ -60,9 +60,9 @@ function attribute_print_form() {
 		if(! pql_set_domain_value($_pql->ldap_linkid, $_pql->ldap_basedn[0], '', $entry))
 		  $msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
 		else
-		  $msg = "Successfully replaced $attrib.";
-		
-		attribute_forward($msg);
+		  $msg = "Successfully replaced $attrib."; $rlnb = 1;
+
+		attribute_forward($msg, $rlnb);
 	} else {
 		// Not a togglable value, show the input form
 ?>
@@ -98,9 +98,9 @@ function attribute_save() {
 	if(! pql_set_domain_value($_pql->ldap_linkid, $_pql->ldap_basedn[0], $attrib, $value))
 	  $msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
 	else
-	  $msg = "Successfully replaced $attrib.";
-	
-	attribute_forward($msg);
+	  $msg = "Successfully replaced $attrib."; $rlnb = 1;
+
+	attribute_forward($msg, $rlnb);
 	break;
 }
 
