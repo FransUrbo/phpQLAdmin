@@ -1,7 +1,7 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 2.3 2002-12-28 23:25:04 turbo Exp $
+// $Id: lang.en.inc,v 2.4 2003-01-02 10:00:35 turbo Exp $
 //
 // if you have a translation to another language, please contact
 // me --> Matthias Blaser <mb@adfinis.ch>
@@ -222,7 +222,7 @@ define("PQL_LDAP_USERPASSWORD_KERBEROS", "(Kerberos V)");
 define("PQL_LDAP_USERPASSWORD_NEW", "Set password");
 define("PQL_LDAP_USERPASSWORD_RETYPE", "Password (Retype)");
 define("PQL_LDAP_USERPASSWORD_HELP", "A password can only contain numbers and letters, special characters are not allowed");
-define("PQL_LDAP_USERPASSWORD_HELP_KRB", "If using {KERBEROS} as password scheme, make sure you<br>include the correct REALM (principal@REALM.TLD)");
+define("PQL_LDAP_USERPASSWORD_HELP_KRB", "If using {KERBEROS} as password scheme, make sure you<br>include the correct REALM (principal@REALM.TLD)<br><b>Unfortunatly you'll have to create the Kerberos principal yourself, this part isn't finished (yet).</b>");
 define("PQL_LDAP_USERPASSWORD_CHANGE_OK", "Successfully changed password");
 define("PQL_LDAP_USERPASSWORD_CHANGE_FAILED", "Failed changing password");
 
