@@ -1,7 +1,7 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 2.1 2002-12-14 21:08:42 turbo Exp $
+// $Id: lang.en.inc,v 2.2 2002-12-17 06:28:29 turbo Exp $
 //
 // if you have a translation to another language, please contact
 // me --> Matthias Blaser <mb@adfinis.ch>
@@ -119,6 +119,19 @@ define("PQL_DOMAIN_DEFAULT_CHANGE_MAILDIR", "Change default maildirectory base f
 define("PQL_DOMAIN_DEFAULT_CHANGE_OK", "Successfully changed default domainname");
 define("PQL_DOMAIN_DEFAULT_CHANGE_FAILED", "Failed to change the default domainname");
 define("PQL_DOMAIN_DEFAULT_CHANGE_UNCHANGED", "Default domainname unchanged");
+
+// database administrator texts
+define("PQL_DOMAIN_ADMIN_TITLE", "Domain administrator(s)");
+define("PQL_DOMAIN_ADMIN_DELETE", "Remove domain administrator");
+define("PQL_DOMAIN_ADMIN_DELETE_OK", "Administrator removed successfully");
+define("PQL_DOMAIN_ADMIN_DELETE_FAILED", "Could not delete administrator");
+define("PQL_DOMAIN_ADMIN_ADD", "Add domain administrator for domain ");
+define("PQL_DOMAIN_ADMIN_ADD_OK", "Administrator added successfully");
+define("PQL_DOMAIN_ADMIN_ADD_FAILED", "Could not add administrator");
+define("PQL_DOMAIN_ADMIN_CHANGE", "Administrator DN");
+define("PQL_DOMAIN_ADMIN_CHANGE_OK", "Administrator added successfully");
+define("PQL_DOMAIN_ADMIN_CHANGE_FAILED", "Could not add administrator DN");
+define("PQL_DOMAIN_ADMIN_UNCHANGED", "Domain administrator unchanged");
 
 define("PQL_ADDRESS_REGISTRED", "Registred addresses");
 define("PQL_ADDRESS_TYPE", "Type");

@@ -40,6 +40,10 @@ switch($attrib){
     break;
   case "basequota";
 	$include = "attrib.basequota.inc";
+	break;
+  case "administrator";
+	$include = "attrib.administrator.inc";
+	break;
   default:
     die("unknown attribute");
 }
@@ -49,7 +53,7 @@ include("header.html");
 ?>
   <span class="title1">
 <?php
-  if(eregi("defaultdomain|basehomedir|basemaildir", $include)) {
+  if(eregi("defaultdomain|basehomedir|basemaildir|administrator", $include)) {
       echo PQL_DOMAIN_DEFAULT_TITLE;
   } else {
       echo PQL_DOMAIN_CHANGE_ATTRIBUTE_TITLE;
@@ -62,17 +66,23 @@ include("header.html");
 // select what to do
 if($submit == 1){
     if(attribute_check("fulldomain")){
-	attribute_save("fulldomain");
+		attribute_save("fulldomain");
     } else {
-	attribute_print_form("fulldomain");
+		attribute_print_form("fulldomain");
     }
 } elseif($submit == 2) {
     // Support for changing domain defaults
     if(attribute_check()){
-	attribute_save("modify");
+		attribute_save("modify");
     } else {
-	attribute_print_form();
+		attribute_print_form();
     }
+} elseif($submit == 3) {
+	// Support for changing domain administrator
+	attribute_print_form($action);
+} elseif($submit == 4) {
+	// SAVE change of domain administrator
+	attribute_save($action);
 } else {
     attribute_print_form("fulldomain");
 }

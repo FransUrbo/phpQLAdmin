@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.2 2002-12-14 22:24:42 turbo Exp $
+// $Id: pql.inc,v 2.3 2002-12-17 06:28:29 turbo Exp $
 //
 // ----------------------------
 // Note: There are a few " followed after PHP comment
@@ -1355,11 +1355,18 @@ function pql_get_domain_value($linkid, $domain, $value, $match = "") {
 		// return the 'domain' part of the DN...
 		for($i=0; $i < $result["count"]; $i++) {
 			for($j=0; $j < $result[$i]["description"]["count"]; $j++) {
-				if(eregi($value, $result[$i]["description"][$j]) && eregi($match, $result[$i]["description"][$j])) {
-					$tmp = split(",", $result[$i]["dn"]);
-					$tmp = split("=", $tmp[count($tmp)-2]);
-					
-					$results[] = $tmp[1];
+				if($match != "*") {
+					if(eregi($value, $result[$i]["description"][$j]) && eregi($match, $result[$i]["description"][$j])) {
+						$tmp = split(",", $result[$i]["dn"]);
+						$tmp = split("=", $tmp[count($tmp)-2]);
+						
+						$results[] = $tmp[1];
+					}
+				} else {
+					if(eregi($value, $result[$i]["description"][$j])) {
+						$tmp = eregi_replace("administrator=", "", $result[$i]["description"][$j]);
+						$results[] = $tmp;
+					}
 				}
 			}
 		}
@@ -1373,7 +1380,7 @@ function pql_get_domain_value($linkid, $domain, $value, $match = "") {
 	}
 	
     // If nothing found, return the domain we where called with
-    if($results[1] == "") {
+    if($results[1] == "" && ($value != 'administrator')) {
 		return $domain;
     } else {
 		if($value == 'administrator') {
@@ -1396,22 +1403,28 @@ function pql_set_domain_value($linkid, $domain, $type, $value) {
     $results = @ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
 	
     $dn = $results[0]["dn"];
-	
-    // Extract all the descriptor fields. We need to add those that
-    // _don't_ contain $type (so we don't completly REPLACE the description
-    // attribute).
-    for($i=0; $i < $results[0]["description"]["count"]; $i++) {
+
+	// Add the PREVIOUS description values (exept those that have $type)
+	for($i=0; $i < $results[0]["description"]["count"]; $i++) {
 		if(! eregi($type, $results[0]["description"][$i])) {
 			$entry["description"][] = $results[0]["description"][$i];
 		}
-    }
-	
-    $entry["description"][] = $type . "=" . $value;
-	
-    if(!ldap_mod_replace($linkid, $dn, $entry)){
+	}		
+
+	if(is_array($value)) {
+		// We're supplied with an array, add those values
+		foreach($value as $val) {
+			$entry["description"][] = $type . "=" . $val;
+		}
+	} else {
+		// Add the single value
+		$entry["description"][] = $type . "=" . $value;
+	}		
+
+	if(!ldap_mod_replace($linkid, $dn, $entry)){
 		pql_errormsg($linkid);
 		return false;
-    }
+	}
 	
     return true;
 }

@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// domain_detail.php,v 1.5 2002/12/12 21:52:08 turbo Exp
+// $Id: domain_detail.php,v 2.2 2002-12-17 06:28:26 turbo Exp $
 //
 session_start();
 require("pql.inc");
@@ -47,15 +47,17 @@ $defaultdomain = pql_get_domain_value($_pql->ldap_linkid, $domain, "defaultdomai
   <span class="title1">Domain: <?=$domain?><?php if($defaultdomain) {echo " ($defaultdomain)";} ?></span>
   <br><br>
 <?php
-$basehomedir   = pql_get_domain_value($_pql->ldap_linkid, $domain, "basehomedir");
-$basemaildir   = pql_get_domain_value($_pql->ldap_linkid, $domain, "basemaildir");
-$basequota     = pql_get_domain_value($_pql->ldap_linkid, $domain, "basequota");
+$basehomedir = pql_get_domain_value($_pql->ldap_linkid, $domain, "basehomedir");
+$basemaildir = pql_get_domain_value($_pql->ldap_linkid, $domain, "basemaildir");
+$basequota   = pql_get_domain_value($_pql->ldap_linkid, $domain, "basequota");
+$admins		 = pql_get_domain_value($_pql->ldap_linkid, $domain, "administrator");
 
 // Setup edit links
 $defaultdomain_link = "<a href=\"domain_edit_attributes.php?attrib=defaultdomain&domain=$domain\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify default domainname for $domain\"></a>";
 $basehomedir_link   = "<a href=\"domain_edit_attributes.php?attrib=basehomedir&domain=$domain\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify default homedirectory for $domain\"></a>";
 $basemaildir_link   = "<a href=\"domain_edit_attributes.php?attrib=basemaildir&domain=$domain\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify default maildirectory for $domain\"></a>";
 $basequota_link     = "<a href=\"domain_edit_attributes.php?attrib=basequota&domain=$domain\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify default quota for $domain\"></a>";
+
 	if($ADVANCED_MODE == 1) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
@@ -83,9 +85,48 @@ $basequota_link     = "<a href=\"domain_edit_attributes.php?attrib=basequota&dom
         <td><?php if($basequota != $domain){echo $basequota;}else{echo PQL_UNSET;} ?></td>
         <td><?=$basequota_link?></td>
       </tr>
+
+<?php
+	if(is_array($admins)) {
+		foreach($admins as $admin) {
+			if($new_tr) {
+?>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title"></td>
+<?php
+			} else {
+?>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title"><?=PQL_DOMAIN_ADMIN_TITLE?></td>
+<?php
+			}
+?>
+
+        <td><?=$admin?></td>
+        <td>
+          <a href="domain_edit_attributes.php?attrib=administrator&domain=<?=$domain?>&administrator=<?=$admin?>&submit=3&action=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify administrators for <?=$domain?>"></a>&nbsp;
+          <a href="domain_edit_attributes.php?attrib=administrator&domain=<?=$domain?>&administrator=<?=$admin?>&submit=4&action=delete"><img src="images/del.png" width="12" height="12" alt="<?=PQL_DOMAIN_ADMIN_DELETE?>" border="0"></a>
+        </td>
+      </tr>
+
+<?php
+			$new_tr = 1;
+		}
+?>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title"></td>
+        <td colspan="4">
+          <a href="domain_edit_attributes.php?attrib=administrator&domain=<?=$domain?>&submit=3&action=add"><?=PQL_DOMAIN_ADMIN_ADD?></a>
+        </td>
+      </tr>
+<?php
+	}
+?>
     </th>
   </table>
+
   <br><br>
+
 <?php
 }
 $users = pql_get_user($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain);
