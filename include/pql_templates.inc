@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_templates.inc,v 2.2 2005-03-06 18:45:04 turbo Exp $
+// $Id: pql_templates.inc,v 2.3 2005-03-07 06:26:53 turbo Exp $
 //
 
 // {{{ Generate the group template (hardcoded for the moment)
@@ -13,7 +13,17 @@ function pql_templates_group() {
 	$TEMPLATE["name"]  = 'group';
 	$TEMPLATE["short"] = 'Group account';
 	$TEMPLATE["long"]  = 'Group delivery with verification (~ mailinglists)';
-	$TEMPLATE["userobjectclass"] = array('qmailGroup');
+
+	// We need the 'person' object class because 'qmailGroup' (and 'qmailUser')
+	// is AUXILIARY, and OpenLDAP >2.2 _require one_ STRUCTURAL.
+	if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
+	  // Need 'uidObject' because of the 'uid' attribute we're referencing users with...
+	  $TEMPLATE["userobjectclass"] = array('person', 'uidObject', 'qmailGroup');
+	else
+	  // Not using 'uid' as reference - do it the QmailLDAP way :(
+	  // Let's hope that any one of the MAY in either one of these three object
+	  // classes allow the attribute we're referencing users with...
+	  $TEMPLATE["userobjectclass"] = array('person', 'qmailUser', 'qmailGroup');
   }
 
   return($TEMPLATE);
