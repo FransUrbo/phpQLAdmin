@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.160 2004-03-13 08:18:37 turbo Exp $
+// $Id: pql.inc,v 2.161 2004-03-16 10:43:04 turbo Exp $
 //
 
 // ----------------------------
@@ -94,8 +94,9 @@ class pql {
 		// Bind to the host
 		if(!$this->bind($binddn, $bindpw)) {
 			$this->ldap_error = "<b>Could not bind to ldap server</b>: ";
-			$this->ldap_error = $this->ldap_error . ldap_error($this->ldap_linkid) . "<br>" .
-			  "Please <a href=\"index.php\" target=\"_top\">relogin</a>.";
+			$this->ldap_error = $this->ldap_error . ldap_error($this->ldap_linkid) . "<p>" .
+			  "Host: $host, Port: $port<br>" .
+			  "Please <a href=\"index.php?logout=1\" target=\"_top\">relogin</a>.";
 
 			if($do_die)
 			  die($this->ldap_error);
@@ -548,42 +549,81 @@ function pql_user_get_number($linkid, $domain) {
 // ------------------------------------------------
 
 // {{{ pql_domain_get(ldap)
-
 // Get all domains listed in ldap-tree (ou|dc-records)
 function pql_domain_get($ldap) {
-	foreach($ldap->ldap_basedn as $dn)  {
-		$dn = urldecode($dn); unset($info);
+	foreach($ldap->ldap_basedn as $TOP_DN)  {
+		$TOP_DN = urldecode($TOP_DN); unset($info);
 
-		$filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $dn) .
-                  "=*)" . pql_setup_branch_objectclasses(1, $dn) . ")";
-
+		// -------------------
 		// Does this top DN contain the ou=People object?
-		$sr1 = @ldap_read($ldap->ldap_linkid, pql_get_define("PQL_CONF_SUBTREE_USERS").",$dn", "objectclass=*");
-		
-		// Is there any users just below the top DN?
-		$sr2 = @ldap_list($ldap->ldap_linkid, $dn, pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $dn)."=*");
-		
-		if((@ldap_count_entries($ldap->ldap_linkid, $sr1) > 0) or
-		   (@ldap_count_entries($ldap->ldap_linkid, $sr2) > 0))
-		  {
-			  // We got 'ou=People' AND/OR user(s) below the top DN. Remember the branch.
-			  $domains[] = $dn;
-		} else {
-			// No entries. Look for branches with a ONE_LEVEL search
-			$sr   = @ldap_list($ldap->ldap_linkid, $dn, $filter) or pql_format_error(1);
-			$info = @ldap_get_entries($ldap->ldap_linkid, $sr) or pql_format_error(1);
-			for ($i=0; $i<$info["count"]; $i++) {
-				$domains[] = $info[$i]["dn"];
+		$filter = 'objectclass=*';
+		$dn = pql_get_define("PQL_CONF_SUBTREE_USERS").",$TOP_DN";
+
+		$sr = @ldap_read($ldap->ldap_linkid, $dn, $filter);
+		if(@ldap_count_entries($ldap->ldap_linkid, $sr) > 0) {
+			// -------------------
+			// Yes it does - Is there any users just below the ou=People object?
+			$filter = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $TOP_DN)."=*";
+			if(pql_domain_get_branchdn($ldap->ldap_linkid, $TOP_DN, $dn, $filter, $domains)) {
+				// Just to be safe - is there any branches here?
+				pql_domain_get_subdomains($ldap->ldap_linkid, $TOP_DN, $dn, $domains);
+			} else {
+				// -------------------
+				// No users below the ou=People objects. Any users directly below the top DN then?
+				$filter = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $TOP_DN)."=*";
+				if(pql_domain_get_branchdn($ldap->ldap_linkid, $TOP_DN, $TOP_DN, $filter, $domains)) {
+					// Just to be safe - is there any branches here?
+					pql_domain_get_subdomains($ldap->ldap_linkid, $TOP_DN, $TOP_DN, $domains);
+				}
 			}
+		} else {
+			// -------------------
+			// No ou=People object - Is there any users just below the top DN then?
+			$filter = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $TOP_DN)."=*";
+			pql_domain_get_branchdn($ldap->ldap_linkid, $TOP_DN, $TOP_DN, $filter, $domains);
+
+			// Just to be safe - is there any branches here?
+			pql_domain_get_subdomains($ldap->ldap_linkid, $TOP_DN, $TOP_DN, $domains);
 		}
 	}
-	
+
 	return $domains;
 }
+// }}}
 
+// {{{ pql_domain_get_branchdn(linkid, topdn, dn, filter, branches)
+function pql_domain_get_branchdn($linkid, $topdn, $dn, $filter, &$branches) {
+	$sr = @ldap_list($linkid, $dn, $filter);
+	if(@ldap_count_entries($linkid, $sr) > 0)
+	  // Got something - remember this branch
+	  $branches[] = $topdn;
+
+	if(is_array)
+	  return(true);
+	else
+	  return(false);
+}
+// }}}
+
+// {{{ pql_domain_get_subdomains(linkid, topdn, dn, branches)
+function pql_domain_get_subdomains($linkid, $topdn, $dn, &$branches) {
+	$filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $topdn) .
+	  "=*)" . pql_setup_branch_objectclasses(1, $topdn) . ")";
+	
+	$sr   = @ldap_list($linkid, $topdn, $filter) or pql_format_error(1);
+	$info = @ldap_get_entries($linkid, $sr) or pql_format_error(1);
+	for($i=0; $i<$info["count"]; $i++)
+	  $branches[] = $info[$i]["dn"];
+	
+	if(is_array)
+	  return(true);
+	else
+	  return(false);
+}
 // }}}
 
 // {{{ pql_domain_add(ldap_linkid, basedn, branch_name)
+
 // Adds a domain into ldap-tree (o|ou|dc-record)
 function pql_domain_add($ldap_linkid, $basedn, $branch_name) {
 	// Maybe UTF-8 encode the branch name - to allow international characters
@@ -631,6 +671,7 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name) {
 
     return $dns;
 }
+
 // }}}
 
 // {{{ pql_domain_del(ldap, domain, delete_forwards)
@@ -662,6 +703,7 @@ function pql_domain_del($ldap, $domain, $delete_forwards) {
 // }}}
 
 // {{{ pql_domain_exist(ldap, domain, rootdn = '')
+
 // Check if domain exists
 function pql_domain_exist($ldap, $domain, $rootdn = '') {
 	$domain = urldecode($domain); $domain = pql_maybe_encode($domain);
@@ -680,6 +722,7 @@ function pql_domain_exist($ldap, $domain, $rootdn = '') {
     
     return false;
 }
+
 // }}}
 
 // {{{ pql_domain_get_value(ldap, dn, value, match, all)
