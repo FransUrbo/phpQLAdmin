@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.3 2003-11-24 08:22:33 turbo Exp $
+// $Id: pql_formating.inc,v 2.4 2003-11-24 12:17:52 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -143,6 +143,9 @@ function pql_format_tree($text, $url, $links = '', $level = 0) {
 	if(is_array($links))
 	  pql_format_tree_span($text, $links, $level);
 
+	if($level)
+	  pql_format_tree_end();
+
 	$div_counter++;
 }
 // }}}
@@ -200,12 +203,9 @@ function pql_format_tree_span($text, $links, $level) {
 		if(eregi("user_detail\.php", $link))
 		  $icon = 1;
 ?>
-    <nobr><?=$nbsp?><a href="<?=$link?>"><?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>">&nbsp;<?php } ?><?=$text?></a></nobr>
-    <br>
+    <nobr><?=$nbsp?><a href="<?=$link?>"><?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>">&nbsp;<?php } ?><?=$text?></a></nobr><br>
 <?php
 	}
-
-	pql_format_tree_end();
 }
 // }}}
 
