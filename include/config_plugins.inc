@@ -11,7 +11,7 @@
 // If you want to customise phpQLAdmin, do NOT do it here, the file
 // to customise is 'config_attributes.inc'.
 //
-// $Id: config_plugins.inc,v 2.17 2004-10-13 17:42:43 turbo Exp $
+// $Id: config_plugins.inc,v 2.18 2004-10-14 05:46:13 turbo Exp $
 
 pql_plugin_register(pql_get_define("PQL_ATTR_ISACTIVE"),
 					"attrib.accountstatus.inc",
@@ -223,12 +223,16 @@ pql_plugin_register(pql_get_define("PQL_ATTR_ADDITIONAL_GROUP"),
 					pql_get_define("PQL_ATTR_ADDITIONAL_GROUP"));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_GROUP_OC"),
-					"attrib.qmailgroup.inc",
+					"attrib.administrator.inc",
 					"",
 					array(pql_get_define("PQL_ATTR_GROUP_DN_MEMBER"),
 						  pql_get_define("PQL_ATTR_GROUP_DN_SENDER"),
-						  pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR"),
-						  pql_get_define("PQL_ATTR_GROUP_FILTER_MEMBER"),
+						  pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR")));
+
+pql_plugin_register(pql_get_define("PQL_ATTR_GROUP_FILTER_MEMBER"),
+					"attrib.qmailgroup.inc",
+					"",
+					array(pql_get_define("PQL_ATTR_GROUP_FILTER_MEMBER"),
 						  pql_get_define("PQL_ATTR_GROUP_FILTER_SENDER")));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_GROUP_CONFIRM_TEXT"),

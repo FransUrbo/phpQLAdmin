@@ -1,6 +1,7 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.41 2004-10-05 17:35:48 turbo Exp $
+// Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
+// $Id: attrib.administrator.inc,v 1.42 2004-10-14 05:46:13 turbo Exp $
 
 require("./left-head.html");
 
@@ -38,6 +39,12 @@ function attribute_setup_aci($old_acis, $userdn) {
 }
 // }}}
 
+// {{{ attribute_init(void)
+function attribute_init() {
+	// dummy function
+}
+// }}}
+
 // {{{ attribute_check(void)
 function attribute_check() {
     global $error, $LANG;
@@ -68,10 +75,17 @@ function attribute_print_form($action) {
 ?>
   <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
+<?php // ------------ S H O W  A  H E A D E R ------------ ?>
 <?php if($attrib == pql_get_define("PQL_ATTR_SEEALSO")) { ?>
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what% for domain %domain%'), array('what' => $LANG->_('contact person'), 'domain' => $orgname)); ?></th>
 <?php } elseif($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM")) { ?>
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what% for domain %domain%'), array('what' => $LANG->_('mailinglist administrator'), 'domain' => $orgname)); ?></th>
+<?php } elseif($attrib == pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR")) { ?>
+      <th colspan="3" align="left"><?=$LANG->_('Add group moderator')?></th>
+<?php } elseif($attrib == pql_get_define("PQL_ATTR_GROUP_DN_MEMBER")) { ?>
+      <th colspan="3" align="left"><?=$LANG->_('Add group member')?></th>
+<?php } elseif($attrib == pql_get_define("PQL_ATTR_GROUP_DN_SENDER")) { ?>
+      <th colspan="3" align="left"><?=$LANG->_('Add group allowed sender')?></th>
 <?php } else {
 		if($_REQUEST["user"]) {
 			$_REQUEST[$attrib] = $_REQUEST["user"];
@@ -84,7 +98,16 @@ function attribute_print_form($action) {
 	  }
 ?>
         <tr class="<?php pql_format_table(); ?>">
-<?php if($_REQUEST["user"]) { // We're giving a user access to ('random') branch ?>
+<?php if(($_REQUEST["attrib"] == 'dnmember') or
+		 ($_REQUEST["attrib"] == 'dnmoderator') or
+		 ($_REQUEST["attrib"] != 'dnsender'))
+	  {
+		  // We're adding a user dn as subscriber,allowed sender or moderator to a qmailGroup object
+?>
+          <td class="title"><?=$LANG->_('User DN')?></td>
+<?php } elseif($_REQUEST["user"]) {
+		// We're giving a user access to ('random') branch
+?>
           <td class="title"><?=$LANG->_('Branch DN')?></td>
 <?php } else { // We're should give a user access to THIS branch ?>
           <td class="title"><?=$LANG->_('Administrator DN')?></td>
@@ -96,7 +119,12 @@ function attribute_print_form($action) {
 <?php } else {
 		// TODO: This is a REALLY bad idea. If we have a 'huge' database
 		// (hundred, thousands or more users), this will take AGES!
-		if(!$_REQUEST["user"]) {
+		if(!$_REQUEST["user"] or ($attrib == pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR")) or
+								 ($attrib == pql_get_define("PQL_ATTR_GROUP_DN_MEMBER")) or
+								 ($attrib == pql_get_define("PQL_ATTR_GROUP_DN_SENDER")))
+		{
+			// ------------ S H O W  B R A N C H E S  A N D  U S E R S ------------
+
 			// We're giving user access to a known domain/branch
 			$i = 0; $j = 0;
 
@@ -176,7 +204,10 @@ function attribute_print_form($action) {
 
             <input type="hidden" name="<?=$attrib?>_<?=$i?>" value="on">
             <input type="hidden" name="<?=$attrib?>" value="<?=$i?>">
-<?php	} else { // We're giving a specific user access to a unknown domain ?>
+<?php	} else {
+			// ------------ S H O W  A  M E N U  W I T H  B R A N C H E S ------------
+			// We're giving a specific user access to a unknown domain
+?>
             <select name="branchdn">
 <?php		if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
 				// We're a super-admin, we can give/take
@@ -231,7 +262,11 @@ function attribute_print_form($action) {
     <input type="hidden" name="rootdn"        value="<?=$_REQUEST["rootdn"]?>">
     <input type="hidden" name="domain"        value="<?=urlencode($_REQUEST["domain"])?>">
     <input type="hidden" name="attrib"        value="<?=$_REQUEST["attrib"]?>">
-<?php if($_REQUEST["user"]) { ?>
+<?php if($_REQUEST["user"] and ($attrib != pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR")) and
+		 ($attrib != pql_get_define("PQL_ATTR_GROUP_DN_MEMBER")) and
+		 ($attrib != pql_get_define("PQL_ATTR_GROUP_DN_SENDER")))
+      {
+?>
     <input type="hidden" name="<?=$attrib?>"  value="<?=$_REQUEST[$attrib]?>">
 <?php } ?>
     <input type="hidden" name="user"          value="<?=urlencode($_REQUEST["user"])?>">
@@ -267,6 +302,9 @@ function attribute_save($type) {
 		  $DN = $_REQUEST["branchdn"];
 		elseif(!$_REQUEST["user"])
 		  $DN = $_REQUEST["domain"];
+		elseif($_REQUEST["view"] == 'group')
+		  // We're adding a subscriber,allowed sender or moderator to a qmailGroup object.
+		  $DN = $_REQUEST["user"];
 		else
 		  $DN = $_REQUEST["rootdn"];
 
@@ -301,10 +339,11 @@ function attribute_save($type) {
 			  unset($_REQUEST[$attrib]);
 		} else {
 			// Add user 
-			if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci"))
+			// NOTE: No ACI additions/modifications if we're modifying a qmailGroup object!
+			if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci") and ($_REQUEST["view"] != 'group'))
 			  $old_acis = pql_aci_get($_pql->ldap_linkid, $_REQUEST["domain"]);
 
-			if($_REQUEST["user"]) {
+			if($_REQUEST["user"] and ($_REQUEST["view"] != 'group')) {
 				$ADMs[$attrib][] = $_REQUEST["user"];
 
 				// Add the OpenLDAPaci attribute (maybe)
@@ -318,7 +357,9 @@ function attribute_save($type) {
 						$ADMs[$attrib][] = $_POST[$var_name];
 
 						// Add the OpenLDAPaci attribute (maybe)
-						if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci")) {
+						if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci") and
+						   ($_REQUEST["view"] != 'group'))
+						{
 							if(!is_array($ACIs))
 							  $ACIs = array();
 

@@ -75,7 +75,7 @@ $url_tmp    = "user_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["
   <P>
 
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left"><?=$LANG->_('Group members')."\n"?>
+    <th colspan="3" align="left"><?=$LANG->_('Subscribed users/addresses')."\n"?>
 <?php
 // DNMember
 $txt["tit"] = $LANG->_('Member DN(s)');
@@ -104,7 +104,7 @@ pql_format_table_single($_pql->ldap_linkid, $txt, $url, $rfc822member, 'rfc822me
     </th>
 
     <th><tr></tr></th>
-    <th colspan="3" align="left"><?=$LANG->_('Group senders')."\n"?>
+    <th colspan="3" align="left"><?=$LANG->_('Senders allowed to send to group')."\n"?>
 <?php
 // DNSender
 $txt["tit"] = $LANG->_('Sender DN(s)');
@@ -133,7 +133,7 @@ pql_format_table_single($_pql->ldap_linkid, $txt, $url, $rfc822sender, 'rfc822se
     </th>
 
     <th><tr></tr></th>
-    <th colspan="3" align="left"><?=$LANG->_('Moderators')."\n"?>
+    <th colspan="3" align="left"><?=$LANG->_('Group moderators')."\n"?>
 <?php
 // DNModerator
 $txt["tit"] = $LANG->_('Moderator DN(s)');
