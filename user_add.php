@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.90 2004-03-18 13:53:12 turbo Exp $
+// $Id: user_add.php,v 2.91 2004-03-19 10:22:21 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -52,13 +52,12 @@ switch($_REQUEST["page_curr"]) {
 		}
 	}
 
-	if(($_REQUEST["page_next"] == "one") and
-	   (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))) {
+	if($_REQUEST["page_next"] == "one") {
 		// ------------------------------------------------
 		// Step 2b: Autogenerate some stuff for the next form
 
 		$attribs = array("autocreatemailaddress" => pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS"),
-				 "autocreateusername"	 => pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"));
+						 "autocreateusername"	 => pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"));
 		foreach($attribs as $key => $attrib) {
 			// Get default value
 			$value = pql_domain_get_value($_pql, $_REQUEST["domain"], $attrib);
@@ -66,8 +65,7 @@ switch($_REQUEST["page_curr"]) {
 		}
 
 		// Verify/Create uid - But only if we're referencing users with UID...
-		if(empty($_REQUEST["uid"]) and $autocreateusername and function_exists('user_generate_uid') and 
-		   (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))) {
+		if(empty($_REQUEST["uid"]) and $autocreateusername and function_exists('user_generate_uid')) {
 			// Generate the username
 			$_REQUEST["uid"] = strtolower(user_generate_uid($_pql, $_REQUEST["surname"],
 															$_REQUEST["name"], $email,
@@ -129,7 +127,7 @@ switch($_REQUEST["page_curr"]) {
 			$_REQUEST["user"] .= "," . $_REQUEST["subbranch"];
 
 			// Now when we have the RDN, double check that it doesn't already exists!
-			if(!pql_user_exist($_pql->ldap_linkid, $_REQUEST["user"])) {
+			if(pql_user_exist($_pql->ldap_linkid, $_REQUEST["user"])) {
 				$error = true;
 				$error_text["source"] = pql_complete_constant($LANG->_('User %user% already exists'), array("user" => $_REQUEST["user"])) . "<br>";
 				$_REQUEST["page_next"] = "one";
@@ -145,7 +143,7 @@ switch($_REQUEST["page_curr"]) {
 				
 				// Create a LDIF object to print in case of error
 				$LDIF = pql_create_ldif("pql_user_add - alias creation", $_REQUEST["user"], $entry);
-				
+
 				// Add the object to the database
 				if(! ldap_add($_pql->ldap_linkid, $_REQUEST["user"], $entry)) {
 					// failed to add user
@@ -260,11 +258,9 @@ switch($_REQUEST["page_curr"]) {
 				$error = true;
 				$error_text["userhost"] = pql_complete_constant($LANG->_('Sorry, I can\'t find any MX or any QmailLDAP/Controls object that listens to the domain <u>%domain%</u>.<br>You will have to specify one manually.'),
 																array('domain' => pql_maybe_idna_decode($_REQUEST["email_domain"])));
-			} else {
-				// We got a MX or QmailLDAP/Controls object. Use it.
-				$_REQUEST["userhost"][1] = $mx;
-				$_REQUEST["host"] = "default";
-			}
+			} else
+			  // We got a MX or QmailLDAP/Controls object. Use it.
+			  $_REQUEST["userhost"] = $mx;
 		}
 		
 		// Get default {home,mail} directory from the database.
@@ -326,23 +322,13 @@ switch($_REQUEST["page_curr"]) {
 		// }}}
 	}
 	break;
-
 	// }}}
+}
 
-  // {{{ case: two (user_add-additional.inc)
-  case "two":
-	// Step 3: Verify additional information (currently only mailhost)
-
-	if(!$_REQUEST["host"] or !$_REQUEST["userhost"]) {
-		// No host
-		$error = true;
-
-		if(!pql_get_define("PQL_CONF_CONTROL_USE"))
-		  $error_text["userhost"] = $LANG->_('Missing') . " (" . $LANG->_('can\'t autogenerate') . ")";
-		else
-		  $error_text["userhost"] = $LANG->_('Missing') . " (" . $LANG->_('not using QmailLDAP/Controls') . ")";
-	}
-  // }}}
+if(is_array($error_text)) {
+	// Add a HTML newline to (all) the error text(s)
+	foreach($error_text as $key => $msg)
+	  $error_text[$key] .= "<br>";
 }
 // }}}
 
