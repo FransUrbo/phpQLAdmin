@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.1 2003-01-18 11:30:00 turbo Exp $
+// $Id: pql_config.inc,v 1.2 2003-01-20 06:02:09 turbo Exp $
 //
 
 $PQL_ATTRIBUTE["PQL_SHOW_USERS"] = 'showUsers';
@@ -15,6 +15,8 @@ $PQL_ATTRIBUTE["PQL_LDAP_CONTROL_AUTOADDLOCALS"] = 'autoAddLocals';
 $PQL_ATTRIBUTE["PQL_LDAP_CHANGE_SERVER"] = 'allowServerChange';
 $PQL_ATTRIBUTE["PQL_ALLOW_ABSOLUTE_PATH"] = 'allowAbsoluteMailPath';
 $PQL_ATTRIBUTE["PQL_VERIFY_DELETE"] = 'deleteVerification';
+
+$PQL_ATTRIBUTE["PQL_LANG"] = 'language';
 $PQL_ATTRIBUTE["PQL_WHOAREWE"] = 'whoAreWe';
 $PQL_ATTRIBUTE["PQL_LDAP_SUBTREE_USERS"] = 'subTreeUsers';
 $PQL_ATTRIBUTE["PQL_LDAP_SUBTREE_GROUPS"] = 'subTreeGroups';
