@@ -27,21 +27,20 @@ if($config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$rootdn] == "dc" or
 }
 
 // check if domain is valid
-if(!check_hostaddress($domain, $force_dot)) {
-	$msg = urlencode(PQL_LANG_DOMAIN_INVALID);
-	header("Location: " . $config["PQL_GLOB_URI"] . "home.php?msg=$msg");
-	exit();
-}
+//if(!check_hostaddress($domain, $force_dot)) {
+//	$msg = urlencode(PQL_LANG_DOMAIN_INVALID);
+//	header("Location: " . $config["PQL_GLOB_URI"] . "home.php?msg=$msg");
+//	exit();
+//}
 
 // check if domain exist
-if(pql_domain_exist($_pql, $domain)) {
+if(pql_domain_exist($_pql, $domain, $rootdn)) {
 	$msg = urlencode(PQL_LANG_DOMAIN_EXISTS);
 	header("Location: " . $config["PQL_GLOB_URI"] . "home.php?msg=$msg");
 	exit();
 }
 
-// TODO: Currently puts the domain in the first base DN found.
-$dns = pql_domain_add($_pql->ldap_linkid, $_pql->ldap_basedn[0], $domain);
+$dns = pql_domain_add($_pql->ldap_linkid, $rootdn, $domain);
 if($dns[0]) {
 	$entry[BRANCH_NAME] = $domain;
 
