@@ -46,8 +46,12 @@ if(isset($advanced)) {
 <?php
 		}
 	}
+	if(PQL_LDAP_EZMLM_USE or PQL_LDAP_CONTROL_USE) {
 ?>
     </frameset>
+<?php
+	}
+?>
     <frame src="home.php?advanced=1" name="pqlmain">
   </frameset>
 <?php
