@@ -68,7 +68,7 @@ if(!function_exists("ldap_connect")){
 	}
 } // end if(function_exists...
 
-include("header.html");
+include("./header.html");
 ?>
   <span class="title1"><?php echo PQL_TEST_TITLE; ?></span>
   <br><br>

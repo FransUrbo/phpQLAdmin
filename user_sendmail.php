@@ -8,7 +8,7 @@ require("./include/pql.inc");
 
 $_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
 
-include("header.html");
+include("./header.html");
 ?>
   <span class="title1"><?php echo PQL_SENDMAIL ?></span>
   <br><br>

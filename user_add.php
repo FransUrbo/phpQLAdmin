@@ -193,7 +193,7 @@ if($submit == "save" and $error == true and !$ADVANCED_MODE) {
 	$submit = "two";
 }
 
-include("header.html");
+include("./header.html");
 ?>
   <span class="title1"><?php echo pql_complete_constant(PQL_USER_ADD_TITLE,array("domain" => $domain)); ?></span>
   <br><br>

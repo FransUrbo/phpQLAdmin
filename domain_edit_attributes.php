@@ -50,7 +50,7 @@ switch($attrib){
 }
 
 include($include);
-include("header.html");
+include("./header.html");
 ?>
   <span class="title1"><?php
   if(eregi("defaultdomain|basehomedir|basemaildir|administrator", $include)) {

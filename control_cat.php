@@ -20,10 +20,10 @@ if(!is_array($control_plugins)){
 
 // include each defined plugin
 foreach($control_plugins as $plugin){
-	include("include/".pql_control_plugin_get_filename($plugin));
+	include("./include/".pql_control_plugin_get_filename($plugin));
 }
 
-include("header.html");
+include("./header.html");
 
 // print status message, if one is available
 if(isset($msg)){

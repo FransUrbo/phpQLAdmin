@@ -19,7 +19,7 @@ switch ($attrib) {
     die("Unknown attribute '$attrib' in ". __FILE__);
 }
 
-include("header.html");
+include("./header.html");
 ?>
   <span class="title1"><?php pql_complete_constant(PQL_USER_DEL_ATTRIBUTE_TITLE, array("value" => $value));?></span>
 <?php

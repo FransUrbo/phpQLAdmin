@@ -6,7 +6,7 @@ session_start();
 
 require("./include/pql.inc");
 
-include("header.html");
+include("./header.html");
 
 // print status message, if one is available
 if(isset($msg)){
@@ -165,6 +165,6 @@ if($change_ldap_server_users or $change_ldap_server_controls) {
   </ul>
   <br>
 
-<?php include("trailer.html"); ?>
+<?php include("./trailer.html"); ?>
 </body>
 </html>

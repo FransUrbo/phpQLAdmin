@@ -8,14 +8,14 @@ require("./include/pql.inc");
 
 if(PQL_LDAP_CONTROL_USE){
     // include control api if control is used
-    include("include/pql_control.inc");
+    include("./include/pql_control.inc");
     $_pql_control = new pql_control($USER_HOST_CTR, $USER_DN, $USER_PASS);
 
     // Get default domain name for this domain
     $defaultdomain = pql_get_domain_value($_pql_control->ldap_linkid, $domain, "defaultdomain");
 }
 
-include("header.html");
+include("./header.html");
 
 // print status message, if one is available
 if(isset($msg)){

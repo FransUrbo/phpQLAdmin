@@ -7,7 +7,7 @@ session_start();
 require("./include/pql.inc");
 require("./include/pql_control.inc");
 
-include("header.html");
+include("./header.html");
 ?>
   <span class="title1"><?php echo pql_complete_constant(PQL_DOMAIN_DEL_TITLE, array("domain" => $domain))?></span>
 <?php

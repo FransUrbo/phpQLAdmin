@@ -7,7 +7,7 @@ session_start();
 require("./include/pql.inc");
 require("./include/pql_control.inc");
 
-include("header.html");
+include("./header.html");
 ?>
   <span class="title1"><?php echo PQL_DOMAIN_ADD; ?>: <?php echo $domain ?></span>
   <br><br>

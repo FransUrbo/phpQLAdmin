@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_detail.php,v 1.5 2002-12-24 12:01:50 turbo Exp $
+// $Id: ezmlm_detail.php,v 1.6 2002-12-24 12:13:10 turbo Exp $
 //
 session_start();
 
@@ -10,7 +10,7 @@ require("./include/pql_ezmlm.inc");
 $ezmlm = new ezmlm();
 require("./ezmlm-hardcoded.php");
 
-include("header.html");
+include("./header.html");
 
 // Load list of mailinglists
 if($ezmlm->readlists()) {

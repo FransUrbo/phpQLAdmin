@@ -11,7 +11,7 @@ $_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
 // Get default domain name for this domain
 $defaultdomain = pql_get_domain_value($_pql->ldap_linkid, $domain, "defaultdomain");
 
-include("header.html");
+include("./header.html");
 
 // print status message, if one is available
 if(isset($msg)){

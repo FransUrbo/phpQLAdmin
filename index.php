@@ -48,7 +48,7 @@ if ($LOGIN_PASS == 1) {
 }
 
 if (empty($uname) or empty($passwd)) {
-	include("header.html");
+	include("./header.html");
 
 	// print status message, if one is available
 	if(isset($msg)) {

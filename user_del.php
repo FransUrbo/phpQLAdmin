@@ -6,7 +6,7 @@ session_start();
 
 require("./include/pql.inc");
 
-include("header.html");
+include("./header.html");
 ?>
   <span class="title1"><?php echo pql_complete_constant(PQL_USER_DEL_TITLE, array("domain" => $domain, "user" => $user)); ?></span>
   <br><br>

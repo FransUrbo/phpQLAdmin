@@ -24,7 +24,7 @@ $_pql_control = new pql_control($USER_HOST_CTR, $USER_DN, $USER_PASS);
 
 // register all attribute plugins here (require)
 $control_plugin = pql_control_plugin_get($attrib);
-include("include/".pql_control_plugin_get_filename($control_plugin));
+include("./include/".pql_control_plugin_get_filename($control_plugin));
 
 
 // forward back to users detail page
@@ -37,7 +37,7 @@ function attribute_forward($msg){
 	header("Location: " . PQL_URI . "$url");
 }
 
-include("header.html");
+include("./header.html");
 ?>
   <span class="title1">Change control values</span>
   <br><br>

@@ -7,7 +7,7 @@ session_start();
 require("./include/pql.inc");
 require("./include/pql_search.inc");
 
-include("header.html");
+include("./header.html");
 
 // print status message, if one is available
 if(isset($msg)){
