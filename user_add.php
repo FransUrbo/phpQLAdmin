@@ -507,6 +507,7 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"><?php echo PQL_LDAP_MAILHOST_TITLE; ?></td>
           <td>
+            <input type="hidden" name="userhost" value="<?=$host_user?>">
             <input type="radio" name="host" value="default" <?php if($host != "user"){ echo "checked";}?>><?php echo PQL_LDAP_MAILHOST_DEFAULT . ": <b>" . $host_user . "</b>";?>
           </td>
         </tr>
@@ -589,12 +590,14 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 		if($account_type == "normal" or $account_type == "system"){
 			// normal mailbox account
 
-			// convert mailhost to lowercase
-
 			// set attributes
-			$entry[PQL_LDAP_ATTR_PASSWD]	= pql_password_hash($password, $pwscheme);
-			$entry[PQL_LDAP_ATTR_MAILHOST]	= $host_user;
-			$entry[PQL_LDAP_ATTR_MODE]		= "localdelivery";
+			$entry[PQL_LDAP_ATTR_PASSWD] = pql_password_hash($password, $pwscheme);
+			if($host == 'default') {
+				$entry[PQL_LDAP_ATTR_MAILHOST] = $userhost;
+			} else {
+				$entry[PQL_LDAP_ATTR_MAILHOST] = $host_user;
+			}
+			$entry[PQL_LDAP_ATTR_MODE] = "localdelivery";
 			if(!$maildirectory) {
 				$entry[PQL_LDAP_ATTR_MAILSTORE] = user_generate_mailstore($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $email, $domain, $entry);
 			} else {
@@ -637,7 +640,7 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 				$url = "user_detail.php?";
 			}
 			
-	   		$url .= "domain=$domain&user=" . urlencode($entry[PQL_LDAP_REFERENCE_USERS_WITH]) . "&rlnb=1&msg=$msg";
+	   		$url .= "domain=$domain&user=" . urlencode($entry[PQL_LDAP_REFERENCE_USERS_WITH]) . "&rlnb=2&msg=$msg";
 			header("Location: " . PQL_URI . "$url");
 		} else {
 			$msg = urlencode(PQL_USER_ADD_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid));
