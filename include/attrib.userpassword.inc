@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.10 2003-05-28 07:23:38 turbo Exp $
+// $Id: attrib.userpassword.inc,v 2.11 2003-06-02 07:52:09 turbo Exp $
 
 function attribute_check($type){
 	global $userpassword, $userpassword_check, $error, $pwscheme;
@@ -104,6 +104,8 @@ function attribute_save($type) {
 
 				if(pql_replace_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_PASSWD"], $pw)){
 					$msg = PQL_LANG_USERPASSWORD_CHANGE_OK;
+					if($user == $GLOBALS["USER_DN"])
+					    $GLOBALS["USER_PASS"] = $userpassword;
 				} else {
 					$msg = PQL_LANG_USERPASSWORD_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
 				}
