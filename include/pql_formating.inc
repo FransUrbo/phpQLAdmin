@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.4 2003-11-24 12:17:52 turbo Exp $
+// $Id: pql_formating.inc,v 2.5 2003-11-26 06:44:27 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -175,13 +175,18 @@ function pql_format_tree_other($cnt, $text, $url, $links, $level, $parent, $chil
 		for($i=0; $i < ($level * 4); $i++) 
 		  $nbsp .= "&nbsp;";
 	}
+
+	if($url) {
+		$url = "href=\"$url\"";
+	}
 ?>
   <div id="el<?=$cnt?><?=$parent?>" class="parent">
-    <?php if($url) { ?><a class="item" href="<?=$url?>" onClick="if (capable) {expandBase('el<?=$cnt?>', true); return false;}"><?php } ?>
+    <a class="item" <?=$url?> onClick="if (capable) {expandBase('el<?=$cnt?>', true); return false;}">
       <?=$nbsp?><img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$cnt?>Img">
     <?php if($url) { ?></a><?php } ?>
 
     <?php if($url) { ?><a class="item" href="<?=$url?>"><?php } ?>
+
       <font color="black" class="heada"><?=$text?></font>
     <?php if($url) { ?></a><?php } ?>
   </div>
