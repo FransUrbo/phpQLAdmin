@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.103.2.1 2005-02-12 05:19:13 turbo Exp $
+// $Id: left.php,v 2.103.2.2 2005-02-23 16:48:38 turbo Exp $
 //
 session_start();
 
@@ -300,7 +300,6 @@ if(!isset($domains)) {
     foreach($domains as $key => $domain) {
 	// Get domain part from the DN (Example: 'dc=test,dc=net' => 'test').
 	$d = split(',', urldecode($domain)); $d = split('=', $d[0]); $d = $d[1];
-	$d = pql_maybe_decode($d);
 
 	if(!eregi('%3D', $domain))
 	  $domain = urlencode($domain);
@@ -333,7 +332,7 @@ if(!isset($domains)) {
 	} else
 	  // This branch don't have any sub units (flat structure)
 	  // -> make sure we still jump into the for loop!
-	  $branches[0] = urldecode($domain);
+	  $branches[0] = $domain;
 
 	for($i = 0; $branches[$i]; $i++) {
 	    unset($subbranch);
