@@ -64,9 +64,10 @@
 #					defaultPasswordScheme	   9
 #					ezmlmAdministrator	  10
 #					maximumMailingLists	  11
+#					controlsAdministrator	  12
 # -----------------------------------------
 
-# $Id: phpQLAdmin.schema,v 2.30 2003-06-13 13:11:28 turbo Exp $
+# $Id: phpQLAdmin.schema,v 2.31 2003-06-18 12:41:05 turbo Exp $
 
 # PQL_CONF_SHOW_USERS (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.1 NAME 'showUsers'
@@ -398,6 +399,11 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.4.11 NAME 'maximumMailingLists'
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
         SINGLE-VALUE )
 
+# PQL_CONF_ADMINISTRATE_CONTROLS
+attributetype ( 1.3.6.1.4.1.8767.3.2.4.12 NAME 'controlsAdministrator'
+	DESC 'QmailLDAP/Controls information administrator(s)?'
+        SUP owner)
+
 # -----------------------------------------
 
 objectclass ( 1.3.6.1.4.1.8767.3.1.1
@@ -420,7 +426,7 @@ objectclass ( 1.3.6.1.4.1.8767.3.1.1
 	        krb5PrincipalName $ krb5AdminServer $
 	        krb5AdminKeytab $ krb5AdminCommandPath $
 	        minimumUIDNumber $ autoAddRCPTHosts $ 
-	        autoAddHostName )
+	        autoAddHostName $ controlsAdministrator )
 	SUP top AUXILIARY )
 
 objectclass ( 1.3.6.1.4.1.8767.3.1.2
@@ -430,7 +436,7 @@ objectclass ( 1.3.6.1.4.1.8767.3.1.2
 	      administrator $ test $ o $ maximumDomainUsers $
 	      additionalDomainName $ defaultPasswordScheme $
 	      ezmlmAdministrator $ maximumMailingLists $
-	      autoCreateUsername $ autoCreateMailAddress )
+	      autoCreateUsername $ autoCreateMailAddress)
 	SUP top AUXILIARY )
 
 #

@@ -17,13 +17,24 @@ if($config["PQL_GLOB_BIND9_USE"]) {
 }
 
 // -----------------
+// Check if this user is a QmailLDAP/Controls administrator
+$controladmins = pql_get_domain_value($_pql, $_pql->ldap_basedn[0], 'controlsadministrator');
+if(is_array($controladmins)) {
+    foreach($controladmins as $admin)
+      if($admin == $USER_DN)
+	$controlsadministrator = 1;
+} elseif($controladmins == $USER_DN) {
+    $controlsadministrator = 1;
+}
+
+// -----------------
 // Should we show the controls frame (ie, is controls configured
 // in ANY of the namingContexts)?
 $counted = 0; // Don't count each of the Control usage more than once
 foreach($_pql->ldap_basedn as $dn)  {
     $ALLOW_CONTROL_CREATE = 1; // DEBUG
 
-    if($config["PQL_GLOB_CONTROL_USE"] and $ALLOW_CONTROL_CREATE) {
+    if($config["PQL_GLOB_CONTROL_USE"] and $ALLOW_CONTROL_CREATE and $controlsadministrator) {
 	$SHOW_FRAME["controls"] = 1;
 	if(!$counted) {
 	    $frames++;

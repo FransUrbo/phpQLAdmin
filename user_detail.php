@@ -99,6 +99,15 @@ if($mailhost == "") {
 }
 
 $userdn = urlencode($user);
+
+$controladmins = pql_get_domain_value($_pql, $rootdn, 'controlsadministrator');
+if(is_array($controladmins)) {
+	foreach($controladmins as $admin)
+	  if($admin == $user)
+		$controlsadministrator = 1;
+} elseif($controladmins == $user) {
+	$controlsadministrator = 1;
+}
 ?>
 
   <table cellspacing="0" border="0" width="100%" cellpadding="0">

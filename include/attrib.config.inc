@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.20 2003-05-28 07:23:37 turbo Exp $
+// $Id: attrib.config.inc,v 1.21 2003-06-18 12:41:23 turbo Exp $
 
 function attribute_check() {
     global $administrator, $domain, $oldvalue, $_pql, $error;
@@ -273,14 +273,21 @@ function attribute_save() {
 		for($i=0; $values[$i]; $i++)
 		  $entry[$attrib][] = $values[$i];
 	} else {
-		// No old value, and it's not a toggle...
-		// Fetch old values from DB
-		$oldvalues = pql_get_domain_value($_pql, $rootdn, $attrib);
-		if(is_array($oldvalues)) {
-			foreach($oldvalues as $val) {
-				if(!@eregi($delval, $val)) {
-					// Remove the one we don't want
-					$entry[$attrib][] = $val;
+		if($rootdn) {
+			if(lc($attrib) != 'controlsadministrator') {
+				// No old value, and it's not a toggle...
+				// Fetch old values from DB
+				unset($oldvalues); $oldvalues = pql_get_domain_value($_pql, $rootdn, $attrib);
+				if(is_array($oldvalues)) {
+					foreach($oldvalues as $val) {
+						if(!@eregi($delval, $val)) {
+							// Remove the one we don't want
+							$entry[$attrib][] = $val;
+						}
+					}
+				} elseif($oldvalues) {
+					// Only one value, add it
+					$entry[$attrib][] = $oldvalues;
 				}
 			}
 		} elseif((lc($attrib) == 'passwordscheme') or
@@ -307,10 +314,30 @@ function attribute_save() {
         }
 	}
 
-	if(! $rootdn) {
+	if(!$rootdn or ($attrib = 'controlsadministrator')) {
 		// We don't have a root DN. This means it's a global
 		// variable, and should be set in every namingContexts
 		foreach($_pql->ldap_basedn as $dn) {
+			if($attrib = 'controlsadministrator') {
+				unset($entry);
+				if($$attrib)
+				  $entry[$attrib][] = $$attrib;
+
+				// Fetch old values from DB
+				unset($oldvalues); $oldvalues = pql_get_domain_value($_pql, $dn, $attrib);
+				if(is_array($oldvalues)) {
+					foreach($oldvalues as $val) {
+						if(!@eregi($delval, $val)) {
+							// Remove the one we don't want
+							$entry[$attrib][] = $val;
+						}
+					}
+				} elseif($oldvalues) {
+					// Only one value, add it
+					$entry[$attrib][] = $oldvalues;
+				}
+			}
+
 			if(! pql_set_domain_value($_pql->ldap_linkid, $dn, '', $entry)) {
 				$msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
 			} else {

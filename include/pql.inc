@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.84 2003-06-18 09:44:30 turbo Exp $
+// $Id: pql.inc,v 2.85 2003-06-18 12:41:24 turbo Exp $
 //
 
 // ----------------------------
@@ -1434,8 +1434,9 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '', $all = 0) {
 	// Go through the result, if there is any
 	for($i=0; $i < $result["count"]; $i++) {
 		// Extract all the descriptor fields
-		if((($value == 'administrator') or ($value == 'seealso') or
-			($value == 'additionaldomainname') or ($value == 'ezmlmadministrator'))) {
+		if(($value == 'administrator') or ($value == 'seealso') or
+		   ($value == 'additionaldomainname') or ($value == 'ezmlmadministrator') or
+		   ($value == 'controlsadministrator')) {
 			if($match != "*") {
 				// Return multiple values. If we're looking for 'administrator', return the DN
 				if(!$all) {
@@ -1479,7 +1480,8 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '', $all = 0) {
 	}
 
 	if($success and (($value == 'administrator') or ($value == 'seealso') or
-					 ($value == 'additionaldomainname') or ($value == 'ezmlmadministrator'))
+					 ($value == 'additionaldomainname') or ($value == 'ezmlmadministrator') or
+					 ($value == 'controlsadministrator'))
 	   and !is_array($results)) {
 		// Convert a flat variable to a array
 		$tmp = $results; unset($results);
@@ -1500,23 +1502,10 @@ function pql_set_domain_value($linkid, $dn, $type, $value) {
 		if(is_array($value)) {
 			// We're supplied with an array, add those values
 			foreach($value as $val) {
-				$val = maybe_encode($val, $type, $linkid);
-
-				if(($type != 'administrator') and ($type != 'seealso')) {
-					$entry[$type][] = $val;
-				} else {
-					$entry[$type][] = $val;
-				}
+				$entry[$type][] = maybe_encode($val, $type, $linkid);
 			}
 		} else {
-			$value = maybe_encode($value, $type, $linkid);
-
-			// Add the single value
-			if(($type != 'administrator') and ($type != 'seealso')) {
-				$entry[$type] = $value;
-			} else {
-				$entry[$type] = $value;
-			}
+			$entry[$type] = maybe_encode($value, $type, $linkid);
 		}
 	} else {
 		// INTERNATIONALIZE
