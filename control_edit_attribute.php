@@ -1,19 +1,10 @@
 <?php
 // edit an attribute of a control option
-// $Id: control_edit_attribute.php,v 2.28 2005-03-04 11:55:32 turbo Exp $
+// $Id: control_edit_attribute.php,v 2.29 2005-03-09 10:45:33 turbo Exp $
 //
+// {{{ Setup session etc
 require("./include/pql_session.inc");
-
-// initial check
-if($_REQUEST["attrib"] == "") {
-	die("no attribute requested !!");
-}
-
-if($_REQUEST["type"] == "") {
-	$_REQUEST["type"] = "add";
-}
-
-require("./include/pql_config.inc");
+require($_SESSION["path"]."/include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_control.inc");
 require($_SESSION["path"]."/include/pql_control_plugins.inc");
 
@@ -22,11 +13,25 @@ $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_
 
 $url["domain"] = pql_format_urls($_REQUEST["domain"]);
 
-// Register all attribute plugins here
+include($_SESSION["path"]."/header.html");
+// }}}
+
+// {{{ Initial check
+if($_REQUEST["attrib"] == "") {
+	die("no attribute requested !!");
+}
+
+if($_REQUEST["type"] == "") {
+	$_REQUEST["type"] = "add";
+}
+// }}}
+
+// {{{ Get and load the plugin file
 $plugin = pql_plugin_get($_REQUEST["attrib"]);
 include($_SESSION["path"]."/include/".pql_plugin_get_filename($plugin));
+// }}}
 
-// forward back to users detail page
+// {{{ Forward back to users detail page
 function attribute_forward($msg) {
 	$msg = urlencode($msg);
 	$cat = pql_plugin_cat($_REQUEST["attrib"]);
@@ -41,12 +46,12 @@ function attribute_forward($msg) {
 	} else
 	  header("Location: " . $_SESSION["URI"] . "$url");
 }
-
-include($_SESSION["path"]."/header.html");
+// }}}
 ?>
   <span class="title1">Change control values</span>
   <br><br>
 <?php
+// {{{ Prepare for the help table
 if(function_exists($plugin . "_help")) {
     // if a help function is available for the plugin,
     // print additional help table and put the
@@ -58,8 +63,9 @@ if(function_exists($plugin . "_help")) {
 
 <?php
 }
+// }}}
 
-// select what to do
+// {{{ Select what to do
 if(@$_REQUEST["submit"]) {
     if(call_user_func($plugin . "_check", $_REQUEST["type"])) {
 		call_user_func($plugin . "_save", $_REQUEST["type"], $_REQUEST["mxhost"]);
@@ -70,9 +76,10 @@ if(@$_REQUEST["submit"]) {
     call_user_func($plugin . "_init", $_REQUEST["mxhost"]);
     call_user_func($plugin . "_print_form", $_REQUEST["mxhost"]);
 }
+// }}}
 
+// {{{ Show the help text frame
 if(function_exists($plugin . "_help")) {
-    // this is the help table
 ?>
 
     <p>
@@ -89,8 +96,7 @@ if(function_exists($plugin . "_help")) {
           </td>
         </tr>
 
-<?php
-	  if(function_exists($plugin . "_help_cr")) {
+<?php if(function_exists($plugin . "_help_cr")) {
 	      // this is the copyright message supplied with help text
 ?>
 
@@ -99,15 +105,16 @@ if(function_exists($plugin . "_help")) {
             <?php call_user_func($plugin . "_help_cr"); ?>
           </td>
         </tr>
-<?php
-}
-?>
+<?php } ?>
       </table>
     </tr>
   </table>
-<?php } ?>
+<?php
+}
+// }}}
+?>
 
-</body>
+  </body>
 </html>
 
 <?php
