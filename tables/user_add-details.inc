@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-details.inc,v 1.18 2004-03-30 06:54:56 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.19 2004-03-31 05:41:30 turbo Exp $ */ ?>
 <?php $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"])); ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -200,6 +200,7 @@
           <td class="title"><?=$LANG->_('Put user in subbranch')?></td>
           <td>
             <select name="subbranch">
+              <option value="<?=pql_format_urls($_REQUEST["domain"])?>"><?=pql_maybe_decode($_REQUEST["domain"])?></option>
 <?php
 				for($i=0; $branches[$i]; $i++) {
 ?>
