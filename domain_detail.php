@@ -34,7 +34,11 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 // check if domain exist
 $dc = ldap_explode_dn($domain, 0); $dc = split('=', $dc[0]);
 if(!pql_domain_exist($_pql, $dc[1])){
-    echo "Domain &quot;$domain&quot; does not exists";
+    echo "Domain &quot;$domain&quot; does not exists<br><br>";
+	echo "Is this perhaps a Top Level DN (namingContexts), and you haven't configured ";
+	echo "how to reference domains/branches in this database!?<br><br>";
+	echo "Please go to <a href=\"config_detail.php\">Show configuration</a> and double check.<br>";
+	echo "Look at the config option 'Reference domains with'.";
     exit();
 }
 
