@@ -143,6 +143,7 @@ if($view == 'owner') {
 } elseif($view == 'chval') {
 	include("./tables/domain_details-users_chval.inc");
 } elseif($view == 'users') {
+	$users = pql_get_user($_pql->ldap_linkid, $domain);
 	include("./tables/domain_details-users.inc");
 }
 	 
