@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.8 2003-11-11 07:21:33 turbo Exp $
+// $Id: pql_bind9.inc,v 2.9 2003-11-11 07:24:42 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, dn)
@@ -99,6 +99,54 @@ function pql_bind9_get_zone($linkid, $dn) {
     }
 }
 // }}}
+
+// {{{ pql_bind9_get_record(linkid, dn, record)
+function pql_bind9_get_record($linkid, $dn, $record = '') {
+	if($record) {
+		$record = lc($record);
+
+		$filter = "(&(objectclass=dNSZone)($record=*)";
+		$attrs  = array($record);
+	} else {
+		$filter = "(&(objectclass=dNSZone)";
+		$attrs  = array();
+	}
+
+	if(ereg('@', $dn)) {
+		// It's a SOA record. This is encoded differently in the DN and
+		// inside the object -> Only the @ is INSIDE the object. Search
+		// one level above the exact DN.
+		$object = ldap_explode_dn($dn, 0);
+		$len    = count($object)-2;
+
+		unset($dn);
+		for($i=$len; $object[$i]; $i--)
+		  if($i > 0)
+			$dn = ",".$object[$i].$dn;
+
+		$dn = ereg_replace("^,", "", $dn);
+
+		$filter .= "(relativeDomainName=@))";
+
+		$sr = @ldap_list($linkid, $dn, $filter, $attrs) or pql_errormsg($linkid);
+	} else {
+		$filter .= ")";
+		$sr = @ldap_read($linkid, $dn, $filter, $attrs) or pql_errormsg($linkid);
+	}
+
+	$info = @ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
+
+	if($info[0][$record]["count"] == 1)
+	  $ret[] = $info[0][$record][0];
+	else {
+		for($i=0; $i < $info[0][$record]["count"]; $i++)
+		  $ret[] = $info[0][$record][$i];
+	}
+
+	return($ret);
+}
+// }}}
+
 
 // {{{ pql_bind9_add_zone(linkid, dn, zone)
 function pql_bind9_add_zone($linkid, $dn, $zone) {
@@ -235,52 +283,6 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 }
 // }}}
 
-// {{{ pql_bind9_get_record(linkid, dn, record)
-function pql_bind9_get_record($linkid, $dn, $record = '') {
-	if($record) {
-		$record = lc($record);
-
-		$filter = "(&(objectclass=dNSZone)($record=*)";
-		$attrs  = array($record);
-	} else {
-		$filter = "(&(objectclass=dNSZone)";
-		$attrs  = array();
-	}
-
-	if(ereg('@', $dn)) {
-		// It's a SOA record. This is encoded differently in the DN and
-		// inside the object -> Only the @ is INSIDE the object. Search
-		// one level above the exact DN.
-		$object = ldap_explode_dn($dn, 0);
-		$len    = count($object)-2;
-
-		unset($dn);
-		for($i=$len; $object[$i]; $i--)
-		  if($i > 0)
-			$dn = ",".$object[$i].$dn;
-
-		$dn = ereg_replace("^,", "", $dn);
-
-		$filter .= "(relativeDomainName=@))";
-
-		$sr = @ldap_list($linkid, $dn, $filter, $attrs) or pql_errormsg($linkid);
-	} else {
-		$filter .= ")";
-		$sr = @ldap_read($linkid, $dn, $filter, $attrs) or pql_errormsg($linkid);
-	}
-
-	$info = @ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
-
-	if($info[0][$record]["count"] == 1)
-	  $ret[] = $info[0][$record][0];
-	else {
-		for($i=0; $i < $info[0][$record]["count"]; $i++)
-		  $ret[] = $info[0][$record][$i];
-	}
-
-	return($ret);
-}
-// }}}
 
 // {{{ pql_bind9_set_record(linkid, dn, record, value)
 function pql_bind9_set_record($linkid, $dn, $record, $value = '') {
