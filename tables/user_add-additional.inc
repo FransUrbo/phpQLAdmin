@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-additional.inc,v 1.24.2.4 2005-02-21 07:41:57 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.24.2.5 2005-02-22 07:57:33 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <!-- Some hidden values from previous page(s) -->
 <?php if($_REQUEST["surname"] and pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_CN"))) { ?>
@@ -101,17 +101,21 @@
           <td class="title" valign="top"><?=$LANG->_('Mail server')?></td>
           <td>
             <?php echo pql_format_error_span($error_text["userhost"]); ?>
-<?php	if($_REQUEST["userhost"]["qlc"]) {
+<?php	$i=0;
+		if($_REQUEST["userhost"]["qlc"]) {
 			// It's defined - QmailLDAP/Controls object
 
-			for($i=0; $_REQUEST["userhost"]["qlc"][$i]; $i++) {
+			for(; $_REQUEST["userhost"]["qlc"][$i]; $i++) {
 ?>
-            <input type="radio" name="host" value="<?=$_REQUEST["userhost"]["qlc"][$i]?>" <?php
-				if(!$_REQUEST["userhost"]["qlc"][1] and !$_REQUEST["userhost"]["dns"]) { 
+
+            <input type="hidden" name="host_<?=$i?>" value="<?=$_REQUEST["userhost"]["qlc"][$i]?>">
+            <input type="radio"  name="host"   value="<?=$i?>" <?php
+				if(!$_REQUEST["userhost"]["qlc"][1] and !$_REQUEST["userhost"]["dns"] and !$checked) { 
 				  // This is the default, IF:
 				  // 1. There's only ONE QmailLDAP/Controls object
 				  //    AND
 				  // 2. There's no DNS entry
+				  $checked = 1;
 				  echo "CHECKED";
 				}
 ?>>
@@ -119,18 +123,22 @@
 <?php		}
 		}
 
-		if($_REQUEST["userhost"]["dns"] or
+		if($_REQUEST["userhost"]["dns"] and
 		   ($_REQUEST["userhost"]["qlc"] and !in_array($_REQUEST["userhost"]["dns"], $_REQUEST["userhost"]["qlc"])))
 		{
 			// It's defined - DNS entry (and it don't exists as QMailLDAP/Controls object)
 ?>
-            <input type="radio" name="userhost" value="<?=$_REQUEST["userhost"]["dns"]?>" CHECKED>
-            <b><?=$_REQUEST["userhost"]["dns"]?></b><br>
 
-			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b><?=$LANG->_('User defined')?></b>:<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="hidden" name="host_<?=$i?>" value="<?=$_REQUEST["userhost"]["dns"]?>">
+            <input type="radio"  name="host"   value="<?=$i?>" <?php if(!$checked) { $checked = 1; ?>CHECKED<?php } $i++; ?>>
+            <b><?=$_REQUEST["userhost"]["dns"]?></b><br>
 <?php	} ?>
-            <input type="text" name="host" size="30">
+
+            <input type="radio"  name="host"   value="<?=$i?>" <?php if(!$checked) { $checked = 1; ?>CHECKED<?php } ?>>
+            <b><?=$LANG->_('User defined')?></b>:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="text"   name="host_<?=$i?>" size="30">
+            <input type="hidden" name="text_host" value="<?=$i?>">
           </td>
         </tr>
 <?php } // if allowing mail server ?>
