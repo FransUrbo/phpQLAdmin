@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.2 2003-05-20 07:21:50 turbo Exp $
+// $Id: bind9_add.php,v 2.3 2003-05-20 10:40:12 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -120,19 +120,42 @@ if(($action == 'add') and ($type == 'domain')) {
     <input type="hidden" name="action" value="add">
     <input type="hidden" name="type" value="host">
     <input type="hidden" name="domain" value="<?=$domain?>">
+    <input type="hidden" name="rootdn" value="<?=$rootdn?>">
     <input type="hidden" name="domainname" value="<?=$domainname?>">
     <br>
     <input type="submit" value="Save">
   </form>
 <?php } else {
-		  echo "Adding host $host ($record_type) to domain $domainname pointing to $dest.<br>";
-		  $entry["host"]		= $host;
-		  $entry["record_type"]	= $record_type;
-		  $entry["domain"]		= $domain;
-		  $entry["domainname"]	= $domainname;
-		  $entry["dest"]		= $dest;
+		  $entry["relativeDomainName"]	= $hostname;
+		  $entry["zoneName"]			= $domainname;
+		  $entry["dnsttl"]				= 604800;
+		  switch($record_type) {
+			case "a":
+			  $entry["arecord"]			= $dest;
+			  break;
+			case "cname":
+			  $entry["cnamerecord"]		= $dest;
+			  break;
+			case "hinfo":
+			  $entry["hinforecord"]		= $dest;
+			  break;
+			case "mx":
+			  $entry["mxrecord"]		= $dest;
+			  break;
+			case "ns":
+			  $entry["nsrecord"]		= $dest;
+			  break;
+		  }
 
-		  pql_bind9_add_host($_pql_control->ldap_linkid, $entry);
+		  if(pql_bind9_add_host($_pql_control->ldap_linkid, $domain, $entry))
+			$msg = "Successfully added host <u>$hostname.$domainname.</u>";
+		  else
+			$msg = "Failed to add $hostname to $domainname";
+
+		  $msg = urlencode($msg);
+		  $url = "domain_detail.php?rootdn=$rootdn&domain=$domain&view=dnszone&msg=$msg";
+
+		  header("Location: $url");
 	  }
 }
 ?>
