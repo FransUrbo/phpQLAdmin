@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.36 2003-08-12 13:35:40 turbo Exp $
+// $Id: pql_config.inc,v 1.37 2003-08-12 14:49:55 turbo Exp $
 //
 
 // We need this instead of define(), so that we can get rid
@@ -212,7 +212,7 @@ foreach($_pql->ldap_basedn as $dn)  {
 
 	// Check some builtin ACL's
 	$ALLOW_BRANCH_CREATE = 0; $ALLOW_CONTROL_CREATE = 0;
-	if($USER_DN) {
+	if($USER_DN && (!$ALLOW_BRANCH_CREATE or !$ALLOW_CONTROL_CREATE)) {
 		// Verify that the user is administrator on the topmost DN -> Allow creation of domain/branches.
 		$ALLOW_BRANCH_CREATE = pql_validate_administrator($_pql->ldap_linkid, $dn, $USER_DN);
 		
