@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.114 2005-02-05 09:05:26 turbo Exp $
+// $Id: user_add.php,v 2.115 2005-02-05 13:36:38 turbo Exp $
 //
 // {{{ Setup session etc
 session_start();
@@ -409,8 +409,7 @@ switch($_REQUEST["page_curr"]) {
 			// Function user_generate_homedir() doesn't exists but we have a base home directory.
 			// Try creating the home directory manually, using the username.
 
-			if(pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["rootdn"])
-			   (!ereg('^/', $basehomedir)))
+			if(pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["rootdn"]) and !ereg('^/', $basehomedir))
 			  // Absolute path is ok - create 'baseHomeDir/username/'
 			  $_REQUEST["homedirectory"] = $basehomedir.$_REQUEST["uid"]."/";
 			else
