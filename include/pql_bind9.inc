@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.27 2004-11-05 13:34:46 turbo Exp $
+// $Id: pql_bind9.inc,v 2.28 2004-11-05 14:41:34 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -105,7 +105,11 @@ function pql_bind9_get_zone($linkid, $branchname, $domainname = '') {
 			} else
 			  $ZONE[$zone][$host]['MX'] = pql_maybe_idna_decode($objects[$i]['mxrecord']);
 		}
-		
+
+		// PTR Record
+		if($objects[$i]['ptrrecord'])
+		  $ZONE[$zone][$host]['HOST'] = $objects[$i]['ptrrecord'];
+
 		// SOA Record
 		if($objects[$i]['soarecord']) {
 			$soa = split(' ', $objects[$i]['soarecord']);
