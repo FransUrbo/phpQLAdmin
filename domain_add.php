@@ -90,7 +90,7 @@ if($dns[0]) {
 	$url = "domain_detail.php?domain=$dns[0]&msg=$msg&rlnb=1";
 
 	// Now it's time to run the special adduser script if defined...
-	if($config["PQL_CONF_EXTRA_SCRIPT_CREATE_DOMAIN"][$rootdn])) {
+	if($config["PQL_CONF_EXTRA_SCRIPT_CREATE_DOMAIN"][$rootdn]) {
 		// Setup the environment with the user details
 		putenv("PQL_DOMAIN=$domain");
 		putenv("PQL_DOMAINNAME=$defaultdomain");
