@@ -90,7 +90,7 @@ switch($attrib){
     die("unknown attribute");
 }
 
-include($include);
+include("./include/".$include);
 include("./header.html");
 ?>
   <span class="title1"><?php echo PQL_USER_EDIT; ?></span>
