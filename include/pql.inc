@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.191 2004-10-11 08:30:48 turbo Exp $
+// $Id: pql.inc,v 2.192 2004-10-14 08:53:12 turbo Exp $
 //
 
 // ----------------------------
@@ -859,7 +859,13 @@ function pql_domain_get_value($ldap, $dn, $value, $match = '', $all = 0) {
 		   ($value == pql_get_define("PQL_ATTR_SEEALSO")) or
 		   ($value == pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME")) or
 		   ($value == pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM")) or
-		   ($value == pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")))
+		   ($value == pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")) or
+		   ($value == pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR")) or
+		   ($value == pql_get_define("PQL_ATTR_GROUP_DN_MEMBER")) or
+		   ($value == pql_get_define("PQL_ATTR_GROUP_DN_SENDER")) or
+		   ($value == pql_get_define("PQL_ATTR_GROUP_822_MODERATOR")) or
+		   ($value == pql_get_define("PQL_ATTR_GROUP_822_MEMBER")) or
+		   ($value == pql_get_define("PQL_ATTR_GROUP_822_SENDER")))
 		  {
 			if($match != "*") {
 				// Return multiple values. If we're looking for 'administrator', return the DN
