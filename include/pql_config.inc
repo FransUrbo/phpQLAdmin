@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.68 2004-09-24 06:42:41 turbo Exp $
+// $Id: pql_config.inc,v 1.69 2004-10-15 15:07:39 turbo Exp $
 //
 
 // include the API files
@@ -136,11 +136,15 @@ if($_SESSION["USER_HOST"]) {
 	// 4. Check some builtin ACL's
 	$_SESSION["ALLOW_BRANCH_CREATE"] = 0; $_SESSION["ALLOW_CONTROL_CREATE"] = 0;
 	if($_SESSION["USER_DN"] && (!$_SESSION["ALLOW_BRANCH_CREATE"] or !$_SESSION["ALLOW_CONTROL_CREATE"])) {
-		// Verify that the user is administrator on the topmost DN -> Allow creation of domain/branches.
+		// Verify that the user is administrator on the topmost DN (i.e. 'super admin') -> Allow creation of domain/branches.
 		$_SESSION["ALLOW_BRANCH_CREATE"] = pql_validate_administrator($_pql->ldap_linkid, $dn, $_SESSION["USER_DN"]);
 		
 		// Check the Control DN if the user is there -> Allow management of Controls information
-		$_SESSION["ALLOW_CONTROL_CREATE"] = pql_validate_administrator($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $_SESSION["USER_DN"]);
+		if(!$_SESSION["ALLOW_BRANCH_CREATE"])
+		  $_SESSION["ALLOW_CONTROL_CREATE"] = pql_validate_administrator($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $_SESSION["USER_DN"]);
+		else
+		  // User is super administrator. Full access!
+		  $_SESSION["ALLOW_CONTROL_CREATE"] = 1;
 	}
 	
 	// 5. Get user configuration for phpQLAdmin
