@@ -93,7 +93,7 @@ switch($attrib){
 include("./include/".$include);
 include("./header.html");
 ?>
-  <span class="title1"><?php echo PQL_USER_EDIT; ?></span>
+  <span class="title1"><?php echo PQL_USER_EDIT; ?> - <u><?=$user?></u></span>
   <br><br>
 <?php
 // select what to do
