@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.63 2004-02-14 14:01:00 turbo Exp $
+// $Id: user_detail.php,v 2.64 2004-02-14 15:31:48 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -102,7 +102,7 @@ foreach($attribs as $attrib) {
     $link = $attrib . "_link";
 
 	$alt = pql_complete_constant($LANG->_('Modify %attribute% for %what%'), array('attribute' => $attrib, 'what' => $username));
-    $$link = "<a href=\"user_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&attrib=$attrib&user=".$url["user"]."&$attrib=$value\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt."\"></a>";
+    $$link = "<a href=\"user_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&attrib=$attrib&user=".$url["user"]."&$attrib=$value&view=$view\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt."\"></a>";
 }
 $quota = pql_get_userquota($_pql->ldap_linkid, $_GET["user"]);
 
