@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.28 2004-11-05 14:41:34 turbo Exp $
+// $Id: pql_bind9.inc,v 2.29 2005-01-29 18:58:17 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -201,6 +201,8 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 	// ----------------
 	// Create a template SOA record
 	$zonename = pql_maybe_idna_encode($zone);
+	$date     = date("Ymd01", time());
+
 	unset($entry);
 	$entry['objectClass'][]		 = 'top';
 	$entry['objectClass'][]		 = 'dNSZone';
@@ -209,7 +211,7 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 	$entry['zoneName']			 = $zonename;
 	$entry['dNSTTL']			 = 604800;
 
-	$entry['sOARecord']			 = "$zonename. registry.$zonename. 2002082106 172800 86400 2419200 604800";
+	$entry['sOARecord']			 = "$zonename. registry.$zonename. $date 172800 86400 2419200 604800";
 	$entry['nSRecord'][]		 = "ns1.$zonename.";
 	$entry['nSRecord'][]		 = "ns2.$zonename.";
 	$entry['mXRecord']			 = "10 mail.$zonename.";
