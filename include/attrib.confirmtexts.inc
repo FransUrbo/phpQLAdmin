@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // confirmText and moderatorText (Qmail-GROUP object texts)
-// $Id: attrib.confirmtexts.inc,v 2.3 2004-10-14 09:53:32 turbo Exp $
+// $Id: attrib.confirmtexts.inc,v 2.4 2004-10-19 10:40:40 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -59,23 +59,16 @@ function attribute_save($type) {
 	$entry = array();
 	$attrib = $_REQUEST["attrib"];
 
-	if(!empty($_REQUEST[$attrib])) 
+	if(!empty($_REQUEST[$attrib]))
 	  $entry[$attrib] = preg_replace('/\\\/', "", $_REQUEST[$attrib]);
-//	else {
-//		// Check if the entry in database is empty. 
-//		// If not, we have choosen to DELETE the value
-//		$mrt_db = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], $attrib);
-//		if($mrt_db[0])
-//		  pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], $attrib);
-//	}
-
+	
 	if($_REQUEST["attrib"] == "confirmtext") {
 		$msg = $LANG->_('Sender confirmation text');
 	} else {
 		$msg = $LANG->_('Moderator confirmation text');
 	}
 
-	if(pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], '', $entry)) 
+	if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], '', '', $entry)) 
 	  $msg = pql_complete_constant($LANG->_('successfully changed %what%'),
 								   array('what' => $msg));
 	else

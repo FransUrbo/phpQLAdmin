@@ -1,6 +1,6 @@
 <?php
 // delete a user
-// $Id: user_del.php,v 2.33 2004-10-18 13:39:31 turbo Exp $
+// $Id: user_del.php,v 2.34 2004-10-19 10:40:40 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -21,7 +21,7 @@ if(!$o) {
 	// Use the RDN
 	$o = $_REQUEST["domain"];
 }
-$cn = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_CN")); $cn = $cn[0];
+$cn = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_CN"));
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove user %user% from domain %domain%'), array("domain" => $o, "user" => $cn)); ?></span>
   <br><br>
@@ -35,11 +35,10 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn))
 	if($unsubscribe) {
 		// We want to unsubscribe user from (all) mailing list(s).
 		// Get the users mail addresses before the object gets deleted
-		$email   = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_MAIL"));
+		$mails   = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_MAIL"));
 		$aliases = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_MAILALTERNATE"));
 
 		// Combine the two attributes into one array.
-		$mails[] = $email[0];
 		if(is_array($aliases)) {
 			foreach($aliases as $alias)
 			  $mails[] = $alias;
@@ -54,8 +53,14 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn))
 		// ----------------------------------------
 		// Remove all administrator/ezmlmAdministrator/controlsAdministrator and seealso
 		// attributes that reference this user.
-		if($delete_admins)
-		  pql_domain_replace_admins($_pql, $_REQUEST["user"], '');
+		if($delete_admins) {
+			// We're only interested in these attributes
+			$attribs = array(pql_get_define("PQL_ATTR_ADMINISTRATOR"),
+							 pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
+							 pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"),
+							 pql_get_define("PQL_ATTR_SEEALSO"));
+			pql_replace_values($_pql, $attribs, $_REQUEST["user"]);
+		}
 
 		// ----------------------------------------
 		// Unsubscribe user from all mailinglists (on this host naturaly :)

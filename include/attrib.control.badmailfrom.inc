@@ -2,9 +2,10 @@
 // control attribute plugin for
 // badmailfrom (blocked from addresses)
 //
-// $Id: attrib.control.badmailfrom.inc,v 2.18 2004-10-18 13:39:31 turbo Exp $
+// $Id: attrib.control.badmailfrom.inc,v 2.19 2004-10-19 10:40:40 turbo Exp $
 
 // {{{ badmailfrom_check(type)
+
 function badmailfrom_check($type) {
     global $error, $LANG;
     
@@ -34,9 +35,11 @@ function badmailfrom_check($type) {
     
     return true;
 }
+
 // }}}
 
 // {{{ badmailfrom_init($host)
+
 // init values
 function badmailfrom_init($host) {
     global $_pql_control;
@@ -49,6 +52,7 @@ function badmailfrom_init($host) {
     if(is_null($_REQUEST["badmailfrom"]))
 	  return true;
 }
+
 // }}}
 
 // {{{ badmailfrom_print_view(host)
@@ -149,10 +153,9 @@ function badmailfrom_save($type, $host) {
       case "modify";
       case "add";
 		// save entries
-		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_ATTR_BADMAILFROM"),
-										 $_REQUEST["badmailfrom"]))
+		if(pql_modify_attribute($_pql_control->ldap_linkid,
+								pql_get_define("PQL_ATTR_CN")."=$host,". $_SESSION["USER_SEARCH_DN_CTR"],
+								pql_get_define("PQL_ATTR_BADMAILFROM"), '', $_REQUEST["badmailfrom"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('badmailfrom options')));
 		else

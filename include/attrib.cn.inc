@@ -1,8 +1,9 @@
 <?php
 // attribute plugin for
 // cn (Full name)
-// $Id: attrib.cn.inc,v 2.21 2004-06-10 05:37:43 turbo Exp $
+// $Id: attrib.cn.inc,v 2.22 2004-10-19 10:40:40 turbo Exp $
 
+// {{{ attribute_check(type)
 function attribute_check($type) {
     global $error, $LANG;
     
@@ -14,11 +15,15 @@ function attribute_check($type) {
     
     return true;
 }
+// }}}
 
+// {{{ attribute_init(void)
 function attribute_init() {
     $_REQUEST["cn"] = (empty($_GET["oldvalue"]) ? "" : $_GET["oldvalue"]);
 }
+// }}}
 
+// {{{ attribute_print_form(void)
 function attribute_print_form() {
     global $error, $LANG;
 ?>
@@ -44,7 +49,9 @@ function attribute_print_form() {
   </form>
 <?php
 }
+// }}}
 
+// {{{ attribute_save(type)
 function attribute_save($type) {
     global $_pql, $LANG;
     
@@ -66,18 +73,15 @@ function attribute_save($type) {
 		// already exist in the object.
 		$attribs = array($_REQUEST["attrib"], 'gecos');
 		foreach($attribs as $attrib) {
-			$old = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"]);
-			if(is_array($old)) {
-				// We have an old value of this array, try to change it...
-				if(pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], $_REQUEST["cn"]))
-				  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
-											   array('what' => $LANG->_('Common name'),
-													 'new'  => $_REQUEST["cn"]));
-				else
-				  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-											   array('what' => $LANG->_('Common name')))
-					. ":&nbsp;" . ldap_error($_pql->ldap_linkid);
-			}
+			// We have an old value of this array, try to change it...
+			if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], '', $_REQUEST["cn"]))
+			  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
+										   array('what' => $LANG->_('Common name'),
+												 'new'  => $_REQUEST["cn"]));
+			else
+			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+										   array('what' => $LANG->_('Common name')))
+				. ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 		}
 
 		/* DLW: Bug: This is broken I think.  It's changing parts of the name, but not the CN.
@@ -86,18 +90,10 @@ function attribute_save($type) {
 		$name = split(" ", $_REQUEST["cn"]);
 
 		// Change givenName which is the first name
-		$old = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_GIVENNAME"));
-		if(is_array($old)) {
-			// We have an old value of this array, try to change it...
-			pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_GIVENNAME"), $name[0]);
-		}
+		pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_GIVENNAME"), '', $name[0]);
 
 		// Change SN which is the last name
-		$old = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_SN"));
-		if(is_array($old)) {
-			// We have an old value of this array, try to change it...
-			pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_SN"), $name[1]);
-		}
+		pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_SN"), '', $name[1]);
 
 		attribute_forward($msg, true);
 		break;
@@ -107,6 +103,7 @@ function attribute_save($type) {
 								  array('type' => $type, 'file' => __FILE__)));
     }
 }
+// }}}
 
 // Local variables:
 // mode: php

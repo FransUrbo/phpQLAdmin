@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.25 2004-10-18 13:39:33 turbo Exp $
+// $Id: pql_bind9.inc,v 2.26 2004-10-19 10:40:42 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -316,28 +316,6 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 }
 // }}}
 
-
-// {{{ pql_bind9_set_record(linkid, dn, record, value)
-function pql_bind9_set_record($linkid, $dn, $record, $value = '') {
-	if(!is_array($record)) {
-		$record = lc($record);
-		$entry[$record] = $value;
-	} else
-	  // We've been called with an already created 'LDIF'...
-	  $entry = $record;
-
-	// Create a LDIF object to print in case of error
-	$LDIF = pql_create_ldif("pql_bind9_set_record", $dn, $entry);
-
-    if(!ldap_mod_replace($linkid, $dn, $entry)) {
-		pql_format_error(1);
-		die($LDIF);
-		return false;
-	}
-
-	return true;
-}
-// }}}
 
 /*
  * Local variables:

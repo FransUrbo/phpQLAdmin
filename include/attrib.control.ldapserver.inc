@@ -7,7 +7,7 @@
 // ldapgrouplogin (dn of a database user - used by qmail-group)
 // ldapgrouppassword (password for bind - used with ldapgrouplogin)
 //
-// $Id: attrib.control.ldapserver.inc,v 2.16 2004-10-18 13:39:32 turbo Exp $
+// $Id: attrib.control.ldapserver.inc,v 2.17 2004-10-19 10:40:40 turbo Exp $
 
 // {{{ ldapserver_check(type)
 function ldapserver_check($type) {
@@ -289,9 +289,9 @@ function ldapserver_save($type, $host) {
 		$attribs = array("ldapserver"   => pql_get_define("PQL_ATTR_LDAPSERVER"),
 						 "ldapbasedn"   => pql_get_define("PQL_ATTR_LDAPBASEDN"));
 		foreach($attribs as $key => $attrib)
-		  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-													pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-													$attrib, $_REQUEST[$key]);
+		  $return[] = pql_modify_attribute($_pql_control->ldap_linkid,
+										   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+										   $attrib, '', $_REQUEST[$key]);
 		
 
 		$attribs = array("ldaplogin"    	=> pql_get_define("PQL_ATTR_LDAPLOGIN"),
@@ -302,16 +302,16 @@ function ldapserver_save($type, $host) {
 			foreach($attribs as $key => $attrib)
 			  if($_REQUEST[$key]) {
 				  // Only set a value which is defined to avoid possible errors
-				  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-															pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-															$attrib, $_REQUEST[$key]);
+				  $return[] = pql_modify_attribute($_pql_control->ldap_linkid,
+												   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+												   $attrib, '', $_REQUEST[$key]);
 			  }
 		} else {
 			foreach($attribs as $key => $attrib)
 			  // reset login and password values
-			  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-														pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-														$attrib, "");
+			  $return[] = pql_modify_attribute($_pql_control->ldap_linkid,
+											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+											   $attrib, '', '');
     	}
 
 		if(in_array(false, $return))

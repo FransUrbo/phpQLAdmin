@@ -1,11 +1,12 @@
 <?php
 // attribute plugin for
 // accountstatus (status of mailaccount)
-// $Id: attrib.accountstatus.inc,v 2.20 2004-10-18 13:39:31 turbo Exp $
+// $Id: attrib.accountstatus.inc,v 2.21 2004-10-19 10:40:40 turbo Exp $
 
 /* DLW: When the calendar gets a value of 2003.12.25, it gets stored or displayed as 2003/12/24 (@7am)
  *      I think it's having problems with time zones.  Look into it. */
 
+// {{{ attribute_check(type)
 /* attribute_check is sometimes called directly (from attribute_print_form)
  * so I use _REQUEST variables instead of _POST variables. */
 function attribute_check($type) {
@@ -43,11 +44,15 @@ function attribute_check($type) {
 		}
 	}
 }
+// }}}
 
+// {{{ attribute_init(void)
 function attribute_init() {
     // dummy function
 }
+// }}}
 
+// {{{ attribute_print_form(type)
 function attribute_print_form($type = "set") {
     global $error, $LANG;
 
@@ -100,7 +105,9 @@ function attribute_print_form($type = "set") {
 <?php
 	}
 }
+// }}}
 
+// {{{ attribute_save(type)
 /* attribute_save is sometimes called directly (from attribute_print_form)
  * so I use _REQUEST variables instead of _POST variables. */
 function attribute_save($type) {
@@ -160,9 +167,8 @@ function attribute_save($type) {
 			$users   = pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], $filter);
 			if(is_array($users)) {
 				foreach($users as $user)
-				  if(! pql_replace_attribute($_pql->ldap_linkid, $user,
-												 pql_get_define("PQL_ATTR_ISACTIVE"),
-												 $_REQUEST["set"])) {
+				  if(!pql_modify_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_ISACTIVE"),
+										   '', $_REQUEST["set"])) {
 					  $msg  = pql_complete_constant($LANG->_('Failed to change %what%'),
 													array('what' => $LANG->_('Status')));
 					  $msg .= ": " . pql_format_error(0);
@@ -177,7 +183,8 @@ function attribute_save($type) {
 		break;
 		
       case "set":
-		if(pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_ISACTIVE"), $_REQUEST["set"])) {
+		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_ISACTIVE"),
+								'', $_REQUEST["set"])) {
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 										 array('what' => $LANG->_('Status'),
 											   'new'  => pql_ldap_accountstatus($_REQUEST["set"])));
@@ -193,6 +200,7 @@ function attribute_save($type) {
 								  array('type' => $type, 'file' => __FILE__)));
     }
 }
+// }}}
 
 // Local variables:
 // mode: php

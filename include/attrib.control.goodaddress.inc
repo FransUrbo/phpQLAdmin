@@ -2,7 +2,7 @@
 // control attribute plugin for
 // goodmailaddr (max number of bytes in message)
 //
-// $Id: attrib.control.goodaddress.inc,v 2.4 2004-10-18 13:39:31 turbo Exp $
+// $Id: attrib.control.goodaddress.inc,v 2.5 2004-10-19 10:40:40 turbo Exp $
 
 // {{{ goodmailaddr_check(type)
 function goodmailaddr_check($type) {
@@ -121,10 +121,9 @@ function goodmailaddr_save($type, $host)  {
 	  case "modify";
 	  case "add";
 		// save entries
-		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_ATTR_GOODADDRESS"),
-										 $_REQUEST["goodmailaddr"]))
+		if(pql_modify_attribute($_pql_control->ldap_linkid,
+								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								pql_get_define("PQL_ATTR_GOODADDRESS"), '', $_REQUEST["goodmailaddr"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('goodmailaddr options')));
 		else

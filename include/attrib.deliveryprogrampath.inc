@@ -1,8 +1,9 @@
 <?php
 // attribute plugin for
 // deliveryprogrampath (path to program running on delivery)
-// $Id: attrib.deliveryprogrampath.inc,v 2.17 2004-06-10 05:37:43 turbo Exp $
+// $Id: attrib.deliveryprogrampath.inc,v 2.18 2004-10-19 10:40:41 turbo Exp $
 
+// {{{ attribute_check(type)
 function attribute_check($type) {
     global $error, $LANG;
 	
@@ -14,7 +15,9 @@ function attribute_check($type) {
 	
 	return true;
 }
+// }}}
 
+// {{{ attribute_init(void)
 function attribute_init() {
     global $_pql;
 
@@ -24,7 +27,9 @@ function attribute_init() {
     // DLW: Why is "oldvalue" getting assigned a value here?
 	$_REQUEST["oldvalue"] = $_REQUEST["deliveryprogrampath"];
 }
+// }}}
 
+// {{{ attribute_print_form(void)
 function attribute_print_form() {
     global $error, $LANG;
 ?>
@@ -58,7 +63,9 @@ function attribute_print_form() {
 
 <?php
 }
+// }}}
 
+// {{{ attribute_save(type)
 function attribute_save($type) {
     global $_pql, $LANG;
 	
@@ -75,8 +82,8 @@ function attribute_save($type) {
 			break;
     	}
 		
-		if(pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_PROGRAM"),
-								 $_REQUEST["deliveryprogrampath"])) {
+		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_PROGRAM"),
+								'', $_REQUEST["deliveryprogrampath"])) {
 			if($_REQUEST["deliveryprogrampath"] == "")
 			  $_REQUEST["deliveryprogrampath"] = $LANG->_('None');
 			
@@ -105,6 +112,7 @@ function attribute_save($type) {
 								  array('type' => $type, 'file' => __FILE__)));
 	}
 }
+// }}}
 
 // Local variables:
 // mode: php

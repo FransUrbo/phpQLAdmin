@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.43 2004-10-18 13:39:33 turbo Exp $
+// $Id: pql_control.inc,v 2.44 2004-10-19 10:40:42 turbo Exp $
 //
 
 // {{{ control connection class
@@ -26,93 +26,12 @@ class pql_control extends pql {
 // PQL - Control - API functions
 // ------------------------------------------------
 
-// {{{ pql_control_replace_attribute(ldap_linkid, ldap_control_basedn, attrib, value)
-function pql_control_replace_attribute($ldap_linkid, $ldap_control_basedn, $attrib, $value) {
-    // replaces an attribute
-
-    // if $value == "" remove the attribute from tree
-    if($value == "")
-	  return pql_control_remove_whole_attribute($ldap_linkid, $ldap_control_basedn, $attrib);
-    
-    // if $value is an array and all elements are "", remove attribute from tree
-    if(is_array($value)) {
-		$remove = true;
-		
-		foreach($value as $val)
-		  if($val != "")
-			$remove = false;
-		
-		if($remove)
-		  return pql_control_remove_whole_attribute($ldap_linkid, $ldap_control_basedn, $attrib);
-    }
-    
-    // format entry
-	if(is_array($value)) {
-		foreach($value as $val)
-		  $entry[$attrib][] = pql_maybe_idna_encode($val);
-	} else
-	  $entry[$attrib] = pql_maybe_idna_encode($value);
-    
-	// Create a LDIF object to print in case of error
-	$LDIF = pql_create_ldif("pql_control_replace_attribute", $ldap_control_basedn, $entry);
-	if(file_exists("./.DEBUG_ME"))
-	  die($LDIF);
-
-    // replace
-    if(!@ldap_mod_replace($ldap_linkid, $ldap_control_basedn, $entry)) {
-		// Try to delete the attribute from the object
-		$del[$attrib] = array();
-		@ldap_mod_del($ldap_linkid, $ldap_control_basedn, $del);
-
-		// Now add the attribute again (this time with the new value(s))
-		if(!@ldap_mod_add($ldap_linkid, $ldap_control_basedn, $entry)) {
-			echo "Can't add attribute $attrib<br>";
-
-			pql_format_error(1);
-			die("$LDIF");
-			return false;
-		}
-    }
-    
-    return true;
-}
-// }}}
-
 // {{{ pql_control_add_attribute(ldap_linkid, ldap_control_basedn, attrib, value)
 function pql_control_add_attribute($ldap_linkid, $ldap_control_basedn, $attrib, $value) {
     // adds an attribute of a control property
     $entry[$attrib] = pql_maybe_encode($value);
 
     if(!@ldap_mod_add($ldap_linkid, $ldap_control_basedn, $entry)) {
-		pql_format_error(1);
-		return false;
-    }
-    
-    return true;
-}
-// }}}
-
-// {{{ pql_control_remove_attribute(ldap_linkid, dn, attrib, value)
-// Removes an attribute of a QmailLDAP object
-function pql_control_remove_attribute($ldap_linkid, $dn, $attrib, $value) {
-    $entry[$attrib] = pql_maybe_encode($value);
-    
-    if(!ldap_mod_del($ldap_linkid, $dn, $entry)) {
-		pql_format_error(1);
-		return false;
-    }
-    
-    return true;
-}
-// }}}
-
-// {{{ pql_control_remove_whole_attribute(ldap_linkid, ldap_control_basedn, attrib)
-// Removes whole attribute from control tree
-function pql_control_remove_whole_attribute($ldap_linkid, $ldap_control_basedn, $attrib) {
-	// Delete all attributes of this type, regardless of value
-	$entry[$attrib] = array();
-
-    if(!@ldap_mod_replace($ldap_linkid, $ldap_control_basedn, $entry)) {
 		pql_format_error(1);
 		return false;
     }
@@ -177,14 +96,10 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 	// ----------------
 	if(($host != '*') and is_array($entry)) {
 		if(($type == pql_get_define("PQL_ATTR_LOCALS")) or !$type) {
-			if(pql_control_replace_attribute($ldap->ldap_linkid, $dn,
-											 pql_get_define("PQL_ATTR_LOCALS"),
-											 $entry))
+			if(pql_modify_attribute($ldap->ldap_linkid, $dn, pql_get_define("PQL_ATTR_LOCALS"), '', $entry))
 			  return true;
 		} elseif($type == pql_get_define("PQL_ATTR_RCPTHOSTS"))	{
-			if(pql_control_replace_attribute($ldap->ldap_linkid, $dn,
-											 pql_get_define("PQL_ATTR_RCPTHOSTS"),
-											 $entry))
+			if(pql_modify_attribute($ldap->ldap_linkid, $dn, pql_get_define("PQL_ATTR_RCPTHOSTS"), '', $entry))
 			  return true;
 		}
 	} else {
@@ -248,9 +163,7 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 						}
 
 						if(is_array($entry))
-						  pql_control_replace_attribute($ldap->ldap_linkid, $hostdn,
-														pql_get_define("PQL_ATTR_LOCALS"),
-														$entry);
+						  pql_modify_attribute($ldap->ldap_linkid, $hostdn, pql_get_define("PQL_ATTR_LOCALS"), '', $entry);
 					} else
 					  // No previous values, add domain
 					  pql_control_add_attribute($ldap->ldap_linkid, $hostdn,
@@ -296,9 +209,7 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 						}
 						
 						if(is_array($entry))
-						  pql_control_replace_attribute($ldap->ldap_linkid, $hostdn,
-														pql_get_define("PQL_ATTR_RCPTHOSTS"),
-														$entry);
+						  pql_modify_attribute($ldap->ldap_linkid, $hostdn, pql_get_define("PQL_ATTR_RCPTHOSTS"), '', $entry);
 					} else
 					  // No previous values, add domain
 					  pql_control_add_attribute($ldap->ldap_linkid, $hostdn,

@@ -1,8 +1,9 @@
 <?php
 // attribute plugin for
 // base homedirectory for domain
-// $Id: attrib.basehomedir.inc,v 2.9 2004-06-10 05:37:43 turbo Exp $
+// $Id: attrib.basehomedir.inc,v 2.10 2004-10-19 10:40:40 turbo Exp $
 
+// {{{ attribute_check(void)
 function attribute_check() {
     global $error, $LANG;
     
@@ -20,11 +21,15 @@ function attribute_check() {
     
     return true;
 }
+// }}}
 
+// {{{ attribute_init(void)
 function attribute_init() {
     $_REQUEST["basehomedir"] = $_REQUEST["oldvalue"];
 }
+// }}}
 
+// {{{ attribute_print_form(void)
 function attribute_print_form() {
     global $error, $LANG;
 	global $orgname;			// Set by domain_edit_attributes.php.
@@ -54,7 +59,9 @@ function attribute_print_form() {
   </form>
 <?php
 }
+// }}}
 
+// {{{ attribute_save(type)
 function attribute_save($type) {
     global $_pql, $LANG;
     
@@ -68,7 +75,7 @@ function attribute_save($type) {
 			break;
     	}
 
-		if(pql_domain_set_value($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["attrib"], $_REQUEST["basehomedir"]))
+		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["attrib"], 1, $_REQUEST["basehomedir"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									   array('what' => $LANG->_('Path'),
 											 'new'  => $_REQUEST["basehomedir"]));
@@ -84,6 +91,7 @@ function attribute_save($type) {
 								  array('type' => $type, 'file' => __FILE__)));
     }
 }
+// }}}
 
 // Local variables:
 // mode: php

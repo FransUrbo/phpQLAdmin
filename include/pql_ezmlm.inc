@@ -3,7 +3,7 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ezmlm.inc,v 1.25 2004-05-10 13:31:16 turbo Exp $
+// $Id: pql_ezmlm.inc,v 1.26 2004-10-19 10:40:42 turbo Exp $
 session_start();
 
 class ezmlm {
@@ -482,10 +482,13 @@ class ezmlm {
 //				}
 			}
 
-			if(! ereg("/$", $dot_home))
-			  $dotpath  = $dot_home . "/.qmail-" . $listname;
-			else
-			  $dotpath  = $dot_home . ".qmail-" . $listname;
+			if($dot_home) {
+				if(! ereg("/$", $dot_home))
+				  $dotpath  = $dot_home . "/.qmail-" . $listname;
+				else
+				  $dotpath  = $dot_home . ".qmail-" . $listname;
+			} else
+			  $dotpath  = "~alias/.qmail-" . $listname;
 		}
 
 		$command = ($this->_paths["make"] . " 2>&1 -"

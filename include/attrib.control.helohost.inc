@@ -2,7 +2,7 @@
 // control attribute plugin for
 // helohost (host name used in SMTP HELO command)
 //
-// $Id: attrib.control.helohost.inc,v 2.16 2004-10-18 13:39:31 turbo Exp $
+// $Id: attrib.control.helohost.inc,v 2.17 2004-10-19 10:40:40 turbo Exp $
 
 // {{{ helohost_check(type)
 function helohost_check($type) {
@@ -97,10 +97,9 @@ function helohost_save($type, $host) {
 	  case "modify";
 	  case "add";
 		// save entries
-		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_ATTR_HELOHOST"),
-										 $_REQUEST["helohost"]))
+		if(pql_modify_attribute($_pql_control->ldap_linkid,
+								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								pql_get_define("PQL_ATTR_HELOHOST"), '', $_REQUEST["helohost"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('helohost options')));
 		else

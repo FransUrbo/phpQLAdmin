@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for administrator and seealso modification
 // Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
-// $Id: attrib.administrator.inc,v 1.45 2004-10-18 13:39:31 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.46 2004-10-19 10:40:40 turbo Exp $
 
 require("./left-head.html");
 
@@ -390,7 +390,7 @@ function attribute_save($type) {
 	}
 	
 	$success = 0;
-	if(pql_domain_set_value($_pql->ldap_linkid, $DN, $attrib, $ADMs))
+	if(pql_modify_attribute($_pql->ldap_linkid, $DN, $attrib, '', $ADMs))
 	  $success = 1;
 	
 	if($attrib == pql_get_define("PQL_ATTR_SEEALSO"))

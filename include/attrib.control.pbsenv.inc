@@ -2,7 +2,7 @@
 // control attribute plugin for
 // pbsenv (max number of bytes in message)
 //
-// $Id: attrib.control.pbsenv.inc,v 2.5 2004-10-18 13:39:32 turbo Exp $
+// $Id: attrib.control.pbsenv.inc,v 2.6 2004-10-19 10:40:41 turbo Exp $
 
 // {{{ pbsenv_check(type)
 function pbsenv_check($type) {
@@ -130,9 +130,9 @@ function pbsenv_save($type, $host)  {
 		for($i=0; $_REQUEST["pbsenvariable_name"][$i] and $_REQUEST["pbsenvariable_value"][$i]; $i++)
 		  $entry[] = $_REQUEST["pbsenvariable_name"][$i] . "=" . $_REQUEST["pbsenvariable_value"][$i];
 
-		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_ATTR_PBS_ENV"), $entry))
+		if(pql_modify_attribute($_pql_control->ldap_linkid,
+								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								pql_get_define("PQL_ATTR_PBS_ENV"), '', $entry))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('pbsenv options')));
 		else

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliverymode (delivery preferences)
-// $Id: attrib.deliverymode.inc,v 2.25 2004-10-18 13:39:32 turbo Exp $
+// $Id: attrib.deliverymode.inc,v 2.26 2004-10-19 10:40:41 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -179,13 +179,9 @@ function attribute_save($type) {
 	if (!empty($_REQUEST["mailreplytext"])) {
 		$tmp = preg_replace('/\\\/', "", $_REQUEST["mailreplytext"]);
 		$entry[pql_get_define("PQL_ATTR_REPLYTEXT")] = pql_maybe_encode($tmp, 'mailreplytext', $_pql->ldap_linkid);
-	} else {
-		// Check if the entry in database is empty. 
-		// If not, we have choosen to DELETE the value
-		$mrt_db = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_REPLYTEXT"));
-		if($mrt_db[0])
-		  pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_REPLYTEXT"));
-	}
+	} else
+	  // Delete the old value from the database
+	  pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_REPLYTEXT"), '', '');
 
 	switch($type) {
 	  case "fulldomain":
@@ -197,7 +193,7 @@ function attribute_save($type) {
 	    $users   = pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], $filter);
 		if(is_array($users)) {
 			foreach($users as $user)
-			  $return[] = pql_replace_attribute($_pql->ldap_linkid, $user, '', $entry);
+			  $return[] = pql_modify_attribute($_pql->ldap_linkid, $user, '', '', $entry);
 
 			if(in_array(false, $return))
 			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
@@ -211,7 +207,7 @@ function attribute_save($type) {
 		break;
 
 	  case "modify":
-		if(pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], '', $entry)) 
+		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], '', '', $entry))
 		  $msg = pql_complete_constant($LANG->_('successfully changed %what%'),
 									   array('what' => $LANG->_('delivery mode')));
 		else

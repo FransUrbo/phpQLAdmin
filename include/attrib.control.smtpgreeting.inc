@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtpgreeting (SMTP greeting message)
 //
-// $Id: attrib.control.smtpgreeting.inc,v 2.16 2004-10-18 13:39:32 turbo Exp $
+// $Id: attrib.control.smtpgreeting.inc,v 2.17 2004-10-19 10:40:41 turbo Exp $
 
 // {{{ smtpgreeting_check(type)
 function smtpgreeting_check($type) {
@@ -95,10 +95,9 @@ function smtpgreeting_save($type, $host) {
       case "modify";
       case "add";
 		// save entries
-		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_ATTR_SMTPGREETING"),
-										 $_REQUEST["smtpgreeting"]))
+		if(pql_modify_attribute($_pql_control->ldap_linkid,
+								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								pql_get_define("PQL_ATTR_SMTPGREETING"), '', $_REQUEST["smtpgreeting"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('smtpgreeting options')));
 		else

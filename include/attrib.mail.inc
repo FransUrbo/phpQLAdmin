@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mail.inc,v 2.21 2004-07-08 10:34:06 turbo Exp $
+// $Id: attrib.mail.inc,v 2.22 2004-10-19 10:40:41 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -104,7 +104,7 @@ function attribute_save($type) {
       case "modify":
 		$user = urldecode($_POST["user"]);
 
-		if(pql_modify_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_MAIL"),
+		if(pql_modify_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_MAIL"),
 									$_POST["oldvalue"], $_POST["mail"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									   array('what' => $LANG->_('main address'),
@@ -115,7 +115,7 @@ function attribute_save($type) {
 
 		if($_POST["keepold"]) {
 			// Put the old primary email address as an alias.
-			if(pql_modify_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_MAILALTERNATE"),
+			if(pql_modify_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_MAILALTERNATE"),
 										'', $_POST["oldvalue"]))
 			  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 										   array('what' => $LANG->_('main address'),

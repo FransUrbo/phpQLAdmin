@@ -1,6 +1,6 @@
 <?php
 // delete attribute of a user
-// $Id: user_del_attribute.php,v 2.28 2004-10-14 09:57:00 turbo Exp $
+// $Id: user_del_attribute.php,v 2.29 2004-10-19 10:40:40 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -45,7 +45,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
       $what = $LANG->_('alias');
 
     // delete the user attribute
-    if(pql_modify_userattribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], $_REQUEST["oldvalue"], '')) {
+    if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], $_REQUEST["oldvalue"], '')) {
 	$msg = pql_complete_constant($LANG->_('Successfully removed %what% %oldvalue%'), array("what" => $what, "oldvalue" => pql_maybe_idna_decode($_REQUEST["oldvalue"])));
 	$success = true;
     } else {

@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.193 2004-10-18 13:39:32 turbo Exp $
+// $Id: pql.inc,v 2.194 2004-10-19 10:40:41 turbo Exp $
 //
 
 // ----------------------------
@@ -412,7 +412,6 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 // }}}
 
 // {{{ pql_user_del(ldap, domain, user, delete_forwards)
-
 // Delete a user from the LDAP database
 function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 	$linkid = $ldap->ldap_linkid;
@@ -496,9 +495,9 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 				$rem_key = array_search($address, $fwd_addresses);
 				if ($rem_key !== false) {
 					// we found a forward -> remove it 
-					pql_replace_attribute($linkid, $forward['reference'],
-											  pql_get_define("PQL_ATTR_FORWARDS"),
-											  $fwd_addresses[$rem_key]);
+					pql_modify_attribute($linkid, $forward['reference'], pql_get_define("PQL_ATTR_FORWARDS"), '',
+										 $fwd_addresses[$rem_key]);
+										 
 				}
 			}
 		} 
@@ -534,7 +533,6 @@ function pql_user_get_quota($ldap_linkid, $user) {
 // }}}
 
 // {{{ pql_user_get_letter(linkid, domain, letra)
-
 // Based in PQL_CONF_GET_USER to search by the cn first letter
 function pql_user_get_letter($linkid, $domain, $letra) {
 	$filter = "(".pql_get_define("PQL_ATTR_UID")."=".$letra."*)";
@@ -545,7 +543,6 @@ function pql_user_get_letter($linkid, $domain, $letra) {
 // }}}
 
 // {{{ pql_user_get_number(ldap_linkid, domain)
-
 // Based in PQL_CONF_GET_USER to search by an initial number at cn attribute
 function pql_user_get_number($linkid, $domain) {
 	// What's the Root DN (namingContexts) for this domain
@@ -648,203 +645,12 @@ function pql_domain_del($ldap, $domain, $delete_forwards) {
 }
 // }}}
 
-// {{{ pql_domain_set_value(linkid, dn, type, value)
-// Set a embedded domain default value
-function pql_domain_set_value($linkid, $dn, $type, $value) {
-	$dn = urldecode($dn);
-
-	$entry = array();
-	if($type) {
-		$type = lc($type);
-		
-		// Setup the value array
-		if(is_array($value)) {
-			// We're supplied with an array, add those values
-			foreach($value as $attr => $val) {
-				$attr = lc($attr);
-				if(is_array($val)) {
-					foreach($val as $data)
-					  $entry[$attr][] = pql_maybe_encode($data, $attr, $linkid);
-				} else
-				  $entry[$attr][] = pql_maybe_encode($val, $attr, $linkid);
-			}
-		} else {
-			$entry[$type] = pql_maybe_encode($value, $type, $linkid);
-		}
-	} else {
-		// INTERNATIONALIZE
-		if(is_array($value)) {
-			foreach($value as $attrib => $val) {
-				if(is_array($val)) {
-					$entry[$attrib] = array(); // DLW:
-					for($i=0; !empty($val[$i]); $i++)
-					  $entry[$attrib][] = pql_maybe_encode($val[$i], $attrib, $linkid);
-				} else
-				  // This is true in at least one case - changing 'mobile' for a branch
-				  $entry[$attrib] = $val;
-			}
-		} else
-		  $entry = $value;
-	}
-
-	// Find out if the phpQLAdmin* object classes exists in the object
-	$OC_EXISTS = 0;
-	$object_ocs = pql_uniq(pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_OBJECTCLASS")));
-	if(is_array($object_ocs)) {
-		foreach($object_ocs as $oc) {
-			if(!eregi('phpQLAdmin', $object_ocs)) {
-				$OC_EXISTS = 1;
-				last;
-			}
-		}
-	}
-
-	// Add the phpQLAdmin* object classes if we haven't specified object class(es) and
-	// the phpQLAdmin* object class(es) are missing.
-	if($value and !$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] and !$OC_EXISTS) {
-		// Setup objectclasses
-		if(!($entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_setup_branch_objectclasses(0, $dn, $linkid)))
-		  unset($entry[pql_get_define("PQL_ATTR_OBJECTCLASS")]);
-		
-		if(!in_array("phpQLAdminGlobal", $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")])) {
-			// There's TWO config object classes. A BRANCH and a GLOBAL.
-			// If this is a GLOBAL attribute, pql_setup_branch_objectclasses()
-			// doesn't catch this. Do it manually here instead...
-			global $PQL_ATTRIBUTE;
-			foreach($value as $attrib => $val) {
-				if(in_array($attrib, $PQL_ATTRIBUTE["GLOBAL"]))
-				  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "phpQLAdminGlobal";
-			}
-		}
-
-		$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_uniq($entry[pql_get_define("PQL_ATTR_OBJECTCLASS")]);
-	}
-	
-	// Create a LDIF object to print in case of error
-	$account_type = $type;
-	$LDIF = pql_create_ldif("pql_domain_set_value", $dn, $entry);
-
-	// --------------------------
-	// DEBUG mode: Print the LDIF
-	if(file_exists("./.DEBUG_ME"))
-	  die($LDIF);
-
-	// Do the LDAP modification
-	if($value != '') {
-		// Replace the current attribute value
-		if(! @ldap_mod_replace($linkid, $dn, $entry)) {
-			if(ldap_errno($linkid) == 65) {
-				// Object class violation - try to add the missing objectclass
-				$old_ocs = $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")];
-
-				// Get existing objectclasses in the object
-				$old = pql_setup_branch_objectclasses(0, $dn, $linkid);
-
-				// Get objectclassess to add
-				$new = pql_missing_objectclasses($linkid, $dn, $entry);
-
-				if(is_array($new) && is_array($old))
-				  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = $old + $new;
-				elseif(is_array($old))
-				  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = $old;
-				elseif(is_array($new))
-				  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = $new;
-
-				if(empty($entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][0])) {
-					global $LANG;
-					echo "pql_domain_set_value() - ".$LANG->_('Could not figure out what objectclasses to add')."<br>";
-
-					$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = $old_ocs;
-
-					$LDIF = pql_create_ldif("pql_domain_set_value", $dn, $entry);
-					die($LDIF);
-				}
-
-				// Recursion... Hopfully there's a limit on how many (max_execution_time in php.ini)!
-				pql_domain_set_value($linkid, $dn, $type, $entry);
-			} else {
-				// Other error...
-				pql_format_error(1);
-				die($LDIF);
-			}
-		}
-	} else {
-		// Delete all attributes of this type, regardless of value
-		$entry[$type] = array();
-
-		if(! ldap_mod_del($linkid, $dn, $entry)) {
-			pql_format_error(1);
-			die($LDIF);
-			return false;
-		}
-	}
-	
-    return true;
-}
-// }}}
-
-// {{{ pql_domain_replace_admins(ldap, old, new)
-// Look for 'administrator/seealso = old value',
-// replace with 'administrator/seealso = new value'.
-function pql_domain_replace_admins($ldap, $old, $new) {
-	// Setup the search filter
-	$filter  = '(|';
-	$filter .= '('.pql_get_define("PQL_ATTR_ADMINISTRATOR")."=$old".')';
-	$filter .= '('.pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")."=$old".')';
-	$filter .= '('.pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM")."=$old".')';
-	$filter .= '('.pql_get_define("PQL_ATTR_SEEALSO")."=$old".')';
-	$filter .= ')';
-
-	// We're only interested in these attributes
-	$attribs = array(pql_get_define("PQL_ATTR_ADMINISTRATOR"),
-					 pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
-					 pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"),
-					 pql_get_define("PQL_ATTR_SEEALSO"));
-
-	// Go through the namingContexts one by one
-	foreach($ldap->ldap_basedn as $base) {
-		$base = urldecode($base);
-		
-		$sr   = ldap_search($ldap->ldap_linkid, $base, $filter, $attribs);
-		$info = ldap_get_entries($ldap->ldap_linkid, $sr) or pql_format_error(1);
-		for($i=0; $i < $info["count"]; $i++) {
-			unset($dn); unset($entry); unset($LDIF);
-			
-			// Go through the attributes we're interested in, looking for
-			// the (old) user DN
-			foreach($attribs as $attrib) {
-				for($j=0; $j < $info[$i][$attrib]["count"]; $j++) {
-					// TODO: Only replace the attribute(s) if it have changed
-					if($old == $info[$i][$attrib][$j]) {
-						// Got a match ...
-						if($new)
-						  // ... we have something to replace with - replace this attribute
-						  $entry[$attrib][] = $new;
-					} else
-					  // Remember the old value
-					  $entry[$attrib][] = $info[$i][$attrib][$j];
-				}
-			}
-			
-			// Create a LDIF object to print in case of error
-			$LDIF = pql_create_ldif("pql_domain_replace_admins", $info[$i]["dn"], $entry);
-			
-			// Modify this object
-			if(!ldap_mod_replace($ldap->ldap_linkid, $info[$i]["dn"], $entry)) {
-				pql_format_error(1);
-				die($LDIF);
-			}
-		}
-	}
-}
-
-// }}}
-
 // ------------------------------------------------
 // TODO: Questionable functons - remove?
 // ------------------------------------------------
 
 // {{{ pql_modify_user_addressbook(ldap_linkid, user, attribs)
+
 function pql_modify_user_addressbook($ldap_linkid, $user, $attribs) {
 	// What's the Root DN (namingContexts) of this user
 	$rootdn = pql_get_rootdn($user, 'pql_modify_user_addressbook'); $rootdn = urldecode($rootdn);
@@ -893,140 +699,6 @@ function pql_modify_user_addressbook($ldap_linkid, $user, $attribs) {
     // check for object class dependencies
     echo var_dump($oc);
 }
-// }}}
-
-// {{{ pql_modify_userattribute(ldap_linkid, user, attrib, oldvalue, newvalue)
-// Change an attribute of a user
-function pql_modify_userattribute($ldap_linkid, $user, $attrib, $oldvalue, $newvalue) {
-    // get all attributes first
-    $entry = pql_get_attribute($ldap_linkid, $user, $attrib);
-
-    // If we found an entry, make sure it isn't
-    // not overwritten, otherwise ADD the attribute.
-    if($entry) {
-		// array_search workaround
-		foreach($entry as $value) {
-			if($value == $oldvalue) {
-				if($newvalue)
-				  // Replace this value with a new one
-				  $value = $newvalue;
-				else
-				  // We want to delete this value
-				  unset($value);
-			}
-
-			if($value)
-			  $entry_new[$attrib][] = $value;
-		}
-
-		// If we're not called with a OLD value, then we
-		// want to add a new value to the attribute
-		if(!$oldvalue and $newvalue)
-		  $entry_new[$attrib][] = $newvalue;
-    } else
-	  $entry_new[$attrib][] = $newvalue;
-
-	// Create a LDIF object to print in case of error
-	$LDIF = pql_create_ldif("pql_modify_userattribute", $user, $entry_new);
-
-    if(file_exists("./.DEBUG_ME"))
-	  die($LDIF);
-
-    if(!ldap_mod_replace($ldap_linkid, $user, $entry_new)) {
-	    // if the value is empty (""), this causes an error in OpenLDAP 2.x, try to ldap_mod_del
-	    if($newvalue == "") {
-			unset($entry_new); $entry_new[$attrib] = array();
-
-			if(ldap_mod_del($ldap_linkid, $user, $entry_new))
-			  return true;
-		}
-
-		pql_format_error(1);
-		return false;
-    }
-    
-    // user entry has changed -> remove the cached version
-    pql_cache_userentry_remove($user);
-
-	// What's the Root DN (namingContexts) of this user
-	$rootdn = pql_get_rootdn($user, 'pql_modify_userattribute'); $rootdn = urldecode($rootdn);
-
-    if ($attrib == pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)) {
-		pql_cache_userdn_remove($user);
-    }
-    
-    return true;
-}
-
-// }}}
-
-// {{{ pql_replace_attribute(ldap_linkid, objectdn, attrib, value)
-// Replaces an attribute in a object (only use for single-field attributes)
-// Delete an attribute(s) if value is an empty string
-function pql_replace_attribute($ldap_linkid, $objectdn, $attrib, $value) {
-	if($attrib)
-	  $attrib = lc($attrib);
-
-    if(!$value)
-	  // Delete all attributes of this type, regardless of value
-	  $entry[$attrib] = array();
-	elseif(!$attrib)
-	  $entry = $value;
-	else
-	  $entry[$attrib] = pql_maybe_encode($value, $attrib, $ldap_linkid);
-
-	// Create a LDIF object to print in case of error
-	$LDIF = pql_create_ldif("pql_replace_attribute", $objectdn, $entry);
-
-	if(file_exists("./.DEBUG_ME"))
-	  die($LDIF);
-
-	// replace the attribute
-	if(!@ldap_mod_replace($ldap_linkid, $objectdn, $entry)) {
-	    // if the value is empty (""), this causes an error in OpenLDAP 2.x, try to ldap_mod_del
-	    if($value == "") {
-			$oldvalue = pql_get_attribute($ldap_linkid, $objectdn, $attrib);
-			$oldvalue = $oldvalue[0];
-			$entry[$attrib] = $oldvalue;
-
-			if(ldap_mod_del($ldap_linkid, $objectdn, $entry))
-			  return true;
-			else {
-				pql_format_error(1);
-				return false;
-			}
-	    } else {
-			if(ldap_errno($ldap_linkid) == 65) {
-				// Object class violation - try to add (the) missing objectclass(es)
-
-				// Get the current object classes in this object
-				$old = pql_get_attribute($ldap_linkid, $objectdn, pql_get_define("PQL_ATTR_OBJECTCLASS"));
-
-				// Try to find which object classes to ADD.
-				$new = pql_missing_objectclasses($ldap_linkid, $objectdn, $entry);
-
-				// Combine the old with the new.
-				$ocs = $old;
-				for($i=0; $new[$i]; $i++)
-				  $ocs[] = $new[$i];
-
-				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = $ocs;
-
-				// Recursion... Hopfully there's a limit on how many (max_execution_time in php.ini)!
-				pql_replace_attribute($ldap_linkid, $objectdn, '', $entry);
-			} else {
-				// Other error...
-				pql_format_error(1);
-				return false;
-			}
-		}
-	}
-	
-	// user entry has changed -> remove the cached version
-	pql_cache_userentry_remove($objectdn);
-	
-	return true;
-}
 
 // }}}
 
@@ -1035,7 +707,6 @@ function pql_replace_attribute($ldap_linkid, $objectdn, $attrib, $value) {
 // ------------------------------------------------
 
 // {{{ pql_get_next_ugidnumber(ldap, type)
-
 // Returns the next free UID/GID number
 function pql_get_next_ugidnumber($ldap, $type) {
     //: Get the minimum allowable ID.
@@ -1196,319 +867,6 @@ function pql_get_mx($domainname) {
 	}
 
 	return($mx);
-}
-// }}}
-
-// {{{ pql_get_subschemas(ldap_linkid, type, match)
-function pql_get_subschemas($ldap_linkid, $type = "", $match = "") {
-    $attribs = array("ldapsyntaxes", "matchingrules", "attributetypes", "objectclasses");
-    foreach($attribs as $attrib) {
-		$result = pql_get_subschema($ldap_linkid, $attrib);
-		if($result)
-		  $entry[$attrib] = $result;
-    }
-	
-	if($type and $match) {
-		// We're looking for something special, look for it. If it doesn't
-		// exists in the array -> return FALSE.
-		if(! $entry[lc($type)][lc($match)])
-		  return 0;
-	}
-
-	// Return 4 arrays with:
-	//	ldapsyntaxes
-	//	matchingrules
-	//	attributetypes
-	//	objectclasses
-    return $entry;
-}
-// }}}
-
-// {{{ pql_get_subschema(ldap_linkid, attrib)
-function pql_get_subschema($ldap_linkid, $attrib) {
-    $attrib = lc($attrib);
-	
-    // Get the DN for the subSchema
-	// CMD: /usr/bin/ldapsearch -x -LLL -h localhost -s base -b '' 'objectClass=*' subschemaSubentry
-	//
-	// TODO: Resue the $this->_find_base_option() function here!
-    $sr    = ldap_read($ldap_linkid, NULL, '(objectClass=*)', array('subschemaSubentry'));
-    $entry = ldap_get_entries($ldap_linkid, $sr);
-    if($entry[0][pql_get_define("PQL_ATTR_SUBSCHEMASUBENTRY")][0]) {
-		// Get the subSchemaAttributes from the subSchema
-		// CMD: /usr/bin/ldapsearch -x -LLL -h localhost -s base -b 'cn=Subschema' 'objectClass=subSchema' $attrib
-		$sr     = ldap_read($ldap_linkid,
-							$entry[0][pql_get_define("PQL_ATTR_SUBSCHEMASUBENTRY")][0],
-							pql_get_define("PQL_ATTR_OBJECTCLASS").'=subSchema', array($attrib));
-		$entry  = ldap_get_entries($ldap_linkid, $sr);
-		for($i=0; $i < $entry[0][$attrib]["count"]; $i++) {
-			// ------------------------
-			// Retreive NAME
-			$words = split("NAME", $entry[0][$attrib][$i]);
-			if(! empty($words[1])) {
-				if(ereg("^ \(", $words[1])) {
-					$words = split("\)", $words[1]);
-					$words = ereg_replace("\'", "", $words[0]);
-					$words = split(" ", $words);
-					$name  = lc($words[2]);
-					
-					$VALUE[$name]["NAME"] = $words[2];
-					for($j=3; $words[$j]; $j++) {
-						$VALUE[$name]["ALIAS"][] = $words[$j];
-					}
-				} else {
-					$words = split("\' ", $words[1]);
-					$words = split(" \'", $words[0]);
-					$name  = lc($words[1]);
-					
-					$VALUE[$name]["NAME"] = $words[1];
-				}
-			}
-			
-			// ------------------------
-			// Get the OID number
-			$words = split(" ", $entry[0][$attrib][$i]);
-			$VALUE[$name]["OID"] = $words[1];
-			
-			// ------------------------
-			// Retreive DESC
-			$words = split("DESC", $entry[0][$attrib][$i]);
-			if(! empty($words[1])) {
-				$words = split("\' ", $words[1]);
-				$words = split(" \'", $words[0]);
-				
-				$VALUE[$name]["DESC"] = $words[1];
-			}
-			
-			// ------------------------
-			// Retreive MAY's
-			$words = split("MAY", $entry[0][$attrib][$i]);
-			if(! empty($words[1])) {
-				if(ereg("\(", $words[1])) {
-					$words = split("\(", $words[1]);
-					$words = split("\)", $words[1]);
-				} else {
-					$words = split("\)", $words[1]);
-				}
-				
-				// Remove spaces
-				$words = ereg_replace(" ", "", $words[0]);
-				$words = split('\$', $words);
-				
-				$j = 0;
-				foreach($words as $may) {
-					$VALUE[$name]["MAY"][] = $may;
-					$j++;
-				}
-				$VALUE[$name]["MAY"]["count"] = $j;
-			}
-			
-			// ------------------------
-			// Retreive MUST's
-			$words = split("MUST", $entry[0][$attrib][$i]);
-			if(! empty($words[1])) {
-				if(ereg("^ \(", $words[1])) {
-					$words = split("\(", $words[1]);
-					$words = split("\)", $words[1]);
-					$word  = $words[0];
-				} else {
-					$words = split(" ", $words[1]);
-					$word  = $words[1];
-				}
-				
-				// Remove spaces
-				$words = ereg_replace(" ", "", $word);
-				$words = split('\$', $words);
-				
-				$j = 0;
-				foreach($words as $must) {
-					$VALUE[$name]["MUST"][] = $must;
-					$j++;
-				}
-				$VALUE[$name]["MUST"]["count"] = $j;
-			}
-			
-			// ------------------------
-			// Retreive EQUALITY
-			$words = split("EQUALITY", $entry[0][$attrib][$i]);
-			if(! empty($words[1])) {
-				$words = split(" ", $words[1]);
-				$VALUE[$name]["EQUALITY"] = $words[1];
-			}
-			
-			// ------------------------
-			// Retreive SYNTAX
-			$words = split("SYNTAX", $entry[0][$attrib][$i]);
-			if(! empty($words[1])) {
-				$words = split(" ", $words[1]);
-				$VALUE[$name]["SYNTAX"] = $words[1];
-			}
-			
-			// ------------------------
-			// Retreive USAGE
-			$words = split("USAGE", $entry[0][$attrib][$i]);
-			if(! empty($words[1])) {
-				$words = split(" ", $words[1]);
-				$VALUE[$name]["USAGE"] = $words[1];
-			}
-			
-			// ------------------------
-			// Retreive SUP
-			if(eregi("SUP", $entry[0][$attrib][$i])) {
-				$words = split("SUP", $entry[0][$attrib][$i]);
-				if(! empty($words[1])) {
-					if(ereg("^ \(", $words[1])) {
-						$words = split("\(", $words[1]);
-						$words = split("\)", $words[1]);
-
-						// Remove spaces
-						$words = ereg_replace(" ", "", $words[0]);
-						$words = split('\$', $words);
-
-						for($j = 0; isset($words[$j]); $j++)
-						  $VALUE[$name]["SUP"][] = $words[$j];
-					} else {
-						$words = split(" ",  $words[1]);
-
-						// Remove spaces
-						$VALUE[$name]["SUP"] = ereg_replace(" ", "", $words[1]);
-					}
-				}
-			}
-
-			// ------------------------
-			// Retreive SINGLE-VALUE
-			if(eregi("SINGLE-VALUE", $entry[0][$attrib][$i]))
-			  $VALUE[$name]["SINGLE-VALUE"] = 'TRUE';
-			
-			// ------------------------
-			// Retreive NO-USER-MODIFICATION
-			if(eregi("NO-USER-MODIFICATION", $entry[0][$attrib][$i]))
-			  $VALUE[$name]["NO-USER-MODIFICATION"] = 'TRUE';
-			
-			// ------------------------
-			// Retreive X-BINARY-TRANSFER-REQUIRED
-			if(eregi("X-BINARY-TRANSFER-REQUIRED", $entry[0][$attrib][$i]))
-			  $VALUE[$name]["X-BINARY-TRANSFER-REQUIRED"] = 'TRUE';
-			
-			// ------------------------
-			// Retreive X-NOT-HUMAN-READABLE
-			if(eregi("X-NOT-HUMAN-READABLE", $entry[0][$attrib][$i]))
-			  $VALUE[$name]["X-NOT-HUMAN-READABLE"] = 'TRUE';
-		}
-
-		/* If there's no anonymous read access to the 'cn=Subschema',
-		 * phpQLAdmin will fail here...  */
-		if(is_array($VALUE))
-		  ksort($VALUE);
-
-		return $VALUE;
-    } else
-	  return false;
-}
-// }}}
-
-// {{{ pql_get_rootdn(dn)
-function pql_get_rootdn($dn, $function = '') {
-	global $_pql, $_SESSION;
-	$tracker = 'Please report this at the <a href="http://bugs.bayour.com/" target="_new">bugtracker</a>.<br>';
-
-	if($function)
-	  $function = " (from $function)";
-
-	if($dn == '')
-	  die("This is weird. We're called$function with an empty DN! $tracker");
-	else
-	  $dn = urldecode($dn);
-
-	if(is_array($_pql->ldap_basedn)) {
-		$counts = 0;
-
-		// Get all possible matches. If we're looking for 'uid=turbo,ou=People,o=Fredriksson,c=SE',
-		// there is at least FOUR possibilities (one for each and every branch - they can all be
-		// separate root DN's!
-		foreach($_pql->ldap_basedn as $base) {
-			$base = urldecode($base);
-
-			if(eregi("$base\$", $dn))  {
-				$counts++;
-				$DNs[] = $base;
-			}
-		}
-
-		if(($counts < 1) and @$_SESSION["MONITOR_BACKEND_ENABLED"]) {
-			// We have ONE more shot in finding the root DN. Look in the
-			// 'cn=Databases,cn=Monitor:namingContexts' attribute(s).
-			require("./include/pql_status.inc");
-			$tmp = pql_get_status($_pql->ldap_linkid, "cn=Databases,cn=Monitor", 'namingContexts');
-			if(is_array($tmp)) {
-				// We got more than one namingContexts (i.e. an array). Go through each value...
-				foreach($tmp as $base) {
-					if(eregi("$base\$", $dn))  {
-						$counts++;
-						$DNs[] = $base;
-					}
-				}
-			} elseif(eregi($tmp, $dn)) {
-				// We've only got one namingContexts (i.e. not an array).
-				$counts++;
-				$DNs[] = $tmp;
-			}
-		}
-		
-		if($counts >= 2) {
-			// We have more than one hit (there's at least TWO partitions)!!
-			// -> Check each DN, looking for the DN with the HIGHEST amount of commas.
-			//    That must be the DN that's closest to the DN we're looking for.
-			foreach($DNs as $base)  {
-				$dn_parts = explode(',', $base);
-				$count = count($dn_parts); // Get amount of DN parts.
-				
-				// Remember this DN. It's above the DN we're looking for.
-				$DN_REF[$base] = ($count) ? $count : 0;
-			}
-			
-			// Again we have more than one. Which of these have the highest
-			// amount of commas!?
-			if($DN_REF) {
-				asort($DN_REF); // Sort the DN's left. The LAST one have the most commas!
-				
-				// Just go through them one by one to get the last one...
-				foreach($DN_REF as $base => $count)
-				  $found = $base;
-				
-				// Return this DN. It MUST be the correct one!!
-				return(urlencode($found));
-			}
-
-			// We just shouldn't end up here! "It can't happen" - famous last words :)
-			die("You've ended up in a place where I didn't expect you to get... How exactly did you get here!? $tracker");
-		} elseif($counts < 1) {
-			// BUG! We don't have a hit!
-			echo "This is weird. We couldn't find the root dn for some reason. The DN we're trying to find a root DN for is: ";
-			echo "'$dn'.<p>$tracker<p>";
-			echo "Note that you <u><b>MUST</b></u> include exact details on how you got this error.";
-			echo "Every single mouse click etc - an URL won't suffice!";
-			die();
-		} else
-		  $dn = $DNs[0];
-	} else {
-		// We don't have any base dn's. Maybe because
-		// we're included from a file which doesn't
-		// have a connection to the LDAP server.
-		//
-		// Find the root dn the 'old fasioned' (ie,
-		// broken!) way.
-		$rootdn = split(',', $dn);
-
-		if($rootdn[1]) {
-			unset($rootdn[0]);
-			$dn = implode(",", $rootdn);
-		} else
-		  $dn = $rootdn[count($rootdn)-1];
-	}
-
-	return(urlencode($dn));
 }
 // }}}
 
@@ -1789,70 +1147,6 @@ function pql_ldap_deliverymode($mode) {
 	}
 }
 
-// }}}
-
-// {{{ pql_setup_branch_objectclasses(filter = 0, dn, linkid = '')
-// Setup object class entry for a domain/branch with all
-// necessary objectclasses
-function pql_setup_branch_objectclasses($filter = 0, $dn, $linkid = '') {
-	if($dn and $linkid) {
-		// Retreive existing objectClasses from the object
-		$object = ldap_explode_dn($dn, 0);
-		$sr     = @ldap_read($linkid, $dn, $object[0], array(pql_get_define("PQL_ATTR_OBJECTCLASS")));
-		$ocs    = @ldap_get_entries($linkid, $sr) or pql_format_error(1);
-		for($j=0; $j < $ocs[0][pql_get_define("PQL_ATTR_OBJECTCLASS")]["count"]; $j++) {
-			if(eregi('phpQLAdminBranch', $ocs[0][pql_get_define("PQL_ATTR_OBJECTCLASS")][$j]))
-				$got_phpqladmin_objectclass_branch = 1;
-
-			$objectclass[] = $ocs[0][pql_get_define("PQL_ATTR_OBJECTCLASS")][$j];
-		}
-	} else {
-		// No previous DN, we're probably creating a new
-
-		// ObjectClasses for this root DN
-		if($dn) {
-			// What's the Root DN (namingContexts) for this domain
-			$rootdn = pql_get_rootdn($dn, 'pql_setup_branch_objectclasses'); $rootdn = urldecode($rootdn);
-
-			$ocs = pql_get_define("PQL_CONF_OBJECTCLASS_DOMAIN", $rootdn);
-		} elseif($linkid->ldap_basedn[0])
-		  $ocs = pql_get_define("PQL_CONF_OBJECTCLASS_DOMAIN", $linkid->ldap_basedn[0]);
-		else
-		  $ocs = '';
-
-		$ocs = pql_split_oldvalues($ocs);
-		foreach($ocs as $oc) {
-			if($filter) {
-				if(!eregi('dcOrganizationNameForm', $oc))
-				  $entry .= "(objectClass=$oc)";
-			} else {
-				if(eregi('phpQLAdminBranch', $oc))
-				  $got_phpqladmin_objectclass_branch = 1;
-
-				$entry[] = $oc;
-			}
-		}
-	}
-
-	if($filter and $entry)
-	  return($entry);
-
-	if($dn and $linkid)
-	  return($objectclass);
-
-	if(!$got_phpqladmin_objectclass_branch and !$filter) {
-		$entry[] = 'phpQLAdminBranch';
-		for($i=0; $objectclass[$i]; $i++)
-		  $entry[] = $objectclass[$i];
-	}
-
-	if(!count($entry))
-	  // We have already setup the objectclasses, return NULL
-	  return;
-	else
-	  // Return the objectClasses
-	  return($entry);
-}
 // }}}
 
 // {{{ pql_split_oldvalues(value)

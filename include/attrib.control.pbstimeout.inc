@@ -2,7 +2,7 @@
 // control attribute plugin for
 // pbstimeout (max number of bytes in message)
 //
-// $Id: attrib.control.pbstimeout.inc,v 2.4 2004-10-18 13:39:32 turbo Exp $
+// $Id: attrib.control.pbstimeout.inc,v 2.5 2004-10-19 10:40:41 turbo Exp $
 
 // {{{ pbstimeout_check(type)
 function pbstimeout_check($type) {
@@ -93,10 +93,9 @@ function pbstimeout_save($type, $host)  {
 	  case "modify";
 	  case "add";
 		// save entries
-		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_ATTR_PBS_TIMEOUT"),
-										 $_REQUEST["pbstimeout"]))
+		if(pql_modify_attribute($_pql_control->ldap_linkid,
+								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								pql_get_define("PQL_ATTR_PBS_TIMEOUT"), '', $_REQUEST["pbstimeout"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('pbstimeout options')));
 		else

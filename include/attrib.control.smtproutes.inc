@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtproutes (max number of bytes in message)
 //
-// $Id: attrib.control.smtproutes.inc,v 2.22 2004-10-18 13:39:32 turbo Exp $
+// $Id: attrib.control.smtproutes.inc,v 2.23 2004-10-19 10:40:41 turbo Exp $
 
 // {{{ smtproutes_check(type)
 
@@ -403,10 +403,9 @@ function smtproutes_save($type, $host) {
 			}
 
 			// Update the object
-			if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-											 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-											 pql_get_define("PQL_ATTR_SMTPROUTES"),
-											 $smtproutes))
+			if(pql_modify_attribute($_pql_control->ldap_linkid,
+									pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+									pql_get_define("PQL_ATTR_SMTPROUTES"), '', $smtproutes))
 			  $success = 1;
 		} else {
 			// We're called from the domain details page -> we must find out what object to update
@@ -427,10 +426,9 @@ function smtproutes_save($type, $host) {
 						$values[] = $_REQUEST["domainname"][0].":".$_REQUEST["relay"][$i].":".$_REQUEST["port"][0];
 						
 						// Update the object
-						if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-														 pql_get_define("PQL_ATTR_CN") . "=" . $_REQUEST["relay"][$i] . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-														 pql_get_define("PQL_ATTR_SMTPROUTES"),
-														 $values))
+						if(pql_modify_attribute($_pql_control->ldap_linkid,
+												pql_get_define("PQL_ATTR_CN") . "=" . $_REQUEST["relay"][$i] . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+												pql_get_define("PQL_ATTR_SMTPROUTES"), '', $values))
 						  $success = 1;
 					}
 				}
@@ -467,10 +465,9 @@ function smtproutes_save($type, $host) {
 					}
 					
 					// Update the object
-					if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-													 pql_get_define("PQL_ATTR_CN") . "=" . $_REQUEST["relay"][$i] . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-													 pql_get_define("PQL_ATTR_SMTPROUTES"),
-													 $newvals))
+					if(pql_modify_attribute($_pql_control->ldap_linkid,
+											pql_get_define("PQL_ATTR_CN") . "=" . $_REQUEST["relay"][$i] . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+											pql_get_define("PQL_ATTR_SMTPROUTES"), '', $newvals))
 					  $success = 1;
 				}
 			}
@@ -498,9 +495,7 @@ function smtproutes_save($type, $host) {
 				}
 				
 				// Save this new array to the object
-				if(pql_control_replace_attribute($_pql_control->ldap_linkid, $ctrl,
-												 pql_get_define("PQL_ATTR_SMTPROUTES"),
-												 $newroutes))
+				if(pql_modify_attribute($_pql_control->ldap_linkid, $ctrl, pql_get_define("PQL_ATTR_SMTPROUTES"), '', $newroutes))
 				  $success = 1;
 			}
 		} elseif($_REQUEST["domain"] && $_REQUEST["set"] && $_REQUEST["rootdn"] && $_REQUEST["attrib"]) {
@@ -527,9 +522,7 @@ function smtproutes_save($type, $host) {
 				}
 
 				// Save this new array to the object
-				if(pql_control_replace_attribute($_pql_control->ldap_linkid, $ctrl,
-												 pql_get_define("PQL_ATTR_SMTPROUTES"),
-												 $newroutes))
+				if(pql_modify_attribute($_pql_control->ldap_linkid, $ctrl, pql_get_define("PQL_ATTR_SMTPROUTES"), '', $newroutes))
 				  $success = 1;
 			}
 		}

@@ -1,8 +1,9 @@
 <?php
 // attribute plugin for
 // loginshell
-// $Id: attrib.loginshell.inc,v 2.16 2004-06-10 05:37:43 turbo Exp $
+// $Id: attrib.loginshell.inc,v 2.17 2004-10-19 10:40:41 turbo Exp $
 
+// {{{ attribute_check(type)
 function attribute_check($type) {
     global $error, $LANG;
     
@@ -14,11 +15,15 @@ function attribute_check($type) {
 
     return true;
 }
+// }}}
 
+// {{{ attribute_init(void)
 function attribute_init() {
     $_REQUEST["loginshell"] = (empty($_GET["oldvalue"]) ? "" : $_GET["oldvalue"]);
 }
+// }}}
 
+// {{{ attribute_print_form(void)
 function attribute_print_form() {
     global $error, $LANG;
 
@@ -73,7 +78,9 @@ function attribute_print_form() {
 
 <?php
 }
+// }}}
 
+// {{{ attribute_save(type)
 function attribute_save($type) {
     global $_pql, $LANG;
     
@@ -90,7 +97,7 @@ function attribute_save($type) {
 			break;
     	}
 		
-		if(pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], $_REQUEST["loginshell"])) {
+		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], '', $_REQUEST["loginshell"])) {
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 										 array('what' => $LANG->_('login shell'),
 											   'new'  => $_REQUEST["loginshell"]));
@@ -107,6 +114,7 @@ function attribute_save($type) {
 								  array('type' => $type, 'file' => __FILE__)));
     }
 }
+// }}}
 
 // Local variables:
 // mode: php

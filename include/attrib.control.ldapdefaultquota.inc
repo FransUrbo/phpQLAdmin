@@ -4,7 +4,7 @@
 // or, if using new style quota
 // 	defaultQuotaSize and defaultQuotaCount
 //
-// $Id: attrib.control.ldapdefaultquota.inc,v 2.17 2004-10-18 13:39:32 turbo Exp $
+// $Id: attrib.control.ldapdefaultquota.inc,v 2.18 2004-10-19 10:40:40 turbo Exp $
 
 // {{{ ldapdefaultquota_check(type)
 function ldapdefaultquota_check($type) {
@@ -212,22 +212,18 @@ function ldapdefaultquota_save($type, $host) {
 
 		if($_SESSION["OLD_STYLE_QUOTA"])  {
 			// Set the old style quota value
-			if(!pql_control_replace_attribute($_pql_control->ldap_linkid, $dn,
-											  pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"),
-											  $mailquota))
+			if(!pql_modify_attribute($_pql_control->ldap_linkid, $dn, pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"), '', $mailquota))
 			  $failed = 1;
 		}
 
 		if($_SESSION["NEW_STYLE_QUOTA"])  {
 			// Set the new style quota values
-			if(!pql_control_replace_attribute($_pql_control->ldap_linkid, $dn,
-											  pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA_SIZE"),
-											  $_REQUEST["maxsize"] * 1024))
+			if(!pql_modify_attribute($_pql_control->ldap_linkid, $dn, pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA_SIZE"), '',
+									 $_REQUEST["maxsize"] * 1024))
 			  $failed = 1;
 
-			if(!pql_control_replace_attribute($_pql_control->ldap_linkid, $dn, 
-											  pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA_COUNT"),
-											  $_REQUEST["maxmails"]))
+			if(!pql_modify_attribute($_pql_control->ldap_linkid, $dn, pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA_COUNT"), '',
+									 $_REQUEST["maxmails"]))
 			  $failed = 1;
 		}
 

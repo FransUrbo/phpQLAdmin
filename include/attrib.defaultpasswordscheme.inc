@@ -1,8 +1,9 @@
 <?php
 // Attribute plugin for
 // defaultPasswordScheme
-// $Id: attrib.defaultpasswordscheme.inc,v 2.12 2004-07-07 14:17:06 turbo Exp $
+// $Id: attrib.defaultpasswordscheme.inc,v 2.13 2004-10-19 10:40:41 turbo Exp $
 
+// {{{ attribute_check(type)
 function attribute_check($type = '') {
     global $error, $LANG;
 
@@ -14,7 +15,9 @@ function attribute_check($type = '') {
     
 	return true;
 }
+// }}}
 
+// {{{ attribute_print_form(type)
 function attribute_print_form($type = "modify") {
     global $error, $LANG;
 
@@ -50,7 +53,9 @@ function attribute_print_form($type = "modify") {
   </form>
 <?php
 }
+// }}}
 
+// {{{ attribute_save(type)
 function attribute_save($type) {
     global $_pql, $LANG;
 
@@ -63,7 +68,7 @@ function attribute_save($type) {
 		if($type == 'delete')
 		  $_REQUEST[$attrib] = '';
 
-		if(pql_domain_set_value($_pql->ldap_linkid, $_REQUEST["domain"], $attrib, $_REQUEST[$attrib]))
+		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib, 1, $_REQUEST[$attrib]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% for domain %domain%'),
 									   array('what'   => $LANG->_('default password scheme'),
 											 'domain' => pql_maybe_decode(urldecode($_REQUEST["domain"]))));
@@ -80,6 +85,7 @@ function attribute_save($type) {
 								  array('type' => $type, 'file' => __FILE__)));
     }
 }
+// }}}
 
 // Local variables:
 // mode: php

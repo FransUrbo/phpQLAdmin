@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for OpenLDAPaci
-// $Id: attrib.aci.inc,v 1.8 2004-06-10 05:37:43 turbo Exp $
+// $Id: attrib.aci.inc,v 1.9 2004-10-19 10:40:40 turbo Exp $
 
 /* DLW: This has valid syntax, but I don't know how to test it. */
 
@@ -246,10 +246,10 @@ function attribute_save($action) {
 	// {{{ Do the modification
     $success = 0;
 	if($user) {
-		if(pql_replace_attribute($_pql->ldap_linkid, $user, '', $acis))
+		if(pql_modify_attribute($_pql->ldap_linkid, $user, '', '', $acis))
 		  $success = 1;
 	} else {
-		if(pql_replace_attribute($_pql->ldap_linkid, $domain, '', $acis))
+		if(pql_modify_attribute($_pql->ldap_linkid, $domain, '', '', $acis))
 		  $success = 1;
 	}
 	// }}}

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.26 2004-10-18 13:39:31 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.27 2004-10-19 10:40:40 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -176,7 +176,7 @@ function attribute_save($type) {
 		  // We're deleting the last entry...
 		  $entry[$attrib] = array();
 
-		if(pql_domain_set_value($_pql->ldap_linkid, $_REQUEST["domain"], '', $entry)) {
+		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], '', '', $entry)) {
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										 array('what' => $LANG->_('Additional domain name')));
 

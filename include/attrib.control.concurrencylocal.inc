@@ -3,7 +3,7 @@
 // concurrencylocal (may simultaneous local deliveries)
 // concurrencyremote (may simultaneous remote deliveries)
 //
-// $Id: attrib.control.concurrencylocal.inc,v 2.18 2004-10-18 13:39:31 turbo Exp $
+// $Id: attrib.control.concurrencylocal.inc,v 2.19 2004-10-19 10:40:40 turbo Exp $
 
 // {{{ concurrencylocal_check(type)
 function concurrencylocal_check($type) {
@@ -123,9 +123,9 @@ function concurrencylocal_save($type, $host) {
 		$attribs = array("concurrencylocal"  => pql_get_define("PQL_ATTR_CONCURRENCYLOCAL"),
 						 "concurrencyremote" => pql_get_define("PQL_ATTR_CONCURRENCYREMOTE"));
 		foreach($attribs as $key => $attrib)
-		  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-													pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-													$attrib, $_REQUEST[$key]);
+		  $return[] = pql_modify_attribute($_pql_control->ldap_linkid,
+										   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+										   $attrib, '', $_REQUEST[$key]);
 		
 		if(in_array(false, $return))
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // rbllist (max number of bytes in message)
 //
-// $Id: attrib.control.rbllist.inc,v 2.5 2004-10-18 13:39:32 turbo Exp $
+// $Id: attrib.control.rbllist.inc,v 2.6 2004-10-19 10:40:41 turbo Exp $
 
 // {{{ rbllist_check(type)
 function rbllist_check($type) {
@@ -160,9 +160,9 @@ function rbllist_save($type, $host)  {
 		for($i=0; $_REQUEST["rblserver"][$i]; $i++)
 		  $entry[] = $_REQUEST["rblserver"][$i]." ".$_REQUEST["rblaction"][$i]." ".$_REQUEST["rblmatch"][$i]." ".$_REQUEST["rblmessage"][$i];
 
-		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_ATTR_CN")."=$host,". $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_ATTR_RBLLIST"), $entry))
+		if(pql_modify_attribute($_pql_control->ldap_linkid,
+								pql_get_define("PQL_ATTR_CN")."=$host,". $_SESSION["USER_SEARCH_DN_CTR"],
+								pql_get_define("PQL_ATTR_RBLLIST"), '', $entry))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('rbllist options')));
 		else

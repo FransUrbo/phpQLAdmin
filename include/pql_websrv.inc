@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for web server configuration)
 //
-// $Id: pql_websrv.inc,v 1.9 2004-10-18 13:39:33 turbo Exp $
+// $Id: pql_websrv.inc,v 1.10 2004-10-19 10:40:42 turbo Exp $
 //
 
 // {{{ pql_websrv_add_server(linkid, domain, server)
@@ -53,30 +53,6 @@ function pql_websrv_add_server($linkid, $domain, $server) {
 		// failed to add configuration
 		pql_format_error(1);
 		die("$LDIF");
-	}
-
-	return true;
-}
-// }}}
-
-// {{{ pql_websrv_set_record(linkid, dn, record, value)
-// This is an exact (!) copy of the pql_bind9_set_record() function
-function pql_websrv_set_record($linkid, $dn, $record, $value = '') {
-	$dn = urldecode($dn);
-
-	if(!is_array($record)) {
-		$record = lc($record);
-		$entry[$record] = $value;
-	} else
-	  // We've been called with an already created 'LDIF'...
-	  $entry = $record;
-	
-	// Create a LDIF object to print in case of error
-	$LDIF = pql_create_ldif("pql_websrv_set_record", $dn, $entry);
-
-    if(!ldap_mod_replace($linkid, $dn, $entry)) {
-		pql_format_error(1);
-		die($LDIF);
 	}
 
 	return true;

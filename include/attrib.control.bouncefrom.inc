@@ -3,9 +3,10 @@
 // bouncefrom (username of bounce sender)
 // bouncehost (hostname of bounce sender)
 //
-// $Id: attrib.control.bouncefrom.inc,v 2.16 2004-10-18 13:39:31 turbo Exp $
+// $Id: attrib.control.bouncefrom.inc,v 2.17 2004-10-19 10:40:40 turbo Exp $
 
 // {{{ bouncefrom_check(type)
+
 function bouncefrom_check($type) {
 	global $error, $LANG;
 
@@ -24,9 +25,11 @@ function bouncefrom_check($type) {
 	if($is_error == false)
 	  return true;
 }
+
 // }}}
 
 // {{{ bouncefrom_init(host)
+
 // init values
 function bouncefrom_init($host) {
 	global $_pql_control;
@@ -40,6 +43,7 @@ function bouncefrom_init($host) {
 											$attrib);
 	}
 }
+
 // }}}
 
 
@@ -124,9 +128,9 @@ function bouncefrom_save($type, $host) {
 		$attribs = array("bouncefrom" => pql_get_define("PQL_ATTR_BOUNCEFROM"),
 						 "bouncehost" => pql_get_define("PQL_ATTR_BOUNCEHOST"));
 		foreach($attribs as $key => $attrib)
-		  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-													pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-													$attrib, $_REQUEST[$key]);
+		  $return[] = pql_modify_attribute($_pql_control->ldap_linkid,
+										   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+										   $attrib, '', $_REQUEST[$key]);
 		
 		if(in_array(false, $return))
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),

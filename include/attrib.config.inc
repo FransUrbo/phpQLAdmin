@@ -1,7 +1,8 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.37 2004-10-18 13:39:31 turbo Exp $
+// $Id: attrib.config.inc,v 1.38 2004-10-19 10:40:40 turbo Exp $
 
+// {{{ attribute_check(void)
 function attribute_check() {
     global $error, $LANG;
 
@@ -17,7 +18,9 @@ function attribute_check() {
     
     return true;
 }
+// }}}
 
+// {{{ attribute_print_form(void)
 function attribute_print_form() {
 	global $_pql, $error, $LANG, $PQL_ATTRIBUTE;
 
@@ -224,7 +227,9 @@ function attribute_print_form() {
   </script>
 <?php
 }
+// }}}
 
+// {{{ attribute_save(void)
 function attribute_save() {
     global $_pql, $LANG, $PQL_ATTRIBUTE;
 
@@ -399,11 +404,7 @@ function attribute_save() {
 				}
 			}
 
-			/* DLW: If there are no more entries for this attribute, then make an empty one
-             * so that pql_domain_set_value knows what attribute we're talking about. */
-			if (!isset($entry[$attrib])) $entry[$attrib] = array();	// DLW: 
-
-			if(! pql_domain_set_value($_pql->ldap_linkid, $dn, NULL, $entry))
+			if(!pql_modify_attribute($_pql->ldap_linkid, $dn, '', '', $entry))
 			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 										   array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
 			else {
@@ -417,10 +418,10 @@ function attribute_save() {
 
 		if(@$delete[$attrib]) {
 			// We're deleting the 'externalScript{User,Domain}' attribute(s).
-			if(pql_domain_set_value($_pql->ldap_linkid, $rootdn, $attrib, NULL))
+			if(pql_modify_attribute($_pql->ldap_linkid, $rootdn, $attrib, '', ''))
               $success = 1;
 		} else {
-			if(pql_domain_set_value($_pql->ldap_linkid, $rootdn, NULL, $entry)) 
+			if(pql_modify_attribute($_pql->ldap_linkid, $rootdn, '', '', $entry)) 
 			  $success = 1;
 		}
 
@@ -437,6 +438,7 @@ function attribute_save() {
 	attribute_forward($msg, $rlnb);
 	break;
 }
+// }}}
 
 // Local variables:
 // mode: php

@@ -1,6 +1,6 @@
 <?php
 // Delete a mailserver controls object
-// $Id: control_del.php,v 2.12 2004-10-18 13:39:30 turbo Exp $
+// $Id: control_del.php,v 2.13 2004-10-19 10:40:40 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -138,10 +138,9 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 					  $users = control_del_find_users($_pql, $_REQUEST["oldmx"]);
 					  if(is_array($users)) {
 						  for($i=0; $users[$i]; $i++) {
-							  pql_replace_attribute($_pql->ldap_linkid,
-													$users[$i],
-													pql_get_define("PQL_ATTR_MAILHOST"),
-													$host);
+							  pql_modify_attribute($_pql->ldap_linkid, $users[$i],
+												   pql_get_define("PQL_ATTR_MAILHOST"),
+												   '', $host);
 						  }
 					  }
 				  }

@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for spamAssassin
-// $Id: attrib.spamassassin.inc,v 2.1 2004-10-13 17:47:29 turbo Exp $
+// $Id: attrib.spamassassin.inc,v 2.2 2004-10-19 10:40:41 turbo Exp $
 
 // {{{ attribute_save($request)
 function attribute_save($request) {
@@ -74,7 +74,7 @@ function attribute_save($request) {
 	// ------------------------------------
 	// Update the user object, replacing the whole
 	// attribute set.
-	if(pql_replace_attribute($_pql->ldap_linkid, urldecode($request["user"]), '', $new))
+	if(pql_modify_attribute($_pql->ldap_linkid, urldecode($request["user"]), '', '', $new))
 	  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 								   array('what' => $LANG->_('Antispam configuration')));
 	else

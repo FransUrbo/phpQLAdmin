@@ -1,13 +1,16 @@
 <?php
 // attribute plugin for
 // ezmlmVirtualUser in a domain/branch
-// $Id: attrib.ezmlmuser.inc,v 2.2 2004-06-10 05:37:43 turbo Exp $
+// $Id: attrib.ezmlmuser.inc,v 2.3 2004-10-19 10:40:41 turbo Exp $
 
+// {{{ attribute_check(void)
 function attribute_check() {
     global $error, $LANG;
 	return true;
 }
+// }}}
 
+// {{{ attaribute_print_form(void)
 function attribute_print_form() {
     global $error, $LANG;
 ?>
@@ -32,7 +35,9 @@ function attribute_print_form() {
   </form>
 <?php
 }
+// }}}
 
+// {{{ attribute_save(type)
 function attribute_save($type) {
     global $_pql, $LANG;
     
@@ -46,7 +51,7 @@ function attribute_save($type) {
 			break;
     	}
 
-		if(pql_domain_set_value($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["attrib"], $_REQUEST["ezmlmvirtualuser"]))
+		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["attrib"], 1, $_REQUEST["ezmlmvirtualuser"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									   array('what' => $LANG->_('EZMLM virtual user'),
 											 'new'  => $_REQUEST["ezmlmvirtualuser"]));
@@ -62,6 +67,7 @@ function attribute_save($type) {
 								  array('type' => $type, 'file' => __FILE__)));
     }
 }
+// }}}
 
 // Local variables:
 // mode: php

@@ -1,8 +1,9 @@
 <?php
 // attribute plugin for
 // mailmessagestore (path to mailbox)
-// $Id: attrib.mailmessagestore.inc,v 2.17 2004-06-10 05:37:43 turbo Exp $
+// $Id: attrib.mailmessagestore.inc,v 2.18 2004-10-19 10:40:41 turbo Exp $
 
+// {{{ attribute_check(type)
 function attribute_check($type) {
     global $error, $LANG;
 	
@@ -27,11 +28,15 @@ function attribute_check($type) {
 	
 	return true;
 }
+// }}}
 
+// {{{ attribute_init(void)
 function attribute_init() {
     $_REQUEST["mailmessagestore"] = $_REQUEST["oldvalue"];
 }
+// }}}
 
+// {{{ attribute_print_form(void)
 function attribute_print_form() {
     global $error, $LANG;
 ?>
@@ -67,7 +72,9 @@ function attribute_print_form() {
   </form>
 <?php
 }
+// }}}
 
+// {{{ attribute_save(type)
 function attribute_save($type) {
     global $_pql, $LANG;
 	
@@ -84,9 +91,8 @@ function attribute_save($type) {
 			break;
     	}
 		
-		if(pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"],
-								 pql_get_define("PQL_ATTR_MAILSTORE"),
-								 $_REQUEST["mailmessagestore"]))
+		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_MAILSTORE"),
+								'', $_REQUEST["mailmessagestore"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									   array('what' => $LANG->_('mailbox path '),
 											 'new'  => $_REQUEST["mailmessagestore"]));
@@ -102,6 +108,7 @@ function attribute_save($type) {
 								  array('type' => $type, 'file' => __FILE__)));
 	}
 }
+// }}}
 
 // Local variables:
 // mode: php

@@ -1,8 +1,9 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.25 2004-10-18 13:39:32 turbo Exp $
+// $Id: attrib.userpassword.inc,v 2.26 2004-10-19 10:40:41 turbo Exp $
 
+// {{{ attribute_check(type)
 function attribute_check($type) {
 	global $error, $LANG;
 
@@ -23,11 +24,15 @@ function attribute_check($type) {
 	
 	return true;
 }
+// }}}
 
+// {{{ attribute_init(void)
 function attribute_init() {
 	// dummy function
 }
+// }}}
 
+// {{{ attribute_print_form(void)
 function attribute_print_form() {
 	global $error, $_pql, $LANG;
 
@@ -95,7 +100,9 @@ function attribute_print_form() {
   </form>
 <?php
 }
+// }}}
 
+// {{{ attribute_save(type)
 function attribute_save($type) {
 	global $_pql, $LANG;
 
@@ -107,13 +114,10 @@ function attribute_save($type) {
 	  case "modify";
 		$pw = pql_password_hash($_REQUEST["userpassword"], $_REQUEST["pwscheme"]);
 		
-		if(pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"],
-								 pql_get_define("PQL_ATTR_PASSWD"),
-								 $pw))
-		{
+		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_PASSWD"), '', $pw)) {
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										 array('what' => $LANG->_('password')));
-
+			
 			if($_REQUEST["user"] == $_SESSION["USER_DN"])
 			  $_SESSION["USER_PASS"] = $userpassword;
 		} else
@@ -128,6 +132,7 @@ function attribute_save($type) {
 								  array('type' => $type, 'file' => __FILE__)));
 	}
 }
+// }}}
 
 // Local variables:
 // mode: php

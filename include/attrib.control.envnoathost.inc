@@ -2,7 +2,7 @@
 // control attribute plugin for
 // envnoathost (default prefix for mailbox paths)
 //
-// $Id: attrib.control.envnoathost.inc,v 2.16 2004-10-18 13:39:31 turbo Exp $
+// $Id: attrib.control.envnoathost.inc,v 2.17 2004-10-19 10:40:40 turbo Exp $
 
 // {{{ envnoathost_check(type)
 function envnoathost_check($type) {
@@ -104,10 +104,9 @@ function envnoathost_save($type, $host) {
 	  case "modify";
 	  case "add";
 		// save entries
-		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_ATTR_ENVNOATHOST"),
-										 $_REQUEST["envnoathost"]))
+		if(pql_modify_attribute($_pql_control->ldap_linkid,
+								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								pql_get_define("PQL_ATTR_ENVNOATHOST"), '', $_REQUEST["envnoathost"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('envnotathost options')));
 		else 

@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: domain_add.php,v 2.50 2004-10-18 13:39:30 turbo Exp $
+// $Id: domain_add.php,v 2.51 2004-10-19 10:40:40 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -77,29 +77,24 @@ if($dns[0]) {
 	$msg = "";
 	
 	// Save the attributes - Default domain
-	if($_REQUEST["defaultdomain"] && !pql_domain_set_value($_pql->ldap_linkid,
-											   $dns[0], 'defaultDomain',
-											   pql_maybe_idna_encode($_REQUEST["defaultdomain"])))
+	if($_REQUEST["defaultdomain"] && !pql_modify_attribute($_pql->ldap_linkid, $dns[0], 'defaultDomain', 1,
+														   pql_maybe_idna_encode($_REQUEST["defaultdomain"])))
 	  $msg = $LANG->_('Failed to change the default domainname') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	
 	// Save the attributes - Default home directory
-	if($defaulthomedir && !pql_domain_set_value($_pql->ldap_linkid,
-												$dns[0], 'baseHomeDir',
-												$defaulthomedir))
+	if($defaulthomedir && !pql_modify_attribute($_pql->ldap_linkid, $dns[0], 'baseHomeDir', 1, $defaulthomedir))
 	  $msg = $LANG->_('Failed to change the default domainname') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	
 	// Save the attributes - Default mail directory
-	if($defaultmaildir && !pql_domain_set_value($_pql->ldap_linkid,
-												$dns[0], 'baseMailDir',
-												$defaultmaildir))
+	if($defaultmaildir && !pql_modify_attribute($_pql->ldap_linkid, $dns[0], 'baseMailDir', 1, $defaultmaildir))
 	  $msg = $LANG->_('Failed to change the default domainname') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	
 	// Save the attributes - Default quota
-	if($defaultquota && !pql_domain_set_value($_pql->ldap_linkid, $dns[0], 'baseQuota', $defaultquota))
+	if($defaultquota && !pql_modify_attribute($_pql->ldap_linkid, $dns[0], 'baseQuota', 1, $defaultquota))
 	  $msg = $LANG->_('Failed to change the default domainname') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	
 	// The creator is by default the administrator
-	if(! pql_domain_set_value($_pql->ldap_linkid, $dns[0], pql_get_define("PQL_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]))
+	if(!pql_modify_attribute($_pql->ldap_linkid, $dns[0], pql_get_define("PQL_ATTR_ADMINISTRATOR"), 1, $_SESSION["USER_DN"]))
 	  $msg = $LANG->_('Failed to change the default domainname') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 
 	// Create a template DNS zone

@@ -1,9 +1,10 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.7 2004-10-18 13:39:32 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.8 2004-10-19 10:40:41 turbo Exp $
 
 // {{{ attribute_check(void)
+
 function attribute_check() {
     global $domain, $rootdn, $rdn, $view, $action, $type, $action;
     global $_pql, $attrib, $$attrib, $oldvalue;
@@ -13,9 +14,11 @@ function attribute_check() {
 
     return false;
 }
+
 // }}}
 
 // {{{ attribute_print_form(void)
+
 function attribute_print_form() {
     global $domain, $rootdn, $rdn, $view, $action, $type, $action, $LANG, $LANG;
     global $_pql, $attrib;
@@ -76,6 +79,7 @@ function attribute_print_form() {
     </form>
 <?php
 }
+
 // }}}
 
 // {{{ attribute_save(action)
@@ -111,7 +115,7 @@ function attribute_save($action) {
 		// Add the new value to the array
 		$entry[$attrib][] = $$attrib;
 
-		if(pql_bind9_set_record($_pql->ldap_linkid, $rdn, $entry))
+		if(pql_modify_attribute($_pql->ldap_linkid, $rdn, '', '', $entry))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $$attrib)).".";
 		else
@@ -120,7 +124,7 @@ function attribute_save($action) {
 		break;
 
 	  case "modify":
-		if(pql_bind9_set_record($_pql->ldap_linkid, $rdn, $attrib, $$attrib))
+		if(pql_modify_attribute($_pql->ldap_linkid, $rdn, $attrib, '', $$attrib))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $attrib));
 		else
@@ -137,7 +141,7 @@ function attribute_save($action) {
 			  $entry[$attrib][] = $oldvalues[$i];
 		}
 
-		if(pql_bind9_set_record($_pql->ldap_linkid, $rdn, $entry))
+		if(pql_modify_attribute($_pql->ldap_linkid, $rdn, '', '', $entry))
 		  $msg = pql_complete_constant($LANG->_('Successfully removed %value%'),
 									   array('value' => $oldvalue));
 		else

@@ -1,6 +1,6 @@
 <?php
 // Attribute plugin for additional group (memberUID)
-// $Id: attrib.additionalgroup.inc,v 2.7 2004-06-10 05:37:43 turbo Exp $
+// $Id: attrib.additionalgroup.inc,v 2.8 2004-10-19 10:40:40 turbo Exp $
 
 // {{{ attribute_init(void)...
 
@@ -145,7 +145,7 @@ function attribute_save($action) {
 			}
 		}
 
-		if(pql_modify_userattribute($_pql->ldap_linkid, $group, $attrib_name, $_REQUEST["uid"], ''))
+		if(pql_modify_attribute($_pql->ldap_linkid, $group, $attrib_name, $_REQUEST["uid"], ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully removed %user% from %what% %group%'),
 									   array('what'  => $LANG->_('additional group'),
 											 'user'  => $_REQUEST["uid"],
@@ -173,7 +173,7 @@ function attribute_save($action) {
 
 		$msg = '';
 		for($i=0; $i< count($groups); $i++) {
-			if(pql_modify_userattribute($_pql->ldap_linkid, $groups[$i], $attrib_name, '', $_REQUEST["uid"])) {
+			if(pql_modify_attribute($_pql->ldap_linkid, $groups[$i], $attrib_name, '', $_REQUEST["uid"])) {
 				$msg .= pql_complete_constant($LANG->_('Successfully added user %user% to group %group%<br>'),
 											  array('user' => $_REQUEST["uid"], 'group' => $groups[$i]));
 			} else {

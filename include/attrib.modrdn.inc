@@ -1,8 +1,9 @@
 <?php
 // attribute plugin for changing/renaming the DN
 //
-// $Id: attrib.modrdn.inc,v 2.9 2004-06-10 05:37:43 turbo Exp $
+// $Id: attrib.modrdn.inc,v 2.10 2004-10-19 10:40:41 turbo Exp $
 
+// {{{ attribute_check(type)
 function attribute_check($type) {
     global $error, $LANG;
 
@@ -12,12 +13,16 @@ function attribute_check($type) {
 
 	return false;
 }
+// }}}
 
+// {{{ attribute_init(void)
 function attribute_init() {
     // DLW: This is weird.  Why isn't oldvalue set to the correct value to begin with?
     $_REQUEST["oldvalue"] = (!empty($_GET["user"]) ? $_GET["user"] : "");
 }
+// }}}
 
+// {{{ attribute_print_form(void)
 function attribute_print_form() {
     global $LANG, $error;
 
@@ -65,7 +70,9 @@ function attribute_print_form() {
   </form>
 <?php
 }
+// }}}
 
+// {{{ attribute_save(type)
 function attribute_save($type) {
     global $_pql, $LANG;
 
@@ -99,9 +106,15 @@ function attribute_save($type) {
 		// the attribute_forward() function later on).
 		$user = $user.",".$rdn;
 
+		// We're only interested in these attributes
+		$attribs = array(pql_get_define("PQL_ATTR_ADMINISTRATOR"),
+						 pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
+						 pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"),
+						 pql_get_define("PQL_ATTR_SEEALSO"));
+
 		// Replace all administrator/seealso attributes that reference the old
 		// user DN with the new DN.
-		pql_domain_replace_admins($_pql, $oldvalue, $user);
+		pql_replace_values($_pql, $attribs, $oldvalue, $user);
 	} else
 	  $msg = pql_complete_constant($LANG->_('Failed to rename RDN %user%'),
 				       array('user' => $olduser)) . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
@@ -109,6 +122,7 @@ function attribute_save($type) {
 	// Redirect to the user details page...
 	attribute_forward($msg, true);
 }
+// }}}
 
 // Local variables:
 // mode: php

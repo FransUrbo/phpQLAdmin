@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mailquota.inc,v 2.27 2004-10-18 13:39:32 turbo Exp $
+// $Id: attrib.mailquota.inc,v 2.28 2004-10-19 10:40:41 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -224,8 +224,8 @@ function attribute_save($type) {
 	    $users   = pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], $filter);
 		if(is_array($users)) {
 			foreach($users as $user)
-			  $return[] = pql_replace_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_QUOTA_VALUE"),
-												$_REQUEST["mailquota"]);
+			  $return[] = pql_modify_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_QUOTA_VALUE"),
+											   '', $_REQUEST["mailquota"]);
 
 			if(in_array(false, $return)) 
 			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
@@ -246,7 +246,7 @@ function attribute_save($type) {
 			$entry['objectClass'][] = 'phpQLAdminConfig';
 
 			// We're setting default quota for domain, not user.
-			if(! pql_domain_set_value($_pql->ldap_linkid, $_REQUEST["domain"], 'baseQuota', $entry))
+			if(!pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], 'baseQuota', '', $entry))
 			  // Failed
 			  $msg = pql_complete_constant($LANG->_('Failed to change %what% for domain %domain%'),
 										   array('what'   => $LANG->_('default quota'),
@@ -256,9 +256,8 @@ function attribute_save($type) {
 			// We're setting quota for a user
 			if($_SESSION["OLD_STYLE_QUOTA"]) {
 				// Set the old style quota value
-				if(! pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"],
-										   pql_get_define("PQL_ATTR_QUOTA_VALUE"),
-										   $mailquota))
+				if(!pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_QUOTA_VALUE"),
+										 '', $mailquota))
 				  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 											   array('what' => $LANG->_('quota'))) . ": " . pql_format_error(0);
 			}
@@ -266,16 +265,14 @@ function attribute_save($type) {
 			if($_SESSION["NEW_STYLE_QUOTA"]) {
 				// Set the new style quota values
 				if($_REQUEST["maxsize"] != "")
-				  if(! pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"],
-											 pql_get_define("PQL_ATTR_QUOTA_SIZE"),
-											 $_REQUEST["maxsize"]))
+				  if(!pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_QUOTA_SIZE"),
+										   '', $_REQUEST["maxsize"]))
 					$msg  = pql_complete_constant($LANG->_('Failed to change %what%'),
 												 array('what' => $LANG->_('quota size'))) . ": " . pql_format_error(0);
 				
 				if($_REQUEST["maxmails"] != "")
-				  if(! pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"],
-											 pql_get_define("PQL_ATTR_QUOTA_COUNT"),
-											 $_REQUEST["maxmails"]))
+				  if(!pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_QUOTA_COUNT"),
+										   '', $_REQUEST["maxmails"]))
 					$msg .= "<br>".pql_complete_constant($LANG->_('Failed to change %what%'),
 														 array('what' => $LANG->_('quota count'))) . ": " . pql_format_error(0);
 			}

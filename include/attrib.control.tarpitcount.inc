@@ -3,7 +3,7 @@
 // tarpitcount (user id of virtual user)
 // tarpitdelay (group id of virtual user)
 //
-// $Id: attrib.control.tarpitcount.inc,v 2.16 2004-10-18 13:39:32 turbo Exp $
+// $Id: attrib.control.tarpitcount.inc,v 2.17 2004-10-19 10:40:41 turbo Exp $
 
 // {{{ tarpitcount_check(type)
 function tarpitcount_check($type) {
@@ -144,9 +144,9 @@ function tarpitcount_save($type, $host) {
 		$attribs = array("tarpitcount" => pql_get_define("PQL_ATTR_TARPITCOUNT"),
 						 "tarpitdelay" => pql_get_define("PQL_ATTR_TARPITDELAY"));
 		foreach($attribs as $key => $attrib)
-		  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-													pql_get_define("PQL_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-													$attrib, $_REQUEST[$key]);
+		  $return[] = pql_modify_attribute($_pql_control->ldap_linkid,
+										   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+										   $attrib, '', $_REQUEST[$key]);
 		
 		if(in_array(false, $return))
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),

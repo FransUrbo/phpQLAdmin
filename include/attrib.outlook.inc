@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for pilotPerson objects etc
-// $Id: attrib.outlook.inc,v 1.24 2004-06-10 05:37:43 turbo Exp $
+// $Id: attrib.outlook.inc,v 1.25 2004-10-19 10:40:41 turbo Exp $
 
 /*
 	Attributes managed here:
@@ -32,6 +32,7 @@
 	physicalDeliveryOfficeName
 */
 
+// {{{ attribute_check(void)
 function attribute_check() {
     global $LANG, $error;
 
@@ -43,10 +44,15 @@ function attribute_check() {
 
     return true;
 }
+// }}}
 
+// {{{ attribute_init(void)
 function attribute_init() {
     $_REQUEST[$attrib] = (!empty($_GET["oldvalue"]) ? $_GET["oldvalue"] : "");
 }
+// }}}
+
+// {{{ attribute_print_form(void)
 
 function attribute_print_form() {
     global $LANG, $error;
@@ -82,6 +88,9 @@ function attribute_print_form() {
 <?php
 }
 
+// }}}
+
+// {{{ attribute_save(type)
 function attribute_save($type) {
     global $_pql, $LANG;
 
@@ -101,7 +110,7 @@ function attribute_save($type) {
 			// Save a domain attribute
 			if(($attrib == 'vatnumber') or ($attrib == 'mobile') or ($attrib == 'info')) {
 				// Special circumstances - this is availible in the phpQLAdminInfo object class,
-				// so we need to call pql_domain_set_value() with an ARRAY with the values to
+				// so we need to call pql_modify_attribute() with an ARRAY with the values to
 				// set/modify, not array+value...
 				$entry[$attrib] = $_REQUEST[$attrib];
 				
@@ -111,16 +120,16 @@ function attribute_save($type) {
 				// Add the 'phpQLAdminInfo' objectclass
 				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'phpQLAdminInfo';
 
-				if(pql_domain_set_value($_pql->ldap_linkid, $_REQUEST["domain"], NULL, $entry))
+				if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], '', '', $entry))
 				  $success = 1;
 			} else {
-				if(pql_domain_set_value($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["attrib"], $_REQUEST[$attrib]))
+				if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["attrib"], 1, $_REQUEST[$attrib]))
 				  $success = 1;
 			}
 
 		} elseif($_REQUEST["user"]) {
 			// Save a user attribute
-			if(pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], $_REQUEST[$attrib]))
+			if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], '', $_REQUEST[$attrib]))
 			  $success = 1;
 		}
 
@@ -135,7 +144,7 @@ function attribute_save($type) {
       case "delete";
 		if($_REQUEST["domain"] and !$_REQUEST["user"]) {
 			// Save a domain attribute
-			if(pql_domain_set_value($_pql->ldap_linkid, $_REQUEST["domain"], $attrib, ''))
+			if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib, '', ''))
 			  $success = 1;
 //		} elseif($_REQUEST["user"] and !$_REQUEST["domain"]) {
 // Currently no DELETE option
@@ -154,6 +163,7 @@ function attribute_save($type) {
 								  array('type' => $type, 'file' => __FILE__)));
     }
 }
+// }}}
 
 // Local variables:
 // mode: php

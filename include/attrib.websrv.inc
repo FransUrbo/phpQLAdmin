@@ -1,8 +1,9 @@
 <?php
 // attribute plugin for the Webserver Configuration editor
 //
-// $Id: attrib.websrv.inc,v 1.5 2004-04-02 12:43:18 turbo Exp $
+// $Id: attrib.websrv.inc,v 1.6 2004-10-19 10:40:41 turbo Exp $
 
+// {{{ attribute_check(void)
 function attribute_check() {
     global $_pql, $LANG;
 
@@ -11,7 +12,9 @@ function attribute_check() {
 
     return false;
 }
+// }}}
 
+// {{{ attribute_print_form(void)
 function attribute_print_form() {
     global $_pql, $LANG;
 
@@ -61,7 +64,9 @@ function attribute_print_form() {
     </form>
 <?php
 }
+// }}}
 
+// {{{ attribute_save(action)
 function attribute_save($action) {
     global $_pql, $LANG;
 
@@ -80,7 +85,7 @@ function attribute_save($action) {
 		// Add the new value to the array
 		$entry[$_REQUEST["attrib"]][] = $_REQUEST[$_REQUEST["attrib"]];
 
-		if(pql_websrv_set_record($_pql->ldap_linkid, $_REQUEST["server"], $entry))
+		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["server"], '', '', $entry))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $_REQUEST[$_REQUEST["attrib"]])).".";
 		else
@@ -90,7 +95,7 @@ function attribute_save($action) {
 		break;
 
 	  case "mod":
-		if(pql_websrv_set_record($_pql->ldap_linkid, $_REQUEST["server"], $_REQUEST["attrib"], $_REQUEST[$_REQUEST["attrib"]]))
+		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["server"], $_REQUEST["attrib"], '', $_REQUEST[$_REQUEST["attrib"]]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $_REQUEST["attrib"]));
 		else
@@ -112,6 +117,7 @@ function attribute_save($action) {
 
     attribute_forward($msg);
 }
+// }}}
 
 // Local variables:
 // mode: php

@@ -1,8 +1,9 @@
 <?php
 // Attribute plugin for
 // maximumDomainUsers
-// $Id: attrib.maximummailinglists.inc,v 2.9 2004-06-10 05:37:43 turbo Exp $
+// $Id: attrib.maximummailinglists.inc,v 2.10 2004-10-19 10:40:41 turbo Exp $
 
+// {{{ attribute_check(type)
 function attribute_check($type = '') {
     global $error, $LANG;
 
@@ -16,7 +17,9 @@ function attribute_check($type = '') {
 
 	return true;
 }
+// }}}
 
+// {{{ attribute_print_form(type)
 function attribute_print_form($type = "modify") {
     global $error, $LANG;
 	global $orgname;			// Set by domain_edit_attributes.php.
@@ -58,7 +61,9 @@ function attribute_print_form($type = "modify") {
   </form>
 <?php
 }
+// }}}
 
+// {{{ attribute_save(type)
 function attribute_save($type) {
     global $_pql, $LANG;
 
@@ -72,7 +77,7 @@ function attribute_save($type) {
 			$_REQUEST[$attrib] = '';
 		}
 
-		if(pql_domain_set_value($_pql->ldap_linkid, $_REQUEST["domain"], $attrib, $_REQUEST[$attrib]))
+		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib, 1, $_REQUEST[$attrib]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% for domain %domain%'),
 									   array('what'   => $LANG->_('maximum allowed mailinglists'),
 											 'domain' => pql_maybe_decode(urlencode($_REQUEST["domain"]))));
@@ -90,6 +95,7 @@ function attribute_save($type) {
 								  array('type' => $type, 'file' => __FILE__)));
     }
 }
+// }}}
 
 // Local variables:
 // mode: php

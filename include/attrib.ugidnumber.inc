@@ -1,8 +1,9 @@
 <?php
 // attribute plugin for
 // qmail uid and gid
-// $Id: attrib.ugidnumber.inc,v 2.3 2004-06-10 05:37:43 turbo Exp $
+// $Id: attrib.ugidnumber.inc,v 2.4 2004-10-19 10:40:41 turbo Exp $
 
+// {{{ attribute_check(type)
 function attribute_check($type) {
     global $error, $LANG;
 
@@ -30,20 +31,22 @@ function attribute_check($type) {
 	
 	return !$failed;
 }
+// }}}
 
-function parse_oldvalue()
-{
-  $uid_gid = (empty($_REQUEST["oldvalue"]) ? ";" : $_REQUEST["oldvalue"]);
-
-  // This should always work because the value comes from the database.
-  if (preg_match('/^\s*(\d*)\s*;\s*(\d*)\s*$/', $uid_gid, $results)) {
-	return array($results[1], $results[2]);
-  } else {
-	// but just to be safe.
-	return array($uid_gid, '');
-  }
+// {{{ parse_oldvalue(void)
+function parse_oldvalue() {
+	$uid_gid = (empty($_REQUEST["oldvalue"]) ? ";" : $_REQUEST["oldvalue"]);
+	
+	// This should always work because the value comes from the database.
+	if (preg_match('/^\s*(\d*)\s*;\s*(\d*)\s*$/', $uid_gid, $results))
+	  return array($results[1], $results[2]);
+	else
+	  // but just to be safe.
+	  return array($uid_gid, '');
 }
+// }}}
 
+// {{{ attribute_init(void)
 function attribute_init() {
     global $_pql;
 
@@ -60,7 +63,9 @@ function attribute_init() {
 	  $_REQUEST["gidnumber"] = pql_get_next_ugidnumber($_pql, 'gid');
 	}
 }
+// }}}
 
+// {{{ attribute_print_form(type)
 function attribute_print_form($type = "modify") {
     global $error, $LANG;
 ?>
@@ -94,7 +99,9 @@ function attribute_print_form($type = "modify") {
 
 <?php
 }
+// }}}
 
+// {{{ attribute_save(type)
 function attribute_save($type) {
     global $_pql, $LANG;
 
@@ -108,25 +115,25 @@ function attribute_save($type) {
 
 	    //die($_REQUEST["user"]);
 		if ($_REQUEST["uidnumber"] != $old_uidnumber) {
-		  if (pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], "uidnumber", $_REQUEST["uidnumber"]))
-			$msgs[] = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
-											array('what' => $LANG->_('UID', 4),
-												  'new'  => $_REQUEST["uidnumber"]));
-		  else
-			$msgs[] = pql_complete_constant($LANG->_('Failed to change %what%'),
-											array('what' => $LANG->_('UID', 4))) . ": " . ldap_error($_pql->ldap_linkid);
+			if (pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], "uidnumber", '', $_REQUEST["uidnumber"]))
+			  $msgs[] = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
+											  array('what' => $LANG->_('UID', 4),
+													'new'  => $_REQUEST["uidnumber"]));
+			else
+			  $msgs[] = pql_complete_constant($LANG->_('Failed to change %what%'),
+											  array('what' => $LANG->_('UID', 4))) . ": " . ldap_error($_pql->ldap_linkid);
 		}
 
 		if ($_REQUEST["gidnumber"] != $old_gidnumber) {
-		  if (pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], "gidnumber", $_REQUEST["gidnumber"]))
-			$msgs[] = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
-											array('what' => $LANG->_('GID', 4),
-												  'new'  => $_REQUEST["gidnumber"]));
-		  else
-			$msgs[] = pql_complete_constant($LANG->_('Failed to change %what%'),
-											array('what' => $LANG->_('GID', 4))) . ": " . ldap_error($_pql->ldap_linkid);
+			if (pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], "gidnumber", '', $_REQUEST["gidnumber"]))
+			  $msgs[] = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
+											  array('what' => $LANG->_('GID', 4),
+													'new'  => $_REQUEST["gidnumber"]));
+			else
+			  $msgs[] = pql_complete_constant($LANG->_('Failed to change %what%'),
+											  array('what' => $LANG->_('GID', 4))) . ": " . ldap_error($_pql->ldap_linkid);
 		}
-
+		
 		if (!empty($msgs)) {
 		  $msg = implode(" ", $msgs);
     	} else {
@@ -142,6 +149,7 @@ function attribute_save($type) {
 								  array('type' => $type, 'file' => __FILE__)));
 	}
 }
+// }}}
 
 // Local variables:
 // mode: php

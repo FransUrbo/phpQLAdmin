@@ -2,7 +2,7 @@
 // control attribute plugin for
 // relaymailfrom (allowed sender addresses for relaying)
 //
-// $Id: attrib.control.relaymailfrom.inc,v 2.18 2004-10-18 13:39:32 turbo Exp $
+// $Id: attrib.control.relaymailfrom.inc,v 2.19 2004-10-19 10:40:41 turbo Exp $
 
 // {{{ relaymailfrom_check(type)
 function relaymailfrom_check($type) {
@@ -156,10 +156,9 @@ function relaymailfrom_save($type, $host) {
 		case "modify";
 		case "add";
 			// save entries
-			if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-											 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-											 pql_get_define("PQL_ATTR_RELAYMAILFROM"),
-											 $_REQUEST["relaymailfrom"]))
+			if(pql_modify_attribute($_pql_control->ldap_linkid,
+									pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+									pql_get_define("PQL_ATTR_RELAYMAILFROM"), '', $_REQUEST["relaymailfrom"]))
 			  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										   array('what' => $LANG->_('relaymailfrom options')));
 			else

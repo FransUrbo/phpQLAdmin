@@ -2,7 +2,7 @@
 // control attribute plugin for
 // qmqpservers (max number of bytes in message)
 //
-// $Id: attrib.control.qmqpservers.inc,v 2.18 2004-10-18 13:39:32 turbo Exp $
+// $Id: attrib.control.qmqpservers.inc,v 2.19 2004-10-19 10:40:41 turbo Exp $
 
 // {{{ qmqpservers_check(type)
 function qmqpservers_check($type) {
@@ -158,10 +158,9 @@ function qmqpservers_save($type, $host)  {
 	  case "modify";
 	  case "add";
 		// save entries
-		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_ATTR_QMQPSERVERS"),
-										 $_REQUEST["qmqpservers"]))
+		if(pql_modify_attribute($_pql_control->ldap_linkid,
+								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								pql_get_define("PQL_ATTR_QMQPSERVERS"), '', $_REQUEST["qmqpservers"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('qmqpservers options')));
 		else

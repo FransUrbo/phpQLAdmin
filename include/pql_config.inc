@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.70 2004-10-18 13:39:33 turbo Exp $
+// $Id: pql_config.inc,v 1.71 2004-10-19 10:40:42 turbo Exp $
 //
 
 // include the API files
@@ -11,6 +11,7 @@ require("./include/pql.inc");				// Main API file
 require("./include/pql_formating.inc");		// Output formating API
 require("./include/pql_cache.inc");			// Cache API
 require("./include/pql_search.inc");		// Search API
+require("./include/pql_write.inc");			// Write API
 require("./include/pql_units.inc");			// Sub branch API
 
 // {{{ pql_set_define(define, value, case_insensitive, dn)

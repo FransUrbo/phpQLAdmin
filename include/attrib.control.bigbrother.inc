@@ -2,7 +2,7 @@
 // control attribute plugin for
 // bigbrother (max number of bytes in message)
 //
-// $Id: attrib.control.bigbrother.inc,v 2.5 2004-10-18 13:39:31 turbo Exp $
+// $Id: attrib.control.bigbrother.inc,v 2.6 2004-10-19 10:40:40 turbo Exp $
 
 // {{{ bigbrother_check(type)
 function bigbrother_check($type) {
@@ -137,9 +137,8 @@ function bigbrother_save($type, $host)  {
 		for($i=0; $_REQUEST["bbmail_to"][$i] and $_REQUEST["bbmail_cpy"][$i]; $i++)
 		  $entry[] = $_REQUEST["bbmail_to"][$i] . ":" . $_REQUEST["bbmail_cpy"][$i];
 
-		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_ATTR_BIGBROTHER"), $entry))
+		if(pql_modify_attribute($_pql_control->ldap_linkid,
+								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"], '', '', $entry))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('bigbrother options')));
 		else

@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // userNamePrefix/userNamePrefixLength
-// $Id: attrib.usernameprefix.inc,v 2.12 2004-06-10 05:37:43 turbo Exp $
+// $Id: attrib.usernameprefix.inc,v 2.13 2004-10-19 10:40:41 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type = '') {
@@ -92,7 +92,7 @@ function attribute_save($type) {
 		if($type == 'delete')
 		  $_REQUEST[$attrib] = '';
 
-		if(pql_domain_set_value($_pql->ldap_linkid, $_REQUEST["domain"], $attrib, $_REQUEST[$attrib]))
+		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib, 1, $_REQUEST[$attrib]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									   array('what' => $LANG->_($lang),
 											 'new'  => $_REQUEST[$attrib]));

@@ -1,8 +1,9 @@
 <?php
 // attribute plugin for
 // default domain name (the default domainname for a domain)
-// $Id: attrib.defaultdomain.inc,v 2.29 2004-10-18 13:39:32 turbo Exp $
+// $Id: attrib.defaultdomain.inc,v 2.30 2004-10-19 10:40:41 turbo Exp $
 
+// {{{ attribute_check(void)
 function attribute_check() {
     global $error, $LANG;
     
@@ -20,11 +21,15 @@ function attribute_check() {
     
     return true;
 }
+// }}}
 
+// {{{ attribute_init(void)
 function attribute_init() {
     $_REQUEST["defaultdomain"] = @$_REQUEST["oldvalue"];
 }
+// }}}
 
+// {{{ attribute_print_form(void)
 function attribute_print_form() {
     global $error, $LANG, $orgname;
 
@@ -116,7 +121,9 @@ function attribute_print_form() {
   </form>
 <?php
 }
+// }}}
 
+// {{{ attribute_save(type)
 function attribute_save($type) {
     global $_pql, $LANG;
 
@@ -133,7 +140,7 @@ function attribute_save($type) {
     switch($type) {
       case "add":
       case "modify":
-		if(pql_domain_set_value($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["attrib"], $defaultdomain)) {
+		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["attrib"], 1, $defaultdomain)) {
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 										 array('what' => $LANG->_('Default domainname', 4),
 											   'new'  => $defaultdomain));
@@ -227,6 +234,7 @@ function attribute_save($type) {
 								  array('type' => $type, 'file' => __FILE__)));
     }
 }
+// }}}
 
 // Local variables:
 // mode: php

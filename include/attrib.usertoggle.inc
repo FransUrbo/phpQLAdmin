@@ -5,7 +5,7 @@
 // This is the exact same as 'attrib.domaintoggle.inc',
 // just applied for users instead of domains...
 //
-// $Id: attrib.usertoggle.inc,v 2.1 2004-05-07 04:43:17 turbo Exp $
+// $Id: attrib.usertoggle.inc,v 2.2 2004-10-19 10:40:41 turbo Exp $
 
 // {{{ attribute_save()
 // It's a toggle. Change value directly.
@@ -15,10 +15,10 @@ function attribute_save() {
 
 	if(!empty($_REQUEST["oldvalue"])) {
 		// Delete the value
-		if(pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], ''))
+		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], '', ''))
 		  $success = 1;
 	} else {
-		if(pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], 'TRUE'))
+		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], '', 'TRUE'))
 		  $success = 1;
 	}
 

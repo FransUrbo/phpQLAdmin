@@ -2,9 +2,10 @@
 // control attribute plugin for
 // rcpthosts (blocked local addresses)
 //
-// $Id: attrib.control.rcpthosts.inc,v 2.24 2004-10-18 13:39:32 turbo Exp $
+// $Id: attrib.control.rcpthosts.inc,v 2.25 2004-10-19 10:40:41 turbo Exp $
 
 // {{{ rcpthosts_check(type)
+
 function rcpthosts_check($type) {
     global $error, $LANG;
 
@@ -26,9 +27,11 @@ function rcpthosts_check($type) {
     
     return true;
 }
+
 // }}}
 
 // {{{ rcpthosts_init(host)
+
 // init values
 function rcpthosts_init($host) {
     global $_pql_control;
@@ -41,6 +44,7 @@ function rcpthosts_init($host) {
     if(is_null($_REQUEST["rcpthosts"]))
 	  return true;
 }
+
 // }}}
 
 
@@ -182,9 +186,9 @@ function rcpthosts_save($type, $host) {
 		// delete entry
 		foreach($HOSTS as $host) {
 			// remove specified domain from rcpthosts in host object
-			if(pql_control_remove_attribute($_pql_control->ldap_linkid,
-											pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											pql_get_define("PQL_ATTR_RCPTHOSTS"), $_REQUEST["set"]))
+			if(pql_modify_attribute($_pql_control->ldap_linkid,
+									pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+									pql_get_define("PQL_ATTR_RCPTHOSTS"), $_REQUEST["set"], ''))
 			  $msg = pql_complete_constant($LANG->_('Successfully removed %domain% from %what%'),
 										   array('what'   => pql_get_define("PQL_ATTR_RCPTHOSTS"),
 												 'domain' => $_REQUEST["set"]));

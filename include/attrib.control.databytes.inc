@@ -2,7 +2,7 @@
 // control attribute plugin for
 // databytes (max number of bytes in message)
 //
-// $Id: attrib.control.databytes.inc,v 2.16 2004-10-18 13:39:31 turbo Exp $
+// $Id: attrib.control.databytes.inc,v 2.17 2004-10-19 10:40:40 turbo Exp $
 
 // {{{ databytes_check(type)
 function databytes_check($type) {
@@ -103,10 +103,9 @@ function databytes_save($type, $host) {
 	  case "modify";
 	  case "add";
 		// save entries
-		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_ATTR_DATABYTES"),
-										 $_REQUEST["databytes"]))
+		if(pql_modify_attribute($_pql_control->ldap_linkid,
+								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								pql_get_define("PQL_ATTR_DATABYTES"), '', $_REQUEST["databytes"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('databytes options')));
 		else

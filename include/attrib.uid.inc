@@ -1,8 +1,9 @@
 <?php
 // attribute plugin for
 // uid (user id)
-// $Id: attrib.uid.inc,v 2.22 2004-06-10 05:37:43 turbo Exp $
+// $Id: attrib.uid.inc,v 2.23 2004-10-19 10:40:41 turbo Exp $
 
+// {{{ attribute_check(type)
 function attribute_check($type){
     global $error, $LANG, $_pql;
 	
@@ -27,11 +28,15 @@ function attribute_check($type){
 	
 	return true;
 }
+// }}}
 
+// {{{ attribute_init(void)
 function attribute_init() {
     $_REQUEST["uid"] = (!empty($_GET["oldvalue"]) ? $_GET["oldvalue"] : "");
 }
+// }}}
 
+// {{{ attribute_print_form(void)
 function attribute_print_form() {
     global $LANG, $error;
 ?>
@@ -64,7 +69,9 @@ function attribute_print_form() {
 
 <?php
 }
+// }}}
 
+// {{{ attribute_save(type)
 function attribute_save($type) {
     global $_pql, $LANG;
 	
@@ -81,18 +88,14 @@ function attribute_save($type) {
 			break;
     	}
 		
-		if(pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"],
-									 pql_get_define("PQL_ATTR_UID"),
-									 $_REQUEST["uid"]))
-		{
-			$msg = pql_complete_constant($LANG->_('Successfully changed %what% from %old% to %new%'),
-										 array('what' => $LANG->_('username'),
-											   'old'  => $_REQUEST["oldvalue"],
-											   'new'  => $_REQUEST["uid"]));
-		} else {
-			$msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-										 array('what' => $LANG->_('username'))) . ": " . pql_format_error(0);
-		}
+		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_UID"), '' $_REQUEST["uid"]))
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% from %old% to %new%'),
+									   array('what' => $LANG->_('username'),
+											 'old'  => $_REQUEST["oldvalue"],
+											 'new'  => $_REQUEST["uid"]));
+		else
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+									   array('what' => $LANG->_('username'))) . ": " . pql_format_error(0);
 		
 		// We use the uid to reference users and it has just changed...
 		if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", pql_get_rootdn($_REQUEST["user"], 'attrib.uid.inc:attribute_save')) == pql_get_define("PQL_ATTR_UID")) {
@@ -110,6 +113,7 @@ function attribute_save($type) {
 								  array('type' => $type, 'file' => __FILE__)));
 	}
 }
+// }}}
 
 // Local variables:
 // mode: php

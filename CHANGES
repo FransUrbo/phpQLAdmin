@@ -21,6 +21,15 @@ phpQLAdmin 2.1.2 TO BE ANNOUNCED
 	    + pql_control.inc:pql_control_search_attribute()
 	    + pql_units.inc:pql_unit_exist()
 	    + pql_websrv.inc:pql_websrv_get_servers()
+	  - Removed the following functions because the new pql_write.inc:pql_modify_attribute()
+	    can/is doing the same job (with some modifications).
+	    + pql.inc:pql_replace_attribute()
+	    + pql.inc:pql_domain_set_value()
+	    + pql_bind9.inc:pql_bind9_set_record()
+	    + pql_pql_websrv.inc:pql_websrv_set_record()
+	    + pql_control.inc:pql_control_replace_attribute()
+	    + pql_control.inc:pql_control_remove_whole_attribute()
+	    + pql_control.inc:pql_control_remove_attribute()
 	  - Moved the following functions from pql.inc to pql_search.inc (and modified
 	    or rewrote it in the process):
 	    + pql_search_forwarders()
@@ -28,9 +37,20 @@ phpQLAdmin 2.1.2 TO BE ANNOUNCED
 	    + pql_validate_administrator()
 	    + pql_domain_get()
 	      Renamed to pql_get_domains() after rewrite/modifications.
+	    + pql_get_subschema()
+	    + pql_get_subschemas()
+	    + pql_get_rootdn()
+	    + pql_split_oldvalues()
 	  - Move pql_search.inc:pql_uniq() to pql_formating:pql_uniq().
 	  - pql.inc:pql_domain_exist() should be called with the link id, not the
 	    whole ldap object!
+	  - Renamed the function pql.inc:pql_domain_replace_admins() to
+	    pql_write.inc:pql_replace_values() and reflect the change (no references
+	    to admin attributes in the function).
+	  - Renamed the function pql.inc:pql_modify_userattribute() to
+	    pql_write.inc:pql_modify_attribute().
+	    + Use the new pql_write.inc:pql_write_mod() function instead of duplicating
+	      the LDAP modification/write part.
 
 phpQLAdmin 2.1.1 Release (Oct 16 2004)
 	Bug fixes

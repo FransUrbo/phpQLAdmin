@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailalternateaddress (emailaddress alias)
-// $Id: attrib.mailalternateaddress.inc,v 2.28 2004-10-18 13:39:32 turbo Exp $
+// $Id: attrib.mailalternateaddress.inc,v 2.29 2004-10-19 10:40:41 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -145,7 +145,7 @@ function attribute_save($type) {
 
     switch($type) {
       case "add":
-		if(pql_modify_userattribute($_pql->ldap_linkid, urldecode($_REQUEST["user"]), $attrib, '', $_REQUEST[$attrib])) {
+		if(pql_modify_attribute($_pql->ldap_linkid, urldecode($_REQUEST["user"]), $attrib, '', $_REQUEST[$attrib])) {
 			$tmp  = split('@', $_REQUEST[$attrib]);
 			$mail = $tmp[0].'@'.pql_maybe_idna_decode($tmp[1]);
 
@@ -173,7 +173,7 @@ function attribute_save($type) {
 			break;
 		}
 		
-		if(pql_modify_userattribute($_pql->ldap_linkid, urldecode($_REQUEST["user"]), $attrib,
+		if(pql_modify_attribute($_pql->ldap_linkid, urldecode($_REQUEST["user"]), $attrib,
 									$_REQUEST["oldvalue"], $_REQUEST[$attrib])) {
 			$tmp  = split('@', $_REQUEST[$attrib]);
 			$mail = $tmp[0].'@'.pql_maybe_idna_decode($tmp[1]);
@@ -215,7 +215,7 @@ function attribute_save($type) {
 		}
 		$OLD[$attrib] = $values;
 
-		if(pql_domain_set_value($_pql->ldap_linkid, $_REQUEST["user"], $attrib, $OLD))
+		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], $attrib, '', $OLD))
 		  $success = 1;
 
 		if(($attrib == pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR")) or
