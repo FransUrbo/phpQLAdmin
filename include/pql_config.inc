@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.54 2004-03-01 10:09:08 turbo Exp $
+// $Id: pql_config.inc,v 1.55 2004-03-01 11:01:49 turbo Exp $
 //
 
 // {{{ pql_set_define(define, value, case_insensitive, dn)
@@ -60,6 +60,7 @@ function pql_get_define($define, $dn = NULL) {
 // SINGLE VALUED ATTRIBUTES
 
 // {{{ BOOLean values (true/false - 0/1)
+
 $PQL_ATTRIBUTE["PQL_CONF_SHOW_USERS"] = 'showUsers';
 $PQL_ATTRIBUTE["PQL_GLOB_CONTROL_USE"] = 'useControls';
 $PQL_ATTRIBUTE["PQL_GLOB_EZMLM_USE"] = 'useEzmlm';
@@ -76,6 +77,7 @@ $PQL_ATTRIBUTE["PQL_CONF_MINIMUM_GIDNUMBER"] = 'minimumGIDNumber';
 $PQL_ATTRIBUTE["PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER"] = 'forwardUIDNumber';
 $PQL_ATTRIBUTE["PQL_GLOB_BIND9_USE"] = 'useBind9';
 $PQL_ATTRIBUTE["PQL_GLOB_WEBSRV_USE"] = 'useWebSrv';
+
 // }}}
 
 // {{{ phpQLAdmin setup
@@ -265,25 +267,23 @@ if((empty($_SESSION["ACI_SUPPORT_ENABLED"]) and function_exists("user_generate_a
 	$ocs = pql_get_subschema($_pql->ldap_linkid, attributeTypes);
 
 	// 9a. Check ifthe attribute openLdapAci exists - ACI support is enabled in the LDAP server.
-	if($ocs[lc(pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI"))]["OID"]) {
-		$_SESSION["ACI_SUPPORT_ENABLED"] = 1;
-	}
+	if(empty($_SESSION["ACI_SUPPORT_ENABLED"]) and
+	   function_exists("user_generate_aci") and
+	   $ocs[lc(pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI"))]["OID"])
+	  $_SESSION["ACI_SUPPORT_ENABLED"] = 1;
 
 	// 9b. Check to see if the attributes mailQuotaSize and mailQuotaCount exists - new stype quota.
 	if(empty($ocs[lc(pql_get_define("PQL_GLOB_ATTR_QUOTA_VALUE"))]["OID"]) and
 	   !empty($ocs[lc(pql_get_define("PQL_GLOB_ATTR_QUOTA_SIZE"))]["OID"]) and
 	   !empty($ocs[lc(pql_get_define("PQL_GLOB_ATTR_QUOTA_COUNT"))]["OID"]))
-	  {
-		  $_SESSION["NEW_STYLE_QUOTA"] = 1;
-	  }
+	  $_SESSION["NEW_STYLE_QUOTA"] = 1;
 }
 
 // 10. Check to see if the cn=Monitor backend is availble/readable
 if(!$MONITOR_BACKEND_ENABLED) {
     $sr = @ldap_read($_pql->ldap_linkid, "cn=Monitor", 'objectClass=*');
-    if($sr) {
-		$_SESSION["MONITOR_BACKEND_ENABLED"] = 1;
-	}
+    if($sr)
+	  $_SESSION["MONITOR_BACKEND_ENABLED"] = 1;
 }
 
 // Remove some variables so we don't clutter the global
