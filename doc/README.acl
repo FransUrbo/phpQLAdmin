@@ -1,0 +1,64 @@
+Access control
+==============
+
+phpQLAdmin does not allow or disallow anything. All access control is
+up to the 'backbone'. That is, the LDAP server, Kerberos KDC and AFS
+protection database (pts) etc. If the user have write access to do
+what is required, then fine. If not, the action will fail.
+
+That is, it might SEEM (from the phpQLAdmin point of view) like the
+user have access to create users, domains, mailinglists etc, but if
+the 'backbone' doesn't grant the action, it will fail.
+
+With this in mind, it is important that the correct access is given at
+the 'backbone' - in the LDAP server, correct ACL lines must be given
+etc.
+
+
+There are however some sligt access control in phpQLAdmin. The issue
+of what to show the user. Version 2.0 and newer of phpQLAdmin was
+designed to be use by multiple administrators at an ISP or
+similar. That is, there might be competing companies on the same
+system, and we don't want them to be able to see (or even worse,
+destroy for) each other, do we!? :)
+
+That is why the LDAP database have had provisions for administrator
+values. For example, I'm using the 'domain' system in my database (as
+opposed to the 'organization' system), so I have in my dc object the
+value
+
+	description: administrator=DN OF ADMIN
+
+The 'DN OF ADMIN' in my case is
+
+	uid=turbo,ou=People,dc=fredriksson,dc=com
+
+as in:
+
+	dn: dc=fredriksson,dc=com
+	objectClass: top
+	objectClass: domain
+	dc: fredriksson
+	description: administrator=uid=turbo,ou=People,dc=fredriksson,dc=com
+
+Without this attribute and value, I would not SEE the 'dc=fredriksson,dc=com'
+LDAP tree. Luckily, the 'description' attribute takes multiple values,
+so one can just 'stack them' (ie, have many administrators). All this
+is accessible through the web interface, but to do any modification to
+the value, one first have to have access to the tree. If you already have
+a database you'd like to administrate through phpQLAdmin, there are some
+description values you have to add to the domain object before you start
+using phpQLAdmin. These are defaultDomain, baseHomeDir, baseMailDir and
+administrator. Once these are in place, everything can be administrated
+through phpQLAdmin.
+
+This is a full example of the dc=fredriksson object above:
+
+	dn: dc=fredriksson,dc=com
+	objectClass: top
+	objectClass: domain
+	dc: fredriksson
+	description: defaultDomain=bayour.com
+	description: baseHomeDir=/afs/bayour.com/user/fredriksson/
+	description: baseMailDir=/var/mail/fredriksson/
+	description: administrator=uid=turbo,ou=People,dc=fredriksson,dc=com
