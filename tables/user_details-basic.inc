@@ -87,7 +87,7 @@
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Additional group(s)')?></td>
-<?php if(is_array($memberuid)) {
+<?php if($memberuid[1]) {
 		$new_tr = 0;
 		foreach($memberuid as $muid) {
 			$muid = pql_maybe_idna_decode($muid);
