@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for the Webserver Configuration editor
 //
-// $Id: attrib.websrv.inc,v 1.5 2004-04-02 12:43:18 turbo Exp $
+// $Id: attrib.websrv.inc,v 1.5.16.1 2004-12-20 08:59:10 turbo Exp $
 
 function attribute_check() {
     global $_pql, $LANG;
@@ -64,12 +64,13 @@ function attribute_print_form() {
 
 function attribute_save($action) {
     global $_pql, $LANG;
+	$server = urldecode($_REQUEST["server"]);
 
     switch($action) {
 	  case "add":
 		// Fetch the old values from the DB
 		$filter = "(&(objectclass=".pql_get_define("PQL_ATTR_WEBSRV_OC").")(".$_REQUEST["attrib"]."=*))";
-		$sr   = ldap_read($_pql->ldap_linkid, $_REQUEST["server"], $filter, array($_REQUEST["attrib"]));
+		$sr   = ldap_read($_pql->ldap_linkid, $server, $filter, array($_REQUEST["attrib"]));
 		$info = ldap_get_entries($_pql->ldap_linkid, $sr)
 		  or pql_format_error(0);
 		for($i=0; $i < $info[0][$_REQUEST["attrib"]]["count"]; $i++) {
@@ -80,7 +81,12 @@ function attribute_save($action) {
 		// Add the new value to the array
 		$entry[$_REQUEST["attrib"]][] = $_REQUEST[$_REQUEST["attrib"]];
 
-		if(pql_websrv_set_record($_pql->ldap_linkid, $_REQUEST["server"], $entry))
+		// Create a LDIF object to print in case of error
+		$LDIF = pql_create_ldif("attrib.websrv.inc", $server, $entry);
+		if(file_exists("./.DEBUG_ME"))
+		  die($LDIF);
+
+		if(pql_websrv_set_record($_pql->ldap_linkid, $server, $entry))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $_REQUEST[$_REQUEST["attrib"]])).".";
 		else
@@ -90,7 +96,7 @@ function attribute_save($action) {
 		break;
 
 	  case "mod":
-		if(pql_websrv_set_record($_pql->ldap_linkid, $_REQUEST["server"], $_REQUEST["attrib"], $_REQUEST[$_REQUEST["attrib"]]))
+		if(pql_websrv_set_record($_pql->ldap_linkid, $server, $_REQUEST["attrib"], $_REQUEST[$_REQUEST["attrib"]]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $_REQUEST["attrib"]));
 		else
@@ -101,7 +107,7 @@ function attribute_save($action) {
 	  case "del":
 		$entry[$_REQUEST["attrib"]] = array();
 
-		if(ldap_mod_del($_pql->ldap_linkid, $_REQUEST["server"], $entry))
+		if(ldap_mod_del($_pql->ldap_linkid, $server, $entry))
 		  $msg = pql_complete_constant($LANG->_('Successfully removed %value%'),
 									   array('value' => $_REQUEST["attrib"]));
 		else
