@@ -33,7 +33,7 @@ function attribute_print_form(){
     ?>
 	<form action="<?php echo $PHP_SELF ?>" method="post">
 	<table cellspacing="0" cellpadding="3" border="0">
-	<th colspan="3" align="left"><?php echo PQL_LDAP_MAILQUOTA_DEFAULT_CHANGE " . $domain; ?></th>
+	<th colspan="3" align="left"><?php echo PQL_LDAP_MAILQUOTA_DEFAULT_CHANGE . $domain; ?></th>
 	<tr class="<?php table_bgcolor(); ?>">
 		<td class="title"><?php echo PQL_LDAP_MAILQUOTA_TITLE; ?></td>
 		<td><?php echo format_error($error["basequota"]); ?><input type="text" name="basequota" value="<?php echo $basequota; ?>" size="50"></td>
