@@ -25,6 +25,11 @@ if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
   //--></script>
 <?php
 }
+
+foreach($_pql->ldap_basedn as $dn) {
+    if(eregi('KERBEROS', $config["PQL_CONF_PASSWORD_SCHEMES"][$dn]))
+      $show_kerberos_info = 1;
+}
 ?>
   <span class="title1">phpQLAdmin configuration</span>
 
@@ -150,7 +155,7 @@ if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
 <?php    } ?>
         <td class="<?=$class?>"><?php if($config["PQL_GLOB_CHANGE_SERVER"]) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
       </tr>
-<?php	if(eregi('KERBEROS', $config["PQL_CONF_PASSWORD_SCHEMES"][$dn])) { ?>
+<?php	if($show_kerberos_info) { ?>
 
       <tr></tr>
 
