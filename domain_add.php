@@ -117,7 +117,7 @@ if($dns[0]) {
 														  array('what' => $LANG->_('domain'))));
 		}
 
-		$url = "domain_detail.php?rootdn=$rootdn&domain=$dns[0]&";
+		$url = "domain_detail.php?rootdn=$rootdn&domain=$dns[0]";
 ?>
 
     <form action="<?=$url?>&msg=<?=$msg?>&rlnb=1" method="post">
