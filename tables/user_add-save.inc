@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.29 2005-01-31 15:25:48 turbo Exp $
+// $Id: user_add-save.inc,v 1.30 2005-02-01 07:33:23 turbo Exp $
 
 // URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
 $_REQUEST["surname"] = urldecode($_REQUEST["surname"]);
@@ -186,21 +186,16 @@ if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "she
 // }}}
 
 // {{{ Add mail store directory if requested
-if(($_REQUEST["account_type"] == "system") or
-   ($_REQUEST["account_type"] == "mail") or
-   ($_REQUEST["account_type"] == "group"))
+if($_REQUEST["maildirectory"] and
+   (($_REQUEST["account_type"] == "system") or
+	($_REQUEST["account_type"] == "mail")   or
+	($_REQUEST["account_type"] == "group")))
 {
-  if(!$_REQUEST["maildirectory"]) {
-	if(function_exists("user_generate_mailstore"))
-	  $entry[pql_get_define("PQL_ATTR_MAILSTORE")] = user_generate_mailstore($_pql, $_REQUEST["email"],
-																			 $_REQUEST["domain"], $entry,
-																			 'user');
-	else if($basemaildir)
-	  $entry[pql_get_define("PQL_ATTR_MAILSTORE")] = $basemaildir.$_REQUEST["uid"]."/";
-  } else
-	$entry[pql_get_define("PQL_ATTR_MAILSTORE")] = $_REQUEST["maildirectory"];
+  // No auto generation - that's done in 'user_add.php'.
+  $entry[pql_get_define("PQL_ATTR_MAILSTORE")] = $_REQUEST["maildirectory"];
 	
   // Verify trailing slash!
+  // BUG: This is only done on Maildir's. What if we wanted Mbox's?!?
   if(! ereg("/$", $entry[pql_get_define("PQL_ATTR_MAILSTORE")]))
 	$entry[pql_get_define("PQL_ATTR_MAILSTORE")] .= "/";
 }
@@ -230,23 +225,18 @@ if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "mai
 	  // Don't add this automaticly.
 	  $entry[pql_get_define("PQL_ATTR_MODE")] = "localdelivery";
 	
-	// -----------------
-	if(($_REQUEST["account_type"] == "system") or in_array('posixaccount', $objectclasses_included)) {
-	  // Add home directory to the entry array
-	  if(!$_REQUEST["homedirectory"]) {
-		if(function_exists("user_generate_homedir"))
-		  $entry[pql_get_define("PQL_ATTR_HOMEDIR")] = user_generate_homedir($_pql, $_REQUEST["email"],
-																			 $_REQUEST["domain"], $entry,
-																			 'user');
-		else if($basehomedir)
-		  $entry[pql_get_define("PQL_ATTR_HOMEDIR")] = $basehomedir.$_REQUEST["uid"]."/";
-	  } else
+	// Add home directory to the entry array
+	if($_REQUEST["homedirectory"] and
+	   (($_REQUEST["account_type"] == "system") or
+		in_array('posixaccount', $objectclasses_included)))
+	  {
+		// No auto generation - that's done in 'user_add.php'.
 		$entry[pql_get_define("PQL_ATTR_HOMEDIR")] = $_REQUEST["homedirectory"];
 
-	  // Verify trailing slash!
-	  if(! ereg("/$", $entry[pql_get_define("PQL_ATTR_HOMEDIR")]))
-		$entry[pql_get_define("PQL_ATTR_HOMEDIR")] .= "/";
-	}
+		// Verify trailing slash!
+		if(! ereg("/$", $entry[pql_get_define("PQL_ATTR_HOMEDIR")]))
+		  $entry[pql_get_define("PQL_ATTR_HOMEDIR")] .= "/";
+	  }
 } elseif($_REQUEST["account_type"] == "group") {
 	// Because we require the 'posixAccount' ('uid' attrib) when creating a
 	// group object, we just add the virtual homedirectory
