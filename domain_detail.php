@@ -87,6 +87,14 @@ if($ADVANCED_MODE == 1) {
 
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=PQL_LANG_DOMAIN_DEFAULT_VALUES?></th>
+<?php if($ALLOW_BRANCH_CREATE) { ?>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Domain/Branch DN</td>
+        <td><?=$domain?></td>
+        <td><?=// TODO: Should we be able to rename the RDN? ?></td>
+      </tr>
+  
+<?php } ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?=PQL_LANG_DOMAIN_DEFAULT_NAME?></td>
         <td><?php if($defaultdomain){echo $defaultdomain;}else{echo PQL_LANG_UNSET;} ?></td>

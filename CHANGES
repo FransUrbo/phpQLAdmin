@@ -21,6 +21,8 @@ phpQLAdmin 2.0.12 TO BE ANNOUNCED
 	    a domain branch
 	  - Only show version information on the 'home' page if we're
 	    running in advanced mode.
+	  - Show the branch' RDN - in the future we should be able to
+	    change (ie rename) it...
 
 	Misc changes
 	  - Removed functions pql_remove_userattribute(),
