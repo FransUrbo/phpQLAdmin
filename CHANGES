@@ -1,5 +1,8 @@
 phpQLAdmin 2.0 Change Log
 
+phpQLAdmin 2.0.2 Release
+	- Documentation update
+	
 phpQLAdmin 2.0.1 Release
 	- More independent LDAP database layout. The admin interface
 	  should not dictate how a database should look like (or vise
