@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.123 2003-11-15 12:22:16 turbo Exp $
+// $Id: pql.inc,v 2.124 2003-11-16 09:06:27 turbo Exp $
 //
 
 // ----------------------------
@@ -2278,6 +2278,15 @@ function lc($string) {
 // {{{ pql_generate_button(button array)
 function pql_generate_button($buttons, $link = '') {
 	global $PHP_SELF, $LANG, $rootdn, $domain;
+
+	$url = $PHP_SELF."?";
+
+	// It's not sure we have a rootdn and/or domain, so only add those
+	// it's set
+	if($rootdn)
+	  $url .= "rootdn=$rootdn&";
+	if($domain)
+	  $url .= "domain=$domain&";
 ?>
 
   <table cellspacing="0" border="0" width="100%" cellpadding="0">
@@ -2287,7 +2296,7 @@ function pql_generate_button($buttons, $link = '') {
 		  // Generate the button link etc
 		  $text = urlencode($text);
 ?>
-    <a href="<?=$PHP_SELF?>?rootdn=<?=$rootdn?>&domain=<?=$domain?>&view=<?=$view?><?php if($link) { echo "&$link"; } ?>"><img alt="/ <?=$LANG->_($text)?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_($text)?>"></a>
+    <a href="<?=$url?>view=<?=$view?><?php if($link) { echo "&$link"; } ?>"><img alt="/ <?=$LANG->_($text)?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_($text)?>"></a>
 <?php
 		  // Increase button counter
 		  $i++;
