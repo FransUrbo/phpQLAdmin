@@ -21,6 +21,11 @@ phpQLAdmin 2.2.2 TO BE ANNOUNCED
 	    generating a default scheme encrypted password.
 	    + REPLACE password, not ADD to object.
 	    Closes: 241
+	  - If there was a MX for a domain, but no QLC object(s), the 'User host'
+	    value (user creation) was empty. Rewrite so that we first create an
+	    array with the MX value and QLC object(s) (avoiding duplicates) THEN
+	    output this array in the form.
+	    Closes: 243
 
 	GUI layout changes
 	Misc changes
