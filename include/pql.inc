@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.80 2003-06-12 10:04:43 turbo Exp $
+// $Id: pql.inc,v 2.81 2003-06-12 11:05:25 turbo Exp $
 //
 
 // ----------------------------
@@ -387,10 +387,10 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 function pql_domain_add($ldap_linkid, $basedn, $branch_name) {
 	global $config;
 
-    $entry[$config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn]] =
+	$entry[$config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn]] =
 	  maybe_encode($branch_name, $config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn], $ldap_linkid);
 	$dn = $config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn] . "=" . $branch_name . "," . $basedn;
-
+	
 	// Setup objectclasses
 	$entry["objectClass"] = pql_setup_branch_objectclasses(0, $basedn);
 	if($config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn] == "o")
@@ -803,7 +803,7 @@ function pql_get_domains($ldap) {
 		}
 		
 		for ($i=0; $i<$info["count"]; $i++) {
-			$domains[] = maybe_encode($info[$i]["dn"]);
+			$domains[] = $info[$i]["dn"];
 		}
 		
 	}
@@ -1437,27 +1437,28 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '', $all = 0) {
 	// Go through the result, if there is any
 	for($i=0; $i < $result["count"]; $i++) {
 		// Extract all the descriptor fields
-		if((($value == 'administrator') or ($value == 'seealso') or ($value == 'additionaldomainname'))
-		   and ($match != "*")) {
-			// Return multiple values. If we're looking for 'administrator', return the DN
-			if(!$all) {
-				for($j=0; $j < $result[$i][$value]["count"]; $j++) {
-					// Filter out the top dn, we don't want that in the domain/branch list...
-					if(($result[$i][$value][$j] == $match) and
-					   (($result["count"] < 2) or ($result[$i]["dn"] != $dn)))
-					{
-						$results[] = maybe_decode($result[$i]["dn"]);
-						$success = 1;
+		if((($value == 'administrator') or ($value == 'seealso') or ($value == 'additionaldomainname'))) {
+			if($match != "*") {
+				// Return multiple values. If we're looking for 'administrator', return the DN
+				if(!$all) {
+					for($j=0; $j < $result[$i][$value]["count"]; $j++) {
+						// Filter out the top dn, we don't want that in the domain/branch list...
+						if(($result[$i][$value][$j] == $match) and
+						   (($result["count"] < 2) or ($result[$i]["dn"] != $dn)))
+						  {
+							  $results[] = $result[$i]["dn"];
+							  $success = 1;
+						  }
 					}
+				} else {
+					$results[] = $result[$i]["dn"];
+					$success = 1;
 				}
 			} else {
-				$results[] = maybe_decode($result[$i]["dn"]);
-				$success = 1;
-			}
-		} elseif(($value == 'administrator') or ($value == 'seealso') or ($value == 'additionaldomainname')) {
-			for($j=0; $j < $result[0][$value]["count"]; $j++) {
-				$results[] = maybe_decode($result[0][$value][$j]);
-				$success = 1;
+				for($j=0; $j < $result[0][$value]["count"]; $j++) {
+					$results[] = maybe_decode($result[0][$value][$j]);
+					$success = 1;
+				}
 			}
 		} elseif(($value == 'passwordscheme') or
 				 ($value == 'userobjectclass') or
