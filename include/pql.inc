@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.20 2003-01-16 16:09:11 turbo Exp $
+// $Id: pql.inc,v 2.21 2003-01-16 16:26:29 turbo Exp $
 //
 // ----------------------------
 // Note: There are a few " followed after PHP comment
