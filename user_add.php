@@ -805,7 +805,7 @@ switch($submit) {
           <td class="title"></td>
           <td>
             <input type="radio" name="host" value="user" <?php if((!$userhost[0] and !$userhost[1]) or ($host == "user")){ echo "checked";}?>>
-            <?php echo PQL_LANG_MAILQUOTA_USERDEFINED;?><input type="text" name="userhost"><br>
+            <?php echo PQL_LANG_MAILQUOTA_USERDEFINED;?>&nbsp;<input type="text" name="userhost"><br>
           </td>
         </tr>
 
