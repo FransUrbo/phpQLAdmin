@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliveryprogrampath (path to program running on delivery)
-// $Id: attrib.deliveryprogrampath.inc,v 2.11 2003-11-18 13:16:38 turbo Exp $
+// $Id: attrib.deliveryprogrampath.inc,v 2.12 2003-11-19 19:38:33 turbo Exp $
 
 function attribute_check($type) {
 	global $deliveryprogrampath, $domain, $oldvalue, $_pql, $error, $LANG;
@@ -19,7 +19,7 @@ function attribute_init() {
 	global $deliveryprogrampath, $oldvalue, $_pql;
 	global $domain, $user;
 	
-	$deliveryprogrampath = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_PROGRAM"));
+	$deliveryprogrampath = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_PROGRAM"));
 	$deliveryprogrampath = $deliveryprogrampath[0];
 	$oldvalue = $deliveryprogrampath;
 }
@@ -91,7 +91,7 @@ function attribute_save($type) {
 		}
 		
 		// check if qmaildotmode is set to 'both' or 'ldapwithprog'
-		$qmaildotmode = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_DOTMODE"));
+		$qmaildotmode = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_DOTMODE"));
 		$qmaildotmode = $qmaildotmode[0];
 		
 		if($qmaildotmode != "both" and $qmaildotmode != "ldapwithprog")

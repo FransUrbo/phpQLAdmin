@@ -1,6 +1,6 @@
 <?php
 // Retreive 'days from Jan 1, 1970'
-$tmp  = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_EXPIRATION"));
+$tmp  = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_EXPIRATION"));
 
 // Convert to UNIX timestamp
 $seconds = $tmp[0] * (60 * 60 * 24);
@@ -9,7 +9,7 @@ $seconds = $tmp[0] * (60 * 60 * 24);
 $time_expiration = date("D M j h:i Y", $seconds);
 
 // Retreive the accountStatus attribute
-$tmp = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_ISACTIVE"));
+$tmp = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_ISACTIVE"));
 $status = $tmp[0];
 
 $status = pql_ldap_accountstatus($status);

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliverymode (delivery preferences)
-// $Id: attrib.deliverymode.inc,v 2.15 2003-11-19 16:20:50 turbo Exp $
+// $Id: attrib.deliverymode.inc,v 2.16 2003-11-19 19:38:33 turbo Exp $
 
 function attribute_check($type) {
 	global $error, $reply, $mailreplytext, $LANG;
@@ -20,7 +20,7 @@ function attribute_init() {
 	global $user, $_pql;
 
 	// initialize values directly from ldap
-	$mode = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_MODE"));
+	$mode = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_MODE"));
 
 	// delivery profile
 	if(is_array($mode) and in_array("forwardonly",$mode))
@@ -32,7 +32,7 @@ function attribute_init() {
 	if(is_array($mode) and in_array("reply", $mode))
 	  $reply = "ok";
 	
-	$mailreplytext = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_REPLYTEXT"));
+	$mailreplytext = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_REPLYTEXT"));
 	$mailreplytext = $mailreplytext[0];
 }
 
@@ -114,7 +114,7 @@ function attribute_save($type) {
 	else {
 		// Check if the entry in database is empty. 
 		// If not, we have choosen to DELETE the value
-		$mrt_db = pql_get_userattribute($_pql->ldap_linkid,
+		$mrt_db = pql_get_attribute($_pql->ldap_linkid,
 										$user, pql_get_define("PQL_GLOB_ATTR_REPLYTEXT"));
 		if($mrt_db[0])
 		  pql_replace_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_REPLYTEXT"));

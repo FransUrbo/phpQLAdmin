@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // cn (Full name)
-// $Id: attrib.cn.inc,v 2.16 2003-11-18 13:16:38 turbo Exp $
+// $Id: attrib.cn.inc,v 2.17 2003-11-19 19:38:33 turbo Exp $
 
 function attribute_check($type) {
     global $cn, $oldvalue, $_pql, $error, $LANG;
@@ -67,7 +67,7 @@ function attribute_save($type) {
 		// already exist in the object.
 		$attribs = array($attrib, 'gecos');
 		foreach($attribs as $attrib) {
-			$old = pql_get_userattribute($_pql->ldap_linkid, $user, $attrib);
+			$old = pql_get_attribute($_pql->ldap_linkid, $user, $attrib);
 			if(is_array($old)) {
 				// We have an old value of this array, try to change it...
 				if(pql_replace_attribute($_pql->ldap_linkid, $user, $attrib, $cn))
@@ -85,14 +85,14 @@ function attribute_save($type) {
 		$name = split(" ", $cn);
 
 		// Change givenName which is the first name
-		$old = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_GIVENNAME"));
+		$old = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_GIVENNAME"));
 		if(is_array($old)) {
 			// We have an old value of this array, try to change it...
 			pql_replace_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_GIVENNAME"), $name[0]);
 		}
 
 		// Change SN which is the last name
-		$old = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_SN"));
+		$old = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_SN"));
 		if(is_array($old)) {
 			// We have an old value of this array, try to change it...
 			pql_replace_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_SN"), $name[1]);

@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.126 2003-11-19 17:06:36 turbo Exp $
+// $Id: pql.inc,v 2.127 2003-11-19 19:38:33 turbo Exp $
 //
 
 // ----------------------------
@@ -374,7 +374,7 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 	}
 
 	// Get uidnr of user
-	$uidnr = pql_get_userattribute($linkid, $user, pql_get_define("PQL_GLOB_ATTR_QMAILUID"));
+	$uidnr = pql_get_attribute($linkid, $user, pql_get_define("PQL_GLOB_ATTR_QMAILUID"));
 	$uidnr = $uidnr[0];
     
 	// Delete the group object if it exists
@@ -394,8 +394,8 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 		$forwarders = pql_search_forwarders($ldap, $user);
 		if ($forwarders) {
 			// someone forwards to this user. Now we need to know which addresses we're removing
-			$email = pql_get_userattribute($linkid, $user, pql_get_define("PQL_GLOB_ATTR_MAIL"));
-			$aliases = pql_get_userattribute($linkid, $user, pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE"));
+			$email = pql_get_attribute($linkid, $user, pql_get_define("PQL_GLOB_ATTR_MAIL"));
+			$aliases = pql_get_attribute($linkid, $user, pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE"));
 			
 			$addresses[] = $email[0];
 			if(is_array($aliases)){
@@ -417,7 +417,7 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
     if ($delete_forwards and $forwarders) {
 		foreach($forwarders as $forward) {
 			// get the forwarding addresses of this user
-			$fwd_addresses = pql_get_userattribute($linkid, $forward['reference'], pql_get_define("PQL_GLOB_ATTR_FORWARDS"));
+			$fwd_addresses = pql_get_attribute($linkid, $forward['reference'], pql_get_define("PQL_GLOB_ATTR_FORWARDS"));
 			foreach($addresses as $address) {
 				// does this user forward to the removed user or one of his aliases?
 				$rem_key = array_search($address, $fwd_addresses);
@@ -770,7 +770,7 @@ function pql_replace_attribute($ldap_linkid, $objectdn, $attrib, $value) {
 	if(!@ldap_mod_replace($ldap_linkid, $objectdn, $entry)) {
 	    // if the value is empty (""), this causes an error in OpenLDAP 2.x, try to ldap_mod_del
 	    if($value == "") {
-			$oldvalue = pql_get_userattribute($ldap_linkid, $objectdn, $attrib);
+			$oldvalue = pql_get_attribute($ldap_linkid, $objectdn, $attrib);
 			$oldvalue = $oldvalue[0];
 			$entry[$attrib] = $oldvalue;
 
@@ -812,7 +812,7 @@ function pql_replace_attribute($ldap_linkid, $objectdn, $attrib, $value) {
 
 					// See if we have the other MUST attributes that the objectclass require
 					for($i=0; $i < $objectclasses[$objectclass[0]]['MUST']['count']; $i++) {
-						$oldvalue = pql_get_userattribute($ldap_linkid, $objectdn, $objectclasses[$objectclass[0]]['MUST'][$i]);
+						$oldvalue = pql_get_attribute($ldap_linkid, $objectdn, $objectclasses[$objectclass[0]]['MUST'][$i]);
 						if(!oldvalue or !is_array($oldvalue))
 						  $missing[] = $objectclasses[$objectclass[0]]['MUST'][$i];
 					}
@@ -1008,7 +1008,7 @@ function pql_modify_user_addressbook($ldap_linkid, $user, $attribs) {
     // haven't a mandatory attribute
     
     // fetch current registred objectclasses of user
-    $oc_user = pql_get_userattribute($ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS"));
+    $oc_user = pql_get_attribute($ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS"));
     
     // set all objectclasses to lowercase
     foreach($oc_user as $oc1){
@@ -1036,7 +1036,7 @@ function pql_modify_user_addressbook($ldap_linkid, $user, $attribs) {
 // Change an attribute of a user
 function pql_modify_userattribute($ldap_linkid, $user, $attrib, $oldvalue, $newvalue) {
     // get all attributes first
-    $entry = pql_get_userattribute($ldap_linkid, $user, $attrib);
+    $entry = pql_get_attribute($ldap_linkid, $user, $attrib);
 
     // If we found an entry, make sure it isn't
     // not overwritten, otherwise ADD the attribute.
@@ -1093,58 +1093,6 @@ function pql_modify_userattribute($ldap_linkid, $user, $attrib, $oldvalue, $newv
 }
 // }}}
 
-// {{{ pql_get_userattribute(ldap_linkid, user, attribute)
-function pql_get_userattribute($ldap_linkid, $user, $attribute) {
-    $attribute = lc($attribute);
-
-    // check whether this user is cached
-    $value = '';
-    
-	if(pql_cache_userentry_get($user, $attribute, $value))
-	  // the user is cached  -> return the value for the requested attribute  
-	  return($value);
-
-    // not yet cached -> get the userentry and cache it
-    $entries = pql_get_userentry($ldap_linkid, $user);
-    if($entries) {
-		// INTERNATIONALIZE values
-		foreach($entries as $attrib => $e) {
-			for($i=0; $e[$i]; $i++)
-			  $values[$attrib][] = pql_maybe_decode($e[$i]);
-		}
-
-		pql_cache_userentry_add($user, $values);
-		return($values[$attribute]);	
-	} else
-	  return(false);
-}
-// }}}
-
-// {{{ pql_get_userentry(ldap_linkid, user)
-function pql_get_userentry($ldap_linkid, $user) {
-	$sr = @ldap_read($ldap_linkid, $user, "(objectClass=*)");
-	if($sr == false)
-	  return false;
-	
-	// build array of all attributes
-	$rid = @ldap_first_entry($ldap_linkid, $sr);
-	$attribs[] = lc(@ldap_first_attribute($ldap_linkid, $rid, $berid));
-
-	while($attrib = @ldap_next_attribute($ldap_linkid, $rid, $berid))
-	  $attribs[] = lc($attrib);
-
-    // build entry array with all attributes and values
-	foreach($attribs as $attrib) {
-		$values = @ldap_get_values($ldap_linkid, $rid, $attrib);
-		unset($values["count"]);
-		$entry[$attrib] = $values;
-    }
-    
-    // return entry
-    return $entry;
-}
-// }}}
-
 // {{{ pql_search_forwarders(ldap, user)
 // Search all accounts with forwarders to $user@$domain
 function pql_search_forwarders($ldap, $user) {
@@ -1152,8 +1100,8 @@ function pql_search_forwarders($ldap, $user) {
 	$linkid = $ldap->ldap_linkid;
 
     // get all email addresses of a user
-    $email = pql_get_userattribute($linkid, $user, pql_get_define("PQL_GLOB_ATTR_MAIL"));
-    $aliases = pql_get_userattribute($linkid, $user, pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE"));
+    $email = pql_get_attribute($linkid, $user, pql_get_define("PQL_GLOB_ATTR_MAIL"));
+    $aliases = pql_get_attribute($linkid, $user, pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE"));
     
     $addresses[] = $email[0];
     if(is_array($aliases)){
@@ -1228,7 +1176,7 @@ function pql_email_exists($ldap, $email) {
 // {{{ pql_get_userquota(ldap_linkid, user)
 // Get formated quota of a user
 function pql_get_userquota($ldap_linkid, $user) {
-    $quota = pql_get_userattribute($ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_QUOTA"));
+    $quota = pql_get_attribute($ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_QUOTA"));
     if(!is_array($quota))
 	  return false;
 	else    

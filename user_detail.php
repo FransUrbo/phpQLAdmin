@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.58 2003-11-19 16:20:27 turbo Exp $
+// $Id: user_detail.php,v 2.59 2003-11-19 19:38:19 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -46,10 +46,10 @@ if(isset($rlnb) and pql_get_define("PQL_GLOB_AUTO_RELOAD")) {
 <?php   }
 }
 
-$username = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_CN"));
+$username = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_CN"));
 if(!$username[0]) {
     // No common name, use uid field
-    $username = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_UID"));
+    $username = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_UID"));
 }
 $username = $username[0];
 ?>
@@ -87,7 +87,7 @@ $attribs = array(pql_get_define("PQL_GLOB_ATTR_CN"),
 foreach($attribs as $attrib) {
     $attrib = strtolower($attrib);
 
-    $value = pql_get_userattribute($_pql->ldap_linkid, $user, $attrib);
+    $value = pql_get_attribute($_pql->ldap_linkid, $user, $attrib);
     $$attrib = $value[0];
     $value = urlencode($$attrib);
 

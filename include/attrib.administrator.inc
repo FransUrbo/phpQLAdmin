@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.27 2003-11-19 16:20:50 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.28 2003-11-19 19:38:32 turbo Exp $
 
 require("./left-head.html");
 
@@ -115,7 +115,7 @@ function attribute_print_form($action) {
 							// specified domain, but also in the PREVIOUS domain shown!
 							unset($cns);
 							foreach($users as $username) {
-								$cn = pql_get_userattribute($_pql->ldap_linkid, $username, pql_get_define("PQL_GLOB_ATTR_CN"));
+								$cn = pql_get_attribute($_pql->ldap_linkid, $username, pql_get_define("PQL_GLOB_ATTR_CN"));
 								$cns[$username] = $cn[0];
 							}
 								

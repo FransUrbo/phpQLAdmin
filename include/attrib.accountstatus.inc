@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // accountstatus (status of mailaccount)
-// $Id: attrib.accountstatus.inc,v 2.12 2003-11-19 16:20:50 turbo Exp $
+// $Id: attrib.accountstatus.inc,v 2.13 2003-11-19 19:38:32 turbo Exp $
 
 function attribute_check($type) {
     global $error, $view, $set, $domain, $rootdn, $attrib, $user, $date, $days, $LANG, $_pql;
@@ -104,7 +104,7 @@ function attribute_save($type) {
 			// Set the shadowExpire attribute for this user
 			
 			// Get the objectClasses of this user
-			$entry = pql_get_userattribute($_pql->ldap_linkid, $user, 'objectclass');
+			$entry = pql_get_attribute($_pql->ldap_linkid, $user, 'objectclass');
 
 			// Make sure that the user have the 'shadowAccount' objectclass
 			for($i=0; $entry[$i]; $i++) {

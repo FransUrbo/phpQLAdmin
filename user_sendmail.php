@@ -1,6 +1,6 @@
 <?php
 // send a testmail to an emailaddress
-// $Id: user_sendmail.php,v 2.16 2003-11-14 11:55:52 turbo Exp $
+// $Id: user_sendmail.php,v 2.17 2003-11-19 19:38:19 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -28,9 +28,9 @@ $vars['MAIL'] = $email;
 $vars['UID'] = $user;
 $vars['VERSION'] = $VERSION;
 
-$cn = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_CN"));
+$cn = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_CN"));
 $vars['CN'] = $cn[0];
-$sn = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_SN"));
+$sn = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_SN"));
 $vars['SN'] = $sn[0];
 
 $quota = pql_get_userquota($_pql->ldap_linkid, $user);

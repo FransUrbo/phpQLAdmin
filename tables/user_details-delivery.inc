@@ -5,7 +5,7 @@
         <td class="title"><?=$LANG->_('Mode')?></td>
       </tr>
 
-<?php	$deliverymode = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_MODE"));
+<?php	$deliverymode = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_MODE"));
 	if(empty($deliverymode)) {
 ?>
       <tr class="<?php table_bgcolor(); ?>">

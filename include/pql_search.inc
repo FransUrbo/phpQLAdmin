@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.9 2003-11-19 17:06:38 turbo Exp $
+// $Id: pql_search.inc,v 2.10 2003-11-19 19:38:33 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -58,6 +58,58 @@ function pql_get_dn($ldap, $reference, $multiples = 0) {
 	}
 
 	return(false);
+}
+// }}}
+
+// {{{ pql_get_attribute(ldap_linkid, user, attribute)
+function pql_get_attribute($ldap_linkid, $user, $attribute) {
+    $attribute = lc($attribute);
+
+    // check whether this user is cached
+    $value = '';
+    
+	if(pql_cache_userentry_get($user, $attribute, $value))
+	  // the user is cached  -> return the value for the requested attribute  
+	  return($value);
+
+    // not yet cached -> get the userentry and cache it
+    $entries = pql_get_object($ldap_linkid, $user);
+    if($entries) {
+		// INTERNATIONALIZE values
+		foreach($entries as $attrib => $e) {
+			for($i=0; $e[$i]; $i++)
+			  $values[$attrib][] = pql_maybe_decode($e[$i]);
+		}
+
+		pql_cache_userentry_add($user, $values);
+		return($values[$attribute]);	
+	} else
+	  return(false);
+}
+// }}}
+
+// {{{ pql_get_object(ldap_linkid, user)
+function pql_get_object($ldap_linkid, $user) {
+	$sr = @ldap_read($ldap_linkid, $user, "(objectClass=*)");
+	if($sr == false)
+	  return false;
+	
+	// build array of all attributes
+	$rid = @ldap_first_entry($ldap_linkid, $sr);
+	$attribs[] = lc(@ldap_first_attribute($ldap_linkid, $rid, $berid));
+
+	while($attrib = @ldap_next_attribute($ldap_linkid, $rid, $berid))
+	  $attribs[] = lc($attrib);
+
+    // build entry array with all attributes and values
+	foreach($attribs as $attrib) {
+		$values = @ldap_get_values($ldap_linkid, $rid, $attrib);
+		unset($values["count"]);
+		$entry[$attrib] = $values;
+    }
+    
+    // return entry
+    return $entry;
 }
 // }}}
 

@@ -132,7 +132,7 @@
 		foreach($domain_admins as $admin) {
 			$admin = pql_maybe_encode($admin); // Re-encode value that we got earlier from pql_domain_value().
 
-			$username = pql_get_userattribute($_pql->ldap_linkid, $admin, pql_get_define("PQL_GLOB_ATTR_CN"));
+			$username = pql_get_attribute($_pql->ldap_linkid, $admin, pql_get_define("PQL_GLOB_ATTR_CN"));
 			if(!$username[0])
 			  $username = $admin;
 			else
@@ -184,7 +184,7 @@
 <?php	if(is_array($mailinglist_admins)) {
 			$new_tr = 0;
 			foreach($mailinglist_admins as $admin) {
-				$username = pql_get_userattribute($_pql->ldap_linkid, $admin, pql_get_define("PQL_GLOB_ATTR_CN"));
+				$username = pql_get_attribute($_pql->ldap_linkid, $admin, pql_get_define("PQL_GLOB_ATTR_CN"));
 				if(!$username[0])
 				  $username = $admin;
 				else

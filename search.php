@@ -1,6 +1,6 @@
 <?php
 // shows results of search
-// $Id: search.php,v 2.19 2003-11-19 16:26:38 turbo Exp $
+// $Id: search.php,v 2.20 2003-11-19 19:38:15 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -66,7 +66,7 @@ if(!$GLOBALS["SINGLE_USER"]) {
 			$is_group = 0;
 			
 			// Check if this object is a (posix)Group object.
-			$ocs = pql_get_userattribute($_pql->ldap_linkid,
+			$ocs = pql_get_attribute($_pql->ldap_linkid,
 										 $usrs[$i], pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS"));
 			for($j=0; $ocs[$j]; $j++) {
 				if(eregi('group', $ocs[$j]))
@@ -96,7 +96,7 @@ if(!$GLOBALS["SINGLE_USER"]) {
 		$is_group = 0;
 		
 		// Check if this object is a (posix)Group object.
-		$ocs = pql_get_userattribute($_pql->ldap_linkid, $usrs[$i], pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS"));
+		$ocs = pql_get_attribute($_pql->ldap_linkid, $usrs[$i], pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS"));
 		for($j=0; $ocs[$j]; $j++) {
 			if(eregi('group', $ocs[$j]))
 			  $is_group = 1;
@@ -121,19 +121,19 @@ if(!$GLOBALS["SINGLE_USER"]) {
 <?php
 		asort($users);
 		foreach($users as $user) {
-			$uid    = pql_get_userattribute($_pql->ldap_linkid, $user,
+			$uid    = pql_get_attribute($_pql->ldap_linkid, $user,
 											pql_get_define("PQL_GLOB_ATTR_UID"));
 			$uid    = $uid[0];
 			
-			$cn     = pql_get_userattribute($_pql->ldap_linkid, $user,
+			$cn     = pql_get_attribute($_pql->ldap_linkid, $user,
 											pql_get_define("PQL_GLOB_ATTR_CN"));
 			$cn     = $cn[0];
 			
-			$mail   = pql_get_userattribute($_pql->ldap_linkid, $user,
+			$mail   = pql_get_attribute($_pql->ldap_linkid, $user,
 											pql_get_define("PQL_GLOB_ATTR_MAIL"));
 			$mail   = $mail[0];
 			
-			$status = pql_get_userattribute($_pql->ldap_linkid, $user,
+			$status = pql_get_attribute($_pql->ldap_linkid, $user,
 											pql_get_define("PQL_GLOB_ATTR_ISACTIVE"));
 			$status = pql_ldap_accountstatus($status[0]);
 

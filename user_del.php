@@ -1,6 +1,6 @@
 <?php
 // delete a user
-// $Id: user_del.php,v 2.25 2003-11-19 16:20:27 turbo Exp $
+// $Id: user_del.php,v 2.26 2003-11-19 19:38:19 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -17,7 +17,7 @@ if(!$o) {
 	// Use the RDN
 	$o = $domain;
 }
-$cn = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_CN")); $cn = $cn[0];
+$cn = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_CN")); $cn = $cn[0];
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove user %user% from domain %domain%'), array("domain" => $o, "user" => $cn)); ?></span>
   <br><br>
@@ -30,8 +30,8 @@ if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
 	if($unsubscribe) {
 		// We want to unsubscribe user from (all) mailing list(s).
 		// Get the users mail addresses before the object gets deleted
-		$email   = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_MAIL"));
-		$aliases = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE"));
+		$email   = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_MAIL"));
+		$aliases = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE"));
 
 		// Combine the two attributes into one array.
 		$mails[] = $email[0];
