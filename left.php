@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.80 2004-03-15 07:09:56 turbo Exp $
+// $Id: left.php,v 2.81 2004-03-16 06:51:04 turbo Exp $
 //
 session_start();
 
@@ -90,42 +90,43 @@ pql_format_tree("<b>".$LANG->_('Home')."</b>", 'home.php');
 $links = array($LANG->_('Find user') => 'user_search.php');
 pql_format_tree($LANG->_('Search'), 0, $links, 1);
 
-if($_SESSION["ADVANCED_MODE"]) {
-    if($_SESSION["ALLOW_BRANCH_CREATE"]) {
-	// Level 2b: Configuration and tests
-	$links = array($LANG->_('phpQLAdmin Configuration')	=> 'config_detail.php',
-		       $LANG->_('Test LDAP-Connection')		=> 'config_ldaptest.php',
-		       $LANG->_('Translate phpQLAdmin')		=> 'update_translations.php');
-	pql_format_tree($LANG->_('phpQLAdmin Configuration'), 0, $links, 1);
-
-	// Level 2c: LDAP server setup etc
-	$links = array($LANG->_('LDAP Syntaxes')		=> 'config_ldap.php?type=ldapsyntaxes',
-		       $LANG->_('LDAP Matching rules')		=> 'config_ldap.php?type=matchingrules',
-		       $LANG->_('LDAP Attribute types')		=> 'config_ldap.php?type=attributetypes',
-		       $LANG->_('LDAP Object classes')		=> 'config_ldap.php?type=objectclasses');
-	if($_SESSION["MONITOR_BACKEND_ENABLED"] and $_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
-	    $new = array(0					=> 0,
-			 $LANG->_('LDAP Server Status')		=> 'status_ldap.php?type=basics',
-			 $LANG->_('LDAP Connection Status')	=> 'status_ldap.php?type=connections',
-			 $LANG->_('LDAP Database Status')	=> 'status_ldap.php?type=databases');
-	    $links = $links + $new;
-	}
-	pql_format_tree($LANG->_('LDAP Server Configuration'), 0, $links, 1);
+if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {
+    // Level 2b: Configuration and tests
+    $links = array($LANG->_('phpQLAdmin Configuration')	=> 'config_detail.php',
+		   $LANG->_('Test LDAP-Connection')	=> 'config_ldaptest.php',
+		   $LANG->_('Translate phpQLAdmin')	=> 'update_translations.php');
+    pql_format_tree($LANG->_('phpQLAdmin Configuration'), 0, $links, 1);
+    
+    // Level 2c: LDAP server setup etc
+    $links = array($LANG->_('LDAP Syntaxes')		=> 'config_ldap.php?type=ldapsyntaxes',
+		   $LANG->_('LDAP Matching rules')	=> 'config_ldap.php?type=matchingrules',
+		   $LANG->_('LDAP Attribute types')	=> 'config_ldap.php?type=attributetypes',
+		   $LANG->_('LDAP Object classes')	=> 'config_ldap.php?type=objectclasses');
+    if($_SESSION["MONITOR_BACKEND_ENABLED"] and $_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
+	$new = array(0					=> 0,
+		     $LANG->_('LDAP Server Status')	=> 'status_ldap.php?type=basics',
+		     $LANG->_('LDAP Connection Status')	=> 'status_ldap.php?type=connections',
+		     $LANG->_('LDAP Database Status')	=> 'status_ldap.php?type=databases');
+	$links = $links + $new;
     }
+    pql_format_tree($LANG->_('LDAP Server Configuration'), 0, $links, 1);
+}
 
-    // Level 2d: Documentation etc
-    $links = array($LANG->_('Documentation')			=> 'doc/index.php',
-		   $LANG->_('What\'s left todo')		=> 'TODO',
-		   $LANG->_('What\'s been done')		=> 'CHANGES',
-		   $LANG->_('Language translator')		=> 'update_translations.php');
-    pql_format_tree($LANG->_('Documentation'), 0, $links, 1);
+// Level 2d: Documentation etc
+$links = array($LANG->_('Documentation')		=> 'doc/index.php',
+	       $LANG->_('What\'s left todo')		=> 'TODO',
+	       $LANG->_('What\'s been done')		=> 'CHANGES');
+if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {
+    $new = array($LANG->_('Language translator')	=> 'update_translations.php');
+    $links = $links + $new;
+}
+pql_format_tree($LANG->_('Documentation'), 0, $links, 1);
 
-    if($_SESSION["ALLOW_BRANCH_CREATE"]) {
-	// Level 2e: Main site and general phpQLAdmin links
-	$links = array('phpQLAdmin @ Bayour'			=> 'http://phpqladmin.bayour.com/',
-		       $LANG->_('Bugtracker')			=> 'http://apache.bayour.com/anthill/');
-	pql_format_tree($LANG->_('phpQLAdmin Site Specifics'), 0, $links, 1);
-    }
+if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {
+    // Level 2e: Main site and general phpQLAdmin links
+    $links = array('phpQLAdmin @ Bayour'			=> 'http://phpqladmin.bayour.com/',
+		   $LANG->_('Bugtracker')			=> 'http://apache.bayour.com/anthill/');
+    pql_format_tree($LANG->_('phpQLAdmin Site Specifics'), 0, $links, 1);
 }
 
 // This an ending for the initial parent (level 0)
