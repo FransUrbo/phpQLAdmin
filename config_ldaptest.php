@@ -45,15 +45,21 @@ if(!function_exists("ldap_connect")){
 		if(!$_pql_control->connect($USER_HOST_CTR)) {
 			$connection_control = PQL_TEST_CONNECTION_FAILED;
 
+			$host = split(' ', PQL_LDAP_HOST);
+			$host = split(';', $host[0]);
+
+			$fqdn = $host[0];
+			$port = $host[1];
+
 			// do additional tests
-			if(!gethostbyname(PQL_LDAP_CONTROL_HOST)){
+			if(!gethostbyname($fqdn)){
 				// not resolved
-				$connection_control .= ", " . pql_complete_constant(PQL_TEST_CONNECTION_RESOLVE_ERR ,array("host" => PQL_LDAP_CONTROL_HOST ));
+				$connection_control .= ", " . pql_complete_constant(PQL_TEST_CONNECTION_RESOLVE_ERR, array("host" => $fqdn ));
 			} else {
 				// try to open a connection
-				if(!fsockopen(PQL_LDAP_CONTROL_HOST, 389)){
+				if(!fsockopen($fqdn, $port)){
 					// impossible to connect
-					$connection_control .= ", " . pql_complete_constant(PQL_TEST_CONNECTION_CONNECT_ERR ,array("host" => $USER_HOST_CTR));
+					$connection_control .= ", " . pql_complete_constant(PQL_TEST_CONNECTION_CONNECT_ERR, array("host" => $USER_HOST_CTR));
 				}
 			}
 		} else {
