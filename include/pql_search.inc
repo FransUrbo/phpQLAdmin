@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.34 2005-02-01 07:31:36 turbo Exp $
+// $Id: pql_search.inc,v 2.35 2005-02-07 12:06:13 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -299,8 +299,7 @@ function pql_validate_administrator($linkid, $dn, $attrib, $admin) {
 // Returns a new, improved/correct object.
 // NOTE: $dn and $type is only used/needed for the ACI's...
 function pql_validate_object($linkid, $dn, $object, $type) {
-	// ---------------------------------
-	// Encode values that needs to encoded and extract the object classes
+	// {{{ Encode values that needs to encoded and extract the object classes
     foreach($object as $key => $value) {
 		// Check if we have a MUST in the objectclasses choosen
 		// for creation for this attribute...
@@ -320,75 +319,75 @@ function pql_validate_object($linkid, $dn, $object, $type) {
 			  $entry[$key] = pql_maybe_encode(trim($value), $key, $linkid);
 		}
     }
+	// }}}
 
-	// ---------------------------------
-	// Retreive all objectclasses the LDAP server knows about
+	// {{{ Retreive all objectclasses the LDAP server knows about
 	$ldap = pql_get_subschema($linkid, "objectclasses");
+	// }}}
 
-	// ---------------------------------
-	// Go through the WANTED objectclasses, checking for a
-	// MUST attribute we don't have
-	foreach($ocs as $oc) {
+	// {{{ Go through the WANTED objectclasses, checking for a MUST attribute we don't have
+	if(is_array($ocs)) {
+	  foreach($ocs as $oc) {
 		$oc = lc($oc);
-
+		
 		if(!$ldap[$oc]['MUST']['count'])
 		  // An objectclass with no MUST, add this directly
 		  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = $oc;
 		else {
-			// This objectclass have one or more MUST attributes
-			// Do we have any of those MUST attributes defined?
-			$MUST = $ldap[$oc]['MUST'];
-
-			foreach($object as $attrib => $value) {
-				$attrib = lc($attrib);
-
-				// Go through the MUST attributes for this objctclass,
-				// looking for an attribute we have NOT defined
-				for($i=0; isset($MUST[$i]); $i++) {
-					$must = lc($MUST[$i]);
-
-					if($attrib == $must)
-					  unset($MUST[$i]);
-				}
-
-				// Before we rearrange the array, remove the count
-				// entry (othervise it gets renamed to a number).
-				unset($MUST['count']);
-				
-				// Rearrange the array
-				$MUST = pql_uniq($MUST);
-				
-				// Readd the count entry
-				$MUST['count'] = count($MUST);
+		  // This objectclass have one or more MUST attributes
+		  // Do we have any of those MUST attributes defined?
+		  $MUST = $ldap[$oc]['MUST'];
+		  
+		  foreach($object as $attrib => $value) {
+			$attrib = lc($attrib);
+			
+			// Go through the MUST attributes for this objctclass,
+			// looking for an attribute we have NOT defined
+			for($i=0; isset($MUST[$i]); $i++) {
+			  $must = lc($MUST[$i]);
+			  
+			  if($attrib == $must)
+				unset($MUST[$i]);
 			}
-
-			if(!$MUST['count'])
-			  // This objectclass don't contain MUST attributes which
-			  // isn't defined in the user object. Add this to the list
-			  // of objectclasses to add
-			  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = $oc;
-			else {
-				// Objectclass which have been removed from the list because
-				// there's an MUST attribute missing
-				echo "<b>Objectclass with missing attribute in MUST:</b> <u>$oc</u><br>";
-				echo "You're missing the following attributes: ";
-				for($i=0; $i < $MUST['count']; $i++) {
-					if(!$MUST[$i+1] and ($i != 0))
-					  echo "and ";
-
-					echo "<i>".$MUST[$i]."</i>";
-
-					if($MUST[$i+1])
-					  echo ", ";
-				}
-				echo "<p>";
+			
+			// Before we rearrange the array, remove the count
+			// entry (othervise it gets renamed to a number).
+			unset($MUST['count']);
+			
+			// Rearrange the array
+			$MUST = pql_uniq($MUST);
+			
+			// Readd the count entry
+			$MUST['count'] = count($MUST);
+		  }
+		  
+		  if(!$MUST['count'])
+			// This objectclass don't contain MUST attributes which
+			// isn't defined in the user object. Add this to the list
+			// of objectclasses to add
+			$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = $oc;
+		  else {
+			// Objectclass which have been removed from the list because
+			// there's an MUST attribute missing
+			echo "<b>Objectclass with missing attribute in MUST:</b> <u>$oc</u><br>";
+			echo "You're missing the following attributes: ";
+			for($i=0; $i < $MUST['count']; $i++) {
+			  if(!$MUST[$i+1] and ($i != 0))
+				echo "and ";
+			  
+			  echo "<i>".$MUST[$i]."</i>";
+			  
+			  if($MUST[$i+1])
+				echo ", ";
 			}
+			echo "<p>";
+		  }
 		}
+	  }
 	}
+	// }}}
 
-	// ---------------------------------
-	// Go through each attribute, verifying that we have an object class
-	// for this.
+	// {{{ Go through each attribute, verifying that we have an object class for this.
 	foreach($object as $attrib => $value) {
 		$attrib = lc($attrib);
 
@@ -398,11 +397,12 @@ function pql_validate_object($linkid, $dn, $object, $type) {
 			// TODO: How do we check that this attribute have a object class specified in $entry!?
 		}
 	}
+	// }}}
 
-	// ---------------------------------
-	// Add the OpenLDAPaci attribute (maybe)
+	// {{{ Add the OpenLDAPaci attribute (maybe)
 	if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci"))
 	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($linkid, $dn, $type);
+	// }}}
 
 	return($entry);
 }

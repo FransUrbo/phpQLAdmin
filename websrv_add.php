@@ -1,7 +1,8 @@
 <?php
-// add a webserver configuration to the LDAP db
-// $Id: websrv_add.php,v 2.7 2004-11-15 15:19:55 turbo Exp $
+// Add a webserver configuration to the LDAP db
+// $Id: websrv_add.php,v 2.8 2005-02-07 12:05:32 turbo Exp $
 //
+// {{{ Setup session
 session_start();
 require("./include/pql_config.inc");
 require("./include/pql_control.inc");
@@ -11,7 +12,9 @@ $url["domain"] = pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 
 include("./header.html");
+// }}}
 
+// {{{ Verify all submitted values
 if($submit) {
 	$error = false;
 	$error_text = array();
@@ -44,8 +47,10 @@ if($submit) {
 	} elseif(!ereg('\/$',  $_REQUEST["documentroot"]))
 	  $_REQUEST["documentroot"] .= '/';
 }
+// }}}
 
 if(($error == 'true') or !$_REQUEST["serverip"] or !$_REQUEST["serverurl"] or !$_REQUEST["serveradmin"] or !$_REQUEST["documentroot"]) {
+	// {{{ Show the input form
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Create a webserver configuration in branch %domain%'), array('domain' => $_REQUEST["domain"])); ?></span>
 
@@ -92,9 +97,9 @@ if(($error == 'true') or !$_REQUEST["serverip"] or !$_REQUEST["serverurl"] or !$
     <input type="submit" value="Create">
   </form>
 <?php
+// }}}
 } else {
-	// No errors (i.e. no missing values). We're good to go!
-
+	// {{{ No errors (i.e. no missing values). We're good to go!
 	$entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_IP")]	= $_REQUEST["serverip"];
 	$entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_URL")]	= $_REQUEST["serverurl"];
 	$entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_ADMIN")]	= $_REQUEST["serveradmin"];
@@ -154,6 +159,7 @@ if(($error == 'true') or !$_REQUEST["serverip"] or !$_REQUEST["serverurl"] or !$
 		die("<b>$url</b>");
 	} else
 	  header("Location: ".pql_get_define("PQL_CONF_URI") . "$url");
+// }}}
 }
 ?>
   </body>
