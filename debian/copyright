@@ -3,9 +3,10 @@ Mon,  5 May 2003 08:23:52 +0200.
 
 It was downloaded from http://phpqladmin.bayour.com/
 
-Upstream Author(s): Turbo Fredriksson <turbo@bayour.com>
+Upstream Author: Turbo Fredriksson <turbo@bayour.com>
 
 Copyright:
+ This software is distributed under GPL v2.
 
-On Debian GNU/Linux systems, the complete text of the GNU General
-Public License can be found in `/usr/share/common-licenses/GPL'.
+ On Debian GNU/Linux systems, the complete text of the GNU General
+ Public License can be found in `/usr/share/common-licenses/GPL'.
