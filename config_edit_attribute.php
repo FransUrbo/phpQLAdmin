@@ -1,6 +1,6 @@
 <?php
 // Edit and set configuration values in the LDAP database
-// $Id: config_edit_attribute.php,v 1.13 2004-11-06 22:04:16 turbo Exp $
+// $Id: config_edit_attribute.php,v 1.14 2004-11-12 09:49:07 turbo Exp $
 //
 session_start();
 
@@ -38,6 +38,7 @@ function attribute_forward($msg, $rlnb = false) {
 // }}}
 
 // {{{ Select what to do
+$attrib = $_REQUEST["attrib"];
 if(@$_REQUEST["submit"] == 1) {
     if(attribute_check()) {
 		attribute_save();
