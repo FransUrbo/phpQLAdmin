@@ -98,22 +98,27 @@ if($submit == "two"){
 	// Verify/Create uid
 	if(!$uid) {
 		if (function_exists('user_generate_uid')) {
-			$uid = strtolower(user_generate_uid($_pql, $surname, $name, $email, $domain, $account_type));
+			$uid = strtolower(user_generate_uid($_pql, $surname, $name, $email, $email_domain, $account_type));
+
+			// Check again. There should be a user name, either from the input
+			// form OR from the user_generate_uid() function above...
+			if(!$uid) {
+				$submit = "one";
+				$error = true;
+				$error_text["uid"] = PQL_LANG_MISSING;
+			} else {
+				if(preg_match("/[^a-z0-9\.@%_-]/i", $uid)) {
+					$submit = "one";
+					$error = true;
+					$error_text["uid"] = PQL_LANG_INVALID;
+				}
+			}
 		} else {
-			$submit = "one";
 			$error = true;
-			$error_text["uid"] = PQL_LANG_MISSING . "(can't autogenerate)";
+			$error_text["uid"] = PQL_LANG_MISSING . " (can't autogenerate)";
 		}
 	}
-	
-	// Check again. There should be a user name, either from the input
-	// form OR from the user_generate_uid() function above...
-	if($uid == "") {
-		$submit = "one";
-		$error = true;
-		$error_text["uid"] = PQL_LANG_MISSING;
-	}
-	
+
 	// Build the COMPLETE email address
 	if(! ereg("@", $email)) {
 		if($email_domain)
@@ -126,16 +131,30 @@ if($submit == "two"){
 // ------------------------------------------------
 // Page 3:
 if ($submit == "save") {
-	if($uid == "") {
-		$error = true;
-		$error_text["uid"] = PQL_LANG_MISSING;
+	// Verify/Create uid
+	if(!$uid) {
+		if (function_exists('user_generate_uid')) {
+			$uid = strtolower(user_generate_uid($_pql, $surname, $name, $email, $email_domain, $account_type));
+
+			// Check again. There should be a user name, either from the input
+			// form OR from the user_generate_uid() function above...
+			if(!$uid) {
+				$submit = "one";
+				$error = true;
+				$error_text["uid"] = PQL_LANG_MISSING;
+			} else {
+				if(preg_match("/[^a-z0-9\.@%_-]/i", $uid)) {
+					$submit = "one";
+					$error = true;
+					$error_text["uid"] = PQL_LANG_INVALID;
+				}
+			}
+		} else {
+			$error = true;
+			$error_text["uid"] = PQL_LANG_MISSING . " (can't autogenerate)";
+		}
 	}
 	
-	if(preg_match("/[^a-z0-9\.@_-]/i", $uid)) {
-		$error = true;
-		$error_text["uid"] = PQL_LANG_INVALID;
-	}
-
 	if($error_text["uid"] == "" and pql_search_attribute($_pql->ldap_linkid, $domain,
 														 $config["PQL_GLOB_ATTR_UID"],
 														 $uid)) {
@@ -204,6 +223,10 @@ if ($submit == "save") {
 				$error = true;
 				$error_text["userhost"] = "Sorry, I can't find any MX or any QmailLDAP/Controls object that listens to this domain - <u>".$domainname[1]."</u><br>You will have to specify one manually.";
 					
+			} else {
+				// We got a MX or QmailLDAP/Controls object. Use it.
+				$userhost = $mx[1];
+				$host = "user";
 			}
 		}
 	} elseif($account_type == "forward") {
@@ -217,8 +240,14 @@ if ($submit == "save") {
 			$error_text["forwardingaddress"] = PQL_LANG_MISSING;
 		}
 	}
-	
-	if($error == true and !$ADVANCED_MODE)
+
+	// No host
+	if(!$host or !$userhost) {
+		$error = true;
+		$error_text["userhost"] = PQL_LANG_MISSING . " (can't autogenerate)";
+	}
+
+	if(($error == true) and !$ADVANCED_MODE and !$submit)
 	  $submit = "two";
 }
 
@@ -254,12 +283,12 @@ if($ADVANCED_MODE && $account_type) {
 
 <?php
 // select form to display
-switch($submit){
+switch($submit) {
     // ---------------------------------- NEXT PAGE: 1
 	case "":
 	  // first
 ?>
-<form action="<?=$PHP_SELF?>" method="post">
+<form action="<?=$PHP_SELF?>" method="post" accept-charset="UTF-8,ISO-8859-1">
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?php echo PQL_LANG_USER_ACCOUNT_PROPERTIES; ?></th>
       <tr class="<?php table_bgcolor(); ?>">
@@ -332,7 +361,7 @@ switch($submit){
     case "one":
 	  // second form
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$PHP_SELF?>" method="post" accept-charset="UTF-8,ISO-8859-1">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo PQL_LANG_USER_ACCOUNT_PROPERTIES_MORE; ?></th>
         <tr class="<?php table_bgcolor(); ?>">
@@ -514,6 +543,7 @@ switch($submit){
             </select>
 <?php 	} else { ?>
             <b>@<?=$defaultdomain?></b>
+            <input type="hidden" name="email_domain" value="<?=$defaultdomain?>">
 <?php 	} ?>
           </td>
         </tr>
@@ -639,7 +669,7 @@ switch($submit){
 		// third
 ?>
 
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$PHP_SELF?>" method="post" accept-charset="UTF-8,ISO-8859-1">
     <input type="hidden" name="surname" value="<?=$surname?>">
     <input type="hidden" name="name" value="<?=$name?>">
     <input type="hidden" name="email" value="<?=$email?>">
@@ -700,7 +730,7 @@ switch($submit){
             <input type="radio" name="host" value="default" <?php if($userhost[0] and ($host != "user")){ echo "checked";}?>>
 <?php	} else { ?>
             <input type="hidden" name="userhost" value="<?=$userhost?>">
-            <input type="radio" name="host" value="default" <?php if($userhost and ($host != "user")){ echo "checked";}?>>
+            <input type="radio" name="host" value="default" <?php if($userhost and ($host == "user")){ echo "checked";}?>>
 <?php	}
 		echo "            " . PQL_LANG_MAILHOST_DEFAULT . ": <b>";
 		if(is_array($userhost))
@@ -910,6 +940,24 @@ switch($submit){
 			$entry[$config["PQL_GLOB_ATTR_QMAILUID"]] = $config["PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER"][$rootdn];
 			$entry[$config["PQL_GLOB_ATTR_QMAILGID"]] = $config["PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER"][$rootdn];
 			$entry[$config["PQL_GLOB_ATTR_HOMEDIR"]]  = "/tmp";
+		}
+
+        // ------------------
+		if($cn) {
+			$cn = maybe_encode($cn);
+		}
+		if($entry[$config["PQL_GLOB_ATTR_GIVENNAME"]]) {
+			$entry[$config["PQL_GLOB_ATTR_GIVENNAME"]]	= maybe_encode($entry[$config["PQL_GLOB_ATTR_GIVENNAME"]]);
+		}
+		if($entry[$config["PQL_GLOB_ATTR_SN"]]) {
+			$entry[$config["PQL_GLOB_ATTR_SN"]]			= maybe_encode($entry[$config["PQL_GLOB_ATTR_SN"]]);
+		}
+		if($entry[$config["PQL_GLOB_ATTR_CN"]]) {
+			$entry[$config["PQL_GLOB_ATTR_CN"]]			= maybe_encode($entry[$config["PQL_GLOB_ATTR_CN"]]);
+		}
+		if($entry["gecos"]) {
+			// Remove the international characters from gecos, isn't allowed
+			$entry["gecos"]								= maybe_encode($entry["gecos"], 1);
 		}
 
         // ------------------
