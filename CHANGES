@@ -10,6 +10,8 @@ phpQLAdmin 2.0.10 TO BE ANNOUNCED
 	    the user who have logged in!
 	  - With new SYNTAX of bool values (came with the new schema) we
 	    must set TRUE/FALSE in the db, not 1/0.
+	  - Missing attribute definition for baseQuota (default domain/branch
+	    quota) in the schema.
 
 	GUI layout change
 	  - Show the user DN in the left frame and in user details
