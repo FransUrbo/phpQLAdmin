@@ -20,7 +20,7 @@ if(empty($forwarders)) {
       <tr class="<?php table_bgcolor(); ?>">
         <td><a href="mailto:<?=$forwarder["email"]?>"><?=$forwarder["email"]?></a></td>
         <td>
-          <a href="user_detail.php?user=<?php echo urlencode($forwarder["reference"]); ?>&view=<?=$view?>"><?=$forwarder[PQL_CONF_REFERENCE_USERS_WITH]?></a>
+          <a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?php echo urlencode($forwarder["reference"]); ?>"><?=$forwarder[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)]?></a>
         </td>
       </tr>
 <?php
