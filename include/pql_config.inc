@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.61.10.2 2004-05-04 07:57:27 turbo Exp $
+// $Id: pql_config.inc,v 1.61.10.2.4.1 2004-08-27 07:39:46 turbo Exp $
 //
 
 // include the API files
@@ -196,6 +196,9 @@ if(!$MONITOR_BACKEND_ENABLED) {
 unset($host); unset($servers); unset($i);
 unset($pql_config_private_variable_which_irritates_me); unset($sr); unset($info);
 unset($v); unset($nkey); unset($k);
+
+// See bug #203...
+($_REQUEST["domain"] = $_GET["domain"] ) || ($_REQUEST["domain"] = $_POST["domain"]);
 
 /*
  * Local variables:
