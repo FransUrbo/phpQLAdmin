@@ -10,7 +10,7 @@ require("./include/pql_control_plugins.inc");
 
 require("./left-head.html");
 
-$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS, false, 0);
+$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS, false, 0);
 if($_pql->ldap_error) {
     session_unregister("USER_ID");
     session_unregister("USER_PASS");
@@ -51,7 +51,7 @@ if($advanced == 1) {
 if($ADVANCED_MODE) {
 ?>
   <font color="black" class="heada">
-    Host: <font color="black" size=-4><b><?=$USER_HOST_USR?></b></font>
+    Host: <font color="black" size=-4><b><?=$USER_HOST?></b></font>
   </font>
 
   <div id="el2Parent" class="parent">

@@ -12,8 +12,8 @@ include("./header.html");
   <span class="title1"><?php echo pql_complete_constant(PQL_DOMAIN_DEL_TITLE, array("domain" => $domain))?></span>
 <?php
     if(isset($ok) || PQL_VERIFY_DELETE){
-	$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
-	$_pql_control = new pql_control($USER_HOST_CTR, $USER_DN, $USER_PASS);
+	$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
+	$_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
 	
 	$delete_forwards = (isset($delete_forwards)) ? true : false;
 	

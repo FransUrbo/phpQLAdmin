@@ -1,6 +1,6 @@
 <?php
 // Add a new mailserver to the database
-// $Id: control_add_server.php,v 2.4 2002-12-29 18:24:34 turbo Exp $
+// $Id: control_add_server.php,v 2.5 2003-01-14 12:53:38 turbo Exp $
 //
 session_start();
 
@@ -9,7 +9,7 @@ require("./include/pql.inc");
 if(PQL_LDAP_CONTROL_USE){
     // include control api if control is used
     include("./include/pql_control.inc");
-    $_pql_control = new pql_control($USER_HOST_CTR, $USER_DN, $USER_PASS);
+    $_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
 
     include("./header.html");
 
@@ -80,7 +80,7 @@ if(PQL_LDAP_CONTROL_USE){
 		}
 	}
 ?>
-  <span class="title1">Create mailserver controls object in LDAP server <?=$USER_HOST_USR?></span>
+  <span class="title1">Create mailserver controls object in LDAP server <?=$USER_HOST?></span>
 
   <table cellspacing="0" cellpadding="3" border="0">
     <th>
@@ -225,8 +225,8 @@ if(PQL_LDAP_CONTROL_USE){
 	// ADVANCED_MODE set! But anyway, just incase I find a better way later :)
 ?>
         <input type="hidden" name="plusdomain" value="">
-        <input type="hidden" name="ldapserver" value="<?=$USER_HOST_USR?>">
-        <input type="hidden" name="ldapbasedn" value="<?=$USER_HOST_CTR?>">
+        <input type="hidden" name="ldapserver" value="<?=$USER_HOST?>">
+        <input type="hidden" name="ldapbasedn" value="<?=$USER_HOST?>">
         <input type="hidden" name="ldapdefaultquota" value="">
         <input type="hidden" name="ldapdefaultdotmode" value="ldapwithprog">
         <input type="hidden" name="dirmaker" value="">

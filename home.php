@@ -47,13 +47,10 @@ if(isset($submit)) {
     if($ldapserver) {
 	$host = split(';', $ldapserver);
 
-	$USER_HOST_USR = $host[0] . ";" . $host[1];
+	$USER_HOST = $host[0] . ";" . $host[1];
 	$USER_SEARCH_DN_USR = $host[2];
 
-	$USER_HOST_CTR = $host[0] . ";" . $host[1];
-	$USER_SEARCH_DN_CTR = $host[3];
-
-	session_register("USER_HOST_USR", "USER_HOST_CTR", "USER_SEARCH_DN_USR", "USER_SEARCH_DN_CTR");
+	session_register("USER_HOST", "USER_SEARCH_DN_USR", "USER_SEARCH_DN_CTR");
     }
 
     // We need to disable advanced mode so that only the user frame

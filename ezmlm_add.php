@@ -1,11 +1,11 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.9 2003-01-14 06:45:11 turbo Exp $
+// $Id: ezmlm_add.php,v 1.10 2003-01-14 12:53:38 turbo Exp $
 //
 session_start();
 
 require("./include/pql.inc");
-$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
+$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 // forward back to list detail page
 function list_forward($domainname, $msg){

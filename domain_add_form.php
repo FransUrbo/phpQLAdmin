@@ -1,13 +1,13 @@
 <?php
 // Input form page to create a domain branch in database
-// $Id: domain_add_form.php,v 1.1 2002-12-29 01:06:18 turbo Exp $
+// $Id: domain_add_form.php,v 1.2 2003-01-14 12:53:38 turbo Exp $
 //
 session_start();
 
 require("./include/pql.inc");
 include("./header.html");
 ?>
-  <span class="title1">Create domain branch in LDAP server <?=$USER_HOST_USR?></span>
+  <span class="title1">Create domain branch in LDAP server <?=$USER_HOST?></span>
 
   <br><br>
 

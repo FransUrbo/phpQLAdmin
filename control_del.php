@@ -1,6 +1,6 @@
 <?php
 // Delete a mailserver controls object
-// $Id: control_del.php,v 2.1 2002-12-29 10:37:25 turbo Exp $
+// $Id: control_del.php,v 2.2 2003-01-14 12:53:38 turbo Exp $
 //
 session_start();
 
@@ -9,7 +9,7 @@ require("./include/pql.inc");
 if(PQL_LDAP_CONTROL_USE){
     // include control api if control is used
     include("./include/pql_control.inc");
-    $_pql_control = new pql_control($USER_HOST_CTR, $USER_DN, $USER_PASS);
+    $_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
 
     include("./header.html");
 

@@ -13,7 +13,7 @@ include("./header.html");
 <?php
 	if(isset($ok) || PQL_VERIFY_DELETE){
 		$delete_forwards = (isset($delete_forwards) || PQL_VERIFY_DELETE) ? true : false;
-		$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
+		$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 		
 		// delete the user
 		if(pql_remove_user($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, $delete_forwards)){

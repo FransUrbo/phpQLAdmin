@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_edit_attribute.php,v 1.7 2003-01-14 06:47:18 turbo Exp $
+// $Id: ezmlm_edit_attribute.php,v 1.8 2003-01-14 12:53:38 turbo Exp $
 //
 session_start();
 
@@ -7,7 +7,7 @@ require("./include/pql.inc");
 require("./include/pql_ezmlm.inc");
 
 // Initialize
-$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS, false, 0);
+$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS, false, 0);
 
 // forward back to list detail page
 function list_forward($domainname, $msg){

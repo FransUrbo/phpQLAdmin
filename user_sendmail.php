@@ -6,7 +6,7 @@ session_start();
 
 require("./include/pql.inc");
 
-$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
+$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 include("./header.html");
 ?>
@@ -50,7 +50,7 @@ if (is_array($quota)) {
 	// search the standard quota...
 	require("./include/pql_control.inc");
 	require("./include/pql_control_plugins.inc");
-	$_pql_control = new pql_control($USER_HOST_CTR, $USER_DN, $USER_PASS);
+	$_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
 	
 	$quota = pql_control_get_attribute($_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR, "ldapdefaultquota");
 	

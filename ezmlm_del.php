@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_del.php,v 1.8 2003-01-14 07:21:40 turbo Exp $
+// $Id: ezmlm_del.php,v 1.9 2003-01-14 12:53:38 turbo Exp $
 //
 session_start();
 
@@ -9,7 +9,7 @@ require("./include/pql_ezmlm.inc");
 include("./header.html");
 
 // Initialize
-$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS, false, 0);
+$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS, false, 0);
 
 // forward back to list detail page
 function list_forward($domainname, $msg){

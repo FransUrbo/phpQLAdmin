@@ -1,12 +1,12 @@
 <?php
-// $Id: ezmlm_detail.php,v 1.11 2003-01-14 07:24:23 turbo Exp $
+// $Id: ezmlm_detail.php,v 1.12 2003-01-14 12:53:38 turbo Exp $
 //
 session_start();
 
 require("./include/pql.inc");
 require("./include/pql_ezmlm.inc");
 
-$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
+$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 // print status message, if one is available
 if(isset($msg)){

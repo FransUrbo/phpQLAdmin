@@ -9,7 +9,7 @@ require("./include/pql.inc");
 if(defined(PQL_LDAP_CONTROL_USE)) {
     // include control api if control is used
     include("./include/pql_control.inc");
-    $_pql_control = new pql_control($USER_HOST_CTR, $USER_DN, $USER_PASS);
+    $_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
 }
 
 include("./header.html");
@@ -30,7 +30,7 @@ if(isset($rlnb) and PQL_AUTO_RELOAD) {
 <?php
 }
 
-$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
+$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 // check if domain exist
 if(!pql_domain_exist($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain)){

@@ -1,6 +1,6 @@
 <?php
 // navigation bar - ezmlm mailinglists manager
-// $Id: left-ezmlm.php,v 2.10 2003-01-14 06:55:07 turbo Exp $
+// $Id: left-ezmlm.php,v 2.11 2003-01-14 12:53:38 turbo Exp $
 //
 session_start();
 
@@ -23,7 +23,7 @@ require("./left-head.html");
 
 <?php
 // Initialize
-$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS, false, 0);
+$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS, false, 0);
 
 // Get ALL domains we have access to.
 //	administrator: USER_DN

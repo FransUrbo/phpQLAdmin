@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.5 2002-12-29 01:04:53 turbo Exp $
+// $Id: left-control.php,v 2.6 2003-01-14 12:53:38 turbo Exp $
 //
 session_start();
 
@@ -10,7 +10,7 @@ require("./include/pql_control_plugins.inc");
 
 require("./left-head.html");
 
-$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS, false, 0);
+$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS, false, 0);
 
 // TODO: How do we know if the user is allowed to add domains?
 //       In the domain description we don't have that info...
@@ -29,7 +29,7 @@ if(PQL_LDAP_CONTROL_USE) {
 	if($ADVANCED_MODE) {
 ?>
   <font color="black" class="heada">
-    Host: <font color="black" size=-4><b><?=$USER_HOST_CTR?></b></font>
+    Host: <font color="black" size=-4><b><?=$USER_HOST?></b></font>
   </font>
 
   <div id="el2Parent" class="parent">

@@ -30,7 +30,7 @@ if(isset($rlnb) and PQL_AUTO_RELOAD){
   <br><br>
 
 <?php
-$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
+$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 // test for submission of variables
 if ($attribute == "" || $filter_type == "" || $search_string == "") {

@@ -116,7 +116,7 @@ if(PQL_VERIFY_DELETE){
 
 <tr>
 	<td class="title">LDAP host</td>
-	<td class="<?php table_bgcolor(); ?>"><?=$USER_HOST_USR?>&nbsp;</td>
+	<td class="<?php table_bgcolor(); ?>"><?=$USER_HOST?>&nbsp;</td>
 </tr>
 
 <tr>
@@ -125,10 +125,6 @@ if(PQL_VERIFY_DELETE){
 </tr>
 
 <?php if(PQL_LDAP_CONTROL_USE) { ?>
-<tr>
-	<td class="title">LDAP control host</td>
-	<td class="<?php table_bgcolor(); ?>"><?=$USER_HOST_CTR?>&nbsp;</td>
-</tr>
 <tr>
 	<td class="title">LDAP control base dn</td>
 	<td class="<?php table_bgcolor(); ?>"><?=$USER_SEARCH_DN_CTR?>&nbsp;</td>

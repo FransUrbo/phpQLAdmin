@@ -12,8 +12,8 @@ include("./header.html");
   <span class="title1"><?=PQL_DOMAIN_ADD?>: <?=$domain?></span>
   <br><br>
 <?php
-$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
-$_pql_control = new pql_control($USER_HOST_CTR, $USER_DN, $USER_PASS);
+$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
+$_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
 
 // convert domain to lowercase
 $domain = strtolower($domain);

@@ -15,19 +15,19 @@ if(!function_exists("ldap_connect")){
 	$ldap_ext = PQL_TEST_LDAP_EXT_OK;
 	
 	// user directory connection
-	$_pql = new pql($USER_HOST_USR, '', '', true);
-	if(!$_pql->connect($USER_HOST_USR)){
+	$_pql = new pql($USER_HOST, '', '', true);
+	if(!$_pql->connect($USER_HOST)){
 		$connection = PQL_TEST_CONNECTION_FAILED;
 		
 		// do additional tests
-		if(!gethostbyname($USER_HOST_USR)){
+		if(!gethostbyname($USER_HOST)){
 			// not resolved
-			$connection .= ", " . pql_complete_constant(PQL_TEST_CONNECTION_RESOLVE_ERR ,array("host" => $USER_HOST_USR ));
+			$connection .= ", " . pql_complete_constant(PQL_TEST_CONNECTION_RESOLVE_ERR ,array("host" => $USER_HOST ));
 		} else {
 			// try to open a connection
-			if(!fsockopen($USER_HOST_USR, 389)){
+			if(!fsockopen($USER_HOST, 389)){
 				// impossible to connect
-				$connection .= ", " . pql_complete_constant(PQL_TEST_CONNECTION_CONNECT_ERR ,array("host" => $USER_HOST_USR ));
+				$connection .= ", " . pql_complete_constant(PQL_TEST_CONNECTION_CONNECT_ERR ,array("host" => $USER_HOST ));
 			}
 		}
 	} else {
@@ -41,8 +41,8 @@ if(!function_exists("ldap_connect")){
 
 	if(PQL_LDAP_CONTROL_USE){
 		// control directory connection
-		$_pql_control = new pql_control($USER_HOST_CTR, '', '', true);
-		if(!$_pql_control->connect($USER_HOST_CTR)) {
+		$_pql_control = new pql_control($USER_HOST, '', '', true);
+		if(!$_pql_control->connect($USER_HOST)) {
 			$connection_control = PQL_TEST_CONNECTION_FAILED;
 
 			$host = split(' ', PQL_LDAP_HOST);
@@ -59,7 +59,7 @@ if(!function_exists("ldap_connect")){
 				// try to open a connection
 				if(!fsockopen($fqdn, $port)){
 					// impossible to connect
-					$connection_control .= ", " . pql_complete_constant(PQL_TEST_CONNECTION_CONNECT_ERR, array("host" => $USER_HOST_CTR));
+					$connection_control .= ", " . pql_complete_constant(PQL_TEST_CONNECTION_CONNECT_ERR, array("host" => $USER_HOST));
 				}
 			}
 		} else {

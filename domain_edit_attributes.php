@@ -5,7 +5,7 @@
 session_start();
 
 require("./include/pql.inc");
-$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
+$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 // forward back to users detail page
 function attribute_forward($msg){
