@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mailquota.inc,v 2.19 2004-02-14 19:11:03 turbo Exp $
+// $Id: attrib.mailquota.inc,v 2.20 2004-02-21 16:04:42 turbo Exp $
 
 function attribute_check($type) {
     global $error, $LANG;
@@ -53,12 +53,6 @@ function attribute_check($type) {
 		$failed = true;
 	}
 	
-	// userdefined, but no quota selected;
-	if($options == "user") {
-		$error["selected"] = $LANG->_('You must select at least one type of quota');
-		$failed = true;
-	}
-	
 	if($failed) {
 		return false;
 	} else {
@@ -81,7 +75,7 @@ function attribute_init() {
 function attribute_print_form($type = "modify") {
     global $error, $LANG;
 ?>
-  <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Change quota')?></th>
 <?php if(!empty($_SESSION["USE_CONTROLS"])) { ?>
@@ -145,7 +139,7 @@ function attribute_save($type) {
     global $_pql, $LANG;
 
 	// Just incase user 'forgets' to tick in the 'User defined' field...
-	if(empty($_REQUEST["options"]) and (!empty($_REQUEST["maxsize"]) or !empty($REQUEST["maxmails"]))) {
+	if(empty($_REQUEST["options"]) and (!empty($_REQUEST["maxsize"]) or !empty($_REQUEST["maxmails"]))) {
 		// Neither 'Standard' nor 'User defined' entered, but we have value(s) for quota
 		$_REQUEST["options"] = "user";
 	}
