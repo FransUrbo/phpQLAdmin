@@ -107,12 +107,14 @@ if($ADVANCED_MODE == 1) {
         <td><?=$basequota_link?></td>
       </tr>
 
+<?php if($ALLOW_BRANCH_CREATE and $ADVANCED_MODE) { ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">Maximum allowed users in branch</td>
         <td><?php if($maximumdomainusers){echo $maximumdomainusers;}else{echo "unlimited";} ?></td>
         <td><?=$maximumdomainusers_link?></td>
       </tr>
 
+<?php } ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?=PQL_LANG_DOMAIN_ADMIN_TITLE?></td>
 <?php
