@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // cn (Full name)
-// $Id: attrib.cn.inc,v 2.12 2003-07-02 07:59:00 turbo Exp $
+// $Id: attrib.cn.inc,v 2.13 2003-07-03 10:10:38 turbo Exp $
 
 function attribute_check($type) {
     global $cn, $oldvalue, $_pql, $error, $LANG;
@@ -72,7 +72,7 @@ function attribute_save($type) {
 				// We have an old value of this array, try to change it...
 				if(pql_replace_userattribute($_pql->ldap_linkid, $user, $attrib, $cn))
 				  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
-											   array('what' => $LANG->_('Common name')
+											   array('what' => $LANG->_('Common name'),
 													 'new'  => $cn));
 				else
 				  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
