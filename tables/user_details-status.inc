@@ -11,7 +11,7 @@ if($tmp[0]) {
 	$time_expiration = '<i>Not set</i>';
 }
 // Retreive the accountStatus attribute
-$status = pql_ldap_accountstatus(pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_ISACTIVE")));
+$status = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_ISACTIVE"));
 ?>
   <!-- accountstatus -->
   <table cellspacing="0" cellpadding="3" border="0">
@@ -24,32 +24,25 @@ $status = pql_ldap_accountstatus(pql_get_attribute($_pql->ldap_linkid, $_GET["us
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title">Status</td>
-<?php if(eregi('Active', $status)) { ?>
+<?php if(($status == "disabled") or ($status == "deleted")) { ?>
+<?php   if($status == "disabled") { ?>
+        <td><b><?=$LANG->_('Disabled')?></b></td>
+<?php   } elseif($status == "deleted") { ?>
+        <td><b><?=$LANG->_('Deleted')?></b></td>
+<?php   } ?>
+        <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_ISACTIVE")?>&user=<?=$url["user"]?>&set=active&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Enable account"></a></td>
+<?php } elseif($status == "noaccess") { ?>
+        <!-- --------------------------------------------------- --> 
+        <!-- This looks weird! Two trashcans beside each other!! -->
+        <!-- --------------------------------------------------- --> 
+        <td><b><?=$LANG->_('POP Locked')?></b></td>
+        <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_ISACTIVE")?>&user=<?=$url["user"]?>&set=active&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="Unlock account"></a></td>
+<?php } else { ?>
         <td><b><?=$LANG->_('Active')?></b></td>
         <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_ISACTIVE")?>&user=<?=$url["user"]?>&set=disabled&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="Disable account"></a></td>
-<?php } elseif(eregi('Locked', $status)) { ?>
-        <td><b><?=$LANG->_('Disabled')?></b></td>
-        <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_ISACTIVE")?>&user=<?=$url["user"]?>&set=active&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Enable account"></a></td>
+        <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_ISACTIVE")?>&user=<?=$url["user"]?>&set=noaccess&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="POP Lock"></a></td>
 <?php } ?>
       </tr>
-    </th>
-  </table>
-
-<?php if(!$_SESSION["SINGLE_USER"]) { ?>
-  <p>
-
-  <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="2" align="left"><?=$LANG->_('POP status')?></th>
-      <tr class="subtitle">
-        <td>
-<?php if(!$_SESSION["NEW_STYLE_QUOTA"])  { ?>
-          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_ISACTIVE")?>&user=<?=$url["user"]?>&set=nopop&view=<?=$_GET["view"]?>"><?=$LANG->_('Lock POP account')?></a>
-<?php } else { ?>
-          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_ISACTIVE")?>&user=<?=$url["user"]?>&set=noaccess&view=<?=$_GET["view"]?>"><?=$LANG->_('Lock account')?></a>
-<?php } ?>
-        </td>
-      </tr>
-<?php } ?>
     </th>
   </table>
 

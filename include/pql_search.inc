@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.31 2005-01-13 12:23:24 turbo Exp $
+// $Id: pql_search.inc,v 2.32 2005-01-31 08:05:10 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -18,34 +18,34 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
 	if(eregi("^dNSTTL=", $dn))
 	  $dn = pql_recreate_dnsttl($dn);
 
-    // TODO: Check whether the object is cached.
+    // {{{ Check whether the object is cached - TODO
 //    $value = '';
 //	if(pql_cache_userentry_get($dn, $attribute, $value))
 //	  // The object is cached  -> return the value for the requested attribute  .
 //	  return($value);
+	// }}}
 
-	// ---------------------
+	// {{{ Which ldap_{search,list,read}() function to use
 	switch($level) {
 	  case "SUBTREE":	$func = "ldap_search";	break;
 	  case "ONELEVEL":	$func = "ldap_list";	break;
 	  default:			$func = "ldap_read";	break;
 	}
+	// }}}
 
 	if($operational)
 	  $op = array('+');
 	else
 	  $op = array();
-	  
 
-	// ---------------------
-	// Retreive the whole object.
+	// {{{ Retreive the whole object.
 	$sr = @$func($linkid, $dn, $filter, $op);
 	if(!$sr)
 	  // No such object - problem with the search string?
 	  return false;
+	// }}}
 
-	// ---------------------
-	// Get ALL hits and rearrange the array.
+	// {{{ Get ALL hits and rearrange the array.
 	$object = ldap_get_entries($linkid, $sr) or pql_format_error(1);
 	for($i=0; $i < $object["count"]; $i++) {
 		foreach($object[$i] as $key => $value) {
@@ -72,8 +72,9 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
 			}
 		}
 	}
+	// }}}
 
-	// ---------------------
+	// {{{ Chase referals
 	// TODO: Finish this, it's taken directly from (the now deleted) function pql_user_get().
 //	if($referrals) {
 //		// Get any referrals in this branch
@@ -103,11 +104,12 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
 //			}
 //		}
 //	}
+	// }}}
 
-	// ---------------------
-	// Cache this/these object
+	// {{{ Cache this/these object
 //	for($i=0; $entry[$i]; $i++)
 //	  pql_cache_userentry_add($dn, $entry[$i]);
+	// }}}
 
 	return($entry);
 }
@@ -133,6 +135,8 @@ function pql_get_attribute($linkid, $dn, $attribute, $operational = 0) {
 
 // {{{ pql_get_dn(linkid, dn, filter, level)
 // This function returns the DN of each object if finds.
+// Basically a simplified version of pql_search() - one that only returns
+// the DN's of the matches...
 function pql_get_dn($linkid, $dn, $filter, $level = 'SUBTREE') {
 	unset($entry);
 
