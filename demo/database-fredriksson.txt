@@ -1,9 +1,12 @@
 This file is technically not an LDIF. Remove empty
-lines and comments (starting with ;), and this note,
+lines and comments (starting with ';'), and this note,
 THEN it will be an LDIF...
 
 This 'semi-ldif' shows ONE of my development databases
 and shows what a base DN can look like when using phpQLAdmin.
+
+It have not been updated for ACI usage. I don't see the point.
+Read the README.aci file instead...
 
 ----- s n i p -----
 dn: o=Turbo Fredriksson
