@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-additional.inc,v 1.2 2003-11-14 11:56:22 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.3 2003-11-15 12:24:31 turbo Exp $ */ ?>
   <form action="<?=$PHP_SELF?>" method="post" accept-charset="UTF-8">
     <input type="hidden" name="surname" value="<?=$surname?>">
     <input type="hidden" name="name" value="<?=$name?>">
@@ -26,13 +26,6 @@
           <td class="title"><?=$LANG->_('Path to mailbox')?></td>
           <td><?=$maildirectory?></td>
         </tr>
-        <input type="hidden"name="maildirectory" value="<?=$maildirectory?>">
-
-<?php	if(($account_type == "normal") and $maildirectory) {
-			$homedirectory = $maildirectory;
-?>
-        <input type="hidden" name="homedirectory" value="<?=$homedirectory?>">
-<?php	} ?>
 
         <tr></tr>
 
@@ -85,10 +78,9 @@
           <td class="title"></td>
           <td>
             <input type="radio" name="host" value="user" <?php if((!$userhost[0] and !$userhost[1]) or ($host == "user")){ echo "checked";}?>>
-            <?=$LANG->_('User defined')?>&nbsp;<input type="text" name="userhost"><br>
+            <?=$LANG->_('User defined')?>&nbsp;<input type="text" name="userhost" size="30"><br>
           </td>
         </tr>
-
 <?php
 	} // end of if-else
 ?>
@@ -97,12 +89,20 @@
   
     <br>
 
-<?php	if($account_type != "forward") {?>
+<?php	if(($account_type == "normal") and $maildirectory) {
+			$homedirectory = $maildirectory;
+?>
+    <input type="hidden" name="homedirectory" value="<?=$homedirectory?>">
+<?php	}
+
+		if($account_type != "forward") {
+?>
     <input type="hidden" name="maildirectory" value="<?=$maildirectory?>">
 <?php	}?>
     <input type="hidden" name="account_type" value="<?=$account_type?>">
     <input type="hidden" name="account_status" value="<?=$account_status?>">
-    <input type="hidden" name="submit" value="save">
+    <input type="hidden" name="page_curr" value="two">
+    <input type="hidden" name="page_next" value="save">
     <input type="hidden" name="domain" value="<?=$domain?>">
     <input type="hidden" name="rootdn" value="<?=$rootdn?>">
     <input type="submit" value="<?=$LANG->_('Save')?>">
