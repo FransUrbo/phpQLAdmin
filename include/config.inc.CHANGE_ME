@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 1.4 2002-12-12 21:52:14 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.0 2002-12-13 14:34:58 turbo Exp $
 //
 session_start();
 // ----------------------------
@@ -73,6 +73,13 @@ define("PQL_TESTMAIL_AUTOSEND", false);
 //
 // If LDAP server isn't listening on port 389, specify the port
 // with a colon separating host and port, like 'fqdn:portnr'.
+//
+// If you are using OpenLDAP 2.x.x you can specify a URL instead of the
+// hostname. To use LDAP with SSL, compile OpenLDAP 2.x.x with SSL
+// support, configure PHP with SSL, and use ldaps://hostname/ as host
+// parameter. The port parameter is not used when using URLs.
+//
+// Note: URL and SSL support were added in PHP v4.0.4.
 define("PQL_LDAP_HOST","localhost:389");
 
 // PQL_LDAP_BASEDN (valid DN)
@@ -115,7 +122,7 @@ define("PQL_LDAP_ATTR_GIVENNAME", strtolower("givenName"));
 // PQL_LDAP_ATTR_DOMAIN (dc | ou)
 // How is your tree organized? What objectClass is used
 // It's either 'ou=domain,PQL_LDAP_BASEDN' or 'dc=domain,PQL_LDAP_BASEDN'
-define("PQL_LDAP_ATTR_DOMAIN", strtolower("ou"));
+define("PQL_LDAP_ATTR_DOMAIN", "ou");
 
 // PQL_LDAP_SUBTREE_USERS
 // Is your users organized DIRECTLY under your 'dc' object like
@@ -181,6 +188,13 @@ define("PQL_LDAP_CONTROL_USE", true);
 //
 // If LDAP server isn't listening on port 389, specify the port
 // with a colon separating host and port, like 'fqdn:portnr'.
+//
+// If you are using OpenLDAP 2.x.x you can specify a URL instead of the
+// hostname. To use LDAP with SSL, compile OpenLDAP 2.x.x with SSL
+// support, configure PHP with SSL, and use ldaps://hostname/ as host
+// parameter. The port parameter is not used when using URLs.
+//
+// Note: URL and SSL support were added in PHP v4.0.4.
 define("PQL_LDAP_CONTROL_HOST","localhost:389");
 
 // PQL_LDAP_CONTROL_BASEDN (valid DN)
