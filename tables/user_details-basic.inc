@@ -66,6 +66,7 @@
         </td>
       </tr>
 
+      <!-- DLW: Why do only some of these have "oldvalue" entries? -->
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Home directory')?></td>
         <td><?php if($homedirectory){echo $homedirectory;}else{echo $LANG->_('None');} ?></td>

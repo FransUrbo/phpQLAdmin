@@ -1,19 +1,19 @@
 <?php
 // attribute plugin for
 // homedirectory (path to homedirectory)
-// $Id: attrib.homedirectory.inc,v 2.12.2.1 2003-12-02 20:47:59 dlw Exp $
+// $Id: attrib.homedirectory.inc,v 2.12.2.2 2003-12-08 19:16:34 dlw Exp $
 
 function attribute_check($type) {
-    global $_pql, $error, $LANG;
+    global $error, $LANG;
     
     // is typed in ?
-    if($_REQUEST["homedirectory"] == "") {
+    if($_POST["homedirectory"] == "") {
 		$error["homedirectory"] = $LANG->_('Missing');
 		return false;
     }
     
     // don't use ".."
-    if(preg_match("/(\.){2,}/", $_REQUEST["homedirectory"])) {
+    if(preg_match("/(\.){2,}/", $_POST["homedirectory"])) {
 		$error["homedirectory"] = $LANG->_('Invalid');
 		return false;
     }
@@ -60,17 +60,17 @@ function attribute_save($type) {
 		break;
 
       case "modify":
-		if($_REQUEST["homedirectory"] == $_REQUEST["oldvalue"]) {
+		if($_POST["homedirectory"] == $_POST["oldvalue"]) {
 			// don't change if new value equal to old one
 			$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('Home directory')));
 			attribute_forward($msg);
 			break;
     	}
 		
-		if(pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], $_REQUEST["homedirectory"]))
+		if(pql_replace_attribute($_pql->ldap_linkid, $_POST["user"], $_POST["attrib"], $_POST["homedirectory"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									   array('what' => $LANG->_('Home directory', 4),
-											 'new'  => $_REQUEST["homedirectory"]));
+											 'new'  => $_POST["homedirectory"]));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('Home directory', 4))) . ": " . ldap_error($_pql->ldap_linkid);
