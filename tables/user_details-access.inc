@@ -178,7 +178,9 @@
         <td><?=$LANG->_('No')?></td>
 <?php			} ?>
         <td>
+<?php			if(!@$super_admin) { ?>
           <a href="config_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")?>&<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")?>=<?=$url["user"]?>&submit=2&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Allow user to administrate Controls information')?>"></a>
+<?php			} ?>
         </td>
 <?php      } ?>
       </tr>
