@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // default domain name (the default domainname for a domain)
-// $Id: attrib.defaultdomain.inc,v 2.23 2003-11-20 08:01:37 turbo Exp $
+// $Id: attrib.defaultdomain.inc,v 2.23.2.1 2003-12-09 16:18:26 dlw Exp $
 
 function attribute_check() {
     global $defaultdomain, $domain, $oldvalue, $_pql, $error, $rootdn, $LANG;
@@ -43,9 +43,9 @@ function attribute_print_form() {
 		require("./include/pql_control.inc");
 
 	  // Initiate a connection to the QmailLDAP/Controls DN
-	  $_pql_control = new pql_control($GLOBALS["USER_HOST"], $GLOBALS["USER_DN"], $GLOBALS["USER_PASS"]);
+	  $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 		
-	  $hosts = pql_control_get_hosts($_pql_control->ldap_linkid, $GLOBALS["USER_SEARCH_DN_CTR"]);
+	  $hosts = pql_control_get_hosts($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"]);
 	  if(is_array($hosts)) {
 ?>
 
@@ -133,7 +133,7 @@ function attribute_save($type) {
 											   'new'  => $defaultdomain));
 			
 			require("./include/pql_control.inc");
-			$_pql_control = new pql_control($GLOBALS["USER_HOST"], $GLOBALS["USER_DN"], $GLOBALS["USER_PASS"]);
+			$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 			// -----------------------------------------
 			// update locals if control patch is enabled
@@ -146,18 +146,18 @@ function attribute_save($type) {
 
 					if(is_array($hosts)) {
 						foreach($hosts as $host)
-						  pql_control_update_domains($_pql_control, pql_get_define("PQL_GLOB_ATTR_CN").'=$host,'.$GLOBALS["USER_SEARCH_DN_CTR"],
+						  pql_control_update_domains($_pql_control, pql_get_define("PQL_GLOB_ATTR_CN").'=$host,'.$_SESSION["USER_SEARCH_DN_CTR"],
 													 '*', array($oldvalue, $defaultdomain),
 													 pql_get_define("PQL_GLOB_ATTR_LOCALS"));
 					}
 				} else {
 					// Change all hosts
 					if($type == 'delete')
-					  pql_control_update_domains($_pql_control, $GLOBALS["USER_SEARCH_DN_CTR"],
+					  pql_control_update_domains($_pql_control, $_SESSION["USER_SEARCH_DN_CTR"],
 												 '*', array($delval, ''),
 												 pql_get_define("PQL_GLOB_ATTR_LOCALS"));
 					else
-					  pql_control_update_domains($_pql_control, $GLOBALS["USER_SEARCH_DN_CTR"],
+					  pql_control_update_domains($_pql_control, $_SESSION["USER_SEARCH_DN_CTR"],
 												 '*', array($oldvalue, $defaultdomain),
 												 pql_get_define("PQL_GLOB_ATTR_LOCALS"));
 				}
@@ -166,7 +166,7 @@ function attribute_save($type) {
 				// This _MUST_ be a 'delete {default,additional} domain'...
 				//
 				// Delete ALL locals/rcpthosts on ALL QmailLDAP/Controls that lists this domain.
-				pql_control_update_domains($_pql_control, $GLOBALS["USER_SEARCH_DN_CTR"],
+				pql_control_update_domains($_pql_control, $_SESSION["USER_SEARCH_DN_CTR"],
 										   '*', array($delval, ''));
 			}
 
@@ -182,22 +182,22 @@ function attribute_save($type) {
 					if(is_array($hosts)) {
 						foreach($hosts as $host)
 						  if($type == 'delete')
-							pql_control_update_domains($_pql_control, pql_get_define("PQL_GLOB_ATTR_CN").'=$host,'.$GLOBALS["USER_SEARCH_DN_CTR"],
+							pql_control_update_domains($_pql_control, pql_get_define("PQL_GLOB_ATTR_CN").'=$host,'.$_SESSION["USER_SEARCH_DN_CTR"],
 													   '*', array($delval, ''),
 													   pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"));
 						  else
-							pql_control_update_domains($_pql_control, pql_get_define("PQL_GLOB_ATTR_CN").'=$host,'.$GLOBALS["USER_SEARCH_DN_CTR"],
+							pql_control_update_domains($_pql_control, pql_get_define("PQL_GLOB_ATTR_CN").'=$host,'.$_SESSION["USER_SEARCH_DN_CTR"],
 													   '*', array($oldvalue, $defaultdomain),
 													   pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"));
 					}
 				} else {
 					// Change all hosts
 					if($type == 'delete')
-					  pql_control_update_domains($_pql_control, $GLOBALS["USER_SEARCH_DN_CTR"],
+					  pql_control_update_domains($_pql_control, $_SESSION["USER_SEARCH_DN_CTR"],
 												 '*', array($delval, ''),
 												 pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"));
 					else
-					  pql_control_update_domains($_pql_control, $GLOBALS["USER_SEARCH_DN_CTR"],
+					  pql_control_update_domains($_pql_control, $_SESSION["USER_SEARCH_DN_CTR"],
 												 '*', array($oldvalue, $defaultdomain),
 												 pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"));
 				}

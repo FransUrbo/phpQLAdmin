@@ -2,7 +2,7 @@
 // control attribute plugin for
 // percenthack (allowed domains for %-relaying)
 //
-// $Id: attrib.control.percenthack.inc,v 2.12 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.control.percenthack.inc,v 2.12.2.1 2003-12-09 16:18:25 dlw Exp $
 
 function percenthack_check($type) {
 	global $error, $percenthack, $view, $LANG;
@@ -34,7 +34,7 @@ function percenthack_init($host) {
 	
 	// fetch data from ldap server
 	$percenthack = pql_control_get_attribute($_pql_control->ldap_linkid,
-											 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+											 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 											 pql_get_define("PQL_GLOB_ATTR_PERCENTHACK"));
 	
 	if(is_null($percenthack))
@@ -128,7 +128,7 @@ function percenthack_save($type, $host) {
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 										 pql_get_define("PQL_GLOB_ATTR_PERCENTHACK"),
 										 $percenthack)) 
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),

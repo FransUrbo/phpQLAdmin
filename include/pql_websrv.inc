@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for web server configuration)
 //
-// $Id: pql_websrv.inc,v 1.4.2.1 2003-11-24 18:07:08 dlw Exp $
+// $Id: pql_websrv.inc,v 1.4.2.2 2003-12-09 16:18:28 dlw Exp $
 //
 
 // {{{ pql_websrv_get_servers(linkid, dn)
@@ -65,7 +65,7 @@ function pql_websrv_add_server($linkid, $domain, $server) {
 		// Add the OpenLDAPaci attribute (maybe)
 		if($_SESSION["ACI_SUPPORT_ENABLED"])
 		  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($linkid,
-																				  $GLOBALS["USER_DN"],
+																				  $_SESSION["USER_DN"],
 																				  'websrv');
 
 		// Create a LDIF object to print in case of error
@@ -89,7 +89,7 @@ function pql_websrv_add_server($linkid, $domain, $server) {
 	// Add the OpenLDAPaci attribute (maybe)
 	if($_SESSION["ACI_SUPPORT_ENABLED"])
 	  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($linkid,
-																			  $GLOBALS["USER_DN"],
+																			  $_SESSION["USER_DN"],
 																			  'websrv');
 
 	$dn = "cn=".$entry["cn"].",$dn";

@@ -1,13 +1,13 @@
 <?php
 // attribute plugin for
 // homedirectory (path to homedirectory)
-// $Id: attrib.homedirectory.inc,v 2.12.2.2 2003-12-08 19:16:34 dlw Exp $
+// $Id: attrib.homedirectory.inc,v 2.12.2.3 2003-12-09 16:18:26 dlw Exp $
 
 function attribute_check($type) {
     global $error, $LANG;
     
     // is typed in ?
-    if($_POST["homedirectory"] == "") {
+    if(empty($_POST["homedirectory"])) {
 		$error["homedirectory"] = $LANG->_('Missing');
 		return false;
     }
@@ -22,11 +22,11 @@ function attribute_check($type) {
 }
 
 function attribute_init() {
-  $_REQUEST["homedirectory"] = $_GET["oldvalue"];
+    $_REQUEST["homedirectory"] = (!empty($_GET["oldvalue"]) ? $_GET["oldvalue"] : "");
 }
 
 function attribute_print_form() {
-    global $LANG, $error;
+    global $error, $LANG;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -53,7 +53,7 @@ function attribute_print_form() {
 
 function attribute_save($type) {
     global $_pql, $LANG;
-    
+
     switch($type) {
       case "add":
 		// no add operation possible with homedirectory

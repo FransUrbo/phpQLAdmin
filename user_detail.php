@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.60.2.2 2003-12-02 20:47:53 dlw Exp $
+// $Id: user_detail.php,v 2.60.2.3 2003-12-09 16:17:00 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -62,6 +62,11 @@ if(!pql_user_exist($_pql->ldap_linkid, $_GET["user"])) {
     echo pql_complete_constant($LANG->_('User %user% does not exist'), array('user' => '<u>'.$_GET["user"].'</u>'));
     exit();
 }
+
+
+/* DLW: Setting all of these variables in the main code is pointless.  Most of them
+ *      never get used.  They should be handled by the tables
+ *      that actually request the variables (user_details-mailbox.inc). */
 
 // Get basic user information
 // Some of these (everything after the 'homedirectory')

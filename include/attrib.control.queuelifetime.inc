@@ -2,7 +2,7 @@
 // control attribute plugin for
 // queuelifetime (maximum number of RCPT TO's)
 //
-// $Id: attrib.control.queuelifetime.inc,v 2.10 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.control.queuelifetime.inc,v 2.10.2.1 2003-12-09 16:18:25 dlw Exp $
 
 function queuelifetime_check($type) {
 	global $error, $queuelifetime, $view, $LANG;
@@ -28,7 +28,7 @@ function queuelifetime_init($host) {
 
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 									   pql_get_define("PQL_GLOB_ATTR_QUEUELIFETIME"));
 
 	if(!is_null($value))
@@ -98,7 +98,7 @@ function queuelifetime_save($type, $host) {
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 										 pql_get_define("PQL_GLOB_ATTR_QUEUELIFETIME"),
 										 $queuelifetime))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),

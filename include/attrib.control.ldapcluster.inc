@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldapcluster (clustering support)
 //
-// $Id: attrib.control.ldapcluster.inc,v 2.9 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.control.ldapcluster.inc,v 2.9.2.1 2003-12-09 16:18:24 dlw Exp $
 
 // check values
 function ldapcluster_check($type) {
@@ -16,7 +16,7 @@ function ldapcluster_init() {
 
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   $GLOBALS["USER_SEARCH_DN_CTR"],
+									   $_SESSION["USER_SEARCH_DN_CTR"],
 									   pql_get_define("PQL_GLOB_ATTR_LDAPCLUSTER"));
 	
 	if(!is_null($value))
@@ -73,7 +73,7 @@ function ldapcluster_save($type, $host) {
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 $GLOBALS["USER_SEARCH_DN_CTR"],
+										 $_SESSION["USER_SEARCH_DN_CTR"],
 										 pql_get_define("PQL_GLOB_ATTR_LDAPCLUSTER"),
 										 $set))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),

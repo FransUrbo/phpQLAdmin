@@ -5,7 +5,7 @@
 // ldaplogin (cn of a database user)
 // ldappassword (password to bind to ldaplogin)
 //
-// $Id: attrib.control.ldapserver.inc,v 2.10 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.control.ldapserver.inc,v 2.10.2.1 2003-12-09 16:18:25 dlw Exp $
 
 function ldapserver_check($type) {
 	global $error, $ldapserver, $ldappassword, $ldapbasedn, $ldaplogin_use, $ldaplogin, $ldap_test, $view, $LANG;
@@ -106,7 +106,7 @@ function ldapserver_init($host) {
 	
 	foreach($attribs as $attrib) {
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 										   $attrib);
 		
 		if(!is_null($value))
@@ -258,7 +258,7 @@ function ldapserver_save($type, $host) {
 						 pql_get_define("PQL_GLOB_ATTR_LDAPBASEDN"));
 		foreach($attribs as $attrib)
 		  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-													pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+													pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 													$attrib, $$attrib);
 		
 		$attribs = array(pql_get_define("PQL_GLOB_ATTR_LDAPLOGIN"),
@@ -266,13 +266,13 @@ function ldapserver_save($type, $host) {
 		if($ldaplogin_use == "1"){
 			foreach($attribs as $attrib)
 			  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-														pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+														pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 														$attrib, $$attrib);
 		} else {
 			foreach($attribs as $attrib)
 			  // reset login and password values
 			  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-														pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+														pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 														$attrib, "");
     	}
 

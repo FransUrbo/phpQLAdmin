@@ -3,7 +3,7 @@
 // timeoutconnect (how long to wait for smtp connection)
 // timeoutremote (how long to wait for remote server)
 //
-// $Id: attrib.control.timeoutconnect.inc,v 2.11 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.control.timeoutconnect.inc,v 2.11.2.1 2003-12-09 16:18:26 dlw Exp $
 
 function timeoutconnect_check($type) {
 	global $error, $timeoutconnect, $timeoutremote, $view, $LANG;
@@ -46,7 +46,7 @@ function timeoutconnect_init($host) {
 
 	foreach($attribs as $attrib) {
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 										   $attrib);
 
 		if(!is_null($value))
@@ -136,7 +136,7 @@ function timeoutconnect_save($type, $host) {
 						 pql_get_define("PQL_GLOB_ATTR_TIMEOUTREMOTE"));
 		foreach($attribs as $attrib)
 		  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-													pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $mxhost . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+													pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 													$attrib, $$attrib);
 		
 		if(in_array(false, $return))

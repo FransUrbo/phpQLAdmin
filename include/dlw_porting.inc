@@ -66,19 +66,19 @@ function dlw_v($var_name, $expect_from = false)
   if (isset($_POST[$var_name])) {
     $retval = $_POST[$var_name];
     if (strpos($expect_from, 'p') === false)
-      trigger_error("\"$var_name\" came from _POST", E_USER_WARNING);
+      trigger_error("\"$var_name\" sp(" . htmlspecialchars($_POST[$var_name]) . ") came from _POST", E_USER_WARNING);
   } else if (isset($_GET[$var_name])) {
     $retval = $_GET[$var_name];
     if (strpos($expect_from, 'g') === false)
-      trigger_error("\"$var_name\" came from _GET", E_USER_WARNING);
+      trigger_error("\"$var_name\" sp(" . htmlspecialchars($_GET[$var_name]) . ") came from _GET", E_USER_WARNING);
   } else if (isset($_COOKIE[$var_name])) {
     $retval = $_COOKIE[$var_name];
     if (strpos($expect_from, 'c') === false)
-      trigger_error("\"$var_name\" came from _COOKIE", E_USER_WARNING);
+      trigger_error("\"$var_name\" sp(" . htmlspecialchars($_COOKIE[$var_name]) . ") came from _COOKIE", E_USER_WARNING);
   } else if (isset($_GLOBAL[$var_name])) {
     $retval = $_GLOBAL[$var_name];
     if (strpos($expect_from, 'G') === false)
-      trigger_error("\"$var_name\" came from _GLOBAL", E_USER_WARNING);
+      trigger_error("\"$var_name\" sp(" . htmlspecialchars($_GLOBAL[$var_name]) . ") came from _GLOBAL", E_USER_WARNING);
   } else {
     $retval = NULL;
     if (strpos($expect_from, 'u') === false)

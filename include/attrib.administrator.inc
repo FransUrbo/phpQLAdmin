@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.29 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.29.2.1 2003-12-09 16:18:24 dlw Exp $
 
 require("./left-head.html");
 
@@ -72,7 +72,7 @@ function attribute_print_form($action) {
 				$dn = urldecode($dn);
 				unset($dom); unset($domains);
 
-				$dom = pql_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $GLOBALS["USER_DN"]);
+				$dom = pql_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]);
 				if($dom) {
 					foreach($dom as $d) {
 						$domains[] = $d;
@@ -142,7 +142,7 @@ function attribute_print_form($action) {
             <input type="hidden" name="<?=$attrib?>" value="<?=$i?>">
 <?php	} elseif($user) { // We're giving a specific user access to a domain ?>
             <select name="domain">
-<?php		if($GLOBALS["ALLOW_GLOBAL_CONFIG_SAVE"]) {
+<?php		if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
 				// We're a super-admin, we can give/take
 				// adminstration on ANY branch/domain
 				// that exists in the system
@@ -157,7 +157,7 @@ function attribute_print_form($action) {
 
 					$dom = pql_domain_value($_pql,
 												$dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"),
-												$GLOBALS["USER_DN"], 1);
+												$_SESSION["USER_DN"], 1);
 					if($dom)
 					  foreach($dom as $d)
 						$domains[] = $d;

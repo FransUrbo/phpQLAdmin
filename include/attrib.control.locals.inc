@@ -2,7 +2,7 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.21 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.21.2.1 2003-12-09 16:18:25 dlw Exp $
 
 function locals_check($type) {
     global $error, $locals, $rootdn, $domain, $view, $LANG;
@@ -33,7 +33,7 @@ function locals_init($host) {
     
     // fetch data from ldap server
     $locals = pql_control_get_attribute($_pql_control->ldap_linkid,
-										pql_get_define("PQL_GLOB_ATTR_CN")."=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										pql_get_define("PQL_GLOB_ATTR_CN")."=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 										pql_get_define("PQL_GLOB_ATTR_LOCALS"));
     
     if(is_null($locals))
@@ -133,7 +133,7 @@ function locals_save($type, $host) {
       case "replicate":
 		// start replication manually
 
-		if(pql_control_update_domains($_pql_control, pql_get_define("PQL_GLOB_ATTR_CN")."=$host,".$GLOBALS["USER_SEARCH_DN_CTR"], $host, '', pql_get_define("PQL_GLOB_ATTR_LOCALS")))
+		if(pql_control_update_domains($_pql_control, pql_get_define("PQL_GLOB_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"], $host, '', pql_get_define("PQL_GLOB_ATTR_LOCALS")))
 		  $msg = pql_complete_constant($LANG->_('Successfully replicated %what%'),
 									   array('what' => pql_get_define("PQL_GLOB_ATTR_LOCALS")));
 		else
@@ -145,7 +145,7 @@ function locals_save($type, $host) {
 
       case "del":
 		// remove specified domain from locals, redirect back to host details
-		if(pql_control_update_domains($_pql_control, $GLOBALS["USER_SEARCH_DN_CTR"],
+		if(pql_control_update_domains($_pql_control, $_SESSION["USER_SEARCH_DN_CTR"],
 									  $host, array($set, ''), pql_get_define("PQL_GLOB_ATTR_LOCALS")))
 		  $msg = pql_complete_constant($LANG->_('Successfully removed %domain% from %what%'),
 									   array('what'   => pql_get_define("PQL_GLOB_ATTR_LOCALS"),
@@ -162,11 +162,11 @@ function locals_save($type, $host) {
 		// adding specified domain to rcpthosts, redirect back to domain details
 		$success = 0;
 		if($mxhost) {
-			if(pql_control_update_domains($_pql_control, pql_get_define("PQL_GLOB_ATTR_CN")."=$mxhost,".$GLOBALS["USER_SEARCH_DN_CTR"],
+			if(pql_control_update_domains($_pql_control, pql_get_define("PQL_GLOB_ATTR_CN")."=$mxhost,".$_SESSION["USER_SEARCH_DN_CTR"],
 										  $host, array('', $set), pql_get_define("PQL_GLOB_ATTR_LOCALS")))
 			  $success = 1;
 		} else {
-			if(pql_control_update_domains($_pql_control, $GLOBALS["USER_SEARCH_DN_CTR"],
+			if(pql_control_update_domains($_pql_control, $_SESSION["USER_SEARCH_DN_CTR"],
 										  '*', array('', $set), pql_get_define("PQL_GLOB_ATTR_LOCALS")))
 			  $success = 1;
 		}

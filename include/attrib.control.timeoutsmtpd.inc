@@ -2,7 +2,7 @@
 // control attribute plugin for
 // timeoutsmtpd (how long to wait for smtp client)
 //
-// $Id: attrib.control.timeoutsmtpd.inc,v 2.11 2003-11-20 08:01:37 turbo Exp $
+// $Id: attrib.control.timeoutsmtpd.inc,v 2.11.2.1 2003-12-09 16:18:26 dlw Exp $
 
 function timeoutsmtpd_check($type) {
 	global $error, $timeoutsmtpd, $LANG;
@@ -28,7 +28,7 @@ function timeoutsmtpd_init($host) {
 	
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 									   pql_get_define("PQL_GLOB_ATTR_TIMEOUTSMTPD"));
 	
 	if(!is_null($value))
@@ -97,7 +97,7 @@ function timeoutsmtpd_save($type, $host) {
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $mxhost . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 										 pql_get_define("PQL_GLOB_ATTR_TIMEOUTSMTPD"),
 										 $timeoutsmtpd))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),

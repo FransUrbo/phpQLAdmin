@@ -1,6 +1,6 @@
 <?php
 // shows results of search
-// $Id: search.php,v 2.21.2.1 2003-11-24 18:07:02 dlw Exp $
+// $Id: search.php,v 2.21.2.2 2003-12-09 16:17:00 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -55,7 +55,7 @@ switch($filter_type) {
     break;
 }
 
-if(!$GLOBALS["SINGLE_USER"]) {
+if(!$_SESSION["SINGLE_USER"]) {
 	// Admin of some sort - look in the whole database for a user
 	// that matches filter
 	foreach($_pql->ldap_basedn as $dn) {

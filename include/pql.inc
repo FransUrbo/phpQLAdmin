@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.129 2003-11-20 09:43:47 turbo Exp $
+// $Id: pql.inc,v 2.129.2.1 2003-12-09 16:18:26 dlw Exp $
 //
 
 // ----------------------------
@@ -194,6 +194,7 @@ function pql_user_get($ldap_linkid, $dn) {
 // }}}
 
 // {{{ pql_user_add(ldap_linkid, domain, cn, attribs, account_type, branch)
+
 // Add a user to the LDAP database
 function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $branch) {
 	global $account_type;
@@ -283,8 +284,8 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 	$userdn = pql_maybe_encode($userdn);
 
 	// Add the OpenLDAPaci attribute (maybe)
-	if($GLOBALS["ACI_SUPPORT_ENABLED"])
-	  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($ldap_linkid, $GLOBALS["USER_DN"], 'user');
+	if($_SESSION["ACI_SUPPORT_ENABLED"])
+	  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($ldap_linkid, $_SESSION["USER_DN"], 'user');
 
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_user_add - user creation", $userdn, $entry);
@@ -319,9 +320,9 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 		$groupdn = pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $attribs[pql_get_define("PQL_CONF_USER_RDN_ATTRIBUTE", $rootdn)] . $subrdn . "," . urldecode($domain);
 
 		// Add the OpenLDAPaci attribute (maybe)
-		if($GLOBALS["ACI_SUPPORT_ENABLED"])
+		if($_SESSION["ACI_SUPPORT_ENABLED"])
 		  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($ldap_linkid,
-																				  $GLOBALS["USER_DN"], 'group');
+																				  $_SESSION["USER_DN"], 'group');
 
 		// Create a LDIF object to print in case of error
 		$LDIF = pql_create_ldif("pql_user_add - group creation", $groupdn, $entry);
@@ -339,6 +340,7 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 	
     return $dns;
 }
+
 // }}}
 
 // {{{ pql_user_del(ldap, domain, user, delete_forwards)
@@ -495,8 +497,8 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name) {
 	  $entry[pql_get_define("PQL_GLOB_ATTR_O")] = 0;
 
 	// Add the OpenLDAPaci attribute (maybe)
-	if($GLOBALS["ACI_SUPPORT_ENABLED"])
-	  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($ldap_linkid, $GLOBALS["USER_DN"], 'branch');
+	if($_SESSION["ACI_SUPPORT_ENABLED"])
+	  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($ldap_linkid, $_SESSION["USER_DN"], 'branch');
 
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_domain_add - create domain", $dn, $entry);
@@ -525,8 +527,8 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name) {
 			  "=" . $branch_name . "," . $basedn;
 
 		// Add the OpenLDAPaci attribute (maybe)
-		if($GLOBALS["ACI_SUPPORT_ENABLED"])
-		  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($ldap_linkid, $GLOBALS["USER_DN"], 'branch');
+		if($_SESSION["ACI_SUPPORT_ENABLED"])
+		  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($ldap_linkid, $_SESSION["USER_DN"], 'branch');
 
 		// Create a LDIF object to print in case of error
 		$LDIF = pql_create_ldif("pql_domain_add - create subtree users", $dn, $entry);
@@ -556,8 +558,8 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name) {
 			  "=" . $branch_name . "," . $basedn;
 
 		// Add the OpenLDAPaci attribute (maybe)
-		if($GLOBALS["ACI_SUPPORT_ENABLED"])
-		  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($ldap_linkid, $GLOBALS["USER_DN"], 'branch');
+		if($_SESSION["ACI_SUPPORT_ENABLED"])
+		  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($ldap_linkid, $_SESSION["USER_DN"], 'branch');
 
 		// Create a LDIF object to print in case of error
 		$LDIF = pql_create_ldif("pql_domain_add - create subtree groups", $dn, $entry);
@@ -581,7 +583,7 @@ function pql_domain_del($ldap, $domain, $delete_forwards) {
 
 	// Make sure that the logged in user isn't located under the
 	// domain/branch being deleted...
-	if(eregi($domain, $GLOBALS["USER_DN"])) {
+	if(eregi($domain, $_SESSION["USER_DN"])) {
 		$msg=urlencode(pql_format_error_span("Sorry, I can't allow you to delete the branch under which you yourself is situated!"));
 		header("Location: " . pql_get_define("PQL_GLOB_URI") . "domain_detail.php?domain=$domain&msg=$msg");
 	}
@@ -1306,7 +1308,7 @@ function pql_get_mx($ldap, $domainname) {
 		// this domain...
 
 		$filter = "(&(objectclass=qmailControl)(".pql_get_define("PQL_GLOB_ATTR_LOCALS")."=$domainname))";
-		$info = pql_search($ldap, $GLOBALS["USER_SEARCH_DN_CTR"], $filter, '');
+		$info = pql_search($ldap, $_SESSION["USER_SEARCH_DN_CTR"], $filter, '');
 		for($i=0; $i<$info["count"]; $i++)
 		  for($j=0; $j<$info[$i][pql_get_define("PQL_GLOB_ATTR_LOCALS")]["count"]; $j++)
 			if($info[$i][pql_get_define("PQL_GLOB_ATTR_LOCALS")][$j] == $domainname)
@@ -1784,16 +1786,17 @@ function pql_execute($command, $hide=true) {
 
 // {{{ pql_generate_button(button array)
 function pql_generate_button($buttons, $link = '') {
-	global $PHP_SELF, $LANG, $rootdn, $domain;
+  //global $PHP_SELF, $LANG, $rootdn, $domain;
+    global $LANG;
 
-	$url = $PHP_SELF."?";
+	$url = $_SERVER["PHP_SELF"] . "?";
 
 	// It's not sure we have a rootdn and/or domain, so only add those
 	// it's set
-	if($rootdn)
-	  $url .= "rootdn=$rootdn&";
-	if($domain)
-	  $url .= "domain=$domain&";
+	if(!empty($_REQUEST["rootdn"]))
+	  $url .= "rootdn=" . $_REQUEST["rootdn"] . "&";
+	if(!empty($_REQUEST["domain"]))
+	  $url .= "domain=" . $_REQUEST["domain"] . "&";
 ?>
 
   <table cellspacing="0" border="0" width="100%" cellpadding="0">
@@ -1804,7 +1807,7 @@ function pql_generate_button($buttons, $link = '') {
 ?>
     <a href="<?=$url?>view=<?=$view?><?php if($link) { echo "&$link"; } ?>"><img alt="/ <?=$LANG->_($text)?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?php echo urlencode($LANG->_($text)); ?>"></a>
 <?php
-		  // Increase button counter
+		  // Increase button counter"
 		  $i++;
 	  }
 ?>

@@ -1,6 +1,6 @@
 <?php
 // Add a new mailserver to the database
-// $Id: control_add_server.php,v 2.14.2.1 2003-11-24 18:07:02 dlw Exp $
+// $Id: control_add_server.php,v 2.14.2.2 2003-12-09 16:16:36 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -73,7 +73,7 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 
 				// Add the OpenLDAPaci attribute (maybe)
 				if($_SESSION["ACI_SUPPORT_ENABLED"])
-				  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($_pql_control->ldap_linkid, $GLOBALS["USER_DN"], 'qmail');
+				  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($_pql_control->ldap_linkid, $_SESSION["USER_DN"], 'qmail');
 				
 				// Create a LDIF object to print in case of error
 				$LDIF = pql_create_ldif("control_add_server.php", $dn, $entry);
