@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of user
-// $Id: user_edit_attribute.php,v 2.33 2004-02-21 12:53:33 turbo Exp $
+// $Id: user_edit_attribute.php,v 2.34 2004-02-21 12:57:38 turbo Exp $
 //
 // This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
 //   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -69,7 +69,6 @@ function attribute_forward($msg, $rlnb = false) {
 include("./include/".pql_plugin_get_filename(pql_plugin_get($_REQUEST["attrib"])));
 
 include("./header.html");
-print $_REQUEST["attrib"] . ": " . pql_plugin_get_filename(pql_plugin_get($_REQUEST["attrib"])) . "<BR>\n";
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Change user data for %user%'), array('user' => $username)); ?></span>
   <br><br>
