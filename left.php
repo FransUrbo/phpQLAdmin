@@ -45,7 +45,7 @@ if($advanced == 1) {
   <!-- HOME -->
   <div id="el1Parent" class="parent">
     <a class="item" href="home.php">
-      <font color="black" class="heada"><b>Users</b></font>
+      <font color="black" class="heada"><b>Home</b></font>
     </a>
   </div>
 
