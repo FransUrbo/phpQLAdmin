@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.102 2003-08-16 10:11:29 turbo Exp $
+// $Id: pql.inc,v 2.103 2003-08-18 08:19:32 turbo Exp $
 //
 
 // ----------------------------
@@ -2135,7 +2135,7 @@ function maybe_encode($string, $attrib = '', $linkid = '') {
 	if($old != $new) {
 		// The two strings isn't equal -> something have been replaced
 
-		if($attrib != '') {
+		if(($attrib != '') && ($linkid != '')) {
 			// Retreive all EXISTING attributes the LDAP server knows about
 			$ldap_attribs = pql_get_subschema($linkid, "attributetypes");
 			
