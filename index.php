@@ -82,7 +82,7 @@ if (empty($uname) or empty($passwd)) {
 
               <tr>
                 <td bgcolor="#D0DCE0"><b><?=PQL_USERPASS?>:</b></td>
-                <td><input type=password name="passwd"></td>
+                <td><input type=password name="passwd" onChange="this.form.submit()" autocomplete="OFF"></td>
               </tr>
 
               <tr><td></td></tr>
