@@ -1,7 +1,9 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.10 2003-01-10 17:44:27 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.11 2003-01-13 07:44:36 turbo Exp $
 //
+if(!$PQL_CONFIG_INCLUDED) {
+$PQL_CONFIG_INCLUDED = 1;
 session_start();
 // ----------------------------
 // include langugage definition
@@ -407,7 +409,7 @@ if(PQL_LDAP_ATTR_DOMAIN == "dc") {
 	$objectclass_domain = "organizationalUnit";
 }
 define("PQL_LDAP_OBJECTCLASS_DOMAIN", strtolower($objectclass_domain));
-
+}
 /*
  * Local variables:
  * mode: php
