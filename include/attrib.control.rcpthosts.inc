@@ -2,11 +2,11 @@
 // control attribute plugin for
 // rcpthosts (blocked local addresses)
 //
-// $Id: attrib.control.rcpthosts.inc,v 2.8 2003-05-05 14:11:12 turbo Exp $
+// $Id: attrib.control.rcpthosts.inc,v 2.9 2003-05-06 09:01:30 turbo Exp $
 
 function rcpthosts_check($type){
-    global $error, $rcpthosts;
-    
+    global $error, $rcpthosts, $domain, $rootdn;
+
     // check validity
     if(is_array($rcpthosts)){
 		foreach($rcpthosts as $key => $host){
@@ -30,8 +30,8 @@ function rcpthosts_check($type){
 
 // init values
 function rcpthosts_init($host){
-    global $_pql_control, $rcpthosts;
-    
+    global $_pql_control, $rcpthosts, $domain, $rootdn;
+
     // fetch data from ldap server
     $rcpthosts = pql_control_get_attribute($_pql_control->ldap_linkid,
 										   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
@@ -94,13 +94,13 @@ function rcpthosts_print_view($host) {
 }
 
 function rcpthosts_print_form(){
-    global $attrib, $PHP_SELF, $error, $rcpthosts, $mxhost, $mxhost;
+    global $attrib, $PHP_SELF, $error, $rcpthosts, $mxhost, $domain, $rootdn;
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">Add domain:</th>
         <tr class="<?php table_bgcolor(); ?>">
-          <td><input type="text" name="set""></td>
+          <td><input type="text" name="set"></td>
         </tr>
       </th>
     </table>
@@ -108,7 +108,8 @@ function rcpthosts_print_form(){
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
-    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
+    <input type="hidden" name="domain" value="<?=$domain?>">
+    <input type="hidden" name="rootdn" value="<?=$rootdn?>">
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 <?php
@@ -116,43 +117,85 @@ function rcpthosts_print_form(){
 
 function rcpthosts_save($type, $host) {
     global $_pql_control, $attrib, $rcpthosts, $set, $error;
-    
+	global $rootdn, $domain;
+
     // recontrol values
     if(!rcpthosts_check($type))
 	  return false;
+
+	if(!$host) {
+		// Get all QmailLDAP/Controls hosts
+		$hosts = pql_control_get_hosts($_pql_control->ldap_linkid, $GLOBALS["USER_SEARCH_DN_CTR"]);
+		if(is_array($hosts)) {
+			if($type == 'add')
+			  $modify_host = 1; // Add domain to host
+			else
+			  $modify_host = 0; // Don't remove the domain from the host
+
+			foreach($hosts as $host) {
+				// Get rcpthosts in each of the hosts
+				$rcpthosts = pql_control_get_attribute($_pql_control->ldap_linkid,
+													   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+													   "rcpthosts");
+				if(is_array($rcpthosts)) {
+					foreach($rcpthosts as $rcpt) {
+						// In the RCPTHosts configured for the host, do we have what we're looking for?
+						if($rcpt == $set)
+						  if($type == 'add')
+							$modify_host = 0; // The domain exists, don't add
+						  else
+							$modify_host = 1; // The domain exists, remove it
+					}
+				}
+
+				if($modify_host)
+				  $HOSTS[] = $host;
+			}
+		}
+	} else {
+		$HOSTS[] = $host;
+	}
+
+	if($HOSTS[1])
+	  // We have more than one host
+	  $all = ' all';
 
     switch($type) {
       case "del":
 		// delete entry
 		
-		// remove specified domain from rcpthosts, redirect back to host details
-		if(pql_control_remove_attribute($_pql_control->ldap_linkid,
-										"cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-										"rcpthosts", $set))
-		  $msg = "Successfully removed $set from rcpthosts";
-		else
-		  $msg = "Failed removing $set from rcpthosts: " . pql_ldap_error($_pql_control->ldap_linkid);
-		
-		attribute_forward($msg);
+		foreach($HOSTS as $host) {
+			// remove specified domain from rcpthosts in host object
+			if(pql_control_remove_attribute($_pql_control->ldap_linkid,
+											"cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+											"rcpthosts", $set))
+			  $msg = "Successfully removed $set from$all rcpthosts";
+			else
+			  $msg = "Failed removing $set from$all rcpthosts: " . pql_ldap_error($_pql_control->ldap_linkid);
+		}
 		break;
 
       case "add":
 		// add entry
 		
-		// adding specified domain to rcpthosts, redirect back to domain details
-		if(pql_control_add_attribute($_pql_control->ldap_linkid,
-									 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-									 "rcpthosts", $set))
-			$msg = "Successfully added $set to rcpthosts";
-		else
-			$msg = "Failed adding $set to rcpthosts: " . pql_ldap_error($_pql_control->ldap_linkid);
-		
-		attribute_forward($msg);
+		foreach($HOSTS as $host) {
+			// adding specified domain to rcpthosts in host object
+			if(pql_control_add_attribute($_pql_control->ldap_linkid,
+										 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										 "rcpthosts", $set))
+			  $msg = "Successfully added $set to$all rcpthosts";
+			else
+			  $msg = "Failed adding $set to$all rcpthosts: " . pql_ldap_error($_pql_control->ldap_linkid);
+		}
 		break;
 
       default:
 		die("unknown save type $type in " . __FILE__ . ", function save()");
     }
+		
+	if($msg)
+	  // redirect back to host details
+	  attribute_forward($msg);
 }
 
 function rcpthosts_help(){
