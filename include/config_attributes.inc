@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.22 2004-10-13 17:47:29 turbo Exp $
+// $Id: config_attributes.inc,v 2.23 2004-11-05 13:15:32 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 
@@ -171,7 +171,6 @@ pql_set_define("PQL_ATTR_ADDITIONAL_GROUP",					strtolower("memberUid"),					fal
 // }}}
 
 // {{{ Attributes used by the Bind9/LDAP sdb driver
-
 pql_set_define("PQL_ATTR_ARECORD",							strtolower("aRecord"),						false);
 pql_set_define("PQL_ATTR_CNAMERECORD",						strtolower("cNameRecord"),					false);
 pql_set_define("PQL_ATTR_DNSTTL",							strtolower("dnsTtl"),						false);
@@ -180,7 +179,8 @@ pql_set_define("PQL_ATTR_MXRECORD",							strtolower("mxRecord"),						false);
 pql_set_define("PQL_ATTR_NSRECORD",							strtolower("nsRecord"),						false);
 pql_set_define("PQL_ATTR_RELATIVEDOMAINNAME",				strtolower("relativeDomainName"),			false);
 pql_set_define("PQL_ATTR_ZONENAME",							strtolower("zoneName"),						false);
-
+pql_set_define("PQL_ATTR_SRVRECORD",						strtolower("srvRecord"),					false);
+pql_set_define("PQL_ATTR_TXTRECORD",						strtolower("txtRecord"),					false);
 // }}}
 
 // {{{ Attributes used by the Apache config
