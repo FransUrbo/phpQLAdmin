@@ -1,4 +1,6 @@
 <? // http://www.thescripts.com/serversidescripting/php/articles/dynamicimagesinphp3.0/page0.html
+// $Id: navbutton.php,v 2.10 2003-11-13 14:33:18 turbo Exp $
+
 include("./include/pql.inc");
 
 $string = implode($argv," ");
@@ -7,6 +9,9 @@ $string = implode($argv," ");
 $string = stripslashes($string);
 $string = ereg_replace("\r\n", "\n", $string) ;
 $string = ereg_replace("%20",  " ", $string);
+
+// Convert the string
+$string = pql_maybe_idna_decode($string);
 
 // Create the image
 if(function_exists('ImageCreateFromPng') && (imagetypes() & IMG_PNG)) {
@@ -26,35 +31,46 @@ if(function_exists('ImageCreateFromPng') && (imagetypes() & IMG_PNG)) {
       $imgtype = 'jpeg';
 }
 
-if(!$myimage) {
-    // No image, create a blank one
-    $myimage = ImageCreate(255, 19);
-    $white   = ImageColorAllocate($myimage, 255, 255, 255);
-    ImageFilledRectangle($myimage, 0, 0, 255, 19, $white);
+// To be able to figure out how wide the text is,
+// we need to know how many upper cased characters
+// and how many lower cased characters there is.
+// The reason for this is that the upper cased
+// letters are twice as wide as the lower cased...
+for($i = 0; $string[$i]; $i++) {
+    $tmp = non_internationalize($string[$i]);
+
+    // Correct: The letter 'I' is NOT counted here! It's wide as a small character.
+    if(ereg("[ABCDEFGHJKLMNOPQRSTUVWXYZ]", $tmp))
+      $upper_case_chars++;
+    else
+      $lower_case_chars++;
 }
 
-// Setup colors
-$black = ImageColorAllocate($myimage, 0, 0, 0);
-    
-// Convert the string
-$string = pql_maybe_idna_decode($string);
+// Calculate the width of the new image (depends on number of characters)
+$new_width  = ($lower_case_chars * 6) + ($upper_case_chars * 6 * 2) + 10;
+
+$new_height = 19;
+$newimg = ImageCreateTrueColor($new_width, $new_height);
+ImageCopyResized($newimg, $myimage, 0, 0, 0, 0, $new_width, 
+		 $new_height, ImageSX($myimage), ImageSY($myimage));
 
 // Write text to image (after decoding it to fix international characters)
-imageTTFText($myimage, 10, 0, 10, 14, $black, realpath("include/thryn.ttf"), $string);
+ImageTTFText($newimg, 10, 0, 10, 14, $black, realpath("include/thryn.ttf"), $string);
     
 // Show image
 if($imgtype == 'png') {
     Header("Content-Type: image/png");
-    ImagePng($myimage);
+    ImagePng($newimg);
 } elseif($imgtype == 'gif') {
     Header("Content-Type: image/gif");
-    ImageGif($myimage);
+    ImageGif($newimg);
 } elseif($imgtype == 'jpeg') {
     Header("Content-Type: image/jpeg");
-    ImageJpeg($myimage);
+    ImageJpeg($newimg);
 }
 
 ImageDestroy($myimage);
+ImageDestroy($newimg);
 ?>
 
 
