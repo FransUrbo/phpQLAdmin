@@ -1,5 +1,9 @@
 <?php $email   = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_MAIL")); $email = $email[0];
       $aliases = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_MAILALTERNATE"));
+
+	  $tmp     = split('@', $email);
+
+	  $mail	   = $tmp[0].'@'.pql_maybe_idna_decode($tmp[1]);
 ?>
   <!-- Addresses (mail, mailalternateaddress) -->
   <table cellspacing="0" cellpadding="3" border="0">
@@ -12,7 +16,7 @@
 
       <tr class="<?php pql_format_table(); ?>">
         <td><?=$LANG->_('Main address')?></td>
-        <td><a href="mailto:<?=$email?>"><?=pql_maybe_idna_decode($email)?></a></td>
+        <td><a href="mailto:<?=$email?>"><?=$mail?></a></td>
         <td>
 <?php if(!$_SESSION["SINGLE_USER"]) { ?>
           <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=mail&user=<?=$url["user"]?>&mail=<?=$email?>&oldvalue=<?=$email?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change main address')?>" border="0"></a>&nbsp;&nbsp;&nbsp;
