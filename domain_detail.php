@@ -25,12 +25,11 @@ if(isset($msg)){
 // reload navigation bar if needed
 if(isset($rlnb) and PQL_AUTO_RELOAD) {
 ?>
-  <script language="JavaScript1.2">
-  <!--
+  <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
+  <script language="JavaScript1.2"><!--
 	// reload navigation frame
-	parent.frames.pqlnav.location.reload();
-    //-->
-  </script>
+	refreshFrames();
+  //--></script>
 <?php
 }
 
@@ -261,7 +260,7 @@ if($ADVANCED_MODE == 1) {
 
 <?php
 	if(PQL_LDAP_CONTROL_USE){
-		if(pql_control_search_attribute($_pql_control->ldap_linkid, PQL_LDAP_CONTROL_BASEDN, "locals", $domain)){
+		if(pql_control_search_attribute($_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR, "locals", $domain)){
 			$locals = PQL_YES;
 			if(!PQL_LDAP_CONTROL_AUTOADDLOCALS){
 				$locals_link = "<a href=\"control_edit_attribute.php?attrib=locals&type=del&set=$domain&submit=1\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"remove $domain from locals\"></a>";
@@ -277,7 +276,7 @@ if($ADVANCED_MODE == 1) {
 			}
 		}
 		
-		if(pql_control_search_attribute($_pql_control->ldap_linkid, PQL_LDAP_CONTROL_BASEDN, "rcpthosts", $domain)){
+		if(pql_control_search_attribute($_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR, "rcpthosts", $domain)){
 			$rcpthosts = PQL_YES;
 			$rcpthosts_link = "<a href=\"control_edit_attribute.php?attrib=rcpthosts&type=del&set=$domain&submit=1\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"remove $domain from rcpthosts\"></a>";
 		} else {

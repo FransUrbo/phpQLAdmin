@@ -50,7 +50,7 @@ if(pql_add_domain($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain)) {
 		// update locals if control patch is enabled
 		if(pql_control_update_domains($_pql->ldap_linkid, $USER_SEARCH_DN_USR,
 									  $_pql_control->ldap_linkid,
-									  PQL_LDAP_CONTROL_BASEDN)) {
+									  $USER_SEARCH_DN_CTR)) {
 			// message ??
 		}
 	}
