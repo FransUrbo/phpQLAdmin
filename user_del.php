@@ -28,22 +28,37 @@ if(isset($ok) || !$config["PQL_CONF_VERIFY_DELETE"][$rootdn]) {
 	if(pql_user_del($_pql, $domain, $user, $delete_forwards)){
 		$msg = PQL_LANG_USER_DEL_OK . ": <b>" . $cn . "</b>";
 		$rlnb = "&rlnb=1";
-	} else {
-		$msg = PQL_LANG_USER_DEL_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+	} else
+	  $msg = PQL_LANG_USER_DEL_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+
+	switch($mail) {
+	  case "delete_mail":
+	  case "archive_mail":
+	  case "donate_mail":
+		$msg .= "<br>Sorry, no changes have been made to the mailbox. It's not implemented in ";
+		$msg .= "phpQLAdmin yet";
+		break;
 	}
 	
 	// redirect to domain-detail page
 	$msg = urlencode($msg);
 	header("Location: " . $config["PQL_GLOB_URI"] . "domain_detail.php?domain=$domain&msg=$msg$rlnb");
 } else {
-	echo PQL_LANG_SURE;
 ?>
 <br>
   <form action="<?php echo $PHP_SELF; ?>" method="GET">
     <input type="hidden" name="user" value="<?php echo $user; ?>">
     <input type="hidden" name="domain" value="<?php echo $domain; ?>">
         
-    <input type="checkbox" name="delete_forwards" checked> <?php echo PQL_LANG_USER_DELETE_FORWARDS; ?><br><br>
+    <span class="title3">What should we do with forwards to this user?</span><br>
+    <input type="checkbox" name="delete_forwards" checked> Delete all forwards<br><br>
+
+    <span class="title3">What should we do with the users mailbox?</span><br>
+    <input type="radio" name="mail" value="delete_mail"> Delete it<br>
+    <input type="radio" name="mail" value="archive_mail" checked> Archive it<br>
+    <input type="radio" name="mail" value="donate_mail"> Donate it to another user<br><br>
+
+    <span class="title2"><?=PQL_LANG_SURE?></span>
     <input type="submit" name="ok" value="<?php echo PQL_LANG_YES; ?>">
     <input type="button" name="back" value="<?php echo PQL_LANG_NO; ?>" onClick="history.back();">
   </form>
