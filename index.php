@@ -28,19 +28,19 @@ if ($logout == 1 or !empty($msg)) {
 	}
 }
 
-if(! eregi(' ', PQL_LDAP_HOST)) {
-	$host = split(';', PQL_LDAP_HOST);
-	$USER_HOST = $host[0] . ";" . $host[1];
-	
-	session_register("USER_HOST");
-}
-
 if ($LOGIN_PASS == 1) {
 	Header("Location:index2.php");
 }
 
 if (empty($uname) or empty($passwd)) {
 	include("./header.html");
+
+	if(! eregi(' ', PQL_LDAP_HOST)) {
+		$host = split(';', PQL_LDAP_HOST);
+		$USER_HOST = $host[0] . ";" . $host[1];
+		
+		session_register("USER_HOST");
+	}
 
 	// print status message, if one is available
 	if(isset($msg)) {
@@ -92,6 +92,7 @@ if (empty($uname) or empty($passwd)) {
 		$server = $USER_HOST;
 ?>
         <b><?=$server?></b>
+        <input type="hidden" name="server" value="<?=PQL_LDAP_HOST?>">
 <?php
 	}
 ?>
@@ -150,9 +151,8 @@ if (empty($uname) or empty($passwd)) {
 	// -------------------------------------
 	// Get the search base - user database
 	if(!$USER_SEARCH_DN_USR) {
-		$host = split(' ', $server);
-		$dn   = split(';', $host[0]);
-		$USER_SEARCH_DN_USR = $dn[2];
+		$host   = split(';', $server);
+		$USER_SEARCH_DN_USR = $host[2];
 
 		session_register("USER_SEARCH_DN_USR");
 	} elseif(is_array($USER_SEARCH_DN_USR)) {
