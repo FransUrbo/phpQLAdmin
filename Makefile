@@ -54,5 +54,9 @@ debian: install
 	  debuild; \
 	  echo "Files is in: "$(DESTDIR))
 
+release: tarball
+	@(mv $(TMPDIR)/phpQLAdmin-$(VERSION).tar.gz /var/www/phpqladmin/; \
+	  mv $(TMPDIR)/phpQLAdmin-$(VERSION).tar.bz2 /var/www/phpqladmin/)
+
 $(INSTDIR):
 	@rm -f $(TMPDIR) && mkdir -p $(INSTDIR)
