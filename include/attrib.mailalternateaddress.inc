@@ -1,28 +1,28 @@
 <?php
 // attribute plugin for
 // mailalternateaddress (emailaddress alias)
-// $Id: attrib.mailalternateaddress.inc,v 2.22 2004-03-11 18:13:41 turbo Exp $
+// $Id: attrib.mailalternateaddress.inc,v 2.23 2004-03-26 08:55:43 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
-    global $mailalternateaddress, $oldvalue, $domain, $_pql, $error, $defaultdomain, $email_domain, $LANG;
+	global $_pql, $LANG;
     
     // is typed in ?
-    if($mailalternateaddress == "") {
+    if($_REQUEST["mailalternateaddress"] == "") {
 		$error["mailalternateaddress"] = $LANG->_('Invalid');
 		return false;
     }
     
 	// Build the COMPLETE email address
-	if(! ereg("@", $mailalternateaddress)) {
-		if($email_domain)
-		  $mailalternateaddress = $mailalternateaddress . "@" . $email_domain;
-		elseif($defaultdomain)
-		  $mailalternateaddress = $mailalternateaddress . "@" . $defaultdomain;
+	if(! ereg("@", $_REQUEST["mailalternateaddress"])) {
+		if($_REQUEST["email_domain"])
+		  $_REQUEST["mailalternateaddress"] = $_REQUEST["mailalternateaddress"] . "@" . $_REQUEST["email_domain"];
+		elseif($_REQUEST["defaultdomain"])
+		  $_REQUEST["mailalternateaddress"] = $_REQUEST["mailalternateaddress"] . "@" . $_REQUEST["defaultdomain"];
 	}
 
     // valid
-    if(!pql_check_email($mailalternateaddress)) {
+    if(!pql_check_email($_REQUEST["mailalternateaddress"])) {
 		$error["mailalternateaddress"] = $LANG->_('Invalid');
 		return false;
     }
@@ -30,13 +30,13 @@ function attribute_check($type) {
     // if type is modify, check existance of old value, else the new one
     if($type == "add") {
 		// add
-		if(pql_email_exists($_pql, $mailalternateaddress)) {
+		if(pql_email_exists($_pql, $_REQUEST["mailalternateaddress"])) {
 			$error["mailalternateaddress"] = $LANG->_('Already exists');
 			return false;
 		}
     } else {
 		// modify
-		if($oldvalue != $mailalternateaddress and pql_email_exists($_pql, $mailalternateaddress)) {
+		if($_REQUEST["oldvalue"] != $_REQUEST["mailalternateaddress"] and pql_email_exists($_pql, $_REQUEST["mailalternateaddress"])) {
 			$error["mailalternateaddress"] = $LANG->_('Already exists');
 			return false;
 		}
@@ -54,14 +54,15 @@ function attribute_init() {
 
 // {{{ attribute_print_form(void)
 function attribute_print_form() {
-    global $error, $defaultdomain, $LANG, $_pql;
+    global $error, $_pql, $LANG;
 
-	$additionaldomainname = pql_domain_get_value($_pql, $domain, pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
+	$defaultdomain		  = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+	$additionaldomainname = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">
-        <?php if($oldvalue == ""){echo $LANG->_('Create new alias');}else{echo $LANG->_('Change alias');} ?>
+        <?php if($_REQUEST["oldvalue"] == ""){echo $LANG->_('Create new alias');}else{echo $LANG->_('Change alias');} ?>
       </th>
 <?php
     // We're changing a MailAlternateAddress. Give the old as reference
@@ -79,13 +80,13 @@ function attribute_print_form() {
           <input type="text" name="mailalternateaddress" value="">
 <?php 	if(is_array($additionaldomainname)) { ?>
             <b>@ <select name="email_domain"></b>
-              <option value="<?=$_REQUEST["defaultdomain"]?>"><?=pql_maybe_idna_decode($_REQUEST["defaultdomain"])?></option>
+              <option value="<?=$defaultdomain?>"><?=pql_maybe_idna_decode($defaultdomain)?></option>
 <?php		foreach($additionaldomainname as $additional) { ?>
               <option value="<?=$additional?>"><?=pql_maybe_idna_decode($additional)?></option>
 <?php   	} ?>
             </select>
 <?php 	} else { ?>
-            <b>@<?=pql_maybe_idna_decode($_REQUEST["defaultdomain"])?></b>
+            <b>@<?=pql_maybe_idna_decode($defaultdomain)?></b>
 <?php 	} ?>
         </td>
       </tr>
@@ -96,13 +97,14 @@ function attribute_print_form() {
       </tr>
     </table>
 
-    <input type="hidden" name="submit"   value="1">
-    <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="oldvalue" value="<?=$_REQUEST["oldvalue"]?>">
-    <input type="hidden" name="domain"   value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="rootdn"   value="<?=$_REQUEST["rootdn"]?>">
-    <input type="hidden" name="user"     value="<?=$_REQUEST["user"]?>">
-    <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="submit"        value="1">
+    <input type="hidden" name="attrib"        value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="oldvalue"      value="<?=$_REQUEST["oldvalue"]?>">
+    <input type="hidden" name="domain"        value="<?=$_REQUEST["domain"]?>">
+    <input type="hidden" name="rootdn"        value="<?=$_REQUEST["rootdn"]?>">
+    <input type="hidden" name="user"          value="<?=$_REQUEST["user"]?>">
+    <input type="hidden" name="view"          value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="defaultdomain" value="<?=$defaultdomain?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
@@ -112,22 +114,27 @@ function attribute_print_form() {
 
 // {{{ attribute_save(type)
 function attribute_save($type) {
-    global $_pql, $email_domain, $LANG;
+    global $_pql, $LANG;
     
     switch($type) {
       case "add":
 		if(pql_modify_userattribute($_pql->ldap_linkid, $_REQUEST["user"],
 									pql_get_define("PQL_ATTR_MAILALTERNATE"),
-									'', $_REQUEST["mailalternateaddress"]))
-		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
-									   array('what' => $LANG->_('alias'),
-											 'new'  => $_REQUEST["mailalternateaddress"]));
-		else
-		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+									'', $_REQUEST["mailalternateaddress"])) {
+			$tmp  = split('@', $_REQUEST["mailalternateaddress"]);
+			$mail = $tmp[0].'@'.pql_maybe_idna_decode($tmp[1]);
+
+			$msg = pql_complete_constant($LANG->_('Successfully added %what% %new%'),
+										 array('what' => $LANG->_('alias'),
+											   'new'  => $mail));
+		} else
+		  $msg = pql_complete_constant($LANG->_('Failed to add %what%'),
 									   array('what' => $LANG->_('alias'))) . ": " . pql_format_error(0);
 		
-		if (pql_get_define("PQL_ATTR_TESTMAIL_AUTOSEND", $_REQUEST["branch"])) {
-			$url = "user_sendmail.php?root=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["branch"]?>&email=" . urlencode($_REQUEST["mailalternateaddress"]) . "&user=" . urlencode($_REQUEST["user"]) . "&msg=" . urlencode($msg);
+		if (pql_get_define("PQL_CONF_TESTMAIL_AUTOSEND", $_REQUEST["rootdn"])) {
+			$url = "user_sendmail.php?root=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["branch"]."&email="
+			  . urlencode($_REQUEST["mailalternateaddress"]) . "&user=" . urlencode($_REQUEST["user"])
+			  . "&msg=" . urlencode($msg);
 			header("Location: " . pql_get_define("PQL_CONF_URI") . $url);
 		} else
 		  attribute_forward($msg);
@@ -143,16 +150,21 @@ function attribute_save($type) {
 		
 		if(pql_modify_userattribute($_pql->ldap_linkid, $_REQUEST["user"],
 									pql_get_define("PQL_ATTR_MAILALTERNATE"),
-									$_REQUEST["oldvalue"], $_REQUEST["mailalternateaddress"]))
-		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
-									   array('what' => $LANG->_('alias'),
-											 'new'  => $mailalternateaddress));
-		else
+									$_REQUEST["oldvalue"], $_REQUEST["mailalternateaddress"])) {
+			$tmp  = split('@', $_REQUEST["mailalternateaddress"]);
+			$mail = $tmp[0].'@'.pql_maybe_idna_decode($tmp[1]);
+
+			$msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
+										 array('what' => $LANG->_('alias'),
+											   'new'  => $mail));
+		} else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('alias'))) . ": " . pql_format_error(0);
 		
-		if(pql_get_define("PQL_ATTR_TESTMAIL_AUTOSEND", $_REQUEST["branch"])) {
-			$url = "user_sendmail.php??root=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["branch"]?>&email=" . urlencode($_REQUEST["mailalternateaddress"]) . "&user=" . urlencode($_REQUEST["user"]) . "&msg=" . urlencode($msg);
+		if(pql_get_define("PQL_CONF_TESTMAIL_AUTOSEND", $_REQUEST["rootdn"])) {
+			$url = "user_sendmail.php?root=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["branch"]."&email="
+			  . urlencode($_REQUEST["mailalternateaddress"]) . "&user=" . urlencode($_REQUEST["user"])
+			  . "&msg=" . urlencode($msg);
 			header("Location: " . pql_get_define("PQL_CONF_URI") . $url);
 		} else
 		  attribute_forward($msg);
