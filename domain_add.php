@@ -81,6 +81,21 @@ if(pql_add_domain($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain)) {
 	if(! pql_set_domain_value($_pql->ldap_linkid, $domain, 'administrator', $USER_DN)) {
 		$msg = PQL_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	}
+
+	// Now it's time to run the special adduser script if defined...
+	if(PQL_EXTRA_SCRIPT_CREATE_DOMAIN) {
+		// Open a bi-directional pipe, so we can write AND read
+		$fh = popen(escapeshellcmd(PQL_EXTRA_SCRIPT_CREATE_DOMAIN), "w+");
+		if($fh) {
+			
+			// We're done, close the command file handle...
+			pclose($fh);
+		} else {
+			$msg = urlencode(PQL_USER_DOMAIN_SCRIPT_FAILED);
+			$url = "domain_detail.php?domain=$domain&msg=$msg";
+			header("Location: " . PQL_URI . "$url");
+		}
+	}
 	
 	// redirect to domain-details
 	if($msg == "") {

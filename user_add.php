@@ -619,9 +619,9 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 		// Add the user to the database
 		if(pql_add_user($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $cn, $entry, $account_type)){
 			// Now it's time to run the special adduser script if defined...
-			if(PQL_EXTRA_SCRIPT_CREATE) {
+			if(PQL_EXTRA_SCRIPT_CREATE_USER) {
 				// Open a bi-directional pipe, so we can write AND read
-				$fh = popen(escapeshellcmd(PQL_EXTRA_SCRIPT_CREATE), "w+");
+				$fh = popen(escapeshellcmd(PQL_EXTRA_SCRIPT_CREATE_USER), "w+");
 				if($fh) {
 
 					// We're done, close the command file handle...

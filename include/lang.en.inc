@@ -1,7 +1,7 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 2.5 2003-01-04 14:24:54 turbo Exp $
+// $Id: lang.en.inc,v 2.6 2003-01-10 07:35:42 turbo Exp $
 //
 // if you have a translation to another language, please contact
 // me --> Matthias Blaser <mb@adfinis.ch>
@@ -99,6 +99,8 @@ define("PQL_DOMAIN_INVALID", "Invalid domain name !! use: domain.tld (e.g. adfin
 define("PQL_DOMAIN_EXISTS", "This domain already exists");
 define("PQL_DOMAIN_ADD", "Create domain");
 define("PQL_DOMAIN_ADD_OK", "Domain %domain% successfully created.<br>You have to manually add this domain to the rpcthosts and locals files in the qmail/control directory !!");
+define("PQL_DOMAIN_ADD_SCRIPT_OK", "Successfully executed the domain add script");
+define("PQL_DOMAIN_ADD_SCRIPT_FAILED", "The domain add script failed!");
 define("PQL_DOMAIN_ADD_FAILED", "Failed creating the domain");
 define("PQL_DOMAIN_ADD_INFO_DC", "Using domain mode (dc separated).<br>Don't use '.' (dots) in domain name");
 define("PQL_DOMAIN_ADD_INFO_OU", "Using organization layout (ou separated).<br>Make sure youre using 'domain.tld' for domain name");
