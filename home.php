@@ -18,7 +18,22 @@ if(isset($rlnb) and PQL_AUTO_RELOAD) {
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
   <script language="JavaScript1.2"><!--
 	// reload navigation frame
+<?php
+  // Reload different nav frame depending on value of $rlnb
+  if($rlnb == 2) {
+?>
+	parent.frames.pqlnavctrl.location.reload();
+<?php
+  } elseif($rlnb == 3) {
+?>
+	parent.frames.pqlnavezmlm.location.reload();
+<?php
+  } else {
+?>
 	parent.frames.pqlnav.location.reload();
+<?php
+  }
+?>
   //--></script>
 <?php
 }
