@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.82 2003-06-12 15:26:51 turbo Exp $
+// $Id: pql.inc,v 2.83 2003-06-13 14:14:11 turbo Exp $
 //
 
 // ----------------------------
@@ -1937,12 +1937,14 @@ function pql_validate_administrator($linkid, $dn, $admin) {
 	return false;
 }
 
-// Crude. Won't work in real life...
 function pql_get_rootdn($dn) {
 	$rootdn = split(',', $dn);
-	$rootdn = $rootdn[count($rootdn)-1];
 
-	return($rootdn);
+	if($rootdn[1]) {
+		unset($rootdn[0]);
+		return(implode(",", $rootdn));
+	} else
+	  return($rootdn[count($rootdn)-1]);
 }
 
 function pql_split_oldvalues($value) {

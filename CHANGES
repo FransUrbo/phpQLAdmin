@@ -15,6 +15,9 @@ phpQLAdmin 2.0.15 Release (TO BE ANNOUNCED)
 	    ImageCreateFromGif(), use GIF. If neither, try
 	    ImageCreateFromJpeg() and output as JPEG.
 	    Closes bug 11
+	  - Get the root DN (namingContexts) even if it's a _multi_
+	    leveled DN. Patch by Emmanouil G. Karatzas.
+	    Closes bug 9
 
 	GUI layout change
 	  - Possibility to set a value in the domain branch saying we
