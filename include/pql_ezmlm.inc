@@ -3,14 +3,16 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ezmlm.inc,v 1.11 2002-12-26 22:05:00 turbo Exp $
+// $Id: pql_ezmlm.inc,v 1.12 2003-01-06 11:48:23 turbo Exp $
 session_start();
 
 class ezmlm {
 	// ===================================================
 	// Private section
 	var $_option		= array();
-	var $srch_path		= '/usr/bin';
+	var $_paths			= array();
+
+	// Public section
 	var $user_name		= '';
 	var $user_home		= '';
 
@@ -193,7 +195,7 @@ class ezmlm {
 		fclose($file);
 
 		// Get number of subscribers
-		$command = $this->srch_path . "/ezmlm-list 2>&1 " . $list_path . " | wc -l";
+		$command = $this->_paths["list"] . " 2>&1 " . $list_path . " | wc -l";
 		$output  = @Exec($command, $output_array, $result);
 		if($result != 0) {
 			$this->error = "could not execute system command: '" . $command . "'" .
@@ -203,7 +205,7 @@ class ezmlm {
 		$configuration["subscribers"] = intval($output);
 
 		// Get subscriber addresses
-		$command = $this->srch_path . "/ezmlm-list 2>&1 " . $list_path;
+		$command = $this->_paths["list"] . " 2>&1 " . $list_path;
 		$output = @Exec($command, $output_array, $result);
 		if($result != 0) {
 			$this->error = "could not execute system command: '" . $command . "'" .
@@ -236,7 +238,7 @@ class ezmlm {
 	// Verify subscriber (is the address subscribed?)
 	function _verifysubscriber($list, $subscriber) {
 		$list_path = $this->user_home."/".$list;
-		$command   = $this->srch_path."/ezmlm-list 2>&1 ".$list_path;
+		$command   = $this->_paths["list"] . " 2>&1 ".$list_path;
 		$output    = @Exec($command, $output_array, $result);
 		if($result != 0) {
 			$this->error = "could not execute system command: ".$command
@@ -273,7 +275,7 @@ class ezmlm {
 	// Couldn't do this 'globaly', at variable declaration
 	// above, so I had to do it in the costructor. I don't
 	// have a better use for it anyway :)
-	function ezmlm($user_name = 'newsletters', $user_home = '/home/newsletters') {
+	function ezmlm($user_name = 'newsletters', $user_home = '/home/newsletters', $paths = 0) {
 		$this->_option["archived"]["on"]		= "a";	$this->_option["archived"]["off"]		= "A";
 		$this->_option["remotecfg"]["on"]		= "c";	$this->_option["remotecfg"]["off"]		= "C";
 		$this->_option["digest"]["on"]			= "d";	$this->_option["digest"]["off"]			= "D";
@@ -294,6 +296,28 @@ class ezmlm {
 		$this->_option["subonly"]["on"]			= "u";	$this->_option["subonly"]["off"]		= "U";
 		$this->_option["extras"]["on"]			= "x";	$this->_option["extras"]["off"]			= "X";
 
+		// This SHOULD allow us to be able to 'replace' the commands with something
+		// that will do remote configuration - scripts that uses rsh/ssh perhaps?
+		if(! $paths) {
+			$this->_paths["make"]	= PQL_LDAP_EZMLM_PATH . "/ezmlm-make";
+			$this->_paths["list"]	= PQL_LDAP_EZMLM_PATH . "/ezmlm-list";
+			$this->_paths["sub"]	= PQL_LDAP_EZMLM_PATH . "/ezmlm-sub";
+			$this->_paths["unsub"]	= PQL_LDAP_EZMLM_PATH . "/ezmlm-unsub";
+		} else {
+			// Assign EXISTING values
+			foreach($paths as $key => $val) {
+				$this->_paths[$key] = $paths[$key];
+			}
+
+			// Assign EXISTING values with defaults
+			$keys = array('make', 'list', 'sub', 'unsub');
+			foreach($keys as $key) {
+				if(! $this->_paths[$key]) {
+					$this->_paths[$key] = PQL_LDAP_EZMLM_PATH . "/ezmlm-" . $key;
+				}
+			}
+		}
+		
 		$this->user_name = $user_name;
 
 		if(! ereg("/$", $user_home))
@@ -376,7 +400,7 @@ class ezmlm {
 			$dotpath  = "~" . $this->user_name . "/.qmail-" . $listname;
 		}
 
-		$command = ($this->srch_path."/ezmlm-make 2>&1 -"
+		$command = ($this->_paths["make"] . " 2>&1 -"
 					. ($add		? "E "		: "+ ")
 					. ($opts	? "-$opts"	: "")
 					. " " . $listpath
@@ -499,7 +523,7 @@ class ezmlm {
 			$listpath	= $this->user_home . "/" . $listname;
 		}
 
-		$command		= $this->srch_path."/ezmlm-sub 2>&1 " . $listpath . " " . $subscriber;
+		$command		= $this->_paths["sub"] . " 2>&1 " . $listpath . " " . $subscriber;
 		if(! $this->debug) {
 			$output    = @Exec($command, $output_array, $result);
 			if($result != 0) {
@@ -525,7 +549,7 @@ class ezmlm {
 			$listpath	= $this->user_home . "/" . $listname;
 		}
 
-		$command		= $this->srch_path."/ezmlm-unsub 2>&1 " . $listpath . " " . $subscriber;
+		$command		= $this->_paths["unsub"] . " 2>&1 " . $listpath . " " . $subscriber;
 		if(! $this->debug) {
 			$output    = @Exec($command, $output_array, $result);
 			if($result != 0) {

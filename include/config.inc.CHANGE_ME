@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.7 2003-01-02 12:28:01 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.8 2003-01-06 11:48:23 turbo Exp $
 //
 session_start();
 // ----------------------------
@@ -199,6 +199,10 @@ define("PQL_LDAP_CONTROL_AUTOADDLOCALS", true);
 // 'replicated' (ie, round-robbing etc), then you'll
 // have to do this manually (at the moment).
 define("PQL_LDAP_EZMLM_USE", false);
+
+// ----------------------------
+// Path to EZMLM commands
+define("PQL_LDAP_EZMLM_PATH", "/usr/bin");
 
 // ----------------------------
 // Should we enable changing of LDAP server?
