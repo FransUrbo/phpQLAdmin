@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.146 2004-02-21 16:02:05 turbo Exp $
+// $Id: pql.inc,v 2.147 2004-02-27 12:26:48 turbo Exp $
 //
 
 // ----------------------------
@@ -498,25 +498,32 @@ function pql_user_exist($linkid, $dn, $user) {
 // Get all domains listed in ldap-tree (ou|dc-records)
 function pql_domain_get($ldap) {
 	foreach($ldap->ldap_basedn as $dn)  {
-		$dn = urldecode($dn);
+		$dn = urldecode($dn); unset($info);
 
 		$filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $dn) .
                   "=*)" . pql_setup_branch_objectclasses(1, $dn) . ")";
 
-		$sr = @ldap_list($ldap->ldap_linkid, $dn, $filter) or pql_format_error(1);
-		$info = @ldap_get_entries($ldap->ldap_linkid, $sr) or pql_format_error(1);
-		if($info["count"] == 0) {
-			// No entries, try a BASE search
-			$sr = @ldap_read($ldap->ldap_linkid, $dn, $filter) or pql_format_error(1);
+		// Does this top DN contain the ou=People object?
+		$sr1 = @ldap_read($ldap->ldap_linkid, pql_get_define("PQL_CONF_SUBTREE_USERS").",$dn", "objectclass=*");
+		
+		// Is there any users just below the top DN?
+		$sr2 = @ldap_list($ldap->ldap_linkid, $dn, pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $dn)."=*");
+		
+		if((@ldap_count_entries($ldap->ldap_linkid, $sr1) > 0) or
+		   (@ldap_count_entries($ldap->ldap_linkid, $sr2) > 0))
+		  {
+			  // We got 'ou=People' AND/OR user(s) below the top DN. Remember the branch.
+			  $domains[] = $dn;
+		} else {
+			// No entries. Look for branches with a ONE_LEVEL search
+			$sr   = @ldap_list($ldap->ldap_linkid, $dn, $filter) or pql_format_error(1);
 			$info = @ldap_get_entries($ldap->ldap_linkid, $sr) or pql_format_error(1);
+			for ($i=0; $i<$info["count"]; $i++) {
+				$domains[] = $info[$i]["dn"];
+			}
 		}
-		
-		for ($i=0; $i<$info["count"]; $i++) {
-			$domains[] = $info[$i]["dn"];
-		}
-		
 	}
-
+	
 	return $domains;
 }
 // }}}
@@ -880,7 +887,7 @@ function pql_set_domain_value($linkid, $dn, $type, $value) {
 	// Do the LDAP modification
 	if($value != '') {
 		// Replace the current attribute value
-		if(! ldap_mod_replace($linkid, $dn, $entry)) {
+		if(! @ldap_mod_replace($linkid, $dn, $entry)) {
 			pql_format_error(1);
 			die($LDIF);
 			return false;
@@ -1190,30 +1197,38 @@ function pql_get_user_number($linkid, $domain) {
 }
 // }}}
 
-// {{{ pql_get_next_uidnumber(ldap)
+// {{{ pql_get_next_ugidnumber(ldap, type)
 // Returns the next free UID/GID number
-function pql_get_next_uidnumber($ldap) {
-    $filter = "(&(" . pql_get_define("PQL_GLOB_ATTR_QMAILUID") . "=*)(objectclass=posixaccount))";
+function pql_get_next_ugidnumber($ldap, $type) {
+	if($type == 'uid') {
+		$attrib  = pql_get_define("PQL_GLOB_ATTR_QMAILUID");
+		$minimum = pql_get_define("PQL_CONF_MINIMUM_UIDNUMBER");
+	} else {
+		$attrib = pql_get_define("PQL_GLOB_ATTR_QMAILGID");
+		$minimum = pql_get_define("PQL_CONF_MINIMUM_GIDNUMBER");
+	}
+
+    $filter = "(&($attrib=*)(objectclass=posixaccount))";
 
 	foreach($ldap->ldap_basedn as $dn) {
 		$results = pql_search($ldap->ldap_linkid, $dn, $filter, '');
 	
-		// Find the highest availible UIDNUMBER
+		// Find the highest availible [UG]IDNUMBER
 		$highest = 0;
 		for($i=0; $i < $results["count"]; $i++) {
-			if(($results[$i][pql_get_define("PQL_GLOB_ATTR_QMAILUID")][0] > $highest) &&
-			   ($results[$i][pql_get_define("PQL_GLOB_ATTR_QMAILUID")][0] < 64000))
+			if(($results[$i][$attrib][0] > $highest) &&
+			   ($results[$i][$attrib][0] < 64000))
 			  {
-				  $highest = $results[$i][pql_get_define("PQL_GLOB_ATTR_QMAILUID")][0];
+				  $highest = $results[$i][$attrib][0];
 			  }
 		}
 	}
 
 	if($highest)
-	$highest++; // Increase with one!
+	  $highest++; // Increase with one!
 	else
-	  if(pql_get_define("PQL_CONF_MINIMUM_UIDNUMBER"))
-		$highest = pql_get_define("PQL_CONF_MINIMUM_UIDNUMBER");
+	  if($minimum)
+		$highest = $minimum;
 	  else
 		$highest = 1000;
 	
