@@ -315,6 +315,14 @@ support (ie, use national characters wherever even in the DN's). One
 exeption to this is if branches is ordered by the 'dc' attribute (domain
 objectclass). The 'dc' attribute does not allow UTF-8 encoded strings...
 
+National characters is now also possible in the FQDN (Fully Qualified
+Domain Name) of the locals/rcpthosts attributes in the QmailLDAP/Controls
+object. To enable this, you will have to update the QmailLDAP/Controls
+schema. See more in the README.upgrade file (see the 'Upgrading from 2.0.13'
+section). Wether QmailLDAP/Controls in itself will allow UTF-8 encoded
+email addresses is not known to me at this time. You will have to test
+it yourself. If it works, please let me know...
+
 
 For more information on installations, please view doc/index.php through
 your web browser. Note though that documentation is not my stronges side
