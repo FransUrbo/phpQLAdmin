@@ -12,6 +12,9 @@ phpQLAdmin 2.0.10 TO BE ANNOUNCED
 	    must set TRUE/FALSE in the db, not 1/0.
 	  - Missing attribute definition for baseQuota (default domain/branch
 	    quota) in the schema.
+	  - When running in non-advanced mode, when creating a user both
+	    userhost and host was set, which lead to incorrect creation of
+	    the mailHost attribute.
 
 	GUI layout change
 	  - Show the user DN in the left frame and in user details
@@ -47,6 +50,24 @@ phpQLAdmin 2.0.10 TO BE ANNOUNCED
 	  - New page (LDAP server configuration) which shows what
 	    attributes and objectclasses the LDAP server knows about
 	    (OID and descriptions etc).
+	  - Possibility to set/change the user/domain creation scripts.
+	    new schema attributes:
+		externalScriptUser	1.3.6.1.4.1.8767.3.2.2.13
+		externalScriptDomain	1.3.6.1.4.1.8767.3.2.2.14
+	  - Possibility to set the Kerberos realm, principal name, keytab
+	    to use with unattended kadmin use etc. New attributes in
+	    phpQLAdminConfig objectclass:
+		These two is also availible in krb5-kdc.schema (from
+		OpenLDAP.org) and have to be uncommented in the schema
+		if the krb5-kdc schema isn't used...
+		krb5RealmName		1.3.6.1.4.1.5322.10.1.12
+		krb5PrincipalName	1.3.6.1.4.1.5322.10.1.1
+
+		krb5AdminServer		1.3.6.1.4.1.8767.3.2.2.15
+		krb5AdminKeytab		1.3.6.1.4.1.8767.3.2.2.16
+		krb5AdminCommandPath	1.3.6.1.4.1.8767.3.2.2.17
+	  - Prettify the message output after adding/removing user/domain
+	    etc. Ie, one msg on one line.
 
 	Misc changes
 	  - Replace all previous defines (constant variables) for
@@ -69,6 +90,9 @@ phpQLAdmin 2.0.10 TO BE ANNOUNCED
 	    constant/variable/reference...
 	  - When adding a user to the LDAP database, double check with the
 	    LDAP server that we can add the user...
+	  - Example code snippet to create a Kerberos principal added (with
+	    the help of a keytab) in create_user.pl.
+	  - Create homedirectory if it's defined in the create_user.pl script.
 
 phpQLAdmin 2.0.9 Release (Mar 29 2003)
 	Highlights
