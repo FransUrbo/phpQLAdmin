@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.74 2003-11-15 20:37:26 turbo Exp $
+// $Id: user_add.php,v 2.75 2003-11-16 09:36:52 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -48,7 +48,7 @@ switch($page_curr) {
   case "":
 	// ------------------------------------------------
 	// Step 1: Selected account type (see how many users there can be)
-	if($maxusers) {
+	if($maxusers and !$ALLOW_BRANCH_CREATE) {
 		if(count(pql_get_user($_pql->ldap_linkid, $domain)) >= $maxusers) {
 			// We have reached the maximum amount of users.
 			include("./header.html");
