@@ -127,6 +127,7 @@
 <?php } ?>
       </tr>
 
+<?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Virtual users base home directory')?></td>
         <td class="<?=$class?>"><?php echo pql_get_define("PQL_CONF_VIRTUAL_BASEHOME"); ?>&nbsp;</td>
