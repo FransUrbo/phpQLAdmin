@@ -1,12 +1,12 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.65 2004-02-21 12:53:33 turbo Exp $
+// $Id: user_detail.php,v 2.66 2004-02-21 16:01:32 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 
 if(!$url["rootdn"]) {
-	$url["rootdn"] = pql_get_rootdn($_GET["user"]);
+	$url["rootdn"] = pql_get_rootdn($_GET["user"], 'user_detail.php');
 }
 
 $url["domain"] = pql_format_urls($_GET["domain"]);

@@ -1,6 +1,6 @@
 <?php
 // delete attribute of a user
-// $Id: user_del_attribute.php,v 2.25 2004-02-14 14:01:00 turbo Exp $
+// $Id: user_del_attribute.php,v 2.26 2004-02-21 16:01:32 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -39,7 +39,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 	    $results = ldap_get_entries($_pql->ldap_linkid, $sr);
 	    foreach($results as $key => $result){
 		if ((string)$key != "count") {
-		    $ref = $result[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", pql_get_rootdn($_REQUEST["user"]))][0];
+		    $ref = $result[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", pql_get_rootdn($_REQUEST["user"], 'user_del_attribute.php'))][0];
 		    $_REQUEST["domain"] = pql_strip_username($result[pql_get_define("PQL_GLOB_ATTR_MAIL")][0]);
 		    $forwarders[]  = array("domain" => $_REQUEST["domain"], "reference" => $ref, "cn" => $_REQUEST["cn"],  "email" => $result[pql_get_define("PQL_GLOB_ATTR_MAIL")][0]);
 		}

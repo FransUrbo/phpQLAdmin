@@ -3,13 +3,13 @@
 // pql_units.inc
 // Sub units (ou=People, ou=Users, dc=host) etc
 //
-// $Id: pql_units.inc,v 1.4 2004-02-14 14:25:36 turbo Exp $
+// $Id: pql_units.inc,v 1.5 2004-02-21 16:02:05 turbo Exp $
 //
 
 // {{{ pql_unit_get(linkid, dn, filter)
 function pql_unit_get($linkid, $dn, $filter = 1) {
 	// What's the Root DN (namingContexts) for this domain
-	$rootdn = pql_get_rootdn($dn); $rootdn = urldecode($rootdn);
+	$rootdn = pql_get_rootdn($dn, 'pql_unit_get'); $rootdn = urldecode($rootdn);
 
 	if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $rootdn) == "dc") {
 		$ocb = "domain";
@@ -39,7 +39,7 @@ function pql_unit_get($linkid, $dn, $filter = 1) {
 // Returns true if sub unit exists, false if not...
 function pql_unit_exist($linkid, $dn, $unit) {
 	// What's the Root DN (namingContexts) for this domain
-	$rootdn = pql_get_rootdn($dn); $rootdn = urldecode($rootdn);
+	$rootdn = pql_get_rootdn($dn, 'pql_unit_exist'); $rootdn = urldecode($rootdn);
 	$dn = urldecode($dn);
 
 	if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $rootdn) == "dc") {
@@ -64,7 +64,7 @@ function pql_unit_exist($linkid, $dn, $unit) {
 // Returns true if successfully added sub unit, false if not
 function pql_unit_add($linkid, $domain, $unit) {
 	// What's the Root DN (namingContexts) for this domain
-	$rootdn = pql_get_rootdn($domain); $rootdn = urldecode($rootdn);
+	$rootdn = pql_get_rootdn($domain, 'pql_unit_add'); $rootdn = urldecode($rootdn);
 	$domain = urldecode($domain);
 
 	if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $rootdn) == "dc") {

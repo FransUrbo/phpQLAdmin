@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.74 2004-02-21 12:45:58 turbo Exp $
+// $Id: left.php,v 2.75 2004-02-21 16:01:31 turbo Exp $
 //
 session_start();
 
@@ -26,7 +26,7 @@ if($_REQUEST["advanced"] == 1) {
 }
 ?>
   <font color="black" class="heada">
-    <?=$LANG->_('User')?>: <b><a href="user_detail.php?rootdn=<?php echo pql_get_rootdn($_SESSION["USER_DN"])?>&user=<?=$_SESSION["USER_DN"]?>"><?=$_SESSION["USER_ID"]?></a></b>
+    <?=$LANG->_('User')?>: <b><a href="user_detail.php?rootdn=<?php echo pql_get_rootdn($_SESSION["USER_DN"], 'left.php')?>&user=<?=$_SESSION["USER_DN"]?>"><?=$_SESSION["USER_ID"]?></a></b>
   </font>
   <br>
 <?php if($_SESSION["ADVANCED_MODE"]) {
@@ -172,7 +172,7 @@ if(!isset($domains)) {
 	$domain = urlencode($domain);
 
 	// Get Root DN
-	$rootdn = pql_get_rootdn($domain);
+	$rootdn = pql_get_rootdn($domain, 'left.php');
 
 	// Get the subbranches in this domain
 	$branches = pql_unit_get($_pql->ldap_linkid, $domain);

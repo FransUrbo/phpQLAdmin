@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // uid (user id)
-// $Id: attrib.uid.inc,v 2.19 2004-02-14 15:27:08 turbo Exp $
+// $Id: attrib.uid.inc,v 2.20 2004-02-21 16:02:05 turbo Exp $
 
 function attribute_check($type){
     global $error, $LANG, $_pql;
@@ -95,7 +95,7 @@ function attribute_save($type) {
 		}
 		
 		// We use the uid to reference users and it has just changed...
-		if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", pql_get_rootdn($_REQUEST["user"])) == pql_get_define("PQL_GLOB_ATTR_UID")) {
+		if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", pql_get_rootdn($_REQUEST["user"], 'attrib.uid.inc:attribute_save')) == pql_get_define("PQL_GLOB_ATTR_UID")) {
 			$_REQUEST["user"] = $_REQUEST["uid"];
 			// Reload the navigation bar (if allowed by config)
 			attribute_forward($msg, true);

@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.145 2004-02-21 12:53:51 turbo Exp $
+// $Id: pql.inc,v 2.146 2004-02-21 16:02:05 turbo Exp $
 //
 
 // ----------------------------
@@ -210,7 +210,7 @@ function pql_user_get($ldap_linkid, $dn) {
 	$dn = urldecode($dn);
 
 	// What's the Root DN (namingContexts) for this domain
-	$rootdn = pql_get_rootdn($dn); $rootdn = urldecode($rootdn);
+	$rootdn = pql_get_rootdn($dn, 'pql_user_get'); $rootdn = urldecode($rootdn);
 
 	// Filter out any object which is a posixGroup.
 	// (&(cn=*)(!(objectclass=posixgroup)))
@@ -234,7 +234,7 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 
 	// -----
 	// What's the Root DN (namingContexts) for this domain
-	$rootdn = pql_get_rootdn($domain); $rootdn = urldecode($rootdn);
+	$rootdn = pql_get_rootdn($domain, 'pql_user_add'); $rootdn = urldecode($rootdn);
 
 	// -----
     // Retreive WANTED objectclasses
@@ -632,7 +632,7 @@ function pql_domain_value($ldap, $dn, $value, $match = '', $all = 0) {
 	}
 
 	// What's the Root DN (namingContexts) for this domain
-	$rootdn = pql_get_rootdn($dn); $rootdn = urldecode($rootdn);
+	$rootdn = pql_get_rootdn($dn, 'pql_domain_value'); $rootdn = urldecode($rootdn);
 
 	// Setup a filter to look for DOMAINS (branches)
 //	if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $rootdn) == "o")
@@ -963,7 +963,7 @@ function pql_replace_admins($ldap, $old, $new) {
 // {{{ pql_modify_user_addressbook(ldap_linkid, user, attribs)
 function pql_modify_user_addressbook($ldap_linkid, $user, $attribs) {
 	// What's the Root DN (namingContexts) of this user
-	$rootdn = pql_get_rootdn($user); $rootdn = urldecode($rootdn);
+	$rootdn = pql_get_rootdn($user, 'pql_modify_user_addressbook'); $rootdn = urldecode($rootdn);
 
     // check if addressbook is disabled
     if(!pql_get_define("PQL_CONF_USE_ADDRESSBOOK", $rootdn))
@@ -1062,7 +1062,7 @@ function pql_modify_userattribute($ldap_linkid, $user, $attrib, $oldvalue, $newv
     pql_cache_userentry_remove($user);
 
 	// What's the Root DN (namingContexts) of this user
-	$rootdn = pql_get_rootdn($user); $rootdn = urldecode($rootdn);
+	$rootdn = pql_get_rootdn($user, 'pql_modify_userattribute'); $rootdn = urldecode($rootdn);
 
     if ($attrib == pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)) {
 		pql_cache_userdn_remove($user);
@@ -1176,7 +1176,7 @@ function pql_get_user_letter($linkid, $domain, $letra) {
 // Based in PQL_CONF_GET_USER to search by an initial number at cn attribute
 function pql_get_user_number($linkid, $domain) {
 	// What's the Root DN (namingContexts) for this domain
-	$rootdn = pql_get_rootdn($dn); $rootdn = urldecode($rootdn);
+	$rootdn = pql_get_rootdn($dn, 'pql_get_user_number'); $rootdn = urldecode($rootdn);
 
     for($numero=0; $numero <= 9; $numero++) {
 		$filter = "(".pql_get_define("PQL_GLOB_ATTR_UID")."=".$numero."*)";
@@ -1235,7 +1235,7 @@ function pql_get_next_username($ldap, $domain) {
 
 	if($prefix) {
 		// Under what namingContexts is this domain/branch located?
-		$rootdn = pql_get_rootdn($domain); $rootdn = urldecode($rootdn);
+		$rootdn = pql_get_rootdn($domain, 'pql_get_next_username'); $rootdn = urldecode($rootdn);
 
 		// Setup the LDAP search filter
 		$filter = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) . '=' . $prefix . '*';
@@ -1527,12 +1527,15 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 // }}}
 
 // {{{ pql_get_rootdn(dn)
-function pql_get_rootdn($dn) {
+function pql_get_rootdn($dn, $function = '') {
 	global $_pql;
 	$tracker = 'Please report this at the <a href="http://apache.bayour.com/anthill/" target="_new">bugtracker</a>.<br>';
 
 	if($dn == '') {
-		echo "This is weird. We're called with an empty DN! $tracker";
+		if($function)
+		  echo "This is weird. We're called (from $function) with an empty DN! $tracker";
+		else
+		  echo "This is weird. We're called with an empty DN! $tracker";
 		die();
 	} else
 	  $dn = urldecode($dn);
@@ -1886,7 +1889,7 @@ function pql_setup_branch_objectclasses($filter = 0, $dn, $linkid = '') {
 		// ObjectClasses for this root DN
 		if($dn) {
 			// What's the Root DN (namingContexts) for this domain
-			$rootdn = pql_get_rootdn($dn); $rootdn = urldecode($rootdn);
+			$rootdn = pql_get_rootdn($dn, 'pql_setup_branch_objectclasses'); $rootdn = urldecode($rootdn);
 
 			$ocs = pql_get_define("PQL_CONF_OBJECTCLASS_DOMAIN", $rootdn);
 		} elseif($linkid->ldap_basedn[0])

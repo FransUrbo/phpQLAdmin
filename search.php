@@ -1,6 +1,6 @@
 <?php
 // shows results of search
-// $Id: search.php,v 2.22 2004-02-14 14:01:00 turbo Exp $
+// $Id: search.php,v 2.23 2004-02-21 16:01:32 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -138,7 +138,7 @@ if(!$_SESSION["SINGLE_USER"]) {
 											pql_get_define("PQL_GLOB_ATTR_ISACTIVE"));
 			$status = pql_ldap_accountstatus($status[0]);
 
-			$rootdn = pql_get_rootdn($user);
+			$rootdn = pql_get_rootdn($user, 'search.php');
 ?>
 
       <tr class="<?php pql_format_table(); ?>">
