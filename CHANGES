@@ -5,19 +5,24 @@ phpQLAdmin 2.0.4 Release - TO BE RELEASED
 	  - Got ezmlm mailing list management to work, stress tested it localy,
 	    "works for me"... :)
 	    + Part of the fix is to have two suidperl script that does a fiew
-	      things the webserver/PHP don't have access to (we need to create
+	      things the webserver/PHP don't have access to. We need to create
 	      some directories as root and give away files/directories to the
 	      mailing list user - usually 'alias'.
 	  - Correctly export environment variables before executing external
 	    script.
 	  - Correctly get domain default values/administrator (missed some when
 	    I changed to my own object class).
+	  - Code cleanup. More debug options availible if changing the code.
+	  - Fixed the search page so that it to can distinguish from DOMAIN
+	    layout or ORGANIZATION layout... Never used the funtion until now :)
 
 	GUI layout change
 	  - Left justify the locals/rcpthosts tables in the mailserver control
 	    details page.
 	  - Allow for creating a script that initializes ldap* files on a new
 	    mail server (example script included).
+	  - Readd the choosing of the LDAP server in the first login page (only
+	    availible if there's multiple servers defined though).
 
 	EZMLM Mailinglist management
 	  - Only build the ezmlm frame list tree if there is any lists, and if
