@@ -62,8 +62,8 @@ if(isset($submit)) {
 }
 
 // Get release version
-$fp = fopen(".version.old", "r");
-$VERSION = fgets($fp, 4096);
+$fp = fopen(".version", "r");
+$VERSION = fgets($fp, 20);
 fclose($fp);
 ?>
 
@@ -75,22 +75,29 @@ fclose($fp);
 	//       In the domain description we don't have that info...
 	// if(($ADVANCED_MODE == 1) && ($USER_BASE == 'everything')){
 	if($ADVANCED_MODE == 1) {
+?>
+    <li>
+      <form action="domain_add.php" method="post">
+        <?php echo PQL_DOMAIN_ADD; ?>
+        <br>
+        <input type="text" name="domain" value="<?php echo $domain; ?>">
+        <input type="submit" value="<?php echo PQL_ADD; ?>">
+      </form>
+<?php
 	    // Should we show the 'change server' choices
-	    if(PQL_LDAP_CHANGE_SERVER) {
-		if(eregi(" ", PQL_LDAP_HOST)) {
-		    $servers = split(" ", PQL_LDAP_HOST);
+	    if(PQL_LDAP_CHANGE_SERVER and eregi(" ", PQL_LDAP_HOST)) {
+		$servers = split(" ", PQL_LDAP_HOST);
 ?>
     <li>
       <form action="<?=$PHP_SELF?>" target="_top">
 	Change LDAP server<br>
         <select name="ldapserver">
 <?php
-			foreach($servers as $server) {
+		foreach($servers as $server) {
 ?>
           <option value="<?=$server?>"><?=$server?></option>
 <?php
-			}
-		    }
+		}
 ?>
         </select>
         <input type="submit" value="<?="--&gt;&gt;"?>" name="submit">
