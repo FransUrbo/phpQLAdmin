@@ -1,6 +1,6 @@
 <?php
 // navigation bar - ezmlm mailinglists manager
-// $Id: left-ezmlm.php,v 2.2 2002-12-20 01:53:55 turbo Exp $
+// $Id: left-ezmlm.php,v 2.3 2002-12-21 11:52:35 turbo Exp $
 //
 session_start();
 
@@ -17,19 +17,7 @@ require("ezmlmmgr/library/ezmlm/editezmlmlistclass.php");
 // Initialize
 $ezmlm = new edit_ezmlm_list_class();
 
-// Enable some needed functions.
-$ezmlm->delete = $ezmlm->editing_texts = $ezmlm->editing = 1;
-$ezmlm->deleting = $ezmlm->adding = 1;
-
-// TODO: Hardcoded defaults to get it looking like SOMETHING...
-require("ezmlmmgr/locale/ezmlm/editezmlmlistclass-en.php");
-$ezmlm->ezmlm_user = "alias";
-$ezmlm->ezmlm_user_home = "/var/lists";
-$ezmlm->rowsperpage = 100;
-$ezmlm->values = array("idiom" => 'en');
-$ezmlm->preferred_idiom = 'en';
-$ezmlm->centerframes=0;
-
+require("ezmlm-hardcoded.php");
 require("left-head.html");
 ?>
   <!-- EZMLM Mailinglists -->
@@ -38,6 +26,13 @@ require("left-head.html");
       <font color="black" class="heada"><b>Mailinglists</b></font>
     </a>
   </div>
+
+  <div id="el2Parent" class="parent">
+    <nobr>
+      <a href="ezmlm_add.php">Add a mailing list to system</a>
+    </nobr>
+  </div>
+
 
 <?php
 if(!($ezmlm->load())) {
@@ -54,16 +49,20 @@ if(!($hosts = pql_get_ezmlm_host($ezmlm))) {
 } else {
     $j = 2;
 
+	global $hosts;
+
 	// Domains
     foreach($hosts as $host => $value) {
 ?>
+  </form>
+
   <!-- start ezmlm mailing list domain -->
   <div id="el<?=$j?>Parent" class="parent">
     <a class="item" href="ezmlm_detail.php?domain=<?=$host?>" onClick="if (capable) {expandBase('el<?=$j?>', true); return false;}">
       <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$j?>Img">
     </a>
 
-    <a class="item" href="ezmlm_detail.php?domain=<?=$host?>" onClick="if (capable) {expandBase('el<?=$j?>', false)}">
+    <a class="item" href="ezmlm_detail.php?domain=<?=$host?>">
       <font color="black" class="heada"><?=$host?></font>
     </a>
   </div>
@@ -82,8 +81,8 @@ if(!($hosts = pql_get_ezmlm_host($ezmlm))) {
 		foreach($value as $name => $val) {
 ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
-      <a href="ezmlm_detail.php?domain=<?=$host?>&list=<?=$name?>"><?=$name?></a>&nbsp;
-      <a class="item" href="ezmlm_detail.php?domain=<?=$host?>&list=<?=$name?>"></a>
+      <a href="ezmlm_detail.php?domain=<?=$host?>&list=<?=$name?>"><img src="images/navarrow.png" width="9" height="9" border="0"></a>&nbsp;
+      <a class="item" href="ezmlm_detail.php?domain=<?=$host?>&list=<?=$name?>"><?=$name?></a>
     </nobr>
 
     <br>
