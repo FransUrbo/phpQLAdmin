@@ -1,6 +1,8 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.10 2003-04-07 07:31:28 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.11 2003-04-07 11:40:35 turbo Exp $
+
+require("./left-head.html");
 
 function attribute_check() {
     global $$attrib, $domain, $oldvalue, $_pql, $error, $$attrib;
@@ -51,26 +53,34 @@ function attribute_print_form($action) {
 	}
 ?>
           <td>
-          <?php echo format_error($error[$$attrib]); ?>
-
-<?php
-	if($action != 'add') {
-?>
+            <?php echo format_error($error[$$attrib]) . "\n"; ?>
+<?php if($action != 'add') { ?>
             <input type="text" name="<?=$$attrib?>" value="<?=$$attrib?>" size="50"></td>
-<?php
-	} else {
+<?php } else {
 		// TODO: This is a REALLY bad idea. If we have a 'huge' database
 		// (hundred, thousands or more users), this will take AGES!
 
 		if($rootdn and $domain) {
-?>
-            <select name="<?=$attrib?>">
-<?php
+			$i = 0; $j = 0;
+
 			// We're should give a user access to THIS branch	
 			foreach($_pql->ldap_basedn as $dn) {
-				// Zero out the variables, othervise we won't get users in
+?>
+
+            <div id="el<?=$j?>Parent" class="parent">
+              <a class="item" onClick="if (capable) {expandBase('el<?=$j?>', true); return false;}">
+                <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$j?>Img">
+              </a>
+        
+              <a class="item">
+                <font color="black" class="heada"><?=$dn?></font>
+              </a>
+            </div>
+        
+            <div id="el<?=$j?>Child" class="child">
+<?php			// Zero out the variables, othervise we won't get users in
 				// specified domain, but also in the PREVIOUS domain shown!
-				unset($users);
+				unset($users); unset($cns);
 
 				// Get all users in this domain
 				$users = pql_get_user($_pql->ldap_linkid, $dn);
@@ -79,16 +89,24 @@ function attribute_print_form($action) {
 
 					foreach($users as $username) {
 						$cn = pql_get_userattribute($_pql->ldap_linkid, $username, $config["PQL_GLOB_ATTR_CN"]);
-						$cns[$dn][$username] = $cn[0];
+						$cns[$username] = $cn[0];
 					}
+
+					asort($cns);
 				}
-			}
-					
-            foreach($cns as $username) {
-				foreach($username as $dn => $cn) {
+
+                foreach($cns as $userdn => $username) {
+					// TODO: We should use type="checkbox", indexed with $i here,
+					//       but I'm not quite sure how to pass the value to attribute_save()...
 ?>
-              <option value="<?=$dn?>"><?=$cn?></option>
-<?php          }
+              <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="<?=$attrib?>" value="<?=$userdn?>"><?=$username?></nobr><br>
+<?php               $i++;
+                }
+
+                $j++;
+?>
+            </div>
+<?php
 			}
 		} elseif($user) {
 ?>
@@ -103,13 +121,11 @@ function attribute_print_form($action) {
 <?php
                 }
 			}
-		}
 ?>
             </select>
-<?php
+<?php	}
 	}
 ?>
-          </td>
         </tr>
       </th>
     </table>
