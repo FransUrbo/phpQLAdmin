@@ -1,6 +1,6 @@
 <?php
 // make some simple tests on ldap connection
-// $Id: config_ldaptest.php,v 2.28 2004-10-20 06:15:41 turbo Exp $
+// $Id: config_ldaptest.php,v 2.29 2004-11-08 09:00:23 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -10,7 +10,7 @@ function check_domain_value($linkid, $dn, $attrib, $value) {
 	global $LANG;
 
 	$entry[$attrib] = $value;
-	if(! @ldap_mod_replace($linkid, $dn, $entry)) {
+	if(!pql_write_mod($linkid, $dn, $entry, "config_ldaptest.php:check_domain_value()/1")) {
 		if(ldap_errno($linkid) == 21)
 		  // Invalid syntax
 		  return($LANG->_('No. Reason:')."<b>".$LANG->_('Old phpQLAdmin schema')."</b>");
@@ -24,7 +24,7 @@ function check_domain_value($linkid, $dn, $attrib, $value) {
 		// Success - delete it again
 		unset($entry);
 		$entry['test'] = array();
-		ldap_mod_del($linkid, $dn, $entry);
+		pql_write_mod($linkid, $dn, $entry, "config_ldaptest.php:check_domain_value()/2") {
 
 		return(0);
 	}

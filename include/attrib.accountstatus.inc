@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // accountstatus (status of mailaccount)
-// $Id: attrib.accountstatus.inc,v 2.22 2004-11-05 11:13:29 turbo Exp $
+// $Id: attrib.accountstatus.inc,v 2.23 2004-11-08 09:00:23 turbo Exp $
 
 /* DLW: When the calendar gets a value of 2003.12.25, it gets stored or displayed as 2003/12/24 (@7am)
  *      I think it's having problems with time zones.  Look into it. */
@@ -139,25 +139,10 @@ function attribute_save($type) {
 			$new_entry[pql_get_define("PQL_ATTR_EXPIRATION")] = $days;
 
 			// Modify the object
-			if(!@ldap_mod_replace($_pql->ldap_linkid, $_REQUEST["user"], $new_entry)) {
-				// Failed to REPLACE the value. Try to remove and then add it again
-				unset($new_entry);
-
-				$new_entry[pql_get_define("PQL_ATTR_EXPIRATION")] = array();
-				if(@ldap_mod_del($_pql->ldap_linkid, $_REQUEST["user"], $new_entry)) {
-					$new_entry[pql_get_define("PQL_ATTR_EXPIRATION")] = $days;
-					if(@ldap_mod_add($_pql->ldap_linkid, $_REQUEST["user"], $new_entry)) {
-						$msg = $LANG->_('Successfully set account expiration date');
-					}
-				}
-
-				if(!$msg) {
-					$msg  = $LANG->_('Failed to set account expiration date');
-					$msg .= ": " . pql_format_error(0);
-				}
-			} else {
-				$msg = $LANG->_('Successfully set account expiration date');
-			}
+			if(!pql_write_mod($_pql->ldap_linkid, $_REQUEST["user"], $new_entry, "attrib.accountstatus.inc:attribute_save()/1"))
+			  $msg  = $LANG->_('Failed to set account expiration date') . ": " . pql_format_error(0);
+			else
+			  $msg = $LANG->_('Successfully set account expiration date');
 		} else {
 			// Create a user search filter (only look for mail users - !?!?).
 			$filter  = "(&(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*)(";
