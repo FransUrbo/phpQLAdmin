@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.14 2003-04-30 07:30:49 turbo Exp $
+// $Id: control_detail.php,v 1.15 2003-05-04 10:04:57 turbo Exp $
 session_start();
 require("./include/pql_config.inc");
 
@@ -50,7 +50,7 @@ if($config["PQL_GLOB_CONTROL_USE"]) {
 	}
 
 	// reload navigation bar if needed
-	if($config["PQL_GLOB_AUTO_RELOAD"]) {
+	if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
 ?>
 
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
