@@ -70,6 +70,7 @@ phpQLAdmin 2.0.18c TO BE ANNOUNCED
 	  - It's important that the 'person' object class is used when creating users
 	    if one's referencing users with the 'cn' attribute.
 	  - Don't show the 'undefined variable' warnings if not running a CVS version.
+	  - Don't add the 'deliveryMode: localdelivery' if we're running with newer QmailLDAP.
 
 phpQLAdmin 2.0.18b Release (Apr  6 2004)
 	Bug fixes
