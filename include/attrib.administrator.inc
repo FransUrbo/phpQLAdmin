@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.9 2003-04-04 16:37:50 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.10 2003-04-07 07:31:28 turbo Exp $
 
 function attribute_check() {
     global $$attrib, $domain, $oldvalue, $_pql, $error, $$attrib;
@@ -23,16 +23,26 @@ function attribute_check() {
 
 function attribute_print_form($action) {
     global $$attrib, $domain, $rootdn, $PHP_SELF, $attrib, $oldvalue;
-	global $error, $_pql, $config;
+	global $error, $_pql, $config, $user;
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
+<?php if($attrib == 'seealso') { ?>
+      <th colspan="3" align="left">Add contact person for domain <?=$domain?></th>
+<?php } else { ?>
       <th colspan="3" align="left"><?php echo PQL_LANG_DOMAIN_ADMIN_ADD . $domain; ?></th>
+<?php } ?>
         <tr class="<?php table_bgcolor(); ?>">
 <?php
-	if($attrib == 'administrator') {
+	if(($attrib == 'administrator') and $rootdn and $domain) {
+		// We're should give a user access to THIS branch
 ?>
           <td class="title"><?=PQL_LANG_DOMAIN_ADMIN_CHANGE?></td>
+<?php
+	} elseif(($attrib == 'administrator') and !$rootdn and !$domain and $user) {
+		// We're giving a user access to ('random') branch
+?>
+          <td class="title">Branch DN</td>
 <?php
 	} else {
 ?>
@@ -49,36 +59,49 @@ function attribute_print_form($action) {
             <input type="text" name="<?=$$attrib?>" value="<?=$$attrib?>" size="50"></td>
 <?php
 	} else {
-		// TODO: This is a REALLY bad idea. If we have 'huge'
-		// (hundred, thousands or more users, this will take AGES!)
+		// TODO: This is a REALLY bad idea. If we have a 'huge' database
+		// (hundred, thousands or more users), this will take AGES!
 
-		// Get ALL domains
-		if(is_array($_pql->ldap_basedn)){
+		if($rootdn and $domain) {
 ?>
             <select name="<?=$attrib?>">
 <?php
-			foreach($_pql->ldap_basedn as $dom) {
-				echo "<!-- Domain DN: $dom -->
-";
-				// Get all users in all the domains
-				$users = pql_get_user($_pql->ldap_linkid, $dom);
+			// We're should give a user access to THIS branch	
+			foreach($_pql->ldap_basedn as $dn) {
+				// Zero out the variables, othervise we won't get users in
+				// specified domain, but also in the PREVIOUS domain shown!
+				unset($users);
+
+				// Get all users in this domain
+				$users = pql_get_user($_pql->ldap_linkid, $dn);
 				if($users) {
-					foreach($users as $user) {
-						$cn = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_CN"]);
-						$cns[$user] = $cn[0];
-					}
-					asort($cns);
+					unset($x);
 
-					foreach($cns as $user => $cn){
-						$dn = pql_search_attribute($_pql->ldap_linkid, $dom, 'cn', $cn);
-
-						// TODO
-						//$d = split(',', $dn); $d = split('=', $d[2]); $d=$d[1].": ";
-?>
-              <option value="<?=$dn?>"><?=$d.$cn?></option>
-<?php
+					foreach($users as $username) {
+						$cn = pql_get_userattribute($_pql->ldap_linkid, $username, $config["PQL_GLOB_ATTR_CN"]);
+						$cns[$dn][$username] = $cn[0];
 					}
 				}
+			}
+					
+            foreach($cns as $username) {
+				foreach($username as $dn => $cn) {
+?>
+              <option value="<?=$dn?>"><?=$cn?></option>
+<?php          }
+			}
+		} elseif($user) {
+?>
+            <select name="domain">
+<?php
+			// We're giving a user access to ('random') branch
+			$domains = pql_get_domains($_pql);
+			if($domains) {
+				foreach($domains as $branch) {
+?>
+              <option value="<?=$branch?>"><?=$branch?></option>
+<?php
+                }
 			}
 		}
 ?>
@@ -91,26 +114,31 @@ function attribute_print_form($action) {
       </th>
     </table>
 
+<?php if(!$user) { ?>
+    <input type="hidden" name="domain" value="<?=$domain?>">
+<?php } else { ?>
+    <input type="hidden" name="administrator" value="<?=$user?>">
+    <input type="hidden" name="user" value="<?=$user?>">
+<?php } ?>
     <input type="hidden" name="submit" value="4">
     <input type="hidden" name="attrib" value="<?=$attrib?>">
-    <input type="hidden" name="domain" value="<?=$domain?>">
     <input type="hidden" name="action" value="<?=$action?>">
-    <input type="hidden" name="oldvalue" value="<?=$$attrib?>">
     <input type="hidden" name="rootdn" value="<?=$rootdn?>">
+    <input type="hidden" name="oldvalue" value="<?=$$attrib?>">
     <input type="submit" value="<?=PQL_LANG_SAVE?>">
   </form>
 <?php
 }
 
 function attribute_save($type) {
-    global $domain, $rootdn, $attrib, $oldvalue, $$attrib, $_pql;
+    global $domain, $rootdn, $attrib, $oldvalue, $$attrib, $_pql, $user;
 	$value = $$attrib;
 
     switch($type) {
       case "add":
       case "modify":
       case "delete":
-		if($value == $oldvalue) {
+		if($value and $oldvalue and ($value == $oldvalue)) {
 			// don't change if new value equal to old one
 			$msg = PQL_LANG_DOMAIN_ADMIN_UNCHANGED;
 			attribute_forward($msg);
@@ -119,45 +147,78 @@ function attribute_save($type) {
 
 		// Get the old values, so we can remove the one we're modifying
 		// (delete the one we want to delete, keep the others etc)
-		$admins	= pql_get_domain_value($_pql, $domain, $attrib);
+		if(($rootdn and $domain) or ($user and $domain))
+		  $admins = pql_get_domain_value($_pql, $domain, $attrib);
+		elseif($user and $rootdn)
+		  $admins = pql_get_domain_value($_pql, $rootdn, $attrib);
+		elseif($user and $$attrib and !$value)
+		  $admins = pql_get_domain_value($_pql, $$attrib, $attrib);
+
 		if(is_array($admins)) {
-			foreach($admins as $admin) {
-				if(($type == 'modify' and $admin != $oldvalue) or
-				   ($type == 'delete' and $admin != $value) or
-				   ($type == 'add'))
-				  {
-					  $ADMs[] = $admin;
-				  }
-			}
+			foreach($admins as $admin)
+			  $ADMs[] = $admin;
 		}
 
-		if($type != 'delete') {
-			// Add the new value of administrator
-			$ADMs[] = $value;
-		}
-
-		if(pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, $ADMs)) {
-			if($type == 'add') {
-				$msg = pql_complete_constant(PQL_LANG_DOMAIN_ADMIN_ADD_OK, array("value" => $value));
-			} elseif($type == 'delete') {
-				$msg = pql_complete_constant(PQL_LANG_DOMAIN_ADMIN_DELETE_OK, array("value" => $value));
+		if($type == 'delete') {
+			// Delete attribute
+			if(!$user and !$$attrib) {
+				// Add the new value of administrator
+				$ADMs[] = $value;
+			} elseif($$attrib) {
+				// Delete user DN from array of administrators
+				foreach($ADMs as $adm) {
+					if(!eregi($$attrib, $adm))
+					  $adms[] = $adm;
+				}
+				
+				$ADMs = $adms;
 			} else {
-				$msg = pql_complete_constant(PQL_LANG_DOMAIN_ADMIN_CHANGE_OK, array("value" => $value));
+				// Delete user DN from array of administrators
+				foreach($ADMs as $adm) {
+					if(!eregi($user, $adm))
+					  $adms[] = $adm;
+				}
+				
+				$ADMs = $adms;
 			}
 		} else {
-			if($type == 'add') {
-				$msg = PQL_LANG_DOMAIN_ADMIN_ADD_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
-			} elseif($type == 'delete') {
-				$msg = PQL_LANG_DOMAIN_ADMIN_DELETE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
-			} else {
-				$msg = PQL_LANG_DOMAIN_ADMIN_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
-			}
+			// Add user 
+			if($user)
+			  $ADMs[] = $user;
+			elseif($$attrib)
+			  $ADMs[] = $$attrib;
 		}
 
-		if($domain == $_pql->ldap_basedn[0])
-		  header("Location: " . $config["PQL_GLOB_URI"] . "home.php?msg=".urlencode($msg));
-		else
-		  attribute_forward($msg);
+		$success = 0;
+		if($domain and (($$attrib and !$user) or ($$attrib and $user) or (!$$attrib and $user))) {
+			echo "1: pql_set_domain_value(linkid, $domain, $attrib, $ADMs)<br>";
+
+			if(pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, $ADMs))
+			  $success = 1;
+		} elseif($rootdn and $user) {
+			echo "2: pql_set_domain_value(linkid, $rootdn, $attrib, $ADMs)<br>";
+
+			if(pql_set_domain_value($_pql->ldap_linkid, $rootdn, $attrib, $ADMs))
+			  $success = 1;
+		}
+
+		if($success) {
+			if($type == 'add')
+			  $msg = pql_complete_constant(PQL_LANG_DOMAIN_ADMIN_ADD_OK, array("value" => $value));
+			elseif($type == 'delete')
+			  $msg = pql_complete_constant(PQL_LANG_DOMAIN_ADMIN_DELETE_OK, array("value" => $value));
+			else
+			  $msg = pql_complete_constant(PQL_LANG_DOMAIN_ADMIN_CHANGE_OK, array("value" => $value));
+		} else {
+			if($type == 'add')
+			  $msg = PQL_LANG_DOMAIN_ADMIN_ADD_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+			elseif($type == 'delete')
+			  $msg = PQL_LANG_DOMAIN_ADMIN_DELETE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+			else
+			  $msg = PQL_LANG_DOMAIN_ADMIN_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+		}
+
+		attribute_forward($msg);
 		break;
 
       default:
