@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.15 2003-01-14 15:58:31 turbo Exp $
+// $Id: pql.inc,v 2.16 2003-01-14 19:23:44 turbo Exp $
 //
 // ----------------------------
 // Note: There are a few " followed after PHP comment
@@ -337,11 +337,21 @@ function pql_add_domain($ldap_linkid, $ldap_basedn, $domain){
     // adds a domain into ldap-tree (ou|dc-record)
     
     $entry["objectClass"][] = "top";
-	$entry["objectClass"][] = "phpQLAdminBranch";
-    $entry["objectClass"][] = PQL_LDAP_OBJECTCLASS_DOMAIN;
 
-	$entry["objectClass"][] = "dcOrganizationNameForm";
-	$entry["o"] = 0;
+	if(eregi(' ', PQL_LDAP_OBJECTCLASS_DOMAIN)) {
+		$objectclasses = split(' ', PQL_LDAP_OBJECTCLASS_DOMAIN);
+		foreach($objectclasses as $oc) {
+			$entry["objectClass"][] = $oc;
+
+			if(eregi('dcOrganizationNameForm', $oc))
+			  $entry["o"] = 0;
+		}
+	} else {
+		$entry["objectClass"][] = "phpQLAdminBranch";
+		$entry["objectClass"][] = PQL_LDAP_OBJECTCLASS_DOMAIN;
+		$entry["objectClass"][] = "dcOrganizationNameForm";
+		$entry["o"] = 0;
+	}
 
     $entry[PQL_LDAP_ATTR_DOMAIN] = $domain;
 	$dn = PQL_LDAP_ATTR_DOMAIN . "=" . $domain . "," . $ldap_basedn;
@@ -689,7 +699,7 @@ function pql_get_domains($ldap_linkid,$ldap_basedn){
 	// get all domains listed in ldap-tree (ou|dc-records)
 	
 	$sr = @ldap_list($ldap_linkid, $ldap_basedn,
-					 "(&(" . PQL_LDAP_ATTR_DOMAIN . "=*)(objectClass=" . PQL_LDAP_OBJECTCLASS_DOMAIN . "))"
+					 "(&(" . PQL_LDAP_ATTR_DOMAIN . "=*)" . pql_branch_objectclasses() . ")"
 					 ) or pql_errormsg($ldap_linkid);
 	$info = @ldap_get_entries($ldap_linkid, $sr) or pql_errormsg($ldap_linkid);
 	
@@ -1381,7 +1391,7 @@ function pql_get_domain_value($linkid, $domain, $value, $match = '*') {
 	//   (|(objectclass=domain)(objectclass=phpQLAdminBranch)(objectclass=dcOrganizationNameForm))
 	//   ($value=$match))
     $filter = "(&(" . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . ")"
-	  . "(|(objectclass=" . PQL_LDAP_OBJECTCLASS_DOMAIN . ")(objectclass=phpQLAdminBranch))"
+	  . "(|" . pql_branch_objectclasses() . ")"
 	  . "(" . $value . "=" . $match . "))";
 
 //	echo "<u>Filter</u>: $filter<br>";
@@ -1426,7 +1436,7 @@ function pql_set_domain_value($linkid, $domain, $type, $value) {
 	// Lowercase type...
 	$type = strtolower($type);
 	
-    $filter = "(&(" . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . ")(|(objectclass=" . PQL_LDAP_OBJECTCLASS_DOMAIN . ")(objectclass=phpQLAdminBranch)(objectclass=dcOrganizationNameForm)))";
+    $filter = "(&(" . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . ")(|" . pql_branch_objectclasses() . "))";
     $sr = ldap_search($linkid, $GLOBALS["USER_SEARCH_DN_USR"], $filter);
     $results = @ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
 	
@@ -1503,6 +1513,21 @@ function pql_execute($command, $hide=true) {
 	  echo "----\nreturn value: $ret $code\n</pre>";
 
 	return $ret;
+}
+
+function pql_branch_objectclasses() {
+	$filter = '';
+
+	if(eregi(' ', PQL_LDAP_OBJECTCLASS_DOMAIN)) {
+		$objectclasses = split(' ', PQL_LDAP_OBJECTCLASS_DOMAIN);
+		for($i=0; $objectclasses[$i]; $i++) {
+			$filter .= "(objectClass=$objectclasses[$i])";
+		}
+	} else {
+		$filter = "(objectClass=" . PQL_LDAP_OBJECTCLASS_DOMAIN . ")";
+	}
+
+	return $filter;
 }
 
 /*
