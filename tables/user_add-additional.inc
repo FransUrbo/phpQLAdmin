@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-additional.inc,v 1.13 2004-03-30 06:24:59 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.14 2004-03-31 05:27:10 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <input type="hidden" name="surname"            value="<?=$_REQUEST["surname"]?>">
     <input type="hidden" name="name"               value="<?=$_REQUEST["name"]?>">
@@ -75,7 +75,7 @@
 
 		if($_REQUEST["userhost"]["dns"]) { // It's defined - DNS entry
 ?>
-            <input type="radio" name="host" value="dns" CHECKED>
+            <input type="radio" name="dns" value="<?=$_REQUEST["userhost"]["dns"]?>" CHECKED>
             <?=$LANG->_('Standard (DNS entry)')?>: <b><?=$_REQUEST["userhost"]["dns"]?></b><br>
 <?php	} ?>
             <input type="radio" name="host" value="usr">
