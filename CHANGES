@@ -31,7 +31,9 @@ phpQLAdmin 2.0.15 Release (TO BE ANNOUNCED)
 	    + With this corrected, phpQLAdmin will not say that it couldn't
 	      delete the branch even if it was removed from the database.
 	    Closes bug 17
-
+	   - The checkbox name="subonly" uses the $checked["trailers"]
+	     value instead of $checked["subonly"] in ezmlm_add.php.
+ 
 	GUI layout change
 	  - Possibility to set a value in the domain branch saying we
 	    automatically would like to create username (uid) and/or
