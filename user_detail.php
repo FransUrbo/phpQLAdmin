@@ -235,10 +235,10 @@ $aliases = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_AT
 
       <tr class="<?php table_bgcolor(); ?>">
         <td><?php echo PQL_LANG_MAIL_TITLE; ?></td>
-        <td><?=$email?></td>
+        <td><a href="mailto:<?=$email?>"><?=$email?></a></td>
         <td>
 <?php if(!$SINGLE_USER) { ?>
-          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=mail&user=<?=$user?>&mail=<?=$email?>&oldvalue=<?=$email?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LANG_MAIL_CHANGE; ?>" border="0"></a>&nbsp;&nbsp;
+          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=mail&user=<?=$user?>&mail=<?=$email?>&oldvalue=<?=$email?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LANG_MAIL_CHANGE; ?>" border="0"></a>&nbsp;&nbsp;&nbsp;
 <?php } ?>
           <a href="user_sendmail.php?email=<?=$email?>&user=<?=$user?>"><img src="images/mail.png" width="16" height="11" alt="<?php echo PQL_LANG_SENDMAIL; ?>" border="0"></a>
         </td>
@@ -251,7 +251,7 @@ if(is_array($aliases)){
 ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td><?php echo PQL_LANG_MAILALTERNATEADDRESS_TITLE; ?></td>
-        <td><?=$alias?></td>
+        <td><a href="mailto:<?=$alias?>"><?=$alias?></a></td>
         <td><a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=mailalternateaddress&domain=<?=$domain?>&user=<?=$user?>&mailalternateaddress=<?php echo pql_strip_domain($alias); ?>&oldvalue=<?=$alias?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LANG_MAILALTERNATEADDRESS_CHANGE; ?>" border="0"></a>&nbsp;&nbsp;<a href="user_del_attribute.php?attrib=mailalternateaddress&user=<?=$user?>&value=<?=$alias?>"><img src="images/del.png" width="12" height="12" alt="<?php echo PQL_LANG_MAILALTERNATEADDRESS_DEL; ?>" border="0"></a>&nbsp;&nbsp;<a href="user_sendmail.php?email=<?=$alias?>&user=<?=$user?>"><img src="images/mail.png" width="16" height="11" alt="<?php echo PQL_LANG_SENDMAIL; ?>" border="0"></a></td>
       </tr>
 <?php
@@ -288,7 +288,7 @@ if(empty($forwarders)) {
 	foreach($forwarders as $forwarder){
 ?>
       <tr class="<?php table_bgcolor(); ?>">
-	<td><?=$forwarder["email"]?></td>
+	<td><a href="mailto:<?=$forwarder["email"]?>"><?=$forwarder["email"]?></a></td>
 	<td>
           <a href="user_detail.php?user=<?php echo urlencode($forwarder["reference"]); ?>"><?=$forwarder[PQL_CONF_REFERENCE_USERS_WITH]?></a>
         </td>
@@ -504,42 +504,40 @@ if(empty($forwarders)){
     foreach($_pql->ldap_basedn as $branch) {
 		// Check the top-most (namingContexts) DN's if user is admin of that...
 		if(pql_validate_administrator($_pql->ldap_linkid, $branch, $user))
-		  $domains[] = $branch;
+		  $domains[$branch][] = $branch;
 
 		// Find all branches the user is admin of
 		$dom = pql_get_domain_value($_pql, $branch, 'administrator', $user);
 		if($dom)
 		  foreach($dom as $d) {
 			  if($d != $branch)
-				$domains[] = $d;
+				$domains[$branch][] = $d;
 		  }
     }
     
     $class=table_bgcolor(0);
     if(isset($domains)) {
-	asort($domains);
-	$new_tr = 0;
-	foreach($domains as $key => $branch) {
-	    if($new_tr) {
+		asort($domains);
+		$new_tr = 0;
+		foreach($domains as $rootdn => $doms) {
+			foreach($doms as $branch) {
+				if($new_tr) {
 ?>
 
       <tr class="<?=$class?>">
         <td class="title"></td>
-<?php
-	    } else {
-?>
+<?php			} else { ?>
       <tr class="<?=$class?>">
         <td class="title">Access to DN:</td>
-<?php
-	    }
-	    $new_tr = 1;
-?>
-        <td><?=$branch?></td>
+<?php			} $new_tr = 1; ?>
+        <td><a href="domain_detail.php?rootdn=<?=$rootdn?>&domain=<?=$branch?>"><?=$branch?></a></td>
         <td>
           <a href="domain_edit_attributes.php?attrib=administrator&domain=<?=$branch?>&user=<?=$user?>&submit=4&action=delete"><img src="images/del.png" width="12" height="12" border="0" alt="Deny user admin access to domain"></a>
         </td>
       </tr>
-<?php   } ?>
+<?php		}
+		}
+?>
       <tr class="<?=$class?>">
         <td class="title"></td>
         <td>
