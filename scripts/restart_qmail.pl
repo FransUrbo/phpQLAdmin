@@ -5,11 +5,15 @@
 # ie, addition/removal of a 'locals' or 'rcpthost' value.
 
 # Config options
-$LDAP_SERVER="localhost";
-$LDAP_SEARCH="/usr/bin/ldapsearch";
-$LDAP_CTRLDN="ou=QmailLDAP,dc=bayour,dc=com";
-$QMAIL_INIT="/etc/init.d/qmail";
-$HOSTNAME="papadoc.bayour.com";
+open(CONFIG, "< /etc/qmail/.restart_qmail.conf")
+    || die("Can't open config, $!\n");
+while(!eof(CONFIG)) {
+    $line = <CONFIG>; chomp($line);
+    $line =~ s/"$//;
+    @conf = split("=\"", $line);
+    $CONFIG{$conf[0]} = $conf[1];
+}
+close(CONFIG);
 
 # Don't touch these
 $local = $rcpthost = '';
@@ -17,7 +21,8 @@ $local = $rcpthost = '';
 
 # ----------------------------
 # Get the QmailLDAP/Controls object for specified host ($HOSTNAME)
-open(SEARCH, "$LDAP_SEARCH -x -LLL -h $LDAP_SERVER -b '$LDAP_CTRLDN' 'cn=$HOSTNAME' locals rcpthosts |")
+$CMD = "$CONFIG{'LDAP_SEARCH'} -x -LLL -h $CONFIG{'LDAP_SERVER'} -b '$CONFIG{'LDAP_CTRLDN'}' 'cn=$CONFIG{'HOSTNAME'}' locals rcpthosts";
+open(SEARCH, "$CMD |")
     || die("Can't search, $!\n");
 while(!eof(SEARCH)) {
     $line = <SEARCH>; chomp($line);
@@ -33,30 +38,32 @@ close(SEARCH);
 
 # ----------------------------
 # Count how many Locals and RCPTHosts attributes we have in this object
+$AMOUNT{'calculated'}{'locals'} = 0; $AMOUNT{'calculated'}{'rcpthosts'} = 0;
 foreach $local (sort(keys(%LOCALS))) { $AMOUNT{'calculated'}{'locals'}++; }
 foreach $rcpthost (sort(keys(%RCPTHOSTS))) { $AMOUNT{'calculated'}{'rcpthosts'}++; }
 
 # ----------------------------
 # Open the files with the old values
 foreach $file (@FILES) {
-    open(FILE, "< /etc/qmail/.$file");
-    $line = <FILE>; chomp($line);
-    $AMOUNT{'oldvalue'}{$file} = $line;
-    close(FILE);
+    if(open(FILE, "< /etc/qmail/.$file")) {
+        $line = <FILE>; chomp($line);
+        $AMOUNT{'oldvalue'}{$file} = $line;
+        close(FILE);
+    } else {
+        $AMOUNT{'oldvalue'}{$file} = 0;
+    }
 
-    if($AMOUNT{'oldvalue'}{$file} and $AMOUNT{'calculated'}{$file}) {
-	if($AMOUNT{'oldvalue'}{$file} != $AMOUNT{'calculated'}{$file}) {
-	    # Value have changed!
-	    open(FILE, "> /etc/qmail/.$file") || die("Can't open file, $!\n");
-	    print FILE $AMOUNT{'calculated'}{$file} . "\n";
-	    close(FILE);
+    if($AMOUNT{'oldvalue'}{$file} != $AMOUNT{'calculated'}{$file}) {
+	# Value have changed!
+	open(FILE, "> /etc/qmail/.$file") || die("Can't open file, $!\n");
+	print FILE $AMOUNT{'calculated'}{$file} . "\n";
+	close(FILE);
 	    
-	    $changed = 1;
-	}
+	$changed = 1;
     }
 }
 
 if($changed) {
     print "Value have changed\n";
-    system($QMAIL_INIT, "restart");
+    system($CONFIG{'QMAIL_INIT'}, "restart");
 }
