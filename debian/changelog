@@ -1,3 +1,9 @@
+phpqladmin (2.0.18-1) unstable; urgency=low
+
+  * New release. IDNA encoding and smaller bugfixes.
+
+ -- Turbo Fredriksson <turbo@debian.org>  Thu, 13 Nov 2003 15:36:12 +0100
+
 phpqladmin (2.0.17-1) unstable; urgency=low
 
   * New release. Lots of new features and functions...
