@@ -5,12 +5,11 @@ phpQLAdmin 2.0.5 Release - TO BE RELEASED
 	  - In same cases, when playing with the PQL_LDAP_EZMLM_USE and/or
 	    PQL_LDAP_CONTROL_USE values, a frame was created when it wasn't
 	    supposed to, and vise versa.
-
-	GUI layout change
-	  - If there's only one host, show that on the login page.
+	  - Allow for deletion of the mail reply text.
+	  - If there's only one host, show that (CORRECTLY) on the login page.
 
 	Misc changes
-	  - A while ago I changed the way you specify LDAP server(s). There is
+	  - A while ago I changed the way one specify LDAP server(s). There is
 	    no separation (unfortunatly ?) between USER server and CONTROLS server.
 	    We only have one host value. Therefor change all occurances of
 	    USER_HOST_{USR,CTR} to just USER_HOST.

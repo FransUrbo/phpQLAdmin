@@ -1,3 +1,13 @@
+Upgrading from 2.0.4
+	Define PQL_LDAP_OBJECTCLASS_DOMAIN (at the bottom should
+	read:
+
+	define("PQL_LDAP_OBJECTCLASS_DOMAIN", strtolower($objectclass_domain) . " dcOrganizationNameForm phpQLAdminBranch");
+
+	all in one line! I can't promise it will work without the
+	'dcOrganizationNameForm' object class, but 'phpQLAdminBranch'
+	is a definitive must!!
+
 Upgrading from 2.0.2
 	There's been some slight code modifications that will break
 	an upgrade from 2.0.2 to 2.0.3.
