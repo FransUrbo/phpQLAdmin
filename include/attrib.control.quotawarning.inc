@@ -2,14 +2,14 @@
 // control attribute plugin for
 // quotawarning (additional quota warning message)
 //
-// $Id: attrib.control.quotawarning.inc,v 2.14 2004-03-11 16:31:55 turbo Exp $
+// $Id: attrib.control.quotawarning.inc,v 2.15 2004-03-29 05:10:33 turbo Exp $
 
 // {{{ quotawarning_check(type)
 function quotawarning_check($type) {
 	global $error, $LANG;
 
 	// missing
-	if($_REQUEST["use"]_quotawarning == 1 and $_REQUEST["quotawarning"] == "") {
+	if($_REQUEST["use_quotawarning"] == 1 and $_REQUEST["quotawarning"] == "") {
 		$error["quotawarning"] = $LANG->_('Missing');
 		return false;
 	}
