@@ -11,7 +11,7 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	    function).
 	    Closes bug 57, 70
 	  - Wrongfull use of '$ACI_SUPPORT_ENABLED' (should have been
-	    '$GLOBALS["ACI_SUPPORT_ENABLED"]'.
+	    '$GLOBALS["ACI_SUPPORT_ENABLED"]').
 	  - Fix folding for non-opera. Closes bug 76
 	  - Create an array with the URL encoded values for user, rootdn and domain.
 	    This is used in every (?) place where there's a distinction between value
@@ -23,6 +23,34 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	  - Move the initialization of the java variable expandedDb from trailer to
 	    head.
 	    Closes bug 61
+	  - When looking in the domain branch if 'ou=DNS' exists, we should do this
+	    with the BRANCH dn, not the RESULTING (ou=DNS,BRANCH) dn!
+	  - If pql_set_domain_value() is called with an array, it does not nessesarily
+	    mean that the whole array contain the same attribute - there might be OTHER
+	    attributes in there (which in turn is arrays).
+	  - Only setup objectclasses in pql_set_domain_value() (i.e. retreive from object
+	    the old values) if we don't already HAVE objectclasses. We might have that
+	    if we're called with an array.
+	  - Catch more URL encoding of the root, branch and user DN before redirecting
+	    to domain info page. This was the cause (and still is - I've probably missed
+	    some places) of most of the errors and faulty views.
+	  - Make sure we IDNA encode (if IDNA is availible) any international domain names
+	    before adding it to locals/rcpthosts.
+	    + IDNA decode _all_ references to domain/host names where it's used as a
+	      DNS or email value etc.
+	  - Dissalow the '&' character(s) in paths to homedir/mailbox
+	  - Rewrite of the dnszonetemplate.php page to correctly create a _complete_
+	    zone file for specified domain. Contains ALL information that's in the
+	    LDAP server.
+	    Closes bug 131
+	  - Quota problems fixed. If we choose to use 'Standard' quota for a user, we need
+	    to get the default quota value from the QmailLDAP/Controls - take the first
+	    value we find. But this is only possible if QmailLDAP/Controls (using the
+	    'phpQLAdmin Configuration->Manage Controls DB' = Yes) so only show this option
+	    if manage controls db is enabled. Also simplify the input of quotas. Previosly
+	    (from before my time - I never bothered to change it) you have to tick in THREE
+	    (one radio-, and two checkboxes) in addition to the values. SIMPLIFY! Should
+	    now be more obvious.
 
 	GUI layout change
 	  - Variable lenght icons with better looking font.
@@ -43,8 +71,36 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	    that should be obvious if there's no users! :).
 	  - 'Add sub unit' link (just above the 'Add user' link). This link should be
 	    in the 'main tree branch' (ie, not within a sub unit tree branch).
+	  - If there's no MX pointer(s), then don't offer the DNS entry choice when
+	    adding user to database.
+	  - Implemented pql_bind9_del_zone() which will, recursivly, delete a DNS zone
+	    of choice (called with base DN where zone is and the zone name).
+	  - Update wording in delete domain question notice.
+	  - Allow for calling config_ldap.php with ONE specific LDAP config type and
+	    only show that, instead of showing everything in one page.
+	    + Slight restructuring and renaming of show config options.
+	      -> phpQLAdmin config and LDAP server config in separate branches.
+	    + Added separate showing of LDAP syntaxes, matching rules etc using the
+	     'new' config_ldap.php page.
+	  - Page to show LDAP connection and database status ala Sun ONE Directory
+	    Server statistics page using the 'cn=Monitor' backend. This backend is not
+	    complete in any way, but I show what's there...
+	  - Move the 'Create DNS template zone file' to DNSzone file instead of the DNSInfo.
+	  - If authentication failed (when logging in), include the user name value previosly
+	    entered when requesting re-authentication. If this happen, focus on the password
+	    field, not the username field.
+	  - When chaning a users login shell, try to default to the users current shell.
+	    If there is none, default to /bin/false as previosly.
+	  - Fix the add/change/delete administrator for branch. This was quite broken, and
+	    only worked occasionally. Now it seems to work every time, everywhere. There
+	    are two places where this can be done - in the 'User details->User access'
+	    page (where you give a user admin rights for specific branch(es), and in the 
+	    'Domain details->Default domain values' (where you give a specific user access
+	    to the current branch).
 
 	Misc changes	
+	  - Configurable lenght of characters/numbers that is autocreated (when auto-
+	    creating a username - uid).
 	  - With the resent definition international characters in the DNS system (and
 	    availibility of this in the .se zone), we need to correctly decode and encode
 	    domain- and hostnames (etc) with international characters. This is done with
@@ -68,6 +124,8 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	    session variables set with session_register()) and values sent from one page
 	    to the next in the URL needs to be referenced with $_SESSION and $_GET (or
 	    $_REQUEST) respectivly. Also, $PHP_SELF needs to be changed to $_SERVER["PHP_SELF"].
+	  - When error occures, try to catch the most common once (those most occuring
+	    on the mailinglist) and give a short description/remedy.
 
 	API changes
 	  - Rearrange functions and group them. Functions dealing with users in one
@@ -109,6 +167,10 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	  - pql_get_mx() now only takes one arg (the domainname to check). The
 	    QmailLDAP/Controls connection is done within this function instead
 	    of externaly (makes more sence - we might want to only check DNS).
+	  - API change: pql_user_exist() now takes THREE arguments (added was
+	    search base DN).
+	  - Added option (default=NULL) to pql_bind9_get_zone() to get info about
+	    a specific zone instead of getting ALL of them at once.
 
 phpQLAdmin 2.0.17 Release (Oct 30 2003)
 	Bug fixes
