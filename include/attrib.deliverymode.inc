@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliverymode (delivery preferences)
-// $Id: attrib.deliverymode.inc,v 2.26 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.deliverymode.inc,v 2.27 2004-11-05 12:39:38 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -71,7 +71,8 @@ function attribute_print_form($type = "modify") {
             <?=pql_format_error_span($error["deliverymode"])?>
             <input type="checkbox" name="nolocal"   <?php if($_REQUEST["nolocal"])   { echo "CHECKED"; } ?>><?=$LANG->_('Do not deliver to local mail box')?><br>
             <input type="checkbox" name="noforward" <?php if($_REQUEST["noforward"]) { echo "CHECKED"; } ?>><?=$LANG->_('Do not forward mail to other account/address')?><br>
-            <input type="checkbox" name="noprogram" <?php if($_REQUEST["noprogram"]) { echo "CHECKED"; } ?>><?=$LANG->_('No program deliveries')?>
+            <input type="radio" name="delivery_type" value="noprogram" <?php if($_REQUEST["noprogram"]) { echo "CHECKED"; } ?>><?=$LANG->_('No program deliveries')?><br>
+            <input type="radio" name="delivery_type" value="program"><input type="text" name="programpath">
           </td>
         </tr>
 
@@ -158,9 +159,11 @@ function attribute_save($type) {
 		  // no mail forwarding
 		  $entry[pql_get_define("PQL_ATTR_MODE")][] = "noforward";
 
-		if($_REQUEST["noprogram"])
+		if($_REQUEST["delivery_type"] == 'noprogram')
 		  // no program deliveries
 		  $entry[pql_get_define("PQL_ATTR_MODE")][] = "noprogram";
+		elseif(($_REQUEST["delivery_type"] == 'program') and $_REQUEST["programpath"])
+		  $entry[pql_get_define("PQL_ATTR_PROGRAM")] = $_REQUEST["programpath"];
 	} else {
 		switch($_REQUEST["deliverymode"]) {
 		  case "forward":
@@ -176,10 +179,10 @@ function attribute_save($type) {
 	if($_REQUEST["reply"] == "ok")
 	  $entry[pql_get_define("PQL_ATTR_MODE")][] = "reply";
 	
-	if (!empty($_REQUEST["mailreplytext"])) {
+	if(!empty($_REQUEST["mailreplytext"])) {
 		$tmp = preg_replace('/\\\/', "", $_REQUEST["mailreplytext"]);
 		$entry[pql_get_define("PQL_ATTR_REPLYTEXT")] = pql_maybe_encode($tmp, 'mailreplytext', $_pql->ldap_linkid);
-	} else
+	} elseif($type != "fulldomain")
 	  // Delete the old value from the database
 	  pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_REPLYTEXT"), '', '');
 
