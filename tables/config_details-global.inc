@@ -51,7 +51,7 @@
       </tr>
 <?php } ?>
 
-      <tr></tr>
+      <tr><td></td></tr>
 
 <?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
 <?php	$class=pql_format_table(0); ?>
@@ -142,7 +142,7 @@
       </tr>
 <?php if($show_kerberos_info) { ?>
 
-      <tr></tr>
+      <tr><td></td></tr>
 
       <!-- -------------------- -->
 <?php	$class=pql_format_table(0); ?>
