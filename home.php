@@ -1,6 +1,6 @@
 <?php
 // start page
-// $Id: home.php,v 2.35 2004-03-15 07:09:56 turbo Exp $
+// $Id: home.php,v 2.36 2004-05-06 05:34:09 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -13,18 +13,18 @@ if(isset($msg)){
 }
 
 // reload navigation bar if needed
-if(isset($rlnb) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
+if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
 ?>
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
   <script language="JavaScript1.2"><!--
 	// reload navigation frame
 <?php
   // Reload different nav frame depending on value of $rlnb
-  if($rlnb == 2) {
+  if($_REQUEST["rlnb"] == 2) {
 ?>
 	parent.frames.pqlnavctrl.location.reload();
 <?php
-  } elseif($rlnb == 3) {
+  } elseif($_REQUEST["rlnb"] == 3) {
 ?>
 	parent.frames.pqlnavezmlm.location.reload();
 <?php
