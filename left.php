@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.69 2004-01-22 10:23:29 turbo Exp $
+// $Id: left.php,v 2.70 2004-01-26 05:27:52 turbo Exp $
 //
 session_start();
 
@@ -83,10 +83,14 @@ if($ADVANCED_MODE) {
 	$links = array($LANG->_('LDAP Syntaxes')		=> 'config_ldap.php?type=ldapsyntaxes',
 		       $LANG->_('LDAP Matching rules')		=> 'config_ldap.php?type=matchingrules',
 		       $LANG->_('LDAP Attribute types')		=> 'config_ldap.php?type=attributetypes',
-		       $LANG->_('LDAP Object classes')		=> 'config_ldap.php?type=objectclasses',
-		       0					=> 0,
-		       $LANG->_('LDAP Connection status')	=> 'status_ldap.php?type=connections',
-		       $LANG->_('LDAP Database status')		=> 'status_ldap.php?type=databases');
+		       $LANG->_('LDAP Object classes')		=> 'config_ldap.php?type=objectclasses');
+	if($MONITOR_BACKEND_ENABLED and $ALLOW_GLOBAL_CONFIG_SAVE) {
+	    $new = array(0					=> 0,
+			 $LANG->_('LDAP Server Status')		=> 'status_ldap.php?type=basics',
+			 $LANG->_('LDAP Connection Status')	=> 'status_ldap.php?type=connections',
+			 $LANG->_('LDAP Database Status')	=> 'status_ldap.php?type=databases');
+	    $links = $links + $new;
+	}
 	pql_format_tree($LANG->_('LDAP Server Configuration'), 0, $links, 1);
     }
 
