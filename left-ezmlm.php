@@ -1,6 +1,6 @@
 <?php
 // navigation bar - ezmlm mailinglists manager
-// $Id: left-ezmlm.php,v 2.9 2003-01-02 12:33:55 turbo Exp $
+// $Id: left-ezmlm.php,v 2.10 2003-01-14 06:55:07 turbo Exp $
 //
 session_start();
 
@@ -26,8 +26,9 @@ require("./left-head.html");
 $_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS, false, 0);
 
 // Get ALL domains we have access to.
-// 'description: administrator=USER_DN' in the domain object
-$domains = pql_get_domain_value($_pql->ldap_linkid, '*', 'administrator', "=" . $USER_DN);
+//	administrator: USER_DN
+// in the domain object
+$domains = pql_get_domain_value($_pql->ldap_linkid, '*', 'administrator', $USER_DN);
 if(!is_array($domains)) {
     // no domain defined - report it
 ?>
@@ -39,6 +40,7 @@ if(!is_array($domains)) {
   <!-- end domain parent -->
 
 <?php
+	die(); // No point in continuing from here!
 } else {
 	asort($domains);
 	foreach($domains as $key => $domain) {
@@ -51,43 +53,56 @@ if(!is_array($domains)) {
 
 		// Get (and remember) lists in this directory
 		if($ezmlm = new ezmlm('alias', $basemaildir)) {
-			$lists[$domain] = $ezmlm->mailing_lists;
+			if($ezmlm->mailing_lists[0]["name"]) {
+				$lists[$domain] = $ezmlm->mailing_lists;
+			}
 		}			
 	}
 
-	foreach($lists as $dom => $entry) {
-		$index = array();
+	if(!is_array($lists)) {
+		// no mailinglists defined - report it
+?>
+  <!-- start domain parent -->
+  <div id="el0000Parent" class="parent">
+    <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el0000Img">
+    <font color="black" class="heada">no lists</font></a>
+  </div>
+  <!-- end domain parent -->
+<?php
+	} else {
+		foreach($lists as $dom => $entry) {
+			$index = array();
 
-		foreach($entry as $listnumber => $listarray) {
-			$listname = $lists[$dom][$listnumber]["name"];
-			$listhost = $lists[$dom][$listnumber]["host"];
-
-			// Remember the listname, so we can sort below.
-			$index[]  = $listname;
-
-			foreach($listarray as $key => $value) {
-				$mailinglists[$listnumber][$key]= $value;
-				$mailinglists_index[$listname]	= $listnumber;
+			foreach($entry as $listnumber => $listarray) {
+				$listname = $lists[$dom][$listnumber]["name"];
+				$listhost = $lists[$dom][$listnumber]["host"];
+				
+				// Remember the listname, so we can sort below.
+				$index[]  = $listname;
+				
+				foreach($listarray as $key => $value) {
+					$mailinglists[$listnumber][$key]= $value;
+					$mailinglists_index[$listname]	= $listnumber;
+				}
+				
+				$listnumber++;
 			}
-
-			$listnumber++;
-		}
-
-		// Sort the domainname lists alphabetically.
-		asort($index);
-		foreach($index as $number => $name) {
-			$mailinglists_hostsindex[$listhost][$dom][$name] = $number;
-		}
-	}
-	
-	$j = 2;
-
-	if($mailinglists_hostsindex) {
-		// Sorted by domainname
-		foreach($mailinglists_hostsindex as $host => $listnames) {
-			foreach($listnames as $domain => $listarray) {
-				;
+			
+			// Sort the domainname lists alphabetically.
+			asort($index);
+			foreach($index as $number => $name) {
+				$mailinglists_hostsindex[$listhost][$dom][$name] = $number;
 			}
+		}
+		
+		$j = 2;
+
+		if($mailinglists_hostsindex) {
+			// Sorted by domainname
+			foreach($mailinglists_hostsindex as $host => $listnames) {
+				foreach($listnames as $domain => $listarray) {
+					;
+				}
 ?>
   <!-- start ezmlm mailing list domain -->
   <div id="el<?=$j?>Parent" class="parent">
@@ -110,8 +125,8 @@ if(!is_array($domains)) {
     <br>
 
 <?php
-			// List names
-			foreach($listarray as $name => $no) {
+				// List names
+				foreach($listarray as $name => $no) {
 ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
       <a href="ezmlm_detail.php?domain=<?=$domain?>&domainname=<?=$host?>&listno=<?=$no?>"><img src="images/navarrow.png" width="9" height="9" border="0"></a>&nbsp;
@@ -120,14 +135,15 @@ if(!is_array($domains)) {
 
     <br>
 <?php			
-			}
+				}
 ?>
   </div>
   <!-- end ezmlm mailing list children -->
 <?php
-			$j++;
+				$j++;
+			}
 		}
-	} // TODO: else - no mailinglists. Error message?
+	} 
 }
 require("./left-trailer.html");
 
