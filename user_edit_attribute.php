@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of user
-// $Id: user_edit_attribute.php,v 2.40 2004-05-07 04:41:21 turbo Exp $
+// $Id: user_edit_attribute.php,v 2.41 2004-05-07 07:39:46 turbo Exp $
 //
 // This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
 //   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -90,7 +90,8 @@ if(($_REQUEST["submit"] == 1) or ($_REQUEST["submit"] == 2)) {
 	attribute_save($action);
 } else {
     if(($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_GROUP_CONFIRM")) or
-       ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_GROUP_MEMBERS_ONLY"))) {
+       ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_GROUP_MEMBERS_ONLY")) or
+       ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_START_ADVANCED"))) {
 	// It's one of those user toggles - go save!
 	attribute_save($action);
     } else {

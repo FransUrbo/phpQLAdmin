@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.179 2004-05-06 15:33:33 turbo Exp $
+// $Id: pql.inc,v 2.180 2004-05-07 07:40:14 turbo Exp $
 //
 
 // ----------------------------
@@ -995,7 +995,13 @@ function pql_domain_set_value($linkid, $dn, $type, $value) {
 				// Object class violation - try to add the missing objectclass
 				$old_ocs = $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")];
 
-				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_missing_objectclasses($linkid, $dn, $entry);
+				// Get existing objectclasses in the object
+				$existing = pql_setup_branch_objectclasses(0, $dn, $linkid);
+
+				// Get objectclassess to add
+				$new = pql_missing_objectclasses($linkid, $dn, $entry);
+
+				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = $existing + $new;
 				if(empty($entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][0])) {
 					global $LANG;
 					echo "pql_domain_set_value() - ".$LANG->_('Could not figure out what objectclasses to add')."<br>";
@@ -1265,7 +1271,8 @@ function pql_modify_userattribute($ldap_linkid, $user, $attrib, $oldvalue, $newv
 // Replaces an attribute in a object (only use for single-field attributes)
 // Delete an attribute(s) if value is an empty string
 function pql_replace_attribute($ldap_linkid, $objectdn, $attrib, $value) {
-	$attrib = lc($attrib);
+	if($attrib)
+	  $attrib = lc($attrib);
 
     if(!$value)
 	  // Delete all attributes of this type, regardless of value
@@ -1295,13 +1302,29 @@ function pql_replace_attribute($ldap_linkid, $objectdn, $attrib, $value) {
 			}
 	    } else {
 			if(ldap_errno($ldap_linkid) == 65) {
-				// Object class violation - try to add the missing objectclass
-				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_missing_objectclasses($linkid, $objectdn, $entry);
+				// Object class violation - try to add (the) missing objectclass(es)
+
+				// Get the current object classes in this object
+				$old = pql_get_attribute($ldap_linkid, $objectdn, pql_get_define("PQL_ATTR_OBJECTCLASS"));
+
+				// Try to find which object classes to ADD.
+				$new = pql_missing_objectclasses($ldap_linkid, $objectdn, $entry);
+
+				// Combine the old with the new.
+				$ocs = $old;
+				for($i=0; $new[$i]; $i++)
+				  $ocs[] = $new[$i];
+
+				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = $ocs;
+
+				// Recursion... Hopfully there's a limit on how many (max_execution_time in php.ini)!
+				pql_replace_attribute($ldap_linkid, $objectdn, '', $entry);
+			} else {
+				// Other error...
+				pql_format_error(1);
+				return false;
 			}
 		}
-	    
-	    pql_format_error(1);
-	    return false;
 	}
 	
 	// user entry has changed -> remove the cached version
@@ -2188,13 +2211,10 @@ function pql_check_attribute($ldap_ocs, $incl_ocs, $attrib) {
 
 // {{{ pql_missing_objectclasses(linkid, dn, entry)
 function pql_missing_objectclasses($linkid, $dn, $entry) {
-	// Get existing objectclasses in the object
-	$existing = pql_setup_branch_objectclasses(0, $dn, $ldap_linkid);
-	
 	// Get objectclasses from the LDAP server, finding the objectclass
 	// that MUST (or if non is found, a MAY) have the attribute we're
 	// trying to modify.
-	$objectclasses = pql_get_subschema($linkid, pql_get_define("PQL_ATTR_OBJECTCLASS"));
+	$objectclasses = pql_get_subschema($linkid, 'objectclasses');
 	if(is_array($objectclasses)) {
 		foreach($entry as $attrib => $val) {
 			// For each of the attributes (exept the objectclass one)

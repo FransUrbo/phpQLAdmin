@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.75 2004-05-06 20:34:07 turbo Exp $
+// $Id: user_detail.php,v 2.76 2004-05-07 07:39:46 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -88,7 +88,8 @@ $attribs = array("cn"					=> pql_get_define("PQL_ATTR_CN"),
 				 "secretary"			=> pql_get_define("PQL_ATTR_SECRETARY"),
 				 "personaltitle"		=> pql_get_define("PQL_ATTR_PERSONALTITLE"),
 				 "mobile"				=> pql_get_define("PQL_ATTR_MOBILE"),
-				 "pager"				=> pql_get_define("PQL_ATTR_PAGER"));
+				 "pager"				=> pql_get_define("PQL_ATTR_PAGER"),
+				 "startwithadvancedmode"=> pql_get_define("PQL_ATTR_START_ADVANCED"));
 foreach($attribs as $key => $attrib) {
     $value = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], $attrib);
     $$key = $value[0];
@@ -96,6 +97,10 @@ foreach($attribs as $key => $attrib) {
 
     // Setup edit links
     $link = $key . "_link";
+
+	if($key == 'startwithadvancedmode')
+	  // It's a toggle. Convert the boolean value to an integer
+	  $$key = pql_format_bool($value);
 
 	$alt = pql_complete_constant($LANG->_('Modify %attribute% for %what%'), array('attribute' => $attrib, 'what' => $username));
     $$link = "<a href=\"user_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&attrib=$attrib&user=".$url["user"]."&$attrib=$value&view=" . $_GET["view"] . "\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt."\"></a>";

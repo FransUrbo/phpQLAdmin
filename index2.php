@@ -1,8 +1,12 @@
 <?php
-// $Id: index2.php,v 2.31 2004-03-21 14:34:53 turbo Exp $
+// $Id: index2.php,v 2.32 2004-05-07 07:39:45 turbo Exp $
 
 session_start();
 require("./include/pql_config.inc");
+
+if(pql_get_define("PQL_CONF_START_ADVANCED", $_SESSION["USER_DN"])) {
+    $_REQUEST["advanced"] = $_SESSION["ADVANCED_MODE"] = 1;
+}
 
 $frames = 2; // Default 2 frames - left and main
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);

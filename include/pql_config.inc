@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.64 2004-05-04 07:59:14 turbo Exp $
+// $Id: pql_config.inc,v 1.65 2004-05-07 07:40:14 turbo Exp $
 //
 
 // include the API files
@@ -49,6 +49,7 @@ function pql_set_define($define, $value, $case_insensitive = false, $dn = NULL) 
 // }}}
 
 // {{{ pql_get_define(define, dn)
+
 function pql_get_define($define, $dn = NULL) {
 	global $config;
 
@@ -65,6 +66,7 @@ function pql_get_define($define, $dn = NULL) {
 
 	return($value);
 }
+
 // }}}
 
 // ----------------------------
@@ -111,23 +113,25 @@ foreach($_pql->ldap_basedn as $dn)  {
 	// If we got something, retreive the attributes
 	for ($i=0; $i<$info["count"]; $i++) {
 		foreach($PQL_ATTRIBUTE as $level => $array) {
-			foreach($array as $key => $pql_config_private_variable_which_irritates_me) {
-				$pql_config_private_variable_which_irritates_me = strtolower($pql_config_private_variable_which_irritates_me);
-				$pql_config_private_array_which_irritates_me = NULL;
-				
-				for($k=0; isset($info[$i][$pql_config_private_variable_which_irritates_me][$k]); $k++) {
-					if($pql_config_private_array_which_irritates_me)
-					  $pql_config_private_array_which_irritates_me .= ",".$info[$i][$pql_config_private_variable_which_irritates_me][$k];
+			if($level != 'USER') {
+				foreach($array as $key => $pql_config_private_variable_which_irritates_me) {
+					$pql_config_private_variable_which_irritates_me = strtolower($pql_config_private_variable_which_irritates_me);
+					$pql_config_private_array_which_irritates_me = NULL;
+					
+					for($k=0; isset($info[$i][$pql_config_private_variable_which_irritates_me][$k]); $k++) {
+						if($pql_config_private_array_which_irritates_me)
+						  $pql_config_private_array_which_irritates_me .= ",".$info[$i][$pql_config_private_variable_which_irritates_me][$k];
+						else
+						  $pql_config_private_array_which_irritates_me = $info[$i][$pql_config_private_variable_which_irritates_me][$k];
+					}
+					
+					if($level == 'GLOBAL')
+					  pql_set_define($key, $pql_config_private_array_which_irritates_me, true);
 					else
-					  $pql_config_private_array_which_irritates_me = $info[$i][$pql_config_private_variable_which_irritates_me][$k];
+					  pql_set_define($key, $pql_config_private_array_which_irritates_me, true, $dn);
+					
+					unset($pql_config_private_array_which_irritates_me);
 				}
-				
-				if($level == 'GLOBAL')
-				  pql_set_define($key, $pql_config_private_array_which_irritates_me, true);
-				else
-				  pql_set_define($key, $pql_config_private_array_which_irritates_me, true, $dn);
-				
-				unset($pql_config_private_array_which_irritates_me);
 			}
 		}
 	}
@@ -146,14 +150,20 @@ foreach($_pql->ldap_basedn as $dn)  {
 	}
 }
 
-// 5. Get language translation
+// 5. Get user configuration for phpQLAdmin
+$user_object = pql_get_object($_pql->ldap_linkid, $_SESSION["USER_DN"]);
+foreach($PQL_ATTRIBUTE["USER"] as $key => $attrib) {
+	pql_set_define($key, $user_object[$attrib][0], true, $_SESSION["USER_DN"]);
+}
+
+// 6. Get language translation
 require("./include/pql_lang.inc");
 $LANG = new pql_lang($_pql);
 
-// 6. Include the plugin API
+// 7. Include the plugin API
 require("./include/pql_plugins.inc");
 
-// 7. Verify that the user have access to write the global phpQLAdmin config
+// 8. Verify that the user have access to write the global phpQLAdmin config
 //    in the first base DN
 $_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"] = pql_validate_administrator($_pql->ldap_linkid, $_pql->ldap_basedn[0], $_SESSION["USER_DN"]);
 

@@ -140,14 +140,12 @@
         <td><?=$LANG->_('Yes')?></td>
         <td>
           <a href="domain_edit_attributes.php?attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR")?>&rootdn=<?=$url["rootdn"]?>&user=<?=$url["user"]?>&submit=4&action=delete&view=<?=$_GET["view"]?>">
-            <img src="images/del.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Disallow user to create domains below %domain%'), array('domain', $_GET["rootdn"])); ?>">
-          </a>
+            <img src="images/del.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Disallow user to create domains below %domain%'), array('domain', $_GET["rootdn"])); ?>"></a>
         </td>
 <?php   } else { ?>
         <td><?=$LANG->_('No')?></td>
         <td>
-          <a href="domain_edit_attributes.php?attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR")?>&rootdn=<?=$url["rootdn"]?>&user=<?=$url["user"]?>&submit=4&action=add&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Allow user to create domains below %domain%'), array('domain', $_GET["rootdn"])); ?>">
-          </a>
+          <a href="domain_edit_attributes.php?attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR")?>&rootdn=<?=$url["rootdn"]?>&user=<?=$url["user"]?>&submit=4&action=add&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Allow user to create domains below %domain%'), array('domain', $_GET["rootdn"])); ?>"></a>
         </td>
 <?php   } ?>
       </tr>
@@ -165,14 +163,31 @@
 <?php       if($controlsadministrator) { ?>
         <td><?=$LANG->_('Yes')?></td>
         <td>
-          <a href="config_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")?>&delval=<?=$url["user"]?>&submit=2&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Disallow user to administrate Controls information')?>">
-          </a>
+          <a href="config_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")?>&delval=<?=$url["user"]?>&submit=2&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Disallow user to administrate Controls information')?>"></a>
         </td>
 <?php       } else { ?>
         <td><?=$LANG->_('No')?></td>
         <td>
-          <a href="config_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")?>&<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")?>=<?=$url["user"]?>&submit=2&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Allow user to administrate Controls information')?>">
-          </a>
+          <a href="config_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")?>&<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")?>=<?=$url["user"]?>&submit=2&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Allow user to administrate Controls information')?>"></a>
+        </td>
+<?php      } ?>
+      </tr>
+
+<?php
+	// ---------------------------------------
+	// When user do a login, should the advanced mode be loaded?
+?>
+      <tr class="<?=$class?>">
+        <td class="title"><?=$LANG->_('Start in advanced mode')?></td>
+<?php       if($startwithadvancedmode) { ?>
+        <td><?=$LANG->_('Yes')?></td>
+        <td>
+          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=pql_get_define("PQL_ATTR_START_ADVANCED")?>&oldvalue=1&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Do not start in advanced mode')?>"></a>
+        </td>
+<?php       } else { ?>
+        <td><?=$LANG->_('No')?></td>
+        <td>
+          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=pql_get_define("PQL_ATTR_START_ADVANCED")?>&oldvalue=0&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Make sure we start in advanced mode')?>"></a>
         </td>
 <?php      } ?>
       </tr>

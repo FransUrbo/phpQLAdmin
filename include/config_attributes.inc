@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.18 2004-05-06 14:29:58 turbo Exp $
+// $Id: config_attributes.inc,v 2.19 2004-05-07 07:40:14 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -329,6 +329,14 @@ $PQL_ATTRIBUTE["BRANCH"] = array("PQL_CONF_SHOW_USERS"					=> pql_get_define("PQ
 								 "PQL_CONF_SUBTREE_USERS"				=> pql_get_define("PQL_ATTR_SUBTREE_USERS"),
 								 "PQL_CONF_SUBTREE_GROUPS"				=> pql_get_define("PQL_ATTR_SUBTREE_GROUPS"),
 								 "PQL_CONF_VAT_NUMBER"					=> pql_get_define("PQL_ATTR_VAT_NUMBER"));
+// }}}
+
+// {{{ These are the internal phpQLAdmin attributes - USER configuration
+// Toggles
+pql_set_define("PQL_ATTR_START_ADVANCED",					strtolower("startWithAdvancedMode"),		false);
+
+// Map attribute to configuration define
+$PQL_ATTRIBUTE["USER"] = array("PQL_CONF_START_ADVANCED"				=> pql_get_define("PQL_ATTR_START_ADVANCED"));
 // }}}
 
 pql_set_define("PQL_ATTR_USER_RDN_ATTRIBUTE",	strtolower(pql_get_define("PQL_ATTR_REFERENCE_USERS_WITH")),	false);
