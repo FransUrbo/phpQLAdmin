@@ -5,22 +5,46 @@
 #                       phpQLAdmin Elements             	3
 #
 #                       Objectclasses                   	1
-#                               phpQLAdminConfig        	1
-#				phpQLAdminBranch		2
+#                               phpQLAdminConfig        	 1
+#				phpQLAdminBranch		 2
 #
 #                       Attributes                      	2
-#                               Toggles                 	1
-#                                       showUsers       	1
-#                               System texts            	2
-#                               Texts                   	3
-#				Value				4
-#					defaultDomain		1
-#					baseHomeDir		2
-#					baseMailDir		3
-#					administrator		4
+#                               Toggles                 	 1
+#                                       showUsers       	   1
+#					useControls		   2
+#					useEzmlm		   3
+#					autoReload		   4
+#					autoSend		   5
+#					autoAddLocals		   6
+#					allowServerChange	   7
+#					allowAbsoluteMailPath	   8
+#					deleteVerification	   9
+#
+#                               System texts            	 2
+#					whoAreWe		   1
+#					subTreeUsers		   2
+#					subTreeGroups		   3
+#					branchObjectClass	   4
+#					userObjectClass		   5
+#					userReference		   6
+#					ezmlmBinaryPath		   7
+#					passWordScheme		   8
+#					catchAllUser		   9
+#					userAttribute		  10
+#
+#                               Texts                   	 3
+#					hostMaster		   1
+#					testMailSubject		   2
+#					testMailText		   3
+#
+#				Value				 4
+#					defaultDomain		   1
+#					baseHomeDir		   2
+#					baseMailDir		   3
+#					administrator		   4
 # -----------------------------------------
 
-# $Id: phpQLAdmin.schema,v 2.2 2003-01-15 06:09:19 turbo Exp $
+# $Id: phpQLAdmin.schema,v 2.3 2003-01-18 11:16:48 turbo Exp $
 
 # PQL_SHOW_USERS (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.1 NAME 'showUsers'
@@ -94,61 +118,64 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.2.1 NAME 'whoAreWe'
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
 	SINGLE-VALUE )
 
-# PQL_LDAP_HOST (FQDN|IP)
-attributetype ( 1.3.6.1.4.1.8767.3.2.2.2 NAME 'ldapHost'
-	DESC 'LDAP servers'
-	EQUALITY caseIgnoreIA5Match
-	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
-
 # PQL_LDAP_SUBTREE_USERS
-attributetype ( 1.3.6.1.4.1.8767.3.2.2.3 NAME 'subTreeUsers'
+attributetype ( 1.3.6.1.4.1.8767.3.2.2.2 NAME 'subTreeUsers'
 	DESC 'Subtree value - Users'
 	EQUALITY caseIgnoreIA5Match
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
 	SINGLE-VALUE )
 
 # PQL_LDAP_SUBTREE_GROUPS
-attributetype ( 1.3.6.1.4.1.8767.3.2.2.4 NAME 'subTreeGroups'
+attributetype ( 1.3.6.1.4.1.8767.3.2.2.3 NAME 'subTreeGroups'
 	DESC 'Subtree value - Groups'
 	EQUALITY caseIgnoreIA5Match
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
 	SINGLE-VALUE )
 
 # PQL_LDAP_OBJECTCLASS_DOMAIN (LDAP object classes)
-attributetype ( 1.3.6.1.4.1.8767.3.2.2.5 NAME 'branchObjectClass'
+attributetype ( 1.3.6.1.4.1.8767.3.2.2.4 NAME 'branchObjectClass'
 	DESC 'Domain/Branch object classes'
 	EQUALITY caseIgnoreIA5Match
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
 
 # PQL_LDAP_OBJECTCLASS_* (LDAP object classes)
-attributetype ( 1.3.6.1.4.1.8767.3.2.2.6 NAME 'userObjectClass'
+attributetype ( 1.3.6.1.4.1.8767.3.2.2.5 NAME 'userObjectClass'
 	DESC 'User object classes'
 	EQUALITY caseIgnoreIA5Match
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
 
 # PQL_LDAP_REFERENCE_USERS_WITH (LDAP attribute name)
-attributetype ( 1.3.6.1.4.1.8767.3.2.2.7 NAME 'userReference'
+attributetype ( 1.3.6.1.4.1.8767.3.2.2.6 NAME 'userReference'
 	DESC 'Defines which attribute phpQLAdmin passes to various functions when it needs to reference users'
 	EQUALITY caseIgnoreIA5Match
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
 	SINGLE-VALUE )
 
 # PQL_LDAP_EZMLM_PATH
-attributetype ( 1.3.6.1.4.1.8767.3.2.2.8 NAME 'ezmlmBinaryPath'
+attributetype ( 1.3.6.1.4.1.8767.3.2.2.7 NAME 'ezmlmBinaryPath'
 	DESC 'Path to ezmlm-* binaries'
 	EQUALITY caseExactMatch
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26
 	SINGLE-VALUE )
 
 # PQL_PASSWORD_SCHEMES
-attributetype ( 1.3.6.1.4.1.8767.3.2.2.9 NAME 'passWordScheme'
+attributetype ( 1.3.6.1.4.1.8767.3.2.2.8 NAME 'passWordScheme'
 	DESC 'Password scheme to allow'
 	EQUALITY caseExactMatch
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26)
 
-# TODO: PQL_LDAP_ATTR_* (LDAP attribute names)
-# TODO: PQL_LDAP_USER_RDN_ATTRIBUTE
-# TODO: PQL_CATCHALLUSER
+# PQL_CATCHALLUSER
+attributetype ( 1.3.6.1.4.1.8767.3.2.2.9 NAME 'catchAllUser'
+	DESC 'Name of the catchall user'
+	EQUALITY caseExactMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26
+	SINGLE-VALUE )
+
+# PQL_LDAP_ATTR_*
+attributetype ( 1.3.6.1.4.1.8767.3.2.2.10 NAME 'userAttribute'
+        DESC ''
+        EQUALITY caseIgnoreIA5Match
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024} )
 
 # -----------------------------------------
 
@@ -202,16 +229,17 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.4.4 NAME 'administrator'
 # -----------------------------------------
 
 objectclass ( 1.3.6.1.4.1.8767.3.1.1
-	NAME 'phpQLAdmin'
+	NAME 'phpQLAdminConfig'
 	DESC 'phpQLAdmin configuration values'
 	MAY (	showUsers $ autoReload $ autoSend $
 		useControls $ autoAddLocals $ useEzmlm $
 		allowServerChange $ allowAbsoluteMailPath $
-		deleteVerification $ whoAreWe $ ldapHost $
-		subTreeUsers $ subTreeGroups $ branchObjectClass $
-		userObjectClass $ userReference $ ezmlmBinaryPath $
-		passwordScheme $ hostMaster $ testMailSubject $
-		testMailText) )
+		deleteVerification $ whoAreWe $
+		subTreeUsers $ subTreeGroups $
+		branchObjectClass $ userObjectClass $
+		userReference $ ezmlmBinaryPath $
+		passwordScheme $ hostMaster $
+		testMailSubject $ testMailText) )
 
 objectclass ( 1.3.6.1.4.1.8767.3.1.2
         NAME 'phpQLAdminBranch'
