@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.157 2004-03-11 18:13:41 turbo Exp $
+// $Id: pql.inc,v 2.158 2004-03-12 16:39:14 turbo Exp $
 //
 
 // ----------------------------
@@ -718,11 +718,11 @@ function pql_domain_get_value($ldap, $dn, $value, $match = '', $all = 0) {
 	// Go through the result, if there is any
 	for($i=0; $i < $result["count"]; $i++) {
 		// Extract all the descriptor fields
-		if(($value == pql_get_define("PQL_CONF_ADMINISTRATOR")) or
-		   ($value == pql_get_define("PQL_CONF_SEEALSO")) or
-		   ($value == pql_get_define("PQL_CONF_ADDITIONAL_DOMAINNAME")) or
-		   ($value == pql_get_define("PQL_CONF_ADMINISTRATOR_EZMLM")) or
-		   ($value == pql_get_define("PQL_CONF_ADMINISTRATOR_CONTROLS")))
+		if(($value == pql_get_define("PQL_ATTR_ADMINISTRATOR")) or
+		   ($value == pql_get_define("PQL_ATTR_SEEALSO")) or
+		   ($value == pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME")) or
+		   ($value == pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM")) or
+		   ($value == pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")))
 		  {
 			if($match != "*") {
 				// Return multiple values. If we're looking for 'administrator', return the DN
@@ -761,17 +761,17 @@ function pql_domain_get_value($ldap, $dn, $value, $match = '', $all = 0) {
 		}
 	} // end for($i)
 
-	if(!$success and (($value != pql_get_define("PQL_CONF_ADMINISTRATOR")) and
-					  ($value != pql_get_define("PQL_CONF_SEEALSO")) and
-					  ($value != pql_get_define("PQL_CONF_ADMINISTRATOR_EZMLM")) or
-					  ($value == pql_get_define("PQL_CONF_ADDITIONAL_DOMAINNAME"))))
+	if(!$success and (($value != pql_get_define("PQL_ATTR_ADMINISTRATOR")) and
+					  ($value != pql_get_define("PQL_ATTR_SEEALSO")) and
+					  ($value != pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM")) or
+					  ($value == pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"))))
 	  return;
 
-	if($success and (($value == pql_get_define("PQL_CONF_ADMINISTRATOR")) or
-					 ($value == pql_get_define("PQL_CONF_SEEALSO")) or
-					 ($value == pql_get_define("PQL_CONF_ADDITIONAL_DOMAINNAME")) or
-					 ($value == pql_get_define("PQL_CONF_ADMINISTRATOR_EZMLM")) or
-					 ($value == pql_get_define("PQL_CONF_ADMINISTRATOR_CONTROLS")))
+	if($success and (($value == pql_get_define("PQL_ATTR_ADMINISTRATOR")) or
+					 ($value == pql_get_define("PQL_ATTR_SEEALSO")) or
+					 ($value == pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME")) or
+					 ($value == pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM")) or
+					 ($value == pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")))
 	   and !is_array($results))
 	  {
 		  // Convert a flat variable to a array
