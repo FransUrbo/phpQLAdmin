@@ -22,6 +22,9 @@ phpQLAdmin 2.0.17 TO BE ANNOUNCED
 	    Closes bug 52.
 	  - Fix user_add.php form errors (checks in wrong places).
 	    Closes bug 65
+	  - Make sure (!) that any '{crypt}' passwords really contain DES encrypted
+	    passwords by using a salt to crypt().
+	    Closes bug 66
 
 	GUI layout change
 	  - Say 'LDAP Server' instead of 'Host' in the left frame - more descriptive.

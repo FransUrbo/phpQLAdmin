@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.113 2003-10-11 11:53:00 turbo Exp $
+// $Id: pql.inc,v 2.114 2003-10-23 13:32:03 turbo Exp $
 //
 
 // ----------------------------
@@ -1146,7 +1146,11 @@ function pql_password_hash($password, $hash) {
 		return $hash . $password;
 
       default:
-		return "{crypt}" . crypt($password);
+		$salt_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./"; 
+		$max_idx = strlen($salt_chars) - 1; 
+		$salt = $salt_chars[rand(0, $max_idx)] . $salt_chars[rand(0, $max_idx)]; 
+
+		return "{crypt}" . crypt($password, $salt);
     }
 }
 
