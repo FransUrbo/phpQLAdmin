@@ -271,9 +271,9 @@ if(is_array($users)){
 <?php
 	asort($users);
 	foreach($users as $user){
-		$uid   = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_UID); $uid = $uid[0];
-		$cn    = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_CN); $cn = $cn[0];
-		$uidnr = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_QMAILUID); $uidnr = $uidnr[0];
+		$uid   = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_LDAP_ATTR_UID"][$rootdn]); $uid = $uid[0];
+		$cn    = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_LDAP_ATTR_CN"][$rootdn]); $cn = $cn[0];
+		$uidnr = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_LDAP_ATTR_QMAILUID"][$rootdn]); $uidnr = $uidnr[0];
 		
 		$status = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_ISACTIVE);
 		$status = pql_ldap_accountstatus($status[0]);
