@@ -1,6 +1,6 @@
 phpQLAdmin 2.2 Change Log
 
-phpQLAdmin 2.2.1 TO BE ANNOUNCED
+phpQLAdmin 2.2.1 Release (Mar 17 2005)
 	Bug fixes
 	  - If we can't find the givenName, surName, commonName nor the gecos
 	    in the user object we have one last chance - the 'user reference'
