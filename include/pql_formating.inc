@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.19 2004-03-14 13:30:20 turbo Exp $
+// $Id: pql_formating.inc,v 2.20 2004-03-19 10:13:14 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -93,7 +93,7 @@ function pql_format_error($output) {
 
 // {{{ pql_format_error_span(msg)
 function pql_format_error_span($msg) {
-    return "<span class=\"error\">" . $msg . "</span>";
+    return "<span class=\"error\">" . $msg . "</span>\n";
 }
 // }}}
 
