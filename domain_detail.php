@@ -91,15 +91,13 @@ $additionaldomainname = pql_get_domain_value($_pql, $domain, "additionaldomainna
 </table>
 
 <?php
-if($view == '')
-	$view = 'default';
+if(!$view)
+  $view = 'default';
 
 if($ADVANCED_MODE and ($view == 'default')) {
 	include("./tables/domain_details-default.inc");
-} else {
-	// Fallback if we're not running in advanced mode
-	$view = 'owner';
 }
+
 if($view == 'owner') {
 	include("./tables/domain_details-owner.inc");
 }
