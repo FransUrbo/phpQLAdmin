@@ -1,14 +1,18 @@
-<?php /* $Id: user_add-details.inc,v 1.29.2.1 2005-02-12 05:19:17 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.29.2.2 2005-02-13 12:27:00 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
-<?php if(pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], 'uid')) {
+<?php if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], 'uid')) {
 		if((!pql_get_define("PQL_CONF_AUTOCREATE_USERNAME", $_REQUEST["rootdn"]) and $_SESSION["ADVANCED_MODE"]) or !$_REQUEST["uid"]) {
 ?>
         <!-- Username (UID) -->
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Username')?></td>
-          <td><?php echo pql_format_error_span($error_text["uid"]); ?><input type="text" name="uid" value="<?=$_REQUEST["uid"]?>"></td>
+          <td>
+            <?=pql_format_error_span($error_text["uid"]); ?>
+            <?=pql_templates_mark_importance($mark); ?>
+            <input type="text" name="uid" value="<?=$_REQUEST["uid"]?>">
+          </td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
@@ -26,32 +30,34 @@
 <?php	}
 	  }
 
-	  if(pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], 'sn')) {
+	  if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], 'sn')) {
 ?>
         <!-- Firstname -->
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Surname')?></td>
           <td>
-              <?php echo pql_format_error_span($error_text["surname"]); ?>
-              <input type="text" name="surname" value="<?=$_REQUEST["surname"]?>">
+            <?=pql_format_error_span($error_text["surname"]); ?>
+            <?=pql_templates_mark_importance($mark); ?>
+            <input type="text" name="surname" value="<?=$_REQUEST["surname"]?>">
           </td>
         </tr>
 <?php }
 
-	  if(pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], 'cn')) {
+	  if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], 'cn')) {
 ?>
 
         <!-- Lastname -->
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Lastname')?></td>
           <td>
-            <?php echo pql_format_error_span($error_text["name"]); ?>
+            <?=pql_format_error_span($error_text["name"]); ?>
+            <?=pql_templates_mark_importance($mark); ?>
             <input type="text" name="name" value="<?=$_REQUEST["name"]?>">
           </td>
         </tr>
 <?php }
 
-	  if(pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_PASSWD"))) {
+	  if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_PASSWD"))) {
 		// Get the default password scheme for branch
 		$_REQUEST["defaultpasswordscheme"] = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"],
 															   pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"));
@@ -64,6 +70,7 @@
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Password encryption scheme')?></td>
           <td>
+            <?=pql_templates_mark_importance($mark); ?>
 <?php		if(eregi(',', pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"]))) {
 				// We got more than one password scheme...
 
@@ -100,16 +107,15 @@
 <?php	if(eregi('KERBEROS', $allowed_schemes) or $_SESSION["ADVANCED_MODE"]) { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Password')?></td>
-<?php		if(!eregi('KERBEROS', $allowed_schemes) and !$autocreatepassword) { ?>
-          <td><input type="checkbox" name="autogenerate"><?=$LANG->_('Autogenerate password')?></td>
+          <td>&nbsp;&nbsp;<input type="checkbox" name="autogenerate"><?=$LANG->_('Autogenerate password')?></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td></td>
-<?php		} ?>
+          <td class="title"></td>
           <!-- Crude hackery. Using type=password won't be so good if we're using {KERBEROS} -->
           <td>
-            <?php echo pql_format_error_span($error_text["password"]); ?>
+            <?=pql_format_error_span($error_text["password"]); ?>
+            <?=pql_templates_mark_importance($mark); ?>
             <input type="input" name="password" value="<?=$_REQUEST["password"]?>">
             <input type="checkbox" name="crypted"><?=$LANG->_('Password is already encrypted')?>
             <?php echo pql_format_error_span($error["pwscheme"]); ?>
@@ -150,7 +156,7 @@
       <th colspan="3" align="left"><?=$LANG->_('Account properties')?></th>
 <?php }
 
-	  if(pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_LOGINSHELL"))) {
+	  if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_LOGINSHELL"))) {
 		// display forms for SYSTEM account
 
 		if($_SESSION["ADVANCED_MODE"]) {
@@ -177,7 +183,7 @@
 <?php	} // end if ADVANCED mode
 	  } // end if account type == system
 
-	  if(pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_MAIL"))) {
+	  if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_MAIL"))) {
 		if(!pql_get_define("PQL_CONF_CREATE_ADDRESS", $_REQUEST["domain"]) or
 		   (pql_get_define("PQL_CONF_CREATE_ADDRESS", $_REQUEST["domain"]) and !function_exists('user_generate_email')) or
 		   $_SESSION["ADVANCED_MODE"] or $error_text["email"]) {
@@ -186,7 +192,8 @@
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Main address')?></td>
           <td>
-            <?php echo pql_format_error_span($error_text["email"]); ?>
+            <?=pql_format_error_span($error_text["email"]); ?>
+            <?=pql_templates_mark_importance($mark); ?>
             <input type="text" name="email" value="<?=$_REQUEST["email"]?>">
 <?php 		if(is_array($additionaldomainname)) { ?>
             <b>@ <select name="email_domain"></b>
@@ -312,7 +319,8 @@
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Forwarding address')?></td>
           <td>
-            <?php echo pql_format_error_span($error_text["forwardingaddress"]); ?>
+            <?=pql_format_error_span($error_text["forwardingaddress"]); ?>
+            <?=pql_templates_mark_importance($mark); ?>
             <input type="text" name="forwardingaddress" value="<?=$_REQUEST["forwardingaddress"]?>"><?=$LANG->_('Email')?>
           </td>
         </tr>
@@ -322,7 +330,7 @@
         </tr>
 <?php } // template == forward
   
-      if(pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_ISACTIVE"))) {
+      if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_ISACTIVE"))) {
 		// Template require 'accountStatus'
 ?>
 
@@ -330,6 +338,7 @@
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Status')?></td>
           <td>
+            <?=pql_templates_mark_importance($mark); ?>
             <select name="account_status">
               <option value="active" SELECTED><?=$LANG->_('Active')?></option>
 <?php if(!$_SESSION["NEW_STYLE_QUOTA"])  { ?>
