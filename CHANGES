@@ -1,5 +1,17 @@
 phpQLAdmin 2.0 Change Log
 
+phpQLAdmin 2.0.19 TO BE ANNOUNCED
+	Bug fixes
+	GUI layout change
+	Misc changes	
+	API changes
+	Schema changes:
+
+phpQLAdmin 2.0.18c TO BE ANNOUNCED
+	Bug fixes
+	  - Add uidNumber, gidNumber and homeDirectory to a mail account IF we've
+	    choosen to use 'posixAccount' when creating user(s).
+
 phpQLAdmin 2.0.18b Release (Apr  6 2004)
 	Bug fixes
 	  - New config option - PQL_CONF_USE_TLS (true/false) which have to be true
