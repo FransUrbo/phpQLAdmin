@@ -112,7 +112,7 @@
 
 <?php	if($autocreateusername) { ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?php echo pql_complete_constant($LANG->_('Automatically generate %what%'), array('what' => $LANG->_('username prefix'))); ?></td>
+        <td class="title"><?=$LANG->_('Username prefix')?></td>
         <td><?php if($usernameprefix){echo $usernameprefix;}else{echo "<i>".$LANG->_('Not set')."</i>";} ?></td>
         <td><?=$usernameprefix_link?></td>
       </tr>
