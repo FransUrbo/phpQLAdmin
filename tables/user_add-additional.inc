@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-additional.inc,v 1.20 2004-10-20 07:15:33 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.21 2004-11-15 15:24:42 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <input type="hidden" name="surname"            value="<?=urlencode($_REQUEST["surname"])?>">
     <input type="hidden" name="name"               value="<?=urlencode($_REQUEST["name"])?>">
@@ -26,18 +26,13 @@
         </tr>
         <input type="hidden" name="password_shown" value="1">
 <?php } ?>
-<?php if($_REQUEST["account_type"] == "system") { ?>
+<?php if(($_REQUEST["account_type"] == "system") and $_REQUEST["homedirectory"]) { ?>
         <!-- Home directory -->
         <tr class="<?php pql_format_table(); ?>">
           <td class="title" valign="top"><?=$LANG->_('Path to homedirectory')?></td>
           <td>
-<?php if(!$_REQUEST["homedirectory"]) { ?>
-            <?php echo pql_format_error_span($error_text["homedirectory"]); ?>
-            <input type="text" name="homedirectory" size="30" value="/tmp/<?=$_REQUEST["uid"]?>">
-<?php } else { ?>
             <?=$_REQUEST["homedirectory"]?>
             <input type="hidden" name="homedirectory" value="<?=$_REQUEST["homedirectory"]?>">
-<?php } ?>
           </td>
         </tr>
 
@@ -49,22 +44,19 @@
 <?php } ?>
 
 <?php if($_REQUEST["account_type"] == "mail" or $_REQUEST["account_type"] == "system") { ?>
+<?php	if($_REQUEST["maildirectory"]) { ?>
         <!-- MailMessageStore -->
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Path to mailbox')?></td>
           <td>
-<?php	if(!$_REQUEST["maildirectory"]) { ?>
-            <?php echo pql_format_error_span($error_text["maildirectory"]); ?>
-            <input type="text" name="maildirectory" size="30" value="/tmp/<?=$_REQUEST["uid"]?>">
-<?php	} else { ?>
             <?=$_REQUEST["maildirectory"]?>
             <input type="hidden" name="maildirectory" value="<?=$_REQUEST["maildirectory"]?>">
-<?php	} ?>
           </td>
         </tr>
 
         <tr></tr>
 
+<?php	} ?>
         <!-- Mailhost -->
         <tr class="<?php pql_format_table(); ?>">
           <td class="title" valign="top"><?=$LANG->_('Mail server')?></td>
