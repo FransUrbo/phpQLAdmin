@@ -60,6 +60,20 @@ phpQLAdmin 2.0.18e TO BE ANNOUNCED
 	    $_REQUEST is always used (but not initialized/correct). Closes bug 203.
 	  - Don't add the phpQLAdmin* objectclassess if they already exists, especially
 	    not two of the same type! This is not allowed with OpenLDAP 2.2.
+	  - When adding/changing an attribute for a user, decode the domain, user and
+	    root DN's and put them in the global $url array. It's used (amongs other)
+	    in include/attrib.mailalternateaddress.inc.
+	    + Force URL decoding of the user DNs before sending the LDIF to the server.
+	  - Don't sort the subschema entries if there IS none. If ACI/ACL don't allow
+	    reading this, then don't bomb.
+	  - To be able to figure out if an attribute is a MUST or MAY, we must follow
+	    any SUP's (recursivly) to be sure we find the object class in question.
+	    However, we're only interessted in any of the oc's that we have elected
+	    to use when creating a user, NOT the target/final oc.
+	  - Faulty HTML comment suffix (s/--!>/-->/) fixed in a number of places.
+	  - Before adding the 'accountStatus' attribute (when creating a user), make
+	    sure that we have an object class that allows it AND that we've actually
+	    SET the value!
 
 	GUI layout change
 	  - Folding tags added in attrib.mail.inc.
@@ -70,6 +84,8 @@ phpQLAdmin 2.0.18e TO BE ANNOUNCED
 	  - In the newest version of OpenLDAP (v2.2.14), the OpenLDAPaci attribute is
 	    hidden in the 'cn=Subschema'. Therefor allow for this to be set manually
 	    through the useACI attribute in the base DN(s).
+	  - I want the server statistics in its own subbranch. Have nothing (?) to do
+	    with configuration, so it makes more sense...
 
 	Misc changes	
 	  - Remove some redundant printr() debug messages.
@@ -82,6 +98,11 @@ phpQLAdmin 2.0.18e TO BE ANNOUNCED
 	    include/config.inc:user_generate_aci() and this was the simplest way to
 	    do it... Eventually all functions that need the base dn will use this variable
 	    in stead...
+	  - URL to bugtracker have changed (old link still works though).
+	  - Instead of tagging the OID value in an ACI with '1.2.3', use a counter (which
+	    is/was the recommended way anyway).
+	  - Add ACI example lines for branch additions and cleanup up the examples a
+	    little (more the way I want them :).
 
 phpQLAdmin 2.0.18d Release (May 19 2004)
 	Bug fixes
