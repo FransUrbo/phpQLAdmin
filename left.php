@@ -37,7 +37,7 @@ if($advanced == 1) {
 	$host = split(';', $USER_HOST);
 ?>
 
-  <font color="black" class="heada"><?=$LANG->_('Host')?>: <b><?=$host[0]?>:<?=$host[1]?></b></font>
+  <font color="black" class="heada"><?=$LANG->_('LDAP Server')?>: <b><?=$host[0]?>:<?=$host[1]?></b></font>
   <br>
 <?php } ?>
 
