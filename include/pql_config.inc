@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.59 2004-03-29 07:57:50 turbo Exp $
+// $Id: pql_config.inc,v 1.60 2004-04-02 08:35:59 turbo Exp $
 //
 
 // include the API files
@@ -143,13 +143,10 @@ foreach($_pql->ldap_basedn as $dn)  {
 require("./include/pql_lang.inc");
 $LANG = new pql_lang($_pql);
 
-// 6. Include the ACI API
-require("./include/pql_aci.inc");
-
-// 7. Include the plugin API
+// 6. Include the plugin API
 require("./include/pql_plugins.inc");
 
-// 8. Verify that the user have access to write the global phpQLAdmin config
+// 7. Verify that the user have access to write the global phpQLAdmin config
 //    in the first base DN
 $_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"] = pql_validate_administrator($_pql->ldap_linkid, $_pql->ldap_basedn[0], $_SESSION["USER_DN"]);
 
@@ -176,6 +173,9 @@ if((empty($_SESSION["ACI_SUPPORT_ENABLED"]) and function_exists("user_generate_a
 		$_SESSION["OLD_STYLE_QUOTA"] = 1;
 	}
 }
+
+if($_SESSION["ACI_SUPPORT_ENABLED"])
+	 require("./include/pql_aci.inc");
 
 // 10. Check to see if the cn=Monitor backend is availble/readable
 if(!$MONITOR_BACKEND_ENABLED) {
