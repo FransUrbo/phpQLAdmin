@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.16 2003-04-29 08:46:05 turbo Exp $
+// $Id: attrib.config.inc,v 1.17 2003-05-01 13:38:49 turbo Exp $
 
 function attribute_check() {
     global $administrator, $domain, $oldvalue, $_pql, $error;
@@ -251,13 +251,16 @@ function attribute_save() {
 		// Fetch old values from DB
 		$oldvalues = pql_get_domain_value($_pql, $rootdn, $attrib);
 		if(is_array($oldvalues)) {
-		foreach($oldvalues as $val) {
-			if(!@eregi($delval, $val)) {
-			   // Remove the one we don't want
+			foreach($oldvalues as $val) {
+				if(!@eregi($delval, $val)) {
+					// Remove the one we don't want
 					$entry[$attrib][] = $val;
 				}
 			}
-		} else {
+		} elseif((lc($attrib) == 'passwordscheme') or
+				 (lc($attrib) == 'userobjectclass') or
+				 (lc($attrib) == 'branchobjectclass'))
+		{
 			// We don't have any values in the LDAP database, we're using
 			// the default values - get the old values from the define
 			foreach($PQL_ATTRIBUTE as $key => $value) {
