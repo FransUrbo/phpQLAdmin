@@ -14,6 +14,9 @@ phpQLAdmin 2.2.2 TO BE ANNOUNCED
 	    Closes: 235, 236, 237, 238
 	  - Do not de-array the username value in 'user_add_attribute.php'.
 	    Closes: 240
+	  - Globalize the listno value ($_REQUEST["listno"]) in ezmlm_detail.php.
+	    This so that we don't need to complicate the list information retreival
+	    in 'tables/ezmlm_details-{detail,lists}.inc'.
 
 	GUI layout changes
 	Misc changes
