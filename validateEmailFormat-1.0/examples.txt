@@ -1,0 +1,51 @@
+validateEmailFormat.php Examples
+================================
+
+First off ...
+
+Make sure you include the function in your script!
+
+	<?php
+	
+	include("/path/to/validateEmailFormat.php");
+	
+	?>
+
+//////////////////////////////////////////////////////
+//
+// Example 1: 
+//	Validate a nasty e-mail address' format
+//
+//////////////////////////////////////////////////////
+
+	<?php
+	
+	$email = "Jeffy <\"That Tall Guy\"@foo.com (blah blah blah)";
+	$isValid = validateEmailFormat($email);
+	if($isValid) {
+		...  // Yes, the above address is a valid format!
+	} else {
+		echo "sorry, that address isn't formatted properly.";
+	}
+	
+	?>
+
+
+//////////////////////////////////////////////////////
+//
+// Example 2: 
+//	Validate a regular e-mail address' format
+//
+//////////////////////////////////////////////////////
+
+	<?php
+	
+	$email = "foo@bar.co.il";
+	$isValid = validateEmailFormat($email);
+	if($isValid) {
+		...  // address format is valid, do what you will
+	} else {
+		echo "sorry ...";
+	}
+
+	?>
