@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.38 2003-01-30 08:37:55 turbo Exp $
+// $Id: pql.inc,v 2.39 2003-01-30 16:11:04 turbo Exp $
 //
 
 // ----------------------------
@@ -1231,17 +1231,21 @@ function pql_get_next_uidnumber($ldap) {
 }
 
 function pql_get_domain_value($ldap, $dn, $value, $match = '') {
-	if(!$match)
-	  $match = '*';
+	$recursive = 1;
+
+	if(!$match) {
+		$match = '*';
+		$recursive = 0;
+	}
 
 	// Setup a filter to look for DOMAINS (branches)
-    $filter  = "(&($value=$match)(".PQL_LDAP_REFERENCE_DOMAINS_WITH."=*))";
+	$filter  = "(&($value=$match)(".PQL_LDAP_REFERENCE_DOMAINS_WITH."=*))";
+		
+	if(!$recursive)
+	  $sr = ldap_read($ldap->ldap_linkid, $dn, $filter, array($value));
+	else
+	  $sr = ldap_search($ldap->ldap_linkid, $dn, $filter, array($value));
 
-	// DEBUG
-	//echo "<p><u>DN</u>: $dn<br>";
-	//echo "<u>Filter</u>: $filter<br>";
-
-	$sr = ldap_search($ldap->ldap_linkid, $dn, $filter, array($value));
 	$result = @ldap_get_entries($ldap->ldap_linkid, $sr) or pql_errormsg($ldap->ldap_linkid);
 
 	for($i=0; $i < $result["count"]; $i++) {
