@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtproutes (max number of bytes in message)
 //
-// $Id: attrib.control.smtproutes.inc,v 2.7 2003-05-20 06:01:22 turbo Exp $
+// $Id: attrib.control.smtproutes.inc,v 2.8 2003-05-20 10:48:37 turbo Exp $
 
 function smtproutes_check($type) {
 	global $error, $domain, $relay, $port;
@@ -138,10 +138,8 @@ function smtproutes_print_view($host) {
 function smtproutes_print_form() {
 	global $attrib, $PHP_SELF, $error, $domain, $relay, $port, $routecount, $mxhost;
 
-	if(($routecount < count($domain) - 1) and count($domain) != 0){
-		$routecount = count($domain) - 1;
-	}
-
+	if(($routecount < count($domain) - 1) and count($domain) != 0)
+	  $routecount = count($domain) - 1;
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -178,9 +176,9 @@ function smtproutes_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
-
 <?php
 }
 
@@ -188,26 +186,23 @@ function smtproutes_save($type, $host) {
 	global $_pql_control, $attrib, $smtproutes, $error, $domain, $relay, $port;
 
 	// recontrol values
-	if(!smtproutes_check($type)){
- 		return false;
-	}
+	if(!smtproutes_check($type))
+	  return false;
 
-	switch($type){
-	  case "modify";
-	  case "add";
+	switch($type) {
+	  case "modify":
+	  case "add":
 		// save entries - combine attributes
-		for($i = 0; $i <= count($domain) - 1; $i++){
+		for($i = 0; $i <= count($domain) - 1; $i++) {
 			// if empty, delete route
-			if($domain[$i] == "" and $relay[$i] == ""){
-				continue;
-     		}
+			if($domain[$i] == "" and $relay[$i] == "")
+			  continue;
 			
 			// if port or relay is not defined, leave out
-			if($port[$i] == "" or $relay[$i] == ""){
-				$tmp = array($domain[$i], $relay[$i]);
-     		} else {
-				$tmp = array($domain[$i], $relay[$i], $port[$i]);
-			}
+			if($port[$i] == "" or $relay[$i] == "")
+			  $tmp = array($domain[$i], $relay[$i]);
+			else
+			  $tmp = array($domain[$i], $relay[$i], $port[$i]);
 			
 			$route = join(":", $tmp);
 			$smtproutes[] = $route;
@@ -215,11 +210,10 @@ function smtproutes_save($type, $host) {
 
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
 										 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-										 "smtproutes", $smtproutes)){
-			$msg = "Successfully saved smtproutes options";
-		} else {
-			$msg = "Failed saving smtproutes: " . pql_ldap_error($_pql_control->ldap_linkid);
-    	}
+										 "smtproutes", $smtproutes))
+		  $msg = "Successfully saved smtproutes options";
+		else
+		  $msg = "Failed saving smtproutes: " . pql_ldap_error($_pql_control->ldap_linkid);
 
 		attribute_forward($msg);
 		break;
@@ -228,7 +222,7 @@ function smtproutes_save($type, $host) {
 	}
 }
 
-function smtproutes_help(){
+function smtproutes_help() {
 ?>
 	Artificial SMTP routes.  Each route has the form
 	domain:relay, without any extra spaces.  If domain

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // percenthack (allowed domains for %-relaying)
 //
-// $Id: attrib.control.percenthack.inc,v 2.7 2003-05-20 06:01:21 turbo Exp $
+// $Id: attrib.control.percenthack.inc,v 2.8 2003-05-20 10:48:37 turbo Exp $
 
 function percenthack_check($type) {
 	global $error, $percenthack;
@@ -119,9 +119,9 @@ function percenthack_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
-
 <?php
 }
 
