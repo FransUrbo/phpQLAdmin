@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliverymode (delivery preferences)
-// $Id: attrib.deliverymode.inc,v 2.17.2.3 2003-12-15 20:33:07 dlw Exp $
+// $Id: attrib.deliverymode.inc,v 2.17.2.4 2003-12-17 16:11:42 dlw Exp $
 
 function attribute_check($type) {
     global $error, $LANG;
@@ -81,6 +81,7 @@ function attribute_print_form($type = "modify") {
 <?php } ?>
     <input type="hidden" name="submit"       value="1">
     <input type="hidden" name="attrib"       value="<?=$_REQUEST["attrib"]?>">
+	<!-- DLW: oldvalue should be 3 values for the 3 fields. -->
     <input type="hidden" name="oldvalue"     value="<?=$_REQUEST["oldvalue"]?>">
     <input type="hidden" name="domain"       value="<?=$_REQUEST["domain"]?>">
     <input type="hidden" name="rootdn"       value="<?=$_REQUEST["rootdn"]?>">
@@ -95,7 +96,9 @@ function attribute_print_form($type = "modify") {
 
 function attribute_save($type) {
     global $_pql, $LANG;
-	
+
+	$entry = array();
+
 	switch($_REQUEST["deliverymode"]) {
 	  case "forward":
 		$entry[pql_get_define("PQL_GLOB_ATTR_MODE")][] = "forwardonly";
@@ -124,8 +127,8 @@ function attribute_save($type) {
 		$users = pql_user_get($_pql->ldap_linkid, $_REQUEST["domain"]);
 		if(is_array($users)) {
 			foreach($users as $user)
-			  $return[] = pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], '', $entry);
-			
+			  $return[] = pql_replace_attribute($_pql->ldap_linkid, $user, '', $entry);
+
 			if(in_array(false, $return))
 			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 										   array('what' => $LANG->_('delivery mode'))) . ": " . pql_ldap_error($_pql->ldap_linkid);

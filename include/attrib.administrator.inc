@@ -1,16 +1,13 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.29.2.2 2003-12-15 20:33:07 dlw Exp $
+// $Id: attrib.administrator.inc,v 1.29.2.3 2003-12-17 16:11:42 dlw Exp $
 
 require("./left-head.html");
 
 function attribute_check() {
-
-  //global $attrib, $domain, $oldvalue, $_pql, $error, $$attrib, $LANG;
     global $error, $LANG;
 	$attrib = $_REQUEST["attrib"];
-	//$value = $_REQUEST[$attrib];
-    
+
     // is typed in ?
     if(empty($_REQUEST[$attrib])) {
 		$error[$attrib] = $LANG->_('Missing');
@@ -27,11 +24,12 @@ function attribute_check() {
 }
 
 function attribute_print_form($action) {
-  //global $$attrib, $domain, $rootdn, $PHP_SELF, $attrib, $oldvalue, $error, $_pql, $user, $view, $LANG;
-    global $orgname; 			// Set by domain_edit_attributes.php
     global $_pql, $error, $LANG;
+    global $orgname; 			// Set by domain_edit_attributes.php
 
 	$attrib = $_REQUEST["attrib"];
+
+	if ($action == 'add') $action = 'fulldomain'; // DLW: Talk to Turbo about the relation between $type and $action.
 
 ?>
   <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post">
@@ -217,8 +215,9 @@ function attribute_print_form($action) {
 <?php
 }
 
+/* DLW: This doesn't work, (Default Branch Values/Add domain administrator for domain) but it doesn't work in
+ *      the original code either.  Look into it. */
 function attribute_save($type) {
-  //global $domain, $rootdn, $attrib, $oldvalue, $$attrib, $_pql, $user, $view, $LANG;
     global $_pql, $LANG;
 
 	$attrib = $_REQUEST["attrib"];

@@ -1,13 +1,13 @@
 <?php
 // Attribute plugin for
 // defaultPasswordScheme
-// $Id: attrib.defaultpasswordscheme.inc,v 2.9 2003-11-20 08:01:37 turbo Exp $
+// $Id: attrib.defaultpasswordscheme.inc,v 2.9.2.1 2003-12-17 16:11:42 dlw Exp $
 
 function attribute_check($type = '') {
-	global $error, $attrib, $$attrib, $LANG;
+    global $error, $LANG;
 
     // is typed in ?
-    if($attrib == "") {
+    if(empty($_REQUEST["attrib"])) {
 		$error[$attrib] = $LANG->_('Missing');
 		return false;
     }
@@ -16,9 +16,11 @@ function attribute_check($type = '') {
 }
 
 function attribute_print_form($type = "modify") {
-	global $error, $attrib, $$attrib, $domain, $rootdn, $view, $orgname, $LANG;
+    global $error, $LANG;
+
+	$attrib = $_REQUEST["attrib"];
 ?>
-  <form action="<?$PHP_SELF?>" method="post">
+  <form action="<?$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Password scheme to use if not specifically specified')?></th>
         <tr class="<?php pql_format_table(); ?>">
@@ -27,7 +29,7 @@ function attribute_print_form($type = "modify") {
             <?php echo pql_format_error_span($error[$attrib]); ?>
             <select name="<?=$attrib?>">
 <?php // Convert the array to a index
-	  $schemes = pql_split_oldvalues(pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn));
+	  $schemes = pql_split_oldvalues(pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"]));
 	  foreach($schemes as $scheme) {
 ?>
               <option value="<?=$scheme?>"><?=$scheme?></option>
@@ -40,9 +42,9 @@ function attribute_print_form($type = "modify") {
 
     <input type="hidden" name="submit" value="2">
     <input type="hidden" name="attrib" value="<?=$attrib?>">
-    <input type="hidden" name="domain" value="<?=$domain?>">
-    <input type="hidden" name="rootdn" value="<?=$rootdn?>">
-    <input type="hidden" name="view"   value="<?=$view?>">
+    <input type="hidden" name="domain" value="<?=$_REQUEST["domain"]?>">
+    <input type="hidden" name="rootdn" value="<?=$_REQUEST["rootdn"]?>">
+    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
@@ -50,23 +52,25 @@ function attribute_print_form($type = "modify") {
 }
 
 function attribute_save($type) {
-	global $error, $attrib, $$attrib, $domain, $rootdn, $type, $_pql, $view, $LANG;
-	
+    global $_pql, $LANG;
+
+	$attrib = $_REQUEST["attrib"];
+
     switch($type) {
       case "add":
       case "modify":
 	  case "delete":
 		if($type == 'delete')
-		  $$attrib = '';
+		  $_REQUEST[$attrib] = '';
 
-		if(pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, $$attrib))
+		if(pql_set_domain_value($_pql->ldap_linkid, $_REQUEST["domain"], $attrib, $_REQUEST[$attrib]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% for domain %domain%'),
 									   array('what'   => $LANG->_('default password scheme'),
-											 'domain' => pql_maybe_decode(urldecode($domain))));
+											 'domain' => pql_maybe_decode(urldecode($_REQUEST["domain"]))));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what% for domain %domain%'),
 									   array('what'   => $LANG->_('default password scheme'),
-											 'domain' => pql_maybe_decode(urldecode($domain)))) . ":&nbsp;".ldap_error($_pql->ldap_linkid);
+											 'domain' => pql_maybe_decode(urldecode($_REQUEST["domain"])))) . ":&nbsp;".ldap_error($_pql->ldap_linkid);
 	
 		attribute_forward($msg);
 		break;

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mailquota.inc,v 2.14.2.1 2003-12-15 20:33:07 dlw Exp $
+// $Id: attrib.mailquota.inc,v 2.14.2.2 2003-12-17 16:11:42 dlw Exp $
 
 function attribute_check($type) {
     global $error, $LANG;
@@ -87,8 +87,6 @@ function attribute_init() {
 }
 
 function attribute_print_form($type = "modify") {
-  //global $use_maxmails, $use_maxsize, $maxmails, $maxsize, $domain, $view, $LANG;
-  //global $rootdn, $options, $user, $PHP_SELF, $attrib, $error;
     global $error, $LANG;
 
 ?>
@@ -196,6 +194,8 @@ function attribute_save($type) {
 		// remove attribute if it is set to ""
 
 		if($_REQUEST["attrib"] == 'basequota') {
+		  /* DLW: Changing base quota doesn't work.
+		   *      It doesn't work in the original code either. */
 			// We're setting default quota for domain, not user.
 			if(! pql_set_domain_value($_pql->ldap_linkid, $_REQUEST["domain"], 'baseQuota', array($mailquota)))
 			  $msg = pql_complete_constant($LANG->_('Successfully changed %what% for domain %domain%'),

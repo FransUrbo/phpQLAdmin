@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.70.2.2 2003-12-15 20:33:04 dlw Exp $
+// $Id: domain_detail.php,v 2.70.2.3 2003-12-17 16:11:37 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -14,8 +14,8 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 include("./header.html");
 
 // print status message, if one is available
-if(isset($msg)) {
-    pql_format_status_msg($msg);
+if(isset($_REQUEST["msg"])) {
+    pql_format_status_msg($_REQUEST["msg"]);
 }
 
 // reload navigation bar if needed
@@ -59,9 +59,10 @@ if(! ereg("%3D", $_REQUEST["domain"])) {
 
 // Get the organization name, or show 'Not set' with an URL to set it
 $domainname = pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_O"));
-//if(!$domainname) {
-// TODO: Resonable default!
-//}
+if(!$domainname) {
+  // TODO: Resonable default!
+  $domainname = '';				// DLW: Just to shut off some warnings.
+}
 
 // Get some default values for this domain
 // Some of these (everything after the 'o' attribute)
@@ -113,9 +114,9 @@ foreach($attribs as $attrib) {
 
 		// A dcOrganizationNameForm attribute
 		$alt1 = pql_complete_constant($LANG->_('Modify attribute %attribute% for %domainname%'),
-									  array('attribute' => $attrib, 'domainname' => $_REQUEST["domainname"]));
+									  array('attribute' => $attrib, 'domainname' => $domainname));
 		$alt2 = pql_complete_constant($LANG->_('Delete attribute %attribute% for %domainname%'),
-									  array('attribute' => $attrib, 'domainname' => $_REQUEST["domainname"]));
+									  array('attribute' => $attrib, 'domainname' => $domainname));
 
 		$$link = "<a href=\"domain_edit_attributes.php?type=modify&attrib=$attrib&rootdn="
 		  . $_REQUEST["rootdn"] . "&domain=" . $_REQUEST["domain"] . "&$attrib=". urlencode($value)
@@ -125,7 +126,7 @@ foreach($attribs as $attrib) {
 		  . "\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt2."\"></a>";
 	} else {
 		$alt1 = pql_complete_constant($LANG->_('Modify attribute %attribute% for %domainname%'),
-									  array('attribute' => $attrib, 'domainname' => $_REQUEST["domainname"]));
+									  array('attribute' => $attrib, 'domainname' => $domainname));
 
 		// A phpQLAdminBranch attribute
 		$$link = "<a href=\"domain_edit_attributes.php?attrib=$attrib&rootdn="
@@ -176,7 +177,7 @@ $buttons = $buttons + $new;
 <?php
 pql_generate_button($buttons, "domain=" . $_REQUEST["domain"]); echo "  <br>\n";
 
-if(!$_REQUEST["view"])
+if(empty($_REQUEST["view"]))
   $_REQUEST["view"] = 'default';
 
 if($_REQUEST["view"] == 'default') {

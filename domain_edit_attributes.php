@@ -1,6 +1,6 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.34.2.2 2003-12-15 20:33:04 dlw Exp $
+// $Id: domain_edit_attributes.php,v 2.34.2.3 2003-12-17 16:11:38 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -58,12 +58,18 @@ include("./header.html");
 <?php
 
   // DLW: I'm guessing that $type comes from a form.
+  /* DLW: Type isn't always set, and some times it seems like "action" it taking it's place.
+   *      Check this out in more detail. */
 if(!$_REQUEST["type"]) {
+  if (!empty($_REQUEST["action"])) { // DLW: I'm wingining it here.
+	$_REQUEST["type"] = $_REQUEST["action"];
+  } else {
 	$_REQUEST["type"] = 'fulldomain';
+  }
 }
-	 
+
 // select what to do
-if($_REQUEST["submit"] == 1) {
+if(@$_REQUEST["submit"] == 1) {
 	if($_REQUEST["attrib"] == 'basequota') {
 		attribute_save("modify");
 	} else {
@@ -72,7 +78,7 @@ if($_REQUEST["submit"] == 1) {
 		else
 		  attribute_print_form($_REQUEST["type"]);
 	}
-} elseif($_REQUEST["submit"] == 2) {
+} elseif(@$_REQUEST["submit"] == 2) {
     // Support for changing domain defaults
 	if($_REQUEST["type"] != 'delete') {
 		if(attribute_check())
@@ -81,10 +87,10 @@ if($_REQUEST["submit"] == 1) {
 		  attribute_print_form();
 	} else
 	  attribute_save("delete");
-} elseif($_REQUEST["submit"] == 3) {
+} elseif(@$_REQUEST["submit"] == 3) {
 	// Support for changing domain administrator
 	attribute_print_form($_REQUEST["type"]);
-} elseif($_REQUEST["submit"] == 4) {
+} elseif(@$_REQUEST["submit"] == 4) {
 	// SAVE change of domain administrator, mailinglist admin and contact person
 	attribute_save($_REQUEST["type"]);
 } else {
