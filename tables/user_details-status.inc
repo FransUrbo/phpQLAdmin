@@ -19,29 +19,27 @@ $status = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("P
       <tr class="<?php pql_format_table(); ?>">
         <td class="title">Account expiration date</td>
         <td><?=$time_expiration?></td>
-        <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_EXPIRATION")?>&user=<?=$url["user"]?>&set=expiration&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Set expiration date"></a></td>
+        <td align="center"><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_EXPIRATION")?>&user=<?=$url["user"]?>&set=expiration&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Set expiration date"></a></td>
       </tr>
 
-      <tr class="<?php pql_format_table(); ?>">
-        <td class="title">Status</td>
-<?php if(($status == "disabled") or ($status == "deleted")) { ?>
-<?php   if($status == "disabled") { ?>
-        <td><b><?=$LANG->_('Disabled')?></b></td>
-<?php   } elseif($status == "deleted") { ?>
-        <td><b><?=$LANG->_('Deleted')?></b></td>
-<?php   } ?>
-        <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_ISACTIVE")?>&user=<?=$url["user"]?>&set=active&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Enable account"></a></td>
-<?php } elseif($status == "noaccess") { ?>
-        <!-- --------------------------------------------------- --> 
-        <!-- This looks weird! Two trashcans beside each other!! -->
-        <!-- --------------------------------------------------- --> 
-        <td><b><?=$LANG->_('POP Locked')?></b></td>
-        <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_ISACTIVE")?>&user=<?=$url["user"]?>&set=active&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="Unlock account"></a></td>
-<?php } else { ?>
-        <td><b><?=$LANG->_('Active')?></b></td>
-        <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_ISACTIVE")?>&user=<?=$url["user"]?>&set=disabled&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="Disable account"></a></td>
-        <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_ISACTIVE")?>&user=<?=$url["user"]?>&set=noaccess&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="POP Lock"></a></td>
+      <form action="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_ISACTIVE")?>&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>" method="post" accept-charset="UTF-8">
+        <tr class="<?php pql_format_table(); ?>">
+          <td class="title">Status</td>
+          <td>
+            <select name="set">
+              <option value="active"   <?php if($status == "active")   { echo "SELECTED"; } ?>><?=$LANG->_('Active')?></option>
+              <option value="disabled" <?php if($status == "disabled") { echo "SELECTED"; } ?>><?=$LANG->_('Disabled')?></option>
+              <option value="deleted"  <?php if($status == "deleted")  { echo "SELECTED"; } ?>><?=$LANG->_('Deleted')?></option>
+              <option value="noaccess" <?php if($status == "noaccess") { echo "SELECTED"; } ?>><?=$LANG->_('No access')?></option>
+<?php if ($_SESSION["OLD_STYLE_QUOTA"]) { ?>
+              <option value="nopop"    <?php if($status == "nopop")    { echo "SELECTED"; } ?>><?=$LANG->_('POP Locked')?></option>
 <?php } ?>
+            </select>
+          </td>
+          <td>
+            <input type="submit" value="<?=$LANG->_('Change')?>">
+          </td>
+        </form>
       </tr>
     </th>
   </table>
