@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.31 2004-10-20 06:32:37 turbo Exp $
+// $Id: pql_formating.inc,v 2.32 2004-11-05 13:39:24 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -16,7 +16,7 @@ function pql_create_ldif($func, $dn, $entry) {
 	$LDIF .= "dn: $dn\n";
 	if(is_array($entry)) {
 		foreach($entry as $key => $e) {
-			$LDIF .= "replace: $key\n";
+//			$LDIF .= "replace: $key\n";
 			if(is_array($entry[$key])) {
 				// ... in an array. Go through each one, creating the LDAP entry
 				foreach($entry[$key] as $x)
@@ -177,6 +177,56 @@ function pql_format_table($echo = 1) {
 }
 // }}}
 
+// {{{ pql_format_table_single(linkid, text, url, array, attribute, class)
+function pql_format_table_single($linkid, $text, $url, $array, $attrib, $class = 0) {
+	if(is_array($array)) { 
+		$new_tr = 0;
+		asort($array);
+		foreach($array as $value) {
+			if(!$class)
+			  $class  = pql_format_table(0);
+
+			$username = pql_get_attribute($linkid, $value, pql_get_define("PQL_ATTR_CN"));
+			if(!$username[0])
+			  $username = $value;
+			elseif(is_array($username))
+			  $username = $username[0];
+
+			if($new_tr) {
+?>
+
+      <tr class="<?=$class?>">
+        <td class="title"></td>
+<?php		} else { ?>
+      <tr class="<?=$class?>">
+        <td class="title"><?=$text["tit"]?>:</td>
+<?php		}
+
+			$new_tr = 1;
+?>
+        <td class="<?=$class?>"><?=$username?></td>
+        <td class="<?=$class?>"><a href="<?=$url["del"]?>&<?=$attrib?>=<?=$value?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$text["del"]?>"></a></td>
+      </tr>
+<?php	}
+	}
+?>
+
+<?php if(!$class) { ?>
+      <tr class="<?=pql_format_table(0)?>">
+<?php } else { ?>
+      <tr class="<?=$class?>">
+<?php } ?>
+<?php if(!is_array($array)) { ?>
+        <td class="title"><?=$text["tit"]?>:</td>
+<?php } else { ?>
+        <td class="title"></td>
+<?php } ?>
+        <td colspan="2"><a href="<?=$url["add"]?>"><?=$text["add"]?></a></td>
+      </tr>
+<?php
+}
+// }}}
+
 // {{{ pql_format_tree(text, url, links, level)
 function pql_format_tree($text, $url, $links = '', $level = 0) {
 	global $div_counter;
@@ -187,11 +237,10 @@ function pql_format_tree($text, $url, $links = '', $level = 0) {
 	$child  = $div_counter . "Child";
 	$parent = "Parent";
 
-	if($_SESSION["opera"]) {
-		pql_format_tree_opera($div_counter, $text, $url, $level, $parent, $child);
-	} else {
-		pql_format_tree_other($div_counter, $text, $url, $level, $parent, $child);
-	}
+	if($_SESSION["opera"])
+	  pql_format_tree_opera($div_counter, $text, $url, $level, $parent, $child);
+	else
+	  pql_format_tree_other($div_counter, $text, $url, $level, $parent, $child);
 
 	if(is_array($links))
 	  pql_format_tree_span($text, $links, $level);
@@ -239,7 +288,7 @@ function pql_format_tree_other($cnt, $text, $url, $level, $parent, $child) {
 	}
 
 	if($url) {
-		if(eregi('^http://', $url))
+		if(eregi('^http', $url))
 		  $url = "href=\"$url\" target=\"_top\"";
 		else
 		  $url = "href=\"$url\"";
@@ -281,8 +330,14 @@ function pql_format_tree_span($text, $links, $level) {
 ?>
     <nobr>
       <?=$nbsp?>
+
+<?php			if(is_array($link)) { ?>
+      <input type="checkbox" name="<?=$link[0]?>_<?=$link[1]?>" value="<?=$link[2]?>"><?=$text?>
+<?php			} else { ?>
       <?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>"><?php } ?>
       <a class="tblItem" title="<?=$text?>" href="<?=$link?>" <?php if(eregi('^http://', $link)) { echo 'target="_new"'; } else { echo 'target="pqlmain"'; } ?>><?=$text?></a>
+<?php			} ?>
+
     </nobr>
 <?php			if($counter < ($count - 1)) { ?>
 
@@ -319,52 +374,6 @@ function pql_format_tree_end() {
 	  echo "  </span>\n\n";
 	else
 	  echo "  </div>\n\n";
-}
-// }}}
-
-// {{{ pql_format_table_single(linkid, text, url, array, attribute)
-function pql_format_table_single($linkid, $text, $url, $array, $attrib) {
-	if(is_array($array)) { 
-		$new_tr = 0;
-		asort($array);
-		foreach($array as $value) {
-			$class  = pql_format_table(0);
-
-			$username = pql_get_attribute($linkid, $value, pql_get_define("PQL_ATTR_CN"));
-			if(!$username[0])
-			  $username = $value;
-			else
-			  $username = $username[0];
-			
-			if($new_tr) {
-?>
-
-      <tr class="<?=$class?>">
-        <td class="title"></td>
-<?php		} else { ?>
-      <tr class="<?=$class?>">
-        <td class="title"><?=$text["tit"]?>:</td>
-<?php		}
-
-			$new_tr = 1;
-?>
-        <td class="<?=$class?>"><?=$username?></td>
-        <td class="<?=$class?>"><a href="<?=$url["del"]?>&<?=$attrib?>=<?=$value?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$text["del"]?>"></a></td>
-      </tr>
-<?php	}
-	}
-?>
-
-      <tr class="<?=pql_format_table(0)?>">
-<?php if(!is_array($array)) { ?>
-        <td class="title"><?=$text["tit"]?>:</td>
-<?php } else { ?>
-        <td class="title"></td>
-<?php } ?>
-        <td><a href="<?=$url["add"]?>"><?=$text["add"]?></a></td>
-        <td></td>
-      </tr>
-<?php
 }
 // }}}
 
