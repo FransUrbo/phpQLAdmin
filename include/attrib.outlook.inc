@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for pilotPerson objects etc
-// $Id: attrib.outlook.inc,v 1.9 2003-05-28 07:23:38 turbo Exp $
+// $Id: attrib.outlook.inc,v 1.10 2003-06-10 12:15:22 turbo Exp $
 
 /*
 	Attributes managed here:
@@ -49,7 +49,7 @@ function attribute_init() {
 
 function attribute_print_form() {
     global $user, $domain, $rootdn, $PHP_SELF, $attrib, $$attrib, $oldvalue, $error, $_pql, $view;
-	$$attrib = utf8_decode($$attrib);
+	$$attrib = maybe_decode($$attrib);
 ?>
 
   <form action="<?php echo $PHP_SELF ?>" method="post" name="outlook">
@@ -82,25 +82,24 @@ function attribute_print_form() {
 
 function attribute_save($type) {
     global $user, $domain, $rootdn, $attrib, $$attrib, $oldvalue, $_pql, $view;
-	$value = utf8_encode($$attrib);
 
     switch($type){
       case "add":
       case "modify":
-		if($value == $oldvalue){
+		if($$attrib == $oldvalue){
 			// don't change if new value equal to old one
-			$msg = "$attrib unchanged ($value == $oldvalue)";
+			$msg = "$attrib unchanged ($$attrib == $oldvalue)";
 			attribute_forward($msg);
 			break;
 		}
 		
 		if($domain and !$user) {
 			// Save a domain attribute
-			if(pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, $value))
+			if(pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, $$attrib))
 			  $success = 1;
 		} elseif($user) {
 			// Save a user attribute
-			if(pql_replace_userattribute($_pql->ldap_linkid, $user, $attrib, $value))
+			if(pql_replace_userattribute($_pql->ldap_linkid, $user, $attrib, $$attrib))
 			  $success = 1;
 		}
 
