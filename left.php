@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.68 2003-11-26 16:21:34 turbo Exp $
+// $Id: left.php,v 2.69 2004-01-22 10:23:29 turbo Exp $
 //
 session_start();
 
@@ -55,7 +55,7 @@ if($advanced == 1) {
 <?php if($ALLOW_BRANCH_CREATE and $ADVANCED_MODE) { ?>
 
   <div id="el2Parent" class="parent">
-    <nobr><a href="domain_add_form.php?rootdn=<?=$_pql->ldap_basedn[0]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain branch'))); ?></a></nobr>
+    <a href="domain_add_form.php?rootdn=<?=$_pql->ldap_basedn[0]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain branch'))); ?></a><br>
   </div>
 
 <?php } ?>
@@ -75,23 +75,34 @@ pql_format_tree($LANG->_('Search'), 0, $links, 1);
 if($ADVANCED_MODE) {
     if($ALLOW_BRANCH_CREATE) {
 	// Level 2b: Configuration and tests
-	$links = array($LANG->_('Show configuration')		=> 'config_detail.php',
-		       $LANG->_('Test LDAP-Connection')		=> 'config_ldaptest.php',
-		       $LANG->_('LDAP server configuration')	=> 'config_ldap.php');
-	pql_format_tree($LANG->_('Configuration'), 0, $links, 1);
+	$links = array($LANG->_('phpQLAdmin Configuration')	=> 'config_detail.php',
+		       $LANG->_('Test LDAP-Connection')		=> 'config_ldaptest.php');
+	pql_format_tree($LANG->_('phpQLAdmin Configuration'), 0, $links, 1);
+
+	// Level 2c: LDAP server setup etc
+	$links = array($LANG->_('LDAP Syntaxes')		=> 'config_ldap.php?type=ldapsyntaxes',
+		       $LANG->_('LDAP Matching rules')		=> 'config_ldap.php?type=matchingrules',
+		       $LANG->_('LDAP Attribute types')		=> 'config_ldap.php?type=attributetypes',
+		       $LANG->_('LDAP Object classes')		=> 'config_ldap.php?type=objectclasses',
+		       0					=> 0,
+		       $LANG->_('LDAP Connection status')	=> 'status_ldap.php?type=connections',
+		       $LANG->_('LDAP Database status')		=> 'status_ldap.php?type=databases');
+	pql_format_tree($LANG->_('LDAP Server Configuration'), 0, $links, 1);
     }
 
-    // Level 2c: Documentation etc
+    // Level 2d: Documentation etc
     $links = array($LANG->_('Documentation')			=> 'doc/index.php',
 		   $LANG->_('What\'s left todo')		=> 'TODO',
 		   $LANG->_('What\'s been done')		=> 'CHANGES',
 		   $LANG->_('Language translator')		=> 'update_translations.php');
     pql_format_tree($LANG->_('Documentation'), 0, $links, 1);
 
-    // Level 2d: Main site and general phpQLAdmin links
-    $links = array('phpqladmin.bayour.com'			=> 'http://phpqladmin.bayour.com/',
-		   $LANG->_('Bugtracker')			=> 'http://apache.bayour.com/anthill/');
-    pql_format_tree($LANG->_('phpQLAdmin'), 0, $links, 1);
+    if($ALLOW_BRANCH_CREATE) {
+	// Level 2e: Main site and general phpQLAdmin links
+	$links = array('phpQLAdmin @ Bayour'			=> 'http://phpqladmin.bayour.com/',
+		       $LANG->_('Bugtracker')			=> 'http://apache.bayour.com/anthill/');
+	pql_format_tree($LANG->_('phpQLAdmin Site Specifics'), 0, $links, 1);
+    }
 }
 
 // This an ending for the initial parent (level 0)
