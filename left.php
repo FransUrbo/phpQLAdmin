@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.82 2004-03-16 09:02:29 turbo Exp $
+// $Id: left.php,v 2.83 2004-03-26 09:44:40 turbo Exp $
 //
 session_start();
 
@@ -201,7 +201,8 @@ if(!isset($domains)) {
 	$d = split(',', urldecode($domain)); $d = split('=', $d[0]); $d = $d[1];
 	$d = pql_maybe_decode($d);
 
-	$domain = urlencode($domain);
+	if(!eregi('%3D', $domain))
+	  $domain = urlencode($domain);
 
 	// Get Root DN
 	$rootdn = pql_get_rootdn($domain, 'left.php');
