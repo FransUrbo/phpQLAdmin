@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of user
-// $Id: user_edit_attribute.php,v 2.36 2004-03-03 07:58:54 turbo Exp $
+// $Id: user_edit_attribute.php,v 2.37 2004-03-09 21:53:51 dlw Exp $
 //
 // This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
 //   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -70,13 +70,15 @@ include("./header.html");
   <br><br>
 <?php
 // select what to do
-if(($_POST["submit"] == 1) or ($_POST["submit"] == 2)) {
+// DLW: One of these days this submit==1 stuff has to be replaced with
+//      human readable text such as submit="verify".
+if(($_REQUEST["submit"] == 1) or ($_REQUEST["submit"] == 2)) {
     if(attribute_check("modify")){
 	attribute_save("modify");
     } else {
 	attribute_print_form();
     }
-} elseif($submit == 4) {
+} elseif($_REQUEST["submit"] == 4) {
 	// SAVE change directly, no need for a form
 	attribute_save($action);
 } else {
