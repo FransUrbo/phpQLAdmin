@@ -1,7 +1,7 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 2.26 2003-06-07 09:46:08 turbo Exp $
+// $Id: lang.en.inc,v 2.27 2003-06-10 12:15:59 turbo Exp $
 //
 // if you have a translation to another language, please contact
 // me --> Turbo Fredriksson <phpqladmin@bayour.com>
@@ -270,7 +270,7 @@ if(!isset($INCLUDE_LANG_EN_INC)) {
 	define("PQL_LANG_UID_TITLE", "Username");
 	define("PQL_LANG_UID_NONE", "none");
 	define("PQL_LANG_UID_HELP", "The username can only contain numbers, letters and following special characters &quot;@&quot;, &quot;.&quot;, &quot;_&quot;, &quot;-&quot;. Additionally, the username should be unique in whole system.");
-	define("PQL_LANG_UID_HELP_SHORT", "Numbers, letters, and following special chars: &quot;@&quot;, &quot;.&quot;, &quot;_&quot;, &quot;-&quot;<br>If left out, a username will be created automatically.");
+	define("PQL_LANG_UID_HELP_SHORT", "Numbers, letters, and following special chars: &quot;@&quot;, &quot;%&quot;, &quot;.&quot;, &quot;_&quot;, &quot;-&quot;<br>If left out, a username will be created automatically.");
 	define("PQL_LANG_UID_CHANGE", "Change username");
 	define("PQL_LANG_UID_CHANGE_OK", "Successfully changed username from %old% to %new%");
 	define("PQL_LANG_UID_CHANGE_FAILED", "Failed changing the username");
