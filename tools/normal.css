@@ -34,6 +34,7 @@ a:hover			{ color: #0000FF; text-decoration: underline;}
 /* special styles for pages */
 .title1			{font-size: 16pt; font-weight: bold;}
 .title2			{font-size: 12pt; font-weight: bold;}
+.title3			{font-size: 8pt; font-weight: bold;}
 
 /* table format */
 tr.title, td.title			{ background: #b3b3b3; font-weight: bold;}
