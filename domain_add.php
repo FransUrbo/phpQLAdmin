@@ -1,13 +1,15 @@
 <?php
 // add a domain
-// $Id: domain_add.php,v 2.59 2005-03-17 09:13:10 turbo Exp $
+// $Id: domain_add.php,v 2.60 2005-03-19 10:58:49 turbo Exp $
 //
+// {{{ Setup session etc
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
 
 $url["domain"]		  = pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"]		  = pql_format_urls($_REQUEST["rootdn"]);
 $url["defaultdomain"] = pql_format_urls($_REQUEST["rootdn"]);
+// }}}
 
 // {{{ Include control api if control is used
 if(pql_get_define("PQL_CONF_CONTROL_USE")) {
@@ -15,13 +17,14 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
     $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 }
 
+$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
+
 include($_SESSION["path"]."/header.html");
 // }}}
 ?>
   <span class="title1"><?=$LANG->_('Create domain')?>: <?=$_REQUEST["domain"]?></span>
   <br><br>
 <?php
-$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 // {{{ Should we enforce a dot in the domainname or not?
 if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $_REQUEST["rootdn"]) == "dc" or
