@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.137 2004-01-14 12:18:23 turbo Exp $
+// $Id: pql.inc,v 2.138 2004-01-15 09:46:54 turbo Exp $
 //
 
 // ----------------------------
@@ -822,8 +822,13 @@ function pql_set_domain_value($linkid, $dn, $type, $value) {
 		// Setup the value array
 		if(is_array($value)) {
 			// We're supplied with an array, add those values
-			foreach($value as $val) {
-				$entry[$type][] = pql_maybe_encode($val, $type, $linkid);
+			foreach($value as $attr => $val) {
+				$attr = lc($attr);
+				if(is_array($val)) {
+					foreach($val as $data)
+					  $entry[$attr][] = pql_maybe_encode($data, $attr, $linkid);
+				} else
+				  $entry[$attr][] = pql_maybe_encode($val, $attr, $linkid);
 			}
 		} else {
 			$entry[$type] = pql_maybe_encode($value, $type, $linkid);
@@ -840,7 +845,7 @@ function pql_set_domain_value($linkid, $dn, $type, $value) {
 		}
 	}
 
-	if($value) {
+	if($value and !$entry["objectclass"]) {
 		// Setup objectclasses
 		if(!($entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")] = pql_setup_branch_objectclasses(0, $dn, $linkid)))
 		  unset($entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")]);
@@ -1768,8 +1773,6 @@ function pql_ldap_mailquota($quota) {
 	  $txt = $LANG->_('Unlimited amount');
 	else
 	  $txt = pql_complete_constant($LANG->_('Max %maxmails% mails'), array("maxmails" => $quota["maxmails"]));
-    
-    $txt .= ",<br>";
     
     if($quota["maxsize"] == "")
 	  $txt .= $LANG->_('Unlimited size');
