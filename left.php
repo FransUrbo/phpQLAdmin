@@ -86,7 +86,7 @@ if(is_array($domains)){
       <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$j?>Img">
     </a>
 
-    <a class="item" href="domain_detail.php?domain=<?=$domain?>" onClick="if (capable) {expandBase('el<?=$j?>', false)}">
+    <a class="item" href="domain_detail.php?domain=<?=$domain?>">
       <font color="black" class="heada"><?=$domain?></font>
     </a>
   </div>

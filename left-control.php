@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.2 2002-12-20 01:34:20 turbo Exp $
+// $Id: left-control.php,v 2.3 2002-12-21 10:43:39 turbo Exp $
 //
 session_start();
 
@@ -55,7 +55,7 @@ if(PQL_LDAP_CONTROL_USE) {
       <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$j?>Img">
     </a>
 
-    <a class="item" href="control_detail.php?host=<?=$host?>" onClick="if (capable) {expandBase('el<?=$j?>', false)}">
+    <a class="item" href="control_detail.php?host=<?=$host?>">
       <font color="black" class="heada"><?=$host?></font>
     </a>
   </div>
