@@ -1,5 +1,5 @@
 <?php
-// $Id: index2.php,v 2.37 2004-11-08 10:23:37 turbo Exp $
+// $Id: index2.php,v 2.38 2004-11-10 13:05:18 turbo Exp $
 
 session_start();
 require("./include/pql_config.inc");
@@ -20,7 +20,8 @@ if(pql_get_define("PQL_CONF_EZMLM_USE")) {
 // -----------------
 // Should we show the controls frame (ie, is controls configured
 // in ANY of the namingContexts)?
-if(pql_get_define("PQL_CONF_CONTROL_USE") and $_SESSION["ALLOW_CONTROL_CREATE"] and $_SESSION["ADVANCED_MODE"]) {
+if(pql_get_define("PQL_CONF_CONTROL_USE") and $_SESSION["ALLOW_CONTROL_CREATE"] and 
+   ($_SESSION["ADVANCED_MODE"] or $_REQUEST["advanced"])) {
     $frames++;
     
     // We need this value for the quota change at least/well...
