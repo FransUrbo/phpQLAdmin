@@ -23,29 +23,46 @@ if(isset($rlnb) and PQL_AUTO_RELOAD){
   </script>
 <?php } ?>
 
-  <br><?php echo PQL_DESCRIPTION ?><br>
+  <br><span class="title1"><?php echo PQL_DESCRIPTION ?></span><br>
 
   <ul>
+
+<?php
+	if($USER_BASE == 'everything' && ($ADVANCED_MODE == 1)) {
+	    // We're administrating the whole domain,
+	    // show the Create domain option...
+?>
     <li>
       <form action="domain_add.php" method="post">
-        <?php echo PQL_DOMAIN_ADD; ?>
+	<?=PQL_DOMAIN_ADD?>
         <br>
         <input type="text" name="domain" value="<?php echo $domain; ?>">
-        <input type="submit" value="<?php echo PQL_ADD; ?>">
+        <input type="submit" value="<?="--&gt;&gt;"?>">
 	<br>
-	<img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php
-	if(PQL_LDAP_OBJECTCLASS_DOMAIN == "domain") {
-	    // We're using a domain object
-	    echo PQL_DOMAIN_ADD_INFO_DC;
-	} else {
-	    // OrganizationUnit object
-	    echo PQL_DOMAIN_ADD_INFO_OU;
-	}
-	?>
+        <table cellspacing="0" cellpadding="3" border="0">
+          <th>
+            <tr class="<?php table_bgcolor(); ?>">
+              <td>
+                <img src="images/info.png" width="16" height="16" alt="" border="0"></td>
+              <td>
+                <?php
+	    if(PQL_LDAP_OBJECTCLASS_DOMAIN == "domain") {
+		// We're using a domain object
+		echo PQL_DOMAIN_ADD_INFO_DC;
+	    } else {
+		// OrganizationUnit object
+		echo PQL_DOMAIN_ADD_INFO_OU;
+	        }?>
+              </td>
+            </tr>
+          </th>
+        </table>
       </form>
       <br>
     </li>
-
+<?php
+	}
+?>
     <!-- begin search engine snippet -->
     <li>
       <form method=post action="search.php">
