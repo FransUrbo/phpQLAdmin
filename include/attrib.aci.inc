@@ -1,12 +1,12 @@
 <?php
 // attribute plugin for OpenLDAPaci
-// $Id: attrib.aci.inc,v 1.9 2004-10-19 10:40:40 turbo Exp $
+// $Id: attrib.aci.inc,v 1.10 2004-11-05 11:18:20 turbo Exp $
 
 /* DLW: This has valid syntax, but I don't know how to test it. */
 
 // {{{ attribute_check(void)
 function attribute_check() {
-    global $error, $LANG;
+    global $_pql, $error, $LANG;
 	
 	$attrib = $_REQUEST["attrib"];
 
@@ -19,7 +19,14 @@ function attribute_check() {
     if($_REQUEST[$attrib]) {
 		$value = $_REQUEST[$attrib]; // DLW: Does this do anything?
     } else {
-		$_REQUEST[$attrib] = $_REQUEST["aci_oid"] . '#' . $_REQUEST["aci_scope"] . '#' . $_REQUEST["aci_action"] . ";";
+		// Get the next OID number by retreive the old ACI's.
+		if($_REQUEST["user"])
+		  $acis = pql_aci_get($_pql->ldap_linkid, $_REQUEST["user"]);
+		else 
+		  $acis = pql_aci_get($_pql->ldap_linkid, $_REQUEST["domain"]);
+		$next_oid = $acis['count'];
+
+		$_REQUEST[$attrib] = "$next_oid#" . $_REQUEST["aci_scope"] . '#' . $_REQUEST["aci_action"] . ";";
 
 		$perm = '';
 		if($_REQUEST["aci_permission_read"]) {
@@ -53,8 +60,20 @@ function attribute_check() {
 
 // {{{ attribute_print_form(action)
 function attribute_print_form($action) {
-    global $LANG;
+    global $_pql, $LANG;
 
+	if(!$_REQUEST["user"])
+	  // It must be a domain
+	  $aci = pql_aci_get($_pql->ldap_linkid, $_REQUEST["domain"]);
+	else
+	  // It must be a user
+	  $aci = pql_aci_get($_pql->ldap_linkid, $_REQUEST["user"]);
+
+	if(is_array($aci)) {
+		echo "<u>Current values:</u><p>";
+		for($i=0; $aci[$i]; $i++)
+		  echo $aci[$i]["LINE"]."<br>";
+	}
 ?>
   <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -122,6 +141,11 @@ function attribute_print_form($action) {
           <td class="title"><?=$LANG->_('Subject')?></td>
           <td><input type="text" name="aci_subject" size="30"></td>
         </tr>
+
+        <tr class="<?php pql_format_table(); ?>">
+          <td class="title" align="right"><img src="images/info.png" width="16" height="16" alt="" border="0"></td>
+          <td><?=$LANG->_("The OID value isn't used. This new ACI will be added at the<br>end of the existing list. You can move it yourself later.")?></td>
+        </tr>
       </th>
     </table>
 
@@ -150,14 +174,6 @@ function attribute_save($action) {
     $domain = urldecode($_REQUEST["domain"]);
     $user   = urldecode($_REQUEST["user"]);
 
-    echo "rootdn: $rootdn<br>";
-    echo "domain: $domain<br>";
-    echo "user: $user<br><br>";
-
-    echo "action: $action<br>";
-    echo "attrib: $attrib<br>";
-    echo "value: $value<br>";
-
     // Retreive the old values
     if($user)
       $acis = pql_aci_get($_pql->ldap_linkid, $user);
@@ -165,10 +181,11 @@ function attribute_save($action) {
       $acis = pql_aci_get($_pql->ldap_linkid, $domain);
 	
     // Extract only the ACI line that's stored in LDAP
-    for($i=0; $acis[$i]["LINE"]; $i++) {
-		$ACIs[$attrib][] = $acis[$i]["LINE"];
-    }
-    $acis = $ACIs;
+    for($i=0; $acis[$i]["LINE"]; $i++)
+	  $ACIs[$attrib][] = $acis[$i]["LINE"];
+
+	$oidnr = $acis[$i-1]['OID'] + 1;
+    $acis  = $ACIs;
 
     switch($action) {
 		// {{{ case: add
