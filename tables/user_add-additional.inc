@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-additional.inc,v 1.14 2004-03-31 05:27:10 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.15 2004-04-01 11:30:52 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <input type="hidden" name="surname"            value="<?=$_REQUEST["surname"]?>">
     <input type="hidden" name="name"               value="<?=$_REQUEST["name"]?>">
@@ -17,6 +17,7 @@
 
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Additional account properties')?></th>
+<?php if($_REQUEST["account_type"] == "system") { ?>
         <!-- Home directory -->
         <tr class="<?php pql_format_table(); ?>">
           <td class="title" valign="top"><?=$LANG->_('Path to homedirectory')?></td>
@@ -31,7 +32,10 @@
           </td>
         </tr>
 
-<?php if($_REQUEST["account_type"] == "system") { ?>
+<?php }
+
+	  if($_REQUEST["account_type"] == "system") {
+?>
         <input type="hidden" name="loginshell" value="<?=$_REQUEST["loginshell"]?>">
 <?php } ?>
 
@@ -69,17 +73,16 @@
 					echo "CHECKED";
 				}
 ?>>
-            <?=$LANG->_('QmailLDAP/Controls object')?>: <b><?=pql_maybe_idna_decode($_REQUEST["userhost"]["qlc"][$i])?></b><br>
+            <b><?=pql_maybe_idna_decode($_REQUEST["userhost"]["qlc"][$i])?></b><br>
 <?php		}
 		} 
 
-		if($_REQUEST["userhost"]["dns"]) { // It's defined - DNS entry
+		if($_REQUEST["userhost"]["dns"] and !in_array($_REQUEST["userhost"]["dns"], $_REQUEST["userhost"]["qlc"])) { // It's defined - DNS entry
 ?>
-            <input type="radio" name="dns" value="<?=$_REQUEST["userhost"]["dns"]?>" CHECKED>
-            <?=$LANG->_('Standard (DNS entry)')?>: <b><?=$_REQUEST["userhost"]["dns"]?></b><br>
+            <input type="radio" name="host" value="<?=$_REQUEST["userhost"]["dns"]?>" CHECKED>
+            <b><?=$_REQUEST["userhost"]["dns"]?></b><br>
 <?php	} ?>
-            <input type="radio" name="host" value="usr">
-            <?=$LANG->_('User defined')?> <input type="text" name="userhost" size="30">
+            <input type="radio" name="host" value="usr"><input type="text" name="userhost" size="30">
           </td>
         </tr>
 <?php } ?>
