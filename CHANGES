@@ -2,11 +2,30 @@ phpQLAdmin 2.0 Change Log
 
 phpQLAdmin 2.0.16 TO BE ANNOUNCED
 	Bug fixes
+	  - Remove hardcoded references to attribute names. Use pql_get_define()
+	    with a define set in include/pql_attributes.inc instead.
+	    Close bug 26
+	  - ACI support added.
+	    Close bug 14
 	  - PHP parse errors fixed.
 	    Closes bugs 35, 39 and 40.
 	  - Set PQL_CONF_REFERENCE_USERS_WITH to 'uid', don't get
 	    the PQL_GLOB_ATTR_UID and THEN set PQL_CONF_REFERENCE_USERS_WITH.
 	    Closes bug 41.
+	  - Rewrite of the pql_get_rootdn() function which have been broken for
+	    quite some time. It worked for some (like me), but in general it was
+	    broken! The (new) solution is to go through each configured
+	    namingContexts (root DN), doing a regexp match against the DN we
+	    want to know the root DN for.
+	  - Strip 'ou=' from the _attribute_ (not the DN) when adding the
+	    PQL_GLOB_SUBTREE_{USERS,GROUPS} part of a new branch. This failed
+	    miserably with OpenLDAP 2.1 (but it should have in 2.0 as well).
+	  - Only retreive attributeTypes etc from the server (the maybe_encode()
+	    function) if both attrib and linkid is set.
+	  - Only add the accountStatus attribute if we have a suitable objectClass
+	    choosen for this user/branch.
+
+	GUI layout change
 	  - Rewrite the layout (and part of the functionality) to better
 	    be able to change, delete and add an SMTP route (layout according
 	    to the rest of the system).
@@ -15,8 +34,18 @@ phpQLAdmin 2.0.16 TO BE ANNOUNCED
 	      the other from the domain details -> Control options -> Add/Remove
 	      domain from smtproutes) with two sub GUI's (change/add) each.
 	    Close bug 36
-
-	GUI layout change
+	  - URL decode the domain/branch DN and offer to enter the default domain
+	    name when creating/adding a domain/branch object.
+	  - Ability to change the RDN of a user (ie, a 'modrdn'). Only availible
+	    if LDAP version is equal (or higher for future use) to 3.
+	  - Change "Control options" to "QmailLDAP/Controls Options" to distinguish
+	    better from "Access Control Information" in the domain details page.
+	  - Make sure we can have a ' in branch (also affects the user DN) by
+	    removing \' which might come from a previous 'urlencode()' etc...
+	  - If phpQLAdmin can't retreive givenName from the object, it will try
+	    to get the commonName and split that into two (using space as delimiter).
+	    The first word should be the firstname, and the second word is the
+	    lastname. If that don't work either, try the gecos attribute...
 
 	Misc changes
 	  - Update of README.acl (using double quotes, not single
@@ -24,6 +53,21 @@ phpQLAdmin 2.0.16 TO BE ANNOUNCED
 	    Closes bug 34
 	  - Better working PQL_GLOB_HOST example with (included) demo database
 	    in ./demo/*.ldif.
+	  - Just after adding the domain/branch to the database but before anything
+	    else, we need to update (all) QmailLDAP/Controls objects.
+	  - Make sure we can have a ' in branch (also affects the user DN) by
+	    removing \' which might come from a previous 'urlencode()' etc...
+	  - Call include/config.inc:user_generate_{mailstore,homedir}() with an
+	    additional parameter - type - which specifies if it's a domain/branch
+	    or user object to create. This can be used to generate mail/home dir
+	    differently depending on what type of object it is.
+	  - Force loading of _ALL_ domains/branches if it's a super-admin.
+	  - With the rewrite of the pql_get_rootdn() function, we can include
+	    the root DN in more places which leads to better displaying of values.
+	  - Sort and 'uniqify' locals/rcpthosts when updating a QmailLDAP/Controls
+	    object.
+	  - Updated qmailControl.schema, Now it works with OpenLDAP 2.x OIDs.
+	    Thanx to Leonardo Fialho.
 
 phpQLAdmin 2.0.15 Release (Jul 15 2003)
 	Bug fixes
