@@ -15,9 +15,9 @@
         <td><a href="mailto:<?=$email?>"><?=pql_maybe_idna_decode($email)?></a></td>
         <td>
 <?php if(!$_SESSION["SINGLE_USER"]) { ?>
-          <a href="user_edit_attribute.php?rootdn=<?=$_GET["rootdn"]?>&domain=<?=$_GET["domain"]?>&attrib=mail&user=<?=$userdn?>&mail=<?=$email?>&oldvalue=<?=$email?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change main address')?>" border="0"></a>&nbsp;&nbsp;&nbsp;
+          <a href="user_edit_attribute.php?rootdn=<?=$_GET["rootdn"]?>&domain=<?=$_GET["domain"]?>&attrib=mail&user=<?=$userdn?>&mail=<?=$email?>&oldvalue=<?=$email?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change main address')?>" border="0"></a>&nbsp;&nbsp;&nbsp;
 <?php } ?>
-          <a href="user_sendmail.php?email=<?=$email?>&user=<?=$userdn?>&view=<?=$view?>"><img src="images/mail.png" width="16" height="11" alt="<?=$LANG->_('Send testmail')?>" border="0"></a>
+          <a href="user_sendmail.php?email=<?=$email?>&user=<?=$userdn?>&view=<?=$_GET["view"]?>"><img src="images/mail.png" width="16" height="11" alt="<?=$LANG->_('Send testmail')?>" border="0"></a>
         </td>
       </tr>
 
@@ -29,14 +29,14 @@ if(is_array($aliases)) {
       <tr class="<?php pql_format_table(); ?>">
         <td><?=$LANG->_('Alias')?></td>
         <td><a href="mailto:<?=$alias?>"><?=pql_maybe_idna_decode($alias)?></a></td>
-        <td><a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=mailalternateaddress&domain=<?=$domain?>&user=<?=$userdn?>&mailalternateaddress=<?php echo pql_strip_domain($alias); ?>&oldvalue=<?=$alias?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change alias')?>" border="0"></a>&nbsp;&nbsp;<a href="user_del_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=mailalternateaddress&user=<?=$userdn?>&oldvalue=<?=$alias?>&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete alias')?>" border="0"></a>&nbsp;&nbsp;<a href="user_sendmail.php?email=<?=$alias?>&user=<?=$userdn?>&view=<?=$view?>"><img src="images/mail.png" width="16" height="11" alt="<?=$LANG->_('Send testmail')?>" border="0"></a></td>
+        <td><a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=mailalternateaddress&domain=<?=$domain?>&user=<?=$userdn?>&mailalternateaddress=<?php echo pql_strip_domain($alias); ?>&oldvalue=<?=$alias?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change alias')?>" border="0"></a>&nbsp;&nbsp;<a href="user_del_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=mailalternateaddress&user=<?=$userdn?>&oldvalue=<?=$alias?>&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete alias')?>" border="0"></a>&nbsp;&nbsp;<a href="user_sendmail.php?email=<?=$alias?>&user=<?=$userdn?>&view=<?=$_GET["view"]?>"><img src="images/mail.png" width="16" height="11" alt="<?=$LANG->_('Send testmail')?>" border="0"></a></td>
       </tr>
 <?php
     }
 }
 ?>
       <tr>
-        <td class="subtitle" colspan="3"><a href="user_add_attribute.php?rootdn=<?=$rootdn?>&attrib=mailalternateaddress&domain=<?=$domain?>&user=<?=$userdn?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"><?=$LANG->_('Create new alias')?></a></td>
+        <td class="subtitle" colspan="3"><a href="user_add_attribute.php?rootdn=<?=$rootdn?>&attrib=mailalternateaddress&domain=<?=$domain?>&user=<?=$userdn?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"><?=$LANG->_('Create new alias')?></a></td>
       </tr>
     </th>
   </table>

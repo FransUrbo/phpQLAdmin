@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for pilotPerson objects etc
-// $Id: attrib.outlook.inc,v 1.16.2.1 2003-12-09 16:18:26 dlw Exp $
+// $Id: attrib.outlook.inc,v 1.16.2.2 2003-12-09 21:10:29 dlw Exp $
 
 /*
 	Attributes managed here:
@@ -31,7 +31,6 @@
 */
 
 function attribute_check() {
-  //global $user, $domain, $oldvalue, $_pql, $error, $attrib, $$attrib, $LANG;
     global $LANG, $error;
 
     // is typed in ?
@@ -44,23 +43,21 @@ function attribute_check() {
 }
 
 function attribute_init() {
-    //global $$attrib, $oldvalue, $attrib;
-    //$$attrib = $oldvalue;
     $_REQUEST[$attrib] = (!empty($_GET["oldvalue"]) ? $_GET["oldvalue"] : "");
 }
 
 function attribute_print_form() {
-  //global $user, $domain, $rootdn, $PHP_SELF, $attrib, $$attrib, $oldvalue, $error, $_pql, $view;
-  //global $orgname, $LANG;
     global $LANG, $error;
-?>
 
-  <form action="<?=$PHP_SELF?>" method="post" name="outlook">
+  // Just to save some typeing.
+  $attrib = $_REQUEST["attrib"];
+?>
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" name="outlook">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Set/Modify attribute %attribute%'), array('attribute' => $_REQUEST["attrib"])); ?></th>
+      <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Set/Modify attribute %attribute%'), array('attribute' => $attrib)); ?></th>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$_REQUEST["attrib"]?></td>
-          <td><?php echo pql_format_error_span($error[$attrib]); ?><input type="text" name="<?=$_REQUEST["attrib"]?>" value="<?=$_REQUEST[$attrib]?>" size="30"></td>
+          <td class="title"><?=$attrib?></td>
+          <td><?php echo pql_format_error_span($error[$attrib]); ?><input type="text" name="<?=$attrib?>" value="<?=$_REQUEST[$attrib]?>" size="30"></td>
         </tr>
       </th>
     </table>
@@ -84,7 +81,6 @@ function attribute_print_form() {
 }
 
 function attribute_save($type) {
-  //global $user, $domain, $rootdn, $attrib, $$attrib, $oldvalue, $_pql, $view, $LANG;
     global $_pql, $LANG;
 
 	$attrib = $_POST["attrib"];
