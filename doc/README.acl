@@ -90,6 +90,13 @@ read the userPassword attribute (because of the 'by * read' in the
 'access to (almost) everything' entry'...
 
 So the solution is to add the 'by dn="..." write' lines in BOTH places.
+
+Note though that bug 34 (which is now closed) in the phpQLAdmin bug
+tracker talks about needing a double quote ("), not a singel quote (').
+This seems like a OpenLDAP bug to me, so take this note for what it is,
+one person having this trouble. It might very possibly be fixed by the
+time you read this...
+
 And this mean that any update on the 'administrator' value will have to
 be incorporated in the LDAP server ACL's as well! Sucks, but that's the
 way it is (currently). Using 'in LDAP' access control (ACI) might help
