@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of a control option
-// $Id: control_edit_attribute.php,v 2.26 2005-02-24 17:04:00 turbo Exp $
+// $Id: control_edit_attribute.php,v 2.27 2005-03-02 09:32:14 turbo Exp $
 //
 session_start();
 
@@ -35,7 +35,11 @@ function attribute_forward($msg) {
 	else
 	  $url = "domain_detail.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"]."&view=".$_REQUEST["view"]."&msg=$msg";
 
-	header("Location: " . $_SESSION["URI"] . "$url");
+	if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+	  echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
+	  die("<b>".$_SESSION["URI"].$link."</b>");
+	} else
+	  header("Location: " . $_SESSION["URI"] . "$url");
 }
 
 include($_SESSION["path"]."/header.html");
@@ -56,7 +60,7 @@ if(function_exists($plugin . "_help")) {
 }
 
 // select what to do
-if($_REQUEST["submit"] == 1) {
+if(@$_REQUEST["submit"]) {
     if(call_user_func($plugin . "_check", $_REQUEST["type"])) {
 		call_user_func($plugin . "_save", $_REQUEST["type"], $_REQUEST["mxhost"]);
     } else {
