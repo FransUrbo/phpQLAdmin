@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliverymode (delivery preferences)
-// $Id: attrib.deliverymode.inc,v 2.2 2002-12-18 16:28:46 turbo Exp $
+// $Id: attrib.deliverymode.inc,v 2.3 2003-01-14 15:53:55 turbo Exp $
 
 function attribute_check($type){
 	global $error, $reply, $mailreplytext;
@@ -99,6 +99,19 @@ function attribute_save($type){
 	}
 	if (!empty($mailreplytext)) {
 		$entry[PQL_LDAP_ATTR_REPLYTEXT] = $mailreplytext;
+	} else {
+		// Check if the entry in database is empty. 
+		// If not, we have choosen to DELETE the value
+		$mrt_db = pql_get_userattribute($_pql->ldap_linkid,
+										$GLOBALS["USER_SEARCH_DN_USR"],
+										$domain, $user,
+										PQL_LDAP_ATTR_REPLYTEXT);
+		if($mrt_db[0]) {
+			pql_remove_userattribute($_pql->ldap_linkid,
+									 $GLOBALS["USER_SEARCH_DN_USR"],
+									 $domain, $user,
+									 PQL_LDAP_ATTR_REPLYTEXT, '');
+		}
 	}
 	
 	switch($type){
@@ -138,3 +151,12 @@ function attribute_save($type){
 	}
 
 }
+
+/*
+ * Local variables:
+ * mode: php
+ * mode: font-lock
+ * tab-width: 4
+ * End:
+ */
+?>
