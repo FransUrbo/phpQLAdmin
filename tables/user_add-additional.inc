@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-additional.inc,v 1.3 2003-11-15 12:24:31 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.4 2003-11-19 16:44:07 turbo Exp $ */ ?>
   <form action="<?=$PHP_SELF?>" method="post" accept-charset="UTF-8">
     <input type="hidden" name="surname" value="<?=$surname?>">
     <input type="hidden" name="name" value="<?=$name?>">
@@ -15,7 +15,14 @@
 
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Additional account properties')?></th>
-<?php
+<?php if($homedirectory) { ?>
+        <!-- Home directory -->
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"><?=$LANG->_('Home directory')?></td>
+          <td><?=$homedirectory?></td>
+        </tr>
+
+<?php }
 	if($account_type == "normal" or $account_type == "system") {
 		// display forms for SYSTEM/MAIL account(s)
 ?>
