@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.172.2.1.6.1 2004-05-05 07:40:47 turbo Exp $
+// $Id: pql.inc,v 2.172.2.1.6.2 2004-05-05 09:43:11 turbo Exp $
 //
 
 // ----------------------------
@@ -343,8 +343,18 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 
 	// -----
 	// Create the RDN for the user
-	$userdn = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) . "=" .
-	          $entry[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)] . ",";
+	if($entry[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)])
+	  $userdn = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) . "=" .
+		$entry[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)] . ",";
+	elseif($entry[pql_get_define("PQL_ATTR_UID")])
+	  $userdn = pql_get_define("PQL_ATTR_UID")."=".$entry[pql_get_define("PQL_ATTR_UID")].",";
+	else {
+		echo "I can't figure out how to name the RDN!<br>";
+		echo "Both the user reference value (".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn);
+		echo ") and the backup reference (".pql_get_define("PQL_ATTR_UID").") is empty...<br>";
+		die("I have no idea how to continue from here...");
+	}
+
 	if($branch)
 	  $userdn .= urldecode($branch);
 	else
