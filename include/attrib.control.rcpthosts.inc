@@ -2,7 +2,7 @@
 // control attribute plugin for
 // rcpthosts (blocked local addresses)
 //
-// $Id: attrib.control.rcpthosts.inc,v 2.11 2003-05-08 09:11:15 turbo Exp $
+// $Id: attrib.control.rcpthosts.inc,v 2.12 2003-05-18 15:34:36 turbo Exp $
 
 function rcpthosts_check($type){
     global $error, $rcpthosts, $domain, $rootdn;
@@ -156,6 +156,17 @@ function rcpthosts_save($type, $host) {
 	  $all = ' all';
 
     switch($type) {
+      case "replicate":
+		// start replication manually
+
+		if(pql_control_update_domains($_pql_control, "cn=$host,".$GLOBALS["USER_SEARCH_DN_CTR"], $host, '', 'rcpthosts'))
+		  $msg = "Successfully replicated rcpthosts";
+		else
+		  $msg = "Failed replicating rcpthosts: " . pql_ldap_error($_pql_control->ldap_linkid);
+	
+		attribute_forward($msg);
+		break;
+
       case "del":
 		// delete entry
 		
@@ -172,7 +183,7 @@ function rcpthosts_save($type, $host) {
 
       case "add":
 		// add entry
-		
+
 		foreach($HOSTS as $host) {
 			// adding specified domain to rcpthosts in host object
 			if(pql_control_add_attribute($_pql_control->ldap_linkid,
