@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_edit_attribute.php,v 1.29 2005-03-15 09:48:14 turbo Exp $
+// $Id: ezmlm_edit_attribute.php,v 1.30 2005-03-17 09:13:10 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -19,7 +19,7 @@ function list_forward($domainname, $listno, $msg) {
 	else
 	  $url = "ezmlm_detail.php?domain=$domain&domainname=$domainname&msg=$msg";
 
-    header("Location: " . $_SESSION["URI"] . "$url");
+    pql_header($url);
 }
 // }}}
 

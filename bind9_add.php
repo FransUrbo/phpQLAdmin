@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.20 2005-03-09 09:59:03 turbo Exp $
+// $Id: bind9_add.php,v 2.21 2005-03-17 09:13:10 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -56,7 +56,7 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 		  if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
 			die($url);
 		  else
-			header("Location: ".$_SESSION["URI"] . "$url");
+			pql_header($url);
 		  // }}}
 	  }
 } elseif(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'host')) {
@@ -195,7 +195,7 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 		  if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
 			die($url);
 		  else
-			header("Location: $url");
+			pql_header($url);
 	  }
 	  // }}}
 }

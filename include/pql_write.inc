@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.21 2005-03-04 09:52:56 turbo Exp $
+// $Id: pql_write.inc,v 2.22 2005-03-17 09:13:10 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -538,7 +538,7 @@ function pql_domain_del($ldap, $domain, $delete_forwards) {
 	// domain/branch being deleted...
 	if(eregi($domain, $_SESSION["USER_DN"])) {
 		$msg=urlencode(pql_format_error_span("Sorry, I can't allow you to delete the branch under which you yourself is situated!"));
-		header("Location: " . $_SESSION["URI"] . "domain_detail.php?domain=$domain&msg=$msg");
+		pql_header("domain_detail.php?domain=$domain&msg=$msg");
 	}
 
 	// Searching for sub entries

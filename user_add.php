@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.123 2005-03-09 09:59:03 turbo Exp $
+// $Id: user_add.php,v 2.124 2005-03-17 09:13:10 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -287,7 +287,7 @@ switch($_REQUEST["page_curr"]) {
 				$msg = urlencode($LANG->_('Successfully created the new user'));
 				$link  = "user_detail.php?rootdn=".$url["rootdn"]."&";
 				$link .= "domain=".$url["domain"]."&user=".$_REQUEST["destination"]."&msg=$msg&rlnb=2";
-				header("Location: " . $_SESSION["URI"] . "$link");
+				pql_header($link);
 			}
 		}
 		// }}}

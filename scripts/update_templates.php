@@ -1,7 +1,7 @@
 <?php
 // Convert the old ways of storing 'user template' information
 // 
-// $Id: update_templates.php,v 1.3 2005-03-09 09:59:03 turbo Exp $
+// $Id: update_templates.php,v 1.4 2005-03-17 09:13:11 turbo Exp $
 
 // {{{ Setup session etc
 require("../include/pql_session.inc");
@@ -57,7 +57,7 @@ if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
   echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<p>";
   die("<b>'".$_SESSION["URI"]."'$url</b>");
 } else {
-  header("Location: ".$_SESSION["URI"].$url);
+  pql_header($url);
 }
 // }}}
 

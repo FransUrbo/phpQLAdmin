@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.34 2005-03-07 10:58:07 turbo Exp $
+// $Id: user_add-save.inc,v 1.35 2005-03-17 09:13:11 turbo Exp $
 
 // {{{ URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
 if($_REQUEST["surname"]) {
@@ -351,12 +351,12 @@ if($DNs[0]) {
 <?php
 	   die();
   } else {
-	header("Location: " . $_SESSION["URI"] . "$link");
+	pql_header($link);
   }
 } else {
   $msg = urlencode($LANG->_('Failed to create the new user') . ":&nbsp;" . ldap_error($_pql->ldap_linkid));
   $link = "domain_detail.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&msg=$msg";
-  header("Location: " . $_SESSION["URI"] . "$link");
+  pql_header($link);
 }
 // }}}
 

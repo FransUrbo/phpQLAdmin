@@ -1,6 +1,6 @@
 <?php
 // edit attributes of a BIND9 DNS zone
-// $Id: bind9_edit_attributes.php,v 2.10 2005-03-09 09:59:03 turbo Exp $
+// $Id: bind9_edit_attributes.php,v 2.11 2005-03-17 09:13:10 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -19,7 +19,7 @@ function attribute_forward($msg) {
     $url  = "domain_detail.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"]."&view=".$_REQUEST["view"];
 	$url .= "&dns_domain_name=".$_REQUEST["dns_domain_name"]."&msg=$msg";
 
-    header("Location: " . $_SESSION["URI"] . "$url");
+    pql_header($url);
 }
 // }}}
 ?>
