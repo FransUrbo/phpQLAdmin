@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.5 2003-05-09 06:58:48 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.6 2003-05-15 08:02:15 turbo Exp $
 
 function attribute_check() {
     global $additionaldomainname, $domain, $oldvalue, $_pql, $error, $rootdn;
@@ -38,15 +38,14 @@ function attribute_print_form() {
           <td class="title">Additional domain name</td>
           <td><?php echo format_error($error["additionaldomainname"]); ?><input type="text" name="additionaldomainname" value="<?php echo $additionaldomainname; ?>" size="20"></td>
         </tr>
-<?php if(!$config["PQL_GLOB_CONTROL_AUTOADDLOCALS"] or !$config["PQL_GLOB_CONTROL_AUTOADDRCPTHOSTS"]) {
-		if(!function_exists("pql_control"))
-		  require("./include/pql_control.inc");
+<?php if(!function_exists("pql_control"))
+		require("./include/pql_control.inc");
 
-		// Initiate a connection to the QmailLDAP/Controls DN
-		$_pql_control = new pql_control($GLOBALS["USER_HOST"], $GLOBALS["USER_DN"], $GLOBALS["USER_PASS"]);
+	  // Initiate a connection to the QmailLDAP/Controls DN
+	  $_pql_control = new pql_control($GLOBALS["USER_HOST"], $GLOBALS["USER_DN"], $GLOBALS["USER_PASS"]);
 		
-		$hosts = pql_control_get_hosts($_pql_control->ldap_linkid, $GLOBALS["USER_SEARCH_DN_CTR"]);
-		if(is_array($hosts)) {
+	  $hosts = pql_control_get_hosts($_pql_control->ldap_linkid, $GLOBALS["USER_SEARCH_DN_CTR"]);
+	  if(is_array($hosts)) {
 ?>
 
         <tr></tr>
@@ -66,8 +65,12 @@ function attribute_print_form() {
             <input type="checkbox" name="locals_<?=$i?>">Add to all hosts<br>
             <input type="hidden" name="locals" value="<?=$i?>">
             &nbsp;If all left unset, no replication will take place
-<?php		} else { ?>
+<?php		} else {
+				$cnt = count($hosts);
+?>
               &nbsp;Automatic replication configured
+              <input type="hidden" name="locals_<?=$cnt?>" value="on">
+              <input type="hidden" name="locals" value="<?=$cnt?>">
 <?php		} ?>
           </td>
         </tr>
@@ -85,14 +88,16 @@ function attribute_print_form() {
             <input type="checkbox" name="rcpthosts_<?=$i?>">Add to all hosts<br>
             <input type="hidden" name="rcpthosts" value="<?=$i?>">
             &nbsp;If all left unset, no replication will take place
-<?php 		} else { ?>
+<?php 		} else {
+				$cnt = count($hosts);
+?>
               &nbsp;Automatic replication configured
+              <input type="hidden" name="rcpthosts_<?=$cnt?>" value="on">
+              <input type="hidden" name="rcpthosts" value="<?=$cnt?>">
 <?php		} ?>
           </td>
         </tr>
-<?php	} // if(is_array($hosts))
-	  } // if PQL_GLOB_CONTROL_AUTOADDLOCALS || PQL_GLOB_CONTROL_AUTOADDRCPTHOSTS
-?>
+<?php } ?>
       </th>
     </table>
 
