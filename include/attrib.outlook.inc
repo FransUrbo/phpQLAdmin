@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for pilotPerson objects etc
-// $Id: attrib.outlook.inc,v 1.13 2003-07-02 07:59:01 turbo Exp $
+// $Id: attrib.outlook.inc,v 1.14 2003-10-21 13:43:37 turbo Exp $
 
 /*
 	Attributes managed here:
@@ -43,7 +43,7 @@ function attribute_check() {
 }
 
 function attribute_init() {
-    global $$attrib, $oldvalue;
+    global $$attrib, $oldvalue, $attrib;
     $$attrib = $oldvalue;
 }
 
