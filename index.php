@@ -1,6 +1,6 @@
 <?php
 // logins to the system
-// $Id: index.php,v 2.44 2005-03-09 09:59:03 turbo Exp $
+// $Id: index.php,v 2.45 2005-03-17 09:13:47 turbo Exp $
 //
 // Start debuging
 // http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0
@@ -32,13 +32,22 @@ if ($_GET["logout"] == 1 or !empty($_GET["msg"])) {
 	if ($_GET["logout"] == 1) {
 		session_write_close();
 
-		if(!empty($_POST["msg"]))
-		  header("Location:index.php?msg=".urlencode($_POST["msg"]));
-		elseif(!empty($_GET["msg"]))
-		  header("Location:index.php?msg=".urlencode($_GET["msg"]));
-		else
-		  header("Location:index.php");
+		// To early (haven't loaded the API's) to use pql_header(), so we
+		// do it the hard way...
+		if(!empty($_POST["msg"])) {
+			header("Location: index.php?msg=".urlencode($_POST["msg"]));
+			exit;
+		} elseif(!empty($_GET["msg"])) {
+			header("Location: index.php?msg=".urlencode($_GET["msg"]));
+			exit;
+		} else {
+			header("Location: index.php");
+			exit;
+		}
 	}
+
+	// Create a new session
+	require("./include/pql_session.inc");
 }
 
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -65,12 +74,15 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 
 <?php
 	}
+
+if(!($whoarewe = pql_get_define("PQL_CONF_WHOAREWE")))
+  $whoarewe = "<br>phpQLAdmin @ ".$_SERVER["SERVER_NAME"];
 ?>
   <br><br>
 
   <table cellspacing="0" cellpadding="3" border="0" align=center>
     <tr>
-      <td bgcolor="#D0DCE0"><FONT size=3><?php echo pql_complete_constant($LANG->_('Welcome to \b%whoarewe%\B'), array('whoarewe' => pql_get_define("PQL_CONF_WHOAREWE"))); ?></FONT></td>
+      <td bgcolor="#D0DCE0"><center><FONT size=3><?php echo pql_complete_constant($LANG->_('Welcome to \b%whoarewe%\B'), array('whoarewe' => $whoarewe)); ?></FONT></center></td>
     </tr>
 
     <tr align="center">
@@ -105,7 +117,7 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 		$server[0] = urldecode($server[0]);
 ?>
         <b><?=$server[0].":".$server[1]?></b>
-        <input type="hidden" name="server" value="<?php echo pql_get_define("PQL_CONF_HOST"); ?>">
+        <input type="hidden" name="server" value="<?=$_SESSION["USER_HOST"]?>">
 <?php
 	}
 ?>
@@ -152,18 +164,12 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 	// -------------------------------------
 	if($_POST["server"]) {
 		// Get the LDAP server
-		if(!$_SESSION["USER_HOST"]) {
-			$host = split(';', $_POST["server"]);
-			$_SESSION["USER_HOST"] = $host[0] . ";" . $host[1];
-		}
+		if(!$_SESSION["USER_HOST"])
+		  $_SESSION["USER_HOST"] = $_POST["server"];
 
 		// Get the search base - controls database
 		if(!$_SESSION["USER_SEARCH_DN_CTR"]) {
-			// Get first entry -> default server:port
-			$host = split('\+', $_POST["server"]);
-			
-			// Get hostname and base DN
-			$dn   = split(';', $host[0]);
+			$dn = split(';', $_SESSION["USER_HOST"]);
 			$_SESSION["USER_SEARCH_DN_CTR"] = $dn[2];
 		}
 	} else
@@ -199,8 +205,7 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 				$msg = $LANG->_('Error') . ": " . ldap_err2str($error);
 
 				session_write_close();
-				header("Location:index.php?msg=" . urlencode($msg) . "&uname=$uname");
-				exit;
+				pql_header("index.php?msg=" . urlencode($msg) . "&uname=$uname");
 			}
 		  }
 		}
@@ -209,8 +214,9 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 	if(!$user_found) {
 		$msg = urlencode($LANG->_('Error') . ": " . $LANG->_("Can't find you in the database"));
 
+		unset($_POST);
 		session_write_close();
-		header("Location: " . $_SESSION["URI"] . "index.php?msg=$msg");
+		pql_header($_SESSION["URI"] . "index.php?msg=$msg");
 	}
 
 	// We made it, so set all the session variables.
@@ -226,12 +232,10 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 
 	session_write_close();
 	if(pql_get_attribute($_pql->ldap_linkid, $_SESSION["USER_DN"], pql_get_define("PQL_ATTR_START_ADVANCED")))
-	  Header("Location:index2.php?advanced=1");
+	  pql_header("index2.php?advanced=1");
 	else
-	  Header("Location:index2.php");
+	  pql_header("index2.php");
 }
-
-// Closing connection
 
 /*
  * Local variables:
