@@ -2,7 +2,7 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.12 2003-05-01 10:18:27 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.13 2003-05-08 09:11:14 turbo Exp $
 
 function locals_check($type){
     global $error, $locals;
@@ -108,7 +108,7 @@ function locals_print_form(){
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">Add domain:</th>
         <tr class="<?php table_bgcolor(); ?>">
-          <td><input type="text" name="set""></td>
+          <td><input type="text" name="set" size="30"></td>
         </tr>
       </th>
     </table>

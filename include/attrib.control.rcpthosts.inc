@@ -2,7 +2,7 @@
 // control attribute plugin for
 // rcpthosts (blocked local addresses)
 //
-// $Id: attrib.control.rcpthosts.inc,v 2.10 2003-05-06 12:47:41 turbo Exp $
+// $Id: attrib.control.rcpthosts.inc,v 2.11 2003-05-08 09:11:15 turbo Exp $
 
 function rcpthosts_check($type){
     global $error, $rcpthosts, $domain, $rootdn;
@@ -95,7 +95,7 @@ function rcpthosts_print_form(){
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">Add domain:</th>
         <tr class="<?php table_bgcolor(); ?>">
-          <td><input type="text" name="set"></td>
+          <td><input type="text" name="set" size="30"></td>
         </tr>
       </th>
     </table>
