@@ -36,7 +36,7 @@ $username = $username[0];
 
 // forward back to users detail page
 function attribute_forward($msg, $rlnb = false) {
-    global $domain, $user, $rootdn;
+    global $domain, $user, $rootdn, $view;
 
     // URL Encode some of the most important information
     // (root DN, domain/branch DN and user DN)
