@@ -53,6 +53,9 @@ phpQLAdmin 2.0.15 Release (TO BE ANNOUNCED)
 	    Don't try to do a foreach on this value, it will give an
 	    error like 'Invalid argument supplied for foreach()'.
 	    Closes bug 24
+	  - Don't output the 'No users in this branch!' if there is no
+	    users. We want the possibility to add users from this page.
+	    Closes bug 28
  
 	GUI layout change
 	  - Possibility to set a value in the domain branch saying we

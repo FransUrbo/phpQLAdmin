@@ -1,6 +1,5 @@
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=$LANG->_('Registred users')?></th>
-<?php if(is_array($users)) { ?>
       <tr>
         <td class="title"><?=$LANG->_('User')?></td>
         <td class="title"><?=$LANG->_('Username')?></td>
@@ -8,7 +7,7 @@
         <td class="title"><?=$LANG->_('Options')?></td>
       </tr>
 
-<?php	asort($users);
+<?php 	asort($users);
 		foreach($users as $user) {
 			$userdn = urlencode($user);
 
@@ -32,14 +31,7 @@
 
 <?php		}
 		}
-	  } else {
-		  // no users registred
 ?>
-      <tr class="<?php table_bgcolor(); ?>">
-        <td colspan="4"><?=$LANG->_('No users registred')?></td>
-      </tr>
-<?php } ?>
-
       <tr class="subtitle">
         <td colspan="4"><a href="user_add.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"> <?=$LANG->_('Register new user')?></a></td>
       </tr>
