@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.51 2004-04-06 05:53:44 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.52 2004-04-28 14:00:22 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -184,6 +184,11 @@ function user_generate_mailstore($ldap, $email, $dn, $entry, $type) {
 	//
 	// Convert the whole mailstore to uppercase? Uncomment next line. 
 	//	$mailstore = strtoupper($mailstore);													
+	//	
+	//		if(! ereg("/$", $mailstore)) {
+	//			// Add a trailing slash - Maildir!
+	//			$mailstore .= "/";
+	//		}
 	
 	return($mailstore);
 }
@@ -194,6 +199,8 @@ function user_generate_mailstore($ldap, $email, $dn, $entry, $type) {
 // See information about function user_generate_mailstore()
 // Above. Exact same options apply
 function user_generate_homedir($ldap, $email, $dn, $entry, $type) {
+    $homedir = '';
+
 	//	if($dn) {
 	//		$homedir = pql_domain_get_value($ldap, $dn, pql_get_define("PQL_ATTR_BASEHOMEDIR"));
 	//		$domain  = pql_domain_get_value($ldap, $dn, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
@@ -206,14 +213,20 @@ function user_generate_homedir($ldap, $email, $dn, $entry, $type) {
 	//	  // We're creating a branch, so add the domain to string
 	//	  $branch = '%d%/';
 	//	
-	//	if(! ereg("/$", $basemaildir)) {
+	//	if(! ereg("/$", $homedir)) {
 	//		$homedir = $homedir . "/" . $branch . "%u%";
 	//	} else {
 	//		$homedir = $homedir . $branch . "%u%";
 	//	}
+	//	
 	//	$homedir = pql_complete_constant($homedir, array("d" => pql_format_international($domain), 
 	//													 "u" => $entry[pql_get_define("PQL_ATTR_UID")],
 	//													 "h" => $entry[pql_get_define("PQL_ATTR_MAILHOST")]));
+
+	if(! ereg("/$", $homedir)) {
+		// Always add a trailing slash for home directories (just in case!)
+		$homedir .= "/";
+	}
 	
 	return($homedir);
 }
