@@ -11,7 +11,7 @@
 // If you want to customise phpQLAdmin, do NOT do it here, the file
 // to customise is 'config_attributes.inc'.
 //
-// $Id: config_plugins.inc,v 2.16 2004-05-10 13:23:08 turbo Exp $
+// $Id: config_plugins.inc,v 2.17 2004-10-13 17:42:43 turbo Exp $
 
 pql_plugin_register(pql_get_define("PQL_ATTR_ISACTIVE"),
 					"attrib.accountstatus.inc",
@@ -133,7 +133,9 @@ pql_plugin_register(pql_get_define("PQL_ATTR_GROUP_CONFIRM"),
 					"",
 					array(pql_get_define("PQL_ATTR_GROUP_CONFIRM"),
 						  pql_get_define("PQL_ATTR_GROUP_MEMBERS_ONLY"),
-						  pql_get_define("PQL_ATTR_START_ADVANCED")));
+						  pql_get_define("PQL_ATTR_START_ADVANCED"),
+						  pql_get_define("PQL_ATTR_GROUP_CONFIRM"),
+						  pql_get_define("PQL_ATTR_GROUP_MEMBERS_ONLY")));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_USERNAME_PREFIX"),
 					"attrib.usernameprefix.inc",
@@ -144,7 +146,10 @@ pql_plugin_register(pql_get_define("PQL_ATTR_USERNAME_PREFIX"),
 pql_plugin_register(pql_get_define("PQL_ATTR_MAILALTERNATE"),
 					"attrib.mailalternateaddress.inc",
 					"",
-					pql_get_define("PQL_ATTR_MAILALTERNATE"));
+					array(pql_get_define("PQL_ATTR_MAILALTERNATE"),
+						  pql_get_define("PQL_ATTR_GROUP_822_MEMBER"),
+						  pql_get_define("PQL_ATTR_GROUP_822_SENDER"),
+						  pql_get_define("PQL_ATTR_GROUP_822_MODERATOR")));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_FORWARDS"),
 					"attrib.mailforwardingaddress.inc",
@@ -216,6 +221,15 @@ pql_plugin_register(pql_get_define("PQL_ATTR_ADDITIONAL_GROUP"),
 					"attrib.additionalgroup.inc",
 					"",
 					pql_get_define("PQL_ATTR_ADDITIONAL_GROUP"));
+
+pql_plugin_register(pql_get_define("PQL_ATTR_GROUP_OC"),
+					"attrib.qmailgroup.inc",
+					"",
+					array(pql_get_define("PQL_ATTR_GROUP_DN_MEMBER"),
+						  pql_get_define("PQL_ATTR_GROUP_DN_SENDER"),
+						  pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR"),
+						  pql_get_define("PQL_ATTR_GROUP_FILTER_MEMBER"),
+						  pql_get_define("PQL_ATTR_GROUP_FILTER_SENDER")));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_GROUP_CONFIRM_TEXT"),
 					"attrib.confirmtexts.inc",
