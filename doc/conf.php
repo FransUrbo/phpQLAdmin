@@ -2,7 +2,7 @@
 <head>
 	<title>phpQL</title>
 	<link rel="stylesheet" href="../normal.css" type="text/css">
-	<!-- $Id: conf.php,v 2.1 2003-01-04 11:24:50 turbo Exp $ -->
+	<!-- $Id: conf.php,v 2.2 2003-02-14 10:10:31 turbo Exp $ -->
 </head>
 
 <body bgcolor="#e7e7e7" background="../images/bkg.png">
@@ -62,17 +62,27 @@ bar could get slow, at least if PQL_SHOW_USERS is turned on.
 ldap-server for the users database.<p>
 In version 2.x, this define is multi-purposed. It is multiple hosts running
 LDAP servers (database layout must match though) with different data (such as
-many ISP's databases. Each server is separated by space.<p>
+many ISP's databases). Each server is separated by space.<p>
 In each server define, there is three fields separated by semicolon (;).<br>
 <b>First field</b> is the hostname,<br>
 <b>Second field</b> is the port number,<br>
-<b>Third field</b> is the DN path to the user database (base for searches),<br>
-<b>Fourth field</b> is the DN path to the qmail-ldap/controls database.<br>
+<b>Third field</b> is the DN path to the qmail-ldap/controls database.<br>
 <u>Example:</u> Two LDAP servers on separate ports and using separate TLD.
 <pre>
-localhost;389;dc=com;ou=QmailLDAP,dc=example,dc=com localhost;3389;dc=net;ou=QmailLDAP,dc=domain,dc=net
+localhost;389;ou=QmailLDAP,dc=example,dc=com localhost;3389;ou=QmailLDAP,dc=domain,dc=net
 </pre>
-<br>
+As you might notice (especially if you're used to older versions of this
+software) that the Base DN is no more. It is found by doing a search for
+the naming context of the LDAP server. An LDAP search command would look like
+this:
+<pre>
+[papadoc.pts/3]$ ldapsearch -x -h localhost -p 389 -b '' -s base objectclass=* namingContexts
+dn:
+namingContexts: dc=com
+</pre>
+This say that my base DN (what I've entered as <b>defaultsearchbase</b> and <b>suffix</b>
+configuration in my slapd.conf file) is <u>dc=com</u>.
+<p>
 <b>PQL_LDAP_CONTROL_USE</b>
 <br>
 (true | false) set to true, if qmail-ldap/control patch is supported by your system. Make sure
