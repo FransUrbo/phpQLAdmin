@@ -84,7 +84,7 @@
 #						vatNumber													25
 # -----------------------------------------
 
-# $Id: phpQLAdmin.schema,v 2.38 2004-03-03 07:25:16 turbo Exp $
+# $Id: phpQLAdmin.schema,v 2.39 2004-03-03 08:33:23 turbo Exp $
 
 # PQL_CONF_SHOW_USERS (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.1 NAME 'showUsers'
@@ -557,7 +557,8 @@ objectclass ( 1.3.6.1.4.1.8767.3.1.2
 				additionalDomainName $ defaultPasswordScheme $
 				ezmlmAdministrator $ maximumMailingLists $
 				autoCreateUsername $ autoCreateMailAddress $
-				userNamePrefix $ userNamePrefixLength $ vatNumber )
+				userNamePrefix $ userNamePrefixLength $ vatNumber $
+				mobile )
 	SUP top AUXILIARY )
 
 objectclass ( 1.3.6.1.4.1.8767.3.1.3
