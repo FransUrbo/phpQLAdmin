@@ -1,8 +1,8 @@
-<?php /* $Id: user_add-details.inc,v 1.9 2004-02-19 11:57:02 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.10 2004-02-27 12:19:39 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
-<?php if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) == pql_get_define("PQL_GLOB_ATTR_UID")) {
+<?php if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_GLOB_ATTR_UID")) {
 		if(!pql_get_define("PQL_GLOB_ATTR_AUTOCREATEUSERNAME", $_REQUEST["domain"]) or
 		   (pql_get_define("PQL_GLOB_ATTR_AUTOCREATEUSERNAME", $_REQUEST["domain"]) and !function_exists('user_generate_uid')) or
 		   $_SESSION["ADVANCED_MODE"]) {
@@ -10,7 +10,7 @@
         <!-- Username (UID) -->
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Username')?></td>
-          <td><?php echo pql_format_error_span($error_text["uid"]); ?><input type="text" name="uid" value="<?=$uid?>"></td>
+          <td><?php echo pql_format_error_span($error_text["uid"]); ?><input type="text" name="uid" value="<?=$_REQUEST["uid"]?>"></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
@@ -32,7 +32,7 @@
           <td class="title"><?=$LANG->_('Surname')?></td>
           <td>
               <?php echo pql_format_error_span($error_text["surname"]); ?>
-              <input type="text" name="surname" value="<?=$surname?>">
+              <input type="text" name="surname" value="<?=$_REQUEST["surname"]?>">
           </td>
         </tr>
 
@@ -41,12 +41,12 @@
           <td class="title"><?=$LANG->_('Lastname')?></td>
           <td>
             <?php echo pql_format_error_span($error_text["name"]); ?>
-            <input type="text" name="name" value="<?=$name?>">
+            <input type="text" name="name" value="<?=$_REQUEST["name"]?>">
           </td>
         </tr>
-<?php if($account_type != "forward") {
+<?php if($_REQUEST["account_type"] != "forward") {
 		// Get the default password scheme for branch
-		$defaultpasswordscheme = pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_DEFAULTPASSWORDSCHEME"));
+		$_REQUEST["defaultpasswordscheme"] = pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_DEFAULTPASSWORDSCHEME"));
 
 		if(!$defaultpasswordscheme or $_SESSION["ADVANCED_MODE"])  {
 			// We have no default password scheme - display forms for SYSTEM/MAIL account
@@ -56,18 +56,18 @@
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Password encryption scheme')?></td>
           <td>
-<?php		if(eregi(',', pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn))) {
+<?php		if(eregi(',', pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"]))) {
 				// We got more than one password scheme...
 
 				// Show each of the schemes as radio buttons
-				$schemes = split(",", pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn));
+				$schemes = split(",", pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"]));
 				foreach($schemes as $scheme) {
 ?>
             <input type="radio" name="pwscheme" value="<?=$scheme?>" <?php if($defaultpasswordscheme == $scheme) { echo "CHECKED"; } ?>><?=$scheme?>
 <?php			}
 			} else { ?>
-            Scheme: <b>{<?php echo pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn); ?>}</b>
-            <input type="hidden" name="pwscheme" value="<?php echo pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn); ?>">
+            Scheme: <b>{<?php echo pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"]); ?>}</b>
+            <input type="hidden" name="pwscheme" value="<?php echo pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"]); ?>">
 <?php		} ?>
           </td>
         </tr>
@@ -87,7 +87,7 @@
           </td>
         </tr>
 
-<?php	if(eregi('KERBEROS', pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn))) { ?>
+<?php	if(eregi('KERBEROS', pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"]))) { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
           <td><?=$LANG->_('If using {KERBEROS} as password scheme, make sure you include the correct REALM (principal@REALM.TLD)')?></td>
@@ -105,7 +105,7 @@
 
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Account properties')?></th>
-<?php if(($account_type == "system") or ($account_type == "shell")) {
+<?php if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "shell")) {
 		// display forms for SYSTEM account
 
 		if($_SESSION["ADVANCED_MODE"]) {
@@ -134,7 +134,7 @@
 	} // end if account type == system
 ?>
 
-<?php if($account_type != "shell") {
+<?php if($_REQUEST["account_type"] != "shell") {
 		if(!pql_get_define("PQL_GLOB_ATTR_CREATE_ADDRESS", $_REQUEST["domain"]) or
 		   (pql_get_define("PQL_GLOB_ATTR_CREATE_ADDRESS", $_REQUEST["domain"]) and !function_exists('user_generate_email')) or
 		   $_SESSION["ADVANCED_MODE"] or $error_text["email"]) {
@@ -144,7 +144,7 @@
           <td class="title"><?=$LANG->_('Main address')?></td>
           <td>
             <?php echo pql_format_error_span($error_text["email"]); ?>
-            <input type="text" name="email" value="<?=$email?>">
+            <input type="text" name="email" value="<?=$_REQUEST["email"]?>">
 <?php 		if(is_array($additionaldomainname)) { ?>
             <b>@ <select name="email_domain"></b>
               <option value="<?=$defaultdomain?>"><?=pql_maybe_idna_decode($defaultdomain)?></option>
@@ -215,27 +215,27 @@
 			// Only one subbranch
 			if(pql_get_define("PQL_GLOB_SUBTREE_USERS")) {
 ?>
-        <input type="hidden" name="subbranch" value="<?php echo pql_get_define("PQL_GLOB_SUBTREE_USERS").",".$domain?>">
+        <input type="hidden" name="subbranch" value="<?php echo pql_get_define("PQL_GLOB_SUBTREE_USERS").",".$_REQUEST["domain"]?>">
 <?php
 			} else {
 ?>
-        <input type="hidden" name="subbranch" value="<?=$domain?>">
+        <input type="hidden" name="subbranch" value="<?=$_REQUEST["domain"]?>">
 <?php
 			}
 		}
 	} else {
 		if(pql_get_define("PQL_GLOB_SUBTREE_USERS")) {
 ?>
-        <input type="hidden" name="subbranch" value="<?php echo pql_get_define("PQL_GLOB_SUBTREE_USERS").",".$domain?>">
+        <input type="hidden" name="subbranch" value="<?php echo pql_get_define("PQL_GLOB_SUBTREE_USERS").",".$_REQUEST["domain"]?>">
 <?php
 		} else {
 ?>
-        <input type="hidden" name="subbranch" value="<?=$domain?>">
+        <input type="hidden" name="subbranch" value="<?=$_REQUEST["domain"]?>">
 <?php
 		}
 	} // end if ADVANCED mode
 
-	if($account_type == "forward") {
+	if($_REQUEST["account_type"] == "forward") {
 		// display forms for FORWARDING account
 ?>
 
@@ -244,7 +244,7 @@
           <td class="title"><?=$LANG->_('Forwarding address')?></td>
           <td>
             <?php echo pql_format_error_span($error_text["forwardingaddress"]); ?>
-            <input type="text" name="forwardingaddress" value="<?=$forwardingaddress?>"><?=$LANG->_('Email')?>
+            <input type="text" name="forwardingaddress" value="<?=$_REQUEST["forwardingaddress"]?>"><?=$LANG->_('Email')?>
           </td>
         </tr>
 
@@ -254,7 +254,7 @@
 <?php
 	} // account_type == forward
   
-    if($account_type != 'shell') {
+    if($_REQUEST["account_type"] != 'shell') {
 ?>
         <!-- Account status -->
         <tr class="<?php pql_format_table(); ?>">
@@ -275,7 +275,7 @@
 
     <input type="hidden" name="page_curr" value="one">
 <?php
-	if(($_SESSION["ADVANCED_MODE"] == 0) or ($account_type == "forward")) {
+	if(($_SESSION["ADVANCED_MODE"] == 0) or ($_REQUEST["account_type"] == "forward")) {
 		// Go to save, no next form...
 		if($_SESSION["ADVANCED_MODE"] == 0) {
 			// Autocreate some values by using 'safe' (?) defaults
@@ -288,7 +288,7 @@
     <input type="hidden" name="page_next" value="save">
 <?php
 	} else {
-		if($account_type != 'shell') {
+		if($_REQUEST["account_type"] != 'shell') {
 ?>
     <input type="hidden" name="page_next" value="two">
 <?php
@@ -299,9 +299,9 @@
 		}
 	} // account_type == forward
 ?>
-    <input type="hidden" name="domain" value="<?=$domain?>">
-    <input type="hidden" name="account_type" value="<?=$account_type?>">
-    <input type="hidden" name="rootdn" value="<?=$rootdn?>">
+    <input type="hidden" name="domain"       value="<?=$_REQUEST["domain"]?>">
+    <input type="hidden" name="account_type" value="<?=$_REQUEST["account_type"]?>">
+    <input type="hidden" name="rootdn"       value="<?=$_REQUEST["rootdn"]?>">
 
     <br>
 
