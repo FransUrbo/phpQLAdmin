@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.180 2004-05-07 07:40:14 turbo Exp $
+// $Id: pql.inc,v 2.181 2004-05-10 13:25:58 turbo Exp $
 //
 
 // ----------------------------
@@ -963,8 +963,19 @@ function pql_domain_set_value($linkid, $dn, $type, $value) {
 
 	if($value and !$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")]) {
 		// Setup objectclasses
-		if(!($entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_setup_branch_objectclasses(0, $dn, $linkid)))
-		  unset($entry[pql_get_define("PQL_ATTR_OBJECTCLASS")]);
+
+		// Get existing objectclasses in the object
+		$old = pql_setup_branch_objectclasses(0, $dn, $linkid);
+
+		// Get objectclassess to add
+		$new = pql_missing_objectclasses($linkid, $dn, $entry);
+		
+		if(is_array($new) && is_array($old))
+		  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = $old + $new;
+		elseif(is_array($old))
+		  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = $old;
+		elseif(is_array($new))
+		  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = $new;
 
 		if(!in_array("phpQLAdminGlobal", $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")])) {
 			// There's TWO config object classes. A BRANCH and a GLOBAL.
@@ -996,12 +1007,18 @@ function pql_domain_set_value($linkid, $dn, $type, $value) {
 				$old_ocs = $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")];
 
 				// Get existing objectclasses in the object
-				$existing = pql_setup_branch_objectclasses(0, $dn, $linkid);
+				$old = pql_setup_branch_objectclasses(0, $dn, $linkid);
 
 				// Get objectclassess to add
 				$new = pql_missing_objectclasses($linkid, $dn, $entry);
 
-				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = $existing + $new;
+				if(is_array($new) && is_array($old))
+				  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = $old + $new;
+				elseif(is_array($old))
+				  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = $old;
+				elseif(is_array($new))
+				  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = $new;
+
 				if(empty($entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][0])) {
 					global $LANG;
 					echo "pql_domain_set_value() - ".$LANG->_('Could not figure out what objectclasses to add')."<br>";
