@@ -60,9 +60,14 @@ if(isset($submit)) {
     // is shown, hence no 'advanced=...' in the url.
     header("Location: " . PQL_URI . "index2.php");
 }
+
+// Get release version
+$fp = fopen(".version.old", "r");
+$VERSION = fgets($fp, 4096);
+fclose($fp);
 ?>
 
-  <br><span class="title1"><?php echo PQL_DESCRIPTION ?></span><br>
+  <br><span class="title1"><?=PQL_DESCRIPTION?> - v<?=$VERSION?></span><br>
 
   <ul>
 <?php

@@ -1,7 +1,7 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 2.4 2003-01-02 10:00:35 turbo Exp $
+// $Id: lang.en.inc,v 2.5 2003-01-04 14:24:54 turbo Exp $
 //
 // if you have a translation to another language, please contact
 // me --> Matthias Blaser <mb@adfinis.ch>
@@ -11,7 +11,7 @@ define("PQL_LANG","en");
 
 // welcome texts (home.php)
 define("PQL_WELCOME", "Welcome to ");
-define("PQL_DESCRIPTION","The QMail-LDAP Adminstration !!");
+define("PQL_DESCRIPTION","The QMail-LDAP Adminstration");
 
 // login texts
 define("PQL_LOGIN","Please Login");
