@@ -24,7 +24,7 @@ $templates = pql_get_templates($_pql->ldap_linkid);
         <td class="title"><?=$LANG->_('Template description')?></td>
         <td class="<?=$class?>"><?=$templates[$i]["short"]?></td>
         <td class="<?=$class?>">
-          <a href="config_edit_attribute.php?rootdn=<?=$dn?>&attrib=<?=pql_get_define("PQL_ATTR_USER_TEMPLATE_DESC")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change user template description')?>"></a>
+          <a href="config_edit_attribute.php?rootdn=<?=$dn?>&attrib=<?=pql_get_define("PQL_ATTR_USER_TEMPLATE_DESC_SHORT")?>&view=template"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change user template description')?>"></a>
         </td>
       </tr>
 
