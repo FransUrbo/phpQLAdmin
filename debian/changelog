@@ -8,9 +8,9 @@ phpqladmin (2.0.18c-1) unstable; urgency=low
 
   * Add uidNumber, gidNumber and homeDirectory to a mail account IF we've
     choosen to use 'posixAccount' when creating user(s).
-  * 
+  * Spelling errors conserning attributes and defines fixed.
 
- -- Turbo Fredriksson <turbo@debian.org>  Tue,  6 Apr 2004 18:32:06 +0200
+ -- Turbo Fredriksson <turbo@debian.org>  Thu,  8 Apr 2004 09:01:53 +0200
 
 phpqladmin (2.0.18b-1) unstable; urgency=low
 
