@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.167 2004-03-26 09:46:05 turbo Exp $
+// $Id: pql.inc,v 2.168 2004-03-27 12:33:21 turbo Exp $
 //
 
 // ----------------------------
@@ -1284,10 +1284,10 @@ function pql_email_exists($ldap, $email) {
 		if(ldap_count_entries($ldap->ldap_linkid, $sr) > 0) {
 			$ed = ldap_first_entry($ldap->ldap_linkid, $sr);
 			return ldap_get_dn($ldap->ldap_linkid, $ed);
-		} else {
-			return false;
 		}
 	}
+
+	return false;
 }
 // }}}
 
