@@ -25,7 +25,9 @@ if($ENV{"PQL_MAILDIRS"} && $ENV{"PQL_WEBUSER"}) {
     for($i=1; $dirs[$i]; $i++) {
 	if(! -d $directory) {
 	    print "Creating $directory\n";
-	    mkdir($directory);
+	    if(! mkdir($directory) ) {
+		print "Unsuccessfull in creating $dir, $!\n";
+	    }
 	}
 
 	$directory .= $dirs[$i+1] . '/'
