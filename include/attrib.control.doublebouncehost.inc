@@ -3,7 +3,7 @@
 // doublebouncehost (username of bounce sender)
 // doublebounceto (hostname of bounce sender)
 //
-// $Id: attrib.control.doublebouncehost.inc,v 2.6 2003-05-05 14:11:12 turbo Exp $
+// $Id: attrib.control.doublebouncehost.inc,v 2.7 2003-05-06 07:52:59 turbo Exp $
 
 function doublebouncehost_check($type) {
 	global $error, $doublebouncehost, $doublebounceto;
@@ -125,6 +125,7 @@ function doublebouncehost_save($type, $host) {
 	
 	switch($type){
 	  case "modify";
+	  case "add";
 		// save entries
 		$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
 												  "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],

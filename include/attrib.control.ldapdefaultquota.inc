@@ -2,7 +2,7 @@
 // control attribute plugin for
 // $ldapdefaultquota (default quota for all mail users)
 
-// $Id: attrib.control.ldapdefaultquota.inc,v 2.5 2003-05-05 14:11:12 turbo Exp $
+// $Id: attrib.control.ldapdefaultquota.inc,v 2.6 2003-05-06 07:52:59 turbo Exp $
 
 function ldapdefaultquota_check($type){
 	global $options, $use_maxsize, $use_maxmails, $maxsize, $maxmails, $error;
@@ -181,6 +181,7 @@ function ldapdefaultquota_save($type, $host){
 
 	switch($type){
 		case "modify":
+		case "add";
 			if(!pql_control_replace_attribute($_pql_control->ldap_linkid,
 							"cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"], "ldapdefaultquota", $mailquota)){
 				$msg = PQL_LANG_MAILQUOTA_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql_control->ldap_linkid);

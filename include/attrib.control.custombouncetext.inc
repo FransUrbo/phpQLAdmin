@@ -2,7 +2,7 @@
 // control attribute plugin for
 // custombouncetext (additional bounce message)
 //
-// $Id: attrib.control.custombouncetext.inc,v 2.6 2003-05-05 14:11:12 turbo Exp $
+// $Id: attrib.control.custombouncetext.inc,v 2.7 2003-05-06 07:52:59 turbo Exp $
 
 function custombouncetext_check($type){
 	global $error, $custombouncetext, $use_custombouncetext;
@@ -111,6 +111,7 @@ function custombouncetext_save($type, $host) {
 	
 	switch($type){
 	  case "modify";
+	  case "add";
 		// save entries
 		if($use_custombouncetext == "0"){
 			$custombouncetext = "";

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtproutes (max number of bytes in message)
 //
-// $Id: attrib.control.smtproutes.inc,v 2.5 2003-05-05 14:11:12 turbo Exp $
+// $Id: attrib.control.smtproutes.inc,v 2.6 2003-05-06 07:52:59 turbo Exp $
 
 function smtproutes_check($type) {
 	global $error, $domain, $relay, $port;
@@ -195,6 +195,7 @@ function smtproutes_save($type, $host) {
 
 	switch($type){
 	  case "modify";
+	  case "add";
 		// save entries - combine attributes
 		for($i = 0; $i <= count($domain) - 1; $i++){
 			// if empty, delete route

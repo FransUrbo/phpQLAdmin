@@ -3,7 +3,7 @@
 // bouncefrom (username of bounce sender)
 // bouncehost (hostname of bounce sender)
 //
-// $Id: attrib.control.bouncefrom.inc,v 2.6 2003-05-05 14:11:12 turbo Exp $
+// $Id: attrib.control.bouncefrom.inc,v 2.7 2003-05-06 07:52:59 turbo Exp $
 
 function bouncefrom_check($type) {
 	global $error, $bouncefrom, $bouncehost;
@@ -125,6 +125,7 @@ function bouncefrom_save($type, $host) {
 
 	switch($type){
 	  case "modify";
+	  case "add";
 		// save entries
 		$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
 												  "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],

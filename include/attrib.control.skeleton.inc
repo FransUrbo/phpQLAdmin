@@ -58,40 +58,36 @@
 //
 // Please look at other plugins to see which standard header text is recommanded.
 //
-// $Id: attrib.control.skeleton.inc,v 2.5 2003-05-05 14:11:12 turbo Exp $
+// $Id: attrib.control.skeleton.inc,v 2.6 2003-05-06 07:52:59 turbo Exp $
 //
 
-function xxx_check($type){
+function xxx_check($type) {
 	global $error, $xxx;
-
+	
 	// form validation comes here.
 	// this function returns true if the check was successful and the values
 	// can be stored. it returns false, if something was wrong.
-
+	
 	// use the error array to provide error description to the
 	// form. the format is:
 	// $error["formelement_name"] = "error description";
-
+	
 	return true;
-
 }
 
-
-function xxx_init(){
-	// init values
-  global $_pql_control, $xxx;
-
+// init values
+function xxx_init() {
+	global $_pql_control, $xxx;
+	
 	// initiate values from ldap database
 	// use global vars to make the initiated values
 	// available for the other functions
-
+	
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid, $GLOBALS["USER_SEARCH_DN_CTR"], "xxx");
-
-	if(!is_null($value)){
-		$xxx = $value[0];
-	}
-
+	
+	if(!is_null($value))
+	  $xxx = $value[0];
 }
 
 
@@ -109,48 +105,56 @@ function xxx_print_view($host) {
 		$xxx = "set the default value here";
  	}
 
-	?>
-	<table cellspacing="0" cellpadding="3" border="0">
-	<th colspan="3" align="left">XXX title</th>
-	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title">XXX attribute</td>
-		<td><?php echo $helohost; ?></td>
-	</tr>
-	<tr class="subtitle">
-		<td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=xxx"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
-	</tr>
-	</table>
+?>
+  <table cellspacing="0" cellpadding="3" border="0">
+    <th colspan="3" align="left">XXX title</th>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">XXX attribute</td>
+        <td><?php echo $helohost; ?></td>
+      </tr>
 
-	<?php
+      <tr class="subtitle">
+        <td colspan="2">
+          <a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=xxx">
+            <img src="images/edit.png" width="12" height="12" border="0"> change options
+          </a>
+        </td>
+      </tr>
+    </th>
+  </table>
+
+<?php
 }
 
-function xxx_print_form(){
+function xxx_print_form() {
 	global $attrib, $xxx, $PHP_SELF, $error, $mxhost;
 
 	// this function displays the form to change the values
 	// for specified attribute.
 
-	?>
-	<form action="<?php echo $PHP_SELF ?>" method="post">
-	<table cellspacing="0" cellpadding="3" border="0">
-	<th colspan="3" align="left">XXX title</th>
-	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title">XXX attribute</td>
-		<td><?php echo format_error($error["xxx"]); ?><input type="text" name="xxx" value="<?php echo $xxx; ?>"> Default: write default value here</td>
-	</tr>
-	<tr>
-		<td colspan="2" class="subtitle"><img src="images/info.png" width="16" height="16" border="0">Leave the fields empty to use default configuration.</td>
-	</tr>
-	</table>
-	<input type="hidden" name="submit" value="1">
-	<input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-	<br>
-	<br>
-    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
-	<input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
-	</form>
+?>
+  <form action="<?php echo $PHP_SELF ?>" method="post">
+    <table cellspacing="0" cellpadding="3" border="0">
+      <th colspan="3" align="left">XXX title</th>
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title">XXX attribute</td>
+          <td><?php echo format_error($error["xxx"]); ?><input type="text" name="xxx" value="<?php echo $xxx; ?>"> Default: write default value here</td>
+        </tr>
 
-	<?php
+        <tr>
+          <td colspan="2" class="subtitle">
+            <img src="images/info.png" width="16" height="16" border="0">Leave the fields empty to use default configuration.
+          </td>
+        </tr>
+      </th>
+    </table>
+    <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
+    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
+  </form>
+
+<?php
 }
 
 function xxx_save($type, $host) {
@@ -163,38 +167,44 @@ function xxx_save($type, $host) {
 	// value in multifield attributes).
 
 	// recontrol values
-	if(!helohost_check($type)){
- 		return false;
-	}
+	if(!helohost_check($type))
+	  return false;
 
-	switch($type){
-
-		case "modify";
-			// save entries
-
-			if(pql_control_replace_attribute($_pql_control->ldap_linkid, $GLOBALS["USER_SEARCH_DN_CTR"], "xxx", $xxx)){
-      	$msg = "Successfully saved xxx options";
-			} else {
-				$msg = "Failed saving xxx: " . pql_ldap_error($_pql_control->ldap_linkid);
+	switch($type) {
+	  case "modify";
+	  case "add";
+		// save entries
+		
+		if(pql_control_replace_attribute($_pql_control->ldap_linkid, $GLOBALS["USER_SEARCH_DN_CTR"], "xxx", $xxx)){
+			$msg = "Successfully saved xxx options";
+		} else {
+			$msg = "Failed saving xxx: " . pql_ldap_error($_pql_control->ldap_linkid);
     	}
 
-			// this will redirect to control_cat.php and display the message $msg
-			attribute_forward($msg);
+		// this will redirect to control_cat.php and display the message $msg
+		attribute_forward($msg);
       break;
-   	default:
-			die("unknown save type $type in " . __FILE__ . ", function save()");
-	}
 
+   	default:
+	  die("unknown save type $type in " . __FILE__ . ", function save()");
+	}
 }
 
-function xxx_help(){
-	?>
+function xxx_help() {
+?>
 	Help about the attribute...
-	<?php
+<?php
 }
 
 function xxx_help_cr(){
 ?>
 	copyright notice about help text comes here
 <?php
+/*
+ * Local variables:
+ * mode: php
+ * mode: font-lock
+ * tab-width: 4
+ * End:
+ */
 }

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldaprebind (don't retrieve password, try to bind to dn)
 //
-// $Id: attrib.control.ldaprebind.inc,v 2.5 2003-05-05 14:11:12 turbo Exp $
+// $Id: attrib.control.ldaprebind.inc,v 2.6 2003-05-06 07:52:59 turbo Exp $
 
 function ldaprebind_check($type){
 	// check values
@@ -73,6 +73,7 @@ function ldaprebind_save($type, $host) {
 
 	switch($type){
 		case "modify";
+		case "add";
 			// save entries
 			if(pql_control_replace_attribute($_pql_control->ldap_linkid,
 											 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],

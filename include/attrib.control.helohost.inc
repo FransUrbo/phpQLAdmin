@@ -2,7 +2,7 @@
 // control attribute plugin for
 // helohost (host name used in SMTP HELO command)
 //
-// $Id: attrib.control.helohost.inc,v 2.5 2003-05-05 14:11:12 turbo Exp $
+// $Id: attrib.control.helohost.inc,v 2.6 2003-05-06 07:52:59 turbo Exp $
 
 function helohost_check($type) {
 	global $error, $helohost;
@@ -94,6 +94,7 @@ function helohost_save($type, $host) {
 	
 	switch($type){
 	  case "modify";
+	  case "add";
 		// save entries
 		
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
