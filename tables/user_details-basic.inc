@@ -81,9 +81,9 @@
 	if(($uidnumber != '') && ($gidnumber != '')) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?="UID;GID"?></td>
+        <td class="title"><?=$LANG->_('UID;GID')?></td>
         <td><?=$uidnumber . ";" . $gidnumber?></td>
-        <td></td>
+        <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=ugidnumber&user=<?=$url["user"]?>&oldvalue=<?=urlencode($uidnumber . ";" . $gidnumber);?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change UID/GID')?>" border="0"></a></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">

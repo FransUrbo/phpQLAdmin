@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.7 2004-03-03 07:41:51 turbo Exp $
+// $Id: config_attributes.inc,v 2.8 2004-03-03 17:05:34 dlw Exp $
 
 // User object attributes
 pql_set_define("PQL_GLOB_ATTR_DOTMODE",				strtolower("qmailDotMode"),			false);
@@ -34,6 +34,7 @@ pql_set_define("PQL_GLOB_ATTR_MODE",				strtolower("deliveryMode"),			false);
 pql_set_define("PQL_GLOB_ATTR_PASSWD",				strtolower("userPassword"),			false);
 pql_set_define("PQL_GLOB_ATTR_PROGRAM",				strtolower("deliveryProgramPath"),		false);
 pql_set_define("PQL_GLOB_ATTR_PURGE",				strtolower("qmailAccountPurge"),		false);
+pql_set_define("PQL_GLOB_ATTR_QMAILUGID",			strtolower("ugidNumber"),			false);
 pql_set_define("PQL_GLOB_ATTR_QMAILGID",			strtolower("gidNumber"),			false);
 pql_set_define("PQL_GLOB_ATTR_QMAILUID",			strtolower("uidNumber"),			false);
 pql_set_define("PQL_GLOB_ATTR_QUOTA_VALUE",			strtolower("mailQuota"),			false);
