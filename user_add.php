@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.99 2004-04-29 12:42:09 turbo Exp $
+// $Id: user_add.php,v 2.100 2004-05-06 14:27:36 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -126,7 +126,8 @@ switch($_REQUEST["page_curr"]) {
 			  $_REQUEST["email"] = preg_replace(" ", "_", $_REQUEST["email"], -1);
 		}
 
-		if(empty($_REQUEST["password"]) and $autocreatepassword and function_exists('pql_password_generate'))
+		if(($_REQUEST["account_type"] != "group") and empty($_REQUEST["password"]) and
+		   $autocreatepassword and function_exists('pql_password_generate'))
 		  $_REQUEST["password"] = pql_password_generate();
 	}
 	break;
@@ -235,8 +236,8 @@ switch($_REQUEST["page_curr"]) {
 		}
 		
 		// Verify the password
-		if($_REQUEST["account_type"] != "forward") {
-			// Only forward accounts is ok without password
+		if(($_REQUEST["account_type"] != "forward") and ($_REQUEST["account_type"] != "group")) {
+			// Only forward and group accounts is ok without password
 			if($_REQUEST["password"] == "") {
 				$error = true;
 				$error_text["password"] = $LANG->_('Missing');
@@ -265,7 +266,7 @@ switch($_REQUEST["page_curr"]) {
 				if(! eregi('\}', $_REQUEST["pwscheme"]))
 				  $_REQUEST["pwscheme"] .= '}';
 			}
-		} else {
+		} elseif($_REQUEST["account_type"] != "group") {
 			// Forwarding accounts - make sure the forwarding mail address is ok
 			if(!pql_check_email($_REQUEST["forwardingaddress"])) {
 				$error = true;
@@ -309,7 +310,7 @@ switch($_REQUEST["page_curr"]) {
 			if((pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
 			   and $_REQUEST["uid"])
 			  $reference = $_REQUEST["uid"];
-			if($_REQUEST["surname"] and $_REQUEST["name"])
+			elseif($_REQUEST["surname"] and $_REQUEST["name"])
 			  $reference = $_REQUEST["surname"]." ".$_REQUEST["name"];
 			elseif($_REQUEST["surname"])
 			  $reference = $_REQUEST["surname"];
@@ -341,7 +342,7 @@ switch($_REQUEST["page_curr"]) {
 			if((pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
 			   and $_REQUEST["uid"])
 			  $reference = $_REQUEST["uid"];
-			if($_REQUEST["surname"] and $_REQUEST["name"])
+			elseif($_REQUEST["surname"] and $_REQUEST["name"])
 			  $reference = $_REQUEST["surname"]." ".$_REQUEST["name"];
 			elseif($_REQUEST["surname"])
 			  $reference = $_REQUEST["surname"];
@@ -408,6 +409,8 @@ if($_SESSION["ADVANCED_MODE"] && $_REQUEST["account_type"]) {
 	  echo " - ".$LANG->_('Shell account');
 	elseif($_REQUEST["account_type"] == 'alias')
 	  echo " - ".$LANG->_('Alias object');
+	elseif($_REQUEST["account_type"] == 'group')
+	  echo " - ".$LANG->_('Group object');
 	else
 	  echo " - ".$LANG->_('Forwarding account');
 }
@@ -421,6 +424,7 @@ if($_SESSION["ADVANCED_MODE"] && $_REQUEST["account_type"]) {
 // Select next form to display using 'page_next'.
 // This will be set correctly above if there's
 // an error.
+//printr($_REQUEST); printr($error_text);
 switch($_REQUEST["page_next"]) {
   case "":
 	// Step 1 - Choose account properties (type of account)
