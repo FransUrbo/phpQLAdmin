@@ -53,9 +53,7 @@ excludelist:
 		$(INSTDIR)/phpQLadmin.log $(INSTDIR)/doc/README.Monitor \
 		$(INSTDIR)/.DEBUG_ME >> new; \
 	  mv new exclude.list; \
-	  cat exclude.list | xargs rm -rf; \
-	  cd $(INSTDIR) && mv -f *.pl scripts/; \
-	  mkdir schemas && mv -f *.schema schemas/)
+	  cat exclude.list | xargs rm -rf)
 
 tarball: install excludelist
 	@(echo -n "Tarball 1: $(TMPDIR)/phpQLAdmin-$(VERSION).tar.gz: "; \
