@@ -1,7 +1,8 @@
 <?php
 // add a domain
-// $Id: unit_add.php,v 2.22 2005-02-24 17:04:00 turbo Exp $
+// $Id: unit_add.php,v 2.23 2005-03-01 20:28:49 turbo Exp $
 //
+// {{{ Setup session etc
 session_start();
 require("./include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_control.inc");
@@ -16,15 +17,17 @@ include($_SESSION["path"]."/header.html");
 							array('domain' => pql_maybe_decode($_REQUEST["domain"]))); ?></span>
   <br><br>
 <?php
+// }}}
 
-// check if domain exist
+// {{{ Check if domain exist
 if(!pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], '(objectclass=*)', 'BASE')) {
 	echo "Domain &quot;".$_REQUEST["domain"]."&quot; does not exists";
 	exit();
 }
+// }}}
 
 if($_REQUEST["unit"]) {
-    // Check if unit exist
+    // {{{ Check if unit exist
     if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $_REQUEST["rootdn"]) == "dc")
       $filter = "(&(dc=".$_REQUEST["unit"].")(objectclass=domain))";
     else
@@ -33,21 +36,34 @@ if($_REQUEST["unit"]) {
 	$msg = urlencode($LANG->_('This sub unit already exists'));
 	header("Location: home.php?msg=$msg");
     }
+// }}}
     
+    // {{{ Setup URL referal and success message
+    $msg = urlencode(pql_complete_constant($LANG->_('Sub unit %unit% successfully created'),
+					   array("unit" => $_REQUEST["unit"])));
+    
+    if(pql_get_define("PQL_CONF_AUTO_RELOAD"))
+      $rlnb = "&rlnb=1";
+
+    $url = "domain_detail.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&msg=$msg$rlnb";
+// }}}
+
+    // {{{ Add unit to database
     if(pql_unit_add($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["unit"])) {
+      if(!file_exists($_SESSION["path"]."/.DEBUG_ME")) {
 	// Redirect to domain-details
-	$msg = urlencode(pql_complete_constant($LANG->_('Sub unit %unit% successfully created'), array("unit" => $_REQUEST["unit"])));
-
-	if(pql_get_define("PQL_CONF_AUTO_RELOAD"))
-	  $rlnb = "&rlnb=1";
-
-	header("Location: domain_detail.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&msg=$msg$rlnb");
+	header("Location: ".$_SESSION["URI"] . $url);
+      } else {
+	echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
+	die("<b>$url</b>");
+      }
     } else {
-	$msg = urlencode($LANG->_('Failed to create the sub unit') . ":&nbsp;" . ldap_error($_pql->ldap_linkid));
-	header("Location: home.php?msg=$msg");
+      $msg = urlencode($LANG->_('Failed to create the sub unit') . ":&nbsp;" . ldap_error($_pql->ldap_linkid));
+      header("Location: home.php?msg=$msg");
     }
+// }}}
 } else {
-    // Show form
+    // {{{ Show form
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -65,8 +81,17 @@ if($_REQUEST["unit"]) {
     <input type="hidden" name="domain" value="<?=$url["domain"]?>">
   </form>
 <?php
+// }}}
 }
+
+/*
+ * Local variables:
+ * mode: php
+ * mode: font-lock
+ * tab-width: 4
+ * End:
+ */
 ?>
 
-</body>
+  </body>
 </html>
