@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.74.2.1 2005-02-12 05:19:15 turbo Exp $
+// $Id: pql_config.inc,v 1.74.2.2 2005-02-19 08:28:13 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -154,7 +154,7 @@ if($_SESSION["USER_HOST"]) {
 																		 $_SESSION["USER_DN"]);
 
 		if(!pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $dn)) {
-		  $ref = pql_get_attribute($_pql->ldap_linkid, $dn, pql_set_define("PQL_ATTR_REFERENCE_USERS_WITH"));
+		  $ref = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_REFERENCE_USERS_WITH"));
 		  pql_set_define("PQL_CONF_REFERENCE_USERS_WITH", $ref, false, $dn);
 		}
 	}
