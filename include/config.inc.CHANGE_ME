@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.35 2003-07-29 13:23:35 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.36 2003-08-12 13:35:40 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -239,6 +239,53 @@ function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $do
 	// Compose the username in the form 'firstname.lastname@domain.tld'.
 	return(lc($surname.".".$lastname."@".$domainname));
 }
+
+// ----------------------------
+// Generate an ACI entry for object
+//
+// If this function is uncommented, then ACI's will be used!
+//
+// user_generate_aci (function)
+// This function is called to create an list of ACI's that should be added
+// to an object as it is created.
+// Input parameters:
+// (resource)	ldap		 	-	A LDAP resource identifier 
+// (string)		user	 		- 	The DN of the user adding/creating the
+//									object (or to have the access specified)
+// (string)		type			-	Type of object being created. Currently one of:
+//									branch	A branch object
+//									user	A user object
+//									qmail	A QmailLDAP/Controls object
+//
+// Returns: (array) ACI entry in LDIF format
+//
+// These are the ACI's that I use in my development system. Might not be
+// perfect, but it works for me...
+//function user_generate_aci($ldap_linkid, $user, $type) {
+//	$i = 0;
+//
+//	// Public entries
+//	$aci[$i] = "OpenLDAPaci: 1.2.3#entry#grant;r;[entry]#public#"; $i++;
+//	$aci[$i] = "OpenLDAPaci: 1.2.3#entry#grant;r,s,c;objectClass,entry#public#"; $i++;
+//	
+//	// Non-public entries
+//	if($type == 'user') {
+//		$aci[$i] = "OpenLDAPaci: 1.2.3#entry#grant;x;userPassword,krb5PrincipalName#public#"; $i++;
+//		$aci[$i] = "OpenLDAPaci: 1.2.3#entry#grant;r,s,c;uid,cn,accountStatus,uidNumber,gidNumber,gecos,homeDirectory,loginShell#public#"; $i++;
+//
+//		// 'user'/'self' writable/readable entries
+//		$aci[$i] = "OpenLDAPaci: 1.2.3#entry#grant;r,s,c;sn,givenName,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,mailMessageStore,o,l,st,telephoneNumber,postalCode,title#users#"; $i++;
+//		$aci[$i] = "OpenLDAPaci: 1.2.3#entry#grant;r,s,c;sn,givenName,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,mailMessageStore,o,l,st,telephoneNumber,postalCode,title#self#"; $i++;
+//	} elseif($type == 'qmail') {
+//		$aci[$i] = "OpenLDAPaci: 1.2.3#entry#grant;r,s;[all]#access-id#ENTER_WHOEVER_YOUR_QMAILSERVER_USES"; $i++;
+//	}
+//
+//	// Non-public entries
+//	$aci[$i] = "OpenLDAPaci: 1.2.3#entry#grant;w,r,s,c;[children]#access-id#$user"; $i++;
+//	$aci[$i] = "OpenLDAPaci: 1.2.3#entry#grant;w,r,s,c,x;[all]#access-id#$user"; $i++;
+//
+//	return($aci);
+//}
 
 // ----------------------------
 // Execute command

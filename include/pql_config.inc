@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.35 2003-07-03 08:35:50 turbo Exp $
+// $Id: pql_config.inc,v 1.36 2003-08-12 13:35:40 turbo Exp $
 //
 
 // We need this instead of define(), so that we can get rid
@@ -226,6 +226,9 @@ foreach($_pql->ldap_basedn as $dn)  {
 // Get language translation
 require("./include/pql_lang.inc");
 $LANG = new pql_lang($_pql);
+
+// Include the ACI API
+require("./include/pql_aci.inc");
 
 // Remove some variables so we don't clutter the global
 // variable name space!

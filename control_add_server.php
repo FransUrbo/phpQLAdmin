@@ -1,6 +1,6 @@
 <?php
 // Add a new mailserver to the database
-// $Id: control_add_server.php,v 2.10 2003-06-25 07:06:24 turbo Exp $
+// $Id: control_add_server.php,v 2.11 2003-08-12 13:35:11 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -64,11 +64,18 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 					}
 				}
 
+				// Add the OpenLDAPaci attribute (maybe)
+				if(function_exists("user_generate_aci"))
+				  $entry["OpenLDAPaci"] = user_generate_aci($_pql_control->ldap_linkid, $GLOBALS["USER_DN"], 'qmail');
+				
+				// Create a LDIF object to print in case of error
+				$LDIF = pql_create_ldif("control_add_server.php", $dn, $entry);
+				
 				if(! ldap_add($_pql_control->ldap_linkid, $dn, $entry)) {
 					unset($submit);
 
-					$msg = urlencode("Failed to created mailserver $fqdn.");
-					header("Location: <?=$PHP_SELF?>");
+					echo "Failed to created mailserver $fqdn.";
+					die($LDIF);
 				} else {
 					$msg = urlencode("Successfully created mailserver $fqdn.");
 					header("Location: " . pql_get_define("PQL_GLOB_URI") . "control_detail.php?host=$fqdn&msg=$msg&rlnb=1");

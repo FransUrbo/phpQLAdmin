@@ -1,0 +1,16 @@
+# NOTE: 'by * none' is the default in EVERY ACL.
+
+# We need to do SASL auth, so the Root DSE must be readable to anyone
+access to dn.base=""
+	attrs=supportedSASLMechanisms,namingContexts,subschemaSubentry,objectClass,entry
+	by domain=".*\.bayour\.com" read
+	by peername="IP=127\.0\.0\.1:.*" read
+	by * search
+
+# We need to allow anonymous to read the schema definitions the LDAP
+# server knows about. But only from localhost!
+access to dn.subtree="cn=Subschema"
+	by peername="IP=127\.0\.0\.1:.*" read
+
+# Everything not explicitly allowed above is not readable.
+access to * by aci write

@@ -38,7 +38,8 @@ if(!function_exists("ldap_connect")){
 } else {
 	$ldap_ext = $LANG->_('Built in (loaded)');
 	
-	// user directory connection
+	// =======================================
+	// User directory connection
 	$_pql = new pql($USER_HOST, '', '', true);
 	if(!$_pql->connect($USER_HOST)) {
 		$connection = $LANG->_('Failed');
@@ -62,8 +63,9 @@ if(!function_exists("ldap_connect")){
 		}
 	}
 
+	// =======================================
+	// Control directory connection
 	if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
-		// control directory connection
 		$_pql_control = new pql_control($USER_HOST, '', '', true);
 		if(!$_pql_control->connect($USER_HOST)) {
 			$connection_control = $LANG->_('Failed');
@@ -96,7 +98,8 @@ if(!function_exists("ldap_connect")){
 		$connection_control = $LANG->_('Control extension deactivated');
 	}
 
-	// Test access rights etc.
+	// =======================================
+	// Access rights
 	if($USER_DN and $USER_PASS) {
 		$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 		foreach($_pql->ldap_basedn as $basedn) {
@@ -123,22 +126,27 @@ if(!function_exists("ldap_connect")){
 				$entry["objectClass"][] = "organizationalUnit";
 				$entry["ou"] = "test";
 			} elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "o") {
-				$entry["objectClass"][] = "organizationL";
+				$entry["objectClass"][] = "organization";
 				$entry["o"] = "test";
 			}
 			$entry[pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)] = "phpQLAdmin_Branch_Test";
+
+			// Setup the DN
 			$dn = pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)."=phpQLAdmin_Branch_Test,".$basedn;
+
 			if(!@ldap_add($_pql->ldap_linkid, $dn, $entry)) {
 				$LDIF = pql_create_ldif("config_ldaptest.php", $dn, $entry);
+
 				$TEST["branches"][$basedn] = "<a href=\"javascript:ldifWindow('".$LDIF."')\">".
-                                             $LANG->_("No. Reason:")."<b>".ldap_error($_pql->ldap_linkid)."</b>'";
+				  $LANG->_("No. Reason:")."<b>".ldap_error($_pql->ldap_linkid)."</b>'";
 			} else {
 				// Success - delete it again
 				ldap_delete($_pql->ldap_linkid, $dn);
+
 				$TEST["branches"][$basedn] = $LANG->_('Yes');
 			}
 			
-			// ----------------------
+			// =======================================
 			// Check write access
 			$filter = "(&" . pql_setup_branch_objectclasses(1, $basedn)
 			  . "(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) . "=*))";
@@ -170,6 +178,46 @@ if(!function_exists("ldap_connect")){
 				} else {
 					$TEST["branches"][$domain] = $LANG->_('Yes');
 				}
+			}
+		}
+
+		// =======================================
+		// ACIs enabled?
+		foreach($_pql->ldap_basedn as $basedn) {
+			$basedn = urldecode($basedn);
+
+			// Setup the LDIF we're adding
+			unset($entry);
+			$entry["objectClass"][] = "top";
+			if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "dc") {
+				$entry["objectClass"][] = "domain";
+				$entry["dc"] = "test";
+			} elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "ou") {
+				$entry["objectClass"][] = "organizationalUnit";
+				$entry["ou"] = "test";
+			} elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "o") {
+				$entry["objectClass"][] = "organization";
+				$entry["o"] = "test";
+			}
+			$entry[pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)] = "phpQLAdmin_Branch_Test";
+			
+			// Add the ACI entries to the object
+			$entry["OpenLDAPaci"][0] = "OpenLDAPaci: 1.2.3#entry#grant;r;[entry]#public#";
+			$entry["OpenLDAPaci"][1] = "OpenLDAPaci: 1.2.3#entry#grant;r,s,c;objectClass,entry#public#";
+			$entry["OpenLDAPaci"][2] = "OpenLDAPaci: 1.2.3#entry#grant;w,r,s,c;[all]#access-id#$USER_DN";
+			
+			// Setup the DN
+			$dn = pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)."=phpQLAdmin_Branch_Test,".$basedn;
+			
+			if(!@ldap_add($_pql->ldap_linkid, $dn, $entry)) {
+				$LDIF = pql_create_ldif("config_ldaptest.php", $dn, $entry);
+
+				$TEST["acis"][$basedn] = "<a href=\"javascript:ldifWindow('".$LDIF."')\">".
+				  $LANG->_("No. Reason:")."<b>".ldap_error($_pql->ldap_linkid)."</b>'";
+			} else {
+				// Success - delete it again
+				ldap_delete($_pql->ldap_linkid, $dn);
+				$TEST["acis"][$basedn] = $LANG->_('Yes');
 			}
 		}
 	}
@@ -264,6 +312,14 @@ include("./header.html");
         <td class="<?=$class?>"><?=$TEST["branches"][$dn]?></td>
       </tr>
 
+      <tr>
+        <td class="title"><?php echo pql_complete_constant($LANG->_('Access to create branch with ACIs in DN %dn%'), array('dn' => $dn)); ?></td>
+        <?php $class=table_bgcolor(0); ?>
+        <td class="<?=$class?>"><?=$TEST["acis"][$dn]?></td>
+      </tr>
+
+      <tr></tr>
+
 <?php    } ?>
     </th>
 
@@ -291,9 +347,13 @@ include("./header.html");
             <th>
               <tr>
                 <td><img src="images/info.png" width="16" height="16" border="0" align="right"></td>
-                <td><?=$LANG->_('This is a simple test to show if the ldap extension is loaded and that the connections are working. It also does some rudimentary ACL tests')?>.&nbsp;</td>
+                <td>
+                  <ul>
+                    <li><?=$LANG->_('This is a simple test to show if the ldap extension is loaded and that the connections are working. It also does some rudimentary ACL tests')?>.</li>
+                    <li>NOTE: If you get denied access to create branches but when trying with ACIs, it works. This doesn't mean that you don't have access to create branches, it means that you <u>must</u> use ACIs, <i>otherwise</i> you're not allowed.</li>
+                  </ul>
+                </td>
               </tr>
-            </th>
           </table>
         </td>
 

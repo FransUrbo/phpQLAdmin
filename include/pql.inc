@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.97 2003-08-10 11:42:31 turbo Exp $
+// $Id: pql.inc,v 2.98 2003-08-12 13:35:40 turbo Exp $
 //
 
 // ----------------------------
@@ -235,6 +235,10 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 	  $userdn .= urldecode($domain);
 	$userdn = maybe_encode($userdn);
 
+	// Add the OpenLDAPaci attribute (maybe)
+	if(function_exists("user_generate_aci"))
+	  $entry["OpenLDAPaci"] = user_generate_aci($ldap_linkid, $GLOBALS["USER_DN"], 'user');
+
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_user_add - user creation", $userdn, $entry);
 
@@ -390,6 +394,10 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name) {
 	  $entry["o"] = maybe_encode($branch_name);
 	else
 	  $entry["o"] = 0;
+
+	// Add the OpenLDAPaci attribute (maybe)
+	if(function_exists("user_generate_aci"))
+	  $entry["OpenLDAPaci"] = user_generate_aci($ldap_linkid, $GLOBALS["USER_DN"], 'branch');
 
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_domain_add - create domain", $dn, $entry);
