@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // cn (Full name)
-// $Id: attrib.cn.inc,v 2.5 2003-04-04 06:54:30 turbo Exp $
+// $Id: attrib.cn.inc,v 2.6 2003-05-04 16:37:04 turbo Exp $
 
 function attribute_check($type){
     global $cn, $oldvalue, $_pql, $error;
@@ -68,8 +68,9 @@ function attribute_save($type){
     	}
 		
 		// TODO: Should this be configurable? What if we don't
-		//       use gecos and/or given/Name!?!?
-		$attribs = array($attrib, 'gecos', 'givenName');
+		//       use gecos and/or givenName!?!?
+//		$attribs = array($attrib, 'gecos', 'givenName');
+		$attribs = array($attrib);
 		foreach($attribs as $attrib) {
 			if(pql_replace_userattribute($_pql->ldap_linkid, $user, $attrib, $cn)) {
 				$msg = pql_complete_constant(PQL_LANG_CN_CHANGE_OK, array("old" => $oldvalue, "new" => $cn)) . "&rlnb=1";
