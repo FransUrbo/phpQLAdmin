@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.39 2004-11-05 12:28:11 turbo Exp $
+// $Id: attrib.config.inc,v 1.40 2004-11-06 22:42:40 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -280,6 +280,10 @@ function attribute_save() {
 				  $entry[$attrib][] = $allowed[$i];
 			}
 		}
+
+		// Just incase this is (was) the last entry...
+		if(!is_array($entry[$attrib]))
+		  $entry[$attrib] = array();
 	} else {
 		// Try to find out if we have an old value, or what we should do with the value we have.
 		if($oldvalue and $toggle) {
