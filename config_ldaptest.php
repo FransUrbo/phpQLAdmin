@@ -11,7 +11,17 @@ function check_domain_value($linkid, $dn, $attrib, $value) {
 	$entry[$attrib] = $value;
 
 	if(! @ldap_mod_replace($linkid, $dn, $entry)) {
-		return("No. Reason: '<b>".ldap_error($linkid)."</b>'");
+		if(ldap_errno($linkid) == 21)
+		  // Invalid syntax
+		  return("No. Reason: '<b>Old phpQLAdmin schema</b>'");
+		else {
+			$LDIF = pql_create_ldif(NULL, $dn, $entry);
+
+			return("<a href=\"javascript:ldifWindow('".$LDIF."')\">".
+				   "No. Reason: '<b>".
+				   ldap_error($linkid).
+				   "</b>'</a>");
+		}
 	} else {
 		// Success - delete it again
 		unset($entry);
@@ -94,7 +104,7 @@ if(!function_exists("ldap_connect")){
 		foreach($_pql->ldap_basedn as $basedn) {
 			// ----------------------
 			// Try to set the attribute 'test' in the top DN
-			$fail = check_domain_value($_pql->ldap_linkid, $basedn, 'test', '1');
+			$fail = check_domain_value($_pql->ldap_linkid, $basedn, 'test', 'TRUE');
 			if($fail) {
 				$TEST["basedn"][$basedn] = $fail;
 			} else {
@@ -113,13 +123,15 @@ if(!function_exists("ldap_connect")){
 				$entry["objectClass"][] = "organizationalUnit";
 				$entry["ou"] = "test";
 			} elseif($config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn] == "o") {
-				$entry["objectClass"][] = "organizational";
+				$entry["objectClass"][] = "organizationL";
 				$entry["o"] = "test";
 			}
 			$entry[$config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn]] = "phpQLAdmin_Branch_Test";
 			$dn = $config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn]."=phpQLAdmin_Branch_Test,".$basedn;
 			if(!@ldap_add($_pql->ldap_linkid, $dn, $entry)) {
-				$TEST["branches"][$basedn] = "No. Reason: '<b>".ldap_error($_pql->ldap_linkid)."</b>'";
+				$LDIF = pql_create_ldif("config_ldaptest.php", $dn, $entry);
+				$TEST["branches"][$basedn] = "<a href=\"javascript:ldifWindow('".$LDIF."')\">".
+                                             "No. Reason: '<b>".ldap_error($_pql->ldap_linkid)."</b>'";
 			} else {
 				// Success - delete it again
 				ldap_delete($_pql->ldap_linkid, $dn);
@@ -152,7 +164,7 @@ if(!function_exists("ldap_connect")){
 		if(is_array($domains)) {
 			foreach($domains as $domain) {
 				// Check write access
-				$fail = check_domain_value($_pql->ldap_linkid, $domain, 'test', '1');
+				$fail = check_domain_value($_pql->ldap_linkid, $domain, 'test', 'TRUE');
 				if($fail) {
 					$TEST["branches"][$domain] = $fail;
 				} else {
@@ -165,6 +177,15 @@ if(!function_exists("ldap_connect")){
 
 include("./header.html");
 ?>
+  <script type="text/javascript" language="javascript"><!--
+    function ldifWindow(string) {
+      myWindow = window.open("", "LDIFWindow", 'toolbar,width=350,height=200');
+      myWindow.document.write(string);
+      myWindow.document.bgColor="white";
+      myWindow.document.close();
+    }
+  //--></script>
+
   <span class="title1"><?php echo PQL_LANG_TEST_TITLE; ?></span>
 
   <br><br>
