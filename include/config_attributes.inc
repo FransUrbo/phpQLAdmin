@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.32 2005-03-07 10:58:08 turbo Exp $
+// $Id: config_attributes.inc,v 2.33 2005-03-15 09:20:51 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -184,6 +184,7 @@ pql_set_define("PQL_ATTR_TXTRECORD",						strtolower("txtRecord"),					false);
 // {{{ Attributes used by the Apache config
 pql_set_define("PQL_ATTR_WEBSRV_USE", 						strtolower('useWebSrv'),					false);
 pql_set_define("PQL_ATTR_WEBSRV_SRV_IP", 					strtolower('ApacheSectionArg'),				false);
+pql_set_define("PQL_ATTR_WEBSRV_SRV_NAME", 					strtolower('ApacheSectionName'),			false);
 pql_set_define("PQL_ATTR_WEBSRV_SRV_URL", 					strtolower('ApacheServerName'),				false);
 pql_set_define("PQL_ATTR_WEBSRV_SCRIPT_URL", 				strtolower('ApacheScriptAlias'),			false);
 pql_set_define("PQL_ATTR_WEBSRV_SCRIPT_PATH", 				strtolower('ApacheAlias'),					false);
@@ -199,11 +200,6 @@ pql_set_define("PQL_ATTR_WEBSRV_SRV_NAME", 					strtolower('ApacheServerName'),	
 pql_set_define("PQL_ATTR_WEBSRV_LDAP_SERVER", 				strtolower('webLDAPServer'),				false);
 pql_set_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_DN", 		strtolower('webLDAPServerLoginDN'),			false);
 pql_set_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_PW", 		strtolower('webLDAPServerLoginPW'),			false);
-
-pql_set_define("PQL_ATTR_WEBSRV_OC",	 					array(strtolower('device'),
-																  strtolower('ApacheSectionObj'),
-																  strtolower('ApacheVirtualHostObj'),
-																  strtolower('ApacheModLogConfigObj')),	false);
 // }}}
 
 // {{{ Miscellaneous external attributes
@@ -211,7 +207,6 @@ pql_set_define("PQL_ATTR_SPAMASSASSIN", 					strtolower('spamAssassin'),					fal
 // }}}
 
 // {{{ These are the internal phpQLAdmin attributes - GLOBAL configuration
-
 // Toggles
 pql_set_define("PQL_ATTR_CONTROL_USE", 						strtolower('useControls'),					false);
 pql_set_define("PQL_ATTR_EZMLM_USE", 						strtolower('useEzmlm'),						false);
@@ -236,29 +231,6 @@ pql_set_define("PQL_ATTR_KRB5_ADMIN_COMMAND_PATH", 			strtolower('krb5AdminComma
 pql_set_define("PQL_ATTR_ADMINISTRATOR",					strtolower("administrator"),				false);
 pql_set_define("PQL_ATTR_ADMINISTRATOR_EZMLM",				strtolower("ezmlmAdministrator"),			false);
 pql_set_define("PQL_ATTR_ADMINISTRATOR_CONTROLS",			strtolower("controlsAdministrator"),		false);
-
-// Map attribute to configuration define
-$PQL_ATTRIBUTE["GLOBAL"] = array("PQL_CONF_CONTROL_USE"					=> pql_get_define("PQL_ATTR_CONTROL_USE"),
-								 "PQL_CONF_EZMLM_USE"					=> pql_get_define("PQL_ATTR_EZMLM_USE"),
-								 "PQL_CONF_BIND9_USE"					=> pql_get_define("PQL_ATTR_BIND9_USE"),
-								 "PQL_CONF_ACI_USE"						=> pql_get_define("PQL_ATTR_ACI_USE"),
-								 "PQL_CONF_WEBSRV_USE"					=> pql_get_define("PQL_ATTR_WEBSRV_USE"),
-								 "PQL_CONF_AUTO_RELOAD"					=> pql_get_define("PQL_ATTR_AUTO_RELOAD"),
-								 "PQL_CONF_CHANGE_SERVER"				=> pql_get_define("PQL_ATTR_CHANGE_SERVER"),
-								 "PQL_CONF_WHOAREWE"					=> pql_get_define("PQL_ATTR_WHOAREWE"),
-								 "PQL_CONF_LANG"						=> pql_get_define("PQL_ATTR_LANG"),
-								 "PQL_CONF_HOSTMASTER"					=> pql_get_define("PQL_ATTR_HOSTMASTER"),
-								 "PQL_CONF_CONTROL_DN"					=> pql_get_define("PQL_ATTR_CONTROL_DN"),
-								 "PQL_CONF_EZMLM_PATH"					=> pql_get_define("PQL_ATTR_EZMLM_PATH"),
-								 "PQL_CONF_KRB5_REALM"					=> pql_get_define("PQL_ATTR_KRB5_REALM"),
-								 "PQL_CONF_KRB5_ADMIN_SERVER"			=> pql_get_define("PQL_ATTR_KRB5_ADMIN_SERVER"),
-								 "PQL_CONF_KRB5_ADMIN_PRINCIPAL"		=> pql_get_define("PQL_ATTR_KRB5_ADMIN_PRINCIPAL"),
-								 "PQL_CONF_KRB5_ADMIN_KEYTAB"			=> pql_get_define("PQL_ATTR_KRB5_ADMIN_KEYTAB"),
-								 "PQL_CONF_KRB5_ADMIN_COMMAND_PATH"		=> pql_get_define("PQL_ATTR_KRB5_ADMIN_COMMAND_PATH"),
-								 "PQL_CONF_ADMINISTRATOR"				=> pql_get_define("PQL_ATTR_ADMINISTRATOR"),
-								 "PQL_CONF_ADMINISTRATOR_EZMLM"	    	=> pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"),
-								 "PQL_CONF_ADMINISTRATOR_CONTROLS"		=> pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
-								 "PQL_CONF_CREATE_MBOX"					=> pql_get_define("PQL_ATTR_CREATE_MBOX"));
 // }}}
 
 // {{{ These are the internal phpQLAdmin attributes - BRANCH configuration
@@ -304,8 +276,46 @@ pql_set_define("PQL_ATTR_REFERENCE_DOMAINS_WITH", 			strtolower('branchReference
 pql_set_define("PQL_ATTR_SUBTREE_USERS", 					strtolower('subTreeUsers'),					false);
 pql_set_define("PQL_ATTR_SUBTREE_GROUPS", 					strtolower('subTreeGroups'),				false);
 pql_set_define("PQL_ATTR_VAT_NUMBER",						strtolower('vatNumber'),					false);
+// }}}
 
-// Map attribute to configuration define
+// {{{ These are the internal phpQLAdmin attributes - USER configuration
+// Toggles
+pql_set_define("PQL_ATTR_START_ADVANCED",					strtolower("startWithAdvancedMode"),	false);
+// }}}
+
+// {{{ These are the internal phpQLAdmin attributes - TEMPLATE configuration
+pql_set_define("PQL_ATTR_USER_TEMPLATE_NAME",				strtolower("userTemplateName"),				false);
+pql_set_define("PQL_ATTR_USER_TEMPLATE_DESC_SHORT",			strtolower("userTemplateDescriptionShort"),	false);
+pql_set_define("PQL_ATTR_USER_TEMPLATE_DESC_LONG",			strtolower("userTemplateDescriptionLong"),	false);
+// }}}
+
+// {{{ Map attribute to configuration define - GLOBAL
+
+$PQL_ATTRIBUTE["GLOBAL"] = array("PQL_CONF_CONTROL_USE"					=> pql_get_define("PQL_ATTR_CONTROL_USE"),
+								 "PQL_CONF_EZMLM_USE"					=> pql_get_define("PQL_ATTR_EZMLM_USE"),
+								 "PQL_CONF_BIND9_USE"					=> pql_get_define("PQL_ATTR_BIND9_USE"),
+								 "PQL_CONF_ACI_USE"						=> pql_get_define("PQL_ATTR_ACI_USE"),
+								 "PQL_CONF_WEBSRV_USE"					=> pql_get_define("PQL_ATTR_WEBSRV_USE"),
+								 "PQL_CONF_AUTO_RELOAD"					=> pql_get_define("PQL_ATTR_AUTO_RELOAD"),
+								 "PQL_CONF_CHANGE_SERVER"				=> pql_get_define("PQL_ATTR_CHANGE_SERVER"),
+								 "PQL_CONF_WHOAREWE"					=> pql_get_define("PQL_ATTR_WHOAREWE"),
+								 "PQL_CONF_LANG"						=> pql_get_define("PQL_ATTR_LANG"),
+								 "PQL_CONF_HOSTMASTER"					=> pql_get_define("PQL_ATTR_HOSTMASTER"),
+								 "PQL_CONF_CONTROL_DN"					=> pql_get_define("PQL_ATTR_CONTROL_DN"),
+								 "PQL_CONF_EZMLM_PATH"					=> pql_get_define("PQL_ATTR_EZMLM_PATH"),
+								 "PQL_CONF_KRB5_REALM"					=> pql_get_define("PQL_ATTR_KRB5_REALM"),
+								 "PQL_CONF_KRB5_ADMIN_SERVER"			=> pql_get_define("PQL_ATTR_KRB5_ADMIN_SERVER"),
+								 "PQL_CONF_KRB5_ADMIN_PRINCIPAL"		=> pql_get_define("PQL_ATTR_KRB5_ADMIN_PRINCIPAL"),
+								 "PQL_CONF_KRB5_ADMIN_KEYTAB"			=> pql_get_define("PQL_ATTR_KRB5_ADMIN_KEYTAB"),
+								 "PQL_CONF_KRB5_ADMIN_COMMAND_PATH"		=> pql_get_define("PQL_ATTR_KRB5_ADMIN_COMMAND_PATH"),
+								 "PQL_CONF_ADMINISTRATOR"				=> pql_get_define("PQL_ATTR_ADMINISTRATOR"),
+								 "PQL_CONF_ADMINISTRATOR_EZMLM"	    	=> pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"),
+								 "PQL_CONF_ADMINISTRATOR_CONTROLS"		=> pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
+								 "PQL_CONF_CREATE_MBOX"					=> pql_get_define("PQL_ATTR_CREATE_MBOX"));
+
+// }}}
+
+// {{{ Map attribute to configuration define - BRANCH
 $PQL_ATTRIBUTE["BRANCH"] = array("PQL_CONF_SHOW_USERS"					=> pql_get_define("PQL_ATTR_SHOW_USERS"),
 								 "PQL_CONF_TESTMAIL_AUTOSEND"			=> pql_get_define("PQL_ATTR_TESTMAIL_AUTOSEND"),
 								 "PQL_CONF_ALLOW_ABSOLUTE_PATH"			=> pql_get_define("PQL_ATTR_ALLOW_ABSOLUTE_PATH"),
@@ -348,18 +358,8 @@ $PQL_ATTRIBUTE["BRANCH"] = array("PQL_CONF_SHOW_USERS"					=> pql_get_define("PQ
 								 "PQL_CONF_VAT_NUMBER"					=> pql_get_define("PQL_ATTR_VAT_NUMBER"));
 // }}}
 
-// {{{ These are the internal phpQLAdmin attributes - USER configuration
-// Toggles
-pql_set_define("PQL_ATTR_START_ADVANCED",					strtolower("startWithAdvancedMode"),	false);
-
-// Map attribute to configuration define
+// {{{ Map attribute to configuration define - USER
 $PQL_ATTRIBUTE["USER"] = array("PQL_CONF_START_ADVANCED"	=> pql_get_define("PQL_ATTR_START_ADVANCED"));
-// }}}
-
-// {{{ These are the internal phpQLAdmin attributes - TEMPLATE configuration
-pql_set_define("PQL_ATTR_USER_TEMPLATE_NAME",				strtolower("userTemplateName"),				false);
-pql_set_define("PQL_ATTR_USER_TEMPLATE_DESC_SHORT",			strtolower("userTemplateDescriptionShort"),	false);
-pql_set_define("PQL_ATTR_USER_TEMPLATE_DESC_LONG",			strtolower("userTemplateDescriptionLong"),	false);
 // }}}
 
 // Local variables:
