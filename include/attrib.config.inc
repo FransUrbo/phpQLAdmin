@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.38 2004-10-19 10:40:40 turbo Exp $
+// $Id: attrib.config.inc,v 1.39 2004-11-05 12:28:11 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -244,7 +244,7 @@ function attribute_save() {
 	
 	$entry = array();
 
-	if($attrib_val) {
+	if($attrib_val and !$delval) {
 		if($attrib == pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME")) {
 			$entry[$attrib][] = strtoupper($attrib_val);
 		} elseif(is_array($_POST)) {
@@ -261,37 +261,57 @@ function attribute_save() {
 		  //		Also see the file 'attrib.administrator.inc' for more examples.
     }
 
-	// Try to find out if we have an old value, or what we should do with the value we have.
-	if($oldvalue and $toggle) {
-		// A togglable value, reverse state
-
-		if($oldvalue == 'FALSE')
-		  $entry[$attrib][] = 'TRUE';
-		elseif($oldvalue == 'TRUE')
-		  $entry[$attrib][] = 'FALSE';
-		else {
-			$values = pql_split_oldvalues($oldvalue);
-			for($i=0; $values[$i]; $i++)
-			  $entry[$attrib][] = $values[$i];
+	if($attrib_val and $delval and (($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) or
+									($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN")) or
+									($attrib == pql_get_define("PQL_ATTR_PASSWORD_SCHEMES")))) {
+		// We're deleting one of the multivalued attributes. Retreive the old value(s) from the LDAP db.
+		
+		if($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) {
+			$allowed = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $rootdn));
+		} elseif($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN")) {
+			$allowed = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_DOMAIN", $rootdn));
+		} elseif($attrib == pql_get_define("PQL_ATTR_PASSWORD_SCHEMES")) {
+			$allowed = pql_split_oldvalues(pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn));
 		}
-	} elseif($oldvalue and $delval) {
-		// We should delete one attribute
-		$values = pql_split_oldvalues($oldvalue);
 
-		// Go through existing attributes, removing the chosen one
-		for($i=0; $values[$i]; $i++)
-		  if(! eregi($delval, $values[$i]))
-			$entry[$attrib][] = $values[$i];
-	} elseif($attrib_val and
-			 ($attrib != pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME")) and
-			 ($attrib != pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) and
-			 ($attrib != pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN"))) {
-		// We have a value for the attribute we're changing.
-		// Any attribute BUT: defaultPasswordScheme, userObjectClass or branchObjectClass
-		$entry[$attrib][] = $attrib_val;
+		if($allowed) {
+			for($i=0; $allowed[$i]; $i++) {
+				if(lc($allowed[$i]) != lc($attrib_val))
+				  $entry[$attrib][] = $allowed[$i];
+			}
+		}
 	} else {
-		if($rootdn) {
-			if($attrib != pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")) {
+		// Try to find out if we have an old value, or what we should do with the value we have.
+		if($oldvalue and $toggle) {
+			// A togglable value, reverse state
+			
+			if($oldvalue == 'FALSE')
+			  $entry[$attrib][] = 'TRUE';
+			elseif($oldvalue == 'TRUE')
+			  $entry[$attrib][] = 'FALSE';
+			else {
+				$values = pql_split_oldvalues($oldvalue);
+				for($i=0; $values[$i]; $i++)
+				  $entry[$attrib][] = $values[$i];
+			}
+		} elseif($oldvalue and $delval) {
+			// We should delete one attribute
+			$values = pql_split_oldvalues($oldvalue);
+			
+			// Go through existing attributes, removing the chosen one
+			for($i=0; $values[$i]; $i++)
+			  if(! eregi($delval, $values[$i]))
+				$entry[$attrib][] = $values[$i];
+		} elseif($attrib_val and
+				 ($attrib != pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME")) and
+				 ($attrib != pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) and
+				 ($attrib != pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN")) and
+				 ($attrib != pql_get_define("PQL_ATTR_PASSWORD_SCHEMES"))) {
+			// We have a value for the attribute we're changing.
+			// Any attribute BUT: defaultPasswordScheme, userObjectClass or branchObjectClass
+			$entry[$attrib][] = $attrib_val;
+		} else {
+			if($rootdn and ($attrib != pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"))) {
 				// Any attribute BUT controlsAdministrator - fetch old values from DB
 				if(!$attrib_val and 
 				   (($attrib == pql_get_define("PQL_ATTR_SCRIPT_CREATE_USER")) or
@@ -301,6 +321,21 @@ function attribute_save() {
 					$delete[$attrib] = 1;
 				} else {
 					unset($oldvalues); $oldvalues = pql_get_attribute($_pql->ldap_linkid, $rootdn, $attrib);
+					if(!$oldvalues) {
+						// We don't have any old values in the LDAP database. Maybe we have some defaults?
+						foreach($PQL_ATTRIBUTE as $level => $array) {
+							foreach($array as $key => $value) {
+								if(!is_array($value)) {
+									if((lc($value) == lc($attrib)) and pql_get_define($key, $rootdn) and !eregi('_GLOB_', $key)) {
+										// Split this value into an array
+										$oldvalues = pql_split_oldvalues(pql_get_define($key, $rootdn));
+										break;
+									}
+								}
+							}
+						}
+					}
+
 					if(is_array($oldvalues)) {
 						foreach($oldvalues as $val) {
 							if(!@eregi($delval, $val)) {
@@ -336,41 +371,42 @@ function attribute_save() {
 						}
 					} // ELSIF it's a toggle.
 				} // IF attrib == externalScript{User,Domain}
-			} // IF attrib != controlsadministrator
-		} elseif(($attrib == pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME")) or
-				 ($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) or
-				 ($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN"))) {
-			// We don't have any values in the LDAP database, we're using
-			// the default values - get the old values from the define
-
-			foreach($PQL_ATTRIBUTE as $level => $array) {
-				foreach($array as $key => $value) {
-					if(!is_array($value)) {
-						if((lc($value) == lc($attrib)) and pql_get_define($key, $rootdn) and !eregi('_GLOB_', $key)) {
-							// Split this value into an array
-							$values = pql_split_oldvalues(pql_get_define($key, $rootdn));
-							foreach($values as $val) {
-								// Add all values EXEPT the one to remove
-								if(lc($val) != lc($delval))
-								  $entry[$attrib][] = $val;
-							}
-							
-							break;
-						}
-					} else {
-						$entry[$attrib][] = $attrib_val;
-					}
-				}
+// With the rewrite Oct 21, 2004 this should no longer be used/referenced... ?
+//			} elseif(($attrib == pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME")) or
+//					 ($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) or
+//					 ($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN"))) {
+//				// We don't have any values in the LDAP database, we're using
+//				// the default values - get the old values from the define
+//				
+//				foreach($PQL_ATTRIBUTE as $level => $array) {
+//					foreach($array as $key => $value) {
+//						if(!is_array($value)) {
+//							if((lc($value) == lc($attrib)) and pql_get_define($key, $rootdn) and !eregi('_GLOB_', $key)) {
+//								// Split this value into an array
+//								$values = pql_split_oldvalues(pql_get_define($key, $rootdn));
+//								foreach($values as $val) {
+//									// Add all values EXEPT the one to remove
+//									if(lc($val) != lc($delval))
+//									  $entry[$attrib][] = $val;
+//								}
+//								
+//								break;
+//							}
+//						} else {
+//							$entry[$attrib][] = $attrib_val;
+//						}
+//					}
+//				}
+			} elseif($toggle) {
+				// We don't have a Root DN, it's not a PasswordScheme or {user,domain}ObjectClass
+				// but it's a toggle. Get the old value and reverse it
+				
+				unset($oldvalues); $oldvalues = pql_get_attribute($_pql->ldap_linkid, $_pql->ldap_basedn[0], $attrib);
+				if($oldvalues == 'TRUE')
+				  $entry[$attrib][] = 'FALSE';
+				else
+				  $entry[$attrib][] = 'TRUE';
 			}
-        } elseif($toggle) {
-			// We don't have a Root DN, it's not a PasswordScheme or {user,domain}ObjectClass
-			// but it's a toggle. Get the old value and reverse it
-
-			unset($oldvalues); $oldvalues = pql_get_attribute($_pql->ldap_linkid, $_pql->ldap_basedn[0], $attrib);
-			if($oldvalues == 'TRUE')
-			  $entry[$attrib][] = 'FALSE';
-			else
-			  $entry[$attrib][] = 'TRUE';
 		}
 	}
 
