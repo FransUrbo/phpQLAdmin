@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.6 2003-09-15 09:47:38 turbo Exp $
+// $Id: bind9_add.php,v 2.7 2003-11-11 14:03:46 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -10,7 +10,7 @@ require("./include/pql_bind9.inc");
 include("./header.html");
 
 if($domainname) {
-	$_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
+	$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 }
 
 if(($action == 'add') and ($type == 'domain')) {
@@ -38,7 +38,7 @@ if(($action == 'add') and ($type == 'domain')) {
     <input type="submit" value="<?php echo "--&gt;&gt;"; ?>">
   </form>
 <?php } else {
-		  if(pql_bind9_add_zone($_pql_control->ldap_linkid, $domain, $domainname))
+		  if(pql_bind9_add_zone($_pql->ldap_linkid, $domain, $domainname))
 			$msg = "Successfully added domain $domainname";
 		  else
 			$msg = "Failed to add domain $domainname";
@@ -54,21 +54,21 @@ if(($action == 'add') and ($type == 'domain')) {
 			  
 			  if(!$record_type) {
 				  $error = true;
-				  $error_text["record_type"] = 'Record type missing';
+				  $error_text["record_type"] = $LANG->_('Record type missing');
 			  }
 			  
 			  if(!$hostname) {
 				  $error = true;
-				  $error_text["hostname"] = 'Hostname missing';
+				  $error_text["hostname"] = $LANG->_('Hostname missing');
 			  }
 
 			  if(!$dest) {
 				  $error = true;
-				  $error_text["dest"] = 'Resource destination missing';
+				  $error_text["dest"] = $LANG->_('Resource destination missing');
 			  }
 		  }
 ?>
-  <span class="title1">Add a record to domain <?=$domainname?></span>
+  <span class="title1"><?php echo pql_complete_constant($LANG->_('Add a record to domain %domain%'), array('domain' => pql_bind9_maybe_decode($domainname))); ?></span>
 
   <br><br>
 
@@ -135,29 +135,29 @@ if(($action == 'add') and ($type == 'domain')) {
     <input type="submit" value="Save">
   </form>
 <?php } else {
-		  $entry[pql_get_define("PQL_GLOB_ATTR_RELATIVEDOMAINNAME")]	= $hostname;
+		  $entry[pql_get_define("PQL_GLOB_ATTR_RELATIVEDOMAINNAME")]	= pql_bind9_maybe_encode($hostname);
 		  $entry[pql_get_define("PQL_GLOB_ATTR_ZONENAME")]				= $domainname;
 		  $entry[pql_get_define("PQL_GLOB_ATTR_DNSTTL")]				= 604800;
 		  switch($record_type) {
 			case "a":
-			  $entry[pql_get_define("PQL_GLOB_ATTR_ARECORD")]			= $dest;
+			  $entry[pql_get_define("PQL_GLOB_ATTR_ARECORD")]			= pql_bind9_maybe_encode($dest);
 			  break;
 			case "cname":
-			  $entry[pql_get_define("PQL_GLOB_ATTR_CNAMERECORD")]		= $dest;
+			  $entry[pql_get_define("PQL_GLOB_ATTR_CNAMERECORD")]		= pql_bind9_maybe_encode($dest);
 			  break;
 			case "hinfo":
 			  $entry[pql_get_define("PQL_GLOB_ATTR_HINFORECORD")]		= $dest;
 			  break;
 			case "mx":
-			  $entry[pql_get_define("PQL_GLOB_ATTR_MXRECORD")]			= $dest;
+			  $entry[pql_get_define("PQL_GLOB_ATTR_MXRECORD")]			= pql_bind9_maybe_encode($dest);
 			  break;
 			case "ns":
-			  $entry[pql_get_define("PQL_GLOB_ATTR_NSRECORD")]			= $dest;
+			  $entry[pql_get_define("PQL_GLOB_ATTR_NSRECORD")]			= pql_bind9_maybe_encode($dest);
 			  break;
 		  }
 
-		  if(pql_bind9_add_host($_pql_control->ldap_linkid, $domain, $entry))
-			$msg = "Successfully added host <u>$hostname.$domainname.</u>";
+		  if(pql_bind9_add_host($_pql->ldap_linkid, $domain, $entry))
+			$msg = "Successfully added host <u>$hostname.".pql_bind9_maybe_decode($domainname).".</u>";
 		  else
 			$msg = "Failed to add $hostname to $domainname";
 
