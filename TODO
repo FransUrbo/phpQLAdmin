@@ -5,7 +5,6 @@ Things left to do
 	  accounts to the equal account of domain.com.
 	  Changes in the aliased domain will be automatically replicated
 	  to the alias domain.
-	* Output a template DNS zone file after domain is created.
 
 	IMPORTANT
 	* Create, delete or modify the Kerberos principal if using {KERBEROS}
