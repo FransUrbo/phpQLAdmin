@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-details.inc,v 1.26 2004-05-06 17:42:08 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.27 2004-10-09 16:25:49 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
@@ -72,6 +72,7 @@
 						// Do not show the KERBEROS scheme if it's a mail account! We don't have
 						// uidNumber and/or gidNumber for that account type, so we can't mapp the
 						// user correctly if using KERBEROS!
+						$allowed_schemes = ($allowed_schemes) ? $allowed_schemes.",".$scheme : $scheme;
 ?>
             <input type="radio" name="pwscheme" value="<?=$scheme?>" <?php if($_REQUEST["defaultpasswordscheme"] == $scheme) { echo "CHECKED"; } ?>><?=$scheme?>
 <?php				}
@@ -96,6 +97,13 @@
         <!-- Password -->
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Password')?></td>
+<?php	if(!eregi('KERBEROS', $allowed_schemes) and !$autocreatepassword) { ?>
+          <td><input type="checkbox" name="autogenerate"><?=$LANG->_('Autogenerate password')?></td>
+        </tr>
+
+        <tr class="<?php pql_format_table(); ?>">
+          <td></td>
+<?php	} ?>
           <!-- Crude hackery. Using type=password won't be so good if we're using {KERBEROS} -->
           <td>
             <?php echo pql_format_error_span($error_text["password"]); ?>
