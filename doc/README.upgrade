@@ -1,3 +1,18 @@
+Upgrading from 2.0.10
+	The schema have been updated, so don't forget to load the new
+	version! Please re-read the file README (subjects 'Schema issues'
+	and 'Kerberos principal creation') before restarting your LDAP
+	server.
+
+	Also, the include/config.inc file must be recreated. Please
+	remove your old copy, copy include/config.inc.CHANGE_ME to
+	include/config.inc and configure that from scratch...
+
+	A lot of configuration options have been moved from the config
+	file (include/config.inc) to the LDAP server, so please read
+	the file README (subjects 'Configuration in LDAP') before trying
+	to login.
+
 Upgrading from 2.0.9
 	The schema have been updated, so don't forget to load the new
 	version!
