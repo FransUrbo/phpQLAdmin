@@ -15,6 +15,9 @@ phpQLAdmin 2.2.1 TO BE ANNOUNCED
 	  - [Merge from HEAD]
 	    + Session was started with the path specified in php.ini:session.cookie_path
 	      which overwrote session from other installation(s).
+	  - Hardcode the group account template into include/pql_templates.inc:pql_get_templates()
+	    This because the user add part needs object classes etc to be able to
+	    work.
 
 	GUI layout changes
 	  - User addition errors is 'tabbed' to the right (aligned with the input
