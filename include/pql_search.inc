@@ -3,23 +3,61 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.8 2003-11-11 07:21:34 turbo Exp $
+// $Id: pql_search.inc,v 2.9 2003-11-19 17:06:38 turbo Exp $
 //
 
 // ------------------------------------------------
 // PQL_CONF_SEARCH - API functions
 // ------------------------------------------------
 
-// {{{ pql_search(ldap_linkid, ldap_basedn, filter)
+// {{{ pql_search(linkid, basedn, filter)
 // Get all users matching filter
-function pql_search($ldap_linkid, $ldap_basedn, $filter) {
-	$sr   = ldap_search($ldap_linkid, $ldap_basedn, $filter);
-	$info = ldap_get_entries($ldap_linkid, $sr);
+function pql_search($linkid, $basedn, $filter, $attrib = 'dn') {
+	// URL decode the object DN if it's URL ENcoded
+	$basedn = urldecode($basedn);
 
-	for ($i=0; $i<$info["count"]; $i++)
-	  $dn[] = $info[$i]["dn"];
+	$sr   = ldap_search($linkid, $basedn, $filter) or pql_errormsg($linkid);
+	$info = ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
+
+	for($i=0; $i < $info["count"]; $i++) {
+		if($attrib == '')
+		  $dn = $dn + $info[$i];
+		else
+		  $dn[] = $info[$i][$attrib];
+	}
 
 	return $dn;
+}
+// }}}
+
+// {{{ pql_get_dn(ldap, reference, multiples)
+// Retrieve the dn for a given reference
+function pql_get_dn($ldap, $reference, $multiples = 0) {
+    // check if we already have the dn for this user chached
+    $dn = '';
+    if(pql_cache_userdn_get($reference, $dn))
+	  return($dn);
+
+    // dn not in cache -> search for it
+	foreach($ldap->ldap_basedn as $base) {
+		$base = urldecode($base);
+
+		// Setup the search filter
+		$filter  = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $base) . "=";
+		$filter .= pql_maybe_encode($reference, pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $base),
+									$ldap->ldap_linkid);
+
+		// Do the search
+		$dn = pql_search($ldap->ldap_linkid, $base, $filter);
+		if($dn) {
+			// we got the dn -> remember it
+			pql_cache_userdn_add($reference, $dn);
+			
+			return($dn);
+		}
+	}
+
+	return(false);
 }
 // }}}
 

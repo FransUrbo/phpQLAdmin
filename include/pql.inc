@@ -3,12 +3,8 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.125 2003-11-16 16:36:48 turbo Exp $
+// $Id: pql.inc,v 2.126 2003-11-19 17:06:36 turbo Exp $
 //
-
-// ----------------------------
-// include and check configuration
-require("./include/pql_cache.inc");
 
 // ----------------------------
 // Get release version
@@ -21,7 +17,7 @@ fclose($fp);
 ob_start();
 
 // ----------------------------
-// API functions / classes
+// API classes
 // ----------------------------
 
 // {{{ PQL - main class (connection handling)
@@ -170,8 +166,30 @@ class pql {
 // }}}
 
 // ------------------------------------------------
-// PQL - API functions
+// API functions - core
 // ------------------------------------------------
+
+// {{{ pql_user_get(ldap_linkid, dn)
+// Get all users of a domain
+function pql_user_get($ldap_linkid, $dn) {
+	$dn = urldecode($dn);
+
+	// What's the Root DN (namingContexts) for this domain
+	$rootdn = pql_get_rootdn($dn); $rootdn = urldecode($rootdn);
+
+	// Filter out any object which is a posixGroup.
+	// (&(cn=*)(!(objectclass=posixgroup)))
+	$filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) . "=*)(!(objectclass=posixgroup)))";
+	
+	$sr = ldap_search($ldap_linkid, $dn, $filter) or pql_errormsg($ldap_linkid);
+	$info = ldap_get_entries($ldap_linkid, $sr) or pql_errormsg($ldap_linkid);
+	for ($i=0; $i<$info["count"]; $i++) {
+		$user[] = $info[$i]["dn"];
+	}
+	
+	return $user;
+}
+// }}}
 
 // {{{ pql_user_add(ldap_linkid, domain, cn, attribs, account_type, branch)
 // Add a user to the LDAP database
@@ -263,7 +281,7 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 	$userdn = pql_maybe_encode($userdn);
 
 	// Add the OpenLDAPaci attribute (maybe)
-	if(function_exists("user_generate_aci"))
+	if($GLOBALS["ACI_SUPPORT_ENABLED"])
 	  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($ldap_linkid, $GLOBALS["USER_DN"], 'user');
 
 	// Create a LDIF object to print in case of error
@@ -278,6 +296,7 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 		return false;
 	}
 	$dns[]  = $userdn;
+	echo "Added $userdn<br>";
     
 	// -----
 	// If this is a 'system' account, create the Group object
@@ -297,19 +316,23 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 
 		$groupdn = pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $attribs[pql_get_define("PQL_CONF_USER_RDN_ATTRIBUTE", $rootdn)] . $subrdn . "," . urldecode($domain);
 
+		// Add the OpenLDAPaci attribute (maybe)
+		if($GLOBALS["ACI_SUPPORT_ENABLED"])
+		  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($ldap_linkid,
+																				  $GLOBALS["USER_DN"], 'group');
+
 		// Create a LDIF object to print in case of error
 		$LDIF = pql_create_ldif("pql_user_add - group creation", $groupdn, $entry);
 
 		// --------------------------
-		
 		if(! ldap_add($ldap_linkid, $groupdn, $entry)) {
 			// failed to add user
 			pql_errormsg($ldap_linkid);
 			die("$LDIF");
 			return $dns;
 		}
-
 		$dns[] = $groupdn;
+		echo "Added $groupdn<br>";
 	}
 	
     return $dns;
@@ -335,7 +358,7 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 			unset($entry); unset($adms);
 
 			// Get administrator attributes for this domain/branch DN
-			$admins	= pql_get_domain_value($ldap, $info[$i]["dn"], pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"));
+			$admins	= pql_domain_value($ldap, $info[$i]["dn"], pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"));
 			for($j=0; $admins[$j]; $j++) {
 				if($admins[$j] != $user)
 				  $adms[] = $admins[$j];
@@ -400,7 +423,7 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 				$rem_key = array_search($address, $fwd_addresses);
 				if ($rem_key !== false) {
 					// we found a forward -> remove it 
-					pql_replace_userattribute($linkid, $forward['reference'],
+					pql_replace_attribute($linkid, $forward['reference'],
 											  pql_get_define("PQL_GLOB_ATTR_FORWARDS"),
 											  $fwd_addresses[$rem_key]);
 				}
@@ -409,6 +432,47 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
     }
 
     return true;
+}
+// }}}
+
+// {{{ pql_user_exist(ldap_linkid, user)
+function pql_user_exist($linkid, $user) {
+    // check if user exists
+	$filter = "objectclass=*";
+    if(!pql_search($linkid, $user, $filter))
+	  // User does not exist in LDAP tree
+	  return(false); 
+
+	return(true);
+}
+// }}}
+
+// ------------------------------------------------
+
+// {{{ pql_domain_get(ldap)
+// Get all domains listed in ldap-tree (ou|dc-records)
+function pql_domain_get($ldap) {
+	foreach($ldap->ldap_basedn as $dn)  {
+		$dn = urldecode($dn);
+
+		$filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $dn) .
+                  "=*)" . pql_setup_branch_objectclasses(1, $dn) . ")";
+
+		$sr = @ldap_list($ldap->ldap_linkid, $dn, $filter) or pql_errormsg($ldap->ldap_linkid);
+		$info = @ldap_get_entries($ldap->ldap_linkid, $sr) or pql_errormsg($ldap->ldap_linkid);
+		if($info["count"] == 0) {
+			// No entries, try a BASE search
+			$sr = @ldap_read($ldap->ldap_linkid, $dn, $filter) or pql_errormsg($ldap->ldap_linkid);
+			$info = @ldap_get_entries($ldap->ldap_linkid, $sr) or pql_errormsg($ldap->ldap_linkid);
+		}
+		
+		for ($i=0; $i<$info["count"]; $i++) {
+			$domains[] = $info[$i]["dn"];
+		}
+		
+	}
+
+	return $domains;
 }
 // }}}
 
@@ -429,7 +493,7 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name) {
 	  $entry[pql_get_define("PQL_GLOB_ATTR_O")] = 0;
 
 	// Add the OpenLDAPaci attribute (maybe)
-	if(function_exists("user_generate_aci"))
+	if($GLOBALS["ACI_SUPPORT_ENABLED"])
 	  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($ldap_linkid, $GLOBALS["USER_DN"], 'branch');
 
 	// Create a LDIF object to print in case of error
@@ -459,7 +523,7 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name) {
 			  "=" . $branch_name . "," . $basedn;
 
 		// Add the OpenLDAPaci attribute (maybe)
-		if(function_exists("user_generate_aci"))
+		if($GLOBALS["ACI_SUPPORT_ENABLED"])
 		  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($ldap_linkid, $GLOBALS["USER_DN"], 'branch');
 
 		// Create a LDIF object to print in case of error
@@ -490,7 +554,7 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name) {
 			  "=" . $branch_name . "," . $basedn;
 
 		// Add the OpenLDAPaci attribute (maybe)
-		if(function_exists("user_generate_aci"))
+		if($GLOBALS["ACI_SUPPORT_ENABLED"])
 		  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($ldap_linkid, $GLOBALS["USER_DN"], 'branch');
 
 		// Create a LDIF object to print in case of error
@@ -526,7 +590,7 @@ function pql_domain_del($ldap, $domain, $delete_forwards) {
     }
     
     // remove all users of domain
-    $users = pql_get_user($linkid, $domain);
+    $users = pql_user_get($linkid, $domain);
     if(is_array($users)) {
 		foreach($users as $user) {
 			pql_user_del($ldap, $domain, $user, $delete_forwards);
@@ -564,61 +628,6 @@ function pql_domain_del($ldap, $domain, $delete_forwards) {
 }
 // }}}
 
-// ------------------------------------------------
-
-// {{{ pql_modify_user_addressbook(ldap_linkid, user, attribs)
-function pql_modify_user_addressbook($ldap_linkid, $user, $attribs) {
-	// What's the Root DN (namingContexts) of this user
-	$rootdn = pql_get_rootdn($user); $rootdn = urldecode($rootdn);
-
-    // check if addressbook is disabled
-    if(!pql_get_define("PQL_CONF_USE_ADDRESSBOOK", $rootdn))
-	  return false;
-    
-    // object-class dependencies for addressbook entries
-    //
-    // ------------------------------------------------------------------------------------
-    // | OBJECTCLASS          | Must-Attr. (OpenLDAP 1.2.x) | Must-Attr. (OpenLDAP 2.0.x) |
-    // ------------------------------------------------------------------------------------
-    // | InetOrgPerson        | none                        | none                        |
-    // ------------------------------------------------------------------------------------
-    // | organizationalPerson | sn, cn                      | none                        |
-    // ------------------------------------------------------------------------------------
-    // | country              | c                           | c                           |
-    // ------------------------------------------------------------------------------------
-    // | organization         | o                           | o                           |
-    // ------------------------------------------------------------------------------------
-    // | pilotObject          | none                        | none                        |
-    // ------------------------------------------------------------------------------------
-    //
-    // the 'organization' and 'country' objectclass can only be set when an 'o' or a 'c'
-    // attribute is given. The other objectclasses will be added by default because the
-    // haven't a mandatory attribute
-    
-    // fetch current registred objectclasses of user
-    $oc_user = pql_get_userattribute($ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS"));
-    
-    // set all objectclasses to lowercase
-    foreach($oc_user as $oc1){
-		$oc[] = lc($oc1);
-    }
-    
-    // add addressbook's default object classes if they are not present
-    $default_oc = array("inetorgperson", "organizationalperson", "pilotobject");
-    
-    foreach($default_oc as $oc1){
-		if(!in_array($oc1, $oc)){
-			//$oc[] = $oc1;
-		}
-    }
-    
-    // check for object class dependencies
-    echo var_dump($oc);
-}
-// }}}
-
-// ------------------------------------------------
-
 // {{{ pql_domain_exist(ldap, domain, rootdn = '')
 // Check if domain exists
 function pql_domain_exist($ldap, $domain, $rootdn = '') {
@@ -640,458 +649,8 @@ function pql_domain_exist($ldap, $domain, $rootdn = '') {
 }
 // }}}
 
-// {{{ pql_user_exist(ldap_linkid, user)
-function pql_user_exist($ldap_linkid, $user) {
-    // check if user exists
-    if(!pql_search_attribute($ldap_linkid, $user, 'objectclass', '*'))
-	  // User does not exist in LDAP tree
-	  return(false); 
-
-	return(true);
-}
-// }}}
-
-// {{{ pql_email_exists(ldap, email)
-// Check if any mail or mailalternateaddress record with this email exists in the ldap tree
-function pql_email_exists($ldap, $email) {
-	$filter = "(|(" . pql_get_define("PQL_GLOB_ATTR_MAIL") . "=" . $email . ")(" . pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE") . "=" . $email . "))";
-
-	foreach($ldap->ldap_basedn as $dn) {
-		$dn = urldecode($dn);
-
-		$sr = ldap_search($ldap->ldap_linkid, $dn, $filter);
-		if(ldap_count_entries($ldap->ldap_linkid, $sr) > 0) {
-			$ed = ldap_first_entry($ldap->ldap_linkid, $sr);
-			return ldap_get_dn($ldap->ldap_linkid, $ed);
-		} else {
-			return false;
-		}
-	}
-}
-// }}}
-
-// ------------------------------------------------
-
-// {{{ pql_modify_userattribute(ldap_linkid, user, attrib, oldvalue, newvalue)
-// Change an attribute of a user
-function pql_modify_userattribute($ldap_linkid, $user, $attrib, $oldvalue, $newvalue) {
-    // get all attributes first
-    $entry = pql_get_userattribute($ldap_linkid, $user, $attrib);
-
-    // If we found an entry, make sure it isn't
-    // not overwritten, otherwise ADD the attribute.
-    if($entry) {
-		// array_search workaround
-		foreach($entry as $value) {
-			if($value == $oldvalue) {
-				if($newvalue)
-				  // Replace this value with a new one
-				  $value = $newvalue;
-				else
-				  // We want to delete this value
-				  unset($value);
-			}
-
-			if($value)
-			  $entry_new[$attrib][] = $value;
-		}
-
-		// If we're not called with a OLD value, then we
-		// want to add a new value to the attribute
-		if(!$oldvalue and $newvalue)
-		  $entry_new[$attrib][] = $newvalue;
-    } else
-	  $entry_new[$attrib][] = $newvalue;
-
-	// Create a LDIF object to print in case of error
-	$LDIF = pql_create_ldif("pql_modify_userattribute", $user, $entry_new);
-
-    if(!ldap_mod_replace($ldap_linkid, $user, $entry_new)) {
-	    // if the value is empty (""), this causes an error in OpenLDAP 2.x, try to ldap_mod_del
-	    if($newvalue == "") {
-			unset($entry_new); $entry_new[$attrib] = array();
-
-			if(ldap_mod_del($ldap_linkid, $user, $entry_new))
-			  return true;
-		}
-
-		pql_errormsg($ldap_linkid);
-		return false;
-    }
-    
-    // user entry has changed -> remove the cached version
-    pql_cache_userentry_remove($user);
-
-	// What's the Root DN (namingContexts) of this user
-	$rootdn = pql_get_rootdn($user); $rootdn = urldecode($rootdn);
-
-    if ($attrib == pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)) {
-		pql_cache_userdn_remove($user);
-    }
-    
-    return true;
-}
-// }}}
-
-// {{{ pql_replace_userattribute(ldap_linkid, user, attrib, value)
-// Replaces an attribute of a user (only use for single-field attributes)
-// Delete an attribut if value is an empty string
-function pql_replace_userattribute($ldap_linkid, $user, $attrib, $value) {
-	$attrib = lc($attrib);
-
-    if(!$value)
-	  // Delete all attributes of this type, regardless of value
-	  $entry[$attrib] = array();
-	elseif(!$attrib)
-	  $entry = $value;
-	else
-	  $entry[$attrib] = pql_maybe_encode($value, $attrib, $ldap_linkid);
-
-	// replace the attribute
-	if(!@ldap_mod_replace($ldap_linkid, $user, $entry)) {
-	    // if the value is empty (""), this causes an error in OpenLDAP 2.x, try to ldap_mod_del
-	    if($value == "") {
-			$oldvalue = pql_get_userattribute($ldap_linkid, $user, $attrib);
-			$oldvalue = $oldvalue[0];
-			$entry[$attrib] = $oldvalue;
-
-			if(ldap_mod_del($ldap_linkid, $user, $entry))
-			  return true;
-			else {
-				pql_errormsg($ldap_linkid);
-				return false;
-			}
-	    } else {
-			if(ldap_errno($ldap_linkid) == 65) {
-				// Object class violation - try to add the missing objectclass
-
-				// Get existing objectclasses in the object
-				$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")] = pql_setup_branch_objectclasses(0, $user, $ldap_linkid);
-
-				// Get objectclasses from the LDAP server, finding the objectclass
-				// that MUST (or if non is found, a MAY) have the attribute we're
-				// trying to modify.
-				$objectclasses = pql_get_subschema($ldap_linkid, 'objectclasses');
-				if(is_array($objectclasses)) {
-					foreach($objectclasses as $key => $oc) {
-						// Go through the MUST attributes
-						for($i=0; $i < $oc[MUST]['count']; $i++)
-						  if(lc($oc[MUST][$i]) == lc($attrib))
-							$objectclass[] = $key;
-
-						if(!is_array($objectclass)) {
-							// Didn't find a MUST, try to find a MAY attribute
-							for($i=0; $i < $oc[MAY]['count']; $i++)
-							  if(lc($oc[MAY][$i]) == lc($attrib))
-								$objectclass[] = $key;
-						}
-                    }
-				}
-
-				if($objectclass[0] and !$objectclass[1]) {
-					// There is only one objectclass which allow/require this attribute
-
-					// See if we have the other MUST attributes that the objectclass require
-					for($i=0; $i < $objectclasses[$objectclass[0]]['MUST']['count']; $i++) {
-						$oldvalue = pql_get_userattribute($ldap_linkid, $user, $objectclasses[$objectclass[0]]['MUST'][$i]);
-						if(!oldvalue or !is_array($oldvalue))
-						  $missing[] = $objectclasses[$objectclass[0]]['MUST'][$i];
-					}
-
-					if(is_array($missing)) {
-						// We're missing attribute(s) - create an array to be used by the user_add_missing_attributes.php page.
-						global $MISSING;
-						$MISSING['attrib'] = $attrib;
-						$MISSING['objectclass'] = $objectclass[0];
-
-						for($i=0; $missing[$i]; $i++)
-						  $MISSING['attributes'][] = $missing[$i];
-					}
-
-					// Add this objectclass to the existing objectclasses
-					$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][] = $objectclass[0];
-				} else { 
-					// TODO: We have more than one attribute!!
-					$msg  = "We retreived more than one objectclass (or possibly non at al!) that MAY or MUST ";
-					$msg .= "the attribute <b>$attrib</b>.<br>This is however not yet supported.<br>Objectclasses ";
-					$msg .= "retreived is:"; echo $msg; printr($objectclass);
-					die();
-				}
-
-				$url = "user_add_missing_attributes.php?user=".urlencode($user);
-				require("./user_add_missing_attributes.php");
-				die();
-			}
-		}
-	    
-	    pql_errormsg($ldap_linkid);
-	    return false;
-	}
-	
-	// user entry has changed -> remove the cached version
-	pql_cache_userentry_remove($user);
-	
-	return true;
-}
-// }}}
-
-// ------------------------------------------------
-
-// {{{ pql_get_domains(ldap)
-// Get all domains listed in ldap-tree (ou|dc-records)
-function pql_get_domains($ldap) {
-	foreach($ldap->ldap_basedn as $dn)  {
-		$dn = urldecode($dn);
-
-		$filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $dn) .
-                  "=*)" . pql_setup_branch_objectclasses(1, $dn) . ")";
-
-		$sr = @ldap_list($ldap->ldap_linkid, $dn, $filter) or pql_errormsg($ldap->ldap_linkid);
-		$info = @ldap_get_entries($ldap->ldap_linkid, $sr) or pql_errormsg($ldap->ldap_linkid);
-		if($info["count"] == 0) {
-			// No entries, try a BASE search
-			$sr = @ldap_read($ldap->ldap_linkid, $dn, $filter) or pql_errormsg($ldap->ldap_linkid);
-			$info = @ldap_get_entries($ldap->ldap_linkid, $sr) or pql_errormsg($ldap->ldap_linkid);
-		}
-		
-		for ($i=0; $i<$info["count"]; $i++) {
-			$domains[] = $info[$i]["dn"];
-		}
-		
-	}
-
-	return $domains;
-}
-// }}}
-
-// {{{ pql_get_user(ldap_linkid, dn)
-// Get all users of a domain
-function pql_get_user($ldap_linkid, $dn) {
-	$dn = urldecode($dn);
-
-	// What's the Root DN (namingContexts) for this domain
-	$rootdn = pql_get_rootdn($dn); $rootdn = urldecode($rootdn);
-
-	// Filter out any object which is a posixGroup.
-	// (&(cn=*)(!(objectclass=posixgroup)))
-	$filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) . "=*)(!(objectclass=posixgroup)))";
-	
-	$sr = @ldap_search($ldap_linkid, $dn, $filter) or pql_errormsg($ldap_linkid);
-	$info = ldap_get_entries($ldap_linkid, $sr) or pql_errormsg($ldap_linkid);
-	for ($i=0; $i<$info["count"]; $i++) {
-		$user[] = $info[$i]["dn"];
-	}
-	
-	return $user;
-}
-// }}}
-
-// {{{ pql_get_user_letter(ldap_linkid, domain, letra)
-// Based in PQL_CONF_GET_USER to search by the cn first letter
-function pql_get_user_letter($ldap_linkid, $domain, $letra) {
-    $sr = ldap_search($ldap_linkid, $domain, "(".pql_get_define("PQL_GLOB_ATTR_UID")."=".$letra."*)");
-    $info = ldap_get_entries($ldap_linkid, $sr);
-    
-    for ($i=0; $i<$info["count"]; $i++) {
-		$user[] = $info[$i]["dn"];
-    }
-    
-    return $user;
-}
-// }}}
-
-// {{{ pql_get_user_number(ldap_linkid, domain)
-// Based in PQL_CONF_GET_USER to search by an initial number at cn attribute
-function pql_get_user_number($ldap_linkid, $domain) {
-	// What's the Root DN (namingContexts) for this domain
-	$rootdn = pql_get_rootdn($dn); $rootdn = urldecode($rootdn);
-
-    for($numero=0; $numero <= 9; $numero++) {
-		$sr = ldap_search($ldap_linkid, $domain, "(".pql_get_define("PQL_GLOB_ATTR_UID")."=".$numero."*)");
-		$info = ldap_get_entries($ldap_linkid, $sr);
-		
-		for ($i=0; $i<$info["count"]; $i++) {
-			$user[] = $info[$i][pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)][0];
-		}
-    }
-    
-    return $user;
-}
-// }}}
-
-// {{{ pql_get_userattribute(ldap_linkid, user, attribute)
-function pql_get_userattribute($ldap_linkid, $user, $attribute) {
-    $attribute = lc($attribute);
-
-    // check whether this user is cached
-    $value = '';
-    
-	if(pql_cache_userentry_get($user, $attribute, $value))
-	  // the user is cached  -> return the value for the requested attribute  
-	  return($value);
-
-    // not yet cached -> get the userentry and cache it
-    $entries = pql_get_userentry($ldap_linkid, $user);
-
-    if($entries) {
-		// INTERNATIONALIZE values
-		foreach($entries as $attrib => $e) {
-			for($i=0; $e[$i]; $i++)
-			  $values[$attrib][] = pql_maybe_decode($e[$i]);
-		}
-
-		pql_cache_userentry_add($user, $values);
-		return($values[$attribute]);	
-	} else
-	  return(false);
-}
-// }}}
-
-// {{{ pql_get_userentry(ldap_linkid, user)
-function pql_get_userentry($ldap_linkid, $user) {
-    $sr = @ldap_read($ldap_linkid, $user, "(objectClass=*)");
-    if($sr == false)
-	  return false;
-    
-    // build array of all attributes
-    $rid = @ldap_first_entry($ldap_linkid, $sr);
-    $attribs[] = lc(@ldap_first_attribute($ldap_linkid, $rid, $berid));
-    while($attrib = @ldap_next_attribute($ldap_linkid, $rid, $berid))
-	  $attribs[] = lc($attrib);
-
-    // build entry array with all attributes and values
-    foreach($attribs as $attrib) {
-		$values = @ldap_get_values($ldap_linkid, $rid, $attrib);
-		unset($values["count"]);
-		$entry[$attrib] = $values;
-    }
-
-    // free result
-    //@ldap_free_result($rid):
-    
-    // return entry
-    return $entry;
-}
-// }}}
-
-// {{{ pql_get_userquota(ldap_linkid, user)
-// Get formated quota of a user
-function pql_get_userquota($ldap_linkid, $user) {
-    $quota = pql_get_userattribute($ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_QUOTA"));
-    if(!is_array($quota))
-	  return false;
-	else    
-	  return pql_parse_quota($quota[0]);
-}
-// }}}
-
-// {{{ pql_get_dn(ldap, reference, multiples)
-// Retrieve the dn for a given reference
-function pql_get_dn($ldap, $reference, $multiples = 0) {
-    // check if we already have the dn for this user chached
-    $dn = '';
-    if(pql_cache_userdn_get($reference, $dn))
-	  return($dn);
-
-    // dn not in cache -> search for it
-	foreach($ldap->ldap_basedn as $base) {
-		$base = urldecode($base);
-
-		$dn = pql_search_attribute($ldap->ldap_linkid, $base,
-								   pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $base),
-								   $reference);
-		if($multiples and $dn)
-		  $dns[] = $dn;
-		elseif($dn) {
-			// we got the dn -> remember it
-			pql_cache_userdn_add($reference, $dn);
-			
-			return($dn);
-		}
-	}
-
-	if($multiples and is_array($dns))
-	  return($dns);
-	else
-	  return(false);
-}
-// }}}
-
-// {{{ pql_get_next_uidnumber(ldap)
-// Returns the next free UID/GID number
-function pql_get_next_uidnumber($ldap) {
-    $filter = "(&(" . pql_get_define("PQL_GLOB_ATTR_QMAILUID") . "=*)(objectclass=posixaccount))";
-
-	foreach($ldap->ldap_basedn as $dn) {
-		$dn = urldecode($dn);
-
-		$sr = ldap_search($ldap->ldap_linkid, $dn, $filter);
-		$results = @ldap_get_entries($ldap->ldap_linkid, $sr) or pql_errormsg($ldap->ldap_linkid);
-	
-		// Find the highest availible UIDNUMBER
-		$highest = 0;
-		for($i=0; $i < $results["count"]; $i++) {
-			if(($results[$i][pql_get_define("PQL_GLOB_ATTR_QMAILUID")][0] > $highest) &&
-			   ($results[$i][pql_get_define("PQL_GLOB_ATTR_QMAILUID")][0] < 64000))
-			  {
-				  $highest = $results[$i][pql_get_define("PQL_GLOB_ATTR_QMAILUID")][0];
-			  }
-		}
-	}
-
-	if($highest)
-	$highest++; // Increase with one!
-	else
-	  if(pql_get_define("PQL_CONF_MINIMUM_UIDNUMBER"))
-		$highest = pql_get_define("PQL_CONF_MINIMUM_UIDNUMBER");
-	  else
-		$highest = 1000;
-	
-    return $highest;
-}
-// }}}
-
-// {{{ pql_get_next_username(ldap, domain)
-// Returns the next free UID/GID number
-function pql_get_next_username($ldap, $domain) {
-	// Get the prefix from the branch
-	$prefix = pql_get_domain_value($ldap, $domain, pql_get_define("PQL_GLOB_ATTR_USERNAMEPREFIX"));
-
-	if($prefix) {
-		// Under what namingContexts is this domain/branch located?
-		$rootdn = pql_get_rootdn($domain); $rootdn = urldecode($rootdn);
-
-		// Setup the LDAP search filter
-//		$filter = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) . '=' . $prefix . '*';
-		$filter = pql_get_define("PQL_GLOB_ATTR_UID")."=$prefix*"; // DEBUG
-
-		// Search the whole database for all users with this prefix
-		foreach($ldap->ldap_basedn as $dn) {
-			$dn = urldecode($dn); unset($info);
-
-			$sr     = ldap_search($ldap->ldap_linkid, $dn, $filter);
-			$info   = @ldap_get_entries($ldap->ldap_linkid, $sr) or pql_errormsg($ldap->ldap_linkid);
-
-			// Rearrange the array, we're only interested in the PQL_CONF_REFERENCE_USERS_WITH value			
-			for($i=0; $i < $info["count"]; $i++)
-			  $USERS[] = $info[$i][pql_get_define("PQL_GLOB_ATTR_UID")][0];
-		}
-
-		if(!$USERS)
-		  return($prefix."0001");
-		else {
-			// We have previous values in the DB. 
-			sort($USERS);
-			$nr  = eregi_replace($prefix, "", $USERS[count($USERS)-1]);
-			return($prefix.sprintf("%04d", $nr + 1));
-		}
-	}
-
-}
-// }}}
-
-// {{{ pql_get_domain_value(ldap, dn, value, match, all)
-function pql_get_domain_value($ldap, $dn, $value, $match = '', $all = 0) {
+// {{{ pql_domain_value(ldap, dn, value, match, all)
+function pql_domain_value($ldap, $dn, $value, $match = '', $all = 0) {
 	$value = lc($value); $dn = urldecode($dn);
 
 	$recursive = 1; $success = 0; $results = '';
@@ -1109,7 +668,7 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '', $all = 0) {
 	  $filter = "$value=$match";
 //	else
 //	  $filter  = "(&($value=$match)(".pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $rootdn)."=*))";
-	//echo "pql_get_domain_value(): '$dn' '$filter' $value<br>"; // DEBUG
+	//echo "pql_domain_value(): '$dn' '$filter' $value<br>"; // DEBUG
 
 	// Search from the DN
 	if(!$recursive)
@@ -1191,6 +750,584 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '', $all = 0) {
 }
 // }}}
 
+// ------------------------------------------------
+
+// {{{ pql_replace_attribute(ldap_linkid, objectdn, attrib, value)
+// Replaces an attribute in a object (only use for single-field attributes)
+// Delete an attribute(s) if value is an empty string
+function pql_replace_attribute($ldap_linkid, $objectdn, $attrib, $value) {
+	$attrib = lc($attrib);
+
+    if(!$value)
+	  // Delete all attributes of this type, regardless of value
+	  $entry[$attrib] = array();
+	elseif(!$attrib)
+	  $entry = $value;
+	else
+	  $entry[$attrib] = pql_maybe_encode($value, $attrib, $ldap_linkid);
+
+	// replace the attribute
+	if(!@ldap_mod_replace($ldap_linkid, $objectdn, $entry)) {
+	    // if the value is empty (""), this causes an error in OpenLDAP 2.x, try to ldap_mod_del
+	    if($value == "") {
+			$oldvalue = pql_get_userattribute($ldap_linkid, $objectdn, $attrib);
+			$oldvalue = $oldvalue[0];
+			$entry[$attrib] = $oldvalue;
+
+			if(ldap_mod_del($ldap_linkid, $objectdn, $entry))
+			  return true;
+			else {
+				pql_errormsg($ldap_linkid);
+				return false;
+			}
+	    } else {
+			if(ldap_errno($ldap_linkid) == 65) {
+				// Object class violation - try to add the missing objectclass
+
+				// Get existing objectclasses in the object
+				$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")] = pql_setup_branch_objectclasses(0, $objectdn, $ldap_linkid);
+
+				// Get objectclasses from the LDAP server, finding the objectclass
+				// that MUST (or if non is found, a MAY) have the attribute we're
+				// trying to modify.
+				$objectclasses = pql_get_subschema($ldap_linkid, 'objectclasses');
+				if(is_array($objectclasses)) {
+					foreach($objectclasses as $key => $oc) {
+						// Go through the MUST attributes
+						for($i=0; $i < $oc[MUST]['count']; $i++)
+						  if(lc($oc[MUST][$i]) == lc($attrib))
+							$objectclass[] = $key;
+
+						if(!is_array($objectclass)) {
+							// Didn't find a MUST, try to find a MAY attribute
+							for($i=0; $i < $oc[MAY]['count']; $i++)
+							  if(lc($oc[MAY][$i]) == lc($attrib))
+								$objectclass[] = $key;
+						}
+                    }
+				}
+
+				if($objectclass[0] and !$objectclass[1]) {
+					// There is only one objectclass which allow/require this attribute
+
+					// See if we have the other MUST attributes that the objectclass require
+					for($i=0; $i < $objectclasses[$objectclass[0]]['MUST']['count']; $i++) {
+						$oldvalue = pql_get_userattribute($ldap_linkid, $objectdn, $objectclasses[$objectclass[0]]['MUST'][$i]);
+						if(!oldvalue or !is_array($oldvalue))
+						  $missing[] = $objectclasses[$objectclass[0]]['MUST'][$i];
+					}
+
+					if(is_array($missing)) {
+						// We're missing attribute(s) - create an array to be used by the user_add_missing_attributes.php page.
+						global $MISSING;
+						$MISSING['attrib'] = $attrib;
+						$MISSING['objectclass'] = $objectclass[0];
+
+						for($i=0; $missing[$i]; $i++)
+						  $MISSING['attributes'][] = $missing[$i];
+					}
+
+					// Add this objectclass to the existing objectclasses
+					$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][] = $objectclass[0];
+				} else { 
+					// TODO: We have more than one attribute!!
+					$msg  = "We retreived more than one objectclass (or possibly non at al!) that MAY or MUST ";
+					$msg .= "the attribute <b>$attrib</b>.<br>This is however not yet supported.<br>Objectclasses ";
+					$msg .= "retreived is:"; echo $msg; printr($objectclass);
+					die();
+				}
+
+				$url = "user_add_missing_attributes.php?user=".urlencode($objectdn);
+				require("./user_add_missing_attributes.php");
+				die();
+			}
+		}
+	    
+	    pql_errormsg($ldap_linkid);
+	    return false;
+	}
+	
+	// user entry has changed -> remove the cached version
+	pql_cache_userentry_remove($objectdn);
+	
+	return true;
+}
+// }}}
+
+// {{{ pql_set_domain_value(linkid, dn, type, value)
+// Set a embedded domain default value
+function pql_set_domain_value($linkid, $dn, $type, $value) {
+	$DEBUG = 0;
+	$dn = urldecode($dn);
+
+	if($type) {
+		$type = lc($type);
+		
+		// Setup the value array
+		if(is_array($value)) {
+			// We're supplied with an array, add those values
+			foreach($value as $val) {
+				$entry[$type][] = pql_maybe_encode($val, $type, $linkid);
+			}
+		} else {
+			$entry[$type] = pql_maybe_encode($value, $type, $linkid);
+		}
+	} else {
+		// INTERNATIONALIZE
+		if(is_array($value)) {
+			foreach($value as $attrib => $val) {
+				for($i=0; $val[$i]; $i++)
+				  $entry[$attrib][] = pql_maybe_encode($val[$i], $attrib, $linkid);
+			}
+		} else {
+			$entry = $value;
+		}
+	}
+
+	if($value) {
+		// Setup objectclasses
+		if(!($entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")] = pql_setup_branch_objectclasses(0, $dn, $linkid)))
+		  unset($entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")]);
+	}
+		
+	// Create a LDIF object to print in case of error
+	$account_type = $type;
+	$LDIF = pql_create_ldif("pql_set_domain_value", $dn, $entry);
+	
+	// --------------------------
+	// DEBUG mode: Print the LDIF
+	if($DEBUG >= 1)
+	  die("$LDIF");
+
+	// Do the LDAP modification
+	if($value != '') {
+		// Replace the current attribute value
+		if(! ldap_mod_replace($linkid, $dn, $entry)) {
+			pql_errormsg($linkid);
+			die($LDIF);
+			return false;
+		}
+	} else {
+		// Delete all attributes of this type, regardless of value
+		$entry[$type] = array();
+
+		if(! ldap_mod_del($linkid, $dn, $entry)) {
+			pql_errormsg($linkid);
+			die($LDIF);
+			return false;
+		}
+	}
+	
+    return true;
+}
+// }}}
+
+// {{{ pql_replace_admins(ldap, old, new)
+// Look for 'administrator/seealso = old value',
+// replace with 'administrator/seealso = new value'.
+function pql_replace_admins($ldap, $old, $new) {
+	// Setup the search filter
+	$filter  = '(|';
+	$filter .= '('.pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR")."=$old".')';
+	$filter .= '('.pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR")."=$old".')';
+	$filter .= '('.pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR")."=$old".')';
+	$filter .= '('.pql_get_define("PQL_GLOB_ATTR_SEEALSO")."=$old".')';
+	$filter .= ')';
+
+	// We're only interested in these attributes
+	$attribs = array(pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"),
+					 pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR"),
+					 pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR"),
+					 pql_get_define("PQL_GLOB_ATTR_SEEALSO"));
+
+	// Go through the namingContexts one by one
+	foreach($ldap->ldap_basedn as $base) {
+		$base = urldecode($base);
+		
+		$sr   = ldap_search($ldap->ldap_linkid, $base, $filter, $attribs);
+		$info = ldap_get_entries($ldap->ldap_linkid, $sr) or pql_errormsg($ldap->ldap_linkid);
+		for($i=0; $i < $info["count"]; $i++) {
+			unset($dn); unset($entry); unset($LDIF);
+			
+			// Go through the attributes we're interested in, looking for
+			// the (old) user DN
+			foreach($attribs as $attrib) {
+				for($j=0; $j < $info[$i][$attrib]["count"]; $j++) {
+					// TODO: Only replace the attribute(s) if it have changed
+					if($old == $info[$i][$attrib][$j]) {
+						// Got a match ...
+						if($new)
+						  // ... we have something to replace with - replace this attribute
+						  $entry[$attrib][] = $new;
+					} else
+					  // Remember the old value
+					  $entry[$attrib][] = $info[$i][$attrib][$j];
+				}
+			}
+			
+			// Create a LDIF object to print in case of error
+			$LDIF = pql_create_ldif("pql_replace_admins", $info[$i]["dn"], $entry);
+			
+			// Modify this object
+			if(!ldap_mod_replace($ldap->ldap_linkid, $info[$i]["dn"], $entry)) {
+				pql_errormsg($ldap->ldap_linkid);
+				die($LDIF);
+			}
+		}
+	}
+}
+// }}}
+
+// {{{ pql_modify_user_addressbook(ldap_linkid, user, attribs)
+function pql_modify_user_addressbook($ldap_linkid, $user, $attribs) {
+	// What's the Root DN (namingContexts) of this user
+	$rootdn = pql_get_rootdn($user); $rootdn = urldecode($rootdn);
+
+    // check if addressbook is disabled
+    if(!pql_get_define("PQL_CONF_USE_ADDRESSBOOK", $rootdn))
+	  return false;
+    
+    // object-class dependencies for addressbook entries
+    //
+    // ------------------------------------------------------------------------------------
+    // | OBJECTCLASS          | Must-Attr. (OpenLDAP 1.2.x) | Must-Attr. (OpenLDAP 2.0.x) |
+    // ------------------------------------------------------------------------------------
+    // | InetOrgPerson        | none                        | none                        |
+    // ------------------------------------------------------------------------------------
+    // | organizationalPerson | sn, cn                      | none                        |
+    // ------------------------------------------------------------------------------------
+    // | country              | c                           | c                           |
+    // ------------------------------------------------------------------------------------
+    // | organization         | o                           | o                           |
+    // ------------------------------------------------------------------------------------
+    // | pilotObject          | none                        | none                        |
+    // ------------------------------------------------------------------------------------
+    //
+    // the 'organization' and 'country' objectclass can only be set when an 'o' or a 'c'
+    // attribute is given. The other objectclasses will be added by default because the
+    // haven't a mandatory attribute
+    
+    // fetch current registred objectclasses of user
+    $oc_user = pql_get_userattribute($ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS"));
+    
+    // set all objectclasses to lowercase
+    foreach($oc_user as $oc1){
+		$oc[] = lc($oc1);
+    }
+    
+    // add addressbook's default object classes if they are not present
+    $default_oc = array("inetorgperson", "organizationalperson", "pilotobject");
+    
+    foreach($default_oc as $oc1){
+		if(!in_array($oc1, $oc)){
+			//$oc[] = $oc1;
+		}
+    }
+    
+    // check for object class dependencies
+    echo var_dump($oc);
+}
+// }}}
+
+// ------------------------------------------------
+// TODO: Questionable functons - remove?
+
+// {{{ pql_modify_userattribute(ldap_linkid, user, attrib, oldvalue, newvalue)
+// Change an attribute of a user
+function pql_modify_userattribute($ldap_linkid, $user, $attrib, $oldvalue, $newvalue) {
+    // get all attributes first
+    $entry = pql_get_userattribute($ldap_linkid, $user, $attrib);
+
+    // If we found an entry, make sure it isn't
+    // not overwritten, otherwise ADD the attribute.
+    if($entry) {
+		// array_search workaround
+		foreach($entry as $value) {
+			if($value == $oldvalue) {
+				if($newvalue)
+				  // Replace this value with a new one
+				  $value = $newvalue;
+				else
+				  // We want to delete this value
+				  unset($value);
+			}
+
+			if($value)
+			  $entry_new[$attrib][] = $value;
+		}
+
+		// If we're not called with a OLD value, then we
+		// want to add a new value to the attribute
+		if(!$oldvalue and $newvalue)
+		  $entry_new[$attrib][] = $newvalue;
+    } else
+	  $entry_new[$attrib][] = $newvalue;
+
+	// Create a LDIF object to print in case of error
+	$LDIF = pql_create_ldif("pql_modify_userattribute", $user, $entry_new);
+
+    if(!ldap_mod_replace($ldap_linkid, $user, $entry_new)) {
+	    // if the value is empty (""), this causes an error in OpenLDAP 2.x, try to ldap_mod_del
+	    if($newvalue == "") {
+			unset($entry_new); $entry_new[$attrib] = array();
+
+			if(ldap_mod_del($ldap_linkid, $user, $entry_new))
+			  return true;
+		}
+
+		pql_errormsg($ldap_linkid);
+		return false;
+    }
+    
+    // user entry has changed -> remove the cached version
+    pql_cache_userentry_remove($user);
+
+	// What's the Root DN (namingContexts) of this user
+	$rootdn = pql_get_rootdn($user); $rootdn = urldecode($rootdn);
+
+    if ($attrib == pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)) {
+		pql_cache_userdn_remove($user);
+    }
+    
+    return true;
+}
+// }}}
+
+// {{{ pql_get_userattribute(ldap_linkid, user, attribute)
+function pql_get_userattribute($ldap_linkid, $user, $attribute) {
+    $attribute = lc($attribute);
+
+    // check whether this user is cached
+    $value = '';
+    
+	if(pql_cache_userentry_get($user, $attribute, $value))
+	  // the user is cached  -> return the value for the requested attribute  
+	  return($value);
+
+    // not yet cached -> get the userentry and cache it
+    $entries = pql_get_userentry($ldap_linkid, $user);
+    if($entries) {
+		// INTERNATIONALIZE values
+		foreach($entries as $attrib => $e) {
+			for($i=0; $e[$i]; $i++)
+			  $values[$attrib][] = pql_maybe_decode($e[$i]);
+		}
+
+		pql_cache_userentry_add($user, $values);
+		return($values[$attribute]);	
+	} else
+	  return(false);
+}
+// }}}
+
+// {{{ pql_get_userentry(ldap_linkid, user)
+function pql_get_userentry($ldap_linkid, $user) {
+	$sr = @ldap_read($ldap_linkid, $user, "(objectClass=*)");
+	if($sr == false)
+	  return false;
+	
+	// build array of all attributes
+	$rid = @ldap_first_entry($ldap_linkid, $sr);
+	$attribs[] = lc(@ldap_first_attribute($ldap_linkid, $rid, $berid));
+
+	while($attrib = @ldap_next_attribute($ldap_linkid, $rid, $berid))
+	  $attribs[] = lc($attrib);
+
+    // build entry array with all attributes and values
+	foreach($attribs as $attrib) {
+		$values = @ldap_get_values($ldap_linkid, $rid, $attrib);
+		unset($values["count"]);
+		$entry[$attrib] = $values;
+    }
+    
+    // return entry
+    return $entry;
+}
+// }}}
+
+// {{{ pql_search_forwarders(ldap, user)
+// Search all accounts with forwarders to $user@$domain
+function pql_search_forwarders($ldap, $user) {
+	$return = '';
+	$linkid = $ldap->ldap_linkid;
+
+    // get all email addresses of a user
+    $email = pql_get_userattribute($linkid, $user, pql_get_define("PQL_GLOB_ATTR_MAIL"));
+    $aliases = pql_get_userattribute($linkid, $user, pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE"));
+    
+    $addresses[] = $email[0];
+    if(is_array($aliases)){
+		$addresses = array_merge($addresses, $aliases);
+    }
+    
+    // create filter
+    $filter = "(|";
+    foreach($addresses as $add){
+		$filter .= "(" . pql_get_define("PQL_GLOB_ATTR_FORWARDS") ."=" . $add . ")";
+    }
+    $filter .= ")";
+
+    // Go through each base DN in the database, looking
+	// for forwarders to this user
+	foreach($ldap->ldap_basedn as $dn) {
+		$dn = urldecode($dn);
+
+		$sr = ldap_search($linkid, $dn, $filter);
+		if(ldap_count_entries($linkid, $sr) > 0) {
+			// Get the entries found
+			$results = ldap_get_entries($linkid, $sr);
+
+			// Go through the entries
+			foreach($results as $key => $result){
+				if((string)$key != "count"){
+					$return[] = array("reference" => $result["dn"],
+									  pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $dn) => $result[pql_get_define("PQL_GLOB_ATTR_CN")][0],
+									  "email" => $result[pql_get_define("PQL_GLOB_ATTR_MAIL")][0]);
+					
+					if(is_array($result[pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE")])){
+						foreach($result[pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE")] as $key => $mailalternateaddress){
+							if((string)$key != "count"){
+								$return[] = array("reference" => $result["dn"],
+												  pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $dn) => $result[pql_get_define("PQL_GLOB_ATTR_CN")][0],
+												  "email" => $mailalternateaddress);
+							}
+						} // end foreach results
+					} // end if is_array
+				} // end if key != count
+			} // end foreach results
+		}
+	} // end foreach basedn
+    
+    return $return;
+}
+// }}}
+
+// ------------------------------------------------
+// API functions - support
+// ------------------------------------------------
+
+// {{{ pql_email_exists(ldap, email)
+// Check if any mail or mailalternateaddress record with this email exists in the ldap tree
+function pql_email_exists($ldap, $email) {
+	$filter = "(|(" . pql_get_define("PQL_GLOB_ATTR_MAIL") . "=" . $email . ")(" . pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE") . "=" . $email . "))";
+
+	foreach($ldap->ldap_basedn as $dn) {
+		$dn = urldecode($dn);
+
+		$sr = ldap_search($ldap->ldap_linkid, $dn, $filter);
+		if(ldap_count_entries($ldap->ldap_linkid, $sr) > 0) {
+			$ed = ldap_first_entry($ldap->ldap_linkid, $sr);
+			return ldap_get_dn($ldap->ldap_linkid, $ed);
+		} else {
+			return false;
+		}
+	}
+}
+// }}}
+
+// {{{ pql_get_userquota(ldap_linkid, user)
+// Get formated quota of a user
+function pql_get_userquota($ldap_linkid, $user) {
+    $quota = pql_get_userattribute($ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_QUOTA"));
+    if(!is_array($quota))
+	  return false;
+	else    
+	  return pql_parse_quota($quota[0]);
+}
+// }}}
+
+// {{{ pql_get_user_letter(linkid, domain, letra)
+// Based in PQL_CONF_GET_USER to search by the cn first letter
+function pql_get_user_letter($linkid, $domain, $letra) {
+	$filter = "(".pql_get_define("PQL_GLOB_ATTR_UID")."=".$letra."*)";
+	$user = pql_search($linkid, $domain, $filter);
+    return $user;
+}
+// }}}
+
+// {{{ pql_get_user_number(ldap_linkid, domain)
+// Based in PQL_CONF_GET_USER to search by an initial number at cn attribute
+function pql_get_user_number($linkid, $domain) {
+	// What's the Root DN (namingContexts) for this domain
+	$rootdn = pql_get_rootdn($dn); $rootdn = urldecode($rootdn);
+
+    for($numero=0; $numero <= 9; $numero++) {
+		$filter = "(".pql_get_define("PQL_GLOB_ATTR_UID")."=".$numero."*)";
+		$tmp = pql_search($linkid, $domain, $filter);
+		
+		if($user)
+		  $user = $user + $tmp;
+    }
+    
+    return $user;
+}
+// }}}
+
+// {{{ pql_get_next_uidnumber(ldap)
+// Returns the next free UID/GID number
+function pql_get_next_uidnumber($ldap) {
+    $filter = "(&(" . pql_get_define("PQL_GLOB_ATTR_QMAILUID") . "=*)(objectclass=posixaccount))";
+
+	foreach($ldap->ldap_basedn as $dn) {
+		$results = pql_search($ldap->ldap_linkid, $dn, $filter, '');
+	
+		// Find the highest availible UIDNUMBER
+		$highest = 0;
+		for($i=0; $i < $results["count"]; $i++) {
+			if(($results[$i][pql_get_define("PQL_GLOB_ATTR_QMAILUID")][0] > $highest) &&
+			   ($results[$i][pql_get_define("PQL_GLOB_ATTR_QMAILUID")][0] < 64000))
+			  {
+				  $highest = $results[$i][pql_get_define("PQL_GLOB_ATTR_QMAILUID")][0];
+			  }
+		}
+	}
+
+	if($highest)
+	$highest++; // Increase with one!
+	else
+	  if(pql_get_define("PQL_CONF_MINIMUM_UIDNUMBER"))
+		$highest = pql_get_define("PQL_CONF_MINIMUM_UIDNUMBER");
+	  else
+		$highest = 1000;
+	
+    return $highest;
+}
+// }}}
+
+// {{{ pql_get_next_username(ldap, domain)
+// Returns the next free UID/GID number
+function pql_get_next_username($ldap, $domain) {
+	// Get the prefix from the branch
+	$prefix = pql_domain_value($ldap, $domain, pql_get_define("PQL_GLOB_ATTR_USERNAMEPREFIX"));
+
+	if($prefix) {
+		// Under what namingContexts is this domain/branch located?
+		$rootdn = pql_get_rootdn($domain); $rootdn = urldecode($rootdn);
+
+		// Setup the LDAP search filter
+//		$filter = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) . '=' . $prefix . '*';
+		$filter = pql_get_define("PQL_GLOB_ATTR_UID")."=$prefix*"; // DEBUG
+
+		// Search the whole database for all users with this prefix
+		foreach($ldap->ldap_basedn as $dn) {
+			$tmp = ldap_search($ldap->ldap_linkid, $dn, $filter, pql_get_define("PQL_GLOB_ATTR_UID"));
+
+			$USERS = $USERS + $tmp;
+		}
+
+		if(!$USERS)
+		  return($prefix."0001");
+		else {
+			// We have previous values in the DB. 
+			sort($USERS);
+			$nr  = eregi_replace($prefix, "", $USERS[count($USERS)-1]);
+			return($prefix.sprintf("%04d", $nr + 1));
+		}
+	}
+
+}
+// }}}
+
 // {{{ pql_get_valid_shells()
 // Load list of allowed shells from /etc/shells
 function pql_get_valid_shells() {
@@ -1218,11 +1355,7 @@ function pql_get_mx($ldap, $domainname) {
 		// this domain...
 
 		$filter = "(&(objectclass=qmailControl)(".pql_get_define("PQL_GLOB_ATTR_LOCALS")."=$domainname))";
-		$sr = @ldap_search($ldap, $GLOBALS["USER_SEARCH_DN_CTR"], $filter)
-		  or pql_errormsg($ldap);
-
-		$info = ldap_get_entries($ldap, $sr)
-		  or pql_errormsg($ldap);
+		$info = pql_search($ldap, $GLOBALS["USER_SEARCH_DN_CTR"], $filter, '');
 		for($i=0; $i<$info["count"]; $i++)
 		  for($j=0; $j<$info[$i][pql_get_define("PQL_GLOB_ATTR_LOCALS")]["count"]; $j++)
 			if($info[$i][pql_get_define("PQL_GLOB_ATTR_LOCALS")][$j] == $domainname)
@@ -1240,6 +1373,31 @@ function pql_get_mx($ldap, $domainname) {
 		
 		return(array(1, $rec[$prio_key]));
 	}
+}
+// }}}
+
+// {{{ pql_get_subschemas(ldap_linkid, type, match)
+function pql_get_subschemas($ldap_linkid, $type = "", $match = "") {
+    $attribs = array("ldapsyntaxes", "matchingrules", "attributetypes", "objectclasses");
+    foreach($attribs as $attrib) {
+		$result = pql_get_subschema($ldap_linkid, $attrib);
+		if($result)
+		  $entry[$attrib] = $result;
+    }
+	
+	if($type and $match) {
+		// We're looking for something special, look for it. If it doesn't
+		// exists in the array -> return FALSE.
+		if(! $entry[lc($type)][lc($match)])
+		  return 0;
+	}
+
+	// Return 4 arrays with:
+	//	ldapsyntaxes
+	//	matchingrules
+	//	attributetypes
+	//	objectclasses
+    return $entry;
 }
 // }}}
 
@@ -1423,35 +1581,8 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 }
 // }}}
 
-// {{{ pql_get_subschemas(ldap_linkid, type, match)
-function pql_get_subschemas($ldap_linkid, $type = "", $match = "") {
-    $attribs = array("ldapsyntaxes", "matchingrules", "attributetypes", "objectclasses");
-    foreach($attribs as $attrib) {
-		$result = pql_get_subschema($ldap_linkid, $attrib);
-		if($result)
-		  $entry[$attrib] = $result;
-    }
-	
-	if($type and $match) {
-		// We're looking for something special, look for it. If it doesn't
-		// exists in the array -> return FALSE.
-		if(! $entry[lc($type)][lc($match)])
-		  return 0;
-	}
-
-	// Return 4 arrays with:
-	//	ldapsyntaxes
-	//	matchingrules
-	//	attributetypes
-	//	objectclasses
-    return $entry;
-}
-// }}}
-
 // {{{ pql_get_subbranch(linkid, dn, filter)
 function pql_get_subbranch($linkid, $dn, $filter = 1) {
-	$dn = urldecode($dn);
-
 	// What's the Root DN (namingContexts) for this domain
 	$rootdn = pql_get_rootdn($dn); $rootdn = urldecode($rootdn);
 
@@ -1461,13 +1592,12 @@ function pql_get_subbranch($linkid, $dn, $filter = 1) {
 		$ocb = "organizationalUnit";
 	}
 	
-	$sr   = ldap_search($linkid, $dn, 'objectclass=organizationalUnit');
-	$info = ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
+	$info = pql_search($linkid, $dn, 'objectclass=organizationalUnit', '');
 	for ($i=0; $i<$info["count"]; $i++) {
 		if($filter) {
 			// Filter out the most obvious subbranches we don't put users in...
-			if(!eregi('group', $info[$i]["dn"]) and
-			   !eregi('qmail', $info[$i]["dn"]) and
+			if(!eregi('group',  $info[$i]["dn"]) and
+			   !eregi('qmail',  $info[$i]["dn"]) and
 			   !eregi('auto\.', $info[$i]["dn"]))
 			  $branches[] = $info[$i]["dn"];
 		} else
@@ -1534,88 +1664,6 @@ function pql_get_rootdn($dn) {
 	return(urlencode($dn));
 }
 // }}}
-
-// ------------------------------------------------
-
-// {{{ pql_search_attribute(ldap_linkid, basedn, attribute, value)
-// Search $attribute with $value in whole ldap tree, returns dn or false
-function pql_search_attribute($ldap_linkid, $basedn, $attribute, $value) {
-	$value = pql_maybe_encode($value, $attribute, $ldap_linkid);
-
-	// URL decode the object DN if it's URL ENcoded
-	if(ereg("%3D", $basedn))
-	  $basedn = urldecode($basedn);
-
-    $filter = '('.$attribute.'='.$value.')';
-//echo "$basedn: $filter ($attribute)<br>\n";
-    $sr = @ldap_search($ldap_linkid, $basedn, $filter, array($attribute));
-    if(@ldap_count_entries($ldap_linkid, $sr) > 0) {
-		$ed = ldap_first_entry($ldap_linkid, $sr);
-		return ldap_get_dn($ldap_linkid, $ed);
-	} else {
-		return false;
-	}
-}
-// }}}
-
-// {{{ pql_search_forwarders(ldap, user)
-// Search all accounts with forwarders to $user@$domain
-function pql_search_forwarders($ldap, $user) {
-	$return = '';
-	$linkid = $ldap->ldap_linkid;
-
-    // get all email addresses of a user
-    $email = pql_get_userattribute($linkid, $user, pql_get_define("PQL_GLOB_ATTR_MAIL"));
-    $aliases = pql_get_userattribute($linkid, $user, pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE"));
-    
-    $addresses[] = $email[0];
-    if(is_array($aliases)){
-		$addresses = array_merge($addresses, $aliases);
-    }
-    
-    // create filter
-    $filter = "(|";
-    foreach($addresses as $add){
-		$filter .= "(" . pql_get_define("PQL_GLOB_ATTR_FORWARDS") ."=" . $add . ")";
-    }
-    $filter .= ")";
-
-    // Go through each base DN in the database, looking
-	// for forwarders to this user
-	foreach($ldap->ldap_basedn as $dn) {
-		$dn = urldecode($dn);
-
-		$sr = ldap_search($linkid, $dn, $filter);
-		if(ldap_count_entries($linkid, $sr) > 0) {
-			// Get the entries found
-			$results = ldap_get_entries($linkid, $sr);
-
-			// Go through the entries
-			foreach($results as $key => $result){
-				if((string)$key != "count"){
-					$return[] = array("reference" => $result["dn"],
-									  pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $dn) => $result[pql_get_define("PQL_GLOB_ATTR_CN")][0],
-									  "email" => $result[pql_get_define("PQL_GLOB_ATTR_MAIL")][0]);
-					
-					if(is_array($result[pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE")])){
-						foreach($result[pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE")] as $key => $mailalternateaddress){
-							if((string)$key != "count"){
-								$return[] = array("reference" => $result["dn"],
-												  pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $dn) => $result[pql_get_define("PQL_GLOB_ATTR_CN")][0],
-												  "email" => $mailalternateaddress);
-							}
-						} // end foreach results
-					} // end if is_array
-				} // end if key != count
-			} // end foreach results
-		}
-	} // end foreach basedn
-    
-    return $return;
-}
-// }}}
-
-// ------------------------------------------------
 
 // {{{ pql_password_hash(password, hash)
 function pql_password_hash($password, $hash) {
@@ -1739,8 +1787,8 @@ function pql_print_filesize($bytes) {
 // }}}
 
 // {{{ pql_strip_domain(email)
+// Get the username of an email address
 function pql_strip_domain($email) {
-    // get username of an email address
     $email = split("@", $email);
     
     if(count($email) == 2)
@@ -1751,8 +1799,8 @@ function pql_strip_domain($email) {
 // }}}
 
 // {{{ pql_strip_username(email)
+// Get the domainname of an email address
 function pql_strip_username($email) {
-    // get domainname of an email address
     $email = split("@", $email);
     
     if(count($email) == 2)
@@ -1762,21 +1810,56 @@ function pql_strip_username($email) {
 }
 // }}}
 
-// --------------------------------------
-// format ldap attribute codes to text
-// --------------------------------------
+// {{{ pql_execute(command, hide=true)
+function pql_execute($command, $hide=true) {
+	$command = "(" . escapeshellcmd($command) . ") 2>&1";
 
-// {{{ pql_complete_constant(text, replacement)
-// Replaces dynamic vars in constants %key% will be replaced with $replacement["key"]
-function pql_complete_constant($text, $replacement) {
-    if(!is_array($replacement))
-	  return false;
-    
-	// prepare patterns
-    foreach($replacement as $key => $value)
-		$pattern[] = "/(%$key%)/i";
-    
-    return preg_replace($pattern, $replacement, $text);
+	if(!$hide)
+	  echo "\n<pre>\n----\n";
+
+	flush(passthru($command, $ret));
+
+	if($ret)
+	  $code = '=> <b><u>FAILED!!</u></b>';
+	else
+	  $code = '=> <b>SUCCESS</b>';
+
+	if(!$hide)
+	  echo "----\nreturn value: $ret $code\n</pre>";
+
+	return $ret;
+}
+// }}}
+
+// {{{ pql_generate_button(button array)
+function pql_generate_button($buttons, $link = '') {
+	global $PHP_SELF, $LANG, $rootdn, $domain;
+
+	$url = $PHP_SELF."?";
+
+	// It's not sure we have a rootdn and/or domain, so only add those
+	// it's set
+	if($rootdn)
+	  $url .= "rootdn=$rootdn&";
+	if($domain)
+	  $url .= "domain=$domain&";
+?>
+
+  <table cellspacing="0" border="0" width="100%" cellpadding="0">
+<?php
+	  $i=0; // A button counter.
+	  foreach($buttons as $view => $text) {
+		  // Generate the button link etc
+?>
+    <a href="<?=$url?>view=<?=$view?><?php if($link) { echo "&$link"; } ?>"><img alt="/ <?=$LANG->_($text)?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?php echo urlencode($LANG->_($text)); ?>"></a>
+<?php
+		  // Increase button counter
+		  $i++;
+	  }
+?>
+  </table>
+
+<?php
 }
 // }}}
 
@@ -1857,101 +1940,6 @@ function pql_ldap_deliverymode($mode) {
     }
 }
 
-// }}}
-
-// {{{ pql_ldap_error(ldap_linkid, attrib)
-function pql_ldap_error($ldap_linkid, $attrib = "") {
-    // an error-message wrapper for adding special comments to some
-    // error conditions
-    
-    $errno = ldap_errno($ldap_linkid);
-    $error = ldap_error($ldap_linkid);
-    
-    switch($errno){
-      case 18:
-		// Inappropriate matching --> invalid qmail.schema
-		$comment = "This error is caused by an invalid qmail.schema. Please look at README.OpenLDAP2 in your doc-directory.";
-		break;
-    }
-    
-    $msg = $errno . ": " . $error;
-    
-    if($comment){
-		$msg .= " (" . $comment . ")";
-    }
-    
-    return $msg;
-}
-// }}}
-
-// --------------------------
-
-// {{{ pql_set_domain_value(linkid, dn, type, value)
-// Set a embedded domain default value
-function pql_set_domain_value($linkid, $dn, $type, $value) {
-	$DEBUG = 0;
-	$dn = urldecode($dn);
-
-	if($type) {
-		$type = lc($type);
-		
-		// Setup the value array
-		if(is_array($value)) {
-			// We're supplied with an array, add those values
-			foreach($value as $val) {
-				$entry[$type][] = pql_maybe_encode($val, $type, $linkid);
-			}
-		} else {
-			$entry[$type] = pql_maybe_encode($value, $type, $linkid);
-		}
-	} else {
-		// INTERNATIONALIZE
-		if(is_array($value)) {
-			foreach($value as $attrib => $val) {
-				for($i=0; $val[$i]; $i++)
-				  $entry[$attrib][] = pql_maybe_encode($val[$i], $attrib, $linkid);
-			}
-		} else {
-			$entry = $value;
-		}
-	}
-
-	if($value) {
-		// Setup objectclasses
-		if(!($entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")] = pql_setup_branch_objectclasses(0, $dn, $linkid)))
-		  unset($entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")]);
-	}
-		
-	// Create a LDIF object to print in case of error
-	$account_type = $type;
-	$LDIF = pql_create_ldif("pql_set_domain_value", $dn, $entry);
-	
-	// --------------------------
-	// DEBUG mode: Print the LDIF
-	if($DEBUG >= 1)
-	  die("$LDIF");
-
-	// Do the LDAP modification
-	if($value != '') {
-		// Replace the current attribute value
-		if(! ldap_mod_replace($linkid, $dn, $entry)) {
-			pql_errormsg($linkid);
-			die($LDIF);
-			return false;
-		}
-	} else {
-		// Delete all attributes of this type, regardless of value
-		$entry[$type] = array();
-
-		if(! ldap_mod_del($linkid, $dn, $entry)) {
-			pql_errormsg($linkid);
-			die($LDIF);
-			return false;
-		}
-	}
-	
-    return true;
-}
 // }}}
 
 // {{{ pql_setup_branch_objectclasses(filter = 0, dn, linkid = '')
@@ -2042,62 +2030,6 @@ function pql_validate_administrator($linkid, $dn, $admin) {
 
 // }}}
 
-// {{{ pql_replace_admins(ldap, old, new)
-// Look for 'administrator/seealso = old value',
-// replace with 'administrator/seealso = new value'.
-function pql_replace_admins($ldap, $old, $new) {
-	// Setup the search filter
-	$filter  = '(|';
-	$filter .= '('.pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR")."=$old".')';
-	$filter .= '('.pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR")."=$old".')';
-	$filter .= '('.pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR")."=$old".')';
-	$filter .= '('.pql_get_define("PQL_GLOB_ATTR_SEEALSO")."=$old".')';
-	$filter .= ')';
-
-	// We're only interested in these attributes
-	$attribs = array(pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"),
-					 pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR"),
-					 pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR"),
-					 pql_get_define("PQL_GLOB_ATTR_SEEALSO"));
-
-	// Go through the namingContexts one by one
-	foreach($ldap->ldap_basedn as $base) {
-		$base = urldecode($base);
-		
-		$sr   = ldap_search($ldap->ldap_linkid, $base, $filter, $attribs);
-		$info = ldap_get_entries($ldap->ldap_linkid, $sr) or pql_errormsg($ldap->ldap_linkid);
-		for($i=0; $i < $info["count"]; $i++) {
-			unset($dn); unset($entry); unset($LDIF);
-			
-			// Go through the attributes we're interested in, looking for
-			// the (old) user DN
-			foreach($attribs as $attrib) {
-				for($j=0; $j < $info[$i][$attrib]["count"]; $j++) {
-					// TODO: Only replace the attribute(s) if it have changed
-					if($old == $info[$i][$attrib][$j]) {
-						// Got a match ...
-						if($new)
-						  // ... we have something to replace with - replace this attribute
-						  $entry[$attrib][] = $new;
-					} else
-					  // Remember the old value
-					  $entry[$attrib][] = $info[$i][$attrib][$j];
-				}
-			}
-			
-			// Create a LDIF object to print in case of error
-			$LDIF = pql_create_ldif("pql_replace_admins", $info[$i]["dn"], $entry);
-			
-			// Modify this object
-			if(!ldap_mod_replace($ldap->ldap_linkid, $info[$i]["dn"], $entry)) {
-				pql_errormsg($ldap->ldap_linkid);
-				die($LDIF);
-			}
-		}
-	}
-}
-// }}}
-
 // {{{ pql_split_oldvalues(value)
 function pql_split_oldvalues($value) {
 	// (Possibly) split the old value array
@@ -2178,14 +2110,62 @@ function pql_check_attribute($ldap_ocs, $incl_ocs, $attrib) {
 }
 // }}}
 
+// {{{ lc(string)
+// I'm a perlhacker really, does it show!? :)
+function lc($string) {
+	return(strtolower($string));
+}
+// }}}
+
+// --------------------------------------
+// API functions - formating
+// --------------------------------------
+
+// {{{ pql_complete_constant(text, replacement)
+// Replaces dynamic vars in constants %key% will be replaced with $replacement["key"]
+function pql_complete_constant($text, $replacement) {
+    if(!is_array($replacement))
+	  return false;
+    
+	// prepare patterns
+    foreach($replacement as $key => $value)
+		$pattern[] = "/(%$key%)/i";
+    
+    return preg_replace($pattern, $replacement, $text);
+}
+// }}}
+
+// {{{ pql_ldap_error(ldap_linkid, attrib)
+function pql_ldap_error($ldap_linkid, $attrib = "") {
+    // an error-message wrapper for adding special comments to some
+    // error conditions
+    
+    $errno = ldap_errno($ldap_linkid);
+    $error = ldap_error($ldap_linkid);
+    
+    switch($errno){
+      case 18:
+		// Inappropriate matching --> invalid qmail.schema
+		$comment = "This error is caused by an invalid qmail.schema. Please look at README.OpenLDAP2 in your doc-directory.";
+		break;
+    }
+    
+    $msg = $errno . ": " . $error;
+    
+    if($comment){
+		$msg .= " (" . $comment . ")";
+    }
+    
+    return $msg;
+}
+// }}}
+
 // {{{ pql_errormsg(ldap_linkid)
 function pql_errormsg($ldap_linkid) {
 	if($ldap_linkid)
 	  echo format_error("LDAP-Error: ") . ldap_error($ldap_linkid) . "<br>";
 }
 // }}}
-
-// --------------------------
 
 // {{{ table_bgcolor(echo = 1)
 function table_bgcolor($echo = 1) {
@@ -2234,27 +2214,6 @@ function print_status_msg($msg){
 }
 // }}}
 
-// {{{ pql_execute(command, hide=true)
-function pql_execute($command, $hide=true) {
-	$command = "(" . escapeshellcmd($command) . ") 2>&1";
-
-	if(!$hide)
-	  echo "\n<pre>\n----\n";
-
-	flush(passthru($command, $ret));
-
-	if($ret)
-	  $code = '=> <b><u>FAILED!!</u></b>';
-	else
-	  $code = '=> <b>SUCCESS</b>';
-
-	if(!$hide)
-	  echo "----\nreturn value: $ret $code\n</pre>";
-
-	return $ret;
-}
-// }}}
-
 // {{{ printr(string)
 function printr($string) {
 	echo "<pre>\n";
@@ -2268,47 +2227,8 @@ function printr($string) {
 }
 // }}}
 
-// {{{ lc(string)
-// I'm a perlhacker really, does it show!? :)
-function lc($string) {
-	return(strtolower($string));
-}
-// }}}
-
-// {{{ pql_generate_button(button array)
-function pql_generate_button($buttons, $link = '') {
-	global $PHP_SELF, $LANG, $rootdn, $domain;
-
-	$url = $PHP_SELF."?";
-
-	// It's not sure we have a rootdn and/or domain, so only add those
-	// it's set
-	if($rootdn)
-	  $url .= "rootdn=$rootdn&";
-	if($domain)
-	  $url .= "domain=$domain&";
-?>
-
-  <table cellspacing="0" border="0" width="100%" cellpadding="0">
-<?php
-	  $i=0; // A button counter.
-	  foreach($buttons as $view => $text) {
-		  // Generate the button link etc
-?>
-    <a href="<?=$url?>view=<?=$view?><?php if($link) { echo "&$link"; } ?>"><img alt="/ <?=$LANG->_($text)?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?php echo urlencode($LANG->_($text)); ?>"></a>
-<?php
-		  // Increase button counter
-		  $i++;
-	  }
-?>
-  </table>
-
-<?php
-}
-// }}}
-
 // --------------------------
-// Internationalization
+// API functions - Internationalization
 // --------------------------
 
 // {{{ non_internationalize(string)
@@ -2390,10 +2310,9 @@ function pql_maybe_idna_encode($string) {
 
 		if(function_exists("idn_to_ascii")) {
 			if(ereg("@", $old)) {
-				$email = split("@", $old);
-				$domain = idn_to_ascii($email[1]);
+				$domain = idn_to_ascii(pql_strip_domain($old));
 
-				return($email[0]."@".$domain);
+				return(pql_strip_domain($old)."@".$domain);
 			} else
 			  return(idn_to_ascii($old));
 		} else
@@ -2412,10 +2331,9 @@ function pql_maybe_idna_decode($string) {
 
 		// Catch email addresses (can't decode the @)
 		if(ereg("@", $string)) {
-			$email  = split("@", $string);
-			$domain = pql_maybe_decode(idn_to_utf8($email[1]));
+			$domain = pql_maybe_decode(idn_to_utf8(pql_strip_username($old)));
 
-			return($email[0]."@".$domain);
+			return(pql_strip_domain($old)."@".$domain);
 		} else 
 		  // First IDNA decode it, then UTF-8 decode it
 		  return(pql_maybe_decode(idn_to_utf8($string)));
