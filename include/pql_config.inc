@@ -3,15 +3,15 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.60 2004-04-02 08:35:59 turbo Exp $
+// $Id: pql_config.inc,v 1.61 2004-04-04 07:06:41 turbo Exp $
 //
 
 // include the API files
-require("./include/pql.inc");					// Main API file
+require("./include/pql.inc");				// Main API file
 require("./include/pql_formating.inc");			// Output formating API
-require("./include/pql_cache.inc");				// Cache API
+require("./include/pql_cache.inc");			// Cache API
 require("./include/pql_search.inc");			// Search API
-require("./include/pql_units.inc");				// Sub branch API
+require("./include/pql_units.inc");			// Sub branch API
 
 // {{{ pql_set_define(define, value, case_insensitive, dn)
 // We need this instead of define(), so that we can get rid
@@ -62,7 +62,7 @@ function pql_get_define($define, $dn = NULL) {
 
 // ----------------------------
 // 1. Load site specific configuration
-require("./include/config.inc");				// Generic site configuration
+require("./include/config.inc");			// Generic site configuration
 
 // 2. Include the attribute configuration
 require("./include/config_attributes.inc");		// Attribute definitions
