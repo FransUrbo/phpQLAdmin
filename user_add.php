@@ -306,18 +306,7 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 		// display forms for SYSTEM account
 
 		if($ADVANCED_MODE) {
-			// Load list of allowed shells from /etc/shells
-			$fp = fopen("/etc/shells", "r");
-			while (!feof ($fp)) {
-				$buffer = fgets($fp, 4096);
-				$shell = split(" ", $buffer);
-				
-				if(!eregi("^#", $shell[0]) and !eregi("^$", $shell[0])) {
-					$shells[] = rtrim($shell[0]);
-				}
-			}
-			fclose ($fp);
-			asort($shells);
+			$shells = pql_get_valid_shells();
 ?>
 
         <!-- Loginshell -->

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // loginshell
-// $Id: attrib.loginshell.inc,v 2.1 2002-12-17 12:24:35 turbo Exp $
+// $Id: attrib.loginshell.inc,v 2.2 2002-12-17 15:07:30 turbo Exp $
 
 function attribute_check($type){
     global $loginshell, $oldvalue, $_pql, $error;
@@ -24,32 +24,35 @@ function attribute_init(){
 function attribute_print_form(){
     global $loginshell, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error;
       
-    ?>
-	<form action="<?php echo $PHP_SELF ?>" method="post">
-	<table cellspacing="0" cellpadding="3" border="0">
-	<th colspan="3" align="left"><?php echo PQL_USER_LOGINSHELL; ?></th>
-	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title"><?php echo PQL_USER_LOGINSHELL; ?></td>
-		<td><?php echo format_error($error["loginshell"]); ?>
-		  <select name="loginshell">
-		    <option value="/bin/bash" SELECTED>/bin/bash</option>
-		    <option value="/bin/sh">/bin/sh</option>
-		    <?php 
-	  // TODO: Extract valid shells from /etc/shells
-		    ?>
-		  </select>
-		</td>
-	</tr>
-	</table>
-	<input type="hidden" name="submit" value="1">
-	<input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-	<input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
-	<input type="hidden" name="domain" value="<?php echo $domain; ?>">
-	<input type="hidden" name="user" value="<?php echo $user ?>">
-	<br>
-	<br>
-	<input type="submit" value="<?php echo PQL_SAVE; ?>">
-	</form>
+    $shells = pql_get_valid_shells();
+?>
+  <form action="<?php echo $PHP_SELF ?>" method="post">
+    <table cellspacing="0" cellpadding="3" border="0">
+      <th colspan="3" align="left"><?php echo PQL_USER_LOGINSHELL; ?></th>
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"><?php echo PQL_USER_LOGINSHELL; ?></td>
+          <td><?php echo format_error($error["loginshell"]); ?>
+            <select name="loginshell">
+              <option value="/bin/false" SELECTED>/bin/false</option>
+<?php
+    foreach($shells as $shell) {
+?>
+              <option value="<?=$shell?>"><?=$shell?></option>
+<?php
+    }
+?>
+            </select>
+          </td>
+        </tr>
+      </table>
+
+      <input type="hidden" name="submit" value="1">
+      <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+      <input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
+      <input type="hidden" name="domain" value="<?php echo $domain; ?>">
+      <input type="hidden" name="user" value="<?php echo $user ?>">
+      <input type="submit" value="<?php echo PQL_SAVE; ?>">
+    </form>
 
     <?php
 }
