@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.87 2004-03-17 17:40:36 turbo Exp $
+// $Id: user_add.php,v 2.88 2004-03-17 20:40:24 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -52,7 +52,8 @@ switch($_REQUEST["page_curr"]) {
 		}
 	}
 
-	if($_REQUEST["page_next"] == "one") {
+	if(($_REQUEST["page_next"] == "one") and
+	   (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))) {
 		// ------------------------------------------------
 		// Step 2b: Autogenerate some stuff for the next form
 
@@ -314,7 +315,7 @@ if($_SESSION["ADVANCED_MODE"] && $_REQUEST["account_type"]) {
 <?php
 // ------------------------------------------------
 // Select next form to display
-switch(($error ? $_REQUEST["page_curr"] : $_REQUEST["page_next"])) {
+switch($_REQUEST["page_next"]) {
   case "":
 	// Step 1 - Choose account properties (type of account)
 	include("./tables/user_add-properties.inc");
