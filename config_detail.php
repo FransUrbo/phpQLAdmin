@@ -110,7 +110,7 @@ foreach($_pql->ldap_basedn as $dn) {
 </tr>
 
 <?php
-	if(PQL_LDAP_CONTROL_USE) {
+	if(PQL_LDAP_CONTROL_USE and $ALLOW_CONTROL_CREATE) {
 ?>
 <tr>
 	<td class="title">LDAP control base dn</td>
@@ -140,12 +140,18 @@ foreach($_pql->ldap_basedn as $dn) {
 
 <tr></tr>
 
+<?php
+	if($ALLOW_CONTROL_CREATE) {
+?>
 <tr>
 	<td class="title">Manage Controls DB</td>
 	<?php $class=table_bgcolor(0); ?>
 	<td class="<?=$class?>"><?php echo $control_use; ?>&nbsp;</td>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_LDAP_CONTROL_USE"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle"></a></td>
 </tr>
+<?php
+	}
+?>  
 
 <tr>
 	<td class="title">Manage EZMLM mailinglists</td>

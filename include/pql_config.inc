@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.6 2003-01-29 14:17:03 turbo Exp $
+// $Id: pql_config.inc,v 1.7 2003-01-30 08:23:15 turbo Exp $
 //
 
 // ----------------------------
@@ -104,7 +104,6 @@ for ($i=0; $i<$info["count"]; $i++) {
 		if(is_array($value)) {
 			foreach($value as $k => $v) {
 				$v = strtolower($v);
-
 				$nkey = $key."_".$k;
 
 				if($info[$i][$v][0] != '') {
@@ -115,7 +114,6 @@ for ($i=0; $i<$info["count"]; $i++) {
 					else
 					  $V = $info[$i][$v][0];
 
-					//echo $nkey."($v): <b>$V</b><br>";
 					define($nkey, $info[$i][$v][0], true);
 				}
 			}
@@ -129,29 +127,26 @@ for ($i=0; $i<$info["count"]; $i++) {
 				else
 				  $V = $info[$i][$value][0];
 
-				//echo "'".$key."' ($value): <b>$V</b><br>";
 				define($key, $info[$i][$value][0], true);
 			}
 		}
 	}
-	//echo "<br>";
 }
 
-// Check the topmost dn if userdn is there -> Allow ADVANCED mode
+// Check some builtin ACL's
+$ALLOW_BRANCH_CREATE = 0; $ALLOW_CONTROL_CREATE = 0;
 if($USER_DN) {
-	$ALLOW_BRANCH_CREATE = 0;
+	// Verify that the user is administrator on the topmost DN -> Allow creation of domain/branches.
+	$ALLOW_BRANCH_CREATE = pql_validate_administrator($_pql->ldap_linkid, $_pql->ldap_basedn[0], $USER_DN);
 
-	for($i=0; $i<$info[0]["administrator"]["count"]; $i++) {
-		if($info[0]["administrator"][$i] == $USER_DN) {
-			$ALLOW_BRANCH_CREATE = 1;
-		}
-	}
-
-	session_register("ALLOW_BRANCH_CREATE");
+	// Check the Control DN if the user is there -> Allow management of Controls information
+	$ALLOW_CONTROL_CREATE = pql_validate_administrator($_pql->ldap_linkid, $USER_SEARCH_DN_CTR, $USER_DN);
 }
 
 // 3. Load 'resonable defaults'
 require("./include/defaults.inc");
+
+session_register("ALLOW_BRANCH_CREATE", "ALLOW_CONTROL_CREATE");
 
 /*
  * Local variables:
