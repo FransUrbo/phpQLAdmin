@@ -1,8 +1,9 @@
 <?php
 // attribute plugin for
 // deliverymode (delivery preferences)
-// $Id: attrib.deliverymode.inc,v 2.21 2004-03-13 07:37:12 turbo Exp $
+// $Id: attrib.deliverymode.inc,v 2.22 2004-04-29 06:50:07 turbo Exp $
 
+// {{{ attribute_check(type)
 function attribute_check($type) {
     global $error, $LANG;
 
@@ -14,7 +15,9 @@ function attribute_check($type) {
 
 	return true;
 }
+// }}}
 
+// {{{ attribute_init(void)
 function attribute_init() {
     global $_pql;
 
@@ -22,10 +25,13 @@ function attribute_init() {
 	$mode = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_MODE"));
 
 	// delivery profile
-	if(is_array($mode) and
-	   (in_array("forwardonly", $mode) or in_array("nolocal", $mode)))
-	  $_REQUEST["deliverymode"] = "forward";
-	else
+	if(is_array($mode)) {
+		foreach($mode as $m)
+		  $_REQUEST[$m] = 1;
+
+		if(in_array("forwardonly", $mode) or in_array("nolocal", $mode))
+		  $_REQUEST["deliverymode"] = "forward";
+	} else
 	  $_REQUEST["deliverymode"] = "local";
 
 	// reply / mailreplytext
@@ -40,14 +46,40 @@ function attribute_init() {
 	$mailreplytext = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_REPLYTEXT"));
 	$_REQUEST["mailreplytext"] = $mailreplytext[0];
 }
+// }}}
 
+// {{{ attribute_print_form(type)
 function attribute_print_form($type = "modify") {
     global $error, $LANG;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Delivery mode')?></th>
-<?php if(!$_SESSION["SINGLE_USER"]) { ?>
+<?php if(!$_SESSION["SINGLE_USER"]) {
+		if($_SESSION["NEW_STYLE_QUOTA"]) {
+			// LDAP_MODE (default: "deliveryMode")
+			// Multi field entries of these keywords:
+			//   - (normal)		Put message into maildir/mbox, plus forward and program delivery
+			//   - noforward	Do not forward (ignores forwarding entries in ldap and .qmail)
+			//	 - nolocal		Do not put message into maildir/mbox (ignores also .qmail)
+			//	 - noprogram	Do not do program deliveries (ignores deliveryprogrampath, .qmail)
+			//   - reply		Send an auto_reply mail with text from mailReplyText
+?>
+        <tr class="<?php pql_format_table(); ?>">
+          <td class="title"><?=$LANG->_('Delivery mode')?></td>
+          <td>
+            <?=pql_format_error_span($error["deliverymode"])?>
+            <input type="checkbox" name="nolocal"   <?php if($_REQUEST["nolocal"])   { echo "CHECKED"; } ?>><?=$LANG->_('Do not deliver to local mail box')?><br>
+            <input type="checkbox" name="noforward" <?php if($_REQUEST["noforward"]) { echo "CHECKED"; } ?>><?=$LANG->_('Do not forward mail to other account/address')?><br>
+            <input type="checkbox" name="noprogram" <?php if($_REQUEST["noprogram"]) { echo "CHECKED"; } ?>><?=$LANG->_('No program deliveries')?>
+          </td>
+        </tr>
+
+        <tr class="<?php pql_format_table(); ?>">
+          <td class="title" align="right"><img src="images/info.png" width="16" height="16" border="0"></td>
+          <td><?=$LANG->_('If all unset, then do normal delivery')?></td>
+        </tr>
+<?php	} else { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Delivery mode')?></td>
           <td>
@@ -58,14 +90,7 @@ function attribute_print_form($type = "modify") {
             </select>
           </td>
         </tr>
-
-<?php	if($_SESSION["NEW_STYLE_QUOTA"]) { ?>
-        <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Program deliveries')?></td>
-          <td><input type="checkbox" name="noprogram" value="ok" <?php if($_REQUEST["noprogram"] == "ok") { echo "CHECKED"; } ?>><?=$LANG->_('No program deliveries')?></td>
-        </tr>
-
-<?php	}
+<?php	} 
 	  }
 ?>
         <tr class="<?php pql_format_table(); ?>">
@@ -117,36 +142,37 @@ function attribute_print_form($type = "modify") {
 
 <?php
 }
+// }}}
 
+// {{{ attribute_save(type)
 function attribute_save($type) {
     global $_pql, $LANG;
 	$entry = array();
 
-	// If running with newer QmailLDAP (>= 20030801), then
-	// 'nolocal' and 'noforward' are mutualy exclusive.
-	switch($_REQUEST["deliverymode"]) {
-	  case "forward":
-		if($_SESSION["NEW_STYLE_QUOTA"]) {
-			$entry[pql_get_define("PQL_ATTR_MODE")][] = "nolocal";
-		} else {
+	if($_SESSION["NEW_STYLE_QUOTA"]) {
+		if($_REQUEST["nolocal"])
+		  // no local deliveries
+		  $entry[pql_get_define("PQL_ATTR_MODE")][] = "nolocal";
+
+		if($_REQUEST["noforward"])
+		  // no mail forwarding
+		  $entry[pql_get_define("PQL_ATTR_MODE")][] = "noforward";
+
+		if($_REQUEST["noprogram"])
+		  // no program deliveries
+		  $entry[pql_get_define("PQL_ATTR_MODE")][] = "noprogram";
+	} else {
+		switch($_REQUEST["deliverymode"]) {
+		  case "forward":
 			$entry[pql_get_define("PQL_ATTR_MODE")][] = "forwardonly";
 			$entry[pql_get_define("PQL_ATTR_MODE")][] = "nombox";
-		}
-		break;
-		
-	  case "local":
-		if($_SESSION["NEW_STYLE_QUOTA"]) {
-			$entry[pql_get_define("PQL_ATTR_MODE")][] = "noforward";
-		} else {
+			break;
+			
+		  case "local":
 			$entry[pql_get_define("PQL_ATTR_MODE")][] = "localdelivery";
 		}
 	}
 	
-	if($_SESSION["NEW_STYLE_QUOTA"] and ($_REQUEST["noprogram"] == "ok")) {
-		// no program deliveries
-		$entry[pql_get_define("PQL_ATTR_MODE")][] = "noprogram";
-	}
-
 	if($_REQUEST["reply"] == "ok")
 	  $entry[pql_get_define("PQL_ATTR_MODE")][] = "reply";
 	
@@ -194,6 +220,7 @@ function attribute_save($type) {
 								  array('type' => $type, 'file' => __FILE__)));
 	}
 }
+// }}}
 
 // Local variables:
 // mode: php
