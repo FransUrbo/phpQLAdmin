@@ -23,3 +23,17 @@ http://apache.bayour.com/list/phpQLAdmin/?action=show_msg&actionargs[]=78&action
 
 But the interesting part is:
 http://apache.bayour.com/list/phpQLAdmin/?action=show_msg&actionargs[]=8&actionargs[]=24
+
+
+As of phpQLAdmin version 2.0.19-pre CVS Mon May 10 2004, the EZMLM
+manager now first looks in /etc/passwd for the defined user (which
+in turn is now set in the 'phpQLAdmin Configuration->BRANCH' instead
+of include/config.inc as previous) and it's home directory. If that
+fails, it will look in '/var/qmail/users/assign' for the users home
+directory.
+
+It (phpQLAdmin) will use this home directory value to write it's
+dot files. This so that one doesn't need to have ALL dot files
+used by ezmlm/qmail in ONE place. This means that now we can have
+the same listname in/for multiple branches (which was not possible
+previosly).
