@@ -622,6 +622,7 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 			if(PQL_EXTRA_SCRIPT_CREATE_USER) {
 				// Setup the environment with the user details
 				putenv("PQL_DOMAIN=\"$domain\"");
+				putenv("PQL_WEBUSER=\"".posix_getuid()."\"");
 				foreach($entry as $key => $e) {
 					$key = "PQL_" . strtoupper($key);
 					if($key != 'PQL_OBJECTCLASS')
