@@ -4,13 +4,12 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.12 2003-05-01 08:50:44 turbo Exp $
+// $Id: pql_control.inc,v 2.13 2003-05-04 10:30:27 turbo Exp $
 //
 // version history:
 // $Log: pql_control.inc,v $
-// Revision 2.12  2003-05-01 08:50:44  turbo
-// When modifying a QmailLDAP/Controls object (pql_control_replace_attribute()),
-// create an LDIF and show that if there's an error...
+// Revision 2.13  2003-05-04 10:30:27  turbo
+// Some comments on how the variables look like...
 //
 // Revision 1.2  2001/09/06 11:36:24  mb
 // added no_connect option to pql_control-class
@@ -211,15 +210,11 @@ function pql_control_remove_whole_attribute($ldap_linkid, $ldap_control_basedn, 
 function pql_control_update_domains($ldap, $dn, $host, $domain = "") {
 	global $config;
 
-    if(!$config["PQL_GLOB_CONTROL_USE"]) {
-		// control patch is not enabled
-		return false;
-    }
-
-	if(!$config["PQL_GLOB_CONTROL_AUTOADDLOCALS"] and $domain) {
-		// do not replicate automatically
-		return false;
-	}
+    if(!$config["PQL_GLOB_CONTROL_USE"] or (!$config["PQL_GLOB_CONTROL_AUTOADDLOCALS"] and $domain))
+	  // control patch is not enabled
+	  // or
+	  // do not replicate automatically
+	  return false;
 
 	if(($host != '*') and !$domain) {
 		$domains = pql_get_domains($ldap);
@@ -264,6 +259,9 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "") {
 		  return true;
 	} else {
 		// $host=* && $domain => Modify ALL servers
+		// domain[0] => oldvalue
+		// domain[1] => newvalue
+
 		$hosts = pql_control_get_hosts($ldap->ldap_linkid, $dn);
 		if(is_array($hosts)) {
 			// Go through each QmailLDAP control object
