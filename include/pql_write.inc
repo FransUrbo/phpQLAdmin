@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.19 2005-02-24 17:04:02 turbo Exp $
+// $Id: pql_write.inc,v 2.20 2005-02-25 07:36:30 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -45,7 +45,6 @@ function pql_write_add($linkid, $dn, $entry, $type, $caller) {
 
 	return(true);
 }
-
 // }}}
 
 // {{{ pql_write_mod(linkid, dn, entry, caller)
@@ -455,7 +454,11 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 		$dn = ldap_get_dn($linkid, $ed);
 		
 		// delete the group
-		ldap_delete($linkid, $dn);
+		if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+		  echo "delete (group): '$dn'<br>";
+		  return TRUE;
+		} else
+		  ldap_delete($linkid, $dn);
 	}
 
     // we delete the forwards to this user as they don't really make sense anymore
@@ -475,10 +478,15 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
     }
     
     // delete the user
-    if(!ldap_delete($linkid, $user)){
+	if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+	  echo "delete (user): '$user'<br>";
+	  return TRUE;
+	} else {
+	  if(!ldap_delete($linkid, $user)) {
 		pql_format_error(1);
 		return false;
-    }
+	  }
+	}
     
     // user entry has been removed -> remove the cached version
     pql_cache_userentry_remove($user);
@@ -530,7 +538,11 @@ function pql_domain_del($ldap, $domain, $delete_forwards) {
 		}
 	}
 
-	return(ldap_delete($linkid, $domain));
+	if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+	  echo "delete (domain): '$domain'<br>";
+	  return TRUE;
+	} else
+	  return(ldap_delete($linkid, $domain));
 }
 // }}}
 
