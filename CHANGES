@@ -1,6 +1,6 @@
 phpQLAdmin 2.0 Change Log
 
-phpQLAdmin 2.0.6 Release - TO BE ANNOUNCED
+phpQLAdmin 2.0.6 Release (Jan 24 2003)
 	Bug fixes
 	  - Calls to pql_email_exists(), pql_user_exist(), pql_get_mx() and
 	    pql_modify_userattribute() was called with the wrong/wrong number
