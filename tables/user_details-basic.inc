@@ -85,10 +85,6 @@
         <td></td>
       </tr>
 
-<?php
-	}
-}
-?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Additional group(s)')?></td>
 <?php if(is_array($memberuid)) {
@@ -118,7 +114,10 @@
         <td colspan="4">
           <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=lc(pql_get_define("PQL_GLOB_ATTR_ADDITIONAL_GROUP"))?>&submit=3&action=add&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional group'))); ?></a>
         </td>
-<?php } ?>
+<?php }
+	}
+}
+?>
     </th>
   </table>
 
