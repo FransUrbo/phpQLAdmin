@@ -3,9 +3,8 @@ mail directories for your users when created for some time
 now. As of 2.1.4, this have been rewritten and more stable.
 
 There are two (three) places which needs to be changed/modified
-for this to work correctly...
+for this to work correctly.
 1. In the domain branch details
-   [left:branch]->Branch Defaults->Base home directory for users
    [left:branch]->Branch Defaults->Base mail directory for users
 
 2. In the branch configuration
