@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.200.2.2 2005-02-19 08:27:39 turbo Exp $
+// $Id: pql.inc,v 2.200.2.3 2005-02-22 08:22:06 turbo Exp $
 //
 
 // ----------------------------
@@ -388,10 +388,10 @@ function pql_get_next_ugidnumber($ldap, $type) {
 function pql_get_next_username($ldap, $domain) {
 	// Get the prefix from the branch
 	$prefix = pql_get_attribute($ldap->ldap_linkid, $domain, pql_get_define("PQL_ATTR_USERNAME_PREFIX"));
-
 	$suffix_length = pql_get_attribute($ldap->ldap_linkid, $domain, pql_get_define("PQL_ATTR_USERNAME_PREFIX_LENGTH"));
+
 	if(!$suffix_length)
-	  $suffix_length = "%03d";
+	  $suffix_length = "%04d";
 	else
 	  $suffix_length = "%0".$suffix_length."d";
 
