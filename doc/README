@@ -324,6 +324,17 @@ email addresses is not known to me at this time. You will have to test
 it yourself. If it works, please let me know...
 
 
+Webserver configuration
+~~~~~~~~~~~~~~~~~~~~~~~
+As of 2.0.17, phpQLAdmin have rudimentary support for having (part of)
+the webserver configuration in the LDAP server. This isn't the pretties
+solution, but it's something. The included example script
+(create_websrv_cfg.pl) will create all the <VirtualHost> definitions
+which can then be included with the Include option. The script is intended
+to run as a cron job every now and then (once every hour sounds resonable)
+to create the <VirtualHost> file.
+
+
 For more information on installations, please view doc/index.php through
 your web browser. Note though that documentation is not my stronges side
 while coding, so it is much out of date. I will evenually get to it,

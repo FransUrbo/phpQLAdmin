@@ -132,6 +132,32 @@ $seealso   			= pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_AT
 $basequota			= pql_ldap_mailquota(pql_parse_quota($basequota));
 
 $additionaldomainname = pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_ADDITIONALDOMAINNAME"));
+
+// Setup the buttons
+$buttons = array('default'	=> 'Default Branch Values',
+				 'users'	=> 'Registred users',
+				 'chval'	=> 'Change values of all users');
+
+if($ADVANCED_MODE) {
+	$new = array('owner'	=> 'Branch Owner',
+				 'dnsinfo'	=> 'MX Information',
+				 'options'	=> 'QmailLDAP/Controls Options',
+				 'aci'		=> 'Access Control Information');
+	$buttons = $buttons + $new;
+
+	if(pql_get_define("PQL_GLOB_BIND9_USE")) {
+		$new = array('dnszone'	=> 'DNS Zone');
+		$buttons = $buttons + $new;
+	}
+
+	if(pql_get_define("PQL_GLOB_WEBSRV_USE")) {
+		$new = array('websrv'	=> 'Webserver Administration');
+		$buttons = $buttons + $new;
+	}
+}
+
+$new = array('action' => 'Actions');
+$buttons = $buttons + $new;
 ?>
   <span class="title1"><?=$LANG->_('Organization name')?>: <?=urldecode($domainname)?></span>
 
@@ -139,7 +165,18 @@ $additionaldomainname = pql_get_domain_value($_pql, $domain, pql_get_define("PQL
 
   <table cellspacing="0" border="0" width="100%" cellpadding="0">
     <tr>
-      <td colspan="2" valign="bottom" align="left" width="100%"><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=default"?>"><img alt="/ <?=$LANG->_('Default Branch Values')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Default Branch Values')?>"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=users"?>"><img alt="/ <?=$LANG->_('Registred users')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Registred users')?>"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=chval"?>"><img alt="/ <?=$LANG->_('Change values of all users')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Change values of all users')?>"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=dnszone"?>"><img alt="/ <?=$LANG->_('DNS Zone')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('DNS Zone')?>"></a><?php if($ADVANCED_MODE) { ?><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=owner"?>"><img alt="/ <?=$LANG->_('Branch Owner')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Branch Owner')?>"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=dnsinfo"?>"><img alt="/ <?=$LANG->_('MX Information')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('MX Information')?>"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=options"?>"><img alt="/ <?=$LANG->_('QmailLDAP/Controls Options')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('QmailLDAP/Controls Options')?>"></a><?php if($ALLOW_BRANCH_CREATE) { ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=aci"?>"><img alt="/ <?=$LANG->_('Access Control Information')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Access Control Information')?>"></a><br><?php } ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=action"?>"><img alt="/ <?=$LANG->_('Actions')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Actions')?>"></a><?php } ?></td>
+      <td colspan="2" valign="bottom" align="left" width="100%"><?php
+	  $i=0; // A button counter.
+	  foreach($buttons as $link => $text) {
+		  // Generate the button link etc
+		  pql_generate_button($link, $text, "");
+
+		  // Increase button counter
+		  $i++;
+
+		  // If we have outputted an even number of buttons, break line
+		  if(!($i % 2))	echo "<br>";
+	  } ?></td>
   </tr>
 </table>
 
@@ -163,25 +200,19 @@ if($view == 'owner') {
 } elseif($view == 'users') {
 	$users = pql_get_user($_pql->ldap_linkid, $domain);
 	include("./tables/domain_details-users.inc");
-}
-	 
-if($ADVANCED_MODE == 1) {
+} elseif($view == 'action') {
+	include("./tables/domain_details-action.inc");
+} elseif($ADVANCED_MODE == 1) {
 	if($view == 'dnsinfo')
-		include("./tables/domain_details-dnsinfo.inc");
-}
-
-if($view == 'dnszone')
-	 include("./tables/domain_details-dnszone.inc");
-
-if($ADVANCED_MODE == 1) {
-	if($view == 'options')
-		include("./tables/domain_details-options.inc");
-
-	if($view == 'aci')
-		include("./tables/domain_details-aci.inc");
-
-	if($view == 'action')
-		include("./tables/domain_details-action.inc");
+	  include("./tables/domain_details-dnsinfo.inc");
+	elseif($view == 'dnszone')
+	  include("./tables/domain_details-dnszone.inc");
+	elseif($view == 'options')
+	  include("./tables/domain_details-options.inc");
+	elseif($view == 'aci')
+	  include("./tables/domain_details-aci.inc");
+	elseif($view == 'websrv')
+	  include("./tables/domain_details-websrv.inc");
 }
 ?>
 </body>

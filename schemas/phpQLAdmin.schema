@@ -7,6 +7,7 @@
 #                       Objectclasses                   	1
 #                               phpQLAdminConfig        	 1
 #				phpQLAdminBranch		 2
+#				phpQLAdminWebsrv		 3
 #
 #                       Attributes                      	2
 #                               Toggles                 	 1
@@ -25,6 +26,7 @@
 #					autoAddHostName		  13
 #					autoCreateUsername	  14
 #					autoCreateMailAddress	  15
+#					useWebSrv		  16
 #
 #                               System texts            	 2
 #					whoAreWe		   1
@@ -66,9 +68,19 @@
 #					maximumMailingLists	  11
 #					controlsAdministrator	  12
 #					userNamePrefix		  13
+#					webServerIP		  14
+#					webServerURL		  15
+#					webDocumentRoot		  16
+#					webServerAlias		  17
+#					webServerAdmin		  18
+#					webScriptAliasURL	  19
+#					WebScriptAliasPath	  20
+#					webLogError		  21
+#					webLogTransfer		  22
+#					webOptions		  23
 # -----------------------------------------
 
-# $Id: phpQLAdmin.schema,v 2.34 2003-07-03 07:25:11 turbo Exp $
+# $Id: phpQLAdmin.schema,v 2.35 2003-10-11 11:55:39 turbo Exp $
 
 # PQL_CONF_SHOW_USERS (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.1 NAME 'showUsers'
@@ -133,6 +145,7 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.1.9 NAME 'deleteVerification'
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
 	SINGLE-VALUE )
 
+# PQL_GLOB_BIND9_USE (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.10 NAME 'useBind9'
 	DESC 'Manage a Bind 9 DNS server [True/False]?'
 	EQUALITY booleanMatch
@@ -169,6 +182,13 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.1.14 NAME 'autoCreateUsername'
 # PQL_CONF_CREATE_ADDRESS
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.15 NAME 'autoCreateMailAddress'
 	DESC 'Automatically create email address when creating a user [True/False]?'
+	EQUALITY booleanMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+	SINGLE-VALUE )
+
+# PQL_GLOB_WEBSRV_USE (true | false)
+attributetype ( 1.3.6.1.4.1.8767.3.2.1.16 NAME 'useWebSrv'
+	DESC 'Manage a webserver [True/False]?'
 	EQUALITY booleanMatch
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
 	SINGLE-VALUE )
@@ -411,6 +431,74 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.4.13 NAME 'userNamePrefix'
         EQUALITY caseIgnoreMatch
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024})
 
+# PQL_CONF_WEBSRV_SRV_IP
+attributetype ( 1.3.6.1.4.1.8767.3.2.4.14 NAME 'webServerIP'
+	DESC 'IP to bind the webServerURL to'
+        EQUALITY caseIgnoreMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
+	SINGLE-VALUE )
+
+# PQL_CONF_WEBSRV_SRV_URL
+attributetype ( 1.3.6.1.4.1.8767.3.2.4.15 NAME 'webServerURL'
+	DESC 'The URL of the website'
+        EQUALITY caseIgnoreMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
+	SINGLE-VALUE )
+
+# PQL_CONF_WEBSRV_DOCROOT
+attributetype ( 1.3.6.1.4.1.8767.3.2.4.16 NAME 'webDocumentRoot'
+	DESC 'Where in the filesystem the website is located'
+        EQUALITY caseIgnoreMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
+	SINGLE-VALUE )
+
+# PQL_CONF_WEBSRV_SRV_ALIAS
+attributetype ( 1.3.6.1.4.1.8767.3.2.4.17 NAME 'webServerAlias'
+	DESC 'Additional website URLs'
+        EQUALITY caseIgnoreMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024} )
+
+# PQL_CONF_WEBSRV_SRV_ADMIN
+attributetype ( 1.3.6.1.4.1.8767.3.2.4.18 NAME 'webServerAdmin'
+	DESC 'Administrator email to website'
+        EQUALITY caseIgnoreMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
+	SINGLE-VALUE )
+
+# PQL_CONF_WEBSRV_SCRIPT_URL
+attributetype ( 1.3.6.1.4.1.8767.3.2.4.19 NAME 'webScriptAliasURL'
+	DESC 'URL location of CGI scripts'
+        EQUALITY caseIgnoreMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
+	SINGLE-VALUE )
+
+# PQL_CONF_WEBSRV_SCRIPT_PATH
+attributetype ( 1.3.6.1.4.1.8767.3.2.4.20 NAME 'webScriptAliasPath'
+	DESC 'Path in filesystem to CGI scripts'
+        EQUALITY caseIgnoreMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
+	SINGLE-VALUE )
+
+# PQL_CONF_WEBSRV_LOG_ERROR
+attributetype ( 1.3.6.1.4.1.8767.3.2.4.21 NAME 'webLogError'
+	DESC 'Path in filesystem to error log file'
+        EQUALITY caseIgnoreMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
+	SINGLE-VALUE )
+
+# PQL_CONF_WEBSRV_LOG_TRANSFER
+attributetype ( 1.3.6.1.4.1.8767.3.2.4.22 NAME 'webLogTransfer'
+	DESC 'Path in filesystem to transfer log file'
+        EQUALITY caseIgnoreMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
+	SINGLE-VALUE )
+
+# PQL_CONF_WEBSRV_OPTIONS
+attributetype ( 1.3.6.1.4.1.8767.3.2.4.23 NAME 'webOptions'
+	DESC 'Additional web server configuration'
+        EQUALITY caseIgnoreMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024})
+
 # -----------------------------------------
 
 objectclass ( 1.3.6.1.4.1.8767.3.1.1
@@ -425,7 +513,7 @@ objectclass ( 1.3.6.1.4.1.8767.3.1.1
 		userReference $ branchReference $
 		ezmlmBinaryPath $ passwordScheme $
 		hostMaster $ testMailSubject $
-		testMailText $ language $ 
+		testMailText $ language $ useWebSrv $
 	        forwardUIDNumber $ test $ 
 	        controlBaseDN $ baseQuota $
 	        useBind9 $ externalScriptUser $
@@ -446,6 +534,16 @@ objectclass ( 1.3.6.1.4.1.8767.3.1.2
 	      autoCreateUsername $ autoCreateMailAddress $
 	      userNamePrefix )
 	SUP top AUXILIARY )
+
+objectclass ( 1.3.6.1.4.1.8767.3.1.3
+	NAME 'phpQLAdminWebsrv'
+	DESC 'phpQLAdmin webserver configuration values'
+	MUST ( cn $ webServerIP $ webServerURL $ 
+	       webServerAdmin $ webDocumentRoot )
+	MAY  ( webServerAlias $ webScriptAliasURL $ 
+	       webScriptAliasPath $ webLogError $ 
+	       webLogTransfer $ webOptions )
+	SUP top STRUCTURAL )
 
 #
 # Local variables:

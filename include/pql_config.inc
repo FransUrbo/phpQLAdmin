@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.38 2003-08-15 08:06:17 turbo Exp $
+// $Id: pql_config.inc,v 1.39 2003-10-11 11:55:49 turbo Exp $
 //
 
 // We need this instead of define(), so that we can get rid
@@ -71,6 +71,7 @@ $PQL_ATTRIBUTE["PQL_CONF_VERIFY_DELETE"] = 'deleteVerification';
 $PQL_ATTRIBUTE["PQL_CONF_MINIMUM_UIDNUMBER"] = 'minimumUIDNumber';
 $PQL_ATTRIBUTE["PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER"] = 'forwardUIDNumber';
 $PQL_ATTRIBUTE["PQL_GLOB_BIND9_USE"] = 'useBind9';
+$PQL_ATTRIBUTE["PQL_GLOB_WEBSRV_USE"] = 'useWebSrv';
 $PQL_ATTRIBUTE["PQL_CONF_CREATE_USERNAME"] = 'autoCreateUsername';
 $PQL_ATTRIBUTE["PQL_CONF_CREATE_ADDRESS"] = 'autoCreateMailAddress';
 
@@ -94,6 +95,18 @@ $PQL_ATTRIBUTE["PQL_GLOB_KRB5_ADMIN_COMMAND_PATH"] = 'krb5AdminCommandPath';
 // Save path for users and groups
 $PQL_ATTRIBUTE["PQL_CONF_SUBTREE"]["USERS"] = 'subTreeUsers';
 $PQL_ATTRIBUTE["PQL_CONF_SUBTREE"]["GROUPS"] = 'subTreeGroups';
+
+// The webserver administrator attributes
+$PQL_ATTRIBUTE["PQL_CONF_WEBSRV_SRV_IP"] = 'webServerIP';
+$PQL_ATTRIBUTE["PQL_CONF_WEBSRV_SRV_URL"] = 'webServerURL';
+$PQL_ATTRIBUTE["PQL_CONF_WEBSRV_SRV_ADMIN"] = 'webServerAdmin';
+$PQL_ATTRIBUTE["PQL_CONF_WEBSRV_DOCROOT"] = 'webDocumentRoot';
+$PQL_ATTRIBUTE["PQL_CONF_WEBSRV_SRV_ALIAS"] = 'webServerAlias';
+$PQL_ATTRIBUTE["PQL_CONF_WEBSRV_SCRIPT_URL"] = 'webScriptAliasURL';
+$PQL_ATTRIBUTE["PQL_CONF_WEBSRV_SCRIPT_PATH"] = 'WebScriptAliasPath';
+$PQL_ATTRIBUTE["PQL_CONF_WEBSRV_LOG_ERROR"] = 'webLogError';
+$PQL_ATTRIBUTE["PQL_CONF_WEBSRV_LOG_TRANSFER"] = 'webLogTransfer';
+$PQL_ATTRIBUTE["PQL_CONF_WEBSRV_OPTIONS"] = 'webOptions';
 
 // References
 $PQL_ATTRIBUTE["PQL_CONF_REFERENCE_USERS_WITH"] = 'userReference';

@@ -13,6 +13,8 @@ phpQLAdmin 2.0.17 TO BE ANNOUNCED
 	  - Say 'LDAP Server' instead of 'Host' in the left frame - more descriptive.
 
 	Misc changes
+	  - Basic webserver editor with script to extract information and create a
+	    part of the httpd.conf for Apache. See the bottom of the README file.
 
 phpQLAdmin 2.0.16 Release (Aug 28 2003)
 	Bug fixes

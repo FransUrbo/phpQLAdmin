@@ -82,9 +82,8 @@
         <td class="<?=$class?>"><?php if(pql_get_define("PQL_GLOB_EZMLM_USE")) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
       </tr>
 
-<?php if($ADVANCED_MODE and 0) { // TODO: Currently disabled. Not even started. ?>
       <tr>
-        <td class="title"><?=$LANG->_('Manage Bind 9 DNSSEC domains')?></td>
+        <td class="title"><?=$LANG->_('Manage DNS domains')?></td>
 <?php $class=table_bgcolor(0);
       if($ALLOW_GLOBAL_CONFIG_SAVE) {
 ?>
@@ -94,7 +93,18 @@
 <?php } ?>
         <td class="<?=$class?>"><?php if(pql_get_define("PQL_GLOB_BIND9_USE")) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
       </tr>
+
+      <tr>
+        <td class="title"><?=$LANG->_('Manage webserver config')?></td>
+<?php $class=table_bgcolor(0);
+      if($ALLOW_GLOBAL_CONFIG_SAVE) {
+?>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_WEBSRV_USE"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_GLOB_WEBSRV_USE"]?>"></a></td>
+<?php } else { ?>
+        <td class="<?=$class?>"></td>
 <?php } ?>
+        <td class="<?=$class?>"><?php if(pql_get_define("PQL_GLOB_WEBSRV_USE")) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
+      </tr>
 
       <tr>
         <td class="title"><?=$LANG->_('Automatic reload of navigation bar')?></td>
