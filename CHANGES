@@ -23,6 +23,9 @@ phpQLAdmin 2.2.1 TO BE ANNOUNCED
 	    'uid') or 'qmailUser' as well as 'qmailGroup' when creating QmailLDAP
 	    group objects. This because OpenLDAP >2.1 _require_ one STRUCTURAL object
 	    class.
+	  - If multi-valued QmailLDAP group values in tables/user_details-group.inc
+	    _isn't_ multi-valued (i.e. not an array), then _make it_ an array. This
+	    so that include/pql_formating.inc:pql_format_table_single() works correctly.
 
 	GUI layout changes
 	  - User addition errors is 'tabbed' to the right (aligned with the input
