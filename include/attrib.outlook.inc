@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for pilotPerson objects etc
-// $Id: attrib.outlook.inc,v 1.27 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.outlook.inc,v 1.28 2005-03-27 12:25:11 turbo Exp $
 
 /*
 	Attributes managed here:
@@ -111,6 +111,23 @@ function attribute_save($type) {
 
 		if($_REQUEST["domain"] and !$_REQUEST["user"]) {
 			// Save a domain attribute
+
+			if(($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_VAT_NUMBER")) or
+			   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_MOBILE")) or
+			   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_INFO")))
+			{
+			  // Special circumstances - an attribute that exists not only in one of my own schemas
+			  // (phpQLAdminInfo) but also in other schemas (which takes precedene).
+
+			  // Check if the 'phpQLAdminInfo' object class exists in the domain object.
+			  $ocs = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_OBJECTCLASS"));
+			  if($ocs and !in_array('phpQLAdminInfo', $ocs)) {
+				pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_OBJECTCLASS"),
+									 '', 'phpQLAdminInfo');
+				// If it fails, it fails ... and so will pql_modify_attribute() below.
+			  }
+			}
+
 			if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["attrib"], 1, $_REQUEST[$attrib]))
 			  $success = 1;
 		} elseif($_REQUEST["user"]) {
