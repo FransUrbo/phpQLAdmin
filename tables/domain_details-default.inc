@@ -64,13 +64,13 @@
 
 <?php if($ALLOW_BRANCH_CREATE) { ?>
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title"><?$LANG->_('Maximum allowed users in branch')?></td>
+        <td class="title"><?=$LANG->_('Maximum allowed users in branch')?></td>
         <td><?php if($maximumdomainusers){echo $maximumdomainusers;}else{echo $LANG->_('Unlimited');} ?></td>
         <td><?=$maximumdomainusers_link?></td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title">$LANG->_('Maximum allowed users in branch')?></td>
+        <td class="title"><?=$LANG->_('Maximum allowed mailinglists in branch')?></td>
         <td><?php if($maximummailinglists){echo $maximummailinglists;}else{echo $LANG->_('Unlimited');} ?></td>
         <td><?=$maximummailinglists_link?></td>
       </tr>
