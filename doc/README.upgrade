@@ -1,3 +1,7 @@
+Upgrading from 2.1.4
+	Support for user/branch deletion script(s). Update your schema at
+	the LDAP server and restart it.
+
 Upgrading from 2.1.3
 	New user templates system. Please read doc/README.Templates for
 	more information on this. This required a schema change, so make
