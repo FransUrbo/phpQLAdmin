@@ -11,7 +11,6 @@ define("PQL_LANG_LANG","de");
 
 // welcome texts (home.php)
 define("PQL_LANG_WELCOME", "Willkommen bei ");
-define("PQL_LANG_DESCRIPTION","Der QMail-LDAP Adminstration !!");
 
 // general texts
 define("PQL_LANG_SAVE", "Speichern");

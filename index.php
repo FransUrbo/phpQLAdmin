@@ -53,7 +53,7 @@ if (empty($uname) or empty($passwd)) {
 
   <table cellspacing="0" cellpadding="3" border="0" align=center>
     <tr>
-      <td bgcolor="#D0DCE0"><FONT size=3><?php echo PQL_LANG_WELCOME . " <B>" . PQL_LANG_DESCRIPTION; ?></B></FONT></td>
+      <td bgcolor="#D0DCE0"><FONT size=3><?php echo PQL_LANG_WELCOME . " <B>" . $config["PQL_GLOB_WHOAREWE"]?></B></FONT></td>
     </tr>
 
     <tr align="center">

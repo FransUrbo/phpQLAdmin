@@ -1,7 +1,7 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 2.19 2003-04-07 15:33:57 turbo Exp $
+// $Id: lang.en.inc,v 2.20 2003-04-26 16:10:19 turbo Exp $
 //
 // if you have a translation to another language, please contact
 // me --> Turbo Fredriksson <phpqladmin@bayour.com>
@@ -22,7 +22,6 @@ if(!isset($INCLUDE_LANG_EN_INC)) {
 	
 	// welcome texts (home.php)
 	define("PQL_LANG_WELCOME", "Welcome to ");
-	define("PQL_LANG_DESCRIPTION","The QMail-LDAP Adminstration");
 	
 	// login texts
 	define("PQL_LANG_LOGIN","Please Login");
