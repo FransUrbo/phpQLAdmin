@@ -1,6 +1,6 @@
 Things left to do
 	IMPORTANT
-	* Get propper (!) 'user templates' to work. It's getting more
+	* Get proper (!) 'user templates' to work. It's getting more
 	  and more difficult to get the schema enforcement to work
 	  properly. I just wish I had an idea on HOW to do it :)
 	* Automatic ACL update when adding a user as administrator
