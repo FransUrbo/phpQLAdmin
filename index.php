@@ -28,26 +28,6 @@ if ($logout == 1 or !empty($msg)) {
 	}
 }
 
-// Start with default value of USER_HOST_USR
-// LDAP server to connect to - first one
-// as default.
-if(!$USER_HOST_USR) {
-	$host = split(' ', PQL_LDAP_HOST);
-	$host = split(';', $host[0]);
-	$USER_HOST_USR = $host[0] . ";" . $host[1];
-
-	session_register("USER_HOST_USR");
-} elseif(is_array($USER_HOST_USR)) {
-	$host = $USER_HOST_USR[0];
-	$USER_HOST_USR = $host;
-
-	session_register("USER_HOST_USR");
-}
-
-// These variables will be NULL the first time,
-// so we will bind anonymously...
-$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
-
 if ($LOGIN_PASS == 1) {
 	Header("Location:index2.php");
 }
@@ -79,49 +59,61 @@ if (empty($uname) or empty($passwd)) {
       <td class="title1"><? echo PQL_LOGIN; ?></td>
     </tr>
   </table>
+
   <form action="<?php echo $PHP_SELF; ?>" method=post name="phpqladmin">
     <table cellspacing="0" cellpadding="3" border="0" align=center>
       <tr>
         <td>LDAP Server:</td>
-        <td align="left"><b><?=$USER_HOST_USR?></b></td>
-      <tr>
+        <td align="left">
 <?php
-	if (!empty($invalid)) {
+	if(eregi(' ', PQL_LDAP_HOST)) {
+		$servers = split(' ', PQL_LDAP_HOST);
 ?>
-      <tr>
-        <td>
-          <tr>
-            <td><FONT color=red><B>Error:</B><?php echo $invalid; ?></FONT></td>
-            <td></td>
-          </tr>
-
+          <select name="server">
+<?php
+		foreach($servers as $server) {
+			// We're only interssted in the HOST entry (othervise the list will be to long)
+			$host = split(';', $server);
+?>
+            <option><?=$host[0]?></option>
+<?php
+		}
+?>
+          </select>
+<?php
+	} else {
+		$server = $USER_HOST_USR;
+?>
+        <b><?=$server?></b>
 <?php
 	}
 ?>
+        </td>
+      <tr>
+
           <tr>
+            <td bgcolor="#D0DCE0"><b><?=PQL_USERNAME?>:</b></td>
+            <td><input type=text name="uname"></td>
+          </tr>
+
+          <tr>
+             <td bgcolor="#D0DCE0"><b><?=PQL_USERPASS?>:</b></td>
+             <td><input type=password name="passwd" onChange="this.form.submit()" autocomplete="OFF"></td>
+          </tr>
+
+          <tr><td></td></tr>
+
+          <tr>
+            <td></td>
             <td>
-              <tr>
-                <td bgcolor="#D0DCE0"><b><?=PQL_USERNAME?>:</b></td>
-                <td><input type=text name="uname"></td>
-              </tr>
-
-              <tr>
-                <td bgcolor="#D0DCE0"><b><?=PQL_USERPASS?>:</b></td>
-                <td><input type=password name="passwd" onChange="this.form.submit()" autocomplete="OFF"></td>
-              </tr>
-
-              <tr><td></td></tr>
-
-              <tr>
-                <td align=center><input type=submit name=action value=submit></td>
-                <td align=center><input type=reset name=action value=reset></td>
-              </tr>
+              <input type=submit name=action value=submit>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <input type=reset name=action value=reset>
             </td>
           </tr>
-        </td>
-      </tr>
-    </table>
+     </table>
   </form>
+
   <script language="JavaScript">
   <!--
     document.phpqladmin.uname.focus();
@@ -135,17 +127,31 @@ if (empty($uname) or empty($passwd)) {
 	$uname = strtolower($uname);	
 
 	// -------------------------------------
+	// Get the LDAP server
+	if(!$USER_HOST_USR) {
+		$host = split(';', $server);
+		$USER_HOST_USR = $host[0] . ";" . $host[1];
+		
+		session_register("USER_HOST_USR");
+	} elseif(is_array($USER_HOST_USR)) {
+		$host = $USER_HOST_USR[0];
+		$USER_HOST_USR = $host;
+		
+		session_register("USER_HOST_USR");
+	}
+
+	// -------------------------------------
 	// Get the search base - user database
 	if(!$USER_SEARCH_DN_USR) {
-		$host = split(' ', PQL_LDAP_HOST);
+		$host = split(' ', $server);
 		$dn   = split(';', $host[0]);
 		$USER_SEARCH_DN_USR = $dn[2];
-		
+
 		session_register("USER_SEARCH_DN_USR");
 	} elseif(is_array($USER_SEARCH_DN_USR)) {
-		$host = $USER_HOST_USR[2];
+		$host = $USER_SEARCH_DN_USR[2];
 		$USER_SEARCH_DN_USR = $host;
-		
+
 		session_register("USER_SEARCH_DN_USR");
 	}
 
@@ -155,17 +161,17 @@ if (empty($uname) or empty($passwd)) {
 	// as default.
 	if(!$USER_HOST_CTR) {
 		// Get first entry -> default server:port
-		$host = split(' ', PQL_LDAP_HOST);
+		$host = split(' ', $server);
 
 		// Get hostname and port
 		$host = split(';', $host[0]);
 		$USER_HOST_CTR = $host[0] . ";" . $host[1];
-		
+
 		session_register("USER_HOST_CTR");
 	} elseif(is_array($USER_HOST_CTR)) {
 		$host = $USER_HOST_CTR[0];
 		$USER_HOST_CTR = $host;
-		
+
 		session_register("USER_HOST_CTR");
 	}
 
@@ -173,28 +179,30 @@ if (empty($uname) or empty($passwd)) {
 	// Get the search base - controls database
 	if(!$USER_SEARCH_DN_CTR) {
 		// Get first entry -> default server:port
-		$host = split(' ', PQL_LDAP_HOST);
+		$host = split(' ', $server);
 
 		// Get hostname and base DN
 		$dn   = split(';', $host[0]);
 		$USER_SEARCH_DN_CTR = $dn[3];
-		
+
 		session_register("USER_SEARCH_DN_CTR");
 	} elseif(is_array($USER_SEARCH_DN_CTR)) {
 		$host = $USER_HOST_CTR[2];
 		$USER_SEARCH_DN_CTR = $host;
-		
+
 		session_register("USER_SEARCH_DN_CTR");
 	}
 
-	// -------------------------------------
-	// Get DN of user
-	//
 	// NOTE:
-	// For the very first time, we have bound anonymously,
-	// so we must have read access (to the DN and CN/UID =>
+	// These variables will be NULL the first time,
+	// so we will bind anonymously... 
+	// We must have read access (to the DN and CN/UID =>
 	// the PQL_LDAP_REFERENCE_USERS_WITH define entry) as
 	// anonymous here!
+	$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
+
+	// -------------------------------------
+	// Get DN of user
 	$rootdn = pql_get_dn($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $uname);
 
 	// Rebind as user
