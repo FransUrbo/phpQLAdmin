@@ -86,6 +86,14 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	    pages. We can be called with either a QLC object, a DNS entry or user supplied.
 	  - Allow user(s) to be put in the root of the branch/domain by adding that option
 	    to the <select> (the 'Add user->user details' page).
+	  - Show ALL mailinglists (in left-ezmlm) if we're "super-admin".
+	  - The attributes 'externalScript{User,Domain}' is allowed to be empty. If we
+	    have a value, and we remove it from the input field, then remove it from
+	    the LDAP object as well.
+	  - Better/correct support for 'virtual users'. A mail account is a very minimal
+	    object. It doesn't need a lot of frills - see README.virtual.
+	  - Remove the last (?) hardcoded references to attribute names. Use pql_get_define()
+	    with a define set in include/pql_attributes.inc instead.
 
 	GUI layout change
 	  - Variable lenght icons with better looking font.
@@ -191,6 +199,8 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	    is used later when adding user(s) - if called with a subbranch, don't show the
 	    'Put user in subbranch ...' selector. Only show that if we're called from the
 	    top domain branch 'Add user' (provided that there ARE subbranches).
+	  - Don't offer the KERBEROS password scheme if it's a mail account (no uid/gid
+	    number) OR the object class(es) we've creating users with don't allow [ug]idNumber.
 
 	Misc changes	
 	  - Configurable lenght of characters/numbers that is autocreated (when auto-
@@ -222,13 +232,6 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	      report any/all bugs at the BTS (Bug Tracking System).
 	  - When error occures, try to catch the most common once (those most occuring
 	    on the mailinglist) and give a short description/remedy.
-	  - Add minimumGIDNumber (OID: 1.3.6.1.4.1.8767.3.2.3.6) for auto user generation.
-	  - Create a new object class phpQLAdminInfo (OID: 1.3.6.1.4.1.8767.3.1.4) which
-	    will host DOMAIN/Branch informations (such as VAT-Number etc) for the domain.
-	  - Split phpQLAdminConfig object class into two - phpQLAdminConfig and
-	    phpQLAdminGlobal. The first is for branch configuration and the other
-	    is for global configuration (paths etc). phpQLAdminGlobal is a new
-	    object class (OID: 1.3.6.1.4.1.8767.3.1.2).
 	  - Changed the mail account type name from "normal" to "mail".
 	  - Allow the editing of UID and GID number(s).
 	  - As of Qmail-LDAP v20030901, the mailQuota attribute have been split into TWO
@@ -327,6 +330,22 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	  - The function pql_search() must have the option to do SUBTREE, ONELEVEL and
 	    BASE searches for an attribute. Othervise we're not finding the correct
 	    organizational unit for a branch.
+
+	Schema changes:
+	  - Add minimumGIDNumber (OID: 1.3.6.1.4.1.8767.3.2.3.6) for auto user generation.
+	  - Create a new object class phpQLAdminInfo (OID: 1.3.6.1.4.1.8767.3.1.4) which
+	    will host DOMAIN/Branch informations (such as VAT-Number etc) for the domain.
+	  - Split phpQLAdminConfig object class into two - phpQLAdminConfig and
+	    phpQLAdminGlobal. The first is for branch configuration and the other
+	    is for global configuration (paths etc). phpQLAdminGlobal is a new
+	    object class (OID: 1.3.6.1.4.1.8767.3.1.2).
+	  - Move all the Apache webserver configuration attributes (web*) to separate
+	    OID tree - 1.3.6.1.4.1.8767.3.2.5.*.
+	  - Move userNamePrefixLength and vatNumber to the end of the 'Misc values' -
+	    OID tree 1.3.6.1.4.1.8767.3.2.4.*.
+	  - New webserver attribute 'webServerName' - OID: 1.3.6.1.4.1.8767.3.2.5.2.
+	  - Renumber all webserver attributes. This because I wanted a 'webServerName'
+	    just after the existing webServerIP.
 
 phpQLAdmin 2.0.17 Release (Oct 30 2003)
 	Bug fixes
