@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.188 2004-10-09 19:00:52 turbo Exp $
+// $Id: pql.inc,v 2.189 2004-10-10 10:16:50 turbo Exp $
 //
 
 // ----------------------------
@@ -1768,7 +1768,7 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 
 // {{{ pql_get_rootdn(dn)
 function pql_get_rootdn($dn, $function = '') {
-	global $_pql;
+	global $_pql, $_SESSION;
 	$tracker = 'Please report this at the <a href="http://bugs.bayour.com/" target="_new">bugtracker</a>.<br>';
 
 	if($function)
@@ -1791,6 +1791,26 @@ function pql_get_rootdn($dn, $function = '') {
 			if(eregi("$base\$", $dn))  {
 				$counts++;
 				$DNs[] = $base;
+			}
+		}
+
+		if(($counts < 1) and @$_SESSION["MONITOR_BACKEND_ENABLED"]) {
+			// We have ONE more shot in finding the root DN. Look in the
+			// 'cn=Databases,cn=Monitor:namingContexts' attribute(s).
+			require("./include/pql_status.inc");
+			$tmp = pql_get_status($_pql->ldap_linkid, "cn=Databases,cn=Monitor", 'namingContexts');
+			if(is_array($tmp)) {
+				// We got more than one namingContexts (i.e. an array). Go through each value...
+				foreach($tmp as $base) {
+					if(eregi("$base\$", $dn))  {
+						$counts++;
+						$DNs[] = $base;
+					}
+				}
+			} elseif(eregi($tmp, $dn)) {
+				// We've only got one namingContexts (i.e. not an array).
+				$counts++;
+				$DNs[] = $tmp;
 			}
 		}
 		
