@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.1 2003-08-15 08:06:17 turbo Exp $
+// $Id: config_attributes.inc,v 2.2 2003-08-17 09:38:10 turbo Exp $
 
 // User object attributes
 pql_set_define("PQL_GLOB_ATTR_DOTMODE",				strtolower("qmailDotMode"),		false);
@@ -110,6 +110,7 @@ pql_set_define("PQL_GLOB_ATTR_POSTALCODE",			strtolower("postalCode"),			false);
 pql_set_define("PQL_GLOB_ATTR_POSTALADDRESS",			strtolower("postalAddress"),			false);
 pql_set_define("PQL_GLOB_ATTR_POSTOFFICEBOX",			strtolower("postOfficeBox"),			false);
 pql_set_define("PQL_GLOB_ATTR_ROOMNUMBER",			strtolower("roomNumber"),			false);
+pql_set_define("PQL_GLOB_ATTR_SECRETARY",			strtolower("secretary"),			false);
 pql_set_define("PQL_GLOB_ATTR_SN",				strtolower("sn"),				false);
 pql_set_define("PQL_GLOB_ATTR_ST",				strtolower("st"),				false);
 pql_set_define("PQL_GLOB_ATTR_STREET",				strtolower("street"),				false);
