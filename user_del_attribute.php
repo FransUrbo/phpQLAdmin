@@ -42,7 +42,7 @@ if(isset($ok) || !PQL_VERIFY_DELETE) {
 	    $results = ldap_get_entries($_pql->ldap_linkid, $sr);
 	    foreach($results as $key => $result){
 		if ((string)$key != "count") {
-		    $ref = $result[PQL_LDAP_REFERENCE_USERS_WITH][0];
+		    $ref = $result[$config["PQL_LDAP_REFERENCE_USERS_WITH"][pql_get_rootdn($user)]][0];
 		    $domain = pql_strip_username($result[PQL_LDAP_ATTR_MAIL][0]);
 		    $forwarders[]  = array("domain" => $domain, "reference" => $ref, "cn" => $cn,  "email" => $result["mail"][0]);
 		}
