@@ -2,7 +2,7 @@
 // control attribute plugin for
 // databytes (max number of bytes in message)
 //
-// $Id: attrib.control.databytes.inc,v 2.15 2004-04-01 06:27:59 turbo Exp $
+// $Id: attrib.control.databytes.inc,v 2.16 2004-10-18 13:39:31 turbo Exp $
 
 // {{{ databytes_check(type)
 function databytes_check($type) {
@@ -24,12 +24,12 @@ function databytes_init($host) {
 	global $_pql_control;
 	
 	// fetch data from ldap server
-	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-									   pql_get_define("PQL_ATTR_DATABYTES"));
-	
-	if(!is_null($value))
-	  $_REQUEST["databytes"] = $value[0];
+	$_REQUEST["databytes"] = pql_get_attribute($_pql_control->ldap_linkid,
+											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+											   pql_get_define("PQL_ATTR_DATABYTES"));
+
+	if(is_null($_REQUEST["databytes"]))
+	  return true;
 }
 // }}}
 

@@ -4,7 +4,7 @@
 // or, if using new style quota
 // 	defaultQuotaSize and defaultQuotaCount
 //
-// $Id: attrib.control.ldapdefaultquota.inc,v 2.16 2004-03-29 07:51:50 turbo Exp $
+// $Id: attrib.control.ldapdefaultquota.inc,v 2.17 2004-10-18 13:39:32 turbo Exp $
 
 // {{{ ldapdefaultquota_check(type)
 function ldapdefaultquota_check($type) {
@@ -69,11 +69,11 @@ function ldapdefaultquota_check($type) {
 function ldapdefaultquota_init($host) {
     global $_pql_control;
     
-    $quota = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-									   pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"));
+    $quota = pql_get_attribute($_pql_control->ldap_linkid,
+							   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+							   pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"));
     if(!is_null($quota)) {
-		$quota = pql_parse_quota($quota[0]);
+		$quota = pql_parse_quota($quota);
 		
 		$_REQUEST["maxmails"] = $quota["maxmails"];
 		$_REQUEST["maxsize"]  = $quota["maxsize"];

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // quotawarning (additional quota warning message)
 //
-// $Id: attrib.control.quotawarning.inc,v 2.15 2004-03-29 05:10:33 turbo Exp $
+// $Id: attrib.control.quotawarning.inc,v 2.16 2004-10-18 13:39:32 turbo Exp $
 
 // {{{ quotawarning_check(type)
 function quotawarning_check($type) {
@@ -24,15 +24,12 @@ function quotawarning_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-									   pql_get_define("PQL_ATTR_QUOTA_WARNING"));
-
-	if(!is_null($value))
-	  $_REQUEST["quotawarning"] = $value[0];
+	$_REQUEST["quotawarning"] = pql_get_attribute($_pql_control->ldap_linkid,
+												  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+												  pql_get_define("PQL_ATTR_QUOTA_WARNING"));
 
 	// initialize radio button
-	if($_REQUEST["quotawarning"] == "")
+	if(!$_REQUEST["quotawarning"])
 	  $_REQUEST["use_quotawarning"] = 0;
 	else
 	  $_REQUEST["use_quotawarning"] = 1;

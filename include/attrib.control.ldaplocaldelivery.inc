@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldaplocaldelivery (search for local account, if ldap search is not successful)
 //
-// $Id: attrib.control.ldaplocaldelivery.inc,v 2.13 2004-03-11 16:31:54 turbo Exp $
+// $Id: attrib.control.ldaplocaldelivery.inc,v 2.14 2004-10-18 13:39:32 turbo Exp $
 
 // {{{ ldaplocaldelivery_check(type)
 function ldaplocaldelivery_check($type) {
@@ -16,15 +16,12 @@ function ldaplocaldelivery_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-									   pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY"));
+	$_REQUEST["ldaplocaldelivery"] = pql_get_attribute($_pql_control->ldap_linkid,
+													   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+													   pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY"));
 
-	if(!is_null($value))
-	  $_REQUEST["ldaplocaldelivery"] = $value[0];
-	else
-	  // set to default value
-	  $_REQUEST["ldaplocaldelivery"] = 1;
+	if(is_null($_REQUEST["ldaplocaldelivery"] ))
+	  return true;
 }
 // }}}
 

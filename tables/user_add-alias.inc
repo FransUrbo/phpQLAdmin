@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-alias.inc,v 1.2 2004-03-26 11:21:00 turbo Exp $ */
+<?php /* $Id: user_add-alias.inc,v 1.3 2004-10-18 13:39:33 turbo Exp $ */
       // Retreive domain branches for this domain (for the subbranch value below)
       $branches = pql_unit_get($_pql->ldap_linkid, $_REQUEST["domain"]);
 ?>
@@ -38,7 +38,7 @@
           <td>
             <?php echo pql_format_error_span($error_text["destination"]); ?>
 <?php // This is the ugly part (see include/attrib.administrator.inc).
-	  $domains = pql_domain_get($_pql);
+	  $domains = pql_get_domains($_pql);
 	  if(isset($domains)) {
 	  	asort($domains);
 		foreach($domains as $key => $domain) {
@@ -68,8 +68,12 @@
             <div id="el<?=$j?>Child" class="child">
 <?php		}
         
-			// Get all users (their DN) in this domain
-			$users = pql_user_get($_pql->ldap_linkid, $domain);
+			// Create a user search filter (only look for mail users - !?!?).
+			$filter  = "(&(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*)(";
+			$filter .= pql_get_define("PQL_ATTR_MAIL")."=*))";
+
+			// Retreive all users in this branch/domain.
+			$users   = pql_get_dn($_pql->ldap_linkid, $domain, $filter);
 			if(is_array($users)) {
 				// Zero out the variables, othervise we won't get users in
 				// specified domain, but also in the PREVIOUS domain shown!

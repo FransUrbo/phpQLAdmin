@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.57 2004-10-11 08:28:32 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.58 2004-10-18 13:39:32 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -118,10 +118,10 @@ function user_generate_mailstore($ldap, $email, $dn, $entry, $type) {
 //		// We're called with a dn of a branch object.
 //
 //		// ... retreive the 'baseMailDir' attribute value from the branch object.
-//		$mailstore = pql_domain_get_value($ldap, $dn, pql_get_define("PQL_ATTR_BASEMAILDIR"));
+//		$mailstore = pql_get_attribute($ldap->ldap_linkid, $dn, pql_get_define("PQL_ATTR_BASEMAILDIR"));
 //
 //		// ... retreive the 'defaultDomainName' attribute value from the branch object.
-//		$domain    = pql_domain_get_value($ldap, $dn, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+//		$domain    = pql_get_attribute($ldap->ldap_linkid, $dn, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 //	} else {
 //		// Default base directory
 //		$mailstore = "/var/mail";
@@ -222,10 +222,10 @@ function user_generate_homedir($ldap, $email, $dn, $entry, $type) {
 
 //	if($dn) {
 //		// ... retreive the 'baseHomeDir' attribute value from the branch object.
-//		$homedir = pql_domain_get_value($ldap, $dn, pql_get_define("PQL_ATTR_BASEHOMEDIR"));
+//		$homedir = pql_get_attribute($ldap->ldap_linkid, $dn, pql_get_define("PQL_ATTR_BASEHOMEDIR"));
 //
 //		// ... retreive the 'defaultDomainName' attribute value from the branch object.
-//		$domain  = pql_domain_get_value($ldap, $dn, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+//		$domain  = pql_get_attribute($ldap->ldap_linkid, $dn, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 //	} else {
 //		// Default base directory
 //		$homedir = "/home";
@@ -374,10 +374,10 @@ function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $do
 //	// Add all the super admins with full access.
 //	$admins = pql_get_attribute($ldap_linkid, urldecode($_SESSION["BASE_DN"][0]), pql_get_define("PQL_ATTR_ADMINISTRATOR"));
 //	if(is_array($admins)) {
-//		foreach($admins as $admin) {
-//			$aci[$i] = "$i#entry#grant;w,r,s,c,x;[all]#access-id#$admin"; $i++;
-//		}
-//	}
+//		foreach($admins as $admin)
+//		  $aci[$i] = "$i#entry#grant;w,r,s,c,x;[all]#access-id#$admin"; $i++;
+//	} else
+//	  $aci[$i] = "$i#entry#grant;w,r,s,c,x;[all]#access-id#$admins"; $i++;
 //
 //	return($aci);
 //}

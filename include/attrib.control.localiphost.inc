@@ -2,7 +2,7 @@
 // control attribute plugin for
 // localiphost (name substituted for local IP address)
 //
-// $Id: attrib.control.localiphost.inc,v 2.15 2004-03-11 16:31:54 turbo Exp $
+// $Id: attrib.control.localiphost.inc,v 2.16 2004-10-18 13:39:32 turbo Exp $
 
 // {{{ ocaliphost_check(type)
 function localiphost_check($type) {
@@ -24,12 +24,12 @@ function localiphost_init($host) {
 	global $_pql_control;
 	
 	// fetch data from ldap server
-	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-									   pql_get_define("PQL_ATTR_LOCALIPHOST"));
+	$_REQUEST["localiphost"] = pql_get_attribute($_pql_control->ldap_linkid,
+												 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+												 pql_get_define("PQL_ATTR_LOCALIPHOST"));
 	
-	if(!is_null($value))
-	  $_REQUEST["localiphost"] = $value[0];
+	if(is_null($_REQUEST["localiphost"]))
+	  return true;
 }
 // }}}
 

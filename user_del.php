@@ -1,6 +1,6 @@
 <?php
 // delete a user
-// $Id: user_del.php,v 2.32 2004-05-10 14:44:07 turbo Exp $
+// $Id: user_del.php,v 2.33 2004-10-18 13:39:31 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -15,7 +15,7 @@ $url["rootdn"]		= pql_format_urls($_REQUEST["rootdn"]);
 $url["user"]		= pql_format_urls($_REQUEST["user"]);
 
 // Get organization name for domain and common name of user
-$o = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_O"));
+$o = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_O"));
 if(!$o) {
 	// No 'organization' attribute (or it's not configured - 0)
 	// Use the RDN
@@ -61,14 +61,14 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn))
 		// Unsubscribe user from all mailinglists (on this host naturaly :)
 		if($unsubscribe) {
 			// Get all domains, looking for mailing lists
-			$domains = pql_domain_get($_pql);
+			$domains = pql_get_domains($_pql);
 			if(is_array($domains)) {
 				asort($domains);
 				foreach($domains as $key => $this_domain) {
 					// Get base directory for mails in all domains
-					if(($basemaildir = pql_domain_get_value($_pql, $this_domain, pql_get_define("PQL_ATTR_BASEMAILDIR")))) {
+					if(($basemaildir = pql_get_attribute($_pql->ldap_linkid, $this_domain, pql_get_define("PQL_ATTR_BASEMAILDIR")))) {
 						// Get the lists in this directory
-						$user  = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_EZMLM_USER"));
+						$user  = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_EZMLM_USER"));
 						$ezmlm = new ezmlm($user, $basemaildir);
 						if(is_array($ezmlm->mailing_lists[0])) {
 							// Go through each list in this domain

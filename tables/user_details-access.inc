@@ -6,11 +6,13 @@
 		$branch = urldecode($branch);
 
 		// Check the top-most (namingContexts) DN's if user is admin of that...
-		if(pql_validate_administrator($_pql->ldap_linkid, $branch, $_GET["user"]))
-		  $domains_admins[$branch][] = $branch;
+		if(pql_validate_administrator($_pql->ldap_linkid, $branch, $_GET["user"])) {
+			$domains_admins[$branch][] = $branch;
+			$super_admin = 1;
+		}
 
 		// Find all branches the user is admin of
-		$dom = pql_domain_get_value($_pql, $branch, pql_get_define("PQL_ATTR_ADMINISTRATOR"), $_GET["user"]);
+		$dom = pql_get_dn($_pql->ldap_linkid, $branch, pql_get_define("PQL_ATTR_ADMINISTRATOR").'='.$_GET["user"]);
 		if($dom) {
 			foreach($dom as $d) {
 				// Filter out the RootDN
@@ -20,7 +22,7 @@
 		}
 
 		// Find all branches the user is mailinglist admin of
-		$dom = pql_domain_get_value($_pql, $branch, pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"), $_GET["user"]);
+		$dom = pql_get_dn($_pql->ldap_linkid, $branch, pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM").'='.$_GET["user"]);
 		if($dom) {
 			foreach($dom as $d)
 			  $domains_ezmlm[$branch][] = $d;
@@ -167,8 +169,14 @@
         <td>
           <a href="config_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")?>&delval=<?=$url["user"]?>&submit=2&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Disallow user to administrate Controls information')?>"></a>
         </td>
-<?php       } else { ?>
+<?php       } else {
+				if(@$super_admin) {
+?>
+        <td><?=$LANG->_('Yes (user is superadmin)')?></td>
+<?php			} else {
+?>
         <td><?=$LANG->_('No')?></td>
+<?php			} ?>
         <td>
           <a href="config_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")?>&<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")?>=<?=$url["user"]?>&submit=2&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Allow user to administrate Controls information')?>"></a>
         </td>

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldapdefaultdotmode (default mode how to interpret .qmail files)
 //
-// $Id: attrib.control.ldapdefaultdotmode.inc,v 2.14 2004-03-11 16:31:54 turbo Exp $
+// $Id: attrib.control.ldapdefaultdotmode.inc,v 2.15 2004-10-18 13:39:32 turbo Exp $
 
 // {{{ ldapdefaultdotmode_check(type)
 function ldapdefaultdotmode_check($type) {
@@ -37,12 +37,12 @@ function ldapdefaultdotmode_init($host) {
 	global $_pql_control;
 	
 	// fetch data from ldap server
-	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-									   pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"));
+	$_REQUEST["ldapdefaultdotmode"] = pql_get_attribute($_pql_control->ldap_linkid,
+														pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+														pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"));
 	
-	if(!is_null($value))
-	  $_REQUEST["ldapdefaultdotmode"] = $value[0];
+	if(is_null($_REQUEST["ldapdefaultdotmode"]))
+	  return true;
 }
 // }}}
 

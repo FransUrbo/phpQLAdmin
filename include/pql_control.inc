@@ -4,10 +4,11 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.42 2004-10-15 15:06:35 turbo Exp $
+// $Id: pql_control.inc,v 2.43 2004-10-18 13:39:33 turbo Exp $
 //
 
 // {{{ control connection class
+
 class pql_control extends pql {
     function pql_control($host, $binddn = "", $bindpw = "", $no_connect = false) {
 		if(!pql_get_define("PQL_CONF_CONTROL_USE"))
@@ -18,45 +19,12 @@ class pql_control extends pql {
 		$this->pql($host, $binddn, $bindpw, $no_connect);
     }
 }
+
 // }}}
 
 // ------------------------------------------------
 // PQL - Control - API functions
 // ------------------------------------------------
-
-// {{{ pql_control_get_attribute(linkid, dn, attribute)
-function pql_control_get_attribute($linkid, $dn, $attribute) {
-    // get a specified option
-    $sr   = ldap_read($linkid, $dn, "(objectClass=qmailControl)", array($attribute));
-    $info = ldap_get_entries($linkid, $sr);
-    
-    for ($i=0; $i < $info[0][$attribute]["count"]; $i++) {
-		$attrib[] = pql_maybe_decode($info[0][$attribute][$i]);
-    }
-    
-    return $attrib;
-}
-// }}}
-
-// {{{ pql_control_get_hosts(ldap_linkid, ldap_basedn)
-function pql_control_get_hosts($ldap_linkid, $ldap_basedn) {
-	// Find all hosts below the $_SESSION["USER_SEARCH_DN_CTR"]
-	$sr = @ldap_search($ldap_linkid, $ldap_basedn,
-					   '(&(cn=*)(objectclass=qmailControl))',
-					   array('cn'));
-    if(!$sr) return false;
-
-	$info = @ldap_get_entries($ldap_linkid, $sr);
-	for ($i=0; $i<$info["count"]; $i++) {
-		$hosts[] = pql_maybe_decode($info[$i]['cn'][0]);
-	}
-
-	if(is_array($hosts))
-	  return $hosts;
-	else
-	  return false;
-}
-// }}}
 
 // {{{ pql_control_replace_attribute(ldap_linkid, ldap_control_basedn, attrib, value)
 function pql_control_replace_attribute($ldap_linkid, $ldap_control_basedn, $attrib, $value) {
@@ -107,38 +75,6 @@ function pql_control_replace_attribute($ldap_linkid, $ldap_control_basedn, $attr
     }
     
     return true;
-}
-// }}}
-
-// {{{ pql_control_search_attribute(ldap_linkid, ldap_basedn, attribute, value, multiple = 0)
-function pql_control_search_attribute($ldap_linkid, $ldap_basedn, $attribute, $value, $multiple = 0) {
-	if(!$ldap_basedn)
-	  // Just incase there is no QmailLDAP/Controls object/DN
-	  return false;
-
-    // search $attribute with $value in whole ldap tree, returns dn or false
-    $filter = "(" . $attribute . "=" . $value . ")";
-    $sr = @ldap_search($ldap_linkid, $ldap_basedn, $filter, array($attribute));
-    
-    if($sr == false) {
-		pql_format_error(1);
-		return false;
-    }
-
-    if(ldap_count_entries($ldap_linkid, $sr) > 0) {
-		if(!$multiple) {
-			$ed = ldap_first_entry($ldap_linkid, $sr);
-			return ldap_get_dn($ldap_linkid,$ed);
-		} else {
-			$info = ldap_get_entries($ldap_linkid, $sr) or pql_format_error(1);
-			for($i=0; $i < $info["count"]; $i++)
-			  $retval[] = $info[$i]["dn"];
-
-			return $retval;
-		}
-    } else {
-		return false;
-    }
 }
 // }}}
 
@@ -196,10 +132,10 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 
 	// ----------------
 	if(($host != '*') and !$domain) {
-		$domains = pql_domain_get($ldap);
+		$domains = pql_get_domains($ldap);
 		foreach($domains as $domain) {
 			// Get default domain name for this domain
-			$domainname = pql_domain_get_value($ldap, $domain, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+			$domainname = pql_get_attribute($ldap->ldap_linkid, $domain, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 			if($domainname) {
 				// Before we add this domain to the list, make sure it don't already exist
 				$ent_exists = 0;
@@ -218,7 +154,7 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 			}
 
 			// Get additional domain names
-			$additional = pql_domain_get_value($ldap, $domain, pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
+			$additional = pql_get_attribute($ldap->ldap_linkid, $domain, pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
 			if(is_array($additional)) {
 				for($i=0; $i < count($additional); $i++) 
 				  $entry[] = $additional[$i];
@@ -260,7 +196,12 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 		if($domain[1])
 		  $domain[1] = pql_maybe_idna_encode($domain[1]);
 
-		$hosts = pql_control_get_hosts($ldap->ldap_linkid, $dn);
+		// Get all QmailLDAP/Control hosts.
+		$result = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+		for($i=0; $result[$i]; $i++)
+		  $hosts[] = pql_get_attribute($_pql_control->ldap_linkid, $result[$i], pql_get_define("PQL_ATTR_CN"));
+
 		if(is_array($hosts)) {
 			// Go through each QmailLDAP control object
 			foreach($hosts as $h) {
@@ -274,9 +215,8 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 					$dont_add = 0; unset($entry);
 
 					// Get current locals for this host
-					$locals = pql_control_get_attribute($ldap->ldap_linkid, $hostdn,
-														pql_get_define("PQL_ATTR_LOCALS"));
-					if(!is_null($locals)) {
+					$locals = pql_get_attribute($ldap->ldap_linkid, $hostdn, pql_get_define("PQL_ATTR_LOCALS"));
+					if(is_array($locals)) {
 						asort($locals); reset($locals);
 						
 						// Rearrange the array
@@ -323,9 +263,8 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 					$dont_add = 0; unset($entry);
 
 					// Get current rcpthosts for this host
-					$rcpthosts = pql_control_get_attribute($ldap->ldap_linkid, $hostdn,
-														   pql_get_define("PQL_ATTR_RCPTHOSTS"));
-					if(!is_null($rcpthosts)) {
+					$rcpthosts = pql_get_attribute($ldap->ldap_linkid, $hostdn, pql_get_define("PQL_ATTR_RCPTHOSTS"));
+					if(is_array($rcpthosts)) {
 						asort($rcpthosts); reset($rcpthosts);
 
 						// Rearrange the array

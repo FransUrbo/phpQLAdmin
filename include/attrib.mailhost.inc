@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailhost (host address which resides the mailhost)
-// $Id: attrib.mailhost.inc,v 2.17 2004-06-10 05:37:43 turbo Exp $
+// $Id: attrib.mailhost.inc,v 2.18 2004-10-18 13:39:32 turbo Exp $
 
 function attribute_check($type) {
     global $error, $LANG;
@@ -121,7 +121,12 @@ function attribute_save($type) {
 		break;
 		
 	  case "fulldomain":
-		$users = pql_user_get($_pql->ldap_linkid, $_REQUEST["domain"]);
+		// Create a user search filter (only look for mail users - !?!?).
+		$filter  = "(&(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*)(";
+		$filter .= pql_get_define("PQL_ATTR_MAIL")."=*))";
+
+		// Retreive all users in this branch/domain.
+	    $users   = pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], $filter);
 		
 		if(is_array($users)) {
 			foreach($users as $user) {

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.30 2004-10-15 15:20:09 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.31 2004-10-18 13:39:32 turbo Exp $
 
 // {{{ locals_check(type)
 
@@ -37,9 +37,9 @@ function locals_init($host) {
     global $_pql_control;
     
     // fetch data from ldap server
-    $_REQUEST["locals"] = pql_control_get_attribute($_pql_control->ldap_linkid,
-													pql_get_define("PQL_ATTR_CN")."=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-													pql_get_define("PQL_ATTR_LOCALS"));
+    $_REQUEST["locals"] = pql_get_attribute($_pql_control->ldap_linkid,
+											pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+											pql_get_define("PQL_ATTR_LOCALS"));
     
     if(is_null($_REQUEST["locals"]))
 	  return true;
@@ -134,6 +134,7 @@ function locals_print_form() {
 // }}}
 
 // {{{ locals_save(type, host)
+
 function locals_save($type, $host) {
     global $_pql, $_pql_control, $LANG;
 	$success = 0;
@@ -159,9 +160,9 @@ function locals_save($type, $host) {
       case "del":
 		if(!$host) {
 			// Find the object(s) which contain this string
-			$ctrls = pql_control_search_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-												  "locals", $_REQUEST["set"], 1);
-			
+			$ctrls = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+								"(&(cn=*)(objectclass=qmailControl)(".pql_set_define("PQL_ATTR_LOCALS")."=".$_REQUEST["set"]."))",
+								'ONELEVEL');
 			// If it isn't an array, but it IS set -> make it an array!
 			if($ctrls && !is_array($ctrls)) {
 				$tmp = $ctrls; unset($ctrls);
@@ -170,7 +171,7 @@ function locals_save($type, $host) {
 			
 			foreach($ctrls as $ctrl) {
 				// Retreive this QmailLDAP/Controls object current value(s)
-				$locals = pql_control_get_attribute($_pql_control->ldap_linkid, $ctrl, pql_get_define("PQL_ATTR_LOCALS"));
+				$locals = pql_get_attribute($_pql_control->ldap_linkid, $ctrl, pql_get_define("PQL_ATTR_LOCALS"));
 				if(is_array($locals)) {
 					// Go through the locals, remove the one in $_REQUEST["set"]
 					for($i=0; $locals[$i]; $i++) {
@@ -187,9 +188,9 @@ function locals_save($type, $host) {
 			}
 		} else {
 			// We're changing a specific mail server...
-			$locals = pql_control_get_attribute($_pql_control->ldap_linkid,
-												pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-												pql_get_define("PQL_ATTR_LOCALS"));
+			$locals = pql_get_attribute($_pql_control->ldap_linkid,
+										pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+										pql_get_define("PQL_ATTR_LOCALS"));
 			for($i=0; $locals[$i]; $i++) {
 				if($locals[$i] != $_REQUEST["set"])
 				  $LOCALS[] = $locals[$i];
@@ -246,6 +247,7 @@ function locals_save($type, $host) {
 								  array('type' => $type, 'file' => __FILE__)));
     }
 }
+
 // }}}
 
 

@@ -1,6 +1,6 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.43 2004-05-10 13:09:04 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.44 2004-10-18 13:39:30 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -51,7 +51,7 @@ if(!$plugin) {
 include("./include/$plugin");
 
 // Get the organization name, or the DN if it's unset
-$orgname = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_O"));
+$orgname = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_O"));
 if(!$orgname) {
 	$orgname = urldecode($_REQUEST["domain"]);
 }

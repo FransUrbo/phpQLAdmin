@@ -1,6 +1,6 @@
 <?php
 // Delete a mailserver controls object
-// $Id: control_del.php,v 2.11 2004-09-24 06:20:40 turbo Exp $
+// $Id: control_del.php,v 2.12 2004-10-18 13:39:30 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -45,7 +45,12 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 			$users = control_del_find_users($_pql, $_REQUEST["mxhost"]);
 			if(is_array($users)) {
 				// There's users - get MX and QmailLDAP/Controls objects
-				$hosts = pql_control_get_hosts($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"]);
+				$result = pql_get_dn($_pql_control->ldap_linkid,
+									 $_SESSION["USER_SEARCH_DN_CTR"],
+									 '(&(cn=*)(objectclass=qmailControl))',
+									 'ONELEVEL');
+				for($i=0; $result[$i]; $i++)
+				  $hosts[] = pql_get_attribute($_pql_control->ldap_linkid, $result[$i], pql_get_define("PQL_ATTR_CN"));
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="GET">
     <input type="hidden" name="oldmx"  value="<?=$_REQUEST["mxhost"]?>">

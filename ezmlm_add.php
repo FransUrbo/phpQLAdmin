@@ -1,6 +1,6 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.32 2004-05-10 15:10:49 turbo Exp $
+// $Id: ezmlm_add.php,v 1.33 2004-10-18 13:39:30 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -31,13 +31,13 @@ if(!$_REQUEST["domainname"]) {
 
 	if($_SESSION["ALLOW_BRANCH_CREATE"]) {
 		// This is a 'super-admin' - get ALL branches
-		$domains = pql_domain_get($_pql);
+		$domains = pql_get_domains($_pql);
 	} else {
 		// Get list of domains where we are listed in the ezmlmAdministrator attribute
 		foreach($_pql->ldap_basedn as $dn)  {
 			$dn = urldecode($dn);
 			
-			$dom = pql_domain_get_value($_pql, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"), $_SESSION["USER_DN"]);
+			$dom = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"), $_SESSION["USER_DN"]);
 			if(is_array($dom)) {
 				foreach($dom as $d)
 				  $domains[] = $d;
@@ -56,7 +56,7 @@ if(!$_REQUEST["domainname"]) {
 			$dont_add = 0;
 			
 			// Get the default domainname for the domain
-			$defaultdomainname = pql_domain_get_value($_pql, $d, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+			$defaultdomainname = pql_get_attribute($_pql->ldap_linkid, $d, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 			
 			// Remove duplicates
 			if($domain_list) {
@@ -74,7 +74,7 @@ if(!$_REQUEST["domainname"]) {
 			$dont_add = 0;
 			
 			// Get any additional domainname(s) for the domain
-			$additionaldomainnames = pql_domain_get_value($_pql, $d, pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
+			$additionaldomainnames = pql_get_attribute($_pql->ldap_linkid, $d, pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
 			
 			if(is_array($additionaldomainnames)) {
 				foreach($additionaldomainnames as $additional) {
@@ -109,14 +109,14 @@ if(!$_REQUEST["domainname"]) {
 	}
 
 	// Get basemaildir path for domain
-	if(!($path = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEMAILDIR"))))
+	if(!($path = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEMAILDIR"))))
 	  die(pql_complete_constant($LANG->_('Can\'t get %what% path from domain \'%domain%\'!'),
 								array('what'   => pql_get_define("PQL_ATTR_BASEMAILDIR"),
 									  'domain' => $_REQUEST["domainname"])));
 	
 	require("./include/pql_ezmlm.inc");
 
-	$user  = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_EZMLM_USER"));
+	$user  = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_EZMLM_USER"));
 	$ezmlm = new ezmlm($user, $path);
 
 	// How many domains do we have in this branch/domain?

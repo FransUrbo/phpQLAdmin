@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of user
-// $Id: user_edit_attribute.php,v 2.42 2004-10-14 07:45:20 turbo Exp $
+// $Id: user_edit_attribute.php,v 2.43 2004-10-18 13:39:31 turbo Exp $
 //
 // This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
 //   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -39,7 +39,7 @@ if(!$_REQUEST["domain"] && $_REQUEST["user"]) {
 }
 
 // Get default domain name for this domain
-$defaultdomain = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+$defaultdomain = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 
 // Get the username. Prettier than the DN
 $username = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_CN"));

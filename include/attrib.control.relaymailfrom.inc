@@ -2,7 +2,7 @@
 // control attribute plugin for
 // relaymailfrom (allowed sender addresses for relaying)
 //
-// $Id: attrib.control.relaymailfrom.inc,v 2.17 2004-10-15 15:21:33 turbo Exp $
+// $Id: attrib.control.relaymailfrom.inc,v 2.18 2004-10-18 13:39:32 turbo Exp $
 
 // {{{ relaymailfrom_check(type)
 function relaymailfrom_check($type) {
@@ -42,9 +42,9 @@ function relaymailfrom_init($host) {
 	global $_pql_control;
 	
 	// fetch data from ldap server
-	$_REQUEST["relaymailfrom"] = pql_control_get_attribute($_pql_control->ldap_linkid,
-														   pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-														   pql_get_define("PQL_ATTR_RELAYMAILFROM"));
+	$_REQUEST["relaymailfrom"] = pql_get_attribute($_pql_control->ldap_linkid,
+												   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+												   pql_get_define("PQL_ATTR_RELAYMAILFROM"));
 	
 	if(is_null($_REQUEST["relaymailfrom"]))
 	  return true;

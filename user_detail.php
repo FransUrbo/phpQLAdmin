@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.79 2004-10-13 17:47:29 turbo Exp $
+// $Id: user_detail.php,v 2.80 2004-10-18 13:39:31 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -23,7 +23,7 @@ if(!$_GET and ($_REQUEST["view"] == "antispam")) {
 }
 
 // Check if user exists
-if(!pql_user_exist($_pql->ldap_linkid, $_GET["user"])) {
+if(!pql_get_dn($_pql->ldap_linkid, $_GET["user"], '(objectclass=*)', 'BASE')) {
     echo pql_complete_constant($LANG->_('User %user% does not exist'), array('user' => '<u>'.$_GET["user"].'</u>'));
     exit();
 }
@@ -38,7 +38,7 @@ $url["rootdn"] = pql_format_urls($_GET["rootdn"]);
 
 // Get default domain name for this domain
 if($_GET["domain"]) {
-	$defaultdomain = pql_domain_get_value($_pql, $url["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+	$defaultdomain = pql_get_attribute($_pql->ldap_linkid, $url["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 }
 
 include("./header.html");
@@ -68,11 +68,10 @@ if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
 }
 
 $username = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_CN"));
-if(!$username[0]) {
+if(!$username) {
     // No common name, use uid field
     $username = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_UID"));
 }
-$username = $username[0];
 ?>
 
   <span class="title1"><?=$username?></span>
@@ -109,8 +108,11 @@ $attribs = array("cn"					=> pql_get_define("PQL_ATTR_CN"),
 				 "startwithadvancedmode"=> pql_get_define("PQL_ATTR_START_ADVANCED"));
 foreach($attribs as $key => $attrib) {
     $value = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], $attrib);
-    $$key = $value[0];
-    $value = urlencode($$key);
+	if(is_array($value))
+	  $value = $value[0];
+
+	$$key = $value;
+	$value = urlencode($value);
 
     // Setup edit links
     $link = $key . "_link";
@@ -144,7 +146,7 @@ if($mailhost == "") {
     $mailhost = $LANG->_('None');
 }
 
-$controladmins = pql_domain_get_value($_pql, $_GET["rootdn"], pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"));
+$controladmins = pql_get_attribute($_pql->ldap_linkid, $_GET["rootdn"], pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"));
 if(is_array($controladmins)) {
 	foreach($controladmins as $admin)
 	  if($admin == $_GET["user"])
@@ -159,6 +161,7 @@ if($uid) {
 	$memberuid = array();
 	foreach($_pql->ldap_basedn as $base) {
 		$base  = urldecode($base);
+// BUG: This won't work - wrong params!!
 		$muids = pql_search($_pql->ldap_linkid, $base,
 							pql_get_define("PQL_ATTR_ADDITIONAL_GROUP")."=".$uid,
 							pql_get_define("PQL_ATTR_CN"));

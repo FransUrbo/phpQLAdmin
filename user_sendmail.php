@@ -1,6 +1,6 @@
 <?php
 // send a testmail to an emailaddress
-// $Id: user_sendmail.php,v 2.23 2004-05-06 05:34:09 turbo Exp $
+// $Id: user_sendmail.php,v 2.24 2004-10-18 13:39:31 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -12,7 +12,7 @@ include("./header.html");
   <span class="title1"><?=$LANG->_('Send testmail')?></span>
   <br><br>
 <?php
-if(!pql_user_exist($_pql->ldap_linkid, $user)) {
+if(!pql_get_dn($_pql->ldap_linkid, $user, '(objectclass=*)', 'BASE')) {
     echo pql_complete_constant($LANG->_('User %user% does not exist'), array('user', $user));
     exit();
 }
@@ -49,10 +49,10 @@ if (is_array($quota)) {
 	require("./include/pql_control.inc");
 	$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 	
-	$quota = pql_control_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-					   pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"));
-	
-	$vars['QUOTA'] = pql_ldap_mailquota($quota);
+	$quota = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+				   pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"));
+	if($quota)
+	  $vars['QUOTA'] = pql_ldap_mailquota($quota);
     }
 }
 	

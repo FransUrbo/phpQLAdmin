@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldapcluster (clustering support)
 //
-// $Id: attrib.control.ldapcluster.inc,v 2.14 2004-10-15 15:19:27 turbo Exp $
+// $Id: attrib.control.ldapcluster.inc,v 2.15 2004-10-18 13:39:32 turbo Exp $
 
 // {{{ ldapcluster_check(type)
 function ldapcluster_check($type) {
@@ -16,15 +16,15 @@ function ldapcluster_init() {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_ATTR_CN").'='.$_REQUEST["mxhost"].",".$_SESSION["USER_SEARCH_DN_CTR"],
-									   pql_get_define("PQL_ATTR_LDAPCLUSTER"));
+	$_REQUEST["ldapcluster"] = pql_get_attribute($_pql_control->ldap_linkid,
+												 pql_get_define("PQL_ATTR_CN").'='.$_REQUEST["mxhost"].",".$_SESSION["USER_SEARCH_DN_CTR"],
+												 pql_get_define("PQL_ATTR_LDAPCLUSTER"));
 
-	if(!is_null($value))
-	  $_REQUEST["ldapcluster"] = $value[0];
-	else
-	  // set to default value
-	  $_REQUEST["ldapcluster"] = 0;
+	if(is_null($_REQUEST["ldapcluster"])) {
+		// set to default value
+		$_REQUEST["ldapcluster"] = 0;
+		return true;
+	}
 }
 // }}}
 

@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_edit_attribute.php,v 1.24 2004-05-10 14:35:43 turbo Exp $
+// $Id: ezmlm_edit_attribute.php,v 1.25 2004-10-18 13:39:30 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -21,13 +21,13 @@ function list_forward($domainname, $listno, $msg) {
 }
 
 // Get base directory for mails
-if(!($path = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEMAILDIR")))) {
+if(!($path = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEMAILDIR")))) {
 	// TODO: What if we can't find the base maildir path!?
 	die(pql_complete_constant($LANG->_('Can\'t get baseMailDir path from %domain%'), array('domain' => $_REQUEST["domain"])));
 }
 
 // Load list of mailinglists
-$user = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_EZMLM_USER"));
+$user = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_EZMLM_USER"));
 if($ezmlm = new ezmlm($user, $path)) {
 	if($ezmlm->mailing_lists[$_REQUEST["listno"]]["name"]) {
 		$listname = $ezmlm->mailing_lists[$_REQUEST["listno"]]["name"];

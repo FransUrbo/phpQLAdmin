@@ -1,5 +1,11 @@
 <?php require("./include/pql_websrv.inc");
-      $servers = pql_websrv_get_servers($_pql->ldap_linkid, "ou=Web,".$_REQUEST["domain"]);
+	  $result = pql_search($_pql->ldap_linkid, $dn, 'objectClass='.pql_get_define("PQL_ATTR_WEBSRV_OC"));
+	  for($i=0; $result[$i]; $i++) {
+		  // Oki, we have webserver configuration(s) in LDAP.
+		  $name = $result[$i][pql_get_define("PQL_ATTR_CN")];
+		  $servers[$name] = $result[$i];
+	  }
+
       if(is_array($servers)) {
 		  if(!$server) {
 			  // Use the first server as default (ie, if we're not called with a specific server to show)

@@ -3,7 +3,7 @@
 // doublebouncehost (username of bounce sender)
 // doublebounceto (hostname of bounce sender)
 //
-// $Id: attrib.control.doublebouncehost.inc,v 2.15 2004-03-11 16:31:54 turbo Exp $
+// $Id: attrib.control.doublebouncehost.inc,v 2.16 2004-10-18 13:39:31 turbo Exp $
 
 // {{{ doublebouncehost_check(type)
 function doublebouncehost_check($type) {
@@ -35,12 +35,9 @@ function doublebouncehost_init($host) {
 	$attribs = array("doublebouncehost" => pql_get_define("PQL_ATTR_DOUBLEBOUNCEHOST"),
 					 "doublebounceto"   => pql_get_define("PQL_ATTR_DOUBLEBOUNCETO"));
 	foreach($attribs as $key => $attrib) {
-		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-										   pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										   $attrib);
-		
-		if(!is_null($value))
-		  $_REQUEST[$key] = $value[0];
+		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid,
+											pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+											$attrib);
 	}
 }
 // }}}

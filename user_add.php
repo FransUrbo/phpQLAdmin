@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.103 2004-10-11 07:54:24 turbo Exp $
+// $Id: user_add.php,v 2.104 2004-10-18 13:39:31 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -16,23 +16,23 @@ $url["subbranch"]	= pql_format_urls($_REQUEST["subbranch"]);
 $url["user"]		= pql_format_urls($_REQUEST["user"]);
 
 // Get the organization name, or the DN if it's unset
-$orgname = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_O"));
+$orgname = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_O"));
 if(!$orgname) {
 	$orgname = urldecode($_REQUEST["domain"]);
 }
 
 // check if domain exist
-if(!pql_domain_exist($_pql, $_REQUEST["domain"])) {
+if(!pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], '(objectclass=*)', 'BASE')) {
 	echo "Domain &quot;".$_REQUEST["domain"]."&quot; does not exists";
 	exit();
 }
 
 // Get default domain values for this domain
-$defaultdomain			= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
-$basehomedir			= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEHOMEDIR"));
-$basemaildir			= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEMAILDIR"));
-$maxusers				= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_MAXIMUM_DOMAIN_USERS"));
-$additionaldomainname	= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
+$defaultdomain			= pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+$basehomedir			= pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEHOMEDIR"));
+$basemaildir			= pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEMAILDIR"));
+$maxusers				= pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_MAXIMUM_DOMAIN_USERS"));
+$additionaldomainname	= pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
 
 // Find out what objectclasses to use when creating user
 $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"]));
@@ -41,10 +41,12 @@ $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLA
 $objectclasses_schema   = pql_get_subschema($_pql->ldap_linkid, 'objectclasses');
 
 // {{{ Verify the input from the current page.  Autogen input for the next page.
+
 // Check the input
 $error = false; $error_text = array();
 switch($_REQUEST["page_curr"]) {
   // {{{ case: "" (make sure a new user can be added.)
+
   case "":
 	// ------------------------------------------------
 	// Step 1: Make sure that the attribute we're using for user reference(s)
@@ -68,7 +70,13 @@ switch($_REQUEST["page_curr"]) {
 	// ------------------------------------------------
 	// Step 2: Selected account type (see how many users there can be)
 	if($maxusers and !$_SESSION["ALLOW_BRANCH_CREATE"]) {
-		if(count(pql_user_get($_pql->ldap_linkid, $_REQUEST["domain"])) >= $maxusers) {
+		// Create a user search filter (only look for mail users - !?!?).
+		$filter  = "(&(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)."=*)(";
+		$filter .= pql_get_define("PQL_ATTR_MAIL")."=*))";
+
+		// Retreive all users in this branch/domain.
+	    $users   = pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], $filter);
+		if(count($users) >= $maxusers) {
 			// We have reached the maximum amount of users.
 			include("./header.html");
 ?>
@@ -90,7 +98,7 @@ switch($_REQUEST["page_curr"]) {
 						 "autocreatepassword"	 => pql_get_define("PQL_ATTR_AUTOCREATE_PASSWORD"));
 		foreach($attribs as $key => $attrib) {
 			// Get default value
-			$value = pql_domain_get_value($_pql, $_REQUEST["domain"], $attrib);
+			$value = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib);
 			$$key  = pql_format_bool($value);
 		}
 
@@ -135,6 +143,7 @@ switch($_REQUEST["page_curr"]) {
 		  $_REQUEST["password"] = pql_generate_password();
 	}
 	break;
+
 	// }}}
 
   // {{{ case: one (validate user_add-details.inc)
@@ -145,6 +154,7 @@ switch($_REQUEST["page_curr"]) {
 
 	if($_REQUEST["account_type"] == "alias") {
 		// {{{ Verify the 'alias' account type
+
 		if($_REQUEST["source"] == "") {
 			$error = true;
 			$error_text["source"] = $LANG->_('Missing');
@@ -161,7 +171,7 @@ switch($_REQUEST["page_curr"]) {
 			$_REQUEST["user"] .= "," . $_REQUEST["subbranch"];
 
 			// Now when we have the RDN, double check that it doesn't already exists!
-			if(pql_user_exist($_pql->ldap_linkid, $_REQUEST["user"])) {
+			if(!pql_get_dn($_pql->ldap_linkid, $_REQUEST["user"], '(objectclass=*)', 'BASE')) {
 				$error = true;
 				$error_text["source"] = pql_complete_constant($LANG->_('User %user% already exists'), array("user" => $_REQUEST["user"])) . "<br>";
 			} else {
@@ -190,6 +200,7 @@ switch($_REQUEST["page_curr"]) {
 				header("Location: " . pql_get_define("PQL_CONF_URI") . "$link");
 			}
 		}
+
 		// }}}
 	} else {
 		// {{{ Verify all account types EXEPT 'alias'
@@ -212,7 +223,7 @@ switch($_REQUEST["page_curr"]) {
 		// Verify username
 		$res = pql_check_attribute($objectclasses_schema, $objectclasses_included, 'sn');
 		if(((pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_CN"))
-			or $res[0]) and pql_user_exist($_pql->ldap_linkid, $user, $_REQUEST["domain"], $_REQUEST["rootdn"])) {
+			or $res[0]) and pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], "(&(objectclass=*)(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=$user))", 'BASE')) {
 			$error = true;
 			$error_text["username"] = pql_complete_constant($LANG->_('User %user% already exists'), array("user" => $user));
 		}
@@ -310,7 +321,7 @@ switch($_REQUEST["page_curr"]) {
 						 "basemaildir" => pql_get_define("PQL_ATTR_BASEMAILDIR"));
 		foreach($attribs as $attrib) {
 			// Get default value
-			$value = pql_domain_get_value($_pql, $_REQUEST["domain"], $attrib);
+			$value = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib);
 			$$key = $value;
 		}
 		
@@ -399,6 +410,7 @@ if(is_array($error_text)) {
 	foreach($error_text as $key => $msg)
 	  $error_text[$key] .= "<br>";
 }
+
 // }}}
 
 // {{{ Process the next page ($page_next).

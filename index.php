@@ -1,6 +1,6 @@
 <?php
 // logins to the system
-// $Id: index.php,v 2.37 2004-05-13 05:40:35 turbo Exp $
+// $Id: index.php,v 2.38 2004-10-18 13:39:30 turbo Exp $
 //
 // Start debuging
 // http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0
@@ -171,6 +171,7 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 	// We must have read access (to the DN and CN/UID =>
 	// the PQL_CONF_REFERENCE_USERS_WITH define entry) as
 	// anonymous here!
+echo "anonymous binding... (".$_SESSION["USER_DN"].")<br>";
 	$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 	// -------------------------------------
@@ -178,31 +179,30 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 	// TODO: This is wrong. There might (?) be multiple
 	//       users with the same uid in the database
 	//       (under different branches/trees).
-	$rootdn = pql_get_dn($_pql, $_POST["uname"], 1);
-	if(!$rootdn and !is_array($rootdn)) {
-		$msg = urlencode($LANG->_("Can't find you in the database"));
-		header("Location: " . pql_get_define("PQL_CONF_URI") . "index.php?msg=$msg");
-	} elseif(is_array($rootdn)) {
-		// We got multiple DN's. Try to bind as each one, keeping
-		// the one that succeeded.
-
-		$got_rootdn = 0;		// DLW: Do we need this variable?
-		foreach($rootdn as $dn) {
-			$_pql->bind($dn, $_POST["passwd"]);
+	$user_found = 0;
+	foreach($_pql->ldap_basedn as $base) {
+		$base    = urldecode($base);
+		$objects = pql_get_dn($_pql->ldap_linkid, $base,
+							  pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $base).'='.$_POST["uname"]);
+		foreach($objects as $userdn) {
+			$_pql->bind($userdn, $_POST["passwd"]);
 			$error = ldap_errno($_pql->ldap_linkid);
-			if(!$error and !$got_rootdn){
-				// That worked, keep it!
-				$got_rootdn = 1;
-				$rootdn = $dn;
+			if(!$error) {
+				// User bound with correct DN with corresponding correct password.
+				$user_found = 1;
 				break;
+			} else {
+				// Authentication problem (probably!).
+				$msg = $LANG->_('Error') . ": " . ldap_err2str($error);
+				header("Location:index.php?msg=" . urlencode($msg) . "&uname=$uname");
+				exit;
 			}
 		}
 	}
 
-	if($error) {
-		$msg = $LANG->_('Error') . ": " . ldap_err2str($error);
-		header("Location:index.php?msg=" . urlencode($msg) . "&uname=$uname");
-		exit;
+	if(!$user_found) {
+		$msg = urlencode($LANG->_('Error') . ": " . $LANG->_("Can't find you in the database"));
+		header("Location: " . pql_get_define("PQL_CONF_URI") . "index.php?msg=$msg");
 	}
 
 	// We made it, so set all the session variables.
@@ -210,10 +210,10 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 	  $_SESSION["USER_PASS"] = $_POST["passwd"];
 
 	$_SESSION["USER_ID"]	= $_POST["uname"];
-	$_SESSION["USER_DN"]	= $rootdn;
+	$_SESSION["USER_DN"]	= $userdn;
 
 	$log = date("M d H:i:s");
-	$log .= " : Logged in ($rootdn)\n";
+	$log .= " : Logged in ($userdn)\n";
 	error_log($log, 3, "phpQLadmin.log");
 	Header("Location:index2.php");
 }

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // dirmaker (default prefix for mailbox paths)
 //
-// $Id: attrib.control.dirmaker.inc,v 2.14 2004-04-01 11:16:47 turbo Exp $
+// $Id: attrib.control.dirmaker.inc,v 2.15 2004-10-18 13:39:31 turbo Exp $
 
 // {{{ dirmaker_check(type)
 function dirmaker_check($type) {
@@ -30,12 +30,12 @@ function dirmaker_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-									   pql_get_define("PQL_ATTR_DIRMAKER"));
+	$_REQUEST["dirmaker"] = pql_get_attribute($_pql_control->ldap_linkid,
+											  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+											  pql_get_define("PQL_ATTR_DIRMAKER"));
 
-	if(!is_null($value))
-	  $_REQUEST["dirmaker"] = $value[0];
+	if(is_null($_REQUEST["dirmaker"]))
+	  return true;
 }
 // }}}
 

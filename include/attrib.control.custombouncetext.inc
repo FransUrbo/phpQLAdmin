@@ -2,7 +2,7 @@
 // control attribute plugin for
 // custombouncetext (additional bounce message)
 //
-// $Id: attrib.control.custombouncetext.inc,v 2.15 2004-03-11 16:31:54 turbo Exp $
+// $Id: attrib.control.custombouncetext.inc,v 2.16 2004-10-18 13:39:31 turbo Exp $
 
 // {{{ custombouncetext_check(type)
 function custombouncetext_check($type) {
@@ -24,15 +24,11 @@ function custombouncetext_init($host) {
 	global $_pql_control;
 	
 	// fetch data from ldap server
-	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-									   pql_get_define("PQL_ATTR_CUSTOMBOUNCETEXT"));
+	$_REQUEST["custombouncetext"] = pql_get_attribute($_pql_control->ldap_linkid,
+													  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+													  pql_get_define("PQL_ATTR_CUSTOMBOUNCETEXT"));
 	
-	if(!is_null($value))
-	  $_REQUEST["custombouncetext"] = $value[0];
-	
-	// initialize radio button
-	if($_REQUEST["custombouncetext"] == "")
+	if(is_null($_REQUEST["custombouncetext"]))
 	  $_REQUEST["use_custombouncetext"] = 0;
 	else
 	  $_REQUEST["use_custombouncetext"] = 1;

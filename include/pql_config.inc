@@ -3,14 +3,14 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.69 2004-10-15 15:07:39 turbo Exp $
+// $Id: pql_config.inc,v 1.70 2004-10-18 13:39:33 turbo Exp $
 //
 
 // include the API files
 require("./include/pql.inc");				// Main API file
-require("./include/pql_formating.inc");			// Output formating API
+require("./include/pql_formating.inc");		// Output formating API
 require("./include/pql_cache.inc");			// Cache API
-require("./include/pql_search.inc");			// Search API
+require("./include/pql_search.inc");		// Search API
 require("./include/pql_units.inc");			// Sub branch API
 
 // {{{ pql_set_define(define, value, case_insensitive, dn)
@@ -49,7 +49,6 @@ function pql_set_define($define, $value, $case_insensitive = false, $dn = NULL) 
 // }}}
 
 // {{{ pql_get_define(define, dn)
-
 function pql_get_define($define, $dn = NULL) {
 	global $config;
 
@@ -148,7 +147,7 @@ if($_SESSION["USER_HOST"]) {
 	}
 	
 	// 5. Get user configuration for phpQLAdmin
-	$user_object = pql_get_object($_pql->ldap_linkid, $_SESSION["USER_DN"]);
+	$user_object = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_DN"], "(objectClass=*)", 'BASE');
 	foreach($PQL_ATTRIBUTE["USER"] as $key => $attrib) {
 		pql_set_define($key, $user_object[$attrib][0], true, $_SESSION["USER_DN"]);
 	}

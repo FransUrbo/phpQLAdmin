@@ -2,7 +2,7 @@
 // control attribute plugin for
 // rbllist (max number of bytes in message)
 //
-// $Id: attrib.control.rbllist.inc,v 2.4 2004-10-16 09:57:08 turbo Exp $
+// $Id: attrib.control.rbllist.inc,v 2.5 2004-10-18 13:39:32 turbo Exp $
 
 // {{{ rbllist_check(type)
 function rbllist_check($type) {
@@ -19,9 +19,9 @@ function rbllist_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	$_REQUEST["rbllist"] = pql_control_get_attribute($_pql_control->ldap_linkid,
-														 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-														 pql_get_define("PQL_ATTR_RBLLIST"));
+	$_REQUEST["rbllist"] = pql_get_attribute($_pql_control->ldap_linkid,
+											 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+											 pql_get_define("PQL_ATTR_RBLLIST"));
 
 	if(is_null($_REQUEST["rbllist"]))
 	  return true;

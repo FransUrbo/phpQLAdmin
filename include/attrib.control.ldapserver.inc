@@ -7,7 +7,7 @@
 // ldapgrouplogin (dn of a database user - used by qmail-group)
 // ldapgrouppassword (password for bind - used with ldapgrouplogin)
 //
-// $Id: attrib.control.ldapserver.inc,v 2.15 2004-04-11 09:18:33 turbo Exp $
+// $Id: attrib.control.ldapserver.inc,v 2.16 2004-10-18 13:39:32 turbo Exp $
 
 // {{{ ldapserver_check(type)
 function ldapserver_check($type) {
@@ -111,16 +111,13 @@ function ldapserver_init($host) {
 					 "ldapgrouplogin"	=> pql_get_define("PQL_ATTR_GROUP_LOGIN"),
 					 "ldapgrouppassword"=> pql_get_define("PQL_ATTR_GROUP_PASSWD"));
 	foreach($attribs as $key => $attrib) {
-		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-										   pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										   $attrib);
-		
-		if(!is_null($value))
-		  $_REQUEST[$key] = $value[0];
+		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid,
+											pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+											$attrib);
 	}
 	
 	// init checkbox
-	if($_REQUEST["ldaplogin"] != "")
+	if($_REQUEST["ldaplogin"])
 	  $_REQUEST["ldaplogin_use"] = 1;
 	
 	// map different hostnames sperated by space to an array

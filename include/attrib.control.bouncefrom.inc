@@ -3,7 +3,7 @@
 // bouncefrom (username of bounce sender)
 // bouncehost (hostname of bounce sender)
 //
-// $Id: attrib.control.bouncefrom.inc,v 2.15 2004-03-11 16:31:54 turbo Exp $
+// $Id: attrib.control.bouncefrom.inc,v 2.16 2004-10-18 13:39:31 turbo Exp $
 
 // {{{ bouncefrom_check(type)
 function bouncefrom_check($type) {
@@ -35,12 +35,9 @@ function bouncefrom_init($host) {
 	$attribs = array("bouncefrom" => pql_get_define("PQL_ATTR_BOUNCEFROM"),
 					 "bouncehost" => pql_get_define("PQL_ATTR_BOUNCEHOST"));
 	foreach($attribs as $key => $attrib) {
-		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-										   pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										   $attrib);
-		
-		if(!is_null($value))
-		  $_REQUEST[$key] = $value[0];
+		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid,
+											pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+											$attrib);
 	}
 }
 // }}}

@@ -1,5 +1,5 @@
 <?php
-// $Id: index2.php,v 2.34 2004-10-15 14:59:11 turbo Exp $
+// $Id: index2.php,v 2.35 2004-10-18 13:39:30 turbo Exp $
 
 session_start();
 require("./include/pql_config.inc");
@@ -24,7 +24,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
     foreach($_pql->ldap_basedn as $dn)  {
 	$dn = urldecode($dn);
 	
-	$controladmins = pql_domain_get_value($_pql, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"));
+	$controladmins = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"));
 	if(is_array($controladmins)) {
 	    foreach($controladmins as $admin)
 	      if($admin == $_SESSION["USER_DN"]) {

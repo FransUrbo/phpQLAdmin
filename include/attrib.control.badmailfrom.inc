@@ -2,7 +2,7 @@
 // control attribute plugin for
 // badmailfrom (blocked from addresses)
 //
-// $Id: attrib.control.badmailfrom.inc,v 2.17 2004-10-15 15:18:15 turbo Exp $
+// $Id: attrib.control.badmailfrom.inc,v 2.18 2004-10-18 13:39:31 turbo Exp $
 
 // {{{ badmailfrom_check(type)
 function badmailfrom_check($type) {
@@ -42,9 +42,9 @@ function badmailfrom_init($host) {
     global $_pql_control;
     
     // fetch data from ldap server
-    $_REQUEST["badmailfrom"] = pql_control_get_attribute($_pql_control->ldap_linkid,
-							 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-							 pql_get_define("PQL_ATTR_BADMAILFROM"));
+    $_REQUEST["badmailfrom"] = pql_get_attribute($_pql_control->ldap_linkid,
+												 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+												 pql_get_define("PQL_ATTR_BADMAILFROM"));
     
     if(is_null($_REQUEST["badmailfrom"]))
 	  return true;

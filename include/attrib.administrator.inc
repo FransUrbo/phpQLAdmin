@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for administrator and seealso modification
 // Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
-// $Id: attrib.administrator.inc,v 1.44 2004-10-14 11:02:09 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.45 2004-10-18 13:39:31 turbo Exp $
 
 require("./left-head.html");
 
@@ -67,6 +67,7 @@ function attribute_check() {
 // }}}
 
 // {{{ attribute_print_form(action)
+
 function attribute_print_form($action) {
     global $_pql, $error, $LANG;
     global $orgname; 			// Set by domain_edit_attributes.php
@@ -133,7 +134,7 @@ function attribute_print_form($action) {
 				$dn = urldecode($dn);
 				unset($dom); unset($domains);
 
-				$dom = pql_domain_get_value($_pql, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]);
+				$dom = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]);
 				if($dom) {
 					foreach($dom as $d) {
 						$domains[] = $d;
@@ -171,8 +172,12 @@ function attribute_print_form($action) {
             <div id="el<?=$j?>Child" class="child">
 <?php					}
 
-						// Get all users (their DN) in this domain
-						$users = pql_user_get($_pql->ldap_linkid, $branch);
+						// Create a user search filter (only look for mail users - !?!?).
+						$filter  = "(&(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)."=*)(";
+						$filter .= pql_get_define("PQL_ATTR_MAIL")."=*))";
+						
+						// Retreive all users in this branch/domain.
+						$users   = pql_get_dn($_pql->ldap_linkid, $branch, $filter);
 						if(is_array($users)) {
 							// Zero out the variables, othervise we won't get users in
 							// specified domain, but also in the PREVIOUS domain shown!
@@ -213,7 +218,7 @@ function attribute_print_form($action) {
 				// We're a super-admin, we can give/take
 				// adminstration on ANY branch/domain
 				// that exists in the system
-				$domains = pql_domain_get($_pql);
+				$domains = pql_get_domains($_pql);
 			} else {
 				// We can only give user access to a branch we (the logged in user)
 				// have access to. Otherwise, we could 'steal' access to any domain
@@ -222,7 +227,7 @@ function attribute_print_form($action) {
 				foreach($_pql->ldap_basedn as $dn)  {
 					$dn = urldecode($dn);
 
-					$dom = pql_domain_get_value($_pql, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR"),
+					$dom = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR"),
 											$_SESSION["USER_DN"], 1);
 					if($dom)
 					  foreach($dom as $d)
@@ -278,6 +283,7 @@ function attribute_print_form($action) {
   </form>
 <?php
 }
+
 // }}}
 
 // {{{ attribute_save(type)
@@ -317,7 +323,7 @@ function attribute_save($type) {
 	
 	// Get the old values, so we can remove the one we're modifying
 	// (delete the one we want to delete, keep the others etc)
-	$admins = pql_domain_get_value($_pql, $DN, $attrib);
+	$admins = pql_get_attribute($_pql->ldap_linkid, $DN, $attrib);
 
 	// Add the old values to the resulting array.
 	$ADMs[$attrib] = array();

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.25 2004-06-10 05:37:43 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.26 2004-10-18 13:39:31 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -49,7 +49,12 @@ function attribute_print_form() {
 	  // Initiate a connection to the QmailLDAP/Controls DN
 	  $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
-	  $hosts = pql_control_get_hosts($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"]);
+	  // Get all QmailLDAP/Control hosts.
+      $result = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+						   '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+	  for($i=0; $result[$i]; $i++)
+		$hosts[] = pql_get_attribute($_pql_control->ldap_linkid, $result[$i], pql_get_define("PQL_ATTR_CN"));
+
 	  if(is_array($hosts)) {
 ?>
 
@@ -152,7 +157,7 @@ function attribute_save($type) {
 
       case "delete":
 		// Fetch old values from DB
-		$oldvalues = pql_domain_get_value($_pql, $_REQUEST["domain"], $attrib);
+		$oldvalues = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib);
 		if(is_array($oldvalues)) {
 			foreach($oldvalues as $val) {
 				if(!@eregi($delval, $val)) {

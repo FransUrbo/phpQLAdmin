@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.24 2004-10-11 07:58:02 turbo Exp $
+// $Id: user_add-save.inc,v 1.25 2004-10-18 13:39:33 turbo Exp $
 
 // URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
 $_REQUEST["surname"] = urldecode($_REQUEST["surname"]);
@@ -256,7 +256,7 @@ if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "mai
 // }}}
 
 // {{{ Add the mail quota
-$default_quota = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEQUOTA"));
+$default_quota = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEQUOTA"));
 if(!empty($default_quota)) {
 	if($_SESSION["NEW_STYLE_QUOTA"]) {
 		$tmp = pql_parse_quota($default_quota);

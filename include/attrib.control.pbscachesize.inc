@@ -2,7 +2,7 @@
 // control attribute plugin for
 // pbscachesize (max number of bytes in message)
 //
-// $Id: attrib.control.pbscachesize.inc,v 2.3 2004-10-15 15:14:10 turbo Exp $
+// $Id: attrib.control.pbscachesize.inc,v 2.4 2004-10-18 13:39:32 turbo Exp $
 
 // {{{ pbscachesize_check(type)
 function pbscachesize_check($type) {
@@ -19,14 +19,12 @@ function pbscachesize_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	$_REQUEST["pbscachesize"] = pql_control_get_attribute($_pql_control->ldap_linkid,
-														 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-														 pql_get_define("PQL_ATTR_PBS_CACHESIZE"));
+	$_REQUEST["pbscachesize"] = pql_get_attribute($_pql_control->ldap_linkid,
+												  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+												  pql_get_define("PQL_ATTR_PBS_CACHESIZE"));
 
 	if(is_null($_REQUEST["pbscachesize"]))
 	  return true;
-	elseif(is_array($_REQUEST["pbscachesize"]))
-	  $_REQUEST["pbscachesize"] = $_REQUEST["pbscachesize"][0];
 }
 // }}}
 

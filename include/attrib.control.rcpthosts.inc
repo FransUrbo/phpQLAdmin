@@ -2,7 +2,7 @@
 // control attribute plugin for
 // rcpthosts (blocked local addresses)
 //
-// $Id: attrib.control.rcpthosts.inc,v 2.23 2004-05-05 11:07:37 turbo Exp $
+// $Id: attrib.control.rcpthosts.inc,v 2.24 2004-10-18 13:39:32 turbo Exp $
 
 // {{{ rcpthosts_check(type)
 function rcpthosts_check($type) {
@@ -34,9 +34,9 @@ function rcpthosts_init($host) {
     global $_pql_control;
 
     // fetch data from ldap server
-    $_REQUEST["rcpthosts"] = pql_control_get_attribute($_pql_control->ldap_linkid,
-										   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-										   pql_get_define("PQL_ATTR_RCPTHOSTS"));
+    $_REQUEST["rcpthosts"] = pql_get_attribute($_pql_control->ldap_linkid,
+											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+											   pql_get_define("PQL_ATTR_RCPTHOSTS"));
     
     if(is_null($_REQUEST["rcpthosts"]))
 	  return true;
@@ -123,8 +123,12 @@ function rcpthosts_save($type, $host) {
     global $_pql_control, $LANG;
 
 	if(!$host) {
-		// Get all QmailLDAP/Controls hosts
-		$hosts = pql_control_get_hosts($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"]);
+		// Get all QmailLDAP/Control hosts.
+		$result = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+		for($i=0; $result[$i]; $i++)
+		  $hosts[] = pql_get_attribute($_pql_control->ldap_linkid, $result[$i], pql_get_define("PQL_ATTR_CN"));
+
 		if(is_array($hosts)) {
 			if($type == 'add')
 			  $modify_host = 1; // Add domain to host
@@ -133,9 +137,9 @@ function rcpthosts_save($type, $host) {
 
 			foreach($hosts as $host) {
 				// Get rcpthosts in each of the hosts
-				$rcpthosts = pql_control_get_attribute($_pql_control->ldap_linkid,
-													   pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-													   pql_get_define("PQL_ATTR_RCPTHOSTS"));
+				$rcpthosts = pql_get_attribute($_pql_control->ldap_linkid,
+											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+											   pql_get_define("PQL_ATTR_RCPTHOSTS"));
 				if(is_array($rcpthosts)) {
 					foreach($rcpthosts as $rcpt) {
 						// In the RCPTHosts configured for the host, do we have what we're looking for?

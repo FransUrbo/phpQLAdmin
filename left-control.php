@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.27 2004-04-06 07:19:06 turbo Exp $
+// $Id: left-control.php,v 2.28 2004-10-18 13:39:31 turbo Exp $
 //
 session_start();
 
@@ -41,7 +41,12 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 
 	$j++;
 
-	$hosts = pql_control_get_hosts($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"]);
+    // Get all QmailLDAP/Control hosts.
+    $result = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+                         '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+    for($i=0; $result[$i]; $i++)
+      $hosts[] = pql_get_attribute($_pql->ldap_linkid, $result[$i], pql_get_define("PQL_ATTR_CN"));
+
 	if(!is_array($hosts)) {
 ?>
 <?php if($_SESSION["opera"]) { ?>

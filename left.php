@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.95 2004-10-10 08:32:26 turbo Exp $
+// $Id: left.php,v 2.96 2004-10-18 13:39:31 turbo Exp $
 //
 session_start();
 
@@ -9,25 +9,33 @@ require("./left-head.html");
 
 function left_htmlify_userlist($linkid, $rootdn, $domain, $subbranch, $users, &$links) {
     // Iterate trough all users in this domain/branch
-    foreach ($users as $dn) {
+    for($i=0; $users[$i]; $i++) {
+	$dn = $users[$i];
 	unset($cn); unset($sn); unset($gecos);
 	
 	// From the user DN, get the CN and SN.
 	$cn = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_GIVENNAME"));
 	$sn = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_SN"));
-	if($cn[0] && $sn[0]) {
+	if($cn && $sn) {
 	    // We have a givenName (first name) and a surName (last name) - combine the two
-	    if($sn[0] != '_') {
-		$cns[$dn] = $sn[0].", ".$cn[0];
+	    if($sn != '_') {
+		if(is_array($sn))
+		  $cns[$dn] = $sn[0].", ".$cn;
+		else
+		  $cns[$dn] = $sn.", ".$cn;
 	    } else {
-		$cns[$dn] = $cn[0];
+		$cns[$dn] = $cn;
 	    }
 	} else {
 	    // Probably don't have a givenName - get the commonName
 	    $cn = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_CN"));
-	    if($cn[0]) {
+	    if($cn) {
 		// We have a commonName - split it up into two parts (which should be first and last name)
-		$cn = split(" ", $cn[0]);
+		if(is_array($cn))
+		  $cn = split(" ", $cn[0]);
+		else
+		  $cn = split(" ", $cn);
+
 		if(!$cn[1]) {
 		    // Don't have second part (last name) of the commonName - MUST be a system 'user'.
 		    $cns[$dn] = "System - ".$cn[0];
@@ -38,11 +46,11 @@ function left_htmlify_userlist($linkid, $rootdn, $domain, $subbranch, $users, &$
 	    } else {
 		// No givenName, surName or commonName - last try, get the gecos
 		$gecos = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_GECOS"));
-		if($gecos[0])
+		if($gecos)
 		  // We have a gecos - use that as is
-		  $cns[$dn] = $gecos[0];
-		//			    else
-		//			      // No gecos either. Now what!?
+		  $cns[$dn] = $gecos;
+//		else
+//		  // No gecos either. Now what!?
 	    }
 	}
     }
@@ -222,7 +230,7 @@ pql_format_tree_end();
 // ---------------- GET THE DOMAINS/BRANCHES
 if($_SESSION["ALLOW_BRANCH_CREATE"]) {
     // This is a 'super-admin'. Should be able to read EVERYTHING!
-    $domains = pql_domain_get($_pql);
+    $domains = pql_get_domains($_pql);
 } else {
     // Get ALL domains we have access.
     //	'administrator: USER_DN'
@@ -230,7 +238,7 @@ if($_SESSION["ALLOW_BRANCH_CREATE"]) {
     foreach($_pql->ldap_basedn as $dn)  {
 	$dn = urldecode($dn);
 
-	$dom = pql_domain_get_value($_pql, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]);
+	$dom = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]);
 	if($dom) {
 	    foreach($dom as $d) {
 		$domains[] = urlencode($d);
@@ -255,7 +263,7 @@ if(!isset($domains)) {
 	  $DN .= "," . $dnparts[$j];
 	
 	// Look in DN for attribute 'defaultdomain'.
-	$defaultdomain = pql_domain_get_value($_pql, $DN, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+	$defaultdomain = pql_get_attribute($_pql->ldap_linkid, $DN, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 	if($defaultdomain) {
 	    // A hit. This is the domain under which the user is located.
 	    $domain = $DN;
@@ -291,6 +299,10 @@ if(!isset($domains)) {
 	// Get Root DN
 	$rootdn = pql_get_rootdn($domain, 'left.php');
 
+	// Create a user search filter (only look for mail users - !?!?).
+	$filter  = "(&(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)."=*)(";
+	$filter .= pql_get_define("PQL_ATTR_MAIL")."=*))";
+
 	// Get the subbranches in this domain
 	$branches = pql_unit_get($_pql->ldap_linkid, $domain);
 
@@ -304,11 +316,10 @@ if(!isset($domains)) {
 			   => "user_add.php?rootdn=$rootdn&domain=$domain");
 
 	    // Just incase there's user(s) at the base of the domain branch...
-	    $users = pql_user_get($_pql->ldap_linkid, $domain, 'ONELEVEL');
-	    if(is_array($users)) {
-		// We have users in this domain
-		left_htmlify_userlist($_pql->ldap_linkid, $rootdn, $domain, $subbranch, $users, $links);
-	    }
+	    $users = pql_get_dn($_pql->ldap_linkid, $domain, $filter, 'ONELEVEL');
+	    if(is_array($users))
+	      // We have users in this domain
+	      left_htmlify_userlist($_pql->ldap_linkid, $rootdn, $domain, $subbranch, $users, $links);
 
 	    pql_format_tree($d, "domain_detail.php?rootdn=$rootdn&domain=$domain", $links, 0);
 	} else
@@ -322,15 +333,15 @@ if(!isset($domains)) {
 	    if(pql_get_define("PQL_CONF_SHOW_USERS", $rootdn)) {
 		// Zero out the variables, othervise we won't get users in
 		// specified domain, but also in the PREVIOUS domain shown!
-		$users = ""; $cns = ""; unset($links);
+		unset($users); unset($links); unset($cns);
 		
 		// Get all users (their DN) in this domain (sub)branch
 		if(count($branches) > 1) {
-		    $users = pql_user_get($_pql->ldap_linkid, $branches[$i]);
+		    $users = pql_get_dn($_pql->ldap_linkid, $branches[$i], $filter);
 		} else {
 		    // We only have one subbranch, don't show the subbranch, list the users
 		    // under the domain branch
-		    $users = pql_user_get($_pql->ldap_linkid, $domain);
+		    $users = pql_get_dn($_pql->ldap_linkid, $domain, $filter);
 		}
 
 		// Level 2: The users

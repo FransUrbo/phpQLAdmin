@@ -2,7 +2,7 @@
 // control attribute plugin for
 // goodmailaddr (max number of bytes in message)
 //
-// $Id: attrib.control.goodaddress.inc,v 2.3 2004-10-15 15:14:10 turbo Exp $
+// $Id: attrib.control.goodaddress.inc,v 2.4 2004-10-18 13:39:31 turbo Exp $
 
 // {{{ goodmailaddr_check(type)
 function goodmailaddr_check($type) {
@@ -19,9 +19,9 @@ function goodmailaddr_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	$_REQUEST["goodmailaddr"] = pql_control_get_attribute($_pql_control->ldap_linkid,
-														 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-														 pql_get_define("PQL_ATTR_GOODADDRESS"));
+	$_REQUEST["goodmailaddr"] = pql_get_attribute($_pql_control->ldap_linkid,
+												  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+												  pql_get_define("PQL_ATTR_GOODADDRESS"));
 
 	if(is_null($_REQUEST["goodmailaddr"]))
 	  return true;

@@ -1,3 +1,7 @@
+Upgrading from 2.1.1
+	I've changed the API - removed duplicate functions etc... Make sure
+	to update the 'include/config.inc.CHANGE_ME' file! 
+
 Upgrading from 2.0.18d
 	More schema updates, make sure the schema file is updated on the LDAP
 	server(s)!

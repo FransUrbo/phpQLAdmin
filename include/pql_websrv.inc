@@ -4,55 +4,8 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for web server configuration)
 //
-// $Id: pql_websrv.inc,v 1.8 2004-04-02 12:46:46 turbo Exp $
+// $Id: pql_websrv.inc,v 1.9 2004-10-18 13:39:33 turbo Exp $
 //
-
-// {{{ pql_websrv_get_servers(linkid, dn)
-function pql_websrv_get_servers($linkid, $dn) {
-    $sr = @ldap_search($linkid, $dn, 'objectClass='.pql_get_define("PQL_ATTR_WEBSRV_OC"));
-    if($sr) {
-		// Oki, we have webserver configuration(s) in LDAP.
-		$info = ldap_get_entries($linkid, $sr)
-		  or pql_format_error(1);
-
-		$attribs = array(pql_get_define("PQL_ATTR_WEBSRV_SRV_IP"),
-						 pql_get_define("PQL_ATTR_WEBSRV_SRV_URL"),
-						 pql_get_define("PQL_ATTR_WEBSRV_SRV_ADMIN"),
-						 pql_get_define("PQL_ATTR_WEBSRV_DOCROOT"),
-						 pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS"),
-						 pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_URL"),
-						 pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_PATH"),
-						 pql_get_define("PQL_ATTR_WEBSRV_LOG_ERROR"),
-						 pql_get_define("PQL_ATTR_WEBSRV_LOG_TRANSFER"),
-						 pql_get_define("PQL_ATTR_WEBSRV_OPTIONS"),
-						 pql_get_define("PQL_ATTR_CN"));
-
-		for($i=0; $i < $info["count"]; $i++) {
-			$name = $info[$i][pql_get_define("PQL_ATTR_WEBSRV_SRV_URL")][0];
-			$name = ereg_replace("http.*//", "", $name);
-			$name = ereg_replace("\/.*$", "", $name);
-
-			foreach($attribs as $attrib) {
-				// Remember the DN
-				$CONF[$name]["dn"] = $info[$i]["dn"];
-
-				// Remember each attribute stored about this server configuration
-				for($j=0; $j < $info[$i][$attrib]["count"]; $j++) {
-					if(($attrib == pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS")) or
-					   ($attrib == pql_get_define("PQL_ATTR_WEBSRV_OPTIONS")))
-					  // Multi value attribute
-					  $CONF[$name][$attrib][] = $info[$i][$attrib][$j];
-					else
-					  // Single value attribute
-					  $CONF[$name][$attrib] = $info[$i][$attrib][$j];
-				}
-			}
-		}
-	}
-
-	return $CONF;
-}
-// }}}
 
 // {{{ pql_websrv_add_server(linkid, domain, server)
 function pql_websrv_add_server($linkid, $domain, $server) {

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliverymode (delivery preferences)
-// $Id: attrib.deliverymode.inc,v 2.24 2004-07-07 12:39:07 turbo Exp $
+// $Id: attrib.deliverymode.inc,v 2.25 2004-10-18 13:39:32 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -189,7 +189,12 @@ function attribute_save($type) {
 
 	switch($type) {
 	  case "fulldomain":
-		$users = pql_user_get($_pql->ldap_linkid, $_REQUEST["domain"]);
+		// Create a user search filter (only look for mail users - !?!?).
+		$filter  = "(&(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*)(";
+		$filter .= pql_get_define("PQL_ATTR_MAIL")."=*))";
+
+		// Retreive all users in this branch/domain.
+	    $users   = pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], $filter);
 		if(is_array($users)) {
 			foreach($users as $user)
 			  $return[] = pql_replace_attribute($_pql->ldap_linkid, $user, '', $entry);

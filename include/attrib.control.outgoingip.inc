@@ -2,7 +2,7 @@
 // control attribute plugin for
 // outgoingip (max number of bytes in message)
 //
-// $Id: attrib.control.outgoingip.inc,v 2.3 2004-10-15 15:14:10 turbo Exp $
+// $Id: attrib.control.outgoingip.inc,v 2.4 2004-10-18 13:39:32 turbo Exp $
 
 // {{{ outgoingip_check(type)
 function outgoingip_check($type) {
@@ -56,14 +56,12 @@ function outgoingip_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	$_REQUEST["outgoingip"] = pql_control_get_attribute($_pql_control->ldap_linkid,
-														 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-														 pql_get_define("PQL_ATTR_OUTGOINGIP"));
+	$_REQUEST["outgoingip"] = pql_get_attribute($_pql_control->ldap_linkid,
+												pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+												pql_get_define("PQL_ATTR_OUTGOINGIP"));
 
 	if(is_null($_REQUEST["outgoingip"]))
 	  return true;
-	elseif(is_array($_REQUEST["outgoingip"]))
-	  $_REQUEST["outgoingip"] = $_REQUEST["outgoingip"][0];
 }
 // }}}
 

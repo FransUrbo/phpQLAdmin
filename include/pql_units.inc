@@ -3,7 +3,7 @@
 // pql_units.inc
 // Sub units (ou=People, ou=Users, dc=host) etc
 //
-// $Id: pql_units.inc,v 1.11 2004-03-30 04:35:50 turbo Exp $
+// $Id: pql_units.inc,v 1.12 2004-10-18 13:39:33 turbo Exp $
 //
 
 // {{{ pql_unit_get(linkid, dn, filter)
@@ -13,16 +13,15 @@ function pql_unit_get($linkid, $dn, $filter = 1) {
 
 	if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $rootdn) == "dc")
 	  // Look for sub-domains below this domain branch.
-	  $subd = pql_search($linkid, $dn, 'objectclass=domain', 'dn', "ONELEVEL");
+	  $subd = pql_get_dn($linkid, $dn, 'objectclass=domain', 'ONELEVEL');
 
 	// Either we couldn't find any sub-domains below the domain branch, OR
 	// we have the database layout organized with organization.
 	// -> Either way, look for organizational unit below the DN as well.
-	$ocs = pql_search($linkid, $dn, 'objectclass=organizationalUnit', 'dn', "ONELEVEL");
+	$ocs = pql_get_dn($linkid, $dn, 'objectclass=organizationalUnit', 'ONELEVEL');
 
 	// Join the two values
 	$info = array_merge($subd, $ocs);
-
 	for($i=0; $info[$i]; $i++) {
 		if($filter) {
 			// Filter out the most obvious subbranches we don't put users in...
@@ -37,31 +36,6 @@ function pql_unit_get($linkid, $dn, $filter = 1) {
 	}
 
 	return $branches;
-}
-// }}}
-
-// {{{ pql_unit_exist(linkid, dn, unit)
-// Returns true if sub unit exists, false if not...
-function pql_unit_exist($linkid, $dn, $unit) {
-	// What's the Root DN (namingContexts) for this domain
-	$rootdn = pql_get_rootdn($dn, 'pql_unit_exist'); $rootdn = urldecode($rootdn);
-	$dn = urldecode($dn);
-
-	if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $rootdn) == "dc") {
-		$ocb = "domain";
-		$ref = 'dc';
-	} else {
-		$ocb = "organizationalUnit";
-		$ref = 'ou';
-	}
-
-	$filter = "(&($ref=$unit)(objectclass=".$ocb."))";
-	
-	$sr   = ldap_list($linkid, $dn, $filter) or pql_format_error(1);
-	$info = ldap_get_entries($linkid, $sr) or pql_format_error(1);
-	if($info["count"])
-	  return(true);
-	return(false);
 }
 // }}}
 

@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.24 2004-03-11 18:13:42 turbo Exp $
+// $Id: pql_bind9.inc,v 2.25 2004-10-18 13:39:33 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -16,96 +16,99 @@ function pql_bind9_get_zone($linkid, $branchname, $domainname = '') {
 	else
 	  $filter = 'objectClass=dNSZone';
 
-    $sr = @ldap_search($linkid, $dn, $filter);
-    if($sr) {
-		// Oki, we have a DNS zone in LDAP.
-		$info = ldap_get_entries($linkid, $sr)
-		  or pql_format_error(1);
-		for($i=0; $i < $info["count"]; $i++) {
-			$zone = $info[$i]['zonename'][0];
-			$host = $info[$i]['relativedomainname'][0];
-				
-			$ZONE[$zone][$host]['RDN']  = pql_maybe_idna_decode($info[$i]['dn']);
-			$ZONE[$zone][$host]['ZONE'] = pql_maybe_idna_decode($zone);
-			$ZONE[$zone][$host]['HOST'] = pql_maybe_idna_decode($host);
-			$ZONE[$zone][$host]['TTL']  = $info[$i]['dnsttl'][0];
-			
-			// A Record(s)
-			if($info[$i]['arecord'][0]) {
-				if($info[$i]['arecord'][1]) {
-					// We have multiple A records - Round-Robin!
-					for($j=0; $j < $info[$i]['arecord']['count']; $j++)
-					  $ZONE[$zone][$host]['A'][] = ($info[$i]['arecord'][$j]);
-				} else
-				  $ZONE[$zone][$host]['A'] = pql_maybe_idna_decode($info[$i]['arecord'][0]);
-			}
-			
-			// CNAME Record
-			if($info[$i]['cnamerecord'][0]) {
-				$cname = pql_maybe_idna_decode($info[$i]['cnamerecord'][0]);
-				
-				if(preg_match("/\\.$/", $cname))
-				  // Remove the domain name, so we're left with the hostname.
-				  $cname = str_replace(".$zone.", "", $cname);
-				
-				$ZONE[$zone][$host]['CNAME'] = $cname;
-			}
-
-			// HINFO Record
-			if($info[$i]['hinforecord'][0])
-			  $ZONE[$zone][$host]['HINFO'] = $info[$i]['hinforecord'][0];
-
-			// SRV Record
-			if($info[$i]['srvrecord'][0])
-			  $ZONE[$zone][$host]['SRV'] = $info[$i]['srvrecord'][0];
-			
-			// TXT Record
-			if($info[$i]['txtrecord'][0])
-			  $ZONE[$zone][$host]['TXT'] = $info[$i]['txtrecord'][0];
-
-			// NS Record(s)
-			if($info[$i]['nsrecord'][0]) {
-				if($info[$i]['nsrecord'][1]) {
-					// We have multiple records
-					for($j=0; $j < $info[$i]['nsrecord']['count']; $j++)
-					  $ZONE[$zone][$host]['NS'][] = pql_maybe_idna_decode($info[$i]['nsrecord'][$j]);
-				} else
-				  $ZONE[$zone][$host]['NS'] = pql_maybe_idna_decode($info[$i]['nsrecord'][0]);
-			}
-
-			// MX Record(s)
-			if($info[$i]['mxrecord'][0]) {
-				if($info[$i]['mxrecord'][1]) {
-					// We have multiple records
-					for($j=0; $j < $info[$i]['mxrecord']['count']; $j++)
-					  $ZONE[$zone][$host]['MX'][] = pql_maybe_idna_decode($info[$i]['mxrecord'][$j]);
-				} else
-				  $ZONE[$zone][$host]['MX'] = pql_maybe_idna_decode($info[$i]['mxrecord'][0]);
-			}
-
-			// SOA Record
-			if($info[$i]['soarecord'][0]) {
-				$soa = split(' ', $info[$i]['soarecord'][0]);
-
-				$ZONE[$zone][$host]['SOA']['ADMIN'] = pql_maybe_idna_decode($soa[1]);
-				$ZONE[$zone][$host]['SOA']['SERIAL'] = $soa[2];
-				$ZONE[$zone][$host]['SOA']['REFRESH'] = $soa[3];
-				$ZONE[$zone][$host]['SOA']['RETRY'] = $soa[4];
-				$ZONE[$zone][$host]['SOA']['EXPIRE'] = $soa[5];
-				$ZONE[$zone][$host]['SOA']['TTL'] = $soa[6];
-			}
-
-			// Sort the host array 
-			ksort($ZONE[$zone]);
+	$objects = pql_search($linkid, $dn, $filter);
+	for($i=0; $objects[$i]['zonename']; $i++) {
+		$zone = $objects[$i]['zonename'];
+		$host = $objects[$i]['relativedomainname'];
+		
+		$ZONE[$zone][$host]['RDN']  = pql_maybe_idna_decode($objects[$i]['dn']);
+		$ZONE[$zone][$host]['ZONE'] = pql_maybe_idna_decode($zone);
+		$ZONE[$zone][$host]['HOST'] = pql_maybe_idna_decode($host);
+		$ZONE[$zone][$host]['TTL']  = $objects[$i]['dnsttl'];
+		
+		// A Record(s)
+		if($objects[$i]['arecord']) {
+			if($objects[$i]['arecord'][1]) {
+				// We have multiple A records - Round-Robin!
+				for($j=0; $j < $objects[$i]['arecord']['count']; $j++)
+				  $ZONE[$zone][$host]['A'][] = ($objects[$i]['arecord'][$j]);
+			} else
+			  $ZONE[$zone][$host]['A'] = pql_maybe_idna_decode($objects[$i]['arecord']);
 		}
 		
-		// Sort the zone array
-		if(is_array($ZONE)) {
-			ksort($ZONE);
-			return($ZONE);
-		} else 
-		  return(array());
-    }
+		// CNAME Record
+		if($objects[$i]['cnamerecord']) {
+			$cname = pql_maybe_idna_decode($objects[$i]['cnamerecord']);
+			
+			if(preg_match("/\\.$/", $cname))
+			  // Remove the domain name, so we're left with the hostname.
+			  $cname = str_replace(".$zone.", "", $cname);
+			
+			$ZONE[$zone][$host]['CNAME'] = $cname;
+		}
+		
+		// HINFO Record
+		if($objects[$i]['hinforecord'])
+		  $ZONE[$zone][$host]['HINFO'] = $objects[$i]['hinforecord'];
+		
+		// SRV Record
+		if($objects[$i]['srvrecord'])
+		  $ZONE[$zone][$host]['SRV'] = $objects[$i]['srvrecord'];
+		
+		// TXT Record
+		if($objects[$i]['txtrecord'])
+		  $ZONE[$zone][$host]['TXT'] = $objects[$i]['txtrecord'];
+		
+		// NS Record(s)
+		if($objects[$i]['nsrecord']) {
+			if($objects[$i]['nsrecord'][1]) {
+				// We have multiple records
+				for($j=0; $j < $objects[$i]['nsrecord']['count']; $j++)
+				  $ZONE[$zone][$host]['NS'][] = pql_maybe_idna_decode($objects[$i]['nsrecord'][$j]);
+			} else
+			  $ZONE[$zone][$host]['NS'] = pql_maybe_idna_decode($objects[$i]['nsrecord']);
+		}
+		
+		// MX Record(s)
+		if($objects[$i]['mxrecord']) {
+			if($objects[$i]['mxrecord'][1]) {
+				// We have multiple records
+				for($j=0; $j < $objects[$i]['mxrecord']['count']; $j++)
+				  $ZONE[$zone][$host]['MX'][] = pql_maybe_idna_decode($objects[$i]['mxrecord'][$j]);
+			} else
+			  $ZONE[$zone][$host]['MX'] = pql_maybe_idna_decode($objects[$i]['mxrecord']);
+		}
+		
+		// SOA Record
+		if($objects[$i]['soarecord']) {
+			$soa = split(' ', $objects[$i]['soarecord']);
+
+			$tmp   = split('\.', $soa[1]);
+			$admin = $tmp[0]."@";
+			for($j=1; $tmp[$j]; $j++) {
+				$admin .= $tmp[$j];
+				if($tmp[$j+1])
+				  $admin .= ".";
+			}
+			$ZONE[$zone][$host]['SOA']['ADMIN']   = pql_maybe_idna_decode($admin);
+
+			$ZONE[$zone][$host]['SOA']['SERIAL']  = $soa[2];
+			$ZONE[$zone][$host]['SOA']['REFRESH'] = $soa[3];
+			$ZONE[$zone][$host]['SOA']['RETRY']   = $soa[4];
+			$ZONE[$zone][$host]['SOA']['EXPIRE']  = $soa[5];
+			$ZONE[$zone][$host]['SOA']['TTL']     = $soa[6];
+		}
+		
+		// Sort the host array 
+		ksort($ZONE[$zone]);
+	}
+	
+	// Sort the zone array
+	if(is_array($ZONE)) {
+		ksort($ZONE);
+		return($ZONE);
+	} else 
+	  return(array());
 }
 // }}}
 
@@ -116,7 +119,11 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 
 	// ----------------
 	// See if the sub branch exists. If not, create it.
-	if(!pql_unit_exist($linkid, $MASTER_DN, 'DNS')) {
+    if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $rootdn) == "dc")
+      $filter = "(&(dc=DNS)(objectclass=domain))";
+    else
+      $filter = "(&(ou=DNS)(objectclass=organizationalUnit"))";
+    if(pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], $filter, 'ONELEVEL')) {
 		// Does not exists - create it
 		if(pql_unit_add($linkid, $MASTER_DN, 'ou=DNS')) {
 			$dn = "ou=DNS,$MASTER_DN";
@@ -135,9 +142,7 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 
 	// Add the OpenLDAPaci attribute (maybe)
 	if($_SESSION["ACI_SUPPORT_ENABLED"]) 
-	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($ldap_linkid,
-																			  $_SESSION["USER_DN"],
-																			  'dnszone');
+	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($linkid, $_SESSION["USER_DN"], 'dnszone');
 
 	for($i=count($dc)-1; $dc[$i]; $i--) {
 		$dc_tmp = pql_maybe_idna_encode($dc[$i]);
@@ -149,9 +154,8 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 		  $dn = pql_get_define("PQL_ATTR_DC")."=".$dc_tmp;
 
 		// See if the component exists. If not, create it.
-		$sr = @ldap_read($linkid, $dn, 'objectClass=domain');
-		if(!$sr) {
-			// Create a LDIF object to print in case of error
+		if(pql_get_dn($linkid, $dn, 'objectClass=domain', 'BASE')) {
+			// Doesn't already exists. Create a LDIF object to print in case of error
 			$LDIF = pql_create_ldif("pql_bind9_add_zone - dc=".$dc_tmp, $dn, $entry);
 			
 			if(! ldap_add($linkid, $dn, $entry)) {
@@ -183,9 +187,7 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 
 	// Add the OpenLDAPaci attribute (maybe)
 	if($_SESSION["ACI_SUPPORT_ENABLED"])
-	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($ldap_linkid,
-																			  $_SESSION["USER_DN"],
-																			  'dnszone');
+	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($linkid, $_SESSION["USER_DN"], 'dnszone');
 
 	$dn = "relativeDomainName=".$entry['relativeDomainName'].",$dn";
 
@@ -284,7 +286,6 @@ function pql_bind9_del_zone($linkid, $dn, $zone) {
 }
 // }}}
 
-
 // {{{ pql_bind9_add_host(linkid, basedn, entry)
 function pql_bind9_add_host($linkid, $basedn, $entry) {
 	// Create each of the domain components in the domainname
@@ -315,55 +316,6 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 }
 // }}}
 
-
-// {{{ pql_bind9_get_record(linkid, dn, record)
-
-function pql_bind9_get_record($linkid, $dn, $record = '') {
-	if($record) {
-		$record = lc($record);
-
-		$filter = "(&(objectclass=dNSZone)($record=*)";
-		$attrs  = array($record);
-	} else {
-		$filter = "(&(objectclass=dNSZone)";
-		$attrs  = array();
-	}
-
-	if(ereg('@', $dn)) {
-		// It's a SOA record. This is encoded differently in the DN and
-		// inside the object -> Only the @ is INSIDE the object. Search
-		// one level above the exact DN.
-		$object = ldap_explode_dn($dn, 0);
-		$len    = count($object)-2;
-
-		unset($dn);
-		for($i=$len; $object[$i]; $i--)
-		  if($i > 0)
-			$dn = ",".$object[$i].$dn;
-
-		$dn = ereg_replace("^,", "", $dn);
-
-		$filter .= "(relativeDomainName=@))";
-
-		$sr = @ldap_list($linkid, $dn, $filter, $attrs) or pql_format_error(1);
-	} else {
-		$filter .= ")";
-		$sr = @ldap_read($linkid, $dn, $filter, $attrs) or pql_format_error(1);
-	}
-
-	$info = @ldap_get_entries($linkid, $sr) or pql_format_error(1);
-
-	if($info[0][$record]["count"] == 1)
-	  $ret[] = $info[0][$record][0];
-	else {
-		for($i=0; $i < $info[0][$record]["count"]; $i++)
-		  $ret[] = $info[0][$record][$i];
-	}
-
-	return($ret);
-}
-
-// }}}
 
 // {{{ pql_bind9_set_record(linkid, dn, record, value)
 function pql_bind9_set_record($linkid, $dn, $record, $value = '') {

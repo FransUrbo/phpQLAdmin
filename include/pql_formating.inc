@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.28 2004-10-15 15:01:12 turbo Exp $
+// $Id: pql_formating.inc,v 2.29 2004-10-18 13:39:33 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -510,6 +510,17 @@ function pql_ldap_mailquota($quota, $newline = 1) {
 	  $txt .= pql_complete_constant($LANG->_('Max %maxsize% KB'), array("maxsize" => $quota["maxsize"]));
     
     return $txt;
+}
+// }}}
+
+// {{{ pql_uniq(array)
+function pql_uniq($array) {
+	if(is_array($array)) {
+		$array = array_values(array_unique($array));
+		asort($array);
+	}
+
+	return($array);
 }
 // }}}
 

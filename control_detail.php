@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.33 2004-05-06 05:34:09 turbo Exp $
+// $Id: control_detail.php,v 1.34 2004-10-18 13:39:30 turbo Exp $
 session_start();
 require("./include/pql_config.inc");
 
@@ -31,7 +31,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 	$cn = pql_get_define("PQL_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"];
 
 	foreach($attribs as $key => $attrib) {
-		$value = pql_control_get_attribute($_pql_control->ldap_linkid, $cn, $attrib);
+		$value = pql_get_attribute($_pql_control->ldap_linkid, $cn, $attrib);
 		if(is_array($value)) {
 			if($key == "locals") {
 				asort($value);
@@ -43,18 +43,18 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 				foreach($value as $val) {
 					$rcpthosts[] = $val;
 				}
-			} elseif($key == "ldappassword") {
-				$$key = "encrypted";
-			} else {
-				$$key = $value[0];
 			}
 		} else {
 			if($key == "ldapserver")
 			  $$key = "<i>".$_SESSION["USER_HOST"]."</i>";
 			elseif($key == "ldapbasedn")
 			  $$key = "<i>".$_SESSION["USER_SEARCH_DN_CTR"]."</i>";
-			else
+			elseif($key == "ldappassword")
+			  $$key = "encrypted";
+			elseif(!$value)
 			  $$key = "<i>".$LANG->_('Not set')."</i>";
+			else
+			  $$key = $value;
 		}
 	}
 

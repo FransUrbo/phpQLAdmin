@@ -2,7 +2,7 @@
 // control attribute plugin for
 // percenthack (allowed domains for %-relaying)
 //
-// $Id: attrib.control.percenthack.inc,v 2.16 2004-03-11 16:31:54 turbo Exp $
+// $Id: attrib.control.percenthack.inc,v 2.17 2004-10-18 13:39:32 turbo Exp $
 
 // {{{ percenthack_check(type)
 function percenthack_check($type) {
@@ -36,9 +36,9 @@ function percenthack_init($host) {
 	global $_pql_control;
 	
 	// fetch data from ldap server
-	$_REQUEST["percenthack"] = pql_control_get_attribute($_pql_control->ldap_linkid,
-														 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-														 pql_get_define("PQL_ATTR_PERCENTHACK"));
+	$_REQUEST["percenthack"] = pql_get_attribute($_pql_control->ldap_linkid,
+												 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+												 pql_get_define("PQL_ATTR_PERCENTHACK"));
 	
 	if(is_null($_REQUEST["percenthack"]))
 	  return true;

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // bigbrother (max number of bytes in message)
 //
-// $Id: attrib.control.bigbrother.inc,v 2.4 2004-10-16 09:44:08 turbo Exp $
+// $Id: attrib.control.bigbrother.inc,v 2.5 2004-10-18 13:39:31 turbo Exp $
 
 // {{{ bigbrother_check(type)
 function bigbrother_check($type) {
@@ -19,9 +19,9 @@ function bigbrother_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	$_REQUEST["bigbrother"] = pql_control_get_attribute($_pql_control->ldap_linkid,
-														 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-														 pql_get_define("PQL_ATTR_BIGBROTHER"));
+	$_REQUEST["bigbrother"] = pql_get_attribute($_pql_control->ldap_linkid,
+												pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+												pql_get_define("PQL_ATTR_BIGBROTHER"));
 
 	if(is_null($_REQUEST["bigbrother"]))
 	  return true;

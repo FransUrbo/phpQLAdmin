@@ -1,6 +1,6 @@
 <?php
 // Create a DNS zone file
-// $Id: dnszonetemplate.php,v 1.5 2004-02-14 15:17:34 turbo Exp $
+// $Id: dnszonetemplate.php,v 1.6 2004-10-18 13:39:30 turbo Exp $
 session_start();
 require("./include/pql_config.inc");
 require("./include/pql_bind9.inc");
@@ -12,6 +12,9 @@ if(is_array($zone)) {
 
     for($i=0; $zone[$defaultdomain]["@"]["NS"][$i]; $i++) 
       $nameservers[] = pql_maybe_idna_encode($zone[$defaultdomain]["@"]["NS"][$i]);
+    if(!is_array($nameservers))
+      // Resonable default...
+      $nameservers = array('ns1.'.$defaultdomain.'.');
 
     if(is_array($zone[$defaultdomain]["@"]["MX"])) {
 	foreach($zone[$defaultdomain]["@"]["MX"] as $mx) {
@@ -24,6 +27,7 @@ if(is_array($zone)) {
     }
     
     $admin   = pql_maybe_idna_encode($zone[$defaultdomain]["@"]["SOA"]["ADMIN"]);
+    $admin   = preg_replace('/@/', '.',  $admin);
 
     $refresh = $zone[$defaultdomain]["@"]["SOA"]["REFRESH"];
     $retry   = $zone[$defaultdomain]["@"]["SOA"]["RETRY"];
@@ -101,6 +105,7 @@ $ORIGIN <?=$origin?>.
 
 $ORIGIN <?=$defaultdomain?>.
 <?php
+$printed_hosts = 0;
 if(is_array($zone[$defaultdomain])) {
     foreach($zone[$defaultdomain] as $data) {
 	if($data['HOST'] != '@') {
@@ -114,8 +119,14 @@ if(is_array($zone[$defaultdomain])) {
 	    } elseif($data['TXT']) {
 		printf("%-6s	%s\n", "TXT", $data['TXT']);
 	    }
+
+	    $printed_hosts = 1;
 	}
-    }
+    } 
+}
+if(!$printed_hosts) {
+    // Just for show :)
+    echo "; [add your hosts here]\n";
 }
 ?>
 </pre>

@@ -1,6 +1,6 @@
 <?php
 // navigation bar - ezmlm mailinglists manager
-// $Id: left-ezmlm.php,v 2.29 2004-05-10 15:12:59 turbo Exp $
+// $Id: left-ezmlm.php,v 2.30 2004-10-18 13:39:31 turbo Exp $
 //
 session_start();
 
@@ -28,7 +28,7 @@ $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PA
 // ---------------- GET THE DOMAINS/BRANCHES
 if($_SESSION["ALLOW_BRANCH_CREATE"]) {
     // This is a 'super-admin'. Should be able to read EVERYTHING!
-    $domains = pql_domain_get($_pql);
+    $domains = pql_get_domains($_pql);
 } else {
 	// Get ALL domains we have access to.
 	//	administrator: USER_DN
@@ -36,7 +36,7 @@ if($_SESSION["ALLOW_BRANCH_CREATE"]) {
 	foreach($_pql->ldap_basedn as $dn)  {
 		$dn = urldecode($dn);
 		
-		$dom = pql_domain_get_value($_pql, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"), $_SESSION["USER_DN"]);
+		$dom = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"), $_SESSION["USER_DN"]);
 		if($dom) {
 			foreach($dom as $d) {
 				$domains[] = urlencode($d);
@@ -72,9 +72,9 @@ if(!is_array($domains)) {
 		$number_of_lists = -1; // So that we end up with 0 for first list!
 
 		// Get base directory for mails
-		if(($basemaildir = pql_domain_get_value($_pql, $domain, pql_get_define("PQL_ATTR_BASEMAILDIR")))) {
+		if(($basemaildir = pql_get_attribute($_pql->ldap_linkid, $domain, pql_get_define("PQL_ATTR_BASEMAILDIR")))) {
 			// Get (and remember) lists in this directory
-			$user = pql_domain_get_value($_pql, $domain, pql_get_define("PQL_ATTR_EZMLM_USER"));
+			$user = pql_get_attribute($_pql->ldap_linkid, $domain, pql_get_define("PQL_ATTR_EZMLM_USER"));
 			if($ezmlm = new ezmlm($user, $basemaildir)) {
 				if($ezmlm->mailing_lists[0]["name"]) {
 					$lists[$domain] = $ezmlm->mailing_lists;

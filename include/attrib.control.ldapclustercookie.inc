@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtpclustercookie (max number of bytes in message)
 //
-// $Id: attrib.control.ldapclustercookie.inc,v 2.4 2004-10-16 09:51:20 turbo Exp $
+// $Id: attrib.control.ldapclustercookie.inc,v 2.5 2004-10-18 13:39:32 turbo Exp $
 
 // {{{ smtpclustercookie_check(type)
 function smtpclustercookie_check($type) {
@@ -19,14 +19,12 @@ function smtpclustercookie_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	$_REQUEST["smtpclustercookie"] = pql_control_get_attribute($_pql_control->ldap_linkid,
-														 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-														 pql_get_define("PQL_ATTR_LDAPCLUSTER_COOKIE"));
+	$_REQUEST["smtpclustercookie"] = pql_get_attribute($_pql_control->ldap_linkid,
+													   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+													   pql_get_define("PQL_ATTR_LDAPCLUSTER_COOKIE"));
 
 	if(is_null($_REQUEST["smtpclustercookie"]))
 	  return true;
-	elseif(is_array($_REQUEST["smtpclustercookie"]))
-	  $_REQUEST["smtpclustercookie"] = $_REQUEST["smtpclustercookie"][0];
 }
 // }}}
 

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mailquota.inc,v 2.26 2004-06-10 05:37:43 turbo Exp $
+// $Id: attrib.mailquota.inc,v 2.27 2004-10-18 13:39:32 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -185,8 +185,12 @@ function attribute_save($type) {
 			// Initialize a QmailLDAP/Controls session
 			$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
-			// Retreive all QmailLDAP/Controls object in the database...
-			$hosts = pql_control_get_hosts($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"]);
+			// Get all QmailLDAP/Control hosts.
+			$result = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+								 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+			for($i=0; $result[$i]; $i++)
+			  $hosts[] = pql_get_attribute($_pql_control->ldap_linkid, $result[$i], pql_get_define("PQL_ATTR_CN"));
+
 			if(is_array($hosts)) {
 				foreach($hosts as $host) {
 					if(empty($mailquota)) {
@@ -212,7 +216,12 @@ function attribute_save($type) {
 		break;
 		
 	  case "fulldomain":
-		$users = pql_user_get($_pql->ldap_linkid, $_REQUEST["domain"]);
+		// Create a user search filter (only look for mail users - !?!?).
+		$filter  = "(&(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*)(";
+		$filter .= pql_get_define("PQL_ATTR_MAIL")."=*))";
+
+		// Retreive all users in this branch/domain.
+	    $users   = pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], $filter);
 		if(is_array($users)) {
 			foreach($users as $user)
 			  $return[] = pql_replace_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_QUOTA_VALUE"),

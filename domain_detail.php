@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.86 2004-05-10 13:07:19 turbo Exp $
+// $Id: domain_detail.php,v 2.87 2004-10-18 13:39:30 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -35,7 +35,7 @@ if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 // check if domain exist
-if(!pql_domain_exist($_pql, $_REQUEST["domain"])) {
+if(!pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], '(objectclass=*)', 'BASE')) {
     echo "Domain &quot;" . $_REQUEST["domain"] . "&quot; does not exists<br><br>";
 	echo "Is this perhaps a Top Level DN (namingContexts), and you haven't configured ";
 	echo "how to reference domains/branches in this database!?<br><br>";
@@ -45,7 +45,7 @@ if(!pql_domain_exist($_pql, $_REQUEST["domain"])) {
 }
 
 // Get the organization name, or show 'Not set' with an URL to set it
-$domainname = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_O"));
+$domainname = pql_get_attribute($_pql->ldap_linkid, $domain, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 if(!$domainname) {
   // TODO: Resonable default!
   $domainname = '';				// DLW: Just to shut off some warnings.
@@ -87,7 +87,7 @@ $attribs = array("autocreatemailaddress"	=> pql_get_define("PQL_ATTR_AUTOCREATE_
 				 "info"						=> pql_get_define("PQL_ATTR_INFO"));
 foreach($attribs as $key => $attrib) {
 	// Get default value
-	$value = pql_domain_get_value($_pql, $_REQUEST["domain"], $attrib);
+	$value = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib);
 	$$key = $value;
 
 	if($attrib == pql_get_define("PQL_ATTR_INFO")) {
@@ -135,9 +135,9 @@ foreach($attribs as $key => $attrib) {
 		  . "border=\"0\" alt=\"".$alt1."\"></a>";
 	}
 }
-$domain_admins		= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR"));
-$mailinglist_admins	= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"));
-$seealso   			= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_SEEALSO"));
+$domain_admins      = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR"));
+$mailinglist_admins = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"));
+$seealso            = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_SEEALSO"));
 
 // The value retreived from the object is a one liner.
 // Split it up into it's parts (SIZE and AMOUNT) and
@@ -148,7 +148,7 @@ $temp[0]	= eregi_replace("S$", "", $temp[0]);
 $quota		= array(); $quota["maxmails"] = $temp[1]; $quota["maxsize"]  = $temp[0];
 $basequota	= pql_ldap_mailquota($quota);
 
-$additionaldomainname = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
+$additionaldomainname = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
 
 // Setup the buttons
 $buttons = array('default'	=> 'Branch Defaults');
@@ -207,7 +207,8 @@ if($_REQUEST["view"] == 'owner') {
 } elseif($_REQUEST["view"] == 'chval') {
 	include("./tables/domain_details-users_chval.inc");
 } elseif($_REQUEST["view"] == 'users') {
-	$users = pql_user_get($_pql->ldap_linkid, $_REQUEST["domain"]);
+	$filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*)(mail=*))";
+	$users = pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], $filter);
 	include("./tables/domain_details-users.inc");
 } elseif($_REQUEST["view"] == 'action') {
 	include("./tables/domain_details-action.inc");

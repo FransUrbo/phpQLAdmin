@@ -2,36 +2,31 @@
 // ----------------------------
 // Retreive, modify and delete ACIs (per-object access control lists)
 //
-// $Id: pql_aci.inc,v 2.9 2004-03-31 05:31:43 turbo Exp $
+// $Id: pql_aci.inc,v 2.10 2004-10-18 13:39:33 turbo Exp $
 
 // {{{ pql_aci_get(linkid, dn, number)
 // Get ACI entries from object
 function pql_aci_get($linkid, $dn, $number = 0) {
-	$dn = urldecode($dn);
-
     if($number)
       // We're looking for a specific ACI number
       $wildcard = "$number#*";
     else
       $wildcard = "*";
-	
-    $filter = "OpenLDAPaci=$wildcard";
-    $sr     = ldap_read($linkid, $dn, $filter, array('OpenLDAPaci')) or pql_format_error(1);
-    $info   = ldap_get_entries($linkid, $sr) or pql_format_error(1);
 
-    if($info[0][pql_get_define("PQL_ATTR_LDAPACI")][0]) {
+	$result = pql_get_attribute($linkid, $dn, 'OpenLDAPaci', 1);
+	if(is_array($result)) {
 		// An openLDAPaci attribute might look something like (see README.aci):
 		//	3#entry#grant;r,s,c;macAddress#group#cn=customer,ou=groups,dc=planetsky,dc=com
 		// or (with more than one permission/target
 		//	3#entry#grant;r,s,c;macAddress;s,c;[all]#group#cn=customer,ou=groups,dc=planetsky,dc=com
 		$n = 0; 
 
-		for($j=0; $j < $info[0][pql_get_define("PQL_ATTR_LDAPACI")]["count"]; $j++) {
-			$ACI[$n]["LINE"]   = $info[0][pql_get_define("PQL_ATTR_LDAPACI")][$j];
+		for($j=0; $result[$j]; $j++) {
+			$ACI[$n]["LINE"]   = $result[$j];
 
 			$got_more_rights = 0;
 			// Split up the attribute value into it's (five) parts
-			$tmp1 = split("#", $info[0][pql_get_define("PQL_ATTR_LDAPACI")][$j]);
+			$tmp1 = split("#", $result[$j]);
 
 			$ACI[$n]["OID"]		= $tmp1[0]; // Irrelevant: Counter or dummy OID (Ex: 1.2.3)
 			$ACI[$n]["SCOPE"]	= $tmp1[1]; // Irrelevant: Always 'entry'

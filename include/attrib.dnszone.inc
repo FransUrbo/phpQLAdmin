@@ -1,8 +1,9 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.6 2004-07-07 14:17:06 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.7 2004-10-18 13:39:32 turbo Exp $
 
+// {{{ attribute_check(void)
 function attribute_check() {
     global $domain, $rootdn, $rdn, $view, $action, $type, $action;
     global $_pql, $attrib, $$attrib, $oldvalue;
@@ -12,7 +13,9 @@ function attribute_check() {
 
     return false;
 }
+// }}}
 
+// {{{ attribute_print_form(void)
 function attribute_print_form() {
     global $domain, $rootdn, $rdn, $view, $action, $type, $action, $LANG, $LANG;
     global $_pql, $attrib;
@@ -20,8 +23,9 @@ function attribute_print_form() {
 	if($action != 'add') {
 		// Get old value
 		$dn = urldecode($rdn);
-		$oldvalue = pql_bind9_get_record($_pql->ldap_linkid, $dn, $attrib);
-		$oldvalue = $oldvalue[0];
+		$oldvalue = pql_get_attribute($_pql->ldap_linkid, $dn, $attrib);
+		if(is_array($oldvalue))
+		  $oldvalue = $oldvalue[0];
 	}
 ?>
     <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
@@ -72,7 +76,9 @@ function attribute_print_form() {
     </form>
 <?php
 }
+// }}}
 
+// {{{ attribute_save(action)
 function attribute_save($action) {
     global $domain, $rootdn, $rdn, $view, $action, $type, $action, $LANG, $LANG;
     global $_pql, $attrib, $$attrib, $oldvalue, $priority, $time;
@@ -96,7 +102,7 @@ function attribute_save($action) {
     switch($action) {
 	  case "add":
 		// Get old value
-		$oldvalues = pql_bind9_get_record($_pql->ldap_linkid, $rdn, $attrib);
+		$oldvalues = pql_get_attribute($_pql->ldap_linkid, $rdn, $attrib);
 
 		// Add the old values to the array
 		for($i=0; $oldvalues[$i]; $i++)
@@ -124,7 +130,7 @@ function attribute_save($action) {
 
 	  case "del":
 		// Get old value
-		$oldvalues = pql_bind9_get_record($_pql->ldap_linkid, $rdn, $attrib);
+		$oldvalues = pql_get_attribute($_pql->ldap_linkid, $rdn, $attrib);
 		for($i=0; $oldvalues[$i]; $i++) {
 			// Filter out the value to delete
 			if($oldvalues[$i] != $oldvalue)
@@ -142,6 +148,7 @@ function attribute_save($action) {
 
     attribute_forward($msg);
 }
+// }}}
 
 // Local variables:
 // mode: php

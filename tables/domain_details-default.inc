@@ -153,7 +153,7 @@
 <?php if(is_array($domain_admins)) {
 		$new_tr = 0;
 		foreach($domain_admins as $admin) {
-			$admin = pql_maybe_encode($admin); // Re-encode value that we got earlier from pql_domain_get_value().
+			$admin = pql_maybe_encode($admin);
 
 			$username = pql_get_attribute($_pql->ldap_linkid, $admin, pql_get_define("PQL_ATTR_CN"));
 			if(!$username[0])

@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-details.inc,v 1.27 2004-10-09 16:25:49 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.28 2004-10-18 13:39:33 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
@@ -51,7 +51,7 @@
 
 	  if(($_REQUEST["account_type"] != "forward") and ($_REQUEST["account_type"] != "group")) {
 		// Get the default password scheme for branch
-		$_REQUEST["defaultpasswordscheme"] = pql_domain_get_value($_pql, $_REQUEST["domain"],
+		$_REQUEST["defaultpasswordscheme"] = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"],
 																  pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"));
 
 		if(!$_REQUEST["defaultpasswordscheme"] or $_SESSION["ADVANCED_MODE"])  {
@@ -240,7 +240,7 @@
 					$branch = pql_format_urls($branch);
 					
 					// Just to make sure - does this subbranch exists?!
-					$xyz = pql_search($_pql->ldap_linkid, $branch, 'objectclass=*', 'dn', "BASE");
+					$xyz = pql_get_dn($_pql->ldap_linkid, $branch, 'objectclass=*', 'BASE');
 					if(is_array($xyz)) {
 						// The object exists - we're not interested in the object
 						// itself, just that it exists (the array is initialized)...
@@ -268,7 +268,7 @@
 			$branch = pql_format_urls($branch);
 			
 			// Just to make sure - does this subbranch exists?!
-			$xyz = pql_search($_pql->ldap_linkid, $branch, 'objectclass=*', 'dn', "BASE");
+			$xyz = pql_get_dn($_pql->ldap_linkid, $branch, 'objectclass=*', 'BASE');
 			if(is_array($xyz)) {
 ?>
         <input type="hidden" name="subbranch" value="<?=$branch?>">

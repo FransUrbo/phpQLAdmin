@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailalternateaddress (emailaddress alias)
-// $Id: attrib.mailalternateaddress.inc,v 2.27 2004-10-14 08:51:45 turbo Exp $
+// $Id: attrib.mailalternateaddress.inc,v 2.28 2004-10-18 13:39:32 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -61,8 +61,8 @@ function attribute_print_form() {
     global $error, $_pql, $LANG;
 
 	$attrib               = $_REQUEST["attrib"];
-	$defaultdomain		  = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
-	$additionaldomainname = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
+	$defaultdomain		  = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+	$additionaldomainname = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -197,7 +197,7 @@ function attribute_save($type) {
       case "delete";
 		// Get the old values, so we can remove the one we're modifying
 		// (delete the one we want to delete, keep the others etc)
-		$values = pql_domain_get_value($_pql, $_REQUEST["user"], $attrib);
+		$values = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], $attrib);
 
 		// Add the old values to the resulting array.
 		$OLD[$attrib] = array();

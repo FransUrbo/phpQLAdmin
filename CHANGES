@@ -1,5 +1,37 @@
 phpQLAdmin 2.0 Change Log
 
+phpQLAdmin 2.1.2 TO BE ANNOUNCED
+	API changes
+	  - Removed the following functions because pql_search.inc:pql_search() can
+	    do the same job (with some modifications):
+	    + pql_search.inc:pql_get_dn()
+	      This was later readded again, but completley rewritten to replace
+	      pql.inc:pql_user_get() (using the new pql_search.inc:pql_search()).
+	    + pql_search.inc:pql_get_object()
+	    + pql.inc:pql_user_get()
+	      Moved the referral chasing to pql_search.inc:pql_search().
+	    + pql.inc:pql_domain_exist()
+	    + pql.inc:pql_user_exist()
+	    + pql.inc:pql_domain_get_value()
+	      NOTE: This unfortunatly made changes to 'include/config.inc.CHANGE_ME'!
+	    + pql.inc:pql_domain_get_branchdn()
+	    + pql.inc:pql_domain_get_subdomains()
+	    + pql_control.inc:pql_control_get_attribute()
+	    + pql_control.inc:pql_control_get_hosts()
+	    + pql_control.inc:pql_control_search_attribute()
+	    + pql_units.inc:pql_unit_exist()
+	    + pql_websrv.inc:pql_websrv_get_servers()
+	  - Moved the following functions from pql.inc to pql_search.inc (and modified
+	    or rewrote it in the process):
+	    + pql_search_forwarders()
+	    + pql_email_exists()
+	    + pql_validate_administrator()
+	    + pql_domain_get()
+	      Renamed to pql_get_domains() after rewrite/modifications.
+	  - Move pql_search.inc:pql_uniq() to pql_formating:pql_uniq().
+	  - pql.inc:pql_domain_exist() should be called with the link id, not the
+	    whole ldap object!
+
 phpQLAdmin 2.1.1 Release (Oct 16 2004)
 	Bug fixes
 	  - Don't create a new connection to the LDAP db in files located in '.'.

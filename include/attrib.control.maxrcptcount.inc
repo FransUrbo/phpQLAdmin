@@ -2,7 +2,7 @@
 // control attribute plugin for
 // maxrcptcount (maximum number of RCPT TO's)
 //
-// $Id: attrib.control.maxrcptcount.inc,v 2.13 2004-03-11 16:31:54 turbo Exp $
+// $Id: attrib.control.maxrcptcount.inc,v 2.14 2004-10-18 13:39:32 turbo Exp $
 
 // {{{ maxrcptcount_check(type)
 function maxrcptcount_check($type) {
@@ -30,12 +30,12 @@ function maxrcptcount_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-									   pql_get_define("PQL_ATTR_MAXRCPTCOUNT"));
+	$_REQUEST["maxrcptcount"] = pql_get_attribute($_pql_control->ldap_linkid,
+												  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+												  pql_get_define("PQL_ATTR_MAXRCPTCOUNT"));
 
-	if(!is_null($value))
-	  $_REQUEST["maxrcptcount"] = $value[0];
+	if(is_null($_REQUEST["maxrcptcount"]))
+	  return true;
 }
 // }}}
 

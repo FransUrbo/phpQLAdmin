@@ -1,6 +1,6 @@
 <?php
 // Add a new mailserver to the database
-// $Id: control_add_server.php,v 2.20 2004-08-27 08:49:28 turbo Exp $
+// $Id: control_add_server.php,v 2.21 2004-10-18 13:39:30 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -67,12 +67,12 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 
 				$cn = pql_get_define("PQL_ATTR_CN") . "=" . $cloneserver . "," . $_SESSION["USER_SEARCH_DN_CTR"];
 				foreach($attribs as $key => $attrib) {
-					$value = pql_control_get_attribute($_pql_control->ldap_linkid, $cn, $attrib);
-					if(!is_null($value)) {
-						for($i=0; $value[$i]; $i++) {
-							$values[$key][] = $value[$i];
-						}
-					}
+					$value = pql_get_attribute($_pql_control->ldap_linkid, $cn, $attrib);
+					if(is_array($value)) {
+						for($i=0; $value[$i]; $i++)
+						  $values[$key][] = $value[$i];
+					} else
+					  $values[$key] = $value;
 				}
 
 				// Create the 'LDIF'
@@ -135,7 +135,14 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
           <td class="title">Clone server</td>
           <td>
 <?php
-	$hosts = pql_control_get_hosts($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"]);
+	// Get all QmailLDAP/Control hosts.
+    $result = pql_get_dn($_pql_control->ldap_linkid,
+						 $_SESSION["USER_SEARCH_DN_CTR"],
+						 '(&(cn=*)(objectclass=qmailControl))',
+						 'ONELEVEL');
+    for($i=0; $result[$i]; $i++)
+      $hosts[] = pql_get_attribute($_pql_control->ldap_linkid, $result[$i], pql_get_define("PQL_ATTR_CN"));
+
 	if(!is_array($hosts)) {
 ?>
             no LDAP control hosts defined

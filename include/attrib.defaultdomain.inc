@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // default domain name (the default domainname for a domain)
-// $Id: attrib.defaultdomain.inc,v 2.28 2004-06-10 05:37:43 turbo Exp $
+// $Id: attrib.defaultdomain.inc,v 2.29 2004-10-18 13:39:32 turbo Exp $
 
 function attribute_check() {
     global $error, $LANG;
@@ -43,7 +43,12 @@ function attribute_print_form() {
 	  // Initiate a connection to the QmailLDAP/Controls DN
 	  $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 		
-	  $hosts = pql_control_get_hosts($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"]);
+      // Get all QmailLDAP/Control hosts.
+      $result = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+                           '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+      for($i=0; $result[$i]; $i++)
+        $hosts[] = pql_get_attribute($_pql_control->ldap_linkid, $result[$i], pql_get_define("PQL_ATTR_CN"));
+
 	  if(is_array($hosts)) {
 ?>
 
