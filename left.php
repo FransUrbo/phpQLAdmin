@@ -84,6 +84,7 @@ if($advanced == 1) {
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="TODO">What's left todo</a></nobr><br>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="CHANGES">What's been done</a></nobr><br>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://phpqladmin.bayour.com/">phpqladmin.bayour.com</a></nobr><br>
+    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://papadoc.bayour.com:23000/anthill/" target="_new">Bugtracker</a></nobr><br>
 <?php } ?>
   </div>
   <!-- HOME -->
