@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.12 2005-01-30 09:28:50 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.13 2005-01-30 10:39:02 turbo Exp $
 
 // {{{ attribute_translate_type(attrib)
 function attribute_translate_type($attrib) {
@@ -39,6 +39,9 @@ function attribute_check() {
 function attribute_print_form() {
 	global $_pql, $LANG;
 
+	$type = $_REQUEST["type"];
+	$type_value = $_REQUEST[$type];
+
 	if($_REQUEST["attrib"])
 	  $attrib = attribute_translate_type($_REQUEST["attrib"]);
 
@@ -46,8 +49,14 @@ function attribute_print_form() {
 		// Get old value
 		$dn = urldecode($_REQUEST["rdn"]);
 		$_REQUEST["oldvalue"] = pql_get_attribute($_pql->ldap_linkid, $dn, $attrib);
-		if(is_array($_REQUEST["oldvalue"]))
-		  $_REQUEST["oldvalue"] = $_REQUEST["oldvalue"][0];
+		if(is_array($_REQUEST["oldvalue"])) {
+		  for($i=0; $_REQUEST["oldvalue"][$i]; $i++) {
+			if(eregi($type_value, $_REQUEST["oldvalue"][$i]))
+			  $oldvalue = $_REQUEST["oldvalue"][$i];
+		  }
+
+		  $_REQUEST["oldvalue"] = $oldvalue;
+		}
 	}
 
 	if((lc($attrib) == 'mxrecord')) {
@@ -132,20 +141,22 @@ function attribute_print_form() {
         </th>
       </table>
 
-      <input type="hidden" name="submit"   value="1">
+      <input type="hidden" name="submit"          value="1">
 <?php	if($action != 'add') {
 			if((lc($attrib) == 'mxrecord')) {
 ?>
-      <input type="hidden" name="oldvalue" value="<?=$prio." ".$_REQUEST["oldvalue"]?>">
+      <input type="hidden" name="oldvalue"        value="<?=$prio." ".$_REQUEST["oldvalue"]?>">
 <?php		} else { ?>
-      <input type="hidden" name="oldvalue" value="<?=$_REQUEST["oldvalue"]?>">
+      <input type="hidden" name="oldvalue"        value="<?=$_REQUEST["oldvalue"]?>">
 <?php		}
 
 			if(lc($attrib) == 'mxrecord') {
 ?>
-      <input type="hidden" name="type"     value="mx">
+      <input type="hidden" name="type"            value="mx">
+<?php		} elseif(lc($attrib) == 'nsrecord') { ?>
+      <input type="hidden" name="type"            value="ns">
 <?php		} else { ?>
-      <input type="hidden" name="oldtype"  value="<?=$attrib?>">
+      <input type="hidden" name="oldtype"         value="<?=$attrib?>">
 <?php		}
 		}
 ?>
@@ -163,7 +174,6 @@ function attribute_print_form() {
 // }}}
 
 // {{{ attribute_save(action)
-
 function attribute_save($action) {
 	global $_pql, $LANG;
 	$success = 0;
@@ -172,23 +182,23 @@ function attribute_save($action) {
 
 	if($_REQUEST["type"])
 	  $attrib = attribute_translate_type($_REQUEST["type"]);
-	$value = $_REQUEST["newvalue"];
+	$newvalue = $_REQUEST["newvalue"];
 
 	if((lc($attrib) == 'mxrecord') && $_REQUEST["priority"])
-	  $value = $_REQUEST["priority"] . " " . $value;
+	  $newvalue = $_REQUEST["priority"] . " " . $newvalue;
 
 	// {{{ if($attrib == 'dnsttl')
 	if((lc($attrib) == 'dnsttl') && $_REQUEST["time"]) {
 	  if($_REQUEST["time"] == "minutes")
-		$value = $value * 60;
+		$newvalue = $value * 60;
 	  elseif($_REQUEST["time"] == "hours")
-		$value = $value * 60 * 60;
+		$newvalue = $value * 60 * 60;
 	  elseif($_REQUEST["time"] == "days")
-		$value = $value * 60 * 60 * 24;
+		$newvalue = $value * 60 * 60 * 24;
 	  elseif($_REQUEST["time"] == "weeks")
-		$value = $value * 60 * 60 * 24 * 7;
+		$newvalue = $value * 60 * 60 * 24 * 7;
 	  elseif($_REQUEST["time"] == "months")
-		$value = $value * 60 * 60 * 24 * 7 * 4;
+		$newvalue = $value * 60 * 60 * 24 * 7 * 4;
 	}
 	// }}}
 
@@ -225,7 +235,7 @@ function attribute_save($action) {
 			// We must also change the RDN!
 			$dnattrs = explode(",", urldecode($dn));
 
-			$new_dn  = pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")."=$value";
+			$new_dn  = pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")."=$newvalue";
 			for($i=1; $dnattrs[$i]; $i++) {
 				$parent .= $dnattrs[$i];
 				if($dnattrs[$i+1])
@@ -247,13 +257,20 @@ function attribute_save($action) {
 		// }}}
 
 	  	// {{{ if(oldtype != newtype)
-		// Remove the 'oldtype' value
-		if(!pql_modify_attribute($_pql->ldap_linkid, $dn, $_REQUEST["oldtype"], '', ''))
-		  // This shouldn't really be possible, but until I find out that/if I'm wrong, I'll just die here!
-		  die("Failed to remove the old attribute ".$_REQUEST["oldtype"]." with value ".$_REQUEST["oldvalue"]);
+		if($oldtype != $newtype) {
+		  // Remove the 'oldtype' value
+		  if(!pql_modify_attribute($_pql->ldap_linkid, $dn, $_REQUEST["oldtype"], '', ''))
+			// This shouldn't really be possible, but until I find out that/if I'm wrong, I'll just die here!
+			die("Failed to remove the old attribute ".$_REQUEST["oldtype"]." with value ".$_REQUEST["oldvalue"]);
+		}
 		// }}}
 
-		if(pql_modify_attribute($_pql->ldap_linkid, $dn, $attrib, 1, $value)) {
+		if((lc($attrib) == 'mxrecord') or (lc($attrib) == 'nsrecord'))
+		  $oldvalue = $_REQUEST["oldvalue"];
+		else
+		  $oldvalue = 1;
+
+		if(pql_modify_attribute($_pql->ldap_linkid, $dn, $attrib, $oldvalue, $newvalue)) {
 		  $success = 1;
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $attrib));
