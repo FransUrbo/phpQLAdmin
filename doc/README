@@ -1,9 +1,14 @@
 Using phpQLAdmin with existing LDAP database
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 If you already have an LDAP database you'd like to administrate
-through phpQLAdmin, it is a requirenment that you read README.acl.
-If you don't (and fully understand it! :), you won't see your database,
-no matter HOW you configure it.
+through phpQLAdmin, it is a requirenment that you read README.acl and
+FULLY understand the limitations layed out in 'Configuration and layout'
+and 'Problematic database layout'.
+
+If you don't (and fully understand this! :), you won't see your database
+(or not all of it), no matter HOW you configure it. Also look at
+'Configuration in LDAP' below for more about this.
+
 
 Upgrading
 ~~~~~~~~~
@@ -12,12 +17,14 @@ then you MUST read the README.upgrade file! It contains important
 information that will break your admin interface (phpQLAdmin) if
 not fully understood.
 
+
 LDAP layout independence
 ~~~~~~~~~~~~~~~~~~~~~~~~
 Version 2.0 of phpQLAdmin was (re)designed to be more forgiving on how
 the layout of the LDAP database is layed out. It does however dictate
 slightly that you follow some kind of 'standard' (if there is such
 a thing in the world of LDAP :).
+
 
 Configuration and layout
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -66,6 +73,98 @@ should do, is configure multiple top suffixes in your LDAP database
 since version 2.0.10 able to cope with that, and show all database as
 one.
 
+
+Problematic database layout
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+I can't catch everything. I have to put limitation somewhere. I don't
+like telling you how you should structure your database, but there's
+no way I'll be able to figure everything out automatically just by
+querying the database. One such layout is pictured below.
+
+  o=Domain Branch 1
+    ou=People
+      cn=Branch1, User1
+      cn=Branch1, User2
+      [etc]
+    o=Domain Branch 2
+      cn=Branch2, User1
+      cn=Branch2, User2
+      [etc]
+    o=Domain Branch 3
+      ou=People
+        cn=Branch3, User1
+        cn=Branch3, User2
+        [etc]
+  o=Domain Branch 4
+  [etc]
+
+Now, what's wrong with this layout? Well, for starters the problem isn't
+the 'Domain Branch 1' and 'Domain Branch 4'. They reside in completly 
+different databases (configured using 'suffix' and 'database' in slapd.conf).
+The problem is that domain branch two and three is 'separate' entities
+from 'Domain Branch 1'. That is, they shouldn't really be there...
+
+The reason for this is that when looking at the left frame (the user list
+frame), everything will at first glance look ok. But looking closer, you'll
+see that users from Domain Branch two to three will end up below the
+'Domain Branch 1' folder tree, like below (yes, users will end up in two
+places). And that's not all. A similar list will be shown when going to
+the 'Registered Users' for 'Domain Branch 1'. ALL users will end up there.
+
+  o=Domain Branch 1
+    ou=People
+      cn=Branch1, User1
+      cn=Branch1, User2
+      cn=Branch2, User1
+      cn=Branch2, User2
+      cn=Branch3, User1
+      cn=Branch3, User2
+      [etc]
+    o=Domain Branch 2
+      cn=Branch2, User1
+      cn=Branch2, User2
+      [etc]
+    o=Domain Branch 3
+      ou=People
+        cn=Branch3, User1
+        cn=Branch3, User2
+        [etc]
+
+Not quite the intended behaviour. The reason for this is that the 'user
+retreival function' (pql_user_get()) isn't smart enough. And there's no
+way I'll fully be able to fix this... I had some preliminary patches,
+but that broke stuff all over the place, so it won't be applied untill
+much later...
+
+Now, the solution isn't something I like to impose on you, but I don't
+have much choice. Or, rather YOU don't have much choice if you want to
+use phpQLAdmin. All branches (one through three) should be flattened
+slightly and put under ONE container. You don't have to add/remove
+the ou=People container(s), they are perfectly ok, but users can't
+like _to_ deep below the branch 'folder'.
+
+  o=Common Container
+    o=Domain Branch 1
+      ou=People
+        cn=User 1
+        cn=User 2
+        [etc]
+    o=Domain Branch 2
+      cn=User 1
+      cn=User 2
+      [etc]
+    o=Domain Branch 3
+      ou=People
+        cn=User 1
+        cn=User 2
+        [etc]
+  o=Domain Branch 4
+  [etc]
+
+Domain branch four does not need to be moved or changed (unless starts
+looking like the first branch, which I guess is a high probability :).
+
+
 Configuration in LDAP
 ~~~~~~~~~~~~~~~~~~~~~
 With version 2.0.5, it's possible to have site specific configurations
@@ -95,6 +194,7 @@ writes the configuration, so backward compability should be ok with an
 non-phpQLAdmin created domain/branch. If it's not, please report a bug
 at the mailinglist phpqladmin@bayour.com.
 
+
 Schema issues
 ~~~~~~~~~~~~~
 There is a couple of problems with the phpQLAdminBranch objectclass.
@@ -108,11 +208,13 @@ remove the leading dashes (#) on those lines.
 
 Another 'problem' with the schema is the Kerberos stuff. Kerberos
 Realm Name (krb5RealmName) and Kerberos Principal Name (krb5PrincipalName)
-is defined in krb5-kdc.schema that comes with slapd. If you're not using
-that schema, then either uncomment the lines 233 through 243 or remove
-the attributes from the MAY clause of the phpQLAdminConfig objectclass
-(line 348 to 350). The kerberos stuff in the schema is just a 'hack'
-until we get REAL Kerberos/AFS support in PHP.
+is defined in krb5-kdc.schema that came with slapd, but have with resent
+versions of OpenLDAP been discontinued. If you're not using that schema,
+then either uncomment the lines 233 through 243 or remove the attributes
+from the MAY clause of the phpQLAdminConfig objectclass (line 348 to 350).
+The kerberos stuff in the schema is just a 'hack' until we get REAL
+Kerberos/AFS support in PHP.
+
 
 Kerberos principal creation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -156,17 +258,6 @@ the script).
 Modifying or deleting the principal when deleting the user is not
 yet implemented.
 
-Protocol errors
-~~~~~~~~~~~~~~~
-The PHP/LDAP module does an LDAPv2 bind, which means that you will
-have to allow a version 2 bind. In OpenLDAP version 2.0, this is done
-by making sure that you DON'T (!) have 'disallow bind_v2' in your
-slapd.conf file. In  OpenLDAP version 2.1, disallowing v2 bind is the
-default and you will have to enable v2 bind by putting 'allow bind_v2'
-in the slapd.conf file.  If slapd does not allow v2 bind, you will get
-the following error in your logfile:
-
-	Could not bind to ldap server: Protocol error
 
 Templates
 ~~~~~~~~~
@@ -179,6 +270,7 @@ should your user objects have? What objectclasses should your
 domain/branch objects have etc... This require knowledge on how LDAP
 works!
 
+
 Administrator login
 ~~~~~~~~~~~~~~~~~~~
 To be able to login to the LDAP server from phpQLAdmin, the object
@@ -190,11 +282,13 @@ file (as example below) won't help.
 	rootdn	cn=Manager,....
 	rootpw	SecretPWHere
 
+
 Apache configuration
 ~~~~~~~~~~~~~~~~~~~~
 As of phpQLAdmin version 2.0.18, there is no need to do any modifications
 to the PHP configuration (php.ini file). Previosly, you had to enable
 'register_globals', but this is not needed any more.
+
 
 QmailLDAP/Controls restart
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -225,6 +319,7 @@ You must have the QmailLDAP/Controls object named
 cn=qmail.example.com,ou=QmailLDAP,dc=example,dc=com
 
 for this to work.
+
 
 Automatic updating locals/rcpthosts
 attributes in QmailLDAP/Controls object
@@ -309,6 +404,7 @@ will have to disable automatic replication on both locals and rcpthosts,
 and either specify what to write where (when adding domain to default
 or additional domain for branch).
 
+
 National characters (UTF-8 encoding)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 As of v2.0.14, it is possible to create objects with full international
@@ -329,11 +425,12 @@ Webserver configuration
 ~~~~~~~~~~~~~~~~~~~~~~~
 As of 2.0.17, phpQLAdmin have rudimentary support for having (part of)
 the webserver configuration in the LDAP server. This isn't the pretties
-solution, but it's something. The included example script
+solution, but it's something. The included example script 
 (create_websrv_cfg.pl) will create all the <VirtualHost> definitions
-which can then be included with the Include option. The script is intended
-to run as a cron job every now and then (once every hour sounds resonable)
-to create the <VirtualHost> file.
+which can then be included with the Include option in your main Apache
+configuration file (httpd.conf). The script is intended to run as a
+cron job every now and then (once every hour sounds resonable) to
+create the <VirtualHost> file.
 
 
 LDAP Server monitoring and status retreival
