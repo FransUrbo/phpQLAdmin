@@ -1,6 +1,6 @@
 <?php
 // Input form page to create a domain branch in database
-// $Id: domain_add_form.php,v 1.2 2003-01-14 12:53:38 turbo Exp $
+// $Id: domain_add_form.php,v 1.3 2003-01-14 18:54:34 turbo Exp $
 //
 session_start();
 
@@ -27,7 +27,7 @@ include("./header.html");
                       <img src="images/info.png" width="16" height="16" alt="" border="0"></td>
                     <td>
 <?php
-	    if(PQL_LDAP_OBJECTCLASS_DOMAIN == "domain") {
+	    if(PQL_LDAP_ATTR_DOMAIN == "dc") {
 		// We're using a domain object
 		echo PQL_DOMAIN_ADD_INFO_DC;
 	    } else {

@@ -19,7 +19,7 @@ $_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
 $domain = strtolower($domain);
 
 // Should we force a dot in the domainname or not?
-if(PQL_LDAP_OBJECTCLASS_DOMAIN == "domain") {
+if(PQL_LDAP_ATTR_DOMAIN == "dc") {
 	// We're using a domain object, which means we should allow
 	// a domain name to be without dot.
 	$nodot = 1;

@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.11 2003-01-13 07:44:36 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.12 2003-01-14 18:54:39 turbo Exp $
 //
 if(!$PQL_CONFIG_INCLUDED) {
 $PQL_CONFIG_INCLUDED = 1;
@@ -408,7 +408,9 @@ if(PQL_LDAP_ATTR_DOMAIN == "dc") {
 } else {
 	$objectclass_domain = "organizationalUnit";
 }
-define("PQL_LDAP_OBJECTCLASS_DOMAIN", strtolower($objectclass_domain));
+
+// Better not touch the following line unless you know what's best for you
+define("PQL_LDAP_OBJECTCLASS_DOMAIN", strtolower($objectclass_domain) . " dcOrganizationNameForm phpQLAdminBranch");
 }
 /*
  * Local variables:
