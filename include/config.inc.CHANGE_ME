@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.50.2.1.8.3 2004-10-11 08:33:12 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.50.2.1.8.3.2.1 2004-12-19 10:14:24 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -313,6 +313,9 @@ function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $do
 //		$aci[$i] = "$i#entry#grant;r,s,c;sn,givenName,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,mailMessageStore,o,l,st,telephoneNumber,postalCode,title#self#"; $i++;
 //	} elseif($type == 'group') {
 //		$aci[$i] = "$i#entry#grant;r,s,c;cn,gidNumber#public#"; $i++;
+//	} elseif($type == 'dnszone') {
+//		$aci[$i] = "$i#entry#grant;r,s,c;dc#public#"; $i++;
+//		$aci[$i] = "$i#entry#grant;w,r,s,c;[all]#access-id#ENTER_WHOEVER_YOUR_DNSSERVER_USES"; $i++;
 //	} elseif($type == 'qmail') {
 //		$aci[$i] = "$i#entry#grant;r,s;[all]#access-id#ENTER_WHOEVER_YOUR_QMAILSERVER_USES"; $i++;
 //	} elseif($type == 'branch') {
@@ -322,9 +325,6 @@ function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $do
 //			$aci[$i] = "$i#entry#grant;r,s,c;dc#public#"; $i++;
 //		}
 //	}
-//
-//	// Non-public entries
-//	$aci[$i] = "$i#entry#grant;w,r,s,c;[children]#access-id#$user"; $i++;
 //
 //	// Add all the super admins with full access.
 //	$admins = pql_get_attribute($ldap_linkid, urldecode($_SESSION["BASE_DN"][0]), pql_get_define("PQL_ATTR_ADMINISTRATOR"));
