@@ -81,6 +81,9 @@ switch($attrib){
   case "autocreatemailaddress";
 	$include = "attrib.domaintoggle.inc";
 	break;
+  case "usernameprefix";
+	$include = "attrib.usernameprefix.inc";
+	break;
   default:
     die("unknown attribute");
 }

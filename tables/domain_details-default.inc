@@ -87,6 +87,14 @@
         <td><?=$autocreateusername_link?></td>
       </tr>
 
+<?php if($autocreateusername) { ?>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Automatic generation username prefix</td>
+        <td><?php if($usernameprefix){echo $usernameprefix;}else{echo "<i>Not set</i>";} ?></td>
+        <td><?=$usernameprefix_link?></td>
+      </tr>
+
+<?php } ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">Automaticly generate email address</td>
         <td><?php if($autocreatemailaddress){echo 'Yes';}else{echo "No";} ?></td>

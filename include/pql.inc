@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.87 2003-06-19 11:23:20 turbo Exp $
+// $Id: pql.inc,v 2.88 2003-06-20 08:52:27 turbo Exp $
 //
 
 // ----------------------------
@@ -1399,6 +1399,45 @@ function pql_get_next_uidnumber($ldap) {
 		$highest = 1000;
 	
     return $highest;
+}
+
+// Returns the next free UID/GID number
+function pql_get_next_username($ldap, $domain) {
+	global $config;
+
+	// Get the prefix from the branch
+	$prefix = pql_get_domain_value($ldap, $domain, 'usernameprefix');
+
+	if($prefix) {
+		// Under what namingContexts is this domain/branch located?
+		$rootdn = pql_get_rootdn($domain);
+
+		// Setup the LDAP search filter
+//		$filter = $config["PQL_CONF_REFERENCE_USERS_WITH"][$rootdn] . '=' . $prefix . '*';
+		$filter = "uid=$prefix*"; // DEBUG
+
+		// Search the whole database for all users with this prefix
+		foreach($ldap->ldap_basedn as $dn) {
+			unset($info);
+
+			$sr     = ldap_search($ldap->ldap_linkid, $dn, $filter);
+			$info   = @ldap_get_entries($ldap->ldap_linkid, $sr) or pql_errormsg($ldap->ldap_linkid);
+
+			// Rearrange the array, we're only interested in the PQL_CONF_REFERENCE_USERS_WITH value			
+			for($i=0; $i < $info["count"]; $i++)
+			  $USERS[] = $info[$i]["uid"][0];
+		}
+
+		if(!$USERS)
+		  return($prefix."0001");
+		else {
+			// We have previous values in the DB. 
+			sort($USERS);
+			$nr  = eregi_replace($prefix, "", $USERS[count($USERS)-1]);
+			return($prefix.sprintf("%04d", $nr + 1));
+		}
+	}
+
 }
 
 function pql_get_domain_value($ldap, $dn, $value, $match = '', $all = 0) {

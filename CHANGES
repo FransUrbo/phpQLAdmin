@@ -59,6 +59,12 @@ phpQLAdmin 2.0.15 Release (TO BE ANNOUNCED)
 	    'Mailbox properties' and 'User access' if we don't run in
 	    advanced mode.
 	    Closes bug 12
+	  - Allow for setting a new branch default - Automatic username
+	    prefix. This option is only visible in the domain/branch
+	    details page if 'Automaticly generate username' is set to
+	    true. Required a new attribute to the phpQLAdminBranch
+	    objectclass. The OID is:
+		userNamePrefix          1.3.6.1.4.1.8767.3.2.4.13
 
 	Misc changes
 

@@ -48,7 +48,7 @@ $attribs = array('defaultdomain', 'basehomedir', 'basemaildir', 'o', 'l',
 				 'postalcode', 'postaladdress', 'telephonenumber', 'street',
 				 'facsimiletelephonenumber', 'postofficebox', 'st', 'basequota',
 				 'maximumdomainusers', 'defaultpasswordscheme', 'maximummailinglists',
-				 'autocreateusername', 'autocreatemailaddress');
+				 'autocreateusername', 'autocreatemailaddress', 'usernameprefix');
 foreach($attribs as $attrib) {
 	// Get default value
 	$value = pql_get_domain_value($_pql, $domain, $attrib);
