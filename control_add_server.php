@@ -1,6 +1,6 @@
 <?php
 // Add a new mailserver to the database
-// $Id: control_add_server.php,v 2.18 2004-03-11 18:13:32 turbo Exp $
+// $Id: control_add_server.php,v 2.19 2004-03-29 07:48:00 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -38,27 +38,39 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 		} elseif($submit == "Clone") {
 			if($fqdn) {
 				// Get the values of the mailserver
-				$attribs = array(pql_get_define("PQL_ATTR_DEFAULTDOMAIN"),
-								 pql_get_define("PQL_ATTR_PLUSDOMAIN"),
-								 pql_get_define("PQL_ATTR_LDAPSERVER"),
-								 pql_get_define("PQL_ATTR_LDAPREBIND"),
-								 pql_get_define("PQL_ATTR_LDAPBASEDN"),
-								 pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"),
-								 pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"),
-								 pql_get_define("PQL_ATTR_DIRMAKER"),
-								 pql_get_define("PQL_ATTR_QUOTA_WARNING"),
-								 pql_get_define("PQL_ATTR_LDAPUID"),
-								 pql_get_define("PQL_ATTR_LDAPGID"));
-				if(isset($include_locals)) 	  $attribs[] = pql_get_define("PQL_ATTR_LOCALS");
-				if(isset($include_rcpthosts)) $attribs[] = pql_get_define("PQL_ATTR_RCPTHOSTS");
-				if(isset($include_password))  $attribs[] = pql_get_define("PQL_ATTR_LDAPPASSWORD");
+				$attribs = array('defaultdomain'		=> pql_get_define("PQL_ATTR_DEFAULTDOMAIN"),
+								 'plusdomain'			=> pql_get_define("PQL_ATTR_PLUSDOMAIN"),
+								 'ldapserver'			=> pql_get_define("PQL_ATTR_LDAPSERVER"),
+								 'ldaprebind'			=> pql_get_define("PQL_ATTR_LDAPREBIND"),
+								 'ldapbasedn'			=> pql_get_define("PQL_ATTR_LDAPBASEDN"),
+								 'ldapdefaultdotmode'	=> pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"),
+								 'ldapdefaultquota'		=> pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"),
+								 'ldapdefaultquotasize'	=> pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA_SIZE"),
+								 'ldapdefaultquotacount'=> pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA_COUNT"),
+								 'dirmaker'				=> pql_get_define("PQL_ATTR_DIRMAKER"),
+								 'quotawarning'			=> pql_get_define("PQL_ATTR_QUOTA_WARNING"),
+								 'ldapuid'				=> pql_get_define("PQL_ATTR_LDAPUID"),
+								 'ldapgid'				=> pql_get_define("PQL_ATTR_LDAPGID"));
+
+				if(isset($include_locals)) {
+					$new = array('locals'				=> pql_get_define("PQL_ATTR_LOCALS"));
+					$attribs = $attribs + $new;
+				}
+				if(isset($include_rcpthosts)) {
+					$new = array('rcpthosts'			=> pql_get_define("PQL_ATTR_RCPTHOSTS"));
+					$attribs = $attribs + $new;
+				}
+				if(isset($include_password)) {
+					$new = array('ldappassword'			=> pql_get_define("PQL_ATTR_LDAPPASSWORD");
+					$attribs = $attribs + $new;
+				}
 
 				$cn = pql_get_define("PQL_ATTR_CN") . "=" . $cloneserver . "," . $_SESSION["USER_SEARCH_DN_CTR"];
-				foreach($attribs as $attrib) {
+				foreach($attribs as $key $attrib) {
 					$value = pql_control_get_attribute($_pql_control->ldap_linkid, $cn, $attrib);
 					if(!is_null($value)) {
 						for($i=0; $value[$i]; $i++) {
-							$values[$attrib][] = $value[$i];
+							$values[$key][] = $value[$i];
 						}
 					}
 				}
@@ -68,9 +80,9 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "top";
 				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "qmailControl";
 				$entry[pql_get_define("PQL_ATTR_CN")]			= $fqdn;
-				foreach($values as $attrib => $val) {
+				foreach($values as $key => $val) {
 					foreach($val as $value) {
-						$entry[$attrib][] = $value;
+						$entry[$key][] = $value;
 					}
 				}
 
@@ -207,11 +219,24 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
           </td>
         </tr>
   
+<?php if(!$_SESSION["NEW_STYLE_QUOTA"])  { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">Default quota</td>
           <td><input type="text" name="ldapdefaultquota" value="<?=$ldapdefaultquota?>" size="30">
         </tr>
   
+<?php } else { ?>
+        <tr class="<?php pql_format_table(); ?>">
+          <td class="title">Default quota size</td>
+          <td><input type="text" name="ldapdefaultquotasize" value="<?=$ldapdefaultquotasize?>" size="30">
+        </tr>
+  
+        <tr class="<?php pql_format_table(); ?>">
+          <td class="title">Default quota count</td>
+          <td><input type="text" name="ldapdefaultquotacount" value="<?=$ldapdefaultquotacount?>" size="30">
+        </tr>
+  
+<?php } ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">Default DOT mode</td>
           <td><input type="text" name="ldapdefaultdotmode" value="<?=$ldapdefaultdotmode?>" size="30">
@@ -240,14 +265,16 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 	// This won't really happen, since we're not getting this form if we haven't
 	// ADVANCED_MODE set! But anyway, just incase I find a better way later :)
 ?>
-        <input type="hidden" name="plusdomain" value="">
-        <input type="hidden" name="ldapserver" value="<?=$_SESSION["USER_HOST"]?>">
-        <input type="hidden" name="ldapbasedn" value="<?=$_SESSION["USER_HOST"]?>">
-        <input type="hidden" name="ldapdefaultquota" value="">
-        <input type="hidden" name="ldapdefaultdotmode" value="ldapwithprog">
-        <input type="hidden" name="dirmaker" value="">
-        <input type="hidden" name="quotawarning" value="User is above quota level!">
-        <input type="hidden" name="ldaprebind" value="1">
+        <input type="hidden" name="plusdomain"            value="">
+        <input type="hidden" name="ldapserver"            value="<?=$_SESSION["USER_HOST"]?>">
+        <input type="hidden" name="ldapbasedn"            value="<?=$_SESSION["USER_HOST"]?>">
+        <input type="hidden" name="ldapdefaultquota"      value="">
+        <input type="hidden" name="ldapdefaultquotacount" value="">
+        <input type="hidden" name="ldapdefaultquotasize"  value="">
+        <input type="hidden" name="ldapdefaultdotmode"    value="ldapwithprog">
+        <input type="hidden" name="dirmaker"              value="">
+        <input type="hidden" name="quotawarning"          value="User is above quota level!">
+        <input type="hidden" name="ldaprebind"            value="1">
 <?php
 	}
 ?>
