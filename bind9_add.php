@@ -1,7 +1,8 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.16 2005-01-30 12:25:40 turbo Exp $
+// $Id: bind9_add.php,v 2.17 2005-01-31 11:41:48 turbo Exp $
 //
+// {{{ Setup session etc
 session_start();
 require("./include/pql_config.inc");
 require("./include/pql_control.inc");
@@ -12,9 +13,11 @@ include("./header.html");
 if($_REQUEST["domainname"]) {
 	$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 }
+// }}}
 
 if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 	  if(!$_REQUEST["domainname"]) {
+		// {{{ action=add && type=domain && !domainname
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Create a DNS zone in branch %domain%'), array('domain' => $_REQUEST["domain"])); ?></span>
 
@@ -38,7 +41,10 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
     <input type="hidden" name="dns_domain_name" value="<?=$_REQUEST["dns_domain_name"]?>">
     <input type="submit" value="<?php echo "--&gt;&gt;"; ?>">
   </form>
-<?php } else {
+<?php
+		// }}}
+      } else {
+		// {{{ Add bind9 zone
 		  if(pql_bind9_add_zone($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["domainname"]))
 			$msg = "Successfully added domain ".$_REQUEST["domainname"];
 		  else
@@ -51,9 +57,11 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 			die($url);
 		  else
 			header("Location: ".pql_get_define("PQL_CONF_URI") . "$url");
+		  // }}}
 	  }
 } elseif(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'host')) {
 	  if(!$_REQUEST["hostname"] or !$_REQUEST["record_type"] or !$_REQUEST["dest"]) {
+		  // {{{ action=add && type=host and (!hostname or !record_type or !dest)
 		  if(!$_REQUEST["submit"]) {
 			  $error_text = array();
 			  $error = false;
@@ -142,10 +150,13 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
     <br>
     <input type="submit" value="Save">
   </form>
-<?php } else {
+<?php
+		// }}}
+	  } else {
+		  // {{{ Add bind9 host
 		  $entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")]	= pql_maybe_idna_encode($_REQUEST["hostname"]);
 		  $entry[pql_get_define("PQL_ATTR_ZONENAME")]			= $_REQUEST["domainname"];
-		  $entry[pql_get_define("PQL_ATTR_DNSTTL")]				= 604800;
+		  $entry[pql_get_define("PQL_ATTR_DNSTTL")]				= pql_bind9_get_ttl($_pql->ldap_linkid, $_REQUEST["domainname"]);
 		  switch($_REQUEST["record_type"]) {
 			case "a":
 			  $entry[pql_get_define("PQL_ATTR_ARECORD")]		= pql_maybe_idna_encode($_REQUEST["dest"]);
@@ -171,7 +182,7 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 			if(!file_exists("./.DEBUG_ME")) {
 			  // We can't do this if we're debuging. The object don't exists in the db, hence
 			  // we can't figure out zone name etc...
-			  if(!pql_bind9_update_serial($_pql, $dn))
+			  if(!pql_bind9_update_serial($_pql->ldap_linkid, $dn))
 				die("failed to update SOA serial number");
 			}
 		  } else
@@ -186,6 +197,7 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 		  else
 			header("Location: $url");
 	  }
+	  // }}}
 }
 ?>
 </body>
