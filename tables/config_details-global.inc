@@ -1,3 +1,5 @@
+  <br>
+
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=$LANG->_('Global configuration')?>
       <tr>
@@ -12,11 +14,7 @@
 <?php $class=table_bgcolor(0);
       if($ALLOW_GLOBAL_CONFIG_SAVE) {
 ?>
-        <td class="<?=$class?>">
-          <a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_LANG"]?>">
-            <img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=$PQL_ATTRIBUTE["PQL_CONF_LANG"]?>">
-          </a>
-        </td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_LANG"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=$PQL_ATTRIBUTE["PQL_CONF_LANG"]?>"></a></td>
 <?php } else { ?>
         <td class="<?=$class?>"></td>
 <?php } ?>
