@@ -92,8 +92,63 @@ include("./header.html");
 	<td class="title"><?php echo PQL_TEST_CONNECTION_CONROL_TITLE; ?></td>
 	<td class="<?php table_bgcolor(); ?>"><?php echo $connection_control; ?>&nbsp;</td>
 </tr>
+
+<tr></tr>
+
+<tr>
+	<td class="title">LDAP server contains phpQLAdminConfig objectclass</td>
+<?php
+if(pql_get_subschemas($_pql->ldap_linkid, "phpQLAdminConfig")) {
+?>
+	<td class="<?php table_bgcolor(); ?>">Yes, it does&nbsp;</td>
+<?php
+} else {
+?>
+	<td class="<?php table_bgcolor(); ?>">No, it doesn't. Please load <a href="phpQLAdmin.schema">phpQLAdmin.schema</a>&nbsp;</td>
+<?php
+}
+?>
+</tr>
+<tr>
+	<td class="title">LDAP server contains phpQLAdminBranch objectclass</td>
+<?php
+if(pql_get_subschemas($_pql->ldap_linkid, "phpQLAdminBranch")) {
+?>
+	<td class="<?php table_bgcolor(); ?>">Yes, it does&nbsp;</td>
+<?php
+} else {
+?>
+	<td class="<?php table_bgcolor(); ?>">No, it doesn't. Please load <a href="phpQLAdmin.schema">phpQLAdmin.schema</a>&nbsp;</td>
+<?php
+}
+?>
+</tr>
+<tr>
+    <td class="title">LDAP server contains schema for <a href="http://www.ietf.org/rfc/rfc2377.txt" target="_new">RFC 2377</a></td>
+<?php
+if(pql_get_subschemas($_pql->ldap_linkid, "dcOrganizationNameForm")) {
+?>
+	<td class="<?php table_bgcolor(); ?>">Yes, it does&nbsp;</td>
+<?php
+} else {
+?>
+	<td class="<?php table_bgcolor(); ?>">No, it doesn't. Please load <a href="rfc2377.schema">rfc2377.schema</a>&nbsp;</td>
+<?php
+}
+?>
+</tr>
 <tr class="subtitle">
-	<td colspan="2"><img src="images/info.png" width="16" height="16" border="0"><?php echo PQL_TEST_HELP; ?>&nbsp;</td>
+  <td>
+    <table>
+      <th>
+        <tr>
+          <td><img src="images/info.png" width="16" height="16" border="0" align="right"></td>
+          <td><?php echo PQL_TEST_HELP; ?>&nbsp;</td>
+        </tr>
+      </th>
+    </table>
+  </td>
+  <td></td>
 </tr>
 </table>
 
