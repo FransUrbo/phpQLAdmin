@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.80 2004-03-14 08:26:12 turbo Exp $
+// $Id: domain_detail.php,v 2.81 2004-03-15 05:17:55 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -147,12 +147,12 @@ $additionaldomainname = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get
 
 // Setup the buttons
 $buttons = array('default'	=> 'Branch Defaults',
-				 'details'	=> 'Branch Details',
 				 'users'	=> 'Registred Users',
 				 'chval'	=> 'Change values of all users');
 
 if($_SESSION["ADVANCED_MODE"]) {
-	$new = array('owner'	=> 'Branch Owner',
+	$new = array('details'	=> 'Branch Details',
+				 'owner'	=> 'Branch Owner',
 				 'dnsinfo'	=> 'MX Information',
 				 'aci'		=> 'Access Control Information');
 	$buttons = $buttons + $new;
