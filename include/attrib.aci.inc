@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for OpenLDAPaci
-// $Id: attrib.aci.inc,v 1.6 2004-03-11 18:13:41 turbo Exp $
+// $Id: attrib.aci.inc,v 1.7 2004-05-13 05:49:00 turbo Exp $
 
 /* DLW: This has valid syntax, but I don't know how to test it. */
 
@@ -61,7 +61,7 @@ function attribute_print_form($action) {
       <th colspan="3" align="left"><?=$LANG->_('Access Control Information')?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Object DN')?></td>
-          <td><?php if(!empty($_REQUEST["user"]) { echo $_REQUEST["user"]; } else { echo $_REQUEST["domain"]; } ?></td>
+          <td><?php if(!empty($_REQUEST["user"])) { echo $_REQUEST["user"]; } else { echo $_REQUEST["domain"]; } ?></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">

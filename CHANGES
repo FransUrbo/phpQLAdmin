@@ -43,6 +43,10 @@ phpQLAdmin 2.0.18d TO BE ANNOUNCED
 	Bug fixes
 	  - De-globalize the 'reload left frame' value so that the reloading can acctually
 	    happen! Closes bug 182
+	  - If the 'maximum mailinglist count' is unset (in ezmlm creation form), then
+	    we're comparing 'count > NULL' which will always be true. To go around this,
+	    use 'count + 1' as maximum value (will make the form continue).
+	  - PHP parse error in include/attrib.aci.inc fixed.
 
 	GUI layout change
 	  - Don't show the minus image before 'no domains' (left-ezmlm.php) if there's
