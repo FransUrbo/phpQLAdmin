@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for pilotPerson objects etc
-// $Id: attrib.outlook.inc,v 1.4 2003-01-30 10:15:37 turbo Exp $
+// $Id: attrib.outlook.inc,v 1.5 2003-02-04 08:28:04 turbo Exp $
 
 /*
 	Attributes managed here:
@@ -96,7 +96,7 @@ function attribute_save($type) {
 			// Save a domain attribute
 			if(pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, $value))
 			  $success = 1;
-		} elseif($user and !$domain) {
+		} elseif($user) {
 			// Save a user attribute
 			if(pql_replace_userattribute($_pql->ldap_linkid, $user, $attrib, $value))
 			  $success = 1;
