@@ -3,16 +3,17 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.72 2004-11-08 10:31:22 turbo Exp $
+// $Id: pql_config.inc,v 1.73 2005-01-31 11:45:32 turbo Exp $
 //
 
-// include the API files
+// {{{ Include the API files
 require("./include/pql.inc");				// Main API file
 require("./include/pql_formating.inc");		// Output formating API
 require("./include/pql_cache.inc");			// Cache API
 require("./include/pql_search.inc");		// Search API
 require("./include/pql_write.inc");			// Write API
 require("./include/pql_units.inc");			// Sub branch API
+// }}}
 
 // {{{ pql_set_define(define, value, case_insensitive, dn)
 // We need this instead of define(), so that we can get rid
@@ -81,13 +82,14 @@ if($_SESSION["USER_HOST"]) {
 	  // Open a connection to the LDAP server
 	  $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
-	// Remember the base DN's
-	$_SESSION["BASE_DN"] = $_pql->ldap_basedn;
-
 	$_SESSION["ALLOW_BRANCH_CREATE"] = 0; $_SESSION["ALLOW_CONTROL_CREATE"] = 0;
 
 	foreach($_pql->ldap_basedn as $dn)  {
 		$dn = urldecode($dn);
+
+		if(!$_SESSION["BASE_DN"])
+		  // Remember the base DN's
+		  $_SESSION["BASE_DN"][] = $dn;
 		
 		// 3. Load configurations from LDAP base DN
 		$sr = @ldap_read($_pql->ldap_linkid, $dn, ('objectClass=*'))
