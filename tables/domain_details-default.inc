@@ -119,7 +119,7 @@
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Length of user suffix')?></td>
-        <td><?php if($usernameprefixlength){echo $usernameprefixlength;}else{echo "<i>".$LANG->_('Not set')."</i>";} ?></td>
+        <td><?php if($usernameprefixlength){echo $usernameprefixlength;}else{echo "4 (<i>".$LANG->_('Default')."</i>)";} ?></td>
         <td><?=$usernameprefixlength_link?></td>
       </tr>
 
