@@ -1,8 +1,8 @@
 <?php
 // edit attributes of a webserver configuration
-// $Id: websrv_edit_attributes.php,v 2.6 2005-02-24 17:04:01 turbo Exp $
+// $Id: websrv_edit_attributes.php,v 2.7 2005-03-04 11:55:32 turbo Exp $
 //
-session_start();
+require("./include/pql_session.inc");
 require("./include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_websrv.inc");
 

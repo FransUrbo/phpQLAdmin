@@ -1,9 +1,9 @@
 <?php
 // add a domain
-// $Id: unit_add.php,v 2.23 2005-03-01 20:28:49 turbo Exp $
+// $Id: unit_add.php,v 2.24 2005-03-04 11:55:32 turbo Exp $
 //
 // {{{ Setup session etc
-session_start();
+require("./include/pql_session.inc");
 require("./include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_control.inc");
 

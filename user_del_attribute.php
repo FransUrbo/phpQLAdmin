@@ -1,8 +1,8 @@
 <?php
 // delete attribute of a user
-// $Id: user_del_attribute.php,v 2.31 2005-02-24 17:04:01 turbo Exp $
+// $Id: user_del_attribute.php,v 2.32 2005-03-04 11:55:32 turbo Exp $
 //
-session_start();
+require("./include/pql_session.inc");
 require("./include/pql_config.inc");
 
 switch ($_REQUEST["attrib"]) {

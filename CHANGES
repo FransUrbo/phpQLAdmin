@@ -2,6 +2,15 @@ phpQLAdmin 2.3 Change Log
 
 phpQLAdmin 2.3.0 TO BE ANNOUNCED
 	Bug fixes
+	  - Session was started with the path specified in php.ini:session.cookie_path.
+	    For me that was '/' which meant that if I have two (or more) phpQLAdmin
+	    installations on the same server (which I do - stable, devel and demo etc),
+	    they overwrote each others session variable.
+	    To avoid this, we must set the 'session.cookie_path' using ini_set() BEFORE
+	    session is started. Instead of doing this in every place where session_start()
+	    is called, we include the new file 'include/pql_session.inc' which does
+	    some additional magic.
+
 	GUI layout changes
 	Documentation changes
 	Schema changes

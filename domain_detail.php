@@ -1,9 +1,9 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.91 2005-02-24 17:04:00 turbo Exp $
+// $Id: domain_detail.php,v 2.92 2005-03-04 11:55:32 turbo Exp $
 //
 // {{{ Setup session etc
-session_start();
+require("./include/pql_session.inc");
 require("./include/pql_config.inc");
 
 $url["domain"] = pql_format_urls($_REQUEST["domain"]);

@@ -1,9 +1,9 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.87 2005-03-04 09:47:52 turbo Exp $
+// $Id: user_detail.php,v 2.88 2005-03-04 11:55:32 turbo Exp $
 //
 // {{{ Setup session
-session_start();
+require("./include/pql_session.inc");
 require("./include/pql_config.inc");
 
 if(!$_GET and ($_REQUEST["view"] == "antispam")) {

@@ -1,7 +1,7 @@
 <?php
-// $Id: index2.php,v 2.39 2004-11-17 07:32:36 turbo Exp $
+// $Id: index2.php,v 2.40 2005-03-04 11:55:32 turbo Exp $
 
-session_start();
+require("./include/pql_session.inc");
 require("./include/pql_config.inc");
 
 if(pql_get_define("PQL_CONF_START_ADVANCED", $_SESSION["USER_DN"])) {

@@ -1,11 +1,11 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.121 2005-03-04 09:51:36 turbo Exp $
+// $Id: user_add.php,v 2.122 2005-03-04 11:55:32 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
 // {{{ Setup session etc
-session_start();
+require("./include/pql_session.inc");
 require("./include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_control.inc");
 require($_SESSION["path"]."/include/pql_templates.inc");

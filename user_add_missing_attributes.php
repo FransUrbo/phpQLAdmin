@@ -1,11 +1,11 @@
 <?php
 // Fix a 'object class violation' by adding missing MUST attributes
-// $Id: user_add_missing_attributes.php,v 2.3 2003-11-14 11:55:52 turbo Exp $
+// $Id: user_add_missing_attributes.php,v 2.4 2005-03-04 11:55:32 turbo Exp $
 //
 // This file is INCLUDED from pql.inc:pql_replace_userattribute()
 // and should NOT be called directly!
 //
-session_start();
+require("./include/pql_session.inc");
 require("./include/pql_config.inc");
 ?>
 

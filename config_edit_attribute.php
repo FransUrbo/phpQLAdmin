@@ -1,9 +1,9 @@
 <?php
 // Edit and set configuration values in the LDAP database
-// $Id: config_edit_attribute.php,v 1.16 2005-02-24 17:04:00 turbo Exp $
+// $Id: config_edit_attribute.php,v 1.17 2005-03-04 11:55:32 turbo Exp $
 //
 // {{{ Setup session etc
-session_start();
+require("./include/pql_session.inc");
 
 require("./include/pql_config.inc");
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);

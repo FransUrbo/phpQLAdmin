@@ -1,8 +1,8 @@
 <?php
 // Add a new mailserver to the database
-// $Id: control_add_server.php,v 2.25 2005-02-25 14:06:46 turbo Exp $
+// $Id: control_add_server.php,v 2.26 2005-03-04 11:55:32 turbo Exp $
 //
-session_start();
+require("./include/pql_session.inc");
 require("./include/pql_config.inc");
 
 if(pql_get_define("PQL_CONF_CONTROL_USE")) {

@@ -1,9 +1,9 @@
 <?php
 // Add a user template
-// $Id: config_template_add.php,v 2.2 2005-02-25 14:33:18 turbo Exp $
+// $Id: config_template_add.php,v 2.3 2005-03-04 11:55:32 turbo Exp $
 //
 // {{{ Setup session etc
-session_start();
+require("./include/pql_session.inc");
 
 require("./include/pql_config.inc");
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);

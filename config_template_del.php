@@ -1,9 +1,9 @@
 <?php
 // Delete a user template object
-// $Id: config_template_del.php,v 2.3 2005-03-04 09:51:36 turbo Exp $
+// $Id: config_template_del.php,v 2.4 2005-03-04 11:55:32 turbo Exp $
 //
 // {{{ Setup session etc
-session_start();
+require("./include/pql_session.inc");
 require("./include/pql_config.inc");
 include($_SESSION["path"]."/header.html");
 // }}}

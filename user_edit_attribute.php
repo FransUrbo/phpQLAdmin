@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of user
-// $Id: user_edit_attribute.php,v 2.49 2005-03-04 09:47:53 turbo Exp $
+// $Id: user_edit_attribute.php,v 2.50 2005-03-04 11:55:32 turbo Exp $
 //
 // This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
 //   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -10,7 +10,7 @@
 //      If the input is valid, save it, else print out the form again and return to step 2.
 
 // {{{ Setup session etc
-session_start();
+require("./include/pql_session.inc");
 require("./include/pql_config.inc");
 require($_SESSION["path"]."/include/config_plugins.inc");
 

@@ -1,8 +1,8 @@
 <?php
 // start page
-// $Id: user_search.php,v 2.9 2005-02-24 17:04:01 turbo Exp $
+// $Id: user_search.php,v 2.10 2005-03-04 11:55:32 turbo Exp $
 //
-session_start();
+require("./include/pql_session.inc");
 require("./include/pql_config.inc");
 
 include($_SESSION["path"]."/header.html");
