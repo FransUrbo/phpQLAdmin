@@ -1,12 +1,14 @@
 <?php
 // navigation bar - ezmlm mailinglists manager
-// $Id: left-ezmlm.php,v 2.32 2005-02-24 17:04:00 turbo Exp $
+// $Id: left-ezmlm.php,v 2.33 2005-03-01 20:27:36 turbo Exp $
 //
+// {{{ Setup session etc
 session_start();
 
 require("./include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_ezmlm.inc");
 require("./left-head.html");
+// }}}
 ?>
   <!-- EZMLM Mailinglists -->
   <div id="el1Parent" class="parent">
@@ -25,7 +27,7 @@ require("./left-head.html");
 // Initialize
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"], false, 0);
 
-// ---------------- GET THE DOMAINS/BRANCHES
+// {{{ Get the domains/branches
 if($_SESSION["ALLOW_BRANCH_CREATE"]) {
     // This is a 'super-admin'. Should be able to read EVERYTHING!
     $domains = pql_get_domains($_pql);
@@ -42,9 +44,10 @@ if($_SESSION["ALLOW_BRANCH_CREATE"]) {
 		}
 	}
 }
+// }}}
 
 if(!is_array($domains)) {
-    // no domain defined - report it
+  // {{{ No domain defined - report it
 ?>
   <!-- start domain parent -->
 <?php if($_SESSION["opera"]) { ?>
@@ -57,14 +60,17 @@ if(!is_array($domains)) {
     <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el0000Img">
     <font color="black" class="heada">no domains</font></a>
   </div>
-<?php } ?>
+<?php
+// }}}
+}
+?>
   <!-- end domain parent -->
 </body>
 </html>
 <?php
 	die(); // No point in continuing from here!
 } else {
-    // We got at least one domain - get it's mailing lists
+    // {{{ We got at least one domain - get it's mailing lists
 	asort($domains);
 	foreach($domains as $key => $domain) {
 		$number_of_lists = -1; // So that we end up with 0 for first list!
@@ -80,8 +86,10 @@ if(!is_array($domains)) {
 			}
 		}
 	}
+// }}}
 
 	if(is_array($lists)) {
+		// {{{ Load and arrange the list information
 		foreach($lists as $dom => $entry) {
 			$index = array();
 
@@ -106,9 +114,10 @@ if(!is_array($domains)) {
 				$mailinglists_hostsindex[$listhost][$dom][$name] = $number;
 			}
 		}
+// }}}
 		
 		if($mailinglists_hostsindex) {
-			// Sorted by domainname
+			// {{{ Sort lists by domainname
 			foreach($mailinglists_hostsindex as $domainname => $listnames) {
 				foreach($listnames as $branch => $listarray) {
 					// Get Root DN
@@ -135,6 +144,7 @@ if(!is_array($domains)) {
 					pql_format_tree_end();
 				}
 			}
+// }}}
 		}
 	} 
 }
