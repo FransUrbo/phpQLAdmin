@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.20 2005-02-25 07:36:30 turbo Exp $
+// $Id: pql_write.inc,v 2.21 2005-03-04 09:52:56 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -131,6 +131,20 @@ function pql_write_ren($linkid, $old, $parent, $new, $keepold = TRUE) {
 	return true;
   } else {
 	if(ldap_rename($linkid, $old, $new, $parent, $keepold))
+	  return true;
+  }
+
+  return false;
+}
+// }}}
+
+// {{{ pql_write_del(linkid, dn)
+function pql_write_del($linkid, $dn) {
+  if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+	echo "Removing DN<br>'<b>$dn</b>'<br>";
+	return true;
+  } else {
+	if(ldap_delete($linkid, $dn))
 	  return true;
   }
 
@@ -411,6 +425,7 @@ function pql_user_add($ldap_linkid, $domain, $dn, $entry, $type, $branch) {
 // ------------------------------------------------
 
 // {{{ pql_user_del(ldap, domain, user, delete_forwards)
+
 // Delete a user from the LDAP database
 function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 	$linkid = $ldap->ldap_linkid;
@@ -458,7 +473,7 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 		  echo "delete (group): '$dn'<br>";
 		  return TRUE;
 		} else
-		  ldap_delete($linkid, $dn);
+		  pql_write_del($linkid, $dn);
 	}
 
     // we delete the forwards to this user as they don't really make sense anymore
@@ -482,7 +497,7 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 	  echo "delete (user): '$user'<br>";
 	  return TRUE;
 	} else {
-	  if(!ldap_delete($linkid, $user)) {
+	  if(!pql_write_del($linkid, $user)) {
 		pql_format_error(1);
 		return false;
 	  }
@@ -542,7 +557,7 @@ function pql_domain_del($ldap, $domain, $delete_forwards) {
 	  echo "delete (domain): '$domain'<br>";
 	  return TRUE;
 	} else
-	  return(ldap_delete($linkid, $domain));
+	  return(pql_write_del($linkid, $domain));
 }
 // }}}
 
