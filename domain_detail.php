@@ -6,7 +6,7 @@ session_start();
 
 require("./include/pql.inc");
 
-if(PQL_LDAP_CONTROL_USE){
+if(defined(PQL_LDAP_CONTROL_USE)) {
     // include control api if control is used
     include("./include/pql_control.inc");
     $_pql_control = new pql_control($USER_HOST_CTR, $USER_DN, $USER_PASS);
@@ -38,23 +38,23 @@ if(!pql_domain_exist($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain)){
     exit();
 }
 
-// Get default domain name for this domain
-$defaultdomain = pql_get_domain_value($_pql->ldap_linkid, $domain, "defaultdomain");
+// Get some default values for this domain
+// Some of these (everything after the 'o' attribute)
+// uses 'objectClass: dcOrganizationNameForm' -> http://rfc-2377.rfcindex.net/
+$attribs = array('defaultdomain', 'basehomedir', 'basemaildir', 'basequota', 'o', 'postalcode', 'postaladdress', 'l', 'telephonenumber', 'facsimiletelephonenumber', 'seealso', 'postofficebox', 'st');
+foreach($attribs as $attrib) {
+	// Get default value
+	$$attrib = pql_get_domain_value($_pql->ldap_linkid, $domain, $attrib);
+
+	// Setup edit links
+	$link = $attrib . "_link";
+	$$link = "<a href=\"domain_edit_attributes.php?attrib=$attrib&domain=$domain\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify $attrib for $domain\"></a>";
+}
+$admins	= pql_get_domain_value($_pql->ldap_linkid, $domain, "administrator");
 ?>
   <span class="title1">Domain: <?=$domain?><?php if($defaultdomain) {echo " ($defaultdomain)";} ?></span>
   <br><br>
 <?php
-$basehomedir = pql_get_domain_value($_pql->ldap_linkid, $domain, "basehomedir");
-$basemaildir = pql_get_domain_value($_pql->ldap_linkid, $domain, "basemaildir");
-$basequota   = pql_get_domain_value($_pql->ldap_linkid, $domain, "basequota");
-$admins		 = pql_get_domain_value($_pql->ldap_linkid, $domain, "administrator");
-
-// Setup edit links
-$defaultdomain_link = "<a href=\"domain_edit_attributes.php?attrib=defaultdomain&domain=$domain\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify default domainname for $domain\"></a>";
-$basehomedir_link   = "<a href=\"domain_edit_attributes.php?attrib=basehomedir&domain=$domain\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify default homedirectory for $domain\"></a>";
-$basemaildir_link   = "<a href=\"domain_edit_attributes.php?attrib=basemaildir&domain=$domain\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify default maildirectory for $domain\"></a>";
-$basequota_link     = "<a href=\"domain_edit_attributes.php?attrib=basequota&domain=$domain\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify default quota for $domain\"></a>";
-
 	if($ADVANCED_MODE == 1) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
@@ -125,6 +125,86 @@ $basequota_link     = "<a href=\"domain_edit_attributes.php?attrib=basequota&dom
   <br><br>
 
 <?php
+	if($o) {
+?>
+  <table cellspacing="0" cellpadding="3" border="0">
+    <th colspan="3" align="left">Branch owner</th>
+<?php if($o) { ?>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Organization name</td>
+        <td><?=$o?></td>
+        <td><?=$o_link?></td>
+      </tr>
+
+<?php } if($postalcode) { ?>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Postal code</td>
+        <td><?=$postalcode?></td>
+        <td><?=$postalcode_link?></td>
+      </tr>
+
+<?php } if($postofficebox) { ?>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Post box</td>
+        <td><?=$postofficebox?></td>
+        <td><?=$postofficebox_link?></td>
+      </tr>
+
+<?php } if($postaladdress) { ?>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Postal address</td>
+        <td><?=$postaladdress?></td>
+        <td><?=$postaladdress_link?></td>
+      </tr>
+
+<?php } if($l) { ?>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">City</td>
+        <td><?=$l?></td>
+        <td><?=$l_link?></td>
+      </tr>
+
+<?php } if($st) { ?>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">State</td>
+        <td><?=$st?></td>
+        <td><?=$st_link?></td>
+      </tr>
+
+<?php } if($telephonenumber) { ?>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Telephone number</td>
+        <td><?=$telephonenumber?></td>
+        <td><?=$telephonenumber_link?></td>
+      </tr>
+
+<?php } if($facsimiletelephonenumber) { ?>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Fax number</td>
+        <td><?=$facsimiletelephonenumber?></td>
+        <td><?=$facsimiletelephonenumber_link?></td>
+      </tr>
+
+<?php
+	  } if($seealso) {
+		  // TODO: This _MIGHT_ be an array! (?)
+		  $user = split(',', $seealso);
+		  $user = split('=', $user[0]);
+		  $user = $user[1];
+?>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Contact person</td>
+        <td><a href="user_detail.php?domain=<?=$domain?>&user=<?=$user?>"><?=$seealso?></a></td>
+        <td><?=$seealso_link?></td>
+      </tr>
+<?php } ?>
+    </th>
+  </table>
+
+  <br><br>
+
+<?php
+	}
 }
 $users = pql_get_user($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain);
 ?>
@@ -260,17 +340,17 @@ if($ADVANCED_MODE == 1) {
   <br><br>
 
 <?php
-	if(PQL_LDAP_CONTROL_USE){
+	if(defined(PQL_LDAP_CONTROL_USE)) {
 		if(pql_control_search_attribute($_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR, "locals", $defaultdomain)){
 			$locals = PQL_YES;
-			if(!PQL_LDAP_CONTROL_AUTOADDLOCALS){
+			if(!defined(PQL_LDAP_CONTROL_AUTOADDLOCALS)) {
 				$locals_link = "<a href=\"control_edit_attribute.php?attrib=locals&type=del&set=$defaultdomain&submit=1\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"remove $defaultdomain from locals\"></a>";
 			} else {
 				$locals_link = "&nbsp;";
 			}
 		} else {
 			$locals = PQL_NO;
-			if(!PQL_LDAP_CONTROL_AUTOADDLOCALS){
+			if(!defined(PQL_LDAP_CONTROL_AUTOADDLOCALS)) {
 				$locals_link = "<a href=\"control_edit_attribute.php?attrib=locals&type=add&set=$defaultdomain&submit=1\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"add $defaultdomain to locals\"></a>";
 			} else {
 				$locals_link = "&nbsp;";
