@@ -143,7 +143,7 @@
 
       <tr></tr>
 
-      <!-- -------------------- --!>
+      <!-- -------------------- -->
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Kerberos realm')?></td>
