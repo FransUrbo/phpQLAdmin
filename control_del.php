@@ -1,6 +1,6 @@
 <?php
 // Delete a mailserver controls object
-// $Id: control_del.php,v 2.18.2.1 2005-03-04 11:59:44 turbo Exp $
+// $Id: control_del.php,v 2.18.2.2 2005-03-17 08:23:01 turbo Exp $
 //
 require("./include/pql_session.inc");
 require("./include/pql_config.inc");
@@ -122,14 +122,14 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 				  $oldmx = $_REQUEST["oldmx"]; unset($_REQUEST);
 				  $url = $_SERVER["PHP_SELF"]."?mxhost=$oldmx&error=1";
 
-				  header("Location: " . $_SESSION["URI"] . $url);
+				  pql_header($url);
 			  } else {
 				  if(($_REQUEST["newmx"] == 'user') and !$_REQUEST["mxhost"]) {
 					  // No (user specified) MX/host specified - do over!
 					  $oldmx = $_REQUEST["oldmx"]; unset($_REQUEST);
 					  $url = $_SERVER["PHP_SELF"]."?mxhost=$oldmx&error=1";
 
-					  header("Location: " . $_SESSION["URI"] . $url);
+					  pql_header($url);
 				  } else {
 					  // Move the user(s) to user specified server
 					  // OR
@@ -183,7 +183,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 														   array('host' => $mxhost))));
 		}
 
-		header("Location: " . $_SESSION["URI"] . $url);
+		pql_header($url);
 	  }
 	}
 	// }}}
