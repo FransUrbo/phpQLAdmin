@@ -1,8 +1,38 @@
 phpQLAdmin 2.0 Change Log
 
 phpQLAdmin 2.0.4 Release - TO BE RELEASED
+	Bug fixes
+	  - Got ezmlm mailing list management to work, stress tested it localy,
+	    "works for me"... :)
+	    + Part of the fix is to have two suidperl script that does a fiew
+	      things the webserver/PHP don't have access to (we need to create
+	      some directories as root and give away files/directories to the
+	      mailing list user - usually 'alias'.
+	  - Correctly export environment variables before executing external
+	    script.
+	  - Correctly get domain default values/administrator (missed some when
+	    I changed to my own object class).
 
-phpQLAdmin 2.0.3
+	GUI layout change
+	  - Left justify the locals/rcpthosts tables in the mailserver control
+	    details page.
+	  - Allow for creating a script that initializes ldap* files on a new
+	    mail server (example script included).
+
+	EZMLM Mailinglist management
+	  - Only build the ezmlm frame list tree if there is any lists, and if
+	    there isn't any, show 'no lists' as indicator.
+	  - Print status message at top of ezmlm details page if there is any.
+	  - Add the 'add subscriber' link at the bottom of the 'show list information'
+	    table even if there is no existing subscribers.
+
+	Misc changes
+	  - Working example of suidperl script 'create_domain.pl' (creates the
+	    'baseMailDir/mailinglists' directory - needs to be done as root).
+	  - Force usage of objectclass 'phpQLAdminBranch' and 'dcOrganizationNameForm'
+	    when creating the domain/branch object.
+
+phpQLAdmin 2.0.3 Release (Jan 13 2003)
 	Bug fixes
 	  - Documentation update
 	  - Missed some include($include) line (prefix with './include/').
@@ -75,10 +105,10 @@ phpQLAdmin 2.0.3
 	    domain/branch administrator. Schema file (phpQLAdmin.schema included).
 	    This will break an upgrade - read README.upgrade!!
 
-phpQLAdmin 2.0.2 Release
+phpQLAdmin 2.0.2 Release (Jan  4 2003)
 	- Documentation update
 	
-phpQLAdmin 2.0.1 Release
+phpQLAdmin 2.0.1 Release (Jan  3 2003)
 	- More independent LDAP database layout. The admin interface
 	  should not dictate how a database should look like (or vise
 	  versa for that matter!). The admin interface should cope with
