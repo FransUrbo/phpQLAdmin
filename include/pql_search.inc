@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.14 2004-01-01 12:35:34 turbo Exp $
+// $Id: pql_search.inc,v 2.15 2004-01-13 18:56:28 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -53,7 +53,6 @@ function pql_get_dn($ldap, $reference, $multiples = 0) {
 									$ldap->ldap_linkid);
 
 		// Do the search
-echo "filter: $filter ($base)<br>";
 		$dn = pql_search($ldap->ldap_linkid, $base, $filter);
 		if($dn) {
 			// we got the dn -> remember it
