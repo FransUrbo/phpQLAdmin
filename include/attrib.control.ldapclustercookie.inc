@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtpclustercookie (max number of bytes in message)
 //
-// $Id: attrib.control.ldapclustercookie.inc,v 2.3 2004-10-15 15:23:02 turbo Exp $
+// $Id: attrib.control.ldapclustercookie.inc,v 2.4 2004-10-16 09:51:20 turbo Exp $
 
 // {{{ smtpclustercookie_check(type)
 function smtpclustercookie_check($type) {
@@ -68,7 +68,7 @@ function smtpclustercookie_print_form() {
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="2" align="left">smtpclustercookie (<?=$LANG->_('_CHANGE THIS_')?>)
+      <th colspan="2" align="left">smtpclustercookie (<?=$LANG->_('Cluster cookie')?>)
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Cookie')?></td>
           <td><?php echo pql_format_error_span($error["smtpclustercookie"]); ?><input type="text" name="smtpclustercookie" value="<?=$_REQUEST["smtpclustercookie"]?>"></td>
