@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.17 2003-05-15 12:22:42 turbo Exp $
+// $Id: control_detail.php,v 1.18 2003-05-18 13:14:53 turbo Exp $
 session_start();
 require("./include/pql_config.inc");
 
@@ -22,10 +22,12 @@ if($config["PQL_GLOB_CONTROL_USE"]) {
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid, $cn, $attrib);
 		if(!is_null($value)) {
 			if($attrib == "locals") {
+				asort($value);
 				foreach($value as $val) {
 					$locals[] = $val;
 				}
 			} elseif($attrib == "rcpthosts") {
+				asort($value);
 				foreach($value as $val) {
 					$rcpthosts[] = $val;
 				}
