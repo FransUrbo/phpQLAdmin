@@ -35,8 +35,14 @@ phpqladmin (2.0.18c-1) unstable; urgency=low
   * Spelling error - s/user_generate_mailstore/user_generate_homedir/.
   * Changing userNamePrefix managed to set the userNamePrefixLength instead.
     + Faulty use of variables in include/attrib.usernameprefix.inc.
+  * Don't show the radio input for 'user specified MX' if it's our only option.
+  * If the file '.DEBUG_ME' exists in the root directory, don't create domain/users.
+    Instead, die with the LDIF that should have been added to the LDAP database.
+  * Get the knowledge on what object classess to use when creating user(s) ONCE
+    (from user_add.php instead of all over the place), and use this knowledge when
+    deciding what input field to show
 
- -- Turbo Fredriksson <turbo@debian.org>  Wed,  5 May 2004 09:31:38 +0200
+ -- Turbo Fredriksson <turbo@debian.org>  Wed,  5 May 2004 12:06:58 +0200
 
 phpqladmin (2.0.18b-1) unstable; urgency=low
 
