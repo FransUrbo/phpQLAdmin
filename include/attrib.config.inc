@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.41 2004-11-12 09:48:00 turbo Exp $
+// $Id: attrib.config.inc,v 1.42 2004-11-14 12:50:19 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -291,7 +291,7 @@ function attribute_save() {
 		// Try to find out if we have an old value, or what we should do with the value we have.
 		if($oldvalue and $toggle) {
 			// A togglable value, reverse state
-			
+
 			if($oldvalue == 'FALSE')
 			  $entry[$attrib][] = 'TRUE';
 			elseif($oldvalue == 'TRUE')
@@ -318,7 +318,39 @@ function attribute_save() {
 			// Any attribute BUT: defaultPasswordScheme, userObjectClass or branchObjectClass
 			$entry[$attrib][] = $attrib_val;
 		} else {
-			if($rootdn and ($attrib != pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"))) {
+			if(($attrib == pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME")) or
+			   ($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) or
+			   ($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN"))) {
+				$oldvalues = pql_get_attribute($_pql->ldap_linkid, $rootdn, $attrib);
+				if(!$oldvalues) {
+					// We don't have any old values in the LDAP database. Maybe we have some defaults?
+					foreach($PQL_ATTRIBUTE as $level => $array) {
+						foreach($array as $key => $value) {
+							if(!is_array($value)) {
+								if((lc($value) == lc($attrib)) and pql_get_define($key, $rootdn) and !eregi('_GLOB_', $key)) {
+									// Split this value into an array
+									$values = pql_split_oldvalues(pql_get_define($key, $rootdn));
+									foreach($values as $val) {
+										// Add all values EXEPT the one to remove
+										if(lc($val) != lc($delval))
+										  $entry[$attrib][] = $val;
+									}
+									
+									break;
+								}
+							} else {
+								$entry[$attrib][] = $attrib_val;
+							}
+						}
+					}
+				} elseif(is_array($oldvalues)) {
+					// Add the old values to the new array
+					foreach($oldvalues as $value) {
+						$entry[$attrib][] = $value;
+					}
+				} else
+				  $entry[$attrib][] = $oldvalues;
+			} elseif($rootdn and ($attrib != pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"))) {
 				// Any attribute BUT controlsAdministrator - fetch old values from DB
 				if(!$attrib_val and 
 				   (($attrib == pql_get_define("PQL_ATTR_SCRIPT_CREATE_USER")) or
@@ -378,32 +410,6 @@ function attribute_save() {
 						}
 					} // ELSIF it's a toggle.
 				} // IF attrib == externalScript{User,Domain}
-// With the rewrite Oct 21, 2004 this should no longer be used/referenced... ?
-//			} elseif(($attrib == pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME")) or
-//					 ($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) or
-//					 ($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN"))) {
-//				// We don't have any values in the LDAP database, we're using
-//				// the default values - get the old values from the define
-//				
-//				foreach($PQL_ATTRIBUTE as $level => $array) {
-//					foreach($array as $key => $value) {
-//						if(!is_array($value)) {
-//							if((lc($value) == lc($attrib)) and pql_get_define($key, $rootdn) and !eregi('_GLOB_', $key)) {
-//								// Split this value into an array
-//								$values = pql_split_oldvalues(pql_get_define($key, $rootdn));
-//								foreach($values as $val) {
-//									// Add all values EXEPT the one to remove
-//									if(lc($val) != lc($delval))
-//									  $entry[$attrib][] = $val;
-//								}
-//								
-//								break;
-//							}
-//						} else {
-//							$entry[$attrib][] = $attrib_val;
-//						}
-//					}
-//				}
 			} elseif($toggle) {
 				// We don't have a Root DN, it's not a PasswordScheme or {user,domain}ObjectClass
 				// but it's a toggle. Get the old value and reverse it
@@ -464,6 +470,9 @@ function attribute_save() {
 			if(pql_modify_attribute($_pql->ldap_linkid, $rootdn, $attrib, '', ''))
               $success = 1;
 		} else {
+			// Sort and 'uniqify' the 'LDIF'.
+			$entry[$attrib] = pql_uniq($entry[$attrib]);
+
 			if(pql_modify_attribute($_pql->ldap_linkid, $rootdn, '', '', $entry)) 
 			  $success = 1;
 		}
