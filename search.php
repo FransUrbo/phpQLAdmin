@@ -58,11 +58,27 @@ switch($filter_type) {
 
 // get userlist that matches filter
 foreach($_pql->ldap_basedn as $dn) {
-    $users = pql_search($_pql->ldap_linkid, $dn, $filter);
+	$dn = urldecode($dn);
+
+    $usrs = pql_search($_pql->ldap_linkid, $dn, $filter);
+	for($i=0; $usrs[$i]; $i++) {
+		$is_group = 0;
+
+		// Check if this object is a (posix)Group object.
+		$ocs = pql_get_userattribute($_pql->ldap_linkid, $usrs[$i], 'objectclass');
+		for($j=0; $ocs[$j]; $j++) {
+			if(eregi('group', $ocs[$j]))
+			  $is_group = 1;
+		}
+		
+		if(!$is_group)
+		  // It's NOT a (posix)Group object, show it in the list...
+		  $users[] = $usrs[$i];
+	}
 }
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="4" align="left"><?=$LANG->_('Registred users')?>: (<?php echo sizeof($users); ?>)</th>
+    <th colspan="4" align="left"><?=$LANG->_('Registred users')?>: (<?php echo count($users); ?>)</th>
 <?php if(is_array($users)) { ?>
       <tr>
         <td class="title"><?=$LANG->_('User')?></td>
@@ -72,37 +88,40 @@ foreach($_pql->ldap_basedn as $dn) {
         <td class="title"><?=$LANG->_('Options')?></td>
       </tr>
 <?php
-  asort($users);
-  foreach($users as $user) {
-      $uid  = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_UID"));  $uid  = $uid[0];
-      $cn   = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_CN"));   $cn   = $cn[0];
-      $mail = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_MAIL")); $mail = $mail[0];
-
-      $status = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_ISACTIVE"));
-      $status = pql_ldap_accountstatus($status[0]);
+		asort($users);
+		foreach($users as $user) {
+			$uid    = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_UID"));
+			$uid    = $uid[0];
+			
+			$cn     = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_CN"));
+			$cn     = $cn[0];
+			
+			$mail   = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_MAIL"));
+			$mail   = $mail[0];
+			
+			$status = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_ISACTIVE"));
+			$status = pql_ldap_accountstatus($status[0]);
 ?>
 
       <tr class="<?php table_bgcolor(); ?>">
-        <td><a href="user_detail.php?domain=<?=$domain?>&user=<?=urlencode($user)?>"><?=$cn?></a></td>
+        <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=urlencode($user)?>"><?=$cn?></a></td>
         <td><?=$uid?></td>
         <td><?=$mail?></td>
         <td><?=$status?></td>
         <td>
-          <a href="user_detail.php?domain=<?php echo $domain ?>&user=<?php echo urlencode($user)?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change user data')?>" border="0"></a>
+          <a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?php echo urlencode($user)?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change user data')?>" border="0"></a>
           &nbsp;
-          <a href="user_del.php?domain=<?php echo $domain;?>&user=<?php echo urlencode($user); ?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete user')?>" border="0"></a>
+          <a href="user_del.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?php echo urlencode($user); ?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete user')?>" border="0"></a>
         </td>
       </tr>
-<?php
-  }
-} else {
-    // no users registred
+<?php	}
+	  } else {
+		  // no users registred
 ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td colspan="5"><?=$LANG->_('No users registred')?></td>
       </tr>
-<?php
-}
+<?php }
 
 /*
  * Local variables:
