@@ -55,13 +55,13 @@ if(function_exists($control_plugin . "_help")){
 // select what to do
 if($submit == 1){
     if(call_user_func($control_plugin . "_check", $type)){
-	call_user_func($control_plugin . "_save", $type);
+		call_user_func($control_plugin . "_save", $type, $host);
     } else {
-	call_user_func($control_plugin . "_print_form");
+		call_user_func($control_plugin . "_print_form", $host);
     }
 } else {
-    call_user_func($control_plugin . "_init");
-    call_user_func($control_plugin . "_print_form");
+    call_user_func($control_plugin . "_init", $host);
+    call_user_func($control_plugin . "_print_form", $host);
 }
 
 if(function_exists($control_plugin . "_help")) {
@@ -103,3 +103,13 @@ if(function_exists($control_plugin . "_help")) {
 
 </body>
 </html>
+
+<?php
+/*
+ * Local variables:
+ * mode: php
+ * mode: font-lock
+ * tab-width: 4
+ * End:
+ */
+?>

@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.1 2002-12-14 21:02:39 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.2 2002-12-17 06:21:06 turbo Exp $
 //
 session_start();
 // ----------------------------
@@ -207,14 +207,6 @@ define("PQL_LDAP_CONTROL_BASEDN","cn=marvin.adfinis.ch, dc=adfinis, dc=ch");
 // and don't want that phpQLAdmin register all domains on this server. Currently, the
 // application do not support more than one control database.
 define("PQL_LDAP_CONTROL_AUTOADDLOCALS", true);
-
-// PQL_LDAP_CONTROL_ME (valid FQDN, value in 'me')
-// This MUST be equal to the value in the configuration file 'me'.
-// phpQLAdmin need this to display default values of configuration
-// vars, because many configuration files use this for their default
-// values if they are not present. phpQLAdmin can't lookup the file
-// dynamically, because it's not possible to store 'me' in LDAP.
-define("PQL_LDAP_CONTROL_ME", "mail.adfinis.com");
 
 // ----------------------------
 // password encryption schemes to allow

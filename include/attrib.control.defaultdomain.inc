@@ -3,9 +3,9 @@
 // defaultdomain (default domain)
 // defaulthost (default hostname)
 //
-// $Id: attrib.control.defaultdomain.inc,v 2.0 2002-12-13 14:34:58 turbo Exp $
+// $Id: attrib.control.defaultdomain.inc,v 2.1 2002-12-17 06:21:05 turbo Exp $
 
-function defaultdomain_check($type){
+function defaultdomain_check($type) {
 	global $error, $defaultdomain, $defaulthost, $plusdomain;
 
 	// check validity
@@ -31,100 +31,107 @@ function defaultdomain_check($type){
  	}
 }
 
-
-function defaultdomain_init(){
+function defaultdomain_init($host) {
 	// init values
-  global $_pql_control, $defaultdomain, $defaulthost, $plusdomain;
+	global $_pql_control, $defaultdomain, $defaulthost, $plusdomain;
 
 	// fetch data from ldap server
 	$attribs = array("defaultdomain", "defaulthost", "plusdomain");
 
 	foreach($attribs as $attrib){
-		$value = pql_control_get_attribute($_pql_control->ldap_linkid, PQL_LDAP_CONTROL_BASEDN, $attrib);
+		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
+										   "cn=" . $host . "," . PQL_LDAP_CONTROL_BASEDN,
+										   $attrib);
 
 		if(!is_null($value)){
 			$$attrib = $value[0];
 		}
 	}
-
 }
 
-function defaultdomain_print_view(){
+function defaultdomain_print_view($host) {
 	global $_pql_control, $defaultdomain, $defaulthost, $plusdomain;
 
 	// init data
-	defaultdomain_init();
+	defaultdomain_init($host);
 
 	// set empty fields to their default value
-	if($defaultdomain == ""){
-		$defaultdomain = PQL_LDAP_CONTROL_ME . ", (default, taken from 'me')";
-  }
-
-	if($defaulthost == ""){
-		$defaulthost = PQL_LDAP_CONTROL_ME . ", (default, taken from 'me')";
-  }
-
-	if($plusdomain == ""){
-		$plusdomain = PQL_LDAP_CONTROL_ME . ", (default, taken from 'me')";
+	if($defaultdomain == "") {
+		$defaultdomain = $host . ", (default, taken from 'me')";
 	}
+	
+	if($defaulthost == "") {
+		$defaulthost = $host . ", (default, taken from 'me')";
+	}
+	
+	if($plusdomain == "") {
+		$plusdomain = $host . ", (default, taken from 'me')";
+	}
+	
+?>
+  <table cellspacing="0" cellpadding="3" border="0">
+    <th colspan="3" align="left">defaultdomain, defaulthost, plusdomain (Default domain / host)</th>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Default domain</td>
+        <td><?php echo $defaultdomain; ?></td>
+      </tr>
 
-	?>
-	<table cellspacing="0" cellpadding="3" border="0">
-	<th colspan="3" align="left">defaultdomain, defaulthost, plusdomain (Default domain / host)</th>
-	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title">Default domain</td>
-		<td><?php echo $defaultdomain; ?></td>
-	</tr>
-	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title">Default host</td>
-		<td><?php echo $defaulthost; ?></td>
-	</tr>
-	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title">Plus domain</td>
-		<td><?php echo $plusdomain; ?></td>
-	</tr>
-	<tr class="subtitle">
-		<td colspan="2"><a href="control_edit_attribute.php?attrib=defaultdomain"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
-	</tr>
-	</table>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Default host</td>
+        <td><?php echo $defaulthost; ?></td>
+      </tr>
 
-	<?php
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Plus domain</td>
+        <td><?php echo $plusdomain; ?></td>
+      </tr>
+
+      <tr class="subtitle">
+        <td colspan="2"><a href="control_edit_attribute.php?attrib=defaultdomain"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
+      </tr>
+    </th>
+  </table>
+
+<?php
 }
 
-function defaultdomain_print_form(){
+function defaultdomain_print_form() {
 	global $attrib, $defaultdomain, $defaulthost, $plusdomain, $PHP_SELF, $error;
 
-	?>
-	<form action="<?php echo $PHP_SELF ?>" method="post">
-	<table cellspacing="0" cellpadding="3" border="0">
-	<th colspan="3" align="left">defaultdomain, defaulthost, plusdomain (Default domain / host)</th>
-	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title">Default domain</td>
-		<td><?php echo format_error($error["defaultdomain"]); ?><input type="text" name="defaultdomain" value="<?php echo $defaultdomain; ?>"> Default: <?php echo PQL_LDAP_CONTROL_ME; ?> (value in 'me')</td>
-	</tr>
-	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title">Default host</td>
-		<td><?php echo format_error($error["defaulthost"]); ?><input type="text" name="defaulthost" value="<?php echo $defaulthost; ?>"> Default: <?php echo PQL_LDAP_CONTROL_ME; ?> (value in 'me')</td>
-	</tr>
-	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title">Plus domain</td>
-		<td><?php echo format_error($error["plusdomain"]); ?><input type="text" name="plusdomain" value="<?php echo $plusdomain; ?>"> Default: <?php echo PQL_LDAP_CONTROL_ME; ?> (value in 'me')</td>
-	</tr>
-	<tr class="subtitle">
-		<td colspan="2"><img src="images/info.png" width="16" height="16" border="0">Leave the fields empty to use default configuration.</td>
-	</tr>
-	</table>
-	<input type="hidden" name="submit" value="1">
-	<input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-	<br>
-	<br>
-	<input type="submit" value="<?php echo PQL_SAVE; ?>">
-	</form>
+?>
+  <form action="<?php echo $PHP_SELF ?>" method="post">
+    <table cellspacing="0" cellpadding="3" border="0">
+      <th colspan="3" align="left">defaultdomain, defaulthost, plusdomain (Default domain / host)</th>
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title">Default domain</td>
+          <td><?php echo format_error($error["defaultdomain"]); ?><input type="text" name="defaultdomain" value="<?php echo $defaultdomain; ?>"> Default: <?=$host?> (value in 'me')</td>
+        </tr>
 
-	<?php
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title">Default host</td>
+          <td><?php echo format_error($error["defaulthost"]); ?><input type="text" name="defaulthost" value="<?php echo $defaulthost; ?>"> Default: <?=$host?> (value in 'me')</td>
+        </tr>
+
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title">Plus domain</td>
+          <td><?php echo format_error($error["plusdomain"]); ?><input type="text" name="plusdomain" value="<?php echo $plusdomain; ?>"> Default: <?=$host?> (value in 'me')</td>
+        </tr>
+
+        <tr class="subtitle">
+          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0">Leave the fields empty to use default configuration.</td>
+        </tr>
+      </th>
+    </table>
+
+    <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="submit" value="<?php echo PQL_SAVE; ?>">
+  </form>
+
+<?php
 }
 
-function defaultdomain_save($type){
+function defaultdomain_save($type, $host) {
 	global $_pql_control, $attrib, $defaultdomain, $defaulthost, $plusdomain, $error;
 
 	// recontrol values
@@ -133,26 +140,29 @@ function defaultdomain_save($type){
 	}
 
 	switch($type){
-
-		case "modify";
-			// save entries
-
-			$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid, PQL_LDAP_CONTROL_BASEDN, "defaultdomain", $defaultdomain);
-    	$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid, PQL_LDAP_CONTROL_BASEDN, "defaulthost", $defaulthost);
-			$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid, PQL_LDAP_CONTROL_BASEDN, "plusdomain", $plusdomain);
-
-			if(in_array(false, $return)){
-				$msg = "Error saving default host / domain options: " . pql_ldap_error($_pql_control->ldap_linkid);
-			} else {
+	  case "modify";
+		// save entries
+		$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
+												  "cn=" . $host . "," . PQL_LDAP_CONTROL_BASEDN,
+												  "defaultdomain", $defaultdomain);
+    	$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
+												  "cn=" . $host . "," . PQL_LDAP_CONTROL_BASEDN,
+												  "defaulthost", $defaulthost);
+		$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
+												  "cn=" . $host . "," . PQL_LDAP_CONTROL_BASEDN,
+												  "plusdomain", $plusdomain);
+		
+		if(in_array(false, $return)){
+			$msg = "Error saving default host / domain options: " . pql_ldap_error($_pql_control->ldap_linkid);
+		} else {
     		$msg = "Successfully default host / domain options";
     	}
 
-			attribute_forward($msg);
-      break;
-   	default:
-			die("unknown save type $type in " . __FILE__ . ", function save()");
+		attribute_forward($msg);
+		break;
+	  default:
+		die("unknown save type $type in " . __FILE__ . ", function save()");
 	}
-
 }
 
 function defaultdomain_help(){
@@ -198,3 +208,10 @@ function defaultdomain_help_cr(){
 	help text taken from qmail man pages
 <?php
 }
+/*
+ * Local variables:
+ * mode: php
+ * mode: font-lock
+ * tab-width: 4
+ * End:
+ */

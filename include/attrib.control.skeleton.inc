@@ -58,7 +58,7 @@
 //
 // Please look at other plugins to see which standard header text is recommanded.
 //
-// $Id: attrib.control.skeleton.inc,v 2.0 2002-12-13 14:34:58 turbo Exp $
+// $Id: attrib.control.skeleton.inc,v 2.1 2002-12-17 06:21:05 turbo Exp $
 //
 
 function xxx_check($type){
@@ -95,7 +95,7 @@ function xxx_init(){
 }
 
 
-function xxx_print_view(){
+function xxx_print_view($host) {
 	global $_pql_control, $xxx;
 
 	// this function will display the configuration

@@ -35,11 +35,18 @@ if(isset($msg)){
 foreach($control_plugins as $plugin_name){
     $func = $plugin_name . "_print_view";
     if(function_exists($func)){
-	call_user_func($func);
-	echo "<br><br>";
+		call_user_func($func, $host);
+		echo "<br><br>";
     }
 }
 
+/*
+ * Local variables:
+ * mode: php
+ * mode: font-lock
+ * tab-width: 4
+ * End:
+ */
 ?>
 </body>
 </html>

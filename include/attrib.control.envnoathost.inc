@@ -2,9 +2,9 @@
 // control attribute plugin for
 // envnoathost (default prefix for mailbox paths)
 //
-// $Id: attrib.control.envnoathost.inc,v 2.0 2002-12-13 14:34:58 turbo Exp $
+// $Id: attrib.control.envnoathost.inc,v 2.1 2002-12-17 06:21:05 turbo Exp $
 
-function envnoathost_check($type){
+function envnoathost_check($type) {
 	global $error, $envnoathost;
 
 	// missing
@@ -21,76 +21,77 @@ function envnoathost_check($type){
 	}
 
 	return true;
-
 }
 
-
-function envnoathost_init(){
+function envnoathost_init($host) {
 	// init values
-  global $_pql_control, $envnoathost;
+	global $_pql_control, $envnoathost;
 
 	// fetch data from ldap server
-	$value = pql_control_get_attribute($_pql_control->ldap_linkid, PQL_LDAP_CONTROL_BASEDN, "envnoathost");
+	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
+									   "cn=" . $host . "," . PQL_LDAP_CONTROL_BASEDN,
+									   "envnoathost");
 
 	if(!is_null($value)){
 		$envnoathost = $value[0];
 	}
-
 }
 
-
-function envnoathost_print_view(){
+function envnoathost_print_view($host) {
 	global $_pql_control, $envnoathost;
 
 	// init data
-	envnoathost_init();
+	envnoathost_init($host);
 
 	// set empty field to default value
 	if($envnoathost == ""){
-		$envnoathost = PQL_LDAP_CONTROL_ME . ", (default, taken from 'me')";
+		$envnoathost = $host . ", (default, taken from 'me')";
  	}
 
-	?>
-	<table cellspacing="0" cellpadding="3" border="0">
-	<th colspan="3" align="left">envnoathost (Default domain for addresses without @)</th>
-	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title">Email</td>
-		<td><?php echo $envnoathost; ?></td>
-	</tr>
-	<tr class="subtitle">
-		<td colspan="2"><a href="control_edit_attribute.php?attrib=envnoathost"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
-	</tr>
-	</table>
+?>
+  <table cellspacing="0" cellpadding="3" border="0">
+    <th colspan="3" align="left">envnoathost (Default domain for addresses without @)</th>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Email</td>
+        <td><?php echo $envnoathost; ?></td>
+      </tr>
 
-	<?php
+      <tr class="subtitle">
+        <td colspan="2"><a href="control_edit_attribute.php?attrib=envnoathost"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
+      </tr>
+    </th>
+  </table>
+
+<?php
 }
 
-function envnoathost_print_form(){
+function envnoathost_print_form() {
 	global $attrib, $envnoathost, $PHP_SELF, $error;
 
-	?>
-	<form action="<?php echo $PHP_SELF ?>" method="post">
-	<table cellspacing="0" cellpadding="3" border="0">
-	<th colspan="3" align="left">envnoathost (Default domain for addresses without @)</th>
-	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title">Address</td>
-		<td><?php echo format_error($error["envnoathost"]); ?><input type="text" name="envnoathost" value="<?php echo $envnoathost; ?>"> Default: <?php echo PQL_LDAP_CONTROL_ME; ?> (value in 'me')</td>
-	</tr>
-	<tr>
-		<td colspan="2"><img src="images/info.png" width="16" height="16" border="0">Leave the fields empty to use default configuration.</td>
-	</tr>
-	</table>
-	<input type="hidden" name="submit" value="1">
-	<input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-	<br>
-	<br>
-	<input type="submit" value="<?php echo PQL_SAVE; ?>">
-	</form>
+?>
+  <form action="<?php echo $PHP_SELF ?>" method="post">
+    <table cellspacing="0" cellpadding="3" border="0">
+      <th colspan="3" align="left">envnoathost (Default domain for addresses without @)</th>
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title">Address</td>
+          <td><?php echo format_error($error["envnoathost"]); ?><input type="text" name="envnoathost" value="<?php echo $envnoathost; ?>"> Default: <?=$host?> (value in 'me')</td>
+        </tr>
 
-	<?php
+        <tr>
+          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0">Leave the fields empty to use default configuration.</td>
+        </tr>
+      </th>
+    </table>
+
+    <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="submit" value="<?php echo PQL_SAVE; ?>">
+  </form>
+
+<?php
 }
 
-function envnoathost_save($type){
+function envnoathost_save($type, $host) {
 	global $_pql_control, $attrib, $envnoathost, $error;
 
 	// recontrol values
@@ -99,32 +100,32 @@ function envnoathost_save($type){
 	}
 
 	switch($type){
-
-		case "modify";
-			// save entries
-
-			if(pql_control_replace_attribute($_pql_control->ldap_linkid, PQL_LDAP_CONTROL_BASEDN, "envnoathost", $envnoathost)){
-      	$msg = "Successfully saved envnotathost options";
-			} else {
-				$msg = "Failed saving envnoathost: " . pql_ldap_error($_pql_control->ldap_linkid);
+	  case "modify";
+		// save entries
+		
+		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
+										 "cn=" . $host . "," . PQL_LDAP_CONTROL_BASEDN,
+										 "envnoathost", $envnoathost)){
+			$msg = "Successfully saved envnotathost options";
+		} else {
+			$msg = "Failed saving envnoathost: " . pql_ldap_error($_pql_control->ldap_linkid);
     	}
-
-			attribute_forward($msg);
-      break;
-   	default:
-			die("unknown save type $type in " . __FILE__ . ", function save()");
+		
+		attribute_forward($msg);
+		break;
+	  default:
+		die("unknown save type $type in " . __FILE__ . ", function save()");
 	}
-
 }
 
-function envnoathost_help(){
-	?>
+function envnoathost_help() {
+?>
 	Presumed domain name for addresses without @ signs.
 	Default:  me, if that is supplied; otherwise the
 	literal name envnoathost, which is probably not what
 	you want.  If qmail-send sees an envelope recipient
 	address without an @ sign, it appends @envnoathost.
-	<?php
+<?php
 }
 
 
@@ -133,3 +134,10 @@ function envnotathost_help_cr(){
 	help text taken from qmail man pages
 <?php
 }
+/*
+ * Local variables:
+ * mode: php
+ * mode: font-lock
+ * tab-width: 4
+ * End:
+ */

@@ -3,9 +3,9 @@
 // doublebouncehost (username of bounce sender)
 // doublebounceto (hostname of bounce sender)
 //
-// $Id: attrib.control.doublebouncehost.inc,v 2.0 2002-12-13 14:34:58 turbo Exp $
+// $Id: attrib.control.doublebouncehost.inc,v 2.1 2002-12-17 06:21:05 turbo Exp $
 
-function doublebouncehost_check($type){
+function doublebouncehost_check($type) {
 	global $error, $doublebouncehost, $doublebounceto;
 
 	// check validity
@@ -21,126 +21,131 @@ function doublebouncehost_check($type){
 		$is_error = true;
 	}
 
-
 	if($is_error == false){
 		return true;
  	}
 }
 
-
-function doublebouncehost_init(){
+function doublebouncehost_init($host) {
 	// init values
-  global $_pql_control, $doublebouncehost, $doublebounceto;
+	global $_pql_control, $doublebouncehost, $doublebounceto;
 
 	// fetch data from ldap server
 	$attribs = array("doublebouncehost", "doublebounceto");
-
+	
 	foreach($attribs as $attrib){
-		$value = pql_control_get_attribute($_pql_control->ldap_linkid, PQL_LDAP_CONTROL_BASEDN, $attrib);
-
+		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
+										   "cn=" . $host . "," . PQL_LDAP_CONTROL_BASEDN,
+										   $attrib);
+		
 		if(!is_null($value)){
 			$$attrib = $value[0];
 		}
 	}
-
 }
 
-function doublebouncehost_print_view(){
+function doublebouncehost_print_view($host) {
 	global $_pql_control, $doublebouncehost, $doublebounceto;
 
 	// init data
-	doublebouncehost_init();
+	doublebouncehost_init($host);
 
 	// set empty fields to their default value
 	if($doublebouncehost == ""){
-		$doublebouncehost = PQL_LDAP_CONTROL_ME . ", (default, taken from 'me')";
-  }
-
+		$doublebouncehost = $host . ", (default, taken from 'me')";
+	}
+	
 	if($doublebounceto == ""){
 		$doublebounceto = "postmaster (default)";
-  }
+	}
+	
+?>
+  <table cellspacing="0" cellpadding="3" border="0">
+    <th colspan="3" align="left">doublebouncehost, doublebounceto (Double bounce)</th>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Host</td>
+        <td><?php echo $doublebouncehost; ?></td>
+      </tr>
 
-	?>
-	<table cellspacing="0" cellpadding="3" border="0">
-	<th colspan="3" align="left">doublebouncehost, doublebounceto (Double bounce)</th>
-	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title">Host</td>
-		<td><?php echo $doublebouncehost; ?></td>
-	</tr>
-	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title">Receiver</td>
-		<td><?php echo $doublebounceto; ?></td>
-	</tr>
-	<tr class="subtitle">
-		<td colspan="2"><a href="control_edit_attribute.php?attrib=doublebouncehost"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
-	</tr>
-	</table>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Receiver</td>
+        <td><?php echo $doublebounceto; ?></td>
+      </tr>
 
-	<?php
+      <tr class="subtitle">
+        <td colspan="2"><a href="control_edit_attribute.php?attrib=doublebouncehost"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
+      </tr>
+    </th>
+  </table>
+
+<?php
 }
 
-function doublebouncehost_print_form(){
+function doublebouncehost_print_form() {
 	global $attrib, $doublebouncehost, $doublebounceto, $PHP_SELF, $error;
 
-	?>
-	<form action="<?php echo $PHP_SELF ?>" method="post">
-	<table cellspacing="0" cellpadding="3" border="0">
-	<th colspan="3" align="left">Double bounce</th>
-	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title">Host</td>
-		<td><?php echo format_error($error["doublebouncehost"]); ?><input type="text" name="doublebouncehost" value="<?php echo $doublebouncehost; ?>"> Default: <?php echo PQL_LDAP_CONTROL_ME; ?> (value in 'me')</td>
-	</tr>
-	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title">Receiver</td>
-		<td><?php echo format_error($error["doublebounceto"]); ?><input type="text" name="doublebounceto" value="<?php echo $doublebounceto; ?>"> Default: postmaster</td>
-	</tr>
-	<tr class="subtitle">
-		<td colspan="2"><img src="images/info.png" width="16" height="16" border="0">
-		Leave the fields empty to use default configuration.
-		</td>
-	</tr>
-	</table>
-	<input type="hidden" name="submit" value="1">
-	<input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-	<br>
-	<br>
-	<input type="submit" value="<?php echo PQL_SAVE; ?>">
-	</form>
+?>
+  <form action="<?php echo $PHP_SELF ?>" method="post">
+    <table cellspacing="0" cellpadding="3" border="0">
+      <th colspan="3" align="left">Double bounce</th>
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title">Host</td>
+          <td><?php echo format_error($error["doublebouncehost"]); ?><input type="text" name="doublebouncehost" value="<?php echo $doublebouncehost; ?>"> Default: <?=$host?> (value in 'me')</td>
+        </tr>
 
-	<?php
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title">Receiver</td>
+          <td><?php echo format_error($error["doublebounceto"]); ?><input type="text" name="doublebounceto" value="<?php echo $doublebounceto; ?>"> Default: postmaster</td>
+        </tr>
+
+        <tr class="subtitle">
+          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0">
+		Leave the fields empty to use default configuration.
+          </td>
+        </tr>
+      </th>
+    </table>
+
+    <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="submit" value="<?php echo PQL_SAVE; ?>">
+  </form>
+
+<?php
 }
 
-function doublebouncehost_save($type){
+function doublebouncehost_save($type, $host) {
 	global $_pql_control, $attrib, $doublebouncehost, $doublebounceto, $error;
 
 	// recontrol values
 	if(!doublebouncehost_check($type)){
  		return false;
 	}
-
+	
 	switch($type){
-
-		case "modify";
-			// save entries
-
-			$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid, PQL_LDAP_CONTROL_BASEDN, "doublebouncehost", $doublebouncehost);
-    	$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid, PQL_LDAP_CONTROL_BASEDN, "doublebounceto", $doublebounceto);
-
-			if(in_array(false, $return)){
-				$msg = "Error saving double bouncing options: " . pql_ldap_error($_pql_control->ldap_linkid);
-			} else {
+	  case "modify";
+		// save entries
+		$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
+												  "cn=" . $host . "," . PQL_LDAP_CONTROL_BASEDN,
+												  "doublebouncehost", $doublebouncehost);
+    	$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
+												  "cn=" . $host . "," . PQL_LDAP_CONTROL_BASEDN,
+												  "doublebounceto", $doublebounceto);
+		
+		if(in_array(false, $return)){
+			$msg = "Error saving double bouncing options: " . pql_ldap_error($_pql_control->ldap_linkid);
+		} else {
     		$msg = "Successfully saved double bouncing options";
     	}
-
-			attribute_forward($msg);
-      break;
-   	default:
-			die("unknown save type $type in " . __FILE__ . ", function save()");
+		
+		attribute_forward($msg);
+		break;
+	  default:
+		die("unknown save type $type in " . __FILE__ . ", function save()");
 	}
-
 }
 
-function doublebouncehost_help(){
+function doublebouncehost_help() {
 	?>
 	<b>Host (doublebouncehost)</b><br>
 	Double-bounce host.  Default:  me, if that is supplied;
@@ -157,8 +162,15 @@ function doublebouncehost_help(){
 	<?php
 }
 
-function doublebouncehost_help_cr(){
+function doublebouncehost_help_cr() {
 ?>
 	help text taken from qmail man pages
 <?php
 }
+/*
+ * Local variables:
+ * mode: php
+ * mode: font-lock
+ * tab-width: 4
+ * End:
+ */

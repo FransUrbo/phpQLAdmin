@@ -2,7 +2,7 @@
 // control attribute plugin for
 // $ldapdefaultquota (default quota for all mail users)
 
-// $Id: attrib.control.ldapdefaultquota.inc,v 2.0 2002-12-13 14:34:58 turbo Exp $
+// $Id: attrib.control.ldapdefaultquota.inc,v 2.1 2002-12-17 06:21:05 turbo Exp $
 
 function ldapdefaultquota_check($type){
 	global $options, $use_maxsize, $use_maxmails, $maxsize, $maxmails, $error;
@@ -19,7 +19,7 @@ function ldapdefaultquota_check($type){
 		$failed = true;
 	}
 
-  // bigger than 0
+	// bigger than 0
 	if($error["maxsize"] == "" and $maxsize <= 0 and $options == "user" and $use_maxsize != ""){
 		$error["maxsize"] = PQL_GREATER_ZERO;
 		$failed = true;
@@ -53,93 +53,97 @@ function ldapdefaultquota_check($type){
 		return false;
 	} else {
 		return true;
-  }
+	}
 }
 
-function ldapdefaultquota_init(){
+function ldapdefaultquota_init($host){
 	global $_pql_control, $use_maxsize, $use_maxmails, $maxsize, $maxmails, $options, $quota;
-	$quota = pql_control_get_attribute($_pql_control->ldap_linkid, PQL_LDAP_CONTROL_BASEDN, "ldapdefaultquota");
+	$quota = pql_control_get_attribute($_pql_control->ldap_linkid,
+									   "cn=" . $host . "," . PQL_LDAP_CONTROL_BASEDN,
+									   "ldapdefaultquota");
 
 	if(!is_null($quota)){
 		$quota = pql_parse_quota($quota[0]);
-
+		
 		$maxmails = $quota["maxmails"];
-
+		
 		if($maxmails != ""){
 			$use_maxmails = "1";
-   	}
-
+		}
+		
 		$maxsize = $quota["maxsize"];
-
+		
 		if($maxsize != ""){
 			$use_maxsize = "1";
-   	}
-
+		}
+		
 		$options = "user";
-  } else {
+	} else {
 		$options = "default";
-  }
-
+	}
 }
 
-function ldapdefaultquota_print_view(){
+function ldapdefaultquota_print_view($host) {
 	// shows information about defaultquota
 	global $quota;
 
-	ldapdefaultquota_init();
+	ldapdefaultquota_init($host);
 
 	$ldapdefaultquota = pql_ldap_mailquota($quota);
 
-	?>
-	<table cellspacing="0" cellpadding="3" border="0">
-		<th colspan="2" align="left">ldapdefaultquota (Default quota)</th>
-		<tr class="<?php table_bgcolor(); ?>">
-			<td><?php echo $ldapdefaultquota; ?></td>
-		</tr>
-		<tr class="subtitle">
-			<td><a href="control_edit_attribute?attrib=ldapdefaultquota"><img src="images/edit.png" width="12" height="12" border="0">change default quota</a>
-			</td>
-		</tr>
-	</table>
-	<?php
-}
+?>
+  <table cellspacing="0" cellpadding="3" border="0">
+    <th colspan="2" align="left">ldapdefaultquota (Default quota)</th>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td><?php echo $ldapdefaultquota; ?></td>
+      </tr>
 
+      <tr class="subtitle">
+        <td>
+          <a href="control_edit_attribute?attrib=ldapdefaultquota"><img src="images/edit.png" width="12" height="12" border="0">change default quota</a>
+        </td>
+      </tr>
+    </th>
+  </table>
+<?php
+}
 
 function ldapdefaultquota_print_form($type = "modify"){
 	global $use_maxmails, $use_maxsize, $maxmails, $maxsize, $options, $PHP_SELF, $attrib, $error;
 
-	?>
-	<form action="<?php echo $PHP_SELF ?>" method="post">
-	<table cellspacing="0" cellpadding="3" border="0">
-	<th colspan="3" align="left"><?php echo PQL_LDAP_MAILQUOTA_CHANGE; ?></th>
-	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title"><?php echo PQL_OPTIONS; ?></td>
-		<td><input type="radio" name="options" value="default" <?php if($options == "default"){ echo "checked"; } //" ?>> Unlimited <input type="radio" name="options" value="user" <?php if($options == "user"){ echo "checked"; } //" ?>> <?php echo PQL_LDAP_MAILQUOTA_USERDEFINED; ?></td>
-	</tr>
-	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title"><?php echo PQL_LDAP_MAILQUOTA_MAXSIZE_TITLE; ?></td>
-		<td><input type="checkbox" name="use_maxsize" value="1" <?php if($use_maxsize == "1"){ echo "checked"; } //" ?>> <?php echo format_error($error["maxsize"]); ?><input type="text" name="maxsize" value="<?php echo $maxsize; ?>"> KB</td>
-	</tr>
-	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title"><?php echo PQL_LDAP_MAILQUOTA_MAXMAILS_TITLE; ?></td>
-		<td><input type="checkbox" name="use_maxmails" value="1" <?php if($use_maxmails == "1"){ echo "checked"; } //" ?>> <?php echo format_error($error["maxmails"]); ?><input type="text" name="maxmails" value="<?php echo $maxmails; ?>"> Mails</td>
-	</tr>
-  <tr class="subtitle">
-		<td colspan="2"><?php echo format_error($error["selected"]); ?><img src="images/info.png" width="16" height="16" border="0"> Note: This affects to all user which have set quota to standard.
-		It's recommended that you set both, max mails and max size for default quota.</td>
-	</tr>
-	</table>
-	<input type="hidden" name="submit" value="1">
-	<input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-	<br>
-	<br>
-	<input type="submit" value="<?php echo PQL_SAVE; ?>">
-	</form>
+?>
+  <form action="<?=$PHP_SELF?>" method="post">
+    <table cellspacing="0" cellpadding="3" border="0">
+      <th colspan="3" align="left"><?=PQL_LDAP_MAILQUOTA_CHANGE?></th>
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"><?=PQL_OPTIONS?></td>
+          <td><input type="radio" name="options" value="default" <?php if($options == "default"){ echo "checked"; }?>> Unlimited <input type="radio" name="options" value="user" <?php if($options == "user"){ echo "checked"; }?>> <?=PQL_LDAP_MAILQUOTA_USERDEFINED?></td>
+        </tr>
 
-	<?php
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"><?=PQL_LDAP_MAILQUOTA_MAXSIZE_TITLE?></td>
+          <td><input type="checkbox" name="use_maxsize" value="1" <?php if($use_maxsize == "1"){ echo "checked"; }?>> <?php echo format_error($error["maxsize"]); ?><input type="text" name="maxsize" value="<?=$maxsize?>"> KB</td>
+        </tr>
+
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"><?=PQL_LDAP_MAILQUOTA_MAXMAILS_TITLE?></td>
+          <td><input type="checkbox" name="use_maxmails" value="1" <?php if($use_maxmails == "1"){ echo "checked"; }?>> <?php echo format_error($error["maxmails"]); ?><input type="text" name="maxmails" value="<?=$maxmails?>"> Mails</td>
+        </tr>
+
+        <tr class="subtitle">
+          <td colspan="2"><?php echo format_error($error["selected"]); ?><img src="images/info.png" width="16" height="16" border="0"> Note: This affects to all user which have set quota to standard.<br>It's recommended that you set both, max mails and max size for default quota.</td>
+        </tr>
+      </th>
+    </table>
+
+    <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="submit" value="<?=PQL_SAVE?>">
+  </form>
+<?php
 }
 
-function ldapdefaultquota_save($type){
+function ldapdefaultquota_save($type, $host){
 	global $_pql_control, $maxsize, $maxmails, $options, $use_maxmails, $use_maxsize;
 
 	// recontrol values
@@ -160,37 +164,33 @@ function ldapdefaultquota_save($type){
 				$mailquota[] = $maxmails . "C";
 			} else {
 				$maxmails = PQL_LDAP_MAILQUOTA_ECHO_MAXMAILS_UNLIMITED;
-    	}
+    	    }
 
 			if(is_array($mailquota)){
 				$mailquota = join(",", $mailquota);
 			}
 
 			$msg = pql_complete_constant(PQL_LDAP_MAILQUOTA_CHANGE_OK, array("quota" =>  pql_ldap_mailquota(array("maxsize" => $maxsize / 1024, "maxmails" => $maxmails))));
-
 			break;
+
 		case "default":
 			$mailquota = "";
-
 			$msg = pql_complete_constant(PQL_LDAP_MAILQUOTA_CHANGE_OK, array("quota" => PQL_LDAP_MAILQUOTA_DEFAULT));
 	}
 
 	switch($type){
-		case "modify";
-
-			if(pql_control_replace_attribute($_pql_control->ldap_linkid, PQL_LDAP_CONTROL_BASEDN, "ldapdefaultquota", $mailquota)){
-				//
-			} else {
+		case "modify":
+			if(!pql_control_replace_attribute($_pql_control->ldap_linkid,
+							"cn=" . $host . "," . PQL_LDAP_CONTROL_BASEDN, "ldapdefaultquota", $mailquota)){
 				$msg = PQL_LDAP_MAILQUOTA_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql_control->ldap_linkid);
 			}
 
 			attribute_forward($msg);
-
 			break;
+
 		default:
 			die("unknown save type $type in " . __FILE__ . ", function save()");
 	}
-
 }
 
 function ldapdefaultquota_help(){
@@ -209,3 +209,11 @@ function ldapdefaultquota_help_cr(){
 	help text taken from life with qmail-ldap
 <?php
 }
+/*
+ * Local variables:
+ * mode: php
+ * mode: font-lock
+ * tab-width: 4
+ * End:
+ */
+?>
