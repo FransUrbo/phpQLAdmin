@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of user
-// $Id: user_edit_attribute.php,v 2.46 2005-02-01 07:27:06 turbo Exp $
+// $Id: user_edit_attribute.php,v 2.47 2005-02-05 12:39:25 turbo Exp $
 //
 // This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
 //   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -8,6 +8,8 @@
 //   2) $submit is 1 (or 2?): Validate the input.  The name of the input variable changes depending on
 //      which attribute is being edited.
 //      If the input is valid, save it, else print out the form again and return to step 2.
+
+// {{{ Setup session etc
 session_start();
 require("./include/pql_config.inc");
 require("./include/config_plugins.inc");
@@ -26,6 +28,7 @@ if (empty($session)) {
 }
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
+// }}}
 
 if(!$_REQUEST["domain"] && $_REQUEST["user"]) {
     // We're called without branchname - try to reconstruct it
@@ -66,7 +69,7 @@ function attribute_forward($msg, $rlnb = false) {
 
 include("./header.html");
 
-// Select which attribute have to be included
+// {{{ Select (and load) which attribute have to be included
 $plugin = pql_plugin_get_filename(pql_plugin_get($_REQUEST["attrib"]));
 if(!$plugin) {
     die("<span class=\"error\">ERROR: No plugin file defined for attribute '<i>".$_REQUEST["attrib"]."</i>'</span>");
@@ -75,37 +78,49 @@ if(!$plugin) {
 }
 
 include("./include/$plugin");
+// }}}
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Change user data for %user%'), array('user' => $username)); ?></span>
   <br><br>
 <?php
-// select what to do
+// {{{ Select what to do
 // DLW: One of these days this submit==1 stuff has to be replaced with
 //      human readable text such as submit="verify".
 if(($_REQUEST["submit"] == 1) or ($_REQUEST["submit"] == 2)) {
-    if(attribute_check("modify")){
-	attribute_save("modify");
+    if(attribute_check("modify")) {
+	  attribute_save("modify");
     } else {
-	attribute_print_form();
+	  attribute_print_form();
     }
-} elseif($_REQUEST["submit"] == 4) {
-    // SAVE change directly, no need for a form
-    attribute_save($action);
 } elseif(($_REQUEST["submit"] == 3) and (($_REQUEST["attrib"] == 'dnmember') or
-					 ($_REQUEST["attrib"] == 'dnmoderator') or
-					 ($_REQUEST["attrib"] == 'dnsender'))) {
-    attribute_print_form($_REQUEST["action"]);
+										 ($_REQUEST["attrib"] == 'dnmoderator') or
+										 ($_REQUEST["attrib"] == 'dnsender'))) {
+  attribute_print_form($_REQUEST["action"]);
+} elseif($_REQUEST["submit"] == 4) {
+  // SAVE change directly, no need for a form
+  attribute_save($_REQUEST["action"]);
+} elseif(($_REQUEST["submit"] == 5) and ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_ISACTIVE"))) {
+	attribute_save($_REQUEST["action"]);
 } else {
-    if(($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_GROUP_CONFIRM")) or
-       ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_GROUP_MEMBERS_ONLY")) or
-       ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_START_ADVANCED"))) {
+  if(($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_GROUP_CONFIRM")) or
+	 ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_GROUP_MEMBERS_ONLY")) or
+	 ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_START_ADVANCED"))) {
 	// It's one of those user toggles - go save!
-	attribute_save($action);
-    } else {
+	attribute_save($_REQUEST["action"]);
+  } else {
 	attribute_init();
 	attribute_print_form();
-    }
+  }
 }
+// }}}
+
+/*
+ * Local variables:
+ * mode: php
+ * mode: font-lock
+ * tab-width: 4
+ * End:
+ */
 ?>
-</body>
+  </body>
 </html>
