@@ -1,7 +1,7 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 1.2 2002-12-12 12:15:16 turbo Exp $
+// $Id: lang.en.inc,v 1.3 2002-12-12 14:25:30 turbo Exp $
 //
 // if you have a translation to another language, please contact
 // me --> Matthias Blaser <mb@adfinis.ch>
@@ -142,9 +142,14 @@ define("PQL_LDAP_DELIVERYMODE_CHANGE_OK","Deliverymode changed");
 define("PQL_LDAP_DELIVERYMODE_CHANGE_FAILED","Failed changing deliverymode");
 define("PQL_LDAP_DELIVERYMODE_NULL","Default properties");
 define("PQL_LDAP_DELIVERYMODE_PROFILE", "Profile");
-define("PQL_LDAP_DELIVERYMODE_PROFILE_LOCAL", "Mail account (local mailbox, POP account)");
-define("PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD", "Forward account (forward only, no local mailbox)");
-define("PQL_LDAP_DELIVERYMODE_PROFILE_SYSTEM", "System account (loginshell, homedir etc)");
+define("PQL_LDAP_DELIVERYMODE_PROFILE_LOCAL", "Mail account");
+define("PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD", "Forward account");
+define("PQL_LDAP_DELIVERYMODE_PROFILE_SYSTEM", "System account");
+
+define("PQL_LDAP_DELIVERYMODE_PROFILE_INC", " includes: ");
+define("PQL_LDAP_DELIVERYMODE_PROFILE_LOCAL_INFO", "local mailbox, POP account");
+define("PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD_INFO", "forward only, no local mailbox");
+define("PQL_LDAP_DELIVERYMODE_PROFILE_SYSTEM_INFO", "loginshell, homedir");
 
 // accountstatus texts
 // (active, nopop, disable)
@@ -202,6 +207,7 @@ define("PQL_LDAP_USERPASSWORD_KERBEROS", "(Kerberos V)");
 define("PQL_LDAP_USERPASSWORD_NEW", "Set password");
 define("PQL_LDAP_USERPASSWORD_RETYPE", "Password (Retype)");
 define("PQL_LDAP_USERPASSWORD_HELP", "A password can only contain numbers and letters, special characters are not allowed");
+define("PQL_LDAP_USERPASSWORD_HELP_KRB", "If using {KERBEROS} as password scheme, make sure you<br>include the correct REALM (principal@REALM.TLD)");
 define("PQL_LDAP_USERPASSWORD_CHANGE_OK", "Successfully changed password");
 define("PQL_LDAP_USERPASSWORD_CHANGE_FAILED", "Failed changing password");
 
