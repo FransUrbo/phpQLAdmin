@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.5 2003-08-15 08:06:04 turbo Exp $
+// $Id: bind9_add.php,v 2.6 2003-09-15 09:47:38 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -30,12 +30,21 @@ if(($action == 'add') and ($type == 'domain')) {
       </th>
     </table>
 
+    <input type="hidden" name="action" value="add">
+    <input type="hidden" name="type"   value="domain">
+    <input type="hidden" name="view"   value="<?=$view?>">
+    <input type="hidden" name="rootdn" value="<?=$rootdn?>">
     <input type="hidden" name="domain" value="<?=$domain?>">
     <input type="submit" value="<?php echo "--&gt;&gt;"; ?>">
   </form>
 <?php } else {
-		  echo "Adding domain $domainname<br>";
-		  pql_bind9_add_zone($_pql_control->ldap_linkid, $domain, $domainname);
+		  if(pql_bind9_add_zone($_pql_control->ldap_linkid, $domain, $domainname))
+			$msg = "Successfully added domain $domainname";
+		  else
+			$msg = "Failed to add domain $domainname";
+
+		  $url = "domain_detail.php?rootdn=$rootdn&domain=$domain&view=$view&msg=".urlencode($msg);
+		  header("Location: ".pql_get_define("PQL_GLOB_URI") . "$url");
 	  }
 } elseif(($action == 'add') and ($type == 'host')) {
 	  if(!$hostname or !$record_type or !$dest) {
