@@ -6,7 +6,7 @@ $Id: README,v 1.0 2001/05/21 09:52:15 mb Exp $
 Project updates / news
 ----------------------
 
-http://www.adfinis.com/projects/phpQLAdmin/
+http://phpqladmin.bayour.com/
 
 
 Documentation:
@@ -24,4 +24,6 @@ organization, credits...
 
 
 Copyright (c) 2001, adfinis Gmbh <opensource@adfinis.com>
+Copyright (c) 2003, Turbo Fredriksson <phpqladmin@bayour.com>
+
 This program is distributed under the terms of the GPL v2.

@@ -1,7 +1,7 @@
 phpQLAdmin - Installation Guide
 -------------------------------
 
-$Id: INSTALL,v 2.0 2002-12-13 14:34:47 turbo Exp $
+$Id: INSTALL,v 2.1 2003-01-04 11:24:50 turbo Exp $
 
 
 Software Requirements:
@@ -30,28 +30,17 @@ Optional:
 Install:
 --------
 
-1. Untar the distribution (tar -zxf phpQLAdmin-x.x.tar.gz) to a directory
+1. Untar the distribution (tar -zxf phpQLAdmin-x.x.x.tgz) to a directory
    below webserver's root.
 
-2. Move all files in the include directory to a php include
-   directory (look at phpinfo() to see which directory is set
-   as include_path). It's better to set the include_path to a
-   directory outside webserver's root, but if you don't want this
-   you can simply move all *.inc files to the root directory of the
-   application (in the php default configuration, a script's current directory
-   is always set to include_path)
-
-3. Avoid unauthorized access to phpQLAdmin. If a user has access the
-   application, he has FULL access to all mail accounts. phpQLAdmin does
-   NOT provide protection itself.
-
-4. If your webserver doesn't support 'index.php' as a directory index
+2. If your webserver doesn't support 'index.php' as a directory index
    file, rename it to index.html or whatever your webserver supports.
    The index.php - file does not contain any php code, so it must not
    be interpreted with php engine.
 
-5. Edit config.inc and change the properties needed to access your
+3. Copy the file 'include/config.inc.CHANGE_ME' to 'include/config.inc'
+   and edit config.inc. Change the properties needed to access your
    LDAP database (have a look at the configuration section in the
    documentation)
 
-6. Try out :)
+4. Try out :)

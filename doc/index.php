@@ -2,7 +2,7 @@
 <head>
 	<title>phpQL</title>
 	<link rel="stylesheet" href="../normal.css" type="text/css">
-	<!-- $Id: index.php,v 2.0 2002-12-13 14:34:47 turbo Exp $ -->
+	<!-- $Id: index.php,v 2.1 2003-01-04 11:24:50 turbo Exp $ -->
 </head>
 
 <body bgcolor="#e7e7e7" background="../images/bkg.png">
@@ -15,8 +15,8 @@
 <img src="../images/arrow.png" width="8" height="8" border="0"><a href="troubleshoot.php">Troubleshooting</a><br>
 <img src="../images/arrow.png" width="8" height="8" border="0"><a href="data.php">How phpQLAdmin handles ldap data</a><br>
 <img src="../images/arrow.png" width="8" height="8" border="0"><a href="faq.php">FAQ (Frequently asked questions)</a><br>
-<img src="../images/arrow.png" width="8" height="8" border="0"><a href="todo.php">TODO: What we want to do in the future</a><br>
-<img src="../images/arrow.png" width="8" height="8" border="0"><a href="CHANGES">CHANGES: What's new in this release</a><br>
+<img src="../images/arrow.png" width="8" height="8" border="0"><a href="../TODO">TODO: What we want to do in the future</a><br>
+<img src="../images/arrow.png" width="8" height="8" border="0"><a href="../CHANGES">CHANGES: What's new in this release</a><br>
 <br>
 <br>
 <span class="title2">License</span>
@@ -37,6 +37,8 @@ phpQLAdmin was initially developped by <a href="http://www.adfinis.com/">adfinis
   <li><b>additional development, testing</b>
 		<br>Michael Moser (mm@adfinis.ch)
 </ul>
+phpQLAdmin was taken over by Turbo Fredriksson on 11 Dec 2002, and is now relocated to <a href="http://phpqladmin.bayour.com/">phpqladmin.bayour.com</a>.
+<br><br>
 phpQLAdmin is Open Source, so you're invited to contribute.
 You can help to make this a useful tool.
 <br>
