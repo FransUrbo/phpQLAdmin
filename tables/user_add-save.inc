@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.23 2004-10-09 16:23:56 turbo Exp $
+// $Id: user_add-save.inc,v 1.24 2004-10-11 07:58:02 turbo Exp $
 
 // URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
 $_REQUEST["surname"] = urldecode($_REQUEST["surname"]);
@@ -248,6 +248,10 @@ if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "mai
 		if(! ereg("/$", $entry[pql_get_define("PQL_ATTR_HOMEDIR")]))
 		  $entry[pql_get_define("PQL_ATTR_HOMEDIR")] .= "/";
 	}
+} elseif($_REQUEST["account_type"] == "group") {
+	// Because we require the 'posixAccount' ('uid' attrib) when creating a
+	// group object, we just add the virtual homedirectory
+	$entry[pql_get_define("PQL_ATTR_HOMEDIR")] = pql_get_define("PQL_CONF_VIRTUAL_BASEHOME");
 }
 // }}}
 
