@@ -1,7 +1,7 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 2.30 2003-10-11 11:47:36 turbo Exp $
+// $Id: lang.en.inc,v 2.31 2004-01-15 13:51:49 turbo Exp $
 //
 // if you have a translation to another language, please contact
 // me --> Turbo Fredriksson <phpqladmin@bayour.com>
@@ -52,7 +52,7 @@ $language = array(
 	"An email address must be unique in whole domain" => "",
 	"Archive it" => "",
 	"Are you really sure" => "",
-	"Attention: If you deleted a domain, all users within this domain will be deleted too" => "",
+	"Attention: If you delete a domain, all users, DNS zones etc within this domain will be deleted too" => "",
 	"Attribute" => "",
 	"Attribute deliveryProgramPath is used if existant, .qmail files are ignored" => "",
 	"Automatic reload of navigation bar" => "",

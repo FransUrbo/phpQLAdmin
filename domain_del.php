@@ -1,6 +1,6 @@
 <?php
 // delete a domain and all users within
-// $Id: domain_del.php,v 2.23 2003-11-19 16:20:26 turbo Exp $
+// $Id: domain_del.php,v 2.24 2004-01-15 13:51:45 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -33,7 +33,7 @@ if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
 
 		// Remove the domain name
 		if($domainname)
-		  pql_control_update_domains($_pql, $USER_SEARCH_DN_CTR, '*', array($domainname, ''));
+			pql_control_update_domains($_pql, $USER_SEARCH_DN_CTR, '*', array($domainname, ''));
 
 		// Remove the additional domain name(s)
 		if(is_array($additionals)) {
@@ -64,7 +64,7 @@ if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
 <br>
 <br>
 <img src="images/info.png" width="16" height="16" border="0">
-<?php echo $LANG->_('Attention: If you deleted a domain, all users within this domain will be deleted too'); ?>!
+<?php echo $LANG->_('Attention: If you delete a domain, all users, DNS zones etc within this domain will be deleted too'); ?>!
 <br>
 <br>
 <?php echo $LANG->_('Are you really sure'); ?>
