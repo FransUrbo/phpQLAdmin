@@ -1,6 +1,18 @@
 phpQLAdmin 2.0 Change Log
 
 phpQLAdmin 2.0.8 - TO BE ANNOUNCED
+	Highlights
+	  - utf8_{encode,decode}() 'Personal details' ('outlook' values etc) to correctly
+	    catch national (ie, non-english) characters.
+	  - Write protect user's top domain/branch.
+	  - After we've fetched any configuration from the LDAP database' topmost DN,
+	    we check if the user's DN is in the administrator attribute. If it is, we
+	    allow domain/branch creation (ie, show the 'Add domain branch' URL).
+	  - Allow for 'ordinary' users to login. They will only see there own name, no
+	    domains etc. Filter out the edit links for the user. They should not be
+	    allowed to edit some 'sensitive' information (loginshell, uid, mailbox/home
+	    directory etc).
+
 	Bug fixes
 	  - LDIF example and documentation (README*) cleanup.
 	  - OpenLDAP ACL example to allow 'dynamic' administrator access
@@ -11,32 +23,28 @@ phpQLAdmin 2.0.8 - TO BE ANNOUNCED
 	  - Don't get the domains TWICE (once when we start using pql_get_domain_value()
 	    which verifies that we have access to the domain(s) and one using
 	    pql_get_domain_value() which does no access control etc).
-	  - utf8_{encode,decode}() 'Personal details' ('outlook' values etc) to correctly
-	    catch national (ie, non-english) characters.
 	  - Missing = in "form ... name=..." (user_add.php).
 	  - If pql_get_domain_value() is called with something to search for ($match),
 	    we have to use 'ldap_search()', othervise we use ldap_read() which do a
 	    search with scope = BASE (only the current object).
+	  - When deleting a user, remove all administrator references from all
+	    domains/branches that lists the useras well.
 
 	GUI layout change
 	  - Only show a 'dropdown menu' if we can choose from more than one domain
 	  - Only show the configuration edit/set links if we're administrator of/in the
 	    topmost DN.
+	  - Allow to make user administrator on the topmost DN (ie, create
+	    domains/branches) in the user_details page.
 
 	Misc changes
-	  - Write protect user's top domain/branch.
 	  - Some files filtered through dos2unix to get rid of ^M
-	  - After we've fetched any configuration from the LDAP database' topmost DN,
-	    we check if the user's DN is in the administrator attribute. If it is, we
-	    allow domain/branch creation (ie, show the 'Add domain branch' URL).
 	  - Since the topmost DN now contain the administrator attribute, we must filter
 	    that out when fetching domains, othervise we'd end up with the topmost DN
 	    in domain/branch listing in the navigation frame...
 	  - New function pql_validate_administrator() which checks a given DN for
 	    existence of the administrator attribute, and if that contains the given
 	    (user) DN.
-	  - Allow to make user administrator on the topmost DN (ie, create
-	    domains/branches) in the user_details page.
 
 phpQLAdmin 2.0.7 Release (Jan 28 2003)
 	Bug fixes
