@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-details.inc,v 1.28 2004-10-18 13:39:33 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.29 2005-02-01 08:46:21 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
@@ -95,15 +95,16 @@
 <?php	} ?>
 
         <!-- Password -->
+<?php	if(eregi('KERBEROS', $allowed_schemes) or $_SESSION["ADVANCED_MODE"]) { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Password')?></td>
-<?php	if(!eregi('KERBEROS', $allowed_schemes) and !$autocreatepassword) { ?>
+<?php		if(!eregi('KERBEROS', $allowed_schemes) and !$autocreatepassword) { ?>
           <td><input type="checkbox" name="autogenerate"><?=$LANG->_('Autogenerate password')?></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
           <td></td>
-<?php	} ?>
+<?php		} ?>
           <!-- Crude hackery. Using type=password won't be so good if we're using {KERBEROS} -->
           <td>
             <?php echo pql_format_error_span($error_text["password"]); ?>
@@ -117,6 +118,13 @@
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
           <td><?=$LANG->_('If you enter an already encrypted password, you must make sure that the password scheme you\'ve choosen is the correct one. Also, choose the checkbox \uPassword is already encrypted\U')?></td>
         </tr>
+<?php	} else { ?>
+        <tr class="<?php pql_format_table(); ?>">
+          <td class="title"><?=$LANG->_('Password')?></td>
+          <td><?=$LANG->_('Will be auto generated')?></td>
+        </tr>
+        <input type="hidden" name="autogenerate" value="on">
+<?php	} ?>
 <?php } ?>
       </th>
     </table>
