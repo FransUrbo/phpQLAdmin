@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.11 2004-03-26 11:25:23 turbo Exp $
+// $Id: user_add-save.inc,v 1.12 2004-03-27 09:41:44 turbo Exp $
 
 // Find out what objectclasses to use when creating user
 $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"]));
@@ -147,7 +147,11 @@ if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "mai
 	// normal mailbox account
 	
 	if($_REQUEST["userhost"] and $_REQUEST["host"])
+	  // If using 'dns' -> the FQDN
 	  $entry[pql_get_define("PQL_ATTR_MAILHOST")] = $_REQUEST["userhost"][$_REQUEST["host"]];
+	elseif($_REQUEST["host"])
+	  // If using 'qlc' -> the FQDN
+	  $entry[pql_get_define("PQL_ATTR_MAILHOST")] = $_REQUEST["host"];
 	
 	$entry[pql_get_define("PQL_ATTR_MODE")] = "localdelivery";
 	

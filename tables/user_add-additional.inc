@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-additional.inc,v 1.11 2004-03-19 10:26:47 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.12 2004-03-27 09:41:43 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <input type="hidden" name="surname"            value="<?=$_REQUEST["surname"]?>">
     <input type="hidden" name="name"               value="<?=$_REQUEST["name"]?>">
@@ -57,10 +57,21 @@
           <td class="title" valign="top"><?=$LANG->_('Mail server')?></td>
           <td>
             <?php echo pql_format_error_span($error_text["userhost"]); ?>
-<?php	if($_REQUEST["userhost"]["qlc"]) { // It's defined - QmailLDAP/Controls object ?>
-            <input type="radio" name="host" value="qlc" <?php if(!$_REQUEST["userhost"]["dns"]) { ?>CHECKED<?php } ?>>
-            <?=$LANG->_('QmailLDAP/Controls object')?>: <b><?=$_REQUEST["userhost"]["qlc"][0]?></b><br>
-<?php	} 
+<?php	if($_REQUEST["userhost"]["qlc"]) { // It's defined - QmailLDAP/Controls object
+			for($i=0; $_REQUEST["userhost"]["qlc"][$i]; $i++) {
+?>
+            <input type="radio" name="host" value="<?=$_REQUEST["userhost"]["qlc"][$i]?>" <?php
+				if(!$_REQUEST["userhost"]["qlc"][1] and !$_REQUEST["userhost"]["dns"]) { 
+					// This is the default, IF:
+					// 1. There's only ONE QmailLDAP/Controls object
+					//    AND
+					// 2. There's no DNS entry
+					echo "CHECKED";
+				}
+?>>
+            <?=$LANG->_('QmailLDAP/Controls object')?>: <b><?=pql_maybe_idna_decode($_REQUEST["userhost"]["qlc"][$i])?></b><br>
+<?php		}
+		} 
 
 		if($_REQUEST["userhost"]["dns"]) { // It's defined - DNS entry
 ?>
