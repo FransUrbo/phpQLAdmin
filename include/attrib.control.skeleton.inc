@@ -58,7 +58,7 @@
 //
 // Please look at other plugins to see which standard header text is recommanded.
 //
-// $Id: attrib.control.skeleton.inc,v 2.13 2004-03-11 16:31:55 turbo Exp $
+// $Id: attrib.control.skeleton.inc,v 2.14 2004-10-15 15:18:15 turbo Exp $
 //
 
 // {{{ xxx_check(type)
@@ -88,7 +88,7 @@ function xxx_init() {
 	
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   $_SESSION["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_ATTR_CN")."=".$_REQUEST["mxhost"].",".$_SESSION["USER_SEARCH_DN_CTR"],
 									   pql_get_define("PQL_ATTR_xxx"));
 	
 	if(!is_null($value))
