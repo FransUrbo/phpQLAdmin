@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.5 2002-12-23 11:55:53 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.6 2002-12-24 12:01:55 turbo Exp $
 //
 session_start();
 // ----------------------------
@@ -10,7 +10,7 @@ session_start();
 // lang.it.inc --> italian
 // lang.jp.inc --> japanese
 // ----------------------------
-require("include/lang.en.inc");
+require("./include/lang.en.inc");
 
 // ----------------------------
 // Graphical Output

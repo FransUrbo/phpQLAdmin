@@ -4,7 +4,7 @@
 //
 session_start();
 
-require("include/pql.inc");
+require("./include/pql.inc");
 
 if(PQL_LDAP_CONTROL_USE){
     // include control api if control is used

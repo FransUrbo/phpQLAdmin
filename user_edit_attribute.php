@@ -4,7 +4,7 @@
 //
 session_start();
 
-require("include/pql.inc");
+require("./include/pql.inc");
 
 $_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
 

@@ -1,17 +1,17 @@
 <?php
 // navigation bar - ezmlm mailinglists manager
-// $Id: left-ezmlm.php,v 2.4 2002-12-22 20:28:00 turbo Exp $
+// $Id: left-ezmlm.php,v 2.5 2002-12-24 12:01:51 turbo Exp $
 //
 session_start();
 
-require("include/pql.inc");
-require("include/pql_ezmlm.inc");
+require("./include/pql.inc");
+require("./include/pql_ezmlm.inc");
 
 // Initialize
 $ezmlm = new ezmlm();
-require("ezmlm-hardcoded.php");
+require("./ezmlm-hardcoded.php");
 
-require("left-head.html");
+require("./left-head.html");
 ?>
   <!-- EZMLM Mailinglists -->
   <div id="el1Parent" class="parent">
@@ -81,7 +81,7 @@ if(! $ezmlm->readlists()) {
 	}
 }
 
-require("left-trailer.html");
+require("./left-trailer.html");
 
 /*
  * Local variables:

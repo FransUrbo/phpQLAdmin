@@ -4,11 +4,11 @@
 //
 session_start();
 
-require("include/pql.inc");
-require("include/pql_control.inc");
-require("include/pql_control_plugins.inc");
+require("./include/pql.inc");
+require("./include/pql_control.inc");
+require("./include/pql_control_plugins.inc");
 
-require("left-head.html");
+require("./left-head.html");
 
 $_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS, false, 0);
 // TODO: If we're choosing another LDAP server, how do we login?
@@ -151,5 +151,5 @@ if(is_array($domains)){
     } // end foreach ($domains)
 } // end if(is_array($domains))
 
-require("left-trailer.html");
+require("./left-trailer.html");
 ?>

@@ -4,9 +4,9 @@
 //
 session_start();
 
-require("include/pql.inc");
-require("include/pql_control.inc");
-require("include/pql_control_plugins.inc");
+require("./include/pql.inc");
+require("./include/pql_control.inc");
+require("./include/pql_control_plugins.inc");
 
 $_pql_control = new pql_control($USER_HOST_CTR, $USER_DN, $USER_PASS);
 

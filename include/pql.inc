@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.6 2002-12-20 01:34:24 turbo Exp $
+// $Id: pql.inc,v 2.7 2002-12-24 12:01:55 turbo Exp $
 //
 // ----------------------------
 // Note: There are a few " followed after PHP comment
@@ -15,7 +15,7 @@
 // ----------------------------
 // include and check configuration
 // ----------------------------
-require("include/config.inc");
+require("./include/config.inc");
 
 // make a simple configuration check
 if(!pql_check_config(&$result)){

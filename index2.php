@@ -1,6 +1,6 @@
 <?php
 session_start();
-require("include/config.inc");
+require("./include/config.inc");
 ?>
 <html>
   <head>

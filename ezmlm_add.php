@@ -1,16 +1,16 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.4 2002-12-23 19:51:35 turbo Exp $
+// $Id: ezmlm_add.php,v 1.5 2002-12-24 12:01:50 turbo Exp $
 //
 session_start();
 
-require("include/pql.inc");
+require("./include/pql.inc");
 $_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
 
 // Initialize
-require("include/pql_ezmlm.inc");
+require("./include/pql_ezmlm.inc");
 $ezmlm = new ezmlm();
-require("ezmlm-hardcoded.php");
+require("./ezmlm-hardcoded.php");
 
 if(!$subscribercount) {
 	$subscribercount = 0;
@@ -91,7 +91,7 @@ if(isset($submit)) {
 	  $error_text["listname"] = 'missing';
 }
 
-require("header.html");
+require("./header.html");
 
 if(!$domain) {
 ?>

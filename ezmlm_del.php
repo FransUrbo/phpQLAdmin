@@ -1,14 +1,14 @@
 <?php
-// $Id: ezmlm_del.php,v 1.2 2002-12-23 11:38:43 turbo Exp $
+// $Id: ezmlm_del.php,v 1.3 2002-12-24 12:01:50 turbo Exp $
 //
 session_start();
 
-require("include/pql.inc");
-require("include/pql_ezmlm.inc");
+require("./include/pql.inc");
+require("./include/pql_ezmlm.inc");
 
 // Initialize
 $ezmlm = new ezmlm();
-require("ezmlm-hardcoded.php");
+require("./ezmlm-hardcoded.php");
 
 include("header.html");
 
