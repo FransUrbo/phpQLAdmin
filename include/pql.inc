@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.23 2003-01-20 06:12:32 turbo Exp $
+// $Id: pql.inc,v 2.24 2003-01-20 08:27:41 turbo Exp $
 //
 // ----------------------------
 // Note: There are a few " followed after PHP comment
@@ -142,7 +142,7 @@ class pql {
 // ------------------------------------------------
 
 // Add a user to the LDAP database
-function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type) {
+function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $branch) {
     // Setup the objectclass entries
     $entry["objectClass"][] = "top";
     $entry["objectClass"][] = PQL_LDAP_OBJECTCLASS_USERID;
@@ -181,8 +181,8 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type) {
 		}
     }
     
-	if(PQL_LDAP_SUBTREE_USERS)
-	  $subrdn = "," . PQL_LDAP_SUBTREE_USERS . ",";
+	if($branch)
+	  $subrdn = "," . $branch . ",";
 
     // dn of the user
     $userdn = PQL_LDAP_ATTR_UID . "=" . $entry[PQL_LDAP_USER_RDN_ATTRIBUTE] . $subrdn . $domain;
@@ -254,18 +254,15 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 	$uidnr = pql_get_userattribute($linkid, $user, PQL_LDAP_ATTR_QMAILUID);
 	$uidnr = $uidnr[0];
     
-	// Delete the group object if it's defined
-	if(PQL_LDAP_SUBTREE_GROUPS) {
-		$filter = "(&(gidNumber=" . $uidnr . ")(objectclass=posixGroup))";
-
-		$sr = ldap_search($linkid, $domain, $filter);
-		if(ldap_count_entries($linkid, $sr) > 0){
-			$ed = ldap_first_entry($linkid, $sr);
-			$dn = ldap_get_dn($linkid, $ed);
-
-			// delete the group
-			ldap_delete($linkid, $dn);
-		}
+	// Delete the group object if it exists
+	$filter = "(&(gidNumber=" . $uidnr . ")(objectclass=posixGroup))";
+	$sr = ldap_search($linkid, $domain, $filter);
+	if(ldap_count_entries($linkid, $sr) > 0){
+		$ed = ldap_first_entry($linkid, $sr);
+		$dn = ldap_get_dn($linkid, $ed);
+		
+		// delete the group
+		ldap_delete($linkid, $dn);
 	}
 
     // we delete the forwards to this user as they don't really make sense anymore
@@ -414,37 +411,27 @@ function pql_domain_del($ldap, $domain, $delete_forwards) {
 			pql_user_del($ldap, $domain, $user, $delete_forwards);
 		}
     }
-    
-    // Remove the USER subtrees if defined
-    if(PQL_LDAP_SUBTREE_USERS) {
-		if(!ldap_delete($linkid, PQL_LDAP_SUBTREE_USERS.",".$domain)) {
-			pql_errormsg($linkid);
-			return false;
-		}
-    }
-    
-    // Remove the GROUP subtrees if defined
-    if(PQL_LDAP_SUBTREE_GROUPS) {
-		// Remove all the GROUP objects of the domain
-		$groups = pql_get_group($linkid, $domain);
-		if(is_array($groups)) {
-			foreach($groups as $group){
-				$dn = pql_get_dn($ldap_linkid, $user);
-				
-				if(!ldap_delete($ldap_linkid, $dn)){
-					pql_errormsg($ldap_linkid);
-					return false;
-				}
+
+	// Get subbranches
+	$branches = pql_get_subbranch($linkid, $domain, 0);
+	if(is_array($branches)) {
+		for($i=0; $branches[$i]; $i++) {
+			// Find every object under this DN and delete it
+			$sr = @ldap_search($linkid, $branches[$i], 'objectclass=*') or pql_errormsg($linkid);
+			$info = ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
+			for ($i=0; $i<$info["count"]; $i++) {
+				if(!ldap_delete($linkid, $info[$i]["dn"]))
+				  pql_errormsg($linkid);
+			}
+
+			// Delete the organizationalUnit itself
+			if(!ldap_delete($linkid, $branches[$i])) {
+				pql_errormsg($linkid);
+				return false;
 			}
 		}
-		
-		// Remove the group object
-		if(!ldap_delete($linkid, PQL_LDAP_SUBTREE_GROUPS.",".$domain)) {
-			pql_errormsg($linkid);
-			return false;
-		}
-    }
-    
+	}
+
     // remove domain entry itself (ou)
     if(!ldap_delete($linkid, $domain)) {
 		pql_errormsg($linkid);
@@ -540,7 +527,6 @@ function pql_email_exists($ldap, $email){
 
 	foreach($ldap->ldap_basedn as $dn) {
 		$sr = ldap_search($ldap_linkid, $dn, $filter);
-    
 		if(ldap_count_entries($ldap_linkid,$sr) > 0) {
 			$ed = ldap_first_entry($ldap_linkid, $sr);
 			return ldap_get_dn($ldap_linkid, $ed);
@@ -702,29 +688,11 @@ function pql_get_user($ldap_linkid, $dn){
 	
 	$sr = @ldap_search($ldap_linkid, $dn, $filter) or pql_errormsg($ldap_linkid);
 	$info = ldap_get_entries($ldap_linkid, $sr) or pql_errormsg($ldap_linkid);
-	
 	for ($i=0; $i<$info["count"]; $i++) {
 		$user[] = $info[$i]["dn"];
 	}
 	
 	return $user;
-}
-
-// get all groups of a domain
-function pql_get_group($ldap_linkid, $domain) {
-	if(PQL_LDAP_SUBTREE_GROUPS)
-	  $subrdn = PQL_LDAP_SUBTREE_GROUPS . ",";
-
-    $filter = "(&(cn=*)(objectclass=posixgroup))";
-    
-    $sr = @ldap_list($ldap_linkid, $domain, $filter) or pql_errormsg($ldap_linkid);
-    $info = ldap_get_entries($ldap_linkid, $sr) or pql_errormsg($ldap_linkid);
-    
-    for ($i=0; $i<$info["count"]; $i++) {
-		$groups[] = $info[$i]["dn"];
-    }
-    
-    return $groups;
 }
 
 // ------------------------------------------------
@@ -1438,10 +1406,22 @@ function pql_branch_objectclasses() {
 	return $filter;
 }
 
-function pql_get_mx($domainname) {
+function pql_get_mx($ldap, $domainname) {
 	$res = getmxrr($domainname, $rec, $weight);
 	if(count($rec) == 0) {
-		return 0;
+		// Not found in the DNS, look for a qmailControl object which lists
+		// this domain...
+
+		$filter = "(&(objectclass=qmailControl)(|(locals=$domainname)(rcpthosts=$domainname)))";
+		foreach($ldap->ldap_basedn as $dn) {
+			$sr = @ldap_search($ldap->ldap_linkid, $dn, $filter) or pql_errormsg($ldap->ldap_linkid);
+			$info = ldap_get_entries($ldap->ldap_linkid, $sr) or pql_errormsg($ldap->ldap_linkid);
+			for ($i=0; $i<$info["count"]; $i++) {
+				return(array(0, $info[$i]["cn"][0]));
+			}
+		}
+
+		return(array(0,0));
 	} else {
 		// Take the MX with _LOWEST_ priority/weight.
 		asort($weight); $old_prio = 65555;
@@ -1451,7 +1431,7 @@ function pql_get_mx($domainname) {
 			}
 		}
 		
-		return $rec[$prio_key];
+		return(array(1, $rec[$prio_key]));
 	}
 }
 
@@ -1615,7 +1595,7 @@ function pql_get_subschemas($ldap_linkid) {
     return $entry;
 }
 
-function pql_get_subbranch($linkid, $dn) {
+function pql_get_subbranch($linkid, $dn, $filter = 1) {
 	if(PQL_LDAP_ATTR_DOMAIN == "dc") {
 		$ocb = "domain";
 	} else {
@@ -1625,8 +1605,11 @@ function pql_get_subbranch($linkid, $dn) {
 	$sr   = ldap_search($linkid, $dn, 'objectclass=organizationalUnit');
 	$info = ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
 	for ($i=0; $i<$info["count"]; $i++) {
-		// Filter out the most obvious subbranches we don't put users in...
-		if(!eregi('group', $info[$i]["dn"]) and !eregi('qmail', $info[$i]["dn"]))
+		if($filter) {
+			// Filter out the most obvious subbranches we don't put users in...
+			if(!eregi('group', $info[$i]["dn"]) and !eregi('qmail', $info[$i]["dn"]))
+			  $branches[] = $info[$i]["dn"];
+		} else
 		  $branches[] = $info[$i]["dn"];
 	}
 
