@@ -18,14 +18,22 @@ if(isset($advanced)) {
 	if(PQL_LDAP_EZMLM_USE) {
 ?>
       <frameset cols="*" rows="50%,*" border="1" frameborder="0">
+<?php
+		if(PQL_LDAP_CONTROL_USE) {
+?>
         <frame src="left-control.php" name="pqlnavctrl">
+<?php
+		}
+?>
         <frame src="left-ezmlm.php" name="pqlnavezmlm">
       </frameset>
 <?php
 	} else {
+		if(PQL_LDAP_CONTROL_USE) {
 ?>
       <frame src="left-control.php" name="pqlnavctrl">
 <?php
+		}
 	}
 ?>
     </frameset>
