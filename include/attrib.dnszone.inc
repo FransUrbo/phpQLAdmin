@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.15.2.2 2005-02-16 12:50:15 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.15.2.3 2005-02-23 17:11:14 turbo Exp $
 
 // {{{ attribute_translate_type(attrib)
 function attribute_translate_type($attrib) {
@@ -190,15 +190,15 @@ function attribute_save($action) {
 	// {{{ if($attrib == 'dnsttl')
 	if((lc($attrib) == 'dnsttl') && $_REQUEST["time"]) {
 	  if($_REQUEST["time"] == "minutes")
-		$newvalue = $value * 60;
+		$newvalue = $newvalue * 60;
 	  elseif($_REQUEST["time"] == "hours")
-		$newvalue = $value * 60 * 60;
+		$newvalue = $newvalue * 60 * 60;
 	  elseif($_REQUEST["time"] == "days")
-		$newvalue = $value * 60 * 60 * 24;
+		$newvalue = $newvalue * 60 * 60 * 24;
 	  elseif($_REQUEST["time"] == "weeks")
-		$newvalue = $value * 60 * 60 * 24 * 7;
+		$newvalue = $newvalue * 60 * 60 * 24 * 7;
 	  elseif($_REQUEST["time"] == "months")
-		$newvalue = $value * 60 * 60 * 24 * 7 * 4;
+		$newvalue = $newvalue * 60 * 60 * 24 * 7 * 4;
 	}
 	// }}}
 
@@ -215,7 +215,7 @@ function attribute_save($action) {
 		  $entry[$attrib][] = $oldvalues[$i];
 
 		// Add the new value to the array
-		$entry[$attrib][] = $value;
+		$entry[$attrib][] = $newvalue;
 
 		if(pql_modify_attribute($_pql->ldap_linkid, $dn, '', '', $entry)) {
 		  $success = 1;
