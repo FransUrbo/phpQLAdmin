@@ -136,7 +136,7 @@ if($submit == "save" and ($account_type == "normal" or $account_type == "system"
 		$error_text["password"] = PQL_MISSING;
     }
     
-    if($pwscheme == "{KERBEROS}") {
+    if(eregi($pwscheme, "{KERBEROS}")) {
 		// Should be in the form: userid@DOMAIN.LTD
 		// TODO: Is this regexp correct!?
 		if(! preg_match("/^[a-zA-Z0-9]+[\._-a-z0-9]*[a-zA-Z0-9]+@[A-Z0-9][-A-Z0-9]+(\.[-A-Z0-9]+)+$/", $password)) {
@@ -652,6 +652,11 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 
 			// set attributes
 			$entry[PQL_LDAP_ATTR_PASSWD]   = pql_password_hash($password, $pwscheme);
+			if(eregi($pwscheme, "{KERBEROS")) {
+				$entry["krb5PrincipalName"] = $password;
+				$entry["objectClass"][] = "krb5Principal";
+			}
+
 			if($host == 'default') {
 				// TODO: If there is no defaultDomain for the domain, get MX of the domain in the email address
 				if($mx)
