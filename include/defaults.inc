@@ -181,8 +181,8 @@ pql_define("PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER", 500, false, $dn);
 // ----------------------------
 // PQL_CONF_MAX_DOMAIN_USERS (integer)
 // Maximum amount of users allowed in a domain branch
-// If zero (0), then unlimited
-pql_define("PQL_CONF_MAX_DOMAIN_USERS", 0, false, $dn);
+// If zero (0) or 'FALSE', then unlimited
+pql_define("PQL_CONF_MAX_DOMAIN_USERS", 'FALSE', false, $dn);
 
 // ----------------------------
 // PQL_GLOB_URI (URL)
