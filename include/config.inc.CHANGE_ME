@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.61 2005-02-05 09:07:06 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.62 2005-02-07 11:42:39 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -156,7 +156,7 @@ pql_set_define("PQL_CONF_USE_TLS", false);
 //	}
 //	
 //	// -------------- Template 2: domain.tld/username
-/	$mailstore = "%d%/%u%"; 
+//	$mailstore = "%d%/%u%"; 
 //	
 //	// you feel comfortable with the old way phpQLAdmin generates the mailstore?
 //	// Uncomment this example and change the string. 
