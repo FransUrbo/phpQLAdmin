@@ -21,9 +21,9 @@ if($config["PQL_GLOB_BIND9_USE"]) {
 // in ANY of the namingContexts)?
 $counted = 0; // Don't count each of the Control usage more than once
 foreach($_pql->ldap_basedn as $dn)  {
-    $ALLOW_CONTROL_CREATE[$dn] = 1; // DEBUG
+    $ALLOW_CONTROL_CREATE = 1; // DEBUG
 
-    if($config["PQL_GLOB_CONTROL_USE"] and $ALLOW_CONTROL_CREATE[$dn]) {
+    if($config["PQL_GLOB_CONTROL_USE"] and $ALLOW_CONTROL_CREATE) {
 	$SHOW_FRAME["controls"] = 1;
 	if(!$counted) {
 	    $frames++;
