@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_detail.php,v 1.6 2002-12-24 12:13:10 turbo Exp $
+// $Id: ezmlm_detail.php,v 1.7 2002-12-25 01:14:58 turbo Exp $
 //
 session_start();
 
@@ -7,8 +7,7 @@ require("./include/pql.inc");
 require("./include/pql_ezmlm.inc");
 
 // Initialize
-$ezmlm = new ezmlm();
-require("./ezmlm-hardcoded.php");
+$ezmlm = new ezmlm('/usr/bin', 'alias', '/var/lists');
 
 include("./header.html");
 
@@ -38,7 +37,7 @@ if($ezmlm->readlists()) {
         <td><?=$listname."@".$listdomain?></td>
         <td align="right"><?=$ezmlm->mailing_lists[$listno]["subscribers"]?></td>
         <td><?=$ezmlm->mailing_lists[$listno]["owner"]?></td>
-        <td><a href="ezmlm_detail.php?domain=<?=$domain?>&listno=<?=$listno?>"><img src="images/edit.png" width="12" height="12" alt="edit attribute" border="0"></a>&nbsp;&nbsp;<a href="ezmlm_del.php?listno=<?=$listno?>"><img src="images/del.png" width="12" height="12" alt="delete attribute" border="0"></a></td>
+        <td><a href="ezmlm_detail.php?domain=<?=$domain?>&listno=<?=$listno?>"><img src="images/edit.png" width="12" height="12" alt="edit list" border="0"></a>&nbsp;&nbsp;<a href="ezmlm_del.php?listno=<?=$listno?>"><img src="images/del.png" width="12" height="12" alt="delete list" border="0"></a></td>
       </tr>
 <?php
 			}
@@ -118,7 +117,7 @@ if($ezmlm->readlists()) {
 				} else {
 				// Editable/Deletable values
 ?>
-        <td><a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&listno=<?=$listno?>&attrib=<?=$key?>"><img src="images/edit.png" width="12" height="12" alt="edit attribute" border="0"></a>&nbsp;&nbsp;<a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&listno=<?=$listno?>&attrib=<?=$key?>"><img src="images/del.png" width="12" height="12" alt="delete attribute" border="0"></a></td>
+        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&listno=<?=$listno?>&attrib=<?=$key?>"><img src="images/edit.png" width="12" height="12" alt="toggle value" border="0"></a>&nbsp;&nbsp;<a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&listno=<?=$listno?>&attrib=<?=$key?>"></a></td>
 <?php
 				}
 			}
