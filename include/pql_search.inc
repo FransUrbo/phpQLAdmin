@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.12 2003-11-20 11:12:27 turbo Exp $
+// $Id: pql_search.inc,v 2.13 2003-11-26 16:47:43 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -21,9 +21,14 @@ function pql_search($linkid, $basedn, $filter, $attrib = 'dn') {
 
 	for($i=0; $i < $info["count"]; $i++) {
 		if($attrib == '')
-		  $dn .= $info[$i];
-		else
-		  $dn[] = $info[$i][$attrib];
+		  $dn[] = $info[$i];
+		else {
+			if(is_array($info[$i][$attrib])) {
+				for($j=0; $j < $info[$i][$attrib]["count"]; $j++)
+				  $dn[] = $info[$i][$attrib][$j];
+			} else
+			  $dn[] = $info[$i][$attrib];
+		}
 	}
 
 	return $dn;
