@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailalternateaddress (emailaddress alias)
-// $Id: attrib.mailalternateaddress.inc,v 2.26 2004-10-13 17:40:29 turbo Exp $
+// $Id: attrib.mailalternateaddress.inc,v 2.27 2004-10-14 08:51:45 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -192,6 +192,49 @@ function attribute_save($type) {
 			header("Location: " . pql_get_define("PQL_CONF_URI") . $url);
 		} else
 		  attribute_forward($msg);
+		break;
+
+      case "delete";
+		// Get the old values, so we can remove the one we're modifying
+		// (delete the one we want to delete, keep the others etc)
+		$values = pql_domain_get_value($_pql, $_REQUEST["user"], $attrib);
+
+		// Add the old values to the resulting array.
+		$OLD[$attrib] = array();
+		if(is_array($values)) {
+			foreach($values as $value)
+			  $OLD[$attrib][] = $value;
+		} elseif($values)
+		  $OLD[$attrib][] = $values;
+		unset($values); // We're done with this array/value.
+
+		// Delete value from old values
+		foreach($OLD[$attrib] as $value) {
+			if(!eregi($_REQUEST[$attrib], $value))
+			  $values[] = $value;
+		}
+		$OLD[$attrib] = $values;
+
+		if(pql_domain_set_value($_pql->ldap_linkid, $_REQUEST["user"], $attrib, $OLD))
+		  $success = 1;
+
+		if(($attrib == pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR")) or
+		   ($attrib == pql_get_define("PQL_ATTR_GROUP_822_MODERATOR")))
+		  $what = $LANG->_('group moderator');
+		elseif(($attrib == pql_get_define("PQL_ATTR_GROUP_DN_MEMBER")) or
+			   ($attrib == pql_get_define("PQL_ATTR_GROUP_822_MEMBER")))
+		  $what = $LANG->_('group member');
+		elseif(($attrib == pql_get_define("PQL_ATTR_GROUP_DN_SENDER")) or
+			   ($attrib == pql_get_define("PQL_ATTR_GROUP_822_SENDER")))
+		  $what = $LANG->_('group allowed sender');
+
+		if($success)
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'), array('what' => $what));
+		else
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'), array('what' => $what))
+			. ": " . ldap_error($_pql->ldap_linkid);
+		
+		attribute_forward($msg);
 		break;
 
       default:
