@@ -95,12 +95,12 @@ if (empty($uname) or empty($passwd)) {
 
           <tr>
             <td bgcolor="#D0DCE0"><b><?=PQL_LANG_USERNAME?>:</b></td>
-            <td><input type=text name="uname"></td>
+            <td><input type=text name="uname" size="30"></td>
           </tr>
 
           <tr>
              <td bgcolor="#D0DCE0"><b><?=PQL_LANG_USERPASS?>:</b></td>
-             <td><input type=password name="passwd" onChange="this.form.submit()" autocomplete="OFF"></td>
+             <td><input type=password name="passwd" size="30" onChange="this.form.submit()" autocomplete="OFF"></td>
           </tr>
 
           <tr><td></td></tr>
