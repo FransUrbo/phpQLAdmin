@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_edit_attribute.php,v 1.27.2.1 2005-03-04 11:59:45 turbo Exp $
+// $Id: ezmlm_edit_attribute.php,v 1.27.2.2 2005-03-17 08:23:01 turbo Exp $
 //
 require("./include/pql_session.inc");
 require("./include/pql_config.inc");
@@ -17,7 +17,7 @@ function list_forward($domainname, $listno, $msg) {
 	else
 	  $url = "ezmlm_detail.php?domain=$domain&domainname=$domainname&msg=$msg";
 
-    header("Location: " . $_SESSION["URI"] . "$url");
+    pql_header($url);
 }
 
 // Get base directory for mails
