@@ -1,8 +1,8 @@
 <?php
 // remove a domain from a bind9 ldap db
-// $Id: bind9_del.php,v 2.5 2005-02-24 17:04:00 turbo Exp $
+// $Id: bind9_del.php,v 2.5.2.1 2005-03-04 11:59:44 turbo Exp $
 //
-session_start();
+require("./include/pql_session.inc");
 require("./include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_control.inc");
 require($_SESSION["path"]."/include/pql_bind9.inc");
