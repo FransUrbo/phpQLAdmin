@@ -9,7 +9,8 @@ require("./include/pql.inc");
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 // check if domain exist
-if(!pql_domain_exist($_pql->ldap_linkid, $domain)){
+$dc = ldap_explode_dn($domain, 0); $dc = split('=', $dc[0]);
+if(!pql_domain_exist($_pql, $dc[1])){
 	echo "domain &quot;$domain&quot; does not exists";
 	exit();
 }
@@ -572,7 +573,7 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 			}
 
 			// Get a free UserID number (which we also use for GroupID number)
-			$uidnr = pql_get_next_uidnumber($_pql->ldap_linkid);
+			$uidnr = pql_get_next_uidnumber($_pql);
 			if($uidnr > 0) {
 				$entry[PQL_LDAP_ATTR_QMAILUID] = $uidnr;
 				$entry[PQL_LDAP_ATTR_QMAILGID] = $uidnr;

@@ -34,7 +34,7 @@ if(!check_hostaddress($domain, $nodot)){
 }
 
 // check if domain exist
-if(pql_domain_exist($_pql->ldap_linkid, PQL_LDAP_ATTR_DOMAIN."=".$domain.",".$_pql->ldap_basedn[0])){
+if(pql_domain_exist($_pql, $domain)) {
 	$msg = urlencode(PQL_DOMAIN_EXISTS);
 	header("Location: " . PQL_URI . "home.php?msg=$msg");
 	exit();

@@ -49,8 +49,10 @@ $username = $username[0];
   <span class="title1"><?=$username?></span>
   <br><br>
 <?php
+
 // check if domain exists
-if(!pql_domain_exist($_pql->ldap_linkid, $domain)){
+$dc = ldap_explode_dn($domain, 0); $dc = split('=', $dc[0]);
+if(!pql_domain_exist($_pql, $dc[1])) {
     echo "domain &quot;$domain&quot; does not exists";
     exit();
 }

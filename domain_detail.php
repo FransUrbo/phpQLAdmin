@@ -33,7 +33,8 @@ if(isset($rlnb) and PQL_AUTO_RELOAD) {
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 // check if domain exist
-if(!pql_domain_exist($_pql->ldap_linkid, $domain)){
+$dc = ldap_explode_dn($domain, 0); $dc = split('=', $dc[0]);
+if(!pql_domain_exist($_pql, $dc[1])){
     echo "domain &quot;$domain&quot; does not exists";
     exit();
 }
@@ -71,7 +72,7 @@ if(!$domainname) {
 	$domainname = "<a href=\"domain_edit_attributes.php?type=modify&attrib=o&domain=$domain\">".PQL_UNSET."</a>";
 }
 ?>
-  <span class="title1">Organization: <?=$domainname?></span>
+  <span class="title1">Organization: <?=urldecode($domainname)?></span>
 <?php
 if($ADVANCED_MODE == 1) {
 ?>
