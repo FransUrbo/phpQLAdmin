@@ -41,7 +41,7 @@ if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
 	
 	// redirect to domain-detail page
 	$msg = urlencode($msg);
-	header("Location: " . pql_get_define("PQL_GLOB_URI") . "domain_detail.php?domain=$domain&msg=$msg$rlnb");
+	header("Location: " . pql_get_define("PQL_GLOB_URI") . "domain_detail.php?domain=$domain&view=$view&msg=$msg$rlnb");
 } else {
 ?>
 <br>
@@ -60,6 +60,7 @@ if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
 <?php } ?>
 
     <span class="title2"><?=$LANG->_('Are you really sure')?>?</span>
+    <input type="hidden" name="view" value="<?=$view?>">
     <input type="submit" name="ok" value="<?=$LANG->_('Yes')?>">
     <input type="button" name="back" value="<?=$LANG->_('No')?>" onClick="history.back();">
   </form>
