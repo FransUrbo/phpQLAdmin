@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-details.inc,v 1.24 2004-04-14 09:21:42 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.25 2004-04-29 07:06:37 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
@@ -318,7 +318,23 @@
         </tr>
 <?php } else { ?>
     <input type="hidden" name="account_status" value="">
-<?php } ?>
+<?php }
+
+	  if($_SESSION["NEW_STYLE_QUOTA"] and ($_REQUEST["account_type"] == 'forward')) {
+		  if($_SESSION["ADVANCED_MODE"]) {
+			  // The new QmailLDAP have a changed 'deliveryMode' setup.
+			  // The only thing that we need to know NOW is:
+			  // Should we delivery into local mailbox as well as forward mail!?
+?>
+        <!-- deliveryMode -->
+        <tr class="<?php pql_format_table(); ?>">
+          <td class="title"></td>
+          <td><input type="checkbox" name="nolocal" CHECKED><?=$LANG->_('No local delivery allowed')?></td>
+        </tr>
+<?php 	  } else { ?>
+          <input type="hidden" name="nolocal" value="1">
+<?php	  } ?>
+<?php  } ?>
       </th>
     </table>
 
