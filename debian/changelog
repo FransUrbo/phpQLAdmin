@@ -1,3 +1,9 @@
+phpqladmin (2.0.18f-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Turbo Fredriksson <turbo@debian.org>  Thu, 14 Oct 2004 13:06:51 +0200
+
 phpqladmin (2.0.18d-1) unstable; urgency=low
 
   * De-globalize the 'reload left frame' value so that the reloading can
