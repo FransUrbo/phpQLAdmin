@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.44 2003-11-18 12:57:08 turbo Exp $
+// $Id: pql_config.inc,v 1.45 2003-11-19 16:41:05 turbo Exp $
 //
 
 // {{{ pql_set_define(define, value, case_insensitive, dn)
@@ -167,8 +167,12 @@ require("./include/config.inc");
 // 2. Include the attribute configuration
 require("./include/config_attributes.inc");
 
-// 3. Load configurations from LDAP base DN
+// include and check configuration
 require("./include/pql.inc");
+require("./include/pql_cache.inc");
+require("./include/pql_search.inc");
+
+// 3. Load configurations from LDAP base DN
 if(!$USER_HOST) {
 	if(! eregi('\+', PQL_GLOB_HOST)) {
 		$host = split(';', PQL_GLOB_HOST);
