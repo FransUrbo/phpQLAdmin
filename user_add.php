@@ -4,6 +4,7 @@
 //
 session_start();
 require("./include/pql_config.inc");
+require("./include/pql_control.inc");
 
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
@@ -107,7 +108,7 @@ if($submit == "two"){
 	
 	// Check again. There should be a user name, either from the input
 	// form OR from the user_generate_uid() function above...
-	if($uid == ""){
+	if($uid == "") {
 		$submit = "one";
 		$error = true;
 		$error_text["uid"] = PQL_LANG_MISSING;
@@ -122,19 +123,10 @@ if($submit == "two"){
 	}
 }
 
-if(($submit == "two") or (($submit == "one") and !$ADVANCED_MODE)) {
-	// fetch DNS information
-	$userhost = pql_get_mx($_pql, $defaultdomain);
-	if(!is_array($userhost)) {
-		$error_text["host"] = PQL_LANG_DNS_NONE;
-		$error = true;
-	}
-}
-
 // ------------------------------------------------
-// Page 3a: 
+// Page 3:
 if ($submit == "save") {
-	if($uid == ""){
+	if($uid == "") {
 		$error = true;
 		$error_text["uid"] = PQL_LANG_MISSING;
 	}
@@ -143,63 +135,90 @@ if ($submit == "save") {
 		$error = true;
 		$error_text["uid"] = PQL_LANG_INVALID;
 	}
+
 	if($error_text["uid"] == "" and pql_search_attribute($_pql->ldap_linkid, $domain,
 														 $config["PQL_GLOB_ATTR_UID"],
 														 $uid)) {
 		$error = true;
 		$error_text["uid"] = PQL_LANG_EXISTS;
 	}
-}
 
-// ------------------------------------------------
-// Page 3b: 
-if($submit == "save" and
-   ($account_type == "normal" or $account_type == "system" or $account_type == "shell"))
-{
-    if($password == ""){
-		$error = true;
-		$error_text["password"] = PQL_LANG_MISSING;
-    }
-    
-    if(eregi("KERBEROS", $pwscheme)) {
-		// Should be in the form: userid@DOMAIN.LTD
-		// TODO: Is this regexp correct!?
-		if(! preg_match("/^[a-zA-Z0-9]+[\._-a-z0-9]*[a-zA-Z0-9]+@[A-Z0-9][-A-Z0-9]+(\.[-A-Z0-9]+)+$/", $password)) {
+	if($account_type == "normal" or $account_type == "system" or $account_type == "shell") {
+		if($password == "") {
 			$error = true;
-			$error_text["password"] = PQL_LANG_INVALID;
+			$error_text["password"] = PQL_LANG_MISSING;
 		}
-    } else {
-		if(preg_match("/[^a-z0-9]/i", $password)){
-			$error = true;
-			$error_text["password"] = PQL_LANG_INVALID;
+		
+		if(eregi("KERBEROS", $pwscheme)) {
+			// Should be in the form: userid@DOMAIN.LTD
+			// TODO: Is this regexp correct!?
+			if(! preg_match("/^[a-zA-Z0-9]+[\._-a-z0-9]*[a-zA-Z0-9]+@[A-Z0-9][-A-Z0-9]+(\.[-A-Z0-9]+)+$/", $password)) {
+				$error = true;
+				$error_text["password"] = PQL_LANG_INVALID;
+			}
+		} else {
+			if(preg_match("/[^a-z0-9]/i", $password)){
+				$error = true;
+				$error_text["password"] = PQL_LANG_INVALID;
+			}
 		}
-    }
-	
-    if(($host != "default") and is_array($userhost)) {
-		if(!preg_match("/^([a-z0-9]+\.{1,1}[a-z0-9]+)+$/i",$userhost[1])) {
-			$error_text["userhost"] = PQL_LANG_INVALID;
-			$error = true;
+		
+		// Build the COMPLETE email address
+		if(! ereg("@", $email)) {
+			if($email_domain)
+			  $email = $email . "@" . $email_domain;
+			else
+			  $email = $email . "@" . $defaultdomain;
 		}
-    }
-}
 
-// ------------------------------------------------
-// 2b: forwardingaddress
-if($submit == "save" and $account_type == "forward"){
-	if(!check_email($forwardingaddress)){
-		$error = true;
-		$error_text["forwardingaddress"] = PQL_LANG_INVALID;
+		// Check the mailHost attribute/value
+		if(is_array($userhost)) {
+			if($host != "default")
+			  if(!preg_match("/^([a-z0-9]+\.{1,1}[a-z0-9]+)+$/i",$userhost[1])) {
+				  $error_text["userhost"] = PQL_LANG_INVALID;
+				  $error = true;
+			  }
+		} elseif($userhost) {
+			if(!preg_match("/^([a-z0-9]+\.{1,1}[a-z0-9]+)+$/i",$userhost)) {
+				$error_text["userhost"] = PQL_LANG_INVALID;
+				$error = true;
+			}
+		} elseif($account_type != "shell") {
+			// We're saving, but we don't have a mailHost value!
+
+			// Get the primary email address domain name
+			if(ereg("@", $email))
+			  $domainname = split('@', $email);
+
+			// Initiate a connection to the QmailLDAP/Controls DN
+			$_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
+
+			// Find MX (or QmailLDAP/Controls with locals=$domainname)
+			$mx = pql_get_mx($_pql_control->ldap_linkid, $domainname[1]);
+			if(!$mx[1]) {
+				// There is no MX and no QmailLDAP/Controls with this
+				// domain name in locals. Die!
+				$submit = "two";
+
+				$error = true;
+				$error_text["userhost"] = "Sorry, I can't find any MX or any QmailLDAP/Controls object that listens to this domain - <u>".$domainname[1]."</u><br>You will have to specify one manually.";
+					
+			}
+		}
+	} elseif($account_type == "forward") {
+		if(!check_email($forwardingaddress)){
+			$error = true;
+			$error_text["forwardingaddress"] = PQL_LANG_INVALID;
+		}
+		
+		if($forwardingaddress == ""){
+			$error = true;
+			$error_text["forwardingaddress"] = PQL_LANG_MISSING;
+		}
 	}
 	
-	if($forwardingaddress == ""){
-		$error = true;
-		$error_text["forwardingaddress"] = PQL_LANG_MISSING;
-	}
-}
-
-// if an error occurs, display the 2nd form again
-if($submit == "save" and $error == true and !$ADVANCED_MODE) {
-	$submit = "two";
+	if($error == true and !$ADVANCED_MODE)
+	  $submit = "two";
 }
 
 if($pwscheme) {
@@ -467,26 +486,27 @@ switch($submit){
           </td>
         </tr>
 
+<?php if($account_type != "shell") { ?>
         <!-- Email address -->
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"><?php echo PQL_LANG_MAIL_TITLE; ?></td>
           <td>
             <?php echo format_error($error_text["email"]); ?>
             <input type="text" name="email" value="<?=$email?>">
-<?php if(is_array($additionaldomainname)) { ?>
+<?php 	if(is_array($additionaldomainname)) { ?>
             <b>@ <select name="email_domain"></b>
               <option value="<?=$defaultdomain?>"><?=$defaultdomain?></option>
-<?php	foreach($additionaldomainname as $additional) { ?>
+<?php		foreach($additionaldomainname as $additional) { ?>
               <option value="<?=$additional?>"><?=$additional?></option>
-<?php   } ?>
+<?php   	} ?>
             </select>
-<?php } else { ?>
+<?php 	} else { ?>
             <b>@<?=$defaultdomain?></b>
-<?php } ?>
+<?php 	} ?>
           </td>
         </tr>
 
-<?php if(is_array($additionaldomainname)) { ?>
+<?php 	if(is_array($additionaldomainname)) { ?>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"><?php echo PQL_LANG_MAILALTERNATEADDRESS_TITLE; ?></td>
           <td>
@@ -499,13 +519,14 @@ switch($submit){
           </td>
         </tr>
 
-<?php } ?>
+<?php 	} ?>
         <tr></tr>
 
         <tr class="subtitle">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
           <td><?php echo PQL_LANG_USER_ADD_HELP2; ?></td>
         </tr>
+<?php } ?>
       </th>
     </table>
 <?php
@@ -568,11 +589,7 @@ switch($submit){
     <input type="hidden" name="homedirectory" value="">
     <input type="hidden" name="maildirectory" value="">
     <input type="hidden" name="host" value="default">
-<?php		if(is_array($userhost)) { ?>
-    <input type="hidden" name="userhost" value="<?=$userhost[1]?>">
-<?php		}
-		}
-?>
+<?php	} ?>
     <input type="hidden" name="submit" value="save">
 <?php
 	} else {
@@ -829,7 +846,12 @@ switch($submit){
 			  $entry[$config["PQL_GLOB_ATTR_MAILHOST"]] = $userhost;
 			else {
 				$domainname = split('@', $entry[$config["PQL_GLOB_ATTR_MAIL"]]);
-				$mx = pql_get_mx($domainname[1], $defaultdomain);
+
+				// Initiate a connection to the QmailLDAP/Controls DN
+				$_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
+
+				// Find MX (or QmailLDAP/Controls with locals=$domainname)
+				$mx = pql_get_mx($_pql_control->ldap_linkid, $domainname[1]);
 				if(is_array($mx))
 				  $entry[$config["PQL_GLOB_ATTR_MAILHOST"]] = $mx[1];
 			}
