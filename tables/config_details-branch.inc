@@ -10,30 +10,6 @@
         <td class="<?=$class?>"><b><?=$dn?>&nbsp;</b></td>
 <?php } ?>
       </tr>
-<?php if($config["PQL_GLOB_CONTROL_USE"]) { ?>
-
-      <!-- -------------------- --!>
-      <tr>
-        <td class="title">LDAP control base dn</td>
-<?php     $class=table_bgcolor(0);
-          foreach($_pql->ldap_basedn as $dn) {
-              if($ALLOW_GLOBAL_CONFIG_SAVE) {
-?>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$dn?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_CONTROL_DN"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Set/Modify <?=$PQL_ATTRIBUTE["PQL_CONF_CONTROL_DN"]?>"></a></td>
-<?php         } else { ?>
-        <td class="<?=$class?>"></td>
-<?php         }
-
-              if($config["PQL_CONF_CONTROL_DN"][$dn]) {
-?>
-        <td class="<?=$class?>"><?=$config["PQL_CONF_CONTROL_DN"][$dn]?>&nbsp;</td>
-<?php         } else { ?>
-        <td class="<?=$class?>"><i>undefined</i></td>
-<?php         }
-          }
-?>
-      </tr>
-<?php } ?>
 
       <!-- -------------------- --!>
       <tr>

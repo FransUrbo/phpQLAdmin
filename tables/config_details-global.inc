@@ -43,6 +43,20 @@
         <td class="<?=$class?>"><?=$config["PQL_GLOB_HOSTMASTER"]?>&nbsp;</td>
       </tr>
 
+<?php if($config["PQL_GLOB_CONTROL_USE"]) { ?>
+      <tr>
+        <td class="title">LDAP control base dn</td>
+<?php     $class=table_bgcolor(0);
+          if($ALLOW_GLOBAL_CONFIG_SAVE) {
+?>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_CONTROL_DN"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Set/Modify <?=$PQL_ATTRIBUTE["PQL_GLOB_CONTROL_DN"]?>"></a></td>
+<?php     } else { ?>
+        <td class="<?=$class?>"></td>
+<?php     } ?>
+        <td class="<?=$class?>"><?=$config["PQL_GLOB_CONTROL_DN"]?></td>
+      </tr>
+<?php } ?>
+
       <tr></tr>
 
       <tr>
