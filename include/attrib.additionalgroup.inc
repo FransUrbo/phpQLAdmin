@@ -1,27 +1,28 @@
 <?php
 // Attribute plugin for additional group (memberUID)
-// $Id: attrib.additionalgroup.inc,v 2.3 2004-02-14 14:25:35 turbo Exp $
+// $Id: attrib.additionalgroup.inc,v 2.4 2004-03-09 21:56:14 dlw Exp $
 
 // {{{ attribute_init(void)...
 function attribute_init() {
-    global $rootdn, $domain, $user, $attrib, $$attrib, $_pql, $LANG;
-	global $group, $uid;
+    global $_pql, $LANG;
 
 	// Get the UID value for this user
-	$uid = pql_get_attribute($_pql->ldap_linkid, $user, lc(pql_get_define("PQL_GLOB_ATTR_UID"))); $uid = $uid[0];
+	$uid = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], lc(pql_get_define("PQL_GLOB_ATTR_UID")));
+	$_REQUEST["uid"] = $uid[0];
 }
 // }}}
 
 // {{{ attribute_check(void)...
 function attribute_check() {
-    global $rootdn, $domain, $user, $attrib, $$attrib, $_pql, $LANG;
+    global $_pql, $LANG;
+
 	return true;
 }
 // }}}
 
 // {{{ attribute_print_form(void)...
 function attribute_print_form() {
-    global $rootdn, $domain, $user, $attrib, $uid, $action, $view, $_pql, $LANG;
+    global $_pql, $LANG;
 
 	// Initialize variables etc
 	attribute_init();
@@ -49,7 +50,7 @@ function attribute_print_form() {
 				
 				// Make sure the user isn't part of this group
 				for($j=0; $j < count($additional); $j++) {
-					if($additional[$j] == $uid)
+					if($additional[$j] == $_REQUEST["uid"])
 					  $is_member = 1;
 				}
 				
@@ -73,7 +74,7 @@ function attribute_print_form() {
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what% for domain %domain%'),
 																	array('what'   => $LANG->_('additional group'),
-																		  'domain' => $domain)); ?></th>
+																		  'domain' => $_REQUEST["domain"])); ?></th>
 <?php foreach($groups as $name => $data) { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td>
@@ -84,7 +85,7 @@ function attribute_print_form() {
 			$links = $links + $new;
 		}
 
-		$text = "<input type='checkbox' name='$attrib"."_$j' value='".$data["DN"]."'>$name";
+		$text = "<input type='checkbox' name='" . $_REQUEST["attrib"] . "_$j' value='".$data["DN"]."'>$name";
 
 		pql_format_tree($text, 0, $links, 1);
 
@@ -96,13 +97,13 @@ function attribute_print_form() {
       </th>
     </table>
 
-    <input type="hidden" name="<?=$attrib?>" value="<?=$j?>">
-    <input type="hidden" name="domain"   value="<?=$domain?>">
-    <input type="hidden" name="rootdn"   value="<?=$rootdn?>">
-    <input type="hidden" name="user"     value="<?=$user?>">
-    <input type="hidden" name="attrib"   value="<?=$attrib?>">
-    <input type="hidden" name="view"     value="<?=$view?>">
-    <input type="hidden" name="action"   value="<?=$action?>">
+    <input type="hidden" name="<?=$_REQUEST["attrib"]?>" value="<?=$j?>">
+    <input type="hidden" name="domain"   value="<?=$_REQUEST["domain"]?>">
+    <input type="hidden" name="rootdn"   value="<?=$_REQUEST["rootdn"]?>">
+    <input type="hidden" name="user"     value="<?=$_REQUEST["user"]?>">
+    <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="action"   value="<?=$_REQUEST["action"]?>">
     <input type="hidden" name="submit"   value="2">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
@@ -113,35 +114,40 @@ function attribute_print_form() {
 
 // {{{ attribute_save(action)...
 function attribute_save($action) {
-    global $rootdn, $domain, $user, $attrib, $$attrib, $_pql, $LANG;
-	global $group, $uid;
+    global $_pql, $LANG;
 
+	/* Sometimes attribute_save gets called directly, bypassing attribute_print_form.
+	 * That's why attribute_init has to be called here, even if we cached the results of
+	 * the previous call in the form in attribute_print_form. */
 	attribute_init();
+	$attrib_name = $_REQUEST["attrib"];
 
 	switch($action) {
 	  // {{{ case: delete
 	  case "delete":
 		// Setup the search filter to get the exact DN of the group
-		$filter  = "(&($attrib=".$uid.")(".pql_get_define("PQL_GLOB_ATTR_CN")."=".$$attrib."))";
-		
+		$filter  = "(&($attrib_name=" . $_REQUEST["uid"] . ")(".pql_get_define("PQL_GLOB_ATTR_CN")
+		  ."=".$_REQUEST[$attrib_name]."))";
+
 		// Get the DN of the group we're removing the user from
 		foreach($_pql->ldap_basedn as $base) {
 			$base = urldecode($base);
-			
-			if(!$group) {
+
+			if(!isset($group)) {
 				$group = pql_search($_pql->ldap_linkid, $base, $filter);
 				$group = $group[0];
 			}
 		}
-		
-		if(pql_modify_userattribute($_pql->ldap_linkid, $group, $attrib, $uid, ''))
+
+		if(pql_modify_userattribute($_pql->ldap_linkid, $group, $attrib_name, $_REQUEST["uid"], ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully removed %user% from %what% %group%'),
 									   array('what'  => $LANG->_('additional group'),
-											 'user'  => $uid,
-											 'group' => $$attrib));
+											 'user'  => $_REQUEST["uid"],
+											 'group' => $_REQUEST[$attrib_name]));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to remove %user% from %what%'),
-									   array('what' => $LANG->_('additional group'))) . ": " . pql_format_error(0);
+									   array('what' => $LANG->_('additional group'),
+											 'user'  => $_REQUEST["uid"])) . ": " . pql_format_error(0);
 
 		attribute_forward($msg);
 		break;
@@ -150,21 +156,22 @@ function attribute_save($action) {
 	  // {{{ case: modify
 	  case "modify":
 		// Get the group DNs we should add the user to
-		$amount = $_POST[$attrib];
+		$amount = $_REQUEST[$attrib_name];
+
 		for($i=0; $i < $amount; $i++) {
-			$var_name = $attrib . "_$i";
+			$var_name = $attrib_name . "_$i";
 			if($_POST[$var_name]) 
 			  $groups[] = $_POST[$var_name];
 		}
 
 		$msg = '';
 		for($i=0; $i< count($groups); $i++) {
-			if(pql_modify_userattribute($_pql->ldap_linkid, $groups[$i], $attrib, '', $uid)) {
+			if(pql_modify_userattribute($_pql->ldap_linkid, $groups[$i], $attrib_name, '', $_REQUEST["uid"])) {
 				$msg .= pql_complete_constant($LANG->_('Successfully added user %user% to group %group%<br>'),
-											  array('user' => $uid, 'group' => $groups[$i]));
+											  array('user' => $_REQUEST["uid"], 'group' => $groups[$i]));
 			} else {
 				$msg .= pql_complete_constant($LANG->_('Failed to add user %user% to group %group%<br>'),
-											  array('user' => $uid, 'group' => $groups[$i]));
+											  array('user' => $_REQUEST["uid"], 'group' => $groups[$i]));
 			}
 		}
 
