@@ -1,13 +1,13 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 2.9 2003-01-14 15:55:51 turbo Exp $
+// $Id: lang.en.inc,v 2.10 2003-01-21 13:52:18 turbo Exp $
 //
 // if you have a translation to another language, please contact
 // me --> Matthias Blaser <mb@adfinis.ch>
 
 // Should we refere to the LDAP branch as 'branch' or 'domain'?
-if(PQL_LDAP_ATTR_DOMAIN == "dc") {
+if(PQL_LDAP_REFERENCE_DOMAINS_WITH == "dc") {
 	$DOMAIN = "domain";
 } else {
 	$DOMAIN = "branch";
@@ -105,7 +105,7 @@ define("PQL_DOMAIN_CHANGE_ATTRIBUTE", "Attribute");
 define("PQL_DOMAIN_INVALID", "Invalid domain name !! use: domain.tld (e.g. adfinis.com)");
 define("PQL_DOMAIN_EXISTS", "This $DOMAIN already exists");
 define("PQL_DOMAIN_ADD", "Create $DOMAIN");
-if(PQL_LDAP_ATTR_DOMAIN == "dc") {
+if(PQL_LDAP_REFERENCE_DOMAINS_WITH == "dc") {
 	define("PQL_DOMAIN_ADD_OK", "Domain %domain% successfully created.<br>You have to manually add this domain to the rpcthosts and locals files in the qmail/control directory !!");
 } else {
 	define("PQL_DOMAIN_ADD_OK", "Branch %domain% successfully created.");
