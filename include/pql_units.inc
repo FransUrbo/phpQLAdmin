@@ -3,7 +3,7 @@
 // pql_units.inc
 // Sub units (ou=People, ou=Users, dc=host) etc
 //
-// $Id: pql_units.inc,v 1.1 2003-11-24 11:31:41 turbo Exp $
+// $Id: pql_units.inc,v 1.2 2003-12-13 13:45:30 turbo Exp $
 //
 
 // {{{ pql_unit_get(linkid, dn, filter)
@@ -40,7 +40,6 @@ function pql_unit_get($linkid, $dn, $filter = 1) {
 function pql_unit_exist($linkid, $dn, $unit) {
 	// What's the Root DN (namingContexts) for this domain
 	$rootdn = pql_get_rootdn($dn); $rootdn = urldecode($rootdn);
-
 	$dn = urldecode($dn);
 
 	if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $rootdn) == "dc") {
