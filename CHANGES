@@ -51,6 +51,10 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	    (from before my time - I never bothered to change it) you have to tick in THREE
 	    (one radio-, and two checkboxes) in addition to the values. SIMPLIFY! Should
 	    now be more obvious.
+	  - Fix for Konqueror - Can't use onChange, must use onClick instead. This means
+	    that we have to catch what brower we're using, and set the correct variable
+	    (currently I only have workarounds for Konqueror and Opera).
+	  - Make sure we include rootdn and domaindn if SINGLE_USER.
 
 	GUI layout change
 	  - Variable lenght icons with better looking font.
@@ -97,6 +101,17 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	    page (where you give a user admin rights for specific branch(es), and in the 
 	    'Domain details->Default domain values' (where you give a specific user access
 	    to the current branch).
+	  - Show user access to EZMLM mailinglists if that's used/defined. Duplicate
+	    the code that shows branch admins. Reword the two to make it clear which
+	    is which...
+	  - Wherever a host-/domainname (be it ldap server, locals/rcpthosts information
+	    and what not) is SHOWN (i.e. not in any URLs), IDNA decode it to show the
+	    international character, not the IDNA code.
+	  - _If_ we should autogenerate UID, HomeDirectory and/or MailDirectory, we must
+	    do that earlier..
+	    BUT:
+	    + Only if we have the auto generation function(s)
+	    + We have a default directory base for this domain
 
 	Misc changes	
 	  - Configurable lenght of characters/numbers that is autocreated (when auto-
@@ -126,7 +141,8 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	    $_REQUEST) respectivly. Also, $PHP_SELF needs to be changed to $_SERVER["PHP_SELF"].
 	  - When error occures, try to catch the most common once (those most occuring
 	    on the mailinglist) and give a short description/remedy.
-
+	  - Add minimumGIDNumber (OID: 1.3.6.1.4.1.8767.3.2.3.6) for auto user generation.
+ 
 	API changes
 	  - Rearrange functions and group them. Functions dealing with users in one
 	    place in the file, functions dealing with domains in their etc...
@@ -171,6 +187,19 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	    search base DN).
 	  - Added option (default=NULL) to pql_bind9_get_zone() to get info about
 	    a specific zone instead of getting ALL of them at once.
+	  - Instead of dupliating code (creating a variable that contains a correct URL
+	    value - urlencoded and ' allowed), I've created a pql_format_urls() function
+	    which will/can do EVERYTHING that is needed when creating a value to be sent
+	    as a URL.
+	  - Added (additional) option to pql_get_rootdn() - source of call. I.e. where
+	    we're called from (for the 'This is weird' message)...
+	  - Rewrite pql_domain_get() - Look for either one of these:
+	    + 'ou=People' (define PQL_CONF_REFERENCE_USERS_WITH) just below the root DN.
+	    + User(s) just below the root DN
+	    + Branches (define PQL_CONF_REFERENCE_DOMAINS_WITH) just below the root DN.
+	  - Rewrite pql_get_next_uidnumber() so that it can be used both to get minimalUIDNumber
+	    _and_ the new 'minimalGIDNumber' attribute. Call it pql_get_next_ugidnumber()
+	    instead to indicate this.
 
 phpQLAdmin 2.0.17 Release (Oct 30 2003)
 	Bug fixes
