@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.21 2003-06-18 12:41:23 turbo Exp $
+// $Id: attrib.config.inc,v 1.22 2003-06-19 10:40:50 turbo Exp $
 
 function attribute_check() {
     global $administrator, $domain, $oldvalue, $_pql, $error;
@@ -18,13 +18,12 @@ function attribute_check() {
 function attribute_print_form() {
     global $administrator, $domain, $PHP_SELF, $attrib, $$attrib, $oldvalue, $error, $_pql, $toggle;
 	global $PQL_ATTRIBUTE, $rootdn, $delval, $config, $view;
-
-	$test = strtolower($attrib);
+	$attrib = strtolower($attrib);
 
 	// Get the old values from the define
 	foreach($PQL_ATTRIBUTE as $key => $value) {
 		$value = strtolower($value);
-		if(($value == $test) and $config[$key][$rootdn]) {
+		if(($value == $attrib) and $config[$key][$rootdn]) {
 			$oldvalue = $config[$key][$rootdn];
 			break;
 		}
@@ -37,7 +36,7 @@ function attribute_print_form() {
 
 	// Now, get the old values from the LDAP database,
 	// overwriting the defines if existing in db.
-	$value = pql_get_domain_value($_pql, $dn, $test);
+	$value = pql_get_domain_value($_pql, $dn, $attrib);
 
 	// If it's an array, make it a comma separated list
 	if(is_array($value)) {
@@ -55,23 +54,6 @@ function attribute_print_form() {
 		  $oldvalue = $value;
 	}
 
-	if($toggle) {
-		// A togglable value, reverse state
-		if(!$oldvalue or ($oldvalue == 'FALSE'))
-		  $entry[$attrib] = 'TRUE';
-		else
-		  $entry[$attrib] = 'FALSE';
-	} elseif($delval) {
-		// We should delete one attribute
-
-		$values = pql_split_oldvalues($oldvalue);
-
-		// Go through existing attributes, removing the chosen one
-		for($i=0; $values[$i]; $i++)
-		  if(! eregi($delval, $values[$i]))
-			$entry[$test][] = $values[$i];
-	} else {
-		// Not a togglable value, show the input form
 ?>
   <script type="text/javascript" language="javascript"><!--
     function errorWindow() {
@@ -106,6 +88,9 @@ function attribute_print_form() {
   <br><br>
 
   <form action="<?php echo $PHP_SELF ?>" method="post" name="phpqladmin_modify">
+<?php   if(($attrib == lc($PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_USER"])) or
+ 		   ($attrib == lc($PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_DOMAIN"]))) {
+?>
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">Set/Modify <?=$attrib."\n"?>
         <tr class="subtitle">
@@ -120,13 +105,14 @@ function attribute_print_form() {
       </th>
     </table>
 
+<?php	} ?>
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title">Add to <?=$attrib."\n"?>
-<?php   if(($test == lc($PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_USER"])) or
- 		   ($test == lc($PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_DOMAIN"]))) {
-            if($test == 'userobjectclass')
+<?php   if(($attrib == lc($PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_USER"])) or
+ 		   ($attrib == lc($PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_DOMAIN"]))) {
+            if($attrib == 'userobjectclass')
                 $existing = $config["PQL_CONF_OBJECTCLASS_USER"][$dn];
             else
                 $existing = $config["PQL_CONF_OBJECTCLASS_DOMAIN"][$dn];
@@ -173,7 +159,7 @@ function attribute_print_form() {
 			}
         } else {
 			// Not a userObjectClass or branchObjectClass
-			if($test == lc($PQL_ATTRIBUTE["PQL_CONF_PASSWORD_SCHEMES"])) {
+			if($attrib == lc($PQL_ATTRIBUTE["PQL_CONF_PASSWORD_SCHEMES"])) {
 				$values = array('CRYPT', 'MD5', 'SHA', 'CLEAR', 'KERBEROS');
 				if(is_array($values)) {
 ?>
@@ -192,7 +178,7 @@ function attribute_print_form() {
 			} else {
 ?>
           <td>
-            <?php echo format_error($error[$attrib]); ?><input type="text" name="<?=$attrib?>" value="<?php if($test != 'whoarewe') { echo $oldvalue; } ?>" size="40">
+            <?php echo format_error($error[$attrib]); ?><input type="text" name="<?=$attrib?>" value="<?php if($attrib != 'whoarewe') { echo $oldvalue; } ?>" size="40">
           </td>
 <?php		}
 	   }
@@ -218,47 +204,17 @@ function attribute_print_form() {
 	// -->
   </script>
 <?php
-	}
-
-	// Do the actual modification
-	if($toggle) {
-		if(! $rootdn) {
-			// We don't have a root DN. This means it's a global
-			// variable, and should be set in every namingContexts
-			foreach($_pql->ldap_basedn as $dn) {
-				if(is_array($entry)) {
-					if(! pql_set_domain_value($_pql->ldap_linkid, $dn, '', $entry)) {
-						$msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
-					} else {
-						$msg = "Successfully replaced $attrib."; $rlnb = 1;
-					}
-				} else {
-					if(! pql_set_domain_value($_pql->ldap_linkid, $dn, $entry, '')) {
-						$msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
-					} else {
-						$msg = "Successfully replaced $attrib."; $rlnb = 1;
-					}
-				}
-			}
-		} else {
-			if(! pql_set_domain_value($_pql->ldap_linkid, $rootdn, '', $entry)) {
-				$msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
-			} else {
-				$msg = "Successfully replaced $attrib."; $rlnb = 1;
-			}
-		}
-	
-		attribute_forward($msg, $rlnb);
-	}
 }
 
 function attribute_save() {
-    global $domain, $attrib, $$attrib, $oldvalue, $administrator, $_pql, $rootdn, $delval, $PQL_ATTRIBUTE, $config, $view;
+    global $domain, $attrib, $$attrib, $oldvalue, $administrator, $_pql;
+	global $delval, $toggle, $PQL_ATTRIBUTE, $config, $view, $rootdn, $config;
+	$attrib = lc($attrib);
 
 	if($$attrib) {
-		if(strtolower($attrib) == 'passwordscheme') {
+		if($attrib == 'passwordscheme') {
 			$entry[$attrib][] = strtoupper($$attrib);
-		} else {
+		} elseif(is_array($_POST)) {
 			for($i=0; $i < $_POST[$attrib]; $i++) {
 				$var_name = $attrib . "_$i";
 				if($_POST[$var_name]) 
@@ -267,15 +223,34 @@ function attribute_save() {
 		}
     }
 
-	// If we HAVE an old value, add it...
+	// Try to find out if we have an old value, or what we should do with the value we have
 	if($oldvalue and $toggle) {
+		// A togglable value, reverse state
+
+		if($oldvalue == 'FALSE')
+		  $entry[$attrib][] = 'TRUE';
+		elseif($oldvalue == 'TRUE')
+		  $entry[$attrib][] = 'FALSE';
+		else {
+			$values = pql_split_oldvalues($oldvalue);
+			for($i=0; $values[$i]; $i++)
+			  $entry[$attrib][] = $values[$i];
+		}
+	} elseif($oldvalue and $delval) {
+		// We should delete one attribute
+
 		$values = pql_split_oldvalues($oldvalue);
+
+		// Go through existing attributes, removing the chosen one
 		for($i=0; $values[$i]; $i++)
-		  $entry[$attrib][] = $values[$i];
+		  if(! eregi($delval, $values[$i]))
+			$entry[$attrib][] = $values[$i];
+	} elseif($$attrib and ($attrib != 'passwordscheme') and
+			($attrib != 'userobjectclass') and ($attrib != 'branchobjectclass')) {
+		$entry[$attrib][] = $$attrib;
 	} else {
 		if($rootdn) {
-			if(lc($attrib) != 'controlsadministrator') {
-				// No old value, and it's not a toggle...
+			if($attrib != 'controlsadministrator') {
 				// Fetch old values from DB
 				unset($oldvalues); $oldvalues = pql_get_domain_value($_pql, $rootdn, $attrib);
 				if(is_array($oldvalues)) {
@@ -286,16 +261,35 @@ function attribute_save() {
 						}
 					}
 				} elseif($oldvalues) {
-					// Only one value, add it
-					$entry[$attrib][] = $oldvalues;
+					if($toggle) {
+						if($oldvalues == 'TRUE')
+						  $entry[$attrib][] = 'FALSE';
+						else
+						  $entry[$attrib][] = 'TRUE';
+					} else {
+						// Only one value, add it
+						$entry[$attrib][] = $oldvalues;
+					}
+				} elseif($toggle) {
+					// No old values and it's a toggle -> check default and reverse it
+					foreach($PQL_ATTRIBUTE as $key => $value) {
+						if(!is_array($value)) {
+							if(lc($value) == $attrib) {
+								if($config[$key][$rootdn] or ($config[$key][$rootdn] == 'TRUE'))
+								  $entry[$attrib][] = 'FALSE';
+								else
+								  $entry[$attrib][] = 'TRUE';
+
+								break;
+							}
+						}
+					}
 				}
 			}
-		} elseif((lc($attrib) == 'passwordscheme') or
-				 (lc($attrib) == 'userobjectclass') or
-				 (lc($attrib) == 'branchobjectclass'))
-		{
+		} elseif(($attrib == 'passwordscheme') or ($attrib == 'userobjectclass') or ($attrib == 'branchobjectclass')) {
 			// We don't have any values in the LDAP database, we're using
 			// the default values - get the old values from the define
+
 			foreach($PQL_ATTRIBUTE as $key => $value) {
 				if(!is_array($value)) {
 					if((lc($value) == lc($attrib)) and $config[$key][$rootdn] and !eregi('_GLOB_', $key)) {
@@ -309,16 +303,31 @@ function attribute_save() {
 
 						break;
 					}
+	            } else {
+					$entry[$attrib][] = $$attrib;
 				}
-            }
-        }
+			}
+        } elseif($toggle) {
+			// We don't have a Root DN, it's not a PasswordScheme or {user,domain}ObjectClass
+			// but it's a toggle. Get the old value and reverse it
+
+			unset($oldvalues); $oldvalues = pql_get_domain_value($_pql, $_pql->ldap_basedn[0], $attrib);
+			if($oldvalues == 'TRUE')
+			  $entry[$attrib][] = 'FALSE';
+			else
+			  $entry[$attrib][] = 'TRUE';
+		}
 	}
 
-	if(!$rootdn or ($attrib = 'controlsadministrator')) {
-		// We don't have a root DN. This means it's a global
-		// variable, and should be set in every namingContexts
+	// -----------------------------
+	// Do the actual modification(s)
+	if(!$rootdn or ($attrib == 'controlsadministrator') or $toggle) {
+		// We don't have a root DN, we're changing controlsAdministrator OR
+		// it's a toggle. This means it's a global variable, and should be
+		// set in every namingContexts
+
 		foreach($_pql->ldap_basedn as $dn) {
-			if($attrib = 'controlsadministrator') {
+			if($attrib == 'controlsadministrator') {
 				unset($entry);
 				if($$attrib)
 				  $entry[$attrib][] = $$attrib;
