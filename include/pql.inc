@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.0 2002-12-13 14:34:58 turbo Exp $
+// $Id: pql.inc,v 2.1 2002-12-14 21:05:27 turbo Exp $
 //
 // ----------------------------
 // Note: There are a few " followed after PHP comment
@@ -175,12 +175,13 @@ function pql_add_user($ldap_linkid, $ldap_basedn, $domain, $cn, $attribs, $accou
 //	// --------------------------
     
     // adds the user
-    if(ldap_add($ldap_linkid,$dn, $entry)){
-		return true;
-    }
+    if(! ldap_add($ldap_linkid,$dn, $entry)){
+		// failed to add user
+		return false;
+	}
     
-    // If this is a 'system' account, create the Group object
-    if($account_type == "system" and $entry["gidnumber"]) {
+	// If this is a 'system' account, create the Group object
+	if($account_type == "system" and $entry["gidnumber"]) {
 		$gidnr = $entry["gidnumber"];
 		
 		// Create a new LDAP object
@@ -192,12 +193,33 @@ function pql_add_user($ldap_linkid, $ldap_basedn, $domain, $cn, $attribs, $accou
 		
 		$dn = "cn=" . $attribs["uid"] . "," . PQL_LDAP_SUBTREE_GROUPS . ","
 		  . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . "," . PQL_LDAP_BASEDN;
-		if(! ldap_add($ldap_linkid,$dn, $entry)){
+
+//	// --------------------------
+//	// DEBUG mode: Print the LDIF
+//	echo "<br>--- DEBUG: pql_add_user() ---<br>";
+//	echo "dn: $dn<br>";
+//	foreach($entry as $key => $e) {
+//		if(eregi("objectclass", $key)) {
+//			// We have a objectClass
+//			if(is_array($entry[$key])) {
+//				// ... in an array. Go through each one, creating the LDAP entry
+//				foreach($entry[$key] as $oc) {
+//					echo "$key: $oc<br>";
+//				}
+//			}
+//		} else {
+//			echo "$key: $entry[$key]<br>";
+//		}
+//	}
+//	die("--- DEBUG ---");
+//	// --------------------------
+    
+		if(! ldap_add($ldap_linkid, $dn, $entry)){
 			return false;
 		}
-    }
+	}
 	
-    return false;
+    return true;
 }
 
 // ------------------------------------------------
@@ -1313,11 +1335,11 @@ function pql_get_next_uidnumber($ldap_linkid) {
 function pql_get_domain_value($linkid, $domain, $value, $match = "") {
     // In the domain object, there's embeded defaults
     //	description: defaultDomain=THE-DEFAULT-DOMAIN-NAME
-	
+
     if($match = "") {
 		$match = "*";
     } else {
-		$match = $match . "*";
+		$match = strtolower($match) . "*";
     }
 	
     // (&(dc=bayour)(objectclass=domain)(description=defaultdomainMATCH))
@@ -1343,6 +1365,9 @@ function pql_get_domain_value($linkid, $domain, $value, $match = "") {
 
 function pql_set_domain_value($linkid, $domain, $type, $value) {
     // Set a embedded domain default value
+
+	// Lowercase type...
+	$type = strtolower($type);
 	
     $filter = "(&(" . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . ")(objectclass=" .
       PQL_LDAP_OBJECTCLASS_DOMAIN . "))";
