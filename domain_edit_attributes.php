@@ -1,7 +1,8 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.44 2004-10-18 13:39:30 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.45 2004-11-05 10:54:44 turbo Exp $
 //
+// {{{ Initialize and setup
 session_start();
 require("./include/pql_config.inc");
 require("./include/config_plugins.inc");
@@ -11,23 +12,28 @@ $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PA
 $url["domain"] = pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 $url["user"]   = pql_format_urls($_REQUEST["user"]);
+// }}}
 
-// forward back to users detail page
+// {{{ Forward back to users detail page
 function attribute_forward($msg) {
 	global $url;
 
-	if($_REQUEST["user"])
-	  $link = "user_detail.php?rootdn=" . $url["rootdn"]
-		. "&domain=" . $url["domain"]
-		. "&user=". $url["user"]
-		. "&view=" . $_REQUEST["view"] . "&msg=$msg";
-	elseif($_REQUEST["administrator"]) {
+	if($_REQUEST["user"]) {
+		$link = "user_detail.php?rootdn=" . $url["rootdn"]
+		  . "&domain=" . $url["domain"]
+		  . "&user=". $url["user"]
+		  . "&view=" . $_REQUEST["view"] . "&msg=$msg";
+	} elseif(ereg('^config_detail', $_REQUEST["view"])) {
+		// Very special sircumstances - we've deleted an administrator from the config_details/ROOTDN page!
+		$tmp  = split('/', $_REQUEST["view"]);
+		$link = "config_detail.php?view=".$tmp[1];
+	} elseif($_REQUEST["administrator"]) {
 		// Administrators is _always_ added/change here, NOT from user_edit_attribute.php
 		// as one would think. I.e. when giving a user access to branch from the
 		// 'User details->User access' page...
 		$url["user"]			= pql_format_urls($_REQUEST["user"]);
 		$url["administrator"]	= pql_format_urls($_REQUEST["administrator"]);
-
+		
 		$link = "user_detail.php?rootdn=" . $url["rootdn"]
 		  . "&domain=" . $url["domain"]
 		  . "&user=" . $url["administrator"]
@@ -37,24 +43,29 @@ function attribute_forward($msg) {
 		. "&domain=" . $url["domain"]
 		. "&view=" . $_REQUEST["view"] . "&msg=$msg";
 
-    header("Location: " . pql_get_define("PQL_CONF_URI") . $link);
+	header("Location: " . pql_get_define("PQL_CONF_URI") . $link);
 }
+// }}}
 
-// Select which attribute have to be included
+// {{{ Select which attribute have to be included
 $plugin = pql_plugin_get_filename(pql_plugin_get($_REQUEST["attrib"]));
 if(!$plugin) {
     die("<span class=\"error\">ERROR: No plugin file defined for attribute '<i>".$_REQUEST["attrib"]."</i>'</span>");
 } elseif(!file_exists("./include/$plugin")) {
     die("<span class=\"error\">ERROR: Plugin file defined for attribute '<i>".$_REQUEST["attrib"]."</i>' does not exists!</span>");
 }
-
 include("./include/$plugin");
+// }}}
 
-// Get the organization name, or the DN if it's unset
+// {{{ Get the organization name, or the DN if it's unset
 $orgname = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_O"));
 if(!$orgname) {
 	$orgname = urldecode($_REQUEST["domain"]);
 }
+if(is_array($orgname)) {
+	$orgname = $orgname[0];
+}
+// }}}
 
 include("./header.html");
 ?>
@@ -64,7 +75,6 @@ include("./header.html");
   <br><br>
 
 <?php
-
   // DLW: I'm guessing that $type comes from a form.
   /* DLW: Type isn't always set, and some times it seems like "action" it taking it's place.
    *      Check this out in more detail. */
@@ -76,7 +86,7 @@ if(!$_REQUEST["type"]) {
   }
 }
 
-// select what to do
+// {{{ Select what to do
 if(@$_REQUEST["submit"] == 1) {
 	if($_REQUEST["attrib"] == 'basequota') {
 		attribute_save("modify");
@@ -114,6 +124,7 @@ if(@$_REQUEST["submit"] == 1) {
 	else
 	  attribute_print_form($_REQUEST["type"]);
 }
+// }}}
 ?>
 </body>
 </html>
