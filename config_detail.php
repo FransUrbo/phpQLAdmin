@@ -1,13 +1,11 @@
 <?php
 // shows configuration of phpQLAdmin
-// $Id: config_detail.php,v 2.51 2004-03-11 18:13:32 turbo Exp $
+// $Id: config_detail.php,v 2.52 2004-04-06 13:03:51 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 
 include("./header.html");
-
-$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 if($_REQUEST["action"] == "clear_session") {
     $view	= $_REQUEST["view"];
