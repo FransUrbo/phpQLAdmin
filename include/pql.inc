@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.155 2004-03-03 10:27:56 turbo Exp $
+// $Id: pql.inc,v 2.156 2004-03-04 19:29:40 turbo Exp $
 //
 
 // ----------------------------
@@ -1629,6 +1629,9 @@ function pql_parse_quota($quota_string) {
 	$quota = '';
 
 	if($_SESSION["NEW_STYLE_QUOTA"]) {
+		$quota_string[0] = ereg_replace("S$", "", $quota_string[0]);
+		$quota_string[1] = ereg_replace("C$", "", $quota_string[1]);
+
 		$quota["maxsize"]  = $quota_string[0];
 		$quota["maxmails"] = $quota_string[1];
 
