@@ -3,7 +3,7 @@
 // pql_units.inc
 // Sub units (ou=People, ou=Users, dc=host) etc
 //
-// $Id: pql_units.inc,v 1.8 2004-03-14 07:43:45 turbo Exp $
+// $Id: pql_units.inc,v 1.9 2004-03-16 16:31:06 turbo Exp $
 //
 
 // {{{ pql_unit_get(linkid, dn, filter)
@@ -17,7 +17,7 @@ function pql_unit_get($linkid, $dn, $filter = 1) {
 		$ocb = "organizationalUnit";
 	}
 	
-	$info = pql_search($linkid, $dn, 'objectclass='.$ocb);
+	$info = pql_search($linkid, $dn, 'objectclass='.$ocb, "BASE");
 	for($i=0; $info[$i]; $i++) {
 		if($filter) {
 			// Filter out the most obvious subbranches we don't put users in...

@@ -3,20 +3,26 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.15 2004-01-13 18:56:28 turbo Exp $
+// $Id: pql_search.inc,v 2.16 2004-03-16 16:31:06 turbo Exp $
 //
 
 // ------------------------------------------------
 // PQL_CONF_SEARCH - API functions
 // ------------------------------------------------
 
-// {{{ pql_search(linkid, basedn, filter)
+// {{{ pql_search(linkid, basedn, filter, level)
 // Get all users matching filter
-function pql_search($linkid, $basedn, $filter, $attrib = 'dn') {
+function pql_search($linkid, $basedn, $filter, $attrib = 'dn', $level = "SUBTREE") {
 	// URL decode the object DN if it's URL ENcoded
 	$basedn = urldecode($basedn);
 
-	$sr   = ldap_search($linkid, $basedn, $filter) or pql_format_error(1);
+	if($level == "SUBTREE") 
+	  $sr   = ldap_search($linkid, $basedn, $filter) or pql_format_error(1);
+	elseif($level == "ONELEVEL")
+	  $sr   = ldap_list($linkid, $basedn, $filter) or pql_format_error(1);
+	else  // $level == "BASE"
+	  $sr   = ldap_read($linkid, $basedn, $filter) or pql_format_error(1);
+
 	$info = ldap_get_entries($linkid, $sr) or pql_format_error(1);
 
 	for($i=0; $i < $info["count"]; $i++) {
