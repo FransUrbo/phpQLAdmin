@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.56 2003-11-14 20:13:24 turbo Exp $
+// $Id: user_detail.php,v 2.57 2003-11-16 13:08:59 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -145,7 +145,7 @@ if($ADVANCED_MODE) {
 				 'access'			=> 'User access');
 	$buttons = $buttons + $new;
 
-	if($ALLOW_BRANCH_CREATE) {
+	if($ALLOW_BRANCH_CREATE && $ACI_SUPPORT_ENABLED) {
 		$new = array('aci'			=> 'Access Control Information');
 		$buttons = $buttons + $new;
 	}
