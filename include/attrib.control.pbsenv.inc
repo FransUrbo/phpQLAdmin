@@ -2,7 +2,7 @@
 // control attribute plugin for
 // pbsenv (max number of bytes in message)
 //
-// $Id: attrib.control.pbsenv.inc,v 2.3 2004-10-15 15:20:41 turbo Exp $
+// $Id: attrib.control.pbsenv.inc,v 2.4 2004-10-16 09:53:22 turbo Exp $
 
 // {{{ pbsenv_check(type)
 function pbsenv_check($type) {
@@ -20,8 +20,8 @@ function pbsenv_init($host) {
 
 	// fetch data from ldap server
 	$_REQUEST["pbsenv"] = pql_control_get_attribute($_pql_control->ldap_linkid,
-														 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-														 pql_get_define("PQL_ATTR_QMQPSERVERS"));
+														 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+														 pql_get_define("PQL_ATTR_PBS_ENV"));
 
 	if(is_null($_REQUEST["pbsenv"]))
 	  return true;
@@ -37,7 +37,7 @@ function pbsenv_print_view($host) {
 	pbsenv_init($host);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th align="left">pbsenv (<?=$LANG->_('_CHANGE THIS_')?>)</th>
+    <th align="left">pbsenv (<?=$LANG->_('Additional environment variables.')?>)</th>
       <tr class="title">
         <td>IP</td>
       </tr>
@@ -49,10 +49,10 @@ function pbsenv_print_view($host) {
       </tr>
 <?php
 	} else {
-		foreach($_REQUEST["pbsenv"] as $server) {
+		foreach($_REQUEST["pbsenv"] as $variable) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td><?=pql_maybe_idna_decode($server)?></td>
+        <td><?=pql_maybe_idna_decode($variable)?></td>
       </tr>
 <?php
 		} // end foreach
@@ -72,32 +72,38 @@ function pbsenv_print_view($host) {
 function pbsenv_print_form() {
 	global $error, $LANG;
 
-	if(($_REQUEST["qmqpcount"] < count($_REQUEST["pbsenv"]) - 1) and count($_REQUEST["qmqpservers"]) != 0)
-	  $_REQUEST["qmqpcount"] = count($_REQUEST["pbsenv"]) - 1;
+	if(($_REQUEST["variablecount"] < count($_REQUEST["pbsenv"]) - 1) and count($_REQUEST["pbsenvariable_name"]) != 0)
+	  $_REQUEST["variablecount"] = count($_REQUEST["pbsenv"]) - 1;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">pbsenv (<?=$LANG->_('_CHANGE THIS_')?>)</th>
+      <th colspan="3" align="left">pbsenv (<?=$LANG->_('Additional environment variables')?>)</th>
         <tr class="title">
-          <td><?=$LANG->_('IP Address')?></td>
+          <td><?=$LANG->_('Variable name')?></td>
+          <td>&nbsp;</td>
+          <td><?=$LANG->_('Variable value')?></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["pbsenv_0"]); ?><input type="text" name="qmqpservers[0]" value="<?=$_REQUEST["qmqpservers"][0]?>"></td>
+          <td><?php echo pql_format_error_span($error["pbsenv_0"]); ?><input type="text" name="pbsenvariable_name[0]" value="<?=$_REQUEST["pbsenvariable_name"][0]?>"></td>
+          <td><b>=</b></td>
+          <td><?php echo pql_format_error_span($error["pbsenv_0"]); ?><input type="text" name="pbsenvariable_value[0]" value="<?=$_REQUEST["pbsenvariable_value"][0]?>"></td>
         </tr>
 
-<?php for($i = 1; $i <= $_REQUEST["qmqpcount"]; $i++) { ?>
+<?php for($i = 1; $i <= $_REQUEST["variablecount"]; $i++) { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["pbsenv_$i"]); ?><input type="text" name="qmqpservers[<?=$i?>]" value="<?=$_REQUEST["qmqpservers"][$i]?>"></td>
+          <td><?php echo pql_format_error_span($error["pbsenv_$i"]); ?><input type="text" name="pbsenvariable_name[<?=$i?>]" value="<?=$_REQUEST["pbsenvariable_name"][$i]?>"></td>
+          <td><b>=</b></td>
+          <td><?php echo pql_format_error_span($error["pbsenv_$i"]); ?><input type="text" name="pbsenvariable_value[<?=$i?>]" value="<?=$_REQUEST["pbsenvariable_value"][$i]?>"></td>
         </tr>
 
 <?php } ?>
         <tr class="subtitle">
-          <td><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&qmqpcount=<?=($_REQUEST["qmqpcount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
+          <td colspan="3"><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&variablecount=<?=($_REQUEST["variablecount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional variable'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
         </tr>
 
         <tr class="subtitle">
-          <td><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('To delete a QMQP server remove the value and save')?>.</td>
+          <td colspan="3"><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('To delete a variable, remove it and save')?>.</td>
         </tr>
       </th>
     </table>
@@ -121,10 +127,12 @@ function pbsenv_save($type, $host)  {
 	  case "modify";
 	  case "add";
 		// save entries
+		for($i=0; $_REQUEST["pbsenvariable_name"][$i] and $_REQUEST["pbsenvariable_value"][$i]; $i++)
+		  $entry[] = $_REQUEST["pbsenvariable_name"][$i] . "=" . $_REQUEST["pbsenvariable_value"][$i];
+
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_ATTR_QMQPSERVERS"),
-										 $_REQUEST["pbsenv"]))
+										 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_ATTR_PBS_ENV"), $entry))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('pbsenv options')));
 		else
@@ -146,9 +154,13 @@ function pbsenv_save($type, $host)  {
 function pbsenv_help() {
 	global $LANG;
 ?>
-	IP addresses of QMQP servers, one address per line.
-	qmail-qmqpc will try each address in turn until it
-	establishes a QMQP connection or runs out of addresses.
+    Additional environment variables to include.
+    pbscheck will set these variables to the values pbsadd returned.
+    It is possible to rewrite the variables. A line like
+    <b>USER=TCPREMOTEINFO</b> will cause pbscheck to set the environment <b>TCPREMOTEINFO</b>
+    to the value set as <b>USER</b> in pbsadd. If you like to prepend some identifier
+    in front of the value you can this like this: <b>USER=TCPREMOTEINFO=[pbs]</b>.
+    This will add <b>[pbs]</b> in front of the value returned by pbsadd.
 <?php
 }
 // }}}
