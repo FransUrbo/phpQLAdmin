@@ -6,8 +6,6 @@ set -e
 PACKAGE="phpqladmin"
 VERSION="2.2.3-1"
 
-if test \( "$1" = upgrade -o "$1" = remove \) -a -L "/usr/doc/phpqladmin"; then
-  rm -f "/usr/doc/phpqladmin"
-fi
+#DEBHELPER#
 
 exit 0

@@ -9,7 +9,6 @@ VERSION="2.0.13-1"
 . /usr/share/debconf/confmodule
 db_version 2.0 || [ $? -lt 30 ]
 
-
 # Package maintainer's commands follow:
 if [ -f /usr/share/wwwconfig-common/apache-uninclude_all.sh ]; then
     db_get "phpqladmin/webserver"
@@ -46,12 +45,8 @@ if [ -f /usr/share/wwwconfig-common/apache-uninclude_all.sh ]; then
 fi
 # End of package maintainer's commands
 
-if [ "$1" = purge -a -e /usr/share/debconf/confmodule ]; then
-    db_purge
-fi
-
-
 db_stop
 
+#DEBHELPER#
 
 exit 0

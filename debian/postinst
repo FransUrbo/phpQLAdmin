@@ -9,7 +9,6 @@ VERSION="2.0.13-1"
 . /usr/share/debconf/confmodule
 db_version 2.0 || [ $? -lt 30 ]
 
-
 if test "$1" = configure -a -d /usr/doc -a ! -e "/usr/doc/phpqladmin" -a -d "/usr/share/doc/phpqladmin"
 then
   ln -sf "../share/doc/phpqladmin" "/usr/doc/phpqladmin"
@@ -55,5 +54,6 @@ fi
 
 db_stop
 
+#DEBHELPER#
 
 exit 0
