@@ -18,6 +18,7 @@ phpQLAdmin 2.0.10 TO BE ANNOUNCED
 	  - Fixing the search engine. Must have been broken for quite a while!
 	  - Remove some variables so we don't clutter the global variable
 	    name space!
+	  - Allow branch and top DN (namingContexts) to contain space
 
 	GUI layout change
 	  - Show the user DN in the left frame and in user details
@@ -78,6 +79,9 @@ phpQLAdmin 2.0.10 TO BE ANNOUNCED
 	    Home tree (left frame).
 	  - Only show the 'home' page trailer if we're running in advanced
 	    mode - a luser shouldn't see this, it's for the admin only...
+	  - Use the WHOAREWE variable instead of the DESCRIPTION. It's
+	    the same thing, but the first is configurable at runtime from
+	    the config page.
 
 	Misc changes
 	  - Replace all previous defines (constant variables) for
