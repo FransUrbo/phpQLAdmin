@@ -68,11 +68,39 @@ directive like this need to be installed into the LDAP server:
 
 Exchange 'dc=com' with your top DN (be it 'c=SE', 'dc=net' etc).
 
-There is however one problem with this. It's not recursive. That is,
-it lets modifications being done in the 'dc=fredriksson,dc=com' tree
-but not in a suborganization such as 'ou=People,dc=fredriksson,dc=com'
-or 'ou=Groups,dc=fredriksson,dc=com'. To enable this, the 'administrator'
-attribute have to be added there as well. This is planned.
+This will however not quite work if you have other ACL's that limit
+what's readable/writable (ie, a restriction on the userPassword
+attribute etc). For example, if your ACL list looks like this:
+
+	access to attr=userPassword
+	        by dn="cn=qmail,ou=People,dc=fredriksson,dc=com" read
+	        by anonymous auth
+	        by self read
+	
+	access to dn=".*?dc=com"
+	        by dnattr=administrator write
+	        by dn="uid=turbo,ou=People,dc=fredriksson,dc=com" write
+	        by dn="uid=turbo.+\+realm=BAYOUR.COM" write
+	        by * read
+
+this won't allow your to update the userPassword field, because that
+ACL entry is BEFORE the 'access to (almost) everything' entry. On the
+other hand, if the ACL entries is reversed, ANYONE will be able to
+read the userPassword attribute (because of the 'by * read' in the
+'access to (almost) everything' entry'...
+
+So the solution is to add the 'by dn="..." write' lines in BOTH places.
+And this mean that any update on the 'administrator' value will have to
+be incorporated in the LDAP server ACL's as well! Sucks, but that's the
+way it is (currently). Using 'in LDAP' access control (ACI) might help
+this, but phpQLAdmin does not have support for this (yet).
+
+Another problem with this is that it's not recursive. That is, it lets
+modifications being done in the 'dc=fredriksson,dc=com' tree but not in
+a suborganization such as 'ou=People,dc=fredriksson,dc=com' or
+'ou=Groups,dc=fredriksson,dc=com'. To enable this, the 'administrator'
+attribute have to be added there as well.
+
 
 This ACL won't allow you to create domains/branches, so to be able
 to do that, add the 'administrator' attribute to your top DN as well
