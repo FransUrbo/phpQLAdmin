@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.36 2003-08-12 13:35:40 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.37 2003-08-15 08:06:17 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -96,8 +96,8 @@ function user_generate_mailstore($ldap, $email, $dn, $entry) {
 	//
 	// example: domains baseMailDir/uid
 	//	if($dn) {
-	//		$mailstore = pql_get_domain_value($ldap, $dn, "basemaildir");
-	//		$domain    = pql_get_domain_value($ldap, $dn, "defaultdomain");
+	//		$mailstore = pql_get_domain_value($ldap, $dn, pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR"));
+	//		$domain    = pql_get_domain_value($ldap, $dn, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
 	//	} else {
 	//		$mailstore = "/var/mail";
 	//		$domain    = "$entry";
@@ -177,8 +177,8 @@ function user_generate_mailstore($ldap, $email, $dn, $entry) {
 // Above. Exact same options apply
 function user_generate_homedir($ldap, $email, $dn, $entry) {
 	//if($dn) {
-	//	$homedir = pql_get_domain_value($ldap, $dn, "basehomedir");
-	//	$domain  = pql_get_domain_value($ldap, $dn, "defaultdomain");
+	//	$homedir = pql_get_domain_value($ldap, $dn, pql_get_define("PQL_GLOB_ATTR_BASEHOMEDIR"));
+	//	$domain  = pql_get_domain_value($ldap, $dn, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
 	//} else {
 	//	$homedir = "/home";
 	//	$domain  = "$entry";

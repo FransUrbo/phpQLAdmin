@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.5 2003-06-24 07:43:49 turbo Exp $
+// $Id: pql_bind9.inc,v 2.6 2003-08-15 08:06:17 turbo Exp $
 //
 
 function pql_bind9_get_zone($linkid, $dn) {
@@ -170,14 +170,14 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 
 function pql_bind9_add_host($linkid, $basedn, $entry) {
 	// Create each of the domain components in the domainname
-	$dc = split('\.', $entry["zoneName"]);
+	$dc = split('\.', $entry[pql_get_define("PQL_GLOB_ATTR_ZONENAME")]);
 	for($i=count($dc)-1; $dc[$i]; $i--) {
 		if($dn)
 		  $dn = "dc=".$dc[$i].",".$dn;
 		else
 		  $dn = "dc=".$dc[$i];
 	}
-	$dn = "relativeDomainName=".$entry["relativeDomainName"].",$dn,ou=DNS,$basedn";
+	$dn = "relativeDomainName=".$entry[pql_get_define("PQL_GLOB_ATTR_RELATIVEDOMAINNAME")].",$dn,ou=DNS,$basedn";
 
 	$entry['objectClass'][] = 'top';
 	$entry['objectClass'][] = 'dNSZone';

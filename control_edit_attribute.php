@@ -15,22 +15,20 @@ if($type == "") {
 
 require("./include/pql_config.inc");
 require("./include/pql_control.inc");
-require("./include/pql_control_plugins.inc");
 
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 $_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
 
-// register all attribute plugins here (require)
-$control_plugin = pql_control_plugin_get($attrib);
-include("./include/".pql_control_plugin_get_filename($control_plugin));
-
+// Register all attribute plugins here
+$plugin = pql_plugin_get($attrib);
+include("./include/".pql_plugin_get_filename($plugin));
 
 // forward back to users detail page
 function attribute_forward($msg) {
 	global $domain, $user, $attrib, $mxhost, $domain, $rootdn, $view;
 
 	$msg = urlencode($msg);
-	$cat = pql_control_plugin_cat($attrib);
+	$cat = pql_plugin_cat($attrib);
 	if($mxhost)
 	  $url = "control_detail.php?mxhost=$mxhost&view=$view&msg=$msg";
 	else
@@ -58,17 +56,17 @@ if(function_exists($control_plugin . "_help")) {
 
 // select what to do
 if($submit == 1) {
-    if(call_user_func($control_plugin . "_check", $type)) {
-		call_user_func($control_plugin . "_save", $type, $mxhost);
+    if(call_user_func($plugin . "_check", $type)) {
+		call_user_func($plugin . "_save", $type, $mxhost);
     } else {
-		call_user_func($control_plugin . "_print_form", $mxhost);
+		call_user_func($plugin . "_print_form", $mxhost);
     }
 } else {
-    call_user_func($control_plugin . "_init", $mxhost);
-    call_user_func($control_plugin . "_print_form", $mxhost);
+    call_user_func($plugin . "_init", $mxhost);
+    call_user_func($plugin . "_print_form", $mxhost);
 }
 
-if(function_exists($control_plugin . "_help")) {
+if(function_exists($plugin . "_help")) {
     // this is the help table
 ?>
     </td>
@@ -81,18 +79,18 @@ if(function_exists($control_plugin . "_help")) {
 
         <tr>
           <td height="0" width="200" class="helptext" valign="top">
-            <?php call_user_func($control_plugin . "_help"); ?>
+            <?php call_user_func($plugin . "_help"); ?>
           </td>
         </tr>
 
         <?php
-	  if(function_exists($control_plugin . "_help_cr")) {
+	  if(function_exists($plugin . "_help_cr")) {
 	      // this is the copyright message supplied with help text
 	?>
 
         <tr>
           <td height="0" width="200" class="helptextcr" valign="top">
-            <?php call_user_func($control_plugin . "_help_cr"); ?>
+            <?php call_user_func($plugin . "_help_cr"); ?>
           </td>
         </tr>
 

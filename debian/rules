@@ -45,15 +45,20 @@ install: build
 		$(INSTDIR)/validateEmailFormat-1.0; \
 	  cp debian/apache.conf debian/phpqladmin/etc/phpqladmin; \
 	  mv $(INSTDIR)/include/config.inc.CHANGE_ME debian/phpqladmin/etc/phpqladmin/config.inc; \
+	  mv $(INSTDIR)/include/config_attributes.inc $(INSTDIR)/include/config_plugins.inc \
+		$(INSTDIR)/include/defaults.inc debian/phpqladmin/etc/phpqladmin/; \
 	  cd $(INSTDIR) && \
 		find -type d -name CVS -o -name '.cvsignore' \
 			-o -name '*~' -o -name '.#*' \
 		| xargs rm -rf;\
 	  rm -Rf debian; \
 	  echo $(version)"-"$(revision)" (Debian GNU/Linux)" > .version; \
-	  cd include && ln -s /etc/phpqladmin/config.inc .; \
+	  cd include; \
+	  ln -s /etc/phpqladmin/config.inc config.inc; \
+	  ln -s /etc/phpqladmin/config_attributes.inc config_attributes.inc; \
+	  ln -s /etc/phpqladmin/config_plugins.inc config_plugins.inc; \
+	  ln -s /etc/phpqladmin/defaults.inc defaults.inc; \
 	)
-
 
 # Build architecture-independent files here.
 binary-indep: build install

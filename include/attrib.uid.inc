@@ -1,14 +1,14 @@
 <?php
 // attribute plugin for
 // uid (user id)
-// $Id: attrib.uid.inc,v 2.11 2003-08-11 19:49:52 turbo Exp $
+// $Id: attrib.uid.inc,v 2.12 2003-08-15 08:06:17 turbo Exp $
 
 function attribute_check($type){
 	global $uid, $oldvalue, $_pql, $error, $domain, $LANG;
 	
 	// is typed in ?
 	if($uid == "") {
-		$error["mail"] = $LANG->_('Missing');
+		$error[pql_get_define("PQL_GLOB_ATTR_MAIL")] = $LANG->_('Missing');
 		return false;
 	}
 	
@@ -85,7 +85,10 @@ function attribute_save($type) {
 			break;
     	}
 		
-		if(pql_replace_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_UID"), $uid)) {
+		if(pql_replace_userattribute($_pql->ldap_linkid, $user,
+									 pql_get_define("PQL_GLOB_ATTR_UID"),
+									 $uid))
+		{
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what% from %old% to %new%'),
 										 array('what' => $LANG->_('username'),
 											   'old'  => $oldvalue,

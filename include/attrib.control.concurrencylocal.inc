@@ -3,7 +3,7 @@
 // concurrencylocal (may simultaneous local deliveries)
 // concurrencyremote (may simultaneous remote deliveries)
 //
-// $Id: attrib.control.concurrencylocal.inc,v 2.9 2003-07-02 07:59:00 turbo Exp $
+// $Id: attrib.control.concurrencylocal.inc,v 2.10 2003-08-15 08:06:17 turbo Exp $
 
 function concurrencylocal_check($type) {
 	global $error, $concurrencylocal, $concurrencyremote, $view, $LANG;
@@ -29,11 +29,12 @@ function concurrencylocal_init($host) {
 	global $_pql_control, $concurrencylocal, $concurrencyremote, $view;
 
 	// fetch data from ldap server
-	$attribs = array("concurrencylocal", "concurrencyremote");
+	$attribs = array(pql_get_define("PQL_GLOB_ATTR_CONCURRENCYLOCAL"),
+					 pql_get_define("PQL_GLOB_ATTR_CONCURRENCYREMOTE"));
 
 	foreach($attribs as $attrib) {
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-										   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 										   $attrib);
 		
 		if(!is_null($value))
@@ -119,12 +120,12 @@ function concurrencylocal_save($type, $host) {
 	  case "modify";
 	  case "add";
 		// save entries
-		$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-												  "cn=" . $mxhost . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-												  "concurrencylocal", $concurrencylocal);
-    	$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-												  "cn=" . $mxhost . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-												  "concurrencyremote", $concurrencyremote);
+		$attribs = array(pql_get_define("PQL_GLOB_ATTR_CONCURRENCYLOCAL"),
+						 pql_get_define("PQL_GLOB_ATTR_CONCURRENCYREMOTE"));
+		foreach($attribs as $attrib)
+		  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
+													pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $mxhost . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+													$attrib, $$attrib);
 		
 		if(in_array(false, $return))
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),

@@ -1,14 +1,14 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mail.inc,v 2.12 2003-08-11 19:49:52 turbo Exp $
+// $Id: attrib.mail.inc,v 2.13 2003-08-15 08:06:17 turbo Exp $
 
 function attribute_check($type) {
     global $mail, $domain, $oldvalue, $_pql, $error, $defaultdomain, $LANG;
     
     // is typed in ?
     if($mail == "") {
-		$error["mail"] = $LANG->_('Missing');
+		$error[pql_get_define("PQL_GLOB_ATTR_MAIL")] = $LANG->_('Missing');
 		return false;
     }
     
@@ -18,13 +18,13 @@ function attribute_check($type) {
     
     // valid
     if(!check_email($mail)) {
-		$error["mail"] = $LANG->_('Invalid');
+		$error[pql_get_define("PQL_GLOB_ATTR_MAIL")] = $LANG->_('Invalid');
 		return false;
     }
     
     // if type is modify, check existance of old value, else the new one
     if($oldvalue != $mail and pql_email_exists($_pql, $mail)) {
-		$error["mail"] = $LANG->_('Already exists');
+		$error[pql_get_define("PQL_GLOB_ATTR_MAIL")] = $LANG->_('Already exists');
 		return false;
     }
     
@@ -52,7 +52,7 @@ function attribute_print_form() {
   ?>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"><?=$LANG->_('Email')?></td>
-          <td><?php echo format_error($error["mail"]); ?><input type="text" name="mail" value=""><b>@<?=$defaultdomain?></b></td>
+          <td><?php echo format_error($error[pql_get_define("PQL_GLOB_ATTR_MAIL")]); ?><input type="text" name="mail" value=""><b>@<?=$defaultdomain?></b></td>
         </tr>
 
         <tr class="subtitle">

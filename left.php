@@ -5,9 +5,6 @@
 session_start();
 
 require("./include/pql_config.inc");
-require("./include/pql_control.inc");
-require("./include/pql_control_plugins.inc");
-
 require("./left-head.html");
 
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS, false, 0);
@@ -95,7 +92,7 @@ if($advanced == 1) {
 //	'administrator: USER_DN'
 // in the domain object
 foreach($_pql->ldap_basedn as $dn)  {
-    $dom = pql_get_domain_value($_pql, $dn, 'administrator', $USER_DN);
+    $dom = pql_get_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $USER_DN);
     if($dom) {
 	foreach($dom as $d) {
 	    $domains[] = urlencode($d);
@@ -118,7 +115,7 @@ if(!isset($domains)) {
 	  $DN .= "," . $dnparts[$j];
 	
 	// Look in DN for attribute 'defaultdomain'.
-	$defaultdomain = pql_get_domain_value($_pql, $DN, 'defaultdomain');
+	$defaultdomain = pql_get_domain_value($_pql, $DN, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
 	if($defaultdomain) {
 	    // A hit. This is the domain under which the user is located.
 	    $domain = $DN;

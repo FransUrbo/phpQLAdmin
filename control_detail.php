@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.22 2003-07-02 07:58:31 turbo Exp $
+// $Id: control_detail.php,v 1.23 2003-08-15 08:06:04 turbo Exp $
 session_start();
 require("./include/pql_config.inc");
 
@@ -12,34 +12,43 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 	include("./header.html");
 
 	// Get the values of the mailserver
-	$attribs = array("defaultdomain", "plusdomain", "ldapserver",
-					 "ldaprebind", "ldapbasedn", "ldapdefaultquota",
-					 "ldapdefaultdotmode", "dirmaker", "quotawarning",
-					 "locals", "rcpthosts", "ldaplogin", "ldappassword");
-	$cn = "cn=" . $mxhost . "," . $USER_SEARCH_DN_CTR;
+	$attribs = array(pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"),
+					 pql_get_define("PQL_GLOB_ATTR_PLUSDOMAIN"),
+					 pql_get_define("PQL_GLOB_ATTR_LDAPSERVER"),
+					 pql_get_define("PQL_GLOB_ATTR_LDAPREBIND"),
+					 pql_get_define("PQL_GLOB_ATTR_LDAPBASEDN"),
+					 pql_get_define("PQL_GLOB_ATTR_LDAPDEFAULTQUOTA"),
+					 pql_get_define("PQL_GLOB_ATTR_LDAPDEFAULTDOTMODE"),
+					 pql_get_define("PQL_GLOB_ATTR_DIRMAKER"),
+					 pql_get_define("PQL_GLOB_ATTR_QUOTAWARNING"),
+					 pql_get_define("PQL_GLOB_ATTR_LOCALS"),
+					 pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"),
+					 pql_get_define("PQL_GLOB_ATTR_LDAPLOGIN"),
+					 pql_get_define("PQL_GLOB_ATTR_LDAPPASSWORD"));
+	$cn = pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $mxhost . "," . $USER_SEARCH_DN_CTR;
 
 	foreach($attribs as $attrib) {
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid, $cn, $attrib);
 		if(!is_null($value)) {
-			if($attrib == "locals") {
+			if($attrib == pql_get_define("PQL_GLOB_ATTR_LOCALS")) {
 				asort($value);
 				foreach($value as $val) {
 					$locals[] = $val;
 				}
-			} elseif($attrib == "rcpthosts") {
+			} elseif($attrib == pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS")) {
 				asort($value);
 				foreach($value as $val) {
 					$rcpthosts[] = $val;
 				}
-			} elseif($attrib == "ldappassword") {
+			} elseif($attrib == pql_get_define("PQL_GLOB_ATTR_LDAPPASSWORD")) {
 				$$attrib = "encrypted";
 			} else {
 				$$attrib = $value[0];
 			}
 		} else {
-			if($attrib == 'ldapserver')
+			if($attrib == pql_get_define("PQL_GLOB_ATTR_LDAPSERVER"))
 			  $$attrib = "<i>".$USER_HOST."</i>";
-			elseif($attrib == 'ldapbasedn')
+			elseif($attrib == pql_get_define("PQL_GLOB_ATTR_LDAPBASEDN"))
 			  $$attrib = "<i>".$USER_SEARCH_DN_CTR."</i>";
 			else
 			  $$attrib = "<i>".$LANG->_('Not set')."</i>";
@@ -47,7 +56,7 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 	}
 
 	// print status message, if one is available
-	if(isset($msg)){
+	if(isset($msg)) {
 		print_status_msg($msg);
 	}
 

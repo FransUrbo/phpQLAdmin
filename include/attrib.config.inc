@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.25 2003-07-03 07:32:32 turbo Exp $
+// $Id: attrib.config.inc,v 1.26 2003-08-15 08:06:17 turbo Exp $
 
 function attribute_check() {
     global $administrator, $domain, $oldvalue, $_pql, $error, $LANG;
@@ -258,7 +258,7 @@ function attribute_save() {
 		$entry[$attrib][] = $$attrib;
 	} else {
 		if($rootdn) {
-			if($attrib != 'controlsadministrator') {
+			if($attrib != pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR")) {
 				// Fetch old values from DB
 				unset($oldvalues); $oldvalues = pql_get_domain_value($_pql, $rootdn, $attrib);
 				if(is_array($oldvalues)) {
@@ -329,13 +329,13 @@ function attribute_save() {
 
 	// -----------------------------
 	// Do the actual modification(s)
-	if(!$rootdn or ($attrib == 'controlsadministrator') or $toggle) {
+	if(!$rootdn or ($attrib == pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR")) or $toggle) {
 		// We don't have a root DN, we're changing controlsAdministrator OR
 		// it's a toggle. This means it's a global variable, and should be
 		// set in every namingContexts
 
 		foreach($_pql->ldap_basedn as $dn) {
-			if($attrib == 'controlsadministrator') {
+			if($attrib == pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR")) {
 				unset($entry);
 				if($$attrib)
 				  $entry[$attrib][] = $$attrib;
@@ -386,8 +386,8 @@ function attribute_verify_objectclass($ldap) {
 	// contains the phpQLAdminBranch
 	$sr  = @ldap_read($ldap->ldap_linkid, $rootdn, $rootdn, array('objectclass'));
 	$ocs = @ldap_get_entries($ldap->ldap_linkid, $sr) or pql_errormsg($ldap->ldap_linkid);
-	for($j=0; $j < $ocs[0]["objectclass"]["count"]; $j++) {
-		if(eregi('phpQLAdminConfig', $ocs[0]["objectclass"][$j]))
+	for($j=0; $j < $ocs[0][pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")]["count"]; $j++) {
+		if(eregi('phpQLAdminConfig', $ocs[0][pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][$j]))
 		  return 1;
 	}
 

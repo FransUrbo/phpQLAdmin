@@ -2,7 +2,7 @@
 // control attribute plugin for
 // helohost (host name used in SMTP HELO command)
 //
-// $Id: attrib.control.helohost.inc,v 2.8 2003-07-02 07:59:00 turbo Exp $
+// $Id: attrib.control.helohost.inc,v 2.9 2003-08-15 08:06:17 turbo Exp $
 
 function helohost_check($type) {
 	global $error, $helohost, $view, $LANG;
@@ -22,8 +22,8 @@ function helohost_init($host) {
 
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-									   "helohost");
+									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_GLOB_ATTR_HELOHOST"));
 
 	if(!is_null($value))
 	  $helohost = $value[0];
@@ -89,8 +89,9 @@ function helohost_save($type, $host) {
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-										 "helohost", $helohost))
+										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_GLOB_ATTR_HELOHOST"),
+										 $helohost))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('helohost options')));
 		else

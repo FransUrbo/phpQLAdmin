@@ -1,12 +1,11 @@
 <?php
 // navigation bar - bind9 information
-// $Id: left-bind9.php,v 2.1 2003-04-27 19:05:44 turbo Exp $
+// $Id: left-bind9.php,v 2.2 2003-08-15 08:06:04 turbo Exp $
 //
 session_start();
 
 //require("./include/pql_config.inc");
 //require("./include/pql_control.inc");
-//require("./include/pql_control_plugins.inc");
 
 //require("./left-head.html");
 //

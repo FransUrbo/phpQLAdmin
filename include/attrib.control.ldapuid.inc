@@ -3,7 +3,7 @@
 // ldapuid (user id of virtual user)
 // ldapgid (group id of virtual user)
 //
-// $Id: attrib.control.ldapuid.inc,v 2.8 2003-07-02 07:59:00 turbo Exp $
+// $Id: attrib.control.ldapuid.inc,v 2.9 2003-08-15 08:06:17 turbo Exp $
 
 function ldapuid_check($type) {
 	global $error, $ldapuid, $ldapgid, $view, $LANG;
@@ -41,11 +41,12 @@ function ldapuid_init($host) {
 	global $_pql_control, $ldapuid, $ldapgid, $view;
 	
 	// fetch data from ldap server
-	$attribs = array("ldapuid", "ldapgid");
+	$attribs = array(pql_get_define("PQL_GLOB_ATTR_LDAPUID"),
+					 pql_get_define("PQL_GLOB_ATTR_LDAPGID"));
 
 	foreach($attribs as $attrib){
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-										   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 										   $attrib);
 		
 		if(!is_null($value))
@@ -125,14 +126,13 @@ function ldapuid_save($type, $host) {
 	  case "modify";
 	  case "add";
 		// save entries
+		$attribs = array(pql_get_define("PQL_GLOB_ATTR_LDAPUID"),
+						 pql_get_define("PQL_GLOB_ATTR_LDAPGID"));
+		foreach($attribs as $attrib)
+		  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
+													pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+													$attrib, $$attrib);
 		
-		$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-												  "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-												  "ldapuid", $ldapuid);
-    	$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-												  "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-												  "ldapgid", $ldapgid);
-
 		if(in_array(false, $return))
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('virtual user options')))

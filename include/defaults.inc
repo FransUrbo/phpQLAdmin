@@ -142,37 +142,6 @@ pql_set_define("PQL_CONF_TESTMAIL_AUTOSEND", false, false, $dn);
 pql_set_define("PQL_CONF_CATCHALLUSER", "catchall", false);
 
 // ----------------------------
-// PQL_GLOB_ATTR_* (LDAP attribute names)
-// You should provide the same names here as in your qmail-ldap.h
-pql_set_define("PQL_GLOB_ATTR_MAIL", strtolower("mail"), false);
-pql_set_define("PQL_GLOB_ATTR_FORWARDS", strtolower("mailforwardingaddress"), false);
-pql_set_define("PQL_GLOB_ATTR_MAILALTERNATE", strtolower("mailalternateaddress"), false);
-pql_set_define("PQL_GLOB_ATTR_QMAILUID", strtolower("uidnumber"), false);
-pql_set_define("PQL_GLOB_ATTR_QMAILGID", strtolower("gidnumber"), false);
-pql_set_define("PQL_GLOB_ATTR_MAILSTORE", strtolower("mailmessagestore"), false);
-pql_set_define("PQL_GLOB_ATTR_HOMEDIR", strtolower("homedirectory"), false);
-pql_set_define("PQL_GLOB_ATTR_LOGINSHELL", strtolower("loginshell"), false);
-pql_set_define("PQL_GLOB_ATTR_QUOTA", strtolower("mailquota"), false);
-pql_set_define("PQL_GLOB_ATTR_PROGRAM", strtolower("deliveryprogrampath"), false);
-pql_set_define("PQL_GLOB_ATTR_MAILHOST", strtolower("mailhost"), false);
-pql_set_define("PQL_GLOB_ATTR_MODE", strtolower("deliverymode"), false);
-pql_set_define("PQL_GLOB_ATTR_REPLYTEXT", strtolower("mailreplytext"), false);
-pql_set_define("PQL_GLOB_ATTR_DOTMODE", strtolower("qmaildotmode"), false);
-pql_set_define("PQL_GLOB_ATTR_UID", strtolower("uid"), false);
-pql_set_define("PQL_GLOB_ATTR_PASSWD", strtolower("userpassword"), false);
-pql_set_define("PQL_GLOB_ATTR_OBJECTCLASS", strtolower("objectclass"), false);
-pql_set_define("PQL_GLOB_ATTR_ISACTIVE", strtolower("accountstatus"), false);
-pql_set_define("PQL_GLOB_ATTR_PURGE", strtolower("qmailaccountpurge"), false);
-
-// ----------------------------
-// These attributes aren't used by qmail-ldap
-// However, phpQLAdmin currently relies on them
-pql_set_define("PQL_GLOB_ATTR_CN", strtolower("cn"), false);
-pql_set_define("PQL_GLOB_ATTR_SN", strtolower("sn"), false);
-pql_set_define("PQL_GLOB_ATTR_DESCRIPTION", strtolower("description"), false);
-pql_set_define("PQL_GLOB_ATTR_GIVENNAME", strtolower("givenname"), false);
-
-// ----------------------------
 // password encryption schemes to allow
 // List of schemes for password schemes that we can choose from when
 // creating a user (or changing password for a user).

@@ -5,7 +5,7 @@
 // ldaplogin (cn of a database user)
 // ldappassword (password to bind to ldaplogin)
 //
-// $Id: attrib.control.ldapserver.inc,v 2.8 2003-07-02 07:59:00 turbo Exp $
+// $Id: attrib.control.ldapserver.inc,v 2.9 2003-08-15 08:06:17 turbo Exp $
 
 function ldapserver_check($type) {
 	global $error, $ldapserver, $ldappassword, $ldapbasedn, $ldaplogin_use, $ldaplogin, $ldap_test, $view, $LANG;
@@ -99,11 +99,14 @@ function ldapserver_init($host) {
 	global $_pql_control, $srvcount, $ldapserver, $ldapbasedn, $ldaplogin_use, $ldaplogin, $ldappassword, $view;
 	
 	// fetch data from ldap server
-	$attribs = array("ldapserver", "ldapbasedn", "ldaplogin", "ldappassword");
+	$attribs = array(pql_get_define("PQL_GLOB_ATTR_LDAPSERVER"),
+					 pql_get_define("PQL_GLOB_ATTR_LDAPBASEDN"),
+					 pql_get_define("PQL_GLOB_ATTR_LDAPLOGIN"),
+					 pql_get_define("PQL_GLOB_ATTR_LDAPPASSWORD"));
 	
 	foreach($attribs as $attrib) {
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-										   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 										   $attrib);
 		
 		if(!is_null($value))
@@ -251,28 +254,26 @@ function ldapserver_save($type, $host) {
 		case "modify";
 		case "add";
 			// save entries
-			$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-													  "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-													  "ldapserver", $ldapserver);
-			$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-													  "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-													  "ldapbasedn", $ldapbasedn);
-
-			if($ldaplogin_use == "1"){
-				$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-														  "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-														  "ldaplogin", $ldaplogin);
-				$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-														  "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-														  "ldappassword", $ldappassword);
-			} else {
-				// reset login and password values
-				$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-														  "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-														  "ldaplogin", "");
-				$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-														  "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-														  "ldappassword", "");
+		$attribs = array(pql_get_define("PQL_GLOB_ATTR_LDAPSERVER"),
+						 pql_get_define("PQL_GLOB_ATTR_LDAPBASEDN"));
+		foreach($attribs as $attrib)
+		  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
+													pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+													$attrib, $$attrib);
+		
+		$attribs = array(pql_get_define("PQL_GLOB_ATTR_LDAPLOGIN"),
+						 pql_get_define("PQL_GLOB_ATTR_LDAPPASSWORD"));
+		if($ldaplogin_use == "1"){
+			foreach($attribs as $attrib)
+			  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
+														pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+														$attrib, $$attrib);
+		} else {
+			foreach($attribs as $attrib)
+			  // reset login and password values
+			  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
+														pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+														$attrib, "");
     	}
 
 		if(in_array(false, $return))

@@ -16,7 +16,7 @@ if(!$rootdn) {
 }
 
 // Get default domain name for this domain
-$defaultdomain = pql_get_domain_value($_pql, $domain, "defaultdomain");
+$defaultdomain = pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
 
 include("./header.html");
 
@@ -44,10 +44,10 @@ if(isset($rlnb) and pql_get_define("PQL_GLOB_AUTO_RELOAD")) {
 <?php   }
 }
 
-$username = pql_get_userattribute($_pql->ldap_linkid, $user, 'cn');
+$username = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_CN"));
 if(!$username[0]) {
     // No common name, use uid field
-    $username = pql_get_userattribute($_pql->ldap_linkid, $user, 'uid');
+    $username = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_UID"));
 }
 $username = $username[0];
 ?>
@@ -105,7 +105,7 @@ if($mailhost == "") {
 
 $userdn = urlencode($user);
 
-$controladmins = pql_get_domain_value($_pql, $rootdn, 'controlsadministrator');
+$controladmins = pql_get_domain_value($_pql, $rootdn, pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR"));
 if(is_array($controladmins)) {
 	foreach($controladmins as $admin)
 	  if($admin == $user)

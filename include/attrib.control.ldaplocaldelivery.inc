@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldaplocaldelivery (search for local account, if ldap search is not successful)
 //
-// $Id: attrib.control.ldaplocaldelivery.inc,v 2.8 2003-08-12 18:38:26 turbo Exp $
+// $Id: attrib.control.ldaplocaldelivery.inc,v 2.9 2003-08-15 08:06:17 turbo Exp $
 
 // check values
 function ldaplocaldelivery_check($type) {
@@ -16,8 +16,8 @@ function ldaplocaldelivery_init($host) {
 
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-									   "ldaplocaldelivery");
+									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_GLOB_ATTR_LDAPLOCALDELIVERY"));
 
 	if(!is_null($value))
 	  $ldaplocaldelivery = $value[0];
@@ -69,8 +69,9 @@ function ldaplocaldelivery_save($type, $host) {
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-										 "ldaplocaldelivery", $set))
+										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_GLOB_ATTR_LDAPLOCALDELIVERY"),
+										 $set))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('ldaplocaldelivery options')));
 		else

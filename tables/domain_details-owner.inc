@@ -59,7 +59,7 @@
 <?php if(is_array($seealso)) {
 		$new_tr = 0;
 		foreach($seealso as $sa) {
-			$username = pql_get_userattribute($_pql->ldap_linkid, $sa, 'cn');
+			$username = pql_get_userattribute($_pql->ldap_linkid, $sa, pql_get_define("PQL_GLOB_ATTR_CN"));
 			if(!$username[0])
 			  $username = $sa;
 			else
@@ -72,8 +72,8 @@
 <?php		} ?>
         <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$sa?>&view=<?=$view?>"><?=urldecode($username)?></a></td>
         <td>
-          <a href="domain_edit_attributes.php?attrib=seealso&rootdn=<?=$rootdn?>&domain=<?=$domain?>&seealso=<?=$sa?>&submit=3&action=modify&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Modify contact persons for %domain%'), array('domain' => $o)); ?>"></a>
-          <a href="domain_edit_attributes.php?attrib=seealso&rootdn=<?=$rootdn?>&domain=<?=$domain?>&seealso=<?=$sa?>&submit=4&action=delete&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Remove contact person from')?> <?=$o?>" border="0"></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_SEEALSO");?>&rootdn=<?=$rootdn?>&domain=<?=$domain?>&<?php echo pql_get_define("PQL_GLOB_ATTR_SEEALSO");?>=<?=$sa?>&submit=3&action=modify&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Modify contact persons for %domain%'), array('domain' => $o)); ?>"></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_SEEALSO");?>&rootdn=<?=$rootdn?>&domain=<?=$domain?>&<?php echo pql_get_define("PQL_GLOB_ATTR_SEEALSO");?>=<?=$sa?>&submit=4&action=delete&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Remove contact person from')?> <?=$o?>" border="0"></a>
         </td>
       </tr>
 
@@ -83,12 +83,12 @@
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"></td>
         <td colspan="4">
-          <a href="domain_edit_attributes.php?attrib=seealso&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('contact person for domain'))); ?></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_SEEALSO");?>&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('contact person for domain'))); ?></a>
         </td>
       </tr>
 <?php } else { ?>
         <td colspan="4">
-          <a href="domain_edit_attributes.php?attrib=seealso&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('contact person for domain'))); ?></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_SEEALSO");?>&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('contact person for domain'))); ?></a>
         </td>
 <?php } ?>
     </th>

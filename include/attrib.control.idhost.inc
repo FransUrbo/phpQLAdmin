@@ -2,7 +2,7 @@
 // control attribute plugin for
 // idhost (host name for message id's)
 //
-// $Id: attrib.control.idhost.inc,v 2.8 2003-07-02 07:59:00 turbo Exp $
+// $Id: attrib.control.idhost.inc,v 2.9 2003-08-15 08:06:17 turbo Exp $
 
 function idhost_check($type) {
 	global $error, $idhost, $view, $LANG;
@@ -23,8 +23,8 @@ function idhost_init($host) {
 	
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-									   "idhost");
+									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_GLOB_ATTR_IDHOST"));
 	
 	if(!is_null($value))
 	  $idhost = $value[0];
@@ -91,8 +91,9 @@ function idhost_save($type, $host) {
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-										 "idhost", $idhost))
+										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_GLOB_ATTR_IDHOST"),
+										 $idhost))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('idhost options')));
 		else

@@ -1,6 +1,6 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.22 2003-06-25 07:06:25 turbo Exp $
+// $Id: ezmlm_add.php,v 1.23 2003-08-15 08:06:04 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -26,7 +26,7 @@ if(!$killcount) {
 if(!$domainname) {
 	// Get list of domains
 	foreach($_pql->ldap_basedn as $dn)  {
-		$dom = pql_get_domain_value($_pql, $dn, 'administrator', $USER_DN);
+		$dom = pql_get_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $USER_DN);
 		foreach($dom as $d) {
 			$domains[] = $d;
 		}
@@ -44,8 +44,7 @@ if(!$domainname) {
 				$dont_add = 0;
 				
 				// Get the default domainname for the domain
-				$defaultdomainname = pql_get_domain_value($_pql, $d, "defaultdomain");
-				
+				$defaultdomainname = pql_get_domain_value($_pql, $d, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
 
 				// Remove duplicates
 				if($domain_list) {
@@ -67,7 +66,7 @@ if(!$domainname) {
 				$dont_add = 0;
 				
 				// Get any additional domainname(s) for the domain
-				$additionaldomainnames = pql_get_domain_value($_pql, $d, "additionaldomainname");
+				$additionaldomainnames = pql_get_domain_value($_pql, $d, pql_get_define("PQL_GLOB_ATTR_ADDITIONALDOMAINNAME"));
 
 				if(is_array($additionaldomainnames)) {
 					foreach($additionaldomainnames as $additional) {
@@ -112,8 +111,8 @@ if($domainname) {
 	}
 	
 	// Get basemaildir path for domain
-	if(!($path = pql_get_domain_value($_pql, $data[0], "basemaildir"))) {
-		die("Can't get baseMailDir path from domain '$data[1]'!");
+	if(!($path = pql_get_domain_value($_pql, $data[0], pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR")))) {
+		die("Can't get ".pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR")." path from domain '$data[1]'!");
 	}
 	
 	require("./include/pql_ezmlm.inc");
@@ -136,7 +135,7 @@ if(!$domain) {
   <span class="title1">Create mailinglist</span>
 <?php
 } else {
-	$dom = pql_get_domain_value($_pql, $domain, 'ezmlmadministrator', $USER_DN);
+	$dom = pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR"), $USER_DN);
 	if(is_array($dom)) {
 		if($ezmlm->mailing_lists_hostsindex["COUNT"] > pql_get_define("PQL_CONF_MAX_LISTS", $domain)) {
 ?>

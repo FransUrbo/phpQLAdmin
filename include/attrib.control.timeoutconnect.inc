@@ -3,7 +3,7 @@
 // timeoutconnect (how long to wait for smtp connection)
 // timeoutremote (how long to wait for remote server)
 //
-// $Id: attrib.control.timeoutconnect.inc,v 2.9 2003-07-02 07:59:00 turbo Exp $
+// $Id: attrib.control.timeoutconnect.inc,v 2.10 2003-08-15 08:06:17 turbo Exp $
 
 function timeoutconnect_check($type) {
 	global $error, $timeoutconnect, $timeoutremote, $view, $LANG;
@@ -41,11 +41,12 @@ function timeoutconnect_init($host) {
 	global $_pql_control, $timeoutconnect, $timeoutremote, $view;
 
 	// fetch data from ldap server
-	$attribs = array("timeoutconnect", "timeoutremote");
+	$attribs = array(pql_get_define("PQL_GLOB_ATTR_TIMEOUTCONNECT"),
+					 pql_get_define("PQL_GLOB_ATTR_TIMEOUTREMOTE"));
 
 	foreach($attribs as $attrib) {
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-										   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 										   $attrib);
 
 		if(!is_null($value))
@@ -131,12 +132,12 @@ function timeoutconnect_save($type, $host) {
 	  case "modify";
 	  case "add";
 		// save entries
-		$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-												  "cn=" . $mxhost . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-												  "timeoutconnect", $timeoutconnect);
-    	$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-												  "cn=" . $mxhost . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-												  "timeoutremote", $timeoutremote);
+		$attribs = array(pql_get_define("PQL_GLOB_ATTR_TIMEOUTCONNECT"),
+						 pql_get_define("PQL_GLOB_ATTR_TIMEOUTREMOTE"));
+		foreach($attribs as $attrib)
+		  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
+													pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $mxhost . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+													$attrib, $$attrib);
 		
 		if(in_array(false, $return))
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),

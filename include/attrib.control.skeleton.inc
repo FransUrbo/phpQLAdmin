@@ -58,7 +58,7 @@
 //
 // Please look at other plugins to see which standard header text is recommanded.
 //
-// $Id: attrib.control.skeleton.inc,v 2.8 2003-07-02 07:59:00 turbo Exp $
+// $Id: attrib.control.skeleton.inc,v 2.9 2003-08-15 08:06:17 turbo Exp $
 //
 
 function xxx_check($type) {
@@ -84,7 +84,9 @@ function xxx_init() {
 	// available for the other functions
 	
 	// fetch data from ldap server
-	$value = pql_control_get_attribute($_pql_control->ldap_linkid, $GLOBALS["USER_SEARCH_DN_CTR"], "xxx");
+	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
+									   $GLOBALS["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_GLOB_ATTR_xxx"));
 	
 	if(!is_null($value))
 	  $xxx = $value[0];
@@ -170,7 +172,10 @@ function xxx_save($type, $host) {
 	  case "add";
 		// save entries
 		
-		if(pql_control_replace_attribute($_pql_control->ldap_linkid, $GLOBALS["USER_SEARCH_DN_CTR"], "xxx", $xxx))
+		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
+										 $GLOBALS["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_GLOB_ATTR_xxx"),
+										 $xxx))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('xxx options')));
 		else

@@ -2,7 +2,7 @@
 // ----------------------------
 // Retreive, modify and delete ACIs (per-object access control lists)
 //
-// $Id: pql_aci.inc,v 2.1 2003-08-12 13:35:40 turbo Exp $
+// $Id: pql_aci.inc,v 2.2 2003-08-15 08:06:17 turbo Exp $
 
 // Get ACI entries from object
 function pql_aci_get($linkid, $dn, $number = 0) {
@@ -16,17 +16,17 @@ function pql_aci_get($linkid, $dn, $number = 0) {
     $sr     = ldap_read($linkid, $dn, $filter, array('OpenLDAPaci')) or pql_errormsg($linkid);
     $info   = ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
 
-    if($info[0]["openldapaci"][0]) {
+    if($info[0][pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")][0]) {
 		// An openLDAPaci attribute might look something like (see README.aci):
 		//	3#entry#grant;r,s,c;macAddress#group#cn=customer,ou=groups,dc=planetsky,dc=com
 		// or (with more than one permission/target
 		//	3#entry#grant;r,s,c;macAddress;s,c;[all]#group#cn=customer,ou=groups,dc=planetsky,dc=com
 		$n = 0; 
 
-		for($j=0; $j < $info[0]["openldapaci"]["count"]; $j++) {
+		for($j=0; $j < $info[0][pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")]["count"]; $j++) {
 			$got_more_rights = 0;
 			
-			$tmp1 = split("#", $info[0]["openldapaci"][$j]); // Split up the attribute value into it's (five) parts
+			$tmp1 = split("#", $info[0][pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")][$j]); // Split up the attribute value into it's (five) parts
 			$ACI[$n]["OID"]		= $tmp1[0]; // Irrelevant: Counter or dummy OID (Ex: 1.2.3)
 			$ACI[$n]["SCOPE"]	= $tmp1[1]; // Irrelevant: Always 'entry'
 			

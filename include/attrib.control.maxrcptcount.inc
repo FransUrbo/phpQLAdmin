@@ -2,7 +2,7 @@
 // control attribute plugin for
 // maxrcptcount (maximum number of RCPT TO's)
 //
-// $Id: attrib.control.maxrcptcount.inc,v 2.8 2003-07-02 07:59:00 turbo Exp $
+// $Id: attrib.control.maxrcptcount.inc,v 2.9 2003-08-15 08:06:17 turbo Exp $
 
 function maxrcptcount_check($type) {
 	global $error, $maxrcptcount, $view, $LANG;
@@ -28,8 +28,8 @@ function maxrcptcount_init($host) {
 
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-									   "maxrcptcount");
+									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_GLOB_ATTR_MAXRCPTCOUNT"));
 
 	if(!is_null($value))
 	  $maxrcptcount = $value[0];
@@ -96,8 +96,9 @@ function maxrcptcount_save($type, $host) {
 		case "add";
 			// save entries
 			if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-											 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-											 "maxrcptcount", $maxrcptcount))
+											 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+											 pql_get_define("PQL_GLOB_ATTR_MAXRCPTCOUNT"),
+											 $maxrcptcount))
 			  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										   array('what' => $LANG->_('maxrcptcount options')));
 			else

@@ -26,13 +26,13 @@ function attribute_forward($msg) {
 }
 
 // Get default domain name for this domain
-$defaultdomain = pql_get_domain_value($_pql, $domain, "defaultdomain");
+$defaultdomain = pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
 
 // Get the username. Prettier than the DN
-$username = pql_get_userattribute($_pql->ldap_linkid, $user, 'cn');
+$username = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_CN"));
 if(!$username[0]) {
     // No common name, use uid field
-    $username = pql_get_userattribute($_pql->ldap_linkid, $user, 'uid');
+    $username = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_UID"));
 }
 $username = $username[0];
 

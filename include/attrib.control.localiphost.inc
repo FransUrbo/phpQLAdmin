@@ -2,7 +2,7 @@
 // control attribute plugin for
 // localiphost (name substituted for local IP address)
 //
-// $Id: attrib.control.localiphost.inc,v 2.9 2003-07-02 07:59:00 turbo Exp $
+// $Id: attrib.control.localiphost.inc,v 2.10 2003-08-15 08:06:17 turbo Exp $
 
 function localiphost_check($type) {
 	global $error, $localiphost, $view, $LANG;
@@ -22,8 +22,8 @@ function localiphost_init($host) {
 	
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-									   "localiphost");
+									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_GLOB_ATTR_LOCALIPHOST"));
 	
 	if(!is_null($value))
 	  $localiphost = $value[0];
@@ -89,8 +89,9 @@ function localiphost_save($type, $host) {
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-										 "localiphost", $localiphost))
+										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_GLOB_ATTR_LOCALIPHOST"),
+										 $localiphost))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('localiphost options')));
 		else

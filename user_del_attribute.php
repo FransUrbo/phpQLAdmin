@@ -43,13 +43,16 @@ if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
 		if ((string)$key != "count") {
 		    $ref = $result[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", pql_get_rootdn($user))][0];
 		    $domain = pql_strip_username($result[pql_get_define("PQL_GLOB_ATTR_MAIL")][0]);
-		    $forwarders[]  = array("domain" => $domain, "reference" => $ref, "cn" => $cn,  "email" => $result["mail"][0]);
+		    $forwarders[]  = array("domain" => $domain, "reference" => $ref, "cn" => $cn,  "email" => $result[pql_get_define("PQL_GLOB_ATTR_MAIL")][0]);
 		}
 	    }
 	    var_dump($forwarders);
 	    foreach($forwarders as $forward) {
 		// we found a forward -> remove it 
-		pql_replace_userattribute($_pql->ldap_linkid, $forward['reference'], pql_get_define("PQL_GLOB_ATTR_FORWARDS"), $oldvalue);
+		pql_replace_userattribute($_pql->ldap_linkid,
+					  $forward['reference'],
+					  pql_get_define("PQL_GLOB_ATTR_FORWARDS"),
+					  $oldvalue);
 	    }
 	}
     }

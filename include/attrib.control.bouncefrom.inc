@@ -3,7 +3,7 @@
 // bouncefrom (username of bounce sender)
 // bouncehost (hostname of bounce sender)
 //
-// $Id: attrib.control.bouncefrom.inc,v 2.9 2003-07-02 07:59:00 turbo Exp $
+// $Id: attrib.control.bouncefrom.inc,v 2.10 2003-08-15 08:06:17 turbo Exp $
 
 function bouncefrom_check($type) {
 	global $error, $bouncefrom, $bouncehost, $view, $LANG;
@@ -29,11 +29,12 @@ function bouncefrom_init($host) {
 	global $_pql_control, $bouncefrom, $bouncehost, $view;
 
 	// fetch data from ldap server
-	$attribs = array("bouncefrom", "bouncehost");
+	$attribs = array(pql_get_define("PQL_GLOB_ATTR_BOUNCEFROM"),
+					 pql_get_define("PQL_GLOB_ATTR_BOUNCEHOST"));
 
 	foreach($attribs as $attrib) {
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-										   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 										   $attrib);
 
 		if(!is_null($value))
@@ -114,12 +115,12 @@ function bouncefrom_save($type, $host) {
 	  case "modify";
 	  case "add";
 		// save entries
-		$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-												  "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-												  "bouncefrom", $bouncefrom);
-    	$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-												  "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-												  "bouncehost", $bouncehost);
+		$attribs = array(pql_get_define("PQL_GLOB_ATTR_BOUNCEFROM"),
+						 pql_get_define("PQL_GLOB_ATTR_BOUNCEHOST"));
+		foreach($attribs as $attrib)
+		  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
+													pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+													$attrib, $$attrib);
 		
 		if(in_array(false, $return))
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),

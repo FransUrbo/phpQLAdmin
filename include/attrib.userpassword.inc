@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.14 2003-07-02 07:59:01 turbo Exp $
+// $Id: attrib.userpassword.inc,v 2.15 2003-08-15 08:06:17 turbo Exp $
 
 function attribute_check($type) {
 	global $userpassword, $userpassword_check, $error, $pwscheme, $LANG;
@@ -32,7 +32,7 @@ function attribute_print_form() {
 	global $domain, $user, $PHP_SELF, $attrib, $error, $rootdn, $pwscheme, $view, $_pql, $LANG;
 
 	// Get the default password scheme for branch
-	$defaultpasswordscheme = pql_get_domain_value($_pql, $domain, "defaultpasswordscheme");
+	$defaultpasswordscheme = pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_DEFAULTPASSWORDSCHEME"));
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -107,7 +107,10 @@ function attribute_save($type) {
 	  case "modify";
 		$pw = pql_password_hash($userpassword, $pwscheme);
 		
-		if(pql_replace_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_PASSWD"), $pw)) {
+		if(pql_replace_userattribute($_pql->ldap_linkid, $user,
+									 pql_get_define("PQL_GLOB_ATTR_PASSWD"),
+									 $pw))
+		{
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										 array('what' => $LANG->_('password')));
 

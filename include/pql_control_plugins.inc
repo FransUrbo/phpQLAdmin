@@ -4,12 +4,32 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control plugins)
 //
-// $Id: pql_control_plugins.inc,v 2.1 2002-12-17 06:42:37 turbo Exp $
+// $Id: pql_control_plugins.inc,v 2.2 2003-08-15 08:06:17 turbo Exp $
 //
 // version history:
 // $Log: pql_control_plugins.inc,v $
-// Revision 2.1  2002-12-17 06:42:37  turbo
-// Retabbing...
+// Revision 2.2  2003-08-15 08:06:17  turbo
+// This humungus change (diff is 221k!) is because of hardcoding attributes
+// into the code. This isn't THAT big a'deal, but IF someone wants to use
+// phpQLAdmin for something else than QmailLDAP/Controls (SendmailLDAP comes
+// to mind), then THEY would have to do this fix. And the original idea with
+// taking over phpQLAdmin was to remove _ALL_ hardcoded design and database
+// structure. It is NOT up to the tool to describe the database. It is the
+// database who should describe the tool!!
+// - This change was accomplished by replacing EVERY SINGLE occurence of a
+//   attribute reference in an array ($variable["locals"] for example) to
+//   a 'define' made in include/config_attributes.inc (required from
+//   include/pql_config.inc). Getting this value (the attribute name) is done
+//   with the function pql_get_define().
+// - To make this work, I had to move all the plugin stuff from include/pql_control.inc
+//   to include/pql_plugins.inc AND make it general. Previosly it was 'controls'
+//   oriented. This because {domain,user}_edit_attributes.php did a 'switch()'
+//   against the attribute, and this is no longer possible (can't use
+//   'case pql_get_define():').
+// Unfortunatly, all this calling to pql_get_define() will make it (phpQLAdmin)
+// a little slower (how much I don't know), but it must be worth it (see above
+// on hardcoding).
+// Closes bug 26.
 //
 // Revision 1.0  2001/05/21 09:52:17  mb
 // update version info to 1.0
@@ -39,207 +59,186 @@
 // ----------------------------
 
 // qmail-ldap specific options
-pql_control_plugin_register("ldapserver",
-							"attrib.control.ldapserver.inc",
-							"q-l ldap core",
-							array("ldapserver",
-								  "ldapbasedn",
-								  "ldaplogin",
-								  "ldappassword"));
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_LDAPSERVER"),
+					"attrib.control.ldapserver.inc",
+					"q-l ldap core",
+					array(pql_get_define("PQL_GLOB_ATTR_LDAPSERVER"),
+						  pql_get_define("PQL_GLOB_ATTR_LDAPBASEDN"),
+						  pql_get_define("PQL_GLOB_ATTR_LDAPLOGIN"),
+						  pql_get_define("PQL_GLOB_ATTR_LDAPPASSWORD")));
 
-pql_control_plugin_register("ldaprebind",
-							"attrib.control.ldaprebind.inc",
-							"q-l ldap core",
-							"ldaprebind");
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_LDAPREBIND"),
+					"attrib.control.ldaprebind.inc",
+					"q-l ldap core",
+					pql_get_define("PQL_GLOB_ATTR_LDAPREBIND"));
 
-pql_control_plugin_register("ldapcluster",
-							"attrib.control.ldapcluster.inc",
-							"q-l ldap core",
-							"ldapcluster");
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_LDAPCLUSTER"),
+					"attrib.control.ldapcluster.inc",
+					"q-l ldap core",
+					pql_get_define("PQL_GLOB_ATTR_LDAPCLUSTER"));
 
-pql_control_plugin_register("ldapdefaultquota",
-							"attrib.control.ldapdefaultquota.inc",
-							"q-l mailbox",
-							"ldapdefaultquota");
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_LDAPDEFAULTQUOTA"),
+					"attrib.control.ldapdefaultquota.inc",
+					"q-l mailbox",
+					pql_get_define("PQL_GLOB_ATTR_LDAPDEFAULTQUOTA"));
 
-pql_control_plugin_register("ldapmessagestore",
-							"attrib.control.ldapmessagestore.inc",
-							"q-l mailbox",
-							"ldapmessagestore");
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_LDAPMESSAGESTORE"),
+					"attrib.control.ldapmessagestore.inc",
+					"q-l mailbox",
+					pql_get_define("PQL_GLOB_ATTR_LDAPMESSAGESTORE"));
 
-pql_control_plugin_register("dirmaker",
-							"attrib.control.dirmaker.inc",
-							"q-l mailbox",
-							"dirmaker");
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_DIRMAKER"),
+					"attrib.control.dirmaker.inc",
+					"q-l mailbox",
+					pql_get_define("PQL_GLOB_ATTR_DIRMAKER"));
 
-pql_control_plugin_register("ldaplocaldelivery",
-							"attrib.control.ldaplocaldelivery.inc",
-							"q-l mailbox",
-							"ldaplocaldelivery");
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_LDAPLOCALDELIVERY"),
+					"attrib.control.ldaplocaldelivery.inc",
+					"q-l mailbox",
+					pql_get_define("PQL_GLOB_ATTR_LDAPLOCALDELIVERY"));
 
-pql_control_plugin_register("quotawarning",
-							"attrib.control.quotawarning.inc",
-							"q-l mailbox",
-							"quotawarning");
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_QUOTAWARNING"),
+					"attrib.control.quotawarning.inc",
+					"q-l mailbox",
+					pql_get_define("PQL_GLOB_ATTR_QUOTAWARNING"));
 
-pql_control_plugin_register("ldapdefaultdotmode",
-							"attrib.control.ldapdefaultdotmode.inc",
-							"q-l mailbox",
-							"ldapdefaultdotmode");
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_LDAPDEFAULTDOTMODE"),
+					"attrib.control.ldapdefaultdotmode.inc",
+					"q-l mailbox",
+					pql_get_define("PQL_GLOB_ATTR_LDAPDEFAULTDOTMODE"));
 
-pql_control_plugin_register("ldapuid",
-							"attrib.control.ldapuid.inc",
-							"q-l virtual user",
-							array("ldapuid",
-								  "ldapgid"));
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_LDAPUID"),
+					"attrib.control.ldapuid.inc",
+					"q-l virtual user",
+					array(pql_get_define("PQL_GLOB_ATTR_LDAPUID"),
+						  pql_get_define("PQL_GLOB_ATTR_LDAPGID")));
 
-pql_control_plugin_register("custombouncetext",
-							"attrib.control.custombouncetext.inc",
-							"q-l bounce",
-							"custombouncetext");
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_CUSTOMBOUNCETEXT"),
+					"attrib.control.custombouncetext.inc",
+					"q-l bounce",
+					pql_get_define("PQL_GLOB_ATTR_CUSTOMBOUNCETEXT"));
 
-pql_control_plugin_register("tarpitcount",
-							"attrib.control.tarpitcount.inc",
-							"q-l spam control",
-							array("tarpitcount",
-								  "tarpitdelay"));
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_TARPITCOUNT"),
+					"attrib.control.tarpitcount.inc",
+					"q-l spam control",
+					array(pql_get_define("PQL_GLOB_ATTR_TARPITCOUNT"),
+						  pql_get_define("PQL_GLOB_ATTR_TARPITDELAY")));
 
-pql_control_plugin_register("maxrcptcount",
-							"attrib.control.maxrcptcount.inc",
-							"q-l spam control",
-							"maxrcptcount");
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_MAXRCPTCOUNT"),
+					"attrib.control.maxrcptcount.inc",
+					"q-l spam control",
+					pql_get_define("PQL_GLOB_ATTR_MAXRCPTCOUNT"));
 
 // core qmail specific options
-pql_control_plugin_register("bouncefrom",
-							"attrib.control.bouncefrom.inc",
-							"qmail-send",
-							array("bouncefrom",
-								  "bouncehost"));
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_BOUNCEFROM"),
+					"attrib.control.bouncefrom.inc",
+					"qmail-send",
+					array(pql_get_define("PQL_GLOB_ATTR_BOUNCEFROM"),
+						  pql_get_define("PQL_GLOB_ATTR_BOUNCEHOST")));
 
-pql_control_plugin_register("concurrencylocal",
-							"attrib.control.concurrencylocal.inc",
-							"qmail-send",
-							array("concurrencylocal",
-								  "concurrencyremote"));
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_CONCURRENCYLOCAL"),
+					"attrib.control.concurrencylocal.inc",
+					"qmail-send",
+					array(pql_get_define("PQL_GLOB_ATTR_CONCURRENCYLOCAL"),
+						  pql_get_define("PQL_GLOB_ATTR_CONCURRENCYREMOTE")));
 
-pql_control_plugin_register("doublebouncehost",
-							"attrib.control.doublebouncehost.inc",
-							"qmail-send",
-							array("doublebouncehost",
-								  "doublebounceto"));
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_DOUBLEBOUNCEHOST"),
+					"attrib.control.doublebouncehost.inc",
+					"qmail-send",
+					array(pql_get_define("PQL_GLOB_ATTR_DOUBLEBOUNCEHOST"),
+						  pql_get_define("PQL_GLOB_ATTR_DOUBLEBOUNCETO")));
 
-pql_control_plugin_register("databytes",
-							"attrib.control.databytes.inc",
-							"qmail-smtpd",
-							"databytes");
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_DATABYTES"),
+					"attrib.control.databytes.inc",
+					"qmail-smtpd",
+					pql_get_define("PQL_GLOB_ATTR_DATABYTES"));
 
-pql_control_plugin_register("queuelifetime",
-							"attrib.control.queuelifetime.inc",
-							"qmail-send",
-							"queuelifetime");
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_QUEUELIFETIME"),
+					"attrib.control.queuelifetime.inc",
+					"qmail-send",
+					pql_get_define("PQL_GLOB_ATTR_QUEUELIFETIME"));
 
-pql_control_plugin_register("smtproutes",
-							"attrib.control.smtproutes.inc",
-							"qmail-remote",
-							"smtproutes");
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_SMTPROUTES"),
+					"attrib.control.smtproutes.inc",
+					"qmail-remote",
+					pql_get_define("PQL_GLOB_ATTR_SMTPROUTES"));
 
-pql_control_plugin_register("locals",
-							"attrib.control.locals.inc",
-							"locals",
-							"locals");
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_LOCALS"),
+					"attrib.control.locals.inc",
+					pql_get_define("PQL_GLOB_ATTR_LOCALS"),
+					pql_get_define("PQL_GLOB_ATTR_LOCALS"));
 
-pql_control_plugin_register("defaultdomain",
-							"attrib.control.defaultdomain.inc",
-							"qmail-inject",
-							array("defaultdomain",
-								  "defaulthost"));
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"),
+					"attrib.control.defaultdomain.inc",
+					"qmail-inject",
+					array(pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"),
+						  pql_get_define("PQL_GLOB_ATTR_DEFAULTHOST")));
 
-pql_control_plugin_register("badmailfrom",
-							"attrib.control.badmailfrom.inc",
-							"qmail-smtpd",
-							"badmailfrom");
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_BADMAILFROM"),
+					"attrib.control.badmailfrom.inc",
+					"qmail-smtpd",
+					pql_get_define("PQL_GLOB_ATTR_BADMAILFROM"));
 
-pql_control_plugin_register("envnoathost",
-							"attrib.control.envnoathost.inc",
-							"qmail-send",
-							"envnoathost");
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_ENVNOATHOST"),
+					"attrib.control.envnoathost.inc",
+					"qmail-send",
+					pql_get_define("PQL_GLOB_ATTR_ENVNOATHOST"));
 
-pql_control_plugin_register("helohost",
-							"attrib.control.helohost.inc",
-							"qmail-remote",
-							"helohost");
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_HELOHOST"),
+					"attrib.control.helohost.inc",
+					"qmail-remote",
+					pql_get_define("PQL_GLOB_ATTR_HELOHOST"));
 
-pql_control_plugin_register("idhost",
-							"attrib.control.idhost.inc",
-							"qmail-inject",
-							"idhost");
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_IDHOST"),
+					"attrib.control.idhost.inc",
+					"qmail-inject",
+					pql_get_define("PQL_GLOB_ATTR_IDHOST"));
 
-pql_control_plugin_register("localiphost",
-							"attrib.control.localiphost.inc",
-							"qmail-smtpd",
-							"localiphost");
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_LOCALIPHOST"),
+					"attrib.control.localiphost.inc",
+					"qmail-smtpd",
+					pql_get_define("PQL_GLOB_ATTR_LOCALIPHOST"));
 
-pql_control_plugin_register("percenthack",
-							"attrib.control.percenthack.inc",
-							"qmail-send",
-							"percenthack");
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_PERCENTHACK"),
+					"attrib.control.percenthack.inc",
+					"qmail-send",
+					pql_get_define("PQL_GLOB_ATTR_PERCENTHACK"));
 
-pql_control_plugin_register("timeoutsmtpd",
-							"attrib.control.timeoutsmtpd.inc",
-							"qmail-smtpd",
-							"timeoutsmtpd");
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_TIMEOUTSMTPD"),
+					"attrib.control.timeoutsmtpd.inc",
+					"qmail-smtpd",
+					pql_get_define("PQL_GLOB_ATTR_TIMEOUTSMTPD"));
 
-pql_control_plugin_register("timeoutconnect",
-							"attrib.control.timeoutconnect.inc",
-							"qmail-remote",
-							array("timeoutconnect",
-								  "timeoutremote"));
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_TIMEOUTCONNECT"),
+					"attrib.control.timeoutconnect.inc",
+					"qmail-remote",
+					array(pql_get_define("PQL_GLOB_ATTR_TIMEOUTCONNECT"),
+						  pql_get_define("PQL_GLOB_ATTR_TIMEOUTREMOTE")));
 
-pql_control_plugin_register("smtpgreeting",
-							"attrib.control.smtpgreeting.inc",
-							"qmail-smtpd",
-							"smtpgreeting");
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_SMTPGREETING"),
+					"attrib.control.smtpgreeting.inc",
+					"qmail-smtpd",
+					pql_get_define("PQL_GLOB_ATTR_SMTPGREETING"));
 
-pql_control_plugin_register("qmqpservers",
-							"attrib.control.qmqpservers.inc",
-							"qmail-qmqpc",
-							"qmqpservers");
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_QMQPSERVERS"),
+					"attrib.control.qmqpservers.inc",
+					"qmail-qmqpc",
+					pql_get_define("PQL_GLOB_ATTR_QMQPSERVERS"));
 
-pql_control_plugin_register("relaymailfrom",
-							"attrib.control.relaymailfrom.inc",
-							"q-l relay",
-							"relaymailfrom");
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_RELAYMAILFROM"),
+					"attrib.control.relaymailfrom.inc",
+					"q-l relay",
+					pql_get_define("PQL_GLOB_ATTR_RELAYMAILFROM"));
 
-pql_control_plugin_register("badrcptto",
-							"attrib.control.badrcptto.inc",
-							"q-l spam control",
-							"badrcptto");
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_BADRCPTTO"),
+					"attrib.control.badrcptto.inc",
+					"q-l spam control",
+					pql_get_define("PQL_GLOB_ATTR_BADRCPTTO"));
 
-pql_control_plugin_register("rcpthosts",
-							"attrib.control.rcpthosts.inc",
-							"rcpthosts",
-							"rcpthosts");
-
-
-// ---------------------------------------------
-// list all registred attributes and their files
-// ---------------------------------------------
-//
-// uncomment this piece of code to view which
-// plugins are registred and to which file
-// they belong.
-//
-
-/*
-$i = 0;
-
-foreach($_pql_control_plugins->attribs as $key => $value){
-	echo "$key --> attrib.control.$value.inc <br>";
-	$i++;
-}
-
-echo "Attribute count: $i<br><br>";
-*/
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"),
+					"attrib.control.rcpthosts.inc",
+					pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"),
+					pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"));
 
 /*
  * Local variables:

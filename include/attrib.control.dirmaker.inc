@@ -2,7 +2,7 @@
 // control attribute plugin for
 // dirmaker (default prefix for mailbox paths)
 //
-// $Id: attrib.control.dirmaker.inc,v 2.8 2003-07-02 07:59:00 turbo Exp $
+// $Id: attrib.control.dirmaker.inc,v 2.9 2003-08-15 08:06:17 turbo Exp $
 
 function dirmaker_check($type) {
 	global $error, $dirmaker, $view, $LANG;
@@ -28,8 +28,8 @@ function dirmaker_init($host) {
 
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-									   "dirmaker");
+									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_GLOB_ATTR_DIRMAKER"));
 
 	if(!is_null($value))
 	  $dirmaker = $value[0];
@@ -91,8 +91,9 @@ function dirmaker_save($type, $host) {
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-										 "dirmaker", $dirmaker))
+										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_GLOB_ATTR_DIRMAKER"),
+										 $dirmaker))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('dirmaker options')));
 		else

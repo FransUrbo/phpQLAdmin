@@ -4,6 +4,7 @@
 //
 session_start();
 require("./include/pql_config.inc");
+require("./include/config_plugins.inc");
 
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
@@ -35,79 +36,15 @@ if(! ereg("%3D", $domain)) {
 	$domain = urlencode($domain);
 }
 
-// select which attribute have to be included
-switch($attrib) {
-  case "accountstatus";
-    $include = "attrib.accountstatus.inc";
-    break;
-  case "deliverymode";
-    $include = "attrib.deliverymode.inc";
-    break;
-  case "mailquota";
-    $include = "attrib.mailquota.inc";
-    break;
-  case "mailhost";
-    $include = "attrib.mailhost.inc";
-    break;
-  case "defaultdomain":
-    $include = "attrib.defaultdomain.inc";
-    break;
-  case "basehomedir":
-    $include = "attrib.basehomedir.inc";
-    break;
-  case "basemaildir";
-    $include = "attrib.basemaildir.inc";
-    break;
-  case "basequota";
-	$include = "attrib.mailquota.inc";
-	break;
-  case "ezmlmadministrator";
-  case "administrator";
-  case "seealso":
-	$include = "attrib.administrator.inc";
-	break;
-  case "maximumdomainusers":
-	$include = "attrib.maximumdomainusers.inc";
-	break;
-  case "maximummailinglists":
-	$include = "attrib.maximummailinglists.inc";
-	break;
-  case "o":
-  case "postalcode":
-  case "postaladdress":
-  case "street":
-  case "l":
-  case "st":
-  case "c":
-  case "telephonenumber":
-  case "facsimiletelephonenumber":
-  case "postofficebox":
-    $include = "attrib.outlook.inc";
-    break;
-  case "additionaldomainname":
-	$include = "attrib.additionaldomainname.inc";
-	break;
-  case "defaultpasswordscheme":
-	$include = "attrib.defaultpasswordscheme.inc";
-	break;
-  case "autocreateusername":
-  case "autocreatemailaddress";
-	$include = "attrib.domaintoggle.inc";
-	break;
-  case "usernameprefix";
-	$include = "attrib.usernameprefix.inc";
-	break;
-  default:
-    die("unknown attribute");
-}
+// Select which attribute have to be included
+include("./include/".pql_plugin_get_filename(pql_plugin_get($attrib)));
 
 // Get the organization name, or the DN if it's unset
-$orgname = pql_get_domain_value($_pql, $domain, 'o');
+$orgname = pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_O"));
 if(!$orgname) {
 	$orgname = urldecode($domain);
 }
 
-include("./include/".$include);
 include("./header.html");
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Change %what% for domain %domain%'), array('what' => $LANG->_('default values'), 'domain' => $orgname)); ?>
@@ -142,9 +79,10 @@ if($submit == 1) {
 	// SAVE change of domain administrator, mailinglist admin and contact person
 	attribute_save($action);
 } else {
-	if($attrib == 'basequota')
+	if($attrib == pql_get_define("PQL_GLOB_ATTR_BASEQUOTA"))
 	  attribute_print_form();
-	elseif(($attrib == 'autocreateusername') or ($attrib == 'autocreatemailaddress'))
+	elseif(($attrib == pql_get_define("PQL_GLOB_ATTR_AUTOCREATEUSERNAME")) or
+		   ($attrib == pql_get_define("PQL_GLOB_ATTR_AUTOCREATEMAILADDRESS")))
 	  attribute_save();
 	else
 	  attribute_print_form("fulldomain");

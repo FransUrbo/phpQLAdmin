@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtpgreeting (SMTP greeting message)
 //
-// $Id: attrib.control.smtpgreeting.inc,v 2.9 2003-07-02 07:59:00 turbo Exp $
+// $Id: attrib.control.smtpgreeting.inc,v 2.10 2003-08-15 08:06:17 turbo Exp $
 
 function smtpgreeting_check($type) {
     global $error, $smtpgreeting, $view;
@@ -17,8 +17,8 @@ function smtpgreeting_init($host) {
     
     // fetch data from ldap server
     $value = pql_control_get_attribute($_pql_control->ldap_linkid,
-				       "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-				       "smtpgreeting");
+									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_GLOB_ATTR_SMTPGREETING"));
     
     if(!is_null($value))
       $smtpgreeting = $value[0];
@@ -82,22 +82,23 @@ function smtpgreeting_save($type, $host) {
     switch($type) {
       case "modify";
       case "add";
-	// save entries
-	if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-					 "cn=" . $mxhost . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-					 "smtpgreeting", $smtpgreeting))
-	  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
-								   array('what' => $LANG->_('smtpgreeting options')));
-	else
-	  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-								   array('what' => $LANG->_('smtpgreeting options'))) . ": " . pql_ldap_error($_pql_control->ldap_linkid);
-							     
-	attribute_forward($msg);
-	break;
+		// save entries
+		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
+										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $mxhost . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_GLOB_ATTR_SMTPGREETING"),
+										 $smtpgreeting))
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+									   array('what' => $LANG->_('smtpgreeting options')));
+		else
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+									   array('what' => $LANG->_('smtpgreeting options'))) . ": " . pql_ldap_error($_pql_control->ldap_linkid);
+																							   
+		attribute_forward($msg);
+		break;
 
       default:
-	die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
-				  array('type' => $type, 'file' => __FILE__)));
+		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
+								  array('type' => $type, 'file' => __FILE__)));
     }
 }
 

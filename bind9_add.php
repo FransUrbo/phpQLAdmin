@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.4 2003-07-02 07:58:31 turbo Exp $
+// $Id: bind9_add.php,v 2.5 2003-08-15 08:06:04 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -126,24 +126,24 @@ if(($action == 'add') and ($type == 'domain')) {
     <input type="submit" value="Save">
   </form>
 <?php } else {
-		  $entry["relativeDomainName"]	= $hostname;
-		  $entry["zoneName"]			= $domainname;
-		  $entry["dnsttl"]				= 604800;
+		  $entry[pql_get_define("PQL_GLOB_ATTR_RELATIVEDOMAINNAME")]	= $hostname;
+		  $entry[pql_get_define("PQL_GLOB_ATTR_ZONENAME")]				= $domainname;
+		  $entry[pql_get_define("PQL_GLOB_ATTR_DNSTTL")]				= 604800;
 		  switch($record_type) {
 			case "a":
-			  $entry["arecord"]			= $dest;
+			  $entry[pql_get_define("PQL_GLOB_ATTR_ARECORD")]			= $dest;
 			  break;
 			case "cname":
-			  $entry["cnamerecord"]		= $dest;
+			  $entry[pql_get_define("PQL_GLOB_ATTR_CNAMERECORD")]		= $dest;
 			  break;
 			case "hinfo":
-			  $entry["hinforecord"]		= $dest;
+			  $entry[pql_get_define("PQL_GLOB_ATTR_HINFORECORD")]		= $dest;
 			  break;
 			case "mx":
-			  $entry["mxrecord"]		= $dest;
+			  $entry[pql_get_define("PQL_GLOB_ATTR_MXRECORD")]			= $dest;
 			  break;
 			case "ns":
-			  $entry["nsrecord"]		= $dest;
+			  $entry[pql_get_define("PQL_GLOB_ATTR_NSRECORD")]			= $dest;
 			  break;
 		  }
 

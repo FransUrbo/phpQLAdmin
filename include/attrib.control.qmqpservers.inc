@@ -2,7 +2,7 @@
 // control attribute plugin for
 // qmqpservers (max number of bytes in message)
 //
-// $Id: attrib.control.qmqpservers.inc,v 2.11 2003-07-02 07:59:00 turbo Exp $
+// $Id: attrib.control.qmqpservers.inc,v 2.12 2003-08-15 08:06:17 turbo Exp $
 
 function qmqpservers_check($type) {
 	global $error, $qmqpservers, $view, $LANG;
@@ -54,8 +54,8 @@ function qmqpservers_init($host) {
 
 	// fetch data from ldap server
 	$qmqpservers = pql_control_get_attribute($_pql_control->ldap_linkid,
-											 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-											 "qmqpservers");
+											 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+											 pql_get_define("PQL_GLOB_ATTR_QMQPSERVERS"));
 
 	if(is_null($qmqpservers))
 	  return true;
@@ -149,8 +149,9 @@ function qmqpservers_save($type, $host)  {
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 "cn=" . $mxhost . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-										 "qmqpservers", $qmqpservers))
+										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $mxhost . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_GLOB_ATTR_QMQPSERVERS"),
+										 $qmqpservers))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('qmqpservers options')));
 		else

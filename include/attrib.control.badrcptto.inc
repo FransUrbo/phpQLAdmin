@@ -2,7 +2,7 @@
 // control attribute plugin for
 // badrcptto (blocked local addresses)
 //
-// $Id: attrib.control.badrcptto.inc,v 2.11 2003-07-02 07:59:00 turbo Exp $
+// $Id: attrib.control.badrcptto.inc,v 2.12 2003-08-15 08:06:17 turbo Exp $
 
 function badrcptto_check($type) {
 	global $error, $badrcptto, $view, $LANG;
@@ -32,8 +32,8 @@ function badrcptto_init($host) {
 
 	// fetch data from ldap server
 	$badrcptto = pql_control_get_attribute($_pql_control->ldap_linkid,
-										   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-										   "badrcptto");
+										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										   pql_get_define("PQL_GLOB_ATTR_BADRCPTTO"));
 
 	if(is_null($badrcptto))
 	  return true;
@@ -136,7 +136,7 @@ function badrcptto_save($type, $host) {
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 "cn=" . $mxhost . "," . $GLOBALS["USER_SEARCH_DN_CTR"], "badrcptto",
+										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $mxhost . "," . $GLOBALS["USER_SEARCH_DN_CTR"], "badrcptto",
 										 $badrcptto))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('badrcptto options')));

@@ -3,7 +3,7 @@
 // defaultdomain (default domain)
 // defaulthost (default hostname)
 //
-// $Id: attrib.control.defaultdomain.inc,v 2.8 2003-07-02 07:59:00 turbo Exp $
+// $Id: attrib.control.defaultdomain.inc,v 2.9 2003-08-15 08:06:17 turbo Exp $
 
 function defaultdomain_check($type) {
 	global $error, $defaultdomain, $defaulthost, $plusdomain, $view, $LANG;
@@ -35,11 +35,13 @@ function defaultdomain_init($host) {
 	global $_pql_control, $defaultdomain, $defaulthost, $plusdomain, $view;
 
 	// fetch data from ldap server
-	$attribs = array("defaultdomain", "defaulthost", "plusdomain");
+	$attribs = array(pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"),
+					 pql_get_define("PQL_GLOB_ATTR_DEFAULTHOST"),
+					 pql_get_define("PQL_GLOB_ATTR_PLUSDOMAIN"));
 
 	foreach($attribs as $attrib){
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-										   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 										   $attrib);
 
 		if(!is_null($value))
@@ -132,15 +134,13 @@ function defaultdomain_save($type, $host) {
 	  case "modify";
 	  case "add";
 		// save entries
-		$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-												  "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-												  "defaultdomain", $defaultdomain);
-    	$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-												  "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-												  "defaulthost", $defaulthost);
-		$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-												  "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-												  "plusdomain", $plusdomain);
+		$attribs = array(pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"),
+						 pql_get_define("PQL_GLOB_ATTR_DEFAULTHOST"),
+						 pql_get_define("PQL_GLOB_ATTR_PLUSDOMAIN"));
+		foreach($attribs as $attrib)
+		  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
+													pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+													$attrib, $$attrib);
 		
 		if(in_array(false, $return))
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),

@@ -17,7 +17,7 @@ if(pql_get_define("PQL_GLOB_BIND9_USE")) {
 
 // -----------------
 // Check if this user is a QmailLDAP/Controls administrator
-$controladmins = pql_get_domain_value($_pql, $_pql->ldap_basedn[0], 'controlsadministrator');
+$controladmins = pql_get_domain_value($_pql, $_pql->ldap_basedn[0], pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR"));
 if(is_array($controladmins)) {
     foreach($controladmins as $admin)
       if($admin == $USER_DN)

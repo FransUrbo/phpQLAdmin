@@ -58,7 +58,7 @@ if(! ereg("%3D", $domain)) {
 }
 
 // Get the organization name, or show 'Not set' with an URL to set it
-$domainname = pql_get_domain_value($_pql, $domain, 'o');
+$domainname = pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_O"));
 //if(!$domainname) {
 // TODO: Resonable default!
 //}
@@ -66,11 +66,25 @@ $domainname = pql_get_domain_value($_pql, $domain, 'o');
 // Get some default values for this domain
 // Some of these (everything after the 'o' attribute)
 // uses 'objectClass: dcOrganizationNameForm' -> http://rfc-2377.rfcindex.net/
-$attribs = array('defaultdomain', 'basehomedir', 'basemaildir', 'o', 'l',
-				 'postalcode', 'postaladdress', 'telephonenumber', 'street',
-				 'facsimiletelephonenumber', 'postofficebox', 'st', 'basequota',
-				 'maximumdomainusers', 'defaultpasswordscheme', 'maximummailinglists',
-				 'autocreateusername', 'autocreatemailaddress', 'usernameprefix');
+$attribs = array(pql_get_define("PQL_GLOB_ATTR_AUTOCREATEMAILADDRESS"),
+				 pql_get_define("PQL_GLOB_ATTR_AUTOCREATEUSERNAME"),
+				 pql_get_define("PQL_GLOB_ATTR_BASEHOMEDIR"),
+				 pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR"),
+				 pql_get_define("PQL_GLOB_ATTR_BASEQUOTA"),
+				 pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"),
+				 pql_get_define("PQL_GLOB_ATTR_DEFAULTPASSWORDSCHEME"),
+				 pql_get_define("PQL_GLOB_ATTR_FACSIMILETELEPHONENUMBER"),
+				 pql_get_define("PQL_GLOB_ATTR_L"),
+				 pql_get_define("PQL_GLOB_ATTR_MAXIMUMDOMAINUSERS"),
+				 pql_get_define("PQL_GLOB_ATTR_MAXIMUMMAILINGLISTS"),
+				 pql_get_define("PQL_GLOB_ATTR_O"),
+				 pql_get_define("PQL_GLOB_ATTR_POSTALADDRESS"),
+				 pql_get_define("PQL_GLOB_ATTR_POSTALCODE"),
+				 pql_get_define("PQL_GLOB_ATTR_POSTOFFICEBOX"),
+				 pql_get_define("PQL_GLOB_ATTR_ST"),
+				 pql_get_define("PQL_GLOB_ATTR_STREET"),
+				 pql_get_define("PQL_GLOB_ATTR_TELEPHONENUMBER"),
+				 pql_get_define("PQL_GLOB_ATTR_USERNAMEPREFIX"));
 foreach($attribs as $attrib) {
 	// Get default value
 	$value = pql_get_domain_value($_pql, $domain, $attrib);
@@ -112,12 +126,12 @@ foreach($attribs as $attrib) {
 		$$link = "<a href=\"domain_edit_attributes.php?attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=$value\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt1."\"></a>";
 	}
 }
-$domain_admins		= pql_get_domain_value($_pql, $domain, "administrator");
-$mailinglist_admins	= pql_get_domain_value($_pql, $domain, "ezmlmadministrator");
-$seealso   			= pql_get_domain_value($_pql, $domain, "seealso");
+$domain_admins		= pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"));
+$mailinglist_admins	= pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR"));
+$seealso   			= pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_SEEALSO"));
 $basequota			= pql_ldap_mailquota(pql_parse_quota($basequota));
 
-$additionaldomainname = pql_get_domain_value($_pql, $domain, "additionaldomainname");
+$additionaldomainname = pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_ADDITIONALDOMAINNAME"));
 ?>
   <span class="title1"><?=$LANG->_('Organization name')?>: <?=urldecode($domainname)?></span>
 

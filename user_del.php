@@ -10,13 +10,13 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 include("./header.html");
 
 // Get organization name for domain and common name of user
-$o = pql_get_domain_value($_pql, $domain, 'o');
+$o = pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_O"));
 if(!$o) {
 	// No 'organization' attribute (or it's not configured - 0)
 	// Use the RDN
 	$o = $domain;
 }
-$cn = pql_get_userattribute($_pql->ldap_linkid, $user, 'cn'); $cn = $cn[0];
+$cn = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_CN")); $cn = $cn[0];
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove user %user% from domain %domain%'), array("domain" => $o, "user" => $cn)); ?></span>
   <br><br>

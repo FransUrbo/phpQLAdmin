@@ -85,7 +85,7 @@ if($dns[0]) {
 	  $msg = $LANG->_('Failed to change the default domainname') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	
 	// The creator is by default the administrator
-	if(! pql_set_domain_value($_pql->ldap_linkid, $dns[0], 'administrator', $USER_DN))
+	if(! pql_set_domain_value($_pql->ldap_linkid, $dns[0], pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $USER_DN))
 	  $msg = $LANG->_('Failed to change the default domainname') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 
 	// redirect to domain-details

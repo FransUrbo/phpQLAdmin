@@ -3,7 +3,7 @@
 // doublebouncehost (username of bounce sender)
 // doublebounceto (hostname of bounce sender)
 //
-// $Id: attrib.control.doublebouncehost.inc,v 2.9 2003-07-02 07:59:00 turbo Exp $
+// $Id: attrib.control.doublebouncehost.inc,v 2.10 2003-08-15 08:06:17 turbo Exp $
 
 function doublebouncehost_check($type) {
 	global $error, $doublebouncehost, $doublebounceto, $view, $LANG;
@@ -29,11 +29,12 @@ function doublebouncehost_init($host) {
 	global $_pql_control, $doublebouncehost, $doublebounceto, $view;
 
 	// fetch data from ldap server
-	$attribs = array("doublebouncehost", "doublebounceto");
+	$attribs = array(pql_get_define("PQL_GLOB_ATTR_DOUBLEBOUNCEHOST"),
+					 pql_get_define("PQL_GLOB_ATTR_DOUBLEBOUNCETO"));
 	
 	foreach($attribs as $attrib) {
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-										   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 										   $attrib);
 		
 		if(!is_null($value))
@@ -113,12 +114,13 @@ function doublebouncehost_save($type, $host) {
 	  case "modify";
 	  case "add";
 		// save entries
-		$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-												  "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-												  "doublebouncehost", $doublebouncehost);
-    	$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-												  "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-												  "doublebounceto", $doublebounceto);
+		$attribs = array(pql_get_define("PQL_GLOB_ATTR_DOUBLEBOUNCEHOST"),
+						 pql_get_define("PQL_GLOB_ATTR_DOUBLEBOUNCETO"));
+		foreach($attribs as $attrib)
+		  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
+													pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+													$attrib,
+													$$attrib);
 		
 		if(in_array(false, $return))
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),

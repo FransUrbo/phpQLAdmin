@@ -1,14 +1,14 @@
 <?php
 // attribute plugin for
 // cn (Full name)
-// $Id: attrib.cn.inc,v 2.14 2003-08-11 19:49:52 turbo Exp $
+// $Id: attrib.cn.inc,v 2.15 2003-08-15 08:06:17 turbo Exp $
 
 function attribute_check($type) {
     global $cn, $oldvalue, $_pql, $error, $LANG;
     
     // is typed in ?
     if($cn == "") {
-		$error["cn"] = $LANG->_('Missing');
+		$error[pql_get_define("PQL_GLOB_ATTR_CN")] = $LANG->_('Missing');
 		return false;
     }
     
@@ -28,7 +28,7 @@ function attribute_print_form() {
       <th colspan="3" align="left"><?=$LANG->_('Common name')?></th>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"><?=$LANG->_('Common name')?></td>
-          <td><?php echo format_error($error["cn"]); ?><input type="text" name="cn"></td>
+          <td><?php echo format_error($error[pql_get_define("PQL_GLOB_ATTR_CN")]); ?><input type="text" name="cn"></td>
         </tr>
       </th>
     </table>
@@ -85,17 +85,17 @@ function attribute_save($type) {
 		$name = split(" ", $cn);
 
 		// Change givenName which is the first name
-		$old = pql_get_userattribute($_pql->ldap_linkid, $user, 'givenName');
+		$old = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_GIVENNAME"));
 		if(is_array($old)) {
 			// We have an old value of this array, try to change it...
-			pql_replace_userattribute($_pql->ldap_linkid, $user, 'givenName', $name[0]);
+			pql_replace_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_GIVENNAME"), $name[0]);
 		}
 
 		// Change SN which is the last name
-		$old = pql_get_userattribute($_pql->ldap_linkid, $user, 'sn');
+		$old = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_SN"));
 		if(is_array($old)) {
 			// We have an old value of this array, try to change it...
-			pql_replace_userattribute($_pql->ldap_linkid, $user, 'sn', $name[1]);
+			pql_replace_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_SN"), $name[1]);
 		}
 
 		attribute_forward($msg, true);

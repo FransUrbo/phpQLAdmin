@@ -2,7 +2,7 @@
 // control attribute plugin for
 // envnoathost (default prefix for mailbox paths)
 //
-// $Id: attrib.control.envnoathost.inc,v 2.9 2003-07-02 07:59:00 turbo Exp $
+// $Id: attrib.control.envnoathost.inc,v 2.10 2003-08-15 08:06:17 turbo Exp $
 
 function envnoathost_check($type) {
 	global $error, $envnoathost, $view, $LANG;
@@ -28,8 +28,8 @@ function envnoathost_init($host) {
 
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-									   "envnoathost");
+									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_GLOB_ATTR_ENVNOATHOST"));
 
 	if(!is_null($value))
 	  $envnoathost = $value[0];
@@ -95,8 +95,8 @@ function envnoathost_save($type, $host) {
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-										 "envnoathost", $envnoathost))
+										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_GLOB_ATTR_ENVNOATHOST"), $envnoathost))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('envnotathost options')));
 		else 

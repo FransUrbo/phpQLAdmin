@@ -45,13 +45,12 @@ if (is_array($quota)) {
 	// No -> quota is 'standard'
 	$vars['QUOTA'] = $LANG->_('Standard');
     } else {
-	// qmail-ldap/control patch is used
-	// search the standard quota...
+	// QmailLDAP/Controls patch is used - get the standard quota
 	require("./include/pql_control.inc");
-	require("./include/pql_control_plugins.inc");
 	$_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
 	
-	$quota = pql_control_get_attribute($_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR, "ldapdefaultquota");
+	$quota = pql_control_get_attribute($_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR,
+					   pql_get_define("PQL_GLOB_ATTR_LDAPDEFAULTQUOTA"));
 	
 	$vars['QUOTA'] = pql_ldap_mailquota($quota);
     }

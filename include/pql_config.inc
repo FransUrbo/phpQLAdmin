@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.37 2003-08-12 14:49:55 turbo Exp $
+// $Id: pql_config.inc,v 1.38 2003-08-15 08:06:17 turbo Exp $
 //
 
 // We need this instead of define(), so that we can get rid
@@ -127,10 +127,10 @@ $PQL_ATTRIBUTE["PQL_CONF_ATTR"]["REPLYTEXT"] = 'userAttribute';
 $PQL_ATTRIBUTE["PQL_CONF_ATTR"]["DOTMODE"] = 'userAttribute';
 $PQL_ATTRIBUTE["PQL_CONF_ATTR"]["UID"] = 'userAttribute';
 $PQL_ATTRIBUTE["PQL_CONF_ATTR"]["PASSWD"] = 'userAttribute';
-$PQL_ATTRIBUTE["PQL_CONF_ATTR"]["OBJECTCLASS"] = 'userAttribute';
+$PQL_ATTRIBUTE["PQL_CONF_ATTR"][pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")] = 'userAttribute';
 $PQL_ATTRIBUTE["PQL_CONF_ATTR"]["ISACTIVE"] = 'userAttribute';
 $PQL_ATTRIBUTE["PQL_CONF_ATTR"]["PURGE"] = 'userAttribute';
-$PQL_ATTRIBUTE["PQL_CONF_ATTR"]["CN"] = 'userAttribute';
+$PQL_ATTRIBUTE["PQL_CONF_ATTR"][pql_get_define("PQL_GLOB_ATTR_CN")] = 'userAttribute';
 $PQL_ATTRIBUTE["PQL_CONF_ATTR"]["SN"] = 'userAttribute';
 $PQL_ATTRIBUTE["PQL_CONF_ATTR"]["DESCRIPTION"] = 'userAttribute';
 $PQL_ATTRIBUTE["PQL_CONF_ATTR"]["GIVENNAME"] = 'userAttribute';
@@ -140,7 +140,10 @@ $PQL_ATTRIBUTE["PQL_CONF_ATTR"]["DOMAIN"] = 'userAttribute';
 // 1. Load site specific configuration
 require("./include/config.inc");
 
-// 2. Load configurations from LDAP base DN
+// 2. Include the attribute configuration
+require("./include/config_attributes.inc");
+
+// 3. Load configurations from LDAP base DN
 require("./include/pql.inc");
 if(!$USER_HOST) {
 	if(! eregi('\+', PQL_GLOB_HOST)) {
@@ -207,7 +210,7 @@ foreach($_pql->ldap_basedn as $dn)  {
 		}
 	}
 
-	// 3. Load 'resonable defaults' for each top DN
+	// 4. Load 'resonable defaults' for each top DN
 	require("./include/defaults.inc");
 
 	// Check some builtin ACL's
@@ -223,12 +226,20 @@ foreach($_pql->ldap_basedn as $dn)  {
 	session_register("ALLOW_BRANCH_CREATE", "ALLOW_CONTROL_CREATE");
 }
 
-// Get language translation
+// 5. Get language translation
 require("./include/pql_lang.inc");
 $LANG = new pql_lang($_pql);
 
-// Include the ACI API
+// 6. Include the ACI API
 require("./include/pql_aci.inc");
+
+// 7. Include the plugin API
+require("./include/pql_plugins.inc");
+
+// 8. Verify that the user have access to write the global phpQLAdmin config
+//    in the first base DN
+$ALLOW_GLOBAL_CONFIG_SAVE = pql_validate_administrator($_pql->ldap_linkid, $_pql->ldap_basedn[0], $USER_DN);
+session_register("ALLOW_GLOBAL_CONFIG_SAVE");
 
 // Remove some variables so we don't clutter the global
 // variable name space!
@@ -236,11 +247,6 @@ unset($host); unset($servers); unset($i);
 unset($value); unset($sr); unset($info);
 unset($key); unset($v); unset($nkey);
 unset($k);
-
-// Verify that the user have access to write the global phpQLAdmin config
-// in the first base DN
-$ALLOW_GLOBAL_CONFIG_SAVE = pql_validate_administrator($_pql->ldap_linkid, $_pql->ldap_basedn[0], $USER_DN);
-session_register("ALLOW_GLOBAL_CONFIG_SAVE");
 
 /*
  * Local variables:

@@ -25,7 +25,7 @@ phpQLAdmin 2.0.16 TO BE ANNOUNCED
 	  - Better working PQL_GLOB_HOST example with (included) demo database
 	    in ./demo/*.ldif.
 
-phpQLAdmin 2.0.15 Release (Release (Jul 15 2003))
+phpQLAdmin 2.0.15 Release (Jul 15 2003)
 	Bug fixes
 	  - Show the 'Registered users' in the user details page if
 	    we're not using advanced mode. This circumvents the empty
@@ -142,7 +142,7 @@ phpQLAdmin 2.0.15 Release (Release (Jul 15 2003))
 	    Todd Rogers <nazgul26@users.sourceforge.net>
 		http://sourceforge.net/projects/phprecipebook
 
-phpQLAdmin 2.0.14 Release (jun 12 2003)
+phpQLAdmin 2.0.14 Release (Jun 12 2003)
 	Bug fixes
 	  - Link to control_edit_attribute.php should include the MX host
 	  - If we can't validate administrator, don't die with LDAP error,

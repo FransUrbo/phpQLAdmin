@@ -128,7 +128,7 @@
 <?php if(is_array($domain_admins)) {
 		$new_tr = 0;
 		foreach($domain_admins as $admin) {
-			$username = pql_get_userattribute($_pql->ldap_linkid, $admin, 'cn');
+			$username = pql_get_userattribute($_pql->ldap_linkid, $admin, pql_get_define("PQL_GLOB_ATTR_CN"));
 			if(!$username[0])
 			  $username = $admin;
 			else
@@ -148,8 +148,8 @@
         <td></td>
 <?php		} else { ?>
         <td>
-          <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&administrator=<?=$admin?>&submit=3&action=modify&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Modify administrators for %domainname%'), array('domainname' => $domainname)); ?>"></a>
-          <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&administrator=<?=$admin?>&submit=4&action=delete&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Remove domain administrator')?>" border="0"></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR");?>&rootdn=<?=$rootdn?>&domain=<?=$domain?>&<?php echo pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR");?>=<?=$admin?>&submit=3&action=modify&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Modify administrators for %domainname%'), array('domainname' => $domainname)); ?>"></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR");?>&rootdn=<?=$rootdn?>&domain=<?=$domain?>&<?php echo pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR");?>=<?=$admin?>&submit=4&action=delete&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Remove domain administrator')?>" border="0"></a>
         </td>
 <?php		} ?>
       </tr>
@@ -161,14 +161,14 @@
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"></td>
         <td colspan="4">
-          <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain administrator for domain'))); ?></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR");?>&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain administrator for domain'))); ?></a>
         </td>
       </tr>
 <?php
 	} else {
 ?>
         <td colspan="4">
-          <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain administrator for domain'))); ?></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR");?>&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain administrator for domain'))); ?></a>
         </td>
 <?php
 	}
@@ -180,7 +180,7 @@
 <?php	if(is_array($mailinglist_admins)) {
 			$new_tr = 0;
 			foreach($mailinglist_admins as $admin) {
-				$username = pql_get_userattribute($_pql->ldap_linkid, $admin, 'cn');
+				$username = pql_get_userattribute($_pql->ldap_linkid, $admin, pql_get_define("PQL_GLOB_ATTR_CN"));
 				if(!$username[0])
 				  $username = $admin;
 				else
@@ -200,8 +200,8 @@
         <td></td>
 <?php			} else { ?>
         <td>
-          <a href="domain_edit_attributes.php?attrib=ezmlmadministrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&ezmlmadministrator=<?=$admin?>&submit=3&action=modify&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Modify administrators for %domainname%'), array('domainname' => $domainname)); ?>"></a>
-          <a href="domain_edit_attributes.php?attrib=ezmlmadministrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&ezmlmadministrator=<?=$admin?>&submit=4&action=delete&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Remove domain administrator')?>" border="0"></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR");?>&rootdn=<?=$rootdn?>&domain=<?=$domain?>&<?php echo pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR");?>=<?=$admin?>&submit=3&action=modify&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Modify administrators for %domainname%'), array('domainname' => $domainname)); ?>"></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR");?>&rootdn=<?=$rootdn?>&domain=<?=$domain?>&<?php echo pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR");?>=<?=$admin?>&submit=4&action=delete&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Remove domain administrator')?>" border="0"></a>
         </td>
 <?php			} ?>
       </tr>
@@ -213,14 +213,14 @@
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"></td>
         <td colspan="4">
-          <a href="domain_edit_attributes.php?attrib=ezmlmadministrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('mailinglist administrator for domain'))); ?></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR");?>&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('mailinglist administrator for domain'))); ?></a>
         </td>
       </tr>
 <?php
 		} else {
 ?>
         <td colspan="4">
-          <a href="domain_edit_attributes.php?attrib=ezmlmadministrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('mailinglist administrator for domain'))); ?></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR");?>&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('mailinglist administrator for domain'))); ?></a>
         </td>
 <?php	}
       }

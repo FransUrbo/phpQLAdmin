@@ -1,6 +1,6 @@
 <?php
 // Add a new mailserver to the database
-// $Id: control_add_server.php,v 2.11 2003-08-12 13:35:11 turbo Exp $
+// $Id: control_add_server.php,v 2.12 2003-08-15 08:06:04 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -35,15 +35,22 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 			if($fqdn) {
 
 				// Get the values of the mailserver
-				$attribs = array("defaultdomain", "plusdomain", "ldapserver",
-								 "ldaprebind", "ldapbasedn", "ldapdefaultquota",
-								 "ldapdefaultdotmode", "dirmaker", "quotawarning",
-								 "ldapuid", "ldapgid");
-				if(isset($include_locals)) 	  $attribs[] = "locals";
-				if(isset($include_rcpthosts)) $attribs[] = "rcpthosts";
-				if(isset($include_password))  $attribs[] = "ldapPassword";
+				$attribs = array(pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"),
+								 pql_get_define("PQL_GLOB_ATTR_PLUSDOMAIN"),
+								 pql_get_define("PQL_GLOB_ATTR_LDAPSERVER"),
+								 pql_get_define("PQL_GLOB_ATTR_LDAPREBIND"),
+								 pql_get_define("PQL_GLOB_ATTR_LDAPBASEDN"),
+								 pql_get_define("PQL_GLOB_ATTR_LDAPDEFAULTQUOTA"),
+								 pql_get_define("PQL_GLOB_ATTR_LDAPDEFAULTDOTMODE"),
+								 pql_get_define("PQL_GLOB_ATTR_DIRMAKER"),
+								 pql_get_define("PQL_GLOB_ATTR_QUOTAWARNING"),
+								 pql_get_define("PQL_GLOB_ATTR_LDAPUID"),
+								 pql_get_define("PQL_GLOB_ATTR_LDAPGID"));
+				if(isset($include_locals)) 	  $attribs[] = pql_get_define("PQL_GLOB_ATTR_LOCALS");
+				if(isset($include_rcpthosts)) $attribs[] = pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS");
+				if(isset($include_password))  $attribs[] = pql_get_define("PQL_GLOB_ATTR_LDAPPASSWORD");
 
-				$cn = "cn=" . $cloneserver . "," . $USER_SEARCH_DN_CTR;
+				$cn = pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $cloneserver . "," . $USER_SEARCH_DN_CTR;
 				foreach($attribs as $attrib) {
 					$value = pql_control_get_attribute($_pql_control->ldap_linkid, $cn, $attrib);
 					if(!is_null($value)) {
@@ -54,10 +61,10 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 				}
 
 				// Create the 'LDIF'
-				$dn						= "cn=" . $fqdn . "," . $USER_SEARCH_DN_CTR;
-				$entry["objectClass"][] = "top";
-				$entry["objectClass"][] = "qmailControl";
-				$entry["cn"]			= $fqdn;
+				$dn						= pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $fqdn . "," . $USER_SEARCH_DN_CTR;
+				$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][] = "top";
+				$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][] = "qmailControl";
+				$entry[pql_get_define("PQL_GLOB_ATTR_CN")]			= $fqdn;
 				foreach($values as $attrib => $val) {
 					foreach($val as $value) {
 						$entry[$attrib][] = $value;
@@ -66,7 +73,7 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 
 				// Add the OpenLDAPaci attribute (maybe)
 				if(function_exists("user_generate_aci"))
-				  $entry["OpenLDAPaci"] = user_generate_aci($_pql_control->ldap_linkid, $GLOBALS["USER_DN"], 'qmail');
+				  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($_pql_control->ldap_linkid, $GLOBALS["USER_DN"], 'qmail');
 				
 				// Create a LDIF object to print in case of error
 				$LDIF = pql_create_ldif("control_add_server.php", $dn, $entry);
@@ -92,7 +99,7 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
     <th>
       <tr class="<?php table_bgcolor(); ?>">
         <td><img src="images/info.png" width="16" height="16" alt="" border="0"></td>
-        <td>You can either CLONE an existing server (<u>without</u> the locals/rcpthosts information)<br><b>or</b> CREATE a new server object.</td>
+        <td>You can either CLONE an existing server (<u>without</u> the <?php echo pql_get_define("PQL_GLOB_ATTR_LOCALS");?>/<?php echo pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"); ?> information)<br><b>or</b> CREATE a new server object.</td>
       </tr>
     </th>
   </table>
@@ -138,17 +145,17 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"></td>
-          <td><input type="checkbox" name="include_locals">Include all <u>locals</u> information in clone</td>
+          <td><input type="checkbox" name="include_locals">Include all <u><?php echo pql_get_define("PQL_GLOB_ATTR_LOCALS"); ?></u> information in clone</td>
         </tr>
 
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"></td>
-          <td><input type="checkbox" name="include_rcpthosts">Include all <u>rcpthosts</u> information in clone</td>
+          <td><input type="checkbox" name="include_rcpthosts">Include all <u><?php echo pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS");?></u> information in clone</td>
         </tr>
 
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"></td>
-          <td><input type="checkbox" name="include_password">Include <u>ldappassword</u> in clone</td>
+          <td><input type="checkbox" name="include_password">Include <u><?php echo pql_get_define("PQL_GLOB_ATTR_LDAPPASSWORD");?></u> in clone</td>
         </tr>
       </th>
     </table>

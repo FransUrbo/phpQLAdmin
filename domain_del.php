@@ -21,9 +21,9 @@ if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
 
 	// Before we delete the domain/branch, we need to get the defaultDomain, additionalDomainName
 	// and smtpRoutes value(s) so that we can remove it from the QmailLDAP/Controls object(s)
-	$domainname  = pql_get_domain_value($_pql, $domain, 'defaultdomain');
-	$additionals = pql_get_domain_value($_pql, $domain, 'additionaldomainname');
-	$routes		 = pql_get_domain_value($_pql, $domain, 'smtproutes');
+	$domainname  = pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
+	$additionals = pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_ADDITIONALDOMAINNAME"));
+	$routes		 = pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_SMTPROUTES"));
 
 	// delete the domain
 	if(pql_domain_del($_pql, $domain, $delete_forwards)) {

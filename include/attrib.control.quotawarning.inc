@@ -2,7 +2,7 @@
 // control attribute plugin for
 // quotawarning (additional quota warning message)
 //
-// $Id: attrib.control.quotawarning.inc,v 2.8 2003-07-02 07:59:00 turbo Exp $
+// $Id: attrib.control.quotawarning.inc,v 2.9 2003-08-15 08:06:17 turbo Exp $
 
 function quotawarning_check($type) {
 	global $error, $quotawarning, $use_quotawarning, $view, $LANG;
@@ -22,8 +22,8 @@ function quotawarning_init($host) {
 
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-									   "quotawarning");
+									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_GLOB_ATTR_QUOTAWARNING"));
 
 	if(!is_null($value))
 	  $quotawarning = $value[0];
@@ -102,8 +102,9 @@ function quotawarning_save($type, $host) {
 		  $quotawarning = "";
 		
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-										 "quotawarning", $quotawarning))
+										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_GLOB_ATTR_QUOTAWARNING"),
+										 $quotawarning))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('quotawarning message')));
 		else

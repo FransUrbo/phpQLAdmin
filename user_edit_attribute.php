@@ -4,6 +4,7 @@
 //
 session_start();
 require("./include/pql_config.inc");
+require("./include/config_plugins.inc");
 
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
@@ -12,7 +13,7 @@ $user   = eregi_replace("\\\'", "'", $user);
 $domain = eregi_replace("\\\'", "'", $domain);
 
 // Get default domain name for this domain
-$defaultdomain = pql_get_domain_value($_pql, $domain, "defaultdomain");
+$defaultdomain = pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
 
 // Get the username. Prettier than the DN
 $username = pql_get_userattribute($_pql->ldap_linkid, $user, 'cn');
@@ -39,76 +40,9 @@ function attribute_forward($msg, $rlnb = false) {
     header("Location: " . pql_get_define("PQL_GLOB_URI") . "$url");
 }
 
-// select which attribute have to be included
-switch($attrib) {
-  case "mailalternateaddress":
-    $include = "attrib.mailalternateaddress.inc";
-    break;
-  case "mailforwardingaddress":
-    $include = "attrib.mailforwardingaddress.inc";
-    break;
-  case "userpassword":
-    $include = "attrib.userpassword.inc";
-    break;
-  case "mail":
-    $include = "attrib.mail.inc";
-    break;
-  case "accountstatus":
-    $include = "attrib.accountstatus.inc";
-    break;
-  case "uid":
-    $include = "attrib.uid.inc";
-    break;
-  case "deliverymode":
-    $include = "attrib.deliverymode.inc";
-    break;
-  case "mailquota":
-    $include = "attrib.mailquota.inc";
-    break;
-  case "mailhost":
-    $include = "attrib.mailhost.inc";
-    break;
-  case "mailmessagestore":
-    $include = "attrib.mailmessagestore.inc";
-    break;
-  case "homedirectory";
-    $include = "attrib.homedirectory.inc";
-    break;
-  case "qmaildotmode":
-    $include = "attrib.qmaildotmode.inc";
-    break;
-  case "deliveryprogrampath":
-    $include = "attrib.deliveryprogrampath.inc";
-    break;
-  case "homephone":
-  case "mobile":
-  case "o":
-  case "postaladdress":
-  case "homepostaladdress":
-  case "l":
-  case "st":
-  case "postalcode":
-  case "c":
-  case "title":
-  case "physicaldeliveryofficename":
-  case "telephonenumber":
-  case "pager":
-  case "info":
-  case "personaltitle":
-  case "roomnumber":
-    $include = "attrib.outlook.inc";
-    break;
-  case "loginshell";
-    $include = "attrib.loginshell.inc";
-    break;
-  case "cn";
-    $include = "attrib.cn.inc";
-    break;
-  default:
-    die("unknown attribute $attrib");
-}
+// Select which attribute have to be included
+include("./include/".pql_plugin_get_filename(pql_plugin_get($attrib)));
 
-include("./include/".$include);
 include("./header.html");
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Change user data for %user%'), array('user' => $username)); ?></span>

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // qmaildotmode (interpretation of .qmail-files)
-// $Id: attrib.qmaildotmode.inc,v 2.9 2003-08-11 19:49:52 turbo Exp $
+// $Id: attrib.qmaildotmode.inc,v 2.10 2003-08-15 08:06:17 turbo Exp $
 
 function attribute_check($type) {
 	global $qmaildotmode, $domain, $oldvalue, $_pql, $error, $LANG;
@@ -102,7 +102,9 @@ function attribute_save($type) {
 		if($qmaildotmode == "default")
 		  $qmaildotmode = "";
 		
-		if(pql_replace_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_DOTMODE"), $qmaildotmode))
+		if(pql_replace_userattribute($_pql->ldap_linkid, $user,
+									 pql_get_define("PQL_GLOB_ATTR_DOTMODE"),
+									 $qmaildotmode))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									   array('what' => $LANG->_('dot mode'),
 											 'new'  => $qmaildotmode));

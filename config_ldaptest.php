@@ -118,16 +118,16 @@ if(!function_exists("ldap_connect")){
 			// Test to see if we have access to create domain/branches
 			// by creating a subbranch
 			unset($entry);
-			$entry["objectClass"][] = "top";
+			$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][] = "top";
 			if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "dc") {
-				$entry["objectClass"][] = "domain";
-				$entry["dc"] = "test";
+				$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][] = "domain";
+				$entry[pql_get_define("PQL_GLOB_ATTR_DC")] = "test";
 			} elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "ou") {
-				$entry["objectClass"][] = "organizationalUnit";
-				$entry["ou"] = "test";
+				$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][] = "organizationalUnit";
+				$entry[pql_get_define("PQL_GLOB_ATTR_OU")] = "test";
 			} elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "o") {
-				$entry["objectClass"][] = "organization";
-				$entry["o"] = "test";
+				$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][] = "organization";
+				$entry[pql_get_define("PQL_GLOB_ATTR_O")] = "test";
 			}
 			$entry[pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)] = "phpQLAdmin_Branch_Test";
 
@@ -188,23 +188,23 @@ if(!function_exists("ldap_connect")){
 
 			// Setup the LDIF we're adding
 			unset($entry);
-			$entry["objectClass"][] = "top";
+			$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][] = "top";
 			if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "dc") {
-				$entry["objectClass"][] = "domain";
-				$entry["dc"] = "test";
+				$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][] = "domain";
+				$entry[pql_get_define("PQL_GLOB_ATTR_DC")] = "test";
 			} elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "ou") {
-				$entry["objectClass"][] = "organizationalUnit";
-				$entry["ou"] = "test";
+				$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][] = "organizationalUnit";
+				$entry[pql_get_define("PQL_GLOB_ATTR_OU")] = "test";
 			} elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "o") {
-				$entry["objectClass"][] = "organization";
-				$entry["o"] = "test";
+				$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][] = "organization";
+				$entry[pql_get_define("PQL_GLOB_ATTR_O")] = "test";
 			}
 			$entry[pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)] = "phpQLAdmin_Branch_Test";
 			
 			// Add the ACI entries to the object
-			$entry["OpenLDAPaci"][0] = "OpenLDAPaci: 1.2.3#entry#grant;r;[entry]#public#";
-			$entry["OpenLDAPaci"][1] = "OpenLDAPaci: 1.2.3#entry#grant;r,s,c;objectClass,entry#public#";
-			$entry["OpenLDAPaci"][2] = "OpenLDAPaci: 1.2.3#entry#grant;w,r,s,c;[all]#access-id#$USER_DN";
+			$entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")][0] = "OpenLDAPaci: 1.2.3#entry#grant;r;[entry]#public#";
+			$entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")][1] = "OpenLDAPaci: 1.2.3#entry#grant;r,s,c;objectClass,entry#public#";
+			$entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")][2] = "OpenLDAPaci: 1.2.3#entry#grant;w,r,s,c;[all]#access-id#$USER_DN";
 			
 			// Setup the DN
 			$dn = pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)."=phpQLAdmin_Branch_Test,".$basedn;

@@ -68,7 +68,7 @@ if(!$GLOBALS["SINGLE_USER"]) {
 			
 			// Check if this object is a (posix)Group object.
 			$ocs = pql_get_userattribute($_pql->ldap_linkid,
-										 $usrs[$i], 'objectclass');
+										 $usrs[$i], pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS"));
 			for($j=0; $ocs[$j]; $j++) {
 				if(eregi('group', $ocs[$j]))
 				  $is_group = 1;
@@ -97,7 +97,7 @@ if(!$GLOBALS["SINGLE_USER"]) {
 		$is_group = 0;
 		
 		// Check if this object is a (posix)Group object.
-		$ocs = pql_get_userattribute($_pql->ldap_linkid, $usrs[$i], 'objectclass');
+		$ocs = pql_get_userattribute($_pql->ldap_linkid, $usrs[$i], pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS"));
 		for($j=0; $ocs[$j]; $j++) {
 			if(eregi('group', $ocs[$j]))
 			  $is_group = 1;

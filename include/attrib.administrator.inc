@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.21 2003-07-02 07:59:00 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.22 2003-08-15 08:06:17 turbo Exp $
 
 require("./left-head.html");
 
@@ -29,21 +29,22 @@ function attribute_print_form($action) {
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-<?php if($attrib == 'seealso') { ?>
+<?php if($attrib == pql_get_define("PQL_GLOB_ATTR_SEEALSO")) { ?>
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what% for domain %domain%'), array('what' => $LANG->_('contact person'), 'domain' => $orgname)); ?></th>
-<?php } elseif($attrib == 'ezmlmadministrator') { ?>
+<?php } elseif($attrib == pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR")) { ?>
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what% for domain %domain%'), array('what' => $LANG->_('mailinglist administrator'), 'domain' => $orgname)); ?></th>
 <?php } else { ?>
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what% for domain %domain%'), array('what' => $LANG->_('domain administrator'), 'domain' => $orgname)); ?></th>
 <?php } ?>
         <tr class="<?php table_bgcolor(); ?>">
 <?php
-	if(($attrib == 'administrator') and $rootdn and $domain) {
+	if(($attrib == pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR")) and $rootdn and $domain) {
 		// We're should give a user access to THIS branch
 ?>
           <td class="title"><?=$LANG->_('Administrator DN')?></td>
 <?php
-	} elseif((($attrib == 'administrator') or ($attrib == 'ezmlmadministrator'))
+	} elseif((($attrib == pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR")) or
+			  ($attrib == pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR")))
 			 and !$rootdn and !$domain and $user) {
 		// We're giving a user access to ('random') branch
 ?>
@@ -70,7 +71,7 @@ function attribute_print_form($action) {
 			foreach($_pql->ldap_basedn as $dn) {
 				unset($dom); unset($domains);
 
-				$dom = pql_get_domain_value($_pql, $dn, 'administrator', $GLOBALS["USER_DN"]);
+				$dom = pql_get_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $GLOBALS["USER_DN"]);
 				if($dom) {
 					foreach($dom as $d) {
 						$domains[] = $d;
@@ -136,7 +137,9 @@ function attribute_print_form($action) {
 				// in the system. Only a branch owner/admin can give someone access
 				// to the current branch. Am I making myself clear?
 				foreach($_pql->ldap_basedn as $dn)  {
-					$dom = pql_get_domain_value($_pql, $dn, 'administrator', $GLOBALS["USER_DN"], 1);
+					$dom = pql_get_domain_value($_pql,
+												$dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"),
+												$GLOBALS["USER_DN"], 1);
 					if($dom)
 					  foreach($dom as $d)
 						$domains[] = $d;
@@ -175,7 +178,7 @@ function attribute_print_form($action) {
 <?php if(!$user) { ?>
     <input type="hidden" name="domain"        value="<?=$domain?>">
 <?php } else { ?>
-    <input type="hidden" name="administrator" value="<?=$user?>">
+    <input type="hidden" name="<?php echo pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR");?>" value="<?=$user?>">
     <input type="hidden" name="user"          value="<?=$user?>">
 <?php } ?>
     <input type="hidden" name="submit"        value="4">
@@ -281,7 +284,10 @@ function attribute_save($type) {
     }
 }
 
-if(($attrib == 'administrator') or ($attrib == 'seealso') or ($attrib == 'ezmlmadministrator')) {
+if(($attrib == pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR")) or
+   ($attrib == pql_get_define("PQL_GLOB_ATTR_SEEALSO")) or
+   ($attrib == pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR")))
+{
 	require("./left-trailer.html");
 }
 

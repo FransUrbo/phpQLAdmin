@@ -26,7 +26,7 @@ if(! ereg("%3D", $domain)) {
 }
 
 // Get the organization name, or the DN if it's unset
-$orgname = pql_get_domain_value($_pql, $domain, 'o');
+$orgname = pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_O"));
 if(!$orgname) {
 	$orgname = urldecode($domain);
 }
@@ -38,11 +38,11 @@ if(!pql_domain_exist($_pql, $domain)) {
 }
 
 // Get default domain values for this domain
-$defaultdomain			= pql_get_domain_value($_pql, $domain, "defaultdomain");
-$basehomedir			= pql_get_domain_value($_pql, $domain, "basehomedir");
-$basemaildir			= pql_get_domain_value($_pql, $domain, "basemaildir");
-$maxusers				= pql_get_domain_value($_pql, $domain, "maximumdomainusers");
-$additionaldomainname	= pql_get_domain_value($_pql, $domain, "additionaldomainname");
+$defaultdomain			= pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
+$basehomedir			= pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_BASEHOMEDIR"));
+$basemaildir			= pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR"));
+$maxusers				= pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_MAXIMUMDOMAINUSERS"));
+$additionaldomainname	= pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_ADDITIONALDOMAINNAME"));
 
 // check formdata
 
@@ -468,7 +468,7 @@ switch($submit) {
         </tr>
 <?php if($account_type != "forward") {
 		// Get the default password scheme for branch
-		$defaultpasswordscheme = pql_get_domain_value($_pql, $domain, "defaultpasswordscheme");
+		$defaultpasswordscheme = pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_DEFAULTPASSWORDSCHEME"));
 
 		if(!$defaultpasswordscheme or $ADVANCED_MODE)  {
 			// We have no default password scheme - display forms for SYSTEM/MAIL account
@@ -960,7 +960,7 @@ switch($submit) {
 		  // Gecos is needed to do PAM/NSS LDAP login 
 		  if($surname && $name &&
 			 (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) == pql_get_define("PQL_GLOB_ATTR_UID"))) {
-			  $entry["gecos"] = $surname . " " . $name;
+			  $entry[pql_get_define("PQL_GLOB_ATTR_GECOS")] = $surname . " " . $name;
 		  }
 		  
 		  // set attributes
@@ -973,13 +973,13 @@ switch($submit) {
 				// User know what he/she's doing. We specified the full principal
 				// name directly in the password field! Use that as userPassword
 				// and krb5PrincipalName.
-				$entry["krb5PrincipalName"] = $password;
+				$entry[pql_get_define("PQL_GLOB_ATTR_KRB5PRINCIPALNAME")] = $password;
 			  elseif(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) == pql_get_define("PQL_GLOB_ATTR_UID"))
 				// The password really IS a password!
-				$entry["krb5PrincipalName"] = $uid . "@" . pql_get_define("PQL_GLOB_KRB5_REALM");
+				$entry[pql_get_define("PQL_GLOB_ATTR_KRB5PRINCIPALNAME")] = $uid . "@" . pql_get_define("PQL_GLOB_KRB5_REALM");
 			  
 			  // Encrypt and create the hash using the krb5PrincipalName attribute
-			  $entry[pql_get_define("PQL_GLOB_ATTR_PASSWD")] = pql_password_hash($entry["krb5PrincipalName"], $pwscheme);
+			  $entry[pql_get_define("PQL_GLOB_ATTR_PASSWD")] = pql_password_hash($entry[pql_get_define("PQL_GLOB_ATTR_KRB5PRINCIPALNAME")], $pwscheme);
 		  } else {
 			  if($crypted)
 				// Password is already encrypted, prefix with choosen password scheme

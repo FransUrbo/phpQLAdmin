@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldapcluster (clustering support)
 //
-// $Id: attrib.control.ldapcluster.inc,v 2.7 2003-07-02 07:59:00 turbo Exp $
+// $Id: attrib.control.ldapcluster.inc,v 2.8 2003-08-15 08:06:17 turbo Exp $
 
 // check values
 function ldapcluster_check($type) {
@@ -15,7 +15,9 @@ function ldapcluster_init() {
 	global $_pql_control, $ldapcluster, $view;
 
 	// fetch data from ldap server
-	$value = pql_control_get_attribute($_pql_control->ldap_linkid, $GLOBALS["USER_SEARCH_DN_CTR"], "ldapcluster");
+	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
+									   $GLOBALS["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_GLOB_ATTR_LDAPCLUSTER"));
 	
 	if(!is_null($value))
 	  $ldapcluster = $value[0];
@@ -70,7 +72,10 @@ function ldapcluster_save($type, $host) {
 	  case "modify";
 	  case "add";
 		// save entries
-		if(pql_control_replace_attribute($_pql_control->ldap_linkid, $GLOBALS["USER_SEARCH_DN_CTR"], "ldapcluster", $set))
+		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
+										 $GLOBALS["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_GLOB_ATTR_LDAPCLUSTER"),
+										 $set))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('ldapcluster options')));
 		else

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldapdefaultdotmode (default mode how to interpret .qmail files)
 //
-// $Id: attrib.control.ldapdefaultdotmode.inc,v 2.9 2003-08-12 18:41:13 turbo Exp $
+// $Id: attrib.control.ldapdefaultdotmode.inc,v 2.10 2003-08-15 08:06:17 turbo Exp $
 
 function ldapdefaultdotmode_check($type) {
 	global $error, $ldapdefaultdotmode, $view, $LANG;
@@ -35,8 +35,8 @@ function ldapdefaultdotmode_init($host) {
 	
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-																		 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-																		 "ldapdefaultdotmode");
+									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_GLOB_ATTR_LDAPDEFAULTDOTMODE"));
 	
 	if(!is_null($value))
 	  $ldapdefaultdotmode = $value[0];
@@ -110,8 +110,9 @@ function ldapdefaultdotmode_save($type, $host) {
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-										 "ldapdefaultdotmode", $ldapdefaultdotmode))
+										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_GLOB_ATTR_LDAPDEFAULTDOTMODE"),
+										 $ldapdefaultdotmode))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('ldapdefaultdotmode options')));
 		else

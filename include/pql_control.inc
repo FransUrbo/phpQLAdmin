@@ -4,26 +4,32 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.26 2003-08-10 08:00:56 turbo Exp $
+// $Id: pql_control.inc,v 2.27 2003-08-15 08:06:17 turbo Exp $
 //
 // version history:
 // $Log: pql_control.inc,v $
-// Revision 2.26  2003-08-10 08:00:56  turbo
-// * PHP code cleanup - s/){/) {/.
-// * If we can't replace (using ldap_mod_replace() function) a value (in
-//   pql_control_replace_attribute()), then we try to delete the attribute
-//   (all values of the attribute) and then try to add the new value.
-// * When updating QmailLDAP/Controls (pql_control_update_domains() function),
-//   we must unset the entry we're trying to update the db with for each of
-//   the 'locals' and 'rcpthosts' attributes.
-//   - Also, I like alphabetically sorted values, so sort locals/rcpthosts before
-//     updating the database. Try to make sure "there's only one" (value of a
-//     specific value).
-//   - When checking if the value to add to locals/rcpthosts exists, we should
-//     check with '$local', not '$locals' (the latter is the whole array).
-//   - Make sure we don't add the new value if it already exists (the checks etc
-//     was wrong, ALL wrong previosly). Don't return if the value exists! We need
-//     to check next type...
+// Revision 2.27  2003-08-15 08:06:17  turbo
+// This humungus change (diff is 221k!) is because of hardcoding attributes
+// into the code. This isn't THAT big a'deal, but IF someone wants to use
+// phpQLAdmin for something else than QmailLDAP/Controls (SendmailLDAP comes
+// to mind), then THEY would have to do this fix. And the original idea with
+// taking over phpQLAdmin was to remove _ALL_ hardcoded design and database
+// structure. It is NOT up to the tool to describe the database. It is the
+// database who should describe the tool!!
+// - This change was accomplished by replacing EVERY SINGLE occurence of a
+//   attribute reference in an array ($variable["locals"] for example) to
+//   a 'define' made in include/config_attributes.inc (required from
+//   include/pql_config.inc). Getting this value (the attribute name) is done
+//   with the function pql_get_define().
+// - To make this work, I had to move all the plugin stuff from include/pql_control.inc
+//   to include/pql_plugins.inc AND make it general. Previosly it was 'controls'
+//   oriented. This because {domain,user}_edit_attributes.php did a 'switch()'
+//   against the attribute, and this is no longer possible (can't use
+//   'case pql_get_define():').
+// Unfortunatly, all this calling to pql_get_define() will make it (phpQLAdmin)
+// a little slower (how much I don't know), but it must be worth it (see above
+// on hardcoding).
+// Closes bug 26.
 //
 // Revision 1.2  2001/09/06 11:36:24  mb
 // added no_connect option to pql_control-class
@@ -243,7 +249,7 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 		$domains = pql_get_domains($ldap);
 		foreach($domains as $domain) {
 			// Get default domain name for this domain
-			$domainname = pql_get_domain_value($ldap, $domain, "defaultdomain");
+			$domainname = pql_get_domain_value($ldap, $domain, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
 			if($domainname) {
 				// Before we add this domain to the list, make sure it don't already exist
 				$ent_exists = 0;
@@ -262,7 +268,7 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 			}
 
 			// Get additional domain names
-			$additional = pql_get_domain_value($ldap, $domain, "additionalDomainName");
+			$additional = pql_get_domain_value($ldap, $domain, pql_get_define("PQL_GLOB_ATTR_ADDITIONALDOMAINNAME"));
 			if(is_array($additional)) {
 				for($i=0; $i < count($additional); $i++) 
 				  $entry[] = $additional[$i];
@@ -284,11 +290,15 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 
 	// ----------------
 	if(($host != '*') and is_array($entry)) {
-		if(($type == 'locals') or !$type) {
-			if(pql_control_replace_attribute($ldap->ldap_linkid, $dn, "locals", $entry))
+		if(($type == pql_get_define("PQL_GLOB_ATTR_LOCALS")) or !$type) {
+			if(pql_control_replace_attribute($ldap->ldap_linkid, $dn,
+											 pql_get_define("PQL_GLOB_ATTR_LOCALS"),
+											 $entry))
 			  return true;
-		} elseif($type == 'rcpthosts') {
-			if(pql_control_replace_attribute($ldap->ldap_linkid, $dn, "rcpthosts", $entry))
+		} elseif($type == pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS")) {
+			if(pql_control_replace_attribute($ldap->ldap_linkid, $dn,
+											 pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"),
+											 $entry))
 			  return true;
 		}
 	} else {
@@ -306,11 +316,12 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 				  $hostdn = $dn;
 
 				// --------------------------------
-				if(($type == 'locals') or !$type) {
+				if(($type == pql_get_define("PQL_GLOB_ATTR_LOCALS")) or !$type) {
 					$dont_add = 0; unset($entry);
 
 					// Get current locals for this host
-					$locals = pql_control_get_attribute($ldap->ldap_linkid, $hostdn, "locals");
+					$locals = pql_control_get_attribute($ldap->ldap_linkid, $hostdn,
+														pql_get_define("PQL_GLOB_ATTR_LOCALS"));
 					if(!is_null($locals)) {
 						asort($locals); reset($locals);
 						
@@ -343,18 +354,23 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 						}
 
 						if(is_array($entry))
-						  pql_control_replace_attribute($ldap->ldap_linkid, $hostdn, "locals", $entry);
+						  pql_control_replace_attribute($ldap->ldap_linkid, $hostdn,
+														pql_get_define("PQL_GLOB_ATTR_LOCALS"),
+														$entry);
 					} else
 					  // No previous values, add domain
-					  pql_control_add_attribute($ldap->ldap_linkid, $hostdn, "locals", $domain[1]);
+					  pql_control_add_attribute($ldap->ldap_linkid, $hostdn,
+												pql_get_define("PQL_GLOB_ATTR_LOCALS"),
+												$domain[1]);
 				}
 
 				// --------------------------------
-				if($type == 'rcpthosts' or !$type) {
+				if($type == pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS") or !$type) {
 					$dont_add = 0; unset($entry);
 
 					// Get current rcpthosts for this host
-					$rcpthosts = pql_control_get_attribute($ldap->ldap_linkid, $hostdn, "rcpthosts");
+					$rcpthosts = pql_control_get_attribute($ldap->ldap_linkid, $hostdn,
+														   pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"));
 					if(!is_null($rcpthosts)) {
 						asort($rcpthosts); reset($rcpthosts);
 
@@ -387,10 +403,14 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 						}
 						
 						if(is_array($entry))
-						  pql_control_replace_attribute($ldap->ldap_linkid, $hostdn, "rcpthosts", $entry);
+						  pql_control_replace_attribute($ldap->ldap_linkid, $hostdn,
+														pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"),
+														$entry);
 					} else
 					  // No previous values, add domain
-					  pql_control_add_attribute($ldap->ldap_linkid, $hostdn, "rcpthosts", $domain[1]);
+					  pql_control_add_attribute($ldap->ldap_linkid, $hostdn,
+												pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"),
+												$domain[1]);
 				}
 			}
 		}
@@ -419,167 +439,6 @@ function pql_control_get_hosts($ldap_linkid, $ldap_basedn) {
 	}
 
 	return $hosts;
-}
-
-// ----------------------------
-// plugin register class
-// ----------------------------
-
-class pql_control_plugin_storage {
-    var $plugins = array();
-    var $cats = array();
-    var $attribs = array();
-    
-    //function pql_control_plugin_storage() {
-    //
-    //}
-    
-    function add_plugin($plugin_name, $plugin_file, $plugin_cat) {
-		// adds an attribute plugin to the plugin storage
-		
-		if(isset($this->plugins[$plugin_name])) {
-			// plugin with this name already exists
-			return false;
-		}
-		
-		$this->plugins[$plugin_name]["cat"] = $plugin_cat;
-		$this->plugins[$plugin_name]["file"] = $plugin_file;
-		
-		$this->cats[$plugin_cat] = 1;
-		
-		return true;
-    }
-	
-    function add_attrib($attrib, $plugin_name) {
-		// adds and attribute to a registred plugin
-		
-		if(!isset($this->plugins[$plugin_name])) {
-			// plugin with this name does not exist
-			return false;
-		}
-		
-		$this->attribs[$attrib] = $plugin_name;
-		
-		return true;
-    }
-	
-    function get_plugin($attrib) {
-		// returns name of plugin for $attrib
-		
-		if(!isset($this->attribs[$attrib])) {
-			// an attribute with this name does not exist
-			return false;
-		}
-		
-		$plugin_name = $this->attribs[$attrib];
-		return $plugin_name;
-    }
-	
-    function get_plugin_filename($plugin_name) {
-		// return filename of plugin for specified plugin name
-		
-		if(!isset($this->plugins[$plugin_name])) {
-			// plugin with this name does not exist
-			return false;
-		}
-		
-		return $this->plugins[$plugin_name]["file"];
-    }
-	
-    function get_plugin_cat($plugin_name) {
-		// returns category of plugin name
-		
-		return $this->plugins[$plugin_name]["cat"];
-    }
-    
-    function get_cat_plugins($cat) {
-		// return all plugin names of category
-		
-		foreach($this->plugins as $plugin_name => $plugin_data) {
-			if($plugin_data["cat"] == $cat) {
-				$plugins[] = $plugin_name;
-			}
-		}
-		
-		return $plugins;
-    }
-	
-    function get_cats() {
-		// return all registred categories
-		foreach($this->cats as $cat => $value) {
-			$cats[] = $cat;
-		}
-		
-		return $cats;
-    }
-}
-
-// ----------------------------
-// plugin API functions
-// ----------------------------
-
-$_pql_control_plugins = new pql_control_plugin_storage();
-
-// ------------------------------------------------
-
-function pql_control_plugin_register($plugin_name, $plugin_file, $plugin_cat, $attribs) {
-    // register a plugin for specified attribute
-    global $_pql_control_plugins;
-    
-    $_pql_control_plugins->add_plugin($plugin_name, $plugin_file, $plugin_cat);
-    
-    if(is_array($attribs)) {
-		foreach($attribs as $attrib) {
-			$_pql_control_plugins->add_attrib($attrib, $plugin_name);
-		}
-    } else {
-		$_pql_control_plugins->add_attrib($attribs, $plugin_name);
-    }
-}
-
-// ------------------------------------------------
-
-function pql_control_plugin_get_cats() {
-    // get all plugin categories
-    global $_pql_control_plugins;
-    
-    return $_pql_control_plugins->get_cats();
-}
-
-// ------------------------------------------------
-
-function pql_control_plugin_get($attrib) {
-    // get a filename for $attrib
-    global $_pql_control_plugins;
-    
-    return $_pql_control_plugins->get_plugin($attrib);
-}
-
-// ------------------------------------------------
-
-function pql_control_plugin_get_catplugins($cat) {
-    // gets all plugin names for specified category
-    global $_pql_control_plugins;
-    
-    return $_pql_control_plugins->get_cat_plugins($cat);
-}
-
-// ------------------------------------------------
-
-function pql_control_plugin_cat($plugin_name) {
-    // gets the category name of plugin
-    global $_pql_control_plugins;
-    
-    return $_pql_control_plugins->get_plugin_cat($plugin_name);
-}
-
-// ------------------------------------------------
-
-function pql_control_plugin_get_filename($plugin_name) {
-    // gets all plugin names for specified category
-    global $_pql_control_plugins;
-    
-    return $_pql_control_plugins->get_plugin_filename($plugin_name);
 }
 
 /*

@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.14 2003-06-25 07:06:25 turbo Exp $
+// $Id: left-control.php,v 2.15 2003-08-15 08:06:04 turbo Exp $
 //
 session_start();
 
@@ -70,8 +70,8 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
   <!-- end server control host -->
 
 <?php
-			$control_cats = pql_control_plugin_get_cats();
-			if(!is_array($control_cats)) {
+			$cats = pql_plugin_get_cats();
+			if(!is_array($cats)) {
 ?>
   <!-- start server control attribute -->
   <div id="el<?=$j?>Child" class="child">
@@ -84,13 +84,13 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 
 <?php
 			} else {
-				asort($control_cats);
+				asort($cats);
 ?>
   <!-- start server control attribute: <?=$cat?> -->
   <div id="el<?=$j?>Child" class="child">
 <?php
 
-				foreach($control_cats as $cat){
+				foreach($cats as $cat){
 ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
       <a href="control_cat.php?mxhost=<?=$host?>&cat=<?=urlencode($cat)?>"><img src="images/navarrow.png" width="9" height="9" border="0"></a>&nbsp;
@@ -105,7 +105,7 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
   </div>
   <!-- end server control attribute -->
 <?php
-			} // end if is_array($control_cats)
+			} // end if is_array($cats)
 
 			$j++;
 		} // end foreach host

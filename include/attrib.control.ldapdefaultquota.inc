@@ -2,7 +2,7 @@
 // control attribute plugin for
 // $ldapdefaultquota (default quota for all mail users)
 
-// $Id: attrib.control.ldapdefaultquota.inc,v 2.9 2003-08-12 18:34:57 turbo Exp $
+// $Id: attrib.control.ldapdefaultquota.inc,v 2.10 2003-08-15 08:06:17 turbo Exp $
 
 function ldapdefaultquota_check($type) {
     global $options, $use_maxsize, $use_maxmails, $maxsize, $maxmails, $error, $view, $LANG;
@@ -59,8 +59,8 @@ function ldapdefaultquota_init($host) {
     global $_pql_control, $use_maxsize, $use_maxmails, $maxsize, $maxmails, $options, $quota, $view;
     
     $quota = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-									   "ldapdefaultquota");
+									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_GLOB_ATTR_LDAPDEFAULTQUOTA"));
     
     if(!is_null($quota)) {
 		$quota = pql_parse_quota($quota[0]);
@@ -173,8 +173,9 @@ function ldapdefaultquota_save($type, $host) {
       case "modify":
       case "add";
 		if(!pql_control_replace_attribute($_pql_control->ldap_linkid,
-										  "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-										  "ldapdefaultquota", $mailquota))
+										  pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										  pql_get_define("PQL_GLOB_ATTR_LDAPDEFAULTQUOTA"),
+										  $mailquota))
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('quota'))) . ": " . pql_ldap_error($_pql_control->ldap_linkid);
 															 
