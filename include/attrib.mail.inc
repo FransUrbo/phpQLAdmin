@@ -1,10 +1,10 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mail.inc,v 2.2 2002-12-18 16:28:46 turbo Exp $
+// $Id: attrib.mail.inc,v 2.3 2003-01-10 18:13:09 turbo Exp $
 
 function attribute_check($type){
-    global $mail, $domain, $oldvalue, $_pql, $error;
+    global $mail, $domain, $oldvalue, $_pql, $error, $defaultdomain;
     
     // is typed in ?
     if($mail == ""){
@@ -39,29 +39,32 @@ function attribute_init(){
 function attribute_print_form(){
     global $mail, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $defaultdomain;
 
-  ?>
-	<form action="<?php echo $PHP_SELF ?>" method="post">
-	<table cellspacing="0" cellpadding="3" border="0">
-	<th colspan="3" align="left"><?php echo PQL_LDAP_MAIL_CHANGE; ?></th>
-	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title"><?php echo PQL_EMAIL; ?></td>
-		<td><?php echo format_error($error["mail"]); ?><input type="text" name="mail" value="<?php echo $mail; ?>"><b>@<?php echo $defaultdomain; ?></b></td>
-	</tr>
-	<tr class="subtitle">
-		<td colspan="2">
-		<img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_LDAP_MAIL_HELP; ?></td>
-	</tr>
-	</table>
-	<input type="hidden" name="submit" value="1">
-	<input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-	<input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
-	<input type="hidden" name="domain" value="<?php echo $domain; ?>">
-	<input type="hidden" name="user" value="<?php echo $user ?>">
-	<br>
-	<br>
-	<input type="submit" value="<?php echo PQL_SAVE; ?>">
-	</form>
-  <?php
+?>
+  <form action="<?php echo $PHP_SELF ?>" method="post">
+    <table cellspacing="0" cellpadding="3" border="0">
+      <th colspan="3" align="left"><?php echo PQL_LDAP_MAIL_CHANGE; ?></th>
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"><?php echo PQL_EMAIL; ?></td>
+          <td><?php echo format_error($error["mail"]); ?><input type="text" name="mail" value="<?php echo $mail; ?>"><b>@<?php echo $defaultdomain; ?></b></td>
+        </tr>
+
+        <tr class="subtitle">
+          <td colspan="2">
+            <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_LDAP_MAIL_HELP; ?>
+          </td>
+        </tr>
+      </th>
+    </table>
+
+    <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="attrib" value="<?=$attrib?>">
+    <input type="hidden" name="oldvalue" value="<?=$oldvalue?>">
+    <input type="hidden" name="domain" value="<?=$domain?>">
+    <input type="hidden" name="user" value="<?=$user ?>">
+    <br><br>
+    <input type="submit" value="<?=PQL_SAVE?>">
+  </form>
+<?php
 }
 
 function attribute_save($type){
@@ -77,24 +80,15 @@ function attribute_save($type){
 	// no add operation possible with mail
 	break;
       case "modify";
-	$email = $mail . "@" . $domain;
-	
-	if($email == $oldvalue){
-	    // don't change if new value equal to old one
-	    $msg = PQL_LDAP_MAIL_UNCHANGED;
-	    attribute_forward($msg);
-	    break;
-    	}
-	
-	if(pql_modify_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, PQL_LDAP_ATTR_MAIL, $oldvalue, $email)){
-	    $msg = pql_complete_constant(PQL_LDAP_MAIL_CHANGE_OK, array("old" => $oldvalue, "new" => $email));
+	if(pql_modify_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, PQL_LDAP_ATTR_MAIL, $oldvalue, $mail)){
+	    $msg = pql_complete_constant(PQL_LDAP_MAIL_CHANGE_OK, array("old" => $oldvalue, "new" => $mail));
 	} else {
 	    $msg = PQL_LDAP_MAIL_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
 	}
 	
 	// We use the mail attribute to reference users and it has just changed...
 	if (PQL_LDAP_REFERENCE_USERS_WITH == PQL_LDAP_ATTR_MAIL) {
-	    $user = $email;
+	    $user = $mail;
 	    // Reload the navigation bar (if allowed by config)
 	    attribute_forward($msg, true);
 	} else {
