@@ -124,12 +124,18 @@ if($mailhost == ""){
         <td><a href="user_edit_attribute.php?attrib=homedirectory&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain; ?>&oldvalue=<?php echo $homedirectory; ?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LDAP_HOMEDIRECTORY_CHANGE; ?>" border="0"></a></td>
       </tr>
 
+<?php
+	if(($uidnumber != '') && ($gidnumber != '')) {
+?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?php echo "UID;GID"; ?></td>
-        <td><?php if($uidnumber && $gidnumber){echo $uidnumber . ";" . $gidnumber;}else{echo "none";} ?></td>
+        <td><?=$uidnumber . ";" . $gidnumber?></td>
         <td><center>x</center></td>
       </tr>
-<?php } ?>
+<?php
+	}
+}
+?>
     </th>
   </table>
 
