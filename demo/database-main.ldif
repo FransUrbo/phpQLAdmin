@@ -16,8 +16,6 @@ userObjectClass: organizationalperson
 userObjectClass: pilotperson
 administrator: uid=demo1,ou=Main Branch,c=SE
 administrator: uid=turbo,ou=Main Branch,c=SE
-modifiersName: uid=demo1,ou=Main Branch,c=SE
-modifyTimestamp: 20030428102324Z
 
 dn: ou=Main Branch,c=SE
 objectClass: top
@@ -29,8 +27,6 @@ baseHomeDir: /var/www.ldap/phpQLAdmin-CVS.demo/Users
 baseMailDir: /var/www.ldap/phpQLAdmin-CVS.demo/Mail
 o: phpQLAdmin demo site
 administrator: uid=turbo,ou=Main Branch,c=SE
-modifiersName: uid=turbo,ou=Main Branch,c=SE
-modifyTimestamp: 20030428102452Z
 
 dn: ou=QmailLDAP,c=SE
 objectClass: top
@@ -52,10 +48,6 @@ objectClass: inetorgperson
 objectClass: organizationalperson
 objectClass: pilotperson
 objectClass: posixaccount
-creatorsName: uid=turbo,ou=Main Branch,c=SE
-createTimestamp: 20030428101649Z
-modifiersName: uid=turbo,ou=Main Branch,c=SE
-modifyTimestamp: 20030428101649Z
 
 dn: uid=demo2,ou=Main Branch,c=SE
 cn: Demo User 2
@@ -72,10 +64,6 @@ objectClass: inetorgperson
 objectClass: organizationalperson
 objectClass: pilotperson
 objectClass: posixaccount
-creatorsName: uid=turbo,ou=Main Branch,c=SE
-createTimestamp: 20030428101817Z
-modifiersName: uid=turbo,ou=Main Branch,c=SE
-modifyTimestamp: 20030428101817Z
 
 dn: uid=demo3,ou=Main Branch,c=SE
 cn: Demo User 3
@@ -92,25 +80,17 @@ objectClass: inetorgperson
 objectClass: organizationalperson
 objectClass: pilotperson
 objectClass: posixaccount
-creatorsName: uid=turbo,ou=Main Branch,c=SE
-createTimestamp: 20030428101842Z
-modifiersName: uid=turbo,ou=Main Branch,c=SE
-modifyTimestamp: 20030428101842Z
 
 dn: ou=Test Branch 1,c=SE
 ou: Test Branch 1
 objectClass: organizationalUnit
 objectClass: phpQLAdminBranch
 o: 0
-creatorsName: uid=demo1,ou=Main Branch,c=SE
-createTimestamp: 20030428102211Z
 baseHomeDir: /home/Test_Branch_1/
 baseMailDir: /var/mail/Test_Branch_1/
 administrator: uid=demo1,ou=Main Branch,c=SE
 administrator: uid=turbo,ou=Main Branch,c=SE
 administrator: uid=demo2,ou=Main Branch,c=SE
-modifiersName: uid=turbo,ou=Main Branch,c=SE
-modifyTimestamp: 20030428102448Z
 
 dn: uid=turbo,ou=Main Branch,c=SE
 cn: Turbo Fredriksson
@@ -127,8 +107,3 @@ objectClass: inetorgperson
 objectClass: organizationalperson
 objectClass: pilotperson
 objectClass: posixaccount
-creatorsName: uid=demo1,ou=Main Branch,c=SE
-createTimestamp: 20030428102247Z
-modifiersName: uid=demo1,ou=Main Branch,c=SE
-modifyTimestamp: 20030428102247Z
-
