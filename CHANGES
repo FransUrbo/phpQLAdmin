@@ -1,5 +1,10 @@
 phpQLAdmin 2.0 Change Log
 
+phpQLAdmin 2.0.17 TO BE ANNOUNCED
+	Bug fixes
+	GUI layout change
+	Misc changes
+
 phpQLAdmin 2.0.16 Release (Aug 28 2003)
 	Bug fixes
 	  - Remove hardcoded references to attribute names. Use pql_get_define()
