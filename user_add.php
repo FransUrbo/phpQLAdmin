@@ -279,7 +279,7 @@ switch($submit){
         <td>
           <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
           <table>
-<?php echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_LOCAL . PQL_LANG_DELIVERYMODE_PROFILE_INC .
+<?php echo PQL_LANG_DELIVERYMODE_PROFILE . " <b>" . PQL_LANG_DELIVERYMODE_PROFILE_LOCAL . "</b>" . PQL_LANG_DELIVERYMODE_PROFILE_INC .
   PQL_LANG_DELIVERYMODE_PROFILE_LOCAL_INFO . ".";?>
           </table>
         </td>
@@ -290,7 +290,7 @@ switch($submit){
         <td colspan="2">
           <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
           <table>
-<?php echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_SYSTEM . PQL_LANG_DELIVERYMODE_PROFILE_INC .
+<?php echo PQL_LANG_DELIVERYMODE_PROFILE . " <b>" . PQL_LANG_DELIVERYMODE_PROFILE_SYSTEM . "</b>" . PQL_LANG_DELIVERYMODE_PROFILE_INC .
   PQL_LANG_DELIVERYMODE_PROFILE_SYSTEM_INFO . ", " . PQL_LANG_DELIVERYMODE_PROFILE_LOCAL_INFO;?>
           </table>
         </td>
@@ -301,7 +301,7 @@ switch($submit){
         <td>
           <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
           <table>
-<?php echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_FORWARD . PQL_LANG_DELIVERYMODE_PROFILE_INC .
+<?php echo PQL_LANG_DELIVERYMODE_PROFILE . " <b>" . PQL_LANG_DELIVERYMODE_PROFILE_FORWARD . "</b>" . PQL_LANG_DELIVERYMODE_PROFILE_INC .
   PQL_LANG_DELIVERYMODE_PROFILE_FORWARD_INFO . ".";?>
           </table>
         </td>
@@ -312,7 +312,7 @@ switch($submit){
         <td>
           <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
           <table>
-<?php echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_SHELL . PQL_LANG_DELIVERYMODE_PROFILE_INC .
+<?php echo PQL_LANG_DELIVERYMODE_PROFILE . " <b>" . PQL_LANG_DELIVERYMODE_PROFILE_SHELL . "</b>" . PQL_LANG_DELIVERYMODE_PROFILE_INC .
   PQL_LANG_DELIVERYMODE_PROFILE_SHELL_INFO;?>
           </table>
         </td>
