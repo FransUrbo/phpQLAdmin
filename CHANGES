@@ -36,6 +36,11 @@ phpQLAdmin 2.2.2 TO BE ANNOUNCED
 	    multiple 'cn' values the informational text was 'Array'. Take the first
 	    value we have.
 	    Closes: 244
+	  - When modifying a user which have a missing object class in an object
+	    which only have _one_ object class, we (phpQLAdmin) ended up with a PHP
+	    error ('[] operator not supported for strings'). Solution is to make sure
+	    values retreived is converted to array if it isn't already.
+	    Closes: 245
 
 	GUI layout changes
 	Misc changes
