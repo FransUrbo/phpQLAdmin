@@ -79,6 +79,14 @@
 <?php } ?>
         <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_EZMLM_USE")) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
       </tr>
+<?php if(pql_get_define("PQL_CONF_EZMLM_USE")) { ?>
+
+      <tr>
+        <td class="title"><?=$LANG->_('Path to EZMLM commands')?></td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=pql_get_define("PQL_ATTR_EZMLM_PATH")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_EZMLM_PATH")?>"></a></td>
+        <td class="<?=$class?>"><?php echo pql_get_define("PQL_CONF_EZMLM_PATH"); ?>&nbsp;</td>
+      </tr>
+<?php } ?>
 
       <tr>
         <td class="title"><?=$LANG->_('Manage DNS domains')?></td>
