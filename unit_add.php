@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: unit_add.php,v 2.17 2004-03-14 07:42:40 turbo Exp $
+// $Id: unit_add.php,v 2.18 2004-03-30 04:35:22 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -13,7 +13,7 @@ $url["unit"]   = pql_format_urls($_REQUEST["unit"]);
 include("./header.html");
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Create subbranch in domain %domain%'),
-							array('domain' => $_REQUEST["domain"])); ?></span>
+							array('domain' => pql_maybe_decode($_REQUEST["domain"]))); ?></span>
   <br><br>
 <?php
 
