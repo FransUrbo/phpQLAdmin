@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.16.4.2.2.6.4.1 2004-09-17 14:21:14 turbo Exp $
+// $Id: user_add-save.inc,v 1.16.4.2.2.6.4.2 2004-10-04 09:18:20 turbo Exp $
 
 // URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
 $_REQUEST["surname"] = urldecode($_REQUEST["surname"]);
@@ -45,7 +45,7 @@ if(($_REQUEST["account_type"] != "mail") or $res[0]) {
 // ------------------
 if($_REQUEST["account_type"] != 'shell') {
 	$res = pql_check_attribute($objectclasses_schema, $objectclasses_included, pql_get_define("PQL_ATTR_ISACTIVE"));
-	if($res[0])
+	if($res[0] and $_REQUEST["account_status"])
 	  $entry[pql_get_define("PQL_ATTR_ISACTIVE")]	= $_REQUEST["account_status"];
 
 	// Cleanup the email address a bit
