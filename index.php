@@ -3,15 +3,7 @@
 // index.php,v 1.4 2002/12/13 13:55:38 turbo Exp
 //
 session_start();
-
-// Include this for completness (and to get an early
-// warning if it's missing - browser goes blank, no
-// error!).
-require("./include/config.inc");
-
-require("./include/pql.inc");
-require("./include/pql_control.inc");
-require("./include/pql_control_plugins.inc");
+require("./include/pql_config.inc");
 
 if ($logout == 1 or !empty($msg)) {
 	if ($logout == 1) {
@@ -35,11 +27,13 @@ if ($LOGIN_PASS == 1) {
 if (empty($uname) or empty($passwd)) {
 	include("./header.html");
 
-	if(! eregi(' ', PQL_LDAP_HOST)) {
-		$host = split(';', PQL_LDAP_HOST);
-		$USER_HOST = $host[0] . ";" . $host[1];
-		
-		session_register("USER_HOST");
+	if(!$USER_HOST) {
+		if(! eregi(' ', PQL_LDAP_HOST)) {
+			$host = split(';', PQL_LDAP_HOST);
+			$USER_HOST = $host[0] . ";" . $host[1];
+			
+			session_register("USER_HOST");
+		}
 	}
 
 	// print status message, if one is available
@@ -183,6 +177,9 @@ if (empty($uname) or empty($passwd)) {
 	if(!$rootdn)
 	  die("Can't find you in the database!");
 
+	if($passwd and !$USER_PASS)
+	  $USER_PASS = $passwd;
+
 	// Rebind as user
 	$_pql->bind($rootdn, $USER_PASS);
 	$error = ldap_errno($_pql->ldap_linkid);
@@ -193,7 +190,6 @@ if (empty($uname) or empty($passwd)) {
 	}
 
 	$USER_ID	= $uname;
-	$USER_PASS	= $passwd;
 	$USER_DN	= $rootdn;
 
 	if(! session_register("USER_ID", "USER_PASS", "USER_DN"))
