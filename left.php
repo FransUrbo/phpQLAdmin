@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.85 2004-03-29 08:00:22 turbo Exp $
+// $Id: left.php,v 2.86 2004-03-30 05:18:54 turbo Exp $
 //
 session_start();
 
@@ -249,7 +249,7 @@ if(!isset($domains)) {
 		    // not the complete DN.
 		    $dnparts = ldap_explode_dn($branches[$i], 0);
 		    $dnparts = split('=', $dnparts[0]);
-		    $subbranch = $dnparts[1];
+		    $subbranch = pql_maybe_decode($dnparts[1]);
 		    
 		    $links = array(pql_complete_constant($LANG->_('Add %what%'),
 							 array('what' => $LANG->_('user')))
