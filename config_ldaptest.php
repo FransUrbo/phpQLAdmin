@@ -1,9 +1,9 @@
 <?php
 // make some simple tests on ldap connection
-// $Id: config_ldaptest.php,v 2.33 2005-03-04 11:55:32 turbo Exp $
+// $Id: config_ldaptest.php,v 2.34 2005-03-09 11:01:58 turbo Exp $
 //
 require("./include/pql_session.inc");
-require("./include/pql_config.inc");
+require($_SESSION["path"]."/include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_control.inc");
 
 // {{{ Check a domain value
@@ -16,7 +16,7 @@ function check_domain_value($linkid, $dn, $attrib, $value) {
 		  // Invalid syntax
 		  return($LANG->_('No. Reason:')."<b>".$LANG->_('Old phpQLAdmin schema')."</b>");
 		else {
-			$LDIF = pql_create_ldif(NULL, $dn, $entry);
+			$LDIF = pql_create_ldif('config_ldaptest.php:pql_write_mod', $dn, $entry, 1);
 
 			return("<a href=\"javascript:ldifWindow('".$LDIF."')\">".
 				   $LANG->_('No. Reason:')."<b>".ldap_error($linkid)."</b>'</a>");
@@ -135,11 +135,17 @@ if(!function_exists("ldap_connect")){
 			}
 			$entry[pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)] = "phpQLAdmin_Branch_Test";
 
+			if(pql_get_define("PQL_CONF_ACI_USE")) {
+			  // Add the ACI entries to the object
+			  $entry[pql_get_define("PQL_ATTR_LDAPACI")] =  "OpenLDAPaci: 0#entry#grant;w,r,s,c;[all]#access-id#";
+			  $entry[pql_get_define("PQL_ATTR_LDAPACI")] .= $_SESSION["USER_DN"];
+			}
+			
 			// Setup the DN
 			$dn = pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)."=phpQLAdmin_Branch_Test,".$basedn;
 
 			if(!@ldap_add($_pql->ldap_linkid, $dn, $entry)) {
-				$LDIF = pql_create_ldif("config_ldaptest.php", $dn, $entry);
+				$LDIF = pql_create_ldif("config_ldaptest.php:ldap_add", $dn, $entry, 1);
 
 				$TEST["branches"][$basedn] = "<a href=\"javascript:ldifWindow('".$LDIF."')\">".
 				  $LANG->_("No. Reason:")."<b>".ldap_error($_pql->ldap_linkid)."</b>'";
@@ -203,16 +209,17 @@ if(!function_exists("ldap_connect")){
 			}
 			$entry[pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)] = "phpQLAdmin_Branch_Test";
 			
-			// Add the ACI entries to the object
-			$entry[pql_get_define("PQL_ATTR_LDAPACI")][0] = "OpenLDAPaci: 1.2.3#entry#grant;r;[entry]#public#";
-			$entry[pql_get_define("PQL_ATTR_LDAPACI")][1] = "OpenLDAPaci: 1.2.3#entry#grant;r,s,c;objectClass,entry#public#";
-			$entry[pql_get_define("PQL_ATTR_LDAPACI")][2] = "OpenLDAPaci: 1.2.3#entry#grant;w,r,s,c;[all]#access-id#" . $_SESSION["USER_DN"];
+			if(pql_get_define("PQL_CONF_ACI_USE")) {
+			  // Add the ACI entries to the object
+			  $entry[pql_get_define("PQL_ATTR_LDAPACI")] =  "OpenLDAPaci: 0#entry#grant;w,r,s,c;[all]#access-id#";
+			  $entry[pql_get_define("PQL_ATTR_LDAPACI")] .= $_SESSION["USER_DN"];
+			}
 			
 			// Setup the DN
 			$dn = pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)."=phpQLAdmin_Branch_Test,".$basedn;
 			
 			if(!@ldap_add($_pql->ldap_linkid, $dn, $entry)) {
-				$LDIF = pql_create_ldif("config_ldaptest.php", $dn, $entry);
+				$LDIF = pql_create_ldif("config_ldaptest.php:ldap_add", $dn, $entry, 1);
 
 				$TEST["acis"][$basedn] = "<a href=\"javascript:ldifWindow('".$LDIF."')\">".
 				  $LANG->_("No. Reason:")."<b>".ldap_error($_pql->ldap_linkid)."</b>'";
@@ -224,6 +231,7 @@ if(!function_exists("ldap_connect")){
 			// }}}
 		}
 	}
+
 	// }}}
 } // end if(function_exists...
 
@@ -231,9 +239,10 @@ include($_SESSION["path"]."/header.html");
 ?>
   <script type="text/javascript" language="javascript"><!--
     function ldifWindow(string) {
-      myWindow = window.open("", "LDIFWindow", 'toolbar,width=350,height=200');
+      myWindow = window.open("", "LDIFWindow", 'toolbar=no,menubar=no,status=no,dependent=yes,width=350,height=200');
 
-	  myWindow.document.write('<html>\n  <body>\n');
+	  myWindow.document.write('<html>\n  <head>\n      <title>phpQLAdmin LDIF</title>\n  </head>\n');
+	  myWindow.document.write('  <body>\n');
       myWindow.document.write('    '+string+'\n');
 	  myWindow.document.write('  </body>\n</html>');
 
