@@ -118,6 +118,11 @@ the password in the slapd.conf file (as example below) won't help.
 	rootdn	cn=Manager,....
 	rootpw	SecretPWHere
 
+Apache configuration
+~~~~~~~~~~~~~~~~~~~~
+You will have to enable register_globals in your php.ini file (don't forget to
+restart the apache server).
+
 
 For more information on installations, please view doc/index.php through
 the webbrowser. Note though that documentation is not my stronges side while
