@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mail.inc,v 2.20 2004-07-08 10:15:13 turbo Exp $
+// $Id: attrib.mail.inc,v 2.21 2004-07-08 10:34:06 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -53,12 +53,17 @@ function attribute_print_form() {
   <?php
     // We're changing the Main address. Give the old as reference
     if($_REQUEST["oldvalue"] != "") {
-		echo "<tr class=\"c2\">";
-		echo "  <td class=\"title\">".$LANG->_('Old address')."</td>";
-		echo "  <td>" . $_REQUEST["mail"] . "</td>";
-		echo "</tr>";
-    }
-  ?>
+?>
+<tr class="c2">
+  <td class="title"><?=$LANG->_('Old address')?></td>
+  <td><?=$_REQUEST["mail"]?></td>
+</tr>
+
+<tr class="c2">
+  <td class="title"></td>
+  <td><input type="checkbox" name="keepold">Add old value as alias</td></td>
+</tr>
+<?php } ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Email')?></td>
           <td><?php echo pql_format_error_span($error[pql_get_define("PQL_ATTR_MAIL")]);
@@ -107,7 +112,19 @@ function attribute_save($type) {
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('main address'))) . ": " . pql_format_error(0);
-		
+
+		if($_POST["keepold"]) {
+			// Put the old primary email address as an alias.
+			if(pql_modify_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_MAILALTERNATE"),
+										'', $_POST["oldvalue"]))
+			  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
+										   array('what' => $LANG->_('main address'),
+												 'new'  => $_POST["mail"]));
+			else
+			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+										   array('what' => $LANG->_('main address'))) . ": " . pql_format_error(0);
+		}
+
 		// We use the mail attribute to reference users and it has just changed...
 		if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", pql_get_rootdn($user, 'attrib.mail.inc:attribute_save')) == pql_get_define("PQL_ATTR_MAIL")) {
 			// DLW: $_REQUEST["user"] is used by attribute_forward, and should be a paramater.
