@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.61 2004-04-04 07:06:41 turbo Exp $
+// $Id: pql_config.inc,v 1.61.10.1 2004-04-14 09:08:56 turbo Exp $
 //
 
 // include the API files
@@ -55,8 +55,10 @@ function pql_get_define($define, $dn = NULL) {
 	if($dn) {
 		$dn = urldecode($dn);
 		return($config[$define][$dn]);
-	} else
+	} elseif(!is_array($config[$define]))
 	  return($config[$define]);
+	else
+	  return(NULL);
 }
 // }}}
 
