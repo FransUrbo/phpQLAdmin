@@ -59,7 +59,7 @@ $username = $username[0];
 <?php
 // check if user exists
 if(!pql_user_exist($_pql->ldap_linkid, $user)) {
-    echo pql_complete_constant($LANG->_('User %user% does not exist'), array('user' => $user));
+    echo pql_complete_constant($LANG->_('User %user% does not exist'), array('user' => '<u>'.$user.'</u>'));
     exit();
 }
 
