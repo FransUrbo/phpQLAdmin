@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.45 2003-11-20 11:10:41 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.46 2003-11-24 11:26:15 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -265,6 +265,7 @@ function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $do
 //									object (or to have the access specified)
 // (string)		type			-	Type of object being created. Currently one of:
 //									branch	A branch object
+//									unit	A sub branch object (ou or another dc)
 //									user	A user object
 //									group	A system group object
 //									dnszone	A Bind 9 DNS zone object
