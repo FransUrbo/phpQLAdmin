@@ -11,6 +11,9 @@ phpQLAdmin 2.0.8 - TO BE ANNOUNCED
 	  - Don't get the domains TWICE (once when we start using pql_get_domain_value()
 	    which verifies that we have access to the domain(s) and one using
 	    pql_get_domain_value() which does no access control etc).
+	  - utf8_{encode,decode}() 'Personal details' ('outlook' values etc) to correctly
+	    catch national (ie, non-english) characters.
+	  - Missing = in "form ... name=..." (user_add.php).
 
 	GUI layout change
 	  - Only show a 'dropdown menu' if we can choose from more than one domain
