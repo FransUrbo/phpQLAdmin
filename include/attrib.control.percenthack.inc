@@ -2,7 +2,7 @@
 // control attribute plugin for
 // percenthack (allowed domains for %-relaying)
 //
-// $Id: attrib.control.percenthack.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
+// $Id: attrib.control.percenthack.inc,v 2.5 2003-05-05 14:11:12 turbo Exp $
 
 function percenthack_check($type) {
 	global $error, $percenthack;
@@ -74,7 +74,7 @@ function percenthack_print_view($host) {
 	} // end if is_array
 ?>
       <tr class="subtitle">
-        <td><a href="control_edit_attribute.php?attrib=percenthack"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
+        <td><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=percenthack"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
       </tr>
     </th>
   </table>
@@ -83,7 +83,7 @@ function percenthack_print_view($host) {
 }
 
 function percenthack_print_form() {
-	global $attrib, $PHP_SELF, $error, $percenthack, $percentcount;
+	global $attrib, $PHP_SELF, $error, $percenthack, $percentcount, $mxhost;
 
 	if(($percentcount < count($percenthack) - 1) and count($percenthack) != 0){
 		$percentcount = count($percenthack) - 1;
@@ -119,6 +119,7 @@ function percenthack_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtproutes (max number of bytes in message)
 //
-// $Id: attrib.control.smtproutes.inc,v 2.4 2003-04-04 06:54:31 turbo Exp $
+// $Id: attrib.control.smtproutes.inc,v 2.5 2003-05-05 14:11:12 turbo Exp $
 
 function smtproutes_check($type) {
 	global $error, $domain, $relay, $port;
@@ -127,7 +127,7 @@ function smtproutes_print_view($host) {
 	} // end if is_array
 ?>
       <tr class="subtitle">
-        <td colspan="5"><a href="control_edit_attribute.php?attrib=smtproutes"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
+        <td colspan="5"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=smtproutes"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
       </tr>
     </th>
   </table>
@@ -136,7 +136,7 @@ function smtproutes_print_view($host) {
 }
 
 function smtproutes_print_form() {
-	global $attrib, $PHP_SELF, $error, $domain, $relay, $port, $routecount;
+	global $attrib, $PHP_SELF, $error, $domain, $relay, $port, $routecount, $mxhost;
 
 	if(($routecount < count($domain) - 1) and count($domain) != 0){
 		$routecount = count($domain) - 1;
@@ -178,6 +178,7 @@ function smtproutes_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 

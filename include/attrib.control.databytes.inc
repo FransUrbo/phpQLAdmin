@@ -2,7 +2,7 @@
 // control attribute plugin for
 // databytes (max number of bytes in message)
 //
-// $Id: attrib.control.databytes.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
+// $Id: attrib.control.databytes.inc,v 2.5 2003-05-05 14:11:12 turbo Exp $
 
 function databytes_check($type) {
 	global $error, $databytes;
@@ -53,7 +53,7 @@ function databytes_print_view($host) {
       </tr>
 
       <tr class="subtitle">
-        <td colspan="2"><a href="control_edit_attribute.php?attrib=databytes"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
+        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=databytes"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
       </tr>
     </th>
   </table>
@@ -62,7 +62,7 @@ function databytes_print_view($host) {
 }
 
 function databytes_print_form() {
-	global $attrib, $databytes, $PHP_SELF, $error;
+	global $attrib, $databytes, $PHP_SELF, $error, $mxhost;
 
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
@@ -81,6 +81,7 @@ function databytes_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 

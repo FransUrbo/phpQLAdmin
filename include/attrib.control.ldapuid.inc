@@ -3,7 +3,7 @@
 // ldapuid (user id of virtual user)
 // ldapgid (group id of virtual user)
 //
-// $Id: attrib.control.ldapuid.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
+// $Id: attrib.control.ldapuid.inc,v 2.5 2003-05-05 14:11:12 turbo Exp $
 
 function ldapuid_check($type) {
 	global $error, $ldapuid, $ldapgid;
@@ -84,7 +84,7 @@ function ldapuid_print_view($host) {
       </tr>
 
       <tr class="subtitle">
-        <td colspan="2"><a href="control_edit_attribute.php?attrib=ldapuid"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
+        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=ldapuid"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
       </tr>
     </th>
   </table>
@@ -93,7 +93,7 @@ function ldapuid_print_view($host) {
 }
 
 function ldapuid_print_form() {
-	global $attrib, $ldapuid, $ldapgid, $PHP_SELF, $error;
+	global $attrib, $ldapuid, $ldapgid, $PHP_SELF, $error, $mxhost;
 
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
@@ -118,6 +118,7 @@ function ldapuid_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 

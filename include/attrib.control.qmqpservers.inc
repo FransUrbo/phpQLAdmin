@@ -2,7 +2,7 @@
 // control attribute plugin for
 // qmqpservers (max number of bytes in message)
 //
-// $Id: attrib.control.qmqpservers.inc,v 2.5 2003-05-01 10:18:27 turbo Exp $
+// $Id: attrib.control.qmqpservers.inc,v 2.6 2003-05-05 14:11:12 turbo Exp $
 
 function qmqpservers_check($type) {
 	global $error, $qmqpservers;
@@ -94,7 +94,7 @@ function qmqpservers_print_view($host) {
 	} // end if is_array
 ?>
       <tr class="subtitle">
-        <td><a href="control_edit_attribute.php?attrib=qmqpservers"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
+        <td><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=qmqpservers"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
       </tr>
     </th>
   </table>
@@ -103,7 +103,7 @@ function qmqpservers_print_view($host) {
 }
 
 function qmqpservers_print_form() {
-	global $attrib, $PHP_SELF, $error, $qmqpservers, $qmqpcount;
+	global $attrib, $PHP_SELF, $error, $qmqpservers, $qmqpcount, $mxhost;
 
 	if(($qmqpcount < count($qmqpservers) - 1) and count($qmqpservers) != 0){
 		$qmqpcount = count($qmqpservers) - 1;
@@ -139,13 +139,14 @@ function qmqpservers_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
 <?php
 }
 
-function qmqpservers_save($type, $save) {
+function qmqpservers_save($type, $host)  {
 	global $_pql_control, $attrib, $qmqpservers, $error, $mxhost;
 
 	// recontrol values

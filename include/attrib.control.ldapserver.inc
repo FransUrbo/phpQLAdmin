@@ -5,7 +5,7 @@
 // ldaplogin (cn of a database user)
 // ldappassword (password to bind to ldaplogin)
 //
-// $Id: attrib.control.ldapserver.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
+// $Id: attrib.control.ldapserver.inc,v 2.5 2003-05-05 14:11:12 turbo Exp $
 
 function ldapserver_check($type){
 	global $error, $ldapserver, $ldappassword, $ldapbasedn, $ldaplogin_use, $ldaplogin, $ldap_test;
@@ -172,7 +172,7 @@ function ldapserver_print_view($host) {
 
 <?php } ?>
       <tr class="subtitle">
-        <td colspan="2"><a href="control_edit_attribute.php?attrib=ldapserver"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
+        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=ldapserver"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
       </tr>
     </th>
   </table>
@@ -181,7 +181,7 @@ function ldapserver_print_view($host) {
 }
 
 function ldapserver_print_form(){
-	global $attrib, $srvcount, $ldapserver, $ldapbasedn, $ldaplogin_use, $ldaplogin, $ldap_test, $PHP_SELF, $error;
+	global $attrib, $srvcount, $ldapserver, $ldapbasedn, $ldaplogin_use, $ldaplogin, $ldap_test, $PHP_SELF, $error, $mxhost;
 	
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
@@ -235,6 +235,7 @@ function ldapserver_print_form(){
     <input type="hidden" name="srvcount" value="<?php echo $srvcount; ?>">
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 

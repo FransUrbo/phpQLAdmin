@@ -2,7 +2,7 @@
 // control attribute plugin for
 // helohost (host name used in SMTP HELO command)
 //
-// $Id: attrib.control.helohost.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
+// $Id: attrib.control.helohost.inc,v 2.5 2003-05-05 14:11:12 turbo Exp $
 
 function helohost_check($type) {
 	global $error, $helohost;
@@ -37,9 +37,8 @@ function helohost_print_view($host) {
 	helohost_init($host);
 
 	// set empty field to default value
-	if($helohost == ""){
-		$helohost = PQL_CONF_CONTROL_ME . ", (default, taken from 'me')";
- 	}
+	if($helohost == "")
+	  $helohost = $host . ", (default, taken from 'me')";
 	
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
@@ -50,7 +49,7 @@ function helohost_print_view($host) {
       </tr>
 
       <tr class="subtitle">
-        <td colspan="2"><a href="control_edit_attribute.php?attrib=helohost"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
+        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=helohost"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
       </tr>
     </th>
   </table>
@@ -59,7 +58,7 @@ function helohost_print_view($host) {
 }
 
 function helohost_print_form() {
-	global $attrib, $helohost, $PHP_SELF, $error;
+	global $attrib, $helohost, $PHP_SELF, $error, $mxhost;
 
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
@@ -67,7 +66,7 @@ function helohost_print_form() {
       <th colspan="3" align="left">helohost (Helo host)</th>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title">Host</td>
-          <td><?php echo format_error($error["helohost"]); ?><input type="text" name="helohost" value="<?php echo $helohost; ?>"> Default: <?php echo PQL_CONF_CONTROL_ME; ?> (value in 'me')</td>
+          <td><?php echo format_error($error["helohost"]); ?><input type="text" name="helohost" value="<?php echo $helohost; ?>"> Default: <?=$mxhost?> (value in 'me')</td>
         </tr>
 
         <tr>
@@ -78,6 +77,7 @@ function helohost_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 

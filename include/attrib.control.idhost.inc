@@ -2,7 +2,7 @@
 // control attribute plugin for
 // idhost (host name for message id's)
 //
-// $Id: attrib.control.idhost.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
+// $Id: attrib.control.idhost.inc,v 2.5 2003-05-05 14:11:12 turbo Exp $
 
 function idhost_check($type){
 	global $error, $idhost;
@@ -52,7 +52,7 @@ function idhost_print_view($host) {
       </tr>
 
       <tr class="subtitle">
-        <td colspan="2"><a href="control_edit_attribute.php?attrib=idhost"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
+        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=idhost"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
       </tr>
     </th>
   </table>
@@ -61,7 +61,7 @@ function idhost_print_view($host) {
 }
 
 function idhost_print_form(){
-	global $attrib, $idhost, $PHP_SELF, $error;
+	global $attrib, $idhost, $PHP_SELF, $error, $mxhost;
 
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
@@ -69,7 +69,7 @@ function idhost_print_form(){
       <th colspan="3" align="left">idhost (host name for Message-ID's)</th>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title">Host</td>
-          <td><?php echo format_error($error["idhost"]); ?><input type="text" name="idhost" value="<?php echo $idhost; ?>"> Default: <?php echo PQL_CONF_CONTROL_ME; ?> (value in 'me')</td>
+          <td><?php echo format_error($error["idhost"]); ?><input type="text" name="idhost" value="<?php echo $idhost; ?>"> Default: <?=$mxhost?> (value in 'me')</td>
         </tr>
 
         <tr>
@@ -80,6 +80,7 @@ function idhost_print_form(){
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldaprebind (don't retrieve password, try to bind to dn)
 //
-// $Id: attrib.control.ldaprebind.inc,v 2.4 2003-05-01 10:18:26 turbo Exp $
+// $Id: attrib.control.ldaprebind.inc,v 2.5 2003-05-05 14:11:12 turbo Exp $
 
 function ldaprebind_check($type){
 	// check values
@@ -48,8 +48,8 @@ function ldaprebind_print_view($host) {
 
       <tr class="subtitle">
         <td>
-          <a href="control_edit_attribute?attrib=ldaprebind&set=1">enable rebind</a> |
-          <a href="control_edit_attribute?attrib=ldaprebind&set=0">disable rebind</a>
+          <a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=ldaprebind&set=1">enable rebind</a> |
+          <a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=ldaprebind&set=0">disable rebind</a>
         </td>
 	  </tr>
     </th>

@@ -3,7 +3,7 @@
 // defaultdomain (default domain)
 // defaulthost (default hostname)
 //
-// $Id: attrib.control.defaultdomain.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
+// $Id: attrib.control.defaultdomain.inc,v 2.5 2003-05-05 14:11:12 turbo Exp $
 
 function defaultdomain_check($type) {
 	global $error, $defaultdomain, $defaulthost, $plusdomain;
@@ -87,7 +87,7 @@ function defaultdomain_print_view($host) {
       </tr>
 
       <tr class="subtitle">
-        <td colspan="2"><a href="control_edit_attribute.php?attrib=defaultdomain"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
+        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=defaultdomain"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
       </tr>
     </th>
   </table>
@@ -96,7 +96,7 @@ function defaultdomain_print_view($host) {
 }
 
 function defaultdomain_print_form() {
-	global $attrib, $defaultdomain, $defaulthost, $plusdomain, $PHP_SELF, $error;
+	global $attrib, $defaultdomain, $defaulthost, $plusdomain, $PHP_SELF, $error, $mxhost;
 
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
@@ -125,6 +125,7 @@ function defaultdomain_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 

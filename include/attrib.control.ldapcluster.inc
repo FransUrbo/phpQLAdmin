@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldapcluster (clustering support)
 //
-// $Id: attrib.control.ldapcluster.inc,v 2.3 2002-12-18 16:28:45 turbo Exp $
+// $Id: attrib.control.ldapcluster.inc,v 2.4 2003-05-05 14:11:12 turbo Exp $
 
 function ldapcluster_check($type){
 	// check values
@@ -46,8 +46,8 @@ function ldapcluster_print_view($host) {
 
       <tr class="subtitle">
         <td>
-          <a href="control_edit_attribute?attrib=ldapcluster&set=1">enable clustering</a> |
-          <a href="control_edit_attribute?attrib=ldapcluster&set=0">disable clustering</a>
+          <a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=ldapcluster&set=1">enable clustering</a> |
+          <a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=ldapcluster&set=0">disable clustering</a>
         </td>
       </tr>
 
@@ -61,11 +61,13 @@ function ldapcluster_print_view($host) {
 }
 
 function ldapcluster_print_form(){
+	global $mxhost;
+
 	// don't print form, save directly
-	ldapcluster_save("modify");
+	ldapcluster_save("modify", $mxhost);
 }
 
-function ldapcluster_save($type){
+function ldapcluster_save($type, $host) {
 	global $_pql_control, $set;
 
 	// recontrol values

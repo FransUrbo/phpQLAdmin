@@ -3,7 +3,7 @@
 // concurrencylocal (may simultaneous local deliveries)
 // concurrencyremote (may simultaneous remote deliveries)
 //
-// $Id: attrib.control.concurrencylocal.inc,v 2.5 2003-05-01 10:18:26 turbo Exp $
+// $Id: attrib.control.concurrencylocal.inc,v 2.6 2003-05-05 14:11:12 turbo Exp $
 
 function concurrencylocal_check($type) {
 	global $error, $concurrencylocal, $concurrencyremote;
@@ -80,7 +80,7 @@ function concurrencylocal_print_view($host) {
       </tr>
 
       <tr class="subtitle">
-        <td colspan="2"><a href="control_edit_attribute.php?attrib=concurrencylocal"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
+        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=concurrencylocal"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
       </tr>
     </th>
   </table>
@@ -89,7 +89,7 @@ function concurrencylocal_print_view($host) {
 }
 
 function concurrencylocal_print_form(){
-	global $attrib, $concurrencylocal, $concurrencyremote, $PHP_SELF, $error;
+	global $attrib, $concurrencylocal, $concurrencyremote, $PHP_SELF, $error, $mxhost;
 
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
@@ -113,13 +113,14 @@ function concurrencylocal_print_form(){
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
 <?php
 }
 
-function concurrencylocal_save($type){
+function concurrencylocal_save($type, $host) {
 	global $_pql_control, $attrib, $concurrencylocal, $concurrencyremote, $error, $mxhost;
 
 	// recontrol values

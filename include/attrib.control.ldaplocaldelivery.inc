@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldaplocaldelivery (search for local account, if ldap search is not successful)
 //
-// $Id: attrib.control.ldaplocaldelivery.inc,v 2.3 2002-12-18 16:28:46 turbo Exp $
+// $Id: attrib.control.ldaplocaldelivery.inc,v 2.4 2003-05-05 14:11:12 turbo Exp $
 
 function ldaplocaldelivery_check($type) {
 	// check values
@@ -48,8 +48,8 @@ function ldaplocaldelivery_print_view($host) {
 
       <tr class="subtitle">
         <td>
-          <a href="control_edit_attribute?attrib=ldaplocaldelivery&set=1">enable local lookup</a> |
-          <a href="control_edit_attribute?attrib=ldaplocaldelivery&set=0">disable local lookup</a>
+          <a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=ldaplocaldelivery&set=1">enable local lookup</a> |
+          <a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=ldaplocaldelivery&set=0">disable local lookup</a>
         </td>
       </tr>
     </th>
@@ -59,8 +59,10 @@ function ldaplocaldelivery_print_view($host) {
 }
 
 function ldaplocaldelivery_print_form(){
+	global $mxhost;
+
 	// don't print form, save directly
-	ldaplocaldelivery_save("modify");
+	ldaplocaldelivery_save("modify", $mxhost);
 }
 
 function ldaplocaldelivery_save($type, $host) {

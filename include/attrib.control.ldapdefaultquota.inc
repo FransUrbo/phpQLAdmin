@@ -2,7 +2,7 @@
 // control attribute plugin for
 // $ldapdefaultquota (default quota for all mail users)
 
-// $Id: attrib.control.ldapdefaultquota.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
+// $Id: attrib.control.ldapdefaultquota.inc,v 2.5 2003-05-05 14:11:12 turbo Exp $
 
 function ldapdefaultquota_check($type){
 	global $options, $use_maxsize, $use_maxmails, $maxsize, $maxmails, $error;
@@ -100,7 +100,7 @@ function ldapdefaultquota_print_view($host) {
 
       <tr class="subtitle">
         <td>
-          <a href="control_edit_attribute?attrib=ldapdefaultquota"><img src="images/edit.png" width="12" height="12" border="0">change default quota</a>
+          <a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=ldapdefaultquota"><img src="images/edit.png" width="12" height="12" border="0">change default quota</a>
         </td>
       </tr>
     </th>
@@ -109,7 +109,7 @@ function ldapdefaultquota_print_view($host) {
 }
 
 function ldapdefaultquota_print_form($type = "modify"){
-	global $use_maxmails, $use_maxsize, $maxmails, $maxsize, $options, $PHP_SELF, $attrib, $error;
+	global $use_maxmails, $use_maxsize, $maxmails, $maxsize, $options, $PHP_SELF, $attrib, $error, $mxhost;
 
 ?>
   <form action="<?=$PHP_SELF?>" method="post">
@@ -138,6 +138,7 @@ function ldapdefaultquota_print_form($type = "modify"){
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
     <input type="submit" value="<?=PQL_LANG_SAVE?>">
   </form>
 <?php

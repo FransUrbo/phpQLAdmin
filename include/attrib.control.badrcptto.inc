@@ -2,7 +2,7 @@
 // control attribute plugin for
 // badrcptto (blocked local addresses)
 //
-// $Id: attrib.control.badrcptto.inc,v 2.5 2003-05-01 10:18:26 turbo Exp $
+// $Id: attrib.control.badrcptto.inc,v 2.6 2003-05-05 14:11:12 turbo Exp $
 
 function badrcptto_check($type) {
 	global $error, $badrcptto;
@@ -83,7 +83,7 @@ function badrcptto_print_view($host) {
 	} // end if is_array
 ?>
       <tr class="subtitle">
-        <td><a href="control_edit_attribute.php?attrib=badrcptto"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
+        <td><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=badrcptto"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
       </tr>
     </th>
   </table>
@@ -92,7 +92,7 @@ function badrcptto_print_view($host) {
 }
 
 function badrcptto_print_form(){
-	global $attrib, $PHP_SELF, $error, $badrcptto, $badcount;
+	global $attrib, $PHP_SELF, $error, $badrcptto, $badcount, $mxhost;
 
 	if(($badcount < count($badrcptto) - 1) and count($badrcptto) != 0){
 		$badcount = count($badrcptto) - 1;
@@ -128,13 +128,14 @@ function badrcptto_print_form(){
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
 <?php
 }
 
-function badrcptto_save($type){
+function badrcptto_save($type, $host) {
 	global $_pql_control, $attrib, $badrcptto, $error, $mxhost;
 
 	// recontrol values

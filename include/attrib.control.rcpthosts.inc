@@ -2,7 +2,7 @@
 // control attribute plugin for
 // rcpthosts (blocked local addresses)
 //
-// $Id: attrib.control.rcpthosts.inc,v 2.7 2003-05-01 10:18:27 turbo Exp $
+// $Id: attrib.control.rcpthosts.inc,v 2.8 2003-05-05 14:11:12 turbo Exp $
 
 function rcpthosts_check($type){
     global $error, $rcpthosts;
@@ -94,7 +94,7 @@ function rcpthosts_print_view($host) {
 }
 
 function rcpthosts_print_form(){
-    global $attrib, $PHP_SELF, $error, $rcpthosts, $mxhost;
+    global $attrib, $PHP_SELF, $error, $rcpthosts, $mxhost, $mxhost;
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -107,6 +107,7 @@ function rcpthosts_print_form(){
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>

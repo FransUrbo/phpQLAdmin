@@ -3,7 +3,7 @@
 // timeoutconnect (how long to wait for smtp connection)
 // timeoutremote (how long to wait for remote server)
 //
-// $Id: attrib.control.timeoutconnect.inc,v 2.5 2003-05-01 10:18:27 turbo Exp $
+// $Id: attrib.control.timeoutconnect.inc,v 2.6 2003-05-05 14:11:12 turbo Exp $
 
 function timeoutconnect_check($type) {
 	global $error, $timeoutconnect, $timeoutremote;
@@ -88,7 +88,7 @@ function timeoutconnect_print_view($host) {
       </tr>
 
       <tr class="subtitle">
-        <td colspan="2"><a href="control_edit_attribute.php?attrib=timeoutconnect"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
+        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=timeoutconnect"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
       </tr>
     </th>
   </table>
@@ -97,7 +97,7 @@ function timeoutconnect_print_view($host) {
 }
 
 function timeoutconnect_print_form(){
-	global $attrib, $timeoutconnect, $timeoutremote, $PHP_SELF, $error;
+	global $attrib, $timeoutconnect, $timeoutremote, $PHP_SELF, $error, $mxhost;
 
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
@@ -121,13 +121,14 @@ function timeoutconnect_print_form(){
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
 <?php
 }
 
-function timeoutconnect_save($type){
+function timeoutconnect_save($type, $host) {
 	global $_pql_control, $attrib, $timeoutconnect, $timeoutremote, $error, $mxhost;
 
 	// recontrol values

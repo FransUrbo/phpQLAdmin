@@ -2,7 +2,7 @@
 // control attribute plugin for
 // maxrcptcount (maximum number of RCPT TO's)
 //
-// $Id: attrib.control.maxrcptcount.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
+// $Id: attrib.control.maxrcptcount.inc,v 2.5 2003-05-05 14:11:12 turbo Exp $
 
 function maxrcptcount_check($type) {
 	global $error, $maxrcptcount;
@@ -56,7 +56,7 @@ function maxrcptcount_print_view($host) {
       </tr>
 
       <tr class="subtitle">
-        <td colspan="2"><a href="control_edit_attribute.php?attrib=maxrcptcount"><img src="images/edit.png" width="12" height="12" border="0">Change options</a></td>
+        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=maxrcptcount"><img src="images/edit.png" width="12" height="12" border="0">Change options</a></td>
       </tr>
     </th>
   </table>
@@ -65,7 +65,7 @@ function maxrcptcount_print_view($host) {
 }
 
 function maxrcptcount_print_form() {
-	global $attrib, $maxrcptcount, $PHP_SELF, $error;
+	global $attrib, $maxrcptcount, $PHP_SELF, $error, $mxhost;
 
 ?>
   <form action="<?=$PHP_SELF?>" method="post">
@@ -84,6 +84,7 @@ function maxrcptcount_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?=$attrib?>">
+    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
     <input type="submit" value="<?=PQL_LANG_SAVE?>">
   </form>
 <?php
