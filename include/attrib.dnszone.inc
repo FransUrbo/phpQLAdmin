@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.14 2005-01-30 12:27:58 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.15 2005-01-31 11:47:28 turbo Exp $
 
 // {{{ attribute_translate_type(attrib)
 function attribute_translate_type($attrib) {
@@ -150,20 +150,9 @@ function attribute_print_form() {
       <input type="hidden" name="oldvalue"        value="<?=$prio." ".$_REQUEST["oldvalue"]?>">
 <?php		} else { ?>
       <input type="hidden" name="oldvalue"        value="<?=$_REQUEST["oldvalue"]?>">
-<?php		}
-
-			if(lc($attrib) == 'mxrecord') {
-?>
-      <input type="hidden" name="type"            value="mx">
-<?php		} elseif(lc($attrib) == 'nsrecord') { ?>
-      <input type="hidden" name="type"            value="ns">
-<?php		} elseif(lc($attrib) == pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")) { ?>
-      <input type="hidden" name="type"            value="host">
-<?php		} else { ?>
-      <input type="hidden" name="oldtype"         value="<?=$attrib?>">
-<?php		}
-		}
-?>
+<?php		} ?>
+      <input type="hidden" name="type"            value="<?=$type?>">
+<?php	} ?>
       <input type="hidden" name="domain"          value="<?=urlencode($_REQUEST["domain"])?>">
       <input type="hidden" name="rootdn"          value="<?=urlencode($_REQUEST["rootdn"])?>">
       <input type="hidden" name="view"            value="<?=$_REQUEST["view"]?>">
@@ -345,7 +334,7 @@ function attribute_save($action) {
 
 	if($success) {
 	  // Successfully modified the zone - update the serial number in the SOA
-	  if(!pql_bind9_update_serial($_pql, $dn))
+	  if(!pql_bind9_update_serial($_pql->ldap_linkid, $dn))
 		die("failed to update ".$soa["dn"].":".pql_get_define("PQL_ATTR_SOARECORD")." with value $serial_new<br>");  
 	}
 
