@@ -26,6 +26,11 @@ phpQLAdmin 2.0.15 Release (TO BE ANNOUNCED)
 	    + Correct the links to the user(s) detail page (missing user
 	      DN).
 	    Closes bug 18
+	  - Slightly change how pql_domain_exist() works. This makes it
+	    easier to verify the existence of a domain deep down the tree.
+	    + With this corrected, phpQLAdmin will not say that it couldn't
+	      delete the branch even if it was removed from the database.
+	    Closes bug 17
 
 	GUI layout change
 	  - Possibility to set a value in the domain branch saying we

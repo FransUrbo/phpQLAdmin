@@ -32,8 +32,7 @@ if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 // check if domain exist
-$dc = ldap_explode_dn($domain, 0); $dc = split('=', $dc[0]);
-if(!pql_domain_exist($_pql, $dc[1])){
+if(!pql_domain_exist($_pql, $domain)){
     echo "Domain &quot;$domain&quot; does not exists<br><br>";
 	echo "Is this perhaps a Top Level DN (namingContexts), and you haven't configured ";
 	echo "how to reference domains/branches in this database!?<br><br>";

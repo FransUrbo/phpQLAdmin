@@ -9,8 +9,7 @@ require("./include/pql_control.inc");
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 // check if domain exist
-$dc = ldap_explode_dn($domain, 0); $dc = split('=', $dc[0]);
-if(!pql_domain_exist($_pql, $dc[1])){
+if(!pql_domain_exist($_pql, $domain)){
 	echo "Domain &quot;$domain&quot; does not exists";
 	exit();
 }

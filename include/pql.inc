@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.83 2003-06-13 14:14:11 turbo Exp $
+// $Id: pql.inc,v 2.84 2003-06-18 09:44:30 turbo Exp $
 //
 
 // ----------------------------
@@ -474,8 +474,7 @@ function pql_domain_del($ldap, $domain, $delete_forwards) {
 		header("Location: " . $config["PQL_GLOB_URI"] . "domain_detail.php?domain=$domain&msg=$msg");
 	}
 
-	$dc = ldap_explode_dn($domain, 0); $dc = split('=', $dc[0]);
-    if(!pql_domain_exist($ldap, $dc[1])) {
+    if(!pql_domain_exist($ldap, $domain)) {
 		// domain does not exist
 		return false;
     }
@@ -576,12 +575,10 @@ function pql_domain_exist($ldap, $domain, $rootdn = '') {
 	$domain = maybe_encode($domain);
 
 	if(!$rootdn) {
-		foreach($ldap->ldap_basedn as $dn) {
-			$filter = '('.$config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$dn].'='.$domain.')';
-			$sr = ldap_search($ldap->ldap_linkid, $dn, $filter);
-			if(ldap_count_entries($ldap->ldap_linkid, $sr) > 0)
-			  return true;
-		}
+		$filter = '(objectClass=phpQLAdminBranch)';
+		$sr = ldap_read($ldap->ldap_linkid, $domain, $filter);
+		if(ldap_count_entries($ldap->ldap_linkid, $sr) > 0)
+		  return true;
 	} else {
 		$filter = '('.$config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$rootdn].'='.$domain.')';
 		$sr = ldap_search($ldap->ldap_linkid, $rootdn, $filter);
