@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.10 2004-03-19 10:46:42 turbo Exp $
+// $Id: user_add-save.inc,v 1.11 2004-03-26 11:25:23 turbo Exp $
 
 // Find out what objectclasses to use when creating user
 $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"]));
@@ -80,9 +80,6 @@ if($_REQUEST["account_type"] == "forward") {
 	$entry[pql_get_define("PQL_ATTR_MODE")][]	= "forwardonly";
 	$entry[pql_get_define("PQL_ATTR_MODE")][]	= "nombox";
 	
-	// Even forward accounts need UIDNumber! (?!?)
-	$entry[pql_get_define("PQL_ATTR_QMAILUID")] = pql_get_define("PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER", $_REQUEST["rootdn"]);
-	$entry[pql_get_define("PQL_ATTR_QMAILGID")] = pql_get_define("PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER", $_REQUEST["rootdn"]);
 	if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
 	  $entry[pql_get_define("PQL_ATTR_HOMEDIR")]= "/tmp";
 } else {
