@@ -94,9 +94,9 @@ $url["del"] = $url_tmp . "submit=4&action=delete&view=$view&attrib=filtermember"
 pql_format_table_single($_pql->ldap_linkid, $txt, $url, $filtermember, 'filtermember');
 
 // RFC822Member
-$txt["tit"] = $LANG->_('RFC822 member DN(s)');
-$txt["add"] = $LANG->_('Add rfc822 member');
-$txt["del"] = $LANG->_('Delete rfc822 member');
+$txt["tit"] = $LANG->_('Subscriber addresses');
+$txt["add"] = $LANG->_('Add subscriber');
+$txt["del"] = $LANG->_('Delete subscriber');
 $url["add"] = $url_tmp . "submit=3&action=add&view=$view&attrib=rfc822member";
 $url["del"] = $url_tmp . "submit=4&action=delete&view=$view&attrib=rfc822member";
 pql_format_table_single($_pql->ldap_linkid, $txt, $url, $rfc822member, 'rfc822member');
@@ -123,9 +123,9 @@ $url["del"] = $url_tmp . "submit=4&action=delete&view=$view&attrib=filtersender"
 pql_format_table_single($_pql->ldap_linkid, $txt, $url, $filtersender, 'filtersender');
 
 // RFC822Sender
-$txt["tit"] = $LANG->_('RFC822 sender DN(s)');
-$txt["add"] = $LANG->_('Add rfc822 sender');
-$txt["del"] = $LANG->_('Delete rfc822 sender');
+$txt["tit"] = $LANG->_('Allowed sender address(es)');
+$txt["add"] = $LANG->_('Add allowed sender');
+$txt["del"] = $LANG->_('Delete allowed sender');
 $url["add"] = $url_tmp . "submit=3&action=add&view=$view&attrib=rfc822sender";
 $url["del"] = $url_tmp . "submit=4&action=delete&view=$view&attrib=rfc822sender";
 pql_format_table_single($_pql->ldap_linkid, $txt, $url, $rfc822sender, 'rfc822sender');
@@ -144,9 +144,9 @@ $url["del"] = $url_tmp . "submit=4&action=delete&view=$view&attrib=dnmoderator";
 pql_format_table_single($_pql->ldap_linkid, $txt, $url, $dnmoderator, 'dnmoderator');
 
 // RFC822Moderator
-$txt["tit"] = $LANG->_('RFC822 Moderator DN(s)');
-$txt["add"] = $LANG->_('Add RFC822 moderator');
-$txt["del"] = $LANG->_('Delete RFC822 moderator');
+$txt["tit"] = $LANG->_('Moderator address(es)');
+$txt["add"] = $LANG->_('Add moderator');
+$txt["del"] = $LANG->_('Delete moderator');
 $url["add"] = $url_tmp . "submit=3&action=add&view=$view&attrib=rfc822moderator";
 $url["del"] = $url_tmp . "submit=4&action=delete&view=$view&attrib=rfc822moderator";
 pql_format_table_single($_pql->ldap_linkid, $txt, $url, $rfc822moderator, 'rfc822moderator');
