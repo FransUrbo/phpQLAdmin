@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_detail.php,v 1.10 2002-12-26 01:05:59 turbo Exp $
+// $Id: ezmlm_detail.php,v 1.11 2003-01-14 07:24:23 turbo Exp $
 //
 session_start();
 
@@ -7,6 +7,11 @@ require("./include/pql.inc");
 require("./include/pql_ezmlm.inc");
 
 $_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
+
+// print status message, if one is available
+if(isset($msg)){
+    print_status_msg($msg);
+}
 
 if($domain) {
 	// Get base directory for mails
@@ -43,7 +48,7 @@ if($domain) {
         <td><?=$listname."@".$listdomain?></td>
         <td align="right"><?=$ezmlm->mailing_lists[$listno]["subscribers"]?></td>
         <td><?=$ezmlm->mailing_lists[$listno]["owner"]?></td>
-        <td><a href="ezmlm_detail.php?domain=<?=$domain?>&domainname=<?=$domainname?>&listno=<?=$listno?>"><img src="images/edit.png" width="12" height="12" alt="edit list" border="0"></a>&nbsp;&nbsp;<a href="ezmlm_del.php?listno=<?=$listno?>"><img src="images/del.png" width="12" height="12" alt="delete list" border="0"></a></td>
+        <td><a href="ezmlm_detail.php?domain=<?=$domain?>&domainname=<?=$domainname?>&listno=<?=$listno?>"><img src="images/edit.png" width="12" height="12" alt="edit list" border="0"></a>&nbsp;&nbsp;<a href="ezmlm_del.php?domain=<?=$domain?>&domainname=<?=$domainname?>&listno=<?=$listno?>"><img src="images/del.png" width="12" height="12" alt="delete list" border="0"></a>&nbsp;&nbsp;<a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&domainname=<?=$domainname?>&listno=<?=$listno?>&attrib=subscriber">add subscriber</a></td>
       </tr>
 <?php
 			}
@@ -130,18 +135,13 @@ if($domain) {
 ?>
       </tr>
 <?php
-			if($key == 'subscriber') {
-				// It's a list of subscribers - show 'add new subscriber'
+		}
 ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td></td>
         <td><a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&domainname=<?=$domainname?>&listno=<?=$listno?>&attrib=subscriber">add subscriber</a></td>
         <td></td>
       </tr>
-<?php
-			}
-		}
-?>
     </th>
   </table>
 
