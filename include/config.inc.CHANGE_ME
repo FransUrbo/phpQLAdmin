@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.27 2003-05-08 06:11:42 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.28 2003-06-10 12:47:01 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -196,24 +196,22 @@ function user_generate_homedir($ldap, $email, $dn, $entry) {
 // This function is called to suggest a value for the uid when you add an user.
 // You may add some code here or just uncomment one of the examples below. 
 // Input parameters:
-// (resource)	ldap_linkid 	-	A LDAP link identifier 
-// (string)		ldap_basedn 	- 	the dn path to the current qmail-ldap database  
+// (resource)	ldap		 	-	A LDAP resource identifier 
 // (string)		surname 		- 	surname  
 // (string)		name	 		- 	name
-// (string)		email			-	local part of the email-address
-// (string)		domain			-	domain in which you create the user
+// (string)		email			-	complete email-address
+// (string)		domain			-	branch in which you create the user
 // (string)		account_type	-	Chosen account type; "normal" or "forward"  
 //
 // Returns: (string) suggested uid; may be changed by the user
-function user_generate_uid($ldap_linkid, $ldap_basedn, $surname, $name, $email, $domain, $account_type) {
+function user_generate_uid($ldap, $surname, $name, $email, $domain, $account_type) {
 	global $config;
 
-	//	return($email);							// only the local part of the email-address				
-	//	return($email . '@' . $domain);			// complete email-address
-	//	return($email . '%' . $domain);			// complete email-address but '%' instead of '@'
-	//	return($email . '_' . $domain);			// complete email-address but '_' instead of '@'
-	//	return($surname . $name);				// "Surname Name"
-	//	return(substr($surname, 0, 1) . $name);	// First character of ther surname + complete name
+	//	return($email);							// Complete email address
+	//	return(eregi_replace('@', '%',$email));	// complete email-address but '%' instead of '@'
+	//	return(eregi_replace('@', '_',$email));	// complete email-address but '_' instead of '@'
+	//	return($surname . $name);				// "Firstname Lastname"
+	//	return(substr($surname, 0, 1) . $name);	// First character of ther surname + complete lastname
 }
 
 /*
