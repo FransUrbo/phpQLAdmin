@@ -84,6 +84,23 @@ if(!is_array($domains)){
     $SINGLE_USER = 1; session_register("SINGLE_USER");
 
     $cn = pql_get_userattribute($_pql->ldap_linkid, $USER_DN, PQL_LDAP_ATTR_CN); $cn = $cn[0];
+
+    // Try to get the DN of the domain
+    $dnparts = ldap_explode_dn($USER_DN, 0);
+    for($i=1; $dnparts[$i]; $i++) {
+	// Traverse the users DN backwards
+	$DN = $dnparts[$i];
+	for($j=$i+1; $dnparts[$j]; $j++)
+	  $DN .= "," . $dnparts[$j];
+	
+	// Look in DN for attribute 'defaultdomain'.
+	$defaultdomain = pql_get_domain_value($_pql, $DN, 'defaultdomain');
+	if($defaultdomain) {
+	    // A hit. This is the domain under which the user is located.
+	    $domain = $DN;
+	    break;
+	}
+    }
 ?>
   <br>
 
