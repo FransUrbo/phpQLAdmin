@@ -126,7 +126,7 @@ if($ADVANCED_MODE == 1) {
 <?php
 			}
 ?>
-        <td><a href="user_detail.php?user=<?=$admin?>"><?=urldecode($username)?></a></td>
+        <td><a href="user_detail.php?domain=<?=$domain?>&user=<?=$admin?>"><?=urldecode($username)?></a></td>
         <td>
           <a href="domain_edit_attributes.php?attrib=administrator&domain=<?=$domain?>&administrator=<?=$admin?>&submit=3&action=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify administrators for <?=$domain?>"></a>&nbsp;
           <a href="domain_edit_attributes.php?attrib=administrator&domain=<?=$domain?>&administrator=<?=$admin?>&submit=4&action=delete"><img src="images/del.png" width="12" height="12" alt="<?=PQL_DOMAIN_ADMIN_DELETE?>" border="0"></a>
@@ -227,7 +227,7 @@ if($ADVANCED_MODE == 1) {
 <?php
 			}
 ?>
-        <td><a href="user_detail.php?user=<?=$sa?>"><?=urldecode($username)?></a></td>
+        <td><a href="user_detail.php?domain=<?=$domain?>&user=<?=$sa?>"><?=urldecode($username)?></a></td>
         <td>
           <a href="domain_edit_attributes.php?attrib=seealso&seealso=<?=$sa?>&submit=3&action=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify contact persons for <?=$o?>"></a>&nbsp;
           <a href="domain_edit_attributes.php?attrib=seealso&seealso=<?=$sa?>&submit=4&action=delete"><img src="images/del.png" width="12" height="12" alt="Remove contact person from <?=$o?>" border="0"></a>

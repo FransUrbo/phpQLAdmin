@@ -15,7 +15,7 @@ function attribute_forward($msg, $rlnb = false){
     global $domain, $user;
     
     $msg = urlencode($msg);
-    $url = "user_detail.php?user=" . urlencode($user) . "&msg=$msg";
+    $url = "user_detail.php?domain=$domain&user=$user&msg=$msg";
     if ($rlnb) {
 	$url .= "&rlnb=1";
     }
