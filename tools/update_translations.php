@@ -2,7 +2,7 @@
 // ----------------------------
 // pql_update_translations.php
 //
-// $Id: update_translations.php,v 2.5.4.1 2005-02-12 05:19:17 turbo Exp $
+// $Id: update_translations.php,v 2.5.4.2 2005-02-16 13:47:44 turbo Exp $
 //
 
 // ----------------------------
@@ -15,7 +15,7 @@
 // be more in line with the rest of the phpQLAdmin
 // package.
 
-require_once("./include/pql_config.inc");
+require_once("../include/pql_config.inc");
 	
 $outputFile = "translations/lang.new.inc";
 $baseDir = ".\/"; // were we start searching for strings
