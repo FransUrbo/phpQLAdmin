@@ -2,7 +2,7 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.3 2002-12-18 16:28:46 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.4 2003-01-10 18:10:56 turbo Exp $
 
 function locals_check($type){
     global $error, $locals;
@@ -144,7 +144,7 @@ function locals_print_form(){
 }
 
 function locals_save($type, $host){
-    global $_pql, $_pql_control, $attrib, $locals, $set, $error;
+    global $_pql, $_pql_control, $attrib, $locals, $set, $error, $host;
     
     // recontrol values
     if(!locals_check($type)){
@@ -182,6 +182,7 @@ function locals_save($type, $host){
 		$msg = urlencode($msg);
 		header("Location: " . PQL_URI . "domain_detail.php?domain=$set&msg=$msg");
 		break;
+
       case "add":
 		// add entry
 		
@@ -196,8 +197,8 @@ function locals_save($type, $host){
 		
 		$msg = urlencode($msg);
 		header("Location: " . PQL_URI . "domain_detail.php?domain=$set&msg=$msg");
-		
 		break;
+
       case "modify":
 		// save entries
 		
