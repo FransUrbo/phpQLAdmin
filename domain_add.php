@@ -1,8 +1,8 @@
 <?php
 // add a domain
-// $Id: domain_add.php,v 2.56 2005-02-24 17:04:00 turbo Exp $
+// $Id: domain_add.php,v 2.56.2.1 2005-03-04 11:59:44 turbo Exp $
 //
-session_start();
+require("./include/pql_session.inc");
 require("./include/pql_config.inc");
 
 $url["domain"]		  = pql_format_urls($_REQUEST["domain"]);
