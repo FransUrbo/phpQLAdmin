@@ -1,6 +1,6 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.19 2003-06-12 16:47:18 turbo Exp $
+// $Id: ezmlm_add.php,v 1.20 2003-06-18 12:52:53 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -262,7 +262,7 @@ if(!$domain) {
             </tr>
 
             <tr class="<?php table_bgcolor(); ?>">
-              <td><input type="checkbox" name="subonly" accesskey="u"<?=$onchg?><?=$checked["trailers"]?>></td>
+              <td><input type="checkbox" name="subonly" accesskey="u"<?=$onchg?><?=$checked["subonly"]?>></td>
               <td class="title">Allow only s<u>u</u>bscribers posts</td>
             </tr>
 
