@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.34 2003-07-03 07:25:54 turbo Exp $
+// $Id: pql_config.inc,v 1.35 2003-07-03 08:35:50 turbo Exp $
 //
 
 // We need this instead of define(), so that we can get rid
@@ -47,15 +47,9 @@ function pql_get_define($define, $dn = NULL) {
 
 	if($dn) {
 		$dn = urldecode($dn);
-
-		if($config[$define][$dn])
-		  return($config[$define][$dn]);
-		elseif($config[$define])
-		  return($config[$define]);
-	} else {
-		if($config[$define])
-		  return($config[$define]);
-	}
+		return($config[$define][$dn]);
+	} else
+	  return($config[$define]);
 }
 
 // ----------------------------
