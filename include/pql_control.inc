@@ -4,13 +4,13 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.10 2003-04-04 16:37:51 turbo Exp $
+// $Id: pql_control.inc,v 2.11 2003-04-30 07:32:13 turbo Exp $
 //
 // version history:
 // $Log: pql_control.inc,v $
-// Revision 2.10  2003-04-04 16:37:51  turbo
-// * Prefix global settings with PQL_GLOB_ (not mix with PQL_CONF_)
-//   + Use $config variable instead of old constants
+// Revision 2.11  2003-04-30 07:32:13  turbo
+// * Make sure that the global $config array is visible in the constructor,
+//   othervise we'll return false (PQL_GLOB_CONTROL_USE isn't set).
 //
 // Revision 1.2  2001/09/06 11:36:24  mb
 // added no_connect option to pql_control-class
@@ -59,13 +59,13 @@
 
 class pql_control extends pql {
     function pql_control($host, $binddn = "", $bindpw = "", $no_connect = false){
-		// call constructor of parent class
-	
-		if(!$config["PQL_GLOB_CONTROL_USE"]) {
-			// control patch is not enabled, leave
-			return false;
-		}
+		global $config;
+
+		if(!$config["PQL_GLOB_CONTROL_USE"])
+		  // control patch is not enabled, leave
+		  return false;
 		
+		// call constructor of parent class
 		$this->pql($host, $binddn, $bindpw, $no_connect);
     }
 }
@@ -74,10 +74,10 @@ class pql_control extends pql {
 // PQL - Control - API functions
 // ------------------------------------------------
 
-function pql_control_get_attribute($ldap_linkid, $ldap_control_basedn, $attribute) {
+function pql_control_get_attribute($linkid, $dn, $attribute) {
     // get a specified option
-    $sr   = @ldap_read($ldap_linkid, $ldap_control_basedn, "(objectClass=qmailControl)", array($attribute));
-    $info = @ldap_get_entries($ldap_linkid, $sr);
+    $sr   = ldap_read($linkid, $dn, "(objectClass=qmailControl)", array($attribute));
+    $info = ldap_get_entries($linkid, $sr);
     
     for ($i=0; $i < $info[0][$attribute]["count"]; $i++) {
 		$attrib[] = $info[0][$attribute][$i];
