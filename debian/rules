@@ -59,6 +59,7 @@ install: build
 	  ln -s /etc/phpqladmin/config_plugins.inc config_plugins.inc; \
 	  ln -s /etc/phpqladmin/defaults.inc defaults.inc; \
 	)
+	chmod -x debian/phpqladmin/etc/phpqladmin/*
 
 # Build architecture-independent files here.
 binary-indep: build install
