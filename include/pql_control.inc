@@ -4,18 +4,12 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.7 2003-01-28 13:09:41 turbo Exp $
+// $Id: pql_control.inc,v 2.8 2003-03-29 15:15:29 turbo Exp $
 //
 // version history:
 // $Log: pql_control.inc,v $
-// Revision 2.7  2003-01-28 13:09:41  turbo
-// * Functions pql_control_update_domains() and pql_control_remove_attribute()
-//   changed quite drastically, update all references to them.
-// * Function pql_control_update_domains() was rewritten to work with new
-//   domain/branch/user reference system, and to allow for changing ALL QmailLDAP
-//   server objects in one go and to get automatic locals update working (ie,
-//   update locals when modifying defaultDomain for a branch, or when adding
-//   a new domain/branch).
+// Revision 2.8  2003-03-29 15:15:29  turbo
+// If the LDAP base DN in searching for control attribute is empty, return. This could happen if there is no (correct) Control DN search base configured etc.
 //
 // Revision 1.2  2001/09/06 11:36:24  mb
 // added no_connect option to pql_control-class
@@ -130,7 +124,12 @@ function pql_control_replace_attribute($ldap_linkid, $ldap_control_basedn, $attr
 
 // ------------------------------------------------
 
-function pql_control_search_attribute($ldap_linkid, $ldap_basedn, $attribute, $value){
+function pql_control_search_attribute($ldap_linkid, $ldap_basedn, $attribute, $value) {
+	if(!$ldap_basedn) {
+		// Just incase there is no QmailLDAP/Controls object/DN
+		return false;
+	}
+
     // search $attribute with $value in whole ldap tree, returns dn or false
     $filter = "(" . $attribute . "=" . $value . ")";
     $sr = @ldap_search($ldap_linkid, $ldap_basedn, $filter, array($attribute));
