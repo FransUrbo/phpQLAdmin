@@ -16,7 +16,7 @@
   <br>
 
   <table cellspacing="0" cellpadding="3" border="0" size="100%">
-    <th colspan="3" align="left"><?=$LANG->_('Domainname')?>: <?=pql_bind9_maybe_decode($dns_domain_name)?>
+    <th colspan="3" align="left"><?=$LANG->_('Domainname')?>: <?=pql_maybe_idna_decode($dns_domain_name)?>
       <tr class="title">
         <td class="title"><?=$LANG->_('SOA Record')?></td>
         <td><?=$LANG->_('SOA Value')?></td>
