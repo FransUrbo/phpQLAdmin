@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.70 2003-05-08 06:15:33 turbo Exp $
+// $Id: pql.inc,v 2.71 2003-05-08 09:20:44 turbo Exp $
 //
 
 // ----------------------------
@@ -1563,14 +1563,16 @@ function pql_get_mx($ldap, $domainname) {
 		// Not found in the DNS, look for a qmailControl object which lists
 		// this domain...
 
-		$filter = "(&(objectclass=qmailControl)(|(locals=$domainname)(rcpthosts=$domainname)))";
-		foreach($ldap->ldap_basedn as $dn) {
-			$sr = @ldap_search($ldap->ldap_linkid, $dn, $filter) or pql_errormsg($ldap->ldap_linkid);
-			$info = ldap_get_entries($ldap->ldap_linkid, $sr) or pql_errormsg($ldap->ldap_linkid);
-			for ($i=0; $i<$info["count"]; $i++) {
-				return(array(0, $info[$i]["cn"][0]));
-			}
-		}
+		$filter = "(&(objectclass=qmailControl)(locals=$domainname))";
+		$sr = @ldap_search($ldap, $GLOBALS["USER_SEARCH_DN_CTR"], $filter)
+		  or pql_errormsg($ldap);
+
+		$info = ldap_get_entries($ldap, $sr)
+		  or pql_errormsg($ldap);
+		for($i=0; $i<$info["count"]; $i++)
+		  for($j=0; $j<$info[$i]["locals"]["count"]; $j++)
+			if($info[$i]["locals"][$j] == $domainname)
+			  return(array(0, $info[$i]["cn"][0]));
 
 		return(array(0,0));
 	} else {
