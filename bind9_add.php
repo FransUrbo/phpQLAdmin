@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.15 2005-01-30 10:34:59 turbo Exp $
+// $Id: bind9_add.php,v 2.16 2005-01-30 12:25:40 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -45,7 +45,7 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 			$msg = "Failed to add domain ".$_REQUEST["domainname"];
 
 		  $url  = "domain_detail.php?rootdn=".urlencode($_REQUEST["rootdn"])."&domain=".urlencode($_REQUEST["domain"]);
-		  $url .= "&view=".$_REQUEST["view"]."&msg=".urlencode($msg);
+		  $url .= "&dns_domain_name=".$_REQUEST["dns_domain_name"]."&view=".$_REQUEST["view"]."&msg=".urlencode($msg);
 
 		  if(file_exists("./.DEBUG_ME"))
 			die($url);
@@ -178,7 +178,8 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 			$msg = "Failed to add ".$_REQUEST["hostname"]." to ".$_REQUEST["domainname"];
 
 		  $msg = urlencode($msg);
-		  $url = "domain_detail.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"]."&view=".$_REQUEST["view"]."&msg=$msg";
+		  $url  = "domain_detail.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"]."&view=".$_REQUEST["view"];
+		  $url .= "&dns_domain_name=".$_REQUEST["dns_domain_name"]."&msg=$msg";
 
 		  if(file_exists("./.DEBUG_ME"))
 			die($url);
