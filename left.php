@@ -11,14 +11,13 @@ require("./include/pql_control_plugins.inc");
 require("./left-head.html");
 
 $_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS, false, 0);
-// TODO: If we're choosing another LDAP server, how do we login?
+// TODO: If we're choosing another LDAP server, how do we login to the new server?
 if($_pql->ldap_error) {
-//    session_unregister("USER_ID");
-//    session_unregister("USER_PASS");
-//    session_unregister("USER_DN");
+    session_unregister("USER_ID");
+    session_unregister("USER_PASS");
+    session_unregister("USER_DN");
 
-//    $_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
-    die("$_pql->ldap_error<a href=\"javascript:window.open('index.php')\" target=_top>Login again</a>");
+    die("$_pql->ldap_error<br><a href=\"index.php\" target=\"_top\">Login again</a>");
 }
 
 // find out if we're to run in ADVANCE/SIMPLE mode
