@@ -16,15 +16,15 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.26 2005-01-30 09:29:36 turbo Exp $
+// $Id: config_attributes.inc,v 2.27 2005-02-05 12:45:08 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
-
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
 pql_set_define("PQL_ATTR_FORWARDS",							strtolower("mailForwardingAddress"),		false);
 pql_set_define("PQL_ATTR_GECOS",							strtolower("gecos"),						false);
 pql_set_define("PQL_ATTR_HOMEDIR",							strtolower("homeDirectory"),				false);
 pql_set_define("PQL_ATTR_ISACTIVE",							strtolower("accountStatus"),				false);
+pql_set_define("PQL_ATTR_ACCOUNT_PURGE",					strtolower("qmailAccountPurge"),			false);
 pql_set_define("PQL_ATTR_EXPIRATION",						strtolower("shadowExpire"),					false);
 pql_set_define("PQL_ATTR_LOGINSHELL",						strtolower("loginShell"),					false);
 pql_set_define("PQL_ATTR_MAIL",								strtolower("mail"),							false);
@@ -43,11 +43,9 @@ pql_set_define("PQL_ATTR_QUOTA_COUNT",						strtolower("mailQuotaCount"),				fal
 pql_set_define("PQL_ATTR_QUOTA_WARNING",					strtolower("quotaWarning"),					false);
 pql_set_define("PQL_ATTR_REPLYTEXT",						strtolower("mailReplyText"),				false);
 pql_set_define("PQL_ATTR_UID",								strtolower("uid"),							false);
-
 // }}}
 
 // {{{ These are the QmailLDAP/Controls attributes.
-
 pql_set_define("PQL_ATTR_BADMAILFROM",						strtolower("badMailFrom"),					false);
 pql_set_define("PQL_ATTR_BADRCPTTO",						strtolower("badRcptTo"),					false);
 pql_set_define("PQL_ATTR_BOUNCEFROM",						strtolower("bounceFrom"),					false);
@@ -103,7 +101,6 @@ pql_set_define("PQL_ATTR_TIMEOUTSMTPD",						strtolower("timeOutSmtpd"),					fal
 pql_set_define("PQL_ATTR_BIGBROTHER",						strtolower("bigBrother"),					false);
 pql_set_define("PQL_ATTR_RBLLIST",							strtolower("rblList"),						false);
 pql_set_define("PQL_ATTR_GOODADDRESS",						strtolower("goodMailAddr"),					false);
-
 // }}}
 
 // {{{ Qmail-Group attributes in QmailLDAP
@@ -266,11 +263,9 @@ $PQL_ATTRIBUTE["GLOBAL"] = array("PQL_CONF_CONTROL_USE"					=> pql_get_define("P
 								 "PQL_CONF_ADMINISTRATOR_EZMLM"	    	=> pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"),
 								 "PQL_CONF_ADMINISTRATOR_CONTROLS"		=> pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
 								 "PQL_CONF_VIRTUAL_BASEHOME"			=> pql_get_define("PQL_ATTR_VIRTUAL_BASEHOME"));
-
 // }}}
 
 // {{{ These are the internal phpQLAdmin attributes - BRANCH configuration
-
 // Toggles
 pql_set_define("PQL_ATTR_SHOW_USERS", 						strtolower('showUsers'),					false);
 pql_set_define("PQL_ATTR_TESTMAIL_AUTOSEND", 				strtolower('autoSend'),						false);
@@ -351,7 +346,6 @@ $PQL_ATTRIBUTE["BRANCH"] = array("PQL_CONF_SHOW_USERS"					=> pql_get_define("PQ
 								 "PQL_CONF_SUBTREE_GROUPS"				=> pql_get_define("PQL_ATTR_SUBTREE_GROUPS"),
 								 "PQL_CONF_EZMLM_USER"					=> pql_get_define("PQL_ATTR_EZMLM_USER"),
 								 "PQL_CONF_VAT_NUMBER"					=> pql_get_define("PQL_ATTR_VAT_NUMBER"));
-
 // }}}
 
 // {{{ These are the internal phpQLAdmin attributes - USER configuration
