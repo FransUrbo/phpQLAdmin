@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailalternateaddress (emailaddress alias)
-// $Id: attrib.mailalternateaddress.inc,v 2.6 2003-04-04 16:37:50 turbo Exp $
+// $Id: attrib.mailalternateaddress.inc,v 2.7 2003-04-29 08:42:59 turbo Exp $
 
 // Construct the emailaddress if it don't contain an at character. Needed later...
 if(($mailalternateaddress != "") && !ereg("@", $mailalternateaddress)) {
@@ -95,7 +95,7 @@ function attribute_save($type){
       case "add":
 	$email = $mailalternateaddress;
 	
-	if(pql_add_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_MAILALTERNATE"], $email)){
+	if(pql_replace_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_MAILALTERNATE"], $email)){
 	    $msg = pql_complete_constant(PQL_LANG_MAILALTERNATEADDRESS_ADD_OK, array("mail" => $email));
 	} else {
 	    $msg = PQL_LANG_MAILALTERNATEADDRESS_ADD_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
