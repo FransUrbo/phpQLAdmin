@@ -15,6 +15,7 @@ phpQLAdmin 2.0.10 TO BE ANNOUNCED
 	  - When running in non-advanced mode, when creating a user both
 	    userhost and host was set, which lead to incorrect creation of
 	    the mailHost attribute.
+	  - Fixing the search engine. Must have been broken for quite a while!
 
 	GUI layout change
 	  - Show the user DN in the left frame and in user details
@@ -68,6 +69,11 @@ phpQLAdmin 2.0.10 TO BE ANNOUNCED
 		krb5AdminCommandPath	1.3.6.1.4.1.8767.3.2.2.17
 	  - Prettify the message output after adding/removing user/domain
 	    etc. Ie, one msg on one line.
+	  - Move the search engine from home to separate page which is
+	    linked from the left frame.
+	  - Instead of showing the search engine on the 'home' page,
+	    it is now located in it's own page, with a link belowed the
+	    Home tree (left frame).
 
 	Misc changes
 	  - Replace all previous defines (constant variables) for
