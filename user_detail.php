@@ -63,7 +63,7 @@ foreach($attribs as $attrib) {
     $attrib = strtolower($attrib);
 
     $value = pql_get_userattribute($_pql->ldap_linkid, $user, $attrib);
-    $$attrib = $value[0];
+    $$attrib = utf8_decode($value[0]);
 
     // Setup edit links
     $link = $attrib . "_link";

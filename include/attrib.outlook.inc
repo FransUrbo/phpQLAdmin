@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for pilotPerson objects etc
-// $Id: attrib.outlook.inc,v 1.3 2003-01-22 09:06:36 turbo Exp $
+// $Id: attrib.outlook.inc,v 1.4 2003-01-30 10:15:37 turbo Exp $
 
 /*
 	Attributes managed here:
@@ -49,6 +49,7 @@ function attribute_init() {
 
 function attribute_print_form() {
     global $user, $domain, $PHP_SELF, $attrib, $$attrib, $oldvalue, $error, $_pql;
+	$$attrib = utf8_decode($$attrib);
 ?>
 
   <form action="<?php echo $PHP_SELF ?>" method="post" name="outlook">
@@ -79,10 +80,7 @@ function attribute_print_form() {
 
 function attribute_save($type) {
     global $user, $domain, $attrib, $$attrib, $oldvalue, $_pql;
-
-// TODO: Only do this if .. ?
-//	$value = urlencode($$attrib);
-	$value = $$attrib;
+	$value = utf8_encode($$attrib);
 
     switch($type){
       case "add":
