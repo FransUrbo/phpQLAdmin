@@ -1,6 +1,6 @@
 <?php
 // Edit and set configuration values in the LDAP database
-// $Id: config_edit_attribute.php,v 1.1 2003-01-18 11:29:43 turbo Exp $
+// $Id: config_edit_attribute.php,v 1.2 2003-01-20 06:24:14 turbo Exp $
 //
 session_start();
 
@@ -10,10 +10,11 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 // forward back to configuration detail page
 function attribute_forward($msg) {
     $msg = urlencode($msg);
-    $url = "config_detail.php&msg=$msg";
+    $url = "config_detail.php?msg=$msg";
     header("Location: " . PQL_URI . "$url");
 }
 
+require("./include/pql_config.inc");
 include("./include/attrib.config.inc");
 include("./header.html");
 ?>
@@ -32,9 +33,6 @@ if($submit == 1) {
 } else {
     attribute_print_form();
 }
-?>
-</body>
-</html>
 
 /*
  * Local variables:
@@ -44,3 +42,5 @@ if($submit == 1) {
  * End:
  */
 ?>
+</body>
+</html>
