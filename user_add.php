@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.94 2004-03-30 06:22:35 turbo Exp $
+// $Id: user_add.php,v 2.95 2004-04-04 07:03:33 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -64,8 +64,15 @@ switch($_REQUEST["page_curr"]) {
 			$$key = pql_format_bool($value);
 		}
 
-		// Verify/Create uid - But only if we're referencing users with UID...
-		if(empty($_REQUEST["uid"]) and $autocreateusername and function_exists('user_generate_uid')) {
+		// Verify/Create uid - But only if:
+		// 1. We haven't specified this ourself (Hmmm, how could we!? We have not been given a choice before this! TODO)
+		// 2. We have set autoCreateUserName to TRUE for this branch/domain
+		// 3. The function 'user_generate_uid()' is defined in include/config.inc.
+		// 4. At least one of the objects we've choosen to use when creating users MAY or MUST the 'uid' attribute..
+		$objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"]));
+		$objectclasses_schema   = pql_get_subschema($_pql->ldap_linkid, 'objectclasses');
+		$res = pql_check_attribute($objectclasses_schema, $objectclasses_included, 'uid');
+		if(empty($_REQUEST["uid"]) and $autocreateusername and function_exists('user_generate_uid') and $res) {
 			// Generate the username
 			$_REQUEST["uid"] = strtolower(user_generate_uid($_pql, $_REQUEST["surname"],
 															$_REQUEST["name"], $email,
