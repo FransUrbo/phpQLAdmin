@@ -2,7 +2,7 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.10 2003-04-04 16:37:50 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.11 2003-05-01 10:01:04 turbo Exp $
 
 function locals_check($type){
     global $error, $locals, $host;
@@ -68,7 +68,7 @@ function locals_print_view($host) {
     if($config["PQL_GLOB_CONTROL_AUTOADDLOCALS"]) {
 ?>
       <tr class="subtitle">
-        <td><a href="control_edit_attribute.php?attrib=locals&type=replicate&host=<?=$host?>&submit=1"><img src="images/edit.png" width="12" height="12" border="0" alt="replicate">Click here to start replication manually</a></td>
+        <td><a href="control_edit_attribute.php?attrib=locals&type=replicate&mxhost=<?=$host?>&submit=1"><img src="images/edit.png" width="12" height="12" border="0" alt="replicate">Click here to start replication manually</a></td>
       </tr>
 
       <br>
@@ -87,7 +87,7 @@ function locals_print_view($host) {
     } else {
   ?>
       <tr class="subtitle">
-        <td><a href="control_edit_attribute.php?attrib=locals&host=<?=$host?>"><img src="images/edit.png" width="12" height="12" border="0"> change options</a> (The automatic replication with domain is disabled)</td>
+        <td><a href="control_edit_attribute.php?attrib=locals&mxhost=<?=$host?>"><img src="images/edit.png" width="12" height="12" border="0"> change options</a> (The automatic replication with domain is disabled)</td>
       </tr>
     </th>
 	<?php }	?>
@@ -96,7 +96,7 @@ function locals_print_view($host) {
 }
 
 function locals_print_form(){
-    global $attrib, $PHP_SELF, $error, $locals, $host;
+    global $attrib, $PHP_SELF, $error, $locals, $mxhost;
     
     // if automatic replication is enabled, don't display form
 // BUG?
@@ -115,7 +115,7 @@ function locals_print_form(){
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="hidden" name="host" value="<?=$host?>">
+    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 <?php
