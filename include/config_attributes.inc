@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.6 2004-03-01 10:09:08 turbo Exp $
+// $Id: config_attributes.inc,v 2.7 2004-03-03 07:41:51 turbo Exp $
 
 // User object attributes
 pql_set_define("PQL_GLOB_ATTR_DOTMODE",				strtolower("qmailDotMode"),			false);
@@ -111,6 +111,8 @@ pql_set_define("PQL_GLOB_ATTR_PERSONALTITLE",			strtolower("personalTitle"),			f
 pql_set_define("PQL_GLOB_ATTR_PHYSICALDELIVERYOFFICENAME",	strtolower("physicalDeliveryOfficeName"),	false);
 pql_set_define("PQL_GLOB_ATTR_POSTALCODE",			strtolower("postalCode"),			false);
 pql_set_define("PQL_GLOB_ATTR_POSTALADDRESS",			strtolower("postalAddress"),			false);
+pql_set_define("PQL_GLOB_ATTR_STREETADDRESS",			strtolower("streetAddress"),			false);
+pql_set_define("PQL_GLOB_ATTR_REGISTEREDADDRESS",		strtolower("registeredAddress"),		false);
 pql_set_define("PQL_GLOB_ATTR_POSTOFFICEBOX",			strtolower("postOfficeBox"),			false);
 pql_set_define("PQL_GLOB_ATTR_ROOMNUMBER",			strtolower("roomNumber"),			false);
 pql_set_define("PQL_GLOB_ATTR_SECRETARY",			strtolower("secretary"),			false);
@@ -149,4 +151,5 @@ pql_set_define("PQL_GLOB_ATTR_MAXIMUMMAILINGLISTS",		strtolower("maximumMailingL
 pql_set_define("PQL_GLOB_ATTR_SEEALSO",				strtolower("seeAlso"),				false);
 pql_set_define("PQL_GLOB_ATTR_USERNAMEPREFIX",			strtolower("userNamePrefix"),			false);
 pql_set_define("PQL_GLOB_ATTR_USERNAMEPREFIX_LENGTH",		strtolower("userNamePrefixLength"),		false);
+pql_set_define("PQL_GLOB_ATTR_VAT_NUMBER",			strtolower("vatNumber"),			false);
 ?>

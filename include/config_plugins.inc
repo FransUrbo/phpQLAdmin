@@ -11,7 +11,7 @@
 // If you want to customise phpQLAdmin, do NOT do it here, the file
 // to customise is 'config_attributes.inc'.
 //
-// $Id: config_plugins.inc,v 2.8 2004-03-01 10:09:08 turbo Exp $
+// $Id: config_plugins.inc,v 2.9 2004-03-03 07:41:51 turbo Exp $
 
 pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_ISACTIVE"),
 					"attrib.accountstatus.inc",
@@ -92,6 +92,9 @@ pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_O"),
 						  pql_get_define("PQL_GLOB_ATTR_POSTALCODE"),
 						  pql_get_define("PQL_GLOB_ATTR_POSTALADDRESS"),
 						  pql_get_define("PQL_GLOB_ATTR_STREET"),
+						  pql_get_define("PQL_GLOB_ATTR_STREETADDRESS"),
+						  pql_get_define("PQL_GLOB_ATTR_REGISTEREDADDRESS"),
+						  pql_get_define("PQL_GLOB_ATTR_VAT_NUMBER"),
 						  pql_get_define("PQL_GLOB_ATTR_L"),
 						  pql_get_define("PQL_GLOB_ATTR_ST"),
 						  pql_get_define("PQL_GLOB_ATTR_C"),
