@@ -180,6 +180,11 @@ define("PQL_LDAP_REFERENCE_DOMAINS_WITH", "ou");
 define("PQL_LDAP_USER_RDN_ATTRIBUTE", PQL_LDAP_ATTR_UID);
 
 // ----------------------------
+// PQL_LDAP_FORWARDINGACCOUNT_UIDNUMBER (integer)
+// Even forward accounts need a UIDNumber!
+define("PQL_LDAP_FORWARDINGACCOUNT_UIDNUMBER", 500);
+
+// ----------------------------
 // PQL_URI (URL)
 // the full url where phpQLAdmin resides
 // ie: http://www.yourdomain.com/phpQLAdmin/

@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.4 2003-01-22 10:25:43 turbo Exp $
+// $Id: pql_config.inc,v 1.5 2003-01-24 10:05:49 turbo Exp $
 //
 
 // ----------------------------
@@ -19,6 +19,7 @@ $PQL_ATTRIBUTE["PQL_LDAP_CONTROL_AUTOADDLOCALS"] = 'autoAddLocals';
 $PQL_ATTRIBUTE["PQL_LDAP_CHANGE_SERVER"] = 'allowServerChange';
 $PQL_ATTRIBUTE["PQL_ALLOW_ABSOLUTE_PATH"] = 'allowAbsoluteMailPath';
 $PQL_ATTRIBUTE["PQL_VERIFY_DELETE"] = 'deleteVerification';
+$PQL_ATTRIBUTE["PQL_LDAP_FORWARDINGACCOUNT_UIDNUMBER"] = 'forwardUIDNumber';
 
 // phpQLAdmin setup
 $PQL_ATTRIBUTE["PQL_LANG"] = 'language';

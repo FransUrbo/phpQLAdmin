@@ -680,6 +680,9 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 			$entry[PQL_LDAP_ATTR_FORWARDS]	= $forwardingaddress;
 			$entry[PQL_LDAP_ATTR_MODE][]	= "forwardonly";
 			$entry[PQL_LDAP_ATTR_MODE][]	= "nombox";
+
+			// Even forward accounts need UIDNumber! (?!?)
+			$entry[PQL_LDAP_ATTR_QMAILUID] = PQL_LDAP_FORWARDINGACCOUNT_UIDNUMBER;
 		}
 
         // ------------------

@@ -316,6 +316,13 @@ foreach($_pql->ldap_basedn as $dn) {
 <?php
 	}
 ?>
+
+<tr>
+	<td class="title">UID Number to be used for forwarding accounts</td>
+        <?php $class=table_bgcolor(0); ?>
+	<td class="<?=$class?>"><?=PQL_LDAP_FORWARDINGACCOUNT_UIDNUMBER?></td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_LDAP_FORWARDINGACCOUNT_UIDNUMBER"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle"></a></td>
+</tr>
 	
 <tr class="subtitle">
 	<td colspan="2"><img src="images/info.png" width="16" height="16" border="0">the phpQLAdmin configuration values are stored in config.inc and <b><?=$_pql->ldap_basedn[0]?></b>&nbsp;</td>
