@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // cn (Full name)
-// $Id: attrib.cn.inc,v 2.9 2003-05-28 07:23:37 turbo Exp $
+// $Id: attrib.cn.inc,v 2.10 2003-06-04 08:04:33 turbo Exp $
 
 function attribute_check($type){
     global $cn, $oldvalue, $_pql, $error;
@@ -69,10 +69,10 @@ function attribute_save($type){
 			break;
     	}
 		
-		// Well. Gecos and givenName is the same thing as CN,
-		// so we should try to change those as well... But only
-		// if they already exist in the object.
-		$attribs = array($attrib, 'gecos', 'givenName');
+		// Well. Gecos is the same thing as CN, so we should
+		// try to change that as well... But only if it
+		// already exist in the object.
+		$attribs = array($attrib, 'gecos');
 		foreach($attribs as $attrib) {
 			$old = pql_get_userattribute($_pql->ldap_linkid, $user, $attrib);
 			if(is_array($old)) {
@@ -82,9 +82,26 @@ function attribute_save($type){
 				else
 				  $msg = PQL_LANG_CN_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 			}
-				
-			attribute_forward($msg, true);
 		}
+
+		// Get first and last name
+		$name = split(" ", $cn);
+
+		// Change givenName which is the first name
+		$old = pql_get_userattribute($_pql->ldap_linkid, $user, 'givenName');
+		if(is_array($old)) {
+			// We have an old value of this array, try to change it...
+			pql_replace_userattribute($_pql->ldap_linkid, $user, 'givenName', $name[0]);
+		}
+
+		// Change SN which is the last name
+		$old = pql_get_userattribute($_pql->ldap_linkid, $user, 'sn');
+		if(is_array($old)) {
+			// We have an old value of this array, try to change it...
+			pql_replace_userattribute($_pql->ldap_linkid, $user, 'sn', $name[1]);
+		}
+
+		attribute_forward($msg, true);
 		break;
 
       default:
