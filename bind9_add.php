@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.13 2005-01-29 18:51:11 turbo Exp $
+// $Id: bind9_add.php,v 2.14 2005-01-30 09:23:45 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -30,11 +30,12 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
       </th>
     </table>
 
-    <input type="hidden" name="action" value="add">
-    <input type="hidden" name="type"   value="domain">
-    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
-    <input type="hidden" name="rootdn" value="<?=$_REQUEST["rootdn"]?>">
-    <input type="hidden" name="domain" value="<?=$_REQUEST["domain"]?>">
+    <input type="hidden" name="action"          value="add">
+    <input type="hidden" name="type"            value="domain">
+    <input type="hidden" name="view"            value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="rootdn"          value="<?=$_REQUEST["rootdn"]?>">
+    <input type="hidden" name="domain"          value="<?=$_REQUEST["domain"]?>">
+    <input type="hidden" name="dns_domain_name" value="<?=$_REQUEST["dns_domain_name"]?>">
     <input type="submit" value="<?php echo "--&gt;&gt;"; ?>">
   </form>
 <?php } else {
@@ -130,13 +131,14 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
       </th>
     </table>
 
-    <input type="hidden" name="submit"     value="0">
-    <input type="hidden" name="action"     value="add">
-    <input type="hidden" name="type"       value="host">
-    <input type="hidden" name="view"       value="<?=$_REQUEST["view"]?>">
-    <input type="hidden" name="domain"     value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="rootdn"     value="<?=$_REQUEST["rootdn"]?>">
-    <input type="hidden" name="domainname" value="<?=$_REQUEST["domainname"]?>">
+    <input type="hidden" name="submit"          value="0">
+    <input type="hidden" name="action"          value="add">
+    <input type="hidden" name="type"            value="host">
+    <input type="hidden" name="view"            value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="domain"          value="<?=$_REQUEST["domain"]?>">
+    <input type="hidden" name="rootdn"          value="<?=$_REQUEST["rootdn"]?>">
+    <input type="hidden" name="domainname"      value="<?=$_REQUEST["domainname"]?>">
+    <input type="hidden" name="dns_domain_name" value="<?=$_REQUEST["dns_domain_name"]?>">
     <br>
     <input type="submit" value="Save">
   </form>
@@ -162,9 +164,13 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 			  break;
 		  }
 
-		  if(pql_bind9_add_host($_pql->ldap_linkid, $_REQUEST["domain"], $entry))
+		  $dn = pql_bind9_add_host($_pql->ldap_linkid, $_REQUEST["domain"], $entry);
+		  if($dn) {
 			$msg = "Successfully added host <u>".$_REQUEST["hostname"].".".pql_maybe_idna_decode($_REQUEST["domainname"])."</u>";
-		  else
+
+			if(!pql_bind9_update_serial($_pql, $dn))
+			  die("failed to update SOA serial number");
+		  } else
 			$msg = "Failed to add ".$_REQUEST["hostname"]." to ".$_REQUEST["domainname"];
 
 		  $msg = urlencode($msg);
