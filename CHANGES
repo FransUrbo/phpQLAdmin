@@ -58,6 +58,34 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	  - As of Qmail-LDAP v20030901, the mailQuota attribute have been split into TWO
 	    attributes - mailQuotaSize and mailQuotaCount. Find out which is used in the
 	    LDAP server, and create the quota value(s) appropriately.
+	  - Only auto-generate UID when creating user if we're in that part of the add
+	    process - page one - AND we're referencing users with uid.
+	  - Huge documentation updates and cleanups.
+	  - When trying to find out if a user is an administrator, there's the possibility
+	    that there's something wrong with the database - the user might not be registered
+	    properly in every BaseDN as a controls administrator - go look in EVERY BaseDN
+	    (i.e. not just the first one) just to be safe we're getting the value...
+	  - When showing user details, we can't IDNA decode the _whole_ email address, only
+	    the domain name part - split the mail address in two (separated by '@' as usuall),
+	    IDNA decode the domain name, and put the mail address back together.
+	  - Don't add {uid,gid}Number if forwarding account - 'ldap{Uid,Gid}' in QmailLDAP/Controls
+	    object must be correct though!
+	  - When adding a user and we can't generate UID, we shouldn't go back and do
+	    over. Just say "can't autogenerate".
+	  - The function pql_control_update_domains() isn't suitable for REMOVING a QLC
+	    locals value. Use pql_control_replace_attribute() instead. But first we must
+	    get all existing values, removing the specified one from the array we send to
+	    pql_control_replace_attribute().
+	  - With toggles (ldapRebind and ldapCluster in the 'Control Details' pages), we
+	    can't just check if the variable is set - it may contain 'Not set' which will
+	    trigger the if(). Do 'if value is 1, then...' instead.
+	  - Better support for newer QmailLDAP (and QmailLDAP/Controls) - version > 20030901,
+	    regarding new/removed values (mailQuota -> mailQuotaSize and mailQuotaCount).
+	    + Support the old format if it's still enabled in the LDAP server.
+	  - Correct and rewrite the 'mailHost' attribute retreival trough the 'Add user'
+	    pages. We can be called with either a QLC object, a DNS entry or user supplied.
+	  - Allow user(s) to be put in the root of the branch/domain by adding that option
+	    to the <select> (the 'Add user->user details' page).
 
 	GUI layout change
 	  - Variable lenght icons with better looking font.
@@ -115,6 +143,54 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	    BUT:
 	    + Only if we have the auto generation function(s)
 	    + We have a default directory base for this domain
+	  - Possibility to clear the $_SESSION array. This needs to be done if/when the
+	    LDAP server configuration changes (we have updated the schemas, enabled/disabled
+	    the Monitor backend etc, etc). Previosly we had to logout and then login again
+	    for the update to be noticed by phpQLAdmin.
+	  - Add an attribute for VAT number (for branches).
+	  - More information about a branch/domain/company - VAT information and 'Miscellaneous'
+	    which is a multiline field.
+	  - Move "Automatically add hostname to domain for replication" and "Automatically
+	    replicate domains to {locals,rcpthosts}" booleans from Configurations->Globals
+	    to 'Configurations->[BRANCH]'. It's a branch variable, not a global phpQLAdmin
+	    value...
+	  - Highlight the current branch - all it's subbranches and users in the left user
+	    frame - looks GREATE in a fully DOM compliant browser, not so bad in Opera!.
+	  - UTF-8 encode values for attributes postalAddress, registeredAddress and
+	    homePostalAddress.
+	  - Hide the "Branch Details" behind the ADVANCED MODE.
+	  - Fold and unfold attribute names and attribute OIDs simultaneous, not separate
+	    in the 'LDAP Server Configuration->LDAP Object classes' page.
+	  - Show (part of) the 'Documentation' branch even if not running in ADVANCED
+	    mode and isn't allowed to create branches...
+	  - Rearrange the top buttons in the 'Domain Details' page - put 'Registred Users'
+	    and 'Change values of all users' _after_ the branch information and then after
+	    that, the 'MX Information'.
+	  - Support the creation of a 'Alias object' - a referral from one object
+	    to another (real) one. Currently only works correctly within the same
+	    server...
+	  - When adding a user, show ALL QmailLDAP/Controls objects to choose from for the
+	    mailHost value (not just the first one).
+	  - When adding a user, and there's only one QmailLDAP/Controls object, AND there's
+	    no DNS entry for the domain(s), THEN the QmailLDAP/Controls object is the default
+	    (CHECKED).
+	  - Add links to some Qmail and Qmail-LDAP sites in the left (user) frame.
+	  - Allow replications of locals and/or rcpthosts to take place in the 'Control
+	    Details->[HOST]->Locals and RCPT Hosts' page.
+	  - Retreive (and show) the ldapCluster value in the base view of the 'Control
+	    Details->[HOST]' page.
+	  - When/if deleting a QmailLDAP/Controls object, we need to know what to do
+	    with user(s) that might have this as their mail host. There's three options:
+	    Ignore, delete and move. Move gives an option to WHERE to move the user(s).
+	    Show all QmailLDAP/Controls objects in this database AND a 'user specified'
+	    where the admin can override any value(s).
+	  - If 'Manage EZMLM mailinglists' in the 'phpQLAdmin Configuration->Global configuration'
+	    is true, we also need an option to set the path to the ezmlm-* commands...
+	  - Have the 'Add user' link not only in subbranches, but also in the top domain
+	    branch. This was always the case if there WAS no subbranches. These two locations
+	    is used later when adding user(s) - if called with a subbranch, don't show the
+	    'Put user in subbranch ...' selector. Only show that if we're called from the
+	    top domain branch 'Add user' (provided that there ARE subbranches).
 
 	Misc changes	
 	  - Configurable lenght of characters/numbers that is autocreated (when auto-
@@ -142,11 +218,40 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	    session variables set with session_register()) and values sent from one page
 	    to the next in the URL needs to be referenced with $_SESSION and $_GET (or
 	    $_REQUEST) respectivly. Also, $PHP_SELF needs to be changed to $_SERVER["PHP_SELF"].
+	    + This is however not 100% complete, so please disable register_globals, and
+	      report any/all bugs at the BTS (Bug Tracking System).
 	  - When error occures, try to catch the most common once (those most occuring
 	    on the mailinglist) and give a short description/remedy.
 	  - Add minimumGIDNumber (OID: 1.3.6.1.4.1.8767.3.2.3.6) for auto user generation.
 	  - Create a new object class phpQLAdminInfo (OID: 1.3.6.1.4.1.8767.3.1.4) which
 	    will host DOMAIN/Branch informations (such as VAT-Number etc) for the domain.
+	  - Split phpQLAdminConfig object class into two - phpQLAdminConfig and
+	    phpQLAdminGlobal. The first is for branch configuration and the other
+	    is for global configuration (paths etc). phpQLAdminGlobal is a new
+	    object class (OID: 1.3.6.1.4.1.8767.3.1.2).
+	  - Changed the mail account type name from "normal" to "mail".
+	  - Allow the editing of UID and GID number(s).
+	  - As of Qmail-LDAP v20030901, the mailQuota attribute have been split into TWO
+	    attributes - mailQuotaSize and mailQuotaCount. phpQLAdmin needs to know which
+	    quota attribute(s) to use when it stores the value into the database.
+	    + Change the define PQL_GLOB_ATTR_QUOTA to PQL_GLOB_ATTR_QUOTA_VALUE to distinguish
+	      it from the new defines
+	    + Add the defines PQL_GLOB_ATTR_QUOTA_{SIZE,COUNT} for the new quota attributes
+	    + Rename PQL_GLOB_ATTR_QUOTAWARNING to PQL_GLOB_ATTR_QUOTA_WARNING (added an
+	      underscore) to make it conform with the other PQL_GLOB_ATTR_QUOTA_* defines.
+	  - Retreive the domain/branch default quota, and use this (if it exists) when
+	    creating the user.
+	  - Simplifying defines (only have two now - PQL_ATTR_* and PQL_CONF_*).
+	  - Fully support LDAP URI's as 'path to LDAP server'.
+	    + Don't show the :port string if using LDAPi.
+	    + URL decode the path (LDAPi require that the path is URL encoded).
+	  - A semi-LDIF showing a fully loaded root DN added (demo/database-fredriksson.txt).
+	  - More and better support for changing attribute names (if using a special LDAP
+	    server which haven't the 'standard' attributes etc).
+	  - Language update - hardcoded language removed in lot's of places.
+	  - If we fail to add the user and we get error number 32 (No such object), we
+	    try adding the ou=People container leading up to the user RDN. If THAT
+	    succeeds, THEN we try readding the user object.
  
 	API changes
 	  - Rearrange functions and group them. Functions dealing with users in one
@@ -173,6 +278,7 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	    + pql_get_user_number()		-> pql_user_get_number()
 	  - Functions removed:
 	    + pql_search_attribute()
+	    + attribute_verify_objectclass()
 	  - Functions renamed and moved to pql_search file:
 	    + Function pql_get_dn()
 	    + pql_get_userattribute()		-> pql_get_attribute()
@@ -186,7 +292,10 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	    + pql_format_table()		pql_format_international()
 	    + pql_maybe_encode()		pql_maybe_decode()
 	    + pql_maybe_idna_encode()		pql_maybe_idna_decode()
+	    + pql_parse_quota()			pql_ldap_mailquota
 	    + printr()                		lc()
+	  - Functions changed/splitted into multiple functions
+	    + pql_replace_attribute()		+ pql_missing_objectclasses()
 	  - Simplify the creation of the tree view - moved to separate functions.
 	    Opera and non-opera, as well as 'top' and 'link' funcs. Should be much
 	    more generic and most of all - higher code redability!
@@ -211,6 +320,12 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	  - Rewrite pql_get_next_uidnumber() so that it can be used both to get minimalUIDNumber
 	    _and_ the new 'minimalGIDNumber' attribute. Call it pql_get_next_ugidnumber()
 	    instead to indicate this.
+	  - To use a TRUE/FALSE value in an if(), we need to make sure it's a BOOL.
+	    I wrote a function pql_format_bool() to avoid code duplication that creates
+	    the variable as a 'boolean', and setting the value to 1/0.
+	  - The function pql_search() must have the option to do SUBTREE, ONELEVEL and
+	    BASE searches for an attribute. Othervise we're not finding the correct
+	    organizational unit for a branch.
 
 phpQLAdmin 2.0.17 Release (Oct 30 2003)
 	Bug fixes
