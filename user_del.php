@@ -11,14 +11,18 @@ include("./header.html");
 
 // Get organization name for domain and common name of user
 $o = pql_get_domain_value($_pql, $domain, 'o');
-$cn = pql_get_userattribute($_pql->ldap_linkid, $user, 'cn');
-$cn = $cn[0];
+if(!$o) {
+	// No 'organization' attribute (or it's not configured - 0)
+	// Use the RDN
+	$o = $domain;
+}
+$cn = pql_get_userattribute($_pql->ldap_linkid, $user, 'cn'); $cn = $cn[0];
 ?>
   <span class="title1"><?php echo pql_complete_constant(PQL_LANG_USER_DEL_TITLE, array("domain" => $o, "user" => $cn)); ?></span>
   <br><br>
 <?php
-if(isset($ok) || !PQL_CONF_VERIFY_DELETE) {
-	$delete_forwards = (isset($delete_forwards) || PQL_CONF_VERIFY_DELETE) ? true : false;
+if(isset($ok) || !$config["PQL_CONF_VERIFY_DELETE"][$rootdn]) {
+	$delete_forwards = (isset($delete_forwards) || $config["PQL_CONF_VERIFY_DELETE"][$rootdn]) ? true : false;
 	
 	// delete the user
 	if(pql_user_del($_pql, $domain, $user, $delete_forwards)){
