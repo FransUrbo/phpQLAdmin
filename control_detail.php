@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.32.6.1 2004-05-06 05:14:29 turbo Exp $
+// $Id: control_detail.php,v 1.32.6.1.6.1 2004-11-11 14:46:35 turbo Exp $
 session_start();
 require("./include/pql_config.inc");
 
@@ -28,7 +28,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 					 "rcpthosts"			=> pql_get_define("PQL_ATTR_RCPTHOSTS"),
 					 "ldaplogin"			=> pql_get_define("PQL_ATTR_LDAPLOGIN"),
 					 "ldappassword"			=> pql_get_define("PQL_ATTR_LDAPPASSWORD"));
-	$cn = pql_get_define("PQL_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"];
+	$cn = pql_get_define("PQL_ATTR_CN") . "=" . $_REQUEST["mxhost"] . "," . $_SESSION["USER_SEARCH_DN_CTR"];
 
 	foreach($attribs as $key => $attrib) {
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid, $cn, $attrib);
@@ -81,13 +81,13 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
   //--></script>
 <?php } ?>
 
-  <span class="title1">Mailserver: <?=pql_maybe_idna_decode($mxhost)?></span>
+  <span class="title1">Mailserver: <?=pql_maybe_idna_decode($_REQUEST["mxhost"])?></span>
 
   <br><br>
 
   <table cellspacing="0" border="0" width="100%" cellpadding="0">
     <tr>
-      <td colspan="2" valign="bottom" align="left" width="100%"><a href="<?=$_SERVER["PHP_SELF"]."?mxhost=$mxhost&view=default"?>"><img alt="/ Base Values \" vspace="0" hspace="0" border="0" src="navbutton.php?Base Values"></a><a href="<?=$_SERVER["PHP_SELF"]."?mxhost=$mxhost&view=hosts"?>"><img alt="/ Locals and RCPT Hosts \" vspace="0" hspace="0" border="0" src="navbutton.php?Locals and RCPT Hosts"></a><br><a href="<?=$_SERVER["PHP_SELF"]."?mxhost=$mxhost&view=action"?>"><img alt="/ Action \" vspace="0" hspace="0" border="0" src="navbutton.php?Action"></a></td>
+      <td colspan="2" valign="bottom" align="left" width="100%"><a href="<?=$_SERVER["PHP_SELF"]."?mxhost=".$_REQUEST["mxhost"]."&view=default"?>"><img alt="/ Base Values \" vspace="0" hspace="0" border="0" src="navbutton.php?Base Values"></a><a href="<?=$_SERVER["PHP_SELF"]."?mxhost=".$_REQUEST["mxhost"]."&view=hosts"?>"><img alt="/ Locals and RCPT Hosts \" vspace="0" hspace="0" border="0" src="navbutton.php?Locals and RCPT Hosts"></a><br><a href="<?=$_SERVER["PHP_SELF"]."?mxhost=".$_REQUEST["mxhost"]."&view=action"?>"><img alt="/ Action \" vspace="0" hspace="0" border="0" src="navbutton.php?Action"></a></td>
   </tr>
 </table>
 
