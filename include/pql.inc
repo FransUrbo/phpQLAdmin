@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.101 2003-08-15 08:06:17 turbo Exp $
+// $Id: pql.inc,v 2.102 2003-08-16 10:11:29 turbo Exp $
 //
 
 // ----------------------------
@@ -1974,7 +1974,13 @@ function pql_validate_administrator($linkid, $dn, $admin) {
 
 function pql_get_rootdn($dn) {
 	global $_pql;
-	$dn = urldecode($dn);
+
+	if($dn == '') {
+		echo "This is weird. We're called with an empty DN! Please report this at the ";
+		echo '<a href="http://papadoc.bayour.com:23000/anthill/" target="_new">Bugtracker</a>.<br>';
+		die();
+	} else
+	  $dn = urldecode($dn);
 
 	if(is_array($_pql->ldap_basedn)) {
 		$counts = 0;
@@ -2000,7 +2006,7 @@ function pql_get_rootdn($dn) {
 		} elseif($counts < 1) {
 			// BUG! We don't have a hit!
 			echo "This is weird. We couldn't find the root dn for some reason. The DN we're trying to find a root DN for is: ";
-			echo "$dn.<p>Please report this at the ";
+			echo "'$dn'.<p>Please report this at the ";
 			echo '<a href="http://papadoc.bayour.com:23000/anthill/" target="_new">Bugtracker</a>.';
 			die();
 		} else
