@@ -1,5 +1,4 @@
 Things left to do
-	* Enable re-login to other LDAP server - choose LDAP server at runtime.
 	* Support for user templates (predefined attributes for a group of users).
 	* Support for alias-domains: phpQLAdmin will be able to create
 	  domain aliases e.g domain.ch will forward all registred
