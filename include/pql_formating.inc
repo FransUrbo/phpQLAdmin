@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.33 2004-11-08 11:26:41 turbo Exp $
+// $Id: pql_formating.inc,v 2.34 2004-11-08 11:59:30 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -193,7 +193,8 @@ function pql_format_table_single($linkid, $text, $url, $array, $attrib, $class =
 				  $username = $value;
 				elseif(is_array($username))
 				  $username = $username[0];
-			}
+			} else
+			  $username = $value;
 
 			if($new_tr) {
 ?>
