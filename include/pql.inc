@@ -3,26 +3,21 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.24 2003-01-20 08:27:41 turbo Exp $
-//
-// ----------------------------
-// Note: There are a few " followed after PHP comment
-// instructions like // in this code . They are
-// here to prevent Quanta+ highlighting all following
-// code as a string. A dirty workaround, I know :)
+// $Id: pql.inc,v 2.25 2003-01-21 14:15:19 turbo Exp $
 //
 
 // ----------------------------
 // include and check configuration
-// ----------------------------
-require("./include/config.inc");
+require("./include/lang.en.inc");
 require("./include/pql_cache.inc");
 
+// ----------------------------
 // Get release version
 $fp = fopen("./.version", "r");
 $VERSION = fgets($fp, 20);
 fclose($fp);
 
+// ----------------------------
 // make a simple configuration check
 if(!pql_check_config(&$result)){
 	echo "There are some problems with your configuration:<br>";
@@ -30,6 +25,7 @@ if(!pql_check_config(&$result)){
 	die();
 }
 
+// ----------------------------
 // turn on output-buffering by default
 ob_start();
 
@@ -181,15 +177,19 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 		}
     }
     
+	$userdn = PQL_LDAP_ATTR_UID . "=" . $entry[PQL_LDAP_USER_RDN_ATTRIBUTE] . ",";
 	if($branch)
-	  $subrdn = "," . $branch . ",";
+	  $userdn .= $branch;
+	else {
+		if(PQL_LDAP_SUBTREE_USERS)
+          $subrdn = PQL_LDAP_SUBTREE_USERS . ",";
 
-    // dn of the user
-    $userdn = PQL_LDAP_ATTR_UID . "=" . $entry[PQL_LDAP_USER_RDN_ATTRIBUTE] . $subrdn . $domain;
+		$userdn .= $subrdn . $domain;
+	}
 
 //	// --------------------------
 //	// DEBUG mode: Print the LDIF
-//	echo "<br>--- DEBUG: pql_add_user() ---<br>";
+//	echo "<br>--- DEBUG: pql_user_add() ---<br>";
 //	echo "dn: $userdn<br>";
 //	foreach($entry as $key => $e) {
 //		if(eregi("objectclass", $key)) {
@@ -330,8 +330,8 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name){
 		$entry["o"] = 0;
 	}
 
-    $entry[PQL_LDAP_ATTR_DOMAIN] = $branch_name;
-	$dn = PQL_LDAP_ATTR_DOMAIN . "=" . $branch_name . "," . $basedn;
+    $entry[PQL_LDAP_REFERENCE_DOMAINS_WITH] = $branch_name;
+	$dn = PQL_LDAP_REFERENCE_DOMAINS_WITH . "=" . $branch_name . "," . $basedn;
 
 //	// --------------------------
 //	// DEBUG mode: Print the LDIF
@@ -368,7 +368,7 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name){
 		$ou = eregi_replace(",$", "", PQL_LDAP_SUBTREE_USERS . ",");
 		$entry["ou"] = $ou;
 		
-		$dn = PQL_LDAP_SUBTREE_USERS . "," . PQL_LDAP_ATTR_DOMAIN . "=" . $branch_name . "," . $basedn;
+		$dn = PQL_LDAP_SUBTREE_USERS . "," . PQL_LDAP_REFERENCE_DOMAINS_WITH . "=" . $branch_name . "," . $basedn;
 		if(!@ldap_add($ldap_linkid, $dn, $entry)){
 			pql_errormsg($ldap_linkid);
 			return $dns;
@@ -383,7 +383,7 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name){
 		$entry["objectClass"][] = "organizationalUnit";
 		$entry["ou"] = PQL_LDAP_SUBTREE_GROUPS;
 		
-		$dn = PQL_LDAP_SUBTREE_GROUPS . "," . PQL_LDAP_ATTR_DOMAIN . "=" . $branch_name . "," . $basedn;
+		$dn = PQL_LDAP_SUBTREE_GROUPS . "," . PQL_LDAP_REFERENCE_DOMAINS_WITH . "=" . $branch_name . "," . $basedn;
 		if(!@ldap_add($ldap_linkid, $dn, $entry)){
 			pql_errormsg($ldap_linkid);
 			return $dns;
@@ -494,7 +494,7 @@ function pql_modify_user_addressbook($ldap_linkid, $user, $attribs){
 
 // check if domain exists
 function pql_domain_exist($ldap, $domain) {
-	$filter = '(&'.pql_branch_objectclasses().'('.PQL_LDAP_ATTR_DOMAIN.'='.$domain.'))';
+	$filter = '(&'.pql_branch_objectclasses().'('.PQL_LDAP_REFERENCE_DOMAINS_WITH.'='.$domain.'))';
 
 	foreach($ldap->ldap_basedn as $dn) {
 		$sr = ldap_search($ldap->ldap_linkid, $dn, $filter);
@@ -669,12 +669,12 @@ function pql_get_domains($ldap_linkid){
 	// get all domains listed in ldap-tree (ou|dc-records)
 	
 	$sr = @ldap_list($ldap_linkid, $ldap_basedn,
-					 "(&(" . PQL_LDAP_ATTR_DOMAIN . "=*)" . pql_branch_objectclasses() . ")"
+					 "(&(" . PQL_LDAP_REFERENCE_DOMAINS_WITH . "=*)" . pql_branch_objectclasses() . ")"
 					 ) or pql_errormsg($ldap_linkid);
 	$info = @ldap_get_entries($ldap_linkid, $sr) or pql_errormsg($ldap_linkid);
 	
 	for ($i=0; $i<$info["count"]; $i++) {
-		$domains[] = $info[$i][PQL_LDAP_ATTR_DOMAIN][0];
+		$domains[] = $info[$i][PQL_LDAP_REFERENCE_DOMAINS_WITH][0];
 	}
 	
 	return $domains;
@@ -799,16 +799,17 @@ function pql_get_dn($ldap, $reference) {
 	  return($dn);
     
     // dn not in cache -> search for it
-	foreach($ldap->ldap_basedn as $base)
-	  $dn = pql_search_attribute($ldap->ldap_linkid, $base, PQL_LDAP_REFERENCE_USERS_WITH, $reference);
+	foreach($ldap->ldap_basedn as $base) {
+		$dn = pql_search_attribute($ldap->ldap_linkid, $base, PQL_LDAP_REFERENCE_USERS_WITH, $reference);
+		if($dn) {
+			// we got the dn -> remember it
+			pql_cache_userdn_add($reference, $dn);
+			
+			return($dn);
+		}
+	}
 
-    if(!$dn)
-	  return(false);
-    
-    // we got the dn -> remember it
-    pql_cache_userdn_add($reference, $dn);
-    
-    return($dn);
+	return(false);
 }
 
 // ------------------------------------------------
@@ -1240,7 +1241,8 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '') {
 	if(!$match)
 	  $match = '*';
 
-    $filter  = $value . "=" . $match;
+	// Setup a filter to look for DOMAINS (branches)
+    $filter  = "(&($value=$match)(".PQL_LDAP_REFERENCE_DOMAINS_WITH."=*))";
 
 	// DEBUG
 	//echo "<p><u>DN</u>: $dn<br>";
@@ -1596,7 +1598,7 @@ function pql_get_subschemas($ldap_linkid) {
 }
 
 function pql_get_subbranch($linkid, $dn, $filter = 1) {
-	if(PQL_LDAP_ATTR_DOMAIN == "dc") {
+	if(PQL_LDAP_REFERENCE_DOMAINS_WITH == "dc") {
 		$ocb = "domain";
 	} else {
 		$ocb = "organizationalUnit";
