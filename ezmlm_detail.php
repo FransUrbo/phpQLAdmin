@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_detail.php,v 1.9 2002-12-25 16:21:28 turbo Exp $
+// $Id: ezmlm_detail.php,v 1.10 2002-12-26 01:05:59 turbo Exp $
 //
 session_start();
 
@@ -150,7 +150,7 @@ if($domain) {
   <table cellspacing="0" cellpadding="3" border="0">
     <th align="left"><?=PQL_ACTIONS?></th>
       <tr class="<?php table_bgcolor(); ?>">
-        <td><a href="ezmlm_del.php?listno=<?=$listno?>">Delete list</a></td>
+        <td><a href="ezmlm_del.php?domain=<?=$domain?>&listno=<?=$listno?>">Delete list</a></td>
       </tr>
     </th>
   </table>
