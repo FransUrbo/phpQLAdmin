@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.37 2003-01-29 14:17:03 turbo Exp $
+// $Id: pql.inc,v 2.38 2003-01-30 08:37:55 turbo Exp $
 //
 
 // ----------------------------
@@ -189,24 +189,24 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 	else
 	  $userdn .= $domain;
 
-	// --------------------------
-	// DEBUG mode: Print the LDIF
-	if($DEBUG >= 1) {
-		echo "<br>--- DEBUG: pql_user_add() ---<br>";
-		echo "dn: $userdn<br>";
-		foreach($entry as $key => $e) {
-			if(is_array($entry[$key])) {
-				// ... in an array. Go through each one, creating the LDAP entry
-				foreach($entry[$key] as $x) {
-					echo "$key: $x<br>";
-				}
-			} else {
-				echo "$key: $entry[$key]<br>";
-			}
-		}
-		die("--- DEBUG ---");
-	}
-	// --------------------------
+//	// --------------------------
+//	// DEBUG mode: Print the LDIF
+//	if($DEBUG >= 1) {
+//		echo "<br>--- DEBUG: pql_user_add() ---<br>";
+//		echo "dn: $userdn<br>";
+//		foreach($entry as $key => $e) {
+//			if(is_array($entry[$key])) {
+//				// ... in an array. Go through each one, creating the LDAP entry
+//				foreach($entry[$key] as $x) {
+//					echo "$key: $x<br>";
+//				}
+//			} else {
+//				echo "$key: $entry[$key]<br>";
+//			}
+//		}
+//		die("--- DEBUG ---");
+//	}
+//	// --------------------------
     
     // adds the user
     if(! ldap_add($ldap_linkid, $userdn, $entry)){
@@ -314,25 +314,12 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 
 // adds a domain into ldap-tree (ou|dc-record)
 function pql_domain_add($ldap_linkid, $basedn, $branch_name){
-	// Setup object classes needed
-    $entry["objectClass"][] = "top";
-	if(eregi(' ', PQL_LDAP_OBJECTCLASS_DOMAIN)) {
-		$objectclasses = split(' ', PQL_LDAP_OBJECTCLASS_DOMAIN);
-		foreach($objectclasses as $oc) {
-			$entry["objectClass"][] = $oc;
-
-			if(eregi('dcOrganizationNameForm', $oc))
-			  $entry["o"] = 0;
-		}
-	} else {
-		$entry["objectClass"][] = "phpQLAdminBranch";
-		$entry["objectClass"][] = PQL_LDAP_OBJECTCLASS_DOMAIN;
-		$entry["objectClass"][] = "dcOrganizationNameForm";
-		$entry["o"] = 0;
-	}
-
     $entry[PQL_LDAP_REFERENCE_DOMAINS_WITH] = $branch_name;
 	$dn = PQL_LDAP_REFERENCE_DOMAINS_WITH . "=" . $branch_name . "," . $basedn;
+
+	// Setup objectclasses
+	$entry["objectClasses"] = pql_setup_branch_objectclasses();
+	$entry["o"] = 0;
 
 //	// --------------------------
 //	// DEBUG mode: Print the LDIF
@@ -675,10 +662,9 @@ function pql_replace_userattributes($ldap_linkid, $user, $entry){
 function pql_get_domains($ldap) {
 	// get all domains listed in ldap-tree (ou|dc-records)
 	
+	$filter = "(&(" . PQL_LDAP_REFERENCE_DOMAINS_WITH . "=*)" . pql_setup_branch_objectclasses(1) . ")";
 	foreach($ldap->ldap_basedn as $dn)  {
-		$sr = @ldap_list($ldap->ldap_linkid, $dn,
-						 "(&(" . PQL_LDAP_REFERENCE_DOMAINS_WITH . "=*)" . pql_branch_objectclasses() . ")"
-						 ) or pql_errormsg($ldap->ldap_linkid);
+		$sr = @ldap_list($ldap->ldap_linkid, $dn, $filter) or pql_errormsg($ldap->ldap_linkid);
 		$info = @ldap_get_entries($ldap->ldap_linkid, $sr) or pql_errormsg($ldap->ldap_linkid);
 		
 		for ($i=0; $i<$info["count"]; $i++) {
@@ -994,7 +980,7 @@ function table_bgcolor($echo = 1) {
 // ------------------------------------------------
 
 function format_error($msg){
-    return "  <span class=\"error\">" . $msg . " </span>";
+    return "<span class=\"error\">" . $msg . "</span>";
 }
 
 // ------------------------------------------------
@@ -1317,19 +1303,8 @@ function pql_set_domain_value($linkid, $dn, $type, $value) {
 		$entry = $value;
 	}
 	
-	// Get all object classes of the DN, making sure it
-	// contains the phpQLAdminBranch
-	$object = ldap_explode_dn($dn, 0);
-	$sr  = @ldap_read($linkid, $dn, $object[0], array('objectclass'));
-	$ocs = @ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
-	for($j=0; $j < $ocs[0]["objectclass"]["count"]; $j++) {
-		if(eregi('phpQLAdminBranch', $ocs[0]["objectclass"][$j]))
-		  $got_phpqladmin_objectclass_branch = 1;
-
-		$entry["objectClass"][] = $ocs[0]["objectclass"][$j];
-	}
-	if(! $got_phpqladmin_objectclass_branch)
-	  $entry["objectClass"][] = 'phpQLAdminBranch';
+	// Setup objectclasses
+	$entry["objectClasses"] = pql_setup_branch_objectclasses(0, $linkid, $dn);
 
 //	// --------------------------
 //	// DEBUG mode: Print the LDIF
@@ -1401,21 +1376,6 @@ function pql_execute($command, $hide=true) {
 	  echo "----\nreturn value: $ret $code\n</pre>";
 
 	return $ret;
-}
-
-function pql_branch_objectclasses() {
-	$filter = '';
-
-	if(eregi(' ', PQL_LDAP_OBJECTCLASS_DOMAIN)) {
-		$objectclasses = split(' ', PQL_LDAP_OBJECTCLASS_DOMAIN);
-		for($i=0; $objectclasses[$i]; $i++) {
-			$filter .= "(objectClass=$objectclasses[$i])";
-		}
-	} else {
-		$filter = "(objectClass=" . PQL_LDAP_OBJECTCLASS_DOMAIN . ")";
-	}
-
-	return $filter;
 }
 
 function pql_get_mx($ldap, $domainname) {
@@ -1635,6 +1595,70 @@ function pql_get_subbranch($linkid, $dn, $filter = 1) {
 	}
 
 	return $branches;
+}
+
+// Setup object class entry for a domain/branch with all
+// necessary objectclasses
+function pql_setup_branch_objectclasses($filter = 0, $linkid = '', $dn = '') {
+	if($dn != '' and $linkid != '') {
+		// Retreive existing objectClasses from the object
+		$object = ldap_explode_dn($dn, 0);
+		$sr     = @ldap_read($linkid, $dn, $object[0], array('objectclass'));
+		$ocs    = @ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
+		
+		for($j=0; $j < $ocs[0]["objectclass"]["count"]; $j++) {
+			if(eregi('phpQLAdminBranch', $ocs[0]["objectclass"][$j]))
+			  $got_phpqladmin_objectclass_branch = 1;
+			
+			$entry[] = $ocs[0]["objectclass"][$j];
+		}
+	} else {
+		// No previous DN, we're probably creating a new
+		if(eregi(' ', PQL_LDAP_OBJECTCLASS_DOMAIN)) {
+			$objectclasses = split(' ', PQL_LDAP_OBJECTCLASS_DOMAIN);
+			foreach($objectclasses as $oc) {
+				if($filter) {
+					$entry .= "(objectClass=$oc)";
+				} else {
+					$entry[] = $oc;
+
+					if(eregi('phpQLAdminBranch', $oc))
+					  $got_phpqladmin_objectclass_branch = 1;
+				}
+			}
+		} else {
+			if($filter) {
+				$entry = "(objectClass=" . PQL_LDAP_OBJECTCLASS_DOMAIN . ")";
+			} else {
+				$entry[] = PQL_LDAP_OBJECTCLASS_DOMAIN;
+				$entry[] = "dcOrganizationNameForm";
+			}
+		}
+	}
+
+	if(!$got_phpqladmin_objectclass_branch and !filter)
+	  $entry[] = 'phpQLAdminBranch';
+	else
+	  // We have already setup the objectclasses, return NULL
+	  $entry = array();
+
+	return($entry);
+}
+
+function pql_validate_administrator($linkid, $dn, $admin) {
+	$sr   = @ldap_read($linkid, $dn, '(objectClass=*)', array('administrator')) or pql_errormsg($linkid);
+	$info = ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
+
+	for($i=0; $i<$info["count"]; $i++) {
+		for($j=0; $j<$info[$i]["administrator"]["count"]; $j++) {
+			// TODO: We shouldn't do a regexp but a 'case insensitive equal'
+			if(eregi($info[$i]["administrator"][$j], $admin)) {
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 /*
