@@ -1047,7 +1047,7 @@ switch($submit) {
 				$url  = "user_sendmail.php?email=" . urlencode($email) . "&";
 				$url .= "domain=$domain&user=" . urlencode($DNs[0]) . "&rlnb=2&msg=$msg";
 			} else {
-				$url  = "user_detail.php?";
+				$url  = "user_detail.php?rootdn=$rootdn&";
 				$url .= "domain=$domain&user=" . urlencode($DNs[0]) . "&rlnb=2&msg=$msg";
 			}
 
