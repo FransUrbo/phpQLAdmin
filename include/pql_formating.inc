@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.13 2004-02-21 12:53:51 turbo Exp $
+// $Id: pql_formating.inc,v 2.14 2004-02-27 12:13:02 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -57,8 +57,13 @@ function pql_format_error($output) {
 	$url = "<a href='config_detail.php?view=".$_pql->ldap_basedn[0]."' target='_new'>Show configuration</a>";
 
     switch($errno) {
+	  case 17:
+		// Undefined attribute type -> invalid schema
+		$comment  = "This error is caused by an invalid schema. Have you updated them recently? If not, copy the new schema ";
+		$comment .= "that defines this attribute, and restart your LDAP server.";
+		break;
       case 18:
-		// Inappropriate matching --> invalid qmail.schema
+		// Inappropriate matching --> invalid schema
 		$comment = "This error is caused by an invalid schema file.";
 		break;
 	  case 21:
