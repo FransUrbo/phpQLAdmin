@@ -1,6 +1,6 @@
 <?php
 // Create a DNS zone file
-// $Id: dnszonetemplate.php,v 1.6.8.2 2005-02-16 13:49:50 turbo Exp $
+// $Id: dnszonetemplate.php,v 1.6.8.3 2005-02-16 15:47:20 turbo Exp $
 session_start();
 require("../include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_bind9.inc");
@@ -88,11 +88,11 @@ if($origin == $defaultdomain) {
 // This is the domain, but with the TLD removed. For use in the SOA record.
 $basedomain = eregi_replace("\.".$origin, "", $defaultdomain);
 ?>
-<pre>
+    <pre>
 <?php
 echo "; LDAP DN: 'ou=DNS,".pql_maybe_decode($domain)."'\n";
 echo "\$ORIGIN $origin.\n";
-printf("%-15s %8s	IN	SOA	%s %s. (\n", $basedomain, "604800", $nameservers[0], $admin);
+printf("%-15s %8s	IN	SOA	%s %s. (\n", $basedomain, $negttl, $nameservers[0], $admin);
 printf("%58d  ; Serial number\n", $date);
 printf("%58d  ; Refresh\n", $refresh);
 printf("%58d  ; Retry\n", $retry);
@@ -134,7 +134,15 @@ if(!$printed_hosts) {
     // Just for show :)
     echo "; [add your host(s) here]\n";
 }
+
+$link  = $_SESSION["URI"]."domain_detail.php?rootdn=".urlencode($_REQUEST["rootdn"]);
+$link .= "&domain=".urlencode($_REQUEST["domain"])."&view=".$_REQUEST["view"];
+$link .= "&dns_domain_name=$defaultdomain";
 ?>
-</pre>
-</body>
+    </pre>
+
+    <form action="<?=$link?>" method="post">
+      <input type="submit" value="Continue">
+    </form>
+  </body>
 </html>
