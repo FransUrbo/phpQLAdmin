@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // default domain name (the default domainname for a domain)
-// $Id: attrib.defaultdomain.inc,v 2.0 2002-12-13 14:34:58 turbo Exp $
+// $Id: attrib.defaultdomain.inc,v 2.1 2002-12-14 21:08:42 turbo Exp $
 
 function attribute_check(){
     global $defaultdomain, $domain, $oldvalue, $_pql, $error;
@@ -29,25 +29,24 @@ function attribute_init(){
 
 function attribute_print_form(){
     global $defaultdomain, $domain, $PHP_SELF, $attrib, $oldvalue, $error;
+?>
+  <form action="<?php echo $PHP_SELF ?>" method="post">
+    <table cellspacing="0" cellpadding="3" border="0">
+      <th colspan="3" align="left"><?php echo PQL_DOMAIN_DEFAULT_CHANGE_NAME . $domain; ?></th>
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"><?php echo PQL_DOMAIN_DEFAULT_NAME; ?></td>
+          <td><?php echo format_error($error["defaultdomain"]); ?><input type="text" name="defaultdomain" value="<?php echo $defaultdomain; ?>" size="20"></td>
+        </tr>
+      </th>
+    </table>
 
-    ?>
-	<form action="<?php echo $PHP_SELF ?>" method="post">
-	<table cellspacing="0" cellpadding="3" border="0">
-	<th colspan="3" align="left"><?php echo PQL_DOMAIN_DEFAULT_CHANGE_NAME . $domain; ?></th>
-	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title"><?php echo PQL_DOMAIN_DEFAULT_NAME; ?></td>
-		<td><?php echo format_error($error["defaultdomain"]); ?><input type="text" name="defaultdomain" value="<?php echo $defaultdomain; ?>" size="20"></td>
-	</tr>
-	</table>
-	<input type="hidden" name="submit" value="2">
-	<input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-	<input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
-	<input type="hidden" name="domain" value="<?php echo $domain; ?>">
-	<br>
-	<br>
-	<input type="submit" value="<?php echo PQL_SAVE; ?>">
-	</form>
-    <?php
+    <input type="hidden" name="submit" value="2">
+    <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
+    <input type="hidden" name="domain" value="<?php echo $domain; ?>">
+    <input type="submit" value="<?php echo PQL_SAVE; ?>">
+  </form>
+<?php
 }
 
 function attribute_save($type){

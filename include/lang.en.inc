@@ -1,7 +1,7 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 2.0 2002-12-13 14:34:58 turbo Exp $
+// $Id: lang.en.inc,v 2.1 2002-12-14 21:08:42 turbo Exp $
 //
 // if you have a translation to another language, please contact
 // me --> Matthias Blaser <mb@adfinis.ch>
@@ -242,7 +242,7 @@ define("PQL_LDAP_UID_CHANGE_FAILED", "Failed changing the username");
 define("PQL_LDAP_UID_UNCHANGED","Username unchanged");
 
 // mailquota texts
-define("PQL_LDAP_MAILQUOTA_TITLE", "Quota");
+define("PQL_LDAP_MAILQUOTA_TITLE", "Default quota");
 define("PQL_LDAP_MAILQUOTA_NONE", "Standard");
 define("PQL_LDAP_MAILQUOTA_ECHO_MAXSIZE", "max %maxsize% KB");
 define("PQL_LDAP_MAILQUOTA_ECHO_MAXSIZE_UNLIMITED", "unlimited size");
