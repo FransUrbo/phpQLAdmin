@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.52 2003-04-04 16:37:51 turbo Exp $
+// $Id: pql.inc,v 2.53 2003-04-07 08:11:21 turbo Exp $
 //
 
 // ----------------------------
@@ -161,11 +161,7 @@ class pql {
 function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $branch) {
 	global $config;
 
-	$DEBUG = 0;
 	$rootdn = pql_get_rootdn($domain);
-
-	if($DEBUG >= 2)
-	  echo "pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $branch)<br>";
 
     // Setup the objectclass entries
 	if($config["PQL_CONF_OBJECTCLASS_USER"][$rootdn]) {
@@ -205,28 +201,14 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 	else
 	  $userdn .= $domain;
 
-	// --------------------------
-	// DEBUG mode: Print the LDIF
-	if($DEBUG >= 1) {
-		echo "<br>--- DEBUG: pql_user_add() ---<br>";
-		echo "dn: $userdn<br>";
-		foreach($entry as $key => $e) {
-			if(is_array($entry[$key])) {
-				// ... in an array. Go through each one, creating the LDAP entry
-				foreach($entry[$key] as $x) {
-					echo "$key: $x<br>";
-				}
-			} else {
-				echo "$key: $entry[$key]<br>";
-			}
-		}
-		die("--- DEBUG ---");
-	}
-	// --------------------------
-    
+	// Create a LDIF object to print in case of error
+	$LDIF = pql_create_ldif("pql_user_add", $userdn, $entry);
+
     // adds the user
     if(! ldap_add($ldap_linkid, $userdn, $entry)){
 		// failed to add user
+		pql_errormsg($ldap_linkid);
+		die("$LDIF");
 		return false;
 	}
 	$dns[]  = $userdn;
@@ -362,28 +344,14 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name){
 	$entry["objectClass"] = pql_setup_branch_objectclasses(0, $basedn);
 	$entry["o"] = 0;
 
-//	// --------------------------
-//	// DEBUG mode: Print the LDIF
-//	echo "<br>--- DEBUG: pql_domain_add() ---<br>";
-//	echo "dn: $dn<br>";
-//	foreach($entry as $key => $e) {
-//		if(eregi("objectclass", $key)) {
-//			// We have a objectClass
-//			if(is_array($entry[$key])) {
-//				// ... in an array. Go through each one, creating the LDAP entry
-//				foreach($entry[$key] as $oc) {
-//					echo "$key: $oc<br>";
-//				}
-//			}
-//		} else {
-//			echo "$key: $entry[$key]<br>";
-//		}
-//	}
-//	die("--- DEBUG ---");
-//	// --------------------------
+	// Create a LDIF object to print in case of error
+	$LDIF = pql_create_ldif("pql_domain_add", $dn, $entry);
 
+    // adds the user
     if(! @ldap_add($ldap_linkid, $dn, $entry)) {
+		// failed to add user
 		pql_errormsg($ldap_linkid);
+		die("$LDIF");
 		return false;
     }
 	$dns[] = $dn;
@@ -400,7 +368,10 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name){
 		$dn = PQL_CONF_SUBTREE_USERS . "," .
               $config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn] .
               "=" . $branch_name . "," . $basedn;
+
+		// adds the user
 		if(!@ldap_add($ldap_linkid, $dn, $entry)){
+			// failed to add user subtree
 			pql_errormsg($ldap_linkid);
 			return $dns;
 		}
@@ -718,6 +689,11 @@ function pql_get_domains($ldap) {
 
 		$sr = @ldap_list($ldap->ldap_linkid, $dn, $filter) or pql_errormsg($ldap->ldap_linkid);
 		$info = @ldap_get_entries($ldap->ldap_linkid, $sr) or pql_errormsg($ldap->ldap_linkid);
+		if($info["count"] == 0) {
+			// No entries, try a BASE search
+			$sr = @ldap_read($ldap->ldap_linkid, $dn, $filter) or pql_errormsg($ldap->ldap_linkid);
+			$info = @ldap_get_entries($ldap->ldap_linkid, $sr) or pql_errormsg($ldap->ldap_linkid);
+		}
 		
 		for ($i=0; $i<$info["count"]; $i++) {
 			$domains[] = $info[$i]["dn"];
@@ -801,7 +777,6 @@ function pql_get_userattribute($ldap_linkid, $user, $attribute) {
 function pql_get_userentry($ldap_linkid, $user) {
     $sr = @ldap_read($ldap_linkid, $user, "(objectClass=*)");
     if($sr == false){
-		pql_errormsg($ldap_linkid);
 		return false;
     }
     
@@ -875,7 +850,7 @@ function pql_get_dn($ldap, $reference, $multiples = 0) {
 // ------------------------------------------------
 function pql_errormsg($ldap_linkid){
 	if($ldap_linkid)
-	  echo format_error("LDAP-Error:") . ldap_error($ldap_linkid) . "<br>";
+	  echo format_error("LDAP-Error: ") . ldap_error($ldap_linkid) . "<br>";
 }
 
 // ------------------------------------------------
@@ -1315,6 +1290,7 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '') {
 
 	// Setup a filter to look for DOMAINS (branches)
 	$filter  = "(&($value=$match)(".$config["PQL_CONF_REFERENCE_DOMAINS_WITH"][pql_get_rootdn($dn)]."=*))";
+	//echo "pql_get_domain_value(): '$dn' '$filter' $value<br>";
 
 	// Search from the DN
 	if(!$recursive)
@@ -1341,6 +1317,11 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '') {
 					$results[] = $result[$i]["dn"];
 					$success = 1;
 				}
+			}
+		} elseif(($value == 'administrator') or ($value == 'seealso')) {
+			for($j=0; $j < $result[0][$value]["count"]; $j++) {
+				$results[] = $result[0][$value][$j];
+				$success = 1;
 			}
 		} elseif(($value == 'passwordscheme') or
 				 ($value == 'userobjectclass') or
@@ -1372,6 +1353,8 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '') {
 
 // Set a embedded domain default value
 function pql_set_domain_value($linkid, $dn, $type, $value) {
+	$DEBUG = 0;
+
 	// Lowercase type...
 	if($type) {
 		$type = strtolower($type);
@@ -1403,27 +1386,20 @@ function pql_set_domain_value($linkid, $dn, $type, $value) {
 	if(!($entry["objectClass"] = pql_setup_branch_objectclasses(0, $dn, $linkid)))
 	  unset($entry["objectClass"]);
 
-//	// --------------------------
-//	// DEBUG mode: Print the LDIF
-//	echo "<br>--- DEBUG: pql_set_domain_value() ---<br>";
-//	echo "dn: $dn<br>";
-//	foreach($entry as $key => $e) {
-//		if(is_array($e)) {
-//			foreach($e as $v) {
-//				echo "$key: $v<br>";
-//			}
-//		} else {
-//			echo "$key: $e<br>";
-//		}
-//	}
-//	die("--- DEBUG ---");
-//	// --------------------------
+	// Create a LDIF object to print in case of error
+	$LDIF = pql_create_ldif("pql_set_domain_value", $dn, $entry);
+
+	// --------------------------
+	// DEBUG mode: Print the LDIF
+	if($DEBUG >= 1)
+	  die("$LDIF");
 
 	// Do the LDAP modification
 	if($value != '') {
 		// Replace the current attribute value
 		if(! ldap_mod_replace($linkid, $dn, $entry)) {
 			pql_errormsg($linkid);
+			die($LDIF);
 			return false;
 		}
 	} else {
@@ -1432,6 +1408,7 @@ function pql_set_domain_value($linkid, $dn, $type, $value) {
 
 		if(! ldap_mod_del($linkid, $dn, $entry)) {
 			pql_errormsg($linkid);
+			die($LDIF);
 			return false;
 		}
 	}
@@ -1508,7 +1485,9 @@ function pql_get_subschema($ldap_linkid, $attrib) {
     $attrib = strtolower($attrib);
 	
     // Get the DN for the subSchema
-    $sr    = ldap_read($ldap_linkid, '', '(objectClass=*)', array('subschemaSubentry'));
+	// /usr/bin/ldapsearch -x -LLL -h localhost -s base -b '' 'objectClass=*' subschemaSubentry
+	// TODO: Resue the $this->_find_base_option() function here!
+    $sr    = ldap_read($ldap_linkid, NULL, '(objectClass=*)', array('subschemaSubentry'));
     $entry = ldap_get_entries($ldap_linkid, $sr);
     if($entry["count"]) {
 		// Get the subSchemaAttributes from the subSchema
@@ -1647,7 +1626,8 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 			if(eregi("X-NOT-HUMAN-READABLE", $entry[0][$attrib][$i]))
 			  $VALUE[$name]["X-NOT-HUMAN-READABLE"] = 'true';
 		}
-		
+
+		ksort($VALUE);
 		return $VALUE;
     }
 }
@@ -1667,7 +1647,12 @@ function pql_get_subschemas($ldap_linkid, $match = "") {
 		if(! $entry["objectclasses"][strtolower($match)])
 		  return 0;
 	}
-	
+
+	// Return 4 arrays:
+	//	ldapsyntaxes
+	//	matchingrules
+	//	attributetypes
+	//	objectclasses
     return $entry;
 }
 
@@ -1724,30 +1709,18 @@ function pql_setup_branch_objectclasses($filter = 0, $dn, $linkid = '') {
 		else
 		  $ocs = '';
 
-		if(eregi(' ', $ocs)) {
-			$objectclasses = split(' ', $ocs);
-			foreach($objectclasses as $oc) {
-				if($filter) {
-					// TODO:  Crude hack to not include an optional
-					//        objectclass in search filter creation...
-					if(!eregi('dcOrganizationNameForm', $oc))
-					  $entry .= "(objectClass=$oc)";
-				} else {
-					$entry[] = $oc;
-
-					if(eregi('phpQLAdminBranch', $oc))
-					  $got_phpqladmin_objectclass_branch = 1;
-				}
-			}
-		} else {
+		$ocs = pql_split_oldvalues($ocs);
+		foreach($ocs as $oc) {
 			if($filter) {
-				$entry = "(objectClass=" . $ocs . ")";
-			} else {
-				$entry[] = $ocs;
-				$entry[] = "dcOrganizationNameForm";
-			}
+				if(! eregi('dcOrganizationNameForm', $oc))
+				  $entry .= "(objectClass=$oc)";
+			} else 
+			  $entry[] = $oc;
 		}
 	}
+
+	if($filter and $entry)
+	  return($entry);
 
 	if(!$got_phpqladmin_objectclass_branch and !$filter) {
 		$entry[] = 'phpQLAdminBranch';
@@ -1800,10 +1773,35 @@ function pql_split_oldvalues($value) {
 	return($values);
 }
 
+// --------------------------
+// Create a LDIF object to print in case of error
+function pql_create_ldif($func, $dn, $entry) {
+	$LDIF  = "<br>--- DEBUG: $func() ---<br>";
+	$LDIF .= "dn: $dn<br>";
+	foreach($entry as $key => $e) {
+		if(is_array($entry[$key])) {
+			// ... in an array. Go through each one, creating the LDAP entry
+			foreach($entry[$key] as $x) {
+				$LDIF .= "$key: $x<br>";
+			}
+		} else {
+			$LDIF .= "$key: $entry[$key]<br>";
+		}
+	}
+	$LDIF .= "--- DEBUG ---<p>";	
+
+	return($LDIF);
+}
+
 function printr($string) {
-	echo "<pre>";
-	print_r($string); 
-	echo "</pre><p>";
+	echo "<pre>\n";
+
+	if(is_array($string))
+	  print_r($string);
+	else
+	  echo "$string<br>";
+
+	echo "</pre><p>\n";
 }
 
 /*
