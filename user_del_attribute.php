@@ -30,11 +30,11 @@ if(isset($ok) || !PQL_CONF_VERIFY_DELETE) {
 	$msg = pql_complete_constant(PQL_LANG_MAILALTERNATEADDRESS_DEL_OK, array("mail" => $oldvalue));
 	$success = true;
     } else {
-    	$msg = PQL_LANG_MAILALTERNATEADDRESS_DEL_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+    	$msg = pql_complete_constant(PQL_LANG_MAILALTERNATEADDRESS_DEL_FAILED, array("mail" => $oldvalue)) . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	$success = false;
     }
     
-    if ($attrib == 'mailalternateaddress' and $success and isset($delete_forwards)) {
+    if (lc($attrib) == 'mailalternateaddress' and $success and isset($delete_forwards)) {
 	// does another account forward to this alias?
 	$sr = ldap_search($_pql->ldap_linkid, "(|(" . $config["PQL_GLOB_ATTR_FORWARDS"] ."=" . $oldvalue . "))");
 	if (ldap_count_entries($_pql->ldap_linkid,$sr) > 0) {
