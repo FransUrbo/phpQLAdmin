@@ -1,5 +1,41 @@
 phpQLAdmin 2.0 Change Log
 
+phpQLAdmin 2.0.10 TO BE ANNOUNCED
+	Bug fixes
+	  - Got multiple backends (namingContexts) to work properly
+	    Include reference to the root dn wherever we're referencing
+	    the domain DN.
+
+	GUI layout change
+	  - Show the user DN in the left frame and in user details
+	    if in advanced mode
+	  - New structure/layout in the config_details page:
+	    + Show each Top DN (namingContexts) as a separate
+	      column (actually two - one small for edit/delete
+	      icon, one for data).
+	  - Possibility to edit/add/remove {user,domain} object
+	    classes, password encryption schemes per domain/branch,
+	    user/domain reference attribute etc, etc.
+	    + This is the beginning of a user template configuration.
+	  - If we have write access to ezmlm/controls in ONE domain
+	    at least, then show frame (provided the global setting
+	    for each is true). If not, don't show frame.
+
+	Misc changes
+	  - Replace all previous defines (constant variables) for
+	    the new global configuration variable $config. This is
+	    an absolute necessity to get domain/branch separate
+	    configuration.
+	    + Separate config per domain/branch.
+	    + Don't set default {user,domain} objectclass(es). This
+	      is configured in the config_details page and is site
+	      and domain/branch specific.
+	  - If we find more than one object when we're looking for
+	    user we're loggin in as (example: one in each namingContexts),
+	    then try each DN with bind() -> Success is a keeper!
+	  - Cleanup of pql_get_domain_value() and pql_setup_branch_objectclasses().
+	    + Redundant (ie, never executed) code removed.
+
 phpQLAdmin 2.0.9 Release (Mar 29 2003)
 	Highlights
 	Bug fixes
