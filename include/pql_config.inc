@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.65 2004-05-07 07:40:14 turbo Exp $
+// $Id: pql_config.inc,v 1.66 2004-05-13 05:55:09 turbo Exp $
 //
 
 // include the API files
@@ -76,70 +76,59 @@ require("./include/config.inc");			// Generic site configuration
 // 2. Include the attribute configuration
 require("./include/config_attributes.inc");		// Attribute definitions
 
-// 3. Load configurations from LDAP base DN
-if(!$_SESSION["USER_HOST"]) {
-	if(! eregi('\+', pql_get_define("PQL_CONF_HOST"))) {
-		$host = split(';', pql_get_define("PQL_CONF_HOST"));
-		$_SESSION["USER_HOST"] = $host[0] . ";" . $host[1] . ";" . $host[2];
-	} else {
-		// TODO: We have multiple hosts defined
-		$servers = split('\+', pql_get_define("PQL_CONF_HOST"));
+if($_SESSION["USER_HOST"]) {
+	if(!$_pql)
+	  $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
-		// For the time beeing, use the first value
-		$host = split(';', $servers[0]);
-		$_SESSION["USER_HOST"] = $host[0] . ";" . $host[1] . ";" . $host[2];
-	}
-}
-
-$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
-foreach($_pql->ldap_basedn as $dn)  {
-	$dn = urldecode($dn);
-
-	$sr = @ldap_read($_pql->ldap_linkid, $dn, ('objectClass=*'))
-	  or pql_format_error(1);
-	$info = ldap_get_entries($_pql->ldap_linkid, $sr)
-	  or pql_format_error(1);
-
-	// Below I use two variables with VERY 'strange' names. I can't call them what I WANT to call
-	// them or what's obvious because I'm afraid of variable overloading...
-	// That is, if I use the variable name _ANY_ (!!) where else, and I need to remember that,
-	// it will be 'destroyed' (or at least contain a value which have nothing to do with the
-	// original value...
-	//
-	// Hence the name's "pql_config_private_{variable,array}_which_irritates_me".
-	// - The "variable" variable will contain the LDAP attribute name.
-	// - The "array" variable will contain the value(s) for this array from the db.
-
-	// If we got something, retreive the attributes
-	for ($i=0; $i<$info["count"]; $i++) {
-		foreach($PQL_ATTRIBUTE as $level => $array) {
-			if($level != 'USER') {
-				foreach($array as $key => $pql_config_private_variable_which_irritates_me) {
-					$pql_config_private_variable_which_irritates_me = strtolower($pql_config_private_variable_which_irritates_me);
-					$pql_config_private_array_which_irritates_me = NULL;
-					
-					for($k=0; isset($info[$i][$pql_config_private_variable_which_irritates_me][$k]); $k++) {
-						if($pql_config_private_array_which_irritates_me)
-						  $pql_config_private_array_which_irritates_me .= ",".$info[$i][$pql_config_private_variable_which_irritates_me][$k];
+	foreach($_pql->ldap_basedn as $dn)  {
+		$dn = urldecode($dn);
+		
+		$sr = @ldap_read($_pql->ldap_linkid, $dn, ('objectClass=*'))
+		  or pql_format_error(1);
+		$info = ldap_get_entries($_pql->ldap_linkid, $sr)
+		  or pql_format_error(1);
+		
+		// Below I use two variables with VERY 'strange' names. I can't call them what I WANT to call
+		// them or what's obvious because I'm afraid of variable overloading...
+		// That is, if I use the variable name _ANY_ (!!) where else, and I need to remember that,
+		// it will be 'destroyed' (or at least contain a value which have nothing to do with the
+		// original value...
+		//
+		// Hence the name's "pql_config_private_{variable,array}_which_irritates_me".
+		// - The "variable" variable will contain the LDAP attribute name.
+		// - The "array" variable will contain the value(s) for this array from the db.
+		
+		// If we got something, retreive the attributes
+		for ($i=0; $i<$info["count"]; $i++) {
+			foreach($PQL_ATTRIBUTE as $level => $array) {
+				if($level != 'USER') {
+					foreach($array as $key => $pql_config_private_variable_which_irritates_me) {
+						$pql_config_private_variable_which_irritates_me = strtolower($pql_config_private_variable_which_irritates_me);
+						$pql_config_private_array_which_irritates_me = NULL;
+						
+						for($k=0; isset($info[$i][$pql_config_private_variable_which_irritates_me][$k]); $k++) {
+							if($pql_config_private_array_which_irritates_me)
+							  $pql_config_private_array_which_irritates_me .= ",".$info[$i][$pql_config_private_variable_which_irritates_me][$k];
+							else
+							  $pql_config_private_array_which_irritates_me = $info[$i][$pql_config_private_variable_which_irritates_me][$k];
+						}
+						
+						if($level == 'GLOBAL')
+						  pql_set_define($key, $pql_config_private_array_which_irritates_me, true);
 						else
-						  $pql_config_private_array_which_irritates_me = $info[$i][$pql_config_private_variable_which_irritates_me][$k];
+						  pql_set_define($key, $pql_config_private_array_which_irritates_me, true, $dn);
+						
+						unset($pql_config_private_array_which_irritates_me);
 					}
-					
-					if($level == 'GLOBAL')
-					  pql_set_define($key, $pql_config_private_array_which_irritates_me, true);
-					else
-					  pql_set_define($key, $pql_config_private_array_which_irritates_me, true, $dn);
-					
-					unset($pql_config_private_array_which_irritates_me);
 				}
 			}
 		}
 	}
 
-	// 4. Load 'resonable defaults' for each top DN
+	// 3. Load 'resonable defaults' for each top DN
 	require("./include/defaults.inc");
-
-	// Check some builtin ACL's
+	
+	// 4. Check some builtin ACL's
 	$_SESSION["ALLOW_BRANCH_CREATE"] = 0; $_SESSION["ALLOW_CONTROL_CREATE"] = 0;
 	if($_SESSION["USER_DN"] && (!$_SESSION["ALLOW_BRANCH_CREATE"] or !$_SESSION["ALLOW_CONTROL_CREATE"])) {
 		// Verify that the user is administrator on the topmost DN -> Allow creation of domain/branches.
@@ -148,12 +137,12 @@ foreach($_pql->ldap_basedn as $dn)  {
 		// Check the Control DN if the user is there -> Allow management of Controls information
 		$_SESSION["ALLOW_CONTROL_CREATE"] = pql_validate_administrator($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $_SESSION["USER_DN"]);
 	}
-}
-
-// 5. Get user configuration for phpQLAdmin
-$user_object = pql_get_object($_pql->ldap_linkid, $_SESSION["USER_DN"]);
-foreach($PQL_ATTRIBUTE["USER"] as $key => $attrib) {
-	pql_set_define($key, $user_object[$attrib][0], true, $_SESSION["USER_DN"]);
+	
+	// 5. Get user configuration for phpQLAdmin
+	$user_object = pql_get_object($_pql->ldap_linkid, $_SESSION["USER_DN"]);
+	foreach($PQL_ATTRIBUTE["USER"] as $key => $attrib) {
+		pql_set_define($key, $user_object[$attrib][0], true, $_SESSION["USER_DN"]);
+	}
 }
 
 // 6. Get language translation
@@ -163,42 +152,46 @@ $LANG = new pql_lang($_pql);
 // 7. Include the plugin API
 require("./include/pql_plugins.inc");
 
-// 8. Verify that the user have access to write the global phpQLAdmin config
-//    in the first base DN
-$_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"] = pql_validate_administrator($_pql->ldap_linkid, $_pql->ldap_basedn[0], $_SESSION["USER_DN"]);
-
-if((empty($_SESSION["ACI_SUPPORT_ENABLED"]) and function_exists("user_generate_aci")) or empty($_SESSION["NEW_STYLE_QUOTA"])) {
-	$ocs = pql_get_subschema($_pql->ldap_linkid, attributeTypes);
-
-	// 9a. Check ifthe attribute openLdapAci exists - ACI support is enabled in the LDAP server.
-	if(empty($_SESSION["ACI_SUPPORT_ENABLED"]) and
-	   function_exists("user_generate_aci") and
-	   $ocs[pql_get_define("PQL_ATTR_LDAPACI")]["OID"])
-	  $_SESSION["ACI_SUPPORT_ENABLED"] = 1;
-
-	// 9b. Check to see if the attributes mailQuotaSize and mailQuotaCount exists - new style quota.
-	if(!empty($ocs[pql_get_define("PQL_ATTR_QUOTA_SIZE")]["OID"]) and
-	   !empty($ocs[pql_get_define("PQL_ATTR_QUOTA_COUNT")]["OID"]))
-	  $_SESSION["NEW_STYLE_QUOTA"] = 1;
-
-	// 9c. Do we support old style quota, even if new style is enabled?
-	if(empty($ocs[pql_get_define("PQL_ATTR_QUOTA_VALUE")]["OID"])) {
-		// The old style quota attribute isn't defined - don't support it
-		$_SESSION["OLD_STYLE_QUOTA"] = 0;
-	} else {
-		// It's defined so support old style quota
-		$_SESSION["OLD_STYLE_QUOTA"] = 1;
+if($_SESSION["USER_HOST"]) {
+	// 8. Verify that the user have access to write the global phpQLAdmin config
+	//    in the first base DN
+	$_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"] = pql_validate_administrator($_pql->ldap_linkid, $_pql->ldap_basedn[0], $_SESSION["USER_DN"]);
+	
+	if((empty($_SESSION["ACI_SUPPORT_ENABLED"]) and function_exists("user_generate_aci")) or empty($_SESSION["NEW_STYLE_QUOTA"])) {
+		$ocs = pql_get_subschema($_pql->ldap_linkid, attributeTypes);
+		
+		// 9a. Check ifthe attribute openLdapAci exists - ACI support is enabled in the LDAP server.
+		if(empty($_SESSION["ACI_SUPPORT_ENABLED"]) and
+		   function_exists("user_generate_aci") and
+		   $ocs[pql_get_define("PQL_ATTR_LDAPACI")]["OID"])
+		  $_SESSION["ACI_SUPPORT_ENABLED"] = 1;
+		
+		// 9b. Check to see if the attributes mailQuotaSize and mailQuotaCount exists - new style quota.
+		if(!empty($ocs[pql_get_define("PQL_ATTR_QUOTA_SIZE")]["OID"]) and
+		   !empty($ocs[pql_get_define("PQL_ATTR_QUOTA_COUNT")]["OID"]))
+		  $_SESSION["NEW_STYLE_QUOTA"] = 1;
+		
+		// 9c. Do we support old style quota, even if new style is enabled?
+		if(empty($ocs[pql_get_define("PQL_ATTR_QUOTA_VALUE")]["OID"])) {
+			// The old style quota attribute isn't defined - don't support it
+			$_SESSION["OLD_STYLE_QUOTA"] = 0;
+		} else {
+			// It's defined so support old style quota
+			$_SESSION["OLD_STYLE_QUOTA"] = 1;
+		}
 	}
 }
 
 if(@$_SESSION["ACI_SUPPORT_ENABLED"])
 	 require("./include/pql_aci.inc");
 
-// 10. Check to see if the cn=Monitor backend is availble/readable
-if(!@$MONITOR_BACKEND_ENABLED) {
-    $sr = @ldap_read($_pql->ldap_linkid, "cn=Monitor", 'objectClass=*');
-    if($sr)
-	  $_SESSION["MONITOR_BACKEND_ENABLED"] = 1;
+if($_SESSION["USER_HOST"]) {
+	// 10. Check to see if the cn=Monitor backend is availble/readable
+	if(!@$MONITOR_BACKEND_ENABLED) {
+		$sr = @ldap_read($_pql->ldap_linkid, "cn=Monitor", 'objectClass=*');
+		if($sr)
+		  $_SESSION["MONITOR_BACKEND_ENABLED"] = 1;
+	}
 }
 
 // Remove some variables so we don't clutter the global
