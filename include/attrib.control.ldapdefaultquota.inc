@@ -1,66 +1,67 @@
 <?php
 // control attribute plugin for
-// $ldapdefaultquota (default quota for all mail users)
+// 	ldapDefaultQuota (default quota for all mail users)
+// or, if using new style quota
+// 	defaultQuotaSize and defaultQuotaCount
 //
-// $Id: attrib.control.ldapdefaultquota.inc,v 2.15 2004-03-11 16:31:54 turbo Exp $
+// $Id: attrib.control.ldapdefaultquota.inc,v 2.16 2004-03-29 07:51:50 turbo Exp $
 
 // {{{ ldapdefaultquota_check(type)
 function ldapdefaultquota_check($type) {
     global $error, $LANG;
     
-    // empty
-    if($_REQUEST["maxsize"] == "" and $_REQUEST["options"] == "user" and $_REQUEST["use_maxsize"] != "") {
+	$failed = false;
+
+	// Just to save some typing.
+	$options  = (!empty($_REQUEST["options"]) ? $_REQUEST["options"] : "");
+	$maxsize  = (!empty($_REQUEST["maxsize"]) ? $_REQUEST["maxsize"] : "");
+	$maxmails = (!empty($_REQUEST["maxmails"]) ? $_REQUEST["maxmails"] : "");
+	
+	// the checks only make sense if we're doing user defined
+	// mailquotas, not if we're setting this user to the standard
+	// in controls/ldapdefaultquota
+	
+	// empty
+	if($maxsize == "" and $options == "user") {
 		$error["maxsize"] = $LANG->_('Missing');
 		$failed = true;
-    }
-    
-    // valid (numeric)
-    if($_REQUEST["maxsize"] != "" and preg_match("/[^0-9]/", $_REQUEST["maxsize"]) and
-	   $_REQUEST["options"] == "user" and $_REQUEST["use_maxsize"] != "") {
+	}
+	
+	// valid (numeric)
+	if($maxsize != "" and preg_match("/[^0-9]/", $maxsize) and $options == "user") {
 		$error["maxsize"] = $LANG->_('Invalid');
 		$failed = true;
-    }
-    
-    // bigger than 0
-    if($error["maxsize"] == "" and $_REQUEST["maxsize"] <= 0 and
-	   $_REQUEST["options"] == "user" and $_REQUEST["use_maxsize"] != "") {
+	}
+	
+	// bigger than 0
+	if($error["maxsize"] == "" and $maxsize <= 0 and $options == "user") {
 		$error["maxsize"] = $LANG->_('Must be above zero');
 		$failed = true;
-    }
-    
-    // empty
-    if($_REQUEST["maxmails"] == ""  and $_REQUEST["options"] == "user" and
-	   $_REQUEST["use_maxmails"] != "") {
+	}
+	
+	// empty
+	if($maxmails == ""  and $options == "user") {
 		$error["maxmails"] = $LANG->_('Missing');
 		$failed = true;
-    }
-    
-    // valid (numeric)
-    if($_REQUEST["maxmails"] != "" and preg_match("/[^0-9]/", $_REQUEST["maxmails"]) and
-	   $_REQUEST["options"] == "user" and $_REQUEST["use_maxmails"] != "") {
+	}
+	
+	// valid (numeric)
+	if($maxmails != "" and preg_match("/[^0-9]/", $maxmails)  and $options == "user") {
 		$error["maxmails"] = $LANG->_('Invalid');
 		$failed = true;
-    }
-    
-    // bigger than 0
-    if($error["maxmails"] == "" and $_REQUEST["maxmails"] <= 0 and
-	   $_REQUEST["options"] == "user" and $_REQUEST["use_maxmails"] != "") {
+	}
+	
+	// bigger than 0
+	if($error["maxmails"] == "" and $maxmails <= 0 and $options == "user"){
 		$error["maxmails"] = $LANG->_('Must be above zero');
 		$failed = true;
-    }
-    
-    // userdefined, but no quota selected;
-    if($_REQUEST["options"] == "user" and
-	   $_REQUEST["use_maxsize"] == "" and
-	   $_REQUEST["use_maxmails"] == "") {
-		$error["selected"] = $LANG->_('You must select at least one type of quota') . "<br>";
-		$failed = true;
-    }
-    
-    if($failed)
-      return false;
-    
-    return true;
+	}
+	
+	if($failed) {
+		return false;
+	} else {
+		return true;
+  }
 }
 // }}}
 
@@ -75,14 +76,9 @@ function ldapdefaultquota_init($host) {
 		$quota = pql_parse_quota($quota[0]);
 		
 		$_REQUEST["maxmails"] = $quota["maxmails"];
-		if($maxmails != "")
-		  $_REQUEST["use_maxmails"] = "1";
-		
-		$_REQUEST["maxsize"] = $quota["maxsize"];
-		if($_REQUEST["maxsize"] != "")
-		  $_REQUEST["use_maxsize"] = "1";
-		
-		$_REQUEST["options"] = "user";
+		$_REQUEST["maxsize"]  = $quota["maxsize"];
+		$_REQUEST["options"]  = "user";
+
 		return($quota);
     } else
       $_REQUEST["options"] = "default";
@@ -95,16 +91,27 @@ function ldapdefaultquota_print_view($host) {
     global $LANG;
     
     $quota = ldapdefaultquota_init($host);
-    $_REQUEST["ldapdefaultquota"] = pql_ldap_mailquota($quota);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="2" align="left">ldapdefaultquota (<?=$LANG->_('Default quota')?>)</th>
+    <th colspan="3" align="left">
+<?php if(!$_SESSION["NEW_STYLE_QUOTA"])  { ?>
+      ldapDefaultQuota
+<?php } else { ?>
+      defaultQuotaSize, defaultQuotaCount
+<?php } ?>
+      (<?=$LANG->_('Default quota')?>)</th>
       <tr class="<?php pql_format_table(); ?>">
-        <td><?=$_REQUEST["ldapdefaultquota"]?></td>
+        <td class="title"><?=$LANG->_('Maximum number of mails')?></td>
+        <td><?=$quota["maxmails"]?></td>
+      </tr>
+
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title"><?=$LANG->_('Maximum size of mailbox')?></td>
+        <td><?=$quota["maxsize"]?></td>
       </tr>
 
       <tr class="subtitle">
-        <td>
+        <td colspan="2">
           <a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=ldapdefaultquota"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a>
         </td>
       </tr>
@@ -121,19 +128,23 @@ function ldapdefaultquota_print_form($type = "modify") {
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Change quota')?></th>
+<?php if(!empty($_SESSION["USE_CONTROLS"])) { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Options')?></td>
           <td><input type="radio" name="options" value="default" <?php if($_REQUEST["options"] == "default"){ echo "checked"; }?>> Unlimited <input type="radio" name="options" value="user" <?php if($_REQUEST["options"] == "user"){ echo "checked"; }?>> <?=$LANG->_('User defined')?></td>
         </tr>
 
+<?php } else { ?>
+        <input type="hidden" name="options" value="user">
+<?php } ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Maximum size of mailbox')?></td>
-          <td><input type="checkbox" name="use_maxsize" value="1" <?php if($_REQUEST["use_maxsize"] == "1"){ echo "checked"; }?>> <?php echo pql_format_error_span($error["maxsize"]); ?><input type="text" name="maxsize" value="<?=$_REQUEST["maxsize"]?>"> KB</td>
+          <td><?php echo pql_format_error_span($error["maxsize"]); ?><input type="text" name="maxsize" value="<?=$_REQUEST["maxsize"]?>"> KB</td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Maximum number of mails')?></td>
-          <td><input type="checkbox" name="use_maxmails" value="1" <?php if($_REQUEST["use_maxmails"] == "1"){ echo "checked"; }?>> <?php echo pql_format_error_span($error["maxmails"]); ?><input type="text" name="maxmails" value="<?=$_REQUEST["maxmails"]?>"> Mails</td>
+          <td><?php echo pql_format_error_span($error["maxmails"]); ?><input type="text" name="maxmails" value="<?=$_REQUEST["maxmails"]?>"> Mails</td>
         </tr>
 
         <tr class="subtitle">
@@ -151,36 +162,43 @@ function ldapdefaultquota_print_form($type = "modify") {
   </form>
 <?php
 }
+// '
 // }}}
 
 // {{{ ldapdefaultquota_save(type, host)
 function ldapdefaultquota_save($type, $host) {
     global $_pql_control, $LANG;
-	
+
+	// Just incase user 'forgets' to tick in the 'User defined' field...
+	if(empty($_REQUEST["options"]) and (!empty($_REQUEST["maxsize"]) or !empty($_REQUEST["maxmails"]))) {
+		// Neither 'Standard' nor 'User defined' entered, but we have value(s) for quota
+		$_REQUEST["options"] = "user";
+	}
+
 	switch($_REQUEST["options"]) {
       case "user":
-		if($_REQUEST["use_maxsize"] != "") {
-			$_REQUEST["maxsize"] = $_REQUEST["maxsize"] * 1024;
-			$mailquota[] = $_REQUEST["maxsize"] . "S";
-		} else
+		if($_REQUEST["maxsize"] != "")
+		  $mailquota[] = ($_REQUEST["maxsize"] * 1024) . "S";
+		else
 		  $_REQUEST["maxsize"] = $LANG->_('Unlimited size');
-		
-		if($_REQUEST["use_maxmails"] != "")
+
+		if($_REQUEST["maxmails"] != "")
 		  $mailquota[] = $_REQUEST["maxmails"] . "C";
 		else
 		  $_REQUEST["maxmails"] = $LANG->_('Unlimited amount');
-		
+
 		if(is_array($mailquota))
-		  $_REQUEST["mailquota"] = join(",", $_REQUEST["mailquota"]);
-		
-		$msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
+		  $mailquota = join(",", $mailquota);
+
+		$msg = pql_complete_constant($LANG->_("Successfully changed %what% to %new%"),
 									 array('what' => $LANG->_('quota'),
-										   'new'  => pql_ldap_mailquota(array('maxsize'  => $_REQUEST["maxsize"] / 1024,
-																			  'maxmails' => $_REQUEST["maxmails"]))));
+										   'new'  => pql_ldap_mailquota(array('maxsize'  => ($_REQUEST["maxsize"] / 1024),
+																			  'maxmails' => $_REQUEST["maxmails"]), 0)));
 		break;
-		
+
       case "default":
-		$_REQUEST["mailquota"] = "";
+		unset($mailquota);
+
 		$msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									 array('what' => $LANG->_('quota'),
 										   'new'  => $LANG->_('Standard')));
@@ -189,13 +207,34 @@ function ldapdefaultquota_save($type, $host) {
     switch($type) {
       case "modify":
       case "add";
-		if(!pql_control_replace_attribute($_pql_control->ldap_linkid,
-										  pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										  pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"),
-										  $_REQUEST["mailquota"]))
+		$dn = pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"];
+		$failed = 0;
+
+		if($_SESSION["OLD_STYLE_QUOTA"])  {
+			// Set the old style quota value
+			if(!pql_control_replace_attribute($_pql_control->ldap_linkid, $dn,
+											  pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"),
+											  $mailquota))
+			  $failed = 1;
+		}
+
+		if($_SESSION["NEW_STYLE_QUOTA"])  {
+			// Set the new style quota values
+			if(!pql_control_replace_attribute($_pql_control->ldap_linkid, $dn,
+											  pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA_SIZE"),
+											  $_REQUEST["maxsize"] * 1024))
+			  $failed = 1;
+
+			if(!pql_control_replace_attribute($_pql_control->ldap_linkid, $dn, 
+											  pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA_COUNT"),
+											  $_REQUEST["maxmails"]))
+			  $failed = 1;
+		}
+
+		if($failed)
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('quota'))) . ": " . pql_format_error(0);
-															 
+
 		attribute_forward($msg);
 		break;
 							    
