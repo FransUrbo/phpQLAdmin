@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.68 2003-05-06 06:38:37 turbo Exp $
+// $Id: pql.inc,v 2.69 2003-05-06 09:52:36 turbo Exp $
 //
 
 // ----------------------------
@@ -245,7 +245,7 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_user_add - user creation", $userdn, $entry);
-die($LDIF);
+
 	// -----
     // Add the user to the database
     if(! ldap_add($ldap_linkid, $userdn, $entry)){
@@ -1843,8 +1843,11 @@ function pql_setup_branch_objectclasses($filter = 0, $dn, $linkid = '') {
 }
 
 function pql_validate_administrator($linkid, $dn, $admin) {
-	$sr   = @ldap_read($linkid, $dn, '(objectClass=*)', array('administrator')) or pql_errormsg($linkid);
-	$info = ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
+	$sr   = @ldap_read($linkid, $dn, '(objectClass=*)', array('administrator'));
+	if(!$sr)
+	  return false;
+
+	$info = @ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
 
 	for($i=0; $i<$info["count"]; $i++) {
 		for($j=0; $j<$info[$i]["administrator"]["count"]; $j++) {
