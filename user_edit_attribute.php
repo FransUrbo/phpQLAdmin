@@ -8,6 +8,17 @@ require("./include/config_plugins.inc");
 
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
+if(!$domain && $user) {
+    // We're called without branchname - try to reconstruct it
+    
+    $tmpdn = split(',', $user);
+    if($tmpdn[1]) {
+	unset($tmpdn[0]);
+	$domain = implode(",", $tmpdn);
+    } else
+      $domain = $tmpdn[count($tmpdn)-1];
+}
+
 // Make sure we can have a ' in branch (also affects the user DN).
 $domain = eregi_replace("\\\'", "'", $domain);
 $user   = eregi_replace("\\\'", "'", $user);
