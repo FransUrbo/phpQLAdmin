@@ -1,5 +1,5 @@
 <? // http://www.thescripts.com/serversidescripting/php/articles/dynamicimagesinphp3.0/page0.html
-// $Id: navbutton.php,v 2.11 2003-11-14 11:00:18 turbo Exp $
+// $Id: navbutton.php,v 2.12 2003-11-14 13:13:41 turbo Exp $
 
 include("./include/pql.inc");
 
@@ -49,6 +49,9 @@ for($i = 0; $string[$i]; $i++) {
 
 // Calculate the width of the new image (depends on number of characters)
 $new_width  = ($lower_case_chars * 6) + ($upper_case_chars * 6 * 2) + 10;
+if(!$upper_case_chars) {
+    $new_width += 17;
+}
 
 $new_height = 19;
 $newimg = ImageCreateTrueColor($new_width, $new_height);
