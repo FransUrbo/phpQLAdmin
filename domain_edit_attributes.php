@@ -1,6 +1,6 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.32 2003-11-14 11:55:52 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.33 2003-11-19 16:25:06 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -40,7 +40,7 @@ if(! ereg("%3D", $domain)) {
 include("./include/".pql_plugin_get_filename(pql_plugin_get($attrib)));
 
 // Get the organization name, or the DN if it's unset
-$orgname = pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_O"));
+$orgname = pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_O"));
 if(!$orgname) {
 	$orgname = urldecode($domain);
 }
@@ -53,15 +53,19 @@ include("./header.html");
   <br><br>
 
 <?php
+if(!$type) {
+	$type = 'fulldomain';
+}
+	 
 // select what to do
 if($submit == 1) {
 	if($attrib == 'basequota') {
 		attribute_save("modify");
 	} else {
-	    if(attribute_check("fulldomain"))
-		  attribute_save("fulldomain");
+	    if(attribute_check($type))
+		  attribute_save($type);
 		else
-		  attribute_print_form("fulldomain");
+		  attribute_print_form($type);
 	}
 } elseif($submit == 2) {
     // Support for changing domain defaults
@@ -85,7 +89,7 @@ if($submit == 1) {
 		   ($attrib == pql_get_define("PQL_GLOB_ATTR_AUTOCREATEMAILADDRESS")))
 	  attribute_save();
 	else
-	  attribute_print_form("fulldomain");
+	  attribute_print_form($type);
 }
 ?>
 </body>
