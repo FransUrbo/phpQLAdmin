@@ -1,16 +1,16 @@
 <?php
 // edit an attribute of a control option
-// $Id: control_edit_attribute.php,v 2.23 2004-03-29 07:49:05 turbo Exp $
+// $Id: control_edit_attribute.php,v 2.23.18.1 2004-11-12 09:14:24 turbo Exp $
 //
 session_start();
 
 // initial check
-if($attrib == "") {
+if($_REQUEST["attrib"] == "") {
 	die("no attribute requested !!");
 }
 
-if($type == "") {
-	$type = "add";
+if($_REQUEST["type"] == "") {
+	$_REQUEST["type"] = "add";
 }
 
 require("./include/pql_config.inc");
@@ -28,14 +28,14 @@ include("./include/".pql_plugin_get_filename($plugin));
 
 // forward back to users detail page
 function attribute_forward($msg) {
-	global $domain, $user, $attrib, $mxhost, $domain, $rootdn, $view;
+	global $user;
 
 	$msg = urlencode($msg);
-	$cat = pql_plugin_cat($attrib);
-	if($mxhost)
-	  $url = "control_detail.php?mxhost=$mxhost&view=$view&msg=$msg";
+	$cat = pql_plugin_cat($_REQUEST["attrib"]);
+	if($_REQUEST["mxhost"])
+	  $url = "control_detail.php?mxhost=".$_REQUEST["mxhost"]."&view=".$_REQUEST["view"]."&msg=$msg";
 	else
-	  $url = "domain_detail.php?rootdn=$rootdn&domain=$domain&view=$view&msg=$msg";
+	  $url = "domain_detail.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"]."&view=".$_REQUEST["view"]."&msg=$msg";
 
 	header("Location: " . pql_get_define("PQL_CONF_URI") . "$url");
 }
@@ -58,15 +58,15 @@ if(function_exists($plugin . "_help")) {
 }
 
 // select what to do
-if($submit == 1) {
-    if(call_user_func($plugin . "_check", $type)) {
-		call_user_func($plugin . "_save", $type, $mxhost);
+if($_REQUEST["submit"] == 1) {
+    if(call_user_func($plugin . "_check", $_REQUEST["type"])) {
+		call_user_func($plugin . "_save", $_REQUEST["type"], $_REQUEST["mxhost"]);
     } else {
-		call_user_func($plugin . "_print_form", $mxhost);
+		call_user_func($plugin . "_print_form", $_REQUEST["mxhost"]);
     }
 } else {
-    call_user_func($plugin . "_init", $mxhost);
-    call_user_func($plugin . "_print_form", $mxhost);
+    call_user_func($plugin . "_init", $_REQUEST["mxhost"]);
+    call_user_func($plugin . "_print_form", $_REQUEST["mxhost"]);
 }
 
 if(function_exists($plugin . "_help")) {

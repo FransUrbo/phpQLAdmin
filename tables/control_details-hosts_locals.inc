@@ -8,14 +8,14 @@
 			if(!$i) {
 ?>
             <td><?=pql_maybe_idna_decode($local)?></td>
-            <td><a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=locals&type=add&set=<?=$local?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=locals&type=del&set=<?=$local?>&submit=1&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
+            <td><a href="control_edit_attribute.php?mxhost=<?=$_REQUEST["mxhost"]?>&attrib=locals&type=add&set=<?=$local?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="control_edit_attribute.php?mxhost=<?=$_REQUEST["mxhost"]?>&attrib=locals&type=del&set=<?=$local?>&submit=1&view=<?=$_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
           </tr>
 
 <?php		} else { ?>
           <tr class="<?php pql_format_table(); ?>">
             <td class="title"></td>
             <td><?=pql_maybe_idna_decode($local)?></td>
-            <td><a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=locals&type=add&set=<?=$local?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=locals&type=del&set=<?=$local?>&submit=1&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
+            <td><a href="control_edit_attribute.php?mxhost=<?=$_REQUEST["mxhost"]?>&attrib=locals&type=add&set=<?=$local?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="control_edit_attribute.php?mxhost=<?=$_REQUEST["mxhost"]?>&attrib=locals&type=del&set=<?=$local?>&submit=1&view=<?=$_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
           </tr>
 
 <?php		}
@@ -24,18 +24,18 @@
 	  } else {
 ?>
           <td><i>not defined</i></td>
-          <td><a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=locals&type=add&set=<?=$local?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=locals&type=del&set=<?=$local?>&submit=1&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
+          <td><a href="control_edit_attribute.php?mxhost=<?=$_REQUEST["mxhost"]?>&attrib=locals&type=add&set=<?=$local?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="control_edit_attribute.php?mxhost=<?=$_REQUEST["mxhost"]?>&attrib=locals&type=del&set=<?=$local?>&submit=1&view=<?=$_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
         </tr>
 <?php } ?>
           <tr class="<?php pql_format_table(); ?>">
             <td class="title" align="right"><img src="images/edit.png" width="12" height="12"></td>
-            <td><a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=locals&view=<?=$view?>">Add value</a></td>
+            <td><a href="control_edit_attribute.php?mxhost=<?=$_REQUEST["mxhost"]?>&attrib=locals&type=add&view=<?=$_REQUEST["view"]?>">Add value</a></td>
             <td></td>
           </tr>
 
           <tr class="<?php pql_format_table(); ?>">
             <td class="title" align="right"><img src="images/edit.png" width="12" height="12"></td>
-            <td><a href="control_edit_attribute.php?attrib=locals&type=replicate&mxhost=<?=$mxhost?>&submit=1&view=<?=$view?>">Replicate</a></td>
+            <td><a href="control_edit_attribute.php?attrib=locals&type=replicate&mxhost=<?=$_REQUEST["mxhost"]?>&submit=1&view=<?=$_REQUEST["view"]?>">Replicate</a></td>
             <td></td>
           </tr>
         </th>
