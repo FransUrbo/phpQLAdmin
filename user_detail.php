@@ -296,7 +296,7 @@ if(empty($forwarders)) {
 
 <?php
 if($ADVANCED_MODE) {
- ?>
+?>
   <!-- Deliverymode -->
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="2" align="left"><?php echo PQL_LDAP_DELIVERYMODE_TITLE; ?></th></th>
@@ -452,6 +452,77 @@ if(empty($forwarders)){
       </tr>
     </th>
   </table>
+<?php
+if($ADVANCED_MODE) {
+?>
+
+  <br><br>
+
+  <!-- Access list -->
+  <table cellspacing="0" cellpadding="3" border="0">
+    <th colspan="2" align="left">User access</th>
+<?php
+    foreach($_pql->ldap_basedn as $branch) {
+	$dom = pql_get_domain_value($_pql, $dn, 'administrator', $USER_DN);
+	if($dom) {
+	    foreach($dom as $d) {
+		$domains[] = $d;
+	    }
+	}
+    }
+    
+    if(is_array($domains)){
+	asort($domains);
+	$new_tr = 0;
+	foreach($domains as $key => $branch) {
+	    $class=table_bgcolor(0);
+
+	    if($new_tr) {
+?>
+
+      <tr class="<?=$class?>">
+        <td class="title"></td>
+<?php
+	    } else {
+?>
+      <tr class="<?=$class?>">
+        <td class="title">Access to DN:</td>
+<?php
+	    }
+	    $new_tr = 1;
+?>
+        <td><?=$branch?></td>
+      </tr>
+<?php
+	}
+    }
+
+    if($ALLOW_BRANCH_CREATE) {
+	$class=table_bgcolor(0);
+?>
+
+      <tr class="<?=$class?>">
+        <td class="title">Create branches</td>
+<?php
+	if(pql_validate_administrator($_pql->ldap_linkid, $_pql->ldap_basedn[0], $user)) {
+?>
+        <td>Yes</td>
+        <td><a href="domain_edit_attributes.php?attrib=administrator&domain=<?=$_pql->ldap_basedn[0]?>&administrator=<?=$user?>&submit=4&action=delete"><img src="images/del.png" width="12" height="12" border="0" alt="Disallow user to create domains"></a></td>
+<?php
+	} else {
+?>
+        <td>No</td>
+        <td><a href="domain_edit_attributes.php?attrib=administrator&domain=<?=$_pql->ldap_basedn[0]?>&administrator=<?=$user?>&submit=4&action=add"><img src="images/edit.png" width="12" height="12" border="0" alt="Allow user to create domains"></a></td>
+<?php
+	}
+?>
+      </tr>
+    </th>
+  </table>
+<?php
+    }
+}
+?>
 
   <br><br>
 
