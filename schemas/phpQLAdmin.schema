@@ -61,7 +61,7 @@
 #					additionalDomainName	   8
 # -----------------------------------------
 
-# $Id: phpQLAdmin.schema,v 2.26 2003-05-18 13:36:33 turbo Exp $
+# $Id: phpQLAdmin.schema,v 2.27 2003-05-18 13:43:24 turbo Exp $
 
 # PQL_CONF_SHOW_USERS (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.1 NAME 'showUsers'
@@ -146,7 +146,7 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.1.12 NAME 'autoAddRCPTHosts'
 	SINGLE-VALUE )
 
 # PQL_GLOB_CONTROL_AUTOADDHOSTNAME (true | false)
-attributetype ( 1.3.6.1.4.1.8767.3.2.1.12 NAME 'autoAddHostName'
+attributetype ( 1.3.6.1.4.1.8767.3.2.1.13 NAME 'autoAddHostName'
 	DESC 'Automatically add hostname to domain for ~controls/rcpthosts attribute [True/False]?'
 	EQUALITY booleanMatch
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
