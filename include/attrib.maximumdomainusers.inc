@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // maximumDomainUsers
-// $Id: attrib.maximumdomainusers.inc,v 2.2 2003-04-30 08:46:56 turbo Exp $
+// $Id: attrib.maximumdomainusers.inc,v 2.3 2003-04-30 09:52:31 turbo Exp $
 
 function attribute_check($type = '') {
 	global $error, $attrib, $$attrib;
@@ -45,14 +45,14 @@ function attribute_print_form($type = "modify") {
 function attribute_save($type) {
 	global $error, $attrib, $$attrib, $domain, $rootdn, $type, $_pql;
 	
-	echo "Type: $type<br>";
-	echo "Domain: $domain<br>";
-	echo "Attrib: $attrib (".$$attrib.")<br>";
-	echo "Root DN: $rootdn<br>";
-	
     switch($type) {
       case "add":
       case "modify":
+	  case "delete":
+		if($type == 'delete') {
+			$$attrib = '';
+		}
+
 		if(pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, $$attrib))
 		  $msg = 'Successfully changed maximum allowed users for domain';
 		else
