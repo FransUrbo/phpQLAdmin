@@ -1,10 +1,10 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.106 2005-03-04 11:55:32 turbo Exp $
+// $Id: left.php,v 2.107 2005-03-07 08:49:48 turbo Exp $
 //
 require("./include/pql_session.inc");
 
-require("./include/pql_config.inc");
+require($_SESSION["path"]."/include/pql_config.inc");
 require($_SESSION["path"]."/left-head.html");
 
 // {{{ left_htmlify_userlist(linkid, rootdn, domain, subbranch, users, &links)
@@ -14,54 +14,83 @@ function left_htmlify_userlist($linkid, $rootdn, $domain, $subbranch, $users, &$
 	$dn = $users[$i];
 	unset($cn); unset($sn); unset($gecos);
 	
-	// From the user DN, get the CN and SN.
-	$cn = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_GIVENNAME"));
-	$sn = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_SN"));
-	if($cn && $sn) {
+	// {{{ 1. Get the commonName
+	$cn = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_CN"));
+	if($cn) {
+	  // We have a commonName - split it up into two parts (which should be first and last name)
+	  if(is_array($cn))
+	    $cn = split(" ", $cn[0]);
+	  else
+	    $cn = split(" ", $cn);
+	  
+	  if(!$cn[1]) {
+	    // Don't have second part (last name) of the commonName - MUST be a system 'user'.
+	    $cns[$dn] = "System - ".$cn[0];
+	  } else {
+	    // We have two parts (or more) - combine into 'Lastname, Firstname'
+	    // Do this in a for loop so that we can convert something like
+	    // 'Test User 3' into '3, Test User'... This sucks for testing, but
+	    // it's true :)
+	    //
+	    // The idea is that the very _last_ part is the last name, and all
+	    // the other is firstname(s). This won't hold true for arabic/chinese
+	    // names for example (not that I know of any way)...
+
+	    // Arrays always start with 0, but count() doesn't.
+	    $count = count($cn) - 1;
+
+	    // This is/should be the last name
+	    $cns[$dn] = $cn[$count].', ';
+
+	    // Add (all) the first name(s)
+	    for($j=0; $j < $count; $j++) {
+	      $cns[$dn] .= $cn[$j];
+
+	      if($cn[$j+1])
+		// More first name(s), separate with space...
+		$cns[$dn] .= ' ';
+	    }
+	  }
+	} else {
+	  // }}}
+
+	// {{{ 2. No commonnName. Get the givenName and SN.
+	  $cn = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_GIVENNAME"));
+	  $sn = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_SN"));
+	  if($cn && $sn) {
 	    // We have a givenName (first name) and a surName (last name) - combine the two
 	    if($sn != '_') {
-		if(is_array($sn))
-		  $cns[$dn] = $sn[0].", ".$cn;
-		else
-		  $cns[$dn] = $sn.", ".$cn;
+	      if(is_array($sn))
+		$cns[$dn] = $sn[0].", ".$cn;
+	      else
+		$cns[$dn] = $sn.", ".$cn;
 	    } else {
-		$cns[$dn] = $cn;
+	      $cns[$dn] = $cn;
 	    }
-	} else {
-	    // Probably don't have a givenName - get the commonName
-	    $cn = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_CN"));
-	    if($cn) {
-		// We have a commonName - split it up into two parts (which should be first and last name)
-		if(is_array($cn))
-		  $cn = split(" ", $cn[0]);
-		else
-		  $cn = split(" ", $cn);
+	  } else {
+	    // }}}
 
-		if(!$cn[1]) {
-		    // Don't have second part (last name) of the commonName - MUST be a system 'user'.
-		    $cns[$dn] = "System - ".$cn[0];
-		} else {
-		    // We have two parts - combine into 'Lastname, Firstname'
-		    $cns[$dn] = $cn[1].", ".$cn[0];
-		}
-	    } else {
-		// No givenName, surName or commonName - last try, get the gecos
-		$gecos = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_GECOS"));
-		if($gecos)
-		  // We have a gecos - use that as is
-		  $cns[$dn] = $gecos;
-		else {
-		  // No gecos either. Last chance - use the user reference attribute
-		  $ref = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn);
-		  $cns[$dn] = pql_get_attribute($linkid, $dn, $ref);
-		}
+	// {{{ 3. No givenName, surName or commonName. Get the gecos
+	    $gecos = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_GECOS"));
+	    if($gecos)
+	      // We have a gecos - use that as is
+	      $cns[$dn] = $gecos;
+	    else {
+	      // }}}
+
+	// {{{ 4. No gecos either. Last chance - use the user reference attribute
+	      $ref = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn);
+	      $cns[$dn] = pql_get_attribute($linkid, $dn, $ref);
 	    }
+	  }
 	}
+	// }}}
     }
 
     if(is_array($cns)) {
 	asort($cns);
 	foreach($cns as $dn => $cn) {
+	    // Only get these two so that we don't show root user(s)!
 	    $uid   = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_UID"));
 	    $uidnr = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_QMAILUID"));
 	    

@@ -12,6 +12,15 @@ phpQLAdmin 2.3.0 TO BE ANNOUNCED
 	    some additional magic.
 
 	GUI layout changes
+	  - Rewrite the way users are listed in the left frame. The attribute 'cn' is
+	    the most obvious to show and the way that's shown is also rewritten.
+	    + If a user have more than two fields (space separated - 'Ulf Turbo Fredriksson'),
+	      then the _last_ part is the lastname and all the others are first names...
+	      If memory serves me correctly, this isn't true for arabic/chinese names, but...
+	    + After 'cn' comes 'givenName' and 'sn' and after that comes 'gecos'. Last
+	      chance is the 'user reference attribute' (whatever that might be - it MUST
+	      exists however).
+
 	Documentation changes
 	Schema changes
 	Misc changes
