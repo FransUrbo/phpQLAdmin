@@ -20,6 +20,7 @@ if(isset($msg)){
 
 // reload navigation bar if needed
 if(isset($rlnb) and PQL_AUTO_RELOAD){
+	if($rlnb == 1) {
 ?>
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
   <script language="JavaScript1.2"><!--
@@ -27,6 +28,14 @@ if(isset($rlnb) and PQL_AUTO_RELOAD){
     refreshFrames();
   //--></script>
 <?php
+	} elseif($rlnb == 2) {
+?>
+  <script language="JavaScript1.2"><!--
+    // reload navigation frame
+    parent.frames.pqlnav.location.reload();
+  //--></script>
+<?php
+	}
 }
 ?>
 
@@ -383,6 +392,16 @@ if(empty($forwarders)){
         <td colspan="2">
           <a href="user_add_attribute.php?attrib=mailforwardingaddress&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain ?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"> <?php echo PQL_LDAP_MAILFORWARDINGADDRESS_NEW; ?></a>
         </td>
+      </tr>
+    </th>
+  </table>
+
+  <br>
+
+  <table cellspacing="0" cellpadding="3" border="0">
+    <th align="left"><?=PQL_ACTIONS?></th>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td><a href="user_del.php?domain=<?=$domain?>&user=<?php echo urlencode($user); ?>"><?=PQL_USER_DELETE?></a></td>
       </tr>
     </th>
   </table>
