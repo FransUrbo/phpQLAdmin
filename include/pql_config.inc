@@ -3,8 +3,15 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.55 2004-03-01 11:01:49 turbo Exp $
+// $Id: pql_config.inc,v 1.56 2004-03-02 07:27:41 turbo Exp $
 //
+
+// include the API files
+require("./include/pql.inc");					// Main API file
+require("./include/pql_formating.inc");			// Output formating API
+require("./include/pql_cache.inc");				// Cache API
+require("./include/pql_search.inc");			// Search API
+require("./include/pql_units.inc");				// Sub branch API
 
 // {{{ pql_set_define(define, value, case_insensitive, dn)
 // We need this instead of define(), so that we can get rid
@@ -14,10 +21,7 @@
 function pql_set_define($define, $value, $case_insensitive = false, $dn = NULL) {
 	global $config;
 
-	if($value == 'TRUE')
-	  $value = '1';
-	elseif($value == 'FALSE')
-	  $value = '0';
+	pql_format_bool($value);
 
 	if(! defined($define))
 	  define($define, $value, $case_insensitive);
@@ -167,13 +171,6 @@ require("./include/config.inc");				// Generic site configuration
 
 // 2. Include the attribute configuration
 require("./include/config_attributes.inc");		// Attribute definitions
-
-// include the API files
-require("./include/pql.inc");					// Main API file
-require("./include/pql_formating.inc");			// Output formating API
-require("./include/pql_cache.inc");				// Cache API
-require("./include/pql_search.inc");			// Search API
-require("./include/pql_units.inc");				// Sub branch API
 
 // 3. Load configurations from LDAP base DN
 if(!$_SESSION["USER_HOST"]) {
