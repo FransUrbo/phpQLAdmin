@@ -136,6 +136,17 @@
         <td><?=$autocreatepassword_link?></td>
       </tr>
 
+<?php }
+
+	  if(pql_get_define("PQL_CONF_EZMLM_USE")) {
+?>
+      <!-- -------------------- --!>
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title"><?=$LANG->_('EZMLM Virtual User')?></td>
+        <td><?php if($ezmlmvirtualuser) { echo $ezmlmvirtualuser; } else { echo "<i>Not set</i>"; }?>&nbsp;</td>
+        <td><?=$ezmlmvirtualuser_link?></td>
+      </tr>
+
 <?php } ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Domain administrator')?></td>
