@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.117 2005-02-24 17:04:00 turbo Exp $
+// $Id: user_add.php,v 2.118 2005-02-26 17:33:46 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -55,6 +55,14 @@ foreach($attribs as $key => $attrib) {
 $objectclasses_schema   = pql_get_subschema($_pql->ldap_linkid, 'objectclasses');
 // }}}
 
+// {{{ Retreive the template definition
+if($_REQUEST["template"] and !is_array($template)) {
+  $template = pql_get_template($_pql->ldap_linkid, $_REQUEST["template"]);
+} else {
+  $templates = pql_get_templates($_pql->ldap_linkid);
+}
+// }}}
+
 // --------------- Verification and action(s).
 
 // {{{ Verify the input from the current page.  Autogen input for the next page.
@@ -69,10 +77,6 @@ switch($_REQUEST["page_curr"]) {
   // {{{ '':    Make sure a new user can be added OR that we autogenerate stuff for the very first page)
   case "":
 	if($_REQUEST["page_next"] == "one") {
-		// {{{ Retreive the template definition
-		$template = pql_get_template($_pql->ldap_linkid, $_REQUEST["template"]);
-		// }}}
-
 		// {{{ Retreive some stuff for autogeneration
 		$attribs = array("autocreatemailaddress" => pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS"),
 						 "autocreateusername"	 => pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"),
@@ -141,11 +145,7 @@ switch($_REQUEST["page_curr"]) {
 		  $_REQUEST["password"] = pql_generate_password();
 		// }}}
 	} else {
-	  // {{{ Step 1: Get user template definitions
-	  $templates = pql_get_templates($_pql->ldap_linkid);
-	  // }}}
-	  
-	  // {{{ Step 2: Make sure we have at least one user template
+	  // {{{ Step 1: Make sure we have at least one user template
 	  if(!is_array($templates)) {
 		include($_SESSION["path"]."/header.html");
 ?>
@@ -157,7 +157,7 @@ switch($_REQUEST["page_curr"]) {
 	  }
 	  // }}}
 
-	  // {{{ Step 3: Make sure that the attribute we're using for user reference(s) is availible
+	  // {{{ Step 2: Make sure that the attribute we're using for user reference(s) is availible
 	  //             in at least ONE object class we've choosen to use when creating users...
 	  $attrib_is_availible = 0;
 	  for($i=0; $templates[$i]; $i++) {
@@ -188,7 +188,7 @@ switch($_REQUEST["page_curr"]) {
 	  }
 	  // }}}
 	  
-	  // {{{ Step 4: Selected account type (see how many users there can be)
+	  // {{{ Step 3: Selected account type (see how many users there can be)
 	  if($maxusers and !$_SESSION["ALLOW_BRANCH_CREATE"]) {
 		// Create a user search filter (only look for mail users - !?!?).
 		$filter  = "(&(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*)(";
@@ -421,8 +421,13 @@ switch($_REQUEST["page_curr"]) {
 		// }}}
 
 		// {{{ Generate the mail directory value
+		// If email set and mailMessageStore is allowed
+		// or
+		// If email set and mailMessageStore is required
 		if($_REQUEST["mail"] and
-		   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILSTORE")))
+		   (pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILSTORE"))
+			or
+			pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILSTORE"), 'MUST')))
 		{
 		  if(!empty($basemaildir)) {
 			if(function_exists("user_generate_mailstore")) {
@@ -447,14 +452,24 @@ switch($_REQUEST["page_curr"]) {
 			  // Function user_generate_mailstore() doesn't exists but we have a base mail directory.
 			  // Try creating the mail directory manually, using the username.
 			  
-			  if(pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["rootdn"])) {
-				// Absolute path is ok - create 'baseMailDir/username/'
-				$ref = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]);
-				if($_REQUEST[$ref])
+			  $ref = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]);
+			  if($_REQUEST[$ref]) {
+				if(pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["rootdn"])
+				   or
+				   (!pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["rootdn"]) and !ereg('^/', $basemaildir)))
+				{
+				  // Absolute path is ok
+				  // or
+				  // Absolute path is not ok, but the baseMailDir doesn't start with a slash
+				  //
+				  // - create 'baseMailDir/username'
 				  $_REQUEST["maildirectory"] = $basemaildir.$_REQUEST[$ref];
-			  } else
-				// We're not allowing an absolute path - don't use the baseMailDir.
-				$_REQUEST["maildirectory"] = $_REQUEST["uid"];
+				} else {
+				  // We're not allowing an absolute path which starts with a slash
+				  // - don't use the baseMailDir.
+				  $_REQUEST["maildirectory"] = $_REQUEST[$ref];
+				}
+			  }
 			}
 			
 			if($_REQUEST["maildirectory"]) {
@@ -462,11 +477,10 @@ switch($_REQUEST["page_curr"]) {
 				// We're not putting mails in a MBox - add a slash at the end to make it a Maildir.
 				$_REQUEST["maildirectory"] .= '/';
 
-			  // Replace space(s) with underscore(s)
+			  // Replace space(s), '&' and '@' with underscore(s)
 			  $_REQUEST["maildirectory"] = preg_replace('/ /', '_', $_REQUEST["maildirectory"], -1);
-
-			  // Replace '&' with underscore(s)
 			  $_REQUEST["maildirectory"] = preg_replace('/&/', '_', $_REQUEST["maildirectory"], -1);
+			  $_REQUEST["maildirectory"] = preg_replace('/@/', '_', $_REQUEST["maildirectory"], -1);
 			}
 		  } else {
 			// Can't autogenerate!
