@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.172 2004-04-01 06:30:21 turbo Exp $
+// $Id: pql.inc,v 2.173 2004-04-06 05:53:44 turbo Exp $
 //
 
 // ----------------------------
@@ -145,7 +145,7 @@ class pql {
 			// Only availible in PHP v4.2.0, hence tripple check
 			// that that function is availible before trying to
 			// use it.
-			if(function_exists("ldap_start_tls")) {
+			if(function_exists("ldap_start_tls") and pql_get_define("PQL_CONF_USE_TLS")) {
 				if(! ldap_start_tls($this->ldap_linkid))
 				  echo "TLS initialization failed: ".ldap_error($this->ldap_linkid);
 			}
