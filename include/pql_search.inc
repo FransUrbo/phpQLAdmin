@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.28 2004-11-13 11:14:37 turbo Exp $
+// $Id: pql_search.inc,v 2.29 2004-11-13 12:47:03 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -315,7 +315,7 @@ function pql_validate_object($linkid, $dn, $object, $type) {
 
 		if(!$ldap[$oc]['MUST']['count'])
 		  // An objectclass with no MUST, add this directly
-		  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = $oc;
+		  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = $oc;
 		else {
 			// This objectclass have one or more MUST attributes
 			// Do we have any of those MUST attributes defined?
@@ -348,14 +348,14 @@ function pql_validate_object($linkid, $dn, $object, $type) {
 			  // This objectclass don't contain MUST attributes which
 			  // isn't defined in the user object. Add this to the list
 			  // of objectclasses to add
-			  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = $oc;
+			  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = $oc;
 			else {
 				// Objectclass which have been removed from the list because
 				// there's an MUST attribute missing
 				echo "<b>Objectclass with missing attribute in MUST:</b> <u>$oc</u><br>";
 				echo "You're missing the following attributes: ";
 				for($i=0; $i < $MUST['count']; $i++) {
-					if(!$MUST[$i+1])
+					if(!$MUST[$i+1] and ($i != 0))
 					  echo "and ";
 
 					echo "<i>".$MUST[$i]."</i>";
@@ -390,7 +390,7 @@ function pql_validate_object($linkid, $dn, $object, $type) {
 }
 // }}}
 
-// BUG: Verify that these are ok.
+// TODO: Verify that these functions are ok (using new API).
 
 // {{{ pql_get_subschemas(ldap_linkid, type, match)
 function pql_get_subschemas($ldap_linkid, $type = "", $match = "") {
