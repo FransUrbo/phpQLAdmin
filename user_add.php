@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.83 2004-03-03 07:58:54 turbo Exp $
+// $Id: user_add.php,v 2.84 2004-03-09 21:51:57 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -30,9 +30,11 @@ $basemaildir			= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define
 $maxusers				= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_MAXIMUMDOMAINUSERS"));
 $additionaldomainname	= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_ADDITIONALDOMAINNAME"));
 
+// {{{ Verify the input from the current page.  Autogen input for the next page.
 // Check the input
 $error = false; $error_text = array();
 switch($_REQUEST["page_curr"]) {
+  // {{{ case: "" (make sure a new user can be added.)
   case "":
 	// ------------------------------------------------
 	// Step 1: Selected account type (see how many users there can be)
@@ -99,7 +101,9 @@ switch($_REQUEST["page_curr"]) {
 		}
 	}
 	break;
+	// }}}
 
+  // {{{ case: one (validate user_add-details.inc)
   case "one":
 	// ------------------------------------------------
 	// Step 2a: Check user details - surname, name, email, account_type, account_status
@@ -266,6 +270,9 @@ switch($_REQUEST["page_curr"]) {
 	}
 	break;
 
+	// }}}
+
+  // {{{ case: two (user_add-additional.inc)
   case "two":
 	// Step 3: Verify additional information (currently only mailhost)
 
@@ -278,8 +285,11 @@ switch($_REQUEST["page_curr"]) {
 		else
 		  $error_text["userhost"] = $LANG->_('Missing') . " (" . $LANG->_('not using QmailLDAP/Controls') . ")";
 	}
+  // }}}
 }
+// }}}
 
+// {{{ Process the next page ($page_next).
 include("./header.html");
 ?>
   <span class="title1">
@@ -303,7 +313,7 @@ if($_SESSION["ADVANCED_MODE"] && $_REQUEST["account_type"]) {
 <?php
 // ------------------------------------------------
 // Select next form to display
-switch($_REQUEST["page_next"]) {
+switch(($error ? $_REQUEST["page_curr"] : $_REQUEST["page_next"])) {
   case "":
 	// Step 1 - Choose account properties (type of account)
 	include("./tables/user_add-properties.inc");
@@ -324,6 +334,7 @@ switch($_REQUEST["page_next"]) {
 	include("./tables/user_add-save.inc");
 	break;
 }
+// }}}
 
 /*
  * Local variables:
