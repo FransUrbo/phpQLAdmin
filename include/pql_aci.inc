@@ -2,11 +2,13 @@
 // ----------------------------
 // Retreive, modify and delete ACIs (per-object access control lists)
 //
-// $Id: pql_aci.inc,v 2.8 2004-03-11 18:13:42 turbo Exp $
+// $Id: pql_aci.inc,v 2.9 2004-03-31 05:31:43 turbo Exp $
 
 // {{{ pql_aci_get(linkid, dn, number)
 // Get ACI entries from object
 function pql_aci_get($linkid, $dn, $number = 0) {
+	$dn = urldecode($dn);
+
     if($number)
       // We're looking for a specific ACI number
       $wildcard = "$number#*";
