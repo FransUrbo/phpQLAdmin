@@ -12,7 +12,7 @@ $OLD_SLAPD = 0;
 
 # Keep it simple - allow write access to all
 # attributes by specified dn.
-$RIGHTS		= "grant;w,r,s,c,x;[all]";
+$RIGHTS		= "grant;w,r,s,c,x;";
 $SUBJECT	= "cn=Turbo Fredriksson,ou=People,o=Fredriksson,c=SE";
 
 # ========= D O N T  C H A N G E  A N Y T H I N G  B E L O W =========
@@ -74,6 +74,7 @@ foreach $dn (@DNs) {
     #	OpenLDAPaci: 1.2.3#entry#grant;r,s,c;objectClass,[entry]#public#
     #	OpenLDAPaci: 1.2.3#entry#grant;r,s,c;c,userReference,branchReference,administrator#public#
     #	OpenLDAPaci: 1.2.3#entry#grant;w,r,s,c;[children]#access-id#cn=Turbo Fredriksson,ou=People,o=Fredriksson,c=SE
+    #	OpenLDAPaci: 1.2.3#entry#grant;w,r,s,c,x;[entry]#access-id#cn=Turbo Fredriksson,ou=People,o=Fredriksson,c=SE
     #	OpenLDAPaci: 1.2.3#entry#grant;w,r,s,c,x;[all]#access-id#cn=Turbo Fredriksson,ou=People,o=Fredriksson,c=SE
     #
     # Second line depends on what type of object it is, and if it's a
@@ -134,7 +135,8 @@ foreach $dn (@DNs) {
 
     print "OpenLDAPaci: 1.2.3#entry#grant;w,r,s,c;[children]#access-id#$SUBJECT\n";
 
-    print "OpenLDAPaci: 1.2.3#entry#$RIGHTS#access-id#$SUBJECT\n";
+    print "OpenLDAPaci: 1.2.3#entry#$RIGHTS\[entry\]#access-id#$SUBJECT\n";
+    print "OpenLDAPaci: 1.2.3#entry#$RIGHTS\[all\]#access-id#$SUBJECT\n";
 
     print "\n";
 }
