@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.116 2003-11-12 09:35:50 turbo Exp $
+// $Id: pql.inc,v 2.117 2003-11-12 14:09:31 turbo Exp $
 //
 
 // ----------------------------
@@ -43,11 +43,11 @@ class pql {
 	    for($i=0; $i < $entry["count"]; $i++) {
 			if(is_array($entry[$i][$attrib])) {
 				for($j=0; $j < $entry[$i][$attrib]["count"]; $j++ )
-				  $val[] = urlencode(maybe_encode($entry[$i][$attrib][$j], $attrib, $this->ldap_linkid));
+				  $val[] = urlencode(pql_maybe_encode($entry[$i][$attrib][$j], $attrib, $this->ldap_linkid));
 			} elseif($entry[$i]["dn"]) {
-				$val[] = urlencode(maybe_encode($entry[$i]["dn"], $attrib, $this->ldap_linkid));
+				$val[] = urlencode(pql_maybe_encode($entry[$i]["dn"], $attrib, $this->ldap_linkid));
 			} else
-			  $val[] = urlencode(maybe_encode($entry[$i][$attrib][0], $attrib, $this->ldap_linkid));
+			  $val[] = urlencode(pql_maybe_encode($entry[$i][$attrib][0], $attrib, $this->ldap_linkid));
 
 			$success = 1;
 	    }
@@ -1700,16 +1700,7 @@ function check_email($email){
     }
     
     // check host part
-    if(!preg_match("/^[a-z0-9]+([\._-]?[a-z0-9]{2,})*$/i", $split[1])){
-		// host part is not valid:
-		// - must start with a valid character (a-Z, 0-9)
-		// - may contain a special char (. or -), but not at start and end
-		//   and following another special char
-		// - must end with 2 valid characters (a-Z, 0-9)
-		return false;
-    }
-    
-    return true;
+	return check_hostaddress($split[1]);
 }
 // }}}
 
@@ -2376,14 +2367,18 @@ function pql_maybe_idna_encode($string) {
 		// The two strings isn't equal -> something have been replaced
 
 		if(function_exists("idn_to_ascii")) {
-			$idna = idn_to_ascii($old);
-			if($idna)
-			  return($idna);
-			else
-			  return($new);
+			if(ereg("@", $old)) {
+				$email = split("@", $old);
+				$domain = idn_to_ascii($email[1]);
+
+				return($email[0]."@".$domain);
+			} else
+			  return(idn_to_ascii($old));
 		} else
+		  // IDNA isn't availible, return the modified string
 		  return($new);
 	} else
+	  // No change - return original string
 	  return($string);
 }
 // }}}
@@ -2393,10 +2388,17 @@ function pql_maybe_idna_decode($string) {
 	if(eregi("xn--", $string) and function_exists("idn_to_utf8")) {
 		// It's an IDNA string, and we have the IDN module loaded
 
-		// First IDNA decode it, then UTF-8 decode it
-		return(maybe_decode(idn_to_utf8($string)));
+		// Catch email addresses (can't decode the @)
+		if(ereg("@", $string)) {
+			$email  = split("@", $string);
+			$domain = pql_maybe_decode(idn_to_utf8($email[1]));
+
+			return($email[0]."@".$domain);
+		} else 
+		  // First IDNA decode it, then UTF-8 decode it
+		  return(pql_maybe_decode(idn_to_utf8($string)));
 	} else {
-		return(maybe_decode($string));
+		return(pql_maybe_decode($string));
 	}
 }
 // }}}
