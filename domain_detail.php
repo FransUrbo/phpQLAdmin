@@ -41,7 +41,9 @@ if(!pql_domain_exist($_pql, $dc[1])){
 // Get some default values for this domain
 // Some of these (everything after the 'o' attribute)
 // uses 'objectClass: dcOrganizationNameForm' -> http://rfc-2377.rfcindex.net/
-$attribs = array('defaultdomain', 'basehomedir', 'basemaildir', 'basequota', 'o', 'postalcode', 'postaladdress', 'l', 'telephonenumber', 'facsimiletelephonenumber', 'postofficebox', 'st', 'street');
+$attribs = array('defaultdomain', 'basehomedir', 'basemaildir', 'basequota', 'o',
+				 'postalcode', 'postaladdress', 'l', 'telephonenumber',
+				 'facsimiletelephonenumber', 'postofficebox', 'st', 'street');
 foreach($attribs as $attrib) {
 	// Get default value
 	$value = pql_get_domain_value($_pql, $domain, $attrib);
@@ -104,6 +106,8 @@ if($ADVANCED_MODE == 1) {
         <td><?=$basequota_link?></td>
       </tr>
 
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title"><?=PQL_LANG_DOMAIN_ADMIN_TITLE?></td>
 <?php
 	if(is_array($admins)) {
 		$new_tr = 0;
@@ -119,16 +123,11 @@ if($ADVANCED_MODE == 1) {
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"></td>
 <?php
-			} else {
-?>
-      <tr class="<?php table_bgcolor(); ?>">
-        <td class="title"><?=PQL_LANG_DOMAIN_ADMIN_TITLE?></td>
-<?php
 			}
 ?>
         <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$admin?>"><?=urldecode($username)?></a></td>
         <td>
-          <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&administrator=<?=$admin?>&submit=3&action=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify administrators for <?=$domain?>"></a>&nbsp;
+          <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&administrator=<?=$admin?>&submit=3&action=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify administrators for <?=$domain?>"></a>
           <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&administrator=<?=$admin?>&submit=4&action=delete"><img src="images/del.png" width="12" height="12" alt="<?=PQL_LANG_DOMAIN_ADMIN_DELETE?>" border="0"></a>
         </td>
       </tr>
@@ -143,6 +142,12 @@ if($ADVANCED_MODE == 1) {
           <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add"><?=PQL_LANG_DOMAIN_ADMIN_ADD?></a>
         </td>
       </tr>
+<?php
+	} else {
+?>
+        <td colspan="4">
+          <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add"><?=PQL_LANG_DOMAIN_ADMIN_ADD?></a>
+        </td>
 <?php
 	}
 }
@@ -229,7 +234,7 @@ if($ADVANCED_MODE == 1) {
 ?>
         <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$sa?>"><?=urldecode($username)?></a></td>
         <td>
-          <a href="domain_edit_attributes.php?attrib=seealso&rootdn=<?=$rootdn?>&domain=<?=$domain?>&seealso=<?=$sa?>&submit=3&action=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify contact persons for <?=$o?>"></a>&nbsp;
+          <a href="domain_edit_attributes.php?attrib=seealso&rootdn=<?=$rootdn?>&domain=<?=$domain?>&seealso=<?=$sa?>&submit=3&action=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify contact persons for <?=$o?>"></a>
           <a href="domain_edit_attributes.php?attrib=seealso&rootdn=<?=$rootdn?>&domain=<?=$domain?>&seealso=<?=$sa?>&submit=4&action=delete"><img src="images/del.png" width="12" height="12" alt="Remove contact person from <?=$o?>" border="0"></a>
         </td>
       </tr>
@@ -237,12 +242,6 @@ if($ADVANCED_MODE == 1) {
 <?php
 			$new_tr = 1;
 		}
-	} else {
-?>
-        <td><i>Not set</i></td>
-        <td></td>
-<?php
-	}
 ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"></td>
@@ -250,6 +249,15 @@ if($ADVANCED_MODE == 1) {
           <a href="domain_edit_attributes.php?attrib=seealso&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add">Add contact person for domain</a>
         </td>
       </tr>
+<?php
+	} else {
+?>
+        <td colspan="4">
+          <a href="domain_edit_attributes.php?attrib=seealso&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add">Add contact person for domain</a>
+        </td>
+<?php
+	}
+?>
     </th>
   </table>
 
