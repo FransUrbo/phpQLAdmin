@@ -7,7 +7,7 @@
 // by Pablo Suau <psuau@renr.es>
 //
 // if you have a translation to another language, please contact
-// me --> Matthias Blaser <mb@adfinis.ch>
+// me --> Turbo Fredriksson <phpqladmin@bayour.com>
 
 // language definition
 define("PQL_LANG_LANG","es");

@@ -1,10 +1,10 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 2.17 2003-04-04 16:37:50 turbo Exp $
+// $Id: lang.en.inc,v 2.18 2003-04-07 08:25:44 turbo Exp $
 //
 // if you have a translation to another language, please contact
-// me --> Matthias Blaser <mb@adfinis.ch>
+// me --> Turbo Fredriksson <phpqladmin@bayour.com>
 
 if(!isset($INCLUDE_LANG_EN_INC)) {
 	$INCLUDE_LANG_EN_INC=1;
