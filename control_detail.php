@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.3 2002-12-29 10:40:52 turbo Exp $
+// $Id: control_detail.php,v 1.4 2002-12-29 18:20:41 turbo Exp $
 session_start();
 
 require("./include/pql.inc");
@@ -16,7 +16,7 @@ if(PQL_LDAP_CONTROL_USE){
 	$attribs = array("defaultdomain", "plusdomain", "ldapserver",
 					 "ldaprebind", "ldapbasedn", "ldapdefaultquota",
 					 "ldapdefaultdotmode", "dirmaker", "quotawarning",
-					 "locals", "rcpthosts");
+					 "locals", "rcpthosts", "ldaplogin", "ldappassword");
 	$cn = "cn=" . $host . "," . $USER_SEARCH_DN_CTR;
 
 	foreach($attribs as $attrib) {
@@ -30,11 +30,13 @@ if(PQL_LDAP_CONTROL_USE){
 				foreach($value as $val) {
 					$rcpthosts[] = $val;
 				}
+			} elseif($attrib == "ldappassword") {
+				$$attrib = "<i>set</i>";
 			} else {
 				$$attrib = $value[0];
 			}
 		} else {
-			$$attrib = "not set";
+			$$attrib = "<i>not set</i>";
 		}
 	}
 
@@ -96,6 +98,18 @@ if(PQL_LDAP_CONTROL_USE){
         <td class="title">LDAP Search base</td>
         <td><?=$ldapbasedn?></td>
         <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=ldapbasedn"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
+      </tr>
+
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">LDAP login</td>
+        <td><?=$ldaplogin?></td>
+        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=ldaplogin"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
+      </tr>
+
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">LDAP password</td>
+        <td><?=$ldappassword?></td>
+        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=ldappassword"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
