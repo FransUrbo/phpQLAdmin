@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.79 2003-06-12 09:23:54 turbo Exp $
+// $Id: pql.inc,v 2.80 2003-06-12 10:04:43 turbo Exp $
 //
 
 // ----------------------------
@@ -50,9 +50,9 @@ class pql {
 	    for($i=0; $i < $entry["count"]; $i++) {
 			if(is_array($entry[$i][$attrib])) {
 				for($j=0; $j < $entry[$i][$attrib]["count"]; $j++ )
-				  $val[] = maybe_encode($entry[$i][$attrib][$j]);
+				  $val[] = maybe_encode($entry[$i][$attrib][$j], $attrib, $this->ldap_linkid);
 			} else
-			  $val[] = maybe_encode($entry[$i][$attrib][0]);
+			  $val[] = maybe_encode($entry[$i][$attrib][0], $attrib, $this->ldap_linkid);
 			
 			$success = 1;
 	    }
@@ -173,37 +173,16 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 	// Retreive all EXISTING objectclasses in the LDAP server
 	$ldap = pql_get_subschema($ldap_linkid, "objectclasses");
 
-	// Retreive all EXISTING attributes the LDAP server knows about
-	$ldap_attribs = pql_get_subschema($ldap_linkid, "attributetypes");
-
 	// -----
 	// Setup user entry variable
     foreach($attribs as $key => $value) {
-		if($ldap_attribs[$key]["SYNTAX"]) {
-			$syntax = $ldap_attribs[$key]["SYNTAX"];
-		} else {
-			// No syntax, check the SUP if that have a SYNTAX
-			// TODO: Be recursive!
-			if($ldap_attribs[$key]["SUP"] && $ldap_attribs[$ldap_attribs[$key]["SUP"]]["SYNTAX"]) {
-				$syntax = $ldap_attribs[$ldap_attribs[$key]["SUP"]]["SYNTAX"];
-			}
-		}
-
 		// Check if we have a MUST in the objectclasses choosen
 		// for creation for this attribute...
 		if(is_array($value)) {
-			foreach($value as $val) {
-				if(eregi('1\.3\.6\.1\.4\.1\.1466\.115\.121\.1\.15', $syntax))
-				  $entry[$key][] = maybe_encode(trim($val));
-				else
-				  $entry[$key][] = trim($val);
-			}
-		} else {
-			if(eregi('1\.3\.6\.1\.4\.1\.1466\.115\.121\.1\.15', $syntax))
-			  $entry[$key] = maybe_encode(trim($value));
-			else
-			  $entry[$key] = trim($value);
-		}
+			foreach($value as $val)
+			  $entry[$key][] = maybe_encode(trim($val), $key, $ldap_linkid);
+		} else
+		  $entry[$key] = maybe_encode(trim($value), $key, $ldap_linkid);
     }
 
 	// -----
@@ -408,13 +387,14 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 function pql_domain_add($ldap_linkid, $basedn, $branch_name) {
 	global $config;
 
-    $entry[$config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn]] = maybe_encode($branch_name); // INTERNATIONALIZE
+    $entry[$config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn]] =
+	  maybe_encode($branch_name, $config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn], $ldap_linkid);
 	$dn = $config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn] . "=" . $branch_name . "," . $basedn;
 
 	// Setup objectclasses
 	$entry["objectClass"] = pql_setup_branch_objectclasses(0, $basedn);
 	if($config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn] == "o")
-	  $entry["o"] = maybe_encode($branch_name);  // INTERNATIONALIZE
+	  $entry["o"] = maybe_encode($branch_name);
 	else
 	  $entry["o"] = 0;
 
@@ -593,7 +573,7 @@ function pql_modify_user_addressbook($ldap_linkid, $user, $attribs) {
 // check if domain exists
 function pql_domain_exist($ldap, $domain, $rootdn = '') {
 	global $config;
-	$domain = maybe_encode($domain); // INTERNATIONALIZE
+	$domain = maybe_encode($domain);
 
 	if(!$rootdn) {
 		foreach($ldap->ldap_basedn as $dn) {
@@ -715,8 +695,7 @@ function pql_replace_userattribute($ldap_linkid, $user, $attrib, $value) {
 	elseif(!$attrib)
 	  $entry = $value;
 	else
-	  // create entry array
-	  $entry[$attrib] = $value;
+	  $entry[$attrib] = maybe_encode($value, $attrib, $ldap_linkid);
 
 	// replace the attribute
 	if(!@ldap_mod_replace($ldap_linkid, $user, $entry)) {
@@ -1035,7 +1014,7 @@ function pql_parse_quota($quota_string) {
 
 // search $attribute with $value in whole ldap tree, returns dn or false
 function pql_search_attribute($ldap_linkid, $basedn, $attribute, $value) {
-	$value = maybe_encode($value); // INTERNATIONALIZE
+	$value = maybe_encode($value, $attribute, $ldap_linkid);
 
     $filter = '('.$attribute.'='.$value.')';
     $sr = ldap_search($ldap_linkid, $basedn, $filter, array($attribute));
@@ -1520,7 +1499,7 @@ function pql_set_domain_value($linkid, $dn, $type, $value) {
 		if(is_array($value)) {
 			// We're supplied with an array, add those values
 			foreach($value as $val) {
-				$val = maybe_encode($val);
+				$val = maybe_encode($val, $type, $linkid);
 
 				if(($type != 'administrator') and ($type != 'seealso')) {
 					$entry[$type][] = $val;
@@ -1529,7 +1508,7 @@ function pql_set_domain_value($linkid, $dn, $type, $value) {
 				}
 			}
 		} else {
-			$value = maybe_encode($value);
+			$value = maybe_encode($value, $type, $linkid);
 
 			// Add the single value
 			if(($type != 'administrator') and ($type != 'seealso')) {
@@ -1543,7 +1522,7 @@ function pql_set_domain_value($linkid, $dn, $type, $value) {
 		if(is_array($value)) {
 			foreach($value as $attrib => $val) {
 				for($i=0; $val[$i]; $i++)
-				  $entry[$attrib][] = maybe_encode($val[$i]);
+				  $entry[$attrib][] = maybe_encode($val[$i], $attrib, $linkid);
 			}
 		} else {
 			$entry = $value;
@@ -2035,18 +2014,40 @@ function lc($string) {
 
 // --------------------------
 // Check if we SHOULD encode the string...
-function maybe_encode($string, $return_new = 0) {
+function maybe_encode($string, $attrib = '', $linkid = '') {
 	$old = $string;
 
 	$new = strtr($old,
 				 "ÁÉÍÓÚÑÀÈÌÒÙÄËÏÖÜÂÊÎÔÛáéíóúñàèìòùåäëïöüâêîôûç",
 				 "AEIOUNAEIOUAEIOYAEIOUaeiounaeiouaaeioyaeiouc");
-	if($old != $new)
-	  if(!$return_new)
+	if($old != $new) {
 		// The two strings isn't equal -> something have been replaced
-		return(utf8_encode($string));
-	  else
-		return($new);
+
+		if($attrib != '') {
+			// Retreive all EXISTING attributes the LDAP server knows about
+			$ldap_attribs = pql_get_subschema($linkid, "attributetypes");
+			
+			// Find the syntax for the attribute (or it's superior attribute)
+			if($ldap_attribs[$attrib]["SYNTAX"]) {
+				$syntax = $ldap_attribs[$attrib]["SYNTAX"];
+			} else {
+				// No syntax, check the SUP if that have a SYNTAX
+				// TODO: Be recursive!
+				if($ldap_attribs[$attrib]["SUP"] && $ldap_attribs[$ldap_attribs[$attrib]["SUP"]]["SYNTAX"]) {
+					$syntax = $ldap_attribs[$ldap_attribs[$attrib]["SUP"]]["SYNTAX"];
+				}
+			}
+		
+			// Does this attribute allow a UTF-8 encoded string?
+			if(eregi('1\.3\.6\.1\.4\.1\.1466\.115\.121\.1\.15', $syntax))
+			  return(utf8_encode($string));
+			else
+			  // Oups, no! Replace any national character with it's
+			  // international (ie US char) counter part...
+			  return($new);
+		} else
+		  return(utf8_encode($string));
+	}
 
 	return($string);
 }
