@@ -41,6 +41,10 @@ phpQLAdmin 2.2.2 TO BE ANNOUNCED
 	    error ('[] operator not supported for strings'). Solution is to make sure
 	    values retreived is converted to array if it isn't already.
 	    Closes: 245
+	  - In OpenLDAP <2.1 duplicates (same attribute, same value multiple times)
+	    was allowed. It isn't any more, so when replication locals/rcpthosts
+	    we (phpQLAdmin) must remove any duplicates to avoid a LDAP modify error.
+	    Closes: 246
 
 	GUI layout changes
 	Misc changes
