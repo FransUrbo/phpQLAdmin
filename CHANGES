@@ -39,6 +39,11 @@ phpQLAdmin 2.0.19 TO BE ANNOUNCED
 	    generation. To get it just after 'autoCreateMailAddress', the 'useWebSrv'
 	    attribute was renumbered (+1 in OID number).
 
+phpQLAdmin 2.0.18d TO BE ANNOUNCED
+	Bug fixes
+	GUI layout change
+	Misc changes	
+
 phpQLAdmin 2.0.18c (May  5 2004)
 	Bug fixes
 	  - Add uidNumber, gidNumber and homeDirectory to a mail account IF we've

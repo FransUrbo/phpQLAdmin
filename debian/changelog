@@ -4,6 +4,12 @@ phpqladmin (2.0.19-1) unstable; urgency=low
 
  -- 
 
+phpqladmin (2.0.18d-1) unstable; urgency=low
+
+  * 
+
+ -- Turbo Fredriksson <turbo@debian.org>  Thu,  6 May 2004 06:55:13 +0200
+
 phpqladmin (2.0.18c-1) unstable; urgency=low
 
   * Add uidNumber, gidNumber and homeDirectory to a mail account IF we've
