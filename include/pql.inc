@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.10 2003-01-10 18:16:17 turbo Exp $
+// $Id: pql.inc,v 2.11 2003-01-12 12:36:17 turbo Exp $
 //
 // ----------------------------
 // Note: There are a few " followed after PHP comment
@@ -773,7 +773,7 @@ function pql_get_userattribute($ldap_linkid, $ldap_basedn, $domain, $user, $attr
     if (pql_cache_userentry_get($dn, $attribute, $value)) {
 		return($value);
     }
-    
+
     // not yet cached -> get the userentry and cache it
     $entries = pql_get_userentry($ldap_linkid, $ldap_basedn, $domain, $user);
     if ($entries) {
@@ -781,7 +781,7 @@ function pql_get_userattribute($ldap_linkid, $ldap_basedn, $domain, $user, $attr
     } else {
 		return(false);
     }
-    
+
     return($entries[$attribute]);	
 }
 
@@ -1365,19 +1365,19 @@ function pql_get_next_uidnumber($ldap_linkid) {
 }
 
 function pql_get_domain_value($linkid, $domain, $value, $match = "") {
-    // In the domain object, there's embeded defaults
-    //	description: defaultDomain=THE-DEFAULT-DOMAIN-NAME
+    // In the domain object, there's embeded defaults using RFC2377
 	$results = "";
 
     if($match == "") {
 		$match = "*";
     }
 
-	$attrib[] = "description";
+	$attrib[] = $value;
 	
-    // (&(dc=bayour)(objectclass=domain)(description=defaultdomainMATCH))
-    $filter = "(&(" . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . ")(objectclass=" . 
-      PQL_LDAP_OBJECTCLASS_DOMAIN . ")(description=" . $value . $match . "))";
+    // (&(dc=bayour)
+	//   (|(objectclass=domain)(objectclass=phpQLAdminBranch)(objectclass=dcOrganizationNameForm))
+	//   ($value=$match))
+    $filter = "(&(" . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . ")(|(objectclass=" . PQL_LDAP_OBJECTCLASS_DOMAIN . ")(objectclass=phpQLAdminBranch)(objectclass=dcOrganizationNameForm))(" . $value . "=" . $match . "))";
     $sr = ldap_search($linkid, $GLOBALS["USER_SEARCH_DN_USR"], $filter, $attrib);
     $result = @ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
 
@@ -1386,41 +1386,28 @@ function pql_get_domain_value($linkid, $domain, $value, $match = "") {
 		// Return multiple values. If we're looking for 'administrator',
 		// return the 'domain' part of the DN...
 		for($i=0; $i < $result["count"]; $i++) {
-			for($j=0; $j < $result[$i]["description"]["count"]; $j++) {
+			for($j=0; $j < $result[$i][$value]["count"]; $j++) {
 				if($match != "*") {
-					if(eregi($value, $result[$i]["description"][$j]) && eregi($match, $result[$i]["description"][$j])) {
+					if($result[$i][$value][$j] == $match) {
 						$tmp = split(",", $result[$i]["dn"]);
 						$tmp = split("=", $tmp[count($tmp)-2]);
 						
 						$results[] = $tmp[1];
 					}
 				} else {
-					if(eregi($value, $result[$i]["description"][$j])) {
-						$tmp = eregi_replace("administrator=", "", $result[$i]["description"][$j]);
-						$results[] = $tmp;
-					}
+					$results[] = $result[$i][$value][$j];
 				}
 			}
 		}
 	} else {
 		// Return the value we're looking for (single valued).
-		for($i=0; $i < $result[0]["description"]["count"]; $i++) {
-			if(eregi($value, $result[0]["description"][$i])) {
-				$results = split("=", $result[0]["description"][$i]);
-			}
-		}
+		$results = $result[0][$value][0];
 	}
 	
-    // If nothing found, return the domain we where called with
-    if($results[1] == "" && ($value != 'administrator')) {
-		return $domain;
-    } else {
-		if($value == 'administrator') {
-			return $results;
-		} else {
-			return $results[1];
-		}
-	}
+	if(!$results[1] and ($value != 'administrator'))
+	  return 0;
+		
+	return $results;
 }
 
 function pql_set_domain_value($linkid, $domain, $type, $value) {
@@ -1429,28 +1416,20 @@ function pql_set_domain_value($linkid, $domain, $type, $value) {
 	// Lowercase type...
 	$type = strtolower($type);
 	
-    $filter = "(&(" . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . ")(objectclass=" .
-      PQL_LDAP_OBJECTCLASS_DOMAIN . "))";
+    $filter = "(&(" . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . ")(|(objectclass=" . PQL_LDAP_OBJECTCLASS_DOMAIN . ")(objectclass=phpQLAdminBranch)(objectclass=dcOrganizationNameForm)))";
     $sr = ldap_search($linkid, $GLOBALS["USER_SEARCH_DN_USR"], $filter);
     $results = @ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
 	
     $dn = $results[0]["dn"];
 
-	// Add the PREVIOUS description values (exept those that have $type)
-	for($i=0; $i < $results[0]["description"]["count"]; $i++) {
-		if(! eregi($type, $results[0]["description"][$i])) {
-			$entry["description"][] = $results[0]["description"][$i];
-		}
-	}		
-
 	if(is_array($value)) {
 		// We're supplied with an array, add those values
 		foreach($value as $val) {
-			$entry["description"][] = $type . "=" . $val;
+			$entry[$type][] = $val;
 		}
 	} else {
 		// Add the single value
-		$entry["description"][] = $type . "=" . $value;
+		$entry[$type][] = $value;
 	}		
 
 	if(!ldap_mod_replace($linkid, $dn, $entry)){
