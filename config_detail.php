@@ -3,9 +3,8 @@
 // config_detail.php,v 1.3 2002/12/12 21:52:08 turbo Exp
 //
 session_start();
-
-require("./include/pql.inc");
 require("./include/pql_config.inc");
+
 include("./header.html");
 
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
@@ -13,6 +12,17 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 // print status message, if one is available
 if(isset($msg)){
     print_status_msg($msg);
+}
+
+// reload navigation bar if needed
+if(isset($rlnb) and PQL_AUTO_RELOAD) {
+?>
+  <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
+  <script language="JavaScript1.2"><!--
+	// reload navigation frame
+	parent.frames.pqlnav.location.reload();
+  //--></script>
+<?php
 }
 
 if(PQL_SHOW_USERS){
@@ -238,9 +248,10 @@ foreach($_pql->ldap_basedn as $dn) {
         <td class="<?=$class?>"></td>
 </tr>
 <?php
-		$new_tr = 0;
-		$objectclasses = split(" ", PQL_LDAP_OBJECTCLASS_USER_EXTRA);
-		foreach($objectclasses as $oc) {
+		if(defined(PQL_LDAP_OBJECTCLASS_USER_EXTRA)) {
+		    $new_tr = 0;
+		    $objectclasses = split(" ", PQL_LDAP_OBJECTCLASS_USER_EXTRA);
+		    foreach($objectclasses as $oc) {
 ?>
 <tr>
 	<td class="title"></td>
@@ -248,37 +259,41 @@ foreach($_pql->ldap_basedn as $dn) {
         <td class="<?=$class?>"></td>
 </tr>
 <?php
+		    }
 		}
 ?>
 
 <tr></tr>
 
 <?php
-		$class=table_bgcolor(0);
-		$objectclasses = '';
-		if(eregi(" ", PQL_LDAP_OBJECTCLASS_DOMAIN)) {
-		    $objectclasses = split(" ", PQL_LDAP_OBJECTCLASS_DOMAIN);
-		} else {
-		    $objectclasses[] = PQL_LDAP_OBJECTCLASS_DOMAIN;
-		}
+		if(defined("PQL_LDAP_OBJECTCLASS_DOMAIN")) {
+		    $new_tr = 0;
+		    $class=table_bgcolor(0);
+		    $objectclasses = '';
+		    if(eregi(" ", PQL_LDAP_OBJECTCLASS_DOMAIN)) {
+			$objectclasses = split(" ", PQL_LDAP_OBJECTCLASS_DOMAIN);
+		    } else {
+			$objectclasses[] = PQL_LDAP_OBJECTCLASS_DOMAIN;
+		    }
 
-		foreach($objectclasses as $oc) {
-		    if($new_tr) {
+		    foreach($objectclasses as $oc) {
+			if($new_tr) {
 ?>
 <tr>
 	<td class="title"></td>
 <?php
-		    } else {
+			} else {
 ?>
 <tr>
 	<td class="title">Domain objectclasses</td>
 <?php
-		    }
-		    $new_tr = 1;
+			}
+			$new_tr = 1;
 ?>
 	<td class="<?=$class?>"><?=$oc?>&nbsp;</td>
         <td class="<?=$class?>"></td>
 <?php
+		    }
 		}
 ?>
 </tr>
@@ -295,8 +310,8 @@ foreach($_pql->ldap_basedn as $dn) {
 <tr>
 	<td class="title">Reference domains with</td>
         <?php $class=table_bgcolor(0); ?>
-	<td class="<?=$class?>"><?=PQL_LDAP_ATTR_DOMAIN?></td>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_LDAP_ATTR_DOMAIN"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle"></a></td>
+	<td class="<?=$class?>"><?=PQL_LDAP_REFERENCE_DOMAINS_WITH?></td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_LDAP_REFERENCE_DOMAINS_WITH"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle"></a></td>
 </tr>
 <?php
 	}
