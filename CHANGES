@@ -18,6 +18,11 @@ phpQLAdmin 2.2.1 TO BE ANNOUNCED
 	  - Hardcode the group account template into include/pql_templates.inc:pql_get_templates()
 	    This because the user add part needs object classes etc to be able to
 	    work.
+	  - Neither of the QmailLDAP schema's are STRUCTURAL (the're AUXILIARY) so
+	    we must use 'person' and either 'uidObject' (if referencing users with
+	    'uid') or 'qmailUser' as well as 'qmailGroup' when creating QmailLDAP
+	    group objects. This because OpenLDAP >2.1 _require_ one STRUCTURAL object
+	    class.
 
 	GUI layout changes
 	  - User addition errors is 'tabbed' to the right (aligned with the input
