@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for pilotPerson objects etc
-// $Id: attrib.outlook.inc,v 1.17 2004-02-14 14:25:36 turbo Exp $
+// $Id: attrib.outlook.inc,v 1.18 2004-03-03 07:31:41 turbo Exp $
 
 /*
 	Attributes managed here:
@@ -22,10 +22,12 @@
 	telephoneNumber
 	title
 	street
+	streetAddress
+	registeredAddress
+	vatNumber
 
 	Not implemented (see no point!)
 	-------------------------------
-	registeredAddress
 	preferredDeliveryMethod
 	physicalDeliveryOfficeName
 */
