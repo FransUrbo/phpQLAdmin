@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.12 2004-11-05 10:39:27 turbo Exp $
+// $Id: bind9_add.php,v 2.13 2005-01-29 18:51:11 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -43,8 +43,13 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 		  else
 			$msg = "Failed to add domain ".$_REQUEST["domainname"];
 
-		  $url = "domain_detail.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"]."&view=".$_REQUEST["view"]."&msg=".urlencode($msg);
-		  header("Location: ".pql_get_define("PQL_CONF_URI") . "$url");
+		  $url  = "domain_detail.php?rootdn=".urlencode($_REQUEST["rootdn"])."&domain=".urlencode($_REQUEST["domain"]);
+		  $url .= "&view=".$_REQUEST["view"]."&msg=".urlencode($msg);
+
+		  if(file_exists("./.DEBUG_ME"))
+			die($url);
+		  else
+			header("Location: ".pql_get_define("PQL_CONF_URI") . "$url");
 	  }
 } elseif(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'host')) {
 	  if(!$_REQUEST["hostname"] or !$_REQUEST["record_type"] or !$_REQUEST["dest"]) {
@@ -128,6 +133,7 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
     <input type="hidden" name="submit"     value="0">
     <input type="hidden" name="action"     value="add">
     <input type="hidden" name="type"       value="host">
+    <input type="hidden" name="view"       value="<?=$_REQUEST["view"]?>">
     <input type="hidden" name="domain"     value="<?=$_REQUEST["domain"]?>">
     <input type="hidden" name="rootdn"     value="<?=$_REQUEST["rootdn"]?>">
     <input type="hidden" name="domainname" value="<?=$_REQUEST["domainname"]?>">
@@ -157,14 +163,17 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 		  }
 
 		  if(pql_bind9_add_host($_pql->ldap_linkid, $_REQUEST["domain"], $entry))
-			$msg = "Successfully added host <u>".$_REQUEST["hostname"].pql_maybe_idna_decode($_REQUEST["domainname"])."</u>";
+			$msg = "Successfully added host <u>".$_REQUEST["hostname"].".".pql_maybe_idna_decode($_REQUEST["domainname"])."</u>";
 		  else
 			$msg = "Failed to add ".$_REQUEST["hostname"]." to ".$_REQUEST["domainname"];
 
 		  $msg = urlencode($msg);
 		  $url = "domain_detail.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"]."&view=".$_REQUEST["view"]."&msg=$msg";
 
-		  header("Location: $url");
+		  if(file_exists("./.DEBUG_ME"))
+			die($url);
+		  else
+			header("Location: $url");
 	  }
 }
 ?>
