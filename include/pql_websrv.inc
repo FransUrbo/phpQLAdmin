@@ -4,13 +4,11 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for web server configuration)
 //
-// $Id: pql_websrv.inc,v 1.6 2004-02-14 14:25:36 turbo Exp $
+// $Id: pql_websrv.inc,v 1.7 2004-03-11 18:13:42 turbo Exp $
 //
 
 // {{{ pql_websrv_get_servers(linkid, dn)
 function pql_websrv_get_servers($linkid, $dn) {
-	global $PQL_ATTRIBUTE;
-
     $sr = @ldap_search($linkid, $dn, 'objectClass=phpQLAdminWebsrv');
     if($sr) {
 		// Oki, we have webserver configuration(s) in LDAP.
@@ -35,8 +33,8 @@ function pql_websrv_get_servers($linkid, $dn) {
 
 				// Remember each attribute stored about this server configuration
 				for($j=0; $j < $info[$i][$attrib]["count"]; $j++) {
-					if(($attrib == lc($PQL_ATTRIBUTE["PQL_CONF_WEBSRV_SRV_ALIAS"])) or
-					   ($attrib == lc($PQL_ATTRIBUTE["PQL_CONF_WEBSRV_OPTIONS"])))
+					if(($attrib == pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS")) or
+					   ($attrib == pql_get_define("PQL_ATTR_WEBSRV_OPTIONS")))
 					  // Multi value attribute
 					  $CONF[$name][$attrib][] = $info[$i][$attrib][$j];
 					else
@@ -64,9 +62,7 @@ function pql_websrv_add_server($linkid, $domain, $server) {
 
 		// Add the OpenLDAPaci attribute (maybe)
 		if($_SESSION["ACI_SUPPORT_ENABLED"])
-		  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($linkid,
-																				  $_SESSION["USER_DN"],
-																				  'websrv');
+		  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($linkid, $_SESSION["USER_DN"], 'websrv');
 
 		// Create a LDIF object to print in case of error
 		$LDIF = pql_create_ldif("pql_websrv_add_server - ou", $dn, $entry);
@@ -88,9 +84,7 @@ function pql_websrv_add_server($linkid, $domain, $server) {
 
 	// Add the OpenLDAPaci attribute (maybe)
 	if($_SESSION["ACI_SUPPORT_ENABLED"])
-	  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($linkid,
-																			  $_SESSION["USER_DN"],
-																			  'websrv');
+	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($linkid, $_SESSION["USER_DN"], 'websrv');
 
 	$dn = "cn=".$entry["cn"].",$dn";
 

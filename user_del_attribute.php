@@ -1,17 +1,17 @@
 <?php
 // delete attribute of a user
-// $Id: user_del_attribute.php,v 2.26 2004-02-21 16:01:32 turbo Exp $
+// $Id: user_del_attribute.php,v 2.27 2004-03-11 18:13:32 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 
 switch ($_REQUEST["attrib"]) {
   case "mailalternateaddress":
-    $_REQUEST["attrib"] = pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE");
+    $_REQUEST["attrib"] = pql_get_define("PQL_ATTR_MAILALTERNATE");
     break;	
     
   case "mailforwardingaddress";
-    $_REQUEST["attrib"] = pql_get_define("PQL_GLOB_ATTR_FORWARDS");
+    $_REQUEST["attrib"] = pql_get_define("PQL_ATTR_FORWARDS");
     break;
     
   default:
@@ -34,14 +34,18 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
     
     if (lc($_REQUEST["attrib"]) == 'mailalternateaddress' and $success and isset($_REQUEST["delete_forwards"])) {
 	// does another account forward to this alias?
-	$sr = ldap_search($_pql->ldap_linkid, "(|(" . pql_get_define("PQL_GLOB_ATTR_FORWARDS") ."=" . $_REQUEST["oldvalue"] . "))");
+	$sr = ldap_search($_pql->ldap_linkid, "(|(" . pql_get_define("PQL_ATTR_FORWARDS") ."=" . $_REQUEST["oldvalue"] . "))");
 	if (ldap_count_entries($_pql->ldap_linkid,$sr) > 0) {
 	    $results = ldap_get_entries($_pql->ldap_linkid, $sr);
 	    foreach($results as $key => $result){
 		if ((string)$key != "count") {
-		    $ref = $result[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", pql_get_rootdn($_REQUEST["user"], 'user_del_attribute.php'))][0];
-		    $_REQUEST["domain"] = pql_strip_username($result[pql_get_define("PQL_GLOB_ATTR_MAIL")][0]);
-		    $forwarders[]  = array("domain" => $_REQUEST["domain"], "reference" => $ref, "cn" => $_REQUEST["cn"],  "email" => $result[pql_get_define("PQL_GLOB_ATTR_MAIL")][0]);
+		    $ref = $result[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH",
+						  pql_get_rootdn($_REQUEST["user"], 'user_del_attribute.php'))][0];
+		    $_REQUEST["domain"] = pql_strip_username($result[pql_get_define("PQL_ATTR_MAIL")][0]);
+		    $forwarders[]  = array("domain"	=> $_REQUEST["domain"],
+					   "reference"	=> $ref,
+					   "cn"		=> $_REQUEST["cn"],
+					   "email"	=> $result[pql_get_define("PQL_ATTR_MAIL")][0]);
 		}
 	    }
 	    var_dump($forwarders);
@@ -49,7 +53,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 		// we found a forward -> remove it 
 		pql_replace_userattribute($_pql->ldap_linkid,
 					  $forward['reference'],
-					  pql_get_define("PQL_GLOB_ATTR_FORWARDS"),
+					  pql_get_define("PQL_ATTR_FORWARDS"),
 					  $_REQUEST["oldvalue"]);
 	    }
 	}
@@ -58,7 +62,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
     // redirect to users detail page
     $url = "user_detail.php?rootdn=" . $_REQUEST["rootdn"] . "&domain=" . $_REQUEST["domain"]
       . "&user=" . urlencode($_REQUEST["user"]) . "&msg=" . urlencode($msg);
-    header("Location: " . pql_get_define("PQL_GLOB_URI") . "$url");
+    header("Location: " . pql_get_define("PQL_CONF_URI") . "$url");
 } else {
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove attribute %attribute% for user %user%'), array('attribute' => $_REQUEST["attrib"], 'user' => $_REQUEST["user"])); ?></span>

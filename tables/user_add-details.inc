@@ -1,10 +1,10 @@
-<?php /* $Id: user_add-details.inc,v 1.11 2004-03-03 07:59:34 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.12 2004-03-11 18:13:48 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
-<?php if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_GLOB_ATTR_UID")) {
-		if(!pql_get_define("PQL_GLOB_ATTR_AUTOCREATEUSERNAME", $_REQUEST["domain"]) or
-		   (pql_get_define("PQL_GLOB_ATTR_AUTOCREATEUSERNAME", $_REQUEST["domain"]) and !function_exists('user_generate_uid')) or
+<?php if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")) {
+		if(!pql_get_define("PQL_CONF_AUTOCREATE_USERNAME", $_REQUEST["domain"]) or
+		   (pql_get_define("PQL_CONF_AUTOCREATE_USERNAME", $_REQUEST["domain"]) and !function_exists('user_generate_uid')) or
 		   $_SESSION["ADVANCED_MODE"]) {
 ?>
         <!-- Username (UID) -->
@@ -46,7 +46,7 @@
         </tr>
 <?php if($_REQUEST["account_type"] != "forward") {
 		// Get the default password scheme for branch
-		$_REQUEST["defaultpasswordscheme"] = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_DEFAULTPASSWORDSCHEME"));
+		$_REQUEST["defaultpasswordscheme"] = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"));
 
 		if(!$defaultpasswordscheme or $_SESSION["ADVANCED_MODE"])  {
 			// We have no default password scheme - display forms for SYSTEM/MAIL account
@@ -135,8 +135,8 @@
 ?>
 
 <?php if($_REQUEST["account_type"] != "shell") {
-		if(!pql_get_define("PQL_GLOB_ATTR_CREATE_ADDRESS", $_REQUEST["domain"]) or
-		   (pql_get_define("PQL_GLOB_ATTR_CREATE_ADDRESS", $_REQUEST["domain"]) and !function_exists('user_generate_email')) or
+		if(!pql_get_define("PQL_CONF_CREATE_ADDRESS", $_REQUEST["domain"]) or
+		   (pql_get_define("PQL_CONF_CREATE_ADDRESS", $_REQUEST["domain"]) and !function_exists('user_generate_email')) or
 		   $_SESSION["ADVANCED_MODE"] or $error_text["email"]) {
 ?>
         <!-- Email address -->
@@ -213,9 +213,9 @@
 <?php
 		} else {
 			// Only one subbranch
-			if(pql_get_define("PQL_GLOB_SUBTREE_USERS")) {
+			if(pql_get_define("PQL_CONF_SUBTREE_USERS")) {
 ?>
-        <input type="hidden" name="subbranch" value="<?php echo pql_get_define("PQL_GLOB_SUBTREE_USERS").",".$_REQUEST["domain"]?>">
+        <input type="hidden" name="subbranch" value="<?php echo pql_get_define("PQL_CONF_SUBTREE_USERS").",".$_REQUEST["domain"]?>">
 <?php
 			} else {
 ?>
@@ -224,9 +224,9 @@
 			}
 		}
 	} else {
-		if(pql_get_define("PQL_GLOB_SUBTREE_USERS")) {
+		if(pql_get_define("PQL_CONF_SUBTREE_USERS")) {
 ?>
-        <input type="hidden" name="subbranch" value="<?php echo pql_get_define("PQL_GLOB_SUBTREE_USERS").",".$_REQUEST["domain"]?>">
+        <input type="hidden" name="subbranch" value="<?php echo pql_get_define("PQL_CONF_SUBTREE_USERS").",".$_REQUEST["domain"]?>">
 <?php
 		} else {
 ?>

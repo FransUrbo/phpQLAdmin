@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.84 2004-03-09 21:51:57 dlw Exp $
+// $Id: user_add.php,v 2.85 2004-03-11 18:13:32 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -12,7 +12,7 @@ $url["subbranch"]	= pql_format_urls($_REQUEST["subbranch"]);
 $url["user"]		= pql_format_urls($_REQUEST["user"]);
 
 // Get the organization name, or the DN if it's unset
-$orgname = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_O"));
+$orgname = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_O"));
 if(!$orgname) {
 	$orgname = urldecode($_REQUEST["domain"]);
 }
@@ -24,11 +24,11 @@ if(!pql_domain_exist($_pql, $_REQUEST["domain"])) {
 }
 
 // Get default domain values for this domain
-$defaultdomain			= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
-$basehomedir			= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_BASEHOMEDIR"));
-$basemaildir			= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR"));
-$maxusers				= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_MAXIMUMDOMAINUSERS"));
-$additionaldomainname	= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_ADDITIONALDOMAINNAME"));
+$defaultdomain			= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+$basehomedir			= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEHOMEDIR"));
+$basemaildir			= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEMAILDIR"));
+$maxusers				= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_MAXIMUM_DOMAIN_USERS"));
+$additionaldomainname	= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
 
 // {{{ Verify the input from the current page.  Autogen input for the next page.
 // Check the input
@@ -56,8 +56,8 @@ switch($_REQUEST["page_curr"]) {
 		// ------------------------------------------------
 		// Step 2b: Autogenerate some stuff for the next form
 
-		$attribs = array(pql_get_define("PQL_GLOB_ATTR_AUTOCREATEMAILADDRESS"),
-						 pql_get_define("PQL_GLOB_ATTR_AUTOCREATEUSERNAME"));
+		$attribs = array(pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS"),
+						 pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"));
 		foreach($attribs as $attrib) {
 			// Get default value
 			$value = pql_domain_get_value($_pql, $_REQUEST["domain"], $attrib);
@@ -66,7 +66,7 @@ switch($_REQUEST["page_curr"]) {
 
 		// Verify/Create uid - But only if we're referencing users with UID...
 		if(empty($_REQUEST["uid"]) and $autocreateusername and function_exists('user_generate_uid') and 
-		   (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_GLOB_ATTR_UID"))) {
+		   (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))) {
 			// Generate the username
 			$_REQUEST["uid"] = strtolower(user_generate_uid($_pql, $_REQUEST["surname"],
 															$_REQUEST["name"], $email,
@@ -123,7 +123,7 @@ switch($_REQUEST["page_curr"]) {
 	$user .= " " . $_REQUEST["name"];
 
 	// Verify username
-    if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_GLOB_ATTR_CN")
+    if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_CN")
        and pql_user_exist($_pql->ldap_linkid, $_REQUEST["rootdn"], $user)) {
 		$error = true;
 		$error_text["username"] = pql_complete_constant($LANG->_('User %user% already exists'), array("user" => $user));
@@ -214,7 +214,7 @@ switch($_REQUEST["page_curr"]) {
 	}
 
 	// Get default {home,mail} directory from the database.
-	$attribs = array(pql_get_define("PQL_GLOB_ATTR_BASEHOMEDIR"), pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR"));
+	$attribs = array(pql_get_define("PQL_ATTR_BASEHOMEDIR"), pql_get_define("PQL_ATTR_BASEMAILDIR"));
 	foreach($attribs as $attrib) {
 		// Get default value
 		$value = pql_domain_get_value($_pql, $_REQUEST["domain"], $attrib);
@@ -223,13 +223,13 @@ switch($_REQUEST["page_curr"]) {
 
 	// Generate the mail directory value
 	if(!empty($basemaildir)) {
-		if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_GLOB_ATTR_UID")) {
+		if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")) {
 			$_REQUEST["maildirectory"] = user_generate_mailstore($_pql, $_REQUEST["email"], $_REQUEST["domain"],
-																 array(pql_get_define("PQL_GLOB_ATTR_UID") => $_REQUEST["uid"]),
+																 array(pql_get_define("PQL_ATTR_UID") => $_REQUEST["uid"]),
 																 'user');
 		} else {
 			$_REQUEST["maildirectory"] = user_generate_mailstore($_pql, $_REQUEST["email"], $_REQUEST["domain"],
-																 array(pql_get_define("PQL_GLOB_ATTR_UID") => $_REQUEST["surname"]." ".$_REQUEST["name"]),
+																 array(pql_get_define("PQL_ATTR_UID") => $_REQUEST["surname"]." ".$_REQUEST["name"]),
 																 'user');
 		}
 		
@@ -241,19 +241,19 @@ switch($_REQUEST["page_curr"]) {
 		// Can't autogenerate!
 		$error = true;
 		$error_text["maildirectory"] = pql_complete_constant($LANG->_('Attribute <u>%what%</u> is missing. Can\'t autogenerate %type%.'),
-															 array('what' => pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR"), 
+															 array('what' => pql_get_define("PQL_ATTR_BASEMAILDIR"), 
 																   'type' => 'Path to mailbox'));
 	}
 
 	// Generate the home directory value
 	if(!empty($basehomedir)) {
-		if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_GLOB_ATTR_UID")) {
+		if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")) {
 			$_REQUEST["homedirectory"] = user_generate_homedir($_pql, $_REQUEST["email"], $_REQUEST["domain"],
-															   array(pql_get_define("PQL_GLOB_ATTR_UID") => $_REQUEST["uid"]),
+															   array(pql_get_define("PQL_ATTR_UID") => $_REQUEST["uid"]),
 															   'user');
 		} else {
 			$_REQUEST["homedirectory"] = user_generate_homedir($_pql, $_REQUEST["email"], $_REQUEST["domain"],
-															   array(pql_get_define("PQL_GLOB_ATTR_UID") => $_REQUEST["surname"]." ".$_REQUEST["name"]),
+															   array(pql_get_define("PQL_ATTR_UID") => $_REQUEST["surname"]." ".$_REQUEST["name"]),
 															   'user');
 		}
 		
@@ -265,7 +265,7 @@ switch($_REQUEST["page_curr"]) {
 		// Can't autogenerate!
 		$error = true;
 		$error_text["homedirectory"] = pql_complete_constant($LANG->_('Attribute <u>%what%</u> is missing. Can\'t autogenerate %type%'),
-															 array('what' => pql_get_define("PQL_GLOB_ATTR_BASEHOMEDIR"), 
+															 array('what' => pql_get_define("PQL_ATTR_BASEHOMEDIR"), 
 																   'type' => 'Path to homedirectory'));
 	}
 	break;
@@ -280,7 +280,7 @@ switch($_REQUEST["page_curr"]) {
 		// No host
 		$error = true;
 
-		if(!pql_get_define("PQL_GLOB_CONTROL_USE"))
+		if(!pql_get_define("PQL_CONF_CONTROL_USE"))
 		  $error_text["userhost"] = $LANG->_('Missing') . " (" . $LANG->_('can\'t autogenerate') . ")";
 		else
 		  $error_text["userhost"] = $LANG->_('Missing') . " (" . $LANG->_('not using QmailLDAP/Controls') . ")";

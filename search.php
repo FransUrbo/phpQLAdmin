@@ -1,6 +1,6 @@
 <?php
 // shows results of search
-// $Id: search.php,v 2.23 2004-02-21 16:01:32 turbo Exp $
+// $Id: search.php,v 2.24 2004-03-11 18:13:32 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -13,7 +13,7 @@ if(isset($msg)) {
 }
 
 // reload navigation bar if needed
-if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_GLOB_AUTO_RELOAD")) {
+if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
 ?>
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
   <script language="JavaScript1.2"><!--
@@ -34,7 +34,7 @@ $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PA
 if (empty($_REQUEST["attribute"]) || empty($_REQUEST["filter_type"]) || empty($_REQUEST["search_string"])) {
     // invalid form submission
     $msg = urlencode($LANG->_('You have to provide a value to search for'));
-    header("Location: " . pql_get_define("PQL_GLOB_URI") . "home.php?msg=$msg");
+    header("Location: " . pql_get_define("PQL_CONF_URI") . "home.php?msg=$msg");
     exit();
 }
 
@@ -66,8 +66,7 @@ if(!$_SESSION["SINGLE_USER"]) {
 			$is_group = 0;
 			
 			// Check if this object is a (posix)Group object.
-			$ocs = pql_get_attribute($_pql->ldap_linkid,
-									 $usrs[$i], pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS"));
+			$ocs = pql_get_attribute($_pql->ldap_linkid, $usrs[$i], pql_get_define("PQL_ATTR_OBJECTCLASS"));
 			for($j=0; $ocs[$j]; $j++) {
 				if(eregi('group', $ocs[$j]))
 				  $is_group = 1;
@@ -96,7 +95,7 @@ if(!$_SESSION["SINGLE_USER"]) {
 		$is_group = 0;
 		
 		// Check if this object is a (posix)Group object.
-		$ocs = pql_get_attribute($_pql->ldap_linkid, $usrs[$i], pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS"));
+		$ocs = pql_get_attribute($_pql->ldap_linkid, $usrs[$i], pql_get_define("PQL_ATTR_OBJECTCLASS"));
 		for($j=0; $ocs[$j]; $j++) {
 			if(eregi('group', $ocs[$j]))
 			  $is_group = 1;
@@ -121,21 +120,17 @@ if(!$_SESSION["SINGLE_USER"]) {
 <?php
 		asort($users);
 		foreach($users as $user) {
-			$uid    = pql_get_attribute($_pql->ldap_linkid, $user,
-											pql_get_define("PQL_GLOB_ATTR_UID"));
+			$uid    = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_UID"));
 			$uid    = $uid[0];
 
 			// DLW: I think displayname would be a better choice.
-			$cn     = pql_get_attribute($_pql->ldap_linkid, $user,
-											pql_get_define("PQL_GLOB_ATTR_CN"));
+			$cn     = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_CN"));
 			$cn     = $cn[0];
 			
-			$mail   = pql_get_attribute($_pql->ldap_linkid, $user,
-											pql_get_define("PQL_GLOB_ATTR_MAIL"));
+			$mail   = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_MAIL"));
 			$mail   = $mail[0];
 			
-			$status = pql_get_attribute($_pql->ldap_linkid, $user,
-											pql_get_define("PQL_GLOB_ATTR_ISACTIVE"));
+			$status = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_ISACTIVE"));
 			$status = pql_ldap_accountstatus($status[0]);
 
 			$rootdn = pql_get_rootdn($user, 'search.php');

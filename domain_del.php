@@ -1,6 +1,6 @@
 <?php
 // delete a domain and all users within
-// $Id: domain_del.php,v 2.26 2004-03-03 07:58:54 turbo Exp $
+// $Id: domain_del.php,v 2.27 2004-03-11 18:13:32 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -25,9 +25,9 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 
 	// Before we delete the domain/branch, we need to get the defaultDomain, additionalDomainName
 	// and smtpRoutes value(s) so that we can remove it from the QmailLDAP/Controls object(s)
-	$domainname  = pql_domain_get_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
-	$additionals = pql_domain_get_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_ADDITIONALDOMAINNAME"));
-	$routes		 = pql_domain_get_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_SMTPROUTES"));
+	$domainname  = pql_domain_get_value($_pql, $domain, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+	$additionals = pql_domain_get_value($_pql, $domain, pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
+	$routes		 = pql_domain_get_value($_pql, $domain, pql_get_define("PQL_ATTR_SMTPROUTES"));
 
 	// delete the domain
 	if(pql_domain_del($_pql, $domain, $delete_forwards)) {
@@ -53,13 +53,13 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 		
 	    // redirect to home page
 	    $msg = urlencode($msg);
-	    header("Location: " . pql_get_define("PQL_GLOB_URI") . "home.php?msg=$msg&rlnb=1");
+	    header("Location: " . pql_get_define("PQL_CONF_URI") . "home.php?msg=$msg&rlnb=1");
 	} else {
 	    $msg = $LANG->_('Failed to remove the domain') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 		
 	    // redirect to domain detail page
 	    $msg = urlencode($msg);
-	    header("Location: " . pql_get_define("PQL_GLOB_URI") . "domain_detail.php?domain=$domain&msg=$msg");
+	    header("Location: " . pql_get_define("PQL_CONF_URI") . "domain_detail.php?domain=$domain&msg=$msg");
 	}
 } else {
 ?>

@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.69 2004-03-03 08:28:37 turbo Exp $
+// $Id: user_detail.php,v 2.70 2004-03-11 18:13:32 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -15,7 +15,7 @@ $url["rootdn"] = pql_format_urls($_GET["rootdn"]);
 
 // Get default domain name for this domain
 if($_GET["domain"]) {
-	$defaultdomain = pql_domain_get_value($_pql, $_GET["domain"], pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
+	$defaultdomain = pql_domain_get_value($_pql, $_GET["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 }
 
 include("./header.html");
@@ -26,7 +26,7 @@ if(isset($_GET["msg"])) {
 }
 
 // reload navigation bar if needed
-if(isset($rlnb) and pql_get_define("PQL_GLOB_AUTO_RELOAD")) {
+if(isset($rlnb) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
 	if($rlnb == 1) {
 ?>
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
@@ -44,10 +44,10 @@ if(isset($rlnb) and pql_get_define("PQL_GLOB_AUTO_RELOAD")) {
 <?php   }
 }
 
-$username = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_GLOB_ATTR_CN"));
+$username = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_CN"));
 if(!$username[0]) {
     // No common name, use uid field
-    $username = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_GLOB_ATTR_UID"));
+    $username = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_UID"));
 }
 $username = $username[0];
 ?>
@@ -69,24 +69,24 @@ if(!pql_user_exist($_pql->ldap_linkid, $_GET["rootdn"], $_GET["user"])) {
 // Get basic user information
 // Some of these (everything after the 'homedirectory')
 // uses 'objectClass: pilotPerson' -> http://rfc-1274.rfcindex.net/
-$attribs = array(pql_get_define("PQL_GLOB_ATTR_CN"),
-				 pql_get_define("PQL_GLOB_ATTR_SN"),
-				 pql_get_define("PQL_GLOB_ATTR_QMAILUID"),
-				 pql_get_define("PQL_GLOB_ATTR_QMAILGID"),
-				 pql_get_define("PQL_GLOB_ATTR_LOGINSHELL"),
-				 pql_get_define("PQL_GLOB_ATTR_UID"),
-				 pql_get_define("PQL_GLOB_ATTR_PASSWD"),
-				 pql_get_define("PQL_GLOB_ATTR_MAILSTORE"),
-				 pql_get_define("PQL_GLOB_ATTR_MAILHOST"),
-				 pql_get_define("PQL_GLOB_ATTR_HOMEDIR"),
-				 pql_get_define("PQL_GLOB_ATTR_ROOMNUMBER"),
-				 pql_get_define("PQL_GLOB_ATTR_TELEPHONENUMBER"),
-				 pql_get_define("PQL_GLOB_ATTR_HOMEPHONE"),
-				 pql_get_define("PQL_GLOB_ATTR_HOMEPOSTALADDRESS"),
-				 pql_get_define("PQL_GLOB_ATTR_SECRETARY"),
-				 pql_get_define("PQL_GLOB_ATTR_PERSONALTITLE"),
-				 pql_get_define("PQL_GLOB_ATTR_MOBILE"),
-				 pql_get_define("PQL_GLOB_ATTR_PAGER"));
+$attribs = array(pql_get_define("PQL_ATTR_CN"),
+				 pql_get_define("PQL_ATTR_SN"),
+				 pql_get_define("PQL_ATTR_QMAILUID"),
+				 pql_get_define("PQL_ATTR_QMAILGID"),
+				 pql_get_define("PQL_ATTR_LOGINSHELL"),
+				 pql_get_define("PQL_ATTR_UID"),
+				 pql_get_define("PQL_ATTR_PASSWD"),
+				 pql_get_define("PQL_ATTR_MAILSTORE"),
+				 pql_get_define("PQL_ATTR_MAILHOST"),
+				 pql_get_define("PQL_ATTR_HOMEDIR"),
+				 pql_get_define("PQL_ATTR_ROOMNUMBER"),
+				 pql_get_define("PQL_ATTR_TELEPHONENUMBER"),
+				 pql_get_define("PQL_ATTR_HOMEPHONE"),
+				 pql_get_define("PQL_ATTR_HOMEPOSTALADDRESS"),
+				 pql_get_define("PQL_ATTR_SECRETARY"),
+				 pql_get_define("PQL_ATTR_PERSONALTITLE"),
+				 pql_get_define("PQL_ATTR_MOBILE"),
+				 pql_get_define("PQL_ATTR_PAGER"));
 foreach($attribs as $attrib) {
     $attrib = lc($attrib);
 
@@ -122,7 +122,7 @@ if($mailhost == "") {
     $mailhost = $LANG->_('None');
 }
 
-$controladmins = pql_domain_get_value($_pql, $_GET["rootdn"], pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR"));
+$controladmins = pql_domain_get_value($_pql, $_GET["rootdn"], pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"));
 if(is_array($controladmins)) {
 	foreach($controladmins as $admin)
 	  if($admin == $_GET["user"])
@@ -138,8 +138,8 @@ if($uid) {
 	foreach($_pql->ldap_basedn as $base) {
 		$base  = urldecode($base);
 		$muids = pql_search($_pql->ldap_linkid, $base,
-							pql_get_define("PQL_GLOB_ATTR_ADDITIONAL_GROUP")."=".$uid,
-							pql_get_define("PQL_GLOB_ATTR_CN"));
+							pql_get_define("PQL_ATTR_ADDITIONAL_GROUP")."=".$uid,
+							pql_get_define("PQL_ATTR_CN"));
 
 		for($i=0; $muids[$i]; $i++)
 		  $memberuid[] = $muids[$i];

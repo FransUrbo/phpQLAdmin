@@ -2,7 +2,7 @@
 <head>
 	<title>phpQL</title>
 	<link rel="stylesheet" href="../normal.css" type="text/css">
-	<!-- $Id: conf.php,v 2.5 2003-04-04 16:37:34 turbo Exp $ -->
+	<!-- $Id: conf.php,v 2.6 2004-03-11 18:13:36 turbo Exp $ -->
 </head>
 
 <body bgcolor="#e7e7e7" background="../images/bkg.png">
@@ -44,19 +44,19 @@ of stuff hardcoded in the PHP files.
 frame. this results in better performance on servers with large amount of users.
 <br>
 <br>
-<b>PQL_GLOB_AUTO_RELOAD</b>
+<b>PQL_CONF_AUTO_RELOAD</b>
 <br>
 (true or false). true, if the navigation bar should automatically be reloaded, if a domain
 or user was added or deleted. with large amount of domains / users reloading the navigation
 bar could get slow, at least if PQL_CONF_SHOW_USERS is turned on.
 <br>
 <br>
-<b>PQL_GLOB_HOSTMASTER</b>
+<b>PQL_CONF_HOSTMASTER</b>
 <br>
 (email address). this is the sender of testmails.
 <br>
 <br>
-<b>PQL_GLOB_HOST</b>
+<b>PQL_CONF_HOST</b>
 <br>
 (full qualified domain name, e.g ldap.foo.bar). the host which is running the
 ldap-server for the users database.<p>
@@ -83,15 +83,15 @@ namingContexts: dc=com
 This say that my base DN (what I've entered as <b>defaultsearchbase</b> and <b>suffix</b>
 configuration in my slapd.conf file) is <u>dc=com</u>.
 <p>
-<b>PQL_GLOB_CONTROL_USE</b>
+<b>PQL_CONF_CONTROL_USE</b>
 <br>
 (true | false) set to true, if qmail-ldap/control patch is supported by your system. Make sure
 you have complied all requirements listed in INSTALL. Configuration values which are beginning with
 PQL_CONF_CONTROL_ are only required if you need qmail-ldap/control support and set
-PQL_GLOB_CONTROL_USE to true, otherwise they will be ignored.
+PQL_CONF_CONTROL_USE to true, otherwise they will be ignored.
 <br>
 <br>
-<b>PQL_GLOB_CONTROL_AUTOADDLOCALS</b>
+<b>PQL_CONF_CONTROL_AUTOADDLOCALS</b>
 <br>
 (true | false). set this to true, if phpQLAdmin should automatically add all domains to
 locals. Disable this (false), if you have more than one qmail-ldap server

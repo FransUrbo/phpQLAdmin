@@ -3,7 +3,7 @@
 // pql_lang.inc
 // phpQLAdmin Language Application Programming Interface (API)
 //
-// $Id: pql_lang.inc,v 2.8 2004-01-01 12:35:34 turbo Exp $
+// $Id: pql_lang.inc,v 2.9 2004-03-11 18:13:42 turbo Exp $
 //
 
 // ----------------------------
@@ -49,7 +49,7 @@ class pql_lang {
 			if($info["count"])
 			  // We got a hit. Return the very first entry
 			  // They _should_ (all) be equal (if they're not, that's a bug).
-			  return $info[0][pql_get_define("PQL_GLOB_ATTR_LANGUAGE")][0];
+			  return $info[0][pql_get_define("PQL_ATTR_LANG")][0];
 		}
 	}
 	// }}}

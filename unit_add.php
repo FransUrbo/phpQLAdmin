@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: unit_add.php,v 2.15 2004-02-14 14:01:00 turbo Exp $
+// $Id: unit_add.php,v 2.16 2004-03-11 18:13:32 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -29,7 +29,7 @@ if($unit) {
 	// Redirect to domain-details
 	$msg = urlencode(pql_complete_constant($LANG->_('Sub unit %unit% successfully created'), array("unit" => $unit)));
 
-	if(pql_get_define("PQL_GLOB_AUTO_RELOAD"))
+	if(pql_get_define("PQL_CONF_AUTO_RELOAD"))
 	  $rlnb = "&rlnb=1";
 
 	header("Location: domain_detail.php?rootdn=$rootdn&domain=$domain&msg=$msg$rlnb");

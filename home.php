@@ -1,6 +1,6 @@
 <?php
 // start page
-// $Id: home.php,v 2.33 2004-02-14 14:01:00 turbo Exp $
+// $Id: home.php,v 2.34 2004-03-11 18:13:32 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -13,7 +13,7 @@ if(isset($msg)){
 }
 
 // reload navigation bar if needed
-if(isset($rlnb) and pql_get_define("PQL_GLOB_AUTO_RELOAD")) {
+if(isset($rlnb) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
 ?>
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
   <script language="JavaScript1.2"><!--
@@ -51,18 +51,18 @@ if(isset($submit)) {
 
     // We need to disable advanced mode so that only the user frame
     // is shown, hence no 'advanced=...' in the url.
-    header("Location: " . pql_get_define("PQL_GLOB_URI") . "index2.php");
+    header("Location: " . pql_get_define("PQL_CONF_URI") . "index2.php");
 }
 ?>
 
-  <br><span class="title1"><?php echo pql_get_define("PQL_GLOB_WHOAREWE"); ?><?php if($_SESSION["ADVANCED_MODE"]) { ?><br>Version: <?=$_SESSION["VERSION"]?><?php } ?></span><br>
+  <br><span class="title1"><?php echo pql_get_define("PQL_CONF_WHOAREWE"); ?><?php if($_SESSION["ADVANCED_MODE"]) { ?><br>Version: <?=$_SESSION["VERSION"]?><?php } ?></span><br>
 
   <ul>
 <?php
 	if($_SESSION["ADVANCED_MODE"] == 1) {
 	    // Should we show the 'change server' choices
-	    if(pql_get_define("PQL_GLOB_CHANGE_SERVER") and eregi('\+', pql_get_define("PQL_GLOB_HOST"))) {
-		$servers = split('\+', pql_get_define("PQL_GLOB_HOST"));
+	    if(pql_get_define("PQL_CONF_CHANGE_SERVER") and eregi('\+', pql_get_define("PQL_CONF_HOST"))) {
+		$servers = split('\+', pql_get_define("PQL_CONF_HOST"));
 ?>
     <li>
       <form action="<?=$_SERVER["PHP_SELF"]?>" target="_top">

@@ -11,202 +11,202 @@
 // If you want to customise phpQLAdmin, do NOT do it here, the file
 // to customise is 'config_attributes.inc'.
 //
-// $Id: config_plugins.inc,v 2.10 2004-03-03 17:05:35 dlw Exp $
+// $Id: config_plugins.inc,v 2.11 2004-03-11 18:13:41 turbo Exp $
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_ISACTIVE"),
+pql_plugin_register(pql_get_define("PQL_ATTR_ISACTIVE"),
 					"attrib.accountstatus.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_ISACTIVE"));
+					pql_get_define("PQL_ATTR_ISACTIVE"));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_EXPIRATION"),
+pql_plugin_register(pql_get_define("PQL_ATTR_EXPIRATION"),
 					"attrib.accountstatus.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_EXPIRATION"));
+					pql_get_define("PQL_ATTR_EXPIRATION"));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_MODE"),
+pql_plugin_register(pql_get_define("PQL_ATTR_MODE"),
 					"attrib.deliverymode.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_MODE"));
+					pql_get_define("PQL_ATTR_MODE"));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_QUOTA_VALUE"),
+pql_plugin_register(pql_get_define("PQL_ATTR_QUOTA_VALUE"),
 					"attrib.mailquota.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_QUOTA_VALUE"));
+					pql_get_define("PQL_ATTR_QUOTA_VALUE"));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_QUOTA_SIZE"),
+pql_plugin_register(pql_get_define("PQL_ATTR_QUOTA_SIZE"),
 					"attrib.mailquota.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_QUOTA_SIZE"));
+					pql_get_define("PQL_ATTR_QUOTA_SIZE"));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_QUOTA_COUNT"),
+pql_plugin_register(pql_get_define("PQL_ATTR_QUOTA_COUNT"),
 					"attrib.mailquota.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_QUOTA_COUNT"));
+					pql_get_define("PQL_ATTR_QUOTA_COUNT"));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_MAILHOST"),
+pql_plugin_register(pql_get_define("PQL_ATTR_MAILHOST"),
 					"attrib.mailhost.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_MAILHOST"));
+					pql_get_define("PQL_ATTR_MAILHOST"));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"),
+pql_plugin_register(pql_get_define("PQL_ATTR_DEFAULTDOMAIN"),
 					"attrib.defaultdomain.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
+					pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_BASEHOMEDIR"),
+pql_plugin_register(pql_get_define("PQL_ATTR_BASEHOMEDIR"),
 					"attrib.basehomedir.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_BASEHOMEDIR"));
+					pql_get_define("PQL_ATTR_BASEHOMEDIR"));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR"),
+pql_plugin_register(pql_get_define("PQL_ATTR_BASEMAILDIR"),
 					"attrib.basemaildir.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR"));
+					pql_get_define("PQL_ATTR_BASEMAILDIR"));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_BASEQUOTA"),
+pql_plugin_register(pql_get_define("PQL_ATTR_BASEQUOTA"),
 					"attrib.mailquota.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_BASEQUOTA"));
+					pql_get_define("PQL_ATTR_BASEQUOTA"));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"),
+pql_plugin_register(pql_get_define("PQL_ATTR_ADMINISTRATOR"),
 					"attrib.administrator.inc",
 					"",
-					array(pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"),
-						  pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR"),
-						  pql_get_define("PQL_GLOB_ATTR_SEEALSO")));
+					array(pql_get_define("PQL_ATTR_ADMINISTRATOR"),
+						  pql_get_define("PQL_ATTR_EZMLMADMINISTRATOR"),
+						  pql_get_define("PQL_ATTR_SEEALSO")));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_MAXIMUMDOMAINUSERS"),
+pql_plugin_register(pql_get_define("PQL_ATTR_MAXIMUMDOMAINUSERS"),
 					"attrib.maximumdomainusers.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_MAXIMUMDOMAINUSERS"));
+					pql_get_define("PQL_ATTR_MAXIMUMDOMAINUSERS"));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_MAXIMUMMAILINGLISTS"),
+pql_plugin_register(pql_get_define("PQL_ATTR_MAXIMUMMAILINGLISTS"),
 					"attrib.maximummailinglists.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_MAXIMUMMAILINGLISTS"));
+					pql_get_define("PQL_ATTR_MAXIMUMMAILINGLISTS"));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_O"),
+pql_plugin_register(pql_get_define("PQL_ATTR_O"),
 					"attrib.outlook.inc",
 					"",
-					array(pql_get_define("PQL_GLOB_ATTR_O"),
-						  pql_get_define("PQL_GLOB_ATTR_POSTALCODE"),
-						  pql_get_define("PQL_GLOB_ATTR_POSTALADDRESS"),
-						  pql_get_define("PQL_GLOB_ATTR_STREET"),
-						  pql_get_define("PQL_GLOB_ATTR_STREETADDRESS"),
-						  pql_get_define("PQL_GLOB_ATTR_REGISTEREDADDRESS"),
-						  pql_get_define("PQL_GLOB_ATTR_VAT_NUMBER"),
-						  pql_get_define("PQL_GLOB_ATTR_L"),
-						  pql_get_define("PQL_GLOB_ATTR_ST"),
-						  pql_get_define("PQL_GLOB_ATTR_C"),
-						  pql_get_define("PQL_GLOB_ATTR_TELEPHONENUMBER"),
-						  pql_get_define("PQL_GLOB_ATTR_FACSIMILETELEPHONENUMBER"),
-						  pql_get_define("PQL_GLOB_ATTR_POSTOFFICEBOX"),
-						  pql_get_define("PQL_GLOB_ATTR_HOMEPHONE"),
-						  pql_get_define("PQL_GLOB_ATTR_MOBILE"),
-						  pql_get_define("PQL_GLOB_ATTR_HOMEPOSTALADDRESS"),
-						  pql_get_define("PQL_GLOB_ATTR_TITLE"),
-						  pql_get_define("PQL_GLOB_ATTR_PHYSICALDELIVERYOFFICENAME"),
-						  pql_get_define("PQL_GLOB_ATTR_PAGER"),
-						  pql_get_define("PQL_GLOB_ATTR_INFO"),
-						  pql_get_define("PQL_GLOB_ATTR_PERSONALTITLE"),
-						  pql_get_define("PQL_GLOB_ATTR_ROOMNUMBER")));
+					array(pql_get_define("PQL_ATTR_O"),
+						  pql_get_define("PQL_ATTR_POSTALCODE"),
+						  pql_get_define("PQL_ATTR_POSTALADDRESS"),
+						  pql_get_define("PQL_ATTR_STREET"),
+						  pql_get_define("PQL_ATTR_STREETADDRESS"),
+						  pql_get_define("PQL_ATTR_REGISTEREDADDRESS"),
+						  pql_get_define("PQL_ATTR_VAT_NUMBER"),
+						  pql_get_define("PQL_ATTR_L"),
+						  pql_get_define("PQL_ATTR_ST"),
+						  pql_get_define("PQL_ATTR_C"),
+						  pql_get_define("PQL_ATTR_TELEPHONENUMBER"),
+						  pql_get_define("PQL_ATTR_FACSIMILETELEPHONENUMBER"),
+						  pql_get_define("PQL_ATTR_POSTOFFICEBOX"),
+						  pql_get_define("PQL_ATTR_HOMEPHONE"),
+						  pql_get_define("PQL_ATTR_MOBILE"),
+						  pql_get_define("PQL_ATTR_HOMEPOSTALADDRESS"),
+						  pql_get_define("PQL_ATTR_TITLE"),
+						  pql_get_define("PQL_ATTR_PHYSICALDELIVERYOFFICENAME"),
+						  pql_get_define("PQL_ATTR_PAGER"),
+						  pql_get_define("PQL_ATTR_INFO"),
+						  pql_get_define("PQL_ATTR_PERSONALTITLE"),
+						  pql_get_define("PQL_ATTR_ROOMNUMBER")));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_ADDITIONALDOMAINNAME"),
+pql_plugin_register(pql_get_define("PQL_ATTR_ADDITIONALDOMAINNAME"),
 					"attrib.additionaldomainname.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_ADDITIONALDOMAINNAME"));
+					pql_get_define("PQL_ATTR_ADDITIONALDOMAINNAME"));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_DEFAULTPASSWORDSCHEME"),
+pql_plugin_register(pql_get_define("PQL_ATTR_DEFAULTPASSWORDSCHEME"),
 					"attrib.defaultpasswordscheme.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_DEFAULTPASSWORDSCHEME"));
+					pql_get_define("PQL_ATTR_DEFAULTPASSWORDSCHEME"));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_AUTOCREATEUSERNAME"),
+pql_plugin_register(pql_get_define("PQL_ATTR_AUTOCREATEUSERNAME"),
 					"attrib.domaintoggle.inc",
 					"",
-					array(pql_get_define("PQL_GLOB_ATTR_AUTOCREATEUSERNAME"),
-						  pql_get_define("PQL_GLOB_ATTR_AUTOCREATEMAILADDRESS")));
+					array(pql_get_define("PQL_ATTR_AUTOCREATEUSERNAME"),
+						  pql_get_define("PQL_ATTR_AUTOCREATEMAILADDRESS")));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_USERNAMEPREFIX"),
+pql_plugin_register(pql_get_define("PQL_ATTR_USERNAMEPREFIX"),
 					"attrib.usernameprefix.inc",
 					"",
-					array(pql_get_define("PQL_GLOB_ATTR_USERNAMEPREFIX"),
-						  pql_get_define("PQL_GLOB_ATTR_USERNAMEPREFIX_LENGTH")));
+					array(pql_get_define("PQL_ATTR_USERNAMEPREFIX"),
+						  pql_get_define("PQL_ATTR_USERNAMEPREFIX_LENGTH")));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE"),
+pql_plugin_register(pql_get_define("PQL_ATTR_MAILALTERNATE"),
 					"attrib.mailalternateaddress.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE"));
+					pql_get_define("PQL_ATTR_MAILALTERNATE"));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_FORWARDS"),
+pql_plugin_register(pql_get_define("PQL_ATTR_FORWARDS"),
 					"attrib.mailforwardingaddress.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_FORWARDS"));
+					pql_get_define("PQL_ATTR_FORWARDS"));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_PASSWD"),
+pql_plugin_register(pql_get_define("PQL_ATTR_PASSWD"),
 					"attrib.userpassword.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_PASSWD"));
+					pql_get_define("PQL_ATTR_PASSWD"));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_MAIL"),
+pql_plugin_register(pql_get_define("PQL_ATTR_MAIL"),
 					"attrib.mail.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_MAIL"));
+					pql_get_define("PQL_ATTR_MAIL"));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_UID"),
+pql_plugin_register(pql_get_define("PQL_ATTR_UID"),
 					"attrib.uid.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_UID"));
+					pql_get_define("PQL_ATTR_UID"));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_QMAILUGID"),
+pql_plugin_register(pql_get_define("PQL_ATTR_QMAILUGID"),
 					"attrib.ugidnumber.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_QMAILUGID"));
+					pql_get_define("PQL_ATTR_QMAILUGID"));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_MAILSTORE"),
+pql_plugin_register(pql_get_define("PQL_ATTR_MAILSTORE"),
 					"attrib.mailmessagestore.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_MAILSTORE"));
+					pql_get_define("PQL_ATTR_MAILSTORE"));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_HOMEDIR"),
+pql_plugin_register(pql_get_define("PQL_ATTR_HOMEDIR"),
 					"attrib.homedirectory.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_HOMEDIR"));
+					pql_get_define("PQL_ATTR_HOMEDIR"));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_DOTMODE"),
+pql_plugin_register(pql_get_define("PQL_ATTR_DOTMODE"),
 					"attrib.qmaildotmode.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_DOTMODE"));
+					pql_get_define("PQL_ATTR_DOTMODE"));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_PROGRAM"),
+pql_plugin_register(pql_get_define("PQL_ATTR_PROGRAM"),
 					"attrib.deliveryprogrampath.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_PROGRAM"));
+					pql_get_define("PQL_ATTR_PROGRAM"));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_LOGINSHELL"),
+pql_plugin_register(pql_get_define("PQL_ATTR_LOGINSHELL"),
 					"attrib.loginshell.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_LOGINSHELL"));
+					pql_get_define("PQL_ATTR_LOGINSHELL"));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_CN"),
+pql_plugin_register(pql_get_define("PQL_ATTR_CN"),
 					"attrib.cn.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_CN"));
+					pql_get_define("PQL_ATTR_CN"));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI"),
+pql_plugin_register(pql_get_define("PQL_ATTR_LDAPACI"),
 					"attrib.aci.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI"));
+					pql_get_define("PQL_ATTR_LDAPACI"));
 
 pql_plugin_register("modrdn",
 					"attrib.modrdn.inc",
 					"",
 					"modrdn");
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_ADDITIONAL_GROUP"),
+pql_plugin_register(pql_get_define("PQL_ATTR_ADDITIONAL_GROUP"),
 					"attrib.additionalgroup.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_ADDITIONAL_GROUP"));
+					pql_get_define("PQL_ATTR_ADDITIONAL_GROUP"));
 
 // List all registred attributes and their files
 // - Uncomment this piece of code to view which

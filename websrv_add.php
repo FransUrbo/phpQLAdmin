@@ -1,6 +1,6 @@
 <?php
 // add a webserver configuration to the LDAP db
-// $Id: websrv_add.php,v 2.3 2004-02-14 14:01:00 turbo Exp $
+// $Id: websrv_add.php,v 2.4 2004-03-11 18:13:32 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -93,7 +93,7 @@ if(($error == 'true') or !$serverip or !serverurl or !$serveradmin or !$document
 	  $msg = "Failed to add webserver configuration $serverurl";
 	
 	$url = "domain_detail.php?rootdn=$rootdn&domain=$domain&view=$view&msg=".urlencode($msg);
-	header("Location: ".pql_get_define("PQL_GLOB_URI") . "$url");
+	header("Location: ".pql_get_define("PQL_CONF_URI") . "$url");
 }
 ?>
   </body>

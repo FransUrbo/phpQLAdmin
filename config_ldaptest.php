@@ -1,6 +1,6 @@
 <?php
 // make some simple tests on ldap connection
-// $Id: config_ldaptest.php,v 2.26 2004-02-14 14:01:00 turbo Exp $
+// $Id: config_ldaptest.php,v 2.27 2004-03-11 18:13:32 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -65,12 +65,12 @@ if(!function_exists("ldap_connect")){
 
 	// =======================================
 	// Control directory connection
-	if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
+	if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 		$_pql_control = new pql_control($_SESSION["USER_HOST"], '', '', true);
 		if(!$_pql_control->connect($_SESSION["USER_HOST"])) {
 			$connection_control = $LANG->_('Failed');
 
-			$host = split('\+', pql_get_define("PQL_GLOB_HOST"));
+			$host = split('\+', pql_get_define("PQL_CONF_HOST"));
 			$host = split(';', $host[0]);
 
 			$fqdn = $host[0];
@@ -118,16 +118,16 @@ if(!function_exists("ldap_connect")){
 			// Test to see if we have access to create domain/branches
 			// by creating a subbranch
 			unset($entry);
-			$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][] = "top";
+			$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "top";
 			if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "dc") {
-				$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][] = "domain";
-				$entry[pql_get_define("PQL_GLOB_ATTR_DC")] = "test";
+				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "domain";
+				$entry[pql_get_define("PQL_ATTR_DC")] = "test";
 			} elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "ou") {
-				$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][] = "organizationalUnit";
-				$entry[pql_get_define("PQL_GLOB_ATTR_OU")] = "test";
+				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "organizationalUnit";
+				$entry[pql_get_define("PQL_ATTR_OU")] = "test";
 			} elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "o") {
-				$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][] = "organization";
-				$entry[pql_get_define("PQL_GLOB_ATTR_O")] = "test";
+				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "organization";
+				$entry[pql_get_define("PQL_ATTR_O")] = "test";
 			}
 			$entry[pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)] = "phpQLAdmin_Branch_Test";
 
@@ -188,23 +188,23 @@ if(!function_exists("ldap_connect")){
 
 			// Setup the LDIF we're adding
 			unset($entry);
-			$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][] = "top";
+			$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "top";
 			if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "dc") {
-				$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][] = "domain";
-				$entry[pql_get_define("PQL_GLOB_ATTR_DC")] = "test";
+				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "domain";
+				$entry[pql_get_define("PQL_ATTR_DC")] = "test";
 			} elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "ou") {
-				$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][] = "organizationalUnit";
-				$entry[pql_get_define("PQL_GLOB_ATTR_OU")] = "test";
+				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "organizationalUnit";
+				$entry[pql_get_define("PQL_ATTR_OU")] = "test";
 			} elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "o") {
-				$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][] = "organization";
-				$entry[pql_get_define("PQL_GLOB_ATTR_O")] = "test";
+				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "organization";
+				$entry[pql_get_define("PQL_ATTR_O")] = "test";
 			}
 			$entry[pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)] = "phpQLAdmin_Branch_Test";
 			
 			// Add the ACI entries to the object
-			$entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")][0] = "OpenLDAPaci: 1.2.3#entry#grant;r;[entry]#public#";
-			$entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")][1] = "OpenLDAPaci: 1.2.3#entry#grant;r,s,c;objectClass,entry#public#";
-			$entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")][2] = "OpenLDAPaci: 1.2.3#entry#grant;w,r,s,c;[all]#access-id#" . $_SESSION["USER_DN"];
+			$entry[pql_get_define("PQL_ATTR_LDAPACI")][0] = "OpenLDAPaci: 1.2.3#entry#grant;r;[entry]#public#";
+			$entry[pql_get_define("PQL_ATTR_LDAPACI")][1] = "OpenLDAPaci: 1.2.3#entry#grant;r,s,c;objectClass,entry#public#";
+			$entry[pql_get_define("PQL_ATTR_LDAPACI")][2] = "OpenLDAPaci: 1.2.3#entry#grant;w,r,s,c;[all]#access-id#" . $_SESSION["USER_DN"];
 			
 			// Setup the DN
 			$dn = pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)."=phpQLAdmin_Branch_Test,".$basedn;

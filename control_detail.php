@@ -1,10 +1,10 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.28 2004-03-01 10:08:37 turbo Exp $
+// $Id: control_detail.php,v 1.29 2004-03-11 18:13:32 turbo Exp $
 session_start();
 require("./include/pql_config.inc");
 
-if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
+if(pql_get_define("PQL_CONF_CONTROL_USE")) {
     // include control api if control is used
     include("./include/pql_control.inc");
     $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
@@ -12,43 +12,43 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 	include("./header.html");
 
 	// Get the values of the mailserver
-	$attribs = array(pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"),
-					 pql_get_define("PQL_GLOB_ATTR_PLUSDOMAIN"),
-					 pql_get_define("PQL_GLOB_ATTR_LDAPSERVER"),
-					 pql_get_define("PQL_GLOB_ATTR_LDAPREBIND"),
-					 pql_get_define("PQL_GLOB_ATTR_LDAPBASEDN"),
-					 pql_get_define("PQL_GLOB_ATTR_LDAPDEFAULTQUOTA"),
-					 pql_get_define("PQL_GLOB_ATTR_LDAPDEFAULTDOTMODE"),
-					 pql_get_define("PQL_GLOB_ATTR_DIRMAKER"),
-					 pql_get_define("PQL_GLOB_ATTR_QUOTA_WARNING"),
-					 pql_get_define("PQL_GLOB_ATTR_LOCALS"),
-					 pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"),
-					 pql_get_define("PQL_GLOB_ATTR_LDAPLOGIN"),
-					 pql_get_define("PQL_GLOB_ATTR_LDAPPASSWORD"));
-	$cn = pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"];
+	$attribs = array(pql_get_define("PQL_ATTR_DEFAULTDOMAIN"),
+					 pql_get_define("PQL_ATTR_PLUSDOMAIN"),
+					 pql_get_define("PQL_ATTR_LDAPSERVER"),
+					 pql_get_define("PQL_ATTR_LDAPREBIND"),
+					 pql_get_define("PQL_ATTR_LDAPBASEDN"),
+					 pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"),
+					 pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"),
+					 pql_get_define("PQL_ATTR_DIRMAKER"),
+					 pql_get_define("PQL_ATTR_QUOTA_WARNING"),
+					 pql_get_define("PQL_ATTR_LOCALS"),
+					 pql_get_define("PQL_ATTR_RCPTHOSTS"),
+					 pql_get_define("PQL_ATTR_LDAPLOGIN"),
+					 pql_get_define("PQL_ATTR_LDAPPASSWORD"));
+	$cn = pql_get_define("PQL_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"];
 
 	foreach($attribs as $attrib) {
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid, $cn, $attrib);
 		if(!is_null($value)) {
-			if($attrib == pql_get_define("PQL_GLOB_ATTR_LOCALS")) {
+			if($attrib == pql_get_define("PQL_ATTR_LOCALS")) {
 				asort($value);
 				foreach($value as $val) {
 					$locals[] = $val;
 				}
-			} elseif($attrib == pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS")) {
+			} elseif($attrib == pql_get_define("PQL_ATTR_RCPTHOSTS")) {
 				asort($value);
 				foreach($value as $val) {
 					$rcpthosts[] = $val;
 				}
-			} elseif($attrib == pql_get_define("PQL_GLOB_ATTR_LDAPPASSWORD")) {
+			} elseif($attrib == pql_get_define("PQL_ATTR_LDAPPASSWORD")) {
 				$$attrib = "encrypted";
 			} else {
 				$$attrib = $value[0];
 			}
 		} else {
-			if($attrib == pql_get_define("PQL_GLOB_ATTR_LDAPSERVER"))
+			if($attrib == pql_get_define("PQL_ATTR_LDAPSERVER"))
 			  $$attrib = "<i>".$_SESSION["USER_HOST"]."</i>";
-			elseif($attrib == pql_get_define("PQL_GLOB_ATTR_LDAPBASEDN"))
+			elseif($attrib == pql_get_define("PQL_ATTR_LDAPBASEDN"))
 			  $$attrib = "<i>".$_SESSION["USER_SEARCH_DN_CTR"]."</i>";
 			else
 			  $$attrib = "<i>".$LANG->_('Not set')."</i>";
@@ -61,7 +61,7 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 	}
 
 	// reload navigation bar if needed
-	if(isset($rlnb) and pql_get_define("PQL_GLOB_AUTO_RELOAD")) {
+	if(isset($rlnb) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
 ?>
 
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
@@ -95,7 +95,7 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 		include("./tables/control_details-action.inc");
 } else {
 ?>
-  <span class="title1">PQL_GLOB_CONTROL_USE isn't set, won't show control information</span>
+  <span class="title1">PQL_CONF_CONTROL_USE isn't set, won't show control information</span>
 <?php
 }
 /*

@@ -1,14 +1,14 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mail.inc,v 2.17 2004-02-21 16:02:05 turbo Exp $
+// $Id: attrib.mail.inc,v 2.18 2004-03-11 18:13:41 turbo Exp $
 
 function attribute_check($type) {
     global $_pql, $LANG, $error, $defaultdomain;
     
     // is typed in ?
     if(empty($_POST["mail"])) {
-		$error[pql_get_define("PQL_GLOB_ATTR_MAIL")] = $LANG->_('Missing');
+		$error[pql_get_define("PQL_ATTR_MAIL")] = $LANG->_('Missing');
 		return false;
     }
     
@@ -22,13 +22,13 @@ function attribute_check($type) {
     
     // valid
     if(!pql_check_email($mail)) {
-		$error[pql_get_define("PQL_GLOB_ATTR_MAIL")] = $LANG->_('Invalid');
+		$error[pql_get_define("PQL_ATTR_MAIL")] = $LANG->_('Invalid');
 		return false;
     }
     
     // if type is modify, check existance of old value, else the new one
     if($_POST["oldvalue"] != $mail and pql_email_exists($_pql, $mail)) {
-		$error[pql_get_define("PQL_GLOB_ATTR_MAIL")] = $LANG->_('Already exists');
+		$error[pql_get_define("PQL_ATTR_MAIL")] = $LANG->_('Already exists');
 		return false;
     }
     
@@ -56,7 +56,7 @@ function attribute_print_form() {
   ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Email')?></td>
-          <td><?php echo pql_format_error_span($error[pql_get_define("PQL_GLOB_ATTR_MAIL")]);
+          <td><?php echo pql_format_error_span($error[pql_get_define("PQL_ATTR_MAIL")]);
 		    ?><input type="text" name="mail" value=""><b>@<?=$defaultdomain?></b></td>
         </tr>
 
@@ -90,7 +90,7 @@ function attribute_save($type) {
 		break;
 
       case "modify":
-		if(pql_modify_userattribute($_pql->ldap_linkid, $_POST["user"], pql_get_define("PQL_GLOB_ATTR_MAIL"),
+		if(pql_modify_userattribute($_pql->ldap_linkid, $_POST["user"], pql_get_define("PQL_ATTR_MAIL"),
 									$_POST["oldvalue"], $_POST["mail"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									   array('what' => $LANG->_('main address'),
@@ -100,7 +100,7 @@ function attribute_save($type) {
 									   array('what' => $LANG->_('main address'))) . ": " . pql_format_error(0);
 		
 		// We use the mail attribute to reference users and it has just changed...
-		if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", pql_get_rootdn($_POST["user"], 'attrib.mail.inc:attribute_save')) == pql_get_define("PQL_GLOB_ATTR_MAIL")) {
+		if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", pql_get_rootdn($_POST["user"], 'attrib.mail.inc:attribute_save')) == pql_get_define("PQL_ATTR_MAIL")) {
 			// DLW: $_REQUEST["user"] is used by attribute_forward, and should be a paramater.
 			$_REQUEST["user"] = $_POST["mail"];
 			// Reload the navigation bar (if allowed by config)

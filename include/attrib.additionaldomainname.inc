@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.21 2004-03-03 07:59:28 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.22 2004-03-11 18:13:41 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -30,6 +30,7 @@ function attribute_init() {
 // }}}
 
 // {{{ attribute_print_form(void)
+
 function attribute_print_form() {
     global $error, $LANG;
 	global $orgname;			// Set by domain_edit_attributes.php.
@@ -55,54 +56,54 @@ function attribute_print_form() {
         <tr></tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain to '.pql_get_define("PQL_GLOB_ATTR_LOCALS").' in following objects'))); ?>:</td>
+          <td class="title"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain to '.pql_get_define("PQL_ATTR_LOCALS").' in following objects'))); ?>:</td>
           <td>
-<?php		if(!pql_get_define("PQL_GLOB_CONTROL_AUTOADDLOCALS")) {
+<?php		if(!pql_get_define("PQL_CONF_CONTROL_AUTOADDLOCALS", $_REQUEST["rootdn"])) {
 				$i = 0;
 
 		  		foreach($hosts as $host) {
 ?>
-            <input type="checkbox" name="<?php echo pql_get_define('PQL_GLOB_ATTR_LOCALS');?>_<?=$i?>" value="<?=$host?>"><?=$host?><br>
+            <input type="checkbox" name="<?php echo pql_get_define('PQL_ATTR_LOCALS');?>_<?=$i?>" value="<?=$host?>"><?=$host?><br>
 <?php	  			$i++;
 		  		}
 ?>
-            <input type="checkbox" name="<?php echo pql_get_define('PQL_GLOB_ATTR_LOCALS');?>_<?=$i?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('to all hosts'))); ?><br>
-            <input type="hidden" name="<?php echo pql_get_define('PQL_GLOB_ATTR_LOCALS');?>" value="<?=$i?>">
+            <input type="checkbox" name="<?php echo pql_get_define('PQL_ATTR_LOCALS');?>_<?=$i?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('to all hosts'))); ?><br>
+            <input type="hidden" name="<?php echo pql_get_define('PQL_ATTR_LOCALS');?>" value="<?=$i?>">
             &nbsp;<?=$LANG->_('If all left unset, no replication will take place')?>
 <?php		} else {
 				$cnt = count($hosts);
 ?>
               &nbsp;<?=$LANG->_('Automatic replication configured')?>
-              <input type="hidden" name="<?php echo pql_get_define('PQL_GLOB_ATTR_LOCALS');?>_<?=$cnt?>" value="on">
-              <input type="hidden" name="<?php echo pql_get_define('PQL_GLOB_ATTR_LOCALS');?>" value="<?=$cnt?>">
+              <input type="hidden" name="<?php echo pql_get_define('PQL_ATTR_LOCALS');?>_<?=$cnt?>" value="on">
+              <input type="hidden" name="<?php echo pql_get_define('PQL_ATTR_LOCALS');?>" value="<?=$cnt?>">
 <?php		} ?>
           </td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain to '.pql_get_define('PQL_GLOB_ATTR_RCPTHOSTS').' in following objects'))); ?>:</td>
+          <td class="title"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain to '.pql_get_define('PQL_ATTR_RCPTHOSTS').' in following objects'))); ?>:</td>
           <td>
-<?php		if(!pql_get_define("PQL_GLOB_CONTROL_AUTOADDRCPTHOSTS")) {
+<?php		if(!pql_get_define("PQL_CONF_CONTROL_AUTOADDRCPTHOSTS", $_REQUEST["rootdn"])) {
 		  		foreach($hosts as $host) {
 ?>
-            <input type="checkbox" name="<?php echo pql_get_define('PQL_GLOB_ATTR_RCPTHOSTS');?>_<?=$i?>" value="<?=$host?>"><?=$host?><br>
+            <input type="checkbox" name="<?php echo pql_get_define('PQL_ATTR_RCPTHOSTS');?>_<?=$i?>" value="<?=$host?>"><?=$host?><br>
 <?php	  			$i++;
 		  		}
 ?>
-            <input type="checkbox" name="<?php echo pql_get_define('PQL_GLOB_ATTR_RCPTHOSTS');?>_<?=$i?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('to all hosts'))); ?><br>
-            <input type="hidden" name="<?php echo pql_get_define('PQL_GLOB_ATTR_RCPTHOSTS');?>" value="<?=$i?>">
+            <input type="checkbox" name="<?php echo pql_get_define('PQL_ATTR_RCPTHOSTS');?>_<?=$i?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('to all hosts'))); ?><br>
+            <input type="hidden" name="<?php echo pql_get_define('PQL_ATTR_RCPTHOSTS');?>" value="<?=$i?>">
             &nbsp;<?=$LANG->_('If all left unset, no replication will take place')?>
 <?php 		} else {
 				$cnt = count($hosts);
 ?>
               &nbsp;<?=$LANG->_('Automatic replication configured')?>
-              <input type="hidden" name="<?php echo pql_get_define('PQL_GLOB_ATTR_RCPTHOSTS');?>_<?=$cnt?>" value="on">
-              <input type="hidden" name="<?php echo pql_get_define('PQL_GLOB_ATTR_RCPTHOSTS');?>" value="<?=$cnt?>">
+              <input type="hidden" name="<?php echo pql_get_define('PQL_ATTR_RCPTHOSTS');?>_<?=$cnt?>" value="on">
+              <input type="hidden" name="<?php echo pql_get_define('PQL_ATTR_RCPTHOSTS');?>" value="<?=$cnt?>">
 <?php		} ?>
           </td>
         </tr>
 <?php } ?>
-<?php if(pql_get_define("PQL_GLOB_BIND9_USE")) { ?>
+<?php if(pql_get_define("PQL_CONF_BIND9_USE")) { ?>
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Create DNS template')?></td>
@@ -123,6 +124,7 @@ function attribute_print_form() {
   </form>
 <?php
 }
+
 // }}}
 
 // {{{ attribute_save(type)
@@ -174,7 +176,7 @@ function attribute_save($type) {
 										 array('what' => $LANG->_('Additional domain name')));
 
 			// Create a template DNS zone
-			if($_REQUEST["template"] && $additionaldomainname && pql_get_define("PQL_GLOB_BIND9_USE")) {
+			if($_REQUEST["template"] && $additionaldomainname && pql_get_define("PQL_CONF_BIND9_USE")) {
 				require("./include/pql_bind9.inc");
 				
 				if(! pql_bind9_add_zone($_pql->ldap_linkid, $_REQUEST["domain"], $additionaldomainname))
@@ -186,32 +188,32 @@ function attribute_save($type) {
 
 			// -----------------------------------------
 			// update locals if control patch is enabled
-			$amount = $_POST[pql_get_define("PQL_GLOB_ATTR_LOCALS")];
+			$amount = $_POST[pql_get_define("PQL_ATTR_LOCALS")];
 			if($amount) {
-				if($_POST[pql_get_define("PQL_GLOB_ATTR_LOCALS")."_".$amount] != 'on') {
+				if($_POST[pql_get_define("PQL_ATTR_LOCALS")."_".$amount] != 'on') {
 					for($i=0; $i < $amount; $i++)
-					  if($_POST[pql_get_define("PQL_GLOB_ATTR_LOCALS")."_".$i])
-						$hosts[] = $_POST[pql_get_define("PQL_GLOB_ATTR_LOCALS")."_".$i];
+					  if($_POST[pql_get_define("PQL_ATTR_LOCALS")."_".$i])
+						$hosts[] = $_POST[pql_get_define("PQL_ATTR_LOCALS")."_".$i];
 
 					if(is_array($hosts)) {
 						foreach($hosts as $host)
 						  if($type == 'delete')
-							pql_control_update_domains($_pql_control, pql_get_define("PQL_GLOB_ATTR_CN").'='.$host.','.$_SESSION["USER_SEARCH_DN_CTR"],
-													   '*', array($delval, ''), pql_get_define("PQL_GLOB_ATTR_LOCALS"));
+							pql_control_update_domains($_pql_control, pql_get_define("PQL_ATTR_CN").'='.$host.','.$_SESSION["USER_SEARCH_DN_CTR"],
+													   '*', array($delval, ''), pql_get_define("PQL_ATTR_LOCALS"));
 						  else
-							pql_control_update_domains($_pql_control, pql_get_define("PQL_GLOB_ATTR_CN").'='.$host.','.$_SESSION["USER_SEARCH_DN_CTR"],
-													   '*', array($oldvalue, $additionaldomainname), pql_get_define("PQL_GLOB_ATTR_LOCALS"));
+							pql_control_update_domains($_pql_control, pql_get_define("PQL_ATTR_CN").'='.$host.','.$_SESSION["USER_SEARCH_DN_CTR"],
+													   '*', array($oldvalue, $additionaldomainname), pql_get_define("PQL_ATTR_LOCALS"));
 					}
 				} else {
 					// Change all hosts
 					if($type == 'delete')
 					  pql_control_update_domains($_pql_control, $_SESSION["USER_SEARCH_DN_CTR"],
 												 '*', array($delval, ''),
-												 pql_get_define("PQL_GLOB_ATTR_LOCALS"));
+												 pql_get_define("PQL_ATTR_LOCALS"));
 					else
 					  pql_control_update_domains($_pql_control, $_SESSION["USER_SEARCH_DN_CTR"],
 												 '*', array($oldvalue, $additionaldomainname),
-												 pql_get_define("PQL_GLOB_ATTR_LOCALS"));
+												 pql_get_define("PQL_ATTR_LOCALS"));
 				}
 			} else {
 				// We have not gone through the form for adding defaultDomain nor additionalDomainName.
@@ -224,34 +226,34 @@ function attribute_save($type) {
 
 			// -----------------------------------------
 			// update rcpthosts if control patch is enabled
-			$amount = $_POST[pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS")];
+			$amount = $_POST[pql_get_define("PQL_ATTR_RCPTHOSTS")];
 			if($amount) {
-				if($_POST[pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS")."_".$amount] != 'on') {
+				if($_POST[pql_get_define("PQL_ATTR_RCPTHOSTS")."_".$amount] != 'on') {
 					for($i=0; $i < $amount; $i++)
-					  if($_POST[pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS")."_".$i])
-						$hosts[] = $_POST[pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS")."_".$i];
+					  if($_POST[pql_get_define("PQL_ATTR_RCPTHOSTS")."_".$i])
+						$hosts[] = $_POST[pql_get_define("PQL_ATTR_RCPTHOSTS")."_".$i];
 
 					if(is_array($hosts)) {
 						foreach($hosts as $host)
 						  if($type == 'delete')
-							pql_control_update_domains($_pql_control, pql_get_define("PQL_GLOB_ATTR_CN").'='.$host.','.$_SESSION["USER_SEARCH_DN_CTR"],
+							pql_control_update_domains($_pql_control, pql_get_define("PQL_ATTR_CN").'='.$host.','.$_SESSION["USER_SEARCH_DN_CTR"],
 													   '*', array($delval, ''),
-													   pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"));
+													   pql_get_define("PQL_ATTR_RCPTHOSTS"));
 						  else
-							pql_control_update_domains($_pql_control, pql_get_define("PQL_GLOB_ATTR_CN").'='.$host.','.$_SESSION["USER_SEARCH_DN_CTR"],
+							pql_control_update_domains($_pql_control, pql_get_define("PQL_ATTR_CN").'='.$host.','.$_SESSION["USER_SEARCH_DN_CTR"],
 													   '*', array($oldvalue, $additionaldomainname),
-													   pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"));
+													   pql_get_define("PQL_ATTR_RCPTHOSTS"));
 					}
 				} else {
 					// Change all hosts
 					if($type == 'delete')
 					  pql_control_update_domains($_pql_control, $_SESSION["USER_SEARCH_DN_CTR"],
 												 '*', array($delval, ''),
-												 pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"));
+												 pql_get_define("PQL_ATTR_RCPTHOSTS"));
 					else
 					  pql_control_update_domains($_pql_control, $_SESSION["USER_SEARCH_DN_CTR"],
 												 '*', array($oldvalue, $additionaldomainname),
-												 pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"));
+												 pql_get_define("PQL_ATTR_RCPTHOSTS"));
 				}
 			} else {
 				// We have not gone through the form for adding defaultDomain nor additionalDomainName.

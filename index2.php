@@ -1,5 +1,5 @@
 <?php
-// $Id: index2.php,v 2.29 2004-03-03 07:58:54 turbo Exp $
+// $Id: index2.php,v 2.30 2004-03-11 18:13:32 turbo Exp $
 
 session_start();
 require("./include/pql_config.inc");
@@ -9,13 +9,13 @@ $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PA
 
 // -----------------
 // Count how many frames we should open
-if(pql_get_define("PQL_GLOB_EZMLM_USE")) {
+if(pql_get_define("PQL_CONF_EZMLM_USE")) {
     $frames++;
 }
 
 // -----------------
 // Check if this user is a QmailLDAP/Controls administrator
-$controladmins = pql_domain_get_value($_pql, $_pql->ldap_basedn[0], pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR"));
+$controladmins = pql_domain_get_value($_pql, $_pql->ldap_basedn[0], pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"));
 if(is_array($controladmins)) {
     foreach($controladmins as $admin)
       if($admin == $_SESSION["USER_DN"])
@@ -31,7 +31,7 @@ $counted = 0; // Don't count each of the Control usage more than once
 foreach($_pql->ldap_basedn as $dn)  {
     $dn = urldecode($dn);
 
-    if(pql_get_define("PQL_GLOB_CONTROL_USE") and $_SESSION["ALLOW_CONTROL_CREATE"] and $controlsadministrator) {
+    if(pql_get_define("PQL_CONF_CONTROL_USE") and $_SESSION["ALLOW_CONTROL_CREATE"] and $controlsadministrator) {
 	$SHOW_FRAME["controls"] = 1;
 	if(!$counted) {
 	    $frames++;
@@ -57,7 +57,7 @@ $size = sprintf("%d", $size);
 ?>
 <html>
   <head>
-    <title><?php echo PQL_GLOB_WHOAREWE;?></title>
+    <title><?=pql_get_define("PQL_CONF_WHOAREWE")?></title>
   </head>
 
   <!-- frames == <?=$frames?> --!>
@@ -84,7 +84,7 @@ $size = sprintf("%d", $size);
       <frameset cols="*" rows="<?=$size?>%,*" border="1" frameborder="0"><!-- $frames >= 5 --!>
 <?php   }
 
-       if(pql_get_define("PQL_GLOB_EZMLM_USE")) { ?>
+       if(pql_get_define("PQL_CONF_EZMLM_USE")) { ?>
       <frame src="left-ezmlm.php"   name="pqlnavezmlm">
 <?php   }
 

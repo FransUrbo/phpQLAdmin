@@ -2,7 +2,7 @@
     <th colspan="3" align="left"><?=$LANG->_('Registred users')?></th>
       <tr>
         <td class="title"><?=$LANG->_('User')?></td>
-<?php if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) == pql_get_define("PQL_GLOB_ATTR_UID")) { ?>
+<?php if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) == pql_get_define("PQL_ATTR_UID")) { ?>
         <td class="title"><?=$LANG->_('Username')?></td>
 <?php } ?>
         <td class="title"><?=$LANG->_('Status')?></td>
@@ -14,17 +14,17 @@
 			foreach($users as $user) {
 				$userdn = urlencode($user);
 
-				$uid    = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_UID"));
+				$uid    = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_UID"));
 				$uid    = $uid[0];
 
 				// DLW: This should be sorted on DisplayName, not cn.
-				$cn     = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_CN"));
+				$cn     = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_CN"));
 				$cn     = $cn[0];
 
-				$uidnr  = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_QMAILUID"));
+				$uidnr  = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_QMAILUID"));
 				$uidnr  = $uidnr[0];
 			
-				$status = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_ISACTIVE"));
+				$status = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_ISACTIVE"));
 				$status = pql_ldap_accountstatus($status[0]);
 
 				if(($uid != 'root') or ($uidnr != '0')) {
@@ -33,7 +33,7 @@
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td><a href="user_detail.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$userdn?>"><?=$cn?></a></td>
-<?php if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) == pql_get_define("PQL_GLOB_ATTR_UID")) { ?>
+<?php if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) == pql_get_define("PQL_ATTR_UID")) { ?>
         <td><?=$uid?></td>
 <?php } ?>
         <td><?=$status?></td>

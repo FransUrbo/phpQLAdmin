@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // loginshell
-// $Id: attrib.loginshell.inc,v 2.14 2004-02-14 16:36:14 turbo Exp $
+// $Id: attrib.loginshell.inc,v 2.15 2004-03-11 18:13:41 turbo Exp $
 
 function attribute_check($type) {
     global $error, $LANG;
@@ -28,7 +28,7 @@ function attribute_print_form() {
 
 	// Get the users existing shell
     $existing_shell = pql_get_attribute($_pql->ldap_linkid, $_GET["user"],
-										pql_get_define("PQL_GLOB_ATTR_LOGINSHELL"));
+										pql_get_define("PQL_ATTR_LOGINSHELL"));
 	if(!empty($existing_shell[0])) {
 		$existing_shell = $existing_shell[0];
 	} else {

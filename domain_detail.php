@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.78 2004-03-03 13:01:53 turbo Exp $
+// $Id: domain_detail.php,v 2.79 2004-03-11 18:13:32 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -8,7 +8,7 @@ require("./include/pql_config.inc");
 $url["domain"] = pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 
-if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
+if(pql_get_define("PQL_CONF_CONTROL_USE")) {
     // include control api if control is used
     include("./include/pql_control.inc");
     $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
@@ -22,7 +22,7 @@ if(isset($_REQUEST["msg"])) {
 }
 
 // reload navigation bar if needed
-if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_GLOB_AUTO_RELOAD")) {
+if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
 ?>
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
   <script language="JavaScript1.2"><!--
@@ -45,7 +45,7 @@ if(!pql_domain_exist($_pql, $_REQUEST["domain"])) {
 }
 
 // Get the organization name, or show 'Not set' with an URL to set it
-$domainname = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_O"));
+$domainname = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_O"));
 if(!$domainname) {
   // TODO: Resonable default!
   $domainname = '';				// DLW: Just to shut off some warnings.
@@ -57,38 +57,38 @@ if(empty($_REQUEST["view"]))
 // Get some default values for this domain
 // Some of these (everything after the 'o' attribute)
 // uses 'objectClass: dcOrganizationNameForm' -> http://rfc-2377.rfcindex.net/
-$attribs = array(pql_get_define("PQL_GLOB_ATTR_AUTOCREATEMAILADDRESS"),
-				 pql_get_define("PQL_GLOB_ATTR_AUTOCREATEUSERNAME"),
-				 pql_get_define("PQL_GLOB_ATTR_BASEHOMEDIR"),
-				 pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR"),
-				 pql_get_define("PQL_GLOB_ATTR_BASEQUOTA"),
-				 pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"),
-				 pql_get_define("PQL_GLOB_ATTR_DEFAULTPASSWORDSCHEME"),
-				 pql_get_define("PQL_GLOB_ATTR_FACSIMILETELEPHONENUMBER"),
-				 pql_get_define("PQL_GLOB_ATTR_L"),
-				 pql_get_define("PQL_GLOB_ATTR_MAXIMUMDOMAINUSERS"),
-				 pql_get_define("PQL_GLOB_ATTR_MAXIMUMMAILINGLISTS"),
-				 pql_get_define("PQL_GLOB_ATTR_O"),
-				 pql_get_define("PQL_GLOB_ATTR_POSTALADDRESS"),
-				 pql_get_define("PQL_GLOB_ATTR_STREETADDRESS"),
-				 pql_get_define("PQL_GLOB_ATTR_REGISTEREDADDRESS"),
-				 pql_get_define("PQL_GLOB_ATTR_POSTALCODE"),
-				 pql_get_define("PQL_GLOB_ATTR_POSTOFFICEBOX"),
-				 pql_get_define("PQL_GLOB_ATTR_ST"),
-				 pql_get_define("PQL_GLOB_ATTR_STREET"),
-				 pql_get_define("PQL_GLOB_ATTR_TELEPHONENUMBER"),
-				 pql_get_define("PQL_GLOB_ATTR_FACSIMILETELEPHONENUMBER"),
-				 pql_get_define("PQL_GLOB_ATTR_MOBILE"),
-				 pql_get_define("PQL_GLOB_ATTR_USERNAMEPREFIX"),
-				 pql_get_define("PQL_GLOB_ATTR_USERNAMEPREFIX_LENGTH"),
-				 pql_get_define("PQL_GLOB_ATTR_VAT_NUMBER"),
-				 pql_get_define("PQL_GLOB_ATTR_INFO"));
+$attribs = array(pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS"),
+				 pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"),
+				 pql_get_define("PQL_ATTR_BASEHOMEDIR"),
+				 pql_get_define("PQL_ATTR_BASEMAILDIR"),
+				 pql_get_define("PQL_ATTR_BASEQUOTA"),
+				 pql_get_define("PQL_ATTR_DEFAULTDOMAIN"),
+				 pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"),
+				 pql_get_define("PQL_ATTR_FACSIMILETELEPHONENUMBER"),
+				 pql_get_define("PQL_ATTR_L"),
+				 pql_get_define("PQL_ATTR_MAXIMUM_DOMAIN_USERS"),
+				 pql_get_define("PQL_ATTR_MAXIMUM_MAILING_LISTS"),
+				 pql_get_define("PQL_ATTR_O"),
+				 pql_get_define("PQL_ATTR_POSTALADDRESS"),
+				 pql_get_define("PQL_ATTR_STREETADDRESS"),
+				 pql_get_define("PQL_ATTR_REGISTEREDADDRESS"),
+				 pql_get_define("PQL_ATTR_POSTALCODE"),
+				 pql_get_define("PQL_ATTR_POSTOFFICEBOX"),
+				 pql_get_define("PQL_ATTR_ST"),
+				 pql_get_define("PQL_ATTR_STREET"),
+				 pql_get_define("PQL_ATTR_TELEPHONENUMBER"),
+				 pql_get_define("PQL_ATTR_FACSIMILETELEPHONENUMBER"),
+				 pql_get_define("PQL_ATTR_MOBILE"),
+				 pql_get_define("PQL_ATTR_USERNAME_PREFIX"),
+				 pql_get_define("PQL_ATTR_USERNAME_PREFIX_LENGTH"),
+				 pql_get_define("PQL_ATTR_VAT_NUMBER"),
+				 pql_get_define("PQL_ATTR_INFO"));
 foreach($attribs as $attrib) {
 	// Get default value
 	$value = pql_domain_get_value($_pql, $_REQUEST["domain"], $attrib);
 	$$attrib = $value;
 
-	if($attrib == pql_get_define("PQL_GLOB_ATTR_INFO")) {
+	if($attrib == pql_get_define("PQL_ATTR_INFO")) {
 		// Special circumstance - multiple lines...
 		$$attrib = eregi_replace("\n", "<br>", $$attrib);
 	}
@@ -138,9 +138,9 @@ foreach($attribs as $attrib) {
 		  . "border=\"0\" alt=\"".$alt1."\"></a>";
 	}
 }
-$domain_admins		= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"));
-$mailinglist_admins	= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR"));
-$seealso   			= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_SEEALSO"));
+$domain_admins		= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR"));
+$mailinglist_admins	= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"));
+$seealso   			= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_SEEALSO"));
 
 // The value retreived from the object is a one liner.
 // Split it up into it's parts (SIZE and AMOUNT) and
@@ -151,7 +151,7 @@ $temp[0] = eregi_replace("S$", "", $temp[0]);
 $quota   = array(); $quota["maxmails"] = $temp[1]; $quota["maxsize"]  = $temp[0];
 $basequota		   = pql_ldap_mailquota($quota);
 
-$additionaldomainname = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_ADDITIONALDOMAINNAME"));
+$additionaldomainname = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
 
 // Setup the buttons
 $buttons = array('default'	=> 'Branch Defaults',
@@ -165,17 +165,17 @@ if($_SESSION["ADVANCED_MODE"]) {
 				 'aci'		=> 'Access Control Information');
 	$buttons = $buttons + $new;
 
-	if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
+	if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 		$new = array('options' => 'QmailLDAP/Controls Options');
 		$buttons = $buttons + $new;
 	}
 
-	if(pql_get_define("PQL_GLOB_BIND9_USE")) {
+	if(pql_get_define("PQL_CONF_BIND9_USE")) {
 		$new = array('dnszone'	=> 'DNS Zone');
 		$buttons = $buttons + $new;
 	}
 
-	if(pql_get_define("PQL_GLOB_WEBSRV_USE")) {
+	if(pql_get_define("PQL_CONF_WEBSRV_USE")) {
 		$new = array('websrv'	=> 'Webserver Administration');
 		$buttons = $buttons + $new;
 	}

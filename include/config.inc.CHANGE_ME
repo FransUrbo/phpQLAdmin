@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.49 2004-03-03 07:59:28 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.50 2004-03-11 18:13:41 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -10,7 +10,7 @@
 //
 
 // ----------------------------
-// PQL_GLOB_HOST (FQDN|IP)
+// PQL_CONF_HOST (FQDN|IP)
 // the host, port and base DN which is running the ldap-server
 // for the USERS database - separated with semi colon (;)
 //
@@ -28,42 +28,49 @@
 //					NOTE: This is NOT the base DN, or a login DN.
 //					It's where the QmailLDAP/Controls objects reside!
 //
-// Note: URI and SSL support were added in PHP v4.0.4.
+// Note1: URI and SSL support were added in PHP v4.0.4.
+// Note2: If using URI, you will have to URL encode the slashes that
+//        shows the path to the socket => ldapi://%2fvar%2frun%2fldapi
+//        This is the path to the socket file '/var/run/ldapi'.
 //
 // Stack these with the + (plus) character and you'll get a list of
 // host you can administrate. If only one, then you can obiously only
-// configure that :)
+// configure that :).
+// You will have to enable 'Allow change of LDAP server' in the phpQLAdmin
+// configuration (HOME->phpQLAdmin Configuration in Advanced mode) for this
+// to take effect.
 //
 // These two examples works directly with the demo database(s) distributed
 // in the demo directory. Don't use on live server, since my account and
 // password (quite easily cracked though :) is in there...
-//pql_set_define("PQL_GLOB_HOST","ldaps://localhost/;;ou=QmailLDAP,c=SE");
-pql_set_define("PQL_GLOB_HOST","localhost;389;ou=QmailLDAP,c=SE");
+//pql_set_define("PQL_CONF_HOST","ldaps://localhost/;;ou=QmailLDAP,c=SE");
+//pql_set_define("PQL_CONF_HOST","ldapi://%2fvar%2frun%2fldapi;;ou=QmailLDAP,c=SE");
+pql_set_define("PQL_CONF_HOST","localhost;389;ou=QmailLDAP,c=SE");
 
 // ----------------------------
-// PQL_GLOB_SUBTREE_USERS
+// PQL_CONF_SUBTREE_USERS
 // Is your users organized DIRECTLY under your 'dc' object like
 //	uid=username,PQL_CONF_REFERENCE_DOMAINS_WITH=example,<LDAP_BASEDN>
 // or in a subtree like
 //	uid=username,ou=People,PQL_CONF_REFERENCE_DOMAINS_WITH=example,<LDAP_BASEDN>
 // -> If the former (no subtree), leave this empty!
-//pql_set_define("PQL_GLOB_SUBTREE_USERS", "ou=People");
+//pql_set_define("PQL_CONF_SUBTREE_USERS", "ou=People");
 
 // ----------------------------
-// PQL_GLOB_SUBTREE_GROUPS
+// PQL_CONF_SUBTREE_GROUPS
 // If you're using your LDAP database for authentication
 // etc, you'd need a group for the user as well. Under
 // what subtree is the groups located?
 // -> Do not add a comma after this, not needed.
-//pql_set_define("PQL_GLOB_SUBTREE_GROUPS", "ou=Groups");
+//pql_set_define("PQL_CONF_SUBTREE_GROUPS", "ou=Groups");
 
 // ----------------------------
-// PQL_GLOB_EZMLM_USER
+// PQL_CONF_EZMLM_USER
 // If you're using the ezmlm manager, you might have to configure
 // what user ezmlm is running as. That is, who "own's" (ie, the
 // directories) the mailinglist. This is usually 'alias', as in
 // '~alias/.qmail-LISTNAME' but can also be 'vmail'...
-pql_set_define("PQL_GLOB_EZMLM_USER", "alias");
+pql_set_define("PQL_CONF_EZMLM_USER", "alias");
 
 // ----------------------------
 // mail(message)store generation
@@ -99,8 +106,8 @@ function user_generate_mailstore($ldap, $email, $dn, $entry, $type) {
 	//
 	// -------------- example: domains baseMailDir/uid
 	//	if($dn) {
-	//		$mailstore = pql_domain_get_value($ldap, $dn, pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR"));
-	//		$domain    = pql_domain_get_value($ldap, $dn, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
+	//		$mailstore = pql_domain_get_value($ldap, $dn, pql_get_define("PQL_ATTR_BASEMAILDIR"));
+	//		$domain    = pql_domain_get_value($ldap, $dn, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 	//	} else {
 	//		$mailstore = "/var/mail";
 	//		$domain    = $entry["BRANCH_NAME"];
@@ -116,26 +123,26 @@ function user_generate_mailstore($ldap, $email, $dn, $entry, $type) {
 	//		$mailstore = $mailstore . $branch . "%u%";
 	//	}
 	//	$mailstore = pql_complete_constant($mailstore, array("d" => pql_format_international($domain), 
-	//														 "u" => $entry[pql_get_define("PQL_GLOB_ATTR_UID")], 
-	//														 "h" => $entry[pql_get_define("PQL_GLOB_ATTR_MAILHOST")]));
+	//														 "u" => $entry[pql_get_define("PQL_ATTR_UID")], 
+	//														 "h" => $entry[pql_get_define("PQL_ATTR_MAILHOST")]));
 	//
 	// -------------- example: "%d/%u" (=> domain.tld/username) 
 	//	$mailstore = "%d%/%u%"; 
 	//	$mailstore = pql_complete_constant($mailstore, array(	"d" => pql_format_international($domain), 
-	//															"u" => $entry[pql_get_define("PQL_GLOB_ATTR_UID")],
-	//															"h" => $entry[pql_get_define("PQL_GLOB_ATTR_MAILHOST")]));
+	//															"u" => $entry[pql_get_define("PQL_ATTR_UID")],
+	//															"h" => $entry[pql_get_define("PQL_ATTR_MAILHOST")]));
 	//
 	// -------------- example: domain.tld/username
-	//	$mailstore = $domain . '/'. $entry[pql_get_define("PQL_GLOB_ATTR_UID")];
+	//	$mailstore = $domain . '/'. $entry[pql_get_define("PQL_ATTR_UID")];
 	//
 	// -------------- example: d/domain.tld/username (first character of the domainname / domainname / uid)
-	//	$mailstore = substr($domain, 0, 1) . '/' . $domain . '/'. $entry[pql_get_define("PQL_GLOB_ATTR_UID")];
+	//	$mailstore = substr($domain, 0, 1) . '/' . $domain . '/'. $entry[pql_get_define("PQL_ATTR_UID")];
 	//
 	// -------------- example: mail.host.tld/domain.tld/username
-	//	$mailstore = $entry[pql_get_define("PQL_GLOB_ATTR_MAILHOST")] . '/' . pql_format_international($domain) . '/'. $entry[pql_get_define("PQL_GLOB_ATTR_UID")];
+	//	$mailstore = $entry[pql_get_define("PQL_ATTR_MAILHOST")] . '/' . pql_format_international($domain) . '/'. $entry[pql_get_define("PQL_ATTR_UID")];
 	//
 	// -------------- example: mail@domain.tld (complete email-address)
-	//	$mailstore = $entry[pql_get_define("PQL_GLOB_ATTR_MAIL")];
+	//	$mailstore = $entry[pql_get_define("PQL_ATTR_MAIL")];
 	//
 	// -------------- example: 123456
 	// generate a random (6 digit) number and make sure 
@@ -153,8 +160,8 @@ function user_generate_mailstore($ldap, $email, $dn, $entry, $type) {
 	// 	$mailstore = mt_rand(100000, 999999);
 	// 	// check whether another user already has this mailstore. If yes, generate another random number.
 	// 	// TODO: ldap_basedn isn't availible any more (it's an array of base DN's)!
-	// 	$filter = pql_get_define("PQL_GLOB_ATTR_MAILSTORE") . "=" . pql_maybe_encode($mailstore,
-	// 																				 pql_get_define("PQL_GLOB_ATTR_MAILSTORE"),
+	// 	$filter = pql_get_define("PQL_ATTR_MAILSTORE") . "=" . pql_maybe_encode($mailstore,
+	// 																				 pql_get_define("PQL_ATTR_MAILSTORE"),
 	// 																				 $ldap);
 	// 	if(!pql_search($ldap, $ldap_basedn, $filter)) {
 	// 		break;
@@ -184,8 +191,8 @@ function user_generate_mailstore($ldap, $email, $dn, $entry, $type) {
 // Above. Exact same options apply
 function user_generate_homedir($ldap, $email, $dn, $entry, $type) {
 	//	if($dn) {
-	//		$homedir = pql_domain_get_value($ldap, $dn, pql_get_define("PQL_GLOB_ATTR_BASEHOMEDIR"));
-	//		$domain  = pql_domain_get_value($ldap, $dn, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
+	//		$homedir = pql_domain_get_value($ldap, $dn, pql_get_define("PQL_ATTR_BASEHOMEDIR"));
+	//		$domain  = pql_domain_get_value($ldap, $dn, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 	//	} else {
 	//		$homedir = "/home";
 	//		$domain  = $entry["BRANCH_NAME"];
@@ -201,8 +208,8 @@ function user_generate_homedir($ldap, $email, $dn, $entry, $type) {
 	//		$homedir = $homedir . $branch . "%u%";
 	//	}
 	//	$homedir = pql_complete_constant($homedir, array("d" => pql_format_international($domain), 
-	//													 "u" => $entry[pql_get_define("PQL_GLOB_ATTR_UID")],
-	//													 "h" => $entry[pql_get_define("PQL_GLOB_ATTR_MAILHOST")]));
+	//													 "u" => $entry[pql_get_define("PQL_ATTR_UID")],
+	//													 "h" => $entry[pql_get_define("PQL_ATTR_MAILHOST")]));
 	
 	return($homedir);
 }

@@ -1,4 +1,4 @@
-<?php if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
+<?php if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 		// ------------------------------
 		// These are the domains we have to check
 		$domainnames = $additionaldomainname; $domainnames[] = $defaultdomain;
@@ -53,7 +53,7 @@
 
   <br><br>
 
-<?php } // end if(PQL_GLOB_CONTROL_USE) ...
+<?php } // end if(PQL_CONF_CONTROL_USE) ...
 /*
  * Local variables:
  * mode: php

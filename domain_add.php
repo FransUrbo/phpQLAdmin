@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: domain_add.php,v 2.45 2004-03-03 07:58:54 turbo Exp $
+// $Id: domain_add.php,v 2.46 2004-03-11 18:13:32 turbo Exp $
 //
 session_start();
 
@@ -35,14 +35,14 @@ if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $rootdn) == "dc" or
 // check if domain is valid
 //if(!pql_check_hostaddress($domain, $force_dot)) {
 //	$msg = urlencode($LANG->_('Invalid domain name! Use: domain.tld (e.g. adfinis.com)'));
-//	header("Location: " . pql_get_define("PQL_GLOB_URI") . "home.php?msg=$msg");
+//	header("Location: " . pql_get_define("PQL_CONF_URI") . "home.php?msg=$msg");
 //	exit();
 //}
 
 // check if domain exist
 if(pql_domain_exist($_pql, $domain, $rootdn)) {
 	$msg = urlencode($LANG->_('This domain already exists'));
-	header("Location: " . pql_get_define("PQL_GLOB_URI") . "home.php?msg=$msg");
+	header("Location: " . pql_get_define("PQL_CONF_URI") . "home.php?msg=$msg");
 	exit();
 }
 
@@ -98,11 +98,11 @@ if($dns[0]) {
 	  $msg = $LANG->_('Failed to change the default domainname') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	
 	// The creator is by default the administrator
-	if(! pql_domain_set_value($_pql->ldap_linkid, $dns[0], pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]))
+	if(! pql_domain_set_value($_pql->ldap_linkid, $dns[0], pql_get_define("PQL_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]))
 	  $msg = $LANG->_('Failed to change the default domainname') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 
 	// Create a template DNS zone
-	if($template && $defaultdomain && pql_get_define("PQL_GLOB_BIND9_USE")) {
+	if($template && $defaultdomain && pql_get_define("PQL_CONF_BIND9_USE")) {
 		require("./include/pql_bind9.inc");
 
 		if(! pql_bind9_add_zone($_pql->ldap_linkid, $dns[0], $defaultdomain))
@@ -148,10 +148,10 @@ if($dns[0]) {
 
 		die();
 	} else
-	  header("Location: " . pql_get_define("PQL_GLOB_URI") . $url);
+	  header("Location: " . pql_get_define("PQL_CONF_URI") . $url);
 } else {
 	$msg = urlencode($LANG->_('Failed to create the domain') . ":&nbsp;" . ldap_error($_pql->ldap_linkid));
-	header("Location: " . pql_get_define("PQL_GLOB_URI") . "home.php?msg=$msg");
+	header("Location: " . pql_get_define("PQL_CONF_URI") . "home.php?msg=$msg");
 }
 ?>
 

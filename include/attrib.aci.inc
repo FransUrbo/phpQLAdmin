@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for OpenLDAPaci
-// $Id: attrib.aci.inc,v 1.5 2004-02-14 14:25:35 turbo Exp $
+// $Id: attrib.aci.inc,v 1.6 2004-03-11 18:13:41 turbo Exp $
 
 /* DLW: This has valid syntax, but I don't know how to test it. */
 
@@ -188,10 +188,10 @@ function attribute_save($action) {
 		unset($ACIs);
 		
 		// Remove specific entry
-		for($i=0; $acis[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")][$i]; $i++) {
-			if($acis[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")][$i] != $value)
+		for($i=0; $acis[pql_get_define("PQL_ATTR_LDAPACI")][$i]; $i++) {
+			if($acis[pql_get_define("PQL_ATTR_LDAPACI")][$i] != $value)
 			  // This is not a value to be delete it, remember it
-			  $ACIs[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")][] = $acis[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")][$i];
+			  $ACIs[pql_get_define("PQL_ATTR_LDAPACI")][] = $acis[pql_get_define("PQL_ATTR_LDAPACI")][$i];
 		}
 		
 		$acis = $ACIs;

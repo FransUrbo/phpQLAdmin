@@ -1,14 +1,14 @@
 <?php
 // attribute plugin for
 // cn (Full name)
-// $Id: attrib.cn.inc,v 2.19 2004-02-14 14:25:35 turbo Exp $
+// $Id: attrib.cn.inc,v 2.20 2004-03-11 18:13:41 turbo Exp $
 
 function attribute_check($type) {
     global $error, $LANG;
     
     // is typed in ?
     if(empty($_REQUEST["cn"])) {
-		$error[pql_get_define("PQL_GLOB_ATTR_CN")] = $LANG->_('Missing');
+		$error[pql_get_define("PQL_ATTR_CN")] = $LANG->_('Missing');
 		return false;
     }
     
@@ -27,7 +27,7 @@ function attribute_print_form() {
       <th colspan="3" align="left"><?=$LANG->_('Common name')?></th>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Common name')?></td>
-          <td><?php echo pql_format_error_span($error[pql_get_define("PQL_GLOB_ATTR_CN")]); ?><input type="text" name="cn" value="<?=$_REQUEST["cn"]?>"></td>
+          <td><?php echo pql_format_error_span($error[pql_get_define("PQL_ATTR_CN")]); ?><input type="text" name="cn" value="<?=$_REQUEST["cn"]?>"></td>
         </tr>
       </th>
     </table>
@@ -86,17 +86,17 @@ function attribute_save($type) {
 		$name = split(" ", $_REQUEST["cn"]);
 
 		// Change givenName which is the first name
-		$old = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_GLOB_ATTR_GIVENNAME"));
+		$old = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_GIVENNAME"));
 		if(is_array($old)) {
 			// We have an old value of this array, try to change it...
-			pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_GLOB_ATTR_GIVENNAME"), $name[0]);
+			pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_GIVENNAME"), $name[0]);
 		}
 
 		// Change SN which is the last name
-		$old = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_GLOB_ATTR_SN"));
+		$old = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_SN"));
 		if(is_array($old)) {
 			// We have an old value of this array, try to change it...
-			pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_GLOB_ATTR_SN"), $name[1]);
+			pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_SN"), $name[1]);
 		}
 
 		attribute_forward($msg, true);

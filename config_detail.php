@@ -1,6 +1,6 @@
 <?php
 // shows configuration of phpQLAdmin
-// $Id: config_detail.php,v 2.50 2004-03-01 09:17:58 turbo Exp $
+// $Id: config_detail.php,v 2.51 2004-03-11 18:13:32 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -34,7 +34,7 @@ if($_REQUEST["action"] == "clear_session") {
     $msg = "Successfully deleted the session variable. Will reload from scratch.";
     $link = "config_detail.php?view=$view&msg=".urlencode($msg);
 
-    header("Location: " . pql_get_define("PQL_GLOB_URI") . $link);
+    header("Location: " . pql_get_define("PQL_CONF_URI") . $link);
 }
 
 // print status message, if one is available
@@ -43,7 +43,7 @@ if(isset($_REQUEST["msg"])) {
 }
 
 // reload navigation bar if needed
-if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_GLOB_AUTO_RELOAD")) {
+if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
 ?>
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
   <script language="JavaScript1.2"><!--

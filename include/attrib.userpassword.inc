@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.22 2004-03-03 07:59:28 turbo Exp $
+// $Id: attrib.userpassword.inc,v 2.23 2004-03-11 18:13:41 turbo Exp $
 
 function attribute_check($type) {
 	global $error, $LANG;
@@ -32,7 +32,7 @@ function attribute_print_form() {
 	global $error, $_pql, $LANG;
 
 	// Get the default password scheme for branch
-	$defaultpasswordscheme = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_DEFAULTPASSWORDSCHEME"));
+	$defaultpasswordscheme = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"));
 ?>
   <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -54,8 +54,8 @@ function attribute_print_form() {
 <?php			}
 			}
 	  	} else { ?>
-            <?=$LANG->_('Scheme')?>: <b>{<?php echo pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"]); ?>}</b>
-            <input type="hidden" name="pwscheme" value="<?php echo pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"])?>">
+            <?=$LANG->_('Scheme')?>: <b>{<?=pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"])?>}</b>
+            <input type="hidden" name="pwscheme" value="<?=pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"])?>">
 <?php 	} ?>
           </td>
         </tr>
@@ -108,7 +108,7 @@ function attribute_save($type) {
 		$pw = pql_password_hash($_REQUEST["userpassword"], $_REQUEST["pwscheme"]);
 		
 		if(pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"],
-								 pql_get_define("PQL_GLOB_ATTR_PASSWD"),
+								 pql_get_define("PQL_ATTR_PASSWD"),
 								 $pw))
 		{
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),

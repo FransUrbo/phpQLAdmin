@@ -1,6 +1,6 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.39 2004-03-03 07:58:54 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.40 2004-03-11 18:13:32 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -36,14 +36,14 @@ function attribute_forward($msg) {
 		. "&domain=" . $url["domain"]
 		. "&view=" . $_REQUEST["view"] . "&msg=$msg";
 
-    header("Location: " . pql_get_define("PQL_GLOB_URI") . $link);
+    header("Location: " . pql_get_define("PQL_CONF_URI") . $link);
 }
 
 // Select which attribute have to be included
 include("./include/".pql_plugin_get_filename(pql_plugin_get($_REQUEST["attrib"])));
 
 // Get the organization name, or the DN if it's unset
-$orgname = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_O"));
+$orgname = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_O"));
 if(!$orgname) {
 	$orgname = urldecode($_REQUEST["domain"]);
 }
@@ -97,10 +97,10 @@ if(@$_REQUEST["submit"] == 1) {
 	elseif($_REQUEST["type"])
 	  attribute_save($_REQUEST["type"]);
 } else {
-	if($_REQUEST["attrib"] == pql_get_define("PQL_GLOB_ATTR_BASEQUOTA"))
+	if($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_BASEQUOTA"))
 	  attribute_print_form();
-	elseif(($_REQUEST["attrib"] == pql_get_define("PQL_GLOB_ATTR_AUTOCREATEUSERNAME")) or
-		   ($_REQUEST["attrib"] == pql_get_define("PQL_GLOB_ATTR_AUTOCREATEMAILADDRESS")))
+	elseif(($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME")) or
+		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS")))
 	  attribute_save();
 	else
 	  attribute_print_form($_REQUEST["type"]);

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // accountstatus (status of mailaccount)
-// $Id: attrib.accountstatus.inc,v 2.16 2004-02-14 14:25:35 turbo Exp $
+// $Id: attrib.accountstatus.inc,v 2.17 2004-03-11 18:13:41 turbo Exp $
 
 /* DLW: When the calendar gets a value of 2003.12.25, it gets stored or displayed as 2003/12/24 (@7am)
  *      I think it's having problems with time zones.  Look into it. */
@@ -109,7 +109,7 @@ function attribute_save($type) {
     switch($type) {
       case "fulldomain":
       case "modify":
-		if(eregi(pql_get_define("PQL_GLOB_ATTR_EXPIRATION"), $_REQUEST["attrib"])) {
+		if(eregi(pql_get_define("PQL_CONF_EXPIRATION"), $_REQUEST["attrib"])) {
 			// Set the shadowExpire attribute for this user
 			
 			// Get the objectClasses of this user
@@ -119,7 +119,7 @@ function attribute_save($type) {
 			for($i=0; $entry[$i]; $i++) {
 				$new_entry["objectclass"][] = $entry[$i];
 
-				if(eregi(pql_get_define("PQL_GLOB_ATTR_EXPIRATION"), $entry[$i]))
+				if(eregi(pql_get_define("PQL_CONF_EXPIRATION"), $entry[$i]))
 				  $got_objectclass = 1;
 			}
 
@@ -128,16 +128,16 @@ function attribute_save($type) {
 			  $new_entry["objectclass"][] = "shadowAccount";
 
 			// Add the attribute and it's value
-			$new_entry[pql_get_define("PQL_GLOB_ATTR_EXPIRATION")] = $days;
+			$new_entry[pql_get_define("PQL_ATTR_EXPIRATION")] = $days;
 
 			// Modify the object
 			if(!@ldap_mod_replace($_pql->ldap_linkid, $_REQUEST["user"], $new_entry)) {
 				// Failed to REPLACE the value. Try to remove and then add it again
 				unset($new_entry);
 
-				$new_entry[pql_get_define("PQL_GLOB_ATTR_EXPIRATION")] = array();
+				$new_entry[pql_get_define("PQL_ATTR_EXPIRATION")] = array();
 				if(@ldap_mod_del($_pql->ldap_linkid, $_REQUEST["user"], $new_entry)) {
-					$new_entry[pql_get_define("PQL_GLOB_ATTR_EXPIRATION")] = $days;
+					$new_entry[pql_get_define("PQL_ATTR_EXPIRATION")] = $days;
 					if(@ldap_mod_add($_pql->ldap_linkid, $_REQUEST["user"], $new_entry)) {
 						$msg = $LANG->_('Successfully set account expiration date');
 					}
@@ -156,7 +156,7 @@ function attribute_save($type) {
 			if(is_array($users)) {
 				foreach($users as $user)
 				  if(! pql_replace_attribute($_pql->ldap_linkid, $user,
-												 pql_get_define("PQL_GLOB_ATTR_ISACTIVE"),
+												 pql_get_define("PQL_ATTR_ISACTIVE"),
 												 $_REQUEST["set"])) {
 					  $msg  = pql_complete_constant($LANG->_('Failed to change %what%'),
 													array('what' => $LANG->_('Status')));
@@ -172,7 +172,7 @@ function attribute_save($type) {
 		break;
 		
       case "set":
-		if(pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_GLOB_ATTR_ISACTIVE"), $_REQUEST["set"])) {
+		if(pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_ISACTIVE"), $_REQUEST["set"])) {
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 										 array('what' => $LANG->_('Status'),
 											   'new'  => pql_ldap_accountstatus($_REQUEST["set"])));

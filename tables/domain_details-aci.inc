@@ -3,7 +3,7 @@
 
 // Setup the URL redirection
 $URL  = "domain_edit_attributes.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"];
-$URL .= "&attrib=".pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")."&view=" . $_REQUEST["view"] . "&";
+$URL .= "&attrib=".pql_get_define("PQL_ATTR_LDAPACI")."&view=" . $_REQUEST["view"] . "&";
 
 if(!empty($_REQUEST["user"])) {
     // Get the ACIs in this user object
@@ -35,7 +35,7 @@ if(!is_array($aci)) {
       </tr>
 
 <?php for($i=0; $aci[$i]; $i++) {
-		$url = $URL . pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI") . "=" . urlencode($aci[$i]["LINE"]);
+		$url = $URL . pql_get_define("PQL_ATTR_LDAPACI") . "=" . urlencode($aci[$i]["LINE"]);
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td><?=$aci[$i]["OID"]?></td>

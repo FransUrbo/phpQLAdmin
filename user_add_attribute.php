@@ -1,6 +1,6 @@
 <?php
 // adds an attribute 
-// $Id: user_add_attribute.php,v 2.26 2004-03-03 07:58:54 turbo Exp $
+// $Id: user_add_attribute.php,v 2.27 2004-03-11 18:13:32 turbo Exp $
 //
 /* This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
  *   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -38,17 +38,17 @@ function attribute_forward($msg) {
     
     $url = "user_detail.php?rootdn=" . $_REQUEST["rootdn"] . "&domain=" . $_REQUEST["domain"]
       . "&user=" . $_REQUEST["user"] . "&view=" . $_REQUEST["view"] . "&msg=".urlencode($msg);
-    header("Location: " . pql_get_define("PQL_GLOB_URI") . "$url");
+    header("Location: " . pql_get_define("PQL_CONF_URI") . "$url");
 }
 
 // Get default domain name for this domain
-$defaultdomain = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
+$defaultdomain = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 
 // Get the username. Prettier than the DN
-$username = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_GLOB_ATTR_CN"));
+$username = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_CN"));
 if(!$username[0]) {
     // No common name, use uid field
-    $username = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_GLOB_ATTR_UID"));
+    $username = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_UID"));
 }
 $username = $username[0];
 

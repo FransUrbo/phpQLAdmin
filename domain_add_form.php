@@ -1,6 +1,6 @@
 <?php
 // Input form page to create a domain branch in database
-// $Id: domain_add_form.php,v 1.19 2004-02-14 14:01:00 turbo Exp $
+// $Id: domain_add_form.php,v 1.20 2004-03-11 18:13:32 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -71,7 +71,7 @@ $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PA
           </td>
         </tr>
 
-<?php if(pql_get_define("PQL_GLOB_BIND9_USE")) { ?>
+<?php if(pql_get_define("PQL_CONF_BIND9_USE")) { ?>
         <tr>
           <td class="title"><?=$LANG->_('Create DNS template')?></td>
           <td>

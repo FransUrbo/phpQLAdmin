@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for pilotPerson objects etc
-// $Id: attrib.outlook.inc,v 1.21 2004-03-03 10:23:29 turbo Exp $
+// $Id: attrib.outlook.inc,v 1.22 2004-03-11 18:13:41 turbo Exp $
 
 /*
 	Attributes managed here:
@@ -59,7 +59,7 @@ function attribute_print_form() {
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Set/Modify attribute %attribute%'), array('attribute' => $attrib)); ?></th>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$attrib?></td>
-          <td><?php echo pql_format_error_span($error[$attrib]); ?><?php if(lc($attrib) == lc(pql_get_define("PQL_GLOB_ATTR_INFO"))) { ?><textarea name="<?=$attrib?>" rows="10" cols="50"><?=$_REQUEST[$attrib]?></textarea><?php } else { ?><input type="text" name="<?=$attrib?>" value="<?=$_REQUEST[$attrib]?>" size="30"></td><?php } ?>
+          <td><?php echo pql_format_error_span($error[$attrib]); ?><?php if($attrib == pql_get_define("PQL_ATTR_INFO")) { ?><textarea name="<?=$attrib?>" rows="10" cols="50"><?=$_REQUEST[$attrib]?></textarea><?php } else { ?><input type="text" name="<?=$attrib?>" value="<?=$_REQUEST[$attrib]?>" size="30"></td><?php } ?>
         </tr>
       </th>
     </table>

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliverymode (delivery preferences)
-// $Id: attrib.deliverymode.inc,v 2.19 2004-02-14 14:25:36 turbo Exp $
+// $Id: attrib.deliverymode.inc,v 2.20 2004-03-11 18:13:41 turbo Exp $
 
 function attribute_check($type) {
     global $error, $LANG;
@@ -19,7 +19,7 @@ function attribute_init() {
     global $_pql;
 
 	// initialize values directly from ldap
-	$mode = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_GLOB_ATTR_MODE"));
+	$mode = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_MODE"));
 
 	// delivery profile
 	if(is_array($mode) and in_array("forwardonly",$mode))
@@ -31,7 +31,7 @@ function attribute_init() {
 	if(is_array($mode) and in_array("reply", $mode))
 	  $_REQUEST["reply"] = "ok";
 	
-	$mailreplytext = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_GLOB_ATTR_REPLYTEXT"));
+	$mailreplytext = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_REPLYTEXT"));
 	$_REQUEST["mailreplytext"] = $mailreplytext[0];
 }
 
@@ -100,25 +100,25 @@ function attribute_save($type) {
 
 	switch($_REQUEST["deliverymode"]) {
 	  case "forward":
-		$entry[pql_get_define("PQL_GLOB_ATTR_MODE")][] = "forwardonly";
-		$entry[pql_get_define("PQL_GLOB_ATTR_MODE")][] = "nombox";
+		$entry[pql_get_define("PQL_ATTR_MODE")][] = "forwardonly";
+		$entry[pql_get_define("PQL_ATTR_MODE")][] = "nombox";
 		break;
 
 	  case "local":
-		$entry[pql_get_define("PQL_GLOB_ATTR_MODE")][] = "localdelivery";
+		$entry[pql_get_define("PQL_ATTR_MODE")][] = "localdelivery";
 	}
 	
 	if($_REQUEST["reply"] == "ok")
-	  $entry[pql_get_define("PQL_GLOB_ATTR_MODE")][] = "reply";
+	  $entry[pql_get_define("PQL_ATTR_MODE")][] = "reply";
 
 	if (!empty($_REQUEST["mailreplytext"])) 
-	  $entry[pql_get_define("PQL_GLOB_ATTR_REPLYTEXT")] = preg_replace('/\\\/', "", $_REQUEST["mailreplytext"]);
+	  $entry[pql_get_define("PQL_ATTR_REPLYTEXT")] = preg_replace('/\\\/', "", $_REQUEST["mailreplytext"]);
 	else {
 		// Check if the entry in database is empty. 
 		// If not, we have choosen to DELETE the value
-		$mrt_db = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_GLOB_ATTR_REPLYTEXT"));
+		$mrt_db = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_REPLYTEXT"));
 		if($mrt_db[0])
-		  pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_GLOB_ATTR_REPLYTEXT"));
+		  pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_REPLYTEXT"));
 	}
 	
 	switch($type) {

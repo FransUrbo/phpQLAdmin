@@ -1,11 +1,11 @@
 <?php
 // Delete a mailserver controls object
-// $Id: control_del.php,v 2.8 2004-02-14 14:01:00 turbo Exp $
+// $Id: control_del.php,v 2.9 2004-03-11 18:13:32 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 
-if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
+if(pql_get_define("PQL_CONF_CONTROL_USE")) {
     // include control api if control is used
     include("./include/pql_control.inc");
     $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
@@ -22,15 +22,15 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 	if(! ldap_delete($_pql_control->ldap_linkid, $dn)) {
 	    // could not delete object
 	    $msg = urlencode("Failed to delete mailserver $host.");
-	    header("Location: " . pql_get_define("PQL_GLOB_URI") . "control_detail.php?host=$host&msg=$msg");
+	    header("Location: " . pql_get_define("PQL_CONF_URI") . "control_detail.php?host=$host&msg=$msg");
 	} else {
 	    // successfully deleted object
 	    $msg = urlencode("Successfully deleted mailserver $host.");
-	    header("Location: " . pql_get_define("PQL_GLOB_URI") . "home.php?msg=$msg&rlnb=2");
+	    header("Location: " . pql_get_define("PQL_CONF_URI") . "home.php?msg=$msg&rlnb=2");
 	}
     }
 }
-// else - PQL_GLOB_CONTROL_USE isn't set!
+// else - PQL_CONF_CONTROL_USE isn't set!
 
 /*
  * Local variables:

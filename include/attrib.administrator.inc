@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.34 2004-03-03 07:59:28 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.35 2004-03-11 18:13:41 turbo Exp $
 
 require("./left-head.html");
 
@@ -31,9 +31,9 @@ function attribute_print_form($action) {
 ?>
   <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-<?php if($attrib == pql_get_define("PQL_GLOB_ATTR_SEEALSO")) { ?>
+<?php if($attrib == pql_get_define("PQL_ATTR_SEEALSO")) { ?>
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what% for domain %domain%'), array('what' => $LANG->_('contact person'), 'domain' => $orgname)); ?></th>
-<?php } elseif($attrib == pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR")) { ?>
+<?php } elseif($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM")) { ?>
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what% for domain %domain%'), array('what' => $LANG->_('mailinglist administrator'), 'domain' => $orgname)); ?></th>
 <?php } else {
 		if($_REQUEST["user"]) {
@@ -68,7 +68,7 @@ function attribute_print_form($action) {
 				$dn = urldecode($dn);
 				unset($dom); unset($domains);
 
-				$dom = pql_domain_get_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]);
+				$dom = pql_domain_get_value($_pql, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]);
 				if($dom) {
 					foreach($dom as $d) {
 						$domains[] = $d;
@@ -113,7 +113,7 @@ function attribute_print_form($action) {
 							// specified domain, but also in the PREVIOUS domain shown!
 							unset($cns);
 							foreach($users as $username) {
-								$cn = pql_get_attribute($_pql->ldap_linkid, $username, pql_get_define("PQL_GLOB_ATTR_CN"));
+								$cn = pql_get_attribute($_pql->ldap_linkid, $username, pql_get_define("PQL_ATTR_CN"));
 								$cns[$username] = $cn[0];
 							}
 								
@@ -154,7 +154,7 @@ function attribute_print_form($action) {
 				foreach($_pql->ldap_basedn as $dn)  {
 					$dn = urldecode($dn);
 
-					$dom = pql_domain_get_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"),
+					$dom = pql_domain_get_value($_pql, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR"),
 											$_SESSION["USER_DN"], 1);
 					if($dom)
 					  foreach($dom as $d)
@@ -293,9 +293,9 @@ function attribute_save($type) {
     }
 }
 
-if(($_REQUEST["attrib"] == pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR")) or
-   ($_REQUEST["attrib"] == pql_get_define("PQL_GLOB_ATTR_SEEALSO")) or
-   ($_REQUEST["attrib"] == pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR")))
+if(($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_ADMINISTRATOR")) or
+   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_SEEALSO")) or
+   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM")))
 {
 	require("./left-trailer.html");
 }

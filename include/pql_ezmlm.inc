@@ -3,7 +3,7 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ezmlm.inc,v 1.21 2003-11-11 07:21:34 turbo Exp $
+// $Id: pql_ezmlm.inc,v 1.22 2004-03-11 18:13:42 turbo Exp $
 session_start();
 
 class ezmlm {
@@ -343,10 +343,10 @@ class ezmlm {
 		// This SHOULD allow us to be able to 'replace' the commands with something
 		// that will do remote configuration - scripts that uses rsh/ssh perhaps?
 		if(! $paths) {
-			$this->_paths["make"]	= pql_get_define("PQL_GLOB_EZMLM_PATH") . "/ezmlm-make";
-			$this->_paths["list"]	= pql_get_define("PQL_GLOB_EZMLM_PATH") . "/ezmlm-list";
-			$this->_paths["sub"]	= pql_get_define("PQL_GLOB_EZMLM_PATH") . "/ezmlm-sub";
-			$this->_paths["unsub"]	= pql_get_define("PQL_GLOB_EZMLM_PATH") . "/ezmlm-unsub";
+			$this->_paths["make"]	= pql_get_define("PQL_CONF_EZMLM_PATH") . "/ezmlm-make";
+			$this->_paths["list"]	= pql_get_define("PQL_CONF_EZMLM_PATH") . "/ezmlm-list";
+			$this->_paths["sub"]	= pql_get_define("PQL_CONF_EZMLM_PATH") . "/ezmlm-sub";
+			$this->_paths["unsub"]	= pql_get_define("PQL_CONF_EZMLM_PATH") . "/ezmlm-unsub";
 		} else {
 			// Assign EXISTING values
 			foreach($paths as $key => $val) {
@@ -357,7 +357,7 @@ class ezmlm {
 			$keys = array('make', 'list', 'sub', 'unsub');
 			foreach($keys as $key) {
 				if(! $this->_paths[$key]) {
-					$this->_paths[$key] = pql_get_define("PQL_GLOB_EZMLM_PATH") . "/ezmlm-" . $key;
+					$this->_paths[$key] = pql_get_define("PQL_CONF_EZMLM_PATH") . "/ezmlm-" . $key;
 				}
 			}
 		}

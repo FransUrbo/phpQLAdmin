@@ -1,5 +1,5 @@
-<?php $email   = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_GLOB_ATTR_MAIL")); $email = $email[0];
-      $aliases = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE"));
+<?php $email   = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_MAIL")); $email = $email[0];
+      $aliases = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_MAILALTERNATE"));
 ?>
   <!-- Addresses (mail, mailalternateaddress) -->
   <table cellspacing="0" cellpadding="3" border="0">

@@ -1,6 +1,6 @@
 <?php
 // delete a user
-// $Id: user_del.php,v 2.29 2004-03-03 08:13:49 turbo Exp $
+// $Id: user_del.php,v 2.30 2004-03-11 18:13:32 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -13,13 +13,13 @@ $rootdn = $_REQUEST["rootdn"];
 $user = $_REQUEST["user"];
 
 // Get organization name for domain and common name of user
-$o = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_O"));
+$o = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_O"));
 if(!$o) {
 	// No 'organization' attribute (or it's not configured - 0)
 	// Use the RDN
 	$o = $_REQUEST["domain"];
 }
-$cn = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_CN")); $cn = $cn[0];
+$cn = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_CN")); $cn = $cn[0];
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove user %user% from domain %domain%'), array("domain" => $o, "user" => $cn)); ?></span>
   <br><br>
@@ -33,8 +33,8 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn))
 	if($unsubscribe) {
 		// We want to unsubscribe user from (all) mailing list(s).
 		// Get the users mail addresses before the object gets deleted
-		$email   = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_MAIL"));
-		$aliases = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE"));
+		$email   = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_MAIL"));
+		$aliases = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_MAILALTERNATE"));
 
 		// Combine the two attributes into one array.
 		$mails[] = $email[0];
@@ -64,9 +64,9 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn))
 				asort($domains);
 				foreach($domains as $key => $this_domain) {
 					// Get base directory for mails in all domains
-					if(($basemaildir = pql_domain_get_value($_pql, $this_domain, pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR")))) {
+					if(($basemaildir = pql_domain_get_value($_pql, $this_domain, pql_get_define("PQL_ATTR_BASEMAILDIR")))) {
 						// Get the lists in this directory
-						$ezmlm = new ezmlm(pql_get_define("PQL_GLOB_EZMLM_USER"), $basemaildir);
+						$ezmlm = new ezmlm(pql_get_define("PQL_CONF_EZMLM_USER"), $basemaildir);
 						if(is_array($ezmlm->mailing_lists[0])) {
 							// Go through each list in this domain
 							foreach($ezmlm->mailing_lists as $number => $data) {
@@ -106,7 +106,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn))
 	$msg = urlencode($msg);
 	$url = "domain_detail.php?rootdn=".urlencode($rootdn)."&domain=".urlencode($_REQUEST["domain"])."&view=basic&msg=$msg$rlnb";
 
-	header("Location: " . pql_get_define("PQL_GLOB_URI") . $url);
+	header("Location: " . pql_get_define("PQL_CONF_URI") . $url);
 } else {
 ?>
 <br>

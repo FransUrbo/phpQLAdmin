@@ -4,13 +4,13 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.36 2004-03-03 07:59:29 turbo Exp $
+// $Id: pql_control.inc,v 2.37 2004-03-11 18:13:42 turbo Exp $
 //
 
 // {{{ control connection class
 class pql_control extends pql {
     function pql_control($host, $binddn = "", $bindpw = "", $no_connect = false) {
-		if(!pql_get_define("PQL_GLOB_CONTROL_USE"))
+		if(!pql_get_define("PQL_CONF_CONTROL_USE"))
 		  // control patch is not enabled, leave
 		  return false;
 		
@@ -196,7 +196,7 @@ function pql_control_remove_whole_attribute($ldap_linkid, $ldap_control_basedn, 
 //
 // domain is array as: 'oldvalue', 'newvalue'
 function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "") {
-    if(!pql_get_define("PQL_GLOB_CONTROL_USE"))
+    if(!pql_get_define("PQL_CONF_CONTROL_USE"))
 	  // control patch is not enabled
 	  return false;
 
@@ -205,7 +205,7 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 		$domains = pql_domain_get($ldap);
 		foreach($domains as $domain) {
 			// Get default domain name for this domain
-			$domainname = pql_domain_get_value($ldap, $domain, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
+			$domainname = pql_domain_get_value($ldap, $domain, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 			if($domainname) {
 				// Before we add this domain to the list, make sure it don't already exist
 				$ent_exists = 0;
@@ -224,7 +224,7 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 			}
 
 			// Get additional domain names
-			$additional = pql_domain_get_value($ldap, $domain, pql_get_define("PQL_GLOB_ATTR_ADDITIONALDOMAINNAME"));
+			$additional = pql_domain_get_value($ldap, $domain, pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
 			if(is_array($additional)) {
 				for($i=0; $i < count($additional); $i++) 
 				  $entry[] = $additional[$i];
@@ -233,7 +233,7 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 	}
 
     // Get the hostname
-    if($host and ($host != '*') and pql_get_define("PQL_GLOB_CONTROL_AUTOADDHOSTNAME")) {
+    if($host and ($host != '*') and pql_get_define("PQL_ATTR_CONTROL_AUTOADDHOSTNAME")) {
 		$hostname = split("\.", $host);
 		$hostname = pql_maybe_encode($hostname[0]);
 	
@@ -241,19 +241,19 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 		  $entry[] = $hostname . "." . $tmp;
 	}
 	
-    if(pql_get_define("PQL_GLOB_CONTROL_AUTOADDLOCALS"))
+    if(pql_get_define("PQL_CONF_CONTROL_AUTOADDLOCALS"))
 	  $entry[] = "localhost";
 
 	// ----------------
 	if(($host != '*') and is_array($entry)) {
-		if(($type == pql_get_define("PQL_GLOB_ATTR_LOCALS")) or !$type) {
+		if(($type == pql_get_define("PQL_ATTR_LOCALS")) or !$type) {
 			if(pql_control_replace_attribute($ldap->ldap_linkid, $dn,
-											 pql_get_define("PQL_GLOB_ATTR_LOCALS"),
+											 pql_get_define("PQL_ATTR_LOCALS"),
 											 $entry))
 			  return true;
-		} elseif($type == pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS")) {
+		} elseif($type == pql_get_define("PQL_ATTR_RCPTHOSTS")) {
 			if(pql_control_replace_attribute($ldap->ldap_linkid, $dn,
-											 pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"),
+											 pql_get_define("PQL_ATTR_RCPTHOSTS"),
 											 $entry))
 			  return true;
 		}
@@ -276,12 +276,12 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 				  $hostdn = $dn;
 
 				// --------------------------------
-				if(($type == pql_get_define("PQL_GLOB_ATTR_LOCALS")) or !$type) {
+				if(($type == pql_get_define("PQL_ATTR_LOCALS")) or !$type) {
 					$dont_add = 0; unset($entry);
 
 					// Get current locals for this host
 					$locals = pql_control_get_attribute($ldap->ldap_linkid, $hostdn,
-														pql_get_define("PQL_GLOB_ATTR_LOCALS"));
+														pql_get_define("PQL_ATTR_LOCALS"));
 					if(!is_null($locals)) {
 						asort($locals); reset($locals);
 						
@@ -308,29 +308,29 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 						  $entry[] = $domain[1];
 						
 						// Add 'hostname.newdomain' to LDIF entry
-						if($h and $domain[1] and pql_get_define("PQL_GLOB_CONTROL_AUTOADDHOSTNAME")) {
+						if($h and $domain[1] and pql_get_define("PQL_CONF_CONTROL_AUTOADDHOSTNAME")) {
 							$hostname = split("\.", $h);
 							$entry[] = $hostname[0] . "." . $domain[1];
 						}
 
 						if(is_array($entry))
 						  pql_control_replace_attribute($ldap->ldap_linkid, $hostdn,
-														pql_get_define("PQL_GLOB_ATTR_LOCALS"),
+														pql_get_define("PQL_ATTR_LOCALS"),
 														$entry);
 					} else
 					  // No previous values, add domain
 					  pql_control_add_attribute($ldap->ldap_linkid, $hostdn,
-												pql_get_define("PQL_GLOB_ATTR_LOCALS"),
+												pql_get_define("PQL_ATTR_LOCALS"),
 												$domain[1]);
 				}
 
 				// --------------------------------
-				if($type == pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS") or !$type) {
+				if($type == pql_get_define("PQL_ATTR_RCPTHOSTS") or !$type) {
 					$dont_add = 0; unset($entry);
 
 					// Get current rcpthosts for this host
 					$rcpthosts = pql_control_get_attribute($ldap->ldap_linkid, $hostdn,
-														   pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"));
+														   pql_get_define("PQL_ATTR_RCPTHOSTS"));
 					if(!is_null($rcpthosts)) {
 						asort($rcpthosts); reset($rcpthosts);
 
@@ -357,19 +357,19 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 						  $entry[] = $domain[1];
 						
 						// Add 'hostname.newdomain' to LDIF entry
-						if($h and $domain[1] and pql_get_define("PQL_GLOB_CONTROL_AUTOADDHOSTNAME")) {
+						if($h and $domain[1] and pql_get_define("PQL_CONF_CONTROL_AUTOADDHOSTNAME")) {
 							$hostname = split("\.", $h);
 							$entry[] = $hostname[0] . "." . $domain[1];
 						}
 						
 						if(is_array($entry))
 						  pql_control_replace_attribute($ldap->ldap_linkid, $hostdn,
-														pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"),
+														pql_get_define("PQL_ATTR_RCPTHOSTS"),
 														$entry);
 					} else
 					  // No previous values, add domain
 					  pql_control_add_attribute($ldap->ldap_linkid, $hostdn,
-												pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"),
+												pql_get_define("PQL_ATTR_RCPTHOSTS"),
 												$domain[1]);
 				}
 			}

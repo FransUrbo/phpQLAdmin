@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailhost (host address which resides the mailhost)
-// $Id: attrib.mailhost.inc,v 2.15 2004-02-14 14:25:36 turbo Exp $
+// $Id: attrib.mailhost.inc,v 2.16 2004-03-11 18:13:41 turbo Exp $
 
 function attribute_check($type) {
     global $error, $LANG;
@@ -105,7 +105,7 @@ function attribute_save($type) {
 			break;
     	}
 		
-		if(pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_GLOB_ATTR_MAILHOST"),
+		if(pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_MAILHOST"),
 								 $_REQUEST["mailhost"])) {
 		    if(empty($_REQUEST["mailhost"]))
 			  $_REQUEST["mailhost"] = $LANG->_('None');
@@ -126,7 +126,7 @@ function attribute_save($type) {
 		if(is_array($users)) {
 			foreach($users as $user) {
 				$return[] = pql_replace_attribute($_pql->ldap_linkid, $user,
-												  pql_get_define("PQL_GLOB_ATTR_MAILHOST"), $_REQUEST["mailhost"]);
+												  pql_get_define("PQL_ATTR_MAILHOST"), $_REQUEST["mailhost"]);
 			}
 			
 			if(in_array(false, $return))

@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.10 2004-02-14 14:01:00 turbo Exp $
+// $Id: bind9_add.php,v 2.11 2004-03-11 18:13:32 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -44,7 +44,7 @@ if(($action == 'add') and ($type == 'domain')) {
 			$msg = "Failed to add domain $domainname";
 
 		  $url = "domain_detail.php?rootdn=$rootdn&domain=$domain&view=$view&msg=".urlencode($msg);
-		  header("Location: ".pql_get_define("PQL_GLOB_URI") . "$url");
+		  header("Location: ".pql_get_define("PQL_CONF_URI") . "$url");
 	  }
 } elseif(($action == 'add') and ($type == 'host')) {
 	  if(!$hostname or !$record_type or !$dest) {
@@ -135,24 +135,24 @@ if(($action == 'add') and ($type == 'domain')) {
     <input type="submit" value="Save">
   </form>
 <?php } else {
-		  $entry[pql_get_define("PQL_GLOB_ATTR_RELATIVEDOMAINNAME")]	= pql_maybe_idna_encode($hostname);
-		  $entry[pql_get_define("PQL_GLOB_ATTR_ZONENAME")]				= $domainname;
-		  $entry[pql_get_define("PQL_GLOB_ATTR_DNSTTL")]				= 604800;
+		  $entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")]	= pql_maybe_idna_encode($hostname);
+		  $entry[pql_get_define("PQL_ATTR_ZONENAME")]				= $domainname;
+		  $entry[pql_get_define("PQL_ATTR_DNSTTL")]				= 604800;
 		  switch($record_type) {
 			case "a":
-			  $entry[pql_get_define("PQL_GLOB_ATTR_ARECORD")]			= pql_maybe_idna_encode($dest);
+			  $entry[pql_get_define("PQL_ATTR_ARECORD")]			= pql_maybe_idna_encode($dest);
 			  break;
 			case "cname":
-			  $entry[pql_get_define("PQL_GLOB_ATTR_CNAMERECORD")]		= pql_maybe_idna_encode($dest);
+			  $entry[pql_get_define("PQL_ATTR_CNAMERECORD")]		= pql_maybe_idna_encode($dest);
 			  break;
 			case "hinfo":
-			  $entry[pql_get_define("PQL_GLOB_ATTR_HINFORECORD")]		= $dest;
+			  $entry[pql_get_define("PQL_ATTR_HINFORECORD")]		= $dest;
 			  break;
 			case "mx":
-			  $entry[pql_get_define("PQL_GLOB_ATTR_MXRECORD")]			= pql_maybe_idna_encode($dest);
+			  $entry[pql_get_define("PQL_ATTR_MXRECORD")]			= pql_maybe_idna_encode($dest);
 			  break;
 			case "ns":
-			  $entry[pql_get_define("PQL_GLOB_ATTR_NSRECORD")]			= pql_maybe_idna_encode($dest);
+			  $entry[pql_get_define("PQL_ATTR_NSRECORD")]			= pql_maybe_idna_encode($dest);
 			  break;
 		  }
 

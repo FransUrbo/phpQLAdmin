@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.23 2004-03-04 19:23:34 turbo Exp $
+// $Id: pql_bind9.inc,v 2.24 2004-03-11 18:13:42 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -135,18 +135,18 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 
 	// Add the OpenLDAPaci attribute (maybe)
 	if($_SESSION["ACI_SUPPORT_ENABLED"]) 
-	  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($ldap_linkid,
+	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($ldap_linkid,
 																			  $_SESSION["USER_DN"],
 																			  'dnszone');
 
 	for($i=count($dc)-1; $dc[$i]; $i--) {
 		$dc_tmp = pql_maybe_idna_encode($dc[$i]);
 
-		$entry[pql_get_define("PQL_GLOB_ATTR_DC")] = $dc_tmp;
+		$entry[pql_get_define("PQL_ATTR_DC")] = $dc_tmp;
 		if($dn)
-		  $dn = pql_get_define("PQL_GLOB_ATTR_DC")."=".$dc_tmp.",".$dn;
+		  $dn = pql_get_define("PQL_ATTR_DC")."=".$dc_tmp.",".$dn;
 		else
-		  $dn = pql_get_define("PQL_GLOB_ATTR_DC")."=".$dc_tmp;
+		  $dn = pql_get_define("PQL_ATTR_DC")."=".$dc_tmp;
 
 		// See if the component exists. If not, create it.
 		$sr = @ldap_read($linkid, $dn, 'objectClass=domain');
@@ -183,7 +183,7 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 
 	// Add the OpenLDAPaci attribute (maybe)
 	if($_SESSION["ACI_SUPPORT_ENABLED"])
-	  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($ldap_linkid,
+	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($ldap_linkid,
 																			  $_SESSION["USER_DN"],
 																			  'dnszone');
 
@@ -288,7 +288,7 @@ function pql_bind9_del_zone($linkid, $dn, $zone) {
 // {{{ pql_bind9_add_host(linkid, basedn, entry)
 function pql_bind9_add_host($linkid, $basedn, $entry) {
 	// Create each of the domain components in the domainname
-	$dc = split('\.', $entry[pql_get_define("PQL_GLOB_ATTR_ZONENAME")]);
+	$dc = split('\.', $entry[pql_get_define("PQL_ATTR_ZONENAME")]);
 	for($i=count($dc)-1; $dc[$i]; $i--) {
 		$dc_tmp = pql_maybe_idna_encode($dc[$i]);
 
@@ -297,7 +297,7 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 		else
 		  $dn = "dc=".$dc_tmp;
 	}
-	$dn = "relativeDomainName=".$entry[pql_get_define("PQL_GLOB_ATTR_RELATIVEDOMAINNAME")].",$dn,ou=DNS,$basedn";
+	$dn = "relativeDomainName=".$entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")].",$dn,ou=DNS,$basedn";
 
 	$entry['objectClass'][] = 'top';
 	$entry['objectClass'][] = 'dNSZone';

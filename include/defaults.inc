@@ -3,18 +3,18 @@
 // This file contains what I think is 'resonable defaults'.
 // Don't change here, change any values in the web interface!
 //
-// $Id: defaults.inc,v 2.27 2004-01-13 18:55:44 turbo Exp $
+// $Id: defaults.inc,v 2.28 2004-03-11 18:13:41 turbo Exp $
 
 // NOTE: Some of these defines isn't called with the (root/top)
 //       DN. They are (site) global variables, not per branch.
 
 // ----------------------------
-// PQL_GLOB_WHOAREWE
-pql_set_define("PQL_GLOB_WHOAREWE", "phpQLAdmin", false);
+// PQL_CONF_WHOAREWE
+pql_set_define("PQL_CONF_WHOAREWE", "phpQLAdmin", false);
 
 // ----------------------------
 // Default language (is changed through the GUI)
-pql_set_define("PQL_GLOB_LANG", "en", false);
+pql_set_define("PQL_CONF_LANG", "en", false);
 
 // ----------------------------
 // PQL_CONF_SHOW_USERS (true | false)
@@ -24,52 +24,52 @@ pql_set_define("PQL_GLOB_LANG", "en", false);
 pql_set_define("PQL_CONF_SHOW_USERS", true, false, $dn);
 
 // ----------------------------
-// PQL_GLOB_AUTO_RELOAD (true | false)
+// PQL_CONF_AUTO_RELOAD (true | false)
 // true, if the navigation bar should be automatically reloaded, if a domain
 // or user was added or deleted
-pql_set_define("PQL_GLOB_AUTO_RELOAD", true, false);
+pql_set_define("PQL_CONF_AUTO_RELOAD", true, false);
 
 // ----------------------------
-// PQL_GLOB_CONTROL_USE (true | false)
+// PQL_CONF_CONTROL_USE (true | false)
 // set to true, if QmailLDAP/Control patch is supported by your system
-pql_set_define("PQL_GLOB_CONTROL_USE", false, false);
+pql_set_define("PQL_CONF_CONTROL_USE", false, false);
 
 // ============================
-// The trick with the next two entries (PQL_GLOB_CONTROL_AUTOADD{LOCALS,RCPTHOSTS}),
+// The trick with the next two entries (PQL_CONF_CONTROL_AUTOADD{LOCALS,RCPTHOSTS}),
 // is that the master (email/qmail) server should only have 'locals', and the
 // slaves should only have 'rcpthosts' attributes.
 // This will make phpQLAdmin add the new domain (or the additionalDomainName
 // in 'locals' on the master, and in the 'rcpthosts' on the slave(s).
 
 // ----------------------------
-// PQL_GLOB_CONTROL_AUTOADDLOCALS (true | false)
+// PQL_CONF_CONTROL_AUTOADDLOCALS (true | false)
 // set this to true, if phpQLAdmin should automatically add all domains to
 // locals. Disable this (false), if you have more than one qmail-ldap server
 // and they're not identical (ie, not hosting the same domains)
-// Currently, the application do not support more than one control database.
-pql_set_define("PQL_GLOB_CONTROL_AUTOADDLOCALS", false, false);
+// Currently, phpQLAdmin does not support more than one control database.
+pql_set_define("PQL_CONF_CONTROL_AUTOADDLOCALS", false, false);
 
 // ----------------------------
-// PQL_GLOB_CONTROL_AUTOADDRCPTHOSTS (true | false)
+// PQL_CONF_CONTROL_AUTOADDRCPTHOSTS (true | false)
 // set this to true, if phpQLAdmin should automatically add all domains to
 // rcpthosts. Disable this (false), if you have more than one qmail-ldap server
 // and they're not identical (ie, not hosting the same domains)
 // Currently, the application do not support more than one control database.
-pql_set_define("PQL_GLOB_CONTROL_AUTOADDRCPTHOSTS", false, false);
+pql_set_define("PQL_CONF_CONTROL_AUTOADDRCPTHOSTS", false, false);
 
 // ----------------------------
-// PQL_GLOB_CONTROL_AUTOADDHOSTNAME (true | false)
+// PQL_CONF_CONTROL_AUTOADDHOSTNAME (true | false)
 // set this to true, if phpQLAdmin should automatically add the hostname to
 // all domains it does autoreplication for (locals AND rcpthosts).
 // Disable this (false), if you have more than one qmail-ldap server
 // and they're not identical (ie, not hosting the same domains)
 // Currently, the application do not support more than one control database.
-pql_set_define("PQL_GLOB_CONTROL_AUTOADDHOSTNAME", false, false);
+pql_set_define("PQL_CONF_CONTROL_AUTOADDHOSTNAME", false, false);
 
 // ----------------------------
 // Should we enable changing of LDAP server?
 // NOTE: Not currently working, so don't use (yet)
-pql_set_define("PQL_GLOB_CHANGE_SERVER", false, false);
+pql_set_define("PQL_CONF_CHANGE_SERVER", false, false);
 
 // ----------------------------
 // PQL_CONF_ALLOW_ABSOLUTE_PATH (true | false)
@@ -91,11 +91,11 @@ pql_set_define("PQL_CONF_VERIFY_DELETE", true, false, $dn);
 // to be running on the ezmlm host. And if it's
 // 'replicated' (ie, round-robbing etc), then you'll
 // have to do this manually (at the moment).
-pql_set_define("PQL_GLOB_EZMLM_USE", false, false);
+pql_set_define("PQL_CONF_EZMLM_USE", false, false);
 
 // ----------------------------
 // Path to EZMLM commands
-pql_set_define("PQL_GLOB_EZMLM_PATH", "/usr/sbin", false);
+pql_set_define("PQL_CONF_EZMLM_PATH", "/usr/sbin", false);
 
 // ----------------------------
 // Should we enable the domain (Bind 9) editor?
@@ -103,24 +103,24 @@ pql_set_define("PQL_GLOB_EZMLM_PATH", "/usr/sbin", false);
 // with DNSSEC and that you (the webserver/phpQLAdmin)
 // have access to a 'root' key that have access to
 // update the DNS.
-pql_set_define("PQL_GLOB_BIND9_USE", false, false);
+pql_set_define("PQL_CONF_BIND9_USE", false, false);
 
 // ----------------------------
 // Should we enable the webserver administration editor?
 // This (likley) require an external script that will
 // search the LDAP database for the configuration and
 // create file(s) that the webserver will understand.
-pql_set_define("PQL_GLOB_WEBSRV_USE", false, false);
+pql_set_define("PQL_CONF_WEBSRV_USE", false, false);
 
 // ----------------------------
 // Should we automaticly create usernames when adding
 // a user to the system?
-pql_set_define("PQL_GLOB_ATTR_AUTOCREATEUSERNAME", false, false, $dn);
+pql_set_define("PQL_CONF_AUTOCREATE_USERNAME", false, false, $dn);
 
 // ----------------------------
 // Should we automaticly create email address when
 // adding a user to the system?
-pql_set_define("PQL_GLOB_ATTR_CREATE_ADDRESS", false, false, $dn);
+pql_set_define("PQL_CONF_CREATE_ADDRESS", false, false, $dn);
 
 // ----------------------------
 // PQL_CONF_TESTMAIL_SUBJECT (text)
@@ -171,7 +171,7 @@ pql_set_define("PQL_CONF_PASSWORD_SCHEMES", "CRYPT,MD5,SHA,CLEAR,KERBEROS", fals
 // This attribute is used to retrieve the dn for the referenced user account. So it's
 // obvious that this attribute must be unique!  
 //
-// By default this is PQL_GLOB_ATTR_UID ('uid').
+// By default this is PQL_CONF_UID ('uid').
 pql_set_define("PQL_CONF_REFERENCE_USERS_WITH", "uid", false, $dn);
 
 // ----------------------------
@@ -185,8 +185,8 @@ pql_set_define("PQL_CONF_REFERENCE_DOMAINS_WITH", "ou", false, $dn);
 // This defines the attribute name, which will be taken to generate
 // the rdn of a user object. e.g. if you choose 'uid' the rdn will be
 // 'uid=idofthisuser'
-// If you want phpQLAdmin to behave like earlier versions, use PQL_GLOB_ATTR_CN here.
-pql_set_define("PQL_CONF_USER_RDN_ATTRIBUTE", pql_get_define("PQL_GLOB_ATTR_UID"), false, $dn);
+// If you want phpQLAdmin to behave like earlier versions, use PQL_CONF_CN here.
+pql_set_define("PQL_CONF_USER_RDN_ATTRIBUTE", pql_get_define("PQL_CONF_UID"), false, $dn);
 
 // ----------------------------
 // PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER (integer)
@@ -194,16 +194,16 @@ pql_set_define("PQL_CONF_USER_RDN_ATTRIBUTE", pql_get_define("PQL_GLOB_ATTR_UID"
 pql_set_define("PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER", 500, false, $dn);
 
 // ----------------------------
-// PQL_CONF_MAX_DOMAIN_USERS (integer)
+// PQL_CONF_MAXIMUM_DOMAIN_USERS (integer)
 // Maximum amount of users allowed in a domain branch
 // If zero (0) or 'FALSE', then unlimited
-pql_set_define("PQL_CONF_MAX_DOMAIN_USERS", 'FALSE', false);
+pql_set_define("PQL_CONF_MAXIMUM_DOMAIN_USERS", 'FALSE', false);
 
 // ----------------------------
-// PQL_GLOB_URI (URL)
+// PQL_CONF_URI (URL)
 // the full url where phpQLAdmin resides
 // ie: http://www.yourdomain.com/phpQLAdmin/
-pql_set_define("PQL_GLOB_URI", "", false);
+pql_set_define("PQL_CONF_URI", "", false);
 
 // ----------------------------
 if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $dn) == "dc") {

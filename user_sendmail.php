@@ -1,6 +1,6 @@
 <?php
 // send a testmail to an emailaddress
-// $Id: user_sendmail.php,v 2.20 2004-03-03 08:28:37 turbo Exp $
+// $Id: user_sendmail.php,v 2.21 2004-03-11 18:13:32 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -21,16 +21,16 @@ if($email == "") {
     die($LANG->_('No email address given'));
 }
 
-$subject = PQL_CONF_TESTMAIL_SUBJECT;
-$from = "From: " . pql_get_define("PQL_GLOB_HOSTMASTER") . "\n";
+$subject = pql_get_define("PQL_ATTR_TESTMAIL_SUBJECT");
+$from = "From: " . pql_get_define("PQL_ATTR_HOSTMASTER") . "\n";
 $xmailer = "X-Mailer: phpQLAdmin ".$_SESSION["VERSION"]."\n";
 $vars['MAIL'] = $email;
 $vars['UID'] = $user;
 $vars['VERSION'] = $_SESSION["VERSION"];
 
-$cn = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_CN"));
+$cn = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_CN"));
 $vars['CN'] = $cn[0];
-$sn = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_SN"));
+$sn = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_SN"));
 $vars['SN'] = $sn[0];
 
 $quota = pql_user_get_quota($_pql->ldap_linkid, $user);
@@ -41,7 +41,7 @@ if (is_array($quota)) {
 } else {
     // No quota for this mailbox.
     // Do we use the qmail-ldap/control patch?
-    if (!pql_get_define("PQL_GLOB_CONTROL_USE")) {
+    if (!pql_get_define("PQL_CONF_CONTROL_USE")) {
 	// No -> quota is 'standard'
 	$vars['QUOTA'] = $LANG->_('Standard');
     } else {
@@ -50,13 +50,13 @@ if (is_array($quota)) {
 	$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 	
 	$quota = pql_control_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-					   pql_get_define("PQL_GLOB_ATTR_LDAPDEFAULTQUOTA"));
+					   pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"));
 	
 	$vars['QUOTA'] = pql_ldap_mailquota($quota);
     }
 }
 	
-$message = pql_complete_constant(PQL_CONF_TESTMAIL_MAILTEXT, $vars);
+$message = pql_complete_constant(pql_get_define("PQL_CONF_TESTMAIL_MAILTEXT"), $vars);
 	
 $header = $from . $xmailer;
 
@@ -78,7 +78,7 @@ $url = "user_detail.php?domain=$domain&user=".urlencode($user)."&msg=".urlencode
 if(isset($rlnb))
      $url .= "&rlnb=$rlnb";
 
-header("Location: " . pql_get_define("PQL_GLOB_URI") . $url);
+header("Location: " . pql_get_define("PQL_CONF_URI") . $url);
 ?>
 </body>
 </html>

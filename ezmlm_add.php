@@ -1,6 +1,6 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.29 2004-03-03 07:58:54 turbo Exp $
+// $Id: ezmlm_add.php,v 1.30 2004-03-11 18:13:32 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -13,7 +13,7 @@ function list_forward($domainname, $msg) {
 
     $msg = urlencode($msg);
     $url = "ezmlm_detail.php?domain=$domain&domainname=$domainname&msg=$msg&rlnb=3";
-    header("Location: " . pql_get_define("PQL_GLOB_URI") . "$url");
+    header("Location: " . pql_get_define("PQL_CONF_URI") . "$url");
 }
 
 if(!$subscribercount) {
@@ -28,7 +28,7 @@ if(!$domainname) {
 	foreach($_pql->ldap_basedn as $dn)  {
 		$dn = urldecode($dn);
 
-		$dom = pql_domain_get_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]);
+		$dom = pql_domain_get_value($_pql, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]);
 		foreach($dom as $d)
 		  $domains[] = $d;
 	}
@@ -45,7 +45,7 @@ if(!$domainname) {
 				$dont_add = 0;
 				
 				// Get the default domainname for the domain
-				$defaultdomainname = pql_domain_get_value($_pql, $d, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
+				$defaultdomainname = pql_domain_get_value($_pql, $d, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 
 				// Remove duplicates
 				if($domain_list)
@@ -62,7 +62,7 @@ if(!$domainname) {
 				$dont_add = 0;
 				
 				// Get any additional domainname(s) for the domain
-				$additionaldomainnames = pql_domain_get_value($_pql, $d, pql_get_define("PQL_GLOB_ATTR_ADDITIONALDOMAINNAME"));
+				$additionaldomainnames = pql_domain_get_value($_pql, $d, pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
 
 				if(is_array($additionaldomainnames)) {
 					foreach($additionaldomainnames as $additional) {
@@ -102,13 +102,13 @@ if($domainname) {
 	}
 	
 	// Get basemaildir path for domain
-	if(!($path = pql_domain_get_value($_pql, $data[0], pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR"))))
+	if(!($path = pql_domain_get_value($_pql, $data[0], pql_get_define("PQL_ATTR_BASEMAILDIR"))))
 	  die(pql_complete_constant($LANG->_('Can\'t get %what% path from domain \'%domain%\'!'),
-								array('what'   => pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR"),
+								array('what'   => pql_get_define("PQL_ATTR_BASEMAILDIR"),
 									  'domain' => $data[1])));
 	
 	require("./include/pql_ezmlm.inc");
-	$ezmlm = new ezmlm(pql_get_define("PQL_GLOB_EZMLM_USER"), $path);
+	$ezmlm = new ezmlm(pql_get_define("PQL_CONF_EZMLM_USER"), $path);
 }	
 
 // Create list
@@ -126,15 +126,15 @@ if(!$domain) {
   <span class="title1"><?=$LANG->_('Create mailinglist')?></span>
 <?php
 } else {
-	$dom = pql_domain_get_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR"), $_SESSION["USER_DN"]);
+	$dom = pql_domain_get_value($_pql, $domain, pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"), $_SESSION["USER_DN"]);
 	if(is_array($dom)) {
-		if($ezmlm->mailing_lists_hostsindex["COUNT"] > pql_get_define("PQL_CONF_MAX_LISTS", $domain)) {
+		if($ezmlm->mailing_lists_hostsindex["COUNT"] > pql_get_define("PQL_CONF_MAXIMUM_MAILING_LISTS", $domain)) {
 ?>
   <span class="title2">
     <?=$LANG->_('Sorry, you have reached the maximum allowed mailinglists in this domain')?><br>
     <?php echo pql_complete_constant($LANG->_('You have %count% mailinglists, but only %allowed% is allowed.'),
 									 array('count'   => $ezmlm->mailing_lists_hostsindex["COUNT"],
-										   'allowed' => pql_get_define("PQL_CONF_MAX_LISTS", $domain))); ?>
+										   'allowed' => pql_get_define("PQL_CONF_MAXIMUM_MAILING_LISTS", $domain))); ?>
 
   </span>
 <?php

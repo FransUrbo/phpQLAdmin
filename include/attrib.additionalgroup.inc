@@ -1,8 +1,9 @@
 <?php
 // Attribute plugin for additional group (memberUID)
-// $Id: attrib.additionalgroup.inc,v 2.4 2004-03-09 21:56:14 dlw Exp $
+// $Id: attrib.additionalgroup.inc,v 2.5 2004-03-11 18:13:41 turbo Exp $
 
 // {{{ attribute_init(void)...
+
 function attribute_init() {
     global $_pql, $LANG;
 
@@ -10,6 +11,7 @@ function attribute_init() {
 	$uid = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], lc(pql_get_define("PQL_GLOB_ATTR_UID")));
 	$_REQUEST["uid"] = $uid[0];
 }
+
 // }}}
 
 // {{{ attribute_check(void)...
@@ -21,6 +23,7 @@ function attribute_check() {
 // }}}
 
 // {{{ attribute_print_form(void)...
+
 function attribute_print_form() {
     global $_pql, $LANG;
 
@@ -30,9 +33,9 @@ function attribute_print_form() {
 
 	// Setup the LDAP search filter to get groups
 	$filter  = "(&";
-	$filter .=   "(".pql_get_define("PQL_GLOB_ATTR_CN")."=*)";
+	$filter .=   "(".pql_get_define("PQL_ATTR_CN")."=*)";
 	$filter .=   "(objectClass=posixGroup)";
-	$filter .=   "(".pql_get_define("PQL_GLOB_ATTR_QMAILGID")."=*)";
+	$filter .=   "(".pql_get_define("PQL_ATTR_QMAILGID")."=*)";
 	$filter .= ")";
 
 	foreach($_pql->ldap_basedn as $base) {
@@ -46,7 +49,7 @@ function attribute_print_form() {
 				
 				// Get additional members in this group
 				$additional = pql_get_attribute($_pql->ldap_linkid, $grps[$i],
-												lc(pql_get_define("PQL_GLOB_ATTR_ADDITIONAL_GROUP")));
+												pql_get_define("PQL_ATTR_ADDITIONAL_GROUP"));
 				
 				// Make sure the user isn't part of this group
 				for($j=0; $j < count($additional); $j++) {
@@ -56,7 +59,7 @@ function attribute_print_form() {
 				
 				if(!$is_member) {
 					// Get the group name for this group
-					$groupname = pql_get_attribute($_pql->ldap_linkid, $grps[$i], lc(pql_get_define("PQL_GLOB_ATTR_CN")));
+					$groupname = pql_get_attribute($_pql->ldap_linkid, $grps[$i], pql_get_define("PQL_ATTR_CN"));
 					$groups[$groupname[0]]["DN"] = $grps[$i];
 					
 					$groups[$groupname[0]]["MEMBERS"] = $additional;
@@ -110,9 +113,11 @@ function attribute_print_form() {
   </form>
 <?php
 }
+
 // }}}
 
 // {{{ attribute_save(action)...
+
 function attribute_save($action) {
     global $_pql, $LANG;
 
@@ -124,6 +129,7 @@ function attribute_save($action) {
 
 	switch($action) {
 	  // {{{ case: delete
+
 	  case "delete":
 		// Setup the search filter to get the exact DN of the group
 		$filter  = "(&($attrib_name=" . $_REQUEST["uid"] . ")(".pql_get_define("PQL_GLOB_ATTR_CN")
@@ -151,6 +157,7 @@ function attribute_save($action) {
 
 		attribute_forward($msg);
 		break;
+
 		// }}}
 
 	  // {{{ case: modify
@@ -184,6 +191,7 @@ function attribute_save($action) {
 								  array('type' => $type, 'file' => __FILE__)));
     }
 }
+
 // }}}
 
 // Local variables:

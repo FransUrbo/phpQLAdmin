@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailforwardingaddress (forward all mails to this address)
-// $Id: attrib.mailforwardingaddress.inc,v 2.17 2004-02-14 14:25:36 turbo Exp $
+// $Id: attrib.mailforwardingaddress.inc,v 2.18 2004-03-11 18:13:41 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -80,7 +80,7 @@ function attribute_save($type) {
 
 	switch($type) {
 	  case "add":
-		if(pql_modify_userattribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_GLOB_ATTR_FORWARDS"),
+		if(pql_modify_userattribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_FORWARDS"),
 									'', $_REQUEST["mailforwardingaddress"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully added %what% %new%'),
 									   array('what' => $LANG->_('forwarding address'),
@@ -102,7 +102,7 @@ function attribute_save($type) {
 			break;
     	}
 		
-		if(pql_modify_userattribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_GLOB_ATTR_FORWARDS"),
+		if(pql_modify_userattribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_FORWARDS"),
 									$_REQUEST["oldvalue"], $email))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									   array('what' => $LANG->_('forwarding address'),
