@@ -28,7 +28,10 @@ if(isset($rlnb) and PQL_AUTO_RELOAD){
   <ul>
 
 <?php
-	if($USER_BASE == 'everything' && ($ADVANCED_MODE == 1)) {
+	// TODO: How do we know if the user is allowed to add domains?
+	//       In the domain description we don't have that info...
+	// if(($ADVANCED_MODE == 1) && ($USER_BASE == 'everything')){
+	if($ADVANCED_MODE == 1) {
 	    // We're administrating the whole domain,
 	    // show the Create domain option...
 ?>
