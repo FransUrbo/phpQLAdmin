@@ -1,6 +1,6 @@
 <?php
 // shows results of search
-// $Id: search.php,v 2.21.2.2 2003-12-09 16:17:00 dlw Exp $
+// $Id: search.php,v 2.21.2.3 2003-12-17 21:50:46 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -13,7 +13,7 @@ if(isset($msg)) {
 }
 
 // reload navigation bar if needed
-if(isset($rlnb) and pql_get_define("PQL_GLOB_AUTO_RELOAD")) {
+if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_GLOB_AUTO_RELOAD")) {
 ?>
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
   <script language="JavaScript1.2"><!--
@@ -31,7 +31,7 @@ if(isset($rlnb) and pql_get_define("PQL_GLOB_AUTO_RELOAD")) {
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 // test for submission of variables
-if ($attribute == "" || $filter_type == "" || $search_string == "") {
+if (empty($_REQUEST["attribute"]) || empty($_REQUEST["filter_type"]) || empty($_REQUEST["search_string"])) {
     // invalid form submission
     $msg = urlencode($LANG->_('You have to provide a value to search for'));
     header("Location: " . pql_get_define("PQL_GLOB_URI") . "home.php?msg=$msg");
@@ -40,18 +40,18 @@ if ($attribute == "" || $filter_type == "" || $search_string == "") {
 
 // make filter to comply with filter_type and search_string
 $filter = "";
-switch($filter_type) {
+switch($_REQUEST["filter_type"]) {
   case "is":
-    $filter = $attribute . "=" . $search_string;
+    $filter = $_REQUEST["attribute"] . "=" . $_REQUEST["search_string"];
     break;
   case "ends_with":
-    $filter = $attribute . "=*" . $search_string;
+    $filter = $_REQUEST["attribute"] . "=*" . $_REQUEST["search_string"];
     break;
   case "starts_with":
-    $filter = $attribute . "=" . $search_string . "*";
+    $filter = $_REQUEST["attribute"] . "=" . $_REQUEST["search_string"] . "*";
     break;
   default:
-    $filter = $attribute . "=*" . $search_string . "*";
+    $filter = $_REQUEST["attribute"] . "=*" . $_REQUEST["search_string"] . "*";
     break;
 }
 
@@ -67,7 +67,7 @@ if(!$_SESSION["SINGLE_USER"]) {
 			
 			// Check if this object is a (posix)Group object.
 			$ocs = pql_get_attribute($_pql->ldap_linkid,
-										 $usrs[$i], pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS"));
+									 $usrs[$i], pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS"));
 			for($j=0; $ocs[$j]; $j++) {
 				if(eregi('group', $ocs[$j]))
 				  $is_group = 1;
@@ -124,7 +124,8 @@ if(!$_SESSION["SINGLE_USER"]) {
 			$uid    = pql_get_attribute($_pql->ldap_linkid, $user,
 											pql_get_define("PQL_GLOB_ATTR_UID"));
 			$uid    = $uid[0];
-			
+
+			// DLW: I think displayname would be a better choice.
 			$cn     = pql_get_attribute($_pql->ldap_linkid, $user,
 											pql_get_define("PQL_GLOB_ATTR_CN"));
 			$cn     = $cn[0];

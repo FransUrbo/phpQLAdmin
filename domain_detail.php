@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.70.2.3 2003-12-17 16:11:37 dlw Exp $
+// $Id: domain_detail.php,v 2.70.2.4 2003-12-17 21:50:46 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -118,6 +118,7 @@ foreach($attribs as $attrib) {
 		$alt2 = pql_complete_constant($LANG->_('Delete attribute %attribute% for %domainname%'),
 									  array('attribute' => $attrib, 'domainname' => $domainname));
 
+		// DLW: A "view" field should be added here.
 		$$link = "<a href=\"domain_edit_attributes.php?type=modify&attrib=$attrib&rootdn="
 		  . $_REQUEST["rootdn"] . "&domain=" . $_REQUEST["domain"] . "&$attrib=". urlencode($value)
 		  . "\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\""

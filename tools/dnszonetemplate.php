@@ -1,7 +1,7 @@
 <html>
 <body>
 <?php
-// $Id: dnszonetemplate.php,v 1.3 2003-01-13 10:47:38 turbo Exp $
+// $Id: dnszonetemplate.php,v 1.3.2.1 2003-12-17 21:50:46 dlw Exp $
 // You can either use this template as is, or write you own,
 // with predefined values (staticly set)...
 //
@@ -9,6 +9,7 @@
 // but this will naturaly fail if it isn't registered. And it'
 // no point in CREATING a template if it ISN'T registered, so...
 //
+$defaultdomain = $_REQUEST["defaultdomain"];
 $dnsparts = split('\.', $defaultdomain);
 for($i=0; $dnsparts[$i]; $i++) {
     $origin = $dnsparts[$i];

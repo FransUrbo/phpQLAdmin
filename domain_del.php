@@ -1,12 +1,14 @@
 <?php
 // delete a domain and all users within
-// $Id: domain_del.php,v 2.23.2.1 2003-11-24 18:07:02 dlw Exp $
+// $Id: domain_del.php,v 2.23.2.2 2003-12-17 21:50:46 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 require("./include/pql_control.inc");
 
 include("./header.html");
+
+$domain = $_REQUEST["domain"];
 
 // Make sure we can have a ' in branch
 $domain = eregi_replace("\\\'", "'", $domain);
@@ -15,11 +17,11 @@ $domain = urldecode($domain);
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove domain %domain%'),
 														array("domain" => pql_maybe_decode($domain)))?></span>
 <?php
-if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
+if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST["rootdn"])) {
 	$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 	$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 	
-	$delete_forwards = (isset($delete_forwards) || pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) ? true : false;
+	$delete_forwards = (isset($_REQUEST["delete_forwards"]) || pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST["rootdn"])) ? true : false;
 
 	// Before we delete the domain/branch, we need to get the defaultDomain, additionalDomainName
 	// and smtpRoutes value(s) so that we can remove it from the QmailLDAP/Controls object(s)
@@ -69,7 +71,7 @@ if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
 <br>
 <?php echo $LANG->_('Are you really sure'); ?>
 <br>
-<form action="<?php echo $PHP_SELF; ?>" method="GET">
+<form action="<?php echo $_REQUEST["PHP_SELF"]; ?>" method="GET">
 	<input type="hidden" name="domain" value="<?=urlencode($domain)?>">
 	
 	<input type="checkbox" name="delete_forwards" checked> <?php echo $LANG->_('Also delete forwards to users in this domain'); ?><br><br>

@@ -1,47 +1,53 @@
 <?php
 // attribute plugin for OpenLDAPaci
-// $Id: attrib.aci.inc,v 1.4 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.aci.inc,v 1.4.2.1 2003-12-17 21:50:52 dlw Exp $
+
+/* DLW: This has valid syntax, but I don't know how to test it. */
 
 // {{{ attribute_check(void)
 function attribute_check() {
-    global $attrib, $domain, $oldvalue, $_pql, $error, $$attrib, $type, $LANG;
-    global $aci_oid, $aci_scope, $aci_action, $aci_permission_read, $aci_permission_write;
-    global $aci_permission_search, $aci_permission_compare, $aci_target, $aci_type, $aci_subject;
+  //global $attrib, $domain, $oldvalue, $_pql, $error, $$attrib, $type, $LANG;
+  //global $aci_oid, $aci_scope, $aci_action, $aci_permission_read, $aci_permission_write;
+  //global $aci_permission_search, $aci_permission_compare, $aci_target, $aci_type, $aci_subject;
+    global $error, $LANG;
 	
+	$attrib = $_REQUEST["attrib"];
+
     // is typed in ?
-    if(!$aci_oid and !$aci_scope and !$aci_action) {
+    if(empty($_REQUEST["aci_oid"]) and empty($_REQUEST["aci_scope"]) and empty($_REQUEST["aci_action"])) {
 		$error[$attrib] = $LANG->_('Missing');
 		return false;
     }
 	
-    if($$attrib) {
-		$value = $$attrib;
+    if($_REQUEST[$attrib]) {
+		$value = $_REQUEST[$attrib]; // DLW: Does this do anything?
     } else {
-		$$attrib  = "$aci_oid#$aci_scope#$aci_action;";
-		
-		if($aci_permission_read) {
+		$_REQUEST[$attrib] = $_REQUEST["aci_oid"] . '#' . $_REQUEST["aci_scope"] . '#' . $_REQUEST["aci_action"] . ";";
+
+		$perm = '';
+		if($_REQUEST["aci_permission_read"]) {
 			$perm = "r";
 		}
 		
-		if($aci_permission_write) {
+		if($_REQUEST["aci_permission_write"]) {
 			if($perm) $perm .= ",";
 			$perm .= "w";
 		}
 		
-		if($aci_permission_search) {
+		if($_REQUEST["aci_permission_search"]) {
 			if($perm) $perm .= ",";
 			$perm .= "s";
 		}
 		
-		if($aci_permission_compare) {
+		if($_REQUEST["aci_permission_compare"]) {
 			if($perm) $perm .= ",";
 			$perm .= "c";
 		}
 		
-		if(($aci_target == 'all') or ($aci_target == 'children') or ($aci_target == 'entry'))
-		  $aci_target = "[" . $aci_target . "]";
+		if(($_REQUEST["aci_target"] == 'all') or ($_REQUEST["aci_target"] == 'children') or ($_REQUEST["aci_target"] == 'entry'))
+		  $_REQUEST["aci_target"] = "[" . $_REQUEST["aci_target"] . "]";
 		
-		$$attrib .= "$perm;$aci_target#$aci_type#$aci_subject";
+		$_REQUEST[$attrib] .= "$perm;" . $_REQUEST["aci_target"] . '#' . $_REQUEST["aci_type"] . '#' . $_REQUEST["aci_subject"];
     }
 	
     return true;
@@ -50,16 +56,17 @@ function attribute_check() {
 
 // {{{ attribute_print_form(action)
 function attribute_print_form($action) {
-    global $attrib, $domain, $rootdn, $PHP_SELF, $$attrib, $oldvalue, $error, $_pql, $user, $view, $LANG;
-    global $orgname;
+  //global $attrib, $domain, $rootdn, $PHP_SELF, $$attrib, $oldvalue, $error, $_pql, $user, $view, $LANG;
+  //global $orgname;
+    global $LANG;
 
 ?>
-  <form action="<?php echo $PHP_SELF ?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Access Control Information')?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Object DN')?></td>
-          <td><?php if($user) { echo "$user"; } else { echo "$domain"; } ?></td>
+          <td><?php if(!empty($_REQUEST["user"]) { echo $_REQUEST["user"]; } else { echo $_REQUEST["domain"]; } ?></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
@@ -123,11 +130,11 @@ function attribute_print_form($action) {
       </th>
     </table>
 
-    <input type="hidden" name="rootdn"        value="<?=$rootdn?>">
-    <input type="hidden" name="domain"        value="<?=$domain?>">
-    <input type="hidden" name="user"          value="<?=$user?>">
-    <input type="hidden" name="attrib"        value="<?=$attrib?>">
-    <input type="hidden" name="view"          value="<?=$view?>">
+    <input type="hidden" name="rootdn"        value="<?=$_REQUEST["rootdn"]?>">
+    <input type="hidden" name="domain"        value="<?=$_REQUEST["domain"]?>">
+    <input type="hidden" name="user"          value="<?=$_REQUEST["user"]?>">
+    <input type="hidden" name="attrib"        value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="view"          value="<?=$_REQUEST["view"]?>">
     <input type="hidden" name="type"          value="<?=$action?>">
     <input type="hidden" name="submit"        value="1">
     <br>
@@ -139,12 +146,15 @@ function attribute_print_form($action) {
 
 // {{{ attribute_save(action)
 function attribute_save($action) {
-    global $domain, $rootdn, $attrib, $oldvalue, $$attrib, $_pql, $user, $view, $LANG;
-    $value = $$attrib;
+  //global $domain, $rootdn, $attrib, $oldvalue, $$attrib, $_pql, $user, $view, $LANG;
+    global $_pql, $LANG;
 
-    $rootdn = urldecode($rootdn);
-    $domain = urldecode($domain);
-    $user   = urldecode($user);
+    $attrib = $_REQUEST["attrib"];
+    $value = $_REQUEST[$attrib];
+
+    $rootdn = urldecode($_REQUEST["rootdn"]);
+    $domain = urldecode($_REQUEST["domain"]);
+    $user   = urldecode($_REQUEST["user"]);
 
     echo "rootdn: $rootdn<br>";
     echo "domain: $domain<br>";
@@ -165,7 +175,7 @@ function attribute_save($action) {
 		$ACIs[$attrib][] = $acis[$i]["LINE"];
     }
     $acis = $ACIs;
-	
+
     switch($action) {
 		// {{{ case: add
       case "add":

@@ -1,6 +1,6 @@
 <?php
 // Edit and set configuration values in the LDAP database
-// $Id: config_edit_attribute.php,v 1.9.2.2 2003-12-15 20:33:03 dlw Exp $
+// $Id: config_edit_attribute.php,v 1.9.2.3 2003-12-17 21:50:46 dlw Exp $
 //
 session_start();
 
@@ -12,7 +12,6 @@ include("./header.html");
 
 // forward back to configuration detail page
 function attribute_forward($msg, $rlnb = false) {
-  //global $attrib, $$attrib, $domain, $rootdn, $view, $delval;
     $attrib = $_REQUEST["attrib"];
 
     $msg = urlencode($msg);
@@ -38,17 +37,15 @@ function attribute_forward($msg, $rlnb = false) {
 }
 
 // select what to do
-if($_REQUEST["submit"] == 1) {
+if(@$_REQUEST["submit"] == 1) {
     if(attribute_check()) {
 		attribute_save();
     } else {
 		attribute_print_form();
     }
-} elseif($_REQUEST["submit"] == 2) {
+} elseif(@$_REQUEST["submit"] == 2) {
 	attribute_save();
-} elseif($delval or $toggle) {
-    // DLW: I'm not sure how $deval or $toggle can be seen from here.
-    trigger_error('DLW: How did this happen?', E_USER_WARNING);
+} elseif(!empty($_REQUEST["delval"]) or !empty($_REQUEST["toggle"])) {
 	attribute_save();
 } else {
     attribute_print_form();

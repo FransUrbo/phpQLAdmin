@@ -1,11 +1,13 @@
 <?php
 // add a domain
-// $Id: domain_add.php,v 2.41.2.1 2003-11-24 18:07:02 dlw Exp $
+// $Id: domain_add.php,v 2.41.2.2 2003-12-17 21:50:46 dlw Exp $
 //
 session_start();
 
 // Make sure we can have a ' in branch
-$domain = ereg_replace("\\\'", "'", $domain);
+$domain = ereg_replace("\\\'", "'", $_REQUEST["domain"]);
+$rootdn = $_REQUEST["rootdn"];
+$defaultdomain = $_REQUEST["defaultdomain"];
 
 require("./include/pql_config.inc");
 require("./include/pql_control.inc");

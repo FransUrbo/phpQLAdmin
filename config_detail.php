@@ -1,6 +1,6 @@
 <?php
 // shows configuration of phpQLAdmin
-// $Id: config_detail.php,v 2.48.2.1 2003-11-24 18:07:02 dlw Exp $
+// $Id: config_detail.php,v 2.48.2.2 2003-12-17 21:50:45 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -10,12 +10,12 @@ include("./header.html");
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 // print status message, if one is available
-if(isset($msg)) {
-    pql_format_status_msg($msg);
+if(isset($_REQUEST["msg"])) {
+    pql_format_status_msg($_REQUEST["msg"]);
 }
 
 // reload navigation bar if needed
-if(isset($rlnb) and pql_get_define("PQL_GLOB_AUTO_RELOAD")) {
+if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_GLOB_AUTO_RELOAD")) {
 ?>
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
   <script language="JavaScript1.2"><!--
@@ -47,10 +47,12 @@ foreach($_pql->ldap_basedn as $dn) {
 // Output the buttons to the browser
 pql_generate_button($buttons);
 
-if(($view == '') or ($view == 'default')) {
+if(empty($_REQUEST["view"]) or $_REQUEST["view"] == 'default') {
     include("./tables/config_details-global.inc");
 } else {
-    $branch = $view;
+    if (empty($_REQUEST["branch"])) {
+      $_REQUEST["branch"] = $_REQUEST["view"];
+    }
     include("./tables/config_details-branch.inc");
 }
 ?>

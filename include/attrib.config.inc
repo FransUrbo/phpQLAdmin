@@ -1,11 +1,11 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.29.2.1 2003-12-15 20:33:07 dlw Exp $
+// $Id: attrib.config.inc,v 1.29.2.2 2003-12-17 21:50:52 dlw Exp $
 
 function attribute_check() {
-  //global $administrator, $domain, $oldvalue, $_pql, $error, $LANG;
-  //global $attrib, $$attrib, $rootdn, $value;
     global $error, $LANG;
+
+	$attrib = $_REQUEST["attrib"];
 
     // is typed in ?
     if(empty($_REQUEST[$attrib])) {
@@ -17,18 +17,16 @@ function attribute_check() {
 }
 
 function attribute_print_form() {
-  //global $administrator, $domain, $PHP_SELF, $attrib, $$attrib, $oldvalue, $error, $_pql, $toggle;
-  //global $PQL_ATTRIBUTE, $rootdn, $delval, $view, $LANG;
-
 	global $_pql, $error, $LANG;
 	global $PQL_ATTRIBUTE;
 	global $toggle;				// DLW: I'm not sure where this gets set.
 
-	//$attrib = strtolower($attrib);
+	// DLW: This form doesn't print the "$error" entries.
+
 	// Save some typing.
-	$attrib = $_REQUEST["attrib"];
-	$oldvalue = (!empty($_REQUEST["oldvalue"]) ? $_REQUEST["oldvalue"] : "");
-	$rootdn = (!empty($_REQUEST["rootdn"]) ? $_REQUEST["rootdn"] : "");
+	$attrib = strtolower($_REQUEST["attrib"]);
+	$oldvalue = @$_REQUEST["oldvalue"];
+	$rootdn = $_REQUEST["rootdn"];
 
 	// Get the old values from the define
 	foreach($PQL_ATTRIBUTE as $key => $value) {
@@ -225,9 +223,6 @@ function attribute_print_form() {
 }
 
 function attribute_save() {
-  //global $domain, $attrib, $$attrib, $oldvalue, $administrator, $_pql, $LANG;
-  //global $delval, $toggle, $PQL_ATTRIBUTE, $view, $rootdn;
-  //$attrib = lc($attrib);
     global $_pql, $LANG;
 	global $PQL_ATTRIBUTE;
 
@@ -237,7 +232,6 @@ function attribute_save() {
 	$toggle = @$_REQUEST["toggle"];
 	$rootdn = @$_REQUEST["rootdn"];
 	$delval = @$_REQUEST["delval"];
-
 
 	// DLW: This should be chopped up into functions to make it more readable.
 	
@@ -255,7 +249,7 @@ function attribute_save() {
 		} // DLW: Why isn't plain old $entry[$attrib][] = $attrib_val here?
     }
 
-	// Try to find out if we have an old value, or what we should do with the value we have
+	// Try to find out if we have an old value, or what we should do with the value we have.
 	if($oldvalue and $toggle) {
 		// A togglable value, reverse state
 
@@ -270,7 +264,6 @@ function attribute_save() {
 		}
 	} elseif($oldvalue and $delval) {
 		// We should delete one attribute
-
 		$values = pql_split_oldvalues($oldvalue);
 
 		// Go through existing attributes, removing the chosen one
@@ -316,8 +309,8 @@ function attribute_save() {
 							}
 						}
 					}
-				}
-			}
+				} // ELSIF it's a toggle.
+			} // IF attrib != controlsadministrator
 		} elseif(($attrib == 'passwordscheme') or ($attrib == 'userobjectclass') or ($attrib == 'branchobjectclass')) {
 			// We don't have any values in the LDAP database, we're using
 			// the default values - get the old values from the define

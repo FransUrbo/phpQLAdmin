@@ -22,7 +22,7 @@
 ?>
 
       <tr class="subtitle">
-        <td colspan="4"><a href="dnszonetemplate.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&defaultdomain=<?=$defaultdomain?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Create DNS template zone file')?></a></td>
+        <td colspan="4"><a href="dnszonetemplate.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&defaultdomain=<?=$defaultdomain?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Create DNS template zone file')?></a></td>
       </tr>
     </th>
   </table>
