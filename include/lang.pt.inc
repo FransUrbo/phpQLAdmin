@@ -273,7 +273,7 @@ define("PQL_TEST_CONNECTION_RESOLVE_ERR", "the hostname %host% could not be reso
 define("PQL_TEST_CONNECTION_CONNECT_ERR", "could not connect to port 389 at %host%, please make sure the service is up and it is not blocked with a firewall"); // to translate
 define("PQL_TEST_CONNECTION_CONNECT_OK", "ok, have fun ;-)"); // to translate
 define("PQL_TEST_CONNECTION_USER_TITLE", "user directory connection"); // to translate
-define("PQL_TEST_CONNECTION_USER_BIND_ERR", "connection ok, but could not bind to the directory. please check PQL_LDAP_ROOTDN and PQL_LDAP_ROOTPW"); // to translate
+define("PQL_TEST_CONNECTION_USER_BIND_ERR", "connection ok, but could not bind to the directory.");
 define("PQL_TEST_CONNECTION_CONROL_TITLE", "control directory connection"); // to translate
 define("PQL_TEST_CONNECTION_CONTROL_BIND_ERR", "connection ok, but could not bind to the directory. please check PQL_LDAP_CONTROL_ROOTDN and PQL_LDAP_CONTROL_ROOTPW"); // to translate
 define("PQL_TEST_CONNECTION_CONROL_INACTIVE", "control extension deactivated"); // to translate

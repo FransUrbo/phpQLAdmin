@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: domain_add.php,v 1.2 2002-12-12 11:50:27 turbo Exp $
+// $Id: domain_add.php,v 1.3 2002-12-12 21:52:08 turbo Exp $
 //
 session_start();
 require("pql.inc");
@@ -11,8 +11,8 @@ include("header.html");
   <span class="title1"><?php echo PQL_DOMAIN_ADD; ?>: <?php echo $domain ?></span>
   <br><br>
 <?php
-$_pql = new pql();
-$_pql_control = new pql_control();
+$_pql = new pql($USER_DN, $USER_PASS);
+$_pql_control = new pql_control($USER_DN, $USER_PASS);
 
 // convert domain to lowercase
 $domain = strtolower($domain);

@@ -1,10 +1,10 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 1.2 2002-12-12 11:50:27 turbo Exp $
+// $Id: user_detail.php,v 1.3 2002-12-12 21:52:08 turbo Exp $
 //
 session_start();
 require("pql.inc");
-$_pql = new pql();
+$_pql = new pql($USER_DN, $USER_PASS);
 
 // Get default domain name for this domain
 $defaultdomain = pql_get_domain_value($_pql->ldap_linkid, $domain, "defaultdomain");

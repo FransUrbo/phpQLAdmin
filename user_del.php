@@ -1,6 +1,6 @@
 <?php
 // delete a user
-// $Id: user_del.php,v 1.2 2002-12-12 11:50:27 turbo Exp $
+// $Id: user_del.php,v 1.3 2002-12-12 21:52:08 turbo Exp $
 //
 session_start();
 require("pql.inc");
@@ -12,7 +12,7 @@ include("header.html");
 <?php
 	if(isset($ok) || PQL_VERIFY_DELETE){
 	$delete_forwards = (isset($delete_forwards) || PQL_VERIFY_DELETE) ? true : false;
-  	$_pql = new pql();
+  	$_pql = new pql($USER_DN, $USER_PASS);
 
 	// delete the user
 	if(pql_remove_user($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user, $delete_forwards)){

@@ -1,6 +1,6 @@
 <?php
 // delete attribute of a user
-// $Id: user_del_attribute.php,v 1.2 2002-12-12 11:50:27 turbo Exp $
+// $Id: user_del_attribute.php,v 1.3 2002-12-12 21:52:08 turbo Exp $
 //
 session_start();
 require("pql.inc");
@@ -23,7 +23,7 @@ include("header.html");
   <span class="title1"><?php pql_complete_constant(PQL_USER_DEL_ATTRIBUTE_TITLE, array("value" => $value));?></span>
 <?php
   if(isset($ok) || PQL_VERIFY_DELETE) {
-  	$_pql = new pql();
+  	$_pql = new pql($USER_DN, $USER_PASS);
 
 	// delete the user attribute
 	if(pql_remove_userattribute($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $user, $attrib, $value)){

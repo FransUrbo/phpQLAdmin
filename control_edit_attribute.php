@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of a control option
-// $Id: control_edit_attribute.php,v 1.2 2002-12-12 11:50:27 turbo Exp $
+// $Id: control_edit_attribute.php,v 1.3 2002-12-12 21:52:08 turbo Exp $
 //
 
 // initial check
@@ -17,7 +17,7 @@ require("pql.inc");
 require("pql_control.inc");
 require("pql_control_plugins.inc");
 
-$_pql = new pql();
+$_pql = new pql($USER_DN, $USER_PASS);
 $_pql_control = new pql_control();
 
 // register all attribute plugins here (require)

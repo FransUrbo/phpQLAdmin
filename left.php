@@ -1,13 +1,13 @@
 <?php
 // navigation bar
-// $Id: left.php,v 1.2 2002-12-12 12:07:47 turbo Exp $
+// $Id: left.php,v 1.3 2002-12-12 21:52:08 turbo Exp $
 //
 session_start();
 require("pql.inc");
 require("pql_control.inc");
 require("pql_control_plugins.inc");
 
-$_pql = new pql();
+$_pql = new pql($USER_DN, $USER_PASS);
 ?>
 <html>
 <head>
@@ -71,7 +71,6 @@ if($USER_BASE == 'everything') {
     //-->
   </style>
 </head>
-
 <body bgcolor="#D0DCE0">
   <font color="black" class="heada"><?=PQL_USER; ?>: <b><?=$USER_ID?></b></font>
   <br>

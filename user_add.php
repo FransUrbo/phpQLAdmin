@@ -1,10 +1,10 @@
 <?php
 // add a user
-// $Id: user_add.php,v 1.3 2002-12-12 14:30:45 turbo Exp $
+// $Id: user_add.php,v 1.4 2002-12-12 21:52:08 turbo Exp $
 //
 session_start();
 require("pql.inc");
-$_pql = new pql();
+$_pql = new pql($USER_DN, $USER_PASS);
 
 // check if domain exist
 if(!pql_domain_exist($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain)){

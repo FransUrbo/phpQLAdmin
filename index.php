@@ -1,6 +1,6 @@
 <?php
 // logins to the system
-// $Id: index.php,v 1.2 2002-12-12 12:00:43 turbo Exp $
+// $Id: index.php,v 1.3 2002-12-12 21:52:08 turbo Exp $
 //
 session_start();
 
@@ -8,7 +8,9 @@ require("pql.inc");
 require("pql_control.inc");
 require("pql_control_plugins.inc");
 
-$_pql = new pql();
+// These variables will be NULL the first time,
+// so we will bind anonymously...
+$_pql = new pql($USER_DN, $USER_PASS);
 
 if ($logout == 1 or !empty($msg)) {
 	if ($logout == 1) {
@@ -28,6 +30,10 @@ if ($LOGIN_PASS == 1) {
 }
 
 // Get all domains
+//
+// NOTE:
+// For the very first time, we have bound anonymously,
+// so we must have read access as anonymously here!
 $domains = pql_get_domains($_pql->ldap_linkid, PQL_LDAP_BASEDN);
 if(is_array($domains)){
 	asort($domains);
@@ -121,14 +127,15 @@ if (empty($uname) or empty($passwd)) {
 	$uname		= strtolower($uname);	
 
 	// Get DN of user
+	//
+	// NOTE:
+	// For the very first time, we have bound anonymously,
+	// so we must have read access as anonymously here!
 	$rootdn = pql_get_dn($_pql->ldap_linkid, PQL_LDAP_BASEDN, $USER_ID);
 	$_pql->close();
 
 	// Connecting, selecting database
 	$_pql = new pql($rootdn, $USER_PASS);
-	$_pql->close();
-
-	$_pql = new pql();
 	$error = ldap_errno($_pql->ldap_linkid);
 	if( $error != 0 ){
 		$msg = PQL_ERROR . ": " . ldap_err2str($error);

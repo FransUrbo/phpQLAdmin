@@ -1,6 +1,6 @@
 <?php
 // delete a domain and all users within
-// $Id: domain_del.php,v 1.2 2002-12-12 11:50:27 turbo Exp $
+// $Id: domain_del.php,v 1.3 2002-12-12 21:52:08 turbo Exp $
 //
 session_start();
 require("pql.inc");
@@ -11,8 +11,8 @@ include("header.html");
   <span class="title1"><?php echo pql_complete_constant(PQL_DOMAIN_DEL_TITLE, array("domain" => $domain))?></span>
 <?php
     if(isset($ok) || PQL_VERIFY_DELETE){
-	$_pql = new pql();
-	$_pql_control = new pql_control();
+	$_pql = new pql($USER_DN, $USER_PASS);
+	$_pql_control = new pql_control($USER_DN, $USER_PASS);
 	
 	$delete_forwards = (isset($delete_forwards)) ? true : false;
 	

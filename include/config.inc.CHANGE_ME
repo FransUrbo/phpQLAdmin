@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 1.3 2002-12-12 12:10:59 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 1.4 2002-12-12 21:52:14 turbo Exp $
 //
 session_start();
 // ----------------------------
@@ -79,13 +79,6 @@ define("PQL_LDAP_HOST","localhost:389");
 // the dn path to the qmail-ldap database (same as the ldapbasedn file in
 // qmail/control directory).
 define("PQL_LDAP_BASEDN","dc=adfinis,dc=ch");
-
-// PQL_LDAP_ROOTDN (valid DN)
-// PQL_LDAP_ROOTPW (valid password in cleartext)
-// the dn path to the root user and its password of the user database.
-// phpQLAdmin need these values to have write acces to the ldap database
-define("PQL_LDAP_ROOTDN", "cn=popadmin, dc=adfinis, dc=ch");
-define("PQL_LDAP_ROOTPW", "xxx");
 
 // ----------------------------
 // PQL_LDAP_ATTR_* (LDAP attribute names)
@@ -194,20 +187,12 @@ define("PQL_LDAP_CONTROL_HOST","localhost:389");
 // the dn path to the qmail-ldap/control database (~/control/ldapcontroldn with prefixed cn=<servername>)
 define("PQL_LDAP_CONTROL_BASEDN","cn=marvin.adfinis.ch, dc=adfinis, dc=ch");
 
-// PQL_LDAP_CONTROL_ROOTDN (valid DN)
-// PQL_LDAP_CONTROL_ROOTPW (valid password in cleartext)
-// the dn path to the root user and its password of the control database.
-// phpQLAdmin need these values to have write acces to the control database
-define("PQL_LDAP_CONTROL_ROOTDN", "cn=popadmin, dc=adfinis, dc=ch");
-define("PQL_LDAP_CONTROL_ROOTPW", "xxx");
-
 // PQL_LDAP_CONTROL_AUTOADDLOCALS (true | false)
 // set this to true, if phpQLAdmin should automatically add all domains to
 // locals. Disable this (false), if you have more than one qmail-ldap server
 // and don't want that phpQLAdmin register all domains on this server. Currently, the
 // application do not support more than one control database.
 define("PQL_LDAP_CONTROL_AUTOADDLOCALS", true);
-
 
 // PQL_LDAP_CONTROL_ME (valid FQDN, value in 'me')
 // This MUST be equal to the value in the configuration file 'me'.

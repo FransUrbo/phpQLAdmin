@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 1.4 2002-12-12 14:32:45 turbo Exp $
+// $Id: domain_detail.php,v 1.5 2002-12-12 21:52:08 turbo Exp $
 //
 session_start();
 require("pql.inc");
@@ -8,7 +8,7 @@ require("pql.inc");
 if(PQL_LDAP_CONTROL_USE){
     // include control api if control is used
     include("pql_control.inc");
-    $_pql_control = new pql_control();
+    $_pql_control = new pql_control($USER_DN, $USER_PASS);
 
     // Get default domain name for this domain
     $defaultdomain = pql_get_domain_value($_pql_control->ldap_linkid, $domain, "defaultdomain");
@@ -37,7 +37,7 @@ if(isset($rlnb) and PQL_AUTO_RELOAD) {
 
   <br><br>
 <?php
-$_pql = new pql();
+$_pql = new pql($USER_DN, $USER_PASS);
 
 // check if domain exist
 if(!pql_domain_exist($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain)){

@@ -1,12 +1,12 @@
 <?php
 // shows details of specified category of attributes
-// $Id: control_cat.php,v 1.2 2002-12-12 11:50:27 turbo Exp $
+// $Id: control_cat.php,v 1.3 2002-12-12 21:52:08 turbo Exp $
 //
 require("pql.inc");
 require("pql_control.inc");
 require("pql_control_plugins.inc");
 
-$_pql_control = new pql_control();
+$_pql_control = new pql_control($USER_DN, $USER_PASS);
 
 // register all attribute plugins here (require)
 $control_plugins = pql_control_plugin_get_catplugins($cat);

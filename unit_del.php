@@ -1,6 +1,6 @@
 <?php
 // delete a domain and all users within
-// $Id: unit_del.php,v 1.2 2002-12-12 11:50:27 turbo Exp $
+// $Id: unit_del.php,v 1.3 2002-12-12 21:52:08 turbo Exp $
 //
 require("pql.inc");
 require("pql_control.inc");
@@ -23,30 +23,26 @@ include("header.html");
 <br>
 <?php
   } else {
-  	$_pql = new pql();
-		$_pql_control = new pql_control();
+      $_pql = new pql($USER_DN, $USER_PASS);
+      $_pql_control = new pql_control($USER_DN, $USER_PASS);
 
-	// delete the unit 
-	if(pql_remove_unit($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $unit)){
-
-		// update locals if control patch is enabled
-		if(pql_control_update_domains($_pql->ldap_linkid, PQL_LDAP_BASEDN, $_pql_control->ldap_linkid, PQL_LDAP_CONTROL_BASEDN)){
-			// message ??
-		}
-
-		$msg = PQL_DOMAIN_DEL_OK;
-		// redirect to home page
-		$msg = urlencode($msg);
-		header("Location: home.php?msg=$msg&rlnb=1");
-
-  	} else {
-    	$msg = PQL_DOMAIN_DEL_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
-		// redirect to domain detail page
-		$msg = urlencode($msg);
-		header("Location: domain_detail.php?domain=$domain&unit=$unit&msg=$msg");
-    }
-
-
+      // delete the unit 
+      if(pql_remove_unit($_pql->ldap_linkid, PQL_LDAP_BASEDN, $domain, $unit)){
+	  // update locals if control patch is enabled
+	  if(pql_control_update_domains($_pql->ldap_linkid, PQL_LDAP_BASEDN, $_pql_control->ldap_linkid, PQL_LDAP_CONTROL_BASEDN)){
+	      // message ??
+	  }
+	  
+	  // redirect to home page
+	  $msg = PQL_DOMAIN_DEL_OK;
+	  $msg = urlencode($msg);
+	  header("Location: home.php?msg=$msg&rlnb=1");
+      } else {
+	  $msg = PQL_DOMAIN_DEL_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+	  // redirect to domain detail page
+	  $msg = urlencode($msg);
+	  header("Location: domain_detail.php?domain=$domain&unit=$unit&msg=$msg");
+      }
   } // end of if
 ?>
 </body>

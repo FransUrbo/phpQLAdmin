@@ -1,7 +1,7 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 1.3 2002-12-12 14:25:30 turbo Exp $
+// $Id: lang.en.inc,v 1.4 2002-12-12 21:52:14 turbo Exp $
 //
 // if you have a translation to another language, please contact
 // me --> Matthias Blaser <mb@adfinis.ch>
@@ -332,7 +332,7 @@ define("PQL_TEST_CONNECTION_RESOLVE_ERR", "the hostname %host% could not be reso
 define("PQL_TEST_CONNECTION_CONNECT_ERR", "could not connect to port 389 at %host%, please make sure the service is up and it is not blocked with a firewall");
 define("PQL_TEST_CONNECTION_CONNECT_OK", "ok, have fun ;-)");
 define("PQL_TEST_CONNECTION_USER_TITLE", "user directory connection");
-define("PQL_TEST_CONNECTION_USER_BIND_ERR", "connection ok, but could not bind to the directory. please check PQL_LDAP_ROOTDN and PQL_LDAP_ROOTPW");
+define("PQL_TEST_CONNECTION_USER_BIND_ERR", "connection ok, but could not bind to the directory.");
 define("PQL_TEST_CONNECTION_CONROL_TITLE", "control directory connection");
 define("PQL_TEST_CONNECTION_CONTROL_BIND_ERR", "connection ok, but could not bind to the directory. please check PQL_LDAP_CONTROL_ROOTDN and PQL_LDAP_CONTROL_ROOTPW");
 define("PQL_TEST_CONNECTION_CONROL_INACTIVE", "control extension deactivated");

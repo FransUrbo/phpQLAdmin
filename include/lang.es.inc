@@ -272,7 +272,7 @@ define("PQL_TEST_CONNECTION_RESOLVE_ERR", "El nombre de dominio %host% no pudo s
 define("PQL_TEST_CONNECTION_CONNECT_ERR", "No se pudo conectar por el puerto 389 a %host%, por favor asegurese de que el servicio está en funcionamiento y de que no está bloqueado por un cortafuegos");
 define("PQL_TEST_CONNECTION_CONNECT_OK", "ok, disfruta ;-)");
 define("PQL_TEST_CONNECTION_USER_TITLE", "conexión al directorio de usuarios");
-define("PQL_TEST_CONNECTION_USER_BIND_ERR", "la conexión es correcta, pero no se pudo acceder al directorio. Por favor comprueba PQL_LDAP_ROOTDN y PQL_LDAP_ROOTPW");
+define("PQL_TEST_CONNECTION_USER_BIND_ERR", "la conexión es correcta, pero no se pudo acceder al directorio.");
 define("PQL_TEST_CONNECTION_CONROL_TITLE", "conexión al directorio de control");
 define("PQL_TEST_CONNECTION_CONTROL_BIND_ERR", "la conexión es correcta, pero no se pudo acceder al directorio. Por favor comprueba PQL_LDAP_CONTROL_ROOTDN y PQL_LDAP_CONTROL_ROOTPW");
 define("PQL_TEST_CONNECTION_CONROL_INACTIVE", "extensión de control desactivada");

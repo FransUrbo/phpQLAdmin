@@ -1,6 +1,6 @@
 <?php
 // shows configuration of phpQLAdmin
-// $Id: config_detail.php,v 1.2 2002-12-12 11:50:27 turbo Exp $
+// $Id: config_detail.php,v 1.3 2002-12-12 21:52:08 turbo Exp $
 //
 require("pql.inc");
 include("header.html");
@@ -47,14 +47,6 @@ include("header.html");
 <tr>
 	<td class="title">LDAP base dn</td>
 	<td class="<?php table_bgcolor(); ?>"><?php echo PQL_LDAP_BASEDN; ?>&nbsp;</td>
-</tr>
-<tr>
-	<td class="title">LDAP root dn</td>
-	<td class="<?php table_bgcolor(); ?>"><?php echo PQL_LDAP_ROOTDN; ?>&nbsp;</td>
-</tr>
-<tr>
-	<td class="title">LDAP root password</td>
-	<td class="<?php table_bgcolor(); ?>">********&nbsp;</td>
 </tr>
 <tr>
 	<td class="title">use control db</td>

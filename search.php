@@ -1,6 +1,6 @@
 <?php
 // shows results of search
-// $Id: search.php,v 1.2 2002-12-12 11:50:27 turbo Exp $
+// $Id: search.php,v 1.3 2002-12-12 21:52:08 turbo Exp $
 //
 session_start();
 require("pql.inc");
@@ -30,7 +30,7 @@ if(isset($rlnb) and PQL_AUTO_RELOAD){
   <br><br>
 
 <?php
-$_pql = new pql();
+$_pql = new pql($USER_DN, $USER_PASS);
 
 // test for submission of variables
 if ($attribute == "" || $filter_type == "" || $search_string == "") {

@@ -273,7 +273,7 @@ define("PQL_TEST_CONNECTION_RESOLVE_ERR", "der Hostname %host% konnte nicht aufg
 define("PQL_TEST_CONNECTION_CONNECT_ERR", "die Verbindung auf Port 389 auf %host% konnte nicht gestartet werden, überprüfen Sie ob der LDAP-Service auf dem Server gestartet ist und die Verbindung nicht durch eine Firewall blockiert ist");
 define("PQL_TEST_CONNECTION_CONNECT_OK", "ok, viel Spass ;-)");
 define("PQL_TEST_CONNECTION_USER_TITLE", "Benutzerdatenbank");
-define("PQL_TEST_CONNECTION_USER_BIND_ERR", "die Verbindung ist OK, es konnte jedoch nicht mit dem vorhanden Benutzername/Passwort an das Verzeichnis gebunden werden. Bitte überprüfen Sie PQL_LDAP_ROOTDN und PQL_LDAP_ROOTPW");
+define("PQL_TEST_CONNECTION_USER_BIND_ERR", "die Verbindung ist OK, es konnte jedoch nicht mit dem vorhanden Benutzername/Passwort an das Verzeichnis gebunden werden.");
 define("PQL_TEST_CONNECTION_CONROL_TITLE", "Controldatenbank");
 define("PQL_TEST_CONNECTION_CONTROL_BIND_ERR", "die Verbindung ist OK, es konnte jedoch nicht mit dem vorhanden Benutzername/Passwort an das Verzeichnis gebunden werden. Bitte überprüfen Sie PQL_LDAP_CONTROL_ROOTDN und PQL_LDAP_CONTROL_ROOTPW");
 define("PQL_TEST_CONNECTION_CONROL_INACTIVE", "Servercontrol deaktiviert");

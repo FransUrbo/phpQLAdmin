@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 1.3 2002-12-12 14:22:42 turbo Exp $
+// $Id: pql.inc,v 1.4 2002-12-12 21:52:14 turbo Exp $
 //
 // ----------------------------
 // Note: There are a few " followed after PHP comment
@@ -49,18 +49,18 @@ class pql {
 	// changed in the PQL_LDAP_HOST 
 	// define...
 	var $ldap_basedn = PQL_LDAP_BASEDN; 	// base dn
-	var $ldap_rootdn = PQL_LDAP_ROOTDN; 	// root dn
-	var $ldap_rootpw = PQL_LDAP_ROOTPW; 	// password to bind to root dn
+	var $ldap_rootdn = "";				 	// DN for binding to LDAP server
+	var $ldap_rootpw = "";				 	// Password for binding to LDAP server
 	var $ldap_linkid = 0;					// ldap connection identifier
 
-	function pql($no_connect = false){
+	function pql($binddn = "",$bindpw = "", $no_connect = false) {
 		// constructor, connect to ldap host
 		if($no_connect == true){
 			return false;
 		}
 		
 		$this->connect() or die("<b>could not connect to ldap server</b>");
-		$this->bind() or die("<b>could not bind to ldap server</b>: " . ldap_error($this->ldap_linkid));
+		$this->bind($binddn, $bindpw) or die("<b>could not bind to ldap server</b>: " . ldap_error($this->ldap_linkid));
 	}
 	
 	function connect(){
@@ -82,9 +82,12 @@ class pql {
 		return false;
 	}
 	
-	function bind(){
-		// bind to ldap server
-		if($this->ldap_linkid and @ldap_bind($this->ldap_linkid, $this->ldap_rootdn, $this->ldap_rootpw)){
+	function bind($binddn = "", $bindpw = "") {
+		// If we haven't set the DN/PW -> do a anonymous bind
+		$this->$ldap_rootdn = $binddn;
+		$this->$ldap_rootpw = $rootpw;
+
+		if($this->ldap_linkid and @ldap_bind($this->ldap_linkid, $this->$ldap_rootdn, $this->$ldap_rootpw)) {
 			return true;
 		}
 		
@@ -152,6 +155,26 @@ function pql_add_user($ldap_linkid, $ldap_basedn, $domain, $cn, $attribs, $accou
     // dn of the user
     $dn = PQL_LDAP_USER_RDN_ATTRIBUTE . "=" . $entry[PQL_LDAP_USER_RDN_ATTRIBUTE] . "," . PQL_LDAP_SUBTREE_USERS
       . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . "," . PQL_LDAP_BASEDN;
+
+//	// --------------------------
+//	// DEBUG mode: Print the LDIF
+//	echo "<br>--- DEBUG ---<br>";
+//	echo "dn: $dn<br>";
+//	foreach($entry as $key => $e) {
+//		if(eregi("objectclass", $key)) {
+//			// We have a objectClass
+//			if(is_array($entry[$key])) {
+//				// ... in an array. Go through each one, creating the LDAP entry
+//				foreach($entry[$key] as $oc) {
+//					echo "$key: $oc<br>";
+//				}
+//			}
+//		} else {
+//			echo "$key: $entry[$key]<br>";
+//		}
+//	}
+//	die("--- DEBUG ---");
+//	// --------------------------
     
     // adds the user
     if(ldap_add($ldap_linkid,$dn, $entry)){
@@ -587,7 +610,7 @@ function pql_replace_userattributes($ldap_linkid, $ldap_basedn, $domain, $user, 
 function pql_get_domains($ldap_linkid,$ldap_basedn){
 	// get all domains listed in ldap-tree (ou|dc-records)
 	
-	$sr = @ldap_list($ldap_linkid,$ldap_basedn,
+	$sr = @ldap_list($ldap_linkid, $ldap_basedn,
 					 "(&(" . PQL_LDAP_ATTR_DOMAIN . "=*)(objectClass=" . PQL_LDAP_OBJECTCLASS_DOMAIN . "))"
 					 ) or pql_errormsg($ldap_linkid);
 	$info = @ldap_get_entries($ldap_linkid, $sr) or pql_errormsg($ldap_linkid);
@@ -1170,14 +1193,6 @@ function pql_check_config(&$result, $enhanced = false){
     
     if(!defined("PQL_LDAP_BASEDN") or PQL_LDAP_BASEDN == ""){
 		$result[] = "no base dn defined";
-    }
-    
-    if(!defined("PQL_LDAP_ROOTDN") or PQL_LDAP_ROOTDN == ""){
-		$result[] = "no root dn defined!!";
-    }
-    
-    if(!defined("PQL_LDAP_ROOTPW") or PQL_LDAP_ROOTPW == ""){
-		$result[] = "no root pw defined!!";
     }
     
     if($enhanced){

@@ -1,10 +1,9 @@
 <?php
 // make some simple tests on ldap connection
-// $Id: config_ldaptest.php,v 1.2 2002-12-12 11:50:27 turbo Exp $
+// $Id: config_ldaptest.php,v 1.3 2002-12-12 21:52:08 turbo Exp $
 //
 require("pql.inc");
 require("pql_control.inc");
-
 
 if(!function_exists("ldap_connect")){
 	$ldap_ext = PQL_TEST_LDAP_EXT_NA;
@@ -12,12 +11,12 @@ if(!function_exists("ldap_connect")){
 	$connection_control = "-";
 } else {
 	$ldap_ext = PQL_TEST_LDAP_EXT_OK;
-
+	
 	// user directory connection
-	$_pql = new pql(true);
+	$_pql = new pql('', '', true);
 	if(!$_pql->connect()){
 		$connection = PQL_TEST_CONNECTION_FAILED;
-
+		
 		// do additional tests
 		if(!gethostbyname(PQL_LDAP_HOST)){
 			// not resolved
@@ -30,6 +29,9 @@ if(!function_exists("ldap_connect")){
 			}
 		}
 	} else {
+		// Setup DN/PW for test (anonymous bind)
+		$_pql->ldap_rootdn = "TEST"; $_pql->ldap_rootpw = "TEST";
+
 		if(!$_pql->bind()){
 			$connection = PQL_TEST_CONNECTION_USER_BIND_ERR;
 		} else {
@@ -40,8 +42,8 @@ if(!function_exists("ldap_connect")){
 
 	if(PQL_LDAP_CONTROL_USE){
 		// control directory connection
-		$_pql_control = new pql_control(true);
-		if(!$_pql_control->connect()){
+		$_pql_control = new pql_control('', '', true);
+		if(!$_pql_control->connect()) {
 			$connection_control = PQL_TEST_CONNECTION_FAILED;
 
 			// do additional tests
@@ -93,3 +95,12 @@ include("header.html");
 
 </body>
 </html>
+
+<?php
+/*
+ * Local variables:
+ * mode: php
+ * tab-width: 4
+ * End:
+ */
+?>
