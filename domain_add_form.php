@@ -1,6 +1,6 @@
 <?php
 // Input form page to create a domain branch in database
-// $Id: domain_add_form.php,v 1.6 2003-04-04 06:53:47 turbo Exp $
+// $Id: domain_add_form.php,v 1.7 2003-04-23 12:10:50 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -16,18 +16,17 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
   <form action="domain_add.php" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=PQL_LANG_DOMAIN_ADD?></th>
-<?php
-if($_pql->ldap_basedn[1]) {
-    // We have more than one Root DN (namingContexts), show
-    // a drop down with every Root DN...
+<?php if($_pql->ldap_basedn[1]) {
+         // We have more than one Root DN (namingContexts), show
+         // a drop down with every Root DN...
 ?>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title">Branch base</td>
           <td>
             <select name="rootdn">
-<?php foreach($_pql->ldap_basedn as $dn)  { ?>
+<?php    foreach($_pql->ldap_basedn as $dn)  { ?>
               <option value="<?=$dn?>"><?=$dn?></option>
-<?php } ?>
+<?php    } ?>
             </select>
           </td>
         </tr>
@@ -38,6 +37,7 @@ if($_pql->ldap_basedn[1]) {
           <td>
             <input type="text" name="domain" value="<?php echo $domain; ?>" size="26">
             <input type="submit" value="<?="--&gt;&gt;"?>">
+            <input type="hidden" name="rootdn" value="<?=$rootdn?>">
             <table cellspacing="0" cellpadding="3" border="0">
               <th>
                 <tr class="<?php table_bgcolor(); ?>">
@@ -45,7 +45,7 @@ if($_pql->ldap_basedn[1]) {
                     <img src="images/info.png" width="16" height="16" alt="" border="0"></td>
                   <td>
 <?php
-	    if(PQL_CONF_REFERENCE_DOMAINS_WITH == "dc") {
+	    if($config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$rootdn] == "dc") {
 		// We're using a domain object
 		echo PQL_LANG_DOMAIN_ADD_INFO_DC;
 	    } else {
