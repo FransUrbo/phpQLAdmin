@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: domain_add.php,v 2.54 2004-11-14 10:49:23 turbo Exp $
+// $Id: domain_add.php,v 2.55 2005-02-20 11:50:21 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -77,23 +77,27 @@ if($_REQUEST["defaultdomain"]) {
 $entry["BRANCH_NAME"] = $_REQUEST["domain"];
 
 // Add default home directory to the object
-$defaulthomedir = pql_format_international(user_generate_homedir('', '', '', $entry, 'branch'));
-if($defaulthomedir) {
+if(function_exists("user_generate_homedir")) {
+  $defaulthomedir = pql_format_international(user_generate_homedir('', '', '', $entry, 'branch'));
+  if($defaulthomedir) {
 	$defaulthomedir = preg_replace('/ /', '_', $defaulthomedir);
 	$defaulthomedir = preg_replace('/&_/', '', $defaulthomedir);
 	$defaulthomedir = preg_replace('/&/', '',  $defaulthomedir);
-
+	
 	$entry[pql_get_define("PQL_ATTR_BASEHOMEDIR")] = $defaulthomedir;
+  }
 }
 
 // Add default mail directory to the object
-$defaultmaildir = pql_format_international(user_generate_mailstore('', '', '', $entry, 'branch'));
-if($defaultmaildir) {
+if(function_exists("user_generate_mailstore")) {
+  $defaultmaildir = pql_format_international(user_generate_mailstore('', '', '', $entry, 'branch'));
+  if($defaultmaildir) {
 	$defaultmaildir = preg_replace('/ /', '_', $defaultmaildir);
 	$defaultmaildir = preg_replace('/&_/', '', $defaultmaildir);
 	$defaultmaildir = preg_replace('/&/', '',  $defaultmaildir);
 
 	$entry[pql_get_define("PQL_ATTR_BASEMAILDIR")] = $defaultmaildir;
+  }
 }
 
 // Add all the super admins with full access.
