@@ -11,10 +11,7 @@ if($tmp[0]) {
 	$time_expiration = '<i>Not set</i>';
 }
 // Retreive the accountStatus attribute
-$tmp = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_ISACTIVE"));
-$status = $tmp[0];
-
-$status = pql_ldap_accountstatus($status);
+$status = pql_ldap_accountstatus(pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_ISACTIVE")));
 ?>
   <!-- accountstatus -->
   <table cellspacing="0" cellpadding="3" border="0">
