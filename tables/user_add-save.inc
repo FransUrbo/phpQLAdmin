@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.30.2.5 2005-02-21 07:41:57 turbo Exp $
+// $Id: user_add-save.inc,v 1.30.2.6 2005-02-22 07:59:31 turbo Exp $
 
 // {{{ URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
 if($_REQUEST["surname"]) {
@@ -72,30 +72,36 @@ if($_REQUEST["mail"] and
 	pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_ISACTIVE")) or
 	pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILALTERNATE"))))
 {
-  if($_REQUEST["account_status"] and 
-	 pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_ISACTIVE")))
-	$entry[pql_get_define("PQL_ATTR_ISACTIVE")]	= $_REQUEST["account_status"];
-  
-  // Add the primary mail address to the entry array
-  if($_REQUEST["mail"] and
-	 pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAIL")))
-	$entry[pql_get_define("PQL_ATTR_MAIL")] = $_REQUEST["mail"];
-  
-  if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILALTERNATE"), 'MUST')) {
-	// For group objects, we need a 'catchall' mail alias as well.
-	$email_temp = split('\@', $_REQUEST["mail"]); $email_temp = $email_temp[0];
+	// {{{ Add the account status attribute
+	if($_REQUEST["account_status"] and 
+	   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_ISACTIVE")))
+	  $entry[pql_get_define("PQL_ATTR_ISACTIVE")]	= $_REQUEST["account_status"];
+	// }}}
 
-	if($_REQUEST["email_domain"])
-	  $entry[pql_get_define("PQL_ATTR_MAILALTERNATE")][] = $email_temp . "-catchall@" . $_REQUEST["email_domain"];
-	elseif($defaultdomain)
-	  $entry[pql_get_define("PQL_ATTR_MAILALTERNATE")][] = $email_temp . "-catchall@" . $defaultdomain;
+	// {{{ Add the primary mail address to the entry array
+	if($_REQUEST["mail"] and
+	   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAIL")))
+	  $entry[pql_get_define("PQL_ATTR_MAIL")] = $_REQUEST["mail"];
+	// }}}
+
+	// {{{ Add the additional email addresses as well
+	$email_temp = split('\@', $_REQUEST["mail"]); $email_temp = $email_temp[0];
 	
-	// Add the additional email addresses as well
-	if(($include_additional == 'on') and is_array($additionaldomainname)) {
-	  foreach($additionaldomainname as $additional)
-		$entry[pql_get_define("PQL_ATTR_MAILALTERNATE")][] = strtolower($email_temp . "@" . $additional);
+	if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILALTERNATE"), 'MUST')) {
+		// For group objects, we need a 'catchall' mail alias as well.
+		if($_REQUEST["email_domain"])
+		  $entry[pql_get_define("PQL_ATTR_MAILALTERNATE")][] = $email_temp . "-catchall@" . $_REQUEST["email_domain"];
+		elseif($defaultdomain)
+		  $entry[pql_get_define("PQL_ATTR_MAILALTERNATE")][] = $email_temp . "-catchall@" . $defaultdomain;
 	}
-  }
+	
+	if(($_REQUEST["include_additional"] == 'on') and is_array($additionaldomainname) and
+	   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILALTERNATE")))
+	{
+		foreach($additionaldomainname as $additional)
+		  $entry[pql_get_define("PQL_ATTR_MAILALTERNATE")][] = strtolower($email_temp . "@" . $additional);
+	}
+	// }}}
 }
 // }}}
 
@@ -198,22 +204,20 @@ if($_REQUEST["mail"] and $_REQUEST["maildirectory"] and
 // }}}
 
 // {{{ Add mail host, home directory and add local delivery to delivery mode
-if($_REQUEST["mail"] and ($_REQUEST["host"] or $_REQUEST["userhost"]) and
+// 'host' can be zero (0) hence isset().
+if($_REQUEST["mail"] and isset($_REQUEST["host"]) and
    pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILHOST")))
 {
-	if($_REQUEST["host"])
-	  // If using 'qlc' -> the FQDN
-	  $entry[pql_get_define("PQL_ATTR_MAILHOST")]       = $_REQUEST["host"];
-	elseif($_REQUEST["userhost"]) {
-		// We've specified a host, but we never ticked the 'User defined' checkbox.
-		if(is_array($_REQUEST["userhost"]) and $_REQUEST["userhost"]["dns"])
-		  // We have a DNS entry. This is default!
-		  $entry[pql_get_define("PQL_ATTR_MAILHOST")]   = $_REQUEST["userhost"]["dns"];
-		elseif(is_array($_REQUEST["userhost"]) and $_REQUEST["userhost"]["qlc"][0])
-		  // No DNS entry, but we have at least one QLC host. Take the first one we find...
-		  $entry[pql_get_define("PQL_ATTR_MAILHOST")]   = $_REQUEST["userhost"]["qlc"][0];
-		else
-		  $entry[pql_get_define("PQL_ATTR_MAILHOST")]   = $_REQUEST["userhost"];
+	if(isset($_REQUEST["host"]) or isset($_REQUEST["text_host"])) {
+		// Is the manual input field set/used?
+		$nr = $_REQUEST["text_host"];
+		if($_REQUEST["host_".$nr])
+		  $entry[pql_get_define("PQL_ATTR_MAILHOST")]       = $_REQUEST["host_".$nr];
+		else {
+			// ... no it isn't. Use the one that is.
+			$nr = $_REQUEST["host"];
+			$entry[pql_get_define("PQL_ATTR_MAILHOST")]       = $_REQUEST["host_".$nr];
+		}
 	}
 	
 	if(!$_SESSION["NEW_STYLE_QUOTA"] and
@@ -289,7 +293,7 @@ $userdn = pql_maybe_encode($userdn);
 // Hence, we must reverse this here ($_REQUEST["subbranch"] is already
 // URL decoded).
 $branch = pql_maybe_decode($_REQUEST["subbranch"]);
-$DNs = pql_user_add($_pql->ldap_linkid, $_REQUEST["domain"], $userdn, $entry, $_REQUEST["template"], $branch);
+$DNs = pql_user_add($_pql->ldap_linkid, $_REQUEST["domain"], $userdn, $entry, 'user', $branch);
 if($DNs[0]) {
   // TODO: DNs[1] (the group object) might still be empty -> failed to add it.
   
