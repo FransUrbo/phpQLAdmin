@@ -3,8 +3,9 @@
 #
 
 TMPDIR  := $(shell tempfile)
-VERSION := $(shell cat .version)
+VERSION := $(shell cat .version | sed 's@\ .*@@')
 INSTDIR := $(TMPDIR)/phpQLAdmin-$(VERSION)
+DESTDIR := $(TMPDIR)/phpqladmin-$(VERSION)
 
 # Make a unified diff over the changes from the last version...
 diff:
@@ -34,9 +35,10 @@ tag:
 	)
 
 install: $(INSTDIR)
-	@(echo -n "Instdir: $(INSTDIR): "; \
-	  find | cpio -p $(INSTDIR); \
-	  rm -Rf $(INSTDIR)/Makefile $(INSTDIR)/.version.old $(INSTDIR)/README.cvs \
+	@(echo -n "Instdir: $(INSTDIR): "; find | cpio -p $(INSTDIR))
+
+tarball: install
+	@(rm -Rf $(INSTDIR)/Makefile $(INSTDIR)/.version.old $(INSTDIR)/README.cvs \
 		$(INSTDIR)/manual $(INSTDIR)/include/config.inc $(INSTDIR)/phpQLadmin.log; \
 	  cd $(INSTDIR) && find -type d -name CVS -o -name '.cvsignore' -o -name '*~' | xargs rm -rf; \
 	  echo -n "Tarball 1: $(TMPDIR)/phpQLAdmin-$(VERSION).tar.gz: "; \
@@ -44,8 +46,13 @@ install: $(INSTDIR)
 	  echo "done."; \
 	  echo -n "Tarball 2: $(TMPDIR)/phpQLAdmin-$(VERSION).tar.bz2: "; \
 	  cd $(TMPDIR) && tar cjf phpQLAdmin-$(VERSION).tar.bz2 phpQLAdmin-$(VERSION); \
-	  echo "done."; \
-	)
+	  echo "done.")
+
+debian: install
+	@(mv $(INSTDIR) $(DESTDIR); \
+	  cd $(DESTDIR); \
+	  debuild; \
+	  echo "Files is in: "$(DESTDIR))
 
 $(INSTDIR):
 	@rm -f $(TMPDIR) && mkdir -p $(INSTDIR)
