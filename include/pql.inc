@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.176 2004-04-14 08:58:10 turbo Exp $
+// $Id: pql.inc,v 2.177 2004-04-29 12:42:46 turbo Exp $
 //
 
 // ----------------------------
@@ -1781,6 +1781,33 @@ function pql_password_hash($password, $hash) {
 
 		return "{crypt}" . crypt($password, $salt);
     }
+}
+// }}}
+
+// {{{ pql_password_generate(void)
+function pql_password_generate() {
+	$amount = 8;
+
+	for(;;) {
+		$pwd = NULL; $o = NULL;
+
+		for($x=0; $x < $amount; ) {
+			$y = rand(1, 1000);
+			if(($y > 350) and ($y < 601)) $d = chr(rand(48, 57));
+			if($y < 351) $d=chr(rand(65, 90));
+			if($y > 600) $d=chr(rand(97, 122));
+			if($d != $o) {
+				$o = $d;
+				$pwd .= $d;
+				$x++;
+			}
+		}
+
+		if(ereg("^[a-zA-Z]{1}([a-zA-Z]+[0-9][a-zA-Z]+)+", $pwd))
+		  break;
+	}
+
+	return($pwd);
 }
 // }}}
 

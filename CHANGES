@@ -35,6 +35,9 @@ phpQLAdmin 2.0.19 TO BE ANNOUNCED
 
 	API changes
 	Schema changes:
+	  - Added autoCreatePassWord (OID: 1.3.6.1.4.1.8767.3.2.1.16) for auto password
+	    generation. To get it just after 'autoCreateMailAddress', the 'useWebSrv'
+	    attribute was renumbered (+1 in OID number).
 
 phpQLAdmin 2.0.18c TO BE ANNOUNCED
 	Bug fixes

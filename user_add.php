@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.98 2004-04-14 09:17:23 turbo Exp $
+// $Id: user_add.php,v 2.99 2004-04-29 12:42:09 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -82,11 +82,12 @@ switch($_REQUEST["page_curr"]) {
 		// Step 3b: Autogenerate some stuff for the next form
 
 		$attribs = array("autocreatemailaddress" => pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS"),
-						 "autocreateusername"	 => pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"));
+						 "autocreateusername"	 => pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"),
+						 "autocreatepassword"	 => pql_get_define("PQL_ATTR_AUTOCREATE_PASSWORD"));
 		foreach($attribs as $key => $attrib) {
 			// Get default value
 			$value = pql_domain_get_value($_pql, $_REQUEST["domain"], $attrib);
-			$$key = pql_format_bool($value);
+			$$key  = pql_format_bool($value);
 		}
 
 		// Verify/Create uid - But only if:
@@ -124,6 +125,9 @@ switch($_REQUEST["page_curr"]) {
 			  // Replace spaces with underscore
 			  $_REQUEST["email"] = preg_replace(" ", "_", $_REQUEST["email"], -1);
 		}
+
+		if(empty($_REQUEST["password"]) and $autocreatepassword and function_exists('pql_password_generate'))
+		  $_REQUEST["password"] = pql_password_generate();
 	}
 	break;
 	// }}}

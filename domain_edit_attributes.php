@@ -1,6 +1,6 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.41 2004-03-12 17:35:25 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.42 2004-04-29 12:42:09 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -101,7 +101,8 @@ if(@$_REQUEST["submit"] == 1) {
 	if($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_BASEQUOTA"))
 	  attribute_print_form();
 	elseif(($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME")) or
-		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS")))
+		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS")) or
+		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_AUTOCREATE_PASSWORD")))
 	  attribute_save();
 	else
 	  attribute_print_form($_REQUEST["type"]);

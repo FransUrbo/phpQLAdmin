@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.84 2004-04-02 08:33:20 turbo Exp $
+// $Id: domain_detail.php,v 2.85 2004-04-29 12:42:08 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -59,6 +59,7 @@ if(empty($_REQUEST["view"]))
 // uses 'objectClass: dcOrganizationNameForm' -> http://rfc-2377.rfcindex.net/
 $attribs = array("autocreatemailaddress"	=> pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS"),
 				 "autocreateusername"		=> pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"),
+				 "autocreatepassword"		=> pql_get_define("PQL_ATTR_AUTOCREATE_PASSWORD"),
 				 "basehomedir"				=> pql_get_define("PQL_ATTR_BASEHOMEDIR"),
 				 "basemaildir"				=> pql_get_define("PQL_ATTR_BASEMAILDIR"),
 				 "basequota"				=> pql_get_define("PQL_ATTR_BASEQUOTA"),
@@ -98,11 +99,14 @@ foreach($attribs as $key => $attrib) {
 	$link = $key . "_link";
 	if(($key != 'defaultdomain') and ($key != 'basehomedir') and ($key != 'basemaildir')) {
 		if(!$value and (($key == 'maximumdomainusers') or ($key == 'maximummailinglists') or
-						($key == 'autocreateusername') or ($key == 'autocreatemailaddress')))
+						($key == 'autocreateusername') or ($key == 'autocreatemailaddress') or
+						($key == 'autocreatepassword')))
 		  $value = 0;
 		else
 		  // We have a value
-		  if(($key == 'autocreateusername') or ($key == 'autocreatemailaddress'))
+		  if(($key == 'autocreateusername') or
+			 ($key == 'autocreatemailaddress') or
+			 ($key == 'autocreatepassword'))
 			// It's a toggle. Convert the boolean value to an integer
 			$$key = pql_format_bool($value);
 

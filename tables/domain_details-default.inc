@@ -110,7 +110,7 @@
         <td><?=$autocreateusername_link?></td>
       </tr>
 
-<?php if($autocreateusername) { ?>
+<?php	if($autocreateusername) { ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?php echo pql_complete_constant($LANG->_('Automatically generate %what%'), array('what' => $LANG->_('username prefix'))); ?></td>
         <td><?php if($usernameprefix){echo $usernameprefix;}else{echo "<i>".$LANG->_('Not set')."</i>";} ?></td>
@@ -123,11 +123,17 @@
         <td><?=$usernameprefixlength_link?></td>
       </tr>
 
-<?php } ?>
+<?php	} ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?php echo pql_complete_constant($LANG->_('Automatically generate %what%'), array('what' => $LANG->_('email address'))); ?></td>
         <td><?php if($autocreatemailaddress){echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
         <td><?=$autocreatemailaddress_link?></td>
+      </tr>
+
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title"><?php echo pql_complete_constant($LANG->_('Automatically generate %what%'), array('what' => $LANG->_('password'))); ?></td>
+        <td><?php if($autocreatepassword){echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
+        <td><?=$autocreatepassword_link?></td>
       </tr>
 
 <?php } ?>

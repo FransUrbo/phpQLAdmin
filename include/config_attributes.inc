@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.16 2004-04-11 09:18:33 turbo Exp $
+// $Id: config_attributes.inc,v 2.17 2004-04-29 12:42:45 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -257,6 +257,7 @@ pql_set_define("PQL_ATTR_ALLOW_ABSOLUTE_PATH", 				strtolower('allowAbsoluteMail
 pql_set_define("PQL_ATTR_VERIFY_DELETE", 					strtolower('deleteVerification'),			false);
 pql_set_define("PQL_ATTR_AUTOCREATE_MAILADDRESS",			strtolower('autoCreateMailAddress'),		false);
 pql_set_define("PQL_ATTR_AUTOCREATE_USERNAME",				strtolower('autoCreateUserName'),			false);
+pql_set_define("PQL_ATTR_AUTOCREATE_PASSWORD",				strtolower('autoCreatePassWord'),			false);
 pql_set_define("PQL_ATTR_CONTROL_AUTOADDHOSTNAME",	 		strtolower('autoAddHostName'),				false);
 pql_set_define("PQL_ATTR_CONTROL_AUTOADDLOCALS", 			strtolower('autoAddLocals'),				false);
 pql_set_define("PQL_ATTR_CONTROL_AUTOADDRCPTHOSTS", 		strtolower('autoAddRCPTHosts'),				false);
@@ -297,6 +298,7 @@ $PQL_ATTRIBUTE["BRANCH"] = array("PQL_CONF_SHOW_USERS"					=> pql_get_define("PQ
 								 "PQL_CONF_VERIFY_DELETE"				=> pql_get_define("PQL_ATTR_VERIFY_DELETE"),
 								 "PQL_CONF_AUTOCREATE_MAILADDRESS"		=> pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS"),
 								 "PQL_CONF_AUTOCREATE_USERNAME"			=> pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"),
+								 "PQL_CONF_AUTOCREATE_PASSWORD"			=> pql_get_define("PQL_ATTR_AUTOCREATE_PASSWORD"),
 								 "PQL_CONF_CONTROL_AUTOADDHOSTNAME"		=> pql_get_define("PQL_ATTR_CONTROL_AUTOADDHOSTNAME"),
 								 "PQL_CONF_CONTROL_AUTOADDLOCALS"		=> pql_get_define("PQL_ATTR_CONTROL_AUTOADDLOCALS"),
 								 "PQL_CONF_CONTROL_AUTOADDRCPTHOSTS"	=> pql_get_define("PQL_ATTR_CONTROL_AUTOADDRCPTHOSTS"),
