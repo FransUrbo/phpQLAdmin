@@ -34,7 +34,7 @@ tag:
 	  echo cvs tag: $$TAG; \
 	  cvs commit -m "New release - $$MAJOR.$$MINOR.$$LEVEL." \
 		.version .version.old CHANGES; \
-	  cvs tag -RF $$TAG; \
+	  cvs tag -bRF $$TAG; \
 	)
 
 install: $(INSTDIR)
