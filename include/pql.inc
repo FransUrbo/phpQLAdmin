@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.154 2004-03-03 08:28:53 turbo Exp $
+// $Id: pql.inc,v 2.155 2004-03-03 10:27:56 turbo Exp $
 //
 
 // ----------------------------
@@ -841,7 +841,18 @@ function pql_domain_set_value($linkid, $dn, $type, $value) {
 		if(! @ldap_mod_replace($linkid, $dn, $entry)) {
 			if(ldap_errno($linkid) == 65) {
 				// Object class violation - try to add the missing objectclass
+				$old_ocs = $entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")];
+
 				$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")] = pql_missing_objectclasses($linkid, $dn, $entry);
+				if(empty($entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][0])) {
+					global $LANG;
+					echo "pql_domain_set_value() - ".$LANG->_('Could not figure out what objectclasses to add')."<br>";
+
+					$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")] = $old_ocs;
+
+					$LDIF = pql_create_ldif("pql_domain_set_value", $dn, $entry);
+					die($LDIF);
+				}
 
 				// Recursion... Hopfully there's a limit on how many (max_execution_time in php.ini)!
 				pql_domain_set_value($linkid, $dn, $type, $entry);
