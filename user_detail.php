@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.71 2004-03-14 08:26:12 turbo Exp $
+// $Id: user_detail.php,v 2.72 2004-03-17 14:58:21 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -61,6 +61,8 @@ if(!pql_user_exist($_pql->ldap_linkid, $_GET["rootdn"], $_GET["user"])) {
     exit();
 }
 
+if(empty($_GET["view"]))
+	$_GET["view"] = 'basic';
 
 /* DLW: Setting all of these variables in the main code is pointless.  Most of them
  *      never get used.  They should be handled by the tables
@@ -95,9 +97,8 @@ foreach($attribs as $key => $attrib) {
     // Setup edit links
     $link = $key . "_link";
 
-	$alt = pql_complete_constant($LANG->_('Modify %attribute% for %what%'),
-								 array('attribute' => $attrib, 'what' => $username));
-    $$link = "<a href=\"user_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&attrib=$attrib&user=".$url["user"]."&$attrib=$value&view=$view\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt."\"></a>";
+	$alt = pql_complete_constant($LANG->_('Modify %attribute% for %what%'), array('attribute' => $attrib, 'what' => $username));
+    $$link = "<a href=\"user_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&attrib=$attrib&user=".$url["user"]."&$attrib=$value&view=" . $_GET["view"] . "\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt."\"></a>";
 }
 $quota = pql_user_get_quota($_pql->ldap_linkid, $_GET["user"]);
 
@@ -140,7 +141,7 @@ if($uid) {
 							pql_get_define("PQL_ATTR_ADDITIONAL_GROUP")."=".$uid,
 							pql_get_define("PQL_ATTR_CN"));
 
-		for($i=0; $muids[$i]; $i++)
+		for($i=0; isset($muids[$i]); $i++)
 		  $memberuid[] = $muids[$i];
 	}
 }
@@ -172,9 +173,6 @@ if(!$_SESSION["SINGLE_USER"]) {
 }
 
 pql_generate_button($buttons, "user=".$url["user"]); echo "  <br>\n";
-
-if($_GET["view"] == '')
-	$_GET["view"] = 'basic';
 
 if($_GET["view"] == 'basic')					include("./tables/user_details-basic.inc");
 if($_GET["view"] == 'personal')					include("./tables/user_details-personal.inc");
