@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.92 2003-07-03 09:16:57 turbo Exp $
+// $Id: pql.inc,v 2.93 2003-07-03 09:40:49 turbo Exp $
 //
 
 // ----------------------------
@@ -2035,8 +2035,8 @@ function maybe_encode($string, $attrib = '', $linkid = '') {
 	$old = $string;
 
 	$new = strtr($old,
-				 "ÉÑÅÄÖÜáéíóúñàèìòùåäöëïüâêîôûç",
-				 "ENAAOYaeiounaeiouaaoeiyaeiouc");
+				 "ÁÉÍÓÚÑÀÈÌÒÙÅÄËÏÖÜÂÊÎÔÛáéíóúñàèìòùåäëïöüâêîôûç",
+				 "AEIOUNAEIOUAAEIOYAEIOUaeiounaeiouaaeioyaeiouc");
 	if($old != $new) {
 		// The two strings isn't equal -> something have been replaced
 
