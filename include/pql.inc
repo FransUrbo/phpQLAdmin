@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.187 2004-10-09 16:30:01 turbo Exp $
+// $Id: pql.inc,v 2.188 2004-10-09 19:00:52 turbo Exp $
 //
 
 // ----------------------------
@@ -1769,19 +1769,22 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 // {{{ pql_get_rootdn(dn)
 function pql_get_rootdn($dn, $function = '') {
 	global $_pql;
-	$tracker = 'Please report this at the <a href="http://apache.bayour.com/anthill/" target="_new">bugtracker</a>.<br>';
+	$tracker = 'Please report this at the <a href="http://bugs.bayour.com/" target="_new">bugtracker</a>.<br>';
 
-	if($dn == '') {
-		if($function)
-		  echo "This is weird. We're called (from $function) with an empty DN! $tracker";
-		else
-		  echo "This is weird. We're called with an empty DN! $tracker";
-		die();
-	} else
+	if($function)
+	  $function = " (from $function)";
+
+	if($dn == '')
+	  die("This is weird. We're called$function with an empty DN! $tracker");
+	else
 	  $dn = urldecode($dn);
 
 	if(is_array($_pql->ldap_basedn)) {
 		$counts = 0;
+
+		// Get all possible matches. If we're looking for 'uid=turbo,ou=People,o=Fredriksson,c=SE',
+		// there is at least FOUR possibilities (one for each and every branch - they can all be
+		// separate root DN's!
 		foreach($_pql->ldap_basedn as $base) {
 			$base = urldecode($base);
 
@@ -1792,13 +1795,32 @@ function pql_get_rootdn($dn, $function = '') {
 		}
 		
 		if($counts >= 2) {
-			// We have more than one hit!!
-			// TODO: What do do with more than one hit!?
-			echo "This is weird. We have more than one hit ($counts to be exact) in our pql_get_rootdn() check!<br>";
-			echo "<br>";
-			echo "These are the DNs that matches the <u>$dn</u> DN. $tracker";
-			printr($DNs);
-			die();
+			// We have more than one hit (there's at least TWO partitions)!!
+			// -> Check each DN, looking for the DN with the HIGHEST amount of commas.
+			//    That must be the DN that's closest to the DN we're looking for.
+			foreach($DNs as $base)  {
+				$dn_parts = explode(',', $base);
+				$count = count($dn_parts); // Get amount of DN parts.
+				
+				// Remember this DN. It's above the DN we're looking for.
+				$DN_REF[$base] = ($count) ? $count : 0;
+			}
+			
+			// Again we have more than one. Which of these have the highest
+			// amount of commas!?
+			if($DN_REF) {
+				asort($DN_REF); // Sort the DN's left. The LAST one have the most commas!
+				
+				// Just go through them one by one to get the last one...
+				foreach($DN_REF as $base => $count)
+				  $found = $base;
+				
+				// Return this DN. It MUST be the correct one!!
+				return(urlencode($found));
+			}
+
+			// We just shouldn't end up here! "It can't happen" - famous last words :)
+			die("You've ended up in a place where I didn't expect you to get... How exactly did you get here!? $tracker");
 		} elseif($counts < 1) {
 			// BUG! We don't have a hit!
 			echo "This is weird. We couldn't find the root dn for some reason. The DN we're trying to find a root DN for is: ";
