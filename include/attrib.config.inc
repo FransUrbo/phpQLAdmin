@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.4 2003-01-21 13:50:30 turbo Exp $
+// $Id: attrib.config.inc,v 1.5 2003-01-22 11:09:52 turbo Exp $
 
 function attribute_check() {
     global $administrator, $domain, $oldvalue, $_pql, $error, $attrib, $$attrib;
@@ -41,20 +41,8 @@ function attribute_print_form() {
 		$opt = ($oldvalue ? '0' : '1');
 		$entry[$attrib] = $opt;
 
-		// Get all object classes of the DN, making sure it
-		// contains the phpQLAdminBranch
-		$sr  = @ldap_read($_pql->ldap_linkid,
-						  $_pql->ldap_basedn[0],
-						  $_pql->ldap_basedn[0],
-						  array('objectclass'));
-		$ocs = @ldap_get_entries($_pql->ldap_linkid, $sr) or pql_errormsg($linkid);
-		for($j=0; $j < $ocs[0]["objectclass"]["count"]; $j++) {
-			if(eregi('phpQLAdminConfig', $ocs[0]["objectclass"][$j]))
-			  $got_phpqladmin_objectclass_config = 1;
-		}
-
+		if(! attribute_verify_objectclass($_pql))
 		// We don't have the 'phpQLAdminConfig' objectclass
-		if(! $got_phpqladmin_objectclass_config)
 		  $entry["objectClass"][] = 'phpQLAdminConfig';
 		
 		if(! pql_set_domain_value($_pql->ldap_linkid, $_pql->ldap_basedn[0], '', $entry))
@@ -86,22 +74,40 @@ function attribute_print_form() {
 
 function attribute_save() {
     global $domain, $attrib, $$attrib, $oldvalue, $administrator, $_pql;
-	$value = $$attrib;
+	$value[$attrib] = $$attrib;
 	
-	if($value == $oldvalue){
+	if($value[$attrib] == $oldvalue){
 		// don't change if new value equal to old one
 		$msg = PQL_LDAP_CN_UNCHANGED;
 		attribute_forward($msg);
 		break;
 	}
 	
-	if(! pql_set_domain_value($_pql->ldap_linkid, $_pql->ldap_basedn[0], $attrib, $value))
+	if(! attribute_verify_objectclass($_pql))
+	  // We don't have the 'phpQLAdminConfig' objectclass
+	  $value["objectClass"][] = 'phpQLAdminConfig';
+		
+	if(! pql_set_domain_value($_pql->ldap_linkid, $_pql->ldap_basedn[0], '', $value))
 	  $msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
 	else
 	  $msg = "Successfully replaced $attrib."; $rlnb = 1;
 
 	attribute_forward($msg, $rlnb);
 	break;
+}
+
+function attribute_verify_objectclass($ldap) {
+	// Get all object classes of the DN, making sure it
+	// contains the phpQLAdminBranch
+	$sr  = @ldap_read($ldap->ldap_linkid, $ldap->ldap_basedn[0],
+					  $ldap->ldap_basedn[0], array('objectclass'));
+	$ocs = @ldap_get_entries($ldap->ldap_linkid, $sr) or pql_errormsg($ldap->ldap_linkid);
+	for($j=0; $j < $ocs[0]["objectclass"]["count"]; $j++) {
+		if(eregi('phpQLAdminConfig', $ocs[0]["objectclass"][$j]))
+		  return 1;
+	}
+
+	return 0;
 }
 
 /*
