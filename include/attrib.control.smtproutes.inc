@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtproutes (max number of bytes in message)
 //
-// $Id: attrib.control.smtproutes.inc,v 2.20 2004-08-27 08:49:33 turbo Exp $
+// $Id: attrib.control.smtproutes.inc,v 2.21 2004-10-15 15:21:57 turbo Exp $
 
 // {{{ smtproutes_check(type)
 function smtproutes_check($type) {
@@ -116,7 +116,7 @@ function smtproutes_print_view($host) {
 	if(!is_array($routes)) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td colspan="5"><?=$LANG->_('No routes defined')?></td>
+        <td colspan="6"><?=$LANG->_('No routes defined')?></td>
       </tr>
 <?php
 	} else {
