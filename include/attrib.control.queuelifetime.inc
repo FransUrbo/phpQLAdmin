@@ -2,7 +2,7 @@
 // control attribute plugin for
 // queuelifetime (maximum number of RCPT TO's)
 //
-// $Id: attrib.control.queuelifetime.inc,v 2.15 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.control.queuelifetime.inc,v 2.16 2005-01-29 18:46:57 turbo Exp $
 
 // {{{ queuelifetime_check(type)
 function queuelifetime_check($type) {
@@ -104,8 +104,8 @@ function queuelifetime_save($type, $host) {
 	global $_pql_control, $LANG;
 
 	switch($type) {
-	  case "modify";
-	  case "add";
+	  case "modify":
+	  case "add":
 		// save entries
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],

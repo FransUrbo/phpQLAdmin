@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // uid (user id)
-// $Id: attrib.uid.inc,v 2.24 2004-11-05 13:14:28 turbo Exp $
+// $Id: attrib.uid.inc,v 2.25 2005-01-29 18:46:57 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type){
@@ -80,7 +80,7 @@ function attribute_save($type) {
 		// no add operation possible with uid
 		break;
 
-	  case "modify";
+	  case "modify":
 		if($_REQUEST["uid"] == $_REQUEST["oldvalue"]) {
 			// don't change if new value equal to old one
 			$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('Username')));

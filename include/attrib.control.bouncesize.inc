@@ -2,7 +2,7 @@
 // control attribute plugin for
 // bouncemaxbytes (max number of bytes in message)
 //
-// $Id: attrib.control.bouncesize.inc,v 2.5 2004-10-19 10:40:40 turbo Exp $
+// $Id: attrib.control.bouncesize.inc,v 2.6 2005-01-29 18:46:57 turbo Exp $
 
 // {{{ bouncemaxbytes_check(type)
 function bouncemaxbytes_check($type) {
@@ -90,8 +90,8 @@ function bouncemaxbytes_save($type, $host)  {
 	global $_pql_control, $error, $LANG;
 
 	switch($type) {
-	  case "modify";
-	  case "add";
+	  case "modify":
+	  case "add":
 		// save entries
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],

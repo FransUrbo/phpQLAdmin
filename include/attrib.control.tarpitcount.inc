@@ -3,7 +3,7 @@
 // tarpitcount (user id of virtual user)
 // tarpitdelay (group id of virtual user)
 //
-// $Id: attrib.control.tarpitcount.inc,v 2.17 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.control.tarpitcount.inc,v 2.18 2005-01-29 18:46:57 turbo Exp $
 
 // {{{ tarpitcount_check(type)
 function tarpitcount_check($type) {
@@ -138,8 +138,8 @@ function tarpitcount_save($type, $host) {
 	global $_pql_control, $LANG;
 
 	switch($type) {
-	  case "modify";
-	  case "add";
+	  case "modify":
+	  case "add":
 		// save entries
 		$attribs = array("tarpitcount" => pql_get_define("PQL_ATTR_TARPITCOUNT"),
 						 "tarpitdelay" => pql_get_define("PQL_ATTR_TARPITDELAY"));

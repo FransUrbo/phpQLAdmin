@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // cn (Full name)
-// $Id: attrib.cn.inc,v 2.22 2004-10-19 10:40:40 turbo Exp $
+// $Id: attrib.cn.inc,v 2.23 2005-01-29 18:46:57 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -60,7 +60,7 @@ function attribute_save($type) {
 		// no add operation possible with cn
 		break;
 
-      case "modify";
+      case "modify":
 		if($_REQUEST["cn"] == $_REQUEST["oldvalue"]) {
 			// don't change if new value equal to old one
 			$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('Common name')));

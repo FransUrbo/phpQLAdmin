@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldapmessagestore (default prefix for mailbox paths)
 //
-// $Id: attrib.control.ldapmessagestore.inc,v 2.16 2004-10-19 10:40:40 turbo Exp $
+// $Id: attrib.control.ldapmessagestore.inc,v 2.17 2005-01-29 18:46:57 turbo Exp $
 
 // {{{ ldapmessagestore_check(type)
 function ldapmessagestore_check($type) {
@@ -97,8 +97,8 @@ function ldapmessagestore_save($type, $host) {
 	global $_pql_control, $LANG;
 	
 	switch($type) {
-	  case "modify";
-	  case "add";
+	  case "modify":
+	  case "add":
 		// save entries
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],

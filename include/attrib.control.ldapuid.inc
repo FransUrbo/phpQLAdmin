@@ -3,7 +3,7 @@
 // ldapuid (user id of virtual user)
 // ldapgid (group id of virtual user)
 //
-// $Id: attrib.control.ldapuid.inc,v 2.15 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.control.ldapuid.inc,v 2.16 2005-01-29 18:46:57 turbo Exp $
 
 // {{{ ldapuid_check(type)
 function ldapuid_check($type) {
@@ -130,8 +130,8 @@ function ldapuid_save($type, $host) {
 	global $_pql_control, $LANG;
 
 	switch($type) {
-	  case "modify";
-	  case "add";
+	  case "modify":
+	  case "add":
 		// save entries
 		$attribs = array("ldapuid" => pql_get_define("PQL_ATTR_LDAPUID"),
 						 "ldapgid" => pql_get_define("PQL_ATTR_LDAPGID"));

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailforwardingaddress (forward all mails to this address)
-// $Id: attrib.mailforwardingaddress.inc,v 2.21 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.mailforwardingaddress.inc,v 2.22 2005-01-29 18:46:57 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -97,7 +97,7 @@ function attribute_save($type) {
 		attribute_forward($msg);
 		break;
 
-	  case "modify";
+	  case "modify":
 		$email = $_REQUEST["mailforwardingaddress"];
 		
 		if($email == $_REQUEST["oldvalue"]) {

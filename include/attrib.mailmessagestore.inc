@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailmessagestore (path to mailbox)
-// $Id: attrib.mailmessagestore.inc,v 2.18 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.mailmessagestore.inc,v 2.19 2005-01-29 18:46:57 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -83,7 +83,7 @@ function attribute_save($type) {
 		// no add operation possible with mailmessagestore
 		break;
 
-	  case "modify";
+	  case "modify":
 		if($_REQUEST["mailmessagestore"] == $_REQUEST["oldvalue"]) {
 			// don't change if new value equal to old one
 			$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('Mailbox path')));

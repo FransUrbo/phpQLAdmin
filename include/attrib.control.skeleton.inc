@@ -58,7 +58,7 @@
 //
 // Please look at other plugins to see which standard header text is recommanded.
 //
-// $Id: attrib.control.skeleton.inc,v 2.16 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.control.skeleton.inc,v 2.17 2005-01-29 18:46:57 turbo Exp $
 //
 
 // {{{ xxx_check(type)
@@ -176,8 +176,8 @@ function xxx_save($type, $host) {
 	// value in multifield attributes).
 
 	switch($type) {
-	  case "modify";
-	  case "add";
+	  case "modify":
+	  case "add":
 		// save entries
 		
 		if(pql_modify_attribute($_pql_control->ldap_linkid,

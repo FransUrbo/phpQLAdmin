@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mailquota.inc,v 2.29 2004-11-05 12:09:44 turbo Exp $
+// $Id: attrib.mailquota.inc,v 2.30 2005-01-29 18:46:57 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -255,7 +255,7 @@ function attribute_save($type) {
 			attribute_forward($msg);
 		}
 		
-	  case "modify";
+	  case "modify":
 		// remove attribute if it is set to ""
 
 		if($_REQUEST["attrib"] == 'basequota') {

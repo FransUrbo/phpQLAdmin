@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailalternateaddress (emailaddress alias)
-// $Id: attrib.mailalternateaddress.inc,v 2.29 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.mailalternateaddress.inc,v 2.30 2005-01-29 18:46:57 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -165,7 +165,7 @@ function attribute_save($type) {
 		  attribute_forward($msg);
 		break;
 
-      case "modify";
+      case "modify":
 		if($_REQUEST[$attrib] == $_REQUEST["oldvalue"]) {
 			// don't change if new value equal to old one
 			$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('alias')));
@@ -194,7 +194,7 @@ function attribute_save($type) {
 		  attribute_forward($msg);
 		break;
 
-      case "delete";
+      case "delete":
 		// Get the old values, so we can remove the one we're modifying
 		// (delete the one we want to delete, keep the others etc)
 		$values = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], $attrib);

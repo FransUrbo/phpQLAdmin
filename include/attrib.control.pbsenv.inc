@@ -2,7 +2,7 @@
 // control attribute plugin for
 // pbsenv (max number of bytes in message)
 //
-// $Id: attrib.control.pbsenv.inc,v 2.6 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.control.pbsenv.inc,v 2.7 2005-01-29 18:46:57 turbo Exp $
 
 // {{{ pbsenv_check(type)
 function pbsenv_check($type) {
@@ -124,8 +124,8 @@ function pbsenv_save($type, $host)  {
 	global $_pql_control, $error, $LANG;
 
 	switch($type) {
-	  case "modify";
-	  case "add";
+	  case "modify":
+	  case "add":
 		// save entries
 		for($i=0; $_REQUEST["pbsenvariable_name"][$i] and $_REQUEST["pbsenvariable_value"][$i]; $i++)
 		  $entry[] = $_REQUEST["pbsenvariable_name"][$i] . "=" . $_REQUEST["pbsenvariable_value"][$i];

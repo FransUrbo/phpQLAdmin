@@ -2,7 +2,7 @@
 // control attribute plugin for
 // quotawarning (additional quota warning message)
 //
-// $Id: attrib.control.quotawarning.inc,v 2.17 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.control.quotawarning.inc,v 2.18 2005-01-29 18:46:57 turbo Exp $
 
 // {{{ quotawarning_check(type)
 function quotawarning_check($type) {
@@ -101,8 +101,8 @@ function quotawarning_save($type, $host) {
 	global $_pql_control, $LANG;
 
 	switch($type) {
-	  case "modify";
-	  case "add";
+	  case "modify":
+	  case "add":
 		// save entries
 		if($_REQUEST["use_quotawarning"] == "0")
 		  $_REQUEST["quotawarning"] = "";

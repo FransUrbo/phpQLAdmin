@@ -3,7 +3,7 @@
 // bouncefrom (username of bounce sender)
 // bouncehost (hostname of bounce sender)
 //
-// $Id: attrib.control.bouncefrom.inc,v 2.17 2004-10-19 10:40:40 turbo Exp $
+// $Id: attrib.control.bouncefrom.inc,v 2.18 2005-01-29 18:46:57 turbo Exp $
 
 // {{{ bouncefrom_check(type)
 
@@ -122,8 +122,8 @@ function bouncefrom_save($type, $host) {
 	global $_pql_control, $LANG;
 
 	switch($type) {
-	  case "modify";
-	  case "add";
+	  case "modify":
+	  case "add":
 		// save entries
 		$attribs = array("bouncefrom" => pql_get_define("PQL_ATTR_BOUNCEFROM"),
 						 "bouncehost" => pql_get_define("PQL_ATTR_BOUNCEHOST"));

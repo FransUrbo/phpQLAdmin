@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // qmaildotmode (interpretation of .qmail-files)
-// $Id: attrib.qmaildotmode.inc,v 2.18 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.qmaildotmode.inc,v 2.19 2005-01-29 18:46:57 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -93,7 +93,7 @@ function attribute_save($type) {
 		// no add operation possible with qmaildotmode
 		break;
 
-	  case "modify";
+	  case "modify":
 		if($_REQUEST["qmaildotmode"] == $_REQUEST["oldvalue"]) {
 			// don't change if new value equal to old one
 			$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('Dotmode')));

@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for pilotPerson objects etc
-// $Id: attrib.outlook.inc,v 1.26 2004-11-05 12:21:22 turbo Exp $
+// $Id: attrib.outlook.inc,v 1.27 2005-01-29 18:46:57 turbo Exp $
 
 /*
 	Attributes managed here:
@@ -127,7 +127,7 @@ function attribute_save($type) {
 		attribute_forward($msg);
 		break;
 
-      case "delete";
+      case "delete":
 		if($_REQUEST["domain"] and !$_REQUEST["user"]) {
 			// Delete a domain attribute
 			if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib, '', ''))

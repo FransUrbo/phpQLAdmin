@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // qmail uid and gid
-// $Id: attrib.ugidnumber.inc,v 2.4 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.ugidnumber.inc,v 2.5 2005-01-29 18:46:57 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -108,7 +108,7 @@ function attribute_save($type) {
 	switch($type) {
 	  case "add":
 		break;
-	  case "modify";
+	  case "modify":
 	    // We have 2 values to change which complicates this a bit.
 		list($old_uidnumber, $old_gidnumber) = parse_oldvalue();
 		$msgs = array();

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // pbscachesize (max number of bytes in message)
 //
-// $Id: attrib.control.pbscachesize.inc,v 2.5 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.control.pbscachesize.inc,v 2.6 2005-01-29 18:46:57 turbo Exp $
 
 // {{{ pbscachesize_check(type)
 function pbscachesize_check($type) {
@@ -90,8 +90,8 @@ function pbscachesize_save($type, $host)  {
 	global $_pql_control, $error, $LANG;
 
 	switch($type) {
-	  case "modify";
-	  case "add";
+	  case "modify":
+	  case "add":
 		// save entries
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],

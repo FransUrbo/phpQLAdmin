@@ -2,7 +2,7 @@
 // control attribute plugin for
 // bigbrother (max number of bytes in message)
 //
-// $Id: attrib.control.bigbrother.inc,v 2.6 2004-10-19 10:40:40 turbo Exp $
+// $Id: attrib.control.bigbrother.inc,v 2.7 2005-01-29 18:46:57 turbo Exp $
 
 // {{{ bigbrother_check(type)
 function bigbrother_check($type) {
@@ -131,8 +131,8 @@ function bigbrother_save($type, $host)  {
 	global $_pql_control, $error, $LANG;
 
 	switch($type) {
-	  case "modify";
-	  case "add";
+	  case "modify":
+	  case "add":
 		// save entries
 		for($i=0; $_REQUEST["bbmail_to"][$i] and $_REQUEST["bbmail_cpy"][$i]; $i++)
 		  $entry[] = $_REQUEST["bbmail_to"][$i] . ":" . $_REQUEST["bbmail_cpy"][$i];

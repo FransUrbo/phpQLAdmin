@@ -2,7 +2,7 @@
 // control attribute plugin for
 // custombouncetext (additional bounce message)
 //
-// $Id: attrib.control.custombouncetext.inc,v 2.17 2004-10-19 10:40:40 turbo Exp $
+// $Id: attrib.control.custombouncetext.inc,v 2.18 2005-01-29 18:46:57 turbo Exp $
 
 // {{{ custombouncetext_check(type)
 function custombouncetext_check($type) {
@@ -104,8 +104,8 @@ function custombouncetext_save($type, $host) {
 	global $_pql_control, $LANG;
 	
 	switch($type) {
-	  case "modify";
-	  case "add";
+	  case "modify":
+	  case "add":
 		// save entries
 		if($_REQUEST["use_custombouncetext"] == "0")
 		  $_REQUEST["custombouncetext"] = "";

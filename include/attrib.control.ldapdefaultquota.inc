@@ -4,7 +4,7 @@
 // or, if using new style quota
 // 	defaultQuotaSize and defaultQuotaCount
 //
-// $Id: attrib.control.ldapdefaultquota.inc,v 2.18 2004-10-19 10:40:40 turbo Exp $
+// $Id: attrib.control.ldapdefaultquota.inc,v 2.19 2005-01-29 18:46:57 turbo Exp $
 
 // {{{ ldapdefaultquota_check(type)
 function ldapdefaultquota_check($type) {
@@ -206,7 +206,7 @@ function ldapdefaultquota_save($type, $host) {
 	
     switch($type) {
       case "modify":
-      case "add";
+      case "add":
 		$dn = pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"];
 		$failed = 0;
 

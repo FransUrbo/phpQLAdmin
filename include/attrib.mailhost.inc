@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailhost (host address which resides the mailhost)
-// $Id: attrib.mailhost.inc,v 2.20 2004-11-05 12:06:17 turbo Exp $
+// $Id: attrib.mailhost.inc,v 2.21 2005-01-29 18:46:57 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -105,7 +105,7 @@ function attribute_save($type) {
 		// no add operation possible with mail
 		break;
 
-	  case "modify";
+	  case "modify":
 		if($_REQUEST["mailhost"] == $_REQUEST["oldvalue"]) {
 			// don't change if new value equal to old one
 			$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('Mailserver')));

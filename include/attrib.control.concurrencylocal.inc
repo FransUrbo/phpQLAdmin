@@ -3,7 +3,7 @@
 // concurrencylocal (may simultaneous local deliveries)
 // concurrencyremote (may simultaneous remote deliveries)
 //
-// $Id: attrib.control.concurrencylocal.inc,v 2.19 2004-10-19 10:40:40 turbo Exp $
+// $Id: attrib.control.concurrencylocal.inc,v 2.20 2005-01-29 18:46:57 turbo Exp $
 
 // {{{ concurrencylocal_check(type)
 function concurrencylocal_check($type) {
@@ -117,8 +117,8 @@ function concurrencylocal_save($type, $host) {
 	global $_pql_control, $LANG;
 
 	switch($type) {
-	  case "modify";
-	  case "add";
+	  case "modify":
+	  case "add":
 		// save entries
 		$attribs = array("concurrencylocal"  => pql_get_define("PQL_ATTR_CONCURRENCYLOCAL"),
 						 "concurrencyremote" => pql_get_define("PQL_ATTR_CONCURRENCYREMOTE"));

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // rbllist (max number of bytes in message)
 //
-// $Id: attrib.control.rbllist.inc,v 2.6 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.control.rbllist.inc,v 2.7 2005-01-29 18:46:57 turbo Exp $
 
 // {{{ rbllist_check(type)
 function rbllist_check($type) {
@@ -153,8 +153,8 @@ function rbllist_save($type, $host)  {
 	global $_pql_control, $error, $LANG;
 
 	switch($type) {
-	  case "modify";
-	  case "add";
+	  case "modify":
+	  case "add":
 		// save entries
 
 		for($i=0; $_REQUEST["rblserver"][$i]; $i++)

@@ -7,7 +7,7 @@
 // ldapgrouplogin (dn of a database user - used by qmail-group)
 // ldapgrouppassword (password for bind - used with ldapgrouplogin)
 //
-// $Id: attrib.control.ldapserver.inc,v 2.17 2004-10-19 10:40:40 turbo Exp $
+// $Id: attrib.control.ldapserver.inc,v 2.18 2005-01-29 18:46:57 turbo Exp $
 
 // {{{ ldapserver_check(type)
 function ldapserver_check($type) {
@@ -283,8 +283,8 @@ function ldapserver_save($type, $host) {
 	$ldapserver = preg_replace("/\s+/", " ", $ldapserver);
 	
 	switch($type) {
-		case "modify";
-		case "add";
+		case "modify":
+		case "add":
 		// save entries
 		$attribs = array("ldapserver"   => pql_get_define("PQL_ATTR_LDAPSERVER"),
 						 "ldapbasedn"   => pql_get_define("PQL_ATTR_LDAPBASEDN"));

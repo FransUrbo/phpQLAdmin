@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldaplocaldelivery (search for local account, if ldap search is not successful)
 //
-// $Id: attrib.control.ldaplocaldelivery.inc,v 2.15 2004-10-19 10:40:40 turbo Exp $
+// $Id: attrib.control.ldaplocaldelivery.inc,v 2.16 2005-01-29 18:46:57 turbo Exp $
 
 // {{{ ldaplocaldelivery_check(type)
 function ldaplocaldelivery_check($type) {
@@ -68,8 +68,8 @@ function ldaplocaldelivery_save($type, $host) {
 	global $_pql_control, $LANG;
 
 	switch($type) {
-	  case "modify";
-	  case "add";
+	  case "modify":
+	  case "add":
 		// save entries
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],

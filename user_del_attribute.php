@@ -1,6 +1,6 @@
 <?php
 // delete attribute of a user
-// $Id: user_del_attribute.php,v 2.29 2004-10-19 10:40:40 turbo Exp $
+// $Id: user_del_attribute.php,v 2.30 2005-01-29 18:46:56 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -10,15 +10,15 @@ switch ($_REQUEST["attrib"]) {
     $_REQUEST["attrib"] = pql_get_define("PQL_ATTR_MAILALTERNATE");
     break;	
     
-  case "mailforwardingaddress";
+  case "mailforwardingaddress":
     $_REQUEST["attrib"] = pql_get_define("PQL_ATTR_FORWARDS");
     break;
 
-  case "confirmtext";
+  case "confirmtext":
     $_REQUEST["attrib"] = pql_get_define("PQL_ATTR_GROUP_CONFIRM_TEXT");
     break;
 
-  case "moderatortext";
+  case "moderatortext":
     $_REQUEST["attrib"] = pql_get_define("PQL_ATTR_GROUP_MODERATOR_TEXT");
     break;
     
