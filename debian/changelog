@@ -2,8 +2,10 @@ phpqladmin (2.0.18d-1) unstable; urgency=low
 
   * De-globalize the 'reload left frame' value so that the reloading can
     acctually happen!
+  * Don't show the minus image before 'no domains' (left-ezmlm.php) if there's
+    no mailing lists to display
 
- -- Turbo Fredriksson <turbo@debian.org>  Thu,  6 May 2004 07:14:02 +0200
+ -- Turbo Fredriksson <turbo@debian.org>  Thu,  6 May 2004 07:43:52 +0200
 
 phpqladmin (2.0.18c-1) unstable; urgency=low
 

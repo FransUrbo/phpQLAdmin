@@ -1,6 +1,6 @@
 <?php
 // navigation bar - ezmlm mailinglists manager
-// $Id: left-ezmlm.php,v 2.26 2004-04-01 07:00:24 turbo Exp $
+// $Id: left-ezmlm.php,v 2.26.6.1 2004-05-06 05:45:29 turbo Exp $
 //
 session_start();
 
@@ -51,7 +51,7 @@ if(!is_array($domains)) {
   <!-- start domain parent -->
 <?php if($_SESSION["opera"]) { ?>
   <div id="el0000Parent" class="parent" onclick="showhide(el0000Spn, el0000Img)">
-    <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el0000Img">
+    <img name="imEx" src="images/spacer.png" border="0" alt="-" width="9" height="9" id="el0000Img">
     <font color="black" class="heada">no domains</font></a>
   </div>
 <?php } else { ?>
