@@ -2,7 +2,7 @@
 // control attribute plugin for
 // dirmaker (default prefix for mailbox paths)
 //
-// $Id: attrib.control.dirmaker.inc,v 2.13 2004-03-11 16:31:54 turbo Exp $
+// $Id: attrib.control.dirmaker.inc,v 2.14 2004-04-01 11:16:47 turbo Exp $
 
 // {{{ dirmaker_check(type)
 function dirmaker_check($type) {
@@ -127,7 +127,7 @@ function dirmaker_help() {
 	global $LANG;
 ?>
 	If you compiled the autohomedirmake-feature, this contains the FULL path to your script which
-	creates missing homedirs. The scrpit is executed under the affected user's uid/gid, so if your
+	creates missing homedirs. The script is executed under the affected user's uid/gid, so if your
 	homedirs are in /home and the homdir for joe (system uid joe) should be created, joe MUST have
 	write permissions to /home. This feature is most usefull in virtual user environments where all
 	users are mapped to an single system uid/gid pair, let's say virtual/virtual. Then only virtual
