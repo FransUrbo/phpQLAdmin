@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // cn (Full name)
-// $Id: attrib.cn.inc,v 2.23.4.1 2005-03-03 13:08:45 turbo Exp $
+// $Id: attrib.cn.inc,v 2.23.4.2 2005-03-27 14:17:25 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -91,9 +91,7 @@ function attribute_save($type) {
 				. ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 		}
 
-		/* DLW: Bug: This is broken I think.  It's changing parts of the name, but not the CN.
-		 *      Does it want to change the CN? */
-		// Get first and last name
+		// Get first and last name from the 'CN'.
 		$name = split(" ", $_REQUEST["cn"]);
 
 		// Change givenName which is the first name
