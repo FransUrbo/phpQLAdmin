@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // default domain name (the default domainname for a domain)
-// $Id: attrib.defaultdomain.inc,v 2.30 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.defaultdomain.inc,v 2.31 2004-11-12 09:28:38 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -159,22 +159,25 @@ function attribute_save($type) {
 							$hosts[] = $_POST[pql_get_define("PQL_ATTR_LOCALS")."_".$i];
 						
 						if(is_array($hosts)) {
-							foreach($hosts as $host)
-							  pql_control_update_domains($_pql_control, $_REQUEST["rootdn"],
-														 pql_get_define("PQL_ATTR_CN").'=$host,'.$_SESSION["USER_SEARCH_DN_CTR"],
-														 '*', array($oldvalue, $defaultdomain),
-														 pql_get_define("PQL_ATTR_LOCALS"));
+							foreach($hosts as $host) {
+								pql_modify_attribute($_pql_control->ldap_linkid,
+													 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+													 pql_get_define("PQL_ATTR_LOCALS"),
+													 '', $defaultdomain);
+							}
 						}
 					} else {
 						// Change all hosts
 						if($type == 'delete')
-						  pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
-													 '*', array($delval, ''),
-													 pql_get_define("PQL_ATTR_LOCALS"));
+						  pql_modify_attribute($_pql_control->ldap_linkid,
+											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+											   pql_get_define("PQL_ATTR_LOCALS"),
+											   $delval, '');
 						else
-						  pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
-													 '*', array($oldvalue, $defaultdomain),
-													 pql_get_define("PQL_ATTR_LOCALS"));
+						  pql_modify_attribute($_pql_control->ldap_linkid,
+											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+											   pql_get_define("PQL_ATTR_LOCALS"),
+											   '', $defaultdomain);
 					}
 				} else {
 					// We have not gone through the form for adding defaultDomain nor additionalDomainName.
@@ -199,26 +202,28 @@ function attribute_save($type) {
 						if(is_array($hosts)) {
 							foreach($hosts as $host)
 							  if($type == 'delete')
-								pql_control_update_domains($_pql_control, $_REQUEST["rootdn"],
-														   pql_get_define("PQL_ATTR_CN").'=$host,'.$_SESSION["USER_SEARCH_DN_CTR"],
-														   '*', array($delval, ''),
-														   pql_get_define("PQL_ATTR_RCPTHOSTS"));
+								pql_modify_attribute($_pql_control->ldap_linkid,
+													 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+													 pql_get_define("PQL_ATTR_RCPTHOSTS"),
+													 $delval, '');
 							  else
-								pql_control_update_domains($_pql_control, $_REQUEST["rootdn"],
-														   pql_get_define("PQL_ATTR_CN").'=$host,'.$_SESSION["USER_SEARCH_DN_CTR"],
-														   '*', array($oldvalue, $defaultdomain),
-														   pql_get_define("PQL_ATTR_RCPTHOSTS"));
+								pql_modify_attribute($_pql_control->ldap_linkid,
+													 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+													 pql_get_define("PQL_ATTR_RCPTHOSTS"),
+													 '', $defaultdomain);
 						}
 					} else {
 						// Change all hosts
 						if($type == 'delete')
-						  pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
-													 '*', array($delval, ''),
-													 pql_get_define("PQL_ATTR_RCPTHOSTS"));
+						  pql_modify_attribute($_pql_control->ldap_linkid,
+											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+											   pql_get_define("PQL_ATTR_RCPTHOSTS"),
+											   $delval, '');
 						else
-						  pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
-													 '*', array($oldvalue, $defaultdomain),
-													 pql_get_define("PQL_ATTR_RCPTHOSTS"));
+						  pql_modify_attribute($_pql_control->ldap_linkid,
+											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+											   pql_get_define("PQL_ATTR_RCPTHOSTS"),
+											   '', $defaultdomain);
 					}
 				}
 			}
