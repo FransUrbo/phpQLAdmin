@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for pilotPerson objects etc
-// $Id: attrib.outlook.inc,v 1.7 2003-04-04 06:54:31 turbo Exp $
+// $Id: attrib.outlook.inc,v 1.8 2003-04-23 11:58:37 turbo Exp $
 
 /*
 	Attributes managed here:
@@ -57,7 +57,7 @@ function attribute_print_form() {
       <th colspan="3" align="left">Set/Modify <?=$attrib?></th>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"><?=$attrib?></td>
-          <td><?php echo format_error($error[$attrib]); ?><input type="text" name="<?=$attrib?>" value="<?=$$attrib?>"></td>
+          <td><?php echo format_error($error[$attrib]); ?><input type="text" name="<?=$attrib?>" value="<?=$$attrib?>" size="30"></td>
         </tr>
       </th>
     </table>
