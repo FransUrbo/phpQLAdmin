@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.1 2003-11-20 08:01:37 turbo Exp $
+// $Id: pql_formating.inc,v 2.2 2003-11-22 16:09:19 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -121,6 +121,102 @@ function pql_format_table($echo = 1) {
 	} else {
 		return $ret;
 	}
+}
+// }}}
+
+// {{{ pql_format_tree(text, url, links, level)
+function pql_format_tree($text, $url, $links = '', $level = 0) {
+	global $opera, $div_counter;
+
+	if(empty($div_counter))
+	  $div_counter = 0;
+
+	$child  = $div_counter . "Child";
+	$parent = "Parent";
+
+	if($opera) {
+		pql_format_tree_opera($div_counter, $text, $url, $links, $level, $parent, $child);
+	} else {
+		pql_format_tree_other($div_counter, $text, $url, $links, $level, $parent, $child);
+	}
+
+	if(is_array($links))
+	  pql_format_tree_span($text, $links, $level);
+
+	$div_counter++;
+}
+// }}}
+
+// {{{ pql_format_tree_opera(counter, text, url, links, level, parent, child)
+function pql_format_tree_opera($cnt, $text, $url, $links, $level, $parent, $child) {
+	$nbsp = '';
+	if($level) {
+		for($i=0; $i < ($level * 4); $i++) 
+		  $nbsp .= "&nbsp;";
+	}
+?>
+  <div id="el<?=$cnt?><?=$parent?>" class="parent" onclick="showhide(el<?=$child?>, el<?=$cnt?>Img)">
+    <?=$nbsp?><img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$cnt?>Img">
+    <?php if($url) { ?><a href="<?=$url?>"><?php } ?><font color="black" class="heada"><?=$text?></font><?php if($url) { ?></a><?php } ?>
+
+  </div>
+  <span id="el<?=$child?>" style="display:''">
+<?php	
+}
+// }}}
+
+// {{{ pql_format_tree_other(counter, text, url, links, level, parent, child)
+function pql_format_tree_other($cnt, $text, $url, $links, $level, $parent, $child) {
+	$nbsp = '';
+	if($level) {
+		for($i=0; $i < ($level * 4); $i++) 
+		  $nbsp .= "&nbsp;";
+	}
+?>
+  <div id="el<?=$cnt?><?=$parent?>" class="parent">
+    <?php if($url) { ?><a class="item" href="<?=$url?>" onClick="if (capable) {expandBase('el<?=$cnt?>', true); return false;}"><?php } ?>
+      <?=$nbsp?><img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$cnt?>Img">
+    <?php if($url) { ?></a><?php } ?>
+
+    <?php if($url) { ?><a class="item" href="<?=$url?>"><?php } ?>
+      <font color="black" class="heada"><?=$text?></font>
+    <?php if($url) { ?></a><?php } ?>
+  </div>
+  <div id="el<?=$child?>" class="child">
+<?php	
+}
+// }}}
+
+// {{{ pql_format_tree_span(text, links)
+function pql_format_tree_span($text, $links, $level) {
+	$nbsp = '';
+	for($i=0; $i < (($level + 1) * 4); $i++)
+	  $nbsp .= "&nbsp;";
+	
+	foreach($links as $link => $text) {
+		// If it's a user, we want an icon before the list...
+		// DIRTY HACK: An option to the function instead?
+		$icon = 0;
+		if(eregi("user_detail\.php", $link))
+		  $icon = 1;
+?>
+    <nobr><?=$nbsp?><a href="<?=$link?>"><?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>">&nbsp;<?php } ?><?=$text?></a></nobr>
+    <br>
+<?php
+	}
+
+	pql_format_tree_end();
+}
+// }}}
+
+// {{{ pql_format_tree_end(void)
+function pql_format_tree_end() {
+	global $opera;
+
+	if($opera)
+	  echo "  </span>\n\n";
+	else
+	  echo "  </div>\n\n";
 }
 // }}}
 
