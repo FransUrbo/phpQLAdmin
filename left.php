@@ -196,10 +196,13 @@ if(!isset($domains)) {
 
 		  $cn = pql_get_userattribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_GIVENNAME"));
 		  $sn = pql_get_userattribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_SN"));
-		  if($cn[0] && $sn[0])
-		    // We have a givenName (first name) and a surName (last name) - combine the two
-		    $cns[$dn] = $sn[0].", ".$cn[0];
-		  else {
+		  if($cn[0] && $sn[0]) {
+		      // We have a givenName (first name) and a surName (last name) - combine the two
+		      if($sn[0] != '_') 
+			$cns[$dn] = $sn[0].", ".$cn[0];
+		      else
+			$cns[$dn] = $cn[0];
+		  } else {
 		      // Probably don't have a givenName - get the commonName
 		      $cn = pql_get_userattribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_CN"));
 		      if($cn[0]) {
