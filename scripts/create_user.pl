@@ -1,4 +1,4 @@
-#!/usr/bin/suidperl -U
+#!/usr/bin/perl -U
 
 exit(0);
 
