@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.93 2004-03-27 12:30:48 turbo Exp $
+// $Id: user_add.php,v 2.94 2004-03-30 06:22:35 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -254,7 +254,7 @@ switch($_REQUEST["page_curr"]) {
 				// domain name in locals. Die!
 				$_REQUEST["page_next"] = "two";
 				
-				$error = true;
+				$error = 'mx';
 				$error_text["userhost"] = pql_complete_constant($LANG->_('Sorry, I can\'t find any MX or any QmailLDAP/Controls object that listens to the domain <u>%domain%</u>.<br>You will have to specify one manually.'),
 																array('domain' => pql_maybe_idna_decode($_REQUEST["email_domain"])));
 			} else
@@ -319,7 +319,7 @@ switch($_REQUEST["page_curr"]) {
 																	   'type' => 'Path to homedirectory'));
 		}
 
-		if($error) {
+		if($error and ($error != 'mx')) {
 			$_REQUEST["page_next"] = 'one';
 		}
 		// }}}
