@@ -135,59 +135,43 @@ if($mailhost == ""){
 
   <br><br>
 
-<?php
-if($roomnumber or $homephone or 
-   $homepostaladdress or $secretary or 
-   $personaltitle or $mobile or
-   $pager)
-{
-?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">Personal details</th>
-<?php if($personaltitle) { ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">Title</td>
-        <td><?=$personaltitle?></td>
+        <td><?php if($personaltitle) { echo $personaltitle; } else { echo PQL_UNSET; }?></td>
         <td><?=$personaltitle_link?></td>
       </tr>
 
-<?php } if($roomnumber) { ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">Room number</td>
-        <td><?=$roomnumber?></td>
+        <td><?php if($roomnumber) { echo $roomnumber; } else { echo PQL_UNSET; }?></td>
         <td><?=$roomnumber_link?></td>
       </tr>
 
-<?php } if($homephone) { ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">Home telephone number</td>
-        <td><?=$homephone?></td>
+        <td><?php if($homephone) { echo $homephone; } else { echo PQL_UNSET; }?></td>
         <td><?=$homephone_link?></td>
       </tr>
 
-<?php } if($mobile) { ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">Mobile telephone number</td>
-        <td><?=$mobile?></td>
+        <td><?php if($mobile) { echo $mobile; } else { echo PQL_UNSET; }?></td>
         <td><?=$mobile_link?></td>
       </tr>
 
-<?php } if($pager) { ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">Pager number</td>
-        <td><?=$pager?></td>
+        <td><?php if($pager) { echo $pager; } else { echo PQL_UNSET; }?></td>
         <td><?=$pager_link?></td>
       </tr>
-
-<?php } ?>
     </th>
   </table>
 
   <br><br>
 
 <?php
-}
-
 $email = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_MAIL);
 $email = $email[0];
 
