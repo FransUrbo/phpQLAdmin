@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.65 2003-04-30 09:54:23 turbo Exp $
+// $Id: pql.inc,v 2.66 2003-05-02 09:00:58 turbo Exp $
 //
 
 // ----------------------------
@@ -270,9 +270,9 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 		$entry["gidnumber"] = $gidnr;
 		
 		if($config["PQL_GLOB_SUBTREE_GROUPS"])
-		  $subrdn = "," . $config["PQL_GLOB_SUBTREE_GROUPS"] . ",";
+		  $subrdn = "," . $config["PQL_GLOB_SUBTREE_GROUPS"];
 
-		$groupdn = $config["PQL_GLOB_ATTR_CN"] . "=" . $attribs[$config["PQL_CONF_USER_RDN_ATTRIBUTE"][$rootdn]] . $subrdn . $domain;
+		$groupdn = $config["PQL_GLOB_ATTR_CN"] . "=" . $attribs[$config["PQL_CONF_USER_RDN_ATTRIBUTE"][$rootdn]] . $subrdn . "," . $domain;
 
 		// Create a LDIF object to print in case of error
 		$LDIF = pql_create_ldif("pql_user_add - group creation", $groupdn, $entry);
