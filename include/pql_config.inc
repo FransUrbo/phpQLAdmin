@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.27 2003-06-02 08:11:02 turbo Exp $
+// $Id: pql_config.inc,v 1.28 2003-06-12 15:37:35 turbo Exp $
 //
 global $config;
 
@@ -63,7 +63,6 @@ $PQL_ATTRIBUTE["PQL_GLOB_BIND9_USE"] = 'useBind9';
 
 // phpQLAdmin setup
 $PQL_ATTRIBUTE["PQL_CONF_LANG"] = 'language';
-$PQL_ATTRIBUTE["PQL_CONF_WHOAREWE"] = 'whoAreWe';
 $PQL_ATTRIBUTE["PQL_GLOB_HOSTMASTER"] = 'hostMaster';
 $PQL_ATTRIBUTE["PQL_CONF_TESTMAIL_SUBJECT"] = 'testMailSubject';
 $PQL_ATTRIBUTE["PQL_CONF_TESTMAIL_MAILTEXT"] = 'testMailText';
