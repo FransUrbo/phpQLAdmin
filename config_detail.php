@@ -53,6 +53,13 @@ if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
       </tr>
 
       <tr>
+        <td class="title">Who are we</td>
+<?php $class=table_bgcolor(0); ?>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_WHOAREWE"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=$PQL_ATTRIBUTE["PQL_GLOB_WHOAREWE"]?>"></a></td>
+        <td class="<?=$class?>"><?=$config["PQL_GLOB_WHOAREWE"]?>&nbsp;</td>
+      </tr>
+
+      <tr>
         <td class="title">Hostmaster</td>
 <?php $class=table_bgcolor(0);
       if($ALLOW_GLOBAL_CONFIG_SAVE) {
