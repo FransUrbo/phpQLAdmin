@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.9 2004-03-11 20:01:20 turbo Exp $
+// $Id: config_attributes.inc,v 2.10 2004-03-14 08:26:55 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -280,32 +280,6 @@ $PQL_ATTRIBUTE["BRANCH"] = array("PQL_CONF_SHOW_USERS"					=> pql_get_define("PQ
 								 "PQL_CONF_SUBTREE_USERS"				=> pql_get_define("PQL_ATTR_SUBTREE_USERS"),
 								 "PQL_CONF_SUBTREE_GROUPS"				=> pql_get_define("PQL_ATTR_SUBTREE_GROUPS"),
 								 "PQL_CONF_VAT_NUMBER"					=> pql_get_define("PQL_ATTR_VAT_NUMBER"));
-// }}}
-
-// {{{ Attribute configuration
-pql_set_define("PQL_ATTR_MAIL", 						strtolower('userAttribute'),				false);
-pql_set_define("PQL_ATTR_FORWARDS", 					strtolower('userAttribute'),				false);
-pql_set_define("PQL_ATTR_MAILALTERNATE", 				strtolower('userAttribute'),				false);
-pql_set_define("PQL_ATTR_QMAILUID", 					strtolower('userAttribute'),				false);
-pql_set_define("PQL_ATTR_QMAILGID", 					strtolower('userAttribute'),				false);
-pql_set_define("PQL_ATTR_MAILSTORE", 					strtolower('userAttribute'),				false);
-pql_set_define("PQL_ATTR_HOMEDIR", 						strtolower('userAttribute'),				false);
-pql_set_define("PQL_ATTR_QUOTA", 						strtolower('userAttribute'),				false);
-pql_set_define("PQL_ATTR_PROGRAM", 						strtolower('userAttribute'),				false);
-pql_set_define("PQL_ATTR_MAILHOST", 					strtolower('userAttribute'),				false);
-pql_set_define("PQL_ATTR_MODE", 						strtolower('userAttribute'),				false);
-pql_set_define("PQL_ATTR_REPLYTEXT", 					strtolower('userAttribute'),				false);
-pql_set_define("PQL_ATTR_DOTMODE", 						strtolower('userAttribute'),				false);
-pql_set_define("PQL_ATTR_UID", 							strtolower('userAttribute'),				false);
-pql_set_define("PQL_ATTR_PASSWD", 						strtolower('userAttribute'),				false);
-pql_set_define("PQL_ATTR_ISACTIVE", 					strtolower('userAttribute'),				false);
-pql_set_define("PQL_ATTR_PURGE", 						strtolower('userAttribute'),				false);
-pql_set_define("PQL_ATTR_SN", 							strtolower('userAttribute'),				false);
-pql_set_define("PQL_ATTR_DESCRIPTION", 					strtolower('userAttribute'),				false);
-pql_set_define("PQL_ATTR_GIVENNAME", 					strtolower('userAttribute'),				false);
-pql_set_define("PQL_ATTR_DOMAIN", 						strtolower('userAttribute'),				false);
-pql_set_define("PQL_ATTR_OBJECTCLASS",					strtolower('userAttribute'),				false);
-pql_set_define("PQL_ATTR_CN",							strtolower('userAttribute'),				false);
 // }}}
 
 pql_set_define("PQL_ATTR_USER_RDN_ATTRIBUTE",	strtolower(pql_get_define("PQL_ATTR_REFERENCE_USERS_WITH")),	false);
