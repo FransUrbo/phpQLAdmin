@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.34 2003-06-28 15:20:58 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.35 2003-07-29 13:23:35 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -33,8 +33,12 @@
 // Stack these with the + (plus) character and you'll get a list of
 // host you can administrate. If only one, then you can obiously only
 // configure that :)
-//pql_set_define("PQL_GLOB_HOST","ldaps://localhost/;;ou=QmailLDAP,dc=example,dc=com");
-pql_set_define("PQL_GLOB_HOST","localhost;389;ou=QmailLDAP,dc=example,dc=com");
+//
+// These two examples works directly with the demo database(s) distributed
+// in the demo directory. Don't use on live server, since my account and
+// password (quite easily cracked though :) is in there...
+//pql_set_define("PQL_GLOB_HOST","ldaps://localhost/;;ou=QmailLDAP,c=SE");
+pql_set_define("PQL_GLOB_HOST","localhost;389;ou=QmailLDAP,c=SE");
 
 // ----------------------------
 // PQL_GLOB_SUBTREE_USERS
