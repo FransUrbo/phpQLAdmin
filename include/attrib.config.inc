@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.40 2004-11-06 22:42:40 turbo Exp $
+// $Id: attrib.config.inc,v 1.41 2004-11-12 09:48:00 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -128,7 +128,10 @@ function attribute_print_form() {
                 $existing = pql_get_define("PQL_CONF_OBJECTCLASS_USER", $dn);
             else
                 $existing = pql_get_define("PQL_CONF_OBJECTCLASS_DOMAIN", $dn);
-            $existing = pql_split_oldvalues($existing); // Convert to array
+			if(is_array($existing))
+			  $existing = pql_split_oldvalues($existing); // Convert to array
+			else
+			  $existing = array();
 
             $objectclasses = pql_get_subschema($_pql->ldap_linkid, "objectclasses");
 			if(is_array($objectclasses)) {
