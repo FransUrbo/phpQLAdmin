@@ -1,4 +1,5 @@
 .ht*
-phpQLadmin.log
+phpQLAdmin.log
 include/config.inc
 .DEBUG_ME
+SETUP_ALIASES.sh
