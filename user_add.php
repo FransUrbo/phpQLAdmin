@@ -176,27 +176,33 @@ if($submit == "two") {
 		// Initiate a connection to the QmailLDAP/Controls DN
 		$_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
 		
-		// Find MX (or QmailLDAP/Controls with locals=$domainname)
-		$mx = pql_get_mx($_pql_control->ldap_linkid, $domainname[1]);
-		if(!$mx[1]) {
-			// There is no MX and no QmailLDAP/Controls with this
-			// domain name in locals. Die!
-			$submit = "two";
-			
-			$error = true;
-			$error_text["userhost"] = "Sorry, I can't find any MX or any QmailLDAP/Controls object that listens to this domain - <u>".$domainname[1]."</u><br>You will have to specify one manually.";
-			
-		} else {
-			// We got a MX or QmailLDAP/Controls object. Use it.
-			$userhost[1] = $mx[1];
-			$host = "default";
+		if($_pql_control->ldap_linkid) {
+			// Find MX (or QmailLDAP/Controls with locals=$domainname)
+			$mx = pql_get_mx($_pql_control->ldap_linkid, $domainname[1]);
+			if(!$mx[1]) {
+				// There is no MX and no QmailLDAP/Controls with this
+				// domain name in locals. Die!
+				$submit = "two";
+				
+				$error = true;
+				$error_text["userhost"] = "Sorry, I can't find any MX or any QmailLDAP/Controls object that listens to this domain - <u>".$domainname[1]."</u><br>You will have to specify one manually.";
+			} else {
+				// We got a MX or QmailLDAP/Controls object. Use it.
+				$userhost[1] = $mx[1];
+				$host = "default";
+			}
 		}
 	}
 
 	// No host
 	if(!$host or !$userhost) {
 		$error = true;
-		$error_text["userhost"] = $LANG->_('Missing') . " (" . $LANG->_('can\'t autogenerate') . ")";
+
+		if($_pql_control->ldap_linkid) {
+			$error_text["userhost"] = $LANG->_('Missing') . " (" . $LANG->_('can\'t autogenerate') . ")";
+		} else {
+			$error_text["userhost"] = $LANG->_('Missing') . " (" . $LANG->_('not using QmailLDAP/Controls') . ")";
+		}
 	}
 
 	// Check/Create the mail directory attribute/value
@@ -571,9 +577,9 @@ switch($submit) {
             <input type="text" name="email" value="<?=$email?>">
 <?php 		if(is_array($additionaldomainname)) { ?>
             <b>@ <select name="email_domain"></b>
-              <option value="<?=$defaultdomain?>"><?=$defaultdomain?></option>
+              <option value="<?=$defaultdomain?>"><?=pql_maybe_idna_decode($defaultdomain)?></option>
 <?php			foreach($additionaldomainname as $additional) { ?>
-              <option value="<?=$additional?>"><?=$additional?></option>
+              <option value="<?=$additional?>"><?=pql_maybe_idna_decode($additional)?></option>
 <?php   		} ?>
             </select>
 <?php 		} else { ?>
@@ -1020,10 +1026,12 @@ switch($submit) {
 			  // Initiate a connection to the QmailLDAP/Controls DN
 			  $_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
 			  
-			  // Find MX (or QmailLDAP/Controls with locals=$domainname)
-			  $mx = pql_get_mx($_pql_control->ldap_linkid, $domainname[1]);
-			  if(is_array($mx))
-				$entry[pql_get_define("PQL_GLOB_ATTR_MAILHOST")] = $mx[1];
+			  if($_pql_control->ldap_linkid) {
+				  // Find MX (or QmailLDAP/Controls with locals=$domainname)
+				  $mx = pql_get_mx($_pql_control->ldap_linkid, $domainname[1]);
+				  if(is_array($mx))
+					$entry[pql_get_define("PQL_GLOB_ATTR_MAILHOST")] = $mx[1];
+			  }
 		  }
 		  
 		  $entry[pql_get_define("PQL_GLOB_ATTR_MODE")] = "localdelivery";
