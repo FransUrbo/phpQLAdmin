@@ -3,15 +3,14 @@
 // user_add.php,v 1.5 2002/12/13 13:58:04 turbo Exp
 //
 session_start();
-
-require("./include/pql.inc");
+require("./include/pql_config.inc");
 
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 // check if domain exist
 $dc = ldap_explode_dn($domain, 0); $dc = split('=', $dc[0]);
 if(!pql_domain_exist($_pql, $dc[1])){
-	echo "domain &quot;$domain&quot; does not exists";
+	echo "Domain &quot;$domain&quot; does not exists";
 	exit();
 }
 
@@ -653,14 +652,17 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 			$entry[PQL_LDAP_ATTR_PASSWD]   = pql_password_hash($password, $pwscheme);
 			if($host == 'default') {
 				// TODO: If there is no defaultDomain for the domain, get MX of the domain in the email address
-				if($mx) {
-					$entry[PQL_LDAP_ATTR_MAILHOST] = $mx;
-				} else {
+				if($mx)
+				  $entry[PQL_LDAP_ATTR_MAILHOST] = $mx;
+				else {
 					$domainname = split('@', $entry[PQL_LDAP_ATTR_MAIL]);
 					$entry[PQL_LDAP_ATTR_MAILHOST] = pql_get_mx($domainname[1]);
 				}
 			} else {
-				$entry[PQL_LDAP_ATTR_MAILHOST] = $userhost[1];
+				if($mx)
+				  $entry[PQL_LDAP_ATTR_MAILHOST] = $mx;
+				else
+				  $entry[PQL_LDAP_ATTR_MAILHOST] = $userhost[1];
 			}
 			$entry[PQL_LDAP_ATTR_MODE]     = "localdelivery";
 			if(!$maildirectory) {
