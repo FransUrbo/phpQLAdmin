@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.91 2004-03-19 10:22:21 turbo Exp $
+// $Id: user_add.php,v 2.92 2004-03-26 11:32:45 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -74,10 +74,8 @@ switch($_REQUEST["page_curr"]) {
 			// Check again. There should be a user name, either from the input
 			// form OR from the user_generate_uid() function above...
 			if(!$_REQUEST["uid"]) {
-				$_REQUEST["page_next"] = "two";
-				
 				$error = true;
-				$error_text["uid"] = $LANG->_('Missing');
+				$error_text["uid"] = $LANG->_('Can\'t autogenerate.');
 			} else {
 				if(preg_match("/[^a-z0-9\.@%_-]/i", $_REQUEST["uid"])) {
 					$_REQUEST["page_next"] = "two";
