@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_edit_attribute.php,v 1.2 2002-12-22 20:28:00 turbo Exp $
+// $Id: ezmlm_edit_attribute.php,v 1.3 2002-12-23 11:46:26 turbo Exp $
 //
 session_start();
 
@@ -15,9 +15,12 @@ include("header.html");
 // Load list of mailinglists
 if($ezmlm->readlists()) {
 	if($ezmlm->mailing_lists[$listno][$attrib]) {
-		echo "<b>MODIFY</b> attribute <u>$attrib</u> on list <u>".$ezmlm->mailing_lists[$listno]["name"]."@$domain</u>.<br>Current value: <b>" . $ezmlm->mailing_lists[$listno][$attrib] . "</b><br>";
+		$list = $ezmlm->mailing_lists[$listno]["name"] . "@$domain";
+
+		// TODO
+		echo "<b>MODIFY</b> attribute <u>$attrib</u> on list <u>$list</u>.<br>Current value: <b>" . $ezmlm->mailing_lists[$listno][$attrib] . "</b><br>";
 	} else {
-		echo "<b>MODIFY</b> attribute <u>$attrib</u> on list <u>".$ezmlm->mailing_lists[$listno]["name"]."@$domain</u>.<br>Current value: <i>not defined</i><br>";
+		echo "Attribute $attrib on list number $listno <b>not defined</b><br>";
 	}
 }
 
