@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.75 2004-02-21 12:53:33 turbo Exp $
+// $Id: domain_detail.php,v 2.76 2004-03-03 07:40:30 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -70,13 +70,19 @@ $attribs = array(pql_get_define("PQL_GLOB_ATTR_AUTOCREATEMAILADDRESS"),
 				 pql_get_define("PQL_GLOB_ATTR_MAXIMUMMAILINGLISTS"),
 				 pql_get_define("PQL_GLOB_ATTR_O"),
 				 pql_get_define("PQL_GLOB_ATTR_POSTALADDRESS"),
+				 pql_get_define("PQL_GLOB_ATTR_STREETADDRESS"),
+				 pql_get_define("PQL_GLOB_ATTR_REGISTEREDADDRESS"),
 				 pql_get_define("PQL_GLOB_ATTR_POSTALCODE"),
 				 pql_get_define("PQL_GLOB_ATTR_POSTOFFICEBOX"),
 				 pql_get_define("PQL_GLOB_ATTR_ST"),
 				 pql_get_define("PQL_GLOB_ATTR_STREET"),
 				 pql_get_define("PQL_GLOB_ATTR_TELEPHONENUMBER"),
+				 pql_get_define("PQL_GLOB_ATTR_FACSIMILETELEPHONENUMBER"),
+				 pql_get_define("PQL_GLOB_ATTR_MOBILE"),
 				 pql_get_define("PQL_GLOB_ATTR_USERNAMEPREFIX"),
-				 pql_get_define("PQL_GLOB_ATTR_USERNAMEPREFIX_LENGTH"));
+				 pql_get_define("PQL_GLOB_ATTR_USERNAMEPREFIX_LENGTH"),
+				 pql_get_define("PQL_GLOB_ATTR_VAT_NUMBER"),
+				 pql_get_define("PQL_GLOB_ATTR_INFO"));
 foreach($attribs as $attrib) {
 	// Get default value
 	$value = pql_domain_value($_pql, $_REQUEST["domain"], $attrib);
@@ -143,8 +149,9 @@ $basequota		   = pql_ldap_mailquota($quota);
 $additionaldomainname = pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_ADDITIONALDOMAINNAME"));
 
 // Setup the buttons
-$buttons = array('default'	=> 'Default Branch Values',
-				 'users'	=> 'Registred users',
+$buttons = array('default'	=> 'Branch Defaults',
+				 'details'	=> 'Branch Details',
+				 'users'	=> 'Registred Users',
 				 'chval'	=> 'Change values of all users');
 
 if($_SESSION["ADVANCED_MODE"]) {
@@ -196,7 +203,9 @@ if($_REQUEST["view"] == 'owner') {
 } elseif($_REQUEST["view"] == 'action') {
 	include("./tables/domain_details-action.inc");
 } elseif($_SESSION["ADVANCED_MODE"] == 1) {
-	if($_REQUEST["view"] == 'dnsinfo')
+	if($_REQUEST["view"] == 'details')
+	  include("./tables/domain_details-personal.inc");
+	elseif($_REQUEST["view"] == 'dnsinfo')
 	  include("./tables/domain_details-dnsinfo.inc");
 	elseif($_REQUEST["view"] == 'dnszone')
 	  include("./tables/domain_details-dnszone.inc");
