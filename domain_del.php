@@ -7,6 +7,9 @@ require("./include/pql_config.inc");
 require("./include/pql_control.inc");
 
 include("./header.html");
+
+// Make sure we can have a ' in branch
+$domain = eregi_replace("\\\'", "'", $domain);
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove domain %domain%'),
 														array("domain" => maybe_decode($domain)))?></span>
