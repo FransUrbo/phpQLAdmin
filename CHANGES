@@ -39,7 +39,31 @@ phpQLAdmin 2.0.19 TO BE ANNOUNCED
 	    generation. To get it just after 'autoCreateMailAddress', the 'useWebSrv'
 	    attribute was renumbered (+1 in OID number).
 
-phpQLAdmin 2.0.18d TO BE ANNOUNCED
+phpQLAdmin 2.0.18e TO BE ANNOUNCED
+	Bug fixes
+	  - The function pql_modify_userattribute() should also have the section that
+	    dies with LDIF if the file .DEBUG_ME exists.
+	  - PHP parse errors fixed. Closes bug 200.
+	  - Variable misspelled. Closes bug 201.
+	  - $url isn't availible in attribute_print_form(). Only the basic values ($rootdn,
+	    $domain and $user) is (they're used in the URL). Re-create the $url array
+	    (with urlencode'd values) to be used as hidden values. Closes bug 202.
+	  - Redundant printr()'s removed from include/attrib.control.smtproutes.inc.
+	  - Make sure that control_edit_attribute.php (when removing a domain from an
+	    attribte - locals/rcpthosts etc) is called with the URL encoded value of
+	    domain/rootdn. Part of fix for bug 202.
+	  - There's a difference in deleting a locals value if we're doing it for EVERY
+	    mailserver, or if we're doing it for ONE. Closes bug 205.
+	  - pql_domain_get_value() expects a URL encoded domain DN value. Give it one...
+	    Closes bug 204.
+	  - Somethimes the domain value is in $_GET, sometimes in $_POST. Either way,
+	    $_REQUEST is always used (but not initialized/correct). Closes bug 203.
+
+	GUI layout change
+	  - Folding tags added in attrib.mail.inc.
+	  - URL DEcode the user DN before calling pql_modify_userattribute().
+
+phpQLAdmin 2.0.18d Release (May 19 2004)
 	Bug fixes
 	  - De-globalize the 'reload left frame' value so that the reloading can acctually
 	    happen! Closes bug 182

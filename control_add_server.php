@@ -1,6 +1,6 @@
 <?php
 // Add a new mailserver to the database
-// $Id: control_add_server.php,v 2.19 2004-03-29 07:48:00 turbo Exp $
+// $Id: control_add_server.php,v 2.20 2004-08-27 08:49:28 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -61,12 +61,12 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 					$attribs = $attribs + $new;
 				}
 				if(isset($include_password)) {
-					$new = array('ldappassword'			=> pql_get_define("PQL_ATTR_LDAPPASSWORD");
+					$new = array('ldappassword'			=> pql_get_define("PQL_ATTR_LDAPPASSWORD"));
 					$attribs = $attribs + $new;
 				}
 
 				$cn = pql_get_define("PQL_ATTR_CN") . "=" . $cloneserver . "," . $_SESSION["USER_SEARCH_DN_CTR"];
-				foreach($attribs as $key $attrib) {
+				foreach($attribs as $key => $attrib) {
 					$value = pql_control_get_attribute($_pql_control->ldap_linkid, $cn, $attrib);
 					if(!is_null($value)) {
 						for($i=0; $value[$i]; $i++) {

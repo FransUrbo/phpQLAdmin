@@ -6,6 +6,10 @@
 		// These are the attributes we have to check
 		$attributes = array('locals', 'rcpthosts', 'smtproutes');
 
+		// URLify values
+		$url["rootdn"] = urlencode($rootdn);
+		$url["domain"] = urlencode($domain);
+
 		// ------------------------------
 		foreach($attributes as $attrib) {
 			foreach($domainnames as $d) {
@@ -21,7 +25,7 @@
 					$alt = pql_complete_constant($LANG->_('Remove %domain% from %attribute%'),
 												 array('domain' => $d, 'attribute' => $attrib));
 						
-					$LINKS[$attrib][$d] = "<a href=\"control_edit_attribute.php?attrib=$attrib&rootdn=$rootdn&domain=$domain&type=del&set=$d&submit=1&view=$view\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"$alt\"></a>";
+					$LINKS[$attrib][$d] = "<a href=\"control_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&attrib=$attrib&type=del&set=$d&submit=1&view=$view\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"$alt\"></a>";
 				} else {
 					$DEFINED[$attrib][$d] = $LANG->_('No');
 

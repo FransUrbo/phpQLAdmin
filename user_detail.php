@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.76 2004-05-07 07:39:46 turbo Exp $
+// $Id: user_detail.php,v 2.77 2004-08-27 08:49:28 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -21,7 +21,7 @@ $url["rootdn"] = pql_format_urls($_GET["rootdn"]);
 
 // Get default domain name for this domain
 if($_GET["domain"]) {
-	$defaultdomain = pql_domain_get_value($_pql, $_GET["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+	$defaultdomain = pql_domain_get_value($_pql, $url["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 }
 
 include("./header.html");

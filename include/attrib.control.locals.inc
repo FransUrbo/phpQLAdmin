@@ -2,11 +2,12 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.28 2004-05-05 11:07:37 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.29 2004-08-27 08:49:33 turbo Exp $
 
 // {{{ locals_check(type)
+
 function locals_check($type) {
-    global $error, $LANG;
+    global $_pql, $_pql_control, $error, $LANG;
     
     // check validity
     if(is_array($_REQUEST["locals"])) {
@@ -27,6 +28,7 @@ function locals_check($type) {
     
     return true;
 }
+
 // }}}
 
 // {{{ locals_init(host)
@@ -134,11 +136,10 @@ function locals_print_form() {
 // {{{ locals_save(type, host)
 function locals_save($type, $host) {
     global $_pql, $_pql_control, $LANG;
+	$success = 0;
 
 	if($_REQUEST["mxhost"])
 	  $host = $_REQUEST["mxhost"];
-	else
-	  $host = '*';
 
     switch($type) {
       case "replicate":
@@ -156,18 +157,51 @@ function locals_save($type, $host) {
 		break;
 
       case "del":
-		$locals = pql_control_get_attribute($_pql_control->ldap_linkid,
-											pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											pql_get_define("PQL_ATTR_LOCALS"));
-		for($i=0; $locals[$i]; $i++) {
-			if($locals[$i] != $_REQUEST["set"])
-			  $LOCALS[] = $locals[$i];
+		if(!$host) {
+			// Find the object(s) which contain this string
+			$ctrls = pql_control_search_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+												  "locals", $_REQUEST["set"], 1);
+			
+			// If it isn't an array, but it IS set -> make it an array!
+			if($ctrls && !is_array($ctrls)) {
+				$tmp = $ctrls; unset($ctrls);
+				$ctrls[] = $tmp;
+			}
+			
+			foreach($ctrls as $ctrl) {
+				// Retreive this QmailLDAP/Controls object current value(s)
+				$locals = pql_control_get_attribute($_pql_control->ldap_linkid, $ctrl, pql_get_define("PQL_ATTR_LOCALS"));
+				if(is_array($locals)) {
+					// Go through the locals, remove the one in $_REQUEST["set"]
+					for($i=0; $locals[$i]; $i++) {
+						if($locals[$i] != $_REQUEST["set"]) {
+							$LOCALS[] = $locals[$i];
+						}
+					}
+				}
+				
+				// Save this new array to the object, redirect back to host details
+				if(pql_control_replace_attribute($_pql_control->ldap_linkid, $ctrl,
+												 pql_get_define("PQL_ATTR_LOCALS"), $LOCALS))
+				  $success = 1;
+			}
+		} else {
+			// We're changing a specific mail server...
+			$locals = pql_control_get_attribute($_pql_control->ldap_linkid,
+												pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+												pql_get_define("PQL_ATTR_LOCALS"));
+			for($i=0; $locals[$i]; $i++) {
+				if($locals[$i] != $_REQUEST["set"])
+				  $LOCALS[] = $locals[$i];
+				
+				// remove specified domain from locals, redirect back to host details
+				if(pql_control_replace_attribute($_pql_control->ldap_linkid,
+												 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+												 pql_get_define("PQL_ATTR_LOCALS"), $LOCALS))
+				  $success = 1;
 		}
 
-		// remove specified domain from locals, redirect back to host details
-		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_ATTR_LOCALS"), $LOCALS))
+		if($success)
 		  $msg = pql_complete_constant($LANG->_('Successfully removed %domain% from %what%'),
 									   array('what'   => pql_get_define("PQL_ATTR_LOCALS"),
 											 'domain' => $_REQUEST["set"]));
