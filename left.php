@@ -158,7 +158,7 @@ if(!isset($domains)) {
     foreach($domains as $key => $domain) {
 	// Get domain part from the DN (Example: 'dc=test,dc=net' => 'test').
 	$d = split(',', urldecode($domain)); $d = split('=', $d[0]); $d = $d[1];
-	$d = maybe_decode($d);
+	$d = pql_maybe_decode($d);
 
 	// Get Root DN
 	$rootdn = pql_get_rootdn($domain);
