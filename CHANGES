@@ -14,6 +14,9 @@ phpQLAdmin 2.0.8 - TO BE ANNOUNCED
 	  - utf8_{encode,decode}() 'Personal details' ('outlook' values etc) to correctly
 	    catch national (ie, non-english) characters.
 	  - Missing = in "form ... name=..." (user_add.php).
+	  - If pql_get_domain_value() is called with something to search for ($match),
+	    we have to use 'ldap_search()', othervise we use ldap_read() which do a
+	    search with scope = BASE (only the current object).
 
 	GUI layout change
 	  - Only show a 'dropdown menu' if we can choose from more than one domain
@@ -32,6 +35,8 @@ phpQLAdmin 2.0.8 - TO BE ANNOUNCED
 	  - New function pql_validate_administrator() which checks a given DN for
 	    existence of the administrator attribute, and if that contains the given
 	    (user) DN.
+	  - Allow to make user administrator on the topmost DN (ie, create
+	    domains/branches) in the user_details page.
 
 phpQLAdmin 2.0.7 Release (Jan 28 2003)
 	Bug fixes
