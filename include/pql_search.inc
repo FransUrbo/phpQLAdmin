@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.22 2004-10-19 10:40:42 turbo Exp $
+// $Id: pql_search.inc,v 2.23 2004-11-05 13:41:28 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -129,11 +129,16 @@ function pql_get_attribute($linkid, $dn, $attribute, $operational = 0) {
 // {{{ pql_get_dn(linkid, dn, filter, level)
 // This function returns the DN of each object if finds.
 function pql_get_dn($linkid, $dn, $filter, $level = 'SUBTREE') {
+	unset($entry);
+
 	$objects = pql_search($linkid, $dn, $filter, $level, 1);
 	for($i=0; $objects[$i]; $i++)
 	  $entry[] = $objects[$i]['dn'];
 
-	return($entry);
+	if(is_array($entry))
+	  return($entry);
+	else
+	  return false;
 }
 // }}}
 
