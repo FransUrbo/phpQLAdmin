@@ -108,6 +108,12 @@ if($ADVANCED_MODE == 1) {
 	if(is_array($admins)) {
 		$new_tr = 0;
 		foreach($admins as $admin) {
+			$username = pql_get_userattribute($_pql->ldap_linkid, $admin, 'cn');
+			if(!$username[0])
+			  $username = $admin;
+			else
+			  $username = $username[0];
+
 			if($new_tr) {
 ?>
       <tr class="<?php table_bgcolor(); ?>">
@@ -120,7 +126,7 @@ if($ADVANCED_MODE == 1) {
 <?php
 			}
 ?>
-        <td><a href="user_detail.php?user=<?=$admin?>"><?=urldecode($admin)?></a></td>
+        <td><a href="user_detail.php?user=<?=$admin?>"><?=urldecode($username)?></a></td>
         <td>
           <a href="domain_edit_attributes.php?attrib=administrator&domain=<?=$domain?>&administrator=<?=$admin?>&submit=3&action=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify administrators for <?=$domain?>"></a>&nbsp;
           <a href="domain_edit_attributes.php?attrib=administrator&domain=<?=$domain?>&administrator=<?=$admin?>&submit=4&action=delete"><img src="images/del.png" width="12" height="12" alt="<?=PQL_DOMAIN_ADMIN_DELETE?>" border="0"></a>
@@ -208,6 +214,12 @@ if($ADVANCED_MODE == 1) {
 	if(is_array($seealso)) {
 		$new_tr = 0;
 		foreach($seealso as $sa) {
+			$username = pql_get_userattribute($_pql->ldap_linkid, $sa, 'cn');
+			if(!$username[0])
+			  $username = $sa;
+			else
+			  $username = $username[0];
+
 			if($new_tr) {
 ?>
       <tr class="<?php table_bgcolor(); ?>">
@@ -215,7 +227,7 @@ if($ADVANCED_MODE == 1) {
 <?php
 			}
 ?>
-        <td><a href="user_detail.php?user=<?=$sa?>"><?=urldecode($sa)?></a></td>
+        <td><a href="user_detail.php?user=<?=$sa?>"><?=urldecode($username)?></a></td>
         <td>
           <a href="domain_edit_attributes.php?attrib=seealso&seealso=<?=$sa?>&submit=3&action=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify contact persons for <?=$o?>"></a>&nbsp;
           <a href="domain_edit_attributes.php?attrib=seealso&seealso=<?=$sa?>&submit=4&action=delete"><img src="images/del.png" width="12" height="12" alt="Remove contact person from <?=$o?>" border="0"></a>
