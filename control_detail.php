@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.4 2002-12-29 18:20:41 turbo Exp $
+// $Id: control_detail.php,v 1.5 2002-12-31 09:45:10 turbo Exp $
 session_start();
 
 require("./include/pql.inc");
@@ -79,55 +79,64 @@ if(PQL_LDAP_CONTROL_USE){
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">Default domainname</td>
         <td><?=$defaultdomain?></td>
-        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=defaultdomain"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
+        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=defaultdomain&type=add"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
+        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=defaultdomain&type=del"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">Plusdomain</td>
         <td><?=$plusdomain?></td>
-        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=plusdomain"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
+        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=plusdomain&type=add"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
+        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=plusdomain&type=del"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">LDAP Server</td>
         <td><?=$ldapserver?></td>
-        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=ldapserver"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
+        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=ldapserver&type=add"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
+        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=ldapserver&type=del"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">LDAP Search base</td>
         <td><?=$ldapbasedn?></td>
-        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=ldapbasedn"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
+        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=ldapbasedn&type=add"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
+        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=ldapbasedn&type=del"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">LDAP login</td>
         <td><?=$ldaplogin?></td>
-        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=ldaplogin"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
+        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=ldaplogin&type=add"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
+        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=ldaplogin&type=del"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">LDAP password</td>
         <td><?=$ldappassword?></td>
-        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=ldappassword"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
+        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=ldappassword&type=add"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
+        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=ldappassword&type=del"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">LDAP Rebind</td>
         <td><?php if($ldaprebind) { echo "Yes"; } else { echo "No"; } ?></td>
-        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=ldaprebind"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
+        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=ldaprebind&type=add"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
+        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=ldaprebind&type=del"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">Default quota</td>
         <td><?=$ldapdefaultquota?></td>
-        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=ldapdefaultquota"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
+        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=ldapdefaultquota&type=add"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
+        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=ldapdefaultquota&type=del"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">Default DOT mode</td>
         <td><?=$ldapdefaultdotmode?></td>
-        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=ldapdefaultdotmode"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
+        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=ldapdefaultdotmode&type=add"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
+        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=ldapdefaultdotmode&type=del"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
       </tr>
 
 <?php
@@ -135,7 +144,8 @@ if(PQL_LDAP_CONTROL_USE){
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">Directory maker</td>
         <td><?=$dirmaker?></td>
-        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=dirmaker"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
+        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=dirmaker&type=add"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
+        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=dirmaker&type=del"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
       </tr>
 
 <?php
@@ -146,7 +156,8 @@ if(PQL_LDAP_CONTROL_USE){
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">Default quota warning</td>
         <td><?=$quotawarning?></td>
-        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=quotawarning"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
+        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=quotawarning&type=add"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
+        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=quotawarning&type=del"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
       </tr>
 
 <?php
@@ -157,7 +168,7 @@ if(PQL_LDAP_CONTROL_USE){
 
   <br>
 
-  <table cellspacing="0" cellpadding="3" border="0">
+  <table cellspacing="10" cellpadding="3" border="0">
     <th valign="top" align="left">Locals
       <!-- LOCALS -->
       <table cellspacing="0" cellpadding="3" border="0">
@@ -171,6 +182,7 @@ if(PQL_LDAP_CONTROL_USE){
 			if(!$i) {
 ?>
             <td><?=$local?></td>
+            <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=locals&type=add&value=<?=$local?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="control_edit_attribute.php?host=<?=$host?>&attrib=locals&type=del&value=<?=$local?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
           </tr>
 
 <?php
@@ -179,6 +191,7 @@ if(PQL_LDAP_CONTROL_USE){
           <tr class="<?php table_bgcolor(); ?>">
             <td class="title"></td>
             <td><?=$local?></td>
+            <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=locals&type=add&value=<?=$local?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="control_edit_attribute.php?host=<?=$host?>&attrib=locals&type=del&value=<?=$local?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
           </tr>
 
 <?php
@@ -188,6 +201,7 @@ if(PQL_LDAP_CONTROL_USE){
 	} else {
 ?>
           <td><i>not defined</i></td>
+          <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=locals&type=add&value=<?=$local?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="control_edit_attribute.php?host=<?=$host?>&attrib=locals&type=del&value=<?=$local?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
         </tr>
 <?php
 	}
@@ -195,6 +209,7 @@ if(PQL_LDAP_CONTROL_USE){
           <tr class="<?php table_bgcolor(); ?>">
             <td class="title" align="right"><img src="images/edit.png" width="12" height="12"></td>
             <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=locals">add value</a></td>
+            <td></td>
           </tr>
         </th>
       </table>
@@ -213,6 +228,7 @@ if(PQL_LDAP_CONTROL_USE){
 			if(!$i) {
 ?>
             <td><?=$rcpthost?></td>
+            <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=rcpthosts&type=add&value=<?=$rcpthost?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="control_edit_attribute.php?host=<?=$host?>&attrib=rcpthosts&type=del&value=<?=$rcpthost?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
           </tr>
 
 <?php
@@ -221,6 +237,7 @@ if(PQL_LDAP_CONTROL_USE){
           <tr class="<?php table_bgcolor(); ?>">
             <td class="title"></td>
             <td><?=$rcpthost?></td>
+            <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=rcpthosts&type=add&value=<?=$rcpthost?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="control_edit_attribute.php?host=<?=$host?>&attrib=rcpthosts&type=del&value=<?=$rcpthost?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
           </tr>
 
 <?php
@@ -230,6 +247,7 @@ if(PQL_LDAP_CONTROL_USE){
 	} else {
 ?>
           <td><i>not defined</i></td>
+          <td></td>
         </tr>
 <?php
 	}
@@ -237,6 +255,7 @@ if(PQL_LDAP_CONTROL_USE){
           <tr class="<?php table_bgcolor(); ?>">
             <td class="title" align="right"><img src="images/edit.png" width="12" height="12"></td>
             <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=rcpthosts">add value</a></td>
+            <td></td>
           </tr>
         </th>
       </table>
