@@ -310,7 +310,7 @@ if(!isset($domains)) {
 	} else
 	  // This branch don't have any sub units (flat structure)
 	  // -> make sure we still jump into the for loop!
-	  $branches[0] = $domain;
+	  $branches[0] = urldecode($domain);
 
 	for($i = 0; $branches[$i]; $i++) {
 	    unset($subbranch);
@@ -321,13 +321,7 @@ if(!isset($domains)) {
 		$users = ""; $cns = ""; unset($links);
 		
 		// Get all users (their DN) in this domain (sub)branch
-		if(count($branches) > 1) {
-		    $users = pql_user_get($_pql->ldap_linkid, $branches[$i]);
-		} else {
-		    // We only have one subbranch, don't show the subbranch, list the users
-		    // under the domain branch
-		    $users = pql_user_get($_pql->ldap_linkid, $domain);
-		}
+		$users = pql_user_get($_pql->ldap_linkid, $branches[$i]);
 
 		// Level 2: The users
 		if(count($branches) > 1) {
