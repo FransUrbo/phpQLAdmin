@@ -1,6 +1,6 @@
 <?php
 // remove a domain from a bind9 ldap db
-// $Id: bind9_del.php,v 2.5.2.1 2005-03-04 11:59:44 turbo Exp $
+// $Id: bind9_del.php,v 2.5.2.2 2005-03-17 08:23:01 turbo Exp $
 //
 require("./include/pql_session.inc");
 require("./include/pql_config.inc");
@@ -24,7 +24,7 @@ if(($_REQUEST["action"] == 'del') and ($_REQUEST["type"] == 'domain') and $_REQU
 		// redirect to domain-detail page
 		$url  = "domain_detail.php?rootdn=".urlencode($_REQUEST["rootdn"])."&domain=".urlencode($_REQUEST["domain"]);
 		$url .= "&view=".$_REQUEST["view"]."&msg=".urlencode($msg);
-		header("Location: " . $_SESSION["URI"] . $url);
+		pql_header($url);
     } else {
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>"      method="GET">
