@@ -1,8 +1,9 @@
 <?php
 // attribute plugin for
 // mailalternateaddress (emailaddress alias)
-// $Id: attrib.mailalternateaddress.inc,v 2.15 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.mailalternateaddress.inc,v 2.16 2003-11-12 14:04:28 turbo Exp $
 
+// {{{ attribute_check(type)
 function attribute_check($type) {
     global $mailalternateaddress, $oldvalue, $domain, $_pql, $error, $defaultdomain, $email_domain, $LANG;
     
@@ -43,11 +44,15 @@ function attribute_check($type) {
     
     return true;
 }
+// }}}
 
+// {{{ attribute_init(void)
 function attribute_init() {
     // dummy function
 }
+// }}}
 
+// {{{ attribute_print_form(void)
 function attribute_print_form() {
     global $mailalternateaddress, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $defaultdomain, $LANG;
 	global $_pql, $view, $rootdn;
@@ -75,13 +80,13 @@ function attribute_print_form() {
           <input type="text" name="mailalternateaddress" value="">
 <?php 	if(is_array($additionaldomainname)) { ?>
             <b>@ <select name="email_domain"></b>
-              <option value="<?=$defaultdomain?>"><?=$defaultdomain?></option>
+              <option value="<?=$defaultdomain?>"><?=pql_maybe_idna_decode($defaultdomain)?></option>
 <?php		foreach($additionaldomainname as $additional) { ?>
-              <option value="<?=$additional?>"><?=$additional?></option>
+              <option value="<?=$additional?>"><?=pql_maybe_idna_decode($additional)?></option>
 <?php   	} ?>
             </select>
 <?php 	} else { ?>
-            <b>@<?=$defaultdomain?></b>
+            <b>@<?=pql_maybe_idna_decode($defaultdomain)?></b>
 <?php 	} ?>
         </td>
       </tr>
@@ -104,7 +109,9 @@ function attribute_print_form() {
   </form>
 <?php
 }
+// }}}
 
+// {{{ attribute_save(type)
 function attribute_save($type) {
     global $domain, $user, $attrib, $oldvalue, $mailalternateaddress, $_pql, $defaultdomain, $email_domain, $view, $LANG;
     
@@ -157,6 +164,7 @@ function attribute_save($type) {
 								  array('type' => $type, 'file' => __FILE__)));
     }
 }
+// }}}
 
 // Local variables:
 // mode: php
