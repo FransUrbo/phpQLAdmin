@@ -1,6 +1,6 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.36.2.1 2005-03-04 11:59:44 turbo Exp $
+// $Id: ezmlm_add.php,v 1.36.2.2 2005-03-17 08:23:01 turbo Exp $
 //
 require("./include/pql_session.inc");
 require("./include/pql_config.inc");
@@ -167,7 +167,7 @@ if(isset($_REQUEST["submit"])) {
 
 		$url  = "ezmlm_detail.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&domainname=".$_REQUEST["domainname"];
 		$url .= "&listno=".$_REQUEST["listname"]."&msg=$msg&rlnb=3";
-		header("Location: " . $_SESSION["URI"] . "$url");
+		pql_header($url);
 	} else
 	  $error_text["listname"] = $LANG->_('Missing')."<br>";
 } else {
