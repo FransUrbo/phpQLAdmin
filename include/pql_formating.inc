@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.20 2004-03-19 10:13:14 turbo Exp $
+// $Id: pql_formating.inc,v 2.21 2004-03-26 11:28:49 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -300,13 +300,11 @@ function pql_format_timestamp($timestamp) {
 
 // {{{ pql_format_urls(string)
 function pql_format_urls(&$string) {
-	$tmp = $string;
-
-	if(ereg('%3D', $tmp)) {
-		// Already URL encoded
-
-		$tmp = urldecode($tmp);
+	if(ereg('%3D', $string)) {
+		// The original string should be URL decoded
+		$string = urldecode($string);
 	}
+	$tmp = $string;
 
 	// Make sure we can have a ' in branch (also affects the user DN).
 	if(ereg("\'", $tmp)) {
