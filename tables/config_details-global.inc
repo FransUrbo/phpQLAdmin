@@ -144,7 +144,7 @@
 
       <tr></tr>
 
-      <!-- -------------------- --!>
+      <!-- -------------------- -->
       <tr>
         <td class="title"><?=$LANG->_('Kerberos realm')?></td>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=pql_get_define("PQL_ATTR_KRB5_REALM")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_KRB5_REALM")?>"></a></td>

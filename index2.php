@@ -1,5 +1,5 @@
 <?php
-// $Id: index2.php,v 2.31 2004-03-21 14:34:53 turbo Exp $
+// $Id: index2.php,v 2.31.8.1 2004-10-05 15:38:38 turbo Exp $
 
 session_start();
 require("./include/pql_config.inc");
@@ -67,18 +67,18 @@ $size = sprintf("%d", $size);
     <title><?=pql_get_define("PQL_CONF_WHOAREWE")?></title>
   </head>
 
-  <!-- frames == <?=$frames?> --!>
+  <!-- frames == <?=$frames?> -->
 
 <?php if(isset($_REQUEST["advanced"]) and !$_SESSION["SINGLE_USER"]) { // Advance mode - show controls and mailinglist managers ?>
-  <frameset cols="260,*" rows="*" border="1" frameborder="0"><!-- $frames >= 2 --!>
-    <!-- LEFT frame --!>
+  <frameset cols="260,*" rows="*" border="1" frameborder="0"><!-- $frames >= 2 -->
+    <!-- LEFT frame -->
 <?php   if($frames >= 3) { ?>
-    <frameset cols="*" rows="<?=$size?>%,*" border="1" frameborder="0"><!-- $frames >= 3 --!>
+    <frameset cols="*" rows="<?=$size?>%,*" border="1" frameborder="0"><!-- $frames >= 3 -->
 <?php   } ?>
       <frame src="left.php?advanced=1" name="pqlnav">
 
 <?php   if($frames >= 4) { ?>
-      <frameset cols="*" rows="<?=$size?>%,*" border="1" frameborder="0"><!-- $frames >= 4 --!>
+      <frameset cols="*" rows="<?=$size?>%,*" border="1" frameborder="0"><!-- $frames >= 4 -->
 <?php   } 
 
         if($SHOW_FRAME["controls"]) {
@@ -88,7 +88,7 @@ $size = sprintf("%d", $size);
 
         if($frames >= 5) {
 ?>
-      <frameset cols="*" rows="<?=$size?>%,*" border="1" frameborder="0"><!-- $frames >= 5 --!>
+      <frameset cols="*" rows="<?=$size?>%,*" border="1" frameborder="0"><!-- $frames >= 5 -->
 <?php   }
 
        if(pql_get_define("PQL_CONF_EZMLM_USE")) { ?>
@@ -97,20 +97,20 @@ $size = sprintf("%d", $size);
 
         if($frames >= 5) {
 ?>
-      </frameset><!-- $frames >= 5 --!>
+      </frameset><!-- $frames >= 5 -->
 <?php   }
 
          if($frames >= 4) {
 ?>
-      </frameset><!-- $frames >= 4 --!>
+      </frameset><!-- $frames >= 4 -->
 <?php    } 
 
          if($frames >= 3) {
 ?>
-    </frameset><!-- $frames >= 3 --!>
+    </frameset><!-- $frames >= 3 -->
 <?php    }  ?>
 
-    <!-- RIGHT frame --!>
+    <!-- RIGHT frame -->
     <frame src="home.php?advanced=1" name="pqlmain">
   </frameset>
 <?php } else {
