@@ -2,7 +2,7 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.15 2003-05-18 15:34:11 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.16 2003-05-19 05:29:19 turbo Exp $
 
 function locals_check($type){
     global $error, $locals, $rootdn, $domain;
@@ -122,7 +122,12 @@ function locals_print_form(){
 }
 
 function locals_save($type, $host){
-    global $_pql, $_pql_control, $attrib, $locals, $set, $error, $rootdn, $domain;
+    global $_pql, $_pql_control, $attrib, $locals, $set, $error, $rootdn, $domain, $mxhost;
+
+	if($mxhost)
+	  $host = $mxhost;
+	else
+	  $host = '*';
 
     switch($type) {
       case "replicate":
@@ -139,7 +144,7 @@ function locals_save($type, $host){
       case "del":
 		// remove specified domain from locals, redirect back to host details
 		if(pql_control_update_domains($_pql_control, $GLOBALS["USER_SEARCH_DN_CTR"],
-									  '*', array($set, ''), "locals"))
+									  $host, array($set, ''), "locals"))
 		  $msg = "Successfully removed $set from locals";
 		else
 		  $msg = "Failed removing $set from locals: " . pql_ldap_error($_pql_control->ldap_linkid);
@@ -149,8 +154,18 @@ function locals_save($type, $host){
 
       case "add":
 		// adding specified domain to rcpthosts, redirect back to domain details
-		if(pql_control_update_domains($_pql_control, $GLOBALS["USER_SEARCH_DN_CTR"],
-									  '*', array('', $set), "locals"))
+		$success = 0;
+		if($mxhost) {
+			if(pql_control_update_domains($_pql_control, "cn=".$mxhost.",".$GLOBALS["USER_SEARCH_DN_CTR"],
+										  $host, array('', $set), "locals"))
+			  $success = 1;
+		} else {
+			if(pql_control_update_domains($_pql_control, $GLOBALS["USER_SEARCH_DN_CTR"],
+										  '*', array('', $set), "locals"))
+			  $success = 1;
+		}
+
+		if($success)
 		  $msg = "Successfully added $set to locals";
 		else
 		  $msg = "Failed adding $set to locals: " . pql_ldap_error($_pql_control->ldap_linkid);
