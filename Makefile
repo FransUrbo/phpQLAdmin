@@ -2,6 +2,7 @@
 # general CVS stuff easily.
 #
 
+DATE    := $(shell date +"%b %e %Y")
 TMPDIR  := $(shell tempfile)
 VERSION := $(shell cat .version | sed 's@\ .*@@')
 INSTDIR := $(TMPDIR)/phpQLAdmin-$(VERSION)
@@ -31,7 +32,8 @@ tag:
 	  TAG="REL_`echo $$MAJOR`_`echo $$MINOR`_`echo $$LEVEL`"; \
 	  echo -n $(TAG) > .tag; \
 	  echo cvs tag: $$TAG; \
-	  cvs commit -m "New release - $$MAJOR.$$MINOR.$$LEVEL." .version .version.old; \
+	  cvs commit -m "New release - $$MAJOR.$$MINOR.$$LEVEL." \
+		.version .version.old CHANGES; \
 	  cvs tag -RF $$TAG; \
 	)
 
@@ -57,7 +59,7 @@ debian: install
 	  debuild; \
 	  echo "Files is in: "$(DESTDIR))
 
-release: tag tarball debian
+release: changes tag tarball debian
 	@(mv -v $(TMPDIR)/phpQLAdmin-$(VERSION).tar.gz /var/www/phpqladmin/; \
 	  mv -v $(TMPDIR)/phpQLAdmin-$(VERSION).tar.bz2 /var/www/phpqladmin/; \
 	  cat /var/www/phpqladmin/index.html.in | \
@@ -70,3 +72,10 @@ release: tag tarball debian
 
 $(INSTDIR):
 	@rm -f $(TMPDIR) && mkdir -p $(INSTDIR)
+
+changes:
+	@( \
+	  echo "Date: $(DATE)"; \
+	  cat CHANGES | sed "s@TO BE ANNOUNCED@Release \($(DATE)\)@" > CHANGES.new; \
+	  mv CHANGES.new CHANGES; \
+	)
