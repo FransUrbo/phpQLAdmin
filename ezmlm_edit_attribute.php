@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_edit_attribute.php,v 1.6 2002-12-25 16:21:28 turbo Exp $
+// $Id: ezmlm_edit_attribute.php,v 1.7 2003-01-14 06:47:18 turbo Exp $
 //
 session_start();
 
@@ -8,6 +8,16 @@ require("./include/pql_ezmlm.inc");
 
 // Initialize
 $_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS, false, 0);
+
+// forward back to list detail page
+function list_forward($domainname, $msg){
+	global $domain;
+
+    $msg = urlencode($msg);
+	// TODO: We need the '$domainname' value to show the LIST, not lists in domain
+    $url = "ezmlm_detail.php?domain=$domain&domainname=$domainname&msg=$msg&rlnb=3";
+    header("Location: " . PQL_URI . "$url");
+}
 
 // Get base directory for mails
 if(!($path = pql_get_domain_value($_pql->ldap_linkid, $domain, "basemaildir"))) {
@@ -20,7 +30,7 @@ if($ezmlm = new ezmlm('alias', $path)) {
 	if($ezmlm->mailing_lists[$listno]["name"]) {
 		$listname = $ezmlm->mailing_lists[$listno]["name"];
 	} else {
-		die("No listname defined for list #$listno!<br>");
+		die("No listname defined for list $listno!<br>");
 	}
 
 	// TODO: Same for 'listparent' and 'fromaddress' when/if we need it...
