@@ -1,6 +1,6 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.5 2002-12-24 12:01:50 turbo Exp $
+// $Id: ezmlm_add.php,v 1.6 2002-12-25 01:13:06 turbo Exp $
 //
 session_start();
 
@@ -9,8 +9,7 @@ $_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
 
 // Initialize
 require("./include/pql_ezmlm.inc");
-$ezmlm = new ezmlm();
-require("./ezmlm-hardcoded.php");
+$ezmlm = new ezmlm('/usr/bin', 'alias', '/var/lists');
 
 if(!$subscribercount) {
 	$subscribercount = 0;

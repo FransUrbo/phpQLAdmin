@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_del.php,v 1.4 2002-12-24 12:13:10 turbo Exp $
+// $Id: ezmlm_del.php,v 1.5 2002-12-25 01:13:06 turbo Exp $
 //
 session_start();
 
@@ -7,8 +7,7 @@ require("./include/pql.inc");
 require("./include/pql_ezmlm.inc");
 
 // Initialize
-$ezmlm = new ezmlm();
-require("./ezmlm-hardcoded.php");
+$ezmlm = new ezmlm('/usr/bin', 'alias', '/var/lists');
 
 include("./header.html");
 
