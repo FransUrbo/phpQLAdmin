@@ -6,17 +6,17 @@ $string = ereg_replace("\r\n", "\n", $string) ;
 $string = ereg_replace("%20",  " ", $string);
 
 // Create the image
-if(function_exists('ImageCreateFromPng')) {
+if(function_exists('ImageCreateFromPng') && (imagetypes() & IMG_PNG)) {
     $myimage = ImageCreateFromPng("images/unselected.png");
 
     if($myimage)
       $imgtype = 'png';
-} elseif(function_exists('ImageCreateFromGif')) {
+} elseif(function_exists('ImageCreateFromGif') && (imagetypes() & IMG_GIF)) {
     $myimage = ImageCreateFromGif("images/unselected.gif");
 
     if($myimage)
       $imgtype = 'gif';
-} elseif(function_exists('ImageCreateFromJpeg')) {
+} elseif(function_exists('ImageCreateFromJpeg') && (imagetypes() & IMG_JPG)) {
     $myimage = ImageCreateFromJpeg("images/unselected.jpeg");
 
     if($myimage)
