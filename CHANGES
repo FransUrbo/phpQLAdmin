@@ -64,7 +64,13 @@ phpQLAdmin 2.0.15 Release (TO BE ANNOUNCED)
 	    Allow for deleting these domain(s) from the QmailLDAP/Controls
 	    object(s). This EVEN if automatic replication is configured.
 	    Closes bug 19
- 
+	  - Only create UID, givenName, [ug]idNumber, gecos and homeDirectory
+	    if we're referencing users with UID (as opposed to CN etc).
+	  - When user-/sur- and/or lastname have been entered, and we're
+	    running in advanced mode we should have figured out the mail
+	    host. This was previosly done one page to late, so we never
+	    got a suggestion on host...
+
 	GUI layout change
 	  - Possibility to set a value in the domain branch saying we
 	    automatically would like to create username (uid) and/or
@@ -99,6 +105,10 @@ phpQLAdmin 2.0.15 Release (TO BE ANNOUNCED)
 	      of your LDAP server. If this is not done, we won't be able
 	      to do a regexp search of the attribute...
 	    Closes bug 25
+	  - 'Complete' redesign. Put {user,sur,last} name, password scheme
+	    and password at the top of the page instead of at the bottom.
+	    It's "more important". Put email address at the bottom (in
+	    the 'Additional account properties' table).
 
 	Misc changes
 	  - Configurable define in config.inc which dictate what user
