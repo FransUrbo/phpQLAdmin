@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.3 2004-10-20 07:15:03 turbo Exp $
+// $Id: pql_write.inc,v 2.4 2004-11-05 13:47:20 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -16,34 +16,34 @@ function pql_write_mod($linkid, $dn, $entry, $caller = NULL) {
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif($caller, $dn, $entry);
 	if(file_exists("./.DEBUG_ME"))
-	  die($LDIF);
-	
-	// Modify this object
-	if(!ldap_mod_replace($linkid, $dn, $entry)) {
-		// Modify failed. Why? Can't support every single
-		// failure, but some I CAN rectify (I think :).
-		$errno = ldap_errno($linkid);
-		switch($errno) {
-		  case "65":
-			// Object class violation - try to add (the) missing objectclass(es).
-			
-			// Get the current object classes in this object
-			$old = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_OBJECTCLASS"));
-			
-			// Try to find which object classes to ADD.
-			$new = pql_missing_objectclasses($linkid, $dn, $entry);
-			
-			// Combine the old with the new.
-			$ocs = $old;
-			for($i=0; $new[$i]; $i++)
-			  $ocs[] = $new[$i];
-			
-			$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_uniq($ocs);
-			
-			// Recursion... Hopfully there's a limit on how many (max_execution_time in php.ini)!
-			pql_write_mod($linkid, $dn, $entry, $caller);
-			break;
-
+	  echo $LDIF;
+	else {
+		// Modify this object
+		if(!ldap_mod_replace($linkid, $dn, $entry)) {
+			// Modify failed. Why? Can't support every single
+			// failure, but some I CAN rectify (I think :).
+			$errno = ldap_errno($linkid);
+			switch($errno) {
+			  case "65":
+				// Object class violation - try to add (the) missing objectclass(es).
+				
+				// Get the current object classes in this object
+				$old = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_OBJECTCLASS"));
+				
+				// Try to find which object classes to ADD.
+				$new = pql_missing_objectclasses($linkid, $dn, $entry);
+				
+				// Combine the old with the new.
+				$ocs = $old;
+				for($i=0; $new[$i]; $i++)
+				  $ocs[] = $new[$i];
+				
+				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_uniq($ocs);
+				
+				// Recursion... Hopfully there's a limit on how many (max_execution_time in php.ini)!
+				pql_write_mod($linkid, $dn, $entry, $caller);
+				break;
+				
 //		  case "17": // Undefined attribute type
 //			break;
 //
@@ -55,10 +55,11 @@ function pql_write_mod($linkid, $dn, $entry, $caller = NULL) {
 //		  case "32": // LDAP_INSUFFICIENT_ACCESS
 //		  case "41": // LDAP_OBJECT_CLASS_VIOLATION
 //			break;
-
-		  default:
-			pql_format_error(1);
-			die($LDIF);
+				
+			  default:
+				pql_format_error(1);
+				die($LDIF);
+			}
 		}
 	}
 
@@ -79,7 +80,8 @@ function pql_write_mod($linkid, $dn, $entry, $caller = NULL) {
 // It will do the modification on ALL objects found, in ALL
 // the backends!
 // It's primary design/goal was to modify the administrator
-// value(s) when a user is deleted.
+// (ezmlmAdministrator, controlsAdministrator and seeAlso) value(s)
+// when a user is deleted or renamed.
 function pql_replace_values($ldap, $attribs, $old, $new = NULL) {
 	// Setup the search filter
 	$filter = '(|';
@@ -139,7 +141,7 @@ function pql_modify_attribute($linkid, $dn, $attrib, $old, $new) {
 	if(is_array($new)) {
 		if($attrib) {
 			for($i=0; $new[$i]; $i++)
-			  $object[$attrib][] = $new[$i];
+			  $object[$attrib][] = pql_maybe_encode($new[$i], $attrib, $linkid);
 		} else
 		  $object = $new;
 	} else {
@@ -149,18 +151,21 @@ function pql_modify_attribute($linkid, $dn, $attrib, $old, $new) {
 			if(!$old and $new) {
 				// Add old values to the new array.
 				if(!is_array($entry))
-				  $object[$attrib][] = $entry;
+				  $object[$attrib][] = pql_maybe_encode($entry, $attrib, $linkid);
 				else {
 					for($i=0; $entry[$i]; $i++)
-					  $object[$attrib][] = $entry[$i];
+					  $object[$attrib][] = pql_maybe_encode($entry[$i], $attrib, $linkid);
 				}
 				
 				// Add the $new value to attribute
-				$object[$attrib][] = $new;
+				$object[$attrib][] = pql_maybe_encode($new, $attrib, $linkid);
 			} else {
 				if($old == 1) {
 					// Replace the existing attribute value
-					$object[$attrib][] = $new;
+					$object[$attrib][] = pql_maybe_encode($new, $attrib, $linkid);
+				} elseif(!$old) {
+					// We're called without both $old and $new - delete whole attribute
+					$object[$attrib] = array();
 				} else {
 					// Replace $old with $new
 					if(!is_array($entry)) {
@@ -182,13 +187,13 @@ function pql_modify_attribute($linkid, $dn, $attrib, $old, $new) {
 						}
 						
 						if($value)
-						  $object[$attrib][] = $value;
+						  $object[$attrib][] = pql_maybe_encode($value, $attrib, $linkid);
 					}
 				}
 			}
 		} elseif($new)
 		  // No previous attribute value, add $new
-		  $object[$attrib][] = $new;
+		  $object[$attrib][] = pql_maybe_encode($new, $attrib, $linkid);
 	}
 	// }}}
 
