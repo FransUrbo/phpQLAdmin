@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-details.inc,v 1.19 2004-03-31 05:41:30 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.20 2004-04-01 11:59:37 turbo Exp $ */ ?>
 <?php $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"])); ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -23,7 +23,10 @@
         </tr>
         <input type="hidden" name="uid" value="<?=$_REQUEST["uid"]?>">
 
-<?php } ?>
+<?php }
+
+	  if(($_REQUEST["account_type"] != "mail") or in_array("person", $objectclasses_included)) {
+?>
         <!-- Firstname -->
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Surname')?></td>
@@ -41,7 +44,9 @@
             <input type="text" name="name" value="<?=$_REQUEST["name"]?>">
           </td>
         </tr>
-<?php if($_REQUEST["account_type"] != "forward") {
+<?php }
+
+	  if($_REQUEST["account_type"] != "forward") {
 		// Get the default password scheme for branch
 		$_REQUEST["defaultpasswordscheme"] = pql_domain_get_value($_pql, $_REQUEST["domain"],
 																  pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"));

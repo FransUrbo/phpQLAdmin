@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.15 2004-04-01 11:34:13 turbo Exp $
+// $Id: user_add-save.inc,v 1.16 2004-04-01 11:59:37 turbo Exp $
 
 // Find out what objectclasses to use when creating user
 $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"]));
@@ -18,14 +18,18 @@ if($_REQUEST["uid"]) {
 }
 
 // ------------------
-if($_REQUEST["account_type"] != "mail") {
+// If we've specified to use the object class 'inetOrgPerson', then allow 'givenName'.
+if(($_REQUEST["account_type"] != "mail") or in_array("inetorgperson", $objectclasses_included)) {
 	// Firstname
 	if($_REQUEST["surname"]) {
 		$entry[pql_get_define("PQL_ATTR_GIVENNAME")]	= $_REQUEST["surname"];
 	} elseif(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")) {
 		$entry[pql_get_define("PQL_ATTR_GIVENNAME")]	= $_REQUEST["uid"];
 	}
-	
+}
+
+// If we've specified to use the object class 'person', then allow 'cn' and 'sn'.
+if(($_REQUEST["account_type"] != "mail") or in_array("person", $objectclasses_included)) {
 	// Lastname
 	if($_REQUEST["name"]) {
 		$entry[pql_get_define("PQL_ATTR_SN")]			= $_REQUEST["name"];
