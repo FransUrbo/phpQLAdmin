@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.24 2003-07-02 07:59:00 turbo Exp $
+// $Id: attrib.config.inc,v 1.25 2003-07-03 07:32:32 turbo Exp $
 
 function attribute_check() {
     global $administrator, $domain, $oldvalue, $_pql, $error, $LANG;
@@ -17,7 +17,7 @@ function attribute_check() {
 
 function attribute_print_form() {
     global $administrator, $domain, $PHP_SELF, $attrib, $$attrib, $oldvalue, $error, $_pql, $toggle;
-	global $PQL_ATTRIBUTE, $rootdn, $delval, $view;
+	global $PQL_ATTRIBUTE, $rootdn, $delval, $view, $LANG;
 	$attrib = strtolower($attrib);
 
 	// Get the old values from the define
@@ -155,6 +155,16 @@ function attribute_print_form() {
           <td class="<?=$class?>"><i><a href="javascript:errorWindow()"><?=$LANG->_('No objectclasses')?>!</i></a></td
 <?php
 			}
+        } elseif($attrib == lc($PQL_ATTRIBUTE["PQL_GLOB_LANG"])) {
+			// We're to change the language -> show a select box with existing languages
+			$languages = $LANG->get_supported();
+?>
+            <select name="<?=$attrib?>">
+<?php		foreach($languages as $l => $lang) { ?>
+              <option value="<?=$l?>"><?=$lang?></option>
+<?php		} ?>
+            </select>
+<?php
         } else {
 			// Not a userObjectClass or branchObjectClass
 			if($attrib == lc($PQL_ATTRIBUTE["PQL_CONF_PASSWORD_SCHEMES"])) {
