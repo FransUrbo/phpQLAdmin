@@ -58,7 +58,7 @@ if(isset($submit)) {
 }
 ?>
 
-  <br><span class="title1"><?=$config["PQL_GLOB_WHOAREWE"]?> - v<?=$VERSION?></span><br>
+  <br><span class="title1"><?=$config["PQL_GLOB_WHOAREWE"]?><br>Version: <?=$VERSION?></span><br>
 
   <ul>
 <?php
