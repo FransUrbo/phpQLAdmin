@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.183 2004-07-07 14:24:22 turbo Exp $
+// $Id: pql.inc,v 2.184 2004-07-08 10:36:45 turbo Exp $
 //
 
 // ----------------------------
@@ -1253,6 +1253,9 @@ function pql_modify_userattribute($ldap_linkid, $user, $attrib, $oldvalue, $newv
 
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_modify_userattribute", $user, $entry_new);
+
+    if(file_exists("./.DEBUG_ME"))
+	  die($LDIF);
 
     if(!ldap_mod_replace($ldap_linkid, $user, $entry_new)) {
 	    // if the value is empty (""), this causes an error in OpenLDAP 2.x, try to ldap_mod_del
