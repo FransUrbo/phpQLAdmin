@@ -1,6 +1,6 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.37 2004-02-21 12:53:33 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.38 2004-02-27 11:42:57 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -8,35 +8,35 @@ require("./include/config_plugins.inc");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
+$url["domain"] = pql_format_urls($_REQUEST["domain"]);
+$url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
+
 // forward back to users detail page
 function attribute_forward($msg) {
+	global $url;
+
 	if($_REQUEST["user"])
-	  $url = "user_detail.php?rootdn=" . $_REQUEST["rootdn"] . "&domain=" . $_REQUEST["domain"]
-		. "&user=". urlencode($_REQUEST["user"]) . "&view=" . $_REQUEST["view"] . "&msg=$msg";
-	elseif($_REQUEST["administrator"])
-	  // Administrators is _always_ added/change here, NOT from user_edit_attribute.php
-	  // as one would think. I.e. when giving a user access to branch from the
-	  // 'User details->User access' page...
-	  $url = "user_detail.php?rootdn=" . $_REQUEST["rootdn"] . "&domain=" . $_REQUEST["domain"]
-	    . "&user=" . $_REQUEST["administrator"] . "&view=" . $_REQUEST["view"] . "&msg=$msg";
-	else
-	  $url = "domain_detail.php?rootdn=" . $_REQUEST["rootdn"] . "&domain=" . $_REQUEST["domain"]
+	  $link = "user_detail.php?rootdn=" . $url["rootdn"]
+		. "&domain=" . $url["domain"]
+		. "&user=". $url["user"]
+		. "&view=" . $_REQUEST["view"] . "&msg=$msg";
+	elseif($_REQUEST["administrator"]) {
+		// Administrators is _always_ added/change here, NOT from user_edit_attribute.php
+		// as one would think. I.e. when giving a user access to branch from the
+		// 'User details->User access' page...
+		$url["user"]			= pql_format_urls($_REQUEST["user"]);
+		$url["administrator"]	= pql_format_urls($_REQUEST["administrator"]);
+
+		$link = "user_detail.php?rootdn=" . $url["rootdn"]
+		  . "&domain=" . $url["domain"]
+		  . "&user=" . $url["administrator"]
+		  . "&view=" . $_REQUEST["view"] . "&msg=$msg";
+	} else
+	  $link = "domain_detail.php?rootdn=" . $url["rootdn"]
+		. "&domain=" . $url["domain"]
 		. "&view=" . $_REQUEST["view"] . "&msg=$msg";
 
-    header("Location: " . pql_get_define("PQL_GLOB_URI") . "$url");
-}
-
-// Look for a URL encoded '=' (%3D). If one isn't found, encode the DN
-// These variables ISN'T encoded "the first time", but they are after
-// the attribute_print_form() have been executed, so we don't want to
-// encode them twice!
-if(! ereg("%3D", $_REQUEST["rootdn"])) {
-	// URL encode namingContexts
-	$_REQUEST["rootdn"] = urlencode($_REQUEST["rootdn"]);
-}
-if(! ereg("%3D", $_REQUEST["domain"])) {
-	// .. and/or domain DN
-	$_REQUEST["domain"] = urlencode($_REQUEST["domain"]);
+    header("Location: " . pql_get_define("PQL_GLOB_URI") . $link);
 }
 
 // Select which attribute have to be included
