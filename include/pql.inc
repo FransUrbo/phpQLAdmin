@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.86 2003-06-19 10:42:18 turbo Exp $
+// $Id: pql.inc,v 2.87 2003-06-19 11:23:20 turbo Exp $
 //
 
 // ----------------------------
@@ -1393,8 +1393,8 @@ function pql_get_next_uidnumber($ldap) {
 	if($highest)
 	$highest++; // Increase with one!
 	else
-	  if($config["PQL_GLOB_MINIMUM_UIDNUMBER"])
-		$highest = $config["PQL_GLOB_MINIMUM_UIDNUMBER"];
+	  if($config["PQL_CONF_MINIMUM_UIDNUMBER"])
+		$highest = $config["PQL_CONF_MINIMUM_UIDNUMBER"];
 	  else
 		$highest = 1000;
 	
