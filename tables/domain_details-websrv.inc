@@ -1,22 +1,35 @@
-<?php require($_SESSION["path"]."/include/pql_websrv.inc");
-	  $result = pql_search($_pql->ldap_linkid, $dn, 'objectClass='.pql_get_define("PQL_ATTR_WEBSRV_OC"));
-	  for($i=0; $result[$i]; $i++) {
-		  // Oki, we have webserver configuration(s) in LDAP.
-		  $name = $result[$i][pql_get_define("PQL_ATTR_CN")];
-		  $servers[$name] = $result[$i];
-	  }
+<?php
+require($_SESSION["path"]."/include/pql_websrv.inc");
 
-      if(is_array($servers)) {
-		  if(!$server) {
-			  // Use the first server as default (ie, if we're not called with a specific server to show)
-			  foreach($servers as $server => $data) break;
-		  } elseif(eregi('=', $server)) {
-			  // Server is a RDN				   -> server   = 'cn=testing.somwehere.tld,ou=WEB,dc=somewhere,dc=tld'
-			  // This will happen after changing a value with websrv_edit_attributes.php.
-			  $server = split('=', $server);    // -> server[1]= 'testing.somwehere.tld,ou'
-			  $server = split(',', $server[1]); // -> server[0]= 'testing.somwehere.tld'a
-			  $server = $server[0];
-		  }
+// {{{ Setup the object class filter
+$ocs = pql_split_oldvalues(pql_get_define("PQL_ATTR_WEBSRV_OC"));
+$filter = '(&';
+for($i=0; $ocs[$i]; $i++) {
+  $filter .= '(objectClass='.$ocs[$i].')';
+}
+$filter .= ')';
+// }}}
+
+// {{{ Retreive the Apache web server object(s)
+$result = pql_search($_pql->ldap_linkid, 'ou=Web,'.$_REQUEST["domain"], $filter);
+for($i=0; $result[$i]; $i++) {
+  // Oki, we have webserver configuration(s) in LDAP.
+  $name = $result[$i][pql_get_define("PQL_ATTR_CN")];
+  $servers[$name] = $result[$i];
+}
+// }}}
+
+if(is_array($servers)) {
+  if(!$server) {
+	// Use the first server as default (ie, if we're not called with a specific server to show)
+	foreach($servers as $server => $data) break;
+  } elseif(eregi('=', $server)) {
+	// Server is a RDN				   -> server   = 'cn=testing.somwehere.tld,ou=WEB,dc=somewhere,dc=tld'
+	// This will happen after changing a value with websrv_edit_attributes.php.
+	$server = split('=', $server);    // -> server[1]= 'testing.somwehere.tld,ou'
+	$server = split(',', $server[1]); // -> server[0]= 'testing.somwehere.tld'a
+	$server = $server[0];
+  }
 ?>
   <table cellspacing="0" border="0" width="100%" cellpadding="0" size="100%">
     <tr>
@@ -25,10 +38,11 @@
   </table>
 
   <br>
-<?php $LINK_URL  = "websrv_edit_attributes.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&server=".urlencode($servers[$server]["dn"]);
-      $LINK_URL .= "&view=".$_REQUEST["view"];
-      $img["mod"]  = '<img src="images/edit.png" width="12" height="12" alt="Modify value" border="0">';
-      $img["del"]  = '<img src="images/del.png"  width="12" height="12" alt="Delete value" border="0">';
+<?php
+  $LINK_URL    = "websrv_edit_attributes.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"];
+  $LINK_URL   .= "&server=".urlencode($servers[$server]["dn"])."&view=".$_REQUEST["view"];
+  $img["mod"]  = '<img src="images/edit.png" width="12" height="12" alt="Modify value" border="0">';
+  $img["del"]  = '<img src="images/del.png"  width="12" height="12" alt="Delete value" border="0">';
 ?>
 
   <table cellspacing="0" cellpadding="3" border="0">

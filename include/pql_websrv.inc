@@ -4,15 +4,14 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for web server configuration)
 //
-// $Id: pql_websrv.inc,v 1.14 2005-02-24 17:04:02 turbo Exp $
+// $Id: pql_websrv.inc,v 1.15 2005-03-01 09:38:33 turbo Exp $
 //
 
 // {{{ pql_websrv_add_server(linkid, domain, server)
 function pql_websrv_add_server($linkid, $domain, $server) {
 	$dn = "ou=WEB,".$domain;
 
-	// ----------------
-	// See if the sub branch exists. If not, create it.
+	// {{{ See if the sub branch exists. If not, create it.
 	if(!pql_get_dn($linkid, $dn, 'objectClass=organizationalUnit', 'BASE')) {
 		$entry['objectclass'][] = 'organizationalUnit';
 		$entry['ou'] = 'WEB';
@@ -34,25 +33,31 @@ function pql_websrv_add_server($linkid, $domain, $server) {
 		  }
 		}
 	}
+	// }}}
 
-	// ----------------
+	// {{{ Setup the object class filter
+	$ocs = pql_split_oldvalues(pql_get_define("PQL_ATTR_WEBSRV_OC"));
+	for($i=0; $ocs[$i]; $i++)
+	  $entry["objectclass"][] = $ocs[$i];
+	// }}}
+
 	$entry = $server;
-	$entry["objectclass"][] = pql_get_define("PQL_ATTR_WEBSRV_OC");
-
 	$dn = pql_get_define("PQL_ATTR_CN")."=".$entry[pql_get_define("PQL_ATTR_CN")].",$dn";
 	$entry[pql_get_define("PQL_ATTR_CN")] = $entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")];
 
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_websrv_add_server", $dn, $entry);
 	if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
-	  die($LDIF);
-
-	// Add the server configuration to the database
-	if(!pql_write_add($linkid, $dn, $entry, 'websrv', 'pql_websrv_add_server/2')) {
+	  echo $LDIF;
+	else {
+	  // {{{ Add the server configuration to the database
+	  if(!pql_write_add($linkid, $dn, $entry, 'websrv', 'pql_websrv_add_server/2')) {
 		// failed to add configuration
 		pql_format_error(1);
 		echo "Can't add webserver object ".$entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")]."<p>";
 		die("$LDIF");
+	  }
+	  // }}}
 	}
 
 	return true;

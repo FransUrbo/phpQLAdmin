@@ -2,6 +2,14 @@ Upgrading from 2.1.4
 	Support for user/branch deletion script(s). Update your schema at
 	the LDAP server and restart it.
 
+	No more support for my own Apache web server configuration schema
+	hack. I now fully support Brian Ferris' 'mod_ldap_cfg' (see the
+	file doc/README.apache) module. Please remove all old web server
+	objects and create new. No upgrade path is supported/recommended.
+	+ The object class phpQLAdminWebSrv (1.3.6.1.4.1.8767.3.1.4) and
+	  all it's attributes have been deleted. Update your LDAP server
+	  schema file, because I might reuse it...
+
 Upgrading from 2.1.3
 	New user templates system. Please read doc/README.Templates for
 	more information on this. This required a schema change, so make

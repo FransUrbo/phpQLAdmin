@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.30 2005-02-25 07:30:40 turbo Exp $
+// $Id: config_attributes.inc,v 2.31 2005-03-01 09:38:33 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -183,31 +183,27 @@ pql_set_define("PQL_ATTR_TXTRECORD",						strtolower("txtRecord"),					false);
 
 // {{{ Attributes used by the Apache config
 pql_set_define("PQL_ATTR_WEBSRV_USE", 						strtolower('useWebSrv'),					false);
-pql_set_define("PQL_ATTR_WEBSRV_SRV_IP", 					strtolower('webServerIP'),					false);
-pql_set_define("PQL_ATTR_WEBSRV_SRV_URL", 					strtolower('webServerURL'),					false);
-pql_set_define("PQL_ATTR_WEBSRV_SCRIPT_URL", 				strtolower('webScriptAliasURL'),			false);
-pql_set_define("PQL_ATTR_WEBSRV_SCRIPT_PATH", 				strtolower('WebScriptAliasPath'),			false);
-pql_set_define("PQL_ATTR_WEBSRV_LOG_ERROR", 				strtolower('webLogError'),					false);
-pql_set_define("PQL_ATTR_WEBSRV_LOG_TRANSFER", 				strtolower('webLogTransfer'),				false);
-pql_set_define("PQL_ATTR_WEBSRV_OPTIONS", 					strtolower('webOptions'),					false);
+pql_set_define("PQL_ATTR_WEBSRV_SRV_IP", 					strtolower('ApacheSectionArg'),				false);
+pql_set_define("PQL_ATTR_WEBSRV_SRV_URL", 					strtolower('ApacheServerName'),				false);
+pql_set_define("PQL_ATTR_WEBSRV_SCRIPT_URL", 				strtolower('ApacheScriptAlias'),			false);
+pql_set_define("PQL_ATTR_WEBSRV_SCRIPT_PATH", 				strtolower('ApacheAlias'),					false);
+pql_set_define("PQL_ATTR_WEBSRV_LOG_ERROR", 				strtolower('ApacheErrorLog'),				false);
+pql_set_define("PQL_ATTR_WEBSRV_LOG_TRANSFER", 				strtolower('ApacheTransferLog'),			false);
+pql_set_define("PQL_ATTR_WEBSRV_OPTIONS", 					strtolower('ApacheRewriteOptions'),			false);
+
+pql_set_define("PQL_ATTR_WEBSRV_DOCROOT", 					strtolower('ApacheDocumentRoot'),			false);
+pql_set_define("PQL_ATTR_WEBSRV_SRV_ALIAS", 				strtolower('ApacheServerAlias'),			false);
+pql_set_define("PQL_ATTR_WEBSRV_SRV_ADMIN", 				strtolower('ApacheServerAdmin'),			false);
+pql_set_define("PQL_ATTR_WEBSRV_SRV_NAME", 					strtolower('ApacheServerName'),				false);
 
 pql_set_define("PQL_ATTR_WEBSRV_LDAP_SERVER", 				strtolower('webLDAPServer'),				false);
 pql_set_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_DN", 		strtolower('webLDAPServerLoginDN'),			false);
 pql_set_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_PW", 		strtolower('webLDAPServerLoginPW'),			false);
 
-// If not using 'mod_cfg_ldap.schema', then enable these (default)
-pql_set_define("PQL_ATTR_WEBSRV_OC",	 					strtolower('phpQLAdminWebsrv'),				false);
-pql_set_define("PQL_ATTR_WEBSRV_DOCROOT", 					strtolower('webDocumentRoot'),				false);
-pql_set_define("PQL_ATTR_WEBSRV_SRV_ALIAS", 				strtolower('webServerAlias'),				false);
-pql_set_define("PQL_ATTR_WEBSRV_SRV_ADMIN", 				strtolower('webServerAdmin'),				false);
-pql_set_define("PQL_ATTR_WEBSRV_SRV_NAME", 					strtolower('webServerName'),				false);
-
-// If you're using the 'mod_cfg_ldap.schema' (see doc/README.apache), then enable these instead.
-//pql_set_define("PQL_ATTR_WEBSRV_OC",	 					strtolower('apacheConfig'),					false);
-//pql_set_define("PQL_ATTR_WEBSRV_DOCROOT", 					strtolower('apacheDocumentRoot'),			false);
-//pql_set_define("PQL_ATTR_WEBSRV_SRV_ALIAS", 				strtolower('apacheServerAlias'),			false);
-//pql_set_define("PQL_ATTR_WEBSRV_SRV_ADMIN", 				strtolower('apacheServerAdmin'),			false);
-//pql_set_define("PQL_ATTR_WEBSRV_SRV_NAME",					strtolower('apacheServerName'),				false);
+pql_set_define("PQL_ATTR_WEBSRV_OC",	 					array(strtolower('device'),
+																  strtolower('ApacheSectionObj'),
+																  strtolower('ApacheVirtualHostObj'),
+																  strtolower('ApacheModLogConfigObj')),	false);
 // }}}
 
 // {{{ Miscellaneous external attributes

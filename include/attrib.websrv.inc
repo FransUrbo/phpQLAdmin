@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for the Webserver Configuration editor
 //
-// $Id: attrib.websrv.inc,v 1.9 2005-02-24 17:04:01 turbo Exp $
+// $Id: attrib.websrv.inc,v 1.10 2005-03-01 09:38:33 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -75,8 +75,16 @@ function attribute_save($action) {
 
     switch($action) {
 	  case "add":
-		// Fetch the old values from the DB
-		$filter = "(&(objectclass=".pql_get_define("PQL_ATTR_WEBSRV_OC").")($attrib=*))";
+		// {{{ Setup the object class filter
+		$ocs = pql_split_oldvalues(pql_get_define("PQL_ATTR_WEBSRV_OC"));
+		$filter = '(&';
+		for($i=0; $ocs[$i]; $i++) {
+		  $filter .= '(objectClass='.$ocs[$i].')';
+		}
+		$filter .= '($attrib=*))';
+		// }}}
+
+		// {{{ Fetch the old values from the DB
 		$sr   = ldap_read($_pql->ldap_linkid, $_REQUEST["server"], $filter, array($attrib));
 		$info = ldap_get_entries($_pql->ldap_linkid, $sr)
 		  or pql_format_error(0);
@@ -84,6 +92,7 @@ function attribute_save($action) {
 			// Add the old value(s) to the array
 			$entry[$attrib][] = $info[0][$attrib][$i];
 		}
+		// }}}
 
 		// Add the new value to the array
 		$entry[$attrib][] = $_REQUEST[$attrib];
