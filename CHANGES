@@ -7,6 +7,14 @@ phpQLAdmin 2.0.16 TO BE ANNOUNCED
 	  - Set PQL_CONF_REFERENCE_USERS_WITH to 'uid', don't get
 	    the PQL_GLOB_ATTR_UID and THEN set PQL_CONF_REFERENCE_USERS_WITH.
 	    Closes bug 41.
+	  - Rewrite the layout (and part of the functionality) to better
+	    be able to change, delete and add an SMTP route (layout according
+	    to the rest of the system).
+	    + We now have two MAIN views (or 'ways to present information'.
+	      One from the controls frame-> qmail-remote -> smtproutes and
+	      the other from the domain details -> Control options -> Add/Remove
+	      domain from smtproutes) with two sub GUI's (change/add) each.
+	    Close bug 36
 
 	GUI layout change
 
