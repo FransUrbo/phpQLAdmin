@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.108 2003-08-20 08:28:20 turbo Exp $
+// $Id: pql.inc,v 2.109 2003-08-20 09:42:06 turbo Exp $
 //
 
 // ----------------------------
@@ -384,8 +384,10 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 
 // adds a domain into ldap-tree (o|ou|dc-record)
 function pql_domain_add($ldap_linkid, $basedn, $branch_name) {
-	$entry[pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)] =
-	  maybe_encode($branch_name, pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn), $ldap_linkid);
+	// Maybe UTF-8 encode the branch name - to allow international characters
+	$branch_name = maybe_encode($branch_name, pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn), $ldap_linkid);
+
+	$entry[pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)] = $branch_name;
 	$dn = pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) . "=" . $branch_name . "," . $basedn;
 	
 	// Setup objectclasses
@@ -425,6 +427,10 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name) {
 			  pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) .
 			  "=" . $branch_name . "," . $basedn;
 
+		// Add the OpenLDAPaci attribute (maybe)
+		if(function_exists("user_generate_aci"))
+		  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($ldap_linkid, $GLOBALS["USER_DN"], 'branch');
+
 		// Create a LDIF object to print in case of error
 		$LDIF = pql_create_ldif("pql_domain_add - create subtree users", $dn, $entry);
 
@@ -451,6 +457,10 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name) {
 		$dn = pql_get_define("PQL_GLOB_SUBTREE_GROUPS") . "," .
 			  pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) .
 			  "=" . $branch_name . "," . $basedn;
+
+		// Add the OpenLDAPaci attribute (maybe)
+		if(function_exists("user_generate_aci"))
+		  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($ldap_linkid, $GLOBALS["USER_DN"], 'branch');
 
 		// Create a LDIF object to print in case of error
 		$LDIF = pql_create_ldif("pql_domain_add - create subtree groups", $dn, $entry);
