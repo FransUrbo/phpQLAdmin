@@ -8,14 +8,14 @@
 			if(!$i) {
 ?>
             <td><?=$local?></td>
-            <td><a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=locals&type=add&set=<?=$local?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=locals&type=del&set=<?=$local?>&submit=1"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
+            <td><a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=locals&type=add&set=<?=$local?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=locals&type=del&set=<?=$local?>&submit=1&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
           </tr>
 
 <?php		} else { ?>
           <tr class="<?php table_bgcolor(); ?>">
             <td class="title"></td>
             <td><?=$local?></td>
-            <td><a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=locals&type=add&set=<?=$local?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=locals&type=del&set=<?=$local?>&submit=1"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
+            <td><a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=locals&type=add&set=<?=$local?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=locals&type=del&set=<?=$local?>&submit=1&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
           </tr>
 
 <?php		}
@@ -24,7 +24,7 @@
 	  } else {
 ?>
           <td><i>not defined</i></td>
-          <td><a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=locals&type=add&set=<?=$local?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=locals&type=del&set=<?=$local?>&submit=1"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
+          <td><a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=locals&type=add&set=<?=$local?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=locals&type=del&set=<?=$local?>&submit=1&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
         </tr>
 <?php } ?>
           <tr class="<?php table_bgcolor(); ?>">
@@ -35,7 +35,7 @@
 
           <tr class="<?php table_bgcolor(); ?>">
             <td class="title" align="right"><img src="images/edit.png" width="12" height="12"></td>
-            <td><a href="control_edit_attribute.php?attrib=locals&type=replicate&mxhost=<?=$mxhost?>&submit=1">Replicate</a></td>
+            <td><a href="control_edit_attribute.php?attrib=locals&type=replicate&mxhost=<?=$mxhost?>&submit=1&view=<?=$view?>">Replicate</a></td>
             <td></td>
           </tr>
         </th>
