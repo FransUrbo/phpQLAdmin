@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.48 2003-11-24 11:34:22 turbo Exp $
+// $Id: pql_config.inc,v 1.49 2003-12-11 06:08:18 turbo Exp $
 //
 
 // {{{ pql_set_define(define, value, case_insensitive, dn)
@@ -75,8 +75,6 @@ $PQL_ATTRIBUTE["PQL_CONF_MINIMUM_UIDNUMBER"] = 'minimumUIDNumber';
 $PQL_ATTRIBUTE["PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER"] = 'forwardUIDNumber';
 $PQL_ATTRIBUTE["PQL_GLOB_BIND9_USE"] = 'useBind9';
 $PQL_ATTRIBUTE["PQL_GLOB_WEBSRV_USE"] = 'useWebSrv';
-$PQL_ATTRIBUTE["PQL_CONF_CREATE_USERNAME"] = 'autoCreateUsername';
-$PQL_ATTRIBUTE["PQL_CONF_CREATE_ADDRESS"] = 'autoCreateMailAddress';
 // }}}
 
 // {{{ phpQLAdmin setup

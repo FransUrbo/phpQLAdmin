@@ -1,10 +1,10 @@
-<?php /* $Id: user_add-details.inc,v 1.6 2003-11-24 11:29:32 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.7 2003-12-11 06:08:26 turbo Exp $ */ ?>
   <form action="<?=$PHP_SELF?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
 <?php if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) == pql_get_define("PQL_GLOB_ATTR_UID")) {
-		if(!pql_get_define("PQL_CONF_CREATE_USERNAME", $domain) or
-		   (pql_get_define("PQL_CONF_CREATE_USERNAME", $domain) and !function_exists('user_generate_uid')) or
+		if(!pql_get_define("PQL_GLOB_ATTR_AUTOCREATEUSERNAME", $domain) or
+		   (pql_get_define("PQL_GLOB_ATTR_AUTOCREATEUSERNAME", $domain) and !function_exists('user_generate_uid')) or
 		   $ADVANCED_MODE) {
 ?>
         <!-- Username (UID) -->
@@ -135,8 +135,8 @@
 ?>
 
 <?php if($account_type != "shell") {
-		if(!pql_get_define("PQL_CONF_CREATE_ADDRESS", $domain) or
-		   (pql_get_define("PQL_CONF_CREATE_ADDRESS", $domain) and !function_exists('user_generate_email')) or
+		if(!pql_get_define("PQL_GLOB_ATTR_CREATE_ADDRESS", $domain) or
+		   (pql_get_define("PQL_GLOB_ATTR_CREATE_ADDRESS", $domain) and !function_exists('user_generate_email')) or
 		   $ADVANCED_MODE or $error_text["email"]) {
 ?>
         <!-- Email address -->

@@ -3,7 +3,7 @@
 // This file contains what I think is 'resonable defaults'.
 // Don't change here, change any values in the web interface!
 //
-// $Id: defaults.inc,v 2.25 2003-11-14 11:56:12 turbo Exp $
+// $Id: defaults.inc,v 2.26 2003-12-11 06:08:17 turbo Exp $
 
 // NOTE: Some of these defines isn't called with the (root/top)
 //       DN. They are (site) global variables, not per branch.
@@ -111,12 +111,12 @@ pql_set_define("PQL_GLOB_WEBSRV_USE", false, false);
 // ----------------------------
 // Should we automaticly create usernames when adding
 // a user to the system?
-pql_set_define("PQL_CONF_CREATE_USERNAME", false, false, $dn);
+pql_set_define("PQL_GLOB_ATTR_AUTOCREATEUSERNAME", false, false, $dn);
 
 // ----------------------------
 // Should we automaticly create email address when
 // adding a user to the system?
-pql_set_define("PQL_CONF_CREATE_ADDRESS", false, false, $dn);
+pql_set_define("PQL_GLOB_ATTR_CREATE_ADDRESS", false, false, $dn);
 
 // ----------------------------
 // PQL_CONF_TESTMAIL_SUBJECT (text)
