@@ -55,7 +55,7 @@ if($advanced == 1) {
 <?php if($ALLOW_BRANCH_CREATE and $ADVANCED_MODE) { ?>
 
   <div id="el2Parent" class="parent">
-    <nobr><a href="domain_add_form.php">Add domain branch</a></nobr>
+    <nobr><a href="domain_add_form.php?rootdn=<?=$_pql->ldap_basedn[0]?>">Add domain branch</a></nobr>
   </div>
 <?php  } ?>
 
@@ -77,6 +77,7 @@ if($advanced == 1) {
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="TODO">What's left todo</a></nobr><br>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="CHANGES">What's been done</a></nobr>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://phpqladmin.bayour.com/">phpqladmin.bayour.com</a></nobr><br>
+    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="config_ldap.php">LDAP server configuration</a></nobr><br>
   </div>
   <!-- HOME -->
 
