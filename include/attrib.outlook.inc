@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for pilotPerson objects etc
-// $Id: attrib.outlook.inc,v 1.2 2003-01-16 14:58:38 turbo Exp $
+// $Id: attrib.outlook.inc,v 1.3 2003-01-22 09:06:36 turbo Exp $
 
 /*
 	Attributes managed here:
@@ -31,7 +31,7 @@
 */
 
 function attribute_check() {
-    global $administrator, $domain, $oldvalue, $_pql, $error, $attrib, $$attrib;
+    global $user, $domain, $oldvalue, $_pql, $error, $attrib, $$attrib;
 
     // is typed in ?
     if($$attrib == ""){
@@ -42,10 +42,16 @@ function attribute_check() {
     return true;
 }
 
-function attribute_print_form($action) {
-    global $administrator, $domain, $PHP_SELF, $attrib, $$attrib, $oldvalue, $error, $_pql;
+function attribute_init() {
+    global $$attrib, $oldvalue;
+    $$attrib = $oldvalue;
+}
+
+function attribute_print_form() {
+    global $user, $domain, $PHP_SELF, $attrib, $$attrib, $oldvalue, $error, $_pql;
 ?>
-  <form action="<?php echo $PHP_SELF ?>" method="post">
+
+  <form action="<?php echo $PHP_SELF ?>" method="post" name="outlook">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">Set/Modify <?=$attrib?></th>
         <tr class="<?php table_bgcolor(); ?>">
@@ -63,36 +69,62 @@ function attribute_print_form($action) {
 	<input type="submit" value="<?php echo PQL_SAVE; ?>">
   </form>
 
+  <script language="JavaScript">
+    <!--
+    document.outlook.<?=$attrib?>.focus();
+    // -->
+  </script>
 <?php
 }
 
 function attribute_save($type) {
-    global $domain, $attrib, $$attrib, $oldvalue, $administrator, $_pql;
-	$value = urlencode($$attrib);
+    global $user, $domain, $attrib, $$attrib, $oldvalue, $_pql;
+
+// TODO: Only do this if .. ?
+//	$value = urlencode($$attrib);
+	$value = $$attrib;
 
     switch($type){
       case "add":
-      case "modify";
+      case "modify":
 		if($value == $oldvalue){
 			// don't change if new value equal to old one
-			$msg = PQL_LDAP_CN_UNCHANGED;
+			$msg = "$attrib unchanged ($value == $oldvalue)";
 			attribute_forward($msg);
 			break;
 		}
 		
-		if(! pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, $value)) {
-			$msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
+		if($domain and !$user) {
+			// Save a domain attribute
+			if(pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, $value))
+			  $success = 1;
+		} elseif($user and !$domain) {
+			// Save a user attribute
+			if(pql_replace_userattribute($_pql->ldap_linkid, $user, $attrib, $value))
+			  $success = 1;
 		}
-		$msg = "Successfully replaced $attrib.";
+
+		if($success)
+		  $msg = "Successfully replaced $attrib.";
+		else
+		  $msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
 
 		attribute_forward($msg);
 		break;
 
       case "delete";
-		if(! pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, '')) {
-			$msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
+		if($domain and !$user) {
+			// Save a domain attribute
+			if(pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, ''))
+			  $success = 1;
+//		} elseif($user and !$domain) {
+// Currently no DELETE option
 		}
-		$msg = "Successfully deleted $attrib.";
+
+		if($success)
+		  $msg = "Successfully deleted $attrib.";
+		else
+		  $msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
 
 		attribute_forward($msg);
 		break;
