@@ -37,7 +37,7 @@ install: $(INSTDIR)
 	@(echo -n "Instdir: $(INSTDIR): "; \
 	  find | cpio -p $(INSTDIR); \
 	  rm -Rf $(INSTDIR)/Makefile $(INSTDIR)/.version.old $(INSTDIR)/README.cvs \
-		$(INSTDIR)/manual $(INSTDIR)/include/config.inc; \
+		$(INSTDIR)/manual $(INSTDIR)/include/config.inc $(INSTDIR)/phpQLadmin.log; \
 	  cd $(INSTDIR) && find -type d -name CVS | xargs rm -rf; \
 	  cd $(INSTDIR) && find -type f -name '.cvsignore' | xargs rm -f; \
 	  echo -n "Tarball 1: $(TMPDIR)/phpQLAdmin-$(VERSION).tar.gz: "; \
