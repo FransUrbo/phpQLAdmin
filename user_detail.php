@@ -502,12 +502,17 @@ if(empty($forwarders)){
     <th colspan="2" align="left">User access</th>
 <?php
     foreach($_pql->ldap_basedn as $branch) {
-	$dom = pql_get_domain_value($_pql, $branch, 'administrator', $user);
-	if($dom) {
-	    foreach($dom as $d) {
-		$domains[] = $d;
-	    }
-	}
+		// Check the top-most (namingContexts) DN's if user is admin of that...
+		if(pql_validate_administrator($_pql->ldap_linkid, $branch, $user))
+		  $domains[] = $branch;
+
+		// Find all branches the user is admin of
+		$dom = pql_get_domain_value($_pql, $branch, 'administrator', $user);
+		if($dom)
+		  foreach($dom as $d) {
+			  if($d != $branch)
+				$domains[] = $d;
+		  }
     }
     
     $class=table_bgcolor(0);
