@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.73 2004-02-15 17:31:53 turbo Exp $
+// $Id: left.php,v 2.74 2004-02-21 12:45:58 turbo Exp $
 //
 session_start();
 
@@ -154,7 +154,7 @@ if(!isset($domains)) {
 	}
     }
 
-    $links = array($cn => "user_detail.php?rootdn=".$_REQUEST["rootdn"]."&domain=domain&user=".urlencode($_SESSION["USER_DN"]));
+    $links = array($cn => "user_detail.php?rootdn=".$_REQUEST["rootdn"]."&domain=$domain&user=".urlencode($_SESSION["USER_DN"]));
     pql_format_tree_span($cn, $links, -1);
 } else {
     $_SESSION["SINGLE_USER"] = 0;
