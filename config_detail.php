@@ -150,6 +150,41 @@ if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
 <?php    } ?>
         <td class="<?=$class?>"><?php if($config["PQL_GLOB_CHANGE_SERVER"]) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
       </tr>
+<?php	if(eregi('KERBEROS', $config["PQL_CONF_PASSWORD_SCHEMES"][$dn])) { ?>
+
+      <tr></tr>
+
+      <!-- -------------------- --!>
+      <tr>
+        <td class="title">Kerberos realm</td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_KRB5_REALM"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=$PQL_ATTRIBUTE["PQL_GLOB_KRB5_REALM"]?>"></a></td>
+        <td class="<?=$class?>"><?=$config["PQL_GLOB_KRB5_REALM"]?>&nbsp;</td>
+      </tr>
+
+      <tr>
+        <td class="title">Kerberos admin server</td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_KRB5_ADMIN_SERVER"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=$PQL_ATTRIBUTE["PQL_GLOB_KRB5_ADMIN_SERVER"]?>"></a></td>
+        <td class="<?=$class?>"><?=$config["PQL_GLOB_KRB5_ADMIN_SERVER"]?>&nbsp;</td>
+      </tr>
+
+      <tr>
+        <td class="title">Kerberos admin principal</td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_KRB5_ADMIN_PRINCIPAL"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=$PQL_ATTRIBUTE["PQL_GLOB_KRB5_ADMIN_PRINCIPAL"]?>"></a></td>
+        <td class="<?=$class?>"><?=$config["PQL_GLOB_KRB5_ADMIN_PRINCIPAL"]?>&nbsp;</td>
+      </tr>
+
+      <tr>
+        <td class="title">Kerberos admin keytab</td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_KRB5_ADMIN_KEYTAB"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=$PQL_ATTRIBUTE["PQL_GLOB_KRB5_ADMIN_KEYTAB"]?>"></a></td>
+        <td class="<?=$class?>"><?=$config["PQL_GLOB_KRB5_ADMIN_KEYTAB"]?>&nbsp;</td>
+      </tr>
+
+      <tr>
+        <td class="title">Path to Kerberos <u>kadmin</u> command</td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_KRB5_ADMIN_COMMAND_PATH"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=$PQL_ATTRIBUTE["PQL_GLOB_KRB5_ADMIN_COMMAND_PATH"]?>"></a></td>
+        <td class="<?=$class?>"><?=$config["PQL_GLOB_KRB5_ADMIN_COMMAND_PATH"]?>&nbsp;</td>
+      </tr>
+<?php	} ?>
     </th>
   </table>
 
@@ -406,7 +441,7 @@ if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
         <td class="<?=$class?>"></td>
 <?php         } ?>
       </tr>
-<?php     } ?>
+<?php   } ?>
 
       <tr></tr>
 

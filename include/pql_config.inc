@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.18 2003-04-24 06:16:37 turbo Exp $
+// $Id: pql_config.inc,v 1.19 2003-04-24 07:28:15 turbo Exp $
 //
 global $config;
 
@@ -69,6 +69,12 @@ $PQL_ATTRIBUTE["PQL_GLOB_EZMLM_PATH"] = 'ezmlmBinaryPath';
 $PQL_ATTRIBUTE["PQL_CONF_PASSWORD_SCHEMES"] = 'passWordScheme';
 $PQL_ATTRIBUTE["PQL_CONF_SCRIPT_CREATE_USER"] = 'externalScriptUser';
 $PQL_ATTRIBUTE["PQL_CONF_SCRIPT_CREATE_DOMAIN"] = 'externalScriptDomain';
+
+$PQL_ATTRIBUTE["PQL_GLOB_KRB5_REALM"] = 'krb5RealmName';
+$PQL_ATTRIBUTE["PQL_GLOB_KRB5_ADMIN_SERVER"] = 'krb5AdminServer';
+$PQL_ATTRIBUTE["PQL_GLOB_KRB5_ADMIN_PRINCIPAL"] = 'krb5PrincipalName';
+$PQL_ATTRIBUTE["PQL_GLOB_KRB5_ADMIN_KEYTAB"] = 'krb5AdminKeytab';
+$PQL_ATTRIBUTE["PQL_GLOB_KRB5_ADMIN_COMMAND_PATH"] = 'krb5AdminCommandPath';
 
 // Save path for users and groups
 $PQL_ATTRIBUTE["PQL_CONF_SUBTREE"]["USERS"] = 'subTreeUsers';
