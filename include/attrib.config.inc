@@ -1,13 +1,14 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.29 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.config.inc,v 1.29.2.1 2003-12-15 20:33:07 dlw Exp $
 
 function attribute_check() {
-    global $administrator, $domain, $oldvalue, $_pql, $error, $LANG;
-	global $attrib, $$attrib, $rootdn, $value;
+  //global $administrator, $domain, $oldvalue, $_pql, $error, $LANG;
+  //global $attrib, $$attrib, $rootdn, $value;
+    global $error, $LANG;
 
     // is typed in ?
-    if($$attrib == "") {
+    if(empty($_REQUEST[$attrib])) {
 		$error[$attrib] = $LANG->_('Missing');
 		return false;
     }
@@ -16,9 +17,18 @@ function attribute_check() {
 }
 
 function attribute_print_form() {
-    global $administrator, $domain, $PHP_SELF, $attrib, $$attrib, $oldvalue, $error, $_pql, $toggle;
-	global $PQL_ATTRIBUTE, $rootdn, $delval, $view, $LANG;
-	$attrib = strtolower($attrib);
+  //global $administrator, $domain, $PHP_SELF, $attrib, $$attrib, $oldvalue, $error, $_pql, $toggle;
+  //global $PQL_ATTRIBUTE, $rootdn, $delval, $view, $LANG;
+
+	global $_pql, $error, $LANG;
+	global $PQL_ATTRIBUTE;
+	global $toggle;				// DLW: I'm not sure where this gets set.
+
+	//$attrib = strtolower($attrib);
+	// Save some typing.
+	$attrib = $_REQUEST["attrib"];
+	$oldvalue = (!empty($_REQUEST["oldvalue"]) ? $_REQUEST["oldvalue"] : "");
+	$rootdn = (!empty($_REQUEST["rootdn"]) ? $_REQUEST["rootdn"] : "");
 
 	// Get the old values from the define
 	foreach($PQL_ATTRIBUTE as $key => $value) {
@@ -86,7 +96,7 @@ function attribute_print_form() {
 
   <br><br>
 
-  <form action="<?php echo $PHP_SELF ?>" method="post" name="phpqladmin_modify">
+  <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="phpqladmin_modify">
 <?php   if(($attrib == lc($PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_USER"])) or
  		   ($attrib == lc($PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_DOMAIN"]))) {
 ?>
@@ -201,7 +211,7 @@ function attribute_print_form() {
 <?php if($toggle) { ?>
     <input type="hidden" name="oldvalue" value="<?=$oldvalue?>">
 <?php } ?>
-    <input type="hidden" name="view" value="<?=$view?>">
+    <input type="hidden" name="view" value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
@@ -215,20 +225,34 @@ function attribute_print_form() {
 }
 
 function attribute_save() {
-    global $domain, $attrib, $$attrib, $oldvalue, $administrator, $_pql, $LANG;
-	global $delval, $toggle, $PQL_ATTRIBUTE, $view, $rootdn;
-	$attrib = lc($attrib);
+  //global $domain, $attrib, $$attrib, $oldvalue, $administrator, $_pql, $LANG;
+  //global $delval, $toggle, $PQL_ATTRIBUTE, $view, $rootdn;
+  //$attrib = lc($attrib);
+    global $_pql, $LANG;
+	global $PQL_ATTRIBUTE;
 
-	if($$attrib) {
+	$attrib = lc($_REQUEST["attrib"]);
+	$attrib_val = @$_REQUEST[$attrib];
+	$oldvalue = @$_REQUEST["oldvalue"];
+	$toggle = @$_REQUEST["toggle"];
+	$rootdn = @$_REQUEST["rootdn"];
+	$delval = @$_REQUEST["delval"];
+
+
+	// DLW: This should be chopped up into functions to make it more readable.
+	
+	$entry = array();
+
+	if($attrib_val) {
 		if($attrib == 'passwordscheme') {
-			$entry[$attrib][] = strtoupper($$attrib);
+			$entry[$attrib][] = strtoupper($attrib_val);
 		} elseif(is_array($_POST)) {
 			for($i=0; $i < $_POST[$attrib]; $i++) {
 				$var_name = $attrib . "_$i";
 				if($_POST[$var_name]) 
 				  $entry[$attrib][] = $_POST[$var_name];
 			}
-		}
+		} // DLW: Why isn't plain old $entry[$attrib][] = $attrib_val here?
     }
 
 	// Try to find out if we have an old value, or what we should do with the value we have
@@ -253,9 +277,9 @@ function attribute_save() {
 		for($i=0; $values[$i]; $i++)
 		  if(! eregi($delval, $values[$i]))
 			$entry[$attrib][] = $values[$i];
-	} elseif($$attrib and ($attrib != 'passwordscheme') and
+	} elseif($attrib_val and ($attrib != 'passwordscheme') and
 			($attrib != 'userobjectclass') and ($attrib != 'branchobjectclass')) {
-		$entry[$attrib][] = $$attrib;
+		$entry[$attrib][] = $attrib_val;
 	} else {
 		if($rootdn) {
 			if($attrib != pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR")) {
@@ -312,7 +336,7 @@ function attribute_save() {
 						break;
 					}
 	            } else {
-					$entry[$attrib][] = $$attrib;
+					$entry[$attrib][] = $attrib_val;
 				}
 			}
         } elseif($toggle) {
@@ -333,17 +357,18 @@ function attribute_save() {
 		// We don't have a root DN, we're changing controlsAdministrator OR
 		// it's a toggle. This means it's a global variable, and should be
 		// set in every namingContexts
-
 		foreach($_pql->ldap_basedn as $dn) {
 			$dn = urldecode($dn);
 
 			if($attrib == pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR")) {
+
 				unset($entry);
-				if($$attrib)
-				  $entry[$attrib][] = $$attrib;
+				if($attrib_val)
+				  $entry[$attrib][] = $attrib_val;
 
 				// Fetch old values from DB
 				unset($oldvalues); $oldvalues = pql_domain_value($_pql, $dn, $attrib);
+
 				if(is_array($oldvalues)) {
 					foreach($oldvalues as $val) {
 						if(!@eregi($delval, $val)) {
@@ -357,6 +382,10 @@ function attribute_save() {
 				}
 			}
 
+			/* DLW: If there are no more entries for this attribute, then make an empty one
+             * so that pql_set_domain_value knows what attribute we're talking about. */
+			if (!isset($entry[$attrib])) $entry[$attrib] = array();	// DLW: 
+
 			if(! pql_set_domain_value($_pql->ldap_linkid, $dn, '', $entry))
 			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 										   array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
@@ -365,7 +394,7 @@ function attribute_save() {
 											 array('what' => $attrib));
 				$rlnb = 1;
 			}
-		}
+		} // FOREACH $_pql->ldap_basedn
 	} else {
 		if(! pql_set_domain_value($_pql->ldap_linkid, $rootdn, '', $entry)) 
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
@@ -381,6 +410,7 @@ function attribute_save() {
 	break;
 }
 
+// DLW: I don't see where in the code this is called.
 function attribute_verify_objectclass($ldap) {
 	global $rootdn;
 

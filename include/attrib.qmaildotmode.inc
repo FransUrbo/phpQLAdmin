@@ -1,19 +1,19 @@
 <?php
 // attribute plugin for
 // qmaildotmode (interpretation of .qmail-files)
-// $Id: attrib.qmaildotmode.inc,v 2.12 2003-11-20 08:01:37 turbo Exp $
+// $Id: attrib.qmaildotmode.inc,v 2.12.2.1 2003-12-15 20:33:07 dlw Exp $
 
 function attribute_check($type) {
-	global $qmaildotmode, $domain, $oldvalue, $_pql, $error, $LANG;
+    global $error, $LANG;
 	
 	// is typed in ?
-	if($qmaildotmode == "") {
+	if(empty($_REQUEST["qmaildotmode"])) {
 		$error["qmaildotmode"] = $LANG->_('Missing');
 		return false;
 	}
 	
 	// valid entry ?
-	switch($qmaildotmode) {
+	switch($_REQUEST["qmaildotmode"]) {
 	  case "default":
 	  case "both":
 	  case "dotonly":
@@ -30,16 +30,15 @@ function attribute_check($type) {
 }
 
 function attribute_init() {
-	global $qmaildotmode, $oldvalue;
-	$qmaildotmode = $oldvalue;
+    $_REQUEST["qmaildotmode"] = $_REQUEST["oldvalue"];
 }
 
 function attribute_print_form() {
-	global $qmaildotmode, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $rootdn, $error, $LANG;
-	
-	$qmaildotmode_select[$qmaildotmode] = "selected";
+    global $error, $LANG;
+
+	$qmaildotmode_select[$_REQUEST["qmaildotmode"]] = "selected";
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Change dotmode')?></th>
         <tr class="<?php pql_format_table(); ?>">
@@ -47,12 +46,12 @@ function attribute_print_form() {
           <td>
             <?php echo pql_format_error_span($error["qmaildotmode"]); ?>
             <select name="qmaildotmode">
-			  <option value="default" <?=$qmaildotmode_select["default"]?>><?=$LANG->_('Default (taken from ldapDefaultDotMode)')?></option>
-			  <option value="both" <?=$qmaildotmode_select["both"]?>><?=$LANG->_('Both (deliveryProgramPath + .qmail)')?></option>
-			  <option value="dotonly" <?=$qmaildotmode_select["dotonly"]?>><?=$LANG->_('Dotonly (only .qmail)')?></option>
-			  <option value="ldaponly" <?=$qmaildotmode_select["ldaponly"]?>><?=$LANG->_('LDAPOnly (deliveryProgramPath + .qmail ignored for ldap deliveries)')?></option>
-			  <option value="ldapwithprog" <?=$qmaildotmode_select["ldapwithprog"]?>><?=$LANG->_('LDAPWithProg (deliveryProgramPath used, .qmail ignored)')?></option>
-			  <option value="none" <?=$qmaildotmode_select["none"]?>><?=$LANG->_('None (deliveryProgramPath + .qmail ignored)')?></option>
+			  <option value="default" <?=@$qmaildotmode_select["default"]?>><?=$LANG->_('Default (taken from ldapDefaultDotMode)')?></option>
+			  <option value="both" <?=@$qmaildotmode_select["both"]?>><?=$LANG->_('Both (deliveryProgramPath + .qmail)')?></option>
+			  <option value="dotonly" <?=@$qmaildotmode_select["dotonly"]?>><?=$LANG->_('Dotonly (only .qmail)')?></option>
+			  <option value="ldaponly" <?=@$qmaildotmode_select["ldaponly"]?>><?=$LANG->_('LDAPOnly (deliveryProgramPath + .qmail ignored for ldap deliveries)')?></option>
+			  <option value="ldapwithprog" <?=@$qmaildotmode_select["ldapwithprog"]?>><?=$LANG->_('LDAPWithProg (deliveryProgramPath used, .qmail ignored)')?></option>
+			  <option value="none" <?=@$qmaildotmode_select["none"]?>><?=$LANG->_('None (deliveryProgramPath + .qmail ignored)')?></option>
             </select>
           </td>
         </tr>
@@ -67,12 +66,12 @@ function attribute_print_form() {
     </table>
 
     <input type="hidden" name="submit"   value="1">
-    <input type="hidden" name="attrib"   value="<?=$attrib?>">
-    <input type="hidden" name="oldvalue" value="<?=$oldvalue?>">
-    <input type="hidden" name="domain"   value="<?=$domain?>">
-    <input type="hidden" name="rootdn"   value="<?=$rootdn?>">
-    <input type="hidden" name="user"     value="<?=$user?>">
-    <input type="hidden" name="view"     value="<?=$view?>">
+    <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="oldvalue" value="<?=$_REQUEST["oldvalue"]?>">
+    <input type="hidden" name="domain"   value="<?=$_REQUEST["domain"]?>">
+    <input type="hidden" name="rootdn"   value="<?=$_REQUEST["rootdn"]?>">
+    <input type="hidden" name="user"     value="<?=$_REQUEST["user"]?>">
+    <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
@@ -80,7 +79,7 @@ function attribute_print_form() {
 }
 
 function attribute_save($type) {
-	global $domain, $user, $attrib, $oldvalue, $qmaildotmode, $_pql, $view, $LANG;
+    global $_pql, $LANG;
 	
 	// recontrol values
 	if(!attribute_check($type))
@@ -92,22 +91,22 @@ function attribute_save($type) {
 		break;
 
 	  case "modify";
-		if($qmaildotmode == $oldvalue) {
+		if($_REQUEST["qmaildotmode"] == $_REQUEST["oldvalue"]) {
 			// don't change if new value equal to old one
 			$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('Dotmode')));
 			attribute_forward($msg);
 			break;
     	}
 		
-		if($qmaildotmode == "default")
-		  $qmaildotmode = "";
+		if($_REQUEST["qmaildotmode"] == "default")
+		  $_REQUEST["qmaildotmode"] = "";
 		
-		if(pql_replace_attribute($_pql->ldap_linkid, $user,
+		if(pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"],
 									 pql_get_define("PQL_GLOB_ATTR_DOTMODE"),
-									 $qmaildotmode))
+									 $_REQUEST["qmaildotmode"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									   array('what' => $LANG->_('dot mode'),
-											 'new'  => $qmaildotmode));
+											 'new'  => $_REQUEST["qmaildotmode"]));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('dot mode'))) . ": " . pql_ldap_error($_pql->ldap_linkid);

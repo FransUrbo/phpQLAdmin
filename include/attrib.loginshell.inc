@@ -1,13 +1,13 @@
 <?php
 // attribute plugin for
 // loginshell
-// $Id: attrib.loginshell.inc,v 2.12.2.1 2003-12-08 19:16:34 dlw Exp $
+// $Id: attrib.loginshell.inc,v 2.12.2.2 2003-12-15 20:33:07 dlw Exp $
 
 function attribute_check($type) {
     global $error, $LANG;
     
     // is typed in ?
-    if(empty($_POST["loginshell"])) {
+    if(empty($_REQUEST["loginshell"])) {
 		$error["loginshell"] = $LANG->_('Missing');
 		return false;
     }
@@ -71,17 +71,17 @@ function attribute_save($type) {
 		break;
 
       case "modify":
-		if($_POST["loginshell"] == $_POST["oldvalue"]) {
+		if($_REQUEST["loginshell"] == $_REQUEST["oldvalue"]) {
 			// don't change if new value equal to old one
 			$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('login shell')));
 			attribute_forward($msg);
 			break;
     	}
 		
-		if(pql_replace_attribute($_pql->ldap_linkid, $_POST["user"], $_POST["attrib"], $_POST["loginshell"])) {
+		if(pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], $_REQUEST["loginshell"])) {
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 										 array('what' => $LANG->_('login shell'),
-											   'new'  => $_POST["loginshell"]));
+											   'new'  => $_REQUEST["loginshell"]));
 		} else {
 			$msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 										 array('what' => $LANG->_('login shell'))) . ": " . ldap_error($_pql->ldap_linkid);

@@ -1,13 +1,13 @@
 <?php
 // attribute plugin for changing/renaming the DN
 //
-// $Id: attrib.modrdn.inc,v 2.5.2.1 2003-12-08 19:16:34 dlw Exp $
+// $Id: attrib.modrdn.inc,v 2.5.2.2 2003-12-15 20:33:07 dlw Exp $
 
 function attribute_check($type) {
     global $error, $LANG;
 
     // DLW: This doesn't generate an error message.
-	if(!empty($_POST["user"]) && !empty($_POST["oldvalue"]) && !empty($_POST["rdn"]))
+	if(!empty($_REQUEST["user"]) && !empty($_REQUEST["oldvalue"]) && !empty($_REQUEST["rdn"]))
 	  return true;
 
 	return false;
@@ -72,16 +72,16 @@ function attribute_save($type) {
     global $_pql, $LANG;
 
 	// We need TRUE/FALSE value, not ON/OFF...
-	if($_POST["keepold"] == 'on')
+	if($_REQUEST["keepold"] == 'on')
 	  $keepold = 'true';
 	else
 	  $keepold = 'false';
 
 	// Remember it for the fail/success story
-	$olduser = $_POST["user"];
+	$olduser = $_REQUEST["user"];
 
 	// Split the value into two parts - attribute and value
-	$dnattr = split("=", $_POST["user"]);
+	$dnattr = split("=", $_REQUEST["user"]);
 
 	// URL/UTF8 encode the value, not the attribute
 	$dn = pql_maybe_encode($dnattr[1], $dnattr[0]);
@@ -90,8 +90,8 @@ function attribute_save($type) {
 	$user = $dnattr[0]."=".$dn;
 
 	// Make sure we can have a ' in the branch
-	$oldvalue = eregi_replace("\\\'", "'", $_POST["oldvalue"]);
-	$rdn = eregi_replace("\\\'", "'", $_POST["rdn"]);
+	$oldvalue = eregi_replace("\\\'", "'", $_REQUEST["oldvalue"]);
+	$rdn = eregi_replace("\\\'", "'", $_REQUEST["rdn"]);
 
 	if(ldap_rename($_pql->ldap_linkid, $oldvalue, $user, $rdn, $keepold)) {
 		$msg = pql_complete_constant($LANG->_('Successfully renamed RDN %user%'),

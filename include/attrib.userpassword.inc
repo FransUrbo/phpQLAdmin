@@ -1,21 +1,21 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.18.2.1 2003-12-08 19:16:34 dlw Exp $
+// $Id: attrib.userpassword.inc,v 2.18.2.2 2003-12-15 20:33:07 dlw Exp $
 
 function attribute_check($type) {
 	global $error, $LANG;
 
 	// is typed in ?
-	if(empty($_POST["userpassword"])) {
+	if(empty($_REQUEST["userpassword"])) {
 		$error["userpassword"] = $LANG->_('Missing');
 		return false;
   	}
 	
 	// valid - A KERBEROS scheme is ALWAYS valid! We only check
 	// password validity if it ISN'T a kerberos scheme...
-	if(!eregi('KERBEROS', $_POST["pwscheme"])) {
-		if(preg_match("/[^a-z0-9]/i", $_POST["userpassword"])){
+	if(!eregi('KERBEROS', $_REQUEST["pwscheme"])) {
+		if(preg_match("/[^a-z0-9]/i", $_REQUEST["userpassword"])){
 			$error["userpassword"] = $LANG->_('Invalid');
 			return false;
 		}
@@ -105,9 +105,9 @@ function attribute_save($type) {
 		break;
 
 	  case "modify";
-		$pw = pql_password_hash($_POST["userpassword"], $_POST["pwscheme"]);
+		$pw = pql_password_hash($_REQUEST["userpassword"], $_REQUEST["pwscheme"]);
 		
-		if(pql_replace_attribute($_pql->ldap_linkid, $_POST["user"],
+		if(pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"],
 								 pql_get_define("PQL_GLOB_ATTR_PASSWD"),
 								 $pw))
 		{
@@ -115,7 +115,7 @@ function attribute_save($type) {
 										 array('what' => $LANG->_('password')));
 
 			// DLW: If I'm changing my own password, save it in the session too?
-			if($_POST["user"] == $_SESSION["USER_DN"])
+			if($_REQUEST["user"] == $_SESSION["USER_DN"])
 			  $_SESSION["USER_PASS"] = $userpassword;
 		} else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // cn (Full name)
-// $Id: attrib.cn.inc,v 2.18.2.1 2003-12-08 19:16:33 dlw Exp $
+// $Id: attrib.cn.inc,v 2.18.2.2 2003-12-15 20:33:07 dlw Exp $
 
 function attribute_check($type) {
     global $error, $LANG;
@@ -54,7 +54,7 @@ function attribute_save($type) {
 		break;
 
       case "modify";
-		if($_POST["cn"] == $_POST["oldvalue"]) {
+		if($_REQUEST["cn"] == $_REQUEST["oldvalue"]) {
 			// don't change if new value equal to old one
 			$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('Common name')));
 			attribute_forward($msg);
@@ -64,15 +64,15 @@ function attribute_save($type) {
 		// Well. Gecos is the same thing as CN, so we should
 		// try to change that as well... But only if it
 		// already exist in the object.
-		$attribs = array($_POST["attrib"], 'gecos');
+		$attribs = array($_REQUEST["attrib"], 'gecos');
 		foreach($attribs as $attrib) {
-			$old = pql_get_attribute($_pql->ldap_linkid, $_POST["user"], $_POST["attrib"]);
+			$old = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"]);
 			if(is_array($old)) {
 				// We have an old value of this array, try to change it...
-				if(pql_replace_attribute($_pql->ldap_linkid, $_POST["user"], $_POST["attrib"], $_POST["cn"]))
+				if(pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], $_REQUEST["cn"]))
 				  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 											   array('what' => $LANG->_('Common name'),
-													 'new'  => $_POST["cn"]));
+													 'new'  => $_REQUEST["cn"]));
 				else
 				  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 											   array('what' => $LANG->_('Common name')))
@@ -83,20 +83,20 @@ function attribute_save($type) {
 		/* DLW: Bug: This is broken I think.  It's changing parts of the name, but not the CN.
 		 *      Does it want to change the CN? */
 		// Get first and last name
-		$name = split(" ", $_POST["cn"]);
+		$name = split(" ", $_REQUEST["cn"]);
 
 		// Change givenName which is the first name
-		$old = pql_get_attribute($_pql->ldap_linkid, $_POST["user"], pql_get_define("PQL_GLOB_ATTR_GIVENNAME"));
+		$old = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_GLOB_ATTR_GIVENNAME"));
 		if(is_array($old)) {
 			// We have an old value of this array, try to change it...
-			pql_replace_attribute($_pql->ldap_linkid, $_POST["user"], pql_get_define("PQL_GLOB_ATTR_GIVENNAME"), $name[0]);
+			pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_GLOB_ATTR_GIVENNAME"), $name[0]);
 		}
 
 		// Change SN which is the last name
-		$old = pql_get_attribute($_pql->ldap_linkid, $_POST["user"], pql_get_define("PQL_GLOB_ATTR_SN"));
+		$old = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_GLOB_ATTR_SN"));
 		if(is_array($old)) {
 			// We have an old value of this array, try to change it...
-			pql_replace_attribute($_pql->ldap_linkid, $_POST["user"], pql_get_define("PQL_GLOB_ATTR_SN"), $name[1]);
+			pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_GLOB_ATTR_SN"), $name[1]);
 		}
 
 		attribute_forward($msg, true);

@@ -1,6 +1,6 @@
 <?php
 // delete a user
-// $Id: user_del.php,v 2.26.2.1 2003-11-24 18:07:02 dlw Exp $
+// $Id: user_del.php,v 2.26.2.2 2003-12-15 20:33:04 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -9,23 +9,26 @@ require("./include/pql_ezmlm.inc");
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 include("./header.html");
+$rootdn = $_REQUEST["rootdn"];
+$user = $_REQUEST["user"];
 
 // Get organization name for domain and common name of user
-$o = pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_O"));
+$o = pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_O"));
 if(!$o) {
 	// No 'organization' attribute (or it's not configured - 0)
 	// Use the RDN
-	$o = $domain;
+	$o = $_REQUEST["domain"];
 }
 $cn = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_CN")); $cn = $cn[0];
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove user %user% from domain %domain%'), array("domain" => $o, "user" => $cn)); ?></span>
   <br><br>
 <?php
-if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
-	$delete_forwards = (isset($delete_forwards) || pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) ? true : false;
-	$delete_admins   = (isset($delete_admins)   || pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) ? true : false;
-	$unsubscribe     = (isset($unsubscribe)     || pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) ? true : false;
+
+if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
+	$delete_forwards = (isset($_REQUEST["delete_forwards"]) || pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) ? true : false;
+	$delete_admins   = (isset($_REQUEST["delete_admins"])   || pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) ? true : false;
+	$unsubscribe     = (isset($_REQUEST["unsubscribe"])     || pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) ? true : false;
 
 	if($unsubscribe) {
 		// We want to unsubscribe user from (all) mailing list(s).
@@ -42,7 +45,7 @@ if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
 	}	
 
 	// delete the user
-	if(pql_user_del($_pql, $domain, $user, $delete_forwards)) {
+	if(pql_user_del($_pql, $_REQUEST["domain"], $user, $delete_forwards)) {
 		$msg = $LANG->_('Successfully removed user') . ": <b>" . $cn . "</b>";
 		$rlnb = "&rlnb=1";
 
@@ -59,9 +62,9 @@ if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
 			$domains = pql_domain_get($_pql);
 			if(is_array($domains)) {
 				asort($domains);
-				foreach($domains as $key => $domain) {
+				foreach($domains as $key => $this_domain) {
 					// Get base directory for mails in all domains
-					if(($basemaildir = pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR")))) {
+					if(($basemaildir = pql_domain_value($_pql, $this_domain, pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR")))) {
 						// Get the lists in this directory
 						$ezmlm = new ezmlm(pql_get_define("PQL_GLOB_EZMLM_USER"), $basemaildir);
 						if(is_array($ezmlm->mailing_lists[0])) {
@@ -77,15 +80,15 @@ if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
 												echo "Unsubscribing user from list ".$data["name"]."<br>";
 												$ezmlm->unsubscribe($number, $subscriber);
 											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+										} // FOREACH address in the subscriber list.
+									} // FOREACH subscriber.
+								} // IF there are subscribers.
+							} // FOREACH mailing lists.
+						} // IF there are ezmlm mailing lists.
+					} // IF there is $basemaildir.
+				} // FOREACH domain.
+			} // IF there are domains to check.
+		} // IF unsubscribing from all mailing lists.
 
 		// ----------------------------------------
 		// Do _something_ to the users mailbox
@@ -101,15 +104,16 @@ if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
 
 	// redirect to domain-detail page
 	$msg = urlencode($msg);
-	$url = "domain_detail.php?rootdn=".urlencode($rootdn)."&domain=".urlencode($domain)."&view=basic&msg=$msg$rlnb";
+	$url = "domain_detail.php?rootdn=".urlencode($rootdn)."&domain=".urlencode($_REQUEST["domain"])."&view=basic&msg=$msg$rlnb";
+
 	header("Location: " . pql_get_define("PQL_GLOB_URI") . $url);
 } else {
 ?>
 <br>
-  <form action="<?=$PHP_SELF?>" method="GET">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="GET">
     <input type="hidden" name="user"   value="<?=$user?>">
     <input type="hidden" name="rootdn" value="<?=$rootdn?>">
-    <input type="hidden" name="domain" value="<?=$domain?>">
+    <input type="hidden" name="domain" value="<?=$_REQUEST["domain"]?>">
         
     <span class="title3"><?=$LANG->_('What should we do with forwards to this user')?>?</span><br>
     <input type="checkbox" name="delete_forwards" checked> <?=$LANG->_('Delete all forwards')?><br>
@@ -129,7 +133,7 @@ if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
   </form>
 <br>
 <?php
-	} // end of if
+} // end of if
 ?>
 </body>
 </html>

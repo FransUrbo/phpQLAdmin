@@ -1,26 +1,26 @@
 <?php
 // attribute plugin for
 // uid (user id)
-// $Id: attrib.uid.inc,v 2.16.2.1 2003-12-08 19:16:34 dlw Exp $
+// $Id: attrib.uid.inc,v 2.16.2.2 2003-12-15 20:33:07 dlw Exp $
 
 function attribute_check($type){
     global $error, $LANG, $_pql;
 	
 	// is typed in ?
-	if(empty($_POST["uid"])) {
+	if(empty($_REQUEST["uid"])) {
 		$error[pql_get_define("PQL_GLOB_ATTR_MAIL")] = $LANG->_('Missing');
 		return false;
 	}
 
 	// valid
-	if(preg_match("/[^a-z0-9\.@_-]/i",$_POST["uid"])) {
+	if(preg_match("/[^a-z0-9\.@_-]/i",$_REQUEST["uid"])) {
 		$error["uid"] = $LANG->_('Invalid');
 		return false;
 	}
 
 	// if type is modify, check existance of old value, else the new one
-	$filter = "uid=".pql_maybe_encode($_POST["uid"], "uid", $_pql->ldap_linkid);
-	if($_POST["oldvalue"] != $_POST["uid"] and pql_search($_pql->ldap_linkid, $_POST["domain"], $filter)) {
+	$filter = "uid=".pql_maybe_encode($_REQUEST["uid"], "uid", $_pql->ldap_linkid);
+	if($_REQUEST["oldvalue"] != $_REQUEST["uid"] and pql_search($_pql->ldap_linkid, $_REQUEST["domain"], $filter)) {
 		$error["uid"] = $LANG->_('Already exists');
 		return false;
 	}
@@ -78,29 +78,29 @@ function attribute_save($type) {
 		break;
 
 	  case "modify";
-		if($_POST["uid"] == $_POST["oldvalue"]) {
+		if($_REQUEST["uid"] == $_REQUEST["oldvalue"]) {
 			// don't change if new value equal to old one
 			$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('Username')));
 			attribute_forward($msg);
 			break;
     	}
 		
-		if(pql_replace_attribute($_pql->ldap_linkid, $_POST["user"],
+		if(pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"],
 									 pql_get_define("PQL_GLOB_ATTR_UID"),
-									 $_POST["uid"]))
+									 $_REQUEST["uid"]))
 		{
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what% from %old% to %new%'),
 										 array('what' => $LANG->_('username'),
-											   'old'  => $_POST["oldvalue"],
-											   'new'  => $_POST["uid"]));
+											   'old'  => $_REQUEST["oldvalue"],
+											   'new'  => $_REQUEST["uid"]));
 		} else {
 			$msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 										 array('what' => $LANG->_('username'))) . ": " . pql_ldap_error($_pql->ldap_linkid);
 		}
 		
 		// We use the uid to reference users and it has just changed...
-		if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", pql_get_rootdn($_POST["user"])) == pql_get_define("PQL_GLOB_ATTR_UID")) {
-			$_POST["user"] = $_POST["uid"];
+		if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", pql_get_rootdn($_REQUEST["user"])) == pql_get_define("PQL_GLOB_ATTR_UID")) {
+			$_REQUEST["user"] = $_REQUEST["uid"];
 			// Reload the navigation bar (if allowed by config)
 			attribute_forward($msg, true);
 		} else {

@@ -6,18 +6,18 @@
 		$branch = urldecode($branch);
 
 		// Check the top-most (namingContexts) DN's if user is admin of that...
-		if(pql_validate_administrator($_pql->ldap_linkid, $branch, $user))
+		if(pql_validate_administrator($_pql->ldap_linkid, $branch, $_GET["user"]))
 		  $domains[$branch][] = $branch;
 
 		// Find all branches the user is admin of
-		$dom = pql_domain_value($_pql, $branch, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $user);
+		$dom = pql_domain_value($_pql, $branch, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $_GET["user"]);
 		if($dom)
 		  foreach($dom as $d) {
 			  if($d != $branch)
 				$domains[$branch][] = $d;
 		  }
     }
-    
+
     $class=pql_format_table(0);
     if(isset($domains)) {
 		asort($domains);
@@ -35,7 +35,7 @@
 <?php			} $new_tr = 1; ?>
         <td><a href="domain_detail.php?rootdn=<?=$branch?>&domain=<?=$branch?>"><?php echo urldecode($branch); ?></a></td>
         <td>
-          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR");?>&domain=<?=$branch?>&user=<?=$userdn?>&submit=4&action=delete&view=<?=$view?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Deny user admin access to domain')?>"></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR");?>&domain=<?=$branch?>&user=<?=$userdn?>&submit=4&action=delete&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Deny user admin access to domain')?>"></a>
         </td>
       </tr>
 <?php		}
@@ -44,7 +44,7 @@
       <tr class="<?=$class?>">
         <td class="title"></td>
         <td>
-          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR");?>&rootdn=<?=$rootdn?>&domain=<?=$branch?>&user=<?=$userdn?>&submit=3&action=add"><?=$LANG->_('Give (more) admin rights')?></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR");?>&rootdn=<?=$_GET["rootdn"]?>&domain=<?=$branch?>&user=<?=$userdn?>&submit=3&action=add"><?=$LANG->_('Give (more) admin rights')?></a>
         </td>
         <td></td>
       </tr>
@@ -54,17 +54,17 @@
 
       <tr class="<?=$class?>">
         <td class="title"><?=$LANG->_('Create branches')?></td>
-<?php       if(pql_validate_administrator($_pql->ldap_linkid, $rootdn, $user)) { ?>
+<?php       if(pql_validate_administrator($_pql->ldap_linkid, $_GET["rootdn"], $_GET["user"])) { ?>
         <td><?=$LANG->_('Yes')?></td>
         <td>
-          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR");?>&rootdn=<?=$rootdn?>&user=<?=$userdn?>&submit=4&action=delete&view=<?=$view?>">
-            <img src="images/del.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Disallow user to create domains below %domain%'), array('domain', $rootdn)); ?>">
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR");?>&rootdn=<?=$_GET["rootdn"]?>&user=<?=$userdn?>&submit=4&action=delete&view=<?=$_GET["view"]?>">
+            <img src="images/del.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Disallow user to create domains below %domain%'), array('domain', $_GET["rootdn"])); ?>">
           </a>
         </td>
 <?php       } else { ?>
         <td><?=$LANG->_('No')?></td>
         <td>
-          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR");?>&rootdn=<?=$rootdn?>&user=<?=$userdn?>&submit=4&action=add&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Allow user to create domains below %domain%'), array('domain', $rootdn)); ?>">
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR");?>&rootdn=<?=$_GET["rootdn"]?>&user=<?=$userdn?>&submit=4&action=add&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Allow user to create domains below %domain%'), array('domain', $_GET["rootdn"])); ?>">
           </a>
         </td>
 <?php      } ?>
@@ -74,9 +74,10 @@
     } else {
 ?>
       <tr class="<?=$class?>">
+		 <!-- DLW: This isnt working, but its also broke in the CVS so Ill fix it later. -->
         <td class="title"><?=$LANG->_('Access to DN')?>:</td>
         <td>
-          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR");?>&rootdn=<?=$rootdn?>&domain=<?=$branch?>&user=<?=$userdn?>&submit=3&action=add&view=<?=$view?>"><?=$LANG->_('Give admin rights')?></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR");?>&rootdn=<?=$_GET["rootdn"]?>&domain=<?=$branch?>&user=<?=$userdn?>&submit=3&action=add&view=<?=$_GET["view"]?>"><?=$LANG->_('Give admin rights')?></a>
         </td>
         <td></td>
       </tr>
@@ -88,13 +89,13 @@
 <?php       if($controlsadministrator) { ?>
         <td><?=$LANG->_('Yes')?></td>
         <td>
-          <a href="config_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR");?>&delval=<?=$userdn?>&submit=2&view=<?=$view?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Disallow user to administrate Controls information')?>">
+          <a href="config_edit_attribute.php?rootdn=<?=$_GET["rootdn"]?>&domain=<?=$_GET["domain"]?>&attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR");?>&delval=<?=$userdn?>&submit=2&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Disallow user to administrate Controls information')?>">
           </a>
         </td>
 <?php       } else { ?>
         <td><?=$LANG->_('No')?></td>
         <td>
-          <a href="config_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR");?>&<?php echo pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR");?>=<?=$userdn?>&submit=2&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Allow user to administrate Controls information')?>">
+          <a href="config_edit_attribute.php?rootdn=<?=$_GET["rootdn"]?>&domain=<?=$_GET["domain"]?>&attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR");?>&<?php echo pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR");?>=<?=$userdn?>&submit=2&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Allow user to administrate Controls information')?>">
           </a>
         </td>
 <?php      } ?>

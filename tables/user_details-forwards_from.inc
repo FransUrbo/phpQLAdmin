@@ -1,4 +1,4 @@
-<?php $forwarders = pql_search_forwarders($_pql, $user); ?>
+<?php $forwarders = pql_search_forwarders($_pql, $_GET["user"]); ?>
   <!-- forwarders in other accounts to this user  -->
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="2" align="left"><?=$LANG->_('Forwarders from other accounts to this user')?></th>
@@ -20,7 +20,7 @@ if(empty($forwarders)) {
       <tr class="<?php pql_format_table(); ?>">
         <td><a href="mailto:<?=$forwarder["email"]?>"><?=pql_maybe_idna_decode($forwarder["email"])?></a></td>
         <td>
-          <a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?php echo urlencode($forwarder["reference"]); ?>"><?=$forwarder[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)]?></a>
+          <a href="user_detail.php?rootdn=<?=$_GET["rootdn"]?>&domain=<?=$_GET["domain"]?>&user=<?php echo urlencode($forwarder["reference"]); ?>"><?=$forwarder[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)]?></a>
         </td>
       </tr>
 <?php

@@ -1,11 +1,11 @@
 <?php
 // edit an attribute of user
-// $Id: user_edit_attribute.php,v 2.29.2.2 2003-12-02 20:47:53 dlw Exp $
+// $Id: user_edit_attribute.php,v 2.29.2.3 2003-12-15 20:33:04 dlw Exp $
 //
 // This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
 //   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
 //      and print out the form.
-//   2) $submit is 1 (or 2?): Validate the input (the name of the input variable changes depending on
+//   2) $submit is 1 (or 2?): Validate the input.  The name of the input variable changes depending on
 //      which attribute is being edited.
 //      If the input is valid, save it, else print out the form again and return to step 2.
 session_start();

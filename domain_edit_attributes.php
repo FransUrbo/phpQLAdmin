@@ -1,6 +1,6 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.34.2.1 2003-11-24 18:07:02 dlw Exp $
+// $Id: domain_edit_attributes.php,v 2.34.2.2 2003-12-15 20:33:04 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -10,15 +10,18 @@ $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PA
 
 // forward back to users detail page
 function attribute_forward($msg) {
-    global $domain, $user, $rootdn;
+  //global $domain, $user, $rootdn;
 
     $msg = urlencode($msg);
 	if($user)
-	  $url = "user_detail.php?rootdn=$rootdn&domain=$domain&user=".urlencode($user)."&view=$view&msg=$msg";
-	elseif($administrator)
-	  $url = "user_detail.php?rootdn=$rootdn&domain=$domain&user=$administrator&view=$view&msg=$msg";
+	  $url = "user_detail.php?rootdn=" . $_REQUEST["rootdn"] . "&domain=" . $_REQUEST["domain"]
+		. "&user=". urlencode($user) . "&view=" . $_REQUEST["view"] . "&msg=$msg";
+	elseif($administrator)		// DLW: Bug? $administrator isn't visable.
+	  $url = "user_detail.php?rootdn=" . $_REQUEST["rootdn"] . "&domain=" . $_REQUEST["domain"]
+	    . "&user=$administrator&view=" . $_REQUEST["view"] . "&msg=$msg";
 	else
-	  $url = "domain_detail.php?rootdn=$rootdn&domain=$domain&view=$view&msg=$msg";
+	  $url = "domain_detail.php?rootdn=" . $_REQUEST["rootdn"] . "&domain=" . $_REQUEST["domain"]
+		. "&view=" . $_REQUEST["view"] . "&msg=$msg";
 
     header("Location: " . pql_get_define("PQL_GLOB_URI") . "$url");
 }
@@ -27,22 +30,22 @@ function attribute_forward($msg) {
 // These variables ISN'T encoded "the first time", but they are after
 // the attribute_print_form() have been executed, so we don't want to
 // encode them twice!
-if(! ereg("%3D", $rootdn)) {
+if(! ereg("%3D", $_REQUEST["rootdn"])) {
 	// URL encode namingContexts
-	$rootdn = urlencode($rootdn);
+	$_REQUEST["rootdn"] = urlencode($_REQUEST["rootdn"]);
 }
-if(! ereg("%3D", $domain)) {
+if(! ereg("%3D", $_REQUEST["domain"])) {
 	// .. and/or domain DN
-	$domain = urlencode($domain);
+	$_REQUEST["domain"] = urlencode($_REQUEST["domain"]);
 }
 
 // Select which attribute have to be included
-include("./include/".pql_plugin_get_filename(pql_plugin_get($attrib)));
+include("./include/".pql_plugin_get_filename(pql_plugin_get($_REQUEST["attrib"])));
 
 // Get the organization name, or the DN if it's unset
-$orgname = pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_O"));
+$orgname = pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_O"));
 if(!$orgname) {
-	$orgname = urldecode($domain);
+	$orgname = urldecode($_REQUEST["domain"]);
 }
 
 include("./header.html");
@@ -53,43 +56,45 @@ include("./header.html");
   <br><br>
 
 <?php
-if(!$type) {
-	$type = 'fulldomain';
+
+  // DLW: I'm guessing that $type comes from a form.
+if(!$_REQUEST["type"]) {
+	$_REQUEST["type"] = 'fulldomain';
 }
 	 
 // select what to do
-if($submit == 1) {
-	if($attrib == 'basequota') {
+if($_REQUEST["submit"] == 1) {
+	if($_REQUEST["attrib"] == 'basequota') {
 		attribute_save("modify");
 	} else {
-	    if(attribute_check($type))
-		  attribute_save($type);
+	    if(attribute_check($_REQUEST["type"]))
+		  attribute_save($_REQUEST["type"]);
 		else
-		  attribute_print_form($type);
+		  attribute_print_form($_REQUEST["type"]);
 	}
-} elseif($submit == 2) {
+} elseif($_REQUEST["submit"] == 2) {
     // Support for changing domain defaults
-	if($type != 'delete') {
+	if($_REQUEST["type"] != 'delete') {
 		if(attribute_check())
 		  attribute_save("modify");
 		else
 		  attribute_print_form();
 	} else
 	  attribute_save("delete");
-} elseif($submit == 3) {
+} elseif($_REQUEST["submit"] == 3) {
 	// Support for changing domain administrator
-	attribute_print_form($type);
-} elseif($submit == 4) {
+	attribute_print_form($_REQUEST["type"]);
+} elseif($_REQUEST["submit"] == 4) {
 	// SAVE change of domain administrator, mailinglist admin and contact person
-	attribute_save($type);
+	attribute_save($_REQUEST["type"]);
 } else {
-	if($attrib == pql_get_define("PQL_GLOB_ATTR_BASEQUOTA"))
+	if($_REQUEST["attrib"] == pql_get_define("PQL_GLOB_ATTR_BASEQUOTA"))
 	  attribute_print_form();
-	elseif(($attrib == pql_get_define("PQL_GLOB_ATTR_AUTOCREATEUSERNAME")) or
-		   ($attrib == pql_get_define("PQL_GLOB_ATTR_AUTOCREATEMAILADDRESS")))
+	elseif(($_REQUEST["attrib"] == pql_get_define("PQL_GLOB_ATTR_AUTOCREATEUSERNAME")) or
+		   ($_REQUEST["attrib"] == pql_get_define("PQL_GLOB_ATTR_AUTOCREATEMAILADDRESS")))
 	  attribute_save();
 	else
-	  attribute_print_form($type);
+	  attribute_print_form($_REQUEST["type"]);
 }
 ?>
 </body>

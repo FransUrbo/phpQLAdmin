@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for pilotPerson objects etc
-// $Id: attrib.outlook.inc,v 1.16.2.2 2003-12-09 21:10:29 dlw Exp $
+// $Id: attrib.outlook.inc,v 1.16.2.3 2003-12-15 20:33:07 dlw Exp $
 
 /*
 	Attributes managed here:
@@ -34,7 +34,7 @@ function attribute_check() {
     global $LANG, $error;
 
     // is typed in ?
-    if(!empty($_POST[$attrib])) {
+    if(!empty($_REQUEST[$attrib])) {
 		$error[$attrib] = $LANG->_('Missing');
 		return false;
     }
@@ -83,25 +83,25 @@ function attribute_print_form() {
 function attribute_save($type) {
     global $_pql, $LANG;
 
-	$attrib = $_POST["attrib"];
+	$attrib = $_REQUEST["attrib"];
     switch($type) {
       case "add":
 		// DLW: Add drops into modify.  Is this an error?
       case "modify":
-		if($_POST[$attrib] == $_POST["oldvalue"]) {
+		if($_REQUEST[$attrib] == $_REQUEST["oldvalue"]) {
 			// don't change if new value equal to old one
 			$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $attrib));
 			attribute_forward($msg);
 			break;
 		}
 
-		if($_POST["domain"] and !$_POST["user"]) {
+		if($_REQUEST["domain"] and !$_REQUEST["user"]) {
 			// Save a domain attribute
-			if(pql_set_domain_value($_pql->ldap_linkid, $_POST["domain"], $_POST["attrib"], $_POST[$attrib]))
+			if(pql_set_domain_value($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["attrib"], $_REQUEST[$attrib]))
 			  $success = 1;
-		} elseif($_POST["user"]) {
+		} elseif($_REQUEST["user"]) {
 			// Save a user attribute
-			if(pql_replace_attribute($_pql->ldap_linkid, $_POST["user"], $_POST["attrib"], $_POST[$attrib]))
+			if(pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], $_REQUEST[$attrib]))
 			  $success = 1;
 		}
 
@@ -114,11 +114,11 @@ function attribute_save($type) {
 		break;
 
       case "delete";
-		if($_POST["domain"] and !$_POST["user"]) {
+		if($_REQUEST["domain"] and !$_REQUEST["user"]) {
 			// Save a domain attribute
-			if(pql_set_domain_value($_pql->ldap_linkid, $_POST["domain"], $attrib, ''))
+			if(pql_set_domain_value($_pql->ldap_linkid, $_REQUEST["domain"], $attrib, ''))
 			  $success = 1;
-//		} elseif($_POST["user"] and !$_POST["domain"]) {
+//		} elseif($_REQUEST["user"] and !$_REQUEST["domain"]) {
 // Currently no DELETE option
 		}
 

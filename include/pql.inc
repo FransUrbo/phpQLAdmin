@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.129.2.1 2003-12-09 16:18:26 dlw Exp $
+// $Id: pql.inc,v 2.129.2.2 2003-12-15 20:33:07 dlw Exp $
 //
 
 // ----------------------------
@@ -194,7 +194,6 @@ function pql_user_get($ldap_linkid, $dn) {
 // }}}
 
 // {{{ pql_user_add(ldap_linkid, domain, cn, attribs, account_type, branch)
-
 // Add a user to the LDAP database
 function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $branch) {
 	global $account_type;
@@ -340,7 +339,6 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 	
     return $dns;
 }
-
 // }}}
 
 // {{{ pql_user_del(ldap, domain, user, delete_forwards)
@@ -864,12 +862,14 @@ function pql_set_domain_value($linkid, $dn, $type, $value) {
 	$DEBUG = 0;
 	$dn = urldecode($dn);
 
+	$entry = array();
 	if($type) {
 		$type = lc($type);
 		
 		// Setup the value array
 		if(is_array($value)) {
 			// We're supplied with an array, add those values
+		    $entry[$attrib] = array(); // DLW:
 			foreach($value as $val) {
 				$entry[$type][] = pql_maybe_encode($val, $type, $linkid);
 			}
@@ -880,7 +880,8 @@ function pql_set_domain_value($linkid, $dn, $type, $value) {
 		// INTERNATIONALIZE
 		if(is_array($value)) {
 			foreach($value as $attrib => $val) {
-				for($i=0; $val[$i]; $i++)
+			    $entry[$attrib] = array(); // DLW:
+				for($i=0; !empty($val[$i]); $i++)
 				  $entry[$attrib][] = pql_maybe_encode($val[$i], $attrib, $linkid);
 			}
 		} else {
@@ -897,7 +898,7 @@ function pql_set_domain_value($linkid, $dn, $type, $value) {
 	// Create a LDIF object to print in case of error
 	$account_type = $type;
 	$LDIF = pql_create_ldif("pql_set_domain_value", $dn, $entry);
-	
+
 	// --------------------------
 	// DEBUG mode: Print the LDIF
 	if($DEBUG >= 1)

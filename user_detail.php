@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.60.2.3 2003-12-09 16:17:00 dlw Exp $
+// $Id: user_detail.php,v 2.60.2.4 2003-12-15 20:33:04 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -164,7 +164,7 @@ if(!$_SESSION["SINGLE_USER"]) {
 	$buttons = $buttons + $new;
 }
 
-pql_generate_button($buttons, "user=".urlencode($_GET["user"])); echo "  <br>\n";
+pql_generate_button($buttons, "user=" . urlencode($_GET["user"])); echo "  <br>\n";
 
 if($_GET["view"] == '')
 	$_GET["view"] = 'basic';
