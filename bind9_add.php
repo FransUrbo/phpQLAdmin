@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.11.16.2 2004-12-19 10:12:28 turbo Exp $
+// $Id: bind9_add.php,v 2.11.16.3 2004-12-19 15:46:43 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -43,7 +43,7 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 		  else
 			$msg = "Failed to add domain ".$_REQUEST["domainname"];
 
-		  $url = "domain_detail.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"]".&view=".$_REQUEST["view"]."&msg=".urlencode($msg);
+		  $url = "domain_detail.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"]."&view=".$_REQUEST["view"]."&msg=".urlencode($msg);
 		  header("Location: ".pql_get_define("PQL_CONF_URI") . "$url");
 	  }
 } elseif(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'host')) {
