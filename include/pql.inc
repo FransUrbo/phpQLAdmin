@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.54 2003-04-07 15:28:03 turbo Exp $
+// $Id: pql.inc,v 2.55 2003-04-08 07:40:51 turbo Exp $
 //
 
 // ----------------------------
@@ -1774,7 +1774,9 @@ function pql_split_oldvalues($value) {
 // --------------------------
 // Create a LDIF object to print in case of error
 function pql_create_ldif($func, $dn, $entry) {
-	$LDIF  = "<br>--- DEBUG: $func() ---<br>";
+	if($func)
+	  $LDIF .= "<br>--- DEBUG: $func() ---<br>";
+
 	$LDIF .= "dn: $dn<br>";
 	foreach($entry as $key => $e) {
 		if(is_array($entry[$key])) {
@@ -1786,7 +1788,9 @@ function pql_create_ldif($func, $dn, $entry) {
 			$LDIF .= "$key: $entry[$key]<br>";
 		}
 	}
-	$LDIF .= "--- DEBUG ---<p>";	
+
+	if($func)
+	  $LDIF .= "--- DEBUG ---<p>";	
 
 	return($LDIF);
 }
