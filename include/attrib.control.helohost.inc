@@ -2,9 +2,9 @@
 // control attribute plugin for
 // helohost (host name used in SMTP HELO command)
 //
-// $Id: attrib.control.helohost.inc,v 2.14 2004-03-11 16:31:54 turbo Exp $
+// $Id: attrib.control.helohost.inc,v 2.15 2004-05-25 13:53:38 turbo Exp $
 
-// {{{helohost_check(type)
+// {{{ helohost_check(type)
 function helohost_check($type) {
 	global $error, $LANG;
 
@@ -18,7 +18,7 @@ function helohost_check($type) {
 }
 // }}}
 
-// helohost_init(host)
+// {{{ helohost_init(host)
 // init values
 function helohost_init($host) {
 	global $_pql_control;
