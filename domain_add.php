@@ -14,20 +14,18 @@ include("./header.html");
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 $_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
 
-// convert domain to lowercase
-$domain = strtolower($domain);
-
 // Should we force a dot in the domainname or not?
-if($config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$rootdn] == "dc") {
-	// We're using a domain object, which means we should allow
-	// a domain name to be without dot.
-	$nodot = 1;
+if($config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$rootdn] == "dc" or
+   $config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$rootdn] == "o") {
+	// We're using a domain or organization object, which
+	// means we should allow a domain name to be without dot.
+	$force_dot = 0;
 } else {
-	$nodot = 0;
+	$force_dot = 1;
 }
 
 // check if domain is valid
-if(!check_hostaddress($domain, $nodot)){
+if(!check_hostaddress($domain, $force_dot)) {
 	$msg = urlencode(PQL_LANG_DOMAIN_INVALID);
 	header("Location: " . $config["PQL_GLOB_URI"] . "home.php?msg=$msg");
 	exit();
@@ -48,6 +46,11 @@ if($dns[0]) {
 	// Default values we can easily figure out
 	$defaultmaildir = user_generate_mailstore('', '', '', $entry);
 	$defaulthomedir = user_generate_homedir('', '', '', $entry);
+
+	// Replace spaces with underscore - can't create dirs with spaces,
+	// it's bound to break SOMEWHERE!
+	$defaultmaildir = preg_replace('/ /', '_', $defaultmaildir);
+	$defaulthomedir = preg_replace('/ /', '_', $defaulthomedir);
 
 	if($defaultdomain != "") {
 		// update locals if control patch is enabled
