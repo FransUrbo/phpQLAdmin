@@ -46,13 +46,14 @@ if(pql_domain_exist($_pql, $domain, $rootdn)) {
 
 $dns = pql_domain_add($_pql->ldap_linkid, $rootdn, $domain);
 if($dns[0]) {
+	// Can't have ' in the branch (used when creating default{mail,home}dir)
+	$domain = ereg_replace("'", "", $domain);
+
 	$entry["BRANCH_NAME"] = $domain;
 
 	if($defaultdomain != "") {
 		// update locals if control patch is enabled
-		if(pql_control_update_domains($_pql, $USER_SEARCH_DN_CTR, '*', array('', $defaultdomain))) {
-			// message ??
-		}
+		pql_control_update_domains($_pql, $USER_SEARCH_DN_CTR, '*', array('', $defaultdomain));
 	}
 
 	// Default values we can easily figure out
