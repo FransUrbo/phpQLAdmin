@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.5 2003-11-26 06:44:27 turbo Exp $
+// $Id: pql_formating.inc,v 2.6 2003-11-26 16:45:59 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -135,9 +135,9 @@ function pql_format_tree($text, $url, $links = '', $level = 0) {
 	$parent = "Parent";
 
 	if($opera) {
-		pql_format_tree_opera($div_counter, $text, $url, $links, $level, $parent, $child);
+		pql_format_tree_opera($div_counter, $text, $url, $level, $parent, $child);
 	} else {
-		pql_format_tree_other($div_counter, $text, $url, $links, $level, $parent, $child);
+		pql_format_tree_other($div_counter, $text, $url, $level, $parent, $child);
 	}
 
 	if(is_array($links))
@@ -150,8 +150,8 @@ function pql_format_tree($text, $url, $links = '', $level = 0) {
 }
 // }}}
 
-// {{{ pql_format_tree_opera(counter, text, url, links, level, parent, child)
-function pql_format_tree_opera($cnt, $text, $url, $links, $level, $parent, $child) {
+// {{{ pql_format_tree_opera(counter, text, url, level, parent, child)
+function pql_format_tree_opera($cnt, $text, $url, $level, $parent, $child) {
 	$nbsp = '';
 	if($level) {
 		for($i=0; $i < ($level * 4); $i++) 
@@ -168,8 +168,8 @@ function pql_format_tree_opera($cnt, $text, $url, $links, $level, $parent, $chil
 }
 // }}}
 
-// {{{ pql_format_tree_other(counter, text, url, links, level, parent, child)
-function pql_format_tree_other($cnt, $text, $url, $links, $level, $parent, $child) {
+// {{{ pql_format_tree_other(counter, text, url, level, parent, child)
+function pql_format_tree_other($cnt, $text, $url, $level, $parent, $child) {
 	$nbsp = '';
 	if($level) {
 		for($i=0; $i < ($level * 4); $i++) 
@@ -201,15 +201,19 @@ function pql_format_tree_span($text, $links, $level) {
 	for($i=0; $i < (($level + 1) * 4); $i++)
 	  $nbsp .= "&nbsp;";
 	
-	foreach($links as $link => $text) {
+	foreach($links as $text => $link) {
 		// If it's a user, we want an icon before the list...
 		// DIRTY HACK: An option to the function instead?
 		$icon = 0;
 		if(eregi("user_detail\.php", $link))
 		  $icon = 1;
+
+		if($link) {
 ?>
     <nobr><?=$nbsp?><a href="<?=$link?>"><?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>">&nbsp;<?php } ?><?=$text?></a></nobr><br>
-<?php
+<?php	} else { ?>
+    <nobr><?=$nbsp?><?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>">&nbsp;<?php } ?><?=$text?></nobr><br>
+<?php	}
 	}
 }
 // }}}
