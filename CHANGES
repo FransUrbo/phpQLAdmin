@@ -3,7 +3,27 @@ phpQLAdmin 2.0 Change Log
 phpQLAdmin 2.0.9 - TO BE ANNOUNCED
 	Highlights
 	Bug fixes
+	  - When ordinary user logs in, we don't know the domain.
+	    Try to find it by traversing the DN backwards, looking
+	    for attribute 'defaultDomain'.
+	  - Use isset() instead of is_array() to get rid of
+	    "Undefined variable ..." when running with E_NOTICE in
+	    PHP4 config (error_reporting define).
+	    + Instead of using define(), we have our own version of
+	      this - pql_define() - that first check if the constant
+	      is defined, and if it isn't it defines it. This to get
+	      rid of 'Constant ... already defined' info if running
+	      with E_NOTICE (error_reporting define).
+	  - Include the domain in calls to user_{edit,add}_attribute
+	    so we can find the default domainname. We need this,
+	    because we need some domain defaults when changing attributes.
+	  - Gecos is needed to do PAM/NSS LDAP login (ie, system
+	    account), so construct the attribute from the fullname.
+	  - Make sure we only include the language (en) file once.
+
 	GUI layout change
+	  - Dissalow the ezmlm frame if ordinary user.
+
 	Misc changes
 
 phpQLAdmin 2.0.8 Release (Jan 31 2003)
