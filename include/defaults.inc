@@ -97,10 +97,14 @@ pql_set_define("PQL_GLOB_EZMLM_PATH", "/usr/bin", false);
 // with DNSSEC and that you (the webserver/phpQLAdmin)
 // have access to a 'root' key that have access to
 // update the DNS.
-//
-// NOTE: Do not enable this. This code isn't even
-//       started!!
 pql_set_define("PQL_GLOB_BIND9_USE", false, false);
+
+// ----------------------------
+// Should we enable the webserver administration editor?
+// This (likley) require an external script that will
+// search the LDAP database for the configuration and
+// create file(s) that the webserver will understand.
+pql_set_define("PQL_GLOB_WEBSRV_USE", false, false);
 
 // ----------------------------
 // Should we automaticly create usernames when adding
@@ -197,13 +201,13 @@ pql_set_define("PQL_GLOB_URI", "", false);
 
 // ----------------------------
 if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $dn) == "dc") {
-	$objectclass_domain = "domain";
+	$objectclass_domain = "domain dcOrganizationNameForm";
 } elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $dn) == "ou") {
 	$objectclass_domain = "organizationalUnit";
 } elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $dn) == "o") {
 	$objectclass_domain = "organization";
 }
-pql_set_define("PQL_CONF_OBJECTCLASS_DOMAIN", $objectclass_domain . " dcOrganizationNameForm phpQLAdminBranch", false, $dn);
+pql_set_define("PQL_CONF_OBJECTCLASS_DOMAIN", $objectclass_domain . " phpQLAdminBranch", false, $dn);
 
 /*
  * Local variables:
