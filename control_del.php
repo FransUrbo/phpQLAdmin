@@ -1,6 +1,6 @@
 <?php
 // Delete a mailserver controls object
-// $Id: control_del.php,v 2.10 2004-03-28 17:37:15 turbo Exp $
+// $Id: control_del.php,v 2.10.8.1 2004-09-17 10:51:45 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -88,7 +88,6 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 		}
 	} else {
 		// We've submitted
-printr($_REQUEST);
 		switch($_REQUEST["action"]) {
 			case "ignore":
 			  // Don't touch the users - delete object directly
