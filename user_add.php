@@ -40,7 +40,7 @@ if($submit == "") {
     $user = $surname . " " . $name;
     if($error == false
        and PQL_LDAP_REFERENCE_USERS_WITH == PQL_LDAP_ATTR_CN
-       and pql_user_exist($_pql->ldap_linkid, $domain, $user)){
+       and pql_user_exist($_pql->ldap_linkid, $user)) {
 		$error = true;
 		$error_text["username"] = pql_complete_constant(PQL_USER_EXIST, array("user" => $user));
 		$error_text["name"] = PQL_EXISTS;
@@ -344,12 +344,12 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 <?php
 		} else {
 ?>
-        <input type="hidden" name="subbranch" value="<?php echo PQL_LDAP_SUBTREE_USERS;?>">
+        <input type="hidden" name="subbranch" value="<?php echo PQL_LDAP_SUBTREE_USERS . "," . $domain;?>">
 <?php
 		}
 	} else {
 ?>
-        <input type="hidden" name="subbranch" value="<?php echo PQL_LDAP_SUBTREE_USERS;?>">
+        <input type="hidden" name="subbranch" value="<?php echo PQL_LDAP_SUBTREE_USERS . "," . $domain;?>">
 <?php
 	} // end if ADVANCED mode
 ?>
@@ -618,6 +618,9 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 
         // ------------------
 		$entry["objectClass"][] = "person";
+		if(($account_type == "system") or ($account_type == "forward")) {
+			$entry["objectClass"][] = "posixAccount";
+		}
 
         // ------------------
 		if($account_type == "system") {
@@ -626,7 +629,6 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 			// We should have inetOrgPerson and posixAccount as objectclass for this
 			// type of System account
 			$entry["objectClass"][] = "inetOrgPerson";
-			$entry["objectClass"][] = "posixAccount";
 
 			// set SYSTEM attributes
 			$entry[PQL_LDAP_ATTR_LOGINSHELL] = $loginshell;
@@ -656,7 +658,7 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 				  $entry[PQL_LDAP_ATTR_MAILHOST] = $mx;
 				else {
 					$domainname = split('@', $entry[PQL_LDAP_ATTR_MAIL]);
-					$entry[PQL_LDAP_ATTR_MAILHOST] = pql_get_mx($domainname[1]);
+					$entry[PQL_LDAP_ATTR_MAILHOST] = pql_get_mx($domainname[1], $defaultdomain);
 				}
 			} else {
 				if($mx)
@@ -683,6 +685,8 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 
 			// Even forward accounts need UIDNumber! (?!?)
 			$entry[PQL_LDAP_ATTR_QMAILUID] = PQL_LDAP_FORWARDINGACCOUNT_UIDNUMBER;
+			$entry[PQL_LDAP_ATTR_QMAILGID] = PQL_LDAP_FORWARDINGACCOUNT_UIDNUMBER;
+			$entry[PQL_LDAP_ATTR_HOMEDIR]  = "/tmp";
 		}
 
         // ------------------
