@@ -10,9 +10,6 @@ if(PQL_LDAP_CONTROL_USE){
     // include control api if control is used
     include("./include/pql_control.inc");
     $_pql_control = new pql_control($USER_HOST_CTR, $USER_DN, $USER_PASS);
-
-    // Get default domain name for this domain
-    $defaultdomain = pql_get_domain_value($_pql_control->ldap_linkid, $domain, "defaultdomain");
 }
 
 include("./header.html");
@@ -260,28 +257,28 @@ if($ADVANCED_MODE == 1) {
 
 <?php
 	if(PQL_LDAP_CONTROL_USE){
-		if(pql_control_search_attribute($_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR, "locals", $domain)){
+		if(pql_control_search_attribute($_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR, "locals", $defaultdomain)){
 			$locals = PQL_YES;
 			if(!PQL_LDAP_CONTROL_AUTOADDLOCALS){
-				$locals_link = "<a href=\"control_edit_attribute.php?attrib=locals&type=del&set=$domain&submit=1\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"remove $domain from locals\"></a>";
+				$locals_link = "<a href=\"control_edit_attribute.php?attrib=locals&type=del&set=$defaultdomain&submit=1\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"remove $defaultdomain from locals\"></a>";
 			} else {
 				$locals_link = "&nbsp;";
 			}
 		} else {
 			$locals = PQL_NO;
 			if(!PQL_LDAP_CONTROL_AUTOADDLOCALS){
-				$locals_link = "<a href=\"control_edit_attribute.php?attrib=locals&type=add&set=$domain&submit=1\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"add $domain to locals\"></a>";
+				$locals_link = "<a href=\"control_edit_attribute.php?attrib=locals&type=add&set=$defaultdomain&submit=1\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"add $defaultdomain to locals\"></a>";
 			} else {
 				$locals_link = "&nbsp;";
 			}
 		}
 		
-		if(pql_control_search_attribute($_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR, "rcpthosts", $domain)){
+		if(pql_control_search_attribute($_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR, "rcpthosts", $defaultdomain)){
 			$rcpthosts = PQL_YES;
-			$rcpthosts_link = "<a href=\"control_edit_attribute.php?attrib=rcpthosts&type=del&set=$domain&submit=1\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"remove $domain from rcpthosts\"></a>";
+			$rcpthosts_link = "<a href=\"control_edit_attribute.php?attrib=rcpthosts&type=del&set=$defaultdomain&submit=1\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"remove $defaultdomain from rcpthosts\"></a>";
 		} else {
 			$rcpthosts = PQL_NO;
-			$rcpthosts_link = "<a href=\"control_edit_attribute.php?attrib=rcpthosts&type=add&set=$domain&submit=1\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"add $domain to rcpthosts\"></a>";
+			$rcpthosts_link = "<a href=\"control_edit_attribute.php?attrib=rcpthosts&type=add&set=$defaultdomain&submit=1\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"add $defaultdomain to rcpthosts\"></a>";
 		}
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
