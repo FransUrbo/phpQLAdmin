@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for the Webserver Configuration editor
 //
-// $Id: attrib.websrv.inc,v 1.6 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.websrv.inc,v 1.6.4.1 2004-11-19 08:50:57 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -70,48 +70,59 @@ function attribute_print_form() {
 function attribute_save($action) {
     global $_pql, $LANG;
 
+	// Just so that we can avoid using '$_REQUEST[$_REQUEST["attrib"]]'.
+	$attrib = $_REQUEST["attrib"];
+
     switch($action) {
 	  case "add":
 		// Fetch the old values from the DB
-		$filter = "(&(objectclass=".pql_get_define("PQL_ATTR_WEBSRV_OC").")(".$_REQUEST["attrib"]."=*))";
-		$sr   = ldap_read($_pql->ldap_linkid, $_REQUEST["server"], $filter, array($_REQUEST["attrib"]));
+		$filter = "(&(objectclass=".pql_get_define("PQL_ATTR_WEBSRV_OC").")($attrib=*))";
+		$sr   = ldap_read($_pql->ldap_linkid, $_REQUEST["server"], $filter, array($attrib));
 		$info = ldap_get_entries($_pql->ldap_linkid, $sr)
 		  or pql_format_error(0);
-		for($i=0; $i < $info[0][$_REQUEST["attrib"]]["count"]; $i++) {
+		for($i=0; $i < $info[0][$attrib]["count"]; $i++) {
 			// Add the old value(s) to the array
-			$entry[$_REQUEST["attrib"]][] = $info[0][$_REQUEST["attrib"]][$i];
+			$entry[$attrib][] = $info[0][$attrib][$i];
 		}
 
 		// Add the new value to the array
-		$entry[$_REQUEST["attrib"]][] = $_REQUEST[$_REQUEST["attrib"]];
+		$entry[$attrib][] = $_REQUEST[$attrib];
 
 		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["server"], '', '', $entry))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
-									   array('what' => $_REQUEST[$_REQUEST["attrib"]])).".";
+									   array('what' => $_REQUEST[$attrib])).".";
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $_REQUEST[$_REQUEST["attrib"]])) . ": "
+									   array('what' => $_REQUEST[$attrib])) . ": "
 										 . ldap_error($_pql->ldap_linkid);
 		break;
 
 	  case "mod":
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["server"], $_REQUEST["attrib"], '', $_REQUEST[$_REQUEST["attrib"]]))
+		if(($attrib == pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER")) and eregi('^ldapi', $_REQUEST[$attrib])) {
+			// It is an LDAP URI - urlencode.
+			
+			// Extract the path 
+			$uri = eregi_replace('ldapi://', '', $_REQUEST[$attrib]);
+			$_REQUEST[$attrib] = 'ldapi://' . urlencode($uri);
+		}
+
+		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["server"], $attrib, '', $_REQUEST[$attrib]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
-									   array('what' => $_REQUEST["attrib"]));
+									   array('what' => $attrib));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $_REQUEST["attrib"])) . ": " . ldap_error($_pql->ldap_linkid);
+									   array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
 		break;
 
 	  case "del":
-		$entry[$_REQUEST["attrib"]] = array();
+		$entry[$attrib] = array();
 
 		if(ldap_mod_del($_pql->ldap_linkid, $_REQUEST["server"], $entry))
 		  $msg = pql_complete_constant($LANG->_('Successfully removed %value%'),
-									   array('value' => $_REQUEST["attrib"]));
+									   array('value' => $attrib));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to remove %value%'),
-									   array('value' => $_REQUEST["attrib"])) . ": " . ldap_error($_pql->ldap_linkid);
+									   array('value' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
 		break;
 	}
 
