@@ -1,0 +1,27 @@
+phpQLAdmin - README
+-------------------
+
+$Id: README,v 1.0 2001/05/21 09:52:15 mb Exp $
+
+Project updates / news
+----------------------
+
+http://www.adfinis.com/projects/phpQLAdmin/
+
+
+Documentation:
+--------------
+
+INSTALL
+--> how to install phpQLAdmin
+
+LICENSE
+--> the GNU General Public License GPL
+
+doc-directory
+--> all kind of documents about configuration, data
+organization, credits...
+
+
+Copyright (c) 2001, adfinis Gmbh <opensource@adfinis.com>
+This program is distributed under the terms of the GPL v2.

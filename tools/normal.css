@@ -1,0 +1,49 @@
+/*
+    normal.css
+    CSS1 style sheet for phpQLAdmin
+    normal.css,v 1.1 2002-12-11 15:09:23 turbo Exp
+*/
+
+
+body {
+	font-family: arial, helvetica, sans-serif;
+	background: #FFFFFF;
+	font-size: 10pt;
+	color: black;
+}
+
+p,div,td,th,nobr,i,br {
+	font-family: arial, helvetica, sans-serif;
+	font-size: 10pt;
+	color: black;
+}
+
+th {
+	font-family: arial, helvetica, sans-serif;
+	font-size: 12pt;
+	color: black;
+	font-weight: bold;
+}
+
+/* links */
+a:link			{ color: #000000; text-decoration: underline;}
+a:visited		{ color: #000000; text-decoration: underline;}
+a:active		{ color: #0000FF; text-decoration: underline;}
+a:hover			{ color: #0000FF; text-decoration: underline;}
+
+/* special styles for pages */
+.title1			{font-size: 16pt; font-weight: bold;}
+.title2			{font-size: 12pt; font-weight: bold;}
+
+/* table format */
+tr.title, td.title			{ background: #b3b3b3; font-weight: bold;}
+tr.subtitle, td.subtitle	{ background: #d1d1d1; }
+tr.c1, td.c1				{ background: #e7e7e7; }
+tr.c2, td.c2				{ background: #dfdfdf; }
+td.message					{ background: #D5DEE6; font-weight: bold;}
+td.helptitle				{ background: #d1d1d1; font-size: 12pt;	font-weight: bold;}
+td.helptext					{ background: #e7e7e7; }
+td.helptextc				{ background: #d1d1d1; font-size: 8pt;	font-weight: bold;}
+
+/* error */
+span.error		{ color: #ff3300; font-weight: bold; }
