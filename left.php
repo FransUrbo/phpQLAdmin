@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.72 2004-02-15 12:17:41 turbo Exp $
+// $Id: left.php,v 2.73 2004-02-15 17:31:53 turbo Exp $
 //
 session_start();
 
@@ -33,7 +33,7 @@ if($_REQUEST["advanced"] == 1) {
 	$host = split(';', $_SESSION["USER_HOST"]);
 ?>
 
-  <font color="black" class="heada"><?=$LANG->_('LDAP Server')?>: <b><?=$host[0]?>:<?=$host[1]?></b></font>
+  <font color="black" class="heada"><?=$LANG->_('LDAP Server')?>: <b><?=pql_maybe_idna_decode($host[0])?>:<?=$host[1]?></b></font>
   <br>
 <?php } ?>
 

@@ -9,35 +9,35 @@
   
       <tr class="<?php pql_format_table(); ?>">
         <td class="title">Fully qualified domain name</td>
-        <td><?=$mxhost?></td>
+        <td><?=pql_maybe_idna_decode($mxhost)?></td>
         <td></td>
         <td></td>
       </tr>
   
       <tr class="<?php pql_format_table(); ?>">
         <td class="title">Default domainname</td>
-        <td><?=$defaultdomain?></td>
+        <td><?=pql_maybe_idna_decode($defaultdomain)?></td>
         <td><a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=defaultdomain&type=add"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
         <td><a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=defaultdomain&type=del"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title">Plusdomain</td>
-        <td><?=$plusdomain?></td>
+        <td><?=pql_maybe_idna_decode($plusdomain)?></td>
         <td><a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=plusdomain&type=add"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
         <td><a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=plusdomain&type=del"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title">LDAP Server</td>
-        <td><?=$ldapserver?></td>
+        <td><?=pql_maybe_idna_decode($ldapserver)?></td>
         <td><a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=ldapserver&type=add"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
         <td><a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=ldapserver&type=del"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title">LDAP Search base</td>
-        <td><?=$ldapbasedn?></td>
+        <td><?=pql_maybe_idna_decode($ldapbasedn)?></td>
         <td><a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=ldapbasedn&type=add"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
         <td><a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=ldapbasedn&type=del"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
       </tr>

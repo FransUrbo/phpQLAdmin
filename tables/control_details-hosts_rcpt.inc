@@ -7,14 +7,14 @@
 		foreach($rcpthosts as $rcpthost) {
 			if(!$i) {
 ?>
-            <td><?=$rcpthost?></td>
+            <td><?=pql_maybe_idna_decode($rcpthost)?></td>
             <td><a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=rcpthosts&type=add&set=<?=$rcpthost?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=rcpthosts&type=del&set=<?=$rcpthost?>&submit=1&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
           </tr>
 
 <?php		} else { ?>
           <tr class="<?php pql_format_table(); ?>">
             <td class="title"></td>
-            <td><?=$rcpthost?></td>
+            <td><?=pql_maybe_idna_decode($rcpthost)?></td>
             <td><a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=rcpthosts&type=add&set=<?=$rcpthost?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=rcpthosts&type=del&set=<?=$rcpthost?>&submit=1&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
           </tr>
 

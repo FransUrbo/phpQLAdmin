@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.21 2004-02-15 17:27:49 turbo Exp $
+// $Id: left-control.php,v 2.22 2004-02-15 17:31:53 turbo Exp $
 //
 session_start();
 
@@ -29,7 +29,7 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 	if($_SESSION["ADVANCED_MODE"]) {
 		$host = split(';', $_SESSION["USER_HOST"]);
 ?>
-  <font color="black" class="heada"><?=$LANG->_('LDAP Server')?>: <b><?=$host[0]?>:<?=$host[1]?></b></font>
+  <font color="black" class="heada"><?=$LANG->_('LDAP Server')?>: <b><?=pql_maybe_idna_decode($host[0])?>:<?=$host[1]?></b></font>
   <p>
 
   <div id="el2Parent" class="parent">

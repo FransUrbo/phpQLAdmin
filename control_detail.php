@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.26 2004-02-14 14:43:15 turbo Exp $
+// $Id: control_detail.php,v 1.27 2004-02-15 17:31:53 turbo Exp $
 session_start();
 require("./include/pql_config.inc");
 
@@ -71,7 +71,7 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
   //--></script>
 <?php } ?>
 
-  <span class="title1">Mailserver: <?=$mxhost?></span>
+  <span class="title1">Mailserver: <?=pql_maybe_idna_decode($mxhost)?></span>
 
   <br><br>
 
