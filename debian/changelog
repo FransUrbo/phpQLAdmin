@@ -8,7 +8,7 @@ phpqladmin (2.0.18-1) unstable; urgency=low
   * Add Brazilian Portuguese po-debconf template - patch by Andre Luis Lopes.
     Closes: #231718
 
- --
+ -- Turbo Fredriksson <turbo@debian.org>  Sun,  4 Apr 2004 09:46:45 +0200
 
 phpqladmin (2.0.17-1) unstable; urgency=low
 
