@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.161 2004-03-16 10:43:04 turbo Exp $
+// $Id: pql.inc,v 2.162 2004-03-17 14:59:37 dlw Exp $
 //
 
 // ----------------------------
@@ -930,6 +930,7 @@ function pql_domain_set_value($linkid, $dn, $type, $value) {
 // }}}
 
 // {{{ pql_domain_replace_admins(ldap, old, new)
+
 // Look for 'administrator/seealso = old value',
 // replace with 'administrator/seealso = new value'.
 function pql_domain_replace_admins($ldap, $old, $new) {
@@ -983,6 +984,7 @@ function pql_domain_replace_admins($ldap, $old, $new) {
 		}
 	}
 }
+
 // }}}
 
 // ------------------------------------------------
@@ -1230,8 +1232,10 @@ function pql_email_exists($ldap, $email) {
 // }}}
 
 // {{{ pql_get_next_ugidnumber(ldap, type)
+
 // Returns the next free UID/GID number
 function pql_get_next_ugidnumber($ldap, $type) {
+    //: Get the minimum allowable ID.
 	if($type == 'uid') {
 		$attrib  = pql_get_define("PQL_ATTR_QMAILUID");
 		$minimum = pql_get_define("PQL_CONF_MINIMUM_UIDNUMBER");
@@ -1240,32 +1244,49 @@ function pql_get_next_ugidnumber($ldap, $type) {
 		$minimum = pql_get_define("PQL_CONF_MINIMUM_GIDNUMBER");
 	}
 
+	$min_id_val = 100;			// Set an absolute min so no one becomes root.
+    foreach ($minimum as $min) {
+	  if ($min > $min_id_val) {
+		$min_id_val = $min;
+	  }
+	}
+
+    //: Make a list of all the already used IDs.
     $filter = "(&($attrib=*)(objectclass=posixaccount))";
 
+	$ids = array();
 	foreach($ldap->ldap_basedn as $dn) {
 		$results = pql_search($ldap->ldap_linkid, $dn, $filter, '');
-	
-		// Find the highest availible [UG]IDNUMBER
-		$highest = 0;
-		for($i=0; $i < $results["count"]; $i++) {
-			if(($results[$i][$attrib][0] > $highest) &&
-			   ($results[$i][$attrib][0] < 64000))
-			  {
-				  $highest = $results[$i][$attrib][0];
-			  }
+		for($i=0; $i < count($results); $i++) {
+		  if ($results[$i][$attrib][0] >= $min_id_val) {
+		    $ids[] = $results[$i][$attrib][0];
+		  }
 		}
 	}
 
-	if($highest)
-	  $highest++; // Increase with one!
-	else
-	  if($minimum)
-		$highest = $minimum;
-	  else
-		$highest = 1000;
-	
-    return $highest;
+	//: Look for a hole in the ID list.
+	$found_id = null;
+	if (empty($ids)) {
+	  $found_id = $min_id_val;
+	} else {
+	  sort($ids, SORT_NUMERIC);
+	  $prev_id = $ids[0];
+	  foreach ($ids as $id) {
+		if ($id > $prev_id + 1) {
+		  $found_id = $prev_id + 1;
+		  break;
+		}
+		$prev_id = $id;
+	  }
+
+	  if (!isset($found_id)) {
+		$found_id = end($ids) + 1;
+	  }
+	}
+
+    return $found_id;
 }
+
 // }}}
 
 // {{{ pql_get_next_username(ldap, domain)

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // qmail uid and gid
-// $Id: attrib.ugidnumber.inc,v 2.1 2004-03-03 17:05:35 dlw Exp $
+// $Id: attrib.ugidnumber.inc,v 2.2 2004-03-17 14:59:37 dlw Exp $
 
 function attribute_check($type) {
     global $error, $LANG;
@@ -54,10 +54,10 @@ function attribute_init() {
     list($_REQUEST["uidnumber"], $_REQUEST["gidnumber"]) = parse_oldvalue();
 
 	if (empty($_REQUEST["uidnumber"])) {
-	  $_REQUEST["uidnumber"] = pql_get_next_uidnumber($_pql);
+	  $_REQUEST["uidnumber"] = pql_get_next_ugidnumber($_pql, 'uid');
 	}
 	if (empty($_REQUEST["gidnumber"])) {
-	  $_REQUEST["gidnumber"] = 1012; // The default email gid.
+	  $_REQUEST["gidnumber"] = pql_get_next_ugidnumber($_pql, 'gid');
 	}
 }
 
