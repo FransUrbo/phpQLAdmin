@@ -39,7 +39,7 @@ phpQLAdmin 2.0.19 TO BE ANNOUNCED
 	    generation. To get it just after 'autoCreateMailAddress', the 'useWebSrv'
 	    attribute was renumbered (+1 in OID number).
 
-phpQLAdmin 2.0.18e TO BE ANNOUNCED
+phpQLAdmin 2.0.18e Release (Oct 14 2004)
 	Bug fixes
 	  - The function pql_modify_userattribute() should also have the section that
 	    dies with LDIF if the file .DEBUG_ME exists.
@@ -96,6 +96,8 @@ phpQLAdmin 2.0.18e TO BE ANNOUNCED
 	  - I want the server statistics in its own subbranch. Have nothing (?) to do
 	    with configuration, so it makes more sense...
 	  - Non-java browser advanced/simple mode toggle.
+	  - When adding a user-type object, make sure the page title correctly shows
+	    what type of object being created (mail, group, system etc).
 
 	Misc changes	
 	  - Remove some redundant printr() debug messages.
@@ -131,6 +133,8 @@ phpQLAdmin 2.0.18d Release (May 19 2004)
 	    we're comparing 'count > NULL' which will always be true. To go around this,
 	    use 'count + 1' as maximum value (will make the form continue).
 	  - PHP parse error in include/attrib.aci.inc fixed.
+	  - Use the URL encoded value of domain, rootdn and user in the hidden HTML values.
+	    This so that it (the value) will survive a form POST.
 
 	GUI layout change
 	  - Don't show the minus image before 'no domains' (left-ezmlm.php) if there's
