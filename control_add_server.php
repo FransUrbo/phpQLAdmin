@@ -1,12 +1,12 @@
 <?php
 // Add a new mailserver to the database
-// $Id: control_add_server.php,v 2.24 2005-02-24 17:04:00 turbo Exp $
+// $Id: control_add_server.php,v 2.25 2005-02-25 14:06:46 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 
 if(pql_get_define("PQL_CONF_CONTROL_USE")) {
-    // include control api if control is used
+    // Include control api if control is used
     include($_SESSION["path"]."/include/pql_control.inc");
     $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
@@ -20,7 +20,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 				  $_REQUEST["fqdn"] = pql_maybe_idna_encode($_REQUEST["fqdn"]);
 
 				// Create an 'LDIF' that we can add to the databaes.
-				$dn = pql_get_define("PQL_ATTR_CN").'='.$_REQUEST["fqdn"].','.$_REQUEST["ldapbasedn"];
+				$dn = pql_get_define("PQL_ATTR_CN").'='.$_REQUEST["fqdn"].','.$_SESSION["USER_SEARCH_DN_CTR"];
 				$entry[pql_get_define("PQL_ATTR_CN")] = $_REQUEST["fqdn"];
 				if($_REQUEST["defaultdomain"])
 				  $entry[pql_get_define("PQL_ATTR_DEFAULTDOMAIN")]			= $_REQUEST["defaultdomain"];
@@ -45,10 +45,14 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")]				= 'qmailControl';
 				
 				if(pql_write_add($_pql_control->ldap_linkid, $dn, $entry, 'qmail', 'control_add_server.php')) {
-					$msg = urlencode("Successfully created mailserver ".$_REQUEST["fqdn"].".");
-					$url = "control_detail.php?mxhost=".$_REQUEST["fqdn"]."&msg=$msg&rlnb=2";
+					$msg  = urlencode("Successfully created mailserver ".$_REQUEST["fqdn"].".");
+					$link = "control_detail.php?mxhost=".$_REQUEST["fqdn"]."&msg=$msg&rlnb=2";
 
-					header("Location: " . $_SESSION["URI"] . $url);
+					if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+					  echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
+					  die("<b>$link</b>");
+					} else
+					  header("Location: " . $_SESSION["URI"] . $link);
 				} else
 				  die("Failed to add QmailLDAP/Control object <b>".$_REQUEST["fqdn"]."</b>");
 			} else {
@@ -113,10 +117,14 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 				// Add the new object to the database.
 				$dn	= pql_get_define("PQL_ATTR_CN").'='.$_REQUEST["fqdn"].','.$_SESSION["USER_SEARCH_DN_CTR"];
 				if(pql_write_add($_pql_control->ldap_linkid, $dn, $entry, 'qmail', 'control_add_server.php')) {
-					$msg = urlencode("Successfully created mailserver ".pql_maybe_idna_decode($_REQUEST["fqdn"]).".");
-					$url = "control_detail.php?mxhost=".$_REQUEST["fqdn"]."&msg=$msg&rlnb=2";
+					$msg  = urlencode("Successfully created mailserver ".pql_maybe_idna_decode($_REQUEST["fqdn"]).".");
+					$link = "control_detail.php?mxhost=".$_REQUEST["fqdn"]."&msg=$msg&rlnb=2";
 
-					header("Location: " . $_SESSION["URI"] . $url);
+					if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+					  echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
+					  die("<b>$link</b>");
+					} else
+					  header("Location: " . $_SESSION["URI"] . $link);
 				} else
 				  die("Failed to clone QmailLDAP/Control object <b>".$_REQUEST["fqdn"]."</b>.");
 			} else
