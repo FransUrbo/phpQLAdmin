@@ -24,6 +24,9 @@ phpQLAdmin 2.0.18c TO BE ANNOUNCED
 	    is by default used, othervise the first QLC object.
 	  - If a define isn't set, the pql_get_define() will return an empty array with
 	    all rootdn's. Catch this, and return NULL if the define is unset.
+	  - To make sure we don't get 'Wrong datatype' in tables/user_add-additional.inc
+	    when checking if the mailHost is a DNS entry, we only look in the QLC
+	    array if there IS such an array.
 
 	GUI layout change
 	  - Require the pql_config.inc file to avoid PHP errors in the right frame
