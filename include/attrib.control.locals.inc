@@ -2,10 +2,10 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.7 2003-01-27 13:18:28 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.8 2003-01-28 13:32:45 turbo Exp $
 
 function locals_check($type){
-    global $error, $locals;
+    global $error, $locals, $host;
     
     // check validity
     if(is_array($locals)){
@@ -29,8 +29,8 @@ function locals_check($type){
     return true;
 }
 
+// init values
 function locals_init($host) {
-    // init values
     global $_pql_control, $locals;
     
     // fetch data from ldap server
@@ -38,9 +38,8 @@ function locals_init($host) {
 										"cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 										"locals");
     
-    if(is_null($locals)){
-		return true;
-    }
+    if(is_null($locals))
+	  return true;
 }
 
 function locals_print_view($host) {
@@ -97,88 +96,62 @@ function locals_print_view($host) {
 }
 
 function locals_print_form(){
-    global $attrib, $PHP_SELF, $error, $locals, $localcount;
+    global $attrib, $PHP_SELF, $error, $locals, $host;
     
     // if automatic replication is enabled, don't display form
-    if(defined("PQL_LDAP_CONTROL_AUTOADDLOCALS")) {
-		return false;
-    }
-    
-    if(($localcount < count($locals) - 1) and count($locals) != 0){
-		$localcount = count($locals) - 1;
-    }
-    
+// BUG?
+//    if(defined("PQL_LDAP_CONTROL_AUTOADDLOCALS")) {
+//		return false;
+//    }
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">locals (defined locals)</th>
-        <tr class="title">
-          <td>Hosts</td>
-        </tr>
-
+      <th colspan="3" align="left">Add domain:</th>
         <tr class="<?php table_bgcolor(); ?>">
-          <td><?php echo format_error($error["locals_0"]); ?><input type="text" name="locals[0]" value="<?php echo $locals[0]; ?>"></td>
-        </tr>
-
-<?php for($i = 1; $i <= $localcount; $i++){ ?>
-        <tr class="<?php table_bgcolor(); ?>">
-          <td><?php echo format_error($error["locals_$i"]); ?><input type="text" name="locals[<?php echo $i; ?>]" value="<?php echo $locals[$i]; ?>"></td>
-        </tr>
-
-<?php } ?>
-        <tr class="subtitle">
-          <td><a href="<?php echo $PHP_SELF; ?>?attrib=<?php echo $attrib; ?>&localcount=<?php echo ($localcount + 1); ?>">add additional address</a> (please save first, changes will be lost)</td>
-        </tr>
-
-        <tr class="subtitle">
-          <td><img src="images/info.png" width="16" height="16" border="0">To delete an address remove the value and save.</td>
+          <td><input type="text" name="set""></td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="host" value="<?=$host?>">
     <input type="submit" value="<?php echo PQL_SAVE; ?>">
   </form>
 <?php
 }
 
 function locals_save($type, $host){
-    global $_pql, $_pql_control, $attrib, $locals, $set, $error, $host;
-    
+    global $_pql, $_pql_control, $attrib, $locals, $set, $error;
+
     // recontrol values
-    if(!locals_check($type)){
-		return false;
-    }
+    if(!locals_check($type))
+	  return false;
     
     switch($type){
       case "replicate":
 		// start replication manually
-		if(pql_control_update_domains($_pql, $_pql_control->ldap_linkid,
-									  "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-									  $host)){
-			$msg = "Successfully replicated locals";
-    	} else {
-			$msg = "Failed replicating locals: " . pql_ldap_error($_pql_control->ldap_linkid);
-    	}
+
+		if(pql_control_update_domains($_pql, "cn=$host,".$GLOBALS["USER_SEARCH_DN_CTR"], $host))
+		  $msg = "Successfully replicated locals";
+		else
+		  $msg = "Failed replicating locals: " . pql_ldap_error($_pql_control->ldap_linkid);
 	
 		attribute_forward($msg);
 		break;
-	
+
       case "del":
 		// delete entry
-		
-		// adding specified domain to rcpthosts, redirect back to domain details
+
+		// remove specified domain from locals, redirect back to host details
 		if(pql_control_remove_attribute($_pql_control->ldap_linkid,
 										"cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-										"locals", $set)){
-			$msg = "Successfully removed $set from locals";
-		} else {
-			$msg = "Failed removing $set from locals: " . pql_ldap_error($_pql_control->ldap_linkid);
-    	}
+										"locals", $set))
+		  $msg = "Successfully removed $set from locals";
+		else
+		  $msg = "Failed removing $set from locals: " . pql_ldap_error($_pql_control->ldap_linkid);
 		
-		$msg = urlencode($msg);
-		header("Location: " . PQL_URI . "domain_detail.php?domain=$set&msg=$msg");
+		attribute_forward($msg);
 		break;
 
       case "add":
@@ -193,23 +166,9 @@ function locals_save($type, $host){
 			$msg = "Failed adding $set to locals: " . pql_ldap_error($_pql_control->ldap_linkid);
     	}
 		
-		$msg = urlencode($msg);
-		header("Location: " . PQL_URI . "domain_detail.php?domain=$set&msg=$msg");
-		break;
-
-      case "modify":
-		// save entries
-		
-		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-										 "locals", $locals)){
-			$msg = "Successfully saved locals";
-		} else {
-			$msg = "Failed saving locals: " . pql_ldap_error($_pql_control->ldap_linkid);
-    	}
-		
 		attribute_forward($msg);
 		break;
+
       default:
 		die("unknown save type $type in " . __FILE__ . ", function save()");
     }
