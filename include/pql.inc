@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.58 2003-04-26 09:27:03 turbo Exp $
+// $Id: pql.inc,v 2.59 2003-04-26 11:46:06 turbo Exp $
 //
 
 // ----------------------------
@@ -272,7 +272,7 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 		if($config["PQL_CONF_SUBTREE_GROUPS"])
 		  $subrdn = "," . $config["PQL_CONF_SUBTREE_GROUPS"] . ",";
 
-		$groupdn = $config["PQL_GLOB_ATTR_CN"] . "=" . $attribs[PQL_CONF_USER_RDN_ATTRIBUTE] . $subrdn . $domain;
+		$groupdn = $config["PQL_GLOB_ATTR_CN"] . "=" . $attribs[$config["PQL_CONF_USER_RDN_ATTRIBUTE"][$rootdn]] . $subrdn . $domain;
 
 		// Create a LDIF object to print in case of error
 		$LDIF = pql_create_ldif("pql_user_add - group creation", $groupdn, $entry);
@@ -411,15 +411,15 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name){
 	$dns[] = $dn;
 
     // Add the USER subtree if defined
-    if(defined("PQL_CONF_SUBTREE_USERS")) {
+    if($config["PQL_CONF_SUBTREE_USERS"][$basedn]) {
 		$entry = "";
 		$entry["objectClass"][] = "top";
 		$entry["objectClass"][] = "organizationalUnit";
 		
-		$ou = eregi_replace(",$", "", PQL_CONF_SUBTREE_USERS . ",");
+		$ou = eregi_replace(",$", "", $config["PQL_CONF_SUBTREE_USERS"][$basedn] . ",");
 		$entry["ou"] = $ou;
 		
-		$dn = PQL_CONF_SUBTREE_USERS . "," .
+		$dn = $config["PQL_CONF_SUBTREE_USERS"][$basedn] . "," .
               $config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn] .
               "=" . $branch_name . "," . $basedn;
 
@@ -433,13 +433,13 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name){
     }
     
     // Add the GROUPS subtree if defined
-    if(defined("PQL_CONF_SUBTREE_GROUPS")) {
+    if($config["PQL_CONF_SUBTREE_GROUPS"][$basedn]) {
 		$entry = "";
 		$entry["objectClass"][] = "top";
 		$entry["objectClass"][] = "organizationalUnit";
-		$entry["ou"] = PQL_CONF_SUBTREE_GROUPS;
+		$entry["ou"] = $config["PQL_CONF_SUBTREE_GROUPS"][$basedn];
 		
-		$dn = PQL_CONF_SUBTREE_GROUPS . "," .
+		$dn = $config["PQL_CONF_SUBTREE_GROUPS"][$basedn] . "," .
               $config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn] .
               "=" . $branch_name . "," . $basedn;
 		if(!@ldap_add($ldap_linkid, $dn, $entry)){
@@ -512,10 +512,11 @@ function pql_domain_del($ldap, $domain, $delete_forwards) {
 // ------------------------------------------------
 
 function pql_modify_user_addressbook($ldap_linkid, $user, $attribs){
+	global $config;
+
     // check if addressbook is disabled
-    if(!defined("PQL_CONF_USE_ADDRESSBOOK")) {
-		return false;
-    }
+    if(!$config["PQL_CONF_USE_ADDRESSBOOK"][pql_get_rootdn($user)])
+	  return false;
     
     // object-class dependencies for addressbook entries
     //
