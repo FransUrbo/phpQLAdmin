@@ -11,7 +11,7 @@
 // If you want to customise phpQLAdmin, do NOT do it here, the file
 // to customise is 'config_attributes.inc'.
 //
-// $Id: config_plugins.inc,v 2.11 2004-03-11 18:13:41 turbo Exp $
+// $Id: config_plugins.inc,v 2.12 2004-03-13 09:12:25 turbo Exp $
 
 pql_plugin_register(pql_get_define("PQL_ATTR_ISACTIVE"),
 					"attrib.accountstatus.inc",
@@ -72,18 +72,18 @@ pql_plugin_register(pql_get_define("PQL_ATTR_ADMINISTRATOR"),
 					"attrib.administrator.inc",
 					"",
 					array(pql_get_define("PQL_ATTR_ADMINISTRATOR"),
-						  pql_get_define("PQL_ATTR_EZMLMADMINISTRATOR"),
+						  pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"),
 						  pql_get_define("PQL_ATTR_SEEALSO")));
 
-pql_plugin_register(pql_get_define("PQL_ATTR_MAXIMUMDOMAINUSERS"),
+pql_plugin_register(pql_get_define("PQL_ATTR_MAXIMUM_DOMAIN_USERS"),
 					"attrib.maximumdomainusers.inc",
 					"",
-					pql_get_define("PQL_ATTR_MAXIMUMDOMAINUSERS"));
+					pql_get_define("PQL_ATTR_MAXIMUM_DOMAIN_USERS"));
 
-pql_plugin_register(pql_get_define("PQL_ATTR_MAXIMUMMAILINGLISTS"),
+pql_plugin_register(pql_get_define("PQL_ATTR_MAXIMUM_MAILING_LISTS"),
 					"attrib.maximummailinglists.inc",
 					"",
-					pql_get_define("PQL_ATTR_MAXIMUMMAILINGLISTS"));
+					pql_get_define("PQL_ATTR_MAXIMUM_MAILING_LISTS"));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_O"),
 					"attrib.outlook.inc",
@@ -111,27 +111,27 @@ pql_plugin_register(pql_get_define("PQL_ATTR_O"),
 						  pql_get_define("PQL_ATTR_PERSONALTITLE"),
 						  pql_get_define("PQL_ATTR_ROOMNUMBER")));
 
-pql_plugin_register(pql_get_define("PQL_ATTR_ADDITIONALDOMAINNAME"),
+pql_plugin_register(pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"),
 					"attrib.additionaldomainname.inc",
 					"",
-					pql_get_define("PQL_ATTR_ADDITIONALDOMAINNAME"));
+					pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
 
-pql_plugin_register(pql_get_define("PQL_ATTR_DEFAULTPASSWORDSCHEME"),
+pql_plugin_register(pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"),
 					"attrib.defaultpasswordscheme.inc",
 					"",
-					pql_get_define("PQL_ATTR_DEFAULTPASSWORDSCHEME"));
+					pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"));
 
-pql_plugin_register(pql_get_define("PQL_ATTR_AUTOCREATEUSERNAME"),
+pql_plugin_register(pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"),
 					"attrib.domaintoggle.inc",
 					"",
-					array(pql_get_define("PQL_ATTR_AUTOCREATEUSERNAME"),
-						  pql_get_define("PQL_ATTR_AUTOCREATEMAILADDRESS")));
+					array(pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"),
+						  pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS")));
 
-pql_plugin_register(pql_get_define("PQL_ATTR_USERNAMEPREFIX"),
+pql_plugin_register(pql_get_define("PQL_ATTR_USERNAME_PREFIX"),
 					"attrib.usernameprefix.inc",
 					"",
-					array(pql_get_define("PQL_ATTR_USERNAMEPREFIX"),
-						  pql_get_define("PQL_ATTR_USERNAMEPREFIX_LENGTH")));
+					array(pql_get_define("PQL_ATTR_USERNAME_PREFIX"),
+						  pql_get_define("PQL_ATTR_USERNAME_PREFIX_LENGTH")));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_MAILALTERNATE"),
 					"attrib.mailalternateaddress.inc",
@@ -158,10 +158,11 @@ pql_plugin_register(pql_get_define("PQL_ATTR_UID"),
 					"",
 					pql_get_define("PQL_ATTR_UID"));
 
-pql_plugin_register(pql_get_define("PQL_ATTR_QMAILUGID"),
+pql_plugin_register(pql_get_define("PQL_ATTR_QMAILUID"),
 					"attrib.ugidnumber.inc",
 					"",
-					pql_get_define("PQL_ATTR_QMAILUGID"));
+					array(pql_get_define("PQL_ATTR_QMAILUID"),
+						  pql_get_define("PQL_ATTR_QMAILGID")));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_MAILSTORE"),
 					"attrib.mailmessagestore.inc",
@@ -215,15 +216,12 @@ pql_plugin_register(pql_get_define("PQL_ATTR_ADDITIONAL_GROUP"),
 
 /*
 $i = 0;
-
 foreach($_pql_plugins->attribs as $key => $value){
-	echo "$key --> attrib.control.$value.inc <br>";
+	echo "$key --> attrib.$value.inc <br>";
 	$i++;
 }
-
 echo "Attribute count: $i<br><br>";
 */
-
 
 /*
  * Local variables:
