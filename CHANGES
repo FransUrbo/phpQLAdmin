@@ -1,5 +1,10 @@
 phpQLAdmin 2.0 Change Log
 
+phpQLAdmin 2.0.19 TO BE ANNOUNCED
+	Bug fixes
+	GUI layout change
+	Misc changes	
+
 phpQLAdmin 2.0.18e Release (Oct 14 2004)
 	Bug fixes
 	  - The function pql_modify_userattribute() should also have the section that
