@@ -1,7 +1,9 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.115 2005-02-05 13:36:38 turbo Exp $
+// $Id: user_add.php,v 2.116 2005-02-07 11:51:31 turbo Exp $
 //
+// --------------- Pre-setup etc.
+
 // {{{ Setup session etc
 session_start();
 require("./include/pql_config.inc");
@@ -59,6 +61,8 @@ $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLA
 // {{{ Get all objectclasses the LDAP server understand
 $objectclasses_schema   = pql_get_subschema($_pql->ldap_linkid, 'objectclasses');
 // }}}
+
+// --------------- Verification and action(s).
 
 // {{{ Verify the input from the current page.  Autogen input for the next page.
 // Check the input
@@ -365,8 +369,7 @@ switch($_REQUEST["page_curr"]) {
 			// Function user_generate_mailstore() doesn't exists but we have a base mail directory.
 			// Try creating the mail directory manually, using the username.
 
-			if(pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["rootdn"]) and
-			   (!ereg('^/', $basemaildir)))
+			if(pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["rootdn"]))
 			  // Absolute path is ok - create 'baseMailDir/username/'
 			  $_REQUEST["maildirectory"] = $basemaildir.$_REQUEST["uid"]."/";
 			else
@@ -409,7 +412,7 @@ switch($_REQUEST["page_curr"]) {
 			// Function user_generate_homedir() doesn't exists but we have a base home directory.
 			// Try creating the home directory manually, using the username.
 
-			if(pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["rootdn"]) and !ereg('^/', $basehomedir))
+			if(pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["rootdn"]))
 			  // Absolute path is ok - create 'baseHomeDir/username/'
 			  $_REQUEST["homedirectory"] = $basehomedir.$_REQUEST["uid"]."/";
 			else
