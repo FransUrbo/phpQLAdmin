@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of user
-// $Id: user_edit_attribute.php,v 2.34 2004-02-21 12:57:38 turbo Exp $
+// $Id: user_edit_attribute.php,v 2.35 2004-02-21 16:06:45 turbo Exp $
 //
 // This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
 //   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -11,6 +11,10 @@
 session_start();
 require("./include/pql_config.inc");
 require("./include/config_plugins.inc");
+
+$url["domain"] = pql_format_urls($_REQUEST["domain"]);
+$url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
+$url["user"]   = pql_format_urls($_REQUEST["user"]);
 
 require_once("./dlw_porting.inc");
 // These variable are "_GET" the first time, and "_POST" the other times.
@@ -34,10 +38,6 @@ if(!$_REQUEST["domain"] && $_REQUEST["user"]) {
       $_REQUEST["domain"] = $tmpdn[count($tmpdn)-1];
 }
 
-$url["domain"] = pql_format_urls($_GET["domain"]);
-$url["rootdn"] = pql_format_urls($_GET["rootdn"]);
-$url["user"]   = pql_format_urls($_GET["user"]);
-
 // Get default domain name for this domain
 $defaultdomain = pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
 
@@ -51,18 +51,14 @@ $username = $username[0];
 
 // forward back to users detail page (called by attribute_save).
 function attribute_forward($msg, $rlnb = false) {
-    // URL Encode some of the most important information
-    // (root DN, domain/branch DN and user DN)
-    $_REQUEST["domain"] = urlencode($_REQUEST["domain"]);
-    $_REQUEST["user"]   = urlencode($_REQUEST["user"]);
-    $_REQUEST["rootdn"] = urlencode($_REQUEST["rootdn"]);
+    global $url;
 
-    $url = "user_detail.php?rootdn=" . $url["rootdn"] . "&domain=" . $url["domain"]
+    $link = "user_detail.php?rootdn=" . $url["rootdn"] . "&domain=" . $url["domain"]
       . "&user=" . $url["user"] . "&view=" . $_REQUEST["view"] . "&msg=".urlencode($msg);
     if ($rlnb)
-      $url .= "&rlnb=2";
+      $link .= "&rlnb=2";
 
-    header("Location: " . pql_get_define("PQL_GLOB_URI") . "$url");
+    header("Location: " . pql_get_define("PQL_GLOB_URI") . "$link");
 }
 
 // Select which attribute have to be included
