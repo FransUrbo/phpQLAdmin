@@ -1,5 +1,5 @@
 <?php
-// $Id: index2.php,v 2.35 2004-10-18 13:39:30 turbo Exp $
+// $Id: index2.php,v 2.36 2004-11-07 08:39:44 turbo Exp $
 
 session_start();
 require("./include/pql_config.inc");
@@ -66,6 +66,15 @@ if($frames > 2) {
     $size = 100;
 }
 $size = sprintf("%d", $size);
+
+// Mozilla have problems with resizing frames.
+// By setting a thick border, it's at least
+// possible...
+if($_SESSION["mozilla"]) {
+    $border = 5;
+} else {
+    $border = 0;
+}
 ?>
 <html>
   <head>
@@ -75,15 +84,15 @@ $size = sprintf("%d", $size);
   <!-- frames == <?=$frames?> -->
 
 <?php if(isset($_REQUEST["advanced"]) and !$_SESSION["SINGLE_USER"]) { // Advance mode - show controls and mailinglist managers ?>
-  <frameset cols="260,*" rows="*" border="1" frameborder="0"><!-- $frames >= 2 -->
+  <frameset cols="260,*" rows="*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 2 -->
     <!-- LEFT frame -->
 <?php   if($frames >= 3) { ?>
-    <frameset cols="*" rows="<?=$size?>%,*" border="1" frameborder="0"><!-- $frames >= 3 -->
+    <frameset cols="*" rows="<?=$size?>%,*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 3 -->
 <?php   } ?>
       <frame src="left.php?advanced=1" name="pqlnav">
 
 <?php   if($frames >= 4) { ?>
-      <frameset cols="*" rows="<?=$size?>%,*" border="1" frameborder="0"><!-- $frames >= 4 -->
+      <frameset cols="*" rows="<?=$size?>%,*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 4 -->
 <?php   } 
 
         if($SHOW_FRAME["controls"]) {
@@ -93,7 +102,7 @@ $size = sprintf("%d", $size);
 
         if($frames >= 5) {
 ?>
-      <frameset cols="*" rows="<?=$size?>%,*" border="1" frameborder="0"><!-- $frames >= 5 -->
+      <frameset cols="*" rows="<?=$size?>%,*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 5 -->
 <?php   }
 
        if(pql_get_define("PQL_CONF_EZMLM_USE")) { ?>
