@@ -1,6 +1,6 @@
 <?php
 // shows configuration of phpQLAdmin
-// $Id: config_ldap.php,v 1.12 2004-03-15 07:14:36 turbo Exp $
+// $Id: config_ldap.php,v 1.13 2004-11-05 10:46:04 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -19,7 +19,7 @@ if($type) {
 } else {
 	$attributetypes = $ldap['attributetypes'];
 }
-$j = 1;
+$j = 1; $oc_counter = 0;
 ?>
     <table cellspacing="0" cellpadding="3" border="0">
 <?php
@@ -53,11 +53,12 @@ foreach($ldap as $x => $array) {
 		// Objectclasses
 		$class = pql_format_table(0);
 ?>
+
         <p><font size="1"><?=$LANG->_('Text in bold is a MUST, and non-bold is MAY')?>.</font><br>
 
 <?php	foreach($array as $value) { ?>
         <!-- --------------------------------------------------- -->
-        <!-- Objectclass #<?=$j?>: '<?=$value['NAME']?>:<?=$value['OID']?>' -->
+        <!-- Objectclass #<?=$oc_counter?>: '<?=$value['NAME']?>:<?=$value['OID']?>' -->
         <tr class="<?=$class?>">
           <!-- ATTRIBUTE NAMES -->
           <td>
@@ -96,6 +97,7 @@ foreach($ldap as $x => $array) {
 <?php		} ?>
           </td>
 
+<?php      $j++; ?>
           <!-- ATTRIBUTE OIDs -->
           <td>
 <?php		if($_SESSION["opera"]) { ?>
@@ -157,7 +159,7 @@ foreach($ldap as $x => $array) {
         </tr>
 
 <?php		$class = pql_format_table(0);
-			$j++;
+			$j++; $oc_counter++;
         }
 	}
 }
@@ -173,4 +175,16 @@ foreach($ldap as $x => $array) {
       </th>
     </table>
 
-<?php require("./left-trailer.html"); ?>
+    <!-- Arrange collapsible/expandable db list at startup -->
+    <script type="text/javascript" language="javascript1.2">
+    <!--
+    if (isNS4) {
+      firstEl  = 'el1Parent';
+      firstInd = nsGetIndex(firstEl);
+      nsShowAll();
+      nsArrangeList();
+    }
+    //-->
+    </script>
+  </body>
+</html>
