@@ -1,6 +1,6 @@
 phpQLAdmin 2.1 Change Log
 
-phpQLAdmin 2.1.3 TO BE ANNOUNCED
+phpQLAdmin 2.1.3 Release (Jan 20 2005)
 	Bug fixes
 	  - More (surprised!? :) deglobalization. And, actually a globalization - use of
 	    '$_REQUEST["orgname"]' instead of '$orgname' in 'domain_edit_attributes.php'.
