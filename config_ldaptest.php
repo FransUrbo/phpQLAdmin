@@ -54,13 +54,13 @@ if(!function_exists("ldap_connect")){
 	}
 
 
-	if(defined("PQL_CONF_CONTROL_USE")) {
+	if($config["PQL_GLOB_CONTROL_USE"]) {
 		// control directory connection
 		$_pql_control = new pql_control($USER_HOST, '', '', true);
 		if(!$_pql_control->connect($USER_HOST)) {
 			$connection_control = PQL_LANG_TEST_CONNECTION_FAILED;
 
-			$host = split('\+', PQL_CONF_HOST);
+			$host = split('\+', $config["PQL_GLOB_HOST"]);
 			$host = split(';', $host[0]);
 
 			$fqdn = $host[0];
@@ -108,8 +108,12 @@ if(!function_exists("ldap_connect")){
 			$entry["objectClass"][] = "top";
 			if($config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn] == "dc") {
 				$entry["objectClass"][] = "domain";
-			} else {
+				$entry["dc"] = "test";
+			} elseif($config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn] == "ou") {
 				$entry["objectClass"][] = "organizationalUnit";
+				$entry["ou"] = "test";
+			} elseif($config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn] == "o") {
+				$entry["objectClass"][] = "organizational";
 				$entry["o"] = "test";
 			}
 			$entry[$config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn]] = "phpQLAdmin_Branch_Test";
