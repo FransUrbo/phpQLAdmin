@@ -7,20 +7,26 @@
         <td class="title"><?=$LANG->_('Options')?></td>
       </tr>
 
-<?php 	asort($users);
-		foreach($users as $user) {
-			$userdn = urlencode($user);
+<?php 	if(is_array($users)) {
+			asort($users);
+			foreach($users as $user) {
+				$userdn = urlencode($user);
 
-			$uid    = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_UID")); $uid = $uid[0];
-			$cn     = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_CN")); $cn = $cn[0];
-			$uidnr  = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_QMAILUID")); $uidnr = $uidnr[0];
+				$uid    = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_UID"));
+				$uid    = $uid[0];
+
+				$cn     = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_CN"));
+				$cn     = $cn[0];
+
+				$uidnr  = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_QMAILUID"));
+				$uidnr  = $uidnr[0];
 			
-			$status = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_ISACTIVE"));
-			$status = pql_ldap_accountstatus($status[0]);
+				$status = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_ISACTIVE"));
+				$status = pql_ldap_accountstatus($status[0]);
 
-			if(($uid != 'root') or ($uidnr != '0')) {
-				// Do NOT show root user(s) here! This should (for safty's sake)
-				// not be availible to administrate through phpQLAdmin!
+				if(($uid != 'root') or ($uidnr != '0')) {
+					// Do NOT show root user(s) here! This should (for safty's sake)
+					// not be availible to administrate through phpQLAdmin!
 ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$userdn?>"><?=$cn?></a></td>
@@ -29,7 +35,8 @@
         <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$userdn?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change user data')?>" border="0"></a>&nbsp;&nbsp;<a href="user_del.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$userdn?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete user')?>" border="0"></a></td>
       </tr>
 
-<?php		}
+<?php			}
+			}
 		}
 ?>
       <tr class="subtitle">
