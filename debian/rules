@@ -44,11 +44,13 @@ install: build
 		$(INSTDIR)/phpQLadmin.log \
 		$(INSTDIR)/validateEmailFormat-1.0; \
 	  cp debian/apache.conf debian/phpqladmin/etc/phpqladmin; \
+	  mv $(INSTDIR)/include/config.inc.CHANGE_ME debian/phpqladmin/etc/phpqladmin/config.inc; \
 	  cd $(INSTDIR) && \
 		find -type d -name CVS -o -name '.cvsignore' \
 			-o -name '*~' -o -name '.#*' \
 		| xargs rm -rf;\
 	  echo $(version)"-"$(revision)" (Debian GNU/Linux)" > .version; \
+	  cd include && ln -s ../../../../etc/config.inc .; \
 	)
 
 
