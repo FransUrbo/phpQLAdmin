@@ -1,32 +1,12 @@
 <?php
 // logins to the system
-// $Id: index.php,v 2.42 2005-02-25 14:45:40 turbo Exp $
+// $Id: index.php,v 2.42.2.1 2005-03-04 11:59:45 turbo Exp $
 //
 // Start debuging
 // http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0
 //apd_set_pprof_trace();
 require_once("./include/dlw_porting.inc");
-session_start();
-
-// {{{ Get 'PWD' so we can find our include files
-if(!$_SESSION["path"] and $_SERVER["PATH_TRANSLATED"]) {
-  $path = $_SERVER["PATH_TRANSLATED"];
-  $path = preg_replace('/\/index.php/', '', $path);
-  $_SESSION["path"] = $path;
-
-  unset($path);
-}
-// }}}
-
-// {{{ Find out our location in the URL
-if(!$_SESSION["URI"]) {
-  $tmp1 = preg_quote($_SERVER["DOCUMENT_ROOT"], '/');
-  $tmp2 = preg_replace("/$tmp1/", "", $_SESSION["path"]);
-  $_SESSION["URI"] = '/'.$tmp2.'/';
-
-  unset($tmp1); unset($tmp2);
-}
-// }}}
+require("./include/pql_session.inc");
 
 // DLW: I'm not sure if $msg ever gets set in a _POST, but for now I'll play it safe.
 if (!empty($_POST["msg"])) {
@@ -50,6 +30,8 @@ if ($_GET["logout"] == 1 or !empty($_GET["msg"])) {
 	session_destroy();
 
 	if ($_GET["logout"] == 1) {
+		session_write_close();
+
 		if(!empty($_POST["msg"]))
 		  header("Location:index.php?msg=".urlencode($_POST["msg"]));
 		elseif(!empty($_GET["msg"]))
@@ -215,6 +197,8 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 			} else {
 				// Authentication problem (probably!).
 				$msg = $LANG->_('Error') . ": " . ldap_err2str($error);
+
+				session_write_close();
 				header("Location:index.php?msg=" . urlencode($msg) . "&uname=$uname");
 				exit;
 			}
@@ -224,6 +208,8 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 
 	if(!$user_found) {
 		$msg = urlencode($LANG->_('Error') . ": " . $LANG->_("Can't find you in the database"));
+
+		session_write_close();
 		header("Location: " . $_SESSION["URI"] . "index.php?msg=$msg");
 	}
 
@@ -238,6 +224,7 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 	$log .= " : Logged in ($userdn)\n";
 	error_log($log, 3, "phpQLadmin.log");
 
+	session_write_close();
 	if(pql_get_attribute($_pql->ldap_linkid, $_SESSION["USER_DN"], pql_get_define("PQL_ATTR_START_ADVANCED")))
 	  Header("Location:index2.php?advanced=1");
 	else
