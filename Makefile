@@ -77,7 +77,7 @@ debian: install
 	  debuild; \
 	  echo "Files is in: "$(DESTDIR))
 
-release: changes tag tarball debian
+release: changes tarball debian
 	@(rcp -x $(TMPDIR)/phpQLAdmin-$(VERSION).tar.gz  aurora:/var/www/phpqladmin/; \
 	  rcp -x $(TMPDIR)/phpQLAdmin-$(VERSION).tar.bz2 aurora:/var/www/phpqladmin/; \
 	  rcp -x $(TMPDIR)/phpQLAdmin-$(VERSION).zip     aurora:/var/www/phpqladmin/; \
@@ -97,4 +97,5 @@ changes:
 	  echo "Date: $(DATE)"; \
 	  cat CHANGES | sed "s@TO BE ANNOUNCED@Release \($(DATE)\)@" > CHANGES.new; \
 	  mv CHANGES.new CHANGES; \
+	  cvs commit -m "New release - `cat .version | sed 's@ .*@@'`" CHANGES; \
 	)
