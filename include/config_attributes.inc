@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.24 2005-01-12 13:50:55 turbo Exp $
+// $Id: config_attributes.inc,v 2.25 2005-01-12 14:53:55 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 
@@ -204,7 +204,7 @@ pql_set_define("PQL_ATTR_WEBSRV_SRV_ALIAS", 				strtolower('webServerAlias'),			
 pql_set_define("PQL_ATTR_WEBSRV_SRV_ADMIN", 				strtolower('webServerAdmin'),				false);
 pql_set_define("PQL_ATTR_WEBSRV_SRV_NAME", 					strtolower('webServerName'),				false);
 
-// If you're using the 'mod_cfg_ldap.schema' (see README.apache), then enable these instead.
+// If you're using the 'mod_cfg_ldap.schema' (see doc/README.apache), then enable these instead.
 //pql_set_define("PQL_ATTR_WEBSRV_OC",	 					strtolower('apacheConfig'),					false);
 //pql_set_define("PQL_ATTR_WEBSRV_DOCROOT", 					strtolower('apacheDocumentRoot'),			false);
 //pql_set_define("PQL_ATTR_WEBSRV_SRV_ALIAS", 				strtolower('apacheServerAlias'),			false);

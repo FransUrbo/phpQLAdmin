@@ -1,6 +1,6 @@
 phpQLAdmin - Installation Guide
 -------------------------------
-$Id: INSTALL,v 2.4 2004-03-18 07:34:33 turbo Exp $
+$Id: INSTALL,v 2.5 2005-01-12 14:53:54 turbo Exp $
 
 Software Requirements:
 ----------------------
@@ -53,4 +53,4 @@ Install:
 
 7. Try it out and report bugs :)
 
-Also read the README* files in the top source directory...
+Also read the doc/README* files for more information...

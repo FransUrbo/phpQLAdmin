@@ -2,7 +2,7 @@
 // ----------------------------
 // Retreive, modify and delete ACIs (per-object access control lists)
 //
-// $Id: pql_aci.inc,v 2.10 2004-10-18 13:39:33 turbo Exp $
+// $Id: pql_aci.inc,v 2.11 2005-01-12 14:53:55 turbo Exp $
 
 // {{{ pql_aci_get(linkid, dn, number)
 // Get ACI entries from object
@@ -15,7 +15,7 @@ function pql_aci_get($linkid, $dn, $number = 0) {
 
 	$result = pql_get_attribute($linkid, $dn, 'OpenLDAPaci', 1);
 	if(is_array($result)) {
-		// An openLDAPaci attribute might look something like (see README.aci):
+		// An openLDAPaci attribute might look something like (see doc/README.aci):
 		//	3#entry#grant;r,s,c;macAddress#group#cn=customer,ou=groups,dc=planetsky,dc=com
 		// or (with more than one permission/target
 		//	3#entry#grant;r,s,c;macAddress;s,c;[all]#group#cn=customer,ou=groups,dc=planetsky,dc=com

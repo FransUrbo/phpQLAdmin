@@ -2,14 +2,14 @@
 <head>
 	<title>phpQL</title>
 	<link rel="stylesheet" href="../normal.css" type="text/css">
-	<!-- $Id: index.php,v 2.3 2004-03-16 10:54:26 turbo Exp $ -->
+	<!-- $Id: index.php,v 2.4 2005-01-12 14:53:55 turbo Exp $ -->
 </head>
 
 <body bgcolor="#e7e7e7" background="../images/bkg.png">
 <span class="title1">phpQLAdmin Documentation</span>
 <br>
 <br>
-<img src="../images/arrow.png" width="8" height="8" border="0"><a href="../README">README</a><br>
+<img src="../images/arrow.png" width="8" height="8" border="0"><a href="README">README</a><br>
 <img src="../images/arrow.png" width="8" height="8" border="0"><a href="INSTALL">INSTALL (installation guide)</a><br>
 <img src="../images/arrow.png" width="8" height="8" border="0"><a href="conf.php">Configuration</a><br>
 <img src="../images/arrow.png" width="8" height="8" border="0"><a href="troubleshoot.php">Troubleshooting</a><br>

@@ -39,7 +39,7 @@ install: build
 	@(echo -n "Instdir: $(INSTDIR): "; \
 	  find | cpio -p $(INSTDIR); \
 	  rm -Rf $(INSTDIR)/Makefile $(INSTDIR)/.version* \
-		$(INSTDIR)/README.* $(INSTDIR)/manual \
+		$(INSTDIR)/doc/README.* $(INSTDIR)/manual \
 		$(INSTDIR)/include/config.inc \
 		$(INSTDIR)/phpQLadmin.log \
 		$(INSTDIR)/validateEmailFormat-1.0; \

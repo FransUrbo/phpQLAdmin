@@ -6,7 +6,7 @@ This 'semi-ldif' shows ONE of my development databases
 and shows what a base DN can look like when using phpQLAdmin.
 
 It have not been updated for ACI usage. I don't see the point.
-Read the README.aci file instead...
+Read the doc/README.aci file instead...
 
 ----- s n i p -----
 dn: o=Turbo Fredriksson
