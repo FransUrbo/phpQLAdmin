@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.6 2003-04-04 16:37:50 turbo Exp $
+// $Id: attrib.userpassword.inc,v 2.7 2003-04-28 10:59:56 turbo Exp $
 
 function attribute_check($type){
 	global $userpassword, $userpassword_check, $error, $pwscheme;
@@ -35,7 +35,7 @@ function attribute_init(){
 }
 
 function attribute_print_form(){
-	global $domain, $user, $PHP_SELF, $attrib, $error;
+	global $domain, $user, $PHP_SELF, $attrib, $error, $config, $rootdn;
 
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
@@ -54,17 +54,21 @@ function attribute_print_form(){
           <td>
           <?php echo format_error($error["pwscheme"]); ?>
 
+<?php if(eregi(',', $config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn])) {
+		// We got more than one password scheme...
+?>
             <select name="pwscheme">
               <option value="none">Choose password scheme to use
 <?php
-	$schemes = split(",", PQL_CONF_PASSWORD_SCHEMES);
+		$schemes = split(",", $config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn]);
 	foreach($schemes as $scheme) {
 ?>
               <option value="{<?=$scheme?>}"><?=$scheme?>
-
-<?php
-	}
-?>
+<?php	}
+	  } else { ?>
+            Scheme: <b>{<?=$config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn]?>}</b>
+            <input type="hidden" name="pwscheme" value="<?=$config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn]?>">
+<?php } ?>
             </select>
           </td>
         </tr>
