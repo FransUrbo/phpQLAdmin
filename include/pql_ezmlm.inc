@@ -3,7 +3,7 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ezmlm.inc,v 1.9 2002-12-26 01:10:00 turbo Exp $
+// $Id: pql_ezmlm.inc,v 1.10 2002-12-26 21:59:18 turbo Exp $
 session_start();
 
 class ezmlm {
@@ -44,6 +44,46 @@ class ezmlm {
 		return $entries;
 	}
 	
+	// Get DOTqmail links linked to specified directory
+	function _getdotlinks($dir, $base) {
+		// We're looking for some file that starts with this regexp:
+		//		$dir.*/$base-
+		// And ends with any of these:
+		$regexp[] = 'accept-default';
+		$regexp[] = 'default';
+		$regexp[] = 'digest-owner';
+		$regexp[] = 'digest-return-default';
+		$regexp[] = 'owner';
+		$regexp[] = 'reject-default';
+		$regexp[] = 'return-default';
+
+		if(!(($directory = @opendir($dir)) !=0)) {
+			$this->error = "could not open the directory '$dir'";
+			return 0;
+		}
+		
+		for(;GetType($entry = readdir($directory)) == "string";) {
+			if($entry == "." || $entry == "..")
+			  continue;
+
+			$target = $dir . "/" . $entry;
+			if(@is_link($target)) {
+				// It's a link.
+
+				for($i=0; $regexp[$i]; $i++) {
+					$lookfor = $dir.'.*/'.$base.'-'.$regexp[$i];
+
+					if(ereg($dir.'.*/'.$base.'-'.$regexp[$i], $target)) {
+						$entries[] = $target;
+					}
+				}
+			}
+		}
+		closedir($directory);
+
+		return $entries;
+	}
+
 	// load list of mailinglists in directory
 	function _readlists($loadtexts = 0) {
 		if(!(($directory = @opendir($this->user_home)) !=0)) {
@@ -361,7 +401,9 @@ class ezmlm {
 	function deletelistentry($listnumber) {
 		$lstname = $this->mailing_lists[$listnumber]["name"];
 		$lstpath = $this->mailing_lists[$listnumber]["directory"];
-		$dotpath = $this->mailing_lists[$listnumber]["dotpath"];
+
+		$dotpath = dirname($this->mailing_lists[$listnumber]["dotpath"]);
+		$dotfile = basename($this->mailing_lists[$listnumber]["dotpath"]);
 
 		// Delete all files and directories recursively
 		$files = $this->_getfsentries($lstpath);
@@ -387,25 +429,25 @@ class ezmlm {
 				}
 			}
 		}
-		echo "#Entries: $i<br>";
+		if($this->debug) {
+			echo "#Entries: $i<br>";
+		}
 
 		// Now time for dot files in ~alias/.qmail-LISTNAME
-		// TODO
-
-		// DEBUG - beg
-		// Lstpath: /var/lists/cvs-phpqladmin
-		// Dotpath: /var/qmail/alias/.qmail-cvs-phpqladmin
-		//
-		// [papadoc.pts/3]$ find /var/qmail/alias/.qmail-cvs-phpqladmin*
-		// /var/qmail/alias/.qmail-cvs-phpqladmin
-		// /var/qmail/alias/.qmail-cvs-phpqladmin-accept-default
-		// /var/qmail/alias/.qmail-cvs-phpqladmin-default
-		// /var/qmail/alias/.qmail-cvs-phpqladmin-digest-owner
-		// /var/qmail/alias/.qmail-cvs-phpqladmin-digest-return-default
-		// /var/qmail/alias/.qmail-cvs-phpqladmin-owner
-		// /var/qmail/alias/.qmail-cvs-phpqladmin-reject-default
-		// /var/qmail/alias/.qmail-cvs-phpqladmin-return-default
-		// DEBUG - end
+		$links = $this->_getdotlinks($dotpath, $dotfile);
+		for($i=0; $links[$i]; $i++) {
+			if(! $this->debug) {
+				if(! unlink($links[$i]) ) {
+					echo "Could not delete link $links[$i]<br>";
+					$unsuccessful = 1;
+				}
+			} else {
+				echo "DEBUG: deleting link: $links[$i]<br>";
+			}
+		}
+		if($this->debug) {
+			echo "#Entries: $i<br>";
+		}
 
 		if($unsuccessful) {
 			return 0;

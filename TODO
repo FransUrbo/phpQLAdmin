@@ -9,6 +9,8 @@ Things left to do
 	  Changes in the aliased domain will be automatically replicated
 	  to the alias domain.
 	* Output a template DNS zone file after domain is created.
+
+	IMPORTANT
 	* Create, delete or modify the Kerberos principal if using {KERBEROS}
 	  password scheme.
 	* Allow for (Open)AFS creation, deletion and modification.
@@ -16,4 +18,3 @@ Things left to do
 	EZMLM mailinglist
 	* Remove hardcoded texts (attributes and such).
 	* Stresstest list creation and modification.
-	* Implement list deletion.
