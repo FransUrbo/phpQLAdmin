@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-details.inc,v 1.21 2004-04-02 09:33:07 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.21.10.1 2004-04-13 09:53:37 turbo Exp $ */ ?>
 <?php $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"])); ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -322,7 +322,6 @@
     <input type="hidden" name="loginshell"    value="/bin/false">
     <input type="hidden" name="homedirectory" value="">
     <input type="hidden" name="maildirectory" value="">
-    <input type="hidden" name="host"          value="default">
 <?php	} ?>
     <input type="hidden" name="page_next"     value="save">
 <?php
