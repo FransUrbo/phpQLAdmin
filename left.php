@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.83 2004-03-26 09:44:40 turbo Exp $
+// $Id: left.php,v 2.84 2004-03-28 08:48:02 turbo Exp $
 //
 session_start();
 
@@ -131,6 +131,12 @@ if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {
     $links = array('phpQLAdmin @ Bayour'			=> 'http://phpqladmin.bayour.com/',
 		   $LANG->_('Bugtracker')			=> 'http://apache.bayour.com/anthill/');
     pql_format_tree($LANG->_('phpQLAdmin Site Specifics'), 0, $links, 1);
+
+    // Level 2f: Misc QmailLDAP/Controls links
+    $links = array('Official Qmail-LDAP pages'			=> 'http://nrg4u.com/',
+		   'Life with Qmail-LDAP'			=> 'http://www.lifewithqmail.org/ldap/',
+		   'Life with Qmail'				=> 'http://www.lifewithqmail.org/');
+    pql_format_tree($LANG->_('Misc Qmail & Qmail-LDAP'), 0, $links, 1);
 }
 
 // This an ending for the initial parent (level 0)
