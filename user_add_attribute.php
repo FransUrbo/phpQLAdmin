@@ -8,19 +8,26 @@ require("./include/pql_config.inc");
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 // forward back to users detail page
-function attribute_forward($msg){
+function attribute_forward($msg) {
     global $domain, $user, $view;
-    
-    $msg = urlencode($msg);
-    $url = "user_detail.php?domain=$domain&user=$user&view=$view&msg=$msg";
+
+    $url = "user_detail.php?domain=$domain&user=".urlencode($user)."&view=$view&msg=".urlencode($msg);
     header("Location: " . $config["PQL_GLOB_URI"] . "$url");
 }
 
 // Get default domain name for this domain
 $defaultdomain = pql_get_domain_value($_pql, $domain, "defaultdomain");
 
+// Get the username. Prettier than the DN
+$username = pql_get_userattribute($_pql->ldap_linkid, $user, 'cn');
+if(!$username[0]) {
+    // No common name, use uid field
+    $username = pql_get_userattribute($_pql->ldap_linkid, $user, 'uid');
+}
+$username = maybe_decode($username[0]);
+
 // select which attribute have to be included
-switch($attrib){
+switch($attrib) {
   case "mailalternateaddress":
     $include = "attrib.mailalternateaddress.inc";
     break;
@@ -34,12 +41,12 @@ switch($attrib){
 include("./include/".$include);
 include("./header.html");
 ?>
-  <span class="title1"><?php echo PQL_LANG_USER_EDIT; ?></span>
+  <span class="title1"><?php echo PQL_LANG_USER_EDIT; ?> for <?=$username?></span>
   <br><br>
 <?php
 // select what to do
-if($submit == 1){
-    if(attribute_check("add")){
+if($submit == 1) {
+    if(attribute_check("add")) {
 	attribute_save("add");
     } else {
 	attribute_print_form();
