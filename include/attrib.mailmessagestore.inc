@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailmessagestore (path to mailbox)
-// $Id: attrib.mailmessagestore.inc,v 2.6 2003-04-04 16:37:50 turbo Exp $
+// $Id: attrib.mailmessagestore.inc,v 2.7 2003-05-22 09:59:09 turbo Exp $
 
 function attribute_check($type){
 	global $mailmessagestore, $domain, $oldvalue, $_pql, $error;
@@ -29,13 +29,13 @@ function attribute_check($type){
 }
 
 function attribute_init(){
-	global $mailmessagestore, $oldvalue;
+	global $mailmessagestore, $oldvalue, $rootdn;
 	
 	$mailmessagestore = $oldvalue;
 }
 
 function attribute_print_form(){
-	global $mailmessagestore, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error;
+	global $mailmessagestore, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $rootdn;
 
 ?>
 	<form action="<?php echo $PHP_SELF ?>" method="post">
@@ -43,22 +43,30 @@ function attribute_print_form(){
 	<th colspan="3" align="left"><?php echo PQL_LANG_MAILMESSAGESTORE_CHANGE; ?></th>
 	<tr class="<?php table_bgcolor(); ?>">
 		<td class="title"><?php echo PQL_LANG_MAILMESSAGESTORE_CHANGE; ?></td>
-		<td><?php echo format_error($error["mailmessagestore"]); ?><input type="text" name="mailmessagestore" value="<?php echo $mailmessagestore; ?>"></td>
+            <td>
+              <?php echo format_error($error["mailmessagestore"]); ?>
+              <input type="text" name="mailmessagestore" value="<?php echo $mailmessagestore; ?>">
+            </td>
+          </td>
 	</tr>
+
 	<tr class="subtitle">
 		<td colspan="2">
 		<?php echo format_error($error["general"]); ?>
 		<img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_LANG_MAILMESSAGESTORE_HELP; ?></td>
+          </td>
 	</tr>
+      </th>
 	</table>
+
 	<input type="hidden" name="submit" value="1">
-	<input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-	<input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
-	<input type="hidden" name="domain" value="<?php echo $domain; ?>">
-	<input type="hidden" name="user" value="<?php echo $user ?>">
-	<br>
-	<br>
-	<input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
+    <input type="hidden" name="attrib" value="<?=$attrib?>">
+    <input type="hidden" name="oldvalue" value="<?=$oldvalue?>">
+    <input type="hidden" name="domain" value="<?=$domain?>">
+    <input type="hidden" name="rootdn" value="<?=$rootdn?>">
+    <input type="hidden" name="user" value="<?=$user?>">
+    <br><br>
+    <input type="submit" value="<?=PQL_LANG_SAVE?>">
 	</form>
 
 <?php
