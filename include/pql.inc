@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.143 2004-02-14 14:25:36 turbo Exp $
+// $Id: pql.inc,v 2.144 2004-02-14 19:13:02 turbo Exp $
 //
 
 // ----------------------------
@@ -1628,14 +1628,17 @@ function pql_parse_quota($quota_string) {
 
     // get max bytes
     preg_match("/([0-9]*)S/", $quota_string, $matches);
-    
     if(isset($matches[1])) {
 		$quota["maxsize"] = intval($matches[1] / 1024);
     
 		// get max mails
 		preg_match("/([0-9]*)C/", $quota_string, $matches);
 		$quota["maxmails"] =  $matches[1];
-	}
+	} else
+	  // The quota value isn't correct. Whing it!
+	  // Asume that the value in there is SIZE, and set AMOUNT to 0
+	  // ('should mean' unlimited if I remember correctly).
+	  return(array($quota_string, "0"));
 
     return $quota;
 }
