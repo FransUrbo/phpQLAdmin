@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for pilotPerson objects etc
-// $Id: attrib.outlook.inc,v 1.22 2004-03-11 18:13:41 turbo Exp $
+// $Id: attrib.outlook.inc,v 1.23 2004-03-31 08:57:18 turbo Exp $
 
 /*
 	Attributes managed here:
@@ -99,8 +99,25 @@ function attribute_save($type) {
 
 		if($_REQUEST["domain"] and !$_REQUEST["user"]) {
 			// Save a domain attribute
-			if(pql_domain_set_value($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["attrib"], $_REQUEST[$attrib]))
-			  $success = 1;
+			if(($attrib == 'vatnumber') or ($attrib == 'mobile') or ($attrib == 'info')) {
+				// Special circumstances - this is availible in the phpQLAdminInfo object class,
+				// so we need to call pql_domain_set_value() with an ARRAY with the values to
+				// set/modify, not array+value...
+				$entry[$attrib] = $_REQUEST[$attrib];
+				
+				// Retreive old object classes for this domain
+				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_setup_branch_objectclasses(0, $_REQUEST["domain"], $_pql->ldap_linkid);
+				
+				// Add the 'phpQLAdminInfo' objectclass
+				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'phpQLAdminInfo';
+
+				if(pql_domain_set_value($_pql->ldap_linkid, $_REQUEST["domain"], NULL, $entry))
+				  $success = 1;
+			} else {
+				if(pql_domain_set_value($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["attrib"], $_REQUEST[$attrib]))
+				  $success = 1;
+			}
+
 		} elseif($_REQUEST["user"]) {
 			// Save a user attribute
 			if(pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], $_REQUEST[$attrib]))

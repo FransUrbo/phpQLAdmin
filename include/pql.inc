@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.170 2004-03-31 06:31:33 turbo Exp $
+// $Id: pql.inc,v 2.171 2004-03-31 08:57:18 turbo Exp $
 //
 
 // ----------------------------
@@ -281,10 +281,6 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 	  $ocs[] = '';
 
 	// -----
-	// Retreive all EXISTING objectclasses in the LDAP server
-	$ldap = pql_get_subschema($ldap_linkid, "objectclasses");
-
-	// -----
 	// Setup user entry variable
     foreach($attribs as $key => $value) {
 		// Check if we have a MUST in the objectclasses choosen
@@ -297,6 +293,9 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
     }
 
 	// -----
+	// Retreive all EXISTING objectclasses in the LDAP server
+	$ldap = pql_get_subschema($ldap_linkid, "objectclasses");
+
 	// Go through the WANTED objectclasses, checking for a
 	// MUST attribute we don't have
 	foreach($ocs as $oc) {
@@ -922,13 +921,16 @@ function pql_domain_set_value($linkid, $dn, $type, $value) {
 		// INTERNATIONALIZE
 		if(is_array($value)) {
 			foreach($value as $attrib => $val) {
-			    $entry[$attrib] = array(); // DLW:
-				for($i=0; !empty($val[$i]); $i++)
-				  $entry[$attrib][] = pql_maybe_encode($val[$i], $attrib, $linkid);
+				if(is_array($val)) {
+					$entry[$attrib] = array(); // DLW:
+					for($i=0; !empty($val[$i]); $i++)
+					  $entry[$attrib][] = pql_maybe_encode($val[$i], $attrib, $linkid);
+				} else
+				  // This is true in at least one case - changing 'mobile' for a branch
+				  $entry[$attrib] = $val;
 			}
-		} else {
-			$entry = $value;
-		}
+		} else
+		  $entry = $value;
 	}
 
 	if($value and !$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")]) {
