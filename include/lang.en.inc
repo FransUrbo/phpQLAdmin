@@ -1,7 +1,7 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 1.4 2002-12-12 21:52:14 turbo Exp $
+// $Id: lang.en.inc,v 2.0 2002-12-13 14:34:58 turbo Exp $
 //
 // if you have a translation to another language, please contact
 // me --> Matthias Blaser <mb@adfinis.ch>
@@ -98,8 +98,10 @@ define("PQL_DOMAIN_CHANGE_ATTRIBUTE", "Attribute");
 define("PQL_DOMAIN_INVALID", "Invalid domain name !! use: domain.tld (e.g. adfinis.com)");
 define("PQL_DOMAIN_EXISTS", "This domain already exists");
 define("PQL_DOMAIN_ADD", "Create domain");
-define("PQL_DOMAIN_ADD_OK", "Domain %domain% successfully created. <br> You have to manually add this domain to the rpcthosts and locals files in the qmail/control directory !!");
+define("PQL_DOMAIN_ADD_OK", "Domain %domain% successfully created.<br>You have to manually add this domain to the rpcthosts and locals files in the qmail/control directory !!");
 define("PQL_DOMAIN_ADD_FAILED", "Failed creating the domain");
+define("PQL_DOMAIN_ADD_INFO_DC", "Using domain mode (dc separated).<br>Don't use '.' (dots) in domain name");
+define("PQL_DOMAIN_ADD_INFO_OU", "Using organization layout (ou separated).<br>Make sure youre using 'domain.tld' for domain name");
 define("PQL_DOMAIN_DEL", "Remove domain");
 define("PQL_DOMAIN_DEL_FORWARDS", "Also delete forwards to users in this domain");
 define("PQL_DOMAIN_DEL_TITLE", "Remove domain %domain%");
