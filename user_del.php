@@ -23,11 +23,20 @@ $cn = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_
 <?php
 if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
 	$delete_forwards = (isset($delete_forwards) || pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) ? true : false;
+	$delete_admins   = (isset($delete_admins)   || pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) ? true : false;
+	$unsubscribe     = (isset($unsubscribe)     || pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) ? true : false;
 
 	// delete the user
 	if(pql_user_del($_pql, $domain, $user, $delete_forwards)) {
 		$msg = $LANG->_('Successfully removed user') . ": <b>" . $cn . "</b>";
 		$rlnb = "&rlnb=1";
+
+		if($delete_admins)
+		  // Remove all administrator/seealso attributes that reference this user
+		  pql_replace_admins($_pql, $user, '');
+
+//		if($unsubscribe)
+//		  // TODO: Unsubscribe user from all mailinglists (on this host naturaly :)
 	} else
 	  $msg = $LANG->_('Failed to remove user') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 
@@ -51,8 +60,10 @@ if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
     <input type="hidden" name="domain" value="<?=$domain?>">
         
     <span class="title3"><?=$LANG->_('What should we do with forwards to this user')?>?</span><br>
-    <input type="checkbox" name="delete_forwards" checked> <?=$LANG->_('Delete all forwards')?><br><br>
+    <input type="checkbox" name="delete_forwards" checked> <?=$LANG->_('Delete all forwards')?><br>
+    <input type="checkbox" name="delete_admins" checked> <?=$LANG->_('Remove user from administrator/seeAlso')?><br>
 <?php if(0) { ?>
+    <input type="checkbox" name="unsubscribe" checked> <?=$LANG->_('Unsubscribe user from all mailing lists')?><br><br>
 
     <span class="title3"><?=$LANG->_('What should we do with the users mailbox')?>?</span><br>
     <input type="radio" name="mail" value="delete_mail"> <?=$LANG->_('Delete it')?><br>
