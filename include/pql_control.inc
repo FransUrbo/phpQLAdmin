@@ -4,12 +4,13 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.13 2003-05-04 10:30:27 turbo Exp $
+// $Id: pql_control.inc,v 2.14 2003-05-05 14:14:47 turbo Exp $
 //
 // version history:
 // $Log: pql_control.inc,v $
-// Revision 2.13  2003-05-04 10:30:27  turbo
-// Some comments on how the variables look like...
+// Revision 2.14  2003-05-05 14:14:47  turbo
+// * Retabbing and code 'beatification'.
+// * Rewrite of pql_control_remove_whole_attribute(). Simpler...
 //
 // Revision 1.2  2001/09/06 11:36:24  mb
 // added no_connect option to pql_control-class
@@ -91,23 +92,19 @@ function pql_control_replace_attribute($ldap_linkid, $ldap_control_basedn, $attr
     // replaces an attribute
 
     // if $value == "" remove the attribute from tree
-    if($value == ""){
-		return pql_control_remove_whole_attribute($ldap_linkid, $ldap_control_basedn, $attrib);
-    }
+    if($value == "")
+	  return pql_control_remove_whole_attribute($ldap_linkid, $ldap_control_basedn, $attrib);
     
     // if $value is an array and all elements are "", remove attribute from tree
-    if(is_array($value)){
+    if(is_array($value)) {
 		$remove = true;
 		
-		foreach($value as $val){
-			if($val != ""){
-				$remove = false;
-			}
-		}
+		foreach($value as $val)
+		  if($val != "")
+			$remove = false;
 		
-		if($remove){
-			return pql_control_remove_whole_attribute($ldap_linkid, $ldap_control_basedn, $attrib);
-		}
+		if($remove)
+		  return pql_control_remove_whole_attribute($ldap_linkid, $ldap_control_basedn, $attrib);
     }
     
     // format entry
@@ -182,19 +179,12 @@ function pql_control_remove_attribute($ldap_linkid, $dn, $attrib, $value) {
 
 // ------------------------------------------------
 
+// removes whole attribute from control tree
 function pql_control_remove_whole_attribute($ldap_linkid, $ldap_control_basedn, $attrib){
-    // removes whole attribute from control tree
-    
-    $attribute = pql_control_get_attribute($ldap_linkid, $ldap_control_basedn, $attrib);
-    
-    if($attribute == ""){
-		// already deleted
-		return true;
-    }
-    
-    $entry[$attrib] = $attribute;
-    
-    if(!@ldap_mod_del($ldap_linkid, $ldap_control_basedn, $entry)){
+	// Delete all attributes of this type, regardless of value
+	$entry[$attrib] = array();
+
+    if(!@ldap_mod_replace($ldap_linkid, $ldap_control_basedn, $entry)) {
 		pql_errormsg($ldap_linkid);
 		return false;
     }
