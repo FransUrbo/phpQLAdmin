@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.16 2003-04-10 08:12:24 turbo Exp $
+// $Id: pql_config.inc,v 1.17 2003-04-23 12:05:21 turbo Exp $
 //
 global $config;
 
@@ -22,18 +22,21 @@ function pql_define($define, $value, $case_insensitive = false, $dn = NULL) {
 	if(! @constant($define))
 	  define($define, $value, $case_insensitive);
 
-	// Create a global two dimensional array with the config values
-	//	Dimension 1: define name
-	//	Dimension 2: root DN
 	if($dn) {
+		// Create a global two dimensional array with the config values
+		//	Dimension 1: define name
+		//	Dimension 2: root DN
+
 		if(!isset($config[$define][$dn])) {
 			$config[$define][$dn] = $value;
 //			echo "config[$define][$dn] = $value<br>"; // DEBUG
 		}
 	} else {
+		// Create a site global array with the config values
+		// This variable type is only one dimensional (not DN specific)
 		if(!isset($config[$define])) {
 			$config[$define] = $value;
-//			echo "config[$define] = $value<br>"; // DEBUG
+//			echo "config[$define] = '$value'<br>"; // DEBUG
 		}
 	}
 }
@@ -62,7 +65,7 @@ $PQL_ATTRIBUTE["PQL_GLOB_HOSTMASTER"] = 'hostMaster';
 $PQL_ATTRIBUTE["PQL_CONF_TESTMAIL_SUBJECT"] = 'testMailSubject';
 $PQL_ATTRIBUTE["PQL_CONF_TESTMAIL_MAILTEXT"] = 'testMailText';
 $PQL_ATTRIBUTE["PQL_CONF_CATCHALLUSER"] = 'catchAllUser';
-$PQL_ATTRIBUTE["PQL_CONF_EZMLM_PATH"] = 'ezmlmBinaryPath';
+$PQL_ATTRIBUTE["PQL_GLOB_EZMLM_PATH"] = 'ezmlmBinaryPath';
 $PQL_ATTRIBUTE["PQL_CONF_PASSWORD_SCHEMES"] = 'passWordScheme';
 
 // Save path for users and groups
@@ -180,16 +183,16 @@ foreach($_pql->ldap_basedn as $dn)  {
 	require("./include/defaults.inc");
 
 	// Check some builtin ACL's
-	$ALLOW_BRANCH_CREATE[$dn] = 0; $ALLOW_CONTROL_CREATE[$dn] = 0;
+	$ALLOW_BRANCH_CREATE = 0; $ALLOW_CONTROL_CREATE = 0;
 	if($USER_DN) {
 		// Verify that the user is administrator on the topmost DN -> Allow creation of domain/branches.
-		$ALLOW_BRANCH_CREATE[$dn] = pql_validate_administrator($_pql->ldap_linkid, $dn, $USER_DN);
+		$ALLOW_BRANCH_CREATE = pql_validate_administrator($_pql->ldap_linkid, $dn, $USER_DN);
 		
 		// Check the Control DN if the user is there -> Allow management of Controls information
-		$ALLOW_CONTROL_CREATE[$dn] = pql_validate_administrator($_pql->ldap_linkid, $USER_SEARCH_DN_CTR, $USER_DN);
+		$ALLOW_CONTROL_CREATE = pql_validate_administrator($_pql->ldap_linkid, $USER_SEARCH_DN_CTR, $USER_DN);
 	}
 	
-	session_register("ALLOW_BRANCH_CREATE[$dn]", "ALLOW_CONTROL_CREATE[$dn]");
+	session_register("ALLOW_BRANCH_CREATE", "ALLOW_CONTROL_CREATE");
 }
 
 // Verify that the user have access to write the global phpQLAdmin config
