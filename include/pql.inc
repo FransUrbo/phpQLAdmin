@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.132 2003-11-24 13:22:17 turbo Exp $
+// $Id: pql.inc,v 2.133 2003-12-09 06:36:31 turbo Exp $
 //
 
 // ----------------------------
@@ -1215,7 +1215,7 @@ function pql_get_next_username($ldap, $domain) {
 
 		// Search the whole database for all users with this prefix
 		foreach($ldap->ldap_basedn as $dn) {
-			$tmp = ldap_search($ldap->ldap_linkid, $dn, $filter, pql_get_define("PQL_GLOB_ATTR_UID"));
+			$tmp = ldap_search($ldap->ldap_linkid, $dn, $filter, array(pql_get_define("PQL_GLOB_ATTR_UID")));
 
 			$USERS = $USERS + $tmp;
 		}
