@@ -7,6 +7,8 @@ require("./include/pql_config.inc");
 require("./include/pql_control.inc");
 
 function check_domain_value($linkid, $dn, $attrib, $value) {
+	global $LANG;
+
 	$entry[$attrib] = $value;
 
 	if(! @ldap_mod_replace($linkid, $dn, $entry)) {
@@ -38,7 +40,7 @@ if(!function_exists("ldap_connect")){
 	
 	// user directory connection
 	$_pql = new pql($USER_HOST, '', '', true);
-	if(!$_pql->connect($USER_HOST)){
+	if(!$_pql->connect($USER_HOST)) {
 		$connection = $LANG->_('Failed');
 		
 		// do additional tests
@@ -49,7 +51,7 @@ if(!function_exists("ldap_connect")){
 			// try to open a connection
 			if(!fsockopen($USER_HOST, 389)) {
 				// impossible to connect
-				$connection .= ", " . pql_complete_constant($LANG->_('Could not connect to port 389 at %host%, please make sure the service is up and that it's not blocked with a firewall') ,array("host" => $USER_HOST ));
+				$connection .= ", " . pql_complete_constant($LANG->_('Could not connect to port 389 at %host%, please make sure the service is up and that it\'s not blocked with a firewall'), array("host" => $USER_HOST ));
 			}
 		}
 	} else {
@@ -59,7 +61,6 @@ if(!function_exists("ldap_connect")){
 			$connection = $LANG->_('Yes');
 		}
 	}
-
 
 	if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 		// control directory connection
@@ -99,6 +100,8 @@ if(!function_exists("ldap_connect")){
 	if($USER_DN and $USER_PASS) {
 		$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 		foreach($_pql->ldap_basedn as $basedn) {
+			$basedn = urldecode($basedn);
+
 			// ----------------------
 			// Try to set the attribute 'test' in the top DN
 			$fail = check_domain_value($_pql->ldap_linkid, $basedn, 'test', 'TRUE');
@@ -239,7 +242,9 @@ include("./header.html");
 <?php if($basedn) { ?>
 
     <th colspan="3" align="left"><?=$LANG->_('Modification access - phpQLAdmin configuration')?>
-<?php    foreach($_pql->ldap_basedn as $dn) { ?>
+<?php    foreach($_pql->ldap_basedn as $dn) {
+			$dn = urldecode($dn);
+?>
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Access to write phpQLAdmin configuration in DN %dn%'), array('dn' => $dn)); ?></td>
         <?php $class=table_bgcolor(0); ?>
@@ -251,7 +256,8 @@ include("./header.html");
 
     <th colspan="3" align="left"><?=$LANG->_('Domain modification access')?>
 <?php    foreach($_pql->ldap_basedn as $dn) {
- ?>
+			$dn = urldecode($dn);
+?>
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Access to create branches in DN %dn%'), array('dn' => $dn)); ?></td>
         <?php $class=table_bgcolor(0); ?>
@@ -261,13 +267,13 @@ include("./header.html");
 <?php    } ?>
     </th>
 
-    <th colspan="3" align="left"><?=$LANG->_('DN modification access - domain DN's')?>
+    <th colspan="3" align="left"><?=$LANG->_('DN modification access - domain DN\'s')?>
 <?php    if(is_array($domains)) {
             asort($domains);
 		    foreach($domains as $key => $domain) {
 ?>
       <tr>
-        <td class="title"><?php echo pql_complete_constant($LANG->_('Access to modify DN \b%dn\B'), array('dn' => $domain)); ?></b></td>
+        <td class="title"><?php echo pql_complete_constant($LANG->_('Access to modify DN \b%dn%\B'), array('dn' => $domain)); ?></b></td>
         <?php $class=table_bgcolor(0); ?>
         <td class="<?=$class?>"><?=$TEST["branches"][$domain]?></td>
       </tr>
