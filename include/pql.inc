@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.85 2003-06-18 12:41:24 turbo Exp $
+// $Id: pql.inc,v 2.86 2003-06-19 10:42:18 turbo Exp $
 //
 
 // ----------------------------
@@ -1523,15 +1523,15 @@ function pql_set_domain_value($linkid, $dn, $type, $value) {
 		// Setup objectclasses
 		if(!($entry["objectClass"] = pql_setup_branch_objectclasses(0, $dn, $linkid)))
 		  unset($entry["objectClass"]);
-		
-		// Create a LDIF object to print in case of error
-		$LDIF = pql_create_ldif("pql_set_domain_value", $dn, $entry);
-
-		// --------------------------
-		// DEBUG mode: Print the LDIF
-		if($DEBUG >= 1)
-		  die("$LDIF");
 	}
+		
+	// Create a LDIF object to print in case of error
+	$LDIF = pql_create_ldif("pql_set_domain_value", $dn, $entry);
+	
+	// --------------------------
+	// DEBUG mode: Print the LDIF
+	if($DEBUG >= 1)
+	  die("$LDIF");
 
 	// Do the LDAP modification
 	if($value != '') {
