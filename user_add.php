@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.97 2004-04-10 08:16:05 turbo Exp $
+// $Id: user_add.php,v 2.98 2004-04-14 09:17:23 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -30,6 +30,12 @@ $basemaildir			= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define
 $maxusers				= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_MAXIMUM_DOMAIN_USERS"));
 $additionaldomainname	= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
 
+// Find out what objectclasses to use when creating user
+$objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"]));
+
+// Get all objectclasses the LDAP server understand
+$objectclasses_schema   = pql_get_subschema($_pql->ldap_linkid, 'objectclasses');
+
 // {{{ Verify the input from the current page.  Autogen input for the next page.
 // Check the input
 $error = false; $error_text = array();
@@ -37,13 +43,32 @@ switch($_REQUEST["page_curr"]) {
   // {{{ case: "" (make sure a new user can be added.)
   case "":
 	// ------------------------------------------------
-	// Step 1: Selected account type (see how many users there can be)
+	// Step 1: Make sure that the attribute we're using for user reference(s)
+	//		   is availible in at least ONE object class we've choosen to use
+	//		   when creating users...
+	$res = pql_check_attribute($objectclasses_schema, $objectclasses_included,
+							   pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]));
+	if(!$res[0]) {
+		include("./header.html");
+?>
+  <span class="title1"><?=pql_complete_constant($LANG->_('Attribute %attrib% is not availible.'), array("attrib" => pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])))?></span>
+  <br><br>
+  Sorry, but the attribute you're choosen to use to reference users with isn't availible in any
+  of the userObjectclasses specified to be used when creating users.<p>
+  There's little point in continuing from here. Please go to the <a href="config_detail.php?view=<?=$url["rootdn"]?>">configuration</a> and setup the
+  correct attribute/objectclass match.
+<?php
+		die();
+	}
+
+	// ------------------------------------------------
+	// Step 2: Selected account type (see how many users there can be)
 	if($maxusers and !$_SESSION["ALLOW_BRANCH_CREATE"]) {
 		if(count(pql_user_get($_pql->ldap_linkid, $_REQUEST["domain"])) >= $maxusers) {
 			// We have reached the maximum amount of users.
 			include("./header.html");
 ?>
-  <span class="title1"><?=$LANG->_('Maximum amount of users reached')?></span>
+  <span class="title1"><?=pql_complete_constant($LANG->_('Maximum amount (%max%) of users reached'), array("max" => $maxusers))?></span>
   <br><br>
   Sorry, but the maximum amount of users have been reached in this domain. You are not allowed
   to create more. Please talk to your administrator if you think this is wrong.
@@ -54,7 +79,7 @@ switch($_REQUEST["page_curr"]) {
 
 	if($_REQUEST["page_next"] == "one") {
 		// ------------------------------------------------
-		// Step 2b: Autogenerate some stuff for the next form
+		// Step 3b: Autogenerate some stuff for the next form
 
 		$attribs = array("autocreatemailaddress" => pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS"),
 						 "autocreateusername"	 => pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"));
@@ -69,8 +94,6 @@ switch($_REQUEST["page_curr"]) {
 		// 2. We have set autoCreateUserName to TRUE for this branch/domain
 		// 3. The function 'user_generate_uid()' is defined in include/config.inc.
 		// 4. At least one of the objects we've choosen to use when creating users MAY or MUST the 'uid' attribute..
-		$objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"]));
-		$objectclasses_schema   = pql_get_subschema($_pql->ldap_linkid, 'objectclasses');
 		$res = pql_check_attribute($objectclasses_schema, $objectclasses_included, 'uid');
 		if(empty($_REQUEST["uid"]) and $autocreateusername and function_exists('user_generate_uid') and $res) {
 			// Generate the username
@@ -106,9 +129,10 @@ switch($_REQUEST["page_curr"]) {
 	// }}}
 
   // {{{ case: one (validate user_add-details.inc)
+
   case "one":
 	// ------------------------------------------------
-	// Step 2a: Check user details - surname, name, email, account_type, account_status
+	// Step 3a: Check user details - surname, name, email, account_type, account_status
 
 	if($_REQUEST["account_type"] == "alias") {
 		// {{{ Verify the 'alias' account type
@@ -160,23 +184,26 @@ switch($_REQUEST["page_curr"]) {
 		// }}}
 	} else {
 		// {{{ Verify all account types EXEPT 'alias'
+
 		// Verify surname
-		if($_REQUEST["surname"] == "") {
+		$res = pql_check_attribute($objectclasses_schema, $objectclasses_included, 'sn');
+		if(($_REQUEST["surname"] == "") and $res[0]) {
 			$error = true;
 			$error_text["surname"] = $LANG->_('Missing');
 		}
 		$user = $_REQUEST["surname"];
 		
 		// Verify lastname
-		if($_REQUEST["name"] == "") {
+		if(($_REQUEST["name"] == "") and $res[0]) {
 			$error = true;
 			$error_text["name"] = $LANG->_('Missing');
 		}
 		$user .= " " . $_REQUEST["name"];
 		
 		// Verify username
-		if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_CN")
-		   and pql_user_exist($_pql->ldap_linkid, $user, $_REQUEST["domain"], $_REQUEST["rootdn"])) {
+		$res = pql_check_attribute($objectclasses_schema, $objectclasses_included, 'sn');
+		if(((pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_CN"))
+			or $res[0]) and pql_user_exist($_pql->ldap_linkid, $user, $_REQUEST["domain"], $_REQUEST["rootdn"])) {
 			$error = true;
 			$error_text["username"] = pql_complete_constant($LANG->_('User %user% already exists'), array("user" => $user));
 		}
@@ -275,15 +302,23 @@ switch($_REQUEST["page_curr"]) {
 		
 		// Generate the mail directory value
 		if(!empty($basemaildir)) {
-			if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")) {
-				$_REQUEST["maildirectory"] = user_generate_mailstore($_pql, $_REQUEST["email"], $_REQUEST["domain"],
-																	 array(pql_get_define("PQL_ATTR_UID") => $_REQUEST["uid"]),
-																	 'user');
-			} else {
-				$_REQUEST["maildirectory"] = user_generate_mailstore($_pql, $_REQUEST["email"], $_REQUEST["domain"],
-																	 array(pql_get_define("PQL_ATTR_UID") => $_REQUEST["surname"]." ".$_REQUEST["name"]),
-																	 'user');
+			if((pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
+			   and $_REQUEST["uid"])
+			  $reference = $_REQUEST["uid"];
+			if($_REQUEST["surname"] and $_REQUEST["name"])
+			  $reference = $_REQUEST["surname"]." ".$_REQUEST["name"];
+			elseif($_REQUEST["surname"])
+			  $reference = $_REQUEST["surname"];
+			elseif($_REQUEST["name"])
+			  $reference = $_REQUEST["name"];
+			elseif($_REQUEST["email"]) {
+				$reference = split('@', $_REQUEST["email"]);
+				$reference = $reference[0];
 			}
+
+			$_REQUEST["maildirectory"] = user_generate_mailstore($_pql, $_REQUEST["email"], $_REQUEST["domain"],
+																 array(pql_get_define("PQL_ATTR_UID") => $reference),
+																 'user');
 			
 			if($_REQUEST["maildirectory"]) {
 				// Replace space(s) with underscore(s)
@@ -299,15 +334,23 @@ switch($_REQUEST["page_curr"]) {
 		
 		// Generate the home directory value
 		if(!empty($basehomedir)) {
-			if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")) {
-				$_REQUEST["homedirectory"] = user_generate_homedir($_pql, $_REQUEST["email"], $_REQUEST["domain"],
-																   array(pql_get_define("PQL_ATTR_UID") => $_REQUEST["uid"]),
-																   'user');
-			} else {
-				$_REQUEST["homedirectory"] = user_generate_homedir($_pql, $_REQUEST["email"], $_REQUEST["domain"],
-																   array(pql_get_define("PQL_ATTR_UID") => $_REQUEST["surname"]." ".$_REQUEST["name"]),
-																   'user');
+			if((pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
+			   and $_REQUEST["uid"])
+			  $reference = $_REQUEST["uid"];
+			if($_REQUEST["surname"] and $_REQUEST["name"])
+			  $reference = $_REQUEST["surname"]." ".$_REQUEST["name"];
+			elseif($_REQUEST["surname"])
+			  $reference = $_REQUEST["surname"];
+			elseif($_REQUEST["name"])
+			  $reference = $_REQUEST["name"];
+			elseif($_REQUEST["email"]) {
+				$reference = split('@', $_REQUEST["email"]);
+				$reference = $reference[0];
 			}
+
+			$_REQUEST["homedirectory"] = user_generate_homedir($_pql, $_REQUEST["email"], $_REQUEST["domain"],
+															   array(pql_get_define("PQL_ATTR_UID") => $reference),
+															   'user');
 			
 			if($_REQUEST["homedirectory"]) {
 				// Replace space(s) with underscore(s)
@@ -331,9 +374,11 @@ switch($_REQUEST["page_curr"]) {
 				$_REQUEST["page_next"] = 'one';
 			}
 		}
+
 		// }}}
 	}
 	break;
+
 	// }}}
 }
 
