@@ -1,12 +1,17 @@
 <?php
 // edit attributes of a webserver configuration
-// $Id: websrv_edit_attributes.php,v 2.7 2005-03-04 11:55:32 turbo Exp $
+// $Id: websrv_edit_attributes.php,v 2.8 2005-03-09 10:55:27 turbo Exp $
 //
+// {{{ Setup session etc
 require("./include/pql_session.inc");
-require("./include/pql_config.inc");
+require($_SESSION["path"]."/include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_websrv.inc");
 
-// forward back to domain detail page
+include($_SESSION["path"]."/header.html");
+include($_SESSION["path"]."/include/attrib.websrv.inc");
+// }}}
+
+// {{{ Forward back to domain detail page
 function attribute_forward($msg) {
 	$url["domain"] = pql_format_urls($_REQUEST["domain"]);
 	$url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
@@ -26,18 +31,14 @@ function attribute_forward($msg) {
 	} else
 	  header("Location: " . $_SESSION["URI"] . $LINK_URL);
 }
-
-include($_SESSION["path"]."/header.html");
-include($_SESSION["path"]."/include/attrib.websrv.inc");
+// }}}
 ?>
     <span class="title1">Change a weberver configuration value</span>
     <br><br>
 
 <?php
-// Select what to do
-if($_REQUEST["action"] == 'del') {
-    attribute_save($_REQUEST["action"]);
-} elseif($_REQUEST["submit"] == 1) {
+// {{{ Select what to do
+if(@$_REQUEST["submit"] or ($_REQUEST["action"] == 'del')) {
     if(attribute_check())
       attribute_save($_REQUEST["action"]);
     else
@@ -45,6 +46,7 @@ if($_REQUEST["action"] == 'del') {
 } else {
     attribute_print_form();
 }
+// }}}
 ?>
   </body>
 </html>
