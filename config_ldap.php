@@ -1,6 +1,6 @@
 <?php
 // shows configuration of phpQLAdmin
-// $Id: config_ldap.php,v 1.8 2003-11-20 08:01:28 turbo Exp $
+// $Id: config_ldap.php,v 1.9 2004-01-22 10:20:25 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -11,6 +11,14 @@ include("./header.html");
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 $ldap = pql_get_subschemas($_pql->ldap_linkid);
+if($type) {
+	$tmp = $ldap; unset($ldap);
+
+	$ldap[$type] = $tmp[$type];
+	$attributetypes = $tmp['attributetypes'];
+} else {
+	$attributetypes = $ldap['attributetypes'];
+}
 $j = 0;
 ?>
     <table cellspacing="0" cellpadding="3" border="0">
@@ -51,12 +59,12 @@ foreach($ldap as $x => $array) {
 <?php	foreach($array as $value) { ?>
         <tr class="<?=$class?>">
           <td>
-<?php if($opera) { ?>
+<?php		if($opera) { ?>
             <div id="el2Parent" class="parent" onclick="showhide(el<?=$j?>Spn, el<?=$j?>Img)">
               <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$j?>Img">
               <a class="item"><font color="black" class="heada"><?=$value['NAME']?></font></a>
             </div>
-<?php } else { ?>
+<?php		} else { ?>
             <div id="el<?=$j?>Parent" class="parent">
               <a class="item" onClick="if (capable) {expandBase('el<?=$j?>', true); expandBase('el<?=$j+1?>', true); return false;}">
                 <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$j?>Img">
@@ -64,13 +72,13 @@ foreach($ldap as $x => $array) {
         
               <a class="item"><font color="black" class="heada"><?=$value['NAME']?></font></a>
             </div>
-<?php } ?>
+<?php		} ?>
 
-<?php if($opera) { ?>
+<?php		if($opera) { ?>
             <span id="el<?=$j?>Spn" style="display:''">
-<?php } else { ?>
+<?php		} else { ?>
             <div id="el<?=$j?>Child" class="child">
-<?php } ?>
+<?php		} ?>
 <?php		for($i=0; $i < $value['MUST']['count']; $i++) { // MUST attributes ?>
               &nbsp;&nbsp;&nbsp;&nbsp;<b><?=$value['MUST'][$i]?></b><br>
 <?php		} 
@@ -79,22 +87,22 @@ foreach($ldap as $x => $array) {
 ?>
               &nbsp;&nbsp;&nbsp;&nbsp;<?=$value['MAY'][$i]?><br>
 <?php		} ?>
-<?php if($opera) { ?>
+<?php		if($opera) { ?>
             </span>
-<?php } else { ?>
+<?php		} else { ?>
             </div>
-<?php } ?>
+<?php		} ?>
           </td>
 <?php		$j++; ?>
           <td>
-<?php if($opera) { ?>
+<?php		if($opera) { ?>
             <div id="el<?=$j?>Parent" class="parent" onclick="showhide(el<?=$j?>Spn, el<?=$j?>Img)">
               <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$j?>Img">
               <a class="item"><font color="black" class="heada"><?=$value['OID']?></font></a>
             </div>
 
             <span id="el<?=$j?>Spn" style="display:''">
-<?php } else { ?>
+<?php		} else { ?>
             <div id="el<?=$j?>Parent" class="parent">
               <a class="item" onClick="if (capable) {expandBase('el<?=$j-1?>', true); expandBase('el<?=$j?>', true); return false;}">
                 <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$j?>Img">
@@ -103,29 +111,28 @@ foreach($ldap as $x => $array) {
             </div>
 
             <div id="el<?=$j?>Child" class="child">
-<?php } ?>
+<?php		} ?>
 <?php		for($i=0; $i < $value['MUST']['count']; $i++) { // MUST attributes ?>
               &nbsp;&nbsp;&nbsp;&nbsp;<b><?php
-				if($ldap['attributetypes'][lc($value['MUST'][$i])]['OID']) {
-					echo $ldap['attributetypes'][lc($value['MUST'][$i])]['OID'];
+			  	if($attributetypes[lc($value['MUST'][$i])]['OID']) {
+					echo $attributetypes[lc($value['MUST'][$i])]['OID'];
 				} else {
 					// It's an alias
-					foreach($ldap['attributetypes'] as $attrib) {
+					foreach($attributetypes as $attrib) {
 						if($attrib['ALIAS'][0])
 						  if(lc($value['MUST'][$i]) == lc($attrib['ALIAS'][0]))
 							echo $attrib['OID'];
 					}
 				} ?></b><br>
-
 <?php       }
 
             for($i=0; $i < $value['MAY']['count']; $i++) { // MAY attributes ?>
               &nbsp;&nbsp;&nbsp;&nbsp;<?php
-				if($ldap['attributetypes'][lc($value['MAY'][$i])]['OID']) {
-					echo $ldap['attributetypes'][lc($value['MAY'][$i])]['OID'];
+				if($attributetypes[lc($value['MAY'][$i])]['OID']) {
+					echo $attributetypes[lc($value['MAY'][$i])]['OID'];
 				} else {
 					// It's an alias
-					foreach($ldap['attributetypes'] as $attrib) {
+					foreach($attributetypes as $attrib) {
 						if($attrib['ALIAS'][0])
 						  if(lc($value['MAY'][$i]) == lc($attrib['ALIAS'][0]))
 							echo $attrib['OID'];
@@ -133,11 +140,11 @@ foreach($ldap as $x => $array) {
 				}?><br>
 
 <?php       } ?>
-<?php if($opera) { ?>
+<?php		if($opera) { ?>
             </span>
-<?php } else { ?>
+<?php		} else { ?>
             </div>
-<?php } ?>
+<?php		} ?>
           </td>
           <td></td>
           <td><?=$value['DESC']?></td>
