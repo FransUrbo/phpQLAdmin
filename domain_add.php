@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: domain_add.php,v 2.56.2.1 2005-03-04 11:59:44 turbo Exp $
+// $Id: domain_add.php,v 2.56.2.2 2005-03-17 08:23:01 turbo Exp $
 //
 require("./include/pql_session.inc");
 require("./include/pql_config.inc");
@@ -39,8 +39,7 @@ if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $_REQUEST["rootdn"]) == "dc
 // {{{ Check if domain is valid
 //if(!pql_check_hostaddress($_REQUEST["domain"], $force_dot)) {
 //	$msg = urlencode($LANG->_('Invalid domain name! Use: domain.tld (e.g. adfinis.com)'));
-//	header("Location: " . $_SESSION["URI"] . "home.php?msg=$msg");
-//	exit();
+//	pql_header("home.php?msg=$msg");
 //}
 // }}}
 
@@ -49,8 +48,7 @@ $filter  = '(&(objectclass=*)('.pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH"
 $filter .= '='.$_REQUEST["domain"].'))';
 if(pql_get_dn($_pql->ldap_linkid, $_REQUEST["rootdn"], $filter, 'ONELEVEL')) {
 	$msg = urlencode($LANG->_('This domain already exists'));
-	header("Location: " . $_SESSION["URI"] . "home.php?msg=$msg");
-	exit();
+	pql_header("home.php?msg=$msg");
 }
 // }}}
 
@@ -188,11 +186,11 @@ if(pql_write_add($_pql->ldap_linkid, $dn, $entry, 'branch', 'domain_add.php')) {
 		echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
 		die("<b>$url</b>");
 	} else {
-		header("Location: " . $_SESSION["URI"] . $url);
+		pql_header($url);
 	}
 } else {
 	$msg = urlencode($LANG->_('Failed to create the domain') . ":&nbsp;" . ldap_error($_pql->ldap_linkid));
-	header("Location: " . $_SESSION["URI"] . "home.php?msg=$msg");
+	pql_header("home.php?msg=$msg");
 }
 ?>
 
