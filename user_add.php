@@ -236,27 +236,33 @@ switch($submit){
       <tr>
         <td></td>
         <td>
-          <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php
-echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_LOCAL . PQL_LANG_DELIVERYMODE_PROFILE_INC .
+          <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
+          <table>
+<?php echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_LOCAL . PQL_LANG_DELIVERYMODE_PROFILE_INC .
   PQL_LANG_DELIVERYMODE_PROFILE_LOCAL_INFO . ".";?>
+          </table>
         </td>
       </tr>
 
       <tr>
         <td></td>
-        <td>
-          <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php
-echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_SYSTEM . PQL_LANG_DELIVERYMODE_PROFILE_INC .
+        <td colspan="2">
+          <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
+          <table>
+<?php echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_SYSTEM . PQL_LANG_DELIVERYMODE_PROFILE_INC .
   PQL_LANG_DELIVERYMODE_PROFILE_SYSTEM_INFO . ", " . PQL_LANG_DELIVERYMODE_PROFILE_LOCAL_INFO;?>
+          </table>
         </td>
       </tr>
 
       <tr>
         <td></td>
         <td>
-          <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php
-echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_FORWARD . PQL_LANG_DELIVERYMODE_PROFILE_INC .
+          <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
+          <table>
+<?php echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_FORWARD . PQL_LANG_DELIVERYMODE_PROFILE_INC .
   PQL_LANG_DELIVERYMODE_PROFILE_FORWARD_INFO . ".";?>
+          </table>
         </td>
       </tr>
     </th>
@@ -786,11 +792,11 @@ echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_FORWARD
 
 				// Execute the user add script (0 => show output)
 				if(pql_execute($config["PQL_CONF_SCRIPT_CREATE_USER"][$rootdn], 0)) {
-					echo PQL_LANG_USER_ADD_SCRIPT_FAILED;
-					$msg = urlencode(PQL_LANG_USER_ADD_SCRIPT_FAILED) . ".&nbsp;";
+					echo PQL_LANG_USER_ADD_SCRIPT_FAILED . "<br>";
+					$msg = urlencode(PQL_LANG_USER_ADD_SCRIPT_FAILED) . ".&nbsp;<br>";
 				} else {
 					echo "<b>" . PQL_LANG_USER_ADD_SCRIPT_OK . "</b><br>";
-					$msg = urlencode(PQL_LANG_USER_ADD_SCRIPT_OK) . ".&nbsp;";
+					$msg = urlencode(PQL_LANG_USER_ADD_SCRIPT_OK) . ".&nbsp;<br>";
 				}
 
 				$url = "domain_detail.php?domain=$domain&msg=$msg";
