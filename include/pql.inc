@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.96 2003-08-10 08:40:47 turbo Exp $
+// $Id: pql.inc,v 2.97 2003-08-10 11:42:31 turbo Exp $
 //
 
 // ----------------------------
@@ -59,7 +59,7 @@ class pql {
 	}
 	
 	function _find_basedn() {
-	    // /usr/bin/ldapsearch -x -LLL -h localhost -s base -b '' objectclass=* namingContexts
+	    // CMD: /usr/bin/ldapsearch -x -LLL -h localhost -s base -b '' objectclass=* namingContexts
 	    return $this->_find_base_option("namingContexts");
 	}
 
@@ -410,6 +410,7 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name) {
 		$entry["objectClass"][] = "organizationalUnit";
 		
 		$ou = eregi_replace(",$", "", pql_get_define("PQL_GLOB_SUBTREE_USERS") . ",");
+		$ou = eregi_replace("^ou=", "", $ou); // Remove the 'ou=' from the attribute
 		$entry["ou"] = $ou;
 		
 		$dn = pql_get_define("PQL_GLOB_SUBTREE_USERS") . "," .
@@ -434,7 +435,10 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name) {
 		$entry = "";
 		$entry["objectClass"][] = "top";
 		$entry["objectClass"][] = "organizationalUnit";
-		$entry["ou"] = pql_get_define("PQL_GLOB_SUBTREE_GROUPS");
+
+		$ou = eregi_replace(",$", "", pql_get_define("PQL_GLOB_SUBTREE_GROUPS") . ",");
+		$ou = eregi_replace("^ou=", "", $ou); // Remove the 'ou=' from the attribute
+		$entry["ou"] = $ou;
 		
 		$dn = pql_get_define("PQL_GLOB_SUBTREE_GROUPS") . "," .
 			  pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) .
@@ -1646,15 +1650,17 @@ function pql_get_subschema($ldap_linkid, $attrib) {
     $attrib = lc($attrib);
 	
     // Get the DN for the subSchema
-	// /usr/bin/ldapsearch -x -LLL -h localhost -s base -b '' 'objectClass=*' subschemaSubentry
+	// CMD: /usr/bin/ldapsearch -x -LLL -h localhost -s base -b '' 'objectClass=*' subschemaSubentry
+	//
 	// TODO: Resue the $this->_find_base_option() function here!
     $sr    = ldap_read($ldap_linkid, NULL, '(objectClass=*)', array('subschemaSubentry'));
     $entry = ldap_get_entries($ldap_linkid, $sr);
-    if($entry["count"]) {
+    if($entry[0]["subschemasubentry"][0]) {
 		// Get the subSchemaAttributes from the subSchema
+		// CMD: /usr/bin/ldapsearch -x -LLL -h localhost -s base -b 'cn=Subschema' 'objectClass=*' $attrib
 		$sr     = ldap_read($ldap_linkid,
 							$entry[0]["subschemasubentry"][0],
-							'(objectClass=*)', array($attrib));
+							'objectClass=*', array($attrib));
 		$entry  = ldap_get_entries($ldap_linkid, $sr);
 		for($i=0; $i < $entry[0][$attrib]["count"]; $i++) {
 			// ------------------------
@@ -1814,7 +1820,8 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 
 		ksort($VALUE);
 		return $VALUE;
-    }
+    } else
+	  return false;
 }
 
 function pql_get_subschemas($ldap_linkid, $type = "", $match = "") {
@@ -2003,14 +2010,37 @@ function pql_create_ldif($func, $dn, $entry) {
 // --------------------------
 // Check wanted objectclasses if any of them require/allows
 // the specific attribute
+//
+// Input:
+//	1. Objectclasses the LDAP server understands
+//	2. Objectclasses we have choosen to use when creating object
+//	3. Attribute we like to check
+//
+// Output:
+//	A two dimensional array.
+//	First dimension:
+//		0. No match (attrib is neither a MUST or a MAY - we're missing
+//		   an objectclass for this attribute!)
+//		1. This attribute is a MUST
+//		2. This attribute is a MAY
+//
+//	Second dimension:
+//		The objectclass we found a match (MUST or MAY) in
 function pql_check_attribute($ldap_ocs, $incl_ocs, $attrib) {
-	for($i=0; $incl_ocs[$i]; $i++)
-	  // Check if there is a MUST for this attribute in one of
-	  // the included objectclasses
-	  for($j=0; $j < $ldap_ocs[$incl_ocs[$i]]['MUST']['count']; $j++)
-		if(lc($ldap_ocs[$incl_ocs[$i]]['MUST'][$j]) == lc($attrib))
-		  return($incl_ocs[$i]);
-	
+	for($i=0; $incl_ocs[$i]; $i++) {
+		// Check if there is a MUST for this attribute in one of
+		// the included objectclasses
+		for($j=0; $j < $ldap_ocs[$incl_ocs[$i]]['MUST']['count']; $j++)
+		  if(lc($ldap_ocs[$incl_ocs[$i]]['MUST'][$j]) == lc($attrib))
+			return array(1, $incl_ocs[$i]);
+
+		// Check if there is a MAY for this attribute in one of
+		// the included objectclasses
+		for($j=0; $j < $ldap_ocs[$incl_ocs[$i]]['MAY']['count']; $j++)
+		  if(lc($ldap_ocs[$incl_ocs[$i]]['MAY'][$j]) == lc($attrib))
+			return array(2, $incl_ocs[$i]);
+	}
+
 	return(0);
 }
 
