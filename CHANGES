@@ -1,6 +1,6 @@
 phpQLAdmin 2.0 Change Log
 
-phpQLAdmin 2.0.18d TO BE ANNOUNCED
+phpQLAdmin 2.0.18d Release (May 19 2004)
 	Bug fixes
 	  - De-globalize the 'reload left frame' value so that the reloading can acctually
 	    happen! Closes bug 182
