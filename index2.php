@@ -11,10 +11,6 @@ if(pql_get_define("PQL_GLOB_EZMLM_USE")) {
     $frames++;
 }
 
-if(pql_get_define("PQL_GLOB_BIND9_USE")) {
-    $frames++;
-}
-
 // -----------------
 // Check if this user is a QmailLDAP/Controls administrator
 $controladmins = pql_get_domain_value($_pql, $_pql->ldap_basedn[0], pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR"));
@@ -87,11 +83,6 @@ $size = sprintf("%d", $size);
 
        if(pql_get_define("PQL_GLOB_EZMLM_USE")) { ?>
       <frame src="left-ezmlm.php"   name="pqlnavezmlm">
-<?php   }
-
-        if(pql_get_define("PQL_GLOB_BIND9_USE")) {
-?>
-      <frame src="left-bind9.php"   name="pqlnavbind9">
 <?php   }
 
         if($frames >= 5) {
