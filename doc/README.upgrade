@@ -1,3 +1,12 @@
+Upgrading from 2.0.19
+	'Some time ago', the function pql_domain_get_value() was renamed and
+	rewritten to pql_get_attribute(). This means that you will have to
+	rewrite (or start over from scratch) the include/config.inc file...
+
+	Previous promises on disabling the 'register_globals' PHP configuration
+	is/was a little hasty. It is MORE true now than it was previosly...
+	PLEASE disable it and report any/all problems you get.
+
 Upgrading from 2.0.18d
 	More schema updates, make sure the schema file is updated on the LDAP
 	server(s)!
