@@ -14,9 +14,11 @@
 # PQL_SN="Test"
 # PQL_UID="test"
 # PQL_UIDNUMBER="1001"
-# PQL_USERPASSWORD="{KERBEROS}test@SWE.NET"
+# PQL_USERPASSWORD="{KERBEROS}test@TEST.ORG"
+# PQL_KADMIN_CMD="/usr/sbin/kadmin"
+# PQL_KADMIN_CL="-r TEST.ORG -p phpQLAdmin -s kerberos.test.org -k -t /etc/krb5.keytab.phpQLAdmin"
 
-$ENV{PATH} = "/bin:/usr/bin";
+$ENV{PATH} = "/bin:/usr/bin:/usr/sbin";
 
 # One thing that we might want to do is
 # create the mail directory:
@@ -31,14 +33,25 @@ if($ENV{"PQL_MAILMESSAGESTORE"}) {
 	    print "Creating $directory\n";
 	    if(! mkdir($directory) ) {
 		print "Unsuccessfull in creating $dir, $!\n";
+		error++;
 	    }
 	}
 
 	$directory .= $dirs[$i+1] . '/';
     }
 }
-chown($ENV{"PQL_UIDNUMBER"}, "mail", $DIR);
 
-#print "// beg ($0)\n";
-#system('/usr/bin/env | grep ^PQL | sort');
-#print "// end\n";
+if(!$error) {
+    chown($ENV{"PQL_UIDNUMBER"}, "mail", $DIR);
+} else {
+    exit($error);
+}
+
+# Add the Kerberos principal
+if(-x $ENV{"PQL_KADMIN_CMD"} && $ENV{"PQL_USERPASSWORD"} && $ENV{"PQL_KADMIN_CL"}) {
+    $principal = (split('}', $ENV{"PQL_USERPASSWORD"}))[1];
+    $principal = (split('\@', $principal))[0];
+
+    @args = ($ENV{"PQL_KADMIN_CMD"}, $ENV{"PQL_KADMIN_CL"}, "-q 'ank -randkey $principal'");
+    system(@args) == 0 or die "system command '@args' failed: $?"
+}
