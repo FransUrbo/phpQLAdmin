@@ -1,6 +1,6 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.18 2003-06-12 12:49:47 turbo Exp $
+// $Id: ezmlm_add.php,v 1.19 2003-06-12 16:47:18 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -103,19 +103,26 @@ $checked["indexed"]		= " CHECKED";	// -iI
 $checked["trailers"]	= " CHECKED";	// -tT
 $checked["public"]		= " CHECKED";							// -p
 
+if($domainname) {
+	if(ereg(';', $domainname))
+	  $data = split(';', $domainname);
+	else {
+		$data[0] = $domain;
+		$data[1] = $domainname;
+	}
+	
+	// Get basemaildir path for domain
+	if(!($path = pql_get_domain_value($_pql, $data[0], "basemaildir"))) {
+		die("Can't get baseMailDir path from domain '$data[1]'!");
+	}
+	
+	require("./include/pql_ezmlm.inc");
+	$ezmlm = new ezmlm('alias', $path);
+}	
+
 // Create list
 if(isset($submit)) {
 	if($listname and $domainname) {
-		$data = split(';', $domainname);
-
-		// Get basemaildir path for domain
-		if(!($path = pql_get_domain_value($_pql, $data[0], "basemaildir"))) {
-			die("Can't get baseMailDir path from domain '$data[1]'!");
-		}
-
-		require("./include/pql_ezmlm.inc");
-		$ezmlm = new ezmlm('alias', $path);
-		
 		$ezmlm->updatelistentry(1, $listname, $data[1], $checked);
 	} else {
 		$error_text["listname"] = 'missing';
@@ -129,9 +136,26 @@ if(!$domain) {
   <span class="title1">Create mailinglist</span>
 <?php
 } else {
+	$dom = pql_get_domain_value($_pql, $domain, 'ezmlmadministrator', $USER_DN);
+	if(is_array($dom)) {
+		if($ezmlm->mailing_lists_hostsindex["COUNT"] > $config["PQL_CONF_MAX_LISTS"][$domain]) {
 ?>
+  <span class="title2">
+    Sorry, you have reached the maximum allowed mailinglists in this domain<br>
+    You have <?=$ezmlm->mailing_lists_hostsindex["COUNT"]?> mailinglists, but only <?=$config["PQL_CONF_MAX_LISTS"][$domain]?> is allowed.
+  </span>
+<?php
+			die();
+		} else { ?>
   <span class="title1">Create mailinglist in domain <?=$domain?> (<?=$domainname?>)</span>
 <?php
+		}
+	} else {
+?>
+  <span class="title2">Sorry, you do not have access to create mailinglists in this domain</span>
+<?php
+		die();
+	}
 }
 ?>
   <br><br>
