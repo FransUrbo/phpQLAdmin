@@ -1,6 +1,6 @@
 <?php
 // start page
-// $Id: user_search.php,v 2.5 2004-03-11 18:13:32 turbo Exp $
+// $Id: user_search.php,v 2.6 2004-03-27 09:45:13 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -13,7 +13,7 @@ include("./header.html");
       <option value="<?=pql_get_define("PQL_ATTR_UID")?>" SELECTED><?=$LANG->_('Username')?></option>
       <option value="<?=pql_get_define("PQL_ATTR_CN")?>"><?=$LANG->_('Common name')?></option>
       <option value="<?=pql_get_define("PQL_ATTR_MAIL")?>"><?=$LANG->_('Mail address')?></option>
-      <option value="<?=pql_get_define("PQL_ATTR_MAILALTERNATE")?>"><?=$LANG->_('Alias')?></option>
+      <option value="<?=pql_get_define("PQL_ATTR_MAILALTERNATE")?>"><?=$LANG->_('Mail alias')?></option>
       <option value="<?=pql_get_define("PQL_ATTR_FORWARDS")?>"><?=$LANG->_('Forwarding address')?></option>
     </select>
 
