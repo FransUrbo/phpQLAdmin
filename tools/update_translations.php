@@ -2,7 +2,7 @@
 // ----------------------------
 // pql_update_translations.php
 //
-// $Id: update_translations.php,v 2.3 2004-02-14 14:01:00 turbo Exp $
+// $Id: update_translations.php,v 2.4 2004-03-14 10:33:08 turbo Exp $
 //
 
 // ----------------------------
@@ -50,7 +50,10 @@ $user_lang = isset( $_POST['user_lang'] ) ? $_POST['user_lang'] : '';
     </select>
 <?php
 	// Now we should load up the language file select by the user or by browser detection
-	$fp = fopen ("./include/lang.$lang.inc", "r");
+	$fp = @fopen("./include/lang.$lang.inc", "r");
+	if(!$fp) {
+	  die("<p>Can't open language file 'include/lang.$lang.inc' for read. Does it exists?");
+	}
 	require ("./include/lang.$lang.inc");
 	$buffer = fgets($fp, 4096); // chop off the php start part
 	$read = true;
@@ -71,7 +74,17 @@ $user_lang = isset( $_POST['user_lang'] ) ? $_POST['user_lang'] : '';
   <input type="hidden" name="mode" value="save">
   <input type="hidden" name="lang" value="<?php echo $lang;?>">
   <input type="submit" value="Save Translation"><p>
-  <textarea rows=10 cols=80 name="toptext"><?php echo $file_text;?></textarea>
+  <textarea rows=10 cols=80 name="toptext">
+<?php echo $file_text;?>
+
+// This is the alphabet of the language. Uppercased characters only at
+// this time. PHP should be able to figure out the lowercased eqvivalent.
+$alphabet = array("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K",
+                  "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V",
+                  "W", "X", "Y", "Z");
+
+// If you want HTML tags, you can have that in the translation string
+// (ie, the value AFTER the '=>' character).</textarea>
 
   <p>
 
@@ -117,7 +130,7 @@ $user_lang = isset( $_POST['user_lang'] ) ? $_POST['user_lang'] : '';
 			echo "<tr><td>";
 
 			if($language[$key] == "") 
-			  echo "<font color=red>*</font>&nbsp";
+			  echo "<font color=red>*</font> ";
 
 			echo $key . "\n";
 			echo "<input type=hidden name=\"key_$count\" size=50 value=\"$key\"></td>";
@@ -128,33 +141,66 @@ $user_lang = isset( $_POST['user_lang'] ) ? $_POST['user_lang'] : '';
 ?>
   </table>
 
-  <input type="hidden" name="total_keys" value="<?php echo $count;?>">
+  <input type="hidden" name="total_keys" value="<?=$count-1?>">
   <input type="submit" value="Save Translation"><p>
 </form>
 <?php } else { 
 	// they have submitted the form	
 	$lang	 = $_REQUEST['lang'];
 	$header  = "<?php\n";
-	$header .= $_REQUEST['toptext'];
-	$header .= "\n\$language = array(\n";
+	$header .= $_REQUEST['toptext']."\n";
 	$header  = stripslashes($header);
-	
+
+	// Remove any M$ newlines...
+	$header  = eregi_replace("", "", $header);
+
 	$total   = $_REQUEST['total_keys'];
+
+	// Prevent refresh from aborting file
+	ignore_user_abort(true);
+
 	$fp      = fopen($outputFile, "w");
+	if(!$fp) {
+	  ignore_user_abort(false);
+	  die("<p>Can't open language file '$outputFile' for write. Does the directory exists and is writable by the webserver?");
+	}
+
 	fputs($fp, $header);
 	for($i=0; $i <= $total; $i++) {
 		$key = "key_$i";
 		$val = "value_$i";
 
-		$str = '	"' . $_REQUEST[$key] . '" => "' . $_REQUEST[$val] . "\",\n";
-		$str = stripslashes($str);
-		fputs($fp, $str);
+		if($i==0)
+			$str = '$language = array("'.$_REQUEST[$key].'" => "'.$_REQUEST[$val].'\"';
+		else
+			$str = '				  "'.$_REQUEST[$key].'" => "'.$_REQUEST[$val].'\"';
+
+		$next = $i+1; $next = "key_$next";
+		if($_REQUEST[$next])
+			$str .= ",\n";
+		else
+			$str .= ");\n\n";
+
+		if(!empty($str)) {
+			$str = stripslashes($str);
+			fputs($fp, $str);
+		}
 	}
 
-	fputs($fp, ");\n?>\n");
+	// Put EMACS mode stuff at the very end...
+	fputs($fp, "/*\n");
+	fputs($fp, " * Local variables:\n");
+	fputs($fp, " * mode: php\n");
+	fputs($fp, " * tab-width: 4\n");
+	fputs($fp, " * End:\n");
+	fputs($fp, " */\n?>\n");
+
 	fclose($fp);
 
 	echo "Translation saved as new file: $outputFile<BR>";
+
+	// Put things back to normal
+	ignore_user_abort(false);
 }
 
 /*
