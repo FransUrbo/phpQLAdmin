@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.75 2003-06-04 08:02:17 turbo Exp $
+// $Id: pql.inc,v 2.76 2003-06-05 06:20:58 turbo Exp $
 //
 
 // ----------------------------
@@ -867,6 +867,8 @@ function pql_get_user_number($ldap_linkid, $domain) {
 // ------------------------------------------------
 
 function pql_get_userattribute($ldap_linkid, $user, $attribute) {
+    $attribute = lc($attribute);
+
     // check whether this user is cached
     $value = '';
     
