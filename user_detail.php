@@ -73,7 +73,9 @@ foreach($attribs as $attrib) {
 
     // Setup edit links
     $link = $attrib . "_link";
-    $$link = "<a href=\"user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=$domain&attrib=$attrib&user=<?php echo urlencode($user); ?>&$attrib=$value\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify $attrib for $username\"></a>";
+	$urluser = urlencode($user);
+
+    $$link = "<a href=\"user_edit_attribute.php?rootdn=$rootdn&domain=$domain&attrib=$attrib&user=$urluser&$attrib=$value\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify $attrib for $username\"></a>";
 }
 $quota = pql_get_userquota($_pql->ldap_linkid, $user);
 
