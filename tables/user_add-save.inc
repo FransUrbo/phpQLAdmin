@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.12 2004-03-27 09:41:44 turbo Exp $
+// $Id: user_add-save.inc,v 1.13 2004-03-30 06:31:02 turbo Exp $
 
 // Find out what objectclasses to use when creating user
 $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"]));
@@ -146,12 +146,19 @@ if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "she
 if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "mail")) {
 	// normal mailbox account
 	
-	if($_REQUEST["userhost"] and $_REQUEST["host"])
-	  // If using 'dns' -> the FQDN
-	  $entry[pql_get_define("PQL_ATTR_MAILHOST")] = $_REQUEST["userhost"][$_REQUEST["host"]];
-	elseif($_REQUEST["host"])
-	  // If using 'qlc' -> the FQDN
-	  $entry[pql_get_define("PQL_ATTR_MAILHOST")] = $_REQUEST["host"];
+	if($_REQUEST["userhost"] and $_REQUEST["host"]) {
+		// If using 'dns' -> the FQDN
+		if($_REQUEST["host"] == "usr")
+		  $entry[pql_get_define("PQL_ATTR_MAILHOST")] = $_REQUEST["userhost"];
+		else
+		  $entry[pql_get_define("PQL_ATTR_MAILHOST")] = $_REQUEST["userhost"][$_REQUEST["host"]];
+	} elseif($_REQUEST["host"]) {
+		// If using 'qlc' -> the FQDN
+		$entry[pql_get_define("PQL_ATTR_MAILHOST")] = $_REQUEST["host"];
+	} elseif($_REQUEST["userhost"]) {
+		// We've specified a host, but we never ticked the 'User defined' checkbox.
+		$entry[pql_get_define("PQL_ATTR_MAILHOST")] = $_REQUEST["userhost"];
+	}
 	
 	$entry[pql_get_define("PQL_ATTR_MODE")] = "localdelivery";
 	
@@ -196,7 +203,11 @@ if(!empty($default_quota)) {
 // ============================================================================================
 // ============== ADD THE USER TO THE DATABASE
 
-$DNs = pql_user_add($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["cn"], $entry, $_REQUEST["account_type"], $_REQUEST["subbranch"]);
+// pql_user_add() will first URL encode the value, THEN UTF8 encode it
+// Hence, we must reverse this here ($_REQUEST["subbranch"] is already
+// URL decoded).
+$branch = pql_maybe_decode($_REQUEST["subbranch"]);
+$DNs = pql_user_add($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["cn"], $entry, $_REQUEST["account_type"], $branch);
 if($DNs[0]) {
 	// TODO: DNs[1] (the group object) might still be empty -> failed to add it.
 	
