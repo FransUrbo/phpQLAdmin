@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.26 2004-11-11 11:12:29 turbo Exp $
+// $Id: pql_search.inc,v 2.27 2004-11-12 13:58:35 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -270,6 +270,93 @@ function pql_validate_administrator($linkid, $dn, $attrib, $admin) {
 			return(true);
 	} elseif($result == $admin)
 	  return(true);
+}
+// }}}
+
+// {{{ pql_setup_object_objectclasses(linkid, ocs, $object)
+// This function takes a known set of object classes that's to be
+// used for an object and comparing that with all the attributes
+// used. If a MUST attribute is missing, it will issue a warning
+// that/what attributes that's missing...
+function pql_setup_object_objectclasses($linkid, $ocs, $object) {
+	// Retreive all objectclasses the LDAP server knows about
+	$ldap = pql_get_subschema($linkid, "objectclasses");
+
+	// ---------------------------------
+	// Go through the WANTED objectclasses, checking for a
+	// MUST attribute we don't have
+	foreach($ocs as $oc) {
+		$oc = lc($oc);
+
+		if(!$ldap[$oc]['MUST']['count'])
+		  // An objectclass with no MUST, add this directly
+		  $entry[] = $oc;
+		else {
+			// This objectclass have one or more MUST attributes
+			// Do we have any of those MUST attributes defined?
+			$MUST = $ldap[$oc]['MUST'];
+
+			foreach($object as $attrib => $value) {
+				$attrib = lc($attrib);
+
+				// Go through the MUST attributes for this objctclass,
+				// looking for an attribute we have NOT defined
+				for($i=0; isset($MUST[$i]); $i++) {
+					$must = lc($MUST[$i]);
+
+					if($attrib == $must)
+					  unset($MUST[$i]);
+				}
+
+				// Before we rearrange the array, remove the count
+				// entry (othervise it gets renamed to a number).
+				unset($MUST['count']);
+				
+				// Rearrange the array
+				$MUST = pql_uniq($MUST);
+				
+				// Readd the count entry
+				$MUST['count'] = count($MUST);
+			}
+
+			if(!$MUST['count'])
+			  // This objectclass don't contain MUST attributes which
+			  // isn't defined in the user object. Add this to the list
+			  // of objectclasses to add
+			  $entry[] = $oc;
+			else {
+				// Objectclass which have been removed from the list because
+				// there's an MUST attribute missing
+				echo "<b>Objectclass with missing attribute in MUST:</b> <u>$oc</u><br>";
+				echo "You're missing the following attributes: ";
+				for($i=0; $i < $MUST['count']; $i++) {
+					if(!$MUST[$i+1])
+					  echo "and ";
+
+					echo "<i>".$MUST[$i]."</i>";
+
+					if($MUST[$i+1])
+					  echo ", ";
+				}
+				echo "<p>";
+			}
+		}
+	}
+
+	// ---------------------------------
+	// Go through each attribute, verifying that we have an object class
+	// for this.
+	foreach($object as $attrib => $value) {
+		$attrib = lc($attrib);
+
+		if(!eregi(pql_get_define("PQL_ATTR_OBJECTCLASS"), $attrib)) {
+			// This is a non-object class attribute
+
+			// TODO: How do we check that this attribute have a object class specified in $entry!?
+		}
+	}
+
+	return($entry);
 }
 // }}}
 
