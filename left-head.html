@@ -45,6 +45,7 @@
   <script src="left.js" type="text/javascript" language="javascript1.2"></script>
 <?php
   $br = strtolower(getenv("HTTP_USER_AGENT"));
+  $_SESSION["lynx"] = eregi("lynx", $br);
   $_SESSION["konqueror"] = eregi("konqueror", $br);
   $_SESSION["opera"] = eregi("opera", $br);
   if($_SESSION["opera"]) {
