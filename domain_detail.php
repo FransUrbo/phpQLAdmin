@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.82 2004-03-16 10:51:06 turbo Exp $
+// $Id: domain_detail.php,v 2.83 2004-03-31 07:25:38 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -149,8 +149,7 @@ $additionaldomainname = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get
 $buttons = array('default'	=> 'Branch Defaults');
 
 if($_SESSION["ADVANCED_MODE"]) {
-	$new = array('details'	=> 'Branch Details',
-				 'owner'	=> 'Branch Owner');
+	$new = array('owner'	=> 'Branch Owner Details');
 	$buttons = $buttons + $new;
 }
 
@@ -206,9 +205,7 @@ if($_REQUEST["view"] == 'owner') {
 } elseif($_REQUEST["view"] == 'action') {
 	include("./tables/domain_details-action.inc");
 } elseif($_SESSION["ADVANCED_MODE"] == 1) {
-	if($_REQUEST["view"] == 'details')
-	  include("./tables/domain_details-personal.inc");
-	elseif($_REQUEST["view"] == 'dnsinfo')
+	if($_REQUEST["view"] == 'dnsinfo')
 	  include("./tables/domain_details-dnsinfo.inc");
 	elseif($_REQUEST["view"] == 'dnszone')
 	  include("./tables/domain_details-dnszone.inc");
