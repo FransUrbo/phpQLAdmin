@@ -1,8 +1,8 @@
 <?php
 // send a testmail to an emailaddress
-// $Id: user_sendmail.php,v 2.26 2005-02-24 17:04:01 turbo Exp $
+// $Id: user_sendmail.php,v 2.26.2.1 2005-03-04 11:59:45 turbo Exp $
 //
-session_start();
+require("./include/pql_session.inc");
 require("./include/pql_config.inc");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
