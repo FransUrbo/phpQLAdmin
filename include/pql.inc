@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.115 2003-11-11 07:21:33 turbo Exp $
+// $Id: pql.inc,v 2.116 2003-11-12 09:35:50 turbo Exp $
 //
 
 // ----------------------------
@@ -201,9 +201,9 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 		// for creation for this attribute...
 		if(is_array($value)) {
 			foreach($value as $val)
-			  $entry[$key][] = maybe_encode(trim($val), $key, $ldap_linkid);
+			  $entry[$key][] = pql_maybe_encode(trim($val), $key, $ldap_linkid);
 		} else
-		  $entry[$key] = maybe_encode(trim($value), $key, $ldap_linkid);
+		  $entry[$key] = pql_maybe_encode(trim($value), $key, $ldap_linkid);
     }
 
 	// -----
@@ -260,7 +260,7 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 	  $userdn .= urldecode($branch);
 	else
 	  $userdn .= urldecode($domain);
-	$userdn = maybe_encode($userdn);
+	$userdn = pql_maybe_encode($userdn);
 
 	// Add the OpenLDAPaci attribute (maybe)
 	if(function_exists("user_generate_aci"))
@@ -416,7 +416,7 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 // Adds a domain into ldap-tree (o|ou|dc-record)
 function pql_domain_add($ldap_linkid, $basedn, $branch_name) {
 	// Maybe UTF-8 encode the branch name - to allow international characters
-	$branch_name = maybe_encode($branch_name, pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn), $ldap_linkid);
+	$branch_name = pql_maybe_encode($branch_name, pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn), $ldap_linkid);
 
 	$entry[pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)] = $branch_name;
 	$dn = pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) . "=" . $branch_name . "," . $basedn;
@@ -424,7 +424,7 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name) {
 	// Setup objectclasses
 	$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")] = pql_setup_branch_objectclasses(0, $basedn);
 	if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "o")
-	  $entry[pql_get_define("PQL_GLOB_ATTR_O")] = maybe_encode($branch_name);
+	  $entry[pql_get_define("PQL_GLOB_ATTR_O")] = pql_maybe_encode($branch_name);
 	else
 	  $entry[pql_get_define("PQL_GLOB_ATTR_O")] = 0;
 
@@ -622,7 +622,7 @@ function pql_modify_user_addressbook($ldap_linkid, $user, $attribs) {
 // {{{ pql_domain_exist(ldap, domain, rootdn = '')
 // Check if domain exists
 function pql_domain_exist($ldap, $domain, $rootdn = '') {
-	$domain = urldecode($domain); $domain = maybe_encode($domain);
+	$domain = urldecode($domain); $domain = pql_maybe_encode($domain);
 
 	if(!$rootdn) {
 		$filter = '(objectClass=phpQLAdminBranch)';
@@ -745,7 +745,7 @@ function pql_replace_userattribute($ldap_linkid, $user, $attrib, $value) {
 	elseif(!$attrib)
 	  $entry = $value;
 	else
-	  $entry[$attrib] = maybe_encode($value, $attrib, $ldap_linkid);
+	  $entry[$attrib] = pql_maybe_encode($value, $attrib, $ldap_linkid);
 
 	// replace the attribute
 	if(!@ldap_mod_replace($ldap_linkid, $user, $entry)) {
@@ -937,7 +937,7 @@ function pql_get_userattribute($ldap_linkid, $user, $attribute) {
 		// INTERNATIONALIZE values
 		foreach($entries as $attrib => $e) {
 			for($i=0; $e[$i]; $i++)
-			  $values[$attrib][] = maybe_decode($e[$i]);
+			  $values[$attrib][] = pql_maybe_decode($e[$i]);
 		}
 
 		pql_cache_userentry_add($user, $values);
@@ -1150,7 +1150,7 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '', $all = 0) {
 				}
 			} else {
 				for($j=0; $j < $result[0][$value]["count"]; $j++) {
-					$results[] = maybe_decode($result[0][$value][$j]);
+					$results[] = pql_maybe_decode($result[0][$value][$j]);
 					$success = 1;
 				}
 			}
@@ -1159,12 +1159,12 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '', $all = 0) {
 				 ($value == 'branchobjectclass')) {
 			// We're requesting a normal multivalue attribute
 			for($j=0; $j < $result[$i][$value]["count"]; $j++) {
-				$results[] = maybe_decode($result[$i][$value][$j]);
+				$results[] = pql_maybe_decode($result[$i][$value][$j]);
 				$success = 1;
 			}
 		} else {
 			// Return the value we're looking for (single valued).
-			$results = maybe_decode($result[0][$value][0]);
+			$results = pql_maybe_decode($result[0][$value][0]);
 			$success = 1;
 		}
 	} // end for($i)
@@ -1184,7 +1184,7 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '', $all = 0) {
 	  {
 		  // Convert a flat variable to a array
 		  $tmp = $results; unset($results);
-		  $results[] = maybe_decode($tmp);
+		  $results[] = pql_maybe_decode($tmp);
 	  }
 
 	return $results;
@@ -1540,7 +1540,7 @@ function pql_get_rootdn($dn) {
 // {{{ pql_search_attribute(ldap_linkid, basedn, attribute, value)
 // Search $attribute with $value in whole ldap tree, returns dn or false
 function pql_search_attribute($ldap_linkid, $basedn, $attribute, $value) {
-	$value = maybe_encode($value, $attribute, $ldap_linkid);
+	$value = pql_maybe_encode($value, $attribute, $ldap_linkid);
 
 	// URL decode the object DN if it's URL ENcoded
 	if(ereg("%3D", $basedn))
@@ -1910,17 +1910,17 @@ function pql_set_domain_value($linkid, $dn, $type, $value) {
 		if(is_array($value)) {
 			// We're supplied with an array, add those values
 			foreach($value as $val) {
-				$entry[$type][] = maybe_encode($val, $type, $linkid);
+				$entry[$type][] = pql_maybe_encode($val, $type, $linkid);
 			}
 		} else {
-			$entry[$type] = maybe_encode($value, $type, $linkid);
+			$entry[$type] = pql_maybe_encode($value, $type, $linkid);
 		}
 	} else {
 		// INTERNATIONALIZE
 		if(is_array($value)) {
 			foreach($value as $attrib => $val) {
 				for($i=0; $val[$i]; $i++)
-				  $entry[$attrib][] = maybe_encode($val[$i], $attrib, $linkid);
+				  $entry[$attrib][] = pql_maybe_encode($val[$i], $attrib, $linkid);
 			}
 		} else {
 			$entry = $value;
@@ -2311,9 +2311,9 @@ function non_internationalize($string) {
 }
 // }}}
 
-// {{{ maybe_encode(string, attrib, linkid)
+// {{{ pql_maybe_encode(string, attrib, linkid)
 // Check if we SHOULD encode the string...
-function maybe_encode($string, $attrib = '', $linkid = '') {
+function pql_maybe_encode($string, $attrib = '', $linkid = '') {
 	$old = $string;
 
 	$new = non_internationalize($old);
@@ -2350,9 +2350,9 @@ function maybe_encode($string, $attrib = '', $linkid = '') {
 }
 // }}}
 
-// {{{ maybe_decode(string)
+// {{{ pql_maybe_decode(string)
 // Check if we SHOULD decode the string...
-function maybe_decode($string) {
+function pql_maybe_decode($string) {
 	if(eregi("\=$", $string))
 	  // It's a BASE64 string, decode it
 	  $decoded = base64_decode($string);
@@ -2364,6 +2364,40 @@ function maybe_decode($string) {
 	  return($decoded);
 	else
 	  return($string);
+}
+// }}}
+
+// {{{ pql_maybe_idna_encode(string)
+function pql_maybe_idna_encode($string) {
+	$old = $string;
+
+	$new = non_internationalize($old);
+	if($old != $new) {
+		// The two strings isn't equal -> something have been replaced
+
+		if(function_exists("idn_to_ascii")) {
+			$idna = idn_to_ascii($old);
+			if($idna)
+			  return($idna);
+			else
+			  return($new);
+		} else
+		  return($new);
+	} else
+	  return($string);
+}
+// }}}
+
+// {{{ pql_maybe_idna_decode(string)
+function pql_maybe_idna_decode($string) {
+	if(eregi("xn--", $string) and function_exists("idn_to_utf8")) {
+		// It's an IDNA string, and we have the IDN module loaded
+
+		// First IDNA decode it, then UTF-8 decode it
+		return(maybe_decode(idn_to_utf8($string)));
+	} else {
+		return(maybe_decode($string));
+	}
 }
 // }}}
 
