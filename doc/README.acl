@@ -135,8 +135,9 @@ time you read this...
 
 And this mean that any update on the 'administrator' value will have to
 be incorporated in the LDAP server ACL's as well! Sucks, but that's the
-way it is (currently). Using 'in LDAP' access control (ACI) might help
-this, but phpQLAdmin does not have support for this (yet).
+way it is (currently). Using 'in LDAP' access control (ACI) will solve
+much of the trouble in keeping the ACL updated when administrator (super
+or branch) is changed. Please read the README.aci file for more on this.
 
 Another problem with this is that it's not recursive. That is, it lets
 modifications being done in the 'dc=fredriksson,dc=com' tree but not in
@@ -170,8 +171,10 @@ Anonymous read to attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Another issue with LDAP ACL's is that you _absolutly_ need anonymous
 read to the 'namingContexts', 'subschemaSubentry' attribute(s) in the
-'' (base) DN. One way to find out if you have this, is to execute the
-following command:
+'' (base) DN. You will need to grant access to the value that the
+'subschemaSubentry' points to (usually 'cn=Subschema').
+
+One way to find out if you have this, is to execute the following command:
 
 	ldapsearch -x -LLL -h localhost -s base -b '' objectclass=* \
 		namingContexts subschemaSubentry
@@ -217,4 +220,7 @@ access to dn.subtree="cn=Subschema"
 
 The reason why we (phpQLAdmin) needs anonymous read access to namingContexts
 and subschemaSubentry is because phpQLAdmin does a lot of 'automatic discovering'
-(of what the database look like etc).
+of what the database look like etc.
+
+NOTE: If phpQLAdmin isn't running on the same host as the LDAP server, they
+      change the localhost IP to the real IP in the 'by peername' above.
