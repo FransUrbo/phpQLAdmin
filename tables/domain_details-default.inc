@@ -147,110 +147,33 @@
         <td><?=$ezmlmvirtualuser_link?></td>
       </tr>
 
-<?php } ?>
-      <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Domain administrator')?></td>
-<?php if(is_array($domain_admins)) {
-		$new_tr = 0;
-		foreach($domain_admins as $admin) {
-			$admin = pql_maybe_encode($admin);
+<?php }
 
-			$username = pql_get_attribute($_pql->ldap_linkid, $admin, pql_get_define("PQL_ATTR_CN"));
-			if(!$username[0])
-			  $username = $admin;
-			else
-			  $username = $username[0];
+	  // Domain administrators
+	  $class = pql_format_table(0);
+	  $url_tmp  = "domain_edit_attributes.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&view=".$_REQUEST["view"];
+	  $url_tmp .= "&attrib=".pql_get_define("PQL_ATTR_ADMINISTRATOR");
+	  
+	  $tbl_txt = array('tit' => $LANG->_('Domain administrators'),
+					   'add' => $LANG->_('Add domain administrator for domain '),
+					   'del' => $LANG->_('Remove domain administrator'));
+	  $tbl_url = array('add' => $url_tmp."&submit=3&action=add",
+					   'del' => $url_tmp."&submit=4&action=delete");
+	  pql_format_table_single($_pql->ldap_linkid, $tbl_txt, $tbl_url, $domain_admins,
+							  pql_get_define("PQL_ATTR_ADMINISTRATOR"), $class);
 
-			if($new_tr) {
-?>
-      <tr class="<?php pql_format_table(); ?>">
-        <td class="title"></td>
-<?php		} ?>
-        <td><a href="user_detail.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$admin?>&view=<?=$_REQUEST["view"]?>"><?=urldecode($username)?></a></td>
-<?php		if(pql_validate_administrator($_pql->ldap_linkid, $_pql->ldap_basedn[0], $admin) and
-			   !$_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
-				// This is a super-admin, and we (user logged in) isn't super-admin.
-				// Don't allow to remove this admin
-?>
-        <td></td>
-<?php		} else { ?>
-        <td>
-          <a href="domain_edit_attributes.php?attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR")?>&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&<?=pql_get_define("PQL_ATTR_ADMINISTRATOR")?>=<?=$admin?>&submit=3&action=modify&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_('Modify administrators for %domainname%'), array('domainname' => $domainname)); ?>"></a>
-          <a href="domain_edit_attributes.php?attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR")?>&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&<?=pql_get_define("PQL_ATTR_ADMINISTRATOR")?>=<?=$admin?>&submit=4&action=delete&view=<?=$_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Remove domain administrator')?>" border="0"></a>
-        </td>
-<?php		} ?>
-      </tr>
-
-<?php
-			$new_tr = 1;
-		}
-?>
-      <tr class="<?php pql_format_table(); ?>">
-        <td class="title"></td>
-        <td colspan="4">
-          <a href="domain_edit_attributes.php?attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR")?>&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&submit=3&action=add&view=<?=$_REQUEST["view"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain administrator for domain'))); ?></a>
-        </td>
-      </tr>
-<?php
-	} else {
-?>
-        <td colspan="4">
-          <a href="domain_edit_attributes.php?attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR")?>&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&submit=3&action=add&view=<?=$_REQUEST["view"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain administrator for domain'))); ?></a>
-        </td>
-<?php
-	}
-?>
-
-<?php if(pql_get_define("maximummailinglists") >= 0) { ?>
-      <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Mailinglist administrators')?></td>
-<?php	if(is_array($mailinglist_admins)) {
-			$new_tr = 0;
-			foreach($mailinglist_admins as $admin) {
-				$username = pql_get_attribute($_pql->ldap_linkid, $admin, pql_get_define("PQL_ATTR_CN"));
-				if(!$username[0])
-				  $username = $admin;
-				else
-				  $username = $username[0];
-				
-				if($new_tr) {
-?>
-      <tr class="<?php pql_format_table(); ?>">
-        <td class="title"></td>
-<?php			} ?>
-        <td><a href="user_detail.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$admin?>&view=<?=$_REQUEST["view"]?>"><?=urldecode($username)?></a></td>
-<?php			if(pql_validate_administrator($_pql->ldap_linkid, $_pql->ldap_basedn[0], $admin) and
-				   !$_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
-					// This is a super-admin, and we (user logged in) isn't super-admin.
-					// Don't allow to remove this admin
-?>
-        <td></td>
-<?php			} else { ?>
-        <td>
-          <a href="domain_edit_attributes.php?attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM")?>&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM")?>=<?=$admin?>&submit=3&action=modify&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Modify administrators for %domainname%'), array('domainname' => $domainname)); ?>"></a>
-          <a href="domain_edit_attributes.php?attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM")?>&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM")?>=<?=$admin?>&submit=4&action=delete&view=<?=$_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Remove domain administrator')?>" border="0"></a>
-        </td>
-<?php			} ?>
-      </tr>
-
-<?php
-				$new_tr = 1;
-			}
-?>
-      <tr class="<?php pql_format_table(); ?>">
-        <td class="title"></td>
-        <td colspan="4">
-          <a href="domain_edit_attributes.php?attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM")?>&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&submit=3&action=add&view=<?=$_REQUEST["view"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('mailinglist administrator for domain'))); ?></a>
-        </td>
-      </tr>
-<?php
-		} else {
-?>
-        <td colspan="4">
-          <a href="domain_edit_attributes.php?attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM")?>&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&submit=3&action=add&view=<?=$_REQUEST["view"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('mailinglist administrator for domain'))); ?></a>
-        </td>
-<?php	}
-      }
+	  // Mailinglist administrators
+	  $class = pql_format_table(0);
+	  $url_tmp  = "domain_edit_attributes.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&view=".$_REQUEST["view"];
+	  $url_tmp .= "&attrib=".pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM");
+	  
+	  $tbl_txt = array('tit' => $LANG->_('Mailinglists administrator'),
+					   'add' => $LANG->_('Add list administrator for domain '),
+					   'del' => $LANG->_('Remove list administrator'));
+	  $tbl_url = array('add' => $url_tmp."&submit=3&action=add",
+					   'del' => $url_tmp."&submit=4&action=delete");
+	  pql_format_table_single($_pql->ldap_linkid, $tbl_txt, $tbl_url, $mailinglist_admins,
+							  pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"), $class);
 ?>
     </th>
   </table>
