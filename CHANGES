@@ -14,6 +14,8 @@ phpQLAdmin 2.0.16 TO BE ANNOUNCED
 	  - Update of README.acl (using double quotes, not single
 	    for 'by dn=...' ACL directive).
 	    Closes bug 34
+	  - Better working PQL_GLOB_HOST example with (included) demo database
+	    in ./demo/*.ldif.
 
 phpQLAdmin 2.0.15 Release (Release (Jul 15 2003))
 	Bug fixes
