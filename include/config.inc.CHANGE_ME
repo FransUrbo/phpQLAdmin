@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.3 2002-12-17 12:24:36 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.4 2002-12-20 01:50:19 turbo Exp $
 //
 session_start();
 // ----------------------------
@@ -10,7 +10,7 @@ session_start();
 // lang.it.inc --> italian
 // lang.jp.inc --> japanese
 // ----------------------------
-require("lang.en.inc");
+require("include/lang.en.inc");
 
 // ----------------------------
 // Graphical Output
@@ -211,6 +211,14 @@ define("PQL_LDAP_CONTROL_HOST","localhost;389;ou=QmailLDAP,dc=example,dc=com");
 // and don't want that phpQLAdmin register all domains on this server. Currently, the
 // application do not support more than one control database.
 define("PQL_LDAP_CONTROL_AUTOADDLOCALS", true);
+
+// ----------------------------
+// Should we enable EZMLM mailinglist management?
+// This require the admin interface (phpQLAdmin)
+// to be running on the ezmlm host. And if it's
+// 'replicated' (ie, round-robbing etc), then you'll
+// have to do this manually (at the moment).
+define("PQL_LDAP_EZMLM_USE", false);
 
 // ----------------------------
 // password encryption schemes to allow
