@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.16 2003-10-16 06:22:45 turbo Exp $
+// $Id: left-control.php,v 2.17 2004-01-22 10:14:57 turbo Exp $
 //
 session_start();
 
@@ -21,7 +21,7 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
   <!-- Server Control -->
   <div id="el<?=$j?>Parent" class="parent">
     <a class="item" href="control.php">
-      <font color="black" class="heada"><b>Control</b></font>
+      <font color="black" class="heada"><b>QmailLDAP/Controls</b></font>
     </a>
   </div>
 
@@ -29,9 +29,8 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 	if($ADVANCED_MODE) {
 		$host = split(';', $USER_HOST);
 ?>
-  <font color="black" class="heada">
-    Host: <font color="black" size=-4><b><?=$host[0]?>:<?=$host[1]?></b></font>
-  </font>
+  <font color="black" class="heada"><?=$LANG->_('LDAP Server')?>: <b><?=$host[0]?>:<?=$host[1]?></b></font>
+  <p>
 
   <div id="el2Parent" class="parent">
     <nobr>
