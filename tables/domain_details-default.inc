@@ -56,7 +56,7 @@
 <?php } ?>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Default homedirectory for users')?></td>
+        <td class="title"><?=$LANG->_('Base home directory for users')?></td>
         <td><?php if($basehomedir){echo $basehomedir;}else{echo $LANG->_('Not set');} ?></td>
 <?php if($_SESSION["ALLOW_BRANCH_CREATE"]) { ?>
         <td><?=$basehomedir_link?></td>
@@ -66,7 +66,7 @@
       </tr>
   
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Default maildirectory for users')?></td>
+        <td class="title"><?=$LANG->_('Base mail directory for users')?></td>
         <td><?php if($basemaildir){echo $basemaildir;}else{echo $LANG->_('Not set');} ?></td>
 <?php if($_SESSION["ALLOW_BRANCH_CREATE"]) { ?>
         <td><?=$basemaildir_link?></td>
