@@ -5,16 +5,13 @@
       if(is_array($zones)) {
 	if(!$domainname) {
 	    // Use the first zone as default (ie, if we're not called with a specific zone to show)
-	    $i=0;
-	    foreach($zones as $domainname => $data) {
-		if($i > 0) last;
-	    }
+	    foreach($zones as $domainname => $data) break;
 	}
 ?>
   <br>
   <table cellspacing="0" border="0" width="100%" cellpadding="0" size="100%">
     <tr>
-      <td colspan="2" valign="bottom" align="left" width="100%"><?php $i=1; foreach($zones as $domainname => $zone_data) { ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=dnszone&domainname=$domainname&view=$view"?>"><img alt="/ Domain <?=$domainname?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$domainname?>"></a><?php if(!($i%2)) { ?><br><?php }; $i++; } ?></td>
+      <td colspan="2" valign="bottom" align="left" width="100%"><?php $i=1; foreach($zones as $dname => $zone_data) { ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=dnszone&domainname=$dname&view=$view"?>"><img alt="/ Domain <?=$dname?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$dname?>"></a><?php if(!($i%2)) { ?><br><?php }; $i++; } ?></td>
     </tr>
   </table>
 
