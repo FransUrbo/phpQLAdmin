@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtproutes (max number of bytes in message)
 //
-// $Id: attrib.control.smtproutes.inc,v 2.18 2004-03-11 16:31:55 turbo Exp $
+// $Id: attrib.control.smtproutes.inc,v 2.19 2004-06-10 05:37:43 turbo Exp $
 
 // {{{ smtproutes_check(type)
 function smtproutes_check($type) {
@@ -331,10 +331,10 @@ function smtproutes_print_form() {
     <input type="hidden" name="mxhost"        value="<?=$_REQUEST["mxhost"]?>">
 <?php } ?>
 <?php if($_REQUEST["rootdn"]) { ?>
-    <input type="hidden" name="rootdn"        value="<?=$_REQUEST["rootdn"]?>">
+    <input type="hidden" name="rootdn"        value="<?=urlencode($_REQUEST["rootdn"])?>">
 <?php } ?>
 <?php if(!is_array($_REQUEST["domain"])) { ?>
-    <input type="hidden" name="domain"        value="<?=$_REQUEST["domain"]?>">
+    <input type="hidden" name="domain"        value="<?=urlencode($_REQUEST["domain"])?>">
 <?php } ?>
     <input type="hidden" name="type"          value="<?=$_REQUEST["type"]?>">
     <input type="hidden" name="view"          value="<?=$_REQUEST["view"]?>">

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliverymode (delivery preferences)
-// $Id: attrib.deliverymode.inc,v 2.22 2004-04-29 06:50:07 turbo Exp $
+// $Id: attrib.deliverymode.inc,v 2.23 2004-06-10 05:37:43 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -132,9 +132,9 @@ function attribute_print_form($type = "modify") {
     <input type="hidden" name="attrib"       value="<?=$_REQUEST["attrib"]?>">
 	<!-- DLW: oldvalue should be 3 values for the 3 fields. -->
     <input type="hidden" name="oldvalue"     value="<?=$_REQUEST["oldvalue"]?>">
-    <input type="hidden" name="domain"       value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="rootdn"       value="<?=$_REQUEST["rootdn"]?>">
-    <input type="hidden" name="user"         value="<?=$_REQUEST["user"]?>">
+    <input type="hidden" name="domain"       value="<?=urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="rootdn"       value="<?=urlencode($_REQUEST["rootdn"])?>">
+    <input type="hidden" name="user"         value="<?=urlencode($_REQUEST["user"])?>">
     <input type="hidden" name="view"         value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">

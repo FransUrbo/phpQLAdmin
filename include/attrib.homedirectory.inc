@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // homedirectory (path to homedirectory)
-// $Id: attrib.homedirectory.inc,v 2.13 2004-02-14 14:25:36 turbo Exp $
+// $Id: attrib.homedirectory.inc,v 2.14 2004-06-10 05:37:43 turbo Exp $
 
 function attribute_check($type) {
     global $error, $LANG;
@@ -41,9 +41,9 @@ function attribute_print_form() {
     <input type="hidden" name="submit"   value="1">
     <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="oldvalue" value="<?=$_REQUEST["oldvalue"]?>">
-    <input type="hidden" name="domain"   value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="rootdn"   value="<?=$_REQUEST["rootdn"]?>">
-    <input type="hidden" name="user"     value="<?=$_REQUEST["user"]?>">
+    <input type="hidden" name="domain"   value="<?=urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="rootdn"   value="<?=urlencode($_REQUEST["rootdn"])?>">
+    <input type="hidden" name="user"     value="<?=urlencode($_REQUEST["user"])?>">
     <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">

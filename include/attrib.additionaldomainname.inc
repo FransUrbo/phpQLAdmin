@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.24 2004-05-04 08:16:42 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.25 2004-06-10 05:37:43 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -116,8 +116,8 @@ function attribute_print_form() {
     <input type="hidden" name="submit"   value="2">
     <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="oldvalue" value="<?=$_REQUEST["additionaldomainname"]?>">
-    <input type="hidden" name="domain"   value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="rootdn"   value="<?=$_REQUEST["rootdn"]?>">
+    <input type="hidden" name="domain"   value="<?=urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="rootdn"   value="<?=urlencode($_REQUEST["rootdn"])?>">
     <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">

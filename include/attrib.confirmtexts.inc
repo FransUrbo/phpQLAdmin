@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // confirmText and moderatorText (Qmail-GROUP object texts)
-// $Id: attrib.confirmtexts.inc,v 2.1 2004-05-07 04:43:17 turbo Exp $
+// $Id: attrib.confirmtexts.inc,v 2.2 2004-06-10 05:37:43 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -40,9 +40,9 @@ function attribute_print_form($type = "modify") {
     <input type="hidden" name="submit"       value="1">
     <input type="hidden" name="attrib"       value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="oldvalue"     value="<?=$_REQUEST["oldvalue"]?>">
-    <input type="hidden" name="domain"       value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="rootdn"       value="<?=$_REQUEST["rootdn"]?>">
-    <input type="hidden" name="user"         value="<?=$_REQUEST["user"]?>">
+    <input type="hidden" name="domain"       value="<?=urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="rootdn"       value="<?=urlencode($_REQUEST["rootdn"])?>">
+    <input type="hidden" name="user"         value="<?=urlencode($_REQUEST["user"])?>">
     <input type="hidden" name="view"         value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">

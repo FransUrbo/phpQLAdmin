@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for pilotPerson objects etc
-// $Id: attrib.outlook.inc,v 1.23 2004-03-31 08:57:18 turbo Exp $
+// $Id: attrib.outlook.inc,v 1.24 2004-06-10 05:37:43 turbo Exp $
 
 /*
 	Attributes managed here:
@@ -67,9 +67,9 @@ function attribute_print_form() {
 	<input type="hidden" name="submit"   value="2">
 	<input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
 	<input type="hidden" name="oldvalue" value="<?=$_REQUEST["oldvalue"]?>">
-	<input type="hidden" name="domain"   value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="rootdn"   value="<?=$_REQUEST["rootdn"]?>">
-	<input type="hidden" name="user"     value="<?=$_REQUEST["user"]?>">
+	<input type="hidden" name="domain"   value="<?=urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="rootdn"   value="<?=urlencode($_REQUEST["rootdn"])?>">
+	<input type="hidden" name="user"     value="<?=urlencode($_REQUEST["user"])?>">
     <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
 	<input type="submit" value="<?=$LANG->_('Save')?>">
   </form>

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // base homedirectory for domain
-// $Id: attrib.basehomedir.inc,v 2.8 2004-03-03 07:59:28 turbo Exp $
+// $Id: attrib.basehomedir.inc,v 2.9 2004-06-10 05:37:43 turbo Exp $
 
 function attribute_check() {
     global $error, $LANG;
@@ -46,8 +46,8 @@ function attribute_print_form() {
     <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
     <!-- DLW: Check to make sure I didnt set oldvalue to oldvalue in any of the attributes. -->
     <input type="hidden" name="oldvalue" value="<?=$_REQUEST["basehomedir"]?>">
-    <input type="hidden" name="domain"   value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="rootdn"   value="<?=$_REQUEST["rootdn"]?>">
+    <input type="hidden" name="domain"   value="<?=urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="rootdn"   value="<?=urlencode($_REQUEST["rootdn"])?>">
     <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">

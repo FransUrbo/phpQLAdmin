@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // userNamePrefix/userNamePrefixLength
-// $Id: attrib.usernameprefix.inc,v 2.11 2004-05-05 07:25:18 turbo Exp $
+// $Id: attrib.usernameprefix.inc,v 2.12 2004-06-10 05:37:43 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type = '') {
@@ -63,8 +63,8 @@ function attribute_print_form($type = "modify") {
 
     <input type="hidden" name="submit" value="2">
     <input type="hidden" name="attrib" value="<?=$attrib?>">
-    <input type="hidden" name="domain" value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="rootdn" value="<?=$_REQUEST["rootdn"]?>">
+    <input type="hidden" name="domain" value="<?=urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="rootdn" value="<?=urlencode($_REQUEST["rootdn"])?>">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
