@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.18 2003-05-04 15:58:21 turbo Exp $
+// $Id: attrib.config.inc,v 1.19 2003-05-24 11:36:52 turbo Exp $
 
 function attribute_check() {
     global $administrator, $domain, $oldvalue, $_pql, $error;
@@ -124,7 +124,7 @@ function attribute_print_form() {
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title">Add to <?=$attrib?>
+          <td class="title">Add to <?=$attrib."\n"?>
 <?php   if(($test == lc($PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_USER"])) or
  		   ($test == lc($PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_DOMAIN"]))) {
             if($test == 'userobjectclass')
@@ -135,7 +135,7 @@ function attribute_print_form() {
 
             $objectclasses = pql_get_subschema($_pql->ldap_linkid, "objectclasses");
 			if(is_array($objectclasses)) {
-				$i = 0;
+				$i = 0; $new_tr = 0;
 				foreach($objectclasses as $key => $oc) {
                     $print = 1; $gotit = 0;
 
@@ -147,25 +147,26 @@ function attribute_print_form() {
 
                     if($print) {
 					    $class=table_bgcolor(0);
-					    if($new_tr) {
+						if($new_tr) {
 ?>
 
-      <tr>
-        <td class="title"></td>
-<?php                   }
-				        $new_tr = 1;
-
-					    // TODO: We should use type="checkbox", indexed with $i here,
-					    //       but I'm not quite sure how to pass the value to attribute_save()...
+        <tr>
+          <td class="title"></td>
+<?php					}
+						$new_tr = 1;
 ?>
           <td class="<?=$class?>">
-            <input type="radio" name="<?=$attrib?>" value="<?=$key?>" size="50"><?=$objectclasses[$key]["NAME"]?>
+            <input type="checkbox" name="<?=$attrib?>_<?=$i?>" value="<?=$key?>" size="50"><?=$objectclasses[$key]["NAME"]."\n"?>
           </td>
+        </tr>
 
 <?php                   $i++;
 					}
                 }
-			} else {
+?>
+      <input type="hidden" name="<?=$attrib?>_<?=$i?>" value="on">
+      <input type="hidden" name="<?=$attrib?>" value="<?=$i?>">
+<?php		} else {
 				// No objectclasses in LDAP!
 ?>
           <td class="<?=$class?>"><i><a href="javascript:errorWindow()">No objectclasses!</i></a></td
@@ -258,7 +259,11 @@ function attribute_save() {
 		if(strtolower($attrib) == 'passwordscheme') {
 			$entry[$attrib][] = strtoupper($$attrib);
 		} else {
-			$entry[$attrib][] = $$attrib;
+			for($i=0; $i < $_POST[$attrib]; $i++) {
+				$var_name = $attrib . "_$i";
+				if($_POST[$var_name]) 
+				  $entry[$attrib][] = $_POST[$var_name];
+			}
 		}
     }
 
