@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.16.4.2.2.2 2004-04-29 06:31:54 turbo Exp $
+// $Id: user_add-save.inc,v 1.16.4.2.2.3 2004-05-04 15:40:23 turbo Exp $
 
 // Find out what objectclasses to use when creating user
 $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"]));
@@ -200,9 +200,9 @@ if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "mai
 			if(($_REQUEST["account_type"] == "mail") and !$_SESSION["ADVANCED_MODE"])
 			  // It's a mail account, and we where/is not running in
 			  // advanced mode. Use the maildirectory as homedirectory.
-			  $entry[pql_get_define("PQL_ATTR_HOMEDIR")] = user_generate_mailstore($_pql, $_REQUEST["email"],
-																				   $_REQUEST["domain"], $entry,
-																				   'user');
+			  $entry[pql_get_define("PQL_ATTR_HOMEDIR")] = user_generate_homedir($_pql, $_REQUEST["email"],
+																				 $_REQUEST["domain"], $entry,
+																				 'user');
 			else
 			  $entry[pql_get_define("PQL_ATTR_HOMEDIR")] = user_generate_homedir($_pql, $_REQUEST["email"],
 																				 $_REQUEST["domain"], $entry,
