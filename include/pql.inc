@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.29 2003-01-23 08:07:48 turbo Exp $
+// $Id: pql.inc,v 2.30 2003-01-24 09:15:39 turbo Exp $
 //
 
 // ----------------------------
@@ -526,10 +526,10 @@ function pql_email_exists($ldap, $email){
 	$filter = "(|(" . PQL_LDAP_ATTR_MAIL . "=" . $email . ")(" . PQL_LDAP_ATTR_MAILALTERNATE . "=" . $email . "))";
 
 	foreach($ldap->ldap_basedn as $dn) {
-		$sr = ldap_search($ldap_linkid, $dn, $filter);
-		if(ldap_count_entries($ldap_linkid,$sr) > 0) {
-			$ed = ldap_first_entry($ldap_linkid, $sr);
-			return ldap_get_dn($ldap_linkid, $ed);
+		$sr = ldap_search($ldap->ldap_linkid, $dn, $filter);
+		if(ldap_count_entries($ldap->ldap_linkid,$sr) > 0) {
+			$ed = ldap_first_entry($ldap->ldap_linkid, $sr);
+			return ldap_get_dn($ldap->ldap_linkid, $ed);
 		} else {
 			return false;
 		}
@@ -581,7 +581,7 @@ function pql_remove_userattribute($ldap_linkid, $user, $attrib, $value){
 function pql_modify_userattribute($ldap_linkid, $user, $attrib, $oldvalue, $newvalue) {
     // get all attributes first
     $entry = pql_get_userattribute($ldap_linkid, $user, $attrib);
-    
+
     // If we found an entry, make it's not overwritten,
     // otherwise ADD the attribute.
     if($entry) {
@@ -596,14 +596,14 @@ function pql_modify_userattribute($ldap_linkid, $user, $attrib, $oldvalue, $newv
     } else {
 		$entry_new[$attrib][] = $newvalue;
     }
-    
-    if(!ldap_mod_replace($ldap_linkid, $dn, $entry_new)){
+
+    if(!ldap_mod_replace($ldap_linkid, $user, $entry_new)) {
 		pql_errormsg($ldap_linkid);
 		return false;
     }
     
     // user entry has changed -> remove the cached version
-    pql_cache_userentry_remove($dn);
+    pql_cache_userentry_remove($user);
     if ($attrib == PQL_LDAP_REFERENCE_USERS_WITH) {
 		pql_cache_userdn_remove($user);
     }
@@ -1258,8 +1258,9 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '') {
 				}
 			}
 		} elseif((($value == 'administrator') or ($value == 'seealso')) and ($match == "*")) {
-			$results[] = $result[$i]["dn"]; $success = 1;
-
+			for($j=0; $j < $result[$i][$value]["count"]; $j++) {
+				$results[] = $result[$i][$value][$j]; $success = 1;
+			}
 		} else {
 			// Return the value we're looking for (single valued).
 			$results = $result[0][$value][0]; $success = 1;
@@ -1580,7 +1581,7 @@ function pql_get_subschema($ldap_linkid, $attrib) {
     }
 }
 
-function pql_get_subschemas($ldap_linkid) {
+function pql_get_subschemas($ldap_linkid, $match = "") {
     $attribs = array("ldapsyntaxes", "matchingrules", "attributetypes", "objectclasses");
     foreach($attribs as $attrib) {
 		$result = pql_get_subschema($ldap_linkid, $attrib);
@@ -1588,6 +1589,13 @@ function pql_get_subschemas($ldap_linkid) {
 			$entry[$attrib] = $result;
 		}
     }
+
+	if($match) {
+		// We're looking for something special, look for it. If it doesn't
+		// exists in the array -> return FALSE.
+		if(! $entry["objectclasses"][strtolower($match)])
+		  return 0;
+	}
 	
     return $entry;
 }
