@@ -1,8 +1,10 @@
-<?php /* $Id: user_add-details.inc,v 1.30 2005-02-24 17:04:03 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.31 2005-03-03 12:22:12 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
-<?php if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $template, 'uid')) {
+<?php
+// {{{ Username
+	  if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $template, 'uid')) {
 		if((!pql_get_define("PQL_CONF_AUTOCREATE_USERNAME", $_REQUEST["rootdn"]) and $_SESSION["ADVANCED_MODE"]) or
 		   empty($_REQUEST["uid"]))
 		{
@@ -29,9 +31,11 @@
         </tr>
         <input type="hidden" name="uid" value="<?=$_REQUEST["uid"]?>">
 
-<?php	}
+<?php 	}
 	  }
+// }}}
 
+	  // {{{ Firstname
 	  if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $template, 'sn')) {
 ?>
         <!-- Firstname -->
@@ -44,7 +48,9 @@
           </td>
         </tr>
 <?php }
+// }}}
 
+	  // {{{ Lastname
 	  if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $template, 'cn')) {
 ?>
 
@@ -58,14 +64,19 @@
           </td>
         </tr>
 <?php }
+// }}}
 
 	  if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_PASSWD"))) {
 		// Get the default password scheme for branch
 		$_REQUEST["defaultpasswordscheme"] = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"],
 															   pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"));
-
-		if(!$_REQUEST["defaultpasswordscheme"] or $_SESSION["ADVANCED_MODE"])  {
-			// We have no default password scheme - display forms for SYSTEM/MAIL account
+		
+		// {{{ Password encryption scheme
+		if((!$_REQUEST["defaultpasswordscheme"] or $_SESSION["ADVANCED_MODE"]) and
+		   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_PASSWD")))
+		{
+			// We have no default password scheme (or we're running in advanced mode) and password is allowed.
+			// -> Allow password to be entered...
 ?>
 
         <!-- Password scheme -->
@@ -73,40 +84,44 @@
           <td class="title"><?=$LANG->_('Password encryption scheme')?></td>
           <td>
             <?=pql_templates_mark_importance($mark); ?>
-<?php		if(eregi(',', pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"]))) {
+<?php		if($schemes[1]) {
 				// We got more than one password scheme...
-
-				// Show each of the schemes as radio buttons
-				$schemes = split(",", pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"]));
+	  
+  				// Show each of the schemes as radio buttons
 				foreach($schemes as $scheme) {
-					if(!(($_REQUEST["template"] == "mail") and ($scheme == "KERBEROS"))) {
-						// Do not show the KERBEROS scheme if it's a mail account! We don't have
-						// uidNumber and/or gidNumber for that account type, so we can't mapp the
-						// user correctly if using KERBEROS!
-						$allowed_schemes = ($allowed_schemes) ? $allowed_schemes.",".$scheme : $scheme;
+				  if(!(($_REQUEST["template"] == "mail") and ($scheme == "KERBEROS"))) {
+					// Do not show the KERBEROS scheme if it's a mail account! We don't have
+					// uidNumber and/or gidNumber for that account type, so we can't mapp the
+					// user correctly if using KERBEROS!
 ?>
-            <input type="radio" name="pwscheme" value="<?=$scheme?>" <?php if($_REQUEST["defaultpasswordscheme"] == $scheme) { echo "CHECKED"; } ?>><?=$scheme?>
-<?php				}
+            <input type="radio" name="pwscheme" value="<?=$scheme?>" <?php if(($_REQUEST["defaultpasswordscheme"] == $scheme) or eregi($scheme, $_REQUEST["pwscheme"])) { echo "CHECKED"; } ?>><?=$scheme?>
+<?php			  }
 				}
-			} else { ?>
-            Scheme: <b>{<?php echo pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"]); ?>}</b>
-            <input type="hidden" name="pwscheme" value="<?php echo pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"]); ?>">
+			} else {
+?>
+            Scheme: <b>{<?=$schemes[0]?>}</b>
+            <input type="hidden" name="pwscheme" value="<?=$schemes[0]?>">
 <?php		} ?>
           </td>
         </tr>
 <?php	} elseif($_REQUEST["template"] != "group") { ?>
         <input type="hidden" name="pwscheme" value="<?=$_REQUEST["defaultpasswordscheme"]?>">
-<?php	} ?>
+<?php   }
 
-<?php	if(eregi('KERBEROS', pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"])) and (!$_REQUEST["defaultpasswordscheme"] or $_SESSION["ADVANCED_MODE"]) and ($_REQUEST["template"] != "mail")) { ?>
+		if(in_array('KERBEROS', $schemes) and (!$_REQUEST["defaultpasswordscheme"] or $_SESSION["ADVANCED_MODE"])) {
+?>
         <tr class="<?php pql_format_table(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
           <td><?=$LANG->_('If using {KERBEROS} as password scheme, make sure you include the correct REALM (principal@REALM.TLD)')?></td>
         </tr>
-<?php	} ?>
+<?php	}
+// }}}
+
+		// {{{ Password
+?>
 
         <!-- Password -->
-<?php	if(eregi('KERBEROS', $allowed_schemes) or $_SESSION["ADVANCED_MODE"]) { ?>
+<?php	if(in_array('KERBEROS', $schemes) or $_SESSION["ADVANCED_MODE"]) { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Password')?></td>
           <td>&nbsp;&nbsp;<input type="checkbox" name="autogenerate"><?=$LANG->_('Autogenerate password')?></td>
@@ -118,7 +133,7 @@
           <td>
             <?=pql_format_error_span($error_text["password"]); ?>
             <?=pql_templates_mark_importance($mark); ?>
-            <input type="input" name="password" value="<?=$_REQUEST["password"]?>">
+            <input type="text" name="password" value="<?=$_REQUEST["password"]?>"<?php if(in_array('KERBEROS', $schemes)) { ?> size="30"<?php } ?>>
             <input type="checkbox" name="crypted"><?=$LANG->_('Password is already encrypted')?>
             <?php echo pql_format_error_span($error["pwscheme"]); ?>
           </td>
@@ -134,8 +149,10 @@
           <td><?=$LANG->_('Will be auto generated')?></td>
         </tr>
         <input type="hidden" name="autogenerate" value="on">
-<?php	} ?>
-<?php } ?>
+<?php	}
+// }}}
+	  }
+?>
       </th>
     </table>
 
@@ -159,11 +176,10 @@
       <th colspan="3" align="left"><?=$LANG->_('Account properties')?></th>
 <?php }
 
+	  // {{{ Login shell
 	  if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_LOGINSHELL"))) {
-		// display forms for SYSTEM account
-
 		if($_SESSION["ADVANCED_MODE"]) {
-			$shells = pql_get_valid_shells();
+		  $shells = pql_get_valid_shells();
 ?>
 
         <!-- Loginshell -->
@@ -172,20 +188,18 @@
           <td><?php echo pql_format_error_span($error["loginshell"]); ?>
 
             <select name="loginshell">
-              <option value="/bin/false" SELECTED>/bin/false</option>
-<?php
-			foreach($shells as $shell) {
-?>
-              <option value="<?=$shell?>"><?=$shell?></option>
-<?php
-			}
-?>
+              <option value="/bin/false"<?php if(!$_REQUEST["loginshell"]) { ?> SELECTED<? } ?>>/bin/false</option>
+<?php	  foreach($shells as $shell) { ?>
+              <option value="<?=$shell?>"<?php if($_REQUEST["loginshell"] == $shell) { ?> SELECTED<? } ?>><?=$shell?></option>
+<?php	  } ?>
             </select>
           </td>
         </tr>
-<?php	} // end if ADVANCED mode
-	  } // end if account type == system
+<?php  } // end if ADVANCED mode
+	  } // end if login shell allowed
+// }}}
 
+	  // {{{ Mail address
 	  if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAIL"))) {
 		if(!pql_get_define("PQL_CONF_CREATE_ADDRESS", $_REQUEST["domain"]) or
 		   (pql_get_define("PQL_CONF_CREATE_ADDRESS", $_REQUEST["domain"]) and !function_exists('user_generate_email')) or
@@ -239,14 +253,15 @@
           <td><?php echo pql_complete_constant($LANG->_('Automatically generated %what%'), array('what' => $LANG->_('email address'))); ?>.</td>
         </tr>
 <?php	}
-	  }
+	  } // end if mail address allowed
+// }}}
 ?>
 
         <!-- sub branch -->
 <?php if($_SESSION["ADVANCED_MODE"]) {
 		if(!$_REQUEST["subbranch"]) {
 			if($branches[1]) {
-				// More than one subbranch - show a select menu
+				// {{{ More than one subbranch - show a select menu
 ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Put user in subbranch')?></td>
@@ -264,8 +279,9 @@
           </td>
         </tr>
 <?php
+// }}}
 			} else {
-				// Only one subbranch
+				// {{{ Only one subbranch
 				if(pql_get_define("PQL_CONF_SUBTREE_USERS")) {
 					$branch = pql_get_define("PQL_CONF_SUBTREE_USERS").",".$_REQUEST["domain"];
 					$branch = pql_format_urls($branch);
@@ -285,6 +301,8 @@
         <input type="hidden" name="subbranch" value="<?=$url["domain"]?>">
 <?php
 				}
+
+// }}}
 			}
 		} else {
 			// We've already specified a subbranch in where to put the user
@@ -293,7 +311,7 @@
         <input type="hidden" name="subbranch" value="<?=$subbranch?>">
 <?php	}
 	  } else {
-		// We're not running in advanced mode
+		// We're NOT running in advanced mode
 		if(pql_get_define("PQL_CONF_SUBTREE_USERS")) {
 			$branch = pql_get_define("PQL_CONF_SUBTREE_USERS").",".$_REQUEST["domain"];
 			$branch = pql_format_urls($branch);
@@ -314,8 +332,8 @@
 <?php	}
 	  } // end if ADVANCED mode
 
+	  // {{{ Forwarding address
 	  if($_REQUEST["template"] == "forward") {
-		// display forms for FORWARDING account
 ?>
 
         <!-- Forwarding address -->
@@ -332,9 +350,10 @@
           <td colspan="2"><img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?=$LANG->_('You can add more forwarding address in the user details page')?></td>
         </tr>
 <?php } // template == forward
+// }}}
   
+	  // {{{ Account status
       if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_ISACTIVE"))) {
-		// Template require 'accountStatus'
 ?>
 
         <!-- Account status -->
@@ -356,7 +375,9 @@
 <?php } elseif($_REQUEST["template"] != "group") { ?>
     <input type="hidden" name="account_status" value="">
 <?php }
+// }}}
 
+	  // {{{ Delivery mode
 	  if($_SESSION["NEW_STYLE_QUOTA"] and ($_REQUEST["template"] == 'forward')) {
 		  if($_SESSION["ADVANCED_MODE"]) {
 			  // The new QmailLDAP have a changed 'deliveryMode' setup.
@@ -370,10 +391,16 @@
         </tr>
 <?php 	  } else { ?>
           <input type="hidden" name="nolocal" value="1">
-<?php	  } ?>
-<?php  } ?>
+<?php	  }
+	  }
+// }}}
+?>
       </th>
     </table>
+
+<?php
+	  // {{{ Hidden values
+?>
 
     <input type="hidden" name="page_curr"     value="one">
 <?php if(($_SESSION["ADVANCED_MODE"] == 0) or ($_REQUEST["template"] == "forward")) {
@@ -400,6 +427,9 @@
     <input type="hidden" name="domain"        value="<?=$url["domain"]?>">
     <input type="hidden" name="template"      value="<?=$_REQUEST["template"]?>">
 
+<?php
+// }}}
+?>
     <br>
 
 <?php if($_SESSION["ADVANCED_MODE"] == 1) { ?>
