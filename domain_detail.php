@@ -48,7 +48,8 @@ if(!pql_domain_exist($_pql, $dc[1])){
 $attribs = array('defaultdomain', 'basehomedir', 'basemaildir', 'o', 'l',
 				 'postalcode', 'postaladdress', 'telephonenumber', 'street',
 				 'facsimiletelephonenumber', 'postofficebox', 'st', 'basequota',
-				 'maximumdomainusers', 'defaultpasswordscheme', 'maximummailinglists');
+				 'maximumdomainusers', 'defaultpasswordscheme', 'maximummailinglists',
+				 'autocreateusername', 'autocreatemailaddress');
 foreach($attribs as $attrib) {
 	// Get default value
 	$value = pql_get_domain_value($_pql, $domain, $attrib);
@@ -58,8 +59,22 @@ foreach($attribs as $attrib) {
 	// we add a delete link as well.
 	$link = $attrib . "_link";
 	if(($attrib != 'defaultdomain') and ($attrib != 'basehomedir') and ($attrib != 'basemaildir')) {
-		if((($attrib == 'maximumdomainusers') or ($attrib == 'maximummailinglists')) and !$value)
+		if(!$value and (($attrib == 'maximumdomainusers') or ($attrib == 'maximummailinglists') or
+						($attrib == 'autocreateusername') or ($attrib == 'autocreatemailaddress')))
 		  $value = 0;
+		else
+		  // We have a value
+		  if(($attrib == 'autocreateusername') or ($attrib == 'autocreatemailaddress')) {
+			  // It's a toggle. Convert the boolean value to an integer
+			  if($value == 'FALSE') {
+				  // It's false, set it to zero
+				  $value = 0;
+				  $$attrib = 0;
+			  } else {
+				  $value = 1;
+				  $$attrib = 1;
+			  }
+		  }
 
 		// A dcOrganizationNameForm attribute
 		$$link = "<a href=\"domain_edit_attributes.php?type=modify&attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=". urlencode($value) ."\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify attribute $attrib for $domain\"></a>&nbsp;<a href=\"domain_edit_attributes.php?type=delete&submit=2&attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=". urlencode($value) ."\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Delete attribute $attrib for $domain\"></a>";

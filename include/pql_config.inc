@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.29 2003-06-12 16:48:44 turbo Exp $
+// $Id: pql_config.inc,v 1.30 2003-06-13 13:12:10 turbo Exp $
 //
 global $config;
 
@@ -60,6 +60,8 @@ $PQL_ATTRIBUTE["PQL_CONF_VERIFY_DELETE"] = 'deleteVerification';
 $PQL_ATTRIBUTE["PQL_GLOB_MINIMUM_UIDNUMBER"] = 'minimumUIDNumber';
 $PQL_ATTRIBUTE["PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER"] = 'forwardUIDNumber';
 $PQL_ATTRIBUTE["PQL_GLOB_BIND9_USE"] = 'useBind9';
+$PQL_ATTRIBUTE["PQL_CONF_CREATE_USERNAME"] = 'autoCreateUsername';
+$PQL_ATTRIBUTE["PQL_CONF_CREATE_ADDRESS"] = 'autoCreateMailAddress';
 
 // phpQLAdmin setup
 $PQL_ATTRIBUTE["PQL_CONF_LANG"] = 'language';

@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.29 2003-06-12 12:47:06 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.30 2003-06-13 13:12:10 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -212,6 +212,28 @@ function user_generate_uid($ldap, $surname, $name, $email, $domain, $account_typ
 	//	return(eregi_replace('@', '_',$email));	// complete email-address but '_' instead of '@'
 	//	return($surname . $name);				// "Firstname Lastname"
 	//	return(substr($surname, 0, 1) . $name);	// First character of ther surname + complete lastname
+}
+
+// ----------------------------
+// EMAIL generation
+//
+// user_generate_email (function)
+// This function is called to create a value for the email address when
+// you add a user. You may add some code here or just uncomment one of the examples below.
+// Input parameters:
+// (resource)	ldap		 	-	A LDAP resource identifier 
+// (string)		surname 		- 	surname  
+// (string)		lastname 		- 	lastname
+// (string)		domainname		-	A domain name in the form 'domain.tld'
+// (string)		domain			-	branch in which you create the user
+// (string)		account_type	-	Chosen account type; "normal" or "forward"  
+//
+// Returns: (string) suggested email address
+function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $domain, $account_type) {
+	global $config;
+
+	// Compose the username in the form 'firstname.lastname@domain.tld'.
+	return(lc($surname.".".$lastname."@".$domainname));
 }
 
 // ----------------------------

@@ -77,6 +77,10 @@ switch($attrib){
   case "defaultpasswordscheme":
 	$include = "attrib.defaultpasswordscheme.inc";
 	break;
+  case "autocreateusername":
+  case "autocreatemailaddress";
+	$include = "attrib.domaintoggle.inc";
+	break;
   default:
     die("unknown attribute");
 }
@@ -118,6 +122,8 @@ if($submit == 1) {
 } else {
 	if($attrib == 'basequota')
 	  attribute_print_form();
+	elseif(($attrib == 'autocreateusername') or ($attrib == 'autocreatemailaddress'))
+	  attribute_save();
 	else
 	  attribute_print_form("fulldomain");
 }

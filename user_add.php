@@ -95,64 +95,92 @@ if($submit == "two"){
 	$error_text = array();
 	$error = false;
 
-	// Verify/Create uid
-	if(!$uid) {
-		if (function_exists('user_generate_uid')) {
-			$uid = strtolower(user_generate_uid($_pql, $surname, $name, $email, $domain, $account_type));
+	// Verify/Create email address
+	if(!$email and function_exists('user_generate_email')) {
+		$email = strtolower(user_generate_email($_pql, $surname, $name, $defaultdomain, $domain, $account_type));
 
-			// Check again. There should be a user name, either from the input
-			// form OR from the user_generate_uid() function above...
-			if(!$uid) {
-				$submit = "one";
-				$error = true;
-				$error_text["uid"] = PQL_LANG_MISSING;
-			} else {
-				if(preg_match("/[^a-z0-9\.@%_-]/i", $uid)) {
-					$submit = "one";
-					$error = true;
-					$error_text["uid"] = PQL_LANG_INVALID;
-				}
-			}
-		} else {
+		// Check again. There must be a email address.
+		if(!$email) {
+			$submit = "one";
 			$error = true;
-			$error_text["uid"] = PQL_LANG_MISSING . " (can't autogenerate)";
+			$error_text["email"] = PQL_LANG_MISSING;
+		}
+	} else {
+		// Build the COMPLETE email address
+		if(! ereg("@", $email)) {
+			if($email_domain)
+			  $email = $email . "@" . $email_domain;
+			else
+			  $email = $email . "@" . $defaultdomain;
 		}
 	}
 
-	// Build the COMPLETE email address
-	if(! ereg("@", $email)) {
-		if($email_domain)
-		  $email = $email . "@" . $email_domain;
-		else
-		  $email = $email . "@" . $defaultdomain;
+	// Verify/Create uid
+	if(!$uid and function_exists('user_generate_uid')) {
+		$uid = strtolower(user_generate_uid($_pql, $surname, $name, $email, $domain, $account_type));
+		
+		// Check again. There should be a user name, either from the input
+		// form OR from the user_generate_uid() function above...
+		if(!$uid) {
+			$submit = "one";
+			$error = true;
+			$error_text["uid"] = PQL_LANG_MISSING;
+		} else {
+			if(preg_match("/[^a-z0-9\.@%_-]/i", $uid)) {
+				$submit = "one";
+				$error = true;
+				$error_text["uid"] = PQL_LANG_INVALID;
+			}
+		}
+	} else {
+		$error = true;
+		$error_text["uid"] = PQL_LANG_MISSING . " (can't autogenerate)";
 	}
 }
 
 // ------------------------------------------------
 // Page 3:
 if ($submit == "save") {
-	// Verify/Create uid
-	if(!$uid) {
-		if (function_exists('user_generate_uid')) {
-			$uid = strtolower(user_generate_uid($_pql, $surname, $name, $email, $domain, $account_type));
+	// Verify/Create email address
+	if(!$email and function_exists('user_generate_email')) {
+		$email = strtolower(user_generate_email($_pql, $surname, $name, $defaultdomain, $domain, $account_type));
 
-			// Check again. There should be a user name, either from the input
-			// form OR from the user_generate_uid() function above...
-			if(!$uid) {
+		// Check again. There must be a email address.
+		if(!$email) {
+			$submit = "one";
+			$error = true;
+			$error_text["email"] = PQL_LANG_MISSING;
+		}
+	} else {
+		// Build the COMPLETE email address
+		if(! ereg("@", $email)) {
+			if($email_domain)
+			  $email = $email . "@" . $email_domain;
+			else
+			  $email = $email . "@" . $defaultdomain;
+		}
+	}
+
+	// Verify/Create uid
+	if(!$uid and function_exists('user_generate_uid')) {
+		$uid = strtolower(user_generate_uid($_pql, $surname, $name, $email, $domain, $account_type));
+		
+		// Check again. There should be a user name, either from the input
+		// form OR from the user_generate_uid() function above...
+		if(!$uid) {
+			$submit = "one";
+			$error = true;
+			$error_text["uid"] = PQL_LANG_MISSING;
+		} else {
+			if(preg_match("/[^a-z0-9\.@%_-]/i", $uid)) {
 				$submit = "one";
 				$error = true;
-				$error_text["uid"] = PQL_LANG_MISSING;
-			} else {
-				if(preg_match("/[^a-z0-9\.@%_-]/i", $uid)) {
-					$submit = "one";
-					$error = true;
-					$error_text["uid"] = PQL_LANG_INVALID;
-				}
+				$error_text["uid"] = PQL_LANG_INVALID;
 			}
-		} else {
-			$error = true;
-			$error_text["uid"] = PQL_LANG_MISSING . " (can't autogenerate)";
 		}
+	} else {
+		$error = true;
+		$error_text["uid"] = PQL_LANG_MISSING . " (can't autogenerate)";
 	}
 	
 	if($error_text["uid"] == "" and pql_search_attribute($_pql->ldap_linkid, $domain,
@@ -183,14 +211,6 @@ if ($submit == "save") {
 			}
 		}
 		
-		// Build the COMPLETE email address
-		if(! ereg("@", $email)) {
-			if($email_domain)
-			  $email = $email . "@" . $email_domain;
-			else
-			  $email = $email . "@" . $defaultdomain;
-		}
-
 		// Check the mailHost attribute/value
 		if(is_array($userhost)) {
 			if($host != "default")
@@ -363,6 +383,10 @@ switch($submit) {
 ?>
   <form action="<?=$PHP_SELF?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
+<?php if(!$config["PQL_CONF_CREATE_USERNAME"][$domain] or
+		 ($config["PQL_CONF_CREATE_USERNAME"][$domain] and !function_exists('user_generate_uid')) or
+		 ($ADVANCED_MODE)) {
+?>
       <th colspan="3" align="left"><?php echo PQL_LANG_USER_ACCOUNT_PROPERTIES_MORE; ?></th>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"><?php echo PQL_LANG_USER_ID; ?></td>
@@ -374,7 +398,13 @@ switch($submit) {
           <td><?=PQL_LANG_UID_HELP_SHORT?></td>
         </tr>
 
-<?php
+<?php	} else { ?>
+        <tr class="<?php table_bgcolor(); ?>">
+          <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
+          <td>I will automatically generate the username.</td>
+        </tr>
+
+<?php	}
     if($account_type != "forward") {
 		// Get the default password scheme for branch
 		$defaultpasswordscheme = pql_get_domain_value($_pql, $domain, "defaultpasswordscheme");
@@ -530,28 +560,32 @@ switch($submit) {
           </td>
         </tr>
 
-<?php if($account_type != "shell") { ?>
+<?php if($account_type != "shell") {
+		if(!$config["PQL_CONF_CREATE_ADDRESS"][$domain] or
+		   ($config["PQL_CONF_CREATE_ADDRESS"][$domain] and !function_exists('user_generate_email')) or
+		   $ADVANCED_MODE or $error_text["email"]) {
+?>
         <!-- Email address -->
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"><?php echo PQL_LANG_MAIL_TITLE; ?></td>
           <td>
             <?php echo format_error($error_text["email"]); ?>
             <input type="text" name="email" value="<?=$email?>">
-<?php 	if(is_array($additionaldomainname)) { ?>
+<?php 		if(is_array($additionaldomainname)) { ?>
             <b>@ <select name="email_domain"></b>
               <option value="<?=$defaultdomain?>"><?=$defaultdomain?></option>
-<?php		foreach($additionaldomainname as $additional) { ?>
+<?php			foreach($additionaldomainname as $additional) { ?>
               <option value="<?=$additional?>"><?=$additional?></option>
-<?php   	} ?>
+<?php   		} ?>
             </select>
-<?php 	} else { ?>
+<?php 		} else { ?>
             <b>@<?=$defaultdomain?></b>
             <input type="hidden" name="email_domain" value="<?=$defaultdomain?>">
-<?php 	} ?>
+<?php 		} ?>
           </td>
         </tr>
 
-<?php 	if(is_array($additionaldomainname)) { ?>
+<?php 		if(is_array($additionaldomainname)) { ?>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"><?php echo PQL_LANG_MAILALTERNATEADDRESS_TITLE; ?></td>
           <td>
@@ -564,14 +598,23 @@ switch($submit) {
           </td>
         </tr>
 
-<?php 	} ?>
         <tr></tr>
 
         <tr class="subtitle">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
           <td><?php echo PQL_LANG_USER_ADD_HELP2; ?></td>
         </tr>
-<?php } ?>
+<?php 		}
+		} else {
+?>
+        <tr class="<?php table_bgcolor(); ?>">
+          <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
+          <td>I will automatically generate the email address.</td>
+        </tr>
+
+<?php	}
+     }
+?>
       </th>
     </table>
 <?php

@@ -103,6 +103,16 @@ pql_define("PQL_GLOB_EZMLM_PATH", "/usr/bin", false);
 pql_define("PQL_GLOB_BIND9_USE", false, false);
 
 // ----------------------------
+// Should we automaticly create usernames when adding
+// a user to the system?
+pql_define("PQL_CONF_CREATE_USERNAME", false, false, $dn);
+
+// ----------------------------
+// Should we automaticly create email address when
+// adding a user to the system?
+pql_define("PQL_CONF_CREATE_ADDRESS", false, false, $dn);
+
+// ----------------------------
 // PQL_CONF_TESTMAIL_SUBJECT (text)
 // The subject of testmails
 pql_define("PQL_CONF_TESTMAIL_SUBJECT", "test", false, $dn);

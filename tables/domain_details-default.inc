@@ -62,7 +62,7 @@
         <td><?=$basequota_link?></td>
       </tr>
 
-<?php if($ALLOW_BRANCH_CREATE and $ADVANCED_MODE) { ?>
+<?php if($ALLOW_BRANCH_CREATE) { ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">Maximum allowed users in branch</td>
         <td><?php if($maximumdomainusers){echo $maximumdomainusers;}else{echo "unlimited";} ?></td>
@@ -79,6 +79,18 @@
         <td class="title">Default password scheme</td>
         <td><?php if($defaultpasswordscheme){echo $defaultpasswordscheme;}else{echo "no default";} ?></td>
         <td><?=$defaultpasswordscheme_link?></td>
+      </tr>
+
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Automaticly generate username</td>
+        <td><?php if($autocreateusername){echo 'Yes';}else{echo "No";} ?></td>
+        <td><?=$autocreateusername_link?></td>
+      </tr>
+
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Automaticly generate email address</td>
+        <td><?php if($autocreatemailaddress){echo 'Yes';}else{echo "No";} ?></td>
+        <td><?=$autocreatemailaddress_link?></td>
       </tr>
 
 <?php } ?>
