@@ -1,11 +1,72 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.88 2004-03-30 07:07:25 turbo Exp $
+// $Id: left.php,v 2.89 2004-03-31 06:29:14 turbo Exp $
 //
 session_start();
 
 require("./include/pql_config.inc");
 require("./left-head.html");
+
+function left_htmlify_userlist($linkid, $rootdn, $domain, $subbranch, $users, &$links) {
+    // Iterate trough all users in this domain/branch
+    foreach ($users as $dn) {
+	unset($cn); unset($sn); unset($gecos);
+	
+	// From the user DN, get the CN and SN.
+	$cn = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_GIVENNAME"));
+	$sn = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_SN"));
+	if($cn[0] && $sn[0]) {
+	    // We have a givenName (first name) and a surName (last name) - combine the two
+	    if($sn[0] != '_') {
+		$cns[$dn] = $sn[0].", ".$cn[0];
+	    } else {
+		$cns[$dn] = $cn[0];
+	    }
+	} else {
+	    // Probably don't have a givenName - get the commonName
+	    $cn = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_CN"));
+	    if($cn[0]) {
+		// We have a commonName - split it up into two parts (which should be first and last name)
+		$cn = split(" ", $cn[0]);
+		if(!$cn[1]) {
+		    // Don't have second part (last name) of the commonName - MUST be a system 'user'.
+		    $cns[$dn] = "System - ".$cn[0];
+		} else {
+		    // We have two parts - combine into 'Lastname, Firstname'
+		    $cns[$dn] = $cn[1].", ".$cn[0];
+		}
+	    } else {
+		// No givenName, surName or commonName - last try, get the gecos
+		$gecos = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_GECOS"));
+		if($gecos[0])
+		  // We have a gecos - use that as is
+		  $cns[$dn] = $gecos[0];
+		//			    else
+		//			      // No gecos either. Now what!?
+	    }
+	}
+    }
+    asort($cns);
+    
+    foreach($cns as $dn => $cn) {
+	$uid = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_UID"));
+	$uid = $uid[0];
+	
+	$uidnr = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_QMAILUID"));
+	$uidnr = $uidnr[0];
+	
+	if(($uid != 'root') or ($uidnr != '0')) {
+	    // Do NOT show root user(s) here! This should (for safty's sake)
+	    // not be availible to administrate through phpQLAdmin!
+	    if($subbranch)
+	      $new = array($cn => "user_detail.php?rootdn=$rootdn&domain=$domain&subbranch=$subbranch&user=".urlencode($dn));
+	    else
+	      $new = array($cn => "user_detail.php?rootdn=$rootdn&domain=$domain&user=".urlencode($dn));
+	    // Add the link to the main array
+	    $links = $links + $new;
+	}
+    }
+}
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"], false, 0);
 if($_pql->ldap_error) {
@@ -224,6 +285,14 @@ if(!isset($domains)) {
 			   pql_complete_constant($LANG->_('Add %what%'),
 						 array('what' => $LANG->_('user')))
 			   => "user_add.php?rootdn=$rootdn&domain=$domain");
+
+	    // Just incase there's user(s) at the base of the domain branch...
+	    $users = pql_user_get($_pql->ldap_linkid, $domain, 'ONELEVEL');
+	    if(is_array($users)) {
+		// We have users in this domain
+		left_htmlify_userlist($_pql->ldap_linkid, $rootdn, $domain, $subbranch, $users, $links);
+	    }
+
 	    pql_format_tree($d, "domain_detail.php?rootdn=$rootdn&domain=$domain", $links, 0);
 	} else
 	  // This branch don't have any sub units (flat structure)
@@ -268,65 +337,9 @@ if(!isset($domains)) {
 				   => "user_add.php?rootdn=$rootdn&domain=$domain");
 		}
 
-		if(is_array($users)) {
-		    // We have users in this domain
-
-		    // Iterate trough all users in this domain/branch
-		    foreach ($users as $dn) {
-			unset($cn); unset($sn); unset($gecos);
-			
-			// From the user DN, get the CN and SN.
-			$cn = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_GIVENNAME"));
-			$sn = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_SN"));
-			if($cn[0] && $sn[0]) {
-			    // We have a givenName (first name) and a surName (last name) - combine the two
-			    if($sn[0] != '_') {
-				$cns[$dn] = $sn[0].", ".$cn[0];
-			    } else {
-				$cns[$dn] = $cn[0];
-			    }
-			} else {
-			    // Probably don't have a givenName - get the commonName
-			    $cn = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_CN"));
-			    if($cn[0]) {
-				// We have a commonName - split it up into two parts (which should be first and last name)
-				$cn = split(" ", $cn[0]);
-				if(!$cn[1]) {
-				    // Don't have second part (last name) of the commonName - MUST be a system 'user'.
-				    $cns[$dn] = "System - ".$cn[0];
-				} else {
-				    // We have two parts - combine into 'Lastname, Firstname'
-				    $cns[$dn] = $cn[1].", ".$cn[0];
-				}
-			    } else {
-				// No givenName, surName or commonName - last try, get the gecos
-				$gecos = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_GECOS"));
-				if($gecos[0])
-				  // We have a gecos - use that as is
-				  $cns[$dn] = $gecos[0];
-				//			    else
-				//			      // No gecos either. Now what!?
-			    }
-			}
-		    }
-		    asort($cns);
-		    
-		    foreach($cns as $dn => $cn) {
-			$uid = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_UID"));
-			$uid = $uid[0];
-			
-			$uidnr = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_QMAILUID"));
-			$uidnr = $uidnr[0];
-			
-			if(($uid != 'root') or ($uidnr != '0')) {
-			    // Do NOT show root user(s) here! This should (for safty's sake)
-			    // not be availible to administrate through phpQLAdmin!
-			    $new = array($cn => "user_detail.php?rootdn=$rootdn&domain=$domain&subbranch=$subbranch&user=".urlencode($dn));
-			    // Add the link to the main array
-			    $links = $links + $new;
-			}
-		    }
-		}
+		if(is_array($users))
+		  // We have users in this domain
+		  left_htmlify_userlist($_pql->ldap_linkid, $rootdn, $domain, $subbranch, $users, $links);
 	    }
 
 	    // Level 1: The domain name with it's users
