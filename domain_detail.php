@@ -41,21 +41,34 @@ if(!pql_domain_exist($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain)){
 // Get some default values for this domain
 // Some of these (everything after the 'o' attribute)
 // uses 'objectClass: dcOrganizationNameForm' -> http://rfc-2377.rfcindex.net/
-$attribs = array('defaultdomain', 'basehomedir', 'basemaildir', 'basequota', 'o', 'postalcode', 'postaladdress', 'l', 'telephonenumber', 'facsimiletelephonenumber', 'seealso', 'postofficebox', 'st');
+$attribs = array('defaultdomain', 'basehomedir', 'basemaildir', 'basequota', 'o', 'postalcode', 'postaladdress', 'l', 'telephonenumber', 'facsimiletelephonenumber', 'postofficebox', 'st', 'street');
 foreach($attribs as $attrib) {
 	// Get default value
-	$$attrib = pql_get_domain_value($_pql->ldap_linkid, $domain, $attrib);
+	$value = pql_get_domain_value($_pql->ldap_linkid, $domain, $attrib);
+	$$attrib = $value;
 
-	// Setup edit links
+	// Setup edit links. If it's a dcOrganizationNameForm attribute, then
+	// we add a delete link as well.
 	$link = $attrib . "_link";
-	$$link = "<a href=\"domain_edit_attributes.php?attrib=$attrib&domain=$domain\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify $attrib for $domain\"></a>";
+	if(($attrib != 'defaultdomain') and ($attrib != 'basehomedir') and
+	   ($attrib != 'basemaildir') and ($attrib != 'basequota'))
+	  {
+		  // A dcOrganizationNameForm attribute
+
+		  $$link = "<a href=\"domain_edit_attributes.php?type=modify&attrib=$attrib&domain=$domain&$attrib=". urlencode($value) ."\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify attribute $attrib for $domain\"></a>&nbsp;<a href=\"domain_edit_attributes.php?type=delete&submit=2&attrib=$attrib&domain=$domain&$attrib=". urlencode($value) ."\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Delete attribute $attrib for $domain\"></a>";
+	  } else {
+		  // A phpQLAdminBranch attribute
+
+		  $$link = "<a href=\"domain_edit_attributes.php?attrib=$attrib&domain=$domain&$attrib=". urlencode($value) ."\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify $attrib for $domain\"></a>";
+	  }
 }
-$admins	= pql_get_domain_value($_pql->ldap_linkid, $domain, "administrator");
+$admins	 = pql_get_domain_value($_pql->ldap_linkid, $domain, "administrator");
+$seealso = pql_get_domain_value($_pql->ldap_linkid, $domain, "seealso");
 ?>
   <span class="title1">Domain: <?=$domain?><?php if($defaultdomain) {echo " ($defaultdomain)";} ?></span>
   <br><br>
 <?php
-	if($ADVANCED_MODE == 1) {
+if($ADVANCED_MODE == 1) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=PQL_DOMAIN_DEFAULT_VALUES?></th>
@@ -85,6 +98,7 @@ $admins	= pql_get_domain_value($_pql->ldap_linkid, $domain, "administrator");
 
 <?php
 	if(is_array($admins)) {
+		$new_tr = 0;
 		foreach($admins as $admin) {
 			if($new_tr) {
 ?>
@@ -98,7 +112,6 @@ $admins	= pql_get_domain_value($_pql->ldap_linkid, $domain, "administrator");
 <?php
 			}
 ?>
-
         <td><?=$admin?></td>
         <td>
           <a href="domain_edit_attributes.php?attrib=administrator&domain=<?=$domain?>&administrator=<?=$admin?>&submit=3&action=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify administrators for <?=$domain?>"></a>&nbsp;
@@ -118,96 +131,115 @@ $admins	= pql_get_domain_value($_pql->ldap_linkid, $domain, "administrator");
       </tr>
 <?php
 	}
+}
 ?>
     </th>
   </table>
 
   <br><br>
 
-<?php
-	if($o) {
-?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">Branch owner</th>
-<?php if($o) { ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">Organization name</td>
-        <td><?=$o?></td>
+        <td><?php if($o) {echo $o;}else{echo PQL_UNSET;}?></td>
         <td><?=$o_link?></td>
       </tr>
 
-<?php } if($postalcode) { ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">Postal code</td>
-        <td><?=$postalcode?></td>
+        <td><?php if($postalcode) {echo $postalcode;}else{echo PQL_UNSET;}?></td>
         <td><?=$postalcode_link?></td>
       </tr>
 
-<?php } if($postofficebox) { ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">Post box</td>
-        <td><?=$postofficebox?></td>
+        <td><?php if($postofficebox) {echo $postofficebox;}else{echo PQL_UNSET;}?></td>
         <td><?=$postofficebox_link?></td>
       </tr>
 
-<?php } if($postaladdress) { ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">Postal address</td>
-        <td><?=$postaladdress?></td>
+        <td><?php if($postaladdress) {echo $postaladdress;}else{echo PQL_UNSET;}?></td>
         <td><?=$postaladdress_link?></td>
       </tr>
 
-<?php } if($l) { ?>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Street address</td>
+        <td><?php if($street) {echo $street;}else{echo PQL_UNSET;}?></td>
+        <td><?=$street_link?></td>
+      </tr>
+
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">City</td>
-        <td><?=$l?></td>
+        <td><?php if($l) {echo $l;}else{echo PQL_UNSET;}?></td>
         <td><?=$l_link?></td>
       </tr>
 
-<?php } if($st) { ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">State</td>
-        <td><?=$st?></td>
+        <td><?php if($st) {echo $st;}else{echo PQL_UNSET;}?></td>
         <td><?=$st_link?></td>
       </tr>
 
-<?php } if($telephonenumber) { ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">Telephone number</td>
-        <td><?=$telephonenumber?></td>
+        <td><?php if($telephonenumber) {echo $telephonenumber;}else{echo PQL_UNSET;}?></td>
         <td><?=$telephonenumber_link?></td>
       </tr>
 
-<?php } if($facsimiletelephonenumber) { ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">Fax number</td>
-        <td><?=$facsimiletelephonenumber?></td>
+        <td><?php if($facsimiletelephonenumber) {echo $facsimiletelephonenumber;}else{echo PQL_UNSET;}?></td>
         <td><?=$facsimiletelephonenumber_link?></td>
       </tr>
 
-<?php
-	  } if($seealso) {
-		  // TODO: This _MIGHT_ be an array! (?)
-		  $user = split(',', $seealso);
-		  $user = split('=', $user[0]);
-		  $user = $user[1];
-?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">Contact person</td>
-        <td><a href="user_detail.php?domain=<?=$domain?>&user=<?=$user?>"><?=$seealso?></a></td>
-        <td><?=$seealso_link?></td>
+<?php
+	if(is_array($seealso)) {
+		$new_tr = 0;
+		foreach($seealso as $sa) {
+			if($new_tr) {
+?>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title"></td>
+<?php
+			}
+
+			$user = split(',', $sa);
+			$user = split('=', $user[0]);
+			$user = $user[1];
+?>
+        <td><a href="user_detail.php?domain=<?=$domain?>&user=<?=$user?>"><?=$sa?></a></td>
+        <td>
+          <a href="domain_edit_attributes.php?attrib=seealso&domain=<?=$domain?>&seealso=<?=$sa?>&submit=3&action=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify contact persons for <?=$domain?>"></a>&nbsp;
+          <a href="domain_edit_attributes.php?attrib=seealso&domain=<?=$domain?>&seealso=<?=$sa?>&submit=4&action=delete"><img src="images/del.png" width="12" height="12" alt="Remove contact person" border="0"></a>
+        </td>
       </tr>
-<?php } ?>
+
+<?php
+			$new_tr = 1;
+		}
+	} else {
+?>
+        <td><i>Not set</i></td>
+        <td></td>
+<?php
+	}
+?>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title"></td>
+        <td colspan="4">
+          <a href="domain_edit_attributes.php?attrib=seealso&domain=<?=$domain?>&submit=3&action=add">Add contact person for domain</a>
+        </td>
+      </tr>
     </th>
   </table>
 
   <br><br>
 
-<?php
-	}
-}
-$users = pql_get_user($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain);
-?>
+<?php $users = pql_get_user($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain); ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=PQL_USER_REGISTRED?></th>
 <?php
