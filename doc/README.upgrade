@@ -1,3 +1,9 @@
+Upgrading from 2.0.17
+	There's been some API code modifications that will break
+	an upgrade to 2.0.18. You will have to re-configure (copy
+	include/config.inc.CHANGE_ME to include/config.inc) and go
+	through include/config.inc again.
+
 Upgrading from 2.0.14
 	The schema have been updated, so don't forget to load the new
 	version!
