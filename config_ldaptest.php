@@ -1,6 +1,6 @@
 <?php
 // make some simple tests on ldap connection
-// $Id: config_ldaptest.php,v 1.3 2002-12-12 21:52:08 turbo Exp $
+// $Id: config_ldaptest.php,v 1.4 2002-12-13 13:47:10 turbo Exp $
 //
 require("pql.inc");
 require("pql_control.inc");
@@ -29,10 +29,7 @@ if(!function_exists("ldap_connect")){
 			}
 		}
 	} else {
-		// Setup DN/PW for test (anonymous bind)
-		$_pql->ldap_rootdn = "TEST"; $_pql->ldap_rootpw = "TEST";
-
-		if(!$_pql->bind()){
+		if(!$_pql->bind('', '')){
 			$connection = PQL_TEST_CONNECTION_USER_BIND_ERR;
 		} else {
 			$connection = PQL_TEST_CONNECTION_CONNECT_OK;
