@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.110 2003-08-26 18:03:01 turbo Exp $
+// $Id: pql.inc,v 2.111 2003-09-15 11:13:51 turbo Exp $
 //
 
 // ----------------------------
@@ -37,7 +37,7 @@ class pql {
 	    if(! $sr) die("Can't find base dn - ".ldap_error($this->ldap_linkid));
 	    $entry = ldap_get_entries($this->ldap_linkid, $sr);
 //printr($entry); die();
-	    
+
 	    // Build an array of base dn's. It's possible to have multiple in a database
 	    for($i=0; $i < $entry["count"]; $i++) {
 			if(is_array($entry[$i][$attrib])) {
@@ -47,14 +47,25 @@ class pql {
 				$val[] = urlencode(maybe_encode($entry[$i]["dn"], $attrib, $this->ldap_linkid));
 			} else
 			  $val[] = urlencode(maybe_encode($entry[$i][$attrib][0], $attrib, $this->ldap_linkid));
-			
+
 			$success = 1;
 	    }
 	    
 	    // If we got at least one DN, return the array. Else return false
-	    if($success)
-		  return $val;
-		else
+	    if($success) {
+			// Remove any spaces after the RDN separator
+			foreach($val as $dn) {
+				while(eregi("%2C\+", $dn)) {
+					// Replace ', ' with ','
+					$new  = eregi_replace("%2C\+", "%2C", $dn);
+				}
+			}
+
+			if(is_array($new))
+			  return $new;
+			else
+			  return $val;
+		} else
 		  return false;
 	}
 	
@@ -2043,10 +2054,10 @@ function pql_replace_admins($ldap, $old, $new) {
 
 function pql_get_rootdn($dn) {
 	global $_pql;
+	$tracker = 'Please report this at the <a href="http://papadoc.bayour.com:23000/anthill/" target="_new">bugtracker</a>.<br>';
 
 	if($dn == '') {
-		echo "This is weird. We're called with an empty DN! Please report this at the ";
-		echo '<a href="http://papadoc.bayour.com:23000/anthill/" target="_new">Bugtracker</a>.<br>';
+		echo "This is weird. We're called with an empty DN! $tracker";
 		die();
 	} else
 	  $dn = urldecode($dn);
@@ -2055,7 +2066,7 @@ function pql_get_rootdn($dn) {
 		$counts = 0;
 		foreach($_pql->ldap_basedn as $base) {
 			$base = urldecode($base);
-			
+
 			if(eregi("$base\$", $dn))  {
 				$counts++;
 				$DNs[] = $base;
@@ -2067,16 +2078,13 @@ function pql_get_rootdn($dn) {
 			// TODO: What do do with more than one hit!?
 			echo "This is weird. We have more than one hit ($counts to be exact) in our pql_get_rootdn() check!<br>";
 			echo "<br>";
-			echo "These are the DNs that matches the <u>$dn</u> DN. Please report this at the ";
-			echo '<a href="http://papadoc.bayour.com:23000/anthill/" target="_new">Bugtracker</a>.';
-			echo "<br>";
+			echo "These are the DNs that matches the <u>$dn</u> DN. $tracker";
 			printr($DNs);
 			die();
 		} elseif($counts < 1) {
 			// BUG! We don't have a hit!
 			echo "This is weird. We couldn't find the root dn for some reason. The DN we're trying to find a root DN for is: ";
-			echo "'$dn'.<p>Please report this at the ";
-			echo '<a href="http://papadoc.bayour.com:23000/anthill/" target="_new">Bugtracker</a>.';
+			echo "'$dn'.<p>$tracker";
 			die();
 		} else
 		  $dn = $DNs[0];
@@ -2255,6 +2263,15 @@ function maybe_decode($string) {
 	  return($decoded);
 	else
 	  return($string);
+}
+
+// --------------------------
+function pql_generate_button($link, $text) {
+	global $PHP_SELF, $LANG, $rootdn, $domain;
+
+	echo '<a href="'.$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=$link".'">';
+    echo '<img alt="/ '.$LANG->_($text).' \\" vspace="0" hspace="0" border="0" src="navbutton.php?';
+	echo $LANG->_($text).'"></a>';
 }
 
 /*
