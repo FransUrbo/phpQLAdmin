@@ -2,14 +2,15 @@
 // control attribute plugin for
 // qmqpservers (max number of bytes in message)
 //
-// $Id: attrib.control.qmqpservers.inc,v 2.16 2004-02-14 14:25:36 turbo Exp $
+// $Id: attrib.control.qmqpservers.inc,v 2.17 2004-03-11 16:31:54 turbo Exp $
 
+// {{{ qmqpservers_check(type)
 function qmqpservers_check($type) {
-	global $error, $qmqpservers, $view, $LANG;
+	global $error, $LANG;
 
 	// check each field
-	if(is_array($qmqpservers)) {
-		foreach($qmqpservers as $key => $server) {
+	if(is_array($_REQUEST["qmqpservers"])) {
+		foreach($_REQUEST["qmqpservers"] as $key => $server) {
 			if($server == "")
 			  continue;
 			
@@ -47,22 +48,27 @@ function qmqpservers_check($type) {
 	
 	return true;
 }
+// }}}
 
+// {{{ qmqpservers_init(host)
 // init values
 function qmqpservers_init($host) {
-	global $_pql_control, $qmqpservers, $view;
+	global $_pql_control;
 
 	// fetch data from ldap server
-	$qmqpservers = pql_control_get_attribute($_pql_control->ldap_linkid,
-											 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-											 pql_get_define("PQL_GLOB_ATTR_QMQPSERVERS"));
+	$_REQUEST["qmqpservers"] = pql_control_get_attribute($_pql_control->ldap_linkid,
+														 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+														 pql_get_define("PQL_ATTR_QMQPSERVERS"));
 
-	if(is_null($qmqpservers))
+	if(is_null($_REQUEST["qmqpservers"]))
 	  return true;
 }
+// }}}
 
+
+// {{{ qmqpservers_print_view(host)
 function qmqpservers_print_view($host) {
-	global $_pql_control, $qmqpservers, $view, $LANG;
+	global $_pql_control, $LANG;
 
 	// init data
 	qmqpservers_init($host);
@@ -73,14 +79,14 @@ function qmqpservers_print_view($host) {
         <td>IP</td>
       </tr>
 <?php
-	if(!is_array($qmqpservers)) {
+	if(!is_array($_REQUEST["qmqpservers"])) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td><?=$LANG->_('Not set')?></td>
       </tr>
 <?php
 	} else {
-		foreach($qmqpservers as $server) {
+		foreach($_REQUEST["qmqpservers"] as $server) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td><?=pql_maybe_idna_decode($server)?></td>
@@ -97,12 +103,14 @@ function qmqpservers_print_view($host) {
 
 <?php
 }
+// }}}
 
+// {{{ qmqpservers_print_form(void)
 function qmqpservers_print_form() {
-	global $attrib, $error, $qmqpservers, $qmqpcount, $mxhost, $view, $LANG;
+	global $error, $LANG;
 
-	if(($qmqpcount < count($qmqpservers) - 1) and count($qmqpservers) != 0)
-	  $qmqpcount = count($qmqpservers) - 1;
+	if(($_REQUEST["qmqpcount"] < count($_REQUEST["qmqpservers"]) - 1) and count($_REQUEST["qmqpservers"]) != 0)
+	  $_REQUEST["qmqpcount"] = count($_REQUEST["qmqpservers"]) - 1;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -112,17 +120,17 @@ function qmqpservers_print_form() {
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["qmqpservers_0"]); ?><input type="text" name="qmqpservers[0]" value="<?=$qmqpservers[0]?>"></td>
+          <td><?php echo pql_format_error_span($error["qmqpservers_0"]); ?><input type="text" name="qmqpservers[0]" value="<?=$_REQUEST["qmqpservers"][0]?>"></td>
         </tr>
 
-<?php for($i = 1; $i <= $qmqpcount; $i++) { ?>
+<?php for($i = 1; $i <= $_REQUEST["qmqpcount"]; $i++) { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["qmqpservers_$i"]); ?><input type="text" name="qmqpservers[<?=$i?>]" value="<?=$qmqpservers[$i]?>"></td>
+          <td><?php echo pql_format_error_span($error["qmqpservers_$i"]); ?><input type="text" name="qmqpservers[<?=$i?>]" value="<?=$_REQUEST["qmqpservers"][$i]?>"></td>
         </tr>
 
 <?php } ?>
         <tr class="subtitle">
-          <td><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?$attrib?>&qmqpcount=<?=($qmqpcount+1)?>&mxhost=<?=$mxhost?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
+          <td><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&qmqpcount=<?=($_REQUEST["qmqpcount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
         </tr>
 
         <tr class="subtitle">
@@ -132,26 +140,28 @@ function qmqpservers_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?=$attrib?>">
-    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
-    <input type="hidden" name="view" value="<?=$view?>">
+    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
 <?php
 }
+// }}}
 
+// {{{ qmqpservers_save(type, host)
 function qmqpservers_save($type, $host)  {
-	global $_pql_control, $attrib, $qmqpservers, $error, $mxhost, $view, $LANG;
+	global $_pql_control, $error, $LANG;
 
 	switch($type) {
 	  case "modify";
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_GLOB_ATTR_QMQPSERVERS"),
-										 $qmqpservers))
+										 pql_get_define("PQL_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_ATTR_QMQPSERVERS"),
+										 $_REQUEST["qmqpservers"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('qmqpservers options')));
 		else
@@ -166,7 +176,10 @@ function qmqpservers_save($type, $host)  {
 								  array('type' => $type, 'file' => __FILE__)));
 	}
 }
+// }}}
 
+
+// {{{ qmqpservers_help(void)
 function qmqpservers_help() {
 	global $LANG;
 ?>
@@ -175,11 +188,14 @@ function qmqpservers_help() {
 	establishes a QMQP connection or runs out of addresses.
 <?php
 }
+// }}}
 
+// {{{ qmqpservers_help_cr(void)
 function qmqpservers_help_cr() {
 	global $LANG;
 	echo $LANG->_('Help text taken from qmail man pages');
 }
+// }}}
 
 // Local variables:
 // mode: php

@@ -2,53 +2,59 @@
 // control attribute plugin for
 // custombouncetext (additional bounce message)
 //
-// $Id: attrib.control.custombouncetext.inc,v 2.14 2004-02-14 14:25:35 turbo Exp $
+// $Id: attrib.control.custombouncetext.inc,v 2.15 2004-03-11 16:31:54 turbo Exp $
 
+// {{{ custombouncetext_check(type)
 function custombouncetext_check($type) {
-	global $error, $custombouncetext, $use_custombouncetext, $view, $LANG;
+	global $error, $LANG;
 
 	// missing
-	if($use_custombouncetext == 1 and $custombouncetext == "") {
+	if($_REQUEST["use_custombouncetext"] == 1 and $_REQUEST["custombouncetext"] == "") {
 		$error["custombouncetext"] = $LANG->_('Missing');
 		return false;
 	}
 
 	return true;
 }
+// }}}
 
+// {{{ custombouncetext_init(host)
 // init values
 function custombouncetext_init($host) {
-	global $_pql_control, $custombouncetext, $use_custombouncetext, $view;
+	global $_pql_control;
 	
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-									   pql_get_define("PQL_GLOB_ATTR_CUSTOMBOUNCETEXT"));
+									   pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_ATTR_CUSTOMBOUNCETEXT"));
 	
 	if(!is_null($value))
-	  $custombouncetext = $value[0];
+	  $_REQUEST["custombouncetext"] = $value[0];
 	
 	// initialize radio button
-	if($custombouncetext == "")
-	  $use_custombouncetext = 0;
+	if($_REQUEST["custombouncetext"] == "")
+	  $_REQUEST["use_custombouncetext"] = 0;
 	else
-	  $use_custombouncetext = 1;
+	  $_REQUEST["use_custombouncetext"] = 1;
 }
+// }}}
 
+
+// {{{ custombouncetext_print_view(host)
 function custombouncetext_print_view($host) {
-	global $_pql_control, $custombouncetext, $use_custombouncetext, $view, $LANG;
+	global $_pql_control, $LANG;
 	
 	// init data
 	custombouncetext_init($host);
 	
-	if($use_custombouncetext == "0")
-	  $custombouncetext = "disabled";
+	if($_REQUEST["use_custombouncetext"] == "0")
+	  $_REQUEST["custombouncetext"] = "disabled";
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">custombouncetext (<?=$LANG->_('Additional bounce text')?>) for host <u><?=$host?></u></th>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Message')?></td>
-        <td><?php echo nl2br($custombouncetext); ?></td>
+        <td><?php echo nl2br($_REQUEST["custombouncetext"]); ?></td>
       </tr>
 
       <tr class="subtitle">
@@ -58,9 +64,11 @@ function custombouncetext_print_view($host) {
   </table>
 <?php
 }
+// }}}
 
+// {{{ custombouncetext_print_form(void)
 function custombouncetext_print_form() {
-	global $attrib, $custombouncetext, $use_custombouncetext, $error, $mxhost, $view, $LANG;
+	global $LANG;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -68,14 +76,14 @@ function custombouncetext_print_form() {
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Use additional message')?></td>
           <td>
-            <input type="radio" name="use_custombouncetext" value="0" <?php if($use_custombouncetext == "0"){ echo "checked"; } //" ?>> <?=$LANG->_('No')?>
-            <input type="radio" name="use_custombouncetext" value="1" <?php if($use_custombouncetext == "1"){ echo "checked"; } //" ?>> <?=$LANG->_('Yes')?>
+            <input type="radio" name="use_custombouncetext" value="0" <?php if($_REQUEST["use_custombouncetext"] == "0"){ echo "checked"; }?>> <?=$LANG->_('No')?>
+            <input type="radio" name="use_custombouncetext" value="1" <?php if($_REQUEST["use_custombouncetext"] == "1"){ echo "checked"; }?>> <?=$LANG->_('Yes')?>
           </td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Message')?></td>
-          <td><?php echo pql_format_error_span($error["custombouncetext"]); ?><textarea cols="40" rows="10" name="custombouncetext"><?=$custombouncetext?></textarea></td>
+          <td><?php echo pql_format_error_span($error["custombouncetext"]); ?><textarea cols="40" rows="10" name="custombouncetext"><?=$_REQUEST["custombouncetext"]?></textarea></td>
         </tr>
 
         <tr class="subtitle">
@@ -85,29 +93,31 @@ function custombouncetext_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?=$attrib?>">
-    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
-    <input type="hidden" name="view" value="<?=$view?>">
+    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
 <?php
 }
+// }}}
 
+// {{{ custombouncetext_save(type, host)
 function custombouncetext_save($type, $host) {
-	global $_pql_control, $attrib, $custombouncetext, $use_custombouncetext, $error, $mxhost, $view, $LANG;
+	global $_pql_control, $LANG;
 	
 	switch($type) {
 	  case "modify";
 	  case "add";
 		// save entries
-		if($use_custombouncetext == "0")
-		  $custombouncetext = "";
+		if($_REQUEST["use_custombouncetext"] == "0")
+		  $_REQUEST["custombouncetext"] = "";
 		
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_GLOB_ATTR_CUSTOMBOUNCETEXT"),
-										 $custombouncetext)) 
+										 pql_get_define("PQL_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_ATTR_CUSTOMBOUNCETEXT"),
+										 $_REQUEST["custombouncetext"])) 
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('custombouncetext message')));
 		else
@@ -123,6 +133,7 @@ function custombouncetext_save($type, $host) {
 								  array('type' => $type, 'file' => __FILE__)));
 	}
 }
+// }}}
 
 // Local variables:
 // mode: php

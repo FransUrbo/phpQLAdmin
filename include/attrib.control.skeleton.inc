@@ -58,11 +58,12 @@
 //
 // Please look at other plugins to see which standard header text is recommanded.
 //
-// $Id: attrib.control.skeleton.inc,v 2.12 2004-02-14 14:25:36 turbo Exp $
+// $Id: attrib.control.skeleton.inc,v 2.13 2004-03-11 16:31:55 turbo Exp $
 //
 
+// {{{ xxx_check(type)
 function xxx_check($type) {
-	global $error, $view, $xxx;
+	global $error, $LANG;
 	
 	// form validation comes here.
 	// this function returns true if the check was successful and the values
@@ -74,10 +75,12 @@ function xxx_check($type) {
 	
 	return true;
 }
+// }}}
 
+// {{{ xxx_init(void)
 // init values
 function xxx_init() {
-	global $_pql_control, $view, $xxx;
+	global $_pql_control;
 	
 	// initiate values from ldap database
 	// use global vars to make the initiated values
@@ -86,15 +89,17 @@ function xxx_init() {
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
 									   $_SESSION["USER_SEARCH_DN_CTR"],
-									   pql_get_define("PQL_GLOB_ATTR_xxx"));
+									   pql_get_define("PQL_ATTR_xxx"));
 	
 	if(!is_null($value))
-	  $xxx = $value[0];
+	  $_REQUEST["xxx"] = $value[0];
 }
+// }}}
 
 
+// {{{ xxx_print_view(host)
 function xxx_print_view($host) {
-	global $_pql_control, $view, $xxx, $LANG;
+	global $_pql_control, $LANG;
 
 	// this function will display the configuration
 	// stored in the ldap database.
@@ -103,14 +108,14 @@ function xxx_print_view($host) {
 	xxx_init();
 
 	// set empty field to default value
-	if($xxx == "")
-	  $xxx = "set the default value here";
+	if($_REQUEST["xxx"] == "")
+	  $_REQUEST["xxx"] = "set the default value here";
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">XXX title</th>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title">XXX attribute</td>
-        <td><?=$helohost?></td>
+        <td><?=$_REQUEST["xxx"]?></td>
       </tr>
 
       <tr class="subtitle">
@@ -124,9 +129,11 @@ function xxx_print_view($host) {
   </table>
 <?php
 }
+// }}}
 
+// {{{ xxx_print_form(void)
 function xxx_print_form() {
-	global $attrib, $xxx, $error, $mxhost, $view, $LANG;
+	global $error, $LANG;
 
 	// this function displays the form to change the values
 	// for specified attribute.
@@ -136,7 +143,7 @@ function xxx_print_form() {
       <th colspan="3" align="left">XXX title</th>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">XXX attribute</td>
-          <td><?php echo pql_format_error_span($error["xxx"]); ?><input type="text" name="xxx" value="<?=$xxx?>"> <?=$LANG->_('Default')?>: write default value here</td>
+          <td><?php echo pql_format_error_span($error["xxx"]); ?><input type="text" name="xxx" value="<?=$_REQUEST["xxx"]?>"> <?=$LANG->_('Default')?>: write default value here</td>
         </tr>
 
         <tr>
@@ -148,18 +155,19 @@ function xxx_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?=$attrib?>">
-    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
-    <input type="hidden" name="view" value="<?=$view?>">
+    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
-
 <?php
 }
+// }}}
 
+// {{{ xxx_save(type, host)
 function xxx_save($type, $host) {
-	global $_pql_control, $attrib, $xxx, $error, $view, $LANG;
+	global $_pql_control, $error, $LANG;
 
 	// this function will save the entered data.
 	// $type is most of the time "modify" so you
@@ -174,8 +182,8 @@ function xxx_save($type, $host) {
 		
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
 										 $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_GLOB_ATTR_xxx"),
-										 $xxx))
+										 pql_get_define("PQL_ATTR_xxx"),
+										 $_REQUEST["xxx"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('xxx options')));
 		else
@@ -191,20 +199,26 @@ function xxx_save($type, $host) {
 								  array('type' => $type, 'file' => __FILE__)));
 	}
 }
+// }}}
 
+
+// {{{ xxx_help(void)
 function xxx_help() {
 	global $LANG;
 ?>
 	Help about the attribute...
 <?php
 }
+// }}}
 
+// {{{ xxx_help_cr(void)
 function xxx_help_cr() {
 	global $LANG;
 ?>
 	copyright notice about help text comes here
 <?php
 }
+// }}}
 
 // Local variables:
 // mode: php

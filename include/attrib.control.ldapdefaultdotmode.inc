@@ -2,8 +2,9 @@
 // control attribute plugin for
 // ldapdefaultdotmode (default mode how to interpret .qmail files)
 //
-// $Id: attrib.control.ldapdefaultdotmode.inc,v 2.13 2004-02-14 14:25:35 turbo Exp $
+// $Id: attrib.control.ldapdefaultdotmode.inc,v 2.14 2004-03-11 16:31:54 turbo Exp $
 
+// {{{ ldapdefaultdotmode_check(type)
 function ldapdefaultdotmode_check($type) {
 	global $error, $ldapdefaultdotmode, $view, $LANG;
 	
@@ -28,35 +29,40 @@ function ldapdefaultdotmode_check($type) {
 	
 	return true;
 }
+// }}}
 
+// {{{ ldapdefaultdotmode_init(host)
 // init values
 function ldapdefaultdotmode_init($host) {
-	global $_pql_control, $ldapdefaultdotmode, $view;
+	global $_pql_control;
 	
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-									   pql_get_define("PQL_GLOB_ATTR_LDAPDEFAULTDOTMODE"));
+									   pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"));
 	
 	if(!is_null($value))
-	  $ldapdefaultdotmode = $value[0];
+	  $_REQUEST["ldapdefaultdotmode"] = $value[0];
 }
+// }}}
 
+
+// {{{ ldapdefaultdotmode_print_view(host)
 function ldapdefaultdotmode_print_view($host) {
-	global $_pql_control, $ldapdefaultdotmode, $view, $LANG;
+	global $_pql_control, $LANG;
 
 	// init data
 	ldapdefaultdotmode_init($host);
 
 	// set empty field to "not set"
-	if($ldapdefaultdotmode == "")
-	  $ldapdefaultdotmode = $LANG->_('Not set');
+	if($_REQUEST["ldapdefaultdotmode"] == "")
+	  $_REQUEST["ldapdefaultdotmode"] = $LANG->_('Not set');
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">ldapdefaultdotmode (<?=$LANG->_('Default dot mode')?>)</th>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Mode')?></td>
-        <td><?=$ldapdefaultdotmode?></td>
+        <td><?=$_REQUEST["ldapdefaultdotmode"]?></td>
       </tr>
 
       <tr class="subtitle">
@@ -66,9 +72,11 @@ function ldapdefaultdotmode_print_view($host) {
   </table>
 <?php
 }
+// }}}
 
+// {{{ ldapdefaultdotmode_print_form(void)
 function ldapdefaultdotmode_print_form() {
-	global $attrib, $ldapdefaultdotmode, $error, $mxhost, $view, $LANG;
+	global $error, $LANG;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -77,11 +85,11 @@ function ldapdefaultdotmode_print_form() {
           <td class="title"><?=$LANG->_('Mode')?></td>
           <td><?php echo pql_format_error_span($error["ldapdefaultdotmode"]); ?>
             <select name="ldapdefaultdotmode">
-              <option value="ldaponly" <?php if($ldapdefaultdotmode == "ldaponly"){ echo "SELECTED"; }?>>ldaponly (<?=$LANG->_('LDAP attribute "deliveryProgramPath" and .qmail files are ignored')?>)</option>
-              <option value="dotonly" <?php if($ldapdefaultdotmode == "dotonly"){ echo "SELECTED"; }?>>dotonly (<?=$LANG->_('only .qmail')?>)</option>
-              <option value="ldapwithprog" <?php if($ldapdefaultdotmode == "ldapwithprog"){ echo "SELECTED"; }?>>ldapwithprog (<?=$LANG->_('Attribute deliveryProgramPath is used if existant, .qmail files are ignored')?>))</option>
-              <option value="both" <?php if($ldapdefaultdotmode == "both"){ echo "SELECTED"; }?>>both (<?=$LANG->_('LDAP attribute "deliveryProgramPath" and .qmail files are used')?>)</option>
-              <option value="none" <?php if($ldapdefaultdotmode == "none"){ echo "SELECTED"; }?>>none (<?=$LANG->_('Both LDAP attribute and .qmail files are ignored')?>)</option>
+              <option value="ldaponly" <?php if($_REQUEST["ldapdefaultdotmode"] == "ldaponly"){ echo "SELECTED"; }?>>ldaponly (<?=$LANG->_('LDAP attribute "deliveryProgramPath" and .qmail files are ignored')?>)</option>
+              <option value="dotonly" <?php if($_REQUEST["ldapdefaultdotmode"] == "dotonly"){ echo "SELECTED"; }?>>dotonly (<?=$LANG->_('only .qmail')?>)</option>
+              <option value="ldapwithprog" <?php if($_REQUEST["ldapdefaultdotmode"] == "ldapwithprog"){ echo "SELECTED"; }?>>ldapwithprog (<?=$LANG->_('Attribute deliveryProgramPath is used if existant, .qmail files are ignored')?>))</option>
+              <option value="both" <?php if($_REQUEST["ldapdefaultdotmode"] == "both"){ echo "SELECTED"; }?>>both (<?=$LANG->_('LDAP attribute "deliveryProgramPath" and .qmail files are used')?>)</option>
+              <option value="none" <?php if($_REQUEST["ldapdefaultdotmode"] == "none"){ echo "SELECTED"; }?>>none (<?=$LANG->_('Both LDAP attribute and .qmail files are ignored')?>)</option>
             </select>
           </td>
         </tr>
@@ -93,26 +101,28 @@ function ldapdefaultdotmode_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?=$attrib?>">
-    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
-    <input type="hidden" name="view" value="<?=$view?>">
+    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
 <?php
 }
+// }}}
 
+// {{{ ldapdefaultdotmode_save(type, host)
 function ldapdefaultdotmode_save($type, $host) {
-	global $_pql_control, $attrib, $ldapdefaultdotmode, $error, $view, $LANG;
+	global $_pql_control, $error, $LANG;
 
 	switch($type) {
 	  case "modify";
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_GLOB_ATTR_LDAPDEFAULTDOTMODE"),
-										 $ldapdefaultdotmode))
+										 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"),
+										 $_REQUEST["ldapdefaultdotmode"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('ldapdefaultdotmode options')));
 		else
@@ -128,6 +138,7 @@ function ldapdefaultdotmode_save($type, $host) {
 								  array('type' => $type, 'file' => __FILE__)));
 	}
 }
+// }}}
 
 // Local variables:
 // mode: php

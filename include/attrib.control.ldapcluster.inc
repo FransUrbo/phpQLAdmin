@@ -2,45 +2,49 @@
 // control attribute plugin for
 // ldapcluster (clustering support)
 //
-// $Id: attrib.control.ldapcluster.inc,v 2.11 2004-02-14 14:25:35 turbo Exp $
+// $Id: attrib.control.ldapcluster.inc,v 2.12 2004-03-11 16:31:54 turbo Exp $
 
-// check values
+// {{{ ldapcluster_check(type)
 function ldapcluster_check($type) {
-	global $view;
 	return true;
 }
+// }}}
 
+// {{{ ldapcluster_init(void)
 // init values
 function ldapcluster_init() {
-	global $_pql_control, $ldapcluster, $view;
+	global $_pql_control;
 
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
 									   $_SESSION["USER_SEARCH_DN_CTR"],
-									   pql_get_define("PQL_GLOB_ATTR_LDAPCLUSTER"));
+									   pql_get_define("PQL_ATTR_LDAPCLUSTER"));
 	
 	if(!is_null($value))
-	  $ldapcluster = $value[0];
+	  $_REQUEST["ldapcluster"] = $value[0];
 	else
 	  // set to default value
-	  $ldapcluster = 0;
+	  $_REQUEST["ldapcluster"] = 0;
 }
+// }}}
 
+
+// {{{ ldapcluster_print_view(host)
 function ldapcluster_print_view($host) {
 	global $ldapcluster, $view, $LANG;
 
 	// init data
 	ldapcluster_init();
 
-	if($ldapcluster == 0)
-	  $ldapcluster = $LANG->_('Disabled, single ldap server');
+	if($_REQUEST["ldapcluster"] == 0)
+	  $_REQUEST["ldapcluster"] = $LANG->_('Disabled, single ldap server');
 	else
-	  $ldapcluster = $LANG->_('Enabled, use native clustering');
+	  $_REQUEST["ldapcluster"] = $LANG->_('Enabled, use native clustering');
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="2" align="left">ldapcluster (<?=$LANG->_('Clustering support')?>)</th>
       <tr class="<?php pql_format_table(); ?>">
-        <td><?=$ldapcluster?></td>
+        <td><?=$_REQUEST["ldapcluster"]?></td>
       </tr>
 
       <tr class="subtitle">
@@ -57,16 +61,18 @@ function ldapcluster_print_view($host) {
   </table>
 <?php
 }
+// }}}
 
+// {{{ ldapcluster_print_form(void)
 function ldapcluster_print_form() {
-	global $mxhost, $view;
-
 	// don't print form, save directly
-	ldapcluster_save("modify", $mxhost);
+	ldapcluster_save("modify", $_REQUEST["mxhost"]);
 }
+// }}}
 
+// {{{ ldapcluster_save(type, host)
 function ldapcluster_save($type, $host) {
-	global $_pql_control, $set, $view, $LANG;
+	global $_pql_control, $LANG;
 
 	switch($type) {
 	  case "modify";
@@ -74,8 +80,8 @@ function ldapcluster_save($type, $host) {
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
 										 $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_GLOB_ATTR_LDAPCLUSTER"),
-										 $set))
+										 pql_get_define("PQL_ATTR_LDAPCLUSTER"),
+										 $_REQUEST["set"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('ldapcluster options')));
 		else
@@ -91,6 +97,7 @@ function ldapcluster_save($type, $host) {
 								  array('type' => $type, 'file' => __FILE__)));
 	}
 }
+// }}}
 
 // Local variables:
 // mode: php

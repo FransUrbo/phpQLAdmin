@@ -2,14 +2,15 @@
 // control attribute plugin for
 // badmailfrom (blocked from addresses)
 //
-// $Id: attrib.control.badmailfrom.inc,v 2.15 2004-02-14 14:25:35 turbo Exp $
+// $Id: attrib.control.badmailfrom.inc,v 2.16 2004-03-11 16:31:53 turbo Exp $
 
+// {{{ badmailfrom_check(type)
 function badmailfrom_check($type) {
-    global $error, $badmailfrom, $view, $LANG;
+    global $error, $LANG;
     
     // check validity
-    if(is_array($badmailfrom)) {
-		foreach($badmailfrom as $key => $badmail) {
+    if(is_array($_REQUEST["badmailfrom"])) {
+		foreach($_REQUEST["badmailfrom"] as $key => $badmail) {
 			if($badmail == "")
 			  continue;
 	    
@@ -33,30 +34,34 @@ function badmailfrom_check($type) {
     
     return true;
 }
+// }}}
 
+// {{{ badmailfrom_init($host)
 // init values
 function badmailfrom_init($host) {
-    global $_pql_control, $badmailfrom, $view;
+    global $_pql_control;
     
     // fetch data from ldap server
-    $badmailfrom = pql_control_get_attribute($_pql_control->ldap_linkid,
-											 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-											 pql_get_define("PQL_GLOB_ATTR_BADMAILFROM"));
+    $_REQUEST["badmailfrom"] = pql_control_get_attribute($_pql_control->ldap_linkid,
+														 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+														 pql_get_define("PQL_ATTR_BADMAILFROM"));
     
-    if(is_null($badmailfrom))
+    if(is_null($_REQUEST["badmailfrom"]))
 	  return true;
 }
+// }}}
 
+// {{{ badmailfrom_print_view(host)
 function badmailfrom_print_view($host) {
-    global $_pql_control, $badmailfrom, $view, $LANG;
+    global $_pql_control, $LANG;
     
     // init data
     badmailfrom_init($host);
     
-    if(is_array($badmailfrom)) {
-		foreach($badmailfrom as $key => $mail) {
+    if(is_array($_REQUEST["badmailfrom"])) {
+		foreach($_REQUEST["badmailfrom"] as $key => $mail) {
 			if(preg_match("/^@/", $mail))
-			  $badmailfrom[$key] = "all of " . pql_strip_username($mail);
+			  $_REQUEST["badmailfrom"][$key] = "all of " . pql_strip_username($mail);
 		}
     }
 ?>
@@ -66,14 +71,14 @@ function badmailfrom_print_view($host) {
         <td><?=$LANG->_('Email')?></td>
       </tr>
  <?php
-	if(!is_array($badmailfrom)) {
+	if(!is_array($_REQUEST["badmailfrom"])) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td><?=$LANG->_('Not set')?></td>
       </tr>
 <?php
 	} else {
-		foreach($badmailfrom as $mail) {
+		foreach($_REQUEST["badmailfrom"] as $mail) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td><?=$mail?></td>
@@ -89,12 +94,14 @@ function badmailfrom_print_view($host) {
   </table>
 <?php
 }
+// }}}
 
+// {{{ badmailfrom_print_form(void)
 function badmailfrom_print_form() {
-    global $attrib, $error, $badmailfrom, $badcount, $mxhost, $view, $LANG;
+    global $error, $LANG;
     
-    if(($badcount < count($badmailfrom) - 1) and count($badmailfrom) != 0)
-	  $badcount = count($badmailfrom) - 1;
+    if(($_REQUEST["badcount"] < count($_REQUEST["badmailfrom"]) - 1) and count($_REQUEST["badmailfrom"]) != 0)
+	  $_REQUEST["badcount"] = count($_REQUEST["badmailfrom"]) - 1;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -104,17 +111,17 @@ function badmailfrom_print_form() {
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["badmailfrom_0"]); ?><input type="text" name="badmailfrom[0]" value="<?=$badmailfrom[0]?>"></td>
+          <td><?php echo pql_format_error_span($error["badmailfrom_0"]); ?><input type="text" name="badmailfrom[0]" value="<?=$_REQUEST["badmailfrom"][0]?>"></td>
         </tr>
 
-<?php for($i = 1; $i <= $badcount; $i++) { ?>
+<?php for($i = 1; $i <= $_REQUEST["badcount"]; $i++) { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["badmailfrom_$i"]); ?><input type="text" name="badmailfrom[<?=$i?>]" value="<?=$badmailfrom[$i]?>"></td>
+          <td><?php echo pql_format_error_span($error["badmailfrom_$i"]); ?><input type="text" name="badmailfrom[<?=$i?>]" value="<?=$_REQUEST["badmailfrom"][$i]?>"></td>
         </tr>
 
 <?php } ?>
         <tr class="subtitle">
-          <td><a href="<?=$_SERVER["PHP_SELF"]?>?attrib=<?=$attrib?>&badcount=<?($badcount+1)?>&mxhost=<?=$mxhost?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
+          <td><a href="<?=$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&badcount=<?($_REQUEST["badcount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
         </tr>
 
         <tr class="subtitle">
@@ -124,26 +131,28 @@ function badmailfrom_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?=$attrib?>">
-    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
-    <input type="hidden" name="view" value="<?=$view?>">
+    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
 <?php
 }
+// }}}
 
+// {{{ badmailfrom_save(type, host)
 function badmailfrom_save($type, $host) {
-    global $_pql_control, $attrib, $badmailfrom, $error, $view, $LANG;
+    global $_pql_control, $LANG;
     
     switch($type) {
       case "modify";
       case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_GLOB_ATTR_BADMAILFROM"),
-										 $badmailfrom))
+										 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_ATTR_BADMAILFROM"),
+										 $_REQUEST["badmailfrom"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('badmailfrom options')));
 		else
@@ -159,7 +168,10 @@ function badmailfrom_save($type, $host) {
 								  array('type' => $type, 'file' => __FILE__)));
     }
 }
+// }}}
 
+
+// {{{ badmailfrom_help(void)
 function badmailfrom_help() {
 	global $LANG;
 ?>
@@ -170,11 +182,14 @@ function badmailfrom_help() {
 	every address at host.
 <?php
 }
+// }}}
 
+// {{{ badmailfrom_help_cr(void)
 function badmailfrom_help_cr() {
 	global $LANG;
 	echo $LANG->_('Help text taken from qmail man pages');
 }
+// }}}
 
 // Local variables:
 // mode: php

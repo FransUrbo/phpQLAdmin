@@ -2,15 +2,15 @@
 // control attribute plugin for
 // smtproutes (max number of bytes in message)
 //
-// $Id: attrib.control.smtproutes.inc,v 2.17 2004-02-14 14:25:36 turbo Exp $
+// $Id: attrib.control.smtproutes.inc,v 2.18 2004-03-11 16:31:55 turbo Exp $
 
+// {{{ smtproutes_check(type)
 function smtproutes_check($type) {
-	global $error, $domain, $relay, $port, $view, $LANG;
-	global $rootdn, $type, $set, $domainname;
+	global $error, $LANG;
 
 	// check all domains
-	if(is_array($domainname)) {
-		foreach($domainname as $key => $dom) {
+	if(is_array($_REQUEST["domainname"])) {
+		foreach($_REQUEST["domainname"] as $key => $dom) {
 			if($dom) {
 				if(preg_match("/[^0-9a-z-\.]+/i",$dom)) {
 					$error["domain_$key"] = $LANG->_('Invalid');
@@ -21,8 +21,8 @@ function smtproutes_check($type) {
 	}
 	
 	// relay hosts
-	if(is_array($relay)) {
-		foreach($relay as $key => $rel) {
+	if(is_array($_REQUEST["relay"])) {
+		foreach($_REQUEST["relay"] as $key => $rel) {
 			if($rel != "" and !pql_check_hostaddress($rel, true)) {
 				$error["relay_$key"] = $LANG->_('Invalid');
 				$is_error = true;
@@ -31,8 +31,8 @@ function smtproutes_check($type) {
 	}
 	
 	// ports - check only if we're not deleting a specific domain
-	if(is_array($port) and ($type != 'del')) {
-		foreach($port as $key => $prt) {
+	if(is_array($_REQUEST["port"]) and ($_REQUEST["type"] != 'del')) {
+		foreach($_REQUEST["port"] as $key => $prt) {
 			if(preg_match("/[^0-9]+/i", $prt)) {
 				$error["port_$key"] = $LANG->_('Invalid');
 				$is_error = true;
@@ -45,44 +45,47 @@ function smtproutes_check($type) {
 	
 	return true;
 }
+// }}}
 
+// {{{ smtproutes_init(host)
+// init values
 function smtproutes_init($host) {
-	// init values
-	global $_pql_control, $smtproutes, $domain, $relay, $port, $view;
-	global $rootdn, $attrib, $type, $set;
+	global $_pql_control;
 
 	if($host) {
 		// fetch data from ldap server
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										   pql_get_define("PQL_GLOB_ATTR_SMTPROUTES"));
+										   pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+										   pql_get_define("PQL_ATTR_SMTPROUTES"));
 		
 		if(is_null($value))
 		  return true;
 
 		foreach($value as $route)
-		  $smtproutes[] = split(":", $route);
+		  $_REQUEST["smtproutes"][] = split(":", $route);
 		
-		foreach($smtproutes as $route) {
-			$domain[] = $route[0];
-			$relay[] = $route[1];
-			$port[] = $route[2];
+		foreach($_REQUEST["smtproutes"] as $route) {
+			$_REQUEST["domain"][] = $route[0];
+			$_REQUEST["relay"][]  = $route[1];
+			$_REQUEST["port"][]   = $route[2];
 		}
 	} else
 	  // We're called from the domain details page,
 	  // get SMTP routes later (in the print_form() func).
 	  return true;
 }
+// }}}
 
+
+// {{{ smtproutes_print_view(host)
 function smtproutes_print_view($host) {
-	global $_pql_control, $smtproutes, $view, $LANG;
-	global $rootdn, $domain, $attrib, $type, $set;
+	global $_pql_control, $LANG;
 
 	// init data
 	smtproutes_init($host);
 
-	if(is_array($smtproutes)) {
-		foreach($smtproutes as $route) {
+	if(is_array($_REQUEST["smtproutes"])) {
+		foreach($_REQUEST["smtproutes"] as $route) {
 			// domain
 			if($route[0] == "")
 			  $route[0] = "&lt; ".$LANG->_('All', 4)." &gt;";
@@ -98,7 +101,6 @@ function smtproutes_print_view($host) {
 			$routes[] = $route;
 		}
 	}
-	
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">smtproutes (<?=$LANG->_('Defined SMTP routes')?>)</th>
@@ -149,88 +151,93 @@ function smtproutes_print_view($host) {
 
 <?php
 }
+// }}}
 
+// {{{ smtproutes_print_form(void)
 function smtproutes_print_form() {
-	global $attrib, $error, $domain, $relay, $port, $routecount, $mxhost, $view, $LANG;
-	global $rootdn, $type, $set, $_pql_control;
+	global $_pql_control, $error, $LANG;
 
-	if($attrib && $rootdn && $set)
+	if($_REQUEST["attrib"] && $_REQUEST["rootdn"] && $_REQUEST["set"])
 	  // We're called from the domain details page -> the domain name is in $set
-	  $domainname[0] = $set;
-	elseif($attrib && $set && $mxhost) {
-		// We're called from the domain details page - change value
-		$tmp = split(":", $set); unset($set);
+	  $_REQUEST["domainname"][0] = $_REQUEST["set"];
+	elseif($_REQUEST["attrib"] && $_REQUEST["set"] && $_REQUEST["mxhost"]) {
+		// We're called from the "QmailLDAP/Controls -> qmail-remote" page  - change value
+		$tmp = split(":", $_REQUEST["set"]); unset($_REQUEST["set"]);
 
 		$ch_domainname = $tmp[0];
 		$ch_relay      = $tmp[1];
 		$ch_port       = $tmp[2];
-	} elseif($type && $mxhost)
-	  // We're called from the control details page -> add new value
-	  unset($domainname);
+	} elseif($_REQUEST["type"] && $_REQUEST["mxhost"])
+	  // We're called from the "QmailLDAP/Controls -> qmail-remote" page  - add value
+	  unset($_REQUEST["domainname"]);
 	else
-	  // We're called from the control details page -> the domain name is in $domain
-	  $domainname = $domain;
+	  // We're called from the "QmailLDAP/Controls -> qmail-remote" page  - the domain name is in $domain
+	  $_REQUEST["domainname"] = $_REQUEST["domain"];
 
-	if(($routecount < count($domainname) - 1) and count($domainname) != 0)
-	  $routecount = count($domainname) - 1;
+	if(($_REQUEST["routecount"] < count($_REQUEST["domainname"]) - 1) and count($_REQUEST["domainname"]) != 0)
+	  $routecount = count($_REQUEST["domainname"]) - 1;
 
 	// --------------------------------------------------------------------
 	// There's acctually TWO 'completly' different forms here...
 	//
-	// One is when we're called from the domain details ('Control Options').
-	// The intention with this is that we want to route the domain to <empty>
-	// mailserver. We know the domain name, and we can find out the mailserver
-	// by getting all QmailLDAP/Controls object from the USER_SEARCH_DN_CTR
-	// DN. Show a select menu and fill in a default port (25).
+	// One is when we're called from the "Domain details -> QmailLDAP/Controls Options".
+	// The intention with this is that we want to route the domain to <empty> mailserver.
+	// We know the domain name, and we can find out the mailserver by getting all
+	// QmailLDAP/Controls object from the USER_SEARCH_DN_CTR DN. Show a select menu
+	// and fill in a default port (25).
 	//
-	// The other form is when we're called from the Controls frame/details.
-	// The intention with this is that we want to route <empty> domain
-	// to the known mailserver.
-	// We know the mailserver and we fill in a default port (25). All we
+	// The other form is when we're called from "QmailLDAP/Controls -> qmail-remote".
+	// The intention with this is that we want to route <empty> domain to the known
+	// mailserver. We know the mailserver and we fill in a default port (25). All we
 	// need is a source domain (the domain to route).
 	// --------------------------------------------------------------------
 
 	// Default port...
-	if(!$port[0])
+	if(empty($port[0]))
 	  $port[0] = 25;
 
-	if($type != 'del') {
-		if(!$mxhost)
+	if($_REQUEST["type"] != 'del') {
+		if(empty($_REQUEST["mxhost"]))
 		  // Get all the QmailLDAP/Controls hosts
 		  $hosts  = pql_control_get_hosts($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"]);
 	} else {
 		// Get all hosts which have this domain in 'attrib'
 		$hosts = pql_control_search_attribute($_pql_control->ldap_linkid,
 											  $_SESSION["USER_SEARCH_DN_CTR"],
-											  $attrib, $set."*", 1);
-
+											  $_REQUEST["attrib"], $_REQUEST["set"]."*", 1);
+		
 		// Convert the DN into a host list
 		for($i=0; $hosts[$i]; $i++) {
 			$host = split(',', $hosts[$i]);
-			$host = eregi_replace(pql_get_define("PQL_GLOB_ATTR_CN") . "=", "", $host[0]);
+			$host = eregi_replace(pql_get_define("PQL_ATTR_CN") . "=", "", $host[0]);
 			$newhosts[] = $host;
 		}
 
 		$hosts = $newhosts;
 	}
 ?>
-        <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post">
-<?php if($attrib && !$rootdn && !$set && (($type == 'add') || ($type == 'modify'))) {
-		// We're adding ONE value, but we want to remember the previous
 
-		for($i=0; $i < count($domain); $i++) {
+    <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+<?php if(($ch_domainname and $ch_relay and $ch_port)
+		 or
+		 ($_REQUEST["type"] == 'add' and is_array($_REQUEST["smtproutes"]))) {
+		// Called from the domain details page -> adding ONE value, but we want to remember the previous
+
+		for($i=0; $i < count($_REQUEST["domain"]); $i++) {
+			if($_REQUEST["domain"][$i] != $ch_domainname) {
 ?>
-          <!-- Relay #<?=$i?>: <?=$domain[$i]?>:<?=$relay[$i]?>:<?=$port[$i]?> -->
-          <input type="hidden" name="domainname[<?=$i?>]" value="<?=$domain[$i]?>">
-          <input type="hidden" name="relay[<?=$i?>]"      value="<?=$relay[$i]?>">
-          <input type="hidden" name="port[<?=$i?>]"       value="<?=$port[$i]?>">
+    <!-- Relay #<?=$i?>: <?=$_REQUEST["domain"][$i]?> -> <?=$_REQUEST["relay"][$i]?>:<?=$_REQUEST["port"][$i]?> -->
+    <input type="hidden" name="domainname[<?=$i?>]" value="<?=$_REQUEST["domain"][$i]?>">
+    <input type="hidden" name="relay[<?=$i?>]"      value="<?=$_REQUEST["relay"][$i]?>">
+    <input type="hidden" name="port[<?=$i?>]"       value="<?=$_REQUEST["port"][$i]?>">
 
-<?php	}
+<?php		}
+		}
 
 		if($ch_domainname && $ch_relay && $ch_port) {
 			// Remember what value to change
-			for($i=0; $i < count($domain); $i++) {
-				if(eregi($ch_domainname, $domain[$i]))
+			for($i=0; $i < count($_REQUEST["domain"]); $i++) {
+				if(eregi($ch_domainname, $_REQUEST["domain"][$i]))
 				  $change = $i;
 			}
 		}
@@ -241,139 +248,149 @@ function smtproutes_print_form() {
 
 	if(isset($change)) {
 		$objnr = $change;
-
-		$domainname[$objnr] = $ch_domainname;
+		$_REQUEST["domainname"][$objnr] = $ch_domainname;
 	} else {
 		$objnr = $counter;
-		unset($domain); unset($relay); unset($port);
+		unset($_REQUEST["relay"]); unset($_REQUEST["port"]);
 	}
 	
 	if($ch_domainname && $ch_relay && $ch_port) {
 ?>
-          <!-- This is the number of the relay (see above) we are changing -->
-          <input type="hidden" name="change"        value="<?=$change?>">
+
+    <!-- This is the number of the relay (see above) we are changing -->
+    <input type="hidden" name="change"        value="<?=$change?>">
 
 <?php } ?>
-          <table cellspacing="0" cellpadding="3" border="0">
-            <th colspan="3" align="left">smtproutes (<?=$LANG->_('SMTP routes')?>)</th>
-              <!-- A --------------------------------- -->
-              <tr class="title">
-                <td><?=$LANG->_('Source domain')?></td>
-<?php if($attrib && $rootdn && $set) { ?>
-                <td>QmailLDAP/Controls</td>
+    <table cellspacing="0" cellpadding="0" border="0">
+      <th colspan="3" align="left">smtproutes (<?=$LANG->_('SMTP routes')?>)</th>
+        <!-- A --------------------------------- -->
+        <tr class="title">
+          <td><?=$LANG->_('Source domain')?></td>
+<?php if($_REQUEST["attrib"] && $_REQUEST["rootdn"] && $_REQUEST["set"]) { ?>
+          <td>QmailLDAP/Controls</td>
 <?php } else { ?>
-                <td><?=$LANG->_('Relay host')?></td>
+          <td><?=$LANG->_('Relay host')?></td>
 <?php } ?>
-<?php if($type != 'del') { ?>
-                <td><?=$LANG->_('Port')?></td>
+<?php if($_REQUEST["type"] != 'del') { ?>
+          <td><?=$LANG->_('Port')?></td>
 <?php } ?>
-              </tr>
+        </tr>
 
-              <!-- B --------------------------------- -->
-              <tr class="<?php pql_format_table(); ?>">
-                <td><?php echo pql_format_error_span($error["domainname_$counter"]); ?><input type="text" name="domainname[<?=$counter?>]" value="<?=$domainname[$objnr]?>">&nbsp;&nbsp;<b><?php if($type != 'del') { ?>=><?php } ?></b></td>
-<?php if($attrib && $rootdn && $set) { ?>
-                <td>
-                  <select name="relay[]" size="1" multiple>
-                    <option value=""><?=$LANG->_('Please select a host')?></option>
+        <!-- B --------------------------------- -->
+        <tr class="<?php pql_format_table(); ?>">
+          <td><?php echo pql_format_error_span($error["domainname_$counter"]); ?><input type="text" name="domainname[<?=$counter?>]" value="<?=pql_maybe_idna_decode($_REQUEST["domainname"][$objnr])?>" <?php if(!empty($_REQUEST["domainname"][$objnr])) { echo "READONLY"; } ?>>&nbsp;&nbsp;<b><?php if($type != 'del') { ?>=><?php } ?></b></td>
+          <td>
+<?php if($_REQUEST["attrib"] && $_REQUEST["rootdn"] && $_REQUEST["set"]) { ?>
+            <select name="relay[]" size="5" multiple>
 <?php	for($i=0; $hosts[$i]; $i++) { ?>
-                    <option value="<?=$hosts[$i]?>"><?=$hosts[$i]?></option>
+              <option value="<?=$hosts[$i]?>"><?=pql_maybe_idna_decode($hosts[$i])?></option>
 <?php	} ?>
-                  </select>
-                </td>
+            </select>
 <?php } else { ?>
-                <td><?php echo pql_format_error_span($error["relay_$counter"]); ?><input type="text" name="relay[<?=$counter?>]" value="<?=$relay[$objnr]?>">&nbsp;&nbsp;<b>:</b></td>
+            <?php echo pql_format_error_span($error["relay_$counter"]); ?><input type="text" name="relay[<?=$counter?>]" value="<?=$_REQUEST["relay"][$objnr]?>">&nbsp;&nbsp;<b>:</b></td>
 <?php } ?>
-<?php if($type != 'del') { ?>
-                <td><?php echo pql_format_error_span($error["port_$counter"]); ?><input type="text" size="4" maxlength="4" name="port[<?=$counter?>]" value="<?=$port[$objnr]?>"></td>
+          </td>
+<?php if($_REQUEST["type"] != 'del') { ?>
+          <td><?php echo pql_format_error_span($error["port_$counter"]); ?><input type="text" size="4" maxlength="4" name="port[<?=$objnr?>]" value="<?php if($ch_port) { echo $ch_port; } else { echo $port[$objnr]; } ?>"></td>
 <?php } ?>
-              </tr>
+        </tr>
 
-<?php for($i = 1, $j = $counter; $i <= $routecount; $i++, $counter++) { ?>
-              <!-- C --------------------------------- -->
-              <tr class="<?php pql_format_table(); ?>">
-                <td><?php echo pql_format_error_span($error["domainname_$i"]); ?><input type="text" name="domainname[<?=$i?>]" value="<?=$domainname[$i]?>">&nbsp;&nbsp;<b>=></b></td>
-                <td><?php echo pql_format_error_span($error["relay_$i"]); ?><input type="text" name="relay[<?=$i?>]" value="<?$relay[$i]?>">&nbsp;&nbsp;<b>:</b></td>
-                <td><?php echo pql_format_error_span($error["port_$i"]); ?><input type="text" size="4" maxlength="4" name="port[<?=$i?>]" value="<?=$port[$i]?>"></td>
-              </tr>
+<?php for($i=1, $j=$counter; $i <= $_REQUEST["routecount"]; $i++, $counter++) { ?>
+        <!-- C --------------------------------- -->
+        <tr class="<?php pql_format_table(); ?>">
+          <td><?php echo pql_format_error_span($error["domainname_$i"]); ?><input type="text" name="domainname[<?=$i?>]" value="<?=$_REQUEST["domainname"][$i]?>">&nbsp;&nbsp;<b>=></b></td>
+          <td><?php echo pql_format_error_span($error["relay_$i"]); ?><input type="text" name="relay[<?=$i?>]" value="<?=$_REQUEST["relay"][$i]?>">&nbsp;&nbsp;<b>:</b></td>
+          <td><?php echo pql_format_error_span($error["port_$i"]); ?><input type="text" size="4" maxlength="4" name="port[<?=$i?>]" value="<?=$_REQUEST["port"][$i]?>"></td>
+        </tr>
 
 <?php } ?>
-<?php if(!$attrib) { ?>
-              <tr class="subtitle">
-                <td colspan="3"><a href="<?=$_SERVER["PHP_SELF"]?>?attrib=<?=$attrib?>&routecount=<?=($routecount+1)?>&mxhost=<?=$mxhost?>">add additional route</a>(<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
-              </tr>
+<?php if(empty($_REQUEST["attrib"])) { ?>
+        <tr class="subtitle">
+          <td colspan="3"><a href="<?=$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&routecount=<?=($_REQUEST["routecount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>">add additional route</a>(<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
+        </tr>
 
 <?php } 
 
-	  if($type != 'del') {
+	  if($_REQUEST["type"] != 'del') {
 ?>
-              <!-- D --------------------------------- -->
-              <tr class="subtitle">
-                <td colspan="3"><img src="images/info.png" width="16" height="16" border="0">If the source domain is empty, the route affects to all hosts. If relay host is empty, qmail will take the MX record of the domain to relay. Use port if the smtp port of the relay host is not 25.<?php if(!$attrib) { ?> Leave domain and relay empty to delete a route.<?php } ?></td>
-              </tr>
+        <!-- D --------------------------------- -->
+        <tr class="subtitle">
+          <td colspan="3"><img src="images/info.png" width="16" height="16" border="0">If the source domain is empty, the route affects to all hosts. If relay host is empty, qmail will take the MX record of the domain to relay. Use port if the smtp port of the relay host is not 25.</td>
+        </tr>
 <?php } else { ?>
-              <tr class="subtitle">
-                <td colspan="3"><img src="images/info.png" width="16" height="16" border="0">You have selected to remove the domain <b><?=$domainname[0]?></b> from <i>smtproutes</i>. Please select host(s) to remove it from. All other entries in the object(s) will be preserved</td>
-              </tr>
+        <tr class="subtitle">
+          <td colspan="3"><img src="images/info.png" width="16" height="16" border="0">You have selected to remove the domain <b><?=$_REQUEST["domainname"][0]?></b> from <i>smtproutes</i>. Please select host(s) to remove it from. All other entries in the object(s) will be preserved</td>
+        </tr>
 <?php } ?>
-            </th>
-          </table>
+      </th>
+    </table>
 
-          <input type="hidden" name="submit"        value="1">
-          <input type="hidden" name="attrib"        value="<?=$attrib?>">
-<?php if($mxhost) {            ?>          <input type="hidden" name="mxhost"        value="<?=$mxhost?>"><?php } ?>
-<?php if($rootdn) {            ?>          <input type="hidden" name="rootdn"        value="<?=$rootdn?>"><?php } ?>
-<?php if(!is_array($domain)) { ?>          <input type="hidden" name="domain"        value="<?=$domain?>"><?php } ?>
-          <input type="hidden" name="type"          value="<?=$type?>">
-          <input type="hidden" name="view"          value="<?=$view?>">
-          <br>
-          <input type="submit"                      value="<?=$LANG->_('Save')?>">
-        </form>
+    <input type="hidden" name="submit"        value="1">
+    <input type="hidden" name="attrib"        value="<?=$_REQUEST["attrib"]?>">
+<?php if($_REQUEST["mxhost"]) { ?>
+    <input type="hidden" name="mxhost"        value="<?=$_REQUEST["mxhost"]?>">
+<?php } ?>
+<?php if($_REQUEST["rootdn"]) { ?>
+    <input type="hidden" name="rootdn"        value="<?=$_REQUEST["rootdn"]?>">
+<?php } ?>
+<?php if(!is_array($_REQUEST["domain"])) { ?>
+    <input type="hidden" name="domain"        value="<?=$_REQUEST["domain"]?>">
+<?php } ?>
+    <input type="hidden" name="type"          value="<?=$_REQUEST["type"]?>">
+    <input type="hidden" name="view"          value="<?=$_REQUEST["view"]?>">
+    <br>
+    <input type="submit"                      value="<?=$LANG->_('Save')?>">
+  </form>
 <?php
 }
+// }}}
+
+// {{{ smtproutes_save(type, host)
 
 function smtproutes_save($type, $host) {
-	global $_pql_control, $attrib, $smtproutes, $error, $domain, $relay, $port, $view, $LANG;
-	global $rootdn, $type, $domainname, $set, $change;
+	global $_pql_control, $LANG;
 	$success = 0;
+echo "smtproutes_save($type, $host)<br>";
+printr($_REQUEST);
 
 	switch($type) {
 	  case "modify":
+		// Fall trough. Modify and Add is basically the same thing (at lease it uses the same functions).
 	  case "add":
 		// save entries - combine attributes
 		if($host) {
 			// We're called from the control details page -> we know what object to update
 
-			if($change >= 0) {
+			if($_REQUEST["change"] >= 0) {
 				// We're replacing a value with another - Delete the value in $change
 				// and rearrange the array.
-				unset($domainname[$change]);
-				unset($relay[$change]);
-				unset($port[$change]);
+				unset($_REQUEST["domainname"][$change]);
+				unset($_REQUEST["relay"][$change]);
+				unset($_REQUEST["port"][$change]);
 
-				foreach($domainname as $d)
+				foreach($_REQUEST["domainname"] as $d)
 				  $tmp[] = $d;
-				$domainname = $tmp; unset($tmp);
+				$_REQUEST["domainname"] = $tmp; unset($tmp);
 
-				foreach($relay as $r)
+				foreach($_REQUEST["relay"] as $r)
 				  $tmp[] = $r;
-				$relay = $tmp; unset($tmp);
+				$_REQUEST["relay"] = $tmp; unset($tmp);
 
-				foreach($port as $p)
+				foreach($_REQUEST["port"] as $p)
 				  $tmp[] = $p;
-				$port = $tmp; unset($tmp);
+				$_REQUEST["port"] = $tmp; unset($tmp);
 			}
 
-			for($i=0; $i < count($domainname); $i++) {
+			for($i=0; $i < count($_REQUEST["domainname"]); $i++) {
 				// if empty, delete route
-				if($domainname[$i] == "" and $relay[$i] == "")
+				if($_REQUEST["domainname"][$i] == "" and $_REQUEST["relay"][$i] == "")
 				  continue;
 				
 				// if port or relay is not defined, leave out
-				if($port[$i] == "" or $relay[$i] == "")
-				  $tmp = array($domainname[$i], $relay[$i]);
+				if($_REQUEST["port"][$i] == "" or $_REQUEST["relay"][$i] == "")
+				  $tmp = array($_REQUEST["domainname"][$i], $_REQUEST["relay"][$i]);
 				else
-				  $tmp = array($domainname[$i], $relay[$i], $port[$i]);
+				  $tmp = array($_REQUEST["domainname"][$i], $_REQUEST["relay"][$i], $_REQUEST["port"][$i]);
 				
 				$route = join(":", $tmp);
 				$smtproutes[] = $route;
@@ -381,29 +398,29 @@ function smtproutes_save($type, $host) {
 
 			// Update the object
 			if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-											 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-											 pql_get_define("PQL_GLOB_ATTR_SMTPROUTES"),
+											 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+											 pql_get_define("PQL_ATTR_SMTPROUTES"),
 											 $smtproutes))
 			  $success = 1;
 		} else {
 			// We're called from the domain details page -> we must find out what object to update
 
-			if($relay) {
+			if($_REQUEST["relay"]) {
 				// Go through each QmailLDAP/Controls object, fetching old values
-				for($i=0; $i < count($relay); $i++) {
-					if($relay[$i]) {
+				for($i=0; $i < count($_REQUEST["relay"]); $i++) {
+					if($_REQUEST["relay"][$i]) {
 						// fetch data from ldap server
 						$values = pql_control_get_attribute($_pql_control->ldap_linkid,
-															pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $relay[$i] . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-															pql_get_define("PQL_GLOB_ATTR_SMTPROUTES"));
+															pql_get_define("PQL_ATTR_CN") . "=" . $_REQUEST["relay"][$i] . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+															pql_get_define("PQL_ATTR_SMTPROUTES"));
 						
 						// Add the new value
-						$values[] = $domainname[0].":".$relay[$i].":25";
+						$values[] = $_REQUEST["domainname"][0].":".$_REQUEST["relay"][$i].":".$_REQUEST["port"][0];
 						
 						// Update the object
 						if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-														 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $relay[$i] . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-														 pql_get_define("PQL_GLOB_ATTR_SMTPROUTES"),
+														 pql_get_define("PQL_ATTR_CN") . "=" . $_REQUEST["relay"][$i] . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+														 pql_get_define("PQL_ATTR_SMTPROUTES"),
 														 $values))
 						  $success = 1;
 					}
@@ -424,39 +441,39 @@ function smtproutes_save($type, $host) {
 	  case "del":
 		// We'd like to remove a domain from one (or more) QmailLDAP/Controls objects
 		// Go through each QmailLDAP/Controls object, fetching old values
-		if($relay) {
+		if($_REQUEST["relay"]) {
 			// We're called from the control details page -> we know what object to update
 
-			for($i=0; $i < count($relay); $i++) {
-				if($relay[$i]) {
+			for($i=0; $i < count($_REQUEST["relay"]); $i++) {
+				if($_REQUEST["relay"][$i]) {
 					// fetch data from ldap server
 					$values = pql_control_get_attribute($_pql_control->ldap_linkid,
-														pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $relay[$i] . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-														pql_get_define("PQL_GLOB_ATTR_SMTPROUTES"));
+														pql_get_define("PQL_ATTR_CN") . "=" . $_REQUEST["relay"][$i] . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+														pql_get_define("PQL_ATTR_SMTPROUTES"));
 					
 					// Go through the values, removing the specific domain
 					for($j=0; $values[$j]; $j++) {
-						if(! eregi($domainname[0], $values[$j]))
+						if(! eregi($_REQUEST["domainname"][0], $values[$j]))
 						  $newvals[] = $values[$j];
 					}
 					
 					// Update the object
 					if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-													 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $relay[$i] . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-													 pql_get_define("PQL_GLOB_ATTR_SMTPROUTES"),
+													 pql_get_define("PQL_ATTR_CN") . "=" . $_REQUEST["relay"][$i] . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+													 pql_get_define("PQL_ATTR_SMTPROUTES"),
 													 $newvals))
 					  $success = 1;
 				}
 			}
-		} elseif(!$domain && !$rootdn && $attrib && $host && $set) {
+		} elseif(empty($_REQUEST["domain"]) && empty($_REQUEST["rootdn"]) && $_REQUEST["attrib"] && $host && $_REQUEST["set"]) {
 			// We're deleting ONE value. $set contains the whole string, as it looks like in the object
 			
 			// Find the object(s) which contain this string
 			$ctrls = pql_control_search_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-												  "smtproutes", $set);
+												  "smtproutes", $_REQUEST["set"]);
 			
 			// If it isn't an array, but it IS set -> make it an array!
-			if($ctrls && !is_array()) {
+			if($ctrls && !is_array($ctrls)) {
 				$tmp = $ctrls; unset($ctrls);
 				$ctrls[] = $tmp;
 			}
@@ -465,51 +482,47 @@ function smtproutes_save($type, $host) {
 				// Retreive this QmailLDAP/Controls object current value(s)
 				$routes = pql_control_get_attribute($_pql_control->ldap_linkid,
 													$ctrl,
-													pql_get_define("PQL_GLOB_ATTR_SMTPROUTES"));
+													pql_get_define("PQL_ATTR_SMTPROUTES"));
 				if(is_array($routes)) {
 					// Go through the SMTP routes, remove the one in $relay
 					foreach($routes as $route)
-					  if(!eregi($set, $route))
+					  if(!eregi($_REQUEST["set"], $route))
 						$newroutes[] = $route;
 				}
 				
 				// Save this new array to the object
-				if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-												 $ctrl,
-												 pql_get_define("PQL_GLOB_ATTR_SMTPROUTES"),
+				if(pql_control_replace_attribute($_pql_control->ldap_linkid, $ctrl,
+												 pql_get_define("PQL_ATTR_SMTPROUTES"),
 												 $newroutes))
 				  $success = 1;
 			}
-		} elseif($domain && $set && $rootdn && $attrib) {
+		} elseif($_REQUEST["domain"] && $_REQUEST["set"] && $_REQUEST["rootdn"] && $_REQUEST["attrib"]) {
 			// We're called from the domain details page -> we must find out what object to update
 
 			// Find QmailLDAP/Controls object(s) which contain this domain in SMTPRoutes
 			$ctrls  = pql_control_search_attribute($_pql_control->ldap_linkid,
 												   $_SESSION["USER_SEARCH_DN_CTR"],
-												   "smtproutes",
-												   $set."*");
+												   "smtproutes", $_REQUEST["set"]."*");
 			// If it isn't an array, but it IS set -> make it an array!
-			if($ctrls && !is_array()) {
+			if($ctrls && !is_array($ctrls)) {
 				$tmp = $ctrls; unset($ctrls);
 				$ctrls[] = $tmp;
 			}
 
 			foreach($ctrls as $ctrl) {
 				// Retreive this QmailLDAP/Controls object current value(s)
-				$routes = pql_control_get_attribute($_pql_control->ldap_linkid,
-													$ctrl,
-													pql_get_define("PQL_GLOB_ATTR_SMTPROUTES"));
+				$routes = pql_control_get_attribute($_pql_control->ldap_linkid, $ctrl,
+													pql_get_define("PQL_ATTR_SMTPROUTES"));
 				if(is_array($routes)) {
 					// Go through the SMTP routes, remove the one in $set
 					foreach($routes as $route)
-					  if(!eregi($set, $route))
+					  if(!eregi($_REQUEST["set"], $route))
 						$newroutes[] = $route;
 				}
 
 				// Save this new array to the object
-				if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-												 $ctrl,
-												 pql_get_define("PQL_GLOB_ATTR_SMTPROUTES"),
+				if(pql_control_replace_attribute($_pql_control->ldap_linkid, $ctrl,
+												 pql_get_define("PQL_ATTR_SMTPROUTES"),
 												 $newroutes))
 				  $success = 1;
 			}
@@ -531,6 +544,10 @@ function smtproutes_save($type, $host) {
 	}
 }
 
+// }}}
+
+
+// {{{ smtproutes_help(void)
 function smtproutes_help() {
     global $LANG;
 ?>
@@ -560,11 +577,14 @@ function smtproutes_help() {
 	mail from the network.
 <?php
 }
+// }}}
 
+// {{{ smtproutes_help_cr(void)
 function smtproutes_help_cr() {
 	global $LANG;
 	echo $LANG->_('Help text taken from qmail man pages');
 }
+// }}}
 
 // Local variables:
 // mode: php

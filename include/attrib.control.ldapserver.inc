@@ -5,20 +5,21 @@
 // ldaplogin (cn of a database user)
 // ldappassword (password to bind to ldaplogin)
 //
-// $Id: attrib.control.ldapserver.inc,v 2.12 2004-02-14 14:25:36 turbo Exp $
+// $Id: attrib.control.ldapserver.inc,v 2.13 2004-03-11 16:31:54 turbo Exp $
 
+// {{{ ldapserver_check(type)
 function ldapserver_check($type) {
-	global $error, $ldapserver, $ldappassword, $ldapbasedn, $ldaplogin_use, $ldaplogin, $ldap_test, $view, $LANG;
+	global $error, $LANG;
 
 	// missing
-	if($ldapserver[0] == "") {
+	if($_REQUEST["ldapserver"][0] == "") {
 		$error["ldapserver_0"] = $LANG->_('Missing');
 		$is_error = true;
 	}
 
 	// check for valid fqdn for all servers
-	if(is_array($ldapserver)) {
-		foreach($ldapserver as $key => $server) {
+	if(is_array($_REQUEST["ldapserver"])) {
+		foreach($_REQUEST["ldapserver"] as $key => $server) {
 			if($server != "" and !pql_check_hostaddress($server, true)) {
 				$error["ldapserver_$key"] = $LANG->_('Invalid');
 				$is_error = true;
@@ -27,7 +28,7 @@ function ldapserver_check($type) {
 	}
 	
 	// missing
-	if($ldapbasedn == "") {
+	if($_REQUEST["ldapbasedn"] == "") {
 		$error["ldapbasedn"] = $LANG->_('Missing');
 		$is_error = true;
 	}
@@ -35,9 +36,9 @@ function ldapserver_check($type) {
 	// check for valid dn
 	
 	// login / password
-	if($ldaplogin_use == "1") {
+	if($_REQUEST["ldaplogin"]_use == "1") {
 		// missing
-		if($ldaplogin == "") {
+		if($_REQUEST["ldaplogin"] == "") {
 			$error["ldaplogin"] = $LANG->_('Missing');
 			$is_error = true;
 		}
@@ -45,23 +46,23 @@ function ldapserver_check($type) {
 		// check for valid dn
 		
 		// missing
-		if($ldappassword == "") {
+		if($_REQUEST["ldappassword"] == "") {
 			$error["ldappassword"] = $LANG->_('Missing');
 			$is_error = true;
 		}
 	}
 
 	// test connection
-	if($ldap_test == "1" and $is_error == false) {
-		foreach($ldapserver as $server) {
+	if($_REQUEST["ldap"]_test == "1" and $is_error == false) {
+		foreach($_REQUEST["ldapserver"] as $server) {
 			if($server == "")
 			  continue;
 			
 			$linkid = @ldap_connect($server);
 			
 			if($linkid) {
-				if($ldaplogin_use == "1") {
-					if(!@ldap_bind($linkid, $ldaplogin, $ldappassword)) {
+				if($_REQUEST["ldaplogin"]_use == "1") {
+					if(!@ldap_bind($linkid, $_REQUEST["ldaplogin"], $_REQUEST["ldappassword"])) {
 						$error["ldap_test"] .= pql_complete_constant($LANG->_('Failed running a test connection to %server%'),
 																	 array('server' => $server)) . ": " . ldap_error($linkid) . "<br>";
 						$is_error = true;
@@ -93,76 +94,83 @@ function ldapserver_check($type) {
 	if($is_error == false)
 	  return true;
 }
+// }}}
 
+// {{{ ldapserver_init(host)
 // init values
 function ldapserver_init($host) {
-	global $_pql_control, $srvcount, $ldapserver, $ldapbasedn, $ldaplogin_use, $ldaplogin, $ldappassword, $view;
+	global $_pql_control;
 	
 	// fetch data from ldap server
-	$attribs = array(pql_get_define("PQL_GLOB_ATTR_LDAPSERVER"),
-					 pql_get_define("PQL_GLOB_ATTR_LDAPBASEDN"),
-					 pql_get_define("PQL_GLOB_ATTR_LDAPLOGIN"),
-					 pql_get_define("PQL_GLOB_ATTR_LDAPPASSWORD"));
-	
-	foreach($attribs as $attrib) {
+	$attribs = array("ldapserver"   => pql_get_define("PQL_ATTR_LDAPSERVER"),
+					 "ldapbasedn"   => pql_get_define("PQL_ATTR_LDAPBASEDN"),
+					 "ldaplogin"    => pql_get_define("PQL_ATTR_LDAPLOGIN"),
+					 "ldappassword" => pql_get_define("PQL_ATTR_LDAPPASSWORD"));
+	foreach($attribs as $key => $attrib) {
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+										   pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 										   $attrib);
 		
 		if(!is_null($value))
-		  $$attrib = $value[0];
+		  $_REQUEST[$key] = $value[0];
 	}
 	
 	// init checkbox
-	if($ldaplogin != "")
-	  $ldaplogin_use = 1;
+	if($_REQUEST["ldaplogin"] != "")
+	  $_REQUEST["ldaplogin_use"] = 1;
 	
 	// map different hostnames sperated by space to an array
-	$ldapserver = split(" ", $ldapserver);
-	if($srvcount == "")
-	  $srvcount = count($ldapserver) - 1;
+	$_REQUEST["ldapserver"] = split(" ", $_REQUEST["ldapserver"]);
+	if($_REQUEST["srvcount"] == "")
+	  $_REQUEST["srvcount"] = count($_REQUEST["ldapserver"]) - 1;
 }
+// }}}
 
+
+// {{{ ldapserver_print_view(host)
 function ldapserver_print_view($host) {
-	global $_pql_control, $ldapserver, $ldapbasedn, $ldaplogin_use, $ldaplogin, $ldappassword, $view, $LANG;
+	global $_pql_control, $LANG;
 
 	// init data
 	ldapserver_init($host);
 
 	// don't display passwords
-	if($ldappassword != "")
-	  $ldappassword = $LANG->_('Set, but now shown');
+	if($_REQUEST["ldappassword"] != "")
+	  $_REQUEST["ldappassword"] = $LANG->_('Set, but now shown');
 
 	// set empty field to "not set"
-	$attribs = array("ldapserver", "ldapbasedn", "ldaplogin", "ldappassword");
-	foreach($attribs as $attrib) {
-		if($$attrib == "")
-		  $$attrib = $LANG->_('Not set');
+	$attribs = array("ldapserver"   => pql_get_define("PQL_ATTR_LDAPSERVER"),
+					 "ldapbasedn"   => pql_get_define("PQL_ATTR_LDAPBASEDN"),
+					 "ldaplogin"    => pql_get_define("PQL_ATTR_LDAPLOGIN"),
+					 "ldappassword" => pql_get_define("PQL_ATTR_LDAPPASSWORD"));
+	foreach($attribs as $key => $attrib) {
+		if($_REQUEST[$key] == "")
+		  $_REQUEST[$key] = $LANG->_('Not set');
 	}
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=$LANG->_('Server connection options')?></th>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Host(s)')?></td>
-        <td><?php echo join(", ", $ldapserver); ?></td>
+        <td><?php echo join(", ", $_REQUEST["ldapserver"]); ?></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Base DN')?></td>
-        <td><?=$ldapbasedn?></td>
+        <td><?=$_REQUEST["ldapbasedn"]?></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Login')?></td>
-        <td><?=$ldaplogin?></td>
+        <td><?=$_REQUEST["ldaplogin"]?></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Password')?></td>
-        <td><?=$ldappassword?></td>
+        <td><?=$_REQUEST["ldappassword"]?></td>
       </tr>
 
-<?php if($ldapserver == $LANG->_('Not set') or $ldapbasedn == $LANG->_('Not set')) { ?>
+<?php if($_REQUEST["ldapserver"] == $LANG->_('Not set') or $_REQUEST["ldapbasedn"] == $LANG->_('Not set')) { ?>
       <tr class="subtitle">
         <td colspan="2"><span class="error"><?=$LANG->_('You have to set both, host and base dn to make qmail-ldap work')?>.</td>
       </tr>
@@ -175,38 +183,39 @@ function ldapserver_print_view($host) {
   </table>
 <?php
 }
+// }}}
 
+// {{{ ldapserver_print_form(void)
 function ldapserver_print_form() {
-	global $attrib, $srvcount, $ldapserver, $ldapbasedn, $ldaplogin_use, $ldaplogin, $ldap_test, $error, $LANG;
-	global $mxhost, $view;
+	global $error, $LANG;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('LDAP server connection option')?></th>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Host(s)')?></td>
-          <td><?php echo pql_format_error_span($error["ldapserver_0"]); ?><input type="text" name="ldapserver[0]" value="<?=$ldapserver[0]?>">
+          <td><?php echo pql_format_error_span($error["ldapserver_0"]); ?><input type="text" name="ldapserver[0]" value="<?=$_REQUEST["ldapserver"][0]?>">
 		    <br>
-<?php for($i = 1; $i <= $srvcount; $i++){ ?>
-			<?php echo pql_format_error_span($error["ldapserver_$i"]); ?><input type="text" name="ldapserver[<?=$i?>]" value="<?=$ldapserver[$i]?>"><br>
+<?php for($i = 1; $i <= $_REQUEST["srvcount"]; $i++){ ?>
+			<?php echo pql_format_error_span($error["ldapserver_$i"]); ?><input type="text" name="ldapserver[<?=$i?>]" value="<?=$_REQUEST["ldapserver"][$i]?>"><br>
 <?php } ?>
             <br>
-            <a href="<?=$_SERVER["PHP_SELF"]?>?attrib=<?=$attrib?>&srvcount=<?php echo ($srvcount + 1); ?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('more servers'))); ?></a>
+            <a href="<?=$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&srvcount=<?php echo ($_REQUEST["srvcount"] + 1); ?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('more servers'))); ?></a>
           </td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Base DN')?></td>
-          <td><?php echo pql_format_error_span($error["ldapbasedn"]); ?><input type="text" name="ldapbasedn" value="<?=$ldapbasedn?>"></td>
+          <td><?php echo pql_format_error_span($error["ldapbasedn"]); ?><input type="text" name="ldapbasedn" value="<?=$_REQUEST["ldapbasedn"]?>"></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td colspan="2"><input type="checkbox" name="ldaplogin_use" value="1" <?php if($ldaplogin_use == "1"){ echo "checked"; } ?>> <?=$LANG->_('Use login and password')?></td>
+          <td colspan="2"><input type="checkbox" name="ldaplogin_use" value="1" <?php if($_REQUEST["ldaplogin_use"] == "1"){ echo "checked"; } ?>> <?=$LANG->_('Use login and password')?></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Login (valid dn)')?></td>
-          <td><?php echo pql_format_error_span($error["ldaplogin"]); ?><input type="text" name="ldaplogin" value="<?=$ldaplogin?>"></td>
+          <td><?php echo pql_format_error_span($error["ldaplogin"]); ?><input type="text" name="ldaplogin" value="<?=$_REQUEST["ldaplogin"]?>"></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
@@ -215,7 +224,7 @@ function ldapserver_print_form() {
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td colspan="2"><input type="checkbox" name="ldap_test" value="1" <?php if($ldap_test == "1"){ echo "checked"; } //" ?>>
+          <td colspan="2"><input type="checkbox" name="ldap_test" value="1" <?php if($_REQUEST["ldap_test"] == "1"){ echo "checked"; } //" ?>>
 			<?=$LANG->_('Test connection after submitting form (it will be tested for each server seperatly)')?>
           </td>
         </tr>
@@ -228,24 +237,24 @@ function ldapserver_print_form() {
       </th>
     </table>
 
-    <input type="hidden" name="srvcount" value="<?=$srvcount?>">
-    <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?=$attrib?>">
-    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
-    <input type="hidden" name="view" value="<?=$view?>">
+    <input type="hidden" name="submit"   value="1">
+    <input type="hidden" name="srvcount" value="<?=$_REQUEST["srvcount"]?>">
+    <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost"   value="<?=$_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
-
 <?php
 }
+// }}}
 
+// {{{ ldapserver_save(type, host)
 function ldapserver_save($type, $host) {
-	global $_pql_control, $attrib, $ldapserver, $ldapbasedn, $ldaplogin_use, $ldaplogin,$ldappassword, $ldap_test, $error, $LANG;
-	global $view;
+	global $_pql_control, $error, $LANG;
 	
 	// map ldapserver array to a single string
-	$ldapserver = trim(join(" ", $ldapserver));
+	$ldapserver = trim(join(" ", $_REQUEST["ldapserver"]));
 	
 	// remove all double, triple or whatever spaces, replace with single one
 	$ldapserver = preg_replace("/\s+/", " ", $ldapserver);
@@ -253,26 +262,27 @@ function ldapserver_save($type, $host) {
 	switch($type) {
 		case "modify";
 		case "add";
-			// save entries
-		$attribs = array(pql_get_define("PQL_GLOB_ATTR_LDAPSERVER"),
-						 pql_get_define("PQL_GLOB_ATTR_LDAPBASEDN"));
-		foreach($attribs as $attrib)
+		// save entries
+		$attribs = array("ldapserver"   => pql_get_define("PQL_ATTR_LDAPSERVER"),
+						 "ldapbasedn"   => pql_get_define("PQL_ATTR_LDAPBASEDN"));
+		foreach($attribs as $key => $attrib)
 		  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-													pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-													$attrib, $$attrib);
+													pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+													$attrib, $_REQUEST[$key]);
 		
-		$attribs = array(pql_get_define("PQL_GLOB_ATTR_LDAPLOGIN"),
-						 pql_get_define("PQL_GLOB_ATTR_LDAPPASSWORD"));
-		if($ldaplogin_use == "1"){
-			foreach($attribs as $attrib)
+
+		$attribs = array("ldaplogin"    => pql_get_define("PQL_ATTR_LDAPLOGIN"),
+						 "ldappassword" => pql_get_define("PQL_ATTR_LDAPPASSWORD"));
+		if($_REQUEST["ldaplogin_use"] == "1") {
+			foreach($attribs as $key => $attrib)
 			  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-														pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-														$attrib, $$attrib);
+														pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+														$attrib, $_REQUEST[$key]);
 		} else {
-			foreach($attribs as $attrib)
+			foreach($attribs as $key => $attrib)
 			  // reset login and password values
 			  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-														pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+														pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 														$attrib, "");
     	}
 
@@ -292,7 +302,10 @@ function ldapserver_save($type, $host) {
 								  array('type' => $type, 'file' => __FILE__)));
 	}
 }
+// }}}
 
+
+// {{{ ldapserver_help(void)
 function ldapserver_help() {
 	global $LANG;
 ?>
@@ -313,11 +326,14 @@ function ldapserver_help() {
 	The password for the user defined in ldaplogin if needed. Cleartext.
 	<?php
 }
+// }}}
 
+// {{{ ldapserver_help_cr(void)
 function ldapserver_help_cr() {
 	global $LANG;
 	echo $LANG->_('Help text taken from life with qmail-ldap');
 }
+// }}}
 
 // Local variables:
 // mode: php

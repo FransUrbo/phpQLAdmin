@@ -2,45 +2,51 @@
 // control attribute plugin for
 // smtpgreeting (SMTP greeting message)
 //
-// $Id: attrib.control.smtpgreeting.inc,v 2.14 2004-02-14 14:25:36 turbo Exp $
+// $Id: attrib.control.smtpgreeting.inc,v 2.15 2004-03-11 16:31:55 turbo Exp $
 
+// {{{ smtpgreeting_check(type)
 function smtpgreeting_check($type) {
-    global $error, $smtpgreeting, $view;
+    global $error;
     
     // no check necessary
     return true;
 }
+// }}}
 
+// {{{ smtpgreeting_init(host)
+// init values
 function smtpgreeting_init($host) {
-    // init values
-    global $_pql_control, $smtpgreeting, $view;
+    global $_pql_control;
     
     // fetch data from ldap server
     $value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-									   pql_get_define("PQL_GLOB_ATTR_SMTPGREETING"));
+									   pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_ATTR_SMTPGREETING"));
     
     if(!is_null($value))
-      $smtpgreeting = $value[0];
+      $_REQUEST["smtpgreeting"] = $value[0];
 }
+// }}}
 
+
+// {{{ smtpgreeting_print_view(host)
 function smtpgreeting_print_view($host) {
-    global $_pql_control, $smtpgreeting, $view, $LANG;
+    global $_pql_control, $LANG;
     
     // init data
     smtpgreeting_init($host);
     
     // set empty field to default value
-    if($smtpgreeting == "")
-      $smtpgreeting = pql_maybe_idna_decode($host) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";
+    if($_REQUEST["smtpgreeting"] == "")
+      $_REQUEST["smtpgreeting"] = pql_maybe_idna_decode($host) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";
 	else
-	  $smtpgreeting = pql_maybe_idna_decode($smtpgreeting);
+	  $_REQUEST["smtpgreeting"] = pql_maybe_idna_decode($_REQUEST["smtpgreeting"]);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">smtpgreeting (<?=$LANG->_('SMTP greeting message')?>)</th>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Message')?></td>
-        <td><?=$smtpgreeting?></td>
+        <td><?=$_REQUEST["smtpgreeting"]?></td>
       </tr>
 
       <tr class="subtitle">
@@ -50,7 +56,9 @@ function smtpgreeting_print_view($host) {
   </table>
 <?php
 }
+// }}}
 
+// {{{ smtpgreeting_print_form(void)
 function smtpgreeting_print_form() {
     global $attrib, $smtpgreeting, $error, $mxhost, $view, $LANG;
 ?>
@@ -59,7 +67,7 @@ function smtpgreeting_print_form() {
       <th colspan="3" align="left">smtpgreeting (<?=$LANG->_('SMTP greeting message')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Message')?></td>
-          <td><?php echo pql_format_error_span($error["smtpgreeting"]); ?><input type="text" name="smtpgreeting" value="<?=$smtpgreeting?>"> <?=$LANG->_('Default')?>: <?=$mxhost?> (<?=$LANG->_('Value in \'me\'', 4)?>)</td>
+          <td><?php echo pql_format_error_span($error["smtpgreeting"]); ?><input type="text" name="smtpgreeting" value="<?=$_REQUEST["smtpgreeting"]?>"> <?=$LANG->_('Default')?>: <?=$mxhost?> (<?=$LANG->_('Value in \'me\'', 4)?>)</td>
         </tr>
 
         <tr>
@@ -69,26 +77,28 @@ function smtpgreeting_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?=$attrib?>">
-    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
-    <input type="hidden" name="view" value="<?=$view?>">
+    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
 <?php
 }
+// }}}
 
+// {{{ smtpgreeting_save(type, host)
 function smtpgreeting_save($type, $host) {
-    global $_pql_control, $attrib, $smtpgreeting, $error, $mxhost, $view, $LANG;
+    global $_pql_control, $error, $LANG;
     
     switch($type) {
       case "modify";
       case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_GLOB_ATTR_SMTPGREETING"),
-										 $smtpgreeting))
+										 pql_get_define("PQL_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_ATTR_SMTPGREETING"),
+										 $_REQUEST["smtpgreeting"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('smtpgreeting options')));
 		else
@@ -103,7 +113,10 @@ function smtpgreeting_save($type, $host) {
 								  array('type' => $type, 'file' => __FILE__)));
     }
 }
+// }}}
 
+
+// {{{ smtpgreeting_help(void)
 function smtpgreeting_help() {
     global $LANG;
 ?>
@@ -113,11 +126,14 @@ function smtpgreeting_help() {
   host's name.
 <?php
 }
+// }}}
 
+// {{{ smtpgreeting_help_cr(void)
 function smtpgreeting_help_cr() {
     global $LANG;
     echo $LANG->_('Help text taken from qmail man pages'), $LANG;
 }
+// }}}
 
 // Local variables:
 // mode: php

@@ -3,25 +3,26 @@
 // defaultdomain (default domain)
 // defaulthost (default hostname)
 //
-// $Id: attrib.control.defaultdomain.inc,v 2.13 2004-02-14 14:25:35 turbo Exp $
+// $Id: attrib.control.defaultdomain.inc,v 2.14 2004-03-11 16:31:54 turbo Exp $
 
+// {{{ defaultdomain_check(type)
 function defaultdomain_check($type) {
-	global $error, $defaultdomain, $defaulthost, $plusdomain, $view, $LANG;
+	global $error, $LANG;
 
 	// check validity
-	if($defaultdomain != "" and !pql_check_hostaddress($defaultdomain)) {
+	if($_REQUEST["defaultdomain"] != "" and !pql_check_hostaddress($_REQUEST["defaultdomain"])) {
 		$error["defaultdomain"] = $LANG->_('Invalid');
 		$is_error = true;
 	}
 
 	// check validity
-	if($defaulthost != "" and !pql_check_hostaddress($defaulthost)) {
+	if($_REQUEST["defaulthost"] != "" and !pql_check_hostaddress($_REQUEST["defaulthost"])) {
 		$error["defaulthost"] = $LANG->_('Invalid');
 		$is_error = true;
 	}
 
 	// check validity
-	if($plusdomain != "" and !pql_check_hostaddress($plusdomain)) {
+	if($_REQUEST["plusdomain"] != "" and !pql_check_hostaddress($_REQUEST["plusdomain"])) {
 		$error["plusdomain"] = $LANG->_('Invalid');
 		$is_error = true;
 	}
@@ -29,57 +30,61 @@ function defaultdomain_check($type) {
 	if($is_error == false)
 	  return true;
 }
+// }}}
 
+// {{{ defaultdomain_init(host)
 // init values
 function defaultdomain_init($host) {
-	global $_pql_control, $defaultdomain, $defaulthost, $plusdomain, $view;
+	global $_pql_control;
 
 	// fetch data from ldap server
-	$attribs = array(pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"),
-					 pql_get_define("PQL_GLOB_ATTR_DEFAULTHOST"),
-					 pql_get_define("PQL_GLOB_ATTR_PLUSDOMAIN"));
-
-	foreach($attribs as $attrib){
+	$attribs = array("defaultdomain" => pql_get_define("PQL_ATTR_DEFAULTDOMAIN"),
+					 "defaulthost"   => pql_get_define("PQL_ATTR_DEFAULTHOST"),
+					 "plusdomain"    => pql_get_define("PQL_ATTR_PLUSDOMAIN"));
+	foreach($attribs as $key => $attrib) {
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+										   pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 										   $attrib);
 
 		if(!is_null($value))
-		  $$attrib = $value[0];
+		  $_REQUEST[$key] = $value[0];
 	}
 }
+// }}}
 
+
+// {{{ defaultdomain_print_view(host)
 function defaultdomain_print_view($host) {
-	global $_pql_control, $defaultdomain, $defaulthost, $plusdomain, $view, $LANG;
+	global $_pql_control, $LANG;
 
 	// init data
 	defaultdomain_init($host);
 
 	// set empty fields to their default value
-	if($defaultdomain == "")
-	  $defaultdomain = pql_maybe_idna_decode($host) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";
+	if($_REQUEST["defaultdomain"] == "")
+	  $_REQUEST["defaultdomain"] = pql_maybe_idna_decode($host) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";
 	
 	if($defaulthost == "")
-	  $defaulthost = pql_maybe_idna_decode($host) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";
+	  $_REQUEST["defaulthost"] = pql_maybe_idna_decode($host) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";
 	
-	if($plusdomain == "") 
-	  $plusdomain = pql_maybe_idna_decode($host) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";
+	if($_REQUEST["plusdomain"] == "") 
+	  $_REQUEST["plusdomain"] = pql_maybe_idna_decode($host) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">defaultdomain, defaulthost, plusdomain (<?=$LANG->_('Default domain / host')?>)</th>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Default domain')?></td>
-        <td><?=$defaultdomain?></td>
+        <td><?=$_REQUEST["defaultdomain"]?></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Default host')?></td>
-        <td><?=$defaulthost?></td>
+        <td><?=$_REQUEST["defaulthost"]?></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Plus domain')?></td>
-        <td><?=$plusdomain?></td>
+        <td><?=$_REQUEST["plusdomain"]?></td>
       </tr>
 
       <tr class="subtitle">
@@ -89,26 +94,28 @@ function defaultdomain_print_view($host) {
   </table>
 <?php
 }
+// }}}
 
+// {{{ defaultdomain_print_form(void)
 function defaultdomain_print_form() {
-	global $attrib, $defaultdomain, $defaulthost, $plusdomain, $error, $mxhost, $view, $LANG;
+	global $LANG;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">defaultdomain, defaulthost, plusdomain (<?=$LANG->_('Default domain / host')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Default domain')?></td>
-          <td><?php echo pql_format_error_span($error["defaultdomain"]); ?><input type="text" name="defaultdomain" value="<?=$defaultdomain?>"> <?=$LANG->_('Default')?>: <?=$host?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
+          <td><?php echo pql_format_error_span($error["defaultdomain"]); ?><input type="text" name="defaultdomain" value="<?=$_REQUEST["defaultdomain"]?>"> <?=$LANG->_('Default')?>: <?=$host?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Default host')?></td>
-          <td><?php echo pql_format_error_span($error["defaulthost"]); ?><input type="text" name="defaulthost" value="<?=$defaulthost?>"> <?=$LANG->_('Default')?>: <?=$host?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
+          <td><?php echo pql_format_error_span($error["defaulthost"]); ?><input type="text" name="defaulthost" value="<?=$_REQUEST["defaulthost"]?>"> <?=$LANG->_('Default')?>: <?=$host?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Plus domain')?></td>
-          <td><?php echo pql_format_error_span($error["plusdomain"]); ?><input type="text" name="plusdomain" value="<?=$plusdomain?>"> <?=$LANG->_('Default')?>: <?=$host?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
+          <td><?php echo pql_format_error_span($error["plusdomain"]); ?><input type="text" name="plusdomain" value="<?=$_REQUEST["plusdomain"]?>"> <?=$LANG->_('Default')?>: <?=$host?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
         </tr>
 
         <tr class="subtitle">
@@ -118,29 +125,31 @@ function defaultdomain_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?=$attrib?>">
-    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
-    <input type="hidden" name="view" value="<?=$view?>">
+    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
 <?php
 }
+// }}}
 
+// {{{ defaultdomain_save(type, host)
 function defaultdomain_save($type, $host) {
-	global $_pql_control, $attrib, $defaultdomain, $defaulthost, $plusdomain, $error, $view, $LANG;
+	global $_pql_control, $LANG;
 
 	switch($type) {
 	  case "modify";
 	  case "add";
 		// save entries
-		$attribs = array(pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"),
-						 pql_get_define("PQL_GLOB_ATTR_DEFAULTHOST"),
-						 pql_get_define("PQL_GLOB_ATTR_PLUSDOMAIN"));
-		foreach($attribs as $attrib)
+		$attribs = array("defaultdomain" => pql_get_define("PQL_ATTR_DEFAULTDOMAIN"),
+						 "defaulthost"   => pql_get_define("PQL_ATTR_DEFAULTHOST"),
+						 "plusdomain"    => pql_get_define("PQL_ATTR_PLUSDOMAIN"));
+		foreach($attribs as $key => $attrib)
 		  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-													pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-													$attrib, $$attrib);
+													pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+													$attrib, $_REQUEST[$key]);
 		
 		if(in_array(false, $return))
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
@@ -158,7 +167,10 @@ function defaultdomain_save($type, $host) {
 								  array('type' => $type, 'file' => __FILE__)));
 	}
 }
+// }}}
 
+
+// {{{ defaultdomain_help(void)
 function defaultdomain_help() {
 	global $LANG;
 ?>
@@ -197,11 +209,14 @@ function defaultdomain_help() {
 	plusdomain.
 <?php
 }
+// }}}
 
+// {{{ defaultdomain_help_cr(void)
 function defaultdomain_help_cr() {
 	global $LANG;
 	echo $LANG->_('Help text taken from qmail man pages');
 }
+// }}}
 
 // Local variables:
 // mode: php

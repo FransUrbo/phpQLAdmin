@@ -2,14 +2,15 @@
 // control attribute plugin for
 // relaymailfrom (allowed sender addresses for relaying)
 //
-// $Id: attrib.control.relaymailfrom.inc,v 2.15 2004-02-14 14:25:36 turbo Exp $
+// $Id: attrib.control.relaymailfrom.inc,v 2.16 2004-03-11 16:31:55 turbo Exp $
 
+// {{{ relaymailfrom_check(type)
 function relaymailfrom_check($type) {
-	global $error, $relaymailfrom, $view, $LANG;
+	global $error, $LANG;
 	
 	// check validity
-	if(is_array($relaymailfrom)) {
-		foreach($relaymailfrom as $key => $badmail) {
+	if(is_array($_REQUEST["relaymailfrom"])) {
+		foreach($_REQUEST["relaymailfrom"] as $key => $badmail) {
 		 	if($badmail == "")
 			  continue;
 			
@@ -33,30 +34,35 @@ function relaymailfrom_check($type) {
 	
 	return true;
 }
+// }}}
 
+// {{{ relaymailfrom_init(host)
 function relaymailfrom_init($host) {
 	// init values
-	global $_pql_control, $relaymailfrom, $view;
+	global $_pql_control;
 	
 	// fetch data from ldap server
-	$relaymailfrom = pql_control_get_attribute($_pql_control->ldap_linkid,
-											   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-											   pql_get_define("PQL_GLOB_ATTR_RELAYMAILFROM"));
+	$_REQUEST["relaymailfrom"] = pql_control_get_attribute($_pql_control->ldap_linkid,
+														   pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+														   pql_get_define("PQL_ATTR_RELAYMAILFROM"));
 	
-	if(is_null($relaymailfrom))
+	if(is_null($_REQUEST["relaymailfrom"]))
 	  return true;
 }
+// }}}
 
+
+// {{{ relaymailfrom_print_view(host)
 function relaymailfrom_print_view($host) {
-	global $_pql_control, $relaymailfrom, $view, $LANG;
+	global $_pql_control, $LANG;
 
 	// init data
 	relaymailfrom_init($host);
 	
-	if(is_array($relaymailfrom)) {
-		foreach($relaymailfrom as $key => $mail) {
+	if(is_array($_REQUEST["relaymailfrom"])) {
+		foreach($_REQUEST["relaymailfrom"] as $key => $mail) {
 			if(preg_match("/^@/", $mail))
-			  $relaymailfrom[$key] = "all of " . pql_strip_username($mail);
+			  $_REQUEST["relaymailfrom"][$key] = "all of " . pql_strip_username($mail);
 		}
 	}
 	
@@ -67,14 +73,14 @@ function relaymailfrom_print_view($host) {
         <td><?=$LANG->_('Email')?></td>
       </tr>
 <?php
-	if(!is_array($relaymailfrom)) {
+	if(!is_array($_REQUEST["relaymailfrom"])) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td><?=$LANG->_('No address defined')?></td>
       </tr>
 <?php
 	} else {
-		foreach($relaymailfrom as $mail) {
+		foreach($_REQUEST["relaymailfrom"] as $mail) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td><?=$mail?></td>
@@ -90,12 +96,14 @@ function relaymailfrom_print_view($host) {
   </table>
 <?php
 }
+// }}}
 
+// {{{ relaymailfrom_print_form(void)
 function relaymailfrom_print_form() {
-	global $attrib, $error, $relaymailfrom, $relaycount, $mxhost, $view, $LANG;
+	global $error, $LANG;
 	
-	if(($relaycount < count($relaymailfrom) - 1) and count($relaymailfrom) != 0)
-	  $relaycount = count($relaymailfrom) - 1;
+	if(($_REQUEST["relaycount"] < count($_REQUEST["relaymailfrom"]) - 1) and count($_REQUEST["relaymailfrom"]) != 0)
+	  $_REQUEST["relaycount"] = count($_REQUEST["relaymailfrom"]) - 1;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -105,19 +113,19 @@ function relaymailfrom_print_form() {
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["relaymailfrom_0"]); ?><input type="text" name="relaymailfrom[0]" value="<?=$relaymailfrom[0]?>"></td>
+          <td><?php echo pql_format_error_span($error["relaymailfrom_0"]); ?><input type="text" name="relaymailfrom[0]" value="<?=$_REQUEST["relaymailfrom"][0]?>"></td>
         </tr>
 
 <?php
-  for($i = 1; $i <= $relaycount; $i++){
+  for($i = 1; $i <= $_REQUEST["relaycount"]; $i++) {
 ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["relaymailfrom_$i"]); ?><input type="text" name="relaymailfrom[<?=$i?>]" value="<?=$relaymailfrom[$i]?>"></td>
+          <td><?php echo pql_format_error_span($error["relaymailfrom_$i"]); ?><input type="text" name="relaymailfrom[<?=$i?>]" value="<?=$_REQUEST["relaymailfrom"][$i]?>"></td>
         </tr>
 
 <?php	} ?>
         <tr class="subtitle">
-          <td><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?$attrib?>&relaycount=<?=($relaycount+1)?>&mxhost=<?=$mxhost?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
+          <td><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&relaycount=<?=($_REQUEST["relaycount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
         </tr>
 
         <tr class="subtitle">
@@ -130,26 +138,28 @@ function relaymailfrom_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?=$attrib?>">
-    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
-    <input type="hidden" name="view" value="<?=$view?>">
+    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
 <?php
 }
-// '
+// }}}
+
+// relaymailfrom_save(type, host)
 function relaymailfrom_save($type, $host) {
-	global $_pql_control, $attrib, $relaymailfrom, $error, $view, $LANG;
+	global $_pql_control, $LANG;
 
 	switch($type) {
 		case "modify";
 		case "add";
 			// save entries
 			if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-											 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-											 pql_get_define("PQL_GLOB_ATTR_RELAYMAILFROM"),
-											 $relaymailfrom))
+											 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+											 pql_get_define("PQL_ATTR_RELAYMAILFROM"),
+											 $_REQUEST["relaymailfrom"]))
 			  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										   array('what' => $LANG->_('relaymailfrom options')));
 			else
@@ -164,7 +174,9 @@ function relaymailfrom_save($type, $host) {
 									array('type' => $type, 'file' => __FILE__)));
 	}
 }
+// }}}
 
+// {{{ relaymailfrom_help(void)
 function relaymailfrom_help() {
 	global $LANG;
 ?>
@@ -177,11 +189,14 @@ open relay then. You should use SMTP after POP instead.
 The first example allows joe@yourdomain.com to relay, the second one allows all addresses ending with @otherdomain.com to relay.
 <?php
 }
+// }}}
 
+// {{{ relaymailfrom_help_cr()
 function relaymailfrom_help_cr() {
 	global $LANG;
 	echo $LANG->_('Help text taken from life with qmail-ldap');
 }
+// }}}
 
 // Local variables:
 // mode: php

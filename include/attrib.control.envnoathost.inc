@@ -2,54 +2,60 @@
 // control attribute plugin for
 // envnoathost (default prefix for mailbox paths)
 //
-// $Id: attrib.control.envnoathost.inc,v 2.14 2004-02-14 14:25:35 turbo Exp $
+// $Id: attrib.control.envnoathost.inc,v 2.15 2004-03-11 16:31:54 turbo Exp $
 
+// {{{ envnoathost_check(type)
 function envnoathost_check($type) {
-	global $error, $envnoathost, $view, $LANG;
+	global $error, $LANG;
 
 	// missing
-	if($envnoathost == "") {
+	if($_REQUEST["envnoathost"] == "") {
 		$error["envnoathost"] = $LANG->_('Missing');
 		return false;
 	}
 
 	// validity
-	if(!pql_check_hostaddress($envnoathost)) {
+	if(!pql_check_hostaddress($_REQUEST["envnoathost"])) {
 		$error["envnoathost"] = $LANG->_('Invalid');
 		return false;
 	}
 
 	return true;
 }
+// }}}
 
+// {{{ envnoathost_init(host)
 // init values
 function envnoathost_init($host) {
-	global $_pql_control, $envnoathost, $view;
+	global $_pql_control;
 
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-									   pql_get_define("PQL_GLOB_ATTR_ENVNOATHOST"));
+									   pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_ATTR_ENVNOATHOST"));
 
 	if(!is_null($value))
-	  $envnoathost = $value[0];
+	  $_REQUEST["envnoathost"] = $value[0];
 }
+// }}}
 
+
+// {{{ envnoathost_print_view(host)
 function envnoathost_print_view($host) {
-	global $_pql_control, $envnoathost, $view, $LANG;
+	global $_pql_control, $LANG;
 
 	// init data
 	envnoathost_init($host);
 
 	// set empty field to default value
-	if($envnoathost == "")
-	  $envnoathost = $host . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";
+	if($_REQUEST["envnoathost"] == "")
+	  $_REQUEST["envnoathost"] = $host . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">envnoathost (<?=$LANG->_('Default domain for addresses without @')?>)</th>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Email')?></td>
-        <td><?=pql_maybe_idna_decode($envnoathost)?></td>
+        <td><?=pql_maybe_idna_decode($_REQUEST["envnoathost"])?></td>
       </tr>
 
       <tr class="subtitle">
@@ -59,16 +65,18 @@ function envnoathost_print_view($host) {
   </table>
 <?php
 }
+// }}}
 
+// {{{ envnoathost_print_form(void)
 function envnoathost_print_form() {
-	global $attrib, $envnoathost, $error, $mxhost, $view, $LANG;
+	global $error, $LANG;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">envnoathost (<?=$LANG->_('Default domain for addresses without @')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Email')?></td>
-          <td><?php echo pql_format_error_span($error["envnoathost"]); ?><input type="text" name="envnoathost" value="<?=$envnoathost?>"> <?=$LANG->_('Default')?>: <?=$mxhost?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
+          <td><?php echo pql_format_error_span($error["envnoathost"]); ?><input type="text" name="envnoathost" value="<?=$_REQUEST["envnoathost"]?>"> <?=$LANG->_('Default')?>: <?=$mxhost?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
         </tr>
 
         <tr>
@@ -78,25 +86,28 @@ function envnoathost_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?=$attrib?>">
-    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
-    <input type="hidden" name="view" value="<?=$view?>">
+    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
 <?php
 }
+// }}}
 
+// {{{ envnoathost_save(type, host)
 function envnoathost_save($type, $host) {
-	global $_pql_control, $attrib, $envnoathost, $error, $view, $LANG;
+	global $_pql_control, $LANG;
 
 	switch($type) {
 	  case "modify";
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_GLOB_ATTR_ENVNOATHOST"), $envnoathost))
+										 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_ATTR_ENVNOATHOST"),
+										 $_REQUEST["envnoathost"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('envnotathost options')));
 		else 
@@ -112,7 +123,10 @@ function envnoathost_save($type, $host) {
 								  array('type' => $type, 'file' => __FILE__)));
 	}
 }
+// }}}
 
+
+// {{{ envnoathost_help(void)
 function envnoathost_help() {
 	global $LANG;
 ?>
@@ -123,12 +137,14 @@ function envnoathost_help() {
 	address without an @ sign, it appends @envnoathost.
 <?php
 }
+// }}}
 
-
+// {{{ envnotathost_help_cr(void)
 function envnotathost_help_cr() {
 	global $LANG;
 	echo $LANG->_('Help text taken from qmail man pages');
 }
+// }}}
 
 // Local variables:
 // mode: php

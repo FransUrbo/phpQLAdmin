@@ -2,14 +2,15 @@
 // control attribute plugin for
 // percenthack (allowed domains for %-relaying)
 //
-// $Id: attrib.control.percenthack.inc,v 2.15 2004-02-14 14:25:36 turbo Exp $
+// $Id: attrib.control.percenthack.inc,v 2.16 2004-03-11 16:31:54 turbo Exp $
 
+// {{{ percenthack_check(type)
 function percenthack_check($type) {
-	global $error, $percenthack, $view, $LANG;
+	global $error, $LANG;
 	
 	// check each field
-	if(is_array($percenthack)) {
-		foreach($percenthack as $key => $server) {
+	if(is_array($_REQUEST["percenthack"])) {
+		foreach($_REQUEST["percenthack"] as $key => $server) {
 			if($server == "")
 			  continue;
 			
@@ -27,22 +28,27 @@ function percenthack_check($type) {
 	
 	return true;
 }
+// }}}
 
+// {{{ percenthack_init(host)
 // init values
 function percenthack_init($host) {
-	global $_pql_control, $percenthack, $view;
+	global $_pql_control;
 	
 	// fetch data from ldap server
-	$percenthack = pql_control_get_attribute($_pql_control->ldap_linkid,
-											 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-											 pql_get_define("PQL_GLOB_ATTR_PERCENTHACK"));
+	$_REQUEST["percenthack"] = pql_control_get_attribute($_pql_control->ldap_linkid,
+														 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+														 pql_get_define("PQL_ATTR_PERCENTHACK"));
 	
-	if(is_null($percenthack))
+	if(is_null($_REQUEST["percenthack"]))
 	  return true;
 }
+// }}}
 
+
+// {{{ percenthack_print_view(host)
 function percenthack_print_view($host) {
-	global $_pql_control, $percenthack, $view, $LANG;
+	global $_pql_control, $LANG;
 	
 	// init data
 	percenthack_init($host);
@@ -53,14 +59,14 @@ function percenthack_print_view($host) {
         <td><?=$LANG->_('Domain')?></td>
       </tr>
  <?php
-	if(!is_array($percenthack)) {
+	if(!is_array($_REQUEST["percenthack"])) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td><?=$LANG->_('Not set')?></td>
       </tr>
 <?php
 	} else {
-		foreach($percenthack as $domain) {
+		foreach($_REQUEST["percenthack"] as $domain) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td><?=pql_maybe_idna_decode($domain)?></td>
@@ -76,12 +82,14 @@ function percenthack_print_view($host) {
   </table>
 <?php
 }
+// }}}
 
+// {{{ percenthack_print_form(void)
 function percenthack_print_form() {
-	global $attrib, $error, $percenthack, $percentcount, $mxhost, $view, $LANG;
+	global $error, $LANG;
 
-	if(($percentcount < count($percenthack) - 1) and count($percenthack) != 0)
-	  $percentcount = count($percenthack) - 1;
+	if(($_REQUEST["percentcount"] < count($_REQUEST["percenthack"]) - 1) and count($_REQUEST["percenthack"]) != 0)
+	  $_REQUEST["percentcount"] = count($_REQUEST["percenthack"]) - 1;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -91,17 +99,17 @@ function percenthack_print_form() {
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["percenthack_0"]); ?><input type="text" name="percenthack[0]" value="<?=$percenthack[0]?>"></td>
+          <td><?php echo pql_format_error_span($error["percenthack_0"]); ?><input type="text" name="percenthack[0]" value="<?=$_REQUEST["percenthack"][0]?>"></td>
         </tr>
 
-<?php for($i = 1; $i <= $percentcount; $i++) { ?>
+<?php for($i = 1; $i <= $_REQUEST["percentcount"]; $i++) { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["percenthack_$i"]); ?><input type="text" name="percenthack[<?=$i?>]" value="<?=$percenthack[$i]?>"></td>
+          <td><?php echo pql_format_error_span($error["percenthack_$i"]); ?><input type="text" name="percenthack[<?=$i?>]" value="<?=$_REQUEST["percenthack"][$i]?>"></td>
         </tr>
 
 <?php } ?>
         <tr class="subtitle">
-          <td><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?$attrib?>&percentcount=<?=($percentcount+1)?>&mxhost=<?=$mxhost?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional domain'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
+          <td><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&percentcount=<?=($_REQUEST["percentcount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional domain'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
         </tr>
 
         <tr class="subtitle">
@@ -111,26 +119,28 @@ function percenthack_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?=$attrib?>">
-    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
-    <input type="hidden" name="view" value="<?=$view?>">
+    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
 <?php
 }
+// }}}
 
+// {{{ percenthack_save(type, host)
 function percenthack_save($type, $host) {
-	global $_pql_control, $attrib, $percenthack, $error, $view, $LANG;
+	global $_pql_control, $error, $LANG;
 
 	switch($type) {
 	  case "modify";
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_GLOB_ATTR_PERCENTHACK"),
-										 $percenthack)) 
+										 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_ATTR_PERCENTHACK"),
+										 $_REQUEST["percenthack"])) 
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('percenthack options')));
 		else
@@ -140,12 +150,16 @@ function percenthack_save($type, $host) {
 
 		attribute_forward($msg);
 		break;
+
 	  default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
 								  array('type' => $type, 'file' => __FILE__)));
 	}
 }
+// }}}
 
+
+// {{{ percenthack_help(void)
 function percenthack_help() {
 	global $LANG;
 ?>
@@ -157,11 +171,14 @@ function percenthack_help() {
 	locals.
 <?php
 }
+// }}}
 
+// {{{ percenthack_help_cr(void)
 function percenthack_help_cr() {
 	global $LANG;
 	echo $LANG->_('Help text taken from qmail man pages');
 }
+// }}}
 
 // Local variables:
 // mode: php

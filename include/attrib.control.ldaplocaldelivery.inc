@@ -2,45 +2,49 @@
 // control attribute plugin for
 // ldaplocaldelivery (search for local account, if ldap search is not successful)
 //
-// $Id: attrib.control.ldaplocaldelivery.inc,v 2.12 2004-02-14 14:25:35 turbo Exp $
+// $Id: attrib.control.ldaplocaldelivery.inc,v 2.13 2004-03-11 16:31:54 turbo Exp $
 
-// check values
+// {{{ ldaplocaldelivery_check(type)
 function ldaplocaldelivery_check($type) {
-	global $view;
 	return true;
 }
+// }}}
 
+// {{{ ldaplocaldelivery_init(host)
 // init values
 function ldaplocaldelivery_init($host) {
-	global $_pql_control, $ldaplocaldelivery, $view;
+	global $_pql_control;
 
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-									   pql_get_define("PQL_GLOB_ATTR_LDAPLOCALDELIVERY"));
+									   pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY"));
 
 	if(!is_null($value))
-	  $ldaplocaldelivery = $value[0];
+	  $_REQUEST["ldaplocaldelivery"] = $value[0];
 	else
 	  // set to default value
-	  $ldaplocaldelivery = 1;
+	  $_REQUEST["ldaplocaldelivery"] = 1;
 }
+// }}}
 
+
+// {{{ ldaplocaldelivery_print_view(host)
 function ldaplocaldelivery_print_view($host) {
-	global $ldaplocaldelivery, $view, $LANG;
+	global $LANG;
 
 	// init data
 	ldaplocaldelivery_init($host);
 	
-	if($ldaplocaldelivery == 0)
-	  $ldaplocaldelivery = $LANG->_('Disabled. Don\'t lookup for local users if ldap lookup didn\'t match');
+	if($_REQUEST["ldaplocaldelivery"] == 0)
+	  $_REQUEST["ldaplocaldelivery"] = $LANG->_('Disabled. Don\'t lookup for local users if ldap lookup didn\'t match');
 	else
-	  $ldaplocaldelivery = $LANG->_('Enabled. Lookup for local users if ldap lookup didn\'t match');
+	  $_REQUEST["ldaplocaldelivery"] = $LANG->_('Enabled. Lookup for local users if ldap lookup didn\'t match');
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="2" align="left">ldaplocaldelivery (<?=$LANG->_('Deliver locally if ldap didn\'t match a user')?>)</th>
       <tr class="<?php pql_format_table(); ?>">
-        <td><?=$ldaplocaldelivery?></td>
+        <td><?=$_REQUEST["ldaplocaldelivery"]?></td>
       </tr>
 
       <tr class="subtitle">
@@ -53,25 +57,27 @@ function ldaplocaldelivery_print_view($host) {
   </table>
 <?php
 }
+// }}}
 
+// {{{ ldaplocaldelivery_print_form(void)
 function ldaplocaldelivery_print_form() {
-	global $mxhost, $view;
-
 	// don't print form, save directly
-	ldaplocaldelivery_save("modify", $mxhost);
+	ldaplocaldelivery_save("modify", $_REQUEST["mxhost"]);
 }
+// }}}
 
+// {{{ ldaplocaldelivery_save(type, host)
 function ldaplocaldelivery_save($type, $host) {
-	global $_pql_control, $set, $view, $LANG;
+	global $_pql_control, $LANG;
 
 	switch($type) {
 	  case "modify";
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_GLOB_ATTR_LDAPLOCALDELIVERY"),
-										 $set))
+										 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY"),
+										 $_REQUEST["set"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('ldaplocaldelivery options')));
 		else
@@ -87,6 +93,7 @@ function ldaplocaldelivery_save($type, $host) {
 								  array('type' => $type, 'file' => __FILE__)));
 	}
 }
+// }}}
 
 // Local variables:
 // mode: php

@@ -2,48 +2,54 @@
 // control attribute plugin for
 // localiphost (name substituted for local IP address)
 //
-// $Id: attrib.control.localiphost.inc,v 2.14 2004-02-14 14:25:36 turbo Exp $
+// $Id: attrib.control.localiphost.inc,v 2.15 2004-03-11 16:31:54 turbo Exp $
 
+// {{{ ocaliphost_check(type)
 function localiphost_check($type) {
-	global $error, $localiphost, $view, $LANG;
+	global $error, $LANG;
 
 	// validity
-	if($localiphost != "" and !pql_check_hostaddress($localiphost)) {
+	if($_REQUEST["localiphost"] != "" and !pql_check_hostaddress($_REQUEST["localiphost"])) {
 		$error["localiphost"] = $LANG->_('Invalid');
 		return false;
 	}
 	
 	return true;
 }
+// }}}
 
+// {{{ localiphost_init(host)
 // init values
 function localiphost_init($host) {
-	global $_pql_control, $localiphost, $view;
+	global $_pql_control;
 	
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-									   pql_get_define("PQL_GLOB_ATTR_LOCALIPHOST"));
+									   pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_ATTR_LOCALIPHOST"));
 	
 	if(!is_null($value))
-	  $localiphost = $value[0];
+	  $_REQUEST["localiphost"] = $value[0];
 }
+// }}}
 
+
+// {{{ localiphost_print_view(host)
 function localiphost_print_view($host) {
-	global $_pql_control, $localiphost, $view, $LANG;
+	global $_pql_control, $LANG;
 	
 	// init data
 	localiphost_init($host);
 
 	// set empty field to default value
-	if($localiphost == "")
-	  $localiphost = $host . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";
+	if(empty($_REQUEST["localiphost"]))
+	  $_REQUEST["localiphost"] = $host . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">localiphost (<?=$LANG->_('Substitution for local IP')?>)</th>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Host')?></td>
-        <td><?=pql_maybe_idna_decode($localiphost)?></td>
+        <td><?=pql_maybe_idna_decode($_REQUEST["localiphost"])?></td>
       </tr>
 
       <tr class="subtitle">
@@ -53,16 +59,18 @@ function localiphost_print_view($host) {
   </table>
 <?php
 }
+// }}}
 
+// {{{ localiphost_print_form(void)
 function localiphost_print_form() {
-	global $attrib, $localiphost, $error, $mxhost, $view, $LANG;
+	global $LANG;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">localiphost (<?=$LANG->_('Substitution for local IP')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Host')?></td>
-          <td><?php echo pql_format_error_span($error["localiphost"]); ?><input type="text" name="localiphost" value="<?php echo $localiphost; ?>"> <?=$LANG->_('Default')?>: <?=$mxhost?> (<?=$LANG->_('Value in \'me\'')?>)</td>
+          <td><?php echo pql_format_error_span($error["localiphost"]); ?><input type="text" name="localiphost" value="<?php echo $localiphost; ?>"> <?=$LANG->_('Default')?>: <?=$_REQUEST["mxhost"]?> (<?=$LANG->_('Value in \'me\'')?>)</td>
         </tr>
 
         <tr>
@@ -72,26 +80,28 @@ function localiphost_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?=$attrib?>">
-    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
-    <input type="hidden" name="view" value="<?=$view?>">
+    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
 <?php
 }
+// }}}
 
+// {{{ localiphost_save(type, host)
 function localiphost_save($type, $host) {
-	global $_pql_control, $attrib, $localiphost, $error, $view, $LANG;
+	global $_pql_control, $LANG;
 
 	switch($type) {
 	  case "modify";
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_GLOB_ATTR_LOCALIPHOST"),
-										 $localiphost))
+										 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_ATTR_LOCALIPHOST"),
+										 $_REQUEST["localiphost"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('localiphost options')));
 		else
@@ -106,7 +116,10 @@ function localiphost_save($type, $host) {
 								  array('type' => $type, 'file' => __FILE__)));
 	}
 }
+// }}}
 
+
+// {{{ localiphost_help(void)
 function localiphost_help() {
 	global $LANG;
 ?>
@@ -119,11 +132,14 @@ function localiphost_help() {
 	is done before rcpthosts.
 <?php
 }
+// }}}
 
+// {{{ localiphost_help_cr(void)
 function localiphost_help_cr() {
 	global $LANG;
 	echo $LANG->_('Help text taken from qmail man pages');
 }
+// }}}
 
 // Local variables:
 // mode: php

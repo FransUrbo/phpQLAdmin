@@ -2,54 +2,60 @@
 // control attribute plugin for
 // dirmaker (default prefix for mailbox paths)
 //
-// $Id: attrib.control.dirmaker.inc,v 2.12 2004-02-14 14:25:35 turbo Exp $
+// $Id: attrib.control.dirmaker.inc,v 2.13 2004-03-11 16:31:54 turbo Exp $
 
+// {{{ dirmaker_check(type)
 function dirmaker_check($type) {
-	global $error, $dirmaker, $view, $LANG;
+	global $error, $LANG;
 
 	// missing
-	if($dirmaker == "") {
+	if($_REQUEST["dirmaker"] == "") {
 		$error["dirmaker"] = $LANG->_('Missing');
 		return false;
 	}
 
 	// trailing slash ?
-	if(!preg_match ("/^(\/)/", $dirmaker)) {
+	if(!preg_match ("/^(\/)/", $_REQUEST["dirmaker"])) {
 		$error["dirmaker"] = $LANG->_('Invalid');
 		return false;
 	}
 
 	return true;
 }
+// }}}
 
+// {{{ dirmaker_init(host)
 // init values
 function dirmaker_init($host) {
-	global $_pql_control, $dirmaker, $view;
+	global $_pql_control;
 
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-									   pql_get_define("PQL_GLOB_ATTR_DIRMAKER"));
+									   pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_ATTR_DIRMAKER"));
 
 	if(!is_null($value))
-	  $dirmaker = $value[0];
+	  $_REQUEST["dirmaker"] = $value[0];
 }
+// }}}
 
+
+// {{{ dirmaker_print_view(host)
 function dirmaker_print_view($host) {
-	global $_pql_control, $dirmaker, $view, $LANG;
+	global $_pql_control, $LANG;
 
 	// init data
 	dirmaker_init($host);
 
 	// set empty field to "not set"
-	if($dirmaker == "")
-	  $dirmaker = $LANG->_('Not set');
+	if($_REQUEST["dirmaker"] == "")
+	  $_REQUEST["dirmaker"] = $LANG->_('Not set');
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">dirmaker (<?=$LANG->_('Path to homedir creating script')?>)</th>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Path')?></td>
-        <td><?=$dirmaker?></td>
+        <td><?=$_REQUEST["dirmaker"]?></td>
       </tr>
 
       <tr class="subtitle">
@@ -59,41 +65,45 @@ function dirmaker_print_view($host) {
   </table>
 <?php
 }
+// }}}
 
+// {{{ dirmaker_print_form(void)
 function dirmaker_print_form() {
-	global $attrib, $dirmaker, $error, $mxhost, $view, $LANG;
+	global $error, $LANG;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">dirmaker (<?=$LANG->_('Path to homedir creating script')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Path')?></td>
-          <td><?php echo pql_format_error_span($error["dirmaker"]); ?><input type="text" name="dirmaker" value="<?=$dirmaker?>"></td>
+          <td><?php echo pql_format_error_span($error["dirmaker"]); ?><input type="text" name="dirmaker" value="<?=$_REQUEST["dirmaker"]?>"></td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?=$attrib?>">
-    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
-    <input type="hidden" name="view" value="<?=$view?>">
+    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
 <?php
 }
+// }}}
 
+// {{{ dirmaker_save(type, host)
 function dirmaker_save($type, $host) {
-	global $_pql_control, $attrib, $dirmaker, $error, $view, $LANG;
+	global $_pql_control, $LANG;
 
 	switch($type) {
 	  case "modify";
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_GLOB_ATTR_DIRMAKER"),
-										 $dirmaker))
+										 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_ATTR_DIRMAKER"),
+										 $_REQUEST["dirmaker"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('dirmaker options')));
 		else
@@ -109,7 +119,10 @@ function dirmaker_save($type, $host) {
 								  array('type' => $type, 'file' => __FILE__)));
 	}
 }
+// }}}
 
+
+// {{{ dirmaker_help(void)
 function dirmaker_help() {
 	global $LANG;
 ?>
@@ -128,11 +141,14 @@ mkdir -m 700 -p $1
 	</pre>
 <?php
 }
+// }}}
 
+// {{{ badmailfrom_help_cr(void)
 function badmailfrom_help_cr() {
 	global $LANG;
 	echo $LANG->_('Help text taken from life with qmail-ldap');
 }
+// }}}
 
 // Local variables:
 // mode: php

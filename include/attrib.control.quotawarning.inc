@@ -2,53 +2,59 @@
 // control attribute plugin for
 // quotawarning (additional quota warning message)
 //
-// $Id: attrib.control.quotawarning.inc,v 2.13 2004-03-01 10:09:07 turbo Exp $
+// $Id: attrib.control.quotawarning.inc,v 2.14 2004-03-11 16:31:55 turbo Exp $
 
+// {{{ quotawarning_check(type)
 function quotawarning_check($type) {
-	global $error, $quotawarning, $use_quotawarning, $view, $LANG;
+	global $error, $LANG;
 
 	// missing
-	if($use_quotawarning == 1 and $quotawarning == "") {
+	if($_REQUEST["use"]_quotawarning == 1 and $_REQUEST["quotawarning"] == "") {
 		$error["quotawarning"] = $LANG->_('Missing');
 		return false;
 	}
 
 	return true;
 }
+// }}}
 
+// {{{ quotawarning_init(host)
+// init values
 function quotawarning_init($host) {
-	// init values
-	global $_pql_control, $quotawarning, $use_quotawarning, $view;
+	global $_pql_control;
 
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-									   pql_get_define("PQL_GLOB_ATTR_QUOTA_WARNING"));
+									   pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_ATTR_QUOTA_WARNING"));
 
 	if(!is_null($value))
-	  $quotawarning = $value[0];
+	  $_REQUEST["quotawarning"] = $value[0];
 
 	// initialize radio button
-	if($quotawarning == "")
-	  $use_quotawarning = 0;
+	if($_REQUEST["quotawarning"] == "")
+	  $_REQUEST["use_quotawarning"] = 0;
 	else
-	  $use_quotawarning = 1;
+	  $_REQUEST["use_quotawarning"] = 1;
 }
+// }}}
 
+
+// {{{ quotawarning_print_view(host)
 function quotawarning_print_view($host) {
-	global $_pql_control, $quotawarning, $use_quotawarning, $view, $LANG;
+	global $_pql_control, $LANG;
 	
 	// init data
 	quotawarning_init($host);
 	
-	if($use_quotawarning == "0")
-	  $quotawarning = "disabled";
+	if($_REQUEST["use_quotawarning"] == "0")
+	  $_REQUEST["quotawarning"] = "disabled";
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">quotawarning (<?=$LANG->_('Additional quota warning message')?>)</th>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Message')?></td>
-        <td><?php echo nl2br($quotawarning); ?></td>
+        <td><?php echo nl2br($_REQUEST["quotawarning"]); ?></td>
       </tr>
 
       <tr class="subtitle">
@@ -58,9 +64,11 @@ function quotawarning_print_view($host) {
   </table>
 <?php
 }
+// }}}
 
+// {{{ quotawarning_print_form(void)
 function quotawarning_print_form() {
-	global $attrib, $quotawarning, $use_quotawarning, $error, $mxhost, $view, $LANG;
+	global $error, $LANG;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -68,43 +76,44 @@ function quotawarning_print_form() {
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Send quota warnings')?></td>
           <td>
-            <input type="radio" name="use_quotawarning" value="0" <?php if($use_quotawarning == "0"){ echo "checked"; } //" ?>> no
-            <input type="radio" name="use_quotawarning" value="1" <?php if($use_quotawarning == "1"){ echo "checked"; } //" ?>> yes
+            <input type="radio" name="use_quotawarning" value="0" <?php if($_REQUEST["use_quotawarning"] == "0"){ echo "checked"; } //" ?>> no
+            <input type="radio" name="use_quotawarning" value="1" <?php if($_REQUEST["use_quotawarning"] == "1"){ echo "checked"; } //" ?>> yes
           </td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Message')?></td>
-          <td><?php echo pql_format_error_span($error["quotawarning"]); ?><textarea cols="40" rows="10" name="quotawarning"><?=$quotawarning?></textarea></td>
+          <td><?php echo pql_format_error_span($error["quotawarning"]); ?><textarea cols="40" rows="10" name="quotawarning"><?=$_REQUEST["quotawarning"]?></textarea></td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?=$attrib?>">
-    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
-    <input type="hidden" name="view" value="<?=$view?>">
+    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
+    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
-
 <?php
 }
+// }}}
 
+// {{{ quotawarning_save(type, host)
 function quotawarning_save($type, $host) {
-	global $_pql_control, $attrib, $quotawarning, $use_quotawarning, $error, $view, $LANG;
+	global $_pql_control, $LANG;
 
 	switch($type) {
 	  case "modify";
 	  case "add";
 		// save entries
-		if($use_quotawarning == "0")
-		  $quotawarning = "";
+		if($_REQUEST["use_quotawarning"] == "0")
+		  $_REQUEST["quotawarning"] = "";
 		
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_GLOB_ATTR_QUOTA_WARNING"),
-										 $quotawarning))
+										 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_ATTR_QUOTA_WARNING"),
+										 $_REQUEST["quotawarning"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('quotawarning message')));
 		else
@@ -119,7 +128,10 @@ function quotawarning_save($type, $host) {
 								  array('type' => $type, 'file' => __FILE__)));
 	}
 }
+// }}}
 
+
+// {{{ quotawarning_help(void)
 function quotawarning_help() {
 	global $LANG;
 	// life with qmail-ldap (http://www.lifewithqmail.org/ldap/)
@@ -128,11 +140,14 @@ function quotawarning_help() {
 	messages will be issued
 <?php
 }
+// }}}
 
+// {{{ quotawarning_help_cr(void)
 function quotawarning_help_cr() {
 	global $LANG;
 	echo $LANG->_('Help text taken from life with qmail-ldap');
 }
+// }}}
 
 // Local variables:
 // mode: php
