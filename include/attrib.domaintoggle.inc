@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // autoCreateUsername and autoCreateMailAddress
-// $Id: attrib.domaintoggle.inc,v 2.6 2004-02-19 12:39:39 turbo Exp $
+// $Id: attrib.domaintoggle.inc,v 2.7 2004-02-27 12:11:00 turbo Exp $
 
 // It's a toggle. Change value directly.
 function attribute_save() {
@@ -15,7 +15,7 @@ function attribute_save() {
 
 	if(pql_set_domain_value($_pql->ldap_linkid, $_REQUEST["domain"], $attrib, $newval))
 	  $msg = pql_complete_constant($LANG->_('Successfully changed %what% for domain %domain%'),
-								   array('what' => $attrib, 'domain' => pql_maybe_decode(urldecode($_REQUEST["domain"]))));
+								   array('what' => $attrib, 'domain' => urldecode(pql_format_urls($_REQUEST["domain"]))));
 	else
 	  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 								   array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
