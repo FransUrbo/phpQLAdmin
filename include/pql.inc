@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.62 2003-04-28 11:03:09 turbo Exp $
+// $Id: pql.inc,v 2.63 2003-04-29 08:37:20 turbo Exp $
 //
 
 // ----------------------------
@@ -376,9 +376,9 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 				$rem_key = array_search($address, $fwd_addresses);
 				if ($rem_key !== false) {
 					// we found a forward -> remove it 
-					pql_remove_userattribute($linkid, $forward['reference'],
-											 $config["PQL_GLOB_ATTR_FORWARDS"],
-											 $fwd_addresses[$rem_key]);
+					pql_replace_userattribute($linkid, $forward['reference'],
+											  $config["PQL_GLOB_ATTR_FORWARDS"],
+											  $fwd_addresses[$rem_key]);
 				}
 			}
 		} 
@@ -621,45 +621,6 @@ function pql_email_exists($ldap, $email){
 
 // ------------------------------------------------
 
-// adds an attribute of a user
-function pql_add_userattribute($ldap_linkid, $user, $attrib, $value) {
-    $entry[$attrib] = $value;
-    
-    if(!ldap_mod_add($ldap_linkid, $user, $entry)){
-		pql_errormsg($ldap_linkid);
-		return false;
-    }
-    
-    // user entry has changed -> remove the cached version
-    pql_cache_userentry_remove($user);
-    
-    return true;
-}
-
-// ------------------------------------------------
-
-// removes an attribute of a user
-function pql_remove_userattribute($ldap_linkid, $user, $attrib, $value){
-    if(!$value) {
-		// Delete all attributes of this type, regardless of value
-		$entry[$attrib] = array();
-    } else {
-		$entry[$attrib] = $value;
-    }
-	
-    if(!ldap_mod_del($ldap_linkid, $user, $entry)){
-		pql_errormsg($ldap_linkid);
-		return false;
-    }
-    
-    // user entry has changed -> remove the cached version
-    pql_cache_userentry_remove($user);
-    
-    return true;
-}
-
-// ------------------------------------------------
-
 // change an attribute of a user
 function pql_modify_userattribute($ldap_linkid, $user, $attrib, $oldvalue, $newvalue) {
 	global $config;
@@ -702,26 +663,102 @@ function pql_modify_userattribute($ldap_linkid, $user, $attrib, $oldvalue, $newv
 // (only use for single-field attributes)
 // delete an attribut if value is an empty string
 function pql_replace_userattribute($ldap_linkid, $user, $attrib, $value) {
-	// create entry array
-	$entry[$attrib] = $value;
-	
+    if(!$value)
+	  // Delete all attributes of this type, regardless of value
+	  $entry[$attrib] = array();
+	elseif(!$attrib)
+	  $entry = $value;
+	else
+	  // create entry array
+	  $entry[$attrib] = $value;
+
 	// replace the attribute
-	if(!ldap_mod_replace($ldap_linkid, $user, $entry)) {
+	if(!@ldap_mod_replace($ldap_linkid, $user, $entry)) {
 	    // if the value is empty (""), this causes an error in OpenLDAP 2.x, try to ldap_mod_del
-	    if($value == ""){
+	    if($value == "") {
 			$oldvalue = pql_get_userattribute($ldap_linkid, $user, $attrib);
 			$oldvalue = $oldvalue[0];
 			$entry[$attrib] = $oldvalue;
-			
-			//return false;
-			
-			if(ldap_mod_del($ldap_linkid, $user, $entry)){
-				return true;
-			} else {
+
+			if(ldap_mod_del($ldap_linkid, $user, $entry))
+			  return true;
+			else {
 				pql_errormsg($ldap_linkid);
 				return false;
 			}
-	    }
+	    } else {
+			if(ldap_errno($ldap_linkid) == 65) {
+				// Object class violation - try to add the missing objectclass
+
+				// Get existing objectclasses in the object
+				$entry["objectClass"] = pql_setup_branch_objectclasses(0, $user, $ldap_linkid);
+
+				// Get objectclasses from the LDAP server, finding the objectclass
+				// that MUST (or if non is found, a MAY) have the attribute we're
+				// trying to modify.
+				$objectclasses = pql_get_subschema($ldap_linkid, 'objectclasses');
+				if(is_array($objectclasses)) {
+					foreach($objectclasses as $key => $oc) {
+						// Go through the MUST attributes
+						for($i=0; $i < $oc[MUST]['count']; $i++)
+						  if(lc($oc[MUST][$i]) == lc($attrib))
+							$objectclass[] = $key;
+
+						if(!is_array($objectclass)) {
+							// Didn't find a MUST, try to find a MAY attribute
+							for($i=0; $i < $oc[MAY]['count']; $i++)
+							  if(lc($oc[MAY][$i]) == lc($attrib))
+								$objectclass[] = $key;
+						}
+                    }
+				}
+
+				if($objectclass[0] and !$objectclass[1]) {
+					// There is only one objectclass which allow/require this attribute
+
+					// See if we have the other MUST attributes that the objectclass require
+					for($i=0; $i < $objectclasses[$objectclass[0]]['MUST']['count']; $i++) {
+						$oldvalue = pql_get_userattribute($ldap_linkid, $user, $objectclasses[$objectclass[0]]['MUST'][$i]);
+						if(!oldvalue or !is_array($oldvalue))
+						  $missing[] = $objectclasses[$objectclass[0]]['MUST'][$i];
+					}
+
+					if(is_array($missing)) {
+						// We're missing attribute(s).
+						// TODO: Ask user to fill in missing attributes (via a popup window?)
+
+						$msg  = "To modify the attribute <b>$attrib</b>, we need to add the objectclass ";
+						$msg .= "<b>".$objectclass[0]."</b>. ";
+						$msg .= "This however require the following attributes (which we don't have): <br><br>";
+						echo $msg; printr($missing);
+
+						$msg  = "The idea is to have phpQLAdmin ask you to enter values for these missing attributes";
+						$msg .= ", but this is not yet completed.<br>"; echo $msg;
+					}
+
+//					// Add this objectclass to the existing objectclasses
+//					$entry["objectClass"][] = $objectclass[0];
+//
+//					// Create a LDIF object to print in case of error
+//					$LDIF = pql_create_ldif("pql_replace_userattribute", $user, $entry);
+				} else { 
+					// TODO: We have more than one attribute!!
+					$msg  = "We retreived more than one objectclass (or possibly non at al!) that MAY or MUST ";
+					$msg .= "the attribute <b>$attrib</b>.<br>This is however not yet supported.<br>Objectclasses ";
+					$msg .= "retreived is:"; echo $msg; printr($objectclass);
+				}
+
+				$msg = "Could not replace/add value because of a object class violation (missing objectclass).";
+				$url = "user_detail.php?user=$user&rlnb=2&msg=".urlencode($msg);
+?>
+
+    <form action="<?=$url?>" method="post">
+      <input type="submit" value="Continue">
+    </form>
+<?php
+				die();
+			}
+		}
 	    
 	    pql_errormsg($ldap_linkid);
 	    return false;
@@ -730,21 +767,6 @@ function pql_replace_userattribute($ldap_linkid, $user, $attrib, $value) {
 	// user entry has changed -> remove the cached version
 	pql_cache_userentry_remove($user);
 	
-	return true;
-}
-
-// ------------------------------------------------
-
-// replaces more than one attribute of a user
-function pql_replace_userattributes($ldap_linkid, $user, $entry){
-	if(!ldap_mod_replace($ldap_linkid, $user, $entry)) {
-		pql_errormsg($ldap_linkid);
-		return false;
-	}
-	
-	// user entry has changed -> remove the cached version
-	pql_cache_userentry_remove($user);
-
 	return true;
 }
 
@@ -1802,6 +1824,9 @@ function pql_setup_branch_objectclasses($filter = 0, $dn, $linkid = '') {
 
 	if($filter and $entry)
 	  return($entry);
+
+	if($dn and $linkid)
+	  return($objectclass);
 
 	if(!$got_phpqladmin_objectclass_branch and !$filter) {
 		$entry[] = 'phpQLAdminBranch';

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliverymode (delivery preferences)
-// $Id: attrib.deliverymode.inc,v 2.6 2003-04-04 16:37:50 turbo Exp $
+// $Id: attrib.deliverymode.inc,v 2.7 2003-04-29 08:37:20 turbo Exp $
 
 function attribute_check($type){
 	global $error, $reply, $mailreplytext;
@@ -99,14 +99,14 @@ function attribute_save($type){
 		$entry[$config["PQL_GLOB_ATTR_MODE"]][] = "reply";
 	}
 	if (!empty($mailreplytext)) {
-		$entry[$config["PQL_GLOB_ATTR_REPLYTEXT"]] = $mailreplytext;
+		$entry[$config["PQL_GLOB_ATTR_REPLYTEXT"]] = preg_replace('/\\\/', "", $mailreplytext);
 	} else {
 		// Check if the entry in database is empty. 
 		// If not, we have choosen to DELETE the value
 		$mrt_db = pql_get_userattribute($_pql->ldap_linkid,
 										$user, $config["PQL_GLOB_ATTR_REPLYTEXT"]);
 		if($mrt_db[0]) {
-			pql_remove_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_REPLYTEXT"], '');
+			pql_replace_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_REPLYTEXT"]);
 		}
 	}
 	
@@ -115,7 +115,7 @@ function attribute_save($type){
 		$users = pql_get_user($_pql->ldap_linkid, $domain);
 		if(is_array($users)){
 			foreach($users as $user){
-				$return[] = pql_replace_userattributes($_pql->ldap_linkid, $user, $entry);
+				$return[] = pql_replace_userattribute($_pql->ldap_linkid, $user, '', $entry);
 			}
 			
 			if(in_array(false, $return)){
@@ -130,7 +130,7 @@ function attribute_save($type){
 		break;
 		
 	  case "modify":
-		if(pql_replace_userattributes($_pql->ldap_linkid, $user, $entry)) {
+		if(pql_replace_userattribute($_pql->ldap_linkid, $user, '', $entry)) {
 			$msg = PQL_LANG_DELIVERYMODE_CHANGE_OK;
 		} else {
 			$msg = PQL_LANG_DELIVERYMODE_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
