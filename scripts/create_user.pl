@@ -2,19 +2,22 @@
 
 # Environment variables of interest
 # PQL_ACCOUNTSTATUS="active"
-# PQL_CN="Test User"
 # PQL_DELIVERYMODE="localdelivery"
 # PQL_DOMAIN="test"
+
+# PQL_UID="test"
+# PQL_CN="Test User"
+# PQL_SN="Test"
+# PQL_UIDNUMBER="1001"
+# PQL_USERPASSWORD="{KERBEROS}test@TEST.ORG"
 # PQL_GIDNUMBER="1001"
+
 # PQL_HOMEDIRECTORY="/afs/bayour.com/user/test/test"
 # PQL_LOGINSHELL="/bin/false"
 # PQL_MAIL="test@test"
 # PQL_MAILHOST="emil.swe.net"
 # PQL_MAILMESSAGESTORE="/var/mail/test/test"
-# PQL_SN="Test"
-# PQL_UID="test"
-# PQL_UIDNUMBER="1001"
-# PQL_USERPASSWORD="{KERBEROS}test@TEST.ORG"
+
 # PQL_KADMIN_CMD="/usr/sbin/kadmin"
 # PQL_KADMIN_REALM="TEST.ORG"
 # PQL_KADMIN_PRINC="phpQLAdmin"
@@ -23,9 +26,7 @@
 
 $ENV{PATH} = "/bin:/usr/bin:/usr/sbin";
 
-# One thing that we might want to do is
-# create the mail directory:
-#	$PQL_MAILMESSAGESTORE
+# Create the mail directory: $PQL_MAILMESSAGESTORE
 if($ENV{"PQL_MAILMESSAGESTORE"}) {
     $DIR = $ENV{"PQL_MAILMESSAGESTORE"};
     @dirs = split('/', $DIR);
@@ -35,20 +36,33 @@ if($ENV{"PQL_MAILMESSAGESTORE"}) {
 	if(! -d $directory) {
 	    print "Creating $directory\n";
 	    if(! mkdir($directory) ) {
-		print "Unsuccessfull in creating $dir, $!\n";
-		error++;
+		die("Unsuccessfull in creating $dir, $!\n");
 	    }
 	}
 
 	$directory .= $dirs[$i+1] . '/';
     }
 }
+chown($ENV{"PQL_UIDNUMBER"}, "mail", $DIR);
 
-if(!$error) {
-    chown($ENV{"PQL_UIDNUMBER"}, "mail", $DIR);
-} else {
-    exit($error);
+# Create the home directory: $PQL_HOMEDIRECTORY
+if($ENV{"PQL_HOMEDIRECTORY"}) {
+    $DIR = $ENV{"PQL_HOMEDIRECTORY"};
+    @dirs = split('/', $DIR);
+
+    $directory = '/' . $dirs[1] . '/';
+    for($i=1; $dirs[$i]; $i++) {
+	if(! -d $directory) {
+	    print "Creating $directory\n";
+	    if(! mkdir($directory) ) {
+		die("Unsuccessfull in creating $dir, $!\n");
+	    }
+	}
+
+	$directory .= $dirs[$i+1] . '/';
+    }
 }
+chown($ENV{"PQL_UIDNUMBER"}, $ENV{"PQL_GIDNUMBER"}, $DIR);
 
 # Add the Kerberos principal
 if(-x $ENV{"PQL_KADMIN_CMD"} && $ENV{"PQL_USERPASSWORD"}) {
