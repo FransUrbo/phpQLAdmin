@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.26 2004-10-19 10:40:42 turbo Exp $
+// $Id: pql_bind9.inc,v 2.27 2004-11-05 13:34:46 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -23,28 +23,50 @@ function pql_bind9_get_zone($linkid, $branchname, $domainname = '') {
 		
 		$ZONE[$zone][$host]['RDN']  = pql_maybe_idna_decode($objects[$i]['dn']);
 		$ZONE[$zone][$host]['ZONE'] = pql_maybe_idna_decode($zone);
-		$ZONE[$zone][$host]['HOST'] = pql_maybe_idna_decode($host);
 		$ZONE[$zone][$host]['TTL']  = $objects[$i]['dnsttl'];
+
+		if(eregi("in-addr.arpa", $zone) and ($host != '@')) {
+			$tmp = preg_replace('/.in-addr.arpa/', '', $zone);
+			$tmp = split('\.', $tmp);
+			
+			unset($PTR);
+			for($j=count($tmp)-1; $tmp[$j]; $j--)
+			  $PTR .= $tmp[$j].'.';
+			
+			$ZONE[$zone][$host]['PTR'] = $PTR.$host;
+		} else
+		  $ZONE[$zone][$host]['HOST'] = pql_maybe_idna_decode($host);
 		
 		// A Record(s)
 		if($objects[$i]['arecord']) {
-			if($objects[$i]['arecord'][1]) {
-				// We have multiple A records - Round-Robin!
-				for($j=0; $j < $objects[$i]['arecord']['count']; $j++)
-				  $ZONE[$zone][$host]['A'][] = ($objects[$i]['arecord'][$j]);
+			if(is_array($objects[$i]['arecord'])) {
+				foreach($objects[$i]['arecord'] as $record)
+				  $ZONE[$zone][$host]['A'][] = pql_maybe_idna_decode($record);
 			} else
 			  $ZONE[$zone][$host]['A'] = pql_maybe_idna_decode($objects[$i]['arecord']);
 		}
 		
 		// CNAME Record
 		if($objects[$i]['cnamerecord']) {
-			$cname = pql_maybe_idna_decode($objects[$i]['cnamerecord']);
-			
-			if(preg_match("/\\.$/", $cname))
-			  // Remove the domain name, so we're left with the hostname.
-			  $cname = str_replace(".$zone.", "", $cname);
-			
-			$ZONE[$zone][$host]['CNAME'] = $cname;
+			if(is_array($objects[$i]['cnamerecord'])) {
+				foreach($objects[$i]['cnamerecord'] as $record) {
+					$cname = pql_maybe_idna_decode($record);
+					
+					if(preg_match("/\\.$/", $cname))
+					  // Remove the domain name, so we're left with the hostname.
+					  $cname = str_replace(".$zone.", "", $cname);
+					
+					$ZONE[$zone][$host]['CNAME'] = $cname;
+				}
+			} else {
+				$cname = pql_maybe_idna_decode($objects[$i]['cnamerecord']);
+				
+				if(preg_match("/\\.$/", $cname))
+				  // Remove the domain name, so we're left with the hostname.
+				  $cname = str_replace(".$zone.", "", $cname);
+				
+				$ZONE[$zone][$host]['CNAME'] = $cname;
+			}
 		}
 		
 		// HINFO Record
@@ -52,8 +74,13 @@ function pql_bind9_get_zone($linkid, $branchname, $domainname = '') {
 		  $ZONE[$zone][$host]['HINFO'] = $objects[$i]['hinforecord'];
 		
 		// SRV Record
-		if($objects[$i]['srvrecord'])
-		  $ZONE[$zone][$host]['SRV'] = $objects[$i]['srvrecord'];
+		if($objects[$i]['srvrecord']) {
+			if(is_array($objects[$i]['srvrecord'])) {
+				foreach($objects[$i]['srvrecord'] as $record)
+				  $ZONE[$zone][$host]['SRV'] = $record;
+			} else
+			  $ZONE[$zone][$host]['SRV'] = $objects[$i]['srvrecord'];
+		}
 		
 		// TXT Record
 		if($objects[$i]['txtrecord'])
@@ -61,20 +88,20 @@ function pql_bind9_get_zone($linkid, $branchname, $domainname = '') {
 		
 		// NS Record(s)
 		if($objects[$i]['nsrecord']) {
-			if($objects[$i]['nsrecord'][1]) {
+			if(is_array($objects[$i]['nsrecord'])) {
 				// We have multiple records
-				for($j=0; $j < $objects[$i]['nsrecord']['count']; $j++)
-				  $ZONE[$zone][$host]['NS'][] = pql_maybe_idna_decode($objects[$i]['nsrecord'][$j]);
+				foreach($objects[$i]['nsrecord'] as $record)
+				  $ZONE[$zone][$host]['NS'][] = pql_maybe_idna_decode($record);
 			} else
 			  $ZONE[$zone][$host]['NS'] = pql_maybe_idna_decode($objects[$i]['nsrecord']);
 		}
 		
 		// MX Record(s)
 		if($objects[$i]['mxrecord']) {
-			if($objects[$i]['mxrecord'][1]) {
+			if(is_array($objects[$i]['mxrecord'])) {
 				// We have multiple records
-				for($j=0; $j < $objects[$i]['mxrecord']['count']; $j++)
-				  $ZONE[$zone][$host]['MX'][] = pql_maybe_idna_decode($objects[$i]['mxrecord'][$j]);
+				foreach($objects[$i]['mxrecord'] as $record)
+				  $ZONE[$zone][$host]['MX'][] = pql_maybe_idna_decode($record);
 			} else
 			  $ZONE[$zone][$host]['MX'] = pql_maybe_idna_decode($objects[$i]['mxrecord']);
 		}
@@ -107,8 +134,7 @@ function pql_bind9_get_zone($linkid, $branchname, $domainname = '') {
 	if(is_array($ZONE)) {
 		ksort($ZONE);
 		return($ZONE);
-	} else 
-	  return(array());
+	}
 }
 // }}}
 
@@ -119,18 +145,15 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 
 	// ----------------
 	// See if the sub branch exists. If not, create it.
-    if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $rootdn) == "dc")
-      $filter = "(&(dc=DNS)(objectclass=domain))";
-    else
-      $filter = "(&(ou=DNS)(objectclass=organizationalUnit"))";
-    if(pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], $filter, 'ONELEVEL')) {
-		// Does not exists - create it
-		if(pql_unit_add($linkid, $MASTER_DN, 'ou=DNS')) {
-			$dn = "ou=DNS,$MASTER_DN";
+	$filter = "(&(ou=DNS)(objectclass=organizationalUnit))";
 
-			$DNs[] = $dn;
-		}
+    if(!pql_get_dn($linkid, $_REQUEST["domain"], $filter, 'ONELEVEL')) {
+		// Does not exists - create it
+		if(!pql_unit_add($linkid, $MASTER_DN, 'ou=DNS'))
+		  die("Could not create 'ou=DNS,$MASTER_DN'");
 	}
+	$dn = "ou=DNS,$MASTER_DN";
+	$DNs[] = $dn;
 
 	// ----------------
 	// Create each of the domain components in the domainname
@@ -154,17 +177,20 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 		  $dn = pql_get_define("PQL_ATTR_DC")."=".$dc_tmp;
 
 		// See if the component exists. If not, create it.
-		if(pql_get_dn($linkid, $dn, 'objectClass=domain', 'BASE')) {
+		if(!pql_get_dn($linkid, $dn, 'objectClass=domain', 'BASE')) {
 			// Doesn't already exists. Create a LDIF object to print in case of error
 			$LDIF = pql_create_ldif("pql_bind9_add_zone - dc=".$dc_tmp, $dn, $entry);
-			
-			if(! ldap_add($linkid, $dn, $entry)) {
-				// Can't add domain component
-				pql_format_error(1);
-				echo "Can't add domain component...<br>\n";
-				die($LDIF);
-			} else
-			  $DNs[] = $dn;
+			if(file_exists("./.DEBUG_ME"))
+			  echo $LDIF;
+			else {
+				if(!ldap_add($linkid, $dn, $entry)) {
+					// Can't add domain component
+					pql_format_error(1);
+					echo "Can't add domain component...<br>\n";
+					die($LDIF);
+				} else
+				  $DNs[] = $dn;
+			}
 		}
 	}
 
@@ -191,17 +217,22 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 
 	$dn = "relativeDomainName=".$entry['relativeDomainName'].",$dn";
 
-	// Create a LDIF object to print in case of error
-	$LDIF = pql_create_ldif("pql_bind9_add_zone - @", $dn, $entry);
-
-	if(! ldap_add($linkid, $dn, $entry)) {
-		// Can't add SOA record
-		pql_format_error(1);
-		echo "Can't add the 'relativeDomainName=@' entry...<br>\n";
-		die($LDIF);
-	} else
-	  $DNs[] = $dn;
-
+	if(!pql_get_dn($linkid, $dn, 'objectClass=dNSZone', 'BASE')) {
+		// Doesn't already exists. Create a LDIF object to print in case of error
+		$LDIF = pql_create_ldif("pql_bind9_add_zone - @", $dn, $entry);
+		if(file_exists("./.DEBUG_ME"))
+		  echo $LDIF;
+		else {
+			if(!ldap_add($linkid, $dn, $entry)) {
+				// Can't add SOA record
+				pql_format_error(1);
+				echo "Can't add the 'relativeDomainName=@' entry...<br>\n";
+				die($LDIF);
+			} else
+			  $DNs[] = $dn;
+		}
+	}
+	
 	return true;
 }
 // }}}
@@ -303,13 +334,20 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 	$entry['objectClass'][] = 'top';
 	$entry['objectClass'][] = 'dNSZone';
 
+	// Add the OpenLDAPaci attribute (maybe)
+	if($_SESSION["ACI_SUPPORT_ENABLED"]) 
+	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($linkid, $_SESSION["USER_DN"], 'dnszone');
+
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_bind9_add_host", $dn, $entry);
-
-	if(! ldap_add($linkid, $dn, $entry)) {
-		pql_format_error(1);
-		die($LDIF);
-		return false;
+	if(file_exists("./.DEBUG_ME")) {
+		echo $LDIF;
+	} else {
+		if(!ldap_add($linkid, $dn, $entry)) {
+			pql_format_error(1);
+			die($LDIF);
+			return false;
+		}
 	}
 
 	return true;
