@@ -1,0 +1,64 @@
+<?php
+// Translation file from the old PQL_* defines to
+// attributeType (objectclass: phpQLAdminConfig)
+// values
+//
+// $Id: pql_config.inc,v 1.1 2003-01-18 11:30:00 turbo Exp $
+//
+
+$PQL_ATTRIBUTE["PQL_SHOW_USERS"] = 'showUsers';
+$PQL_ATTRIBUTE["PQL_LDAP_CONTROL_USE"] = 'useControls';
+$PQL_ATTRIBUTE["PQL_LDAP_EZMLM_USE"] = 'useEzmlm';
+$PQL_ATTRIBUTE["PQL_AUTO_RELOAD"] = 'autoReload';
+$PQL_ATTRIBUTE["PQL_TESTMAIL_AUTOSEND"] = 'autoSend';
+$PQL_ATTRIBUTE["PQL_LDAP_CONTROL_AUTOADDLOCALS"] = 'autoAddLocals';
+$PQL_ATTRIBUTE["PQL_LDAP_CHANGE_SERVER"] = 'allowServerChange';
+$PQL_ATTRIBUTE["PQL_ALLOW_ABSOLUTE_PATH"] = 'allowAbsoluteMailPath';
+$PQL_ATTRIBUTE["PQL_VERIFY_DELETE"] = 'deleteVerification';
+$PQL_ATTRIBUTE["PQL_WHOAREWE"] = 'whoAreWe';
+$PQL_ATTRIBUTE["PQL_LDAP_SUBTREE_USERS"] = 'subTreeUsers';
+$PQL_ATTRIBUTE["PQL_LDAP_SUBTREE_GROUPS"] = 'subTreeGroups';
+$PQL_ATTRIBUTE["PQL_LDAP_OBJECTCLASS_DOMAIN"] = 'branchObjectClass';
+$PQL_ATTRIBUTE["PQL_LDAP_OBJECTCLASS_USERID"] = 'userObjectClass';
+$PQL_ATTRIBUTE["PQL_LDAP_OBJECTCLASS_USER_EXTRA"] = 'userObjectClass';
+$PQL_ATTRIBUTE["PQL_LDAP_REFERENCE_USERS_WITH"] = 'userReference';
+$PQL_ATTRIBUTE["PQL_LDAP_EZMLM_PATH"] = 'ezmlmBinaryPath';
+$PQL_ATTRIBUTE["PQL_PASSWORD_SCHEMES"] = 'passWordScheme';
+$PQL_ATTRIBUTE["PQL_HOSTMASTER"] = 'hostMaster';
+$PQL_ATTRIBUTE["PQL_TESTMAIL_SUBJECT"] = 'testMailSubject';
+$PQL_ATTRIBUTE["PQL_TESTMAIL_MAILTEXT"] = 'testMailText';
+$PQL_ATTRIBUTE["PQL_CATCHALLUSER"] = 'catchAllUser';
+$PQL_ATTRIBUTE["PQL_LDAP_ATTR_MAIL"] = 'userAttribute';
+$PQL_ATTRIBUTE["PQL_LDAP_ATTR_FORWARDS"] = 'userAttribute';
+$PQL_ATTRIBUTE["PQL_LDAP_ATTR_MAILALTERNATE"] = 'userAttribute';
+$PQL_ATTRIBUTE["PQL_LDAP_ATTR_QMAILUID"] = 'userAttribute';
+$PQL_ATTRIBUTE["PQL_LDAP_ATTR_QMAILGID"] = 'userAttribute';
+$PQL_ATTRIBUTE["PQL_LDAP_ATTR_MAILSTORE"] = 'userAttribute';
+$PQL_ATTRIBUTE["PQL_LDAP_ATTR_HOMEDIR"] = 'userAttribute';
+$PQL_ATTRIBUTE["PQL_LDAP_ATTR_QUOTA"] = 'userAttribute';
+$PQL_ATTRIBUTE["PQL_LDAP_ATTR_PROGRAM"] = 'userAttribute';
+$PQL_ATTRIBUTE["PQL_LDAP_ATTR_MAILHOST"] = 'userAttribute';
+$PQL_ATTRIBUTE["PQL_LDAP_ATTR_MODE"] = 'userAttribute';
+$PQL_ATTRIBUTE["PQL_LDAP_ATTR_REPLYTEXT"] = 'userAttribute';
+$PQL_ATTRIBUTE["PQL_LDAP_ATTR_DOTMODE"] = 'userAttribute';
+$PQL_ATTRIBUTE["PQL_LDAP_ATTR_UID"] = 'userAttribute';
+$PQL_ATTRIBUTE["PQL_LDAP_ATTR_PASSWD"] = 'userAttribute';
+$PQL_ATTRIBUTE["PQL_LDAP_ATTR_OBJECTCLASS"] = 'userAttribute';
+$PQL_ATTRIBUTE["PQL_LDAP_ATTR_ISACTIVE"] = 'userAttribute';
+$PQL_ATTRIBUTE["PQL_LDAP_ATTR_PURGE"] = 'userAttribute';
+$PQL_ATTRIBUTE["PQL_LDAP_ATTR_CN"] = 'userAttribute';
+$PQL_ATTRIBUTE["PQL_LDAP_ATTR_SN"] = 'userAttribute';
+$PQL_ATTRIBUTE["PQL_LDAP_ATTR_DESCRIPTION"] = 'userAttribute';
+$PQL_ATTRIBUTE["PQL_LDAP_ATTR_GIVENNAME"] = 'userAttribute';
+$PQL_ATTRIBUTE["PQL_LDAP_ATTR_DOMAIN"] = 'userAttribute';
+
+$PQL_ATTRIBUTE["PQL_LDAP_USER_RDN_ATTRIBUTE"] = $PQL_ATTRIBUTE["PQL_LDAP_REFERENCE_USERS_WITH"];
+
+/*
+ * Local variables:
+ * mode: php
+ * mode: font-lock
+ * tab-width: 4
+ * End:
+ */
+?>
