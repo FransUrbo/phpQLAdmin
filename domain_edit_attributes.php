@@ -52,16 +52,16 @@ switch($attrib){
 include($include);
 include("header.html");
 ?>
-  <span class="title1">
-<?php
+  <span class="title1"><?php
   if(eregi("defaultdomain|basehomedir|basemaildir|administrator", $include)) {
       echo PQL_DOMAIN_DEFAULT_TITLE;
   } else {
       echo PQL_DOMAIN_CHANGE_ATTRIBUTE_TITLE;
   }
 ?>
-</span>
-<br><br>
+  </span>
+
+  <br><br>
 
 <?php
 // select what to do
