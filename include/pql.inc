@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.104 2003-08-18 14:14:38 turbo Exp $
+// $Id: pql.inc,v 2.105 2003-08-18 14:26:57 turbo Exp $
 //
 
 // ----------------------------
@@ -1020,8 +1020,8 @@ function pql_search_attribute($ldap_linkid, $basedn, $attribute, $value) {
 
     $filter = '('.$attribute.'='.$value.')';
 //echo "$basedn: $filter ($attribute)<br>\n";
-    $sr = ldap_search($ldap_linkid, $basedn, $filter, array($attribute));
-    if(ldap_count_entries($ldap_linkid, $sr) > 0) {
+    $sr = @ldap_search($ldap_linkid, $basedn, $filter, array($attribute));
+    if(@ldap_count_entries($ldap_linkid, $sr) > 0) {
 		$ed = ldap_first_entry($ldap_linkid, $sr);
 		return ldap_get_dn($ldap_linkid, $ed);
 	} else {
