@@ -80,13 +80,16 @@ foreach($_pql->ldap_basedn as $dn)  {
 }
 
 if(!is_array($domains)){
-    // if no domain defined, report it
+    // No domain defined -> 'ordinary' user (only show this user)
+    $SINGLE_USER = 1; session_register("SINGLE_USER");
+
+    $cn = pql_get_userattribute($_pql->ldap_linkid, $USER_DN, PQL_LDAP_ATTR_CN); $cn = $cn[0];
 ?>
+  <br>
+
   <!-- start domain parent -->
-  <div id="el0000Parent" class="parent">
-    <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el0000Img">
-    <font color="black" class="heada">no domains</font></a>
-  </div>
+  <a href="user_detail.php?domain=<?=$domain?>&user=<?=$USER_DN?>"><img src="images/mail_small.png" border="0" alt="<?=$cn?>"></a>&nbsp;
+  <a class="item" href="user_detail.php?domain=<?=$domain?>&user=<?=$USER_DN?>"><?=$cn?></a>
   <!-- end domain parent -->
 
 <?php
