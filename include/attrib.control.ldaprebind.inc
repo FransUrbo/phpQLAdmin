@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldaprebind (don't retrieve password, try to bind to dn)
 //
-// $Id: attrib.control.ldaprebind.inc,v 2.3 2002-12-18 16:28:46 turbo Exp $
+// $Id: attrib.control.ldaprebind.inc,v 2.4 2003-05-01 10:18:26 turbo Exp $
 
 function ldaprebind_check($type){
 	// check values
@@ -60,7 +60,7 @@ function ldaprebind_print_view($host) {
 
 function ldaprebind_print_form($host) {
 	// don't print form, save directly
-	ldaprebind_save("modify");
+	ldaprebind_save("modify", $host);
 }
 
 function ldaprebind_save($type, $host) {

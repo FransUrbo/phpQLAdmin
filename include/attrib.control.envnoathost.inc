@@ -2,7 +2,7 @@
 // control attribute plugin for
 // envnoathost (default prefix for mailbox paths)
 //
-// $Id: attrib.control.envnoathost.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
+// $Id: attrib.control.envnoathost.inc,v 2.5 2003-05-01 10:18:26 turbo Exp $
 
 function envnoathost_check($type) {
 	global $error, $envnoathost;
@@ -66,7 +66,7 @@ function envnoathost_print_view($host) {
 }
 
 function envnoathost_print_form() {
-	global $attrib, $envnoathost, $PHP_SELF, $error;
+	global $attrib, $envnoathost, $PHP_SELF, $error, $mxhost;
 
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
@@ -74,7 +74,7 @@ function envnoathost_print_form() {
       <th colspan="3" align="left">envnoathost (Default domain for addresses without @)</th>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title">Address</td>
-          <td><?php echo format_error($error["envnoathost"]); ?><input type="text" name="envnoathost" value="<?php echo $envnoathost; ?>"> Default: <?=$host?> (value in 'me')</td>
+          <td><?php echo format_error($error["envnoathost"]); ?><input type="text" name="envnoathost" value="<?php echo $envnoathost; ?>"> Default: <?=$mxhost?> (value in 'me')</td>
         </tr>
 
         <tr>

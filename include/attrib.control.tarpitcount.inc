@@ -3,7 +3,7 @@
 // tarpitcount (user id of virtual user)
 // tarpitdelay (group id of virtual user)
 //
-// $Id: attrib.control.tarpitcount.inc,v 2.4 2003-04-04 06:54:31 turbo Exp $
+// $Id: attrib.control.tarpitcount.inc,v 2.5 2003-05-01 10:18:27 turbo Exp $
 
 function tarpitcount_check($type) {
 	global $error, $tarpitcount, $tarpitdelay;
@@ -132,7 +132,7 @@ function tarpitcount_print_form() {
 }
 
 function tarpitcount_save($type){
-	global $_pql_control, $attrib, $tarpitcount, $tarpitdelay, $error;
+	global $_pql_control, $attrib, $tarpitcount, $tarpitdelay, $error, $mxhost;
 
 	// recontrol values
 	if(!tarpitcount_check($type)){
@@ -144,10 +144,10 @@ function tarpitcount_save($type){
 			// save entries
 
 			$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-													  "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+													  "cn=" . $mxhost . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 													  "tarpitcount", $tarpitcount);
 			$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-													  "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+													  "cn=" . $mxhost . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 													  "tarpitdelay", $tarpitdelay);
 
 			if(in_array(false, $return)){

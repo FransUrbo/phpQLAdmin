@@ -2,10 +2,10 @@
 // control attribute plugin for
 // rcpthosts (blocked local addresses)
 //
-// $Id: attrib.control.rcpthosts.inc,v 2.6 2003-05-01 10:01:04 turbo Exp $
+// $Id: attrib.control.rcpthosts.inc,v 2.7 2003-05-01 10:18:27 turbo Exp $
 
 function rcpthosts_check($type){
-    global $error, $rcpthosts, $host;
+    global $error, $rcpthosts;
     
     // check validity
     if(is_array($rcpthosts)){

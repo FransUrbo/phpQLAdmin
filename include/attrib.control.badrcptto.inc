@@ -2,7 +2,7 @@
 // control attribute plugin for
 // badrcptto (blocked local addresses)
 //
-// $Id: attrib.control.badrcptto.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
+// $Id: attrib.control.badrcptto.inc,v 2.5 2003-05-01 10:18:26 turbo Exp $
 
 function badrcptto_check($type) {
 	global $error, $badrcptto;
@@ -135,7 +135,7 @@ function badrcptto_print_form(){
 }
 
 function badrcptto_save($type){
-	global $_pql_control, $attrib, $badrcptto, $error;
+	global $_pql_control, $attrib, $badrcptto, $error, $mxhost;
 
 	// recontrol values
 	if(!badrcptto_check($type)){
@@ -147,7 +147,7 @@ function badrcptto_save($type){
 		// save entries
 		
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"], "badrcptto",
+										 "cn=" . $mxhost . "," . $GLOBALS["USER_SEARCH_DN_CTR"], "badrcptto",
 										 $badrcptto)) {
 			$msg = "Successfully saved badrcptto options";
 		} else {

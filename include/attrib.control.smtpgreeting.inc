@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtpgreeting (SMTP greeting message)
 //
-// $Id: attrib.control.smtpgreeting.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
+// $Id: attrib.control.smtpgreeting.inc,v 2.5 2003-05-01 10:18:27 turbo Exp $
 
 function smtpgreeting_check($type) {
 	global $error, $smtpgreeting;
@@ -55,7 +55,7 @@ function smtpgreeting_print_view($host) {
 }
 
 function smtpgreeting_print_form(){
-	global $attrib, $smtpgreeting, $PHP_SELF, $error;
+	global $attrib, $smtpgreeting, $PHP_SELF, $error, $mxhost;
 
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
@@ -63,7 +63,7 @@ function smtpgreeting_print_form(){
       <th colspan="3" align="left">smtpgreeting (SMTP greeting message)</th>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title">Message</td>
-          <td><?php echo format_error($error["smtpgreeting"]); ?><input type="text" name="smtpgreeting" value="<?php echo $smtpgreeting; ?>"> Default: <?=$host?> (value in 'me')</td>
+          <td><?php echo format_error($error["smtpgreeting"]); ?><input type="text" name="smtpgreeting" value="<?php echo $smtpgreeting; ?>"> Default: <?=$mxhost?> (value in 'me')</td>
         </tr>
 
         <tr>
@@ -80,7 +80,7 @@ function smtpgreeting_print_form(){
 }
 
 function smtpgreeting_save($type){
-	global $_pql_control, $attrib, $smtpgreeting, $error;
+	global $_pql_control, $attrib, $smtpgreeting, $error, $mxhost;
 
 	// recontrol values
 	if(!smtpgreeting_check($type)){
@@ -91,7 +91,7 @@ function smtpgreeting_save($type){
 	  case "modify";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										 "cn=" . $mxhost . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 										 "smtpgreeting", $smtpgreeting)){
 			$msg = "Successfully saved smtpgreeting options";
 		} else {

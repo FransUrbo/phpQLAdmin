@@ -3,7 +3,7 @@
 // bouncefrom (username of bounce sender)
 // bouncehost (hostname of bounce sender)
 //
-// $Id: attrib.control.bouncefrom.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
+// $Id: attrib.control.bouncefrom.inc,v 2.5 2003-05-01 10:18:26 turbo Exp $
 
 function bouncefrom_check($type) {
 	global $error, $bouncefrom, $bouncehost;
@@ -81,7 +81,7 @@ function bouncefrom_print_view($host) {
 }
 
 function bouncefrom_print_form() {
-	global $attrib, $bouncefrom, $bouncehost, $PHP_SELF, $error;
+	global $attrib, $bouncefrom, $bouncehost, $PHP_SELF, $error, $mxhost;
 
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
@@ -94,7 +94,7 @@ function bouncefrom_print_form() {
 
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title">Host for bouncing</td>
-          <td><?php echo format_error($error["bouncehost"]); ?><input type="text" name="bouncehost" value="<?php echo $bouncehost; ?>"> Default: <?=$host?> (value in 'me')</td>
+          <td><?php echo format_error($error["bouncehost"]); ?><input type="text" name="bouncehost" value="<?php echo $bouncehost; ?>"> Default: <?=$mxhost?> (value in 'me')</td>
         </tr>
 
         <tr class="subtitle">

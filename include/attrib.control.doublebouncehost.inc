@@ -3,7 +3,7 @@
 // doublebouncehost (username of bounce sender)
 // doublebounceto (hostname of bounce sender)
 //
-// $Id: attrib.control.doublebouncehost.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
+// $Id: attrib.control.doublebouncehost.inc,v 2.5 2003-05-01 10:18:26 turbo Exp $
 
 function doublebouncehost_check($type) {
 	global $error, $doublebouncehost, $doublebounceto;
@@ -82,7 +82,7 @@ function doublebouncehost_print_view($host) {
 }
 
 function doublebouncehost_print_form() {
-	global $attrib, $doublebouncehost, $doublebounceto, $PHP_SELF, $error;
+	global $attrib, $doublebouncehost, $doublebounceto, $PHP_SELF, $error, $mxhost;
 
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
@@ -90,7 +90,7 @@ function doublebouncehost_print_form() {
       <th colspan="3" align="left">Double bounce</th>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title">Host</td>
-          <td><?php echo format_error($error["doublebouncehost"]); ?><input type="text" name="doublebouncehost" value="<?php echo $doublebouncehost; ?>"> Default: <?=$host?> (value in 'me')</td>
+          <td><?php echo format_error($error["doublebouncehost"]); ?><input type="text" name="doublebouncehost" value="<?php echo $doublebouncehost; ?>"> Default: <?=$mxhost?> (value in 'me')</td>
         </tr>
 
         <tr class="<?php table_bgcolor(); ?>">

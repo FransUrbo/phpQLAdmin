@@ -2,10 +2,10 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.11 2003-05-01 10:01:04 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.12 2003-05-01 10:18:27 turbo Exp $
 
 function locals_check($type){
-    global $error, $locals, $host;
+    global $error, $locals;
     
     // check validity
     if(is_array($locals)){

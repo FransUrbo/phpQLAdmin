@@ -2,7 +2,7 @@
 // control attribute plugin for
 // localiphost (name substituted for local IP address)
 //
-// $Id: attrib.control.localiphost.inc,v 2.4 2003-04-04 06:54:30 turbo Exp $
+// $Id: attrib.control.localiphost.inc,v 2.5 2003-05-01 10:18:26 turbo Exp $
 
 function localiphost_check($type) {
 	global $error, $localiphost;
@@ -59,7 +59,7 @@ function localiphost_print_view($host) {
 }
 
 function localiphost_print_form() {
-	global $attrib, $localiphost, $PHP_SELF, $error;
+	global $attrib, $localiphost, $PHP_SELF, $error, $mxhost;
 
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
@@ -67,7 +67,7 @@ function localiphost_print_form() {
       <th colspan="3" align="left">localiphost (Substitution for local IP)</th>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title">Host</td>
-          <td><?php echo format_error($error["localiphost"]); ?><input type="text" name="localiphost" value="<?php echo $localiphost; ?>"> Default: <?=$host?> (value in 'me')</td>
+          <td><?php echo format_error($error["localiphost"]); ?><input type="text" name="localiphost" value="<?php echo $localiphost; ?>"> Default: <?=$mxhost?> (value in 'me')</td>
         </tr>
 
         <tr>
