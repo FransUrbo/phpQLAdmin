@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.172.2.1 2004-04-06 06:20:38 turbo Exp $
+// $Id: pql.inc,v 2.172.2.1.6.1 2004-05-05 07:40:47 turbo Exp $
 //
 
 // ----------------------------
@@ -357,6 +357,9 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_user_add - user creation", $userdn, $entry);
+
+	if(file_exists("./.DEBUG_ME"))
+	  die($LDIF);
 
 	// -----
     // Add the user to the database
@@ -712,6 +715,9 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name) {
 
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_domain_add - create domain", $dn, $entry);
+
+	if(file_exists("./.DEBUG_ME"))
+	  die($LDIF);
 
     // adds the user
     if(! @ldap_add($ldap_linkid, $dn, $entry)) {
