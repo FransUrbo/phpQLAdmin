@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for OpenLDAPaci
-// $Id: attrib.aci.inc,v 1.1 2003-11-18 12:44:25 turbo Exp $
+// $Id: attrib.aci.inc,v 1.2 2003-11-19 16:28:11 turbo Exp $
 
 function attribute_check() {
     global $attrib, $domain, $oldvalue, $_pql, $error, $$attrib, $type, $LANG;
@@ -161,10 +161,6 @@ function attribute_save($action) {
     }
     $acis = $ACIs;
 
-// ------------------
-// TODO: Test if pql_replace_attribute() works!
-// ------------------
-
     $success = 0;
     switch($action) {
       case "add":
@@ -172,8 +168,9 @@ function attribute_save($action) {
 	if($user) {
 	    if(pql_replace_attribute($_pql->ldap_linkid, $user, '', $acis))
 	      $success = 1;
-//	} else {
-// TODO: Modify domain object
+	} else {
+	    if(pql_replace_attribute($_pql->ldap_linkid, $domain, '', $acis))
+	      $success = 1;
 	}
 	break;
 
@@ -193,8 +190,9 @@ function attribute_save($action) {
 	if($user) {
 	    if(pql_replace_attribute($_pql->ldap_linkid, $user, '', $ACIs))
 	      $success = 1;
-//	} else {
-// TODO: Modify domain object
+	} else {
+	    if(pql_replace_attribute($_pql->ldap_linkid, $domain, '', $ACIs))
+	      $success = 1;
 	}
 	break;
       default:
