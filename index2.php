@@ -1,5 +1,5 @@
 <?php
-// $Id: index2.php,v 2.30 2004-03-11 18:13:32 turbo Exp $
+// $Id: index2.php,v 2.31 2004-03-21 14:34:53 turbo Exp $
 
 session_start();
 require("./include/pql_config.inc");
@@ -15,13 +15,20 @@ if(pql_get_define("PQL_CONF_EZMLM_USE")) {
 
 // -----------------
 // Check if this user is a QmailLDAP/Controls administrator
-$controladmins = pql_domain_get_value($_pql, $_pql->ldap_basedn[0], pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"));
-if(is_array($controladmins)) {
-    foreach($controladmins as $admin)
-      if($admin == $_SESSION["USER_DN"])
+foreach($_pql->ldap_basedn as $dn)  {
+    $dn = urldecode($dn);
+
+    $controladmins = pql_domain_get_value($_pql, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"));
+    if(is_array($controladmins)) {
+	foreach($controladmins as $admin)
+	  if($admin == $_SESSION["USER_DN"]) {
+	      $controlsadministrator = 1;
+	      continue;
+	  }
+    } elseif($controladmins == $_SESSION["USER_DN"]) {
 	$controlsadministrator = 1;
-} elseif($controladmins == $_SESSION["USER_DN"]) {
-    $controlsadministrator = 1;
+	continue;
+    }
 }
 
 // -----------------
