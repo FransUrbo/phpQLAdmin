@@ -2,7 +2,13 @@ phpQLAdmin 2.0 Change Log
 
 phpQLAdmin 2.0.17 TO BE ANNOUNCED
 	Bug fixes
+	  - Missing inclusion of the domain and/or rootdn value in URLs.
+	    Closes bug 47
+	  - Spelling error (s/, /=>/) in use of pql_complete_constant(array()).
+
 	GUI layout change
+	  - Say 'LDAP Server' instead of 'Host' in the left frame - more descriptive.
+
 	Misc changes
 
 phpQLAdmin 2.0.16 Release (Aug 28 2003)
