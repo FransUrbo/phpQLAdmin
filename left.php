@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.90.8.2 2004-09-24 06:45:09 turbo Exp $
+// $Id: left.php,v 2.90.8.3 2004-10-05 07:07:17 turbo Exp $
 //
 session_start();
 
@@ -166,14 +166,15 @@ if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {
 		   $LANG->_('LDAP Matching rules')	=> 'config_ldap.php?type=matchingrules',
 		   $LANG->_('LDAP Attribute types')	=> 'config_ldap.php?type=attributetypes',
 		   $LANG->_('LDAP Object classes')	=> 'config_ldap.php?type=objectclasses');
-    if($_SESSION["MONITOR_BACKEND_ENABLED"] and $_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
-	$new = array(0					=> 0,
-		     $LANG->_('LDAP Server Status')	=> 'status_ldap.php?type=basics',
-		     $LANG->_('LDAP Connection Status')	=> 'status_ldap.php?type=connections',
-		     $LANG->_('LDAP Database Status')	=> 'status_ldap.php?type=databases');
-	$links = $links + $new;
-    }
     pql_format_tree($LANG->_('LDAP Server Configuration'), 0, $links, 1);
+
+    if($_SESSION["MONITOR_BACKEND_ENABLED"] and $_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
+	// Level 2c2: LDAP Server status
+	$links = array($LANG->_('LDAP Server Status')		=> 'status_ldap.php?type=basics',
+		       $LANG->_('LDAP Connection Status')	=> 'status_ldap.php?type=connections',
+		       $LANG->_('LDAP Database Status')		=> 'status_ldap.php?type=databases');
+	pql_format_tree($LANG->_('LDAP Server Statistics'), 0, $links, 1);
+    }
 }
 
 // Level 2d: Documentation etc
