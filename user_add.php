@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.92 2004-03-26 11:32:45 turbo Exp $
+// $Id: user_add.php,v 2.93 2004-03-27 12:30:48 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -190,14 +190,15 @@ switch($_REQUEST["page_curr"]) {
 		// Second test if email is valid
 		if(!pql_check_email($_REQUEST["email"])) {
 			$error = true;
-			
 			$error_text["email"] = $LANG->_('Invalid');
 		}
 		
 		// It exists, it's valid. Does it already exists in the database?
 		if($error_text["email"] == "" and pql_email_exists($_pql, $_REQUEST["email"])) {
 			$error = true;
-			$error_text["email"] = $LANG->_('Already exists');
+			$error_text["email"] = pql_complete_constant($LANG->_('Mail address %address% already exists'),
+														 array("address" => '<i>'.$_REQUEST["email"].'</i>'));
+			unset($_REQUEST["email"]);
 		}
 		
 		// Verify the password
@@ -316,6 +317,10 @@ switch($_REQUEST["page_curr"]) {
 			$error_text["homedirectory"] = pql_complete_constant($LANG->_('Attribute <u>%what%</u> is missing. Can\'t autogenerate %type%'),
 																 array('what' => pql_get_define("PQL_ATTR_BASEHOMEDIR"), 
 																	   'type' => 'Path to homedirectory'));
+		}
+
+		if($error) {
+			$_REQUEST["page_next"] = 'one';
 		}
 		// }}}
 	}
