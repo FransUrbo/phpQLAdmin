@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.149 2004-03-01 10:42:11 turbo Exp $
+// $Id: pql.inc,v 2.150 2004-03-03 07:46:14 turbo Exp $
 //
 
 // ----------------------------
@@ -767,63 +767,7 @@ function pql_replace_attribute($ldap_linkid, $objectdn, $attrib, $value) {
 	    } else {
 			if(ldap_errno($ldap_linkid) == 65) {
 				// Object class violation - try to add the missing objectclass
-
-				// Get existing objectclasses in the object
-				$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")] = pql_setup_branch_objectclasses(0, $objectdn, $ldap_linkid);
-
-				// Get objectclasses from the LDAP server, finding the objectclass
-				// that MUST (or if non is found, a MAY) have the attribute we're
-				// trying to modify.
-				$objectclasses = pql_get_subschema($ldap_linkid, 'objectclasses');
-				if(is_array($objectclasses)) {
-					foreach($objectclasses as $key => $oc) {
-						// Go through the MUST attributes
-						for($i=0; $i < $oc[MUST]['count']; $i++)
-						  if(lc($oc[MUST][$i]) == lc($attrib))
-							$objectclass[] = $key;
-
-						if(!is_array($objectclass)) {
-							// Didn't find a MUST, try to find a MAY attribute
-							for($i=0; $i < $oc[MAY]['count']; $i++)
-							  if(lc($oc[MAY][$i]) == lc($attrib))
-								$objectclass[] = $key;
-						}
-                    }
-				}
-
-				if($objectclass[0] and !$objectclass[1]) {
-					// There is only one objectclass which allow/require this attribute
-
-					// See if we have the other MUST attributes that the objectclass require
-					for($i=0; $i < $objectclasses[$objectclass[0]]['MUST']['count']; $i++) {
-						$oldvalue = pql_get_attribute($ldap_linkid, $objectdn, $objectclasses[$objectclass[0]]['MUST'][$i]);
-						if(!oldvalue or !is_array($oldvalue))
-						  $missing[] = $objectclasses[$objectclass[0]]['MUST'][$i];
-					}
-
-					if(is_array($missing)) {
-						// We're missing attribute(s) - create an array to be used by the user_add_missing_attributes.php page.
-						global $MISSING;
-						$MISSING['attrib'] = $attrib;
-						$MISSING['objectclass'] = $objectclass[0];
-
-						for($i=0; $missing[$i]; $i++)
-						  $MISSING['attributes'][] = $missing[$i];
-					}
-
-					// Add this objectclass to the existing objectclasses
-					$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][] = $objectclass[0];
-				} else { 
-					// TODO: We have more than one attribute!!
-					$msg  = "We retreived more than one objectclass (or possibly non at al!) that MAY or MUST ";
-					$msg .= "the attribute <b>$attrib</b>.<br>This is however not yet supported.<br>Objectclasses ";
-					$msg .= "retreived is:"; echo $msg; printr($objectclass);
-					die();
-				}
-
-				$url = "user_add_missing_attributes.php?user=".urlencode($objectdn);
-				require("./user_add_missing_attributes.php");
-				die();
+				$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")] = pql_missing_objectclasses($linkid, $objectdn, $entry);
 			}
 		}
 	    
@@ -895,9 +839,17 @@ function pql_set_domain_value($linkid, $dn, $type, $value) {
 	if($value != '') {
 		// Replace the current attribute value
 		if(! @ldap_mod_replace($linkid, $dn, $entry)) {
-			pql_format_error(1);
-			die($LDIF);
-			return false;
+			if(ldap_errno($linkid) == 65) {
+				// Object class violation - try to add the missing objectclass
+				$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")] = pql_missing_objectclasses($linkid, $dn, $entry);
+
+				// Recursion... Hopfully there's a limit on how many (max_execution_time in php.ini)!
+				pql_set_domain_value($linkid, $dn, $type, $entry);
+			} else {
+				// Other error...
+				pql_format_error(1);
+				die($LDIF);
+			}
 		}
 	} else {
 		// Delete all attributes of this type, regardless of value
@@ -2049,6 +2001,49 @@ function pql_check_attribute($ldap_ocs, $incl_ocs, $attrib) {
 	}
 
 	return(0);
+}
+// }}}
+
+// {{{ pql_missing_objectclasses(linkid, dn, entry)
+function pql_missing_objectclasses($linkid, $dn, $entry) {
+	// Get existing objectclasses in the object
+	$existing = pql_setup_branch_objectclasses(0, $dn, $ldap_linkid);
+	
+	// Get objectclasses from the LDAP server, finding the objectclass
+	// that MUST (or if non is found, a MAY) have the attribute we're
+	// trying to modify.
+	$objectclasses = pql_get_subschema($linkid, 'objectclasses');
+	if(is_array($objectclasses)) {
+		foreach($entry as $attrib => $val) {
+			// For each of the attributes (exept the objectclass one)
+			// in the object, let's see if we can find it's objectclass.
+
+			if($attrib != "objectclass") {
+				foreach($objectclasses as $key => $oc) {
+					// Go through the MUST attributes
+					for($i=0; $i < $oc[MUST]['count']; $i++)
+					  if(lc($oc[MUST][$i]) == lc($attrib))
+						$objectclass[] = $key;
+					
+					if(!is_array($objectclass)) {
+						// Didn't find a MUST, try to find a MAY attribute
+						for($i=0; $i < $oc[MAY]['count']; $i++)
+						  if(lc($oc[MAY][$i]) == lc($attrib))
+							$objectclass[] = $key;
+					}
+				}
+			}
+		}
+
+		if(is_array($objectclass)) {
+			// We've found objectclass(es) that provide the attributes in the object.
+			for($i=0; $existing[$i]; $i++)
+			  $objectclass[] = $existing[$i];
+
+			return($objectclass);
+		}
+	} else
+	  return false;
 }
 // }}}
 
