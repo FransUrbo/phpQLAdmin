@@ -3,7 +3,7 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ezmlm.inc,v 1.23 2004-05-06 08:26:12 turbo Exp $
+// $Id: pql_ezmlm.inc,v 1.24 2004-05-06 15:40:01 turbo Exp $
 session_start();
 
 class ezmlm {
@@ -205,16 +205,7 @@ class ezmlm {
 		}
 		fclose($file);
 
-		// Get number of subscribers
-		$command = $this->_paths["list"] . " 2>&1 " . $list_path . " | wc -l";
-		$output  = @Exec($command, $output_array, $result);
-		if($result != 0) {
-			$this->error = "could not execute system command: '" . $command . "'" .
-			  ((!strcmp($output, "")) ? "" : (" (".$output.")"));
-			return 0;
-		}
-		$configuration["subscribers"] = intval($output);
-
+		// ------------------------
 		// Get subscriber addresses
 		$command = $this->_paths["list"] . " 2>&1 " . $list_path;
 		$output = @Exec($command, $output_array, $result);
@@ -223,10 +214,30 @@ class ezmlm {
 			  ((!strcmp($output, "")) ? "" : (" (".$output.")"));
 			return 0;
 		}
-		for($i=1; $output_array[$i]; $i++) {
-			$configuration["subscriber"][] = $output_array[$i];
+
+		$configuration["subscribers"] = count($output_array);
+		for($i=0; $output_array[$i]; $i++)
+		  $configuration["subscriber"][] = $output_array[$i];
+
+		// ------------------------
+		if(file_exists($list_path . "/deny/lock")) {
+			// Get deny addresses
+			unset($output_array); unset($result);
+
+			$command = $this->_paths["list"] . " 2>&1 " . $list_path . "/deny";
+			$output = @Exec($command, $output_array, $result);
+			if($result != 0) {
+				$this->error = "could not execute system command: '" . $command . "'" .
+				  ((!strcmp($output, "")) ? "" : (" (".$output.")"));
+				return 0;
+			}
+
+			$configuration["killlisted"] = count($output_array);
+			for($i=0; $output_array[$i]; $i++)
+			  $configuration["killlist"][] = $output_array[$i];
 		}
 
+		// ------------------------
 		if($loadtexts) {
 			$configuration["texts"] = array("top"				=> HtmlEntities("Administration-message-header"),
 											"bottom"			=> HtmlEntities("Administration-message-footer"),
@@ -296,9 +307,9 @@ class ezmlm {
 			//chown($files[$i], $uidnr);
 		}
 
-		putenv("PQL_USERGROUP=$uidnr.".posix_getuid());
-		putenv("PQL_DIRECTORY=".$directory);
-		pql_execute('./sub_ezmlm_create.pl', 1);
+//		putenv("PQL_USERGROUP=$uidnr.".posix_getuid());
+//		putenv("PQL_DIRECTORY=".$directory);
+//		pql_execute('./sub_ezmlm_create.pl', 1);
 	}
 	// }}}
 
@@ -328,6 +339,7 @@ class ezmlm {
 		$this->_option["subhelp"]["on"]			= "h";	$this->_option["subhelp"]["off"]		= "H";
 		$this->_option["indexed"]["on"]			= "i";	$this->_option["indexed"]["off"]		= "I";
 		$this->_option["subjump"]["on"]			= "j";	$this->_option["subjump"]["off"]		= "J";
+		$this->_option["kill"]["on"]			= "k";	$this->_option["kill"]["off"]			= "";
 		$this->_option["sublistable"]["on"]		= "l";	$this->_option["sublistable"]["off"]	= "L";
 		$this->_option["moderated"]["on"]		= "m";	$this->_option["moderated"]["off"]		= "M";
 		$this->_option["modonly"]["on"]			= "o";	$this->_option["modonly"]["off"]		= "O";
@@ -407,6 +419,7 @@ class ezmlm {
 					 . ($options["subhelp"]			? "h"  : "")
 					 . ($options["indexed"]			? "i"  : "")
 					 . ($options["subjump"]			? "j"  : "")
+					 . ($options["kill"]			? "k"  : "")
 					 . ($options["sublistable"]		? "l"  : "")
 					 . ($options["moderated"]		? "m"  : "")
 					 . ($options["modonly"]			? "o"  : "")
@@ -460,7 +473,7 @@ class ezmlm {
 					. " " . $listname
 					. " " . $domain);
 
-		if(! $this->debug) {
+		if(!$this->debug and !file_exists("./.DEBUG_ME")) {
 			$output = do_exec($command, $output_array, $result);
 			if($result != 0) {
 				// Failed to create list
@@ -472,20 +485,12 @@ class ezmlm {
 				  . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $cmd
 				  . "</font><br>Error returned: "
 				  . (!strcmp($output, "") ? "" : " " . $output . "</b>");
-
-				if(function_exists("list_forward"))
-				  list_forward($domain, NULL, $this->error);
-			} else {
-				// Successfully created list
-
-				$this->_chmodown($listpath, $this->user_name);
-
-				if(function_exists("list_forward"))
-				  list_forward($domain, $listno, "Successfully modified list " . $listname . "<br>");
-			}
-		} else {
-			die("DEBUG Command:<br><pre>$command</pre><br>");
-		}
+				return 0;
+			} else
+			  // Successfully created list
+			  $this->_chmodown($listpath, $this->user_name);
+		} else
+		  echo "Command:<br><pre>$command</pre><br>";
 
 		return 1;
 	}
@@ -506,7 +511,7 @@ class ezmlm {
 		$files[] = $lstpath;
 		for($i=0; $files[$i]; $i++) {
 			if(is_dir($files[$i])) {
-				if(! $this->debug) {
+				if(!$this->debug and !file_exists("./.DEBUG_ME")) {
 					if(! rmdir($files[$i]) ) {
 						echo "Could not delete dir $files[$i]<br>";
 						$unsuccessful = 1;
@@ -515,7 +520,7 @@ class ezmlm {
 					echo "DEBUG: deleting <b>dir</b> : $files[$i]<br>";
 				}
 			} else {
-				if(! $this->debug) {
+				if(!$this->debug and !file_exists("./.DEBUG_ME")) {
 					if(! unlink($files[$i]) ) {
 						echo "Could not delete file $files[$i]<br>";
 						$unsuccessful = 1;
@@ -532,7 +537,7 @@ class ezmlm {
 		// Now time for dot files in ~alias/.qmail-LISTNAME
 		$links = $this->_getdotlinks($dotpath, $dotfile);
 		for($i=0; $links[$i]; $i++) {
-			if(! $this->debug) {
+			if(!$this->debug and !file_exists("./.DEBUG_ME")) {
 				if(! unlink($links[$i]) ) {
 					echo "Could not delete link $links[$i]<br>";
 					$unsuccessful = 1;
@@ -547,12 +552,9 @@ class ezmlm {
 
 		if($unsuccessful) {
 			$this->error = "Could not delete mailinglist $lstname from directory $lstpath";
-
-			if(function_exists("list_forward"))
-			  list_forward($domain, NULL, $this->error);
+			return 0;
 		} else {
-			if(function_exists("list_forward"))
-			  list_forward($domain, $listnumber, "Successfully deleted mailinglist");
+			return 1;
 		}
 	}
 	// }}}
@@ -605,7 +607,7 @@ class ezmlm {
 		}
 
 		$command		= $this->_paths["sub"] . " 2>&1 " . $listpath . " " . $subscriber;
-		if(! $this->debug) {
+		if(!$this->debug and !file_exists("./.DEBUG_ME")) {
 			$output    = do_exec($command, $output_array, $result);
 			if($result != 0) {
 				// Failed to subscribe user
@@ -617,22 +619,15 @@ class ezmlm {
 				  . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $cmd
 				  . "</font><br>Error returned: "
 				  . (!strcmp($output, "") ? "" : " " . $output . "</b>");
-
-				if(function_exists("list_forward"))
-				  list_forward($domain, NULL, $this->error);
-			} else {
-				// Successfully subscribed user
-				if(function_exists("list_forward"))
-				  list_forward($domain, $listno, "Successfully subscribed user to " . $listname . "<br>");
+				return 0;
 			}
-		} else {
-			die("DEBUG Command:<br><pre>$command</pre><br>");
-		}
+		} else
+		  echo "Command:<br><pre>$command</pre><br>";
 
 		return 1;
 	}
 	// }}}
- 
+
 	// {{{ unsubscribe(listname, subscriber)
 	// Remove subscriber
 	function unsubscribe($listname, $subscriber) {
@@ -648,7 +643,7 @@ class ezmlm {
 		}
 
 		$command		= $this->_paths["unsub"] . " 2>&1 " . $listpath . " " . $subscriber;
-		if(! $this->debug) {
+		if(!$this->debug and !file_exists("./.DEBUG_ME")) {
 			$output    = do_exec($command, $output_array, $result);
 			if($result != 0) {
 				// Failed to unsubscribe user
@@ -660,19 +655,24 @@ class ezmlm {
 				  . "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $cmd
 				  . "</font><br>Error returned: "
 				  . (!strcmp($output, "") ? "" : " " . $output . "</b>");
-
-				if(function_exists("list_forward"))
-				  list_forward($domain, NULL, $this->error);
-			} else {
-				// Successfully subscribed user
-				if(function_exists("list_forward"))
-				  list_forward($domain, $listno, "Successfully unsubscribed user from " . $listname . "<br>");
+				return 0;
 			}
-		} else {
-			die("DEBUG Command:<br><pre>$command</pre><br>");
-		}
+		} else
+		  echo "Command:<br><pre>$command</pre><br>";
 
 		return 1;
+	}
+	// }}}
+
+	// {{{ subscribe_kill(listname, address)
+	function subscribe_kill($listname, $address) {
+		$this->subscribe($listname."/deny", $address);
+	}
+	// }}}
+ 
+	// {{{ unsubscribe_kill(listname, address)
+	function unsubscribe_kill($listname, $address) {
+		$this->unsubscribe($listname."/deny", $address);
 	}
 	// }}}
 }
