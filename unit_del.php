@@ -1,6 +1,6 @@
 <?php
 // delete a domain and all users within
-// $Id: unit_del.php,v 2.15.2.1 2005-03-04 11:59:45 turbo Exp $
+// $Id: unit_del.php,v 2.15.2.2 2005-03-17 08:23:01 turbo Exp $
 //
 require("./include/pql_session.inc");
 require("./include/pql_config.inc");
@@ -37,12 +37,12 @@ include($_SESSION["path"]."/header.html");
 	  // redirect to home page
 	  $msg = $LANG->_('Successfully removed the domain');
 	  $msg = urlencode($msg);
-	  header("Location: home.php?msg=$msg&rlnb=1");
+	  pql_header("home.php?msg=$msg&rlnb=1");
       } else {
 	  $msg = $LANG->_('Failed to remove the domain') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	  // redirect to domain detail page
 	  $msg = urlencode($msg);
-	  header("Location: domain_detail.php?domain=$domain&unit=$unit&msg=$msg");
+	  pql_header("domain_detail.php?domain=$domain&unit=$unit&msg=$msg");
       }
   } // end of if
 ?>
