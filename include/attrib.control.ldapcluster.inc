@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldapcluster (clustering support)
 //
-// $Id: attrib.control.ldapcluster.inc,v 2.9 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.control.ldapcluster.inc,v 2.10 2004-01-01 12:35:33 turbo Exp $
 
 // check values
 function ldapcluster_check($type) {
@@ -81,7 +81,7 @@ function ldapcluster_save($type, $host) {
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('ldapcluster options')))
-			. ": " . pql_ldap_error($_pql_control->ldap_linkid);
+			. ": " . pql_format_error(0);
 		
 		attribute_forward($msg);
 		break;

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // queuelifetime (maximum number of RCPT TO's)
 //
-// $Id: attrib.control.queuelifetime.inc,v 2.10 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.control.queuelifetime.inc,v 2.11 2004-01-01 12:35:34 turbo Exp $
 
 function queuelifetime_check($type) {
 	global $error, $queuelifetime, $view, $LANG;
@@ -106,7 +106,7 @@ function queuelifetime_save($type, $host) {
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('queuelifetime options')))
-			. ": " . pql_ldap_error($_pql_control->ldap_linkid);
+			. ": " . pql_format_error(0);
 		
 		attribute_forward($msg);
 		break;

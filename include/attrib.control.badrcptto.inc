@@ -2,7 +2,7 @@
 // control attribute plugin for
 // badrcptto (blocked local addresses)
 //
-// $Id: attrib.control.badrcptto.inc,v 2.14 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.control.badrcptto.inc,v 2.15 2004-01-01 12:35:33 turbo Exp $
 
 function badrcptto_check($type) {
 	global $error, $badrcptto, $view, $LANG;
@@ -141,7 +141,7 @@ function badrcptto_save($type, $host) {
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('badrcptto options')))
-			. ": " . pql_ldap_error($_pql_control->ldap_linkid);
+			. ": " . pql_format_error(0);
 
 		attribute_forward($msg);
 		break;

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // databytes (max number of bytes in message)
 //
-// $Id: attrib.control.databytes.inc,v 2.10 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.control.databytes.inc,v 2.11 2004-01-01 12:35:33 turbo Exp $
 
 function databytes_check($type) {
 	global $error, $databytes, $view, $LANG;
@@ -102,7 +102,7 @@ function databytes_save($type, $host) {
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('databytes options')))
-			. ": " . pql_ldap_error($_pql_control->ldap_linkid);
+			. ": " . pql_format_error(0);
 
 		attribute_forward($msg);
 		break;

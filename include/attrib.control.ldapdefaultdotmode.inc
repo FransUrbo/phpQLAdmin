@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldapdefaultdotmode (default mode how to interpret .qmail files)
 //
-// $Id: attrib.control.ldapdefaultdotmode.inc,v 2.11 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.control.ldapdefaultdotmode.inc,v 2.12 2004-01-01 12:35:33 turbo Exp $
 
 function ldapdefaultdotmode_check($type) {
 	global $error, $ldapdefaultdotmode, $view, $LANG;
@@ -118,7 +118,7 @@ function ldapdefaultdotmode_save($type, $host) {
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('ldapdefaultdotmode options')))
-			. ": " . pql_ldap_error($_pql_control->ldap_linkid);
+			. ": " . pql_format_error(0);
 
 		attribute_forward($msg);
 		break;

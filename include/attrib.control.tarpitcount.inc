@@ -3,7 +3,7 @@
 // tarpitcount (user id of virtual user)
 // tarpitdelay (group id of virtual user)
 //
-// $Id: attrib.control.tarpitcount.inc,v 2.11 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.control.tarpitcount.inc,v 2.12 2004-01-01 12:35:34 turbo Exp $
 
 function tarpitcount_check($type) {
 	global $error, $tarpitcount, $tarpitdelay, $view, $LANG;
@@ -145,7 +145,7 @@ function tarpitcount_save($type, $host) {
 		
 		if(in_array(false, $return))
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('tarpitting options'))) . ": " . pql_ldap_error($_pql_control->ldap_linkid);
+									   array('what' => $LANG->_('tarpitting options'))) . ": " . pql_format_error(0);
 		else
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('tarpitting options')));

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.21 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.22 2004-01-01 12:35:34 turbo Exp $
 
 function locals_check($type) {
     global $error, $locals, $rootdn, $domain, $view, $LANG;
@@ -138,7 +138,7 @@ function locals_save($type, $host) {
 									   array('what' => pql_get_define("PQL_GLOB_ATTR_LOCALS")));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to replicate %what%'),
-									   array('what' => pql_get_define("PQL_GLOB_ATTR_LOCALS"))).": ".pql_ldap_error($_pql_control->ldap_linkid);
+									   array('what' => pql_get_define("PQL_GLOB_ATTR_LOCALS"))).": ".pql_format_error(0);
 	
 		attribute_forward($msg);
 		break;
@@ -153,7 +153,7 @@ function locals_save($type, $host) {
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to remove %domain% from %what%'),
 									   array('what'   => pql_get_define("PQL_GLOB_ATTR_LOCALS"),
-											 'domain' => $set)) . ": " . pql_ldap_error($_pql_control->ldap_linkid);
+											 'domain' => $set)) . ": " . pql_format_error(0);
 		
 		attribute_forward($msg);
 		break;
@@ -179,7 +179,7 @@ function locals_save($type, $host) {
 		  $msg = pql_complete_constant($LANG->_('Failed to add %domain% to %what%'),
 									   array('what'   => pql_get_define("PQL_GLOB_ATTR_LOCALS"),
 											 'domain' => $set))
-			. ": " . pql_ldap_error($_pql_control->ldap_linkid);
+			. ": " . pql_format_error(0);
 		
 		attribute_forward($msg);
 		break;

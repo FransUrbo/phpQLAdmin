@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for the Webserver Configuration editor
 //
-// $Id: attrib.websrv.inc,v 1.2 2003-11-20 08:01:37 turbo Exp $
+// $Id: attrib.websrv.inc,v 1.3 2004-01-01 12:35:34 turbo Exp $
 
 function attribute_check() {
     global $rootdn, $domain, $view, $action, $attrib, $$attrib, $server, $oldvalue;
@@ -67,7 +67,7 @@ function attribute_save($action) {
 		$filter = "(&(objectclass=phpQLAdminWebsrv)($attrib=*))";
 		$sr   = ldap_read($_pql->ldap_linkid, $server, $filter, array($attrib));
 		$info = ldap_get_entries($_pql->ldap_linkid, $sr)
-		  or pql_format_error_msg($_pql->ldap_linkid);
+		  or pql_format_error(0);
 		for($i=0; $i < $info[0][$attrib]["count"]; $i++) {
 			// Add the old value(s) to the array
 			$entry[$attrib][] = $info[0][$attrib][$i];

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldaplocaldelivery (search for local account, if ldap search is not successful)
 //
-// $Id: attrib.control.ldaplocaldelivery.inc,v 2.10 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.control.ldaplocaldelivery.inc,v 2.11 2004-01-01 12:35:34 turbo Exp $
 
 // check values
 function ldaplocaldelivery_check($type) {
@@ -77,7 +77,7 @@ function ldaplocaldelivery_save($type, $host) {
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('ldaplocaldelivery options')))
-			. ": " . pql_ldap_error($_pql_control->ldap_linkid);
+			. ": " . pql_format_error(0);
 
 		attribute_forward($msg);
 		break;

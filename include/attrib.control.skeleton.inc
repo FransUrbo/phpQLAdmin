@@ -58,7 +58,7 @@
 //
 // Please look at other plugins to see which standard header text is recommanded.
 //
-// $Id: attrib.control.skeleton.inc,v 2.10 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.control.skeleton.inc,v 2.11 2004-01-01 12:35:34 turbo Exp $
 //
 
 function xxx_check($type) {
@@ -180,7 +180,7 @@ function xxx_save($type, $host) {
 									   array('what' => $LANG->_('xxx options')));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('xxx options'))) . ": " . pql_ldap_error($_pql_control->ldap_linkid);
+									   array('what' => $LANG->_('xxx options'))) . ": " . pql_format_error(0);
 
 		// this will redirect to control_cat.php and display the message $msg
 		attribute_forward($msg);

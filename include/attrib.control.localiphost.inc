@@ -2,7 +2,7 @@
 // control attribute plugin for
 // localiphost (name substituted for local IP address)
 //
-// $Id: attrib.control.localiphost.inc,v 2.11 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.control.localiphost.inc,v 2.12 2004-01-01 12:35:34 turbo Exp $
 
 function localiphost_check($type) {
 	global $error, $localiphost, $view, $LANG;
@@ -97,7 +97,7 @@ function localiphost_save($type, $host) {
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('localiphost options')))
-			. ": " . pql_ldap_error($_pql_control->ldap_linkid);
+			. ": " . pql_format_error(0);
 
 		attribute_forward($msg);
 		break;

@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.135 2003-12-11 06:04:14 turbo Exp $
+// $Id: pql.inc,v 2.136 2004-01-01 12:35:34 turbo Exp $
 //
 
 // ----------------------------
@@ -183,8 +183,8 @@ function pql_user_get($ldap_linkid, $dn) {
 	// (&(cn=*)(!(objectclass=posixgroup)))
 	$filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) . "=*)(!(objectclass=posixgroup)))";
 	
-	$sr = ldap_search($ldap_linkid, $dn, $filter) or pql_format_error_msg($ldap_linkid);
-	$info = ldap_get_entries($ldap_linkid, $sr) or pql_format_error_msg($ldap_linkid);
+	$sr = ldap_search($ldap_linkid, $dn, $filter) or pql_format_error(1);
+	$info = ldap_get_entries($ldap_linkid, $sr) or pql_format_error(1);
 	for ($i=0; $i<$info["count"]; $i++) {
 		$user[] = $info[$i]["dn"];
 	}
@@ -293,7 +293,7 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
     // Add the user to the database
     if(! ldap_add($ldap_linkid, $userdn, $entry)){
 		// failed to add user
-		pql_format_error_msg($ldap_linkid);
+		pql_format_error(1);
 		die("$LDIF");
 		return false;
 	}
@@ -329,7 +329,7 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 		// --------------------------
 		if(! ldap_add($ldap_linkid, $groupdn, $entry)) {
 			// failed to add user
-			pql_format_error_msg($ldap_linkid);
+			pql_format_error(1);
 			die("$LDIF");
 			return $dns;
 		}
@@ -355,7 +355,7 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 		$dn = urldecode($dn);
 
 		$sr = ldap_search($linkid, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR")."=$user");
-		$info = ldap_get_entries($linkid, $sr) or pql_format_error_msg($linkid);
+		$info = ldap_get_entries($linkid, $sr) or pql_format_error(1);
 		for($i=0; $i<$info["count"]; $i++) {
 			unset($entry); unset($adms);
 
@@ -370,7 +370,7 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 				// Add the administrators that's left to the DN
 				$entry[pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR")] = $adms;
 				if(! ldap_mod_replace($linkid, $info[$i]["dn"], $entry))
-				  pql_format_error_msg($linkid);
+				  pql_format_error(1);
 			}
 		}
 	}
@@ -408,7 +408,7 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
     
     // delete the user
     if(!ldap_delete($linkid, $user)){
-		pql_format_error_msg($linkid);
+		pql_format_error(1);
 		return false;
     }
     
@@ -460,12 +460,12 @@ function pql_domain_get($ldap) {
 		$filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $dn) .
                   "=*)" . pql_setup_branch_objectclasses(1, $dn) . ")";
 
-		$sr = @ldap_list($ldap->ldap_linkid, $dn, $filter) or pql_format_error_msg($ldap->ldap_linkid);
-		$info = @ldap_get_entries($ldap->ldap_linkid, $sr) or pql_format_error_msg($ldap->ldap_linkid);
+		$sr = @ldap_list($ldap->ldap_linkid, $dn, $filter) or pql_format_error(1);
+		$info = @ldap_get_entries($ldap->ldap_linkid, $sr) or pql_format_error(1);
 		if($info["count"] == 0) {
 			// No entries, try a BASE search
-			$sr = @ldap_read($ldap->ldap_linkid, $dn, $filter) or pql_format_error_msg($ldap->ldap_linkid);
-			$info = @ldap_get_entries($ldap->ldap_linkid, $sr) or pql_format_error_msg($ldap->ldap_linkid);
+			$sr = @ldap_read($ldap->ldap_linkid, $dn, $filter) or pql_format_error(1);
+			$info = @ldap_get_entries($ldap->ldap_linkid, $sr) or pql_format_error(1);
 		}
 		
 		for ($i=0; $i<$info["count"]; $i++) {
@@ -504,7 +504,7 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name) {
     // adds the user
     if(! @ldap_add($ldap_linkid, $dn, $entry)) {
 		// failed to add user
-		pql_format_error_msg($ldap_linkid);
+		pql_format_error(1);
 		die("$LDIF");
 		return false;
     }
@@ -558,17 +558,17 @@ function pql_domain_del($ldap, $domain, $delete_forwards) {
 	if(is_array($branches)) {
 		for($i=0; $branches[$i]; $i++) {
 			// Find every object under this DN and delete it
-			$sr = @ldap_search($linkid, $branches[$i], 'objectclass=*') or pql_format_error_msg($linkid);
-			$info = ldap_get_entries($linkid, $sr) or pql_format_error_msg($linkid);
+			$sr = @ldap_search($linkid, $branches[$i], 'objectclass=*') or pql_format_error(1);
+			$info = ldap_get_entries($linkid, $sr) or pql_format_error(1);
 			for ($j=0; $j<$info["count"]; $j++)
 			  if($info[$j]["dn"] != $branches[$i])
 				// Don't delete the branch quite yet
 				if(!ldap_delete($linkid, $info[$j]["dn"]))
-				  pql_format_error_msg($linkid);
+				  pql_format_error(1);
 			
 			// Delete the organizationalUnit itself
 			if(!ldap_delete($linkid, $branches[$i])) {
-				pql_format_error_msg($linkid);
+				pql_format_error(1);
 				return false;
 			}
 		}
@@ -576,7 +576,7 @@ function pql_domain_del($ldap, $domain, $delete_forwards) {
 
     // remove domain entry itself (ou)
     if(!ldap_delete($linkid, $domain)) {
-		pql_format_error_msg($linkid);
+		pql_format_error(1);
 		return false;
     }
 
@@ -636,7 +636,7 @@ function pql_domain_value($ldap, $dn, $value, $match = '', $all = 0) {
 
 	// Get the entries
 	$result = @ldap_get_entries($ldap->ldap_linkid, $sr)
-	  or pql_format_error_msg($ldap->ldap_linkid);
+	  or pql_format_error(1);
 
 	// Go through the result, if there is any
 	for($i=0; $i < $result["count"]; $i++) {
@@ -733,7 +733,7 @@ function pql_replace_attribute($ldap_linkid, $objectdn, $attrib, $value) {
 			if(ldap_mod_del($ldap_linkid, $objectdn, $entry))
 			  return true;
 			else {
-				pql_format_error_msg($ldap_linkid);
+				pql_format_error(1);
 				return false;
 			}
 	    } else {
@@ -799,7 +799,7 @@ function pql_replace_attribute($ldap_linkid, $objectdn, $attrib, $value) {
 			}
 		}
 	    
-	    pql_format_error_msg($ldap_linkid);
+	    pql_format_error(1);
 	    return false;
 	}
 	
@@ -859,7 +859,7 @@ function pql_set_domain_value($linkid, $dn, $type, $value) {
 	if($value != '') {
 		// Replace the current attribute value
 		if(! ldap_mod_replace($linkid, $dn, $entry)) {
-			pql_format_error_msg($linkid);
+			pql_format_error(1);
 			die($LDIF);
 			return false;
 		}
@@ -868,7 +868,7 @@ function pql_set_domain_value($linkid, $dn, $type, $value) {
 		$entry[$type] = array();
 
 		if(! ldap_mod_del($linkid, $dn, $entry)) {
-			pql_format_error_msg($linkid);
+			pql_format_error(1);
 			die($LDIF);
 			return false;
 		}
@@ -901,7 +901,7 @@ function pql_replace_admins($ldap, $old, $new) {
 		$base = urldecode($base);
 		
 		$sr   = ldap_search($ldap->ldap_linkid, $base, $filter, $attribs);
-		$info = ldap_get_entries($ldap->ldap_linkid, $sr) or pql_format_error_msg($ldap->ldap_linkid);
+		$info = ldap_get_entries($ldap->ldap_linkid, $sr) or pql_format_error(1);
 		for($i=0; $i < $info["count"]; $i++) {
 			unset($dn); unset($entry); unset($LDIF);
 			
@@ -926,7 +926,7 @@ function pql_replace_admins($ldap, $old, $new) {
 			
 			// Modify this object
 			if(!ldap_mod_replace($ldap->ldap_linkid, $info[$i]["dn"], $entry)) {
-				pql_format_error_msg($ldap->ldap_linkid);
+				pql_format_error(1);
 				die($LDIF);
 			}
 		}
@@ -1032,7 +1032,7 @@ function pql_modify_userattribute($ldap_linkid, $user, $attrib, $oldvalue, $newv
 			  return true;
 		}
 
-		pql_format_error_msg($ldap_linkid);
+		pql_format_error(1);
 		return false;
     }
     
@@ -1222,7 +1222,7 @@ function pql_get_next_username($ldap, $domain) {
 		foreach($ldap->ldap_basedn as $dn) {
 			$dn  = urldecode($dn);
 			$sr  = ldap_search($ldap->ldap_linkid, $dn, $filter, array(pql_get_define("PQL_GLOB_ATTR_UID")));
-			$tmp = ldap_get_entries($ldap->ldap_linkid, $sr) or pql_format_error_msg($ldap->ldap_linkid);
+			$tmp = ldap_get_entries($ldap->ldap_linkid, $sr) or pql_format_error(1);
 			for($i=0; $i < $tmp["count"]; $i++)
 			  $USERS[] = $tmp[$i][pql_get_define("PQL_GLOB_ATTR_UID")][0];
 		}
@@ -1837,7 +1837,7 @@ function pql_setup_branch_objectclasses($filter = 0, $dn, $linkid = '') {
 		// Retreive existing objectClasses from the object
 		$object = ldap_explode_dn($dn, 0);
 		$sr     = @ldap_read($linkid, $dn, $object[0], array('objectclass'));
-		$ocs    = @ldap_get_entries($linkid, $sr) or pql_format_error_msg($linkid);
+		$ocs    = @ldap_get_entries($linkid, $sr) or pql_format_error(1);
 		
 		for($j=0; $j < $ocs[0][pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")]["count"]; $j++) {
 			if(eregi('phpQLAdminBranch', $ocs[0][pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][$j]))
@@ -1904,7 +1904,7 @@ function pql_validate_administrator($linkid, $dn, $admin) {
 	if(!$sr)
 	  return false;
 
-	$info = @ldap_get_entries($linkid, $sr) or pql_format_error_msg($linkid);
+	$info = @ldap_get_entries($linkid, $sr) or pql_format_error(1);
 	for($i=0; $i<$info["count"]; $i++) {
 		for($j=0; $j<$info[$i][pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR")]["count"]; $j++)
 		  // TODO: We shouldn't do a regexp but a 'case insensitive equal'

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // rcpthosts (blocked local addresses)
 //
-// $Id: attrib.control.rcpthosts.inc,v 2.17 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.control.rcpthosts.inc,v 2.18 2004-01-01 12:35:34 turbo Exp $
 
 function rcpthosts_check($type) {
     global $error, $rcpthosts, $domain, $rootdn, $view, $LANG;
@@ -158,7 +158,7 @@ function rcpthosts_save($type, $host) {
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to replicate %what%'),
 									   array('what' => pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS")))
-			. ": " . pql_ldap_error($_pql_control->ldap_linkid);
+			. ": " . pql_format_error(0);
 	
 		attribute_forward($msg);
 		break;
@@ -177,7 +177,7 @@ function rcpthosts_save($type, $host) {
 			  $msg = pql_complete_constant($LANG->_('Failed to remove %domain% from %what%'),
 										   array('what'   => pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"),
 												 'domain' => $set))
-				. ": " . pql_ldap_error($_pql_control->ldap_linkid);
+				. ": " . pql_format_error(0);
 		}
 		break;
 
@@ -197,7 +197,7 @@ function rcpthosts_save($type, $host) {
 										   array('what'   => pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"),
 												 'domain' => $set,
 												 'value'  => $all))
-				. ": " . pql_ldap_error($_pql_control->ldap_linkid);
+				. ": " . pql_format_error(0);
 		}
 		break;
 

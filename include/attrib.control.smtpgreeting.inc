@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtpgreeting (SMTP greeting message)
 //
-// $Id: attrib.control.smtpgreeting.inc,v 2.11 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.control.smtpgreeting.inc,v 2.12 2004-01-01 12:35:34 turbo Exp $
 
 function smtpgreeting_check($type) {
     global $error, $smtpgreeting, $view;
@@ -91,7 +91,7 @@ function smtpgreeting_save($type, $host) {
 									   array('what' => $LANG->_('smtpgreeting options')));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('smtpgreeting options'))) . ": " . pql_ldap_error($_pql_control->ldap_linkid);
+									   array('what' => $LANG->_('smtpgreeting options'))) . ": " . pql_format_error(0);
 																							   
 		attribute_forward($msg);
 		break;

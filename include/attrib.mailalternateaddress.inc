@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailalternateaddress (emailaddress alias)
-// $Id: attrib.mailalternateaddress.inc,v 2.18 2003-11-20 08:01:37 turbo Exp $
+// $Id: attrib.mailalternateaddress.inc,v 2.19 2004-01-01 12:35:34 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -125,7 +125,7 @@ function attribute_save($type) {
 											 'new'  => $mailalternateaddress));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('alias'))) . ": " . pql_ldap_error($_pql->ldap_linkid);
+									   array('what' => $LANG->_('alias'))) . ": " . pql_format_error(0);
 		
 		if (PQL_CONF_TESTMAIL_AUTOSEND) {
 			$url = "user_sendmail.php?email=" . urlencode($mailalternateaddress) . "&domain=$domain&user=" . urlencode($user) . "&msg=" . urlencode($msg);
@@ -150,7 +150,7 @@ function attribute_save($type) {
 											 'new'  => $mailalternateaddress));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('alias'))) . ": " . pql_ldap_error($_pql->ldap_linkid);
+									   array('what' => $LANG->_('alias'))) . ": " . pql_format_error(0);
 		
 		if(pql_get_define("PQL_CONF_TESTMAIL_AUTOSEND")) {
 			$url = "user_sendmail.php?email=" . urlencode($mailalternateaddress) . "&domain=$domain&user=" . urlencode($user) . "&msg=" . urlencode($msg);

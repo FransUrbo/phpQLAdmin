@@ -3,7 +3,7 @@
 // timeoutconnect (how long to wait for smtp connection)
 // timeoutremote (how long to wait for remote server)
 //
-// $Id: attrib.control.timeoutconnect.inc,v 2.11 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.control.timeoutconnect.inc,v 2.12 2004-01-01 12:35:34 turbo Exp $
 
 function timeoutconnect_check($type) {
 	global $error, $timeoutconnect, $timeoutremote, $view, $LANG;
@@ -141,7 +141,7 @@ function timeoutconnect_save($type, $host) {
 		
 		if(in_array(false, $return))
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('remote timeout options'))) . ": " . pql_ldap_error($_pql_control->ldap_linkid);
+									   array('what' => $LANG->_('remote timeout options'))) . ": " . pql_format_error(0);
 		else
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('remote timeout options')));

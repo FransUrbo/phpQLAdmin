@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.17 2003-12-13 13:43:01 turbo Exp $
+// $Id: pql_bind9.inc,v 2.18 2004-01-01 12:35:34 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, dn)
@@ -13,7 +13,7 @@ function pql_bind9_get_zone($linkid, $dn) {
     if($sr) {
 		// Oki, we have a DNS zone in LDAP.
 		$info = ldap_get_entries($linkid, $sr)
-		  or pql_format_error_msg($linkid);
+		  or pql_format_error(1);
 		for($i=0; $i < $info["count"]; $i++) {
 			$zone = $info[$i]['zonename'][0];
 			$host = $info[$i]['relativedomainname'][0];
@@ -131,13 +131,13 @@ function pql_bind9_get_record($linkid, $dn, $record = '') {
 
 		$filter .= "(relativeDomainName=@))";
 
-		$sr = @ldap_list($linkid, $dn, $filter, $attrs) or pql_format_error_msg($linkid);
+		$sr = @ldap_list($linkid, $dn, $filter, $attrs) or pql_format_error(1);
 	} else {
 		$filter .= ")";
-		$sr = @ldap_read($linkid, $dn, $filter, $attrs) or pql_format_error_msg($linkid);
+		$sr = @ldap_read($linkid, $dn, $filter, $attrs) or pql_format_error(1);
 	}
 
-	$info = @ldap_get_entries($linkid, $sr) or pql_format_error_msg($linkid);
+	$info = @ldap_get_entries($linkid, $sr) or pql_format_error(1);
 
 	if($info[0][$record]["count"] == 1)
 	  $ret[] = $info[0][$record][0];
@@ -198,7 +198,7 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 			
 			if(! ldap_add($linkid, $dn, $entry)) {
 				// Can't add domain component
-				pql_format_error_msg($linkid);
+				pql_format_error(1);
 				echo "Can't add domain component...<br>\n";
 				die($LDIF);
 			} else
@@ -236,7 +236,7 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 
 	if(! ldap_add($linkid, $dn, $entry)) {
 		// Can't add SOA record
-		pql_format_error_msg($linkid);
+		pql_format_error(1);
 		echo "Can't add the 'relativeDomainName=@' entry...<br>\n";
 		die($LDIF);
 	} else
@@ -267,7 +267,7 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 	$LDIF = pql_create_ldif("pql_bind9_add_host", $dn, $entry);
 
 	if(! ldap_add($linkid, $dn, $entry)) {
-		pql_format_error_msg($linkid);
+		pql_format_error(1);
 		die($LDIF);
 		return false;
 	}
@@ -290,7 +290,7 @@ function pql_bind9_set_record($linkid, $dn, $record, $value = '') {
 	$LDIF = pql_create_ldif("pql_bind9_set_record", $dn, $entry);
 
     if(!ldap_mod_replace($linkid, $dn, $entry)) {
-		pql_format_error_msg($linkid);
+		pql_format_error(1);
 		die($LDIF);
 		return false;
 	}

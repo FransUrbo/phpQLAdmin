@@ -2,7 +2,7 @@
 // control attribute plugin for
 // helohost (host name used in SMTP HELO command)
 //
-// $Id: attrib.control.helohost.inc,v 2.10 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.control.helohost.inc,v 2.11 2004-01-01 12:35:33 turbo Exp $
 
 function helohost_check($type) {
 	global $error, $helohost, $view, $LANG;
@@ -97,7 +97,7 @@ function helohost_save($type, $host) {
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('helohost options')))
-			. ": " . pql_ldap_error($_pql_control->ldap_linkid);
+			. ": " . pql_format_error(0);
 
 		attribute_forward($msg);
 		break;

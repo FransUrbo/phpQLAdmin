@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.7 2003-11-27 21:00:11 turbo Exp $
+// $Id: pql_formating.inc,v 2.8 2004-01-01 12:35:34 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -45,35 +45,44 @@ function pql_complete_constant($text, $replacement) {
 }
 // }}}
 
-// {{{ pql_ldap_error(ldap_linkid, attrib)
-function pql_ldap_error($ldap_linkid, $attrib = "") {
-    // an error-message wrapper for adding special comments to some
-    // error conditions
+// {{{ pql_format_error(output)
+// an error-message wrapper for adding special comments to some
+// error conditions
+function pql_format_error($output) {
+	global $_pql;
+
+    $errno = ldap_errno($_pql->ldap_linkid);
+    $error = ldap_error($_pql->ldap_linkid);
     
-    $errno = ldap_errno($ldap_linkid);
-    $error = ldap_error($ldap_linkid);
-    
-    switch($errno){
+	$url = "<a href='config_detail.php?view=".$_pql->ldap_basedn[0]."' target='_new'>Show configuration</a>";
+
+    switch($errno) {
       case 18:
 		// Inappropriate matching --> invalid qmail.schema
-		$comment = "This error is caused by an invalid qmail.schema. Please look at README.OpenLDAP2 in your doc-directory.";
+		$comment = "This error is caused by an invalid schema file.";
+		break;
+	  case 21:
+		// Invalid syntax
+		$comment  = "This error is caused because an attribute is used, but there is no <i>value</i> for it (i.e. an empty ";
+		$comment .= "attribute/value pair).<br>";
+		$comment .= "The attribute is most likley <b>objectClass</b> and is usually caused because you're missing ";
+		$comment .= "objectclasses for this type of object. Go to $url and setup the appropriate <b>objectclasses</b>.";
+		break;
+	  case 41:
+		// Object Class Violation
+		$comment  = "This error is caused because you're using an attribute but haven't included the correct object class.";
+		$comment .= "<br>Please go to $url and setup the appropriate <b>objectClasses</b>.";
 		break;
     }
     
-    $msg = $errno . ": " . $error;
-    
-    if($comment){
-		$msg .= " (" . $comment . ")";
-    }
-    
-    return $msg;
-}
-// }}}
+    $msg = "<p>".pql_format_error_span("LDAP-Error #$errno: $error");
+    if($comment)
+	  $msg .= "<br>$comment<p>";
 
-// {{{ pql_format_error_msg(ldap_linkid)
-function pql_format_error_msg($ldap_linkid) {
-	if($ldap_linkid)
-	  echo pql_format_error_span("LDAP-Error: ") . ldap_error($ldap_linkid) . "<br>";
+	if($output)
+	  echo $msg;
+	else
+	  return $msg;
 }
 // }}}
 

@@ -1,6 +1,6 @@
 <?php
 // make some simple tests on ldap connection
-// $Id: config_ldaptest.php,v 2.24 2003-11-20 08:01:28 turbo Exp $
+// $Id: config_ldaptest.php,v 2.25 2004-01-01 12:35:25 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -152,16 +152,16 @@ if(!function_exists("ldap_connect")){
 			  . "(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) . "=*))";
 			
 			$sr = @ldap_list($_pql->ldap_linkid, $basedn, $filter)
-			  or pql_format_error_msg($_pql->ldap_linkid);
+			  or pql_format_error(1);
 			$info = @ldap_get_entries($_pql->ldap_linkid, $sr)
-			  or pql_format_error_msg($_pql->ldap_linkid);
+			  or pql_format_error(1);
 
 			if(! $info["count"]) {
 				// Didn't find anything on a one-level search, try a global one...
 				$sr = @ldap_search($_pql->ldap_linkid, $basedn, $filter)
-				  or pql_format_error_msg($_pql->ldap_linkid);
+				  or pql_format_error(1);
 				$info = @ldap_get_entries($_pql->ldap_linkid, $sr)
-				  or pql_format_error_msg($_pql->ldap_linkid);
+				  or pql_format_error(1);
 			}
 
 			for ($i=0; $i<$info["count"]; $i++) {

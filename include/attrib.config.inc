@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.29 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.config.inc,v 1.30 2004-01-01 12:35:33 turbo Exp $
 
 function attribute_check() {
     global $administrator, $domain, $oldvalue, $_pql, $error, $LANG;
@@ -387,7 +387,7 @@ function attribute_verify_objectclass($ldap) {
 	// Get all object classes of the DN, making sure it
 	// contains the phpQLAdminBranch
 	$sr  = @ldap_read($ldap->ldap_linkid, $rootdn, $rootdn, array('objectclass'));
-	$ocs = @ldap_get_entries($ldap->ldap_linkid, $sr) or pql_format_error_msg($ldap->ldap_linkid);
+	$ocs = @ldap_get_entries($ldap->ldap_linkid, $sr) or pql_format_error(1);
 	for($j=0; $j < $ocs[0][pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")]["count"]; $j++) {
 		if(eregi('phpQLAdminConfig', $ocs[0][pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][$j]))
 		  return 1;

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // custombouncetext (additional bounce message)
 //
-// $Id: attrib.control.custombouncetext.inc,v 2.12 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.control.custombouncetext.inc,v 2.13 2004-01-01 12:35:33 turbo Exp $
 
 function custombouncetext_check($type) {
 	global $error, $custombouncetext, $use_custombouncetext, $view, $LANG;
@@ -113,7 +113,7 @@ function custombouncetext_save($type, $host) {
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('custombouncetext message')))
-			. ": " . pql_ldap_error($_pql_control->ldap_linkid);
+			. ": " . pql_format_error(0);
 		
 		attribute_forward($msg);
 		break;

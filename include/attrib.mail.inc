@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mail.inc,v 2.14 2003-11-20 08:01:37 turbo Exp $
+// $Id: attrib.mail.inc,v 2.15 2004-01-01 12:35:34 turbo Exp $
 
 function attribute_check($type) {
     global $mail, $domain, $oldvalue, $_pql, $error, $defaultdomain, $LANG;
@@ -91,7 +91,7 @@ function attribute_save($type) {
 											 'new'  => $mail));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('main address'))) . ": " . pql_ldap_error($_pql->ldap_linkid);
+									   array('what' => $LANG->_('main address'))) . ": " . pql_format_error(0);
 		
 		// We use the mail attribute to reference users and it has just changed...
 		if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", pql_get_rootdn($user)) == pql_get_define("PQL_GLOB_ATTR_MAIL")) {

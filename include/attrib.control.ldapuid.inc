@@ -3,7 +3,7 @@
 // ldapuid (user id of virtual user)
 // ldapgid (group id of virtual user)
 //
-// $Id: attrib.control.ldapuid.inc,v 2.10 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.control.ldapuid.inc,v 2.11 2004-01-01 12:35:34 turbo Exp $
 
 function ldapuid_check($type) {
 	global $error, $ldapuid, $ldapgid, $view, $LANG;
@@ -136,7 +136,7 @@ function ldapuid_save($type, $host) {
 		if(in_array(false, $return))
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('virtual user options')))
-			. ": " . pql_ldap_error($_pql_control->ldap_linkid);
+			. ": " . pql_format_error(0);
 		else
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('virtual user options')));

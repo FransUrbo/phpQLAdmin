@@ -1,6 +1,6 @@
 <?php
 // Attribute plugin for additional group (memberUID)
-// $Id: attrib.additionalgroup.inc,v 2.1 2003-11-26 16:42:07 turbo Exp $
+// $Id: attrib.additionalgroup.inc,v 2.2 2004-01-01 12:35:33 turbo Exp $
 
 // {{{ attribute_init(void)...
 function attribute_init() {
@@ -141,7 +141,7 @@ function attribute_save($action) {
 											 'group' => $$attrib));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to remove %user% from %what%'),
-									   array('what' => $LANG->_('additional group'))) . ": " . pql_ldap_error($_pql->ldap_linkid);
+									   array('what' => $LANG->_('additional group'))) . ": " . pql_format_error(0);
 
 		attribute_forward($msg);
 		break;

@@ -3,7 +3,7 @@
 // pql_units.inc
 // Sub units (ou=People, ou=Users, dc=host) etc
 //
-// $Id: pql_units.inc,v 1.2 2003-12-13 13:45:30 turbo Exp $
+// $Id: pql_units.inc,v 1.3 2004-01-01 12:35:34 turbo Exp $
 //
 
 // {{{ pql_unit_get(linkid, dn, filter)
@@ -52,8 +52,8 @@ function pql_unit_exist($linkid, $dn, $unit) {
 
 	$filter = "(&($ref=$unit)(objectclass=".$ocb."))";
 	
-	$sr   = ldap_list($linkid, $dn, $filter) or pql_format_error_msg($linkid);
-	$info = ldap_get_entries($linkid, $sr) or pql_format_error_msg($linkid);
+	$sr   = ldap_list($linkid, $dn, $filter) or pql_format_error(1);
+	$info = ldap_get_entries($linkid, $sr) or pql_format_error(1);
 	if($info["count"])
 	  return(true);
 	return(false);
@@ -89,7 +89,7 @@ function pql_unit_add($linkid, $domain, $unit) {
     // Add the unit to the database
     if(! ldap_add($linkid, $dn, $entry)) {
 		// failed to add unit
-		pql_format_error_msg($linkid);
+		pql_format_error(1);
 		die("$LDIF");
 		return false;
 	}

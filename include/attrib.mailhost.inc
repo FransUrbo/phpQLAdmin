@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailhost (host address which resides the mailhost)
-// $Id: attrib.mailhost.inc,v 2.13 2003-11-20 08:01:37 turbo Exp $
+// $Id: attrib.mailhost.inc,v 2.14 2004-01-01 12:35:34 turbo Exp $
 
 function attribute_check($type) {
 	global $options, $mailhost, $domain, $error, $LANG;
@@ -112,7 +112,7 @@ function attribute_save($type) {
 											   'new'  => $mailhost));
 		} else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('mailserver'))) . ": " . pql_ldap_error($_pql->ldap_linkid);
+									   array('what' => $LANG->_('mailserver'))) . ": " . pql_format_error(0);
 		
 		attribute_forward($msg);
 		break;
@@ -130,7 +130,7 @@ function attribute_save($type) {
 			
 			if(in_array(false, $return))
 			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-										   array('what' => $LANG->_('mailserver'))).": ".pql_ldap_error($_pql->ldap_linkid);
+										   array('what' => $LANG->_('mailserver'))).": ".pql_format_error(0);
 			else
 			  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 										   array('what' => $LANG->_('mailserver'),

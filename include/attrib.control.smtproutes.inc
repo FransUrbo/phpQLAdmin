@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtproutes (max number of bytes in message)
 //
-// $Id: attrib.control.smtproutes.inc,v 2.14 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.control.smtproutes.inc,v 2.15 2004-01-01 12:35:34 turbo Exp $
 
 function smtproutes_check($type) {
 	global $error, $domain, $relay, $port, $view, $LANG;
@@ -416,7 +416,7 @@ function smtproutes_save($type, $host) {
 									   array('what' => $LANG->_('smtproutes options')));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('smtproutes options'))) . ": " . pql_ldap_error($_pql_control->ldap_linkid);
+									   array('what' => $LANG->_('smtproutes options'))) . ": " . pql_format_error(0);
 
 		attribute_forward($msg);
 		break;
@@ -520,7 +520,7 @@ function smtproutes_save($type, $host) {
 									   array('what' => $LANG->_('smtproutes options')));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('smtproutes options'))) . ": " . pql_ldap_error($_pql_control->ldap_linkid);
+									   array('what' => $LANG->_('smtproutes options'))) . ": " . pql_format_error(0);
 
 		attribute_forward($msg);
 		break;

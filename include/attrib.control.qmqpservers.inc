@@ -2,7 +2,7 @@
 // control attribute plugin for
 // qmqpservers (max number of bytes in message)
 //
-// $Id: attrib.control.qmqpservers.inc,v 2.13 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.control.qmqpservers.inc,v 2.14 2004-01-01 12:35:34 turbo Exp $
 
 function qmqpservers_check($type) {
 	global $error, $qmqpservers, $view, $LANG;
@@ -157,7 +157,7 @@ function qmqpservers_save($type, $host)  {
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('qmqpservers options')))
-			. ": " . pql_ldap_error($_pql_control->ldap_linkid);
+			. ": " . pql_format_error(0);
 
 		attribute_forward($msg);
 		break;

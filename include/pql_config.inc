@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.49 2003-12-11 06:08:18 turbo Exp $
+// $Id: pql_config.inc,v 1.50 2004-01-01 12:35:34 turbo Exp $
 //
 
 // {{{ pql_set_define(define, value, case_insensitive, dn)
@@ -199,9 +199,9 @@ foreach($_pql->ldap_basedn as $dn)  {
 	$dn = urldecode($dn);
 
 	$sr = @ldap_read($_pql->ldap_linkid, $dn, ('objectClass=*'))
-	  or pql_format_error_msg($_pql->ldap_linkid);
+	  or pql_format_error(1);
 	$info = ldap_get_entries($_pql->ldap_linkid, $sr)
-	  or pql_format_error_msg($_pql->ldap_linkid);
+	  or pql_format_error(1);
 
 	// If we got something, retreive the attributes
 	for ($i=0; $i<$info["count"]; $i++) {

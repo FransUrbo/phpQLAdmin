@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // accountstatus (status of mailaccount)
-// $Id: attrib.accountstatus.inc,v 2.14 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.accountstatus.inc,v 2.15 2004-01-01 12:35:33 turbo Exp $
 
 function attribute_check($type) {
     global $error, $view, $set, $domain, $rootdn, $attrib, $user, $date, $days, $LANG, $_pql;
@@ -136,7 +136,7 @@ function attribute_save($type) {
 
 				if(!$msg) {
 					$msg  = $LANG->_('Failed to set account expiration date');
-					$msg .= ": " . pql_ldap_error($_pql->ldap_linkid);
+					$msg .= ": " . pql_format_error(0);
 				}
 			} else {
 				$msg = $LANG->_('Successfully set account expiration date');
@@ -151,7 +151,7 @@ function attribute_save($type) {
 												 $set)) {
 					  $msg  = pql_complete_constant($LANG->_('Failed to change %what%'),
 													array('what' => $LANG->_('Status')));
-					  $msg .= ": " . pql_ldap_error($_pql->ldap_linkid);
+					  $msg .= ": " . pql_format_error(0);
 				  } else
 					$msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 												 array('what' => $LANG->_('Status'),
@@ -169,7 +169,7 @@ function attribute_save($type) {
 											   'new'  => pql_ldap_accountstatus($set)));
 		} else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('Status'))) . ": " . pql_ldap_error($_pql->ldap_linkid);
+									   array('what' => $LANG->_('Status'))) . ": " . pql_format_error(0);
 		
 		attribute_forward($msg);
 		break;

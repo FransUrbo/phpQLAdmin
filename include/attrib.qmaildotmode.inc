@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // qmaildotmode (interpretation of .qmail-files)
-// $Id: attrib.qmaildotmode.inc,v 2.12 2003-11-20 08:01:37 turbo Exp $
+// $Id: attrib.qmaildotmode.inc,v 2.13 2004-01-01 12:35:34 turbo Exp $
 
 function attribute_check($type) {
 	global $qmaildotmode, $domain, $oldvalue, $_pql, $error, $LANG;
@@ -110,7 +110,7 @@ function attribute_save($type) {
 											 'new'  => $qmaildotmode));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('dot mode'))) . ": " . pql_ldap_error($_pql->ldap_linkid);
+									   array('what' => $LANG->_('dot mode'))) . ": " . pql_format_error(0);
 		
 		attribute_forward($msg);
 		break;

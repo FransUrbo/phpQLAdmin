@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailforwardingaddress (forward all mails to this address)
-// $Id: attrib.mailforwardingaddress.inc,v 2.15 2003-11-20 08:01:37 turbo Exp $
+// $Id: attrib.mailforwardingaddress.inc,v 2.16 2004-01-01 12:35:34 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -88,7 +88,7 @@ function attribute_save($type) {
 											 'new'  => pql_maybe_idna_decode($mailforwardingaddress)));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to add %what%'),
-									   array('what' => $LANG->_('forwarding address'))) . ": " . pql_ldap_error($_pql->ldap_linkid);
+									   array('what' => $LANG->_('forwarding address'))) . ": " . pql_format_error(0);
 		
 		attribute_forward($msg);
 		break;
@@ -109,7 +109,7 @@ function attribute_save($type) {
 											 'new'  => $email));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('forwarding address'))) . ": " . pql_ldap_error($_pql->ldap_linkid);
+									   array('what' => $LANG->_('forwarding address'))) . ": " . pql_format_error(0);
 		
 		attribute_forward($msg);
 		break;

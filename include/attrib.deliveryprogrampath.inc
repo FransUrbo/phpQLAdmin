@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliveryprogrampath (path to program running on delivery)
-// $Id: attrib.deliveryprogrampath.inc,v 2.13 2003-11-20 08:01:37 turbo Exp $
+// $Id: attrib.deliveryprogrampath.inc,v 2.14 2004-01-01 12:35:34 turbo Exp $
 
 function attribute_check($type) {
 	global $deliveryprogrampath, $domain, $oldvalue, $_pql, $error, $LANG;
@@ -87,7 +87,7 @@ function attribute_save($type) {
 											   'new'  => $deliveryprogrampath));
 		} else {
 			$msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-										 array('what' => $LANG->_('path'))) . ": " . pql_ldap_error($_pql->ldap_linkid);
+										 array('what' => $LANG->_('path'))) . ": " . pql_format_error(0);
 		}
 		
 		// check if qmaildotmode is set to 'both' or 'ldapwithprog'

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliverymode (delivery preferences)
-// $Id: attrib.deliverymode.inc,v 2.17 2003-11-20 08:01:37 turbo Exp $
+// $Id: attrib.deliverymode.inc,v 2.18 2004-01-01 12:35:34 turbo Exp $
 
 function attribute_check($type) {
 	global $error, $reply, $mailreplytext, $LANG;
@@ -129,7 +129,7 @@ function attribute_save($type) {
 			
 			if(in_array(false, $return))
 			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-										   array('what' => $LANG->_('delivery mode'))) . ": " . pql_ldap_error($_pql->ldap_linkid);
+										   array('what' => $LANG->_('delivery mode'))) . ": " . pql_format_error(0);
 			else
 			  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										   array('what' => $LANG->_('delivery mode')));
@@ -144,7 +144,7 @@ function attribute_save($type) {
 									   array('what' => $LANG->_('delivery mode')));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('delivery mode'))) . ": " . pql_ldap_error($_pql->ldap_linkid);
+									   array('what' => $LANG->_('delivery mode'))) . ": " . pql_format_error(0);
 		
 		attribute_forward($msg);
 		break;

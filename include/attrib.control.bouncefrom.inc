@@ -3,7 +3,7 @@
 // bouncefrom (username of bounce sender)
 // bouncehost (hostname of bounce sender)
 //
-// $Id: attrib.control.bouncefrom.inc,v 2.11 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.control.bouncefrom.inc,v 2.12 2004-01-01 12:35:33 turbo Exp $
 
 function bouncefrom_check($type) {
 	global $error, $bouncefrom, $bouncehost, $view, $LANG;
@@ -125,7 +125,7 @@ function bouncefrom_save($type, $host) {
 		if(in_array(false, $return))
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('bouncing options')))
-			. ": " . pql_ldap_error($_pql_control->ldap_linkid);
+			. ": " . pql_format_error(0);
 		else
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('bouncing options')));
