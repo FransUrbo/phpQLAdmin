@@ -1,7 +1,7 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 2.2 2002-12-17 06:28:29 turbo Exp $
+// $Id: lang.en.inc,v 2.3 2002-12-28 23:25:04 turbo Exp $
 //
 // if you have a translation to another language, please contact
 // me --> Matthias Blaser <mb@adfinis.ch>
@@ -30,7 +30,7 @@ define("PQL_EMAIL", "Email");
 define("PQL_ACTIONS", "Actions");
 
 define("PQL_SURE", "Are you really sure ");
-define("PQL_YES", "Yeah...");
+define("PQL_YES", "Yes");
 define("PQL_NO", "No");
 define("PQL_ADD", "create");
 
