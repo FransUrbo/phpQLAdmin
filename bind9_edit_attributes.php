@@ -1,6 +1,6 @@
 <?php
 // edit attributes of a BIND9 DNS zone
-// $Id: bind9_edit_attributes.php,v 2.7.2.1 2005-02-12 05:19:12 turbo Exp $
+// $Id: bind9_edit_attributes.php,v 2.7.2.2 2005-02-16 12:50:14 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -52,12 +52,14 @@ switch($_REQUEST["type"]) {
 	$_REQUEST["attrib"] = pql_get_define("PQL_ATTR_TXTRECORD");
 	break;
   default:
-	die("unknown zone type '".$_REQUEST["type"]."'.");
+	if($_REQUEST["action"] != "del") {
+	  die("unknown zone type '".$_REQUEST["type"]."'.");
+	}
 }
 // }}}
 
 // {{{ Select what to do
-if(($_REQUEST["action"] == 'del') && $_REQUEST["oldvalue"]) {
+if(($_REQUEST["action"] == 'del') && $_REQUEST["rdn"]) {
 	attribute_save($_REQUEST["action"]);
 } elseif($_REQUEST["submit"] == 1) {
     if(attribute_check())
