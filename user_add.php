@@ -1,7 +1,8 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.109 2005-01-28 11:47:31 turbo Exp $
+// $Id: user_add.php,v 2.110 2005-01-31 15:03:30 turbo Exp $
 //
+// {{{ Setup session etc
 session_start();
 require("./include/pql_config.inc");
 require("./include/pql_control.inc");
@@ -14,8 +15,9 @@ $url["domain"]		= pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"]		= pql_format_urls($_REQUEST["rootdn"]);
 $url["subbranch"]	= pql_format_urls($_REQUEST["subbranch"]);
 $url["user"]		= pql_format_urls($_REQUEST["user"]);
+// }}}
 
-// Get the organization name, or the DN if it's unset
+// {{{ Get the organization name, or the DN if it's unset
 $orgname = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_O"));
 if(!$orgname) {
 	$orgname = urldecode($_REQUEST["domain"]);
@@ -23,25 +25,40 @@ if(!$orgname) {
 	$orgname = $orgname[0];
 }
 $_REQUEST["orgname"] = $orgname;
+// }}}
 
-// check if domain exist
+// {{{ Check if domain exist
 if(!pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], '(objectclass=*)', 'BASE')) {
 	echo "Domain &quot;".$_REQUEST["domain"]."&quot; does not exists";
 	exit();
 }
+// }}}
 
-// Get default domain values for this domain
+// {{{ Get default domain values for this domain
 $defaultdomain			= pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
-$basehomedir			= pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEHOMEDIR"));
-$basemaildir			= pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEMAILDIR"));
 $maxusers				= pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_MAXIMUM_DOMAIN_USERS"));
 $additionaldomainname	= pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
 
-// Find out what objectclasses to use when creating user
-$objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"]));
+// Get the {home,mail} directory values
+$attribs = array("basehomedir" => pql_get_define("PQL_ATTR_BASEHOMEDIR"),
+				 "basemaildir" => pql_get_define("PQL_ATTR_BASEMAILDIR"));
+foreach($attribs as $key => $attrib) {
+  // Get default value
+  $value = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib);
+  if(!ereg('/$', $value))
+	$value . '/';
 
-// Get all objectclasses the LDAP server understand
+  $$key = $value;
+}
+// }}}
+
+// {{{ Find out what objectclasses to use when creating user
+$objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"]));
+// }}}
+
+// {{{ Get all objectclasses the LDAP server understand
 $objectclasses_schema   = pql_get_subschema($_pql->ldap_linkid, 'objectclasses');
+// }}}
 
 // {{{ Verify the input from the current page.  Autogen input for the next page.
 // Check the input
@@ -156,7 +173,6 @@ switch($_REQUEST["page_curr"]) {
 
 	if($_REQUEST["account_type"] == "alias") {
 		// {{{ Verify the 'alias' account type
-
 		if($_REQUEST["source"] == "") {
 			$error = true;
 			$error_text["source"] = $LANG->_('Missing');
@@ -206,23 +222,26 @@ switch($_REQUEST["page_curr"]) {
 		// }}}
 	} else {
 		// {{{ Verify all account types EXEPT 'alias'
+		// ------------------------
 
-		// Verify surname
+		// {{{ Verify surname
 		$res = pql_check_attribute($objectclasses_schema, $objectclasses_included, 'sn');
 		if(($_REQUEST["surname"] == "") and $res[0]) {
 			$error = true;
 			$error_text["surname"] = $LANG->_('Missing');
 		}
 		$user = $_REQUEST["surname"];
-		
-		// Verify lastname
+		// }}}
+
+		// {{{ Verify lastname
 		if(($_REQUEST["name"] == "") and $res[0]) {
 			$error = true;
 			$error_text["name"] = $LANG->_('Missing');
 		}
 		$user .= " " . $_REQUEST["name"];
-		
-		// Verify username
+		// }}}
+
+		// {{{ Verify username
 		$res = pql_check_attribute($objectclasses_schema, $objectclasses_included, 'sn');
 		$filter = "(&(objectclass=*)(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=$user))";
 		if(((pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_CN"))
@@ -230,16 +249,16 @@ switch($_REQUEST["page_curr"]) {
 			$error = true;
 			$error_text["username"] = pql_complete_constant($LANG->_('User %user% already exists'), array("user" => $user));
 		}
-		
-		// First test if email is valid - must contain an '@'.
+		// }}}
+
+		// {{{ Test if email is valid - must contain an '@'.
 		if(! ereg("@", $_REQUEST["email"])) {
 			if($_REQUEST["email_domain"])
 			  $_REQUEST["email"] = $_REQUEST["email"] . "@" . $_REQUEST["email_domain"];
 			else
 			  $_REQUEST["email"] = $_REQUEST["email"] . "@" . $defaultdomain;
 		}
-		
-		// Second test if email is valid
+
 		if(!pql_check_email($_REQUEST["email"])) {
 			$error = true;
 			$error_text["email"] = $LANG->_('Invalid');
@@ -252,8 +271,9 @@ switch($_REQUEST["page_curr"]) {
 														 array("address" => '<i>'.$_REQUEST["email"].'</i>'));
 			unset($_REQUEST["email"]);
 		}
-		
-		// Verify the password
+		// }}}
+
+		// {{{ Verify the password
 		if(($_REQUEST["account_type"] != "forward") and ($_REQUEST["account_type"] != "group")) {
 			// Only forward and group accounts is ok without password
 			if(($_REQUEST["password"] == "")) {
@@ -301,8 +321,9 @@ switch($_REQUEST["page_curr"]) {
 				$error_text["forwardingaddress"] = $LANG->_('Missing');
 			}
 		}
-		
-		// Check the mailHost attribute/value
+		// }}}
+
+		// {{{ Check the mailHost attribute/value
 		if($_REQUEST["account_type"] != "shell") {
 			// Find MX (or QmailLDAP/Controls with locals=$email_domain)
 			$mx = pql_get_mx($_REQUEST["email_domain"]);
@@ -318,18 +339,11 @@ switch($_REQUEST["page_curr"]) {
 			  // We got a MX or QmailLDAP/Controls object. Use it.
 			  $_REQUEST["userhost"] = $mx;
 		}
-		
-		// Get default {home,mail} directory from the database.
-		$attribs = array("basehomedir" => pql_get_define("PQL_ATTR_BASEHOMEDIR"),
-						 "basemaildir" => pql_get_define("PQL_ATTR_BASEMAILDIR"));
-		foreach($attribs as $attrib) {
-			// Get default value
-			$value = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib);
-			$$key = $value;
-		}
-		
-		// Generate the mail directory value
-		if(!empty($basemaildir) and function_exists("user_generate_mailstore")) {
+		// }}}
+
+		// {{{ Generate the mail directory value
+		if(!empty($basemaildir)) {
+		  if(function_exists("user_generate_mailstore")) {
 			if((pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
 			   and $_REQUEST["uid"])
 			  $reference = $_REQUEST["uid"];
@@ -347,20 +361,24 @@ switch($_REQUEST["page_curr"]) {
 			$_REQUEST["maildirectory"] = user_generate_mailstore($_pql, $_REQUEST["email"], $_REQUEST["domain"],
 																 array(pql_get_define("PQL_ATTR_UID") => $reference),
 																 'user');
-			
-			if($_REQUEST["maildirectory"]) {
-				// Replace space(s) with underscore(s)
-				$_REQUEST["maildirectory"] = preg_replace('/ /', '_', $_REQUEST["maildirectory"], -1);
-			}
+		  } else
+			// Function user_generate_mailstore() doesn't exists. Try manually
+			$_REQUEST["maildirectory"] = $basemaildir.$_REQUEST["uid"]."/";
+
+		  if($_REQUEST["maildirectory"])
+			// Replace space(s) with underscore(s)
+			$_REQUEST["maildirectory"] = preg_replace('/ /', '_', $_REQUEST["maildirectory"], -1);
 		} else {
 			// Can't autogenerate!
 			$error_text["maildirectory"] = pql_complete_constant($LANG->_('Attribute <u>%what%</u> is missing. Can\'t autogenerate %type%.'),
 																 array('what' => pql_get_define("PQL_ATTR_BASEMAILDIR"), 
 																	   'type' => 'Path to mailbox'));
 		}
-		
-		// Generate the home directory value
-		if(!empty($basehomedir) and function_exists("user_generate_homedir")) {
+		// }}}
+
+		// {{{ Generate the home directory value
+		if(!empty($basehomedir)) {
+		  if(function_exists("user_generate_homedir")) {
 			if((pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
 			   and $_REQUEST["uid"])
 			  $reference = $_REQUEST["uid"];
@@ -378,17 +396,21 @@ switch($_REQUEST["page_curr"]) {
 			$_REQUEST["homedirectory"] = user_generate_homedir($_pql, $_REQUEST["email"], $_REQUEST["domain"],
 															   array(pql_get_define("PQL_ATTR_UID") => $reference),
 															   'user');
+		  } else
+			// Function user_generate_homedir() doesn't exists. Try manually
+			$_REQUEST["homedirectory"] = $basehomedir.$_REQUEST["uid"]."/";
 			
-			if($_REQUEST["homedirectory"]) {
-				// Replace space(s) with underscore(s)
-				$_REQUEST["homedirectory"] = preg_replace('/ /', '_', $_REQUEST["homedirectory"], -1);
-			}
+		  if($_REQUEST["homedirectory"]) {
+			// Replace space(s) with underscore(s)
+			$_REQUEST["homedirectory"] = preg_replace('/ /', '_', $_REQUEST["homedirectory"], -1);
+		  }
 		} else {
 			// Can't autogenerate!
 			$error_text["homedirectory"] = pql_complete_constant($LANG->_('Attribute <u>%what%</u> is missing. Can\'t autogenerate %type%'),
 																 array('what' => pql_get_define("PQL_ATTR_BASEHOMEDIR"), 
 																	   'type' => 'Path to homedirectory'));
 		}
+		// }}}
 
 		if($error and !empty($error_text)) {
 			// We have an error. What page should come after this?
@@ -400,7 +422,6 @@ switch($_REQUEST["page_curr"]) {
 				$_REQUEST["page_next"] = 'one';
 			}
 		}
-
 		// }}}
 	}
 	break;
