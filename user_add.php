@@ -67,16 +67,6 @@ if($submit == "") {
     $error = false;
     $error_text = array();
 
-    if($surname == ""){
-		$error = true;
-		$error_text["surname"] = $LANG->_('Missing');
-    }
-	
-    if($name == ""){
-		$error = true;
-		$error_text["name"] = $LANG->_('Missing');
-    }
-	
     $user = $surname . " " . $name;
     if($error == false
        and pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) == pql_get_define("PQL_GLOB_ATTR_CN")
@@ -103,7 +93,7 @@ if($submit == "") {
     }
 	
     // if an error occured, set displaying form to '' (initial display)
-    if(isset($submit) and $error == true) {
+    if($error == true) {
 		$submit = "";
     } else {
 		$error_text = array();
@@ -226,6 +216,16 @@ if($submit == "two") {
 			$maildirectory = preg_replace('/ /', '_', $maildirectory, -1);
 		}
 	}
+
+    if($surname == "") {
+		$error = true;
+		$error_text["surname"] = $LANG->_('Missing');
+    }
+	
+    if($name == "") {
+		$error = true;
+		$error_text["name"] = $LANG->_('Missing');
+    }
 }
 
 // ------------------------------------------------
