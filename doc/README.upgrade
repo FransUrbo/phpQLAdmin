@@ -1,3 +1,9 @@
+Upgrading from 2.0.18
+	There's been more API changes that will break the upgrade
+	to 2.0.19. Update your include/config.inc file....
+
+	Also update the schema, that to have changed.
+
 Upgrading from 2.0.17
 	There's been some API code modifications that will break
 	an upgrade to 2.0.18. You will have to re-configure (copy
