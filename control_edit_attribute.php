@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of a control option
-// $Id: control_edit_attribute.php,v 2.22 2004-03-11 19:41:20 turbo Exp $
+// $Id: control_edit_attribute.php,v 2.23 2004-03-29 07:49:05 turbo Exp $
 //
 session_start();
 
@@ -23,7 +23,7 @@ $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_
 $url["domain"] = pql_format_urls($_REQUEST["domain"]);
 
 // Register all attribute plugins here
-$plugin = pql_plugin_get($attrib);
+$plugin = pql_plugin_get($_REQUEST["attrib"]);
 include("./include/".pql_plugin_get_filename($plugin));
 
 // forward back to users detail page

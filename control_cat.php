@@ -1,6 +1,6 @@
 <?php
 // shows details of specified category of attributes
-// $Id: control_cat.php,v 2.14 2004-02-14 14:01:00 turbo Exp $
+// $Id: control_cat.php,v 2.15 2004-03-29 07:49:05 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -10,7 +10,7 @@ require("./include/pql_control_plugins.inc");
 $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 // register all attribute plugins here (require)
-$plugins = pql_plugin_get_catplugins($cat);
+$plugins = pql_plugin_get_catplugins($_REQUEST["cat"]);
 
 // valid category ??
 if(!is_array($plugins)) {
