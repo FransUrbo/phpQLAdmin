@@ -13,11 +13,11 @@
       <tr>
         <td class="title"><?=$LANG->_('Show users')?></td>
         <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_SHOW_USERS", $_REQUEST["branch"])) {echo $LANG->_('Yes');}else{echo $LANG->_('No');}?>&nbsp;</td>
+        <td class="<?=$class?>">
 <?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&toggle=1&attrib=<?=pql_get_define("PQL_ATTR_SHOW_USERS")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?><?=pql_get_define("PQL_CONF_SHOW_USERS", $_REQUEST["branch"])?>"></a></td>
-<?php } else { ?>
-        <td class="<?=$class?>"></td>
+          <a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&toggle=1&attrib=<?=pql_get_define("PQL_ATTR_SHOW_USERS")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?><?=pql_get_define("PQL_CONF_SHOW_USERS", $_REQUEST["branch"])?>"></a>
 <?php } ?>
+        </td>
       </tr>
 
       <!-- -------------------- -->
@@ -25,11 +25,11 @@
       <tr>
         <td class="title"><?=$LANG->_('Allow absolute mailbox paths')?></td>
         <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["branch"])) {echo $LANG->_('Yes');}else{echo $LANG->_('No');}?>&nbsp;</td>
+        <td class="<?=$class?>">
 <?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&toggle=1&attrib=<?=pql_get_define("PQL_ATTR_ALLOW_ABSOLUTE_PATH")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?><?=pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["branch"])?>"></a></td>
-<?php } else { ?>
-        <td class="<?=$class?>"></td>
+          <a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&toggle=1&attrib=<?=pql_get_define("PQL_ATTR_ALLOW_ABSOLUTE_PATH")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?><?=pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["branch"])?>"></a>
 <?php } ?>
+        </td>
       </tr>
 
       <!-- -------------------- -->
@@ -37,11 +37,11 @@
       <tr>
         <td class="title"><?=$LANG->_('Verify user/domain deletions \i\urecomended!\U\I')?></td>
         <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST["branch"])) {echo $LANG->_('Yes');}else{echo $LANG->_('No');}?>&nbsp;</td>
+        <td class="<?=$class?>">
 <?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&toggle=1&attrib=<?=pql_get_define("PQL_ATTR_VERIFY_DELETE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?><?=pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST["branch"])?>"></a></td>
-<?php } else { ?>
-        <td class="<?=$class?>"></td>
+          <a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&toggle=1&attrib=<?=pql_get_define("PQL_ATTR_VERIFY_DELETE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?><?=pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST["branch"])?>"></a>
 <?php } ?>
+        </td>
       </tr>
 
       <!-- -------------------- -->
@@ -49,11 +49,11 @@
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Reference %what% with'), array('what' => $LANG->_('users'))); ?></td>
         <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["branch"])?></td>
+        <td class="<?=$class?>">
 <?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&attrib=<?=pql_get_define("PQL_ATTR_REFERENCE_USERS_WITH")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?><?=pql_get_define("PQL_CONF_REFERENCE_USERS_WITH")?>"></a></td>
-<?php } else { ?>
-        <td class="<?=$class?>"></td>
+          <a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&attrib=<?=pql_get_define("PQL_ATTR_REFERENCE_USERS_WITH")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?><?=pql_get_define("PQL_CONF_REFERENCE_USERS_WITH")?>"></a>
 <?php } ?>
+        </td>
       </tr>
 
       <!-- -------------------- -->
@@ -61,11 +61,11 @@
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Reference %what% with'), array('what' => $LANG->_('domains'))); ?></td>
         <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $_REQUEST["branch"])?></td>
+        <td class="<?=$class?>">
 <?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&attrib=<?=pql_get_define("PQL_ATTR_REFERENCE_DOMAINS_WITH")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?><?=pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH")?>"></a></td>
-<?php } else { ?>
-        <td class="<?=$class?>"></td>
+          <a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&attrib=<?=pql_get_define("PQL_ATTR_REFERENCE_DOMAINS_WITH")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?><?=pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH")?>"></a>
 <?php } ?>
+        </td>
       </tr>
 
       <!-- -------------------- -->
@@ -73,33 +73,28 @@
       <tr>
         <td class="title"><?=$LANG->_('Minimum UID Number to be used for shell and system accounts')?></td>
         <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_MINIMUM_UIDNUMBER", $_REQUEST["branch"])?></td>
-<?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
         <td class="<?=$class?>">
+<?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
           <a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&attrib=<?=pql_get_define("PQL_ATTR_MINIMUM_UIDNUMBER")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Set <?=pql_get_define("PQL_ATTR_MINIMUM_UIDNUMBER")?>"></a>
-        </td>
-<?php } else { ?>
-        <td class="<?=$class?>"></td>
 <?php } ?>
+        </td>
       </tr>
 
       <!-- -------------------- -->
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Minimum GID Number to be used for shell and system accounts')?></td>
-        <td class="<?=$class?>"><?=$gidnr?></td>
 <?php $gidnr = pql_get_define("PQL_CONF_MINIMUM_GIDNUMBER", $_REQUEST["branch"]);
 	  if(empty($gidnr)) {
 		  $gidnr = pql_get_define("PQL_CONF_MINIMUM_UIDNUMBER", $_REQUEST["branch"]);
 	  }
-
-      if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
 ?>
+        <td class="<?=$class?>"><?=$gidnr?></td>
         <td class="<?=$class?>">
+<?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
           <a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&attrib=<?=pql_get_define("PQL_ATTR_MINIMUM_GIDNUMBER")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Set <?=pql_get_define("PQL_ATTR_MINIMUM_GIDNUMBER")?>"></a>
-        </td>
-<?php } else { ?>
-        <td class="<?=$class?>"></td>
 <?php } ?>
+        </td>
       </tr>
 
       <!-- -------------------- -->
@@ -107,13 +102,11 @@
       <tr>
         <td class="title">UID <?=$LANG->_('number to be used for forwarding accounts')?></td>
         <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER", $_REQUEST["branch"])?></td>
-<?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
         <td class="<?=$class?>">
+<?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
           <a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&attrib=<?=pql_get_define("PQL_ATTR_FORWARDINGACCOUNT_UIDNUMBER")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?><?=pql_get_define("PQL_ATTR_FORWARDINGACCOUNT_UIDNUMBER")?>"></a>
-        </td>
-<?php } else { ?>
-        <td class="<?=$class?>"></td>
 <?php } ?>
+        </td>
       </tr>
 
       <tr></tr>
@@ -123,11 +116,11 @@
 <?php	$class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('External %what% creation script'), array('what' => $LANG->_('user'))); ?></td>
+        <td class="<?=$class?>">
 <?php	if(pql_get_define("PQL_CONF_SCRIPT_CREATE_USER", $_REQUEST["branch"])) { ?>
-        <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_SCRIPT_CREATE_USER", $_REQUEST["branch"])?></td>
-<?php	} else { ?>
-        <td class="<?=$class?>"></td>
+          <?=pql_get_define("PQL_CONF_SCRIPT_CREATE_USER", $_REQUEST["branch"])?>
 <?php	} ?>
+        </td>
 <?php	$new_tr = 0; ?>
         <td class="<?=$class?>">
           <a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&attrib=<?=pql_get_define("PQL_ATTR_SCRIPT_CREATE_USER")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_SCRIPT_CREATE_USER")?>"></a>
@@ -138,11 +131,11 @@
 <?php	$class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('External %what% creation script'), array('what' => $LANG->_('domain')));?></td>
+        <td class="<?=$class?>">
 <?php	if(pql_get_define("PQL_CONF_SCRIPT_CREATE_DOMAIN", $_REQUEST["branch"])) { ?>
-        <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_SCRIPT_CREATE_DOMAIN", $_REQUEST["branch"])?></td>
-<?php	} else { ?>
-        <td class="<?=$class?>"></td>
+          <?=pql_get_define("PQL_CONF_SCRIPT_CREATE_DOMAIN", $_REQUEST["branch"])?>
 <?php	} ?>
+        </td>
 <?php	$new_tr = 0; ?>
         <td class="<?=$class?>">
           <a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&attrib=<?=pql_get_define("PQL_ATTR_SCRIPT_CREATE_DOMAIN")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_SCRIPT_CREATE_DOMAIN")?>"></a>
@@ -156,11 +149,11 @@
       <tr>
         <td class="title"><?=$LANG->_('Automatically add hostname to domain for replication')?></td>
         <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_CONTROL_AUTOADDHOSTNAME", $_REQUEST["branch"])) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
+        <td class="<?=$class?>">
 <?php	if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&toggle=1&attrib=<?=pql_get_define("PQL_ATTR_CONTROL_AUTOADDHOSTNAME")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_CONTROL_AUTOADDHOSTNAME")?>"></a></td>
-<?php	} else { ?>
-        <td class="<?=$class?>"></td>
+          <a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&toggle=1&attrib=<?=pql_get_define("PQL_ATTR_CONTROL_AUTOADDHOSTNAME")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_CONTROL_AUTOADDHOSTNAME")?>"></a>
 <?php	} ?>
+        </td>
       </tr>
 
       <!-- -------------------- -->
@@ -168,11 +161,11 @@
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Automatically replicate domains to %what%'), array('what' => $LANG->_('locals'))); ?></td>
         <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_CONTROL_AUTOADDLOCALS", $_REQUEST["branch"])) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
+        <td class="<?=$class?>">
 <?php	if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&toggle=1&attrib=<?=pql_get_define("PQL_ATTR_CONTROL_AUTOADDLOCALS")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_CONTROL_AUTOADDLOCALS")?>"></a></td>
-<?php	} else { ?>
-        <td class="<?=$class?>"></td>
+          <a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&toggle=1&attrib=<?=pql_get_define("PQL_ATTR_CONTROL_AUTOADDLOCALS")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_CONTROL_AUTOADDLOCALS")?>"></a>
 <?php	} ?>
+        </td>
       </tr>
 
       <!-- -------------------- -->
@@ -180,11 +173,11 @@
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Automatically replicate domains to %what%'), array('what' => $LANG->_('rcpthosts'))); ?></td>
         <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_CONTROL_AUTOADDRCPTHOSTS", $_REQUEST["branch"])) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
+        <td class="<?=$class?>">
 <?php	if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&toggle=1&attrib=<?=pql_get_define("PQL_ATTR_CONTROL_AUTOADDRCPTHOSTS")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_CONTROL_AUTOADDRCPTHOSTS")?>"></a></td>
-<?php	} else { ?>
-        <td class="<?=$class?>"></td>
+          <a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&toggle=1&attrib=<?=pql_get_define("PQL_ATTR_CONTROL_AUTOADDRCPTHOSTS")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_CONTROL_AUTOADDRCPTHOSTS")?>"></a>
 <?php	} ?>
+        </td>
       </tr>
 
       <tr></tr>
@@ -229,7 +222,6 @@
 		$url = array('add' => $url_tmp, 'del' => $url_tmp."&delval=1&submit=2");
 //&delval=".$oc[$i][$_REQUEST["branch"]]
 
-		// BUG: DLW: I cant add phpQLAdminBranch. I can't remove the last entry.
 		pql_format_table_single($_pql->ldap_linkid, $txt, $url, $objectclasses, pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN"), $class);
 ?>
 
