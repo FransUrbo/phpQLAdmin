@@ -1,0 +1,52 @@
+# OID base,             IANA                            	1.3.6.1.4.1
+# OID Base,             Turbo Fredriksson               	8767
+# OID assignments,      LDAP Elements                   	1
+#                       SNMP Elements                   	2
+#                       phpQLAdmin Elements             	3
+#
+#                       Objectclasses                   	1
+#                               phpQLAdminConfig        	1
+#				phpQLAdminBranch		2
+#
+#                       Attributes                      	2
+#                               Toggles                 	1
+#                                       showUsers       	1
+#                               System texts            	2
+#                               Texts                   	3
+#				Value				4
+#					defaultDomain		1
+#					baseHomeDir		2
+#					baseMailDir		3
+#					administrator		4
+# -----------------------------------------
+
+# This is also availible in qmailControl.schema
+#attributetype ( 1.3.6.1.4.1.8767.3.2.4.1 NAME 'defaultDomain'
+#        DESC 'Default domain name for the branch'
+#        EQUALITY caseIgnoreIA5Match
+#        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
+#        SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.3.2.4.2 NAME 'baseHomeDir'
+        DESC 'Prefix/Base home directory for users'
+        EQUALITY caseIgnoreIA5Match
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
+        SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.3.2.4.3 NAME 'baseMailDir'
+        DESC 'Prefix/Base mail directory for users'
+        EQUALITY caseIgnoreIA5Match
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
+        SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.3.2.4.4 NAME 'administrator'
+        DESC 'Administrator for branch'
+        EQUALITY caseIgnoreIA5Match
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024} )
+
+# -----------------------------------------
+
+objectclass ( 1.3.6.1.4.1.8767.3.1.2
+        NAME 'phpQLAdminBranch'
+        DESC 'phpQLAdmin branch ACL values'
+        MAY ( defaultDomain $ baseHomeDir $ baseMailDir $ administrator ) )
