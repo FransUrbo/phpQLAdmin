@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.85.2.2 2005-02-15 10:53:53 turbo Exp $
+// $Id: user_detail.php,v 2.85.2.3 2005-02-22 09:51:22 turbo Exp $
 //
 // {{{ Setup session
 session_start();
@@ -200,6 +200,10 @@ if($uid) {
 // If anyone of them is 'qmailGroup', then it's a Group object!
 $objectclasses = pql_get_attribute($_pql->ldap_linkid, $_GET["user"],
 								   pql_get_define("PQL_ATTR_OBJECTCLASS"));
+if($objectclasses and !is_array($objectclasses)) {
+  // Make it an array for the following foreach() to work..
+  $objectclasses = array($objectclasses);
+}
 foreach($objectclasses as $oc) {
 	if(eregi('qmailGroup', $oc))
 	  $USER_IS_GROUP = 1;
