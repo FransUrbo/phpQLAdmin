@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.129 2003-11-20 09:43:47 turbo Exp $
+// $Id: pql.inc,v 2.130 2003-11-24 08:26:25 turbo Exp $
 //
 
 // ----------------------------
@@ -1543,16 +1543,18 @@ function pql_get_subbranch($linkid, $dn, $filter = 1) {
 		$ocb = "organizationalUnit";
 	}
 	
-	$info = pql_search($linkid, $dn, 'objectclass=organizationalUnit', '');
-	for ($i=0; $i<$info["count"]; $i++) {
+	$info = pql_search($linkid, $dn, 'objectclass='.$ocb);
+	for($i=0; $info[$i]; $i++) {
 		if($filter) {
 			// Filter out the most obvious subbranches we don't put users in...
-			if(!eregi('group',  $info[$i]["dn"]) and
-			   !eregi('qmail',  $info[$i]["dn"]) and
-			   !eregi('auto\.', $info[$i]["dn"]))
-			  $branches[] = $info[$i]["dn"];
+			if(!eregi('group',  $info[$i]) and
+			   !eregi('qmail',  $info[$i]) and
+			   !eregi('auto\.', $info[$i]) and
+			   !eregi('web',    $info[$i]) and
+			   !eregi('dns',	$info[$i]))
+			  $branches[] = $info[$i];
 		} else
-		  $branches[] = $info[$i]["dn"];
+		  $branches[] = $info[$i];
 	}
 
 	return $branches;
