@@ -4,24 +4,44 @@
 # It restarts Qmail if it detects a change in domains
 # ie, addition/removal of a 'locals' or 'rcpthost' value.
 
-# Config options
+# ----------------------------
+# Get the configuration variables
 open(CONFIG, "< /etc/qmail/.restart_qmail.conf")
     || die("Can't open config, $!\n");
 while(!eof(CONFIG)) {
     $line = <CONFIG>; chomp($line);
-    $line =~ s/"$//;
+    $line =~ s/\"$//;
     @conf = split("=\"", $line);
     $CONFIG{$conf[0]} = $conf[1];
 }
 close(CONFIG);
 
+# ----------------------------
+# Get the QmailLDAP/Controls login DN
+open(USER, "< /etc/qmail/ldaplogin")
+    || die("Can't open ldaplogin, $!\n");
+$CONFIG{'ldaplogin'} = <USER>;
+chomp($CONFIG{'ldaplogin'});
+close(USER);
+
+# ----------------------------
+# Get the QmailLDAP/Controls password
+open(PW, "< /etc/qmail/ldappassword")
+    || die("Can't open ldappassword, $!\n");
+$CONFIG{'ldappassword'} = <PW>;
+chomp($CONFIG{'ldappassword'});
+close(PW);
+
+# ----------------------------
 # Don't touch these
 $local = $rcpthost = '';
 @FILES = ("locals", "rcpthosts");
 
 # ----------------------------
 # Get the QmailLDAP/Controls object for specified host ($HOSTNAME)
-$CMD = "$CONFIG{'LDAP_SEARCH'} -x -LLL -h $CONFIG{'LDAP_SERVER'} -b '$CONFIG{'LDAP_CTRLDN'}' 'cn=$CONFIG{'HOSTNAME'}' locals rcpthosts";
+$CMD  = "$CONFIG{'LDAP_SEARCH'} -x -D '$CONFIG{'ldaplogin'}' -w '$CONFIG{'ldappassword'}'";
+$CMD .= "-LLL -h $CONFIG{'LDAP_SERVER'} -b '$CONFIG{'LDAP_CTRLDN'}' 'cn=$CONFIG{'HOSTNAME'}'";
+$CMD .= " locals rcpthosts";
 open(SEARCH, "$CMD |")
     || die("Can't search, $!\n");
 while(!eof(SEARCH)) {
@@ -65,5 +85,5 @@ foreach $file (@FILES) {
 
 if($changed) {
     print "Value have changed\n";
-    system($CONFIG{'QMAIL_INIT'}, "restart");
+#    system($CONFIG{'QMAIL_INIT'}, "restart");
 }
