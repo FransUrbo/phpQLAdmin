@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for changing/renaming the DN
 //
-// $Id: attrib.modrdn.inc,v 2.2 2003-08-18 10:38:39 turbo Exp $
+// $Id: attrib.modrdn.inc,v 2.3 2003-08-18 14:20:12 turbo Exp $
 
 function attribute_check($type) {
 	global $user, $oldvalue, $rdn, $view, $domain, $rootdn, $attrib;
@@ -38,7 +38,7 @@ function attribute_print_form() {
       <th colspan="3" align="left"><?=$LANG->_('Rename this RDN')?></th>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"><?=$LANG->_('Old RDN')?></td>
-          <td><?=$oldvalue?></td>
+          <td><?php echo maybe_decode($oldvalue); ?></td>
         </tr>
 
         <tr class="<?php table_bgcolor(); ?>">
@@ -93,15 +93,20 @@ function attribute_save($type) {
 	$oldvalue = eregi_replace("\\\'", "'", $oldvalue);
 	$rdn = eregi_replace("\\\'", "'", $rdn);
 
-	if(ldap_rename($_pql->ldap_linkid, $oldvalue, $user, $rdn, $keepold))
-	  $msg = pql_complete_constant($LANG->_('Successfully renamed RDN %user%'),
-				       array('user' => $olduser));
-	else
+	if(ldap_rename($_pql->ldap_linkid, $oldvalue, $user, $rdn, $keepold)) {
+		$msg = pql_complete_constant($LANG->_('Successfully renamed RDN %user%'),
+									 array('user' => $olduser));
+
+		// Since the DN have change, replace the 'user' value (which is used in
+		// the attribute_forward() function later on).
+		$user = $user.",".$rdn;
+
+		// Replace all administrator/seealso attributes that reference the old
+		// user DN with the new DN.
+		pql_replace_admins($_pql, $oldvalue, $user);
+	} else
 	  $msg = pql_complete_constant($LANG->_('Failed to rename RDN %user%'),
 				       array('user' => $olduser)) . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
-
-	// Since the DN have change, replace the 'user' value (which is used in the attribute_forward() function).
-	$user = $user.",".$rdn;
 
 	// Redirect to the user details page...
 	attribute_forward($msg, true);
