@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.95.10.1 2004-04-10 08:21:09 turbo Exp $
+// $Id: user_add.php,v 2.95.10.2 2004-05-05 07:56:53 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -29,6 +29,12 @@ $basehomedir			= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define
 $basemaildir			= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEMAILDIR"));
 $maxusers				= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_MAXIMUM_DOMAIN_USERS"));
 $additionaldomainname	= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
+
+// Find out what objectclasses to use when creating user
+$objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"]));
+
+// Get all objectclasses the LDAP server understand
+$objectclasses_schema   = pql_get_subschema($_pql->ldap_linkid, 'objectclasses');
 
 // {{{ Verify the input from the current page.  Autogen input for the next page.
 // Check the input
@@ -69,8 +75,6 @@ switch($_REQUEST["page_curr"]) {
 		// 2. We have set autoCreateUserName to TRUE for this branch/domain
 		// 3. The function 'user_generate_uid()' is defined in include/config.inc.
 		// 4. At least one of the objects we've choosen to use when creating users MAY or MUST the 'uid' attribute..
-		$objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"]));
-		$objectclasses_schema   = pql_get_subschema($_pql->ldap_linkid, 'objectclasses');
 		$res = pql_check_attribute($objectclasses_schema, $objectclasses_included, 'uid');
 		if(empty($_REQUEST["uid"]) and $autocreateusername and function_exists('user_generate_uid') and $res) {
 			// Generate the username
@@ -161,22 +165,24 @@ switch($_REQUEST["page_curr"]) {
 	} else {
 		// {{{ Verify all account types EXEPT 'alias'
 		// Verify surname
-		if($_REQUEST["surname"] == "") {
+		$res = pql_check_attribute($objectclasses_schema, $objectclasses_included, 'sn');
+		if(($_REQUEST["surname"] == "") and $res[0]) {
 			$error = true;
 			$error_text["surname"] = $LANG->_('Missing');
 		}
 		$user = $_REQUEST["surname"];
 		
 		// Verify lastname
-		if($_REQUEST["name"] == "") {
+		if(($_REQUEST["name"] == "") and $res[0]) {
 			$error = true;
 			$error_text["name"] = $LANG->_('Missing');
 		}
 		$user .= " " . $_REQUEST["name"];
 		
 		// Verify username
-		if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_CN")
-		   and pql_user_exist($_pql->ldap_linkid, $user, $_REQUEST["domain"], $_REQUEST["rootdn"])) {
+		$res = pql_check_attribute($objectclasses_schema, $objectclasses_included, 'sn');
+		if(((pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_CN"))
+			or $res[0]) and pql_user_exist($_pql->ldap_linkid, $user, $_REQUEST["domain"], $_REQUEST["rootdn"])) {
 			$error = true;
 			$error_text["username"] = pql_complete_constant($LANG->_('User %user% already exists'), array("user" => $user));
 		}
@@ -275,15 +281,23 @@ switch($_REQUEST["page_curr"]) {
 		
 		// Generate the mail directory value
 		if(!empty($basemaildir)) {
-			if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")) {
-				$_REQUEST["maildirectory"] = user_generate_mailstore($_pql, $_REQUEST["email"], $_REQUEST["domain"],
-																	 array(pql_get_define("PQL_ATTR_UID") => $_REQUEST["uid"]),
-																	 'user');
-			} else {
-				$_REQUEST["maildirectory"] = user_generate_mailstore($_pql, $_REQUEST["email"], $_REQUEST["domain"],
-																	 array(pql_get_define("PQL_ATTR_UID") => $_REQUEST["surname"]." ".$_REQUEST["name"]),
-																	 'user');
+			if((pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
+			   and $_REQUEST["uid"])
+			  $reference = $_REQUEST["uid"];
+			if($_REQUEST["surname"] and $_REQUEST["name"])
+			  $reference = $_REQUEST["surname"]." ".$_REQUEST["name"];
+			elseif($_REQUEST["surname"])
+			  $reference = $_REQUEST["surname"];
+			elseif($_REQUEST["name"])
+			  $reference = $_REQUEST["name"];
+			elseif($_REQUEST["email"]) {
+				$reference = split('@', $_REQUEST["email"]);
+				$reference = $reference[0];
 			}
+			
+			$_REQUEST["maildirectory"] = user_generate_mailstore($_pql, $_REQUEST["email"], $_REQUEST["domain"],
+																 array(pql_get_define("PQL_ATTR_UID") => $reference),
+																 'user');
 			
 			if($_REQUEST["maildirectory"]) {
 				// Replace space(s) with underscore(s)
@@ -299,15 +313,23 @@ switch($_REQUEST["page_curr"]) {
 		
 		// Generate the home directory value
 		if(!empty($basehomedir)) {
-			if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")) {
-				$_REQUEST["homedirectory"] = user_generate_homedir($_pql, $_REQUEST["email"], $_REQUEST["domain"],
-																   array(pql_get_define("PQL_ATTR_UID") => $_REQUEST["uid"]),
-																   'user');
-			} else {
-				$_REQUEST["homedirectory"] = user_generate_homedir($_pql, $_REQUEST["email"], $_REQUEST["domain"],
-																   array(pql_get_define("PQL_ATTR_UID") => $_REQUEST["surname"]." ".$_REQUEST["name"]),
-																   'user');
+			if((pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
+			   and $_REQUEST["uid"])
+			  $reference = $_REQUEST["uid"];
+			if($_REQUEST["surname"] and $_REQUEST["name"])
+			  $reference = $_REQUEST["surname"]." ".$_REQUEST["name"];
+			elseif($_REQUEST["surname"])
+			  $reference = $_REQUEST["surname"];
+			elseif($_REQUEST["name"])
+			  $reference = $_REQUEST["name"];
+			elseif($_REQUEST["email"]) {
+				$reference = split('@', $_REQUEST["email"]);
+				$reference = $reference[0];
 			}
+			
+			$_REQUEST["homedirectory"] = user_generate_homedir($_pql, $_REQUEST["email"], $_REQUEST["domain"],
+															   array(pql_get_define("PQL_ATTR_UID") => $reference),
+															   'user');
 			
 			if($_REQUEST["homedirectory"]) {
 				// Replace space(s) with underscore(s)

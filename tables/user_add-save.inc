@@ -1,11 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.16.4.2.2.3 2004-05-04 15:40:23 turbo Exp $
-
-// Find out what objectclasses to use when creating user
-$objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"]));
-
-// Get all objectclasses the LDAP server understand
-$objectclasses_schema   = pql_get_subschema($_pql->ldap_linkid, 'objectclasses');
+// $Id: user_add-save.inc,v 1.16.4.2.2.4 2004-05-05 07:57:15 turbo Exp $
 
 // ============================================================================================
 // ============== PREPARE THE USERS ATTRIBUTE(S)
@@ -18,8 +12,8 @@ if($_REQUEST["uid"]) {
 }
 
 // ------------------
-// If we've specified to use the object class 'inetOrgPerson', then allow 'givenName'.
-if(($_REQUEST["account_type"] != "mail") or in_array("inetorgperson", $objectclasses_included)) {
+$res = pql_check_attribute($objectclasses_schema, $objectclasses_included, pql_get_define("PQL_ATTR_SN"));
+if(($_REQUEST["account_type"] != "mail") or $res[0]) {
 	// Firstname
 	if($_REQUEST["surname"]) {
 		$entry[pql_get_define("PQL_ATTR_GIVENNAME")]	= $_REQUEST["surname"];
@@ -28,8 +22,7 @@ if(($_REQUEST["account_type"] != "mail") or in_array("inetorgperson", $objectcla
 	}
 }
 
-// If we've specified to use the object class 'person', then allow 'cn' and 'sn'.
-if(($_REQUEST["account_type"] != "mail") or in_array("person", $objectclasses_included)) {
+if(($_REQUEST["account_type"] != "mail") or $res[0]) {
 	// Lastname
 	if($_REQUEST["name"]) {
 		$entry[pql_get_define("PQL_ATTR_SN")]			= $_REQUEST["name"];
@@ -47,8 +40,8 @@ if(($_REQUEST["account_type"] != "mail") or in_array("person", $objectclasses_in
 
 // ------------------
 if($_REQUEST["account_type"] != 'shell') {
-	if(in_array('trustaccount', $objectclasses_included))
-	  // Only add 'accountStatus' if admin have enabled the 'trustAccount' object class.
+	$res = pql_check_attribute($objectclasses_schema, $objectclasses_included, pql_get_define("PQL_ATTR_ISACTIVE"));
+	if($res[0])
 	  $entry[pql_get_define("PQL_ATTR_ISACTIVE")]	= $_REQUEST["account_status"];
 
 	// Cleanup the email address a bit
@@ -93,7 +86,8 @@ if($_REQUEST["account_type"] == "forward") {
 
 	// -----------------
 	// Add [ug]id number to the entry array
-	if(($_REQUEST["account_type"] != "mail") or in_array('posixaccount', $objectclasses_included)) {
+	$res = pql_check_attribute($objectclasses_schema, $objectclasses_included, pql_get_define("PQL_ATTR_QMAILUID"));
+	if(($_REQUEST["account_type"] != "mail") or $res[0]) {
 		// We COULD end up here, EVEN if it's a mail account! So we have to tripple check again,
 		// and again so that we only add the [ug]idNumber if it's supposed to be added...
 		if($_REQUEST["account_type"] == "mail") {
@@ -194,7 +188,8 @@ if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "mai
 	  $entry[pql_get_define("PQL_ATTR_MAILSTORE")] .= "/";
 	
 	// -----------------
-	if(($_REQUEST["account_type"] == "system") or in_array('posixaccount', $objectclasses_included)) {
+	$res = pql_check_attribute($objectclasses_schema, $objectclasses_included, pql_get_define("PQL_ATTR_HOMEDIR"));
+	if(($_REQUEST["account_type"] == "system") or $res[0]) {
 		// Add home directory to the entry array
 		if(!$_REQUEST["homedirectory"]) {
 			if(($_REQUEST["account_type"] == "mail") and !$_SESSION["ADVANCED_MODE"])
