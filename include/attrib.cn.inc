@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // cn (Full name)
-// $Id: attrib.cn.inc,v 2.24 2005-03-03 12:16:35 turbo Exp $
+// $Id: attrib.cn.inc,v 2.25 2005-03-04 09:55:27 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -19,13 +19,17 @@ function attribute_check($type) {
 
 // {{{ attribute_init(void)
 function attribute_init() {
-    $_REQUEST["cn"] = (empty($_GET["oldvalue"]) ? "" : $_GET["oldvalue"]);
+	if(!$_REQUEST["cn"])
+	  $_REQUEST["cn"] = (empty($_GET["oldvalue"]) ? "" : $_GET["oldvalue"]);
 }
 // }}}
 
 // {{{ attribute_print_form(void)
 function attribute_print_form() {
     global $error, $LANG;
+
+	if($_REQUEST["cn"] and !$_REQUEST["oldvalue"])
+	  $_REQUEST["oldvalue"] = $_REQUEST["cn"];
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -44,6 +48,9 @@ function attribute_print_form() {
     <input type="hidden" name="rootdn"   value="<?=urlencode($_REQUEST["rootdn"])?>">
     <input type="hidden" name="user"     value="<?=urlencode($_REQUEST["user"])?>">
     <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
+<?php if(!$_REQUEST["cn"] and !$_REQUEST["oldvalue"] and ($_REQUEST["type"] == 'add')) { ?>
+    <input type="hidden" name="type"     value="<?=$_REQUEST["type"]?>">
+<?php } ?>
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
@@ -54,13 +61,28 @@ function attribute_print_form() {
 // {{{ attribute_save(type)
 function attribute_save($type) {
     global $_pql, $LANG;
+
+	if($_REQUEST["type"])
+	  $type = $_REQUEST["type"];
     
     switch($type) {
       case "add":
-		// no add operation possible with cn
+		// {{{ Add a value
+		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], '', $_REQUEST["cn"]))
+		  $msg = pql_complete_constant($LANG->_('Successfully added %what%'),
+									   array('what' => $LANG->_('Common name')));
+		else
+		  $msg = pql_complete_constant($LANG->_('Failed to added %what%'),
+									   array('what' => $LANG->_('Common name')))
+			. ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+
+		attribute_forward($msg, true);
+		break;
+		// }}}
 		break;
 
       case "modify":
+		// {{{ Modify a value
 		if($_REQUEST["cn"] == $_REQUEST["oldvalue"]) {
 			// don't change if new value equal to old one
 			$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('Common name')));
@@ -104,6 +126,21 @@ function attribute_save($type) {
 
 		attribute_forward($msg, true);
 		break;
+		// }}}
+
+	  case "del":
+		// {{{ Delete a value
+		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], $_REQUEST["cn"], ''))
+		  $msg = pql_complete_constant($LANG->_('Successfully deleted %what%'),
+									   array('what' => $LANG->_('Common name')));
+		else
+		  $msg = pql_complete_constant($LANG->_('Failed to delete %what%'),
+									   array('what' => $LANG->_('Common name')))
+			. ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+
+		attribute_forward($msg, true);
+		break;
+		// }}}
 
       default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
