@@ -17,6 +17,10 @@ phpQLAdmin 2.0.18d TO BE ANNOUNCED
 	    reload' is set to true/yes.
 	    + Do not reload the left frame just because a list have CHANGED!
 	  - Don't allow deletion of list from the domain lists list. Only from the list details.
+	  - Failure to auto generate {mail,home}Directory doesn't warrant a reload of
+	    the user data page. We should get to the next page, which will give the user
+	    a chance to input a correct value.
+	    Closes bug 186
 
 	Misc changes	
 	  - De-globalize ezmlm pages.
