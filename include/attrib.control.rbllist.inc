@@ -2,50 +2,13 @@
 // control attribute plugin for
 // rbllist (max number of bytes in message)
 //
-// $Id: attrib.control.rbllist.inc,v 2.2 2004-07-08 11:37:53 turbo Exp $
+// $Id: attrib.control.rbllist.inc,v 2.3 2004-10-15 15:21:04 turbo Exp $
 
 // {{{ rbllist_check(type)
 function rbllist_check($type) {
 	global $error, $LANG;
 
-	// check each field
-	if(is_array($_REQUEST["rbllist"])) {
-		foreach($_REQUEST["rbllist"] as $key => $server) {
-			if($server == "")
-			  continue;
-			
-			// it is an ip address
-			if(!preg_match("/([0-9]{1,3}\.){3,3}[0-9]{1,1}/", $server)) {
-				$is_error = true;
-				$error["rbllist_$key"] = $LANG->_('Invalid');
-			} else {
-				// ip format ok, check validity of matched ip address
-				$ip = explode(".", $server);
-				
-				foreach($ip as $ip_key => $ip_part) {
-					switch((int)$ip_key) {
-					  case 0:
-					  case 3:
-						if($ip_part <= 0 or $ip_part > 254) {
-							$is_error = true;
-							$error["rbllist_$key"] = $LANG->_('Invalid');
-						}
-						break;
-						
-					  default:
-						if($ip_part < 0 or $ip_part > 255) {
-							$is_error = true;
-							$error["rbllist_$key"] = $LANG->_('Invalid');
-						}
-					} // end switch
-				} // end foreach
-			} // end if !preg_match...
-		} // end foreach
-	} // end if is_array...
-
-	if($is_error)
-	  return false;
-	
+	// dummy function
 	return true;
 }
 // }}}
