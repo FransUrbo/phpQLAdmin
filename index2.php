@@ -1,5 +1,5 @@
 <?php
-// $Id: index2.php,v 2.27 2004-02-14 14:01:00 turbo Exp $
+// $Id: index2.php,v 2.28 2004-02-14 18:57:25 turbo Exp $
 
 session_start();
 require("./include/pql_config.inc");
@@ -31,14 +31,15 @@ $counted = 0; // Don't count each of the Control usage more than once
 foreach($_pql->ldap_basedn as $dn)  {
     $dn = urldecode($dn);
 
-    $_SESSION["ALLOW_CONTROL_CREATE"] = 1; // DEBUG
-
     if(pql_get_define("PQL_GLOB_CONTROL_USE") and $_SESSION["ALLOW_CONTROL_CREATE"] and $controlsadministrator) {
 	$SHOW_FRAME["controls"] = 1;
 	if(!$counted) {
 	    $frames++;
 	    $counted = 1;
 	}
+
+        // We need this value for the quota change at least/well...
+        $_SESSION["USE_CONTROLS"] = 1;
     }
 }
 
