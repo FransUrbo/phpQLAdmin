@@ -2,9 +2,26 @@ phpQLAdmin 2.1 Change Log
 
 phpQLAdmin 2.1.5 TO BE ANNOUNCED
 	Bug fixes
+	  - Don't call ldap_delete() when deleting users/branches or QmailLDAP/Controls
+	    objects _and_ we're debugging. Output a debug message and return TRUE to
+	    fake success...
+	  - Managed to create the object in the base DN (or rather, the value of the
+	    'LDAP Search base' that I asked about in the 'create server' page).
+	    + Use the session value of 'USER_SEARCH_DN_CTR'.
+	    + If debugging, die with a message, not redirect to server view page.
+
 	GUI layout change
+	  - Two new branch attributes to support user/branch deletion scripts:
+	    externalScriptUserDelete        1.3.6.1.4.1.8767.3.2.2.19
+	    externalScriptDomainDelete      1.3.6.1.4.1.8767.3.2.2.20
+	  - If user is super admin, we don't show the 'change value' for the
+	    '[user detail]->User access->Administrate QmailLDAP/Controls'. No point,
+	    a 'super admin' IS after all a SUPER admin!
+
 	API changes
+
 	Misc changes	
+
 	Documentation changes
 
 phpQLAdmin 2.1.4 Release (Feb 24 2005)
