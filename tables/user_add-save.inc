@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.26 2004-11-13 12:49:00 turbo Exp $
+// $Id: user_add-save.inc,v 1.27 2004-11-14 09:42:52 turbo Exp $
 
 // URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
 $_REQUEST["surname"] = urldecode($_REQUEST["surname"]);
@@ -269,12 +269,12 @@ if(!empty($default_quota)) {
 // }}}
 
 // {{{ Create the RDN for the user
-if($entry[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])])
-	 $userdn = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) . "=" .
-	 $entry[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])] . ",";
-	 elseif($entry[pql_get_define("PQL_ATTR_UID")])
-	 $userdn = pql_get_define("PQL_ATTR_UID")."=".$entry[pql_get_define("PQL_ATTR_UID")].",";
-else {
+if($entry[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])]) {
+	$userdn = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) . "=" .
+	  $entry[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])] . ",";
+} elseif($entry[pql_get_define("PQL_ATTR_UID")]) {
+	$userdn = pql_get_define("PQL_ATTR_UID")."=".$entry[pql_get_define("PQL_ATTR_UID")].",";
+} else {
 	echo "I can't figure out how to name the RDN!<br>";
 	echo "Both the user reference value (".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]);
 	echo ") and the backup reference (".pql_get_define("PQL_ATTR_UID").") is empty...<br>";
