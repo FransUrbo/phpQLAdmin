@@ -469,10 +469,10 @@ if($ADVANCED_MODE == 1) {
 		
 		if(pql_control_search_attribute($_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR, "rcpthosts", $defaultdomain)){
 			$rcpthosts = PQL_LANG_YES;
-			$rcpthosts_link = "<a href=\"control_edit_attribute.php?attrib=rcpthosts&rootdn=<?=$rootdn?>&type=del&set=$defaultdomain&submit=1\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"remove $defaultdomain from rcpthosts\"></a>";
+			$rcpthosts_link = "<a href=\"control_edit_attribute.php?attrib=rcpthosts&rootdn=$rootdn&domain=$domain&type=del&set=$defaultdomain&submit=1\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"remove $defaultdomain from rcpthosts\"></a>";
 		} else {
 			$rcpthosts = PQL_LANG_NO;
-			$rcpthosts_link = "<a href=\"control_edit_attribute.php?attrib=rcpthosts&rootdn=<?=$rootdn?>&type=add&set=$defaultdomain&submit=1\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"add $defaultdomain to rcpthosts\"></a>";
+			$rcpthosts_link = "<a href=\"control_edit_attribute.php?attrib=rcpthosts&rootdn=$rootdn&domain=$domain&type=add&set=$defaultdomain&submit=1\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"add $defaultdomain to rcpthosts\"></a>";
 		}
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
