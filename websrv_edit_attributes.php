@@ -1,26 +1,24 @@
 <?php
 // edit attributes of a webserver configuration
-// $Id: websrv_edit_attributes.php,v 2.3 2004-03-11 18:13:32 turbo Exp $
+// $Id: websrv_edit_attributes.php,v 2.4 2004-04-02 12:41:34 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 require("./include/pql_websrv.inc");
 
-$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
-
 // forward back to domain detail page
 function attribute_forward($msg) {
-    global $rootdn, $domain, $view, $server;
+	$url["domain"] = pql_format_urls($_REQUEST["domain"]);
+	$url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 
-    $server = ldap_explode_dn($server, 0);
+    $server = ldap_explode_dn($_REQUEST["server"], 0);
     $server = ereg_replace("cn=", "", $server[0]);
 
     // URL Encode the DN values
-    $rootdn = urlencode($rootdn);
-    $domain = urlencode($domain);
     $msg    = urlencode($msg);
 
-    $url = "domain_detail.php?rootdn=$rootdn&domain=$domain&server=$server&view=$view&msg=$msg";
+    $url  = "domain_detail.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&server=$server";
+	$url .= "&view=".$_REQUEST["view"]."&msg=$msg";
     header("Location: " . pql_get_define("PQL_CONF_URI") . "$url");
 }
 
