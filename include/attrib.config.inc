@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.8 2003-04-04 16:42:19 turbo Exp $
+// $Id: attrib.config.inc,v 1.9 2003-04-07 07:36:01 turbo Exp $
 
 function attribute_check() {
     global $administrator, $domain, $oldvalue, $_pql, $error;
@@ -51,16 +51,19 @@ function attribute_print_form() {
 		}
 		
 		$oldvalue = $oldval;
-	} else
-	  if($value != '') $oldvalue = $value;
+	} else {
+		if($value != '')
+		  $oldvalue = $value;
+		else
+		  $oldvalue = 'FALSE';
+	}
 
 	if($toggle) {
 		// A togglable value, reverse state
-		if(!$oldvalue or $oldvalue == 'false')
-		  $opt = '1';
+		if(!$oldvalue or ($oldvalue == 'false'))
+		  $entry[$attrib] = 'TRUE';
 		else
-		  $opt = '0';
-		$entry[$attrib] = $opt;
+		  $entry[$attrib] = 'FALSE';
 	} elseif($delval) {
 		// We should delete one attribute
 
@@ -77,10 +80,22 @@ function attribute_print_form() {
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">Set/Modify <?=$attrib?></th>
         <tr class="<?php table_bgcolor(); ?>">
+<?php   if(($test == 'userobjectclass') or ($test == 'branchobjectclass')) { ?>
+          <td class="title">Add to <?=$attrib?>
+            <select name="<?=$attrib?>">
+<?php       $objectclasses = pql_get_subschema($_pql->ldap_linkid, "objectclasses");
+            foreach($objectclasses as $key => $oc) {
+?>
+            <option value="<?=$key?>"><?=$objectclasses[$key]["NAME"]?></option>
+<?php       } ?>
+            </select>
+          </td>
+<?php   } else { ?>
           <td class="title"><?=$attrib?></td>
-          <td><?php echo format_error($error[$attrib]); ?><input type="text" name="<?=$attrib?>" value="<?php
-if(($test != 'passwordscheme') and ($test != 'userobjectclass') and ($test != 'branchobjectclass'))
-   echo "$oldvalue";?>"></td>
+          <td>
+            <?php echo format_error($error[$attrib]); ?><input type="text" name="<?=$attrib?>" value="<?php if($test != 'passwordscheme') { echo $oldvalue; } ?>" size="40">
+          </td>
+<?php   } ?>
         </tr>
       </th>
     </table>
@@ -101,25 +116,30 @@ if(($test != 'passwordscheme') and ($test != 'userobjectclass') and ($test != 'b
 	}
 
 	// Do the actual modification
-	if(($toggle or $delval) and is_array($entry)) {
-		if(! $rootdn) {
-			// We don't have a root DN. This means it's a global
-			// variable, and should be set in every namingContexts
-			foreach($_pql->ldap_basedn as $dn) {
+	if(! $rootdn) {
+		// We don't have a root DN. This means it's a global
+		// variable, and should be set in every namingContexts
+		foreach($_pql->ldap_basedn as $dn) {
+			if(is_array($entry)) {
 				if(! pql_set_domain_value($_pql->ldap_linkid, $dn, '', $entry))
 				  $msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
 				else
 				  $msg = "Successfully replaced $attrib."; $rlnb = 1;
+			} else {
+				if(! pql_set_domain_value($_pql->ldap_linkid, $dn, $entry, ''))
+				  $msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
+				else
+				  $msg = "Successfully replaced $attrib."; $rlnb = 1;
 			}
-		} else {
-			if(! pql_set_domain_value($_pql->ldap_linkid, $rootdn, '', $entry))
-			  $msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
-			else
-			  $msg = "Successfully replaced $attrib."; $rlnb = 1;
 		}
-
-		attribute_forward($msg, $rlnb);
+	} else {
+		if(! pql_set_domain_value($_pql->ldap_linkid, $rootdn, '', $entry))
+		  $msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
+		else
+		  $msg = "Successfully replaced $attrib."; $rlnb = 1;
 	}
+	
+	attribute_forward($msg, $rlnb);
 }
 
 function attribute_save() {
