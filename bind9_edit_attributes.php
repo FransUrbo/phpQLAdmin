@@ -1,6 +1,6 @@
 <?php
 // edit attributes of a BIND9 DNS zone
-// $Id: bind9_edit_attributes.php,v 2.4.16.1 2004-11-15 10:27:17 turbo Exp $
+// $Id: bind9_edit_attributes.php,v 2.4.16.2 2004-12-19 15:47:51 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -8,13 +8,14 @@ require("./include/pql_bind9.inc");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
-// forward back to domain detail page
+// {{{ Forward back to domain detail page
 function attribute_forward($msg) {
     $msg = urlencode($msg);
     $url = "domain_detail.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"]."&view=".$_REQUEST["view"]."&msg=$msg";
 
     header("Location: " . pql_get_define("PQL_CONF_URI") . "$url");
 }
+// }}}
 
 include("./header.html");
 include("./include/attrib.dnszone.inc");
@@ -23,39 +24,41 @@ include("./include/attrib.dnszone.inc");
     <br><br>
 
 <?php
-// Translate the TYPE to dNSZone objectclass attribute
-switch($_REQUEST["type"]) {
-  case "a":
-  case "host":
+// {{{ Translate the TYPE to dNSZone objectclass attribute
+if($_REQUEST["type"]) {
+    switch($_REQUEST["type"]) {
+      case "a":
+      case "host":
 	$attrib = 'relativeDomainName';
 	break;
-  case "ttl":
+      case "ttl":
 	$attrib = 'dNSTTL';
 	break;
-  case "ns":
+      case "ns":
 	$attrib = 'nSRecord';
 	break;
-  case "mx":
+      case "mx":
 	$attrib = 'mXRecord';
 	break;
-  case "cname":
+      case "cname":
 	$attrib = 'cNAMERecord';
 	break;
-  case "srv":
+      case "srv":
 	$attrib = 'sRVRecord';
 	break;
-  case "txt":
+      case "txt":
 	$attrib = 'tXTRecord';
 	break;
-  default:
+      default:
 	die("unknown zone type '".$_REQUEST["type"]."'.");
+    }
 }
+// }}}
 
-
-// select what to do
-if(($_REQUEST["action"] == 'del') && $_REQUEST["oldvalue"]) {
+// {{{ Select what to do
+if(($_REQUEST["action"] == 'del') and ($_REQUEST["oldvalue"] or $_REQUEST["rdn"])) {
 	attribute_save($_REQUEST["action"]);
-} elseif($submit == 1) {
+} elseif($_REQUEST["submit"] == 1) {
     if(attribute_check())
       attribute_save($_REQUEST["action"]);
     else
@@ -63,6 +66,7 @@ if(($_REQUEST["action"] == 'del') && $_REQUEST["oldvalue"]) {
 } else {
     attribute_print_form();
 }
+// }}}
 ?>
   </body>
 </html>
