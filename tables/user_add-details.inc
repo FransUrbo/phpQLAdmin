@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-details.inc,v 1.16 2004-03-30 05:19:00 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.17 2004-03-30 06:26:06 turbo Exp $ */ ?>
 <?php $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"])); ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -202,7 +202,7 @@
 <?php
 			for($i=0; $branches[$i]; $i++) {
 ?>
-              <option value="<?=$branches[$i]?>"><?=pql_maybe_decode($branches[$i])?></option>
+              <option value="<?=pql_format_urls($branches[$i])?>"><?=pql_maybe_decode($branches[$i])?></option>
 <?php
 			}
 ?>
