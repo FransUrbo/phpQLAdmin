@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.15 2005-01-31 21:03:30 turbo Exp $
+// $Id: pql_write.inc,v 2.16 2005-01-31 21:12:02 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -204,6 +204,7 @@ function pql_replace_values($ldap, $attribs, $old, $new = NULL) {
 // * If $old == '' && $new == '' -> delete whole attribute
 // * If $old == '' && $new != '' -> add $new
 // * If $old == 1  && $new != '' -> replace existing value with $new
+// * If $old == 1  && $new == '' -> delete whole attribute
 // * If $new == array            -> called with 'ldif', replace
 //   + In this case, it is ok with an empty $attrib.
 function pql_modify_attribute($linkid, $dn, $attrib, $old, $new) {
