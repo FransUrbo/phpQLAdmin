@@ -1,6 +1,6 @@
 <?php
 // shows configuration of phpQLAdmin
-// $Id: config_detail.php,v 2.51 2004-03-11 18:13:32 turbo Exp $
+// config_detail.php,v 2.51 2004/03/11 18:13:32 turbo Exp
 //
 session_start();
 require("./include/pql_config.inc");
@@ -66,6 +66,10 @@ foreach($_pql->ldap_basedn as $dn) {
     $button = array($dn => urldecode($dn));
     $buttons += $button;
 }
+if($_SESSION["lynx"]) {
+    $button = array('index2' => 'Back to index');
+    $buttons += $button;
+}
 ?>
   <span class="title1"><?=$LANG->_('phpQLAdmin configuration')?></span>
 
@@ -77,6 +81,12 @@ pql_generate_button($buttons);
 
 if(empty($_REQUEST["view"]) or $_REQUEST["view"] == 'default') {
     include("./tables/config_details-global.inc");
+} elseif($_SESSION["lynx"] and ($_REQUEST["view"] == 'index2')) {
+    $link = "index2.php";
+    if(isset($_SESSION["ADVANCED_MODE"]))
+      $link .= "?advanced=1";
+
+    header("Location: " . pql_get_define("PQL_CONF_URI") . $link);
 } else {
     if (empty($_REQUEST["branch"])) {
       $_REQUEST["branch"] = $_REQUEST["view"];
