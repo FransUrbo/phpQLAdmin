@@ -4,13 +4,13 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.11 2003-04-30 07:32:13 turbo Exp $
+// $Id: pql_control.inc,v 2.12 2003-05-01 08:50:44 turbo Exp $
 //
 // version history:
 // $Log: pql_control.inc,v $
-// Revision 2.11  2003-04-30 07:32:13  turbo
-// * Make sure that the global $config array is visible in the constructor,
-//   othervise we'll return false (PQL_GLOB_CONTROL_USE isn't set).
+// Revision 2.12  2003-05-01 08:50:44  turbo
+// When modifying a QmailLDAP/Controls object (pql_control_replace_attribute()),
+// create an LDIF and show that if there's an error...
 //
 // Revision 1.2  2001/09/06 11:36:24  mb
 // added no_connect option to pql_control-class
@@ -90,7 +90,7 @@ function pql_control_get_attribute($linkid, $dn, $attribute) {
 
 function pql_control_replace_attribute($ldap_linkid, $ldap_control_basedn, $attrib, $value) {
     // replaces an attribute
-    
+
     // if $value == "" remove the attribute from tree
     if($value == ""){
 		return pql_control_remove_whole_attribute($ldap_linkid, $ldap_control_basedn, $attrib);
@@ -114,9 +114,13 @@ function pql_control_replace_attribute($ldap_linkid, $ldap_control_basedn, $attr
     // format entry
     $entry[$attrib] = $value;
     
+	// Create a LDIF object to print in case of error
+	$LDIF = pql_create_ldif("pql_control_replace_attribute", $ldap_control_basedn, $entry);
+
     // replace
-    if(!@ldap_mod_replace($ldap_linkid, $ldap_control_basedn, $entry)){
+    if(!ldap_mod_replace($ldap_linkid, $ldap_control_basedn, $entry)){
 		pql_errormsg($ldap_linkid);
+		die("$LDIF");
 		return false;
     }
     
