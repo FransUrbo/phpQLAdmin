@@ -1,6 +1,6 @@
 <?php
 // delete a domain and all users within
-// $Id: domain_del.php,v 2.28.10.1 2004-05-04 08:02:29 turbo Exp $
+// $Id: domain_del.php,v 2.28.10.1.2.1 2004-05-06 05:52:49 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -19,12 +19,6 @@ $domain = urldecode($domain);
 if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST["rootdn"])) {
 	$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
-	if(pql_get_define("PQL_CONF_CONTROL_USE")) {
-		// include control api if control is used
-		include("./include/pql_control.inc");
-		$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
-	}
-
 	$delete_forwards = (isset($_REQUEST["delete_forwards"]) || pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST["rootdn"])) ? true : false;
 
 	// Before we delete the domain/branch, we need to get the defaultDomain, additionalDomainName
@@ -37,24 +31,34 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 	if(pql_domain_del($_pql, $domain, $delete_forwards)) {
 	    // Deletion of the branch was successfull - Update the QmailLDAP/Controls object(s)
 
-		// Remove the domain name
-		if($domainname)
-		  // NOTE: Even if autoreplication is disabled, this should still be done!
-		  pql_control_update_domains($_pql, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
-									 '*', array($domainname, ''));
+		if(pql_get_define("PQL_CONF_CONTROL_USE")) {
+			// -------------------------
+			// Include control API
+			include("./include/pql_control.inc");
+			$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
-		// Remove the additional domain name(s)
-		if(is_array($additionals)) {
-			foreach($additionals as $additional)
+			// -------------------------
+			// Update the QLC object(s):
+
+			// ... remove the domain name
+			if($domainname)
+			  // NOTE: Even if autoreplication is disabled, this should still be done!
 			  pql_control_update_domains($_pql, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
-										 '*', array($additional, ''));
-		}
-	    
-		// Remove the SMTP route(s)
-		if(is_array($routes)) {
-			foreach($routes as $route)
-			  pql_control_update_domains($_pql, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
-										 '*', array($route, ''));
+										 '*', array($domainname, ''));
+			
+			// ... remove the additional domain name(s)
+			if(is_array($additionals)) {
+				foreach($additionals as $additional)
+				  pql_control_update_domains($_pql, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
+											 '*', array($additional, ''));
+			}
+			
+			// ... remove the SMTP route(s)
+			if(is_array($routes)) {
+				foreach($routes as $route)
+				  pql_control_update_domains($_pql, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
+											 '*', array($route, ''));
+			}
 		}
 	    
 	    $msg = $LANG->_('Successfully removed the domain');
