@@ -2,7 +2,7 @@
 // control attribute plugin for
 // relaymailfrom (allowed sender addresses for relaying)
 //
-// $Id: attrib.control.relaymailfrom.inc,v 2.11 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.relaymailfrom.inc,v 2.12 2003-11-19 16:32:48 turbo Exp $
 
 function relaymailfrom_check($type) {
 	global $error, $relaymailfrom, $view, $LANG;
@@ -55,10 +55,8 @@ function relaymailfrom_print_view($host) {
 	
 	if(is_array($relaymailfrom)) {
 		foreach($relaymailfrom as $key => $mail) {
-			if(preg_match("/^@/", $mail)){
-				$mail = split("@", $mail);
-				$relaymailfrom[$key] = "all of " . $mail[1];
-			}
+			if(preg_match("/^@/", $mail))
+			  $relaymailfrom[$key] = "all of " . pql_strip_username($mail);
 		}
 	}
 	

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // badmailfrom (blocked from addresses)
 //
-// $Id: attrib.control.badmailfrom.inc,v 2.11 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.badmailfrom.inc,v 2.12 2003-11-19 16:32:47 turbo Exp $
 
 function badmailfrom_check($type) {
     global $error, $badmailfrom, $view, $LANG;
@@ -55,10 +55,8 @@ function badmailfrom_print_view($host) {
     
     if(is_array($badmailfrom)) {
 		foreach($badmailfrom as $key => $mail) {
-			if(preg_match("/^@/", $mail)) {
-				$mail = split("@", $mail);
-				$badmailfrom[$key] = "all of " . $mail[1];
-			}
+			if(preg_match("/^@/", $mail))
+			  $badmailfrom[$key] = "all of " . pql_strip_username($mail);
 		}
     }
 ?>

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // badrcptto (blocked local addresses)
 //
-// $Id: attrib.control.badrcptto.inc,v 2.12 2003-08-15 08:06:17 turbo Exp $
+// $Id: attrib.control.badrcptto.inc,v 2.13 2003-11-19 16:32:48 turbo Exp $
 
 function badrcptto_check($type) {
 	global $error, $badrcptto, $view, $LANG;
@@ -47,10 +47,8 @@ function badrcptto_print_view($host) {
 
 	if(is_array($badrcptto)) {
 		foreach($badrcptto as $key => $mail) {
-			if(preg_match("/^@/", $mail)) {
-				$mail = split("@", $mail);
-				$badrcptto[$key] = "all of " . $mail[1];
-			}
+			if(preg_match("/^@/", $mail))
+			  $badrcptto[$key] = "all of " . pql_strip_username($mail);
 		}
 	}
 	
