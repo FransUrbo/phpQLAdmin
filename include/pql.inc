@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.22 2003-01-17 14:47:24 turbo Exp $
+// $Id: pql.inc,v 2.23 2003-01-20 06:12:32 turbo Exp $
 //
 // ----------------------------
 // Note: There are a few " followed after PHP comment
@@ -997,16 +997,22 @@ function pql_password_hash($password, $hash){
 
 // ------------------------------------------------
 
-function table_bgcolor(){
+function table_bgcolor($echo = 1) {
     global $flag;
     
-    if($flag){
+    if($flag) {
 		$flag = false;
-		echo "c1";
+		$ret="c1";
     } else {
 		$flag = true;
-		echo "c2";
+		$ret="c2";
     }
+
+	if($echo) {
+		echo $ret;
+	} else {
+		return $ret;
+	}
 }
 
 // ------------------------------------------------
@@ -1302,33 +1308,69 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '') {
 	return $results;
 }
 
+// Set a embedded domain default value
 function pql_set_domain_value($linkid, $dn, $type, $value) {
-    // Set a embedded domain default value
-
 	// Lowercase type...
-	$type = strtolower($type);
-	
-	if(is_array($value)) {
-		// We're supplied with an array, add those values
-		foreach($value as $val) {
+	if($type) {
+		$type = strtolower($type);
+		
+		// Setup the value array
+		if(is_array($value)) {
+			// We're supplied with an array, add those values
+			foreach($value as $val) {
+				if(($type != 'administrator') and ($type != 'seealso')) {
+					$entry[$type][] = $val;
+				} else {
+					$entry[$type][] = $val;
+				}
+			}
+		} else {
+			// Add the single value
 			if(($type != 'administrator') and ($type != 'seealso')) {
-				$entry[$type][] = $val;
+				$entry[$type] = $value;
 			} else {
-				$entry[$type][] = $val;
+				$entry[$type] = $value;
 			}
 		}
 	} else {
-		// Add the single value
-		if(($type != 'administrator') and ($type != 'seealso')) {
-			$entry[$type] = $value;
-		} else {
-			$entry[$type] = $value;
-		}
-	}		
+		// We're only supplied with an array of entries to add/modify
+		$entry = $value;
+	}
+	
+	// Get all object classes of the DN, making sure it
+	// contains the phpQLAdminBranch
+	$object = ldap_explode_dn($dn, 0);
+	$sr  = @ldap_read($linkid, $dn, $object[0], array('objectclass'));
+	$ocs = @ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
+	for($j=0; $j < $ocs[0]["objectclass"]["count"]; $j++) {
+		if(eregi('phpQLAdminBranch', $ocs[0]["objectclass"][$j]))
+		  $got_phpqladmin_objectclass_branch = 1;
 
+		$entry["objectClass"][] = $ocs[0]["objectclass"][$j];
+	}
+	if(! $got_phpqladmin_objectclass_branch)
+	  $entry["objectClass"][] = 'phpQLAdminBranch';
+
+//	// --------------------------
+//	// DEBUG mode: Print the LDIF
+//	echo "<br>--- DEBUG: pql_set_domain_value() ---<br>";
+//	echo "dn: $dn<br>";
+//	foreach($entry as $key => $e) {
+//		if(is_array($e)) {
+//			foreach($e as $v) {
+//				echo "$key: $v<br>";
+//			}
+//		} else {
+//			echo "$key: $e<br>";
+//		}
+//	}
+//	die("--- DEBUG ---");
+//	// --------------------------
+
+	// Do the LDAP modification
 	if($value != '') {
 		// Replace the current attribute value
-		if(!ldap_mod_replace($linkid, $dn, $entry)){
+		if(! ldap_mod_replace($linkid, $dn, $entry)) {
 			pql_errormsg($linkid);
 			return false;
 		}
@@ -1336,7 +1378,7 @@ function pql_set_domain_value($linkid, $dn, $type, $value) {
 		// Delete all attributes of this type, regardless of value
 		$entry[$type] = array();
 
-		if(!ldap_mod_del($linkid, $dn, $entry)){
+		if(! ldap_mod_del($linkid, $dn, $entry)) {
 			pql_errormsg($linkid);
 			return false;
 		}
@@ -1571,6 +1613,24 @@ function pql_get_subschemas($ldap_linkid) {
     }
 	
     return $entry;
+}
+
+function pql_get_subbranch($linkid, $dn) {
+	if(PQL_LDAP_ATTR_DOMAIN == "dc") {
+		$ocb = "domain";
+	} else {
+		$ocb = "organizationalUnit";
+	}
+	
+	$sr   = ldap_search($linkid, $dn, 'objectclass=organizationalUnit');
+	$info = ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
+	for ($i=0; $i<$info["count"]; $i++) {
+		// Filter out the most obvious subbranches we don't put users in...
+		if(!eregi('group', $info[$i]["dn"]) and !eregi('qmail', $info[$i]["dn"]))
+		  $branches[] = $info[$i]["dn"];
+	}
+
+	return $branches;
 }
 
 /*
