@@ -91,24 +91,30 @@ if(pql_add_domain($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain)) {
 	// Now it's time to run the special adduser script if defined...
 	if(PQL_EXTRA_SCRIPT_CREATE_DOMAIN) {
 		// Setup the environment with the user details
-		putenv("PQL_DOMAIN=\"$domain\"");
-		putenv("PQL_DOMAINNAME=\"$defaultdomain\"");
-		putenv("PQL_HOMEDIRS=\"$defaulthomedir\"");
-		putenv("PQL_MAILDIRS=\"$defaultmaildir\"");
-		putenv("PQL_QUOTA=\"$defaultquota\"");
+		putenv("PQL_DOMAIN=$domain");
+		putenv("PQL_DOMAINNAME=$defaultdomain");
+		putenv("PQL_HOMEDIRS=$defaulthomedir");
+		putenv("PQL_MAILDIRS=$defaultmaildir");
+		putenv("PQL_QUOTA=$defaultquota");
+		putenv("PQL_WEBUSER=".posix_getuid());
 		
 		// Execute the domain add script (0 => show output)
 		if(pql_execute(PQL_EXTRA_SCRIPT_CREATE_DOMAIN, 0)) {
-			$msg = urlencode(PQL_DOMAIN_ADD_SCRIPT_FAILED);
-			$url = "home.php?msg=$msg";
-			header("Location: " . PQL_URI . $url);
+			echo PQL_DOMAIN_ADD_SCRIPT_FAILED;
+			$msg .= urlencode(PQL_DOMAIN_ADD_SCRIPT_FAILED);
+		} else {
+			echo "<b>" . PQL_DOMAIN_ADD_SCRIPT_OK . "</b><br>";
+			$msg .= urlencode(PQL_DOMAIN_ADD_SCRIPT_OK);
 		}
 
+		$url = "domain_detail.php?domain=$domain&";
 ?>
-    <form action="<?=$url?>" method="post">
+
+    <form action="<?=$url?>&msg=<?=$msg?>&rlnb=1" method="post">
       <input type="submit" value="Continue">
     </form>
 <?php
+
 		die();
 	} else {
 		header("Location: " . PQL_URI . $url);
