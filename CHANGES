@@ -24,6 +24,12 @@ phpQLAdmin 2.0.16 TO BE ANNOUNCED
 	    function) if both attrib and linkid is set.
 	  - Only add the accountStatus attribute if we have a suitable objectClass
 	    choosen for this user/branch.
+	  - Got wrong value from the _chmodown() - include/pql_ezmlm.inc. It's
+	    called with a username to get info about, but we/I used the global
+	    mailing list user value.
+	  - When creating a domain/branch with a non-US character, only the entry
+	    value was UTF-8 encoded, not the DN. This lead to a non UTF-8 encoded
+	    DN and hence a mismatch between entry/dn attribute...
 
 	GUI layout change
 	  - Rewrite the layout (and part of the functionality) to better
@@ -72,6 +78,19 @@ phpQLAdmin 2.0.16 TO BE ANNOUNCED
 	    when removing user.
 	  - Replace old RDN with new RDN in all administrator/seeAlso attributes
 	    in all domains/branches when renaming DN.
+	  - If a user is deleted, check all local mailinglists for subscription and
+	    unsubscribe mail address(es).
+	    + Only do list forwarding after a successfull modification (subscription,
+	      unsubscription, list creation etc) if the function list_forward() exists.
+	      It doesn't if we're deleting a user (and hence want to unsubscribe user
+	      from ALL mailing lists).
+	    + When calling unsubscribe(), the function is called with a listname
+	      (can be numeric). Unfortunatly the variables was mixed up, so we ended
+	      up getting the listpath from a list that don't exists. We only need to
+	      values - listpath and domainname (the latter is used in the redirect
+	      after success).
+	  - Non-internationalize the home/branch directory when creating a domain/branch
+	    or user object.
 
 phpQLAdmin 2.0.15 Release (Jul 15 2003)
 	Bug fixes
