@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.17 2004-04-06 13:34:11 turbo Exp $
+// $Id: user_add-save.inc,v 1.18 2004-04-13 10:53:40 turbo Exp $
 
 // Find out what objectclasses to use when creating user
 $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"]));
@@ -94,15 +94,29 @@ if($_REQUEST["account_type"] == "forward") {
 	// -----------------
 	// Add [ug]id number to the entry array
 	if(($_REQUEST["account_type"] != "mail") or in_array('posixaccount', $objectclasses_included)) {
-		// Get a free UserID number (which we also use for GroupID number)
-		$uidnr = pql_get_next_ugidnumber($_pql, 'uid');
-		if($uidnr > 0)
-		  $entry[pql_get_define("PQL_ATTR_QMAILUID")] = $uidnr;
-		
-		$gidnr = pql_get_next_ugidnumber($_pql, 'gid');
-		if($gidnr > 0)
-		  $entry[pql_get_define("PQL_ATTR_QMAILGID")] = $gidnr;
-	
+		// We COULD end up here, EVEN if it's a mail account! So we have to tripple check again,
+		// and again so that we only add the [ug]idNumber if it's supposed to be added...
+		if($_REQUEST["account_type"] == "mail") {
+			// It's a mail account but we've decided to use 'posixAccount' when creating users,
+			// so use the predefined uid/gid number for this user...
+			$virtual_uid_number = pql_get_define("PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER", $_REQUEST["rootdn"]);
+
+			$entry[pql_get_define("PQL_ATTR_QMAILUID")] = $virtual_uid_number;
+			$entry[pql_get_define("PQL_ATTR_QMAILGID")] = $virtual_uid_number;
+		} else {
+			// It's not a mail account
+
+			// Get a free UserID number
+			$uidnr = pql_get_next_ugidnumber($_pql, 'uid');
+			if($uidnr > 0)
+			  $entry[pql_get_define("PQL_ATTR_QMAILUID")] = $uidnr;
+
+			// Get a free GroupID number
+			$gidnr = pql_get_next_ugidnumber($_pql, 'gid');
+			if($gidnr > 0)
+			  $entry[pql_get_define("PQL_ATTR_QMAILGID")] = $gidnr;
+		}
+
 		// -----------------
 		// Gecos is needed to do PAM/NSS LDAP login 
 		if($_REQUEST["surname"] && $_REQUEST["name"] &&
@@ -151,9 +165,17 @@ if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "mai
 	if($_REQUEST["host"])
 	  // If using 'qlc' -> the FQDN
 	  $entry[pql_get_define("PQL_ATTR_MAILHOST")]   = $_REQUEST["host"];
-	elseif($_REQUEST["userhost"])
-	  // We've specified a host, but we never ticked the 'User defined' checkbox.
-	  $entry[pql_get_define("PQL_ATTR_MAILHOST")]   = $_REQUEST["userhost"];
+	elseif($_REQUEST["userhost"]) {
+		// We've specified a host, but we never ticked the 'User defined' checkbox.
+		if($_REQUEST["userhost"]["dns"])
+		  // We have a DNS entry. This is default!
+		  $entry[pql_get_define("PQL_ATTR_MAILHOST")]   = $_REQUEST["userhost"]["dns"];
+		elseif($_REQUEST["userhost"]["qlc"][0])
+		  // No DNS entry, but we have at least one QLC host. Take the first one we find...
+		  $entry[pql_get_define("PQL_ATTR_MAILHOST")]   = $_REQUEST["userhost"]["qlc"][0];
+		else
+		  $entry[pql_get_define("PQL_ATTR_MAILHOST")]   = $_REQUEST["userhost"];
+	}
 	
 	$entry[pql_get_define("PQL_ATTR_MODE")] = "localdelivery";
 	
