@@ -3,7 +3,7 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ezmlm.inc,v 1.8 2002-12-25 16:21:33 turbo Exp $
+// $Id: pql_ezmlm.inc,v 1.9 2002-12-26 01:10:00 turbo Exp $
 session_start();
 
 class ezmlm {
@@ -14,7 +14,37 @@ class ezmlm {
 	var $user_name		= '';
 	var $user_home		= '';
 
-	// Load list of mailinglists in directory
+	// Get filesystem entries (files or directories) recursively.
+	function _getfsentries($dir) {
+		if(!(($directory = @opendir($dir)) !=0)) {
+			$this->error = "could not open the directory '$dir'";
+			return 0;
+		}
+		
+		for(;GetType($entry = readdir($directory)) == "string";) {
+			if($entry == "." || $entry == "..")
+			  continue;
+			
+			if(@is_dir($dir."/".$entry)) {
+				// directory - recursive invocation
+				
+				$e = $this->_getfsentries($dir . "/" . $entry);
+				for($i=0; $e[$i]; $i++) {
+					$entries[] = $e[$i];
+				}
+			}
+
+			// First the file above, then the directory.
+			// That way we get it sorted and done for
+			// deletion!
+			$entries[] = $dir . "/" . $entry;
+		}
+		closedir($directory);
+
+		return $entries;
+	}
+	
+	// load list of mailinglists in directory
 	function _readlists($loadtexts = 0) {
 		if(!(($directory = @opendir($this->user_home)) !=0)) {
 			$this->error="could not open the ezmlm user home directory";
@@ -34,12 +64,12 @@ class ezmlm {
 						closedir($directory);
 						return 0;
 					}
-				  
+
 				  $this->mailing_lists_index[$entry_name] = $list_index;
 			  }
 		}
 		closedir($directory);
-		
+
 		ksort($this->mailing_lists_index);
 		foreach($this->mailing_lists_index as $name => $no) {
 			$host = $this->mailing_lists[$no]["host"];
@@ -321,10 +351,67 @@ class ezmlm {
 				return 0;
 			}
 		} else {
-			die("Command: <br><pre>$command</pre><br>");
+			die("DEBUG:<br>Command: <br><pre>$command</pre><br>");
 		}
 
 		return 1;
+	}
+
+	// delete a mailinglist
+	function deletelistentry($listnumber) {
+		$lstname = $this->mailing_lists[$listnumber]["name"];
+		$lstpath = $this->mailing_lists[$listnumber]["directory"];
+		$dotpath = $this->mailing_lists[$listnumber]["dotpath"];
+
+		// Delete all files and directories recursively
+		$files = $this->_getfsentries($lstpath);
+		$files[] = $lstpath;
+		for($i=0; $files[$i]; $i++) {
+			if(is_dir($files[$i])) {
+				if(! $this->debug) {
+					if(! rmdir($files[$i]) ) {
+						echo "Could not delete dir $files[$i]<br>";
+						$unsuccessful = 1;
+					}
+				} else {
+					echo "DEBUG: deleting <b>dir</b> : $files[$i]<br>";
+				}
+			} else {
+				if(! $this->debug) {
+					if(! unlink($files[$i]) ) {
+						echo "Could not delete file $files[$i]<br>";
+						$unsuccessful = 1;
+					}
+				} else {
+					echo "DEBUG: deleting file: $files[$i]<br>";
+				}
+			}
+		}
+		echo "#Entries: $i<br>";
+
+		// Now time for dot files in ~alias/.qmail-LISTNAME
+		// TODO
+
+		// DEBUG - beg
+		// Lstpath: /var/lists/cvs-phpqladmin
+		// Dotpath: /var/qmail/alias/.qmail-cvs-phpqladmin
+		//
+		// [papadoc.pts/3]$ find /var/qmail/alias/.qmail-cvs-phpqladmin*
+		// /var/qmail/alias/.qmail-cvs-phpqladmin
+		// /var/qmail/alias/.qmail-cvs-phpqladmin-accept-default
+		// /var/qmail/alias/.qmail-cvs-phpqladmin-default
+		// /var/qmail/alias/.qmail-cvs-phpqladmin-digest-owner
+		// /var/qmail/alias/.qmail-cvs-phpqladmin-digest-return-default
+		// /var/qmail/alias/.qmail-cvs-phpqladmin-owner
+		// /var/qmail/alias/.qmail-cvs-phpqladmin-reject-default
+		// /var/qmail/alias/.qmail-cvs-phpqladmin-return-default
+		// DEBUG - end
+
+		if($unsuccessful) {
+			return 0;
+		} else {
+			return 1;
+		}
 	}
 
 	// Create/Modify list text
@@ -378,7 +465,7 @@ class ezmlm {
 				return 0;
 			}
 		} else {
-			die("Command: <br><pre>$command</pre><br>");
+			die("DEBUG:<br>Command: <br><pre>$command</pre><br>");
 		}
 
 		return 1;
@@ -404,7 +491,7 @@ class ezmlm {
 				return 0;
 			}
 		} else {
-			die("Command: <br><pre>$command</pre><br>");
+			die("DEBUG:<br>Command: <br><pre>$command</pre><br>");
 		}
 
 		return 1;
