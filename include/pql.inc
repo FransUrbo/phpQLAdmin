@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.36 2003-01-29 13:24:19 turbo Exp $
+// $Id: pql.inc,v 2.37 2003-01-29 14:17:03 turbo Exp $
 //
 
 // ----------------------------
@@ -1263,17 +1263,21 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '') {
 		if((($value == 'administrator') or ($value == 'seealso')) and ($match != "*")) {
 			// Return multiple values. If we're looking for 'administrator', return the DN
 			for($j=0; $j < $result[$i][$value]["count"]; $j++) {
-				if($result[$i][$value][$j] == $match) {
-					$results[] = $result[$i]["dn"]; $success = 1;
+				// Filter out the top dn, we don't want that in the domain/branch list...
+				if(($result[$i][$value][$j] == $match) and ($result[$i]["dn"] != $ldap->ldap_basedn[0])) {
+					$results[] = $result[$i]["dn"];
+					$success = 1;
 				}
 			}
 		} elseif((($value == 'administrator') or ($value == 'seealso')) and ($match == "*")) {
 			for($j=0; $j < $result[$i][$value]["count"]; $j++) {
-				$results[] = $result[$i][$value][$j]; $success = 1;
+				$results[] = $result[$i][$value][$j];
+				$success = 1;
 			}
 		} else {
 			// Return the value we're looking for (single valued).
-			$results = $result[0][$value][0]; $success = 1;
+			$results = $result[0][$value][0];
+			$success = 1;
 		}
 	} // end for($i)
 

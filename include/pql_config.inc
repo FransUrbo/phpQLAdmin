@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.5 2003-01-24 10:05:49 turbo Exp $
+// $Id: pql_config.inc,v 1.6 2003-01-29 14:17:03 turbo Exp $
 //
 
 // ----------------------------
@@ -135,6 +135,19 @@ for ($i=0; $i<$info["count"]; $i++) {
 		}
 	}
 	//echo "<br>";
+}
+
+// Check the topmost dn if userdn is there -> Allow ADVANCED mode
+if($USER_DN) {
+	$ALLOW_BRANCH_CREATE = 0;
+
+	for($i=0; $i<$info[0]["administrator"]["count"]; $i++) {
+		if($info[0]["administrator"][$i] == $USER_DN) {
+			$ALLOW_BRANCH_CREATE = 1;
+		}
+	}
+
+	session_register("ALLOW_BRANCH_CREATE");
 }
 
 // 3. Load 'resonable defaults'

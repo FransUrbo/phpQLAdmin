@@ -54,6 +54,9 @@ if($ADVANCED_MODE) {
     Host: <font color="black" size=-4><b><?=$USER_HOST?></b></font>
   </font>
 
+<?php
+	if($ALLOW_BRANCH_CREATE) {
+?>
   <div id="el2Parent" class="parent">
     <nobr>
       <a href="domain_add_form.php">Add domain branch</a>
@@ -61,6 +64,7 @@ if($ADVANCED_MODE) {
   </div>
 
 <?php
+	}
 }
 
 // Get ALL domains we have access.

@@ -62,9 +62,6 @@ if(isset($submit)) {
 
   <ul>
 <?php
-	// TODO: How do we know if the user is allowed to add domains?
-	//       In the domain description we don't have that info...
-	// if(($ADVANCED_MODE == 1) && ($USER_BASE == 'everything')){
 	if($ADVANCED_MODE == 1) {
 	    // Should we show the 'change server' choices
 	    if(defined("PQL_LDAP_CHANGE_SERVER") and eregi(" ", PQL_LDAP_HOST)) {
