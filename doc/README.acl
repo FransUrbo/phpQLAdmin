@@ -224,3 +224,20 @@ of what the database look like etc.
 
 NOTE: If phpQLAdmin isn't running on the same host as the LDAP server, they
       change the localhost IP to the real IP in the 'by peername' above.
+
+
+Access to the root dn and it's attributes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+For a branch administrator to get all the needed buttons in the domain details
+pages, all authenticated users need access to the attributes defined in the
+'phpQLAdminGlobal' object class. Either that, or you specify all branch administrators
+manually...
+
+An ACL for this would look like this (allowing authenticated access to my
+c=SE branch):
+
+----- s n i p -----
+access to dn="c=SE"
+        attrs=useControls,useEzmlm,useBind9,useWebSrv,autoReload,allowServerChange,whoAreWe,language,hostMaster,ezmlmBinaryPath,krb5RealmName,krb5AdminServer,krb5PrincipalName,krb5AdminKeytab,krb5AdminCommandPath,controlBaseDn,ezmlmAdministrator,controlsAdministrator,useACI
+        by users read
+----- s n i p -----
