@@ -12,8 +12,9 @@
       </tr>
 
 <?php foreach($ezmlm->mailing_lists_hostsindex as $listdomain => $listarray) {
-		// Go through each list in the domain
-		foreach($listarray as $listname => $listno) {
+		if(is_array($listarray)) {
+			// Go through each list in the domain
+			foreach($listarray as $listname => $listno) {
 ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td><?=$listname."@".$listdomain?></td>
@@ -21,8 +22,9 @@
         <td><?=$ezmlm->mailing_lists[$listno]["owner"]?></td>
         <td><a href="ezmlm_detail.php?domain=<?=$domain?>&domainname=<?=$domainname?>&listno=<?=$listno?>"><img src="images/edit.png" width="12" height="12" alt="edit list" border="0"></a>&nbsp;&nbsp;<a href="ezmlm_del.php?domain=<?=$domain?>&domainname=<?=$domainname?>&listno=<?=$listno?>"><img src="images/del.png" width="12" height="12" alt="delete list" border="0"></a>&nbsp;&nbsp;<a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&domainname=<?=$domainname?>&listno=<?=$listno?>&attrib=subscriber">add subscriber</a></td>
       </tr>
-<?php	}
-	  }
+<?php		}
+	  	}
+	}
 ?>
 
       <tr class="subtitle">
