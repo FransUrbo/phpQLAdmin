@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.78 2003-06-10 12:20:18 turbo Exp $
+// $Id: pql.inc,v 2.79 2003-06-12 09:23:54 turbo Exp $
 //
 
 // ----------------------------
@@ -170,19 +170,40 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 	  $ocs[] = '';
 
 	// -----
-	// Retreive EXISTING objectclasses in the LDAP server
+	// Retreive all EXISTING objectclasses in the LDAP server
 	$ldap = pql_get_subschema($ldap_linkid, "objectclasses");
+
+	// Retreive all EXISTING attributes the LDAP server knows about
+	$ldap_attribs = pql_get_subschema($ldap_linkid, "attributetypes");
 
 	// -----
 	// Setup user entry variable
     foreach($attribs as $key => $value) {
+		if($ldap_attribs[$key]["SYNTAX"]) {
+			$syntax = $ldap_attribs[$key]["SYNTAX"];
+		} else {
+			// No syntax, check the SUP if that have a SYNTAX
+			// TODO: Be recursive!
+			if($ldap_attribs[$key]["SUP"] && $ldap_attribs[$ldap_attribs[$key]["SUP"]]["SYNTAX"]) {
+				$syntax = $ldap_attribs[$ldap_attribs[$key]["SUP"]]["SYNTAX"];
+			}
+		}
+
 		// Check if we have a MUST in the objectclasses choosen
 		// for creation for this attribute...
-		if(is_array($value))
-		  foreach($value as $val)
-			$entry[$key][] = trim($val);
-		else
-		  $entry[$key] = trim($value);
+		if(is_array($value)) {
+			foreach($value as $val) {
+				if(eregi('1\.3\.6\.1\.4\.1\.1466\.115\.121\.1\.15', $syntax))
+				  $entry[$key][] = maybe_encode(trim($val));
+				else
+				  $entry[$key][] = trim($val);
+			}
+		} else {
+			if(eregi('1\.3\.6\.1\.4\.1\.1466\.115\.121\.1\.15', $syntax))
+			  $entry[$key] = maybe_encode(trim($value));
+			else
+			  $entry[$key] = trim($value);
+		}
     }
 
 	// -----
@@ -238,6 +259,7 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 	  $userdn .= $branch;
 	else
 	  $userdn .= $domain;
+	$userdn = maybe_encode($userdn);
 
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_user_add - user creation", $userdn, $entry);
@@ -875,12 +897,18 @@ function pql_get_userattribute($ldap_linkid, $user, $attribute) {
 
     // not yet cached -> get the userentry and cache it
     $entries = pql_get_userentry($ldap_linkid, $user);
-    if($entries)
-	  pql_cache_userentry_add($user, $entries);
-	else
-	  return(false);
 
-    return($entries[$attribute]);	
+    if($entries) {
+		// INTERNATIONALIZE values
+		foreach($entries as $attrib => $e) {
+			for($i=0; $e[$i]; $i++)
+			  $values[$attrib][] = maybe_decode($e[$i]);
+		}
+
+		pql_cache_userentry_add($user, $values);
+		return($values[$attribute]);	
+	} else
+	  return(false);
 }
 
 // ------------------------------------------------
@@ -1439,17 +1467,17 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '', $all = 0) {
 					if(($result[$i][$value][$j] == $match) and
 					   (($result["count"] < 2) or ($result[$i]["dn"] != $dn)))
 					{
-						$results[] = $result[$i]["dn"];
+						$results[] = maybe_decode($result[$i]["dn"]);
 						$success = 1;
 					}
 				}
 			} else {
-				$results[] = $result[$i]["dn"];
+				$results[] = maybe_decode($result[$i]["dn"]);
 				$success = 1;
 			}
 		} elseif(($value == 'administrator') or ($value == 'seealso') or ($value == 'additionaldomainname')) {
 			for($j=0; $j < $result[0][$value]["count"]; $j++) {
-				$results[] = $result[0][$value][$j];
+				$results[] = maybe_decode($result[0][$value][$j]);
 				$success = 1;
 			}
 		} elseif(($value == 'passwordscheme') or
@@ -1457,12 +1485,12 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '', $all = 0) {
 				 ($value == 'branchobjectclass')) {
 			// We're requesting a normal multivalue attribute
 			for($j=0; $j < $result[$i][$value]["count"]; $j++) {
-				$results[] = $result[$i][$value][$j];
+				$results[] = maybe_decode($result[$i][$value][$j]);
 				$success = 1;
 			}
 		} else {
 			// Return the value we're looking for (single valued).
-			$results = $result[0][$value][0];
+			$results = maybe_decode($result[0][$value][0]);
 			$success = 1;
 		}
 	} // end for($i)
@@ -1475,7 +1503,7 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '', $all = 0) {
 	   and !is_array($results)) {
 		// Convert a flat variable to a array
 		$tmp = $results; unset($results);
-		$results[] = $tmp;
+		$results[] = maybe_decode($tmp);
 	}
 
 	return $results;
@@ -1492,22 +1520,35 @@ function pql_set_domain_value($linkid, $dn, $type, $value) {
 		if(is_array($value)) {
 			// We're supplied with an array, add those values
 			foreach($value as $val) {
+				$val = maybe_encode($val);
+
 				if(($type != 'administrator') and ($type != 'seealso')) {
-					$entry[$type][] = maybe_encode($val);
+					$entry[$type][] = $val;
 				} else {
 					$entry[$type][] = $val;
 				}
 			}
 		} else {
+			$value = maybe_encode($value);
+
 			// Add the single value
 			if(($type != 'administrator') and ($type != 'seealso')) {
-				$entry[$type] = maybe_encode($value);
+				$entry[$type] = $value;
 			} else {
 				$entry[$type] = $value;
 			}
 		}
-	} else
-	  $entry = $value;
+	} else {
+		// INTERNATIONALIZE
+		if(is_array($value)) {
+			foreach($value as $attrib => $val) {
+				for($i=0; $val[$i]; $i++)
+				  $entry[$attrib][] = maybe_encode($val[$i]);
+			}
+		} else {
+			$entry = $value;
+		}
+	}
 
 	if($value) {
 		// Setup objectclasses
@@ -1737,6 +1778,30 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 				$VALUE[$name]["USAGE"] = $words[1];
 			}
 			
+			// ------------------------
+			// Retreive SUP
+			if(eregi("SUP", $entry[0][$attrib][$i])) {
+				$words = split("SUP", $entry[0][$attrib][$i]);
+				if($words[1]) {
+					if(ereg("^ \(", $words[1])) {
+						$words = split("\(", $words[1]);
+						$words = split("\)", $words[1]);
+
+						// Remove spaces
+						$words = ereg_replace(" ", "", $words[0]);
+						$words = split('\$', $words);
+
+						for($j = 0; $words[$j]; $j++)
+						  $VALUE[$name]["SUP"][] = $words[$j];
+					} else {
+						$words = split(" ",  $words[1]);
+
+						// Remove spaces
+						$VALUE[$name]["SUP"] = ereg_replace(" ", "", $words[1]);
+					}
+				}
+			}
+
 			// ------------------------
 			// Retreive SINGLE-VALUE
 			if(eregi("SINGLE-VALUE", $entry[0][$attrib][$i]))
@@ -1974,8 +2039,8 @@ function maybe_encode($string, $return_new = 0) {
 	$old = $string;
 
 	$new = strtr($old,
-				 "ÁÉÍÓÚÑÀÈÌÒÙÄËÏÖÜÂÊÎÔÛáéíóúñàèìòùäëïöüâêîôûç",
-				 "AEIOUNAEIOUAEIOYAEIOUaeiounaeiouaeioyaeiouc");
+				 "ÁÉÍÓÚÑÀÈÌÒÙÄËÏÖÜÂÊÎÔÛáéíóúñàèìòùåäëïöüâêîôûç",
+				 "AEIOUNAEIOUAEIOYAEIOUaeiounaeiouaaeioyaeiouc");
 	if($old != $new)
 	  if(!$return_new)
 		// The two strings isn't equal -> something have been replaced
