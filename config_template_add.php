@@ -1,6 +1,6 @@
 <?php
 // Add a user template
-// $Id: config_template_add.php,v 2.2.2.1 2005-03-04 11:59:44 turbo Exp $
+// $Id: config_template_add.php,v 2.2.2.2 2005-03-17 08:23:01 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -122,7 +122,7 @@ if(($error == 'true')) {
 	echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
 	die("<b>$url</b>");
   } else
-	header("Location: ".$_SESSION["URI"] . "$url");
+	pql_header($url);
 // }}}
 }
 /*
