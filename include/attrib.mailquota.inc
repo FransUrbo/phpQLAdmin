@@ -1,16 +1,17 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mailquota.inc,v 2.24 2004-03-11 18:13:41 turbo Exp $
+// $Id: attrib.mailquota.inc,v 2.25 2004-03-29 07:52:55 turbo Exp $
 
+// {{{ attribute_check(type)
 function attribute_check($type) {
     global $error, $LANG;
 
 	$failed = false;
 
 	// Just to save some typing.
-	$options = (!empty($_REQUEST["options"]) ? $_REQUEST["options"] : "");
-	$maxsize = (!empty($_REQUEST["maxsize"]) ? $_REQUEST["maxsize"] : "");
+	$options  = (!empty($_REQUEST["options"]) ? $_REQUEST["options"] : "");
+	$maxsize  = (!empty($_REQUEST["maxsize"]) ? $_REQUEST["maxsize"] : "");
 	$maxmails = (!empty($_REQUEST["maxmails"]) ? $_REQUEST["maxmails"] : "");
 	
 	// the checks only make sense if we're doing user defined
@@ -59,7 +60,9 @@ function attribute_check($type) {
 		return true;
   }
 }
+// }}}
 
+// {{{ attribute_init(void)
 function attribute_init() {
     global $_pql;
 
@@ -71,7 +74,9 @@ function attribute_init() {
 	} else
 	  $_REQUEST["options"]    = "default";
 }
+// }}}
 
+// {{{ attribute_print_form(type)
 function attribute_print_form($type = "modify") {
     global $error, $LANG;
 ?>
@@ -134,7 +139,9 @@ function attribute_print_form($type = "modify") {
 
 <?php
 }
+// }}}
 
+// {{{ attribute_save(save)
 function attribute_save($type) {
     global $_pql, $LANG;
 
@@ -163,7 +170,7 @@ function attribute_save($type) {
 		$msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									 array('what' => $LANG->_('quota'),
 										   'new'  => pql_ldap_mailquota(array('maxsize'  => $_REQUEST["maxsize"] / 1024,
-																			  'maxmails' => $_REQUEST["maxmails"]))));
+																			  'maxmails' => $_REQUEST["maxmails"]), 0)));
 		break;
 
 	  case "default":
@@ -238,7 +245,17 @@ function attribute_save($type) {
 			// The success msg is set above (in the switch($type) code).
 		} else {
 			// We're setting quota for a user
+			if($_SESSION["OLD_STYLE_QUOTA"]) {
+				// Set the old style quota value
+				if(! pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"],
+										   pql_get_define("PQL_ATTR_QUOTA_VALUE"),
+										   $mailquota))
+				  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+											   array('what' => $LANG->_('quota'))) . ": " . pql_format_error(0);
+			}
+
 			if($_SESSION["NEW_STYLE_QUOTA"]) {
+				// Set the new style quota values
 				if($_REQUEST["maxsize"] != "")
 				  if(! pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"],
 											 pql_get_define("PQL_ATTR_QUOTA_SIZE"),
@@ -252,12 +269,6 @@ function attribute_save($type) {
 											 $_REQUEST["maxmails"]))
 					$msg .= "<br>".pql_complete_constant($LANG->_('Failed to change %what%'),
 														 array('what' => $LANG->_('quota count'))) . ": " . pql_format_error(0);
-			} else {
-				if(! pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"],
-										   pql_get_define("PQL_ATTR_QUOTA_VALUE"),
-										   $mailquota))
-				  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-											   array('what' => $LANG->_('quota'))) . ": " . pql_format_error(0);
 			}
 		}
 		
@@ -269,6 +280,7 @@ function attribute_save($type) {
 								  array('type' => $type, 'file' => __FILE__)));
 	}
 }
+// }}}
 
 // Local variables:
 // mode: php
