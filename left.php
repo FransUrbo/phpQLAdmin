@@ -71,14 +71,26 @@ if($USER_BASE == 'everything') {
     //-->
   </style>
 </head>
+<?php
+// find out if we're to run in ADVANCE/SIMPLE mode
+if(isset($advanced)) {
+    $checked = " CHECKED";
+    $ADVANCED_MODE = 1;
+    session_register("ADVANCED_MODE");
+} else {
+    $ADVANCED_MODE = 0;
+    session_register("ADVANCED_MODE");
+}
+?>
 <body bgcolor="#D0DCE0">
   <font color="black" class="heada"><?=PQL_USER; ?>: <b><?=$USER_ID?></b></font>
   <br>
   <font color="black" size=2>
     <a href="home.php"><?=PQL_HOME?></A> | <a href="index.php?logout=1" target="_parent"><?=PQL_LOGOUT?></a>
+    <form method=post action="left.php" target="pqlnav">
+      <input type="checkbox" name="advanced" accesskey="a" onChange="this.form.submit(); parent.frames.pqlmain.location.reload();"<?=$checked?>><u>A</u>dvanced mode
+    </form>
   </font>
-
-  <br><br>
 
   <div id="el1Parent" class="parent">
     <!-- HOME -->
