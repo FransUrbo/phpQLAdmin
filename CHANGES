@@ -1,6 +1,6 @@
 phpQLAdmin 2.0 Change Log
 
-phpQLAdmin 2.0.18c TO BE ANNOUNCED
+phpQLAdmin 2.0.18c (May  5 2004)
 	Bug fixes
 	  - Add uidNumber, gidNumber and homeDirectory to a mail account IF we've
 	    choosen to use 'posixAccount' when creating user(s).
