@@ -1,5 +1,5 @@
 <?php
-// $Id: index2.php,v 2.31.8.1.4.1 2004-11-06 08:31:36 turbo Exp $
+// index2.php,v 2.31.8.1.4.1 2004/11/06 08:31:36 turbo Exp
 
 session_start();
 require("./include/pql_config.inc");
@@ -32,9 +32,11 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 	    continue;
 	}
 	
-	if(pql_validate_administrator($_pql->ldap_linkid, $dn, $_SESSION["USER_DN"]))
-	  // User is super administrator. Full access!
-	  $controlsadministrator = 1;
+	if(pql_validate_administrator($_pql->ldap_linkid, $dn, $_SESSION["USER_DN"])) {
+	    // User is super administrator. Full access!
+	    $controlsadministrator = 1;
+	    $_SESSION["ALLOW_CONTROL_CREATE"] = 1;
+	}
     }
 }
 
