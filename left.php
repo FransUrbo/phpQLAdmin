@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.66 2003-11-24 12:22:49 turbo Exp $
+// $Id: left.php,v 2.67 2003-11-25 06:26:35 turbo Exp $
 //
 session_start();
 
@@ -170,7 +170,10 @@ if(!isset($domains)) {
 			   pql_complete_constant($LANG->_('Add %what%'),
 						 array('what' => $LANG->_('sub unit'))));
 	    pql_format_tree($d, "domain_detail.php?rootdn=$rootdn&domain=$domain", $links, 0);
-	}
+	} else
+	  // This branch don't have any sub units (flat structure)
+	  // -> make sure we still jump into the for loop!
+	  $branches[0] = $domain;
 
 	for($i = 0; $branches[$i]; $i++) {
 	    unset($subbranch);
