@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.19 2003-06-12 15:30:07 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.20 2003-06-25 07:07:01 turbo Exp $
 
 require("./left-head.html");
 
@@ -24,16 +24,17 @@ function attribute_check() {
 }
 
 function attribute_print_form($action) {
-    global $$attrib, $domain, $rootdn, $PHP_SELF, $attrib, $oldvalue, $error, $_pql, $config, $user, $view;
+    global $$attrib, $domain, $rootdn, $PHP_SELF, $attrib, $oldvalue, $error, $_pql, $user, $view;
+	global $orgname;
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
 <?php if($attrib == 'seealso') { ?>
-      <th colspan="3" align="left">Add contact person for domain <?=$domain?></th>
+      <th colspan="3" align="left">Add contact person for domain <?=$orgname?></th>
 <?php } elseif($attrib == 'ezmlmadministrator') { ?>
-      <th colspan="3" align="left">Add mailinglist administrator for domain <?=$domain?></th>
+      <th colspan="3" align="left">Add mailinglist administrator for domain <?=$orgname?></th>
 <?php } else { ?>
-      <th colspan="3" align="left"><?php echo PQL_LANG_DOMAIN_ADMIN_ADD . $domain; ?></th>
+      <th colspan="3" align="left"><?php echo PQL_LANG_DOMAIN_ADMIN_ADD . $orgname; ?></th>
 <?php } ?>
         <tr class="<?php table_bgcolor(); ?>">
 <?php
@@ -101,7 +102,7 @@ function attribute_print_form($action) {
 							// specified domain, but also in the PREVIOUS domain shown!
 							unset($cns);
 							foreach($users as $username) {
-								$cn = pql_get_userattribute($_pql->ldap_linkid, $username, $config["PQL_GLOB_ATTR_CN"]);
+								$cn = pql_get_userattribute($_pql->ldap_linkid, $username, pql_get_define("PQL_GLOB_ATTR_CN"));
 								$cns[$username] = $cn[0];
 							}
 								
@@ -173,17 +174,17 @@ function attribute_print_form($action) {
     </table>
 
 <?php if(!$user) { ?>
-    <input type="hidden" name="domain" value="<?=$domain?>">
+    <input type="hidden" name="domain"        value="<?=$domain?>">
 <?php } else { ?>
     <input type="hidden" name="administrator" value="<?=$user?>">
-    <input type="hidden" name="user" value="<?=$user?>">
+    <input type="hidden" name="user"          value="<?=$user?>">
 <?php } ?>
-    <input type="hidden" name="submit" value="4">
-    <input type="hidden" name="attrib" value="<?=$attrib?>">
-    <input type="hidden" name="action" value="<?=$action?>">
-    <input type="hidden" name="rootdn" value="<?=$rootdn?>">
-    <input type="hidden" name="oldvalue" value="<?=$$attrib?>">
-    <input type="hidden" name="view" value="<?=$view?>">
+    <input type="hidden" name="submit"        value="4">
+    <input type="hidden" name="attrib"        value="<?=$attrib?>">
+    <input type="hidden" name="action"        value="<?=$action?>">
+    <input type="hidden" name="rootdn"        value="<?=$rootdn?>">
+    <input type="hidden" name="oldvalue"      value="<?=$$attrib?>">
+    <input type="hidden" name="view"          value="<?=$view?>">
     <br>
     <input type="submit" value="<?=PQL_LANG_SAVE?>">
   </form>
@@ -279,7 +280,7 @@ function attribute_save($type) {
 			else
 			  $msg = PQL_LANG_DOMAIN_ADMIN_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 		}
-
+		
 		attribute_forward($msg);
 		break;
 

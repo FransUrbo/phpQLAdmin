@@ -3,7 +3,7 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ezmlm.inc,v 1.17 2003-06-12 16:50:18 turbo Exp $
+// $Id: pql_ezmlm.inc,v 1.18 2003-06-25 07:07:02 turbo Exp $
 session_start();
 
 class ezmlm {
@@ -307,8 +307,6 @@ class ezmlm {
 	// above, so I had to do it in the costructor. I don't
 	// have a better use for it anyway :)
 	function ezmlm($user_name = 'newsletters', $user_home = '/home/newsletters', $paths = 0) {
-		global $config;
-
 		$this->_option["archived"]["on"]		= "a";	$this->_option["archived"]["off"]		= "A";
 		$this->_option["remotecfg"]["on"]		= "c";	$this->_option["remotecfg"]["off"]		= "C";
 		$this->_option["digest"]["on"]			= "d";	$this->_option["digest"]["off"]			= "D";
@@ -332,10 +330,10 @@ class ezmlm {
 		// This SHOULD allow us to be able to 'replace' the commands with something
 		// that will do remote configuration - scripts that uses rsh/ssh perhaps?
 		if(! $paths) {
-			$this->_paths["make"]	= $config["PQL_GLOB_EZMLM_PATH"] . "/ezmlm-make";
-			$this->_paths["list"]	= $config["PQL_GLOB_EZMLM_PATH"] . "/ezmlm-list";
-			$this->_paths["sub"]	= $config["PQL_GLOB_EZMLM_PATH"] . "/ezmlm-sub";
-			$this->_paths["unsub"]	= $config["PQL_GLOB_EZMLM_PATH"] . "/ezmlm-unsub";
+			$this->_paths["make"]	= pql_get_define("PQL_GLOB_EZMLM_PATH") . "/ezmlm-make";
+			$this->_paths["list"]	= pql_get_define("PQL_GLOB_EZMLM_PATH") . "/ezmlm-list";
+			$this->_paths["sub"]	= pql_get_define("PQL_GLOB_EZMLM_PATH") . "/ezmlm-sub";
+			$this->_paths["unsub"]	= pql_get_define("PQL_GLOB_EZMLM_PATH") . "/ezmlm-unsub";
 		} else {
 			// Assign EXISTING values
 			foreach($paths as $key => $val) {
@@ -346,7 +344,7 @@ class ezmlm {
 			$keys = array('make', 'list', 'sub', 'unsub');
 			foreach($keys as $key) {
 				if(! $this->_paths[$key]) {
-					$this->_paths[$key] = $config["PQL_GLOB_EZMLM_PATH"] . "/ezmlm-" . $key;
+					$this->_paths[$key] = pql_get_define("PQL_GLOB_EZMLM_PATH") . "/ezmlm-" . $key;
 				}
 			}
 		}

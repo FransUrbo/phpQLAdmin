@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliveryprogrampath (path to program running on delivery)
-// $Id: attrib.deliveryprogrampath.inc,v 2.6 2003-05-28 07:23:38 turbo Exp $
+// $Id: attrib.deliveryprogrampath.inc,v 2.7 2003-06-25 07:07:02 turbo Exp $
 
 function attribute_check($type){
 	global $deliveryprogrampath, $domain, $oldvalue, $_pql, $error;
@@ -17,16 +17,15 @@ function attribute_check($type){
 
 function attribute_init(){
 	global $deliveryprogrampath, $oldvalue, $_pql;
-	global $domain, $user, $config;
+	global $domain, $user;
 	
-	$deliveryprogrampath = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_PROGRAM"]);
+	$deliveryprogrampath = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_PROGRAM"));
 	$deliveryprogrampath = $deliveryprogrampath[0];
 	$oldvalue = $deliveryprogrampath;
 }
 
 function attribute_print_form(){
 	global $deliveryprogrampath, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $view;
-
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -45,12 +44,13 @@ function attribute_print_form(){
       </th>
     </table>
 
-    <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
-    <input type="hidden" name="domain" value="<?php echo $domain; ?>">
-    <input type="hidden" name="user" value="<?php echo $user ?>">
-    <input type="hidden" name="view" value="<?=$view?>">
+    <input type="hidden" name="submit"   value="1">
+    <input type="hidden" name="attrib"   value="<?=$attrib?>">
+    <input type="hidden" name="oldvalue" value="<?=$oldvalue?>">
+    <input type="hidden" name="domain"   value="<?=$domain?>">
+    <input type="hidden" name="rootdn"   value="<?=$rootdn?>">
+    <input type="hidden" name="user"     value="<?=$user?>">
+    <input type="hidden" name="view"     value="<?=$view?>">
     <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
@@ -79,7 +79,7 @@ function attribute_save($type){
 			break;
     	}
 		
-		if(pql_replace_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_PROGRAM"], $deliveryprogrampath)){
+		if(pql_replace_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_PROGRAM"), $deliveryprogrampath)){
 			if($deliveryprogrampath == ""){
 				$deliveryprogrampath = PQL_LANG_DELIVERYPROGRAMPATH_NONE;
      		}
@@ -90,7 +90,7 @@ function attribute_save($type){
 		}
 		
 		// check if qmaildotmode is set to 'both' or 'ldapwithprog'
-		$qmaildotmode = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_DOTMODE"]);
+		$qmaildotmode = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_DOTMODE"));
 		$qmaildotmode = $qmaildotmode[0];
 		
 		if($qmaildotmode != "both" and $qmaildotmode != "ldapwithprog"){

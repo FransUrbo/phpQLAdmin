@@ -36,7 +36,7 @@ function attribute_forward($msg){
 	else
 	  $url = "domain_detail.php?rootdn=$rootdn&domain=$domain&view=$view&msg=$msg";
 
-	header("Location: " . $config["PQL_GLOB_URI"] . "$url");
+	header("Location: " . pql_get_define("PQL_GLOB_URI") . "$url");
 }
 
 include("./header.html");

@@ -5,7 +5,7 @@
 session_start();
 require("./include/pql_config.inc");
 
-if($config["PQL_GLOB_CONTROL_USE"]) {
+if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
     // include control api if control is used
     include("./include/pql_control.inc");
     $_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
@@ -19,7 +19,7 @@ if(isset($msg)){
 }
 
 // reload navigation bar if needed
-if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
+if(isset($rlnb) and pql_get_define("PQL_GLOB_AUTO_RELOAD")) {
 ?>
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
   <script language="JavaScript1.2"><!--
@@ -32,13 +32,31 @@ if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 // check if domain exist
-if(!pql_domain_exist($_pql, $domain)){
+if(!pql_domain_exist($_pql, $domain)) {
     echo "Domain &quot;$domain&quot; does not exists<br><br>";
 	echo "Is this perhaps a Top Level DN (namingContexts), and you haven't configured ";
 	echo "how to reference domains/branches in this database!?<br><br>";
 	echo "Please go to <a href=\"config_detail.php\">Show configuration</a> and double check.<br>";
 	echo "Look at the config option 'Reference domains with'.";
     exit();
+}
+
+// Look for a URL encoded '=' (%3D). If one isn't found, encode the DN
+// These variables ISN'T encoded "the first time", but they are after
+// a successfull/failed modification, so we don't want to encode them twice!
+if(! ereg("%3D", $rootdn)) {
+	// URL encode namingContexts
+	$rootdn = urlencode($rootdn);
+}
+if(! ereg("%3D", $domain)) {
+	// .. and/or domain DN
+	$domain = urlencode($domain);
+}
+
+// Get the organization name, or show 'Not set' with an URL to set it
+$domainname = pql_get_domain_value($_pql, $domain, 'o');
+if(!$domainname) {
+	$domainname = "<a href=\"domain_edit_attributes.php?type=modify&attrib=o&rootdn=$rootdn&domain=$domain\">".PQL_LANG_UNSET."</a>";
 }
 
 // Get some default values for this domain
@@ -76,22 +94,16 @@ foreach($attribs as $attrib) {
 		  }
 
 		// A dcOrganizationNameForm attribute
-		$$link = "<a href=\"domain_edit_attributes.php?type=modify&attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=". urlencode($value) ."\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify attribute $attrib for $domain\"></a>&nbsp;<a href=\"domain_edit_attributes.php?type=delete&submit=2&attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=". urlencode($value) ."\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Delete attribute $attrib for $domain\"></a>";
+		$$link = "<a href=\"domain_edit_attributes.php?type=modify&attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=". urlencode($value) ."\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify attribute $attrib for $domainname\"></a>&nbsp;<a href=\"domain_edit_attributes.php?type=delete&submit=2&attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=". urlencode($value) ."\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Delete attribute $attrib for $domainname\"></a>";
 	} else {
 		// A phpQLAdminBranch attribute
-		$$link = "<a href=\"domain_edit_attributes.php?attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=$value\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify $attrib for $domain\"></a>";
+		$$link = "<a href=\"domain_edit_attributes.php?attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=$value\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify $attrib for $domainname\"></a>";
 	}
 }
 $domain_admins		= pql_get_domain_value($_pql, $domain, "administrator");
 $mailinglist_admins	= pql_get_domain_value($_pql, $domain, "ezmlmadministrator");
 $seealso   			= pql_get_domain_value($_pql, $domain, "seealso");
 $basequota			= pql_ldap_mailquota(pql_parse_quota($basequota));
-
-// Get the organization name, or show 'Not set' with an URL to set it
-$domainname = pql_get_domain_value($_pql, $domain, 'o');
-if(!$domainname) {
-	$domainname = "<a href=\"domain_edit_attributes.php?type=modify&attrib=o&rootdn=$rootdn&domain=$domain\">".PQL_LANG_UNSET."</a>";
-}
 
 $additionaldomainname = pql_get_domain_value($_pql, $domain, "additionaldomainname");
 ?>
@@ -101,7 +113,7 @@ $additionaldomainname = pql_get_domain_value($_pql, $domain, "additionaldomainna
 
   <table cellspacing="0" border="0" width="100%" cellpadding="0">
     <tr>
-      <td colspan="2" valign="bottom" align="left" width="100%"><?php if($ADVANCED_MODE) { ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=default"?>"><img alt="/ Default Branch Values \" vspace="0" hspace="0" border="0" src="navbutton.php?Default Branch Values"></a><?php } ?><?php if($ADVANCED_MODE) { ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=owner"?>"><img alt="/ Branch Owner \" vspace="0" hspace="0" border="0" src="navbutton.php?Branch Owner"></a><br><?php } ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=users"?>"><img alt="/ Registred Users \" vspace="0" hspace="0" border="0" src="navbutton.php?Registred Users"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=chval"?>"><img alt="/ Change values of all users in this branch \" vspace="0" hspace="0" border="0" src="navbutton.php?Change values of all users"></a><?php if($ADVANCED_MODE) { ?><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=dnsinfo"?>"><img alt="/ MX Information \" vspace="0" hspace="0" border="0" src="navbutton.php?MX Information"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=options"?>"><img alt="/ Control Options \" vspace="0" hspace="0" border="0" src="navbutton.php?Control Options"></a><?php } else { ?><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=dnszone"?>"><img alt="/ DNS Zone \" vspace="0" hspace="0" border="0" src="navbutton.php?DNS Zone"></a><?php } ?><?php if($ADVANCED_MODE) { ?><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=action"?>"><img alt="/ Actions \" vspace="0" hspace="0" border="0" src="navbutton.php?Actions"></a><?php } ?></td>
+      <td colspan="2" valign="bottom" align="left" width="100%"><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=default"?>"><img alt="/ Default Branch Values \" vspace="0" hspace="0" border="0" src="navbutton.php?Default Branch Values"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=users"?>"><img alt="/ Registred Users \" vspace="0" hspace="0" border="0" src="navbutton.php?Registred Users"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=chval"?>"><img alt="/ Change values of all users in this branch \" vspace="0" hspace="0" border="0" src="navbutton.php?Change values of all users"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=dnszone"?>"><img alt="/ DNS Zone \" vspace="0" hspace="0" border="0" src="navbutton.php?DNS Zone"></a><?php if($ADVANCED_MODE) { ?><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=owner"?>"><img alt="/ Branch Owner \" vspace="0" hspace="0" border="0" src="navbutton.php?Branch Owner"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=dnsinfo"?>"><img alt="/ MX Information \" vspace="0" hspace="0" border="0" src="navbutton.php?MX Information"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=options"?>"><img alt="/ Control Options \" vspace="0" hspace="0" border="0" src="navbutton.php?Control Options"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=action"?>"><img alt="/ Actions \" vspace="0" hspace="0" border="0" src="navbutton.php?Actions"></a><?php } ?></td>
   </tr>
 </table>
 

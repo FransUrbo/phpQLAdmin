@@ -1,8 +1,8 @@
   <!-- advanced delivery options -->
-<?php $qmaildotmode = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_DOTMODE"]);
+<?php $qmaildotmode = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_DOTMODE"));
       $qmaildotmode = $qmaildotmode[0];
 
-      $deliveryprogrampath = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_PROGRAM"]);
+      $deliveryprogrampath = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_PROGRAM"));
       $deliveryprogrampath = $deliveryprogrampath[0];
 
       if($qmaildotmode == "") {

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mailquota.inc,v 2.7 2003-05-28 07:23:38 turbo Exp $
+// $Id: attrib.mailquota.inc,v 2.8 2003-06-25 07:07:02 turbo Exp $
 
 function attribute_check($type){
 	global $options, $use_maxsize, $use_maxmails, $maxsize, $maxmails, $error;
@@ -111,8 +111,9 @@ function attribute_print_form($type = "modify") {
     </table>
 
     <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="hidden" name="domain" value="<?php echo $domain; ?>">
+    <input type="hidden" name="attrib" value="<?=$attrib?>">
+    <input type="hidden" name="domain" value="<?=$domain?>">
+    <input type="hidden" name="rootdn" value="<?=$rootdn?>">
 <?php if($attrib == 'mailquota') { ?>
     <input type="hidden" name="user" value="<?=$user?>">
 <?php } ?>
@@ -125,7 +126,7 @@ function attribute_print_form($type = "modify") {
 }
 
 function attribute_save($type) {
-	global $_pql, $attrib, $domain, $user, $maxsize, $maxmails, $options, $use_maxmails, $use_maxsize, $config, $view;
+	global $_pql, $attrib, $domain, $user, $maxsize, $maxmails, $options, $use_maxmails, $use_maxsize, $view;
 	
 	// recontrol values
 	if(!attribute_check($type))
@@ -166,7 +167,7 @@ function attribute_save($type) {
 		$users = pql_get_user($_pql->ldap_linkid, $domain);
 		if(is_array($users)) {
 			foreach($users as $user)
-			  $return[] = pql_replace_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_QUOTA"], $mailquota);
+			  $return[] = pql_replace_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_QUOTA"), $mailquota);
 
 			if(in_array(false, $return))
 			  $msg = PQL_LANG_MAILQUOTA_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
@@ -183,7 +184,7 @@ function attribute_save($type) {
 			  $msg = PQL_LANG_MAILQUOTA_DEFAULT_CHANGE . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
 		} else {
 			// We're setting quota for a user
-			if(! pql_replace_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_QUOTA"], $mailquota))
+			if(! pql_replace_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_QUOTA"), $mailquota))
 			  $msg = PQL_LANG_MAILQUOTA_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
 		}
 		

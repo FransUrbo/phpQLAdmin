@@ -4,7 +4,6 @@
 //
 session_start();
 require("./include/pql_config.inc");
-global $config;
 
 require("./left-head.html");
 include("./header.html");

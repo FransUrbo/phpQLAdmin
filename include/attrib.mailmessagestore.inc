@@ -1,11 +1,10 @@
 <?php
 // attribute plugin for
 // mailmessagestore (path to mailbox)
-// $Id: attrib.mailmessagestore.inc,v 2.8 2003-05-28 07:23:38 turbo Exp $
+// $Id: attrib.mailmessagestore.inc,v 2.9 2003-06-25 07:07:02 turbo Exp $
 
 function attribute_check($type){
-	global $mailmessagestore, $domain, $oldvalue, $_pql, $error;
-	global $rootdn, $config;
+	global $mailmessagestore, $domain, $oldvalue, $_pql, $error, $rootdn;
 	
 	// is typed in ?
 	if($mailmessagestore == ""){
@@ -14,7 +13,7 @@ function attribute_check($type){
 	}
 	
 	// check for absolute paths
-	if(!$config["PQL_CONF_ALLOW_ABSOLUTE_PATH"][$rootdn] and preg_match("/^\//", $mailmessagestore)) {
+	if(!pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $rootdn) and preg_match("/^\//", $mailmessagestore)) {
 		$error["general"] = PQL_LANG_MAILMESSAGESTORE_ABSOLUTE_NOTALLOWED . "<br>";
 		return false;
 	}
@@ -36,7 +35,6 @@ function attribute_init(){
 
 function attribute_print_form(){
 	global $mailmessagestore, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $rootdn, $view;
-
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -58,13 +56,13 @@ function attribute_print_form(){
       </th>
 	</table>
 
-    <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?=$attrib?>">
+    <input type="hidden" name="submit"   value="1">
+    <input type="hidden" name="attrib"   value="<?=$attrib?>">
     <input type="hidden" name="oldvalue" value="<?=$oldvalue?>">
-    <input type="hidden" name="domain" value="<?=$domain?>">
-    <input type="hidden" name="rootdn" value="<?=$rootdn?>">
-    <input type="hidden" name="user" value="<?=$user?>">
-    <input type="hidden" name="view" value="<?=$view?>">
+    <input type="hidden" name="domain"   value="<?=$domain?>">
+    <input type="hidden" name="rootdn"   value="<?=$rootdn?>">
+    <input type="hidden" name="user"     value="<?=$user?>">
+    <input type="hidden" name="view"     value="<?=$view?>">
     <br>
     <input type="submit" value="<?=PQL_LANG_SAVE?>">
   </form>
@@ -73,7 +71,7 @@ function attribute_print_form(){
 }
 
 function attribute_save($type){
-	global $domain, $user, $attrib, $oldvalue, $mailmessagestore, $_pql, $config, $view;
+	global $domain, $user, $attrib, $oldvalue, $mailmessagestore, $_pql, $view;
 	
 	// recontrol values
 	if(!attribute_check($type)){
@@ -93,7 +91,7 @@ function attribute_save($type){
 			break;
     	}
 		
-		if(pql_replace_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_MAILSTORE"], $mailmessagestore)){
+		if(pql_replace_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_MAILSTORE"), $mailmessagestore)) {
 			$msg = pql_complete_constant(PQL_LANG_MAILMESSAGESTORE_CHANGE_OK, array("path" => $mailmessagestore));
 		} else {
 			$msg = PQL_LANG_MAILMESSAGESTORE_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // default domain name (the default domainname for a domain)
-// $Id: attrib.defaultdomain.inc,v 2.19 2003-05-28 07:23:37 turbo Exp $
+// $Id: attrib.defaultdomain.inc,v 2.20 2003-06-25 07:07:02 turbo Exp $
 
 function attribute_check(){
     global $defaultdomain, $domain, $oldvalue, $_pql, $error, $rootdn;
@@ -28,12 +28,14 @@ function attribute_init(){
 }
 
 function attribute_print_form(){
-    global $defaultdomain, $domain, $PHP_SELF, $attrib, $oldvalue, $error, $rootdn, $config, $view;
+    global $defaultdomain, $domain, $PHP_SELF, $attrib, $oldvalue, $error, $rootdn, $view;
+	global $orgname;
+
 	$oldvalue = $defaultdomain;
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?php echo PQL_LANG_DOMAIN_DEFAULT_CHANGE_NAME . $domain; ?></th>
+      <th colspan="3" align="left"><?php echo PQL_LANG_DOMAIN_DEFAULT_CHANGE_NAME . $orgname; ?></th>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"><?php echo PQL_LANG_DOMAIN_DEFAULT_NAME; ?></td>
           <td><?php echo format_error($error["defaultdomain"]); ?><input type="text" name="defaultdomain" value="<?php echo $defaultdomain; ?>" size="20"></td>
@@ -53,7 +55,7 @@ function attribute_print_form(){
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title">Add domain to locals in following objects:</td>
           <td>
-<?php		if(!$config["PQL_GLOB_CONTROL_AUTOADDLOCALS"]) {
+<?php		if(!pql_get_define("PQL_GLOB_CONTROL_AUTOADDLOCALS")) {
 				$i = 0;
 
 		  		foreach($hosts as $host) {
@@ -78,7 +80,7 @@ function attribute_print_form(){
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title">Add domain to rcpthosts in following objects:</td>
           <td>
-<?php		if(!$config["PQL_GLOB_CONTROL_AUTOADDRCPTHOSTS"]) {
+<?php		if(!pql_get_define("PQL_GLOB_CONTROL_AUTOADDRCPTHOSTS")) {
 		  		foreach($hosts as $host) {
 ?>
             <input type="checkbox" name="rcpthosts_<?=$i?>" value="<?=$host?>"><?=$host?><br>
@@ -101,12 +103,12 @@ function attribute_print_form(){
       </th>
     </table>
 
-    <input type="hidden" name="submit" value="2">
-    <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
-    <input type="hidden" name="domain" value="<?php echo $domain; ?>">
-    <input type="hidden" name="rootdn" value="<?=$rootdn?>">
-    <input type="hidden" name="view" value="<?=$view?>">
+    <input type="hidden" name="submit"   value="2">
+    <input type="hidden" name="attrib"   value="<?=$attrib?>">
+    <input type="hidden" name="oldvalue" value="<?=$oldvalue?>">
+    <input type="hidden" name="domain"   value="<?=$domain?>">
+    <input type="hidden" name="rootdn"   value="<?=$rootdn?>">
+    <input type="hidden" name="view"     value="<?=$view?>">
     <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
@@ -115,7 +117,7 @@ function attribute_print_form(){
 }
 
 function attribute_save($type){
-    global $domain, $attrib, $oldvalue, $defaultdomain, $_pql, $config, $rootdn, $view;
+    global $domain, $attrib, $oldvalue, $defaultdomain, $_pql, $rootdn, $view;
     
     // recontrol values
     if(!attribute_check($type))

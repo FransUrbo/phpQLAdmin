@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for pilotPerson objects etc
-// $Id: attrib.outlook.inc,v 1.11 2003-06-12 09:16:15 turbo Exp $
+// $Id: attrib.outlook.inc,v 1.12 2003-06-25 07:07:02 turbo Exp $
 
 /*
 	Attributes managed here:
@@ -49,6 +49,7 @@ function attribute_init() {
 
 function attribute_print_form() {
     global $user, $domain, $rootdn, $PHP_SELF, $attrib, $$attrib, $oldvalue, $error, $_pql, $view;
+	global $orgname;
 ?>
 
   <form action="<?php echo $PHP_SELF ?>" method="post" name="outlook">
@@ -61,13 +62,13 @@ function attribute_print_form() {
       </th>
     </table>
 
-	<input type="hidden" name="submit" value="2">
-	<input type="hidden" name="attrib" value="<?=$attrib?>">
+	<input type="hidden" name="submit"   value="2">
+	<input type="hidden" name="attrib"   value="<?=$attrib?>">
 	<input type="hidden" name="oldvalue" value="<?=$oldvalue?>">
-	<input type="hidden" name="domain" value="<?=$domain?>">
-	<input type="hidden" name="user" value="<?=$user?>">
-    <input type="hidden" name="rootdn" value="<?=$rootdn?>">
-    <input type="hidden" name="view" value="<?=$view?>">
+	<input type="hidden" name="domain"   value="<?=$domain?>">
+    <input type="hidden" name="rootdn"   value="<?=$rootdn?>">
+	<input type="hidden" name="user"     value="<?=$user?>">
+    <input type="hidden" name="view"     value="<?=$view?>">
 	<input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
@@ -91,7 +92,7 @@ function attribute_save($type) {
 			attribute_forward($msg);
 			break;
 		}
-		
+
 		if($domain and !$user) {
 			// Save a domain attribute
 			if(pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, $$attrib))

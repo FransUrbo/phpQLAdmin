@@ -1,6 +1,6 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.21 2003-06-21 20:19:25 turbo Exp $
+// $Id: ezmlm_add.php,v 1.22 2003-06-25 07:06:25 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -13,7 +13,7 @@ function list_forward($domainname, $msg){
 
     $msg = urlencode($msg);
     $url = "ezmlm_detail.php?domain=$domain&domainname=$domainname&msg=$msg&rlnb=3";
-    header("Location: " . $config["PQL_GLOB_URI"] . "$url");
+    header("Location: " . pql_get_define("PQL_GLOB_URI") . "$url");
 }
 
 if(!$subscribercount) {
@@ -117,7 +117,7 @@ if($domainname) {
 	}
 	
 	require("./include/pql_ezmlm.inc");
-	$ezmlm = new ezmlm($config["PQL_GLOB_EZMLM_USER"], $path);
+	$ezmlm = new ezmlm(pql_get_define("PQL_GLOB_EZMLM_USER"), $path);
 }	
 
 // Create list
@@ -138,11 +138,11 @@ if(!$domain) {
 } else {
 	$dom = pql_get_domain_value($_pql, $domain, 'ezmlmadministrator', $USER_DN);
 	if(is_array($dom)) {
-		if($ezmlm->mailing_lists_hostsindex["COUNT"] > $config["PQL_CONF_MAX_LISTS"][$domain]) {
+		if($ezmlm->mailing_lists_hostsindex["COUNT"] > pql_get_define("PQL_CONF_MAX_LISTS", $domain)) {
 ?>
   <span class="title2">
     Sorry, you have reached the maximum allowed mailinglists in this domain<br>
-    You have <?=$ezmlm->mailing_lists_hostsindex["COUNT"]?> mailinglists, but only <?=$config["PQL_CONF_MAX_LISTS"][$domain]?> is allowed.
+    You have <?=$ezmlm->mailing_lists_hostsindex["COUNT"]?> mailinglists, but only <?php echo pql_get_define("PQL_CONF_MAX_LISTS", $domain); ?> is allowed.
   </span>
 <?php
 			die();

@@ -19,11 +19,24 @@ function attribute_forward($msg) {
 	else
 	  $url = "domain_detail.php?rootdn=$rootdn&domain=$domain&view=$view&msg=$msg";
 
-    header("Location: " . $config["PQL_GLOB_URI"] . "$url");
+    header("Location: " . pql_get_define("PQL_GLOB_URI") . "$url");
+}
+
+// Look for a URL encoded '=' (%3D). If one isn't found, encode the DN
+// These variables ISN'T encoded "the first time", but they are after
+// the attribute_print_form() have been executed, so we don't want to
+// encode them twice!
+if(! ereg("%3D", $rootdn)) {
+	// URL encode namingContexts
+	$rootdn = urlencode($rootdn);
+}
+if(! ereg("%3D", $domain)) {
+	// .. and/or domain DN
+	$domain = urlencode($domain);
 }
 
 // select which attribute have to be included
-switch($attrib){
+switch($attrib) {
   case "accountstatus";
     $include = "attrib.accountstatus.inc";
     break;
@@ -86,6 +99,12 @@ switch($attrib){
 	break;
   default:
     die("unknown attribute");
+}
+
+// Get the organization name, or the DN if it's unset
+$orgname = pql_get_domain_value($_pql, $domain, 'o');
+if(!$orgname) {
+	$orgname = urldecode($domain);
 }
 
 include("./include/".$include);

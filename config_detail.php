@@ -4,7 +4,6 @@
 //
 session_start();
 require("./include/pql_config.inc");
-global $config;
 
 include("./header.html");
 
@@ -16,7 +15,7 @@ if(isset($msg)){
 }
 
 // reload navigation bar if needed
-if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
+if(isset($rlnb) and pql_get_define("PQL_GLOB_AUTO_RELOAD")) {
 ?>
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
   <script language="JavaScript1.2"><!--
@@ -27,7 +26,7 @@ if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
 }
 
 foreach($_pql->ldap_basedn as $dn) {
-    if(eregi('KERBEROS', $config["PQL_CONF_PASSWORD_SCHEMES"][$dn]))
+    if(eregi('KERBEROS', pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $dn)))
       $show_kerberos_info = 1;
 }
 ?>

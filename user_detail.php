@@ -22,7 +22,7 @@ if(isset($msg)) {
 }
 
 // reload navigation bar if needed
-if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
+if(isset($rlnb) and pql_get_define("PQL_GLOB_AUTO_RELOAD")) {
 	if($rlnb == 1) {
 ?>
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>

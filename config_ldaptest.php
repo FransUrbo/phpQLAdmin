@@ -5,7 +5,6 @@
 session_start();
 require("./include/pql_config.inc");
 require("./include/pql_control.inc");
-global $config;
 
 function check_domain_value($linkid, $dn, $attrib, $value) {
 	$entry[$attrib] = $value;
@@ -64,13 +63,13 @@ if(!function_exists("ldap_connect")){
 	}
 
 
-	if($config["PQL_GLOB_CONTROL_USE"]) {
+	if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 		// control directory connection
 		$_pql_control = new pql_control($USER_HOST, '', '', true);
 		if(!$_pql_control->connect($USER_HOST)) {
 			$connection_control = PQL_LANG_TEST_CONNECTION_FAILED;
 
-			$host = split('\+', $config["PQL_GLOB_HOST"]);
+			$host = split('\+', pql_get_define("PQL_GLOB_HOST"));
 			$host = split(';', $host[0]);
 
 			$fqdn = $host[0];
@@ -116,18 +115,18 @@ if(!function_exists("ldap_connect")){
 			// by creating a subbranch
 			unset($entry);
 			$entry["objectClass"][] = "top";
-			if($config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn] == "dc") {
+			if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "dc") {
 				$entry["objectClass"][] = "domain";
 				$entry["dc"] = "test";
-			} elseif($config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn] == "ou") {
+			} elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "ou") {
 				$entry["objectClass"][] = "organizationalUnit";
 				$entry["ou"] = "test";
-			} elseif($config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn] == "o") {
+			} elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "o") {
 				$entry["objectClass"][] = "organizationL";
 				$entry["o"] = "test";
 			}
-			$entry[$config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn]] = "phpQLAdmin_Branch_Test";
-			$dn = $config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn]."=phpQLAdmin_Branch_Test,".$basedn;
+			$entry[pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)] = "phpQLAdmin_Branch_Test";
+			$dn = pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)."=phpQLAdmin_Branch_Test,".$basedn;
 			if(!@ldap_add($_pql->ldap_linkid, $dn, $entry)) {
 				$LDIF = pql_create_ldif("config_ldaptest.php", $dn, $entry);
 				$TEST["branches"][$basedn] = "<a href=\"javascript:ldifWindow('".$LDIF."')\">".
@@ -141,7 +140,7 @@ if(!function_exists("ldap_connect")){
 			// ----------------------
 			// Check write access
 			$filter = "(&" . pql_setup_branch_objectclasses(1, $basedn)
-			  . "(" . $config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn] . "=*))";
+			  . "(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) . "=*))";
 			
 			$sr = @ldap_list($_pql->ldap_linkid, $basedn, $filter)
 			  or pql_errormsg($_pql->ldap_linkid);

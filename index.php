@@ -28,8 +28,8 @@ if (empty($uname) or empty($passwd)) {
 	include("./header.html");
 
 	if(!$USER_HOST) {
-		if(! eregi('\+', $config["PQL_GLOB_HOST"])) {
-			$host = split(';', $config["PQL_GLOB_HOST"]);
+		if(! eregi('\+', pql_get_define("PQL_GLOB_HOST"))) {
+			$host = split(';', pql_get_define("PQL_GLOB_HOST"));
 			$USER_HOST = $host[0] . ";" . $host[1] . ";" . $host[2];
 			
 			session_register("USER_HOST");
@@ -53,7 +53,7 @@ if (empty($uname) or empty($passwd)) {
 
   <table cellspacing="0" cellpadding="3" border="0" align=center>
     <tr>
-      <td bgcolor="#D0DCE0"><FONT size=3><?php echo PQL_LANG_WELCOME . " <B>" . $config["PQL_GLOB_WHOAREWE"]?></B></FONT></td>
+      <td bgcolor="#D0DCE0"><FONT size=3><?php echo PQL_LANG_WELCOME . " <B>" . pql_get_define("PQL_GLOB_WHOAREWE")?></B></FONT></td>
     </tr>
 
     <tr align="center">
@@ -67,8 +67,8 @@ if (empty($uname) or empty($passwd)) {
         <td>LDAP Server:</td>
         <td align="left">
 <?php
-	if(eregi('\+', $config["PQL_GLOB_HOST"])) {
-		$servers = split('\+', $config["PQL_GLOB_HOST"]);
+	if(eregi('\+', pql_get_define("PQL_GLOB_HOST"))) {
+		$servers = split('\+', pql_get_define("PQL_GLOB_HOST"));
 ?>
           <select name="server">
 <?php	foreach($servers as $server) {
@@ -82,7 +82,7 @@ if (empty($uname) or empty($passwd)) {
 		$server = split(';', $USER_HOST);
 ?>
         <b><?=$server[0].":".$server[1]?></b>
-        <input type="hidden" name="server" value="<?=$config["PQL_GLOB_HOST"]?>">
+        <input type="hidden" name="server" value="<?php echo pql_get_define("PQL_GLOB_HOST"); ?>">
 <?php
 	}
 ?>

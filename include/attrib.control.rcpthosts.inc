@@ -2,7 +2,7 @@
 // control attribute plugin for
 // rcpthosts (blocked local addresses)
 //
-// $Id: attrib.control.rcpthosts.inc,v 2.13 2003-05-28 07:23:37 turbo Exp $
+// $Id: attrib.control.rcpthosts.inc,v 2.14 2003-06-25 07:07:02 turbo Exp $
 
 function rcpthosts_check($type){
     global $error, $rcpthosts, $domain, $rootdn, $view;
@@ -42,7 +42,7 @@ function rcpthosts_init($host){
 }
 
 function rcpthosts_print_view($host) {
-    global $_pql_control, $rcpthosts, $config, $view;
+    global $_pql_control, $rcpthosts, $view;
     
     // init data
     rcpthosts_init($host);
@@ -60,7 +60,7 @@ function rcpthosts_print_view($host) {
 <?php   } // end foreach
     } // end if is_array
 
-    if($config["PQL_GLOB_CONTROL_AUTOADDRCPTHOSTS"]) {
+    if(pql_get_define("PQL_GLOB_CONTROL_AUTOADDRCPTHOSTS")) {
 ?>
       <tr class="subtitle">
         <td><a href="control_edit_attribute.php?attrib=rcpthosts&type=replicate&mxhost=<?=$host?>&submit=1"><img src="images/edit.png" width="12" height="12" border="0" alt="replicate">Click here to start replication manually</a></td>
@@ -105,7 +105,7 @@ function rcpthosts_print_form(){
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
     <input type="hidden" name="domain" value="<?=$domain?>">
     <input type="hidden" name="rootdn" value="<?=$rootdn?>">
-    <input type="hidden" name="view" value="<?=$view?>">
+    <input type="hidden" name="view"   value="<?=$view?>">
     <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>

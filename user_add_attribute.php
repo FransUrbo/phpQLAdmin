@@ -12,7 +12,7 @@ function attribute_forward($msg) {
     global $domain, $user, $view;
 
     $url = "user_detail.php?domain=$domain&user=".urlencode($user)."&view=$view&msg=".urlencode($msg);
-    header("Location: " . $config["PQL_GLOB_URI"] . "$url");
+    header("Location: " . pql_get_define("PQL_GLOB_URI") . "$url");
 }
 
 // Get default domain name for this domain

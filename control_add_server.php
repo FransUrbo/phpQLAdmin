@@ -1,11 +1,11 @@
 <?php
 // Add a new mailserver to the database
-// $Id: control_add_server.php,v 2.9 2003-04-04 16:37:19 turbo Exp $
+// $Id: control_add_server.php,v 2.10 2003-06-25 07:06:24 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 
-if($config["PQL_GLOB_CONTROL_USE"]) {
+if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
     // include control api if control is used
     include("./include/pql_control.inc");
     $_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
@@ -20,7 +20,7 @@ if($config["PQL_GLOB_CONTROL_USE"]) {
 				die("we're ready to <b>create</b>, but can't do anything yet!<br>");
 
 				$msg = urlencode("Successfully created mailserver $fqdn.");
-				header("Location: " . $config["PQL_GLOB_URI"] . "control_detail.php?host=$fqdn&msg=$msg&rlnb=1");
+				header("Location: " . pql_get_define("PQL_GLOB_URI") . "control_detail.php?host=$fqdn&msg=$msg&rlnb=1");
 			} else {
 				if(! $fqdn)
 				  $error_text["fqdn_create"] = 'missing';
@@ -71,7 +71,7 @@ if($config["PQL_GLOB_CONTROL_USE"]) {
 					header("Location: <?=$PHP_SELF?>");
 				} else {
 					$msg = urlencode("Successfully created mailserver $fqdn.");
-					header("Location: " . $config["PQL_GLOB_URI"] . "control_detail.php?host=$fqdn&msg=$msg&rlnb=1");
+					header("Location: " . pql_get_define("PQL_GLOB_URI") . "control_detail.php?host=$fqdn&msg=$msg&rlnb=1");
 				}
 			} else {
 				$error_text["fqdn_clone"] = 'missing';

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // cn (Full name)
-// $Id: attrib.cn.inc,v 2.10 2003-06-04 08:04:33 turbo Exp $
+// $Id: attrib.cn.inc,v 2.11 2003-06-25 07:07:01 turbo Exp $
 
 function attribute_check($type){
     global $cn, $oldvalue, $_pql, $error;
@@ -23,7 +23,6 @@ function attribute_init(){
 
 function attribute_print_form(){
     global $cn, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $view;
-
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -35,12 +34,13 @@ function attribute_print_form(){
       </th>
     </table>
 
-    <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
-    <input type="hidden" name="domain" value="<?php echo $domain; ?>">
-    <input type="hidden" name="user" value="<?php echo $user ?>">
-    <input type="hidden" name="view" value="<?=$view?>">
+    <input type="hidden" name="submit"   value="1">
+    <input type="hidden" name="attrib"   value="<?=$attrib?>">
+    <input type="hidden" name="oldvalue" value="<?=$oldvalue?>">
+    <input type="hidden" name="domain"   value="<?=$domain?>">
+    <input type="hidden" name="rootdn"   value="<?=$rootdn?>">
+    <input type="hidden" name="user"     value="<?=$user?>">
+    <input type="hidden" name="view"     value="<?=$view?>">
     <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>

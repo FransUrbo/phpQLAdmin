@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliverymode (delivery preferences)
-// $Id: attrib.deliverymode.inc,v 2.9 2003-06-07 12:24:56 turbo Exp $
+// $Id: attrib.deliverymode.inc,v 2.10 2003-06-25 07:07:02 turbo Exp $
 
 function attribute_check($type){
 	global $error, $reply, $mailreplytext;
@@ -17,10 +17,10 @@ function attribute_check($type){
 
 function attribute_init(){
 	global $reply, $mailreplytext, $deliverymode, $domain;
-	global $user, $_pql, $config;
+	global $user, $_pql;
 
 	// initialize values directly from ldap
-	$mode = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_MODE"]);
+	$mode = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_MODE"));
 
 	// delivery profile
 	if(is_array($mode) and in_array("forwardonly",$mode)){
@@ -34,14 +34,13 @@ function attribute_init(){
 		$reply = "ok";
 	}
 	
-	$mailreplytext = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_REPLYTEXT"]);
+	$mailreplytext = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_REPLYTEXT"));
 	$mailreplytext = $mailreplytext[0];
 }
 
 
 function attribute_print_form($type = "modify"){
 	global $reply, $mailreplytext, $deliverymode, $domain, $user, $PHP_SELF, $attrib, $error, $view;
-
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -74,12 +73,13 @@ function attribute_print_form($type = "modify"){
 <?php if($GLOBALS["SINGLE_USER"]) { ?>
     <input type="hidden" name="deliverymode" value="<?=$deliverymode?>">
 <?php } ?>
-    <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
-    <input type="hidden" name="domain" value="<?php echo $domain; ?>">
-    <input type="hidden" name="user" value="<?php echo $user ?>">
-    <input type="hidden" name="view" value="<?=$view?>">
+    <input type="hidden" name="submit"       value="1">
+    <input type="hidden" name="attrib"       value="<?=$attrib?>">
+    <input type="hidden" name="oldvalue"     value="<?=$oldvalue?>">
+    <input type="hidden" name="domain"       value="<?=$domain?>">
+    <input type="hidden" name="rootdn"       value="<?=$rootdn?>">
+    <input type="hidden" name="user"         value="<?=$user?>">
+    <input type="hidden" name="view"         value="<?=$view?>">
     <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
@@ -88,7 +88,7 @@ function attribute_print_form($type = "modify"){
 }
 
 function attribute_save($type){
-	global $domain, $user, $attrib, $reply, $mailreplytext, $deliverymode, $_pql, $config, $view;
+	global $domain, $user, $attrib, $reply, $mailreplytext, $deliverymode, $_pql, $view;
 	
 	// recontrol values
 	if(!attribute_check($type)){
@@ -97,25 +97,25 @@ function attribute_save($type){
 	
 	switch($deliverymode){
 	  case "forward":
-		$entry[$config["PQL_GLOB_ATTR_MODE"]][] = "forwardonly";
-		$entry[$config["PQL_GLOB_ATTR_MODE"]][] = "nombox";
+		$entry[pql_get_define("PQL_GLOB_ATTR_MODE")][] = "forwardonly";
+		$entry[pql_get_define("PQL_GLOB_ATTR_MODE")][] = "nombox";
 		break;
 	  case "local":
-		$entry[$config["PQL_GLOB_ATTR_MODE"]][] = "localdelivery";
+		$entry[pql_get_define("PQL_GLOB_ATTR_MODE")][] = "localdelivery";
 	}
 	
 	if($reply == "ok"){
-		$entry[$config["PQL_GLOB_ATTR_MODE"]][] = "reply";
+		$entry[pql_get_define("PQL_GLOB_ATTR_MODE")][] = "reply";
 	}
 	if (!empty($mailreplytext)) {
-		$entry[$config["PQL_GLOB_ATTR_REPLYTEXT"]] = preg_replace('/\\\/', "", $mailreplytext);
+		$entry[pql_get_define("PQL_GLOB_ATTR_REPLYTEXT")] = preg_replace('/\\\/', "", $mailreplytext);
 	} else {
 		// Check if the entry in database is empty. 
 		// If not, we have choosen to DELETE the value
 		$mrt_db = pql_get_userattribute($_pql->ldap_linkid,
-										$user, $config["PQL_GLOB_ATTR_REPLYTEXT"]);
+										$user, pql_get_define("PQL_GLOB_ATTR_REPLYTEXT"));
 		if($mrt_db[0]) {
-			pql_replace_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_REPLYTEXT"]);
+			pql_replace_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_REPLYTEXT"));
 		}
 	}
 	

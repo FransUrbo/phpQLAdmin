@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.5 2003-04-26 13:16:16 turbo Exp $
+// $Id: pql_search.inc,v 2.6 2003-06-25 07:07:03 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -11,10 +11,8 @@
 // ------------------------------------------------
 
 function pql_search($ldap_linkid, $ldap_basedn, $filter){
-	global $config;
-
 	// get all users matching filter
-	$filter = "(&(" . $config["PQL_CONF_REFERENCE_USERS_WITH"][$ldap_basedn] . "=*)($filter))";
+	$filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $ldap_basedn) . "=*)($filter))";
 
 	$sr = ldap_search($ldap_linkid, $ldap_basedn, $filter);
 	$info = ldap_get_entries($ldap_linkid, $sr);

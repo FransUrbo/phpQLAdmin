@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.22 2003-06-19 10:40:50 turbo Exp $
+// $Id: attrib.config.inc,v 1.23 2003-06-25 07:07:01 turbo Exp $
 
 function attribute_check() {
     global $administrator, $domain, $oldvalue, $_pql, $error;
@@ -17,14 +17,14 @@ function attribute_check() {
 
 function attribute_print_form() {
     global $administrator, $domain, $PHP_SELF, $attrib, $$attrib, $oldvalue, $error, $_pql, $toggle;
-	global $PQL_ATTRIBUTE, $rootdn, $delval, $config, $view;
+	global $PQL_ATTRIBUTE, $rootdn, $delval, $view;
 	$attrib = strtolower($attrib);
 
 	// Get the old values from the define
 	foreach($PQL_ATTRIBUTE as $key => $value) {
 		$value = strtolower($value);
-		if(($value == $attrib) and $config[$key][$rootdn]) {
-			$oldvalue = $config[$key][$rootdn];
+		if(($value == $attrib) and pql_get_define($key, $rootdn)) {
+			$oldvalue = pql_get_define($key, $rootdn);
 			break;
 		}
 	}
@@ -113,9 +113,9 @@ function attribute_print_form() {
 <?php   if(($attrib == lc($PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_USER"])) or
  		   ($attrib == lc($PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_DOMAIN"]))) {
             if($attrib == 'userobjectclass')
-                $existing = $config["PQL_CONF_OBJECTCLASS_USER"][$dn];
+                $existing = pql_get_define("PQL_CONF_OBJECTCLASS_USER", $dn);
             else
-                $existing = $config["PQL_CONF_OBJECTCLASS_DOMAIN"][$dn];
+                $existing = pql_get_define("PQL_CONF_OBJECTCLASS_DOMAIN", $dn);
             $existing = pql_split_oldvalues($existing); // Convert to array
 
             $objectclasses = pql_get_subschema($_pql->ldap_linkid, "objectclasses");
@@ -165,7 +165,7 @@ function attribute_print_form() {
 ?>
           <td>
 <?php				for($i=0; $values[$i]; $i++) {
-						if(!eregi($values[$i], $config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn])) {
+						if(!eregi($values[$i], pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn))) {
 							// We don't want to include schemes we've already
 							// configured branch to use...
 ?>
@@ -208,7 +208,7 @@ function attribute_print_form() {
 
 function attribute_save() {
     global $domain, $attrib, $$attrib, $oldvalue, $administrator, $_pql;
-	global $delval, $toggle, $PQL_ATTRIBUTE, $config, $view, $rootdn, $config;
+	global $delval, $toggle, $PQL_ATTRIBUTE, $view, $rootdn;
 	$attrib = lc($attrib);
 
 	if($$attrib) {
@@ -275,7 +275,7 @@ function attribute_save() {
 					foreach($PQL_ATTRIBUTE as $key => $value) {
 						if(!is_array($value)) {
 							if(lc($value) == $attrib) {
-								if($config[$key][$rootdn] or ($config[$key][$rootdn] == 'TRUE'))
+								if(pql_get_define($key, $rootdn) or (pql_get_define($key, $rootdn) == 'TRUE'))
 								  $entry[$attrib][] = 'FALSE';
 								else
 								  $entry[$attrib][] = 'TRUE';
@@ -292,9 +292,9 @@ function attribute_save() {
 
 			foreach($PQL_ATTRIBUTE as $key => $value) {
 				if(!is_array($value)) {
-					if((lc($value) == lc($attrib)) and $config[$key][$rootdn] and !eregi('_GLOB_', $key)) {
+					if((lc($value) == lc($attrib)) and pql_get_define($key, $rootdn) and !eregi('_GLOB_', $key)) {
 						// Split this value into an array
-						$values = pql_split_oldvalues($config[$key][$rootdn]);
+						$values = pql_split_oldvalues(pql_get_define($key, $rootdn));
 						foreach($values as $val) {
 							// Add all values EXEPT the one to remove
 							if(lc($val) != lc($delval))

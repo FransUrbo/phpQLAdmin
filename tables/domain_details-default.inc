@@ -3,7 +3,7 @@
 <?php if($ALLOW_BRANCH_CREATE) { ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">Domain/Branch DN</td>
-        <td><?=$domain?></td>
+        <td><?php echo urldecode($domain); ?></td>
         <td><?=// TODO: Should we be able to rename the RDN? ?></td>
       </tr>
   
@@ -26,7 +26,7 @@
 <?php		} ?>
         <td><?=$additional?></td>
         <td>
-          <a href="domain_edit_attributes.php?attrib=<?=lc($PQL_ATTRIBUTE["PQL_CONF_ADDITIONAL_DOMAIN_NAME"])?>&rootdn=<?=$rootdn?>&domain=<?=$domain?>&<?=lc($PQL_ATTRIBUTE["PQL_CONF_ADDITIONAL_DOMAIN_NAME"])?>=<?=$additional?>&submit=3&action=modify&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify <?=lc($PQL_ATTRIBUTE["PQL_CONF_ADDITIONAL_DOMAIN_NAME"])?> for <?=$domain?>"></a>
+          <a href="domain_edit_attributes.php?attrib=<?=lc($PQL_ATTRIBUTE["PQL_CONF_ADDITIONAL_DOMAIN_NAME"])?>&rootdn=<?=$rootdn?>&domain=<?=$domain?>&<?=lc($PQL_ATTRIBUTE["PQL_CONF_ADDITIONAL_DOMAIN_NAME"])?>=<?=$additional?>&submit=3&action=modify&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify <?=lc($PQL_ATTRIBUTE["PQL_CONF_ADDITIONAL_DOMAIN_NAME"])?> for <?=$domainname?>"></a>
           <a href="domain_edit_attributes.php?attrib=<?=lc($PQL_ATTRIBUTE["PQL_CONF_ADDITIONAL_DOMAIN_NAME"])?>&rootdn=<?=$rootdn?>&domain=<?=$domain?>&delval=<?=$additional?>&submit=4&action=delete&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="Delete additional domain name" border="0"></a>
         </td>
 <?php		$new_tr = 1;
@@ -127,7 +127,7 @@
         <td></td>
 <?php		} else { ?>
         <td>
-          <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&administrator=<?=$admin?>&submit=3&action=modify&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify administrators for <?=$domain?>"></a>
+          <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&administrator=<?=$admin?>&submit=3&action=modify&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify administrators for <?=$domainname?>"></a>
           <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&administrator=<?=$admin?>&submit=4&action=delete&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="<?=PQL_LANG_DOMAIN_ADMIN_DELETE?>" border="0"></a>
         </td>
 <?php		} ?>
@@ -153,7 +153,7 @@
 	}
 ?>
 
-<?php if($config["maximummailinglists"] >= 0) { ?>
+<?php if(pql_get_define("maximummailinglists") >= 0) { ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">Mailinglist administrator(s)</td>
 <?php	if(is_array($mailinglist_admins)) {
@@ -179,7 +179,7 @@
         <td></td>
 <?php			} else { ?>
         <td>
-          <a href="domain_edit_attributes.php?attrib=ezmlmadministrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&ezmlmadministrator=<?=$admin?>&submit=3&action=modify&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify administrators for <?=$domain?>"></a>
+          <a href="domain_edit_attributes.php?attrib=ezmlmadministrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&ezmlmadministrator=<?=$admin?>&submit=3&action=modify&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify administrators for <?=$domainname?>"></a>
           <a href="domain_edit_attributes.php?attrib=ezmlmadministrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&ezmlmadministrator=<?=$admin?>&submit=4&action=delete&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="<?=PQL_LANG_DOMAIN_ADMIN_DELETE?>" border="0"></a>
         </td>
 <?php			} ?>

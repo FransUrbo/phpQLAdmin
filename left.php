@@ -97,7 +97,7 @@ foreach($_pql->ldap_basedn as $dn)  {
     $dom = pql_get_domain_value($_pql, $dn, 'administrator', $USER_DN);
     if($dom) {
 	foreach($dom as $d) {
-	    $domains[] = $d;
+	    $domains[] = urlencode($d);
 	}
     }
 }
@@ -106,7 +106,7 @@ if(!isset($domains)) {
     // No domain defined -> 'ordinary' user (only show this user)
     $SINGLE_USER = 1; session_register("SINGLE_USER");
 
-    $cn = pql_get_userattribute($_pql->ldap_linkid, $USER_DN, $config["PQL_GLOB_ATTR_CN"]); $cn = $cn[0];
+    $cn = pql_get_userattribute($_pql->ldap_linkid, $USER_DN, pql_get_config("PQL_GLOB_ATTR_CN")); $cn = $cn[0];
 
     // Try to get the DN of the domain
     $dnparts = ldap_explode_dn($USER_DN, 0);
@@ -137,7 +137,7 @@ if(!isset($domains)) {
     asort($domains);
     foreach($domains as $key => $domain) {
 	// Get domain part from the DN (Example: 'dc=test,dc=net' => 'test').
-	$d = split(',', $domain); $d = split('=', $d[0]); $d = $d[1];
+	$d = split(',', urldecode($domain)); $d = split('=', $d[0]); $d = $d[1];
 
 	// Get Root DN
 	$rootdn = pql_get_rootdn($domain);
@@ -160,14 +160,14 @@ if(!isset($domains)) {
   <div id="el<?=$j?>Child" class="child">
 <?php
       // iterate trough all users
-      if($config["PQL_CONF_SHOW_USERS"][$rootdn]) {
+      if(pql_get_define("PQL_CONF_SHOW_USERS", $rootdn)) {
 	  // Zero out the variables, othervise we won't get users in
 	  // specified domain, but also in the PREVIOUS domain shown!
 	  $users = ""; $cns = "";
 
 	  // Get all users (their DN) in this domain
 	  $users = pql_get_user($_pql->ldap_linkid, $domain);
-	  if(!is_array($users)){
+	  if(!is_array($users)) {
 	      // no user available for this domain
 ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
@@ -188,24 +188,24 @@ if(!isset($domains)) {
 	      foreach ($users as $dn) {
 		  unset($cn); unset($sn);
 
-		  $cn = pql_get_userattribute($_pql->ldap_linkid, $dn, $config["PQL_GLOB_ATTR_GIVENNAME"]);
-		  $sn = pql_get_userattribute($_pql->ldap_linkid, $dn, $config["PQL_GLOB_ATTR_SN"]);
+		  $cn = pql_get_userattribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_GIVENNAME"));
+		  $sn = pql_get_userattribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_SN"));
 
 		  if($cn[0] && $sn[0])
 		    // Only remember users that have both a first and lastname.
 		    $cns[$dn] = $sn[0].", ".$cn[0];
 		  else {
-		      $cn = pql_get_userattribute($_pql->ldap_linkid, $dn, $config["PQL_GLOB_ATTR_CN"]);
+		      $cn = pql_get_userattribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_CN"));
 		      $cns[$dn] = "System - ".$cn[0];
 		  }
 	      }
               asort($cns);
 
 	      foreach($cns as $dn => $cn) {
-		  $uid = pql_get_userattribute($_pql->ldap_linkid, $dn, $config["PQL_GLOB_ATTR_UID"]);
+		  $uid = pql_get_userattribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_UID"));
 		  $uid = $uid[0];
 
-		  $uidnr = pql_get_userattribute($_pql->ldap_linkid, $dn, $config["PQL_GLOB_ATTR_QMAILUID"]);
+		  $uidnr = pql_get_userattribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_QMAILUID"));
 		  $uidnr = $uidnr[0];
 
 		  if(($uid != 'root') or ($uidnr != '0')) {

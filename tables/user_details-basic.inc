@@ -3,7 +3,8 @@
     <th colspan="3" align="left"><?php echo PQL_LANG_USER_DATA; ?></th>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?php echo PQL_LANG_USER_ID ?></td>
-        <td><?=$$config["PQL_CONF_REFERENCE_USERS_WITH"][$rootdn]?></td>
+<?php $ref = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn); ?>
+        <td><?=$$ref?></td>
         <td>
 <?php if(!$SINGLE_USER) { ?>
           <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=uid&user=<?=$userdn?>&oldvalue=<?=$uid?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LANG_UID_CHANGE; ?>" border="0"></a>

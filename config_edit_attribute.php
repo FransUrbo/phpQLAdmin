@@ -1,6 +1,6 @@
 <?php
 // Edit and set configuration values in the LDAP database
-// $Id: config_edit_attribute.php,v 1.8 2003-06-19 10:36:03 turbo Exp $
+// $Id: config_edit_attribute.php,v 1.9 2003-06-25 07:06:24 turbo Exp $
 //
 session_start();
 
@@ -29,10 +29,10 @@ function attribute_forward($msg, $rlnb = false) {
 		  $url = "config_detail.php?msg=$msg";
 	}
 
-	if($rlnb and $config["PQL_GLOB_AUTO_RELOAD"])
+	if($rlnb and pql_get_define("PQL_GLOB_AUTO_RELOAD"))
 	  $url .= "&rlnb=1";
 
-    header("Location: " . $config["PQL_GLOB_URI"] . "$url");
+    header("Location: " . pql_get_define("PQL_GLOB_URI") . "$url");
 }
 
 // select what to do

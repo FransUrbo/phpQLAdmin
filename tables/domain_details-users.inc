@@ -12,11 +12,11 @@
 		foreach($users as $user) {
 			$userdn = urlencode($user);
 
-			$uid    = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_UID"]); $uid = $uid[0];
-			$cn     = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_CN"]); $cn = $cn[0];
-			$uidnr  = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_QMAILUID"]); $uidnr = $uidnr[0];
+			$uid    = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_UID")); $uid = $uid[0];
+			$cn     = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_CN")); $cn = $cn[0];
+			$uidnr  = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_QMAILUID")); $uidnr = $uidnr[0];
 			
-			$status = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_ISACTIVE"]);
+			$status = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_ISACTIVE"));
 			$status = pql_ldap_accountstatus($status[0]);
 
 			if(($uid != 'root') or ($uidnr != '0')) {

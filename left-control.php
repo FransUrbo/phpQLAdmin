@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.13 2003-06-02 08:10:42 turbo Exp $
+// $Id: left-control.php,v 2.14 2003-06-25 07:06:25 turbo Exp $
 //
 session_start();
 
@@ -14,8 +14,8 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS, false, 0);
 
 // TODO: How do we know if the user is allowed to add domains?
 //       In the domain description we don't have that info...
-//if($config["PQL_GLOB_CONTROL_USE"] && ($USER_BASE == 'everything')) {
-if($config["PQL_GLOB_CONTROL_USE"]) {
+//if(pql_get_define("PQL_GLOB_CONTROL_USE") && ($USER_BASE == 'everything')) {
+if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 	$j = 1;
 ?>
   <!-- Server Control -->

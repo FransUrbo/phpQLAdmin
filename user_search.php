@@ -10,11 +10,11 @@ include("./header.html");
   <span class="title2"><?php echo PQL_LANG_SEARCH_TITLE; ?></span>
   <form method=post action="search.php">
     <select name=attribute>
-      <option value=<?=$config["PQL_GLOB_ATTR_UID"]?> SELECTED><?php echo PQL_LANG_SEARCH_UID; ?></option>
-      <option value=<?=$config["PQL_GLOB_ATTR_CN"]?>><?php echo PQL_LANG_SEARCH_CN; ?></option>
-      <option value=<?=$config["PQL_GLOB_ATTR_MAIL"]?>><?php echo PQL_LANG_SEARCH_MAIL; ?></option>
-      <option value=<?=$config["PQL_GLOB_ATTR_MAILALTERNATE"]?>><?php echo PQL_LANG_SEARCH_MAILALTERNATEADDRESS; ?></option>
-      <option value=<?=$config["PQL_GLOB_ATTR_FORWARDS"]?>><?php echo PQL_LANG_SEARCH_MAILFORWARDINGADDRESS; ?></option>
+      <option value=<?php echo pql_get_define("PQL_GLOB_ATTR_UID"); ?> SELECTED><?php echo PQL_LANG_SEARCH_UID; ?></option>
+      <option value=<?php echo pql_get_define("PQL_GLOB_ATTR_CN"); ?>><?php echo PQL_LANG_SEARCH_CN; ?></option>
+      <option value=<?php echo pql_get_define("PQL_GLOB_ATTR_MAIL"); ?>><?php echo PQL_LANG_SEARCH_MAIL; ?></option>
+      <option value=<?php echo pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE"); ?>><?php echo PQL_LANG_SEARCH_MAILALTERNATEADDRESS; ?></option>
+      <option value=<?php echo pql_get_define("PQL_GLOB_ATTR_FORWARDS"); ?>><?php echo PQL_LANG_SEARCH_MAILFORWARDINGADDRESS; ?></option>
     </select>
 
     <select name=filter_type>

@@ -43,6 +43,10 @@ phpQLAdmin 2.0.15 Release (TO BE ANNOUNCED)
 	    Closes bug 20
 	  - Implemented change of Bind9 zone values.
 	    Closes bug 1
+	  - URL encode namingContexts and domain DN in the left frame.
+	    This so we can have strange characters (like '&') in the
+	    branch name.
+	    Closes bug 23
  
 	GUI layout change
 	  - Possibility to set a value in the domain branch saying we

@@ -1,10 +1,10 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.20 2003-06-10 11:29:06 turbo Exp $
+// $Id: control_detail.php,v 1.21 2003-06-25 07:06:25 turbo Exp $
 session_start();
 require("./include/pql_config.inc");
 
-if($config["PQL_GLOB_CONTROL_USE"]) {
+if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
     // include control api if control is used
     include("./include/pql_control.inc");
     $_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
@@ -52,7 +52,7 @@ if($config["PQL_GLOB_CONTROL_USE"]) {
 	}
 
 	// reload navigation bar if needed
-	if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
+	if(isset($rlnb) and pql_get_define("PQL_GLOB_AUTO_RELOAD")) {
 ?>
 
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>

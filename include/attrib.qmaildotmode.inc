@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // qmaildotmode (interpretation of .qmail-files)
-// $Id: attrib.qmaildotmode.inc,v 2.6 2003-05-28 07:23:38 turbo Exp $
+// $Id: attrib.qmaildotmode.inc,v 2.7 2003-06-25 07:07:02 turbo Exp $
 
 function attribute_check($type){
 	global $qmaildotmode, $domain, $oldvalue, $_pql, $error;
@@ -68,12 +68,13 @@ function attribute_print_form(){
       </th>
     </table>
 
-    <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
-    <input type="hidden" name="domain" value="<?php echo $domain; ?>">
-    <input type="hidden" name="user" value="<?php echo $user ?>">
-    <input type="hidden" name="view" value="<?=$view?>">
+    <input type="hidden" name="submit"   value="1">
+    <input type="hidden" name="attrib"   value="<?=$attrib?>">
+    <input type="hidden" name="oldvalue" value="<?=$oldvalue?>">
+    <input type="hidden" name="domain"   value="<?=$domain?>">
+    <input type="hidden" name="rootdn"   value="<?=$rootdn?>">
+    <input type="hidden" name="user"     value="<?=$user?>">
+    <input type="hidden" name="view"     value="<?=$view?>">
     <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
@@ -82,7 +83,7 @@ function attribute_print_form(){
 }
 
 function attribute_save($type){
-	global $domain, $user, $attrib, $oldvalue, $qmaildotmode, $_pql, $config, $view;
+	global $domain, $user, $attrib, $oldvalue, $qmaildotmode, $_pql, $view;
 	
 	// recontrol values
 	if(!attribute_check($type)){
@@ -106,7 +107,7 @@ function attribute_save($type){
 			$qmaildotmode = "";
     	}
 		
-		if(pql_replace_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_DOTMODE"], $qmaildotmode)){
+		if(pql_replace_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_DOTMODE"), $qmaildotmode)) {
 			$msg = pql_complete_constant(PQL_LANG_QMAILDOTMODE_CHANGE_OK, array("mode" => $qmaildotmode));
 		} else {
 			$msg = PQL_LANG_QMAILDOTMODE_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);

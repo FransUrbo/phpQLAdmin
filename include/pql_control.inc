@@ -4,13 +4,31 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.23 2003-06-12 09:26:14 turbo Exp $
+// $Id: pql_control.inc,v 2.24 2003-06-25 07:07:02 turbo Exp $
 //
 // version history:
 // $Log: pql_control.inc,v $
-// Revision 2.23  2003-06-12 09:26:14  turbo
-// * Encode/Decode as much data directly in the API functions so that we don't
-//   miss to encode/decode a value in the program at large..
+// Revision 2.24  2003-06-25 07:07:02  turbo
+// Close bug 23.
+//
+// The 'reason' for this bug is that '&' is a URL character that indicates
+// an option. For example:
+//
+//      /cgi-bin/somescript.cgi?first=option&second=other&etc=something
+//
+// Now, when the URL contains 'Falu Bil- & Industrifarg' (which, in
+// English would be 'Falu Car- & Industrycoulor'), the browser thinks
+// that ' Industrifarg' is an option to 'Falu bil- '. Hence the error...
+//
+// The fix is to URL encode (exchange speciall URL characters like '=', '&'
+// etc) with a special character. The '=' character would be '%3D' etc...
+//
+// The problem with this (URL encode branch and rootdn) is that I use that
+// (the root and branch DN) in the global config variable to distinguish
+// variables between branches.
+//
+// The fix is to create a function - pql_get_define() - that will decode the
+// DN (if supplied - a branch option) and send the result back to the caller.
 //
 // Revision 1.2  2001/09/06 11:36:24  mb
 // added no_connect option to pql_control-class
@@ -59,9 +77,7 @@
 
 class pql_control extends pql {
     function pql_control($host, $binddn = "", $bindpw = "", $no_connect = false){
-		global $config;
-
-		if(!$config["PQL_GLOB_CONTROL_USE"])
+		if(!pql_get_define("PQL_GLOB_CONTROL_USE"))
 		  // control patch is not enabled, leave
 		  return false;
 		
@@ -201,9 +217,7 @@ function pql_control_remove_whole_attribute($ldap_linkid, $ldap_control_basedn, 
 //
 // domain is array as: 'oldvalue', 'newvalue'
 function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "") {
-	global $config;
-
-    if(!$config["PQL_GLOB_CONTROL_USE"])
+    if(!pql_get_define("PQL_GLOB_CONTROL_USE"))
 	  // control patch is not enabled
 	  return false;
 
@@ -240,7 +254,7 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 	}
 
     // Get the hostname
-    if($host and ($host != '*') and $config["PQL_GLOB_CONTROL_AUTOADDHOSTNAME"]) {
+    if($host and ($host != '*') and pql_get_define("PQL_GLOB_CONTROL_AUTOADDHOSTNAME")) {
 		$hostname = split("\.", $host);
 		$hostname = maybe_encode($hostname[0]);
 	
@@ -248,7 +262,7 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 		  $entry[] = $hostname . "." . $tmp;
 	}
 	
-    if($config["PQL_GLOB_CONTROL_AUTOADDLOCALS"])
+    if(pql_get_define("PQL_GLOB_CONTROL_AUTOADDLOCALS"))
 	  $entry[] = "localhost";
 
 	// ----------------
@@ -300,7 +314,7 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 						  $entry[] = $domain[1];
 						
 						// Add 'hostname.newdomain' to LDIF entry
-						if($h and $domain[1] and $config["PQL_GLOB_CONTROL_AUTOADDHOSTNAME"]) {
+						if($h and $domain[1] and pql_get_define("PQL_GLOB_CONTROL_AUTOADDHOSTNAME")) {
 							$hostname = split("\.", $h);
 							$entry[] = $hostname[0] . "." . $domain[1];
 						}
@@ -312,7 +326,7 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 				}
 
 				// --------------------------------
-				if($type == 'rcpthosts') {
+				if($type == 'rcpthosts' or !$type) {
 					// Get current rcpthosts for this host
 					$rcpthosts = pql_control_get_attribute($ldap->ldap_linkid, $hostdn, "rcpthosts");
 					if(!is_null($rcpthosts)) {
@@ -335,7 +349,7 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 						  $entry[] = $domain[1];
 						
 						// Add 'hostname.newdomain' to LDIF entry
-						if($h and $domain[1] and $config["PQL_GLOB_CONTROL_AUTOADDHOSTNAME"]) {
+						if($h and $domain[1] and pql_get_define("PQL_GLOB_CONTROL_AUTOADDHOSTNAME")) {
 							$hostname = split("\.", $h);
 							$entry[] = $hostname[0] . "." . $domain[1];
 						}

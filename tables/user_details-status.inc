@@ -1,4 +1,4 @@
-<?php	$status = pql_get_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_ISACTIVE"]);
+<?php	$status = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_ISACTIVE"));
 	$status = $status[0];
 
 	$status = pql_ldap_accountstatus($status);

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // base homedirectory for domain
-// $Id: attrib.basemaildir.inc,v 2.2 2003-05-28 07:23:37 turbo Exp $
+// $Id: attrib.basemaildir.inc,v 2.3 2003-06-25 07:07:01 turbo Exp $
 
 function attribute_check(){
     global $basemaildir, $domain, $oldvalue, $_pql, $error;
@@ -28,11 +28,11 @@ function attribute_init(){
 }
 
 function attribute_print_form(){
-    global $basemaildir, $domain, $PHP_SELF, $attrib, $oldvalue, $error, $view;
+    global $basemaildir, $domain, $PHP_SELF, $attrib, $oldvalue, $error, $view, $orgname;
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?php echo PQL_LANG_DOMAIN_DEFAULT_CHANGE_MAILDIR . $domain; ?></th>
+      <th colspan="3" align="left"><?php echo PQL_LANG_DOMAIN_DEFAULT_CHANGE_MAILDIR . $orgname; ?></th>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"><?php echo PQL_LANG_USER_MAILDIR; ?></td>
           <td><?php echo format_error($error["basemaildir"]); ?><input type="text" name="basemaildir" value="<?php echo $basemaildir; ?>" size="50"></td>
@@ -40,11 +40,12 @@ function attribute_print_form(){
       </th>
     </table>
 
-    <input type="hidden" name="submit" value="2">
-    <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
-    <input type="hidden" name="domain" value="<?php echo $domain; ?>">
-    <input type="hidden" name="view" value="<?=$view?>">
+    <input type="hidden" name="submit"   value="2">
+    <input type="hidden" name="attrib"   value="<?=$attrib?>">
+    <input type="hidden" name="oldvalue" value="<?=$oldvalue?>">
+    <input type="hidden" name="domain"   value="<?=$domain?>">
+    <input type="hidden" name="rootdn"   value="<?=$rootdn?>">
+    <input type="hidden" name="view"     value="<?=$view?>">
     <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>

@@ -3,15 +3,14 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.31 2003-06-19 11:23:20 turbo Exp $
+// $Id: pql_config.inc,v 1.32 2003-06-25 07:07:02 turbo Exp $
 //
-global $config;
 
 // We need this instead of define(), so that we can get rid
 // of 'Constant ... already defined' if running with
 //	error_reporting=E_ALL
 // in PHP...
-function pql_define($define, $value, $case_insensitive = false, $dn = NULL) {
+function pql_set_define($define, $value, $case_insensitive = false, $dn = NULL) {
 	global $config;
 
 	if($value == 'TRUE')
@@ -27,6 +26,8 @@ function pql_define($define, $value, $case_insensitive = false, $dn = NULL) {
 		//	Dimension 1: define name
 		//	Dimension 2: root DN
 
+		$dn = urldecode($dn);
+
 		if(!isset($config[$define][$dn])) {
 			$config[$define][$dn] = $value;
 //			echo "config[$define][$dn] = $value<br>"; // DEBUG
@@ -38,6 +39,22 @@ function pql_define($define, $value, $case_insensitive = false, $dn = NULL) {
 			$config[$define] = $value;
 //			echo "config[$define] = '$value'<br>"; // DEBUG
 		}
+	}
+}
+
+function pql_get_define($define, $dn = NULL) {
+	global $config;
+
+	if($dn) {
+		$dn = urldecode($dn);
+
+		if($config[$define][$dn])
+		  return($config[$define][$dn]);
+		elseif($config[$define])
+		  return($config[$define]);
+	} else {
+		if($config[$define])
+		  return($config[$define]);
 	}
 }
 
@@ -154,6 +171,8 @@ if(isset($USER_DN))
 
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 foreach($_pql->ldap_basedn as $dn)  {
+	$dn = urldecode($dn);
+
 	$sr = @ldap_read($_pql->ldap_linkid, $dn, ('objectClass=*'))
 	  or pql_errormsg($_pql->ldap_linkid);
 	$info = ldap_get_entries($_pql->ldap_linkid, $sr)
@@ -185,9 +204,9 @@ foreach($_pql->ldap_basedn as $dn)  {
 				}
 
 				if(ereg("_GLOB_", $key)) 
-				  pql_define($key, $values, true);
+				  pql_set_define($key, $values, true);
 				else
-				  pql_define($key, $values, true, $dn);
+				  pql_set_define($key, $values, true, $dn);
 
 				unset($values);
 			}

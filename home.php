@@ -13,7 +13,7 @@ if(isset($msg)){
 }
 
 // reload navigation bar if needed
-if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
+if(isset($rlnb) and pql_get_define("PQL_GLOB_AUTO_RELOAD")) {
 ?>
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
   <script language="JavaScript1.2"><!--
@@ -54,18 +54,18 @@ if(isset($submit)) {
 
     // We need to disable advanced mode so that only the user frame
     // is shown, hence no 'advanced=...' in the url.
-    header("Location: " . $config["PQL_GLOB_URI"] . "index2.php");
+    header("Location: " . pql_get_define("PQL_GLOB_URI") . "index2.php");
 }
 ?>
 
-  <br><span class="title1"><?=$config["PQL_GLOB_WHOAREWE"]?><?php if($ADVANCED_MODE) { ?><br>Version: <?=$VERSION?><?php } ?></span><br>
+  <br><span class="title1"><?php echo pql_get_define("PQL_GLOB_WHOAREWE"); ?><?php if($ADVANCED_MODE) { ?><br>Version: <?=$VERSION?><?php } ?></span><br>
 
   <ul>
 <?php
 	if($ADVANCED_MODE == 1) {
 	    // Should we show the 'change server' choices
-	    if($config["PQL_GLOB_CHANGE_SERVER"] and eregi('\+', $config["PQL_GLOB_HOST"])) {
-		$servers = split('\+', $config["PQL_GLOB_HOST"]);
+	    if(pql_get_define("PQL_GLOB_CHANGE_SERVER") and eregi('\+', pql_get_define("PQL_GLOB_HOST"))) {
+		$servers = split('\+', pql_get_define("PQL_GLOB_HOST"));
 ?>
     <li>
       <form action="<?=$PHP_SELF?>" target="_top">

@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // defaultPasswordScheme
-// $Id: attrib.defaultpasswordscheme.inc,v 2.2 2003-05-28 07:23:37 turbo Exp $
+// $Id: attrib.defaultpasswordscheme.inc,v 2.3 2003-06-25 07:07:02 turbo Exp $
 
 function attribute_check($type = '') {
 	global $error, $attrib, $$attrib;
@@ -16,7 +16,7 @@ function attribute_check($type = '') {
 }
 
 function attribute_print_form($type = "modify") {
-	global $error, $attrib, $$attrib, $domain, $rootdn, $config, $view;
+	global $error, $attrib, $$attrib, $domain, $rootdn, $view, $orgname;
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -27,7 +27,7 @@ function attribute_print_form($type = "modify") {
             <?php echo format_error($error[$attrib]); ?>
             <select name="<?=$attrib?>">
 <?php // Convert the array to a index
-	  $schemes = pql_split_oldvalues($config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn]);
+	  $schemes = pql_split_oldvalues(pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn));
 	  foreach($schemes as $scheme) {
 ?>
               <option value="<?=$scheme?>"><?=$scheme?></option>
@@ -42,7 +42,7 @@ function attribute_print_form($type = "modify") {
     <input type="hidden" name="attrib" value="<?=$attrib?>">
     <input type="hidden" name="domain" value="<?=$domain?>">
     <input type="hidden" name="rootdn" value="<?=$rootdn?>">
-    <input type="hidden" name="view" value="<?=$view?>">
+    <input type="hidden" name="view"   value="<?=$view?>">
     <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>

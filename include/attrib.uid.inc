@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // uid (user id)
-// $Id: attrib.uid.inc,v 2.8 2003-05-28 07:23:38 turbo Exp $
+// $Id: attrib.uid.inc,v 2.9 2003-06-25 07:07:02 turbo Exp $
 
 function attribute_check($type){
 	global $uid, $oldvalue, $_pql, $error, $domain;
@@ -35,7 +35,6 @@ function attribute_init(){
 
 function attribute_print_form(){
 	global $uid, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $view;
-
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -53,12 +52,13 @@ function attribute_print_form(){
       </th>
     </table>
 
-    <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
-    <input type="hidden" name="domain" value="<?php echo $domain; ?>">
-    <input type="hidden" name="user" value="<?php echo $user ?>">
-    <input type="hidden" name="view" value="<?=$view?>">
+    <input type="hidden" name="submit"   value="1">
+    <input type="hidden" name="attrib"   value="<?=$attrib?>">
+    <input type="hidden" name="oldvalue" value="<?=$oldvalue?>">
+    <input type="hidden" name="domain"   value="<?=$domain?>">
+    <input type="hidden" name="rootdn"   value="<?=$rootdn?>">
+    <input type="hidden" name="user"     value="<?=$user?>">
+    <input type="hidden" name="view"     value="<?=$view?>">
     <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
@@ -67,7 +67,7 @@ function attribute_print_form(){
 }
 
 function attribute_save($type){
-	global $domain, $user, $attrib, $oldvalue, $uid, $_pql, $config, $view;
+	global $domain, $user, $attrib, $oldvalue, $uid, $_pql, $view;
 	
 	// recontrol values
 	if(!attribute_check($type)){
@@ -87,14 +87,14 @@ function attribute_save($type){
 			break;
     	}
 		
-		if(pql_replace_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_UID"], $uid)){
+		if(pql_replace_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_UID"), $uid)){
 			$msg = pql_complete_constant(PQL_LANG_UID_CHANGE_OK, array("old" => $oldvalue, "new" => $uid));
 		} else {
 			$msg = PQL_LANG_UID_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
 		}
 		
 		// We use the uid to reference users and it has just changed...
-		if ($config["PQL_CONF_REFERENCE_USERS_WITH"][pql_get_rootdn($user)] == $config["PQL_GLOB_ATTR_UID"]) {
+		if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", pql_get_rootdn($user)) == pql_get_define("PQL_GLOB_ATTR_UID")) {
 			$user = $uid;
 			// Reload the navigation bar (if allowed by config)
 			attribute_forward($msg, true);

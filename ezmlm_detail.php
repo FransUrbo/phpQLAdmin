@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_detail.php,v 1.17 2003-06-21 20:19:25 turbo Exp $
+// $Id: ezmlm_detail.php,v 1.18 2003-06-25 07:06:25 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -19,7 +19,7 @@ if($domain) {
 	}
 
 	// Initialize and load list of mailinglists
-	$ezmlm = new ezmlm($config["PQL_GLOB_EZMLM_USER"], $basemaildir);
+	$ezmlm = new ezmlm(pql_get_define("PQL_GLOB_EZMLM_USER"), $basemaildir);
 	
 	include("./header.html");
 	

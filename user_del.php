@@ -21,8 +21,8 @@ $cn = pql_get_userattribute($_pql->ldap_linkid, $user, 'cn'); $cn = $cn[0];
   <span class="title1"><?php echo pql_complete_constant(PQL_LANG_USER_DEL_TITLE, array("domain" => $o, "user" => $cn)); ?></span>
   <br><br>
 <?php
-if(isset($ok) || !$config["PQL_CONF_VERIFY_DELETE"][$rootdn]) {
-	$delete_forwards = (isset($delete_forwards) || $config["PQL_CONF_VERIFY_DELETE"][$rootdn]) ? true : false;
+if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
+	$delete_forwards = (isset($delete_forwards) || pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) ? true : false;
 	
 	// delete the user
 	if(pql_user_del($_pql, $domain, $user, $delete_forwards)){
@@ -42,7 +42,7 @@ if(isset($ok) || !$config["PQL_CONF_VERIFY_DELETE"][$rootdn]) {
 	
 	// redirect to domain-detail page
 	$msg = urlencode($msg);
-	header("Location: " . $config["PQL_GLOB_URI"] . "domain_detail.php?domain=$domain&msg=$msg$rlnb");
+	header("Location: " . pql_get_define("PQL_GLOB_URI") . "domain_detail.php?domain=$domain&msg=$msg$rlnb");
 } else {
 ?>
 <br>

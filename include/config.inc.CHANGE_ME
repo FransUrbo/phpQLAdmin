@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.32 2003-06-21 20:19:47 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.33 2003-06-25 07:07:02 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -34,8 +34,8 @@ require("./include/lang.en.inc");
 // Stack these with the + (plus) character and you'll get a list of
 // host you can administrate. If only one, then you can obiously only
 // configure that :)
-//pql_define("PQL_GLOB_HOST","ldaps://localhost/;;ou=QmailLDAP,dc=example,dc=com");
-pql_define("PQL_GLOB_HOST","localhost;389;ou=QmailLDAP,dc=example,dc=com");
+//pql_set_define("PQL_GLOB_HOST","ldaps://localhost/;;ou=QmailLDAP,dc=example,dc=com");
+pql_set_define("PQL_GLOB_HOST","localhost;389;ou=QmailLDAP,dc=example,dc=com");
 
 // ----------------------------
 // PQL_GLOB_SUBTREE_USERS
@@ -44,7 +44,7 @@ pql_define("PQL_GLOB_HOST","localhost;389;ou=QmailLDAP,dc=example,dc=com");
 // or in a subtree like
 //	uid=username,ou=People,PQL_CONF_REFERENCE_DOMAINS_WITH=example,<LDAP_BASEDN>
 // -> If the former (no subtree), leave this empty!
-//pql_define("PQL_GLOB_SUBTREE_USERS", "ou=People");
+//pql_set_define("PQL_GLOB_SUBTREE_USERS", "ou=People");
 
 // ----------------------------
 // PQL_GLOB_SUBTREE_GROUPS
@@ -52,7 +52,7 @@ pql_define("PQL_GLOB_HOST","localhost;389;ou=QmailLDAP,dc=example,dc=com");
 // etc, you'd need a group for the user as well. Under
 // what subtree is the groups located?
 // -> Do not add a comma after this, not needed.
-//pql_define("PQL_GLOB_SUBTREE_GROUPS", "ou=Groups");
+//pql_set_define("PQL_GLOB_SUBTREE_GROUPS", "ou=Groups");
 
 // ----------------------------
 // PQL_GLOB_EZMLM_USER
@@ -60,7 +60,7 @@ pql_define("PQL_GLOB_HOST","localhost;389;ou=QmailLDAP,dc=example,dc=com");
 // what user ezmlm is running as. That is, who "own's" (ie, the
 // directories) the mailinglist. This is usually 'alias', as in
 // '~alias/.qmail-LISTNAME' but can also be 'vmail'...
-pql_define("PQL_GLOB_EZMLM_USER", "alias");
+pql_set_define("PQL_GLOB_EZMLM_USER", "alias");
 
 // ----------------------------
 // mail(message)store generation
@@ -84,8 +84,6 @@ pql_define("PQL_GLOB_EZMLM_USER", "alias");
 // WARNING:	phpQLAdmin will not check the return-value. Be sure not to return nonsense or
 //			a path which is already assigned to another user.
 function user_generate_mailstore($ldap, $email, $dn, $entry) {
-	global $config;
-
 	$mailstore = '';
 	
 	// you feel comfortable with the old way phpQLAdmin generates the mailstore?
@@ -108,29 +106,29 @@ function user_generate_mailstore($ldap, $email, $dn, $entry) {
 	//		$mailstore = $mailstore . "%u%";
 	//	}
 	//	$mailstore = pql_complete_constant($mailstore, array("d" => $domain, 
-	//														 "u" => $entry[$config["PQL_GLOB_ATTR_UID"]], 
-	//														 "h" => $entry[$config["PQL_GLOB_ATTR_MAILHOST"]]));
+	//														 "u" => $entry[pql_get_define("PQL_GLOB_ATTR_UID")], 
+	//														 "h" => $entry[pql_get_define("PQL_GLOB_ATTR_MAILHOST")]));
 	//
 	// example: "%d/%u" (=> domain.tld/username) 
 	//	$mailstore = "%d%/%u%"; 
 	//	$mailstore = pql_complete_constant($mailstore, array(	"d" => $domain, 
-	//															"u" => $entry[$config["PQL_GLOB_ATTR_UID"]], 
-	//															"h" => $entry[$config["PQL_GLOB_ATTR_MAILHOST"]]));
+	//															"u" => $entry[pql_get_define("PQL_GLOB_ATTR_UID")],
+	//															"h" => $entry[pql_get_define("PQL_GLOB_ATTR_MAILHOST")]));
 	// domainname / uid
 	// example: domain.tld/username
-	//	$mailstore = $domain . '/'. $entry[$config["PQL_GLOB_ATTR_UID"]]; 					
+	//	$mailstore = $domain . '/'. $entry[pql_get_define("PQL_GLOB_ATTR_UID")];
 	//
 	// first character of the domainname / domainname / uid
 	// example: d/domain.tld/username
-	//	$mailstore = substr($domain, 0, 1) . '/' . $domain . '/'. $entry[$config["PQL_GLOB_ATTR_UID"]]; 					
+	//	$mailstore = substr($domain, 0, 1) . '/' . $domain . '/'. $entry[pql_get_define("PQL_GLOB_ATTR_UID")];
 	//
 	// mailhost / domainname / uid
 	// example: mail.host.tld/domain.tld/username
-	//	$mailstore = $entry[$config["PQL_GLOB_ATTR_MAILHOST"]] . '/' . $domain . '/'. $entry[$config["PQL_GLOB_ATTR_UID"]];
+	//	$mailstore = $entry[pql_get_define("PQL_GLOB_ATTR_MAILHOST")] . '/' . $domain . '/'. $entry[pql_get_define("PQL_GLOB_ATTR_UID")];
 	//
 	// complete email-address 
 	// example: mail@domain.tld
-	//	$mailstore = $entry[$config["PQL_GLOB_ATTR_MAIL"]]; 					
+	//	$mailstore = $entry[pql_get_define("PQL_GLOB_ATTR_MAIL")];
 	//
 	// generate a random (6 digit) number and make sure 
 	// no other user has the same mailstore 
@@ -148,7 +146,7 @@ function user_generate_mailstore($ldap, $email, $dn, $entry) {
 	//		$mailstore = mt_rand(100000, 999999);
 	//		// check whether another user already has this mailstore. If yes, generate another random number.
 	//		// TODO: ldap_basedn isn't availible any more (it's an array of base DN's)!
-	//		if (!pql_search_attribute($ldap, $ldap_basedn, $config["PQL_GLOB_ATTR_MAILSTORE"], $mailstore)) {
+	//		if (!pql_search_attribute($ldap, $ldap_basedn, pql_get_define("PQL_GLOB_ATTR_MAILSTORE"), $mailstore)) {
 	//			break;
 	//		}
 	//	}
@@ -175,8 +173,6 @@ function user_generate_mailstore($ldap, $email, $dn, $entry) {
 // See information about function user_generate_mailstore()
 // Above. Exact same options apply
 function user_generate_homedir($ldap, $email, $dn, $entry) {
-	global $config;
-
 	//if($dn) {
 	//	$homedir = pql_get_domain_value($ldap, $dn, "basehomedir");
 	//	$domain  = pql_get_domain_value($ldap, $dn, "defaultdomain");
@@ -191,8 +187,8 @@ function user_generate_homedir($ldap, $email, $dn, $entry) {
 	//	$homedir = $homedir . "%u%";
 	//}
 	//$homedir = pql_complete_constant($homedir, array("d" => $domain, 
-	//												 "u" => $entry[$config["PQL_GLOB_ATTR_UID"]], 
-	//												 "h" => $entry[$config["PQL_GLOB_ATTR_MAILHOST"]]));
+	//												 "u" => $entry[pql_get_define("PQL_GLOB_ATTR_UID")],
+	//												 "h" => $entry[pql_get_define("PQL_GLOB_ATTR_MAILHOST")]));
 	
 	return($homedir);
 }
@@ -213,8 +209,6 @@ function user_generate_homedir($ldap, $email, $dn, $entry) {
 //
 // Returns: (string) suggested uid; may be changed by the user
 function user_generate_uid($ldap, $surname, $name, $email, $domain, $account_type) {
-	global $config;
-
 	//	return(pql_get_next_username($ldap, $domain));	// Use prefix from branch to generate UID.
 	//	return($email);									// Complete email address
 	//	return(eregi_replace('@', '%',$email));			// complete email-address but '%' instead of '@'
@@ -239,8 +233,6 @@ function user_generate_uid($ldap, $surname, $name, $email, $domain, $account_typ
 //
 // Returns: (string) suggested email address
 function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $domain, $account_type) {
-	global $config;
-
 	// Compose the username in the form 'firstname.lastname@domain.tld'.
 	return(lc($surname.".".$lastname."@".$domainname));
 }

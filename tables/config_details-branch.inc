@@ -18,7 +18,7 @@
 <?php } else { ?>
         <td class="<?=$class?>"></td>
 <?php } ?>
-        <td class="<?=$class?>"><?php if($config["PQL_CONF_SHOW_USERS"][$branch]) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
+        <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_SHOW_USERS", $branch)) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
       </tr>
 
       <!-- -------------------- --!>
@@ -31,7 +31,7 @@
 <?php } else { ?>
         <td class="<?=$class?>"></td>
 <?php } ?>
-        <td class="<?=$class?>"><?php if($config["PQL_CONF_ALLOW_ABSOLUTE_PATH"][$branch]) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
+        <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $branch)) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
       </tr>
 
       <!-- -------------------- --!>
@@ -44,7 +44,7 @@
 <?php } else { ?>
         <td class="<?=$class?>"></td>
 <?php } ?>
-        <td class="<?=$class?>"><?php if($config["PQL_CONF_VERIFY_DELETE"][$branch]) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
+        <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_VERIFY_DELETE", $branch)) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
       </tr>
 
       <tr>
@@ -56,7 +56,7 @@
 <?php } else { ?>
         <td class="<?=$class?>"></td>
 <?php } ?>
-        <td class="<?=$class?>"><?=$config["PQL_CONF_REFERENCE_USERS_WITH"][$branch]?></td>
+        <td class="<?=$class?>"><?php echo pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $branch); ?></td>
       </tr>
 
       <!-- -------------------- --!>
@@ -69,7 +69,7 @@
 <?php } else { ?>
         <td class="<?=$class?>"></td>
 <?php } ?>
-        <td class="<?=$class?>"><?=$config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$branch]?></td>
+        <td class="<?=$class?>"><?php echo pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $branch); ?></td>
       </tr>
 
       <!-- -------------------- --!>
@@ -86,7 +86,7 @@
 <?php } else { ?>
         <td class="<?=$class?>"></td>
 <?php } ?>
-        <td class="<?=$class?>"><?=$config["PQL_CONF_MINIMUM_UIDNUMBER"][$branch]?></td>
+        <td class="<?=$class?>"><?php echo pql_get_define("PQL_CONF_MINIMUM_UIDNUMBER", $branch); ?></td>
       </tr>
 
       <tr>
@@ -102,7 +102,7 @@
 <?php } else { ?>
         <td class="<?=$class?>"></td>
 <?php } ?>
-        <td class="<?=$class?>"><?=$config["PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER"][$branch]?></td>
+        <td class="<?=$class?>"><?php echo pql_get_define("PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER", $branch); ?></td>
       </tr>
 
       <tr></tr>
@@ -119,8 +119,8 @@
             <img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=$PQL_ATTRIBUTE["PQL_CONF_SCRIPT_CREATE_USER"]?>">
           </a>
         </td>
-<?php	if($config["PQL_CONF_SCRIPT_CREATE_USER"][$branch]) { ?>
-        <td class="<?=$class?>"><?=$config["PQL_CONF_SCRIPT_CREATE_USER"][$branch]?></td>
+<?php	if(pql_get_define("PQL_CONF_SCRIPT_CREATE_USER", $branch)) { ?>
+        <td class="<?=$class?>"><?php echo pql_get_define("PQL_CONF_SCRIPT_CREATE_USER", $branch); ?></td>
 <?php	} else { ?>
         <td class="<?=$class?>"></td>
 <?php	} ?>
@@ -137,8 +137,8 @@
             <img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=$PQL_ATTRIBUTE["PQL_CONF_SCRIPT_CREATE_DOMAIN"]?>">
           </a>
         </td>
-<?php	if($config["PQL_CONF_SCRIPT_CREATE_DOMAIN"][$branch]) { ?>
-        <td class="<?=$class?>"><?=$config["PQL_CONF_SCRIPT_CREATE_DOMAIN"][$branch]?></td>
+<?php	if(pql_get_define("PQL_CONF_SCRIPT_CREATE_DOMAIN", $branch)) { ?>
+        <td class="<?=$class?>"><?php echo pql_get_define("PQL_CONF_SCRIPT_CREATE_DOMAIN", $branch); ?></td>
 <?php	} else { ?>
         <td class="<?=$class?>"></td>
 <?php	} ?>
@@ -152,7 +152,7 @@
 <?php     $class=table_bgcolor(0); $new_tr = 0;
 
           // Convert the array to a index
-		  $schemes = pql_split_oldvalues($config["PQL_CONF_PASSWORD_SCHEMES"][$branch]);
+		  $schemes = pql_split_oldvalues(pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $branch));
 	      
 		  $i = 0;
 		  foreach($schemes as $key) {
@@ -209,7 +209,7 @@
 <?php     $new_tr = 0; $max = 0;
 
           // Convert the array to a index
-		  $objectclasses = pql_split_oldvalues($config["PQL_CONF_OBJECTCLASS_USER"][$branch]);
+		  $objectclasses = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $branch));
 			  
 		  $i = 0;
 		  foreach($objectclasses as $key) {
@@ -278,7 +278,7 @@
           // Convert the array to a index
 		  unset($o); unset($objectclasses);
 			  
-		  $objectclasses = pql_split_oldvalues($config["PQL_CONF_OBJECTCLASS_DOMAIN"][$branch]);
+		  $objectclasses = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_DOMAIN", $branch));
 			  
 		  $i = 0;
 		  foreach($objectclasses as $key) {

@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_del.php,v 1.14 2003-06-21 20:19:25 turbo Exp $
+// $Id: ezmlm_del.php,v 1.15 2003-06-25 07:06:25 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -15,7 +15,7 @@ function list_forward($domainname, $msg){
 
     $msg = urlencode($msg);
     $url = "home.php?msg=$msg&rlnb=3";
-    header("Location: " . $config["PQL_GLOB_URI"] . "$url");
+    header("Location: " . pql_get_define("PQL_GLOB_URI") . "$url");
 }
 
 // Get base directory for mails
@@ -25,7 +25,7 @@ if(!($path = pql_get_domain_value($_pql, $domain, "basemaildir"))) {
 }
 
 // Load list of mailinglists
-if($ezmlm = new ezmlm($config["PQL_GLOB_EZMLM_USER"], $path)) {
+if($ezmlm = new ezmlm(pql_get_define("PQL_GLOB_EZMLM_USER"), $path)) {
 	if(is_array($ezmlm->mailing_lists[$listno])) {
 		$listname = $ezmlm->mailing_lists[$listno]["name"] . "@" . $ezmlm->mailing_lists[$listno]["host"];
 		$listpath = $ezmlm->mailing_lists[$listno]["directory"];

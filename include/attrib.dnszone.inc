@@ -1,10 +1,10 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.1 2003-06-24 07:43:48 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.2 2003-06-25 07:07:02 turbo Exp $
 
 function attribute_check() {
-    global $domain, $rootdn, $rdn, $view, $config, $action, $type, $action;
+    global $domain, $rootdn, $rdn, $view, $action, $type, $action;
     global $_pql, $PHP_SELF, $attrib, $$attrib, $oldvalue;
 
     if($attrib && $rdn && ($$attrib != $oldvalue))
@@ -14,7 +14,7 @@ function attribute_check() {
 }
 
 function attribute_print_form() {
-    global $domain, $rootdn, $rdn, $view, $config, $action, $type, $action;
+    global $domain, $rootdn, $rdn, $view, $action, $type, $action;
     global $_pql, $PHP_SELF, $attrib;
 
 	if($action != 'add') {
@@ -74,7 +74,7 @@ function attribute_print_form() {
 }
 
 function attribute_save($action) {
-    global $domain, $rootdn, $rdn, $view, $config, $action, $type, $action;
+    global $domain, $rootdn, $rdn, $view, $action, $type, $action;
     global $_pql, $PHP_SELF, $attrib, $$attrib, $oldvalue, $priority, $time;
 
 	if((lc($attrib) == 'mxrecord') && $priority)

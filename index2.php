@@ -1,18 +1,17 @@
 <?php
 session_start();
 require("./include/pql_config.inc");
-global $config;
 
 $frames = 2; // Default 2 frames - left and main
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 // -----------------
 // Count how many frames we should open
-if($config["PQL_GLOB_EZMLM_USE"]) {
+if(pql_get_define("PQL_GLOB_EZMLM_USE")) {
     $frames++;
 }
 
-if($config["PQL_GLOB_BIND9_USE"]) {
+if(pql_get_define("PQL_GLOB_BIND9_USE")) {
     $frames++;
 }
 
@@ -34,7 +33,7 @@ $counted = 0; // Don't count each of the Control usage more than once
 foreach($_pql->ldap_basedn as $dn)  {
     $ALLOW_CONTROL_CREATE = 1; // DEBUG
 
-    if($config["PQL_GLOB_CONTROL_USE"] and $ALLOW_CONTROL_CREATE and $controlsadministrator) {
+    if(pql_get_define("PQL_GLOB_CONTROL_USE") and $ALLOW_CONTROL_CREATE and $controlsadministrator) {
 	$SHOW_FRAME["controls"] = 1;
 	if(!$counted) {
 	    $frames++;
@@ -84,11 +83,11 @@ $size = sprintf("%d", $size);
       <frameset cols="*" rows="<?=$size?>%,*" border="1" frameborder="0"><!-- $frames >= 5 --!>
 <?php   }
 
-       if($config["PQL_GLOB_EZMLM_USE"]) { ?>
+       if(pql_get_define("PQL_GLOB_EZMLM_USE")) { ?>
       <frame src="left-ezmlm.php"   name="pqlnavezmlm">
 <?php   }
 
-        if($config["PQL_GLOB_BIND9_USE"]) {
+        if(pql_get_define("PQL_GLOB_BIND9_USE")) {
 ?>
       <frame src="left-bind9.php"   name="pqlnavbind9">
 <?php   }

@@ -1,6 +1,6 @@
 <?php
 // edit attributes of a BIND9 DNS zone
-// $Id: bind9_edit_attributes.php,v 2.1 2003-06-24 07:43:14 turbo Exp $
+// $Id: bind9_edit_attributes.php,v 2.2 2003-06-25 07:06:24 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -10,12 +10,12 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 // forward back to domain detail page
 function attribute_forward($msg) {
-    global $domain, $rootdn, $rdn, $view, $config;
+    global $domain, $rootdn, $rdn, $view;
 
     $msg = urlencode($msg);
     $url = "domain_detail.php?rootdn=$rootdn&domain=$domain&view=$view&msg=$msg";
 
-    header("Location: " . $config["PQL_GLOB_URI"] . "$url");
+    header("Location: " . pql_get_define("PQL_GLOB_URI") . "$url");
 }
 
 include("./header.html");

@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // usernamePrefix
-// $Id: attrib.usernameprefix.inc,v 2.1 2003-06-20 08:52:27 turbo Exp $
+// $Id: attrib.usernameprefix.inc,v 2.2 2003-06-25 07:07:02 turbo Exp $
 
 function attribute_check($type = '') {
 	global $error, $attrib, $$attrib;
@@ -16,11 +16,11 @@ function attribute_check($type = '') {
 }
 
 function attribute_print_form($type = "modify") {
-	global $error, $attrib, $$attrib, $domain, $rootdn, $view;
+	global $error, $attrib, $$attrib, $domain, $rootdn, $view, $orgname;
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">Username prefix to use when automaticly creating username in domain <?=$domain?></th>
+      <th colspan="3" align="left">Username prefix to use when automaticly creating username in domain <?=$orgname?></th>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title">Username prefix</td>
           <td>
@@ -45,7 +45,8 @@ function attribute_print_form($type = "modify") {
     <input type="hidden" name="submit" value="2">
     <input type="hidden" name="attrib" value="<?=$attrib?>">
     <input type="hidden" name="domain" value="<?=$domain?>">
-    <input type="hidden" name="view" value="<?=$view?>">
+    <input type="hidden" name="rootdn" value="<?=$rootdn?>">
+    <input type="hidden" name="view"   value="<?=$view?>">
     <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
