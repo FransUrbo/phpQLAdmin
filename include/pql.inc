@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.56 2003-04-08 10:35:19 turbo Exp $
+// $Id: pql.inc,v 2.57 2003-04-23 12:28:23 turbo Exp $
 //
 
 // ----------------------------
@@ -40,7 +40,7 @@ class pql {
 	var $ldap_basedn = 0;					// array of base dns for future searches etc
 
 	function _find_base_option($attrib) {
-	    $attrib = strtolower($attrib);
+	    $attrib = lc($attrib);
 
 	    $sr = @ldap_read($this->ldap_linkid, NULL, '(objectClass=*)', array($attrib));
 	    if(! $sr) die("Can't find base dn - ".ldap_error($this->ldap_linkid));
@@ -159,42 +159,84 @@ class pql {
 
 // Add a user to the LDAP database
 function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $branch) {
-	global $config;
+	global $config, $account_type;
 
+	// -----
+	// What's the Root DN (namingContexts) for this domain
 	$rootdn = pql_get_rootdn($domain);
 
-    // Setup the objectclass entries
-	if($config["PQL_CONF_OBJECTCLASS_USER"][$rootdn]) {
-		foreach(pql_split_oldvalues($config["PQL_CONF_OBJECTCLASS_USER"][$rootdn]) as $oc)
-		  $entry["objectClass"][] = $oc;
-	}
-    
-    // additional attributes
+	// -----
+    // Retreive WANTED objectclasses
+	if($config["PQL_CONF_OBJECTCLASS_USER"][$rootdn])
+	  foreach(pql_split_oldvalues($config["PQL_CONF_OBJECTCLASS_USER"][$rootdn]) as $oc)
+		$ocs[] = $oc;
+	else
+	  $ocs[] = '';
+
+	// -----
+	// Retreive EXISTING objectclasses in the LDAP server
+	$ldap = pql_get_subschema($ldap_linkid, "objectclasses");
+
+	// -----
+	// Setup user entry variable
     foreach($attribs as $key => $value){
-		// We might have supplied some objectClass definitions
-		// Don't overwrite those!
-		if(! eregi("objectclass", $key)) {
-			if(is_array($value)) {
-				foreach($value as $val) {
-					$entry[$key][] = trim($val);
-				}
-			} else {
-				$entry[$key] = trim($value);
-			}
-		} else {
-			// We have a objectClass
-			if(is_array($value)) {
-				// ... in an array. Go through each one, creating the LDAP entry
-				foreach($value as $oc) {
-					$entry["objectClass"][] = $oc;
-				}
-			} else {
-				// Could this happen?! Just incase, this SHOULD work :)
-				$entry["objectClass"][] = $value;
-			}
-		}
+		// Check if we have a MUST in the objectclasses choosen
+		// for creation for this attribute...
+		if(is_array($value))
+		  foreach($value as $val)
+			$entry[$key][] = trim($val);
+		else
+		  $entry[$key] = trim($value);
     }
-    
+
+	// -----
+	// Go through the WANTED objectclasses, checking for a
+	// MUST attribute we don't have
+	foreach($ocs as $oc) {
+		if(!$ldap[$oc]['MUST']['count'])
+		  // An objectclass with no MUST, add this directly
+		  $entry['objectclass'][] = $oc;
+		else {
+			// This objectclass have one or more MUST attributes
+			// Do we have any of those MUST attributes defined?
+			$MUST = $ldap[$oc]['MUST'];
+
+			foreach($entry as $attrib => $value) {
+				if(!is_array($value)) {
+					// Go through the MUST attributes for this objctclass,
+					// looking for an attribute we have NOT defined
+					for($i=0; $MUST[$i]; $i++)
+					  if(lc($MUST[$i]) == lc($attrib))
+						unset($MUST[$i]);
+					
+					// Before we rearrange the array, remove the count
+					// entry (othervise it's get renamed to a number).
+					unset($MUST['count']);
+					
+					// Rearrange the array
+					$MUST = array_values(array_unique($MUST));
+					
+					// Readd the count entry
+					$MUST['count'] = count($MUST);
+				}
+			}
+			
+			if(!$MUST['count'])
+			  // This objectclass don't contain MUST attributes which
+			  // isn't defined in the user object. Add this to the list
+			  // of objectclasses to add
+			  $entry['objectclass'][] = $oc;
+//			else {
+//				// Objectclass which have been removed from the list because
+//				// there's an MUST attribute missing
+//				echo "<b>Objectclass with missing attribute in MUST: $oc</b><br>";
+//				printr($MUST);
+//			}
+		}
+	}
+
+	// -----
+	// Create the RDN for the user
 	$userdn = $config["PQL_GLOB_ATTR_UID"] . "=" . $entry[$config["PQL_GLOB_ATTR_UID"]] . ",";
 	if($branch)
 	  $userdn .= $branch;
@@ -204,7 +246,8 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_user_add", $userdn, $entry);
 
-    // adds the user
+	// -----
+    // Add the user to the database
     if(! ldap_add($ldap_linkid, $userdn, $entry)){
 		// failed to add user
 		pql_errormsg($ldap_linkid);
@@ -213,6 +256,7 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 	}
 	$dns[]  = $userdn;
     
+	// -----
 	// If this is a 'system' account, create the Group object
 	if($account_type == "system" and $entry["gidnumber"]) {
 		$gidnr = $entry["gidnumber"];
@@ -490,7 +534,7 @@ function pql_modify_user_addressbook($ldap_linkid, $user, $attribs){
     
     // set all objectclasses to lowercase
     foreach($oc_user as $oc1){
-		$oc[] = strtolower($oc1);
+		$oc[] = lc($oc1);
     }
     
     // add addressbook's default object classes if they are not present
@@ -789,9 +833,9 @@ function pql_get_userentry($ldap_linkid, $user) {
     
     // build array of all attributes
     $rid = @ldap_first_entry($ldap_linkid, $sr);
-    $attribs[] = strtolower(@ldap_first_attribute($ldap_linkid, $rid, $berid));
+    $attribs[] = lc(@ldap_first_attribute($ldap_linkid, $rid, $berid));
     while($attrib = @ldap_next_attribute($ldap_linkid, $rid, $berid))
-	  $attribs[] = strtolower($attrib);
+	  $attribs[] = lc($attrib);
 
     // build entry array with all attributes and values
     foreach($attribs as $attrib) {
@@ -1279,6 +1323,7 @@ function pql_get_next_uidnumber($ldap) {
 
 function pql_get_domain_value($ldap, $dn, $value, $match = '') {
 	global $config;
+	$value = lc($value);
 
 	$recursive = 1; $success = 0; $results = '';
 
@@ -1289,7 +1334,7 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '') {
 
 	// Setup a filter to look for DOMAINS (branches)
 	$filter  = "(&($value=$match)(".$config["PQL_CONF_REFERENCE_DOMAINS_WITH"][pql_get_rootdn($dn)]."=*))";
-	//echo "pql_get_domain_value(): '$dn' '$filter' $value<br>";
+	//echo "pql_get_domain_value(): '$dn' '$filter' $value<br>"; // DEBUG
 
 	// Search from the DN
 	if(!$recursive)
@@ -1355,7 +1400,7 @@ function pql_set_domain_value($linkid, $dn, $type, $value) {
 	$DEBUG = 0;
 
 	if($type) {
-		$type = strtolower($type);
+		$type = lc($type);
 		
 		// Setup the value array
 		if(is_array($value)) {
@@ -1480,7 +1525,7 @@ function pql_get_mx($ldap, $domainname) {
 }
 
 function pql_get_subschema($ldap_linkid, $attrib) {
-    $attrib = strtolower($attrib);
+    $attrib = lc($attrib);
 	
     // Get the DN for the subSchema
 	// /usr/bin/ldapsearch -x -LLL -h localhost -s base -b '' 'objectClass=*' subschemaSubentry
@@ -1502,7 +1547,7 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 					$words = split("\)", $words[1]);
 					$words = ereg_replace("\'", "", $words[0]);
 					$words = split(" ", $words);
-					$name  = strtolower($words[2]);
+					$name  = lc($words[2]);
 					
 					$VALUE[$name]["NAME"] = $words[2];
 					for($j=3; $words[$j]; $j++) {
@@ -1511,7 +1556,7 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 				} else {
 					$words = split("\' ", $words[1]);
 					$words = split(" \'", $words[0]);
-					$name  = strtolower($words[1]);
+					$name  = lc($words[1]);
 					
 					$VALUE[$name]["NAME"] = $words[1];
 				}
@@ -1630,23 +1675,22 @@ function pql_get_subschema($ldap_linkid, $attrib) {
     }
 }
 
-function pql_get_subschemas($ldap_linkid, $match = "") {
+function pql_get_subschemas($ldap_linkid, $type = "", $match = "") {
     $attribs = array("ldapsyntaxes", "matchingrules", "attributetypes", "objectclasses");
     foreach($attribs as $attrib) {
 		$result = pql_get_subschema($ldap_linkid, $attrib);
-		if($result) {
-			$entry[$attrib] = $result;
-		}
+		if($result)
+		  $entry[$attrib] = $result;
     }
-
-	if($match) {
+	
+	if($type and $match) {
 		// We're looking for something special, look for it. If it doesn't
 		// exists in the array -> return FALSE.
-		if(! $entry["objectclasses"][strtolower($match)])
+		if(! $entry[lc($type)][lc($match)])
 		  return 0;
 	}
 
-	// Return 4 arrays:
+	// Return 4 arrays with:
 	//	ldapsyntaxes
 	//	matchingrules
 	//	attributetypes
@@ -1750,6 +1794,7 @@ function pql_validate_administrator($linkid, $dn, $admin) {
 	return false;
 }
 
+// Crude. Won't work in real life...
 function pql_get_rootdn($dn) {
 	$rootdn = split(',', $dn);
 	$rootdn = $rootdn[count($rootdn)-1];
@@ -1774,8 +1819,10 @@ function pql_split_oldvalues($value) {
 // --------------------------
 // Create a LDIF object to print in case of error
 function pql_create_ldif($func, $dn, $entry) {
+	global $account_type;
+
 	if($func)
-	  $LDIF .= "<br>--- DEBUG: $func() ---<br>";
+	  $LDIF .= "<br>--- DEBUG: $func($account_type) ---<br>";
 
 	$LDIF .= "dn: $dn<br>";
 	foreach($entry as $key => $e) {
@@ -1795,6 +1842,21 @@ function pql_create_ldif($func, $dn, $entry) {
 	return($LDIF);
 }
 
+// --------------------------
+// Check wanted objectclasses if any of them require/allows
+// the specific attribute
+function pql_check_attribute($ldap_ocs, $incl_ocs, $attrib) {
+	for($i=0; $incl_ocs[$i]; $i++)
+	  // Check if there is a MUST for this attribute in one of
+	  // the included objectclasses
+	  for($j=0; $j < $ldap_ocs[$incl_ocs[$i]]['MUST']['count']; $j++)
+		if(lc($ldap_ocs[$incl_ocs[$i]]['MUST'][$j]) == lc($attrib))
+		  return($incl_ocs[$i]);
+	
+	return(0);
+}
+
+// --------------------------
 function printr($string) {
 	echo "<pre>\n";
 
@@ -1806,10 +1868,15 @@ function printr($string) {
 	echo "</pre><p>\n";
 }
 
+// --------------------------
+// I'm a perlhacker really, does it show!? :)
+function lc($string) {
+	return(strtolower($string));
+}
+
 /*
  * Local variables:
  * mode: php
- * mode: font-lock
  * tab-width: 4
  * End:
  */
