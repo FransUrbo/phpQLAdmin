@@ -55,34 +55,32 @@ if(!pql_user_exist($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user)){
 }
 
 // Get basic user information
-$cn = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user,"cn");
-$sn = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user,"sn");
-$uidnr = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user,"uidnumber");
-$gidnr = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user,"gidnumber");
-$shell = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user,"loginshell");
-$uid = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user,"uid");
-$pw = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user,"userpassword");
-$mailbox = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user,"mailmessagestore");
-$mailhost = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user,"mailhost");
-$homedir = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user,"homedirectory");
+// Some of these (everything after the 'homedirectory')
+// uses 'objectClass: pilotPerson' -> http://rfc-1274.rfcindex.net/
+$attribs = array('cn', 'sn', 'uidnumber', 'gidnumber', 'loginshell', 'uid', 'userpassword', 'mailmessagestore', 'mailhost', 'homedirectory', 'roomnumber', 'homephone', 'homepostaladdress', 'secretary', 'personaltitle', 'mobile', 'pager');
+foreach($attribs as $attrib) {
+    $value = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, $attrib);
+    $$attrib = $value[0];
+
+    // Setup edit links
+    $link = $attrib . "_link";
+    $$link = "<a href=\"user_edit_attribute.php?attrib=$attrib&user=<?php echo urlencode($user); ?>&domain=<?=$domain?>\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify $attrib for $user\"></a>";
+}
 $quota = pql_get_userquota($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user);
 
-$uid = $uid[0]; $pw = $pw[0]; $mailbox = $mailbox[0]; $mailhost = $mailhost[0];
-$homedir = $homedir[0]; $shell = $shell[0];
-
-if($pw == ""){
-    $pw = PQL_LDAP_USERPASSWORD_NONE;
+if($userpassword == ""){
+    $userpassword = PQL_LDAP_USERPASSWORD_NONE;
 } else {
-    if(ereg("{KERBEROS}", $pw)) {
-	$princ = split("}", $pw);
-	$pw = $princ[1] . " " . PQL_LDAP_USERPASSWORD_KERBEROS;
+    if(ereg("{KERBEROS}", $userpassword)) {
+	$princ = split("}", $userpassword);
+	$userpassword = $princ[1] . " " . PQL_LDAP_USERPASSWORD_KERBEROS;
     } else {
-	$pw = PQL_LDAP_USERPASSWORD_ENCRYPTED;
+	$userpassword = PQL_LDAP_USERPASSWORD_ENCRYPTED;
     }
 }
 
-if($mailbox == ""){
-    $mailbox = PQL_LDAP_MAILMESSAGESTORE_NONE;
+if($mailmessagestore == ""){
+    $mailmessagestore = PQL_LDAP_MAILMESSAGESTORE_NONE;
 }
 
 if($mailhost == ""){
@@ -102,43 +100,97 @@ if($mailhost == ""){
 <?php if($ADVANCED_MODE) { ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?php echo PQL_LDAP_USERPASSWORD_TITLE; ?></td>
-        <td><?php echo $pw; ?></td>
+        <td><?php echo $userpassword; ?></td>
         <td><a href="user_edit_attribute.php?attrib=userpassword&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain; ?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LDAP_USERPASSWORD_NEW; ?>" border="0"></a></td>
       </tr>
 <?php } ?>
 
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?php echo PQL_USER_DATA_SURNAME . ", " . PQL_USER_DATA_LASTNAME; ?></td>
-        <td><?php echo $cn[0]; ?></td>
+        <td><?php echo $cn; ?></td>
         <td><a href="user_edit_attribute.php?attrib=cn&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain ?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LDAP_CN_CHANGE; ?>" border="0"></a></td>
       </tr>
 
 <?php if($ADVANCED_MODE) { ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?php echo PQL_USER_LOGINSHELL; ?></td>
-        <td><?php if($shell){echo $shell;}else{echo "none";} ?></td>
+        <td><?php if($loginshell){echo $loginshell;}else{echo "none";} ?></td>
         <td><a href="user_edit_attribute.php?attrib=loginshell&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain ?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LDAP_LOGINSHELL_CHANGE; ?>" border="0"></a></td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?php echo PQL_USER_HOMEDIR; ?></td>
-        <td><?php if($homedir){echo $homedir;}else{echo "none";} ?></td>
-        <td><a href="user_edit_attribute.php?attrib=homedirectory&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain; ?>&oldvalue=<?php echo $homedir; ?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LDAP_HOMEDIRECTORY_CHANGE; ?>" border="0"></a></td>
+        <td><?php if($homedirectory){echo $homedirectory;}else{echo "none";} ?></td>
+        <td><a href="user_edit_attribute.php?attrib=homedirectory&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain; ?>&oldvalue=<?php echo $homedirectory; ?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LDAP_HOMEDIRECTORY_CHANGE; ?>" border="0"></a></td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?php echo "UID;GID"; ?></td>
-        <td><?php if($uidnr[0] && $gidnr[0]){echo $uidnr[0] . ";" . $gidnr[0];}else{echo "none";} ?></td>
+        <td><?php if($uidnumber && $gidnumber){echo $uidnumber . ";" . $gidnumber;}else{echo "none";} ?></td>
         <td><center>x</center></td>
       </tr>
 <?php } ?>
     </th>
   </table>
 
-  <br>
+  <br><br>
 
 <?php
+if($roomnumber or $homephone or 
+   $homepostaladdress or $secretary or 
+   $personaltitle or $mobile or
+   $pager)
+{
+?>
+  <table cellspacing="0" cellpadding="3" border="0">
+    <th colspan="3" align="left">Personal details</th>
+<?php if($personaltitle) { ?>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Title</td>
+        <td><?=$personaltitle?></td>
+        <td><?=$personaltitle_link?></td>
+      </tr>
+
+<?php } if($roomnumber) { ?>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Room number</td>
+        <td><?=$roomnumber?></td>
+        <td><?=$roomnumber_link?></td>
+      </tr>
+
+<?php } if($homephone) { ?>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Home telephone number</td>
+        <td><?=$homephone?></td>
+        <td><?=$homephone_link?></td>
+      </tr>
+
+<?php } if($mobile) { ?>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Mobile telephone number</td>
+        <td><?=$mobile?></td>
+        <td><?=$mobile_link?></td>
+      </tr>
+
+<?php } if($pager) { ?>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Pager number</td>
+        <td><?=$pager?></td>
+        <td><?=$pager_link?></td>
+      </tr>
+
+<?php } ?>
+    </th>
+  </table>
+
+  <br><br>
+
+<?php
+}
+
 $email = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_MAIL);
+$email = $email[0];
+
 $aliases = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_MAILALTERNATE);
 ?>
   <!-- Addresses (mail, mailalternateaddress) -->
@@ -152,8 +204,8 @@ $aliases = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domai
 
       <tr class="<?php table_bgcolor(); ?>">
         <td><?php echo PQL_LDAP_MAIL_TITLE; ?></td>
-        <td><?php echo $email[0]; ?></td>
-        <td><a href="user_edit_attribute.php?attrib=mail&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain; ?>&mail=<?php echo pql_strip_domain($email[0]); ?>&oldvalue=<?php echo $email[0] ?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LDAP_MAIL_CHANGE; ?>" border="0"></a>&nbsp;&nbsp;<a href="user_sendmail.php?email=<?php echo $email[0];?>&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain; ?>"><img src="images/mail.png" width="16" height="11" alt="<?php echo PQL_SENDMAIL; ?>" border="0"></a></td>
+        <td><?php echo $email; ?></td>
+        <td><a href="user_edit_attribute.php?attrib=mail&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain; ?>&mail=<?php echo pql_strip_domain($email); ?>&oldvalue=<?php echo $email ?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LDAP_MAIL_CHANGE; ?>" border="0"></a>&nbsp;&nbsp;<a href="user_sendmail.php?email=<?php echo $email;?>&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain; ?>"><img src="images/mail.png" width="16" height="11" alt="<?php echo PQL_SENDMAIL; ?>" border="0"></a></td>
       </tr>
 
 <?php
@@ -176,7 +228,7 @@ if(is_array($aliases)){
     </th>
   </table>
 
-  <br>
+  <br><br>
 
 <?php
 $forwarders = pql_search_forwarders($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user);
@@ -212,11 +264,13 @@ if(empty($forwarders)) {
     </th>
   </table>
 
-  <br>
+  <br><br>
 
 <?php
 	$status = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_ISACTIVE);
-	$status = pql_ldap_accountstatus($status[0]);
+	$status = $status[0];
+
+	$status = pql_ldap_accountstatus($status);
 ?>
   <!-- accountstatus -->
   <table cellspacing="0" cellpadding="3" border="0">
@@ -235,7 +289,7 @@ if(empty($forwarders)) {
     </th>
   </table>
 
-  <br>
+  <br><br>
 
 <?php
 if($ADVANCED_MODE) {
@@ -276,14 +330,14 @@ if($ADVANCED_MODE) {
     </th>
   </table>
 
-  <br>
+  <br><br>
 
   <!-- advanced delivery options -->
 <?php
   $qmaildotmode = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_DOTMODE);
-  $deliveryprogrampath = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_PROGRAM);
-
   $qmaildotmode = $qmaildotmode[0];
+
+  $deliveryprogrampath = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_PROGRAM);
   $deliveryprogrampath = $deliveryprogrampath[0];
 
   if($qmaildotmode == ""){
@@ -314,7 +368,7 @@ if($ADVANCED_MODE) {
     </th>
   </table>
 
-  <br>
+  <br><br>
 
   <!-- misc MAIL Attributes (mailmessagestore, mailhost, mailquota)-->
 <?php
@@ -329,9 +383,9 @@ if($ADVANCED_MODE) {
     <th colspan="3" align="left"><?php echo PQL_USER_MAILBOXPROPERTIES; ?></th>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?php echo PQL_LDAP_MAILMESSAGESTORE_TITLE; ?></td>
-        <td><?php echo $mailbox; ?></td>
+        <td><?php echo $mailmessagestore; ?></td>
         <td>
-          <a href="user_edit_attribute.php?attrib=mailmessagestore&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain; ?>&oldvalue=<?php echo $mailbox; ?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
+          <a href="user_edit_attribute.php?attrib=mailmessagestore&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain; ?>&oldvalue=<?php echo $mailmessagestore; ?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
         </td>
       </tr>
 
@@ -353,7 +407,7 @@ if($ADVANCED_MODE) {
     </th>
   </table>
 
-  <br>
+  <br><br>
 
 <?php
 } // end if ADVANCED mode
@@ -396,7 +450,7 @@ if(empty($forwarders)){
     </th>
   </table>
 
-  <br>
+  <br><br>
 
   <table cellspacing="0" cellpadding="3" border="0">
     <th align="left"><?=PQL_ACTIONS?></th>
