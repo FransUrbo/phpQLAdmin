@@ -81,7 +81,9 @@ phpQLAdmin 2.1.4 TO BE ANNOUNCED
 	    + Load specific template from DB
 	      include/pql_templates.inc:pql_get_template()
 	    + Get all required and allowed attributes for specific template
-	    include/pql_templates.inc:pql_templates_attributes()
+	      include/pql_templates.inc:pql_templates_attributes()
+	    + Show a red star or space depending on if the attribute is required or not.
+	      include/pql_templates.inc:pql_templates_mark_importance()
 
 	Misc changes	
 	  - Folding tags - LOTS of folding tags.
