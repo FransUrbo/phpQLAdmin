@@ -1,6 +1,6 @@
 <?php
 // delete a user
-// $Id: user_del.php,v 2.23 2003-11-14 11:55:52 turbo Exp $
+// $Id: user_del.php,v 2.24 2003-11-16 08:26:32 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -35,8 +35,10 @@ if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
 
 		// Combine the two attributes into one array.
 		$mails[] = $email[0];
-		foreach($aliases as $alias)
-		  $mails[] = $alias;
+		if(is_array($aliases)) {
+			foreach($aliases as $alias)
+			  $mails[] = $alias;
+		}
 	}	
 
 	// delete the user
@@ -99,7 +101,8 @@ if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
 
 	// redirect to domain-detail page
 	$msg = urlencode($msg);
-	header("Location: " . pql_get_define("PQL_GLOB_URI") . "domain_detail.php?rootdn=$rootdn&domain=$domain&view=$view&msg=$msg$rlnb");
+	$url = "domain_detail.php?rootdn=".urlencode($rootdn)."&domain=".urlencode($domain)."&view=basic&msg=$msg$rlnb";
+	header("Location: " . pql_get_define("PQL_GLOB_URI") . $url);
 } else {
 ?>
 <br>
@@ -121,7 +124,6 @@ if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
 <?php } ?>
 
     <span class="title2"><?=$LANG->_('Are you really sure')?>?</span>
-    <input type="hidden" name="view" value="<?=$view?>">
     <input type="submit" name="ok"   value="<?=$LANG->_('Yes')?>">
     <input type="button" name="back" value="<?=$LANG->_('No')?>" onClick="history.back();">
   </form>
