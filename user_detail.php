@@ -1,7 +1,8 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.85.2.1 2005-02-12 05:19:13 turbo Exp $
+// $Id: user_detail.php,v 2.85.2.2 2005-02-15 10:53:53 turbo Exp $
 //
+// {{{ Setup session
 session_start();
 require("./include/pql_config.inc");
 
@@ -42,13 +43,15 @@ if($_GET["domain"]) {
 }
 
 include($_SESSION["path"]."/header.html");
+// }}}
 
-// print status message, if one is available
+// {{{ Print status message, if one is available
 if(isset($_GET["msg"])) {
 	pql_format_status_msg($_GET["msg"]);
 }
+// }}}
 
-// reload navigation bar if needed
+// {{{ Reload navigation bar if needed
 if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
 	if($_REQUEST["rlnb"] == 1) {
 ?>
@@ -66,7 +69,9 @@ if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
   //--></script>
 <?php   }
 }
+// }}}
 
+// {{{ Retreive and show username etc
 $username = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_CN"));
 if(!$username) {
     // No common name, use uid field
@@ -80,6 +85,7 @@ if($username and is_array($username)) {
   <span class="title1"><?=$username?></span>
   <br><br>
 <?php
+// }}}
 if(empty($_GET["view"]))
 	$_GET["view"] = 'basic';
 
@@ -87,7 +93,7 @@ if(empty($_GET["view"]))
  *      never get used.  They should be handled by the tables
  *      that actually request the variables (user_details-mailbox.inc). */
 
-// Get basic user information
+// {{{ Get basic user information
 // Some of these (everything after the 'homedirectory')
 // uses 'objectClass: pilotPerson' -> http://rfc-1274.rfcindex.net/
 $attribs = array("cn"					=> pql_get_define("PQL_ATTR_CN"),
@@ -170,7 +176,9 @@ if(is_array($controladmins)) {
 } elseif($controladmins == $_GET["user"]) {
 	$controlsadministrator = 1;
 }
+// }}}
 
+// {{{ Load groups user is member of
 // If this user have a username (ie, 'uid') then let's see if this user is member
 // of more groups (listed in the 'memberUid' attribute).
 if($uid) {
@@ -186,8 +194,9 @@ if($uid) {
 		  $memberuid[] = $muids[$i];
 	}
 }
+// }}}
 
-// Get the object classes of this user
+// {{{ Get the object classes of this user
 // If anyone of them is 'qmailGroup', then it's a Group object!
 $objectclasses = pql_get_attribute($_pql->ldap_linkid, $_GET["user"],
 								   pql_get_define("PQL_ATTR_OBJECTCLASS"));
@@ -195,8 +204,9 @@ foreach($objectclasses as $oc) {
 	if(eregi('qmailGroup', $oc))
 	  $USER_IS_GROUP = 1;
 }
+// }}}
 
-// Setup the buttons
+// {{{ Setup the buttons
 $buttons = array('basic'			=> 'User data');
 if(!$USER_IS_GROUP) {
 	$new = array('personal'			=> 'Personal details',
@@ -236,7 +246,9 @@ if(!$_SESSION["SINGLE_USER"]) {
 }
 
 pql_generate_button($buttons, "user=".$url["user"]); echo "  <br>\n";
+// }}}
 
+// {{{ Load the correct view page
 if($_GET["view"] == 'basic')					include("./tables/user_details-basic.inc");
 if($_GET["view"] == 'personal')					include("./tables/user_details-personal.inc");
 if($_GET["view"] == 'email')					include("./tables/user_details-email.inc");
@@ -257,6 +269,7 @@ if($_SESSION["ADVANCED_MODE"] and !$_SESSION["SINGLE_USER"]) {
 if(!$_SESSION["SINGLE_USER"]) {
 	if($_GET["view"] == 'actions')				include("./tables/user_details-action.inc");
 }
+// }}}
 
 /*
  * Local variables:
