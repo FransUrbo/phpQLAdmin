@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.6 2003-01-07 14:58:18 turbo Exp $
+// $Id: control_detail.php,v 1.7 2003-01-13 10:46:27 turbo Exp $
 session_start();
 
 require("./include/pql.inc");
@@ -170,7 +170,7 @@ if(PQL_LDAP_CONTROL_USE){
 
   <br>
 
-  <table cellspacing="10" cellpadding="3" border="0">
+  <table cellspacing="0" cellpadding="0" border="0">
     <th valign="top" align="left">Locals
       <!-- LOCALS -->
       <table cellspacing="0" cellpadding="3" border="0">
@@ -216,6 +216,8 @@ if(PQL_LDAP_CONTROL_USE){
         </th>
       </table>
     </th>
+
+    <th>&nbsp;&nbsp;&nbsp;&nbsp;</th>
 
     <th valign="top" align="left">RCPT Hosts
       <!-- RCPTHOSTS -->
@@ -268,8 +270,12 @@ if(PQL_LDAP_CONTROL_USE){
 
   <table cellspacing="0" cellpadding="3" border="0">
     <th align="left"><?=PQL_ACTIONS?></th>
+      <tr class="subtitle">
+        <td colspan="4"><a href="installmailserver.php?domain=<?=$domain?>&host=<?=$host?>"><img src="images/edit.png" width="12" height="12" border="0">Create mailserver install script</a></td>
+      </tr>
+
       <tr class="<?php table_bgcolor(); ?>">
-        <td><a href="control_del.php?host=<?=$host?>">Delete mailserver control object</a></td>
+        <td><a href="control_del.php?host=<?=$host?>"><img src="images/edit.png" width="12" height="12" border="0">Delete mailserver control object</a></td>
       </tr>
     </th>
   </table>
