@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.37.6.1.2.1 2004-09-17 13:29:39 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.37.6.1.2.2 2004-10-05 17:33:29 turbo Exp $
 
 require("./left-head.html");
 
@@ -210,6 +210,13 @@ function attribute_print_form($action) {
 function attribute_save($type) {
     global $_pql, $LANG;
 
+	// There is serious problems with this. I fix for one usage and break another
+	// one! Let's try to remember (and document) how it's called. It's called from
+	// the following places:
+	// * left.php->user->User access->Allow user to create domains below domain
+	// * left.php->user->User access->Disallow user to create domains below domain
+	// [anything else!?]
+
 	$attrib = $_REQUEST["attrib"];
 	$value = $_REQUEST[$attrib];
 
@@ -217,6 +224,13 @@ function attribute_save($type) {
       case "add":
       case "modify":
       case "delete":
+		if($_REQUEST["branchdn"])
+		  $DN = $_REQUEST["branchdn"];
+		elseif(!$_REQUEST["user"])
+		  $DN = $_REQUEST["domain"];
+		else
+		  $DN = $_REQUEST["rootdn"];
+
 		if($value and $_REQUEST["oldvalue"] and ($value == $_REQUEST["oldvalue"])) {
 			// don't change if new value equal to old one
 			$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('Domain administrator')));
@@ -226,10 +240,7 @@ function attribute_save($type) {
 
 		// Get the old values, so we can remove the one we're modifying
 		// (delete the one we want to delete, keep the others etc)
-		if(!$_REQUEST["user"])
-		  $admins = pql_domain_get_value($_pql, $_REQUEST["domain"], $attrib);
-		else
-		  $admins = pql_domain_get_value($_pql, $_REQUEST["branchdn"], $attrib);
+		$admins = pql_domain_get_value($_pql, $DN, $attrib);
 
 		$ADMs[$attrib] = array();
 
@@ -266,15 +277,8 @@ function attribute_save($type) {
 		}
 
 		$success = 0;
-		if(!$_REQUEST["user"]) {
-			if(pql_domain_set_value($_pql->ldap_linkid, $_REQUEST["domain"], $attrib, $ADMs))
-			  $success = 1;
-		} else {
-			if(pql_domain_set_value($_pql->ldap_linkid, $_REQUEST["branchdn"], $attrib, $ADMs)) {
-				$success = 1;
-				$_REQUEST["domain"] = $_REQUEST["branchdn"];
-			}
-		}
+		if(pql_domain_set_value($_pql->ldap_linkid, $DN, $attrib, $ADMs))
+		  $success = 1;
 
 		if($success)
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
