@@ -1,7 +1,7 @@
 <? // http://www.thescripts.com/serversidescripting/php/articles/dynamicimagesinphp3.0/page0.html
-// $Id: navbutton.php,v 2.16 2004-11-12 15:57:01 turbo Exp $
+// $Id: navbutton.php,v 2.17 2005-01-13 05:33:39 turbo Exp $
 
-include("./include/pql_formating.inc");
+require("../include/pql_formating.inc");
 
 $string = implode($_SERVER["argv"]," ");
 $string = urldecode($string);
@@ -16,17 +16,17 @@ $string = pql_maybe_idna_decode($string);
 
 // Create the image
 if(function_exists('ImageCreateFromPng') && (imagetypes() & IMG_PNG)) {
-    $myimage = ImageCreateFromPng("images/unselected.png");
+    $myimage = ImageCreateFromPng("../images/unselected.png");
 
     if($myimage)
       $imgtype = 'png';
 } elseif(function_exists('ImageCreateFromGif') && (imagetypes() & IMG_GIF)) {
-    $myimage = ImageCreateFromGif("images/unselected.gif");
+    $myimage = ImageCreateFromGif("../images/unselected.gif");
 
     if($myimage)
       $imgtype = 'gif';
 } elseif(function_exists('ImageCreateFromJpeg') && (imagetypes() & IMG_JPG)) {
-    $myimage = ImageCreateFromJpeg("images/unselected.jpg");
+    $myimage = ImageCreateFromJpeg("../images/unselected.jpg");
 
     if($myimage)
       $imgtype = 'jpeg';
@@ -62,7 +62,7 @@ ImageCopyResized($newimg, $myimage, 0, 0, 0, 0, $new_width,
 
 $black = imagecolorallocate($newimg, 0, 0, 0);
 // Write text to image (after decoding it to fix international characters)
-ImageTTFText($newimg, 10, 0, 10, 14, $black, realpath("include/thryn.ttf"), $string);
+ImageTTFText($newimg, 10, 0, 10, 14, $black, realpath("../include/thryn.ttf"), $string);
     
 // Show image
 if($imgtype == 'png') {

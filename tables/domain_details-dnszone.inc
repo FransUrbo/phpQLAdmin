@@ -10,7 +10,7 @@
 		elseif($_REQUEST["dns_domain_name"])
 		  $dns_domain_name = $_REQUEST["dns_domain_name"];
 ?>
-    <a href="<?=$_SERVER["PHP_SELF"]?>?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&view=<?=$_REQUEST["view"]?>&dns_domain_name=<?=$dname?>"><img alt="/ <?=$dname?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?php echo urlencode($dname)?>"></a>
+    <a href="<?=$_SERVER["PHP_SELF"]?>?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&view=<?=$_REQUEST["view"]?>&dns_domain_name=<?=$dname?>"><img alt="/ <?=$dname?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?<?php echo urlencode($dname)?>"></a>
 <?php	} ?>
   </table>
 
