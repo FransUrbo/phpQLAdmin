@@ -25,8 +25,8 @@ define("PQL_LDAP_CONTROL_USE", false);
 // PQL_LDAP_CONTROL_AUTOADDLOCALS (true | false)
 // set this to true, if phpQLAdmin should automatically add all domains to
 // locals. Disable this (false), if you have more than one qmail-ldap server
-// and don't want that phpQLAdmin register all domains on this server. Currently, the
-// application do not support more than one control database.
+// and they're not identical (ie, not hosting the same domains)
+// Currently, the application do not support more than one control database.
 define("PQL_LDAP_CONTROL_AUTOADDLOCALS", false);
 
 // ----------------------------
