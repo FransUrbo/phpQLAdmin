@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.58 2004-03-15 05:14:27 turbo Exp $
+// $Id: pql_config.inc,v 1.59 2004-03-29 07:57:50 turbo Exp $
 //
 
 // include the API files
@@ -162,11 +162,19 @@ if((empty($_SESSION["ACI_SUPPORT_ENABLED"]) and function_exists("user_generate_a
 	   $ocs[pql_get_define("PQL_ATTR_LDAPACI")]["OID"])
 	  $_SESSION["ACI_SUPPORT_ENABLED"] = 1;
 
-	// 9b. Check to see if the attributes mailQuotaSize and mailQuotaCount exists - new stype quota.
-	if(empty($ocs[pql_get_define("PQL_ATTR_QUOTA_VALUE")]["OID"]) and
-	   !empty($ocs[pql_get_define("PQL_ATTR_QUOTA_SIZE")]["OID"]) and
+	// 9b. Check to see if the attributes mailQuotaSize and mailQuotaCount exists - new style quota.
+	if(!empty($ocs[pql_get_define("PQL_ATTR_QUOTA_SIZE")]["OID"]) and
 	   !empty($ocs[pql_get_define("PQL_ATTR_QUOTA_COUNT")]["OID"]))
 	  $_SESSION["NEW_STYLE_QUOTA"] = 1;
+
+	// 9c. Do we support old style quota, even if new style is enabled?
+	if(empty($ocs[pql_get_define("PQL_ATTR_QUOTA_VALUE")]["OID"])) {
+		// The old style quota attribute isn't defined - don't support it
+		$_SESSION["OLD_STYLE_QUOTA"] = 0;
+	} else {
+		// It's defined so support old style quota
+		$_SESSION["OLD_STYLE_QUOTA"] = 1;
+	}
 }
 
 // 10. Check to see if the cn=Monitor backend is availble/readable
