@@ -1,13 +1,13 @@
 <?php
 // Setup the URL redirection
-$url  = "domain_edit_attributes.php?rootdn=".urlencode($rootdn)."&domain=".urlencode($domain);
-$url .= "&attrib=".pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")."&view=$view&";
+$URL  = "domain_edit_attributes.php?rootdn=".urlencode($rootdn)."&domain=".urlencode($domain);
+$URL .= "&attrib=".pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")."&view=$view&";
 
 if($user) {
     // Get the ACIs in this user object
     $aci = pql_aci_get($_pql->ldap_linkid, $user);
 
-	$url .= "user=".urlencode($user);
+	$URL .= "user=".urlencode($user);
 } else {
     // Get the ACIs in this branch object
     $aci = pql_aci_get($_pql->ldap_linkid, urldecode($domain));
@@ -33,6 +33,7 @@ if(!is_array($aci)) {
       </tr>
 
 <?php for($i=0; $aci[$i]; $i++) {
+		$url = $URL . pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI") . "=" . urlencode($aci[$i]["LINE"]);
 ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td><?=$aci[$i]["OID"]?></td>
@@ -55,7 +56,7 @@ if(!is_array($aci)) {
 
         <td><?=$aci[$i]["TYPE"]?></td>
         <td><?=$aci[$i]["SUBJECT"]?></td>
-        <td align="center"><a href="<?=$url?>&submit=3&type=edit&<?=pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")?>=<?=urlencode($aci[$i]["LINE"])?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change value')?>" border="0"></a>&nbsp;&nbsp;<a href="<?=$url?>&submit=2&type=delete&<?=pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")?>=<?=urlencode($aci[$i]["LINE"])?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete value')?>" border="0"></a>&nbsp;&nbsp;<?php if($i==0) { ?><img src="images/spacer_12x12.png" width="12" height="12" border="0"><?php } else { ?><a href="move_up"><img src="images/up.png" width="12" height="12" alt="move up" border="0"></a><?php } ?><?php if(!$aci[$i+1]["LINE"]) { ?><img src="images/spacer_12x12.png" width="12" height="12" border="0"><?php } else { ?><a href="move_down"><img src="images/down.png" width="12" height="12" alt="move down" border="0"></a><?php } ?></td>
+        <td align="center"><a href="<?=$url?>&submit=3&type=edit"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change value')?>" border="0"></a>&nbsp;&nbsp;<a href="<?=$url?>&submit=2&type=delete"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete value')?>" border="0"></a>&nbsp;&nbsp;<?php if($i==0) { ?><img src="images/spacer_12x12.png" width="12" height="12" border="0"><?php } else { ?><a href="<?=$url?>&submit=4&type=moveup"><img src="images/up.png" width="12" height="12" alt="move up" border="0"></a><?php } ?><?php if(!$aci[$i+1]["LINE"]) { ?><img src="images/spacer_12x12.png" width="12" height="12" border="0"><?php } else { ?><a href="<?=$url?>&submit=4&type=movedown"><img src="images/down.png" width="12" height="12" alt="move down" border="0"></a><?php } ?></td>
       </tr>
 <?php } ?>
 
