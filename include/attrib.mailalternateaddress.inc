@@ -1,15 +1,10 @@
 <?php
 // attribute plugin for
 // mailalternateaddress (emailaddress alias)
-// $Id: attrib.mailalternateaddress.inc,v 2.8 2003-05-19 17:05:04 turbo Exp $
-
-// Construct the emailaddress if it don't contain an at character. Needed later...
-if(($mailalternateaddress != "") && !ereg("@", $mailalternateaddress)) {
-    $mailalternateaddress = $mailalternateaddress . "@" . $defaultdomain;
-}
+// $Id: attrib.mailalternateaddress.inc,v 2.9 2003-05-20 12:58:45 turbo Exp $
 
 function attribute_check($type){
-    global $mailalternateaddress, $oldvalue, $domain, $_pql, $error, $defaultdomain;
+    global $mailalternateaddress, $oldvalue, $domain, $_pql, $error, $defaultdomain, $email_domain;
     
     // is typed in ?
     if($mailalternateaddress == ""){
@@ -17,6 +12,14 @@ function attribute_check($type){
 		return false;
     }
     
+	// Build the COMPLETE email address
+	if(! ereg("@", $mailalternateaddress)) {
+		if($email_domain)
+		  $mailalternateaddress = $mailalternateaddress . "@" . $email_domain;
+		elseif($defaultdomain)
+		  $mailalternateaddress = $mailalternateaddress . "@" . $defaultdomain;
+	}
+
     // valid
     if(!check_email($mailalternateaddress)){
 		$error["mailalternateaddress"] = PQL_LANG_INVALID;
@@ -102,45 +105,41 @@ function attribute_print_form() {
 
 function attribute_save($type) {
     global $domain, $user, $attrib, $oldvalue, $mailalternateaddress;
-    global $_pql, $defaultdomain, $config;
-    
-    // recontrol values
-    if(!attribute_check($type))
-	  return false;
+    global $_pql, $defaultdomain, $email_domain, $config;
     
     switch($type) {
       case "add":
-		$email = $mailalternateaddress;
-		
-		if(pql_replace_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_MAILALTERNATE"], $email))
-		  $msg = pql_complete_constant(PQL_LANG_MAILALTERNATEADDRESS_ADD_OK, array("mail" => $email));
+		if(pql_modify_userattribute($_pql->ldap_linkid, $user,
+									$config["PQL_GLOB_ATTR_MAILALTERNATE"],
+									'', $mailalternateaddress))
+		  $msg = pql_complete_constant(PQL_LANG_MAILALTERNATEADDRESS_ADD_OK, array("mail" => $mailalternateaddress));
 		else
 		  $msg = PQL_LANG_MAILALTERNATEADDRESS_ADD_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
 		
 		if (PQL_CONF_TESTMAIL_AUTOSEND) {
-			$url = "user_sendmail.php?email=" . urlencode($email) . "&domain=$domain&user=" . urlencode($user) . "&msg=" . urlencode($msg);
+			$url = "user_sendmail.php?email=" . urlencode($mailalternateaddress) . "&domain=$domain&user=" . urlencode($user) . "&msg=" . urlencode($msg);
 			header("Location: " . $config["PQL_GLOB_URI"] . $url);
 		} else
 		  attribute_forward($msg);
 		break;
 
       case "modify";
-		$email = $mailalternateaddress;
-		
-		if($email == $oldvalue) {
+		if($mailalternateaddress == $oldvalue) {
 			// don't change if new value equal to old one
 			$msg = PQL_LANG_MAILALTERNATEADDRESS_UNCHANGED;
 			attribute_forward($msg);
 			break;
 		}
 		
-		if(pql_modify_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_MAILALTERNATE"], $oldvalue, $email))
-		  $msg = pql_complete_constant(PQL_LANG_MAILALTERNATEADDRESS_CHANGE_OK, array("old" => $oldvalue, "new" => $email));
+		if(pql_modify_userattribute($_pql->ldap_linkid, $user,
+									$config["PQL_GLOB_ATTR_MAILALTERNATE"],
+									$oldvalue, $mailalternateaddress))
+		  $msg = pql_complete_constant(PQL_LANG_MAILALTERNATEADDRESS_CHANGE_OK, array("old" => $oldvalue, "new" => $mailalternateaddress));
 		else
 		  $msg = PQL_LANG_MAILALTERNATEADDRESS_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
 		
 		if (PQL_CONF_TESTMAIL_AUTOSEND) {
-			$url = "user_sendmail.php?email=" . urlencode($email) . "&domain=$domain&user=" . urlencode($user) . "&msg=" . urlencode($msg);
+			$url = "user_sendmail.php?email=" . urlencode($mailalternateaddress) . "&domain=$domain&user=" . urlencode($user) . "&msg=" . urlencode($msg);
 			header("Location: " . $config["PQL_GLOB_URI"] . $url);
 		} else
 		  attribute_forward($msg);
