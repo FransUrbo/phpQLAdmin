@@ -49,6 +49,7 @@ switch($attrib){
   case "o":
   case "postalcode":
   case "postaladdress":
+  case "street":
   case "l":
   case "st":
   case "c":
