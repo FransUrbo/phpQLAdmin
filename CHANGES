@@ -1,5 +1,10 @@
 phpQLAdmin 2.0 Change Log
 
+phpQLAdmin 2.0.13 TO BE ANNOUNCED
+	Bug fixes
+	GUI layout change
+	Misc changes
+
 phpQLAdmin 2.0.12 Release (May 3 2003)
 	Bug fixes
 	  - In attrib.deliverymode.inc, remove all backslashes in
