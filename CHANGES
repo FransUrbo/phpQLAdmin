@@ -8,12 +8,27 @@ phpQLAdmin 2.0.8 - TO BE ANNOUNCED
 	  - Duplicate 'owner' attribute for 'administrator' (removed SYNTAX/EQUALITY)
 	    in schema.
 	  - Filter out 'auto\.' from groups to allow user creation in.
+	  - Don't get the domains TWICE (once when we start using pql_get_domain_value()
+	    which verifies that we have access to the domain(s) and one using
+	    pql_get_domain_value() which does no access control etc).
 
 	GUI layout change
+	  - Only show a 'dropdown menu' if we can choose from more than one domain
+	  - Only show the configuration edit/set links if we're administrator of/in the
+	    topmost DN.
 
 	Misc changes
 	  - Write protect user's top domain/branch.
 	  - Some files filtered through dos2unix to get rid of ^M
+	  - After we've fetched any configuration from the LDAP database' topmost DN,
+	    we check if the user's DN is in the administrator attribute. If it is, we
+	    allow domain/branch creation (ie, show the 'Add domain branch' URL).
+	  - Since the topmost DN now contain the administrator attribute, we must filter
+	    that out when fetching domains, othervise we'd end up with the topmost DN
+	    in domain/branch listing in the navigation frame...
+	  - New function pql_validate_administrator() which checks a given DN for
+	    existence of the administrator attribute, and if that contains the given
+	    (user) DN.
 
 phpQLAdmin 2.0.7 Release (Jan 28 2003)
 	Bug fixes
