@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.110 2005-01-31 15:03:30 turbo Exp $
+// $Id: user_add.php,v 2.111 2005-02-01 07:26:36 turbo Exp $
 //
 // {{{ Setup session etc
 session_start();
@@ -362,7 +362,8 @@ switch($_REQUEST["page_curr"]) {
 																 array(pql_get_define("PQL_ATTR_UID") => $reference),
 																 'user');
 		  } else
-			// Function user_generate_mailstore() doesn't exists. Try manually
+			// Function user_generate_mailstore() doesn't exists but we have a base mail directory.
+			// Try creating the mail directory manually, using the username.
 			$_REQUEST["maildirectory"] = $basemaildir.$_REQUEST["uid"]."/";
 
 		  if($_REQUEST["maildirectory"])
