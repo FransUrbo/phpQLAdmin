@@ -5,6 +5,11 @@ phpQLAdmin 2.0.18c TO BE ANNOUNCED
 	  - Add uidNumber, gidNumber and homeDirectory to a mail account IF we've
 	    choosen to use 'posixAccount' when creating user(s).
 	  - De-globalize the root DN in call to user_detail.php from user_details-forwards_from.inc.
+	  - The 'attribute key' used for 'attribute independence' _must_ be lowercase
+	    to work as a variable later.
+	  - PQL_CONF_ to PQL_ATTR_ spelling error fixed.
+	  - Attribute spelling error fixed in tables/user_details-basic.inc
+	    ('ugidnumber' should be 'uidnumber').
 
 	GUI layout change
 	  - Require the pql_config.inc file to avoid PHP errors in the right frame
