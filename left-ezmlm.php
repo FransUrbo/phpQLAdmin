@@ -1,6 +1,6 @@
 <?php
 // navigation bar - ezmlm mailinglists manager
-// $Id: left-ezmlm.php,v 2.8 2002-12-25 16:21:28 turbo Exp $
+// $Id: left-ezmlm.php,v 2.9 2003-01-02 12:33:55 turbo Exp $
 //
 session_start();
 
@@ -82,11 +82,12 @@ if(!is_array($domains)) {
 	
 	$j = 2;
 
-	// Sorted by domainname
-	foreach($mailinglists_hostsindex as $host => $listnames) {
-		foreach($listnames as $domain => $listarray) {
-			;
-		}
+	if($mailinglists_hostsindex) {
+		// Sorted by domainname
+		foreach($mailinglists_hostsindex as $host => $listnames) {
+			foreach($listnames as $domain => $listarray) {
+				;
+			}
 ?>
   <!-- start ezmlm mailing list domain -->
   <div id="el<?=$j?>Parent" class="parent">
@@ -109,8 +110,8 @@ if(!is_array($domains)) {
     <br>
 
 <?php
-		// List names
-		foreach($listarray as $name => $no) {
+			// List names
+			foreach($listarray as $name => $no) {
 ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
       <a href="ezmlm_detail.php?domain=<?=$domain?>&domainname=<?=$host?>&listno=<?=$no?>"><img src="images/navarrow.png" width="9" height="9" border="0"></a>&nbsp;
@@ -119,13 +120,14 @@ if(!is_array($domains)) {
 
     <br>
 <?php			
-		}
+			}
 ?>
   </div>
   <!-- end ezmlm mailing list children -->
 <?php
-		$j++;
-	}
+			$j++;
+		}
+	} // TODO: else - no mailinglists. Error message?
 }
 require("./left-trailer.html");
 
