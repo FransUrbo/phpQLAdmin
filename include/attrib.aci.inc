@@ -1,51 +1,54 @@
 <?php
 // attribute plugin for OpenLDAPaci
-// $Id: attrib.aci.inc,v 1.2 2003-11-19 16:28:11 turbo Exp $
+// $Id: attrib.aci.inc,v 1.3 2003-11-19 19:55:36 turbo Exp $
 
+// {{{ attribute_check(void)
 function attribute_check() {
     global $attrib, $domain, $oldvalue, $_pql, $error, $$attrib, $type, $LANG;
     global $aci_oid, $aci_scope, $aci_action, $aci_permission_read, $aci_permission_write;
     global $aci_permission_search, $aci_permission_compare, $aci_target, $aci_type, $aci_subject;
-
+	
     // is typed in ?
     if(!$aci_oid and !$aci_scope and !$aci_action) {
-	$error[$attrib] = $LANG->_('Missing');
-	return false;
+		$error[$attrib] = $LANG->_('Missing');
+		return false;
     }
-
+	
     if($$attrib) {
-	$value = $$attrib;
+		$value = $$attrib;
     } else {
-	$$attrib  = "$aci_oid#$aci_scope#$aci_action;";
-
-	if($aci_permission_read) {
-	    $perm = "r";
-	}
-
-	if($aci_permission_write) {
-	    if($perm) $perm .= ",";
-	    $perm .= "w";
-	}
-
-	if($aci_permission_search) {
-	    if($perm) $perm .= ",";
-	    $perm .= "s";
-	}
-
-	if($aci_permission_compare) {
-	    if($perm) $perm .= ",";
-	    $perm .= "c";
-	}
-
-	if(($aci_target == 'all') or ($aci_target == 'children') or ($aci_target == 'entry'))
-	  $aci_target = "[" . $aci_target . "]";
-
-	$$attrib .= "$perm;$aci_target#$aci_type#$aci_subject";
+		$$attrib  = "$aci_oid#$aci_scope#$aci_action;";
+		
+		if($aci_permission_read) {
+			$perm = "r";
+		}
+		
+		if($aci_permission_write) {
+			if($perm) $perm .= ",";
+			$perm .= "w";
+		}
+		
+		if($aci_permission_search) {
+			if($perm) $perm .= ",";
+			$perm .= "s";
+		}
+		
+		if($aci_permission_compare) {
+			if($perm) $perm .= ",";
+			$perm .= "c";
+		}
+		
+		if(($aci_target == 'all') or ($aci_target == 'children') or ($aci_target == 'entry'))
+		  $aci_target = "[" . $aci_target . "]";
+		
+		$$attrib .= "$perm;$aci_target#$aci_type#$aci_subject";
     }
-
+	
     return true;
 }
+// }}}
 
+// {{{ attribute_print_form(action)
 function attribute_print_form($action) {
     global $attrib, $domain, $rootdn, $PHP_SELF, $$attrib, $oldvalue, $error, $_pql, $user, $view, $LANG;
     global $orgname;
@@ -132,7 +135,9 @@ function attribute_print_form($action) {
   </form>
 <?php
 }
+// }}}
 
+// {{{ attribute_save(action)
 function attribute_save($action) {
     global $domain, $rootdn, $attrib, $oldvalue, $$attrib, $_pql, $user, $view, $LANG;
     $value = $$attrib;
@@ -154,59 +159,107 @@ function attribute_save($action) {
       $acis = pql_aci_get($_pql->ldap_linkid, $user);
     else 
       $acis = pql_aci_get($_pql->ldap_linkid, $domain);
-
+	
     // Extract only the ACI line that's stored in LDAP
     for($i=0; $acis[$i]["LINE"]; $i++) {
-	$ACIs[$attrib][] = $acis[$i]["LINE"];
+		$ACIs[$attrib][] = $acis[$i]["LINE"];
     }
     $acis = $ACIs;
-
-    $success = 0;
+	
     switch($action) {
+		// {{{ case: add
       case "add":
-	// Do the modification
-	if($user) {
-	    if(pql_replace_attribute($_pql->ldap_linkid, $user, '', $acis))
-	      $success = 1;
-	} else {
-	    if(pql_replace_attribute($_pql->ldap_linkid, $domain, '', $acis))
-	      $success = 1;
-	}
-	break;
-
+		// Add the value to the attribute
+		$acis[$attrib][] = $value;
+		break;
+		// }}}
+		
+		// {{{ case: modify - TODO
       case "modify":
-	break;
-
+		break;
+		// }}}
+		
+		// {{{ case: delete
       case "delete":
-	unset($ACIs);
+		unset($ACIs);
+		
+		// Remove specific entry
+		for($i=0; $acis[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")][$i]; $i++) {
+			if($acis[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")][$i] != $value)
+			  // This is not a value to be delete it, remember it
+			  $ACIs[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")][] = $acis[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")][$i];
+		}
+		
+		$acis = $ACIs;
+		break;
+		// }}}
 
-	// Remove specific entry
-	for($i=0; $acis[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")][$i]; $i++) {
-	    if($acis[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")][$i] != $value)
-	      // This is not a value to be delete it, remember it
-	      $ACIs[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")][] = $acis[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")][$i];
-	}
+		// {{{ case: moveup
+	  case "moveup":
+		for($i=0; $acis[$attrib][$i]; $i++) {
+			// If the NEXT value is what we're looking for,
+			// it will have to be put in THIS position
+			if($value == $acis[$attrib][$i+1]) {
+				// Next ACI is the one we're looking for - put that here
+				$new[$attrib][] = $acis[$attrib][$i+1];
 
-	if($user) {
-	    if(pql_replace_attribute($_pql->ldap_linkid, $user, '', $ACIs))
-	      $success = 1;
-	} else {
-	    if(pql_replace_attribute($_pql->ldap_linkid, $domain, '', $ACIs))
-	      $success = 1;
-	}
-	break;
+				// Add the current one AFTER this
+				$new[$attrib][] = $acis[$attrib][$i];
+				$i++;
+			} else
+			  $new[$attrib][] = $acis[$attrib][$i];
+		}
+
+		$acis = $new;
+		break;
+		// }}}
+
+		// {{{ case: movedown
+	  case "movedown":
+		for($i=0; $acis[$attrib][$i]; $i++) {
+			if($value == $acis[$attrib][$i]) {
+				// This value is the one we're looking for - take next and put that here
+				$new[$attrib][] = $acis[$attrib][$i+1];
+
+				// Add the current one AFTER this
+				$new[$attrib][] = $acis[$attrib][$i];
+				$i++;
+			} else
+			  $new[$attrib][] = $acis[$attrib][$i];
+		}
+
+		$acis = $new;
+		break;
+		// }}}
+
+		// {{{ case: default
       default:
-	die(pql_complete_constant($LANG->_('Unknown action %action% in file %file%, function save()'),
-				  array('action' => $action, 'file' => __FILE__)));
+		die(pql_complete_constant($LANG->_('Unknown action %action% in file %file%, function save()'),
+								  array('action' => $action, 'file' => __FILE__)));
+		// }}}
     }
+	
+	// {{{ Do the modification
+    $success = 0;
+	if($user) {
+		if(pql_replace_attribute($_pql->ldap_linkid, $user, '', $acis))
+		  $success = 1;
+	} else {
+		if(pql_replace_attribute($_pql->ldap_linkid, $domain, '', $acis))
+		  $success = 1;
+	}
+	// }}}
 
+	// {{{ Redirect depending on success 
     if($success)
       $msg = pql_complete_constant($LANG->_('Successfully %action% ACI to DN'), array('action' => $action));
     else
       $msg = pql_complete_constant($LANG->_('Failed to %action% ACI to DN'), array('action' => $action))
-	. ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+		. ":&nbsp;" . ldap_error($_pql->ldap_linkid);
     attribute_forward($msg);
+	// }}}
 }
+// }}}
 
 // Local variables:
 // mode: php
