@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.77 2004-03-03 07:58:54 turbo Exp $
+// $Id: left.php,v 2.78 2004-03-12 13:09:50 turbo Exp $
 //
 session_start();
 
@@ -25,35 +25,55 @@ if($_REQUEST["advanced"] == 1) {
     $_SESSION["ADVANCED_MODE"] = 0;
 }
 ?>
-  <font color="black" class="heada">
-    <?=$LANG->_('User')?>: <b><a href="user_detail.php?rootdn=<?php echo pql_get_rootdn($_SESSION["USER_DN"], 'left.php')?>&user=<?=$_SESSION["USER_DN"]?>"><?=$_SESSION["USER_ID"]?></a></b>
-  </font>
-  <br>
+  <!-- Link to the logged in user information page -->
+  <div id="el1Parent" class="parent" style="margin-bottom: 5px">
+    <?=$LANG->_('User')?>:
+    <nobr>
+      <a class="item" href="user_detail.php?rootdn=<?php echo pql_get_rootdn($_SESSION["USER_DN"], 'left.php')?>&user=<?=urlencode($_SESSION["USER_DN"])?>">
+        <span class="heada"><b><?=$_SESSION["USER_ID"]?></b></span>
+      </a>
+    </nobr>
+  </div>
+
 <?php if($_SESSION["ADVANCED_MODE"]) {
 	$host = split(';', $_SESSION["USER_HOST"]);
+
+	// If it's an LDAP URI, replace "%2f" with "/" -> URLdecode
+	$host[0] = urldecode($host[0]);
 ?>
+  <!-- LDAP Server information -->
+  <div id="el2Parent" class="parent" style="margin-bottom: 5px">
+    <?=$LANG->_('LDAP Server')?>:
+    <nobr>
+      <span class="heada"><?=pql_maybe_idna_decode($host[0])?>:<?=$host[1]?></span>
+    </nobr>
+  </div>
 
-  <font color="black" class="heada"><?=$LANG->_('LDAP Server')?>: <b><?=pql_maybe_idna_decode($host[0])?>:<?=$host[1]?></b></font>
-  <br>
 <?php } ?>
 
-  <font color="black" class="heada">
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <a href="index.php?logout=1" target="_parent"><?=$LANG->_('Log out')?></a>
-  </font>
+  <!-- logout link -->
+  <div id="el3Parent" class="parent" style="margin-bottom: 5px">
+    <nobr>
+      <a class="item" href="index.php?logout=1" target="_parent">
+        <span class="heada"><?=$LANG->_('Log out')?></span>
+      </a>
+    </nobr>
+  </div>
 
-  <br>
-
-  <form method=post action="index2.php" target="_top">
+  <!-- Advanced Mode selector -->
+  <div id="el4Parent" class="parent">
+    <form method=post action="index2.php" target="_top">
 <?php if($_SESSION["konqueror"]) { ?>
-    <input type="checkbox" name="advanced" accesskey="a" onClick="this.form.submit()"<?=$checked?>><?=$LANG->_('\uA\Udvanced mode')."\n"?>
+      <input type="checkbox" name="advanced" accesskey="a" onClick="this.form.submit()"<?=$checked?>><?=$LANG->_('\uA\Udvanced mode')."\n"?>
 <?php } else { ?>
-    <input type="checkbox" name="advanced" accesskey="a" onChange="this.form.submit()"<?=$checked?>><?=$LANG->_('\uA\Udvanced mode')."\n"?>
+      <input type="checkbox" name="advanced" accesskey="a" onChange="this.form.submit()"<?=$checked?>><?=$LANG->_('\uA\Udvanced mode')."\n"?>
 <?php } ?>
-  </form>
+    </form>
+  </div>
 <?php if($_SESSION["ALLOW_BRANCH_CREATE"] and $_SESSION["ADVANCED_MODE"]) { ?>
 
-  <div id="el2Parent" class="parent">
+  <!-- Add domain branch link -->
+  <div id="el5Parent" class="parent">
     <a href="domain_add_form.php?rootdn=<?=$_pql->ldap_basedn[0]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain branch'))); ?></a><br>
   </div>
 
@@ -63,7 +83,7 @@ if($_REQUEST["advanced"] == 1) {
 <?php
 // ---------------- HOME BRANCH (PROJECT URLS ETC)
 // Level 1: phpQLAdmin configuration etc
-$div_counter = 3; // Initialize the global counter
+$div_counter = 10; // Initialize the global counter
 pql_format_tree("<b>".$LANG->_('Home')."</b>", 'home.php');
 
 // Level 2a: Search links
@@ -121,7 +141,7 @@ if($_SESSION["ALLOW_BRANCH_CREATE"]) {
     foreach($_pql->ldap_basedn as $dn)  {
 	$dn = urldecode($dn);
 
-	$dom = pql_domain_get_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]);
+	$dom = pql_domain_get_value($_pql, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]);
 	if($dom) {
 	    foreach($dom as $d) {
 		$domains[] = urlencode($d);
@@ -135,7 +155,7 @@ if(!isset($domains)) {
     // No domain defined -> 'ordinary' user (only show this user)
     $_SESSION["SINGLE_USER"] = 1;
 
-    $cn = pql_get_attribute($_pql->ldap_linkid, $_SESSION["USER_DN"], pql_get_define("PQL_GLOB_ATTR_CN")); $cn = $cn[0];
+    $cn = pql_get_attribute($_pql->ldap_linkid, $_SESSION["USER_DN"], pql_get_define("PQL_ATTR_CN")); $cn = $cn[0];
 
     // Try to get the DN of the domain
     $dnparts = ldap_explode_dn($_SESSION["USER_DN"], 0);
@@ -146,7 +166,7 @@ if(!isset($domains)) {
 	  $DN .= "," . $dnparts[$j];
 	
 	// Look in DN for attribute 'defaultdomain'.
-	$defaultdomain = pql_domain_get_value($_pql, $DN, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
+	$defaultdomain = pql_domain_get_value($_pql, $DN, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 	if($defaultdomain) {
 	    // A hit. This is the domain under which the user is located.
 	    $domain = $DN;
@@ -240,8 +260,8 @@ if(!isset($domains)) {
 			unset($cn); unset($sn); unset($gecos);
 			
 			// From the user DN, get the CN and SN.
-			$cn = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_GIVENNAME"));
-			$sn = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_SN"));
+			$cn = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_GIVENNAME"));
+			$sn = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_SN"));
 			if($cn[0] && $sn[0]) {
 			    // We have a givenName (first name) and a surName (last name) - combine the two
 			    if($sn[0] != '_') {
@@ -251,7 +271,7 @@ if(!isset($domains)) {
 			    }
 			} else {
 			    // Probably don't have a givenName - get the commonName
-			    $cn = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_CN"));
+			    $cn = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_CN"));
 			    if($cn[0]) {
 				// We have a commonName - split it up into two parts (which should be first and last name)
 				$cn = split(" ", $cn[0]);
@@ -264,7 +284,7 @@ if(!isset($domains)) {
 				}
 			    } else {
 				// No givenName, surName or commonName - last try, get the gecos
-				$gecos = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_GECOS"));
+				$gecos = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_GECOS"));
 				if($gecos[0])
 				  // We have a gecos - use that as is
 				  $cns[$dn] = $gecos[0];
@@ -276,10 +296,10 @@ if(!isset($domains)) {
 		    asort($cns);
 		    
 		    foreach($cns as $dn => $cn) {
-			$uid = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_UID"));
+			$uid = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_UID"));
 			$uid = $uid[0];
 			
-			$uidnr = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_QMAILUID"));
+			$uidnr = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_QMAILUID"));
 			$uidnr = $uidnr[0];
 			
 			if(($uid != 'root') or ($uidnr != '0')) {
@@ -294,10 +314,11 @@ if(!isset($domains)) {
 	    }
 
 	    // Level 1: The domain name with it's users
-	    if((count($branches) > 1) and $subbranch) {
+	    if((count($branches) > 1) and $subbranch)
 		pql_format_tree($subbranch, $url, $links, 1);
-	    } else {
+	    else {
 		pql_format_tree($d, "domain_detail.php?rootdn=$rootdn&domain=$domain", $links, 0);
+		echo "\n";
 	    }
 	} // end foreach ($branches)
 
