@@ -71,8 +71,7 @@ binary-indep: build install
 
 	(cd $(INSTDIR) && \
 	  rm *-stamp *.schema; \
-	  find -type f | xargs chmod 644; \
-	  chmod 755 *.pl)
+	  find -type f | xargs chmod 644)
 
 	dh_installdeb -i
 	dh_shlibdeps -i
