@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_edit_attribute.php,v 1.22 2004-04-06 07:22:05 turbo Exp $
+// $Id: ezmlm_edit_attribute.php,v 1.23 2004-05-06 08:23:05 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -9,37 +9,40 @@ $url["domain"] = pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 
 // forward back to list detail page
-function list_forward($domainname, $msg) {
-    $msg = urlencode($msg);
+function list_forward($domainname, $listno, $msg) {
+    $msg    = urlencode($msg);
+	$domain = urlencode($domain);
+	if($listno)
+	  $url = "ezmlm_detail.php?domain=".$_REQUEST["domain"]."&domainname=$domainname&listno=$listno&msg=$msg";
+	else
+	  $url = "ezmlm_detail.php?domain=".$_REQUEST["domain"]."&domainname=$domainname&msg=$msg";
 
-	// TODO: We need the '$domainname' value to show the LIST, not lists in domain
-    $url = "ezmlm_detail.php?domain=".$_REQUEST["domain"]."&domainname=$domainname&listno=".$_REQUEST["listno"]."&msg=$msg&rlnb=3";
     header("Location: " . pql_get_define("PQL_CONF_URI") . "$url");
 }
 
 // Get base directory for mails
-if(!($path = pql_domain_get_value($_pql, $domain, pql_get_define("PQL_ATTR_BASEMAILDIR")))) {
+if(!($path = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEMAILDIR")))) {
 	// TODO: What if we can't find the base maildir path!?
-	die(pql_complete_constant($LANG->_('Can\'t get baseMailDir path from %domain%'), array('domain' => $domain)));
+	die(pql_complete_constant($LANG->_('Can\'t get baseMailDir path from %domain%'), array('domain' => $_REQUEST["domain"])));
 }
 
 // Load list of mailinglists
 if($ezmlm = new ezmlm(pql_get_define("PQL_CONF_EZMLM_USER"), $path)) {
-	if($ezmlm->mailing_lists[$listno]["name"]) {
-		$listname = $ezmlm->mailing_lists[$listno]["name"];
+	if($ezmlm->mailing_lists[$_REQUEST["listno"]]["name"]) {
+		$listname = $ezmlm->mailing_lists[$_REQUEST["listno"]]["name"];
 	} else {
-		die(pql_complete_constant($LANG->_('No listname defined for list %listnr%'), array('listnr' => $listno)));
+		die(pql_complete_constant($LANG->_('No listname defined for list %listnr%'), array('listnr' => $_REQUEST["listno"])));
 	}
 
 	// TODO: Same for 'listparent' and 'fromaddress' when/if we need it...
-	if(($attrib == 'subscriber') or ($attrib == 'owner')) {
+	if(($_REQUEST["attrib"] == 'subscriber') or ($_REQUEST["attrib"] == 'owner')) {
 		include("./header.html");
 
 		if(($submit != 'save') and !$value) {
-			if($attrib == 'subscriber') {
+			if($_REQUEST["attrib"] == 'subscriber') {
 				$title1 = $LANG->_('Add email address to subscription list');
 				$title2 = $LANG->_('Subscription address');
-			} elseif($attrib == 'owner') {
+			} elseif($_REQUEST["attrib"] == 'owner') {
 				$title1 = $LANG->_('Edit list owner address');
 				$title2 = $LANG->_('List owner address');
 			}
@@ -56,11 +59,11 @@ if($ezmlm = new ezmlm(pql_get_define("PQL_CONF_EZMLM_USER"), $path)) {
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Email')?></td>
 <?php
-			if($attrib == 'subscriber') {
+			if($_REQUEST["attrib"] == 'subscriber') {
 ?>
-          <td><input type="text" name="subscriber" value="<?=$subscriber?>"></td>
+          <td><input type="text" name="subscriber" value="<?=$subscriber?>" size="50"></td>
 <?php
-			} elseif($attrib == 'owner') {
+			} elseif($_REQUEST["attrib"] == 'owner') {
 ?>
           <td><input type="text" name="owner" value="<?=$owner?>"></td>
 <?php
@@ -70,29 +73,32 @@ if($ezmlm = new ezmlm(pql_get_define("PQL_CONF_EZMLM_USER"), $path)) {
       </th>
     </table>
 
-    <input type="hidden" name="listno" value="<?=$listno?>">
-    <input type="hidden" name="domain" value="<?=$domain?>">
-    <input type="hidden" name="domainname" value="<?=$domainname?>">
-    <input type="hidden" name="attrib" value="<?=$attrib?>">
-    <input type="submit" name="submit" value="save">
+    <input type="hidden" name="listno"     value="<?=$_REQUEST["listno"]?>">
+    <input type="hidden" name="domain"     value="<?=$_REQUEST["domain"]?>">
+    <input type="hidden" name="domainname" value="<?=$_REQUEST["domainname"]?>">
+    <input type="hidden" name="attrib"     value="<?=$_REQUEST["attrib"]?>">
+
+    <p>
+
+    <input type="submit" name="submit"     value="save">
   </form>
 <?php
 		} else {
 			// Save the value of list owner
 
-			if($attrib == 'subscriber') {
+			if($_REQUEST["attrib"] == 'subscriber') {
 				if($value) {
 					$ezmlm->unsubscribe($listname, $value);
 				} else {
 					$ezmlm->subscribe($listname, $subscriber);
 				}
-			} elseif($attrib == 'owner') {
-				$ezmlm->updatelistentry(0, $listno, $domainname, $attrib, $owner);
+			} elseif($_REQUEST["attrib"] == 'owner') {
+				$ezmlm->updatelistentry(0, $_REQUEST["listno"], $_REQUEST["domainname"], $_REQUEST["attrib"], $owner);
 			}
 		}
 	} else {
 		// Toggle configuration value
-		$ezmlm->updatelistentry(0, $listno, $domainname, $attrib, $ezmlm->mailing_lists[$listno]);
+		$ezmlm->updatelistentry(0, $_REQUEST["listno"], $_REQUEST["domainname"], $_REQUEST["attrib"], $ezmlm->mailing_lists[$_REQUEST["listno"]]);
 	}
 }
 
