@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.52 2004-04-28 14:00:22 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.53 2004-05-08 08:08:47 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -95,101 +95,120 @@ pql_set_define("PQL_CONF_EZMLM_USER", "alias");
 //
 // Returns:	(string) path to the users mailstore
 //
-// Note: 	If this path is not absolute (w/o trailing slash)
+// NOTE1: 	If this path is not absolute (w/o trailing slash)
 //			it will be prefixed by qmail/LDAP with qmail/control/ldapmessagestore
+//
+// NOTE2:	These functions are TEMPLATES. To fully utilise this, you probably need some
+//			PHP knowledge. I've tried my best to write as usefull functions as possible,
+//			but it's impossible to anticipate every need...
 //
 // WARNING:	phpQLAdmin will not check the return-value. Be sure not to return nonsense or
 //			a path which is already assigned to another user.
+//
+// Supported replacement code in this function:
+//		%d% = domain
+//		%u% = username
+//		%h% = mailhost
+//		%m% = mailaddress
 function user_generate_mailstore($ldap, $email, $dn, $entry, $type) {
 	$mailstore = '';
+
+	// -------------- Debugging 1:
+	// If you suspect that this function isn't doing what it's supposed to do,
+	// uncomment the next few lines. This can also be used in bugtracker or the
+	// mailinglist for help...
+//	echo "user_generate_mailstore('<i>linkid</i>', '$email', '$dn', '<i>array</i>', '$type')<br>";
+//	echo "The entry array: "; printr($entry);
 	
-	// you feel comfortable with the old way phpQLAdmin generates the mailstore?
-	// Uncomment this example and change the string. 
+	// -------------- Template 1: domains baseMailDir/uid
+//	if($dn) {
+//		// We're called with a dn of a branch object.
+//
+//		// ... retreive the 'baseMailDir' attribute value from the branch object.
+//		$mailstore = pql_domain_get_value($ldap, $dn, pql_get_define("PQL_ATTR_BASEMAILDIR"));
+//
+//		// ... retreive the 'defaultDomainName' attribute value from the branch object.
+//		$domain    = pql_domain_get_value($ldap, $dn, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+//	} else {
+//		// Default base directory
+//		$mailstore = "/var/mail";
+//
+//		// The branch name is (should be) included in the calling of the function.
+//		$domain    = $entry["BRANCH_NAME"];
+//	}
+//	
+//	if($type == 'branch') {
+//		// We're creating a branch, so add the domain name to the path.
+//		$branch = '%d%/';
+//	}
+//	
+//	if(! ereg("/$", $mailstore)) {
+//		// The base mail directory value doesn't end with a slash, add one.
+//		// The '$branch' variable will be empty for users, set if a branch.
+//		$mailstore = $mailstore . "/" . $branch . "%u%";
+//	} else {
+//		// The base mail directory value doesn't end with a slash, add one.
+//		// The '$branch' variable will be empty for users, set if a branch.
+//		$mailstore = $mailstore . $branch . "%u%";
+//	}
+	
+	// -------------- Template 2: domain.tld/username
+//	$mailstore = "%d%/%u%"; 
+	
+	// -------------- Template 3: d/domain.tld/username (First character of the domainname / domainname / uid)
+//	$mailstore = substr($domain, 0, 1) . "/%d%/%u%";
+
+	// -------------- Template 4: mail.host.tld/domain.tld/username
+//	$mailstore = "%h%/%d%/%u%";
+
+	// -------------- Template 5: mail@domain.tld (complete email-address)
+	$mailstore = "%m%";
+
+	// -------------- Template 6: 123456
+	// Generate a random (6 digit) number and make sure no other user has
+	// the same mailstore. This will be slow if you have many users, use
+	// some hash instead of random numbers
 	//
-	// supported variables: %d% = domain, %u% = username, %h% = mailhost
-	//
-	// -------------- example: domains baseMailDir/uid
-	//	if($dn) {
-	//		$mailstore = pql_domain_get_value($ldap, $dn, pql_get_define("PQL_ATTR_BASEMAILDIR"));
-	//		$domain    = pql_domain_get_value($ldap, $dn, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
-	//	} else {
-	//		$mailstore = "/var/mail";
-	//		$domain    = $entry["BRANCH_NAME"];
-	//	}
-	//
-	//	if($type == 'branch')
-	//	  // We're creating a branch, so add the domain to string
-	//	  $branch = '%d%/';
-	//	
-	//	if(! ereg("/$", $mailstore)) {
-	//		$mailstore = $mailstore . "/" . $branch . "%u%";
-	//	} else {
-	//		$mailstore = $mailstore . $branch . "%u%";
-	//	}
-	//	$mailstore = pql_complete_constant($mailstore, array("d" => pql_format_international($domain), 
-	//														 "u" => $entry[pql_get_define("PQL_ATTR_UID")], 
-	//														 "h" => $entry[pql_get_define("PQL_ATTR_MAILHOST")]));
-	//
-	// -------------- example: "%d/%u" (=> domain.tld/username) 
-	//	$mailstore = "%d%/%u%"; 
-	//	$mailstore = pql_complete_constant($mailstore, array(	"d" => pql_format_international($domain), 
-	//															"u" => $entry[pql_get_define("PQL_ATTR_UID")],
-	//															"h" => $entry[pql_get_define("PQL_ATTR_MAILHOST")]));
-	//
-	// -------------- example: domain.tld/username
-	//	$mailstore = $domain . '/'. $entry[pql_get_define("PQL_ATTR_UID")];
-	//
-	// -------------- example: d/domain.tld/username (first character of the domainname / domainname / uid)
-	//	$mailstore = substr($domain, 0, 1) . '/' . $domain . '/'. $entry[pql_get_define("PQL_ATTR_UID")];
-	//
-	// -------------- example: mail.host.tld/domain.tld/username
-	//	$mailstore = $entry[pql_get_define("PQL_ATTR_MAILHOST")] . '/' . pql_format_international($domain) . '/'. $entry[pql_get_define("PQL_ATTR_UID")];
-	//
-	// -------------- example: mail@domain.tld (complete email-address)
-	//	$mailstore = $entry[pql_get_define("PQL_ATTR_MAIL")];
-	//
-	// -------------- example: 123456
-	// generate a random (6 digit) number and make sure 
-	// no other user has the same mailstore 
-	// This will be slow if you have many users, use some hash
-	// instead of random numbers
-	//
-	// seed the random number generator
-	//	$seed = list($usec, $sec) = explode(' ', microtime());
-	//	$seed = (float) $sec + ((float) $usec * 100000);
-	//	mt_srand($seed);
-	//	
-	// for(;;) {
-	// 	// generate a random numer between 100000 and 999999 (6 digits)
-	// 	$mailstore = mt_rand(100000, 999999);
-	// 	// check whether another user already has this mailstore. If yes, generate another random number.
-	// 	// TODO: ldap_basedn isn't availible any more (it's an array of base DN's)!
-	// 	$filter = pql_get_define("PQL_ATTR_MAILSTORE") . "=" . pql_maybe_encode($mailstore,
-	// 																				 pql_get_define("PQL_ATTR_MAILSTORE"),
-	// 																				 $ldap);
-	// 	if(!pql_search($ldap, $ldap_basedn, $filter)) {
-	// 		break;
-	// 	}
-	// }
-	//
-	//
-	// All examples above generate a relative path.
-	// If you like to make absolute paths, uncomment this.
-	// Prefix the path with  "/home/mailusers/"
-	// i.e.: domain.tld/username => /home/mailusers/domain.tld/username
-	//	$mailstore = "/home/mailusers/" . $mailstore; 
-	//
+	// Seed the random number generator
+//	$seed = list($usec, $sec) = explode(' ', microtime());
+//	$seed = (float) $sec + ((float) $usec * 100000);
+//	mt_srand($seed);
+//	
+//	for(;;) {
+//	 	// Generate a random numer between 100000 and 999999 (6 digits)
+//	 	$mailstore = mt_rand(100000, 999999);
+//
+//	 	// Check whether another user already has this mailstore. If yes,
+//		// generate another random number.
+//	 	// TODO: ldap_basedn isn't availible any more (it's an array of base DN's)!
+//	 	$filter = pql_get_define("PQL_ATTR_MAILSTORE") . "=" . pql_maybe_encode($mailstore,
+//																				pql_get_define("PQL_ATTR_MAILSTORE"),
+//																				$ldap);
+//	 	if(!pql_search($ldap, $ldap_basedn, $filter)) {
+//	 		break;
+//	 	}
+//	}
+
+	// -------------- Note 1:
 	// Convert the whole mailstore to lowercase? Uncomment next line. 
-	//	$mailstore = strtolower($mailstore);
-	//
+//	$mailstore = strtolower($mailstore);
+
+	// -------------- Note 2:
 	// Convert the whole mailstore to uppercase? Uncomment next line. 
-	//	$mailstore = strtoupper($mailstore);													
-	//	
-	//		if(! ereg("/$", $mailstore)) {
-	//			// Add a trailing slash - Maildir!
-	//			$mailstore .= "/";
-	//		}
-	
+//	$mailstore = strtoupper($mailstore);													
+
+	// ----------------------------------------------
+	// Add a trailing slash for Maildir's.
+	if(! ereg("/$", $mailstore)) {
+		$mailstore .= "/";
+	}
+
+	// Substitue the '%X%' values with real values...
+	$mailstore = pql_complete_constant($mailstore, array("d" => pql_format_international($domain), 
+														 "u" => $entry[pql_get_define("PQL_ATTR_UID")], 
+														 "h" => $entry[pql_get_define("PQL_ATTR_MAILHOST")],
+														 "m" => $entry[pql_get_define("PQL_ATTR_MAIL")]));
+
 	return($mailstore);
 }
 
@@ -201,33 +220,54 @@ function user_generate_mailstore($ldap, $email, $dn, $entry, $type) {
 function user_generate_homedir($ldap, $email, $dn, $entry, $type) {
     $homedir = '';
 
-	//	if($dn) {
-	//		$homedir = pql_domain_get_value($ldap, $dn, pql_get_define("PQL_ATTR_BASEHOMEDIR"));
-	//		$domain  = pql_domain_get_value($ldap, $dn, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
-	//	} else {
-	//		$homedir = "/home";
-	//		$domain  = $entry["BRANCH_NAME"];
-	//	}
-	//	
-	//	if($type == 'branch')
-	//	  // We're creating a branch, so add the domain to string
-	//	  $branch = '%d%/';
-	//	
-	//	if(! ereg("/$", $homedir)) {
-	//		$homedir = $homedir . "/" . $branch . "%u%";
-	//	} else {
-	//		$homedir = $homedir . $branch . "%u%";
-	//	}
-	//	
-	//	$homedir = pql_complete_constant($homedir, array("d" => pql_format_international($domain), 
-	//													 "u" => $entry[pql_get_define("PQL_ATTR_UID")],
-	//													 "h" => $entry[pql_get_define("PQL_ATTR_MAILHOST")]));
+	// -------------- Debugging 1:
+	// If you suspect that this function isn't doing what it's supposed to do,
+	// uncomment the next few lines. This can also be used in bugtracker or the
+	// mailinglist for help...
+//	echo "user_generate_homedir('<i>linkid</i>', '$email', '$dn', '<i>array</i>', '$type')<br>";
+//	echo "The entry array: "; printr($entry);
 
+//	if($dn) {
+//		// ... retreive the 'baseHomeDir' attribute value from the branch object.
+//		$homedir = pql_domain_get_value($ldap, $dn, pql_get_define("PQL_ATTR_BASEHOMEDIR"));
+//
+//		// ... retreive the 'defaultDomainName' attribute value from the branch object.
+//		$domain  = pql_domain_get_value($ldap, $dn, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+//	} else {
+//		// Default base directory
+//		$homedir = "/home";
+//
+//		// The branch name is (should be) included in the calling of the function.
+//		$domain  = $entry["BRANCH_NAME"];
+//	}
+//	
+//	if($type == 'branch') {
+//		// We're creating a branch, so add the domain to string
+//		$branch = '%d%/';
+//	}
+//	
+//	if(! ereg("/$", $homedir)) {
+//		// The base home directory value doesn't end with a slash, add one.
+//		// The '$branch' variable will be empty for users, set if a branch.
+//		$homedir = $homedir . "/" . $branch . "%u%";
+//	} else {
+//		// The base home directory value doesn't end with a slash, add one.
+//		// The '$branch' variable will be empty for users, set if a branch.
+//		$homedir = $homedir . $branch . "%u%";
+//	}
+
+	// ----------------------------------------------
+	// Add a trailing slash for Maildir's.
 	if(! ereg("/$", $homedir)) {
-		// Always add a trailing slash for home directories (just in case!)
 		$homedir .= "/";
 	}
-	
+
+	// Substitue the '%X%' values with real values...
+	$homedir = pql_complete_constant($homedir, array("d" => pql_format_international($domain), 
+													 "u" => $entry[pql_get_define("PQL_ATTR_UID")], 
+													 "h" => $entry[pql_get_define("PQL_ATTR_MAILHOST")],
+													 "m" => $entry[pql_get_define("PQL_ATTR_MAIL")]));
+
 	return($homedir);
 }
 
