@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 1.2 2002-12-12 11:50:31 turbo Exp $
+// $Id: pql.inc,v 1.3 2002-12-12 14:22:42 turbo Exp $
 //
 // ----------------------------
 // Note: There are a few " followed after PHP comment
@@ -1026,16 +1026,15 @@ function format_error($msg){
 // ------------------------------------------------
 
 function print_status_msg($msg){
-	?>
-	  <table cellpadding="3" cellspacing="0" border="0" width="100%">
-		<tr>
-		  <td class="message"><img src="images/info.png" width="16" height="16" border="0"> <?php echo stripslashes($msg); ?></td>
-			</tr>
-			  </table>
-				<br>
-				  <br>
-					
-					<?php
+?>
+  <table cellpadding="3" cellspacing="0" border="0" width="100%">
+    <tr>
+      <td class="message"><img src="images/info.png" width="16" height="16" border="0"> <?php echo stripslashes($msg); ?></td>
+    </tr>
+  </table>
+
+  <br><br>
+<?php
 }
 
 // ------------------------------------------------
