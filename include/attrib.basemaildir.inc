@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // base homedirectory for domain
-// $Id: attrib.basemaildir.inc,v 2.9 2004-10-19 10:40:40 turbo Exp $
+// $Id: attrib.basemaildir.inc,v 2.9.4.1 2004-11-19 08:43:57 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -31,12 +31,12 @@ function attribute_init() {
 
 // {{{ attribute_print_forms(void)
 function attribute_print_form() {
-    global $error, $LANG, $orgname;
+    global $error, $LANG;
 	// DLW: Need a way to unset basemaildir.
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Change %what% for domain %domain%'), array('what' => $LANG->_('default maildirectory base'), 'domain' => $orgname)); ?></th>
+      <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Change %what% for domain %domain%'), array('what' => $LANG->_('default maildirectory base'), 'domain' => $_REQUEST["orgname"])); ?></th>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Mail directory')?></td>
           <td><?php echo pql_format_error_span($error["basemaildir"]); ?><input type="text" name="basemaildir" value="<?=$_REQUEST["basemaildir"]?>" size="50"></td>
