@@ -29,6 +29,7 @@ tag:
 	  echo -n "We are now at version "; \
 	  cat  < .version; \
 	  TAG="REL_`echo $$MAJOR`_`echo $$MINOR`_`echo $$LEVEL`"; \
+	  echo -n $(TAG) > .tag; \
 	  echo cvs tag: $$TAG; \
 	  cvs commit -m "New release - $$MAJOR.$$MINOR.$$LEVEL." .version .version.old; \
 	  cvs tag -RF $$TAG; \
@@ -60,8 +61,9 @@ release: tag tarball debian
 	@(mv $(TMPDIR)/phpQLAdmin-$(VERSION).tar.gz /var/www/phpqladmin/; \
 	  mv $(TMPDIR)/phpQLAdmin-$(VERSION).tar.bz2 /var/www/phpqladmin/; \
 	  cat /var/www/phpqladmin/index.html.in | \
-		sed -e "s@%VERSION%@$(VERSION)@" -e "s@%CVSTAG%@$(TAG)@" \
-		> /var/www/phpqladmin/index.html.out)
+		sed -e "s@%VERSION%@$(VERSION)@g" -e "s@%CVSTAG%@`cat .tag`@g" \
+		> /var/www/phpqladmin/index.html.out; \
+	  rm .tag)
 
 $(INSTDIR):
 	@rm -f $(TMPDIR) && mkdir -p $(INSTDIR)
