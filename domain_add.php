@@ -16,7 +16,9 @@ $_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
 
 // Should we force a dot in the domainname or not?
 if($config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$rootdn] == "dc" or
-   $config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$rootdn] == "o") {
+   $config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$rootdn] == "ou" or
+   $config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$rootdn] == "o")
+{
 	// We're using a domain or organization object, which
 	// means we should allow a domain name to be without dot.
 	$force_dot = 0;
