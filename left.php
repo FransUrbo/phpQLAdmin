@@ -36,6 +36,11 @@ if($advanced == 1) {
     <?=PQL_USER; ?>: <b><?=$USER_ID?></b> |
     <a href="index.php?logout=1" target="_parent"><?=PQL_LOGOUT?></a>
   </font>
+<?php if($ADVANCED_MODE) { ?>
+  <font color="black" size="-10">
+    <?=$USER_DN?>
+  </font>
+<?php } ?>
   <form method=post action="index2.php" target="_top">
     <input type="checkbox" name="advanced" accesskey="a" onChange="this.form.submit()"<?=$checked?>><u>A</u>dvanced mode
   </form>
@@ -47,17 +52,13 @@ if($advanced == 1) {
     </a>
   </div>
 
-<?php
-if($ADVANCED_MODE) {
-?>
+<?php if($ADVANCED_MODE) { ?>
   <font color="black" class="heada">
     Host: <font color="black" size=-4><b><?=$USER_HOST?></b></font>
   </font>
   <br>
 
-<?php
-	if($ALLOW_BRANCH_CREATE) {
-?>
+<?php if($ALLOW_BRANCH_CREATE) { ?>
   <div id="el2Parent" class="parent">
     <nobr>
       <a href="domain_add_form.php">Add domain branch</a>

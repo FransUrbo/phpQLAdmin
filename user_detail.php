@@ -107,6 +107,12 @@ if($mailhost == ""){
 
 <?php if($ADVANCED_MODE) { ?>
       <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">User DN</td>
+        <td><?=$user?></td>
+        <td></td>
+      </tr>
+
+      <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?php echo PQL_LDAP_USERPASSWORD_TITLE; ?></td>
         <td><?=$userpassword?></td>
         <td>
