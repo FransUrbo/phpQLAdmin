@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.87 2004-03-30 06:20:56 turbo Exp $
+// $Id: left.php,v 2.88 2004-03-30 07:07:25 turbo Exp $
 //
 session_start();
 
@@ -219,7 +219,11 @@ if(!isset($domains)) {
 	if((count($branches) > 1)) {
 	    $links = array(pql_complete_constant($LANG->_('Add %what%'),
 						 array('what' => $LANG->_('sub unit')))
-			   => "unit_add.php?rootdn=$rootdn&domain=$domain");
+			   => "unit_add.php?rootdn=$rootdn&domain=$domain",
+
+			   pql_complete_constant($LANG->_('Add %what%'),
+						 array('what' => $LANG->_('user')))
+			   => "user_add.php?rootdn=$rootdn&domain=$domain");
 	    pql_format_tree($d, "domain_detail.php?rootdn=$rootdn&domain=$domain", $links, 0);
 	} else
 	  // This branch don't have any sub units (flat structure)
@@ -257,13 +261,12 @@ if(!isset($domains)) {
 		} else {
 		    $links = array(pql_complete_constant($LANG->_('Add %what%'),
 							 array('what' => $LANG->_('sub unit')))
-				    => "unit_add.php?rootdn=$rootdn&domain=$domain");
-		    $new = array(pql_complete_constant($LANG->_('Add %what%'),
-						       array('what' => $LANG->_('user')))
-				 => "user_add.php?rootdn=$rootdn&domain=$domain");
-		    $links = $links + $new;
+				    => "unit_add.php?rootdn=$rootdn&domain=$domain",
+
+				   pql_complete_constant($LANG->_('Add %what%'),
+							 array('what' => $LANG->_('user')))
+				   => "user_add.php?rootdn=$rootdn&domain=$domain");
 		}
-		    
 
 		if(is_array($users)) {
 		    // We have users in this domain
