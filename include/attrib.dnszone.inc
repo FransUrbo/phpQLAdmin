@@ -1,11 +1,11 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.4 2003-11-20 08:01:37 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.5 2004-02-14 14:25:36 turbo Exp $
 
 function attribute_check() {
     global $domain, $rootdn, $rdn, $view, $action, $type, $action;
-    global $_pql, $PHP_SELF, $attrib, $$attrib, $oldvalue;
+    global $_pql, $attrib, $$attrib, $oldvalue;
 
     if($attrib && $rdn && ($$attrib != $oldvalue))
       return true;
@@ -15,7 +15,7 @@ function attribute_check() {
 
 function attribute_print_form() {
     global $domain, $rootdn, $rdn, $view, $action, $type, $action, $LANG, $LANG;
-    global $_pql, $PHP_SELF, $attrib;
+    global $_pql, $attrib;
 
 	if($action != 'add') {
 		// Get old value
@@ -24,7 +24,7 @@ function attribute_print_form() {
 		$oldvalue = $oldvalue[0];
 	}
 ?>
-    <form action="<?=$PHP_SELF?>" method="post">
+    <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
       <table cellspacing="0" cellpadding="3" border="0">
         <th colspan="3" align="left"><?=$LANG->_('Change Bind9 value')?></th>
           <tr class="<?php pql_format_table(); ?>">
@@ -75,7 +75,7 @@ function attribute_print_form() {
 
 function attribute_save($action) {
     global $domain, $rootdn, $rdn, $view, $action, $type, $action, $LANG, $LANG;
-    global $_pql, $PHP_SELF, $attrib, $$attrib, $oldvalue, $priority, $time;
+    global $_pql, $attrib, $$attrib, $oldvalue, $priority, $time;
 
 	if((lc($attrib) == 'mxrecord') && $priority)
 	  $$attrib = $priority . " " . $$attrib;

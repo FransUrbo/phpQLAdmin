@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldapmessagestore (default prefix for mailbox paths)
 //
-// $Id: attrib.control.ldapmessagestore.inc,v 2.11 2004-01-01 12:35:34 turbo Exp $
+// $Id: attrib.control.ldapmessagestore.inc,v 2.12 2004-02-14 14:25:35 turbo Exp $
 
 function ldapmessagestore_check($type) {
 	global $error, $ldapmessagestore, $view, $LANG;
@@ -28,7 +28,7 @@ function ldapmessagestore_init($host) {
 	
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 									   pql_get_define("PQL_GLOB_ATTR_LDAPMESSAGESTORE"));
 	
 	if(!is_null($value))
@@ -61,9 +61,9 @@ function ldapmessagestore_print_view($host) {
 }
 
 function ldapmessagestore_print_form() {
-	global $attrib, $ldapmessagestore, $PHP_SELF, $error, $mxhost, $view, $LANG;
+	global $attrib, $ldapmessagestore, $error, $mxhost, $view, $LANG;
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">ldapmessagestore (<?=$LANG->_('Default mailbox prefix path')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
@@ -91,7 +91,7 @@ function ldapmessagestore_save($type, $host) {
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 										 pql_get_define("PQL_GLOB_ATTR_LDAPMESSAGESTORE"),
 										 $ldapmessagestore))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),

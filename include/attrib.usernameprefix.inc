@@ -1,14 +1,14 @@
 <?php
 // Attribute plugin for
 // usernamePrefix/usernamePrefixLength
-// $Id: attrib.usernameprefix.inc,v 2.5 2003-12-11 06:04:14 turbo Exp $
+// $Id: attrib.usernameprefix.inc,v 2.6 2004-02-14 14:25:36 turbo Exp $
 
 function attribute_check($type = '') {
-	global $error, $attrib, $$attrib, $LANG;
+    global $error, $LANG;
 
     // is typed in ?
-    if($attrib == "") {
-		$error[$attrib] = $LANG->_('Missing');
+    if($_REQUEST["attrib"] == "") {
+		$error[$_REQUEST["attrib"]] = $LANG->_('Missing');
 		return false;
     }
     
@@ -16,9 +16,12 @@ function attribute_check($type = '') {
 }
 
 function attribute_print_form($type = "modify") {
-	global $error, $attrib, $$attrib, $domain, $rootdn, $view, $orgname, $LANG;
+    global $error, $LANG;
+	global $orgname;			// Set by domain_edit_attributes.php.
+
+    $attrib = $_REQUEST["attrib"];
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Username prefix to use when automaticly creating username in domain %domain%'), array('domain' => $orgname)); ?></th>
         <tr class="<?php pql_format_table(); ?>">
@@ -30,9 +33,9 @@ function attribute_print_form($type = "modify") {
           <td>
             <?php echo pql_format_error_span($error[$attrib]); ?>
 <?php if($attrib == 'usernameprefix') { ?>
-            <input type="text" name="<?=$attrib?>" value="<?=$$attrib?>" size="50">
+            <input type="text" name="<?=$attrib?>" value="<?=$_REQUEST[$attrib]?>" size="50">
 <?php } elseif($attrib == 'usernameprefixlength') { ?>
-            <input type="text" name="<?=$attrib?>" value="<?=$$attrib?>" size="10">
+            <input type="text" name="<?=$attrib?>" value="<?=$_REQUEST[$attrib]?>" size="10">
 <?php } ?>
           </td>
         </tr>
@@ -55,9 +58,9 @@ function attribute_print_form($type = "modify") {
 
     <input type="hidden" name="submit" value="2">
     <input type="hidden" name="attrib" value="<?=$attrib?>">
-    <input type="hidden" name="domain" value="<?=$domain?>">
-    <input type="hidden" name="rootdn" value="<?=$rootdn?>">
-    <input type="hidden" name="view"   value="<?=$view?>">
+    <input type="hidden" name="domain" value="<?=$_REQUEST["domain"]?>">
+    <input type="hidden" name="rootdn" value="<?=$_REQUEST["rootdn"]?>">
+    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
@@ -66,6 +69,8 @@ function attribute_print_form($type = "modify") {
 
 function attribute_save($type) {
 	global $error, $attrib, $$attrib, $domain, $rootdn, $type, $_pql, $view, $LANG;
+
+	$attrib = $_REQUEST["attrib"];
 
 	if($attrib == 'usernameprefix') {
 		$lang = "username prefix";
@@ -78,12 +83,12 @@ function attribute_save($type) {
       case "modify":
 	  case "delete":
 		if($type == 'delete')
-		  $$attrib = '';
+		  $_REQUEST[$attrib] = '';
 
-		if(pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, $$attrib))
+		if(pql_set_domain_value($_pql->ldap_linkid, $_REQUEST["domain"], $attrib, $_REQUEST[$attrib]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									   array('what' => $LANG->_($lang),
-											 'new'  => $$attrib));
+											 'new'  => $_REQUEST[$attrib]));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_($lang))) . ": ".ldap_error($_pql->ldap_linkid);

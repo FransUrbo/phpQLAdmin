@@ -3,7 +3,7 @@
 // timeoutconnect (how long to wait for smtp connection)
 // timeoutremote (how long to wait for remote server)
 //
-// $Id: attrib.control.timeoutconnect.inc,v 2.12 2004-01-01 12:35:34 turbo Exp $
+// $Id: attrib.control.timeoutconnect.inc,v 2.13 2004-02-14 14:25:36 turbo Exp $
 
 function timeoutconnect_check($type) {
 	global $error, $timeoutconnect, $timeoutremote, $view, $LANG;
@@ -46,7 +46,7 @@ function timeoutconnect_init($host) {
 
 	foreach($attribs as $attrib) {
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 										   $attrib);
 
 		if(!is_null($value))
@@ -92,11 +92,11 @@ function timeoutconnect_print_view($host) {
 }
 
 function timeoutconnect_print_form() {
-	global $attrib, $timeoutconnect, $timeoutremote, $PHP_SELF, $error, $mxhost, $view, $LANG;
+	global $attrib, $timeoutconnect, $timeoutremote, $error, $mxhost, $view, $LANG;
 	$string  = $LANG->_('Seconds', 4) . ". ";
 	$string .= $LANG->_('Default');
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">timeoutconnect, timeoutremote (<?=$LANG->_('Timeouts')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
@@ -136,7 +136,7 @@ function timeoutconnect_save($type, $host) {
 						 pql_get_define("PQL_GLOB_ATTR_TIMEOUTREMOTE"));
 		foreach($attribs as $attrib)
 		  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-													pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $mxhost . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+													pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 													$attrib, $$attrib);
 		
 		if(in_array(false, $return))

@@ -1,19 +1,19 @@
 <?php
 // attribute plugin for
 // default domain name (the default domainname for a domain)
-// $Id: attrib.defaultdomain.inc,v 2.23 2003-11-20 08:01:37 turbo Exp $
+// $Id: attrib.defaultdomain.inc,v 2.24 2004-02-14 14:25:36 turbo Exp $
 
 function attribute_check() {
-    global $defaultdomain, $domain, $oldvalue, $_pql, $error, $rootdn, $LANG;
+    global $error, $LANG;
     
     // is typed in ?
-    if($defaultdomain == "") {
+    if(empty($_REQUEST["defaultdomain"])) {
 		$error[pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN")] = $LANG->_('Missing');
 		return false;
     }
-    
+
     // don't use ".."
-    if(preg_match("/(\.){2,}/", $defaultdomain)) {
+    if(preg_match("/(\.){2,}/", $_REQUEST["defaultdomain"])) {
 		$error[pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN")] = $LANG->_('Invalid');
 		return false;
     }
@@ -22,17 +22,15 @@ function attribute_check() {
 }
 
 function attribute_init() {
-    global $defaultdomain, $oldvalue, $rootdn;
-    $defaultdomain = $oldvalue;
+    $_REQUEST["defaultdomain"] = @$_REQUEST["oldvalue"];
 }
 
 function attribute_print_form() {
-    global $defaultdomain, $domain, $PHP_SELF, $attrib, $oldvalue, $error, $rootdn, $view, $LANG;
-	global $orgname;
+    global $error, $LANG, $orgname;
 
-	$oldvalue = $defaultdomain;
+	$defaultdomain = $_REQUEST["defaultdomain"];
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Change %what% for domain %domain%'), array('what' => $LANG->_('default domain name'), 'domain' => $orgname)); ?></th>
         <tr class="<?php pql_format_table(); ?>">
@@ -43,9 +41,9 @@ function attribute_print_form() {
 		require("./include/pql_control.inc");
 
 	  // Initiate a connection to the QmailLDAP/Controls DN
-	  $_pql_control = new pql_control($GLOBALS["USER_HOST"], $GLOBALS["USER_DN"], $GLOBALS["USER_PASS"]);
+	  $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 		
-	  $hosts = pql_control_get_hosts($_pql_control->ldap_linkid, $GLOBALS["USER_SEARCH_DN_CTR"]);
+	  $hosts = pql_control_get_hosts($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"]);
 	  if(is_array($hosts)) {
 ?>
 
@@ -103,11 +101,11 @@ function attribute_print_form() {
     </table>
 
     <input type="hidden" name="submit"   value="2">
-    <input type="hidden" name="attrib"   value="<?=$attrib?>">
-    <input type="hidden" name="oldvalue" value="<?=$oldvalue?>">
-    <input type="hidden" name="domain"   value="<?=$domain?>">
-    <input type="hidden" name="rootdn"   value="<?=$rootdn?>">
-    <input type="hidden" name="view"     value="<?=$view?>">
+    <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="oldvalue" value="<?=$defaultdomain?>">
+    <input type="hidden" name="domain"   value="<?=$_REQUEST["domain"]?>">
+    <input type="hidden" name="rootdn"   value="<?=$_REQUEST["rootdn"]?>">
+    <input type="hidden" name="view"     value="<?=@$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
@@ -115,8 +113,11 @@ function attribute_print_form() {
 }
 
 function attribute_save($type) {
-    global $domain, $attrib, $oldvalue, $defaultdomain, $_pql, $rootdn, $view, $LANG;
-    
+    global $_pql, $LANG;
+
+    $oldvalue = @$_REQUEST["oldvalue"];
+	$defaultdomain = @$_REQUEST["defaultdomain"];
+
 	if($defaultdomain == $oldvalue) {
 		// don't change if new value equal to old one
 		$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('Default domainname')));
@@ -127,13 +128,13 @@ function attribute_save($type) {
     switch($type) {
       case "add":
       case "modify":
-		if(pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, $defaultdomain)) {
+		if(pql_set_domain_value($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["attrib"], $defaultdomain)) {
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 										 array('what' => $LANG->_('Default domainname', 4),
 											   'new'  => $defaultdomain));
 			
 			require("./include/pql_control.inc");
-			$_pql_control = new pql_control($GLOBALS["USER_HOST"], $GLOBALS["USER_DN"], $GLOBALS["USER_PASS"]);
+			$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 			// -----------------------------------------
 			// update locals if control patch is enabled
@@ -146,18 +147,18 @@ function attribute_save($type) {
 
 					if(is_array($hosts)) {
 						foreach($hosts as $host)
-						  pql_control_update_domains($_pql_control, pql_get_define("PQL_GLOB_ATTR_CN").'=$host,'.$GLOBALS["USER_SEARCH_DN_CTR"],
+						  pql_control_update_domains($_pql_control, pql_get_define("PQL_GLOB_ATTR_CN").'=$host,'.$_SESSION["USER_SEARCH_DN_CTR"],
 													 '*', array($oldvalue, $defaultdomain),
 													 pql_get_define("PQL_GLOB_ATTR_LOCALS"));
 					}
 				} else {
 					// Change all hosts
 					if($type == 'delete')
-					  pql_control_update_domains($_pql_control, $GLOBALS["USER_SEARCH_DN_CTR"],
+					  pql_control_update_domains($_pql_control, $_SESSION["USER_SEARCH_DN_CTR"],
 												 '*', array($delval, ''),
 												 pql_get_define("PQL_GLOB_ATTR_LOCALS"));
 					else
-					  pql_control_update_domains($_pql_control, $GLOBALS["USER_SEARCH_DN_CTR"],
+					  pql_control_update_domains($_pql_control, $_SESSION["USER_SEARCH_DN_CTR"],
 												 '*', array($oldvalue, $defaultdomain),
 												 pql_get_define("PQL_GLOB_ATTR_LOCALS"));
 				}
@@ -166,7 +167,7 @@ function attribute_save($type) {
 				// This _MUST_ be a 'delete {default,additional} domain'...
 				//
 				// Delete ALL locals/rcpthosts on ALL QmailLDAP/Controls that lists this domain.
-				pql_control_update_domains($_pql_control, $GLOBALS["USER_SEARCH_DN_CTR"],
+				pql_control_update_domains($_pql_control, $_SESSION["USER_SEARCH_DN_CTR"],
 										   '*', array($delval, ''));
 			}
 
@@ -182,22 +183,22 @@ function attribute_save($type) {
 					if(is_array($hosts)) {
 						foreach($hosts as $host)
 						  if($type == 'delete')
-							pql_control_update_domains($_pql_control, pql_get_define("PQL_GLOB_ATTR_CN").'=$host,'.$GLOBALS["USER_SEARCH_DN_CTR"],
+							pql_control_update_domains($_pql_control, pql_get_define("PQL_GLOB_ATTR_CN").'=$host,'.$_SESSION["USER_SEARCH_DN_CTR"],
 													   '*', array($delval, ''),
 													   pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"));
 						  else
-							pql_control_update_domains($_pql_control, pql_get_define("PQL_GLOB_ATTR_CN").'=$host,'.$GLOBALS["USER_SEARCH_DN_CTR"],
+							pql_control_update_domains($_pql_control, pql_get_define("PQL_GLOB_ATTR_CN").'=$host,'.$_SESSION["USER_SEARCH_DN_CTR"],
 													   '*', array($oldvalue, $defaultdomain),
 													   pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"));
 					}
 				} else {
 					// Change all hosts
 					if($type == 'delete')
-					  pql_control_update_domains($_pql_control, $GLOBALS["USER_SEARCH_DN_CTR"],
+					  pql_control_update_domains($_pql_control, $_SESSION["USER_SEARCH_DN_CTR"],
 												 '*', array($delval, ''),
 												 pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"));
 					else
-					  pql_control_update_domains($_pql_control, $GLOBALS["USER_SEARCH_DN_CTR"],
+					  pql_control_update_domains($_pql_control, $_SESSION["USER_SEARCH_DN_CTR"],
 												 '*', array($oldvalue, $defaultdomain),
 												 pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"));
 				}

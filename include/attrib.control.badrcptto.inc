@@ -2,7 +2,7 @@
 // control attribute plugin for
 // badrcptto (blocked local addresses)
 //
-// $Id: attrib.control.badrcptto.inc,v 2.15 2004-01-01 12:35:33 turbo Exp $
+// $Id: attrib.control.badrcptto.inc,v 2.16 2004-02-14 14:25:35 turbo Exp $
 
 function badrcptto_check($type) {
 	global $error, $badrcptto, $view, $LANG;
@@ -32,7 +32,7 @@ function badrcptto_init($host) {
 
 	// fetch data from ldap server
 	$badrcptto = pql_control_get_attribute($_pql_control->ldap_linkid,
-										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 										   pql_get_define("PQL_GLOB_ATTR_BADRCPTTO"));
 
 	if(is_null($badrcptto))
@@ -86,12 +86,12 @@ function badrcptto_print_view($host) {
 }
 
 function badrcptto_print_form() {
-	global $attrib, $PHP_SELF, $error, $badrcptto, $badcount, $mxhost, $view, $LANG;
+	global $attrib, $error, $badrcptto, $badcount, $mxhost, $view, $LANG;
 
 	if(($badcount < count($badrcptto) - 1) and count($badrcptto) != 0)
 	  $badcount = count($badrcptto) - 1;
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">badrcptto (<?=$LANG->_('Rejected local addresses')?>)</th>
         <tr class="title">
@@ -109,7 +109,7 @@ function badrcptto_print_form() {
 
 <?php } ?>
         <tr class="subtitle">
-          <td><a href="<?=$PHP_SELF?>?attrib=<?=$attrib?>&badcount=<?=($badcount+1)?>&mxhost=<?=$mxhost?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
+          <td><a href="<?=$_SERVER["PHP_SELF"]?>?attrib=<?=$attrib?>&badcount=<?=($badcount+1)?>&mxhost=<?=$mxhost?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
         </tr>
 
         <tr class="subtitle">
@@ -134,7 +134,7 @@ function badrcptto_save($type, $host) {
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $mxhost . "," . $GLOBALS["USER_SEARCH_DN_CTR"], "badrcptto",
+										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"], "badrcptto",
 										 $badrcptto))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('badrcptto options')));

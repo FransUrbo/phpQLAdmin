@@ -1,11 +1,11 @@
 <?php
 // attribute plugin for the Webserver Configuration editor
 //
-// $Id: attrib.websrv.inc,v 1.3 2004-01-01 12:35:34 turbo Exp $
+// $Id: attrib.websrv.inc,v 1.4 2004-02-14 14:25:36 turbo Exp $
 
 function attribute_check() {
     global $rootdn, $domain, $view, $action, $attrib, $$attrib, $server, $oldvalue;
-    global $_pql, $PHP_SELF, $LANG;
+    global $_pql, $LANG;
 
     if($attrib && ($$attrib != $oldvalue))
       return true;
@@ -15,9 +15,9 @@ function attribute_check() {
 
 function attribute_print_form() {
     global $rootdn, $domain, $view, $action, $attrib, $server, $oldvalue;
-	global $_pql, $PHP_SELF, $LANG;
+	global $_pql, $LANG;
 ?>
-    <form action="<?=$PHP_SELF?>" method="post">
+    <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
       <table cellspacing="0" cellpadding="3" border="0">
         <th colspan="3" align="left"><?=$LANG->_('Change webserver configuration')?></th>
           <tr class="<?php pql_format_table(); ?>">
@@ -59,7 +59,7 @@ function attribute_print_form() {
 
 function attribute_save($action) {
     global $rootdn, $domain, $view, $action, $attrib, $$attrib, $server, $oldvalue;
-    global $_pql, $PHP_SELF, $LANG;
+    global $_pql, $LANG;
 
     switch($action) {
 	  case "add":

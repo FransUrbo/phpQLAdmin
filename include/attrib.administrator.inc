@@ -1,21 +1,21 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.29 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.30 2004-02-14 14:25:35 turbo Exp $
 
 require("./left-head.html");
 
 function attribute_check() {
-    global $attrib, $domain, $oldvalue, $_pql, $error, $$attrib, $LANG;
-	$value = $$attrib;
-    
+    global $error, $LANG;
+	$attrib = $_REQUEST["attrib"];
+
     // is typed in ?
-    if($value == "") {
+    if(empty($_REQUEST[$attrib])) {
 		$error[$attrib] = $LANG->_('Missing');
 		return false;
     }
     
     // don't use ".."
-    if(preg_match("/(\.){2,}/", $value)) {
+    if(preg_match("/(\.){2,}/", $_REQUEST[$attrib])) {
 		$error[$attrib] = $LANG->_('Invalid');
 		return false;
     }
@@ -24,10 +24,15 @@ function attribute_check() {
 }
 
 function attribute_print_form($action) {
-    global $$attrib, $domain, $rootdn, $PHP_SELF, $attrib, $oldvalue, $error, $_pql, $user, $view, $LANG;
-	global $orgname;
+    global $_pql, $error, $LANG;
+    global $orgname; 			// Set by domain_edit_attributes.php
+
+	$attrib = $_REQUEST["attrib"];
+
+	if ($action == 'add') $action = 'fulldomain'; // DLW: Talk to Turbo about the relation between $type and $action.
+
 ?>
-  <form action="<?php echo $PHP_SELF ?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
 <?php if($attrib == pql_get_define("PQL_GLOB_ATTR_SEEALSO")) { ?>
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what% for domain %domain%'), array('what' => $LANG->_('contact person'), 'domain' => $orgname)); ?></th>
@@ -38,14 +43,14 @@ function attribute_print_form($action) {
 <?php } ?>
         <tr class="<?php pql_format_table(); ?>">
 <?php
-	if(($attrib == pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR")) and $rootdn and $domain) {
+	if(($attrib == pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR")) and $_REQUEST["rootdn"] and $_REQUEST["domain"]) {
 		// We're should give a user access to THIS branch
 ?>
           <td class="title"><?=$LANG->_('Administrator DN')?></td>
 <?php
 	} elseif((($attrib == pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR")) or
 			  ($attrib == pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR")))
-			 and !$rootdn and !$domain and $user) {
+			 and !$_REQUEST["rootdn"] and !$_REQUEST["domain"] and $_REQUEST["user"]) {
 		// We're giving a user access to ('random') branch
 ?>
           <td class="title"><?=$LANG->_('Branch DN')?></td>
@@ -57,13 +62,13 @@ function attribute_print_form($action) {
 	}
 ?>
           <td>
-            <?php echo pql_format_error_span($error[$$attrib]) . "\n"; ?>
+            <?php echo pql_format_error_span($error[$_REQUEST[$attrib]]) . "\n"; ?>
 <?php if($action != 'add') { ?>
-            <input type="text" name="<?=$$attrib?>" value="<?=$$attrib?>" size="50"></td>
+            <input type="text" name="<?=$attrib?>" value="<?=$_REQUEST[$attrib]?>" size="50"></td>
 <?php } else {
 		// TODO: This is a REALLY bad idea. If we have a 'huge' database
 		// (hundred, thousands or more users), this will take AGES!
-		if($rootdn and $domain) {
+		if($_REQUEST["rootdn"] and $_REQUEST["domain"]) {
 			// We're giving access to a specific domain
 			$i = 0; $j = 0;
 
@@ -72,7 +77,7 @@ function attribute_print_form($action) {
 				$dn = urldecode($dn);
 				unset($dom); unset($domains);
 
-				$dom = pql_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $GLOBALS["USER_DN"]);
+				$dom = pql_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]);
 				if($dom) {
 					foreach($dom as $d) {
 						$domains[] = $d;
@@ -87,7 +92,7 @@ function attribute_print_form($action) {
 						$d = pql_maybe_decode($d);
 ?>
 
-<?php if($opera) { ?>
+<?php if($opera) { // DLW: Is the $opera variable visable here? ?>
             <div id="el2Parent" class="parent" onclick="showhide(el<?=$j?>Spn, el<?=$j?>Img)">
               <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$j?>Img">
             </div>
@@ -140,13 +145,13 @@ function attribute_print_form($action) {
 
             <input type="hidden" name="<?=$attrib?>_<?=$i?>" value="on">
             <input type="hidden" name="<?=$attrib?>" value="<?=$i?>">
-<?php	} elseif($user) { // We're giving a specific user access to a domain ?>
+<?php	} elseif($_REQUEST["user"]) { // We're giving a specific user access to a domain ?>
             <select name="domain">
-<?php		if($GLOBALS["ALLOW_GLOBAL_CONFIG_SAVE"]) {
+<?php		if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
 				// We're a super-admin, we can give/take
 				// adminstration on ANY branch/domain
 				// that exists in the system
-				$domains = pql_domain_get($_pql);
+				$_REQUEST["domains"] = pql_domain_get($_pql);
 			} else {
 				// We can only give user access to a branch we (the logged in user)
 				// have access to. Otherwise, we could 'steal' access to any domain
@@ -155,9 +160,8 @@ function attribute_print_form($action) {
 				foreach($_pql->ldap_basedn as $dn)  {
 					$dn = urldecode($dn);
 
-					$dom = pql_domain_value($_pql,
-												$dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"),
-												$GLOBALS["USER_DN"], 1);
+					$dom = pql_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"),
+											$_SESSION["USER_DN"], 1);
 					if($dom)
 					  foreach($dom as $d)
 						$domains[] = $d;
@@ -193,33 +197,37 @@ function attribute_print_form($action) {
       </th>
     </table>
 
-<?php if(!$user) { ?>
-    <input type="hidden" name="domain"        value="<?=$domain?>">
+<?php if(!$_REQUEST["user"]) { ?>
+    <input type="hidden" name="domain"        value="<?=$_REQUEST["domain"]?>">
 <?php } else { ?>
-    <input type="hidden" name="<?php echo pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR");?>" value="<?=$user?>">
-    <input type="hidden" name="user"          value="<?=$user?>">
+    <input type="hidden" name="<?php echo pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR");?>" value="<?=$_REQUEST["user"]?>">
+    <input type="hidden" name="user"          value="<?=$_REQUEST["user"]?>">
 <?php } ?>
     <input type="hidden" name="submit"        value="4">
-    <input type="hidden" name="attrib"        value="<?=$attrib?>">
+    <input type="hidden" name="attrib"        value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="action"        value="<?=$action?>">
-    <input type="hidden" name="rootdn"        value="<?=$rootdn?>">
-    <input type="hidden" name="oldvalue"      value="<?=$$attrib?>">
-    <input type="hidden" name="view"          value="<?=$view?>">
+    <input type="hidden" name="rootdn"        value="<?=$_REQUEST["rootdn"]?>">
+    <input type="hidden" name="oldvalue"      value="<?=$_REQUEST[$attrib]?>">
+    <input type="hidden" name="view"          value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
 <?php
 }
 
+/* DLW: This doesn't work, (Default Branch Values/Add domain administrator for domain) but it doesn't work in
+ *      the original code either.  Look into it. */
 function attribute_save($type) {
-    global $domain, $rootdn, $attrib, $oldvalue, $$attrib, $_pql, $user, $view, $LANG;
-	$value = $$attrib;
+    global $_pql, $LANG;
+
+	$attrib = $_REQUEST["attrib"];
+	$value = $_REQUEST[$attrib];
 
     switch($type) {
       case "add":
       case "modify":
       case "delete":
-		if($value and $oldvalue and ($value == $oldvalue)) {
+		if($value and $_REQUEST["oldvalue"] and ($value == $_REQUEST["oldvalue"])) {
 			// don't change if new value equal to old one
 			$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('Domain administrator')));
 			attribute_forward($msg);
@@ -228,12 +236,14 @@ function attribute_save($type) {
 
 		// Get the old values, so we can remove the one we're modifying
 		// (delete the one we want to delete, keep the others etc)
-		if(($rootdn and $domain) or ($user and $domain))
-		  $admins = pql_domain_value($_pql, $domain, $attrib);
-		elseif($user and $rootdn)
-		  $admins = pql_domain_value($_pql, $rootdn, $attrib);
-		elseif($user and $$attrib and !$value)
-		  $admins = pql_domain_value($_pql, $$attrib, $attrib);
+		if(($_REQUEST["rootdn"] and $_REQUEST["domain"]) or ($_SERVER["user"] and $_REQUEST["domain"]))
+		  $admins = pql_domain_value($_pql, $_REQUEST["domain"], $attrib);
+		elseif($_SERVER["user"] and $_REQUEST["rootdn"])
+		  $admins = pql_domain_value($_pql, $_REQUEST["rootdn"], $attrib);
+		elseif($_SERVER["user"] and $value and !$value)
+		  $admins = pql_domain_value($_pql, $value, $attrib);
+
+		$ADMs = array();
 
 		if(is_array($admins)) {
 			foreach($admins as $admin)
@@ -242,13 +252,13 @@ function attribute_save($type) {
 
 		if($type == 'delete') {
 			// Delete attribute
-			if(!$user and !$$attrib) {
+			if(!$_SERVER["user"] and !$value) {
 				// Add the new value of administrator
 				$ADMs[] = $value;
-			} elseif($$attrib) {
+			} elseif($value) {
 				// Delete user DN from array of administrators
 				foreach($ADMs as $adm) {
-					if(!eregi($$attrib, $adm))
+					if(!eregi($value, $adm))
 					  $adms[] = $adm;
 				}
 				
@@ -256,7 +266,7 @@ function attribute_save($type) {
 			} else {
 				// Delete user DN from array of administrators
 				foreach($ADMs as $adm) {
-					if(!eregi($user, $adm))
+					if(!eregi($_SERVER["user"], $adm))
 					  $adms[] = $adm;
 				}
 				
@@ -264,10 +274,10 @@ function attribute_save($type) {
 			}
 		} else {
 			// Add user 
-			if($user)
-			  $ADMs[] = $user;
-			elseif($$attrib) {
-				$amount = $_POST[$attrib];
+			if($_SERVER["user"])
+			  $ADMs[] = $_SERVER["user"];
+			elseif($value) {
+				$amount = $value;
 				for($i=0; $i < $amount; $i++) {
 					$var_name = $attrib . "_$i";
 					if($_POST[$var_name]) 
@@ -277,11 +287,11 @@ function attribute_save($type) {
 		}
 
 		$success = 0;
-		if($domain and (($$attrib and !$user) or ($$attrib and $user) or (!$$attrib and $user))) {
-			if(pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, $ADMs))
+		if($_REQUEST["domain"] and (($value and !$_SERVER["user"]) or ($value and $_SERVER["user"]) or (!$value and $_SERVER["user"]))) {
+			if(pql_set_domain_value($_pql->ldap_linkid, $_REQUEST["domain"], $attrib, $ADMs))
 			  $success = 1;
-		} elseif($rootdn and $user) {
-			if(pql_set_domain_value($_pql->ldap_linkid, $rootdn, $attrib, $ADMs))
+		} elseif($_REQUEST["rootdn"] and $_SERVER["user"]) {
+			if(pql_set_domain_value($_pql->ldap_linkid, $_REQUEST["rootdn"], $attrib, $ADMs))
 			  $success = 1;
 		}
 
@@ -302,9 +312,9 @@ function attribute_save($type) {
     }
 }
 
-if(($attrib == pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR")) or
-   ($attrib == pql_get_define("PQL_GLOB_ATTR_SEEALSO")) or
-   ($attrib == pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR")))
+if(($_REQUEST["attrib"] == pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR")) or
+   ($_REQUEST["attrib"] == pql_get_define("PQL_GLOB_ATTR_SEEALSO")) or
+   ($_REQUEST["attrib"] == pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR")))
 {
 	require("./left-trailer.html");
 }

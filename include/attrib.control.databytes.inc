@@ -2,7 +2,7 @@
 // control attribute plugin for
 // databytes (max number of bytes in message)
 //
-// $Id: attrib.control.databytes.inc,v 2.11 2004-01-01 12:35:33 turbo Exp $
+// $Id: attrib.control.databytes.inc,v 2.12 2004-02-14 14:25:35 turbo Exp $
 
 function databytes_check($type) {
 	global $error, $databytes, $view, $LANG;
@@ -22,7 +22,7 @@ function databytes_init($host) {
 	
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 									   pql_get_define("PQL_GLOB_ATTR_DATABYTES"));
 	
 	if(!is_null($value))
@@ -60,9 +60,9 @@ function databytes_print_view($host) {
 }
 
 function databytes_print_form() {
-	global $attrib, $databytes, $PHP_SELF, $error, $mxhost, $view, $LANG;
+	global $attrib, $databytes, $error, $mxhost, $view, $LANG;
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">databytes (<?=$LANG->_('Maximum number databytes in message')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
@@ -94,7 +94,7 @@ function databytes_save($type, $host) {
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 										 pql_get_define("PQL_GLOB_ATTR_DATABYTES"),
 										 $databytes))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // envnoathost (default prefix for mailbox paths)
 //
-// $Id: attrib.control.envnoathost.inc,v 2.13 2004-02-12 11:27:30 turbo Exp $
+// $Id: attrib.control.envnoathost.inc,v 2.14 2004-02-14 14:25:35 turbo Exp $
 
 function envnoathost_check($type) {
 	global $error, $envnoathost, $view, $LANG;
@@ -28,7 +28,7 @@ function envnoathost_init($host) {
 
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 									   pql_get_define("PQL_GLOB_ATTR_ENVNOATHOST"));
 
 	if(!is_null($value))
@@ -61,9 +61,9 @@ function envnoathost_print_view($host) {
 }
 
 function envnoathost_print_form() {
-	global $attrib, $envnoathost, $PHP_SELF, $error, $mxhost, $view, $LANG;
+	global $attrib, $envnoathost, $error, $mxhost, $view, $LANG;
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">envnoathost (<?=$LANG->_('Default domain for addresses without @')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
@@ -95,7 +95,7 @@ function envnoathost_save($type, $host) {
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 										 pql_get_define("PQL_GLOB_ATTR_ENVNOATHOST"), $envnoathost))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('envnotathost options')));

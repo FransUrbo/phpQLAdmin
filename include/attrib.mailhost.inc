@@ -1,35 +1,37 @@
 <?php
 // attribute plugin for
 // mailhost (host address which resides the mailhost)
-// $Id: attrib.mailhost.inc,v 2.14 2004-01-01 12:35:34 turbo Exp $
+// $Id: attrib.mailhost.inc,v 2.15 2004-02-14 14:25:36 turbo Exp $
 
 function attribute_check($type) {
-	global $options, $mailhost, $domain, $error, $LANG;
+    global $error, $LANG;
 	
 	// clear attribute ?
-	if($options == "none")
-	  $mailhost = "";
+	if($_REQUEST["options"] == "none")
+	  $_REQUEST["mailhost"] = "";
 	
 	// is typed in ?
-	if($options == "user" and $mailhost == "") {
+	if($_REQUEST["options"] == "user" and empty($_REQUEST["mailhost"])) {
 		$error["mailhost"] = $LANG->_('Missing');
 		return false;
 	}
 	
 	// valid
-	if($options == "user" and !preg_match("/^([a-z0-9]+\.{1,1}[a-z0-9]+)+$/i",$mailhost)) {
+	if($_REQUEST["options"] == "user" and !preg_match("/^([a-z0-9]+\.{1,1}[a-z0-9]+)+$/i",$_REQUEST["mailhost"])) {
 		$error["mailhost"] = $LANG->_('Invalid');
 		return false;
 	}
 	
 	// check dns if dns option is set
-	if($options  == "dns") {
-		$res = getmxrr($domain, $rec, $weight);
+	if($_REQUEST["options"]  == "dns") {
+	    $rec = array();			// The names of the found servers.  (Output variable.)
+	    $weight = array();		// The weights of the found servers. (Output variable.)
+		$res = getmxrr($_REQUEST["mailhost"], $rec, $weight);
 		if(count($rec) == 0){
 			$error["dns"] = $LANG->_('This domain isn\'t registred within the DNS system') . "<br>";
 			return false;
 		} else {
-			$mailhost = $rec[0];
+		    $mailhost = $rec[0];
 		}
 	}
 	
@@ -37,32 +39,32 @@ function attribute_check($type) {
 }
 
 function attribute_init() {
-	global $options, $mailhost, $oldvalue, $domain, $LANG;
+    global $LANG;
 	
 	// control dns to set options
-	$mailhost = $oldvalue;
-	
-	if(lc($mailhost) == lc($LANG->_('None'))) {
-		$options = "none";
-		$oldvalue = "";
-		$mailhost = "";
+	$_REQUEST["mailhost"] = $_REQUEST["oldvalue"];
+
+	if(lc($_REQUEST["mailhost"]) == lc($LANG->_('None'))) {
+		$_REQUEST["options"] = "none";
+		$_REQUEST["oldvalue"] = "";
+		$_REQUEST["mailhost"] = "";
 	}
 }
 
 function attribute_print_form() {
-	global $mailhost, $options, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $rootdn, $view, $LANG;
+    global $error, $LANG;
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Mail server')?></th>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Options')?></td>
-          <td><input type="radio" name="options" value="dns" <?php if($options=="dns"){ echo "checked"; }?>><?=$LANG->_('Standard (DNS entry)')?><input type="radio" name="options" value="user" <?php if($options=="user"){ echo "checked"; }?>><?=$LANG->_('User defined')?><input type="radio" name="options" value="none" <?php if($options=="none"){ echo "checked"; }?>><?=$LANG->_('None')?></td>
+          <td><input type="radio" name="options" value="dns" <?php if($_REQUEST["options"]=="dns"){ echo "checked"; }?>><?=$LANG->_('Standard (DNS entry)')?><input type="radio" name="options" value="user" <?php if($_REQUEST["options"]=="user"){ echo "checked"; }?>><?=$LANG->_('User defined')?><input type="radio" name="options" value="none" <?php if($_REQUEST["options"]=="none"){ echo "checked"; }?>><?=$LANG->_('None')?></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Host address (FQDN)')?></td>
-          <td><?php echo pql_format_error_span($error["mailhost"]); ?><input type="text" name="mailhost" value="<?=$mailhost?>"></td>
+          <td><?php echo pql_format_error_span($error["mailhost"]); ?><input type="text" name="mailhost" value="<?=$_REQUEST["mailhost"]?>"></td>
         </tr>
 
         <tr class="subtitle">
@@ -75,12 +77,12 @@ function attribute_print_form() {
     </table>
 
     <input type="hidden" name="submit"   value="1">
-    <input type="hidden" name="attrib"   value="<?=$attrib?>">
-    <input type="hidden" name="oldvalue" value="<?=$oldvalue?>">
-    <input type="hidden" name="domain"   value="<?=$domain?>">
-    <input type="hidden" name="rootdn"   value="<?=$rootdn?>">
-    <input type="hidden" name="user"     value="<?=$user?>">
-    <input type="hidden" name="view"     value="<?=$view?>">
+    <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="oldvalue" value="<?=$_REQUEST["oldvalue"]?>">
+    <input type="hidden" name="domain"   value="<?=$_REQUEST["domain"]?>">
+    <input type="hidden" name="rootdn"   value="<?=$_REQUEST["rootdn"]?>">
+    <input type="hidden" name="user"     value="<?=$_REQUEST["user"]?>">
+    <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
@@ -88,7 +90,7 @@ function attribute_print_form() {
 }
 
 function attribute_save($type) {
-	global $mailhost, $domain, $user, $attrib, $oldvalue, $_pql, $view, $LANG;
+    global $_pql, $LANG;
 	
 	switch($type) {
 	  case "add":
@@ -96,20 +98,21 @@ function attribute_save($type) {
 		break;
 
 	  case "modify";
-		if($mailhost == $oldvalue) {
+		if($_REQUEST["mailhost"] == $_REQUEST["oldvalue"]) {
 			// don't change if new value equal to old one
 			$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('Mailserver')));
 			attribute_forward($msg);
 			break;
     	}
 		
-		if(pql_replace_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_MAILHOST"), $mailhost)) {
-			if($mailhost == "")
-			  $mailhost = $LANG->_('None');
+		if(pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_GLOB_ATTR_MAILHOST"),
+								 $_REQUEST["mailhost"])) {
+		    if(empty($_REQUEST["mailhost"]))
+			  $_REQUEST["mailhost"] = $LANG->_('None');
 
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 										 array('what' => $LANG->_('mailserver'),
-											   'new'  => $mailhost));
+											   'new'  => $_REQUEST["mailhost"]));
 		} else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('mailserver'))) . ": " . pql_format_error(0);
@@ -118,14 +121,12 @@ function attribute_save($type) {
 		break;
 		
 	  case "fulldomain":
-		$users = pql_user_get($_pql->ldap_linkid, $domain);
+		$users = pql_user_get($_pql->ldap_linkid, $_REQUEST["domain"]);
 		
 		if(is_array($users)) {
 			foreach($users as $user) {
-				$return[] = pql_replace_attribute($_pql->ldap_linkid,
-													  $user,
-													  pql_get_define("PQL_GLOB_ATTR_MAILHOST"),
-													  $mailhost);
+				$return[] = pql_replace_attribute($_pql->ldap_linkid, $user,
+												  pql_get_define("PQL_GLOB_ATTR_MAILHOST"), $_REQUEST["mailhost"]);
 			}
 			
 			if(in_array(false, $return))
@@ -134,7 +135,7 @@ function attribute_save($type) {
 			else
 			  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 										   array('what' => $LANG->_('mailserver'),
-												 'new'  => $mailhost));
+												 'new'  => $_REQUEST["mailhost"]));
 			
 			attribute_forward($msg);
 		}

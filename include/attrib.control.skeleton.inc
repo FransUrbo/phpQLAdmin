@@ -58,7 +58,7 @@
 //
 // Please look at other plugins to see which standard header text is recommanded.
 //
-// $Id: attrib.control.skeleton.inc,v 2.11 2004-01-01 12:35:34 turbo Exp $
+// $Id: attrib.control.skeleton.inc,v 2.12 2004-02-14 14:25:36 turbo Exp $
 //
 
 function xxx_check($type) {
@@ -85,7 +85,7 @@ function xxx_init() {
 	
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   $GLOBALS["USER_SEARCH_DN_CTR"],
+									   $_SESSION["USER_SEARCH_DN_CTR"],
 									   pql_get_define("PQL_GLOB_ATTR_xxx"));
 	
 	if(!is_null($value))
@@ -126,12 +126,12 @@ function xxx_print_view($host) {
 }
 
 function xxx_print_form() {
-	global $attrib, $xxx, $PHP_SELF, $error, $mxhost, $view, $LANG;
+	global $attrib, $xxx, $error, $mxhost, $view, $LANG;
 
 	// this function displays the form to change the values
 	// for specified attribute.
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">XXX title</th>
         <tr class="<?php pql_format_table(); ?>">
@@ -173,7 +173,7 @@ function xxx_save($type, $host) {
 		// save entries
 		
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 $GLOBALS["USER_SEARCH_DN_CTR"],
+										 $_SESSION["USER_SEARCH_DN_CTR"],
 										 pql_get_define("PQL_GLOB_ATTR_xxx"),
 										 $xxx))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),

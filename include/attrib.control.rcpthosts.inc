@@ -2,7 +2,7 @@
 // control attribute plugin for
 // rcpthosts (blocked local addresses)
 //
-// $Id: attrib.control.rcpthosts.inc,v 2.19 2004-02-12 11:27:30 turbo Exp $
+// $Id: attrib.control.rcpthosts.inc,v 2.20 2004-02-14 14:25:36 turbo Exp $
 
 function rcpthosts_check($type) {
     global $error, $rcpthosts, $domain, $rootdn, $view, $LANG;
@@ -32,7 +32,7 @@ function rcpthosts_init($host) {
 
     // fetch data from ldap server
     $rcpthosts = pql_control_get_attribute($_pql_control->ldap_linkid,
-										   pql_get_define("PQL_GLOB_ATTR_CN")."=$host,".$GLOBALS["USER_SEARCH_DN_CTR"],
+										   pql_get_define("PQL_GLOB_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 										   pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"));
     
     if(is_null($rcpthosts))
@@ -87,9 +87,9 @@ function rcpthosts_print_view($host) {
 }
 
 function rcpthosts_print_form() {
-    global $attrib, $PHP_SELF, $error, $rcpthosts, $mxhost, $domain, $rootdn, $view, $LANG;
+    global $attrib, $error, $rcpthosts, $mxhost, $domain, $rootdn, $view, $LANG;
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain'))); ?>:</th>
         <tr class="<?php pql_format_table(); ?>">
@@ -115,7 +115,7 @@ function rcpthosts_save($type, $host) {
 
 	if(!$host) {
 		// Get all QmailLDAP/Controls hosts
-		$hosts = pql_control_get_hosts($_pql_control->ldap_linkid, $GLOBALS["USER_SEARCH_DN_CTR"]);
+		$hosts = pql_control_get_hosts($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"]);
 		if(is_array($hosts)) {
 			if($type == 'add')
 			  $modify_host = 1; // Add domain to host
@@ -125,7 +125,7 @@ function rcpthosts_save($type, $host) {
 			foreach($hosts as $host) {
 				// Get rcpthosts in each of the hosts
 				$rcpthosts = pql_control_get_attribute($_pql_control->ldap_linkid,
-													   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+													   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 													   pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"));
 				if(is_array($rcpthosts)) {
 					foreach($rcpthosts as $rcpt) {
@@ -152,7 +152,7 @@ function rcpthosts_save($type, $host) {
     switch($type) {
       case "replicate":
 		// start replication manually
-		if(pql_control_update_domains($_pql_control, pql_get_define("PQL_GLOB_ATTR_CN")."=$host,".$GLOBALS["USER_SEARCH_DN_CTR"], $host, '', 'rcpthosts'))
+		if(pql_control_update_domains($_pql_control, pql_get_define("PQL_GLOB_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"], $host, '', 'rcpthosts'))
 		  $msg = pql_complete_constant($LANG->_('Successfully replicated %what%'),
 									   array('what' => pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS")));
 		else
@@ -168,7 +168,7 @@ function rcpthosts_save($type, $host) {
 		foreach($HOSTS as $host) {
 			// remove specified domain from rcpthosts in host object
 			if(pql_control_remove_attribute($_pql_control->ldap_linkid,
-											pql_get_define("PQL_GLOB_ATTR_CN")."=$host,".$GLOBALS["USER_SEARCH_DN_CTR"],
+											pql_get_define("PQL_GLOB_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 											pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"), $set))
 			  $msg = pql_complete_constant($LANG->_('Successfully removed %domain% from %what%'),
 										   array('what'   => pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"),
@@ -186,7 +186,7 @@ function rcpthosts_save($type, $host) {
 		foreach($HOSTS as $host) {
 			// adding specified domain to rcpthosts in host object
 			if(pql_control_add_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_GLOB_ATTR_CN")."=$host,".$GLOBALS["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_GLOB_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 										 pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"), $set))
 			  $msg = pql_complete_constant($LANG->_('Successfully added %domain% to %value %what%'),
 										   array('what'   => pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"),

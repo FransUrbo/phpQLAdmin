@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.51 2004-01-26 05:19:02 turbo Exp $
+// $Id: pql_config.inc,v 1.52 2004-02-14 14:25:36 turbo Exp $
 //
 
 // {{{ pql_set_define(define, value, case_insensitive, dn)
@@ -173,28 +173,21 @@ require("./include/pql_search.inc");			// Search API
 require("./include/pql_units.inc");				// Sub branch API
 
 // 3. Load configurations from LDAP base DN
-if(!$USER_HOST) {
+if(!$_SESSION["USER_HOST"]) {
 	if(! eregi('\+', PQL_GLOB_HOST)) {
 		$host = split(';', PQL_GLOB_HOST);
-		$USER_HOST = $host[0] . ";" . $host[1] . ";" . $host[2];
-		
-		session_register("USER_HOST");
+		$_SESSION["USER_HOST"] = $host[0] . ";" . $host[1] . ";" . $host[2];
 	} else {
 		// TODO: We have multiple hosts defined
 		$servers = split('\+', PQL_GLOB_HOST);
 
 		// For the time beeing, use the first value
 		$host = split(';', $servers[0]);
-		$USER_HOST = $host[0] . ";" . $host[1] . ";" . $host[2];
-		
-		session_register("USER_HOST");
+		$_SESSION["USER_HOST"] = $host[0] . ";" . $host[1] . ";" . $host[2];
 	}
 }
 
-if(isset($USER_DN))
-	 session_register("USER_DN");
-
-$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
+$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 foreach($_pql->ldap_basedn as $dn)  {
 	$dn = urldecode($dn);
 
@@ -243,16 +236,14 @@ foreach($_pql->ldap_basedn as $dn)  {
 	require("./include/defaults.inc");
 
 	// Check some builtin ACL's
-	$ALLOW_BRANCH_CREATE = 0; $ALLOW_CONTROL_CREATE = 0;
-	if($USER_DN && (!$ALLOW_BRANCH_CREATE or !$ALLOW_CONTROL_CREATE)) {
+	$_SESSION["ALLOW_BRANCH_CREATE"] = 0; $_SESSION["ALLOW_CONTROL_CREATE"] = 0;
+	if($_SESSION["USER_DN"] && (!$_SESSION["ALLOW_BRANCH_CREATE"] or !$_SESSION["ALLOW_CONTROL_CREATE"])) {
 		// Verify that the user is administrator on the topmost DN -> Allow creation of domain/branches.
-		$ALLOW_BRANCH_CREATE = pql_validate_administrator($_pql->ldap_linkid, $dn, $USER_DN);
+		$_SESSION["ALLOW_BRANCH_CREATE"] = pql_validate_administrator($_pql->ldap_linkid, $dn, $_SESSION["USER_DN"]);
 		
 		// Check the Control DN if the user is there -> Allow management of Controls information
-		$ALLOW_CONTROL_CREATE = pql_validate_administrator($_pql->ldap_linkid, $USER_SEARCH_DN_CTR, $USER_DN);
+		$_SESSION["ALLOW_CONTROL_CREATE"] = pql_validate_administrator($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $_SESSION["USER_DN"]);
 	}
-	
-	session_register("ALLOW_BRANCH_CREATE", "ALLOW_CONTROL_CREATE");
 }
 
 // 5. Get language translation
@@ -267,15 +258,13 @@ require("./include/pql_plugins.inc");
 
 // 8. Verify that the user have access to write the global phpQLAdmin config
 //    in the first base DN
-$ALLOW_GLOBAL_CONFIG_SAVE = pql_validate_administrator($_pql->ldap_linkid, $_pql->ldap_basedn[0], $USER_DN);
-session_register("ALLOW_GLOBAL_CONFIG_SAVE");
+$_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"] = pql_validate_administrator($_pql->ldap_linkid, $_pql->ldap_basedn[0], $_SESSION["USER_DN"]);
 
 // 9. Check if ACI support is enabled in LDAP server
-if(!$ACI_SUPPORT_ENABLED and function_exists("user_generate_aci")) {
-	$ocs = pql_get_subschema($_pql->ldap_linkid, 'attributeTypes');
+if(empty($_SESSION["ACI_SUPPORT_ENABLED"]) and function_exists("user_generate_aci")) {
+	$ocs = pql_get_subschema($_pql->ldap_linkid, attributeTypes);
 	if($ocs["openldapaci"]["OID"]) {
-		$ACI_SUPPORT_ENABLED = 1;
-		session_register("ACI_SUPPORT_ENABLED");
+		$_SESSION["ACI_SUPPORT_ENABLED"] = 1;
 	}
 }
 
@@ -283,8 +272,7 @@ if(!$ACI_SUPPORT_ENABLED and function_exists("user_generate_aci")) {
 if(!$MONITOR_BACKEND_ENABLED) {
     $sr = @ldap_read($_pql->ldap_linkid, "cn=Monitor", 'objectClass=*');
     if($sr) {
-		$MONITOR_BACKEND_ENABLED = 1;
-		session_register("MONITOR_BACKEND_ENABLED");
+		$_SESSION["MONITOR_BACKEND_ENABLED"] = 1;
 	}
 }
 

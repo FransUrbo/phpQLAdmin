@@ -1,11 +1,11 @@
-<?php /* $Id: user_add-details.inc,v 1.7 2003-12-11 06:08:26 turbo Exp $ */ ?>
-  <form action="<?=$PHP_SELF?>" method="post" accept-charset="UTF-8">
+<?php /* $Id: user_add-details.inc,v 1.8 2004-02-14 14:25:41 turbo Exp $ */ ?>
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
 <?php if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) == pql_get_define("PQL_GLOB_ATTR_UID")) {
-		if(!pql_get_define("PQL_GLOB_ATTR_AUTOCREATEUSERNAME", $domain) or
-		   (pql_get_define("PQL_GLOB_ATTR_AUTOCREATEUSERNAME", $domain) and !function_exists('user_generate_uid')) or
-		   $ADVANCED_MODE) {
+		if(!pql_get_define("PQL_GLOB_ATTR_AUTOCREATEUSERNAME", $_GET["domain"]) or
+		   (pql_get_define("PQL_GLOB_ATTR_AUTOCREATEUSERNAME", $_GET["domain"]) and !function_exists('user_generate_uid')) or
+		   $_SESSION["ADVANCED_MODE"]) {
 ?>
         <!-- Username (UID) -->
         <tr class="<?php pql_format_table(); ?>">
@@ -48,7 +48,7 @@
 		// Get the default password scheme for branch
 		$defaultpasswordscheme = pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_DEFAULTPASSWORDSCHEME"));
 
-		if(!$defaultpasswordscheme or $ADVANCED_MODE)  {
+		if(!$defaultpasswordscheme or $_SESSION["ADVANCED_MODE"])  {
 			// We have no default password scheme - display forms for SYSTEM/MAIL account
 ?>
 
@@ -108,7 +108,7 @@
 <?php if(($account_type == "system") or ($account_type == "shell")) {
 		// display forms for SYSTEM account
 
-		if($ADVANCED_MODE) {
+		if($_SESSION["ADVANCED_MODE"]) {
 			$shells = pql_get_valid_shells();
 ?>
 
@@ -135,9 +135,9 @@
 ?>
 
 <?php if($account_type != "shell") {
-		if(!pql_get_define("PQL_GLOB_ATTR_CREATE_ADDRESS", $domain) or
-		   (pql_get_define("PQL_GLOB_ATTR_CREATE_ADDRESS", $domain) and !function_exists('user_generate_email')) or
-		   $ADVANCED_MODE or $error_text["email"]) {
+		if(!pql_get_define("PQL_GLOB_ATTR_CREATE_ADDRESS", $_GET["domain"]) or
+		   (pql_get_define("PQL_GLOB_ATTR_CREATE_ADDRESS", $_GET["domain"]) and !function_exists('user_generate_email')) or
+		   $_SESSION["ADVANCED_MODE"] or $error_text["email"]) {
 ?>
         <!-- Email address -->
         <tr class="<?php pql_format_table(); ?>">
@@ -191,8 +191,8 @@
 
         <!-- sub branch -->
 <?php
-	if($ADVANCED_MODE) {
-		$branches = pql_unit_get($_pql->ldap_linkid, $domain);
+	if($_SESSION["ADVANCED_MODE"]) {
+		$branches = pql_unit_get($_pql->ldap_linkid, $_GET["domain"]);
 		if($branches[1]) {
 			// More than one subbranch - show a select menu
 ?>
@@ -275,9 +275,9 @@
 
     <input type="hidden" name="page_curr" value="one">
 <?php
-	if(($ADVANCED_MODE == 0) or ($account_type == "forward")) {
+	if(($_SESSION["ADVANCED_MODE"] == 0) or ($account_type == "forward")) {
 		// Go to save, no next form...
-		if($ADVANCED_MODE == 0) {
+		if($_SESSION["ADVANCED_MODE"] == 0) {
 			// Autocreate some values by using 'safe' (?) defaults
 ?>
     <input type="hidden" name="loginshell" value="/bin/false">
@@ -306,7 +306,7 @@
     <br>
 
 <?php
-	if($ADVANCED_MODE == 1) {
+	if($_SESSION["ADVANCED_MODE"] == 1) {
 ?>
     <input type="submit" value="--&gt;&gt;">
 <?php

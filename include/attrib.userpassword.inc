@@ -1,21 +1,21 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.19 2004-01-01 12:35:34 turbo Exp $
+// $Id: attrib.userpassword.inc,v 2.20 2004-02-14 14:25:36 turbo Exp $
 
 function attribute_check($type) {
-	global $userpassword, $userpassword_check, $error, $pwscheme, $LANG;
+	global $error, $LANG;
 
 	// is typed in ?
-	if($userpassword == "") {
+	if(empty($_REQUEST["userpassword"])) {
 		$error["userpassword"] = $LANG->_('Missing');
 		return false;
   	}
 	
 	// valid - A KERBEROS scheme is ALWAYS valid! We only check
 	// password validity if it ISN'T a kerberos scheme...
-	if(!eregi('KERBEROS', $pwscheme)) {
-		if(preg_match("/[^a-z0-9]/i", $userpassword)){
+	if(!eregi('KERBEROS', $_REQUEST["pwscheme"])) {
+		if(preg_match("/[^a-z0-9]/i", $_REQUEST["userpassword"])){
 			$error["userpassword"] = $LANG->_('Invalid');
 			return false;
 		}
@@ -29,23 +29,23 @@ function attribute_init() {
 }
 
 function attribute_print_form() {
-	global $domain, $user, $PHP_SELF, $attrib, $error, $rootdn, $pwscheme, $view, $_pql, $LANG;
+	global $error, $_pql, $LANG;
 
 	// Get the default password scheme for branch
-	$defaultpasswordscheme = pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_DEFAULTPASSWORDSCHEME"));
+	$defaultpasswordscheme = pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_DEFAULTPASSWORDSCHEME"));
 ?>
-  <form action="<?php echo $PHP_SELF ?>" method="post">
+  <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Set password')?></th>
-<?php if(!$defaultpasswordscheme or $GLOBALS["ADVANCED_MODE"]) { ?>
+<?php if(!$defaultpasswordscheme or $_SESSION["ADVANCED_MODE"]) { ?>
         <!-- Password schema -->
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Password encryption scheme')?></td>
           <td>
             <?php echo pql_format_error_span($error["pwscheme"]); ?>
-<?php	if(eregi(',', pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn))) {
+<?php	if(eregi(',', pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"]))) {
 			// We got more than one password scheme...
-			$schemes = split(",", pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn));
+			$schemes = split(",", pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"]));
 			foreach($schemes as $scheme) {
 				if(!eregi('KERBEROS', $scheme)) {
 ?>
@@ -54,8 +54,8 @@ function attribute_print_form() {
 <?php			}
 			}
 	  	} else { ?>
-            <?=$LANG->_('Scheme')?>: <b>{<?php echo pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn); ?>}</b>
-            <input type="hidden" name="pwscheme" value="<?php echo pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn)?>">
+            <?=$LANG->_('Scheme')?>: <b>{<?php echo pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"]); ?>}</b>
+            <input type="hidden" name="pwscheme" value="<?php echo pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"])?>">
 <?php 	} ?>
           </td>
         </tr>
@@ -68,7 +68,7 @@ function attribute_print_form() {
           <td class="title"><?=$LANG->_('Password')?></td>
           <td>
             <?php echo pql_format_error_span($error["userpassword"]) . "\n"; ?>
-            <!-- Ugly hack. Should realy have type=password here, but what's the use. Really!? -->
+            <!-- Ugly hack. Should really have type=password here, but what''s the use. Really!? -->
             <input type="input" name="userpassword">
           </td>
         </tr>
@@ -86,36 +86,37 @@ function attribute_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?=$attrib?>">
-    <input type="hidden" name="domain" value="<?=$domain?>">
-    <input type="hidden" name="rootdn" value="<?=$rootdn?>">
-    <input type="hidden" name="user"   value="<?=$user?>">
-    <input type="hidden" name="view"   value="<?=$view?>">
+    <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="domain" value="<?=$_REQUEST["domain"]?>">
+    <input type="hidden" name="rootdn" value="<?=$_REQUEST["rootdn"]?>">
+    <input type="hidden" name="user"   value="<?=$_REQUEST["user"]?>">
+    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
 <?php
 }
-// '
+
 function attribute_save($type) {
-	global $domain, $user, $attrib, $userpassword, $_pql, $pwscheme, $view, $LANG;
+	global $_pql, $LANG;
 
 	switch($type) {
 	  case "add":
 		// no add function for userpassword
 		break;
-		
+
 	  case "modify";
-		$pw = pql_password_hash($userpassword, $pwscheme);
+		$pw = pql_password_hash($_REQUEST["userpassword"], $_REQUEST["pwscheme"]);
 		
-		if(pql_replace_attribute($_pql->ldap_linkid, $user,
-									 pql_get_define("PQL_GLOB_ATTR_PASSWD"),
-									 $pw))
+		if(pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"],
+								 pql_get_define("PQL_GLOB_ATTR_PASSWD"),
+								 $pw))
 		{
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										 array('what' => $LANG->_('password')));
 
-			if($user == $GLOBALS["USER_DN"])
-			  $GLOBALS["USER_PASS"] = $userpassword;
+			// DLW: If I'm changing my own password, save it in the session too?
+			if($_REQUEST["user"] == $_SESSION["USER_DN"])
+			  $_SESSION["USER_PASS"] = $userpassword;
 		} else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('password'))) . ": " . pql_format_error(0);

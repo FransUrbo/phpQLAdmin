@@ -2,7 +2,7 @@
 // control attribute plugin for
 // $ldapdefaultquota (default quota for all mail users)
 
-// $Id: attrib.control.ldapdefaultquota.inc,v 2.12 2004-01-01 12:35:34 turbo Exp $
+// $Id: attrib.control.ldapdefaultquota.inc,v 2.13 2004-02-14 14:25:35 turbo Exp $
 
 function ldapdefaultquota_check($type) {
     global $options, $use_maxsize, $use_maxmails, $maxsize, $maxmails, $error, $view, $LANG;
@@ -59,7 +59,7 @@ function ldapdefaultquota_init($host) {
     global $_pql_control, $use_maxsize, $use_maxmails, $maxsize, $maxmails, $options, $quota, $view;
     
     $quota = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 									   pql_get_define("PQL_GLOB_ATTR_LDAPDEFAULTQUOTA"));
     
     if(!is_null($quota)) {
@@ -103,9 +103,9 @@ function ldapdefaultquota_print_view($host) {
 }
 
 function ldapdefaultquota_print_form($type = "modify") {
-    global $use_maxmails, $use_maxsize, $maxmails, $maxsize, $options, $PHP_SELF, $attrib, $error, $mxhost, $LANG;
+    global $use_maxmails, $use_maxsize, $maxmails, $maxsize, $options, $attrib, $error, $mxhost, $LANG;
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Change quota')?></th>
         <tr class="<?php pql_format_table(); ?>">
@@ -173,7 +173,7 @@ function ldapdefaultquota_save($type, $host) {
       case "modify":
       case "add";
 		if(!pql_control_replace_attribute($_pql_control->ldap_linkid,
-										  pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										  pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 										  pql_get_define("PQL_GLOB_ATTR_LDAPDEFAULTQUOTA"),
 										  $mailquota))
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),

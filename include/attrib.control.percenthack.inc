@@ -2,7 +2,7 @@
 // control attribute plugin for
 // percenthack (allowed domains for %-relaying)
 //
-// $Id: attrib.control.percenthack.inc,v 2.14 2004-02-12 11:27:30 turbo Exp $
+// $Id: attrib.control.percenthack.inc,v 2.15 2004-02-14 14:25:36 turbo Exp $
 
 function percenthack_check($type) {
 	global $error, $percenthack, $view, $LANG;
@@ -34,7 +34,7 @@ function percenthack_init($host) {
 	
 	// fetch data from ldap server
 	$percenthack = pql_control_get_attribute($_pql_control->ldap_linkid,
-											 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+											 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 											 pql_get_define("PQL_GLOB_ATTR_PERCENTHACK"));
 	
 	if(is_null($percenthack))
@@ -78,12 +78,12 @@ function percenthack_print_view($host) {
 }
 
 function percenthack_print_form() {
-	global $attrib, $PHP_SELF, $error, $percenthack, $percentcount, $mxhost, $view, $LANG;
+	global $attrib, $error, $percenthack, $percentcount, $mxhost, $view, $LANG;
 
 	if(($percentcount < count($percenthack) - 1) and count($percenthack) != 0)
 	  $percentcount = count($percenthack) - 1;
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">percenthack (<?=$LANG->_('Percent relaying domains', 4)?>)</th>
         <tr class="title">
@@ -101,7 +101,7 @@ function percenthack_print_form() {
 
 <?php } ?>
         <tr class="subtitle">
-          <td><a href="<?$PHP_SELF?>?attrib=<?$attrib?>&percentcount=<?=($percentcount+1)?>&mxhost=<?=$mxhost?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional domain'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
+          <td><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?$attrib?>&percentcount=<?=($percentcount+1)?>&mxhost=<?=$mxhost?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional domain'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
         </tr>
 
         <tr class="subtitle">
@@ -128,7 +128,7 @@ function percenthack_save($type, $host) {
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 										 pql_get_define("PQL_GLOB_ATTR_PERCENTHACK"),
 										 $percenthack)) 
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),

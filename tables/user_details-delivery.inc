@@ -5,7 +5,7 @@
         <td class="title"><?=$LANG->_('Mode')?></td>
       </tr>
 
-<?php	$deliverymode = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_MODE"));
+<?php	$deliverymode = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_GLOB_ATTR_MODE"));
 	if(empty($deliverymode)) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
@@ -24,7 +24,7 @@
 
       <tr class="subtitle">
         <td>
-          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=deliverymode&user=<?=$url["user"]?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"><?=$LANG->_('Change properties')?></a>
+          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=deliverymode&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"><?=$LANG->_('Change properties')?></a>
         </td>
       </tr>
     </th>

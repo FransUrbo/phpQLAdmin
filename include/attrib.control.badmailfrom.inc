@@ -2,7 +2,7 @@
 // control attribute plugin for
 // badmailfrom (blocked from addresses)
 //
-// $Id: attrib.control.badmailfrom.inc,v 2.14 2004-01-01 12:35:33 turbo Exp $
+// $Id: attrib.control.badmailfrom.inc,v 2.15 2004-02-14 14:25:35 turbo Exp $
 
 function badmailfrom_check($type) {
     global $error, $badmailfrom, $view, $LANG;
@@ -40,7 +40,7 @@ function badmailfrom_init($host) {
     
     // fetch data from ldap server
     $badmailfrom = pql_control_get_attribute($_pql_control->ldap_linkid,
-											 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+											 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 											 pql_get_define("PQL_GLOB_ATTR_BADMAILFROM"));
     
     if(is_null($badmailfrom))
@@ -91,12 +91,12 @@ function badmailfrom_print_view($host) {
 }
 
 function badmailfrom_print_form() {
-    global $attrib, $PHP_SELF, $error, $badmailfrom, $badcount, $mxhost, $view, $LANG;
+    global $attrib, $error, $badmailfrom, $badcount, $mxhost, $view, $LANG;
     
     if(($badcount < count($badmailfrom) - 1) and count($badmailfrom) != 0)
 	  $badcount = count($badmailfrom) - 1;
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">badmailfrom (<?=$LANG->_('Blocked senders')?>)</th>
         <tr class="title">
@@ -114,7 +114,7 @@ function badmailfrom_print_form() {
 
 <?php } ?>
         <tr class="subtitle">
-          <td><a href="<?=$PHP_SELF?>?attrib=<?=$attrib?>&badcount=<?($badcount+1)?>&mxhost=<?=$mxhost?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
+          <td><a href="<?=$_SERVER["PHP_SELF"]?>?attrib=<?=$attrib?>&badcount=<?($badcount+1)?>&mxhost=<?=$mxhost?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
         </tr>
 
         <tr class="subtitle">
@@ -141,7 +141,7 @@ function badmailfrom_save($type, $host) {
       case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 										 pql_get_define("PQL_GLOB_ATTR_BADMAILFROM"),
 										 $badmailfrom))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),

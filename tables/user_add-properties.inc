@@ -1,5 +1,5 @@
-<?php /* $Id: user_add-properties.inc,v 1.4 2003-11-20 08:01:46 turbo Exp $ */ ?>
-<form action="<?=$PHP_SELF?>" method="post" accept-charset="UTF-8">
+<?php /* $Id: user_add-properties.inc,v 1.5 2004-02-14 14:25:41 turbo Exp $ */ ?>
+<form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=$LANG->_('Account properties')?></th>
       <tr class="<?php pql_format_table(); ?>">

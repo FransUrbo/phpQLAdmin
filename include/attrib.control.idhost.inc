@@ -2,7 +2,7 @@
 // control attribute plugin for
 // idhost (host name for message id's)
 //
-// $Id: attrib.control.idhost.inc,v 2.14 2004-02-12 11:27:30 turbo Exp $
+// $Id: attrib.control.idhost.inc,v 2.15 2004-02-14 14:25:35 turbo Exp $
 
 function idhost_check($type) {
 	global $error, $idhost, $view, $LANG;
@@ -23,7 +23,7 @@ function idhost_init($host) {
 	
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 									   pql_get_define("PQL_GLOB_ATTR_IDHOST"));
 	
 	if(!is_null($value))
@@ -57,9 +57,9 @@ function idhost_print_view($host) {
 }
 
 function idhost_print_form() {
-	global $attrib, $idhost, $PHP_SELF, $error, $mxhost, $view, $LANG;
+	global $attrib, $idhost, $error, $mxhost, $view, $LANG;
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">idhost (<?=$LANG->_('Host name for Message-ID\'s')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
@@ -91,7 +91,7 @@ function idhost_save($type, $host) {
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 										 pql_get_define("PQL_GLOB_ATTR_IDHOST"),
 										 $idhost))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),

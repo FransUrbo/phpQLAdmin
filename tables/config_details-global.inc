@@ -6,13 +6,13 @@
         <td class="title"><?=$LANG->_('LDAP host')?></td>
 <?php $class=pql_format_table(0); ?>
         <td class="<?=$class?>"></td>
-        <td class="<?=$class?>"><?=$USER_HOST?>&nbsp;</td>
+        <td class="<?=$class?>"><?=$_SESSION["USER_HOST"]?>&nbsp;</td>
       </tr>
 
       <tr>
         <td class="title"><?=$LANG->_('Language')?></td>
 <?php $class=pql_format_table(0);
-      if($ALLOW_GLOBAL_CONFIG_SAVE) {
+      if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
 ?>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_LANG"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=$PQL_ATTRIBUTE["PQL_CONF_LANG"]?>"></a></td>
 <?php } else { ?>
@@ -31,7 +31,7 @@
       <tr>
         <td class="title"><?=$LANG->_('Hostmaster')?></td>
 <?php $class=pql_format_table(0);
-      if($ALLOW_GLOBAL_CONFIG_SAVE) {
+      if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
 ?>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_HOSTMASTER"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=$PQL_ATTRIBUTE["PQL_GLOB_HOSTMASTER"]?>"></a></td>
 <?php } else { ?>
@@ -44,7 +44,7 @@
       <tr>
         <td class="title"><?=$LANG->_('LDAP control base dn')?></td>
 <?php     $class=pql_format_table(0);
-          if($ALLOW_GLOBAL_CONFIG_SAVE) {
+          if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
 ?>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_CONTROL_DN"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Set/Modify <?=$PQL_ATTRIBUTE["PQL_GLOB_CONTROL_DN"]?>"></a></td>
 <?php     } else { ?>
@@ -59,7 +59,7 @@
       <tr>
         <td class="title"><?=$LANG->_('Manage Controls DB')?></td>
 <?php $class=pql_format_table(0);
-      if($ALLOW_GLOBAL_CONFIG_SAVE) {
+      if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
 ?>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_CONTROL_USE"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_GLOB_CONTROL_USE"]?>"></a></td>
 <?php } else { ?>
@@ -71,7 +71,7 @@
       <tr>
         <td class="title"><?=$LANG->_('Manage EZMLM mailinglists')?></td>
 <?php $class=pql_format_table(0);
-      if($ALLOW_GLOBAL_CONFIG_SAVE) {
+      if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
 ?>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_EZMLM_USE"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_GLOB_EZMLM_USE"]?>"></a></td>
 <?php } else { ?>
@@ -83,7 +83,7 @@
       <tr>
         <td class="title"><?=$LANG->_('Manage DNS domains')?></td>
 <?php $class=pql_format_table(0);
-      if($ALLOW_GLOBAL_CONFIG_SAVE) {
+      if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
 ?>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_BIND9_USE"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_GLOB_BIND9_USE"]?>"></a></td>
 <?php } else { ?>
@@ -95,7 +95,7 @@
       <tr>
         <td class="title"><?=$LANG->_('Manage webserver config')?></td>
 <?php $class=pql_format_table(0);
-      if($ALLOW_GLOBAL_CONFIG_SAVE) {
+      if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
 ?>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_WEBSRV_USE"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_GLOB_WEBSRV_USE"]?>"></a></td>
 <?php } else { ?>
@@ -107,7 +107,7 @@
       <tr>
         <td class="title"><?=$LANG->_('Automatic reload of navigation bar')?></td>
 <?php $class=pql_format_table(0);
-      if($ALLOW_GLOBAL_CONFIG_SAVE) {
+      if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
 ?>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_AUTO_RELOAD"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_GLOB_AUTO_RELOAD"]?>"></a></td>
 <?php } else { ?>
@@ -119,7 +119,7 @@
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Automatically replicate domains to %what%'), array('what' => $LANG->_('locals'))); ?></td>
 <?php $class=pql_format_table(0);
-      if($ALLOW_GLOBAL_CONFIG_SAVE) {
+      if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
 ?>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_CONTROL_AUTOADDLOCALS"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_CONF_CONTROL_AUTOADDLOCALS"]?>"></a></td>
 <?php } else { ?>
@@ -131,7 +131,7 @@
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Automatically replicate domains to %what%'), array('what' => $LANG->_('rcpthosts'))); ?></td>
 <?php $class=pql_format_table(0);
-      if($ALLOW_GLOBAL_CONFIG_SAVE) {
+      if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
 ?>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_CONTROL_AUTOADDRCPTHOSTS"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_CONF_CONTROL_AUTOADDRCPTHOSTS"]?>"></a></td>
 <?php } else { ?>
@@ -143,7 +143,7 @@
       <tr>
         <td class="title"><?=$LANG->_('Automatically add hostname to domain for replication')?></td>
 <?php $class=pql_format_table(0);
-      if($ALLOW_GLOBAL_CONFIG_SAVE) {
+      if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
 ?>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_CONTROL_AUTOADDHOSTNAME"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_CONF_CONTROL_AUTOADDHOSTNAME"]?>"></a></td>
 <?php } else { ?>
@@ -155,7 +155,7 @@
       <tr>
         <td class="title"><?=$LANG->_('Allow change of LDAP server')?></td>
 <?php $class=pql_format_table(0);
-      if($ALLOW_GLOBAL_CONFIG_SAVE) {
+      if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
 ?>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_CHANGE_SERVER"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_CONF_CHANGE_SERVER"]?>"></a></td>
 <?php } else { ?>

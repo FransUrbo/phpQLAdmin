@@ -5,7 +5,7 @@
 // ldaplogin (cn of a database user)
 // ldappassword (password to bind to ldaplogin)
 //
-// $Id: attrib.control.ldapserver.inc,v 2.11 2004-01-01 12:35:34 turbo Exp $
+// $Id: attrib.control.ldapserver.inc,v 2.12 2004-02-14 14:25:36 turbo Exp $
 
 function ldapserver_check($type) {
 	global $error, $ldapserver, $ldappassword, $ldapbasedn, $ldaplogin_use, $ldaplogin, $ldap_test, $view, $LANG;
@@ -106,7 +106,7 @@ function ldapserver_init($host) {
 	
 	foreach($attribs as $attrib) {
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 										   $attrib);
 		
 		if(!is_null($value))
@@ -177,10 +177,10 @@ function ldapserver_print_view($host) {
 }
 
 function ldapserver_print_form() {
-	global $attrib, $srvcount, $ldapserver, $ldapbasedn, $ldaplogin_use, $ldaplogin, $ldap_test, $PHP_SELF, $error, $LANG;
+	global $attrib, $srvcount, $ldapserver, $ldapbasedn, $ldaplogin_use, $ldaplogin, $ldap_test, $error, $LANG;
 	global $mxhost, $view;
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('LDAP server connection option')?></th>
         <tr class="<?php pql_format_table(); ?>">
@@ -191,7 +191,7 @@ function ldapserver_print_form() {
 			<?php echo pql_format_error_span($error["ldapserver_$i"]); ?><input type="text" name="ldapserver[<?=$i?>]" value="<?=$ldapserver[$i]?>"><br>
 <?php } ?>
             <br>
-            <a href="<?=$PHP_SELF?>?attrib=<?=$attrib?>&srvcount=<?php echo ($srvcount + 1); ?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('more servers'))); ?></a>
+            <a href="<?=$_SERVER["PHP_SELF"]?>?attrib=<?=$attrib?>&srvcount=<?php echo ($srvcount + 1); ?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('more servers'))); ?></a>
           </td>
         </tr>
 
@@ -258,7 +258,7 @@ function ldapserver_save($type, $host) {
 						 pql_get_define("PQL_GLOB_ATTR_LDAPBASEDN"));
 		foreach($attribs as $attrib)
 		  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-													pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+													pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 													$attrib, $$attrib);
 		
 		$attribs = array(pql_get_define("PQL_GLOB_ATTR_LDAPLOGIN"),
@@ -266,13 +266,13 @@ function ldapserver_save($type, $host) {
 		if($ldaplogin_use == "1"){
 			foreach($attribs as $attrib)
 			  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-														pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+														pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 														$attrib, $$attrib);
 		} else {
 			foreach($attribs as $attrib)
 			  // reset login and password values
 			  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-														pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+														pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 														$attrib, "");
     	}
 

@@ -1,6 +1,6 @@
 <?php
 // Attribute plugin for additional group (memberUID)
-// $Id: attrib.additionalgroup.inc,v 2.2 2004-01-01 12:35:33 turbo Exp $
+// $Id: attrib.additionalgroup.inc,v 2.3 2004-02-14 14:25:35 turbo Exp $
 
 // {{{ attribute_init(void)...
 function attribute_init() {
@@ -69,7 +69,7 @@ function attribute_print_form() {
 	// Used for the checkbox counter below
 	$j = 0;
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what% for domain %domain%'),
 																	array('what'   => $LANG->_('additional group'),

@@ -1,3 +1,4 @@
+<!-- DLW: When these fields are edited, they dont return to this page.  This is a bug. -->
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=$LANG->_('Personal details')?></th>
       <tr class="<?php pql_format_table(); ?>">

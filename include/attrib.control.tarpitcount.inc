@@ -3,7 +3,7 @@
 // tarpitcount (user id of virtual user)
 // tarpitdelay (group id of virtual user)
 //
-// $Id: attrib.control.tarpitcount.inc,v 2.12 2004-01-01 12:35:34 turbo Exp $
+// $Id: attrib.control.tarpitcount.inc,v 2.13 2004-02-14 14:25:36 turbo Exp $
 
 function tarpitcount_check($type) {
 	global $error, $tarpitcount, $tarpitdelay, $view, $LANG;
@@ -52,7 +52,7 @@ function tarpitcount_init($host) {
 	
 	foreach($attribs as $attrib) {
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 										   $attrib);
 		
 		if(!is_null($value))
@@ -98,9 +98,9 @@ function tarpitcount_print_view($host) {
 }
 
 function tarpitcount_print_form() {
-	global $attrib, $tarpitcount, $tarpitdelay, $PHP_SELF, $error, $mxhost, $view, $LANG;
+	global $attrib, $tarpitcount, $tarpitdelay, $error, $mxhost, $view, $LANG;
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">tarpitcount, tarpitdelay (<?=$LANG->_('Tarpitting settings')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
@@ -140,7 +140,7 @@ function tarpitcount_save($type, $host) {
 						 pql_get_define("PQL_GLOB_ATTR_TARPITDELAY"));
 		foreach($attribs as $attrib)
 		  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-													pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $mxhost . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+													pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 													$attrib, $$attrib);
 		
 		if(in_array(false, $return))

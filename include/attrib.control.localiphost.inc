@@ -2,7 +2,7 @@
 // control attribute plugin for
 // localiphost (name substituted for local IP address)
 //
-// $Id: attrib.control.localiphost.inc,v 2.13 2004-02-12 11:27:30 turbo Exp $
+// $Id: attrib.control.localiphost.inc,v 2.14 2004-02-14 14:25:36 turbo Exp $
 
 function localiphost_check($type) {
 	global $error, $localiphost, $view, $LANG;
@@ -22,7 +22,7 @@ function localiphost_init($host) {
 	
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 									   pql_get_define("PQL_GLOB_ATTR_LOCALIPHOST"));
 	
 	if(!is_null($value))
@@ -55,9 +55,9 @@ function localiphost_print_view($host) {
 }
 
 function localiphost_print_form() {
-	global $attrib, $localiphost, $PHP_SELF, $error, $mxhost, $view, $LANG;
+	global $attrib, $localiphost, $error, $mxhost, $view, $LANG;
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">localiphost (<?=$LANG->_('Substitution for local IP')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
@@ -89,7 +89,7 @@ function localiphost_save($type, $host) {
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 										 pql_get_define("PQL_GLOB_ATTR_LOCALIPHOST"),
 										 $localiphost))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),

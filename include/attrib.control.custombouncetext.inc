@@ -2,7 +2,7 @@
 // control attribute plugin for
 // custombouncetext (additional bounce message)
 //
-// $Id: attrib.control.custombouncetext.inc,v 2.13 2004-01-01 12:35:33 turbo Exp $
+// $Id: attrib.control.custombouncetext.inc,v 2.14 2004-02-14 14:25:35 turbo Exp $
 
 function custombouncetext_check($type) {
 	global $error, $custombouncetext, $use_custombouncetext, $view, $LANG;
@@ -22,7 +22,7 @@ function custombouncetext_init($host) {
 	
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 									   pql_get_define("PQL_GLOB_ATTR_CUSTOMBOUNCETEXT"));
 	
 	if(!is_null($value))
@@ -60,9 +60,9 @@ function custombouncetext_print_view($host) {
 }
 
 function custombouncetext_print_form() {
-	global $attrib, $custombouncetext, $use_custombouncetext,  $PHP_SELF, $error, $mxhost, $view, $LANG;
+	global $attrib, $custombouncetext, $use_custombouncetext, $error, $mxhost, $view, $LANG;
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">custombouncetext (<?=$LANG->_('Additional bounce text')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
@@ -105,7 +105,7 @@ function custombouncetext_save($type, $host) {
 		  $custombouncetext = "";
 		
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $mxhost . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 										 pql_get_define("PQL_GLOB_ATTR_CUSTOMBOUNCETEXT"),
 										 $custombouncetext)) 
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),

@@ -3,7 +3,7 @@
 // bouncefrom (username of bounce sender)
 // bouncehost (hostname of bounce sender)
 //
-// $Id: attrib.control.bouncefrom.inc,v 2.13 2004-02-12 11:27:30 turbo Exp $
+// $Id: attrib.control.bouncefrom.inc,v 2.14 2004-02-14 14:25:35 turbo Exp $
 
 function bouncefrom_check($type) {
 	global $error, $bouncefrom, $bouncehost, $view, $LANG;
@@ -34,7 +34,7 @@ function bouncefrom_init($host) {
 
 	foreach($attribs as $attrib) {
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 										   $attrib);
 
 		if(!is_null($value))
@@ -76,9 +76,9 @@ function bouncefrom_print_view($host) {
 }
 
 function bouncefrom_print_form() {
-	global $attrib, $bouncefrom, $bouncehost, $PHP_SELF, $error, $mxhost, $view, $LANG;
+	global $attrib, $bouncefrom, $bouncehost, $error, $mxhost, $view, $LANG;
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">bouncefrom, bouncehost (<?=$LANG->_('Bouncing source')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
@@ -119,7 +119,7 @@ function bouncefrom_save($type, $host) {
 						 pql_get_define("PQL_GLOB_ATTR_BOUNCEHOST"));
 		foreach($attribs as $attrib)
 		  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-													pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+													pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 													$attrib, $$attrib);
 		
 		if(in_array(false, $return))

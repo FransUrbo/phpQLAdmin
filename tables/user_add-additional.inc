@@ -1,5 +1,5 @@
-<?php /* $Id: user_add-additional.inc,v 1.6 2004-01-14 12:26:29 turbo Exp $ */ ?>
-  <form action="<?=$PHP_SELF?>" method="post" accept-charset="UTF-8">
+<?php /* $Id: user_add-additional.inc,v 1.7 2004-02-14 14:25:41 turbo Exp $ */ ?>
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <input type="hidden" name="surname" value="<?=$surname?>">
     <input type="hidden" name="name" value="<?=$name?>">
     <input type="hidden" name="email" value="<?=$email?>">

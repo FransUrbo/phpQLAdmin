@@ -15,7 +15,7 @@
 				else
 				  $val = $d;
 
-				if(pql_control_search_attribute($_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR, $attrib, $val)) {
+				if(pql_control_search_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $attrib, $val)) {
 					$DEFINED[$attrib][$d] = $LANG->_('Yes');
 
 					$alt = pql_complete_constant($LANG->_('Remove %domain% from %attribute%'),

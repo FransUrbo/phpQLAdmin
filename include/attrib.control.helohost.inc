@@ -2,7 +2,7 @@
 // control attribute plugin for
 // helohost (host name used in SMTP HELO command)
 //
-// $Id: attrib.control.helohost.inc,v 2.12 2004-02-12 11:27:30 turbo Exp $
+// $Id: attrib.control.helohost.inc,v 2.13 2004-02-14 14:25:35 turbo Exp $
 
 function helohost_check($type) {
 	global $error, $helohost, $view, $LANG;
@@ -22,7 +22,7 @@ function helohost_init($host) {
 
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 									   pql_get_define("PQL_GLOB_ATTR_HELOHOST"));
 
 	if(!is_null($value))
@@ -55,9 +55,9 @@ function helohost_print_view($host) {
 }
 
 function helohost_print_form() {
-	global $attrib, $helohost, $PHP_SELF, $error, $mxhost, $view, $LANG;
+	global $attrib, $helohost, $error, $mxhost, $view, $LANG;
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">helohost (Helo host)</th>
         <tr class="<?php pql_format_table(); ?>">
@@ -89,7 +89,7 @@ function helohost_save($type, $host) {
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 										 pql_get_define("PQL_GLOB_ATTR_HELOHOST"),
 										 $helohost))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),

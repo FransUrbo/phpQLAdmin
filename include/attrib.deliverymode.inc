@@ -1,13 +1,13 @@
 <?php
 // attribute plugin for
 // deliverymode (delivery preferences)
-// $Id: attrib.deliverymode.inc,v 2.18 2004-01-01 12:35:34 turbo Exp $
+// $Id: attrib.deliverymode.inc,v 2.19 2004-02-14 14:25:36 turbo Exp $
 
 function attribute_check($type) {
-	global $error, $reply, $mailreplytext, $LANG;
+    global $error, $LANG;
 
 	// if reply is selected, mailreplytext must not be null
-	if($reply != "" and $mailreplytext == "") {
+	if(!empty($_REQUEST["reply"]) and empty($_REQUEST["mailreplytext"])) {
 		$error["mailreplytext"] = $LANG->_('Missing');
 		return false;
 	}
@@ -16,40 +16,39 @@ function attribute_check($type) {
 }
 
 function attribute_init() {
-	global $reply, $mailreplytext, $deliverymode, $domain;
-	global $user, $_pql;
+    global $_pql;
 
 	// initialize values directly from ldap
-	$mode = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_MODE"));
+	$mode = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_GLOB_ATTR_MODE"));
 
 	// delivery profile
 	if(is_array($mode) and in_array("forwardonly",$mode))
-	  $deliverymode = "forward";
+	  $_REQUEST["deliverymode"] = "forward";
 	else
-	  $deliverymode = "local";
-	
+	  $_REQUEST["deliverymode"] = "local";
+
 	// reply / mailreplytext
 	if(is_array($mode) and in_array("reply", $mode))
-	  $reply = "ok";
+	  $_REQUEST["reply"] = "ok";
 	
-	$mailreplytext = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_REPLYTEXT"));
-	$mailreplytext = $mailreplytext[0];
+	$mailreplytext = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_GLOB_ATTR_REPLYTEXT"));
+	$_REQUEST["mailreplytext"] = $mailreplytext[0];
 }
 
 function attribute_print_form($type = "modify") {
-	global $reply, $mailreplytext, $deliverymode, $domain, $user, $PHP_SELF, $attrib, $error, $rootdn, $view, $LANG;
+    global $error, $LANG;
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Delivery mode')?></th>
-<?php if(!$GLOBALS["SINGLE_USER"]) { ?>
+<?php if(!$_SESSION["SINGLE_USER"]) { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Delivery mode')?></td>
           <td>
             <?php echo pql_format_error_span($error["deliverymode"]); ?>
             <select name="deliverymode">
-              <option value="local" <?php if($deliverymode == "local"){ echo "SELECTED";} ?>><?=$LANG->_('Mail account')?>
-              <option value="forward" <?php if($deliverymode == "forward"){ echo "SELECTED";} ?>><?=$LANG->_('Forward account')?>
+              <option value="local" <?php if($_REQUEST["deliverymode"] == "local"){ echo "SELECTED";} ?>><?=$LANG->_('Mail account')?>
+              <option value="forward" <?php if($_REQUEST["deliverymode"] == "forward"){ echo "SELECTED";} ?>><?=$LANG->_('Forward account')?>
             </select>
           </td>
         </tr>
@@ -57,12 +56,12 @@ function attribute_print_form($type = "modify") {
 <?php } ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Do auto reply')?></td>
-          <td><input type="checkbox" name="reply" value="ok" <?php if($reply=="ok"){ echo "checked";} ?>><?=$LANG->_('Send an auto reply')?></td>
+          <td><input type="checkbox" name="reply" value="ok" <?php if($_REQUEST["reply"] =="ok"){ echo "checked";} ?>><?=$LANG->_('Send an auto reply')?></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Text for replying')?></td>
-          <td valign="center"><?php echo pql_format_error_span($error["mailreplytext"]); ?> <textarea name="mailreplytext" cols="40" rows="10"><?=$mailreplytext?></textarea></td>
+          <td valign="center"><?php echo pql_format_error_span($error["mailreplytext"]); ?> <textarea name="mailreplytext" cols="40" rows="10"><?=$_REQUEST["mailreplytext"]?></textarea></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
@@ -76,16 +75,17 @@ function attribute_print_form($type = "modify") {
       </th>
     </table>
 
-<?php if($GLOBALS["SINGLE_USER"]) { ?>
-    <input type="hidden" name="deliverymode" value="<?=$deliverymode?>">
+<?php if($_SESSION["SINGLE_USER"]) { ?>
+    <input type="hidden" name="deliverymode" value="<?=$_REQUEST["deliverymode"]?>">
 <?php } ?>
     <input type="hidden" name="submit"       value="1">
-    <input type="hidden" name="attrib"       value="<?=$attrib?>">
-    <input type="hidden" name="oldvalue"     value="<?=$oldvalue?>">
-    <input type="hidden" name="domain"       value="<?=$domain?>">
-    <input type="hidden" name="rootdn"       value="<?=$rootdn?>">
-    <input type="hidden" name="user"         value="<?=$user?>">
-    <input type="hidden" name="view"         value="<?=$view?>">
+    <input type="hidden" name="attrib"       value="<?=$_REQUEST["attrib"]?>">
+	<!-- DLW: oldvalue should be 3 values for the 3 fields. -->
+    <input type="hidden" name="oldvalue"     value="<?=$_REQUEST["oldvalue"]?>">
+    <input type="hidden" name="domain"       value="<?=$_REQUEST["domain"]?>">
+    <input type="hidden" name="rootdn"       value="<?=$_REQUEST["rootdn"]?>">
+    <input type="hidden" name="user"         value="<?=$_REQUEST["user"]?>">
+    <input type="hidden" name="view"         value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
@@ -94,9 +94,11 @@ function attribute_print_form($type = "modify") {
 }
 
 function attribute_save($type) {
-	global $domain, $user, $attrib, $reply, $mailreplytext, $deliverymode, $_pql, $view, $LANG;
-	
-	switch($deliverymode) {
+    global $_pql, $LANG;
+
+	$entry = array();
+
+	switch($_REQUEST["deliverymode"]) {
 	  case "forward":
 		$entry[pql_get_define("PQL_GLOB_ATTR_MODE")][] = "forwardonly";
 		$entry[pql_get_define("PQL_GLOB_ATTR_MODE")][] = "nombox";
@@ -106,27 +108,26 @@ function attribute_save($type) {
 		$entry[pql_get_define("PQL_GLOB_ATTR_MODE")][] = "localdelivery";
 	}
 	
-	if($reply == "ok")
+	if($_REQUEST["reply"] == "ok")
 	  $entry[pql_get_define("PQL_GLOB_ATTR_MODE")][] = "reply";
 
-	if (!empty($mailreplytext)) 
-	  $entry[pql_get_define("PQL_GLOB_ATTR_REPLYTEXT")] = preg_replace('/\\\/', "", $mailreplytext);
+	if (!empty($_REQUEST["mailreplytext"])) 
+	  $entry[pql_get_define("PQL_GLOB_ATTR_REPLYTEXT")] = preg_replace('/\\\/', "", $_REQUEST["mailreplytext"]);
 	else {
 		// Check if the entry in database is empty. 
 		// If not, we have choosen to DELETE the value
-		$mrt_db = pql_get_attribute($_pql->ldap_linkid,
-										$user, pql_get_define("PQL_GLOB_ATTR_REPLYTEXT"));
+		$mrt_db = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_GLOB_ATTR_REPLYTEXT"));
 		if($mrt_db[0])
-		  pql_replace_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_REPLYTEXT"));
+		  pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_GLOB_ATTR_REPLYTEXT"));
 	}
 	
 	switch($type) {
 	  case "fulldomain":
-		$users = pql_user_get($_pql->ldap_linkid, $domain);
+		$users = pql_user_get($_pql->ldap_linkid, $_REQUEST["domain"]);
 		if(is_array($users)) {
 			foreach($users as $user)
 			  $return[] = pql_replace_attribute($_pql->ldap_linkid, $user, '', $entry);
-			
+
 			if(in_array(false, $return))
 			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 										   array('what' => $LANG->_('delivery mode'))) . ": " . pql_format_error(0);
@@ -137,9 +138,9 @@ function attribute_save($type) {
 			attribute_forward($msg);
 		}
 		break;
-		
+
 	  case "modify":
-		if(pql_replace_attribute($_pql->ldap_linkid, $user, '', $entry)) 
+		if(pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], '', $entry)) 
 		  $msg = pql_complete_constant($LANG->_('successfully changed %what%'),
 									   array('what' => $LANG->_('delivery mode')));
 		else

@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for pilotPerson objects etc
-// $Id: attrib.outlook.inc,v 1.16 2003-11-20 08:01:37 turbo Exp $
+// $Id: attrib.outlook.inc,v 1.17 2004-02-14 14:25:36 turbo Exp $
 
 /*
 	Attributes managed here:
@@ -31,44 +31,44 @@
 */
 
 function attribute_check() {
-    global $user, $domain, $oldvalue, $_pql, $error, $attrib, $$attrib, $LANG;
+    global $LANG, $error;
 
     // is typed in ?
-    if($$attrib == "") {
+    if(!empty($_REQUEST[$attrib])) {
 		$error[$attrib] = $LANG->_('Missing');
 		return false;
     }
-    
+
     return true;
 }
 
 function attribute_init() {
-    global $$attrib, $oldvalue, $attrib;
-    $$attrib = $oldvalue;
+    $_REQUEST[$attrib] = (!empty($_GET["oldvalue"]) ? $_GET["oldvalue"] : "");
 }
 
 function attribute_print_form() {
-    global $user, $domain, $rootdn, $PHP_SELF, $attrib, $$attrib, $oldvalue, $error, $_pql, $view;
-	global $orgname, $LANG;
-?>
+    global $LANG, $error;
 
-  <form action="<?=$PHP_SELF?>" method="post" name="outlook">
+  // Just to save some typeing.
+  $attrib = $_REQUEST["attrib"];
+?>
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" name="outlook">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Set/Modify attribute %attribute%'), array('attribute' => $attrib)); ?></th>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$attrib?></td>
-          <td><?php echo pql_format_error_span($error[$attrib]); ?><input type="text" name="<?=$attrib?>" value="<?=$$attrib?>" size="30"></td>
+          <td><?php echo pql_format_error_span($error[$attrib]); ?><input type="text" name="<?=$attrib?>" value="<?=$_REQUEST[$attrib]?>" size="30"></td>
         </tr>
       </th>
     </table>
 
 	<input type="hidden" name="submit"   value="2">
-	<input type="hidden" name="attrib"   value="<?=$attrib?>">
-	<input type="hidden" name="oldvalue" value="<?=$oldvalue?>">
-	<input type="hidden" name="domain"   value="<?=$domain?>">
-    <input type="hidden" name="rootdn"   value="<?=$rootdn?>">
-	<input type="hidden" name="user"     value="<?=$user?>">
-    <input type="hidden" name="view"     value="<?=$view?>">
+	<input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
+	<input type="hidden" name="oldvalue" value="<?=$_REQUEST["oldvalue"]?>">
+	<input type="hidden" name="domain"   value="<?=$_REQUEST["domain"]?>">
+    <input type="hidden" name="rootdn"   value="<?=$_REQUEST["rootdn"]?>">
+	<input type="hidden" name="user"     value="<?=$_REQUEST["user"]?>">
+    <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
 	<input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
 
@@ -81,25 +81,27 @@ function attribute_print_form() {
 }
 
 function attribute_save($type) {
-    global $user, $domain, $rootdn, $attrib, $$attrib, $oldvalue, $_pql, $view, $LANG;
+    global $_pql, $LANG;
 
+	$attrib = $_REQUEST["attrib"];
     switch($type) {
       case "add":
+		// DLW: Add drops into modify.  Is this an error?
       case "modify":
-		if($$attrib == $oldvalue) {
+		if($_REQUEST[$attrib] == $_REQUEST["oldvalue"]) {
 			// don't change if new value equal to old one
 			$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $attrib));
 			attribute_forward($msg);
 			break;
 		}
 
-		if($domain and !$user) {
+		if($_REQUEST["domain"] and !$_REQUEST["user"]) {
 			// Save a domain attribute
-			if(pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, $$attrib))
+			if(pql_set_domain_value($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["attrib"], $_REQUEST[$attrib]))
 			  $success = 1;
-		} elseif($user) {
+		} elseif($_REQUEST["user"]) {
 			// Save a user attribute
-			if(pql_replace_attribute($_pql->ldap_linkid, $user, $attrib, $$attrib))
+			if(pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], $_REQUEST[$attrib]))
 			  $success = 1;
 		}
 
@@ -112,11 +114,11 @@ function attribute_save($type) {
 		break;
 
       case "delete";
-		if($domain and !$user) {
+		if($_REQUEST["domain"] and !$_REQUEST["user"]) {
 			// Save a domain attribute
-			if(pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, ''))
+			if(pql_set_domain_value($_pql->ldap_linkid, $_REQUEST["domain"], $attrib, ''))
 			  $success = 1;
-//		} elseif($user and !$domain) {
+//		} elseif($_REQUEST["user"] and !$_REQUEST["domain"]) {
 // Currently no DELETE option
 		}
 

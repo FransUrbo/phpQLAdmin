@@ -3,7 +3,7 @@
 // pql_units.inc
 // Sub units (ou=People, ou=Users, dc=host) etc
 //
-// $Id: pql_units.inc,v 1.3 2004-01-01 12:35:34 turbo Exp $
+// $Id: pql_units.inc,v 1.4 2004-02-14 14:25:36 turbo Exp $
 //
 
 // {{{ pql_unit_get(linkid, dn, filter)
@@ -80,8 +80,8 @@ function pql_unit_add($linkid, $domain, $unit) {
 	$entry['objectClass'] = $ocb;
 
 	// Add the OpenLDAPaci attribute (maybe)
-	if($GLOBALS["ACI_SUPPORT_ENABLED"])
-	  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($linkid, $GLOBALS["USER_DN"], 'unit');
+	if($_SESSION["ACI_SUPPORT_ENABLED"])
+	  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($linkid, $_SESSION["USER_DN"], 'unit');
 
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_unit_add", $dn, $entry);

@@ -1,13 +1,19 @@
 <?php
 // attribute plugin for
 // accountstatus (status of mailaccount)
-// $Id: attrib.accountstatus.inc,v 2.15 2004-01-01 12:35:33 turbo Exp $
+// $Id: attrib.accountstatus.inc,v 2.16 2004-02-14 14:25:35 turbo Exp $
 
+/* DLW: When the calendar gets a value of 2003.12.25, it gets stored or displayed as 2003/12/24 (@7am)
+ *      I think it's having problems with time zones.  Look into it. */
+
+/* attribute_check is sometimes called directly (from attribute_print_form)
+ * so I use _REQUEST variables instead of _POST variables. */
 function attribute_check($type) {
-    global $error, $view, $set, $domain, $rootdn, $attrib, $user, $date, $days, $LANG, $_pql;
+    global $error, $LANG;
+	global $date, $days;		// Output globals.
     
 	if($type != "modify") {
-		switch($set) {
+		switch($_REQUEST["set"]) {
 		  case "active":
 		  case "nopop":
 		  case "disabled":
@@ -20,7 +26,7 @@ function attribute_check($type) {
 			return false;
 		}
 	} else {
-		$tmp = split("\.", $date);
+		$tmp = split("\.", $_REQUEST["date"]);
 
 		// Convert the YYYY.MM.DD date to UNIX std time (sec from 1 Jan 1970)
 		$date = date("U", mktime(0,0,0,$tmp[1],$tmp[2],$tmp[0]));
@@ -42,9 +48,9 @@ function attribute_init() {
 }
 
 function attribute_print_form($type = "set") {
-    global $error, $view, $set, $domain, $rootdn, $attrib, $user, $LANG, $_pql;
+    global $error, $LANG;
 
-    if($set != 'expiration') {
+    if($_REQUEST["set"] != 'expiration') {
 		// No form neccessary - save directly
 
 		if(!attribute_check($type)) {
@@ -58,7 +64,7 @@ function attribute_print_form($type = "set") {
 		// Java script etc taken from http://dynarch.com/mishoo/calendar.epl
 ?>
 
-  <form action="<?=$PHP_SLEF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3">
       <th colspan="3" align="left"><?=$LANG->_('Time when the account is disabled')?></th>
         <tr class="<?php pql_format_table(); ?>">
@@ -72,11 +78,11 @@ function attribute_print_form($type = "set") {
 
 
     <input type="hidden" name="submit"   value="1">
-    <input type="hidden" name="attrib"   value="<?=$attrib?>">
-    <input type="hidden" name="domain"   value="<?=$domain?>">
-    <input type="hidden" name="rootdn"   value="<?=$rootdn?>">
-    <input type="hidden" name="user"     value="<?=$user?>">
-    <input type="hidden" name="view"     value="<?=$view?>">
+    <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="domain"   value="<?=$_REQUEST["domain"]?>">
+    <input type="hidden" name="rootdn"   value="<?=$_REQUEST["rootdn"]?>">
+    <input type="hidden" name="user"     value="<?=$_REQUEST["user"]?>">
+    <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
@@ -94,17 +100,20 @@ function attribute_print_form($type = "set") {
 	}
 }
 
+/* attribute_save is sometimes called directly (from attribute_print_form)
+ * so I use _REQUEST variables instead of _POST variables. */
 function attribute_save($type) {
-    global $rootdn, $domain, $user, $set, $attrib, $_pql, $view, $days, $LANG;
-    
+    global $_pql, $error, $LANG;
+	global $date, $days;		// Set in attribute_check.
+
     switch($type) {
       case "fulldomain":
       case "modify":
-		if(eregi(pql_get_define("PQL_GLOB_ATTR_EXPIRATION"), $attrib)) {
+		if(eregi(pql_get_define("PQL_GLOB_ATTR_EXPIRATION"), $_REQUEST["attrib"])) {
 			// Set the shadowExpire attribute for this user
 			
 			// Get the objectClasses of this user
-			$entry = pql_get_attribute($_pql->ldap_linkid, $user, 'objectclass');
+			$entry = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], 'objectclass');
 
 			// Make sure that the user have the 'shadowAccount' objectclass
 			for($i=0; $entry[$i]; $i++) {
@@ -122,14 +131,14 @@ function attribute_save($type) {
 			$new_entry[pql_get_define("PQL_GLOB_ATTR_EXPIRATION")] = $days;
 
 			// Modify the object
-			if(!@ldap_mod_replace($_pql->ldap_linkid, $user, $new_entry)) {
+			if(!@ldap_mod_replace($_pql->ldap_linkid, $_REQUEST["user"], $new_entry)) {
 				// Failed to REPLACE the value. Try to remove and then add it again
 				unset($new_entry);
 
 				$new_entry[pql_get_define("PQL_GLOB_ATTR_EXPIRATION")] = array();
-				if(@ldap_mod_del($_pql->ldap_linkid, $user, $new_entry)) {
+				if(@ldap_mod_del($_pql->ldap_linkid, $_REQUEST["user"], $new_entry)) {
 					$new_entry[pql_get_define("PQL_GLOB_ATTR_EXPIRATION")] = $days;
-					if(@ldap_mod_add($_pql->ldap_linkid, $user, $new_entry)) {
+					if(@ldap_mod_add($_pql->ldap_linkid, $_REQUEST["user"], $new_entry)) {
 						$msg = $LANG->_('Successfully set account expiration date');
 					}
 				}
@@ -142,20 +151,20 @@ function attribute_save($type) {
 				$msg = $LANG->_('Successfully set account expiration date');
 			}
 		} else {
-			$users = pql_user_get($_pql->ldap_linkid, $domain);
+			$users = pql_user_get($_pql->ldap_linkid, $_REQUEST["domain"]);
 			
 			if(is_array($users)) {
 				foreach($users as $user)
 				  if(! pql_replace_attribute($_pql->ldap_linkid, $user,
 												 pql_get_define("PQL_GLOB_ATTR_ISACTIVE"),
-												 $set)) {
+												 $_REQUEST["set"])) {
 					  $msg  = pql_complete_constant($LANG->_('Failed to change %what%'),
 													array('what' => $LANG->_('Status')));
 					  $msg .= ": " . pql_format_error(0);
 				  } else
 					$msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 												 array('what' => $LANG->_('Status'),
-													   'new'  => pql_ldap_accountstatus($set)));
+													   'new'  => pql_ldap_accountstatus($_REQUEST["set"])));
 			}
 		}
 
@@ -163,10 +172,10 @@ function attribute_save($type) {
 		break;
 		
       case "set":
-		if(pql_replace_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_ISACTIVE"), $set)) {
+		if(pql_replace_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_GLOB_ATTR_ISACTIVE"), $_REQUEST["set"])) {
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 										 array('what' => $LANG->_('Status'),
-											   'new'  => pql_ldap_accountstatus($set)));
+											   'new'  => pql_ldap_accountstatus($_REQUEST["set"])));
 		} else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('Status'))) . ": " . pql_format_error(0);

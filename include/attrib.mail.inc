@@ -1,20 +1,24 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mail.inc,v 2.15 2004-01-01 12:35:34 turbo Exp $
+// $Id: attrib.mail.inc,v 2.16 2004-02-14 14:25:36 turbo Exp $
 
 function attribute_check($type) {
-    global $mail, $domain, $oldvalue, $_pql, $error, $defaultdomain, $LANG;
+    global $_pql, $LANG, $error, $defaultdomain;
     
     // is typed in ?
-    if($mail == "") {
+    if(empty($_POST["mail"])) {
 		$error[pql_get_define("PQL_GLOB_ATTR_MAIL")] = $LANG->_('Missing');
 		return false;
     }
     
-    // Is it REALLY a email address (ie, does it have an at in there?)
-    if(!ereg("@", $mail))
+	$mail = $_POST["mail"];
+    // Is it REALLY an email address (ie, does it have an "@" in there?)
+	// DLW: This change by side-effect should really be in the save code.
+    if(!ereg("@", $mail)) {
 	  $mail = $mail . "@" . $defaultdomain;
+	  $_POST["mail"] = $mail;
+	}
     
     // valid
     if(!pql_check_email($mail)) {
@@ -23,7 +27,7 @@ function attribute_check($type) {
     }
     
     // if type is modify, check existance of old value, else the new one
-    if($oldvalue != $mail and pql_email_exists($_pql, $mail)) {
+    if($_POST["oldvalue"] != $mail and pql_email_exists($_pql, $mail)) {
 		$error[pql_get_define("PQL_GLOB_ATTR_MAIL")] = $LANG->_('Already exists');
 		return false;
     }
@@ -36,23 +40,24 @@ function attribute_init() {
 }
 
 function attribute_print_form() {
-    global $mail, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $defaultdomain, $rootdn, $view, $LANG;
+    global $defaultdomain, $error, $LANG;
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Change main address')?></th>
   <?php
     // We're changing the Main address. Give the old as reference
-    if($oldvalue != "") {
+    if($_REQUEST["oldvalue"] != "") {
 		echo "<tr class=\"c2\">";
 		echo "  <td class=\"title\">".$LANG->_('Old address')."</td>";
-		echo "  <td>" . $mail . "</td>";
+		echo "  <td>" . $_REQUEST["mail"] . "</td>";
 		echo "</tr>";
     }
   ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Email')?></td>
-          <td><?php echo pql_format_error_span($error[pql_get_define("PQL_GLOB_ATTR_MAIL")]); ?><input type="text" name="mail" value=""><b>@<?=$defaultdomain?></b></td>
+          <td><?php echo pql_format_error_span($error[pql_get_define("PQL_GLOB_ATTR_MAIL")]);
+		    ?><input type="text" name="mail" value=""><b>@<?=$defaultdomain?></b></td>
         </tr>
 
         <tr class="subtitle">
@@ -64,12 +69,12 @@ function attribute_print_form() {
     </table>
 
     <input type="hidden" name="submit"   value="1">
-    <input type="hidden" name="attrib"   value="<?=$attrib?>">
-    <input type="hidden" name="oldvalue" value="<?=$oldvalue?>">
-    <input type="hidden" name="domain"   value="<?=$domain?>">
-    <input type="hidden" name="rootdn"   value="<?=$rootdn?>">
-    <input type="hidden" name="user"     value="<?=$user ?>">
-    <input type="hidden" name="view"     value="<?=$view?>">
+    <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="oldvalue" value="<?=$_REQUEST["oldvalue"]?>">
+    <input type="hidden" name="domain"   value="<?=$_REQUEST["domain"]?>">
+    <input type="hidden" name="rootdn"   value="<?=$_REQUEST["rootdn"]?>">
+    <input type="hidden" name="user"     value="<?=$_REQUEST["user"]?>">
+    <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
@@ -77,7 +82,7 @@ function attribute_print_form() {
 }
 
 function attribute_save($type) {
-    global $domain, $user, $attrib, $oldvalue, $mail, $_pql, $view, $LANG;
+    global $_pql, $LANG;
 
     switch($type) {
       case "add":
@@ -85,17 +90,19 @@ function attribute_save($type) {
 		break;
 
       case "modify":
-		if(pql_modify_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_MAIL"), $oldvalue, $mail))
+		if(pql_modify_userattribute($_pql->ldap_linkid, $_POST["user"], pql_get_define("PQL_GLOB_ATTR_MAIL"),
+									$_POST["oldvalue"], $_POST["mail"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									   array('what' => $LANG->_('main address'),
-											 'new'  => $mail));
+											 'new'  => $_POST["mail"]));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('main address'))) . ": " . pql_format_error(0);
 		
 		// We use the mail attribute to reference users and it has just changed...
-		if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", pql_get_rootdn($user)) == pql_get_define("PQL_GLOB_ATTR_MAIL")) {
-			$user = $mail;
+		if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", pql_get_rootdn($_POST["user"])) == pql_get_define("PQL_GLOB_ATTR_MAIL")) {
+			// DLW: $_REQUEST["user"] is used by attribute_forward, and should be a paramater.
+			$_REQUEST["user"] = $_POST["mail"];
 			// Reload the navigation bar (if allowed by config)
 			attribute_forward($msg, true);
 		} else {

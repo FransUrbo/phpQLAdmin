@@ -3,7 +3,7 @@
 // concurrencylocal (may simultaneous local deliveries)
 // concurrencyremote (may simultaneous remote deliveries)
 //
-// $Id: attrib.control.concurrencylocal.inc,v 2.14 2004-02-12 14:00:17 turbo Exp $
+// $Id: attrib.control.concurrencylocal.inc,v 2.15 2004-02-14 14:25:35 turbo Exp $
 
 function concurrencylocal_check($type) {
 	global $error, $concurrencylocal, $concurrencyremote, $view, $LANG;
@@ -34,7 +34,7 @@ function concurrencylocal_init($host) {
 
 	foreach($attribs as $attrib) {
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 										   $attrib);
 		
 		if(!is_null($value))
@@ -82,9 +82,9 @@ function concurrencylocal_print_view($host) {
 }
 
 function concurrencylocal_print_form() {
-	global $attrib, $concurrencylocal, $concurrencyremote, $PHP_SELF, $error, $mxhost, $view, $LANG;
+	global $attrib, $concurrencylocal, $concurrencyremote, $error, $mxhost, $view, $LANG;
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">concurrencylocal, concurrencyremote (<?=$LANG->_('Maximum simultaneous deliveries')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
@@ -124,7 +124,7 @@ function concurrencylocal_save($type, $host) {
 						 pql_get_define("PQL_GLOB_ATTR_CONCURRENCYREMOTE"));
 		foreach($attribs as $attrib)
 		  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-													pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $mxhost . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+													pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 													$attrib, $$attrib);
 		
 		if(in_array(false, $return))

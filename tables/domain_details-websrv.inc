@@ -8,7 +8,7 @@
 ?>
   <table cellspacing="0" border="0" width="100%" cellpadding="0" size="100%">
     <tr>
-      <td colspan="2" valign="bottom" align="left" width="100%"><?php $i=1; foreach($servers as $srv => $data) { ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=$view&server=$srv&view=$view"?>"><img alt="/ <?=$srv?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$srv?>"></a><?php if(!($i%2)) { ?><br><?php }; $i++; } ?></td>
+      <td colspan="2" valign="bottom" align="left" width="100%"><?php $i=1; foreach($servers as $srv => $data) { ?><a href="<?=$_SERVER["PHP_SELF"]."?rootdn=$rootdn&domain=$domain&view=$view&server=$srv&view=$view"?>"><img alt="/ <?=$srv?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$srv?>"></a><?php if(!($i%2)) { ?><br><?php }; $i++; } ?></td>
     </tr>
   </table>
 

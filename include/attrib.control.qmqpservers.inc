@@ -2,7 +2,7 @@
 // control attribute plugin for
 // qmqpservers (max number of bytes in message)
 //
-// $Id: attrib.control.qmqpservers.inc,v 2.15 2004-02-12 11:27:30 turbo Exp $
+// $Id: attrib.control.qmqpservers.inc,v 2.16 2004-02-14 14:25:36 turbo Exp $
 
 function qmqpservers_check($type) {
 	global $error, $qmqpservers, $view, $LANG;
@@ -54,7 +54,7 @@ function qmqpservers_init($host) {
 
 	// fetch data from ldap server
 	$qmqpservers = pql_control_get_attribute($_pql_control->ldap_linkid,
-											 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+											 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 											 pql_get_define("PQL_GLOB_ATTR_QMQPSERVERS"));
 
 	if(is_null($qmqpservers))
@@ -99,12 +99,12 @@ function qmqpservers_print_view($host) {
 }
 
 function qmqpservers_print_form() {
-	global $attrib, $PHP_SELF, $error, $qmqpservers, $qmqpcount, $mxhost, $view, $LANG;
+	global $attrib, $error, $qmqpservers, $qmqpcount, $mxhost, $view, $LANG;
 
 	if(($qmqpcount < count($qmqpservers) - 1) and count($qmqpservers) != 0)
 	  $qmqpcount = count($qmqpservers) - 1;
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">qmqpservers (<?=$LANG->_('QMQP servers')?>)</th>
         <tr class="title">
@@ -122,7 +122,7 @@ function qmqpservers_print_form() {
 
 <?php } ?>
         <tr class="subtitle">
-          <td><a href="<?$PHP_SELF?>?attrib=<?$attrib?>&qmqpcount=<?=($qmqpcount+1)?>&mxhost=<?=$mxhost?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
+          <td><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?$attrib?>&qmqpcount=<?=($qmqpcount+1)?>&mxhost=<?=$mxhost?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
         </tr>
 
         <tr class="subtitle">
@@ -149,7 +149,7 @@ function qmqpservers_save($type, $host)  {
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $mxhost . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 										 pql_get_define("PQL_GLOB_ATTR_QMQPSERVERS"),
 										 $qmqpservers))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtpgreeting (SMTP greeting message)
 //
-// $Id: attrib.control.smtpgreeting.inc,v 2.13 2004-02-12 11:27:30 turbo Exp $
+// $Id: attrib.control.smtpgreeting.inc,v 2.14 2004-02-14 14:25:36 turbo Exp $
 
 function smtpgreeting_check($type) {
     global $error, $smtpgreeting, $view;
@@ -17,7 +17,7 @@ function smtpgreeting_init($host) {
     
     // fetch data from ldap server
     $value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 									   pql_get_define("PQL_GLOB_ATTR_SMTPGREETING"));
     
     if(!is_null($value))
@@ -52,9 +52,9 @@ function smtpgreeting_print_view($host) {
 }
 
 function smtpgreeting_print_form() {
-    global $attrib, $smtpgreeting, $PHP_SELF, $error, $mxhost, $view, $LANG;
+    global $attrib, $smtpgreeting, $error, $mxhost, $view, $LANG;
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">smtpgreeting (<?=$LANG->_('SMTP greeting message')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
@@ -86,7 +86,7 @@ function smtpgreeting_save($type, $host) {
       case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $mxhost . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 										 pql_get_define("PQL_GLOB_ATTR_SMTPGREETING"),
 										 $smtpgreeting))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),

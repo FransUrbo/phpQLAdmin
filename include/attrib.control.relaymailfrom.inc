@@ -2,7 +2,7 @@
 // control attribute plugin for
 // relaymailfrom (allowed sender addresses for relaying)
 //
-// $Id: attrib.control.relaymailfrom.inc,v 2.14 2004-01-01 12:35:34 turbo Exp $
+// $Id: attrib.control.relaymailfrom.inc,v 2.15 2004-02-14 14:25:36 turbo Exp $
 
 function relaymailfrom_check($type) {
 	global $error, $relaymailfrom, $view, $LANG;
@@ -40,7 +40,7 @@ function relaymailfrom_init($host) {
 	
 	// fetch data from ldap server
 	$relaymailfrom = pql_control_get_attribute($_pql_control->ldap_linkid,
-											   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+											   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 											   pql_get_define("PQL_GLOB_ATTR_RELAYMAILFROM"));
 	
 	if(is_null($relaymailfrom))
@@ -92,12 +92,12 @@ function relaymailfrom_print_view($host) {
 }
 
 function relaymailfrom_print_form() {
-	global $attrib, $PHP_SELF, $error, $relaymailfrom, $relaycount, $mxhost, $view, $LANG;
+	global $attrib, $error, $relaymailfrom, $relaycount, $mxhost, $view, $LANG;
 	
 	if(($relaycount < count($relaymailfrom) - 1) and count($relaymailfrom) != 0)
 	  $relaycount = count($relaymailfrom) - 1;
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">relaymailfrom (<?=$LANG->_('Allowed senders for relaying', 4)?>)</th>
         <tr class="title">
@@ -117,7 +117,7 @@ function relaymailfrom_print_form() {
 
 <?php	} ?>
         <tr class="subtitle">
-          <td><a href="<?$PHP_SELF?>?attrib=<?$attrib?>&relaycount=<?=($relaycount+1)?>&mxhost=<?=$mxhost?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
+          <td><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?$attrib?>&relaycount=<?=($relaycount+1)?>&mxhost=<?=$mxhost?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
         </tr>
 
         <tr class="subtitle">
@@ -147,7 +147,7 @@ function relaymailfrom_save($type, $host) {
 		case "add";
 			// save entries
 			if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-											 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+											 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 											 pql_get_define("PQL_GLOB_ATTR_RELAYMAILFROM"),
 											 $relaymailfrom))
 			  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),

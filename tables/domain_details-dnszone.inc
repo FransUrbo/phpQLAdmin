@@ -9,7 +9,7 @@
 	      // Use the first zone as default (ie, if we're not called with a specific zone to show)
 	      $dns_domain_name = $dname;
 ?>
-    <a href="<?=$PHP_SELF?>?rootdn=<?=$rootdn?>&domain=<?=$domain?>&view=<?=$view?>&dns_domain_name=<?=$dname?>"><img alt="/ <?=$dname?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?php echo urlencode($dname)?>"></a>
+    <a href="<?=$_SERVER["PHP_SELF"]?>?rootdn=<?=$rootdn?>&domain=<?=$domain?>&view=<?=$view?>&dns_domain_name=<?=$dname?>"><img alt="/ <?=$dname?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?php echo urlencode($dname)?>"></a>
 <?php	} ?>
   </table>
 

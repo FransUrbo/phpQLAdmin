@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtproutes (max number of bytes in message)
 //
-// $Id: attrib.control.smtproutes.inc,v 2.16 2004-02-12 11:27:30 turbo Exp $
+// $Id: attrib.control.smtproutes.inc,v 2.17 2004-02-14 14:25:36 turbo Exp $
 
 function smtproutes_check($type) {
 	global $error, $domain, $relay, $port, $view, $LANG;
@@ -54,7 +54,7 @@ function smtproutes_init($host) {
 	if($host) {
 		// fetch data from ldap server
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 										   pql_get_define("PQL_GLOB_ATTR_SMTPROUTES"));
 		
 		if(is_null($value))
@@ -151,7 +151,7 @@ function smtproutes_print_view($host) {
 }
 
 function smtproutes_print_form() {
-	global $attrib, $PHP_SELF, $error, $domain, $relay, $port, $routecount, $mxhost, $view, $LANG;
+	global $attrib, $error, $domain, $relay, $port, $routecount, $mxhost, $view, $LANG;
 	global $rootdn, $type, $set, $_pql_control;
 
 	if($attrib && $rootdn && $set)
@@ -197,11 +197,11 @@ function smtproutes_print_form() {
 	if($type != 'del') {
 		if(!$mxhost)
 		  // Get all the QmailLDAP/Controls hosts
-		  $hosts  = pql_control_get_hosts($_pql_control->ldap_linkid, $GLOBALS["USER_SEARCH_DN_CTR"]);
+		  $hosts  = pql_control_get_hosts($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"]);
 	} else {
 		// Get all hosts which have this domain in 'attrib'
 		$hosts = pql_control_search_attribute($_pql_control->ldap_linkid,
-											  $GLOBALS["USER_SEARCH_DN_CTR"],
+											  $_SESSION["USER_SEARCH_DN_CTR"],
 											  $attrib, $set."*", 1);
 
 		// Convert the DN into a host list
@@ -214,7 +214,7 @@ function smtproutes_print_form() {
 		$hosts = $newhosts;
 	}
 ?>
-        <form action="<?php echo $PHP_SELF ?>" method="post">
+        <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post">
 <?php if($attrib && !$rootdn && !$set && (($type == 'add') || ($type == 'modify'))) {
 		// We're adding ONE value, but we want to remember the previous
 
@@ -300,7 +300,7 @@ function smtproutes_print_form() {
 <?php } ?>
 <?php if(!$attrib) { ?>
               <tr class="subtitle">
-                <td colspan="3"><a href="<?=$PHP_SELF?>?attrib=<?=$attrib?>&routecount=<?=($routecount+1)?>&mxhost=<?=$mxhost?>">add additional route</a>(<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
+                <td colspan="3"><a href="<?=$_SERVER["PHP_SELF"]?>?attrib=<?=$attrib?>&routecount=<?=($routecount+1)?>&mxhost=<?=$mxhost?>">add additional route</a>(<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
               </tr>
 
 <?php } 
@@ -381,7 +381,7 @@ function smtproutes_save($type, $host) {
 
 			// Update the object
 			if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-											 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+											 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 											 pql_get_define("PQL_GLOB_ATTR_SMTPROUTES"),
 											 $smtproutes))
 			  $success = 1;
@@ -394,7 +394,7 @@ function smtproutes_save($type, $host) {
 					if($relay[$i]) {
 						// fetch data from ldap server
 						$values = pql_control_get_attribute($_pql_control->ldap_linkid,
-															pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $relay[$i] . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+															pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $relay[$i] . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 															pql_get_define("PQL_GLOB_ATTR_SMTPROUTES"));
 						
 						// Add the new value
@@ -402,7 +402,7 @@ function smtproutes_save($type, $host) {
 						
 						// Update the object
 						if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-														 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $relay[$i] . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+														 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $relay[$i] . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 														 pql_get_define("PQL_GLOB_ATTR_SMTPROUTES"),
 														 $values))
 						  $success = 1;
@@ -431,7 +431,7 @@ function smtproutes_save($type, $host) {
 				if($relay[$i]) {
 					// fetch data from ldap server
 					$values = pql_control_get_attribute($_pql_control->ldap_linkid,
-														pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $relay[$i] . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+														pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $relay[$i] . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 														pql_get_define("PQL_GLOB_ATTR_SMTPROUTES"));
 					
 					// Go through the values, removing the specific domain
@@ -442,7 +442,7 @@ function smtproutes_save($type, $host) {
 					
 					// Update the object
 					if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-													 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $relay[$i] . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+													 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $relay[$i] . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 													 pql_get_define("PQL_GLOB_ATTR_SMTPROUTES"),
 													 $newvals))
 					  $success = 1;
@@ -452,7 +452,7 @@ function smtproutes_save($type, $host) {
 			// We're deleting ONE value. $set contains the whole string, as it looks like in the object
 			
 			// Find the object(s) which contain this string
-			$ctrls = pql_control_search_attribute($_pql_control->ldap_linkid, $GLOBALS["USER_SEARCH_DN_CTR"],
+			$ctrls = pql_control_search_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 												  "smtproutes", $set);
 			
 			// If it isn't an array, but it IS set -> make it an array!
@@ -485,7 +485,7 @@ function smtproutes_save($type, $host) {
 
 			// Find QmailLDAP/Controls object(s) which contain this domain in SMTPRoutes
 			$ctrls  = pql_control_search_attribute($_pql_control->ldap_linkid,
-												   $GLOBALS["USER_SEARCH_DN_CTR"],
+												   $_SESSION["USER_SEARCH_DN_CTR"],
 												   "smtproutes",
 												   $set."*");
 			// If it isn't an array, but it IS set -> make it an array!

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // quotawarning (additional quota warning message)
 //
-// $Id: attrib.control.quotawarning.inc,v 2.11 2004-01-01 12:35:34 turbo Exp $
+// $Id: attrib.control.quotawarning.inc,v 2.12 2004-02-14 14:25:36 turbo Exp $
 
 function quotawarning_check($type) {
 	global $error, $quotawarning, $use_quotawarning, $view, $LANG;
@@ -22,7 +22,7 @@ function quotawarning_init($host) {
 
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 									   pql_get_define("PQL_GLOB_ATTR_QUOTAWARNING"));
 
 	if(!is_null($value))
@@ -60,9 +60,9 @@ function quotawarning_print_view($host) {
 }
 
 function quotawarning_print_form() {
-	global $attrib, $quotawarning, $use_quotawarning,  $PHP_SELF, $error, $mxhost, $view, $LANG;
+	global $attrib, $quotawarning, $use_quotawarning, $error, $mxhost, $view, $LANG;
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">quotawarning (<?=$LANG->_('Additional quota warning message')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
@@ -102,7 +102,7 @@ function quotawarning_save($type, $host) {
 		  $quotawarning = "";
 		
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 										 pql_get_define("PQL_GLOB_ATTR_QUOTAWARNING"),
 										 $quotawarning))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),

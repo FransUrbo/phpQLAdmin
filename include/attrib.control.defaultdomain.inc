@@ -3,7 +3,7 @@
 // defaultdomain (default domain)
 // defaulthost (default hostname)
 //
-// $Id: attrib.control.defaultdomain.inc,v 2.12 2004-02-12 11:27:30 turbo Exp $
+// $Id: attrib.control.defaultdomain.inc,v 2.13 2004-02-14 14:25:35 turbo Exp $
 
 function defaultdomain_check($type) {
 	global $error, $defaultdomain, $defaulthost, $plusdomain, $view, $LANG;
@@ -41,7 +41,7 @@ function defaultdomain_init($host) {
 
 	foreach($attribs as $attrib){
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+										   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 										   $attrib);
 
 		if(!is_null($value))
@@ -91,9 +91,9 @@ function defaultdomain_print_view($host) {
 }
 
 function defaultdomain_print_form() {
-	global $attrib, $defaultdomain, $defaulthost, $plusdomain, $PHP_SELF, $error, $mxhost, $view, $LANG;
+	global $attrib, $defaultdomain, $defaulthost, $plusdomain, $error, $mxhost, $view, $LANG;
 ?>
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">defaultdomain, defaulthost, plusdomain (<?=$LANG->_('Default domain / host')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
@@ -139,7 +139,7 @@ function defaultdomain_save($type, $host) {
 						 pql_get_define("PQL_GLOB_ATTR_PLUSDOMAIN"));
 		foreach($attribs as $attrib)
 		  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-													pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+													pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 													$attrib, $$attrib);
 		
 		if(in_array(false, $return))

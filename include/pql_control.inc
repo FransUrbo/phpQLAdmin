@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.34 2004-01-20 07:48:01 turbo Exp $
+// $Id: pql_control.inc,v 2.35 2004-02-14 14:25:36 turbo Exp $
 //
 
 // {{{ control connection class
@@ -40,7 +40,7 @@ function pql_control_get_attribute($linkid, $dn, $attribute) {
 
 // {{{ pql_control_get_hosts(ldap_linkid, ldap_basedn)
 function pql_control_get_hosts($ldap_linkid, $ldap_basedn) {
-	// Find all hosts below the $GLOBALS["USER_SEARCH_DN_CTR"]
+	// Find all hosts below the $_SESSION["USER_SEARCH_DN_CTR"]
 	$sr = @ldap_search($ldap_linkid, $ldap_basedn,
 					   '(&(cn=*)(objectclass=qmailControl))',
 					   array('cn', 'dn'));

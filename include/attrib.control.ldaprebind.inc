@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldaprebind (don't retrieve password, try to bind to dn)
 //
-// $Id: attrib.control.ldaprebind.inc,v 2.11 2004-01-01 12:35:34 turbo Exp $
+// $Id: attrib.control.ldaprebind.inc,v 2.12 2004-02-14 14:25:36 turbo Exp $
 
 // check values
 function ldaprebind_check($type) {
@@ -16,7 +16,7 @@ function ldaprebind_init($host) {
 	
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+									   pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 									   pql_get_define("PQL_GLOB_ATTR_LDAPREBIND"));
 
 	if(!is_null($value))
@@ -70,7 +70,7 @@ function ldaprebind_save($type, $host) {
 		case "add";
 			// save entries
 			if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-											 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+											 pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 											 pql_get_define("PQL_GLOB_ATTR_LDAPREBIND"),
 											 $set))
 			  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
