@@ -46,12 +46,22 @@ This layout is configured by defining PQL_LDAP_SUBTREE_USERS and/or
 PQL_LDAP_SUBTREE_GROUPS, so without these, you CAN get a flat layout,
 but please don't.
 
+Also, it's not possible to mix the two layouts in one database. You CAN
+configure multiple top suffixes in your LDAP database (multiple database
+backends with different suffixes). phpQLAdmin should be able to cope with
+that, and show it as ONE. This have not been tested however.
+
 
 With version 2.0.5, it's possible to have site specific configurations
 in the database. It is saved into the topmost RDN ('dc=com' or 'c=SE'
 in my two examples above) objects, so make sure you have access to modify
 this object. This is a matter of the LDAP server, not phpQLAdmin so consult
-your LDAP servers documentation on how to do this.
+your LDAP servers documentation on how to do this. If you only have the
+required objectclasses (top and/or domain in a domain layout for example),
+phpQLAdmin will add the two objectclasses 'phpQLAdminConfig' and
+'phpQLAdminBranch' to the object before it writes the configuration, so
+backward compability should be ok with an non-phpQLAdmin created domain/branch.
+If it's not, please report a bug at the mailinglist phpqladmin@bayour.com.
 
 
 For more information on installations, please view doc/index.php through
