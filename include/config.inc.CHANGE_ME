@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.6 2002-12-24 12:01:55 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.7 2003-01-02 12:28:01 turbo Exp $
 //
 session_start();
 // ----------------------------
@@ -73,12 +73,13 @@ define("PQL_TESTMAIL_AUTOSEND", false);
 // for the USERS database - separated with semi colon (;)
 //
 // Fields:
-//	LDAP host	Fully Qualified Hostname
-//				IP address
-//				LDAP URI (ldap://, ldaps://, ldapi:// etc)
-//	LDAP port	Port number
-//				NOTE: Use only if not using LDAP URI
-//	Search base	Starting point for the LDAP database
+//	LDAP host		Fully Qualified Hostname
+//					IP address
+//					LDAP URI (ldap://, ldaps://, ldapi:// etc)
+//	LDAP port		Port number
+//					NOTE: Use only if not using LDAP URI
+//	Search base		Starting point for the LDAP database
+//  Control base	Starting point for the LDAP controls information
 //
 // Note: URI and SSL support were added in PHP v4.0.4.
 //
@@ -86,8 +87,8 @@ define("PQL_TESTMAIL_AUTOSEND", false);
 // administrate. If only one, then you can obiously only configure
 // that :)
 //
-//define("PQL_LDAP_HOST","ldaps://localhost/;;dc=com");
-define("PQL_LDAP_HOST","localhost;389;dc=com");
+//define("PQL_LDAP_HOST","ldaps://localhost/;;dc=com;ou=QmailLDAP,dc=example,dc=com");
+define("PQL_LDAP_HOST","localhost;389;dc=com;ou=QmailLDAP,dc=example,dc=com");
 
 // ----------------------------
 // PQL_LDAP_ATTR_* (LDAP attribute names)
@@ -183,27 +184,6 @@ define("PQL_LDAP_USER_RDN_ATTRIBUTE", PQL_LDAP_ATTR_UID);
 // PQL_LDAP_CONTROL_USE (true | false)
 // set to true, if QmailLDAP/Control patch is supported by your system
 define("PQL_LDAP_CONTROL_USE", true);
-
-// PQL_LDAP_CONTROL_HOST (FQDN|IP)
-// the host, port and base DN which is running the ldap-server
-// for the CONTROLS database - separated with semi colon (;)
-//
-// Fields:
-//	LDAP host	Fully Qualified Hostname
-//				IP address
-//				LDAP URI (ldap://, ldaps://, ldapi:// etc)
-//	LDAP port	Port number
-//				NOTE: Use only if not using LDAP URI
-//	Search base	Starting point for the LDAP database
-//
-// Note: URI and SSL support were added in PHP v4.0.4.
-//
-// Stack these with space and you'll get a list of host you can
-// administrate. If only one, then you can obiously only configure
-// that :)
-//
-//define("PQL_LDAP_CONTROL_HOST","ldaps://localhost/;;ou=QmailLDAP,dc=example,dc=com");
-define("PQL_LDAP_CONTROL_HOST","localhost;389;ou=QmailLDAP,dc=example,dc=com");
 
 // PQL_LDAP_CONTROL_AUTOADDLOCALS (true | false)
 // set this to true, if phpQLAdmin should automatically add all domains to

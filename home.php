@@ -39,23 +39,26 @@ if(isset($rlnb) and PQL_AUTO_RELOAD) {
 }
 
 // find out which LDAP server(s) to use
-if($change_ldap_server_users or $change_ldap_server_controls) {
-    // Change LDAP server for user database?
+if(isset($submit)) {
+    $ADVANCED_MODE = 0;
+    session_register("ADVANCED_MODE");
+
+    // Change LDAP server
     if($ldapserver) {
 	$host = split(';', $ldapserver);
+
 	$USER_HOST_USR = $host[0] . ";" . $host[1];
 	$USER_SEARCH_DN_USR = $host[2];
 
-	session_register("USER_HOST_USR", "USER_SEARCH_DN_USR");
+	$USER_HOST_CTR = $host[0] . ";" . $host[1];
+	$USER_SEARCH_DN_CTR = $host[3];
+
+	session_register("USER_HOST_USR", "USER_HOST_CTR", "USER_SEARCH_DN_USR", "USER_SEARCH_DN_CTR");
     }
 
-    // Change LDAP server for controls database?
-    if($controlserver) {
-	$host = split(';', $ldapserver);
-	$USER_HOST_CTR = $host[0] . ";" . $host[1];
-	$USER_SEARCH_DN_CTR = $host[2];
-	session_register("USER_HOST_CTR", "USER_SEARCH_DN_CTR");
-    }
+    // We need to disable advanced mode so that only the user frame
+    // is shown, hence no 'advanced=...' in the url.
+    header("Location: " . PQL_URI . "index2.php");
 }
 ?>
 
@@ -70,14 +73,14 @@ if($change_ldap_server_users or $change_ldap_server_controls) {
 	    // Should we show the 'change server' choices
 	    if(PQL_LDAP_CHANGE_SERVER) {
 		if(eregi(" ", PQL_LDAP_HOST)) {
-		    $servers_usr = split(" ", PQL_LDAP_HOST);
+		    $servers = split(" ", PQL_LDAP_HOST);
 ?>
     <li>
-      <form action="<?=$PHP_SELF?>" target="pqlmain">
-	Change LDAP server (user database)<br>
+      <form action="<?=$PHP_SELF?>" target="_top">
+	Change LDAP server<br>
         <select name="ldapserver">
 <?php
-			foreach($servers_usr as $server) {
+			foreach($servers as $server) {
 ?>
           <option value="<?=$server?>"><?=$server?></option>
 <?php
@@ -85,33 +88,11 @@ if($change_ldap_server_users or $change_ldap_server_controls) {
 		    }
 ?>
         </select>
-        <input type="hidden" name="change_ldap_server_users" value=1>
-        <input type="submit" value="<?="--&gt;&gt;"?>" onChange="refreshFrames();">
+        <input type="submit" value="<?="--&gt;&gt;"?>" name="submit">
       </form>
     </li>
 
 <?php
-		    if(PQL_LDAP_CONTROL_USE and eregi(" ", PQL_LDAP_CONTROL_HOST)) {
-			$servers_ctr = split(" ", PQL_LDAP_CONTROL_HOST);
-?>
-    <li>
-      <form action="<?=$PHP_SELF?>" target="pqlmain">
-        Change LDAP server (controls database)<br>
-        <select name="controlserver">
-<?php
-	                foreach($servers_ctr as $server) {
-?>
-          <option value="<?=$server?>"><?=$server?></option>
-<?php
-	                }
-?>
-        </select>
-        <input type="hidden" name="change_ldap_server_controls" value=1>
-        <input type="submit" value="<?="--&gt;&gt;"?>" onChange="refreshFrames();">
-      </form>
-    </li>
-<?php
-		    }
 	    }
 	}
 ?>
