@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.107 2003-08-19 08:02:19 turbo Exp $
+// $Id: pql.inc,v 2.108 2003-08-20 08:28:20 turbo Exp $
 //
 
 // ----------------------------
@@ -1981,11 +1981,17 @@ function pql_validate_administrator($linkid, $dn, $admin) {
 // replace with 'administrator/seealso = new value'.
 function pql_replace_admins($ldap, $old, $new) {
 	// Setup the search filter
-	$filter  = '(|' . '('.pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR")."=$old".')';
-	$filter .= '('.pql_get_define("PQL_GLOB_ATTR_SEEALSO")."=$old".'))';
+	$filter  = '(|';
+	$filter .= '('.pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR")."=$old".')';
+	$filter .= '('.pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR")."=$old".')';
+	$filter .= '('.pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR")."=$old".')';
+	$filter .= '('.pql_get_define("PQL_GLOB_ATTR_SEEALSO")."=$old".')';
+	$filter .= ')';
 
 	// We're only interested in these attributes
 	$attribs = array(pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"),
+					 pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR"),
+					 pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR"),
 					 pql_get_define("PQL_GLOB_ATTR_SEEALSO"));
 
 	// Go through the namingContexts one by one
