@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.29 2005-01-29 18:58:17 turbo Exp $
+// $Id: pql_bind9.inc,v 2.30 2005-01-30 09:19:59 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -356,10 +356,59 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 		}
 	}
 
-	return true;
+	return $dn;
 }
 // }}}
 
+// {{{ pql_bind9_update_serial(ldap, dn)
+function pql_bind9_update_serial($ldap, $dn) {
+  // Get the zone name from the record (so that we can find the SOA)
+  $zone = pql_get_attribute($ldap->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ZONENAME"));
+
+  // Get the SOA for this zone.
+  $filter = '(&('.pql_get_define("PQL_ATTR_ZONENAME")."=$zone)(".pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME").'=@))';
+  foreach($ldap->ldap_basedn as $base) {
+	$object = pql_search($ldap->ldap_linkid, $base, $filter);
+	if(is_array($object[0])) {
+	  // "there can be only one" - anything else should (?) be an error.
+	  $soa["dn"]  = $object[0]["dn"];
+	  $soa["soa"] = $object[0][lc(pql_get_define("PQL_ATTR_SOARECORD"))];
+	}
+  }
+
+  // Get the old serial number from the SOA
+  // sOARecord: phpqladmin.com. registry.phpqladmin.com. 2005013001 172800 86400 2419200 604800
+  $tmp = split(' ', $soa["soa"]); $serial = $tmp[2];
+
+  // Extract date and serial number from the SOA serial number.
+  // This _SHOULD_ be in the form 'YYYMMDDxx'.
+  for($i=0; $i <= 7; $i++)
+	$serial_date .= $serial[$i];
+  $serial_number = $serial[8].$serial[9];
+
+  // Get current date.
+  $date = date("Ymd", time());
+
+  // Let's see how the new value should look like.
+  if($serial_date == $date) {
+	// We've change the zone 'today'. Update the serial number
+	$serial_number = sprintf("%02d", ++$serial_number);
+  } else {
+	// Not changed 'today'. Use todays date with '01' as serial number
+	$serial_number = "01";
+  }
+
+  // Create the new SOA value from the new serial number added to the current date.
+  // sOARecord: phpqladmin.com. registry.phpqladmin.com. 2005013002 172800 86400 2419200 604800
+  $SOA = $tmp[0]." ".$tmp[1]." $date$serial_number ".$tmp[3]." ".$tmp[4]." ".$tmp[5]." ".$tmp[6];
+
+  // Update the SOA with this new SOA serial number.
+  if(!pql_modify_attribute($ldap->ldap_linkid, $soa["dn"], pql_get_define("PQL_ATTR_SOARECORD"), 1, $SOA))
+	return false;
+  else
+	return true;
+}
+// }}}
 
 /*
  * Local variables:
