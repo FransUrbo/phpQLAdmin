@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.13 2004-03-30 06:31:02 turbo Exp $
+// $Id: user_add-save.inc,v 1.14 2004-03-31 05:30:07 turbo Exp $
 
 // Find out what objectclasses to use when creating user
 $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"]));
@@ -146,19 +146,14 @@ if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "she
 if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "mail")) {
 	// normal mailbox account
 	
-	if($_REQUEST["userhost"] and $_REQUEST["host"]) {
-		// If using 'dns' -> the FQDN
-		if($_REQUEST["host"] == "usr")
-		  $entry[pql_get_define("PQL_ATTR_MAILHOST")] = $_REQUEST["userhost"];
-		else
-		  $entry[pql_get_define("PQL_ATTR_MAILHOST")] = $_REQUEST["userhost"][$_REQUEST["host"]];
-	} elseif($_REQUEST["host"]) {
-		// If using 'qlc' -> the FQDN
-		$entry[pql_get_define("PQL_ATTR_MAILHOST")] = $_REQUEST["host"];
-	} elseif($_REQUEST["userhost"]) {
-		// We've specified a host, but we never ticked the 'User defined' checkbox.
-		$entry[pql_get_define("PQL_ATTR_MAILHOST")] = $_REQUEST["userhost"];
-	}
+	if($_REQUEST["host"])
+	  // If using 'qlc' -> the FQDN
+	  $entry[pql_get_define("PQL_ATTR_MAILHOST")]   = $_REQUEST["host"];
+	elseif($_REQUEST["userhost"])
+	  // We've specified a host, but we never ticked the 'User defined' checkbox.
+	  $entry[pql_get_define("PQL_ATTR_MAILHOST")]   = $_REQUEST["userhost"];
+	elseif($_REQUEST["dns"])
+	  $entry[pql_get_define("PQL_ATTR_MAILHOST")]   = $_REQUEST["dns"];
 	
 	$entry[pql_get_define("PQL_ATTR_MODE")] = "localdelivery";
 	
@@ -190,14 +185,12 @@ if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "mai
 $default_quota = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEQUOTA"));
 if(!empty($default_quota)) {
 	if($_SESSION["NEW_STYLE_QUOTA"]) {
-		$tmp = split(',', $default_quota);
-		$tmp = pql_parse_quota(array($tmp[0], $tmp[1]));
+		$tmp = pql_parse_quota($default_quota);
 		
 		$entry[pql_get_define("PQL_ATTR_QUOTA_SIZE")]  = $tmp["maxsize"];
 		$entry[pql_get_define("PQL_ATTR_QUOTA_COUNT")] = $tmp["maxmails"];
-	} else {
-		$entry[pql_get_define("PQL_ATTR_QUOTA_VALUE")] = $default_quota;
-	}
+	} else
+	  $entry[pql_get_define("PQL_ATTR_QUOTA_VALUE")]   = $default_quota;
 }
 
 // ============================================================================================
