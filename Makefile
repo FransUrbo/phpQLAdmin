@@ -44,8 +44,6 @@ excludelist:
 	@(cd $(TMPDIR); \
 	  find -type d -name CVS -exec find {} \; \
 	    | sed 's@\./@@'  > exclude.list; \
-	  find -type d -name debian -exec find {} \; \
-	    | sed 's@\./@@' >> exclude.list; \
 	  find -type f -name '.cvsignore' -o -name 'README.cvs' \
 	    -o -name '*.new' -o -name '*.orig' -o -name '*~' \
 	    -o -name '.#*' | sed 's@\./@@' >> exclude.list; \
@@ -81,13 +79,8 @@ release: changes tarball debian
 	@(rcp -x $(TMPDIR)/phpQLAdmin-$(VERSION).tar.gz  aurora:/var/www/phpqladmin/; \
 	  rcp -x $(TMPDIR)/phpQLAdmin-$(VERSION).tar.bz2 aurora:/var/www/phpqladmin/; \
 	  rcp -x $(TMPDIR)/phpQLAdmin-$(VERSION).zip     aurora:/var/www/phpqladmin/; \
-	  cat /var/www/phpqladmin/index.html.in | \
-		sed -e "s@%VERSION%@$(VERSION)@g" -e "s@%CVSTAG%@`cat .tag`@g" \
-		> /var/www/phpqladmin/index.html.out; \
-	  mv /var/www/phpqladmin/index.html.out /var/www/phpqladmin/index.html; \
-	  cp -v CHANGES /var/www/phpqladmin/CHANGES.txt; \
-	  cp -v $(DESTDIR)/../*.deb /var/www/phpqladmin; \
-	  rm .tag)
+	  rcp -x CHANGES aurora:/var/www/phpqladmin/CHANGES_devel.txt; \
+	  rcp -x $(TMPDIR)/../*.deb aurora:/var/www/phpqladmin)
 
 $(INSTDIR):
 	@rm -f $(TMPDIR) && mkdir -p $(INSTDIR)
