@@ -1,8 +1,9 @@
 <?php
 // attribute plugin for
 // mailforwardingaddress (forward all mails to this address)
-// $Id: attrib.mailforwardingaddress.inc,v 2.13 2003-10-11 11:47:36 turbo Exp $
+// $Id: attrib.mailforwardingaddress.inc,v 2.14 2003-11-12 14:05:18 turbo Exp $
 
+// {{{ attribute_check(type)
 function attribute_check($type) {
 	global $mailforwardingaddress, $error, $LANG;
 
@@ -11,6 +12,9 @@ function attribute_check($type) {
 		$error["mailforwardingaddress"] = $LANG->_('Missing');
 		return false;
   	}
+
+	// IDNA encode email address
+	$mailforwardingaddress = pql_maybe_idna_encode($mailforwardingaddress);
 
 	// valid
 	if(!check_email($mailforwardingaddress)) {
@@ -21,11 +25,15 @@ function attribute_check($type) {
 	// maybe check existence for modifying
 	return true;
 }
+// }}}
 
+// {{{ attribute_init(void)
 function attribute_init() {
 	// dummy function
 }
+// }}}
 
+// {{{ attribute_print_form(void)
 function attribute_print_form() {
 	global $mailforwardingaddress, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $rootdn, $view, $LANG;
 ?>
@@ -64,7 +72,9 @@ function attribute_print_form() {
 
 <?php
 }
-// '
+// }}}
+
+// {{{ attribute_save(type)
 function attribute_save($type) {
 	global $domain, $user, $attrib, $oldvalue, $view, $LANG;
 	global $mailforwardingaddress, $_pql;
@@ -75,7 +85,7 @@ function attribute_save($type) {
 									'', $mailforwardingaddress))
 		  $msg = pql_complete_constant($LANG->_('Successfully added %what% %new%'),
 									   array('what' => $LANG->_('forwarding address'),
-											 'new'  => $mailforwardingaddress));
+											 'new'  => pql_maybe_idna_decode($mailforwardingaddress)));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to add %what%'),
 									   array('what' => $LANG->_('forwarding address'))) . ": " . pql_ldap_error($_pql->ldap_linkid);
@@ -108,6 +118,7 @@ function attribute_save($type) {
 								  array('type' => $type, 'file' => __FILE__)));
 	}
 }
+// }}}
 
 // Local variables:
 // mode: php
