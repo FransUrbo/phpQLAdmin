@@ -145,7 +145,7 @@ if(!isset($domains)) {
 	  // specified domain, but also in the PREVIOUS domain shown!
 	  $users = ""; $cns = "";
 
-	  // Get all users in the domain
+	  // Get all users (their DN) in this domain
 	  $users = pql_get_user($_pql->ldap_linkid, $domain);
 	  if(!is_array($users)){
 	      // no user available for this domain
@@ -167,29 +167,32 @@ if(!isset($domains)) {
     <br>
 
 <?php
-              if($config["PQL_LDAP_REFERENCE_USERS_WITH"][pql_get_rootdn($user)] != constant("PQL_LDAP_ATTR_CN")) {
-		  foreach ($users as $user) {
-		      $cn = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_CN);
-		      $cns[$user] = $cn[0];
-		  }
-		  asort($cns);
-    
-		  foreach($cns as $user => $cn) {
-		      $uid   = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_UID); $uid = $uid[0];
-		      $uidnr = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_QMAILUID); $uidnr = $uidnr[0];
-		      if(($uid != 'root') or ($uidnr != '0')) {
-			  // Do NOT show root user(s) here! This should (for safty's sake)
-			  // not be availible to administrate through phpQLAdmin!
+              // From the user DN, get the CN.
+	      foreach ($users as $dn) {
+		  $cn = pql_get_userattribute($_pql->ldap_linkid, $dn, $config["PQL_LDAP_ATTR_CN"][$rootdn]);
+		  $cns[$dn] = $cn[0];
+	      }
+              asort($cns);
+
+	      foreach($cns as $dn => $cn) {
+		  $uid   = pql_get_userattribute($_pql->ldap_linkid, $dn, $config["PQL_LDAP_ATTR_UID"][$rootdn]);
+		  $uid = $uid[0];
+
+		  $uidnr = pql_get_userattribute($_pql->ldap_linkid, $dn, $config["PQL_LDAP_ATTR_QMAILUID"][$rootdn]);
+		  $uidnr = $uidnr[0];
+
+		  if(($uid != 'root') or ($uidnr != '0')) {
+		      // Do NOT show root user(s) here! This should (for safty's sake)
+		      // not be availible to administrate through phpQLAdmin!
 ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
-      <a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$user?>"><img src="images/mail_small.png" border="0" alt="<?=$cn?>"></a>&nbsp;
-      <a class="item" href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$user?>"><?=$cn?></a>
+      <a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$dn?>"><img src="images/mail_small.png" border="0" alt="<?=$cn?>"></a>&nbsp;
+      <a class="item" href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$dn?>"><?=$cn?></a>
     </nobr>
 
     <br>
 
 <?php
-                      }
 		  }
               }
           }
