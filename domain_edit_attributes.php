@@ -80,13 +80,7 @@ switch($attrib){
 include("./include/".$include);
 include("./header.html");
 ?>
-  <span class="title1"><?php
-  if(eregi("defaultdomain|basehomedir|basemaildir|administrator", $include)) {
-      echo PQL_LANG_DOMAIN_DEFAULT_TITLE;
-  } else {
-      echo PQL_LANG_DOMAIN_CHANGE_ATTRIBUTE_TITLE;
-  }
-?>
+  <span class="title1"><?php echo PQL_LANG_DOMAIN_DEFAULT_TITLE; ?>
   </span>
 
   <br><br>
