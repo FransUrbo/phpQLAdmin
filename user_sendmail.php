@@ -1,6 +1,6 @@
 <?php
 // send a testmail to an emailaddress
-// $Id: user_sendmail.php,v 2.26.2.1 2005-03-04 11:59:45 turbo Exp $
+// $Id: user_sendmail.php,v 2.26.2.2 2005-03-17 08:23:01 turbo Exp $
 //
 require("./include/pql_session.inc");
 require("./include/pql_config.inc");
@@ -74,11 +74,9 @@ if(mail($email, $subject, $message, $header)){
 }
 
 $url = "user_detail.php?domain=".$_REQUEST["domain"]."&user=".urlencode($_REQUEST["user"])."&msg=".urlencode($msg);
-
 if(isset($_REQUEST["rlnb"]))
      $url .= "&rlnb=".$_REQUEST["rlnb"];
-
-header("Location: " . $_SESSION["URI"] . $url);
+pql_header($url);
 ?>
 </body>
 </html>
