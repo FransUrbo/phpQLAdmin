@@ -10,18 +10,16 @@ include("./header.html");
 
 // Make sure we can have a ' in branch
 $domain = eregi_replace("\\\'", "'", $domain);
+$domain = urldecode($domain);
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove domain %domain%'),
-														array("domain" => maybe_decode($domain)))?></span>
+														array("domain" => pql_maybe_decode($domain)))?></span>
 <?php
 if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
 	$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 	$_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
 	
 	$delete_forwards = (isset($delete_forwards) || pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) ? true : false;
-	
-	// Make sure we can have a ' in branch
-	$domain = eregi_replace("\\\'", "'", $domain);
 
 	// Before we delete the domain/branch, we need to get the defaultDomain, additionalDomainName
 	// and smtpRoutes value(s) so that we can remove it from the QmailLDAP/Controls object(s)
@@ -72,7 +70,7 @@ if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
 <?php echo $LANG->_('Are you really sure'); ?>
 <br>
 <form action="<?php echo $PHP_SELF; ?>" method="GET">
-	<input type="hidden" name="domain" value="<?php echo $domain; ?>">
+	<input type="hidden" name="domain" value="<?=urlencode($domain)?>">
 	
 	<input type="checkbox" name="delete_forwards" checked> <?php echo $LANG->_('Also delete forwards to users in this domain'); ?><br><br>
 	<input type="submit" name="ok" value="<?php echo $LANG->_('Yes'); ?>">
