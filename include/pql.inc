@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.1 2002-12-14 21:05:27 turbo Exp $
+// $Id: pql.inc,v 2.2 2002-12-14 22:24:42 turbo Exp $
 //
 // ----------------------------
 // Note: There are a few " followed after PHP comment
@@ -1335,32 +1335,53 @@ function pql_get_next_uidnumber($ldap_linkid) {
 function pql_get_domain_value($linkid, $domain, $value, $match = "") {
     // In the domain object, there's embeded defaults
     //	description: defaultDomain=THE-DEFAULT-DOMAIN-NAME
+	$results = "";
 
-    if($match = "") {
+    if($match == "") {
 		$match = "*";
-    } else {
-		$match = strtolower($match) . "*";
     }
+
+	$attrib[] = "description";
 	
     // (&(dc=bayour)(objectclass=domain)(description=defaultdomainMATCH))
     $filter = "(&(" . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . ")(objectclass=" . 
       PQL_LDAP_OBJECTCLASS_DOMAIN . ")(description=" . $value . $match . "))";
-    $sr = ldap_search($linkid, PQL_LDAP_BASEDN, $filter);
-    $results = @ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
-	
-    // Extract all the descriptor fields, look 
-    for($i=0; $i < $results[0]["description"]["count"]; $i++) {
-		if(eregi($value, $results[0]["description"][$i])) {
-			$results = split("=", $results[0]["description"][$i]);
+    $sr = ldap_search($linkid, PQL_LDAP_BASEDN, $filter, $attrib);
+    $result = @ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
+
+    // Extract all the descriptor fields
+	if($value == 'administrator') {
+		// Return multiple values. If we're looking for 'administrator',
+		// return the 'domain' part of the DN...
+		for($i=0; $i < $result["count"]; $i++) {
+			for($j=0; $j < $result[$i]["description"]["count"]; $j++) {
+				if(eregi($value, $result[$i]["description"][$j]) && eregi($match, $result[$i]["description"][$j])) {
+					$tmp = split(",", $result[$i]["dn"]);
+					$tmp = split("=", $tmp[count($tmp)-2]);
+					
+					$results[] = $tmp[1];
+				}
+			}
 		}
-    }
+	} else {
+		// Return the value we're looking for (single valued).
+		for($i=0; $i < $result[0]["description"]["count"]; $i++) {
+			if(eregi($value, $result[0]["description"][$i])) {
+				$results = split("=", $result[0]["description"][$i]);
+			}
+		}
+	}
 	
     // If nothing found, return the domain we where called with
     if($results[1] == "") {
 		return $domain;
-    }
-	
-    return $results[1];
+    } else {
+		if($value == 'administrator') {
+			return $results;
+		} else {
+			return $results[1];
+		}
+	}
 }
 
 function pql_set_domain_value($linkid, $domain, $type, $value) {

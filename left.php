@@ -100,13 +100,12 @@ if(isset($advanced)) {
   </div>
 
 <?php
-if($USER_BASE == 'everything') {
-    // Get ALL domains
-    $domains = pql_get_domains($_pql->ldap_linkid, PQL_LDAP_BASEDN);
-    if(is_array($domains)){
-	asort($domains);
-    } else {
-	// if no domain defined, report it
+// Get ALL domains
+$domains = pql_get_domain_value($_pql->ldap_linkid, '*', 'administrator', "=" . $USER_DN);
+if(is_array($domains)){
+    asort($domains);
+} else {
+    // if no domain defined, report it
 ?>
   <!-- start domain parent -->
   <div id="el<?php echo $j;?>Parent" class="parent">
@@ -116,10 +115,6 @@ if($USER_BASE == 'everything') {
   <!-- end domain parent -->
 
 <?php
-    }
-} else {
-    // We want a specific domain...
-    $domains[0] = $USER_BASE;
 }
 
 if(is_array($domains)){
