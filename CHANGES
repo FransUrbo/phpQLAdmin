@@ -35,7 +35,15 @@ phpQLAdmin 2.3.0 TO BE ANNOUNCED
 	  - Because of the change in the way 'forwarding accounts' where used/created,
 	    I lost all purpose of the 'virtualBaseHomeDir' global attribute/configuration!
 	    Remove all references to it.
+	  - Four new attributes for remote ezmlm lists added to the 'phpQLAdminGlobal'
+	    object class:
+	    ezmlmRemote				1.3.6.1.4.1.8767.3.2.1.21
+	    ezmlmRemoteHost			1.3.6.1.4.1.8767.3.2.4.20
+	    ezmlmRemoteUser			1.3.6.1.4.1.8767.3.2.4.21
+	    ezmlmRemoteRetreiveScript		1.3.6.1.4.1.8767.3.2.2.21
 
 	Misc changes
+	  - Administration of mailinglists located on remote server (i.e. not on the same
+	    host where phpQLAdmin is running). See WARNING.txt!
 
 [all changelog for <2.3 branch have been removed for space reasons]

@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.66 2005-03-07 10:58:08 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.67 2005-03-15 09:45:03 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -435,14 +435,28 @@ function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $do
 // hand wants it to really execute the command, uncomment the line which
 // does the execute.
 function do_exec($command, $output, &$return) {
-//	return(@exec($command, $output, $return));
+  $return = 100;
+  $msg  = "<p>";
+  $msg .= "Command execution disabled. See ./include/config.inc:do_exec(). ";
+  $msg .= "Command to execute was: <br><br><b>$command</b><br>";
+  return($msg);
 
-	$return = 100;
+  // --------------------
 
-	$msg  = "<p>";
-	$msg .= "Command execution disabled. See ./include/config.inc:do_exec(). ";
-	$msg .= "Command to execute was: <br><br><b>$command</b><br>";
-	return($msg);
+  // Execute '$command' either on localhost or remotehost...
+  if(pql_get_define("PQL_CONF_EZMLM_REMOTE")) {
+	// ... remote
+	$cmd = pql_get_define("PQL_CONF_EZMLM_REMOTE_RETREIVE_SCRIPT");
+	$usr = pql_get_define("PQL_CONF_EZMLM_REMOTE_USER");
+	$hst = pql_get_define("PQL_CONF_EZMLM_REMOTE_HOST");
+	
+	if($cmd and $usr and $hst) {
+	  if(file_exists($cmd))
+		return("env -i $cmd $hst $usr $command");
+	}
+  } else
+	// ... local
+	return(@exec($command, $output, $return));
 }
 
 /*

@@ -1,0 +1,11 @@
+This file should always be empty (exept this header :). That's the idea
+any way.
+
+Please check it every time you've done a cvs update, because you MIGHT
+ruin your system/db or something else if you don't take notice!!
+
+Warnings of the day:
+Administrations of remote ezmlm lists is more or less done. It can
+RETREIVE information, but WRITING (in one way or the other) have not
+been tested AT ALL! Do not use on live lists, they might be totaly
+fucked if I've missed something!!

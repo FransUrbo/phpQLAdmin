@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.33 2005-03-15 09:20:51 turbo Exp $
+// $Id: config_attributes.inc,v 2.34 2005-03-15 09:45:03 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -202,6 +202,13 @@ pql_set_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_DN", 		strtolower('webLDAPServ
 pql_set_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_PW", 		strtolower('webLDAPServerLoginPW'),			false);
 // }}}
 
+// {{{ Attributes for external ezmlm mailing lists
+pql_set_define("PQL_ATTR_EZMLM_REMOTE", 					strtolower('ezmlmRemote'),					false);
+pql_set_define("PQL_ATTR_EZMLM_REMOTE_HOST", 				strtolower('ezmlmRemoteHost'),				false);
+pql_set_define("PQL_ATTR_EZMLM_REMOTE_USER", 				strtolower('ezmlmRemoteUser'),				false);
+pql_set_define("PQL_ATTR_EZMLM_REMOTE_RETREIVE_SCRIPT", 	strtolower('ezmlmRemoteRetreiveScript'),	false);
+// }}}
+
 // {{{ Miscellaneous external attributes
 pql_set_define("PQL_ATTR_SPAMASSASSIN", 					strtolower('spamAssassin'),					false);
 // }}}
@@ -311,7 +318,11 @@ $PQL_ATTRIBUTE["GLOBAL"] = array("PQL_CONF_CONTROL_USE"					=> pql_get_define("P
 								 "PQL_CONF_ADMINISTRATOR"				=> pql_get_define("PQL_ATTR_ADMINISTRATOR"),
 								 "PQL_CONF_ADMINISTRATOR_EZMLM"	    	=> pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"),
 								 "PQL_CONF_ADMINISTRATOR_CONTROLS"		=> pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
-								 "PQL_CONF_CREATE_MBOX"					=> pql_get_define("PQL_ATTR_CREATE_MBOX"));
+								 "PQL_CONF_CREATE_MBOX"					=> pql_get_define("PQL_ATTR_CREATE_MBOX"),
+								 "PQL_CONF_EZMLM_REMOTE"				=> pql_get_define("PQL_ATTR_EZMLM_REMOTE"),
+								 "PQL_CONF_EZMLM_REMOTE_HOST"			=> pql_get_define("PQL_ATTR_EZMLM_REMOTE_HOST"),
+								 "PQL_CONF_EZMLM_REMOTE_USER"			=> pql_get_define("PQL_ATTR_EZMLM_REMOTE_USER"),
+								 "PQL_CONF_EZMLM_REMOTE_RETREIVE_SCRIPT"=> pql_get_define("PQL_ATTR_EZMLM_REMOTE_RETREIVE_SCRIPT"));
 
 // }}}
 
