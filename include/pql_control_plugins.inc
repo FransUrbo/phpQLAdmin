@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control plugins)
 //
-// $Id: pql_control_plugins.inc,v 2.5 2004-03-11 18:13:42 turbo Exp $
+// $Id: pql_control_plugins.inc,v 2.6 2004-04-01 06:56:07 turbo Exp $
 //
 
 // ----------------------------
@@ -27,7 +27,7 @@ pql_plugin_register(pql_get_define("PQL_ATTR_LDAPREBIND"),
 
 pql_plugin_register(pql_get_define("PQL_ATTR_LDAPCLUSTER"),
 					"attrib.control.ldapcluster.inc",
-					"q-l ldap core",
+					"q-l ldap cluster",
 					pql_get_define("PQL_ATTR_LDAPCLUSTER"));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"),
@@ -85,7 +85,7 @@ pql_plugin_register(pql_get_define("PQL_ATTR_MAXRCPTCOUNT"),
 // core qmail specific options
 pql_plugin_register(pql_get_define("PQL_ATTR_BOUNCEFROM"),
 					"attrib.control.bouncefrom.inc",
-					"qmail-send",
+					"q-l bounce",
 					array(pql_get_define("PQL_ATTR_BOUNCEFROM"),
 						  pql_get_define("PQL_ATTR_BOUNCEHOST")));
 
@@ -97,7 +97,7 @@ pql_plugin_register(pql_get_define("PQL_ATTR_CONCURRENCYLOCAL"),
 
 pql_plugin_register(pql_get_define("PQL_ATTR_DOUBLEBOUNCEHOST"),
 					"attrib.control.doublebouncehost.inc",
-					"qmail-send",
+					"q-l bounce",
 					array(pql_get_define("PQL_ATTR_DOUBLEBOUNCEHOST"),
 						  pql_get_define("PQL_ATTR_DOUBLEBOUNCETO")));
 
@@ -192,6 +192,118 @@ pql_plugin_register(pql_get_define("PQL_ATTR_RCPTHOSTS"),
 					"attrib.control.rcpthosts.inc",
 					pql_get_define("PQL_ATTR_RCPTHOSTS"),
 					pql_get_define("PQL_ATTR_RCPTHOSTS"));
+
+if($_SESSION["NEW_STYLE_QUOTA"]) {
+	// Oki, so these have nothing to do with quota, but the varible
+	// (the existance of the new style quota attributes) existance
+	// (in the LDAP server) should indicate that we're running a newer
+	// QmailLDAP, where these are defined as well...
+
+	// ----- LDAP stuff
+
+	pql_plugin_register(pql_get_define("PQL_ATTR_LDAPTIMEOUT"),
+						"attrib.control.ldaptimeout.inc",
+						"q-l ldap core",
+						pql_get_define("PQL_ATTR_LDAPTIMEOUT"));
+	
+	// ----- Cluster stuff
+
+	pql_plugin_register(pql_get_define("PQL_ATTR_LDAPCLUSTER_HOSTS"),
+						"attrib.control.ldapclusterhosts.inc",
+						"q-l ldap cluster",
+						pql_get_define("PQL_ATTR_LDAPCLUSTER_HOSTS"));
+	
+	pql_plugin_register(pql_get_define("PQL_ATTR_LDAPCLUSTER_COOKIE"),
+						"attrib.control.ldapclustercookie.inc",
+						"q-l ldap cluster",
+						pql_get_define("PQL_ATTR_LDAPCLUSTER_COOKIE"));
+
+	// ----- SMTP stuff
+
+	pql_plugin_register(pql_get_define("PQL_ATTR_OUTGOINGIP"),
+						"attrib.control.outgoingip.inc",
+						"qmail-smtpd",
+						pql_get_define("PQL_ATTR_OUTGOINGIP"));
+
+	pql_plugin_register(pql_get_define("PQL_ATTR_GOODADDRESS"),
+						"attrib.control.goodaddress.inc",
+						"qmail-smtpd",
+						pql_get_define("PQL_ATTR_GOODADDRESS"));
+
+	// ----- QMQP stuff
+
+	pql_plugin_register(pql_get_define("PQL_ATTR_QMQPCIP"),
+						"attrib.control.qmqpcip.inc",
+						"qmail-qmqpc",
+						pql_get_define("PQL_ATTR_QMQPCIP"));
+
+	// ----- Other/Misc stuff
+
+	pql_plugin_register(pql_get_define("PQL_ATTR_BIGBROTHER"),
+						"attrib.control.bigbrother.inc",
+						"qmail-send",
+						pql_get_define("PQL_ATTR_BIGBROTHER"));
+
+	pql_plugin_register(pql_get_define("PQL_ATTR_RBLLIST"),
+						"attrib.control.rbllist.inc",
+						"q-l spam control",
+						pql_get_define("PQL_ATTR_RBLLIST"));
+
+	pql_plugin_register(pql_get_define("PQL_ATTR_BOUNCESIZE"),
+						"attrib.control.bouncesize.inc",
+						"q-l bounce",
+						pql_get_define("PQL_ATTR_BOUNCESIZE"));
+
+	// ----- PopBeforeSmtp stuff
+
+	pql_plugin_register(pql_get_define("PQL_ATTR_PBS_SERVERS"),
+						"attrib.control.pbsservers.inc",
+						"q-l popbeforesmtp",
+						pql_get_define("PQL_ATTR_PBS_SERVERS"));
+
+	pql_plugin_register(pql_get_define("PQL_ATTR_PBS_IP"),
+						"attrib.control.pbsip.inc",
+						"q-l popbeforesmtp",
+						pql_get_define("PQL_ATTR_PBS_IP"));
+
+	pql_plugin_register(pql_get_define("PQL_ATTR_PBS_PORT"),
+						"attrib.control.pbsport.inc",
+						"q-l popbeforesmtp",
+						pql_get_define("PQL_ATTR_PBS_PORT"));
+
+	pql_plugin_register(pql_get_define("PQL_ATTR_PBS_SECRET"),
+						"attrib.control.pbssecret.inc",
+						"q-l popbeforesmtp",
+						pql_get_define("PQL_ATTR_PBS_SECRET"));
+
+	pql_plugin_register(pql_get_define("PQL_ATTR_PBS_CACHESIZE"),
+						"attrib.control.pbscachesize.inc",
+						"q-l popbeforesmtp",
+						pql_get_define("PQL_ATTR_PBS_CACHESIZE"));
+
+	pql_plugin_register(pql_get_define("PQL_ATTR_PBS_TIMEOUT"),
+						"attrib.control.pbstimeout.inc",
+						"q-l popbeforesmtp",
+						pql_get_define("PQL_ATTR_PBS_TIMEOUT"));
+
+	pql_plugin_register(pql_get_define("PQL_ATTR_PBS_ENV"),
+						"attrib.control.pbsenv.inc",
+						"q-l popbeforesmtp",
+						pql_get_define("PQL_ATTR_PBS_ENV"));
+}
+
+// List all registred attributes and their files
+// - Uncomment this piece of code to view which
+//   plugins are registred and to which file
+//   they belong.
+
+//$i = 0;
+//$attribs = $_pql_plugins->attribs; asort($attribs);
+//foreach($attribs as $key => $value) {
+//	echo "$key --> attrib.control.$value.inc <br>";
+//	$i++;
+//}
+//echo "Attribute count: $i<br><br>";
 
 /*
  * Local variables:

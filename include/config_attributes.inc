@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.12 2004-03-29 07:53:14 turbo Exp $
+// $Id: config_attributes.inc,v 2.13 2004-04-01 06:56:07 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -49,6 +49,7 @@ pql_set_define("PQL_ATTR_BADMAILFROM",						strtolower("badMailFrom"),					false
 pql_set_define("PQL_ATTR_BADRCPTTO",						strtolower("badRcptTo"),					false);
 pql_set_define("PQL_ATTR_BOUNCEFROM",						strtolower("bounceFrom"),					false);
 pql_set_define("PQL_ATTR_BOUNCEHOST",						strtolower("bounceHost"),					false);
+pql_set_define("PQL_ATTR_BOUNCESIZE",						strtolower("bounceMaxBytes"),				false);
 pql_set_define("PQL_ATTR_CONCURRENCYLOCAL",					strtolower("concurrencyLocal"),				false);
 pql_set_define("PQL_ATTR_CONCURRENCYREMOTE",				strtolower("concurrencyRemote"),			false);
 pql_set_define("PQL_ATTR_CUSTOMBOUNCETEXT",					strtolower("customBounceText"),				false);
@@ -63,6 +64,8 @@ pql_set_define("PQL_ATTR_HELOHOST",							strtolower("heloHost"),						false);
 pql_set_define("PQL_ATTR_IDHOST",							strtolower("idHost"),						false);
 pql_set_define("PQL_ATTR_LDAPBASEDN",						strtolower("ldapBaseDN"),					false);
 pql_set_define("PQL_ATTR_LDAPCLUSTER",						strtolower("ldapCluster"),					false);
+pql_set_define("PQL_ATTR_LDAPCLUSTER_COOKIE",				strtolower("smtpClusterCookie"),			false);
+pql_set_define("PQL_ATTR_LDAPCLUSTER_HOSTS",				strtolower("ldapClusterHosts"),				false);
 pql_set_define("PQL_ATTR_LDAPDEFAULTDOTMODE",				strtolower("ldapDefaultDotMode"),			false);
 pql_set_define("PQL_ATTR_LDAPDEFAULTQUOTA",					strtolower("ldapDefaultQuota"),				false);
 pql_set_define("PQL_ATTR_LDAPDEFAULTQUOTA_SIZE",			strtolower("DefaultQuotaSize"),				false);
@@ -73,14 +76,17 @@ pql_set_define("PQL_ATTR_LDAPLOGIN",						strtolower("ldapLogin"),					false);
 pql_set_define("PQL_ATTR_LDAPMESSAGESTORE",					strtolower("ldapMessageStore"),				false);
 pql_set_define("PQL_ATTR_LDAPPASSWORD",						strtolower("ldapPassword"),					false);
 pql_set_define("PQL_ATTR_LDAPREBIND",						strtolower("ldapRebind"),					false);
+pql_set_define("PQL_ATTR_LDAPTIMEOUT",						strtolower("ldapTimeOut"),					false);
 pql_set_define("PQL_ATTR_LDAPSERVER",						strtolower("ldapServer"),					false);
 pql_set_define("PQL_ATTR_LDAPUID",							strtolower("ldapUid"),						false);
 pql_set_define("PQL_ATTR_LOCALIPHOST",						strtolower("localIpHost"),					false);
+pql_set_define("PQL_ATTR_OUTGOINGIP",						strtolower("outGoingIp"),					false);
 pql_set_define("PQL_ATTR_LOCALS",							strtolower("locals"),						false);
 pql_set_define("PQL_ATTR_MAXRCPTCOUNT",						strtolower("maxRcptCount"),					false);
 pql_set_define("PQL_ATTR_PERCENTHACK",						strtolower("percentHack"),					false);
 pql_set_define("PQL_ATTR_PLUSDOMAIN",						strtolower("plusDomain"),					false);
 pql_set_define("PQL_ATTR_QMQPSERVERS",						strtolower("qmqpServers"),					false);
+pql_set_define("PQL_ATTR_QMQPCIP",							strtolower("qmqpcIp"),						false);
 pql_set_define("PQL_ATTR_QUEUELIFETIME",					strtolower("queueLifeTime"),				false);
 pql_set_define("PQL_ATTR_RCPTHOSTS",						strtolower("rcptHosts"),					false);
 pql_set_define("PQL_ATTR_RELAYMAILFROM",					strtolower("relayMailFrom"),				false);
@@ -91,6 +97,19 @@ pql_set_define("PQL_ATTR_TARPITDELAY",						strtolower("tarPitDelay"),					false
 pql_set_define("PQL_ATTR_TIMEOUTCONNECT",					strtolower("timeOutConnect"),				false);
 pql_set_define("PQL_ATTR_TIMEOUTREMOTE",					strtolower("timeOutRemote"),				false);
 pql_set_define("PQL_ATTR_TIMEOUTSMTPD",						strtolower("timeOutSmtpd"),					false);
+pql_set_define("PQL_ATTR_BIGBROTHER",						strtolower("bigBrother"),					false);
+pql_set_define("PQL_ATTR_RBLLIST",							strtolower("rblList"),						false);
+pql_set_define("PQL_ATTR_GOODADDRESS",						strtolower("goodMailAddr"),					false);
+// }}}
+
+// {{{ PopBeforeSMTP attributes in QmailLDAP
+pql_set_define("PQL_ATTR_PBS_SERVERS",						strtolower("pbsServers"),					false);
+pql_set_define("PQL_ATTR_PBS_IP",							strtolower("pbsIp"),						false);
+pql_set_define("PQL_ATTR_PBS_PORT",							strtolower("pbsPort"),						false);
+pql_set_define("PQL_ATTR_PBS_SECRET",						strtolower("pbsSecret"),					false);
+pql_set_define("PQL_ATTR_PBS_CACHESIZE",					strtolower("pbsCacheSize"),					false);
+pql_set_define("PQL_ATTR_PBS_TIMEOUT",						strtolower("pbsTimeOut"),					false);
+pql_set_define("PQL_ATTR_PBS_ENV",							strtolower("pbsEnv"),						false);
 // }}}
 
 // {{{ Builtin LDAP attributes used by phpQLAdmin
