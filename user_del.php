@@ -1,6 +1,6 @@
 <?php
 // delete a user
-// $Id: user_del.php,v 2.28 2004-03-03 07:58:54 turbo Exp $
+// $Id: user_del.php,v 2.29 2004-03-03 08:13:49 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -53,7 +53,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn))
 		// Remove all administrator/ezmlmAdministrator/controlsAdministrator and seealso
 		// attributes that reference this user.
 		if($delete_admins)
-		  pql_replace_admins($_pql, $user, '');
+		  pql_domain_replace_admins($_pql, $user, '');
 
 		// ----------------------------------------
 		// Unsubscribe user from all mailinglists (on this host naturaly :)

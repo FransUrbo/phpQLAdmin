@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.152 2004-03-03 08:10:44 turbo Exp $
+// $Id: pql.inc,v 2.153 2004-03-03 08:14:08 turbo Exp $
 //
 
 // ----------------------------
@@ -816,10 +816,10 @@ function pql_domain_set_value($linkid, $dn, $type, $value) {
 }
 // }}}
 
-// {{{ pql_replace_admins(ldap, old, new)
+// {{{ pql_domain_replace_admins(ldap, old, new)
 // Look for 'administrator/seealso = old value',
 // replace with 'administrator/seealso = new value'.
-function pql_replace_admins($ldap, $old, $new) {
+function pql_domain_replace_admins($ldap, $old, $new) {
 	// Setup the search filter
 	$filter  = '(|';
 	$filter .= '('.pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR")."=$old".')';
@@ -860,7 +860,7 @@ function pql_replace_admins($ldap, $old, $new) {
 			}
 			
 			// Create a LDIF object to print in case of error
-			$LDIF = pql_create_ldif("pql_replace_admins", $info[$i]["dn"], $entry);
+			$LDIF = pql_create_ldif("pql_domain_replace_admins", $info[$i]["dn"], $entry);
 			
 			// Modify this object
 			if(!ldap_mod_replace($ldap->ldap_linkid, $info[$i]["dn"], $entry)) {
