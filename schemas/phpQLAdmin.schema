@@ -31,6 +31,7 @@
 #					passWordScheme		   8
 #					catchAllUser		   9
 #					userAttribute		  10
+#					language		  11
 #
 #                               Texts                   	 3
 #					hostMaster		   1
@@ -44,7 +45,7 @@
 #					administrator		   4
 # -----------------------------------------
 
-# $Id: phpQLAdmin.schema,v 2.3 2003-01-18 11:16:48 turbo Exp $
+# $Id: phpQLAdmin.schema,v 2.4 2003-01-19 10:50:56 turbo Exp $
 
 # PQL_SHOW_USERS (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.1 NAME 'showUsers'
@@ -177,6 +178,13 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.2.10 NAME 'userAttribute'
         EQUALITY caseIgnoreIA5Match
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024} )
 
+# PQL_LANGUAGE
+attributetype ( 1.3.6.1.4.1.8767.3.2.2.11 NAME 'language'
+	DESC 'Language to be used by the interface'
+	EQUALITY caseExactMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26
+	SINGLE-VALUE )
+
 # -----------------------------------------
 
 # PQL_HOSTMASTER (emailaddress)
@@ -239,9 +247,17 @@ objectclass ( 1.3.6.1.4.1.8767.3.1.1
 		branchObjectClass $ userObjectClass $
 		userReference $ ezmlmBinaryPath $
 		passwordScheme $ hostMaster $
-		testMailSubject $ testMailText) )
+		testMailSubject $ testMailText $
+	        language) )
 
 objectclass ( 1.3.6.1.4.1.8767.3.1.2
         NAME 'phpQLAdminBranch'
         DESC 'phpQLAdmin branch ACL values'
         MAY ( defaultDomain $ baseHomeDir $ baseMailDir $ administrator ) )
+
+#
+# Local variables:
+# mode: php
+# mode: font-lock
+# tab-width: 8
+# End:
