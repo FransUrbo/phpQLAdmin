@@ -1,11 +1,11 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.25 2003-11-12 09:33:32 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.26 2003-11-18 13:18:59 turbo Exp $
 
 require("./left-head.html");
 
 function attribute_check() {
-    global $$attrib, $domain, $oldvalue, $_pql, $error, $$attrib, $LANG;
+    global $attrib, $domain, $oldvalue, $_pql, $error, $$attrib, $LANG;
 	$value = $$attrib;
     
     // is typed in ?
