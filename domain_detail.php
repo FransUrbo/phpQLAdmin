@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.83 2004-03-31 07:25:38 turbo Exp $
+// $Id: domain_detail.php,v 2.84 2004-04-02 08:33:20 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -158,9 +158,11 @@ $new = array('users'	=> 'Registred Users',
 $buttons = $buttons + $new;
 
 if($_SESSION["ADVANCED_MODE"]) {
-	$new = array('dnsinfo'	=> 'MX Information',
-				 'aci'		=> 'Access Control Information');
-	$buttons = $buttons + $new;
+	if($_SESSION["ACI_SUPPORT_ENABLED"]) {
+		$new = array('dnsinfo'	=> 'MX Information',
+					 'aci'		=> 'Access Control Information');
+		$buttons = $buttons + $new;
+	}
 
 	if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 		$new = array('options' => 'QmailLDAP/Controls Options');
