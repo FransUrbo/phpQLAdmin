@@ -2,7 +2,7 @@
 // control attribute plugin for
 // rbllist (max number of bytes in message)
 //
-// $Id: attrib.control.rbllist.inc,v 2.3 2004-10-15 15:21:04 turbo Exp $
+// $Id: attrib.control.rbllist.inc,v 2.4 2004-10-16 09:57:08 turbo Exp $
 
 // {{{ rbllist_check(type)
 function rbllist_check($type) {
@@ -21,7 +21,7 @@ function rbllist_init($host) {
 	// fetch data from ldap server
 	$_REQUEST["rbllist"] = pql_control_get_attribute($_pql_control->ldap_linkid,
 														 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-														 pql_get_define("PQL_ATTR_QMQPSERVERS"));
+														 pql_get_define("PQL_ATTR_RBLLIST"));
 
 	if(is_null($_REQUEST["rbllist"]))
 	  return true;
@@ -37,29 +37,36 @@ function rbllist_print_view($host) {
 	rbllist_init($host);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th align="left">rbllist (<?=$LANG->_('_CHANGE THIS_')?>)</th>
+    <th colspan="4" align="left">rbllist (<?=$LANG->_('Realtime Blackhole List')?>)</th>
       <tr class="title">
-        <td>IP</td>
+        <td><?=$LANG->_('RBL Address')?></td>
+        <td><?=$LANG->_('Action')?></td>
+        <td><?=$LANG->_('Match on')?></td>
+        <td><?=$LANG->_('Message')?></td>
       </tr>
 <?php
 	if(!is_array($_REQUEST["rbllist"])) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td><?=$LANG->_('Not set')?></td>
+        <td colspan="4"><?=$LANG->_('Not set')?></td>
       </tr>
 <?php
 	} else {
 		foreach($_REQUEST["rbllist"] as $server) {
+			$line = split(' ', $server);
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td><?=pql_maybe_idna_decode($server)?></td>
+        <td><?=$line[0]?></td>
+        <td><?=$line[1]?></td>
+        <td><?=$line[2]?></td>
+        <td><?php for($i=3; $line[$i]; $i++) { echo $line[$i]." "; } ?></td>
       </tr>
 <?php
 		} // end foreach
 	} // end if is_array
 ?>
       <tr class="subtitle">
-        <td><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=rbllist"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
+        <td colspan="4"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=rbllist"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
       </tr>
     </th>
   </table>
@@ -72,32 +79,60 @@ function rbllist_print_view($host) {
 function rbllist_print_form() {
 	global $error, $LANG;
 
-	if(($_REQUEST["qmqpcount"] < count($_REQUEST["rbllist"]) - 1) and count($_REQUEST["qmqpservers"]) != 0)
-	  $_REQUEST["qmqpcount"] = count($_REQUEST["rbllist"]) - 1;
+//	if(($_REQUEST["rblcount"] < count($_REQUEST["rbllist"]) - 1) and count($_REQUEST["rblserver"]) != 0)
+//	  $_REQUEST["rblcount"] = count($_REQUEST["rbllist"]) - 1;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">rbllist (<?=$LANG->_('_CHANGE THIS_')?>)</th>
+      <th colspan="4" align="left">rbllist (<?=$LANG->_('Realtime Blackhole List')?>)</th>
         <tr class="title">
-          <td><?=$LANG->_('IP Address')?></td>
+          <td><?=$LANG->_('RBL Address')?></td>
+          <td><?=$LANG->_('Action')?></td>
+          <td><?=$LANG->_('Match on')?></td>
+          <td><?=$LANG->_('Message')?></td>
         </tr>
 
+<?php if(is_array($_REQUEST["rbllist"])) { 
+		for($i=0; $_REQUEST["rbllist"][$i]; $i++) {
+			$line = split(' ', $_REQUEST["rbllist"][$i]);
+?>
         <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["rbllist_0"]); ?><input type="text" name="qmqpservers[0]" value="<?=$_REQUEST["qmqpservers"][0]?>"></td>
+          <td><?php echo pql_format_error_span($error["rbllist_$i"]); ?><input type="text" name="rblserver[<?=$i?>]" value="<?=$line[0]?>"></td>
+          <td>
+            <?php echo pql_format_error_span($error["rbllist_$i"]); ?>
+            <select name="rblaction[<?=$i?>]">
+              <option value="reject" <?php if($line[1] == "reject") { echo "SELECTED"; } ?>><?=$LANG->_('Reject mail')?></option>
+              <option value="addheader" <?php if($line[1] == "addheader") { echo "SELECTED"; } ?>><?=$LANG->_('Add header')?></option>
+            </select>
+          </td>
+          <td><?php echo pql_format_error_span($error["rbllist_$i"]); ?><input type="text" name="rblmatch[<?=$i?>]" value="<?=$line[2]?>" size="10"></td>
+          <td><?php echo pql_format_error_span($error["rbllist_$i"]); ?><input type="text" name="rblmessage[<?=$i?>]" value="<?php for($j=3; $line[$j]; $j++) { echo $line[$j]." "; } ?>" size="40"></td>
         </tr>
 
-<?php for($i = 1; $i <= $_REQUEST["qmqpcount"]; $i++) { ?>
+<?php 	}
+      } else {
+		  $i=0;
+	  }
+?>
         <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["rbllist_$i"]); ?><input type="text" name="qmqpservers[<?=$i?>]" value="<?=$_REQUEST["qmqpservers"][$i]?>"></td>
+          <td><input type="text" name="rblserver[<?=$i?>]"></td>
+          <td>
+            <?php echo pql_format_error_span($error["rbllist_<?=$i?>"]); ?>
+            <select name="rblaction[<?=$i?>]">
+              <option value="reject"><?=$LANG->_('Reject mail')?></option>
+              <option value="addheader"><?=$LANG->_('Add header')?></option>
+            </select>
+          </td>
+          <td><input type="text" name="rblmatch[<?=$i?>]" size="10"></td>
+          <td><input type="text" name="rblmessage[<?=$i?>]" size="40"></td>
         </tr>
 
-<?php } ?>
         <tr class="subtitle">
-          <td><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&qmqpcount=<?=($_REQUEST["qmqpcount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
+          <td colspan="4"><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&rblcount=<?=($_REQUEST["rblcount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
         </tr>
 
         <tr class="subtitle">
-          <td><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('To delete a QMQP server remove the value and save')?>.</td>
+          <td colspan="4"><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('To delete a RBL server, remove the value and save')?>.</td>
         </tr>
       </th>
     </table>
@@ -121,10 +156,13 @@ function rbllist_save($type, $host)  {
 	  case "modify";
 	  case "add";
 		// save entries
+
+		for($i=0; $_REQUEST["rblserver"][$i]; $i++)
+		  $entry[] = $_REQUEST["rblserver"][$i]." ".$_REQUEST["rblaction"][$i]." ".$_REQUEST["rblmatch"][$i]." ".$_REQUEST["rblmessage"][$i];
+
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_ATTR_QMQPSERVERS"),
-										 $_REQUEST["rbllist"]))
+										 pql_get_define("PQL_ATTR_CN")."=$host,". $_SESSION["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_ATTR_RBLLIST"), $entry))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('rbllist options')));
 		else
@@ -146,9 +184,16 @@ function rbllist_save($type, $host)  {
 function rbllist_help() {
 	global $LANG;
 ?>
-	IP addresses of QMQP servers, one address per line.
-	qmail-qmqpc will try each address in turn until it
-	establishes a QMQP connection or runs out of addresses.
+    Rbllist contains a number of RBL's to check for the given senders IP address.
+    The file consists of four tab or space separated fields.<br>
+      <b>basedomain</b>: base domain address to lookup (e.g. relays.ordb.org)<br>
+      <b>action</b>: one of addheader or reject.
+              addheader will just create a X-RBL: header whereas
+              reject will reject the smtp connection instantly with a 553 error.<br>
+      <b>matchon</b>: any or IP-Address, if a IP-Address is specified the action is only
+               taken if the returned address form basedomain is equal to
+               IP-Address. With any all returned IP-Address will match.<br>
+      <b>message</b>: message to be included in X-RBL: headers and 553 errors.
 <?php
 }
 // }}}
