@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.173 2004-04-06 05:53:44 turbo Exp $
+// $Id: pql.inc,v 2.174 2004-04-06 13:11:38 turbo Exp $
 //
 
 // ----------------------------
@@ -1735,6 +1735,16 @@ function pql_password_hash($password, $hash) {
     // - {crypt}cryptedpassword
     // - {KERBEROS}principal@realm
     // - cleartextpasswort
+
+	if(!function_exists("mhash") and ($hash = "{MD5}")) {
+		// We do not have access to MD5 encryption - force {CRYPT}!
+		unset($hash);
+
+		$log = date("M d H:i:s");
+		$log .= "MD5 encryption (mhash) not compiled into PHP. Please review the file doc/INSTALL. Falling back to using {CRYPT}";
+		@error_log($log, 3, "phpQLadmin.log");
+	}
+
     switch($hash){
       case "{SSHA}":
 		// SHA1 hashing (salted)
