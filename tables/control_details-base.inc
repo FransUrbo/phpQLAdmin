@@ -58,8 +58,15 @@
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title">LDAP Rebind</td>
-        <td><?php if($ldaprebind) { echo "Yes"; $set=0; } else { echo "No"; $set=1; } ?></td>
+        <td><?php if($ldaprebind == 1) { echo "Yes"; $set=0; } else { echo "No"; $set=1; } ?></td>
         <td><a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=ldaprebind&submit=1&type=modify&set=<?=$set?>"><img src="images/edit.png" width="12" height="12" alt="toggle value" border="0"></a></td>
+        <td></td>
+      </tr>
+
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title">LDAP Clustering</td>
+        <td><?php if($ldapcluster == 1) { echo "Yes"; $set=0; } else { echo "No"; $set=1; } ?></td>
+        <td><a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=ldapcluster&submit=1&type=modify&set=<?=$set?>"><img src="images/edit.png" width="12" height="12" alt="toggle value" border="0"></a></td>
         <td></td>
       </tr>
 

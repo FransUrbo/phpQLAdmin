@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.30 2004-03-14 08:26:12 turbo Exp $
+// $Id: control_detail.php,v 1.31 2004-03-28 09:13:49 turbo Exp $
 session_start();
 require("./include/pql_config.inc");
 
@@ -16,6 +16,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 					 "plusdomain"			=> pql_get_define("PQL_ATTR_PLUSDOMAIN"),
 					 "ldapserver"			=> pql_get_define("PQL_ATTR_LDAPSERVER"),
 					 "ldaprebind"			=> pql_get_define("PQL_ATTR_LDAPREBIND"),
+					 "ldapcluster"			=> pql_get_define("PQL_ATTR_LDAPCLUSTER"),
 					 "ldapbasedn"			=> pql_get_define("PQL_ATTR_LDAPBASEDN"),
 					 "ldapdefaultquota"		=> pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"),
 					 "ldapdefaultdotmode"	=> pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"),
@@ -29,7 +30,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 
 	foreach($attribs as $key => $attrib) {
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid, $cn, $attrib);
-		if(!is_null($value)) {
+		if(is_array($value)) {
 			if($key == "locals") {
 				asort($value);
 				foreach($value as $val) {
