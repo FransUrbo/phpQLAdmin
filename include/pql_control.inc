@@ -4,13 +4,14 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.21 2003-05-19 05:37:28 turbo Exp $
+// $Id: pql_control.inc,v 2.22 2003-05-19 15:18:01 turbo Exp $
 //
 // version history:
 // $Log: pql_control.inc,v $
-// Revision 2.21  2003-05-19 05:37:28  turbo
-// * Enforce locals/rcpthosts integrity (don't add domain to rcpthosts if domain
-//   exists in locals) in the pql_control_add_attribute() function.
+// Revision 2.22  2003-05-19 15:18:01  turbo
+// Don't enforce locals/rcpthosts integrity. A machine
+// with local(s) will also need rcpthost(s) to be able
+// to receive mail for the domain...
 //
 // Revision 1.2  2001/09/06 11:36:24  mb
 // added no_connect option to pql_control-class
@@ -154,17 +155,6 @@ function pql_control_add_attribute($ldap_linkid, $ldap_control_basedn, $attrib, 
     // adds an attribute of a control property
     $entry[$attrib] = $value;
 
-	if(lc($attrib) == 'rcpthosts') {
-		// Check this object if the domain is in locals. If it is, don't add it to rcpthosts.
-		$locals = pql_control_get_attribute($ldap_linkid, $ldap_control_basedn, "locals");
-		if(!is_null($locals)) {
-			foreach($locals as $local) {
-				if(lc($value) == lc($local))
-				  return false;
-			}
-		}
-	}
-    
     if(!@ldap_mod_add($ldap_linkid, $ldap_control_basedn, $entry)){
 		pql_errormsg($ldap_linkid);
 		return false;
@@ -320,15 +310,6 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 
 				// --------------------------------
 				if($type == 'rcpthosts') {
-					// Check this object if the domain is in locals. If it is, don't add it to rcpthosts.
-					$locals = pql_control_get_attribute($ldap->ldap_linkid, $hostdn, "locals");
-					if(!is_null($locals)) {
-						foreach($locals as $local) {
-							if($domain[1] == $local)
-							  return false;
-						}
-					}
-
 					// Get current rcpthosts for this host
 					$rcpthosts = pql_control_get_attribute($ldap->ldap_linkid, $hostdn, "rcpthosts");
 					if(!is_null($rcpthosts)) {
