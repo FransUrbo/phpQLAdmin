@@ -1,20 +1,27 @@
+Using phpQLAdmin with existing LDAP database
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 If you already have an LDAP database you'd like to administrate
 through phpQLAdmin, it is a requirenment that you read README.acl.
 If you don't (and fully understand it! :), you won't see your database,
 no matter HOW you configure it.
 
-If you're upgrading from phpQLAdmin version 2.0.2, then you MUST read
-the README.upgrade file! It contains important information that will
-break your admin interface (phpQLAdmin) if not fully understood.
+Upgrading
+~~~~~~~~~
+If you're upgrading from a phpQLAdmin version older than 2.0.10,
+then you MUST read the README.upgrade file! It contains important
+information that will break your admin interface (phpQLAdmin) if
+not fully understood.
 
-
+LDAP layout independence
+~~~~~~~~~~~~~~~~~~~~~~~~
 Version 2.0 of phpQLAdmin was (re)designed to be more forgiving on how
 the layout of the LDAP database is layed out. It does however dictate
 slightly that you follow some kind of 'standard' (if there is such
 a thing in the world of LDAP :). That is, it's very unforgiving if 
 you have a flat database. If you do, don't use LDAP, use SQL!
 
-
+Configuration and layout
+~~~~~~~~~~~~~~~~~~~~~~~~
 To configure phpQLAdmin, copy the file include/config.inc.CHANGE_ME
 to include/config.inc and change the latter. Go throug each line,
 and decide where the database is, what's the base dn etc. From that,
@@ -51,7 +58,8 @@ configure multiple top suffixes in your LDAP database (multiple database
 backends with different suffixes). phpQLAdmin should be able to cope with
 that, and show it as ONE. This have not been tested however.
 
-
+Configuration in LDAP
+~~~~~~~~~~~~~~~~~~~~~
 With version 2.0.5, it's possible to have site specific configurations
 in the database. It is saved into the topmost RDN ('dc=com' or 'c=SE'
 in my two examples above) objects, so make sure you have access to modify
@@ -70,6 +78,8 @@ to uncomment the attribute from the phpQLAdmin.schema before you restart your
 LDAP server. The attribute is defined on lines 237 to 241 in the phpQLAdmin.schema,
 so remove the leading dashes (#) on those lines.
 
+Protocol errors
+~~~~~~~~~~~~~~~
 The PHP/LDAP module does an LDAPv2 bind, which means that you will have to
 allow a version 2 bind. In OpenLDAP version 2.0, this is done by making sure
 that you DON'T (!) have 'disallow bind_v2' in your slapd.conf file. In 
@@ -80,6 +90,15 @@ logfile:
 
 	Could not bind to ldap server: Protocol error
 
+Templates
+~~~~~~~~~
+As of version 2.0.10, phpQLAdmin have rudimentary support for user and
+domain/branch templates. This configured in the 'Show phpQLAdmin configuration'
+page. For a new installation, 'Password encryption schemes', 'User objectclasses'
+and 'Domain objectclasses' will be empty. You will have to setup this for
+your self. What objectclasses should your user objects have? What objectclasses
+should your domain/branch objects have etc... This require knowledge on how
+LDAP works!
 
 For more information on installations, please view doc/index.php through
 the webbrowser.
