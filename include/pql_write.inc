@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.9 2004-11-13 13:01:04 turbo Exp $
+// $Id: pql_write.inc,v 2.10 2004-11-14 09:42:33 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -270,11 +270,6 @@ function pql_modify_attribute($linkid, $dn, $attrib, $old, $new) {
 }
 // }}}
 
-// ------------------------------------------------
-// These functions should REALLY be revised for rewrite.
-// They're WAY to complicated!
-// ------------------------------------------------
-
 // {{{ pql_user_add(ldap_linkid, domain, dn, entry, type, branch)
 // Add a user to the LDAP database
 function pql_user_add($ldap_linkid, $domain, $dn, $entry, $type, $branch) {
@@ -293,6 +288,7 @@ function pql_user_add($ldap_linkid, $domain, $dn, $entry, $type, $branch) {
 	} else {
 		if(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $rootdn)) {
 			foreach(pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $rootdn)) as $oc) {
+				// BUG: I really hate this. No hardcoding!!
 				if((($type == 'mail') and ($oc == 'krb5principal')) or
 				   (($type == 'mail') and ($oc == 'trustaccount')))
 				  next;
@@ -348,19 +344,19 @@ function pql_user_add($ldap_linkid, $domain, $dn, $entry, $type, $branch) {
 	// {{{ If this is a 'system' account, create the Group object
 	if($type == "system" and $entry[pql_get_define("PQL_ATTR_QMAILGID")]) {
 		// Remember this for the NEW entry object...
-		$gidnr = $entry[pql_get_define("PQL_ATTR_QMAILGID")];
+		$gidnr   = $entry[pql_get_define("PQL_ATTR_QMAILGID")];
+		$rdnattr = $entry[pql_get_define("PQL_ATTR_USER_RDN_ATTRIBUTE", $rootdn)];
 		
 		// Create a new LDAP object
-		$entry = "";
-		$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "top";
-		$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "posixGroup";
+		$entry = array();
+		$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = "posixGroup";
 		$entry[pql_get_define("PQL_ATTR_CN")] = $attribs[pql_get_define("PQL_ATTR_UID")];
 		$entry[pql_get_define("PQL_ATTR_QMAILGID")] = $gidnr;
 		
 		if(pql_get_define("PQL_CONF_SUBTREE_GROUPS"))
 		  $subrdn = "," . pql_get_define("PQL_CONF_SUBTREE_GROUPS");
 
-		$groupdn = pql_get_define("PQL_ATTR_CN") . "=" . $attribs[pql_get_define("PQL_ATTR_USER_RDN_ATTRIBUTE", $rootdn)] . $subrdn . "," . urldecode($domain);
+		$groupdn = pql_get_define("PQL_ATTR_CN")."=$rdnattr".$subrdn.','.urldecode($domain);
 
 		// --------------------------
 		if(!pql_write_add($ldap_linkid, $groupdn, $entry, 'group', 'pql_user_add - group creation')) {
@@ -384,8 +380,12 @@ function pql_user_add($ldap_linkid, $domain, $dn, $entry, $type, $branch) {
 
 // }}}
 
-// {{{ pql_user_del(ldap, domain, user, delete_forwards)
+// ------------------------------------------------
+// These functions should REALLY be revised for rewrite.
+// They're WAY to complicated!
+// ------------------------------------------------
 
+// {{{ pql_user_del(ldap, domain, user, delete_forwards)
 // Delete a user from the LDAP database
 function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 	$linkid = $ldap->ldap_linkid;
@@ -478,61 +478,6 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
     }
 
     return true;
-}
-
-// }}}
-
-// {{{ pql_domain_add(ldap_linkid, basedn, branch_name)
-
-// Adds a domain into ldap-tree (o|ou|dc-record)
-function pql_domain_add($ldap_linkid, $basedn, $branch_name) {
-	// Maybe UTF-8 encode the branch name - to allow international characters
-	$branch_name = pql_maybe_encode($branch_name, pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn), $ldap_linkid);
-
-	$entry[pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)] = $branch_name;
-	$dn = pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) . "=" . $branch_name . "," . $basedn;
-	
-	// Setup objectclasses
-	$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_setup_branch_objectclasses(0, $basedn);
-	if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "o")
-	  $entry[pql_get_define("PQL_ATTR_O")] = pql_maybe_encode($branch_name);
-	else
-	  $entry[pql_get_define("PQL_ATTR_O")] = 0;
-
-	// Add the OpenLDAPaci attribute (maybe)
-	if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci"))
-	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($ldap_linkid, $_SESSION["USER_DN"], 'branch');
-
-	// Create a LDIF object to print in case of error
-	$LDIF = pql_create_ldif("pql_domain_add - create domain", $dn, $entry);
-
-	if(file_exists("./.DEBUG_ME"))
-	  die($LDIF);
-
-    // adds the user
-    if(! @ldap_add($ldap_linkid, $dn, $entry)) {
-		// Failed to add branch
-		pql_format_error(1);
-		die("$LDIF");
-		return false;
-    }
-	$dns[] = $dn;
-
-    // Add the USER subtree if defined
-    if(pql_get_define("PQL_CONF_SUBTREE_USERS")) {
-		$ou = split('=', pql_get_define("PQL_CONF_SUBTREE_USERS"));
-		if(pql_unit_add($ldap_linkid, $dn, $ou[1]))
-		  $dns[] = pql_get_define("PQL_CONF_SUBTREE_USERS").','.$dn;
-    }
-    
-    // Add the GROUPS subtree if defined
-    if(pql_get_define("PQL_CONF_SUBTREE_GROUPS")) {
-		$ou = split('=', pql_get_define("PQL_CONF_SUBTREE_GROUPS"));
-		if(pql_unit_add($ldap_linkid, $dn, $ou[1]))
-		  $dns[] = pql_get_define("PQL_CONF_SUBTREE_GROUPS").','.$dn;
-    }
-
-    return $dns;
 }
 
 // }}}
