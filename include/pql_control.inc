@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.33 2004-01-01 12:35:34 turbo Exp $
+// $Id: pql_control.inc,v 2.34 2004-01-20 07:48:01 turbo Exp $
 //
 
 // {{{ control connection class
@@ -83,9 +83,9 @@ function pql_control_replace_attribute($ldap_linkid, $ldap_control_basedn, $attr
     // format entry
 	if(is_array($value)) {
 		foreach($value as $val)
-		  $entry[$attrib][] = pql_maybe_encode($val);
+		  $entry[$attrib][] = pql_maybe_idna_encode($val);
 	} else
-	  $entry[$attrib] = $value;
+	  $entry[$attrib] = pql_maybe_idna_encode($value);
     
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_control_replace_attribute", $ldap_control_basedn, $entry);
@@ -261,6 +261,10 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 		// $host=* && $domain => Modify ALL servers
 		// domain[0] => oldvalue
 		// domain[1] => newvalue
+
+		// Maybe IDNA encode the domain name
+		if($domain[1])
+		  $domain[1] = pql_maybe_idna_encode($domain[1]);
 
 		$hosts = pql_control_get_hosts($ldap->ldap_linkid, $dn);
 		if(is_array($hosts)) {
