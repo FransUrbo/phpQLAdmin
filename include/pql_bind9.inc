@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.24.16.1 2004-12-19 10:21:17 turbo Exp $
+// $Id: pql_bind9.inc,v 2.24.16.2 2004-12-19 16:20:11 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -23,14 +23,39 @@ function pql_bind9_get_zone($linkid, $branchname, $domainname = '') {
 		  or pql_format_error(1);
 		for($i=0; $i < $info["count"]; $i++) {
 			$zone = $info[$i]['zonename'][0];
-			$host = $info[$i]['relativedomainname'][0];
+
+			if(eregi("in-addr.arpa", $zone) and ($host != '@')) {
+				// This is an reverse zone.
+				unset($host);
+
+				$tmp = split('\.', $info[$i]['relativedomainname'][0]);
+				for($j=count($tmp)-1; $tmp[$j]; $j--) {
+					$host .= $tmp[$j];
+					if($tmp[$j-1])
+					  $host .= '.';
+				}
+			} else
+			  $host = $info[$i]['relativedomainname'][0];
 				
 			$ZONE[$zone][$host]['RDN']  = pql_maybe_idna_decode($info[$i]['dn']);
 			$ZONE[$zone][$host]['ZONE'] = pql_maybe_idna_decode($zone);
-			$ZONE[$zone][$host]['HOST'] = pql_maybe_idna_decode($host);
 			$ZONE[$zone][$host]['TTL']  = $info[$i]['dnsttl'][0];
 			
-			// A Record(s)
+			// PTR Record
+			if(eregi("in-addr.arpa", $zone) and ($host != '@')) {
+				unset($PTR);
+
+				$tmp = preg_replace('/.in-addr.arpa/', '', $zone);
+				$tmp = split('\.', $tmp);
+				for($j=count($tmp)-1; $tmp[$j]; $j--)
+				  $PTR .= $tmp[$j].'.';
+				
+				$ZONE[$zone][$host]['PTR']  = $PTR.$host;
+				$ZONE[$zone][$host]['HOST'] = $host;
+			} else
+			  $ZONE[$zone][$host]['HOST']  = pql_maybe_idna_decode($host);
+
+ 			// A Record(s)
 			if($info[$i]['arecord'][0]) {
 				if($info[$i]['arecord'][1]) {
 					// We have multiple A records - Round-Robin!
@@ -316,6 +341,19 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 		die($LDIF);
 		return false;
 	}
+
+	return true;
+}
+// }}}
+
+// {{{ pql_bind9_del_host(linkid, dn)
+function pql_bind9_del_host($linkid, $dn) {
+	$dn = urldecode($dn);
+	if(file_exists("./.DEBUG_ME"))
+	  return true;
+
+	if(!ldap_delete($linkid, $dn))
+	  pql_format_error(1);
 
 	return true;
 }
