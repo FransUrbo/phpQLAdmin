@@ -1,6 +1,6 @@
 <?php
 // navigation bar - ezmlm mailinglists manager
-// $Id: left-ezmlm.php,v 2.22 2004-02-14 14:01:00 turbo Exp $
+// $Id: left-ezmlm.php,v 2.23 2004-02-14 17:06:55 turbo Exp $
 //
 session_start();
 
@@ -43,7 +43,7 @@ if(!is_array($domains)) {
     // no domain defined - report it
 ?>
   <!-- start domain parent -->
-<?php if($opera) { ?>
+<?php if($_SESSION["opera"]) { ?>
   <div id="el0000Parent" class="parent" onclick="showhide(el0000Spn, el0000Img)">
     <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el0000Img">
     <font color="black" class="heada">no domains</font></a>
@@ -79,7 +79,7 @@ if(!is_array($domains)) {
 		// no mailinglists defined - report it
 ?>
   <!-- start domain parent -->
-<?php if($opera) { ?>
+<?php if($_SESSION["opera"]) { ?>
   <div id="el0000Parent" class="parent" onclick="showhide(el0000Spn, el0000Img)">
     <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el0000Img">
     <font color="black" class="heada">no lists</font></a>
@@ -128,7 +128,7 @@ if(!is_array($domains)) {
 				}
 ?>
   <!-- start ezmlm mailing list domain -->
-<?php if($opera) { ?>
+<?php if($_SESSION["opera"]) { ?>
   <div id="el<?=$j?>Parent" class="parent" onclick="showhide(el<?=$j?>Spn, el<?=$j?>Img)">
     <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$j?>Img">
     <a class="item" href="ezmlm_detail.php?domain=<?=$domain?>&domainname=<?=$host?>">
@@ -149,7 +149,7 @@ if(!is_array($domains)) {
   <!-- end ezmlm mailing list domain -->
 
   <!-- start ezmlm mailing list children -->
-<?php if($opera) { ?>
+<?php if($_SESSION["opera"]) { ?>
   <span id="el<?=$j?>Spn" style="display:''">
 <?php } else { ?>
   <div id="el<?=$j?>Child" class="child">
@@ -173,7 +173,7 @@ if(!is_array($domains)) {
 <?php			
 				}
 ?>
-<?php if($opera) { ?>
+<?php if($_SESSION["opera"]) { ?>
   </span>
 <?php } else { ?>
   </div>

@@ -44,9 +44,9 @@
   <script src="left.js" type="text/javascript" language="javascript1.2"></script>
 <?php
   $br = strtolower(getenv("HTTP_USER_AGENT"));
-  $opera = eregi("opera", $br);
-  if($opera) {
-      $opera=true;
+  $_SESSION["opera"] = eregi("opera", $br);
+  if($_SESSION["opera"]) {
+      $_SESSION["opera"]=true;
 ?>
   <script src="opera.js" type="text/javascript" language="javascript1.2"></script>
 <?php } ?>
