@@ -86,24 +86,24 @@ $url_tmp    = "user_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["
 $txt["tit"] = $LANG->_('Member DN(s)');
 $txt["add"] = $LANG->_('Add member');
 $txt["del"] = $LANG->_('Delete member');
-$url["add"] = $url_tmp . "submit=3&action=add&view=$view&attrib=dnmember";
-$url["del"] = $url_tmp . "submit=4&action=delete&view=$view&attrib=dnmember";
+$url["add"] = $url_tmp . "submit=3&action=add&view=".$_REQUEST["view"]."&attrib=dnmember";
+$url["del"] = $url_tmp . "submit=4&action=delete&view=".$_REQUEST["view"]."&attrib=dnmember";
 pql_format_table_single($_pql->ldap_linkid, $txt, $url, $dnmember, 'dnmember');
 
 // FilterMember
 $txt["tit"] = $LANG->_('Filter DN(s)');
 $txt["add"] = $LANG->_('Add filter');
 $txt["del"] = $LANG->_('Delete filter');
-$url["add"] = $url_tmp . "submit=3&action=add&view=$view&attrib=filtermember";
-$url["del"] = $url_tmp . "submit=4&action=delete&view=$view&attrib=filtermember";
+$url["add"] = $url_tmp . "submit=3&action=add&view=".$_REQUEST["view"]."&attrib=filtermember";
+$url["del"] = $url_tmp . "submit=4&action=delete&view=".$_REQUEST["view"]."&attrib=filtermember";
 pql_format_table_single($_pql->ldap_linkid, $txt, $url, $filtermember, 'filtermember');
 
 // RFC822Member
 $txt["tit"] = $LANG->_('Subscriber addresses');
 $txt["add"] = $LANG->_('Add subscriber');
 $txt["del"] = $LANG->_('Delete subscriber');
-$url["add"] = $url_tmp . "submit=3&action=add&view=$view&attrib=rfc822member";
-$url["del"] = $url_tmp . "submit=4&action=delete&view=$view&attrib=rfc822member";
+$url["add"] = $url_tmp . "submit=3&action=add&view=".$_REQUEST["view"]."&attrib=rfc822member";
+$url["del"] = $url_tmp . "submit=4&action=delete&view=".$_REQUEST["view"]."&attrib=rfc822member";
 pql_format_table_single($_pql->ldap_linkid, $txt, $url, $rfc822member, 'rfc822member');
 ?>
     </th>
@@ -115,24 +115,24 @@ pql_format_table_single($_pql->ldap_linkid, $txt, $url, $rfc822member, 'rfc822me
 $txt["tit"] = $LANG->_('Sender DN(s)');
 $txt["add"] = $LANG->_('Add sender');
 $txt["del"] = $LANG->_('Delete sender');
-$url["add"] = $url_tmp . "submit=3&action=add&view=$view&attrib=dnsender";
-$url["del"] = $url_tmp . "submit=4&action=delete&view=$view&attrib=dnsender";
+$url["add"] = $url_tmp . "submit=3&action=add&view=".$_REQUEST["view"]."&attrib=dnsender";
+$url["del"] = $url_tmp . "submit=4&action=delete&view=".$_REQUEST["view"]."&attrib=dnsender";
 pql_format_table_single($_pql->ldap_linkid, $txt, $url, $dnsender, 'dnsender');
 
 // FilterSender
 $txt["tit"] = $LANG->_('Filter DN(s)');
 $txt["add"] = $LANG->_('Add filter');
 $txt["del"] = $LANG->_('Delete filter');
-$url["add"] = $url_tmp . "submit=3&action=add&view=$view&attrib=filtersender";
-$url["del"] = $url_tmp . "submit=4&action=delete&view=$view&attrib=filtersender";
+$url["add"] = $url_tmp . "submit=3&action=add&view=".$_REQUEST["view"]."&attrib=filtersender";
+$url["del"] = $url_tmp . "submit=4&action=delete&view=".$_REQUEST["view"]."&attrib=filtersender";
 pql_format_table_single($_pql->ldap_linkid, $txt, $url, $filtersender, 'filtersender');
 
 // RFC822Sender
 $txt["tit"] = $LANG->_('Allowed sender address(es)');
 $txt["add"] = $LANG->_('Add allowed sender');
 $txt["del"] = $LANG->_('Delete allowed sender');
-$url["add"] = $url_tmp . "submit=3&action=add&view=$view&attrib=rfc822sender";
-$url["del"] = $url_tmp . "submit=4&action=delete&view=$view&attrib=rfc822sender";
+$url["add"] = $url_tmp . "submit=3&action=add&view=".$_REQUEST["view"]."&attrib=rfc822sender";
+$url["del"] = $url_tmp . "submit=4&action=delete&view=".$_REQUEST["view"]."&attrib=rfc822sender";
 pql_format_table_single($_pql->ldap_linkid, $txt, $url, $rfc822sender, 'rfc822sender');
 ?>
     </th>
@@ -144,16 +144,16 @@ pql_format_table_single($_pql->ldap_linkid, $txt, $url, $rfc822sender, 'rfc822se
 $txt["tit"] = $LANG->_('Moderator DN(s)');
 $txt["add"] = $LANG->_('Add moderator');
 $txt["del"] = $LANG->_('Delete moderator');
-$url["add"] = $url_tmp . "submit=3&action=add&view=$view&attrib=dnmoderator";
-$url["del"] = $url_tmp . "submit=4&action=delete&view=$view&attrib=dnmoderator";
+$url["add"] = $url_tmp . "submit=3&action=add&view=".$_REQUEST["view"]."&attrib=dnmoderator";
+$url["del"] = $url_tmp . "submit=4&action=delete&view=".$_REQUEST["view"]."&attrib=dnmoderator";
 pql_format_table_single($_pql->ldap_linkid, $txt, $url, $dnmoderator, 'dnmoderator');
 
 // RFC822Moderator
 $txt["tit"] = $LANG->_('Moderator address(es)');
 $txt["add"] = $LANG->_('Add moderator');
 $txt["del"] = $LANG->_('Delete moderator');
-$url["add"] = $url_tmp . "submit=3&action=add&view=$view&attrib=rfc822moderator";
-$url["del"] = $url_tmp . "submit=4&action=delete&view=$view&attrib=rfc822moderator";
+$url["add"] = $url_tmp . "submit=3&action=add&view=".$_REQUEST["view"]."&attrib=rfc822moderator";
+$url["del"] = $url_tmp . "submit=4&action=delete&view=".$_REQUEST["view"]."&attrib=rfc822moderator";
 pql_format_table_single($_pql->ldap_linkid, $txt, $url, $rfc822moderator, 'rfc822moderator');
 ?>
     </th>

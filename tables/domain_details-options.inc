@@ -26,14 +26,14 @@
 					$alt = pql_complete_constant($LANG->_('Remove %domain% from %attribute%'),
 												 array('domain' => $d, 'attribute' => $attrib));
 						
-					$LINKS[$attrib][$d] = "<a href=\"control_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&attrib=$attrib&type=del&set=$d&submit=1&view=$view\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"$alt\"></a>";
+					$LINKS[$attrib][$d] = "<a href=\"control_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&attrib=$attrib&type=del&set=$d&submit=1&view=".$_REQUEST["view"]."\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"$alt\"></a>";
 				} else {
 					$DEFINED[$attrib][$d] = $LANG->_('No');
 
 					$alt = pql_complete_constant($LANG->_('Add %what% to %attribute%'),
 												 array('what' => $d, 'attribute' => $attrib));
 					
-					$LINKS[$attrib][$d] = "<a href=\"control_edit_attribute.php?attrib=$attrib&rootdn=$rootdn&domain=$domain&type=add&set=$d&view=$view\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"$alt\"></a>";
+					$LINKS[$attrib][$d] = "<a href=\"control_edit_attribute.php?attrib=$attrib&rootdn=$rootdn&domain=$domain&type=add&set=$d&view=".$_REQUEST["view"]."\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"$alt\"></a>";
 				}
 			}
 		}

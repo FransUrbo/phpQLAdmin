@@ -20,13 +20,13 @@
 ?>
   <table cellspacing="0" border="0" width="100%" cellpadding="0" size="100%">
     <tr>
-      <td colspan="2" valign="bottom" align="left" width="100%"><?php $i=1; foreach($servers as $srv => $data) { ?><a href="<?=$_SERVER["PHP_SELF"]."?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&view=$view&server=$srv&view=$view"?>"><img alt="/ <?=$srv?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$srv?>"></a><?php if(!($i%2)) { ?><br><?php }; $i++; } ?></td>
+      <td colspan="2" valign="bottom" align="left" width="100%"><?php $i=1; foreach($servers as $srv => $data) { ?><a href="<?=$_SERVER["PHP_SELF"]."?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&view=".$_REQUEST["view"]."&server=$srv"?>"><img alt="/ <?=$srv?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$srv?>"></a><?php if(!($i%2)) { ?><br><?php }; $i++; } ?></td>
     </tr>
   </table>
 
   <br>
 <?php $url  = "websrv_edit_attributes.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&server=".urlencode($servers[$server]["dn"]);
-      $url .= "&view=$view";
+      $url .= "&view=".$_REQUEST["view"];
       $img["mod"]  = '<img src="images/edit.png" width="12" height="12" alt="Modify value" border="0">';
       $img["del"]  = '<img src="images/del.png"  width="12" height="12" alt="Delete value" border="0">';
 ?>
@@ -184,7 +184,7 @@
   <table cellspacing="0" cellpadding="3" border="0">
     <th align="left"><?=$LANG->_('Actions')?></th>
       <tr class="<?php pql_format_table(); ?>">
-        <td><a href="websrv_add.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('webserver configuration'))); ?></a></td>
+        <td><a href="websrv_add.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&view=<?=$_REQUEST["view"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('webserver configuration'))); ?></a></td>
       </tr>
     </th>
   </table>

@@ -51,7 +51,7 @@ if(is_array($spamassassin)) {
     <input type="hidden" name="rootdn"        value="<?=$url["rootdn"]?>">
     <input type="hidden" name="domain"        value="<?=$url["domain"]?>">
     <input type="hidden" name="user"          value="<?=$url["user"]?>">
-    <input type="hidden" name="view"          value="<?=$view?>">
+    <input type="hidden" name="view"          value="<?=$_REQUEST["view"]?>">
     <input type="hidden" name="attrib"        value="spamassassin">
 
     <table cellspacing="0" cellpadding="3" border="0">
