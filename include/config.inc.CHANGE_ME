@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.26 2003-04-27 18:17:38 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.27 2003-05-08 06:11:42 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -76,6 +76,8 @@ pql_define("PQL_GLOB_HOST","localhost;389;ou=QmailLDAP,dc=example,dc=com");
 // WARNING:	phpQLAdmin will not check the return-value. Be sure not to return nonsense or
 //			a path which is already assigned to another user.
 function user_generate_mailstore($ldap, $email, $dn, $entry) {
+	global $config;
+
 	$mailstore = '';
 	
 	// you feel comfortable with the old way phpQLAdmin generates the mailstore?
@@ -165,6 +167,8 @@ function user_generate_mailstore($ldap, $email, $dn, $entry) {
 // See information about function user_generate_mailstore()
 // Above. Exact same options apply
 function user_generate_homedir($ldap, $email, $dn, $entry) {
+	global $config;
+
 	//if($dn) {
 	//	$homedir = pql_get_domain_value($ldap, $dn, "basehomedir");
 	//	$domain  = pql_get_domain_value($ldap, $dn, "defaultdomain");
@@ -202,6 +206,8 @@ function user_generate_homedir($ldap, $email, $dn, $entry) {
 //
 // Returns: (string) suggested uid; may be changed by the user
 function user_generate_uid($ldap_linkid, $ldap_basedn, $surname, $name, $email, $domain, $account_type) {
+	global $config;
+
 	//	return($email);							// only the local part of the email-address				
 	//	return($email . '@' . $domain);			// complete email-address
 	//	return($email . '%' . $domain);			// complete email-address but '%' instead of '@'
