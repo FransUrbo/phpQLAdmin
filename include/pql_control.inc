@@ -4,15 +4,12 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.17 2003-05-08 20:07:23 turbo Exp $
+// $Id: pql_control.inc,v 2.18 2003-05-18 13:39:19 turbo Exp $
 //
 // version history:
 // $Log: pql_control.inc,v $
-// Revision 2.17  2003-05-08 20:07:23  turbo
-// * Sometimes, we don't want automatic replication of locals and/or rcpthosts,
-//   but do it manually (such as with the new checkbox system in attribute.locals
-//   etc). Don't return just because we don't have automatic replication enabled.
-// * Return true as default...
+// Revision 2.18  2003-05-18 13:39:19  turbo
+// Don't add hostname to domain if we haven't set autoAddHostName.
 //
 // Revision 1.2  2001/09/06 11:36:24  mb
 // added no_connect option to pql_control-class
@@ -230,7 +227,7 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 	}
 
     // Get the hostname
-    if($host and ($host != '*')) {
+    if($host and ($host != '*') and $config["PQL_GLOB_CONTROL_AUTOADDHOSTNAME"]) {
 		$hostname = split("\.", $host);
 		$hostname = $hostname[0];
 	
@@ -284,7 +281,7 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 						  $entry[] = $domain[1];
 						
 						// Add 'hostname.newdomain' to LDIF entry
-						if($h and $domain[1]) {
+						if($h and $domain[1] and $config["PQL_GLOB_CONTROL_AUTOADDHOSTNAME"]) {
 							$hostname = split("\.", $h);
 							$entry[] = $hostname[0] . "." . $domain[1];
 						}
@@ -327,7 +324,7 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 						  $entry[] = $domain[1];
 						
 						// Add 'hostname.newdomain' to LDIF entry
-						if($h and $domain[1]) {
+						if($h and $domain[1] and $config["PQL_GLOB_CONTROL_AUTOADDHOSTNAME"]) {
 							$hostname = split("\.", $h);
 							$entry[] = $hostname[0] . "." . $domain[1];
 						}
