@@ -106,6 +106,7 @@ if(!isset($domains)) {
     $SINGLE_USER = 1; session_register("SINGLE_USER");
 
     $cn = pql_get_userattribute($_pql->ldap_linkid, $USER_DN, $config["PQL_GLOB_ATTR_CN"]); $cn = $cn[0];
+    $cn = maybe_decode($cn);
 
     // Try to get the DN of the domain
     $dnparts = ldap_explode_dn($USER_DN, 0);
@@ -125,8 +126,8 @@ if(!isset($domains)) {
     }
 ?>
   <!-- start domain parent -->
-  <a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$USER_DN?>"><img src="images/mail_small.png" border="0" alt="<?=$cn?>"></a>&nbsp;
-  <a class="item" href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$USER_DN?>"><?=$cn?></a>
+  <a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?php echo urlencode($USER_DN); ?>"><img src="images/mail_small.png" border="0" alt="<?=$cn?>"></a>&nbsp;
+  <a class="item" href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?php echo urlencode($USER_DN); ?>"><?=$cn?></a>
   <!-- end domain parent -->
 
 <?php
@@ -192,10 +193,10 @@ if(!isset($domains)) {
 
 		  if($cn[0] && $sn[0])
 		    // Only remember users that have both a first and lastname.
-		    $cns[$dn] = $sn[0].", ".$cn[0];
+		    $cns[$dn] = maybe_decode($sn[0]).", ".maybe_decode($cn[0]);
 		  else {
 		      $cn = pql_get_userattribute($_pql->ldap_linkid, $dn, $config["PQL_GLOB_ATTR_CN"]);
-		      $cns[$dn] = "System - ".$cn[0];
+		      $cns[$dn] = "System - ".maybe_decode($cn[0]);
 		  }
 	      }
               asort($cns);
@@ -212,8 +213,8 @@ if(!isset($domains)) {
 		      // not be availible to administrate through phpQLAdmin!
 ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
-      <a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$dn?>"><img src="images/mail_small.png" border="0" alt="<?=$cn?>"></a>&nbsp;
-      <a class="item" href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$dn?>"><?=$cn?></a>
+      <a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?php echo urlencode($dn); ?>"><img src="images/mail_small.png" border="0" alt="<?=$cn?>"></a>&nbsp;
+      <a class="item" href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?php echo urlencode($dn); ?>"><?=$cn?></a>
     </nobr>
 
     <br>
