@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for changing/renaming the DN
 //
-// $Id: attrib.modrdn.inc,v 2.12 2005-01-30 12:28:49 turbo Exp $
+// $Id: attrib.modrdn.inc,v 2.13 2005-01-31 11:39:44 turbo Exp $
 
 // {{{ attribute_setup_aci(linkid, dn, old, new)
 function attribute_setup_aci($linkid, $dn, $old, $new) {
@@ -130,7 +130,7 @@ function attribute_save($type) {
 		
 		// {{{ Change all ACI's in all the objects in all the base DN's.
 		if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci")) {
-			foreach($_pql->ldap_basedn as $dn) {
+			foreach($_SESSION["BASE_DN"] as $dn) {
 				$objects = pql_get_dn($_pql->ldap_linkid, $dn, 'objectClass=*');
 				for($i=0; $objects[$i]; $i++) {
 					$ACIs = attribute_setup_aci($_pql->ldap_linkid, $objects[$i], $_REQUEST["oldvalue"], $user);

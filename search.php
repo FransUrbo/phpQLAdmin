@@ -1,6 +1,6 @@
 <?php
 // shows results of search
-// $Id: search.php,v 2.29 2005-01-12 20:08:39 turbo Exp $
+// $Id: search.php,v 2.30 2005-01-31 11:39:44 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -86,9 +86,7 @@ switch($_REQUEST["filter_type"]) {
 if(!$_SESSION["SINGLE_USER"]) {
 	// Admin of some sort - look in the whole database for a user
 	// that matches filter
-	foreach($_pql->ldap_basedn as $dn) {
-		$dn = urldecode($dn);
-		
+	foreach($_SESSION["BASE_DN"] as $dn) {
 		if($_REQUEST["debug"])
 		  echo "$dn: $filter<br>";
 

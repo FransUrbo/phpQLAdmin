@@ -51,17 +51,15 @@ if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
 <?php
 }
 
-foreach($_pql->ldap_basedn as $dn) {
-    $dn = urldecode($dn);
-
+foreach($_SESSION["BASE_DN"] as $dn) {
     if(eregi('KERBEROS', pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $dn)))
       $show_kerberos_info = 1;
 }
 
 // Create the button array with domain buttons
 $buttons = array('default' => 'Global configuration');
-foreach($_pql->ldap_basedn as $dn) {
-    $button = array($dn => urldecode($dn));
+foreach($_SESSION["BASE_DN"] as $dn) {
+    $button = array($dn => $dn);
     $buttons += $button;
 }
 if($_SESSION["lynx"]) {

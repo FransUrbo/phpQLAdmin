@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.32 2005-01-31 08:05:10 turbo Exp $
+// $Id: pql_search.inc,v 2.33 2005-01-31 11:39:44 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -156,9 +156,7 @@ function pql_get_dn($linkid, $dn, $filter, $level = 'SUBTREE') {
 function pql_get_domains($ldap) {
 	$domains = array();
 
-	foreach($ldap->ldap_basedn as $TOP_DN)  {
-		$TOP_DN     = urldecode($TOP_DN);
-
+	foreach($_SESSION["BASE_DN"] as $TOP_DN)  {
 		if(pql_get_define("PQL_CONF_SUBTREE_USERS")) {
 			// There's a subtree defined - look if it's there
 			$dn     = pql_get_define("PQL_CONF_SUBTREE_USERS").",$TOP_DN";
@@ -227,8 +225,7 @@ function pql_search_forwarders($ldap, $user) {
 
     // Go through each base DN in the database, looking
 	// for forwarders to this user
-	foreach($ldap->ldap_basedn as $dn) {
-		$dn  = urldecode($dn);
+	foreach($_SESSION["BASE_DN"] as $dn) {
 		$ref = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $dn);
 
 		// Get all users that refere/forwards to this ($dn) object.
@@ -253,9 +250,7 @@ function pql_search_forwarders($ldap, $user) {
 function pql_email_exists($ldap, $email) {
 	$filter = "(|(" . pql_get_define("PQL_ATTR_MAIL") . "=" . $email . ")(" . pql_get_define("PQL_ATTR_MAILALTERNATE") . "=" . $email . "))";
 
-	foreach($ldap->ldap_basedn as $dn) {
-		$dn = urldecode($dn);
-
+	foreach($_SESSION["BASE_DN"] as $dn) {
 		$results = pql_get_dn($ldap->ldap_linkid, $dn, $filter);
 		if(is_array($results))
 		  return true;
@@ -623,15 +618,13 @@ function pql_get_rootdn($dn, $function = '') {
 	else
 	  $dn = urldecode($dn);
 
-	if(is_array($_pql->ldap_basedn)) {
+	if(is_array($_SESSION["BASE_DN"])) {
 		$counts = 0;
 
 		// Get all possible matches. If we're looking for 'uid=turbo,ou=People,o=Fredriksson,c=SE',
 		// there is at least FOUR possibilities (one for each and every branch - they can all be
 		// separate root DN's!
-		foreach($_pql->ldap_basedn as $base) {
-			$base = urldecode($base);
-
+		foreach($_SESSION["BASE_DN"] as $base) {
 			if(eregi("$base\$", $dn))  {
 				$counts++;
 				$DNs[] = $base;
@@ -738,8 +731,8 @@ function pql_setup_branch_objectclasses($filter = 0, $dn, $linkid = '') {
 			$rootdn = pql_get_rootdn($dn, 'pql_setup_branch_objectclasses'); $rootdn = urldecode($rootdn);
 
 			$ocs = pql_get_define("PQL_CONF_OBJECTCLASS_DOMAIN", $rootdn);
-		} elseif($linkid->ldap_basedn[0])
-		  $ocs = pql_get_define("PQL_CONF_OBJECTCLASS_DOMAIN", $linkid->ldap_basedn[0]);
+		} elseif($_SESSION["BASE_DN"][0])
+		  $ocs = pql_get_define("PQL_CONF_OBJECTCLASS_DOMAIN", $_SESSION["BASE_DN"][0]);
 		else
 		  $ocs = '';
 

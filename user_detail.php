@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.84 2005-01-12 20:08:39 turbo Exp $
+// $Id: user_detail.php,v 2.85 2005-01-31 11:39:44 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -175,7 +175,7 @@ if(is_array($controladmins)) {
 // of more groups (listed in the 'memberUid' attribute).
 if($uid) {
 	$memberuid = array();
-	foreach($_pql->ldap_basedn as $base) {
+	foreach($_SESSION["BASE_DN"] as $base) {
 		$base  = urldecode($base);
 // BUG: This won't work - wrong params!!
 		$muids = pql_search($_pql->ldap_linkid, $base,

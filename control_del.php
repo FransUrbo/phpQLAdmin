@@ -1,6 +1,6 @@
 <?php
 // Delete a mailserver controls object
-// $Id: control_del.php,v 2.14 2005-01-12 13:50:54 turbo Exp $
+// $Id: control_del.php,v 2.15 2005-01-31 11:39:44 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -13,8 +13,7 @@ require("./include/pql_config.inc");
 function control_del_find_users($link, $host) {
 	// See if there's any users that have this host as mailHost
 	$filter = pql_get_define("PQL_ATTR_MAILHOST").'='.$host;
-	foreach($link->ldap_basedn as $dn) {
-		$dn = urldecode($dn);
+	foreach($_SESSION["BASE_DN"] as $dn) {
 		$usrs = pql_search($link->ldap_linkid, $dn, $filter);
 		if(is_array($usrs)) {
 			for($i=0; $usrs[$i]; $i++)

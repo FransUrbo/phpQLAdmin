@@ -1,6 +1,6 @@
 <?php
 // logins to the system
-// $Id: index.php,v 2.39 2005-01-12 14:39:35 turbo Exp $
+// $Id: index.php,v 2.40 2005-01-31 11:39:44 turbo Exp $
 //
 // Start debuging
 // http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0
@@ -180,8 +180,7 @@ echo "anonymous binding... (".$_SESSION["USER_DN"].")<br>";
 	//       users with the same uid in the database
 	//       (under different branches/trees).
 	$user_found = 0;
-	foreach($_pql->ldap_basedn as $base) {
-		$base    = urldecode($base);
+	foreach($_SESSION["BASE_DN"] as $base) {
 		$objects = pql_get_dn($_pql->ldap_linkid, $base,
 							  pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $base).'='.$_POST["uname"]);
 		foreach($objects as $userdn) {

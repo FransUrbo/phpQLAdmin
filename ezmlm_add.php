@@ -1,6 +1,6 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.33 2004-10-18 13:39:30 turbo Exp $
+// $Id: ezmlm_add.php,v 1.34 2005-01-31 11:39:44 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -34,9 +34,7 @@ if(!$_REQUEST["domainname"]) {
 		$domains = pql_get_domains($_pql);
 	} else {
 		// Get list of domains where we are listed in the ezmlmAdministrator attribute
-		foreach($_pql->ldap_basedn as $dn)  {
-			$dn = urldecode($dn);
-			
+		foreach($_SESSION["BASE_DN"] as $dn)  {
 			$dom = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"), $_SESSION["USER_DN"]);
 			if(is_array($dom)) {
 				foreach($dom as $d)

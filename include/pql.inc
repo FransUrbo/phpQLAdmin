@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.198 2005-01-13 12:23:24 turbo Exp $
+// $Id: pql.inc,v 2.199 2005-01-31 11:39:44 turbo Exp $
 //
 
 // ----------------------------
@@ -343,7 +343,7 @@ function pql_get_next_ugidnumber($ldap, $type) {
     $filter = "(&($attrib=*)(objectclass=posixaccount))";
 
 	$ids = array();
-	foreach($ldap->ldap_basedn as $dn) {
+	foreach($_SESSION["BASE_DN"] as $dn) {
 		$results = pql_search($ldap->ldap_linkid, $dn, $filter);
 		for($i=0; $i < count($results); $i++) {
 		  if ($results[$i][$attrib][0] >= $min_id_val) {
@@ -397,7 +397,7 @@ function pql_get_next_username($ldap, $domain) {
 		$filter = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) . '=' . $prefix . '*';
 
 		// Search the whole database for all users with this prefix
-		foreach($ldap->ldap_basedn as $dn) {
+		foreach($_SESSION["BASE_DN"] as $dn) {
 			$dn  = urldecode($dn);
 			$sr  = ldap_search($ldap->ldap_linkid, $dn, $filter, array(pql_get_define("PQL_ATTR_UID")));
 			$tmp = ldap_get_entries($ldap->ldap_linkid, $sr) or pql_format_error(1);

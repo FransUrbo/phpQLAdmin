@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.13 2005-01-30 12:29:51 turbo Exp $
+// $Id: pql_write.inc,v 2.14 2005-01-31 11:39:44 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -165,7 +165,7 @@ function pql_replace_values($ldap, $attribs, $old, $new = NULL) {
 	$filter .= ')';
 
 	// Go through the namingContexts one by one
-	foreach($ldap->ldap_basedn as $dn) {
+	foreach($_SESSION["BASE_DN"] as $dn) {
 		// Get all objects that have this object ($old) in any of the $attribs attributes.
 		$result = pql_search($ldap->ldap_linkid, $dn, $filter);
 		for($i=0; $result[$i]; $i++) {
@@ -414,9 +414,7 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 	  return false;
 
 	// Remove all administrator entries which contain the user DN
-	foreach($ldap->ldap_basedn as $dn) {
-		$dn = urldecode($dn);
-
+	foreach($_SESSION["BASE_DN"] as $dn) {
 		$sr = ldap_search($linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR")."=$user");
 		$info = ldap_get_entries($linkid, $sr) or pql_format_error(1);
 		for($i=0; $i<$info["count"]; $i++) {

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for administrator and seealso modification
 // Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
-// $Id: attrib.administrator.inc,v 1.49 2005-01-12 13:50:55 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.50 2005-01-31 11:39:44 turbo Exp $
 
 // There is serious problems with this. I fix for one usage and break another
 // one! Let's try to remember (and document) how it's called. It's called from
@@ -265,9 +265,7 @@ function attribute_print_form($action) {
 				// have access to. Otherwise, we could 'steal' access to any domain
 				// in the system. Only a branch owner/admin can give someone access
 				// to the current branch. Am I making myself clear?
-				foreach($_pql->ldap_basedn as $dn)  {
-					$dn = urldecode($dn);
-
+				foreach($_SESSION["BASE_DN"] as $dn)  {
 					$dom = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR"),
 											$_SESSION["USER_DN"], 1);
 					if($dom)
@@ -280,7 +278,7 @@ function attribute_print_form($action) {
 				$domains = pql_uniq($domains);
 				asort($domains);
 				foreach($domains as $domain) {
-					if($domain == $_pql->ldap_basedn[0]) {
+					if($domain == $_SESSION["BASE_DN"][0]) {
 						$shown_first_rootdn = 1;
 ?>
               <option value="<?=$domain?>">*&nbsp;<?=pql_maybe_decode($domain)?></option>

@@ -1,6 +1,6 @@
 <?php
 // make some simple tests on ldap connection
-// $Id: config_ldaptest.php,v 2.30 2004-11-08 14:41:23 turbo Exp $
+// $Id: config_ldaptest.php,v 2.31 2005-01-31 11:39:44 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -111,9 +111,7 @@ if(!function_exists("ldap_connect")){
 	// {{{ Access rights
 	if($_SESSION["USER_DN"] and $_SESSION["USER_PASS"]) {
 		$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
-		foreach($_pql->ldap_basedn as $basedn) {
-			$basedn = urldecode($basedn);
-
+		foreach($_SESSION["BASE_DN"] as $basedn) {
 			// {{{ Try to set the attribute 'test' in the top DN
 			$fail = check_domain_value($_pql->ldap_linkid, $basedn, 'test', 'TRUE');
 			if($fail)
@@ -189,9 +187,7 @@ if(!function_exists("ldap_connect")){
 		}
 
 		// {{{ Check ACI
-		foreach($_pql->ldap_basedn as $basedn) {
-			$basedn = urldecode($basedn);
-
+		foreach($_SESSION["BASE_DN"] as $basedn) {
 			// Setup the LDIF we're adding
 			unset($entry);
 			$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "top";
@@ -302,9 +298,7 @@ include("./header.html");
 <?php if($basedn) { ?>
 
     <th colspan="3" align="left"><?=$LANG->_('Modification access - phpQLAdmin configuration')?>
-<?php    foreach($_pql->ldap_basedn as $dn) {
-			$dn = urldecode($dn);
-?>
+<?php    foreach($_SESSION["BASE_DN"] as $dn) { ?>
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Access to write phpQLAdmin configuration in DN %dn%'), array('dn' => $dn)); ?></td>
         <?php $class=pql_format_table(0); ?>
@@ -315,9 +309,7 @@ include("./header.html");
     </th>
 
     <th colspan="3" align="left"><?=$LANG->_('Domain modification access')?>
-<?php    foreach($_pql->ldap_basedn as $dn) {
-			$dn = urldecode($dn);
-?>
+<?php    foreach($_SESSION["BASE_DN"] as $dn) { ?>
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Access to create branches in DN %dn%'), array('dn' => $dn)); ?></td>
         <?php $class=pql_format_table(0); ?>

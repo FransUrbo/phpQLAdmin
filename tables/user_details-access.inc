@@ -2,7 +2,7 @@
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="2" align="left"><?=$LANG->_('User access')?></th>
 <?php
-    foreach($_pql->ldap_basedn as $branch) {
+    foreach($_SESSION["BASE_DN"] as $branch) {
 		$branch = urldecode($branch);
 
 		// Check the top-most (namingContexts) DN's if user is admin of that...

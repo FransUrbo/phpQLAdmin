@@ -1,6 +1,6 @@
 <?php
 // Attribute plugin for additional group (memberUID)
-// $Id: attrib.additionalgroup.inc,v 2.8 2004-10-19 10:40:40 turbo Exp $
+// $Id: attrib.additionalgroup.inc,v 2.9 2005-01-31 11:39:44 turbo Exp $
 
 // {{{ attribute_init(void)...
 
@@ -38,9 +38,7 @@ function attribute_print_form() {
 	$filter .=   "(".pql_get_define("PQL_ATTR_QMAILGID")."=*)";
 	$filter .= ")";
 
-	foreach($_pql->ldap_basedn as $base) {
-		$base = urldecode($base);
-
+	foreach($_SESSION["BASE_DN"] as $base) {
 		// Get all the groups in this root DN.
 		$grps = pql_search($_pql->ldap_linkid, $base, $filter);
 		if(is_array($grps)) {
@@ -136,9 +134,7 @@ function attribute_save($action) {
 		  ."=".$_REQUEST[$attrib_name]."))";
 
 		// Get the DN of the group we're removing the user from
-		foreach($_pql->ldap_basedn as $base) {
-			$base = urldecode($base);
-
+		foreach($_SESSION["BASE_DN"] as $base) {
 			if(!isset($group)) {
 				$group = pql_search($_pql->ldap_linkid, $base, $filter);
 				$group = $group[0];

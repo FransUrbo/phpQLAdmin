@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.42 2004-11-14 12:50:19 turbo Exp $
+// $Id: attrib.config.inc,v 1.43 2005-01-31 11:39:44 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -44,7 +44,7 @@ function attribute_print_form() {
 	}
 
 	if(! $rootdn)
-	  $dn = $_pql->ldap_basedn[0];
+	  $dn = $_SESSION["BASE_DN"][0];
 	else
 	  $dn = $rootdn;
 
@@ -414,7 +414,7 @@ function attribute_save() {
 				// We don't have a Root DN, it's not a PasswordScheme or {user,domain}ObjectClass
 				// but it's a toggle. Get the old value and reverse it
 				
-				unset($oldvalues); $oldvalues = pql_get_attribute($_pql->ldap_linkid, $_pql->ldap_basedn[0], $attrib);
+				unset($oldvalues); $oldvalues = pql_get_attribute($_pql->ldap_linkid, $_SESSION["BASE_DN"][0], $attrib);
 				if($oldvalues == 'TRUE')
 				  $entry[$attrib][] = 'FALSE';
 				else
@@ -429,9 +429,7 @@ function attribute_save() {
 		// We don't have a root DN, we're changing controlsAdministrator OR
 		// it's a toggle. This means it's a global variable, and should be
 		// set in every namingContexts
-		foreach($_pql->ldap_basedn as $dn) {
-			$dn = urldecode($dn);
-
+		foreach($_SESSION["BASE_DN"] as $dn) {
 			if($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")) {
 				unset($entry);
 				if($attrib_val)
@@ -461,7 +459,7 @@ function attribute_save() {
 											 array('what' => $attrib));
 				$rlnb = 1;
 			}
-		} // FOREACH $_pql->ldap_basedn
+		} // FOREACH $_SESSION["BASE_DN"]
 	} else {
 		$success = 0;
 

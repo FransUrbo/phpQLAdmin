@@ -1,6 +1,6 @@
 <?php
 // navigation bar - ezmlm mailinglists manager
-// $Id: left-ezmlm.php,v 2.30 2004-10-18 13:39:31 turbo Exp $
+// $Id: left-ezmlm.php,v 2.31 2005-01-31 11:39:44 turbo Exp $
 //
 session_start();
 
@@ -33,9 +33,7 @@ if($_SESSION["ALLOW_BRANCH_CREATE"]) {
 	// Get ALL domains we have access to.
 	//	administrator: USER_DN
 	// in the domain object
-	foreach($_pql->ldap_basedn as $dn)  {
-		$dn = urldecode($dn);
-		
+	foreach($_SESSION["BASE_DN"] as $dn)  {
 		$dom = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"), $_SESSION["USER_DN"]);
 		if($dom) {
 			foreach($dom as $d) {

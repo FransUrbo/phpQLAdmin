@@ -1,6 +1,6 @@
 <?php
 // Input form page to create a domain branch in database
-// $Id: domain_add_form.php,v 1.21 2004-04-02 09:04:19 turbo Exp $
+// $Id: domain_add_form.php,v 1.22 2005-01-31 11:39:44 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -18,7 +18,7 @@ $server = urldecode($server[0]);
   <form action="domain_add.php" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Create domain')?></th>
-<?php if($_pql->ldap_basedn[1]) {
+<?php if($_SESSION["BASE_DN"][1]) {
          // We have more than one Root DN (namingContexts), show
          // a drop down with every Root DN...
 ?>
@@ -26,7 +26,7 @@ $server = urldecode($server[0]);
           <td class="title"><?=$LANG->_('Branch base')?></td>
           <td>
             <select name="rootdn">
-<?php    foreach($_pql->ldap_basedn as $dn)  { $dn = urldecode($dn); ?>
+<?php    foreach($_SESSION["BASE_DN"] as $dn)  { ?>
               <option value="<?=$dn?>"><?=$dn?></option>
 <?php    } ?>
             </select>
@@ -40,7 +40,7 @@ $server = urldecode($server[0]);
           <td class="title"><?=$LANG->_('Branch name')?></td>
           <td>
             <input type="text" name="domain" value="<?=$_REQUEST["domain"]?>" size="30">
-<?php if(! $_pql->ldap_basedn[1]) { ?>
+<?php if(! $_SESSION["BASE_DN"][1]) { ?>
             <table cellspacing="0" cellpadding="3" border="0">
               <th>
                 <tr class="<?php pql_format_table(); ?>">
