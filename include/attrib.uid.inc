@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // uid (user id)
-// $Id: attrib.uid.inc,v 2.13 2003-10-11 11:59:25 turbo Exp $
+// $Id: attrib.uid.inc,v 2.14 2003-11-18 13:16:38 turbo Exp $
 
 function attribute_check($type){
 	global $uid, $oldvalue, $_pql, $error, $domain, $LANG;
@@ -85,7 +85,7 @@ function attribute_save($type) {
 			break;
     	}
 		
-		if(pql_replace_userattribute($_pql->ldap_linkid, $user,
+		if(pql_replace_attribute($_pql->ldap_linkid, $user,
 									 pql_get_define("PQL_GLOB_ATTR_UID"),
 									 $uid))
 		{

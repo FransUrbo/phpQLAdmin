@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // accountstatus (status of mailaccount)
-// $Id: attrib.accountstatus.inc,v 2.10 2003-10-15 05:25:23 turbo Exp $
+// $Id: attrib.accountstatus.inc,v 2.11 2003-11-18 13:16:37 turbo Exp $
 
 function attribute_check($type) {
     global $error, $view, $set, $domain, $rootdn, $attrib, $user, $date, $days, $LANG, $_pql;
@@ -146,7 +146,7 @@ function attribute_save($type) {
 			
 			if(is_array($users)) {
 				foreach($users as $user)
-				  if(! pql_replace_userattribute($_pql->ldap_linkid, $user,
+				  if(! pql_replace_attribute($_pql->ldap_linkid, $user,
 												 pql_get_define("PQL_GLOB_ATTR_ISACTIVE"),
 												 $set)) {
 					  $msg  = pql_complete_constant($LANG->_('Failed to change %what%'),
@@ -163,7 +163,7 @@ function attribute_save($type) {
 		break;
 		
       case "set":
-		if(pql_replace_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_ISACTIVE"), $set)) {
+		if(pql_replace_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_ISACTIVE"), $set)) {
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 										 array('what' => $LANG->_('Status'),
 											   'new'  => pql_ldap_accountstatus($set)));

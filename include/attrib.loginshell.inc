@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // loginshell
-// $Id: attrib.loginshell.inc,v 2.10 2003-08-18 08:26:11 turbo Exp $
+// $Id: attrib.loginshell.inc,v 2.11 2003-11-18 13:16:38 turbo Exp $
 
 function attribute_check($type) {
     global $loginshell, $oldvalue, $_pql, $error, $LANG;
@@ -78,7 +78,7 @@ function attribute_save($type) {
 			break;
     	}
 		
-		if(pql_replace_userattribute($_pql->ldap_linkid, $user, $attrib, $loginshell)) {
+		if(pql_replace_attribute($_pql->ldap_linkid, $user, $attrib, $loginshell)) {
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 										 array('what' => $LANG->_('login shell'),
 											   'new'  => $loginshell));

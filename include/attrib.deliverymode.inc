@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliverymode (delivery preferences)
-// $Id: attrib.deliverymode.inc,v 2.13 2003-08-11 19:49:52 turbo Exp $
+// $Id: attrib.deliverymode.inc,v 2.14 2003-11-18 13:16:38 turbo Exp $
 
 function attribute_check($type) {
 	global $error, $reply, $mailreplytext, $LANG;
@@ -117,7 +117,7 @@ function attribute_save($type) {
 		$mrt_db = pql_get_userattribute($_pql->ldap_linkid,
 										$user, pql_get_define("PQL_GLOB_ATTR_REPLYTEXT"));
 		if($mrt_db[0])
-		  pql_replace_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_REPLYTEXT"));
+		  pql_replace_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_REPLYTEXT"));
 	}
 	
 	switch($type) {
@@ -125,7 +125,7 @@ function attribute_save($type) {
 		$users = pql_get_user($_pql->ldap_linkid, $domain);
 		if(is_array($users)) {
 			foreach($users as $user)
-			  $return[] = pql_replace_userattribute($_pql->ldap_linkid, $user, '', $entry);
+			  $return[] = pql_replace_attribute($_pql->ldap_linkid, $user, '', $entry);
 			
 			if(in_array(false, $return))
 			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
@@ -139,7 +139,7 @@ function attribute_save($type) {
 		break;
 		
 	  case "modify":
-		if(pql_replace_userattribute($_pql->ldap_linkid, $user, '', $entry)) 
+		if(pql_replace_attribute($_pql->ldap_linkid, $user, '', $entry)) 
 		  $msg = pql_complete_constant($LANG->_('successfully changed %what%'),
 									   array('what' => $LANG->_('delivery mode')));
 		else
