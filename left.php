@@ -106,7 +106,6 @@ if(!isset($domains)) {
     $SINGLE_USER = 1; session_register("SINGLE_USER");
 
     $cn = pql_get_userattribute($_pql->ldap_linkid, $USER_DN, $config["PQL_GLOB_ATTR_CN"]); $cn = $cn[0];
-    $cn = maybe_decode($cn);
 
     // Try to get the DN of the domain
     $dnparts = ldap_explode_dn($USER_DN, 0);
@@ -193,10 +192,10 @@ if(!isset($domains)) {
 
 		  if($cn[0] && $sn[0])
 		    // Only remember users that have both a first and lastname.
-		    $cns[$dn] = maybe_decode($sn[0]).", ".maybe_decode($cn[0]);
+		    $cns[$dn] = $sn[0].", ".$cn[0];
 		  else {
 		      $cn = pql_get_userattribute($_pql->ldap_linkid, $dn, $config["PQL_GLOB_ATTR_CN"]);
-		      $cns[$dn] = "System - ".maybe_decode($cn[0]);
+		      $cns[$dn] = "System - ".$cn[0];
 		  }
 	      }
               asort($cns);

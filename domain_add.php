@@ -65,19 +65,19 @@ if($dns[0]) {
 	// Save the attributes - Default domain
 	if($defaultdomain && !pql_set_domain_value($_pql->ldap_linkid,
 											   $dns[0], 'defaultDomain',
-											   maybe_encode($defaultdomain)))
+											   $defaultdomain))
 	  $msg = PQL_LANG_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	
 	// Save the attributes - Default home directory
 	if($defaulthomedir && !pql_set_domain_value($_pql->ldap_linkid,
 												$dns[0], 'baseHomeDir',
-												maybe_encode($defaulthomedir)))
+												$defaulthomedir))
 	  $msg = PQL_LANG_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	
 	// Save the attributes - Default mail directory
 	if($defaultmaildir && !pql_set_domain_value($_pql->ldap_linkid,
 												$dns[0], 'baseMailDir',
-												maybe_encode($defaultmaildir)))
+												$defaultmaildir))
 	  $msg = PQL_LANG_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	
 	// Save the attributes - Default quota

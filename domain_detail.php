@@ -52,7 +52,7 @@ $attribs = array('defaultdomain', 'basehomedir', 'basemaildir', 'o', 'l',
 foreach($attribs as $attrib) {
 	// Get default value
 	$value = pql_get_domain_value($_pql, $domain, $attrib);
-	$$attrib = maybe_decode($value);
+	$$attrib = $value;
 
 	// Setup edit links. If it's a dcOrganizationNameForm attribute, then
 	// we add a delete link as well.

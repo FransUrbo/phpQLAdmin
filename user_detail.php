@@ -45,7 +45,7 @@ if(!$username[0]) {
     // No common name, use uid field
     $username = pql_get_userattribute($_pql->ldap_linkid, $user, 'uid');
 }
-$username = maybe_decode($username[0]);
+$username = $username[0];
 ?>
 
   <span class="title1"><?=$username?></span>
@@ -68,7 +68,7 @@ foreach($attribs as $attrib) {
     $attrib = strtolower($attrib);
 
     $value = pql_get_userattribute($_pql->ldap_linkid, $user, $attrib);
-    $$attrib = maybe_decode($value[0]);
+    $$attrib = $value[0];
     $value = urlencode($$attrib);
 
     // Setup edit links
@@ -95,9 +95,6 @@ if($mailmessagestore == "") {
 if($mailhost == "") {
     $mailhost = PQL_LANG_MAILHOST_NONE;
 }
-
-$mailmessagestore = maybe_decode($mailmessagestore);
-$mailhost = maybe_decode($mailhost);
 
 $userdn = urlencode($user);
 ?>

@@ -24,7 +24,7 @@ if(!$username[0]) {
     // No common name, use uid field
     $username = pql_get_userattribute($_pql->ldap_linkid, $user, 'uid');
 }
-$username = maybe_decode($username[0]);
+$username = $username[0];
 
 // select which attribute have to be included
 switch($attrib) {

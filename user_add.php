@@ -288,7 +288,7 @@ switch($submit) {
 	case "":
 	  // first
 ?>
-<form action="<?=$PHP_SELF?>" method="post" accept-charset="UTF-8,ISO-8859-1">
+<form action="<?=$PHP_SELF?>" method="post" accept-charset="UTF-8">
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?php echo PQL_LANG_USER_ACCOUNT_PROPERTIES; ?></th>
       <tr class="<?php table_bgcolor(); ?>">
@@ -361,7 +361,7 @@ switch($submit) {
     case "one":
 	  // second form
 ?>
-  <form action="<?=$PHP_SELF?>" method="post" accept-charset="UTF-8,ISO-8859-1">
+  <form action="<?=$PHP_SELF?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo PQL_LANG_USER_ACCOUNT_PROPERTIES_MORE; ?></th>
         <tr class="<?php table_bgcolor(); ?>">
@@ -669,7 +669,7 @@ switch($submit) {
 		// third
 ?>
 
-  <form action="<?=$PHP_SELF?>" method="post" accept-charset="UTF-8,ISO-8859-1">
+  <form action="<?=$PHP_SELF?>" method="post" accept-charset="UTF-8">
     <input type="hidden" name="surname" value="<?=$surname?>">
     <input type="hidden" name="name" value="<?=$name?>">
     <input type="hidden" name="email" value="<?=$email?>">
@@ -940,19 +940,19 @@ switch($submit) {
 
         // ------------------
 		if($surname && $name) {
-			$entry[$config["PQL_GLOB_ATTR_CN"]]	= maybe_encode(trim($surname) . " " . trim($name));
+			$entry[$config["PQL_GLOB_ATTR_CN"]]	= trim($surname) . " " . trim($name);
 		} else {
 			$entry[$config["PQL_GLOB_ATTR_CN"]] = $uid;
 		}
 
 		if($entry[$config["PQL_GLOB_ATTR_GIVENNAME"]]) {
-			$entry[$config["PQL_GLOB_ATTR_GIVENNAME"]]	= maybe_encode($entry[$config["PQL_GLOB_ATTR_GIVENNAME"]]);
+			$entry[$config["PQL_GLOB_ATTR_GIVENNAME"]]	= $entry[$config["PQL_GLOB_ATTR_GIVENNAME"]];
 		}
 		if($entry[$config["PQL_GLOB_ATTR_SN"]]) {
-			$entry[$config["PQL_GLOB_ATTR_SN"]]			= maybe_encode($entry[$config["PQL_GLOB_ATTR_SN"]]);
+			$entry[$config["PQL_GLOB_ATTR_SN"]]			= $entry[$config["PQL_GLOB_ATTR_SN"]];
 		}
 		if($entry[$config["PQL_GLOB_ATTR_CN"]]) {
-			$entry[$config["PQL_GLOB_ATTR_CN"]]			= maybe_encode($entry[$config["PQL_GLOB_ATTR_CN"]]);
+			$entry[$config["PQL_GLOB_ATTR_CN"]]			= $entry[$config["PQL_GLOB_ATTR_CN"]];
 		}
 		if($entry["gecos"]) {
 			// Remove the international characters from gecos, isn't allowed

@@ -17,9 +17,6 @@ if(!$o) {
 	$o = $domain;
 }
 $cn = pql_get_userattribute($_pql->ldap_linkid, $user, 'cn'); $cn = $cn[0];
-
-$o  = maybe_decode($o);
-$cn = maybe_decode($cn);
 ?>
   <span class="title1"><?php echo pql_complete_constant(PQL_LANG_USER_DEL_TITLE, array("domain" => $o, "user" => $cn)); ?></span>
   <br><br>
