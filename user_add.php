@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.116.2.3 2005-02-14 10:43:59 turbo Exp $
+// $Id: user_add.php,v 2.116.2.4 2005-02-15 09:36:36 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -531,10 +531,16 @@ include($_SESSION["path"]."/header.html");
 ?>
   <span class="title1">
     <?php echo pql_complete_constant($LANG->_('Create account in domain %domain%'),
-									 array("domain" => $_REQUEST["orgname"])); ?>: 
+									 array("domain" => $_REQUEST["orgname"])); ?>
 <?php
-if($_SESSION["ADVANCED_MODE"] && $_REQUEST["template"]) {
-  echo $template["short"];
+if($_SESSION["ADVANCED_MODE"] && is_array($template)) {
+  echo ': '.$template["short"];
+} elseif(!is_array($template)) {
+  // Retreive template we're using
+  $template = pql_get_template($_pql->ldap_linkid, $_REQUEST["template"]);
+  echo ': '.$template["short"];
+} else {
+  echo '.';
 }
 ?>
   </span>
