@@ -1,12 +1,12 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.34 2004-04-01 09:36:12 turbo Exp $
+// $Id: attrib.config.inc,v 1.35 2004-04-01 09:43:36 turbo Exp $
 
 function attribute_check() {
     global $error, $LANG;
 
 	$attrib = $_REQUEST["attrib"];
-	if(($attrib != pql_get_define("PQL_ATTR_SCRIPT_CREATE_USER")) or
+	if(($attrib != pql_get_define("PQL_ATTR_SCRIPT_CREATE_USER")) and
 	   ($attrib != pql_get_define("PQL_ATTR_SCRIPT_CREATE_DOMAIN"))) {
 		// Unless it's a 'externalScript{User,Domain}' attribute - is it typed in?
 		if(empty($_REQUEST[$attrib])) {
