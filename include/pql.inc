@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.182 2004-06-16 07:45:48 turbo Exp $
+// $Id: pql.inc,v 2.183 2004-07-07 14:24:22 turbo Exp $
 //
 
 // ----------------------------
@@ -818,7 +818,6 @@ function pql_domain_exist($ldap, $domain, $rootdn = '') {
 // }}}
 
 // {{{ pql_domain_get_value(ldap, dn, value, match, all)
-
 function pql_domain_get_value($ldap, $dn, $value, $match = '', $all = 0) {
 	$value = lc($value); $dn = urldecode($dn);
 
@@ -1300,7 +1299,9 @@ function pql_replace_attribute($ldap_linkid, $objectdn, $attrib, $value) {
 
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_replace_attribute", $objectdn, $entry);
-//die($LDIF);
+
+	if(file_exists("./.DEBUG_ME"))
+	  die($LDIF);
 
 	// replace the attribute
 	if(!@ldap_mod_replace($ldap_linkid, $objectdn, $entry)) {
