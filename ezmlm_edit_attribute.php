@@ -1,19 +1,19 @@
 <?php
-// $Id: ezmlm_edit_attribute.php,v 1.21 2004-03-11 18:13:32 turbo Exp $
+// $Id: ezmlm_edit_attribute.php,v 1.22 2004-04-06 07:22:05 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 require("./include/pql_ezmlm.inc");
 
-$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"], false, 0);
+$url["domain"] = pql_format_urls($_REQUEST["domain"]);
+$url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 
 // forward back to list detail page
 function list_forward($domainname, $msg) {
-	global $domain;
-
     $msg = urlencode($msg);
+
 	// TODO: We need the '$domainname' value to show the LIST, not lists in domain
-    $url = "ezmlm_detail.php?domain=$domain&domainname=$domainname&msg=$msg&rlnb=3";
+    $url = "ezmlm_detail.php?domain=".$_REQUEST["domain"]."&domainname=$domainname&listno=".$_REQUEST["listno"]."&msg=$msg&rlnb=3";
     header("Location: " . pql_get_define("PQL_CONF_URI") . "$url");
 }
 
