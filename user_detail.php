@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.70 2004-03-11 18:13:32 turbo Exp $
+// $Id: user_detail.php,v 2.71 2004-03-14 08:26:12 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -69,40 +69,39 @@ if(!pql_user_exist($_pql->ldap_linkid, $_GET["rootdn"], $_GET["user"])) {
 // Get basic user information
 // Some of these (everything after the 'homedirectory')
 // uses 'objectClass: pilotPerson' -> http://rfc-1274.rfcindex.net/
-$attribs = array(pql_get_define("PQL_ATTR_CN"),
-				 pql_get_define("PQL_ATTR_SN"),
-				 pql_get_define("PQL_ATTR_QMAILUID"),
-				 pql_get_define("PQL_ATTR_QMAILGID"),
-				 pql_get_define("PQL_ATTR_LOGINSHELL"),
-				 pql_get_define("PQL_ATTR_UID"),
-				 pql_get_define("PQL_ATTR_PASSWD"),
-				 pql_get_define("PQL_ATTR_MAILSTORE"),
-				 pql_get_define("PQL_ATTR_MAILHOST"),
-				 pql_get_define("PQL_ATTR_HOMEDIR"),
-				 pql_get_define("PQL_ATTR_ROOMNUMBER"),
-				 pql_get_define("PQL_ATTR_TELEPHONENUMBER"),
-				 pql_get_define("PQL_ATTR_HOMEPHONE"),
-				 pql_get_define("PQL_ATTR_HOMEPOSTALADDRESS"),
-				 pql_get_define("PQL_ATTR_SECRETARY"),
-				 pql_get_define("PQL_ATTR_PERSONALTITLE"),
-				 pql_get_define("PQL_ATTR_MOBILE"),
-				 pql_get_define("PQL_ATTR_PAGER"));
-foreach($attribs as $attrib) {
-    $attrib = lc($attrib);
-
+$attribs = array("cn"					=> pql_get_define("PQL_ATTR_CN"),
+				 "sn"					=> pql_get_define("PQL_ATTR_SN"),
+				 "uidnumber"			=> pql_get_define("PQL_ATTR_QMAILUID"),
+				 "gidNumber"			=> pql_get_define("PQL_ATTR_QMAILGID"),
+				 "loginshell"			=> pql_get_define("PQL_ATTR_LOGINSHELL"),
+				 "uid"					=> pql_get_define("PQL_ATTR_UID"),
+				 "userpassword"			=> pql_get_define("PQL_ATTR_PASSWD"),
+				 "mailmessagestore"		=> pql_get_define("PQL_ATTR_MAILSTORE"),
+				 "mailhost"				=> pql_get_define("PQL_ATTR_MAILHOST"),
+				 "homedirectory"		=> pql_get_define("PQL_ATTR_HOMEDIR"),
+				 "roomnumber"			=> pql_get_define("PQL_ATTR_ROOMNUMBER"),
+				 "telephonenumber"		=> pql_get_define("PQL_ATTR_TELEPHONENUMBER"),
+				 "homephone"			=> pql_get_define("PQL_ATTR_HOMEPHONE"),
+				 "homepostaladdress"	=> pql_get_define("PQL_ATTR_HOMEPOSTALADDRESS"),
+				 "secretary"			=> pql_get_define("PQL_ATTR_SECRETARY"),
+				 "personaltitle"		=> pql_get_define("PQL_ATTR_PERSONALTITLE"),
+				 "mobile"				=> pql_get_define("PQL_ATTR_MOBILE"),
+				 "pager"				=> pql_get_define("PQL_ATTR_PAGER"));
+foreach($attribs as $key => $attrib) {
     $value = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], $attrib);
-    $$attrib = $value[0];
-    $value = urlencode($$attrib);
+    $$key = $value[0];
+    $value = urlencode($$key);
 
     // Setup edit links
-    $link = $attrib . "_link";
+    $link = $key . "_link";
 
-	$alt = pql_complete_constant($LANG->_('Modify %attribute% for %what%'), array('attribute' => $attrib, 'what' => $username));
+	$alt = pql_complete_constant($LANG->_('Modify %attribute% for %what%'),
+								 array('attribute' => $attrib, 'what' => $username));
     $$link = "<a href=\"user_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&attrib=$attrib&user=".$url["user"]."&$attrib=$value&view=$view\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt."\"></a>";
 }
 $quota = pql_user_get_quota($_pql->ldap_linkid, $_GET["user"]);
 
-// Some of these get set from the "$$attrib = $value[0]" line above.
+// Some of these get set from the "$$key = $value[0]" line above.
 if($userpassword == "") {
     $userpassword = $LANG->_('None');
 } else {

@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.29 2004-03-11 18:13:32 turbo Exp $
+// $Id: control_detail.php,v 1.30 2004-03-14 08:26:12 turbo Exp $
 session_start();
 require("./include/pql_config.inc");
 
@@ -12,46 +12,46 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 	include("./header.html");
 
 	// Get the values of the mailserver
-	$attribs = array(pql_get_define("PQL_ATTR_DEFAULTDOMAIN"),
-					 pql_get_define("PQL_ATTR_PLUSDOMAIN"),
-					 pql_get_define("PQL_ATTR_LDAPSERVER"),
-					 pql_get_define("PQL_ATTR_LDAPREBIND"),
-					 pql_get_define("PQL_ATTR_LDAPBASEDN"),
-					 pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"),
-					 pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"),
-					 pql_get_define("PQL_ATTR_DIRMAKER"),
-					 pql_get_define("PQL_ATTR_QUOTA_WARNING"),
-					 pql_get_define("PQL_ATTR_LOCALS"),
-					 pql_get_define("PQL_ATTR_RCPTHOSTS"),
-					 pql_get_define("PQL_ATTR_LDAPLOGIN"),
-					 pql_get_define("PQL_ATTR_LDAPPASSWORD"));
+	$attribs = array("defaultdomain"		=> pql_get_define("PQL_ATTR_DEFAULTDOMAIN"),
+					 "plusdomain"			=> pql_get_define("PQL_ATTR_PLUSDOMAIN"),
+					 "ldapserver"			=> pql_get_define("PQL_ATTR_LDAPSERVER"),
+					 "ldaprebind"			=> pql_get_define("PQL_ATTR_LDAPREBIND"),
+					 "ldapbasedn"			=> pql_get_define("PQL_ATTR_LDAPBASEDN"),
+					 "ldapdefaultquota"		=> pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"),
+					 "ldapdefaultdotmode"	=> pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"),
+					 "dirmaker"				=> pql_get_define("PQL_ATTR_DIRMAKER"),
+					 "quotawarning"			=> pql_get_define("PQL_ATTR_QUOTA_WARNING"),
+					 "locals"				=> pql_get_define("PQL_ATTR_LOCALS"),
+					 "rcpthosts"			=> pql_get_define("PQL_ATTR_RCPTHOSTS"),
+					 "ldaplogin"			=> pql_get_define("PQL_ATTR_LDAPLOGIN"),
+					 "ldappassword"			=> pql_get_define("PQL_ATTR_LDAPPASSWORD"));
 	$cn = pql_get_define("PQL_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"];
 
-	foreach($attribs as $attrib) {
+	foreach($attribs as $key => $attrib) {
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid, $cn, $attrib);
 		if(!is_null($value)) {
-			if($attrib == pql_get_define("PQL_ATTR_LOCALS")) {
+			if($key == "locals") {
 				asort($value);
 				foreach($value as $val) {
 					$locals[] = $val;
 				}
-			} elseif($attrib == pql_get_define("PQL_ATTR_RCPTHOSTS")) {
+			} elseif($key == "rcpthosts") {
 				asort($value);
 				foreach($value as $val) {
 					$rcpthosts[] = $val;
 				}
-			} elseif($attrib == pql_get_define("PQL_ATTR_LDAPPASSWORD")) {
-				$$attrib = "encrypted";
+			} elseif($key == "ldappassword") {
+				$$key = "encrypted";
 			} else {
-				$$attrib = $value[0];
+				$$key = $value[0];
 			}
 		} else {
-			if($attrib == pql_get_define("PQL_ATTR_LDAPSERVER"))
-			  $$attrib = "<i>".$_SESSION["USER_HOST"]."</i>";
-			elseif($attrib == pql_get_define("PQL_ATTR_LDAPBASEDN"))
-			  $$attrib = "<i>".$_SESSION["USER_SEARCH_DN_CTR"]."</i>";
+			if($key == "ldapserver")
+			  $$key = "<i>".$_SESSION["USER_HOST"]."</i>";
+			elseif($key == "ldapbasedn")
+			  $$key = "<i>".$_SESSION["USER_SEARCH_DN_CTR"]."</i>";
 			else
-			  $$attrib = "<i>".$LANG->_('Not set')."</i>";
+			  $$key = "<i>".$LANG->_('Not set')."</i>";
 		}
 	}
 

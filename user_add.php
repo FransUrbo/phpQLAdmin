@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.85 2004-03-11 18:13:32 turbo Exp $
+// $Id: user_add.php,v 2.86 2004-03-14 08:26:12 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -56,12 +56,12 @@ switch($_REQUEST["page_curr"]) {
 		// ------------------------------------------------
 		// Step 2b: Autogenerate some stuff for the next form
 
-		$attribs = array(pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS"),
-						 pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"));
-		foreach($attribs as $attrib) {
+		$attribs = array("autocreatemailaddress" => pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS"),
+				 "autocreateusername"	 => pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"));
+		foreach($attribs as $key => $attrib) {
 			// Get default value
 			$value = pql_domain_get_value($_pql, $_REQUEST["domain"], $attrib);
-			$$attrib = pql_format_bool($value);
+			$$key = pql_format_bool($value);
 		}
 
 		// Verify/Create uid - But only if we're referencing users with UID...
@@ -214,11 +214,12 @@ switch($_REQUEST["page_curr"]) {
 	}
 
 	// Get default {home,mail} directory from the database.
-	$attribs = array(pql_get_define("PQL_ATTR_BASEHOMEDIR"), pql_get_define("PQL_ATTR_BASEMAILDIR"));
+	$attribs = array("basehomedir" => pql_get_define("PQL_ATTR_BASEHOMEDIR"),
+			 "basemaildir" => pql_get_define("PQL_ATTR_BASEMAILDIR"));
 	foreach($attribs as $attrib) {
 		// Get default value
 		$value = pql_domain_get_value($_pql, $_REQUEST["domain"], $attrib);
-		$$attrib = $value;
+		$$key = $value;
 	}
 
 	// Generate the mail directory value
@@ -265,8 +266,8 @@ switch($_REQUEST["page_curr"]) {
 		// Can't autogenerate!
 		$error = true;
 		$error_text["homedirectory"] = pql_complete_constant($LANG->_('Attribute <u>%what%</u> is missing. Can\'t autogenerate %type%'),
-															 array('what' => pql_get_define("PQL_ATTR_BASEHOMEDIR"), 
-																   'type' => 'Path to homedirectory'));
+								     array('what' => pql_get_define("PQL_ATTR_BASEHOMEDIR"), 
+									   'type' => 'Path to homedirectory'));
 	}
 	break;
 

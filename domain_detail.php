@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.79 2004-03-11 18:13:32 turbo Exp $
+// $Id: domain_detail.php,v 2.80 2004-03-14 08:26:12 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -57,62 +57,54 @@ if(empty($_REQUEST["view"]))
 // Get some default values for this domain
 // Some of these (everything after the 'o' attribute)
 // uses 'objectClass: dcOrganizationNameForm' -> http://rfc-2377.rfcindex.net/
-$attribs = array(pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS"),
-				 pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"),
-				 pql_get_define("PQL_ATTR_BASEHOMEDIR"),
-				 pql_get_define("PQL_ATTR_BASEMAILDIR"),
-				 pql_get_define("PQL_ATTR_BASEQUOTA"),
-				 pql_get_define("PQL_ATTR_DEFAULTDOMAIN"),
-				 pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"),
-				 pql_get_define("PQL_ATTR_FACSIMILETELEPHONENUMBER"),
-				 pql_get_define("PQL_ATTR_L"),
-				 pql_get_define("PQL_ATTR_MAXIMUM_DOMAIN_USERS"),
-				 pql_get_define("PQL_ATTR_MAXIMUM_MAILING_LISTS"),
-				 pql_get_define("PQL_ATTR_O"),
-				 pql_get_define("PQL_ATTR_POSTALADDRESS"),
-				 pql_get_define("PQL_ATTR_STREETADDRESS"),
-				 pql_get_define("PQL_ATTR_REGISTEREDADDRESS"),
-				 pql_get_define("PQL_ATTR_POSTALCODE"),
-				 pql_get_define("PQL_ATTR_POSTOFFICEBOX"),
-				 pql_get_define("PQL_ATTR_ST"),
-				 pql_get_define("PQL_ATTR_STREET"),
-				 pql_get_define("PQL_ATTR_TELEPHONENUMBER"),
-				 pql_get_define("PQL_ATTR_FACSIMILETELEPHONENUMBER"),
-				 pql_get_define("PQL_ATTR_MOBILE"),
-				 pql_get_define("PQL_ATTR_USERNAME_PREFIX"),
-				 pql_get_define("PQL_ATTR_USERNAME_PREFIX_LENGTH"),
-				 pql_get_define("PQL_ATTR_VAT_NUMBER"),
-				 pql_get_define("PQL_ATTR_INFO"));
-foreach($attribs as $attrib) {
+$attribs = array("autocreatemailaddress"	=> pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS"),
+				 "autocreateusername"		=> pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"),
+				 "basehomedir"				=> pql_get_define("PQL_ATTR_BASEHOMEDIR"),
+				 "basemaildir"				=> pql_get_define("PQL_ATTR_BASEMAILDIR"),
+				 "basequota"				=> pql_get_define("PQL_ATTR_BASEQUOTA"),
+				 "defaultdomain"			=> pql_get_define("PQL_ATTR_DEFAULTDOMAIN"),
+				 "defaultpasswordscheme"	=> pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"),
+				 "facsimiletelephonenumber"	=> pql_get_define("PQL_ATTR_FACSIMILETELEPHONENUMBER"),
+				 "l"						=> pql_get_define("PQL_ATTR_L"),
+				 "maximumdomainusers"		=> pql_get_define("PQL_ATTR_MAXIMUM_DOMAIN_USERS"),
+				 "maximumMailingLists"		=> pql_get_define("PQL_ATTR_MAXIMUM_MAILING_LISTS"),
+				 "o"						=> pql_get_define("PQL_ATTR_O"),
+				 "postaladdress"			=> pql_get_define("PQL_ATTR_POSTALADDRESS"),
+				 "streetaddress"			=> pql_get_define("PQL_ATTR_STREETADDRESS"),
+				 "registeredaddress"		=> pql_get_define("PQL_ATTR_REGISTEREDADDRESS"),
+				 "postalcode"				=> pql_get_define("PQL_ATTR_POSTALCODE"),
+				 "postofficebox"			=> pql_get_define("PQL_ATTR_POSTOFFICEBOX"),
+				 "st"						=> pql_get_define("PQL_ATTR_ST"),
+				 "street"					=> pql_get_define("PQL_ATTR_STREET"),
+				 "telephonenumber"			=> pql_get_define("PQL_ATTR_TELEPHONENUMBER"),
+				 "facsimiletelephonenumber"	=> pql_get_define("PQL_ATTR_FACSIMILETELEPHONENUMBER"),
+				 "mobile"					=> pql_get_define("PQL_ATTR_MOBILE"),
+				 "usernameprefix"			=> pql_get_define("PQL_ATTR_USERNAME_PREFIX"),
+				 "usernameprefixlength"		=> pql_get_define("PQL_ATTR_USERNAME_PREFIX_LENGTH"),
+				 "vatnumber"				=> pql_get_define("PQL_ATTR_VAT_NUMBER"),
+				 "info"						=> pql_get_define("PQL_ATTR_INFO"));
+foreach($attribs as $key => $attrib) {
 	// Get default value
 	$value = pql_domain_get_value($_pql, $_REQUEST["domain"], $attrib);
-	$$attrib = $value;
+	$$key = $value;
 
 	if($attrib == pql_get_define("PQL_ATTR_INFO")) {
 		// Special circumstance - multiple lines...
-		$$attrib = eregi_replace("\n", "<br>", $$attrib);
+		$$key = eregi_replace("\n", "<br>", $$key);
 	}
 
 	// Setup edit links. If it's a dcOrganizationNameForm attribute, then
 	// we add a delete link as well.
-	$link = $attrib . "_link";
-	if(($attrib != 'defaultdomain') and ($attrib != 'basehomedir') and ($attrib != 'basemaildir')) {
-		if(!$value and (($attrib == 'maximumdomainusers') or ($attrib == 'maximummailinglists') or
-						($attrib == 'autocreateusername') or ($attrib == 'autocreatemailaddress')))
+	$link = $key . "_link";
+	if(($key != 'defaultdomain') and ($key != 'basehomedir') and ($key != 'basemaildir')) {
+		if(!$value and (($key == 'maximumdomainusers') or ($key == 'maximummailinglists') or
+						($key == 'autocreateusername') or ($key == 'autocreatemailaddress')))
 		  $value = 0;
 		else
 		  // We have a value
-		  if(($attrib == 'autocreateusername') or ($attrib == 'autocreatemailaddress')) {
-			  // It's a toggle. Convert the boolean value to an integer
-			  if($value == 'FALSE') {
-				  // It's false, set it to zero
-				  $value = 0;
-				  $$attrib = 0;
-			  } else {
-				  $value = 1;
-				  $$attrib = 1;
-			  }
-		  }
+		  if(($key == 'autocreateusername') or ($key == 'autocreatemailaddress'))
+			// It's a toggle. Convert the boolean value to an integer
+			$$key = pql_format_bool($value);
 
 		// A dcOrganizationNameForm attribute
 		$alt1 = pql_complete_constant($LANG->_('Modify attribute %attribute% for %domainname%'),
@@ -145,11 +137,11 @@ $seealso   			= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define(
 // The value retreived from the object is a one liner.
 // Split it up into it's parts (SIZE and AMOUNT) and
 // create an array that pql_ldap_mailquota() understands.
-$temp			   = split(',', $basequota);
-$temp[1] = eregi_replace("C$", "", $temp[1]);
-$temp[0] = eregi_replace("S$", "", $temp[0]);
-$quota   = array(); $quota["maxmails"] = $temp[1]; $quota["maxsize"]  = $temp[0];
-$basequota		   = pql_ldap_mailquota($quota);
+$temp		= split(',', $basequota);
+$temp[1]	= eregi_replace("C$", "", $temp[1]);
+$temp[0]	= eregi_replace("S$", "", $temp[0]);
+$quota		= array(); $quota["maxmails"] = $temp[1]; $quota["maxsize"]  = $temp[0];
+$basequota	= pql_ldap_mailquota($quota);
 
 $additionaldomainname = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
 
