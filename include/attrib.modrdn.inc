@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for changing/renaming the DN
 //
-// $Id: attrib.modrdn.inc,v 2.1 2003-08-18 08:24:42 turbo Exp $
+// $Id: attrib.modrdn.inc,v 2.2 2003-08-18 10:38:39 turbo Exp $
 
 function attribute_check($type) {
 	global $user, $oldvalue, $rdn, $view, $domain, $rootdn, $attrib;
@@ -88,6 +88,10 @@ function attribute_save($type) {
 
 	// Create a new DN part
 	$user = $dnattr[0]."=".$dn;
+
+	// Make sure we can have a ' in the branch
+	$oldvalue = eregi_replace("\\\'", "'", $oldvalue);
+	$rdn = eregi_replace("\\\'", "'", $rdn);
 
 	if(ldap_rename($_pql->ldap_linkid, $oldvalue, $user, $rdn, $keepold))
 	  $msg = pql_complete_constant($LANG->_('Successfully renamed RDN %user%'),
