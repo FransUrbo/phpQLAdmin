@@ -2,7 +2,7 @@
 <head>
 	<title>phpQL</title>
 	<link rel="stylesheet" href="../normal.css" type="text/css">
-	<!-- $Id: index.php,v 2.2 2003-04-07 12:35:22 turbo Exp $ -->
+	<!-- $Id: index.php,v 2.3 2004-03-16 10:54:26 turbo Exp $ -->
 </head>
 
 <body bgcolor="#e7e7e7" background="../images/bkg.png">
@@ -45,9 +45,7 @@ You can help to make this a useful tool.
 <ul>
 	<li>Tobias Ratschiller (tobias@phpwizard.net), for providing the navigation bar script (taken from phpMyAdmin)
 	<li>Henning Brauer (henning.brauer@bsmail.de), for the permission to use texts from 'life with qmail-ldap' in the help system
-	<li>Alex A. Beeck (beeck@nttb.com.br), for the search extension and portugese translating
-	<li>Luca Pescatore (l.pescatore@network.it), for italian translating
-	<li>Swen Veckes (s.veckes@de.kddi.com), for japanese translating
+	<li>Alex A. Beeck (beeck@nttb.com.br), for the search extension
 </ul>
 <br>
 <span class="title2">Known Bugs</span>

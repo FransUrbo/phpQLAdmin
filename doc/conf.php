@@ -2,7 +2,7 @@
 <head>
 	<title>phpQL</title>
 	<link rel="stylesheet" href="../normal.css" type="text/css">
-	<!-- $Id: conf.php,v 2.6 2004-03-11 18:13:36 turbo Exp $ -->
+	<!-- $Id: conf.php,v 2.7 2004-03-16 10:54:26 turbo Exp $ -->
 </head>
 
 <body bgcolor="#e7e7e7" background="../images/bkg.png">
@@ -29,48 +29,40 @@ Change filename of the required language file to change the language
 of the application. Language files have the name lang.xx.inc, where
 xx stands for the abbreviation of the language (e.g. de for german,
 en for english and so on). Look in your include directory to see
-which languages are supported. Currently these are german (de) and english (en),
-italian (it) and japanes (jp), but I hope, there will be other users who contribute
-their languages too.
-<br>
-These files have been hoplessly left behind while working on version 2.0, the only
-language that's been keept up to date is the english one. Also, there's quite a lot
-of stuff hardcoded in the PHP files.
-<br>
-<br>
-<b>PQL_CONF_SHOW_USERS</b>
-<br>
-(true or false). set to false, if the domain users should not be shown in the navigation
-frame. this results in better performance on servers with large amount of users.
-<br>
-<br>
-<b>PQL_CONF_AUTO_RELOAD</b>
-<br>
-(true or false). true, if the navigation bar should automatically be reloaded, if a domain
-or user was added or deleted. with large amount of domains / users reloading the navigation
-bar could get slow, at least if PQL_CONF_SHOW_USERS is turned on.
-<br>
-<br>
-<b>PQL_CONF_HOSTMASTER</b>
-<br>
-(email address). this is the sender of testmails.
-<br>
-<br>
+which languages are supported. Currently, only English (en) is supported, but I hope
+there will be other users who contribute their languages.
+<p>
 <b>PQL_CONF_HOST</b>
 <br>
-(full qualified domain name, e.g ldap.foo.bar). the host which is running the
-ldap-server for the users database.<p>
-In version 2.x, this define is multi-purposed. It is multiple hosts running
-LDAP servers (database layout must match though) with different data (such as
-many ISP's databases). Each server is separated by the plus (+) character.<p>
+FQDN, Fully Qualified Domain Name (e.g ldap.foo.bar) to the host which is
+running the LDAP server for the users database.
+<br>
+This value is multi-purposed, it can contain multiple hosts running LDAP servers
+with different data (such as many ISP's databases). Each server is separated by
+the plus (+) character.
+<br>
 In each server define, there is three fields separated by semicolon (;).<br>
 <b>First field</b> is the hostname,<br>
 <b>Second field</b> is the port number,<br>
-<b>Third field</b> is the DN path to the qmail-ldap/controls database.<br>
-<u>Example:</u> Two LDAP servers on separate ports and using separate TLD.
+<b>Third field</b> is the DN path to the qmail-ldap/controls database.
+<p>
+<u>Example:</u> Two LDAP servers on separate ports and using separate TLD (bind without SSL,
+one on standard port 389 and one on another port - 3389).
 <pre>
-localhost;389;ou=QmailLDAP,dc=example,dc=com+localhost;3389;ou=QmailLDAP,dc=domain,dc=net
+localhost;;ou=QmailLDAP,dc=example,dc=com+localhost;3389;ou=QmailLDAP,dc=domain,dc=net
 </pre>
+Since the PHP LDAP module supports LDAP URIs, naturaly you could use that here as well
+(note that the path to the socket <b>must</b> be URL encoded). Also note that this socket
+must be readable and writable by the user Apache is running as.
+<pre>
+ldapi://%2fvar%2frun%2fldapi;;ou=QmailLDAP,dc=example,dc=com
+</pre>
+Using SSL is also possible. Take special care to make sure that the LDAP server acctually
+works with SSL (certificate is ok and that you've configured slapd to listen on ldaps).
+<pre>
+ldaps://server.example.com;;ou=QmailLDAP,dc=example,dc=com
+</pre>
+In both the <b>ldapi</b> and <b>ldaps</b> examples, the <u>port</u> value is pointless.<br>
 As you might notice (especially if you're used to older versions of this
 software) that the Base DN is no more. It is found by doing a search for
 the naming context of the LDAP server. An LDAP search command would look like
@@ -83,40 +75,32 @@ namingContexts: dc=com
 This say that my base DN (what I've entered as <b>defaultsearchbase</b> and <b>suffix</b>
 configuration in my slapd.conf file) is <u>dc=com</u>.
 <p>
-<b>PQL_CONF_CONTROL_USE</b>
+<b>PQL_CONF_SUBTREE_USERS</b> and <b>PQL_CONF_SUBTREE_GROUPS</b>
 <br>
-(true | false) set to true, if qmail-ldap/control patch is supported by your system. Make sure
-you have complied all requirements listed in INSTALL. Configuration values which are beginning with
-PQL_CONF_CONTROL_ are only required if you need qmail-ldap/control support and set
-PQL_CONF_CONTROL_USE to true, otherwise they will be ignored.
+Organizational unit below each top branch DN to store users and groups.
+Example:
+If your top DN is <i>dc=com</i> (see <i>namingContexts</i> above), your
+branch object DN is <i>dc=example</i> (see QmailLDAP/Controls example above)
+and you enter <b>ou=People</b> into the PQL_CONF_SUBTREE_USERS and
+(optionally) <b>ou=Groups</b> into the PQL_CONF_SUBTREE_GROUPS, then this
+would result in all users being stored below the following DN:
+<pre>
+ou=People,dc=example,dc=com
+</pre>
+<p>
+<b>PQL_CONF_EZMLM_USER</b>
 <br>
+If you're using the ezmlm manager, you might have to configure
+what user ezmlm is running as. That is, who "own's" (ie, the
+directories) the mailinglist. This is usually 'alias', as in
+'~alias/.qmail-LISTNAME' but can also be 'vmail'...
+<p>
+<b>Other</b>
 <br>
-<b>PQL_CONF_CONTROL_AUTOADDLOCALS</b>
-<br>
-(true | false). set this to true, if phpQLAdmin should automatically add all domains to
-locals. Disable this (false), if you have more than one qmail-ldap server
-and don't want that phpQLAdmin register all domains on this server. Currently, the
-application do not support more than one control database.
-<br>
-<br>
-<b>PQL_CONF_PASSWORD_SCHEMES</b>
-<br>
-(CRYPT | CLEAR | SHA | MD5 | KERBEROS). defines the password encryption type which is allowd to
-encrypt passwords in the ldap database. qmail/ldap is supporting SHA, MD5, CRYPT and cleartext
-passwords (if compiled with cleartext password support). phpQLAdmin is supporting
-all hashes, but for SHA and MD5 support you need to install PHP's mhash extension. PHP's native
-MD5 Hash is not compatible with the required hashes of ldap. It's recommended that you use
-SHA or MD5 if you have mhash support in your PHP engine, because crypt allows only 8 characters in
-a password, others will be ignored. Avoid using cleartext passwords, they are not secured, and have
-not support in qmail/ldap by default (can be changed only at compile time).
-<br>
-You can define all of them, separated with comma (,) and you'll get a selectable list of these
-when creating a user.
-<br>
-<br>
-<b>PQL_CONF_ALLOW_ABSOLUTE_PATH</b>
-<br>
-(true | false). set this to true, if absolute paths are allowed to set
-the mailbox directory.
+that this, <b><u>NO</u></b> other values need to be entered
+into the config.inc file! Everything else is configured from the
+user interface. Select 'Advanced mode' in the left frame and unfold
+the <u>Home</u> branch. There you'll see <u>phpQLAdmin Configuration</u>
+(once as a branch name and once as a URL for a page).
 </body>
 </html>

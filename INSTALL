@@ -1,35 +1,35 @@
 phpQLAdmin - Installation Guide
 -------------------------------
-
-$Id: INSTALL,v 2.2 2003-03-26 18:26:09 turbo Exp $
-
+$Id: INSTALL,v 2.3 2004-03-16 10:54:26 turbo Exp $
 
 Software Requirements:
 ----------------------
-
 - qmail-ldap (this is not required to get phpQLAdmin working, but why use
-  phpQLAdmin w/o qmail-ldap ? :)
-- LDAP server with support for "qmailuser" objectclass (tested with OpenLDAP 1.2.11)
-- root access to the qmail-ldap DN
+  phpQLAdmin w/o qmail-ldap ? :). There is fundamental support (i.e. phpQLAdmin
+  API supports this) to use phpQLAdmin with for example Sendmail/LDAP etc. This
+  have to be fully tested and verified - patches will be greatfully accepted!
+- LDAP server with support for "qmailUser" objectclass (tested with OpenLDAP 1.2.11)
 - Webserver (tested with Apache 1.3.14)
-- PHP 4.0.x (tested with PHP 4.0.4pl) with compiled in LDAP support
+
+PHP Requirenments:
+------------------
+- PHP 4.0.x (tested with PHP 4.0.4pl)
+- Compiled in LDAP support
+
+PHP additionals/nice-to-have
+----------------------------
+- Compiled in JPEG, GIF or (preferably) PNG support.
+- Compiled in mhash-library to support MD5 and SHA password encryption
+- Compiled in IDN support (http://php-idn.bayour.com)
 
 Additional Requirements for qmail-ldap/control patch support:
 -------------------------------------------------------------
-
-- LDAP server with support for "qmailcontrol" objectclass
-- "qmailcontrol" objectclass must contain all attributes which you want
+- LDAP server with support for "qmailControl" objectclass
+- "qmailControl" objectclass must contain all attributes which you want
   to administrate trough phpQLAdmin
-
-Optional:
----------
-
-- mhash-library compiled in PHP to support MD5 and SHA password encryption
-
 
 Install:
 --------
-
 1. Untar the distribution (tar -zxf phpQLAdmin-x.x.x.tgz) to a directory
    below webserver's root.
 
