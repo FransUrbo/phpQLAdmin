@@ -4,14 +4,19 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.20 2004-01-16 15:23:55 turbo Exp $
+// $Id: pql_bind9.inc,v 2.21 2004-02-12 14:01:27 turbo Exp $
 //
 
-// {{{ pql_bind9_get_zone(linkid, domain)
-function pql_bind9_get_zone($linkid, $domain) {
-	$dn = "ou=DNS,".urldecode($domain);
+// {{{ pql_bind9_get_zone(linkid, branchname, domainname)
+function pql_bind9_get_zone($linkid, $branchname, $domainname = '') {
+	$dn = "ou=DNS,".urldecode($branchname);
 
-    $sr = @ldap_search($linkid, $dn, 'objectClass=dNSZone');
+	if(!empty($domainname))
+	  $filter = "(&(zoneName=$domainname)(objectClass=dNSZone))";
+	else
+	  $filter = 'objectClass=dNSZone';
+
+    $sr = @ldap_search($linkid, $dn, $filter);
     if($sr) {
 		// Oki, we have a DNS zone in LDAP.
 		$info = ldap_get_entries($linkid, $sr)
