@@ -355,10 +355,15 @@ switch($submit){
 <?php
 		if(eregi(',', $config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn])) {
 			// We got more than one password scheme...
+
+			// Get the default password scheme for branch
+			$defaultpasswordscheme = pql_get_domain_value($_pql, $domain, "defaultpasswordscheme");
+
+			// Show each of the schemes as radio buttons
 			$schemes = split(",", $config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn]);
 			foreach($schemes as $scheme) {
 ?>
-            <input type="radio" name="pwscheme" value="<?=$scheme?>"><?=$scheme?>
+            <input type="radio" name="pwscheme" value="<?=$scheme?>" <?php if($defaultpasswordscheme == $scheme) { echo "CHECKED"; } ?>><?=$scheme?>
 <?php		}
 		} else { ?>
             Scheme: <b>{<?=$config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn]?>}</b>

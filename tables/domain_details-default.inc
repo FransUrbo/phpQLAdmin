@@ -69,6 +69,12 @@
         <td><?=$maximumdomainusers_link?></td>
       </tr>
 
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Default password scheme</td>
+        <td><?php if($defaultpasswordscheme){echo $defaultpasswordscheme;}else{echo "no default";} ?></td>
+        <td><?=$defaultpasswordscheme_link?></td>
+      </tr>
+
 <?php } ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?=PQL_LANG_DOMAIN_ADMIN_TITLE?></td>

@@ -48,7 +48,7 @@ if(!pql_domain_exist($_pql, $dc[1])){
 $attribs = array('defaultdomain', 'basehomedir', 'basemaildir', 'o', 'l',
 				 'postalcode', 'postaladdress', 'telephonenumber', 'street',
 				 'facsimiletelephonenumber', 'postofficebox', 'st', 'basequota',
-				 'maximumdomainusers');
+				 'maximumdomainusers', 'defaultpasswordscheme');
 foreach($attribs as $attrib) {
 	// Get default value
 	$value = pql_get_domain_value($_pql, $domain, $attrib);

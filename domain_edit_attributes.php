@@ -70,6 +70,9 @@ switch($attrib){
   case "additionaldomainname":
 	$include = "attrib.additionaldomainname.inc";
 	break;
+  case "defaultpasswordscheme":
+	$include = "attrib.defaultpasswordscheme.inc";
+	break;
   default:
     die("unknown attribute");
 }
