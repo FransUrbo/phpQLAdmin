@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.30 2005-01-12 13:50:55 turbo Exp $
+// $Id: pql_search.inc,v 2.31 2005-01-13 12:23:24 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -15,29 +15,8 @@
 function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $operational = 0) {
 	// URL decode the object DN if it's URL ENcoded
 	$dn = urldecode($dn);
-
-	if(eregi("^dNSTTL=", $dn)) {
-	  // De urldecode (part of) the DNS DN.
-	  // We're missing the '+' between dNSTTL and relativeDomainName
-	  // (which urldecode() removes!):
-	  // 
-	  // dNSTTL=3600+relativeDomainName=@,dc=domain,dc=tld,ou=DNS,o=Branch,c=SE
-	  $dn_parts = explode(',', $dn);
-
-	  // Create the new DN with all but the very first part.
-	  $count = count($dn_parts);
-	  for($i=1; $i <= $count; $i++) {
-		$newdn .= $dn_parts[$i];
-		if($dn_parts[$i+1])
-		  $newdn .= ",";
-	  }
-
-	  // Add the missing part
-	  $tmp   = split(' ', $dn_parts[0]);
-	  $newdn = $tmp[0]."+".$tmp[1].",".$newdn;
-
-	  $dn = $newdn;
-	}
+	if(eregi("^dNSTTL=", $dn))
+	  $dn = pql_recreate_dnsttl($dn);
 
     // TODO: Check whether the object is cached.
 //    $value = '';
