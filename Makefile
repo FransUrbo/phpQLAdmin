@@ -58,11 +58,14 @@ debian: install
 	  echo "Files is in: "$(DESTDIR))
 
 release: tag tarball debian
-	@(mv $(TMPDIR)/phpQLAdmin-$(VERSION).tar.gz /var/www/phpqladmin/; \
-	  mv $(TMPDIR)/phpQLAdmin-$(VERSION).tar.bz2 /var/www/phpqladmin/; \
+	@(mv -v $(TMPDIR)/phpQLAdmin-$(VERSION).tar.gz /var/www/phpqladmin/; \
+	  mv -v $(TMPDIR)/phpQLAdmin-$(VERSION).tar.bz2 /var/www/phpqladmin/; \
 	  cat /var/www/phpqladmin/index.html.in | \
 		sed -e "s@%VERSION%@$(VERSION)@g" -e "s@%CVSTAG%@`cat .tag`@g" \
 		> /var/www/phpqladmin/index.html.out; \
+	  mv /var/www/phpqladmin/index.html.out /var/www/phpqladmin/index.html; \
+	  cp -v CHANGES /var/www/phpqladmin/CHANGES.txt; \
+	  cp -v $(DESTDIR)/../*.deb /var/www/phpqladmin; \
 	  rm .tag)
 
 $(INSTDIR):
