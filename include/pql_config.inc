@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.20 2003-04-26 14:57:33 turbo Exp $
+// $Id: pql_config.inc,v 1.21 2003-04-28 11:03:44 turbo Exp $
 //
 global $config;
 
@@ -55,6 +55,7 @@ $PQL_ATTRIBUTE["PQL_GLOB_CONTROL_AUTOADDLOCALS"] = 'autoAddLocals';
 $PQL_ATTRIBUTE["PQL_GLOB_CHANGE_SERVER"] = 'allowServerChange';
 $PQL_ATTRIBUTE["PQL_CONF_ALLOW_ABSOLUTE_PATH"] = 'allowAbsoluteMailPath';
 $PQL_ATTRIBUTE["PQL_CONF_VERIFY_DELETE"] = 'deleteVerification';
+$PQL_ATTRIBUTE["PQL_GLOB_MINIMUM_UIDNUMBER"] = 'minimumUIDNumber';
 $PQL_ATTRIBUTE["PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER"] = 'forwardUIDNumber';
 $PQL_ATTRIBUTE["PQL_GLOB_BIND9_USE"] = 'useBind9';
 
