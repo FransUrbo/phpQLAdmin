@@ -54,6 +54,7 @@
 #						testMailText											 3
 #						forwardUIDNumber									 4
 #						minimumUIDNumber									 5
+#						minimumGIDNumber									 6
 #
 #					Value															4
 #						defaultDomain											 1
@@ -82,7 +83,7 @@
 #						userNamePrefixLength							24
 # -----------------------------------------
 
-# $Id: phpQLAdmin.schema,v 2.36 2003-12-11 06:04:07 turbo Exp $
+# $Id: phpQLAdmin.schema,v 2.37 2004-02-27 11:43:56 turbo Exp $
 
 # PQL_CONF_SHOW_USERS (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.1 NAME 'showUsers'
@@ -357,7 +358,14 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.3.4 NAME 'forwardUIDNumber'
 
 # PQL_CONF_MINIMUM_UIDNUMBER (integer)
 attributetype ( 1.3.6.1.4.1.8767.3.2.3.5 NAME 'minimumUIDNumber'
-	DESC 'Minimum UID/GID Number to be used for shell and system accounts'
+	DESC 'Minimum UID Number to be used for shell and system accounts'
+	EQUALITY integerMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+	SINGLE-VALUE )
+
+# PQL_CONF_MINIMUM_GIDNUMBER (integer)
+attributetype ( 1.3.6.1.4.1.8767.3.2.3.6 NAME 'minimumGIDNumber'
+	DESC 'Minimum GID Number to be used for shell and system accounts'
 	EQUALITY integerMatch
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
 	SINGLE-VALUE )
