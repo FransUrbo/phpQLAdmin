@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.16 2005-02-24 17:04:01 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.17 2005-03-04 09:51:36 turbo Exp $
 
 // {{{ attribute_translate_type(attrib)
 function attribute_translate_type($attrib) {
@@ -246,7 +246,7 @@ function attribute_save($action) {
 				echo "Renaming<br>'<b>$dn</b>'<br>to<br>'<b>$new_dn,$parent</b>'<br>";
 				$dn = $new_dn.','.$parent;
 			} else {
-				if(ldap_rename($_pql->ldap_linkid, $dn, $new_dn, $parent, true))
+				if(pql_write_ren($_pql->ldap_linkid, $dn, $new_dn, $parent, true))
 				  $dn = $new_dn.','.$parent;
 				else {
 					pql_format_error(1);
@@ -336,7 +336,7 @@ function attribute_save($action) {
 			$success = 1;
 			echo "Deleting a whole object: '$dn'";
 		  } else {
-			if(ldap_delete($_pql->ldap_linkid, $dn))
+			if(pql_write_del($_pql->ldap_linkid, $dn))
 			  $success = 1;
 			else
 			  pql_format_error(1);

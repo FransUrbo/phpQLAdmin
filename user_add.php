@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.120 2005-03-03 12:14:56 turbo Exp $
+// $Id: user_add.php,v 2.121 2005-03-04 09:51:36 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -277,11 +277,8 @@ switch($_REQUEST["page_curr"]) {
 				$host = split(';', $_SESSION["USER_HOST"]);
 				$entry["ref"] = $host[0]."/".urlencode($_REQUEST["destination"]);
 				
-				// Create a LDIF object to print in case of error
-				$LDIF = pql_create_ldif("pql_user_add - alias creation", $_REQUEST["user"], $entry);
-
 				// Add the object to the database
-				if(! ldap_add($_pql->ldap_linkid, $_REQUEST["user"], $entry)) {
+				if(!pql_write_add($_pql->ldap_linkid, $_REQUEST["user"], $entry, 'alias', 'user_add.php')) {
 					// failed to add user
 					pql_format_error(1);
 					die($LDIF);

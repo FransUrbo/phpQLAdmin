@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.32 2005-02-24 17:04:01 turbo Exp $
+// $Id: pql_bind9.inc,v 2.33 2005-03-04 09:51:36 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -211,19 +211,13 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 
 		// See if the component exists. If not, create it.
 		if(!pql_get_dn($linkid, $dn, 'objectClass=domain', 'BASE')) {
-			// Doesn't already exists. Create a LDIF object to print in case of error
-			$LDIF = pql_create_ldif("pql_bind9_add_zone - dc=".$dc_tmp, $dn, $entry);
-			if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
-			  echo $LDIF;
-			else {
-				if(!ldap_add($linkid, $dn, $entry)) {
-					// Can't add domain component
-					pql_format_error(1);
-					echo "Can't add domain component...<br>\n";
-					die($LDIF);
-				} else
-				  $DNs[] = $dn;
-			}
+		  if(!pql_write_add($linkid, $dn, $entry, 'objectclass', 'pql_bind9_add_zone')) {
+			// Can't add domain component
+			pql_format_error(1);
+			echo "Can't add domain component...<br>\n";
+			die($LDIF);
+		  } else
+			$DNs[] = $dn;
 		}
 	}
 
@@ -253,19 +247,13 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 	$dn = "relativeDomainName=".$entry['relativeDomainName'].",$dn";
 
 	if(!pql_get_dn($linkid, $dn, 'objectClass=dNSZone', 'BASE')) {
-		// Doesn't already exists. Create a LDIF object to print in case of error
-		$LDIF = pql_create_ldif("pql_bind9_add_zone - @", $dn, $entry);
-		if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
-		  echo $LDIF;
-		else {
-			if(!ldap_add($linkid, $dn, $entry)) {
-				// Can't add SOA record
-				pql_format_error(1);
-				echo "Can't add the 'relativeDomainName=@' entry...<br>\n";
-				die($LDIF);
-			} else
-			  $DNs[] = $dn;
-		}
+	  if(!pql_write_add($linkid, $dn, $entry, 'bind9/zone', 'pql_bind9_add_zone')) {
+		// Can't add SOA record
+		pql_format_error(1);
+		echo "Can't add the 'relativeDomainName=@' entry...<br>\n";
+		die($LDIF);
+	  } else
+		$DNs[] = $dn;
 	}
 	
 	return true;
@@ -297,16 +285,10 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 	// }}}
 
 	// {{{ Add the object to the database
-	// Create a LDIF object to print in case of error
-	$LDIF = pql_create_ldif("pql_bind9_add_host", $dn, $entry);
-	if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
-		echo $LDIF;
-	} else {
-		if(!ldap_add($linkid, $dn, $entry)) {
-			pql_format_error(1);
-			die($LDIF);
-			return false;
-		}
+	if(!pql_write_add($linkid, $dn, $entry, 'bind9/host', 'pql_bind9_add_host')) {
+	  pql_format_error(1);
+	  die($LDIF);
+	  return false;
 	}
 	// }}}
 
@@ -333,13 +315,13 @@ function pql_bind9_del_zone($linkid, $dn, $zone) {
 
 		if($lc_dn != $lc_zone) {
 			// Don't delete the acctuall zone quite yet
-			if(!ldap_delete($linkid, $info[$i]["dn"]))
+			if(!pql_write_del($linkid, $info[$i]["dn"]))
 			  pql_format_error(1);
 		}
 	}
 
 	// Delete the zone itself
-	if(!ldap_delete($linkid, $dn_to_remove)) {
+	if(!pql_write_del($linkid, $dn_to_remove)) {
 		pql_format_error(1);
 		return false;
 	}
@@ -361,7 +343,7 @@ function pql_bind9_del_zone($linkid, $dn, $zone) {
     $info = ldap_get_entries($linkid, $sr) or pql_format_error(1);
 	if(! $info[1]) {
 		// We don't have more than the DN object, delete it.
-		if(!ldap_delete($linkid, $tld)) {
+		if(!pql_write_del($linkid, $tld)) {
 			pql_format_error(1);
 			return false;
 		}
@@ -385,7 +367,7 @@ function pql_bind9_del_zone($linkid, $dn, $zone) {
     $info = ldap_get_entries($linkid, $sr) or pql_format_error(1);
 	if(! $info[1]) {
 		// We don't have more than the DN object, delete it.
-		if(!ldap_delete($linkid, $ou)) {
+		if(!pql_write_del($linkid, $ou)) {
 			pql_format_error(1);
 			return false;
 		}

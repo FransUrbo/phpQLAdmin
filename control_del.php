@@ -1,6 +1,6 @@
 <?php
 // Delete a mailserver controls object
-// $Id: control_del.php,v 2.18 2005-03-01 09:30:02 turbo Exp $
+// $Id: control_del.php,v 2.19 2005-03-04 09:51:36 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -171,7 +171,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 	  if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
 		die("I'm debugging, so '<b>$dn</b>' isn't deleted!");
 	  else {
-		if(! ldap_delete($_pql_control->ldap_linkid, $dn)) {
+		if(! pql_write_del($_pql_control->ldap_linkid, $dn)) {
 		  // Could not delete object
 		  $url = "control_detail.php?mxhost=".$mxhost."&msg=";
 		  $url .= urlencode(pql_complete_constant($LANG->_("Failed to delete mailserver %host%.",
