@@ -9,6 +9,9 @@ phpQLAdmin 2.0.18c TO BE ANNOUNCED
 	  - Require the pql_config.inc file to avoid PHP errors in the right frame
 	    when choosing control.php or ezmlm.php.
 
+	Misc changes	
+	  - The file 'doc/INSTALL' was moved to '.' so that it's easily seen.
+
 phpQLAdmin 2.0.18b Release (Apr  6 2004)
 	Bug fixes
 	  - New config option - PQL_CONF_USE_TLS (true/false) which have to be true
