@@ -17,6 +17,10 @@ phpQLAdmin 2.2.2 TO BE ANNOUNCED
 	  - Globalize the listno value ($_REQUEST["listno"]) in ezmlm_detail.php.
 	    This so that we don't need to complicate the list information retreival
 	    in 'tables/ezmlm_details-{detail,lists}.inc'.
+	  - Missing { and/or } in change password form lead to pql_password_hash()
+	    generating a default scheme encrypted password.
+	    + REPLACE password, not ADD to object.
+	    Closes: 241
 
 	GUI layout changes
 	Misc changes
