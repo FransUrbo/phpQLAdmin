@@ -13,14 +13,14 @@
       if($ALLOW_GLOBAL_CONFIG_SAVE) {
 ?>
         <td class="<?=$class?>">
-          <a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_LANG"]?>">
+          <a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_LANG"]?>">
             <img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=$PQL_ATTRIBUTE["PQL_CONF_LANG"]?>">
           </a>
         </td>
 <?php } else { ?>
         <td class="<?=$class?>"></td>
 <?php } ?>
-        <td class="<?=$class?>"><?=$LANG->_('Language')?>&nbsp;</td>
+        <td class="<?=$class?>"><?php echo pql_get_define("PQL_GLOB_LANG")?>&nbsp;</td>
       </tr>
 
       <tr>

@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.33 2003-06-28 15:11:30 turbo Exp $
+// $Id: pql_config.inc,v 1.34 2003-07-03 07:25:54 turbo Exp $
 //
 
 // We need this instead of define(), so that we can get rid
@@ -81,7 +81,7 @@ $PQL_ATTRIBUTE["PQL_CONF_CREATE_USERNAME"] = 'autoCreateUsername';
 $PQL_ATTRIBUTE["PQL_CONF_CREATE_ADDRESS"] = 'autoCreateMailAddress';
 
 // phpQLAdmin setup
-$PQL_ATTRIBUTE["PQL_CONF_LANG"] = 'language';
+$PQL_ATTRIBUTE["PQL_GLOB_LANG"] = 'language';
 $PQL_ATTRIBUTE["PQL_GLOB_HOSTMASTER"] = 'hostMaster';
 $PQL_ATTRIBUTE["PQL_CONF_TESTMAIL_SUBJECT"] = 'testMailSubject';
 $PQL_ATTRIBUTE["PQL_CONF_TESTMAIL_MAILTEXT"] = 'testMailText';
