@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.4 2002-12-24 12:01:51 turbo Exp $
+// $Id: left-control.php,v 2.5 2002-12-29 01:04:53 turbo Exp $
 //
 session_start();
 
@@ -31,6 +31,13 @@ if(PQL_LDAP_CONTROL_USE) {
   <font color="black" class="heada">
     Host: <font color="black" size=-4><b><?=$USER_HOST_CTR?></b></font>
   </font>
+
+  <div id="el2Parent" class="parent">
+    <nobr>
+      <a href="control_add_server.php">Add mail server</a>
+    </nobr>
+  </div>
+
 <?php
 	}
 
