@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.15 2004-03-02 07:28:21 turbo Exp $
+// $Id: pql_formating.inc,v 2.16 2004-03-12 13:17:11 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -167,12 +167,17 @@ function pql_format_tree($text, $url, $links = '', $level = 0) {
 // {{{ pql_format_tree_opera(counter, text, url, level, parent, child)
 function pql_format_tree_opera($cnt, $text, $url, $level, $parent, $child) {
 	$nbsp = '';
+
+	$mouse["click"] = 'onclick="showhide(el'.$child.', el'.$cnt.'Img)"';
+	$mouse["over"]  = 'onmouseover="if (isDOM || isIE4) {hilightBase(\'el'.$cnt.'\', \'#CCFFCC\')}"';
+	$mouse["out"]   = 'onmouseout="if (isDOM || isIE4) {hilightBase(\'el'.$cnt.'\', \'#D0DCE0\')}"';
+
 	if($level) {
 		for($i=0; $i < ($level * 4); $i++) 
 		  $nbsp .= "&nbsp;";
 	}
 ?>
-  <div id="el<?=$cnt?><?=$parent?>" class="parent" onclick="showhide(el<?=$child?>, el<?=$cnt?>Img)">
+  <div id="el<?=$cnt?><?=$parent?>" class="parent" <?=$mouse["over"]." ".$mouse["out"]." ".$mouse["click"]?>>
     <?=$nbsp?><img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$cnt?>Img">
     <?php if($url) { ?><a href="<?=$url?>"><?php } ?><font color="black" class="heada"><?=$text?></font><?php if($url) { ?></a><?php } ?>
 
@@ -185,27 +190,32 @@ function pql_format_tree_opera($cnt, $text, $url, $level, $parent, $child) {
 // {{{ pql_format_tree_other(counter, text, url, level, parent, child)
 function pql_format_tree_other($cnt, $text, $url, $level, $parent, $child) {
 	$nbsp = '';
+
+	$mouse["over"]  = 'onmouseover="if (isDOM || isIE4) {hilightBase(\'el'.$cnt.'\', \'#CCFFCC\')}"';
+	$mouse["out"]   = 'onmouseout="if (isDOM || isIE4) {hilightBase(\'el'.$cnt.'\', \'#D0DCE0\')}"';
+
 	if($level) {
 		for($i=0; $i < ($level * 4); $i++) 
 		  $nbsp .= "&nbsp;";
 	}
 
-// Can't remember why I did this. Uncommenting it until I do...
-//	if($url) {
-//		$url = "href=\"$url\"";
-//	}
+	if($url) {
+		$url = "href=\"$url\"";
+	}
 ?>
-  <div id="el<?=$cnt?><?=$parent?>" class="parent">
-    <a class="item" <?=$url?> onClick="if (capable) {expandBase('el<?=$cnt?>', true); return false;}">
-      <?=$nbsp?><img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$cnt?>Img">
-    <?php if($url) { ?></a><?php } ?>
+  <div id="el<?=$cnt?>Parent" class="parent" <?=$mouse["over"]." ".$mouse["out"]?>>
+    <nobr>
+      <a class="item" <?=$url?> onclick="if (capable) {expandBase('el<?=$cnt?>', true); return false;}">
+        <?=$nbsp?><img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$cnt?>Img">
+      </a>
 
-    <?php if($url) { ?><a class="item" href="<?=$url?>"><?php } ?>
-
-      <font color="black" class="heada"><?=$text?></font>
-    <?php if($url) { ?></a><?php } ?>
+      <a class="item" <?=$url?> onclick="if (capable) {expandBase('el<?=$cnt?>', false)}">
+        <span class="heada"><?=$text?></span>
+      </a>
+    </nobr>
   </div>
-  <div id="el<?=$child?>" class="child">
+
+  <div id="el<?=$child?>" class="child" style="margin-bottom: 5px" <?=$mouse["over"]." ".$mouse["out"]?>>
 <?php	
 }
 // }}}
@@ -215,7 +225,8 @@ function pql_format_tree_span($text, $links, $level) {
 	$nbsp = '';
 	for($i=0; $i < (($level + 1) * 4); $i++)
 	  $nbsp .= "&nbsp;";
-	
+
+	$count = count($links); $counter = 0;
 	foreach($links as $text => $link) {
 		// If it's a user, we want an icon before the list...
 		// DIRTY HACK: An option to the function instead?
@@ -226,13 +237,36 @@ function pql_format_tree_span($text, $links, $level) {
 		if($text) {
 			if($link) {
 ?>
-    <nobr><?=$nbsp?><a href="<?=$link?>"><?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>">&nbsp;<?php } ?><?=$text?></a></nobr><br>
-<?php		} else { ?>
-    <nobr><?=$nbsp?><?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>">&nbsp;<?php } ?><?=$text?></nobr><br>
+    <nobr>
+      <?=$nbsp?>
+      <?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>"><?php } ?>
+      <a class="tblItem" title="<?=$text?>" target="pqlmain" href="<?=$link?>"><?=$text?></a>
+    </nobr>
+<?php			if($counter < ($count - 1)) { ?>
+
+    <br />
+<?php			}
+			} else { ?>
+    <nobr>
+      <?=$nbsp?>
+      <?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>"><?php } ?>
+      <?=$text?>
+    </nobr>
+
+    <br />
 <?php		}
 		} else { ?>
-    <nobr><?=$nbsp?>---------------</nobr><br>
-<?php	}
+    <nobr>
+      <?=$nbsp?>
+      ---------------
+    </nobr>
+<?php		if($counter < ($count - 1)) { ?>
+
+    <br />
+<?php		}
+		}
+
+		$counter++;
 	}
 }
 // }}}
