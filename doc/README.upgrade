@@ -5,6 +5,10 @@ Upgrading from 2.0.13
 	Also, some new features have been added (automatic replication
 	of rcpthosts attributes), so please read the README file again.
 
+	It is now possible to UTF-8 encode branches. That is, use national
+	characters! This is however not possible if using 'dc' branches.
+	That's a 'problem' (?) in the schema, not phpQLAdmin.
+
 Upgrading from 2.0.10
 	The schema have been updated, so don't forget to load the new
 	version! Please re-read the file README (subjects 'Schema issues'

@@ -308,6 +308,13 @@ will have to disable automatic replication on both locals and rcpthosts,
 and either specify what to write where (when adding domain to default
 or additional domain for branch).
 
+National characters (UTF-8 encoding)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+As of v2.0.14, it is possible to create objects with full international
+support (ie, use national characters wherever even in the DN's). One
+exeption to this is if branches is ordered by the 'dc' attribute (domain
+objectclass). The 'dc' attribute does not allow UTF-8 encoded strings...
+
 
 For more information on installations, please view doc/index.php through
 your web browser. Note though that documentation is not my stronges side
