@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.13 2005-01-30 10:39:02 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.14 2005-01-30 12:27:58 turbo Exp $
 
 // {{{ attribute_translate_type(attrib)
 function attribute_translate_type($attrib) {
@@ -82,7 +82,9 @@ function attribute_print_form() {
     <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
       <table cellspacing="0" cellpadding="3" border="0">
         <th colspan="3" align="left"><?php
-	   if($host != "@") {
+	   if(lc($attrib) == pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")) {
+		 echo pql_complete_constant($LANG->_("Rename DNS host %host%"), array('host' => $host));
+	   } elseif($host != "@") {
 		 echo pql_complete_constant($LANG->_('Change Bind9 value for %host%'), array('host' => $host));
 	   } else {
 		 echo pql_complete_constant($LANG->_("Change Bind9 SOA value for %domain%"), array('domain' => $domain));
@@ -124,7 +126,7 @@ function attribute_print_form() {
             <td><?=$LANG->_("If this is an FQDN not in this zone,<br>don't forget the trailing dot!")?></td>
             <td></td>
           </tr>
-<?php	} elseif((lc($attrib) != 'nsrecord') and (lc($attrib) != 'dnsttl')) { ?>
+<?php	} elseif((lc($attrib) != 'nsrecord') and (lc($attrib) != 'dnsttl') and (lc($attrib) != pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME"))) { ?>
           <tr class="<?php pql_format_table(); ?>">
             <td class="title">New record type</td>
             <td>
@@ -155,6 +157,8 @@ function attribute_print_form() {
       <input type="hidden" name="type"            value="mx">
 <?php		} elseif(lc($attrib) == 'nsrecord') { ?>
       <input type="hidden" name="type"            value="ns">
+<?php		} elseif(lc($attrib) == pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")) { ?>
+      <input type="hidden" name="type"            value="host">
 <?php		} else { ?>
       <input type="hidden" name="oldtype"         value="<?=$attrib?>">
 <?php		}
@@ -163,7 +167,11 @@ function attribute_print_form() {
       <input type="hidden" name="domain"          value="<?=urlencode($_REQUEST["domain"])?>">
       <input type="hidden" name="rootdn"          value="<?=urlencode($_REQUEST["rootdn"])?>">
       <input type="hidden" name="view"            value="<?=$_REQUEST["view"]?>">
+<?php	if(lc($attrib) == pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")) { ?>
+      <input type="hidden" name="action"          value="rename">
+<?php	} else { ?>
       <input type="hidden" name="action"          value="<?=$_REQUEST["action"]?>">
+<?php	} ?>
       <input type="hidden" name="rdn"             value="<?=urlencode($_REQUEST["rdn"])?>">
       <input type="hidden" name="dns_domain_name" value="<?=$_REQUEST["dns_domain_name"]?>">
       <br>
@@ -277,6 +285,35 @@ function attribute_save($action) {
 		} else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
+		break;
+		// }}}
+
+	  case "rename":
+		// {{{ ren
+		$rdn_old = urldecode($_REQUEST["rdn"]);
+
+		$tmp     = explode(',', $rdn_old);
+		$attrib  = explode('=', $tmp[0]); $attrib=$attrib[0];
+
+		// {{{ Generate parent DN
+		$count   = count($tmp);
+		for($i=1; $i <= $count; $i++) {
+		  $parent .= $tmp[$i];
+		  if($tmp[$i+1])
+			$parent .= ",";
+		}
+		// }}}
+
+		// Generate new RDN
+		$rdn_new = "$attrib=".$_REQUEST["newvalue"];
+
+		if(pql_write_ren($_pql->ldap_linkid, $rdn_old, $parent, $rdn_new))
+		  $msg = pql_complete_constant($LANG->_('Successfully renamed RDN %old% to %new%'),
+									   array('old' => $rdn_old,
+											 'new' => $rdn_new));
+		else
+		  $msg = pql_complete_constant($LANG->_('Failed to rename RDN %old%'),
+									   array('old' => $rdn_old)) . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 		break;
 		// }}}
 
