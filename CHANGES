@@ -31,6 +31,8 @@ phpQLAdmin 2.0.9 - TO BE ANNOUNCED
 	  - Allow for search/base DN with a space. This means that we
  	    separate our PQL_LDAP_HOST entries with the '+' character
 	    instead!
+	  - Do a v3 bind by default. Fall back to a v2 bind if that didn't
+	    work.
 
 	GUI layout change
 	  - Dissalow the ezmlm frame if ordinary user.

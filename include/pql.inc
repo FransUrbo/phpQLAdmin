@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.44 2003-03-27 09:36:49 turbo Exp $
+// $Id: pql.inc,v 2.45 2003-03-29 09:17:25 turbo Exp $
 //
 
 // ----------------------------
@@ -80,7 +80,22 @@ class pql {
 				$this->ldap_error = $this->ldap_error . ldap_error($this->ldap_linkid) . "<br>" .
 				  "Please <a href=\"index.php\" target=\"_top\">relogin</a>.";
 			} else {
-				$this->ldap_error = $this->ldap_error . "LDAP server does not allow v2 binds!<p>Please allow v2 binds by removing 'disallow bind_v2' (OpenLDAP v2.0) or entering 'allow bind_v2' (OpenLDAP v2.1) in the slapd.conf file!";
+			    // Does not allow v3 bind, try a v2 bind 
+			    @ldap_set_option($this->ldap_linkid, LDAP_OPT_PROTOCOL_VERSION, 2);
+
+			    // Try to bind again 
+			    if(!$this->bind($binddn, $bindpw)) {
+				$this->ldap_error = "<b>Could not bind to ldap server</b>: ";
+				if(ldap_errno($this->ldap_linkid) != 2) {
+				    $this->ldap_error = $this->ldap_error . ldap_error($this->ldap_linkid) . "<br>" .
+				      "Please <a href=\"index.php\" target=\"_top\">relogin</a>.";
+				}
+			    } else {
+				// A v2 bind worked, we're bound to the server!
+				// Find the base DN(s)
+				$this->ldap_basedn = $this->_find_basedn();
+				return true;
+			    }
 			}
 
 			if($do_die) {
@@ -112,10 +127,10 @@ class pql {
 		$this->ldap_linkid = @ldap_connect($host, $port);
 		
 		if($this->ldap_linkid){
-			// Set the LDAP protocol version to 3 (LDAPv3).
-			//@ldap_set_option($this->ldap_linkid, LDAP_OPT_PROTOCOL_VERSION, 3);
+		    // Set the LDAP protocol version to 3 (LDAPv3).
+		    @ldap_set_option($this->ldap_linkid, LDAP_OPT_PROTOCOL_VERSION, 3);
 
-			return true;
+		    return true;
 		}
 		
 		return false;
