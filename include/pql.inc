@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.196 2004-11-05 13:16:52 turbo Exp $
+// $Id: pql.inc,v 2.197 2004-11-06 22:45:02 turbo Exp $
 //
 
 // ----------------------------
@@ -708,12 +708,15 @@ function pql_split_oldvalues($value) {
 		$values = split(" ", $value);
 	} elseif(eregi(",", $value)) {
 		$values = split(",", $value);
-	} else {
+	} elseif($value) {
 		$values[] = $value;
 	}
 
-	asort($values);
-	return($values);
+	if(is_array($values)) {
+		asort($values);
+		return($values);
+	} else
+	  return false;
 }
 // }}}
 
