@@ -7,9 +7,51 @@ phpQLAdmin 2.0.19 TO BE ANNOUNCED
 	    + A 'super admin' should be able to manage the QmailLDAP/Controls
 	      information, even if he/she isn't a controls administrator.
 	    + Simplify - cyckle through the root DN's _once_ (not twice).
+	  - Parse error fixed - missing } - in include/attrib.control.locals.inc.
+	  - pql_domain_get(): It's possible that the 'PQL_CONF_SUBTREE_USERS' is empty.
+	    If it is, we shouldn't try to add ',TOPDN' after it... We'll end up with a
+	    faulty search DN (',TOPDN'!).
+	  - URL decode the DN when we check if the user is a valid administrator for
+	    the global configuration.
+	  - Incase the user isn't a controls admin, we checked if he/she is a super
+	    admin. If true, then we must also set the session variable ALLOW_CONTROL_CREATE.
+	    Otherwise it won't show the controls frame...
+	  - Add the ACI's (if in use) in the pql_domain_set_value() function.
+	  - URL decode the domain/branch - if we have a flat structure - before retreiving
+	    users in left.php.
+	  - Since '$branches[]' (in left.php) is ALWAYS set before we get users, there's
+	    little point in checking AGAIN if we have more than one subbranch. Even if
+	    we don't, we have the main branch as a subbranch... This lead to code duplication
+	    removal.
+	  - De-globalize in a lot of places (installmailserver.php, control_detail.php,
+	    control_cat.php, control_edit_attribute.php, control_details-action.inc,
+	    control_details-base.inc and control_details-hosts_{locals,rcpt}.inc).
 
 	GUI layout change
-	Misc changes	
+	  - If we're running lynx, and we select the 'advanced' URL (in the left.php page),
+	    we should NOT be redirected to left.php, but index2.php (as everyone else).
+	    This so that we can enter the controls frame etc...
+	  - If we're running with lynx, we should have a 'back to index' link (that links
+	    to '/index2.php') in the config_detail.php so that we can get out of the
+	    configurator.
+
+	Misc changes
+	  - Fix the demo database setup:
+	    - 'Port' the demo database to OpenLDAP version 2.2.
+	      + Can't have more than one structural objectclass - remove inetOrgPerson
+	        and organizationalPerson from all user objects.
+	      + Remove 'givenName' from all user objects.
+	      + Remove 'objectClass=top' from all objects
+	    - BranchReference should be 'o', not 'ou'.
+	      + Update the 'branchObjectClass' in the base object as well.
+	    - Add 'objectClass=phpQLAdminGlobal' from the base object.
+	    - Add a QmailLDAP/Controls object - 'test.domain.tld'.
+	    - Update all 'userPassword' attributes for all the user objects.
+	    - Remove some misc database/backend configurations:
+	      dbsync, dbnosync, dbnolocking, cachesize, dbcachesize, checkpoint,
+	      idlcachesize
+	    - Update index better suited for syncRepl (and index administrator and
+	      ezmlmAdministrator)
 
 phpQLAdmin 2.0.18e Release (Oct 14 2004)
 	Bug fixes
