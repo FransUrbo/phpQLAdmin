@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for web server configuration)
 //
-// $Id: pql_websrv.inc,v 1.16 2005-03-14 19:41:10 turbo Exp $
+// $Id: pql_websrv.inc,v 1.17 2005-03-15 08:53:16 turbo Exp $
 //
 
 // {{{ pql_websrv_add_server(linkid, domain, server)
@@ -39,6 +39,7 @@ function pql_websrv_add_server($linkid, $domain, $server) {
 	$dn = pql_get_define("PQL_ATTR_CN")."=".$entry[pql_get_define("PQL_ATTR_CN")].",$dn";
 	$entry[pql_get_define("PQL_ATTR_CN")] = $entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")];
 	$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_split_oldvalues(pql_get_define("PQL_CONF_WEBSRV_OC"));
+	$entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")] = 'VirtualHost';
 
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_websrv_add_server", $dn, $entry);
