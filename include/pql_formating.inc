@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.10 2004-01-22 10:16:29 turbo Exp $
+// $Id: pql_formating.inc,v 2.11 2004-01-26 05:14:38 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -240,6 +240,24 @@ function pql_format_tree_end() {
 	  echo "  </span>\n\n";
 	else
 	  echo "  </div>\n\n";
+}
+// }}}
+
+// {{{ pql_format_timestamp(timestamp)
+function pql_format_timestamp($timestamp) {
+	$timestamp = preg_replace('/Z$/', '', $timestamp);
+
+	$year   = $timestamp[0].$timestamp[1].$timestamp[2].$timestamp[3];
+	$month  = $timestamp[4].$timestamp[5];
+	$day    = $timestamp[6].$timestamp[7];
+
+	$hour   = $timestamp[8].$timestamp[9];
+	$minute = $timestamp[10].$timestamp[11];
+	$second = $timestamp[12].$timestamp[13];
+
+	$date   = date("r", mktime($hour, $minute, $second,
+							   $month, $day, $year));
+	return($date);
 }
 // }}}
 
