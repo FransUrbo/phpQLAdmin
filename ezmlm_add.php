@@ -1,11 +1,20 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.8 2002-12-25 16:21:28 turbo Exp $
+// $Id: ezmlm_add.php,v 1.9 2003-01-14 06:45:11 turbo Exp $
 //
 session_start();
 
 require("./include/pql.inc");
 $_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
+
+// forward back to list detail page
+function list_forward($domainname, $msg){
+	global $domain;
+
+    $msg = urlencode($msg);
+    $url = "ezmlm_detail.php?domain=$domain&domainname=$domainname&msg=$msg&rlnb=3";
+    header("Location: " . PQL_URI . "$url");
+}
 
 if(!$subscribercount) {
 	$subscribercount = 0;
@@ -16,10 +25,10 @@ if(!$killcount) {
 
 if(!$domainname) {
 	// Get list of domain
-	$domains = pql_get_domain_value($_pql->ldap_linkid, '*', 'administrator', "=" . $USER_DN);
+	$domains = pql_get_domain_value($_pql->ldap_linkid, '*', 'administrator', $USER_DN);
     if(!is_array($domains)){
-		// if no domain defined, report it
-		echo "<b>Can't find any domain!</b><br>";
+		// if no domain defined - fatal error
+		die("<b>Can't find any domain!</b><br>");
     } else {
 		asort($domains);
 		
@@ -48,35 +57,16 @@ if(!$domainname) {
 	}
 }
 
-// Remember values between reloads
-if($archived)		$checked["archived"]		= " CHECKED";	// -aA
-if($remotecfg)		$checked["remotecfg"]		= " CHECKED";	// -cC
-if($digest)			$checked["digest"]			= " CHECKED";	// -dD
-if($prefix)			$checked["prefix"]			= " CHECKED";	// -fF
-if($subhelp)		$checked["subhelp"]			= " CHECKED";	// -hH
-if(!$archived) {	$guardarch = " DISABLED";	}
-if($indexed)		$checked["indexed"]			= " CHECKED";	// -iI
-if($subjump)		$checked["subjump"]			= " CHECKED";	// -jJ
-if($sublistable)	$checked["sublistable"]		= " CHECKED";	// -lL
-																// -kK TODO
-if($moderated)		$checked["moderated"]		= " CHECKED";	// -mM
-if($modonly)		$checked["modonly"]			= " CHECKED";	// -oO
-if($pubpriv == 'public') {
-	$checked["public"]  = " CHECKED";							// -p
-	$checked["private"] = "";
-} elseif($pubpriv == 'private') {
-	$checked["public"]  = "";
-	$checked["private"] = " CHECKED";							// -P
-}
-if($reqaddress)		$checked["reqaddress"]		= " CHECKED";	// -qQ
-if($remoteadm)		$checked["remoteadm"]		= " CHECKED";	// -rR
-if($submoderated)	$checked["submoderated"]	= " CHECKED";	// -sS
-if($trailers)		$checked["trailers"]		= " CHECKED";	// -tT
-if($subonly)		$checked["subonly"]			= " CHECKED";	// -uU
-if($extras)			$checked["extras"]			= " CHECKED";	// -x
-
-// TODO: For some reason, when I enable this, I get errors on the page!
-//$onchg = ' onChange="this.form.submit()"';
+// Default values. I think these are needed...
+$checked["subhelp"]		= " CHECKED";	// -hH
+$checked["subjump"]		= " CHECKED";	// -jJ
+$checked["reqaddress"]	= " CHECKED";	// -qQ
+$checked["subonly"]		= " CHECKED";	// -uU
+$checked["prefix"]		= " CHECKED";	// -fF
+$checked["archived"]	= " CHECKED";	// -aA
+$checked["indexed"]		= " CHECKED";	// -iI
+$checked["trailers"]	= " CHECKED";	// -tT
+$checked["public"]		= " CHECKED";							// -p
 
 // Create list
 if(isset($submit)) {
@@ -85,9 +75,10 @@ if(isset($submit)) {
 			// Get domain tree
 			$domains = pql_get_domains($_pql->ldap_linkid, $USER_SEARCH_DN_USR);
 			foreach($domains as $key => $name) {
-				$defaultdomain = pql_get_domain_value($_pql->ldap_linkid, $name, 'defaultDomain');
+				$defaultdomain = pql_get_domain_value($_pql->ldap_linkid, $name, 'defaultdomain');
 				if($domainname == $defaultdomain) {
 					$domain = $name;
+					break;
 				}
 			}
 		}
