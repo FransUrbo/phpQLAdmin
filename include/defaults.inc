@@ -61,7 +61,7 @@ pql_define("PQL_GLOB_EZMLM_USE", false, false);
 
 // ----------------------------
 // Path to EZMLM commands
-pql_define("PQL_CONF_EZMLM_PATH", "/usr/bin", false);
+pql_define("PQL_GLOB_EZMLM_PATH", "/usr/bin", false);
 
 // ----------------------------
 // Should we enable the domain (Bind 9) editor?
