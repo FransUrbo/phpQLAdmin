@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.33 2003-01-27 13:18:28 turbo Exp $
+// $Id: pql.inc,v 2.34 2003-01-28 13:23:35 turbo Exp $
 //
 
 // ----------------------------
@@ -675,7 +675,7 @@ function pql_get_domains($ldap) {
 		$info = @ldap_get_entries($ldap->ldap_linkid, $sr) or pql_errormsg($ldap->ldap_linkid);
 		
 		for ($i=0; $i<$info["count"]; $i++) {
-			$domains[] = $info[$i][PQL_LDAP_REFERENCE_DOMAINS_WITH][0];
+			$domains[] = $info[$i]["dn"];
 		}
 		
 	}
