@@ -2,7 +2,7 @@
 <head>
 	<title>phpQL</title>
 	<link rel="stylesheet" href="../normal.css" type="text/css">
-	<!-- $Id: faq.php,v 2.1 2004-03-16 10:54:26 turbo Exp $ -->
+	<!-- $Id: faq.php,v 2.2 2004-03-16 17:09:08 turbo Exp $ -->
 </head>
 
 <body bgcolor="#e7e7e7" background="../images/bkg.png">
@@ -61,6 +61,9 @@ will not work.
 TODO
 <p>
 <b>I'm getting the error "Could not bind to ldap server: Can't contact LDAP server"</b><br>
+TODO
+<p>
+<b>I'm getting the error "This is weird. We couldn't find the root dn for some reason."</b><br>
 TODO
 <p>
 <b>Netscape says 'Document contains no data' when requesting phpQLAdmin</b><br>
