@@ -1,6 +1,6 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.33 2003-11-19 16:25:06 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.34 2003-11-19 19:28:59 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -78,10 +78,10 @@ if($submit == 1) {
 	  attribute_save("delete");
 } elseif($submit == 3) {
 	// Support for changing domain administrator
-	attribute_print_form($action);
+	attribute_print_form($type);
 } elseif($submit == 4) {
 	// SAVE change of domain administrator, mailinglist admin and contact person
-	attribute_save($action);
+	attribute_save($type);
 } else {
 	if($attrib == pql_get_define("PQL_GLOB_ATTR_BASEQUOTA"))
 	  attribute_print_form();
