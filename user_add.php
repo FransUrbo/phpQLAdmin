@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.111 2005-02-01 07:26:36 turbo Exp $
+// $Id: user_add.php,v 2.112 2005-02-01 08:39:32 turbo Exp $
 //
 // {{{ Setup session etc
 session_start();
@@ -273,10 +273,10 @@ switch($_REQUEST["page_curr"]) {
 		}
 		// }}}
 
-		// {{{ Verify the password
+		// {{{ Verify (and/or generate) the password
 		if(($_REQUEST["account_type"] != "forward") and ($_REQUEST["account_type"] != "group")) {
 			// Only forward and group accounts is ok without password
-			if(($_REQUEST["password"] == "")) {
+			if(!$_REQUEST["password"]) {
 				if(!$_REQUEST["autogenerate"]) {
 					$error = true;
 					$error_text["password"] = $LANG->_('Missing');
@@ -361,10 +361,17 @@ switch($_REQUEST["page_curr"]) {
 			$_REQUEST["maildirectory"] = user_generate_mailstore($_pql, $_REQUEST["email"], $_REQUEST["domain"],
 																 array(pql_get_define("PQL_ATTR_UID") => $reference),
 																 'user');
-		  } else
+		  } else {
 			// Function user_generate_mailstore() doesn't exists but we have a base mail directory.
 			// Try creating the mail directory manually, using the username.
-			$_REQUEST["maildirectory"] = $basemaildir.$_REQUEST["uid"]."/";
+
+			if(pql_get_define("PQL_ATTR_ALLOW_ABSOLUTE_PATH", $_REQUEST["rootdn"]))
+			  // We're not allowing an absolute path - don't use the baseMailDir.
+			  $_REQUEST["maildirectory"] = $_REQUEST["uid"]."/";
+			else
+			  // Absolute path is ok - create 'baseMailDir/username/'
+			  $_REQUEST["maildirectory"] = $basemaildir.$_REQUEST["uid"]."/";
+		  }
 
 		  if($_REQUEST["maildirectory"])
 			// Replace space(s) with underscore(s)
