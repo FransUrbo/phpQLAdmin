@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.17 2003-11-20 08:01:36 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.18 2003-11-24 13:03:22 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -107,7 +107,7 @@ function attribute_print_form() {
 <?php if(pql_get_define("PQL_GLOB_BIND9_USE")) { ?>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Additional domain name')?></td>
+          <td class="title"><?=$LANG->_('Create DNS template')?></td>
           <td><input type="checkbox" name="template"> Yes</td>
         </tr>
 <?php } ?>
