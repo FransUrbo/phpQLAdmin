@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.63 2003-04-29 08:37:20 turbo Exp $
+// $Id: pql.inc,v 2.64 2003-04-29 12:07:39 turbo Exp $
 //
 
 // ----------------------------
@@ -724,38 +724,27 @@ function pql_replace_userattribute($ldap_linkid, $user, $attrib, $value) {
 					}
 
 					if(is_array($missing)) {
-						// We're missing attribute(s).
-						// TODO: Ask user to fill in missing attributes (via a popup window?)
+						// We're missing attribute(s) - create an array to be used by the user_add_missing_attributes.php page.
+						global $MISSING;
+						$MISSING['attrib'] = $attrib;
+						$MISSING['objectclass'] = $objectclass[0];
 
-						$msg  = "To modify the attribute <b>$attrib</b>, we need to add the objectclass ";
-						$msg .= "<b>".$objectclass[0]."</b>. ";
-						$msg .= "This however require the following attributes (which we don't have): <br><br>";
-						echo $msg; printr($missing);
-
-						$msg  = "The idea is to have phpQLAdmin ask you to enter values for these missing attributes";
-						$msg .= ", but this is not yet completed.<br>"; echo $msg;
+						for($i=0; $missing[$i]; $i++)
+						  $MISSING['attributes'][] = $missing[$i];
 					}
 
-//					// Add this objectclass to the existing objectclasses
-//					$entry["objectClass"][] = $objectclass[0];
-//
-//					// Create a LDIF object to print in case of error
-//					$LDIF = pql_create_ldif("pql_replace_userattribute", $user, $entry);
+					// Add this objectclass to the existing objectclasses
+					$entry["objectClass"][] = $objectclass[0];
 				} else { 
 					// TODO: We have more than one attribute!!
 					$msg  = "We retreived more than one objectclass (or possibly non at al!) that MAY or MUST ";
 					$msg .= "the attribute <b>$attrib</b>.<br>This is however not yet supported.<br>Objectclasses ";
 					$msg .= "retreived is:"; echo $msg; printr($objectclass);
+					die();
 				}
 
-				$msg = "Could not replace/add value because of a object class violation (missing objectclass).";
-				$url = "user_detail.php?user=$user&rlnb=2&msg=".urlencode($msg);
-?>
-
-    <form action="<?=$url?>" method="post">
-      <input type="submit" value="Continue">
-    </form>
-<?php
+				$url = "user_add_missing_attributes.php?user=$user";
+				require("./user_add_missing_attributes.php");
 				die();
 			}
 		}
