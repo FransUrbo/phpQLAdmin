@@ -88,14 +88,19 @@ if($advanced == 1) {
   <!-- HOME -->
 
 <?php
-// Get ALL domains we have access.
-//	'administrator: USER_DN'
-// in the domain object
-foreach($_pql->ldap_basedn as $dn)  {
-    $dom = pql_get_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $USER_DN);
-    if($dom) {
-	foreach($dom as $d) {
-	    $domains[] = urlencode($d);
+if($ALLOW_BRANCH_CREATE) {
+    // This is a 'super-admin'. Should be able to read EVERYTHING!
+    $domains = pql_get_domains($_pql);
+} else {
+    // Get ALL domains we have access.
+    //	'administrator: USER_DN'
+    // in the domain object
+    foreach($_pql->ldap_basedn as $dn)  {
+	$dom = pql_get_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $USER_DN);
+	if($dom) {
+	    foreach($dom as $d) {
+		$domains[] = urlencode($d);
+	    }
 	}
     }
 }
