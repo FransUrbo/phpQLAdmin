@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.105 2004-10-20 06:08:17 turbo Exp $
+// $Id: user_add.php,v 2.106 2004-11-13 12:45:58 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -19,6 +19,8 @@ $url["user"]		= pql_format_urls($_REQUEST["user"]);
 $orgname = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_O"));
 if(!$orgname) {
 	$orgname = urldecode($_REQUEST["domain"]);
+} elseif(is_array($orgname)) {
+	$orgname = $orgname[0];
 }
 
 // check if domain exist
@@ -41,7 +43,6 @@ $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLA
 $objectclasses_schema   = pql_get_subschema($_pql->ldap_linkid, 'objectclasses');
 
 // {{{ Verify the input from the current page.  Autogen input for the next page.
-
 // Check the input
 $error = false; $error_text = array();
 switch($_REQUEST["page_curr"]) {
@@ -402,7 +403,6 @@ switch($_REQUEST["page_curr"]) {
 		// }}}
 	}
 	break;
-
 	// }}}
 }
 
@@ -411,16 +411,14 @@ if(is_array($error_text)) {
 	foreach($error_text as $key => $msg)
 	  $error_text[$key] .= "<br>";
 }
-
 // }}}
 
 // {{{ Process the next page ($page_next).
 include("./header.html");
 ?>
   <span class="title1">
-    <?php echo pql_complete_constant($LANG->_('Create %type% in domain %domain%'),
-									 array("type"   => $_REQUEST["account_type"],
-										   "domain" => $orgname)); ?>
+    <?php echo pql_complete_constant($LANG->_('Create account in domain %domain%'),
+									 array("domain" => $orgname)); ?>
 <?php
 if($_SESSION["ADVANCED_MODE"] && $_REQUEST["account_type"]) {
 	if($_REQUEST["account_type"] == 'mail')
@@ -474,6 +472,7 @@ switch($_REQUEST["page_next"]) {
 	  include("./tables/user_add-save.inc");
 	break;
 }
+
 // }}}
 
 /*
