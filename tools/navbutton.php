@@ -38,7 +38,7 @@ if(!$myimage) {
 $black = ImageColorAllocate($myimage, 0, 0, 0);
     
 // Convert the string
-$string = pql_bind9_maybe_decode($string);
+$string = pql_maybe_idna_decode($string);
 
 // Write text to image (after decoding it to fix international characters)
 imageTTFText($myimage, 10, 0, 10, 14, $black, realpath("include/thryn.ttf"), $string);
