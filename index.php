@@ -1,6 +1,6 @@
 <?php
 // logins to the system
-// $Id: index.php,v 2.33 2004-02-14 16:01:04 turbo Exp $
+// $Id: index.php,v 2.34 2004-03-11 19:44:34 turbo Exp $
 //
 // Start debuging
 // http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0
@@ -44,8 +44,8 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 	include("./header.html");
 
 	if(!$_SESSION["USER_HOST"]) {
-		if(! eregi('\+', pql_get_define("PQL_GLOB_HOST"))) {
-			$host = split(';', pql_get_define("PQL_GLOB_HOST"));
+		if(! eregi('\+', pql_get_define("PQL_CONF_HOST"))) {
+			$host = split(';', pql_get_define("PQL_CONF_HOST"));
 			$_SESSION["USER_HOST"] = $host[0] . ";" . $host[1] . ";" . $host[2];
 		}
 	}
@@ -67,7 +67,7 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 
   <table cellspacing="0" cellpadding="3" border="0" align=center>
     <tr>
-      <td bgcolor="#D0DCE0"><FONT size=3><?php echo pql_complete_constant($LANG->_('Welcome to \b%whoarewe%\B'), array('whoarewe' => pql_get_define("PQL_GLOB_WHOAREWE"))); ?></FONT></td>
+      <td bgcolor="#D0DCE0"><FONT size=3><?php echo pql_complete_constant($LANG->_('Welcome to \b%whoarewe%\B'), array('whoarewe' => pql_get_define("PQL_CONF_WHOAREWE"))); ?></FONT></td>
     </tr>
 
     <tr align="center">
@@ -81,12 +81,15 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
         <td><?=$LANG->_('LDAP server')?>:</td>
         <td align="left">
 <?php
-	if(eregi('\+', pql_get_define("PQL_GLOB_HOST"))) {
-		$servers = split('\+', pql_get_define("PQL_GLOB_HOST"));
+	if(eregi('\+', pql_get_define("PQL_CONF_HOST"))) {
+		$servers = split('\+', pql_get_define("PQL_CONF_HOST"));
 ?>
           <select name="server">
 <?php	foreach($servers as $server) {
 			$host = split(';', $server);
+
+			// If it's an LDAP URI, replace "%2f" with "/" -> URLdecode
+			$host[0] = urldecode($host[0]);
 ?>
             <option value="<?=$server?>"><?=$host[0]?>:<?=$host[1]?></option>
 <?php	} ?>
@@ -94,9 +97,12 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 <?php
 	} else {
 		$server = split(';', $_SESSION["USER_HOST"]);
+
+		// If it's an LDAP URI, replace "%2f" with "/" -> URLdecode
+		$server[0] = urldecode($server[0]);
 ?>
         <b><?=$server[0].":".$server[1]?></b>
-        <input type="hidden" name="server" value="<?php echo pql_get_define("PQL_GLOB_HOST"); ?>">
+        <input type="hidden" name="server" value="<?php echo pql_get_define("PQL_CONF_HOST"); ?>">
 <?php
 	}
 ?>
@@ -183,7 +189,7 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 	$rootdn = pql_get_dn($_pql, $_POST["uname"], 1);
 	if(!$rootdn and !is_array($rootdn)) {
 		$msg = urlencode($LANG->_("Can't find you in the database"));
-		header("Location: " . pql_get_define("PQL_GLOB_URI") . "index.php?msg=$msg");
+		header("Location: " . pql_get_define("PQL_CONF_URI") . "index.php?msg=$msg");
 	} elseif(is_array($rootdn)) {
 		// We got multiple DN's. Try to bind as each one, keeping
 		// the one that succeeded.

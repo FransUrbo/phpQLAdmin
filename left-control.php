@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.22 2004-02-15 17:31:53 turbo Exp $
+// $Id: left-control.php,v 2.23 2004-03-11 19:45:11 turbo Exp $
 //
 session_start();
 
@@ -14,8 +14,8 @@ $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PA
 
 // TODO: How do we know if the user is allowed to add domains?
 //       In the domain description we don't have that info...
-//if(pql_get_define("PQL_GLOB_CONTROL_USE") && ($_SESSION["USER_BASE"] == 'everything')) {
-if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
+//if(pql_get_define("PQL_ATTR_CONTROL_USE") && ($_SESSION["USER_BASE"] == 'everything')) {
+if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 	$j = 1;
 ?>
   <!-- Server Control -->
@@ -28,6 +28,9 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 <?php
 	if($_SESSION["ADVANCED_MODE"]) {
 		$host = split(';', $_SESSION["USER_HOST"]);
+
+		// If it's an LDAP URI, replace "%2f" with "/" -> URLdecode
+		$host[0] = urldecode($host[0]);
 ?>
   <font color="black" class="heada"><?=$LANG->_('LDAP Server')?>: <b><?=pql_maybe_idna_decode($host[0])?>:<?=$host[1]?></b></font>
   <p>
@@ -141,7 +144,7 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 			$j++;
 		} // end foreach host
 	} // end if is_array($hosts)
-} // end if PQL_GLOB_CONTROL_USE
+} // end if PQL_CONF_CONTROL_USE
 
 require("./left-trailer.html");
 
