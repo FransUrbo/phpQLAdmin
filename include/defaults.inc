@@ -179,6 +179,12 @@ pql_define("PQL_CONF_USER_RDN_ATTRIBUTE", $config["PQL_GLOB_ATTR_UID"], false, $
 pql_define("PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER", 500, false, $dn);
 
 // ----------------------------
+// PQL_CONF_MAX_DOMAIN_USERS (integer)
+// Maximum amount of users allowed in a domain branch
+// If zero (0), then unlimited
+pql_define("PQL_CONF_MAX_DOMAIN_USERS", 0, false, $dn);
+
+// ----------------------------
 // PQL_GLOB_URI (URL)
 // the full url where phpQLAdmin resides
 // ie: http://www.yourdomain.com/phpQLAdmin/

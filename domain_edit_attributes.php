@@ -52,6 +52,9 @@ switch($attrib){
   case "seealso":
 	$include = "attrib.administrator.inc";
 	break;
+  case "maximumdomainusers":
+	$include = "attrib.maximumdomainusers.inc";
+	break;
   case "o":
   case "postalcode":
   case "postaladdress":

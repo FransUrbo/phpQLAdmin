@@ -43,7 +43,8 @@ if(!pql_domain_exist($_pql, $dc[1])){
 // uses 'objectClass: dcOrganizationNameForm' -> http://rfc-2377.rfcindex.net/
 $attribs = array('defaultdomain', 'basehomedir', 'basemaildir', 'o', 'l',
 				 'postalcode', 'postaladdress', 'telephonenumber', 'street',
-				 'facsimiletelephonenumber', 'postofficebox', 'st', 'basequota');
+				 'facsimiletelephonenumber', 'postofficebox', 'st', 'basequota',
+				 'maximumdomainusers');
 foreach($attribs as $attrib) {
 	// Get default value
 	$value = pql_get_domain_value($_pql, $domain, $attrib);
@@ -53,6 +54,9 @@ foreach($attribs as $attrib) {
 	// we add a delete link as well.
 	$link = $attrib . "_link";
 	if(($attrib != 'defaultdomain') and ($attrib != 'basehomedir') and ($attrib != 'basemaildir')) {
+		if(($attrib == 'maximumdomainusers') and !$value)
+		  $value = 0;
+
 		// A dcOrganizationNameForm attribute
 		$$link = "<a href=\"domain_edit_attributes.php?type=modify&attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=". urlencode($value) ."\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify attribute $attrib for $domain\"></a>&nbsp;<a href=\"domain_edit_attributes.php?type=delete&submit=2&attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=". urlencode($value) ."\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Delete attribute $attrib for $domain\"></a>";
 	} else {
@@ -101,6 +105,12 @@ if($ADVANCED_MODE == 1) {
         <td class="title"><?=PQL_LANG_MAILQUOTA_TITLE?></td>
         <td><?php if($basequota){echo $basequota;}else{echo PQL_LANG_UNSET;} ?></td>
         <td><?=$basequota_link?></td>
+      </tr>
+
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Maximum allowed users in branch</td>
+        <td><?php if($maximumdomainusers){echo $maximumdomainusers;}else{echo "unlimited";} ?></td>
+        <td><?=$maximumdomainusers_link?></td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
