@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for pilotPerson objects etc
-// $Id: attrib.outlook.inc,v 1.25 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.outlook.inc,v 1.26 2004-11-05 12:21:22 turbo Exp $
 
 /*
 	Attributes managed here:
@@ -53,31 +53,34 @@ function attribute_init() {
 // }}}
 
 // {{{ attribute_print_form(void)
-
 function attribute_print_form() {
     global $LANG, $error;
 
-  // Just to save some typeing.
-  $attrib = $_REQUEST["attrib"];
+	// Just to save some typeing.
+	$attrib = $_REQUEST["attrib"];
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" name="outlook">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Set/Modify attribute %attribute%'), array('attribute' => $attrib)); ?></th>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$attrib?></td>
-          <td><?php echo pql_format_error_span($error[$attrib]); ?><?php if($attrib == pql_get_define("PQL_ATTR_INFO")) { ?><textarea name="<?=$attrib?>" rows="10" cols="50"><?=$_REQUEST[$attrib]?></textarea><?php } else { ?><input type="text" name="<?=$attrib?>" value="<?=$_REQUEST[$attrib]?>" size="30"></td><?php } ?>
+          <td>
+            <?php echo pql_format_error_span($error[$attrib]); ?>
+            <?php if($attrib == pql_get_define("PQL_ATTR_INFO")) { ?><textarea name="<?=$attrib?>" rows="10" cols="50"><?=$_REQUEST[$attrib]?></textarea><?php } else { ?><input type="text" name="<?=$attrib?>" value="<?=$_REQUEST[$attrib]?>" size="30">
+          </td><?php } ?>
+
         </tr>
       </th>
     </table>
 
-	<input type="hidden" name="submit"   value="2">
-	<input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
-	<input type="hidden" name="oldvalue" value="<?=$_REQUEST["oldvalue"]?>">
-	<input type="hidden" name="domain"   value="<?=urlencode($_REQUEST["domain"])?>">
+    <input type="hidden" name="submit"   value="2">
+    <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="oldvalue" value="<?=$_REQUEST["oldvalue"]?>">
+    <input type="hidden" name="domain"   value="<?=urlencode($_REQUEST["domain"])?>">
     <input type="hidden" name="rootdn"   value="<?=urlencode($_REQUEST["rootdn"])?>">
-	<input type="hidden" name="user"     value="<?=urlencode($_REQUEST["user"])?>">
+    <input type="hidden" name="user"     value="<?=urlencode($_REQUEST["user"])?>">
     <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
-	<input type="submit" value="<?=$LANG->_('Save')?>">
+    <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
 
   <script language="JavaScript">
@@ -108,25 +111,8 @@ function attribute_save($type) {
 
 		if($_REQUEST["domain"] and !$_REQUEST["user"]) {
 			// Save a domain attribute
-			if(($attrib == 'vatnumber') or ($attrib == 'mobile') or ($attrib == 'info')) {
-				// Special circumstances - this is availible in the phpQLAdminInfo object class,
-				// so we need to call pql_modify_attribute() with an ARRAY with the values to
-				// set/modify, not array+value...
-				$entry[$attrib] = $_REQUEST[$attrib];
-				
-				// Retreive old object classes for this domain
-				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_setup_branch_objectclasses(0, $_REQUEST["domain"], $_pql->ldap_linkid);
-				
-				// Add the 'phpQLAdminInfo' objectclass
-				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'phpQLAdminInfo';
-
-				if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], '', '', $entry))
-				  $success = 1;
-			} else {
-				if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["attrib"], 1, $_REQUEST[$attrib]))
-				  $success = 1;
-			}
-
+			if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["attrib"], 1, $_REQUEST[$attrib]))
+			  $success = 1;
 		} elseif($_REQUEST["user"]) {
 			// Save a user attribute
 			if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], '', $_REQUEST[$attrib]))
@@ -143,11 +129,13 @@ function attribute_save($type) {
 
       case "delete";
 		if($_REQUEST["domain"] and !$_REQUEST["user"]) {
-			// Save a domain attribute
+			// Delete a domain attribute
 			if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib, '', ''))
 			  $success = 1;
-//		} elseif($_REQUEST["user"] and !$_REQUEST["domain"]) {
-// Currently no DELETE option
+		} elseif($_REQUEST["user"] and !$_REQUEST["domain"]) {
+			// Delete a user attribute
+			if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], $attrib, '', ''))
+			  $success = 1;
 		}
 
 		if($success)
