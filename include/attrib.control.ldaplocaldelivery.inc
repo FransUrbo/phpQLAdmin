@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldaplocaldelivery (search for local account, if ldap search is not successful)
 //
-// $Id: attrib.control.ldaplocaldelivery.inc,v 2.7 2003-07-02 07:59:00 turbo Exp $
+// $Id: attrib.control.ldaplocaldelivery.inc,v 2.8 2003-08-12 18:38:26 turbo Exp $
 
 // check values
 function ldaplocaldelivery_check($type) {
@@ -38,7 +38,7 @@ function ldaplocaldelivery_print_view($host) {
 	  $ldaplocaldelivery = $LANG->_('Enabled. Lookup for local users if ldap lookup didn\'t match');
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="2" align="left">ldaplocaldelivery (<?=$LANG->_('Deliver locally if ldap didn't match a user')?>)</th>
+    <th colspan="2" align="left">ldaplocaldelivery (<?=$LANG->_('Deliver locally if ldap didn\'t match a user')?>)</th>
       <tr class="<?php table_bgcolor(); ?>">
         <td><?=$ldaplocaldelivery?></td>
       </tr>
