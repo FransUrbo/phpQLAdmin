@@ -1,6 +1,7 @@
 <html>
 <body>
 <?php
+// $Id: dnszonetemplate.php,v 1.3 2003-01-13 10:47:38 turbo Exp $
 // You can either use this template as is, or write you own,
 // with predefined values (staticly set)...
 //
