@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for changing/renaming the DN
 //
-// $Id: attrib.modrdn.inc,v 2.11 2004-11-05 12:15:32 turbo Exp $
+// $Id: attrib.modrdn.inc,v 2.12 2005-01-30 12:28:49 turbo Exp $
 
 // {{{ attribute_setup_aci(linkid, dn, old, new)
 function attribute_setup_aci($linkid, $dn, $old, $new) {
@@ -111,24 +111,10 @@ function attribute_save($type) {
 	$user = $dnattr[0]."=".$_REQUEST["user"];
 
 	// {{{ Rename the RDN
-	$success = 0;
-    if(file_exists("./.DEBUG_ME")) {
-		echo "Renaming<br>'<b>".$_REQUEST["oldvalue"]."</b>'<br>to<br>'<b>$user,".$_REQUEST["rdn"]."</b>'<br>";
-		$user = $user.",".$_REQUEST["rdn"];
-
-		$success = 1;
-	} else {
-		if(ldap_rename($_pql->ldap_linkid, $_REQUEST["oldvalue"], $user, $_REQUEST["rdn"], $keepold)) {
-			$user = $user.",".$_REQUEST["rdn"];
-
-			$success = 1;
-		}
-	}
-	
-	if($success) {
-		$msg = pql_complete_constant($LANG->_('Successfully renamed RDN %old% to %new%'),
-									 array('old' => $_REQUEST["oldvalue"],
-										   'new' => $user));
+	if(pql_write_ren($_pql->ldap_linkid, $_REQUEST["oldvalue"], $_REQUEST["rdn"], $user, $keepold)) {
+	  $msg = pql_complete_constant($LANG->_('Successfully renamed RDN %old% to %new%'),
+								   array('old' => $_REQUEST["oldvalue"],
+										 'new' => $user));
 
 		// {{{ Replace all references to this user in the admin attributes
 		// We're only interested in these attributes
