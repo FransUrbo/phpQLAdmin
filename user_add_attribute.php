@@ -1,6 +1,6 @@
 <?php
 // adds an attribute 
-// $Id: user_add_attribute.php,v 2.30.2.1 2005-03-04 11:59:45 turbo Exp $
+// $Id: user_add_attribute.php,v 2.30.2.2 2005-03-17 08:23:01 turbo Exp $
 //
 /* This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
  *   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -42,7 +42,7 @@ function attribute_forward($msg) {
     
     $url = "user_detail.php?rootdn=" . $_REQUEST["rootdn"] . "&domain=" . $_REQUEST["domain"]
       . "&user=" . $_REQUEST["user"] . "&view=" . $_REQUEST["view"] . "&msg=".urlencode($msg);
-    header("Location: " . $_SESSION["URI"] . "$url");
+    pql_header($url);
 }
 
 // Get default domain name for this domain
