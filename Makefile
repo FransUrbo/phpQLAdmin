@@ -18,8 +18,7 @@ diff:
 	)
 
 tag:
-	@(cp .version .version.old; \
-	  VERSION=`cat .version | sed 's@ .*@@'`; \
+	@(VERSION=`cat .version | sed 's@ .*@@'`; \
 	  MAJOR=`expr substr $$VERSION 1 1`; \
 	  MINOR=`expr substr $$VERSION 3 1`; \
 	  LEVEL=`expr substr $$VERSION 5 2`; \
