@@ -17,6 +17,8 @@ phpQLAdmin 2.0.18e TO BE ANNOUNCED
 	    mailserver, or if we're doing it for ONE. Closes bug 205.
 	  - pql_domain_get_value() expects a URL encoded domain DN value. Give it one...
 	    Closes bug 204.
+	  - Somethimes the domain value is in $_GET, sometimes in $_POST. Either way,
+	    $_REQUEST is always used (but not initialized/correct). Closes bug 203.
 
 	GUI layout change
 	  - Folding tags added in attrib.mail.inc.
