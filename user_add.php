@@ -57,7 +57,7 @@ if($submit == "") {
 		$error_text["email"] = PQL_INVALID;
     }
 	
-    if($error_text["email"] == "" and pql_email_exists($_pql->ldap_linkid, $email)){
+    if($error_text["email"] == "" and pql_email_exists($_pql, $email)) {
 		$error = true;
 		$error_text["email"] = PQL_EXISTS;
     }
