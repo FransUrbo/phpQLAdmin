@@ -2,7 +2,7 @@
 require($_SESSION["path"]."/include/pql_websrv.inc");
 
 // {{{ Setup the object class filter
-$ocs = pql_split_oldvalues(pql_get_define("PQL_ATTR_WEBSRV_OC"));
+$ocs = pql_split_oldvalues(pql_get_define("PQL_CONF_WEBSRV_OC"));
 $filter = '(&';
 for($i=0; $ocs[$i]; $i++) {
   $filter .= '(objectClass='.$ocs[$i].')';

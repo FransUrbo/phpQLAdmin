@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for the Webserver Configuration editor
 //
-// $Id: attrib.websrv.inc,v 1.10 2005-03-01 09:38:33 turbo Exp $
+// $Id: attrib.websrv.inc,v 1.11 2005-03-14 19:43:17 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -76,7 +76,7 @@ function attribute_save($action) {
     switch($action) {
 	  case "add":
 		// {{{ Setup the object class filter
-		$ocs = pql_split_oldvalues(pql_get_define("PQL_ATTR_WEBSRV_OC"));
+		$ocs = pql_split_oldvalues(pql_get_define("PQL_CONF_WEBSRV_OC"));
 		$filter = '(&';
 		for($i=0; $ocs[$i]; $i++) {
 		  $filter .= '(objectClass='.$ocs[$i].')';
