@@ -43,15 +43,7 @@
 
   <script src="tools/frames.js" type="text/javascript" language="javascript1.2"></script>
   <script src="tools/left.js" type="text/javascript" language="javascript1.2"></script>
-<?php
-  $br = strtolower(getenv("HTTP_USER_AGENT"));
-  $_SESSION["lynx"] = eregi("lynx", $br);
-  $_SESSION["konqueror"] = eregi("konqueror", $br);
-  $_SESSION["opera"] = eregi("opera", $br);
-  $_SESSION["mozilla"] = eregi("mozilla", $br);
-  if($_SESSION["opera"]) {
-      $_SESSION["opera"]=true;
-?>
+<?php if($_SESSION["opera"]) { ?>
   <script src="tools/opera.js" type="text/javascript" language="javascript1.2"></script>
 <?php } ?>
 
