@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.153 2004-03-03 08:14:08 turbo Exp $
+// $Id: pql.inc,v 2.154 2004-03-03 08:28:53 turbo Exp $
 //
 
 // ----------------------------
@@ -492,6 +492,56 @@ function pql_user_exist($linkid, $dn, $user) {
 	  return(false); 
 
 	return(true);
+}
+// }}}
+
+// {{{ pql_user_get_quota(ldap_linkid, user)
+
+// Get formated quota of a user
+function pql_user_get_quota($ldap_linkid, $user) {
+	if($_SESSION["NEW_STYLE_QUOTA"]) {
+	  $quota_size  = pql_get_attribute($ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_QUOTA_SIZE"));
+	  $quota_count = pql_get_attribute($ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_QUOTA_COUNT"));
+
+	  return pql_parse_quota(array($quota_size[0], $quota_count[0]));
+	} else {
+	  $quota = pql_get_attribute($ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_QUOTA_VALUE"));
+
+	  if(!is_array($quota))
+		return false;
+	  else    
+		return pql_parse_quota($quota[0]);
+  }
+}
+
+// }}}
+
+// {{{ pql_user_get_letter(linkid, domain, letra)
+
+// Based in PQL_CONF_GET_USER to search by the cn first letter
+function pql_user_get_letter($linkid, $domain, $letra) {
+	$filter = "(".pql_get_define("PQL_GLOB_ATTR_UID")."=".$letra."*)";
+	$user = pql_search($linkid, $domain, $filter);
+    return $user;
+}
+
+// }}}
+
+// {{{ pql_user_get_number(ldap_linkid, domain)
+// Based in PQL_CONF_GET_USER to search by an initial number at cn attribute
+function pql_user_get_number($linkid, $domain) {
+	// What's the Root DN (namingContexts) for this domain
+	$rootdn = pql_get_rootdn($dn, 'pql_user_get_number'); $rootdn = urldecode($rootdn);
+
+    for($numero=0; $numero <= 9; $numero++) {
+		$filter = "(".pql_get_define("PQL_GLOB_ATTR_UID")."=".$numero."*)";
+		$tmp = pql_search($linkid, $domain, $filter);
+		
+		if($user)
+		  $user = $user + $tmp;
+    }
+    
+    return $user;
 }
 // }}}
 
@@ -1113,56 +1163,6 @@ function pql_email_exists($ldap, $email) {
 			return false;
 		}
 	}
-}
-// }}}
-
-// {{{ pql_get_userquota(ldap_linkid, user)
-
-// Get formated quota of a user
-function pql_get_userquota($ldap_linkid, $user) {
-	if($_SESSION["NEW_STYLE_QUOTA"]) {
-	  $quota_size  = pql_get_attribute($ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_QUOTA_SIZE"));
-	  $quota_count = pql_get_attribute($ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_QUOTA_COUNT"));
-
-	  return pql_parse_quota(array($quota_size[0], $quota_count[0]));
-	} else {
-	  $quota = pql_get_attribute($ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_QUOTA_VALUE"));
-
-	  if(!is_array($quota))
-		return false;
-	  else    
-		return pql_parse_quota($quota[0]);
-  }
-}
-
-// }}}
-
-// {{{ pql_get_user_letter(linkid, domain, letra)
-
-// Based in PQL_CONF_GET_USER to search by the cn first letter
-function pql_get_user_letter($linkid, $domain, $letra) {
-	$filter = "(".pql_get_define("PQL_GLOB_ATTR_UID")."=".$letra."*)";
-	$user = pql_search($linkid, $domain, $filter);
-    return $user;
-}
-
-// }}}
-
-// {{{ pql_get_user_number(ldap_linkid, domain)
-// Based in PQL_CONF_GET_USER to search by an initial number at cn attribute
-function pql_get_user_number($linkid, $domain) {
-	// What's the Root DN (namingContexts) for this domain
-	$rootdn = pql_get_rootdn($dn, 'pql_get_user_number'); $rootdn = urldecode($rootdn);
-
-    for($numero=0; $numero <= 9; $numero++) {
-		$filter = "(".pql_get_define("PQL_GLOB_ATTR_UID")."=".$numero."*)";
-		$tmp = pql_search($linkid, $domain, $filter);
-		
-		if($user)
-		  $user = $user + $tmp;
-    }
-    
-    return $user;
 }
 // }}}
 

@@ -1,6 +1,6 @@
 <?php
 // send a testmail to an emailaddress
-// $Id: user_sendmail.php,v 2.19 2004-02-14 14:01:00 turbo Exp $
+// $Id: user_sendmail.php,v 2.20 2004-03-03 08:28:37 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -33,7 +33,7 @@ $vars['CN'] = $cn[0];
 $sn = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_SN"));
 $vars['SN'] = $sn[0];
 
-$quota = pql_get_userquota($_pql->ldap_linkid, $user);
+$quota = pql_user_get_quota($_pql->ldap_linkid, $user);
 
 // Does the user have an individual mailbox quota?
 if (is_array($quota)) {

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mailquota.inc,v 2.22 2004-03-03 07:59:28 turbo Exp $
+// $Id: attrib.mailquota.inc,v 2.23 2004-03-03 08:28:53 turbo Exp $
 
 function attribute_check($type) {
     global $error, $LANG;
@@ -63,7 +63,7 @@ function attribute_check($type) {
 function attribute_init() {
     global $_pql;
 
-    $quota = pql_get_userquota($_pql->ldap_linkid, $_REQUEST["user"]);
+    $quota = pql_user_get_quota($_pql->ldap_linkid, $_REQUEST["user"]);
 	if(is_array($quota)) {
 		$_REQUEST["maxmails"] = $quota["maxmails"];
 		$_REQUEST["maxsize"]  = $quota["maxsize"];

@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.68 2004-03-03 07:58:54 turbo Exp $
+// $Id: user_detail.php,v 2.69 2004-03-03 08:28:37 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -100,7 +100,7 @@ foreach($attribs as $attrib) {
 	$alt = pql_complete_constant($LANG->_('Modify %attribute% for %what%'), array('attribute' => $attrib, 'what' => $username));
     $$link = "<a href=\"user_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&attrib=$attrib&user=".$url["user"]."&$attrib=$value&view=$view\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt."\"></a>";
 }
-$quota = pql_get_userquota($_pql->ldap_linkid, $_GET["user"]);
+$quota = pql_user_get_quota($_pql->ldap_linkid, $_GET["user"]);
 
 // Some of these get set from the "$$attrib = $value[0]" line above.
 if($userpassword == "") {
