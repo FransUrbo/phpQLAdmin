@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.14 2003-05-08 06:08:46 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.15 2003-05-20 14:12:02 turbo Exp $
 
 require("./left-head.html");
 
@@ -59,8 +59,8 @@ function attribute_print_form($action) {
 <?php } else {
 		// TODO: This is a REALLY bad idea. If we have a 'huge' database
 		// (hundred, thousands or more users), this will take AGES!
-
 		if($rootdn and $domain) {
+			// We're giving access to a specific domain
 			$i = 0; $j = 0;
 
 			// We're should give a user access to THIS branch	
@@ -96,20 +96,19 @@ function attribute_print_form($action) {
 				}
 
                 foreach($cns as $userdn => $username) {
-					// TODO: We should use type="checkbox", indexed with $i here,
-					//       but I'm not quite sure how to pass the value to attribute_save()...
 ?>
-              <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="<?=$attrib?>" value="<?=$userdn?>"><?=$username?></nobr><br>
+              <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="<?=$attrib?>_<?=$i?>" value="<?=$userdn?>"><?=$username?></nobr><br>
 <?php               $i++;
                 }
 
                 $j++;
 ?>
             </div>
-<?php
-			}
-		} elseif($user) {
-?>
+<?php		} ?>
+
+            <input type="hidden" name="<?=$attrib?>_<?=$i?>" value="on">
+            <input type="hidden" name="<?=$attrib?>" value="<?=$i?>">
+<?php	} elseif($user) { // We're giving a specific user access to a domain ?>
             <select name="domain">
 <?php		if($GLOBALS["ALLOW_GLOBAL_CONFIG_SAVE"]) {
 				// We're a super-admin, we can give/take
@@ -230,8 +229,14 @@ function attribute_save($type) {
 			// Add user 
 			if($user)
 			  $ADMs[] = $user;
-			elseif($$attrib)
-			  $ADMs[] = $$attrib;
+			elseif($$attrib) {
+				$amount = $_POST[$attrib];
+				for($i=0; $i < $amount; $i++) {
+					$var_name = $attrib . "_$i";
+					if($_POST[$var_name]) 
+					  $ADMs[] = $_POST[$var_name];
+				}
+			}
 		}
 
 		$success = 0;
