@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of a control option
-// $Id: control_edit_attribute.php,v 2.21 2004-02-14 14:01:00 turbo Exp $
+// $Id: control_edit_attribute.php,v 2.22 2004-03-11 19:41:20 turbo Exp $
 //
 session_start();
 
@@ -20,6 +20,8 @@ require("./include/pql_control_plugins.inc");
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
+$url["domain"] = pql_format_urls($_REQUEST["domain"]);
+
 // Register all attribute plugins here
 $plugin = pql_plugin_get($attrib);
 include("./include/".pql_plugin_get_filename($plugin));
@@ -35,15 +37,15 @@ function attribute_forward($msg) {
 	else
 	  $url = "domain_detail.php?rootdn=$rootdn&domain=$domain&view=$view&msg=$msg";
 
-	header("Location: " . pql_get_define("PQL_GLOB_URI") . "$url");
+	header("Location: " . pql_get_define("PQL_CONF_URI") . "$url");
 }
 
 include("./header.html");
 ?>
   <span class="title1">Change control values</span>
   <br><br>
-  <?php
-if(function_exists($control_plugin . "_help")) {
+<?php
+if(function_exists($plugin . "_help")) {
     // if a help function is available for the plugin,
     // print additional help table and put the
     // displayed form of the plugin into a cell of this
@@ -51,7 +53,7 @@ if(function_exists($control_plugin . "_help")) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <tr>
-      <td width="450" valign="top">
+
 <?php
 }
 
@@ -70,8 +72,9 @@ if($submit == 1) {
 if(function_exists($plugin . "_help")) {
     // this is the help table
 ?>
-    </td>
-    <td>&nbsp;</td>
+
+    <p>
+
     <td valign="top">
       <table cellspacing="0" cellpadding="3" border="0">
         <tr>
@@ -79,29 +82,27 @@ if(function_exists($plugin . "_help")) {
         </tr>
 
         <tr>
-          <td height="0" width="200" class="helptext" valign="top">
+          <td height="0" class="helptext" valign="top">
             <?php call_user_func($plugin . "_help"); ?>
           </td>
         </tr>
 
-        <?php
+<?php
 	  if(function_exists($plugin . "_help_cr")) {
 	      // this is the copyright message supplied with help text
-	?>
+?>
 
         <tr>
-          <td height="0" width="200" class="helptextcr" valign="top">
+          <td height="0" class="helptextcr" valign="top">
             <?php call_user_func($plugin . "_help_cr"); ?>
           </td>
         </tr>
-
 <?php
 }
 ?>
       </table>
-    </td>
-  </tr>
-</table>
+    </tr>
+  </table>
 <?php } ?>
 
 </body>
