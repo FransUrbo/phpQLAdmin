@@ -68,6 +68,10 @@ phpQLAdmin 2.0.16 TO BE ANNOUNCED
 	    object.
 	  - Updated qmailControl.schema, Now it works with OpenLDAP 2.x OIDs.
 	    Thanx to Leonardo Fialho.
+	  - Remove user from administrator/seeAlso attributes in all domains/branches
+	    when removing user.
+	  - Replace old RDN with new RDN in all administrator/seeAlso attributes
+	    in all domains/branches when renaming DN.
 
 phpQLAdmin 2.0.15 Release (Jul 15 2003)
 	Bug fixes
