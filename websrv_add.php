@@ -1,6 +1,6 @@
 <?php
 // add a webserver configuration to the LDAP db
-// $Id: websrv_add.php,v 2.6 2004-11-05 14:53:53 turbo Exp $
+// $Id: websrv_add.php,v 2.7 2004-11-15 15:19:55 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -45,7 +45,7 @@ if($submit) {
 	  $_REQUEST["documentroot"] .= '/';
 }
 
-if(($error == 'true') or !$_REQUEST["serverip"] or !serverurl or !$_REQUEST["serveradmin"] or !$_REQUEST["documentroot"]) {
+if(($error == 'true') or !$_REQUEST["serverip"] or !$_REQUEST["serverurl"] or !$_REQUEST["serveradmin"] or !$_REQUEST["documentroot"]) {
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Create a webserver configuration in branch %domain%'), array('domain' => $_REQUEST["domain"])); ?></span>
 
@@ -93,6 +93,8 @@ if(($error == 'true') or !$_REQUEST["serverip"] or !serverurl or !$_REQUEST["ser
   </form>
 <?php
 } else {
+	// No errors (i.e. no missing values). We're good to go!
+
 	$entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_IP")]	= $_REQUEST["serverip"];
 	$entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_URL")]	= $_REQUEST["serverurl"];
 	$entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_ADMIN")]	= $_REQUEST["serveradmin"];
@@ -146,7 +148,12 @@ if(($error == 'true') or !$_REQUEST["serverip"] or !serverurl or !$_REQUEST["ser
 	
 	$url =  "domain_detail.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"];
 	$url .= "&view=".$_REQUEST["view"]."&msg=".urlencode($msg);
-	header("Location: ".pql_get_define("PQL_CONF_URI") . "$url");
+
+	if(file_exists("./.DEBUG_ME")) {
+		echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
+		die("<b>$url</b>");
+	} else
+	  header("Location: ".pql_get_define("PQL_CONF_URI") . "$url");
 }
 ?>
   </body>
