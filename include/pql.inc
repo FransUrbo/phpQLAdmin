@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.69 2003-05-06 09:52:36 turbo Exp $
+// $Id: pql.inc,v 2.70 2003-05-08 06:15:33 turbo Exp $
 //
 
 // ----------------------------
@@ -1371,7 +1371,7 @@ function pql_get_next_uidnumber($ldap) {
     return $highest;
 }
 
-function pql_get_domain_value($ldap, $dn, $value, $match = '') {
+function pql_get_domain_value($ldap, $dn, $value, $match = '', $all = 0) {
 	global $config;
 	$value = lc($value);
 
@@ -1407,14 +1407,19 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '') {
 		if((($value == 'administrator') or ($value == 'seealso') or ($value == 'additionaldomainname'))
 		   and ($match != "*")) {
 			// Return multiple values. If we're looking for 'administrator', return the DN
-			for($j=0; $j < $result[$i][$value]["count"]; $j++) {
-				// Filter out the top dn, we don't want that in the domain/branch list...
-				if(($result[$i][$value][$j] == $match) and
-				   (($result["count"] < 2) or
-					($result[$i]["dn"] != $dn))) {
-					$results[] = $result[$i]["dn"];
-					$success = 1;
+			if(!$all) {
+				for($j=0; $j < $result[$i][$value]["count"]; $j++) {
+					// Filter out the top dn, we don't want that in the domain/branch list...
+					if(($result[$i][$value][$j] == $match) and
+					   (($result["count"] < 2) or ($result[$i]["dn"] != $dn)))
+					{
+						$results[] = $result[$i]["dn"];
+						$success = 1;
+					}
 				}
+			} else {
+				$results[] = $result[$i]["dn"];
+				$success = 1;
 			}
 		} elseif(($value == 'administrator') or ($value == 'seealso') or ($value == 'additionaldomainname')) {
 			for($j=0; $j < $result[0][$value]["count"]; $j++) {
@@ -1843,19 +1848,16 @@ function pql_setup_branch_objectclasses($filter = 0, $dn, $linkid = '') {
 }
 
 function pql_validate_administrator($linkid, $dn, $admin) {
-	$sr   = @ldap_read($linkid, $dn, '(objectClass=*)', array('administrator'));
+	$sr = @ldap_search($linkid, $dn, '(administrator=*)', array('administrator'));
 	if(!$sr)
 	  return false;
 
 	$info = @ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
-
 	for($i=0; $i<$info["count"]; $i++) {
-		for($j=0; $j<$info[$i]["administrator"]["count"]; $j++) {
-			// TODO: We shouldn't do a regexp but a 'case insensitive equal'
-			if(eregi($info[$i]["administrator"][$j], $admin)) {
-				return true;
-			}
-		}
+		for($j=0; $j<$info[$i]["administrator"]["count"]; $j++)
+		  // TODO: We shouldn't do a regexp but a 'case insensitive equal'
+		  if(eregi($info[$i]["administrator"][$j], $admin) and ($info[$i]['dn'] == $dn))
+			return true;
 	}
 
 	return false;
