@@ -1,6 +1,6 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.17 2003-04-04 16:37:20 turbo Exp $
+// $Id: ezmlm_add.php,v 1.18 2003-06-12 12:49:47 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -44,19 +44,48 @@ if(!$domainname) {
 				$dont_add = 0;
 				
 				// Get the default domainname for the domain
-				$domainname = pql_get_domain_value($_pql, $d, "defaultdomain");
+				$defaultdomainname = pql_get_domain_value($_pql, $d, "defaultdomain");
 				
+
 				// Remove duplicates
 				if($domain_list) {
-					for($i=0; $domain_list[$i]; $i++) {
-						if($domain_list[$i] == $domainname) {
-							$dont_add = 1;
+					foreach($domain_list as $branch => $data) {
+						for($i=0; $data[$i]; $i++) {
+							if($data[$i] == $defaultdomainname) {
+								$dont_add = 1;
+							}
 						}
 					}
 				}
 				
 				if(!$dont_add) {
-					$domain_list = $domainname;
+					$domain_list[$d][] = $defaultdomainname;
+				}
+			}
+
+			foreach($domains as $key => $d) {
+				$dont_add = 0;
+				
+				// Get any additional domainname(s) for the domain
+				$additionaldomainnames = pql_get_domain_value($_pql, $d, "additionaldomainname");
+
+				if(is_array($additionaldomainnames)) {
+					foreach($additionaldomainnames as $additional) {
+						// Remove duplicates
+						if($domain_list) {
+							foreach($domain_list as $branch => $data) {
+								for($i=0; $data[$i]; $i++) {
+									if($data[$i] == $additional) {
+										$dont_add = 1;
+									}
+								}
+							}
+						}
+						
+						if(!$dont_add) {
+							$domain_list[$d][] = $additional;
+						}
+					}
 				}
 			}
 		}
@@ -77,15 +106,17 @@ $checked["public"]		= " CHECKED";							// -p
 // Create list
 if(isset($submit)) {
 	if($listname and $domainname) {
+		$data = split(';', $domainname);
+
 		// Get basemaildir path for domain
-		if(!($path = pql_get_domain_value($_pql, $domain, "basemaildir"))) {
-			die("Can't get baseMailDir path from domain '$domain'!");
+		if(!($path = pql_get_domain_value($_pql, $data[0], "basemaildir"))) {
+			die("Can't get baseMailDir path from domain '$data[1]'!");
 		}
 
 		require("./include/pql_ezmlm.inc");
 		$ezmlm = new ezmlm('alias', $path);
 		
-		$ezmlm->updatelistentry(1, $listname, $domainname, $checked);
+		$ezmlm->updatelistentry(1, $listname, $data[1], $checked);
 	} else {
 		$error_text["listname"] = 'missing';
 	}
@@ -121,11 +152,12 @@ if(!$domain) {
 	if(is_array($domain_list)) {
 ?></b>
             <select name="domainname">
-<?php
-		for($i=0; $domain_list[$i]; $i++) {
+<?php	foreach($domain_list as $branch => $data) {
+			for($i=0; $data[$i]; $i++) {
 ?>
-	          <option value="<?=$domain_list[$i]?>"><?=$domain_list[$i]?></option>
+	          <option value="<?=$branch.";".$data[$i]?>"><?=$data[$i]?></option>
 <?php
+			}
 		}
 ?>
             </select>
