@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.41 2003-01-31 06:05:41 turbo Exp $
+// $Id: pql.inc,v 2.42 2003-02-04 08:32:35 turbo Exp $
 //
 
 // ----------------------------
@@ -860,17 +860,19 @@ function pql_ldap_error($ldap_linkid, $attrib = ""){
 // ------------------------------------------------
 
 function pql_parse_quota($quota_string){
+	$quota = '';
+
     // get max bytes
     preg_match("/([0-9]*)S/", $quota_string, $matches);
     
-    if($matches[1] != ""){
+    if(isset($matches[1])) {
 		$quota["maxsize"] = intval($matches[1] / 1024);
-    }
     
-    // get max mails
-    preg_match("/([0-9]*)C/", $quota_string, $matches);
-    $quota["maxmails"] =  $matches[1];
-    
+		// get max mails
+		preg_match("/([0-9]*)C/", $quota_string, $matches);
+		$quota["maxmails"] =  $matches[1];
+	}
+
     return $quota;
 }
 
@@ -893,6 +895,7 @@ function pql_search_attribute($ldap_linkid, $basedn, $attribute, $value) {
 
 // search all accounts with forwarders to $user@$domain
 function pql_search_forwarders($ldap, $user){
+	$return = '';
 	$linkid = $ldap->ldap_linkid;
 
     // get all email addresses of a user
@@ -1254,7 +1257,7 @@ function pql_get_next_uidnumber($ldap) {
 }
 
 function pql_get_domain_value($ldap, $dn, $value, $match = '') {
-	$recursive = 1;
+	$recursive = 1; $success = 0; $results = '';
 
 	if(!$match) {
 		$match = '*';
@@ -1263,7 +1266,6 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '') {
 
 	// Setup a filter to look for DOMAINS (branches)
 	$filter  = "(&($value=$match)(".PQL_LDAP_REFERENCE_DOMAINS_WITH."=*))";
-		
 	if(!$recursive)
 	  $sr = ldap_read($ldap->ldap_linkid, $dn, $filter, array($value));
 	else
