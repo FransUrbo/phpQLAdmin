@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.86 2004-03-14 08:26:12 turbo Exp $
+// $Id: user_add.php,v 2.87 2004-03-17 17:40:36 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -297,7 +297,7 @@ include("./header.html");
     <?php echo pql_complete_constant($LANG->_('Create user in domain %domain%'), array("domain" => $orgname)); ?>
 <?php
 if($_SESSION["ADVANCED_MODE"] && $_REQUEST["account_type"]) {
-	if($_REQUEST["account_type"] == 'normal')
+	if($_REQUEST["account_type"] == 'mail')
 	  echo " - ".$LANG->_('Mail account');
 	elseif($_REQUEST["account_type"] == 'system')
 	  echo " - ".$LANG->_('System account');
