@@ -1,5 +1,31 @@
 phpQLAdmin 2.0 Change Log
 
+phpQLAdmin 2.0.12 TO BE ANNOUNCED
+	Bug fixes
+	  - In attrib.deliverymode.inc, remove all backslashes in mailReplyText (we
+	    got invalid syntax when doing ldap modify).
+
+	GUI layout change
+	  - User details page:
+	    + Mail information contains a mailto HREF.
+	    + Organise domains the user have access to by it's top DN so that we can
+	      have a correct URL link to the domain's details page.
+	  - In the 'LDAP server configuration' page, show each MUST/MAY attribute
+	    (and it's OID number) in a foldable list for each of the attributes the
+	    LDAP server knows about.
+
+	Misc changes
+	  - Removed functions pql_remove_userattribute(), pql_replace_userattributes()
+	    and pql_add_userattribute().
+	    + The exact same functionality is in function pql_replace_userattribute()
+	      (with some slight modifications)
+	  - Slight rewrite of the pql_replace_userattribute() function to allow for
+	    fixing of LDAP error 65 (Object class violation).
+	    + If we're modifying a value and we're missing an objectclass and the
+	      objectclass we find that REQUIRE (MAY) some attributes which we're
+	      missing, ask user/admin to fill in the missing attributes, THEN retry
+	      to add/modify the object.
+
 phpQLAdmin 2.0.11 Release (Apr 28 2003)
 	Bug fixes
 	  - Move the checking for { and } (password scheme) to standalone to
