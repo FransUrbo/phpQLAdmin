@@ -119,6 +119,10 @@ if(isset($submit)) {
   </ul>
   <br>
 
-<?php include("./trailer.html"); ?>
+<?php
+if($ALLOW_BRANCH_CREATE and $ADVANCED_MODE) {
+    include("./trailer.html");
+}
+?>
 </body>
 </html>
