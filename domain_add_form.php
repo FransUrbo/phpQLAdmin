@@ -1,6 +1,6 @@
 <?php
 // Input form page to create a domain branch in database
-// $Id: domain_add_form.php,v 1.7 2003-04-23 12:10:50 turbo Exp $
+// $Id: domain_add_form.php,v 1.8 2003-04-27 18:10:59 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -48,6 +48,9 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 	    if($config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$rootdn] == "dc") {
 		// We're using a domain object
 		echo PQL_LANG_DOMAIN_ADD_INFO_DC;
+	    } elseif($config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$rootdn] == "o") {
+		// We're using organization layout
+		echo PQL_LANG_DOMAIN_ADD_INFO_O;
 	    } else {
 		// OrganizationUnit object
 		echo PQL_LANG_DOMAIN_ADD_INFO_OU;
