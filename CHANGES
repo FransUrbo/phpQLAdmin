@@ -1,5 +1,23 @@
 phpQLAdmin 2.2 Change Log
 
+phpQLAdmin 2.2.2 TO BE ANNOUNCED
+	Bug fixes
+	  - If the additional domain name value in the branch object is defined, but
+	    not an array -> make it an array.
+	  - When ticked 'Add to all hosts', we must first GET all hosts, then change
+	    value(s) in each one in turn.
+	    Closes: 234
+	  - Copy the save function from 'include/attrib.control.rcpthosts.inc' and
+	    put it in 'include/attrib.control.locals.inc'. It does exactly what it's
+	    supposed to - change value(s) on (all) host(s).
+	  - If we're changing a toggle, include 'submit=1' in the change URL.
+	    Closes: 235, 236, 237, 238
+	  - Do not de-array the username value in 'user_add_attribute.php'.
+	    Closes: 240
+
+	GUI layout changes
+	Misc changes
+
 phpQLAdmin 2.2.1 Release (Mar 17 2005)
 	Bug fixes
 	  - If we can't find the givenName, surName, commonName nor the gecos
