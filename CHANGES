@@ -11,6 +11,7 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	GUI layout change
 	  - Smaller text font in buttons.
 	  - Allow for international characters in buttons.
+	  - Relative (to the font string length) button width.
 
 	Misc changes	
 	  - With the resent definition international characters in the DNS system (and
