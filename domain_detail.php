@@ -141,9 +141,13 @@ $buttons = array('default'	=> 'Default Branch Values',
 if($ADVANCED_MODE) {
 	$new = array('owner'	=> 'Branch Owner',
 				 'dnsinfo'	=> 'MX Information',
-				 'options'	=> 'QmailLDAP/Controls Options',
 				 'aci'		=> 'Access Control Information');
 	$buttons = $buttons + $new;
+
+	if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
+		$new = array('options' => 'QmailLDAP/Controls Options');
+		$buttons = $buttons + $new;
+	}
 
 	if(pql_get_define("PQL_GLOB_BIND9_USE")) {
 		$new = array('dnszone'	=> 'DNS Zone');
