@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.33 2003-06-25 07:07:02 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.34 2003-06-28 15:20:58 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -8,7 +8,6 @@
 //	./phpQLAdmin.schema
 //	./include/pql_config.inc
 //
-require("./include/lang.en.inc");
 
 // ----------------------------
 // PQL_GLOB_HOST (FQDN|IP)
