@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.189 2004-10-10 10:16:50 turbo Exp $
+// $Id: pql.inc,v 2.190 2004-10-11 08:03:41 turbo Exp $
 //
 
 // ----------------------------
@@ -276,16 +276,18 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 	$rootdn = pql_get_rootdn($domain, 'pql_user_add'); $rootdn = urldecode($rootdn);
 
 	// -----
-    // Retreive WANTED objectclasses
-	if(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $rootdn))
-	  foreach(pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $rootdn)) as $oc)
-		$ocs[] = $oc;
-	else
-	  $ocs[] = '';
-
-	// -----
-	if($account_type == "group")
+	if($account_type == "group") {
+	  $ocs[] = 'person';		// OpenLDAP version >2.2 REQUIRE one structural objectclass.
 	  $ocs[] = 'qmailgroup';
+	  $ocs[] = 'posixAccount';	// We need the uid attribute (etc);
+	} else {
+		// Retreive WANTED objectclasses
+		if(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $rootdn))
+		  foreach(pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $rootdn)) as $oc)
+			$ocs[] = $oc;
+		else
+		  $ocs[] = '';
+	}
 
 	// -----
 	// Setup user entry variable
@@ -315,35 +317,28 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 			$MUST = $ldap[$oc]['MUST'];
 
 			foreach($entry as $attrib => $value) {
-				if(!is_array($value)) {
-					// Go through the MUST attributes for this objctclass,
-					// looking for an attribute we have NOT defined
-					for($i=0; isset($MUST[$i]); $i++)
-					  if(lc($MUST[$i]) == lc($attrib))
-						unset($MUST[$i]);
-					
-					// Before we rearrange the array, remove the count
-					// entry (othervise it's get renamed to a number).
-					unset($MUST['count']);
-					
-					// Rearrange the array
-					$MUST = pql_uniq($MUST);
-					
-					// Readd the count entry
-					$MUST['count'] = count($MUST);
+				$attrib = lc($attrib);
+
+				// Go through the MUST attributes for this objctclass,
+				// looking for an attribute we have NOT defined
+				for($i=0; isset($MUST[$i]); $i++) {
+					$must = lc($MUST[$i]);
+
+					if($attrib == $must)
+					  unset($MUST[$i]);
 				}
-				
+
 				// Before we rearrange the array, remove the count
-				// entry (othervise it get's renamed to a number).
+				// entry (othervise it gets renamed to a number).
 				unset($MUST['count']);
 				
 				// Rearrange the array
-				$MUST = array_values(array_unique($MUST));
+				$MUST = pql_uniq($MUST);
 				
 				// Readd the count entry
 				$MUST['count'] = count($MUST);
 			}
-			
+
 			if(!$MUST['count'])
 			  // This objectclass don't contain MUST attributes which
 			  // isn't defined in the user object. Add this to the list
