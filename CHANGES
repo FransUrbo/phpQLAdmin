@@ -2,8 +2,43 @@ phpQLAdmin 2.0 Change Log
 
 phpQLAdmin 2.0.14 TO BE ANNOUNCED
 	Bug fixes
+	  - Link to control_edit_attribute.php should include the MX host
+	  - If we can't validate administrator, don't die with LDAP error,
+	    return false (ie, admin is not valid).
+	  - Maximum users for domain is just that 'FOR DOMAIN'! Not for
+	    the whole three! I looked in the root dn/namingContexts for
+	    this value, which is wrong!
+	  - Don't force create a homedirectory if we're creating a 'Mail
+	    account'. We re-use the mailMessageStore.
+	    + We also force [ug]idNumber by re-using the forwarding account
+	      numbers. That is, Mail and Forwarding accounts ALL use the
+	      same uid and gid numbers. The reason for this is that Qmail
+	      won't accept mails for a user if they don't have a uid/gid
+	      number between a specific range (compile time). And we can't
+	      add the uid/gid numbers if we don't have a homeDirectory
+	      (schema enforced).
+	  - When changing a QmailLDAP/Controls object, depending on where
+	    we where called from (from the domain details - remove/add
+	    rcpthost), redirect to original page (control_detail.php or
+	    domain_detail.php depending).
+	  - Only create the principal in the example create user script
+	    if it is a {KERBEROS} password.
+
 	GUI layout change
+	  - Add/Change/Delete additional domain name(s) into the branch/domain,
+	    not just the 'Default domain name'. Using the new schema attribute
+	    'additionalDomainName' (with OID number 1.3.6.1.4.1.8767.3.2.4.8).
+	    + If we have multiple domains for the domain/branch, put a <select>
+	      menu for specifying main/primary email address. Optionally allow
+	      for creating mailAlternateAddress with (all) the other domains...
+
 	Misc changes
+	  - Replicate domain to RCPTHosts to host which have it defined.
+	    Treat RCPTHosts the same way as Locals - ability to replicate
+	    and update QmailLDAP/Controls automaticly when adding/removing
+	    or changing a domain/branch. This is done with the help of a
+	    new attribute, autoAddRCPTHosts with OID number
+	    1.3.6.1.4.1.8767.3.2.1.12.
 
 phpQLAdmin 2.0.13 Release (May 5 2003)
 	Bug fixes
