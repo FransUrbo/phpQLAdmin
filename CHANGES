@@ -4,7 +4,7 @@ phpQLAdmin 2.0.19 TO BE ANNOUNCED
 	Bug fixes
 	  - Don't create a new connection to the LDAP db in files located in '.'.
 	    This is done sufficently in pql_config.inc
-	  - More de-globalization.
+	  - lots and lots of variable de-globalization.
 	  - If the function mhash() isn't availible AND we're about to generate
 	    a {MD5} (in pql_password_hash()) password, we can't do this. Fall back
 	    to using CRYPT. Everything should still work, just not as secure...
@@ -15,6 +15,69 @@ phpQLAdmin 2.0.19 TO BE ANNOUNCED
 	    a free {User,Group}ID if: It's NOT an mail account OR: we're using
 	    posixAccount when creating user(s) AND we have a 'forwarding account
 	    uid number for this branch.
+	  - There's a lot of stuff that isn't used if we're not referencing users with
+	    'uid'. This is (partly?) wrong. Creating a user (anywhere!), requires some
+	    stuff otherwise not added.
+	    + Move stuff around to improve readability - huge rewrite.
+	  - Change some PQL_ATTR_* stuff to PQL_CONF_*.
+	    Closes bug #145
+	  - Don't call pql_control_update_domains() (when creating domains) unless
+	    PQL_CONF_CONTROL_USE is set.
+	    Closes bug #164
+	  - Make sure a trailing slash is added on mailstore and home directory, and.
+	    replace all double slashes with one.
+	  - Full support for new QmailLDAP delivery modes. Old format still supported
+	    though. Use checkboxes instead of selects.
+	  - URL Decode the surname and lastname values in the user/save page which
+	    was/is encoded in tables/user_add-additional.inc.
+	  - Cleanup and rewrite the email address creation. The mailAlternateAddress
+	    must be set when creating a group object.
+	  - Don't add deliveryMode automaticly. If we're running newer QmailLDAP, we
+	    use different values than if running an older QmailLDAP...
+	  - Only add mailMessageStore if we're adding a system, mail or group account
+	    + Also make sure this contain a trailing slash (for Maildir creation)!
+	    + Also add the homeDirectory attribute. This is moot in functionality
+	      really, but if enforcing schema check we must have this.
+	    + Hardcode the object classes needed - the base oc is 'qmailGroup', but
+	      OpenLDAP version >2.2 REQUIRE one structural objectclass so we add the
+	      'person' oc. But since we're coding the RDN with 'uid', we must also add
+	      the 'posixAccount' (which is the reason why we add homeDirectory).
+	  - Only add homeDirectory if we're adding a system account OR 'posixAccount' is
+	    one of the object classes choosen for account creation.
+	  - Spelling error fixed: s/user_generate_mailstore/user_generate_homedir/ in one
+	    place...
+	  - De-internationalize the 'gecos' value - international characters not allowed.
+	  - Fail greacefully if there isn't a plugin for the attribute we're about to
+	    modify.
+	    + Put toghether the plugin file name outside of the 'include()' function in
+	      the user_edit_attribute page.
+	  - In case we have setup two LDAP server (for example 'localhost' and 'other'
+	    in that order), and the first one (localhost) isn't availible, phpQLAdmin
+	    will fail. This because code assumes that configuration is availible in
+	    the FIRST LDAP server configured (if we haven't submitted the login form
+	    that is).
+	    This is naturaly not correct, because the second LDAP server might have a
+	    whole different layout and setup... The solution is to NOT use _ANY_ LDAP
+	    configuration (only the defaults). When we have submitted the login form,
+	    then we have the LDAP host information, so then we can try to get the config
+	    we need/want...
+	    + Don't try to get languages supported from LDAP, if we don't have an LDAP
+	      hostname.
+	  - When trying to get the root DN a specific object is in, it IS possible that
+	    we get more than one that matches. For example, looking for 
+	    'uid=turbo,ou=People,o=Fredriksson,c=SE' there is FOUR (three in reality)
+	    possibilities - 'ou=People,o=Fredriksson,c=SE', 'o=Fredriksson,c=SE' and
+	    'c=SE' (the fourt is the object it self - it COULD happen, even though
+	    higly unlikley). The true root DN is the one with the MOST number of DN
+	    parts - count them, and take the DN with highest number.
+	    + This should (hopfully) take care of most of the "This is weird ..."
+	      messages.
+	  - When verifying that we have object classes for all the attributes in the
+	    object, and that those object classes all have their MUST rule(s) fullfilled
+	    I checked if the attribute value was an array before I did the check. This
+	    is void, since I'm not interessted in the value, only the attribute name.
+	  - Don't use the user_generate_aci() function just because the session variable
+	    'ACI_SUPPORT_ENABLED' is set. Check that the function actually exists as well!
 
 	GUI layout change
 	  - Allow setting ldapGroup{Login,Password} attributes (availible in newer
@@ -22,7 +85,39 @@ phpQLAdmin 2.0.19 TO BE ANNOUNCED
 	  - If the attribute we use to reference users with isn't availible in any of
 	    the object classes we've choosen to create users with, we die with a message.
 	    The user creation will break, sooner than later!
-
+	  - Allow for setting 'no local delivery' directly when creating a user (IF
+	    we're running in advanced mode AND using new QmailLDAP).
+	  - If there is no account expiration date, then say so in the table (instead
+	    of 'xxx 1979').
+	  - Support creation of account type 'group' (a 'micro mailinglist').
+	    + Don't demand password for group accounts.
+	  - A function (pql_format_table_single()) that will go through an array,
+	    creating a nice table which looks good even if there zero, one or more
+	    values.
+	  - Support for changing togglable values directly (without going via a form).
+	  - Show the images/mail image for mailinglists as well as users.
+	  - Added option to keep old primary email address as an alias when deleting a
+	    mail address.
+	  - Show registered addresses in domain, sorted by tree below each user.
+	    Possibility to view/change/delete the 'super administrators' in the branch
+	    configuration as well as for each user. This makes it easier to see directly
+	    who's a 'super admin'...
+	  - If we haven't specified a global branch option to auto generate password,
+	    we give the user/admin a chance to do this anyway with a checkbox.
+	    + If we have specified to auto generate a password, we show it as the last
+	      thing before creating the user. If we're running in advanced mode, we do
+	      this at the same time as we ask for mail host (MX) and if not, we do it
+	      in a separate page.
+	  - I couldn't figure out a way to check java support in the browser, so instead
+	    I check for the 'lynx' browser. If true, then we can toggle simple/advanced
+	    mode by using a 'submit' button instead of an 'on{Change,Click}' which calls
+	    a java function (this.form.submit())...
+	  - Output the correct type of object that's being created from the user_add page
+	    in the title of the page instead of hardcoded 'Create user in domain ...'.
+	  - Support SpamAssassin configuration for each user in the LDAP database. This
+	    is accomplished using the included 'schema' (actually only an attributeType
+	    definition) included with SpamAssassin.
+ 
 	Misc changes	
 	  - Support the new/changed accountStatus value 'noaccess'. Only if NEW_STYLE_QUOTA
 	    is set though, it's not availible in the LDAP server othervise...
@@ -32,12 +127,69 @@ phpQLAdmin 2.0.19 TO BE ANNOUNCED
 	  - We should care less what OBJECT CLASS is used when creating users, and more
 	    the fact what ATTRIBUTE is availible (in these object classes). Hence,
 	    don't use in_array(), but pql_check_attribute().
+	  - The pql_missing_objectclasses() function was under the impression that
+	    it's always a DOMAIN/BRANCH object that should be checked for missing object
+	    classes. It isn't now, so pql_setup_branch_objectclasses() needs to be
+	    called manually only when it's a domain/branch object that's being
+	    added/modified.
+	    + Also, the subschema entry isn't called 'objectclass' (used via a define),
+	      but 'objectclasses'! This lead to the fact that no missing object classes
+	      where processed.
+	  - More notes for the user_generate_{mailstore,homedir}() functions.
+	    + Simplify the functions to make then more easy to read.
+	  - Exchange some '<?php echo ...' for the shorter '<?=...'.
+	  - Rewrite (in two places of the function pql_domain_set_value()) of the part
+	    that (tries to) makes sure that object classes are up-to-date with attribute
+	    added/removed - a lot smarter.
+	  - If we've specified to auto generate a password, we can't complain if
+	    the password is empty. It (the auto genaration) is done as the last thing
+	    before adding the user to the database.
+	  - With OpenLDAP version >2.2, the cn=Monitor backend have changed. Attributes
+	    that previosly was in 'description' etc, is now in 'monitoredInfo' etc.
+	    This required some changes both in the backend functions such as pql_get_status()
+	    and pql_get_status_databases() but also in the CALLING of those function.
+	  - Getting the uptime was all wrong. I misstook the value for some kind of
+	    UNIX time stamp, but it's not. And reporting the total amount of minutes
+	    is rediculos, especially if the server have been up for days or weeks (months!).
+	    Instead, use the (relativly) new function pql_format_timestamp_human()
+	    that was specifically written for this change.
+	    + The only problem with this rewrite is that OpenLDAP <2.2 is no longer
+	      supported. At least not from the monitor/status point of view. Doesn't
+	      matter that much, since 2.2.17 is now marked as stable, and <2.2 is marked
+	      as ancient/dead...
+	  - Make sure that ALL the super admins is included in the ACI's with full access
+	    in all objects being created
+	  - Cleanup the demo database files. Add better/newer ACI configuration, ACI
+	    attributes in the objects etc.
 
 	API changes
 	Schema changes:
 	  - Added autoCreatePassWord (OID: 1.3.6.1.4.1.8767.3.2.1.16) for auto password
 	    generation. To get it just after 'autoCreateMailAddress', the 'useWebSrv'
 	    attribute was renumbered (+1 in OID number).
+	  - Support for setting the default phpQLAdmin view mode (advanced/normal).
+	    + This is done with a new attribute (OID: 1.3.6.1.4.1.8767.3.2.1.18) and a
+	      new object class (OID: 1.3.6.1.4.1.8767.3.1.6) which have to be added to
+	      the user object.
+	    + Support getting user phpQLAdmin configuration (currently only the new
+	      attribute, but future use can be seen) by getting the full user object,
+	      looking for configuration 'defines' set in $PQL_ATTRIBUTE["USER"].
+	    + Add the new attribute to the 'usertoggle' plugin for ease of db updates.
+	    + Setting the default view mode is done in the user details page->Access.
+	  - Support for setting 'ezmlmVirtualUser' in a branch object. This is a new
+	    attribute (OID: 1.3.6.1.4.1.8767.3.2.2.18) - a MAY in phpQLAdminBranch.
+	    + The EZMLM constructor no longer uses a global value. Get the 'ezmlmVirtualUser'
+	      from the branch object...
+	  - Additional argument (default user reference attribute) added to pql_get_dn().
+	    This so that we can call it recursivly incase we don't have a user reference
+	    attribute for some reason (i.e. we can't find the value in the LDAP server).
+	    If this is the case, we default to 'uid' as reference, and if the user isn't
+	    found with that, we call recursivly with 'cn' as reference... If that fails
+	    as well -> return 'no such user'.
+	  - Rename the function pql_password_generate() to pql_generate_password()
+	    which is more in line with functions specified in include/config.inc.
+	  - Replace the array_values(array_unique()) combo with the 'new' pql_uniq()
+	    function.
 
 phpQLAdmin 2.0.18e Release (Oct 14 2004)
 	Bug fixes
