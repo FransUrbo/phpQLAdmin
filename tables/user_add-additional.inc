@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-additional.inc,v 1.24.2.2 2005-02-13 12:25:38 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.24.2.3 2005-02-15 16:47:55 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <!-- Some hidden values from previous page(s) -->
 <?php if($_REQUEST["surname"] and pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_CN"))) { ?>
@@ -117,15 +117,18 @@
 ?>>
             <b><?=pql_maybe_idna_decode($_REQUEST["userhost"]["qlc"][$i])?></b><br>
 <?php		}
-		} 
+		}
 
-		if($_REQUEST["userhost"]["dns"] and 
+		if($_REQUEST["userhost"]["dns"] or
 		   ($_REQUEST["userhost"]["qlc"] and !in_array($_REQUEST["userhost"]["dns"], $_REQUEST["userhost"]["qlc"])))
 		{
 			// It's defined - DNS entry (and it don't exists as QMailLDAP/Controls object)
 ?>
-            <input type="radio" name="host" value="<?=$_REQUEST["userhost"]["dns"]?>" CHECKED>
+            <input type="radio" name="userhost" value="<?=$_REQUEST["userhost"]["dns"]?>" CHECKED>
             <b><?=$_REQUEST["userhost"]["dns"]?></b><br>
+
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b><?=$LANG->_('User defined')?></b>:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <?php	} ?>
             <input type="text" name="host" size="30">
           </td>
