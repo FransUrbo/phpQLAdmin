@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.27 2004-02-15 17:31:53 turbo Exp $
+// $Id: control_detail.php,v 1.28 2004-03-01 10:08:37 turbo Exp $
 session_start();
 require("./include/pql_config.inc");
 
@@ -20,7 +20,7 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 					 pql_get_define("PQL_GLOB_ATTR_LDAPDEFAULTQUOTA"),
 					 pql_get_define("PQL_GLOB_ATTR_LDAPDEFAULTDOTMODE"),
 					 pql_get_define("PQL_GLOB_ATTR_DIRMAKER"),
-					 pql_get_define("PQL_GLOB_ATTR_QUOTAWARNING"),
+					 pql_get_define("PQL_GLOB_ATTR_QUOTA_WARNING"),
 					 pql_get_define("PQL_GLOB_ATTR_LOCALS"),
 					 pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"),
 					 pql_get_define("PQL_GLOB_ATTR_LDAPLOGIN"),

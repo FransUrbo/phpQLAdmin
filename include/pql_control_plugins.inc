@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control plugins)
 //
-// $Id: pql_control_plugins.inc,v 2.3 2003-11-11 07:21:34 turbo Exp $
+// $Id: pql_control_plugins.inc,v 2.4 2004-03-01 10:09:08 turbo Exp $
 //
 
 // ----------------------------
@@ -50,10 +50,10 @@ pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_LDAPLOCALDELIVERY"),
 					"q-l mailbox",
 					pql_get_define("PQL_GLOB_ATTR_LDAPLOCALDELIVERY"));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_QUOTAWARNING"),
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_QUOTA_WARNING"),
 					"attrib.control.quotawarning.inc",
 					"q-l mailbox",
-					pql_get_define("PQL_GLOB_ATTR_QUOTAWARNING"));
+					pql_get_define("PQL_GLOB_ATTR_QUOTA_WARNING"));
 
 pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_LDAPDEFAULTDOTMODE"),
 					"attrib.control.ldapdefaultdotmode.inc",

@@ -11,7 +11,7 @@
 // If you want to customise phpQLAdmin, do NOT do it here, the file
 // to customise is 'config_attributes.inc'.
 //
-// $Id: config_plugins.inc,v 2.7 2003-12-11 06:04:14 turbo Exp $
+// $Id: config_plugins.inc,v 2.8 2004-03-01 10:09:08 turbo Exp $
 
 pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_ISACTIVE"),
 					"attrib.accountstatus.inc",
@@ -28,10 +28,20 @@ pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_MODE"),
 					"",
 					pql_get_define("PQL_GLOB_ATTR_MODE"));
 
-pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_QUOTA"),
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_QUOTA_VALUE"),
 					"attrib.mailquota.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_QUOTA"));
+					pql_get_define("PQL_GLOB_ATTR_QUOTA_VALUE"));
+
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_QUOTA_SIZE"),
+					"attrib.mailquota.inc",
+					"",
+					pql_get_define("PQL_GLOB_ATTR_QUOTA_SIZE"));
+
+pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_QUOTA_COUNT"),
+					"attrib.mailquota.inc",
+					"",
+					pql_get_define("PQL_GLOB_ATTR_QUOTA_COUNT"));
 
 pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_MAILHOST"),
 					"attrib.mailhost.inc",

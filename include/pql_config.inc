@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.53 2004-02-27 12:13:32 turbo Exp $
+// $Id: pql_config.inc,v 1.54 2004-03-01 10:09:08 turbo Exp $
 //
 
 // {{{ pql_set_define(define, value, case_insensitive, dn)
@@ -261,12 +261,21 @@ require("./include/pql_plugins.inc");
 //    in the first base DN
 $_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"] = pql_validate_administrator($_pql->ldap_linkid, $_pql->ldap_basedn[0], $_SESSION["USER_DN"]);
 
-// 9. Check if ACI support is enabled in LDAP server
-if(empty($_SESSION["ACI_SUPPORT_ENABLED"]) and function_exists("user_generate_aci")) {
+if((empty($_SESSION["ACI_SUPPORT_ENABLED"]) and function_exists("user_generate_aci")) or empty($_SESSION["NEW_STYLE_QUOTA"])) {
 	$ocs = pql_get_subschema($_pql->ldap_linkid, attributeTypes);
-	if($ocs["openldapaci"]["OID"]) {
+
+	// 9a. Check ifthe attribute openLdapAci exists - ACI support is enabled in the LDAP server.
+	if($ocs[lc(pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI"))]["OID"]) {
 		$_SESSION["ACI_SUPPORT_ENABLED"] = 1;
 	}
+
+	// 9b. Check to see if the attributes mailQuotaSize and mailQuotaCount exists - new stype quota.
+	if(empty($ocs[lc(pql_get_define("PQL_GLOB_ATTR_QUOTA_VALUE"))]["OID"]) and
+	   !empty($ocs[lc(pql_get_define("PQL_GLOB_ATTR_QUOTA_SIZE"))]["OID"]) and
+	   !empty($ocs[lc(pql_get_define("PQL_GLOB_ATTR_QUOTA_COUNT"))]["OID"]))
+	  {
+		  $_SESSION["NEW_STYLE_QUOTA"] = 1;
+	  }
 }
 
 // 10. Check to see if the cn=Monitor backend is availble/readable

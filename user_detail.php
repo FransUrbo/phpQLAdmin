@@ -1,17 +1,17 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.66 2004-02-21 16:01:32 turbo Exp $
+// $Id: user_detail.php,v 2.67 2004-03-01 10:08:37 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 
-if(!$url["rootdn"]) {
-	$url["rootdn"] = pql_get_rootdn($_GET["user"], 'user_detail.php');
+if(!$_GET["rootdn"]) {
+	$_GET["rootdn"] = pql_get_rootdn($_GET["user"], 'user_detail.php');
 }
 
 $url["domain"] = pql_format_urls($_GET["domain"]);
-$url["rootdn"] = pql_format_urls($_GET["rootdn"]);
 $url["user"]   = pql_format_urls($_GET["user"]);
+$url["rootdn"] = pql_format_urls($_GET["rootdn"]);
 
 // Get default domain name for this domain
 if($_GET["domain"]) {

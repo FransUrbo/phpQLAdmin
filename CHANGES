@@ -55,6 +55,9 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	    that we have to catch what brower we're using, and set the correct variable
 	    (currently I only have workarounds for Konqueror and Opera).
 	  - Make sure we include rootdn and domaindn if SINGLE_USER.
+	  - As of Qmail-LDAP v20030901, the mailQuota attribute have been split into TWO
+	    attributes - mailQuotaSize and mailQuotaCount. Find out which is used in the
+	    LDAP server, and create the quota value(s) appropriately.
 
 	GUI layout change
 	  - Variable lenght icons with better looking font.

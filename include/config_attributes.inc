@@ -16,29 +16,32 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.5 2003-12-11 06:04:14 turbo Exp $
+// $Id: config_attributes.inc,v 2.6 2004-03-01 10:09:08 turbo Exp $
 
 // User object attributes
-pql_set_define("PQL_GLOB_ATTR_DOTMODE",				strtolower("qmailDotMode"),		false);
-pql_set_define("PQL_GLOB_ATTR_FORWARDS",			strtolower("mailForwardingAddress"),	false);
-pql_set_define("PQL_GLOB_ATTR_GECOS",				strtolower("gecos"),			false);
-pql_set_define("PQL_GLOB_ATTR_HOMEDIR",				strtolower("homeDirectory"),		false);
-pql_set_define("PQL_GLOB_ATTR_ISACTIVE",			strtolower("accountStatus"),		false);
-pql_set_define("PQL_GLOB_ATTR_EXPIRATION",			strtolower("shadowExpire"),		false);
-pql_set_define("PQL_GLOB_ATTR_LOGINSHELL",			strtolower("loginShell"),		false);
-pql_set_define("PQL_GLOB_ATTR_MAIL",				strtolower("mail"),			false);
-pql_set_define("PQL_GLOB_ATTR_MAILALTERNATE",			strtolower("mailAlternateAddress"),	false);
-pql_set_define("PQL_GLOB_ATTR_MAILHOST",			strtolower("mailHost"),			false);
-pql_set_define("PQL_GLOB_ATTR_MAILSTORE",			strtolower("mailMessageStore"),		false);
-pql_set_define("PQL_GLOB_ATTR_MODE",				strtolower("deliveryMode"),		false);
-pql_set_define("PQL_GLOB_ATTR_PASSWD",				strtolower("userPassword"),		false);
-pql_set_define("PQL_GLOB_ATTR_PROGRAM",				strtolower("deliveryProgramPath"),	false);
-pql_set_define("PQL_GLOB_ATTR_PURGE",				strtolower("qmailAccountPurge"),	false);
-pql_set_define("PQL_GLOB_ATTR_QMAILGID",			strtolower("gidNumber"),		false);
-pql_set_define("PQL_GLOB_ATTR_QMAILUID",			strtolower("uidNumber"),		false);
-pql_set_define("PQL_GLOB_ATTR_QUOTA",				strtolower("mailQuota"),		false);
-pql_set_define("PQL_GLOB_ATTR_REPLYTEXT",			strtolower("mailReplyText"),		false);
-pql_set_define("PQL_GLOB_ATTR_UID",				strtolower("uid"),			false);
+pql_set_define("PQL_GLOB_ATTR_DOTMODE",				strtolower("qmailDotMode"),			false);
+pql_set_define("PQL_GLOB_ATTR_FORWARDS",			strtolower("mailForwardingAddress"),		false);
+pql_set_define("PQL_GLOB_ATTR_GECOS",				strtolower("gecos"),				false);
+pql_set_define("PQL_GLOB_ATTR_HOMEDIR",				strtolower("homeDirectory"),			false);
+pql_set_define("PQL_GLOB_ATTR_ISACTIVE",			strtolower("accountStatus"),			false);
+pql_set_define("PQL_GLOB_ATTR_EXPIRATION",			strtolower("shadowExpire"),			false);
+pql_set_define("PQL_GLOB_ATTR_LOGINSHELL",			strtolower("loginShell"),			false);
+pql_set_define("PQL_GLOB_ATTR_MAIL",				strtolower("mail"),				false);
+pql_set_define("PQL_GLOB_ATTR_MAILALTERNATE",			strtolower("mailAlternateAddress"),		false);
+pql_set_define("PQL_GLOB_ATTR_MAILHOST",			strtolower("mailHost"),				false);
+pql_set_define("PQL_GLOB_ATTR_MAILSTORE",			strtolower("mailMessageStore"),			false);
+pql_set_define("PQL_GLOB_ATTR_MODE",				strtolower("deliveryMode"),			false);
+pql_set_define("PQL_GLOB_ATTR_PASSWD",				strtolower("userPassword"),			false);
+pql_set_define("PQL_GLOB_ATTR_PROGRAM",				strtolower("deliveryProgramPath"),		false);
+pql_set_define("PQL_GLOB_ATTR_PURGE",				strtolower("qmailAccountPurge"),		false);
+pql_set_define("PQL_GLOB_ATTR_QMAILGID",			strtolower("gidNumber"),			false);
+pql_set_define("PQL_GLOB_ATTR_QMAILUID",			strtolower("uidNumber"),			false);
+pql_set_define("PQL_GLOB_ATTR_QUOTA_VALUE",			strtolower("mailQuota"),			false);
+pql_set_define("PQL_GLOB_ATTR_QUOTA_SIZE",			strtolower("mailQuotaSize"),			false);
+pql_set_define("PQL_GLOB_ATTR_QUOTA_COUNT",			strtolower("mailQuotaCount"),			false);
+pql_set_define("PQL_GLOB_ATTR_QUOTA_WARNING",			strtolower("quotaWarning"),			false);
+pql_set_define("PQL_GLOB_ATTR_REPLYTEXT",			strtolower("mailReplyText"),			false);
+pql_set_define("PQL_GLOB_ATTR_UID",				strtolower("uid"),				false);
 
 // These are the QmailLDAP/Controls attributes.
 pql_set_define("PQL_GLOB_ATTR_BADMAILFROM",			strtolower("badMailFrom"),			false);
@@ -76,7 +79,6 @@ pql_set_define("PQL_GLOB_ATTR_PERCENTHACK",			strtolower("percentHack"),			false
 pql_set_define("PQL_GLOB_ATTR_PLUSDOMAIN",			strtolower("plusDomain"),			false);
 pql_set_define("PQL_GLOB_ATTR_QMQPSERVERS",			strtolower("qmqpServers"),			false);
 pql_set_define("PQL_GLOB_ATTR_QUEUELIFETIME",			strtolower("queueLifeTime"),			false);
-pql_set_define("PQL_GLOB_ATTR_QUOTAWARNING",			strtolower("quotaWarning"),			false);
 pql_set_define("PQL_GLOB_ATTR_RCPTHOSTS",			strtolower("rcptHosts"),			false);
 pql_set_define("PQL_GLOB_ATTR_RELAYMAILFROM",			strtolower("relayMailFrom"),			false);
 pql_set_define("PQL_GLOB_ATTR_SMTPGREETING",			strtolower("smtpGreeting"),			false);

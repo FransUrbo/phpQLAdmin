@@ -12,6 +12,12 @@ Upgrading from 2.0.18
 	include/config.inc.CHANGE_ME have changed user_generate_email()
 	(smarter - some variables isn't needed sometimes).
 
+	As of Qmail-LDAP v20030901, the mailQuota attribute have been
+	split into TWO attributes - mailQuotaSize and mailQuotaCount.
+	Make sure you DO NOT use the newer schema on an older Qmail-LDAP!
+	phpQLAdmin looks for the presence of these attributes when it
+	tries to figure out which type of quota it will create!
+
 Upgrading from 2.0.17
 	There's been some API code modifications that will break
 	an upgrade to 2.0.18. You will have to re-configure (copy

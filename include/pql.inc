@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.147 2004-02-27 12:26:48 turbo Exp $
+// $Id: pql.inc,v 2.148 2004-03-01 10:09:08 turbo Exp $
 //
 
 // ----------------------------
@@ -228,6 +228,7 @@ function pql_user_get($ldap_linkid, $dn) {
 // }}}
 
 // {{{ pql_user_add(ldap_linkid, domain, cn, attribs, account_type, branch)
+
 // Add a user to the LDAP database
 function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $branch) {
 	global $account_type;
@@ -373,6 +374,7 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 	
     return $dns;
 }
+
 // }}}
 
 // {{{ pql_user_del(ldap, domain, user, delete_forwards)
@@ -731,6 +733,7 @@ function pql_domain_value($ldap, $dn, $value, $match = '', $all = 0) {
 // ------------------------------------------------
 
 // {{{ pql_replace_attribute(ldap_linkid, objectdn, attrib, value)
+
 // Replaces an attribute in a object (only use for single-field attributes)
 // Delete an attribute(s) if value is an empty string
 function pql_replace_attribute($ldap_linkid, $objectdn, $attrib, $value) {
@@ -830,6 +833,7 @@ function pql_replace_attribute($ldap_linkid, $objectdn, $attrib, $value) {
 	
 	return true;
 }
+
 // }}}
 
 // {{{ pql_set_domain_value(linkid, dn, type, value)
@@ -1160,23 +1164,35 @@ function pql_email_exists($ldap, $email) {
 // }}}
 
 // {{{ pql_get_userquota(ldap_linkid, user)
+
 // Get formated quota of a user
 function pql_get_userquota($ldap_linkid, $user) {
-    $quota = pql_get_attribute($ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_QUOTA"));
-    if(!is_array($quota))
-	  return false;
-	else    
-	  return pql_parse_quota($quota[0]);
+	if($_SESSION["NEW_STYLE_QUOTA"]) {
+	  $quota_size  = pql_get_attribute($ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_QUOTA_SIZE"));
+	  $quota_count = pql_get_attribute($ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_QUOTA_COUNT"));
+
+	  return pql_parse_quota(array($quota_size[0], $quota_count[0]));
+	} else {
+	  $quota = pql_get_attribute($ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_QUOTA_VALUE"));
+
+	  if(!is_array($quota))
+		return false;
+	  else    
+		return pql_parse_quota($quota[0]);
+  }
 }
+
 // }}}
 
 // {{{ pql_get_user_letter(linkid, domain, letra)
+
 // Based in PQL_CONF_GET_USER to search by the cn first letter
 function pql_get_user_letter($linkid, $domain, $letra) {
 	$filter = "(".pql_get_define("PQL_GLOB_ATTR_UID")."=".$letra."*)";
 	$user = pql_search($linkid, $domain, $filter);
     return $user;
 }
+
 // }}}
 
 // {{{ pql_get_user_number(ldap_linkid, domain)
@@ -1648,21 +1664,28 @@ function pql_password_hash($password, $hash) {
 function pql_parse_quota($quota_string) {
 	$quota = '';
 
-    // get max bytes
-    preg_match("/([0-9]*)S/", $quota_string, $matches);
-    if(isset($matches[1])) {
-		$quota["maxsize"] = intval($matches[1] / 1024);
-    
-		// get max mails
-		preg_match("/([0-9]*)C/", $quota_string, $matches);
-		$quota["maxmails"] =  $matches[1];
-	} else
-	  // The quota value isn't correct. Whing it!
-	  // Asume that the value in there is SIZE, and set AMOUNT to 0
-	  // ('should mean' unlimited if I remember correctly).
-	  return(array($quota_string, "0"));
+	if($_SESSION["NEW_STYLE_QUOTA"]) {
+		$quota["maxsize"]  = $quota_string[0];
+		$quota["maxmails"] = $quota_string[1];
 
-    return $quota;
+		return($quota);
+	} else { 
+		// get max bytes
+		preg_match("/([0-9]*)S/", $quota_string, $matches);
+		if(isset($matches[1])) {
+			$quota["maxsize"] = intval($matches[1] / 1024);
+			
+			// get max mails
+			preg_match("/([0-9]*)C/", $quota_string, $matches);
+			$quota["maxmails"] =  $matches[1];
+		} else
+		  // The quota value isn't correct. Whing it!
+		  // Asume that the value in there is SIZE, and set AMOUNT to 0
+		  // ('should mean' unlimited if I remember correctly).
+		  return(array($quota_string, "0"));
+		
+		return $quota;
+	}
 }
 // }}}
 

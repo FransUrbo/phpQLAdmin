@@ -1,6 +1,6 @@
 <?php
 // Add a new mailserver to the database
-// $Id: control_add_server.php,v 2.16 2004-02-15 17:15:01 turbo Exp $
+// $Id: control_add_server.php,v 2.17 2004-03-01 10:08:37 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -46,7 +46,7 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 								 pql_get_define("PQL_GLOB_ATTR_LDAPDEFAULTQUOTA"),
 								 pql_get_define("PQL_GLOB_ATTR_LDAPDEFAULTDOTMODE"),
 								 pql_get_define("PQL_GLOB_ATTR_DIRMAKER"),
-								 pql_get_define("PQL_GLOB_ATTR_QUOTAWARNING"),
+								 pql_get_define("PQL_GLOB_ATTR_QUOTA_WARNING"),
 								 pql_get_define("PQL_GLOB_ATTR_LDAPUID"),
 								 pql_get_define("PQL_GLOB_ATTR_LDAPGID"));
 				if(isset($include_locals)) 	  $attribs[] = pql_get_define("PQL_GLOB_ATTR_LOCALS");
