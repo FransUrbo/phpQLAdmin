@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // maximumDomainUsers
-// $Id: attrib.maximumdomainusers.inc,v 2.1 2003-04-30 08:39:16 turbo Exp $
+// $Id: attrib.maximumdomainusers.inc,v 2.2 2003-04-30 08:46:56 turbo Exp $
 
 function attribute_check($type = '') {
 	global $error, $attrib, $$attrib;
@@ -25,7 +25,7 @@ function attribute_print_form($type = "modify") {
           <td class="title">Maximum allowed users</td>
           <td>
             <?php echo format_error($error[$attrib]); ?>
-            <input type="text" name="<?=$attrib?>" value="<?$$attrib?>" size="50">
+            <input type="text" name="<?=$attrib?>" value="<?=$$attrib?>" size="50">
           </td>
         </tr>
       </th>
@@ -44,19 +44,19 @@ function attribute_print_form($type = "modify") {
 
 function attribute_save($type) {
 	global $error, $attrib, $$attrib, $domain, $rootdn, $type, $_pql;
-
+	
 	echo "Type: $type<br>";
 	echo "Domain: $domain<br>";
 	echo "Attrib: $attrib (".$$attrib.")<br>";
 	echo "Root DN: $rootdn<br>";
-
+	
     switch($type) {
       case "add":
       case "modify":
 		if(pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, $$attrib))
 		  $msg = 'Successfully changed maximum allowed users for domain';
 		else
-		  $msg = 'Failed to set/change maximum allowed users for domain: &nbsp;".ldap_error($_pql->ldap_linkid);
+		  $msg = 'Failed to set/change maximum allowed users for domain: &nbsp;'.ldap_error($_pql->ldap_linkid);
 	
 		attribute_forward($msg);
 		break;
