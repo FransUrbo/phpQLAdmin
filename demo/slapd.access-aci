@@ -2,34 +2,38 @@
 
 # -----------------------------------------------------------------------------
 # We need to do SASL auth, so the Root DSE must be readable to anyone
-access to dn.base=""
-	attrs=supportedSASLMechanisms,namingContexts,subschemaSubentry,objectClass,entry
-	by domain=".*\.bayour\.com" read
-	by peername="IP=127\.0\.0\.1:.*" read
-	by * search
+access to dn.base="" attrs=supportedSASLMechanisms,namingContexts,subschemaSubentry,objectClass,entry
+	by domain.subtree="bayour.com" read
+	by peername.ip="127\.0\.0\.1" read
+	by peername.path="/var/run/ldapi" read
+	by * read
 
-# Make sure the 'admin' have full read (no point in allowing write - it's
-# read only) access to ALL attributes in the '' base.
+# Make sure the admin, localhost and localdomain have full read (no point
+# in allowing write - it's read only) access to ALL attributes in the '' base.
 access to dn.base=""
-        by dn="cn=Turbo Fredriksson,ou=People,o=Fredriksson,c=SE" read
+        by dn.exact="uid=demo1,o=Main Branch,c=SE" read
+	by domain.subtree="bayour.com" read
+	by peername.ip="127\.0\.0\.1" read
+	by peername.path="/var/run/ldapi" read
 
 # -----------------------------------------------------------------------------
-# Part of the monitor backend is only readable from localhost (and my workstation)
+# * Make sure the 'admin' have full read access to ALL attributes
+#   in the monitor backend no matter where he/she comes from.
+# * Anonymous read from local host.
 access to dn.subtree="cn=Monitor"
-	attrs=cn,description,objectClass,entry
-	by peername="IP=192\.168\.1\.122:.*" read
-	by peername="IP=127\.0\.0\.1:.*" read
-
-# Make sure the 'admin' have full read (no point in allowing write - it's
-# read only) access to ALL attributes in the monitor backend no matter where
-# he/she comes from.
-access to dn.subtree="cn=Monitor"
-        by dn="cn=Turbo Fredriksson,ou=People,o=Fredriksson,c=SE" read
+	by dn.exact="uid=demo1,o=Main Branch,c=SE" write
+	by peername.ip="127\.0\.0\.1" read
+	by peername.path="/var/run/ldapi" read
+	by * none
 
 # -----------------------------------------------------------------------------
-# Allow anonymous to read the schema definitions the LDAP server knows about.
+# Allow anonymous to read the schema definitions the LDAP server knows about
+# from local host.
 access to dn="cn=Subschema"
-	by peername="IP=127\.0\.0\.1:.*" read
+	by dn.exact="uid=demo1,o=Main Branch,c=SE" read
+	by peername.ip="127\.0\.0\.1" read
+	by peername.path="/var/run/ldapi" read
+	by * none
 
 # -----------------------------------------------------------------------------
 # Everything not explicitly allowed above is not readable. Unless read and/or
