@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.8 2004-01-01 12:35:34 turbo Exp $
+// $Id: pql_formating.inc,v 2.9 2004-01-15 13:53:40 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -80,7 +80,7 @@ function pql_format_error($output) {
 	  $msg .= "<br>$comment<p>";
 
 	if($output)
-	  echo $msg;
+	  echo $msg."<br>";
 	else
 	  return $msg;
 }
