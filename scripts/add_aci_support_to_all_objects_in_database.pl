@@ -13,7 +13,9 @@ $OLD_SLAPD = 0;
 # Keep it simple - allow write access to all
 # attributes by specified dn.
 $RIGHTS		= "grant;w,r,s,c,x;";
-$SUBJECT	= "cn=Turbo Fredriksson,ou=People,o=Fredriksson,c=SE";
+
+# What RDN's should get this access (if more than one, separate with comma).
+@SUBJECTS	= ("cn=Turbo Fredriksson,ou=People,o=Fredriksson,c=SE");
 
 # ========= D O N T  C H A N G E  A N Y T H I N G  B E L O W =========
 
@@ -133,10 +135,14 @@ foreach $dn (@DNs) {
 	print "OpenLDAPaci: 1.2.3#entry#grant;r,s,c;relativeDomainName,zoneName,DNSTTL,DNSClass,ARecord,MDRecord,MXRecord,NSRecord,SOARecord,CNAMERecord,PTRRecord,HINFORecord,MINFORecord,TXTRecord,SIGRecord,KEYRecord,AAAARecord,LOCRecord,NXTRecord,SRVRecord,NAPTRRecord,KXRecord,CERTRecord,A6Record,DNAMERecord$phpQLAdminAttribs#public#\n";
     }
 
-    print "OpenLDAPaci: 1.2.3#entry#grant;w,r,s,c;[children]#access-id#$SUBJECT\n";
+    @ENTRIES = ("OpenLDAPaci: 1.2.3#entry#grant;w,r,s,c;[children]#access-id#",
+		"OpenLDAPaci: 1.2.3#entry#$RIGHTS\[entry\]#access-id#",
+		"OpenLDAPaci: 1.2.3#entry#$RIGHTS\[all\]#access-id#");
 
-    print "OpenLDAPaci: 1.2.3#entry#$RIGHTS\[entry\]#access-id#$SUBJECT\n";
-    print "OpenLDAPaci: 1.2.3#entry#$RIGHTS\[all\]#access-id#$SUBJECT\n";
-
+    foreach $entry (@ENTRIES) {
+	foreach $subj (@SUBJECTS) {
+	    print "$entry$subj\n";
+	}
+    }
     print "\n";
 }
