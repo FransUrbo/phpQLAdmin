@@ -1,7 +1,7 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 2.12 2003-01-27 13:23:41 turbo Exp $
+// $Id: lang.en.inc,v 2.13 2003-01-28 13:21:56 turbo Exp $
 //
 // if you have a translation to another language, please contact
 // me --> Matthias Blaser <mb@adfinis.ch>
@@ -102,12 +102,13 @@ define("PQL_DNS_NONE", "This domain isn't registred within the DNS system");
 
 define("PQL_DOMAIN_CHANGE_ATTRIBUTE_TITLE", "Change values of all users in this $DOMAIN");
 define("PQL_DOMAIN_CHANGE_ATTRIBUTE", "Attribute");
-define("PQL_DOMAIN_INVALID", "Invalid domain name !! use: domain.tld (e.g. adfinis.com)");
 define("PQL_DOMAIN_EXISTS", "This $DOMAIN already exists");
 define("PQL_DOMAIN_ADD", "Create $DOMAIN");
 if(PQL_LDAP_REFERENCE_DOMAINS_WITH == "dc") {
+	define("PQL_DOMAIN_INVALID", "Invalid $DOMAIN name !! use: domain.tld (e.g. adfinis.com)");
 	define("PQL_DOMAIN_ADD_OK", "Domain %domain% successfully created.<br>You have to manually add this domain to the rpcthosts and locals files in the qmail/control directory !!");
 } else {
+	define("PQL_DOMAIN_INVALID", "Invalid $DOMAIN name !! Don't use dots in the name, you're creating a BRANCH, not a domain.");
 	define("PQL_DOMAIN_ADD_OK", "Branch %domain% successfully created.");
 }
 define("PQL_DOMAIN_ADD_SCRIPT_OK", "Successfully executed the $DOMAIN add script");
@@ -351,7 +352,7 @@ define("PQL_SEARCH_FINDBUTTON","find");
 // ldap connection test texts
 define("PQL_TEST_TITLE", "phpQLAdmin ldap connection");
 define("PQL_TEST_TESTS", "Tests");
-define("PQL_TEST_HELP", "This is a simple test to show if the ldap extension is loaded<br>and the connections are working.");
+define("PQL_TEST_HELP", "This is a simple test to show if the ldap extension is loaded<br>and the connections are working. It also does some<br>rudimentary ACL tests.");
 define("PQL_TEST_LDAP_EXT_TITLE", "PHP LDAP extension");
 define("PQL_TEST_LDAP_EXT_NA", "not available");
 define("PQL_TEST_LDAP_EXT_OK", "built in (loaded)");
