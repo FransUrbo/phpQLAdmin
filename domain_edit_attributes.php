@@ -1,6 +1,6 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.45 2004-11-05 10:54:44 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.45.4.1 2005-01-12 11:47:37 turbo Exp $
 //
 // {{{ Initialize and setup
 session_start();
@@ -58,6 +58,7 @@ include("./include/$plugin");
 // }}}
 
 // {{{ Get the organization name, or the DN if it's unset
+
 $orgname = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_O"));
 if(!$orgname) {
 	$orgname = urldecode($_REQUEST["domain"]);
@@ -65,19 +66,34 @@ if(!$orgname) {
 if(is_array($orgname)) {
 	$orgname = $orgname[0];
 }
+$_REQUEST["orgname"] = $orgname;
+
 // }}}
 
 include("./header.html");
 ?>
-  <span class="title1"><?php echo pql_complete_constant($LANG->_('Change %what% for domain %domain%'), array('what' => $LANG->_('default values'), 'domain' => $orgname)); ?>
+  <span class="title1"><?php echo pql_complete_constant($LANG->_('Change %what% for domain %domain%'), array('what' => $LANG->_('default values'), 'domain' => $_REQUEST["orgname"])); ?>
   </span>
 
   <br><br>
 
 <?php
-  // DLW: I'm guessing that $type comes from a form.
-  /* DLW: Type isn't always set, and some times it seems like "action" it taking it's place.
-   *      Check this out in more detail. */
+// Pages that call us (domain_edit_attributes.php) with
+// * only 'type=':
+//		domain_detail.php
+//		domain_details-aci.inc
+// * only 'action=':
+//		domain_details-default.inc
+//		domain_details-owner.inc
+//		user_details-access.inc
+// * neither 'type=' nor 'action=':
+//		domain_details-users_chval.inc
+//		config_details-branch.inc
+//
+// * Values for type/action:
+//		type={edit,delete,moveup,movedown,host,del}
+//		action={modify,delete,add}
+
 if(!$_REQUEST["type"]) {
   if (!empty($_REQUEST["action"])) { // DLW: I'm wingining it here.
 	$_REQUEST["type"] = $_REQUEST["action"];
@@ -88,6 +104,10 @@ if(!$_REQUEST["type"]) {
 
 // {{{ Select what to do
 if(@$_REQUEST["submit"] == 1) {
+	// Called from:
+	//	tables/domain_details-dnszone.inc
+	//	tables/domain_details-options.inc
+
 	if($_REQUEST["attrib"] == 'basequota') {
 		attribute_save("modify");
 	} else {
@@ -98,6 +118,9 @@ if(@$_REQUEST["submit"] == 1) {
 	}
 } elseif(@$_REQUEST["submit"] == 2) {
     // Support for changing domain defaults
+	// Called from:
+	//	tables/domain_details-aci.inc
+
 	if($_REQUEST["type"] != 'delete') {
 		if(attribute_check())
 		  attribute_save("modify");
@@ -107,9 +130,19 @@ if(@$_REQUEST["submit"] == 1) {
 	  attribute_save("delete");
 } elseif(@$_REQUEST["submit"] == 3) {
 	// Support for changing domain administrator
+	// Called from:
+	//	tables/domain_details-aci.inc
+	//	tables/domain_details-default.inc
+	//	tables/domain_details-owner.inc
+
 	attribute_print_form($_REQUEST["type"]);
 } elseif(@$_REQUEST["submit"] == 4) {
 	// SAVE change of domain administrator, mailinglist admin and contact person
+	// Called from:
+	//	tables/domain_details-aci.inc
+	//	tables/domain_details-default.inc
+	//	tables/domain_details-owner.inc
+
 	if($_REQUEST["action"])
 	  attribute_save($_REQUEST["action"]);
 	elseif($_REQUEST["type"])
