@@ -7,10 +7,41 @@ phpQLAdmin 2.0.7 - TO BE ANNOUNCED
 	    whatever) under the branch we're to delete. We then go through all these
 	    entries, deleting them. The problem was that the subbranch was included
 	    in this, so we ended up trying to delete the subbranch twice.
+	  - Value 'value' was used else where, use 'set' instead (the attribute change
+	    files already used this) when modifying (add/del) a QmailLDAP locals/rcpthosts
+	    value.
+	  - Only use 'add' or 'delete' actions when modifying a QmailLDAP locals/rcpthosts
+	    value (add and delete IS a modify).
+	  - Lowercase all attribute checks (so that switch/case combo works properly).
+	  - Better description on how to set PQL_LDAP_CONTROL_AUTOADDLOCALS properly.
+	  - Don't use 'if(defined(PQL_LDAP*))'. It won't work if it's FALSE.
 
 	GUI layout change
+	  - Reference the Administrator/Contact person with 'cn', not RDN.
+	  - Better/more human readable description on the 'Personal details'.
+	  - Rudimentary ACL tests - use attribute 'test' (bool) to check if it's ok
+	    to modify values/attributes on the specific DN's (base/root DN and in
+	    each domain/branch DN that exists in db).
+	  - When changing a QmailLDAP controls object, don't redirect to domain details
+	    page, go to the host's control details page instead.
+	  - When adding a locals/rcpthosts value to the QmailLDAP controls object, don't
+	    give all the previous values to add/remove nor show option to increase the
+	    count (adding more input fields etc).
+	    If we're adding a value, one single value should be added! The delete option
+	    is availible through it's own URL through the control_details page.
 
 	Misc changes
+	  - Functions pql_control_update_domains() and pql_get_domains() have change
+	    somewhat. Send the full class initialization to functions, not just the
+	    link ID.
+	  - Different PQL_DOMAIN_INVALID dependening on PQL_LDAP_REFERENCE_DOMAINS_WITH.
+	  - Filtered through dos2unix to get rid of ^M
+	  - Function pql_control_update_domains() was rewritten to work with new
+	    domain/branch/user reference system, and to allow for changing ALL QmailLDAP
+	    server objects in one go and to get automatic locals update working (ie,
+	    update locals when modifying defaultDomain for a branch, or when adding
+	    a new domain/branch).
+	  - Add homePostalAddress to 'Personal details' to manage.
 
 phpQLAdmin 2.0.6 Release (Jan 24 2003)
 	Bug fixes
