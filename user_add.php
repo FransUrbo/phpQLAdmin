@@ -1,9 +1,10 @@
 <?php
 // add a user
-// $Id: user_add.php,v 1.4 2002-12-12 21:52:08 turbo Exp $
+// $Id: user_add.php,v 1.5 2002-12-13 13:58:04 turbo Exp $
 //
 session_start();
 require("pql.inc");
+
 $_pql = new pql($USER_DN, $USER_PASS);
 
 // check if domain exist
@@ -273,7 +274,7 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
           <?php echo format_error($error["pwscheme"]); ?>
 
           <select name="pwscheme">
-            <option value="none">Choose password scheme to use
+            <option value="none">Choose password scheme to use</option>
 <?php
               $schemes = split(",", PQL_PASSWORD_SCHEMES);
               foreach($schemes as $scheme) {
@@ -293,6 +294,19 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 
     if($account_type == "system") {
 		// display forms for SYSTEM account
+
+		// Load list of allowed shells from /etc/shells
+		$fp = fopen("/etc/shells", "r");
+		while (!feof ($fp)) {
+			$buffer = fgets($fp, 4096);
+			$shell = split(" ", $buffer);
+
+			if(!eregi("^#", $shell[0]) and !eregi("^$", $shell[0])) {
+				$shells[] = $shell[0];
+			}
+		}
+		fclose ($fp);
+		asort($shells);
 ?>
 
       <!-- Loginshell -->
@@ -300,10 +314,14 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
         <td class="title"><?php echo PQL_USER_LOGINSHELL; ?></td>
         <td><?php echo format_error($error["loginshell"]); ?>
           <select name="loginshell">
-            <option value="/bin/bash" SELECTED>/bin/bash</option>
-            <option value="/bin/sh">/bin/sh</option><?php 
-			// TODO: Extract valid shells from /etc/shells
-	    ?>
+			<option value="/bin/false" SELECTED>/bin/false</option>
+<?php
+		foreach($shells as $shell) {
+?>
+            <option value="<?=$shell?>"><?=$shell?></option>
+<?php
+		}
+?>
           </select>
         </td>
       </tr>
