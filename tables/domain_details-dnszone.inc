@@ -232,6 +232,10 @@
       <tr class="<?php pql_format_table(); ?>">
         <td><a href="bind9_del.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&dns_domain_name=<?=$dns_domain_name?>&action=del&type=domain&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Remove this %what%'), array('what' => $LANG->_('DNS zone'))); ?></a></td>
       </tr>
+
+      <tr class="<?php pql_format_table(); ?>">
+        <td><a href="dnszonetemplate.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&defaultdomain=<?=$dns_domain_name?>&view=<?=$view?>"><?=$LANG->_('Create DNS template zone file')?></a></td>
+      </tr>
 <?php } ?>
     </th>
   </table>

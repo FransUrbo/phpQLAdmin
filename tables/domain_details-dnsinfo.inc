@@ -20,10 +20,6 @@
 <?php	} // end foreach
 	} // end if (count($rec) == 0)
 ?>
-
-      <tr class="subtitle">
-        <td colspan="4"><a href="dnszonetemplate.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&defaultdomain=<?=$defaultdomain?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Create DNS template zone file')?></a></td>
-      </tr>
     </th>
   </table>
 
