@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.39 2003-08-16 11:47:03 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.40 2003-08-20 08:36:47 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -306,7 +306,7 @@ function do_exec($command, $output, &$return) {
 //	return(@exec($command, $output, $return));
 
 	$return = 100;
-	return(false);
+	return("Command execution disabled. See ./include/config.inc:do_exec().");
 }
 
 /*
