@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.116.2.5 2005-02-15 10:53:21 turbo Exp $
+// $Id: user_add.php,v 2.116.2.6 2005-02-15 16:44:13 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -323,6 +323,12 @@ switch($_REQUEST["page_curr"]) {
 			$error_text["email"] = pql_complete_constant($LANG->_('Mail address %address% already exists'),
 														 array("address" => '<i>'.$_REQUEST["email"].'</i>'));
 			unset($_REQUEST["email"]);
+		  } else {
+			// The mail address is perfectly ok, but if user specify an exact email address (which most
+			// likley don't match the email_domain we must change the email_domain request value for
+			// the rest of the checks to work correctly.
+			$tmp = split('@', $_REQUEST["email"]);
+			$_REQUEST["email_domain"] = $tmp[1];
 		  }
 		}
 		// }}}
