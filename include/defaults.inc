@@ -7,6 +7,10 @@
 //       DN. They are (site) global variables, not per branch.
 
 // ----------------------------
+// PQL_GLOB_WHOAREWE
+pql_define("PQL_GLOB_WHOAREWE", "phpQLAdmin", false);
+
+// ----------------------------
 // PQL_CONF_SHOW_USERS (true | false)
 // set to false, if the domain users should not be shown in the navigation
 // frame. this results in better performance on servers with large amount
