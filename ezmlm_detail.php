@@ -1,19 +1,22 @@
 <?php
-// $Id: ezmlm_detail.php,v 1.31 2005-03-04 11:55:32 turbo Exp $
+// $Id: ezmlm_detail.php,v 1.32 2005-03-09 10:50:18 turbo Exp $
 //
+// {{{ Setup session etc
 require("./include/pql_session.inc");
-require("./include/pql_config.inc");
+require($_SESSION["path"]."/include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_ezmlm.inc");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
-// print status message, if one is available
+$url["domain"] = pql_format_urls($_REQUEST["domain"]);
+$url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
+// }}}
+
+// {{{ Print status message, if one is available
 if(isset($_REQUEST["msg"])){
     pql_format_status_msg($_REQUEST["msg"]);
 }
-
-$url["domain"] = pql_format_urls($_REQUEST["domain"]);
-$url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
+// }}}
 
 if($_REQUEST["domain"]) {
 	// Get base directory for mails
@@ -45,6 +48,7 @@ if($_REQUEST["domain"]) {
 		include("./tables/ezmlm_details-lists.inc");
 	} else {
 		// We got a list, show if's details
+		$listno = $_REQUEST["listno"];
 		include("./tables/ezmlm_details-detail.inc");
 	}
 }
