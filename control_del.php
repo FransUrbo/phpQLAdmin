@@ -1,11 +1,11 @@
 <?php
 // Delete a mailserver controls object
-// $Id: control_del.php,v 2.13 2004-10-19 10:40:40 turbo Exp $
+// $Id: control_del.php,v 2.14 2005-01-12 13:50:54 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 
-// Get users that uses this mailserver - we need to know this twice.
+// {{{ Get users that uses this mailserver - we need to know this twice.
 // Once the first time we're called, and once when the acctuall deletion
 // will take place.
 // Therefor a little function here to simplify, and avoid duplication.
@@ -24,19 +24,21 @@ function control_del_find_users($link, $host) {
 
 	return($users);
 }
-
+// }}}
 
 if(pql_get_define("PQL_CONF_CONTROL_USE")) {
-    // include control api if control is used
+    // {{{ include control api if control is used
     include("./include/pql_control.inc");
     $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
+	// }}}
 
 	if(!$_REQUEST["submit"] or $_REQUEST["error"]) {
 		include("./header.html");
 		
 		// Check to see if this object exists
-		$sr = ldap_search($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-						  "(cn=" . $_REQUEST["mxhost"] . ")", array("cn"), "BASE");
+		$filter = "(".pql_get_define("PQL_ATTR_CN") . "=" . $_REQUEST["mxhost"] . ")";
+		$sr = ldap_search($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $filter,
+						  array(pql_get_define("PQL_ATTR_MAILHOST")), "BASE");
 		if(ldap_count_entries($_pql_control->ldap_linkid, $sr) > 0) {
 			// Exists - get DN
 			$dn = ldap_get_dn($_pql_control->ldap_linkid,
@@ -95,24 +97,27 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 		// We've submitted
 		switch($_REQUEST["action"]) {
 			case "ignore":
-			  // Don't touch the users - delete object directly
+			  // {{{ Don't touch the users - delete object directly
 			  $delete_object = 1;
 			  break;
+			  // }}}
 
 			case "delete":
-			  // 1. Delete all users
+			  // {{{ 1. Delete all users
 			  $users = control_del_find_users($_pql, $_REQUEST["oldmx"]);
 			  if(is_array($users)) {
 				  for($i=0; $users[$i]; $i++)
 					pql_user_del($_pql, $_REQUEST["domain"], $users[$i], 1);
 			  }
+			  // }}}
 
-			  // 2. Delete object
+			  // {{{ 2. Delete object
 			  $delete_object = 1;
 			  break;
+			  // }}}
 
 			case "move":
-			  // 1. Move user(s) to other MX/Host. Where?
+			  // {{{ 1. Move user(s) to other MX/Host. Where?
 			  if($_REQUEST["newmx"] == "") {
 				  // We haven't specified a (pre-defined) MX/host to move the users to - do over!
 				  $oldmx = $_REQUEST["oldmx"]; unset($_REQUEST);
@@ -145,26 +150,36 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 					  }
 				  }
 			  }
+			  // }}}
 
-			  // 2. Delete object
+			  // {{{ 2. Delete object
 			  $delete_object = 1;
 			  break;
+			  // }}}
 		  }
 	}
 
+	// {{{ delete object
 	if($delete_object) {
-		$dn = pql_get_define("PQL_ATTR_CN").'='.$_REQUEST["oldmx"].','.$_SESSION["USER_SEARCH_DN_CTR"];
-		if(! ldap_delete($_pql_control->ldap_linkid, $dn)) {
-			// Could not delete object
-			$msg = urlencode("Failed to delete mailserver $host.");
-			header("Location: " . pql_get_define("PQL_CONF_URI") . 
-				   "control_detail.php?mxhost=".$_REQUEST["oldmx"]."&msg=$msg");
-		} else {
-			// Successfully deleted object
-			$msg = urlencode("Successfully deleted mailserver $host.");
-			header("Location: " . pql_get_define("PQL_CONF_URI") . "home.php?msg=$msg&rlnb=2");
-		}
+	  if($_REQUEST["mxhost"])
+		$mxhost = $_REQUEST["mxhost"];
+	  elseif($_REQUEST["oldmx"]) {
+		$mxhost = $_REQUEST["oldmx"];
+
+		$dn = pql_get_define("PQL_ATTR_CN").'='.$mxhost.','.$_SESSION["USER_SEARCH_DN_CTR"];
+	  }
+
+	  if(! ldap_delete($_pql_control->ldap_linkid, $dn)) {
+		// Could not delete object
+		$url = "control_detail.php?mxhost=".$mxhost."&msg=".urlencode("Failed to delete mailserver $mxhost.");
+	  } else {
+		// Successfully deleted object
+		$url = "home.php?rlnb=2&msg=".urlencode("Successfully deleted mailserver $mxhost.");
+	  }
+
+	  header("Location: " . pql_get_define("PQL_CONF_URI") . $url);
 	}
+	// }}}
 }
 // else - PQL_CONF_CONTROL_USE isn't set!
 

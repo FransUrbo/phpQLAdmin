@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.28 2004-11-12 09:28:38 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.29 2005-01-12 13:50:55 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -33,12 +33,10 @@ function attribute_init() {
 
 function attribute_print_form() {
     global $error, $LANG;
-	global $orgname;			// Set by domain_edit_attributes.php.
-
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what% for domain %domain%'), array('what' => $LANG->_('additional domain name'), 'domain' => $orgname)); ?></th>
+      <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what% for domain %domain%'), array('what' => $LANG->_('additional domain name'), 'domain' => $_REQUEST["orgname"])); ?></th>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Additional domain name')?></td>
           <td><?php echo pql_format_error_span($error["additionaldomainname"]); ?><input type="text" name="additionaldomainname" value="<?=$_REQUEST["additionaldomainname"]?>" size="20"></td>

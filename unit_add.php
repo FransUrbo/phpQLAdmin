@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: unit_add.php,v 2.20 2004-10-20 07:14:24 turbo Exp $
+// $Id: unit_add.php,v 2.21 2005-01-12 13:50:54 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -25,7 +25,7 @@ if(!pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], '(objectclass=*)', 'BASE
 
 if($_REQUEST["unit"]) {
     // Check if unit exist
-    if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $rootdn) == "dc")
+    if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $_REQUEST["rootdn"]) == "dc")
       $filter = "(&(dc=".$_REQUEST["unit"].")(objectclass=domain))";
     else
       $filter = "(&(ou=".$_REQUEST["unit"].")(objectclass=organizationalUnit))";

@@ -7,8 +7,8 @@
 		$attributes = array('locals', 'rcpthosts', 'smtproutes');
 
 		// URLify values
-		$url["rootdn"] = urlencode($rootdn);
-		$url["domain"] = urlencode($domain);
+		$url["rootdn"] = urlencode($_REQUEST["rootdn"]);
+		$url["domain"] = urlencode($_REQUEST["domain"]);
 
 		// ------------------------------
 		foreach($attributes as $attrib) {
@@ -33,7 +33,7 @@
 					$alt = pql_complete_constant($LANG->_('Add %what% to %attribute%'),
 												 array('what' => $d, 'attribute' => $attrib));
 					
-					$LINKS[$attrib][$d] = "<a href=\"control_edit_attribute.php?attrib=$attrib&rootdn=$rootdn&domain=$domain&type=add&set=$d&view=".$_REQUEST["view"]."\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"$alt\"></a>";
+					$LINKS[$attrib][$d] = "<a href=\"control_edit_attribute.php?attrib=$attrib&rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"]."&type=add&set=$d&view=".$_REQUEST["view"]."\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"$alt\"></a>";
 				}
 			}
 		}

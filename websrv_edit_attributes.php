@@ -1,6 +1,6 @@
 <?php
 // edit attributes of a webserver configuration
-// $Id: websrv_edit_attributes.php,v 2.4 2004-04-02 12:41:34 turbo Exp $
+// $Id: websrv_edit_attributes.php,v 2.5 2005-01-12 13:50:54 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -11,15 +11,20 @@ function attribute_forward($msg) {
 	$url["domain"] = pql_format_urls($_REQUEST["domain"]);
 	$url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 
-    $server = ldap_explode_dn($_REQUEST["server"], 0);
+    $server = ldap_explode_dn(urldecode($_REQUEST["server"]), 0);
     $server = ereg_replace("cn=", "", $server[0]);
 
     // URL Encode the DN values
     $msg    = urlencode($msg);
 
-    $url  = "domain_detail.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&server=$server";
-	$url .= "&view=".$_REQUEST["view"]."&msg=$msg";
-    header("Location: " . pql_get_define("PQL_CONF_URI") . "$url");
+    $LINK_URL  = "domain_detail.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&server=$server";
+	$LINK_URL .= "&view=".$_REQUEST["view"]."&msg=$msg";
+
+	if(file_exists("./.DEBUG_ME")) {
+		echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
+		die("<b>$LINK_URL</b>");
+	} else
+	  header("Location: " . pql_get_define("PQL_CONF_URI") . $LINK_URL);
 }
 
 include("./header.html");
@@ -30,11 +35,11 @@ include("./include/attrib.websrv.inc");
 
 <?php
 // Select what to do
-if($action == 'del') {
-    attribute_save($action);
-} elseif($submit == 1) {
+if($_REQUEST["action"] == 'del') {
+    attribute_save($_REQUEST["action"]);
+} elseif($_REQUEST["submit"] == 1) {
     if(attribute_check())
-      attribute_save($action);
+      attribute_save($_REQUEST["action"]);
     else
       attribute_print_form();
 } else {

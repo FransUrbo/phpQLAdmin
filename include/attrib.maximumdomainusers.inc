@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // maximumDomainUsers
-// $Id: attrib.maximumdomainusers.inc,v 2.14 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.maximumdomainusers.inc,v 2.15 2005-01-12 13:50:55 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type = '') {
@@ -20,7 +20,6 @@ function attribute_check($type = '') {
 // {{{ attribute_print_form(type)
 function attribute_print_form($type = "modify") {
     global $error, $LANG;
-	global $orgname;			// Set by domain_edit_attributes.php.
 
     $attrib = $_REQUEST["attrib"];
 ?>

@@ -93,17 +93,20 @@
 #            webServerAlias                   5  *mod_cfg_ldap: apacheServerAlias
 #            webServerAdmin                   6  *mod_cfg_ldap: apacheServerAdmin
 #            webScriptAliasURL                7
-#            WebScriptAliasPath               8
+#            webScriptAliasPath               8
 #            webLogError                      9
 #            webLogTransfer                  10
 #            webOptions                      11
+#            webLDAPServer                   12
+#            webLDAPServerLoginDN            13
+#            webLDAPServerLoginPW            14
 # --------------------------------------------
 #
 # *mod_cfg_ldap => Also defined (with other name) in mod_cfg_ldap
 # availible from http://sourceforge.net/projects/modcfgldap/
 # See README.apache in this directory.
 
-# $Id: phpQLAdmin.schema,v 2.49 2004-11-06 22:38:28 turbo Exp $
+# $Id: phpQLAdmin.schema,v 2.50 2005-01-12 13:50:54 turbo Exp $
 
 # PQL_ATTR_SHOW_USERS (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.1 NAME 'showUsers'
@@ -587,6 +590,23 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.5.11 NAME 'webOptions'
   EQUALITY caseIgnoreMatch
   SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024})
 
+# PQL_ATTR_WEBSRV_LDAP_SERVER
+attributetype ( 1.3.6.1.4.1.8767.3.2.5.12 NAME 'webLDAPServer'
+  DESC 'Fully Qualified Host Name of the LDAP server for mod_cfg_ldap configs'
+  EQUALITY caseExactIA5Match
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.26
+  SINGLE-VALUE )
+
+# PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_DN
+attributetype ( 1.3.6.1.4.1.8767.3.2.5.13 NAME 'webLDAPServerLoginDN'
+  DESC 'RDN with read access to mod_cfg_ldap configs'
+  SUP owner)
+
+# PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_PW
+attributetype ( 1.3.6.1.4.1.8767.3.2.5.14 NAME 'webLDAPServerLoginPW'
+  DESC 'Password associated with webLDAPServerLoginDN'
+  SUP userPassword)
+
 # -----------------------------------------
 
 objectclass ( 1.3.6.1.4.1.8767.3.1.1
@@ -638,7 +658,8 @@ objectclass ( 1.3.6.1.4.1.8767.3.1.4
          webDocumentRoot )
   MAY  ( webServerAlias $ webScriptAliasURL $ 
          webScriptAliasPath $ webLogError $ 
-         webLogTransfer $ webOptions )
+         webLogTransfer $ webOptions $ webLDAPServer $
+         webLDAPServerLoginDN $ webLDAPServerLoginPW )
   SUP top STRUCTURAL )
 
 objectclass ( 1.3.6.1.4.1.8767.3.1.5

@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // maximumDomainUsers
-// $Id: attrib.maximummailinglists.inc,v 2.10 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.maximummailinglists.inc,v 2.11 2005-01-12 13:50:55 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type = '') {
@@ -22,15 +22,14 @@ function attribute_check($type = '') {
 // {{{ attribute_print_form(type)
 function attribute_print_form($type = "modify") {
     global $error, $LANG;
-	global $orgname;			// Set by domain_edit_attributes.php.
 
     $attrib = $_REQUEST["attrib"];
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Maximum allowed mailinglists in domain %domain%'), array('domain' => $orgname)); ?></th>
+      <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Maximum allowed mailinglists in domain %domain%'), array('domain' => $_REQUEST["orgname"])); ?></th>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?php echo pql_complete_constant($LANG->_('MMaximum allowed mailinglists in domain %domain%'), array('domain' => $orgname)); ?></td>
+          <td class="title"><?php echo pql_complete_constant($LANG->_('MMaximum allowed mailinglists in domain %domain%'), array('domain' => $_REQUEST["orgname"])); ?></td>
           <td>
             <?php echo pql_format_error_span($error[$attrib]); ?>
             <input type="text" name="<?=$attrib?>" value="<?=$_REQUEST[$attrib]?>" size="50">

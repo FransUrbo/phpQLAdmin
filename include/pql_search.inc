@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.29 2004-11-13 12:47:03 turbo Exp $
+// $Id: pql_search.inc,v 2.30 2005-01-12 13:50:55 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -15,6 +15,29 @@
 function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $operational = 0) {
 	// URL decode the object DN if it's URL ENcoded
 	$dn = urldecode($dn);
+
+	if(eregi("^dNSTTL=", $dn)) {
+	  // De urldecode (part of) the DNS DN.
+	  // We're missing the '+' between dNSTTL and relativeDomainName
+	  // (which urldecode() removes!):
+	  // 
+	  // dNSTTL=3600+relativeDomainName=@,dc=domain,dc=tld,ou=DNS,o=Branch,c=SE
+	  $dn_parts = explode(',', $dn);
+
+	  // Create the new DN with all but the very first part.
+	  $count = count($dn_parts);
+	  for($i=1; $i <= $count; $i++) {
+		$newdn .= $dn_parts[$i];
+		if($dn_parts[$i+1])
+		  $newdn .= ",";
+	  }
+
+	  // Add the missing part
+	  $tmp   = split(' ', $dn_parts[0]);
+	  $newdn = $tmp[0]."+".$tmp[1].",".$newdn;
+
+	  $dn = $newdn;
+	}
 
     // TODO: Check whether the object is cached.
 //    $value = '';
@@ -53,8 +76,11 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
 				// it!
 				if(is_array($value) and $value[1]) {
 					// A multi value - such as 'mailAlternateAddress'
-					// or 'objectClass' etc. Take ALL values.
-					for($j=0; $value[$j]; $j++) {
+					// or 'objectClass' etc. Take ALL values, ignoring
+					// any empty values that might exists.
+					$count = count($value);
+					for($j=0; $j <= $count; $j++) {
+					  if($value[$j])
 						$entry[$i][$key][] = pql_maybe_decode($value[$j]);
 					}
 				} elseif(!is_array($value))

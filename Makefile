@@ -92,3 +92,6 @@ changes:
 	  mv CHANGES.new CHANGES; \
 	  cvs commit -m "New release - `cat .version | sed 's@ .*@@'`" CHANGES; \
 	)
+clean:
+	@(find -name '*~' -o -name '.*~' -o -name '.#*' -o -name '#*' | \
+	  xargs --no-run-if-empty rm)

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // ezmlmVirtualUser in a domain/branch
-// $Id: attrib.ezmlmuser.inc,v 2.3 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.ezmlmuser.inc,v 2.4 2005-01-12 13:50:55 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -16,7 +16,7 @@ function attribute_print_form() {
 ?>
   <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Change %what% for domain %domain%'), array('what' => $LANG->_('EZMLM Virtual User'), 'domain' => $orgname)); ?></th>
+      <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Change %what% for domain %domain%'), array('what' => $LANG->_('EZMLM Virtual User'), 'domain' => $_REQUEST["orgname"])); ?></th>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Username')?></td>
           <td><?php echo pql_format_error_span($error["ezmlmvirtualuser"]); ?><input type="text" name="ezmlmvirtualuser" value="<?=$_REQUEST["ezmlmvirtualuser"]?>" size="50"></td>

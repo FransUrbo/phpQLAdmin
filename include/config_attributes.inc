@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.23 2004-11-05 13:15:32 turbo Exp $
+// $Id: config_attributes.inc,v 2.24 2005-01-12 13:50:55 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 
@@ -184,7 +184,6 @@ pql_set_define("PQL_ATTR_TXTRECORD",						strtolower("txtRecord"),					false);
 // }}}
 
 // {{{ Attributes used by the Apache config
-
 pql_set_define("PQL_ATTR_WEBSRV_USE", 						strtolower('useWebSrv'),					false);
 pql_set_define("PQL_ATTR_WEBSRV_SRV_IP", 					strtolower('webServerIP'),					false);
 pql_set_define("PQL_ATTR_WEBSRV_SRV_URL", 					strtolower('webServerURL'),					false);
@@ -193,6 +192,10 @@ pql_set_define("PQL_ATTR_WEBSRV_SCRIPT_PATH", 				strtolower('WebScriptAliasPath
 pql_set_define("PQL_ATTR_WEBSRV_LOG_ERROR", 				strtolower('webLogError'),					false);
 pql_set_define("PQL_ATTR_WEBSRV_LOG_TRANSFER", 				strtolower('webLogTransfer'),				false);
 pql_set_define("PQL_ATTR_WEBSRV_OPTIONS", 					strtolower('webOptions'),					false);
+
+pql_set_define("PQL_ATTR_WEBSRV_LDAP_SERVER", 				strtolower('webLDAPServer'),				false);
+pql_set_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_DN", 		strtolower('webLDAPServerLoginDN'),			false);
+pql_set_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_PW", 		strtolower('webLDAPServerLoginPW'),			false);
 
 // If not using 'mod_cfg_ldap.schema', then enable these (default)
 pql_set_define("PQL_ATTR_WEBSRV_OC",	 					strtolower('phpQLAdminWebsrv'),				false);
@@ -207,7 +210,6 @@ pql_set_define("PQL_ATTR_WEBSRV_SRV_NAME", 					strtolower('webServerName'),				
 //pql_set_define("PQL_ATTR_WEBSRV_SRV_ALIAS", 				strtolower('apacheServerAlias'),			false);
 //pql_set_define("PQL_ATTR_WEBSRV_SRV_ADMIN", 				strtolower('apacheServerAdmin'),			false);
 //pql_set_define("PQL_ATTR_WEBSRV_SRV_NAME",					strtolower('apacheServerName'),				false);
-
 // }}}
 
 // {{{ Miscellaneous external attributes
