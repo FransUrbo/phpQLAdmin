@@ -1,6 +1,6 @@
 phpQLAdmin 2.0 Change Log
 
-phpQLAdmin 2.0.11 TO BE ANNOUNCED
+phpQLAdmin 2.0.11 Release (Apr 28 2003)
 	Bug fixes
 	  - Move the checking for { and } (password scheme) to standalone to
 	    make absolutly sure it's invoked...
