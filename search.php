@@ -1,6 +1,6 @@
 <?php
 // shows results of search
-// $Id: search.php,v 2.24 2004-03-11 18:13:32 turbo Exp $
+// $Id: search.php,v 2.25 2004-03-27 12:09:52 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -38,6 +38,14 @@ if (empty($_REQUEST["attribute"]) || empty($_REQUEST["filter_type"]) || empty($_
     exit();
 }
 
+if($_REQUEST["attribute"] == pql_get_define("PQL_ATTR_MAILHOST")) {
+	// IDNA decode the FQDN
+	$_REQUEST["search_string"] = pql_maybe_idna_encode($_REQUEST["search_string"]);
+
+	// We must force an 'is', since it's not possible to do a substring match
+	$_REQUEST["filter_type"] = 'is';
+}
+
 // make filter to comply with filter_type and search_string
 $filter = "";
 switch($_REQUEST["filter_type"]) {
@@ -61,6 +69,9 @@ if(!$_SESSION["SINGLE_USER"]) {
 	foreach($_pql->ldap_basedn as $dn) {
 		$dn = urldecode($dn);
 		
+		if($_REQUEST["debug"])
+		  echo "$dn: $filter<br>";
+
 		$usrs = pql_search($_pql->ldap_linkid, $dn, $filter);
 		for($i=0; $usrs[$i]; $i++) {
 			$is_group = 0;
