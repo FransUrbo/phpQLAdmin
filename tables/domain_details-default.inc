@@ -1,5 +1,5 @@
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left"><?=$LANG->_('Default domain values')?></th>
+    <th colspan="3" align="left"><?=$LANG->_('Default domain values')?>
 <?php if($ALLOW_BRANCH_CREATE) { ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?=$LANG->_('Branch DN')?></td>
