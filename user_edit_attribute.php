@@ -15,7 +15,7 @@ function attribute_forward($msg, $rlnb = false){
     global $domain, $user;
     
     $msg = urlencode($msg);
-    $url = "user_detail.php?domain=$domain&user=" . urlencode($user) . "&msg=$msg";
+    $url = "user_detail.php?user=" . urlencode($user) . "&msg=$msg";
     if ($rlnb) {
 	$url .= "&rlnb=1";
     }
@@ -64,19 +64,21 @@ switch($attrib){
   case "deliveryprogrampath":
     $include = "attrib.deliveryprogrampath.inc";
     break;
-  case "homePhone":
+  case "homephone":
   case "mobile":
   case "o":
-  case "postalAddress":
+  case "postaladdress":
   case "l":
   case "st":
-  case "postalCode":
+  case "postalcode":
   case "c":
   case "title":
-  case "physicalDeliveryOfficeName":
-  case "telephoneNumber":
+  case "physicaldeliveryofficename":
+  case "telephonenumber":
   case "pager":
   case "info":
+  case "personaltitle":
+  case "roomnumber":
     $include = "attrib.outlook.inc";
     break;
   case "loginshell";
@@ -86,7 +88,7 @@ switch($attrib){
     $include = "attrib.cn.inc";
     break;
   default:
-    die("unknown attribute");
+    die("unknown attribute $attrib");
 }
 
 include("./include/".$include);
@@ -96,7 +98,7 @@ include("./header.html");
   <br><br>
 <?php
 // select what to do
-if($submit == 1){
+if(($submit == 1) or ($submit == 2)) {
     if(attribute_check("modify")){
 	attribute_save("modify");
     } else {
