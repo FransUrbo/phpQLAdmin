@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.9 2003-11-11 07:24:42 turbo Exp $
+// $Id: pql_bind9.inc,v 2.10 2003-11-11 14:01:02 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, dn)
@@ -18,9 +18,9 @@ function pql_bind9_get_zone($linkid, $dn) {
 			$zone = $info[$i]['zonename'][0];
 			$host = $info[$i]['relativedomainname'][0];
 				
-			$ZONE[$zone][$host]['RDN']  = $info[$i]['dn'];
-			$ZONE[$zone][$host]['ZONE'] = $zone;
-			$ZONE[$zone][$host]['HOST'] = $host;
+			$ZONE[$zone][$host]['RDN']  = pql_bind9_maybe_decode($info[$i]['dn']);
+			$ZONE[$zone][$host]['ZONE'] = pql_bind9_maybe_decode($zone);
+			$ZONE[$zone][$host]['HOST'] = pql_bind9_maybe_decode($host);
 			$ZONE[$zone][$host]['TTL']  = $info[$i]['dnsttl'][0];
 			
 			// A Record(s)
@@ -28,14 +28,14 @@ function pql_bind9_get_zone($linkid, $dn) {
 				if($info[$i]['arecord'][1]) {
 					// We have multiple A records - Round-Robin!
 					for($j=0; $j < $info[$i]['arecord']['count']; $j++)
-					  $ZONE[$zone][$host]['A'][] = $info[$i]['arecord'][$j];
+					  $ZONE[$zone][$host]['A'][] = ($info[$i]['arecord'][$j]);
 				} else
-				  $ZONE[$zone][$host]['A'] = $info[$i]['arecord'][0];
+				  $ZONE[$zone][$host]['A'] = pql_bind9_maybe_decode($info[$i]['arecord'][0]);
 			}
 			
 			// CNAME Record
 			if($info[$i]['cnamerecord'][0]) {
-				$cname = $info[$i]['cnamerecord'][0];
+				$cname = pql_bind9_maybe_decode($info[$i]['cnamerecord'][0]);
 				
 				if(preg_match("/\\.$/", $cname))
 				  // Remove the domain name, so we're left with the hostname.
@@ -61,9 +61,9 @@ function pql_bind9_get_zone($linkid, $dn) {
 				if($info[$i]['nsrecord'][1]) {
 					// We have multiple records
 					for($j=0; $j < $info[$i]['nsrecord']['count']; $j++)
-					  $ZONE[$zone][$host]['NS'][] = $info[$i]['nsrecord'][$j];
+					  $ZONE[$zone][$host]['NS'][] = pql_bind9_maybe_decode($info[$i]['nsrecord'][$j]);
 				} else
-				  $ZONE[$zone][$host]['NS'] = $info[$i]['nsrecord'][0];
+				  $ZONE[$zone][$host]['NS'] = pql_bind9_maybe_decode($info[$i]['nsrecord'][0]);
 			}
 
 			// MX Record(s)
@@ -71,16 +71,16 @@ function pql_bind9_get_zone($linkid, $dn) {
 				if($info[$i]['mxrecord'][1]) {
 					// We have multiple records
 					for($j=0; $j < $info[$i]['mxrecord']['count']; $j++)
-					  $ZONE[$zone][$host]['MX'][] = $info[$i]['mxrecord'][$j];
+					  $ZONE[$zone][$host]['MX'][] = pql_bind9_maybe_decode($info[$i]['mxrecord'][$j]);
 				} else
-				  $ZONE[$zone][$host]['MX'] = $info[$i]['mxrecord'][0];
+				  $ZONE[$zone][$host]['MX'] = pql_bind9_maybe_decode($info[$i]['mxrecord'][0]);
 			}
 
 			// SOA Record
 			if($info[$i]['soarecord'][0]) {
 				$soa = split(' ', $info[$i]['soarecord'][0]);
 
-				$ZONE[$zone][$host]['SOA']['ADMIN'] = $soa[1];
+				$ZONE[$zone][$host]['SOA']['ADMIN'] = pql_bind9_maybe_decode($soa[1]);
 				$ZONE[$zone][$host]['SOA']['SERIAL'] = $soa[2];
 				$ZONE[$zone][$host]['SOA']['REFRESH'] = $soa[3];
 				$ZONE[$zone][$host]['SOA']['RETRY'] = $soa[4];
@@ -101,6 +101,7 @@ function pql_bind9_get_zone($linkid, $dn) {
 // }}}
 
 // {{{ pql_bind9_get_record(linkid, dn, record)
+
 function pql_bind9_get_record($linkid, $dn, $record = '') {
 	if($record) {
 		$record = lc($record);
@@ -145,6 +146,7 @@ function pql_bind9_get_record($linkid, $dn, $record = '') {
 
 	return($ret);
 }
+
 // }}}
 
 
@@ -193,18 +195,19 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 																			  'dnszone');
 
 	for($i=count($dc)-1; $dc[$i]; $i--) {
-		$entry[pql_get_define("PQL_GLOB_ATTR_DC")] = $dc[$i];
+		$dc_tmp = pql_bind9_maybe_encode($dc[$i]);
 
+		$entry[pql_get_define("PQL_GLOB_ATTR_DC")] = $dc_tmp;
 		if($dn)
-		  $dn = pql_get_define("PQL_GLOB_ATTR_DC")."=".$dc[$i].",".$dn;
+		  $dn = pql_get_define("PQL_GLOB_ATTR_DC")."=".$dc_tmp.",".$dn;
 		else
-		  $dn = pql_get_define("PQL_GLOB_ATTR_DC")."=".$dc[$i];
+		  $dn = pql_get_define("PQL_GLOB_ATTR_DC")."=".$dc_tmp;
 
 		// See if the component exists. If not, create it.
 		$sr = @ldap_read($linkid, $dn, 'objectClass=domain');
 		if(!$sr) {
 			// Create a LDIF object to print in case of error
-			$LDIF = pql_create_ldif("pql_bind9_add_zone - dc=".$dc[$i], $dn, $entry);
+			$LDIF = pql_create_ldif("pql_bind9_add_zone - dc=".$dc_tmp, $dn, $entry);
 			
 			if(! ldap_add($linkid, $dn, $entry)) {
 				// Can't add domain component
@@ -218,19 +221,20 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 
 	// ----------------
 	// Create a template SOA record
+	$zonename = pql_bind9_maybe_encode($zone);
 	unset($entry);
 	$entry['objectClass'][]		 = 'top';
 	$entry['objectClass'][]		 = 'dNSZone';
 
 	$entry['relativeDomainName'] = '@';
-	$entry['zoneName']			 = $zone;
+	$entry['zoneName']			 = $zonename;
 	$entry['dNSTTL']			 = 604800;
 
-	$entry['sOARecord']			 = "$zone. registry.$zone. 2002082106 172800 86400 2419200 604800";
-	$entry['nSRecord'][]		 = "ns1.$zone.";
-	$entry['nSRecord'][]		 = "ns2.$zone.";
-	$entry['mXRecord']			 = "10 mail.$zone.";
-	$entry['tXTRecord']			 = "$zone";
+	$entry['sOARecord']			 = "$zonename. registry.$zonename. 2002082106 172800 86400 2419200 604800";
+	$entry['nSRecord'][]		 = "ns1.$zonename.";
+	$entry['nSRecord'][]		 = "ns2.$zonename.";
+	$entry['mXRecord']			 = "10 mail.$zonename.";
+	$entry['tXTRecord']			 = "$zonename";
 
 	// Add the OpenLDAPaci attribute (maybe)
 	if(function_exists("user_generate_aci"))
@@ -260,10 +264,12 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 	// Create each of the domain components in the domainname
 	$dc = split('\.', $entry[pql_get_define("PQL_GLOB_ATTR_ZONENAME")]);
 	for($i=count($dc)-1; $dc[$i]; $i--) {
+		$dc_tmp = pql_bind9_maybe_encode($dc[$i]);
+
 		if($dn)
-		  $dn = "dc=".$dc[$i].",".$dn;
+		  $dn = "dc=".$dc_tmp.",".$dn;
 		else
-		  $dn = "dc=".$dc[$i];
+		  $dn = "dc=".$dc_tmp;
 	}
 	$dn = "relativeDomainName=".$entry[pql_get_define("PQL_GLOB_ATTR_RELATIVEDOMAINNAME")].",$dn,ou=DNS,$basedn";
 
@@ -303,6 +309,40 @@ function pql_bind9_set_record($linkid, $dn, $record, $value = '') {
 	}
 
 	return true;
+}
+// }}}
+
+// {{{ pql_bind9_maybe_encode(string)
+function pql_bind9_maybe_encode($string) {
+	$old = $string;
+
+	$new = non_internationalize($old);
+	if($old != $new) {
+		// The two strings isn't equal -> something have been replaced
+
+		if(function_exists("idn_to_ascii")) {
+			$idna = idn_to_ascii($old);
+			if($idna)
+			  return($idna);
+			else
+			  return($new);
+		} else
+		  return($new);
+	} else
+	  return($string);
+}
+// }}}
+
+// {{{ pql_bind9_maybe_decode(string)
+function pql_bind9_maybe_decode($string) {
+	if(eregi("xn--", $string) and function_exists("idn_to_utf8")) {
+		// It's an IDNA string, and we have the IDN module loaded
+
+		// First IDNA decode it, then UTF-8 decode it
+		return(maybe_decode(idn_to_utf8($string)));
+	} else {
+		return(maybe_decode($string));
+	}
 }
 // }}}
 
