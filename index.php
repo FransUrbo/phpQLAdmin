@@ -61,7 +61,7 @@ if (empty($uname) or empty($passwd)) {
     </tr>
   </table>
 
-  <form action="<?=$PHP_SELF?>" method=post name="phpqladmin">
+  <form action="<?=$PHP_SELF?>" method=post name="phpqladmin" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0" align=center>
       <tr>
         <td>LDAP Server:</td>
