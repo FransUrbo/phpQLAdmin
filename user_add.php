@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.116.2.4 2005-02-15 09:36:36 turbo Exp $
+// $Id: user_add.php,v 2.116.2.5 2005-02-15 10:53:21 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -331,11 +331,16 @@ switch($_REQUEST["page_curr"]) {
 		// If password is set and allowed.
 		// or:
 		// If password isn't set but required.
+		// or:
+		// If password isn't set, we have been asked to autogenerate one AND it's allowed.
 		if(($_REQUEST["password"] and
 			pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_PASSWD")))
 		   or
 		   (empty($_REQUEST["password"]) and
-            pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_PASSWD"), 'MUST')))
+            pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_PASSWD"), 'MUST'))
+		   or
+		   (empty($_REQUEST["password"]) and ($_REQUEST["autogenerate"] == "on") and
+			pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_PASSWD"))))
 		{
 			// Only forward and group accounts is ok without password
 			if(empty($_REQUEST["password"])) {
