@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.78 2004-03-12 13:09:50 turbo Exp $
+// $Id: left.php,v 2.79 2004-03-14 10:29:56 turbo Exp $
 //
 session_start();
 
@@ -94,7 +94,8 @@ if($_SESSION["ADVANCED_MODE"]) {
     if($_SESSION["ALLOW_BRANCH_CREATE"]) {
 	// Level 2b: Configuration and tests
 	$links = array($LANG->_('phpQLAdmin Configuration')	=> 'config_detail.php',
-		       $LANG->_('Test LDAP-Connection')		=> 'config_ldaptest.php');
+		       $LANG->_('Test LDAP-Connection')		=> 'config_ldaptest.php',
+		       $LANG->_('Translate phpQLAdmin')		=> 'update_translations.php');
 	pql_format_tree($LANG->_('phpQLAdmin Configuration'), 0, $links, 1);
 
 	// Level 2c: LDAP server setup etc
