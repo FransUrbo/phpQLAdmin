@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.19 2004-05-07 07:40:14 turbo Exp $
+// $Id: config_attributes.inc,v 2.20 2004-05-10 13:21:22 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -218,6 +218,7 @@ pql_set_define("PQL_ATTR_LANG", 							strtolower('language'),						false);
 pql_set_define("PQL_ATTR_HOSTMASTER", 						strtolower('hostMaster'),					false);
 pql_set_define("PQL_ATTR_CONTROL_DN", 						strtolower('controlBaseDN'),				false);
 pql_set_define("PQL_ATTR_EZMLM_PATH", 						strtolower('ezmlmBinaryPath'),				false);
+pql_set_define("PQL_ATTR_EZMLM_USER", 						strtolower('ezmlmVirtualUser'),				false);
 pql_set_define("PQL_ATTR_KRB5_REALM", 						strtolower('krb5RealmName'),				false);
 pql_set_define("PQL_ATTR_KRB5_ADMIN_SERVER", 				strtolower('krb5AdminServer'),				false);
 pql_set_define("PQL_ATTR_KRB5_ADMIN_PRINCIPAL", 			strtolower('krb5PrincipalName'),			false);
@@ -328,6 +329,7 @@ $PQL_ATTRIBUTE["BRANCH"] = array("PQL_CONF_SHOW_USERS"					=> pql_get_define("PQ
 								 "PQL_CONF_REFERENCE_DOMAINS_WITH"		=> pql_get_define("PQL_ATTR_REFERENCE_DOMAINS_WITH"),
 								 "PQL_CONF_SUBTREE_USERS"				=> pql_get_define("PQL_ATTR_SUBTREE_USERS"),
 								 "PQL_CONF_SUBTREE_GROUPS"				=> pql_get_define("PQL_ATTR_SUBTREE_GROUPS"),
+								 "PQL_CONF_EZMLM_USER"					=> pql_get_define("PQL_ATTR_EZMLM_USER"),
 								 "PQL_CONF_VAT_NUMBER"					=> pql_get_define("PQL_ATTR_VAT_NUMBER"));
 // }}}
 
