@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.67 2003-11-14 11:55:52 turbo Exp $
+// $Id: domain_detail.php,v 2.68 2003-11-14 20:13:24 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -167,7 +167,7 @@ $buttons = $buttons + $new;
 
   <br><br>
 <?php
-pql_generate_button($buttons); echo "  <br>\n";
+pql_generate_button($buttons, "domain=$domain"); echo "  <br>\n";
 
 if(!$view)
   $view = 'default';

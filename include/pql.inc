@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.120 2003-11-14 10:59:59 turbo Exp $
+// $Id: pql.inc,v 2.121 2003-11-14 20:13:39 turbo Exp $
 //
 
 // ----------------------------
@@ -2022,6 +2022,7 @@ function pql_setup_branch_objectclasses($filter = 0, $dn, $linkid = '') {
 // }}}
 
 // {{{ pql_validate_administrator(linkid, dn, admin)
+
 function pql_validate_administrator($linkid, $dn, $admin) {
 	$dn = urldecode($dn);
 
@@ -2040,6 +2041,7 @@ function pql_validate_administrator($linkid, $dn, $admin) {
 
 	return false;
 }
+
 // }}}
 
 // {{{ pql_replace_admins(ldap, old, new)
@@ -2276,18 +2278,18 @@ function lc($string) {
 // }}}
 
 // {{{ pql_generate_button(button array)
-function pql_generate_button($buttons) {
+function pql_generate_button($buttons, $link = '') {
 	global $PHP_SELF, $LANG, $rootdn, $domain;
 ?>
 
   <table cellspacing="0" border="0" width="100%" cellpadding="0">
 <?php
 	  $i=0; // A button counter.
-	  foreach($buttons as $link => $text) {
+	  foreach($buttons as $view => $text) {
 		  // Generate the button link etc
 		  $text = urlencode($text);
 ?>
-    <a href="<?=$PHP_SELF?>?rootdn=<?=$rootdn?>&domain=<?=$domain?>&view=<?=$link?>"><img alt="/ <?=$LANG->_($text)?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_($text)?>"></a>
+    <a href="<?=$PHP_SELF?>?rootdn=<?=$rootdn?>&domain=<?=$domain?>&view=<?=$view?><?php if($link) { echo "&$link"; } ?>"><img alt="/ <?=$LANG->_($text)?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_($text)?>"></a>
 <?php
 		  // Increase button counter
 		  $i++;
@@ -2315,6 +2317,7 @@ function non_internationalize($string) {
 // }}}
 
 // {{{ pql_maybe_encode(string, attrib, linkid)
+
 // Check if we SHOULD encode the string...
 function pql_maybe_encode($string, $attrib = '', $linkid = '') {
 	$old = $string;
@@ -2351,6 +2354,7 @@ function pql_maybe_encode($string, $attrib = '', $linkid = '') {
 
 	return($string);
 }
+
 // }}}
 
 // {{{ pql_maybe_decode(string)

@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.55 2003-11-14 11:55:52 turbo Exp $
+// $Id: user_detail.php,v 2.56 2003-11-14 20:13:24 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -156,7 +156,7 @@ if(!$SINGLE_USER) {
 	$buttons = $buttons + $new;
 }
 
-pql_generate_button($buttons); echo "  <br>\n";
+pql_generate_button($buttons, "user=".urlencode($user)); echo "  <br>\n";
 
 if($view == '')
 	$view = 'basic';
