@@ -41,9 +41,9 @@ the database should be layed out something like this:
       ou=Groups            ou=Groups
         cn=groupname         cn=groupname
 
-Here I show two 'domains' - Fredriksson and Winas. What this means
-is that users are under the 'ou=People' object and groups are under
-the 'ou=Groups'. Each under the actual 'domain' object.
+Here I show two 'domains' - Fredriksson and Winas. What this means is
+that users are under the 'ou=People' object and groups are under the
+'ou=Groups'. Each under the actual 'domain' object.
 
 The 'domain' refer to the 'basetree' (dc=fredriksson/dc=winas and
 ou=Fredriksson/ou=Winas in these two examples), NOT to the domainname!
@@ -54,77 +54,124 @@ This layout is configured by defining PQL_LDAP_SUBTREE_USERS and/or
 PQL_LDAP_SUBTREE_GROUPS, so without these, you CAN get a flat layout,
 but please don't.
 
-The third layout is what I would like to call 'mixed'. It don't separate
-users under ou=People etc, but directly under the branch and users don't
-have the UID attribute but is using CN as part of their RDN.
+The third layout is what I would like to call 'mixed'. It don't
+separate users under ou=People etc, but directly under the branch and
+users don't have the UID attribute but is using CN as part of their
+RDN.
 
-Also, you shouldn't mix the layouts types in one database. What you should
-do, is configure multiple top suffixes in your LDAP database (multiple
-database backends with different suffixes). phpQLAdmin is since version
-2.0.10 able to cope with that, and show all database as one.
+Also, you shouldn't mix the layouts types in one database. What you
+should do, is configure multiple top suffixes in your LDAP database
+(multiple database backends with different suffixes). phpQLAdmin is
+since version 2.0.10 able to cope with that, and show all database as
+one.
 
 Configuration in LDAP
 ~~~~~~~~~~~~~~~~~~~~~
 With version 2.0.5, it's possible to have site specific configurations
-in the database. It is saved into the topmost RDN's ('dc=com' and 'c=SE'
-in my two examples above) objects, so make sure you have access to modify
-these objects before saving a site global value.
+in the database. It is saved into the topmost RDN's ('dc=com' and
+'c=SE' in my two examples above) objects, so make sure you have access
+to modify these objects before saving a site global value.
 
-This is a matter of the LDAP server, not phpQLAdmin so consult your LDAP
-servers documentation on how to do this. If you only have the required
-objectclasses (top and/or domain in a domain layout for example), phpQLAdmin
-will add the two objectclasses 'phpQLAdminConfig' and 'phpQLAdminBranch' to
-the object before it writes the configuration, so backward compability should
-be ok with an non-phpQLAdmin created domain/branch. If it's not, please report
-a bug at the mailinglist phpqladmin@bayour.com.
+This is a matter of the LDAP server, not phpQLAdmin so consult your
+LDAP servers documentation on how to do this. If you only have the
+required objectclasses (top and/or domain in a domain layout for
+example), phpQLAdmin will add the two objectclasses 'phpQLAdminConfig'
+and 'phpQLAdminBranch' to the object before it writes the
+configuration, so backward compability should be ok with an
+non-phpQLAdmin created domain/branch. If it's not, please report a bug
+at the mailinglist phpqladmin@bayour.com.
 
 
-One attribute in the phpQLAdminBranch objectclass that's a little troublesome
-is the defaultDomain attribute. It exists in the qmailControl.schema distributed
-with the QmailLDAP/Controls patch. If you don't use this patch, you will have
-to uncomment the attribute from the phpQLAdmin.schema before you restart your
-LDAP server. The attribute is defined on lines 237 to 241 in the phpQLAdmin.schema,
-so remove the leading dashes (#) on those lines.
+One attribute in the phpQLAdminBranch objectclass that's a little
+troublesome is the defaultDomain attribute. It exists in the
+qmailControl.schema distributed with the QmailLDAP/Controls patch. If
+you don't use this patch, you will have to uncomment the attribute
+from the phpQLAdmin.schema before you restart your LDAP server. The
+attribute is defined on lines 291 to 295 in the phpQLAdmin.schema, so
+remove the leading dashes (#) on those lines.
+
+Another 'problem' with the schema is the Kerberos stuff. Kerberos
+Realm Name (krb5RealmName) and Kerberos Principal Name
+(krb5PrincipalName) is defined in krb5-kdc.schema that comes with
+slapd. If you're not using that schema, then either uncomment the
+lines 232 through 242 or remove the attributes from the MAY clause of
+the phpQLAdminConfig objectclass. The kerberos stuff in the schema is
+just a 'hack' until we get REAL Kerberos/AFS support in PHP.
+
+Kerberos principal creation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+As of version 2.0.10, phpQLAdmin have (very) rudimentary support for
+creating the corresponding Kerberos principal in the KDC. This is
+solely done in the user creation script (example script
+'create_user.pl' have been included for quite some time and have been
+updated to show how it's done). To give this script write access to a
+remote Kerberos database, we need to have a special principal and a
+keytab for this principal so that we can do 'unattended
+administration' (ie script vise). My setup consists of creating the
+principal 'phpQLAdmin', exporting that principal into a keytab
+(krb5.keytab.phpQLAdmin) and giving the principal 'phpQLAdmin' full
+access to the Kerberos database in the Kerberos KAdmind ACL file. How
+to do this is documented in your Kerberos system documentations.
+
+To be able to create a Kerberos principal, you will have to have
+'KERBEROS' defined in the Password encryption schemes (see the 'Show
+configuration' page). You will then see five more configuration
+options in the 'Global configuration' section. Shown below, with
+example definitions:
+
+	Kerberos realm			TEST.ORG
+	Kerberos admin server		kerberos.test.org
+	Kerberos admin principal	phpQLAdmin  
+	Kerberos admin keytab		/etc/krb5.keytab.phpQLAdmin  
+	Path to Kerberos kadmin command	/usr/sbin  
+
+Without ALL (!) of these values, the (example) script will not even
+TRY to create a Kerberos principal.
+
+Modifying or deleting the principal when deleting the user is not
+yet implemented.
 
 Protocol errors
 ~~~~~~~~~~~~~~~
-The PHP/LDAP module does an LDAPv2 bind, which means that you will have to
-allow a version 2 bind. In OpenLDAP version 2.0, this is done by making sure
-that you DON'T (!) have 'disallow bind_v2' in your slapd.conf file. In 
-OpenLDAP version 2.1, disallowing v2 bind is the default and you will have
-to enable v2 bind by putting 'allow bind_v2' in the slapd.conf file.
-If slapd does not allow v2 bind, you will get the following error in your
-logfile:
+The PHP/LDAP module does an LDAPv2 bind, which means that you will
+have to allow a version 2 bind. In OpenLDAP version 2.0, this is done
+by making sure that you DON'T (!) have 'disallow bind_v2' in your
+slapd.conf file. In  OpenLDAP version 2.1, disallowing v2 bind is the
+default and you will have to enable v2 bind by putting 'allow bind_v2'
+in the slapd.conf file.  If slapd does not allow v2 bind, you will get
+the following error in your logfile:
 
 	Could not bind to ldap server: Protocol error
 
 Templates
 ~~~~~~~~~
 As of version 2.0.10, phpQLAdmin have rudimentary support for user and
-domain/branch templates. This configured in the 'Show phpQLAdmin configuration'
-page. For a new installation, 'Password encryption schemes', 'User objectclasses'
-and 'Domain objectclasses' will be empty. You will have to setup this for
-your self. What objectclasses should your user objects have? What objectclasses
-should your domain/branch objects have etc... This require knowledge on how
-LDAP works!
+domain/branch templates. This configured in the 'Show phpQLAdmin
+configuration' page. For a new installation, 'Password encryption
+schemes', 'User objectclasses' and 'Domain objectclasses' will be
+empty. You will have to setup this for your self. What objectclasses
+should your user objects have? What objectclasses should your
+domain/branch objects have etc... This require knowledge on how LDAP
+works!
 
 Administrator login
 ~~~~~~~~~~~~~~~~~~~
-To be able to login to the LDAP server from phpQLAdmin, the object you're using
-for login must have the possibility/authority to do a simple bind. That usually
-means that there have to be a 'userPassword' attribute in the object. Only having
-the password in the slapd.conf file (as example below) won't help.
+To be able to login to the LDAP server from phpQLAdmin, the object
+you're using for login must have the possibility/authority to do a
+simple bind. That usually means that there have to be a 'userPassword'
+attribute in the object. Only having the password in the slapd.conf
+file (as example below) won't help.
 
 	rootdn	cn=Manager,....
 	rootpw	SecretPWHere
 
 Apache configuration
 ~~~~~~~~~~~~~~~~~~~~
-You will have to enable register_globals in your php.ini file (don't forget to
-restart the apache server).
+You will have to enable register_globals in your php.ini file (don't
+forget to restart the apache server).
 
 
-For more information on installations, please view doc/index.php through
-the webbrowser. Note though that documentation is not my stronges side while
-coding, so it is much out of date. I will evenually get to it, but... :)
-
+For more information on installations, please view doc/index.php
+through the webbrowser. Note though that documentation is not my
+stronges side while coding, so it is much out of date. I will
+evenually get to it, but... :)
