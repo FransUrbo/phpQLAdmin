@@ -7,6 +7,14 @@
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
+        <td class="title"><?=$LANG->_('VAT number')?></td>
+        <td><?php if($vatnumber) { echo $vatnumber; } else { echo $LANG->_('Not set'); }?></td>
+        <td><?=$vatnumber_link?></td>
+      </tr>
+
+      <tr><td></td><td></td></tr>
+
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Postal code')?></td>
         <td><?php if($postalcode) {echo $postalcode;}else{echo $LANG->_('Not set');}?></td>
         <td><?=$postalcode_link?></td>
@@ -42,6 +50,8 @@
         <td><?=$st_link?></td>
       </tr>
 
+      <tr><td></td><td></td></tr>
+
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Telephone number')?></td>
         <td><?php if($telephonenumber) {echo $telephonenumber;}else{echo $LANG->_('Not set');}?></td>
@@ -52,6 +62,20 @@
         <td class="title"><?=$LANG->_('Fax number')?></td>
         <td><?php if($facsimiletelephonenumber) {echo $facsimiletelephonenumber;}else{echo $LANG->_('Not set');}?></td>
         <td><?=$facsimiletelephonenumber_link?></td>
+      </tr>
+
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title"><?=$LANG->_('Telephone number')?> (<?=$LANG->_('Mobile')?>)</td>
+        <td><?php if($mobile) { echo $mobile; } else { echo $LANG->_('Not set'); }?></td>
+        <td><?=$mobile_link?></td>
+      </tr>
+
+      <tr><td></td><td></td></tr>
+
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title"><?=$LANG->_('Miscellaneous')?></td>
+        <td><?php if($info) { echo $info; } else { echo $LANG->_('Not set'); }?></td>
+        <td><?=$info_link?></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
