@@ -36,7 +36,7 @@ tag:
 install: $(INSTDIR)
 	@(echo -n "Instdir: $(INSTDIR): "; \
 	  find | cpio -p $(INSTDIR); \
-	  rm $(INSTDIR)/Makefile $(INSTDIR)/.version.old $(INSTDIR)/README.cvs; \
+	  rm -Rf $(INSTDIR)/Makefile $(INSTDIR)/.version.old $(INSTDIR)/README.cvs $(INSTDIR)/manual; \
 	  echo -n "Tarball 1: $(TMPDIR)/phpQLAdmin-$(VERSION).tar.gz: "; \
 	  cd $(TMPDIR) && tar czf phpQLAdmin-$(VERSION).tar.gz phpQLAdmin-$(VERSION); \
 	  echo "done."; \
