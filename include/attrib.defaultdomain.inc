@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // default domain name (the default domainname for a domain)
-// $Id: attrib.defaultdomain.inc,v 2.24 2004-02-14 14:25:36 turbo Exp $
+// $Id: attrib.defaultdomain.inc,v 2.25 2004-03-03 07:59:28 turbo Exp $
 
 function attribute_check() {
     global $error, $LANG;
@@ -128,7 +128,7 @@ function attribute_save($type) {
     switch($type) {
       case "add":
       case "modify":
-		if(pql_set_domain_value($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["attrib"], $defaultdomain)) {
+		if(pql_domain_set_value($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["attrib"], $defaultdomain)) {
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 										 array('what' => $LANG->_('Default domainname', 4),
 											   'new'  => $defaultdomain));

@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // defaultPasswordScheme
-// $Id: attrib.defaultpasswordscheme.inc,v 2.10 2004-02-14 14:25:36 turbo Exp $
+// $Id: attrib.defaultpasswordscheme.inc,v 2.11 2004-03-03 07:59:28 turbo Exp $
 
 function attribute_check($type = '') {
     global $error, $LANG;
@@ -63,7 +63,7 @@ function attribute_save($type) {
 		if($type == 'delete')
 		  $_REQUEST[$attrib] = '';
 
-		if(pql_set_domain_value($_pql->ldap_linkid, $_REQUEST["domain"], $attrib, $_REQUEST[$attrib]))
+		if(pql_domain_set_value($_pql->ldap_linkid, $_REQUEST["domain"], $attrib, $_REQUEST[$attrib]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% for domain %domain%'),
 									   array('what'   => $LANG->_('default password scheme'),
 											 'domain' => pql_maybe_decode(urldecode($_REQUEST["domain"]))));

@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.35 2004-02-14 14:25:36 turbo Exp $
+// $Id: pql_control.inc,v 2.36 2004-03-03 07:59:29 turbo Exp $
 //
 
 // {{{ control connection class
@@ -205,7 +205,7 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 		$domains = pql_domain_get($ldap);
 		foreach($domains as $domain) {
 			// Get default domain name for this domain
-			$domainname = pql_domain_value($ldap, $domain, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
+			$domainname = pql_domain_get_value($ldap, $domain, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
 			if($domainname) {
 				// Before we add this domain to the list, make sure it don't already exist
 				$ent_exists = 0;
@@ -224,7 +224,7 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 			}
 
 			// Get additional domain names
-			$additional = pql_domain_value($ldap, $domain, pql_get_define("PQL_GLOB_ATTR_ADDITIONALDOMAINNAME"));
+			$additional = pql_domain_get_value($ldap, $domain, pql_get_define("PQL_GLOB_ATTR_ADDITIONALDOMAINNAME"));
 			if(is_array($additional)) {
 				for($i=0; $i < count($additional); $i++) 
 				  $entry[] = $additional[$i];

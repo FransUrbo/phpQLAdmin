@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailalternateaddress (emailaddress alias)
-// $Id: attrib.mailalternateaddress.inc,v 2.20 2004-02-14 14:25:36 turbo Exp $
+// $Id: attrib.mailalternateaddress.inc,v 2.21 2004-03-03 07:59:28 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -57,7 +57,7 @@ function attribute_print_form() {
     global $mailalternateaddress, $domain, $user, $attrib, $oldvalue, $error, $defaultdomain, $LANG;
 	global $_pql, $view, $rootdn;
 
-	$additionaldomainname = pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_ADDITIONALDOMAINNAME"));
+	$additionaldomainname = pql_domain_get_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_ADDITIONALDOMAINNAME"));
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">

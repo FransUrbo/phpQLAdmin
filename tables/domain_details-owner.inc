@@ -59,7 +59,7 @@
 <?php if(is_array($seealso)) {
 		$new_tr = 0;
 		foreach($seealso as $sa) {
-			$sa = pql_maybe_encode($sa); // Re-encode value that we got earlier from pql_domain_value().
+			$sa = pql_maybe_encode($sa); // Re-encode value that we got earlier from pql_domain_get_value().
 
 			$username = pql_get_attribute($_pql->ldap_linkid, $sa, pql_get_define("PQL_GLOB_ATTR_CN"));
 			if(!$username[0])

@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for pilotPerson objects etc
-// $Id: attrib.outlook.inc,v 1.18 2004-03-03 07:31:41 turbo Exp $
+// $Id: attrib.outlook.inc,v 1.19 2004-03-03 07:59:28 turbo Exp $
 
 /*
 	Attributes managed here:
@@ -99,7 +99,7 @@ function attribute_save($type) {
 
 		if($_REQUEST["domain"] and !$_REQUEST["user"]) {
 			// Save a domain attribute
-			if(pql_set_domain_value($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["attrib"], $_REQUEST[$attrib]))
+			if(pql_domain_set_value($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["attrib"], $_REQUEST[$attrib]))
 			  $success = 1;
 		} elseif($_REQUEST["user"]) {
 			// Save a user attribute
@@ -118,7 +118,7 @@ function attribute_save($type) {
       case "delete";
 		if($_REQUEST["domain"] and !$_REQUEST["user"]) {
 			// Save a domain attribute
-			if(pql_set_domain_value($_pql->ldap_linkid, $_REQUEST["domain"], $attrib, ''))
+			if(pql_domain_set_value($_pql->ldap_linkid, $_REQUEST["domain"], $attrib, ''))
 			  $success = 1;
 //		} elseif($_REQUEST["user"] and !$_REQUEST["domain"]) {
 // Currently no DELETE option

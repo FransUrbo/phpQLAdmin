@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.76 2004-02-27 18:42:27 turbo Exp $
+// $Id: left.php,v 2.77 2004-03-03 07:58:54 turbo Exp $
 //
 session_start();
 
@@ -121,7 +121,7 @@ if($_SESSION["ALLOW_BRANCH_CREATE"]) {
     foreach($_pql->ldap_basedn as $dn)  {
 	$dn = urldecode($dn);
 
-	$dom = pql_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]);
+	$dom = pql_domain_get_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]);
 	if($dom) {
 	    foreach($dom as $d) {
 		$domains[] = urlencode($d);
@@ -146,7 +146,7 @@ if(!isset($domains)) {
 	  $DN .= "," . $dnparts[$j];
 	
 	// Look in DN for attribute 'defaultdomain'.
-	$defaultdomain = pql_domain_value($_pql, $DN, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
+	$defaultdomain = pql_domain_get_value($_pql, $DN, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
 	if($defaultdomain) {
 	    // A hit. This is the domain under which the user is located.
 	    $domain = $DN;

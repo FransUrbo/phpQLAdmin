@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.33 2004-02-14 23:09:58 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.34 2004-03-03 07:59:28 turbo Exp $
 
 require("./left-head.html");
 
@@ -68,7 +68,7 @@ function attribute_print_form($action) {
 				$dn = urldecode($dn);
 				unset($dom); unset($domains);
 
-				$dom = pql_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]);
+				$dom = pql_domain_get_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]);
 				if($dom) {
 					foreach($dom as $d) {
 						$domains[] = $d;
@@ -154,7 +154,7 @@ function attribute_print_form($action) {
 				foreach($_pql->ldap_basedn as $dn)  {
 					$dn = urldecode($dn);
 
-					$dom = pql_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"),
+					$dom = pql_domain_get_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"),
 											$_SESSION["USER_DN"], 1);
 					if($dom)
 					  foreach($dom as $d)
@@ -227,9 +227,9 @@ function attribute_save($type) {
 		// Get the old values, so we can remove the one we're modifying
 		// (delete the one we want to delete, keep the others etc)
 		if(!$_REQUEST["user"])
-		  $admins = pql_domain_value($_pql, $_REQUEST["domain"], $attrib);
+		  $admins = pql_domain_get_value($_pql, $_REQUEST["domain"], $attrib);
 		else
-		  $admins = pql_domain_value($_pql, $_REQUEST["branchdn"], $attrib);
+		  $admins = pql_domain_get_value($_pql, $_REQUEST["branchdn"], $attrib);
 
 		$ADMs[$attrib] = array();
 
@@ -267,10 +267,10 @@ function attribute_save($type) {
 
 		$success = 0;
 		if(!$_REQUEST["user"]) {
-			if(pql_set_domain_value($_pql->ldap_linkid, $_REQUEST["domain"], $attrib, $ADMs))
+			if(pql_domain_set_value($_pql->ldap_linkid, $_REQUEST["domain"], $attrib, $ADMs))
 			  $success = 1;
 		} else {
-			if(pql_set_domain_value($_pql->ldap_linkid, $_REQUEST["branchdn"], $attrib, $ADMs)) {
+			if(pql_domain_set_value($_pql->ldap_linkid, $_REQUEST["branchdn"], $attrib, $ADMs)) {
 				$success = 1;
 				$_REQUEST["domain"] = $_REQUEST["branchdn"];
 			}

@@ -1,6 +1,6 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.38 2004-02-27 11:42:57 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.39 2004-03-03 07:58:54 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -43,7 +43,7 @@ function attribute_forward($msg) {
 include("./include/".pql_plugin_get_filename(pql_plugin_get($_REQUEST["attrib"])));
 
 // Get the organization name, or the DN if it's unset
-$orgname = pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_O"));
+$orgname = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_O"));
 if(!$orgname) {
 	$orgname = urldecode($_REQUEST["domain"]);
 }

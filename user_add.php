@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.82 2004-03-02 07:25:56 turbo Exp $
+// $Id: user_add.php,v 2.83 2004-03-03 07:58:54 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -12,7 +12,7 @@ $url["subbranch"]	= pql_format_urls($_REQUEST["subbranch"]);
 $url["user"]		= pql_format_urls($_REQUEST["user"]);
 
 // Get the organization name, or the DN if it's unset
-$orgname = pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_O"));
+$orgname = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_O"));
 if(!$orgname) {
 	$orgname = urldecode($_REQUEST["domain"]);
 }
@@ -24,11 +24,11 @@ if(!pql_domain_exist($_pql, $_REQUEST["domain"])) {
 }
 
 // Get default domain values for this domain
-$defaultdomain			= pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
-$basehomedir			= pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_BASEHOMEDIR"));
-$basemaildir			= pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR"));
-$maxusers				= pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_MAXIMUMDOMAINUSERS"));
-$additionaldomainname	= pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_ADDITIONALDOMAINNAME"));
+$defaultdomain			= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
+$basehomedir			= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_BASEHOMEDIR"));
+$basemaildir			= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR"));
+$maxusers				= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_MAXIMUMDOMAINUSERS"));
+$additionaldomainname	= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_ADDITIONALDOMAINNAME"));
 
 // Check the input
 $error = false; $error_text = array();
@@ -58,7 +58,7 @@ switch($_REQUEST["page_curr"]) {
 						 pql_get_define("PQL_GLOB_ATTR_AUTOCREATEUSERNAME"));
 		foreach($attribs as $attrib) {
 			// Get default value
-			$value = pql_domain_value($_pql, $_REQUEST["domain"], $attrib);
+			$value = pql_domain_get_value($_pql, $_REQUEST["domain"], $attrib);
 			$$attrib = pql_format_bool($value);
 		}
 
@@ -213,7 +213,7 @@ switch($_REQUEST["page_curr"]) {
 	$attribs = array(pql_get_define("PQL_GLOB_ATTR_BASEHOMEDIR"), pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR"));
 	foreach($attribs as $attrib) {
 		// Get default value
-		$value = pql_domain_value($_pql, $_REQUEST["domain"], $attrib);
+		$value = pql_domain_get_value($_pql, $_REQUEST["domain"], $attrib);
 		$$attrib = $value;
 	}
 

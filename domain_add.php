@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: domain_add.php,v 2.44 2004-02-14 14:01:00 turbo Exp $
+// $Id: domain_add.php,v 2.45 2004-03-03 07:58:54 turbo Exp $
 //
 session_start();
 
@@ -76,29 +76,29 @@ if($dns[0]) {
 	$msg = "";
 	
 	// Save the attributes - Default domain
-	if($defaultdomain && !pql_set_domain_value($_pql->ldap_linkid,
+	if($defaultdomain && !pql_domain_set_value($_pql->ldap_linkid,
 											   $dns[0], 'defaultDomain',
 											   pql_maybe_idna_encode($defaultdomain)))
 	  $msg = $LANG->_('Failed to change the default domainname') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	
 	// Save the attributes - Default home directory
-	if($defaulthomedir && !pql_set_domain_value($_pql->ldap_linkid,
+	if($defaulthomedir && !pql_domain_set_value($_pql->ldap_linkid,
 												$dns[0], 'baseHomeDir',
 												$defaulthomedir))
 	  $msg = $LANG->_('Failed to change the default domainname') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	
 	// Save the attributes - Default mail directory
-	if($defaultmaildir && !pql_set_domain_value($_pql->ldap_linkid,
+	if($defaultmaildir && !pql_domain_set_value($_pql->ldap_linkid,
 												$dns[0], 'baseMailDir',
 												$defaultmaildir))
 	  $msg = $LANG->_('Failed to change the default domainname') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	
 	// Save the attributes - Default quota
-	if($defaultquota && !pql_set_domain_value($_pql->ldap_linkid, $dns[0], 'baseQuota', $defaultquota))
+	if($defaultquota && !pql_domain_set_value($_pql->ldap_linkid, $dns[0], 'baseQuota', $defaultquota))
 	  $msg = $LANG->_('Failed to change the default domainname') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	
 	// The creator is by default the administrator
-	if(! pql_set_domain_value($_pql->ldap_linkid, $dns[0], pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]))
+	if(! pql_domain_set_value($_pql->ldap_linkid, $dns[0], pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]))
 	  $msg = $LANG->_('Failed to change the default domainname') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 
 	// Create a template DNS zone

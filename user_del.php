@@ -1,6 +1,6 @@
 <?php
 // delete a user
-// $Id: user_del.php,v 2.27 2004-02-14 14:01:00 turbo Exp $
+// $Id: user_del.php,v 2.28 2004-03-03 07:58:54 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -13,7 +13,7 @@ $rootdn = $_REQUEST["rootdn"];
 $user = $_REQUEST["user"];
 
 // Get organization name for domain and common name of user
-$o = pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_O"));
+$o = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_O"));
 if(!$o) {
 	// No 'organization' attribute (or it's not configured - 0)
 	// Use the RDN
@@ -64,7 +64,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn))
 				asort($domains);
 				foreach($domains as $key => $this_domain) {
 					// Get base directory for mails in all domains
-					if(($basemaildir = pql_domain_value($_pql, $this_domain, pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR")))) {
+					if(($basemaildir = pql_domain_get_value($_pql, $this_domain, pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR")))) {
 						// Get the lists in this directory
 						$ezmlm = new ezmlm(pql_get_define("PQL_GLOB_EZMLM_USER"), $basemaildir);
 						if(is_array($ezmlm->mailing_lists[0])) {

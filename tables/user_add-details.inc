@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-details.inc,v 1.10 2004-02-27 12:19:39 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.11 2004-03-03 07:59:34 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
@@ -46,7 +46,7 @@
         </tr>
 <?php if($_REQUEST["account_type"] != "forward") {
 		// Get the default password scheme for branch
-		$_REQUEST["defaultpasswordscheme"] = pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_DEFAULTPASSWORDSCHEME"));
+		$_REQUEST["defaultpasswordscheme"] = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_DEFAULTPASSWORDSCHEME"));
 
 		if(!$defaultpasswordscheme or $_SESSION["ADVANCED_MODE"])  {
 			// We have no default password scheme - display forms for SYSTEM/MAIL account

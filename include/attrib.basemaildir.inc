@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // base homedirectory for domain
-// $Id: attrib.basemaildir.inc,v 2.6 2004-02-14 14:25:35 turbo Exp $
+// $Id: attrib.basemaildir.inc,v 2.7 2004-03-03 07:59:28 turbo Exp $
 
 function attribute_check() {
     global $error, $LANG;
@@ -64,7 +64,7 @@ function attribute_save($type) {
 			break;
     	}
 		
-		if(pql_set_domain_value($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["attrib"], $_REQUEST["basemaildir"]))
+		if(pql_domain_set_value($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["attrib"], $_REQUEST["basemaildir"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									   array('what' => $LANG->_('Path'),
 											 'new'  => $_REQUEST["basemaildir"]));

@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_detail.php,v 1.22 2004-02-14 14:01:00 turbo Exp $
+// $Id: ezmlm_detail.php,v 1.23 2004-03-03 07:58:54 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -14,7 +14,7 @@ if(isset($msg)){
 
 if($domain) {
 	// Get base directory for mails
-	if(!($basemaildir = pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR")))) {
+	if(!($basemaildir = pql_domain_get_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR")))) {
 		die("Can't get ".pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR")." for domain '$domain'!<br>");
 	}
 

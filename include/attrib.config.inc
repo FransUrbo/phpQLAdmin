@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.31 2004-02-14 14:25:35 turbo Exp $
+// $Id: attrib.config.inc,v 1.32 2004-03-03 07:59:28 turbo Exp $
 
 function attribute_check() {
     global $error, $LANG;
@@ -44,7 +44,7 @@ function attribute_print_form() {
 
 	// Now, get the old values from the LDAP database,
 	// overwriting the defines if existing in db.
-	$value = pql_domain_value($_pql, $dn, $attrib);
+	$value = pql_domain_get_value($_pql, $dn, $attrib);
 
 	// If it's an array, make it a comma separated list
 	if(is_array($value)) {
@@ -277,7 +277,7 @@ function attribute_save() {
 		if($rootdn) {
 			if($attrib != pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR")) {
 				// Fetch old values from DB
-				unset($oldvalues); $oldvalues = pql_domain_value($_pql, $rootdn, $attrib);
+				unset($oldvalues); $oldvalues = pql_domain_get_value($_pql, $rootdn, $attrib);
 				if(is_array($oldvalues)) {
 					foreach($oldvalues as $val) {
 						if(!@eregi($delval, $val)) {
@@ -336,7 +336,7 @@ function attribute_save() {
 			// We don't have a Root DN, it's not a PasswordScheme or {user,domain}ObjectClass
 			// but it's a toggle. Get the old value and reverse it
 
-			unset($oldvalues); $oldvalues = pql_domain_value($_pql, $_pql->ldap_basedn[0], $attrib);
+			unset($oldvalues); $oldvalues = pql_domain_get_value($_pql, $_pql->ldap_basedn[0], $attrib);
 			if($oldvalues == 'TRUE')
 			  $entry[$attrib][] = 'FALSE';
 			else
@@ -360,7 +360,7 @@ function attribute_save() {
 				  $entry[$attrib][] = $attrib_val;
 
 				// Fetch old values from DB
-				unset($oldvalues); $oldvalues = pql_domain_value($_pql, $dn, $attrib);
+				unset($oldvalues); $oldvalues = pql_domain_get_value($_pql, $dn, $attrib);
 
 				if(is_array($oldvalues)) {
 					foreach($oldvalues as $val) {
@@ -376,10 +376,10 @@ function attribute_save() {
 			}
 
 			/* DLW: If there are no more entries for this attribute, then make an empty one
-             * so that pql_set_domain_value knows what attribute we're talking about. */
+             * so that pql_domain_set_value knows what attribute we're talking about. */
 			if (!isset($entry[$attrib])) $entry[$attrib] = array();	// DLW: 
 
-			if(! pql_set_domain_value($_pql->ldap_linkid, $dn, '', $entry))
+			if(! pql_domain_set_value($_pql->ldap_linkid, $dn, '', $entry))
 			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 										   array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
 			else {
@@ -389,7 +389,7 @@ function attribute_save() {
 			}
 		} // FOREACH $_pql->ldap_basedn
 	} else {
-		if(! pql_set_domain_value($_pql->ldap_linkid, $rootdn, '', $entry)) 
+		if(! pql_domain_set_value($_pql->ldap_linkid, $rootdn, '', $entry)) 
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
 		else {

@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_del.php,v 1.18 2004-02-14 14:01:00 turbo Exp $
+// $Id: ezmlm_del.php,v 1.19 2004-03-03 07:58:54 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -19,7 +19,7 @@ function list_forward($domainname, $msg){
 }
 
 // Get base directory for mails
-if(!($path = pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR")))) {
+if(!($path = pql_domain_get_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR")))) {
 	// TODO: What if we can't find the base maildir path!?
 	die("Can't get ".pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR")." path from domain '$domain'!");
 }

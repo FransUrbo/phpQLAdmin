@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.150 2004-03-03 07:46:14 turbo Exp $
+// $Id: pql.inc,v 2.151 2004-03-03 07:59:28 turbo Exp $
 //
 
 // ----------------------------
@@ -397,7 +397,7 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 			unset($entry); unset($adms);
 
 			// Get administrator attributes for this domain/branch DN
-			$admins	= pql_domain_value($ldap, $info[$i]["dn"], pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"));
+			$admins	= pql_domain_get_value($ldap, $info[$i]["dn"], pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"));
 			for($j=0; $admins[$j]; $j++) {
 				if($admins[$j] != $user)
 				  $adms[] = $admins[$j];
@@ -632,8 +632,8 @@ function pql_domain_exist($ldap, $domain, $rootdn = '') {
 }
 // }}}
 
-// {{{ pql_domain_value(ldap, dn, value, match, all)
-function pql_domain_value($ldap, $dn, $value, $match = '', $all = 0) {
+// {{{ pql_domain_get_value(ldap, dn, value, match, all)
+function pql_domain_get_value($ldap, $dn, $value, $match = '', $all = 0) {
 	$value = lc($value); $dn = urldecode($dn);
 
 	$recursive = 1; $success = 0; $results = '';
@@ -644,14 +644,14 @@ function pql_domain_value($ldap, $dn, $value, $match = '', $all = 0) {
 	}
 
 	// What's the Root DN (namingContexts) for this domain
-	$rootdn = pql_get_rootdn($dn, 'pql_domain_value'); $rootdn = urldecode($rootdn);
+	$rootdn = pql_get_rootdn($dn, 'pql_domain_get_value'); $rootdn = urldecode($rootdn);
 
 	// Setup a filter to look for DOMAINS (branches)
 //	if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $rootdn) == "o")
 	  $filter = "$value=$match";
 //	else
 //	  $filter  = "(&($value=$match)(".pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $rootdn)."=*))";
-	//echo "pql_domain_value(): '$dn' '$filter' $value<br>"; // DEBUG
+	//echo "pql_domain_get_value(): '$dn' '$filter' $value<br>"; // DEBUG
 
 	// Search from the DN
 	if(!$recursive)
@@ -783,9 +783,9 @@ function pql_replace_attribute($ldap_linkid, $objectdn, $attrib, $value) {
 
 // }}}
 
-// {{{ pql_set_domain_value(linkid, dn, type, value)
+// {{{ pql_domain_set_value(linkid, dn, type, value)
 // Set a embedded domain default value
-function pql_set_domain_value($linkid, $dn, $type, $value) {
+function pql_domain_set_value($linkid, $dn, $type, $value) {
 	$DEBUG = 0;
 	$dn = urldecode($dn);
 
@@ -828,7 +828,7 @@ function pql_set_domain_value($linkid, $dn, $type, $value) {
 		
 	// Create a LDIF object to print in case of error
 	$account_type = $type;
-	$LDIF = pql_create_ldif("pql_set_domain_value", $dn, $entry);
+	$LDIF = pql_create_ldif("pql_domain_set_value", $dn, $entry);
 
 	// --------------------------
 	// DEBUG mode: Print the LDIF
@@ -844,7 +844,7 @@ function pql_set_domain_value($linkid, $dn, $type, $value) {
 				$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")] = pql_missing_objectclasses($linkid, $dn, $entry);
 
 				// Recursion... Hopfully there's a limit on how many (max_execution_time in php.ini)!
-				pql_set_domain_value($linkid, $dn, $type, $entry);
+				pql_domain_set_value($linkid, $dn, $type, $entry);
 			} else {
 				// Other error...
 				pql_format_error(1);
@@ -1211,9 +1211,9 @@ function pql_get_next_ugidnumber($ldap, $type) {
 // Returns the next free UID/GID number
 function pql_get_next_username($ldap, $domain) {
 	// Get the prefix from the branch
-	$prefix = pql_domain_value($ldap, $domain, pql_get_define("PQL_GLOB_ATTR_USERNAMEPREFIX"));
+	$prefix = pql_domain_get_value($ldap, $domain, pql_get_define("PQL_GLOB_ATTR_USERNAMEPREFIX"));
 
-	$suffix_length = pql_domain_value($ldap, $domain, pql_get_define("PQL_GLOB_ATTR_USERNAMEPREFIX_LENGTH"));
+	$suffix_length = pql_domain_get_value($ldap, $domain, pql_get_define("PQL_GLOB_ATTR_USERNAMEPREFIX_LENGTH"));
 	if(!$suffix_length)
 	  $suffix_length = "%03d";
 	else

@@ -10,7 +10,7 @@
 		  $domains_admins[$branch][] = $branch;
 
 		// Find all branches the user is admin of
-		$dom = pql_domain_value($_pql, $branch, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $_GET["user"]);
+		$dom = pql_domain_get_value($_pql, $branch, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $_GET["user"]);
 		if($dom) {
 			foreach($dom as $d) {
 				// Filter out the RootDN
@@ -20,7 +20,7 @@
 		}
 
 		// Find all branches the user is mailinglist admin of
-		$dom = pql_domain_value($_pql, $branch, pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR"), $_GET["user"]);
+		$dom = pql_domain_get_value($_pql, $branch, pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR"), $_GET["user"]);
 		if($dom) {
 			foreach($dom as $d)
 			  $domains_ezmlm[$branch][] = $d;

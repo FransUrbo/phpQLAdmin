@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.76 2004-03-03 07:40:30 turbo Exp $
+// $Id: domain_detail.php,v 2.77 2004-03-03 07:58:54 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -45,7 +45,7 @@ if(!pql_domain_exist($_pql, $_REQUEST["domain"])) {
 }
 
 // Get the organization name, or show 'Not set' with an URL to set it
-$domainname = pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_O"));
+$domainname = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_O"));
 if(!$domainname) {
   // TODO: Resonable default!
   $domainname = '';				// DLW: Just to shut off some warnings.
@@ -85,7 +85,7 @@ $attribs = array(pql_get_define("PQL_GLOB_ATTR_AUTOCREATEMAILADDRESS"),
 				 pql_get_define("PQL_GLOB_ATTR_INFO"));
 foreach($attribs as $attrib) {
 	// Get default value
-	$value = pql_domain_value($_pql, $_REQUEST["domain"], $attrib);
+	$value = pql_domain_get_value($_pql, $_REQUEST["domain"], $attrib);
 	$$attrib = $value;
 
 	// Setup edit links. If it's a dcOrganizationNameForm attribute, then
@@ -133,9 +133,9 @@ foreach($attribs as $attrib) {
 		  . "border=\"0\" alt=\"".$alt1."\"></a>";
 	}
 }
-$domain_admins		= pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"));
-$mailinglist_admins	= pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR"));
-$seealso   			= pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_SEEALSO"));
+$domain_admins		= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"));
+$mailinglist_admins	= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR"));
+$seealso   			= pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_SEEALSO"));
 
 // The value retreived from the object is a one liner.
 // Split it up into it's parts (SIZE and AMOUNT) and
@@ -146,7 +146,7 @@ $temp[0] = eregi_replace("S$", "", $temp[0]);
 $quota   = array(); $quota["maxmails"] = $temp[1]; $quota["maxsize"]  = $temp[0];
 $basequota		   = pql_ldap_mailquota($quota);
 
-$additionaldomainname = pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_ADDITIONALDOMAINNAME"));
+$additionaldomainname = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_ADDITIONALDOMAINNAME"));
 
 // Setup the buttons
 $buttons = array('default'	=> 'Branch Defaults',
