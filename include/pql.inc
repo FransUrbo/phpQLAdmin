@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.158 2004-03-12 16:39:14 turbo Exp $
+// $Id: pql.inc,v 2.159 2004-03-13 07:37:13 turbo Exp $
 //
 
 // ----------------------------
@@ -1839,37 +1839,60 @@ function pql_ldap_accountstatus($status) {
 // }}}
 
 // {{{ pql_ldap_deliverymode(mode)
-
 // Returns text of delivery mode
 function pql_ldap_deliverymode($mode) {
     global $LANG;
 
-    // normal [default]
-    // forwardonly
-    // nombox
-    // localdelivery
-    // reply
-    // echo
-    
-    switch($mode) {
-      case "forwardonly":
-		return $LANG->_('Only forward');
+	if($_SESSION["NEW_STYLE_QUOTA"]) {
+		// multi field entries of these keywords
+		// - (normal)	put message into maildir/mbox, plus forward and program delivery
+		// - noforward	do not forward (ignores forwarding entries in ldap and .qmail)
+		// - nolocal	do not put message into maildir/mbox (ignores also .qmail)
+		// - noprogram	do not do program deliveries (ignores deliveryprogrampath, .qmail)
+		// - reply		send an auto_reply mail with text from mailReplyText
+		switch($mode) {
+		  case "normal":
+			return $LANG->_('Save in local mailbox, allow forwarding and program delivery');
 
-      case "nombox":
-		return $LANG->_('No local mailbox');
+		  case "noforward":
+			return $LANG->_('Save in local mailbox only (no forwarding)');
 
-      case "localdelivery":
-		return $LANG->_('Save in local mailbox');
+		  case "nolocal":
+			return $LANG->_('Do not save in local mailbox, allow forwarding and program delivery');
 
-      case "reply":
-		return $LANG->_('Do auto reply');
+		  case "noprogram":
+			return $LANG->_('Do not allow program delivery (ignores deliveryProgramPath and .qmail)');
 
-      case "echo":
-		return $LANG->_('Echo to console (tricky)');
-
-      default:
-		return $LANG->_('Normal');
-    }
+		  case "reply":
+			return $LANG->_('Send an automatic reply mail');
+		}
+	} else {
+		// normal [default]
+		// forwardonly
+		// nombox
+		// localdelivery
+		// reply
+		// echo
+		switch($mode) {
+		  case "forwardonly":
+			return $LANG->_('Only forward');
+			
+		  case "nombox":
+			return $LANG->_('No local mailbox');
+			
+		  case "localdelivery":
+			return $LANG->_('Save in local mailbox');
+			
+		  case "reply":
+			return $LANG->_('Send an automatic reply mail');
+			
+		  case "echo":
+			return $LANG->_('Echo to console (tricky)');
+			
+		  default:
+			return $LANG->_('Normal');
+		}
+	}
 }
 
 // }}}
