@@ -41,8 +41,22 @@ phpqladmin (2.0.18c-1) unstable; urgency=low
   * Get the knowledge on what object classess to use when creating user(s) ONCE
     (from user_add.php instead of all over the place), and use this knowledge when
     deciding what input field to show
+  * In case the 'user reference value' isn't availible when putting togheter
+    the new users RDN, try to fallback to the 'uid' value. If that is also
+    unset, die with a message... Best I can do!
+  * De-internationalize the gecos attribute - it won't allow non-us characters!
+  * Spelling error: s@if/elseif@ in two places where I'm about to call
+    user_generate_{mailstore,homedir}(). This stoped the auto-generation of
+    {home,mail} directories to use the UID value - CN/SN overwrote the previous
+    set UID value.
+  * When we can't find the root dn for some reason, i MUST have more information.
+  * Make sure that the view is included in change/add locals/rcpthosts value(s)
+    so that we end up in the Locals/RCPTHosts view again.
+  * Only add the 'homeDirectory' attribute if we've choosen to use 'posixAccount'
+    when creating a user - qmailUser allows homeDirectory, but it's not needed
+    for mail accounts. Previous fix was wrong...
 
- -- Turbo Fredriksson <turbo@debian.org>  Wed,  5 May 2004 12:06:58 +0200
+ -- Turbo Fredriksson <turbo@debian.org>  Wed,  5 May 2004 17:29:41 +0200
 
 phpqladmin (2.0.18b-1) unstable; urgency=low
 

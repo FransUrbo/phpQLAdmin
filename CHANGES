@@ -73,12 +73,23 @@ phpQLAdmin 2.0.18c TO BE ANNOUNCED
 	  - Spelling error - s/user_generate_mailstore/user_generate_homedir/.
 	  - Changing userNamePrefix managed to set the userNamePrefixLength instead.
 	    + Faulty use of variables in include/attrib.usernameprefix.inc.
+	  - In case the 'user reference value' isn't availible when putting togheter
+	    the new users RDN, try to fallback to the 'uid' value. If that is also
+	    unset, die with a message... Best I can do!
+	  - De-internationalize the gecos attribute - it won't allow non-us characters!
+	  - Spelling error: s@if/elseif@ in two places where I'm about to call
+	    user_generate_{mailstore,homedir}(). This stoped the auto-generation of
+	    {home,mail} directories to use the UID value - CN/SN overwrote the previous
+	    set UID value.
 
 	GUI layout change
 	  - Require the pql_config.inc file to avoid PHP errors in the right frame
 	    when choosing control.php or ezmlm.php.
 	  - Don't show the radio input for 'user specified MX' if it's our only option.
-
+	  - When we can't find the root dn for some reason, i MUST have more information.
+	  - Make sure that the view is included in change/add locals/rcpthosts value(s)
+	    so that we end up in the Locals/RCPTHosts view again.
+ 
 	Misc changes	
 	  - The file 'doc/INSTALL' was moved to '.' so that it's easily seen.
 	  - It's important that the 'person' object class is used when creating users
@@ -90,6 +101,9 @@ phpQLAdmin 2.0.18c TO BE ANNOUNCED
 	  - Get the knowledge on what object classess to use when creating user(s) ONCE
 	    (from user_add.php instead of all over the place), and use this knowledge when
 	    deciding what input field to show
+	  - Only add the 'homeDirectory' attribute if we've choosen to use 'posixAccount'
+	    when creating a user - qmailUser allows homeDirectory, but it's not needed
+	    for mail accounts. Previous fix was wrong...
 
 phpQLAdmin 2.0.18b Release (Apr  6 2004)
 	Bug fixes
