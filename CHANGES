@@ -9,9 +9,13 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	  - Variable name overloading fixed.
 
 	GUI layout change
-	  - Smaller text font in buttons.
-	  - Allow for international characters in buttons.
-	  - Relative (to the font string length) button width.
+	  - Variable lenght icons with better looking font.
+	    + Smaller text font in buttons.
+	    + Allow for international characters in buttons.
+	    + Relative (to the font string length) button width.
+	    Closes bug 8
+	  - API editor written - change, delete and add API entries for an object
+	    through the point-and-click interface (web browser).
 
 	Misc changes	
 	  - With the resent definition international characters in the DNS system (and
@@ -20,9 +24,9 @@ phpQLAdmin 2.0.18 TO BE ANNOUNCED
 	    the PHP-IDN module (also by yours truly).
 	  - Offer to create a DNS zone in ldap when adding both default and additional
 	    domain names.
-	  - Prefix functions maybe_{decode,encode} with the phpQLAdmin prefix 'pql_'.
-	  - Variable lenght icons with better looking font.
-	    Closes bug 8
+	  - API changes - functions have been removed and changed name. This to simplify
+	    the API.
+	    + Prefix functions maybe_{decode,encode} with the phpQLAdmin prefix 'pql_'.
 
 phpQLAdmin 2.0.17 Release (Oct 30 2003)
 	Bug fixes
