@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.44 2005-02-24 17:04:01 turbo Exp $
+// $Id: attrib.config.inc,v 1.45 2005-02-26 17:41:56 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -279,7 +279,13 @@ function attribute_save() {
 	$oldvalue   = @$_REQUEST["oldvalue"];
 	$toggle     = @$_REQUEST["toggle"];
 	$rootdn     = @$_REQUEST["rootdn"];
+	$domain		= @$_REQUEST["domain"];
 	$delval     = @$_REQUEST["delval"];
+
+	if($domain)
+	  $dn = $domain;
+	elseif($rootdn)
+	  $dn = $rootdn;
 
 	// DLW: This should be chopped up into functions to make it more readable.
 	// TURBO: Completely agree! See bug #221
@@ -303,8 +309,11 @@ function attribute_save() {
 		  //		See the section that starts with 'if(is_array($objectclasses)) {' above.
 		  //		Also see the file 'attrib.administrator.inc' for more examples.
 		// }}}
+	} elseif(!$oldvalue and $toggle) {
+		// A togglable value, but we don't know the previous value
+		$oldvalue = pql_get_attribute($_pql->ldap_linkid, $dn, $attrib);
     }
-
+		  
 	if($attrib_val and $delval and (($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) or
 									($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN")) or
 									($attrib == pql_get_define("PQL_ATTR_PASSWORD_SCHEMES")))) {
