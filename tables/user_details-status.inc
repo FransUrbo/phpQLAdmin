@@ -10,8 +10,14 @@ if($tmp[0]) {
 } else {
 	$time_expiration = '<i>Not set</i>';
 }
+
 // Retreive the accountStatus attribute
 $status = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_ISACTIVE"));
+if($status == "deleted") {
+  $date = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_ACCOUNT_PURGE"));
+  if($date)
+	$date = date("M j, Y", $date);
+}
 ?>
   <!-- accountstatus -->
   <table cellspacing="0" cellpadding="3" border="0">
@@ -41,6 +47,14 @@ $status = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("P
           </td>
         </form>
       </tr>
+<?php if(($status == "deleted") and $date) { ?>
+
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title">Account deletion date</td>
+        <td><?=$date?></td>
+        <td></td>
+      </tr>
+<?php } ?>
     </th>
   </table>
 
