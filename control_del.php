@@ -1,6 +1,6 @@
 <?php
 // Delete a mailserver controls object
-// $Id: control_del.php,v 2.16 2005-02-24 17:04:00 turbo Exp $
+// $Id: control_del.php,v 2.17 2005-02-25 14:45:31 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -168,15 +168,19 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 		$dn = pql_get_define("PQL_ATTR_CN").'='.$mxhost.','.$_SESSION["USER_SEARCH_DN_CTR"];
 	  }
 
-	  if(! ldap_delete($_pql_control->ldap_linkid, $dn)) {
-		// Could not delete object
-		$url = "control_detail.php?mxhost=".$mxhost."&msg=".urlencode("Failed to delete mailserver $mxhost.");
-	  } else {
-		// Successfully deleted object
-		$url = "home.php?rlnb=2&msg=".urlencode("Successfully deleted mailserver $mxhost.");
-	  }
+	  if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+		die("I'm debugging, so '<b>$dn</b>' isn't deleted!");
+	  else {
+		if(! ldap_delete($_pql_control->ldap_linkid, $dn)) {
+		  // Could not delete object
+		  $url = "control_detail.php?mxhost=".$mxhost."&msg=".urlencode("Failed to delete mailserver $mxhost.");
+		} else {
+		  // Successfully deleted object
+		  $url = "home.php?rlnb=2&msg=".urlencode("Successfully deleted mailserver $mxhost.");
+		}
 
-	  header("Location: " . $_SESSION["URI"] . $url);
+		header("Location: " . $_SESSION["URI"] . $url);
+	  }
 	}
 	// }}}
 }
