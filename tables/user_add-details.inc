@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-details.inc,v 1.17 2004-03-30 06:26:06 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.18 2004-03-30 06:54:56 turbo Exp $ */ ?>
 <?php $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"])); ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -191,48 +191,56 @@
         <!-- sub branch -->
 <?php
 	if($_SESSION["ADVANCED_MODE"]) {
-		$branches = pql_unit_get($_pql->ldap_linkid, $_REQUEST["domain"]);
-		if($branches[1]) {
-			// More than one subbranch - show a select menu
+		if(!$_REQUEST["subbranch"]) {
+			$branches = pql_unit_get($_pql->ldap_linkid, $_REQUEST["domain"]);
+			if($branches[1]) {
+				// More than one subbranch - show a select menu
 ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Put user in subbranch')?></td>
           <td>
             <select name="subbranch">
 <?php
-			for($i=0; $branches[$i]; $i++) {
+				for($i=0; $branches[$i]; $i++) {
 ?>
               <option value="<?=pql_format_urls($branches[$i])?>"><?=pql_maybe_decode($branches[$i])?></option>
 <?php
-			}
+				}
 ?>
             </select>
           </td>
         </tr>
 <?php
-		} else {
-			// Only one subbranch
-			if(pql_get_define("PQL_CONF_SUBTREE_USERS")) {
-				$branch = pql_get_define("PQL_CONF_SUBTREE_USERS").",".$_REQUEST["domain"];
-				$branch = pql_format_urls($branch);
-
-				// Just to make sure - does this subbranch exists?!
-				$xyz = pql_search($_pql->ldap_linkid, $branch, 'objectclass=*', 'dn', "BASE");
-				if(is_array($xyz)) {
+			} else {
+				// Only one subbranch
+				if(pql_get_define("PQL_CONF_SUBTREE_USERS")) {
+					$branch = pql_get_define("PQL_CONF_SUBTREE_USERS").",".$_REQUEST["domain"];
+					$branch = pql_format_urls($branch);
+					
+					// Just to make sure - does this subbranch exists?!
+					$xyz = pql_search($_pql->ldap_linkid, $branch, 'objectclass=*', 'dn', "BASE");
+					if(is_array($xyz)) {
+						// The object exists - we're not interested in the object
+						// itself, just that it exists (the array is initialized)...
 ?>
         <input type="hidden" name="subbranch" value="<?=$branch?>">
-<?php
+<?php				} else { ?>
+        <input type="hidden" name="subbranch" value="<?=$url["domain"]?>">
+<?php				}
 				} else {
 ?>
         <input type="hidden" name="subbranch" value="<?=$url["domain"]?>">
-<?php			}
-			} else {
-?>
-        <input type="hidden" name="subbranch" value="<?=$url["domain"]?>">
 <?php
+				}
 			}
-		}
+		} else {
+			// We've already specified a subbranch in where to put the user
+			$subbranch = pql_format_urls($subbranch);
+?>
+        <input type="hidden" name="subbranch" value="<?=$subbranch?>">
+<?php	}
 	} else {
+		// We're not running in advanced mode
 		if(pql_get_define("PQL_CONF_SUBTREE_USERS")) {
 			$branch = pql_get_define("PQL_CONF_SUBTREE_USERS").",".$_REQUEST["domain"];
 			$branch = pql_format_urls($branch);
@@ -275,6 +283,7 @@
   
     if(($_REQUEST["account_type"] != 'shell') and in_array('trustaccount', $objectclasses_included)) {
 ?>
+
         <!-- Account status -->
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Status')?></td>
@@ -292,7 +301,7 @@
       </th>
     </table>
 
-    <input type="hidden" name="page_curr"    value="one">
+    <input type="hidden" name="page_curr"     value="one">
 <?php
 	if(($_SESSION["ADVANCED_MODE"] == 0) or ($_REQUEST["account_type"] == "forward")) {
 		// Go to save, no next form...
