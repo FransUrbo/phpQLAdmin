@@ -1,3 +1,7 @@
+Upgrading from 2.0.5
+	The schema have been updated, so don't forget to load the new
+	version!
+
 Upgrading from 2.0.4
 	There's been some slight code modifications that will break
 	an upgrade from 2.0.2 to 2.0.3.
