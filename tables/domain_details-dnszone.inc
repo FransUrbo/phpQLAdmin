@@ -166,7 +166,7 @@
 						$type = lc($TYPE);
 
 						$HREF  = "bind9_edit_attributes.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"];
-						$HREF .= "&action=modify&type=host&rdn=".urlencode($data['RDN'])."&attrib=$type&view=$view";
+						$HREF .= "&action=modify&type=$type&rdn=".urlencode($data['RDN'])."&view=$view";
 
 						if($data[$TYPE]) {
 							unset($records);
@@ -183,18 +183,18 @@
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td>
-          <a href="<?=$HREF?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Modify host value')." host"?>"></a>
+          <a href="<?=$HREF?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_('Modify %type% record'), array('type' => "host"))?>"></a>
           <?=$data['HOST']?>
         </td>
 
         <td>
-          <a href="<?=$HREF?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Modify host value')." TTL"?>"></a>
+          <a href="<?=$HREF?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_('Modify %type% record'), array('type' => "TTL"))?>"></a>
           <?=$data['TTL']?>
         </td>
 
         <td><?=$LANG->_($TYPE)?></td>
         <td>
-          <a href="<?=$HREF?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Modify host value')." CNAME"?>"></a>
+          <a href="<?=$HREF?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_('Modify %type% record'), array('type' => $TYPE))?>"></a>
           <?=$record?>
         </td>
 
