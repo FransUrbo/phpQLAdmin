@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.16 2004-04-01 11:59:37 turbo Exp $
+// $Id: user_add-save.inc,v 1.16.2.1 2004-04-06 13:36:23 turbo Exp $
 
 // Find out what objectclasses to use when creating user
 $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"]));
@@ -93,7 +93,7 @@ if($_REQUEST["account_type"] == "forward") {
 
 	// -----------------
 	// Add [ug]id number to the entry array
-	if($_REQUEST["account_type"] != "mail") {
+	if(($_REQUEST["account_type"] != "mail") or in_array('posixaccount', $objectclasses_included)) {
 		// Get a free UserID number (which we also use for GroupID number)
 		$uidnr = pql_get_next_ugidnumber($_pql, 'uid');
 		if($uidnr > 0)
@@ -169,7 +169,7 @@ if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "mai
 	  $entry[pql_get_define("PQL_ATTR_MAILSTORE")] .= "/";
 	
 	// -----------------
-	if($_REQUEST["account_type"] == "system") {
+	if(($_REQUEST["account_type"] == "system") or in_array('posixaccount', $objectclasses_included)) {
 		// Add home directory to the entry array
 		if(!$_REQUEST["homedirectory"]) {
 			if(($_REQUEST["account_type"] == "mail") and !$_SESSION["ADVANCED_MODE"])
