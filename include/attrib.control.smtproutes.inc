@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtproutes (max number of bytes in message)
 //
-// $Id: attrib.control.smtproutes.inc,v 2.18.6.1 2004-05-25 13:57:51 turbo Exp $
+// $Id: attrib.control.smtproutes.inc,v 2.18.6.2 2004-08-26 18:03:22 turbo Exp $
 
 // {{{ smtproutes_check(type)
 function smtproutes_check($type) {
@@ -350,8 +350,6 @@ function smtproutes_print_form() {
 function smtproutes_save($type, $host) {
 	global $_pql_control, $LANG;
 	$success = 0;
-echo "smtproutes_save($type, $host)<br>";
-printr($_REQUEST);
 
 	switch($type) {
 	  case "modify":
