@@ -45,7 +45,11 @@ if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
       if($ALLOW_GLOBAL_CONFIG_SAVE and 0) {
 	  // TODO: Sorry, phpQLAdmin isn't translated propperly to anything else than English!
 ?>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_LANG"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=$PQL_ATTRIBUTE["PQL_CONF_LANG"]?>"></a></td>
+        <td class="<?=$class?>">
+          <a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_LANG"]?>">
+            <img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=$PQL_ATTRIBUTE["PQL_CONF_LANG"]?>">
+          </a>
+        </td>
 <?php    } else { ?>
         <td class="<?=$class?>"></td>
 <?php    } ?>
@@ -269,7 +273,11 @@ if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
       foreach($_pql->ldap_basedn as $dn) {
          if($ALLOW_GLOBAL_CONFIG_SAVE) {
 ?>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$dn?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER"]?>"></a></td>
+        <td class="<?=$class?>">
+          <a href="config_edit_attribute.php?rootdn=<?=$dn?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER"]?>">
+            <img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER"]?>">
+          </a>
+        </td>
 <?php    } else { ?>
         <td class="<?=$class?>"></td>
 <?php    } ?>
@@ -279,6 +287,49 @@ if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
 
       <tr></tr>
 <?php if($ADVANCED_MODE) { ?>
+
+      <!-- -------------------- --!>
+      <tr>
+        <td class="title">External user creation script</td>
+<?php	$class=table_bgcolor(0);
+		$new_tr = 0;
+		foreach($_pql->ldap_basedn as $dn) {
+?>
+        <td class="<?=$class?>">
+          <a href="config_edit_attribute.php?rootdn=<?=$dn?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_SCRIPT_CREATE_USER"]?>">
+            <img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=$PQL_ATTRIBUTE["PQL_CONF_SCRIPT_CREATE_USER"]?>">
+          </a>
+        </td>
+<?php		if($config["PQL_CONF_SCRIPT_CREATE_USER"][$dn]) { ?>
+        <td class="<?=$class?>"><?=$config["PQL_CONF_SCRIPT_CREATE_USER"][$dn]?></td>
+<?php		} else { ?>
+        <td class="<?=$class?>"></td>
+<?php		}
+	  }
+?>
+      </tr>
+
+      <!-- -------------------- --!>
+      <tr>
+        <td class="title">External domain creation script</td>
+<?php	$class=table_bgcolor(0);
+		$new_tr = 0;
+		foreach($_pql->ldap_basedn as $dn) {
+?>
+        <td class="<?=$class?>">
+          <a href="config_edit_attribute.php?rootdn=<?=$dn?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_SCRIPT_CREATE_DOMAIN"]?>">
+            <img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=$PQL_ATTRIBUTE["PQL_CONF_SCRIPT_CREATE_DOMAIN"]?>">
+          </a>
+        </td>
+<?php		if($config["PQL_CONF_SCRIPT_CREATE_DOMAIN"][$dn]) { ?>
+        <td class="<?=$class?>"><?=$config["PQL_CONF_SCRIPT_CREATE_DOMAIN"][$dn]?></td>
+<?php		} else { ?>
+        <td class="<?=$class?>"></td>
+<?php		}
+	  }
+?>
+      </tr>
+
       <tr></tr>
 
       <!-- -------------------- --!>

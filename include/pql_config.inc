@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.17 2003-04-23 12:05:21 turbo Exp $
+// $Id: pql_config.inc,v 1.18 2003-04-24 06:16:37 turbo Exp $
 //
 global $config;
 
@@ -67,6 +67,8 @@ $PQL_ATTRIBUTE["PQL_CONF_TESTMAIL_MAILTEXT"] = 'testMailText';
 $PQL_ATTRIBUTE["PQL_CONF_CATCHALLUSER"] = 'catchAllUser';
 $PQL_ATTRIBUTE["PQL_GLOB_EZMLM_PATH"] = 'ezmlmBinaryPath';
 $PQL_ATTRIBUTE["PQL_CONF_PASSWORD_SCHEMES"] = 'passWordScheme';
+$PQL_ATTRIBUTE["PQL_CONF_SCRIPT_CREATE_USER"] = 'externalScriptUser';
+$PQL_ATTRIBUTE["PQL_CONF_SCRIPT_CREATE_DOMAIN"] = 'externalScriptDomain';
 
 // Save path for users and groups
 $PQL_ATTRIBUTE["PQL_CONF_SUBTREE"]["USERS"] = 'subTreeUsers';

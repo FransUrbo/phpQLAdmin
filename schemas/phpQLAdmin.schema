@@ -33,8 +33,10 @@
 #					ezmlmBinaryPath		   8
 #					passWordScheme		   9
 #					catchAllUser		  10
-#					userAttribute		  12
-#					language		  13
+#					userAttribute		  11
+#					language		  12
+#					externalScriptUser	  13
+#					externalScriptDomain	  14
 #
 #                               Texts                   	 3
 #					hostMaster		   1
@@ -51,7 +53,7 @@
 #					baseQuota		   6
 # -----------------------------------------
 
-# $Id: phpQLAdmin.schema,v 2.17 2003-04-10 08:12:10 turbo Exp $
+# $Id: phpQLAdmin.schema,v 2.18 2003-04-24 06:16:33 turbo Exp $
 
 # PQL_SHOW_USERS (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.1 NAME 'showUsers'
@@ -210,6 +212,20 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.2.12 NAME 'language'
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26
 	SINGLE-VALUE )
 
+# PQL_CONF_SCRIPT_CREATE_USER
+attributetype ( 1.3.6.1.4.1.8767.3.2.2.13 NAME 'externalScriptUser'
+	DESC 'Path to external user creation script'
+	EQUALITY caseExactIA5Match
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26
+	SINGLE-VALUE )
+
+# PQL_CONF_SCRIPT_CREATE_DOMAIN
+attributetype ( 1.3.6.1.4.1.8767.3.2.2.14 NAME 'externalScriptDomain'
+	DESC 'Path to external domain/branch creation script'
+	EQUALITY caseExactIA5Match
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26
+	SINGLE-VALUE )
+
 # -----------------------------------------
 
 # PQL_HOSTMASTER (emailaddress)
@@ -291,7 +307,8 @@ objectclass ( 1.3.6.1.4.1.8767.3.1.1
 		testMailText $ language $ 
 	        forwardUIDNumber $ test $ 
 	        controlBaseDN $ baseQuota $
-	        useBind9 )
+	        useBind9 $ externalScriptUser $
+		externalScriptDomain )
 	SUP top AUXILIARY )
 
 objectclass ( 1.3.6.1.4.1.8767.3.1.2
