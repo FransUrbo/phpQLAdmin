@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.65 2005-03-07 09:52:20 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.66 2005-03-07 10:58:08 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -126,12 +126,6 @@ pql_set_define("PQL_CONF_USE_TLS", false);
 //
 //		// ... retreive the 'defaultDomainName' attribute value from the branch object.
 //		$domain    = pql_get_attribute($ldap->ldap_linkid, $dn, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
-//
-//		// ... double check - do we have a home directory?
-//		if(!$mailstore)
-//		  // Nope. Maybe we have the 'virtualBaseHomeDir' attribute specified
-//		  // in the base object...
-//		  $mailstore = pql_get_define("PQL_CONF_VIRTUAL_BASEHOME");
 //	} else {
 //		// Default base directory
 //		$mailstore = "/var/mail";

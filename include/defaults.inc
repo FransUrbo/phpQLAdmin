@@ -3,7 +3,7 @@
 // This file contains what I think is 'resonable defaults'.
 // Don't change here, change any values in the web interface!
 //
-// $Id: defaults.inc,v 2.31 2005-02-24 17:04:01 turbo Exp $
+// $Id: defaults.inc,v 2.32 2005-03-07 10:58:08 turbo Exp $
 
 // NOTE: Some of these defines isn't called with the (root/top)
 //       DN. They are (site) global variables, not per branch.
@@ -200,13 +200,6 @@ pql_set_define("PQL_CONF_MAXIMUM_DOMAIN_USERS", 'FALSE', false);
 // the full url where phpQLAdmin resides
 // ie: http://www.yourdomain.com/phpQLAdmin/
 pql_set_define("PQL_CONF_URI", "", false);
-
-// ----------------------------
-// PQL_ATTR_VIRTUAL_BASEHOME (string)
-// The (base directory of) virtual users home directory
-// Doesn not need to exists, but it is not allowed to be world writable
-// (Qmail thingie, not phpQLAdmin!).
-pql_set_define("PQL_CONF_VIRTUAL_BASEHOME", "/tmp/virtual", false);
 
 // ----------------------------
 if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $dn) == "dc") {

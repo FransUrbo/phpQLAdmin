@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.33 2005-03-03 12:23:10 turbo Exp $
+// $Id: user_add-save.inc,v 1.34 2005-03-07 10:58:07 turbo Exp $
 
 // {{{ URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
 if($_REQUEST["surname"]) {
@@ -115,16 +115,14 @@ if($_REQUEST["forwardingaddress"] and
   if(!$_SESSION["NEW_STYLE_QUOTA"]) {
 	// The new QmailLDAP have a changed 'deliveryMode' setup.
 	// Don't add this automaticly.
+	if($_REQUEST["forwardingtype"] == 'moveto')
+	  $entry[pql_get_define("PQL_ATTR_MODE")][]	= "nombox";
 	$entry[pql_get_define("PQL_ATTR_MODE")][]	= "forwardonly";
-	$entry[pql_get_define("PQL_ATTR_MODE")][]	= "nombox";
   } else {
-	$entry[pql_get_define("PQL_ATTR_MODE")][]	= "nolocal";
+	if($_REQUEST["forwardingtype"] == 'moveto')
+	  $entry[pql_get_define("PQL_ATTR_MODE")][]	= "nolocal";
 	$entry[pql_get_define("PQL_ATTR_MODE")][]	= "noprogram";
   }
-  
-  // If we're referencing users with 'uid', we need the mailbox directory (fake it)
-  //if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
-	$entry[pql_get_define("PQL_ATTR_MAILSTORE")]= pql_get_define("PQL_CONF_VIRTUAL_BASEHOME");
   // }}}
 }
 
@@ -196,7 +194,7 @@ if($_REQUEST["loginshell"] and
 // }}}
 
 // {{{ Add mail directory
-if($_REQUEST["mail"] and $_REQUEST["maildirectory"] and !$_REQUEST["forwardingaddress"] and
+if($_REQUEST["mail"] and $_REQUEST["maildirectory"] and
    pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILSTORE")))
 {
   // No auto generation - that's done in 'user_add.php'.

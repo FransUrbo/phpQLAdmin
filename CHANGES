@@ -20,9 +20,18 @@ phpQLAdmin 2.3.0 TO BE ANNOUNCED
 	    + After 'cn' comes 'givenName' and 'sn' and after that comes 'gecos'. Last
 	      chance is the 'user reference attribute' (whatever that might be - it MUST
 	      exists however).
+	  - When creating a 'forwarding account' there are two possibilities. Either with
+	    local delivery (as well as forwarding) or no local delivery (i.e. only forwarding).
+	    Allow this with two radio buttons in the 'Additional account properties' page -
+	    'Copy to' (default) or 'Forward to'.
+	    + Create objects with real home dirs...
 
 	Documentation changes
 	Schema changes
+	  - Because of the change in the way 'forwarding accounts' where used/created,
+	    I lost all purpose of the 'virtualBaseHomeDir' global attribute/configuration!
+	    Remove all references to it.
+
 	Misc changes
 
 [all changelog for <2.3 branch have been removed for space reasons]
