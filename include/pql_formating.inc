@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.17 2004-03-12 13:44:07 turbo Exp $
+// $Id: pql_formating.inc,v 2.18 2004-03-13 09:13:01 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -337,6 +337,8 @@ function pql_format_bool(&$value) {
 		settype($value, "boolean");
 		$value = '0';
 	}
+
+	return($value);
 }
 // }}}
 
