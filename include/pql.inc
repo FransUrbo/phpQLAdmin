@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.9 2003-01-07 08:01:18 turbo Exp $
+// $Id: pql.inc,v 2.10 2003-01-10 18:16:17 turbo Exp $
 //
 // ----------------------------
 // Note: There are a few " followed after PHP comment
@@ -56,11 +56,16 @@ class pql {
 
 		// Bind to the host
 		if(!$this->bind($binddn, $bindpw)) {
+			session_unset();
+			session_destroy();
+
+			$this->ldap_error = "<b>Could not bind to ldap server</b>: " . ldap_error($this->ldap_linkid) . "<br>" .
+			  "Please <a href=\"index.php\">relogin</a>.";
+
 			if($do_die) {
-				die("<b>Could not bind to ldap server</b>: " . ldap_error($this->ldap_linkid));
+				die($this->ldap_error);
 			}
 
-			$this->ldap_error = "<b>Could not bind to ldap server</b>: " . ldap_error($this->ldap_linkid) . "<br>";
 			return false;
 		}
 
@@ -443,6 +448,20 @@ function pql_remove_user($ldap_linkid, $ldap_basedn, $domain, $user, $delete_for
 		return false;
     }
     
+	// Delete the group object if it's defined
+	if(PQL_LDAP_SUBTREE_GROUPS) {
+		$filter = "(&(cn=" . $user . ")(objectclass=posixGroup))";
+
+		$sr = ldap_search($ldap_linkid, $ldap_basedn, $filter, array($attribute));
+		if(ldap_count_entries($ldap_linkid, $sr) > 0){
+			$ed = ldap_first_entry($ldap_linkid, $sr);
+			$dn = ldap_get_dn($ldap_linkid,$ed);
+
+			// delete the group
+			ldap_delete($ldap_linkid, $dn);
+		}
+	}
+
     $dn = pql_get_dn($ldap_linkid, $ldap_basedn, $user);
     
     // we delete the forwards to this user as they don't really make sense anymore
@@ -486,7 +505,7 @@ function pql_remove_user($ldap_linkid, $ldap_basedn, $domain, $user, $delete_for
 			}
 		} 
     }
-    
+
     return true;
 }
 
@@ -1340,6 +1359,7 @@ function pql_get_next_uidnumber($ldap_linkid) {
 			$highest = $results[$i]["uidnumber"][0];
 		}
     }
+	$highest++; // Increase with one!
 	
     return $highest;
 }
@@ -1456,6 +1476,25 @@ function pql_get_valid_shells() {
 	asort($shells);
 
 	return $shells;
+}
+
+function pql_execute($command, $hide=true) {
+	$command = "(" . escapeshellcmd($command) . ") 2>&1";
+
+	if(!$hide)
+	  echo "\n<pre>\n----\n";
+
+	flush(passthru($command, $ret));
+
+	if($ret)
+	  $code = '=> <b><u>FAILED!!</u></b>';
+	else
+	  $code = '=> <b>SUCCESS</b>';
+
+	if(!$hide)
+	  echo "----\nreturn value: $ret $code\n</pre>";
+
+	return $ret;
 }
 
 /*
