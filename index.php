@@ -1,6 +1,6 @@
 <?php
 // logins to the system
-// $Id: index.php,v 2.41 2005-02-24 17:04:00 turbo Exp $
+// $Id: index.php,v 2.42 2005-02-25 14:45:40 turbo Exp $
 //
 // Start debuging
 // http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0
@@ -237,7 +237,11 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 	$log = date("M d H:i:s");
 	$log .= " : Logged in ($userdn)\n";
 	error_log($log, 3, "phpQLadmin.log");
-	Header("Location:index2.php");
+
+	if(pql_get_attribute($_pql->ldap_linkid, $_SESSION["USER_DN"], pql_get_define("PQL_ATTR_START_ADVANCED")))
+	  Header("Location:index2.php?advanced=1");
+	else
+	  Header("Location:index2.php");
 }
 
 // Closing connection
