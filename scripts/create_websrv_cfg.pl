@@ -1,8 +1,21 @@
 #!/usr/bin/perl -w
 
 $HOST = "localhost";
-$USER = 'cn=Turbo Fredriksson,ou=People,o=Fredriksson,c=SE';
+$USER = 'cn=Turbo Fredriksson,ou=People,o=Turbo Fredriksson';
 $PASS = `cat /tmp/...`; chomp($PASS);
+
+# These must be lowercased!!
+$OC		 = 'phpqladminwebsrv';
+$SRV_NAME	 = 'cn';
+$SRV_IP		 = 'webserverip';
+$SRV_ADM	 = 'webserveradmin';
+$SRV_ALIAS	 = 'webserveralias';
+$SRV_SCIPT_ALIAS = 'webscriptaliasurl';
+$SRV_SCIPT_PATH	 = 'webscriptaliaspath';
+$SRV_LOG_ERRORS	 = 'weblogerror';
+$SRV_LOG_TRANSF	 = 'weblogtransfer';
+$SRV_OPTIONS	 = 'weboptions';
+$DOC_ROOT	 = 'webdocumentroot';
 
 # ------------------------
 # No editable parts below!
@@ -19,7 +32,7 @@ while(!eof(ROOT)) {
 }
 close(ROOT);
 
-$search = "'(objectclass=phpQLAdminWebsrv)'";
+$search = "'(objectclass=$OC)'";
 foreach $basedn (@DNS) {
     $cmd = "ldapsearch -LLL -x -h $HOST -b '$basedn' -s sub -D '$USER' -w $PASS $search";
     open(SEARCH, "$cmd |") or die($@);
@@ -35,37 +48,39 @@ foreach $basedn (@DNS) {
 	($attrib, $value) = split(': ', $line);
 	$attrib = lc($attrib);
 
-	if($ENTRY{$name}{$attrib}) {
-	    $ENTRY{$name}{$attrib} .= ';'.$value;
-	} else {
-	    $ENTRY{$name}{$attrib} = $value;
+	if($value) {
+	    if($ENTRY{$name}{$attrib}) {
+		$ENTRY{$name}{$attrib} .= ';'.$value;
+	    } else {
+		$ENTRY{$name}{$attrib} = $value;
+	    }
 	}
     }
     close(SEARCH);
 }
 
 foreach $srv (sort(keys(%ENTRY))) {
-    print "<VirtualHost ".$ENTRY{$srv}{'webserverip'}.">\n";
+    print "<VirtualHost ".$ENTRY{$srv}{$SRV_IP}.">\n";
     foreach $attr (sort(keys(%{$ENTRY{$srv}}))) {
-	if($attr eq 'cn') {
+	if($attr eq $SRV_NAME) {
 	    print "\tServerName ".$ENTRY{$srv}{$attr}."\n";
-	} elsif($attr eq 'webdocumentroot') {
+	} elsif($attr eq $DOC_ROOT) {
 	    print "\tDocumentRoot ".$ENTRY{$srv}{$attr}."\n";
-	} elsif($attr eq 'webserveradmin') {
+	} elsif($attr eq $SRV_ADM) {
 	    print "\tServerAdmin ".$ENTRY{$srv}{$attr}."\n";
-	} elsif($attr eq 'webserveralias') {
+	} elsif($attr eq $SRV_ALIAS) {
 	    @aliases = split(';', $ENTRY{$srv}{$attr});
 	    foreach $alias (sort(@aliases)) {
 		print "\tServerAlias $alias\n";
 	    }
-	} elsif($attr eq 'webscriptaliasurl') {
-	    print "\tScriptAlias ".$ENTRY{$srv}{webscriptaliasurl};
-	    print " ".$ENTRY{$srv}{webscriptaliaspath}."\n";
-	} elsif($attr eq 'weblogerror') {
+	} elsif($attr eq $SRV_SCIPT_ALIAS) {
+	    print "\tScriptAlias ".$ENTRY{$srv}{$SRV_SCIPT_ALIAS};
+	    print " ".$ENTRY{$srv}{$SRV_SCIPT_PATH}."\n";
+	} elsif($attr eq $SRV_LOG_ERRORS) {
 	    print "\tErrorLog ".$ENTRY{$srv}{$attr}."\n";
-	} elsif($attr eq 'weblogtransfer') {
+	} elsif($attr eq $SRV_LOG_TRANSF) {
 	    print "\tTransferLog ".$ENTRY{$srv}{$attr}."\n";
-	} elsif($attr eq 'weboptions') {
+	} elsif($attr eq $SRV_OPTIONS) {
 	    print "\tOptions ".$ENTRY{$srv}{$attr}."\n";
 	}
     }
