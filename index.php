@@ -156,7 +156,7 @@ if (empty($uname) or empty($passwd)) {
 
 		// Get hostname and base DN
 		$dn   = split(';', $host[0]);
-		$USER_SEARCH_DN_CTR = $dn[3];
+		$USER_SEARCH_DN_CTR = $dn[2];
 
 		session_register("USER_SEARCH_DN_CTR");
 	} elseif(is_array($USER_SEARCH_DN_CTR)) {
@@ -176,7 +176,12 @@ if (empty($uname) or empty($passwd)) {
 
 	// -------------------------------------
 	// Get DN of user
-	$rootdn = pql_get_dn($_pql->ldap_linkid, $uname);
+	// TODO: This is wrong. There might (?) be multiple
+	//       users with the same uid in the database
+	//       (under different branches/trees).
+	$rootdn = pql_get_dn($_pql, $uname);
+	if(!$rootdn)
+	  die("Can't find you in the database!");
 
 	// Rebind as user
 	$_pql->bind($rootdn, $USER_PASS);
@@ -191,9 +196,8 @@ if (empty($uname) or empty($passwd)) {
 	$USER_PASS	= $passwd;
 	$USER_DN	= $rootdn;
 
-	if (!session_register("USER_ID", "USER_PASS", "USER_DN")) {
-		die (PQL_SESSION_REG);
-	}
+	if(! session_register("USER_ID", "USER_PASS", "USER_DN"))
+	  die (PQL_SESSION_REG);
 
 	$log = date("M d H:i:s");
 	$log .= " : Logged in ($rootdn)\n";
