@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.15 2004-04-03 06:31:09 turbo Exp $
+// $Id: config_attributes.inc,v 2.16 2004-04-11 09:18:33 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -100,6 +100,24 @@ pql_set_define("PQL_ATTR_TIMEOUTSMTPD",						strtolower("timeOutSmtpd"),					fal
 pql_set_define("PQL_ATTR_BIGBROTHER",						strtolower("bigBrother"),					false);
 pql_set_define("PQL_ATTR_RBLLIST",							strtolower("rblList"),						false);
 pql_set_define("PQL_ATTR_GOODADDRESS",						strtolower("goodMailAddr"),					false);
+// }}}
+
+// {{{ Qmail-Group attributes in QmailLDAP
+pql_set_define("PQL_ATTR_GROUP_LOGIN",						strtolower("ldapGroupLogin"),				false);
+pql_set_define("PQL_ATTR_GROUP_PASSWD",						strtolower("ldapGroupPassWord"),			false);
+pql_set_define("PQL_ATTR_GROUP_OC",							strtolower("qmailGroup"),					false);
+pql_set_define("PQL_ATTR_GROUP_MEMBERS_ONLY",				strtolower("membersOnly"),					false);
+pql_set_define("PQL_ATTR_GROUP_CONFIRM",					strtolower("senderConfirm"),				false);
+pql_set_define("PQL_ATTR_GROUP_CONFIRM_TEXT",				strtolower("confirmText"),					false);
+pql_set_define("PQL_ATTR_GROUP_MODERATOR_TEXT",				strtolower("moderatorText"),				false);
+pql_set_define("PQL_ATTR_GROUP_DN_MODERATOR",				strtolower("dnmoderator"),					false);
+pql_set_define("PQL_ATTR_GROUP_DN_MEMBER",					strtolower("dnMember"),						false);
+pql_set_define("PQL_ATTR_GROUP_DN_SENDER",					strtolower("dnsender"),						false);
+pql_set_define("PQL_ATTR_GROUP_822_MODERATOR",				strtolower("rfc822Moderator"),				false);
+pql_set_define("PQL_ATTR_GROUP_822_MEMBER",					strtolower("rfc822Member"),					false);
+pql_set_define("PQL_ATTR_GROUP_822_SENDER",					strtolower("rfc822sender"),					false);
+pql_set_define("PQL_ATTR_GROUP_FILTER_MEMBER",				strtolower("filterMember"),					false);
+pql_set_define("PQL_ATTR_GROUP_FILTER_SENDER",				strtolower("filtersender"),					false);
 // }}}
 
 // {{{ PopBeforeSMTP attributes in QmailLDAP

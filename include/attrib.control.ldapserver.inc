@@ -2,10 +2,12 @@
 // control attribute plugin for
 // ldapserver (server which holds ldap database)
 // ldapbasedn (dn, which points to ldap database)
-// ldaplogin (cn of a database user)
-// ldappassword (password to bind to ldaplogin)
+// ldaplogin (dn of a database user)
+// ldappassword (password for bind - used with ldaplogin)
+// ldapgrouplogin (dn of a database user - used by qmail-group)
+// ldapgrouppassword (password for bind - used with ldapgrouplogin)
 //
-// $Id: attrib.control.ldapserver.inc,v 2.14 2004-03-29 08:09:02 turbo Exp $
+// $Id: attrib.control.ldapserver.inc,v 2.15 2004-04-11 09:18:33 turbo Exp $
 
 // {{{ ldapserver_check(type)
 function ldapserver_check($type) {
@@ -102,10 +104,12 @@ function ldapserver_init($host) {
 	global $_pql_control;
 	
 	// fetch data from ldap server
-	$attribs = array("ldapserver"   => pql_get_define("PQL_ATTR_LDAPSERVER"),
-					 "ldapbasedn"   => pql_get_define("PQL_ATTR_LDAPBASEDN"),
-					 "ldaplogin"    => pql_get_define("PQL_ATTR_LDAPLOGIN"),
-					 "ldappassword" => pql_get_define("PQL_ATTR_LDAPPASSWORD"));
+	$attribs = array("ldapserver"   	=> pql_get_define("PQL_ATTR_LDAPSERVER"),
+					 "ldapbasedn"   	=> pql_get_define("PQL_ATTR_LDAPBASEDN"),
+					 "ldaplogin"    	=> pql_get_define("PQL_ATTR_LDAPLOGIN"),
+					 "ldappassword"		=> pql_get_define("PQL_ATTR_LDAPPASSWORD"),
+					 "ldapgrouplogin"	=> pql_get_define("PQL_ATTR_GROUP_LOGIN"),
+					 "ldapgrouppassword"=> pql_get_define("PQL_ATTR_GROUP_PASSWD"));
 	foreach($attribs as $key => $attrib) {
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
 										   pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
@@ -139,10 +143,12 @@ function ldapserver_print_view($host) {
 	  $_REQUEST["ldappassword"] = $LANG->_('Set, but now shown');
 
 	// set empty field to "not set"
-	$attribs = array("ldapserver"   => pql_get_define("PQL_ATTR_LDAPSERVER"),
-					 "ldapbasedn"   => pql_get_define("PQL_ATTR_LDAPBASEDN"),
-					 "ldaplogin"    => pql_get_define("PQL_ATTR_LDAPLOGIN"),
-					 "ldappassword" => pql_get_define("PQL_ATTR_LDAPPASSWORD"));
+	$attribs = array("ldapserver"   	=> pql_get_define("PQL_ATTR_LDAPSERVER"),
+					 "ldapbasedn"   	=> pql_get_define("PQL_ATTR_LDAPBASEDN"),
+					 "ldaplogin"    	=> pql_get_define("PQL_ATTR_LDAPLOGIN"),
+					 "ldappassword" 	=> pql_get_define("PQL_ATTR_LDAPPASSWORD"),
+					 "ldapgrouplogin"	=> pql_get_define("PQL_ATTR_GROUP_LOGIN"),
+					 "ldapgrouppassword"=> pql_get_define("PQL_ATTR_GROUP_PASSWD"));
 	foreach($attribs as $key => $attrib) {
 		if($_REQUEST[$key] == "")
 		  $_REQUEST[$key] = $LANG->_('Not set');
@@ -176,6 +182,16 @@ function ldapserver_print_view($host) {
       </tr>
 
 <?php } ?>
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title"><?=$LANG->_('Group login')?></td>
+        <td><?=$_REQUEST["ldapgrouplogin"]?></td>
+      </tr>
+
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title"><?=$LANG->_('Group login password')?></td>
+        <td><?=$_REQUEST["ldapgrouppassword"]?></td>
+      </tr>
+
       <tr class="subtitle">
         <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=ldapserver"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
       </tr>
@@ -220,7 +236,17 @@ function ldapserver_print_form() {
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Password')?></td>
-          <td><?php echo pql_format_error_span($error["ldappassword"]); ?><input type="password" name="ldappassword"></td>
+          <td><?php echo pql_format_error_span($error["ldappassword"]); ?><input type="password" name="ldappassword" value="<?=$_REQUEST["ldappassword"]?>"></td>
+        </tr>
+
+        <tr class="<?php pql_format_table(); ?>">
+          <td class="title"><?=$LANG->_('Group login')?></td>
+          <td><?php echo pql_format_error_span($error["ldapgrouplogin"]); ?><input type="text" name="ldapgrouplogin"></td>
+        </tr>
+
+        <tr class="<?php pql_format_table(); ?>">
+          <td class="title"><?=$LANG->_('Group login password')?></td>
+          <td><?php echo pql_format_error_span($error["ldapgrouppassword"]); ?><input type="password" name="ldapgrouppassword"></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
@@ -271,13 +297,18 @@ function ldapserver_save($type, $host) {
 													$attrib, $_REQUEST[$key]);
 		
 
-		$attribs = array("ldaplogin"    => pql_get_define("PQL_ATTR_LDAPLOGIN"),
-						 "ldappassword" => pql_get_define("PQL_ATTR_LDAPPASSWORD"));
+		$attribs = array("ldaplogin"    	=> pql_get_define("PQL_ATTR_LDAPLOGIN"),
+						 "ldappassword" 	=> pql_get_define("PQL_ATTR_LDAPPASSWORD"),
+						 "ldapgrouplogin"	=> pql_get_define("PQL_ATTR_GROUP_LOGIN"),
+						 "ldapgrouppassword"=> pql_get_define("PQL_ATTR_GROUP_PASSWD"));
 		if($_REQUEST["ldaplogin_use"] == "1") {
 			foreach($attribs as $key => $attrib)
-			  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-														pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-														$attrib, $_REQUEST[$key]);
+			  if($_REQUEST[$key]) {
+				  // Only set a value which is defined to avoid possible errors
+				  $return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
+															pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+															$attrib, $_REQUEST[$key]);
+			  }
 		} else {
 			foreach($attribs as $key => $attrib)
 			  // reset login and password values
@@ -309,22 +340,43 @@ function ldapserver_save($type, $host) {
 function ldapserver_help() {
 	global $LANG;
 ?>
-	<b><?=$LANG->_('Host')?></b><br>
+  <b><?=$LANG->_('Host')?></b><br>
 	Your ldap server's hostname. If you want more than one ldap-server for redundancy,
 	use the "add more servers" link to add another server. To clear additional server simply
 	remove the value and save.
 	<br><br>
-	<b><?=$LANG->_('Base DN')?></b><br>
-  The BaseDN for ldap searches. See OpenLDAP's documentation for more information about BaseDN. Required.
-  Example: "o=yourcorp, c=ch"
+  <b><?=$LANG->_('Base DN')?></b><br>
+    The BaseDN for ldap searches. See OpenLDAP's documentation for more information about BaseDN. Required.
+    <br>
+    <i>Example: <u>o=yourcorp,c=ch</u></i>
 	<br><br>
   <b><?=$LANG->_('Login')?></b><br>
 	If you need to authentificate against your ldap server to retrieve the user information, this is the username to do so.
-	Note: this is a ldap dn, not a unix username.
+    <br>
+	<i>Note1: This is a ldap dn, not a unix username.</i>
+    <br>
+	<i>Note2: If unset, all searches will be done anonymously so make sure everyone can read the relevant values.</i>
 	<br><br>
   <b><?=$LANG->_('Password')?></b><br>
-	The password for the user defined in ldaplogin if needed. Cleartext.
-	<?php
+	The password for the user defined in ldaplogin if needed.
+    <br>
+    <i>Note: This should be entered as cleartext, not encrypted!</i>
+	<br><br>
+  <b><?=$LANG->_('Group login')?></b><br>
+	If qmail-group need to authentificate against your ldap server to retrieve the user information, this is the username
+    to do so.
+    <br>
+	<i>Note1: This is a ldap dn, not a unix username.</i>
+    <br>
+	<i>Note2: If unset, it will default to the value in ldaplogin.</i>
+	<br><br>
+  <b><?=$LANG->_('Group login password')?></b><br>
+	The password for the user defined in ldapgrouplogin if needed.
+    <br>
+    <i>Note1: This should be entered as cleartext, not encrypted!</i>
+    <br>
+	<i>Note2: If unset, it will default to the value in ldappassword.</i>
+<?php
 }
 // }}}
 

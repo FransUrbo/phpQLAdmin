@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control plugins)
 //
-// $Id: pql_control_plugins.inc,v 2.6 2004-04-01 06:56:07 turbo Exp $
+// $Id: pql_control_plugins.inc,v 2.7 2004-04-11 09:18:33 turbo Exp $
 //
 
 // ----------------------------
@@ -18,7 +18,9 @@ pql_plugin_register(pql_get_define("PQL_ATTR_LDAPSERVER"),
 					array(pql_get_define("PQL_ATTR_LDAPSERVER"),
 						  pql_get_define("PQL_ATTR_LDAPBASEDN"),
 						  pql_get_define("PQL_ATTR_LDAPLOGIN"),
-						  pql_get_define("PQL_ATTR_LDAPPASSWORD")));
+						  pql_get_define("PQL_ATTR_LDAPPASSWORD"),
+						  pql_get_define("PQL_ATTR_GROUP_LOGIN"),
+						  pql_get_define("PQL_ATTR_GROUP_PASSWD")));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_LDAPREBIND"),
 					"attrib.control.ldaprebind.inc",
