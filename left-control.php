@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.28 2004-10-18 13:39:31 turbo Exp $
+// $Id: left-control.php,v 2.29 2004-11-08 10:25:01 turbo Exp $
 //
 session_start();
 
@@ -10,10 +10,8 @@ require("./include/pql_control_plugins.inc");
 
 require("./left-head.html");
 
-// TODO: How do we know if the user is allowed to add domains?
-//       In the domain description we don't have that info...
-//if(pql_get_define("PQL_ATTR_CONTROL_USE") && ($_SESSION["USER_BASE"] == 'everything')) {
-if(pql_get_define("PQL_CONF_CONTROL_USE")) {
+if(pql_get_define("PQL_CONF_CONTROL_USE") && $_SESSION["ALLOW_CONTROL_CREATE"]) {
+	// We're administrating QmailLDAP/Control and the user is allowed to administrate.
 	$j = 1;
 ?>
   <!-- Server Control -->
