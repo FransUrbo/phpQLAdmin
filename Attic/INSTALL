@@ -1,0 +1,12 @@
+How to install:
+
+	1. Copy include/config.inc.CHANGE_ME to include/config.inc
+	2. Change include/config.inc with values for you site
+	3. Setup your PHP driver (apache etc) to include files from
+	   this directory. This is done (on a Debian GNU/Linux box)
+ 	   in the file '/etc/php4/apache/php.ini'. 
+	   Find the line that starts with 'include_path' and make
+	   sure it contains the exact path to where you extracted
+	   this source (usually somewhere in your DocumentRoot).
+
+INSTALL,v 1.1 2002-12-11 16:08:08 turbo Exp
