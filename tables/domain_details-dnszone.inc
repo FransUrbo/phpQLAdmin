@@ -168,7 +168,7 @@
 
       <tr class="subtitle">
         <td></td>
-        <td><a href="bind9_add.php?action=add&type=host&domain=<?=$domain?>&domainname=<?=$domainname?>&submit=1"><img src="images/edit.png" width="12" height="12" border="0" alt="Add host">Add host</a></td>
+        <td><a href="bind9_add.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&domainname=<?=$domainname?>&action=add&type=host&submit=1"><img src="images/edit.png" width="12" height="12" border="0" alt="Add host">Add host</a></td>
         <td></td>
         <td></td>
         <td></td>
@@ -180,4 +180,4 @@
   No zones configure for this branch. 
 <?php } ?>
   <br>
-  <a href="bind9_add.php?action=add&type=domain&domain=<?=$domain?>">Add DNS zone</a>
+  <a href="bind9_add.php?domain=<?=$domain?>&action=add&type=domain">Add DNS zone</a>
