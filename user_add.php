@@ -562,6 +562,7 @@ switch($submit){
 	if(($ADVANCED_MODE == 0) or ($account_type == "forward")) {
 		// Go to save, no next form...
 		if($ADVANCED_MODE == 0) {
+			// Autocreate some values by using 'safe' (?) defaults
 ?>
     <input type="hidden" name="loginshell" value="/bin/false">
     <input type="hidden" name="homedirectory" value="">
@@ -809,9 +810,14 @@ switch($submit){
 			  // Encrypt and create the hash using the password value
 			  $entry[$config["PQL_GLOB_ATTR_PASSWD"]]   = pql_password_hash($password, $pwscheme);
 
-			if(!$homedirectory)
-			  $entry[$config["PQL_GLOB_ATTR_HOMEDIR"]] = user_generate_homedir($_pql, $email, $domain, $entry);
-			else
+			if(!$homedirectory) {
+				if(($account_type == "normal") and !$ADVANCED_MODE)
+				  // It's a mail account, and we where/is not running in
+				  // advanced mode. Use the maildirectory as homedirectory.
+				  $entry[$config["PQL_GLOB_ATTR_HOMEDIR"]] = user_generate_mailstore($_pql, $email, $domain, $entry);
+				else
+				  $entry[$config["PQL_GLOB_ATTR_HOMEDIR"]] = user_generate_homedir($_pql, $email, $domain, $entry);
+			} else
 			  $entry[$config["PQL_GLOB_ATTR_HOMEDIR"]] = $homedirectory;
 		}
 
@@ -830,11 +836,10 @@ switch($submit){
 
 			$entry[$config["PQL_GLOB_ATTR_MODE"]]     = "localdelivery";
 
-			if(!$maildirectory) {
-				$entry[$config["PQL_GLOB_ATTR_MAILSTORE"]] = user_generate_mailstore($_pql, $email, $domain, $entry);
-			} else {
-				$entry[$config["PQL_GLOB_ATTR_MAILSTORE"]] = $maildirectory;
-			}
+			if(!$maildirectory)
+			  $entry[$config["PQL_GLOB_ATTR_MAILSTORE"]] = user_generate_mailstore($_pql, $email, $domain, $entry);
+			else
+			  $entry[$config["PQL_GLOB_ATTR_MAILSTORE"]] = $maildirectory;
 		} elseif($account_type != "shell") {
 			// forwardonly account
 
