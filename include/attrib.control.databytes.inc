@@ -2,7 +2,7 @@
 // control attribute plugin for
 // databytes (max number of bytes in message)
 //
-// $Id: attrib.control.databytes.inc,v 2.13 2004-03-11 16:31:54 turbo Exp $
+// $Id: attrib.control.databytes.inc,v 2.14 2004-03-28 18:58:02 turbo Exp $
 
 // {{{ databytes_check(type)
 function databytes_check($type) {
@@ -54,7 +54,7 @@ function databytes_print_view($host) {
     <th colspan="3" align="left">databytes (<?=$LANG->_('Maximum number databytes in message')?>)</th>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Maximum')?></td>
-        <td><?="$_REQUEST["databytes"] $hr_databytes"?></td>
+        <td><?=$_REQUEST["databytes"]." ".$hr_databytes?></td>
       </tr>
 
       <tr class="subtitle">
