@@ -117,6 +117,12 @@
         <td><?=$usernameprefix_link?></td>
       </tr>
 
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title"><?=$LANG->_('Length of user suffix')?></td>
+        <td><?php if($usernameprefixlength){echo $usernameprefixlength;}else{echo "<i>".$LANG->_('Not set')."</i>";} ?></td>
+        <td><?=$usernameprefixlength_link?></td>
+      </tr>
+
 <?php } ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?php echo pql_complete_constant($LANG->_('Automatically generate %what%'), array('what' => $LANG->_('email address'))); ?></td>

@@ -11,7 +11,7 @@
 // If you want to customise phpQLAdmin, do NOT do it here, the file
 // to customise is 'config_attributes.inc'.
 //
-// $Id: config_plugins.inc,v 2.6 2003-11-26 16:42:07 turbo Exp $
+// $Id: config_plugins.inc,v 2.7 2003-12-11 06:04:14 turbo Exp $
 
 pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_ISACTIVE"),
 					"attrib.accountstatus.inc",
@@ -117,7 +117,8 @@ pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_AUTOCREATEUSERNAME"),
 pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_USERNAMEPREFIX"),
 					"attrib.usernameprefix.inc",
 					"",
-					pql_get_define("PQL_GLOB_ATTR_USERNAMEPREFIX"));
+					array(pql_get_define("PQL_GLOB_ATTR_USERNAMEPREFIX"),
+						  pql_get_define("PQL_GLOB_ATTR_USERNAMEPREFIX_LENGTH")));
 
 pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE"),
 					"attrib.mailalternateaddress.inc",

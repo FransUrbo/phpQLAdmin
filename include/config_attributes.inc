@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.4 2003-11-26 16:42:06 turbo Exp $
+// $Id: config_attributes.inc,v 2.5 2003-12-11 06:04:14 turbo Exp $
 
 // User object attributes
 pql_set_define("PQL_GLOB_ATTR_DOTMODE",				strtolower("qmailDotMode"),		false);
@@ -146,4 +146,5 @@ pql_set_define("PQL_GLOB_ATTR_MAXIMUMDOMAINUSERS",		strtolower("maximumDomainUse
 pql_set_define("PQL_GLOB_ATTR_MAXIMUMMAILINGLISTS",		strtolower("maximumMailingLists"),		false);
 pql_set_define("PQL_GLOB_ATTR_SEEALSO",				strtolower("seeAlso"),				false);
 pql_set_define("PQL_GLOB_ATTR_USERNAMEPREFIX",			strtolower("userNamePrefix"),			false);
+pql_set_define("PQL_GLOB_ATTR_USERNAMEPREFIX_LENGTH",		strtolower("userNamePrefixLength"),		false);
 ?>

@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.134 2003-12-09 09:59:16 turbo Exp $
+// $Id: pql.inc,v 2.135 2003-12-11 06:04:14 turbo Exp $
 //
 
 // ----------------------------
@@ -1205,32 +1205,40 @@ function pql_get_next_username($ldap, $domain) {
 	// Get the prefix from the branch
 	$prefix = pql_domain_value($ldap, $domain, pql_get_define("PQL_GLOB_ATTR_USERNAMEPREFIX"));
 
+	$suffix_length = pql_domain_value($ldap, $domain, pql_get_define("PQL_GLOB_ATTR_USERNAMEPREFIX_LENGTH"));
+	if(!$suffix_length)
+	  $suffix_length = "%03d";
+	else
+	  $suffix_length = "%0".$suffix_length."d";
+
 	if($prefix) {
 		// Under what namingContexts is this domain/branch located?
 		$rootdn = pql_get_rootdn($domain); $rootdn = urldecode($rootdn);
 
 		// Setup the LDAP search filter
-//		$filter = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) . '=' . $prefix . '*';
-		$filter = pql_get_define("PQL_GLOB_ATTR_UID")."=$prefix*"; // DEBUG
+		$filter = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) . '=' . $prefix . '*';
 
 		// Search the whole database for all users with this prefix
 		foreach($ldap->ldap_basedn as $dn) {
-		    $dn  = urldecode($dn);
-			$tmp = ldap_search($ldap->ldap_linkid, $dn, $filter, array(pql_get_define("PQL_GLOB_ATTR_UID")));
-
-			$USERS = $USERS + $tmp;
+			$dn  = urldecode($dn);
+			$sr  = ldap_search($ldap->ldap_linkid, $dn, $filter, array(pql_get_define("PQL_GLOB_ATTR_UID")));
+			$tmp = ldap_get_entries($ldap->ldap_linkid, $sr) or pql_format_error_msg($ldap->ldap_linkid);
+			for($i=0; $i < $tmp["count"]; $i++)
+			  $USERS[] = $tmp[$i][pql_get_define("PQL_GLOB_ATTR_UID")][0];
 		}
 
-		if(!$USERS)
-		  return($prefix."0001");
-		else {
+		if(!$USERS) {
+			$suffix = sprintf("$suffix_length", 1);
+		} else {
 			// We have previous values in the DB. 
 			sort($USERS);
 			$nr  = eregi_replace($prefix, "", $USERS[count($USERS)-1]);
-			return($prefix.sprintf("%04d", $nr + 1));
-		}
-	}
 
+			$suffix = sprintf("$suffix_length", $nr + 1);
+		}
+
+		return($prefix.$suffix);
+	}
 }
 // }}}
 

@@ -1,86 +1,88 @@
-# OID base,             IANA                            	1.3.6.1.4.1
-# OID Base,             Turbo Fredriksson               	8767
-# OID assignments,      LDAP Elements                   	1
-#                       SNMP Elements                   	2
-#                       phpQLAdmin Elements             	3
+#	OID base (IANA)								1.3.6.1.4.1
+#	OID Base (Turbo Fredriksson)				 8767
+#	OID assignments:
+#			LDAP Elements										1
+#			SNMP Elements										2
+
+#			phpQLAdmin Elements							3
+#				Objectclasses										1
+#					phpQLAdminConfig								1
+#					phpQLAdminBranch								2
+#					phpQLAdminWebsrv								3
 #
-#                       Objectclasses                   	1
-#                               phpQLAdminConfig        	 1
-#				phpQLAdminBranch		 2
-#				phpQLAdminWebsrv		 3
+#				Attributes												2
+#					Toggles														1
+#						showUsers													 1
+#						useControls												 2
+#						useEzmlm													 3
+#						autoReload												 4
+#						autoSend													 5
+#						autoAddLocals											 6
+#						allowServerChange									 7
+#						allowAbsoluteMailPath							 8
+#						deleteVerification								 9
+#						useBind9													10
+#						test															11
+#						autoAddRCPTHosts									12
+#						autoAddHostName										13
+#						autoCreateUsername								14
+#						autoCreateMailAddress							15
+#						useWebSrv													16
 #
-#                       Attributes                      	2
-#                               Toggles                 	 1
-#                                       showUsers       	   1
-#					useControls		   2
-#					useEzmlm		   3
-#					autoReload		   4
-#					autoSend		   5
-#					autoAddLocals		   6
-#					allowServerChange	   7
-#					allowAbsoluteMailPath	   8
-#					deleteVerification	   9
-#					useBind9		  10
-#					test			  11
-#					autoAddRCPTHosts	  12
-#					autoAddHostName		  13
-#					autoCreateUsername	  14
-#					autoCreateMailAddress	  15
-#					useWebSrv		  16
+#					System texts											2
+#						whoAreWe													 1
+#						subTreeUsers											 2
+#						subTreeGroups											 3
+#						branchObjectClass									 4
+#						userObjectClass										 5
+#						userReference											 6
+#						branchReference										 7
+#						ezmlmBinaryPath										 8
+#						passWordScheme										 9
+#						catchAllUser		  								10
+#						userAttribute		  								11
+#						language		  										12
+#						externalScriptUser	  						13
+#						externalScriptDomain	  					14
+#						krb5AdminServer		  							15
+#						krb5AdminKeytab		  							16
+#						krb5AdminCommandPath	  					17
 #
-#                               System texts            	 2
-#					whoAreWe		   1
-#					subTreeUsers		   2
-#					subTreeGroups		   3
-#					branchObjectClass	   4
-#					userObjectClass		   5
-#					userReference		   6
-#					branchReference		   7
-#					ezmlmBinaryPath		   8
-#					passWordScheme		   9
-#					catchAllUser		  10
-#					userAttribute		  11
-#					language		  12
-#					externalScriptUser	  13
-#					externalScriptDomain	  14
-#					krb5AdminServer		  15
-#					krb5AdminKeytab		  16
-#					krb5AdminCommandPath	  17
+#					Texts															3
+#						hostMaster												 1
+#						testMailSubject										 2
+#						testMailText											 3
+#						forwardUIDNumber									 4
+#						minimumUIDNumber									 5
 #
-#                               Texts                   	 3
-#					hostMaster		   1
-#					testMailSubject		   2
-#					testMailText		   3
-#					forwardUIDNumber	   4
-#					minimumUIDNumber	   5
-#
-#				Value				 4
-#					defaultDomain		   1
-#					baseHomeDir		   2
-#					baseMailDir		   3
-#					administrator		   4
-#					controlBaseDN		   5
-#					baseQuota		   6
-#					maximumDomainUsers	   7
-#					additionalDomainName	   8
-#					defaultPasswordScheme	   9
-#					ezmlmAdministrator	  10
-#					maximumMailingLists	  11
-#					controlsAdministrator	  12
-#					userNamePrefix		  13
-#					webServerIP		  14
-#					webServerURL		  15
-#					webDocumentRoot		  16
-#					webServerAlias		  17
-#					webServerAdmin		  18
-#					webScriptAliasURL	  19
-#					WebScriptAliasPath	  20
-#					webLogError		  21
-#					webLogTransfer		  22
-#					webOptions		  23
+#					Value															4
+#						defaultDomain											 1
+#						baseHomeDir												 2
+#						baseMailDir												 3
+#						administrator											 4
+#						controlBaseDN											 5
+#						baseQuota													 6
+#						maximumDomainUsers								 7
+#						additionalDomainName							 8
+#						defaultPasswordScheme							 9
+#						ezmlmAdministrator								10
+#						maximumMailingLists								11
+#						controlsAdministrator	  					12
+#						userNamePrefix		  							13
+#						webServerIP		  									14
+#						webServerURL		  								15
+#						webDocumentRoot		  							16
+#						webServerAlias		  							17
+#						webServerAdmin		  							18
+#						webScriptAliasURL	  							19
+#						WebScriptAliasPath	  						20
+#						webLogError		  									21
+#						webLogTransfer		  							22
+#						webOptions		  									23
+#						userNamePrefixLength							24
 # -----------------------------------------
 
-# $Id: phpQLAdmin.schema,v 2.35 2003-10-11 11:55:39 turbo Exp $
+# $Id: phpQLAdmin.schema,v 2.36 2003-12-11 06:04:07 turbo Exp $
 
 # PQL_CONF_SHOW_USERS (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.1 NAME 'showUsers'
@@ -172,14 +174,14 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.1.13 NAME 'autoAddHostName'
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
 	SINGLE-VALUE )
 
-# PQL_CONF_CREATE_USERNAME
+# PQL_GLOB_ATTR_AUTOCREATEUSERNAME
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.14 NAME 'autoCreateUsername'
 	DESC 'Automatically create username when creating a user [True/False]?'
 	EQUALITY booleanMatch
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
 	SINGLE-VALUE )
 
-# PQL_CONF_CREATE_ADDRESS
+# PQL_GLOB_ATTR_CREATE_ADDRESS
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.15 NAME 'autoCreateMailAddress'
 	DESC 'Automatically create email address when creating a user [True/False]?'
 	EQUALITY booleanMatch
@@ -264,9 +266,9 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.2.10 NAME 'catchAllUser'
 
 # PQL_GLOB_ATTR_*
 attributetype ( 1.3.6.1.4.1.8767.3.2.2.11 NAME 'userAttribute'
-        DESC ''
-        EQUALITY caseIgnoreMatch
-        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024} )
+	DESC ''
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024} )
 
 # PQL_GLOB_LANG
 attributetype ( 1.3.6.1.4.1.8767.3.2.2.12 NAME 'language'
@@ -364,140 +366,147 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.3.5 NAME 'minimumUIDNumber'
 
 # This is also availible in qmailControl.schema (from QmailLDAP/Controls)
 #attributetype ( 1.3.6.1.4.1.8767.3.2.4.1 NAME 'defaultDomain'
-#        DESC 'Default domain name for the branch'
-#        EQUALITY caseIgnoreMatch
-#        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
-#        SINGLE-VALUE )
+#	DESC 'Default domain name for the branch'
+#	EQUALITY caseIgnoreMatch
+#	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
+#	SINGLE-VALUE )
 
 attributetype ( 1.3.6.1.4.1.8767.3.2.4.2 NAME 'baseHomeDir'
-        DESC 'Prefix/Base home directory for users'
-        EQUALITY caseIgnoreMatch
-        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
-        SINGLE-VALUE )
+	DESC 'Prefix/Base home directory for users'
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
+	SINGLE-VALUE )
 
 attributetype ( 1.3.6.1.4.1.8767.3.2.4.3 NAME 'baseMailDir'
-        DESC 'Prefix/Base mail directory for users'
-        EQUALITY caseIgnoreMatch
-        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
-        SINGLE-VALUE )
+	DESC 'Prefix/Base mail directory for users'
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
+	SINGLE-VALUE )
 
 attributetype ( 1.3.6.1.4.1.8767.3.2.4.4 NAME 'administrator'
-        DESC 'Administrator for branch'
-        SUP owner)
+	DESC 'Administrator for branch'
+	SUP owner)
 
 attributetype ( 1.3.6.1.4.1.8767.3.2.4.5 NAME 'controlBaseDn'
-        DESC 'Search base DN for QmailLDAP/Controls objects'
-        SUP owner)
+	DESC 'Search base DN for QmailLDAP/Controls objects'
+	SUP owner)
 
 attributetype ( 1.3.6.1.4.1.8767.3.2.4.6 NAME 'baseQuota'
-        DESC 'Default mail quota for domain'
-        SYNTAX 1.3.6.1.4.1.1466.115.121.1.44
-        SINGLE-VALUE )
+	DESC 'Default mail quota for domain'
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.44
+	SINGLE-VALUE )
 
 attributetype ( 1.3.6.1.4.1.8767.3.2.4.7 NAME 'maximumDomainUsers'
-        DESC 'Maximum users allowed in a domain branch'
+	DESC 'Maximum users allowed in a domain branch'
 	EQUALITY integerMatch
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
-        SINGLE-VALUE )
+	SINGLE-VALUE )
 
 attributetype ( 1.3.6.1.4.1.8767.3.2.4.8 NAME 'additionalDomainName'
-        DESC 'Additional domain names for branch/domain'
-        EQUALITY caseIgnoreMatch
-        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024})
+	DESC 'Additional domain names for branch/domain'
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024})
 
 attributetype ( 1.3.6.1.4.1.8767.3.2.4.9 NAME 'defaultPasswordScheme'
-        DESC 'Default password scheme to use in branch'
-        EQUALITY caseIgnoreMatch
-        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024})
+	DESC 'Default password scheme to use in branch'
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024})
 
 attributetype ( 1.3.6.1.4.1.8767.3.2.4.10 NAME 'ezmlmAdministrator'
-        DESC 'Mailinglist Administrator for branch'
-        SUP owner)
+	DESC 'Mailinglist Administrator for branch'
+	SUP owner)
 
 attributetype ( 1.3.6.1.4.1.8767.3.2.4.11 NAME 'maximumMailingLists'
-        DESC 'Maximum mailinglists allowed in a domain branch'
+	DESC 'Maximum mailinglists allowed in a domain branch'
 	EQUALITY integerMatch
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
-        SINGLE-VALUE )
+	SINGLE-VALUE )
 
 # PQL_CONF_ADMINISTRATE_CONTROLS
 attributetype ( 1.3.6.1.4.1.8767.3.2.4.12 NAME 'controlsAdministrator'
 	DESC 'QmailLDAP/Controls information administrator(s)?'
-        SUP owner)
+	SUP owner)
 
 # PQL_CONF_AUTOMATIC_USERNAME_CREATION_PREFIX
 attributetype ( 1.3.6.1.4.1.8767.3.2.4.13 NAME 'userNamePrefix'
 	DESC 'The prefix to use when automaticly creating a username/uid'
-        EQUALITY caseIgnoreMatch
-        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024})
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024})
 
 # PQL_CONF_WEBSRV_SRV_IP
 attributetype ( 1.3.6.1.4.1.8767.3.2.4.14 NAME 'webServerIP'
 	DESC 'IP to bind the webServerURL to'
-        EQUALITY caseIgnoreMatch
-        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
 	SINGLE-VALUE )
 
 # PQL_CONF_WEBSRV_SRV_URL
 attributetype ( 1.3.6.1.4.1.8767.3.2.4.15 NAME 'webServerURL'
 	DESC 'The URL of the website'
-        EQUALITY caseIgnoreMatch
-        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
 	SINGLE-VALUE )
 
 # PQL_CONF_WEBSRV_DOCROOT
 attributetype ( 1.3.6.1.4.1.8767.3.2.4.16 NAME 'webDocumentRoot'
 	DESC 'Where in the filesystem the website is located'
-        EQUALITY caseIgnoreMatch
-        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
 	SINGLE-VALUE )
 
 # PQL_CONF_WEBSRV_SRV_ALIAS
 attributetype ( 1.3.6.1.4.1.8767.3.2.4.17 NAME 'webServerAlias'
 	DESC 'Additional website URLs'
-        EQUALITY caseIgnoreMatch
-        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024} )
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024} )
 
 # PQL_CONF_WEBSRV_SRV_ADMIN
 attributetype ( 1.3.6.1.4.1.8767.3.2.4.18 NAME 'webServerAdmin'
 	DESC 'Administrator email to website'
-        EQUALITY caseIgnoreMatch
-        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
 	SINGLE-VALUE )
 
 # PQL_CONF_WEBSRV_SCRIPT_URL
 attributetype ( 1.3.6.1.4.1.8767.3.2.4.19 NAME 'webScriptAliasURL'
 	DESC 'URL location of CGI scripts'
-        EQUALITY caseIgnoreMatch
-        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
 	SINGLE-VALUE )
 
 # PQL_CONF_WEBSRV_SCRIPT_PATH
 attributetype ( 1.3.6.1.4.1.8767.3.2.4.20 NAME 'webScriptAliasPath'
 	DESC 'Path in filesystem to CGI scripts'
-        EQUALITY caseIgnoreMatch
-        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
 	SINGLE-VALUE )
 
 # PQL_CONF_WEBSRV_LOG_ERROR
 attributetype ( 1.3.6.1.4.1.8767.3.2.4.21 NAME 'webLogError'
 	DESC 'Path in filesystem to error log file'
-        EQUALITY caseIgnoreMatch
-        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
 	SINGLE-VALUE )
 
 # PQL_CONF_WEBSRV_LOG_TRANSFER
 attributetype ( 1.3.6.1.4.1.8767.3.2.4.22 NAME 'webLogTransfer'
 	DESC 'Path in filesystem to transfer log file'
-        EQUALITY caseIgnoreMatch
-        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
 	SINGLE-VALUE )
 
 # PQL_CONF_WEBSRV_OPTIONS
 attributetype ( 1.3.6.1.4.1.8767.3.2.4.23 NAME 'webOptions'
 	DESC 'Additional web server configuration'
-        EQUALITY caseIgnoreMatch
-        SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024})
+	EQUALITY caseIgnoreMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024})
+
+# PQL_GLOB_ATTR_USERNAMEPREFIX_LENGTH (integer)
+attributetype ( 1.3.6.1.4.1.8767.3.2.4.24 NAME 'userNamePrefixLength'
+	DESC 'Length of username prefix when automaticly creating usernames'
+	EQUALITY integerMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+	SINGLE-VALUE )
 
 # -----------------------------------------
 
@@ -505,49 +514,49 @@ objectclass ( 1.3.6.1.4.1.8767.3.1.1
 	NAME 'phpQLAdminConfig'
 	DESC 'phpQLAdmin configuration values'
 	MAY (	showUsers $ autoReload $ autoSend $
-		useControls $ autoAddLocals $ useEzmlm $
-		allowServerChange $ allowAbsoluteMailPath $
-		deleteVerification $ whoAreWe $
-		subTreeUsers $ subTreeGroups $
-		branchObjectClass $ userObjectClass $
-		userReference $ branchReference $
-		ezmlmBinaryPath $ passwordScheme $
-		hostMaster $ testMailSubject $
-		testMailText $ language $ useWebSrv $
-	        forwardUIDNumber $ test $ 
-	        controlBaseDN $ baseQuota $
-	        useBind9 $ externalScriptUser $
-		externalScriptDomain $ krb5RealmName $
-	        krb5PrincipalName $ krb5AdminServer $
-	        krb5AdminKeytab $ krb5AdminCommandPath $
-	        minimumUIDNumber $ autoAddRCPTHosts $ 
-	        autoAddHostName $ controlsAdministrator )
+				useControls $ autoAddLocals $ useEzmlm $
+				allowServerChange $ allowAbsoluteMailPath $
+				deleteVerification $ whoAreWe $
+				subTreeUsers $ subTreeGroups $
+				branchObjectClass $ userObjectClass $
+				userReference $ branchReference $
+				ezmlmBinaryPath $ passwordScheme $
+				hostMaster $ testMailSubject $
+				testMailText $ language $ useWebSrv $
+				forwardUIDNumber $ test $ 
+				controlBaseDN $ baseQuota $
+				useBind9 $ externalScriptUser $
+				externalScriptDomain $ krb5RealmName $
+				krb5PrincipalName $ krb5AdminServer $
+				krb5AdminKeytab $ krb5AdminCommandPath $
+				minimumUIDNumber $ autoAddRCPTHosts $ 
+				autoAddHostName $ controlsAdministrator )
 	SUP top AUXILIARY )
 
 objectclass ( 1.3.6.1.4.1.8767.3.1.2
-        NAME 'phpQLAdminBranch'
-        DESC 'phpQLAdmin branch ACL values'
-        MAY ( defaultDomain $ baseHomeDir $ baseMailDir $
-	      administrator $ test $ o $ maximumDomainUsers $
-	      additionalDomainName $ defaultPasswordScheme $
-	      ezmlmAdministrator $ maximumMailingLists $
-	      autoCreateUsername $ autoCreateMailAddress $
-	      userNamePrefix )
+	NAME 'phpQLAdminBranch'
+	DESC 'phpQLAdmin branch ACL values'
+	MAY ( defaultDomain $ baseHomeDir $ baseMailDir $
+				administrator $ test $ o $ maximumDomainUsers $
+				additionalDomainName $ defaultPasswordScheme $
+				ezmlmAdministrator $ maximumMailingLists $
+				autoCreateUsername $ autoCreateMailAddress $
+				userNamePrefix $ userNamePrefixLength )
 	SUP top AUXILIARY )
 
 objectclass ( 1.3.6.1.4.1.8767.3.1.3
 	NAME 'phpQLAdminWebsrv'
 	DESC 'phpQLAdmin webserver configuration values'
 	MUST ( cn $ webServerIP $ webServerURL $ 
-	       webServerAdmin $ webDocumentRoot )
+				 webServerAdmin $ webDocumentRoot )
 	MAY  ( webServerAlias $ webScriptAliasURL $ 
-	       webScriptAliasPath $ webLogError $ 
-	       webLogTransfer $ webOptions )
+				 webScriptAliasPath $ webLogError $ 
+				 webLogTransfer $ webOptions )
 	SUP top STRUCTURAL )
 
 #
 # Local variables:
-# mode: php
+# mode: fundamental
 # mode: font-lock
-# tab-width: 8
+# tab-width: 2
 # End:

@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
-// usernamePrefix
-// $Id: attrib.usernameprefix.inc,v 2.4 2003-11-20 08:01:37 turbo Exp $
+// usernamePrefix/usernamePrefixLength
+// $Id: attrib.usernameprefix.inc,v 2.5 2003-12-11 06:04:14 turbo Exp $
 
 function attribute_check($type = '') {
 	global $error, $attrib, $$attrib, $LANG;
@@ -22,10 +22,18 @@ function attribute_print_form($type = "modify") {
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Username prefix to use when automaticly creating username in domain %domain%'), array('domain' => $orgname)); ?></th>
         <tr class="<?php pql_format_table(); ?>">
+<?php if($attrib == 'usernameprefix') { ?>
           <td class="title"><?=$LANG->_('Username prefix')?></td>
+<?php } elseif($attrib == 'usernameprefixlength') { ?>
+          <td class="title"><?=$LANG->_('Length of suffix')?></td>
+<?php } ?>
           <td>
             <?php echo pql_format_error_span($error[$attrib]); ?>
+<?php if($attrib == 'usernameprefix') { ?>
             <input type="text" name="<?=$attrib?>" value="<?=$$attrib?>" size="50">
+<?php } elseif($attrib == 'usernameprefixlength') { ?>
+            <input type="text" name="<?=$attrib?>" value="<?=$$attrib?>" size="10">
+<?php } ?>
           </td>
         </tr>
 
@@ -34,7 +42,11 @@ function attribute_print_form($type = "modify") {
           <td>
             <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
             <table>
+<?php if($attrib == 'usernameprefix') { ?>
               <?=$LANG->_('The username will be created with this as prefix, and a incrementing number after it when automaticly creating a username (uid)')?>
+<?php } elseif($attrib == 'usernameprefixlength') { ?>
+              <?=$LANG->_('This is the length of the automaticly generated numbers after the prefix')?>
+<?php } ?>
             </table>
           </td>
         </tr>
@@ -54,6 +66,12 @@ function attribute_print_form($type = "modify") {
 
 function attribute_save($type) {
 	global $error, $attrib, $$attrib, $domain, $rootdn, $type, $_pql, $view, $LANG;
+
+	if($attrib == 'usernameprefix') {
+		$lang = "username prefix";
+	} elseif($attrib == 'usernameprefixlength') {
+		$lang = "length of suffix";
+	}
 	
     switch($type) {
       case "add":
@@ -64,12 +82,12 @@ function attribute_save($type) {
 
 		if(pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, $$attrib))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
-									   array('what' => $LANG->_('username prefix'),
+									   array('what' => $LANG->_($lang),
 											 'new'  => $$attrib));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('username prefix'))) . ": ".ldap_error($_pql->ldap_linkid);
-	
+									   array('what' => $LANG->_($lang))) . ": ".ldap_error($_pql->ldap_linkid);
+
 		attribute_forward($msg);
 		break;
 		

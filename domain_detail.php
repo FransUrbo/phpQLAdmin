@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.70 2003-11-20 08:01:29 turbo Exp $
+// $Id: domain_detail.php,v 2.71 2003-12-11 06:04:06 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -84,7 +84,8 @@ $attribs = array(pql_get_define("PQL_GLOB_ATTR_AUTOCREATEMAILADDRESS"),
 				 pql_get_define("PQL_GLOB_ATTR_ST"),
 				 pql_get_define("PQL_GLOB_ATTR_STREET"),
 				 pql_get_define("PQL_GLOB_ATTR_TELEPHONENUMBER"),
-				 pql_get_define("PQL_GLOB_ATTR_USERNAMEPREFIX"));
+				 pql_get_define("PQL_GLOB_ATTR_USERNAMEPREFIX"),
+				 pql_get_define("PQL_GLOB_ATTR_USERNAMEPREFIX_LENGTH"));
 foreach($attribs as $attrib) {
 	// Get default value
 	$value = pql_domain_value($_pql, $domain, $attrib);
