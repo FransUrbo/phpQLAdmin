@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.9 2004-01-15 13:53:40 turbo Exp $
+// $Id: pql_formating.inc,v 2.10 2004-01-22 10:16:29 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -218,11 +218,15 @@ function pql_format_tree_span($text, $links, $level) {
 		if(eregi("user_detail\.php", $link))
 		  $icon = 1;
 
-		if($link) {
+		if($text) {
+			if($link) {
 ?>
     <nobr><?=$nbsp?><a href="<?=$link?>"><?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>">&nbsp;<?php } ?><?=$text?></a></nobr><br>
-<?php	} else { ?>
+<?php		} else { ?>
     <nobr><?=$nbsp?><?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>">&nbsp;<?php } ?><?=$text?></nobr><br>
+<?php		}
+		} else { ?>
+    <nobr><?=$nbsp?>---------------</nobr><br>
 <?php	}
 	}
 }
