@@ -3,7 +3,7 @@
 #
 
 TMPDIR  := $(shell tempfile)
-VERSION := $(shell cat .version)
+VERSION := $(shell cat .version.old)
 INSTDIR := $(TMPDIR)/phpQLAdmin-$(VERSION)
 
 # Make a unified diff over the changes from the last version...
@@ -29,8 +29,8 @@ tag:
 	  cat  < .version; \
 	  TAG="REL_`echo $$MAJOR`_`echo $$MINOR`_`echo $$LEVEL`"; \
 	  echo cvs tag: $$TAG; \
-	  cvs commit -m "New release - $$MAJOR.$$MINOR.$$NEWLV." .version .version.old; \
 	  cvs tag -RF $$TAG; \
+	  cvs commit -m "New release - $$MAJOR.$$MINOR.$$NEWLV." .version .version.old; \
 	)
 
 install: $(INSTDIR)
