@@ -3,14 +3,51 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ezmlm.inc,v 1.7 2002-12-25 11:30:47 turbo Exp $
+// $Id: pql_ezmlm.inc,v 1.8 2002-12-25 16:21:33 turbo Exp $
+session_start();
+
 class ezmlm {
 	// ===================================================
 	// Private section
-	var $_option   = array();
-	var $srch_path = '/usr/bin';
-	var $user_name = '';
-	var $user_home = '';
+	var $_option		= array();
+	var $srch_path		= '/usr/bin';
+	var $user_name		= '';
+	var $user_home		= '';
+
+	// Load list of mailinglists in directory
+	function _readlists($loadtexts = 0) {
+		if(!(($directory = @opendir($this->user_home)) !=0)) {
+			$this->error="could not open the ezmlm user home directory";
+			return 0;
+		}
+
+		for(;GetType($entry_name = readdir($directory)) == "string";) {
+			if((strcmp(substr($entry_name, 0, 1),".") &&
+				@is_dir($this->user_home."/".$entry_name) &&
+				file_exists($this->user_home."/".$entry_name."/config")))
+			  {
+				  $list_index = Count($this->mailing_lists);
+				  if(!$this->_readlistconfiguration($entry_name,
+													$this->mailing_lists[$list_index],
+													$loadtexts))
+					{
+						closedir($directory);
+						return 0;
+					}
+				  
+				  $this->mailing_lists_index[$entry_name] = $list_index;
+			  }
+		}
+		closedir($directory);
+		
+		ksort($this->mailing_lists_index);
+		foreach($this->mailing_lists_index as $name => $no) {
+			$host = $this->mailing_lists[$no]["host"];
+			$this->mailing_lists_hostsindex[$host][$name] = $no;
+		}
+
+		return 1;
+	}
 
 	// Read list configuration
 	function _readlistconfiguration($list, &$configuration, $loadtexts) {
@@ -187,42 +224,14 @@ class ezmlm {
 		$this->_option["extras"]["on"]			= "x";	$this->_option["extras"]["off"]			= "X";
 
 		$this->user_name = $user_name;
-		$this->user_home = $user_home;
-	}
 
-	// Load list of mailinglists in directory
-	function readlists($loadtexts = 0) {
-		if(!(($directory = @opendir($this->user_home)) !=0)) {
-			$this->error="could not open the ezmlm user home directory";
-			return 0;
-		}
+		if(! ereg("/$", $user_home))
+		  $this->user_home = $user_home."/mailinglists";
+		else
+		  $this->user_home = $user_home."mailinglists";
 
-		for(;GetType($entry_name = readdir($directory)) == "string";) {
-			if((strcmp(substr($entry_name, 0, 1),".") &&
-				@is_dir($this->user_home."/".$entry_name) &&
-				file_exists($this->user_home."/".$entry_name."/config")))
-			  {
-				$list_index = Count($this->mailing_lists);
-				if(!$this->_readlistconfiguration($entry_name,
-												 $this->mailing_lists[$list_index],
-												 $loadtexts))
-				  {
-					  closedir($directory);
-					  return 0;
-				  }
-
-				$this->mailing_lists_index[$entry_name] = $list_index;
-			}
-		}
-		closedir($directory);
-
-		ksort($this->mailing_lists_index);
-		foreach($this->mailing_lists_index as $name => $no) {
-			$host = $this->mailing_lists[$no]["host"];
-			$this->mailing_lists_hostsindex[$host][$name] = $no;
-		}
-
-		return 1;
+		// Load list of mailinglists
+		$this->_readlists();
 	}
 
 	// Create/Modify mailinglist
@@ -287,17 +296,22 @@ class ezmlm {
 			}
 		}
 
+		if(is_numeric($listname)) {
+			$listpath = $this->mailing_lists[$listname]["directory"];
+			$dotpath  = $this->mailing_lists[$listname]["dotpath"];
+			$listname = $this->mailing_lists[$listname]["name"];
+		} else {
+			$listpath = $this->user_home . $listname;
+			$dotpath  = "~" . $this->user_name . "/.qmail-" . $listname;
+		}
+
 		$command = ($this->srch_path."/ezmlm-make 2>&1 -"
-					. ($add		? "E"		: "+ ")
+					. ($add		? "E "		: "+ ")
 					. ($opts	? "-$opts"	: "")
-					. " "
-					. $this->user_home."/".$listname
-					. " "
-					. "~".$this->user_name."/.qmail-".$listname
-					. " "
-					. $listname
-					. " "
-					. $domain);
+					. " " . $listpath
+					. " " . $dotpath
+					. " " . $listname
+					. " " . $domain);
 
 		if(! $this->debug) {
 			$output = @Exec($command, $output_array, $result);
@@ -345,9 +359,17 @@ class ezmlm {
 	}
 
 	// Add subscriber
-	function subscribe($list, $subscriber) {
-		$list_path = $this->user_home."/".$list;
-		$command   = $this->srch_path."/ezmlm-sub 2>&1 ".$list_path." ".$subscriber;
+	function subscribe($listname, $subscriber) {
+		if(is_numeric($listname)) {
+			$listno		= $listname;
+
+			$listname	= $this->mailing_lists[$listname]["name"];
+			$listpath	= $this->mailing_lists[$listname]["directory"] . "/" . $listname;
+		} else {
+			$listpath	= $this->user_home . "/" . $listname;
+		}
+
+		$command		= $this->srch_path."/ezmlm-sub 2>&1 " . $listpath . " " . $subscriber;
 		if(! $this->debug) {
 			$output    = @Exec($command, $output_array, $result);
 			if($result != 0) {
@@ -363,9 +385,17 @@ class ezmlm {
 	}
  
 	// Remove subscriber
-	function unsubscribe($list, $subscriber) {
-		$list_path = $this->user_home."/".$list;
-		$command   = $this->srch_path."/ezmlm-unsub 2>&1 ".$list_path." ".$subscriber;
+	function unsubscribe($listname, $subscriber) {
+		if(is_numeric($listname)) {
+			$listno		= $listname;
+
+			$listname	= $this->mailing_lists[$listname]["name"];
+			$listpath	= $this->mailing_lists[$listname]["directory"] . "/" . $listname;
+		} else {
+			$listpath	= $this->user_home . "/" . $listname;
+		}
+
+		$command		= $this->srch_path."/ezmlm-unsub 2>&1 " . $listpath . " " . $subscriber;
 		if(! $this->debug) {
 			$output    = @Exec($command, $output_array, $result);
 			if($result != 0) {

@@ -1,22 +1,28 @@
 <?php
-// $Id: ezmlm_detail.php,v 1.8 2002-12-25 11:30:43 turbo Exp $
+// $Id: ezmlm_detail.php,v 1.9 2002-12-25 16:21:28 turbo Exp $
 //
 session_start();
 
 require("./include/pql.inc");
 require("./include/pql_ezmlm.inc");
 
-// Initialize
-$ezmlm = new ezmlm('alias', '/var/lists');
+$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
 
-include("./header.html");
+if($domain) {
+	// Get base directory for mails
+	if(!($basemaildir = pql_get_domain_value($_pql->ldap_linkid, $domain, "basemaildir"))) {
+		die("Can't get base mail directory for domain '$domain'!<br>");
+	}
 
-// Load list of mailinglists
-if($ezmlm->readlists()) {
+	// Initialize and load list of mailinglists
+	$ezmlm = new ezmlm('alias', $basemaildir);
+	
+	include("./header.html");
+	
 	if(!is_numeric($listno)) {
 		// No list, show all lists in the domain
 ?>
-  <span class="title1">Domain: <?=$domain?></span>
+  <span class="title1">Domain: <?=$domain?> (domainname: <?=$domainname?>)</span>
   <br><br>
 
   <table cellspacing="0" cellpadding="3" border="0">
@@ -37,7 +43,7 @@ if($ezmlm->readlists()) {
         <td><?=$listname."@".$listdomain?></td>
         <td align="right"><?=$ezmlm->mailing_lists[$listno]["subscribers"]?></td>
         <td><?=$ezmlm->mailing_lists[$listno]["owner"]?></td>
-        <td><a href="ezmlm_detail.php?domain=<?=$domain?>&listno=<?=$listno?>"><img src="images/edit.png" width="12" height="12" alt="edit list" border="0"></a>&nbsp;&nbsp;<a href="ezmlm_del.php?listno=<?=$listno?>"><img src="images/del.png" width="12" height="12" alt="delete list" border="0"></a></td>
+        <td><a href="ezmlm_detail.php?domain=<?=$domain?>&domainname=<?=$domainname?>&listno=<?=$listno?>"><img src="images/edit.png" width="12" height="12" alt="edit list" border="0"></a>&nbsp;&nbsp;<a href="ezmlm_del.php?listno=<?=$listno?>"><img src="images/del.png" width="12" height="12" alt="delete list" border="0"></a></td>
       </tr>
 <?php
 			}
@@ -45,7 +51,7 @@ if($ezmlm->readlists()) {
 ?>
 
       <tr class="subtitle">
-        <td colspan="4"><a href="ezmlm_add.php?domain=<?=$domain?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"> Register new list</a></td>
+        <td colspan="4"><a href="ezmlm_add.php?domain=<?=$domain?>&domainname=<?=$domainname?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"> Register new list</a></td>
       </tr>
     </th>
   </table>
@@ -53,7 +59,7 @@ if($ezmlm->readlists()) {
 	} else {
 		// We got a list, show if's details
 ?>
-  <span class="title1">List: <?=$ezmlm->mailing_lists[$listno]["name"]."@".$domain?></span>
+  <span class="title1">List: <?=$ezmlm->mailing_lists[$listno]["name"]."@".$domainname?></span>
   <br><br>
 
   <table cellspacing="0" cellpadding="3" border="0">
@@ -68,12 +74,12 @@ if($ezmlm->readlists()) {
 			// Defined value
 			if(!is_array($value)) {
 				// Not an array (ie, not subscriber/text value)
-
+				
 				if($value == 1)
 				  $value = 'Yes';
 				elseif(!$value)
 				  $value = 'No';
-
+				
 				// if this is number of subscribers, don't output it
 				if(($key != 'subscribers') and ($key != 'directory') and ($key != 'dotpath')) {
 ?>
@@ -102,7 +108,7 @@ if($ezmlm->readlists()) {
 					}
 ?>
         <td><?=$x?></td>
-        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&listno=<?=$listno?>&attrib=<?=$key?>&value=<?=$x?>"><img src="images/del.png" width="12" height="12" alt="delete attribute" border="0"></a></td>
+        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&domainname=<?=$domainname?>&listno=<?=$listno?>&attrib=<?=$key?>&value=<?=$x?>"><img src="images/del.png" width="12" height="12" alt="delete attribute" border="0"></a></td>
 <?php
 					$j++;
 				}
@@ -115,9 +121,9 @@ if($ezmlm->readlists()) {
         <td></td>
 <?php
 				} else {
-				// Editable/Deletable values
+					// Editable/Deletable values
 ?>
-        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&listno=<?=$listno?>&attrib=<?=$key?>"><img src="images/edit.png" width="12" height="12" alt="toggle value" border="0"></a>&nbsp;&nbsp;<a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&listno=<?=$listno?>&attrib=<?=$key?>"></a></td>
+        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&domainname=<?=$domainname?>&listno=<?=$listno?>&attrib=<?=$key?>"><img src="images/edit.png" width="12" height="12" alt="toggle value" border="0"></a>&nbsp;&nbsp;<a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&domainname=<?=$domainname?>&listno=<?=$listno?>&attrib=<?=$key?>"></a></td>
 <?php
 				}
 			}
@@ -129,7 +135,7 @@ if($ezmlm->readlists()) {
 ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td></td>
-        <td><a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&listno=<?=$listno?>&attrib=subscriber">add subscriber</a></td>
+        <td><a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&domainname=<?=$domainname?>&listno=<?=$listno?>&attrib=subscriber">add subscriber</a></td>
         <td></td>
       </tr>
 <?php

@@ -1,15 +1,11 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.7 2002-12-25 11:30:43 turbo Exp $
+// $Id: ezmlm_add.php,v 1.8 2002-12-25 16:21:28 turbo Exp $
 //
 session_start();
 
 require("./include/pql.inc");
 $_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
-
-// Initialize
-require("./include/pql_ezmlm.inc");
-$ezmlm = new ezmlm('alias', '/var/lists');
 
 if(!$subscribercount) {
 	$subscribercount = 0;
@@ -18,7 +14,7 @@ if(!$killcount) {
 	$killcount = 0;
 }
 
-if(!$domain) {
+if(!$domainname) {
 	// Get list of domain
 	$domains = pql_get_domain_value($_pql->ldap_linkid, '*', 'administrator', "=" . $USER_DN);
     if(!is_array($domains)){
@@ -84,10 +80,30 @@ if($extras)			$checked["extras"]			= " CHECKED";	// -x
 
 // Create list
 if(isset($submit)) {
-	if($listname)
-	  $ezmlm->updatelistentry(1, $listname, $domain, $checked);
-	else
-	  $error_text["listname"] = 'missing';
+	if($listname and $domainname) {
+		if(!$domain) {
+			// Get domain tree
+			$domains = pql_get_domains($_pql->ldap_linkid, $USER_SEARCH_DN_USR);
+			foreach($domains as $key => $name) {
+				$defaultdomain = pql_get_domain_value($_pql->ldap_linkid, $name, 'defaultDomain');
+				if($domainname == $defaultdomain) {
+					$domain = $name;
+				}
+			}
+		}
+
+		// Get basemaildir path for domain
+		if(!($path = pql_get_domain_value($_pql->ldap_linkid, $domain, "basemaildir"))) {
+			die("Can't get baseMailDir path from domain '$domain'!");
+		}
+
+		require("./include/pql_ezmlm.inc");
+		$ezmlm = new ezmlm('alias', $path);
+		
+		$ezmlm->updatelistentry(1, $listname, $domainname, $checked);
+	} else {
+		$error_text["listname"] = 'missing';
+	}
 }
 
 require("./header.html");
@@ -98,7 +114,7 @@ if(!$domain) {
 <?php
 } else {
 ?>
-  <span class="title1">Create mailinglist in domain <?=$domain?></span>
+  <span class="title1">Create mailinglist in domain <?=$domain?> (<?=$domainname?>)</span>
 <?php
 }
 ?>
@@ -117,7 +133,7 @@ if(!$domain) {
 	// No domain - select box with existing domains
 ?>
             <input name="listname" value="<?=$listname?>">@
-            <select name="domain">
+            <select name="domainname">
 <?php
 	for($i=0; $domain_list[$i]; $i++) {
 ?>
@@ -130,8 +146,8 @@ if(!$domain) {
 } else {
 	// Got domainname, show that (and remember it!)
 ?>
-            <input type="hidden" name="domain" value="<?=$domain?>">
-            <input name="listname" value="<?=$listname?>"><b>@<?=$domain?></b>
+            <input type="hidden" name="domainname" value="<?=$domainname?>">
+            <input name="listname" value="<?=$listname?>"><b>@<?=$domainname?></b>
 <?php
 }
 ?>

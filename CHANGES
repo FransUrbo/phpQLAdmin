@@ -41,6 +41,7 @@ phpQLAdmin 2.0.1 Release
 	  + Log each login/logout in ./phpQLadmin.log.
 	- Ezmlm mailinglist management. Create and modify a ezmlm mailinglist.
 	  + Deletion of list is not availible yet.
+	  + Look for lists in baseMailDir/mailinglists for each domain
 	- Controls management sorted on host (ie, multiple hosts is
 	  manageable) in a tree like fashion.
 	- Search for files in current dir 'require("./'. This so that

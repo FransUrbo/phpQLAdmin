@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_edit_attribute.php,v 1.5 2002-12-25 11:30:43 turbo Exp $
+// $Id: ezmlm_edit_attribute.php,v 1.6 2002-12-25 16:21:28 turbo Exp $
 //
 session_start();
 
@@ -7,19 +7,26 @@ require("./include/pql.inc");
 require("./include/pql_ezmlm.inc");
 
 // Initialize
-$ezmlm = new ezmlm('alias', '/var/lists');
+$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS, false, 0);
 
-include("./header.html");
+// Get base directory for mails
+if(!($path = pql_get_domain_value($_pql->ldap_linkid, $domain, "basemaildir"))) {
+	// TODO: What if we can't find the base maildir path!?
+	die("Can't get baseMailDir path from domain '$domain'!");
+}
 
 // Load list of mailinglists
-if($ezmlm->readlists()) {
+if($ezmlm = new ezmlm('alias', $path)) {
 	if($ezmlm->mailing_lists[$listno]["name"]) {
-		$list   = $ezmlm->mailing_lists[$listno]["name"];
-		$domain = $ezmlm->mailing_lists[$listno]["host"];
-	}	
+		$listname = $ezmlm->mailing_lists[$listno]["name"];
+	} else {
+		die("No listname defined for list #$listno!<br>");
+	}
 
 	// TODO: Same for 'listparent' and 'fromaddress' when/if we need it...
 	if(($attrib == 'subscriber') or ($attrib == 'owner')) {
+		include("./header.html");
+
 		if(($submit != 'save') and !$value) {
 			if($attrib == 'subscriber') {
 				$title1 = 'Add email address to subscription list';
@@ -57,6 +64,7 @@ if($ezmlm->readlists()) {
 
     <input type="hidden" name="listno" value="<?=$listno?>">
     <input type="hidden" name="domain" value="<?=$domain?>">
+    <input type="hidden" name="domainname" value="<?=$domainname?>">
     <input type="hidden" name="attrib" value="<?=$attrib?>">
     <input type="submit" name="submit" value="save">
   </form>
@@ -65,18 +73,18 @@ if($ezmlm->readlists()) {
 			// Save the value of list owner
 
 			if($attrib == 'subscriber') {
-				if(! $value) {
-					$ezmlm->subscribe($list, $subscriber);
+				if($value) {
+					$ezmlm->unsubscribe($listname, $value);
 				} else {
-					$ezmlm->unsubscribe($list, $value);
+					$ezmlm->subscribe($listname, $subscriber);
 				}
 			} elseif($attrib == 'owner') {
-				$ezmlm->updatelistentry(0, $list, $domain, $attrib, $owner);
+				$ezmlm->updatelistentry(0, $listno, $domainname, $attrib, $owner);
 			}
 		}
 	} else {
 		// Toggle configuration value
-		$ezmlm->updatelistentry(0, $list, $domain, $attrib, $ezmlm->mailing_lists[$listno]);
+		$ezmlm->updatelistentry(0, $listno, $domainname, $attrib, $ezmlm->mailing_lists[$listno]);
 	}
 }
 
