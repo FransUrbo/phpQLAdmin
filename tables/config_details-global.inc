@@ -203,6 +203,28 @@
 
   <br><br>
 
+  <table cellspacing="0" cellpadding="3" border="0">
+    <th align="left"><?=$LANG->_('Actions')?></th>
+      <tr class="<?php pql_format_table(); ?>">
+        <td><a href="config_detail.php?view=<?=$_GET["view"]?>&action=clear_session"><?=$LANG->_('Clear session array')?></a></td>
+      </tr>
+
+      <tr class="subtitle">
+        <table>
+          <tr>
+            <td>
+              <?php echo pql_format_error_span($error["selected"]); ?>
+              <img src="images/info.png" width="16" height="16" alt="" border="0">
+            </td>
+            <td>
+              &nbsp;<?=$LANG->_('Reloading of the session array should/can be done after a schema change on the LDAP server have been done. This so that you don\'t have to logout and then login again for the update to be known to phpQLAdmin/the browser.')?>
+            </td>
+          </tr>
+        </table>
+      </tr>
+    </th>
+  </table>
+
 <?php
 /*
  * Local variables:

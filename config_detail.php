@@ -1,6 +1,6 @@
 <?php
 // shows configuration of phpQLAdmin
-// $Id: config_detail.php,v 2.49 2004-02-14 14:01:00 turbo Exp $
+// $Id: config_detail.php,v 2.50 2004-03-01 09:17:58 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -8,6 +8,34 @@ require("./include/pql_config.inc");
 include("./header.html");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
+
+if($_REQUEST["action"] == "clear_session") {
+    $view	= $_REQUEST["view"];
+
+    // SOME variables should be remembered in the next session
+    $user_host	= $_SESSION["USER_HOST"];
+    $user_dn	= $_SESSION["USER_DN"];
+    $user_pass	= $_SESSION["USER_PASS"];
+    $user_ctrdn	= $_SESSION["USER_SEARCH_DN_CTR"];
+    $advanced	= $_SESSION["ADVANCED_MODE"];
+
+    // Destroy the current session
+    $_SESSION = array();
+    session_destroy();
+
+    // Start a new session
+    session_start();
+    $_SESSION["USER_HOST"]		= $user_host;
+    $_SESSION["USER_DN"]		= $user_dn;
+    $_SESSION["USER_PASS"]		= $user_pass;
+    $_SESSION["USER_SEARCH_DN_CTR"]	= $user_ctrdn;
+    $_SESSION["ADVANCED_MODE"]		= $advanced;
+
+    $msg = "Successfully deleted the session variable. Will reload from scratch.";
+    $link = "config_detail.php?view=$view&msg=".urlencode($msg);
+
+    header("Location: " . pql_get_define("PQL_GLOB_URI") . $link);
+}
 
 // print status message, if one is available
 if(isset($_REQUEST["msg"])) {
