@@ -4,30 +4,35 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for web server configuration)
 //
-// $Id: pql_websrv.inc,v 1.7 2004-03-11 18:13:42 turbo Exp $
+// $Id: pql_websrv.inc,v 1.8 2004-04-02 12:46:46 turbo Exp $
 //
 
 // {{{ pql_websrv_get_servers(linkid, dn)
 function pql_websrv_get_servers($linkid, $dn) {
-    $sr = @ldap_search($linkid, $dn, 'objectClass=phpQLAdminWebsrv');
+    $sr = @ldap_search($linkid, $dn, 'objectClass='.pql_get_define("PQL_ATTR_WEBSRV_OC"));
     if($sr) {
 		// Oki, we have webserver configuration(s) in LDAP.
 		$info = ldap_get_entries($linkid, $sr)
 		  or pql_format_error(1);
 
-		$attribs = array('webServerIP', 'webServerURL', 'webServerAdmin',
-						 'webDocumentRoot', 'webServerAlias', 'webScriptAliasURL',
-						 'webScriptAliasPath', 'webLogError', 'webLogTransfer',
-						 'webOptions', 'cn', 'dn');
+		$attribs = array(pql_get_define("PQL_ATTR_WEBSRV_SRV_IP"),
+						 pql_get_define("PQL_ATTR_WEBSRV_SRV_URL"),
+						 pql_get_define("PQL_ATTR_WEBSRV_SRV_ADMIN"),
+						 pql_get_define("PQL_ATTR_WEBSRV_DOCROOT"),
+						 pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS"),
+						 pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_URL"),
+						 pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_PATH"),
+						 pql_get_define("PQL_ATTR_WEBSRV_LOG_ERROR"),
+						 pql_get_define("PQL_ATTR_WEBSRV_LOG_TRANSFER"),
+						 pql_get_define("PQL_ATTR_WEBSRV_OPTIONS"),
+						 pql_get_define("PQL_ATTR_CN"));
 
 		for($i=0; $i < $info["count"]; $i++) {
-			$name = $info[$i]["webserverurl"][0];
+			$name = $info[$i][pql_get_define("PQL_ATTR_WEBSRV_SRV_URL")][0];
 			$name = ereg_replace("http.*//", "", $name);
 			$name = ereg_replace("\/.*$", "", $name);
 
 			foreach($attribs as $attrib) {
-				$attrib = lc($attrib); // Force lowercase, it won't work otherwise
-
 				// Remember the DN
 				$CONF[$name]["dn"] = $info[$i]["dn"];
 
@@ -78,15 +83,14 @@ function pql_websrv_add_server($linkid, $domain, $server) {
 	// ----------------
 	unset($entry);
 	$entry = $server;
-	$entry["objectclass"][] = 'phpQLAdminWebsrv';
-	$entry["cn"] = ereg_replace("http.*//", "", $entry["webserverurl"]);
-	$entry["cn"] = ereg_replace("\/.*$", "", $entry["cn"]);
+	$entry["objectclass"][] = pql_get_define("PQL_ATTR_WEBSRV_OC");
+	$entry[pql_get_define("PQL_ATTR_CN")] = $entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")];
 
 	// Add the OpenLDAPaci attribute (maybe)
 	if($_SESSION["ACI_SUPPORT_ENABLED"])
 	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($linkid, $_SESSION["USER_DN"], 'websrv');
 
-	$dn = "cn=".$entry["cn"].",$dn";
+	$dn = pql_get_define("PQL_ATTR_CN")."=".$entry[pql_get_define("PQL_ATTR_CN")].",$dn";
 
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_websrv_add_server", $dn, $entry);
@@ -105,6 +109,8 @@ function pql_websrv_add_server($linkid, $domain, $server) {
 // {{{ pql_websrv_set_record(linkid, dn, record, value)
 // This is an exact (!) copy of the pql_bind9_set_record() function
 function pql_websrv_set_record($linkid, $dn, $record, $value = '') {
+	$dn = urldecode($dn);
+
 	if(!is_array($record)) {
 		$record = lc($record);
 		$entry[$record] = $value;
