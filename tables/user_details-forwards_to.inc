@@ -17,7 +17,7 @@
       <tr class="<?php table_bgcolor(); ?>">
         <td><?=$forwarder?></td>
         <td>
-          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=mailforwardingaddress&user=<?=$user?>&mailforwardingaddress=<?=$forwarder?>&oldvalue=<?=$forwarder?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="user_del_attribute.php?attrib=mailforwardingaddress&user=<?=$user?>&value=<?=$forwarder?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=mailforwardingaddress&user=<?=$user?>&mailforwardingaddress=<?=$forwarder?>&oldvalue=<?=$forwarder?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="user_del_attribute.php?attrib=mailforwardingaddress&user=<?=$user?>&oldvalue=<?=$forwarder?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a>
         </td>
       </tr>
 <?php	} // end of foreach
