@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.2 2004-10-20 06:32:37 turbo Exp $
+// $Id: pql_write.inc,v 2.3 2004-10-20 07:15:03 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -421,7 +421,7 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 	$linkid = $ldap->ldap_linkid;
 
-	if(!pql_get_dn($_pql->ldap_linkid, $user, '(objectclass=*)', 'BASE'))
+	if(!pql_get_dn($ldap->ldap_linkid, $user, '(objectclass=*)', 'BASE'))
 	  // user does not exist
 	  return false;
 
