@@ -213,10 +213,12 @@ if($submit == "two") {
 	if(!$maildirectory) {
 		if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) == pql_get_define("PQL_GLOB_ATTR_UID")) {
 			$maildirectory = user_generate_mailstore($_pql, $email, $domain,
-													 array(pql_get_define("PQL_GLOB_ATTR_UID") => $uid));
+													 array(pql_get_define("PQL_GLOB_ATTR_UID") => $uid),
+													 'user');
 		} else {
 			$maildirectory = user_generate_mailstore($_pql, $email, $domain,
-													 array(pql_get_define("PQL_GLOB_ATTR_UID") => $surname." ".$name));
+													 array(pql_get_define("PQL_GLOB_ATTR_UID") => $surname." ".$name),
+													 'user');
 		}
 
 		if($maildirectory) {
@@ -994,9 +996,13 @@ switch($submit) {
 				  if(($account_type == "normal") and !$ADVANCED_MODE)
 					// It's a mail account, and we where/is not running in
 					// advanced mode. Use the maildirectory as homedirectory.
-					$entry[pql_get_define("PQL_GLOB_ATTR_HOMEDIR")] = user_generate_mailstore($_pql, $email, $domain, $entry);
+					$entry[pql_get_define("PQL_GLOB_ATTR_HOMEDIR")] = user_generate_mailstore($_pql, $email,
+																							  $domain, $entry,
+																							  'user');
 				  else
-					$entry[pql_get_define("PQL_GLOB_ATTR_HOMEDIR")] = user_generate_homedir($_pql, $email, $domain, $entry);
+					$entry[pql_get_define("PQL_GLOB_ATTR_HOMEDIR")] = user_generate_homedir($_pql, $email,
+																							$domain, $entry,
+																							'user');
 			  } else
 				$entry[pql_get_define("PQL_GLOB_ATTR_HOMEDIR")] = $homedirectory;
 		  }
@@ -1023,7 +1029,9 @@ switch($submit) {
 		  $entry[pql_get_define("PQL_GLOB_ATTR_MODE")] = "localdelivery";
 		  
 		  if(!$maildirectory)
-			$entry[pql_get_define("PQL_GLOB_ATTR_MAILSTORE")] = user_generate_mailstore($_pql, $email, $domain, $entry);
+			$entry[pql_get_define("PQL_GLOB_ATTR_MAILSTORE")] = user_generate_mailstore($_pql, $email,
+																						$domain, $entry,
+																						'user');
 		  else
 			$entry[pql_get_define("PQL_GLOB_ATTR_MAILSTORE")] = $maildirectory;
 	  } elseif($account_type != "shell") {

@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.37 2003-08-15 08:06:17 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.38 2003-08-16 10:08:27 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -78,6 +78,9 @@ pql_set_define("PQL_GLOB_EZMLM_USER", "alias");
 // (string)		domain			-	domain in which you create the user
 // (array)		entry			-	Associative array with all attributes phpQLAdmin is about
 //									to add to the new userobject. The index is the attributename.
+// (string)		type			-	Type of object being created. Currently one of:
+//									user	A user object
+//									branch	A branch object
 //
 // Returns:	(string) path to the users mailstore
 //
@@ -86,7 +89,7 @@ pql_set_define("PQL_GLOB_EZMLM_USER", "alias");
 //
 // WARNING:	phpQLAdmin will not check the return-value. Be sure not to return nonsense or
 //			a path which is already assigned to another user.
-function user_generate_mailstore($ldap, $email, $dn, $entry) {
+function user_generate_mailstore($ldap, $email, $dn, $entry, $type) {
 	$mailstore = '';
 	
 	// you feel comfortable with the old way phpQLAdmin generates the mailstore?
@@ -94,50 +97,51 @@ function user_generate_mailstore($ldap, $email, $dn, $entry) {
 	//
 	// supported variables: %d% = domain, %u% = username, %h% = mailhost
 	//
-	// example: domains baseMailDir/uid
+	// -------------- example: domains baseMailDir/uid
 	//	if($dn) {
 	//		$mailstore = pql_get_domain_value($ldap, $dn, pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR"));
 	//		$domain    = pql_get_domain_value($ldap, $dn, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
 	//	} else {
 	//		$mailstore = "/var/mail";
-	//		$domain    = "$entry";
+	//		$domain    = $entry["BRANCH_NAME"];
 	//	}
 	//
+	//	if($type == 'branch')
+	//	  // We're creating a branch, so add the domain to string
+	//	  $branch = '%d%/';
+	//	
 	//	if(! ereg("/$", $mailstore)) {
-	//		$mailstore = $mailstore . "/" . "%u%";
+	//		$mailstore = $mailstore . "/" . $branch . "%u%";
 	//	} else {
-	//		$mailstore = $mailstore . "%u%";
+	//		$mailstore = $mailstore . $branch . "%u%";
 	//	}
 	//	$mailstore = pql_complete_constant($mailstore, array("d" => $domain, 
 	//														 "u" => $entry[pql_get_define("PQL_GLOB_ATTR_UID")], 
 	//														 "h" => $entry[pql_get_define("PQL_GLOB_ATTR_MAILHOST")]));
 	//
-	// example: "%d/%u" (=> domain.tld/username) 
+	// -------------- example: "%d/%u" (=> domain.tld/username) 
 	//	$mailstore = "%d%/%u%"; 
 	//	$mailstore = pql_complete_constant($mailstore, array(	"d" => $domain, 
 	//															"u" => $entry[pql_get_define("PQL_GLOB_ATTR_UID")],
 	//															"h" => $entry[pql_get_define("PQL_GLOB_ATTR_MAILHOST")]));
-	// domainname / uid
-	// example: domain.tld/username
+	//
+	// -------------- example: domain.tld/username
 	//	$mailstore = $domain . '/'. $entry[pql_get_define("PQL_GLOB_ATTR_UID")];
 	//
-	// first character of the domainname / domainname / uid
-	// example: d/domain.tld/username
+	// -------------- example: d/domain.tld/username (first character of the domainname / domainname / uid)
 	//	$mailstore = substr($domain, 0, 1) . '/' . $domain . '/'. $entry[pql_get_define("PQL_GLOB_ATTR_UID")];
 	//
-	// mailhost / domainname / uid
-	// example: mail.host.tld/domain.tld/username
+	// -------------- example: mail.host.tld/domain.tld/username
 	//	$mailstore = $entry[pql_get_define("PQL_GLOB_ATTR_MAILHOST")] . '/' . $domain . '/'. $entry[pql_get_define("PQL_GLOB_ATTR_UID")];
 	//
-	// complete email-address 
-	// example: mail@domain.tld
+	// -------------- example: mail@domain.tld (complete email-address)
 	//	$mailstore = $entry[pql_get_define("PQL_GLOB_ATTR_MAIL")];
 	//
+	// -------------- example: 123456
 	// generate a random (6 digit) number and make sure 
 	// no other user has the same mailstore 
 	// This will be slow if you have many users, use some hash
 	// instead of random numbers
-	// example: 123456
 	//
 	// seed the random number generator
 	//	$seed = list($usec, $sec) = explode(' ', microtime());
@@ -175,23 +179,27 @@ function user_generate_mailstore($ldap, $email, $dn, $entry) {
 //
 // See information about function user_generate_mailstore()
 // Above. Exact same options apply
-function user_generate_homedir($ldap, $email, $dn, $entry) {
-	//if($dn) {
-	//	$homedir = pql_get_domain_value($ldap, $dn, pql_get_define("PQL_GLOB_ATTR_BASEHOMEDIR"));
-	//	$domain  = pql_get_domain_value($ldap, $dn, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
-	//} else {
-	//	$homedir = "/home";
-	//	$domain  = "$entry";
-	//}
-	//
-	//if(! ereg("/$", $basemaildir)) {
-	//	$homedir = $homedir . "/" . "%u%";
-	//} else {
-	//	$homedir = $homedir . "%u%";
-	//}
-	//$homedir = pql_complete_constant($homedir, array("d" => $domain, 
-	//												 "u" => $entry[pql_get_define("PQL_GLOB_ATTR_UID")],
-	//												 "h" => $entry[pql_get_define("PQL_GLOB_ATTR_MAILHOST")]));
+function user_generate_homedir($ldap, $email, $dn, $entry, $type) {
+	//	if($dn) {
+	//		$homedir = pql_get_domain_value($ldap, $dn, pql_get_define("PQL_GLOB_ATTR_BASEHOMEDIR"));
+	//		$domain  = pql_get_domain_value($ldap, $dn, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
+	//	} else {
+	//		$homedir = "/home";
+	//		$domain  = $entry["BRANCH_NAME"];
+	//	}
+	//	
+	//	if($type == 'branch')
+	//	  // We're creating a branch, so add the domain to string
+	//	  $branch = '%d%/';
+	//	
+	//	if(! ereg("/$", $basemaildir)) {
+	//		$homedir = $homedir . "/" . "%u%";
+	//	} else {
+	//		$homedir = $homedir . "%u%";
+	//	}
+	//	$homedir = pql_complete_constant($homedir, array("d" => $domain, 
+	//													 "u" => $entry[pql_get_define("PQL_GLOB_ATTR_UID")],
+	//													 "h" => $entry[pql_get_define("PQL_GLOB_ATTR_MAILHOST")]));
 	
 	return($homedir);
 }

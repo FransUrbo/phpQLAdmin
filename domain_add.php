@@ -52,8 +52,8 @@ if($dns[0]) {
 	}
 
 	// Default values we can easily figure out
-	$defaultmaildir = user_generate_mailstore('', '', '', $entry);
-	$defaulthomedir = user_generate_homedir('', '', '', $entry);
+	$defaultmaildir = user_generate_mailstore('', '', '', $entry, 'branch');
+	$defaulthomedir = user_generate_homedir('', '', '', $entry, 'branch');
 
 	// Replace spaces with underscore - can't create dirs with spaces,
 	// it's bound to break SOMEWHERE!
