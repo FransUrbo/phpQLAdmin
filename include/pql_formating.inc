@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.22 2004-03-29 07:56:29 turbo Exp $
+// $Id: pql_formating.inc,v 2.23 2004-03-30 07:57:26 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -200,7 +200,10 @@ function pql_format_tree_other($cnt, $text, $url, $level, $parent, $child) {
 	}
 
 	if($url) {
-		$url = "href=\"$url\" target=\"_top\"";
+		if(eregi('^http://', $url))
+		  $url = "href=\"$url\" target=\"_top\"";
+		else
+		  $url = "href=\"$url\"";
 	}
 ?>
   <div id="el<?=$cnt?>Parent" class="parent" <?=$mouse["over"]." ".$mouse["out"]?>>
