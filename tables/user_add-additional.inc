@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-additional.inc,v 1.5 2003-11-20 08:01:46 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.6 2004-01-14 12:26:29 turbo Exp $ */ ?>
   <form action="<?=$PHP_SELF?>" method="post" accept-charset="UTF-8">
     <input type="hidden" name="surname" value="<?=$surname?>">
     <input type="hidden" name="name" value="<?=$name?>">
@@ -47,42 +47,53 @@
 <?php
 		}
 ?>
+<?php	if(is_array($userhost) or defined($userhost)) { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Mail server')?></td>
           <td>
 <?php	if(is_array($userhost)) { ?>
             <input type="hidden" name="userhost" value="<?=$userhost[1]?>">
             <input type="radio" name="host" value="default" <?php if($userhost[0] and ($host != "user")){ echo "checked";}?>>
-<?php	} else { ?>
+<?php		} elseif(defined($userhost)) { ?>
             <input type="hidden" name="userhost" value="<?=$userhost?>">
             <input type="radio" name="host" value="default" <?php if($userhost and ($host != "user")){ echo "checked";}?>>
 <?php	}
 		echo "            " . $LANG->_('Standard (DNS entry)') . ": <b>";
+
 		if(is_array($userhost))
 		  echo $userhost[1];
-		else
+			elseif(defined($userhost))
 		  echo $userhost;
+			else
+			  echo pql_format_error_span($error_text["userhost"]);
 
 		echo "</b>\n";?>
           </td>
         </tr>
-<?php
+<?php	}
+
 		if(!$userhost[0] and $userhost[1]) {
 			// It's defined, but it comes from LDAP
 ?>
 
         <tr class="<?php pql_format_table(); ?>">
+<?php	if(is_array($userhost) or defined($userhost)) { ?>
           <td class="title"></td>
+<?php	} else { $shown_mailserver_in_controls_object_question=1; ?>
+          <td class="title"><?=$LANG->_('Mail server')?></td>
+<?php	} ?>
           <td>
             <input type="radio" name="host" value="user" checked><?=$LANG->_('QmailLDAP/Controls object')?>: <b><?=$userhost[1]?></b>
           </td>
         </tr>
-<?php
-		}
-?>
+<?php	} ?>
   
         <tr class="<?php pql_format_table(); ?>">
+<?php	if(is_array($userhost) or defined($userhost) or $shown_mailserver_in_controls_object_question) { ?>
           <td class="title"></td>
+<?php	} else { ?>
+          <td class="title"><?=$LANG->_('Mail server')?></td>
+<?php	} ?>
           <td>
             <input type="radio" name="host" value="user" <?php if((!$userhost[0] and !$userhost[1]) or ($host == "user")){ echo "checked";}?>>
             <?=$LANG->_('User defined')?>&nbsp;<input type="text" name="userhost" size="30"><br>
