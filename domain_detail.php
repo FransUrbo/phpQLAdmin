@@ -8,7 +8,7 @@ require("include/pql.inc");
 
 if(PQL_LDAP_CONTROL_USE){
     // include control api if control is used
-    include("pql_control.inc");
+    include("include/pql_control.inc");
     $_pql_control = new pql_control($USER_HOST_CTR, $USER_DN, $USER_PASS);
 
     // Get default domain name for this domain
