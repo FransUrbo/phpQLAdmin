@@ -20,6 +20,15 @@ phpQLAdmin 2.0.9 - TO BE ANNOUNCED
 	  - Gecos is needed to do PAM/NSS LDAP login (ie, system
 	    account), so construct the attribute from the fullname.
 	  - Make sure we only include the language (en) file once.
+	  - Schema changes: 
+	    + Replace each 'caseIgnoreIA5Match' to 'caseIgnoreMatch'
+	      on each DirectoryString syntax (1.3.6.1.4.1.1466.115.121.1.15)
+	    + Replace each 'caseIgnoreIA5Match' to 'caseExactIA5Match'
+	      on each IA5 String syntax (1.3.6.1.4.1.1466.115.121.1.26).
+	      - Thanx to Patrik Nilsson for this bugreport.
+	  - Allow for search/base DN with a space. This means that we
+ 	    separate our PQL_LDAP_HOST entries with the '+' character
+	    instead!
 
 	GUI layout change
 	  - Dissalow the ezmlm frame if ordinary user.
