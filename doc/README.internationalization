@@ -14,7 +14,10 @@ if you always use the same tool. This is phpQLAdmin. It will
 make sure that all encoding back and forward is always
 correct and no matter what it looks like in the database,
 it will present the data as it's supposed to - readable by
-a human.
+a human. A UTF-8 encoded value might look like this:
+'baseHomeDir:: L2hvbWUvw5ZzdGVuX8OEbGZoc3Ryw7ZtLw=='. Decoded,
+this will look like '/home/Östen_Älfhström/' (which is a bug
+in it self, but... :)
 
 
 In all aspects of phpQLAdmin when it comes to international
