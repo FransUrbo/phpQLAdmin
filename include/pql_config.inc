@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.14 2003-04-07 08:21:30 turbo Exp $
+// $Id: pql_config.inc,v 1.15 2003-04-08 08:29:06 turbo Exp $
 //
 
 global $config;
@@ -41,6 +41,7 @@ function pql_define($define, $value, $case_insensitive = false, $dn = NULL) {
 
 // ----------------------------
 // - SINGLE VALUED ATTRIBUTES -
+$PQL_ATTRIBUTE["PQL_GLOB_WHOAREWE"] = 'whoAreWe';
 
 // BOOLean values (true/false - 0/1)
 $PQL_ATTRIBUTE["PQL_CONF_SHOW_USERS"] = 'showUsers';
@@ -165,12 +166,7 @@ foreach($_pql->ldap_basedn as $dn)  {
 					  $values = $info[$i][$value][$k];
 				}
 
-				if(($key == "PQL_GLOB_HOSTMASTER") or
-				   ($key == "PQL_GLOB_CONTROL_USE") or
-				   ($key == "PQL_GLOB_EZMLM_USE") or
-				   ($key == "PQL_GLOB_AUTO_RELOAD") or
-				   ($key == "PQL_GLOB_CONTROL_AUTOADDLOCALS") or
-				   ($key == "PQL_GLOB_CHANGE_SERVER"))
+				if(ereg("_GLOB_", $key)) 
 				  pql_define($key, $values, true);
 				else
 				  pql_define($key, $values, true, $dn);
