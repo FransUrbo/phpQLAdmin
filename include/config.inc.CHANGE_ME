@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.8 2003-01-06 11:48:23 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.9 2003-01-07 08:01:18 turbo Exp $
 //
 session_start();
 // ----------------------------
@@ -132,8 +132,7 @@ define("PQL_LDAP_ATTR_DOMAIN", "ou");
 // or in a subtree like
 //	uid=username,ou=People,PQL_LDAP_ATTR_DOMAIN=example,<LDAP_BASEDN>
 // -> If the former (no subtree), leave this empty!
-// -> If defined, DON'T FORGET THE ENDING COMMA (,)!
-//define("PQL_LDAP_SUBTREE_USERS", "ou=People,");
+//define("PQL_LDAP_SUBTREE_USERS", "ou=People");
 
 // PQL_LDAP_SUBTREE_GROUPS
 // If you're using your LDAP database for authentication
