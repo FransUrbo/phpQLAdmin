@@ -109,7 +109,7 @@
         </td>
       </tr>
 
-      <tr></tr>
+      <tr><td></td><td></td></tr>
 <?php if($_SESSION["ADVANCED_MODE"]) { ?>
 
       <!-- -------------------- -->
@@ -142,7 +142,38 @@
         </td>
       </tr>
 
-      <tr></tr>
+
+      <!-- -------------------- -->
+<?php	$class=pql_format_table(0); ?>
+      <tr>
+        <td class="title"><?php echo pql_complete_constant($LANG->_('External %what% removal script'), array('what' => $LANG->_('user'))); ?></td>
+        <td class="<?=$class?>">
+<?php	if(pql_get_define("PQL_CONF_SCRIPT_DELETE_USER", $_REQUEST["branch"])) { ?>
+          <?=pql_get_define("PQL_CONF_SCRIPT_DELETE_USER", $_REQUEST["branch"])?>
+<?php	} ?>
+        </td>
+<?php	$new_tr = 0; ?>
+        <td class="<?=$class?>">
+          <a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&attrib=<?=pql_get_define("PQL_ATTR_SCRIPT_DELETE_USER")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_SCRIPT_DELETE_USER")?>"></a>
+        </td>
+      </tr>
+
+      <!-- -------------------- -->
+<?php	$class=pql_format_table(0); ?>
+      <tr>
+        <td class="title"><?php echo pql_complete_constant($LANG->_('External %what% removal script'), array('what' => $LANG->_('domain')));?></td>
+        <td class="<?=$class?>">
+<?php	if(pql_get_define("PQL_CONF_SCRIPT_DELETE_DOMAIN", $_REQUEST["branch"])) { ?>
+          <?=pql_get_define("PQL_CONF_SCRIPT_DELETE_DOMAIN", $_REQUEST["branch"])?>
+<?php	} ?>
+        </td>
+<?php	$new_tr = 0; ?>
+        <td class="<?=$class?>">
+          <a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&attrib=<?=pql_get_define("PQL_ATTR_SCRIPT_DELETE_DOMAIN")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_SCRIPT_DELETE_DOMAIN")?>"></a>
+        </td>
+      </tr>
+
+      <tr><td></td><td></td></tr>
 
       <!-- -------------------- -->
 <?php	$class=pql_format_table(0); ?>
@@ -180,7 +211,7 @@
         </td>
       </tr>
 
-      <tr></tr>
+      <tr><td></td><td></td></tr>
 
       <!-- -------------------- -->
 <?php	$class=pql_format_table(0);
@@ -195,8 +226,6 @@
 
 		pql_format_table_single($_pql->ldap_linkid, $txt, $url, $objectclasses, pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN"), $class);
 ?>
-
-      <tr></tr>
 
       <!-- -------------------- -->
 <?php	$class=pql_format_table(0);

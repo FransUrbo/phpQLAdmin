@@ -60,6 +60,8 @@
 #            krb5AdminKeytab                 16
 #            krb5AdminCommandPath            17
 #            ezmlmVirtualUser                18
+#            externalScriptUserDelete        19
+#            externalScriptDomainDelete      20
 #
 #          Texts                            3
 #            hostMaster                       1
@@ -111,7 +113,7 @@
 # availible from http://sourceforge.net/projects/modcfgldap/
 # See doc/README.apache for more information.
 
-# $Id: phpQLAdmin.schema,v 2.52 2005-02-24 17:04:02 turbo Exp $
+# $Id: phpQLAdmin.schema,v 2.53 2005-02-25 07:30:41 turbo Exp $
 
 # PQL_ATTR_SHOW_USERS (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.1 NAME 'showUsers'
@@ -389,6 +391,20 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.2.18 NAME 'ezmlmVirtualUser'
   SYNTAX 1.3.6.1.4.1.1466.115.121.1.26
   SINGLE-VALUE )
 
+# PQL_ATTR_SCRIPT_DELETE_USER
+attributetype ( 1.3.6.1.4.1.8767.3.2.2.19 NAME 'externalScriptUserDelete'
+  DESC 'Path to external user removal script'
+  EQUALITY caseExactIA5Match
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.26
+  SINGLE-VALUE )
+
+# PQL_ATTR_SCRIPT_DELETE_USER
+attributetype ( 1.3.6.1.4.1.8767.3.2.2.20 NAME 'externalScriptDomainDelete'
+  DESC 'Path to external domain removal script'
+  EQUALITY caseExactIA5Match
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.26
+  SINGLE-VALUE )
+
 # -----------------------------------------
 
 # PQL_ATTR_HOSTMASTER (emailaddress)
@@ -656,7 +672,8 @@ objectclass ( 1.3.6.1.4.1.8767.3.1.1
         baseQuota $ externalScriptUser $
         externalScriptDomain $ minimumUIDNumber $
         minimumGIDNumber $ autoAddRCPTHosts $
-        autoAddHostName )
+        autoAddHostName $ externalScriptUserDelete $
+        externalScriptDomainDelete )
   SUP top AUXILIARY )
 
 objectclass ( 1.3.6.1.4.1.8767.3.1.2

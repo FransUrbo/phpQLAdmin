@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.29 2005-02-24 17:04:01 turbo Exp $
+// $Id: config_attributes.inc,v 2.30 2005-02-25 07:30:40 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -303,6 +303,8 @@ pql_set_define("PQL_ATTR_CATCHALLUSER", 					strtolower('catchAllUser'),					fal
 pql_set_define("PQL_ATTR_PASSWORD_SCHEMES", 				strtolower('passWordScheme'),				false);
 pql_set_define("PQL_ATTR_SCRIPT_CREATE_USER", 				strtolower('externalScriptUser'),			false);
 pql_set_define("PQL_ATTR_SCRIPT_CREATE_DOMAIN", 			strtolower('externalScriptDomain'),			false);
+pql_set_define("PQL_ATTR_SCRIPT_DELETE_USER", 				strtolower('externalScriptUserDelete'),		false);
+pql_set_define("PQL_ATTR_SCRIPT_DELETE_DOMAIN", 			strtolower('externalScriptDomainDelete'),	false);
 pql_set_define("PQL_ATTR_REFERENCE_USERS_WITH", 			strtolower('userReference'),				false);
 pql_set_define("PQL_ATTR_REFERENCE_DOMAINS_WITH", 			strtolower('branchReference'),				false);
 pql_set_define("PQL_ATTR_SUBTREE_USERS", 					strtolower('subTreeUsers'),					false);
@@ -342,6 +344,8 @@ $PQL_ATTRIBUTE["BRANCH"] = array("PQL_CONF_SHOW_USERS"					=> pql_get_define("PQ
 								 "PQL_CONF_PASSWORD_SCHEMES"			=> pql_get_define("PQL_ATTR_PASSWORD_SCHEMES"),
 								 "PQL_CONF_SCRIPT_CREATE_USER"			=> pql_get_define("PQL_ATTR_SCRIPT_CREATE_USER"),
 								 "PQL_CONF_SCRIPT_CREATE_DOMAIN"		=> pql_get_define("PQL_ATTR_SCRIPT_CREATE_DOMAIN"),
+								 "PQL_CONF_SCRIPT_DELETE_USER"			=> pql_get_define("PQL_ATTR_SCRIPT_DELETE_USER"),
+								 "PQL_CONF_SCRIPT_DELETE_DOMAIN"		=> pql_get_define("PQL_ATTR_SCRIPT_DELETE_DOMAIN"),
 								 "PQL_CONF_REFERENCE_USERS_WITH"		=> pql_get_define("PQL_ATTR_REFERENCE_USERS_WITH"),
 								 "PQL_CONF_REFERENCE_DOMAINS_WITH"		=> pql_get_define("PQL_ATTR_REFERENCE_DOMAINS_WITH"),
 								 "PQL_CONF_SUBTREE_USERS"				=> pql_get_define("PQL_ATTR_SUBTREE_USERS"),
