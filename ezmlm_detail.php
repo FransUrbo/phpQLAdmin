@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_detail.php,v 1.2 2002-12-22 20:28:00 turbo Exp $
+// $Id: ezmlm_detail.php,v 1.3 2002-12-23 11:48:38 turbo Exp $
 //
 session_start();
 
@@ -38,7 +38,7 @@ if($ezmlm->readlists()) {
         <td><?=$listname."@".$listdomain?></td>
         <td align="right"><?=$ezmlm->mailing_lists[$listno]["subscribers"]?></td>
         <td><?=$ezmlm->mailing_lists[$listno]["owner"]?></td>
-        <td><a href="ezmlm_detail.php?domain=<?=$domain?>&listno=<?=$listno?>"><img src="images/edit.png" width="12" height="12" alt="edit attribute" border="0"></a>&nbsp;&nbsp;<a href="ezmlm_del.php?domain=<?=$domain?>&listno=<?=$listno?>"><img src="images/del.png" width="12" height="12" alt="delete attribute" border="0"></a></td>
+        <td><a href="ezmlm_detail.php?domain=<?=$domain?>&listno=<?=$listno?>"><img src="images/edit.png" width="12" height="12" alt="edit attribute" border="0"></a>&nbsp;&nbsp;<a href="ezmlm_del.php?listno=<?=$listno?>"><img src="images/del.png" width="12" height="12" alt="delete attribute" border="0"></a></td>
       </tr>
 <?php
 			}
@@ -137,6 +137,16 @@ if($ezmlm->readlists()) {
 			}
 		}
 ?>
+    </th>
+  </table>
+
+  <br>
+
+  <table cellspacing="0" cellpadding="3" border="0">
+    <th align="left"><?=PQL_ACTIONS?></th>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td><a href="ezmlm_del.php?listno=<?=$listno?>">Delete list</a></td>
+      </tr>
     </th>
   </table>
 <?php
