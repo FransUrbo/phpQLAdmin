@@ -3,7 +3,7 @@
 // pql_units.inc
 // Sub units (ou=People, ou=Users, dc=host) etc
 //
-// $Id: pql_units.inc,v 1.10 2004-03-16 17:07:56 turbo Exp $
+// $Id: pql_units.inc,v 1.11 2004-03-30 04:35:50 turbo Exp $
 //
 
 // {{{ pql_unit_get(linkid, dn, filter)
@@ -71,6 +71,8 @@ function pql_unit_add($linkid, $domain, $unit) {
 	// What's the Root DN (namingContexts) for this domain
 	$rootdn = pql_get_rootdn($domain, 'pql_unit_add'); $rootdn = urldecode($rootdn);
 	$domain = urldecode($domain);
+
+	$unit = pql_maybe_encode($unit);
 
 	if(ereg('=', $unit)) {
 		$tmp = split('=', $unit);
