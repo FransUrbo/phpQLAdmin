@@ -1,3 +1,10 @@
+Upgrading from 2.0.13
+	The schema have been updated, so don't forget to load the new
+	version!
+
+	Also, some new features have been added (automatic replication
+	of rcpthosts attributes), so please read the README file again.
+
 Upgrading from 2.0.10
 	The schema have been updated, so don't forget to load the new
 	version! Please re-read the file README (subjects 'Schema issues'
