@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.73.10.1 2004-04-08 06:46:49 turbo Exp $
+// $Id: user_detail.php,v 2.73.10.1.2.1 2004-05-06 05:14:29 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -26,8 +26,8 @@ if(isset($_GET["msg"])) {
 }
 
 // reload navigation bar if needed
-if(isset($rlnb) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
-	if($rlnb == 1) {
+if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
+	if($_REQUEST["rlnb"] == 1) {
 ?>
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
   <script language="JavaScript1.2"><!--
@@ -35,7 +35,7 @@ if(isset($rlnb) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
     refreshFrames();
   //--></script>
 <?php
-	} elseif($rlnb == 2) {
+	} elseif($_REQUEST["rlnb"] == 2) {
 ?>
   <script language="JavaScript1.2"><!--
     // reload navigation frame
