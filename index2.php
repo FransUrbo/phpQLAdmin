@@ -1,8 +1,8 @@
 <?php
-// $Id: index2.php,v 2.40 2005-03-04 11:55:32 turbo Exp $
+// $Id: index2.php,v 2.41 2005-03-09 10:52:35 turbo Exp $
 
 require("./include/pql_session.inc");
-require("./include/pql_config.inc");
+require($_SESSION["path"]."/include/pql_config.inc");
 
 if(pql_get_define("PQL_CONF_START_ADVANCED", $_SESSION["USER_DN"])) {
     $_REQUEST["advanced"] = $_SESSION["ADVANCED_MODE"] = 1;
@@ -41,6 +41,9 @@ if($frames > 2) {
 }
 $size = sprintf("%d", $size);
 
+//echo "Frames: $frames<br>";
+//echo "Size: $size<br>";
+
 // Mozilla have problems with resizing frames.
 // By setting a thick border, it's at least
 // possible...
@@ -61,12 +64,12 @@ if($_SESSION["mozilla"]) {
   <frameset cols="260,*" rows="*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 2 -->
     <!-- LEFT frame -->
 <?php   if($frames >= 3) { ?>
-    <frameset cols="*" rows="<?=$size?>%,*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 3 -->
+    <frameset cols="*" rows="70%,*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 3 -->
 <?php   } ?>
       <frame src="left.php?advanced=1" name="pqlnav">
 
 <?php   if($frames >= 4) { ?>
-      <frameset cols="*" rows="<?=$size?>%,*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 4 -->
+      <frameset cols="*" rows="50%,*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 4 -->
 <?php   } 
 
         if($_SESSION["USE_CONTROLS"]) {
