@@ -4,86 +4,150 @@ in the internals of OpenLDAP. It is very sparce, and will not really be updated.
 
 It is ONLY intended for me when coding the 'LDAP status pages'!!
 
+As of the following file revisions, OpenLDAP version <2.2 is no longer supported
+since 2.2 introduced a whole new Monitor backend. The values the monitor/status
+page is interested in is in completely different attributes (and in some cases,
+in different branches).
+
+This doesn't matter much, since anything older than 2.2 is marked ancient, and
+OpenLDAP version 2.2.17 is marked stable (since about a month of this writing).
+
+I'll document the revisions incase someone wants/needs to support pre 2.2.
+
+					 VERSION #
+FILENAME				PREV	NEW
+status_ldap.php				2.4	2.5
+include/pql_status.inc			1.1	1.2
+tables/status_ldap-basic.inc		1.2	1.3
+tables/status_ldap-connections.inc	1.1	1.2
+tables/status_ldap-databases.inc	1.1	1.2
+
+
 * The tree structure of the cn=Monitor backend
 =========================================
 	cn=Monitor
-	+ cn=Time
-	  + cn=Current
-	    + modifyTimeStamp
+	+ monitoredInfo
+	  - The server version etc
+	* cn=Time
+	  * cn=Current
+	    + monitorTimeStamp
 	      - The current server time.
-	  + cn=Start
 	    + createTimeStamp
 	      - The (LDAP) server start/boot time.
-	+ cn=Statistics
-	  + cn=Bytes
-	    + description
+	* cn=Statistics
+	  * cn=Bytes
+	    + monitorCounter
 	      - Number of bytes send to client(s).
-	  + cn=PDU
-	    + description
-?	      - 
-	  + cn=Referrals
-	    + description
+	  * cn=PDU
+	    + monitorCounter
+	      - ????
+	  * cn=Referrals
+	    + monitorCounter
 	      - Number of referral chasings since start/boot.
-	  + cn=Entries
-	    + description
+	  * cn=Entries
+	    + monitorCounter
 	      - Number of entries send to client(s).
-	+ cn=Operations
-	  + cn=Completed
-	    + description
-	      - Number of completed LDAP operations.
-	  + cn=Initiated
-	    + description
-	      - Number of started (but not completed) LDAP operations.
-	+ cn=Log
+	* cn=Operations
+	  [this branch have totaly changed w/ OL >2.2]
+	  * cn=Bind
+	    + monitorOpInitiated
+	      - Number of initiated operations.
+	    + monitorOpCompleted
+	      - Number of completed operations.
+	  * cn=Unbind
+	    + [see cn=Bind,cn=Operations,cn=Monitor]
+	  * cn=Add
+	    + [see cn=Bind,cn=Operations,cn=Monitor]
+	  * cn=Delete
+	    + [see cn=Bind,cn=Operations,cn=Monitor]
+	  * cn=Modrdn
+	    + [see cn=Bind,cn=Operations,cn=Monitor]
+	  * cn=Modify
+	    + [see cn=Bind,cn=Operations,cn=Monitor]
+	  * cn=Compare
+	    + [see cn=Bind,cn=Operations,cn=Monitor]
+	  * cn=Search
+	    + [see cn=Bind,cn=Operations,cn=Monitor]
+	  * cn=Abandon
+	    + [see cn=Bind,cn=Operations,cn=Monitor]
+	  * cn=Extended
+	    + [see cn=Bind,cn=Operations,cn=Monitor]
+	* cn=Log
 	  - No subordinates
-	+ cn=Write Waiters
+	* cn=Write Waiters
+	  [this branch is no more - new => cn=Waiters w/ subordinates]
 	  - No subordinates
-	+ cn=Read Waiters
+	* cn=Read Waiters
+	  [this branch is no more - new => cn=Waiters w/ subordinates]
 	  - No subordinates
-	+ cn=Connections
-	  + cn=Connection [nr]
-	    + description
+	* cn=Waiters
+	  * cn=Write
+	    + monitorCounter
+	      - ????
+	  * cn=Read
+	    + monitorCounter
+	      - ????
+	* cn=Connections
+	  * cn=Connection [nr]
+	    + monitoredInfo
 	      - Information about this specific connection
 	      - See below for more information of the content of the
 		'description' value.
-	  + cn=Current
-	    + description
+	    + monitorConnectionNumber
+	      - Number of connection. Same as [nr] in branch DN.
+	    + monitorConnectionAuthzDN
+	      - DN of authenticated object/user.
+	    + monitorConnectionLocalAddress
+	      - Connected through this listener.
+	    + monitorConnectionPeerAddress
+	      - Connected from this address/interface/path.
+	  * cn=Current
+	    + monitorCounter
 	      - Number of simultaneous connections at this time.
-	  + cn=Total
-	    + description
+	  * cn=Total
+	    + monitorCounter
 	      - Total number of connections since start/boot.
-	+ cn=TLS
+	* cn=TLS
 	  - No subordinates
-	+ cn=SASL
+	* cn=SASL
 	  - No subordinates
-	+ cn=Threads
-	  + description
-	    - Maximum number of threads and 'backload' (?).
-	+ cn=Backends
-	  + cn=Backend [nr]
+	* cn=Threads
+	  + monitoredInfo
+	    - Maximum number of threads
+	    - 'backload' (?).
+	* cn=Backends
+	  + monitoredInfo
+	    - Supported backends.
+	  * cn=Backend [nr]
 	    - Information about the database backend [nr].
-	    + description
+	    + monitoredInfo
 	      - Type of backend (bdb, ldbm etc).
 	    + supportedControl
 ?	      - OID values
-	+ cn=Databases
-	  + cn=Database [nr]
-	    + description
+	* cn=Databases
+	  + namingContexts
+	    - Root DN's - every suffix server have.
+	  + monitorContext
+	    - Root DN to the Monitor backend.
+	  * cn=Database [nr]
+	    + monitoredInfo
 	      - Type of backend (monitor, bdb, ldbm etc)
 	    + seeAlso
 	      - Reference to backend information.
-		+ cn=Backend [nr],cn=Backends,cn=Monitor
+		* cn=Backend [nr],cn=Backends,cn=Monitor
 	    + {naming,monitor}Contexts
 	      - Root DN of this database backend ('monitorContexts' in the case of the
 		Monitor backend type and 'namingContexts' for other suffixes).
-	+ cn=Listeners
-	  + cn=Listener [nr]
-	    + description
+	* cn=Listeners
+	  * cn=Listener [nr]
+	    + monitorConnectionLocalAddress
 	      - IP address and port this (LDAP) server listens on.
-		+ IP=0.0.0.0:389
+		-> IP=0.0.0.0:389
+		-> PATH=/var/run/ldapi
 	    + labeledURI
 	      - URI this (LDAP) server listens on.
-		+ ldap://0.0.0.0:389/
+		-> ldap://0.0.0.0:389/
+		-> ldapi://%2fvar%2frun%2fldapi/????x-mod=0777
 
 * cn=Connection X,cn=Connections,cn=Monitor
 =========================================
