@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.11 2005-01-29 18:57:04 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.12 2005-01-30 09:28:50 turbo Exp $
 
 // {{{ attribute_translate_type(attrib)
 function attribute_translate_type($attrib) {
@@ -133,15 +133,28 @@ function attribute_print_form() {
       </table>
 
       <input type="hidden" name="submit"   value="1">
-<?php	if($action != 'add') { ?>
+<?php	if($action != 'add') {
+			if((lc($attrib) == 'mxrecord')) {
+?>
+      <input type="hidden" name="oldvalue" value="<?=$prio." ".$_REQUEST["oldvalue"]?>">
+<?php		} else { ?>
       <input type="hidden" name="oldvalue" value="<?=$_REQUEST["oldvalue"]?>">
+<?php		}
+
+			if(lc($attrib) == 'mxrecord') {
+?>
+      <input type="hidden" name="type"     value="mx">
+<?php		} else { ?>
       <input type="hidden" name="oldtype"  value="<?=$attrib?>">
-<?php	} ?>
-      <input type="hidden" name="domain"   value="<?=urlencode($_REQUEST["domain"])?>">
-      <input type="hidden" name="rootdn"   value="<?=urlencode($_REQUEST["rootdn"])?>">
-      <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
-      <input type="hidden" name="action"   value="<?=$_REQUEST["action"]?>">
-      <input type="hidden" name="rdn"      value="<?=urlencode($_REQUEST["rdn"])?>">
+<?php		}
+		}
+?>
+      <input type="hidden" name="domain"          value="<?=urlencode($_REQUEST["domain"])?>">
+      <input type="hidden" name="rootdn"          value="<?=urlencode($_REQUEST["rootdn"])?>">
+      <input type="hidden" name="view"            value="<?=$_REQUEST["view"]?>">
+      <input type="hidden" name="action"          value="<?=$_REQUEST["action"]?>">
+      <input type="hidden" name="rdn"             value="<?=urlencode($_REQUEST["rdn"])?>">
+      <input type="hidden" name="dns_domain_name" value="<?=$_REQUEST["dns_domain_name"]?>">
       <br>
       <input type="submit" value="<?=$LANG->_('Save')?>">
     </form>
@@ -150,8 +163,10 @@ function attribute_print_form() {
 // }}}
 
 // {{{ attribute_save(action)
+
 function attribute_save($action) {
 	global $_pql, $LANG;
+	$success = 0;
 
 	$dn = urldecode($_REQUEST["rdn"]);
 
@@ -192,12 +207,13 @@ function attribute_save($action) {
 		// Add the new value to the array
 		$entry[$attrib][] = $value;
 
-		if(pql_modify_attribute($_pql->ldap_linkid, $dn, '', '', $entry))
+		if(pql_modify_attribute($_pql->ldap_linkid, $dn, '', '', $entry)) {
+		  $success = 1;
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
-									   array('what' => $value)).".";
-		else
+									   array('what' => $attrib)).".";
+		} else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $value)) . ": " . ldap_error($_pql->ldap_linkid);
+									   array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
 		break;
 		// }}}
 
@@ -237,10 +253,11 @@ function attribute_save($action) {
 		  die("Failed to remove the old attribute ".$_REQUEST["oldtype"]." with value ".$_REQUEST["oldvalue"]);
 		// }}}
 
-		if(pql_modify_attribute($_pql->ldap_linkid, $dn, $attrib, 1, $value))
+		if(pql_modify_attribute($_pql->ldap_linkid, $dn, $attrib, 1, $value)) {
+		  $success = 1;
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $attrib));
-		else
+		} else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
 		break;
@@ -261,19 +278,27 @@ function attribute_save($action) {
 			}
 		}
 
-		if(pql_modify_attribute($_pql->ldap_linkid, $dn, '', '', $entry))
+		if(pql_modify_attribute($_pql->ldap_linkid, $dn, '', '', $entry)) {
+		  $success = 1;
 		  $msg = pql_complete_constant($LANG->_('Successfully removed %value%'),
 									   array('value' => $_REQUEST["oldvalue"]));
-		else
+		} else
 		  $msg = pql_complete_constant($LANG->_('Failed to remove %value%'),
 									   array('value' => $_REQUEST["oldvalue"])) . ": " . ldap_error($_pql->ldap_linkid);
 		break;
 		// }}}
 	}
 
-	if(!file_exists("./.DEBUG_ME"))
+	if($success) {
+	  // Successfully modified the zone - update the serial number in the SOA
+	  if(!pql_bind9_update_serial($_pql, $dn))
+		die("failed to update ".$soa["dn"].":".pql_get_define("PQL_ATTR_SOARECORD")." with value $serial_new<br>");  
+	}
+
+	if(!file_exists("./.DEBUG_ME")) 
 	  attribute_forward($msg);
 }
+
 // }}}
 
 // Local variables:
