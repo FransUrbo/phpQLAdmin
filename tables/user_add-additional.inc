@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-additional.inc,v 1.15 2004-04-01 11:30:52 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.16 2004-05-01 07:27:40 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <input type="hidden" name="surname"            value="<?=$_REQUEST["surname"]?>">
     <input type="hidden" name="name"               value="<?=$_REQUEST["name"]?>">
@@ -61,7 +61,9 @@
           <td class="title" valign="top"><?=$LANG->_('Mail server')?></td>
           <td>
             <?php echo pql_format_error_span($error_text["userhost"]); ?>
-<?php	if($_REQUEST["userhost"]["qlc"]) { // It's defined - QmailLDAP/Controls object
+<?php	if($_REQUEST["userhost"]["qlc"]) {
+			// It's defined - QmailLDAP/Controls object
+
 			for($i=0; $_REQUEST["userhost"]["qlc"][$i]; $i++) {
 ?>
             <input type="radio" name="host" value="<?=$_REQUEST["userhost"]["qlc"][$i]?>" <?php
@@ -77,7 +79,10 @@
 <?php		}
 		} 
 
-		if($_REQUEST["userhost"]["dns"] and !in_array($_REQUEST["userhost"]["dns"], $_REQUEST["userhost"]["qlc"])) { // It's defined - DNS entry
+		if($_REQUEST["userhost"]["dns"] and 
+		   ($_REQUEST["userhost"]["qlc"] and !in_array($_REQUEST["userhost"]["dns"], $_REQUEST["userhost"]["qlc"])))
+		{
+			// It's defined - DNS entry
 ?>
             <input type="radio" name="host" value="<?=$_REQUEST["userhost"]["dns"]?>" CHECKED>
             <b><?=$_REQUEST["userhost"]["dns"]?></b><br>

@@ -25,8 +25,11 @@ phpqladmin (2.0.18c-1) unstable; urgency=low
     all rootdn's. Catch this, and return NULL if the define is unset.
   * Don't show the 'undefined variable' warnings if not running a CVS version.
   * Don't add the 'deliveryMode: localdelivery' if we're running with newer QmailLDAP.
+  * To make sure we don't get 'Wrong datatype' in tables/user_add-additional.inc
+    when checking if the mailHost is a DNS entry, we only look in the QLC
+    array if there IS such an array.
 
- -- Turbo Fredriksson <turbo@debian.org>  Thu, 29 Apr 2004 08:32:36 +0200
+ -- Turbo Fredriksson <turbo@debian.org>  Sat,  1 May 2004 09:23:14 +0200
 
 phpqladmin (2.0.18b-1) unstable; urgency=low
 
