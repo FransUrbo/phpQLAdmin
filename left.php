@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.102 2005-01-31 11:44:39 turbo Exp $
+// $Id: left.php,v 2.103 2005-02-01 07:26:02 turbo Exp $
 //
 session_start();
 
@@ -290,12 +290,12 @@ if(!isset($domains)) {
     pql_format_tree_span($cn, $links, -1);
     // }}}
 } else {
+    // {{{ We got at least one domain - get it's users
     $_SESSION["SINGLE_USER"] = 0;
 ?>
 
   <!-- Domain branches -->
 <?php
-    // {{{ We got at least one domain - get it's users
     asort($domains);
     foreach($domains as $key => $domain) {
 	// Get domain part from the DN (Example: 'dc=test,dc=net' => 'test').
