@@ -2,7 +2,7 @@
 // control attribute plugin for
 // rcpthosts (blocked local addresses)
 //
-// $Id: attrib.control.rcpthosts.inc,v 2.21.10.1 2004-05-04 08:03:17 turbo Exp $
+// $Id: attrib.control.rcpthosts.inc,v 2.21.10.2 2004-05-05 11:03:09 turbo Exp $
 
 // {{{ rcpthosts_check(type)
 function rcpthosts_check($type) {
@@ -84,7 +84,7 @@ function rcpthosts_print_view($host) {
       </tr>
 <?php } else { ?>
       <tr class="subtitle">
-        <td><a href="control_edit_attribute.php?rootdn=<?=$_REQUEST["rootdn"]?>&attrib=<?=pql_get_define("PQL_ATTR_RCPTHOSTS")?>&mxhost=<?=$host?>"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a> (<?=$LANG->_('The automatic replication with domain is disabled')?>)</td>
+        <td><a href="control_edit_attribute.php?rootdn=<?=$_REQUEST["rootdn"]?>&attrib=<?=pql_get_define("PQL_ATTR_RCPTHOSTS")?>&mxhost=<?=$host?>&view=hosts"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a> (<?=$LANG->_('The automatic replication with domain is disabled')?>)</td>
       </tr>
     </th>
 <?php }	?>
@@ -199,7 +199,7 @@ function rcpthosts_save($type, $host) {
 			if(pql_control_add_attribute($_pql_control->ldap_linkid,
 										 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 										 pql_get_define("PQL_ATTR_RCPTHOSTS"), $_REQUEST["set"]))
-			  $msg = pql_complete_constant($LANG->_('Successfully added %domain% to %value %what%'),
+			  $msg = pql_complete_constant($LANG->_('Successfully added %domain% to %value% %what%'),
 										   array('what'   => pql_get_define("PQL_ATTR_RCPTHOSTS"),
 												 'domain' => $_REQUEST["set"],
 												 'value'  => $all));
