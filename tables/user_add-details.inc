@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-details.inc,v 1.2 2003-11-14 11:56:22 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.3 2003-11-15 12:25:00 turbo Exp $ */ ?>
   <form action="<?=$PHP_SELF?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
@@ -273,6 +273,7 @@
       </th>
     </table>
 
+    <input type="hidden" name="page_curr" value="one">
 <?php
 	if(($ADVANCED_MODE == 0) or ($account_type == "forward")) {
 		// Go to save, no next form...
@@ -284,16 +285,16 @@
     <input type="hidden" name="maildirectory" value="">
     <input type="hidden" name="host" value="default">
 <?php	} ?>
-    <input type="hidden" name="submit" value="save">
+    <input type="hidden" name="page_next" value="save">
 <?php
 	} else {
 		if($account_type != 'shell') {
 ?>
-    <input type="hidden" name="submit" value="two">
+    <input type="hidden" name="page_next" value="two">
 <?php
 		} else {
 ?>
-    <input type="hidden" name="submit" value="save">
+    <input type="hidden" name="page_next" value="save">
 <?php
 		}
 	} // account_type == forward
