@@ -36,49 +36,63 @@ The 'DN OF ADMIN' in my case is
 as in:
 
 	dn: dc=fredriksson,dc=com
+	dc: fredriksson
 	objectClass: top
 	objectClass: domain
-	dc: fredriksson
+	objectClass: phpQLAdminBranch
 	administrator: uid=turbo,ou=People,dc=fredriksson,dc=com
 
 Without this attribute and value, I would not SEE the 'dc=fredriksson,dc=com'
-LDAP tree. Luckily, the 'description' attribute takes multiple values,
-so one can just 'stack them' (ie, have many administrators). All this
-is accessible through the web interface, but to do any modification to
-the value, one first have to have access to the tree. If you already have
-a database you'd like to administrate through phpQLAdmin, there are some
-description values you have to add to the domain object before you start
-using phpQLAdmin. These are defaultDomain, baseHomeDir, baseMailDir and
-administrator. Once these are in place, everything can be administrated
-through phpQLAdmin.
+LDAP tree when I login. Luckily, the 'administrator' attribute takes
+multiple values, so one can just 'stack them' (ie, have many
+administrators). All this is accessible through the web interface, but
+to do any modification to the value, one first have to have access to
+the tree (see below).
 
-This is a full example of the dc=fredriksson object above:
+If you already have a database you'd like to administrate through
+phpQLAdmin, you will have to add this attribute (with corresponding
+objectclass phpQLAdminBranch) before being able to administrate your
+database. To do this, you must install the schema file
+'phpQLAdmin.schema' into your LDAP server (don't forget to include it
+as well and possibly restart your LDAP server!).
 
-	dn: dc=fredriksson,dc=com
-	objectClass: top
-	objectClass: domain
-	dc: fredriksson
-	defaultDomain: bayour.com
-	baseHomeDir: /afs/bayour.com/user/fredriksson/
-	baseMailDir: /var/mail/fredriksson/
-	administrator: uid=turbo,ou=People,dc=fredriksson,dc=com
 
-To enable this (which is a must), you will be forced to install the
-schema file 'phpQLAdmin.schema' into your LDAP server (don't forget
-to include it as well and possibly restart your LDAP server!).
+In the file README, I said that it's up to the 'backbone' (in this
+case the LDAP server) to dictate what users have access to. To allow
+the domain/branch administrator to create users and groups etc, an ACL
+directive like this need to be installed into the LDAP server:
+
+	access to dn=".*?dc=com"
+	        by dnattr=administrator write
+	        by * read
+
+Exchange 'dc=com' with your top DN (be it 'c=SE', 'dc=net' etc).
+
+There is however one problem with this. It's not recursive. That is,
+it lets modifications being done in the 'dc=fredriksson,dc=com' tree
+but not in a suborganization such as 'ou=People,dc=fredriksson,dc=com'
+or 'ou=Groups,dc=fredriksson,dc=com'. To enable this, the 'administrator'
+attribute have to be added there as well. This is planned.
+
+This ACL won't allow you to create domains/branches, so to be able
+to do that, add the 'administrator' attribute to your top DN as well
+(don't forget to add the objectclass 'phpQLAdminBranch'!). This have
+currently to be done with your LDAP servers tool (with OpenLDAP you
+use ldapmodify or ldapadd). Being able to do this via the phpQLAdmin
+interface is planed.
 
 
 If you like me is 'some kind of ISP' (hosting multiple domain or what
-not) and you have layed out your LDAP tree according to the DOMAIN layout,
-and where each branch (each dc object directly below the top dc - dc=com
-in my case) is owned by different people, it would be nice to have
-information about the owner of the branch (and be able to edit this
-information!).
+not) and you have layed out your LDAP tree according to the DOMAIN
+layout, and where each branch (each dc object directly below the top
+dc - dc=com in my case) is owned by different people, it would be nice
+to have information about the owner of the branch (and be able to edit
+this information!).
 
 This is possible by using the objectClass 'dcOrganizationNameForm'
-(RFC 2377, which can be found at http://rfc-2377.rfcindex.net/). It allows
-storage of telephone number, Organization name, Postal address, Postal code
-etc in the domain object.
+(RFC 2377, which can be found at http://rfc-2377.rfcindex.net/). It
+allows storage of telephone number, Organization name, Postal address,
+Postal code etc in the domain object.
 
-If you want this, install the schema file 'rfc2377.schema' into your LDAP
-server.
+If you want this, install the schema file 'rfc2377.schema' into your
+LDAP server.
