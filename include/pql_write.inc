@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.14 2005-01-31 11:39:44 turbo Exp $
+// $Id: pql_write.inc,v 2.15 2005-01-31 21:03:30 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -137,7 +137,7 @@ function pql_write_ren($linkid, $old, $parent, $new, $keepold = TRUE) {
 
   return false;
 }
-// {{{
+// }}}
 
 // ------------------------------------------------
 // WRITE API functions - Support
@@ -237,7 +237,11 @@ function pql_modify_attribute($linkid, $dn, $attrib, $old, $new) {
 			} else {
 				if($old == 1) {
 					// Replace the existing attribute value
-					$object[$attrib][] = pql_maybe_encode($new, $attrib, $linkid);
+					if($new)
+					  $object[$attrib][] = pql_maybe_encode($new, $attrib, $linkid);
+					else
+					  // No new attribute. Probably because we're following a delete URL
+					  $object[$attrib] = array();
 				} elseif(!$old) {
 					// We're called without both $old and $new - delete whole attribute
 					$object[$attrib] = array();
