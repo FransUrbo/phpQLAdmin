@@ -8,7 +8,7 @@ $myimage = ImageCreateFromGif("images/unselected.gif");
 $black   = ImageColorAllocate($myimage, 0, 0, 0);
 $width   = (imagesx($myimage)-7.5*strlen($string))/2;
 
-ImageString($myimage, 3, $width, 1, $string, $black);
+ImageString($myimage, 3, $width, 3, $string, $black);
 
 # Show image
 Header("Content-Type: image/gif");
