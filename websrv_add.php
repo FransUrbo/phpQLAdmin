@@ -1,11 +1,14 @@
 <?php
 // add a webserver configuration to the LDAP db
-// $Id: websrv_add.php,v 2.4 2004-03-11 18:13:32 turbo Exp $
+// $Id: websrv_add.php,v 2.5 2004-04-02 12:39:13 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 require("./include/pql_control.inc");
 require("./include/pql_websrv.inc");
+
+$url["domain"] = pql_format_urls($_REQUEST["domain"]);
+$url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 
 include("./header.html");
 
@@ -13,38 +16,43 @@ if($submit) {
 	$error = false;
 	$error_text = array();
 	
-	if(!$serverip) {
+	if(!$_REQUEST["servername"]) {
+		$error = true;
+		$error_text["servername"] = $LANG->_('Missing');
+	}
+	
+	if(!$_REQUEST["serverip"]) {
 		$error = true;
 		$error_text["serverip"] = $LANG->_('Missing');
 	}
 	
-	if(!$serverurl) {
+	if(!$_REQUEST["serverurl"]) {
 		$error = true;
 		$error_text["serverurl"] = $LANG->_('Missing');
-	} elseif(!ereg('\/$', $serverurl))
-	  $serverurl .= '/';
+	} elseif(!ereg('\/$', $_REQUEST["serverurl"]))
+	  $_REQUEST["serverurl"] .= '/';
 	
-	if(!$serveradmin) {
+	if(!$_REQUEST["serveradmin"]) {
 		$error = true;
 		$error_text["serveradmin"] = $LANG->_('Missing');
-	} elseif(!ereg('@', $serveradmin)) {
+	} elseif(!ereg('@', $_REQUEST["serveradmin"])) {
 		$error = true;
 		$error_text["serveradmin"] = $LANG->_('Invalid');
 	}
 	
-	if(!$documentroot) {
+	if(!$_REQUEST["documentroot"]) {
 		$error = true;
 		$error_text["documentroot"] = $LANG->_('Missing');
-	} elseif(!ereg('^\/', $documentroot)) {
+	} elseif(!ereg('^\/', $_REQUEST["documentroot"])) {
 		$error = true;
 		$error_text["documentroot"] = $LANG->_('Invalid');
-	} elseif(!ereg('\/$',  $documentroot))
-	  $documentroot .= '/';
+	} elseif(!ereg('\/$',  $_REQUEST["documentroot"]))
+	  $_REQUEST["documentroot"] .= '/';
 }
 
-if(($error == 'true') or !$serverip or !serverurl or !$serveradmin or !$documentroot) {
+if(($error == 'true') or !$_REQUEST["serverip"] or !serverurl or !$_REQUEST["serveradmin"] or !$_REQUEST["documentroot"]) {
 ?>
-  <span class="title1"><?php echo pql_complete_constant($LANG->_('Create a webserver configuration in branch %domain%'), array('domain' => $domain)); ?></span>
+  <span class="title1"><?php echo pql_complete_constant($LANG->_('Create a webserver configuration in branch %domain%'), array('domain' => $_REQUEST["domain"])); ?></span>
 
   <br><br>
 
@@ -52,47 +60,55 @@ if(($error == 'true') or !$serverip or !serverurl or !$serveradmin or !$document
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('webserver configuration'))); ?>
         <tr class="<?php pql_format_table(); ?>">
+          <td class="title"><?=$LANG->_('Server name')?></td>
+          <td><?php echo pql_format_error_span($error_text["serverip"]); ?><input type="text" name="servername" size="40" value="<?=$_REQUEST["serverip"]?>"></td>
+        </tr>
+
+        <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Server IP[:PORT]')?></td>
-          <td><?php echo pql_format_error_span($error_text["serverip"]); ?><input type="text" name="serverip" size="40" value="<?=$serverip?>"></td>
+          <td><?php echo pql_format_error_span($error_text["serverip"]); ?><input type="text" name="serverip" size="40" value="<?=$_REQUEST["serverip"]?>"></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Server URL')?></td>
-          <td><?php echo pql_format_error_span($error_text["serverurl"]); ?><input type="text" name="serverurl" size="40" value="<?=$serverurl?>"></td>
+          <td><?php echo pql_format_error_span($error_text["serverurl"]); ?><input type="text" name="serverurl" size="40" value="<?=$_REQUEST["serverurl"]?>"></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Server Administrator')?></td>
-          <td><?php echo pql_format_error_span($error_text["serveradmin"]); ?><input type="text" name="serveradmin" size="40" value="<?=$serveradmin?>"></td>
+          <td><?php echo pql_format_error_span($error_text["serveradmin"]); ?><input type="text" name="serveradmin" size="40" value="<?=$_REQUEST["serveradmin"]?>"></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Document root')?></td>
-          <td><?php echo pql_format_error_span($error_text["documentroot"]); ?><input type="text" name="documentroot" size="40" value="<?=$documentroot?>"></td>
+          <td><?php echo pql_format_error_span($error_text["documentroot"]); ?><input type="text" name="documentroot" size="40" value="<?=$_REQUEST["documentroot"]?>"></td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit" value="submit">
     <input type="hidden" name="action" value="add">
-    <input type="hidden" name="view"   value="<?=$view?>">
-    <input type="hidden" name="rootdn" value="<?=$rootdn?>">
-    <input type="hidden" name="domain" value="<?=$domain?>">
+    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="rootdn" value="<?=$url["rootdn"]?>">
+    <input type="hidden" name="domain" value="<?=$url["domain"]?>">
+    <br>
     <input type="submit" value="Create">
   </form>
 <?php
 } else {
-	$entry["webserverip"]		= $serverip;
-	$entry["webserverurl"]		= $serverurl;
-	$entry["webserveradmin"]	= $serveradmin;
-	$entry["webdocumentroot"]	= $documentroot;
+	$entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")]	= $_REQUEST["servername"];
+	$entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_IP")]	= $_REQUEST["serverip"];
+	$entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_URL")]	= $_REQUEST["serverurl"];
+	$entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_ADMIN")]	= $_REQUEST["serveradmin"];
+	$entry[pql_get_define("PQL_ATTR_WEBSRV_DOCROOT")]	= $_REQUEST["documentroot"];
 
-	if(pql_websrv_add_server($_pql->ldap_linkid, $domain, $entry))
-	  $msg = "Successfully added webserver configuration $serverurl";
+	if(pql_websrv_add_server($_pql->ldap_linkid, $_REQUEST["domain"], $entry))
+	  $msg = "Successfully added webserver configuration ".$_REQUEST["serverurl"];
 	else
-	  $msg = "Failed to add webserver configuration $serverurl";
+	  $msg = "Failed to add webserver configuration ".$_REQUEST["serverurl"];
 	
-	$url = "domain_detail.php?rootdn=$rootdn&domain=$domain&view=$view&msg=".urlencode($msg);
+	$url =  "domain_detail.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"];
+	$url .= "&view=".$_REQUEST["view"]."&msg=".urlencode($msg);
 	header("Location: ".pql_get_define("PQL_CONF_URI") . "$url");
 }
 ?>
