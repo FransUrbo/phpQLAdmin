@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.14 2004-03-31 05:30:07 turbo Exp $
+// $Id: user_add-save.inc,v 1.15 2004-04-01 11:34:13 turbo Exp $
 
 // Find out what objectclasses to use when creating user
 $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"]));
@@ -18,25 +18,27 @@ if($_REQUEST["uid"]) {
 }
 
 // ------------------
-// Firstname
-if($_REQUEST["surname"]) {
-	$entry[pql_get_define("PQL_ATTR_GIVENNAME")]	= $_REQUEST["surname"];
-} elseif(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")) {
-	$entry[pql_get_define("PQL_ATTR_GIVENNAME")]	= $_REQUEST["uid"];
-}
-
-// Lastname
-if($_REQUEST["name"]) {
-	$entry[pql_get_define("PQL_ATTR_SN")]			= $_REQUEST["name"];
-} elseif(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")) {
-	$entry[pql_get_define("PQL_ATTR_SN")]			= $_REQUEST["uid"];
-}
-
-// Full (common) name
-if($_REQUEST["surname"] && $_REQUEST["name"]) {
-	$entry[pql_get_define("PQL_ATTR_CN")] = trim($_REQUEST["surname"]) . " " . trim($_REQUEST["name"]);
-} elseif(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")) {
-	$entry[pql_get_define("PQL_ATTR_CN")] = $_REQUEST["uid"];
+if($_REQUEST["account_type"] != "mail") {
+	// Firstname
+	if($_REQUEST["surname"]) {
+		$entry[pql_get_define("PQL_ATTR_GIVENNAME")]	= $_REQUEST["surname"];
+	} elseif(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")) {
+		$entry[pql_get_define("PQL_ATTR_GIVENNAME")]	= $_REQUEST["uid"];
+	}
+	
+	// Lastname
+	if($_REQUEST["name"]) {
+		$entry[pql_get_define("PQL_ATTR_SN")]			= $_REQUEST["name"];
+	} elseif(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")) {
+		$entry[pql_get_define("PQL_ATTR_SN")]			= $_REQUEST["uid"];
+	}
+	
+	// Full (common) name
+	if($_REQUEST["surname"] && $_REQUEST["name"]) {
+		$entry[pql_get_define("PQL_ATTR_CN")] = trim($_REQUEST["surname"]) . " " . trim($_REQUEST["name"]);
+	} elseif(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")) {
+		$entry[pql_get_define("PQL_ATTR_CN")] = $_REQUEST["uid"];
+	}
 }
 
 // ------------------
@@ -96,17 +98,13 @@ if($_REQUEST["account_type"] == "forward") {
 		$gidnr = pql_get_next_ugidnumber($_pql, 'gid');
 		if($gidnr > 0)
 		  $entry[pql_get_define("PQL_ATTR_QMAILGID")] = $gidnr;
-	} else {
-		// It's a 'Mail account'. Use the forwarding account uidNumber for ALL 'mail only' accounts.
-		$entry[pql_get_define("PQL_ATTR_QMAILUID")] = pql_get_define("PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER", $_REQUEST["rootdn"]);
-		$entry[pql_get_define("PQL_ATTR_QMAILGID")] = pql_get_define("PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER", $_REQUEST["rootdn"]);
-	}
 	
-	// -----------------
-	// Gecos is needed to do PAM/NSS LDAP login 
-	if($_REQUEST["surname"] && $_REQUEST["name"] &&
-	   (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))) {
-		$entry[pql_get_define("PQL_ATTR_GECOS")] = $_REQUEST["surname"] . " " . $_REQUEST["name"];
+		// -----------------
+		// Gecos is needed to do PAM/NSS LDAP login 
+		if($_REQUEST["surname"] && $_REQUEST["name"] &&
+		   (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))) {
+			$entry[pql_get_define("PQL_ATTR_GECOS")] = $_REQUEST["surname"] . " " . $_REQUEST["name"];
+		}
 	}
 	
 	// -----------------
@@ -152,8 +150,6 @@ if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "mai
 	elseif($_REQUEST["userhost"])
 	  // We've specified a host, but we never ticked the 'User defined' checkbox.
 	  $entry[pql_get_define("PQL_ATTR_MAILHOST")]   = $_REQUEST["userhost"];
-	elseif($_REQUEST["dns"])
-	  $entry[pql_get_define("PQL_ATTR_MAILHOST")]   = $_REQUEST["dns"];
 	
 	$entry[pql_get_define("PQL_ATTR_MODE")] = "localdelivery";
 	
@@ -164,21 +160,31 @@ if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "mai
 	else
 	  $entry[pql_get_define("PQL_ATTR_MAILSTORE")] = $_REQUEST["maildirectory"];
 
+	// Verify trailing slash!
+    if(! ereg("/$", $entry[pql_get_define("PQL_ATTR_MAILSTORE")]))
+	  $entry[pql_get_define("PQL_ATTR_MAILSTORE")] .= "/";
+	
 	// -----------------
-	// Add home directory to the entry array
-	if(!$_REQUEST["homedirectory"]) {
-		if(($_REQUEST["account_type"] == "mail") and !$_SESSION["ADVANCED_MODE"])
-		  // It's a mail account, and we where/is not running in
-		  // advanced mode. Use the maildirectory as homedirectory.
-		  $entry[pql_get_define("PQL_ATTR_HOMEDIR")] = user_generate_mailstore($_pql, $_REQUEST["email"],
-																			   $_REQUEST["domain"], $entry,
-																			   'user');
-		else
-		  $entry[pql_get_define("PQL_ATTR_HOMEDIR")] = user_generate_homedir($_pql, $_REQUEST["email"],
-																			 $_REQUEST["domain"], $entry,
-																			 'user');
-	} else
-	  $entry[pql_get_define("PQL_ATTR_HOMEDIR")] = $_REQUEST["homedirectory"];
+	if($_REQUEST["account_type"] == "system") {
+		// Add home directory to the entry array
+		if(!$_REQUEST["homedirectory"]) {
+			if(($_REQUEST["account_type"] == "mail") and !$_SESSION["ADVANCED_MODE"])
+			  // It's a mail account, and we where/is not running in
+			  // advanced mode. Use the maildirectory as homedirectory.
+			  $entry[pql_get_define("PQL_ATTR_HOMEDIR")] = user_generate_mailstore($_pql, $_REQUEST["email"],
+																				   $_REQUEST["domain"], $entry,
+																				   'user');
+			else
+			  $entry[pql_get_define("PQL_ATTR_HOMEDIR")] = user_generate_homedir($_pql, $_REQUEST["email"],
+																				 $_REQUEST["domain"], $entry,
+																				 'user');
+		} else
+		  $entry[pql_get_define("PQL_ATTR_HOMEDIR")] = $_REQUEST["homedirectory"];
+
+		// Verify trailing slash!
+		if(! ereg("/$", $entry[pql_get_define("PQL_ATTR_HOMEDIR")]))
+		  $entry[pql_get_define("PQL_ATTR_HOMEDIR")] .= "/";
+	}
 }
 
 // ------------------
