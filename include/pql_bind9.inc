@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.30 2005-01-30 09:19:59 turbo Exp $
+// $Id: pql_bind9.inc,v 2.31 2005-01-31 11:49:49 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -142,6 +142,35 @@ function pql_bind9_get_zone($linkid, $branchname, $domainname = '') {
 }
 // }}}
 
+// {{{ pql_bind9_get_acis(linkid, zone)
+// This function will retreive the ACI's from the SOA object
+// and return them unmodified.
+function pql_bind9_get_acis($linkid, $zone) {
+  $filter = '(&('.pql_get_define("PQL_ATTR_ZONENAME")."=$zone)(".pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME").'=@))';
+  foreach($_SESSION["BASE_DN"] as $base) {
+	$object = pql_search($linkid, $base, $filter, 'SUBTREE', 1, 1);
+	if(is_array($object[0]))
+	  return $object[0][pql_get_define("PQL_ATTR_LDAPACI")];
+  }
+
+  return false;
+}
+// }}}
+
+// {{{ pql_bind9_get_ttl(linkid, zone)
+// This function will retreive the default TTL from the SOA object.
+function pql_bind9_get_ttl($linkid, $zone) {
+  $filter = '(&('.pql_get_define("PQL_ATTR_ZONENAME")."=$zone)(".pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME").'=@))';
+  foreach($_SESSION["BASE_DN"] as $base) {
+	$object = pql_search($linkid, $base, $filter);
+	if(is_array($object[0]))
+	  return $object[0]['dnsttl'];
+  }
+
+  return false;
+}
+// }}}
+
 
 // {{{ pql_bind9_add_zone(linkid, dn, zone)
 function pql_bind9_add_zone($linkid, $dn, $zone) {
@@ -243,6 +272,49 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 }
 // }}}
 
+// {{{ pql_bind9_add_host(linkid, basedn, entry)
+function pql_bind9_add_host($linkid, $basedn, $entry) {
+	// {{{ Create each of the domain components in the domainname
+	$dc = split('\.', $entry[pql_get_define("PQL_ATTR_ZONENAME")]);
+	for($i=count($dc)-1; $dc[$i]; $i--) {
+		$dc_tmp = pql_maybe_idna_encode($dc[$i]);
+
+		if($dn)
+		  $dn = "dc=".$dc_tmp.",".$dn;
+		else
+		  $dn = "dc=".$dc_tmp;
+	}
+	$dn = "relativeDomainName=".$entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")].",$dn,ou=DNS,$basedn";
+	// }}}
+
+	$entry['objectClass'][] = 'top';
+	$entry['objectClass'][] = 'dNSZone';
+
+	// {{{ Add the OpenLDAPaci attribute (maybe)
+	if($_SESSION["ACI_SUPPORT_ENABLED"]) 
+	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = pql_bind9_get_acis($linkid, $entry[pql_get_define("PQL_ATTR_ZONENAME")]);
+																	  
+	// }}}
+
+	// {{{ Add the object to the database
+	// Create a LDIF object to print in case of error
+	$LDIF = pql_create_ldif("pql_bind9_add_host", $dn, $entry);
+	if(file_exists("./.DEBUG_ME")) {
+		echo $LDIF;
+	} else {
+		if(!ldap_add($linkid, $dn, $entry)) {
+			pql_format_error(1);
+			die($LDIF);
+			return false;
+		}
+	}
+	// }}}
+
+	return $dn;
+}
+// }}}
+
+
 // {{{ pql_bind9_del_zone(linkid, dn, zone)
 function pql_bind9_del_zone($linkid, $dn, $zone) {
 	$dnsparts = split('\.', $zone);
@@ -323,52 +395,15 @@ function pql_bind9_del_zone($linkid, $dn, $zone) {
 }
 // }}}
 
-// {{{ pql_bind9_add_host(linkid, basedn, entry)
-function pql_bind9_add_host($linkid, $basedn, $entry) {
-	// Create each of the domain components in the domainname
-	$dc = split('\.', $entry[pql_get_define("PQL_ATTR_ZONENAME")]);
-	for($i=count($dc)-1; $dc[$i]; $i--) {
-		$dc_tmp = pql_maybe_idna_encode($dc[$i]);
-
-		if($dn)
-		  $dn = "dc=".$dc_tmp.",".$dn;
-		else
-		  $dn = "dc=".$dc_tmp;
-	}
-	$dn = "relativeDomainName=".$entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")].",$dn,ou=DNS,$basedn";
-
-	$entry['objectClass'][] = 'top';
-	$entry['objectClass'][] = 'dNSZone';
-
-	// Add the OpenLDAPaci attribute (maybe)
-	if($_SESSION["ACI_SUPPORT_ENABLED"]) 
-	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($linkid, $_SESSION["USER_DN"], 'dnszone');
-
-	// Create a LDIF object to print in case of error
-	$LDIF = pql_create_ldif("pql_bind9_add_host", $dn, $entry);
-	if(file_exists("./.DEBUG_ME")) {
-		echo $LDIF;
-	} else {
-		if(!ldap_add($linkid, $dn, $entry)) {
-			pql_format_error(1);
-			die($LDIF);
-			return false;
-		}
-	}
-
-	return $dn;
-}
-// }}}
-
-// {{{ pql_bind9_update_serial(ldap, dn)
-function pql_bind9_update_serial($ldap, $dn) {
+// {{{ pql_bind9_update_serial(linkid, dn)
+function pql_bind9_update_serial($linkid, $dn) {
   // Get the zone name from the record (so that we can find the SOA)
-  $zone = pql_get_attribute($ldap->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ZONENAME"));
+  $zone = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_ZONENAME"));
 
   // Get the SOA for this zone.
   $filter = '(&('.pql_get_define("PQL_ATTR_ZONENAME")."=$zone)(".pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME").'=@))';
-  foreach($ldap->ldap_basedn as $base) {
-	$object = pql_search($ldap->ldap_linkid, $base, $filter);
+  foreach($_SESSION["BASE_DN"] as $base) {
+	$object = pql_search($linkid, $base, $filter);
 	if(is_array($object[0])) {
 	  // "there can be only one" - anything else should (?) be an error.
 	  $soa["dn"]  = $object[0]["dn"];
@@ -403,7 +438,7 @@ function pql_bind9_update_serial($ldap, $dn) {
   $SOA = $tmp[0]." ".$tmp[1]." $date$serial_number ".$tmp[3]." ".$tmp[4]." ".$tmp[5]." ".$tmp[6];
 
   // Update the SOA with this new SOA serial number.
-  if(!pql_modify_attribute($ldap->ldap_linkid, $soa["dn"], pql_get_define("PQL_ATTR_SOARECORD"), 1, $SOA))
+  if(!pql_modify_attribute($linkid, $soa["dn"], pql_get_define("PQL_ATTR_SOARECORD"), 1, $SOA))
 	return false;
   else
 	return true;
