@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.26 2004-04-04 07:01:47 turbo Exp $
+// $Id: left-control.php,v 2.27 2004-04-06 07:19:06 turbo Exp $
 //
 session_start();
 
@@ -9,8 +9,6 @@ require("./include/pql_control.inc");
 require("./include/pql_control_plugins.inc");
 
 require("./left-head.html");
-
-$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"], false, 0);
 
 // TODO: How do we know if the user is allowed to add domains?
 //       In the domain description we don't have that info...
