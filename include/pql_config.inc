@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.19 2003-04-24 07:28:15 turbo Exp $
+// $Id: pql_config.inc,v 1.20 2003-04-26 14:57:33 turbo Exp $
 //
 global $config;
 
@@ -202,6 +202,13 @@ foreach($_pql->ldap_basedn as $dn)  {
 	
 	session_register("ALLOW_BRANCH_CREATE", "ALLOW_CONTROL_CREATE");
 }
+
+// Remove some variables so we don't clutter the global
+// variable name space!
+unset($host); unset($servers); unset($i);
+unset($value); unset($sr); unset($info);
+unset($key); unset($v); unset($nkey);
+unset($k);
 
 // Verify that the user have access to write the global phpQLAdmin config
 // in the first base DN
