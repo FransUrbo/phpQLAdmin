@@ -42,8 +42,12 @@ $attribs = array("dnmember"			=> pql_get_define("PQL_ATTR_GROUP_DN_MEMBER"),
 				 "rfc822moderator"	=> pql_get_define("PQL_ATTR_GROUP_822_MODERATOR"));
 foreach($attribs as $key => $attrib) {
 	// Get default value
-	$value = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], $attrib);
-	$$key  = $value;
+	if($value = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], $attrib)) {
+	  if(!is_array($value))
+		$$key  = array($value);
+	  else
+		$$key  = $value;
+	}
 }
 
 $url_tmp    = "user_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&user=".$url["user"]."&";
