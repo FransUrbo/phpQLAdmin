@@ -64,3 +64,35 @@ This will create a vhost entry that looks like:
         ServerAdmin turbo@bayour.com
 </VirtualHost>
 ----- s n i p -----
+
+The httpd.conf will need the following entry to allow
+virtual hosting in the LDAP server:
+----- s n i p -----
+# http://www4.ncsu.edu/~bdferris/mod_ldap_cfg/index.html
+LoadModule ldap_cfg_module    /root/apache/mod_ldap_cfg.so
+<IfModule mod_ldap_cfg.c>
+  #   1: Prints all configuration directives as sent to Apache
+  #   2: Prints all configurations directives with line numbers
+  #   4: Prints LDAP search information
+  #   8: Prints LDAP connection information
+  #  16: Prints LDAP SASL connection information
+  #  32: Prints handling of "LDAPCfg_*" directives
+  #  64: Prints every mod_ldap_cfg function call made
+  # 128: Everything else that only a developer could love
+  #  -1: All of it
+#  LDAPCfg_Debug         -1
+
+  LDAPCfg_BindDN        "<dn>"
+  LDAPCfg_Password      <secret>
+
+  LDAPCfg_BaseDN        <basedn>
+  LDAPCfg_SearchScope   sub
+
+  LDAPCfg_URI           <ldapuri>
+  LDAPCfg_ProtoVer      3
+  LDAPCfg_UseSimpleBind
+
+  LDAPCfg_Load          "ApacheSectionArg=192.168.1.4*"
+</IfModule>
+----- s n i p -----
+
