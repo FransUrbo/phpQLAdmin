@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.11 2004-03-26 09:45:36 turbo Exp $
+// $Id: config_attributes.inc,v 2.12 2004-03-29 07:53:14 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -65,6 +65,8 @@ pql_set_define("PQL_ATTR_LDAPBASEDN",						strtolower("ldapBaseDN"),					false);
 pql_set_define("PQL_ATTR_LDAPCLUSTER",						strtolower("ldapCluster"),					false);
 pql_set_define("PQL_ATTR_LDAPDEFAULTDOTMODE",				strtolower("ldapDefaultDotMode"),			false);
 pql_set_define("PQL_ATTR_LDAPDEFAULTQUOTA",					strtolower("ldapDefaultQuota"),				false);
+pql_set_define("PQL_ATTR_LDAPDEFAULTQUOTA_SIZE",			strtolower("DefaultQuotaSize"),				false);
+pql_set_define("PQL_ATTR_LDAPDEFAULTQUOTA_COUNT",			strtolower("DefaultQuotaCount"),			false);
 pql_set_define("PQL_ATTR_LDAPGID",							strtolower("ldapGid"),						false);
 pql_set_define("PQL_ATTR_LDAPLOCALDELIVERY",				strtolower("ldapLocalDelivery"),			false);
 pql_set_define("PQL_ATTR_LDAPLOGIN",						strtolower("ldapLogin"),					false);
