@@ -5,8 +5,19 @@ phpQLAdmin 2.0.5 Release - TO BE RELEASED
 	  - In same cases, when playing with the PQL_LDAP_EZMLM_USE and/or
 	    PQL_LDAP_CONTROL_USE values, a frame was created when it wasn't
 	    supposed to, and vise versa.
+	  - In some cases (non advanced mode, creating 'Mail account' amongst
+	    others, no default domainname in the branch object) will render
+	    the mailHost value empty. Before we save, we test if the value is
+	    set one last time. If it isn't, and we have no MX pointer, we get
+	    a NEW MX value from the email address.
+	    + I had code that did that at the top, so move that into a separate
+	      function pql_get_mx() that we can call at will.
 	  - Allow for deletion of the mail reply text.
 	  - If there's only one host, show that (CORRECTLY) on the login page.
+	  - Call pql_domain_exist() with only the branch name, not the DN.
+	    + Had to rewrite it so that it adds 'dc=' (dc configurable with
+	      PQL_LDAP_ATTR_DOMAIN define) as prefix to the branch in the
+	      search for existing domain/branch. Search from each base DN.
 
 	GUI layout change
 	  - Only show following information if ADVANCED_MODE is set (in the
@@ -45,6 +56,17 @@ phpQLAdmin 2.0.5 Release - TO BE RELEASED
 	  - Add the two 'new' objectclasses (dcOrganizationNameForm and
 	    phpQLAdminBranch) in the PQL_LDAP_OBJECTCLASS_DOMAIN define. This
 	    will let us make it configurable at runtime later...
+	  - New function pql_get_subschema() that retreives specific entries
+	    from the 'cn=Subschema' (or whatever is defined in the subschemaSubentry
+	    at base ''). 
+	    + Using the wrapper function pql_get_subschemas() we can get ALL
+	      interesting values (ldapsyntaxes, matchingrules, attributetypes and
+	      objectclasses) in one go.
+	    + The intention of this is to be able to configure what attributes to
+	      use when creating users and/or branches. To make sure each MUST is
+	      fullfilled, we (phpQLAdmin) must know which MUST belong to which
+	      object class (only the LDAP can tell us the truth, the whole truth
+	      and nothing BUT the truth).
 
 phpQLAdmin 2.0.4 Release (Jan 14 2003)
 	Bug fixes
