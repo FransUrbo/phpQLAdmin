@@ -6,7 +6,7 @@ objectClass: phpQLAdminConfig
 objectClass: phpQLAdminGlobal
 branchReference: o
 userReference: uid
-hostMaster: turbo@bayour.com
+hostMaster: turbo@phpqladmin.com
 passWordScheme: MD5
 branchObjectClass: organization
 branchObjectClass: phpQLAdminBranch
@@ -21,7 +21,7 @@ dn: o=Main Branch,c=SE
 objectClass: organization
 objectClass: phpQLAdminBranch
 o: Main Branch
-defaultDomain: phpqladmin.bayour.com
+defaultDomain: phpqladmin.com
 baseHomeDir: /var/www.ldap/phpQLAdmin-CVS.demo/Users
 baseMailDir: /var/www.ldap/phpQLAdmin-CVS.demo/Mail
 administrator: uid=demo2,o=Main Branch,c=SE
@@ -71,7 +71,7 @@ cn: Demo User 1
 sn: Demo
 uid: demo1
 loginShell: /bin/false
-homeDirectory: /var/www.ldap/phpQLAdmin-CVS.demo/Users/phpqladmin.bayour.com/
+homeDirectory: /var/www.ldap/phpQLAdmin-CVS.demo/Users/phpqladmin.com/
 uidNumber: 1000
 gidNumber: 1000
 gecos: Demo User 1
@@ -91,7 +91,7 @@ cn: Demo User 2
 sn: Demo
 uid: demo2
 loginShell: /bin/false
-homeDirectory: /var/www.ldap/phpQLAdmin-CVS.demo/Users/phpqladmin.bayour.com/
+homeDirectory: /var/www.ldap/phpQLAdmin-CVS.demo/Users/phpqladmin.com/
 uidNumber: 1001
 gidNumber: 1001
 gecos: Demo User 2
@@ -112,7 +112,7 @@ cn: Demo User 3
 sn: Demo
 uid: demo3
 loginShell: /bin/false
-homeDirectory: /var/www.ldap/phpQLAdmin-CVS.demo/Users/phpqladmin.bayour.com/
+homeDirectory: /var/www.ldap/phpQLAdmin-CVS.demo/Users/phpqladmin.com/
 uidNumber: 1002
 gidNumber: 1002
 gecos: Demo User 3

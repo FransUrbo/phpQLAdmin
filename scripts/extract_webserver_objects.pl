@@ -39,7 +39,7 @@ for($i = 0; $i < $count; $i++) {
     # ApacheSectionArg: 192.168.1.4
     # ApacheServerName: testing.bayour.com
     # ApacheDocumentRoot: /var/www/testing
-    # ApacheServerAdmin: turbo@bayour.com
+    # ApacheServerAdmin: turbo@phpqladmin.com
     # ApacheErrorLog: /var/log/apache/testing_error.log
     # ApacheTransferLog: /var/log/apache/testing_access.log
 
