@@ -41,6 +41,8 @@ phpQLAdmin 2.0.15 Release (TO BE ANNOUNCED)
 	    included, we won't see/get all the branch defaults we might
 	    need.
 	    Closes bug 20
+	  - Implemented change of Bind9 zone values.
+	    Closes bug 1
  
 	GUI layout change
 	  - Possibility to set a value in the domain branch saying we

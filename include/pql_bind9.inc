@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.4 2003-05-21 06:25:06 turbo Exp $
+// $Id: pql_bind9.inc,v 2.5 2003-06-24 07:43:49 turbo Exp $
 //
 
 function pql_bind9_get_zone($linkid, $dn) {
@@ -184,10 +184,74 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_bind9_add_host", $dn, $entry);
+
 	if(! ldap_add($linkid, $dn, $entry)) {
-		// Can't add SOA record
 		pql_errormsg($linkid);
-		
+		die($LDIF);
+		return false;
+	}
+
+	return true;
+}
+
+function pql_bind9_get_record($linkid, $dn, $record = '') {
+	if($record) {
+		$record = lc($record);
+
+		$filter = "(&(objectclass=dNSZone)($record=*)";
+		$attrs  = array($record);
+	} else {
+		$filter = "(&(objectclass=dNSZone)";
+		$attrs  = array();
+	}
+
+	if(ereg('@', $dn)) {
+		// It's a SOA record. This is encoded differently in the DN and
+		// inside the object -> Only the @ is INSIDE the object. Search
+		// one level above the exact DN.
+		$object = ldap_explode_dn($dn, 0);
+		$len    = count($object)-2;
+
+		unset($dn);
+		for($i=$len; $object[$i]; $i--)
+		  if($i > 0)
+			$dn = ",".$object[$i].$dn;
+
+		$dn = ereg_replace("^,", "", $dn);
+
+		$filter .= "(relativeDomainName=@))";
+
+		$sr = @ldap_list($linkid, $dn, $filter, $attrs) or pql_errormsg($linkid);
+	} else {
+		$filter .= ")";
+		$sr = @ldap_read($linkid, $dn, $filter, $attrs) or pql_errormsg($linkid);
+	}
+
+	$info = @ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
+
+	if($info[0][$record]["count"] == 1)
+	  $ret[] = $info[0][$record][0];
+	else {
+		for($i=0; $i < $info[0][$record]["count"]; $i++)
+		  $ret[] = $info[0][$record][$i];
+	}
+
+	return($ret);
+}
+
+function pql_bind9_set_record($linkid, $dn, $record, $value = '') {
+	if(!is_array($record)) {
+		$record = lc($record);
+		$entry[$record] = $value;
+	} else
+	  // We've been called with an already created 'LDIF'...
+	  $entry = $record;
+
+	// Create a LDIF object to print in case of error
+	$LDIF = pql_create_ldif("pql_bind9_set_record", $dn, $entry);
+
+    if(!ldap_mod_replace($linkid, $dn, $entry)) {
+		pql_errormsg($linkid);
 		die($LDIF);
 		return false;
 	}
