@@ -2,8 +2,48 @@ phpQLAdmin 2.0 Change Log
 
 phpQLAdmin 2.0.13 TO BE ANNOUNCED
 	Bug fixes
+	  - Don't check the domainname when creating a new branch. If the
+	    user want to create it in a certain way, let him/her!
+	  - We're getting an array from the function pql_get_mx()! Use the
+	    SECOND value. Now I know why I sometimes got TWO mailHost
+	    attribute values. The first is a TRUE/FALSE value!!!
+	  - Some missing define to global $config translations fixed.
+	  - Don't force a reload of the Controls frame unless we
+	    specificly ask to do it (ie, setting the rlnb variable).
+	  - Before changing the gecos and the givenName, let's see
+	    if it's in the object. If is, change it, othervise don't.
+	    That way we get around the missing objectclass error if
+	    it doesn't exist (and we don't have an objectclass for
+	    them).
+
 	GUI layout change
+	  - Password scheme is separate from password, using a radio input
+	    instead of <select>.
+	  - Now the password really IS the password, not the principal (even
+	    if we're backward compatible with the old behavior where you
+	    specified the principal name into the password field).
+	  - Create the userPassword attribute differently depending on what
+	    scheme we're using.
+	  - We know what base to use for adding branch, so don't use
+	    'the first base DN found' - adding branches in DB with multiple
+	    namingContexts.
+	  - Show input fields for homedirectory (when creating a user) if
+	    it's a normal OR system account. We need homedir to be able
+	    to use IMAP/POP...
+	    + Use this info when creating an account (all types exept
+	      a forwarding account).
+	  - Show a radio button on what to do with the users mailbox when
+	    deleting a user - Delete, Archive or donate it to another user.
+	    The actuall action is not yet implemented, just the frameworks.
+	  - One size smaller on all font sizes in the left frame(s).
+	  - Use radio input with availible password schemes to choose
+	    from (when adding a password scheme to branch).
+
 	Misc changes
+	  - Added a cron script to (possibly) restart qmail if
+	    locals/rcpthosts have been changed - restart_qmail.pl.
+	  - Added the possibility to create a Debian GNU/Linux package
+	    (I'm also the official Debian GNU/Linux maintainer).
 
 phpQLAdmin 2.0.12 Release (May 3 2003)
 	Bug fixes
