@@ -41,6 +41,7 @@
       </tr>
 
 <?php } ?>
+<?php if(!$USER_IS_GROUP) { ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Password')?></td>
         <td><?=$userpassword?></td>
@@ -49,13 +50,14 @@
         </td>
       </tr>
 
+<?php } ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Surname').", ".$LANG->_('Lastname')?></td>
         <td><?=$cn?></td>
         <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=cn&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change common name')?>" border="0"></a></td>
       </tr>
 
-<?php if($_SESSION["ADVANCED_MODE"]) { ?>
+<?php if($_SESSION["ADVANCED_MODE"] and !$USER_IS_GROUP) { ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Login shell')?></td>
         <td><?php if($loginshell){echo $loginshell;}else{echo $LANG->_('None');} ?></td>
@@ -77,9 +79,7 @@
         </td>
       </tr>
 
-<?php
-	if(($uidnumber != '') && ($gidnumber != '')) {
-?>
+<?php if(($uidnumber != '') && ($gidnumber != '')) { ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('UID;GID')?></td>
         <td><?=$uidnumber . ";" . $gidnumber?></td>
