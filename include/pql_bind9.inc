@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.22 2004-02-14 14:25:36 turbo Exp $
+// $Id: pql_bind9.inc,v 2.23 2004-03-04 19:23:34 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -118,7 +118,7 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 	// See if the sub branch exists. If not, create it.
 	if(!pql_unit_exist($linkid, $MASTER_DN, 'DNS')) {
 		// Does not exists - create it
-		if(pql_unit_add($linkid, $MASTER_DN, 'DNS')) {
+		if(pql_unit_add($linkid, $MASTER_DN, 'ou=DNS')) {
 			$dn = "ou=DNS,$MASTER_DN";
 
 			$DNs[] = $dn;
