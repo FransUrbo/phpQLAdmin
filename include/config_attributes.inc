@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.14 2004-04-02 12:45:50 turbo Exp $
+// $Id: config_attributes.inc,v 2.15 2004-04-03 06:31:09 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -306,16 +306,6 @@ $PQL_ATTRIBUTE["BRANCH"] = array("PQL_CONF_SHOW_USERS"					=> pql_get_define("PQ
 								 "PQL_CONF_SCRIPT_CREATE_DOMAIN"		=> pql_get_define("PQL_ATTR_SCRIPT_CREATE_DOMAIN"),
 								 "PQL_CONF_REFERENCE_USERS_WITH"		=> pql_get_define("PQL_ATTR_REFERENCE_USERS_WITH"),
 								 "PQL_CONF_REFERENCE_DOMAINS_WITH"		=> pql_get_define("PQL_ATTR_REFERENCE_DOMAINS_WITH"),
-								 "PQL_CONF_WEBSRV_SRV_IP"				=> pql_get_define("PQL_ATTR_WEBSRV_SRV_IP"),
-								 "PQL_CONF_WEBSRV_SRV_URL"				=> pql_get_define("PQL_ATTR_WEBSRV_SRV_URL"),
-								 "PQL_CONF_WEBSRV_SRV_ADMIN"			=> pql_get_define("PQL_ATTR_WEBSRV_SRV_ADMIN"),
-								 "PQL_CONF_WEBSRV_DOCROOT"				=> pql_get_define("PQL_ATTR_WEBSRV_DOCROOT"),
-								 "PQL_CONF_WEBSRV_SRV_ALIAS"			=> pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS"),
-								 "PQL_CONF_WEBSRV_SCRIPT_URL"			=> pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_URL"),
-								 "PQL_CONF_WEBSRV_SCRIPT_PATH"			=> pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_PATH"),
-								 "PQL_CONF_WEBSRV_LOG_ERROR"			=> pql_get_define("PQL_ATTR_WEBSRV_LOG_ERROR"),
-								 "PQL_CONF_WEBSRV_LOG_TRANSFER"			=> pql_get_define("PQL_ATTR_WEBSRV_LOG_TRANSFER"),
-								 "PQL_CONF_WEBSRV_OPTIONS"				=> pql_get_define("PQL_ATTR_WEBSRV_OPTIONS"),
 								 "PQL_CONF_SUBTREE_USERS"				=> pql_get_define("PQL_ATTR_SUBTREE_USERS"),
 								 "PQL_CONF_SUBTREE_GROUPS"				=> pql_get_define("PQL_ATTR_SUBTREE_GROUPS"),
 								 "PQL_CONF_VAT_NUMBER"					=> pql_get_define("PQL_ATTR_VAT_NUMBER"));
