@@ -18,6 +18,7 @@ if(!pql_domain_exist($_pql, $dc[1])){
 $defaultdomain = pql_get_domain_value($_pql, $domain, "defaultdomain");
 $basehomedir   = pql_get_domain_value($_pql, $domain, "basehomedir");
 $basemaildir   = pql_get_domain_value($_pql, $domain, "basemaildir");
+$maxusers      = pql_get_domain_value($_pql, $domain, "maximumdomainusers");
 
 $additionaldomainname = pql_get_domain_value($_pql, $domain, "additionaldomainname");
 
@@ -27,8 +28,8 @@ $additionaldomainname = pql_get_domain_value($_pql, $domain, "additionaldomainna
 // Page 1: surname, name, email, account_type, account_status
 if($submit == "") {
 	// Before continuing, let's see how many users there can be
-	if($config["PQL_CONF_MAX_DOMAIN_USERS"][$rootdn]) {
-		if(count(pql_get_user($_pql->ldap_linkid, $domain)) >= $config["PQL_CONF_MAX_DOMAIN_USERS"][$rootdn]) {
+	if($maxusers) {
+		if(count(pql_get_user($_pql->ldap_linkid, $domain)) >= $maxusers) {
 			// We have reached the maximum amount of users.
 			include("./header.html");
 ?>
