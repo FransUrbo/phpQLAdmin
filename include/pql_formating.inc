@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.24 2004-05-06 16:41:37 turbo Exp $
+// $Id: pql_formating.inc,v 2.25 2004-05-10 13:32:27 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -234,7 +234,7 @@ function pql_format_tree_span($text, $links, $level) {
 		// If it's a user, we want an icon before the list...
 		// DIRTY HACK: An option to the function instead?
 		$icon = 0;
-		if(eregi("user_detail\.php", $link))
+		if(eregi("user_detail\.php", $link) or eregi("ezmlm_detail\.php", $link))
 		  $icon = 1;
 
 		if($text) {
