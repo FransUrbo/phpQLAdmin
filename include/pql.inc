@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.121 2003-11-14 20:13:39 turbo Exp $
+// $Id: pql.inc,v 2.122 2003-11-15 09:29:18 turbo Exp $
 //
 
 // ----------------------------
@@ -1481,7 +1481,7 @@ function pql_get_subbranch($linkid, $dn, $filter = 1) {
 // {{{ pql_get_rootdn(dn)
 function pql_get_rootdn($dn) {
 	global $_pql;
-	$tracker = 'Please report this at the <a href="http://papadoc.bayour.com:23000/anthill/" target="_new">bugtracker</a>.<br>';
+	$tracker = 'Please report this at the <a href="http://apache.bayour.com/anthill/" target="_new">bugtracker</a>.<br>';
 
 	if($dn == '') {
 		echo "This is weird. We're called with an empty DN! $tracker";

@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.60 2003-11-14 11:55:52 turbo Exp $
+// $Id: left.php,v 2.61 2003-11-15 09:29:13 turbo Exp $
 //
 session_start();
 
@@ -93,7 +93,7 @@ if($advanced == 1) {
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="CHANGES"><?=$LANG->_('What\'s been done')?></a></nobr><br>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="update_translations.php" target="_new"><?=$LANG->_('Language translator')?></a></nobr><br>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://phpqladmin.bayour.com/">phpqladmin.bayour.com</a></nobr><br>
-    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://papadoc.bayour.com:23000/anthill/" target="_new"><?=$LANG->_('Bugtracker')?></a></nobr><br>
+    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://apache.bayour.com/anthill/" target="_new"><?=$LANG->_('Bugtracker')?></a></nobr><br>
 <?php } ?>
 <?php if($opera) { ?>
   </span>
