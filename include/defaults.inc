@@ -191,7 +191,9 @@ pql_set_define("PQL_CONF_PASSWORD_SCHEMES", "CRYPT,MD5,SHA,CLEAR,KERBEROS", fals
 // Defines which attribute phpQLAdmin passes to various functions when it needs to reference users.
 // This attribute is used to retrieve the dn for the referenced user account. So it's
 // obvious that this attribute must be unique!  
-pql_set_define("PQL_CONF_REFERENCE_USERS_WITH", pql_get_define("PQL_GLOB_ATTR_UID"), false, $dn);
+//
+// By default this is PQL_GLOB_ATTR_UID ('uid').
+pql_set_define("PQL_CONF_REFERENCE_USERS_WITH", "uid", false, $dn);
 
 // ----------------------------
 // PQL_CONF_REFERENCE_DOMAINS_WITH (dc | ou | o)
