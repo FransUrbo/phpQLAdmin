@@ -97,32 +97,30 @@ if($mailhost == "") {
 }
 ?>
 
-<?php include("./tables/user_details-basic.inc"); ?>
-<?php include("./tables/user_details-personal.inc"); ?>
-<?php include("./tables/user_details-email.inc"); ?>
-<?php include("./tables/user_details-forwards_from.inc"); ?>
-<?php include("./tables/user_details-status.inc"); ?>
-<?php if($ADVANCED_MODE) { ?>
-<?php	include("./tables/user_details-delivery.inc"); ?>
-<?php	include("./tables/user_details-delivery_advanced.inc"); ?>
-<?php	include("./tables/user_details-mailbox.inc"); ?>
-<?php } ?>
-<?php include("./tables/user_details-forwards_to.inc"); ?>
-<?php if($ADVANCED_MODE and !$SINGLE_USER) { ?>
-<?php	include("./tables/user_details-access.inc"); ?>
-<?php } ?>
+  <table cellspacing="0" border="0" width="100%" cellpadding="0">
+    <tr>
+      <td colspan="2" valign="bottom" align="left" width="100%" colspan="2"><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$user&view=basic"?>"><img alt="/ User Data \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$user&view=personal"?>"><img alt="/ Personal Details \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$user&view=email"?>"><img alt="/ Registred Addresses \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$user&view=status"?>"><img alt="/ Account Status \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$user&view=delivery"?>"><img alt="/ Delivery Mode \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$user&view=delivery_advanced"?>"><img alt="/ Advanced Delivery Properties \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$user&view=mailbox"?>"><img alt="/ Mailbox properties \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$user&view=forwards_to"?>"><img alt="/ Forwarders from other accounts \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$user&view=forwards_from"?>"><img alt="/ Forwarding to other account \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$user&view=access"?>"><img alt="/ User Access \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><?php if(!$SINGLE_USER) { ?><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$user&view=actions"?>"><img alt="/ Actions \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><?php } ?></td>
+  </tr>
+</table>
 
-<?php if(!$SINGLE_USER) { ?>
-  <br><br>
-
-  <table cellspacing="0" cellpadding="3" border="0">
-    <th align="left"><?=PQL_LANG_ACTIONS?></th>
-      <tr class="<?php table_bgcolor(); ?>">
-        <td><a href="user_del.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$user?>"><?=PQL_LANG_USER_DELETE?></a></td>
-      </tr>
-    </th>
-  </table>
-<?php }
+<?php
+if(($view == 'basic') or ($view == ''))	include("./tables/user_details-basic.inc");
+if($view == 'personal')					include("./tables/user_details-personal.inc");
+if($view == 'email')					include("./tables/user_details-email.inc");
+if($view == 'status')					include("./tables/user_details-status.inc");
+if($ADVANCED_MODE) {
+	if($view == 'delivery')				include("./tables/user_details-delivery.inc");
+	if($view == 'delivery_advanced')	include("./tables/user_details-delivery_advanced.inc");
+	if($view == 'mailbox')				include("./tables/user_details-mailbox.inc");
+}
+if($view == 'forwards_from')			include("./tables/user_details-forwards_from.inc");
+if($view == 'forwards_to')				include("./tables/user_details-forwards_to.inc");
+if($ADVANCED_MODE and !$SINGLE_USER) {
+	if($view == 'access')				include("./tables/user_details-access.inc");
+}
+if(!$SINGLE_USER) {
+	if($view == 'actions')				include("./tables/user_details-action.inc");
+}
 
 /*
  * Local variables:

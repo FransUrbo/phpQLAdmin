@@ -84,28 +84,41 @@ $additionaldomainname = pql_get_domain_value($_pql, $domain, "additionaldomainna
 
   <br><br>
 
-<?php if($ADVANCED_MODE == 1) { ?>
-<?php	include("./tables/domain_details-default.inc"); ?>
-<?php } ?>
-<?php include("./tables/domain_details-owner.inc"); ?>
+  <table cellspacing="0" border="0" width="100%" cellpadding="0">
+    <tr>
+      <td colspan="2" valign="bottom" align="left" width="100%"><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=default"?>"><img alt="/ Default Branch Values \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=owner"?>"><img alt="/ Branch Owner \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=users"?>"><img alt="/ Registred Users \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=chval"?>"><img alt="/ Change values of all users in this branch \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=dnsinfo"?>"><img alt="/ DNS Information \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=options"?>"><img alt="/ Control Options \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=action"?>"><img alt="/ Actions \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a></td>
+  </tr>
+</table>
 
-<?php $users = pql_get_user($_pql->ldap_linkid, $domain); ?>
-<?php include("./tables/domain_details-users.inc"); ?>
-<?php if(is_array($users)) { ?>
-<?php	include("./tables/domain_details-users_chval.inc"); ?>
-<?php } ?>
+<?php
+if($ADVANCED_MODE and (($view == 'default') or ($view == ''))) {
+	include("./tables/domain_details-default.inc");
+}
+if($view == 'owner') {
+	include("./tables/domain_details-owner.inc");
+}
 
-<?php if($ADVANCED_MODE == 1) { ?>
-<?php	include("./tables/domain_details-dnsinfo.inc"); ?>
-<?php	include("./tables/domain_details-options.inc"); ?>
-  <table cellspacing="0" cellpadding="3" border="0">
-    <th align="left"><?=PQL_LANG_ACTIONS?></th>
-      <tr class="<?php table_bgcolor(); ?>">
-        <td><a href="domain_del.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>"><?=PQL_LANG_DOMAIN_DEL?></a></td>
-      </tr>
-    </th>
-  </table>
-<?php } ?>
+if(($view == 'users') or ($view == 'chval')) {
+	$users = pql_get_user($_pql->ldap_linkid, $domain);
+
+	if($view == 'users')
+		include("./tables/domain_details-users.inc");
+
+	if(is_array($users) and ($view == 'chval'))
+		include("./tables/domain_details-users_chval.inc");
+}
+
+if($ADVANCED_MODE == 1) {
+	if($view == 'dnsinfo')
+		include("./tables/domain_details-dnsinfo.inc");
+
+	if($view == 'options')
+		include("./tables/domain_details-options.inc");
+
+	if($view == 'action')
+		include("./tables/domain_details-action.inc");
+}
+?>
 </body>
 </html>
 

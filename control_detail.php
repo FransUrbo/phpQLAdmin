@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.16 2003-05-15 07:02:02 turbo Exp $
+// $Id: control_detail.php,v 1.17 2003-05-15 12:22:42 turbo Exp $
 session_start();
 require("./include/pql_config.inc");
 
@@ -64,12 +64,26 @@ if($config["PQL_GLOB_CONTROL_USE"]) {
 
   <br><br>
 
-<?php include("./tables/control_details-base.inc"); ?>
-<?php include("./tables/control_details-hosts.inc"); ?>
-<?php include("./tables/control_details-action.inc"); ?>
-<?php } else { ?>
+  <table cellspacing="0" border="0" width="100%" cellpadding="0">
+    <tr>
+      <td colspan="2" valign="bottom" align="left" width="100%"><a href="<?=$PHP_SELF."?mxhost=$mxhost&view=default"?>"><img alt="/ Base Values \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><a href="<?=$PHP_SELF."?mxhost=$mxhost&view=hosts"?>"><img alt="/ Locals and RCPT Hosts \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a><a href="<?=$PHP_SELF."?mxhost=$mxhost&view=action"?>"><img alt="/ Action \" vspace="0" hspace="0" border="0" src="images/xxx.png"></a></td>
+  </tr>
+</table>
+
+<?php
+	if(($view == 'default') or ($view == ''))
+		include("./tables/control_details-base.inc");
+
+	if($view == 'hosts')
+		include("./tables/control_details-hosts.inc");
+
+	if($view == 'action')
+		include("./tables/control_details-action.inc");
+} else {
+?>
   <span class="title1">PQL_GLOB_CONTROL_USE isn't set, won't show control information</span>
-<?php }
+<?php
+}
 /*
  * Local variables:
  * mode: php
