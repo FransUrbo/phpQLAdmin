@@ -1,11 +1,12 @@
 <?php
 // make some simple tests on ldap connection
-// $Id: config_ldaptest.php,v 2.29 2004-11-08 09:00:23 turbo Exp $
+// $Id: config_ldaptest.php,v 2.30 2004-11-08 14:41:23 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 require("./include/pql_control.inc");
 
+// {{{ Check a domain value
 function check_domain_value($linkid, $dn, $attrib, $value) {
 	global $LANG;
 
@@ -24,21 +25,23 @@ function check_domain_value($linkid, $dn, $attrib, $value) {
 		// Success - delete it again
 		unset($entry);
 		$entry['test'] = array();
-		pql_write_mod($linkid, $dn, $entry, "config_ldaptest.php:check_domain_value()/2") {
+		pql_write_mod($linkid, $dn, $entry, "config_ldaptest.php:check_domain_value()/2");
 
 		return(0);
 	}
 }
+// }}}
 
 if(!function_exists("ldap_connect")){
+	// {{{ Not availible
 	$ldap_ext = $LANG->_('Not available');
 	$connection = "-";
 	$connection_control = "-";
+	// }}}
 } else {
 	$ldap_ext = $LANG->_('Built in (loaded)');
 	
-	// =======================================
-	// User directory connection
+	// {{{ User directory connection
 	$_pql = new pql($_SESSION["USER_HOST"], '', '', true);
 	if(!$_pql->connect($_SESSION["USER_HOST"])) {
 		$connection = $LANG->_('Failed');
@@ -66,9 +69,9 @@ if(!function_exists("ldap_connect")){
 		else
 		  $connection = $LANG->_('Yes');
 	}
+	// }}}
 
-	// =======================================
-	// Control directory connection
+	// {{{ Control directory connection
 	if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 		$_pql_control = new pql_control($_SESSION["USER_HOST"], '', '', true);
 		if(!$_pql_control->connect($_SESSION["USER_HOST"])) {
@@ -103,25 +106,23 @@ if(!function_exists("ldap_connect")){
 		}
 	} else
 	  $connection_control = $LANG->_('Control extension deactivated');
+	// }}}
 
-	// =======================================
-	// Access rights
+	// {{{ Access rights
 	if($_SESSION["USER_DN"] and $_SESSION["USER_PASS"]) {
 		$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 		foreach($_pql->ldap_basedn as $basedn) {
 			$basedn = urldecode($basedn);
 
-			// ----------------------
-			// Try to set the attribute 'test' in the top DN
+			// {{{ Try to set the attribute 'test' in the top DN
 			$fail = check_domain_value($_pql->ldap_linkid, $basedn, 'test', 'TRUE');
 			if($fail)
 			  $TEST["basedn"][$basedn] = $fail;
 			else
 			  $TEST["basedn"][$basedn] = $LANG->_('Yes');
+			// }}}
 			
-			// ----------------------
-			// Test to see if we have access to create domain/branches
-			// by creating a subbranch
+			// {{{ Test to see if we have access to create domain/branches by creating a subbranch
 			unset($entry);
 			$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "top";
 			if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "dc") {
@@ -150,9 +151,9 @@ if(!function_exists("ldap_connect")){
 
 				$TEST["branches"][$basedn] = $LANG->_('Yes');
 			}
+			// }}}
 			
-			// =======================================
-			// Check write access
+			// {{{ Check write access
 			$filter = "(&" . pql_setup_branch_objectclasses(1, $basedn)
 			  . "(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) . "=*))";
 			
@@ -172,6 +173,7 @@ if(!function_exists("ldap_connect")){
 			for ($i=0; $i<$info["count"]; $i++) {
 				$domains[] = $info[$i]["dn"];
 			}
+			// }}}
 		}
 
 		if(is_array($domains)) {
@@ -186,8 +188,7 @@ if(!function_exists("ldap_connect")){
 			}
 		}
 
-		// =======================================
-		// ACIs enabled?
+		// {{{ Check ACI
 		foreach($_pql->ldap_basedn as $basedn) {
 			$basedn = urldecode($basedn);
 
@@ -224,8 +225,10 @@ if(!function_exists("ldap_connect")){
 				ldap_delete($_pql->ldap_linkid, $dn);
 				$TEST["acis"][$basedn] = $LANG->_('Yes');
 			}
+			// }}}
 		}
 	}
+	// }}}
 } // end if(function_exists...
 
 include("./header.html");
