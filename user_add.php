@@ -628,21 +628,7 @@ switch($submit){
 	if($account_type == "normal" or $account_type == "system") {
 		// display forms for SYSTEM/MAIL account(s)
 ?>
-        <!-- Home directory -->
-        <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_LANG_USER_HOMEDIR; ?></td>
-          <td><?php
-	  if(! ereg("/$", $basehomedir)) {
-		  $homedirectory = $basehomedir . "/" . $uid;
-	  } else {
-		  $homedirectory = $basehomedir . $uid;
-	  }
-	  echo $homedirectory . "/";
-	  ?></td>
-        </tr>
-
         <input type="hidden" name="loginshell" value="<?=$loginshell?>">
-        <input type="hidden" name="homedirectory" value="<?=$homedirectory?>">
 
         <!-- MailMessageStore -->
         <tr class="<?php table_bgcolor(); ?>">
@@ -656,6 +642,11 @@ switch($submit){
 	  echo $maildirectory . "/";
 	  ?></td>
         </tr>
+<?php	if(($account_type == "normal") and $maildirectory) {
+			$homedirectory = $maildirectory;
+?>
+        <input type="hidden" name="homedirectory" value="<?=$homedirectory?>">
+<?php	} ?>
 
         <tr></tr>
 
@@ -775,25 +766,28 @@ switch($submit){
 		}
 
         // ------------------
-		if(($account_type == "system") or ($account_type == "shell")) {
-			// Normal system account
+		if(($account_type == "system") or ($account_type == "shell"))
+		  $entry[$config["PQL_GLOB_ATTR_LOGINSHELL"]] = $loginshell;
 
-			// set SYSTEM attributes
-			$entry[$config["PQL_GLOB_ATTR_LOGINSHELL"]] = $loginshell;
-
-			// Get a free UserID number (which we also use for GroupID number)
-			$uidnr = pql_get_next_uidnumber($_pql);
-			if($uidnr > 0) {
-				$entry[$config["PQL_GLOB_ATTR_QMAILUID"]] = $uidnr;
-				$entry[$config["PQL_GLOB_ATTR_QMAILGID"]] = $uidnr;
+        // ------------------
+		if($account_type != "forward") {
+			if($account_type != "normal") {
+				// Get a free UserID number (which we also use for GroupID number)
+				$uidnr = pql_get_next_uidnumber($_pql);
+				if($uidnr > 0) {
+					$entry[$config["PQL_GLOB_ATTR_QMAILUID"]] = $uidnr;
+					$entry[$config["PQL_GLOB_ATTR_QMAILGID"]] = $uidnr;
+				}
+			} else {
+				// It's a 'Mail account'. Use the forwarding account uidNumber
+				// for ALL 'mail only' accounts.
+				$entry[$config["PQL_GLOB_ATTR_QMAILUID"]] = $config["PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER"][$rootdn];
+				$entry[$config["PQL_GLOB_ATTR_QMAILGID"]] = $config["PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER"][$rootdn];
 			}
 
 			// Gecos is needed to do PAM/NSS LDAP login 
 			$entry["gecos"] = $surname . " " . $name;
-		}
 
-        // ------------------
-		if($account_type != "forward") {
 			// set attributes
 			if(eregi('KERBEROS', $pwscheme)) {
 				// We're using the {KERBEROS} password scheme. Special circumstances.
