@@ -3,7 +3,7 @@
 // pql_lang.inc
 // phpQLAdmin Language Application Programming Interface (API)
 //
-// $Id: pql_lang.inc,v 2.2 2003-06-28 15:23:59 turbo Exp $
+// $Id: pql_lang.inc,v 2.3 2003-07-03 07:50:41 turbo Exp $
 //
 
 // ----------------------------
@@ -25,14 +25,11 @@ class pql_lang {
 	// =================================================== Private section
 	var $_supported = array('en' => 'English');
 	var $_language	= NULL;
+	var $_choosen   = NULL;
 	
 	function _set_array($larr) {
 		// set the lang array for translations
 		$this->_language =& $larr;
-	}
-
-	function _get_supported() {
-		return $this->_supported;
 	}
 
 	// Get default language from database
@@ -87,17 +84,24 @@ class pql_lang {
 			$lang = $this->_get_browser_languages();
 		}
 
-		if(!$lang && file_exists("include/lang.".$lang.".inc"))
-		  // We have a language (either from the database or the browser)
-		  include("./include/lang.".$lang.".inc");
-		else
-		  // No default language. Load the English default
-		  include("./include/lang.en.inc");
+		if(!$lang && file_exists("include/lang.".$lang.".inc")) {
+			// We have a language (either from the database or the browser)
+			include("./include/lang.".$lang.".inc");
+			$this->_choosen = $lang;
+		} else {
+			// No default language. Load the English default
+			include("./include/lang.en.inc");
+			$this->_choosen = 'en';
+		}
 
 		// Initiate the language array.
 		$this->_set_array($language);
 	}
 	
+	function get_supported() {
+		return $this->_supported;
+	}
+
 	// Translate string to the local language [same form as the gettext abbreviation]
 	// This is the order of precedence:
 	//	* If the key exists in the lang array, return the value of the key
@@ -111,6 +115,14 @@ class pql_lang {
 		  // We have a translation for this string -> return it.
 		  $str = $x;
 
+		$str = preg_replace('/\\\\n/', '<br>', $str, -1);
+		$str = preg_replace('/\\\\u/', '<u>',  $str, -1);
+		$str = preg_replace('/\\\\U/', '</u>', $str, -1);
+		$str = preg_replace('/\\\\i/', '<i>',  $str, -1);
+		$str = preg_replace('/\\\\I/', '</i>', $str, -1);
+		$str = preg_replace('/\\\\b/', '<b>',  $str, -1);
+		$str = preg_replace('/\\\\B/', '</b>', $str, -1);
+
 		switch($case) {
 		  case UPPER:
 			$str = strtoupper($str);
@@ -121,11 +133,18 @@ class pql_lang {
 			break;
 
 		  case UPPERFIRST:
-			$str = strtoupper($str[0]);
+//			$str = strtoupper($str[0]);
 			break;
 
 		  case LOWERFIRST:
-			$str = strtolower($str[0]);
+//			for($i=0; $i < strlen($str); $i++) {
+//				if($i=0)
+//				  $new[] = strtolower($str[$i]);
+//				else
+//				  $new[] = $str[$i];
+//			}
+//
+//			$str = $new;
 			break;
 		}
 
