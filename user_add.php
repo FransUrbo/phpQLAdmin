@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.75 2003-11-16 09:36:52 turbo Exp $
+// $Id: user_add.php,v 2.76 2003-11-18 13:03:40 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -243,6 +243,22 @@ switch($page_curr) {
 	if($maildirectory) {
 		// Replace space(s) with underscore(s)
 		$maildirectory = preg_replace('/ /', '_', $maildirectory, -1);
+	}
+
+	// Generate the home directory value
+	if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) == pql_get_define("PQL_GLOB_ATTR_UID")) {
+		$homedirectory = user_generate_homedir($_pql, $email, $domain,
+											   array(pql_get_define("PQL_GLOB_ATTR_UID") => $uid),
+											   'user');
+	} else {
+		$homedirectory = user_generate_homedir($_pql, $email, $domain,
+											   array(pql_get_define("PQL_GLOB_ATTR_UID") => $surname." ".$name),
+											   'user');
+	}
+
+	if($homedirectory) {
+		// Replace space(s) with underscore(s)
+		$homedirectory = preg_replace('/ /', '_', $homedirectory, -1);
 	}
 	break;
 
