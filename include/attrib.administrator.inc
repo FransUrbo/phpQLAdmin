@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.15 2003-05-20 14:12:02 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.16 2003-05-27 19:00:55 turbo Exp $
 
 require("./left-head.html");
 
@@ -65,6 +65,20 @@ function attribute_print_form($action) {
 
 			// We're should give a user access to THIS branch	
 			foreach($_pql->ldap_basedn as $dn) {
+				unset($dom); unset($domains);
+
+				$dom = pql_get_domain_value($_pql, $dn, 'administrator', $GLOBALS["USER_DN"]);
+				if($dom) {
+					foreach($dom as $d) {
+						$domains[] = $d;
+					}
+				}
+
+				if(isset($domains)) {
+					asort($domains);
+					foreach($domains as $key => $domain) {
+						// Get domain part from the DN (Example: 'dc=test,dc=net' => 'test').
+						$d = split(',', $domain); $d = split('=', $d[0]); $d = $d[1];
 ?>
 
             <div id="el<?=$j?>Parent" class="parent">
@@ -73,38 +87,36 @@ function attribute_print_form($action) {
               </a>
         
               <a class="item">
-                <font color="black" class="heada"><?=$dn?></font>
+                <font color="black" class="heada"><?=$d?></font>
               </a>
             </div>
         
             <div id="el<?=$j?>Child" class="child">
-<?php			// Zero out the variables, othervise we won't get users in
-				// specified domain, but also in the PREVIOUS domain shown!
-				unset($users); unset($cns);
-
-				// Get all users in this domain
-				$users = pql_get_user($_pql->ldap_linkid, $dn);
-				if($users) {
-					unset($x);
-
-					foreach($users as $username) {
-						$cn = pql_get_userattribute($_pql->ldap_linkid, $username, $config["PQL_GLOB_ATTR_CN"]);
-						$cns[$username] = $cn[0];
-					}
-
-					asort($cns);
-				}
-
-                foreach($cns as $userdn => $username) {
+<?php					// Get all users (their DN) in this domain
+						$users = pql_get_user($_pql->ldap_linkid, $domain);
+						if(is_array($users)) {
+							// Zero out the variables, othervise we won't get users in
+							// specified domain, but also in the PREVIOUS domain shown!
+							unset($cns);
+							foreach($users as $username) {
+								$cn = pql_get_userattribute($_pql->ldap_linkid, $username, $config["PQL_GLOB_ATTR_CN"]);
+								$cns[$username] = $cn[0];
+							}
+								
+							foreach($cns as $userdn => $username) {
 ?>
               <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="<?=$attrib?>_<?=$i?>" value="<?=$userdn?>"><?=$username?></nobr><br>
-<?php               $i++;
-                }
+<?php              				$i++;
+               				}
+						}
 
-                $j++;
+						$j++;
 ?>
             </div>
-<?php		} ?>
+<?php				}
+				}
+			}
+?>
 
             <input type="hidden" name="<?=$attrib?>_<?=$i?>" value="on">
             <input type="hidden" name="<?=$attrib?>" value="<?=$i?>">
