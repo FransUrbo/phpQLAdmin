@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // usernamePrefix/usernamePrefixLength
-// $Id: attrib.usernameprefix.inc,v 2.6 2004-02-14 14:25:36 turbo Exp $
+// $Id: attrib.usernameprefix.inc,v 2.7 2004-02-26 14:05:27 turbo Exp $
 
 function attribute_check($type = '') {
     global $error, $LANG;
@@ -68,7 +68,7 @@ function attribute_print_form($type = "modify") {
 }
 
 function attribute_save($type) {
-	global $error, $attrib, $$attrib, $domain, $rootdn, $type, $_pql, $view, $LANG;
+	global $error, $attrib, $$attrib, $domain, $rootdn, $_pql, $view, $LANG;
 
 	$attrib = $_REQUEST["attrib"];
 
