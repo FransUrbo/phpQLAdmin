@@ -1,6 +1,6 @@
 phpQLAdmin 2.0 Change Log
 
-phpQLAdmin 2.0.13 TO BE ANNOUNCED
+phpQLAdmin 2.0.13 Release (May 5 2003)
 	Bug fixes
 	  - Don't check the domainname when creating a new branch. If the
 	    user want to create it in a certain way, let him/her!
