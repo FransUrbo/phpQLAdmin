@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.3 2003-05-06 12:50:12 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.4 2003-05-08 11:40:17 turbo Exp $
 
 function attribute_check() {
     global $additionaldomainname, $domain, $oldvalue, $_pql, $error, $rootdn;
@@ -38,6 +38,48 @@ function attribute_print_form() {
           <td class="title">Additional domain name</td>
           <td><?php echo format_error($error["additionaldomainname"]); ?><input type="text" name="additionaldomainname" value="<?php echo $additionaldomainname; ?>" size="20"></td>
         </tr>
+
+<?php if(!function_exists("pql_control"))
+		require("./include/pql_control.inc");
+
+	  // Initiate a connection to the QmailLDAP/Controls DN
+	  $_pql_control = new pql_control($GLOBALS["USER_HOST"], $GLOBALS["USER_DN"], $GLOBALS["USER_PASS"]);
+
+	  $hosts = pql_control_get_hosts($_pql_control->ldap_linkid, $GLOBALS["USER_SEARCH_DN_CTR"]);
+	  if(is_array($hosts)) {
+		  $i = 0;
+?>
+        <tr></tr>
+
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title">Add domain to locals in following objects:</td>
+          <td>
+<?php	  foreach($hosts as $host) { ?>
+            <input type="checkbox" name="locals_<?=$i?>" value="<?=$host?>"><?=$host?><br>
+<?php	  	$i++;
+		  }
+?>
+            <input type="checkbox" name="locals_<?=$i?>">Add to all hosts<br>
+            <input type="hidden" name="locals" value="<?=$i?>">
+            &nbsp;If all left unset, no replication will take place
+          </td>
+        </tr>
+
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title">Add domain to rcpthosts in following objects:</td>
+          <td>
+<?php	  foreach($hosts as $host) { ?>
+            <input type="checkbox" name="rcpthosts_<?=$i?>" value="<?=$host?>"><?=$host?><br>
+<?php	  	$i++;
+		  }
+?>
+            <input type="checkbox" name="rcpthosts_<?=$i?>">Add to all hosts<br>
+            <input type="hidden" name="rcpthosts" value="<?=$i?>">
+            &nbsp;If all left unset, no replication will take place
+          </td>
+        </tr>
+
+<?php } ?>
       </th>
     </table>
 
@@ -53,14 +95,14 @@ function attribute_print_form() {
 
 function attribute_save($type) {
     global $domain, $attrib, $oldvalue, $additionaldomainname, $_pql, $config, $rootdn, $delval;
-    
+
     // recontrol values
     if(!attribute_check($type) and !delval)
 	  return false;
 
 	if(($additionaldomainname == $oldvalue) and !delval) {
 		// don't change if new value equal to old one
-		$msg = PQL_LANG_DOMAIN_DEFAULT_CHANGE_UNCHANGED;
+		$msg = "Additional domain name unchanged";
 		attribute_forward($msg);
 		break;
 	}
@@ -88,20 +130,84 @@ function attribute_save($type) {
 		  $entry[$attrib] = array();
 		
 		if(pql_set_domain_value($_pql->ldap_linkid, $domain, '', $entry)) {
-			$msg = pql_complete_constant(PQL_LANG_DOMAIN_DEFAULT_CHANGE_OK, array("name" => $additionaldomainname));
+			$msg = pql_complete_constant("Successfully changed additional domainname", array("name" => $additionaldomainname));
 
 			require("./include/pql_control.inc");
 			$_pql_control = new pql_control($GLOBALS["USER_HOST"], $GLOBALS["USER_DN"], $GLOBALS["USER_PASS"]);
-			
+
+			// -----------------------------------------
 			// update locals if control patch is enabled
-			if($type == 'delete')
-			  pql_control_update_domains($_pql_control, $GLOBALS["USER_SEARCH_DN_CTR"],
-										 '*', array($delval, ''));
-			else
-			  pql_control_update_domains($_pql_control, $GLOBALS["USER_SEARCH_DN_CTR"],
-										 '*', array($oldvalue, $additionaldomainname));
+			$amount = $_POST["locals"];
+			if($amount) {
+				if($_POST["locals_$amount"] != 'on') {
+					for($i=0; $i < $amount; $i++)
+					  if($_POST["locals_$i"])
+						$hosts[] = $_POST["locals_$i"];
+
+					if(is_array($hosts)) {
+						foreach($hosts as $host)
+						  if($type == 'delete')
+							pql_control_update_domains($_pql_control, 'cn='.$host.','.$GLOBALS["USER_SEARCH_DN_CTR"],
+													   '*', array($delval, ''), "locals");
+						  else
+							pql_control_update_domains($_pql_control, 'cn='.$host.','.$GLOBALS["USER_SEARCH_DN_CTR"],
+													   '*', array($oldvalue, $additionaldomainname), "locals");
+					}
+				} else {
+					// Change all hosts
+					if($type == 'delete')
+					  pql_control_update_domains($_pql_control, $GLOBALS["USER_SEARCH_DN_CTR"],
+												 '*', array($delval, ''), "locals");
+					else
+					  pql_control_update_domains($_pql_control, $GLOBALS["USER_SEARCH_DN_CTR"],
+												 '*', array($oldvalue, $additionaldomainname), "locals");
+				}
+			} else {
+				// We have not gone through the form for adding defaultDomain nor additionalDomainName.
+				// This _MUST_ be a 'delete {default,additional} domain'...
+				//
+				// Delete ALL locals/rcpthosts on ALL QmailLDAP/Controls that lists this domain.
+				pql_control_update_domains($_pql_control, $GLOBALS["USER_SEARCH_DN_CTR"],
+										   '*', array($delval, ''));
+			}
+
+			// -----------------------------------------
+			// update rcpthosts if control patch is enabled
+			$amount = $_POST["rcpthosts"];
+			if($amount) {
+				if($_POST["rcpthosts_$amount"] != 'on') {
+					for($i=0; $i < $amount; $i++)
+					  if($_POST["rcpthosts_$i"])
+						$hosts[] = $_POST["rcpthosts_$i"];
+
+					if(is_array($hosts)) {
+						foreach($hosts as $host)
+						  if($type == 'delete')
+							pql_control_update_domains($_pql_control, 'cn='.$host.','.$GLOBALS["USER_SEARCH_DN_CTR"],
+													   '*', array($delval, ''), "rcpthosts");
+						  else
+							pql_control_update_domains($_pql_control, 'cn='.$host.','.$GLOBALS["USER_SEARCH_DN_CTR"],
+													   '*', array($oldvalue, $additionaldomainname), "rcpthosts");
+					}
+				} else {
+					// Change all hosts
+					if($type == 'delete')
+					  pql_control_update_domains($_pql_control, $GLOBALS["USER_SEARCH_DN_CTR"],
+												 '*', array($delval, ''), "rcpthosts");
+					else
+					  pql_control_update_domains($_pql_control, $GLOBALS["USER_SEARCH_DN_CTR"],
+												 '*', array($oldvalue, $additionaldomainname), "rcpthosts");
+				}
+			} else {
+				// We have not gone through the form for adding defaultDomain nor additionalDomainName.
+				// This _MUST_ be a 'delete {default,additional} domain'...
+				//
+				// Delete ALL locals/rcpthosts on ALL QmailLDAP/Controls that lists this domain.
+				pql_control_update_domains($_pql_control, $GLOBALS["USER_SEARCH_DN_CTR"],
+										   '*', array($delval, ''));
+			}
 		} else
-		  $msg = PQL_LANG_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+		  $msg = "Failed to change an additional domainname" . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 		
 		attribute_forward($msg);
 		break;
