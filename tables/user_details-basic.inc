@@ -6,7 +6,7 @@
         <td><?=$$config["PQL_CONF_REFERENCE_USERS_WITH"][$rootdn]?></td>
         <td>
 <?php if(!$SINGLE_USER) { ?>
-          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=uid&user=<?=$user?>&oldvalue=<?=$uid?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LANG_UID_CHANGE; ?>" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=uid&user=<?=$user?>&oldvalue=<?=$uid?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LANG_UID_CHANGE; ?>" border="0"></a>
 <?php } ?>
         </td>
       </tr>
@@ -23,7 +23,7 @@
         <td><?=$userpassword?></td>
         <td>
 <?php if(!$SINGLE_USER) { ?>
-          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=userpassword&user=<?=$user?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LANG_USERPASSWORD_NEW; ?>" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=userpassword&user=<?=$user?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LANG_USERPASSWORD_NEW; ?>" border="0"></a>
 <?php } ?>
         </td>
       </tr>
@@ -32,7 +32,7 @@
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?php echo PQL_LANG_USER_DATA_SURNAME . ", " . PQL_LANG_USER_DATA_LASTNAME; ?></td>
         <td><?=$cn?></td>
-        <td><a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=cn&user=<?=$user?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LANG_CN_CHANGE; ?>" border="0"></a></td>
+        <td><a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=cn&user=<?=$user?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LANG_CN_CHANGE; ?>" border="0"></a></td>
       </tr>
 
 <?php if($ADVANCED_MODE) { ?>
@@ -41,7 +41,7 @@
         <td><?php if($loginshell){echo $loginshell;}else{echo "none";} ?></td>
         <td>
 <?php if(!$SINGLE_USER) { ?>
-          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=loginshell&user=<?=$user?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LANG_LOGINSHELL_CHANGE; ?>" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=loginshell&user=<?=$user?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LANG_LOGINSHELL_CHANGE; ?>" border="0"></a>
 <?php } ?>
         </td>
       </tr>
@@ -51,7 +51,7 @@
         <td><?php if($homedirectory){echo $homedirectory;}else{echo "none";} ?></td>
         <td>
 <?php if(!$SINGLE_USER) { ?>
-          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=homedirectory&user=<?=$user?>&oldvalue=<?=$homedirectory?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LANG_HOMEDIRECTORY_CHANGE; ?>" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=homedirectory&user=<?=$user?>&oldvalue=<?=$homedirectory?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LANG_HOMEDIRECTORY_CHANGE; ?>" border="0"></a>
 <?php } ?>
         </td>
       </tr>

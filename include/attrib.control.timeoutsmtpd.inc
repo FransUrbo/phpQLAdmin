@@ -2,7 +2,7 @@
 // control attribute plugin for
 // timeoutsmtpd (how long to wait for smtp client)
 //
-// $Id: attrib.control.timeoutsmtpd.inc,v 2.7 2003-05-06 07:52:59 turbo Exp $
+// $Id: attrib.control.timeoutsmtpd.inc,v 2.8 2003-05-28 07:23:37 turbo Exp $
 
 function timeoutsmtpd_check($type) {
 	global $error, $timeoutsmtpd;
@@ -67,8 +67,7 @@ function timeoutsmtpd_print_view($host) {
 }
 
 function timeoutsmtpd_print_form(){
-	global $attrib, $timeoutsmtpd, $PHP_SELF, $error, $mxhost;
-
+	global $attrib, $timeoutsmtpd, $PHP_SELF, $error, $mxhost, $view;
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -86,6 +85,8 @@ function timeoutsmtpd_print_form(){
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
@@ -93,7 +94,7 @@ function timeoutsmtpd_print_form(){
 }
 
 function timeoutsmtpd_save($type, $host) {
-	global $_pql_control, $attrib, $timeoutsmtpd, $error, $mxhost;
+	global $_pql_control, $attrib, $timeoutsmtpd, $error, $mxhost, $view;
 
 	// recontrol values
 	if(!timeoutsmtpd_check($type)){

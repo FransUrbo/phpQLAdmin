@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.7 2003-05-27 08:53:48 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.8 2003-05-28 07:23:37 turbo Exp $
 
 function attribute_check() {
     global $additionaldomainname, $domain, $oldvalue, $_pql, $error, $rootdn;
@@ -28,7 +28,7 @@ function attribute_init() {
 }
 
 function attribute_print_form() {
-    global $additionaldomainname, $domain, $PHP_SELF, $attrib, $oldvalue, $error, $rootdn, $config;
+    global $additionaldomainname, $domain, $PHP_SELF, $attrib, $oldvalue, $error, $rootdn, $config, $view;
 	$oldvalue = $additionaldomainname;
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
@@ -106,13 +106,15 @@ function attribute_print_form() {
     <input type="hidden" name="oldvalue" value="<?=$oldvalue?>">
     <input type="hidden" name="domain" value="<?=$domain?>">
     <input type="hidden" name="rootdn" value="<?=$rootdn?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 <?php
 }
 
 function attribute_save($type) {
-    global $domain, $attrib, $oldvalue, $additionaldomainname, $_pql, $config, $domain, $delval;
+    global $domain, $attrib, $oldvalue, $additionaldomainname, $_pql, $config, $domain, $delval, $view;
 
     // recontrol values
     if(!attribute_check($type) and !delval)

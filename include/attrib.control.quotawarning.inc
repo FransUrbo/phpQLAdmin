@@ -2,10 +2,10 @@
 // control attribute plugin for
 // quotawarning (additional quota warning message)
 //
-// $Id: attrib.control.quotawarning.inc,v 2.6 2003-05-06 07:52:59 turbo Exp $
+// $Id: attrib.control.quotawarning.inc,v 2.7 2003-05-28 07:23:37 turbo Exp $
 
 function quotawarning_check($type) {
-	global $error, $quotawarning, $use_quotawarning;
+	global $error, $quotawarning, $use_quotawarning, $view;
 
 	// missing
 	if($use_quotawarning == 1 and $quotawarning == ""){
@@ -18,7 +18,7 @@ function quotawarning_check($type) {
 
 function quotawarning_init($host) {
 	// init values
-	global $_pql_control, $quotawarning, $use_quotawarning;
+	global $_pql_control, $quotawarning, $use_quotawarning, $view;
 
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
@@ -38,7 +38,7 @@ function quotawarning_init($host) {
 }
 
 function quotawarning_print_view($host) {
-	global $_pql_control, $quotawarning, $use_quotawarning;
+	global $_pql_control, $quotawarning, $use_quotawarning, $view;
 	
 	// init data
 	quotawarning_init($host);
@@ -65,7 +65,7 @@ function quotawarning_print_view($host) {
 }
 
 function quotawarning_print_form() {
-	global $attrib, $quotawarning, $use_quotawarning,  $PHP_SELF, $error, $mxhost;
+	global $attrib, $quotawarning, $use_quotawarning,  $PHP_SELF, $error, $mxhost, $view;
 
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
@@ -89,6 +89,8 @@ function quotawarning_print_form() {
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
@@ -96,7 +98,7 @@ function quotawarning_print_form() {
 }
 
 function quotawarning_save($type, $host) {
-	global $_pql_control, $attrib, $quotawarning, $use_quotawarning, $error;
+	global $_pql_control, $attrib, $quotawarning, $use_quotawarning, $error, $view;
 
 	// recontrol values
 	if(!quotawarning_check($type)){

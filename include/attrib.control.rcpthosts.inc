@@ -2,10 +2,10 @@
 // control attribute plugin for
 // rcpthosts (blocked local addresses)
 //
-// $Id: attrib.control.rcpthosts.inc,v 2.12 2003-05-18 15:34:36 turbo Exp $
+// $Id: attrib.control.rcpthosts.inc,v 2.13 2003-05-28 07:23:37 turbo Exp $
 
 function rcpthosts_check($type){
-    global $error, $rcpthosts, $domain, $rootdn;
+    global $error, $rcpthosts, $domain, $rootdn, $view;
 
     // check validity
     if(is_array($rcpthosts)){
@@ -30,7 +30,7 @@ function rcpthosts_check($type){
 
 // init values
 function rcpthosts_init($host){
-    global $_pql_control, $rcpthosts, $domain, $rootdn;
+    global $_pql_control, $rcpthosts, $domain, $rootdn, $view;
 
     // fetch data from ldap server
     $rcpthosts = pql_control_get_attribute($_pql_control->ldap_linkid,
@@ -42,7 +42,7 @@ function rcpthosts_init($host){
 }
 
 function rcpthosts_print_view($host) {
-    global $_pql_control, $rcpthosts, $config;
+    global $_pql_control, $rcpthosts, $config, $view;
     
     // init data
     rcpthosts_init($host);
@@ -89,7 +89,7 @@ function rcpthosts_print_view($host) {
 }
 
 function rcpthosts_print_form(){
-    global $attrib, $PHP_SELF, $error, $rcpthosts, $mxhost, $domain, $rootdn;
+    global $attrib, $PHP_SELF, $error, $rcpthosts, $mxhost, $domain, $rootdn, $view;
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -105,14 +105,15 @@ function rcpthosts_print_form(){
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
     <input type="hidden" name="domain" value="<?=$domain?>">
     <input type="hidden" name="rootdn" value="<?=$rootdn?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 <?php
 }
 
 function rcpthosts_save($type, $host) {
-    global $_pql_control, $attrib, $rcpthosts, $set, $error;
-	global $rootdn, $domain;
+    global $_pql_control, $attrib, $rcpthosts, $set, $error, $rootdn, $domain, $view;
 
     // recontrol values
     if(!rcpthosts_check($type))

@@ -2,10 +2,10 @@
 // control attribute plugin for
 // idhost (host name for message id's)
 //
-// $Id: attrib.control.idhost.inc,v 2.6 2003-05-06 07:52:59 turbo Exp $
+// $Id: attrib.control.idhost.inc,v 2.7 2003-05-28 07:23:37 turbo Exp $
 
 function idhost_check($type){
-	global $error, $idhost;
+	global $error, $idhost, $view;
 
 	// validity
 	if($idhost != "" and !check_hostaddress($idhost)){
@@ -17,15 +17,15 @@ function idhost_check($type){
 }
 
 
+// init values
 function idhost_init($host) {
-	// init values
-  global $_pql_control, $idhost;
-
+	global $_pql_control, $idhost, $view;
+	
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
 									   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 									   "idhost");
-
+	
 	if(!is_null($value)){
 		$idhost = $value[0];
 	}
@@ -33,7 +33,7 @@ function idhost_init($host) {
 
 
 function idhost_print_view($host) {
-	global $_pql_control, $idhost;
+	global $_pql_control, $idhost, $view;
 
 	// init data
 	idhost_init($host);
@@ -61,8 +61,7 @@ function idhost_print_view($host) {
 }
 
 function idhost_print_form(){
-	global $attrib, $idhost, $PHP_SELF, $error, $mxhost;
-
+	global $attrib, $idhost, $PHP_SELF, $error, $mxhost, $view;
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -81,6 +80,8 @@ function idhost_print_form(){
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
@@ -88,7 +89,7 @@ function idhost_print_form(){
 }
 
 function idhost_save($type, $host) {
-	global $_pql_control, $attrib, $idhost, $error;
+	global $_pql_control, $attrib, $idhost, $error, $view;
 
 	// recontrol values
 	if(!idhost_check($type)){

@@ -2,16 +2,18 @@
 // control attribute plugin for
 // ldaprebind (don't retrieve password, try to bind to dn)
 //
-// $Id: attrib.control.ldaprebind.inc,v 2.6 2003-05-06 07:52:59 turbo Exp $
+// $Id: attrib.control.ldaprebind.inc,v 2.7 2003-05-28 07:23:37 turbo Exp $
 
+// check values
 function ldaprebind_check($type){
-	// check values
+	global $view;
+
 	return true;
 }
 
+// init values
 function ldaprebind_init($host){
-	// init values
-	global $_pql_control, $ldaprebind;
+	global $_pql_control, $ldaprebind, $view;
 	
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
@@ -23,22 +25,20 @@ function ldaprebind_init($host){
 	} else {
 		// set to default value
 		$ldaprebind = 0;
-  }
+	}
 }
 
 function ldaprebind_print_view($host) {
-	global $ldaprebind;
+	global $ldaprebind, $view;
 	
 	// init data
 	ldaprebind_init($host);
 	
-	//
 	if($ldaprebind == 0){
 		$ldaprebind = "Disabled, don't rebind, retrieve password (Default)";
 	} else {
 		$ldaprebind = "Enabled, rebind with retrieved DN, don't retrieve password";
 	}
-
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="2" align="left">ldaprebind (Rebind to LDAP server)</th>
@@ -59,12 +59,14 @@ function ldaprebind_print_view($host) {
 }
 
 function ldaprebind_print_form($host) {
+	global $view;
+
 	// don't print form, save directly
 	ldaprebind_save("modify", $host);
 }
 
 function ldaprebind_save($type, $host) {
-	global $_pql_control, $set;
+	global $_pql_control, $set, $view;
 
 	// recontrol values
 	if(!ldaprebind_check($type)){

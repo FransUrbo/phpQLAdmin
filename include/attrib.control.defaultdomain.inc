@@ -3,10 +3,10 @@
 // defaultdomain (default domain)
 // defaulthost (default hostname)
 //
-// $Id: attrib.control.defaultdomain.inc,v 2.6 2003-05-06 07:52:59 turbo Exp $
+// $Id: attrib.control.defaultdomain.inc,v 2.7 2003-05-28 07:23:37 turbo Exp $
 
 function defaultdomain_check($type) {
-	global $error, $defaultdomain, $defaulthost, $plusdomain;
+	global $error, $defaultdomain, $defaulthost, $plusdomain, $view;
 
 	// check validity
 	if($defaultdomain != "" and !check_hostaddress($defaultdomain)){
@@ -31,9 +31,9 @@ function defaultdomain_check($type) {
  	}
 }
 
+// init values
 function defaultdomain_init($host) {
-	// init values
-	global $_pql_control, $defaultdomain, $defaulthost, $plusdomain;
+	global $_pql_control, $defaultdomain, $defaulthost, $plusdomain, $view;
 
 	// fetch data from ldap server
 	$attribs = array("defaultdomain", "defaulthost", "plusdomain");
@@ -50,7 +50,7 @@ function defaultdomain_init($host) {
 }
 
 function defaultdomain_print_view($host) {
-	global $_pql_control, $defaultdomain, $defaulthost, $plusdomain;
+	global $_pql_control, $defaultdomain, $defaulthost, $plusdomain, $view;
 
 	// init data
 	defaultdomain_init($host);
@@ -96,8 +96,7 @@ function defaultdomain_print_view($host) {
 }
 
 function defaultdomain_print_form() {
-	global $attrib, $defaultdomain, $defaulthost, $plusdomain, $PHP_SELF, $error, $mxhost;
-
+	global $attrib, $defaultdomain, $defaulthost, $plusdomain, $PHP_SELF, $error, $mxhost, $view;
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -126,6 +125,8 @@ function defaultdomain_print_form() {
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
@@ -133,7 +134,7 @@ function defaultdomain_print_form() {
 }
 
 function defaultdomain_save($type, $host) {
-	global $_pql_control, $attrib, $defaultdomain, $defaulthost, $plusdomain, $error;
+	global $_pql_control, $attrib, $defaultdomain, $defaulthost, $plusdomain, $error, $view;
 
 	// recontrol values
 	if(!defaultdomain_check($type)){

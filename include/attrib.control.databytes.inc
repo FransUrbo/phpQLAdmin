@@ -2,10 +2,10 @@
 // control attribute plugin for
 // databytes (max number of bytes in message)
 //
-// $Id: attrib.control.databytes.inc,v 2.6 2003-05-06 07:52:59 turbo Exp $
+// $Id: attrib.control.databytes.inc,v 2.7 2003-05-28 07:23:37 turbo Exp $
 
 function databytes_check($type) {
-	global $error, $databytes;
+	global $error, $databytes, $view;
 
 	// number ?
 	if($databytes != "" and preg_match ("/[^0-9]/", $databytes)){
@@ -16,9 +16,9 @@ function databytes_check($type) {
 	return true;
 }
 
+// init values
 function databytes_init($host) {
-	// init values
-	global $_pql_control, $databytes;
+	global $_pql_control, $databytes, $view;
 	
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
@@ -31,7 +31,7 @@ function databytes_init($host) {
 }
 
 function databytes_print_view($host) {
-	global $_pql_control, $databytes;
+	global $_pql_control, $databytes, $view;
 
 	// init data
 	databytes_init($host);
@@ -62,7 +62,7 @@ function databytes_print_view($host) {
 }
 
 function databytes_print_form() {
-	global $attrib, $databytes, $PHP_SELF, $error, $mxhost;
+	global $attrib, $databytes, $PHP_SELF, $error, $mxhost, $view;
 
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
@@ -82,6 +82,8 @@ function databytes_print_form() {
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
@@ -89,7 +91,7 @@ function databytes_print_form() {
 }
 
 function databytes_save($type, $host) {
-	global $_pql_control, $attrib, $databytes, $error;
+	global $_pql_control, $attrib, $databytes, $error, $view;
 
 	// recontrol values
 	if(!databytes_check($type)){

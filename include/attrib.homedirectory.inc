@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // homedirectory (path to homedirectory)
-// $Id: attrib.homedirectory.inc,v 2.4 2003-04-04 06:54:31 turbo Exp $
+// $Id: attrib.homedirectory.inc,v 2.5 2003-05-28 07:23:38 turbo Exp $
 
 function attribute_check($type){
     global $homedirectory, $domain, $oldvalue, $_pql, $error;
@@ -28,33 +28,34 @@ function attribute_init(){
 }
 
 function attribute_print_form(){
-    global $homedirectory, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error
+    global $homedirectory, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $view;
 
 ?>
-	<form action="<?php echo $PHP_SELF ?>" method="post">
-	<table cellspacing="0" cellpadding="3" border="0">
-	<th colspan="3" align="left"><?php echo PQL_LANG_HOMEDIRECTORY_CHANGE; ?></th>
-	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title"><?php echo PQL_LANG_HOMEDIRECTORY_CHANGE; ?></td>
-		<td><?php echo format_error($error["homedirectory"]); ?><input type="text" name="homedirectory" value="<?php echo $homedirectory; ?>" size="50"></td>
-	</tr>
-	</table>
-	<input type="hidden" name="submit" value="1">
-	<input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-	<input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
-	<input type="hidden" name="domain" value="<?php echo $domain; ?>">
-	<input type="hidden" name="user" value="<?php echo $user ?>">
-	<br>
-	<br>
-	<input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
-	</form>
+  <form action="<?php echo $PHP_SELF ?>" method="post">
+    <table cellspacing="0" cellpadding="3" border="0">
+      <th colspan="3" align="left"><?php echo PQL_LANG_HOMEDIRECTORY_CHANGE; ?></th>
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"><?php echo PQL_LANG_HOMEDIRECTORY_CHANGE; ?></td>
+          <td><?php echo format_error($error["homedirectory"]); ?><input type="text" name="homedirectory" value="<?php echo $homedirectory; ?>" size="50"></td>
+        </tr>
+      </th>
+    </table>
 
+    <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
+    <input type="hidden" name="domain" value="<?php echo $domain; ?>">
+    <input type="hidden" name="user" value="<?php echo $user ?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
+    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
+  </form>
   
 <?php
 }
 
 function attribute_save($type){
-    global $domain, $user, $attrib, $oldvalue, $homedirectory, $_pql;
+    global $domain, $user, $attrib, $oldvalue, $homedirectory, $_pql, $view;
     
     // recontrol values
     if(!attribute_check($type)){

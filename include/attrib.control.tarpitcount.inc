@@ -3,10 +3,10 @@
 // tarpitcount (user id of virtual user)
 // tarpitdelay (group id of virtual user)
 //
-// $Id: attrib.control.tarpitcount.inc,v 2.7 2003-05-06 07:45:09 turbo Exp $
+// $Id: attrib.control.tarpitcount.inc,v 2.8 2003-05-28 07:23:37 turbo Exp $
 
 function tarpitcount_check($type) {
-	global $error, $tarpitcount, $tarpitdelay;
+	global $error, $tarpitcount, $tarpitdelay, $view;
 
 	// missing
 	if($tarpitcount == ""){
@@ -45,7 +45,7 @@ function tarpitcount_check($type) {
 
 function tarpitcount_init($host) {
 	// init values
-	global $_pql_control, $tarpitcount, $tarpitdelay;
+	global $_pql_control, $tarpitcount, $tarpitdelay, $view;
 	
 	// fetch data from ldap server
 	$attribs = array("tarpitcount", "tarpitdelay");
@@ -62,7 +62,7 @@ function tarpitcount_init($host) {
 }
 
 function tarpitcount_print_view($host) {
-	global $_pql_control, $tarpitcount, $tarpitdelay;
+	global $_pql_control, $tarpitcount, $tarpitdelay, $view;
 	
 	// init data
 	tarpitcount_init($host);
@@ -103,7 +103,7 @@ function tarpitcount_print_view($host) {
 }
 
 function tarpitcount_print_form() {
-	global $attrib, $tarpitcount, $tarpitdelay, $PHP_SELF, $error, $mxhost;
+	global $attrib, $tarpitcount, $tarpitdelay, $PHP_SELF, $error, $mxhost, $view;
 
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
@@ -124,16 +124,19 @@ function tarpitcount_print_form() {
         </tr>
       </th>
     </table>
+
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
    </form>
 <?php
 }
 
 function tarpitcount_save($type, $host) {
-	global $_pql_control, $attrib, $tarpitcount, $tarpitdelay, $error, $mxhost;
+	global $_pql_control, $attrib, $tarpitcount, $tarpitdelay, $error, $mxhost, $view;
 
 	// recontrol values
 	if(!tarpitcount_check($type)){

@@ -2,16 +2,18 @@
 // control attribute plugin for
 // ldaplocaldelivery (search for local account, if ldap search is not successful)
 //
-// $Id: attrib.control.ldaplocaldelivery.inc,v 2.5 2003-05-06 07:52:59 turbo Exp $
+// $Id: attrib.control.ldaplocaldelivery.inc,v 2.6 2003-05-28 07:23:37 turbo Exp $
 
+// check values
 function ldaplocaldelivery_check($type) {
-	// check values
+	global $view;
+
 	return true;
 }
 
+// init values
 function ldaplocaldelivery_init($host) {
-	// init values
-	global $_pql_control, $ldaplocaldelivery;
+	global $_pql_control, $ldaplocaldelivery, $view;
 
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
@@ -27,18 +29,16 @@ function ldaplocaldelivery_init($host) {
 }
 
 function ldaplocaldelivery_print_view($host) {
-	global $ldaplocaldelivery;
+	global $ldaplocaldelivery, $view;
 
 	// init data
 	ldaplocaldelivery_init($host);
 	
-	//
 	if($ldaplocaldelivery == 0){
 		$ldaplocaldelivery = "Disabled, don't lookup for local users if ldap lookup didn't match";
 	} else {
 		$ldaplocaldelivery = "Enabled, lookup for local users if ldap lookup didn't match";
 	}
-
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="2" align="left">ldaplocaldelivery (Deliver locally if ldap didn't match a user)</th>
@@ -59,14 +59,14 @@ function ldaplocaldelivery_print_view($host) {
 }
 
 function ldaplocaldelivery_print_form(){
-	global $mxhost;
+	global $mxhost, $view;
 
 	// don't print form, save directly
 	ldaplocaldelivery_save("modify", $mxhost);
 }
 
 function ldaplocaldelivery_save($type, $host) {
-	global $_pql_control, $set;
+	global $_pql_control, $set, $view;
 
 	// recontrol values
 	if(!ldaplocaldelivery_check($type)){

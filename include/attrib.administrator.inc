@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.16 2003-05-27 19:00:55 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.17 2003-05-28 07:23:37 turbo Exp $
 
 require("./left-head.html");
 
@@ -24,8 +24,7 @@ function attribute_check() {
 }
 
 function attribute_print_form($action) {
-    global $$attrib, $domain, $rootdn, $PHP_SELF, $attrib, $oldvalue;
-	global $error, $_pql, $config, $user;
+    global $$attrib, $domain, $rootdn, $PHP_SELF, $attrib, $oldvalue, $error, $_pql, $config, $user, $view;
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -181,13 +180,15 @@ function attribute_print_form($action) {
     <input type="hidden" name="action" value="<?=$action?>">
     <input type="hidden" name="rootdn" value="<?=$rootdn?>">
     <input type="hidden" name="oldvalue" value="<?=$$attrib?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?=PQL_LANG_SAVE?>">
   </form>
 <?php
 }
 
 function attribute_save($type) {
-    global $domain, $rootdn, $attrib, $oldvalue, $$attrib, $_pql, $user;
+    global $domain, $rootdn, $attrib, $oldvalue, $$attrib, $_pql, $user, $view;
 	$value = $$attrib;
 
     switch($type) {

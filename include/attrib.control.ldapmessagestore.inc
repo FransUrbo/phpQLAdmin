@@ -2,10 +2,10 @@
 // control attribute plugin for
 // ldapmessagestore (default prefix for mailbox paths)
 //
-// $Id: attrib.control.ldapmessagestore.inc,v 2.6 2003-05-06 07:52:59 turbo Exp $
+// $Id: attrib.control.ldapmessagestore.inc,v 2.7 2003-05-28 07:23:37 turbo Exp $
 
 function ldapmessagestore_check($type){
-	global $error, $ldapmessagestore;
+	global $error, $ldapmessagestore, $view;
 
 	// missing
 	if($ldapmessagestore == ""){
@@ -22,9 +22,9 @@ function ldapmessagestore_check($type){
 	return true;
 }
 
+// init values
 function ldapmessagestore_init($host){
-	// init values
-	global $_pql_control, $ldapmessagestore;
+	global $_pql_control, $ldapmessagestore, $view;
 	
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
@@ -37,7 +37,7 @@ function ldapmessagestore_init($host){
 }
 
 function ldapmessagestore_print_view($host) {
-	global $_pql_control, $ldapmessagestore;
+	global $_pql_control, $ldapmessagestore, $view;
 
 	// init data
 	ldapmessagestore_init($host);
@@ -65,7 +65,7 @@ function ldapmessagestore_print_view($host) {
 }
 
 function ldapmessagestore_print_form(){
-	global $attrib, $ldapmessagestore, $PHP_SELF, $error, $mxhost;
+	global $attrib, $ldapmessagestore, $PHP_SELF, $error, $mxhost, $view;
 	
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
@@ -81,6 +81,8 @@ function ldapmessagestore_print_form(){
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
@@ -88,7 +90,7 @@ function ldapmessagestore_print_form(){
 }
 
 function ldapmessagestore_save($type, $host){
-	global $_pql_control, $attrib, $ldapmessagestore, $error;
+	global $_pql_control, $attrib, $ldapmessagestore, $error, $view;
 	
 	// recontrol values
 	if(!ldapmessagestore_check($type)){

@@ -2,10 +2,10 @@
 // control attribute plugin for
 // helohost (host name used in SMTP HELO command)
 //
-// $Id: attrib.control.helohost.inc,v 2.6 2003-05-06 07:52:59 turbo Exp $
+// $Id: attrib.control.helohost.inc,v 2.7 2003-05-28 07:23:37 turbo Exp $
 
 function helohost_check($type) {
-	global $error, $helohost;
+	global $error, $helohost, $view;
 
 	// validity
 	if($helohost != "" and !check_hostaddress($helohost)){
@@ -16,9 +16,9 @@ function helohost_check($type) {
 	return true;
 }
 
+// init values
 function helohost_init($host) {
-	// init values
-	global $_pql_control, $helohost;
+	global $_pql_control, $helohost, $view;
 
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
@@ -31,7 +31,7 @@ function helohost_init($host) {
 }
 
 function helohost_print_view($host) {
-	global $_pql_control, $helohost;
+	global $_pql_control, $helohost, $view;
 
 	// init data
 	helohost_init($host);
@@ -58,8 +58,7 @@ function helohost_print_view($host) {
 }
 
 function helohost_print_form() {
-	global $attrib, $helohost, $PHP_SELF, $error, $mxhost;
-
+	global $attrib, $helohost, $PHP_SELF, $error, $mxhost, $view;
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -78,6 +77,8 @@ function helohost_print_form() {
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
@@ -85,7 +86,7 @@ function helohost_print_form() {
 }
 
 function helohost_save($type, $host) {
-	global $_pql_control, $attrib, $helohost, $error;
+	global $_pql_control, $attrib, $helohost, $error, $view;
 
 	// recontrol values
 	if(!helohost_check($type)){

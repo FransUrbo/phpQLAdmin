@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliveryprogrampath (path to program running on delivery)
-// $Id: attrib.deliveryprogrampath.inc,v 2.5 2003-04-04 16:37:50 turbo Exp $
+// $Id: attrib.deliveryprogrampath.inc,v 2.6 2003-05-28 07:23:38 turbo Exp $
 
 function attribute_check($type){
 	global $deliveryprogrampath, $domain, $oldvalue, $_pql, $error;
@@ -25,37 +25,41 @@ function attribute_init(){
 }
 
 function attribute_print_form(){
-	global $deliveryprogrampath, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error
+	global $deliveryprogrampath, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $view;
 
 ?>
-	<form action="<?php echo $PHP_SELF ?>" method="post">
-	<table cellspacing="0" cellpadding="3" border="0">
-	<th colspan="3" align="left"><?php echo PQL_LANG_DELIVERYPROGRAMPATH_CHANGE; ?></th>
-	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title"><?php echo PQL_LANG_DELIVERYPROGRAMPATH_CHANGE; ?></td>
-		<td><?php echo format_error($error["deliveryprogrampath"]); ?><input type="text" name="deliveryprogrampath" value="<?php echo $deliveryprogrampath; ?>"></td>
-	</tr>
-	<tr class="subtitle">
-		<td colspan="2">
-		<?php echo format_error($error["general"]); ?>
-		<img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_LANG_DELIVERYPROGRAMPATH_HELP; ?></td>
-	</tr>
-	</table>
-	<input type="hidden" name="submit" value="1">
-	<input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-	<input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
-	<input type="hidden" name="domain" value="<?php echo $domain; ?>">
-	<input type="hidden" name="user" value="<?php echo $user ?>">
-	<br>
-	<br>
-	<input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
-	</form>
+  <form action="<?php echo $PHP_SELF ?>" method="post">
+    <table cellspacing="0" cellpadding="3" border="0">
+      <th colspan="3" align="left"><?php echo PQL_LANG_DELIVERYPROGRAMPATH_CHANGE; ?></th>
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"><?php echo PQL_LANG_DELIVERYPROGRAMPATH_CHANGE; ?></td>
+          <td><?php echo format_error($error["deliveryprogrampath"]); ?><input type="text" name="deliveryprogrampath" value="<?php echo $deliveryprogrampath; ?>"></td>
+        </tr>
+
+        <tr class="subtitle">
+          <td colspan="2">
+            <?php echo format_error($error["general"]); ?>
+            <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_LANG_DELIVERYPROGRAMPATH_HELP; ?>
+          </td>
+        </tr>
+      </th>
+    </table>
+
+    <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
+    <input type="hidden" name="domain" value="<?php echo $domain; ?>">
+    <input type="hidden" name="user" value="<?php echo $user ?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
+    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
+  </form>
 
 <?php
 }
 
 function attribute_save($type){
-	global $domain, $user, $attrib, $oldvalue, $deliveryprogrampath, $_pql;
+	global $domain, $user, $attrib, $oldvalue, $deliveryprogrampath, $_pql, $view;
 	
 	// recontrol values
 	if(!attribute_check($type)){

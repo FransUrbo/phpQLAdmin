@@ -58,11 +58,11 @@
 //
 // Please look at other plugins to see which standard header text is recommanded.
 //
-// $Id: attrib.control.skeleton.inc,v 2.6 2003-05-06 07:52:59 turbo Exp $
+// $Id: attrib.control.skeleton.inc,v 2.7 2003-05-28 07:23:37 turbo Exp $
 //
 
 function xxx_check($type) {
-	global $error, $xxx;
+	global $error, $view, $xxx;
 	
 	// form validation comes here.
 	// this function returns true if the check was successful and the values
@@ -77,7 +77,7 @@ function xxx_check($type) {
 
 // init values
 function xxx_init() {
-	global $_pql_control, $xxx;
+	global $_pql_control, $view, $xxx;
 	
 	// initiate values from ldap database
 	// use global vars to make the initiated values
@@ -92,7 +92,7 @@ function xxx_init() {
 
 
 function xxx_print_view($host) {
-	global $_pql_control, $xxx;
+	global $_pql_control, $view, $xxx;
 
 	// this function will display the configuration
 	// stored in the ldap database.
@@ -127,7 +127,7 @@ function xxx_print_view($host) {
 }
 
 function xxx_print_form() {
-	global $attrib, $xxx, $PHP_SELF, $error, $mxhost;
+	global $attrib, $xxx, $PHP_SELF, $error, $mxhost, $view;
 
 	// this function displays the form to change the values
 	// for specified attribute.
@@ -148,9 +148,12 @@ function xxx_print_form() {
         </tr>
       </th>
     </table>
+
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
@@ -158,7 +161,7 @@ function xxx_print_form() {
 }
 
 function xxx_save($type, $host) {
-	global $_pql_control, $attrib, $xxx, $error;
+	global $_pql_control, $attrib, $xxx, $error, $view;
 
 	// this function will save the entered data.
 	// $type is most of the time "modify" so you

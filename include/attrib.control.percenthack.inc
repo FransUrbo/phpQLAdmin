@@ -2,10 +2,10 @@
 // control attribute plugin for
 // percenthack (allowed domains for %-relaying)
 //
-// $Id: attrib.control.percenthack.inc,v 2.8 2003-05-20 10:48:37 turbo Exp $
+// $Id: attrib.control.percenthack.inc,v 2.9 2003-05-28 07:23:37 turbo Exp $
 
 function percenthack_check($type) {
-	global $error, $percenthack;
+	global $error, $percenthack, $view;
 	
 	// check each field
 	if(is_array($percenthack)){
@@ -30,9 +30,9 @@ function percenthack_check($type) {
 	return true;
 }
 
+// init values
 function percenthack_init($host) {
-	// init values
-	global $_pql_control, $percenthack;
+	global $_pql_control, $percenthack, $view;
 	
 	// fetch data from ldap server
 	$percenthack = pql_control_get_attribute($_pql_control->ldap_linkid,
@@ -45,7 +45,7 @@ function percenthack_init($host) {
 }
 
 function percenthack_print_view($host) {
-	global $_pql_control, $percenthack;
+	global $_pql_control, $percenthack, $view;
 	
 	// init data
 	percenthack_init($host);
@@ -83,7 +83,7 @@ function percenthack_print_view($host) {
 }
 
 function percenthack_print_form() {
-	global $attrib, $PHP_SELF, $error, $percenthack, $percentcount, $mxhost;
+	global $attrib, $PHP_SELF, $error, $percenthack, $percentcount, $mxhost, $view;
 
 	if(($percentcount < count($percenthack) - 1) and count($percenthack) != 0){
 		$percentcount = count($percenthack) - 1;
@@ -120,13 +120,16 @@ function percenthack_print_form() {
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
+
 <?php
 }
 
 function percenthack_save($type, $host) {
-	global $_pql_control, $attrib, $percenthack, $error;
+	global $_pql_control, $attrib, $percenthack, $error, $view;
 
 	// recontrol values
 	if(!percenthack_check($type)){

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // cn (Full name)
-// $Id: attrib.cn.inc,v 2.8 2003-05-05 05:14:44 turbo Exp $
+// $Id: attrib.cn.inc,v 2.9 2003-05-28 07:23:37 turbo Exp $
 
 function attribute_check($type){
     global $cn, $oldvalue, $_pql, $error;
@@ -22,30 +22,34 @@ function attribute_init(){
 }
 
 function attribute_print_form(){
-    global $cn, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error;
+    global $cn, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $view;
 
 ?>
-	<form action="<?php echo $PHP_SELF ?>" method="post">
-	<table cellspacing="0" cellpadding="3" border="0">
-	<th colspan="3" align="left"><?php echo PQL_LANG_SEARCH_CN; ?></th>
-	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title"><?php echo PQL_LANG_SEARCH_CN; ?></td>
-		<td><?php echo format_error($error["cn"]); ?><input type="text" name="cn"></td>
-	</tr>
-	</table>
-	<input type="hidden" name="submit" value="1">
-	<input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-	<input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
-	<input type="hidden" name="domain" value="<?php echo $domain; ?>">
-	<input type="hidden" name="user" value="<?php echo $user ?>">
-	<input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
-	</form>
+  <form action="<?php echo $PHP_SELF ?>" method="post">
+    <table cellspacing="0" cellpadding="3" border="0">
+      <th colspan="3" align="left"><?php echo PQL_LANG_SEARCH_CN; ?></th>
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"><?php echo PQL_LANG_SEARCH_CN; ?></td>
+          <td><?php echo format_error($error["cn"]); ?><input type="text" name="cn"></td>
+        </tr>
+      </th>
+    </table>
+
+    <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
+    <input type="hidden" name="domain" value="<?php echo $domain; ?>">
+    <input type="hidden" name="user" value="<?php echo $user ?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
+    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
+  </form>
 
 <?php
 }
 
 function attribute_save($type){
-    global $domain, $user, $attrib, $oldvalue, $cn, $_pql;
+    global $domain, $user, $attrib, $oldvalue, $cn, $_pql, $view;
     
     // recontrol values
     if(!attribute_check($type)){

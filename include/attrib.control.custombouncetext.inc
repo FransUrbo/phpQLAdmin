@@ -2,10 +2,10 @@
 // control attribute plugin for
 // custombouncetext (additional bounce message)
 //
-// $Id: attrib.control.custombouncetext.inc,v 2.7 2003-05-06 07:52:59 turbo Exp $
+// $Id: attrib.control.custombouncetext.inc,v 2.8 2003-05-28 07:23:37 turbo Exp $
 
 function custombouncetext_check($type){
-	global $error, $custombouncetext, $use_custombouncetext;
+	global $error, $custombouncetext, $use_custombouncetext, $view;
 
 	// missing
 	if($use_custombouncetext == 1 and $custombouncetext == ""){
@@ -16,9 +16,9 @@ function custombouncetext_check($type){
 	return true;
 }
 
+// init values
 function custombouncetext_init($host){
-	// init values
-	global $_pql_control, $custombouncetext, $use_custombouncetext;
+	global $_pql_control, $custombouncetext, $use_custombouncetext, $view;
 	
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
@@ -38,7 +38,7 @@ function custombouncetext_init($host){
 }
 
 function custombouncetext_print_view($host) {
-	global $_pql_control, $custombouncetext, $use_custombouncetext;
+	global $_pql_control, $custombouncetext, $use_custombouncetext, $view;
 	
 	// init data
 	custombouncetext_init($host);
@@ -65,8 +65,7 @@ function custombouncetext_print_view($host) {
 }
 
 function custombouncetext_print_form(){
-	global $attrib, $custombouncetext, $use_custombouncetext,  $PHP_SELF, $error, $mxhost;
-
+	global $attrib, $custombouncetext, $use_custombouncetext,  $PHP_SELF, $error, $mxhost, $view;
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -95,6 +94,8 @@ function custombouncetext_print_form(){
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
@@ -102,7 +103,7 @@ function custombouncetext_print_form(){
 }
 
 function custombouncetext_save($type, $host) {
-	global $_pql_control, $attrib, $custombouncetext, $use_custombouncetext, $error, $mxhost;
+	global $_pql_control, $attrib, $custombouncetext, $use_custombouncetext, $error, $mxhost, $view;
 	
 	// recontrol values
 	if(!custombouncetext_check($type)){

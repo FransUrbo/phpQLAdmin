@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailalternateaddress (emailaddress alias)
-// $Id: attrib.mailalternateaddress.inc,v 2.9 2003-05-20 12:58:45 turbo Exp $
+// $Id: attrib.mailalternateaddress.inc,v 2.10 2003-05-28 07:23:38 turbo Exp $
 
 function attribute_check($type){
     global $mailalternateaddress, $oldvalue, $domain, $_pql, $error, $defaultdomain, $email_domain;
@@ -50,7 +50,7 @@ function attribute_init() {
 
 function attribute_print_form() {
     global $mailalternateaddress, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $defaultdomain;
-	global $_pql;
+	global $_pql, $view;
 
 	$additionaldomainname = pql_get_domain_value($_pql, $domain, "additionaldomainname");
 ?>
@@ -97,15 +97,16 @@ function attribute_print_form() {
     <input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
     <input type="hidden" name="domain" value="<?php echo $domain; ?>">
     <input type="hidden" name="user" value="<?php echo $user ?>">
-    <br><br>
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
+
 <?php
 }
 
 function attribute_save($type) {
-    global $domain, $user, $attrib, $oldvalue, $mailalternateaddress;
-    global $_pql, $defaultdomain, $email_domain, $config;
+    global $domain, $user, $attrib, $oldvalue, $mailalternateaddress, $_pql, $defaultdomain, $email_domain, $config, $view;
     
     switch($type) {
       case "add":

@@ -13,11 +13,11 @@ function attribute_forward($msg){
 
     $msg = urlencode($msg);
 	if($user)
-	  $url = "user_detail.php?rootdn=$rootdn&domain=$domain&user=$user&msg=$msg";
+	  $url = "user_detail.php?rootdn=$rootdn&domain=$domain&user=$user&view=$view&msg=$msg";
 	elseif($administrator)
-	  $url = "user_detail.php?rootdn=$rootdn&domain=$domain&user=$administrator&msg=$msg";
+	  $url = "user_detail.php?rootdn=$rootdn&domain=$domain&user=$administrator&view=$view&msg=$msg";
 	else
-	  $url = "domain_detail.php?rootdn=$rootdn&domain=$domain&msg=$msg";
+	  $url = "domain_detail.php?rootdn=$rootdn&domain=$domain&view=$view&msg=$msg";
 
     header("Location: " . $config["PQL_GLOB_URI"] . "$url");
 }

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.9 2003-05-08 06:10:36 turbo Exp $
+// $Id: attrib.userpassword.inc,v 2.10 2003-05-28 07:23:38 turbo Exp $
 
 function attribute_check($type){
 	global $userpassword, $userpassword_check, $error, $pwscheme;
@@ -29,7 +29,7 @@ function attribute_init(){
 }
 
 function attribute_print_form(){
-	global $domain, $user, $PHP_SELF, $attrib, $error, $config, $rootdn, $pwscheme;
+	global $domain, $user, $PHP_SELF, $attrib, $error, $config, $rootdn, $pwscheme, $view;
 
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
@@ -80,13 +80,14 @@ function attribute_print_form(){
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
     <input type="hidden" name="domain" value="<?php echo $domain; ?>">
     <input type="hidden" name="user" value="<?php echo $user ?>">
+    <input type="hidden" name="view" value="<?=$view?>">
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 <?php
 }
 
 function attribute_save($type) {
-	global $domain, $user, $attrib, $userpassword, $_pql, $pwscheme, $config;
+	global $domain, $user, $attrib, $userpassword, $_pql, $pwscheme, $config, $view;
 
 	// recontrol values
 	if(!attribute_check($type)) {

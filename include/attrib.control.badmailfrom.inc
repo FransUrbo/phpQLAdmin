@@ -2,69 +2,69 @@
 // control attribute plugin for
 // badmailfrom (blocked from addresses)
 //
-// $Id: attrib.control.badmailfrom.inc,v 2.8 2003-05-20 10:48:37 turbo Exp $
+// $Id: attrib.control.badmailfrom.inc,v 2.9 2003-05-28 07:23:37 turbo Exp $
 
 function badmailfrom_check($type) {
-	global $error, $badmailfrom;
-
-	// check validity
-	if(is_array($badmailfrom)){
-		foreach($badmailfrom as $key => $badmail){
-		 	if($badmail == ""){
-				continue;
-			}
-			
-			if(preg_match("/^@/", $badmail)){
-				// retry with added user
-				if(!check_email("user" . $badmail)){
-					$is_error = true;
-					$error["badmailfrom_$key"] = PQL_LANG_INVALID;
-				}
-			} else {
-				if(!check_email($badmail)){
-					$is_error = true;
-					$error["badmailfrom_$key"] = PQL_LANG_INVALID;
-				}
-			} // end if preg_match...
-		} // end foreach
-	} // end if is_array
-	
-	if($is_error){
-		return false;
-	}
-	
-	return true;
+    global $error, $badmailfrom, $view;
+    
+    // check validity
+    if(is_array($badmailfrom)){
+	foreach($badmailfrom as $key => $badmail){
+	    if($badmail == ""){
+		continue;
+	    }
+	    
+	    if(preg_match("/^@/", $badmail)){
+		// retry with added user
+		if(!check_email("user" . $badmail)){
+		    $is_error = true;
+		    $error["badmailfrom_$key"] = PQL_LANG_INVALID;
+		}
+	    } else {
+		if(!check_email($badmail)){
+		    $is_error = true;
+		    $error["badmailfrom_$key"] = PQL_LANG_INVALID;
+		}
+	    } // end if preg_match...
+	} // end foreach
+    } // end if is_array
+    
+    if($is_error){
+	return false;
+    }
+    
+    return true;
 }
 
+// init values
 function badmailfrom_init($host) {
-	// init values
-	global $_pql_control, $badmailfrom;
-
-	// fetch data from ldap server
-	$badmailfrom = pql_control_get_attribute($_pql_control->ldap_linkid,
-											 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-											 "badmailfrom");
-
-	if(is_null($badmailfrom)){
-		return true;
-	}
+    global $_pql_control, $badmailfrom, $view;
+    
+    // fetch data from ldap server
+    $badmailfrom = pql_control_get_attribute($_pql_control->ldap_linkid,
+					     "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+					     "badmailfrom");
+    
+    if(is_null($badmailfrom)){
+	return true;
+    }
 }
 
 function badmailfrom_print_view($host) {
-	global $_pql_control, $badmailfrom;
-
-	// init data
-	badmailfrom_init($host);
-
-	if(is_array($badmailfrom)){
-		foreach($badmailfrom as $key => $mail){
-			if(preg_match("/^@/", $mail)){
-				$mail = split("@", $mail);
-				$badmailfrom[$key] = "all of " . $mail[1];
-			}
-		}
+    global $_pql_control, $badmailfrom, $view;
+    
+    // init data
+    badmailfrom_init($host);
+    
+    if(is_array($badmailfrom)){
+	foreach($badmailfrom as $key => $mail){
+	    if(preg_match("/^@/", $mail)){
+		$mail = split("@", $mail);
+		$badmailfrom[$key] = "all of " . $mail[1];
+	    }
 	}
-
+    }
+    
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th align="left">badmailfrom (Blocked senders)</th>
@@ -98,12 +98,11 @@ function badmailfrom_print_view($host) {
 }
 
 function badmailfrom_print_form() {
-	global $attrib, $PHP_SELF, $error, $badmailfrom, $badcount, $mxhost;
-
-	if(($badcount < count($badmailfrom) - 1) and count($badmailfrom) != 0){
-		$badcount = count($badmailfrom) - 1;
-	}
-	
+    global $attrib, $PHP_SELF, $error, $badmailfrom, $badcount, $mxhost, $view;
+    
+    if(($badcount < count($badmailfrom) - 1) and count($badmailfrom) != 0){
+	$badcount = count($badmailfrom) - 1;
+    }
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -135,36 +134,38 @@ function badmailfrom_print_form() {
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 <?php
 }
 
 function badmailfrom_save($type, $host) {
-	global $_pql_control, $attrib, $badmailfrom, $error;
-
-	// recontrol values
-	if(!badmailfrom_check($type)){
- 		return false;
-	}
-
-	switch($type){
-	  case "modify";
-	  case "add";
-		// save entries
-		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-										 "badmailfrom", $badmailfrom)){
-			$msg = "Successfully saved badmailfrom options";
-		} else {
-			$msg = "Failed saving badmailfrom: " . pql_ldap_error($_pql_control->ldap_linkid);
+    global $_pql_control, $attrib, $badmailfrom, $error, $view;
+    
+    // recontrol values
+    if(!badmailfrom_check($type)){
+	return false;
+    }
+    
+    switch($type){
+      case "modify";
+      case "add";
+	// save entries
+	if(pql_control_replace_attribute($_pql_control->ldap_linkid,
+					 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
+					 "badmailfrom", $badmailfrom)){
+	    $msg = "Successfully saved badmailfrom options";
+	} else {
+	    $msg = "Failed saving badmailfrom: " . pql_ldap_error($_pql_control->ldap_linkid);
     	}
-		
-		attribute_forward($msg);
-		break;
-	  default:
-		die("unknown save type $type in " . __FILE__ . ", function save()");
-	}
+
+	attribute_forward($msg);
+	break;
+      default:
+	die("unknown save type $type in " . __FILE__ . ", function save()");
+    }
 }
 
 function badmailfrom_help() {

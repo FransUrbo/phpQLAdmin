@@ -2,10 +2,10 @@
 // control attribute plugin for
 // badrcptto (blocked local addresses)
 //
-// $Id: attrib.control.badrcptto.inc,v 2.9 2003-05-20 10:48:37 turbo Exp $
+// $Id: attrib.control.badrcptto.inc,v 2.10 2003-05-28 07:23:37 turbo Exp $
 
 function badrcptto_check($type) {
-	global $error, $badrcptto;
+	global $error, $badrcptto, $view;
 
 	// check validity
 	if(is_array($badrcptto)){
@@ -28,9 +28,9 @@ function badrcptto_check($type) {
 	return true;
 }
 
+// init values
 function badrcptto_init($host) {
-	// init values
-	global $_pql_control, $badrcptto;
+	global $_pql_control, $badrcptto, $view;
 
 	// fetch data from ldap server
 	$badrcptto = pql_control_get_attribute($_pql_control->ldap_linkid,
@@ -43,7 +43,7 @@ function badrcptto_init($host) {
 }
 
 function badrcptto_print_view($host) {
-	global $_pql_control, $badrcptto;
+	global $_pql_control, $badrcptto, $view;
 
 	// init data
 	badrcptto_init($host);
@@ -92,7 +92,7 @@ function badrcptto_print_view($host) {
 }
 
 function badrcptto_print_form(){
-	global $attrib, $PHP_SELF, $error, $badrcptto, $badcount, $mxhost;
+	global $attrib, $PHP_SELF, $error, $badrcptto, $badcount, $mxhost, $view;
 
 	if(($badcount < count($badrcptto) - 1) and count($badrcptto) != 0){
 		$badcount = count($badrcptto) - 1;
@@ -135,7 +135,7 @@ function badrcptto_print_form(){
 }
 
 function badrcptto_save($type, $host) {
-	global $_pql_control, $attrib, $badrcptto, $error, $mxhost;
+	global $_pql_control, $attrib, $badrcptto, $error, $mxhost, $view;
 
 	// recontrol values
 	if(!badrcptto_check($type)){

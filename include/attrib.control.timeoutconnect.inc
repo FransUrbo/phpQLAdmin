@@ -3,10 +3,10 @@
 // timeoutconnect (how long to wait for smtp connection)
 // timeoutremote (how long to wait for remote server)
 //
-// $Id: attrib.control.timeoutconnect.inc,v 2.7 2003-05-06 07:52:59 turbo Exp $
+// $Id: attrib.control.timeoutconnect.inc,v 2.8 2003-05-28 07:23:37 turbo Exp $
 
 function timeoutconnect_check($type) {
-	global $error, $timeoutconnect, $timeoutremote;
+	global $error, $timeoutconnect, $timeoutremote, $view;
 
 	// check validity
 	if(preg_match("/[^0-9]/", $timeoutconnect)){
@@ -39,7 +39,7 @@ function timeoutconnect_check($type) {
 
 function timeoutconnect_init($host) {
 	// init values
-	global $_pql_control, $timeoutconnect, $timeoutremote;
+	global $_pql_control, $timeoutconnect, $timeoutremote, $view;
 
 	// fetch data from ldap server
 	$attribs = array("timeoutconnect", "timeoutremote");
@@ -56,7 +56,7 @@ function timeoutconnect_init($host) {
 }
 
 function timeoutconnect_print_view($host) {
-	global $_pql_control, $timeoutconnect, $timeoutremote;
+	global $_pql_control, $timeoutconnect, $timeoutremote, $view;
 
 	// init data
 	timeoutconnect_init($host);
@@ -97,7 +97,7 @@ function timeoutconnect_print_view($host) {
 }
 
 function timeoutconnect_print_form(){
-	global $attrib, $timeoutconnect, $timeoutremote, $PHP_SELF, $error, $mxhost;
+	global $attrib, $timeoutconnect, $timeoutremote, $PHP_SELF, $error, $mxhost, $view;
 
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
@@ -122,6 +122,8 @@ function timeoutconnect_print_form(){
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
@@ -129,7 +131,7 @@ function timeoutconnect_print_form(){
 }
 
 function timeoutconnect_save($type, $host) {
-	global $_pql_control, $attrib, $timeoutconnect, $timeoutremote, $error, $mxhost;
+	global $_pql_control, $attrib, $timeoutconnect, $timeoutremote, $error, $mxhost, $view;
 
 	// recontrol values
 	if(!timeoutconnect_check($type)){

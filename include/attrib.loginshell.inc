@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // loginshell
-// $Id: attrib.loginshell.inc,v 2.5 2003-04-04 06:54:31 turbo Exp $
+// $Id: attrib.loginshell.inc,v 2.6 2003-05-28 07:23:38 turbo Exp $
 
 function attribute_check($type){
     global $loginshell, $oldvalue, $_pql, $error;
@@ -22,7 +22,7 @@ function attribute_init(){
 }
 
 function attribute_print_form(){
-    global $loginshell, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error;
+    global $loginshell, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $view;
       
     $shells = pql_get_valid_shells();
 ?>
@@ -31,7 +31,8 @@ function attribute_print_form(){
       <th colspan="3" align="left"><?php echo PQL_LANG_USER_LOGINSHELL; ?></th>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"><?php echo PQL_LANG_USER_LOGINSHELL; ?></td>
-          <td><?php echo format_error($error["loginshell"]); ?>
+          <td>
+            <?php echo format_error($error["loginshell"]); ?>
             <select name="loginshell">
               <option value="/bin/false" SELECTED>/bin/false</option>
 <?php
@@ -44,21 +45,24 @@ function attribute_print_form(){
             </select>
           </td>
         </tr>
-      </table>
+      </th>
+    </table>
 
-      <input type="hidden" name="submit" value="1">
-      <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-      <input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
-      <input type="hidden" name="domain" value="<?php echo $domain; ?>">
-      <input type="hidden" name="user" value="<?php echo $user ?>">
-      <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
-    </form>
+    <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
+    <input type="hidden" name="domain" value="<?php echo $domain; ?>">
+    <input type="hidden" name="user" value="<?php echo $user ?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
+    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
+  </form>
 
 <?php
 }
 
 function attribute_save($type){
-    global $domain, $user, $attrib, $oldvalue, $loginshell, $_pql;
+    global $domain, $user, $attrib, $oldvalue, $loginshell, $_pql, $view;
     
     // recontrol values
     if(!attribute_check($type)){

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // uid (user id)
-// $Id: attrib.uid.inc,v 2.7 2003-04-04 16:37:50 turbo Exp $
+// $Id: attrib.uid.inc,v 2.8 2003-05-28 07:23:38 turbo Exp $
 
 function attribute_check($type){
 	global $uid, $oldvalue, $_pql, $error, $domain;
@@ -34,36 +34,40 @@ function attribute_init(){
 }
 
 function attribute_print_form(){
-	global $uid, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error;
+	global $uid, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $view;
 
 ?>
-	<form action="<?php echo $PHP_SELF ?>" method="post">
-	<table cellspacing="0" cellpadding="3" border="0">
-	<th colspan="3" align="left"><?php echo PQL_LANG_UID_CHANGE; ?></th>
-	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title"><?php echo PQL_LANG_UID_TITLE; ?></td>
-		<td><?php echo format_error($error["uid"]); ?><input type="text" name="uid" value="<?php echo $uid; ?>"></td>
-	</tr>
-	<tr class="subtitle">
-		<td colspan="2">
-		<img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_LANG_UID_HELP; ?></td>
-	</tr>
-	</table>
-	<input type="hidden" name="submit" value="1">
-	<input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-	<input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
-	<input type="hidden" name="domain" value="<?php echo $domain; ?>">
-	<input type="hidden" name="user" value="<?php echo $user ?>">
-	<br>
-	<br>
-	<input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
-	</form>
+  <form action="<?php echo $PHP_SELF ?>" method="post">
+    <table cellspacing="0" cellpadding="3" border="0">
+      <th colspan="3" align="left"><?php echo PQL_LANG_UID_CHANGE; ?></th>
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"><?php echo PQL_LANG_UID_TITLE; ?></td>
+          <td><?php echo format_error($error["uid"]); ?><input type="text" name="uid" value="<?php echo $uid; ?>"></td>
+        </tr>
+
+        <tr class="subtitle">
+          <td colspan="2">
+            <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_LANG_UID_HELP; ?>
+          </td>
+        </tr>
+      </th>
+    </table>
+
+    <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
+    <input type="hidden" name="domain" value="<?php echo $domain; ?>">
+    <input type="hidden" name="user" value="<?php echo $user ?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
+    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
+  </form>
 
 <?php
 }
 
 function attribute_save($type){
-	global $domain, $user, $attrib, $oldvalue, $uid, $_pql, $config;
+	global $domain, $user, $attrib, $oldvalue, $uid, $_pql, $config, $view;
 	
 	// recontrol values
 	if(!attribute_check($type)){

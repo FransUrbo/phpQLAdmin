@@ -3,10 +3,10 @@
 // concurrencylocal (may simultaneous local deliveries)
 // concurrencyremote (may simultaneous remote deliveries)
 //
-// $Id: attrib.control.concurrencylocal.inc,v 2.7 2003-05-06 07:52:59 turbo Exp $
+// $Id: attrib.control.concurrencylocal.inc,v 2.8 2003-05-28 07:23:37 turbo Exp $
 
 function concurrencylocal_check($type) {
-	global $error, $concurrencylocal, $concurrencyremote;
+	global $error, $concurrencylocal, $concurrencyremote, $view;
 
 	// check validity
 	if(preg_match("/[^0-9]/", $concurrencylocal)){
@@ -25,9 +25,9 @@ function concurrencylocal_check($type) {
  	}
 }
 
+// init values
 function concurrencylocal_init($host) {
-	// init values
-	global $_pql_control, $concurrencylocal, $concurrencyremote;
+	global $_pql_control, $concurrencylocal, $concurrencyremote, $view;
 
 	// fetch data from ldap server
 	$attribs = array("concurrencylocal", "concurrencyremote");
@@ -44,7 +44,7 @@ function concurrencylocal_init($host) {
 }
 
 function concurrencylocal_print_view($host) {
-	global $_pql_control, $concurrencylocal, $concurrencyremote;
+	global $_pql_control, $concurrencylocal, $concurrencyremote, $view;
 
 	// init data
 	concurrencylocal_init($host);
@@ -89,8 +89,7 @@ function concurrencylocal_print_view($host) {
 }
 
 function concurrencylocal_print_form(){
-	global $attrib, $concurrencylocal, $concurrencyremote, $PHP_SELF, $error, $mxhost;
-
+	global $attrib, $concurrencylocal, $concurrencyremote, $PHP_SELF, $error, $mxhost, $view;
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -114,6 +113,8 @@ function concurrencylocal_print_form(){
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
@@ -121,7 +122,7 @@ function concurrencylocal_print_form(){
 }
 
 function concurrencylocal_save($type, $host) {
-	global $_pql_control, $attrib, $concurrencylocal, $concurrencyremote, $error, $mxhost;
+	global $_pql_control, $attrib, $concurrencylocal, $concurrencyremote, $error, $mxhost, $view;
 
 	// recontrol values
 	if(!concurrencylocal_check($type)){

@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // defaultPasswordScheme
-// $Id: attrib.defaultpasswordscheme.inc,v 2.1 2003-05-24 11:33:38 turbo Exp $
+// $Id: attrib.defaultpasswordscheme.inc,v 2.2 2003-05-28 07:23:37 turbo Exp $
 
 function attribute_check($type = '') {
 	global $error, $attrib, $$attrib;
@@ -16,7 +16,7 @@ function attribute_check($type = '') {
 }
 
 function attribute_print_form($type = "modify") {
-	global $error, $attrib, $$attrib, $domain, $rootdn, $config;
+	global $error, $attrib, $$attrib, $domain, $rootdn, $config, $view;
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -42,14 +42,16 @@ function attribute_print_form($type = "modify") {
     <input type="hidden" name="attrib" value="<?=$attrib?>">
     <input type="hidden" name="domain" value="<?=$domain?>">
     <input type="hidden" name="rootdn" value="<?=$rootdn?>">
+    <input type="hidden" name="view" value="<?=$view?>">
     <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
+
 <?php
 }
 
 function attribute_save($type) {
-	global $error, $attrib, $$attrib, $domain, $rootdn, $type, $_pql;
+	global $error, $attrib, $$attrib, $domain, $rootdn, $type, $_pql, $view;
 	
     switch($type) {
       case "add":

@@ -2,10 +2,10 @@
 // control attribute plugin for
 // ldapdefaultdotmode (default mode how to interpret .qmail files)
 //
-// $Id: attrib.control.ldapdefaultdotmode.inc,v 2.6 2003-05-06 07:52:59 turbo Exp $
+// $Id: attrib.control.ldapdefaultdotmode.inc,v 2.7 2003-05-28 07:23:37 turbo Exp $
 
 function ldapdefaultdotmode_check($type) {
-	global $error, $ldapdefaultdotmode;
+	global $error, $ldapdefaultdotmode, $view;
 	
 	// missing
 	if($ldapdefaultdotmode == ""){
@@ -28,9 +28,9 @@ function ldapdefaultdotmode_check($type) {
 	return true;
 }
 
+// init values
 function ldapdefaultdotmode_init($host) {
-	// init values
-	global $_pql_control, $ldapdefaultdotmode;
+	global $_pql_control, $ldapdefaultdotmode, $view;
 	
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
@@ -43,7 +43,7 @@ function ldapdefaultdotmode_init($host) {
 }
 
 function ldapdefaultdotmode_print_view($host) {
-	global $_pql_control, $ldapdefaultdotmode;
+	global $_pql_control, $ldapdefaultdotmode, $view;
 
 	// init data
 	ldapdefaultdotmode_init($host);
@@ -71,7 +71,7 @@ function ldapdefaultdotmode_print_view($host) {
 }
 
 function ldapdefaultdotmode_print_form() {
-	global $attrib, $ldapdefaultdotmode, $PHP_SELF, $error, $mxhost;
+	global $attrib, $ldapdefaultdotmode, $PHP_SELF, $error, $mxhost, $view;
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -98,13 +98,15 @@ function ldapdefaultdotmode_print_form() {
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 <?php
 }
 
 function ldapdefaultdotmode_save($type, $host) {
-	global $_pql_control, $attrib, $ldapdefaultdotmode, $error;
+	global $_pql_control, $attrib, $ldapdefaultdotmode, $error, $view;
 
 	// recontrol values
 	if(!ldapdefaultdotmode_check($type)){

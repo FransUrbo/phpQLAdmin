@@ -27,14 +27,14 @@ include("./include/".pql_control_plugin_get_filename($control_plugin));
 
 // forward back to users detail page
 function attribute_forward($msg){
-	global $domain, $user, $attrib, $mxhost, $domain, $rootdn;
+	global $domain, $user, $attrib, $mxhost, $domain, $rootdn, $view;
 
 	$msg = urlencode($msg);
 	$cat = pql_control_plugin_cat($attrib);
 	if($mxhost)
-	  $url = "control_detail.php?mxhost=$mxhost&msg=$msg";
+	  $url = "control_detail.php?mxhost=$mxhost&view=$view&msg=$msg";
 	else
-	  $url = "domain_detail.php?rootdn=$rootdn&domain=$domain&msg=$msg";
+	  $url = "domain_detail.php?rootdn=$rootdn&domain=$domain&view=$view&msg=$msg";
 
 	header("Location: " . $config["PQL_GLOB_URI"] . "$url");
 }

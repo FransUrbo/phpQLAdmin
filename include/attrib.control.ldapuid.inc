@@ -3,10 +3,10 @@
 // ldapuid (user id of virtual user)
 // ldapgid (group id of virtual user)
 //
-// $Id: attrib.control.ldapuid.inc,v 2.6 2003-05-06 07:45:09 turbo Exp $
+// $Id: attrib.control.ldapuid.inc,v 2.7 2003-05-28 07:23:37 turbo Exp $
 
 function ldapuid_check($type) {
-	global $error, $ldapuid, $ldapgid;
+	global $error, $ldapuid, $ldapgid, $view;
 
 	// missing
 	if($ldapuid == ""){
@@ -37,9 +37,9 @@ function ldapuid_check($type) {
  	}
 }
 
+// init values
 function ldapuid_init($host) {
-	// init values
-	global $_pql_control, $ldapuid, $ldapgid;
+	global $_pql_control, $ldapuid, $ldapgid, $view;
 	
 	// fetch data from ldap server
 	$attribs = array("ldapuid", "ldapgid");
@@ -56,7 +56,7 @@ function ldapuid_init($host) {
 }
 
 function ldapuid_print_view($host) {
-	global $_pql_control, $ldapuid, $ldapgid;
+	global $_pql_control, $ldapuid, $ldapgid, $view;
 
 	// init data
 	ldapuid_init($host);
@@ -93,7 +93,7 @@ function ldapuid_print_view($host) {
 }
 
 function ldapuid_print_form() {
-	global $attrib, $ldapuid, $ldapgid, $PHP_SELF, $error, $mxhost;
+	global $attrib, $ldapuid, $ldapgid, $PHP_SELF, $error, $mxhost, $view;
 
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
@@ -119,6 +119,8 @@ function ldapuid_print_form() {
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
@@ -126,7 +128,7 @@ function ldapuid_print_form() {
 }
 
 function ldapuid_save($type, $host) {
-	global $_pql_control, $attrib, $ldapuid, $ldapgid, $error;
+	global $_pql_control, $attrib, $ldapuid, $ldapgid, $error, $view;
 
 	// recontrol values
 	if(!ldapuid_check($type)){

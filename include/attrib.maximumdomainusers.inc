@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // maximumDomainUsers
-// $Id: attrib.maximumdomainusers.inc,v 2.3 2003-04-30 09:52:31 turbo Exp $
+// $Id: attrib.maximumdomainusers.inc,v 2.4 2003-05-28 07:23:38 turbo Exp $
 
 function attribute_check($type = '') {
 	global $error, $attrib, $$attrib;
@@ -16,7 +16,7 @@ function attribute_check($type = '') {
 }
 
 function attribute_print_form($type = "modify") {
-	global $error, $attrib, $$attrib, $domain, $rootdn;
+	global $error, $attrib, $$attrib, $domain, $rootdn, $view;
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -34,16 +34,15 @@ function attribute_print_form($type = "modify") {
     <input type="hidden" name="submit" value="2">
     <input type="hidden" name="attrib" value="<?=$attrib?>">
     <input type="hidden" name="domain" value="<?=$domain?>">
-
-    <br><br>
-
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 <?php
 }
 
 function attribute_save($type) {
-	global $error, $attrib, $$attrib, $domain, $rootdn, $type, $_pql;
+	global $error, $attrib, $$attrib, $domain, $rootdn, $type, $_pql, $view;
 	
     switch($type) {
       case "add":

@@ -2,10 +2,10 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.16 2003-05-19 05:29:19 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.17 2003-05-28 07:23:37 turbo Exp $
 
 function locals_check($type){
-    global $error, $locals, $rootdn, $domain;
+    global $error, $locals, $rootdn, $domain, $view;
     
     // check validity
     if(is_array($locals)){
@@ -31,7 +31,7 @@ function locals_check($type){
 
 // init values
 function locals_init($host) {
-    global $_pql_control, $locals;
+    global $_pql_control, $locals, $view;
     
     // fetch data from ldap server
     $locals = pql_control_get_attribute($_pql_control->ldap_linkid,
@@ -43,7 +43,7 @@ function locals_init($host) {
 }
 
 function locals_print_view($host) {
-    global $_pql_control, $locals, $config;
+    global $_pql_control, $locals, $config, $view;
     
     // init data
     locals_init($host);
@@ -96,7 +96,7 @@ function locals_print_view($host) {
 }
 
 function locals_print_form(){
-    global $attrib, $PHP_SELF, $error, $locals, $mxhost;
+    global $attrib, $PHP_SELF, $error, $locals, $mxhost, $view;
     
     // if automatic replication is enabled, don't display form
 // BUG?
@@ -116,13 +116,15 @@ function locals_print_form(){
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 <?php
 }
 
 function locals_save($type, $host){
-    global $_pql, $_pql_control, $attrib, $locals, $set, $error, $rootdn, $domain, $mxhost;
+    global $_pql, $_pql_control, $attrib, $locals, $set, $error, $rootdn, $domain, $mxhost, $view;
 
 	if($mxhost)
 	  $host = $mxhost;

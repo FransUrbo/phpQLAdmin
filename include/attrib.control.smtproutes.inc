@@ -2,10 +2,10 @@
 // control attribute plugin for
 // smtproutes (max number of bytes in message)
 //
-// $Id: attrib.control.smtproutes.inc,v 2.8 2003-05-20 10:48:37 turbo Exp $
+// $Id: attrib.control.smtproutes.inc,v 2.9 2003-05-28 07:23:37 turbo Exp $
 
 function smtproutes_check($type) {
-	global $error, $domain, $relay, $port;
+	global $error, $domain, $relay, $port, $view;
 
 	// check all domains
 	if(is_array($domain)) {
@@ -46,7 +46,7 @@ function smtproutes_check($type) {
 
 function smtproutes_init($host) {
 	// init values
-	global $_pql_control, $smtproutes, $domain, $relay, $port;
+	global $_pql_control, $smtproutes, $domain, $relay, $port, $view;
 
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
@@ -69,7 +69,7 @@ function smtproutes_init($host) {
 }
 
 function smtproutes_print_view($host) {
-	global $_pql_control, $smtproutes;
+	global $_pql_control, $smtproutes, $view;
 
 	// init data
 	smtproutes_init($host);
@@ -136,7 +136,7 @@ function smtproutes_print_view($host) {
 }
 
 function smtproutes_print_form() {
-	global $attrib, $PHP_SELF, $error, $domain, $relay, $port, $routecount, $mxhost;
+	global $attrib, $PHP_SELF, $error, $domain, $relay, $port, $routecount, $mxhost, $view;
 
 	if(($routecount < count($domain) - 1) and count($domain) != 0)
 	  $routecount = count($domain) - 1;
@@ -177,13 +177,15 @@ function smtproutes_print_form() {
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 <?php
 }
 
 function smtproutes_save($type, $host) {
-	global $_pql_control, $attrib, $smtproutes, $error, $domain, $relay, $port;
+	global $_pql_control, $attrib, $smtproutes, $error, $domain, $relay, $port, $view;
 
 	// recontrol values
 	if(!smtproutes_check($type))

@@ -2,10 +2,10 @@
 // control attribute plugin for
 // relaymailfrom (allowed sender addresses for relaying)
 //
-// $Id: attrib.control.relaymailfrom.inc,v 2.8 2003-05-20 10:48:37 turbo Exp $
+// $Id: attrib.control.relaymailfrom.inc,v 2.9 2003-05-28 07:23:37 turbo Exp $
 
 function relaymailfrom_check($type) {
-	global $error, $relaymailfrom;
+	global $error, $relaymailfrom, $view;
 	
 	// check validity
 	if(is_array($relaymailfrom)){
@@ -38,7 +38,7 @@ function relaymailfrom_check($type) {
 
 function relaymailfrom_init($host) {
 	// init values
-	global $_pql_control, $relaymailfrom;
+	global $_pql_control, $relaymailfrom, $view;
 	
 	// fetch data from ldap server
 	$relaymailfrom = pql_control_get_attribute($_pql_control->ldap_linkid,
@@ -51,7 +51,7 @@ function relaymailfrom_init($host) {
 }
 
 function relaymailfrom_print_view($host) {
-	global $_pql_control, $relaymailfrom;
+	global $_pql_control, $relaymailfrom, $view;
 
 	// init data
 	relaymailfrom_init($host);
@@ -97,7 +97,7 @@ function relaymailfrom_print_view($host) {
 }
 
 function relaymailfrom_print_form() {
-	global $attrib, $PHP_SELF, $error, $relaymailfrom, $relaycount, $mxhost;
+	global $attrib, $PHP_SELF, $error, $relaymailfrom, $relaycount, $mxhost, $view;
 	
 	if(($relaycount < count($relaymailfrom) - 1) and count($relaymailfrom) != 0){
 		$relaycount = count($relaymailfrom) - 1;
@@ -139,13 +139,15 @@ function relaymailfrom_print_form() {
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 <?php
 }
 
 function relaymailfrom_save($type, $host) {
-	global $_pql_control, $attrib, $relaymailfrom, $error;
+	global $_pql_control, $attrib, $relaymailfrom, $error, $view;
 
 	// recontrol values
 	if(!relaymailfrom_check($type)){

@@ -2,10 +2,10 @@
 // control attribute plugin for
 // queuelifetime (maximum number of RCPT TO's)
 //
-// $Id: attrib.control.queuelifetime.inc,v 2.6 2003-05-06 07:52:59 turbo Exp $
+// $Id: attrib.control.queuelifetime.inc,v 2.7 2003-05-28 07:23:37 turbo Exp $
 
 function queuelifetime_check($type) {
-	global $error, $queuelifetime;
+	global $error, $queuelifetime, $view;
 
 	// number ?
 	if(preg_match ("/[^0-9]/", $queuelifetime)){
@@ -24,7 +24,7 @@ function queuelifetime_check($type) {
 
 function queuelifetime_init($host) {
 	// init values
-	global $_pql_control, $queuelifetime;
+	global $_pql_control, $queuelifetime, $view;
 
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
@@ -37,7 +37,7 @@ function queuelifetime_init($host) {
 }
 
 function queuelifetime_print_view($host) {
-	global $_pql_control, $queuelifetime;
+	global $_pql_control, $queuelifetime, $view;
 
 	// init data
 	queuelifetime_init($host);
@@ -67,7 +67,7 @@ function queuelifetime_print_view($host) {
 }
 
 function queuelifetime_print_form() {
-	global $attrib, $queuelifetime, $PHP_SELF, $error, $mxhost;
+	global $attrib, $queuelifetime, $PHP_SELF, $error, $mxhost, $view;
 
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
@@ -87,6 +87,8 @@ function queuelifetime_print_form() {
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
@@ -94,7 +96,7 @@ function queuelifetime_print_form() {
 }
 
 function queuelifetime_save($type, $host) {
-	global $_pql_control, $attrib, $queuelifetime, $error;
+	global $_pql_control, $attrib, $queuelifetime, $error, $view;
 
 	// recontrol values
 	if(!queuelifetime_check($type)){

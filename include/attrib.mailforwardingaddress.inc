@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailforwardingaddress (forward all mails to this address)
-// $Id: attrib.mailforwardingaddress.inc,v 2.7 2003-05-27 10:18:29 turbo Exp $
+// $Id: attrib.mailforwardingaddress.inc,v 2.8 2003-05-28 07:23:38 turbo Exp $
 
 function attribute_check($type){
 	global $mailforwardingaddress, $error;
@@ -27,41 +27,46 @@ function attribute_init(){
 }
 
 function attribute_print_form(){
-	global $mailforwardingaddress, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error;
+	global $mailforwardingaddress, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $view;
 
-	?>
-	<form action="<?php echo $PHP_SELF ?>" method="post">
-	<table cellspacing="0" cellpadding="3" border="0">
-	<th colspan="3" align="left"><?php if($oldvalue == ""){echo PQL_LANG_MAILFORWARDINGADDRESS_NEW;}else{echo PQL_LANG_MAILFORWARDINGADDRESS_CHANGE;} ?></th>
-	<?php
-	  // We're changing a MailForwardingAddress. Give the old as reference
-	  if($oldvalue != "") {
-			echo "<tr class=\"c2\">";
-			echo "  <td class=\"title\">Old address</td>";
-			echo "  <td>" . $mailforwardingaddress . "</td>";
-			echo "</tr>";
-	  }
-	?>
-	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title"><?php echo PQL_LANG_EMAIL; ?></td>
-		<td><?php echo format_error($error["mailforwardingaddress"]); ?><input type="text" name="mailforwardingaddress" value=""></td>
-	</tr>
-	</table>
-	<input type="hidden" name="submit" value="1">
-	<input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-	<input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
-	<input type="hidden" name="domain" value="<?php echo $domain; ?>">
-	<input type="hidden" name="user" value="<?php echo $user ?>">
-	<br>
-	<br>
-	<input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
-	</form>
+?>
+  <form action="<?php echo $PHP_SELF ?>" method="post">
+    <table cellspacing="0" cellpadding="3" border="0">
+      <th colspan="3" align="left">
+        <?php if($oldvalue == ""){echo PQL_LANG_MAILFORWARDINGADDRESS_NEW;}else{echo PQL_LANG_MAILFORWARDINGADDRESS_CHANGE;} ?>
+      </th>
+<?php
+	// We're changing a MailForwardingAddress. Give the old as reference
+	if($oldvalue != "") {
+		echo "<tr class=\"c2\">";
+		echo "  <td class=\"title\">Old address</td>";
+		echo "  <td>" . $mailforwardingaddress . "</td>";
+		echo "</tr>";
+	}
+?>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title"><?php echo PQL_LANG_EMAIL; ?></td>
+        <td>
+          <?php echo format_error($error["mailforwardingaddress"]); ?><input type="text" name="mailforwardingaddress" value="">
+        </td>
+      </tr>
+    </table>
 
-	<?php
+    <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
+    <input type="hidden" name="domain" value="<?php echo $domain; ?>">
+    <input type="hidden" name="user" value="<?php echo $user ?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
+    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
+  </form>
+
+<?php
 }
 
 function attribute_save($type){
-	global $domain, $user, $attrib, $oldvalue;
+	global $domain, $user, $attrib, $oldvalue, $view;
 	global $mailforwardingaddress, $_pql, $config;
 
 	// recontrol values

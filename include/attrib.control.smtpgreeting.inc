@@ -2,10 +2,10 @@
 // control attribute plugin for
 // smtpgreeting (SMTP greeting message)
 //
-// $Id: attrib.control.smtpgreeting.inc,v 2.7 2003-05-06 07:45:09 turbo Exp $
+// $Id: attrib.control.smtpgreeting.inc,v 2.8 2003-05-28 07:23:37 turbo Exp $
 
 function smtpgreeting_check($type) {
-	global $error, $smtpgreeting;
+	global $error, $smtpgreeting, $view;
 
 	// no check necessary
 
@@ -14,7 +14,7 @@ function smtpgreeting_check($type) {
 
 function smtpgreeting_init($host) {
 	// init values
-	global $_pql_control, $smtpgreeting;
+	global $_pql_control, $smtpgreeting, $view;
 
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
@@ -27,7 +27,7 @@ function smtpgreeting_init($host) {
 }
 
 function smtpgreeting_print_view($host) {
-	global $_pql_control, $smtpgreeting;
+	global $_pql_control, $smtpgreeting, $view;
 
 	// init data
 	smtpgreeting_init($host);
@@ -55,7 +55,7 @@ function smtpgreeting_print_view($host) {
 }
 
 function smtpgreeting_print_form(){
-	global $attrib, $smtpgreeting, $PHP_SELF, $error, $mxhost;
+	global $attrib, $smtpgreeting, $PHP_SELF, $error, $mxhost, $view;
 
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
@@ -71,9 +71,12 @@ function smtpgreeting_print_form(){
         </tr>
       </th>
     </table>
+
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
@@ -81,7 +84,7 @@ function smtpgreeting_print_form(){
 }
 
 function smtpgreeting_save($type, $host) {
-	global $_pql_control, $attrib, $smtpgreeting, $error, $mxhost;
+	global $_pql_control, $attrib, $smtpgreeting, $error, $mxhost, $view;
 
 	// recontrol values
 	if(!smtpgreeting_check($type)){

@@ -22,10 +22,10 @@
 				// not be availible to administrate through phpQLAdmin!
 ?>
       <tr class="<?php table_bgcolor(); ?>">
-        <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=urlencode($user)?>"><?=$cn?></a></td>
+        <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=urlencode($user)?>&view=<?=$view?>"><?=$cn?></a></td>
         <td><?=$uid?></td>
         <td><?=$status?></td>
-        <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$user?>"><img src="images/edit.png" width="12" height="12" alt="<?=PQL_LANG_USER_EDIT?>" border="0"></a>&nbsp;&nbsp;<a href="user_del.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$user?>"><img src="images/del.png" width="12" height="12" alt="<?=PQL_LANG_USER_DELETE?>" border="0"></a></td>
+        <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$user?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?=PQL_LANG_USER_EDIT?>" border="0"></a>&nbsp;&nbsp;<a href="user_del.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$user?>&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="<?=PQL_LANG_USER_DELETE?>" border="0"></a></td>
       </tr>
 
 <?php		}
@@ -39,7 +39,7 @@
 <?php } ?>
 
       <tr class="subtitle">
-        <td colspan="4"><a href="user_add.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"> <?=PQL_LANG_USER_NEW?></a></td>
+        <td colspan="4"><a href="user_add.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"> <?=PQL_LANG_USER_NEW?></a></td>
       </tr>
     </th>
   </table>

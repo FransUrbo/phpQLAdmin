@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for pilotPerson objects etc
-// $Id: attrib.outlook.inc,v 1.8 2003-04-23 11:58:37 turbo Exp $
+// $Id: attrib.outlook.inc,v 1.9 2003-05-28 07:23:38 turbo Exp $
 
 /*
 	Attributes managed here:
@@ -48,7 +48,7 @@ function attribute_init() {
 }
 
 function attribute_print_form() {
-    global $user, $domain, $rootdn, $PHP_SELF, $attrib, $$attrib, $oldvalue, $error, $_pql;
+    global $user, $domain, $rootdn, $PHP_SELF, $attrib, $$attrib, $oldvalue, $error, $_pql, $view;
 	$$attrib = utf8_decode($$attrib);
 ?>
 
@@ -68,6 +68,7 @@ function attribute_print_form() {
 	<input type="hidden" name="domain" value="<?=$domain?>">
 	<input type="hidden" name="user" value="<?=$user?>">
     <input type="hidden" name="rootdn" value="<?=$rootdn?>">
+    <input type="hidden" name="view" value="<?=$view?>">
 	<input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
@@ -80,7 +81,7 @@ function attribute_print_form() {
 }
 
 function attribute_save($type) {
-    global $user, $domain, $rootdn, $attrib, $$attrib, $oldvalue, $_pql;
+    global $user, $domain, $rootdn, $attrib, $$attrib, $oldvalue, $_pql, $view;
 	$value = utf8_encode($$attrib);
 
     switch($type){

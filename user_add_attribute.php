@@ -9,10 +9,10 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 // forward back to users detail page
 function attribute_forward($msg){
-    global $domain, $user;
+    global $domain, $user, $view;
     
     $msg = urlencode($msg);
-    $url = "user_detail.php?domain=$domain&user=$user&msg=$msg";
+    $url = "user_detail.php?domain=$domain&user=$user&view=$view&msg=$msg";
     header("Location: " . $config["PQL_GLOB_URI"] . "$url");
 }
 

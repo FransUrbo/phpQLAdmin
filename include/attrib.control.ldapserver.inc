@@ -5,10 +5,10 @@
 // ldaplogin (cn of a database user)
 // ldappassword (password to bind to ldaplogin)
 //
-// $Id: attrib.control.ldapserver.inc,v 2.6 2003-05-06 07:52:59 turbo Exp $
+// $Id: attrib.control.ldapserver.inc,v 2.7 2003-05-28 07:23:37 turbo Exp $
 
 function ldapserver_check($type){
-	global $error, $ldapserver, $ldappassword, $ldapbasedn, $ldaplogin_use, $ldaplogin, $ldap_test;
+	global $error, $ldapserver, $ldappassword, $ldapbasedn, $ldaplogin_use, $ldaplogin, $ldap_test, $view;
 
 	// missing
 	if($ldapserver[0] == ""){
@@ -93,9 +93,9 @@ function ldapserver_check($type){
  	}
 }
 
+// init values
 function ldapserver_init($host) {
-	// init values
-	global $_pql_control, $srvcount, $ldapserver, $ldapbasedn, $ldaplogin_use, $ldaplogin, $ldappassword;
+	global $_pql_control, $srvcount, $ldapserver, $ldapbasedn, $ldaplogin_use, $ldaplogin, $ldappassword, $view;
 	
 	// fetch data from ldap server
 	$attribs = array("ldapserver", "ldapbasedn", "ldaplogin", "ldappassword");
@@ -123,7 +123,7 @@ function ldapserver_init($host) {
 }
 
 function ldapserver_print_view($host) {
-	global $_pql_control, $ldapserver, $ldapbasedn, $ldaplogin_use, $ldaplogin, $ldappassword;
+	global $_pql_control, $ldapserver, $ldapbasedn, $ldaplogin_use, $ldaplogin, $ldappassword, $view;
 
 	// init data
 	ldapserver_init($host);
@@ -181,7 +181,8 @@ function ldapserver_print_view($host) {
 }
 
 function ldapserver_print_form(){
-	global $attrib, $srvcount, $ldapserver, $ldapbasedn, $ldaplogin_use, $ldaplogin, $ldap_test, $PHP_SELF, $error, $mxhost;
+	global $attrib, $srvcount, $ldapserver, $ldapbasedn, $ldaplogin_use, $ldaplogin, $ldap_test, $PHP_SELF, $error;
+	global $mxhost, $view;
 	
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
@@ -236,6 +237,8 @@ function ldapserver_print_form(){
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
@@ -244,6 +247,7 @@ function ldapserver_print_form(){
 
 function ldapserver_save($type, $host) {
 	global $_pql_control, $attrib, $ldapserver, $ldapbasedn, $ldaplogin_use, $ldaplogin,$ldappassword, $ldap_test, $error;
+	global $view;
 	
 	// recontrol values
 	if(!ldapserver_check($type)){

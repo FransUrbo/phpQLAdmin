@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // qmaildotmode (interpretation of .qmail-files)
-// $Id: attrib.qmaildotmode.inc,v 2.5 2003-04-04 16:37:50 turbo Exp $
+// $Id: attrib.qmaildotmode.inc,v 2.6 2003-05-28 07:23:38 turbo Exp $
 
 function attribute_check($type){
 	global $qmaildotmode, $domain, $oldvalue, $_pql, $error;
@@ -41,45 +41,48 @@ function attribute_print_form(){
 	$qmaildotmode_select[$qmaildotmode] = "selected";
 
 ?>
-	<form action="<?php echo $PHP_SELF ?>" method="post">
-	<table cellspacing="0" cellpadding="3" border="0">
-	<th colspan="3" align="left"><?php echo PQL_LANG_QMAILDOTMODE_CHANGE; ?></th>
-	<tr class="<?php table_bgcolor(); ?>">
-		<td class="title"><?php echo PQL_LANG_QMAILDOTMODE_CHANGE; ?></td>
-		<td><?php echo format_error($error["qmaildotmode"]); ?>
-    <select name="qmaildotmode">
-			<option value="default" <?php echo $qmaildotmode_select["default"]; ?>><?php echo PQL_LANG_QMAILDOTMODE_MODE_DEFAULT; ?></option>
-			<option value="both" <?php echo $qmaildotmode_select["both"]; ?>><?php echo PQL_LANG_QMAILDOTMODE_MODE_BOTH; ?></option>
-			<option value="dotonly" <?php echo $qmaildotmode_select["dotonly"]; ?>><?php echo PQL_LANG_QMAILDOTMODE_MODE_DOTONLY; ?></option>
-			<option value="ldaponly" <?php echo $qmaildotmode_select["ldaponly"]; ?>><?php echo PQL_LANG_QMAILDOTMODE_MODE_LDAPONLY; ?></option>
-			<option value="ldapwithprog" <?php echo $qmaildotmode_select["ldapwithprog"]; ?>><?php echo PQL_LANG_QMAILDOTMODE_MODE_LDAPWITHPROG; ?></option>
-			<option value="none" <?php echo $qmaildotmode_select["none"]; ?>><?php echo PQL_LANG_QMAILDOTMODE_MODE_NONE; ?></option>
-    </select>
+  <form action="<?php echo $PHP_SELF ?>" method="post">
+    <table cellspacing="0" cellpadding="3" border="0">
+      <th colspan="3" align="left"><?php echo PQL_LANG_QMAILDOTMODE_CHANGE; ?></th>
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"><?php echo PQL_LANG_QMAILDOTMODE_CHANGE; ?></td>
+          <td>
+            <?php echo format_error($error["qmaildotmode"]); ?>
+            <select name="qmaildotmode">
+			  <option value="default" <?php echo $qmaildotmode_select["default"]; ?>><?php echo PQL_LANG_QMAILDOTMODE_MODE_DEFAULT; ?></option>
+			  <option value="both" <?php echo $qmaildotmode_select["both"]; ?>><?php echo PQL_LANG_QMAILDOTMODE_MODE_BOTH; ?></option>
+			  <option value="dotonly" <?php echo $qmaildotmode_select["dotonly"]; ?>><?php echo PQL_LANG_QMAILDOTMODE_MODE_DOTONLY; ?></option>
+			  <option value="ldaponly" <?php echo $qmaildotmode_select["ldaponly"]; ?>><?php echo PQL_LANG_QMAILDOTMODE_MODE_LDAPONLY; ?></option>
+			  <option value="ldapwithprog" <?php echo $qmaildotmode_select["ldapwithprog"]; ?>><?php echo PQL_LANG_QMAILDOTMODE_MODE_LDAPWITHPROG; ?></option>
+			  <option value="none" <?php echo $qmaildotmode_select["none"]; ?>><?php echo PQL_LANG_QMAILDOTMODE_MODE_NONE; ?></option>
+            </select>
+          </td>
+        </tr>
 
-		</td>
-	</tr>
-	<tr class="subtitle">
-		<td colspan="2">
-		<?php echo format_error($error["general"]); ?>
-		<img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_LANG_QMAILDOTMODE_HELP; ?></td>
-	</tr>
-	</table>
-	<input type="hidden" name="submit" value="1">
-	<input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-	<input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
-	<input type="hidden" name="domain" value="<?php echo $domain; ?>">
-	<input type="hidden" name="user" value="<?php echo $user ?>">
-	<br>
-	<br>
-	<input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
-	</form>
+        <tr class="subtitle">
+          <td colspan="2">
+            <?php echo format_error($error["general"]); ?>
+            <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_LANG_QMAILDOTMODE_HELP; ?>
+          </td>
+        </tr>
+      </th>
+    </table>
+
+    <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
+    <input type="hidden" name="domain" value="<?php echo $domain; ?>">
+    <input type="hidden" name="user" value="<?php echo $user ?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
+    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
+  </form>
 
 <?php
 }
 
 function attribute_save($type){
-	global $domain, $user, $attrib, $oldvalue;
-	global $qmaildotmode, $_pql, $config;
+	global $domain, $user, $attrib, $oldvalue, $qmaildotmode, $_pql, $config, $view;
 	
 	// recontrol values
 	if(!attribute_check($type)){

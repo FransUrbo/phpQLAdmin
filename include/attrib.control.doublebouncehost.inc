@@ -3,10 +3,10 @@
 // doublebouncehost (username of bounce sender)
 // doublebounceto (hostname of bounce sender)
 //
-// $Id: attrib.control.doublebouncehost.inc,v 2.7 2003-05-06 07:52:59 turbo Exp $
+// $Id: attrib.control.doublebouncehost.inc,v 2.8 2003-05-28 07:23:37 turbo Exp $
 
 function doublebouncehost_check($type) {
-	global $error, $doublebouncehost, $doublebounceto;
+	global $error, $doublebouncehost, $doublebounceto, $view;
 
 	// check validity
 	if($doublebounceto != "" and !check_email($doublebounceto . "@domain.tld")){
@@ -26,9 +26,9 @@ function doublebouncehost_check($type) {
  	}
 }
 
+// init values
 function doublebouncehost_init($host) {
-	// init values
-	global $_pql_control, $doublebouncehost, $doublebounceto;
+	global $_pql_control, $doublebouncehost, $doublebounceto, $view;
 
 	// fetch data from ldap server
 	$attribs = array("doublebouncehost", "doublebounceto");
@@ -45,7 +45,7 @@ function doublebouncehost_init($host) {
 }
 
 function doublebouncehost_print_view($host) {
-	global $_pql_control, $doublebouncehost, $doublebounceto;
+	global $_pql_control, $doublebouncehost, $doublebounceto, $view;
 
 	// init data
 	doublebouncehost_init($host);
@@ -82,8 +82,7 @@ function doublebouncehost_print_view($host) {
 }
 
 function doublebouncehost_print_form() {
-	global $attrib, $doublebouncehost, $doublebounceto, $PHP_SELF, $error, $mxhost;
-
+	global $attrib, $doublebouncehost, $doublebounceto, $PHP_SELF, $error, $mxhost, $view;
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -116,7 +115,7 @@ function doublebouncehost_print_form() {
 }
 
 function doublebouncehost_save($type, $host) {
-	global $_pql_control, $attrib, $doublebouncehost, $doublebounceto, $error;
+	global $_pql_control, $attrib, $doublebouncehost, $doublebounceto, $error, $view;
 
 	// recontrol values
 	if(!doublebouncehost_check($type)){

@@ -2,10 +2,10 @@
 // control attribute plugin for
 // maxrcptcount (maximum number of RCPT TO's)
 //
-// $Id: attrib.control.maxrcptcount.inc,v 2.6 2003-05-06 07:52:59 turbo Exp $
+// $Id: attrib.control.maxrcptcount.inc,v 2.7 2003-05-28 07:23:37 turbo Exp $
 
 function maxrcptcount_check($type) {
-	global $error, $maxrcptcount;
+	global $error, $maxrcptcount, $view;
 
 	// missing
 	if($maxrcptcount == ""){
@@ -22,9 +22,9 @@ function maxrcptcount_check($type) {
 	return true;
 }
 
+// init values
 function maxrcptcount_init($host) {
-	// init values
-	global $_pql_control, $maxrcptcount;
+	global $_pql_control, $maxrcptcount, $view;
 
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
@@ -37,7 +37,7 @@ function maxrcptcount_init($host) {
 }
 
 function maxrcptcount_print_view($host) {
-	global $_pql_control, $maxrcptcount;
+	global $_pql_control, $maxrcptcount, $view;
 
 	// init data
 	maxrcptcount_init($host);
@@ -65,8 +65,7 @@ function maxrcptcount_print_view($host) {
 }
 
 function maxrcptcount_print_form() {
-	global $attrib, $maxrcptcount, $PHP_SELF, $error, $mxhost;
-
+	global $attrib, $maxrcptcount, $PHP_SELF, $error, $mxhost, $view;
 ?>
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -85,13 +84,16 @@ function maxrcptcount_print_form() {
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?=$attrib?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?=PQL_LANG_SAVE?>">
   </form>
+
 <?php
 }
 
 function maxrcptcount_save($type, $host) {
-	global $_pql_control, $attrib, $maxrcptcount, $error;
+	global $_pql_control, $attrib, $maxrcptcount, $error, $view;
 
 	// recontrol values
 	if(!maxrcptcount_check($type)){

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mailquota.inc,v 2.6 2003-04-07 15:26:47 turbo Exp $
+// $Id: attrib.mailquota.inc,v 2.7 2003-05-28 07:23:38 turbo Exp $
 
 function attribute_check($type){
 	global $options, $use_maxsize, $use_maxmails, $maxsize, $maxmails, $error;
@@ -79,7 +79,7 @@ function attribute_init() {
 }
 
 function attribute_print_form($type = "modify") {
-	global $use_maxmails, $use_maxsize, $maxmails, $maxsize, $domain;
+	global $use_maxmails, $use_maxsize, $maxmails, $maxsize, $domain, $view;
 	global $rootdn, $options, $user, $PHP_SELF, $attrib, $error;
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
@@ -116,9 +116,8 @@ function attribute_print_form($type = "modify") {
 <?php if($attrib == 'mailquota') { ?>
     <input type="hidden" name="user" value="<?=$user?>">
 <?php } ?>
-
-    <br><br>
-
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
@@ -126,8 +125,7 @@ function attribute_print_form($type = "modify") {
 }
 
 function attribute_save($type) {
-	global $_pql, $attrib, $domain, $user, $maxsize, $maxmails;
-	global $options, $use_maxmails, $use_maxsize, $config;
+	global $_pql, $attrib, $domain, $user, $maxsize, $maxmails, $options, $use_maxmails, $use_maxsize, $config, $view;
 	
 	// recontrol values
 	if(!attribute_check($type))

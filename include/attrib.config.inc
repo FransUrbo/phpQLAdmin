@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.19 2003-05-24 11:36:52 turbo Exp $
+// $Id: attrib.config.inc,v 1.20 2003-05-28 07:23:37 turbo Exp $
 
 function attribute_check() {
     global $administrator, $domain, $oldvalue, $_pql, $error;
@@ -16,9 +16,8 @@ function attribute_check() {
 }
 
 function attribute_print_form() {
-    global $administrator, $domain, $PHP_SELF, $attrib;
-	global $$attrib, $oldvalue, $error, $_pql, $toggle;
-	global $PQL_ATTRIBUTE, $rootdn, $delval, $config;
+    global $administrator, $domain, $PHP_SELF, $attrib, $$attrib, $oldvalue, $error, $_pql, $toggle;
+	global $PQL_ATTRIBUTE, $rootdn, $delval, $config, $view;
 
 	$test = strtolower($attrib);
 
@@ -208,6 +207,8 @@ function attribute_print_form() {
 <?php if($toggle) { ?>
     <input type="hidden" name="oldvalue" value="<?=$oldvalue?>">
 <?php } ?>
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
@@ -252,8 +253,7 @@ function attribute_print_form() {
 }
 
 function attribute_save() {
-    global $domain, $attrib, $$attrib, $oldvalue, $administrator, $_pql, $rootdn;
-	global $delval, $PQL_ATTRIBUTE, $config;
+    global $domain, $attrib, $$attrib, $oldvalue, $administrator, $_pql, $rootdn, $delval, $PQL_ATTRIBUTE, $config, $view;
 
 	if($$attrib) {
 		if(strtolower($attrib) == 'passwordscheme') {

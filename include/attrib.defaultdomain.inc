@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // default domain name (the default domainname for a domain)
-// $Id: attrib.defaultdomain.inc,v 2.18 2003-05-18 13:15:26 turbo Exp $
+// $Id: attrib.defaultdomain.inc,v 2.19 2003-05-28 07:23:37 turbo Exp $
 
 function attribute_check(){
     global $defaultdomain, $domain, $oldvalue, $_pql, $error, $rootdn;
@@ -28,7 +28,7 @@ function attribute_init(){
 }
 
 function attribute_print_form(){
-    global $defaultdomain, $domain, $PHP_SELF, $attrib, $oldvalue, $error, $rootdn, $config;
+    global $defaultdomain, $domain, $PHP_SELF, $attrib, $oldvalue, $error, $rootdn, $config, $view;
 	$oldvalue = $defaultdomain;
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
@@ -106,13 +106,16 @@ function attribute_print_form(){
     <input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
     <input type="hidden" name="domain" value="<?php echo $domain; ?>">
     <input type="hidden" name="rootdn" value="<?=$rootdn?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
+
 <?php
 }
 
 function attribute_save($type){
-    global $domain, $attrib, $oldvalue, $defaultdomain, $_pql, $config, $rootdn;
+    global $domain, $attrib, $oldvalue, $defaultdomain, $_pql, $config, $rootdn, $view;
     
     // recontrol values
     if(!attribute_check($type))

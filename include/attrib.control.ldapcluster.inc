@@ -2,16 +2,18 @@
 // control attribute plugin for
 // ldapcluster (clustering support)
 //
-// $Id: attrib.control.ldapcluster.inc,v 2.5 2003-05-06 07:52:59 turbo Exp $
+// $Id: attrib.control.ldapcluster.inc,v 2.6 2003-05-28 07:23:37 turbo Exp $
 
+// check values
 function ldapcluster_check($type){
-	// check values
+	global $view;
+
 	return true;
 }
 
+// init values
 function ldapcluster_init(){
-	// init values
-	global $_pql_control, $ldapcluster;
+	global $_pql_control, $ldapcluster, $view;
 
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid, $GLOBALS["USER_SEARCH_DN_CTR"], "ldapcluster");
@@ -25,18 +27,16 @@ function ldapcluster_init(){
 }
 
 function ldapcluster_print_view($host) {
-	global $ldapcluster;
+	global $ldapcluster, $view;
 
 	// init data
 	ldapcluster_init();
 
-	//
 	if($ldapcluster == 0){
 		$ldapcluster = "Disabled, single ldap server";
 	} else {
 		$ldapcluster = "Enabled, use native clustering";
 	}
-
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="2" align="left">ldapcluster (Clustering support)</th>
@@ -61,14 +61,14 @@ function ldapcluster_print_view($host) {
 }
 
 function ldapcluster_print_form(){
-	global $mxhost;
+	global $mxhost, $view;
 
 	// don't print form, save directly
 	ldapcluster_save("modify", $mxhost);
 }
 
 function ldapcluster_save($type, $host) {
-	global $_pql_control, $set;
+	global $_pql_control, $set, $view;
 
 	// recontrol values
 	if(!ldapcluster_check($type)){

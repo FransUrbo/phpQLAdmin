@@ -2,10 +2,10 @@
 // control attribute plugin for
 // localiphost (name substituted for local IP address)
 //
-// $Id: attrib.control.localiphost.inc,v 2.7 2003-05-06 07:52:59 turbo Exp $
+// $Id: attrib.control.localiphost.inc,v 2.8 2003-05-28 07:23:37 turbo Exp $
 
 function localiphost_check($type) {
-	global $error, $localiphost;
+	global $error, $localiphost, $view;
 
 	// validity
 	if($localiphost != "" and !check_hostaddress($localiphost)){
@@ -16,9 +16,9 @@ function localiphost_check($type) {
 	return true;
 }
 
+// init values
 function localiphost_init($host) {
-	// init values
-	global $_pql_control, $localiphost;
+	global $_pql_control, $localiphost, $view;
 	
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
@@ -31,7 +31,7 @@ function localiphost_init($host) {
 }
 
 function localiphost_print_view($host) {
-	global $_pql_control, $localiphost;
+	global $_pql_control, $localiphost, $view;
 	
 	// init data
 	localiphost_init($host);
@@ -59,7 +59,7 @@ function localiphost_print_view($host) {
 }
 
 function localiphost_print_form() {
-	global $attrib, $localiphost, $PHP_SELF, $error, $mxhost;
+	global $attrib, $localiphost, $PHP_SELF, $error, $mxhost, $view;
 
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
@@ -79,6 +79,8 @@ function localiphost_print_form() {
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
+    <input type="hidden" name="view" value="<?=$view?>">
+    <br>
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
@@ -86,7 +88,7 @@ function localiphost_print_form() {
 }
 
 function localiphost_save($type, $host) {
-	global $_pql_control, $attrib, $localiphost, $error;
+	global $_pql_control, $attrib, $localiphost, $error, $view;
 
 	// recontrol values
 	if(!localiphost_check($type)){
