@@ -64,19 +64,15 @@ include("header.html");
 <?php if(PQL_LDAP_CONTROL_USE) { ?>
 <tr>
 	<td class="title">LDAP control host</td>
-	<td class="<?php table_bgcolor(); ?>"><?=$$USER_HOST_CTR?>&nbsp;</td>
+	<td class="<?php table_bgcolor(); ?>"><?=$USER_HOST_CTR?>&nbsp;</td>
 </tr>
 <tr>
 	<td class="title">LDAP control base dn</td>
-	<td class="<?php table_bgcolor(); ?>"><?php echo PQL_LDAP_CONTROL_BASEDN; ?>&nbsp;</td>
+	<td class="<?php table_bgcolor(); ?>"><?=$USER_SEARCH_DN_CTR?>&nbsp;</td>
 </tr>
 <tr>
 	<td class="title">LDAP control root dn</td>
-	<td class="<?php table_bgcolor(); ?>"><?php echo PQL_LDAP_CONTROL_ROOTDN; ?>&nbsp;</td>
-</tr>
-<tr>
-	<td class="title">LDAP control root password</td>
-	<td class="<?php table_bgcolor(); ?>">********&nbsp;</td>
+	<td class="<?php table_bgcolor(); ?>"><?=$USER_DN?>&nbsp;</td>
 </tr>
 <tr>
 	<td class="title">value in 'me'</td>
