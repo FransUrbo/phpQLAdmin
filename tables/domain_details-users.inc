@@ -2,11 +2,13 @@
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=$LANG->_('Registred users')?></th>
       <tr>
-        <td class="title"><?=$LANG->_('Options')?></td>
-        <td class="title"><?=$LANG->_('User')?></td>
+        <td class="title"></td>
         <td class="title"><?=$LANG->_('Status')?></td>
+        <td class="title"><?=$LANG->_('Address')?></td>
 <?php if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) == pql_get_define("PQL_ATTR_UID")) { ?>
         <td class="title"><?=$LANG->_('Username')?></td>
+<?php } else { ?>
+        <td class="title"><?=$LANG->_('User')?></td>
 <?php } ?>
       </tr>
 
@@ -19,39 +21,33 @@
 				$urledit= "user_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&user=$userdn";
 
 				$uid    = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_UID"));
-				$uid    = $uid[0];
 
 				// DLW: This should be sorted on DisplayName, not cn.
 				$cn     = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_CN"));
-				$cn     = $cn[0];
+				if(is_array($cn)) $cn = $cn[0];
 
 				$uidnr  = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_QMAILUID"));
-				$uidnr  = $uidnr[0];
-			
 				$status = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_ISACTIVE"));
-				$status = pql_ldap_accountstatus($status[0]);
+				$status = pql_ldap_accountstatus($status);
 
 				if(($uid != 'root') or ($uidnr != '0')) {
 					// Do NOT show root user(s) here! This should (for safty's sake)
 					// not be availible to administrate through phpQLAdmin!
 
 					// Get registered addresses for this user
-					$email   = pql_get_attribute($_pql->ldap_linkid, $user,
-												 pql_get_define("PQL_ATTR_MAIL"));
-					$email   = $email[0];
+					$email   = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_MAIL"));
 					$tmp     = split('@', $email);
 					$mail    = $tmp[0].'@'.pql_maybe_idna_decode($tmp[1]);
 
-					if($mail) {
-						$links = array("<b>$mail</b>" =>
-									   $urledit."&attrib=mail&mail=$email&oldvalue=$email&view=email");
-					} else {
-						$links = array();
-					}
+					if($mail)
+					  $links = array("<b>$mail</b>" => $urledit."&attrib=mail&mail=$email&oldvalue=$email&view=email");
+					else
+					  $links = array();
 
 					// Get any mail aliases for this user
-					$aliases = pql_get_attribute($_pql->ldap_linkid, $user,
-												 pql_get_define("PQL_ATTR_MAILALTERNATE"));
+					$aliases = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_MAILALTERNATE"));
+					if($aliases and !is_array($aliases))
+					  $aliases = array($aliases);
 
 					if($aliases) {
 						foreach($aliases as $alias) {
@@ -92,7 +88,7 @@
         <!-- User -->
         <td>
 <?php
-					pql_format_tree($cn, $urldet, $links, 0);
+					pql_format_tree($cn, 0, $links, 0);
 					pql_format_tree_end();
 ?>
         </td>
