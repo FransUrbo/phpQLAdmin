@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.2 2003-01-20 06:42:16 uid1000 Exp $
+// $Id: attrib.config.inc,v 1.3 2003-01-20 08:55:36 turbo Exp $
 
 function attribute_check() {
     global $administrator, $domain, $oldvalue, $_pql, $error, $attrib, $$attrib;
@@ -31,9 +31,8 @@ function attribute_print_form() {
 		}
 	}
 
-	// TODO: Now, get the second value from the LDAP
-	//       database, overwriting the defines if
-	//       existing in db.
+	// Now, get the second value from the LDAP database,
+	// overwriting the defines if existing in db.
 	$value = pql_get_domain_value($_pql, $_pql->ldap_basedn[0], $test);
 	if($value != '') $oldvalue = $value;
 
@@ -78,16 +77,16 @@ function attribute_print_form() {
     </table>
 
 	<input type="hidden" name="attrib" value="<?=$attrib?>">
-	<input type="hidden" name="submit" value="save">
+	<input type="hidden" name="submit" value="1">
 	<input type="submit" value="<?php echo PQL_SAVE; ?>">
   </form>
 <?php
 	}
 }
 
-function attribute_save($type) {
+function attribute_save() {
     global $domain, $attrib, $$attrib, $oldvalue, $administrator, $_pql;
-	$value = urlencode($$attrib);
+	$value = $$attrib;
 	
 	if($value == $oldvalue){
 		// don't change if new value equal to old one
@@ -96,10 +95,10 @@ function attribute_save($type) {
 		break;
 	}
 	
-	if(! pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, $value)) {
-		$msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
-	}
-	$msg = "Successfully replaced $attrib.";
+	if(! pql_set_domain_value($_pql->ldap_linkid, $_pql->ldap_basedn[0], $attrib, $value))
+	  $msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
+	else
+	  $msg = "Successfully replaced $attrib.";
 	
 	attribute_forward($msg);
 	break;
