@@ -61,39 +61,37 @@ if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
         <td class="<?=$class?>"><?=$config["PQL_GLOB_HOSTMASTER"]?>&nbsp;</td>
       </tr>
 
-<?php if($ALLOW_GLOBAL_CONFIG_SAVE) { ?>
       <tr>
         <td class="title">Manage Controls DB</td>
         <?php $class=table_bgcolor(0); ?>
-<?php       if($ALLOW_GLOBAL_CONFIG_SAVE) { ?>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_CONTROL_USE"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_CONF_CONTROL_USE"]?>"></a></td>
-<?php       } else { ?>
+<?php if($ALLOW_GLOBAL_CONFIG_SAVE) { ?>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_CONTROL_USE"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_GLOB_CONTROL_USE"]?>"></a></td>
+<?php } else { ?>
         <td class="<?=$class?>"></td>
-<?php       } ?>
-        <td class="<?=$class?>"><?=$config["PQL_GLOB_CONTROL_USE"]?>&nbsp;</td>
+<?php } ?>
+        <td class="<?=$class?>"><?php if($config["PQL_GLOB_CONTROL_USE"]) {echo 'Yes';} else {echo 'No';}?>&nbsp;</td>
       </tr>
-<?php    } ?>
 
       <tr>
         <td class="title">Manage EZMLM mailinglists</td>
         <?php $class=table_bgcolor(0); ?>
 <?php    if($ALLOW_GLOBAL_CONFIG_SAVE) { ?>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_EZMLM_USE"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_CONF_EZMLM_USE"]?>"></a></td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_EZMLM_USE"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_GLOB_EZMLM_USE"]?>"></a></td>
 <?php    } else { ?>
         <td class="<?=$class?>"></td>
 <?php    } ?>
-        <td class="<?=$class?>"><?=$config["PQL_GLOB_EZMLM_USE"]?>&nbsp;</td>
+        <td class="<?=$class?>"><?php if($config["PQL_GLOB_EZMLM_USE"]) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
       </tr>
 
       <tr>
         <td class="title">Automatic reload of navigation bar</td>
         <?php $class=table_bgcolor(0); ?>
 <?php    if($ALLOW_GLOBAL_CONFIG_SAVE) { ?>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_AUTO_RELOAD"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_CONF_AUTO_RELOAD"]?>"></a></td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_AUTO_RELOAD"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_GLOB_AUTO_RELOAD"]?>"></a></td>
 <?php    } else { ?>
         <td class="<?=$class?>"></td>
 <?php    } ?>
-        <td class="<?=$class?>"><?=$config["PQL_GLOB_AUTO_RELOAD"]?>&nbsp;</td>
+        <td class="<?=$class?>"><?php if($config["PQL_GLOB_AUTO_RELOAD"]) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
       </tr>
 
       <tr>
@@ -104,7 +102,7 @@ if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
 <?php    } else { ?>
         <td class="<?=$class?>"></td>
 <?php    } ?>
-        <td class="<?=$class?>"><?=$config["PQL_GLOB_CONTROL_AUTOADDLOCALS"]?>&nbsp;</td>
+        <td class="<?=$class?>"><?php if($config["PQL_GLOB_CONTROL_AUTOADDLOCALS"]) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
       </tr>
 
       <tr>
@@ -115,7 +113,7 @@ if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
 <?php    } else { ?>
         <td class="<?=$class?>"></td>
 <?php    } ?>
-        <td class="<?=$class?>"><?=$config["PQL_GLOB_CHANGE_SERVER"]?>&nbsp;</td>
+        <td class="<?=$class?>"><?php if($config["PQL_GLOB_CHANGE_SERVER"]) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
       </tr>
     </th>
 
@@ -146,18 +144,27 @@ if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
 <?php } ?>
       </tr>
 
+<?php if($config["PQL_GLOB_CONTROL_USE"]) { ?>
       <tr>
         <td class="title">LDAP control base dn</td>
         <?php $class=table_bgcolor(0); ?>
-<?php foreach($_pql->ldap_basedn as $dn) { ?>
+<?php     foreach($_pql->ldap_basedn as $dn) { ?>
+<?php         if($ALLOW_GLOBAL_CONFIG_SAVE) { ?>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$dn?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_CONTROL_DN"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Set/Modify <?=$PQL_ATTRIBUTE["PQL_CONF_CONTROL_DN"]?>"></a></td>
+<?php         } else { ?>
         <td class="<?=$class?>"></td>
-<?php    if($config["PQL_CONF_CONTROL_DN"][$dn]) { ?>
+<?php         }
+
+              if($config["PQL_CONF_CONTROL_DN"][$dn]) {
+?>
         <td class="<?=$class?>"><?=$config["PQL_CONF_CONTROL_DN"][$dn]?>&nbsp;</td>
-<?php    } else { ?>
+<?php         } else { ?>
         <td class="<?=$class?>"><i>undefined</i></td>
-<?php    } ?>
-<?php } ?>
+<?php         }
+          }
+?>
       </tr>
+<?php } ?>
 
       <tr>
         <td class="title">Show users</td>
@@ -169,7 +176,7 @@ if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
 ?>
         <td class="<?=$class?>"></td>
 <?php    } ?>
-        <td class="<?=$class?>"><?=$config["PQL_CONF_SHOW_USERS"][$dn]?>&nbsp;</td>
+        <td class="<?=$class?>"><?php if($config["PQL_CONF_SHOW_USERS"][$dn]) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
 <?php } ?>
       </tr>
 
@@ -182,7 +189,7 @@ if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
 <?php    } else { ?>
         <td class="<?=$class?>"></td>
 <?php    } ?>
-        <td class="<?=$class?>"><?=$config["PQL_CONF_ALLOW_ABSOLUTE_PATH"][$dn]?>&nbsp;</td>
+        <td class="<?=$class?>"><?php if($config["PQL_CONF_ALLOW_ABSOLUTE_PATH"][$dn]) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
 <?php } ?>
       </tr>
 
@@ -195,7 +202,7 @@ if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
 <?php    } else { ?>
         <td class="<?=$class?>"></td>
 <?php    } ?>
-        <td class="<?=$class?>"><?=$config["PQL_CONF_VERIFY_DELETE"][$dn]?>&nbsp;</td>
+        <td class="<?=$class?>"><?php if($config["PQL_CONF_VERIFY_DELETE"][$dn]) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
 <?php } ?>
       </tr>
 
