@@ -1,0 +1,14 @@
+Template: phpqladmin/webserver
+Type: select
+Choices: Apache, Apache-SSL, Both, None
+Choices-pl: Apache, Apache-SSL, Obydwa, ¯aden
+Default: ${webserver}
+Description: Which web server would you like to reconfigure automatically?
+ phpQLAdmin supports any web server that PHP4 does, but this
+ automatic configuration process only supports Apache and Apache-SSL.
+Description-pl: Który serwer WWW przekonfigurowaæ automatycznie?
+ phpQLAdmin dzia³a z dowolnym serwerem WWW który obs³uguje pliki PHP4,
+ ale automatyczna konfiguracja dzia³a tylko dla Apache i Apache-SSL.
+Description-sv: Vilken webserver will du konfigurera automatiskt?
+ phpQLAdmin stodjer alla webservrar som PHP4 gor, men denna automatiska
+ konfigurations process stodjer bara Apache och Apache-SSL.
