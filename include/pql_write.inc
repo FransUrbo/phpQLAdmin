@@ -3,50 +3,25 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.7 2004-11-12 14:01:27 turbo Exp $
+// $Id: pql_write.inc,v 2.8 2004-11-13 11:17:16 turbo Exp $
 //
 
 // ------------------------------------------------
-// Core WRITE API functions
+// WRITE API functions - Core
 // ------------------------------------------------
 
-// {{{ pql_write_add(linkid, dn, object, type, caller)
+// {{{ pql_write_add(linkid, dn, entry, type, caller)
+
 // ADD an object - called with an 'ldif' for modification.
-function pql_write_add($linkid, $dn, $object, $type, $caller) {
-	// -----
-	// Verify and/or encode values
-    foreach($object as $key => $value) {
-		// Check if we have a MUST in the objectclasses choosen
-		// for creation for this attribute...
-		if(is_array($value)) {
-			foreach($value as $val) {
-				if(eregi(pql_get_define("PQL_ATTR_OBJECTCLASS"), $key))
-				  $ocs[] = $val;
-
-				$entry[$key][] = pql_maybe_encode(trim($val), $key, $ldap_linkid);
-			}
-		} else {
-			if(eregi(pql_get_define("PQL_ATTR_OBJECTCLASS"), $key))
-			  $ocs[] = $value;
-			
-			$entry[$key] = pql_maybe_encode(trim($value), $key, $ldap_linkid);
-		}
-    }
-
-	// -----
-	// Make sure that all attributes we're using in this object have a corresponding object class
-	$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_setup_object_objectclasses($linkid, $ocs, $entry);
-
-	// -----
-	// Add the OpenLDAPaci attribute (maybe)
-	if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci"))
-	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($ldap_linkid, $userdn, $type);
+function pql_write_add($linkid, $dn, $entry, $type, $caller) {
+	// Verify that the object have what it needs to be able to be added
+	$entry = pql_validate_object($linkid, $dn, $entry, $type);
 
 	// -----
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif($caller, $dn, $entry);
 	if(file_exists("./.DEBUG_ME"))
-	  echo $LDIF;
+	  die($LDIF);
 	else {
 		// -----
 		// Add this object to the database
@@ -70,6 +45,7 @@ function pql_write_add($linkid, $dn, $object, $type, $caller) {
 
 	return(true);
 }
+
 // }}}
 
 // {{{ pql_write_mod(linkid, dn, entry, caller)
@@ -146,11 +122,10 @@ function pql_write_mod($linkid, $dn, $entry, $caller = NULL, $count = 0) {
 // }}}
 
 // ------------------------------------------------
-// Support SEARCH API functions
+// WRITE API functions - Support
 // ------------------------------------------------
 
 // {{{ pql_replace_values(ldap, attribs, old, new)
-
 // Look for attribs=old,
 // - replace with attribs=new
 // - or (if 'new' is empty/null), remove the value.
@@ -312,33 +287,14 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 
 	// -----
 	if($account_type == "group") {
-	  $ocs[] = 'person';		// OpenLDAP version >2.2 REQUIRE one structural objectclass.
-	  $ocs[] = 'qmailgroup';
-	  $ocs[] = 'posixAccount';	// We need the uid attribute (etc);
-	} else {
-		// Retreive WANTED objectclasses
-		if(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $rootdn))
-		  foreach(pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $rootdn)) as $oc)
-			$ocs[] = $oc;
-		else
-		  $ocs[] = '';
+		// OpenLDAP version >2.2 REQUIRE one structural objectclass.
+		$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'person';
+
+		$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'qmailgroup';
+
+		// We need the uid attribute (etc);
+		$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'posixAccount';
 	}
-
-	// -----
-	// Setup user entry variable
-    foreach($attribs as $key => $value) {
-		// Check if we have a MUST in the objectclasses choosen
-		// for creation for this attribute...
-		if(is_array($value)) {
-			foreach($value as $val)
-			  $entry[$key][] = pql_maybe_encode(trim($val), $key, $ldap_linkid);
-		} else
-		  $entry[$key] = pql_maybe_encode(trim($value), $key, $ldap_linkid);
-    }
-
-	// -----
-	// Make sure that all attributes we're using in this object have a corresponding object class
-	$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_setup_object_objectclasses($ldap_linkid, $ocs, $entry);
 
 	// -----
 	// Create the RDN for the user
@@ -361,9 +317,8 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 	$userdn = pql_maybe_encode($userdn);
 
 	// -----
-	// Add the OpenLDAPaci attribute (maybe)
-	if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci"))
-	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($ldap_linkid, $userdn, 'user');
+	// Make sure that all attributes we're using in this object have a corresponding object class
+	$entry = pql_validate_object($ldap_linkid, $userdn, $entry, $account_type);
 
 	// -----
 	// Create a LDIF object to print in case of error
