@@ -1,7 +1,7 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 1.1 2002-12-11 15:09:23 turbo Exp $
+// $Id: lang.en.inc,v 1.2 2002-12-12 12:15:16 turbo Exp $
 //
 // if you have a translation to another language, please contact
 // me --> Matthias Blaser <mb@adfinis.ch>
@@ -12,7 +12,16 @@ define("PQL_LANG","en");
 // welcome texts (home.php)
 define("PQL_WELCOME", "Welcome to ");
 define("PQL_DESCRIPTION","The QMail-LDAP Adminstration !!");
-define("PQL_LOGIN", "Login");
+
+// login texts
+define("PQL_LOGIN","Please Login");
+define("PQL_USERNAME","Login ID");
+define("PQL_USERPASS","Password");
+define("PQL_RETYPE","Retype password");
+define("PQL_ORG_BASE","Organization");
+
+define("PQL_HOME","Home");
+define("PQL_LOGOUT","Log out");
 
 // general texts
 define("PQL_SAVE", "Save");
@@ -38,6 +47,8 @@ define("PQL_EXISTS", "already exists");
 define("PQL_FAILED_RETYPE", "not exactly retyped");
 define("PQL_NO_OBJECT", "attribute not found");
 define("PQL_GREATER_ZERO", "must be > 0");
+define("PQL_SESSION_REG", "Could not register session variables");
+define("PQL_ERROR", "Error");
 
 // user/domain/address things
 define("PQL_USER", "User");
