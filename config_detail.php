@@ -303,6 +303,24 @@ if(isset($rlnb) and $config["PQL_GLOB_AUTO_RELOAD"]) {
 
       <!-- -------------------- --!>
       <tr>
+        <td class="title">Minimum UID/GID Number to be used for shell and system accounts</td>
+<?php $class=table_bgcolor(0);
+      foreach($_pql->ldap_basedn as $dn) {
+         if($ALLOW_GLOBAL_CONFIG_SAVE) {
+?>
+        <td class="<?=$class?>">
+          <a href="config_edit_attribute.php?rootdn=<?=$dn?>&attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_MINIMUM_UIDNUMBER"]?>">
+            <img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_GLOB_MINIMUM_UIDNUMBER"]?>">
+          </a>
+        </td>
+<?php    } else { ?>
+        <td class="<?=$class?>"></td>
+<?php    } ?>
+        <td class="<?=$class?>"><?=$config["PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER"][$dn]?></td>
+<?php } ?>
+      </tr>
+
+      <tr>
         <td class="title">UID Number to be used for forwarding accounts</td>
 <?php $class=table_bgcolor(0);
       foreach($_pql->ldap_basedn as $dn) {
