@@ -3,7 +3,7 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ezmlm.inc,v 1.27 2005-02-24 17:04:01 turbo Exp $
+// $Id: pql_ezmlm.inc,v 1.28 2005-03-01 20:30:33 turbo Exp $
 session_start();
 
 class ezmlm {
@@ -92,6 +92,9 @@ class ezmlm {
 	// {{{ _readlists(loadtexts)
 	// load list of mailinglists in directory
 	function _readlists($loadtexts = 0) {
+		// BUG: If list(s) are on external FS, then neither opendir()
+		//      nor readdir() (and all the other 'support' functions)
+		//      will work!
 		if(!(($directory = @opendir($this->user_home)) !=0)) {
 			$this->error="could not open the ezmlm user home directory";
 			return 0;
@@ -332,7 +335,7 @@ class ezmlm {
 	// Couldn't do this 'globaly', at variable declaration
 	// above, so I had to do it in the costructor. I don't
 	// have a better use for it anyway :)
-	function ezmlm($user_name = 'newsletters', $user_home = '/home/newsletters', $paths = 0) {
+	function ezmlm($user_name = 'newsletters', $user_home = '/home/newsletters', $cmd_paths = 0) {
 		$this->_option["archived"]["on"]		= "a";	$this->_option["archived"]["off"]		= "A";
 		$this->_option["remotecfg"]["on"]		= "c";	$this->_option["remotecfg"]["off"]		= "C";
 		$this->_option["digest"]["on"]			= "d";	$this->_option["digest"]["off"]			= "D";
@@ -356,15 +359,15 @@ class ezmlm {
 
 		// This SHOULD allow us to be able to 'replace' the commands with something
 		// that will do remote configuration - scripts that uses rsh/ssh perhaps?
-		if(! $paths) {
+		if(! $cmd_paths) {
 			$this->_paths["make"]	= pql_get_define("PQL_CONF_EZMLM_PATH") . "/ezmlm-make";
 			$this->_paths["list"]	= pql_get_define("PQL_CONF_EZMLM_PATH") . "/ezmlm-list";
 			$this->_paths["sub"]	= pql_get_define("PQL_CONF_EZMLM_PATH") . "/ezmlm-sub";
 			$this->_paths["unsub"]	= pql_get_define("PQL_CONF_EZMLM_PATH") . "/ezmlm-unsub";
 		} else {
 			// Assign EXISTING values
-			foreach($paths as $key => $val) {
-				$this->_paths[$key] = $paths[$key];
+			foreach($cmd_paths as $key => $val) {
+				$this->_paths[$key] = $cmd_paths[$key];
 			}
 
 			// Assign EXISTING values with defaults
@@ -591,13 +594,13 @@ class ezmlm {
 	// Create/Modify list text
 	function savelistentrytexts($listname, $text, $contents) {
 		// Create a temp file
-		if(! strcmp($path = tempnam($this->user_home."/".$listname."/text", $text.'.'), "")) {
+		if(! strcmp($list_path = tempnam($this->user_home."/".$listname."/text", $text.'.'), "")) {
 			$this->error = "could not create a temporary the mailing list text file name";
 			return 0;
 		}
 
 		// Open the temp file for write
-		if( ($file = @fopen($path, "w")) !=0 ) {
+		if( ($file = @fopen($list_path, "w")) !=0 ) {
 			$this->error = "could not create a temporary the mailing list text file";
 			return 0;
 		}
@@ -605,7 +608,7 @@ class ezmlm {
 		// Write text content to temp file
 		if( fwrite($file, $contents, strlen($contents)) !=0) {
 			fclose($file);
-			unlink($path);
+			unlink($list_path);
 
 			$this->error = "could not write to a temporary the mailing list text file";
 			return 0;
@@ -613,8 +616,8 @@ class ezmlm {
 		fclose($file);
 
 		// Move the tempfile to the correct dir/filename
-		$success = copy($path, ($this->user_home."/".$listname."/text/".$text));
-		unlink($path);
+		$success = copy($list_path, ($this->user_home."/".$listname."/text/".$text));
+		unlink($list_path);
 
 		return $success;
 	}
