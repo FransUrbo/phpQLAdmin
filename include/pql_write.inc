@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.12 2005-01-13 12:30:45 turbo Exp $
+// $Id: pql_write.inc,v 2.13 2005-01-30 12:29:51 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -124,6 +124,20 @@ function pql_write_mod($linkid, $dn, $entry, $caller = NULL, $count = 0) {
 	return(true);
 }
 // }}}
+
+// {{{ pql_write_ren(linkid, old, parent, new, keepold)
+function pql_write_ren($linkid, $old, $parent, $new, $keepold = TRUE) {
+  if(file_exists("./.DEBUG_ME")) {
+	echo "Renaming<br>'<b>$old</b>'<br>to<br>'<b>$new,$parent</b>'<br>";
+	return true;
+  } else {
+	if(ldap_rename($linkid, $old, $new, $parent, $keepold))
+	  return true;
+  }
+
+  return false;
+}
+// {{{
 
 // ------------------------------------------------
 // WRITE API functions - Support
