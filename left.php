@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.90 2004-04-01 12:29:21 turbo Exp $
+// $Id: left.php,v 2.91 2004-04-30 11:23:03 turbo Exp $
 //
 session_start();
 
@@ -194,7 +194,7 @@ if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {
     pql_format_tree($LANG->_('phpQLAdmin Site Specifics'), 0, $links, 1);
 
     // Level 2f: Misc QmailLDAP/Controls links
-    $links = array('Official Qmail-LDAP pages'			=> 'http://www.nrg4u.com/',
+    $links = array('Official Qmail-LDAP pages'			=> 'http://www.qmail-ldap.org/',
 		   'Life with Qmail-LDAP'			=> 'http://www.lifewithqmail.org/ldap/',
 		   'Life with Qmail'				=> 'http://www.lifewithqmail.org/');
     pql_format_tree($LANG->_('Misc Qmail & Qmail-LDAP'), 0, $links, 1);
