@@ -191,7 +191,9 @@ if(empty($forwarders)) {
 ?>
       <tr class="<?php table_bgcolor(); ?>">
 	<td><?php echo $forwarder["email"];?></td>
-	<td><a href="user_detail.php?user=<?php echo urlencode($forwarder["reference"]); ?>&domain=<?php echo $forwarder["domain"]; ?>"><?php echo $forwarder["cn"];?>@<?php echo $forwarder["domain"];?></a></td>
+	<td>
+          <a href="user_detail.php?user=<?php echo urlencode($forwarder["reference"]); ?>&domain=<?php echo $forwarder["domain"]; ?>"><?php echo $forwarder[PQL_LDAP_REFERENCE_USERS_WITH];?></a>
+        </td>
       </tr>
 <?php
 	} // end of foreach
