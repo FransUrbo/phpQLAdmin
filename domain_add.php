@@ -3,9 +3,9 @@
 // domain_add.php,v 1.3 2002/12/12 21:52:08 turbo Exp
 //
 session_start();
-
-require("./include/pql.inc");
+require("./include/pql_config.inc");
 require("./include/pql_control.inc");
+
 include("./header.html");
 ?>
   <span class="title1"><?=PQL_DOMAIN_ADD?>: <?=$domain?></span>
@@ -18,7 +18,7 @@ $_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
 $domain = strtolower($domain);
 
 // Should we force a dot in the domainname or not?
-if(PQL_LDAP_ATTR_DOMAIN == "dc") {
+if(PQL_LDAP_REFERENCE_DOMAINS_WITH == "dc") {
 	// We're using a domain object, which means we should allow
 	// a domain name to be without dot.
 	$nodot = 1;

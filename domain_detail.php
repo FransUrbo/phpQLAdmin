@@ -3,8 +3,7 @@
 // domain_detail.php,v 2.2 2002/12/17 06:28:26 turbo Exp
 //
 session_start();
-
-require("./include/pql.inc");
+require("./include/pql_config.inc");
 
 if(defined(PQL_LDAP_CONTROL_USE)) {
     // include control api if control is used
@@ -35,7 +34,7 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 // check if domain exist
 $dc = ldap_explode_dn($domain, 0); $dc = split('=', $dc[0]);
 if(!pql_domain_exist($_pql, $dc[1])){
-    echo "domain &quot;$domain&quot; does not exists";
+    echo "Domain &quot;$domain&quot; does not exists";
     exit();
 }
 

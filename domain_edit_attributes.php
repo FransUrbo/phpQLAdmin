@@ -3,8 +3,8 @@
 // domain_edit_attributes.php,v 1.3 2002/12/12 21:52:08 turbo Exp
 //
 session_start();
+require("./include/pql_config.inc");
 
-require("./include/pql.inc");
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 // forward back to users detail page

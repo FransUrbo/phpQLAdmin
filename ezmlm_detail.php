@@ -1,9 +1,8 @@
 <?php
-// $Id: ezmlm_detail.php,v 1.13 2003-01-16 14:58:33 turbo Exp $
+// $Id: ezmlm_detail.php,v 1.14 2003-01-21 13:39:40 turbo Exp $
 //
 session_start();
-
-require("./include/pql.inc");
+require("./include/pql_config.inc");
 require("./include/pql_ezmlm.inc");
 
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);

@@ -3,8 +3,7 @@
 // user_sendmail.php,v 1.3 2002/12/12 21:52:08 turbo Exp
 //
 session_start();
-
-require("./include/pql.inc");
+require("./include/pql_config.inc");
 
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 

@@ -1,9 +1,8 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.8 2003-01-14 12:53:38 turbo Exp $
+// $Id: control_detail.php,v 1.9 2003-01-21 13:39:40 turbo Exp $
 session_start();
-
-require("./include/pql.inc");
+require("./include/pql_config.inc");
 
 if(PQL_LDAP_CONTROL_USE){
     // include control api if control is used

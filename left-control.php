@@ -1,10 +1,10 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.6 2003-01-14 12:53:38 turbo Exp $
+// $Id: left-control.php,v 2.7 2003-01-21 13:39:40 turbo Exp $
 //
 session_start();
 
-require("./include/pql.inc");
+require("./include/pql_config.inc");
 require("./include/pql_control.inc");
 require("./include/pql_control_plugins.inc");
 

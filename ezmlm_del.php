@@ -1,15 +1,13 @@
 <?php
-// $Id: ezmlm_del.php,v 1.10 2003-01-16 14:58:33 turbo Exp $
+// $Id: ezmlm_del.php,v 1.11 2003-01-21 13:39:40 turbo Exp $
 //
 session_start();
-
-require("./include/pql.inc");
+require("./include/pql_config.inc");
 require("./include/pql_ezmlm.inc");
 
-include("./header.html");
-
-// Initialize
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS, false, 0);
+
+include("./header.html");
 
 // forward back to list detail page
 function list_forward($domainname, $msg){

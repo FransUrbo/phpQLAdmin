@@ -3,11 +3,11 @@
 // user_del.php,v 1.3 2002/12/12 21:52:08 turbo Exp
 //
 session_start();
+require("./include/pql_config.inc");
 
-require("./include/pql.inc");
+$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 include("./header.html");
-$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 // Get organization name for domain and common name of user
 $o = pql_get_domain_value($_pql, $domain, 'o');

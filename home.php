@@ -3,8 +3,7 @@
 // home.php,v 1.3 2002/12/13 13:50:12 turbo Exp
 //
 session_start();
-
-require("./include/pql.inc");
+require("./include/pql_config.inc");
 
 include("./header.html");
 
@@ -12,6 +11,7 @@ include("./header.html");
 if(isset($msg)){
     print_status_msg($msg);
 }
+
 // reload navigation bar if needed
 if(isset($rlnb) and PQL_AUTO_RELOAD) {
 ?>

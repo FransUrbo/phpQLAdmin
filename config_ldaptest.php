@@ -3,8 +3,7 @@
 // config_ldaptest.php,v 1.4 2002/12/13 13:47:10 turbo Exp
 //
 session_start();
-
-require("./include/pql.inc");
+require("./include/pql_config.inc");
 require("./include/pql_control.inc");
 
 if(!function_exists("ldap_connect")){

@@ -1,10 +1,9 @@
 <?php
 // Add a new mailserver to the database
-// $Id: control_add_server.php,v 2.5 2003-01-14 12:53:38 turbo Exp $
+// $Id: control_add_server.php,v 2.6 2003-01-21 13:39:40 turbo Exp $
 //
 session_start();
-
-require("./include/pql.inc");
+require("./include/pql_config.inc");
 
 if(PQL_LDAP_CONTROL_USE){
     // include control api if control is used

@@ -1,10 +1,10 @@
 <?php
 // Input form page to create a domain branch in database
-// $Id: domain_add_form.php,v 1.3 2003-01-14 18:54:34 turbo Exp $
+// $Id: domain_add_form.php,v 1.4 2003-01-21 13:39:40 turbo Exp $
 //
 session_start();
+require("./include/pql_config.inc");
 
-require("./include/pql.inc");
 include("./header.html");
 ?>
   <span class="title1">Create domain branch in LDAP server <?=$USER_HOST?></span>
@@ -27,7 +27,7 @@ include("./header.html");
                       <img src="images/info.png" width="16" height="16" alt="" border="0"></td>
                     <td>
 <?php
-	    if(PQL_LDAP_ATTR_DOMAIN == "dc") {
+	    if(PQL_LDAP_REFERENCE_DOMAINS_WITH == "dc") {
 		// We're using a domain object
 		echo PQL_DOMAIN_ADD_INFO_DC;
 	    } else {
