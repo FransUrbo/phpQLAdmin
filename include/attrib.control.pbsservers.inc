@@ -2,7 +2,7 @@
 // control attribute plugin for
 // pbsservers (max number of bytes in message)
 //
-// $Id: attrib.control.pbsservers.inc,v 2.2 2004-07-08 11:37:53 turbo Exp $
+// $Id: attrib.control.pbsservers.inc,v 2.3 2004-10-15 15:14:10 turbo Exp $
 
 // {{{ pbsservers_check(type)
 function pbsservers_check($type) {
@@ -58,7 +58,7 @@ function pbsservers_init($host) {
 	// fetch data from ldap server
 	$_REQUEST["pbsservers"] = pql_control_get_attribute($_pql_control->ldap_linkid,
 														 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-														 pql_get_define("PQL_ATTR_QMQPSERVERS"));
+														 pql_get_define("PQL_ATTR_PBS_SERVERS"));
 
 	if(is_null($_REQUEST["pbsservers"]))
 	  return true;
@@ -74,7 +74,7 @@ function pbsservers_print_view($host) {
 	pbsservers_init($host);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th align="left">pbsservers (<?=$LANG->_('_CHANGE THIS_')?>)</th>
+    <th align="left">pbsservers (<?=$LANG->_('POP before SMTP servers')?>)</th>
       <tr class="title">
         <td>IP</td>
       </tr>
@@ -96,7 +96,7 @@ function pbsservers_print_view($host) {
 	} // end if is_array
 ?>
       <tr class="subtitle">
-        <td><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=pbsservers"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
+        <td><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=pbsservers"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Add server')?></a></td>
       </tr>
     </th>
   </table>
@@ -109,32 +109,32 @@ function pbsservers_print_view($host) {
 function pbsservers_print_form() {
 	global $error, $LANG;
 
-	if(($_REQUEST["qmqpcount"] < count($_REQUEST["pbsservers"]) - 1) and count($_REQUEST["qmqpservers"]) != 0)
-	  $_REQUEST["qmqpcount"] = count($_REQUEST["pbsservers"]) - 1;
+	if(($_REQUEST["pbscount"] < count($_REQUEST["pbsservers"]) - 1) and count($_REQUEST["pbsservers"]) != 0)
+	  $_REQUEST["pbscount"] = count($_REQUEST["pbsservers"]) - 1;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">pbsservers (<?=$LANG->_('_CHANGE THIS_')?>)</th>
+      <th colspan="3" align="left">pbsservers (<?=$LANG->_('POP before SMTP servers')?>)</th>
         <tr class="title">
           <td><?=$LANG->_('IP Address')?></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["pbsservers_0"]); ?><input type="text" name="qmqpservers[0]" value="<?=$_REQUEST["qmqpservers"][0]?>"></td>
+          <td><?php echo pql_format_error_span($error["pbsservers_0"]); ?><input type="text" name="pbsservers[0]" value="<?=$_REQUEST["pbsservers"][0]?>"></td>
         </tr>
 
-<?php for($i = 1; $i <= $_REQUEST["qmqpcount"]; $i++) { ?>
+<?php for($i = 1; $i <= $_REQUEST["pbscount"]; $i++) { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["pbsservers_$i"]); ?><input type="text" name="qmqpservers[<?=$i?>]" value="<?=$_REQUEST["qmqpservers"][$i]?>"></td>
+          <td><?php echo pql_format_error_span($error["pbsservers_$i"]); ?><input type="text" name="pbsservers[<?=$i?>]" value="<?=$_REQUEST["pbsservers"][$i]?>"></td>
         </tr>
 
 <?php } ?>
         <tr class="subtitle">
-          <td><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&qmqpcount=<?=($_REQUEST["qmqpcount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
+          <td><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&pbscount=<?=($_REQUEST["pbscount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
         </tr>
 
         <tr class="subtitle">
-          <td><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('To delete a QMQP server remove the value and save')?>.</td>
+          <td><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('To delete a PBS server, remove the value and save')?>.</td>
         </tr>
       </th>
     </table>
@@ -159,8 +159,8 @@ function pbsservers_save($type, $host)  {
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_ATTR_QMQPSERVERS"),
+										 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_ATTR_PBS_SERVERS"),
 										 $_REQUEST["pbsservers"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('pbsservers options')));
@@ -183,9 +183,8 @@ function pbsservers_save($type, $host)  {
 function pbsservers_help() {
 	global $LANG;
 ?>
-	IP addresses of QMQP servers, one address per line.
-	qmail-qmqpc will try each address in turn until it
-	establishes a QMQP connection or runs out of addresses.
+    A list of IP addresses of running pbsdbd servers.
+    This file is only used by the clients pbsadd and pbscheck.
 <?php
 }
 // }}}

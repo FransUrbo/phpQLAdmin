@@ -1,102 +1,65 @@
 <?php
 // control attribute plugin for
-// goodaddress (max number of bytes in message)
+// goodmailaddr (max number of bytes in message)
 //
-// $Id: attrib.control.goodaddress.inc,v 2.2 2004-07-08 11:37:53 turbo Exp $
+// $Id: attrib.control.goodaddress.inc,v 2.3 2004-10-15 15:14:10 turbo Exp $
 
-// {{{ goodaddress_check(type)
-function goodaddress_check($type) {
+// {{{ goodmailaddr_check(type)
+function goodmailaddr_check($type) {
 	global $error, $LANG;
 
-	// check each field
-	if(is_array($_REQUEST["goodaddress"])) {
-		foreach($_REQUEST["goodaddress"] as $key => $server) {
-			if($server == "")
-			  continue;
-			
-			// it is an ip address
-			if(!preg_match("/([0-9]{1,3}\.){3,3}[0-9]{1,1}/", $server)) {
-				$is_error = true;
-				$error["goodaddress_$key"] = $LANG->_('Invalid');
-			} else {
-				// ip format ok, check validity of matched ip address
-				$ip = explode(".", $server);
-				
-				foreach($ip as $ip_key => $ip_part) {
-					switch((int)$ip_key) {
-					  case 0:
-					  case 3:
-						if($ip_part <= 0 or $ip_part > 254) {
-							$is_error = true;
-							$error["goodaddress_$key"] = $LANG->_('Invalid');
-						}
-						break;
-						
-					  default:
-						if($ip_part < 0 or $ip_part > 255) {
-							$is_error = true;
-							$error["goodaddress_$key"] = $LANG->_('Invalid');
-						}
-					} // end switch
-				} // end foreach
-			} // end if !preg_match...
-		} // end foreach
-	} // end if is_array...
-
-	if($is_error)
-	  return false;
-	
+	// dummy function
 	return true;
 }
 // }}}
 
-// {{{ goodaddress_init(host)
+// {{{ goodmailaddr_init(host)
 // init values
-function goodaddress_init($host) {
+function goodmailaddr_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	$_REQUEST["goodaddress"] = pql_control_get_attribute($_pql_control->ldap_linkid,
-														 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-														 pql_get_define("PQL_ATTR_QMQPSERVERS"));
+	$_REQUEST["goodmailaddr"] = pql_control_get_attribute($_pql_control->ldap_linkid,
+														 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+														 pql_get_define("PQL_ATTR_GOODADDRESS"));
 
-	if(is_null($_REQUEST["goodaddress"]))
+	if(is_null($_REQUEST["goodmailaddr"]))
 	  return true;
 }
 // }}}
 
 
-// {{{ goodaddress_print_view(host)
-function goodaddress_print_view($host) {
+// {{{ goodmailaddr_print_view(host)
+function goodmailaddr_print_view($host) {
 	global $_pql_control, $LANG;
 
 	// init data
-	goodaddress_init($host);
+	goodmailaddr_init($host);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th align="left">goodaddress (<?=$LANG->_('_CHANGE THIS_')?>)</th>
+    <th align="left">goodmailaddr (<?=$LANG->_('Localy accepted mail addresses')?>)</th>
       <tr class="title">
-        <td>IP</td>
+        <td>Address(es)</td>
       </tr>
 <?php
-	if(!is_array($_REQUEST["goodaddress"])) {
+	if(!is_array($_REQUEST["goodmailaddr"])) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td><?=$LANG->_('Not set')?></td>
       </tr>
 <?php
 	} else {
-		foreach($_REQUEST["goodaddress"] as $server) {
+		foreach($_REQUEST["goodmailaddr"] as $address) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td><?=pql_maybe_idna_decode($server)?></td>
+        <td><?=pql_maybe_idna_decode($address)?></td>
       </tr>
 <?php
 		} // end foreach
 	} // end if is_array
 ?>
       <tr class="subtitle">
-        <td><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=goodaddress"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
+        <td><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=goodmailaddr"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
       </tr>
     </th>
   </table>
@@ -105,36 +68,36 @@ function goodaddress_print_view($host) {
 }
 // }}}
 
-// {{{ goodaddress_print_form(void)
-function goodaddress_print_form() {
+// {{{ goodmailaddr_print_form(void)
+function goodmailaddr_print_form() {
 	global $error, $LANG;
 
-	if(($_REQUEST["qmqpcount"] < count($_REQUEST["goodaddress"]) - 1) and count($_REQUEST["qmqpservers"]) != 0)
-	  $_REQUEST["qmqpcount"] = count($_REQUEST["goodaddress"]) - 1;
+	if(($_REQUEST["goodmailaddrcount"] < count($_REQUEST["goodmailaddr"]) - 1) and count($_REQUEST["goodmailaddresses"]) != 0)
+	  $_REQUEST["goodmailaddrcount"] = count($_REQUEST["goodmailaddr"]) - 1;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">goodaddress (<?=$LANG->_('_CHANGE THIS_')?>)</th>
+      <th colspan="3" align="left">goodmailaddr (<?=$LANG->_('Localy accepted mail addresses')?>)</th>
         <tr class="title">
-          <td><?=$LANG->_('IP Address')?></td>
+          <td><?=$LANG->_('Mail address(es)')?></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["goodaddress_0"]); ?><input type="text" name="qmqpservers[0]" value="<?=$_REQUEST["qmqpservers"][0]?>"></td>
+          <td><?php echo pql_format_error_span($error["goodmailaddr_0"]); ?><input type="text" name="goodmailaddresses[0]" value="<?=$_REQUEST["goodmailaddresses"][0]?>"></td>
         </tr>
 
-<?php for($i = 1; $i <= $_REQUEST["qmqpcount"]; $i++) { ?>
+<?php for($i = 1; $i <= $_REQUEST["goodmailaddrcount"]; $i++) { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["goodaddress_$i"]); ?><input type="text" name="qmqpservers[<?=$i?>]" value="<?=$_REQUEST["qmqpservers"][$i]?>"></td>
+          <td><?php echo pql_format_error_span($error["goodmailaddr_$i"]); ?><input type="text" name="goodmailaddresses[<?=$i?>]" value="<?=$_REQUEST["goodmailaddresses"][$i]?>"></td>
         </tr>
 
 <?php } ?>
         <tr class="subtitle">
-          <td><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&qmqpcount=<?=($_REQUEST["qmqpcount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
+          <td><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&goodmailaddrcount=<?=($_REQUEST["goodmailaddrcount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
         </tr>
 
         <tr class="subtitle">
-          <td><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('To delete a QMQP server remove the value and save')?>.</td>
+          <td><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('To delete an address, remove the value and save')?>.</td>
         </tr>
       </th>
     </table>
@@ -150,8 +113,8 @@ function goodaddress_print_form() {
 }
 // }}}
 
-// {{{ goodaddress_save(type, host)
-function goodaddress_save($type, $host)  {
+// {{{ goodmailaddr_save(type, host)
+function goodmailaddr_save($type, $host)  {
 	global $_pql_control, $error, $LANG;
 
 	switch($type) {
@@ -160,13 +123,13 @@ function goodaddress_save($type, $host)  {
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
 										 pql_get_define("PQL_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_ATTR_QMQPSERVERS"),
-										 $_REQUEST["goodaddress"]))
+										 pql_get_define("PQL_ATTR_GOODADDRESS"),
+										 $_REQUEST["goodmailaddr"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
-									   array('what' => $LANG->_('goodaddress options')));
+									   array('what' => $LANG->_('goodmailaddr options')));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('goodaddress options')))
+									   array('what' => $LANG->_('goodmailaddr options')))
 			. ": " . pql_format_error(0);
 
 		attribute_forward($msg);
@@ -179,19 +142,23 @@ function goodaddress_save($type, $host)  {
 // }}}
 
 
-// {{{ goodaddress_help(void)
-function goodaddress_help() {
+// {{{ goodmailaddr_help(void)
+function goodmailaddr_help() {
 	global $LANG;
 ?>
-	IP addresses of QMQP servers, one address per line.
-	qmail-qmqpc will try each address in turn until it
-	establishes a QMQP connection or runs out of addresses.
+    This file contains local recipient addresses that are always accepted in
+    conjunction with sender or recipient verify checks.
+    <i>Example: user@domain or @domain</i><br>
+    <b>NOTE</b>: This is useful for things like <postmaster@domain.com> and other
+          addresses you always want to accept, even if they are not in the
+          ldap directory or when a lookup temporarly fails. See RCPTCHECK
+          and SENDERCHECK.
 <?php
 }
 // }}}
 
-// {{{ goodaddress_help_cr(void)
-function goodaddress_help_cr() {
+// {{{ goodmailaddr_help_cr(void)
+function goodmailaddr_help_cr() {
 	global $LANG;
 	echo $LANG->_('Help text taken from qmail man pages');
 }

@@ -1,102 +1,59 @@
 <?php
 // control attribute plugin for
-// bouncesize (max number of bytes in message)
+// bouncemaxbytes (max number of bytes in message)
 //
-// $Id: attrib.control.bouncesize.inc,v 2.2 2004-07-08 11:37:53 turbo Exp $
+// $Id: attrib.control.bouncesize.inc,v 2.3 2004-10-15 15:14:10 turbo Exp $
 
-// {{{ bouncesize_check(type)
-function bouncesize_check($type) {
+// {{{ bouncemaxbytes_check(type)
+function bouncemaxbytes_check($type) {
 	global $error, $LANG;
 
-	// check each field
-	if(is_array($_REQUEST["bouncesize"])) {
-		foreach($_REQUEST["bouncesize"] as $key => $server) {
-			if($server == "")
-			  continue;
-			
-			// it is an ip address
-			if(!preg_match("/([0-9]{1,3}\.){3,3}[0-9]{1,1}/", $server)) {
-				$is_error = true;
-				$error["bouncesize_$key"] = $LANG->_('Invalid');
-			} else {
-				// ip format ok, check validity of matched ip address
-				$ip = explode(".", $server);
-				
-				foreach($ip as $ip_key => $ip_part) {
-					switch((int)$ip_key) {
-					  case 0:
-					  case 3:
-						if($ip_part <= 0 or $ip_part > 254) {
-							$is_error = true;
-							$error["bouncesize_$key"] = $LANG->_('Invalid');
-						}
-						break;
-						
-					  default:
-						if($ip_part < 0 or $ip_part > 255) {
-							$is_error = true;
-							$error["bouncesize_$key"] = $LANG->_('Invalid');
-						}
-					} // end switch
-				} // end foreach
-			} // end if !preg_match...
-		} // end foreach
-	} // end if is_array...
-
-	if($is_error)
-	  return false;
-	
+	// dummy function
 	return true;
 }
 // }}}
 
-// {{{ bouncesize_init(host)
+// {{{ bouncemaxbytes_init(host)
 // init values
-function bouncesize_init($host) {
+function bouncemaxbytes_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	$_REQUEST["bouncesize"] = pql_control_get_attribute($_pql_control->ldap_linkid,
-														 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-														 pql_get_define("PQL_ATTR_QMQPSERVERS"));
+	$_REQUEST["bouncemaxbytes"] = pql_control_get_attribute($_pql_control->ldap_linkid,
+														 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+														 pql_get_define("PQL_ATTR_BOUNCESIZE"));
 
-	if(is_null($_REQUEST["bouncesize"]))
+	if(is_null($_REQUEST["bouncemaxbytes"]))
 	  return true;
+	elseif(is_array($_REQUEST["bouncemaxbytes"]))
+	  $_REQUEST["bouncemaxbytes"] = $_REQUEST["bouncemaxbytes"][0];
 }
 // }}}
 
 
-// {{{ bouncesize_print_view(host)
-function bouncesize_print_view($host) {
+// {{{ bouncemaxbytes_print_view(host)
+function bouncemaxbytes_print_view($host) {
 	global $_pql_control, $LANG;
 
 	// init data
-	bouncesize_init($host);
+	bouncemaxbytes_init($host);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th align="left">bouncesize (<?=$LANG->_('_CHANGE THIS_')?>)</th>
-      <tr class="title">
-        <td>IP</td>
-      </tr>
-<?php
-	if(!is_array($_REQUEST["bouncesize"])) {
-?>
+    <th colspan="3" align="left">bouncemaxbytes (<?=$LANG->_('Maximum bounce message size.')?>)
       <tr class="<?php pql_format_table(); ?>">
-        <td><?=$LANG->_('Not set')?></td>
-      </tr>
+        <td class="title">Bytes</td>
+<?php
+	if(!$_REQUEST["bouncemaxbytes"]) {
+?>
+        <td><i><?=$LANG->_('Not set')?></i></td>
 <?php
 	} else {
-		foreach($_REQUEST["bouncesize"] as $server) {
 ?>
-      <tr class="<?php pql_format_table(); ?>">
-        <td><?=pql_maybe_idna_decode($server)?></td>
-      </tr>
+        <td><?=$_REQUEST["bouncemaxbytes"]?></td>
 <?php
-		} // end foreach
 	} // end if is_array
 ?>
-      <tr class="subtitle">
-        <td><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=bouncesize"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
+        <td><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=bouncemaxbytes"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options')?>"></a></td>
       </tr>
     </th>
   </table>
@@ -105,36 +62,16 @@ function bouncesize_print_view($host) {
 }
 // }}}
 
-// {{{ bouncesize_print_form(void)
-function bouncesize_print_form() {
+// {{{ bouncemaxbytes_print_form(void)
+function bouncemaxbytes_print_form() {
 	global $error, $LANG;
-
-	if(($_REQUEST["qmqpcount"] < count($_REQUEST["bouncesize"]) - 1) and count($_REQUEST["qmqpservers"]) != 0)
-	  $_REQUEST["qmqpcount"] = count($_REQUEST["bouncesize"]) - 1;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">bouncesize (<?=$LANG->_('_CHANGE THIS_')?>)</th>
-        <tr class="title">
-          <td><?=$LANG->_('IP Address')?></td>
-        </tr>
-
+      <th colspan="2" align="left">bouncemaxbytes (<?=$LANG->_('Maximum bounce message size.')?>)
         <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["bouncesize_0"]); ?><input type="text" name="qmqpservers[0]" value="<?=$_REQUEST["qmqpservers"][0]?>"></td>
-        </tr>
-
-<?php for($i = 1; $i <= $_REQUEST["qmqpcount"]; $i++) { ?>
-        <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["bouncesize_$i"]); ?><input type="text" name="qmqpservers[<?=$i?>]" value="<?=$_REQUEST["qmqpservers"][$i]?>"></td>
-        </tr>
-
-<?php } ?>
-        <tr class="subtitle">
-          <td><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&qmqpcount=<?=($_REQUEST["qmqpcount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
-        </tr>
-
-        <tr class="subtitle">
-          <td><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('To delete a QMQP server remove the value and save')?>.</td>
+          <td class="title"><?=$LANG->_('Bytes')?></td>
+          <td><?php echo pql_format_error_span($error["bouncemaxbytes"]); ?><input type="text" name="bouncemaxbytes" value="<?=$_REQUEST["bouncemaxbytes"]?>"></td>
         </tr>
       </th>
     </table>
@@ -150,8 +87,8 @@ function bouncesize_print_form() {
 }
 // }}}
 
-// {{{ bouncesize_save(type, host)
-function bouncesize_save($type, $host)  {
+// {{{ bouncemaxbytes_save(type, host)
+function bouncemaxbytes_save($type, $host)  {
 	global $_pql_control, $error, $LANG;
 
 	switch($type) {
@@ -159,14 +96,14 @@ function bouncesize_save($type, $host)  {
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_ATTR_QMQPSERVERS"),
-										 $_REQUEST["bouncesize"]))
+										 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_ATTR_BOUNCESIZE"),
+										 $_REQUEST["bouncemaxbytes"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
-									   array('what' => $LANG->_('bouncesize options')));
+									   array('what' => $LANG->_('bouncemaxbytes options')));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('bouncesize options')))
+									   array('what' => $LANG->_('bouncemaxbytes options')))
 			. ": " . pql_format_error(0);
 
 		attribute_forward($msg);
@@ -179,19 +116,17 @@ function bouncesize_save($type, $host)  {
 // }}}
 
 
-// {{{ bouncesize_help(void)
-function bouncesize_help() {
+// {{{ bouncemaxbytes_help(void)
+function bouncemaxbytes_help() {
 	global $LANG;
 ?>
-	IP addresses of QMQP servers, one address per line.
-	qmail-qmqpc will try each address in turn until it
-	establishes a QMQP connection or runs out of addresses.
+    The maximal number of bytes to be included in a bounce message.
 <?php
 }
 // }}}
 
-// {{{ bouncesize_help_cr(void)
-function bouncesize_help_cr() {
+// {{{ bouncemaxbytes_help_cr(void)
+function bouncemaxbytes_help_cr() {
 	global $LANG;
 	echo $LANG->_('Help text taken from qmail man pages');
 }

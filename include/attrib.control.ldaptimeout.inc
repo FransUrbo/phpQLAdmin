@@ -2,50 +2,13 @@
 // control attribute plugin for
 // ldaptimeout (max number of bytes in message)
 //
-// $Id: attrib.control.ldaptimeout.inc,v 2.2 2004-07-08 11:37:53 turbo Exp $
+// $Id: attrib.control.ldaptimeout.inc,v 2.3 2004-10-15 15:14:10 turbo Exp $
 
 // {{{ ldaptimeout_check(type)
 function ldaptimeout_check($type) {
 	global $error, $LANG;
 
-	// check each field
-	if(is_array($_REQUEST["ldaptimeout"])) {
-		foreach($_REQUEST["ldaptimeout"] as $key => $server) {
-			if($server == "")
-			  continue;
-			
-			// it is an ip address
-			if(!preg_match("/([0-9]{1,3}\.){3,3}[0-9]{1,1}/", $server)) {
-				$is_error = true;
-				$error["ldaptimeout_$key"] = $LANG->_('Invalid');
-			} else {
-				// ip format ok, check validity of matched ip address
-				$ip = explode(".", $server);
-				
-				foreach($ip as $ip_key => $ip_part) {
-					switch((int)$ip_key) {
-					  case 0:
-					  case 3:
-						if($ip_part <= 0 or $ip_part > 254) {
-							$is_error = true;
-							$error["ldaptimeout_$key"] = $LANG->_('Invalid');
-						}
-						break;
-						
-					  default:
-						if($ip_part < 0 or $ip_part > 255) {
-							$is_error = true;
-							$error["ldaptimeout_$key"] = $LANG->_('Invalid');
-						}
-					} // end switch
-				} // end foreach
-			} // end if !preg_match...
-		} // end foreach
-	} // end if is_array...
-
-	if($is_error)
-	  return false;
-	
+	// dummy function
 	return true;
 }
 // }}}
@@ -57,11 +20,13 @@ function ldaptimeout_init($host) {
 
 	// fetch data from ldap server
 	$_REQUEST["ldaptimeout"] = pql_control_get_attribute($_pql_control->ldap_linkid,
-														 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-														 pql_get_define("PQL_ATTR_QMQPSERVERS"));
+														 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+														 pql_get_define("PQL_ATTR_LDAPTIMEOUT"));
 
 	if(is_null($_REQUEST["ldaptimeout"]))
 	  return true;
+	elseif(is_array($_REQUEST["ldaptimeout"]) and $_REQUEST["ldaptimeout"][0])
+	  $_REQUEST["ldaptimeout"] = $_REQUEST["ldaptimeout"][0];
 }
 // }}}
 
@@ -74,29 +39,21 @@ function ldaptimeout_print_view($host) {
 	ldaptimeout_init($host);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th align="left">ldaptimeout (<?=$LANG->_('_CHANGE THIS_')?>)</th>
-      <tr class="title">
-        <td>IP</td>
-      </tr>
-<?php
-	if(!is_array($_REQUEST["ldaptimeout"])) {
-?>
+    <th colspan="3" align="left">ldaptimeout (<?=$LANG->_('LDAP Timeout')?>)
       <tr class="<?php pql_format_table(); ?>">
-        <td><?=$LANG->_('Not set')?></td>
-      </tr>
+        <td class="title"><?=$LANG->_('Seconds')?></td>
+<?php
+	if(!$_REQUEST["ldaptimeout"]) {
+?>
+        <td><i><?=$LANG->_('Not set')?></i></td>
 <?php
 	} else {
-		foreach($_REQUEST["ldaptimeout"] as $server) {
 ?>
-      <tr class="<?php pql_format_table(); ?>">
-        <td><?=pql_maybe_idna_decode($server)?></td>
-      </tr>
+        <td><?=$_REQUEST["ldaptimeout"]." ".$LANG->_('seconds')?></td>
 <?php
-		} // end foreach
 	} // end if is_array
 ?>
-      <tr class="subtitle">
-        <td><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=ldaptimeout"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
+        <td><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=ldaptimeout"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options')?>"></a></td>
       </tr>
     </th>
   </table>
@@ -108,33 +65,13 @@ function ldaptimeout_print_view($host) {
 // {{{ ldaptimeout_print_form(void)
 function ldaptimeout_print_form() {
 	global $error, $LANG;
-
-	if(($_REQUEST["qmqpcount"] < count($_REQUEST["ldaptimeout"]) - 1) and count($_REQUEST["qmqpservers"]) != 0)
-	  $_REQUEST["qmqpcount"] = count($_REQUEST["ldaptimeout"]) - 1;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">ldaptimeout (<?=$LANG->_('_CHANGE THIS_')?>)</th>
+      <th colspan="3" align="left">ldaptimeout (<?=$LANG->_('LDAP Timeout')?>)</th>
         <tr class="title">
-          <td><?=$LANG->_('IP Address')?></td>
-        </tr>
-
-        <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["ldaptimeout_0"]); ?><input type="text" name="qmqpservers[0]" value="<?=$_REQUEST["qmqpservers"][0]?>"></td>
-        </tr>
-
-<?php for($i = 1; $i <= $_REQUEST["qmqpcount"]; $i++) { ?>
-        <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["ldaptimeout_$i"]); ?><input type="text" name="qmqpservers[<?=$i?>]" value="<?=$_REQUEST["qmqpservers"][$i]?>"></td>
-        </tr>
-
-<?php } ?>
-        <tr class="subtitle">
-          <td><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&qmqpcount=<?=($_REQUEST["qmqpcount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
-        </tr>
-
-        <tr class="subtitle">
-          <td><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('To delete a QMQP server remove the value and save')?>.</td>
+          <td><?=$LANG->_('Seconds')?></td>
+          <td><?php echo pql_format_error_span($error["ldaptimeout_0"]); ?><input type="text" name="ldaptimeout" value="<?=$_REQUEST["ldaptimeout"]?>"></td>
         </tr>
       </th>
     </table>
@@ -159,8 +96,8 @@ function ldaptimeout_save($type, $host)  {
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_ATTR_QMQPSERVERS"),
+										 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_ATTR_LDAPTIMEOUT"),
 										 $_REQUEST["ldaptimeout"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('ldaptimeout options')));
@@ -183,9 +120,8 @@ function ldaptimeout_save($type, $host)  {
 function ldaptimeout_help() {
 	global $LANG;
 ?>
-	IP addresses of QMQP servers, one address per line.
-	qmail-qmqpc will try each address in turn until it
-	establishes a QMQP connection or runs out of addresses.
+    The time the ldap search waits for a response from the ldap server
+    Default: 30 seconds
 <?php
 }
 // }}}

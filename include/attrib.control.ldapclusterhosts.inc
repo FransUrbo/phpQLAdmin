@@ -2,50 +2,13 @@
 // control attribute plugin for
 // ldapclusterhosts (max number of bytes in message)
 //
-// $Id: attrib.control.ldapclusterhosts.inc,v 2.2 2004-07-08 11:37:53 turbo Exp $
+// $Id: attrib.control.ldapclusterhosts.inc,v 2.3 2004-10-15 15:14:10 turbo Exp $
 
 // {{{ ldapclusterhosts_check(type)
 function ldapclusterhosts_check($type) {
 	global $error, $LANG;
 
-	// check each field
-	if(is_array($_REQUEST["ldapclusterhosts"])) {
-		foreach($_REQUEST["ldapclusterhosts"] as $key => $server) {
-			if($server == "")
-			  continue;
-			
-			// it is an ip address
-			if(!preg_match("/([0-9]{1,3}\.){3,3}[0-9]{1,1}/", $server)) {
-				$is_error = true;
-				$error["ldapclusterhosts_$key"] = $LANG->_('Invalid');
-			} else {
-				// ip format ok, check validity of matched ip address
-				$ip = explode(".", $server);
-				
-				foreach($ip as $ip_key => $ip_part) {
-					switch((int)$ip_key) {
-					  case 0:
-					  case 3:
-						if($ip_part <= 0 or $ip_part > 254) {
-							$is_error = true;
-							$error["ldapclusterhosts_$key"] = $LANG->_('Invalid');
-						}
-						break;
-						
-					  default:
-						if($ip_part < 0 or $ip_part > 255) {
-							$is_error = true;
-							$error["ldapclusterhosts_$key"] = $LANG->_('Invalid');
-						}
-					} // end switch
-				} // end foreach
-			} // end if !preg_match...
-		} // end foreach
-	} // end if is_array...
-
-	if($is_error)
-	  return false;
-	
+	// dummy function
 	return true;
 }
 // }}}
@@ -58,7 +21,7 @@ function ldapclusterhosts_init($host) {
 	// fetch data from ldap server
 	$_REQUEST["ldapclusterhosts"] = pql_control_get_attribute($_pql_control->ldap_linkid,
 														 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-														 pql_get_define("PQL_ATTR_QMQPSERVERS"));
+														 pql_get_define("PQL_ATTR_LDAPCLUSTER_HOSTS"));
 
 	if(is_null($_REQUEST["ldapclusterhosts"]))
 	  return true;
@@ -74,18 +37,12 @@ function ldapclusterhosts_print_view($host) {
 	ldapclusterhosts_init($host);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th align="left">ldapclusterhosts (<?=$LANG->_('_CHANGE THIS_')?>)</th>
+    <th align="left">ldapclusterhosts (<?=$LANG->_('Hosts in the mail cluster')?>)</th>
       <tr class="title">
-        <td>IP</td>
+        <td>FQDN</td>
       </tr>
 <?php
-	if(!is_array($_REQUEST["ldapclusterhosts"])) {
-?>
-      <tr class="<?php pql_format_table(); ?>">
-        <td><?=$LANG->_('Not set')?></td>
-      </tr>
-<?php
-	} else {
+	if(is_array($_REQUEST["ldapclusterhosts"])) {
 		foreach($_REQUEST["ldapclusterhosts"] as $server) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
@@ -96,7 +53,11 @@ function ldapclusterhosts_print_view($host) {
 	} // end if is_array
 ?>
       <tr class="subtitle">
-        <td><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=ldapclusterhosts"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
+        <td><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=ldapclusterhosts"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Add host')?></a></td>
+      </tr>
+
+      <tr class="subtitle">
+        <td><img src="images/info.png" width="16" height="16" border="0"> Note: Clustering support must be compiled into qmail-ldap</td>
       </tr>
     </th>
   </table>
@@ -109,32 +70,32 @@ function ldapclusterhosts_print_view($host) {
 function ldapclusterhosts_print_form() {
 	global $error, $LANG;
 
-	if(($_REQUEST["qmqpcount"] < count($_REQUEST["ldapclusterhosts"]) - 1) and count($_REQUEST["qmqpservers"]) != 0)
-	  $_REQUEST["qmqpcount"] = count($_REQUEST["ldapclusterhosts"]) - 1;
+	if(($_REQUEST["hostcount"] < count($_REQUEST["ldapclusterhosts"]) - 1) and count($_REQUEST["ldapclusterhosts"]) != 0)
+	  $_REQUEST["hostcount"] = count($_REQUEST["ldapclusterhosts"]) - 1;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">ldapclusterhosts (<?=$LANG->_('_CHANGE THIS_')?>)</th>
+      <th colspan="3" align="left">ldapclusterhosts (<?=$LANG->_('Host to regognize as part of the mail cluster')?>)</th>
         <tr class="title">
-          <td><?=$LANG->_('IP Address')?></td>
+          <td>FQDN</td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["ldapclusterhosts_0"]); ?><input type="text" name="qmqpservers[0]" value="<?=$_REQUEST["qmqpservers"][0]?>"></td>
+          <td><?php echo pql_format_error_span($error["ldapclusterhosts_0"]); ?><input type="text" name="ldapclusterhosts[0]" value="<?=$_REQUEST["ldapclusterhosts"][0]?>" size="40"></td>
         </tr>
 
-<?php for($i = 1; $i <= $_REQUEST["qmqpcount"]; $i++) { ?>
+<?php for($i = 1; $i <= $_REQUEST["hostcount"]; $i++) { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["ldapclusterhosts_$i"]); ?><input type="text" name="qmqpservers[<?=$i?>]" value="<?=$_REQUEST["qmqpservers"][$i]?>"></td>
+          <td><?php echo pql_format_error_span($error["ldapclusterhosts_$i"]); ?><input type="text" name="ldapclusterhosts[<?=$i?>]" value="<?=$_REQUEST["ldapclusterhosts"][$i]?>" size="40"></td>
         </tr>
 
 <?php } ?>
         <tr class="subtitle">
-          <td><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&qmqpcount=<?=($_REQUEST["qmqpcount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
+          <td><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&hostcount=<?=($_REQUEST["hostcount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
         </tr>
 
         <tr class="subtitle">
-          <td><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('To delete a QMQP server remove the value and save')?>.</td>
+          <td><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('To delete a cluster host, remove the value and save')?>.</td>
         </tr>
       </th>
     </table>
@@ -159,8 +120,8 @@ function ldapclusterhosts_save($type, $host)  {
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_ATTR_QMQPSERVERS"),
+										 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_ATTR_LDAPCLUSTER_HOSTS"),
 										 $_REQUEST["ldapclusterhosts"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('ldapclusterhosts options')));
@@ -183,9 +144,9 @@ function ldapclusterhosts_save($type, $host)  {
 function ldapclusterhosts_help() {
 	global $LANG;
 ?>
-	IP addresses of QMQP servers, one address per line.
-	qmail-qmqpc will try each address in turn until it
-	establishes a QMQP connection or runs out of addresses.
+    ldapclusterhosts contains a number of hostnames (FQDM) to check together
+    with ~control/me when clustering is on. This file is useful if you want to
+    run multiple instances of qmail-ldap on one machine.
 <?php
 }
 // }}}

@@ -2,50 +2,13 @@
 // control attribute plugin for
 // pbssecret (max number of bytes in message)
 //
-// $Id: attrib.control.pbssecret.inc,v 2.2 2004-07-08 11:37:53 turbo Exp $
+// $Id: attrib.control.pbssecret.inc,v 2.3 2004-10-15 15:14:10 turbo Exp $
 
 // {{{ pbssecret_check(type)
 function pbssecret_check($type) {
 	global $error, $LANG;
 
-	// check each field
-	if(is_array($_REQUEST["pbssecret"])) {
-		foreach($_REQUEST["pbssecret"] as $key => $server) {
-			if($server == "")
-			  continue;
-			
-			// it is an ip address
-			if(!preg_match("/([0-9]{1,3}\.){3,3}[0-9]{1,1}/", $server)) {
-				$is_error = true;
-				$error["pbssecret_$key"] = $LANG->_('Invalid');
-			} else {
-				// ip format ok, check validity of matched ip address
-				$ip = explode(".", $server);
-				
-				foreach($ip as $ip_key => $ip_part) {
-					switch((int)$ip_key) {
-					  case 0:
-					  case 3:
-						if($ip_part <= 0 or $ip_part > 254) {
-							$is_error = true;
-							$error["pbssecret_$key"] = $LANG->_('Invalid');
-						}
-						break;
-						
-					  default:
-						if($ip_part < 0 or $ip_part > 255) {
-							$is_error = true;
-							$error["pbssecret_$key"] = $LANG->_('Invalid');
-						}
-					} // end switch
-				} // end foreach
-			} // end if !preg_match...
-		} // end foreach
-	} // end if is_array...
-
-	if($is_error)
-	  return false;
-	
+	// dummy function
 	return true;
 }
 // }}}
@@ -57,11 +20,13 @@ function pbssecret_init($host) {
 
 	// fetch data from ldap server
 	$_REQUEST["pbssecret"] = pql_control_get_attribute($_pql_control->ldap_linkid,
-														 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-														 pql_get_define("PQL_ATTR_QMQPSERVERS"));
+														 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+														 pql_get_define("PQL_ATTR_PBS_SECRET"));
 
 	if(is_null($_REQUEST["pbssecret"]))
 	  return true;
+	elseif(is_array($_REQUEST["pbssecret"]))
+	  $_REQUEST["pbssecret"] = $_REQUEST["pbssecret"][0];
 }
 // }}}
 
@@ -74,29 +39,21 @@ function pbssecret_print_view($host) {
 	pbssecret_init($host);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th align="left">pbssecret (<?=$LANG->_('_CHANGE THIS_')?>)</th>
-      <tr class="title">
-        <td>IP</td>
-      </tr>
-<?php
-	if(!is_array($_REQUEST["pbssecret"])) {
-?>
+    <th colspan="3" align="left">pbssecret (<?=$LANG->_('POP before SMTP secret')?>)
       <tr class="<?php pql_format_table(); ?>">
-        <td><?=$LANG->_('Not set')?></td>
-      </tr>
+        <td class="title"><?=$LANG->_('Secret')?></td>
+<?php
+	if(!$_REQUEST["pbssecret"]) {
+?>
+        <td><i><?=$LANG->_('Not set')?></i></td>
 <?php
 	} else {
-		foreach($_REQUEST["pbssecret"] as $server) {
 ?>
-      <tr class="<?php pql_format_table(); ?>">
-        <td><?=pql_maybe_idna_decode($server)?></td>
-      </tr>
+        <td><?=$_REQUEST["pbssecret"]?></td>
 <?php
-		} // end foreach
 	} // end if is_array
 ?>
-      <tr class="subtitle">
-        <td><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=pbssecret"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
+        <td><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=pbssecret"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options')?>"></a></td>
       </tr>
     </th>
   </table>
@@ -108,33 +65,13 @@ function pbssecret_print_view($host) {
 // {{{ pbssecret_print_form(void)
 function pbssecret_print_form() {
 	global $error, $LANG;
-
-	if(($_REQUEST["qmqpcount"] < count($_REQUEST["pbssecret"]) - 1) and count($_REQUEST["qmqpservers"]) != 0)
-	  $_REQUEST["qmqpcount"] = count($_REQUEST["pbssecret"]) - 1;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">pbssecret (<?=$LANG->_('_CHANGE THIS_')?>)</th>
-        <tr class="title">
-          <td><?=$LANG->_('IP Address')?></td>
-        </tr>
-
+      <th colspan="2" align="left">pbssecret (<?=$LANG->_('POP before SMTP secret')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["pbssecret_0"]); ?><input type="text" name="qmqpservers[0]" value="<?=$_REQUEST["qmqpservers"][0]?>"></td>
-        </tr>
-
-<?php for($i = 1; $i <= $_REQUEST["qmqpcount"]; $i++) { ?>
-        <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["pbssecret_$i"]); ?><input type="text" name="qmqpservers[<?=$i?>]" value="<?=$_REQUEST["qmqpservers"][$i]?>"></td>
-        </tr>
-
-<?php } ?>
-        <tr class="subtitle">
-          <td><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&qmqpcount=<?=($_REQUEST["qmqpcount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
-        </tr>
-
-        <tr class="subtitle">
-          <td><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('To delete a QMQP server remove the value and save')?>.</td>
+          <td class="title"><?=$LANG->_('Secret')?></td>
+          <td><?php echo pql_format_error_span($error["pbssecret"]); ?><input type="text" name="pbssecret" value="<?=$_REQUEST["pbssecret"]?>"></td>
         </tr>
       </th>
     </table>
@@ -159,8 +96,8 @@ function pbssecret_save($type, $host)  {
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_ATTR_QMQPSERVERS"),
+										 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_ATTR_PBS_SECRET"),
 										 $_REQUEST["pbssecret"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('pbssecret options')));
@@ -183,9 +120,8 @@ function pbssecret_save($type, $host)  {
 function pbssecret_help() {
 	global $LANG;
 ?>
-	IP addresses of QMQP servers, one address per line.
-	qmail-qmqpc will try each address in turn until it
-	establishes a QMQP connection or runs out of addresses.
+    Shared secret used by pbsadd and pbsdbd to authenticate the client.
+    Required for pbsdbd and pbsadd.
 <?php
 }
 // }}}

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // outgoingip (max number of bytes in message)
 //
-// $Id: attrib.control.outgoingip.inc,v 2.2 2004-07-08 11:37:53 turbo Exp $
+// $Id: attrib.control.outgoingip.inc,v 2.3 2004-10-15 15:14:10 turbo Exp $
 
 // {{{ outgoingip_check(type)
 function outgoingip_check($type) {
@@ -57,11 +57,13 @@ function outgoingip_init($host) {
 
 	// fetch data from ldap server
 	$_REQUEST["outgoingip"] = pql_control_get_attribute($_pql_control->ldap_linkid,
-														 pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-														 pql_get_define("PQL_ATTR_QMQPSERVERS"));
+														 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+														 pql_get_define("PQL_ATTR_OUTGOINGIP"));
 
 	if(is_null($_REQUEST["outgoingip"]))
 	  return true;
+	elseif(is_array($_REQUEST["outgoingip"]))
+	  $_REQUEST["outgoingip"] = $_REQUEST["outgoingip"][0];
 }
 // }}}
 
@@ -74,29 +76,21 @@ function outgoingip_print_view($host) {
 	outgoingip_init($host);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th align="left">outgoingip (<?=$LANG->_('_CHANGE THIS_')?>)</th>
-      <tr class="title">
-        <td>IP</td>
-      </tr>
-<?php
-	if(!is_array($_REQUEST["outgoingip"])) {
-?>
+    <th colspan="3" align="left">outgoingip (<?=$LANG->_('IP that qmail-remote binds to')?>)
       <tr class="<?php pql_format_table(); ?>">
-        <td><?=$LANG->_('Not set')?></td>
-      </tr>
+        <td class="title">IP</td>
+<?php
+	if(!$_REQUEST["outgoingip"]) {
+?>
+        <td><i><?=$LANG->_('Not set')?></i></td>
 <?php
 	} else {
-		foreach($_REQUEST["outgoingip"] as $server) {
 ?>
-      <tr class="<?php pql_format_table(); ?>">
-        <td><?=pql_maybe_idna_decode($server)?></td>
-      </tr>
+        <td><?=$_REQUEST["outgoingip"]?></td>
 <?php
-		} // end foreach
 	} // end if is_array
 ?>
-      <tr class="subtitle">
-        <td><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=outgoingip"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
+        <td><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=outgoingip"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options')?>"></a></td>
       </tr>
     </th>
   </table>
@@ -108,34 +102,13 @@ function outgoingip_print_view($host) {
 // {{{ outgoingip_print_form(void)
 function outgoingip_print_form() {
 	global $error, $LANG;
-
-	if(($_REQUEST["qmqpcount"] < count($_REQUEST["outgoingip"]) - 1) and count($_REQUEST["qmqpservers"]) != 0)
-	  $_REQUEST["qmqpcount"] = count($_REQUEST["outgoingip"]) - 1;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">outgoingip (<?=$LANG->_('_CHANGE THIS_')?>)</th>
-        <tr class="title">
-          <td><?=$LANG->_('IP Address')?></td>
-        </tr>
-
+      <th colspan="2" align="left">outgoingip (<?=$LANG->_('IP that qmail-remote binds to')?>)</th>
         <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["outgoingip_0"]); ?><input type="text" name="qmqpservers[0]" value="<?=$_REQUEST["qmqpservers"][0]?>"></td>
-        </tr>
-
-<?php for($i = 1; $i <= $_REQUEST["qmqpcount"]; $i++) { ?>
-        <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["outgoingip_$i"]); ?><input type="text" name="qmqpservers[<?=$i?>]" value="<?=$_REQUEST["qmqpservers"][$i]?>"></td>
-        </tr>
-
-<?php } ?>
-        <tr class="subtitle">
-          <td><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&qmqpcount=<?=($_REQUEST["qmqpcount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
-        </tr>
-
-        <tr class="subtitle">
-          <td><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('To delete a QMQP server remove the value and save')?>.</td>
-        </tr>
+          <td class="title"><?=$LANG->_('IP Address')?></td>
+          <td><?php echo pql_format_error_span($error["outgoingip"]); ?><input type="text" name="outgoingip" value="<?=$_REQUEST["outgoingip"]?>"></td>
       </th>
     </table>
 
@@ -159,8 +132,8 @@ function outgoingip_save($type, $host)  {
 	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_ATTR_QMQPSERVERS"),
+										 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_ATTR_OUTGOINGIP"),
 										 $_REQUEST["outgoingip"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('outgoingip options')));
@@ -183,9 +156,7 @@ function outgoingip_save($type, $host)  {
 function outgoingip_help() {
 	global $LANG;
 ?>
-	IP addresses of QMQP servers, one address per line.
-	qmail-qmqpc will try each address in turn until it
-	establishes a QMQP connection or runs out of addresses.
+    IP address the qmail-remote server should bind to.
 <?php
 }
 // }}}
