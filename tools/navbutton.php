@@ -1,6 +1,10 @@
 <? // http://www.thescripts.com/serversidescripting/php/articles/dynamicimagesinphp3.0/page0.html
-// Prepare the text - remove unwanted characters etc
+include("./include/pql.inc");
+include("./include/pql_bind9.inc");
+
 $string = implode($argv," ");
+
+// Prepare the text - remove unwanted characters etc
 $string = stripslashes($string);
 $string = ereg_replace("\r\n", "\n", $string) ;
 $string = ereg_replace("%20",  " ", $string);
@@ -32,10 +36,12 @@ if(!$myimage) {
 
 // Setup colors
 $black = ImageColorAllocate($myimage, 0, 0, 0);
-$width = (ImageSX($myimage)-7.5*strlen($string))/2;
     
-// Write text to image
-ImageString($myimage, 3, $width, 3, $string, $black);
+// Convert the string
+$string = pql_bind9_maybe_decode($string);
+
+// Write text to image (after decoding it to fix international characters)
+imageTTFText($myimage, 10, 0, 10, 14, $black, realpath("include/thryn.ttf"), $string);
     
 // Show image
 if($imgtype == 'png') {
