@@ -1,12 +1,12 @@
 <?php
 // Manage PHP sessions per phpQLAdmin instance
-// $Id: pql_session.inc,v 1.1.2.2 2005-03-08 05:42:24 turbo Exp $
+// $Id: pql_session.inc,v 1.1.2.3 2005-03-17 08:29:03 turbo Exp $
 
 // {{{ Start session
 if(!ereg('/$', $_SERVER["REQUEST_URI"])) {
   $_SERVER["REQUEST_URI"] .= '/';
 }
-ini_set("session.cookie_path", $_SERVER["REQUEST_URI"]);
+//ini_set("session.cookie_path", $_SERVER["REQUEST_URI"]);
 session_start();
 // }}}
 
