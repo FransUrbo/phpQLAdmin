@@ -343,14 +343,26 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
         </tr>
 <?php
 		} else {
+			if(defined("PQL_LDAP_SUBTREE_USERS")) {
 ?>
         <input type="hidden" name="subbranch" value="<?php echo PQL_LDAP_SUBTREE_USERS . "," . $domain;?>">
 <?php
+			} else {
+?>
+        <input type="hidden" name="subbranch" value="<?=$domain?>">
+<?php
+			}
 		}
 	} else {
+		if(defined("PQL_LDAP_SUBTREE_USERS")) {
 ?>
         <input type="hidden" name="subbranch" value="<?php echo PQL_LDAP_SUBTREE_USERS . "," . $domain;?>">
 <?php
+		} else {
+?>
+        <input type="hidden" name="subbranch" value="<?=$domain?>">
+<?php
+		}
 	} // end if ADVANCED mode
 ?>
       </th>
