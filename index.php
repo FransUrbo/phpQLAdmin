@@ -61,7 +61,7 @@ if (empty($uname) or empty($passwd)) {
     </tr>
   </table>
 
-  <form action="<?php echo $PHP_SELF; ?>" method=post name="phpqladmin">
+  <form action="<?=$PHP_SELF?>" method=post name="phpqladmin">
     <table cellspacing="0" cellpadding="3" border="0" align=center>
       <tr>
         <td>LDAP Server:</td>
@@ -173,17 +173,29 @@ if (empty($uname) or empty($passwd)) {
 	// TODO: This is wrong. There might (?) be multiple
 	//       users with the same uid in the database
 	//       (under different branches/trees).
-	$rootdn = pql_get_dn($_pql, $uname);
-	if(!$rootdn)
+	$rootdn = pql_get_dn($_pql, $uname, 1);
+	if(!$rootdn and !is_array($rootdn))
 	  die("Can't find you in the database!");
+	elseif(is_array($rootdn)) {
+		// We got multiple DN's. Try to bind as each one, keeping
+		// the one that succeeded.
+
+		$got_rootdn = 0;
+		foreach($rootdn as $dn) {
+			$_pql->bind($dn, $passwd);
+			$error = ldap_errno($_pql->ldap_linkid);
+			if(!$error and !$got_rootdn){
+				// That worked, keep it!
+				$got_rootdn = 1;
+				$rootdn = $dn;
+			}
+		}
+	}
 
 	if($passwd and !$USER_PASS)
 	  $USER_PASS = $passwd;
 
-	// Rebind as user
-	$_pql->bind($rootdn, $USER_PASS);
-	$error = ldap_errno($_pql->ldap_linkid);
-	if( $error != 0 ){
+	if($error) {
 		$msg = PQL_ERROR . ": " . ldap_err2str($error);
 		header("Location:index.php?msg=" . urlencode($msg));
 		exit;
