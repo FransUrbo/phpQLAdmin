@@ -74,25 +74,25 @@ if($ADVANCED_MODE == 1) {
     <th colspan="3" align="left"><?=PQL_DOMAIN_DEFAULT_VALUES?></th>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?=PQL_DOMAIN_DEFAULT_NAME?></td>
-        <td><?php if($defaultdomain != $domain){echo $defaultdomain;}else{echo PQL_UNSET;} ?></td>
+        <td><?php if($defaultdomain){echo $defaultdomain;}else{echo PQL_UNSET;} ?></td>
         <td><?=$defaultdomain_link?></td>
       </tr>
   
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?=PQL_DOMAIN_DEFAULT_HOMEDIR?></td>
-        <td><?php if($basehomedir != $domain){echo $basehomedir;}else{echo PQL_UNSET;} ?></td>
+        <td><?php if($basehomedir){echo $basehomedir;}else{echo PQL_UNSET;} ?></td>
         <td><?=$basehomedir_link?></td>
       </tr>
   
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?=PQL_DOMAIN_DEFAULT_MAILDIR?></td>
-        <td><?php if($basemaildir != $domain){echo $basemaildir;}else{echo PQL_UNSET;} ?></td>
+        <td><?php if($basemaildir){echo $basemaildir;}else{echo PQL_UNSET;} ?></td>
         <td><?=$basemaildir_link?></td>
       </tr>
   
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?=PQL_LDAP_MAILQUOTA_TITLE?></td>
-        <td><?php if($basequota != $domain){echo $basequota;}else{echo PQL_UNSET;} ?></td>
+        <td><?php if($basequota){echo $basequota;}else{echo PQL_UNSET;} ?></td>
         <td><?=$basequota_link?></td>
       </tr>
 
