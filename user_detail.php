@@ -1,11 +1,13 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.60 2003-11-20 08:01:29 turbo Exp $
+// $Id: user_detail.php,v 2.61 2003-11-26 16:25:20 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 
-$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
+$url["domain"] = urlencode($domain);
+$url["rootdn"] = urlencode($rootdn);
+$url["user"]   = urlencode($user);
 
 // Make sure we can have a ' in branch (also affects the user DN).
 $user   = eregi_replace("\\\'", "'", $user);
@@ -85,7 +87,7 @@ $attribs = array(pql_get_define("PQL_GLOB_ATTR_CN"),
 				 pql_get_define("PQL_GLOB_ATTR_MOBILE"),
 				 pql_get_define("PQL_GLOB_ATTR_PAGER"));
 foreach($attribs as $attrib) {
-    $attrib = strtolower($attrib);
+    $attrib = lc($attrib);
 
     $value = pql_get_attribute($_pql->ldap_linkid, $user, $attrib);
     $$attrib = $value[0];
@@ -93,10 +95,9 @@ foreach($attribs as $attrib) {
 
     // Setup edit links
     $link = $attrib . "_link";
-	$urluser = urlencode($user);
 
 	$alt = pql_complete_constant($LANG->_('Modify %attribute% for %what%'), array('attribute' => $attrib, 'what' => $username));
-    $$link = "<a href=\"user_edit_attribute.php?rootdn=$rootdn&domain=$domain&attrib=$attrib&user=$urluser&$attrib=$value\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt."\"></a>";
+    $$link = "<a href=\"user_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&attrib=$attrib&user=".$url["user"]."&$attrib=$value\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt."\"></a>";
 }
 $quota = pql_get_userquota($_pql->ldap_linkid, $user);
 
@@ -119,8 +120,6 @@ if($mailhost == "") {
     $mailhost = $LANG->_('None');
 }
 
-$userdn = urlencode($user);
-
 $controladmins = pql_domain_value($_pql, $rootdn, pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR"));
 if(is_array($controladmins)) {
 	foreach($controladmins as $admin)
@@ -128,6 +127,21 @@ if(is_array($controladmins)) {
 		$controlsadministrator = 1;
 } elseif($controladmins == $user) {
 	$controlsadministrator = 1;
+}
+
+// If this user have a username (ie, 'uid') then let's see if this user is member
+// of more groups (listed in the 'memberUid' attribute).
+if($uid) {
+	$memberuid = array();
+	foreach($_pql->ldap_basedn as $base) {
+		$base  = urldecode($base);
+		$muids = pql_search($_pql->ldap_linkid, $base,
+							pql_get_define("PQL_GLOB_ATTR_ADDITIONAL_GROUP")."=".$uid,
+							pql_get_define("PQL_GLOB_ATTR_CN"));
+
+		for($i=0; $muids[$i]; $i++)
+		  $memberuid[] = $muids[$i];
+	}
 }
 
 // Setup the buttons

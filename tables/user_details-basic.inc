@@ -7,7 +7,7 @@
         <td><?=$$ref?></td>
         <td>
 <?php if(!$SINGLE_USER) { ?>
-          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=uid&user=<?=$userdn?>&oldvalue=<?=$uid?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change username')?>" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=uid&user=<?=$url["user"]?>&oldvalue=<?=$uid?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change username')?>" border="0"></a>
 <?php } ?>
         </td>
       </tr>
@@ -33,7 +33,7 @@
 		if($version >= 3) {
 			// Only allow an admin to rename object (if we're using LDAP v3)
 ?>
-          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=modrdn&user=<?=$userdn?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Rename DN')?>" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=modrdn&user=<?=$url["user"]?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Rename DN')?>" border="0"></a>
 <?php	}
 	  }
 ?>
@@ -45,14 +45,14 @@
         <td class="title"><?=$LANG->_('Password')?></td>
         <td><?=$userpassword?></td>
         <td>
-          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=userpassword&user=<?=$userdn?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Set password')?>" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=userpassword&user=<?=$url["user"]?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Set password')?>" border="0"></a>
         </td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Surname').", ".$LANG->_('Lastname')?></td>
         <td><?=$cn?></td>
-        <td><a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=cn&user=<?=$userdn?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change common name')?>" border="0"></a></td>
+        <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=cn&user=<?=$url["user"]?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change common name')?>" border="0"></a></td>
       </tr>
 
 <?php if($ADVANCED_MODE) { ?>
@@ -61,7 +61,7 @@
         <td><?php if($loginshell){echo $loginshell;}else{echo $LANG->_('None');} ?></td>
         <td>
 <?php if(!$SINGLE_USER) { ?>
-          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=loginshell&user=<?=$userdn?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change login shell')?>" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=loginshell&user=<?=$url["user"]?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change login shell')?>" border="0"></a>
 <?php } ?>
         </td>
       </tr>
@@ -71,7 +71,7 @@
         <td><?php if($homedirectory){echo $homedirectory;}else{echo $LANG->_('None');} ?></td>
         <td>
 <?php if(!$SINGLE_USER) { ?>
-          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=homedirectory&user=<?=$userdn?>&oldvalue=<?=urlencode($homedirectory);?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change home directory')?>" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=homedirectory&user=<?=$url["user"]?>&oldvalue=<?=urlencode($homedirectory);?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change home directory')?>" border="0"></a>
 <?php } ?>
         </td>
       </tr>
@@ -84,10 +84,41 @@
         <td><?=$uidnumber . ";" . $gidnumber?></td>
         <td></td>
       </tr>
+
 <?php
 	}
 }
 ?>
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title"><?=$LANG->_('Additional group(s)')?></td>
+<?php if(is_array($memberuid)) {
+		$new_tr = 0;
+		foreach($memberuid as $muid) {
+			$muid = pql_maybe_idna_decode($muid);
+
+			if($new_tr) {
+?>
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title"></td>
+<?php		} ?>
+        <td><?=$muid?></td>
+        <td>
+          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=lc(pql_get_define("PQL_GLOB_ATTR_ADDITIONAL_GROUP"))?>&<?=lc(pql_get_define("PQL_GLOB_ATTR_ADDITIONAL_GROUP"))?>=<?=$muid?>&submit=4&action=delete&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Remove user from group')?>" border="0"></a>
+        </td>
+<?php		$new_tr = 1;
+		} // if new_tr
+?>
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title"></td>
+        <td colspan="4">
+          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=lc(pql_get_define("PQL_GLOB_ATTR_ADDITIONAL_GROUP"))?>&submit=3&action=add&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional group'))); ?></a>
+        </td>
+      </tr>
+<?php } else { ?>
+        <td colspan="4">
+          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=lc(pql_get_define("PQL_GLOB_ATTR_ADDITIONAL_GROUP"))?>&submit=3&action=add&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional group'))); ?></a>
+        </td>
+<?php } ?>
     </th>
   </table>
 

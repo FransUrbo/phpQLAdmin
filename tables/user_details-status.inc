@@ -20,17 +20,17 @@ $status = pql_ldap_accountstatus($status);
       <tr class="<?php pql_format_table(); ?>">
         <td>Account expiration date</td>
         <td><?=$time_expiration?></td>
-        <td><a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=<?=pql_get_define("PQL_GLOB_ATTR_EXPIRATION")?>&user=<?=$userdn?>&set=expiration&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Set expiration date"></a></td>
+        <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_GLOB_ATTR_EXPIRATION")?>&user=<?=$url["user"]?>&set=expiration&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Set expiration date"></a></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
         <td>Status</td>
 <?php if(eregi('Active', $status)) { ?>
         <td><b><?=$LANG->_('Active')?></b></td>
-        <td><a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=<?=pql_get_define("PQL_GLOB_ATTR_ISACTIVE")?>&user=<?=$userdn?>&set=disabled&view=<?=$view?>"><img src="images/del.png" width="12" height="12" border="0" alt="Disable account"></a></td>
+        <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_GLOB_ATTR_ISACTIVE")?>&user=<?=$url["user"]?>&set=disabled&view=<?=$view?>"><img src="images/del.png" width="12" height="12" border="0" alt="Disable account"></a></td>
 <?php } elseif(eregi('Locked', $status)) { ?>
         <td><b><?=$LANG->_('Disabled')?></b></td>
-        <td><a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=<?=pql_get_define("PQL_GLOB_ATTR_ISACTIVE")?>&user=<?=$userdn?>&set=active&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Enable account"></a></td>
+        <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_GLOB_ATTR_ISACTIVE")?>&user=<?=$url["user"]?>&set=active&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Enable account"></a></td>
 <?php } ?>
       </tr>
     </th>
@@ -43,7 +43,7 @@ $status = pql_ldap_accountstatus($status);
     <th colspan="2" align="left"><?=$LANG->_('POP status')?></th>
       <tr class="subtitle">
         <td>
-          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=<?=pql_get_define("PQL_GLOB_ATTR_ISACTIVE")?>&user=<?=$userdn?>&set=nopop&view=<?=$view?>"><?=$LANG->_('Lock POP account')?></a>
+          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_GLOB_ATTR_ISACTIVE")?>&user=<?=$url["user"]?>&set=nopop&view=<?=$view?>"><?=$LANG->_('Lock POP account')?></a>
         </td>
       </tr>
 <?php } ?>

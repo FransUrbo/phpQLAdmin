@@ -17,7 +17,7 @@
       <tr class="<?php pql_format_table(); ?>">
         <td><?=pql_maybe_idna_decode($forwarder)?></td>
         <td>
-          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=mailforwardingaddress&user=<?=$userdn?>&mailforwardingaddress=<?=$forwarder?>&oldvalue=<?=$forwarder?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="user_del_attribute.php?attrib=mailforwardingaddress&user=<?=$userdn?>&oldvalue=<?=$forwarder?>&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a>
+          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=mailforwardingaddress&user=<?=$url["user"]?>&mailforwardingaddress=<?=$forwarder?>&oldvalue=<?=$forwarder?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="user_del_attribute.php?attrib=mailforwardingaddress&user=<?=$url["user"]?>&oldvalue=<?=$forwarder?>&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a>
         </td>
       </tr>
 <?php	} // end of foreach
@@ -26,7 +26,7 @@
 
       <tr class="subtitle">
         <td colspan="2">
-          <a href="user_add_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=mailforwardingaddress&user=<?=$userdn?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"><?=$LANG->_('Create new forwarding address')?></a>
+          <a href="user_add_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=mailforwardingaddress&user=<?=$url["user"]?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"><?=$LANG->_('Create new forwarding address')?></a>
         </td>
       </tr>
     </th>
