@@ -14,7 +14,7 @@
 	}
 
 	// Output the buttons to the browser
-	pql_generate_button($buttons);
+	pql_generate_button($buttons, "domain=$domain");
 ?>
   <table cellspacing="0" cellpadding="3" border="0" size="100%">
     <th colspan="3" align="left"><?=$LANG->_('Domainname')?>: <?=pql_maybe_idna_decode($dns_domain_name)?>
