@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.18 2004-03-19 10:17:59 turbo Exp $
+// $Id: pql_search.inc,v 2.19 2004-05-13 06:00:27 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -44,22 +44,29 @@ function pql_search($linkid, $basedn, $filter, $attrib = 'dn', $level = "SUBTREE
 }
 // }}}
 
-// {{{ pql_get_dn(ldap, reference, multiples)
+// {{{ pql_get_dn(ldap, reference, multiples, default_reference)
 // Retrieve the dn for a given reference
-function pql_get_dn($ldap, $reference, $multiples = 0) {
-    // check if we already have the dn for this user chached
-    $dn = '';
+function pql_get_dn($ldap, $reference, $multiples = 0, $default = 'uid') {
+    $dn = ''; $resonable_default = 0;
+
+    // Check if we already have the dn for this user chached
     if(pql_cache_userdn_get($reference, $dn))
 	  return($dn);
 
-    // dn not in cache -> search for it
+    // DN not in cache -> search for it
 	foreach($ldap->ldap_basedn as $base) {
 		$base = urldecode($base);
 
+		// Get user reference
+		$user_ref = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $base);
+		if(!$user_ref) {
+			// Resonable default...
+			$user_ref = $default;
+			$resonable_default = 1;
+		}
+
 		// Setup the search filter
-		$filter  = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $base) . "=";
-		$filter .= pql_maybe_encode($reference, pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $base),
-									$ldap->ldap_linkid);
+		$filter  = $user_ref . "=" . pql_maybe_encode($reference, $user_ref, $ldap->ldap_linkid);
 
 		// Do the search
 		$dn = pql_search($ldap->ldap_linkid, $base, $filter);
@@ -68,6 +75,11 @@ function pql_get_dn($ldap, $reference, $multiples = 0) {
 			pql_cache_userdn_add($reference, $dn);
 			
 			return($dn);
+		} elseif($resonable_default) {
+			// Not found, and we've specified a resonable default
+			// which didn't work. Have one more shot at finding the object...
+			// -> Recursivly call again.
+			pql_get_dn($ldap, $reference, $multiples, 'cn');
 		}
 	}
 
