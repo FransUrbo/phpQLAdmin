@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.74 2003-05-27 09:48:57 turbo Exp $
+// $Id: pql.inc,v 2.75 2003-06-04 08:02:17 turbo Exp $
 //
 
 // ----------------------------
@@ -688,6 +688,8 @@ function pql_modify_userattribute($ldap_linkid, $user, $attrib, $oldvalue, $newv
 // (only use for single-field attributes)
 // delete an attribut if value is an empty string
 function pql_replace_userattribute($ldap_linkid, $user, $attrib, $value) {
+	$attrib = lc($attrib);
+
     if(!$value)
 	  // Delete all attributes of this type, regardless of value
 	  $entry[$attrib] = array();
