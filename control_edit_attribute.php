@@ -10,7 +10,7 @@ if($attrib == ""){
 }
 
 if($type == ""){
-	$type = "modify";
+	$type = "add";
 }
 
 require("./include/pql_config.inc");
