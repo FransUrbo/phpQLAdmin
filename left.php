@@ -36,6 +36,7 @@ if($advanced == 1) {
     <?=PQL_USER; ?>: <b><?=$USER_ID?></b> |
     <a href="index.php?logout=1" target="_parent"><?=PQL_LOGOUT?></a>
   </font>
+  <br>
 <?php if($ADVANCED_MODE) { ?>
   <font color="black" size="-10">
     <?=$USER_DN?>
@@ -166,18 +167,19 @@ if(!isset($domains)) {
     <br>
 
 <?php
-              foreach ($users as $user) {
-		  $cn = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_CN);
-		  $cns[$user] = $cn[0];
-	      }
-	      asort($cns);
+              if($config["PQL_LDAP_REFERENCE_USERS_WITH"][pql_get_rootdn($user)] != constant("PQL_LDAP_ATTR_CN")) {
+		  foreach ($users as $user) {
+		      $cn = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_CN);
+		      $cns[$user] = $cn[0];
+		  }
+		  asort($cns);
     
-              foreach($cns as $user => $cn) {
-		  $uid   = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_UID); $uid = $uid[0];
-		  $uidnr = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_QMAILUID); $uidnr = $uidnr[0];
-		  if(($uid != 'root') or ($uidnr != '0')) {
-		      // Do NOT show root user(s) here! This should (for safty's sake)
-		      // not be availible to administrate through phpQLAdmin!
+		  foreach($cns as $user => $cn) {
+		      $uid   = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_UID); $uid = $uid[0];
+		      $uidnr = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_QMAILUID); $uidnr = $uidnr[0];
+		      if(($uid != 'root') or ($uidnr != '0')) {
+			  // Do NOT show root user(s) here! This should (for safty's sake)
+			  // not be availible to administrate through phpQLAdmin!
 ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
       <a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$user?>"><img src="images/mail_small.png" border="0" alt="<?=$cn?>"></a>&nbsp;
@@ -187,6 +189,7 @@ if(!isset($domains)) {
     <br>
 
 <?php
+                      }
 		  }
               }
           }
