@@ -28,7 +28,7 @@ if (empty($uname) or empty($passwd)) {
 	include("./header.html");
 
 	if(!$USER_HOST) {
-		if(! eregi(' ', PQL_LDAP_HOST)) {
+		if(! eregi('\+', PQL_LDAP_HOST)) {
 			$host = split(';', PQL_LDAP_HOST);
 			$USER_HOST = $host[0] . ";" . $host[1];
 			
@@ -67,8 +67,8 @@ if (empty($uname) or empty($passwd)) {
         <td>LDAP Server:</td>
         <td align="left">
 <?php
-	if(eregi(' ', PQL_LDAP_HOST)) {
-		$servers = split(' ', PQL_LDAP_HOST);
+	if(eregi('\+', PQL_LDAP_HOST)) {
+		$servers = split('\+', PQL_LDAP_HOST);
 ?>
           <select name="server">
 <?php

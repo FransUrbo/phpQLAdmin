@@ -59,7 +59,7 @@ if(!function_exists("ldap_connect")){
 		if(!$_pql_control->connect($USER_HOST)) {
 			$connection_control = PQL_TEST_CONNECTION_FAILED;
 
-			$host = split(' ', PQL_LDAP_HOST);
+			$host = split('\+', PQL_LDAP_HOST);
 			$host = split(';', $host[0]);
 
 			$fqdn = $host[0];

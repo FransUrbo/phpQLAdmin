@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.8 2003-02-04 08:06:41 turbo Exp $
+// $Id: pql_config.inc,v 1.9 2003-03-06 10:40:48 turbo Exp $
 //
 
 // We need this instead of define(), so that we can get rid
@@ -92,13 +92,20 @@ require("./include/config.inc");
 // 2. Load configurations from LDAP base DN
 require("./include/pql.inc");
 if(!$USER_HOST) {
-	if(! eregi(' ', PQL_LDAP_HOST)) {
+	if(! eregi('\+', PQL_LDAP_HOST)) {
 		$host = split(';', PQL_LDAP_HOST);
 		$USER_HOST = $host[0] . ";" . $host[1];
 		
 		session_register("USER_HOST");
 	} else {
 		// TODO: We have multiple hosts defined
+		$servers = split('\+', PQL_LDAP_HOST);
+
+		// For the time beeing, use the first value
+		$host = split(';', $servers[0]);
+		$USER_HOST = $host[0] . ";" . $host[1];
+		
+		session_register("USER_HOST");
 	}
 }
 
