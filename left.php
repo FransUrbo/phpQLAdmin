@@ -55,6 +55,13 @@ if($ADVANCED_MODE) {
   <font color="black" class="heada">
     Host: <font color="black" size=-4><b><?=$USER_HOST_USR?></b></font>
   </font>
+
+  <div id="el2Parent" class="parent">
+    <nobr>
+      <a href="domain_add_form.php">Add domain branch</a>
+    </nobr>
+  </div>
+
 <?php
 }
 

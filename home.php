@@ -52,9 +52,6 @@ if($change_ldap_server_users or $change_ldap_server_controls) {
 	//       In the domain description we don't have that info...
 	// if(($ADVANCED_MODE == 1) && ($USER_BASE == 'everything')){
 	if($ADVANCED_MODE == 1) {
-	    // We're administrating the whole domain,
-	    // show the Create domain option...
-
 	    // Should we show the 'change server' choices
 	    if(PQL_LDAP_CHANGE_SERVER) {
 		if(eregi(" ", PQL_LDAP_HOST)) {
@@ -101,38 +98,6 @@ if($change_ldap_server_users or $change_ldap_server_controls) {
 <?php
 		    }
 	    }
-?>
-
-
-    <li>
-      <form action="domain_add.php" method="post">
-	<?=PQL_DOMAIN_ADD?>
-        <br>
-        <input type="text" name="domain" value="<?php echo $domain; ?>">
-        <input type="submit" value="<?="--&gt;&gt;"?>">
-	<br>
-        <table cellspacing="0" cellpadding="3" border="0">
-          <th>
-            <tr class="<?php table_bgcolor(); ?>">
-              <td>
-                <img src="images/info.png" width="16" height="16" alt="" border="0"></td>
-              <td>
-                <?php
-	    if(PQL_LDAP_OBJECTCLASS_DOMAIN == "domain") {
-		// We're using a domain object
-		echo PQL_DOMAIN_ADD_INFO_DC;
-	    } else {
-		// OrganizationUnit object
-		echo PQL_DOMAIN_ADD_INFO_OU;
-	        }?>
-              </td>
-            </tr>
-          </th>
-        </table>
-      </form>
-      <br>
-    </li>
-<?php
 	}
 ?>
     <!-- begin search engine snippet -->
