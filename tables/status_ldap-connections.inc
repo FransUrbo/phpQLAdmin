@@ -179,10 +179,10 @@ $connections_information = pql_get_subentries($_pql->ldap_linkid,
 				echo "LDAPS";
 			} ?></td>
       </tr>
+<?php		} ?>
     </th>
   </table>
-<?php		}
-	  	}
+<?php  	}
 /*
  * Local variables:
  * mode: php
