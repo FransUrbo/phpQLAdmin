@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.97 2004-11-05 10:56:56 turbo Exp $
+// $Id: left.php,v 2.98 2004-11-08 11:25:02 turbo Exp $
 //
 session_start();
 
@@ -248,7 +248,9 @@ if(!isset($domains)) {
     // No domain defined -> 'ordinary' user (only show this user)
     $_SESSION["SINGLE_USER"] = 1;
 
-    $cn = pql_get_attribute($_pql->ldap_linkid, $_SESSION["USER_DN"], pql_get_define("PQL_ATTR_CN")); $cn = $cn[0];
+    $cn = pql_get_attribute($_pql->ldap_linkid, $_SESSION["USER_DN"], pql_get_define("PQL_ATTR_CN"));
+    if(is_array($cn))
+       $cn = $cn[0];
 
     // Try to get the DN of the domain
     $dnparts = ldap_explode_dn($_SESSION["USER_DN"], 0);
