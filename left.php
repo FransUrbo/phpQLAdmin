@@ -96,8 +96,6 @@ if(!isset($domains)) {
 	
 	// Look in DN for attribute 'defaultdomain'.
 	$defaultdomain = pql_get_domain_value($_pql, $DN, 'defaultdomain');
-// DEBUG
-echo "Defaultdomain: $defaultdomain ($DN)<br>";
 	if($defaultdomain) {
 	    // A hit. This is the domain under which the user is located.
 	    $domain = $DN;
