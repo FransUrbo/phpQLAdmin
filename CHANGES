@@ -2,6 +2,9 @@ phpQLAdmin 2.0 Change Log
 
 phpQLAdmin 2.0.16 TO BE ANNOUNCED
 	Bug fixes
+	  - PHP parse errors fixed.
+	    Closes bug 35
+
 	GUI layout change
 	Misc changes
 
