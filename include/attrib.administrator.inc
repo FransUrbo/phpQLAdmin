@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.12 2003-04-28 10:56:25 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.13 2003-05-01 11:18:32 turbo Exp $
 
 require("./left-head.html");
 
@@ -247,6 +247,10 @@ function attribute_save($type) {
       default:
 		die("unknown save type $type in " . __FILE__ . ", function save()");
     }
+}
+
+if(($attrib == 'administrator') or ($attrib == 'seealso')) {
+	require("./left-trailer.html");
 }
 /*
  * Local variables:
