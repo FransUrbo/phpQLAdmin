@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.77 2004-08-27 08:49:28 turbo Exp $
+// $Id: user_detail.php,v 2.78 2004-10-11 09:17:32 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -152,12 +152,12 @@ if($uid) {
 }
 
 // Get the object classes of this user
-// If anyone of them is 'qmailGroup', then
-// it's a Group object!
+// If anyone of them is 'qmailGroup', then it's a Group object!
 $objectclasses = pql_get_attribute($_pql->ldap_linkid, $_GET["user"],
 								   pql_get_define("PQL_ATTR_OBJECTCLASS"));
-if(in_array('qmailgroup', $objectclasses)) {
-	$USER_IS_GROUP = 1;
+foreach($objectclasses as $oc) {
+	if(eregi('qmailGroup', $oc))
+	  $USER_IS_GROUP = 1;
 }
 
 // Setup the buttons
@@ -173,9 +173,13 @@ if(!$USER_IS_GROUP) {
 }
 
 $new = array('email'				=> 'Registred addresses',
-			 'forwards_from'		=> 'Forwarders from other accounts',
-			 'forwards_to'			=> 'Forwarders to other accounts');
+			 'forwards_from'		=> 'Forwarders from other accounts');
 $buttons = $buttons + $new;
+
+if(!$USER_IS_GROUP) {
+	$new = array('forwards_to'		=> 'Forwarders to other accounts');
+	$buttons = $buttons + $new;
+}
 
 if($_SESSION["ADVANCED_MODE"] and !$USER_IS_GROUP) {
 	$new = array('delivery_advanced'=> 'Advanced delivery properties',
