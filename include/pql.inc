@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.57 2003-04-23 12:28:23 turbo Exp $
+// $Id: pql.inc,v 2.58 2003-04-26 09:27:03 turbo Exp $
 //
 
 // ----------------------------
@@ -244,7 +244,7 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 	  $userdn .= $domain;
 
 	// Create a LDIF object to print in case of error
-	$LDIF = pql_create_ldif("pql_user_add", $userdn, $entry);
+	$LDIF = pql_create_ldif("pql_user_add - user creation", $userdn, $entry);
 
 	// -----
     // Add the user to the database
@@ -259,24 +259,32 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 	// -----
 	// If this is a 'system' account, create the Group object
 	if($account_type == "system" and $entry["gidnumber"]) {
+		// Remember this for the NEW entry object...
 		$gidnr = $entry["gidnumber"];
 		
 		// Create a new LDAP object
 		$entry = "";
 		$entry["objectClass"][] = "top";
 		$entry["objectClass"][] = "posixGroup";
-		$entry["cn"] = $attribs["uid"];
+		$entry["cn"] = $attribs[$config["PQL_GLOB_ATTR_UID"]];
 		$entry["gidnumber"] = $gidnr;
 		
-		if(defined("PQL_CONF_SUBTREE_GROUPS"))
-		  $subrdn = "," . PQL_CONF_SUBTREE_GROUPS . ",";
+		if($config["PQL_CONF_SUBTREE_GROUPS"])
+		  $subrdn = "," . $config["PQL_CONF_SUBTREE_GROUPS"] . ",";
 
 		$groupdn = $config["PQL_GLOB_ATTR_CN"] . "=" . $attribs[PQL_CONF_USER_RDN_ATTRIBUTE] . $subrdn . $domain;
 
+		// Create a LDIF object to print in case of error
+		$LDIF = pql_create_ldif("pql_user_add - group creation", $groupdn, $entry);
+
 		// --------------------------
 		
-		if(! ldap_add($ldap_linkid, $groupdn, $entry))
-		  return $dns;
+		if(! ldap_add($ldap_linkid, $groupdn, $entry)) {
+			// failed to add user
+			pql_errormsg($ldap_linkid);
+			die("$LDIF");
+			return $dns;
+		}
 
 		$dns[] = $groupdn;
 	}
