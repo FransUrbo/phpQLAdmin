@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.31 2003-01-24 11:47:52 turbo Exp $
+// $Id: pql.inc,v 2.32 2003-01-27 11:47:20 turbo Exp $
 //
 
 // ----------------------------
@@ -420,11 +420,12 @@ function pql_domain_del($ldap, $domain, $delete_forwards) {
 			// Find every object under this DN and delete it
 			$sr = @ldap_search($linkid, $branches[$i], 'objectclass=*') or pql_errormsg($linkid);
 			$info = ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
-			for ($j=0; $j<$info["count"]; $j++) {
+			for ($j=0; $j<$info["count"]; $j++)
+			  if($info[$j]["dn"] != $branches[$i])
+				// Don't delete the branch quite yet
 				if(!ldap_delete($linkid, $info[$j]["dn"]))
 				  pql_errormsg($linkid);
-			}
-
+			
 			// Delete the organizationalUnit itself
 			if(!ldap_delete($linkid, $branches[$i])) {
 				pql_errormsg($linkid);
@@ -438,7 +439,7 @@ function pql_domain_del($ldap, $domain, $delete_forwards) {
 		pql_errormsg($linkid);
 		return false;
     }
-    
+
     return true;
 }
 
