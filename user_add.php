@@ -776,17 +776,18 @@ switch($submit){
 		// prepare the users attributes
 		$entry[$config["PQL_GLOB_ATTR_UID"]]			= $uid;
 		if($surname) {
+			// Firstname
 			$cn											= $surname . " " . $name;
-			$entry[$config["PQL_GLOB_ATTR_SN"]]			= $surname;
+			$entry[$config["PQL_GLOB_ATTR_GIVENNAME"]]	= $surname;
 		} else {
-			$entry[$config["PQL_GLOB_ATTR_SN"]]			= $uid;
+			$entry[$config["PQL_GLOB_ATTR_GIVENNAME"]]	= $uid;
 		}
 
 		if($name) {
-			$entry[$config["PQL_GLOB_ATTR_GIVENNAME"]]	= $name;
-			$entry[$config["PQL_GLOB_ATTR_CN"]]			= trim($surname) . " " . trim($name);
+			// Lastname
+			$entry[$config["PQL_GLOB_ATTR_SN"]]			= $name;
 		} else {
-			$entry[$config["PQL_GLOB_ATTR_CN"]]			= $uid;
+			$entry[$config["PQL_GLOB_ATTR_SN"]]			= $uid;
 		}
 
         // ------------------
@@ -826,8 +827,12 @@ switch($submit){
 			}
 
 			// Gecos is needed to do PAM/NSS LDAP login 
-			if($surname && $name)
-			  $entry["gecos"] = $surname . " " . $name;
+			if($surname && $name) {
+				$entry["gecos"]							  = $surname . " " . $name;
+				$entry[$config["PQL_GLOB_ATTR_CN"]]		  = trim($surname) . " " . trim($name);
+			} else {
+				$entry[$config["PQL_GLOB_ATTR_CN"]]		  = $uid;
+			}
 
 			// set attributes
 			if(eregi('KERBEROS', $pwscheme)) {
