@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.47 2003-11-20 09:32:40 turbo Exp $
+// $Id: pql_config.inc,v 1.48 2003-11-24 11:34:22 turbo Exp $
 //
 
 // {{{ pql_set_define(define, value, case_insensitive, dn)
@@ -162,16 +162,17 @@ $PQL_ATTRIBUTE["PQL_CONF_ATTR"]["DOMAIN"] = 'userAttribute';
 
 // ----------------------------
 // 1. Load site specific configuration
-require("./include/config.inc");
+require("./include/config.inc");				// Generic site configuration
 
 // 2. Include the attribute configuration
-require("./include/config_attributes.inc");
+require("./include/config_attributes.inc");		// Attribute definitions
 
 // include the API files
-require("./include/pql.inc");
-require("./include/pql_formating.inc");
-require("./include/pql_cache.inc");
-require("./include/pql_search.inc");
+require("./include/pql.inc");					// Main API file
+require("./include/pql_formating.inc");			// Output formating API
+require("./include/pql_cache.inc");				// Cache API
+require("./include/pql_search.inc");			// Search API
+require("./include/pql_units.inc");				// Sub branch API
 
 // 3. Load configurations from LDAP base DN
 if(!$USER_HOST) {
