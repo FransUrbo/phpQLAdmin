@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.87 2004-10-18 13:39:30 turbo Exp $
+// $Id: domain_detail.php,v 2.88 2004-11-05 10:49:57 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -88,6 +88,8 @@ $attribs = array("autocreatemailaddress"	=> pql_get_define("PQL_ATTR_AUTOCREATE_
 foreach($attribs as $key => $attrib) {
 	// Get default value
 	$value = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib);
+	if(is_array($value))
+	  $value = $value[0];
 	$$key = $value;
 
 	if($attrib == pql_get_define("PQL_ATTR_INFO")) {
@@ -136,8 +138,23 @@ foreach($attribs as $key => $attrib) {
 	}
 }
 $domain_admins      = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR"));
-$mailinglist_admins = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"));
+if($domain_admins and !is_array($domain_admins)) {
+	// It's defined, but it's not an array. Convert it so we don't get into trouble below.
+	$domain_admins = array($domain_admins);
+}
+
+$mailinglist_admins = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"],
+										pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"));
+if($mailinglist_admins and !is_array($mailinglist_admins)) {
+	// It's defined, but it's not an array. Convert it so we don't get into trouble below.
+	$mailinglist_admins = array($mailinglist_admins);
+}
+
 $seealso            = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_SEEALSO"));
+if($seealso and !is_array($seealso)) {
+	// It's defined, but it's not an array. Convert it so we don't get into trouble below.
+	$seealso = array($seealso);
+}
 
 // The value retreived from the object is a one liner.
 // Split it up into it's parts (SIZE and AMOUNT) and
