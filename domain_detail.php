@@ -28,7 +28,7 @@ if(isset($rlnb) and PQL_AUTO_RELOAD) {
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
   <script language="JavaScript1.2"><!--
 	// reload navigation frame
-	refreshFrames();
+	parent.frames.pqlnav.location.reload();
   //--></script>
 <?php
 }
