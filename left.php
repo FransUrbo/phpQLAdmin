@@ -11,7 +11,6 @@ require("./include/pql_control_plugins.inc");
 require("./left-head.html");
 
 $_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS, false, 0);
-// TODO: If we're choosing another LDAP server, how do we login to the new server?
 if($_pql->ldap_error) {
     session_unregister("USER_ID");
     session_unregister("USER_PASS");
