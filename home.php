@@ -75,15 +75,6 @@ fclose($fp);
 	//       In the domain description we don't have that info...
 	// if(($ADVANCED_MODE == 1) && ($USER_BASE == 'everything')){
 	if($ADVANCED_MODE == 1) {
-?>
-    <li>
-      <form action="domain_add.php" method="post">
-        <?php echo PQL_DOMAIN_ADD; ?>
-        <br>
-        <input type="text" name="domain" value="<?php echo $domain; ?>">
-        <input type="submit" value="<?php echo PQL_ADD; ?>">
-      </form>
-<?php
 	    // Should we show the 'change server' choices
 	    if(PQL_LDAP_CHANGE_SERVER and eregi(" ", PQL_LDAP_HOST)) {
 		$servers = split(" ", PQL_LDAP_HOST);
