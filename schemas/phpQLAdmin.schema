@@ -48,75 +48,75 @@
 #					administrator		   4
 # -----------------------------------------
 
-# $Id: phpQLAdmin.schema,v 2.11 2003-03-06 09:15:16 turbo Exp $
+# $Id: phpQLAdmin.schema,v 2.12 2003-03-14 06:56:47 turbo Exp $
 
 # PQL_SHOW_USERS (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.1 NAME 'showUsers'
 	DESC 'Shown users in the navigation frame [True/False]?'
 	EQUALITY booleanMatch
-	SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
 	SINGLE-VALUE )
 
 # PQL_LDAP_CONTROL_USE (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.2 NAME 'useControls'
 	DESC 'Is ~controls information stored in LDAP database [True/False]?'
 	EQUALITY booleanMatch
-	SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
 	SINGLE-VALUE )
 
 # PQL_LDAP_EZMLM_USE (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.3 NAME 'useEzmlm'
 	DESC 'Manage ezmlm mailinglists [True/False]?'
 	EQUALITY booleanMatch
-	SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
 	SINGLE-VALUE )
 
 # PQL_AUTO_RELOAD (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.4 NAME 'autoReload'
 	DESC 'Automatically reload navigation bar(s) [True/False]?'
 	EQUALITY booleanMatch
-	SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
 	SINGLE-VALUE )
 
 # PQL_TESTMAIL_AUTOSEND (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.5 NAME 'autoSend'
 	DESC 'Automatically send a testmail when a new user or alias has been added [True/False]?'
 	EQUALITY booleanMatch
-	SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
 	SINGLE-VALUE )
 
 # PQL_LDAP_CONTROL_AUTOADDLOCALS (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.6 NAME 'autoAddLocals'
 	DESC 'Automatically add domain to ~controls/locals attribute [True/False]?'
 	EQUALITY booleanMatch
-	SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
 	SINGLE-VALUE )
 
 # PQL_LDAP_CHANGE_SERVER (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.7 NAME 'allowServerChange'
 	DESC 'Should we allow LDAP server change [True/False]?'
 	EQUALITY booleanMatch
-	SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
 	SINGLE-VALUE )
 
 # PQL_ALLOW_ABSOLUTE_PATH (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.8 NAME 'allowAbsoluteMailPath'
 	DESC 'Should we allow setting absolute path to mailbox directory [True/False]?'
 	EQUALITY booleanMatch
-	SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
 	SINGLE-VALUE )
 
 # PQL_VERIFY_DELETE (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.9 NAME 'deleteVerification'
 	DESC 'Verify deletion of user objects etc [True/False]?'
 	EQUALITY booleanMatch
-	SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
 	SINGLE-VALUE )
 
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.10 NAME 'test'
 	DESC 'Used to test write access, dont set yourself'
 	EQUALITY booleanMatch
-	SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
 	SINGLE-VALUE )
 
 # -----------------------------------------
@@ -271,13 +271,15 @@ objectclass ( 1.3.6.1.4.1.8767.3.1.1
 		ezmlmBinaryPath $ passwordScheme $
 		hostMaster $ testMailSubject $
 		testMailText $ language $ 
-	        forwardUIDNumber $ test ) )
+	        forwardUIDNumber $ test )
+	SUP top AUXILIARY )
 
 objectclass ( 1.3.6.1.4.1.8767.3.1.2
         NAME 'phpQLAdminBranch'
         DESC 'phpQLAdmin branch ACL values'
         MAY ( defaultDomain $ baseHomeDir $ baseMailDir $
-	      administrator $ test ) )
+	      administrator $ test $ o )
+	SUP top AUXILIARY )
 
 #
 # Local variables:
