@@ -1,8 +1,9 @@
 <?php
 // Attribute plugin for
 // usernamePrefix/usernamePrefixLength
-// $Id: attrib.usernameprefix.inc,v 2.9 2004-03-03 07:59:28 turbo Exp $
+// $Id: attrib.usernameprefix.inc,v 2.10 2004-05-05 07:14:09 turbo Exp $
 
+// {{{ attribute_check(type)
 function attribute_check($type = '') {
     global $error, $LANG;
 
@@ -14,7 +15,9 @@ function attribute_check($type = '') {
     
 	return true;
 }
+// }}}
 
+// {{{ attribute_print_form(type)
 function attribute_print_form($type = "modify") {
     global $error, $LANG;
 	global $orgname;			// Set by domain_edit_attributes.php.
@@ -68,7 +71,9 @@ function attribute_print_form($type = "modify") {
   </form>
 <?php
 }
+// }}}
 
+// {{{ attribute_save(type)
 function attribute_save($type) {
 	global $error, $attrib, $$attrib, $domain, $rootdn, $_pql, $view, $LANG;
 
@@ -103,6 +108,7 @@ function attribute_save($type) {
 								  array('type' => $type, 'file' => __FILE__)));
     }
 }
+// }}}
 
 // Local variables:
 // mode: php
