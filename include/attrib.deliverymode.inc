@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliverymode (delivery preferences)
-// $Id: attrib.deliverymode.inc,v 2.11 2003-07-02 07:59:00 turbo Exp $
+// $Id: attrib.deliverymode.inc,v 2.12 2003-07-13 09:16:00 turbo Exp $
 
 function attribute_check($type) {
 	global $error, $reply, $mailreplytext, $LANG;
@@ -63,6 +63,15 @@ function attribute_print_form($type = "modify") {
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"><?=$LANG->_('Text for replying')?></td>
           <td valign="center"><?php echo format_error($error["mailreplytext"]); ?> <textarea name="mailreplytext" cols="40" rows="10"><?=$mailreplytext?></textarea></td>
+        </tr>
+
+        <tr class="<?php table_bgcolor(); ?>">
+          <table>
+            <td><img src="images/info.png" width="16" height="16" border="0" align="left"></td>
+            <td>
+              <?=$LANG->_('If send auto reply is enabled, QmailLDAP will first store the mail in the users mailbox, THEN send the reply')?>.
+            </td>
+          </table>
         </tr>
       </th>
     </table>
