@@ -385,9 +385,9 @@ switch($submit){
 <?php
 		} else {
 			// Only one subbranch
-			if($config["PQL_CONF_SUBTREE_USERS"]) {
+			if($config["PQL_GLOB_SUBTREE_USERS"]) {
 ?>
-        <input type="hidden" name="subbranch" value="<?=$config["PQL_CONF_SUBTREE_USERS"].",".$domain?>">
+        <input type="hidden" name="subbranch" value="<?=$config["PQL_GLOB_SUBTREE_USERS"].",".$domain?>">
 <?php
 			} else {
 ?>
@@ -396,9 +396,9 @@ switch($submit){
 			}
 		}
 	} else {
-		if($config["PQL_CONF_SUBTREE_USERS"]) {
+		if($config["PQL_GLOB_SUBTREE_USERS"]) {
 ?>
-        <input type="hidden" name="subbranch" value="<?=$config["PQL_CONF_SUBTREE_USERS"].",".$domain?>">
+        <input type="hidden" name="subbranch" value="<?=$config["PQL_GLOB_SUBTREE_USERS"].",".$domain?>">
 <?php
 		} else {
 ?>

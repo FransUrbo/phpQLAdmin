@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.60 2003-04-26 12:09:12 turbo Exp $
+// $Id: pql.inc,v 2.61 2003-04-27 18:17:38 turbo Exp $
 //
 
 // ----------------------------
@@ -269,8 +269,8 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 		$entry["cn"] = $attribs[$config["PQL_GLOB_ATTR_UID"]];
 		$entry["gidnumber"] = $gidnr;
 		
-		if($config["PQL_CONF_SUBTREE_GROUPS"])
-		  $subrdn = "," . $config["PQL_CONF_SUBTREE_GROUPS"] . ",";
+		if($config["PQL_GLOB_SUBTREE_GROUPS"])
+		  $subrdn = "," . $config["PQL_GLOB_SUBTREE_GROUPS"] . ",";
 
 		$groupdn = $config["PQL_GLOB_ATTR_CN"] . "=" . $attribs[$config["PQL_CONF_USER_RDN_ATTRIBUTE"][$rootdn]] . $subrdn . $domain;
 
@@ -387,7 +387,7 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
     return true;
 }
 
-// adds a domain into ldap-tree (ou|dc-record)
+// adds a domain into ldap-tree (o|ou|dc-record)
 function pql_domain_add($ldap_linkid, $basedn, $branch_name){
 	global $config;
 
@@ -396,10 +396,13 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name){
 
 	// Setup objectclasses
 	$entry["objectClass"] = pql_setup_branch_objectclasses(0, $basedn);
-	$entry["o"] = 0;
+	if($config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn] == "o")
+	  $entry["o"] = $branch_name;
+	else
+	  $entry["o"] = 0;
 
 	// Create a LDIF object to print in case of error
-	$LDIF = pql_create_ldif("pql_domain_add", $dn, $entry);
+	$LDIF = pql_create_ldif("pql_domain_add - create domain", $dn, $entry);
 
     // adds the user
     if(! @ldap_add($ldap_linkid, $dn, $entry)) {
@@ -411,44 +414,53 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name){
 	$dns[] = $dn;
 
     // Add the USER subtree if defined
-    if($config["PQL_CONF_SUBTREE_USERS"][$basedn]) {
+    if($config["PQL_GLOB_SUBTREE_USERS"]) {
 		$entry = "";
 		$entry["objectClass"][] = "top";
 		$entry["objectClass"][] = "organizationalUnit";
 		
-		$ou = eregi_replace(",$", "", $config["PQL_CONF_SUBTREE_USERS"][$basedn] . ",");
+		$ou = eregi_replace(",$", "", $config["PQL_GLOB_SUBTREE_USERS"] . ",");
 		$entry["ou"] = $ou;
 		
-		$dn = $config["PQL_CONF_SUBTREE_USERS"][$basedn] . "," .
+		$dn = $config["PQL_GLOB_SUBTREE_USERS"] . "," .
               $config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn] .
               "=" . $branch_name . "," . $basedn;
+
+		// Create a LDIF object to print in case of error
+		$LDIF = pql_create_ldif("pql_domain_add - create subtree users", $dn, $entry);
 
 		// adds the user
 		if(!@ldap_add($ldap_linkid, $dn, $entry)){
 			// failed to add user subtree
 			pql_errormsg($ldap_linkid);
+			die($LDIF);
 			return $dns;
 		}
 		$dns[] = $dn;
     }
     
     // Add the GROUPS subtree if defined
-    if($config["PQL_CONF_SUBTREE_GROUPS"][$basedn]) {
+    if($config["PQL_GLOB_SUBTREE_GROUPS"]) {
 		$entry = "";
 		$entry["objectClass"][] = "top";
 		$entry["objectClass"][] = "organizationalUnit";
-		$entry["ou"] = $config["PQL_CONF_SUBTREE_GROUPS"][$basedn];
+		$entry["ou"] = $config["PQL_GLOB_SUBTREE_GROUPS"];
 		
-		$dn = $config["PQL_CONF_SUBTREE_GROUPS"][$basedn] . "," .
+		$dn = $config["PQL_GLOB_SUBTREE_GROUPS"] . "," .
               $config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$basedn] .
               "=" . $branch_name . "," . $basedn;
+
+		// Create a LDIF object to print in case of error
+		$LDIF = pql_create_ldif("pql_domain_add - create subtree groups", $dn, $entry);
+
 		if(!@ldap_add($ldap_linkid, $dn, $entry)){
 			pql_errormsg($ldap_linkid);
+			die($LDIF);
 			return $dns;
 		}
 		$dns[] = $dn;
     }
-    
+
     return $dns;
 }
 
@@ -1146,15 +1158,12 @@ function check_email($email){
 
 // ------------------------------------------------
 
-function check_hostaddress($host, $allow_domain){
-    // checks an fqdn
-    // if allow_domain is true, it will not be checked for dots
-    
-    if($allow_domain){
-		return !preg_match("/[^0-9a-z-]/", $host);
-    } else {
-		return preg_match("/^([0-9a-z-]+\.[0-9a-z-]+)+$/i", $host);
-    }
+function check_hostaddress($host, $force_dot) {
+    // checks an fqdn - if force_dot is true, it must contain a dot
+    if($force_dot)
+	  return preg_match("/^([0-9a-z-]+\.[0-9a-z-]+)+$/i", $host);
+	else
+	  return preg_match("/[^0-9a-z]/i", $host);
 }
 
 // ------------------------------------------------
@@ -1349,7 +1358,10 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '') {
 	}
 
 	// Setup a filter to look for DOMAINS (branches)
-	$filter  = "(&($value=$match)(".$config["PQL_CONF_REFERENCE_DOMAINS_WITH"][pql_get_rootdn($dn)]."=*))";
+	if($config["PQL_CONF_REFERENCE_DOMAINS_WITH"][pql_get_rootdn($dn)] == "o")
+	  $filter = "$value=$match";
+	else
+	  $filter  = "(&($value=$match)(".$config["PQL_CONF_REFERENCE_DOMAINS_WITH"][pql_get_rootdn($dn)]."=*))";
 	//echo "pql_get_domain_value(): '$dn' '$filter' $value<br>"; // DEBUG
 
 	// Search from the DN
@@ -1770,10 +1782,14 @@ function pql_setup_branch_objectclasses($filter = 0, $dn, $linkid = '') {
 		$ocs = pql_split_oldvalues($ocs);
 		foreach($ocs as $oc) {
 			if($filter) {
-				if(! eregi('dcOrganizationNameForm', $oc))
+				if(!eregi('dcOrganizationNameForm', $oc))
 				  $entry .= "(objectClass=$oc)";
-			} else 
-			  $entry[] = $oc;
+			} else {
+				if(eregi('phpQLAdminBranch', $oc))
+				  $got_phpqladmin_objectclass_branch = 1;
+
+				$entry[] = $oc;
+			}
 		}
 	}
 

@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.25 2003-04-24 06:16:37 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.26 2003-04-27 18:17:38 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -38,21 +38,21 @@ require("./include/lang.en.inc");
 pql_define("PQL_GLOB_HOST","localhost;389;ou=QmailLDAP,dc=example,dc=com");
 
 // ----------------------------
-// PQL_CONF_SUBTREE_USERS
+// PQL_GLOB_SUBTREE_USERS
 // Is your users organized DIRECTLY under your 'dc' object like
 //	uid=username,PQL_CONF_REFERENCE_DOMAINS_WITH=example,<LDAP_BASEDN>
 // or in a subtree like
 //	uid=username,ou=People,PQL_CONF_REFERENCE_DOMAINS_WITH=example,<LDAP_BASEDN>
 // -> If the former (no subtree), leave this empty!
-//pql_define("PQL_CONF_SUBTREE_USERS", "ou=People");
+//pql_define("PQL_GLOB_SUBTREE_USERS", "ou=People");
 
 // ----------------------------
-// PQL_CONF_SUBTREE_GROUPS
+// PQL_GLOB_SUBTREE_GROUPS
 // If you're using your LDAP database for authentication
 // etc, you'd need a group for the user as well. Under
 // what subtree is the groups located?
 // -> Do not add a comma after this, not needed.
-//pql_define("PQL_CONF_SUBTREE_GROUPS", "ou=Groups");
+//pql_define("PQL_GLOB_SUBTREE_GROUPS", "ou=Groups");
 
 // ----------------------------
 // mail(message)store generation
