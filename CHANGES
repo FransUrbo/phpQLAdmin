@@ -1,5 +1,11 @@
 phpQLAdmin 2.0 Change Log
 
+phpQLAdmin 2.0.9 - TO BE ANNOUNCED
+	Highlights
+	Bug fixes
+	GUI layout change
+	Misc changes
+
 phpQLAdmin 2.0.8 Release (Jan 31 2003)
 	Highlights
 	  - utf8_{encode,decode}() 'Personal details' ('outlook' values etc) to correctly
