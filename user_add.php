@@ -867,6 +867,12 @@ switch($submit) {
 	case "save":
 	  // code for saving the user
 
+	  // Find out what objectclasses to use when creating user
+	  $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $rootdn));
+
+	  // Get all objectclasses the LDAP server understand
+	  $objectclasses_schema   = pql_get_subschema($_pql->ldap_linkid, 'objectclasses');
+
 	  // convert uid, email to lowercase
 	  if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) == pql_get_define("PQL_GLOB_ATTR_UID")) {
 		  $uid = strtolower($uid);
@@ -902,7 +908,16 @@ switch($submit) {
 
       // ------------------
 	  if($account_type != 'shell') {
-		  $entry[pql_get_define("PQL_GLOB_ATTR_ISACTIVE")]	= $account_status;
+		  // Check to see if the attribute PQL_GLOB_ATTR_ISACTIVE (should be accountStatus)
+		  // is a MUST (required attribute) or a MAY (allowed attribute) in any of the
+		  // objectclasses we have choosen to use.
+		  $val = pql_check_attribute($objectclasses_schema,
+									 $objectclasses_included,
+									 pql_get_define("PQL_GLOB_ATTR_ISACTIVE"));
+		  if($val[0] >= 1)
+			// The attribute is either a MUST or a MAY - which doesn't interest me :)
+			$entry[pql_get_define("PQL_GLOB_ATTR_ISACTIVE")]= $account_status;
+
 		  $entry[pql_get_define("PQL_GLOB_ATTR_MAIL")]		= $email;
 		  if($include_additional == 'on' and is_array($additionaldomainname)) {
 			  if(ereg("@", $email)) {
