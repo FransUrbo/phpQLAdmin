@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.3 2003-10-15 05:25:23 turbo Exp $
+// $Id: config_attributes.inc,v 2.4 2003-11-26 16:42:06 turbo Exp $
 
 // User object attributes
 pql_set_define("PQL_GLOB_ATTR_DOTMODE",				strtolower("qmailDotMode"),		false);
@@ -118,6 +118,7 @@ pql_set_define("PQL_GLOB_ATTR_STREET",				strtolower("street"),				false);
 pql_set_define("PQL_GLOB_ATTR_SUBSCHEMASUBENTRY",		strtolower("subSchemaSubEntry"),		false);
 pql_set_define("PQL_GLOB_ATTR_TELEPHONENUMBER",			strtolower("telePhoneNumber"),			false);
 pql_set_define("PQL_GLOB_ATTR_TITLE",				strtolower("title"),				false);
+pql_set_define("PQL_GLOB_ATTR_ADDITIONAL_GROUP",		strtolower("memberUid"),			false);
 
 // Bind9/LDAP attributes
 pql_set_define("PQL_GLOB_ATTR_ARECORD",				strtolower("aRecord"),				false);
