@@ -1,9 +1,9 @@
 <?php
 // navigation bar - ezmlm mailinglists manager
-// $Id: left-ezmlm.php,v 2.33 2005-03-01 20:27:36 turbo Exp $
+// $Id: left-ezmlm.php,v 2.33.2.1 2005-03-04 11:59:45 turbo Exp $
 //
 // {{{ Setup session etc
-session_start();
+require("./include/pql_session.inc");
 
 require("./include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_ezmlm.inc");
