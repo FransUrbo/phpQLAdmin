@@ -107,7 +107,7 @@ if(!isset($domains)) {
     // No domain defined -> 'ordinary' user (only show this user)
     $SINGLE_USER = 1; session_register("SINGLE_USER");
 
-    $cn = pql_get_userattribute($_pql->ldap_linkid, $USER_DN, pql_get_config("PQL_GLOB_ATTR_CN")); $cn = $cn[0];
+    $cn = pql_get_userattribute($_pql->ldap_linkid, $USER_DN, pql_get_define("PQL_GLOB_ATTR_CN")); $cn = $cn[0];
 
     // Try to get the DN of the domain
     $dnparts = ldap_explode_dn($USER_DN, 0);
