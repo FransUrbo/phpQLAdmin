@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.67 2003-11-25 06:26:35 turbo Exp $
+// $Id: left.php,v 2.68 2003-11-26 16:21:34 turbo Exp $
 //
 session_start();
 
@@ -69,28 +69,28 @@ $div_counter = 3; // Initialize the global counter
 pql_format_tree("<b>".$LANG->_('Home')."</b>", 'home.php');
 
 // Level 2a: Search links
-$links = array('user_search.php' => $LANG->_('Find user'));
+$links = array($LANG->_('Find user') => 'user_search.php');
 pql_format_tree($LANG->_('Search'), 0, $links, 1);
 
 if($ADVANCED_MODE) {
     if($ALLOW_BRANCH_CREATE) {
 	// Level 2b: Configuration and tests
-	$links = array('config_detail.php'		=> $LANG->_('Show configuration'),
-		       'config_ldaptest.php'		=> $LANG->_('Test LDAP-Connection'),
-		       'config_ldap.php'		=> $LANG->_('LDAP server configuration'));
+	$links = array($LANG->_('Show configuration')		=> 'config_detail.php',
+		       $LANG->_('Test LDAP-Connection')		=> 'config_ldaptest.php',
+		       $LANG->_('LDAP server configuration')	=> 'config_ldap.php');
 	pql_format_tree($LANG->_('Configuration'), 0, $links, 1);
     }
 
     // Level 2c: Documentation etc
-    $links = array('doc/index.php'			=> $LANG->_('Documentation'),
-		   'TODO'				=> $LANG->_('What\'s left todo'),
-		   'CHANGES'				=> $LANG->_('What\'s been done'),
-		   'update_translations.php'		=> $LANG->_('Language translator'));
+    $links = array($LANG->_('Documentation')			=> 'doc/index.php',
+		   $LANG->_('What\'s left todo')		=> 'TODO',
+		   $LANG->_('What\'s been done')		=> 'CHANGES',
+		   $LANG->_('Language translator')		=> 'update_translations.php');
     pql_format_tree($LANG->_('Documentation'), 0, $links, 1);
 
     // Level 2d: Main site and general phpQLAdmin links
-    $links = array('http://phpqladmin.bayour.com/'	=> 'phpqladmin.bayour.com',
-		   'http://apache.bayour.com/anthill/'	=> $LANG->_('Bugtracker'));
+    $links = array('phpqladmin.bayour.com'			=> 'http://phpqladmin.bayour.com/',
+		   $LANG->_('Bugtracker')			=> 'http://apache.bayour.com/anthill/');
     pql_format_tree($LANG->_('phpQLAdmin'), 0, $links, 1);
 }
 
@@ -141,7 +141,7 @@ if(!isset($domains)) {
 	}
     }
 
-    $links = array("user_detail.php?rootdn=$rootdn&domain=$domain&user=".urlencode($USER_DN) => $cn);
+    $links = array($cn => "user_detail.php?rootdn=$rootdn&domain=$domain&user=".urlencode($USER_DN));
     pql_format_tree_span($cn, $links, -1);
 } else {
     $SINGLE_USER = 0; session_register("SINGLE_USER");
@@ -166,9 +166,9 @@ if(!isset($domains)) {
 	$branches = pql_unit_get($_pql->ldap_linkid, $domain);
 
 	if((count($branches) > 1)) {
-	    $links = array("unit_add.php?rootdn=$rootdn&domain=$domain" =>
-			   pql_complete_constant($LANG->_('Add %what%'),
-						 array('what' => $LANG->_('sub unit'))));
+	    $links = array(pql_complete_constant($LANG->_('Add %what%'),
+						 array('what' => $LANG->_('sub unit')))
+			   => "unit_add.php?rootdn=$rootdn&domain=$domain");
 	    pql_format_tree($d, "domain_detail.php?rootdn=$rootdn&domain=$domain", $links, 0);
 	} else
 	  // This branch don't have any sub units (flat structure)
@@ -200,16 +200,16 @@ if(!isset($domains)) {
 		    $dnparts = split('=', $dnparts[0]);
 		    $subbranch = $dnparts[1];
 		    
-		    $links = array("user_add.php?rootdn=$rootdn&domain=$domain&subbranch=$subbranch" =>
-				   pql_complete_constant($LANG->_('Add %what%'),
-							 array('what' => $LANG->_('user'))));
+		    $links = array(pql_complete_constant($LANG->_('Add %what%'),
+							 array('what' => $LANG->_('user')))
+				   => "user_add.php?rootdn=$rootdn&domain=$domain&subbranch=$subbranch");
 		} else {
-		    $links = array("unit_add.php?rootdn=$rootdn&domain=$domain" =>
-				   pql_complete_constant($LANG->_('Add %what%'),
-							 array('what' => $LANG->_('sub unit'))));
-		    $new = array("user_add.php?rootdn=$rootdn&domain=$domain" =>
-				 pql_complete_constant($LANG->_('Add %what%'),
-						       array('what' => $LANG->_('user'))));
+		    $links = array(pql_complete_constant($LANG->_('Add %what%'),
+							 array('what' => $LANG->_('sub unit')))
+				    => "unit_add.php?rootdn=$rootdn&domain=$domain");
+		    $new = array(pql_complete_constant($LANG->_('Add %what%'),
+						       array('what' => $LANG->_('user')))
+				 => "user_add.php?rootdn=$rootdn&domain=$domain");
 		    $links = $links + $new;
 		}
 		    
@@ -267,8 +267,7 @@ if(!isset($domains)) {
 			if(($uid != 'root') or ($uidnr != '0')) {
 			    // Do NOT show root user(s) here! This should (for safty's sake)
 			    // not be availible to administrate through phpQLAdmin!
-			    $new = array("user_detail.php?rootdn=$rootdn&domain=$domain&subbranch=$subbranch&user=".urlencode($dn) => $cn);
-			    
+			    $new = array($cn => "user_detail.php?rootdn=$rootdn&domain=$domain&subbranch=$subbranch&user=".urlencode($dn));
 			    // Add the link to the main array
 			    $links = $links + $new;
 			}
