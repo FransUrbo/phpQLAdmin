@@ -1,5 +1,18 @@
 phpQLAdmin 2.0 Change Log
 
+phpQLAdmin 2.0.3 Release - TO BE RELEASED
+	- Documentation update
+	- EZMLM Manager class(es) removed. Re-implemented what I needed.
+	- Possibility to set path/command for ezmlm management (should be
+	  possible to use scripts/commands that do remote administration).
+	- Small bug fix in include statements (prefix with './include/').
+	- GUI layout change
+	  + 'Tablify' the home links (original/new maintainers etc).
+	  + Show what user to modify in user_edit_attribute, so we don't
+	    modify 'in the blind'.
+	- Replace/Modify 'gecos' and 'givenName' entries at the same time
+	  we're modifying the 'cn' entry.
+
 phpQLAdmin 2.0.2 Release
 	- Documentation update
 	
