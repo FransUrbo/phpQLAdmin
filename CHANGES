@@ -21,6 +21,12 @@ phpQLAdmin 2.2.2 TO BE ANNOUNCED
 	    generating a default scheme encrypted password.
 	    + REPLACE password, not ADD to object.
 	    Closes: 241
+	  - Before we modify the 'mobile', 'vatNumber' or 'info' for a branch object,
+	    we must first verify that it contains the object class 'phpQLAdminInfo'.
+	    This because all these attributes exists in other object classes which
+	    takes precedence when phpQLAdmin tries to figure out which missing object
+	    class to add when the modify failed because of a object class violation.
+	    Closes: 242
 	  - If there was a MX for a domain, but no QLC object(s), the 'User host'
 	    value (user creation) was empty. Rewrite so that we first create an
 	    array with the MX value and QLC object(s) (avoiding duplicates) THEN
