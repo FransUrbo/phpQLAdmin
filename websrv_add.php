@@ -1,6 +1,6 @@
 <?php
 // add a webserver configuration to the LDAP db
-// $Id: websrv_add.php,v 2.5 2004-04-02 12:39:13 turbo Exp $
+// $Id: websrv_add.php,v 2.5.16.1 2004-12-20 09:25:36 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -15,11 +15,6 @@ include("./header.html");
 if($submit) {
 	$error = false;
 	$error_text = array();
-	
-	if(!$_REQUEST["servername"]) {
-		$error = true;
-		$error_text["servername"] = $LANG->_('Missing');
-	}
 	
 	if(!$_REQUEST["serverip"]) {
 		$error = true;
@@ -60,18 +55,13 @@ if(($error == 'true') or !$_REQUEST["serverip"] or !serverurl or !$_REQUEST["ser
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('webserver configuration'))); ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Server name')?></td>
-          <td><?php echo pql_format_error_span($error_text["serverip"]); ?><input type="text" name="servername" size="40" value="<?=$_REQUEST["serverip"]?>"></td>
+          <td class="title"><?=$LANG->_('Server URL')?></td>
+          <td><?php echo pql_format_error_span($error_text["serverurl"]); ?><input type="text" name="serverurl" size="40" value="<?=$_REQUEST["serverurl"]?>"></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Server IP[:PORT]')?></td>
           <td><?php echo pql_format_error_span($error_text["serverip"]); ?><input type="text" name="serverip" size="40" value="<?=$_REQUEST["serverip"]?>"></td>
-        </tr>
-
-        <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Server URL')?></td>
-          <td><?php echo pql_format_error_span($error_text["serverurl"]); ?><input type="text" name="serverurl" size="40" value="<?=$_REQUEST["serverurl"]?>"></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
@@ -96,12 +86,22 @@ if(($error == 'true') or !$_REQUEST["serverip"] or !serverurl or !$_REQUEST["ser
   </form>
 <?php
 } else {
-	$entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")]	= $_REQUEST["servername"];
 	$entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_IP")]	= $_REQUEST["serverip"];
 	$entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_URL")]	= $_REQUEST["serverurl"];
 	$entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_ADMIN")]	= $_REQUEST["serveradmin"];
 	$entry[pql_get_define("PQL_ATTR_WEBSRV_DOCROOT")]	= $_REQUEST["documentroot"];
 
+	// Extract the host FQDN from the URL. A little crude...
+	if(eregi('.*://', $_REQUEST["serverurl"])) {
+		$fqdn = eregi_replace('.*://', '', $_REQUEST["serverurl"]);
+	}
+	if(eregi(':', $fqdn)) { $fqdn = eregi_replace(':.*', '', $fqdn); }
+	if(eregi('/', $fqdn)) { $fqdn = eregi_replace('/.*', '', $fqdn); }
+
+	// Add the host FQDN to the entry array.
+	$entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")]	= $fqdn;
+
+	// Add the web server object
 	if(pql_websrv_add_server($_pql->ldap_linkid, $_REQUEST["domain"], $entry))
 	  $msg = "Successfully added webserver configuration ".$_REQUEST["serverurl"];
 	else
