@@ -3,13 +3,13 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.200.2.1 2005-02-12 05:19:15 turbo Exp $
+// $Id: pql.inc,v 2.200.2.2 2005-02-19 08:27:39 turbo Exp $
 //
 
 // ----------------------------
 // Get release version
 $fp = fopen($_SESSION["path"]."/.version", "r");
-$_SESSION["VERSION"] = fgets($fp, 20);
+$_SESSION["VERSION"] = fgets($fp, 50);
 $_SESSION["VERSION"] = rtrim($_SESSION["VERSION"], "\n");
 fclose($fp);
 
