@@ -1,6 +1,6 @@
 <?php
 // shows configuration of phpQLAdmin
-// $Id: config_ldap.php,v 1.11 2004-02-14 17:06:55 turbo Exp $
+// $Id: config_ldap.php,v 1.12 2004-03-15 07:14:36 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -19,7 +19,7 @@ if($type) {
 } else {
 	$attributetypes = $ldap['attributetypes'];
 }
-$j = 0;
+$j = 1;
 ?>
     <table cellspacing="0" cellpadding="3" border="0">
 <?php
@@ -53,15 +53,17 @@ foreach($ldap as $x => $array) {
 		// Objectclasses
 		$class = pql_format_table(0);
 ?>
-        <br>
-        <font size="1"><?=$LANG->_('Text in bold is a MUST, and non-bold is MAY')?>.</font>
-        <br>
+        <p><font size="1"><?=$LANG->_('Text in bold is a MUST, and non-bold is MAY')?>.</font><br>
+
 <?php	foreach($array as $value) { ?>
+        <!-- --------------------------------------------------- -->
+        <!-- Objectclass #<?=$j?>: '<?=$value['NAME']?>:<?=$value['OID']?>' -->
         <tr class="<?=$class?>">
+          <!-- ATTRIBUTE NAMES -->
           <td>
 <?php		if($_SESSION["opera"]) { ?>
-            <div id="el2Parent" class="parent" onclick="showhide(el<?=$j?>Spn, el<?=$j?>Img)">
-              <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$j?>Img">
+            <div id="el<?=$j?>Parent" class="parent" onclick="showhide(el<?=$j?>aSpn, el<?=$j?>aImg); showhide(el<?=$j?>bSpn, el<?=$j?>bImg);">
+              <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$j?>aImg">
               <a class="item"><font color="black" class="heada"><?=$value['NAME']?></font></a>
             </div>
 <?php		} else { ?>
@@ -75,7 +77,7 @@ foreach($ldap as $x => $array) {
 <?php		} ?>
 
 <?php		if($_SESSION["opera"]) { ?>
-            <span id="el<?=$j?>Spn" style="display:''">
+            <span id="el<?=$j?>aSpn" style="display:''">
 <?php		} else { ?>
             <div id="el<?=$j?>Child" class="child">
 <?php		} ?>
@@ -93,15 +95,16 @@ foreach($ldap as $x => $array) {
             </div>
 <?php		} ?>
           </td>
-<?php		$j++; ?>
+
+          <!-- ATTRIBUTE OIDs -->
           <td>
 <?php		if($_SESSION["opera"]) { ?>
-            <div id="el<?=$j?>Parent" class="parent" onclick="showhide(el<?=$j?>Spn, el<?=$j?>Img)">
-              <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$j?>Img">
+            <div id="el<?=$j?>Parent" class="parent" onclick="showhide(el<?=$j?>aSpn, el<?=$j?>aImg); showhide(el<?=$j?>bSpn, el<?=$j?>bImg);">
+              <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$j?>bImg">
               <a class="item"><font color="black" class="heada"><?=$value['OID']?></font></a>
             </div>
 
-            <span id="el<?=$j?>Spn" style="display:''">
+            <span id="el<?=$j?>bSpn" style="display:''">
 <?php		} else { ?>
             <div id="el<?=$j?>Parent" class="parent">
               <a class="item" onClick="if (capable) {expandBase('el<?=$j-1?>', true); expandBase('el<?=$j?>', true); return false;}">
@@ -138,7 +141,6 @@ foreach($ldap as $x => $array) {
 							echo $attrib['OID'];
 					}
 				}?><br>
-
 <?php       } ?>
 <?php		if($_SESSION["opera"]) { ?>
             </span>
@@ -146,11 +148,16 @@ foreach($ldap as $x => $array) {
             </div>
 <?php		} ?>
           </td>
+
+          <!-- EMPTY TABLE -->
           <td></td>
+
+          <!-- OBJECTCLASS DESCRIPTION -->
           <td><?=$value['DESC']?></td>
         </tr>
 
-<?php	$class = pql_format_table(0); $j++;
+<?php		$class = pql_format_table(0);
+			$j++;
         }
 	}
 }
@@ -163,5 +170,7 @@ foreach($ldap as $x => $array) {
  * End:
  */
 ?>
+      </th>
     </table>
+
 <?php require("./left-trailer.html"); ?>
