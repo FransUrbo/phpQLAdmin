@@ -144,7 +144,7 @@ if (empty($uname) or empty($passwd)) {
 	// Get the search base - controls database
 	if(!$USER_SEARCH_DN_CTR) {
 		// Get first entry -> default server:port
-		$host = split(' ', $server);
+		$host = split('\+', $server);
 
 		// Get hostname and base DN
 		$dn   = split(';', $host[0]);
