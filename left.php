@@ -4,7 +4,7 @@
 //
 session_start();
 
-require("./include/pql.inc");
+require("./include/pql_config.inc");
 require("./include/pql_control.inc");
 require("./include/pql_control_plugins.inc");
 
@@ -68,8 +68,10 @@ if($ADVANCED_MODE) {
 // in the domain object
 foreach($_pql->ldap_basedn as $dn)  {
     $dom = pql_get_domain_value($_pql, $dn, 'administrator', $USER_DN);
-    foreach($dom as $d) {
-	$domains[] = $d;
+    if($dom) {
+	foreach($dom as $d) {
+	    $domains[] = $d;
+	}
     }
 }
 
