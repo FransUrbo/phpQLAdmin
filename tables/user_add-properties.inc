@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-properties.inc,v 1.13.8.1 2005-02-12 05:19:17 turbo Exp $ */ ?>
+<?php /* $Id: user_add-properties.inc,v 1.13.8.2 2005-02-21 07:45:05 turbo Exp $ */ ?>
 <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=$LANG->_('Account properties')?></th>
@@ -24,7 +24,7 @@
         <td>
           <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
           <table>
-            <?php echo pql_complete_constant($LANG->_('Profile %type% account'), array('type' => $templates[$i]["name"])); ?>: <?=$templates[$i]["long"]?>.
+            <?php echo pql_complete_constant($LANG->_('Profile \b%type%\B account'), array('type' => $templates[$i]["short"])); ?>: <?=$templates[$i]["long"]?>.
           </table>
         </td>
       </tr>
@@ -36,7 +36,7 @@
         <td>
           <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
           <table>
-            <?php echo pql_complete_constant($LANG->_('Profile %type% account'), array('type' => $LANG->_('group'))); ?>: <?=$LANG->_('Group delivery with verification (~ mailinglist)')?>.
+            <?php echo pql_complete_constant($LANG->_('Profile \b%type%\B account'), array('type' => $LANG->_('group'))); ?>: <?=$LANG->_('Group delivery with verification (~ mailinglist)')?>.
           </table>
         </td>
       </tr>
@@ -48,8 +48,7 @@
         <td>
           <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
           <table>
-            An alias object is a <i>link</i> from one object to the real object. In LDAP terms,
-            this is called a <u>reference</u>.
+	        <?=$LANG->_('An \balias object\B is a \ilink\I from one object to the real object - in LDAP terms: this is called a \ureference\U.')?>
           </table>
         </td>
       </tr>
