@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.99 2004-11-11 09:18:47 turbo Exp $
+// $Id: left.php,v 2.100 2004-11-12 09:31:40 turbo Exp $
 //
 session_start();
 
@@ -299,7 +299,6 @@ if(!isset($domains)) {
 
 	// Get the subbranches in this domain
 	$branches = pql_unit_get($_pql->ldap_linkid, $domain);
-
 	if((count($branches) > 1)) {
 	    $links = array(pql_complete_constant($LANG->_('Add %what%'),
 						 array('what' => $LANG->_('sub unit')))
@@ -319,7 +318,7 @@ if(!isset($domains)) {
 	} else
 	  // This branch don't have any sub units (flat structure)
 	  // -> make sure we still jump into the for loop!
-	  $branches[0] = $domain;
+	  $branches[0] = urldecode($domain);
 
 	for($i = 0; $branches[$i]; $i++) {
 	    unset($subbranch);
@@ -330,13 +329,7 @@ if(!isset($domains)) {
 		unset($users); unset($links); unset($cns);
 		
 		// Get all users (their DN) in this domain (sub)branch
-		if(count($branches) > 1) {
-		    $users = pql_get_dn($_pql->ldap_linkid, $branches[$i], $filter);
-		} else {
-		    // We only have one subbranch, don't show the subbranch, list the users
-		    // under the domain branch
-		    $users = pql_get_dn($_pql->ldap_linkid, $domain, $filter);
-		}
+		$users = pql_get_dn($_pql->ldap_linkid, $branches[$i], $filter);
 
 		// Level 2: The users
 		if(count($branches) > 1) {
