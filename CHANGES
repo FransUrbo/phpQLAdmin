@@ -37,6 +37,8 @@ phpQLAdmin 2.0.10 TO BE ANNOUNCED
 	  - When selecting what user should have access to what domain,
 	    show users in a menu similar to the left frame (expandable
 	    menu).
+	  - Allow for changing the whoAreWe attribute (previos
+	    PQL_GLOB_WHOAREWE constant).
 
 	Misc changes
 	  - Replace all previous defines (constant variables) for
