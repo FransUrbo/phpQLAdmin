@@ -34,6 +34,13 @@ phpQLAdmin 2.1.3 TO BE ANNOUNCED
 	  - Some (code) documentation updates.
 	  - Add the file 'README.depends' which (very shortly) describes what's needed to get
 	    phpQLAdmin working (software vice)...
+	  - I've moved all schema files into the 'schemas' sub directory, all shell and perl
+	    script examples into the sub directory 'scripts' and all README* files down to the
+	    'doc' sub directory. This to remove some clutter from the main directory...
+	    NOTE: I've done that on the cvs server level, so there's no commit logs that
+		  indicate this. I did this so that I don't lose the logs (the only way to
+		  move a file in cvs is to remove it and then add it in the new location -
+		  you'll lose ALL logs when it's removed!).
 
 	Schema changes
 	  - Three new attributes for the phpQLAdminWebSrv object class:
