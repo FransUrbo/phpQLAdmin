@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.31 2004-03-28 09:13:49 turbo Exp $
+// $Id: control_detail.php,v 1.32 2004-03-29 07:50:38 turbo Exp $
 session_start();
 require("./include/pql_config.inc");
 
@@ -19,6 +19,8 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 					 "ldapcluster"			=> pql_get_define("PQL_ATTR_LDAPCLUSTER"),
 					 "ldapbasedn"			=> pql_get_define("PQL_ATTR_LDAPBASEDN"),
 					 "ldapdefaultquota"		=> pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"),
+					 "defaultquotasize"		=> pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA_SIZE"),
+					 "defaultquotacount"	=> pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA_COUNT"),
 					 "ldapdefaultdotmode"	=> pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"),
 					 "dirmaker"				=> pql_get_define("PQL_ATTR_DIRMAKER"),
 					 "quotawarning"			=> pql_get_define("PQL_ATTR_QUOTA_WARNING"),
@@ -60,6 +62,13 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 	if(isset($msg)) {
 		pql_format_status_msg($msg);
 	}
+
+	// Just incase we have a new style quota, but not an old one...
+	if(($defaultquotasize and !eregi('not set', $defaultquotasize)) and
+	   ($defaultquotacount and !eregi('not set', $defaultquotacount)))
+	  $quota = $defaultquotasize."S,".$defaultquotacount."C";
+	elseif($ldapdefaultquota and !eregi('not set', $ldapdefaultquota))
+	  $quota = $ldapdefaultquota;
 
 	// reload navigation bar if needed
 	if(isset($rlnb) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
