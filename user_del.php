@@ -1,6 +1,6 @@
 <?php
 // delete a user
-// $Id: user_del.php,v 2.30 2004-03-11 18:13:32 turbo Exp $
+// $Id: user_del.php,v 2.31 2004-03-30 06:24:03 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -9,8 +9,10 @@ require("./include/pql_ezmlm.inc");
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 include("./header.html");
-$rootdn = $_REQUEST["rootdn"];
-$user = $_REQUEST["user"];
+
+$url["domain"]		= pql_format_urls($_REQUEST["domain"]);
+$url["rootdn"]		= pql_format_urls($_REQUEST["rootdn"]);
+$url["user"]		= pql_format_urls($_REQUEST["user"]);
 
 // Get organization name for domain and common name of user
 $o = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_O"));
@@ -19,7 +21,7 @@ if(!$o) {
 	// Use the RDN
 	$o = $_REQUEST["domain"];
 }
-$cn = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_CN")); $cn = $cn[0];
+$cn = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_CN")); $cn = $cn[0];
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove user %user% from domain %domain%'), array("domain" => $o, "user" => $cn)); ?></span>
   <br><br>
@@ -33,8 +35,8 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn))
 	if($unsubscribe) {
 		// We want to unsubscribe user from (all) mailing list(s).
 		// Get the users mail addresses before the object gets deleted
-		$email   = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_MAIL"));
-		$aliases = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_MAILALTERNATE"));
+		$email   = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_MAIL"));
+		$aliases = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_MAILALTERNATE"));
 
 		// Combine the two attributes into one array.
 		$mails[] = $email[0];
@@ -45,7 +47,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn))
 	}	
 
 	// delete the user
-	if(pql_user_del($_pql, $_REQUEST["domain"], $user, $delete_forwards)) {
+	if(pql_user_del($_pql, $_REQUEST["domain"], $_REQUEST["user"], $delete_forwards)) {
 		$msg = $LANG->_('Successfully removed user') . ": <b>" . $cn . "</b>";
 		$rlnb = "&rlnb=1";
 
@@ -53,7 +55,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn))
 		// Remove all administrator/ezmlmAdministrator/controlsAdministrator and seealso
 		// attributes that reference this user.
 		if($delete_admins)
-		  pql_domain_replace_admins($_pql, $user, '');
+		  pql_domain_replace_admins($_pql, $_REQUEST["user"], '');
 
 		// ----------------------------------------
 		// Unsubscribe user from all mailinglists (on this host naturaly :)
@@ -104,17 +106,17 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn))
 
 	// redirect to domain-detail page
 	$msg = urlencode($msg);
-	$url = "domain_detail.php?rootdn=".urlencode($rootdn)."&domain=".urlencode($_REQUEST["domain"])."&view=basic&msg=$msg$rlnb";
+	$url = "domain_detail.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&view=basic&msg=$msg$rlnb";
 
 	header("Location: " . pql_get_define("PQL_CONF_URI") . $url);
 } else {
 ?>
 <br>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="GET">
-    <input type="hidden" name="user"   value="<?=$user?>">
-    <input type="hidden" name="rootdn" value="<?=$rootdn?>">
-    <input type="hidden" name="domain" value="<?=$_REQUEST["domain"]?>">
-        
+    <input type="hidden" name="user"   value="<?=$url["user"]?>">
+    <input type="hidden" name="rootdn" value="<?=$url["rootdn"]?>">
+    <input type="hidden" name="domain" value="<?=$url["domain"]?>">
+
     <span class="title3"><?=$LANG->_('What should we do with forwards to this user')?>?</span><br>
     <input type="checkbox" name="delete_forwards" checked> <?=$LANG->_('Delete all forwards')?><br>
     <input type="checkbox" name="delete_admins" checked> <?=$LANG->_('Remove user from administrator/seeAlso')?><br>
