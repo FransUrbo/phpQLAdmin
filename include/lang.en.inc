@@ -1,7 +1,7 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 2.8 2003-01-12 12:31:44 turbo Exp $
+// $Id: lang.en.inc,v 2.9 2003-01-14 15:55:51 turbo Exp $
 //
 // if you have a translation to another language, please contact
 // me --> Matthias Blaser <mb@adfinis.ch>
@@ -160,8 +160,8 @@ define("PQL_LDAP_DELIVERYMODE_MODE","Mode");
 define("PQL_LDAP_DELIVERYMODE_NORMAL","Normal");
 define("PQL_LDAP_DELIVERYMODE_FORWARDONLY","Only forward");
 define("PQL_LDAP_DELIVERYMODE_NOMBOX","No local mailbox");
-define("PQL_LDAP_DELIVERYMODE_LOCALDELIVERY","Save local");
-define("PQL_LDAP_DELIVERYMODE_REPLY","Auto reply");
+define("PQL_LDAP_DELIVERYMODE_LOCALDELIVERY","Save in local mailbox");
+define("PQL_LDAP_DELIVERYMODE_REPLY","Do auto reply");
 define("PQL_LDAP_DELIVERYMODE_REPLY_SEND","Send an auto reply");
 define("PQL_LDAP_DELIVERYMODE_REPLY_TEXT","Text for replying");
 define("PQL_LDAP_DELIVERYMODE_ECHO","Echo to console (tricky)");
