@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.12 2003-04-04 07:01:06 turbo Exp $
+// $Id: pql_config.inc,v 1.13 2003-04-04 16:46:23 turbo Exp $
 //
 
 // We need this instead of define(), so that we can get rid
@@ -24,9 +24,16 @@ function pql_define($define, $value, $case_insensitive = false, $dn = NULL) {
 	// Create a global two dimensional array with the config values
 	//	Dimension 1: define name
 	//	Dimension 2: root DN
-	if($dn && !$config[$define][$dn]) {
-		//echo "config[$define][$dn] = $value<br>"; // DEBUG
-		$config[$define][$dn] = $value;
+	if($dn) {
+//		echo "config[$define][$dn] = $value<br>"; // DEBUG
+
+		if(!$config[$define][$dn])
+		  $config[$define][$dn] = $value;
+	} else {
+//		echo "config[$define] = $value<br>"; // DEBUG
+
+		if(!$config[$define])
+		  $config[$define] = $value;
 	}
 }
 
@@ -35,12 +42,12 @@ function pql_define($define, $value, $case_insensitive = false, $dn = NULL) {
 
 // BOOLean values (true/false - 0/1)
 $PQL_ATTRIBUTE["PQL_CONF_SHOW_USERS"] = 'showUsers';
-$PQL_ATTRIBUTE["PQL_CONF_CONTROL_USE"] = 'useControls';
-$PQL_ATTRIBUTE["PQL_CONF_EZMLM_USE"] = 'useEzmlm';
-$PQL_ATTRIBUTE["PQL_CONF_AUTO_RELOAD"] = 'autoReload';
+$PQL_ATTRIBUTE["PQL_GLOB_CONTROL_USE"] = 'useControls';
+$PQL_ATTRIBUTE["PQL_GLOB_EZMLM_USE"] = 'useEzmlm';
+$PQL_ATTRIBUTE["PQL_GLOB_AUTO_RELOAD"] = 'autoReload';
 $PQL_ATTRIBUTE["PQL_CONF_TESTMAIL_AUTOSEND"] = 'autoSend';
-$PQL_ATTRIBUTE["PQL_CONF_CONTROL_AUTOADDLOCALS"] = 'autoAddLocals';
-$PQL_ATTRIBUTE["PQL_CONF_CHANGE_SERVER"] = 'allowServerChange';
+$PQL_ATTRIBUTE["PQL_GLOB_CONTROL_AUTOADDLOCALS"] = 'autoAddLocals';
+$PQL_ATTRIBUTE["PQL_GLOB_CHANGE_SERVER"] = 'allowServerChange';
 $PQL_ATTRIBUTE["PQL_CONF_ALLOW_ABSOLUTE_PATH"] = 'allowAbsoluteMailPath';
 $PQL_ATTRIBUTE["PQL_CONF_VERIFY_DELETE"] = 'deleteVerification';
 $PQL_ATTRIBUTE["PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER"] = 'forwardUIDNumber';
@@ -48,7 +55,7 @@ $PQL_ATTRIBUTE["PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER"] = 'forwardUIDNumber';
 // phpQLAdmin setup
 $PQL_ATTRIBUTE["PQL_CONF_LANG"] = 'language';
 $PQL_ATTRIBUTE["PQL_CONF_WHOAREWE"] = 'whoAreWe';
-$PQL_ATTRIBUTE["PQL_CONF_HOSTMASTER"] = 'hostMaster';
+$PQL_ATTRIBUTE["PQL_GLOB_HOSTMASTER"] = 'hostMaster';
 $PQL_ATTRIBUTE["PQL_CONF_TESTMAIL_SUBJECT"] = 'testMailSubject';
 $PQL_ATTRIBUTE["PQL_CONF_TESTMAIL_MAILTEXT"] = 'testMailText';
 $PQL_ATTRIBUTE["PQL_CONF_CATCHALLUSER"] = 'catchAllUser';
@@ -104,14 +111,14 @@ require("./include/config.inc");
 // 2. Load configurations from LDAP base DN
 require("./include/pql.inc");
 if(!$USER_HOST) {
-	if(! eregi('\+', PQL_CONF_HOST)) {
-		$host = split(';', PQL_CONF_HOST);
+	if(! eregi('\+', PQL_GLOB_HOST)) {
+		$host = split(';', PQL_GLOB_HOST);
 		$USER_HOST = $host[0] . ";" . $host[1];
 		
 		session_register("USER_HOST");
 	} else {
 		// TODO: We have multiple hosts defined
-		$servers = split('\+', PQL_CONF_HOST);
+		$servers = split('\+', PQL_GLOB_HOST);
 
 		// For the time beeing, use the first value
 		$host = split(';', $servers[0]);
@@ -147,7 +154,10 @@ foreach($_pql->ldap_basedn as $dn)  {
 						else
 						  $V = $info[$i][$v][0];
 						
-						pql_define($nkey, $V, true, $dn);
+						if($values)
+						  $values .= ",$V";
+						else
+						  $values = $V;
 					}
 				}
 			} else {
@@ -165,10 +175,19 @@ foreach($_pql->ldap_basedn as $dn)  {
 					  $values .= ",$V";
 					else
 					  $values = $V;
-
-					pql_define($key, $values, true, $dn);
-					unset($values);
 				}
+
+				if(($key == "PQL_GLOB_HOSTMASTER") or
+				   ($key == "PQL_GLOB_CONTROL_USE") or
+				   ($key == "PQL_GLOB_EZMLM_USE") or
+				   ($key == "PQL_GLOB_AUTO_RELOAD") or
+				   ($key == "PQL_GLOB_CONTROL_AUTOADDLOCALS") or
+				   ($key == "PQL_GLOB_CHANGE_SERVER"))
+				  pql_define($key, $values, true);
+				else
+				  pql_define($key, $values, true, $dn);
+
+				unset($values);
 			}
 		}
 	}
