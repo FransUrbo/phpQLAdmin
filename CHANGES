@@ -8,13 +8,40 @@ phpQLAdmin 2.0.17 TO BE ANNOUNCED
 	  - URL decode the domain DN at the correct time in each of the attribute
 	    change page (when building the message).
 	  - Add the root DN value to the call for bind9_add.php.
+	  - Misc PHP, HTML and URL code fixes. Includes 'remember variable
+	    throughout the form and urlencode/-decode in the correct places and missing
+	    values etc.
+	    Closes bugs 49, 56 to 59, 63, 64
+	  - Misc missing % in call to pql_complete_constant() fixed.
+	  - Final touches of the Bind(9) editor. Should now be able to do everything
+	    needed with a zone in LDAP.
+	  - Only force the dcOrganizationNameForm objectclass if we're using 'dc'
+	    (domain component) as the branch separator.
+	  - Avoid future overloading of $value by replacing it with a truly uniq name in
+	    include/pql_config.inc.
+	    Closes bug 52.
+	  - Fix user_add.php form errors (checks in wrong places).
+	    Closes bug 65
 
 	GUI layout change
 	  - Say 'LDAP Server' instead of 'Host' in the left frame - more descriptive.
+	  - Rudimentary support for webserver administration. Changes to the schema was
+	    done!
+	  - Support Opera (folding branches).
+	  - Option to set the account expiration date. This uses the shadowExpire
+	    attribute allowed in the shadowAccount (which require only the uid
+	    attribute). Third party javascript (jscalendar) used to choose expiration
+	    date for account. http://dynarch.com/mishoo/calendar/calendar.epl
 
 	Misc changes
 	  - Basic webserver editor with script to extract information and create a
 	    part of the httpd.conf for Apache. See the bottom of the README file.
+	  - Remove the remainder of the old idea of Bind(9) editor (separate frame to
+	    the left).
+	  - New, improved way to output icons -> arrays and for() loops. Uses new
+	    function pql_generate_button() that simplified much.
+	  - If surName is '_', don't show it in the left frame. This is for use with
+	    account such as 'Information' etc wich isn't a (physical) person...
 
 phpQLAdmin 2.0.16 Release (Aug 28 2003)
 	Bug fixes
