@@ -158,59 +158,59 @@
       </tr>
 
 <?php	if(is_array($zones[$dns_domain_name])) {
-	  foreach($zones[$dns_domain_name] as $data) {
-		if($data['HOST'] != '@') {
+			foreach($zones[$dns_domain_name] as $data) {
+				if($data['HOST'] != '@') {
+					$TYPES = array('CNAME', 'A', 'SRV', 'TXT', 'PTR');
+					foreach($TYPES as $TYPE) {
+						$type = lc($TYPE);
+
+						$HREF  = "bind9_edit_attributes.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"];
+						$HREF .= "&action=modify&type=host&rdn=".urlencode($data['RDN'])."&type=$type&view=$view";
+
+						if($data[$TYPE]) {
+							unset($records);
+							if(!is_array($data[$TYPE])) {
+								$records[] = $data[$TYPE];
+							} else {
+								$records = $data[$TYPE];
+							}
+
+							foreach($records as $record) {
+								if(($TYPE == 'CNAME') and !eregi('\.$', $record)) {
+									$record .= '.'.pql_maybe_idna_decode($dns_domain_name).'.';
+								}
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td>
-          <a href="bind9_edit_attributes.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&action=modify&type=host&rdn=<?php echo urlencode($data['RDN']); ?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Modify host value')." host"?>"></a>
+          <a href="<?=$HREF?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Modify host value')." host"?>"></a>
           <?=$data['HOST']?>
         </td>
 
         <td>
-          <a href="bind9_edit_attributes.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&action=modify&type=ttl&rdn=<?php echo urlencode($data['RDN']); ?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Modify host value')." TTL"?>"></a>
+          <a href="<?=$HREF?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Modify host value')." TTL"?>"></a>
           <?=$data['TTL']?>
         </td>
 
-<?php			if($data['CNAME']) { ?>
-        <td><?=$LANG->_('CNAME')?></td>
+        <td><?=$LANG->_($TYPE)?></td>
         <td>
-          <a href="bind9_edit_attributes.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&action=modify&type=cname&rdn=<?php echo urlencode($data['RDN']); ?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Modify host value')." CNAME"?>"></a>
-          <?=$data['CNAME']?>
+          <a href="<?=$HREF?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Modify host value')." CNAME"?>"></a>
+          <?=$record?>
         </td>
 
-<?php			} elseif($data['A']) { ?>
-        <td>A</td>
         <td>
-          <a href="bind9_edit_attributes.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&action=modify&type=a&rdn=<?php echo urlencode($data['RDN']); ?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Modify host value')." A"?>"></a>
-          <?=$data['A']?>
-        </td>
-
-<?php			} elseif($data['SRV']) { ?>
-        <td><?=$LANG->_('SRV')?></td>
-        <td>
-          <a href="bind9_edit_attributes.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&action=modify&type=srv&rdn=<?php echo urlencode($data['RDN']); ?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Modify host value')." SRV"?>"></a>
-          <?=$data['SRV']?>
-        </td>
-
-<?php			} elseif($data['TXT']) { ?>
-        <td>TXT</td>
-        <td>
-          <a href="bind9_edit_attributes.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&action=modify&type=txt&rdn=<?php echo urlencode($data['RDN']); ?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Modify host value')." TXT"?>"></a>
-          <?=$data['TXT']?>
-        </td>
-<?php			} ?>
-        <td>
-          <a href="bind9_edit_attributes.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&action=del&rdn=<?php echo urlencode($data['RDN']); ?>&view=<?=$_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Delete host')?>"></a>
+          <a href="bind9_edit_attributes.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&action=del&rdn=<?php echo urlencode($data['RDN']); ?>&view=<?=$view?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Delete host')?>"></a>
         </td>
       </tr>
-<?php		}
-	  } // foreach $zones
-	}
+<?php					  } // foreach record
+					  } // if TYPE
+				  } // foreach TYPES
+				} // if host != '@'
+			} // foreach $zones
+		}
 ?>
 
       <tr class="subtitle">
-        <td><a href="bind9_add.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&domainname=<?=$dns_domain_name?>&action=add&type=host&submit=1&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('host'))); ?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('host'))); ?></a></td>
+        <td><a href="bind9_add.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&domainname=<?=$dns_domain_name?>&action=add&type=host&submit=1&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('host'))); ?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('host'))); ?></a></td>
         <td></td>
         <td></td>
         <td></td>
