@@ -149,20 +149,6 @@ if (empty($uname) or empty($passwd)) {
 	}
 
 	// -------------------------------------
-	// Get the search base - user database
-	if(!$USER_SEARCH_DN_USR) {
-		$host   = split(';', $server);
-		$USER_SEARCH_DN_USR = $host[2];
-
-		session_register("USER_SEARCH_DN_USR");
-	} elseif(is_array($USER_SEARCH_DN_USR)) {
-		$host = $USER_SEARCH_DN_USR[2];
-		$USER_SEARCH_DN_USR = $host;
-
-		session_register("USER_SEARCH_DN_USR");
-	}
-
-	// -------------------------------------
 	// Get the search base - controls database
 	if(!$USER_SEARCH_DN_CTR) {
 		// Get first entry -> default server:port
@@ -190,7 +176,7 @@ if (empty($uname) or empty($passwd)) {
 
 	// -------------------------------------
 	// Get DN of user
-	$rootdn = pql_get_dn($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $uname);
+	$rootdn = pql_get_dn($_pql->ldap_linkid, $uname);
 
 	// Rebind as user
 	$_pql->bind($rootdn, $USER_PASS);

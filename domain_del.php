@@ -18,10 +18,9 @@ include("./header.html");
 	$delete_forwards = (isset($delete_forwards)) ? true : false;
 	
 	// delete the domain
-	if(pql_remove_domain($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $delete_forwards)) {
+	if(pql_domain_del($_pql, $domain, $delete_forwards)) {
 	    // update locals if control patch is enabled
 	    if(pql_control_update_domains($_pql->ldap_linkid,
-									  $USER_SEARCH_DN_USR,
 									  $_pql_control->ldap_linkid,
 									  $USER_SEARCH_DN_CTR)){
 		// message ??

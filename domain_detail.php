@@ -33,7 +33,7 @@ if(isset($rlnb) and PQL_AUTO_RELOAD) {
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 // check if domain exist
-if(!pql_domain_exist($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain)){
+if(!pql_domain_exist($_pql->ldap_linkid, $domain)){
     echo "domain &quot;$domain&quot; does not exists";
     exit();
 }
@@ -44,7 +44,7 @@ if(!pql_domain_exist($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain)){
 $attribs = array('defaultdomain', 'basehomedir', 'basemaildir', 'basequota', 'o', 'postalcode', 'postaladdress', 'l', 'telephonenumber', 'facsimiletelephonenumber', 'postofficebox', 'st', 'street');
 foreach($attribs as $attrib) {
 	// Get default value
-	$value = pql_get_domain_value($_pql->ldap_linkid, $domain, $attrib);
+	$value = pql_get_domain_value($_pql, $domain, $attrib);
 	$$attrib = $value;
 
 	// Setup edit links. If it's a dcOrganizationNameForm attribute, then
@@ -59,17 +59,25 @@ foreach($attribs as $attrib) {
 	  } else {
 		  // A phpQLAdminBranch attribute
 
-		  $$link = "<a href=\"domain_edit_attributes.php?attrib=$attrib&domain=$domain&$attrib=". urlencode($value) ."\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify $attrib for $domain\"></a>";
+		  $$link = "<a href=\"domain_edit_attributes.php?attrib=$attrib&domain=$domain&$attrib=$value\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify $attrib for $domain\"></a>";
 	  }
 }
-$admins	 = pql_get_domain_value($_pql->ldap_linkid, $domain, "administrator");
-$seealso = pql_get_domain_value($_pql->ldap_linkid, $domain, "seealso");
+$admins	 = pql_get_domain_value($_pql, $domain, "administrator");
+$seealso = pql_get_domain_value($_pql, $domain, "seealso");
+
+// Get the organization name, or show 'Not set' with an URL to set it
+$domainname = pql_get_domain_value($_pql, $domain, 'o');
+if(!$domainname) {
+	$domainname = "<a href=\"domain_edit_attributes.php?type=modify&attrib=o&domain=$domain\">".PQL_UNSET."</a>";
+}
 ?>
-  <span class="title1">Domain: <?=$domain?><?php if($defaultdomain) {echo " ($defaultdomain)";} ?></span>
-  <br><br>
+  <span class="title1">Organization: <?=$domainname?></span>
 <?php
 if($ADVANCED_MODE == 1) {
 ?>
+
+  <br><br>
+
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=PQL_DOMAIN_DEFAULT_VALUES?></th>
       <tr class="<?php table_bgcolor(); ?>">
@@ -142,7 +150,7 @@ if($ADVANCED_MODE == 1) {
     <th colspan="3" align="left">Branch owner</th>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">Organization name</td>
-        <td><?php if($o) {echo $o;}else{echo PQL_UNSET;}?></td>
+        <td><?php if($o) {echo urldecode($o);}else{echo PQL_UNSET;}?></td>
         <td><?=$o_link?></td>
       </tr>
 
@@ -166,13 +174,13 @@ if($ADVANCED_MODE == 1) {
 
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">Street address</td>
-        <td><?php if($street) {echo $street;}else{echo PQL_UNSET;}?></td>
+        <td><?php if($street) {echo urldecode($street);}else{echo PQL_UNSET;}?></td>
         <td><?=$street_link?></td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">City</td>
-        <td><?php if($l) {echo $l;}else{echo PQL_UNSET;}?></td>
+        <td><?php if($l) {echo urldecode($l);}else{echo PQL_UNSET;}?></td>
         <td><?=$l_link?></td>
       </tr>
 
@@ -206,15 +214,11 @@ if($ADVANCED_MODE == 1) {
         <td class="title"></td>
 <?php
 			}
-
-			$user = split(',', $sa);
-			$user = split('=', $user[0]);
-			$user = $user[1];
 ?>
-        <td><a href="user_detail.php?domain=<?=$domain?>&user=<?=$user?>"><?=$sa?></a></td>
+        <td><a href="user_detail.php?user=<?=$sa?>"><?=urldecode($sa)?></a></td>
         <td>
-          <a href="domain_edit_attributes.php?attrib=seealso&domain=<?=$domain?>&seealso=<?=$sa?>&submit=3&action=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify contact persons for <?=$domain?>"></a>&nbsp;
-          <a href="domain_edit_attributes.php?attrib=seealso&domain=<?=$domain?>&seealso=<?=$sa?>&submit=4&action=delete"><img src="images/del.png" width="12" height="12" alt="Remove contact person" border="0"></a>
+          <a href="domain_edit_attributes.php?attrib=seealso&seealso=<?=$sa?>&submit=3&action=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify contact persons for <?=$o?>"></a>&nbsp;
+          <a href="domain_edit_attributes.php?attrib=seealso&seealso=<?=$sa?>&submit=4&action=delete"><img src="images/del.png" width="12" height="12" alt="Remove contact person from <?=$o?>" border="0"></a>
         </td>
       </tr>
 
@@ -239,7 +243,7 @@ if($ADVANCED_MODE == 1) {
 
   <br><br>
 
-<?php $users = pql_get_user($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain); ?>
+<?php $users = pql_get_user($_pql->ldap_linkid, $domain); ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=PQL_USER_REGISTRED?></th>
 <?php
@@ -255,22 +259,26 @@ if(is_array($users)){
 <?php
 	asort($users);
 	foreach($users as $user){
-		$uid = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_UID);
-		$uid = $uid[0];
-		$cn = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_CN);
-		$cn = $cn[0];
+		$uid   = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_UID); $uid = $uid[0];
+		$cn    = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_CN); $cn = $cn[0];
+		$uidnr = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_QMAILUID); $uidnr = $uidnr[0];
 		
-		$status = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_ISACTIVE);
+		$status = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_ISACTIVE);
 		$status = pql_ldap_accountstatus($status[0]);
+
+		if(($uid != 'root') or ($uidnr != '0')) {
+			// Do NOT show root user(s) here! This should (for safty's sake)
+			// not be availible to administrate through phpQLAdmin!
 ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td><a href="user_detail.php?domain=<?=$domain?>&user=<?=urlencode($user)?>"><?=$cn?></a></td>
         <td><?=$uid?></td>
         <td><?=$status?></td>
-        <td><a href="user_detail.php?domain=<?=$domain?>&user=<?=urlencode($user)?>"><img src="images/edit.png" width="12" height="12" alt="<?=PQL_USER_EDIT?>" border="0"></a>&nbsp;&nbsp;<a href="user_del.php?domain=<?=$domain?>&user=<?=urlencode($user)?>"><img src="images/del.png" width="12" height="12" alt="<?=PQL_USER_DELETE?>" border="0"></a></td>
+        <td><a href="user_detail.php?domain=<?=$domain?>&user=<?=$user?>"><img src="images/edit.png" width="12" height="12" alt="<?=PQL_USER_EDIT?>" border="0"></a>&nbsp;&nbsp;<a href="user_del.php?domain=<?=$domain?>&user=<?=$user?>"><img src="images/del.png" width="12" height="12" alt="<?=PQL_USER_DELETE?>" border="0"></a></td>
       </tr>
 
 <?php
+		}
 	}
 } else {
 	// no users registred

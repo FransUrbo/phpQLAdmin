@@ -9,15 +9,15 @@ require("./include/pql.inc");
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 // check if domain exist
-if(!pql_domain_exist($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain)){
+if(!pql_domain_exist($_pql->ldap_linkid, $domain)){
 	echo "domain &quot;$domain&quot; does not exists";
 	exit();
 }
 
 // Get default domain name for this domain
-$defaultdomain = pql_get_domain_value($_pql->ldap_linkid, $domain, "defaultdomain");
-$basehomedir   = pql_get_domain_value($_pql->ldap_linkid, $domain, "basehomedir");
-$basemaildir   = pql_get_domain_value($_pql->ldap_linkid, $domain, "basemaildir");
+$defaultdomain = pql_get_domain_value($_pql, $domain, "defaultdomain");
+$basehomedir   = pql_get_domain_value($_pql, $domain, "basehomedir");
+$basemaildir   = pql_get_domain_value($_pql, $domain, "basemaildir");
 
 // check formdata
 
@@ -40,7 +40,7 @@ if($submit == "") {
     $user = $surname . " " . $name;
     if($error == false
        and PQL_LDAP_REFERENCE_USERS_WITH == PQL_LDAP_ATTR_CN
-       and pql_user_exist($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user)){
+       and pql_user_exist($_pql->ldap_linkid, $domain, $user)){
 		$error = true;
 		$error_text["username"] = pql_complete_constant(PQL_USER_EXIST, array("user" => $user));
 		$error_text["name"] = PQL_EXISTS;
@@ -57,7 +57,7 @@ if($submit == "") {
 		$error_text["email"] = PQL_INVALID;
     }
 	
-    if($error_text["email"] == "" and pql_email_exists($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $email)){
+    if($error_text["email"] == "" and pql_email_exists($_pql->ldap_linkid, $email)){
 		$error = true;
 		$error_text["email"] = PQL_EXISTS;
     }
@@ -71,7 +71,7 @@ if($submit == "") {
 }
 
 // ------------------------------------------------
-// Page 2: uid, password, host, quota, host_user, quota_user
+// Page 2: uid, password, host, quota, userhost, quota_user
 if($submit == "two"){
 	$error_text = array();
 	$error = false;
@@ -79,7 +79,7 @@ if($submit == "two"){
 	// Verify/Create uid
 	if(!$uid) {
 		if (function_exists('user_generate_uid')) {
-			$uid = strtolower(user_generate_uid($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $surname, $name, $email, $domain, $account_type));
+			$uid = strtolower(user_generate_uid($_pql, $surname, $name, $email, $domain, $account_type));
 		} else {
 			$submit = "one";
 			$error = true;
@@ -105,7 +105,7 @@ if(($submit == "two") or (($submit == "one") and !$ADVANCED_MODE)) {
 	// fetch dns information
 	$res = getmxrr($defaultdomain, $rec, $weight);
 	if(count($rec) == 0) {
-		$error_text["host_user"] = PQL_DNS_NONE;
+		$error_text["userhost"] = PQL_DNS_NONE;
 		$error = true;
 	} else {
 		// Take the MX with _LOWEST_ priority/weight.
@@ -116,7 +116,7 @@ if(($submit == "two") or (($submit == "one") and !$ADVANCED_MODE)) {
 			}
 		}
 
-		$host_user = $rec[$prio_key];
+		$userhost = $rec[$prio_key];
 	}
 }
 
@@ -132,7 +132,7 @@ if ($submit == "save") {
 		$error = true;
 		$error_text["uid"] = PQL_INVALID;
 	}
-	if($error_text["uid"] == "" and pql_search_attribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, PQL_LDAP_ATTR_UID, $uid)) {
+	if($error_text["uid"] == "" and pql_search_attribute($_pql->ldap_linkid, $domain, PQL_LDAP_ATTR_UID, $uid)) {
 		$error = true;
 		$error_text["uid"] = PQL_EXISTS;
 	}
@@ -161,13 +161,13 @@ if($submit == "save" and ($account_type == "normal" or $account_type == "system"
     }
 	
     if($host != "default"){
-		if($host_user == ""){
+		if($userhost == ""){
 			$error = true;
-			$error_text["host_user"] = PQL_MISSING;
+			$error_text["userhost"] = PQL_MISSING;
 		} else {
-			if(!preg_match("/^([a-z0-9]+\.{1,1}[a-z0-9]+)+$/i",$host_user)) {
+			if(!preg_match("/^([a-z0-9]+\.{1,1}[a-z0-9]+)+$/i",$userhost)) {
 				//
-				$error_text["host_user"] = PQL_INVALID;
+				$error_text["userhost"] = PQL_INVALID;
 				$error = true;
 			}
 		}
@@ -418,7 +418,7 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
     <input type="hidden" name="loginshell" value="/bin/false">
     <input type="hidden" name="homedirectory" value="">
     <input type="hidden" name="maildirectory" value="">
-    <input type="hidden" name="host_user" value="<?=$host_user?>">
+    <input type="hidden" name="userhost" value="<?=$userhost?>">
     <input type="hidden" name="host" value="default">
 <?php
 		}
@@ -507,15 +507,15 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"><?php echo PQL_LDAP_MAILHOST_TITLE; ?></td>
           <td>
-            <input type="hidden" name="userhost" value="<?=$host_user?>">
-            <input type="radio" name="host" value="default" <?php if($host != "user"){ echo "checked";}?>><?php echo PQL_LDAP_MAILHOST_DEFAULT . ": <b>" . $host_user . "</b>";?>
+            <input type="hidden" name="mx" value="<?=$userhost?>">
+            <input type="radio" name="host" value="default" <?php if($host != "user"){ echo "checked";}?>><?php echo PQL_LDAP_MAILHOST_DEFAULT . ": <b>" . $userhost . "</b>";?>
           </td>
         </tr>
   
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"></td>
           <td>
-            <input type="radio" name="host" value="user" <?php if($host == "user"){ echo "checked";}?>><?php echo PQL_LDAP_MAILQUOTA_USERDEFINED;?> <?php echo format_error($error_text["host_user"]); ?><input type="text" name="host_user">
+            <input type="radio" name="userhost" value="user" <?php if($host == "user"){ echo "checked";}?>><?php echo PQL_LDAP_MAILQUOTA_USERDEFINED;?> <?php echo format_error($error_text["userhost"]); ?><input type="text" name="userhost">
           </td>
         </tr>
 <?php
@@ -562,6 +562,9 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 		$entry[PQL_LDAP_ATTR_ISACTIVE]		= $account_status;
 
         // ------------------
+		$entry["objectClass"][] = "person";
+
+        // ------------------
 		if($account_type == "system") {
 			// Normal system account
 
@@ -573,7 +576,7 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 			// set SYSTEM attributes
 			$entry[PQL_LDAP_ATTR_LOGINSHELL] = $loginshell;
 			if(!$homedirectory) {
-				$entry[PQL_LDAP_ATTR_HOMEDIR] = user_generate_homedir($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $email, $domain, $entry);
+				$entry[PQL_LDAP_ATTR_HOMEDIR] = user_generate_homedir($_pql, $email, $domain, $entry);
 			} else {
 				$entry[PQL_LDAP_ATTR_HOMEDIR] = $homedirectory;
 			}
@@ -591,15 +594,15 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 			// normal mailbox account
 
 			// set attributes
-			$entry[PQL_LDAP_ATTR_PASSWD] = pql_password_hash($password, $pwscheme);
+			$entry[PQL_LDAP_ATTR_PASSWD]   = pql_password_hash($password, $pwscheme);
 			if($host == 'default') {
-				$entry[PQL_LDAP_ATTR_MAILHOST] = $userhost;
+				$entry[PQL_LDAP_ATTR_MAILHOST] = $mx;
 			} else {
-				$entry[PQL_LDAP_ATTR_MAILHOST] = $host_user;
+				$entry[PQL_LDAP_ATTR_MAILHOST] = $userhost;
 			}
-			$entry[PQL_LDAP_ATTR_MODE] = "localdelivery";
+			$entry[PQL_LDAP_ATTR_MODE]     = "localdelivery";
 			if(!$maildirectory) {
-				$entry[PQL_LDAP_ATTR_MAILSTORE] = user_generate_mailstore($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $email, $domain, $entry);
+				$entry[PQL_LDAP_ATTR_MAILSTORE] = user_generate_mailstore($_pql, $email, $domain, $entry);
 			} else {
 				$entry[PQL_LDAP_ATTR_MAILSTORE] = $maildirectory;
 			}
@@ -617,7 +620,10 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 
         // ------------------
 		// Add the user to the database
-		if(pql_add_user($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $cn, $entry, $account_type)){
+		$dns = pql_user_add($_pql->ldap_linkid, $domain, $cn, $entry, $account_type);
+		if($dns[0]) {
+			// TODO: dns[1] (the group object) might still be empty -> failed to add it.
+
 			// Now it's time to run the special adduser script if defined...
 			if(PQL_EXTRA_SCRIPT_CREATE_USER) {
 				// Setup the environment with the user details
@@ -645,10 +651,10 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 
 			if (PQL_TESTMAIL_AUTOSEND) {
 				$url  = "user_sendmail.php?email=" . urlencode($email) . "&";
-				$url .= "domain=$domain&user=" . urlencode($entry[PQL_LDAP_REFERENCE_USERS_WITH]) . "&rlnb=2&msg=$msg";
+				$url .= "domain=$domain&user=" . urlencode($dns[0]) . "&rlnb=2&msg=$msg";
 			} else {
 				$url  = "user_detail.php?";
-				$url .= "domain=$domain&user=" . urlencode($entry[PQL_LDAP_REFERENCE_USERS_WITH]) . "&rlnb=2&msg=$msg";
+				$url .= "domain=$domain&user=" . urlencode($dns[0]) . "&rlnb=2&msg=$msg";
 			}
 
 			if(PQL_EXTRA_SCRIPT_CREATE_USER) {

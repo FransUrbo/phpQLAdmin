@@ -27,15 +27,15 @@ if(!check_hostaddress($domain)){
 
 // "
 // check if unit exist
-if(pql_unit_exist($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $unit)){
+if(pql_unit_exist($_pql->ldap_linkid, $domain, $unit)){
 	$msg = urlencode(PQL_DOMAIN_EXISTS);
 	header("Location: home.php?msg=$msg");
 	exit();
 }
 
-if(pql_add_unit($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $unit)){
+if(pql_add_unit($_pql->ldap_linkid, $domain, $unit)){
 	// update locals if control patch is enabled
-	if(pql_control_update_domains($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR)){
+	if(pql_control_update_domains($_pql->ldap_linkid, $_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR)){
 		// message ??
   }
 

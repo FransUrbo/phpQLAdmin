@@ -1,42 +1,42 @@
 <?php
 // attribute plugin for
 // uid (user id)
-// $Id: attrib.uid.inc,v 2.2 2002-12-18 16:28:46 turbo Exp $
+// $Id: attrib.uid.inc,v 2.3 2003-01-16 14:58:38 turbo Exp $
 
 function attribute_check($type){
-	global $uid, $oldvalue, $_pql, $error;
-
+	global $uid, $oldvalue, $_pql, $error, $domain;
+	
 	// is typed in ?
 	if($uid == ""){
 		$error["mail"] = PQL_MISSING;
 		return false;
-  }
-
+	}
+	
 	// valid
 	if(preg_match("/[^a-z0-9\.@_-]/i",$uid)){
 		$error["uid"] = PQL_INVALID;
 		return false;
 	}
-
+	
 	// if type is modify, check existance of old value, else the new one
-	if($oldvalue != $uid and pql_search_attribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"],"uid",$uid)){
-			$error["uid"] = PQL_EXISTS;
-			return false;
+	if($oldvalue != $uid and pql_search_attribute($_pql->ldap_linkid, $domain "uid", $uid)){
+		$error["uid"] = PQL_EXISTS;
+		return false;
 	}
-
+	
 	return true;
 }
 
 function attribute_init(){
 	global $uid, $oldvalue;
-
+	
 	$uid = $oldvalue;
 }
 
 function attribute_print_form(){
 	global $uid, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error;
 
-	?>
+?>
 	<form action="<?php echo $PHP_SELF ?>" method="post">
 	<table cellspacing="0" cellpadding="3" border="0">
 	<th colspan="3" align="left"><?php echo PQL_LDAP_UID_CHANGE; ?></th>
@@ -59,48 +59,57 @@ function attribute_print_form(){
 	<input type="submit" value="<?php echo PQL_SAVE; ?>">
 	</form>
 
-	<?php
+<?php
 }
 
 function attribute_save($type){
 	global $domain, $user, $attrib, $oldvalue, $uid, $_pql;
-
+	
 	// recontrol values
 	if(!attribute_check($type)){
  		return false;
 	}
-
+	
 	switch($type){
-		case "add":
-			// no add operation possible with uid
-			break;
-  	case "modify";
+	  case "add":
+		// no add operation possible with uid
+		break;
 
-			if($uid == $oldvalue){
-				// don't change if new value equal to old one
-				$msg = PQL_LDAP_UID_UNCHANGED;
-				attribute_forward($msg);
-				break;
+	  case "modify";
+		if($uid == $oldvalue){
+			// don't change if new value equal to old one
+			$msg = PQL_LDAP_UID_UNCHANGED;
+			attribute_forward($msg);
+			break;
     	}
+		
+		if(pql_replace_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_UID, $uid)){
+			$msg = pql_complete_constant(PQL_LDAP_UID_CHANGE_OK, array("old" => $oldvalue, "new" => $uid));
+		} else {
+			$msg = PQL_LDAP_UID_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
+		}
+		
+		// We use the uid to reference users and it has just changed...
+		if (PQL_LDAP_REFERENCE_USERS_WITH == PQL_LDAP_ATTR_UID) {
+			$user = $uid;
+			// Reload the navigation bar (if allowed by config)
+			attribute_forward($msg, true);
+		} else {
+			attribute_forward($msg);
+		}
+		
+		break;
 
-			if(pql_replace_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, PQL_LDAP_ATTR_UID, $uid)){
-				$msg = pql_complete_constant(PQL_LDAP_UID_CHANGE_OK, array("old" => $oldvalue, "new" => $uid));
-			} else {
-				$msg = PQL_LDAP_UID_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
-			}
-
-			// We use the uid to reference users and it has just changed...
-			if (PQL_LDAP_REFERENCE_USERS_WITH == PQL_LDAP_ATTR_UID) {
-				$user = $uid;
-				// Reload the navigation bar (if allowed by config)
-				attribute_forward($msg, true);
-			} else {
-				attribute_forward($msg);
-			}
-
-			break;
-		default:
-			die("unknown save type $type in " . __FILE__ . ", function save()");
+	  default:
+		die("unknown save type $type in " . __FILE__ . ", function save()");
 	}
-
 }
+
+/*
+ * Local variables:
+ * mode: php
+ * mode: font-lock
+ * tab-width: 4
+ * End:
+ */
+?>

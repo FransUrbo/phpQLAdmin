@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_del.php,v 1.9 2003-01-14 12:53:38 turbo Exp $
+// $Id: ezmlm_del.php,v 1.10 2003-01-16 14:58:33 turbo Exp $
 //
 session_start();
 
@@ -21,7 +21,7 @@ function list_forward($domainname, $msg){
 }
 
 // Get base directory for mails
-if(!($path = pql_get_domain_value($_pql->ldap_linkid, $domain, "basemaildir"))) {
+if(!($path = pql_get_domain_value($_pql, $domain, "basemaildir"))) {
 	// TODO: What if we can't find the base maildir path!?
 	die("Can't get baseMailDir path from domain '$domain'!");
 }

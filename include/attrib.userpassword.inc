@@ -1,36 +1,34 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.2 2002-12-18 16:28:46 turbo Exp $
+// $Id: attrib.userpassword.inc,v 2.3 2003-01-16 14:58:38 turbo Exp $
 
 function attribute_check($type){
 	global $userpassword, $userpassword_check, $error, $pwscheme;
-
+	
 	// is typed in ?
 	if($userpassword == ""){
 		$error["userpassword"] = PQL_MISSING;
 		return false;
   	}
-
+	
 	// valid - A KERBEROS scheme is ALWAYS valid! We only check
 	// password validity if it ISN'T a kerberos scheme...
 	if($pwscheme != "{KERBEROS}") {
-		 if(preg_match("/[^a-z0-9]/i", $userpassword)){
-			  $error["userpassword"] = PQL_INVALID;
-			  return false;
-		 }
-	
-		 // exactly retyped ?
-		 if($userpassword != $userpassword_check){
-			  $error["userpassword_check"] = PQL_FAILED_RETYPE;
-			  return false;
-		 }
+		if(preg_match("/[^a-z0-9]/i", $userpassword)){
+			$error["userpassword"] = PQL_INVALID;
+			return false;
+		}
+		
+		// exactly retyped ?
+		if($userpassword != $userpassword_check){
+			$error["userpassword_check"] = PQL_FAILED_RETYPE;
+			return false;
+		}
 	}
-
+	
 	return true;
-
 }
-
 
 function attribute_init(){
 	// dummy function
@@ -39,7 +37,7 @@ function attribute_init(){
 function attribute_print_form(){
 	global $domain, $user, $PHP_SELF, $attrib, $error;
 
-	?>
+?>
 	<form action="<?php echo $PHP_SELF ?>" method="post">
 	<table cellspacing="0" cellpadding="3" border="0">
 	<th colspan="3" align="left"><?php echo PQL_LDAP_USERPASSWORD_NEW; ?></th>
@@ -74,25 +72,26 @@ function attribute_print_form(){
 	<input type="submit" value="<?php echo PQL_SAVE; ?>">
 	</form>
 
-	<?php
+<?php
 }
 
-function attribute_save($type){
+function attribute_save($type) {
 	global $domain, $user, $attrib, $userpassword, $_pql, $pwscheme;
 
 	// recontrol values
-	if(!attribute_check($type)){
+	if(!attribute_check($type)) {
  		return false;
 	}
 
-	switch($type){
+	switch($type) {
 		case "add":
 			// no add function for userpassword
 			break;
+
   		case "modify";
 				$pw = pql_password_hash($userpassword, $pwscheme);
 
-				if(pql_replace_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, PQL_LDAP_ATTR_PASSWD, $pw)){
+				if(pql_replace_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_PASSWD, $pw)){
 					$msg = PQL_LDAP_USERPASSWORD_CHANGE_OK;
 				} else {
 					$msg = PQL_LDAP_USERPASSWORD_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
@@ -106,3 +105,12 @@ function attribute_save($type){
 	}
 
 }
+
+/*
+ * Local variables:
+ * mode: php
+ * mode: font-lock
+ * tab-width: 4
+ * End:
+ */
+?>

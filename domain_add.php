@@ -6,7 +6,6 @@ session_start();
 
 require("./include/pql.inc");
 require("./include/pql_control.inc");
-
 include("./header.html");
 ?>
   <span class="title1"><?=PQL_DOMAIN_ADD?>: <?=$domain?></span>
@@ -35,20 +34,24 @@ if(!check_hostaddress($domain, $nodot)){
 }
 
 // check if domain exist
-if(pql_domain_exist($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain)){
+if(pql_domain_exist($_pql->ldap_linkid, PQL_LDAP_ATTR_DOMAIN."=".$domain.",".$_pql->ldap_basedn[0])){
 	$msg = urlencode(PQL_DOMAIN_EXISTS);
 	header("Location: " . PQL_URI . "home.php?msg=$msg");
 	exit();
 }
 
-// Defaultvalues we can easily figure out
-$defaulthomedir = user_generate_homedir('', '', '', $domain, '');
-$defaultmaildir = user_generate_mailstore('', '', '', $domain, '');
+// TODO: Currently puts the domain in the first base DN found.
+$dns = pql_domain_add($_pql->ldap_linkid, $_pql->ldap_basedn[0], $domain);
+if($dns[0]) {
+	$entry[BRANCH_NAME] = $domain;
 
-if(pql_add_domain($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain)) {
+	// Default values we can easily figure out
+	$defaultmaildir = user_generate_mailstore('', '', '', $entry);
+	$defaulthomedir = user_generate_homedir('', '', '', $entry);
+
 	if($defaultdomain != "") {
 		// update locals if control patch is enabled
-		if(pql_control_update_domains($_pql->ldap_linkid, $USER_SEARCH_DN_USR,
+		if(pql_control_update_domains($_pql->ldap_linkid,
 									  $_pql_control->ldap_linkid,
 									  $USER_SEARCH_DN_CTR)) {
 			// message ??
@@ -58,35 +61,35 @@ if(pql_add_domain($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain)) {
 	$msg = "";
 	
 	// Save the attributes - Default domain
-	if($defaultdomain && !pql_set_domain_value($_pql->ldap_linkid, $domain, 'defaultDomain', $defaultdomain)) {
+	if($defaultdomain && !pql_set_domain_value($_pql->ldap_linkid, $dns[0], 'defaultDomain', $defaultdomain)) {
 		$msg = PQL_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	}
 	
 	// Save the attributes - Default home directory
-	if($defaulthomedir && !pql_set_domain_value($_pql->ldap_linkid, $domain, 'baseHomeDir', $defaulthomedir)) {
+	if($defaulthomedir && !pql_set_domain_value($_pql->ldap_linkid, $dns[0], 'baseHomeDir', $defaulthomedir)) {
 		$msg = PQL_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	}
 	
 	// Save the attributes - Default mail directory
-	if($defaultmaildir && !pql_set_domain_value($_pql->ldap_linkid, $domain, 'baseMailDir', $defaultmaildir)) {
+	if($defaultmaildir && !pql_set_domain_value($_pql->ldap_linkid, $dns[0], 'baseMailDir', $defaultmaildir)) {
 		$msg = PQL_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	}
 	
 	// Save the attributes - Default quota
-	if($defaultquota && !pql_set_domain_value($_pql->ldap_linkid, $domain, 'baseQuota', $defaultquota)) {
+	if($defaultquota && !pql_set_domain_value($_pql->ldap_linkid, $dns[0], 'baseQuota', $defaultquota)) {
 		$msg = PQL_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	}
 	
 	// The creator is by default the administrator
-	if(! pql_set_domain_value($_pql->ldap_linkid, $domain, 'administrator', $USER_DN)) {
+	if(! pql_set_domain_value($_pql->ldap_linkid, $dns[0], 'administrator', $USER_DN)) {
 		$msg = PQL_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	}
 
 	// redirect to domain-details
 	if($msg == "") {
-		$msg = urlencode(pql_complete_constant(PQL_DOMAIN_ADD_OK, array("domain" => $domain)));
+		$msg = urlencode(pql_complete_constant(PQL_DOMAIN_ADD_OK, array("domain" => $dns[0])));
 	}
-	$url = "domain_detail.php?domain=$domain&msg=$msg&rlnb=1";
+	$url = "domain_detail.php?domain=$dns[0]&msg=$msg&rlnb=1";
 
 	// Now it's time to run the special adduser script if defined...
 	if(PQL_EXTRA_SCRIPT_CREATE_DOMAIN) {
@@ -107,7 +110,7 @@ if(pql_add_domain($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain)) {
 			$msg .= urlencode(PQL_DOMAIN_ADD_SCRIPT_OK);
 		}
 
-		$url = "domain_detail.php?domain=$domain&";
+		$url = "domain_detail.php?domain=$dns[0]&";
 ?>
 
     <form action="<?=$url?>&msg=<?=$msg?>&rlnb=1" method="post">

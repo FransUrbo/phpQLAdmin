@@ -4,12 +4,27 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.3 2002-12-18 16:28:46 turbo Exp $
+// $Id: pql_control.inc,v 2.4 2003-01-16 14:58:38 turbo Exp $
 //
 // version history:
 // $Log: pql_control.inc,v $
-// Revision 2.3  2002-12-18 16:28:46  turbo
-// Replace control DN define with the session variable.
+// Revision 2.4  2003-01-16 14:58:38  turbo
+// * Completly redesigned how LDAP objects (users, domains etc) are referenced.
+//   To make sure that we don't mix similarly named users in different RDN's,
+//   we reference them with there full RDN. This forced almost all functions in
+//   the API to change how they are called. We don't need the 'basedn', because
+//   there is none. Also, most of the time the 'domain' variable was used to build
+//   the DN where we did searches from. This is no longer needed, since the 'domain'
+//   is now the RDN of the domain, instead of just a fraction of it.
+// * Renamed the following function (I think the new name sounds better :)
+// 	pql_add_user()    to pql_user_add()
+// 	pql_remove_user() to pql_user_del()
+// 	pql_add_domain()  to pql_domain_add()
+// 	pql_remove_user() to pql_domain_del()
+// * Changed '<?php echo ... ?>' to '<?=...?>' in some places
+// * Removed USER_SEARCH_DN_USR (and GLOBALS["USER_SEARCH_DN_USR"])
+// * Run files through 'dos2unix' to remove ^M
+// * urlencode() 'Outlook values'
 //
 // Revision 1.2  2001/09/06 11:36:24  mb
 // added no_connect option to pql_control-class
@@ -209,7 +224,7 @@ function pql_control_update_domains($ldap_linkid, $ldap_basedn, $ldap_control_li
 		return false;
     }
 	
-    $domains = pql_get_domains($ldap_linkid, $ldap_basedn);
+    $domains = pql_get_domains($ldap_linkid);
     foreach($domains as $domain) {
 		// Get default domain name for this domain
 		$domainname = pql_get_domain_value($ldap_linkid, $domain, "defaultdomain");

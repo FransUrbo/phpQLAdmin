@@ -9,7 +9,7 @@ require("./include/pql.inc");
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 // Get default domain name for this domain
-$defaultdomain = pql_get_domain_value($_pql->ldap_linkid, $domain, "defaultdomain");
+$defaultdomain = pql_get_domain_value($_pql, $domain, "defaultdomain");
 
 include("./header.html");
 
@@ -37,19 +37,26 @@ if(isset($rlnb) and PQL_AUTO_RELOAD){
 <?php
 	}
 }
+
+$username = pql_get_userattribute($_pql->ldap_linkid, $user, 'cn');
+if(!$username[0]) {
+    // No common name, use uid field
+    $username = pql_get_userattribute($_pql->ldap_linkid, $user, 'uid');
+}
+$username = $username[0];
 ?>
 
-  <span class="title1"><?php echo $user; ?> (<?php echo $defaultdomain; ?>)</span>
+  <span class="title1"><?=$username?></span>
   <br><br>
 <?php
 // check if domain exists
-if(!pql_domain_exist($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain)){
+if(!pql_domain_exist($_pql->ldap_linkid, $domain)){
     echo "domain &quot;$domain&quot; does not exists";
     exit();
 }
 
 // check if user exists
-if(!pql_user_exist($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user)){
+if(!pql_user_exist($_pql->ldap_linkid, $user)){
 	echo "user &quot;$user&quot; does not exist";
 	exit();
 }
@@ -59,14 +66,14 @@ if(!pql_user_exist($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user)){
 // uses 'objectClass: pilotPerson' -> http://rfc-1274.rfcindex.net/
 $attribs = array('cn', 'sn', 'uidnumber', 'gidnumber', 'loginshell', 'uid', 'userpassword', 'mailmessagestore', 'mailhost', 'homedirectory', 'roomnumber', 'homephone', 'homepostaladdress', 'secretary', 'personaltitle', 'mobile', 'pager');
 foreach($attribs as $attrib) {
-    $value = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, $attrib);
+    $value = pql_get_userattribute($_pql->ldap_linkid, $user, $attrib);
     $$attrib = $value[0];
 
     // Setup edit links
     $link = $attrib . "_link";
-    $$link = "<a href=\"user_edit_attribute.php?attrib=$attrib&user=<?php echo urlencode($user); ?>&domain=<?=$domain?>\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify $attrib for $user\"></a>";
+    $$link = "<a href=\"user_edit_attribute.php?attrib=$attrib&user=<?=$user?>\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify $attrib for $username\"></a>";
 }
-$quota = pql_get_userquota($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user);
+$quota = pql_get_userquota($_pql->ldap_linkid, $user);
 
 if($userpassword == ""){
     $userpassword = PQL_LDAP_USERPASSWORD_NONE;
@@ -93,35 +100,35 @@ if($mailhost == ""){
     <th colspan="3" align="left"><?php echo PQL_USER_DATA; ?></th>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?php echo PQL_USER_ID ?></td>
-        <td><?php echo $uid; ?></td>
-        <td><a href="user_edit_attribute.php?attrib=uid&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain; ?>&oldvalue=<?php echo $uid ?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LDAP_UID_CHANGE; ?>" border="0"></a></td>
+        <td><?=$uid?></td>
+        <td><a href="user_edit_attribute.php?attrib=uid&user=<?=$user?>&oldvalue=<?=$uid?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LDAP_UID_CHANGE; ?>" border="0"></a></td>
       </tr>
 
 <?php if($ADVANCED_MODE) { ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?php echo PQL_LDAP_USERPASSWORD_TITLE; ?></td>
-        <td><?php echo $userpassword; ?></td>
-        <td><a href="user_edit_attribute.php?attrib=userpassword&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain; ?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LDAP_USERPASSWORD_NEW; ?>" border="0"></a></td>
+        <td><?=$userpassword?></td>
+        <td><a href="user_edit_attribute.php?attrib=userpassword&user=<?=$user?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LDAP_USERPASSWORD_NEW; ?>" border="0"></a></td>
       </tr>
 <?php } ?>
 
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?php echo PQL_USER_DATA_SURNAME . ", " . PQL_USER_DATA_LASTNAME; ?></td>
-        <td><?php echo $cn; ?></td>
-        <td><a href="user_edit_attribute.php?attrib=cn&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain ?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LDAP_CN_CHANGE; ?>" border="0"></a></td>
+        <td><?=$cn?></td>
+        <td><a href="user_edit_attribute.php?attrib=cn&user=<?=$user?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LDAP_CN_CHANGE; ?>" border="0"></a></td>
       </tr>
 
 <?php if($ADVANCED_MODE) { ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?php echo PQL_USER_LOGINSHELL; ?></td>
         <td><?php if($loginshell){echo $loginshell;}else{echo "none";} ?></td>
-        <td><a href="user_edit_attribute.php?attrib=loginshell&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain ?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LDAP_LOGINSHELL_CHANGE; ?>" border="0"></a></td>
+        <td><a href="user_edit_attribute.php?attrib=loginshell&user=<?=$user?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LDAP_LOGINSHELL_CHANGE; ?>" border="0"></a></td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?php echo PQL_USER_HOMEDIR; ?></td>
         <td><?php if($homedirectory){echo $homedirectory;}else{echo "none";} ?></td>
-        <td><a href="user_edit_attribute.php?attrib=homedirectory&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain; ?>&oldvalue=<?php echo $homedirectory; ?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LDAP_HOMEDIRECTORY_CHANGE; ?>" border="0"></a></td>
+        <td><a href="user_edit_attribute.php?attrib=homedirectory&user=<?=$user?>&oldvalue=<?=$homedirectory?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LDAP_HOMEDIRECTORY_CHANGE; ?>" border="0"></a></td>
       </tr>
 
 <?php
@@ -178,10 +185,8 @@ if($mailhost == ""){
   <br><br>
 
 <?php
-$email = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_MAIL);
-$email = $email[0];
-
-$aliases = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_MAILALTERNATE);
+$email   = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_MAIL); $email = $email[0];
+$aliases = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_MAILALTERNATE);
 ?>
   <!-- Addresses (mail, mailalternateaddress) -->
   <table cellspacing="0" cellpadding="3" border="0">
@@ -194,8 +199,8 @@ $aliases = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domai
 
       <tr class="<?php table_bgcolor(); ?>">
         <td><?php echo PQL_LDAP_MAIL_TITLE; ?></td>
-        <td><?php echo $email; ?></td>
-        <td><a href="user_edit_attribute.php?attrib=mail&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain; ?>&mail=<?php echo pql_strip_domain($email); ?>&oldvalue=<?php echo $email ?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LDAP_MAIL_CHANGE; ?>" border="0"></a>&nbsp;&nbsp;<a href="user_sendmail.php?email=<?php echo $email;?>&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain; ?>"><img src="images/mail.png" width="16" height="11" alt="<?php echo PQL_SENDMAIL; ?>" border="0"></a></td>
+        <td><?=$email?></td>
+        <td><a href="user_edit_attribute.php?attrib=mail&user=<?=$user?>&mail=<?=$email?>&oldvalue=<?=$email?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LDAP_MAIL_CHANGE; ?>" border="0"></a>&nbsp;&nbsp;<a href="user_sendmail.php?email=<?=$email?>&user=<?=$user?>"><img src="images/mail.png" width="16" height="11" alt="<?php echo PQL_SENDMAIL; ?>" border="0"></a></td>
       </tr>
 
 <?php
@@ -205,15 +210,15 @@ if(is_array($aliases)){
 ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td><?php echo PQL_LDAP_MAILALTERNATEADDRESS_TITLE; ?></td>
-        <td><?php echo $alias; ?></td>
-        <td><a href="user_edit_attribute.php?attrib=mailalternateaddress&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain; ?>&mailalternateaddress=<?php echo pql_strip_domain($alias); ?>&oldvalue=<?php echo $alias ?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LDAP_MAILALTERNATEADDRESS_CHANGE; ?>" border="0"></a>&nbsp;&nbsp;<a href="user_del_attribute.php?attrib=mailalternateaddress&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain; ?>&value=<?php echo $alias ?>"><img src="images/del.png" width="12" height="12" alt="<?php echo PQL_LDAP_MAILALTERNATEADDRESS_DEL; ?>" border="0"></a>&nbsp;&nbsp;<a href="user_sendmail.php?email=<?php echo $alias;?>&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain; ?>"><img src="images/mail.png" width="16" height="11" alt="<?php echo PQL_SENDMAIL; ?>" border="0"></a></td>
+        <td><?$alias?></td>
+        <td><a href="user_edit_attribute.php?attrib=mailalternateaddress&user=<?=$user?>&mailalternateaddress=<?php echo pql_strip_domain($alias); ?>&oldvalue=<?=$alias?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LDAP_MAILALTERNATEADDRESS_CHANGE; ?>" border="0"></a>&nbsp;&nbsp;<a href="user_del_attribute.php?attrib=mailalternateaddress&user=<?=$user?>&value=<?=$alias?>"><img src="images/del.png" width="12" height="12" alt="<?php echo PQL_LDAP_MAILALTERNATEADDRESS_DEL; ?>" border="0"></a>&nbsp;&nbsp;<a href="user_sendmail.php?email=<?=$alias?>&user=<?=$user?>"><img src="images/mail.png" width="16" height="11" alt="<?php echo PQL_SENDMAIL; ?>" border="0"></a></td>
       </tr>
 <?php
     }
 }
 ?>
       <tr>
-        <td class="subtitle" colspan="3"><a href="user_add_attribute.php?attrib=mailalternateaddress&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain ?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"> <?php echo PQL_LDAP_MAILALTERNATEADDRESS_NEW; ?></a></td>
+        <td class="subtitle" colspan="3"><a href="user_add_attribute.php?attrib=mailalternateaddress&user=<?=$user?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"> <?php echo PQL_LDAP_MAILALTERNATEADDRESS_NEW; ?></a></td>
       </tr>
     </th>
   </table>
@@ -221,7 +226,7 @@ if(is_array($aliases)){
   <br><br>
 
 <?php
-$forwarders = pql_search_forwarders($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user);
+$forwarders = pql_search_forwarders($_pql, $user);
 ?>
   <!-- forwarders in other accounts to this user  -->
   <table cellspacing="0" cellpadding="3" border="0">
@@ -242,9 +247,9 @@ if(empty($forwarders)) {
 	foreach($forwarders as $forwarder){
 ?>
       <tr class="<?php table_bgcolor(); ?>">
-	<td><?php echo $forwarder["email"];?></td>
+	<td><?=$forwarder["email"]?></td>
 	<td>
-          <a href="user_detail.php?user=<?php echo urlencode($forwarder["reference"]); ?>&domain=<?php echo $forwarder["domain"]; ?>"><?php echo $forwarder[PQL_LDAP_REFERENCE_USERS_WITH];?></a>
+          <a href="user_detail.php?user=<?php echo urlencode($forwarder["reference"]); ?>"><?=$forwarder[PQL_LDAP_REFERENCE_USERS_WITH]?></a>
         </td>
       </tr>
 <?php
@@ -257,7 +262,7 @@ if(empty($forwarders)) {
   <br><br>
 
 <?php
-	$status = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_ISACTIVE);
+	$status = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_ISACTIVE);
 	$status = $status[0];
 
 	$status = pql_ldap_accountstatus($status);
@@ -266,14 +271,14 @@ if(empty($forwarders)) {
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="2" align="left"><?php echo PQL_LDAP_ACCOUNTSTATUS_TITLE; ?></th>
       <tr class="<?php table_bgcolor(); ?>">
-	<td><?php echo $status; ?></td>
+	<td><?=$status?></td>
       </tr>
 
       <tr class="subtitle">
         <td>
-          <a href="user_edit_attribute.php?attrib=accountstatus&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain; ?>&set=active"><?php echo PQL_LDAP_ACCOUNTSTATUS_CHANGE_ACTIVE; ?></a>
-	| <a href="user_edit_attribute.php?attrib=accountstatus&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain; ?>&set=nopop"><?php echo PQL_LDAP_ACCOUNTSTATUS_CHANGE_NOPOP; ?></a>
-	| <a href="user_edit_attribute.php?attrib=accountstatus&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain; ?>&set=disabled"><?php echo PQL_LDAP_ACCOUNTSTATUS_CHANGE_DISABLE; ?></a>
+          <a href="user_edit_attribute.php?attrib=accountstatus&user=<?=$user?>&set=active"><?php echo PQL_LDAP_ACCOUNTSTATUS_CHANGE_ACTIVE; ?></a>
+	| <a href="user_edit_attribute.php?attrib=accountstatus&user=<?=$user?>&set=nopop"><?php echo PQL_LDAP_ACCOUNTSTATUS_CHANGE_NOPOP; ?></a>
+	| <a href="user_edit_attribute.php?attrib=accountstatus&user=<?=$user?>&set=disabled"><?php echo PQL_LDAP_ACCOUNTSTATUS_CHANGE_DISABLE; ?></a>
 	</td>
       </tr>
     </th>
@@ -292,7 +297,7 @@ if($ADVANCED_MODE) {
       </tr>
 
 <?php
-  $deliverymode = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_MODE);
+  $deliverymode = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_MODE);
 
   if(empty($deliverymode)){
 ?>
@@ -305,7 +310,7 @@ if($ADVANCED_MODE) {
 	$mode_text = pql_ldap_deliverymode($mode);
 ?>
       <tr class="<?php table_bgcolor(); ?>">
-	<td><?php echo $mode_text; ?></td>
+	<td><?=$mode_text?></td>
       </tr>
 <?php
     } // end of foreach
@@ -314,7 +319,7 @@ if($ADVANCED_MODE) {
 
       <tr class="subtitle">
 	<td>
-          <a href="user_edit_attribute.php?attrib=deliverymode&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain ?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"><?php echo PQL_LDAP_DELIVERYMODE_CHANGE; ?></a>
+          <a href="user_edit_attribute.php?attrib=deliverymode&user=<?=$user?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"><?php echo PQL_LDAP_DELIVERYMODE_CHANGE; ?></a>
         </td>
       </tr>
     </th>
@@ -324,10 +329,10 @@ if($ADVANCED_MODE) {
 
   <!-- advanced delivery options -->
 <?php
-  $qmaildotmode = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_DOTMODE);
+  $qmaildotmode = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_DOTMODE);
   $qmaildotmode = $qmaildotmode[0];
 
-  $deliveryprogrampath = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_PROGRAM);
+  $deliveryprogrampath = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_PROGRAM);
   $deliveryprogrampath = $deliveryprogrampath[0];
 
   if($qmaildotmode == ""){
@@ -342,17 +347,17 @@ if($ADVANCED_MODE) {
     <th colspan="3" align="left"><?php echo PQL_USER_DELIVERYPROPERTIES; ?></th>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?php echo PQL_LDAP_QMAILDOTMODE_TITLE; ?></td>
-        <td><?php echo $qmaildotmode; ?></td>
+        <td><?=$qmaildotmode?></td>
         <td>
-          <a href="user_edit_attribute.php?attrib=qmaildotmode&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain; ?>&oldvalue=<?php echo $qmaildotmode; ?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
+          <a href="user_edit_attribute.php?attrib=qmaildotmode&user=<?=$user?>&oldvalue=<?=$qmaildotmode?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
         </td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?php echo PQL_LDAP_DELIVERYPROGRAMPATH_TITLE; ?></td>
-        <td><?php echo $deliveryprogrampath; ?></td>
+        <td><?=$deliveryprogrampath?></td>
         <td>
-          <a href="user_edit_attribute.php?attrib=deliveryprogrampath&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain; ?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
+          <a href="user_edit_attribute.php?attrib=deliveryprogrampath&user=<?=$user?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
         </td>
       </tr>
     </th>
@@ -373,25 +378,25 @@ if($ADVANCED_MODE) {
     <th colspan="3" align="left"><?php echo PQL_USER_MAILBOXPROPERTIES; ?></th>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?php echo PQL_LDAP_MAILMESSAGESTORE_TITLE; ?></td>
-        <td><?php echo $mailmessagestore; ?></td>
+        <td><?=$mailmessagestore?></td>
         <td>
-          <a href="user_edit_attribute.php?attrib=mailmessagestore&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain; ?>&oldvalue=<?php echo $mailmessagestore; ?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
+          <a href="user_edit_attribute.php?attrib=mailmessagestore&user=<?=$user?>&oldvalue=<?=$mailmessagestore?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
         </td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?php echo PQL_LDAP_MAILHOST_TITLE; ?></td>
-        <td><?php echo $mailhost; ?></td>
+        <td><?=$mailhost?></td>
         <td>
-          <a href="user_edit_attribute.php?attrib=mailhost&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain; ?>&oldvalue=<?php echo $mailhost; ?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
+          <a href="user_edit_attribute.php?attrib=mailhost&user=<?=$user?>&oldvalue=<?=$mailhost?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
         </td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?php echo PQL_LDAP_MAILQUOTA_TITLE; ?></td>
-        <td><?php echo $quota; ?></td>
+        <td><?=$quota?></td>
         <td>
-          <a href="user_edit_attribute.php?attrib=mailquota&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain; ?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
+          <a href="user_edit_attribute.php?attrib=mailquota&user=<?=$user?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
         </td>
       </tr>
     </th>
@@ -401,7 +406,7 @@ if($ADVANCED_MODE) {
 
 <?php
 } // end if ADVANCED mode
-  $forwarders = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_FORWARDS);
+  $forwarders = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_FORWARDS);
 ?>
   <!-- Forwarders (mailalternateaddress) -->
   <table cellspacing="0" cellpadding="3" border="0">
@@ -422,9 +427,9 @@ if(empty($forwarders)){
     foreach($forwarders as $forwarder){
 ?>
       <tr class="<?php table_bgcolor(); ?>">
-        <td><?php echo $forwarder;?></td>
+        <td><?=$forwarder?></td>
         <td>
-          <a href="user_edit_attribute.php?attrib=mailforwardingaddress&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain; ?>&mailforwardingaddress=<?php echo $forwarder; ?>&oldvalue=<?php echo $forwarder ?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="user_del_attribute.php?attrib=mailforwardingaddress&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain; ?>&value=<?php echo $forwarder ?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a>
+          <a href="user_edit_attribute.php?attrib=mailforwardingaddress&user=<?=$user?>&mailforwardingaddress=<?=$forwarder?>&oldvalue=<?=$forwarder?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="user_del_attribute.php?attrib=mailforwardingaddress&user=<?=$user?>&value=<?=$forwarder?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a>
         </td>
       </tr>
 <?php
@@ -434,7 +439,7 @@ if(empty($forwarders)){
 
       <tr class="subtitle">
         <td colspan="2">
-          <a href="user_add_attribute.php?attrib=mailforwardingaddress&user=<?php echo urlencode($user); ?>&domain=<?php echo $domain ?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"> <?php echo PQL_LDAP_MAILFORWARDINGADDRESS_NEW; ?></a>
+          <a href="user_add_attribute.php?attrib=mailforwardingaddress&user=<?=$user?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"> <?php echo PQL_LDAP_MAILFORWARDINGADDRESS_NEW; ?></a>
         </td>
       </tr>
     </th>
@@ -445,7 +450,7 @@ if(empty($forwarders)){
   <table cellspacing="0" cellpadding="3" border="0">
     <th align="left"><?=PQL_ACTIONS?></th>
       <tr class="<?php table_bgcolor(); ?>">
-        <td><a href="user_del.php?domain=<?=$domain?>&user=<?php echo urlencode($user); ?>"><?=PQL_USER_DELETE?></a></td>
+        <td><a href="user_del.php?user=<?=$user?>"><?=PQL_USER_DELETE?></a></td>
       </tr>
     </th>
   </table>

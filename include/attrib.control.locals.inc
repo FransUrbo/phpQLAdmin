@@ -2,7 +2,7 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.4 2003-01-10 18:10:56 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.5 2003-01-16 14:58:38 turbo Exp $
 
 function locals_check($type){
     global $error, $locals;
@@ -155,7 +155,6 @@ function locals_save($type, $host){
       case "replicate":
 		// start replication manually
 		if(pql_control_update_domains($_pql->ldap_linkid,
-									  $GLOBALS["USER_SEARCH_DN_USR"],
 									  $_pql_control->ldap_linkid,
 									  "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 									  $host)){

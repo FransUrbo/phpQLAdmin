@@ -1,6 +1,6 @@
 <?php
 // navigation bar - ezmlm mailinglists manager
-// $Id: left-ezmlm.php,v 2.11 2003-01-14 12:53:38 turbo Exp $
+// $Id: left-ezmlm.php,v 2.12 2003-01-16 14:58:34 turbo Exp $
 //
 session_start();
 
@@ -28,7 +28,13 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS, false, 0);
 // Get ALL domains we have access to.
 //	administrator: USER_DN
 // in the domain object
-$domains = pql_get_domain_value($_pql->ldap_linkid, '*', 'administrator', $USER_DN);
+foreach($_pql->ldap_basedn as $dn)  {
+    $dom = pql_get_domain_value($_pql, $dn, 'administrator', $USER_DN);
+    foreach($dom as $d) {
+        $domains[] = $d;
+    }
+}
+
 if(!is_array($domains)) {
     // no domain defined - report it
 ?>
@@ -47,7 +53,7 @@ if(!is_array($domains)) {
 		$number_of_lists = -1; // So that we end up with 0 for first list!
 
 		// Get base directory for mails
-		if(!($basemaildir = pql_get_domain_value($_pql->ldap_linkid, $domain, "basemaildir"))) {
+		if(!($basemaildir = pql_get_domain_value($_pql, $domain, "basemaildir"))) {
 			die("Can't get base mail directory for domain '$domain'!<br>");
 		}
 

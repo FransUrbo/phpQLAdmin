@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mail.inc,v 2.3 2003-01-10 18:13:09 turbo Exp $
+// $Id: attrib.mail.inc,v 2.4 2003-01-16 14:58:38 turbo Exp $
 
 function attribute_check($type){
     global $mail, $domain, $oldvalue, $_pql, $error, $defaultdomain;
@@ -24,7 +24,7 @@ function attribute_check($type){
     }
     
     // if type is modify, check existance of old value, else the new one
-    if($oldvalue != $mail and pql_email_exists($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $mail)){
+    if($oldvalue != $mail and pql_email_exists($_pql->ldap_linkid, $mail)){
 	$error["mail"] = PQL_EXISTS;
 	return false;
     }
@@ -80,7 +80,7 @@ function attribute_save($type){
 	// no add operation possible with mail
 	break;
       case "modify";
-	if(pql_modify_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, PQL_LDAP_ATTR_MAIL, $oldvalue, $mail)){
+	if(pql_modify_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_MAIL, $oldvalue, $mail)){
 	    $msg = pql_complete_constant(PQL_LDAP_MAIL_CHANGE_OK, array("old" => $oldvalue, "new" => $mail));
 	} else {
 	    $msg = PQL_LDAP_MAIL_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);

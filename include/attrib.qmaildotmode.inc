@@ -1,48 +1,46 @@
 <?php
 // attribute plugin for
 // qmaildotmode (interpretation of .qmail-files)
-// $Id: attrib.qmaildotmode.inc,v 2.2 2002-12-18 16:28:46 turbo Exp $
+// $Id: attrib.qmaildotmode.inc,v 2.3 2003-01-16 14:58:38 turbo Exp $
 
 function attribute_check($type){
 	global $qmaildotmode, $domain, $oldvalue, $_pql, $error;
-
+	
 	// is typed in ?
 	if($qmaildotmode == ""){
 		$error["qmaildotmode"] = PQL_MISSING;
 		return false;
-  }
-
+	}
+	
 	// valid entry ?
 	switch($qmaildotmode){
-		case "default":
-		case "both":
-		case "dotonly":
-		case "ldaponly":
-		case "ldapwithprog":
-		case "none":
-			break;
-		default:
-			$error["qmaildotmode"] = PQL_INVALID;
-			return false;
-  }
-
+	  case "default":
+	  case "both":
+	  case "dotonly":
+	  case "ldaponly":
+	  case "ldapwithprog":
+	  case "none":
+		break;
+	  default:
+		$error["qmaildotmode"] = PQL_INVALID;
+		return false;
+	}
+	
 	return true;
 }
 
 function attribute_init(){
 	global $qmaildotmode, $oldvalue;
-
-
+	
 	$qmaildotmode = $oldvalue;
-
 }
 
 function attribute_print_form(){
 	global $qmaildotmode, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error;
-
+	
 	$qmaildotmode_select[$qmaildotmode] = "selected";
 
-	?>
+?>
 	<form action="<?php echo $PHP_SELF ?>" method="post">
 	<table cellspacing="0" cellpadding="3" border="0">
 	<th colspan="3" align="left"><?php echo PQL_LDAP_QMAILDOTMODE_CHANGE; ?></th>
@@ -76,45 +74,53 @@ function attribute_print_form(){
 	<input type="submit" value="<?php echo PQL_SAVE; ?>">
 	</form>
 
-	<?php
+<?php
 }
 
 function attribute_save($type){
 	global $domain, $user, $attrib, $oldvalue, $qmaildotmode, $_pql;
-
+	
 	// recontrol values
 	if(!attribute_check($type)){
  		return false;
 	}
-
+	
 	switch($type){
-		case "add":
-			// no add operation possible with qmaildotmode
-			break;
-  	case "modify";
+	  case "add":
+		// no add operation possible with qmaildotmode
+		break;
 
-			if($qmaildotmode == $oldvalue){
-				// don't change if new value equal to old one
-				$msg = PQL_LDAP_QMAILDOTMODE_UNCHANGED;
-				attribute_forward($msg);
-				break;
-    	}
-
-			if($qmaildotmode == "default"){
-				$qmaildotmode = "";
-    	}
-
-			if(pql_replace_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, PQL_LDAP_ATTR_DOTMODE, $qmaildotmode)){
-				$msg = pql_complete_constant(PQL_LDAP_QMAILDOTMODE_CHANGE_OK, array("mode" => $qmaildotmode));
-			} else {
-				$msg = PQL_LDAP_QMAILDOTMODE_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
-			}
-
+	  case "modify";
+		if($qmaildotmode == $oldvalue){
+			// don't change if new value equal to old one
+			$msg = PQL_LDAP_QMAILDOTMODE_UNCHANGED;
 			attribute_forward($msg);
 			break;
-
-		default:
-			die("unknown save type $type in " . __FILE__ . ", function save()");
+    	}
+		
+		if($qmaildotmode == "default"){
+			$qmaildotmode = "";
+    	}
+		
+		if(pql_replace_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_DOTMODE, $qmaildotmode)){
+			$msg = pql_complete_constant(PQL_LDAP_QMAILDOTMODE_CHANGE_OK, array("mode" => $qmaildotmode));
+		} else {
+			$msg = PQL_LDAP_QMAILDOTMODE_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
+		}
+		
+		attribute_forward($msg);
+		break;
+		
+	  default:
+		die("unknown save type $type in " . __FILE__ . ", function save()");
 	}
-
 }
+
+/*
+ * Local variables:
+ * mode: php
+ * mode: font-lock
+ * tab-width: 4
+ * End:
+ */
+?>

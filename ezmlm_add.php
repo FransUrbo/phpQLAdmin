@@ -1,6 +1,6 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.10 2003-01-14 12:53:38 turbo Exp $
+// $Id: ezmlm_add.php,v 1.11 2003-01-16 14:58:33 turbo Exp $
 //
 session_start();
 
@@ -25,7 +25,14 @@ if(!$killcount) {
 
 if(!$domainname) {
 	// Get list of domain
-	$domains = pql_get_domain_value($_pql->ldap_linkid, '*', 'administrator', $USER_DN);
+
+	foreach($_pql->ldap_basedn as $dn)  {
+		$dom = pql_get_domain_value($_pql, $dn, 'administrator', $USER_DN);
+		foreach($dom as $d) {
+			$domains[] = $d;
+		}
+	}
+
     if(!is_array($domains)){
 		// if no domain defined - fatal error
 		die("<b>Can't find any domain!</b><br>");
@@ -38,7 +45,7 @@ if(!$domainname) {
 				$dont_add = 0;
 				
 				// Get the default domainname for the domain
-				$domainname = pql_get_domain_value($_pql->ldap_linkid, $d, "defaultdomain");
+				$domainname = pql_get_domain_value($_pql, $d, "defaultdomain");
 				
 				// Remove duplicates
 				if($domain_list) {
@@ -73,9 +80,9 @@ if(isset($submit)) {
 	if($listname and $domainname) {
 		if(!$domain) {
 			// Get domain tree
-			$domains = pql_get_domains($_pql->ldap_linkid, $USER_SEARCH_DN_USR);
+			$domains = pql_get_domains($_pql->ldap_linkid);
 			foreach($domains as $key => $name) {
-				$defaultdomain = pql_get_domain_value($_pql->ldap_linkid, $name, 'defaultdomain');
+				$defaultdomain = pql_get_domain_value($_pql, $name, 'defaultdomain');
 				if($domainname == $defaultdomain) {
 					$domain = $name;
 					break;
@@ -84,7 +91,7 @@ if(isset($submit)) {
 		}
 
 		// Get basemaildir path for domain
-		if(!($path = pql_get_domain_value($_pql->ldap_linkid, $domain, "basemaildir"))) {
+		if(!($path = pql_get_domain_value($_pql, $domain, "basemaildir"))) {
 			die("Can't get baseMailDir path from domain '$domain'!");
 		}
 

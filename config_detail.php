@@ -7,6 +7,8 @@ session_start();
 require("./include/pql.inc");
 include("./header.html");
 
+$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
+
 if(PQL_SHOW_USERS){
     $show_users = "yes";
 } else {
@@ -65,9 +67,26 @@ if(PQL_VERIFY_DELETE){
 	<td class="<?php table_bgcolor(); ?>"><?=$USER_HOST?>&nbsp;</td>
 </tr>
 
+<?php
+$new_tr = 0;
+foreach($_pql->ldap_basedn as $dn) {
+    if($new_tr) {
+?>
+<tr>
+	<td class="title"></td>
+<?php
+    } else {
+?>
 <tr>
 	<td class="title">LDAP base dn</td>
-	<td class="<?php table_bgcolor(); ?>"><?=$USER_SEARCH_DN_USR?>&nbsp;</td>
+<?php
+    }
+    $new_tr = 1;
+?>
+	<td class="<?php table_bgcolor(); ?>"><?=$dn?>&nbsp;</td>
+<?php
+		}
+?>
 </tr>
 
 <?php

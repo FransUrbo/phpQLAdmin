@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.4 2003-01-13 07:15:53 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.5 2003-01-16 14:58:38 turbo Exp $
 
 function attribute_check() {
     global $$attrib, $domain, $oldvalue, $_pql, $error, $$attrib;
@@ -52,28 +52,29 @@ function attribute_print_form($action) {
 		// (hundred, thousands or more users, this will take AGES!)
 
 		// Get ALL domains
-		$domains = pql_get_domains($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"]);
-		if(is_array($domains)){
-			asort($domains);
+		if(is_array($_pql->ldap_basedn)){
 ?>
             <select name="<?=$attrib?>">
 <?php
-			foreach($domains as $dom) {
-				echo "<!-- Domain: $dom -->
+			foreach($_pql->ldap_basedn as $dom) {
+				echo "<!-- Domain DN: $dom -->
 ";
 				// Get all users in all the domains
-				$users = pql_get_user($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $dom);
+				$users = pql_get_user($_pql->ldap_linkid, $dom);
 				if($users) {
 					foreach($users as $user) {
-						$cn = pql_get_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, PQL_LDAP_ATTR_CN);
+						$cn = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_CN);
 						$cns[$user] = $cn[0];
 					}
 					asort($cns);
-					
+
 					foreach($cns as $user => $cn){
-						$dn = pql_search_attribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], 'cn', $cn);
+						$dn = pql_search_attribute($_pql->ldap_linkid, $dom, 'cn', $cn);
+
+						// TODO
+						//$d = split(',', $dn); $d = split('=', $d[2]); $d=$d[1].": ";
 ?>
-              <option value="<?=$dn?>"><?php echo $dom . ": " . $cn?></option>
+              <option value="<?=$dn?>"><?=$d.$cn?></option>
 <?php
 					}
 				}
@@ -116,7 +117,7 @@ function attribute_save($type) {
 
 		// Get the old values, so we can remove the one we're modifying
 		// (delete the one we want to delete, keep the others etc)
-		$admins	= pql_get_domain_value($_pql->ldap_linkid, $domain, $attrib);
+		$admins	= pql_get_domain_value($_pql, $domain, $attrib);
 		if(is_array($admins)) {
 			foreach($admins as $admin) {
 				if(($type == 'modify' and $admin != $oldvalue) or

@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_detail.php,v 1.12 2003-01-14 12:53:38 turbo Exp $
+// $Id: ezmlm_detail.php,v 1.13 2003-01-16 14:58:33 turbo Exp $
 //
 session_start();
 
@@ -15,7 +15,7 @@ if(isset($msg)){
 
 if($domain) {
 	// Get base directory for mails
-	if(!($basemaildir = pql_get_domain_value($_pql->ldap_linkid, $domain, "basemaildir"))) {
+	if(!($basemaildir = pql_get_domain_value($_pql, $domain, "basemaildir"))) {
 		die("Can't get base mail directory for domain '$domain'!<br>");
 	}
 

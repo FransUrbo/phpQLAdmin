@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliverymode (delivery preferences)
-// $Id: attrib.deliverymode.inc,v 2.3 2003-01-14 15:53:55 turbo Exp $
+// $Id: attrib.deliverymode.inc,v 2.4 2003-01-16 14:58:38 turbo Exp $
 
 function attribute_check($type){
 	global $error, $reply, $mailreplytext;
@@ -17,32 +17,31 @@ function attribute_check($type){
 
 function attribute_init(){
 	global $reply, $mailreplytext, $deliverymode, $domain, $user, $_pql;
+
 	// initialize values directly from ldap
+	$mode = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_MODE);
 
-	$mode = pql_get_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, PQL_LDAP_ATTR_MODE);
 	// delivery profile
-
 	if(is_array($mode) and in_array("forwardonly",$mode)){
 		$deliverymode = "forward";
-  } else {
+	} else {
 		$deliverymode = "local";
-  }
-
+	}
+	
 	// reply / mailreplytext
 	if(is_array($mode) and in_array("reply", $mode)){
 		$reply = "ok";
 	}
-
-	$mailreplytext = pql_get_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, PQL_LDAP_ATTR_REPLYTEXT);
+	
+	$mailreplytext = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_REPLYTEXT);
 	$mailreplytext = $mailreplytext[0];
-
 }
 
 
 function attribute_print_form($type = "modify"){
 	global $reply, $mailreplytext, $deliverymode, $domain, $user, $PHP_SELF, $attrib, $error
 
-	?>
+?>
 	<form action="<?php echo $PHP_SELF ?>" method="post">
 	<table cellspacing="0" cellpadding="3" border="0">
 	<th colspan="3" align="left"><?php echo PQL_LDAP_DELIVERYMODE_TITLE; ?></th>
@@ -74,26 +73,26 @@ function attribute_print_form($type = "modify"){
 	<input type="submit" value="<?php echo PQL_SAVE; ?>">
 	</form>
 
-	<?php
+<?php
 }
 
 function attribute_save($type){
 	global $domain, $user, $attrib, $reply, $mailreplytext, $deliverymode, $_pql;
-
+	
 	// recontrol values
 	if(!attribute_check($type)){
  		return false;
 	}
-
+	
 	switch($deliverymode){
-		case "forward":
-			$entry[PQL_LDAP_ATTR_MODE][] = "forwardonly";
-			$entry[PQL_LDAP_ATTR_MODE][] = "nombox";
-			break;
-		case "local":
-			$entry[PQL_LDAP_ATTR_MODE][] = "localdelivery";
+	  case "forward":
+		$entry[PQL_LDAP_ATTR_MODE][] = "forwardonly";
+		$entry[PQL_LDAP_ATTR_MODE][] = "nombox";
+		break;
+	  case "local":
+		$entry[PQL_LDAP_ATTR_MODE][] = "localdelivery";
 	}
-
+	
 	if($reply == "ok"){
 		$entry[PQL_LDAP_ATTR_MODE][] = "reply";
 	}
@@ -103,53 +102,44 @@ function attribute_save($type){
 		// Check if the entry in database is empty. 
 		// If not, we have choosen to DELETE the value
 		$mrt_db = pql_get_userattribute($_pql->ldap_linkid,
-										$GLOBALS["USER_SEARCH_DN_USR"],
-										$domain, $user,
-										PQL_LDAP_ATTR_REPLYTEXT);
+										$user, PQL_LDAP_ATTR_REPLYTEXT);
 		if($mrt_db[0]) {
-			pql_remove_userattribute($_pql->ldap_linkid,
-									 $GLOBALS["USER_SEARCH_DN_USR"],
-									 $domain, $user,
-									 PQL_LDAP_ATTR_REPLYTEXT, '');
+			pql_remove_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_REPLYTEXT, '');
 		}
 	}
 	
 	switch($type){
-		case "fulldomain":
-		
-			$users = pql_get_user($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain);
-
-			if(is_array($users)){
-				foreach($users as $user){
-					$return[] = pql_replace_userattributes($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user,$entry);
-				}
-
-				if(in_array(false, $return)){
-					$msg = PQL_LDAP_DELIVERYMODE_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
-				} else {
-					$msg = PQL_LDAP_DELIVERYMODE_CHANGE_OK;
-				}
-
-				attribute_forward($msg);
-
+	  case "fulldomain":
+		$users = pql_get_user($_pql->ldap_linkid, $domain);
+		if(is_array($users)){
+			foreach($users as $user){
+				$return[] = pql_replace_userattributes($_pql->ldap_linkid, $user, $entry);
 			}
-			break;
-
-		case "modify":
-
-			if(pql_replace_userattributes($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user,$entry)){
-				$msg = PQL_LDAP_DELIVERYMODE_CHANGE_OK;
-			} else {
+			
+			if(in_array(false, $return)){
 				$msg = PQL_LDAP_DELIVERYMODE_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
+			} else {
+				$msg = PQL_LDAP_DELIVERYMODE_CHANGE_OK;
 			}
-
+			
 			attribute_forward($msg);
+			
+		}
+		break;
+		
+	  case "modify":
+		if(pql_replace_userattributes($_pql->ldap_linkid, $user, $entry)) {
+			$msg = PQL_LDAP_DELIVERYMODE_CHANGE_OK;
+		} else {
+			$msg = PQL_LDAP_DELIVERYMODE_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
+		}
+		
+		attribute_forward($msg);
+		break;
 
-			break;
-    default:
-			die("unknown save type $type in " . __FILE__ . ", function save()");
+	  default:
+		die("unknown save type $type in " . __FILE__ . ", function save()");
 	}
-
 }
 
 /*

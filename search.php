@@ -58,7 +58,7 @@ switch($filter_type) {
 }
 
 // get userlist that matches filter
-$users = pql_search($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $filter);
+$users = pql_search($_pql->ldap_linkid, $filter);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="4" align="left"><?php echo PQL_USER_REGISTRED ?> (<?php echo sizeof($users); ?>)</th>
@@ -78,13 +78,13 @@ if(is_array($users)){
       // don't know domain, so must figure it out
       $domain = $user["domain"];
       $reference = $user["reference"];
-      $uid = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $reference, PQL_LDAP_ATTR_UID);
+      $uid = pql_get_userattribute($_pql->ldap_linkid, $reference, PQL_LDAP_ATTR_UID);
       $uid = $uid[0];
-      $cn = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $reference, PQL_LDAP_ATTR_CN);
+      $cn = pql_get_userattribute($_pql->ldap_linkid, $reference, PQL_LDAP_ATTR_CN);
       $cn = $cn[0];
-      $mail = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $reference, PQL_LDAP_ATTR_MAIL);
+      $mail = pql_get_userattribute($_pql->ldap_linkid, $reference, PQL_LDAP_ATTR_MAIL);
       $mail = $mail[0];
-      $status = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $reference, PQL_LDAP_ATTR_ISACTIVE);
+      $status = pql_get_userattribute($_pql->ldap_linkid, $reference, PQL_LDAP_ATTR_ISACTIVE);
       $status = pql_ldap_accountstatus($status[0]);
 ?>
     <tr class="<?php table_bgcolor(); ?>">

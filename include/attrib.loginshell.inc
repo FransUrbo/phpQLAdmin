@@ -1,15 +1,15 @@
 <?php
 // attribute plugin for
 // loginshell
-// $Id: attrib.loginshell.inc,v 2.3 2002-12-18 16:28:46 turbo Exp $
+// $Id: attrib.loginshell.inc,v 2.4 2003-01-16 14:58:38 turbo Exp $
 
 function attribute_check($type){
     global $loginshell, $oldvalue, $_pql, $error;
     
     // is typed in ?
     if($loginshell == ""){
-	$error["loginshell"] = PQL_MISSING;
-	return false;
+		$error["loginshell"] = PQL_MISSING;
+		return false;
     }
     
     return true;
@@ -54,7 +54,7 @@ function attribute_print_form(){
       <input type="submit" value="<?php echo PQL_SAVE; ?>">
     </form>
 
-    <?php
+<?php
 }
 
 function attribute_save($type){
@@ -62,32 +62,41 @@ function attribute_save($type){
     
     // recontrol values
     if(!attribute_check($type)){
-	return false;
+		return false;
     }
     
     switch($type){
       case "add":
-	// no add operation possible with loginshell
-	break;
+		// no add operation possible with loginshell
+		break;
+
       case "modify";
-	if($loginshell == $oldvalue){
-	    // don't change if new value equal to old one
-	    $msg = PQL_LDAP_LOGINSHELL_UNCHANGED;
-	    attribute_forward($msg);
-	    break;
+		if($loginshell == $oldvalue){
+			// don't change if new value equal to old one
+			$msg = PQL_LDAP_LOGINSHELL_UNCHANGED;
+			attribute_forward($msg);
+			break;
     	}
-	
-	if(pql_replace_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, $attrib, $loginshell)){
-	    $msg = pql_complete_constant(PQL_LDAP_LOGINSHELL_CHANGE_OK, array("old" => $oldvalue, "new" => $loginshell));
-	} else {
-	    $msg = PQL_LDAP_LOGINSHELL_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
-	}
-	
-	attribute_forward($msg);
-	
-	break;
+		
+		if(pql_replace_userattribute($_pql->ldap_linkid, $user, $attrib, $loginshell)) {
+			$msg = pql_complete_constant(PQL_LDAP_LOGINSHELL_CHANGE_OK, array("old" => $oldvalue, "new" => $loginshell));
+		} else {
+			$msg = PQL_LDAP_LOGINSHELL_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+		}
+		
+		attribute_forward($msg);
+		break;
 
       default:
-	die("unknown save type $type in " . __FILE__ . ", function save()");
+		die("unknown save type $type in " . __FILE__ . ", function save()");
     }
 }
+
+/*
+ * Local variables:
+ * mode: php
+ * mode: font-lock
+ * tab-width: 4
+ * End:
+ */
+?>

@@ -1,61 +1,59 @@
 <?php
 // attribute plugin for
 // mailhost (host address which resides the mailhost)
-// $Id: attrib.mailhost.inc,v 2.2 2002-12-18 16:28:46 turbo Exp $
+// $Id: attrib.mailhost.inc,v 2.3 2003-01-16 14:58:38 turbo Exp $
 
 function attribute_check($type){
 	global $options, $mailhost, $domain, $error;
-
+	
 	// clear attribute ?
 	if($options == "none"){
 		$mailhost = "";
 	}
-
+	
 	// is typed in ?
 	if($options == "user" and $mailhost == ""){
 		$error["mailhost"] = PQL_MISSING;
 		return false;
-  }
-
+	}
+	
 	// valid
 	if($options == "user" and !preg_match("/^([a-z0-9]+\.{1,1}[a-z0-9]+)+$/i",$mailhost)){
-		//"
 		$error["mailhost"] = PQL_INVALID;
 		return false;
 	}
-
+	
 	// check dns if dns option is set
 	if($options  == "dns"){
 		$res = getmxrr($domain, $rec, $weight);
 		if(count($rec) == 0){
-			 $error["dns"] = PQL_DNS_NONE . "<br>";
-			 return false;
-    } else {
+			$error["dns"] = PQL_DNS_NONE . "<br>";
+			return false;
+		} else {
 			$mailhost = $rec[0];
-   	}
+		}
 	}
-
+	
  	return true;
 }
 
 function attribute_init(){
 	global $options, $mailhost, $oldvalue, $domain;
-
+	
 	// control dns to set options
 	$mailhost = $oldvalue;
-
+	
 	if($mailhost == PQL_LDAP_MAILHOST_NONE){
 		$options = "none";
 		$oldvalue = "";
 		$mailhost = "";
-  }
-
+	}
 }
 
 function attribute_print_form(){
 	global $mailhost, $options, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error
 
-	?>
+?>
 	<form action="<?php echo $PHP_SELF ?>" method="post">
 	<table cellspacing="0" cellpadding="3" border="0">
 	<th colspan="3" align="left"><?php echo PQL_LDAP_MAILHOST_TITLE; ?></th>
@@ -83,63 +81,69 @@ function attribute_print_form(){
 	<input type="submit" value="<?php echo PQL_SAVE; ?>">
 	</form>
 
-	<?php
+<?php
 }
 
 function attribute_save($type){
 	global $mailhost, $domain, $user, $attrib, $oldvalue, $_pql;
-
+	
 	// recontrol values
 	if(!attribute_check($type)){
  		return false;
 	}
-
+	
 	switch($type){
-		case "add":
-			// no add operation possible with mail
-			break;
-  	case "modify";
+	  case "add":
+		// no add operation possible with mail
+		break;
 
-			if($mailhost == $oldvalue){
-				// don't change if new value equal to old one
-				$msg = PQL_LDAP_MAILHOST_UNCHANGED;
-				attribute_forward($msg);
-				break;
-    	}
-
-			if(pql_replace_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, PQL_LDAP_ATTR_MAILHOST, $mailhost)){
-				if($mailhost == ""){
-					$mailhost = PQL_LDAP_MAILHOST_NONE;
-     		}
-				$msg = pql_complete_constant(PQL_LDAP_MAILHOST_CHANGE_OK, array("mailhost" => $mailhost));
-			} else {
-				$msg = PQL_LDAP_MAILHOST_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
-			}
-
+	  case "modify";
+		if($mailhost == $oldvalue){
+			// don't change if new value equal to old one
+			$msg = PQL_LDAP_MAILHOST_UNCHANGED;
 			attribute_forward($msg);
-
 			break;
-
-   	case "fulldomain":
-			$users = pql_get_user($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain);
-
-			if(is_array($users)){
-					foreach($users as $user){
-						$return[] = pql_replace_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, PQL_LDAP_ATTR_MAILHOST, $mailhost);
-					}
-
-					if(in_array(false, $return)){
-						$msg = PQL_LDAP_MAILHOST_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
-					} else {
-						$msg = pql_complete_constant(PQL_LDAP_MAILHOST_CHANGE_OK, array("mailhost" => $mailhost));
-      		}
-
-					attribute_forward($msg);
-
+    	}
+		
+		if(pql_replace_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_MAILHOST, $mailhost)){
+			if($mailhost == ""){
+				$mailhost = PQL_LDAP_MAILHOST_NONE;
+     		}
+			$msg = pql_complete_constant(PQL_LDAP_MAILHOST_CHANGE_OK, array("mailhost" => $mailhost));
+		} else {
+			$msg = PQL_LDAP_MAILHOST_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
+		}
+		
+		attribute_forward($msg);
+		break;
+		
+	  case "fulldomain":
+		$users = pql_get_user($_pql->ldap_linkid, $domain);
+		
+		if(is_array($users)){
+			foreach($users as $user){
+				$return[] = pql_replace_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_MAILHOST, $mailhost);
 			}
-
-		default:
-			die("unknown save type $type in " . __FILE__ . ", function save()");
+			
+			if(in_array(false, $return)){
+				$msg = PQL_LDAP_MAILHOST_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
+			} else {
+				$msg = pql_complete_constant(PQL_LDAP_MAILHOST_CHANGE_OK, array("mailhost" => $mailhost));
+      		}
+			
+			attribute_forward($msg);
+		}
+		
+	  default:
+		die("unknown save type $type in " . __FILE__ . ", function save()");
 	}
-
 }
+
+/*
+ * Local variables:
+ * mode: php
+ * mode: font-lock
+ * tab-width: 4
+ * End:
+ */
+?>

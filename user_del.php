@@ -7,27 +7,32 @@ session_start();
 require("./include/pql.inc");
 
 include("./header.html");
+$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
+
+// Get organization name for domain and common name of user
+$o = pql_get_domain_value($_pql, $domain, 'o');
+$cn = pql_get_userattribute($_pql->ldap_linkid, $user, 'cn');
+$cn = $cn[0];
 ?>
-  <span class="title1"><?php echo pql_complete_constant(PQL_USER_DEL_TITLE, array("domain" => $domain, "user" => $user)); ?></span>
+  <span class="title1"><?php echo pql_complete_constant(PQL_USER_DEL_TITLE, array("domain" => $o, "user" => $cn)); ?></span>
   <br><br>
 <?php
-	if(isset($ok) || PQL_VERIFY_DELETE){
-		$delete_forwards = (isset($delete_forwards) || PQL_VERIFY_DELETE) ? true : false;
-		$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
-		
-		// delete the user
-		if(pql_remove_user($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, $delete_forwards)){
-			$msg = PQL_USER_DEL_OK . ": <b>" . $user . "</b>";
-			$rlnb = "&rlnb=1";
-		} else {
-			$msg = PQL_USER_DEL_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
-		}
-		
-		// redirect to domain-detail page
-		$msg = urlencode($msg);
-		header("Location: " . PQL_URI . "domain_detail.php?domain=$domain&msg=$msg$rlnb");
+if(isset($ok) || PQL_VERIFY_DELETE){
+	$delete_forwards = (isset($delete_forwards) || PQL_VERIFY_DELETE) ? true : false;
+	
+	// delete the user
+	if(pql_user_del($_pql, $domain, $user, $delete_forwards)){
+		$msg = PQL_USER_DEL_OK . ": <b>" . $cn . "</b>";
+		$rlnb = "&rlnb=1";
 	} else {
-		echo PQL_SURE;
+		$msg = PQL_USER_DEL_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+	}
+	
+	// redirect to domain-detail page
+	$msg = urlencode($msg);
+	header("Location: " . PQL_URI . "domain_detail.php?domain=$domain&msg=$msg$rlnb");
+} else {
+	echo PQL_SURE;
 ?>
 <br>
   <form action="<?php echo $PHP_SELF; ?>" method="GET">

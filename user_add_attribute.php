@@ -4,20 +4,20 @@
 //
 session_start();
 require("./include/pql.inc");
-$_pql = new pql($USER_HOST_USR, $USER_DN, $USER_PASS);
+$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 // forward back to users detail page
 function attribute_forward($msg){
     global $domain, $user;
     
     $msg = urlencode($msg);
-    $url = "user_detail.php?domain=$domain&user=" . urlencode($user) . "&msg=$msg";
+    $url = "user_detail.php?domain=$domain&user=$user&msg=$msg";
     header("Location: " . PQL_URI . "$url");
 }
 
 // Get default domain name for this domain
-$defaultdomain = pql_get_domain_value($_pql->ldap_linkid, $domain, "defaultdomain");
- 
+$defaultdomain = pql_get_domain_value($_pql, $domain, "defaultdomain");
+
 // select which attribute have to be included
 switch($attrib){
   case "mailalternateaddress":

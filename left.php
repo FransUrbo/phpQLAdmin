@@ -66,10 +66,14 @@ if($ADVANCED_MODE) {
 // Get ALL domains we have access.
 //	'administrator: USER_DN'
 // in the domain object
-$domains = pql_get_domain_value($_pql->ldap_linkid, '*', 'administrator', $USER_DN);
-if(is_array($domains)){
-    asort($domains);
-} else {
+foreach($_pql->ldap_basedn as $dn)  {
+    $dom = pql_get_domain_value($_pql, $dn, 'administrator', $USER_DN);
+    foreach($dom as $d) {
+	$domains[] = $d;
+    }
+}
+
+if(!is_array($domains)){
     // if no domain defined, report it
 ?>
   <!-- start domain parent -->
@@ -83,7 +87,11 @@ if(is_array($domains)){
 }
 
 if(is_array($domains)){
+    asort($domains);
     foreach($domains as $key => $domain) {
+	// Get domain part from the DN (Example: 'dc=test,dc=net' => 'test').
+	$d = split(',', $domain); $d = split('=', $d[0]); $d = $d[1];
+
 	$j = $key + 2;
 ?>
   <!-- start domain parent -->
@@ -93,7 +101,7 @@ if(is_array($domains)){
     </a>
 
     <a class="item" href="domain_detail.php?domain=<?=$domain?>">
-      <font color="black" class="heada"><?=$domain?></font>
+      <font color="black" class="heada"><?=$d?></font>
     </a>
   </div>
   <!-- end domain parent -->
@@ -108,14 +116,13 @@ if(is_array($domains)){
 	  $users = ""; $cns = "";
 
 	  // Get all users in the domain
-	  $users = pql_get_user($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain);
-	  
+	  $users = pql_get_user($_pql->ldap_linkid, $domain);
 	  if(!is_array($users)){
 	      // no user available for this domain
 ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
       <img src="images/mail_small.png" border="0" alt="no user defined">&nbsp;
-      <a href="user_add.php?domain=<?php echo $domain;?>">no user</a>
+      <a href="user_add.php?domain=<?=$domain?>">no user(s)</a>
     </nobr>
 
     <br>
@@ -124,28 +131,34 @@ if(is_array($domains)){
           } else {
 ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
-      <a href="user_add.php?domain=<?php echo $domain;?>">Add a user</a>
+      <a href="user_add.php?domain=<?=$domain?>">Add a user</a>
     </nobr>
 
     <br>
 
 <?php
               foreach ($users as $user) {
-		  $cn = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_CN);
+		  $cn = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_CN);
 		  $cns[$user] = $cn[0];
 	      }
 	      asort($cns);
     
-              foreach($cns as $user => $cn){
+              foreach($cns as $user => $cn) {
+		  $uid   = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_UID); $uid = $uid[0];
+		  $uidnr = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_QMAILUID); $uidnr = $uidnr[0];
+		  if(($uid != 'root') or ($uidnr != '0')) {
+		      // Do NOT show root user(s) here! This should (for safty's sake)
+		      // not be availible to administrate through phpQLAdmin!
 ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
-      <a href="user_detail.php?domain=<?php echo $domain;?>&user=<?php echo urlencode($user);?>"><img src="images/mail_small.png" border="0" alt="<?=$cn?>"></a>&nbsp;
-      <a class="item" href="user_detail.php?domain=<?php echo $domain;?>&user=<?php echo urlencode($user);?>"><?php echo $cn;?></a>
+      <a href="user_detail.php?user=<?=$user?>"><img src="images/mail_small.png" border="0" alt="<?=$cn?>"></a>&nbsp;
+      <a class="item" href="user_detail.php?user=<?=$user?>"><?=$cn?></a>
     </nobr>
 
     <br>
 
 <?php
+		  }
               }
           }
       }

@@ -27,7 +27,7 @@ if(isset($ok) || PQL_VERIFY_DELETE) {
     $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
     
     // delete the user attribute
-    if(pql_remove_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, $attrib, $value)){
+    if(pql_remove_userattribute($_pql->ldap_linkid, $user, $attrib, $value)){
 	$msg = PQL_USER_DEL_ATTRIBUTE_OK;
 	$success = true;
     } else {
@@ -37,7 +37,7 @@ if(isset($ok) || PQL_VERIFY_DELETE) {
     
     if ($attrib == 'mailalternateaddress' and $success and isset($delete_forwards)) {
 	// does another account forward to this alias?
-	$sr = ldap_search($_pql->ldap_linkid, $USER_SEARCH_DN_USR, "(|(" . PQL_LDAP_ATTR_FORWARDS ."=" . $value . "))");
+	$sr = ldap_search($_pql->ldap_linkid, "(|(" . PQL_LDAP_ATTR_FORWARDS ."=" . $value . "))");
 	if (ldap_count_entries($_pql->ldap_linkid,$sr) > 0) {
 	    
 	    $results = ldap_get_entries($_pql->ldap_linkid, $sr);
@@ -51,7 +51,7 @@ if(isset($ok) || PQL_VERIFY_DELETE) {
 	    var_dump($forwarders);
 	    foreach($forwarders as $forward) {
 		// we found a forward -> remove it 
-		pql_remove_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $forward['domain'], $forward['reference'], PQL_LDAP_ATTR_FORWARDS, $value);
+		pql_remove_userattribute($_pql->ldap_linkid, $forward['reference'], PQL_LDAP_ATTR_FORWARDS, $value);
 	    }
 	}
     }

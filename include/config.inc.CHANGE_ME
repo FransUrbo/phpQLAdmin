@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.12 2003-01-14 18:54:39 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.13 2003-01-16 14:58:38 turbo Exp $
 //
 if(!$PQL_CONFIG_INCLUDED) {
 $PQL_CONFIG_INCLUDED = 1;
@@ -57,8 +57,8 @@ define("PQL_TESTMAIL_SUBJECT", "Test");
 // - %SN%				--> users surname
 // - %UID% 				--> users uid
 // - %QUOTA% 			--> users quota  
-// - %PQL_VERSION% 	--> phpQLAdmin version number
-define("PQL_TESTMAIL_MAILTEXT","Hi %CN%,\nyour email address '%MAIL%' seems to work.\n\nHave a nice day,\nyour administrator\n\n\n-------\nsent trough phpQLAdmin %PQL_VERSION%");
+// - %VERSION%			--> phpQLAdmin version number
+define("PQL_TESTMAIL_MAILTEXT","Hi %CN%,\nyour email address '%MAIL%' seems to work.\n\nHave a nice day,\nyour administrator\n\n\n-------\nsent trough phpQLAdmin %VERSION%");
 
 // PQL_TESTMAIL_AUTOSEND (true | false)
 // Automatically send a testmail when a new user or alias has been added?
@@ -160,7 +160,7 @@ define("PQL_LDAP_OBJECTCLASS_USERID", "qmailUser");
 // -> Do NOT list inetOrgPerson and/or posixAccount here!
 // -> Don't quite work yet. It won't take notice of MAY's in
 //    these object classes!
-//define("PQL_LDAP_OBJECTCLASS_USER_EXTRA", "pilotPerson organizationalPerson krb5Principal extraPosixAccount trustAccount");
+//define("PQL_LDAP_OBJECTCLASS_USER_EXTRA", "person pilotPerson organizationalPerson krb5Principal extraPosixAccount trustAccount");
 
 // ----------------------------
 // PQL_LDAP_REFERENCE_USERS_WITH (LDAP attribute name)
@@ -262,8 +262,7 @@ define("PQL_VERIFY_DELETE", "true");
 // when creating a new user. 
 // You may add some code here or just uncomment one of the examples below. 
 // Input parameters:
-// (resource)	ldap_linkid 	-	A LDAP link identifier 
-// (string)		ldap_basedn 	- 	the dn path to the current qmail-ldap database  
+// (object)		ldap		 	-	A LDAP link
 // (string)		email			-	local part of the email-address
 // (string)		domain			-	domain in which you create the user
 // (array)		entry			-	Associative array with all attributes phpQLAdmin is about
@@ -277,13 +276,31 @@ define("PQL_VERIFY_DELETE", "true");
 // WARNING:	phpQLAdmin will not check the return-value. Be sure not to return nonsense or
 //			a path which is already assigned to another user.
 
-function user_generate_mailstore($ldap_linkid, $ldap_basedn, $email, $domain, $entry) {
+function user_generate_mailstore($ldap, $email, $dn, $entry) {
 	$mailstore = '';
 
 	// you feel comfortable with the old way phpQLAdmin generates the mailstore?
 	// Uncomment this example and change the string. 
 	//
 	// supported variables: %d% = domain, %u% = username, %h% = mailhost
+	//
+	// example: domains baseMailDir/uid
+	//	if($dn) {
+	//		$mailstore = pql_get_domain_value($ldap, $dn, "basemaildir");
+	//		$domain    = pql_get_domain_value($ldap, $dn, "defaultdomain");
+	//	} else {
+	//		$mailstore = "/var/mail";
+	//		$domain    = "$entry";
+	//	}
+	//
+	//	if(! ereg("/$", $mailstore)) {
+	//		$mailstore = $mailstore . "/" . "%u%";
+	//	} else {
+	//		$mailstore = $mailstore . "%u%";
+	//	}
+	//	$mailstore = pql_complete_constant($mailstore, array("d" => $domain, 
+	//														 "u" => $entry[PQL_LDAP_ATTR_UID], 
+	//														 "h" => $entry[PQL_LDAP_ATTR_MAILHOST]));
 	//
 	// example: "%d/%u" (=> domain.tld/username) 
 	//	$mailstore = "%d%/%u%"; 
@@ -321,7 +338,8 @@ function user_generate_mailstore($ldap_linkid, $ldap_basedn, $email, $domain, $e
 	//		// generate a random numer between 100000 and 999999 (6 digits)
 	//		$mailstore = mt_rand(100000, 999999);
 	//		// check whether another user already has this mailstore. If yes, generate another random number.
-	//		if (!pql_search_attribute($ldap_linkid, $ldap_basedn, PQL_LDAP_ATTR_MAILSTORE, $mailstore)) {
+	//		// TODO: ldap_basedn isn't availible any more (it's an array of base DN's)!
+	//		if (!pql_search_attribute($ldap, $ldap_basedn, PQL_LDAP_ATTR_MAILSTORE, $mailstore)) {
 	//			break;
 	//		}
 	//	}
@@ -347,11 +365,23 @@ function user_generate_mailstore($ldap_linkid, $ldap_basedn, $email, $domain, $e
 // ----------------------------
 // See information about function user_generate_mailstore()
 // Above. Exact same options apply
-function user_generate_homedir($ldap_linkid, $ldap_basedn, $email, $domain, $entry) {
-	// $homedir = "/home/%d%/%u%";
-	// $homedir = pql_complete_constant($homedir, array("d" => $domain, 
-													 "u" => $entry[PQL_LDAP_ATTR_UID], 
-													 "h" => $entry[PQL_LDAP_ATTR_MAILHOST]));
+function user_generate_homedir($ldap, $email, $dn, $entry) {
+	//if($dn) {
+	//	$homedir = pql_get_domain_value($ldap, $dn, "basehomedir");
+	//	$domain  = pql_get_domain_value($ldap, $dn, "defaultdomain");
+	//} else {
+	//	$homedir = "/home";
+	//	$domain  = "$entry";
+	//}
+	//
+	//if(! ereg("/$", $basemaildir)) {
+	//	$homedir = $homedir . "/" . "%u%";
+	//} else {
+	//	$homedir = $homedir . "%u%";
+	//}
+	//$homedir = pql_complete_constant($homedir, array("d" => $domain, 
+	//												 "u" => $entry[PQL_LDAP_ATTR_UID], 
+	//												 "h" => $entry[PQL_LDAP_ATTR_MAILHOST]));
 	return($homedir);
 }
 

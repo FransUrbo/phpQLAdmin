@@ -1,26 +1,25 @@
 <?php
 // attribute plugin for
 // accountstatus (status of mailaccount)
-// $Id: attrib.accountstatus.inc,v 2.2 2002-12-18 16:28:45 turbo Exp $
+// $Id: attrib.accountstatus.inc,v 2.3 2003-01-16 14:58:38 turbo Exp $
 
 function attribute_check($type){
 	// attribute should be
 	// - active
 	// - nopop
 	// - disabled
-
+	
 	global $set, $error;
-
+	
 	switch($set){
-		case "active":
-		case "nopop":
-		case "disabled":
-			return true;
-	default:
+	  case "active":
+	  case "nopop":
+	  case "disabled":
+		return true;
+	  default:
 		$error["set"] = "unknown attribute value '" . $set . "' for accountstatus";
 		return false;
 	}
-
 }
 
 function attribute_init(){
@@ -30,57 +29,63 @@ function attribute_init(){
 function attribute_print_form($type = "set"){
 	// no form neccessary, directly save
 	global $error;
-
+	
 	if(!attribute_check($type)){
 		$msg = $error["set"];
 		attribute_forward($msg);
 	}
-
+	
 	attribute_save($type);
 }
 
 function attribute_save($type){
 	global $domain, $user, $set, $attrib, $_pql;
-
+	
 	// recontrol values
 	if(!attribute_check($type)){
  		return false;
 	}
-
+	
 	switch($type){
-		case "fulldomain":
-			 $users = pql_get_user($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain);
-
-			 if(is_array($users)){
-					foreach($users as $user){
-						$return[] = pql_replace_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, PQL_LDAP_ATTR_ISACTIVE, $set);
-					}
-
-					if(in_array(false, $return)){
-						$msg = PQL_LDAP_ACCOUNTSTATUS_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
-      		} else {
-						$msg = pql_complete_constant(PQL_LDAP_ACCOUNTSTATUS_CHANGE_OK, array("status" => pql_ldap_accountstatus($set)));
-      		}
-
-					attribute_forward($msg);
-
-			 }
-
-			 break;
-		case "set":
-
-			if(pql_replace_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, PQL_LDAP_ATTR_ISACTIVE, $set)){
-				$msg = pql_complete_constant(PQL_LDAP_ACCOUNTSTATUS_CHANGE_OK, array("status" => pql_ldap_accountstatus($set)));
-			} else {
-				$msg = PQL_LDAP_ACCOUNTSTATUS_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
+	  case "fulldomain":
+		$users = pql_get_user($_pql->ldap_linkid, $domain);
+		
+		if(is_array($users)){
+			foreach($users as $user){
+				$return[] = pql_replace_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_ISACTIVE, $set);
 			}
-
+			
+			if(in_array(false, $return)){
+				$msg = PQL_LDAP_ACCOUNTSTATUS_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
+      		} else {
+				$msg = pql_complete_constant(PQL_LDAP_ACCOUNTSTATUS_CHANGE_OK, array("status" => pql_ldap_accountstatus($set)));
+      		}
+			
 			attribute_forward($msg);
+		}
+		
+		break;
 
-			break;
+	  case "set":
+		if(pql_replace_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_ISACTIVE, $set)){
+			$msg = pql_complete_constant(PQL_LDAP_ACCOUNTSTATUS_CHANGE_OK, array("status" => pql_ldap_accountstatus($set)));
+		} else {
+			$msg = PQL_LDAP_ACCOUNTSTATUS_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
+		}
+		
+		attribute_forward($msg);
+		break;
 
-		default:
-			die("unknown save type $type in " . __FILE__ . ", function save()");
+	  default:
+		die("unknown save type $type in " . __FILE__ . ", function save()");
 	}
-
 }
+
+/*
+ * Local variables:
+ * mode: php
+ * mode: font-lock
+ * tab-width: 4
+ * End:
+ */
+?>

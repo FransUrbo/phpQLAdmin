@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for pilotPerson objects etc
-// $Id: attrib.outlook.inc,v 1.1 2003-01-13 07:36:14 turbo Exp $
+// $Id: attrib.outlook.inc,v 1.2 2003-01-16 14:58:38 turbo Exp $
 
 /*
 	Attributes managed here:
@@ -68,7 +68,7 @@ function attribute_print_form($action) {
 
 function attribute_save($type) {
     global $domain, $attrib, $$attrib, $oldvalue, $administrator, $_pql;
-	$value = $$attrib;
+	$value = urlencode($$attrib);
 
     switch($type){
       case "add":

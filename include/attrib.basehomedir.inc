@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // base homedirectory for domain
-// $Id: attrib.basehomedir.inc,v 2.0 2002-12-13 14:34:57 turbo Exp $
+// $Id: attrib.basehomedir.inc,v 2.1 2003-01-16 14:58:38 turbo Exp $
 
 function attribute_check(){
     global $basehomedir, $domain, $oldvalue, $_pql, $error;
@@ -30,7 +30,7 @@ function attribute_init(){
 function attribute_print_form(){
     global $basehomedir, $domain, $PHP_SELF, $attrib, $oldvalue, $error;
 
-    ?>
+?>
 	<form action="<?php echo $PHP_SELF ?>" method="post">
 	<table cellspacing="0" cellpadding="3" border="0">
 	<th colspan="3" align="left"><?php echo PQL_DOMAIN_DEFAULT_CHANGE_HOMEDIR . $domain; ?></th>
@@ -47,7 +47,7 @@ function attribute_print_form(){
 	<br>
 	<input type="submit" value="<?php echo PQL_SAVE; ?>">
 	</form>
-    <?php
+<?php
 }
 
 function attribute_save($type){

@@ -13,7 +13,7 @@ include("./header.html");
   <span class="title1"><?php echo PQL_SENDMAIL ?></span>
   <br><br>
 <?php
-if(!pql_user_exist($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user)){
+if(!pql_user_exist($_pql->ldap_linkid, $domain, $user)){
     echo "user &quot;$user&quot; does not exist";
     exit();
 }
@@ -24,17 +24,17 @@ if($email == ""){
 
 $subject = PQL_TESTMAIL_SUBJECT;
 $from = "From: " . PQL_HOSTMASTER . "\n";
-$xmailer = "X-Mailer: phpQLAdmin " . PQL_VERSION . "\n";
+$xmailer = "X-Mailer: phpQLAdmin $VERSION\n";
 $vars['MAIL'] = $email;
 $vars['UID'] = $user;
-$vars['PQL_VERSION'] = PQL_VERSION;
+$vars['VERSION'] = $VERSION;
 
-$cn = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_CN);
+$cn = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_CN);
 $vars['CN'] = $cn[0];
-$sn = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_SN);
+$sn = pql_get_userattribute($_pql->ldap_linkid, $user, PQL_LDAP_ATTR_SN);
 $vars['SN'] = $sn[0];
 
-$quota = pql_get_userquota($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user);
+$quota = pql_get_userquota($_pql->ldap_linkid, $user);
 
 // Does the user have an individual mailbox quota?
 if (is_array($quota)) {

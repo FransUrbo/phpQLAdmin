@@ -9,7 +9,7 @@ require("./include/pql.inc");
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 // Get default domain name for this domain
-$defaultdomain = pql_get_domain_value($_pql->ldap_linkid, $domain, "defaultdomain");
+$defaultdomain = pql_get_domain_value($_pql, $domain, "defaultdomain");
 
 // forward back to users detail page
 function attribute_forward($msg, $rlnb = false){

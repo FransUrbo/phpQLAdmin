@@ -29,9 +29,9 @@ include("./header.html");
       $_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
 
       // delete the unit 
-      if(pql_remove_unit($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $unit)){
+      if(pql_remove_unit($_pql->ldap_linkid, $domain, $unit)){
 	  // update locals if control patch is enabled
-	  if(pql_control_update_domains($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR)){
+	  if(pql_control_update_domains($_pql->ldap_linkid, $_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR)){
 	      // message ??
 	  }
 	  
