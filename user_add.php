@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.95 2004-04-04 07:03:33 turbo Exp $
+// $Id: user_add.php,v 2.95.10.1 2004-04-10 08:21:09 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -85,8 +85,6 @@ switch($_REQUEST["page_curr"]) {
 				$error_text["uid"] = $LANG->_('Can\'t autogenerate.');
 			} else {
 				if(preg_match("/[^a-z0-9\.@%_-]/i", $_REQUEST["uid"])) {
-					$_REQUEST["page_next"] = "two";
-					
 					$error = true;
 					$error_text["uid"] = $LANG->_('Invalid');
 				}
@@ -124,9 +122,7 @@ switch($_REQUEST["page_curr"]) {
 			$error_text["destination"] = $LANG->_('Missing');
 		}
 
-		if($error)
-		  $_REQUEST["page_next"] = "one";
-		else {
+		if(!$error) {
 			// Construct the user/alias RDN
 			$_REQUEST["user"]  = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) . "=" . $_REQUEST["source"];
 			$_REQUEST["user"] .= "," . $_REQUEST["subbranch"];
@@ -135,7 +131,6 @@ switch($_REQUEST["page_curr"]) {
 			if(pql_user_exist($_pql->ldap_linkid, $_REQUEST["user"])) {
 				$error = true;
 				$error_text["source"] = pql_complete_constant($LANG->_('User %user% already exists'), array("user" => $_REQUEST["user"])) . "<br>";
-				$_REQUEST["page_next"] = "one";
 			} else {
 				// The 'tables/user_add-save.inc' file isn't suitable for creating an alias. Do it here directly
 				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'referral';
@@ -257,11 +252,11 @@ switch($_REQUEST["page_curr"]) {
 			// Find MX (or QmailLDAP/Controls with locals=$email_domain)
 			$mx = pql_get_mx($_REQUEST["email_domain"]);
 			if(!$mx) {
-				// There is no MX and no QmailLDAP/Controls with this
-				// domain name in locals. Die!
-				$_REQUEST["page_next"] = "two";
-				
-				$error = 'mx';
+				if(!$error)
+				  // Only set this to 'mx' if it's not already set.
+				  // This so that the switch at the bottom won't break.
+				  $error = "mx";
+
 				$error_text["userhost"] = pql_complete_constant($LANG->_('Sorry, I can\'t find any MX or any QmailLDAP/Controls object that listens to the domain <u>%domain%</u>.<br>You will have to specify one manually.'),
 																array('domain' => pql_maybe_idna_decode($_REQUEST["email_domain"])));
 			} else
@@ -326,8 +321,15 @@ switch($_REQUEST["page_curr"]) {
 																	   'type' => 'Path to homedirectory'));
 		}
 
-		if($error and ($error != 'mx')) {
-			$_REQUEST["page_next"] = 'one';
+		if($error and !empty($error_text)) {
+			// We have an error. What page should come after this?
+			if(ereg("mx", $error)) {
+				// This is the only case where we really SHOULD go to the next page - MX problems.
+				$_REQUEST["page_next"] = 'two';
+			} else {
+				// Redisplay the current page
+				$_REQUEST["page_next"] = 'one';
+			}
 		}
 		// }}}
 	}
@@ -367,7 +369,9 @@ if($_SESSION["ADVANCED_MODE"] && $_REQUEST["account_type"]) {
 
 <?php
 // ------------------------------------------------
-// Select next form to display
+// Select next form to display using 'page_next'.
+// This will be set correctly above if there's
+// an error.
 switch($_REQUEST["page_next"]) {
   case "":
 	// Step 1 - Choose account properties (type of account)

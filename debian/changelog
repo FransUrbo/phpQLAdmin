@@ -4,8 +4,10 @@ phpqladmin (2.0.18c-1) unstable; urgency=low
     choosen to use 'posixAccount' when creating user(s).
   * Spelling errors conserning attributes and defines fixed.
   * Predefine (empty) variables to get rid of errors.
+  * Correctly process the next page/form to display in user_add.php.
+    This depend largely on if we have an MX error or not.
 
- -- Turbo Fredriksson <turbo@debian.org>  Thu,  8 Apr 2004 18:27:04 +0200
+ -- Turbo Fredriksson <turbo@debian.org>  Sat, 10 Apr 2004 10:19:29 +0200
 
 phpqladmin (2.0.18b-1) unstable; urgency=low
 

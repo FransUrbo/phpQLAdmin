@@ -11,6 +11,8 @@ phpQLAdmin 2.0.18c TO BE ANNOUNCED
 	  - Attribute spelling error fixed in tables/user_details-basic.inc
 	    ('ugidnumber' should be 'uidnumber').
 	  - Predefine (empty) variables to get rid of errors.
+	  - Correctly process the next page/form to display in user_add.php. This depend
+	    largely on if we have an MX error or not.
 
 	GUI layout change
 	  - Require the pql_config.inc file to avoid PHP errors in the right frame
