@@ -1,6 +1,6 @@
 <?php
 // delete a domain and all users within
-// $Id: unit_del.php,v 2.13 2004-02-14 14:01:00 turbo Exp $
+// $Id: unit_del.php,v 2.14 2004-05-04 08:16:16 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -30,7 +30,7 @@ include("./header.html");
       // delete the unit 
       if(pql_remove_unit($_pql->ldap_linkid, $domain, $unit)) {
 	  // update locals if control patch is enabled
-	  if(pql_control_update_domains($_pql, $_SESSION["USER_SEARCH_DN_CTR"])) {
+	  if(pql_control_update_domains($_pql, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"])) {
 	      // message ??
 	  }
 	  

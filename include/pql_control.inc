@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.39 2004-04-01 06:29:29 turbo Exp $
+// $Id: pql_control.inc,v 2.40 2004-05-04 08:16:42 turbo Exp $
 //
 
 // {{{ control connection class
@@ -189,11 +189,11 @@ function pql_control_remove_whole_attribute($ldap_linkid, $ldap_control_basedn, 
 }
 // }}}
 
-// {{{ pql_control_update_domains(ldap, dn, host, domain = "", type = "")
+// {{{ pql_control_update_domains(ldap, rootdn, dn, host, domain = "", type = "")
 // Replicate all registred domains to locals
 //
 // domain is array as: 'oldvalue', 'newvalue'
-function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "") {
+function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $type = "") {
     if(!pql_get_define("PQL_CONF_CONTROL_USE"))
 	  // control patch is not enabled
 	  return false;
@@ -231,15 +231,15 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 	}
 
     // Get the hostname
-    if($host and ($host != '*') and pql_get_define("PQL_ATTR_CONTROL_AUTOADDHOSTNAME")) {
+    if($host and ($host != '*') and pql_get_define("PQL_CONF_CONTROL_AUTOADDHOSTNAME", $rootdn)) {
 		$hostname = split("\.", $host);
 		$hostname = pql_maybe_encode($hostname[0]);
 	
 		foreach($temp as $tmp)
 		  $entry[] = $hostname . "." . $tmp;
 	}
-	
-    if(pql_get_define("PQL_CONF_CONTROL_AUTOADDLOCALS"))
+
+    if(pql_get_define("PQL_CONF_CONTROL_AUTOADDLOCALS", $rootdn))
 	  $entry[] = "localhost";
 
 	// ----------------
@@ -249,7 +249,7 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 											 pql_get_define("PQL_ATTR_LOCALS"),
 											 $entry))
 			  return true;
-		} elseif($type == pql_get_define("PQL_ATTR_RCPTHOSTS")) {
+		} elseif($type == pql_get_define("PQL_ATTR_RCPTHOSTS"))	{
 			if(pql_control_replace_attribute($ldap->ldap_linkid, $dn,
 											 pql_get_define("PQL_ATTR_RCPTHOSTS"),
 											 $entry))
@@ -306,7 +306,7 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 						  $entry[] = $domain[1];
 						
 						// Add 'hostname.newdomain' to LDIF entry
-						if($h and $domain[1] and pql_get_define("PQL_CONF_CONTROL_AUTOADDHOSTNAME")) {
+						if($h and $domain[1] and pql_get_define("PQL_CONF_CONTROL_AUTOADDHOSTNAME", $rootdn)) {
 							$hostname = split("\.", $h);
 							$entry[] = $hostname[0] . "." . $domain[1];
 						}
@@ -355,7 +355,7 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 						  $entry[] = $domain[1];
 						
 						// Add 'hostname.newdomain' to LDIF entry
-						if($h and $domain[1] and pql_get_define("PQL_CONF_CONTROL_AUTOADDHOSTNAME")) {
+						if($h and $domain[1] and pql_get_define("PQL_CONF_CONTROL_AUTOADDHOSTNAME", $rootdn)) {
 							$hostname = split("\.", $h);
 							$entry[] = $hostname[0] . "." . $domain[1];
 						}
