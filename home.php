@@ -1,14 +1,12 @@
 <?php
 // start page
-// $Id: home.php,v 1.2 2002-12-12 11:54:15 turbo Exp $
+// $Id: home.php,v 1.3 2002-12-13 13:50:12 turbo Exp $
 //
 session_start();
 require("pql.inc");
 
 include("header.html");
-?>
-  <!-- User base: <?php echo $USER_BASE; ?> -->
-<?php
+
 // print status message, if one is available
 if(isset($msg)){
     print_status_msg($msg);
@@ -23,9 +21,7 @@ if(isset($rlnb) and PQL_AUTO_RELOAD){
      parent.frames.pqlnav.location.reload();
   //-->
   </script>
-<?php
-}
-?>
+<?php } ?>
 
   <br><?php echo PQL_DESCRIPTION ?><br>
 
@@ -36,8 +32,18 @@ if(isset($rlnb) and PQL_AUTO_RELOAD){
         <br>
         <input type="text" name="domain" value="<?php echo $domain; ?>">
         <input type="submit" value="<?php echo PQL_ADD; ?>">
-       </form>
-       <br>
+	<br>
+	<img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php
+	if(PQL_LDAP_OBJECTCLASS_DOMAIN == "domain") {
+	    // We're using a domain object
+	    echo PQL_DOMAIN_ADD_INFO_DC;
+	} else {
+	    // OrganizationUnit object
+	    echo PQL_DOMAIN_ADD_INFO_OU;
+	}
+	?>
+      </form>
+      <br>
     </li>
 
     <!-- begin search engine snippet -->
@@ -65,14 +71,8 @@ if(isset($rlnb) and PQL_AUTO_RELOAD){
       </form>
     </li>
     <!-- end of search engine snippet -->
-
-    <li><a href="doc/index.php"><?php echo PQL_DOCUMENTATION; ?></a></li>
-    <li><a href="config_detail.php"><?php echo PQL_SHOW_CONFIG; ?></a></li>
-    <li><a href="config_ldaptest.php"><?php echo PQL_TEST_LDAP; ?></a></li>
-    <li><a href="http://www.adfinis.ch/projects/phpQLAdmin/" target="_new">phpQLAdmin Online</a></li>
-    <li><a href="http://www.adfinis.ch/" target="_new">adfinis GmbH, the developpers</a></li>
   </ul>
-<br>
-&copy; <a href="http://www.adfinis.ch">adfinis GmbH</a>, 2001 (<a href="mailto:info@adfinis.ch">info</a>)
+  <br>
+  <?php include("trailer.html"); ?>
 </body>
 </html>
