@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.10 2003-07-02 07:59:00 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.11 2003-07-03 09:50:55 turbo Exp $
 
 function attribute_check() {
     global $additionaldomainname, $domain, $oldvalue, $_pql, $error, $rootdn, $LANG;
@@ -152,7 +152,7 @@ function attribute_save($type) {
 		
 		if(pql_set_domain_value($_pql->ldap_linkid, $domain, '', $entry)) {
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
-										 array('what' => $LANG->_('Additional domain name')))
+										 array('what' => $LANG->_('Additional domain name')));
 
 			require("./include/pql_control.inc");
 			$_pql_control = new pql_control($GLOBALS["USER_HOST"], $GLOBALS["USER_DN"], $GLOBALS["USER_PASS"]);
