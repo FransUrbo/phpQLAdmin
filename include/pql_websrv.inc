@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for web server configuration)
 //
-// $Id: pql_websrv.inc,v 1.15 2005-03-01 09:38:33 turbo Exp $
+// $Id: pql_websrv.inc,v 1.16 2005-03-14 19:41:10 turbo Exp $
 //
 
 // {{{ pql_websrv_add_server(linkid, domain, server)
@@ -35,15 +35,10 @@ function pql_websrv_add_server($linkid, $domain, $server) {
 	}
 	// }}}
 
-	// {{{ Setup the object class filter
-	$ocs = pql_split_oldvalues(pql_get_define("PQL_ATTR_WEBSRV_OC"));
-	for($i=0; $ocs[$i]; $i++)
-	  $entry["objectclass"][] = $ocs[$i];
-	// }}}
-
 	$entry = $server;
 	$dn = pql_get_define("PQL_ATTR_CN")."=".$entry[pql_get_define("PQL_ATTR_CN")].",$dn";
 	$entry[pql_get_define("PQL_ATTR_CN")] = $entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")];
+	$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_split_oldvalues(pql_get_define("PQL_CONF_WEBSRV_OC"));
 
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_websrv_add_server", $dn, $entry);
