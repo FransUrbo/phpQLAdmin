@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.73 2004-03-18 12:45:54 turbo Exp $
+// $Id: user_detail.php,v 2.74 2004-04-07 14:02:23 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -74,7 +74,7 @@ if(empty($_GET["view"]))
 $attribs = array("cn"					=> pql_get_define("PQL_ATTR_CN"),
 				 "sn"					=> pql_get_define("PQL_ATTR_SN"),
 				 "uidnumber"			=> pql_get_define("PQL_ATTR_QMAILUID"),
-				 "gidNumber"			=> pql_get_define("PQL_ATTR_QMAILGID"),
+				 "gidnumber"			=> pql_get_define("PQL_ATTR_QMAILGID"),
 				 "loginshell"			=> pql_get_define("PQL_ATTR_LOGINSHELL"),
 				 "uid"					=> pql_get_define("PQL_ATTR_UID"),
 				 "userpassword"			=> pql_get_define("PQL_ATTR_PASSWD"),

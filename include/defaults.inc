@@ -3,7 +3,7 @@
 // This file contains what I think is 'resonable defaults'.
 // Don't change here, change any values in the web interface!
 //
-// $Id: defaults.inc,v 2.28 2004-03-11 18:13:41 turbo Exp $
+// $Id: defaults.inc,v 2.29 2004-04-07 14:02:29 dlw Exp $
 
 // NOTE: Some of these defines isn't called with the (root/top)
 //       DN. They are (site) global variables, not per branch.
@@ -186,7 +186,7 @@ pql_set_define("PQL_CONF_REFERENCE_DOMAINS_WITH", "ou", false, $dn);
 // the rdn of a user object. e.g. if you choose 'uid' the rdn will be
 // 'uid=idofthisuser'
 // If you want phpQLAdmin to behave like earlier versions, use PQL_CONF_CN here.
-pql_set_define("PQL_CONF_USER_RDN_ATTRIBUTE", pql_get_define("PQL_CONF_UID"), false, $dn);
+pql_set_define("PQL_CONF_USER_RDN_ATTRIBUTE", pql_get_define("PQL_ATTR_UID"), false, $dn);
 
 // ----------------------------
 // PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER (integer)
