@@ -1,6 +1,6 @@
 <?php
 // Input form page to create a domain branch in database
-// $Id: domain_add_form.php,v 1.14 2003-08-09 20:21:58 turbo Exp $
+// $Id: domain_add_form.php,v 1.15 2003-11-12 09:31:33 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -71,6 +71,15 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
           </td>
         </tr>
 
+<?php if(pql_get_define("PQL_GLOB_BIND9_USE")) { ?>
+        <tr>
+          <td class="title"><?=$LANG->_('Create a template zone')?></td>
+          <td>
+            <input type="checkbox" name="template" CHECKED>
+          </td>
+        </tr>
+
+<?php } ?>
         <tr><td><input type="submit" value="Create"></td></tr>
       </th>
     </table>
