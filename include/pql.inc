@@ -3,12 +3,11 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.89 2003-06-25 07:07:02 turbo Exp $
+// $Id: pql.inc,v 2.90 2003-06-28 15:22:36 turbo Exp $
 //
 
 // ----------------------------
 // include and check configuration
-require("./include/lang.en.inc");
 require("./include/pql_cache.inc");
 
 // ----------------------------
@@ -16,14 +15,6 @@ require("./include/pql_cache.inc");
 $fp = fopen("./.version", "r");
 $VERSION = fgets($fp, 20);
 fclose($fp);
-
-// ----------------------------
-// make a simple configuration check
-if(!pql_check_config(&$result)){
-	echo "There are some problems with your configuration:<br>";
-	echo "<ul><li>" . join("<li>", $result) . "</ul>";
-	die();
-}
 
 // ----------------------------
 // turn on output-buffering by default
@@ -1275,25 +1266,6 @@ function pql_complete_constant($text, $replacement) {
     
     return preg_replace($pattern, $replacement, $text);
 }
-
-// ------------------------------------------------
-function pql_check_config(&$result, $enhanced = false) {
-    $result = array();
-    
-    // language definition
-    if(!defined("PQL_LANG_LANG"))
-	  $result[] = "no language definition file included!!";
-    
-// TODO: enhance configuration check
-//    if($enhanced) {
-//    }
-    
-    if(count($result) > 0)
-	  return false;
-    
-    return true;
-}
-
 
 // --------------------------------------
 // format ldap attribute codes to text
