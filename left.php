@@ -153,8 +153,8 @@ if(is_array($domains)){
 		      // not be availible to administrate through phpQLAdmin!
 ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
-      <a href="user_detail.php?domain=<?=$domain?>&user=<?=$user?>"><img src="images/mail_small.png" border="0" alt="<?=$cn?>"></a>&nbsp;
-      <a class="item" href="user_detail.php?domain=<?=$domain?>&user=<?=$user?>"><?=$cn?></a>
+      <a href="user_detail.php?user=<?=$user?>"><img src="images/mail_small.png" border="0" alt="<?=$cn?>"></a>&nbsp;
+      <a class="item" href="user_detail.php?user=<?=$user?>"><?=$cn?></a>
     </nobr>
 
     <br>
