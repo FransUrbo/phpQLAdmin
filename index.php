@@ -70,12 +70,16 @@ if (empty($uname) or empty($passwd)) {
       <td bgcolor="#D0DCE0"><FONT size=3><?php echo PQL_WELCOME . " <B>" . PQL_DESCRIPTION; ?></B></FONT></td>
     </tr>
 
-    <tr align=center>
+    <tr align="center">
       <td class="title1"><? echo PQL_LOGIN; ?></td>
     </tr>
   </table>
   <form action="<?php echo $PHP_SELF; ?>" method=post name="phpqladmin">
     <table cellspacing="0" cellpadding="3" border="0" align=center>
+      <tr>
+        <td>LDAP Server:</td>
+        <td align="left"><b><?=$USER_HOST_USR?></b></td>
+      <tr>
 <?php
 	if (!empty($invalid)) {
 ?>
@@ -145,7 +149,10 @@ if (empty($uname) or empty($passwd)) {
 	// LDAP server to connect to - first one
 	// as default.
 	if(!$USER_HOST_CTR) {
-		$host = split(' ', PQL_LDAP_CONTROL_HOST);
+		// Get first entry -> default server:port
+		$host = split(' ', PQL_LDAP_HOST);
+
+		// Get hostname and port
 		$host = split(';', $host[0]);
 		$USER_HOST_CTR = $host[0] . ";" . $host[1];
 		
@@ -160,9 +167,12 @@ if (empty($uname) or empty($passwd)) {
 	// -------------------------------------
 	// Get the search base - controls database
 	if(!$USER_SEARCH_DN_CTR) {
-		$host = split(' ', PQL_LDAP_CONTROL_HOST);
+		// Get first entry -> default server:port
+		$host = split(' ', PQL_LDAP_HOST);
+
+		// Get hostname and base DN
 		$dn   = split(';', $host[0]);
-		$USER_SEARCH_DN_CTR = $dn[2];
+		$USER_SEARCH_DN_CTR = $dn[3];
 		
 		session_register("USER_SEARCH_DN_CTR");
 	} elseif(is_array($USER_SEARCH_DN_CTR)) {
