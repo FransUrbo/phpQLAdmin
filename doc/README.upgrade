@@ -2,10 +2,11 @@ Upgrading from 2.0.14
 	The schema have been updated, so don't forget to load the new
 	version!
 
-	I've added a template user_generate_email() function to the file
-	include/config.inc.CHANGE_ME. So either copy that function to your
-	include/config.inc file, or start with a new copy (see the README
-	file).
+	I've added a template user_generate_email() function (among other
+	changes) to the file include/config.inc.CHANGE_ME. So either copy
+	that function to your include/config.inc file, or start with a new
+	copy - which is recomended, since there are more changes than that.
+	See the README file.
 
 Upgrading from 2.0.13
 	The schema have been updated, so don't forget to load the new

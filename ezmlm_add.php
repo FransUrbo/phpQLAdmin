@@ -1,6 +1,6 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.20 2003-06-18 12:52:53 turbo Exp $
+// $Id: ezmlm_add.php,v 1.21 2003-06-21 20:19:25 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -117,7 +117,7 @@ if($domainname) {
 	}
 	
 	require("./include/pql_ezmlm.inc");
-	$ezmlm = new ezmlm('alias', $path);
+	$ezmlm = new ezmlm($config["PQL_GLOB_EZMLM_USER"], $path);
 }	
 
 // Create list

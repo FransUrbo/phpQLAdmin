@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_del.php,v 1.13 2003-04-04 16:37:20 turbo Exp $
+// $Id: ezmlm_del.php,v 1.14 2003-06-21 20:19:25 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -25,7 +25,7 @@ if(!($path = pql_get_domain_value($_pql, $domain, "basemaildir"))) {
 }
 
 // Load list of mailinglists
-if($ezmlm = new ezmlm('alias', $path)) {
+if($ezmlm = new ezmlm($config["PQL_GLOB_EZMLM_USER"], $path)) {
 	if(is_array($ezmlm->mailing_lists[$listno])) {
 		$listname = $ezmlm->mailing_lists[$listno]["name"] . "@" . $ezmlm->mailing_lists[$listno]["host"];
 		$listpath = $ezmlm->mailing_lists[$listno]["directory"];

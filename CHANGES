@@ -67,6 +67,8 @@ phpQLAdmin 2.0.15 Release (TO BE ANNOUNCED)
 		userNamePrefix          1.3.6.1.4.1.8767.3.2.4.13
 
 	Misc changes
+	  - Configurable define in config.inc which dictate what user
+	    (system account) ezmlm mailinglists is owned by.
 
 phpQLAdmin 2.0.14 Release (jun 12 2003)
 	Bug fixes
