@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.85 2004-04-29 12:42:08 turbo Exp $
+// $Id: domain_detail.php,v 2.86 2004-05-10 13:07:19 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -83,6 +83,7 @@ $attribs = array("autocreatemailaddress"	=> pql_get_define("PQL_ATTR_AUTOCREATE_
 				 "usernameprefix"			=> pql_get_define("PQL_ATTR_USERNAME_PREFIX"),
 				 "usernameprefixlength"		=> pql_get_define("PQL_ATTR_USERNAME_PREFIX_LENGTH"),
 				 "vatnumber"				=> pql_get_define("PQL_ATTR_VAT_NUMBER"),
+				 "ezmlmvirtualuser"			=> pql_get_define("PQL_ATTR_EZMLM_USER"),
 				 "info"						=> pql_get_define("PQL_ATTR_INFO"));
 foreach($attribs as $key => $attrib) {
 	// Get default value
