@@ -2,7 +2,7 @@
 // shows configuration of phpQLAdmin
 // config_detail.php,v 2.51 2004/03/11 18:13:32 turbo Exp
 //
-session_start();
+require("./include/pql_session.inc");
 require("./include/pql_config.inc");
 
 include($_SESSION["path"]."/header.html");
@@ -23,7 +23,7 @@ if($_REQUEST["action"] == "clear_session") {
     session_destroy();
 
     // Start a new session
-    session_start();
+    require("./include/pql_session.inc");
     $_SESSION["USER_HOST"]		= $user_host;
     $_SESSION["USER_DN"]		= $user_dn;
     $_SESSION["USER_PASS"]		= $user_pass;
