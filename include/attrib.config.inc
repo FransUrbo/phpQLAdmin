@@ -1,17 +1,19 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.33 2004-03-11 19:57:43 turbo Exp $
+// $Id: attrib.config.inc,v 1.34 2004-04-01 09:36:12 turbo Exp $
 
 function attribute_check() {
     global $error, $LANG;
 
 	$attrib = $_REQUEST["attrib"];
-
-    // is typed in ?
-    if(empty($_REQUEST[$attrib])) {
-		$error[$attrib] = $LANG->_('Missing');
-		return false;
-    }
+	if(($attrib != pql_get_define("PQL_ATTR_SCRIPT_CREATE_USER")) or
+	   ($attrib != pql_get_define("PQL_ATTR_SCRIPT_CREATE_DOMAIN"))) {
+		// Unless it's a 'externalScript{User,Domain}' attribute - is it typed in?
+		if(empty($_REQUEST[$attrib])) {
+			$error[$attrib] = $LANG->_('Missing');
+			return false;
+		}
+	}
     
     return true;
 }
@@ -232,6 +234,7 @@ function attribute_save() {
 	$toggle = @$_REQUEST["toggle"];
 	$rootdn = @$_REQUEST["rootdn"];
 	$delval = @$_REQUEST["delval"];
+printr($_REQUEST);
 
 	// DLW: This should be chopped up into functions to make it more readable.
 	
@@ -247,6 +250,11 @@ function attribute_save() {
 				  $entry[$attrib][] = $_POST[$var_name];
 			}
 		} // DLW: Why isn't plain old $entry[$attrib][] = $attrib_val here?
+		  // TURBO: Because if we've choosen a objectClass, then we have MULTIPLE
+		  //		choices - amount if in the hidden input 'name=$attrib', and
+		  //		all the choosen values are in 'name=$attrib\_$counter'.
+		  //		See the section that starts with 'if(is_array($objectclasses)) {' above.
+		  //		Also see the file 'attrib.administrator.inc' for more examples.
     }
 
 	// Try to find out if we have an old value, or what we should do with the value we have.
@@ -274,46 +282,56 @@ function attribute_save() {
 			 ($attrib != pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME")) and
 			 ($attrib != pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) and
 			 ($attrib != pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN"))) {
+		// We have a value for the attribute we're changing.
+		// Any attribute BUT: defaultPasswordScheme, userObjectClass or branchObjectClass
 		$entry[$attrib][] = $attrib_val;
 	} else {
 		if($rootdn) {
 			if($attrib != pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")) {
-				// Fetch old values from DB
-				unset($oldvalues); $oldvalues = pql_domain_get_value($_pql, $rootdn, $attrib);
-				if(is_array($oldvalues)) {
-					foreach($oldvalues as $val) {
-						if(!@eregi($delval, $val)) {
-							// Remove the one we don't want
-							$entry[$attrib][] = $val;
+				// Any attribute BUT controlsAdministrator - fetch old values from DB
+				if(!$attrib_val and 
+				   (($attrib == pql_get_define("PQL_ATTR_SCRIPT_CREATE_USER")) or
+					($attrib == pql_get_define("PQL_ATTR_SCRIPT_CREATE_DOMAIN")))) {
+					// If 'externalScript{User,Domain}' attribute(s) are empty, then
+					// special circumstances!
+					$delete[$attrib] = 1;
+				} else {
+					unset($oldvalues); $oldvalues = pql_domain_get_value($_pql, $rootdn, $attrib);
+					if(is_array($oldvalues)) {
+						foreach($oldvalues as $val) {
+							if(!@eregi($delval, $val)) {
+								// Remove the one we don't want
+								$entry[$attrib][] = $val;
+							}
 						}
-					}
-				} elseif($oldvalues) {
-					if($toggle) {
-						if($oldvalues == 'TRUE')
-						  $entry[$attrib][] = 'FALSE';
-						else
-						  $entry[$attrib][] = 'TRUE';
-					} else {
-						// Only one value, add it
-						$entry[$attrib][] = $oldvalues;
-					}
-				} elseif($toggle) {
-					// No old values and it's a toggle -> check default and reverse it
-					foreach($PQL_ATTRIBUTE as $level => $array) {
-						foreach($array as $key => $value) {
-							if(!is_array($value)) {
-								if(lc($value) == $attrib) {
-									if(pql_get_define($key, $rootdn) or (pql_get_define($key, $rootdn) == 'TRUE'))
-									  $entry[$attrib][] = 'FALSE';
-									else
-									  $entry[$attrib][] = 'TRUE';
-									
-									break;
+					} elseif($oldvalues) {
+						if($toggle) {
+							if($oldvalues == 'TRUE')
+							  $entry[$attrib][] = 'FALSE';
+							else
+							  $entry[$attrib][] = 'TRUE';
+						} else {
+							// Only one value, add it
+							$entry[$attrib][] = $oldvalues;
+						}
+					} elseif($toggle) {
+						// No old values and it's a toggle -> check default and reverse it
+						foreach($PQL_ATTRIBUTE as $level => $array) {
+							foreach($array as $key => $value) {
+								if(!is_array($value)) {
+									if(lc($value) == $attrib) {
+										if(pql_get_define($key, $rootdn) or (pql_get_define($key, $rootdn) == 'TRUE'))
+										  $entry[$attrib][] = 'FALSE';
+										else
+										  $entry[$attrib][] = 'TRUE';
+										
+										break;
+									}
 								}
 							}
 						}
-					}
-				} // ELSIF it's a toggle.
+					} // ELSIF it's a toggle.
+				} // IF attrib == externalScript{User,Domain}
 			} // IF attrib != controlsadministrator
 		} elseif(($attrib == pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME")) or
 				 ($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) or
@@ -386,7 +404,7 @@ function attribute_save() {
              * so that pql_domain_set_value knows what attribute we're talking about. */
 			if (!isset($entry[$attrib])) $entry[$attrib] = array();	// DLW: 
 
-			if(! pql_domain_set_value($_pql->ldap_linkid, $dn, '', $entry))
+			if(! pql_domain_set_value($_pql->ldap_linkid, $dn, NULL, $entry))
 			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 										   array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
 			else {
@@ -396,13 +414,24 @@ function attribute_save() {
 			}
 		} // FOREACH $_pql->ldap_basedn
 	} else {
-		if(! pql_domain_set_value($_pql->ldap_linkid, $rootdn, '', $entry)) 
-		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
-		else {
+		$success = 0;
+
+		if(@$delete[$attrib]) {
+			// We're deleting the 'externalScript{User,Domain}' attribute(s).
+			if(pql_domain_set_value($_pql->ldap_linkid, $rootdn, $attrib, NULL))
+              $success = 1;
+		} else {
+			if(pql_domain_set_value($_pql->ldap_linkid, $rootdn, NULL, $entry)) 
+			  $success = 1;
+		}
+
+		if($success) {
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										 array('what' => $attrib));
 			$rlnb = 1;
+		} else {
+			$msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+										 array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
 		}
 	}
 
