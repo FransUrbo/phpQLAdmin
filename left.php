@@ -33,43 +33,54 @@ if($advanced == 1) {
 }
 ?>
   <font color="black" class="heada">
-    <?=PQL_LANG_USER; ?>: <b><?=$USER_ID?></b> |
-    <a href="index.php?logout=1" target="_parent"><?=PQL_LANG_LOGOUT?></a>
+    <?=PQL_LANG_USER?>: <b><a href="user_detail.php?user=<?=$USER_DN?>"><?=$USER_ID?></a></b>
   </font>
   <br>
 <?php if($ADVANCED_MODE) { ?>
-  <font color="black" size="-10">
-    <?=$USER_DN?>
-  </font>
+
+  <font color="black" class="heada">Host: <b><?=$USER_HOST?></b></font>
+  <br>
 <?php } ?>
+
+  <font color="black" class="heada">
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="index.php?logout=1" target="_parent"><?=PQL_LANG_LOGOUT?></a>
+  </font>
+
+  <br>
+
   <form method=post action="index2.php" target="_top">
     <input type="checkbox" name="advanced" accesskey="a" onChange="this.form.submit()"<?=$checked?>><u>A</u>dvanced mode
   </form>
+<?php if($ALLOW_BRANCH_CREATE and $ADVANCED_MODE) { ?>
+
+  <div id="el2Parent" class="parent">
+    <nobr><a href="domain_add_form.php">Add domain branch</a></nobr>
+  </div>
+<?php  } ?>
 
   <!-- HOME -->
   <div id="el1Parent" class="parent">
+    <a class="item" href="home.php" onClick="if (capable) {expandBase('el1', true); return false;}">
+      <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el1Img">
+    </a>
+
     <a class="item" href="home.php">
       <font color="black" class="heada"><b>Home</b></font>
     </a>
   </div>
 
-<?php if($ADVANCED_MODE) { ?>
-  <font color="black" class="heada">
-    Host: <font color="black" size=-4><b><?=$USER_HOST?></b></font>
-  </font>
-  <br>
-
-<?php if($ALLOW_BRANCH_CREATE) { ?>
-  <div id="el2Parent" class="parent">
-    <nobr>
-      <a href="domain_add_form.php">Add domain branch</a>
-    </nobr>
+  <div id="el1Child" class="child">
+    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="config_detail.php">Show configuration</a></nobr><br>
+    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="config_ldaptest.php"><?php echo PQL_LANG_TEST_LDAP; ?></a></nobr><br>
+    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="doc/index.php"><?=PQL_LANG_DOCUMENTATION?></a></nobr><br>
+    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="TODO">What's left todo</a></nobr><br>
+    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="CHANGES">What's been done</a></nobr>
+    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://phpqladmin.bayour.com/">phpqladmin.bayour.com</a></nobr><br>
   </div>
+  <!-- HOME -->
 
 <?php
-	}
-}
-
 // Get ALL domains we have access.
 //	'administrator: USER_DN'
 // in the domain object
