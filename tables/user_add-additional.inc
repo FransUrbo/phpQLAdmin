@@ -1,7 +1,7 @@
-<?php /* $Id: user_add-additional.inc,v 1.17 2004-05-05 08:07:14 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.18 2004-05-05 12:35:37 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
-    <input type="hidden" name="surname"            value="<?=$_REQUEST["surname"]?>">
-    <input type="hidden" name="name"               value="<?=$_REQUEST["name"]?>">
+    <input type="hidden" name="surname"            value="<?=urlencode($_REQUEST["surname"])?>">
+    <input type="hidden" name="name"               value="<?=urlencode($_REQUEST["name"])?>">
     <input type="hidden" name="email"              value="<?=$_REQUEST["email"]?>">
     <input type="hidden" name="uid"                value="<?=$_REQUEST["uid"]?>">
 <?php if($account_type != "forward") { ?>
