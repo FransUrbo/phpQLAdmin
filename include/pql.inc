@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.40 2003-01-30 18:06:37 turbo Exp $
+// $Id: pql.inc,v 2.41 2003-01-31 06:05:41 turbo Exp $
 //
 
 // ----------------------------
@@ -189,24 +189,24 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 	else
 	  $userdn .= $domain;
 
-//	// --------------------------
-//	// DEBUG mode: Print the LDIF
-//	if($DEBUG >= 1) {
-//		echo "<br>--- DEBUG: pql_user_add() ---<br>";
-//		echo "dn: $userdn<br>";
-//		foreach($entry as $key => $e) {
-//			if(is_array($entry[$key])) {
-//				// ... in an array. Go through each one, creating the LDAP entry
-//				foreach($entry[$key] as $x) {
-//					echo "$key: $x<br>";
-//				}
-//			} else {
-//				echo "$key: $entry[$key]<br>";
-//			}
-//		}
-//		die("--- DEBUG ---");
-//	}
-//	// --------------------------
+	// --------------------------
+	// DEBUG mode: Print the LDIF
+	if($DEBUG >= 1) {
+		echo "<br>--- DEBUG: pql_user_add() ---<br>";
+		echo "dn: $userdn<br>";
+		foreach($entry as $key => $e) {
+			if(is_array($entry[$key])) {
+				// ... in an array. Go through each one, creating the LDAP entry
+				foreach($entry[$key] as $x) {
+					echo "$key: $x<br>";
+				}
+			} else {
+				echo "$key: $entry[$key]<br>";
+			}
+		}
+		die("--- DEBUG ---");
+	}
+	// --------------------------
     
     // adds the user
     if(! ldap_add($ldap_linkid, $userdn, $entry)){
