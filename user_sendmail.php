@@ -1,6 +1,6 @@
 <?php
 // send a testmail to an emailaddress
-// user_sendmail.php,v 1.3 2002/12/12 21:52:08 turbo Exp
+// $Id: user_sendmail.php,v 2.16 2003-11-14 11:55:52 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");

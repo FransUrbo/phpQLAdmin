@@ -1,4 +1,6 @@
 <?php
+// $Id: index2.php,v 2.25 2003-11-14 11:55:52 turbo Exp $
+
 session_start();
 require("./include/pql_config.inc");
 

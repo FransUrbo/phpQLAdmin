@@ -1,6 +1,6 @@
 <?php
 // logins to the system
-// index.php,v 1.4 2002/12/13 13:55:38 turbo Exp
+// $Id: index.php,v 2.30 2003-11-14 11:55:52 turbo Exp $
 //
 // Start debuging
 // http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0

@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// left.php,v 1.3 2002/12/12 21:52:08 turbo Exp
+// $Id: left.php,v 2.60 2003-11-14 11:55:52 turbo Exp $
 //
 session_start();
 

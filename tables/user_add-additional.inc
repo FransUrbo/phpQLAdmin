@@ -1,3 +1,4 @@
+<?php /* $Id: user_add-additional.inc,v 1.2 2003-11-14 11:56:22 turbo Exp $ */ ?>
   <form action="<?=$PHP_SELF?>" method="post" accept-charset="UTF-8">
     <input type="hidden" name="surname" value="<?=$surname?>">
     <input type="hidden" name="name" value="<?=$name?>">

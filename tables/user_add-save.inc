@@ -1,3 +1,5 @@
+	  // $Id: user_add-save.inc,v 1.2 2003-11-14 11:56:22 turbo Exp $
+
 	  // Find out what objectclasses to use when creating user
 	  $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $rootdn));
 

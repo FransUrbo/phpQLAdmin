@@ -1,6 +1,6 @@
 <?php
 // Fix a 'object class violation' by adding missing MUST attributes
-// Id: $
+// $Id: user_add_missing_attributes.php,v 2.3 2003-11-14 11:55:52 turbo Exp $
 //
 // This file is INCLUDED from pql.inc:pql_replace_userattribute()
 // and should NOT be called directly!

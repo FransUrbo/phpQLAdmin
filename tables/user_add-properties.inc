@@ -1,3 +1,4 @@
+<?php /* $Id: user_add-properties.inc,v 1.2 2003-11-14 11:56:22 turbo Exp $ */ ?>
 <form action="<?=$PHP_SELF?>" method="post" accept-charset="UTF-8">
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=$LANG->_('Account properties')?></th>

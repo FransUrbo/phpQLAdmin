@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// domain_add.php,v 1.3 2002/12/12 21:52:08 turbo Exp
+// $Id: domain_add.php,v 2.40 2003-11-14 11:55:52 turbo Exp $
 //
 session_start();
 

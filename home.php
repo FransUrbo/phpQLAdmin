@@ -1,6 +1,6 @@
 <?php
 // start page
-// home.php,v 1.3 2002/12/13 13:50:12 turbo Exp
+// $Id: home.php,v 2.31 2003-11-14 11:55:52 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
