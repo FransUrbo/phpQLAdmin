@@ -1,9 +1,15 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.74 2004-04-07 14:02:23 dlw Exp $
+// $Id: user_detail.php,v 2.75 2004-05-06 20:34:07 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
+
+// Check if user exists
+if(!pql_user_exist($_pql->ldap_linkid, $_GET["user"])) {
+    echo pql_complete_constant($LANG->_('User %user% does not exist'), array('user' => '<u>'.$_GET["user"].'</u>'));
+    exit();
+}
 
 if(!$_GET["rootdn"]) {
 	$_GET["rootdn"] = pql_get_rootdn($_GET["user"], 'user_detail.php');
@@ -26,8 +32,8 @@ if(isset($_GET["msg"])) {
 }
 
 // reload navigation bar if needed
-if(isset($rlnb) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
-	if($rlnb == 1) {
+if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
+	if($_REQUEST["rlnb"] == 1) {
 ?>
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
   <script language="JavaScript1.2"><!--
@@ -35,7 +41,7 @@ if(isset($rlnb) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
     refreshFrames();
   //--></script>
 <?php
-	} elseif($rlnb == 2) {
+	} elseif($_REQUEST["rlnb"] == 2) {
 ?>
   <script language="JavaScript1.2"><!--
     // reload navigation frame
@@ -55,12 +61,6 @@ $username = $username[0];
   <span class="title1"><?=$username?></span>
   <br><br>
 <?php
-// check if user exists
-if(!pql_user_exist($_pql->ldap_linkid, $_GET["user"])) {
-    echo pql_complete_constant($LANG->_('User %user% does not exist'), array('user' => '<u>'.$_GET["user"].'</u>'));
-    exit();
-}
-
 if(empty($_GET["view"]))
 	$_GET["view"] = 'basic';
 
@@ -146,16 +146,33 @@ if($uid) {
 	}
 }
 
-// Setup the buttons
-$buttons = array('basic'			=> 'User data',
-				 'personal'			=> 'Personal details',
-				 'email'			=> 'Registred addresses',
-				 'status'			=> 'Account status',
-				 'delivery'			=> 'Delivery mode',
-				 'forwards_from'	=> 'Forwarders from other accounts',
-				 'forwards_to'		=> 'Forwarders to other accounts');
+// Get the object classes of this user
+// If anyone of them is 'qmailGroup', then
+// it's a Group object!
+$objectclasses = pql_get_attribute($_pql->ldap_linkid, $_GET["user"],
+								   pql_get_define("PQL_ATTR_OBJECTCLASS"));
+if(in_array('qmailgroup', $objectclasses)) {
+	$USER_IS_GROUP = 1;
+}
 
-if($_SESSION["ADVANCED_MODE"]) {
+// Setup the buttons
+$buttons = array('basic'			=> 'User data');
+if(!$USER_IS_GROUP) {
+	$new = array('personal'			=> 'Personal details',
+				 'status'			=> 'Account status',
+				 'delivery'			=> 'Delivery mode');
+	$buttons = $buttons + $new;
+} else {
+	$new = array('group'			=> 'Group stuff');
+	$buttons = $buttons + $new;
+}
+
+$new = array('email'				=> 'Registred addresses',
+			 'forwards_from'		=> 'Forwarders from other accounts',
+			 'forwards_to'			=> 'Forwarders to other accounts');
+$buttons = $buttons + $new;
+
+if($_SESSION["ADVANCED_MODE"] and !$USER_IS_GROUP) {
 	$new = array('delivery_advanced'=> 'Advanced delivery properties',
 				 'mailbox'			=> 'Mailbox properties',
 				 'access'			=> 'User access');
@@ -179,6 +196,7 @@ if($_GET["view"] == 'personal')					include("./tables/user_details-personal.inc"
 if($_GET["view"] == 'email')					include("./tables/user_details-email.inc");
 if($_GET["view"] == 'status')					include("./tables/user_details-status.inc");
 if($_GET["view"] == 'delivery')					include("./tables/user_details-delivery.inc");
+if($_GET["view"] == 'group')					include("./tables/user_details-group.inc");
 if($_SESSION["ADVANCED_MODE"]) {
 	if($_GET["view"] == 'delivery_advanced')	include("./tables/user_details-delivery_advanced.inc");
 	if($_GET["view"] == 'mailbox')				include("./tables/user_details-mailbox.inc");
