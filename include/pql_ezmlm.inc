@@ -3,7 +3,7 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ezmlm.inc,v 1.10 2002-12-26 21:59:18 turbo Exp $
+// $Id: pql_ezmlm.inc,v 1.11 2002-12-26 22:05:00 turbo Exp $
 session_start();
 
 class ezmlm {
@@ -47,15 +47,16 @@ class ezmlm {
 	// Get DOTqmail links linked to specified directory
 	function _getdotlinks($dir, $base) {
 		// We're looking for some file that starts with this regexp:
-		//		$dir.*/$base-
+		//		$dir.*/$base
 		// And ends with any of these:
-		$regexp[] = 'accept-default';
-		$regexp[] = 'default';
-		$regexp[] = 'digest-owner';
-		$regexp[] = 'digest-return-default';
-		$regexp[] = 'owner';
-		$regexp[] = 'reject-default';
-		$regexp[] = 'return-default';
+		$regexp[] = '$';
+		$regexp[] = '-accept-default';
+		$regexp[] = '-default';
+		$regexp[] = '-digest-owner';
+		$regexp[] = '-digest-return-default';
+		$regexp[] = '-owner';
+		$regexp[] = '-reject-default';
+		$regexp[] = '-return-default';
 
 		if(!(($directory = @opendir($dir)) !=0)) {
 			$this->error = "could not open the directory '$dir'";
@@ -71,9 +72,9 @@ class ezmlm {
 				// It's a link.
 
 				for($i=0; $regexp[$i]; $i++) {
-					$lookfor = $dir.'.*/'.$base.'-'.$regexp[$i];
+					$lookfor = $dir.'.*/'.$base.$regexp[$i];
 
-					if(ereg($dir.'.*/'.$base.'-'.$regexp[$i], $target)) {
+					if(ereg($lookfor, $target)) {
 						$entries[] = $target;
 					}
 				}
