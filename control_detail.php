@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.10 2003-01-23 08:01:51 turbo Exp $
+// $Id: control_detail.php,v 1.11 2003-01-28 13:00:46 turbo Exp $
 session_start();
 require("./include/pql_config.inc");
 
@@ -183,7 +183,7 @@ if(defined("PQL_LDAP_CONTROL_USE")) {
 			if(!$i) {
 ?>
             <td><?=$local?></td>
-            <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=locals&type=add&value=<?=$local?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="control_edit_attribute.php?host=<?=$host?>&attrib=locals&type=del&value=<?=$local?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
+            <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=locals&type=add&set=<?=$local?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="control_edit_attribute.php?host=<?=$host?>&attrib=locals&type=del&set=<?=$local?>&submit=1"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
           </tr>
 
 <?php
@@ -192,7 +192,7 @@ if(defined("PQL_LDAP_CONTROL_USE")) {
           <tr class="<?php table_bgcolor(); ?>">
             <td class="title"></td>
             <td><?=$local?></td>
-            <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=locals&type=add&value=<?=$local?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="control_edit_attribute.php?host=<?=$host?>&attrib=locals&type=del&value=<?=$local?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
+            <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=locals&type=add&set=<?=$local?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="control_edit_attribute.php?host=<?=$host?>&attrib=locals&type=del&set=<?=$local?>&submit=1"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
           </tr>
 
 <?php
@@ -202,14 +202,20 @@ if(defined("PQL_LDAP_CONTROL_USE")) {
 	} else {
 ?>
           <td><i>not defined</i></td>
-          <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=locals&type=add&value=<?=$local?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="control_edit_attribute.php?host=<?=$host?>&attrib=locals&type=del&value=<?=$local?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
+          <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=locals&type=add&set=<?=$local?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="control_edit_attribute.php?host=<?=$host?>&attrib=locals&type=del&set=<?=$local?>&submit=1"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
         </tr>
 <?php
 	}
 ?>
           <tr class="<?php table_bgcolor(); ?>">
             <td class="title" align="right"><img src="images/edit.png" width="12" height="12"></td>
-            <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=locals">add value</a></td>
+            <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=locals">Add value</a></td>
+            <td></td>
+          </tr>
+
+          <tr class="<?php table_bgcolor(); ?>">
+            <td class="title" align="right"><img src="images/edit.png" width="12" height="12"></td>
+            <td><a href="control_edit_attribute.php?attrib=locals&type=replicate&host=<?=$host?>&submit=1">Replicate</a></td>
             <td></td>
           </tr>
         </th>
@@ -231,7 +237,7 @@ if(defined("PQL_LDAP_CONTROL_USE")) {
 			if(!$i) {
 ?>
             <td><?=$rcpthost?></td>
-            <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=rcpthosts&type=add&value=<?=$rcpthost?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="control_edit_attribute.php?host=<?=$host?>&attrib=rcpthosts&type=del&value=<?=$rcpthost?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
+            <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=rcpthosts&type=add&set=<?=$rcpthost?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="control_edit_attribute.php?host=<?=$host?>&attrib=rcpthosts&type=del&set=<?=$rcpthost?>&submit=1"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
           </tr>
 
 <?php
@@ -240,7 +246,7 @@ if(defined("PQL_LDAP_CONTROL_USE")) {
           <tr class="<?php table_bgcolor(); ?>">
             <td class="title"></td>
             <td><?=$rcpthost?></td>
-            <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=rcpthosts&type=add&value=<?=$rcpthost?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="control_edit_attribute.php?host=<?=$host?>&attrib=rcpthosts&type=del&value=<?=$rcpthost?>"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
+            <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=rcpthosts&type=add&set=<?=$rcpthost?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="control_edit_attribute.php?host=<?=$host?>&attrib=rcpthosts&type=del&set=<?=$rcpthost?>&submit=1"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
           </tr>
 
 <?php
@@ -257,7 +263,7 @@ if(defined("PQL_LDAP_CONTROL_USE")) {
 ?>
           <tr class="<?php table_bgcolor(); ?>">
             <td class="title" align="right"><img src="images/edit.png" width="12" height="12"></td>
-            <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=rcpthosts">add value</a></td>
+            <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=rcpthosts">Add value</a></td>
             <td></td>
           </tr>
         </th>
