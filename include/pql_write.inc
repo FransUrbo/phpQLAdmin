@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.8 2004-11-13 11:17:16 turbo Exp $
+// $Id: pql_write.inc,v 2.9 2004-11-13 13:01:04 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -11,7 +11,6 @@
 // ------------------------------------------------
 
 // {{{ pql_write_add(linkid, dn, entry, type, caller)
-
 // ADD an object - called with an 'ldif' for modification.
 function pql_write_add($linkid, $dn, $entry, $type, $caller) {
 	// Verify that the object have what it needs to be able to be added
@@ -21,7 +20,7 @@ function pql_write_add($linkid, $dn, $entry, $type, $caller) {
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif($caller, $dn, $entry);
 	if(file_exists("./.DEBUG_ME"))
-	  die($LDIF);
+	  echo $LDIF;
 	else {
 		// -----
 		// Add this object to the database
@@ -276,17 +275,14 @@ function pql_modify_attribute($linkid, $dn, $attrib, $old, $new) {
 // They're WAY to complicated!
 // ------------------------------------------------
 
-// {{{ pql_user_add(ldap_linkid, domain, cn, attribs, account_type, branch)
+// {{{ pql_user_add(ldap_linkid, domain, dn, entry, type, branch)
 // Add a user to the LDAP database
-function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $branch) {
-	global $account_type;
-
-	// -----
+function pql_user_add($ldap_linkid, $domain, $dn, $entry, $type, $branch) {
 	// What's the Root DN (namingContexts) for this domain
 	$rootdn = pql_get_rootdn($domain, 'pql_user_add'); $rootdn = urldecode($rootdn);
 
-	// -----
-	if($account_type == "group") {
+	// {{{ Setup the objectclasses
+	if($type == "group") {
 		// OpenLDAP version >2.2 REQUIRE one structural objectclass.
 		$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'person';
 
@@ -294,42 +290,21 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 
 		// We need the uid attribute (etc);
 		$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'posixAccount';
+	} else {
+		if(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $rootdn)) {
+			foreach(pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $rootdn)) as $oc) {
+				if((($type == 'mail') and ($oc == 'krb5principal')) or
+				   (($type == 'mail') and ($oc == 'trustaccount')))
+				  next;
+				else
+				  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = $oc;
+			}
+		}
 	}
+	// }}}
 
-	// -----
-	// Create the RDN for the user
-	if($entry[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)])
-	  $userdn = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) . "=" .
-		$entry[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)] . ",";
-	elseif($entry[pql_get_define("PQL_ATTR_UID")])
-	  $userdn = pql_get_define("PQL_ATTR_UID")."=".$entry[pql_get_define("PQL_ATTR_UID")].",";
-	else {
-		echo "I can't figure out how to name the RDN!<br>";
-		echo "Both the user reference value (".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn);
-		echo ") and the backup reference (".pql_get_define("PQL_ATTR_UID").") is empty...<br>";
-		die("I have no idea how to continue from here...");
-	}
-
-	if($branch)
-	  $userdn .= urldecode($branch);
-	else
-	  $userdn .= urldecode($domain);
-	$userdn = pql_maybe_encode($userdn);
-
-	// -----
-	// Make sure that all attributes we're using in this object have a corresponding object class
-	$entry = pql_validate_object($ldap_linkid, $userdn, $entry, $account_type);
-
-	// -----
-	// Create a LDIF object to print in case of error
-	$LDIF = pql_create_ldif("pql_user_add - user creation", $userdn, $entry);
-
-	if(file_exists("./.DEBUG_ME"))
-	  die($LDIF);
-
-	// -----
-    // Add the user to the database
-    if(! ldap_add($ldap_linkid, $userdn, $entry)) {
+    // {{{ Add the user to the database
+    if(!pql_write_add($ldap_linkid, $dn, $entry, $type, 'pql_user_add - user creation/1')) {
 		// failed to add user
 		$failed = 1; pql_format_error(1);
 
@@ -347,33 +322,31 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 			$ou_entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'organizationalUnit';
 			
 			// Create a LDIF object to print in case of error
-			$ou_LDIF = pql_create_ldif("pql_user_add - user creation/ou", $ou_rdn, $ou_entry);
-			if(! ldap_add($ldap_linkid, $ou_rdn, $ou_entry)) {
+			if(!pql_write_add($ldap_linkid, $ou_rdn, $ou_entry, '', 'pql_user_add - user creation/ou')) {
 				echo "I've tried to add the user object, but that failed because of error 32 - No such object. ";
 				echo "The idea was that it was missing the organizational unit container preceding it in the path. ";
 				echo "That didn't work either. I'm stumped...<br>";
 
-				echo "$ou_LDIF<p>";
 				$failed = 1;
 			} else {
 				// Adding the ou container worked! Try adding the user again.
 				$failed = 0;
-				if(! ldap_add($ldap_linkid, $userdn, $entry))
+				if(!pql_write_add($ldap_linkid, $dn, $entry, $type, 'pql_user_add - user creation/2'))
 				  $failed = 1;
 			}
 		}
 		
 		if($failed) {
 			pql_format_error(1);
-			die("$LDIF");
+			die();
 		}
 	}
-	$dns[]  = $userdn;
-	echo "Added $userdn<br>";
+	$dns[]  = $dn;
+	echo "Added $dn<br>";
+	// }}}
     
-	// -----
-	// If this is a 'system' account, create the Group object
-	if($account_type == "system" and $entry[pql_get_define("PQL_ATTR_QMAILGID")]) {
+	// {{{ If this is a 'system' account, create the Group object
+	if($type == "system" and $entry[pql_get_define("PQL_ATTR_QMAILGID")]) {
 		// Remember this for the NEW entry object...
 		$gidnr = $entry[pql_get_define("PQL_ATTR_QMAILGID")];
 		
@@ -389,30 +362,30 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 
 		$groupdn = pql_get_define("PQL_ATTR_CN") . "=" . $attribs[pql_get_define("PQL_ATTR_USER_RDN_ATTRIBUTE", $rootdn)] . $subrdn . "," . urldecode($domain);
 
-		// Add the OpenLDAPaci attribute (maybe)
-		if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci"))
-		  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($ldap_linkid, $_SESSION["USER_DN"], 'group');
-
-		// Create a LDIF object to print in case of error
-		$LDIF = pql_create_ldif("pql_user_add - group creation", $groupdn, $entry);
-
 		// --------------------------
-		if(! ldap_add($ldap_linkid, $groupdn, $entry)) {
+		if(!pql_write_add($ldap_linkid, $groupdn, $entry, 'group', 'pql_user_add - group creation')) {
 			// failed to add user
 			pql_format_error(1);
-			die("$LDIF");
-			return $dns;
+			die();
 		}
 		$dns[] = $groupdn;
 		echo "Added $groupdn<br>";
 	}
+	// }}}
 	
+	if(file_exists("./.DEBUG_ME")) {
+		echo "DNs added: ";
+		printr($dns);
+		die();
+	}
+
     return $dns;
 }
 
 // }}}
 
 // {{{ pql_user_del(ldap, domain, user, delete_forwards)
+
 // Delete a user from the LDAP database
 function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 	$linkid = $ldap->ldap_linkid;
@@ -510,6 +483,7 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 // }}}
 
 // {{{ pql_domain_add(ldap_linkid, basedn, branch_name)
+
 // Adds a domain into ldap-tree (o|ou|dc-record)
 function pql_domain_add($ldap_linkid, $basedn, $branch_name) {
 	// Maybe UTF-8 encode the branch name - to allow international characters
