@@ -129,11 +129,48 @@ if(is_array($controladmins)) {
 } elseif($controladmins == $user) {
 	$controlsadministrator = 1;
 }
+
+// Setup the buttons
+$buttons = array('basic'			=> 'User data',
+				 'personal'			=> 'Personal details',
+				 'email'			=> 'Registred addresses',
+				 'status'			=> 'Account status',
+				 'delivery'			=> 'Delivery mode',
+				 'forwards_from'	=> 'Forwarders from other accounts',
+				 'forwards_to'		=> 'Forwarders to other accounts');
+
+if($ADVANCED_MODE) {
+	$new = array('delivery_advanced'=> 'Advanced delivery properties',
+				 'mailbox'			=> 'Mailbox properties',
+				 'access'			=> 'User access');
+	$buttons = $buttons + $new;
+
+	if($ALLOW_BRANCH_CREATE) {
+		$new = array('aci'			=> 'Access Control Information');
+		$buttons = $buttons + $new;
+	}
+}
+
+if(!$SINGLE_USER) {
+	$new = array('actions'			=> 'Actions');
+	$buttons = $buttons + $new;
+}
 ?>
 
   <table cellspacing="0" border="0" width="100%" cellpadding="0">
     <tr>
-      <td colspan="2" valign="bottom" align="left" width="100%" colspan="2"><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=basic"?>"><img alt="/ <?=$LANG->_('User data')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('User data')?>"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=personal"?>"><img alt="/ <?=$LANG->_('Personal details')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Personal details')?>"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=email"?>"><img alt="/ <?=$LANG->_('Registred addresses')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Registred addresses')?>"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=status"?>"><img alt="/ <?=$LANG->_('Account status')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Account status')?>"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=delivery"?>"><img alt="/ <?=$LANG->_('Delivery mode')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Delivery mode')?>"></a><?php if($ADVANCED_MODE) { ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=delivery_advanced"?>"><img alt="/ <?=$LANG->_('Advanced delivery properties')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Advanced delivery properties')?>"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=mailbox"?>"><img alt="/ <?=$LANG->_('Mailbox properties')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Mailbox properties')?>"></a><?php } ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=forwards_from"?>"><img alt="/ <?=$LANG->_('Forwarders from other accounts')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Forwarders from other accounts')?>"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=forwards_to"?>"><img alt="/ <?=$LANG->_('Forwarders to other accounts')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Forwarders to other accounts')?>"></a><?php if($ADVANCED_MODE) { ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=access"?>"><img alt="/ <?=$LANG->_('User access')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('User access')?>"></a><br><?php if($ALLOW_BRANCH_CREATE) { ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=aci"?>"><img alt="/ <?=$LANG->_('Access Control Information')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Access Control Information')?>"></a><?php } ?><?php } ?><?php if(!$SINGLE_USER) { ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=actions"?>"><img alt="/ <?=$LANG->_('Actions')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Actions')?>"></a><?php } ?></td>
+      <td colspan="2" valign="bottom" align="left" width="100%" colspan="2"><?php
+	  $i=0; // A button counter.
+	  foreach($buttons as $link => $text) {
+		  // Generate the button link etc
+		  pql_generate_button($link, $text);
+
+		  // Increase button counter
+		  $i++;
+
+		  // If we have outputted an even number of buttons, break line
+		  if(!($i % 2))	echo "<br>";
+	  } ?></td>
   </tr>
 </table>
 
