@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.171 2004-03-31 08:57:18 turbo Exp $
+// $Id: pql.inc,v 2.172 2004-04-01 06:30:21 turbo Exp $
 //
 
 // ----------------------------
@@ -1799,32 +1799,6 @@ function pql_check_hostaddress($host, $force_dot = 0) {
 	  return preg_match("/^([0-9a-z-]+\.[0-9a-z-]+)+$/i", $host);
 	else
 	  return preg_match("/[^0-9a-z]/i", $host);
-}
-// }}}
-
-// {{{ pql_print_filesize(bytes)
-function pql_print_filesize($bytes) {
-    // print out human readable filesizes
-    
-    // at which byte/kb/mb count switch to the next upper level
-    $switch_bytes = "750";
-    
-    if($bytes >= ($switch_bytes * 1048576)){
-		$gb = number_format($bytes / 1073741824, 2, ".", "'");
-		return $gb . " GB";
-    }
-    
-    if($bytes >= ($switch_bytes * 1024)){
-		$mb = number_format($bytes / 1048576, 2, ".", "'");
-		return $mb . " MB";
-    }
-    
-    if($bytes >= $switch_bytes){
-		$mb =  number_format($bytes / 1024, 2, ".", "'");
-		return $mb . " KB";
-    }
-    
-    return $bytes . " Bytes";
 }
 // }}}
 

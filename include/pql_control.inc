@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.38 2004-03-19 10:12:42 turbo Exp $
+// $Id: pql_control.inc,v 2.39 2004-04-01 06:29:29 turbo Exp $
 //
 
 // {{{ control connection class
@@ -375,6 +375,32 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 	}
 
     return true;
+}
+// }}}
+
+// {{{ pql_control_print_filesize(bytes)
+function pql_control_print_filesize($bytes) {
+    // print out human readable filesizes
+    
+    // at which byte/kb/mb count switch to the next upper level
+    $switch_bytes = "750";
+    
+    if($bytes >= ($switch_bytes * 1048576)){
+		$gb = number_format($bytes / 1073741824, 2, ".", "'");
+		return $gb . " GB";
+    }
+    
+    if($bytes >= ($switch_bytes * 1024)){
+		$mb = number_format($bytes / 1048576, 2, ".", "'");
+		return $mb . " MB";
+    }
+    
+    if($bytes >= $switch_bytes){
+		$mb =  number_format($bytes / 1024, 2, ".", "'");
+		return $mb . " KB";
+    }
+    
+    return $bytes . " Bytes";
 }
 // }}}
 
