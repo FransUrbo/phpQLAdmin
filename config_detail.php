@@ -120,6 +120,7 @@ foreach($_pql->ldap_basedn as $dn) {
 </tr>
 <?php
 	}
+?>
 
 <tr></tr>
 
