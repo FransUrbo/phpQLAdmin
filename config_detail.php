@@ -36,7 +36,7 @@ foreach($_pql->ldap_basedn as $dn) {
 
   <table cellspacing="0" border="0" width="100%" cellpadding="0">
     <tr>
-      <td valign="bottom" align="left" width="100%" colspan="2"><a href="<?=$PHP_SELF."?view=default"?>"><img alt="/ Global Configuration \" vspace="0" hspace="0" border="0" src="navbutton.php?Global Configuration"></a><?php $i=1; foreach($_pql->ldap_basedn as $dn) { if(!($i%2)) { ?><br><?php } ?><a href="<?=$PHP_SELF."?view=branch&branch=$dn"?>"><img alt="/ Top Branch <?=$dn?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$dn?>"></a><?php $i++; } ?>
+      <td valign="bottom" align="left" width="100%" colspan="2"><a href="<?=$PHP_SELF."?view=default"?>"><img alt="/ Global Configuration \" vspace="0" hspace="0" border="0" src="navbutton.php?Global Configuration"></a><?php $i=1; foreach($_pql->ldap_basedn as $dn) { $dn = urldecode($dn); if(!($i%2)) { ?><br><?php } ?><a href="<?=$PHP_SELF."?view=branch&branch=$dn"?>"><img alt="/ Top Branch <?=$dn?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$dn?>"></a><?php $i++; } ?>
       </td>
     </tr>
   </table>
