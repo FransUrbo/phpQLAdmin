@@ -45,6 +45,9 @@ phpQLAdmin 2.0.18d TO BE ANNOUNCED
 	    happen! Closes bug 182
 
 	GUI layout change
+	  - Don't show the minus image before 'no domains' (left-ezmlm.php) if there's
+	    no mailing lists to display
+
 	Misc changes	
 
 phpQLAdmin 2.0.18c (May  5 2004)
