@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.5.12.1 2004-12-19 15:50:52 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.5.12.2 2004-12-20 17:49:52 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -18,16 +18,52 @@ function attribute_check() {
 function attribute_print_form() {
     global $_pql, $LANG;
 
+	// {{{ Translate the TYPE to dNSZone objectclass attribute
+	if($_REQUEST["attrib"]) {
+	  switch($_REQUEST["attrib"]) {
+      case "a":
+      case "host":
+		$attrib = 'relativeDomainName';
+		break;
+      case "ttl":
+		$attrib = 'dNSTTL';
+		break;
+      case "ns":
+		$attrib = 'nSRecord';
+		break;
+      case "mx":
+		$attrib = 'mXRecord';
+		break;
+      case "cname":
+		$attrib = 'cNAMERecord';
+		break;
+      case "srv":
+		$attrib = 'sRVRecord';
+		break;
+      case "txt":
+		$attrib = 'tXTRecord';
+		break;
+      default:
+		die("unknown zone type '".$_REQUEST["type"]."'.");
+	  }
+	}
+	// }}}
+
 	if($_REQUEST["action"] != 'add') {
 		// Get old value
 		$dn = urldecode($_REQUEST["rdn"]);
-		$oldvalue = pql_bind9_get_record($_pql->ldap_linkid, $dn, $_REQUEST["attrib"]);
+		$oldvalue = pql_bind9_get_record($_pql->ldap_linkid, $dn, $attrib);
 		$oldvalue = $oldvalue[0];
 	}
+
+	// relativeDomainName zoneName
+	$host   = pql_bind9_get_record($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")); $host = $host[0];
+	$domain = pql_bind9_get_record($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ZONENAME")); $domain = $domain[0];
+	$host = $host.".".$domain;
 ?>
     <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
       <table cellspacing="0" cellpadding="3" border="0">
-        <th colspan="3" align="left"><?=$LANG->_('Change Bind9 value')?></th>
+        <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Change Bind9 value for %host%'), array('host' => $host))?></th>
           <tr class="<?php pql_format_table(); ?>">
             <td class="title"><?php echo pql_complete_constant($LANG->_('Change attribute %attribute%'), array('attribute' => $_REQUEST["attrib"])); ?></td>
             <td><input type="text" name="<?=$_REQUEST["attrib"]?>" value="<?=$oldvalue?>" size="20"></td>
@@ -80,6 +116,37 @@ function attribute_save($action) {
     global $_pql, $LANG;
 	$attrib = $_REQUEST["attrib"];
 
+	// {{{ Translate the TYPE to dNSZone objectclass attribute
+	if($_REQUEST["attrib"]) {
+	  switch($_REQUEST["attrib"]) {
+      case "a":
+      case "host":
+		$attrib_search = 'relativeDomainName';
+		break;
+      case "ttl":
+		$attrib_search = 'dNSTTL';
+		break;
+      case "ns":
+		$attrib_search = 'nSRecord';
+		break;
+      case "mx":
+		$attrib_search = 'mXRecord';
+		break;
+      case "cname":
+		$attrib_search = 'cNAMERecord';
+		break;
+      case "srv":
+		$attrib_search = 'sRVRecord';
+		break;
+      case "txt":
+		$attrib_search = 'tXTRecord';
+		break;
+      default:
+		die("unknown zone type '".$_REQUEST["type"]."'.");
+	  }
+	}
+	// }}}
+
 	if((lc($attrib) == 'mxrecord') && $_REQUEST["priority"])
 	  $_REQUEST[$attrib] = $_REQUEST["priority"] . " " . $_REQUEST[$attrib];
 
@@ -98,6 +165,7 @@ function attribute_save($action) {
 
     switch($action) {
 	  case "add":
+		// {{{ add
 		// Get old value
 		$oldvalues = pql_bind9_get_record($_pql->ldap_linkid, $_REQUEST["rdn"], $attrib);
 
@@ -108,27 +176,31 @@ function attribute_save($action) {
 		// Add the new value to the array
 		$entry[$attrib][] = $_REQUEST[$attrib];
 
-		if(pql_bind9_set_record($_pql->ldap_linkid, $rdn, $entry))
+		if(pql_bind9_set_record($_pql->ldap_linkid, $_REQUEST["rdn"], $entry))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $_REQUEST[$attrib])).".";
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $_REQUEST[$attrib])) . ": " . ldap_error($_pql->ldap_linkid);
 		break;
+		// }}}
 
 	  case "modify":
-		if(pql_bind9_set_record($_pql->ldap_linkid, $rdn, $attrib, $_REQUEST[$attrib]))
+		// {{{ mod
+		if(pql_bind9_set_record($_pql->ldap_linkid, $_REQUEST["rdn"], $attrib_search, $_REQUEST[$attrib]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $attrib));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
 		break;
+		// }}}
 
 	  case "del":
+		// {{{ del
 		if($_REQUEST["type"] and $_REQUEST["oldvalue"]) {
 			// Get old value
-			$oldvalues = pql_bind9_get_record($_pql->ldap_linkid, $rdn, $attrib);
+			$oldvalues = pql_bind9_get_record($_pql->ldap_linkid, $_REQUEST["rdn"], $attrib);
 			for($i=0; $oldvalues[$i]; $i++) {
 				// Filter out the value to delete
 				if($oldvalues[$i] != $oldvalue)
@@ -150,6 +222,7 @@ function attribute_save($action) {
 										   array('value' => $_REQUEST["rdn"])) . ": " . ldap_error($_pql->ldap_linkid);
 		}
 		break;
+		// }}}
 	}
 
     attribute_forward($msg);
