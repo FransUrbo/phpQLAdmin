@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.54 2004-05-10 13:19:48 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.55 2004-10-05 07:52:22 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -344,26 +344,33 @@ function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $do
 //	$i = 0;
 //
 //	// Public entries
-//	$aci[$i] = "1.2.3#entry#grant;r;[entry]#public#"; $i++;
-//	$aci[$i] = "1.2.3#entry#grant;r,s,c;objectClass,entry#public#"; $i++;
+//	$aci[$i] = "$i#entry#grant;r,s,c;objectClass,[entry]#public#"; $i++;
 //	
 //	// Non-public entries
 //	if($type == 'user') {
-//		$aci[$i] = "1.2.3#entry#grant;x;userPassword,krb5PrincipalName#public#"; $i++;
-//		$aci[$i] = "1.2.3#entry#grant;r,s,c;uid,cn,accountStatus,uidNumber,gidNumber,gecos,homeDirectory,loginShell#public#"; $i++;
+//		$aci[$i] = "$i#entry#grant;x;userPassword,krb5PrincipalName#public#"; $i++;
+//		$aci[$i] = "$i#entry#grant;r,s,c;uid,cn,accountStatus,uidNumber,gidNumber,gecos,homeDirectory,loginShell#public#"; $i++;
 //
 //		// 'user'/'self' writable/readable entries
-//		$aci[$i] = "1.2.3#entry#grant;r,s,c;sn,givenName,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,mailMessageStore,o,l,st,telephoneNumber,postalCode,title#users#"; $i++;
-//		$aci[$i] = "1.2.3#entry#grant;r,s,c;sn,givenName,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,mailMessageStore,o,l,st,telephoneNumber,postalCode,title#self#"; $i++;
+//		$aci[$i] = "$i#entry#grant;r,s,c;sn,givenName,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,mailMessageStore,o,l,st,telephoneNumber,postalCode,title#users#"; $i++;
+//		$aci[$i] = "$i#entry#grant;r,s,c;sn,givenName,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,mailMessageStore,o,l,st,telephoneNumber,postalCode,title#self#"; $i++;
 //	} elseif($type == 'group') {
-//		$aci[$i] = "1.2.3#entry#grant;r,s,c;cn,gidNumber#public#"; $i++;
+//		$aci[$i] = "$i#entry#grant;r,s,c;cn,gidNumber#public#"; $i++;
 //	} elseif($type == 'qmail') {
-//		$aci[$i] = "1.2.3#entry#grant;r,s;[all]#access-id#ENTER_WHOEVER_YOUR_QMAILSERVER_USES"; $i++;
+//		$aci[$i] = "$i#entry#grant;r,s;[all]#access-id#ENTER_WHOEVER_YOUR_QMAILSERVER_USES"; $i++;
+//	} elseif($type == 'branch') {
+//		if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $_REQUEST["rootdn"]) == "o") {
+//			$aci[$i] = "$i#entry#grant;r,s,c;o#public#"; $i++;
+//		} else {
+//			$aci[$i] = "$i#entry#grant;r,s,c;dc#public#"; $i++;
+//		}
+//
+//		$aci[$i] = "$i#entry#grant;w,r,s,c,x;[all]#access-id#$user"; $i++;
 //	}
 //
 //	// Non-public entries
-//	$aci[$i] = "1.2.3#entry#grant;w,r,s,c;[children]#access-id#$user"; $i++;
-//	$aci[$i] = "1.2.3#entry#grant;w,r,s,c,x;[all]#access-id#$user"; $i++;
+//	$aci[$i] = "$i#entry#grant;w,r,s,c;[children]#access-id#$user"; $i++;
+//	$aci[$i] = "$i#entry#grant;w,r,s,c,x;[all]#access-id#$user"; $i++;
 //
 //	return($aci);
 //}
