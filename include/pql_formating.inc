@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.11 2004-01-26 05:14:38 turbo Exp $
+// $Id: pql_formating.inc,v 2.12 2004-02-14 17:07:50 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -135,7 +135,7 @@ function pql_format_table($echo = 1) {
 
 // {{{ pql_format_tree(text, url, links, level)
 function pql_format_tree($text, $url, $links = '', $level = 0) {
-	global $opera, $div_counter;
+	global $div_counter;
 
 	if(empty($div_counter))
 	  $div_counter = 0;
@@ -143,7 +143,7 @@ function pql_format_tree($text, $url, $links = '', $level = 0) {
 	$child  = $div_counter . "Child";
 	$parent = "Parent";
 
-	if($opera) {
+	if($_SESSION["opera"]) {
 		pql_format_tree_opera($div_counter, $text, $url, $level, $parent, $child);
 	} else {
 		pql_format_tree_other($div_counter, $text, $url, $level, $parent, $child);
@@ -234,9 +234,7 @@ function pql_format_tree_span($text, $links, $level) {
 
 // {{{ pql_format_tree_end(void)
 function pql_format_tree_end() {
-	global $opera;
-
-	if($opera)
+	if($_SESSION["opera"])
 	  echo "  </span>\n\n";
 	else
 	  echo "  </div>\n\n";

@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.30 2004-02-14 14:25:35 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.31 2004-02-14 17:07:50 turbo Exp $
 
 require("./left-head.html");
 
@@ -28,9 +28,6 @@ function attribute_print_form($action) {
     global $orgname; 			// Set by domain_edit_attributes.php
 
 	$attrib = $_REQUEST["attrib"];
-
-	if ($action == 'add') $action = 'fulldomain'; // DLW: Talk to Turbo about the relation between $type and $action.
-
 ?>
   <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -92,9 +89,10 @@ function attribute_print_form($action) {
 						$d = pql_maybe_decode($d);
 ?>
 
-<?php if($opera) { // DLW: Is the $opera variable visable here? ?>
+<?php if($_SESSION["opera"]) { ?>
             <div id="el2Parent" class="parent" onclick="showhide(el<?=$j?>Spn, el<?=$j?>Img)">
               <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$j?>Img">
+              <font color="black" class="heada"><?=$d?></font>
             </div>
 <?php } else { ?>
             <div id="el<?=$j?>Parent" class="parent">
@@ -108,7 +106,7 @@ function attribute_print_form($action) {
             </div>
 <?php } ?>
         
-<?php if($opera) { ?>
+<?php if($_SESSION["opera"]) { ?>
             <span id="el<?=$j?>Spn" style="display:'none'">
 <?php } else { ?>
             <div id="el<?=$j?>Child" class="child">
@@ -133,7 +131,7 @@ function attribute_print_form($action) {
 
 						$j++;
 ?>
-<?php if($opera) { ?>
+<?php if($_SESSION["opera"]) { ?>
             </span>
 <?php } else { ?>
             </div>
