@@ -32,6 +32,12 @@
             <td><a href="control_edit_attribute.php?mxhost=<?=$mxhost?>&attrib=rcpthosts">Add value</a></td>
             <td></td>
           </tr>
+
+          <tr class="<?php pql_format_table(); ?>">
+            <td class="title" align="right"><img src="images/edit.png" width="12" height="12"></td>
+            <td><a href="control_edit_attribute.php?attrib=rcpthosts&type=replicate&mxhost=<?=$mxhost?>&submit=1&view=<?=$view?>">Replicate</a></td>
+            <td></td>
+          </tr>
         </th>
       </table>
 <?php
