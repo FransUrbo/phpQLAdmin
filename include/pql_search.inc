@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.18.8.1 2004-09-17 13:29:39 turbo Exp $
+// $Id: pql_search.inc,v 2.18.8.1.2.1 2004-12-19 10:26:40 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -16,12 +16,17 @@ function pql_search($linkid, $basedn, $filter, $attrib = 'dn', $level = "SUBTREE
 	// URL decode the object DN if it's URL ENcoded
 	$basedn = urldecode($basedn);
 
+	if($attrib == pql_get_define("PQL_ATTR_LDAPACI"))
+	  $retreive = array(pql_get_define("PQL_ATTR_LDAPACI"));
+	else
+	  $retreive = array();
+
 	if($level == "SUBTREE") 
-	  $sr = @ldap_search($linkid, $basedn, $filter);
+	  $sr = @ldap_search($linkid, $basedn, $filter, $retreive);
 	elseif($level == "ONELEVEL")
-	  $sr = @ldap_list($linkid, $basedn, $filter);
+	  $sr = @ldap_list($linkid, $basedn, $filter, $retreive);
 	else  // $level == "BASE"
-	  $sr = @ldap_read($linkid, $basedn, $filter);
+	  $sr = @ldap_read($linkid, $basedn, $filter, $retreive);
 
 	if(!$sr)
 	  // No such object
@@ -54,8 +59,6 @@ function pql_get_dn($ldap, $reference, $multiples = 0) {
 
     // dn not in cache -> search for it
 	foreach($ldap->ldap_basedn as $base) {
-		$base = urldecode($base);
-
 		// Setup the search filter
 		$filter  = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $base) . "=";
 		$filter .= pql_maybe_encode($reference, pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $base),
