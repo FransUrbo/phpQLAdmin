@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of user
-// $Id: user_edit_attribute.php,v 2.43 2004-10-18 13:39:31 turbo Exp $
+// $Id: user_edit_attribute.php,v 2.44 2004-11-05 11:10:59 turbo Exp $
 //
 // This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
 //   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -43,13 +43,12 @@ $defaultdomain = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_
 
 // Get the username. Prettier than the DN
 $username = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_CN"));
-if(!$username[0]) {
+if(!$username) {
     // No common name, use uid field
     $username = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_UID"));
 }
-$username = $username[0];
 
-// forward back to users detail page (called by attribute_save).
+// {{{ Forward back to users detail page (called by attribute_save).
 function attribute_forward($msg, $rlnb = false) {
     global $url;
 
@@ -60,6 +59,7 @@ function attribute_forward($msg, $rlnb = false) {
 
     header("Location: " . pql_get_define("PQL_CONF_URI") . "$link");
 }
+// }}}
 
 include("./header.html");
 
