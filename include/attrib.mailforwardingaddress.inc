@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailforwardingaddress (forward all mails to this address)
-// $Id: attrib.mailforwardingaddress.inc,v 2.6 2003-04-29 08:37:20 turbo Exp $
+// $Id: attrib.mailforwardingaddress.inc,v 2.7 2003-05-27 10:18:29 turbo Exp $
 
 function attribute_check($type){
 	global $mailforwardingaddress, $error;
@@ -71,7 +71,7 @@ function attribute_save($type){
 	
 	switch($type){
 	  case "add":
-		if(pql_replace_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_FORWARDS"], $mailforwardingaddress)){
+		if(pql_modify_userattribute($_pql->ldap_linkid, $user, $config["PQL_GLOB_ATTR_FORWARDS"], '', $mailforwardingaddress)){
 			$msg = pql_complete_constant(PQL_LANG_MAILFORWARDINGADDRESS_ADD_OK, array("mail" => $mailforwardingaddress));
 		} else {
 			$msg = PQL_LANG_MAILFORWARDINGADDRESS_ADD_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
