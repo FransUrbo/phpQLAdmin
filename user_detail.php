@@ -108,8 +108,8 @@ if(($view == 'basic') or ($view == ''))	include("./tables/user_details-basic.inc
 if($view == 'personal')					include("./tables/user_details-personal.inc");
 if($view == 'email')					include("./tables/user_details-email.inc");
 if($view == 'status')					include("./tables/user_details-status.inc");
+if($view == 'delivery')					include("./tables/user_details-delivery.inc");
 if($ADVANCED_MODE) {
-	if($view == 'delivery')				include("./tables/user_details-delivery.inc");
 	if($view == 'delivery_advanced')	include("./tables/user_details-delivery_advanced.inc");
 	if($view == 'mailbox')				include("./tables/user_details-mailbox.inc");
 }

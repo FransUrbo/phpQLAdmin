@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliverymode (delivery preferences)
-// $Id: attrib.deliverymode.inc,v 2.8 2003-05-28 07:23:37 turbo Exp $
+// $Id: attrib.deliverymode.inc,v 2.9 2003-06-07 12:24:56 turbo Exp $
 
 function attribute_check($type){
 	global $error, $reply, $mailreplytext;
@@ -46,6 +46,7 @@ function attribute_print_form($type = "modify"){
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo PQL_LANG_DELIVERYMODE_TITLE; ?></th>
+<?php if(!$GLOBALS["SINGLE_USER"]) { ?>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"><?php echo PQL_LANG_DELIVERYMODE_PROFILE; ?></td>
           <td>
@@ -57,6 +58,7 @@ function attribute_print_form($type = "modify"){
           </td>
         </tr>
 
+<?php } ?>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"><?php echo PQL_LANG_DELIVERYMODE_REPLY; ?></td>
           <td><input type="checkbox" name="reply" value="ok" <?php if($reply=="ok"){ echo "checked";} ?>> <?php echo PQL_LANG_DELIVERYMODE_REPLY_SEND; ?></td>
@@ -69,6 +71,9 @@ function attribute_print_form($type = "modify"){
       </th>
     </table>
 
+<?php if($GLOBALS["SINGLE_USER"]) { ?>
+    <input type="hidden" name="deliverymode" value="<?=$deliverymode?>">
+<?php } ?>
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
     <input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
