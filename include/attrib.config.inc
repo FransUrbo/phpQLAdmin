@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.27 2003-08-20 14:21:51 turbo Exp $
+// $Id: attrib.config.inc,v 1.28 2003-11-19 16:20:50 turbo Exp $
 
 function attribute_check() {
     global $administrator, $domain, $oldvalue, $_pql, $error, $LANG;
@@ -36,7 +36,7 @@ function attribute_print_form() {
 
 	// Now, get the old values from the LDAP database,
 	// overwriting the defines if existing in db.
-	$value = pql_get_domain_value($_pql, $dn, $attrib);
+	$value = pql_domain_value($_pql, $dn, $attrib);
 
 	// If it's an array, make it a comma separated list
 	if(is_array($value)) {
@@ -260,7 +260,7 @@ function attribute_save() {
 		if($rootdn) {
 			if($attrib != pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR")) {
 				// Fetch old values from DB
-				unset($oldvalues); $oldvalues = pql_get_domain_value($_pql, $rootdn, $attrib);
+				unset($oldvalues); $oldvalues = pql_domain_value($_pql, $rootdn, $attrib);
 				if(is_array($oldvalues)) {
 					foreach($oldvalues as $val) {
 						if(!@eregi($delval, $val)) {
@@ -319,7 +319,7 @@ function attribute_save() {
 			// We don't have a Root DN, it's not a PasswordScheme or {user,domain}ObjectClass
 			// but it's a toggle. Get the old value and reverse it
 
-			unset($oldvalues); $oldvalues = pql_get_domain_value($_pql, $_pql->ldap_basedn[0], $attrib);
+			unset($oldvalues); $oldvalues = pql_domain_value($_pql, $_pql->ldap_basedn[0], $attrib);
 			if($oldvalues == 'TRUE')
 			  $entry[$attrib][] = 'FALSE';
 			else
@@ -343,7 +343,7 @@ function attribute_save() {
 				  $entry[$attrib][] = $$attrib;
 
 				// Fetch old values from DB
-				unset($oldvalues); $oldvalues = pql_get_domain_value($_pql, $dn, $attrib);
+				unset($oldvalues); $oldvalues = pql_domain_value($_pql, $dn, $attrib);
 				if(is_array($oldvalues)) {
 					foreach($oldvalues as $val) {
 						if(!@eregi($delval, $val)) {

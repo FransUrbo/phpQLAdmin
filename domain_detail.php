@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.68 2003-11-14 20:13:24 turbo Exp $
+// $Id: domain_detail.php,v 2.69 2003-11-19 16:20:27 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -58,7 +58,7 @@ if(! ereg("%3D", $domain)) {
 }
 
 // Get the organization name, or show 'Not set' with an URL to set it
-$domainname = pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_O"));
+$domainname = pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_O"));
 //if(!$domainname) {
 // TODO: Resonable default!
 //}
@@ -87,7 +87,7 @@ $attribs = array(pql_get_define("PQL_GLOB_ATTR_AUTOCREATEMAILADDRESS"),
 				 pql_get_define("PQL_GLOB_ATTR_USERNAMEPREFIX"));
 foreach($attribs as $attrib) {
 	// Get default value
-	$value = pql_get_domain_value($_pql, $domain, $attrib);
+	$value = pql_domain_value($_pql, $domain, $attrib);
 	$$attrib = $value;
 
 	// Setup edit links. If it's a dcOrganizationNameForm attribute, then
@@ -126,12 +126,12 @@ foreach($attribs as $attrib) {
 		$$link = "<a href=\"domain_edit_attributes.php?attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=$value\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt1."\"></a>";
 	}
 }
-$domain_admins		= pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"));
-$mailinglist_admins	= pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR"));
-$seealso   			= pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_SEEALSO"));
+$domain_admins		= pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"));
+$mailinglist_admins	= pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR"));
+$seealso   			= pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_SEEALSO"));
 $basequota			= pql_ldap_mailquota(pql_parse_quota($basequota));
 
-$additionaldomainname = pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_ADDITIONALDOMAINNAME"));
+$additionaldomainname = pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_ADDITIONALDOMAINNAME"));
 
 // Setup the buttons
 $buttons = array('default'	=> 'Default Branch Values',
@@ -185,7 +185,7 @@ if($view == 'owner') {
 } elseif($view == 'chval') {
 	include("./tables/domain_details-users_chval.inc");
 } elseif($view == 'users') {
-	$users = pql_get_user($_pql->ldap_linkid, $domain);
+	$users = pql_user_get($_pql->ldap_linkid, $domain);
 	include("./tables/domain_details-users.inc");
 } elseif($view == 'action') {
 	include("./tables/domain_details-action.inc");

@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.43 2003-11-18 13:20:50 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.44 2003-11-19 16:20:50 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -99,8 +99,8 @@ function user_generate_mailstore($ldap, $email, $dn, $entry, $type) {
 	//
 	// -------------- example: domains baseMailDir/uid
 	//	if($dn) {
-	//		$mailstore = pql_get_domain_value($ldap, $dn, pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR"));
-	//		$domain    = pql_get_domain_value($ldap, $dn, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
+	//		$mailstore = pql_domain_value($ldap, $dn, pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR"));
+	//		$domain    = pql_domain_value($ldap, $dn, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
 	//	} else {
 	//		$mailstore = "/var/mail";
 	//		$domain    = $entry["BRANCH_NAME"];
@@ -148,15 +148,18 @@ function user_generate_mailstore($ldap, $email, $dn, $entry, $type) {
 	//	$seed = (float) $sec + ((float) $usec * 100000);
 	//	mt_srand($seed);
 	//	
-	//	for(;;) {
-	//		// generate a random numer between 100000 and 999999 (6 digits)
-	//		$mailstore = mt_rand(100000, 999999);
-	//		// check whether another user already has this mailstore. If yes, generate another random number.
-	//		// TODO: ldap_basedn isn't availible any more (it's an array of base DN's)!
-	//		if (!pql_search_attribute($ldap, $ldap_basedn, pql_get_define("PQL_GLOB_ATTR_MAILSTORE"), $mailstore)) {
-	//			break;
-	//		}
-	//	}
+	// for(;;) {
+	// 	// generate a random numer between 100000 and 999999 (6 digits)
+	// 	$mailstore = mt_rand(100000, 999999);
+	// 	// check whether another user already has this mailstore. If yes, generate another random number.
+	// 	// TODO: ldap_basedn isn't availible any more (it's an array of base DN's)!
+	// 	$filter = pql_get_define("PQL_GLOB_ATTR_MAILSTORE") . "=" . pql_maybe_encode($mailstore,
+	// 																				 pql_get_define("PQL_GLOB_ATTR_MAILSTORE"),
+	// 																				 $ldap);
+	// 	if(!pql_search($ldap, $ldap_basedn, $filter)) {
+	// 		break;
+	// 	}
+	// }
 	//
 	//
 	// All examples above generate a relative path.
@@ -181,8 +184,8 @@ function user_generate_mailstore($ldap, $email, $dn, $entry, $type) {
 // Above. Exact same options apply
 function user_generate_homedir($ldap, $email, $dn, $entry, $type) {
 	//	if($dn) {
-	//		$homedir = pql_get_domain_value($ldap, $dn, pql_get_define("PQL_GLOB_ATTR_BASEHOMEDIR"));
-	//		$domain  = pql_get_domain_value($ldap, $dn, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
+	//		$homedir = pql_domain_value($ldap, $dn, pql_get_define("PQL_GLOB_ATTR_BASEHOMEDIR"));
+	//		$domain  = pql_domain_value($ldap, $dn, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
 	//	} else {
 	//		$homedir = "/home";
 	//		$domain  = $entry["BRANCH_NAME"];

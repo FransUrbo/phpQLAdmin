@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.26 2003-11-18 13:18:59 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.27 2003-11-19 16:20:50 turbo Exp $
 
 require("./left-head.html");
 
@@ -72,7 +72,7 @@ function attribute_print_form($action) {
 				$dn = urldecode($dn);
 				unset($dom); unset($domains);
 
-				$dom = pql_get_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $GLOBALS["USER_DN"]);
+				$dom = pql_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $GLOBALS["USER_DN"]);
 				if($dom) {
 					foreach($dom as $d) {
 						$domains[] = $d;
@@ -109,7 +109,7 @@ function attribute_print_form($action) {
             <div id="el<?=$j?>Child" class="child">
 <?php } ?>
 <?php					// Get all users (their DN) in this domain
-						$users = pql_get_user($_pql->ldap_linkid, $branch);
+						$users = pql_user_get($_pql->ldap_linkid, $branch);
 						if(is_array($users)) {
 							// Zero out the variables, othervise we won't get users in
 							// specified domain, but also in the PREVIOUS domain shown!
@@ -146,7 +146,7 @@ function attribute_print_form($action) {
 				// We're a super-admin, we can give/take
 				// adminstration on ANY branch/domain
 				// that exists in the system
-				$domains = pql_get_domains($_pql);
+				$domains = pql_domain_get($_pql);
 			} else {
 				// We can only give user access to a branch we (the logged in user)
 				// have access to. Otherwise, we could 'steal' access to any domain
@@ -155,7 +155,7 @@ function attribute_print_form($action) {
 				foreach($_pql->ldap_basedn as $dn)  {
 					$dn = urldecode($dn);
 
-					$dom = pql_get_domain_value($_pql,
+					$dom = pql_domain_value($_pql,
 												$dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"),
 												$GLOBALS["USER_DN"], 1);
 					if($dom)
@@ -229,11 +229,11 @@ function attribute_save($type) {
 		// Get the old values, so we can remove the one we're modifying
 		// (delete the one we want to delete, keep the others etc)
 		if(($rootdn and $domain) or ($user and $domain))
-		  $admins = pql_get_domain_value($_pql, $domain, $attrib);
+		  $admins = pql_domain_value($_pql, $domain, $attrib);
 		elseif($user and $rootdn)
-		  $admins = pql_get_domain_value($_pql, $rootdn, $attrib);
+		  $admins = pql_domain_value($_pql, $rootdn, $attrib);
 		elseif($user and $$attrib and !$value)
-		  $admins = pql_get_domain_value($_pql, $$attrib, $attrib);
+		  $admins = pql_domain_value($_pql, $$attrib, $attrib);
 
 		if(is_array($admins)) {
 			foreach($admins as $admin)

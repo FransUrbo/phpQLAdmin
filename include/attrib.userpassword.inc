@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.16 2003-11-18 13:16:38 turbo Exp $
+// $Id: attrib.userpassword.inc,v 2.17 2003-11-19 16:20:50 turbo Exp $
 
 function attribute_check($type) {
 	global $userpassword, $userpassword_check, $error, $pwscheme, $LANG;
@@ -32,7 +32,7 @@ function attribute_print_form() {
 	global $domain, $user, $PHP_SELF, $attrib, $error, $rootdn, $pwscheme, $view, $_pql, $LANG;
 
 	// Get the default password scheme for branch
-	$defaultpasswordscheme = pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_DEFAULTPASSWORDSCHEME"));
+	$defaultpasswordscheme = pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_DEFAULTPASSWORDSCHEME"));
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // accountstatus (status of mailaccount)
-// $Id: attrib.accountstatus.inc,v 2.11 2003-11-18 13:16:37 turbo Exp $
+// $Id: attrib.accountstatus.inc,v 2.12 2003-11-19 16:20:50 turbo Exp $
 
 function attribute_check($type) {
     global $error, $view, $set, $domain, $rootdn, $attrib, $user, $date, $days, $LANG, $_pql;
@@ -142,7 +142,7 @@ function attribute_save($type) {
 				$msg = $LANG->_('Successfully set account expiration date');
 			}
 		} else {
-			$users = pql_get_user($_pql->ldap_linkid, $domain);
+			$users = pql_user_get($_pql->ldap_linkid, $domain);
 			
 			if(is_array($users)) {
 				foreach($users as $user)

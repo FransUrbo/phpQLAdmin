@@ -1,6 +1,6 @@
 <?php
 // adds an attribute 
-// $Id: user_add_attribute.php,v 2.22 2003-11-14 11:55:52 turbo Exp $
+// $Id: user_add_attribute.php,v 2.23 2003-11-19 16:20:27 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -37,7 +37,7 @@ function attribute_forward($msg) {
 }
 
 // Get default domain name for this domain
-$defaultdomain = pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
+$defaultdomain = pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
 
 // Get the username. Prettier than the DN
 $username = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_CN"));

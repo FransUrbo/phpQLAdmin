@@ -1,6 +1,6 @@
 <?php
 // navigation bar - ezmlm mailinglists manager
-// $Id: left-ezmlm.php,v 2.20 2003-10-16 06:22:45 turbo Exp $
+// $Id: left-ezmlm.php,v 2.21 2003-11-19 16:20:27 turbo Exp $
 //
 session_start();
 
@@ -31,7 +31,7 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS, false, 0);
 foreach($_pql->ldap_basedn as $dn)  {
 	$dn = urldecode($dn);
 
-    $dom = pql_get_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR"), $USER_DN);
+    $dom = pql_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR"), $USER_DN);
     if($dom) {
 		foreach($dom as $d) {
 			$domains[] = urlencode($d);
@@ -65,7 +65,7 @@ if(!is_array($domains)) {
 		$number_of_lists = -1; // So that we end up with 0 for first list!
 
 		// Get base directory for mails
-		if(($basemaildir = pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR")))) {
+		if(($basemaildir = pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR")))) {
 			// Get (and remember) lists in this directory
 			if($ezmlm = new ezmlm(pql_get_define("PQL_GLOB_EZMLM_USER"), $basemaildir)) {
 				if($ezmlm->mailing_lists[0]["name"]) {

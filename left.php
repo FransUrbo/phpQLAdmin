@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.61 2003-11-15 09:29:13 turbo Exp $
+// $Id: left.php,v 2.62 2003-11-19 16:20:27 turbo Exp $
 //
 session_start();
 
@@ -105,7 +105,7 @@ if($advanced == 1) {
 <?php
 if($ALLOW_BRANCH_CREATE) {
     // This is a 'super-admin'. Should be able to read EVERYTHING!
-    $domains = pql_get_domains($_pql);
+    $domains = pql_domain_get($_pql);
 } else {
     // Get ALL domains we have access.
     //	'administrator: USER_DN'
@@ -113,7 +113,7 @@ if($ALLOW_BRANCH_CREATE) {
     foreach($_pql->ldap_basedn as $dn)  {
 	$dn = urldecode($dn);
 
-	$dom = pql_get_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $USER_DN);
+	$dom = pql_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $USER_DN);
 	if($dom) {
 	    foreach($dom as $d) {
 		$domains[] = urlencode($d);
@@ -137,7 +137,7 @@ if(!isset($domains)) {
 	  $DN .= "," . $dnparts[$j];
 	
 	// Look in DN for attribute 'defaultdomain'.
-	$defaultdomain = pql_get_domain_value($_pql, $DN, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
+	$defaultdomain = pql_domain_value($_pql, $DN, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
 	if($defaultdomain) {
 	    // A hit. This is the domain under which the user is located.
 	    $domain = $DN;
@@ -200,7 +200,7 @@ if(!isset($domains)) {
 	  $users = ""; $cns = "";
 
 	  // Get all users (their DN) in this domain
-	  $users = pql_get_user($_pql->ldap_linkid, $domain);
+	  $users = pql_user_get($_pql->ldap_linkid, $domain);
 	  if(!is_array($users)) {
 	      // no user available for this domain
 ?>

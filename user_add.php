@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.76 2003-11-18 13:03:40 turbo Exp $
+// $Id: user_add.php,v 2.77 2003-11-19 16:20:27 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -24,7 +24,7 @@ if(! ereg("%3D", $domain)) {
 }
 
 // Get the organization name, or the DN if it's unset
-$orgname = pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_O"));
+$orgname = pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_O"));
 if(!$orgname) {
 	$orgname = urldecode($domain);
 }
@@ -36,11 +36,11 @@ if(!pql_domain_exist($_pql, $domain)) {
 }
 
 // Get default domain values for this domain
-$defaultdomain			= pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
-$basehomedir			= pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_BASEHOMEDIR"));
-$basemaildir			= pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR"));
-$maxusers				= pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_MAXIMUMDOMAINUSERS"));
-$additionaldomainname	= pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_ADDITIONALDOMAINNAME"));
+$defaultdomain			= pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
+$basehomedir			= pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_BASEHOMEDIR"));
+$basemaildir			= pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_BASEMAILDIR"));
+$maxusers				= pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_MAXIMUMDOMAINUSERS"));
+$additionaldomainname	= pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_ADDITIONALDOMAINNAME"));
 
 // Check the input
 $error = false; $error_text = array();
@@ -49,7 +49,7 @@ switch($page_curr) {
 	// ------------------------------------------------
 	// Step 1: Selected account type (see how many users there can be)
 	if($maxusers and !$ALLOW_BRANCH_CREATE) {
-		if(count(pql_get_user($_pql->ldap_linkid, $domain)) >= $maxusers) {
+		if(count(pql_user_get($_pql->ldap_linkid, $domain)) >= $maxusers) {
 			// We have reached the maximum amount of users.
 			include("./header.html");
 ?>

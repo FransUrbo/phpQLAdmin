@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.57 2003-11-16 13:08:59 turbo Exp $
+// $Id: user_detail.php,v 2.58 2003-11-19 16:20:27 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -17,7 +17,7 @@ if(!$rootdn) {
 
 // Get default domain name for this domain
 if($domain) {
-	$defaultdomain = pql_get_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
+	$defaultdomain = pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
 }
 
 include("./header.html");
@@ -121,7 +121,7 @@ if($mailhost == "") {
 
 $userdn = urlencode($user);
 
-$controladmins = pql_get_domain_value($_pql, $rootdn, pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR"));
+$controladmins = pql_domain_value($_pql, $rootdn, pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR"));
 if(is_array($controladmins)) {
 	foreach($controladmins as $admin)
 	  if($admin == $user)

@@ -10,7 +10,7 @@
 		  $domains[$branch][] = $branch;
 
 		// Find all branches the user is admin of
-		$dom = pql_get_domain_value($_pql, $branch, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $user);
+		$dom = pql_domain_value($_pql, $branch, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $user);
 		if($dom)
 		  foreach($dom as $d) {
 			  if($d != $branch)
