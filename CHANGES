@@ -12,7 +12,7 @@ phpQLAdmin 2.0.1 Release
 	  + Left frame in three sub frames - Users, Controls and Ezmlm,
 	    each reloaded independently when changed.
 	  + Sort MX on priority, not FQDN
-	  + The nav button (left/right icon) only fonds/unfolds the
+	  + The nav button (left/right icon) only folds/unfolds the
 	    level, nothing more!
 	  + Add a 'delete user' at the bottom of the user details page,
 	    so that we don't have to go through the domain details to
@@ -29,24 +29,24 @@ phpQLAdmin 2.0.1 Release
 		description: baseMailDir=/var/mail/users/
 		description: administrator=uid=turbo,ou=People,dc=fredriksson,dc=com
 		description: administrator=uid=khaan,ou=People,dc=bayour,dc=com
-	  + Don't show the domain if person loggin in isn't listed in the
+	  + Don't show the domain if person login in in isn't listed in the
 	    object.
 	  + Insert base values in the database for these when creating
 	    a domain.
 	  + Change these values on the domain details page.
 	- Use authentication to access page(s) - session management.
-	  This lead to the removal of the hardcoded values for admin
+	  This lead to the removal of the hard coded values for admin
 	  DN and password. Access to database branches is through the
 	  domain object and it's "description" field - administrator.
 	  + Allow for 'Advanced mode' which gives more information. This so that
 	    we can show simple (required) stuff for 'inexperienced administrators',
 	    and all the nitty gritty to the pro.
 	  + Log each login/logout in ./phpQLadmin.log.
-	- Ezmlm mailinglist management. Create and modify a ezmlm mailinglist.
+	- Ezmlm mailing list management. Create and modify a ezmlm mailing list.
 	  + Look for lists in baseMailDir/mailinglists for each domain
 	  + Actual action is disabled by default. Set 'ezmlm->debug = 0' if you
 	    want to test this. WARNING: HAVE NOT BEEN TESTED LIVE! It just _LOOKS_
-	    correct!! I take no responsibility for list mailinglists!
+	    correct!! I take no responsibility for lost mailing lists!
 	- Controls management sorted on host (ie, multiple hosts is
 	  manageable) in a tree like fashion.
 	- Search for files in current dir 'require("./'. This so that
@@ -57,7 +57,7 @@ phpQLAdmin 2.0.1 Release
 	  + This will allow choosing from a predefined set of LDAP
 	    hosts at runtime (independent server choosing for user
 	    and controls database).
-	    This isn't quite working though. We most likley don't have
+	    This isn't quite working though. We most likely don't have
 	    the same credentials on both servers.
 	- Allow for selecting login shell when creating user (open /etc/shells
 	  and output list to choose from).
@@ -70,12 +70,12 @@ phpQLAdmin 1.1 Release
 	+ added the attributes qmailDotMode and deliveryProgramPath to
 	  users options
 	+ added option to test the ldap connection
-	+ fixed various linkin bugs in user_detail.php
+	+ fixed various linking bugs in user_detail.php
 
 phpQLAdmin 1.0 Release
 	+ support for qmail-ldap/control patch, which allows to control
 	  all qmail configuration stuff in a ldap database
-	+ help system for control values, english only (many thanks to
+	+ help system for control values, English only (many thanks to
 	  Henning Brauer for permission to take these texts from 'life
 	  with qmail-ldap', others are taken from the qmail man pages)
 	+ support for non-salted MD5 and SHA password encryption
@@ -83,16 +83,16 @@ phpQLAdmin 1.0 Release
 	+ better error reporting on failures
 	+ fixed bug in adding domain: now supports subdomains as well
 	+ fixed bug in navigation bar: user_detail.php was not correctly
-	  linked (didn't affects to apache with activated multiviews option)
+	  linked (didn't affects to apache with activated multi views option)
 	+ now refusing values equal 0 at setting quota
 	+ various little bugs fixed 
 
 	New available language support:
-	+ added japanese language support (many thanks to Swen Veckes) 
-	+ added portugese language support (many thanks to Alex A. Beeck) 
+	+ added Japanese language support (many thanks to Swen Veckes) 
+	+ added Portuguese language support (many thanks to Alex A. Beeck) 
 
 phpQLAdmin 0.9beta (2nd) Release
-	+ added italien language file (many thanks to Luca Pescatore)
+	+ added Italian language file (many thanks to Luca Pescatore)
 	+ tar.gz file fixed (all files are now in a subdirectory)
 
 phpQLAdmin 0.9beta (1st) Release
