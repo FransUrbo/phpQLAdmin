@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.31 2004-02-14 17:07:50 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.32 2004-02-14 20:49:48 turbo Exp $
 
 require("./left-head.html");
 
@@ -213,8 +213,6 @@ function attribute_print_form($action) {
 <?php
 }
 
-/* DLW: This doesn't work, (Default Branch Values/Add domain administrator for domain) but it doesn't work in
- *      the original code either.  Look into it. */
 function attribute_save($type) {
     global $_pql, $LANG;
 
@@ -234,61 +232,65 @@ function attribute_save($type) {
 
 		// Get the old values, so we can remove the one we're modifying
 		// (delete the one we want to delete, keep the others etc)
-		if(($_REQUEST["rootdn"] and $_REQUEST["domain"]) or ($_SERVER["user"] and $_REQUEST["domain"]))
-		  $admins = pql_domain_value($_pql, $_REQUEST["domain"], $attrib);
-		elseif($_SERVER["user"] and $_REQUEST["rootdn"])
-		  $admins = pql_domain_value($_pql, $_REQUEST["rootdn"], $attrib);
-		elseif($_SERVER["user"] and $value and !$value)
-		  $admins = pql_domain_value($_pql, $value, $attrib);
+		if(($_REQUEST["rootdn"] and $_REQUEST["domain"]) or ($_REQUEST["user"] and $_REQUEST["domain"])) {
+			$admins = pql_domain_value($_pql, $_REQUEST["domain"], $attrib);
+		} elseif($_REQUEST["user"] and $_REQUEST["rootdn"]) {
+			$admins = pql_domain_value($_pql, $_REQUEST["rootdn"], $attrib);
+		} elseif($_REQUEST["user"] and $value and !$value) {
+			$admins = pql_domain_value($_pql, $value, $attrib);
+		}
 
-		$ADMs = array();
+		$ADMs[$attrib] = array();
 
 		if(is_array($admins)) {
 			foreach($admins as $admin)
-			  $ADMs[] = $admin;
+			  $ADMs[$attrib][] = $admin;
 		}
 
 		if($type == 'delete') {
 			// Delete attribute
-			if(!$_SERVER["user"] and !$value) {
+			if(!$_REQUEST["user"] and !$value) {
 				// Add the new value of administrator
-				$ADMs[] = $value;
+				$ADMs[$attrib][] = $value;
 			} elseif($value) {
 				// Delete user DN from array of administrators
-				foreach($ADMs as $adm) {
+				foreach($ADMs[$attrib] as $adm) {
 					if(!eregi($value, $adm))
 					  $adms[] = $adm;
 				}
 				
-				$ADMs = $adms;
+				$ADMs[$attrib] = $adms;
 			} else {
 				// Delete user DN from array of administrators
-				foreach($ADMs as $adm) {
-					if(!eregi($_SERVER["user"], $adm))
+				foreach($ADMs[$attrib] as $adm) {
+					if(!eregi($_REQUEST["user"], $adm))
 					  $adms[] = $adm;
 				}
 				
-				$ADMs = $adms;
+				$ADMs[$attrib] = $adms;
 			}
 		} else {
 			// Add user 
-			if($_SERVER["user"])
-			  $ADMs[] = $_SERVER["user"];
+			if($_REQUEST["user"])
+			  $ADMs[$attrib][] = $_REQUEST["user"];
 			elseif($value) {
 				$amount = $value;
 				for($i=0; $i < $amount; $i++) {
 					$var_name = $attrib . "_$i";
 					if($_POST[$var_name]) 
-					  $ADMs[] = $_POST[$var_name];
+					  $ADMs[$attrib][] = $_POST[$var_name];
 				}
 			}
 		}
 
 		$success = 0;
-		if($_REQUEST["domain"] and (($value and !$_SERVER["user"]) or ($value and $_SERVER["user"]) or (!$value and $_SERVER["user"]))) {
+		if($_REQUEST["domain"] and
+		   (($value and !$_REQUEST["user"]) or
+			($value and $_REQUEST["user"])  or
+			(!$value and $_REQUEST["user"]))) {
 			if(pql_set_domain_value($_pql->ldap_linkid, $_REQUEST["domain"], $attrib, $ADMs))
 			  $success = 1;
-		} elseif($_REQUEST["rootdn"] and $_SERVER["user"]) {
+		} elseif($_REQUEST["rootdn"] and $_REQUEST["user"]) {
 			if(pql_set_domain_value($_pql->ldap_linkid, $_REQUEST["rootdn"], $attrib, $ADMs))
 			  $success = 1;
 		}
