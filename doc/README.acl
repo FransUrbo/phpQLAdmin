@@ -104,10 +104,7 @@ attribute have to be added there as well.
 
 This ACL won't allow you to create domains/branches, so to be able
 to do that, add the 'administrator' attribute to your top DN as well
-(don't forget to add the objectclass 'phpQLAdminBranch'!). This have
-currently to be done with your LDAP servers tool (with OpenLDAP you
-use ldapmodify or ldapadd). Being able to do this via the phpQLAdmin
-interface is planed.
+(don't forget to add the objectclass 'phpQLAdminBranch'!).
 
 
 If you like me is 'some kind of ISP' (hosting multiple domain or what
