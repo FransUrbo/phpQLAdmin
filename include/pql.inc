@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.43 2003-03-25 07:09:19 turbo Exp $
+// $Id: pql.inc,v 2.44 2003-03-27 09:36:49 turbo Exp $
 //
 
 // ----------------------------
@@ -40,11 +40,12 @@ class pql {
 	var $ldap_basedn = 0;					// array of base dns for future searches etc
 
 	function _find_basedn() {
-		// /usr/bin/ldapsearch -x -LLL -h ldap1 -s base -b '' objectclass=* namingContexts
+		// /usr/bin/ldapsearch -x -LLL -h localhost -s base -b '' objectclass=* namingContexts
 
 		$sr = ldap_read($this->ldap_linkid, '', '(objectClass=*)', array('namingContexts'));
+		if(! $sr) die("Can't find base dn - ".ldap_error($this->ldap_linkid));
 		$entry = ldap_get_entries($this->ldap_linkid, $sr);
-		
+
 		// Build an array of base dn's. It's possible to have multiple in a database
 		for($i=0; $i < $entry["count"]; $i++) {
 			$dn[] = $entry[$i]["dn"];
@@ -74,8 +75,13 @@ class pql {
 //			session_unset();
 //			session_destroy();
 
-			$this->ldap_error = "<b>Could not bind to ldap server</b>: " . ldap_error($this->ldap_linkid) . "<br>" .
-			  "Please <a href=\"index.php\" target=\"_top\">relogin</a>.";
+			$this->ldap_error = "<b>Could not bind to ldap server</b>: ";
+			if(ldap_errno($this->ldap_linkid) != 2) {
+				$this->ldap_error = $this->ldap_error . ldap_error($this->ldap_linkid) . "<br>" .
+				  "Please <a href=\"index.php\" target=\"_top\">relogin</a>.";
+			} else {
+				$this->ldap_error = $this->ldap_error . "LDAP server does not allow v2 binds!<p>Please allow v2 binds by removing 'disallow bind_v2' (OpenLDAP v2.0) or entering 'allow bind_v2' (OpenLDAP v2.1) in the slapd.conf file!";
+			}
 
 			if($do_die) {
 				die($this->ldap_error);
