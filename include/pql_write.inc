@@ -3,12 +3,74 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.6 2004-11-12 09:49:49 turbo Exp $
+// $Id: pql_write.inc,v 2.7 2004-11-12 14:01:27 turbo Exp $
 //
 
 // ------------------------------------------------
 // Core WRITE API functions
 // ------------------------------------------------
+
+// {{{ pql_write_add(linkid, dn, object, type, caller)
+// ADD an object - called with an 'ldif' for modification.
+function pql_write_add($linkid, $dn, $object, $type, $caller) {
+	// -----
+	// Verify and/or encode values
+    foreach($object as $key => $value) {
+		// Check if we have a MUST in the objectclasses choosen
+		// for creation for this attribute...
+		if(is_array($value)) {
+			foreach($value as $val) {
+				if(eregi(pql_get_define("PQL_ATTR_OBJECTCLASS"), $key))
+				  $ocs[] = $val;
+
+				$entry[$key][] = pql_maybe_encode(trim($val), $key, $ldap_linkid);
+			}
+		} else {
+			if(eregi(pql_get_define("PQL_ATTR_OBJECTCLASS"), $key))
+			  $ocs[] = $value;
+			
+			$entry[$key] = pql_maybe_encode(trim($value), $key, $ldap_linkid);
+		}
+    }
+
+	// -----
+	// Make sure that all attributes we're using in this object have a corresponding object class
+	$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_setup_object_objectclasses($linkid, $ocs, $entry);
+
+	// -----
+	// Add the OpenLDAPaci attribute (maybe)
+	if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci"))
+	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($ldap_linkid, $userdn, $type);
+
+	// -----
+	// Create a LDIF object to print in case of error
+	$LDIF = pql_create_ldif($caller, $dn, $entry);
+	if(file_exists("./.DEBUG_ME"))
+	  echo $LDIF;
+	else {
+		// -----
+		// Add this object to the database
+		if(! ldap_add($linkid, $dn, $entry)) {
+			// Failed!
+			$errno = ldap_errno($linkid);
+			$error = ldap_error($linkid);
+
+			// TODO: Error checking. Some problems might be salvable...
+			switch($errno) {
+			  case 68:
+				// Already exists. Fine, return true (?)
+				return(true);
+				break;
+			}
+			
+			pql_format_error(1);
+			die("Error: #$errno ($error)");
+		}
+	}
+
+	return(true);
+}
+// }}}
 
 // {{{ pql_write_mod(linkid, dn, entry, caller)
 // MODIFY an object - called with an 'ldif' for modification.
@@ -88,6 +150,7 @@ function pql_write_mod($linkid, $dn, $entry, $caller = NULL, $count = 0) {
 // ------------------------------------------------
 
 // {{{ pql_replace_values(ldap, attribs, old, new)
+
 // Look for attribs=old,
 // - replace with attribs=new
 // - or (if 'new' is empty/null), remove the value.
@@ -274,56 +337,8 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
     }
 
 	// -----
-	// Retreive all EXISTING objectclasses in the LDAP server
-	$ldap = pql_get_subschema($ldap_linkid, "objectclasses");
-
-	// Go through the WANTED objectclasses, checking for a
-	// MUST attribute we don't have
-	foreach($ocs as $oc) {
-		if(!$ldap[$oc]['MUST']['count'])
-		  // An objectclass with no MUST, add this directly
-		  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = $oc;
-		else {
-			// This objectclass have one or more MUST attributes
-			// Do we have any of those MUST attributes defined?
-			$MUST = $ldap[$oc]['MUST'];
-
-			foreach($entry as $attrib => $value) {
-				$attrib = lc($attrib);
-
-				// Go through the MUST attributes for this objctclass,
-				// looking for an attribute we have NOT defined
-				for($i=0; isset($MUST[$i]); $i++) {
-					$must = lc($MUST[$i]);
-
-					if($attrib == $must)
-					  unset($MUST[$i]);
-				}
-
-				// Before we rearrange the array, remove the count
-				// entry (othervise it gets renamed to a number).
-				unset($MUST['count']);
-				
-				// Rearrange the array
-				$MUST = pql_uniq($MUST);
-				
-				// Readd the count entry
-				$MUST['count'] = count($MUST);
-			}
-
-			if(!$MUST['count'])
-			  // This objectclass don't contain MUST attributes which
-			  // isn't defined in the user object. Add this to the list
-			  // of objectclasses to add
-			  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = $oc;
-			else {
-				// Objectclass which have been removed from the list because
-				// there's an MUST attribute missing
-				echo "<b>Objectclass with missing attribute in MUST:</b> <u>$oc</u>";
-				printr($MUST);
-			}
-		}
-	}
+	// Make sure that all attributes we're using in this object have a corresponding object class
+	$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_setup_object_objectclasses($ldap_linkid, $ocs, $entry);
 
 	// -----
 	// Create the RDN for the user
@@ -345,10 +360,12 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 	  $userdn .= urldecode($domain);
 	$userdn = pql_maybe_encode($userdn);
 
+	// -----
 	// Add the OpenLDAPaci attribute (maybe)
 	if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci"))
 	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($ldap_linkid, $userdn, 'user');
 
+	// -----
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_user_add - user creation", $userdn, $entry);
 
