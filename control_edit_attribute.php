@@ -5,11 +5,11 @@
 session_start();
 
 // initial check
-if($attrib == ""){
+if($attrib == "") {
 	die("no attribute requested !!");
 }
 
-if($type == ""){
+if($type == "") {
 	$type = "add";
 }
 
@@ -26,7 +26,7 @@ include("./include/".pql_control_plugin_get_filename($control_plugin));
 
 
 // forward back to users detail page
-function attribute_forward($msg){
+function attribute_forward($msg) {
 	global $domain, $user, $attrib, $mxhost, $domain, $rootdn, $view;
 
 	$msg = urlencode($msg);
@@ -44,7 +44,7 @@ include("./header.html");
   <span class="title1">Change control values</span>
   <br><br>
   <?php
-if(function_exists($control_plugin . "_help")){
+if(function_exists($control_plugin . "_help")) {
     // if a help function is available for the plugin,
     // print additional help table and put the
     // displayed form of the plugin into a cell of this
@@ -57,8 +57,8 @@ if(function_exists($control_plugin . "_help")){
 }
 
 // select what to do
-if($submit == 1){
-    if(call_user_func($control_plugin . "_check", $type)){
+if($submit == 1) {
+    if(call_user_func($control_plugin . "_check", $type)) {
 		call_user_func($control_plugin . "_save", $type, $mxhost);
     } else {
 		call_user_func($control_plugin . "_print_form", $mxhost);
@@ -86,7 +86,7 @@ if(function_exists($control_plugin . "_help")) {
         </tr>
 
         <?php
-	  if(function_exists($control_plugin . "_help_cr")){
+	  if(function_exists($control_plugin . "_help_cr")) {
 	      // this is the copyright message supplied with help text
 	?>
 
