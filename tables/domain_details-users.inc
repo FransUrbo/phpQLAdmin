@@ -5,10 +5,10 @@
         <td class="title"></td>
         <td class="title"><?=$LANG->_('Status')?></td>
         <td class="title"><?=$LANG->_('Address')?></td>
-<?php if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) == pql_get_define("PQL_ATTR_UID")) { ?>
+<?php if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")) { ?>
         <td class="title"><?=$LANG->_('Username')?></td>
 <?php } else { ?>
-        <td class="title"><?=$LANG->_('User')?></td>
+        <td class="title"><?php echo pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]);?></td>
 <?php } ?>
       </tr>
 
@@ -86,13 +86,13 @@
         <!-- Status -->
         <td><?=$status?></td>
         <!-- User -->
-        <td>
+        <td nowrap="1">
 <?php
 					pql_format_tree($cn, 0, $links, 0);
 					pql_format_tree_end();
 ?>
         </td>
-<?php				if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) == pql_get_define("PQL_ATTR_UID")) { ?>
+<?php				if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")) { ?>
         <!-- Username -->
         <td><?=$uid?></td>
 <?php				} ?>
