@@ -52,6 +52,15 @@ pql_define("PQL_GLOB_CONTROL_AUTOADDLOCALS", false, false);
 pql_define("PQL_GLOB_CONTROL_AUTOADDRCPTHOSTS", false, false);
 
 // ----------------------------
+// PQL_GLOB_CONTROL_AUTOADDHOSTNAME (true | false)
+// set this to true, if phpQLAdmin should automatically add the hostname to
+// all domains it does autoreplication for (locals AND rcpthosts).
+// Disable this (false), if you have more than one qmail-ldap server
+// and they're not identical (ie, not hosting the same domains)
+// Currently, the application do not support more than one control database.
+pql_define("PQL_GLOB_CONTROL_AUTOADDHOSTNAME", false, false);
+
+// ----------------------------
 // Should we enable changing of LDAP server?
 // NOTE: Not currently working, so don't use (yet)
 pql_define("PQL_GLOB_CHANGE_SERVER", false, false);

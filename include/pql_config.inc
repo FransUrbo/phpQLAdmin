@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.25 2003-05-15 08:53:53 turbo Exp $
+// $Id: pql_config.inc,v 1.26 2003-05-18 13:36:54 turbo Exp $
 //
 global $config;
 
@@ -53,6 +53,7 @@ $PQL_ATTRIBUTE["PQL_GLOB_AUTO_RELOAD"] = 'autoReload';
 $PQL_ATTRIBUTE["PQL_CONF_TESTMAIL_AUTOSEND"] = 'autoSend';
 $PQL_ATTRIBUTE["PQL_GLOB_CONTROL_AUTOADDLOCALS"] = 'autoAddLocals';
 $PQL_ATTRIBUTE["PQL_GLOB_CONTROL_AUTOADDRCPTHOSTS"] = 'autoAddRCPTHosts';
+$PQL_ATTRIBUTE["PQL_GLOB_CONTROL_AUTOADDHOSTNAME"] = 'autoAddHostName';
 $PQL_ATTRIBUTE["PQL_GLOB_CHANGE_SERVER"] = 'allowServerChange';
 $PQL_ATTRIBUTE["PQL_CONF_ALLOW_ABSOLUTE_PATH"] = 'allowAbsoluteMailPath';
 $PQL_ATTRIBUTE["PQL_CONF_VERIFY_DELETE"] = 'deleteVerification';
