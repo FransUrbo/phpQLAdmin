@@ -1,7 +1,7 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 2.23 2003-04-30 09:54:52 turbo Exp $
+// $Id: lang.en.inc,v 2.24 2003-05-06 06:39:38 turbo Exp $
 //
 // if you have a translation to another language, please contact
 // me --> Turbo Fredriksson <phpqladmin@bayour.com>
@@ -242,7 +242,7 @@ if(!isset($INCLUDE_LANG_EN_INC)) {
 	define("PQL_LANG_USERPASSWORD_NEW", "Set password");
 	define("PQL_LANG_USERPASSWORD_RETYPE", "Password (Retype)");
 	define("PQL_LANG_USERPASSWORD_HELP", "A password can only contain numbers and letters, special characters are not allowed");
-	define("PQL_LANG_USERPASSWORD_HELP_KRB", "If using {KERBEROS} as password scheme, make sure you<br>include the correct REALM (principal@REALM.TLD)<br><b>Unfortunatly you'll have to create the Kerberos principal yourself, this part isn't finished (yet).</b>");
+	define("PQL_LANG_USERPASSWORD_HELP_KRB", "If using {KERBEROS} as password scheme, make sure you include the correct REALM (principal@REALM.TLD).<br><b>Unfortunatly you'll have to create the Kerberos principal yourself, this part isn't finished (yet).</b>");
 	define("PQL_LANG_USERPASSWORD_CHANGE_OK", "Successfully changed password");
 	define("PQL_LANG_USERPASSWORD_CHANGE_FAILED", "Failed changing password");
 	
