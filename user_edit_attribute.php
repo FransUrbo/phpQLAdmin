@@ -17,7 +17,7 @@ function attribute_forward($msg, $rlnb = false){
     $msg = urlencode($msg);
     $url = "user_detail.php?domain=$domain&user=$user&msg=$msg";
     if ($rlnb) {
-	$url .= "&rlnb=1";
+	$url .= "&rlnb=2";
     }
     
     header("Location: " . $config["PQL_GLOB_URI"] . "$url");

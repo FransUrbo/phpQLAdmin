@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // cn (Full name)
-// $Id: attrib.cn.inc,v 2.6 2003-05-04 16:37:04 turbo Exp $
+// $Id: attrib.cn.inc,v 2.7 2003-05-04 18:42:55 turbo Exp $
 
 function attribute_check($type){
     global $cn, $oldvalue, $_pql, $error;
@@ -38,8 +38,6 @@ function attribute_print_form(){
 	<input type="hidden" name="oldvalue" value="<?php echo $oldvalue; ?>">
 	<input type="hidden" name="domain" value="<?php echo $domain; ?>">
 	<input type="hidden" name="user" value="<?php echo $user ?>">
-	<br>
-	<br>
 	<input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
 	</form>
 
@@ -72,12 +70,12 @@ function attribute_save($type){
 //		$attribs = array($attrib, 'gecos', 'givenName');
 		$attribs = array($attrib);
 		foreach($attribs as $attrib) {
-			if(pql_replace_userattribute($_pql->ldap_linkid, $user, $attrib, $cn)) {
-				$msg = pql_complete_constant(PQL_LANG_CN_CHANGE_OK, array("old" => $oldvalue, "new" => $cn)) . "&rlnb=1";
-			} else {
-				$msg = PQL_LANG_CN_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
-				attribute_forward($msg);
-			}
+			if(pql_replace_userattribute($_pql->ldap_linkid, $user, $attrib, $cn))
+			  $msg = pql_complete_constant(PQL_LANG_CN_CHANGE_OK, array("old" => $oldvalue, "new" => $cn));
+			else
+			  $msg = PQL_LANG_CN_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+
+			attribute_forward($msg, true);
 		}
 		break;
 
