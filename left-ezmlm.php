@@ -1,6 +1,6 @@
 <?php
 // navigation bar - ezmlm mailinglists manager
-// $Id: left-ezmlm.php,v 2.27 2004-05-06 05:47:50 turbo Exp $
+// $Id: left-ezmlm.php,v 2.28 2004-05-06 14:22:06 turbo Exp $
 //
 session_start();
 
@@ -137,17 +137,17 @@ if(!is_array($domains)) {
 <?php if($_SESSION["opera"]) { ?>
   <div id="el<?=$j?>Parent" class="parent" onclick="showhide(el<?=$j?>Spn, el<?=$j?>Img)">
     <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$j?>Img">
-    <a class="item" href="ezmlm_detail.php?domain=<?=$domain?>&domainname=<?=$host?>">
+    <a class="item" href="ezmlm_detail.php?rootdn=<?=$domain?>&domainname=<?=$host?>">
       <font color="black" class="heada"><?=$host?></font>
     </a>
   </div>
 <?php } else { ?>
   <div id="el<?=$j?>Parent" class="parent">
-    <a class="item" href="ezmlm_detail.php?domain=<?=$domain?>&domainname=<?=$host?>" onClick="if (capable) {expandBase('el<?=$j?>', true); return false;}">
+    <a class="item" href="ezmlm_detail.php?rootdn=<?=$domain?>&domainname=<?=$host?>" onClick="if (capable) {expandBase('el<?=$j?>', true); return false;}">
       <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$j?>Img">
     </a>
 
-    <a class="item" href="ezmlm_detail.php?domain=<?=$domain?>&domainname=<?=$host?>">
+    <a class="item" href="ezmlm_detail.php?rootdn=<?=$domain?>&domainname=<?=$host?>">
       <font color="black" class="heada"><?=$host?></font>
     </a>
   </div>
@@ -161,7 +161,7 @@ if(!is_array($domains)) {
   <div id="el<?=$j?>Child" class="child">
 <?php } ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
-      <a href="ezmlm_add.php?domain=<?=$domain?>&domainname=<?=$host?>">Add a mailing list</a>
+      <a href="ezmlm_add.php?rootdn=<?=$domain?>&domainname=<?=$host?>">Add a mailing list</a>
     </nobr>
 
     <br>
@@ -171,8 +171,8 @@ if(!is_array($domains)) {
 				foreach($listarray as $name => $no) {
 ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
-      <a href="ezmlm_detail.php?domain=<?=$domain?>&domainname=<?=$host?>&listno=<?=$no?>"><img src="images/navarrow.png" width="9" height="9" border="0"></a>&nbsp;
-      <a class="item" href="ezmlm_detail.php?domain=<?=$domain?>&domainname=<?=$host?>&listno=<?=$no?>"><?=$name?></a>
+      <a href="ezmlm_detail.php?rootdn=<?=$domain?>&domainname=<?=$host?>&listno=<?=$no?>"><img src="images/navarrow.png" width="9" height="9" border="0"></a>&nbsp;
+      <a class="item" href="ezmlm_detail.php?rootdn=<?=$domain?>&domainname=<?=$host?>&listno=<?=$no?>"><?=$name?></a>
     </nobr>
 
     <br>
