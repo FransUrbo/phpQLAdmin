@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.46 2003-11-24 11:26:15 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.47 2004-02-27 12:12:03 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -248,7 +248,15 @@ function user_generate_uid($ldap, $surname, $name, $email, $domain, $account_typ
 // Returns: (string) suggested email address
 function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $domain, $account_type) {
 	// Compose the username in the form 'firstname.lastname@domain.tld'.
-	return(lc($surname.".".$lastname."@".$domainname));
+	// Compose the username with first+last name with dot in between.
+	if(!empty($surname))
+	  $mail = $surname;
+	if(!empty($lastname))
+	  $mail .= ".$lastname";
+	if(!empty($domainname))
+	  $mail .= "@$domainname";
+
+	return(lc($mail));
 }
 
 // ----------------------------
