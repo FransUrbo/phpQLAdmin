@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.3 2003-05-20 10:37:55 turbo Exp $
+// $Id: pql_bind9.inc,v 2.4 2003-05-21 06:25:06 turbo Exp $
 //
 
 function pql_bind9_get_zone($linkid, $dn) {
@@ -76,8 +76,16 @@ function pql_bind9_get_zone($linkid, $dn) {
 			}
 
 			// SOA Record
-			if($info[$i]['soarecord'][0])
-			  $ZONE[$zone][$host]['SOA'] = $info[$i]['soarecord'][0];
+			if($info[$i]['soarecord'][0]) {
+				$soa = split(' ', $info[$i]['soarecord'][0]);
+
+				$ZONE[$zone][$host]['SOA']['ADMIN'] = $soa[1];
+				$ZONE[$zone][$host]['SOA']['SERIAL'] = $soa[2];
+				$ZONE[$zone][$host]['SOA']['REFRESH'] = $soa[3];
+				$ZONE[$zone][$host]['SOA']['RETRY'] = $soa[4];
+				$ZONE[$zone][$host]['SOA']['EXPIRE'] = $soa[5];
+				$ZONE[$zone][$host]['SOA']['TTL'] = $soa[6];
+			}
 
 			// Sort the host array 
 			ksort($ZONE[$zone]);
