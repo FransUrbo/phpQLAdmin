@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.15 2003-04-28 10:59:13 turbo Exp $
+// $Id: attrib.config.inc,v 1.16 2003-04-29 08:46:05 turbo Exp $
 
 function attribute_check() {
     global $administrator, $domain, $oldvalue, $_pql, $error;
@@ -262,7 +262,7 @@ function attribute_save() {
 			// the default values - get the old values from the define
 			foreach($PQL_ATTRIBUTE as $key => $value) {
 				if(!is_array($value)) {
-					if((lc($value) == lc($attrib)) and $config[$key][$rootdn]) {
+					if((lc($value) == lc($attrib)) and $config[$key][$rootdn] and !eregi('_GLOB_', $key)) {
 						// Split this value into an array
 						$values = pql_split_oldvalues($config[$key][$rootdn]);
 						foreach($values as $val) {
