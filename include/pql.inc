@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.168 2004-03-27 12:33:21 turbo Exp $
+// $Id: pql.inc,v 2.169 2004-03-29 07:54:56 turbo Exp $
 //
 
 // ----------------------------
@@ -559,18 +559,22 @@ function pql_user_exist($linkid, $user, $domain = NULL, $rootdn = NULL) {
 // Get formated quota of a user
 function pql_user_get_quota($ldap_linkid, $user) {
 	if($_SESSION["NEW_STYLE_QUOTA"]) {
-	  $quota_size  = pql_get_attribute($ldap_linkid, $user, pql_get_define("PQL_ATTR_QUOTA_SIZE"));
-	  $quota_count = pql_get_attribute($ldap_linkid, $user, pql_get_define("PQL_ATTR_QUOTA_COUNT"));
-
-	  return pql_parse_quota(array($quota_size[0], $quota_count[0]));
-	} else {
+		$quota_size  = pql_get_attribute($ldap_linkid, $user, pql_get_define("PQL_ATTR_QUOTA_SIZE"));
+		$quota_count = pql_get_attribute($ldap_linkid, $user, pql_get_define("PQL_ATTR_QUOTA_COUNT"));
+		
+		if($quota_size and $quota_count)
+		  $quota = array($quota_size[0]."S,".$quota_count[0]."C");
+		else
+		  // Just incase we haven't the new style quota in the DB, get the old type
+		  $quota = pql_get_attribute($ldap_linkid, $user, pql_get_define("PQL_ATTR_QUOTA_VALUE"));
+	} else
+	  // We're not using new style quota, get the old type...
 	  $quota = pql_get_attribute($ldap_linkid, $user, pql_get_define("PQL_ATTR_QUOTA_VALUE"));
 
-	  if(!is_array($quota))
-		return false;
-	  else    
-		return pql_parse_quota($quota[0]);
-  }
+	if(!is_array($quota))
+	  return false;
+	else
+	  return pql_parse_quota($quota[0]);
 }
 
 // }}}
@@ -1757,38 +1761,6 @@ function pql_password_hash($password, $hash) {
 }
 // }}}
 
-// {{{ pql_parse_quota(quota_string)
-function pql_parse_quota($quota_string) {
-	$quota = '';
-
-	if($_SESSION["NEW_STYLE_QUOTA"]) {
-		$quota_string[0] = ereg_replace("S$", "", $quota_string[0]);
-		$quota_string[1] = ereg_replace("C$", "", $quota_string[1]);
-
-		$quota["maxsize"]  = $quota_string[0];
-		$quota["maxmails"] = $quota_string[1];
-
-		return($quota);
-	} else { 
-		// get max bytes
-		preg_match("/([0-9]*)S/", $quota_string, $matches);
-		if(isset($matches[1])) {
-			$quota["maxsize"] = intval($matches[1] / 1024);
-			
-			// get max mails
-			preg_match("/([0-9]*)C/", $quota_string, $matches);
-			$quota["maxmails"] =  $matches[1];
-		} else
-		  // The quota value isn't correct. Whing it!
-		  // Asume that the value in there is SIZE, and set AMOUNT to 0
-		  // ('should mean' unlimited if I remember correctly).
-		  return(array($quota_string, "0"));
-		
-		return $quota;
-	}
-}
-// }}}
-
 // {{{ pql_check_email(email)
 function pql_check_email($email) {
     $split = split("@", $email);
@@ -1928,25 +1900,6 @@ function pql_generate_button($buttons, $link = '') {
 <?php
 }
 
-// }}}
-
-// {{{ pql_ldap_mailquota(quota)
-// Returns human readable version of users quota
-function pql_ldap_mailquota($quota) {
-    global $LANG;
-
-    if($quota["maxmails"] == "")
-	  $txt = $LANG->_('Unlimited amount');
-	else
-	  $txt = pql_complete_constant($LANG->_('Max %maxmails% mails'), array("maxmails" => $quota["maxmails"]));
-    
-    if($quota["maxsize"] == "")
-	  $txt .= $LANG->_('Unlimited size');
-	else
-	  $txt .= pql_complete_constant($LANG->_('Max %maxsize% KB'), array("maxsize" => $quota["maxsize"]));
-    
-    return $txt;
-}
 // }}}
 
 // {{{ pql_ldap_accountstatus(status)
