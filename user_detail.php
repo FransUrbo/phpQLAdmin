@@ -1,9 +1,26 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.78 2004-10-11 09:17:32 turbo Exp $
+// $Id: user_detail.php,v 2.79 2004-10-13 17:47:29 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
+
+if(!$_GET and ($_REQUEST["view"] == "antispam")) {
+	// We're coming from "./tables/user_details-antispam.inc",
+	// so the _GET array isn't availible (which it is if we're
+	// comming from any of the view buttons or the left frame),
+	// but _REQUEST is (we're posting...). Make _GET and _REQUEST
+	// work seemingless...
+    $_GET = $_REQUEST;
+
+	if($_REQUEST["commit"]) {
+		// We're committing the SpamAssassin configuration
+		// -> save changes (call an include which have all
+		//    the logic).
+		require("./include/attrib.spamassassin.inc");
+		attribute_save($_REQUEST);
+	}
+}
 
 // Check if user exists
 if(!pql_user_exist($_pql->ldap_linkid, $_GET["user"])) {
@@ -177,7 +194,8 @@ $new = array('email'				=> 'Registred addresses',
 $buttons = $buttons + $new;
 
 if(!$USER_IS_GROUP) {
-	$new = array('forwards_to'		=> 'Forwarders to other accounts');
+	$new = array('forwards_to'		=> 'Forwarders to other accounts',
+				 'antispam'			=> 'Antispam configuration');
 	$buttons = $buttons + $new;
 }
 
@@ -212,6 +230,7 @@ if($_SESSION["ADVANCED_MODE"]) {
 }
 if($_GET["view"] == 'forwards_from')			include("./tables/user_details-forwards_from.inc");
 if($_GET["view"] == 'forwards_to')				include("./tables/user_details-forwards_to.inc");
+if($_GET["view"] == 'antispam')					include("./tables/user_details-antispam.inc");
 if($_SESSION["ADVANCED_MODE"] and !$_SESSION["SINGLE_USER"]) {
 	if($_GET["view"] == 'access')				include("./tables/user_details-access.inc");
 	if($_GET["view"] == 'aci')					include("./tables/user_details-aci.inc");

@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.21 2004-09-24 06:20:40 turbo Exp $
+// $Id: config_attributes.inc,v 2.22 2004-10-13 17:47:29 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 
@@ -208,6 +208,10 @@ pql_set_define("PQL_ATTR_WEBSRV_SRV_NAME", 					strtolower('webServerName'),				
 //pql_set_define("PQL_ATTR_WEBSRV_SRV_ADMIN", 				strtolower('apacheServerAdmin'),			false);
 //pql_set_define("PQL_ATTR_WEBSRV_SRV_NAME",					strtolower('apacheServerName'),				false);
 
+// }}}
+
+// {{{ Miscellaneous external attributes
+pql_set_define("PQL_ATTR_SPAMASSASSIN", 					strtolower('spamAssassin'),					false);
 // }}}
 
 // {{{ These are the internal phpQLAdmin attributes - GLOBAL configuration
