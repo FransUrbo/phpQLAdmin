@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.24.16.2 2004-12-19 16:20:11 turbo Exp $
+// $Id: pql_bind9.inc,v 2.24.16.3 2004-12-20 17:45:13 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -420,6 +420,8 @@ function pql_bind9_set_record($linkid, $dn, $record, $value = '') {
 
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_bind9_set_record", $dn, $entry);
+	if(file_exists("./.DEBUG_ME"))
+	  die($LDIF);
 
     if(!ldap_mod_replace($linkid, $dn, $entry)) {
 		pql_format_error(1);
