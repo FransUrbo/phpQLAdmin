@@ -3,7 +3,7 @@
 // pql_plugins.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_plugins.inc,v 2.2 2003-11-11 07:21:34 turbo Exp $
+// $Id: pql_plugins.inc,v 2.3 2003-12-13 13:44:09 turbo Exp $
 
 // Plugin register class
 class pql_plugin_storage {
@@ -126,7 +126,7 @@ function pql_plugin_get_catplugins($cat) {
 }
 // }}}
 
-// {{{ !pql_plugin_get_cats()
+// {{{ pql_plugin_get_cats()
 // Get all plugin categories
 function pql_plugin_get_cats() {
     global $_pql_plugins;
