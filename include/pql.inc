@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.49 2003-04-03 11:25:16 turbo Exp $
+// $Id: pql.inc,v 2.50 2003-04-03 12:25:10 turbo Exp $
 //
 
 // ----------------------------
@@ -1358,6 +1358,12 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '') {
 		return;
 	}
 
+	if($success and (($value == 'administrator') or ($value == 'seealso')) and !is_array($value)) {
+		// Convert a flat variable to a array
+		$tmp = $results; unset($results);
+		$results[] = $tmp;
+	}
+
 	return $results;
 }
 
@@ -1792,7 +1798,7 @@ function pql_split_oldvalues($value) {
 function printr($string) {
 	echo "<pre>";
 	print_r($string); 
-	echo "</pre>";
+	echo "</pre><p>";
 }
 
 /*
