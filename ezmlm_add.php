@@ -1,6 +1,6 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.3 2002-12-23 11:43:21 turbo Exp $
+// $Id: ezmlm_add.php,v 1.4 2002-12-23 19:51:35 turbo Exp $
 //
 session_start();
 
@@ -58,15 +58,14 @@ if($archived)		$checked["archived"]		= " CHECKED";	// -aA
 if($remotecfg)		$checked["remotecfg"]		= " CHECKED";	// -cC
 if($digest)			$checked["digest"]			= " CHECKED";	// -dD
 if($prefix)			$checked["prefix"]			= " CHECKED";	// -fF
-if(!$archived) {
-	$checked["guardedarchive"] = " DISABLED";					// -gG
-} else {
-	if($guardedarchive)
-	  $checked["guardedarchive"] = " CHECKED";
-}
+if($subhelp)		$checked["subhelp"]			= " CHECKED";	// -hH
+if(!$archived) {	$guardarch = " DISABLED";	}
 if($indexed)		$checked["indexed"]			= " CHECKED";	// -iI
+if($subjump)		$checked["subjump"]			= " CHECKED";	// -jJ
 if($sublistable)	$checked["sublistable"]		= " CHECKED";	// -lL
+																// -kK TODO
 if($moderated)		$checked["moderated"]		= " CHECKED";	// -mM
+if($modonly)		$checked["modonly"]			= " CHECKED";	// -oO
 if($pubpriv == 'public') {
 	$checked["public"]  = " CHECKED";							// -p
 	$checked["private"] = "";
@@ -81,16 +80,18 @@ if($trailers)		$checked["trailers"]		= " CHECKED";	// -tT
 if($subonly)		$checked["subonly"]			= " CHECKED";	// -uU
 if($extras)			$checked["extras"]			= " CHECKED";	// -x
 
+// TODO: For some reason, when I enable this, I get errors on the page!
+//$onchg = ' onChange="this.form.submit()"';
+
 // Create list
-if($submit == 'Create list') {
+if(isset($submit)) {
 	if($listname)
 	  $ezmlm->updatelistentry(1, $listname, $domain, $checked);
 	else
 	  $error_text["listname"] = 'missing';
 }
 
-// Create the mailinglist creation form
-include("header.html");
+require("header.html");
 
 if(!$domain) {
 ?>
@@ -104,13 +105,14 @@ if(!$domain) {
 ?>
   <br><br>
 
-  <form action="<?=$PHP_SELF?>" method="post">
+  <form action="<?=$PHP_SELF?>" method="post" name"addlist">
     <!-- Base configuration -->
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">Base configuration</th>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title">List name</td>
           <td><?php echo format_error($error_text["listname"]); ?>
+
 <?php
 if(!$domain) {
 	// No domain - select box with existing domains
@@ -167,47 +169,78 @@ if(!$domain) {
 
     <!-- List options -->
     <table cellspacing="0" cellpadding="3" border="0">
+      <th valign="top" align="left">Subscription options
+        <table cellspacing="0" cellpadding="3" border="0">
+          <th>
+            <tr class="<?php table_bgcolor(); ?>">
+              <td><input type="checkbox" name="subhelp" accesskey="h"<?=$onchg?><?=$checked["subhelp"]?>></td>
+              <td class="title">Subscription verification</td>
+            </tr>
+
+            <tr class="<?php table_bgcolor(); ?>">
+              <td><input type="checkbox" name="subjump" accesskey="j"<?=$onchg?><?=$checked["subjump"]?>></td>
+              <td class="title">Unsubscription verification</td>
+            </tr>
+
+            <tr class="<?php table_bgcolor(); ?>">
+              <td><input type="checkbox" name="submoderated" accesskey="s"<?=$onchg?><?=$checked["submoderated"]?>></td>
+              <td class="title"><u>S</u>ubscription moderation</td>
+            </tr>
+
+            <tr class="<?php table_bgcolor(); ?>">
+              <td><input type="checkbox" name="sublistable" accesskey="l"<?=$onchg?><?=$checked["sublistable"]?>></td>
+              <td class="title">Subscriber <u>l</u>istable</td>
+            </tr>
+
+            <tr class="<?php table_bgcolor(); ?>">
+              <td><input type="checkbox" name="reqaddress" accesskey="q"<?=$onchg?><?=$checked["reqaddress"]?>></td>
+              <td class="title">Enable re<u>q</u>uest address</td>
+            </tr>
+
+            <tr class="<?php table_bgcolor(); ?>">
+              <td><input type="checkbox" name="subonly" accesskey="u"<?=$onchg?><?=$checked["trailers"]?>></td>
+              <td class="title">Allow only s<u>u</u>bscribers posts</td>
+            </tr>
+
+            <tr class="<?php table_bgcolor(); ?>">
+              <td><input type="checkbox" name="modonly" accesskey="o"<?=$onchg?><?=$checked["modonly"]?>></td>
+              <td class="title">Allow only m<u>o</u>derator posts</td>
+            </tr>
+          </th>
+        </table>
+      </th>
+
       <th valign="top" align="left">Basic List options
         <table cellspacing="0" cellpadding="3" border="0">
           <th>
             <tr class="<?php table_bgcolor(); ?>">
-              <td><input type="checkbox" name="moderated" accesskey="m" onChange="this.form.submit()"<?=$checked["moderated"]?>></td>
+              <td><input type="checkbox" name="moderated" accesskey="m"<?=$onchg?><?=$checked["moderated"]?>></td>
               <td class="title">Moderation - <u>M</u>essage</td>
             </tr>
 
             <tr class="<?php table_bgcolor(); ?>">
-              <td><input type="checkbox" name="submoderated" accesskey="s" onChange="this.form.submit()"<?=$checked["submoderated"]?>></td>
-              <td class="title">Moderation - <u>S</u>ubscription</td>
-            </tr>
-
-            <tr class="<?php table_bgcolor(); ?>">
-              <td><input type="checkbox" name="prefix" accesskey="f" onChange="this.form.submit()"<?=$checked["prefix"]?>></td>
+              <td><input type="checkbox" name="prefix" accesskey="f"<?=$onchg?><?=$checked["prefix"]?>></td>
               <td class="title">Subject pre<u>f</u>ix</td>
             </tr>
 
             <tr class="<?php table_bgcolor(); ?>">
-              <td><input type="checkbox" name="remotecfg" accesskey="c" onChange="this.form.submit()"<?=$checked["remotecfg"]?>></td>
+              <td><input type="checkbox" name="remotecfg" accesskey="c"<?=$onchg?><?=$checked["remotecfg"]?>></td>
               <td class="title">Enable remote <u>c</u>onfiguration</td>
             </tr>
 
             <tr class="<?php table_bgcolor(); ?>">
-              <td><input type="checkbox" name="remoteadm" accesskey="r" onChange="this.form.submit()"<?=$checked["remoteadm"]?>></td>
+              <td><input type="checkbox" name="remoteadm" accesskey="r"<?=$onchg?><?=$checked["remoteadm"]?>></td>
               <td class="title">Enable <u>r</u>emote administration</td>
             </tr>
 
             <tr class="<?php table_bgcolor(); ?>">
-              <td><input type="checkbox" name="archived" accesskey="a" onChange="this.form.submit()"<?=$checked["archived"]?>></td>
+              <td><input type="checkbox" name="archived" accesskey="a"<?=$onchg?><?=$checked["archived"]?>></td>
               <td class="title"><u>A</u>rchived</td>
             </tr>
 
             <tr class="<?php table_bgcolor(); ?>">
-              <td><input type="checkbox" name="guardedarchive" accesskey="g" onChange="this.form.submit()"<?=$checked["guardedarchive"]?>></td>
+              <td><input type="checkbox" name="guardedarchive" accesskey="g"<?=$onchg?><?=$guardarch?>></td>
               <td class="title"><u>G</u>uarded archive</td>
-            </tr>
-
-            <tr class="<?php table_bgcolor(); ?>">
-              <td><input type="checkbox" name="indexed" accesskey="i" onChange="this.form.submit()"<?=$checked["indexed"]?>></td>
-              <td class="title"><u>I</u>ndexed</td>
             </tr>
           </th>
         </table>
@@ -217,42 +250,32 @@ if(!$domain) {
         <table cellspacing="0" cellpadding="3" border="0">
           <th>
             <tr class="<?php table_bgcolor(); ?>">
-              <td><input type="checkbox" name="digest" accesskey="d" onChange="this.form.submit()"<?=$checked["digest"]?>></td>
+              <td><input type="checkbox" name="digest" accesskey="d"<?=$onchg?><?=$checked["digest"]?>></td>
               <td class="title">Enable <u>d</u>igest</td>
             </tr>
 
             <tr class="<?php table_bgcolor(); ?>">
-              <td><input type="checkbox" name="sublistable" accesskey="l" onChange="this.form.submit()"<?=$checked["sublistable"]?>></td>
-              <td class="title">Subscriber <u>l</u>istable</td>
+              <td><input type="checkbox" name="indexed" accesskey="i"<?=$onchg?><?=$checked["indexed"]?>></td>
+              <td class="title"><u>I</u>ndexed</td>
             </tr>
 
             <tr class="<?php table_bgcolor(); ?>">
-              <td><input type="checkbox" name="reqaddress" accesskey="q" onChange="this.form.submit()"<?=$checked["reqaddress"]?>></td>
-              <td class="title">Enable re<u>q</u>uest address</td>
-            </tr>
-
-            <tr class="<?php table_bgcolor(); ?>">
-              <td><input type="checkbox" name="trailers" accesskey="t" onChange="this.form.submit()"<?=$checked["trailers"]?>></td>
+              <td><input type="checkbox" name="trailers" accesskey="t"<?=$onchg?><?=$checked["trailers"]?>></td>
               <td class="title">Add <u>t</u>railers to messages</td>
             </tr>
 
             <tr class="<?php table_bgcolor(); ?>">
-              <td><input type="checkbox" name="subonly" accesskey="u" onChange="this.form.submit()"<?=$checked["trailers"]?>></td>
-              <td class="title">Allow only s<u>u</u>bscribers posts</td>
-            </tr>
-
-            <tr class="<?php table_bgcolor(); ?>">
-              <td><input type="checkbox" name="extras" accesskey="x" onChange="this.form.submit()"<?=$checked["extras"]?>></td>
+              <td><input type="checkbox" name="extras" accesskey="x"<?=$onchg?><?=$checked["extras"]?>></td>
               <td class="title">Enable list e<u>x</u>tras</td>
             </tr>
 
             <tr class="<?php table_bgcolor(); ?>">
-              <td><input type="radio" name="pubpriv" accesskey="P" onChange="this.form.submit()" value="public"<?=$checked["public"]?>></td>
+              <td><input type="radio" name="pubpriv" accesskey="p"<?=$onchg?> value="public"<?=$checked["public"]?>></td>
               <td class="title"><u>P</u>ublic</td>
             </tr>
 
             <tr class="<?php table_bgcolor(); ?>">
-              <td><input type="radio" name="pubpriv" accesskey="p" onChange="this.form.submit()" value="private"<?=$checked["private"]?>></td>
+              <td><input type="radio" name="pubpriv" accesskey="p"<?=$onchg?> value="private"<?=$checked["private"]?>></td>
               <td class="title"><u>P</u>rivate</td>
             </tr>
           </th>
@@ -270,7 +293,7 @@ if(!$domain) {
 ?>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title">Subscriber</td>
-          <td><input type="text" name="subscriber[<?=$i?>]" value="<?=$subscriber[$i]?>" onChange="this.form.submit()"></td>
+          <td><input type="text" name="subscriber[<?=$i?>]" value="<?=$subscriber[$i]?>"<?=$onchg?>></td>
         </tr>
 <?php
 	}
@@ -292,7 +315,7 @@ if(!$domain) {
 ?>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title">Address</td>
-          <td><input type="text" name="killlist[<?=$i?>]" value="<?=$killlist[$i]?>" onChange="this.form.submit()"></td>
+          <td><input type="text" name="killlist[<?=$i?>]" value="<?=$killlist[$i]?>"<?=$onchg?>></td>
         </tr>
 
 <?php
@@ -312,8 +335,12 @@ if(!$domain) {
 <?php } for($i = 1; $i <= $killcount; $i++) { ?>
     <input type="hidden" name="killlist[<?=$i?>]" value="<?=$killlist[$i]?>">
 <?php } ?>
+
     <input type="submit" name="submit" value="Create list">
   </form>
+  </body>
+</html>
+
 <?php
 /*
  * Local variables:
