@@ -1,6 +1,6 @@
 <?php
 // navigation bar - ezmlm mailinglists manager
-// $Id: left-ezmlm.php,v 2.19 2003-08-20 14:21:42 turbo Exp $
+// $Id: left-ezmlm.php,v 2.20 2003-10-16 06:22:45 turbo Exp $
 //
 session_start();
 
@@ -43,10 +43,17 @@ if(!is_array($domains)) {
     // no domain defined - report it
 ?>
   <!-- start domain parent -->
+<?php if($opera) { ?>
+  <div id="el0000Parent" class="parent" onclick="showhide(el0000Spn, el0000Img)">
+    <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el0000Img">
+    <font color="black" class="heada">no domains</font></a>
+  </div>
+<?php } else { ?>
   <div id="el0000Parent" class="parent">
     <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el0000Img">
     <font color="black" class="heada">no domains</font></a>
   </div>
+<?php } ?>
   <!-- end domain parent -->
 </body>
 </html>
@@ -72,10 +79,17 @@ if(!is_array($domains)) {
 		// no mailinglists defined - report it
 ?>
   <!-- start domain parent -->
+<?php if($opera) { ?>
+  <div id="el0000Parent" class="parent" onclick="showhide(el0000Spn, el0000Img)">
+    <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el0000Img">
+    <font color="black" class="heada">no lists</font></a>
+  </div>
+<?php } else { ?>
   <div id="el0000Parent" class="parent">
     <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el0000Img">
     <font color="black" class="heada">no lists</font></a>
   </div>
+<?php } ?>
   <!-- end domain parent -->
 <?php
 	} else {
@@ -114,6 +128,14 @@ if(!is_array($domains)) {
 				}
 ?>
   <!-- start ezmlm mailing list domain -->
+<?php if($opera) { ?>
+  <div id="el<?=$j?>Parent" class="parent" onclick="showhide(el<?=$j?>Spn, el<?=$j?>Img)">
+    <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$j?>Img">
+    <a class="item" href="ezmlm_detail.php?domain=<?=$domain?>&domainname=<?=$host?>">
+      <font color="black" class="heada"><?=$host?></font>
+    </a>
+  </div>
+<?php } else { ?>
   <div id="el<?=$j?>Parent" class="parent">
     <a class="item" href="ezmlm_detail.php?domain=<?=$domain?>&domainname=<?=$host?>" onClick="if (capable) {expandBase('el<?=$j?>', true); return false;}">
       <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$j?>Img">
@@ -123,10 +145,15 @@ if(!is_array($domains)) {
       <font color="black" class="heada"><?=$host?></font>
     </a>
   </div>
+<?php } ?>
   <!-- end ezmlm mailing list domain -->
 
   <!-- start ezmlm mailing list children -->
+<?php if($opera) { ?>
+  <span id="el<?=$j?>Spn" style="display:''">
+<?php } else { ?>
   <div id="el<?=$j?>Child" class="child">
+<?php } ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
       <a href="ezmlm_add.php?domain=<?=$domain?>&domainname=<?=$host?>">Add a mailing list</a>
     </nobr>
@@ -146,7 +173,11 @@ if(!is_array($domains)) {
 <?php			
 				}
 ?>
+<?php if($opera) { ?>
+  </span>
+<?php } else { ?>
   </div>
+<?php } ?>
   <!-- end ezmlm mailing list children -->
 <?php
 				$j++;

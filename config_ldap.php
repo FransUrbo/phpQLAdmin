@@ -51,6 +51,12 @@ foreach($ldap as $x => $array) {
 <?php	foreach($array as $value) { ?>
         <tr class="<?=$class?>">
           <td>
+<?php if($opera) { ?>
+            <div id="el2Parent" class="parent" onclick="showhide(el<?=$j?>Spn, el<?=$j?>Img)">
+              <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$j?>Img">
+              <a class="item"><font color="black" class="heada"><?=$value['NAME']?></font></a>
+            </div>
+<?php } else { ?>
             <div id="el<?=$j?>Parent" class="parent">
               <a class="item" onClick="if (capable) {expandBase('el<?=$j?>', true); expandBase('el<?=$j+1?>', true); return false;}">
                 <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$j?>Img">
@@ -58,8 +64,13 @@ foreach($ldap as $x => $array) {
         
               <a class="item"><font color="black" class="heada"><?=$value['NAME']?></font></a>
             </div>
+<?php } ?>
 
+<?php if($opera) { ?>
+            <span id="el<?=$j?>Spn" style="display:''">
+<?php } else { ?>
             <div id="el<?=$j?>Child" class="child">
+<?php } ?>
 <?php		for($i=0; $i < $value['MUST']['count']; $i++) { // MUST attributes ?>
               &nbsp;&nbsp;&nbsp;&nbsp;<b><?=$value['MUST'][$i]?></b><br>
 <?php		} 
@@ -68,17 +79,31 @@ foreach($ldap as $x => $array) {
 ?>
               &nbsp;&nbsp;&nbsp;&nbsp;<?=$value['MAY'][$i]?><br>
 <?php		} ?>
+<?php if($opera) { ?>
+            </span>
+<?php } else { ?>
             </div>
+<?php } ?>
           </td>
 <?php		$j++; ?>
           <td>
+<?php if($opera) { ?>
+            <div id="el<?=$j?>Parent" class="parent" onclick="showhide(el<?=$j?>Spn, el<?=$j?>Img)">
+              <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$j?>Img">
+              <a class="item"><font color="black" class="heada"><?=$value['OID']?></font></a>
+            </div>
+
+            <span id="el<?=$j?>Spn" style="display:''">
+<?php } else { ?>
             <div id="el<?=$j?>Parent" class="parent">
               <a class="item" onClick="if (capable) {expandBase('el<?=$j-1?>', true); expandBase('el<?=$j?>', true); return false;}">
                 <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$j?>Img">
               </a>
               <a class="item"><font color="black" class="heada"><?=$value['OID']?></font></a>
             </div>
+
             <div id="el<?=$j?>Child" class="child">
+<?php } ?>
 <?php		for($i=0; $i < $value['MUST']['count']; $i++) { // MUST attributes ?>
               &nbsp;&nbsp;&nbsp;&nbsp;<b><?php
 				if($ldap['attributetypes'][lc($value['MUST'][$i])]['OID']) {
@@ -108,7 +133,11 @@ foreach($ldap as $x => $array) {
 				}?><br>
 
 <?php       } ?>
+<?php if($opera) { ?>
+            </span>
+<?php } else { ?>
             </div>
+<?php } ?>
           </td>
           <td></td>
           <td><?=$value['DESC']?></td>
