@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.28 2004-11-15 15:25:54 turbo Exp $
+// $Id: user_add-save.inc,v 1.29 2005-01-31 15:25:48 turbo Exp $
 
 // URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
 $_REQUEST["surname"] = urldecode($_REQUEST["surname"]);
@@ -190,16 +190,19 @@ if(($_REQUEST["account_type"] == "system") or
    ($_REQUEST["account_type"] == "mail") or
    ($_REQUEST["account_type"] == "group"))
 {
-	if(!$_REQUEST["maildirectory"])
+  if(!$_REQUEST["maildirectory"]) {
+	if(function_exists("user_generate_mailstore"))
 	  $entry[pql_get_define("PQL_ATTR_MAILSTORE")] = user_generate_mailstore($_pql, $_REQUEST["email"],
 																			 $_REQUEST["domain"], $entry,
 																			 'user');
-	else
-	  $entry[pql_get_define("PQL_ATTR_MAILSTORE")] = $_REQUEST["maildirectory"];
+	else if($basemaildir)
+	  $entry[pql_get_define("PQL_ATTR_MAILSTORE")] = $basemaildir.$_REQUEST["uid"]."/";
+  } else
+	$entry[pql_get_define("PQL_ATTR_MAILSTORE")] = $_REQUEST["maildirectory"];
 	
-	// Verify trailing slash!
-    if(! ereg("/$", $entry[pql_get_define("PQL_ATTR_MAILSTORE")]))
-	  $entry[pql_get_define("PQL_ATTR_MAILSTORE")] .= "/";
+  // Verify trailing slash!
+  if(! ereg("/$", $entry[pql_get_define("PQL_ATTR_MAILSTORE")]))
+	$entry[pql_get_define("PQL_ATTR_MAILSTORE")] .= "/";
 }
 // }}}
 
@@ -229,17 +232,20 @@ if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "mai
 	
 	// -----------------
 	if(($_REQUEST["account_type"] == "system") or in_array('posixaccount', $objectclasses_included)) {
-		// Add home directory to the entry array
-		if(!$_REQUEST["homedirectory"])
+	  // Add home directory to the entry array
+	  if(!$_REQUEST["homedirectory"]) {
+		if(function_exists("user_generate_homedir"))
 		  $entry[pql_get_define("PQL_ATTR_HOMEDIR")] = user_generate_homedir($_pql, $_REQUEST["email"],
 																			 $_REQUEST["domain"], $entry,
 																			 'user');
-		else
-		  $entry[pql_get_define("PQL_ATTR_HOMEDIR")] = $_REQUEST["homedirectory"];
+		else if($basehomedir)
+		  $entry[pql_get_define("PQL_ATTR_HOMEDIR")] = $basehomedir.$_REQUEST["uid"]."/";
+	  } else
+		$entry[pql_get_define("PQL_ATTR_HOMEDIR")] = $_REQUEST["homedirectory"];
 
-		// Verify trailing slash!
-		if(! ereg("/$", $entry[pql_get_define("PQL_ATTR_HOMEDIR")]))
-		  $entry[pql_get_define("PQL_ATTR_HOMEDIR")] .= "/";
+	  // Verify trailing slash!
+	  if(! ereg("/$", $entry[pql_get_define("PQL_ATTR_HOMEDIR")]))
+		$entry[pql_get_define("PQL_ATTR_HOMEDIR")] .= "/";
 	}
 } elseif($_REQUEST["account_type"] == "group") {
 	// Because we require the 'posixAccount' ('uid' attrib) when creating a
