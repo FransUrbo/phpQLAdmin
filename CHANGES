@@ -1,6 +1,6 @@
 phpQLAdmin 2.0 Change Log
 
-phpQLAdmin 2.0.12 TO BE ANNOUNCED
+phpQLAdmin 2.0.12 Release (May 3 2003)
 	Bug fixes
 	  - In attrib.deliverymode.inc, remove all backslashes in
 	    mailReplyText (we got invalid syntax when doing ldap modify).
