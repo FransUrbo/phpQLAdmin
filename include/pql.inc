@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.59 2003-04-26 11:46:06 turbo Exp $
+// $Id: pql.inc,v 2.60 2003-04-26 12:09:12 turbo Exp $
 //
 
 // ----------------------------
@@ -1094,9 +1094,16 @@ function format_error($msg){
 function print_status_msg($msg){
 ?>
   <table cellpadding="3" cellspacing="0" border="0" width="100%">
-    <tr>
-      <td class="message"><img src="images/info.png" width="16" height="16" border="0"> <?php echo stripslashes($msg); ?></td>
-    </tr>
+    <th colspan="3" align="left">
+      <tr class="message">
+        <td colspan="2" class="message">
+          <img src="images/info.png" width="16" height="16" border="0" align="left">
+          <table>
+            <?php echo stripslashes($msg) . "\n"; ?>
+          </table>
+        </td>
+      </tr>
+    </th>
   </table>
 
   <br><br>
