@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_detail.php,v 1.3 2002-12-23 11:48:38 turbo Exp $
+// $Id: ezmlm_detail.php,v 1.4 2002-12-23 19:15:00 turbo Exp $
 //
 session_start();
 
@@ -76,7 +76,7 @@ if($ezmlm->readlists()) {
 				  $value = 'No';
 
 				// if this is number of subscribers, don't output it
-				if($key != 'subscribers') {
+				if(($key != 'subscribers') and ($key != 'directory') and ($key != 'dotpath')) {
 ?>
 
       <tr class="<?php table_bgcolor(); ?>">
@@ -103,14 +103,14 @@ if($ezmlm->readlists()) {
 					}
 ?>
         <td><?=$x?></td>
-        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="ezmlm_del_attribute.php?domain=<?=$domain?>&listno=<?=$listno?>&attrib=<?=$key?>&value=<?=$x?>"><img src="images/del.png" width="12" height="12" alt="delete attribute" border="0"></a></td>
+        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&listno=<?=$listno?>&attrib=<?=$key?>&value=<?=$x?>"><img src="images/del.png" width="12" height="12" alt="delete attribute" border="0"></a></td>
 <?php
 					$j++;
 				}
 			}
 
-			if($key != 'subscriber') {
-				if(($key == 'name') or ($key == 'local') or ($key == 'subscribers')) {
+			if(($key != 'subscriber') and ($key != 'directory') and ($key != 'dotpath')) {
+				if(($key == 'name') or ($key == 'local') or ($key == 'subscribers') or ($key == 'host')) {
 					// Special circumstances - not editable/deletable
 ?>
         <td></td>
@@ -118,7 +118,7 @@ if($ezmlm->readlists()) {
 				} else {
 				// Editable/Deletable values
 ?>
-        <td><a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&listno=<?=$listno?>&attrib=<?=$key?>"><img src="images/edit.png" width="12" height="12" alt="edit attribute" border="0"></a>&nbsp;&nbsp;<a href="ezmlm_del_attribute.php?domain=<?=$domain?>&listno=<?=$listno?>&attrib=<?=$key?>"><img src="images/del.png" width="12" height="12" alt="delete attribute" border="0"></a></td>
+        <td><a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&listno=<?=$listno?>&attrib=<?=$key?>"><img src="images/edit.png" width="12" height="12" alt="edit attribute" border="0"></a>&nbsp;&nbsp;<a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&listno=<?=$listno?>&attrib=<?=$key?>"><img src="images/del.png" width="12" height="12" alt="delete attribute" border="0"></a></td>
 <?php
 				}
 			}
