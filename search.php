@@ -76,7 +76,7 @@ if(is_array($users)){
   asort($users);
   foreach($users as $user){
       // don't know domain, so must figure it out
-      $domain = $user["ou"];
+      $domain = $user["domain"];
       $reference = $user["reference"];
       $uid = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $reference, PQL_LDAP_ATTR_UID);
       $uid = $uid[0];
@@ -88,11 +88,11 @@ if(is_array($users)){
       $status = pql_ldap_accountstatus($status[0]);
 ?>
     <tr class="<?php table_bgcolor(); ?>">
-      <td><a href="user_detail.php?domain=<?php echo $domain ?>&user=<?php echo urlencode($reference)?>"><?php echo $cn; ?></a></td>
+      <td><a href="user_detail.php?domain=<?=$domain?>&user=<?=urlencode($reference)?>"><?=$cn?></a></td>
 
-      <td><?php echo $uid; ?></td>
-      <td><?php echo $mail; ?></td>
-      <td><?php echo $status; ?></td>
+      <td><?=$uid?></td>
+      <td><?=$mail?></td>
+      <td><?=$status?></td>
       <td>
         <a href="user_detail.php?domain=<?php echo $domain ?>&user=<?php echo urlencode($reference)?>">
           <img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_USER_EDIT ?>" border="0">
