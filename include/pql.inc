@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.138 2004-01-15 09:46:54 turbo Exp $
+// $Id: pql.inc,v 2.139 2004-01-15 13:55:25 turbo Exp $
 //
 
 // ----------------------------
@@ -540,47 +540,19 @@ function pql_domain_del($ldap, $domain, $delete_forwards) {
 		header("Location: " . pql_get_define("PQL_GLOB_URI") . "domain_detail.php?domain=$domain&msg=$msg");
 	}
 
-    if(!pql_domain_exist($ldap, $domain)) {
-		// domain does not exist
-		return false;
-    }
-    
-    // remove all users of domain
-    $users = pql_user_get($linkid, $domain);
-    if(is_array($users)) {
-		foreach($users as $user) {
-			pql_user_del($ldap, $domain, $user, $delete_forwards);
-		}
-    }
-
-	// Get subbranches
-	$branches = pql_unit_get($linkid, $domain, 0);
-	if(is_array($branches)) {
-		for($i=0; $branches[$i]; $i++) {
-			// Find every object under this DN and delete it
-			$sr = @ldap_search($linkid, $branches[$i], 'objectclass=*') or pql_format_error(1);
-			$info = ldap_get_entries($linkid, $sr) or pql_format_error(1);
-			for ($j=0; $j<$info["count"]; $j++)
-			  if($info[$j]["dn"] != $branches[$i])
-				// Don't delete the branch quite yet
-				if(!ldap_delete($linkid, $info[$j]["dn"]))
-				  pql_format_error(1);
-			
-			// Delete the organizationalUnit itself
-			if(!ldap_delete($linkid, $branches[$i])) {
-				pql_format_error(1);
-				return false;
-			}
+	// Searching for sub entries
+	$sr   = ldap_list($linkid, $domain, "objectClass=*");
+	$info = ldap_get_entries($linkid, $sr);
+	for($i=0; $i < $info['count']; $i++){
+		// Deleting recursively this sub entry
+		$result = pql_domain_del($ldap, $info[$i]['dn'], $delete_forwards);
+		if(!$result) {
+			// Return result code if delete fails
+			return($result);
 		}
 	}
 
-    // remove domain entry itself (ou)
-    if(!ldap_delete($linkid, $domain)) {
-		pql_format_error(1);
-		return false;
-    }
-
-    return true;
+	return(ldap_delete($linkid, $domain));
 }
 // }}}
 
