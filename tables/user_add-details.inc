@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-details.inc,v 1.22 2004-04-13 10:52:41 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.23 2004-04-13 11:17:15 turbo Exp $ */ ?>
 <?php $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"])); ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -301,8 +301,12 @@
           <td>
             <select name="account_status">
               <option value="active" SELECTED><?=$LANG->_('Active')?></option>
+<?php if(!$_SESSION["NEW_STYLE_QUOTA"])  { ?>
               <option value="nopop"><?=$LANG->_('POP locked')?></option>
-              <option value="disabled"><?=$LANG->_('Locked')?></option>
+<?php } else { ?>
+              <option value="noaccess"><?=$LANG->_('Account locked')?></option>
+<?php } ?>
+              <option value="disabled"><?=$LANG->_('Disabled')?></option>
             </select>
           </td>
         </tr>

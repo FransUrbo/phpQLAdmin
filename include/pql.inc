@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.174 2004-04-06 13:11:38 turbo Exp $
+// $Id: pql.inc,v 2.175 2004-04-13 11:16:52 turbo Exp $
 //
 
 // ----------------------------
@@ -1901,14 +1901,18 @@ function pql_ldap_accountstatus($status) {
 
     // active [default]
     // nopop
+	// noaccess
     // disabled
     
     switch($status) {
       case "nopop":
 		return $LANG->_('POP locked');
 
+	  case "noaccess":
+		return $LANG->_('Locked/Noaccess');
+
       case "disabled":
-		return $LANG->_('Locked');
+		return $LANG->_('Locked/Disabled');
 
       default:
 		return $LANG->_('Active');

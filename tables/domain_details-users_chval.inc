@@ -8,7 +8,11 @@
       <tr class="<?php pql_format_table(); ?>">
         <td><?=$LANG->_('Status')?></td>
         <td><a href="domain_edit_attributes.php?attrib=accountstatus&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&set=active&view=<?=$_REQUEST["view"]?>"><?=$LANG->_('Activate')?></a>
+<?php if(!$_SESSION["NEW_STYLE_QUOTA"])  { ?>
   	| <a href="domain_edit_attributes.php?attrib=accountstatus&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&set=nopop&view=<?=$_REQUEST["view"]?>"><?=$LANG->_('Lock POP account')?></a>
+<?php } else { ?>
+  	| <a href="domain_edit_attributes.php?attrib=accountstatus&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&set=noaccess&view=<?=$_REQUEST["view"]?>"><?=$LANG->_('Lock account')?></a>
+<?php } ?>
   	| <a href="domain_edit_attributes.php?attrib=accountstatus&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&set=disabled&view=<?=$_REQUEST["view"]?>"><?=$LANG->_('Disable account')?></a>
         </td>
       </tr>

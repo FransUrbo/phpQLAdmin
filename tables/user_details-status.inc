@@ -43,7 +43,11 @@ $status = pql_ldap_accountstatus($status);
     <th colspan="2" align="left"><?=$LANG->_('POP status')?></th>
       <tr class="subtitle">
         <td>
+<?php if(!$_SESSION["NEW_STYLE_QUOTA"])  { ?>
           <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_ISACTIVE")?>&user=<?=$url["user"]?>&set=nopop&view=<?=$_GET["view"]?>"><?=$LANG->_('Lock POP account')?></a>
+<?php } else { ?>
+          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_ISACTIVE")?>&user=<?=$url["user"]?>&set=noaccess&view=<?=$_GET["view"]?>"><?=$LANG->_('Lock account')?></a>
+<?php } ?>
         </td>
       </tr>
 <?php } ?>

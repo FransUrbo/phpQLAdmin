@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // accountstatus (status of mailaccount)
-// $Id: attrib.accountstatus.inc,v 2.17 2004-03-11 18:13:41 turbo Exp $
+// $Id: attrib.accountstatus.inc,v 2.18 2004-04-13 11:16:52 turbo Exp $
 
 /* DLW: When the calendar gets a value of 2003.12.25, it gets stored or displayed as 2003/12/24 (@7am)
  *      I think it's having problems with time zones.  Look into it. */
@@ -16,6 +16,7 @@ function attribute_check($type) {
 		switch($_REQUEST["set"]) {
 		  case "active":
 		  case "nopop":
+		  case "noaccess":
 		  case "disabled":
 		  case "expiration":
 			return true;
