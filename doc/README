@@ -27,18 +27,19 @@ to include/config.inc and change the latter. Go throug each line,
 and decide where the database is, what's the base dn etc. From that,
 the database should be layed out something like this:
 
-	Domain layout			Organization layout
-	dc=com				c=SE
-	  dc=fredriksson		  ou=Fredriksson
-	    ou=People			    ou=People
-	      uid=usename		      uid=username
-	    ou=Groups			    ou=Groups
-	      cn=groupname		      cn=groupname
-	  dc=winas			  ou=Winas
-	    ou=People			    ou=People
-	      uid=usename		      uid=username
-	    ou=Groups			    ou=Groups
-	      cn=groupname		      cn=groupname
+  Domain layout        Organization layout    Org layout/mixed
+  =============        ===================    ================
+  dc=com               c=SE                   c=SE
+    dc=fredriksson       ou=Fredriksson         ou=Fredriksson
+      ou=People            ou=People              cn=User Name1
+        uid=usename          uid=username       ou=Winas
+      ou=Groups            ou=Groups              cn=User Name2
+        cn=groupname         cn=groupname       
+    dc=winas             ou=Winas
+      ou=People            ou=People
+        uid=usename          uid=username
+      ou=Groups            ou=Groups
+        cn=groupname         cn=groupname
 
 Here I show two 'domains' - Fredriksson and Winas. What this means
 is that users are under the 'ou=People' object and groups are under
@@ -53,23 +54,30 @@ This layout is configured by defining PQL_LDAP_SUBTREE_USERS and/or
 PQL_LDAP_SUBTREE_GROUPS, so without these, you CAN get a flat layout,
 but please don't.
 
-Also, it's not possible to mix the two layouts in one database. You CAN
-configure multiple top suffixes in your LDAP database (multiple database
-backends with different suffixes). phpQLAdmin should be able to cope with
-that, and show it as ONE. This have not been tested however.
+The third layout is what I would like to call 'mixed'. It don't separate
+users under ou=People etc, but directly under the branch and users don't
+have the UID attribute but is using CN as part of their RDN.
+
+Also, you shouldn't mix the layouts types in one database. What you should
+do, is configure multiple top suffixes in your LDAP database (multiple
+database backends with different suffixes). phpQLAdmin is since version
+2.0.10 able to cope with that, and show all database as one.
 
 Configuration in LDAP
 ~~~~~~~~~~~~~~~~~~~~~
 With version 2.0.5, it's possible to have site specific configurations
-in the database. It is saved into the topmost RDN ('dc=com' or 'c=SE'
+in the database. It is saved into the topmost RDN's ('dc=com' and 'c=SE'
 in my two examples above) objects, so make sure you have access to modify
-this object. This is a matter of the LDAP server, not phpQLAdmin so consult
-your LDAP servers documentation on how to do this. If you only have the
-required objectclasses (top and/or domain in a domain layout for example),
-phpQLAdmin will add the two objectclasses 'phpQLAdminConfig' and
-'phpQLAdminBranch' to the object before it writes the configuration, so
-backward compability should be ok with an non-phpQLAdmin created domain/branch.
-If it's not, please report a bug at the mailinglist phpqladmin@bayour.com.
+these objects before saving a site global value.
+
+This is a matter of the LDAP server, not phpQLAdmin so consult your LDAP
+servers documentation on how to do this. If you only have the required
+objectclasses (top and/or domain in a domain layout for example), phpQLAdmin
+will add the two objectclasses 'phpQLAdminConfig' and 'phpQLAdminBranch' to
+the object before it writes the configuration, so backward compability should
+be ok with an non-phpQLAdmin created domain/branch. If it's not, please report
+a bug at the mailinglist phpqladmin@bayour.com.
+
 
 One attribute in the phpQLAdminBranch objectclass that's a little troublesome
 is the defaultDomain attribute. It exists in the qmailControl.schema distributed
@@ -100,5 +108,18 @@ your self. What objectclasses should your user objects have? What objectclasses
 should your domain/branch objects have etc... This require knowledge on how
 LDAP works!
 
+Administrator login
+~~~~~~~~~~~~~~~~~~~
+To be able to login to the LDAP server from phpQLAdmin, the object you're using
+for login must have the possibility/authority to do a simple bind. That usually
+means that there have to be a 'userPassword' attribute in the object. Only having
+the password in the slapd.conf file (as example below) won't help.
+
+	rootdn	cn=Manager,....
+	rootpw	SecretPWHere
+
+
 For more information on installations, please view doc/index.php through
-the webbrowser.
+the webbrowser. Note though that documentation is not my stronges side while
+coding, so it is much out of date. I will evenually get to it, but... :)
+
