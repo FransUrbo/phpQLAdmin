@@ -3,6 +3,10 @@
 // domain_add.php,v 1.3 2002/12/12 21:52:08 turbo Exp
 //
 session_start();
+
+// Make sure we can have a ' in branch
+$domain = ereg_replace("\\\'", "'", $domain);
+
 require("./include/pql_config.inc");
 require("./include/pql_control.inc");
 
