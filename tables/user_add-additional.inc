@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-additional.inc,v 1.27 2005-03-07 10:58:07 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.28 2005-03-19 10:50:54 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <!-- Some hidden values from previous page(s) -->
 <?php if($_REQUEST["surname"] and pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_CN"))) { ?>
@@ -141,7 +141,7 @@
 		   ($_REQUEST["mail"] or
 			pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILHOST"), 'MUST')))
 		{
-			 echo pql_templates_mark_importance(1);
+			 echo "            ".pql_templates_mark_importance(1);
 		}
 ?>
             <?php echo pql_format_error_span($error_text["userhost"]); ?>
@@ -150,6 +150,8 @@
 			// It's defined - QmailLDAP/Controls object
 
 			for(; $_REQUEST["userhost"]["qlc"][$i]; $i++) {
+			    if($i != 0)
+			      echo "&nbsp;&nbsp;";
 ?>
 
             <input type="hidden" name="host_<?=$i?>" value="<?=$_REQUEST["userhost"]["qlc"][$i]?>">
@@ -171,6 +173,8 @@
 		   ($_REQUEST["userhost"]["qlc"] and !in_array($_REQUEST["userhost"]["dns"], $_REQUEST["userhost"]["qlc"])))
 		{
 			// It's defined - DNS entry (and it don't exists as QMailLDAP/Controls object)
+			if($i >= 1)
+			  echo "&nbsp;&nbsp;";
 ?>
 
             <input type="hidden" name="host_<?=$i?>" value="<?=$_REQUEST["userhost"]["dns"]?>">
@@ -178,9 +182,10 @@
             <b><?=$_REQUEST["userhost"]["dns"]?></b><br>
 <?php	} ?>
 
+<?php	if($i >= 1) echo "&nbsp;&nbsp;"; ?>
             <input type="radio"  name="host"   value="<?=$i?>" <?php if(!$checked) { $checked = 1; ?>CHECKED<?php } ?>>
             <b><?=$LANG->_('User defined')?></b>:<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php if($i >= 1) { echo "&nbsp;&nbsp;\n"; } else { echo "\n"; } ?>
             <input type="text"   name="host_<?=$i?>" size="56">
             <input type="hidden" name="text_host" value="<?=$i?>">
           </td>
