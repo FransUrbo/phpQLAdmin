@@ -3,7 +3,7 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ezmlm.inc,v 1.16 2003-06-12 12:47:06 turbo Exp $
+// $Id: pql_ezmlm.inc,v 1.17 2003-06-12 16:50:18 turbo Exp $
 session_start();
 
 class ezmlm {
@@ -119,12 +119,16 @@ class ezmlm {
 			$this->mailing_lists_hostsindex[$host][$name] = $no;
 		}
 
+		$this->mailing_lists_hostsindex["COUNT"] = count($this->mailing_lists_hostsindex[$host]);
 		return 1;
 	}
 
 	// Read list configuration
 	function _readlistconfiguration($list, &$configuration, $loadtexts) {
-		$list_path = ($this->user_home."/".$list);
+		if(! ereg("/$", $user_home))
+		  $list_path = ($this->user_home.$list);
+		else
+		  $list_path = ($this->user_home."/$list");
 		if(!( ($file = @fopen($list_path."/config", "r")) !=0)) {
 			$this->error="could not open the mailing list configuration file";
 			return 0;
@@ -196,7 +200,7 @@ class ezmlm {
 
 		// Get number of subscribers
 		$command = $this->_paths["list"] . " 2>&1 " . $list_path . " | wc -l";
-		$output  = do_exec($command, $output_array, $result);
+		$output  = @Exec($command, $output_array, $result);
 		if($result != 0) {
 			$this->error = "could not execute system command: '" . $command . "'" .
 			  ((!strcmp($output, "")) ? "" : (" (".$output.")"));
@@ -206,7 +210,7 @@ class ezmlm {
 
 		// Get subscriber addresses
 		$command = $this->_paths["list"] . " 2>&1 " . $list_path;
-		$output = do_exec($command, $output_array, $result);
+		$output = @Exec($command, $output_array, $result);
 		if($result != 0) {
 			$this->error = "could not execute system command: '" . $command . "'" .
 			  ((!strcmp($output, "")) ? "" : (" (".$output.")"));
