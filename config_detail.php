@@ -83,6 +83,8 @@ if(empty($_REQUEST["view"]) or $_REQUEST["view"] == 'default') {
     $link = "index2.php";
     if(isset($_SESSION["ADVANCED_MODE"]))
       $link .= "?advanced=1";
+    else
+      $link .= "?advanced=0";
 
     header("Location: " . pql_get_define("PQL_CONF_URI") . $link);
 } else {
