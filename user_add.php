@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.118 2005-02-26 17:33:46 turbo Exp $
+// $Id: user_add.php,v 2.119 2005-03-02 09:08:02 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -431,6 +431,7 @@ switch($_REQUEST["page_curr"]) {
 		{
 		  if(!empty($basemaildir)) {
 			if(function_exists("user_generate_mailstore")) {
+			  // {{{ Function user_generate_mailstore() exists
 			  if((pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
 				 and $_REQUEST["uid"])
 				$reference = $_REQUEST["uid"];
@@ -448,9 +449,11 @@ switch($_REQUEST["page_curr"]) {
 			  $_REQUEST["maildirectory"] = user_generate_mailstore($_pql, $_REQUEST["mail"], $_REQUEST["domain"],
 																   array(pql_get_define("PQL_ATTR_UID") => $reference),
 																   'user');
+			  // }}}
 			} else {
-			  // Function user_generate_mailstore() doesn't exists but we have a base mail directory.
-			  // Try creating the mail directory manually, using the username.
+			  // {{{ Function user_generate_mailstore() doesn't exists
+			  //     We do however have a base mail directory.
+			  //     Try creating the mail directory manually, using the username.
 			  
 			  $ref = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]);
 			  if($_REQUEST[$ref]) {
@@ -470,6 +473,7 @@ switch($_REQUEST["page_curr"]) {
 				  $_REQUEST["maildirectory"] = $_REQUEST[$ref];
 				}
 			  }
+			  // }}}
 			}
 			
 			if($_REQUEST["maildirectory"]) {
