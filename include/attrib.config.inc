@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.9 2003-04-07 07:36:01 turbo Exp $
+// $Id: attrib.config.inc,v 1.10 2003-04-08 08:31:28 turbo Exp $
 
 function attribute_check() {
     global $administrator, $domain, $oldvalue, $_pql, $error;
@@ -93,7 +93,7 @@ function attribute_print_form() {
 <?php   } else { ?>
           <td class="title"><?=$attrib?></td>
           <td>
-            <?php echo format_error($error[$attrib]); ?><input type="text" name="<?=$attrib?>" value="<?php if($test != 'passwordscheme') { echo $oldvalue; } ?>" size="40">
+            <?php echo format_error($error[$attrib]); ?><input type="text" name="<?=$attrib?>" value="<?php if(($test != 'passwordscheme') and ($test != 'whoarewe')) { echo $oldvalue; } ?>" size="40">
           </td>
 <?php   } ?>
         </tr>
@@ -116,30 +116,35 @@ function attribute_print_form() {
 	}
 
 	// Do the actual modification
-	if(! $rootdn) {
-		// We don't have a root DN. This means it's a global
-		// variable, and should be set in every namingContexts
-		foreach($_pql->ldap_basedn as $dn) {
-			if(is_array($entry)) {
-				if(! pql_set_domain_value($_pql->ldap_linkid, $dn, '', $entry))
-				  $msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
-				else
-				  $msg = "Successfully replaced $attrib."; $rlnb = 1;
+	if($toggle) {
+		if(! $rootdn) {
+			// We don't have a root DN. This means it's a global
+			// variable, and should be set in every namingContexts
+			foreach($_pql->ldap_basedn as $dn) {
+				if(is_array($entry)) {
+					if(! pql_set_domain_value($_pql->ldap_linkid, $dn, '', $entry)) {
+						$msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
+					} else {
+						$msg = "Successfully replaced $attrib."; $rlnb = 1;
+					}
+				} else {
+					if(! pql_set_domain_value($_pql->ldap_linkid, $dn, $entry, '')) {
+						$msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
+					} else {
+						$msg = "Successfully replaced $attrib."; $rlnb = 1;
+					}
+				}
+			}
+		} else {
+			if(! pql_set_domain_value($_pql->ldap_linkid, $rootdn, '', $entry)) {
+				$msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
 			} else {
-				if(! pql_set_domain_value($_pql->ldap_linkid, $dn, $entry, ''))
-				  $msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
-				else
-				  $msg = "Successfully replaced $attrib."; $rlnb = 1;
+				$msg = "Successfully replaced $attrib."; $rlnb = 1;
 			}
 		}
-	} else {
-		if(! pql_set_domain_value($_pql->ldap_linkid, $rootdn, '', $entry))
-		  $msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
-		else
-		  $msg = "Successfully replaced $attrib."; $rlnb = 1;
-	}
 	
-	attribute_forward($msg, $rlnb);
+		attribute_forward($msg, $rlnb);
+	}
 }
 
 function attribute_save() {
@@ -157,7 +162,7 @@ function attribute_save() {
 	}
 
 	// If we HAVE an old value, add it...
-	if($oldvalue) {
+	if($oldvalue and $toggle) {
 		$values = pql_split_oldvalues($oldvalue);
 		for($i=0; $values[$i]; $i++)
 		  $value[$attrib][] = $values[$i];
@@ -167,16 +172,18 @@ function attribute_save() {
 		// We don't have a root DN. This means it's a global
 		// variable, and should be set in every namingContexts
 		foreach($_pql->ldap_basedn as $dn) {
-			if(! pql_set_domain_value($_pql->ldap_linkid, $dn, '', $value))
-			  $msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
-			else
-			  $msg = "Successfully replaced $attrib."; $rlnb = 1;
+			if(! pql_set_domain_value($_pql->ldap_linkid, $dn, '', $value)) {
+				$msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
+			} else {
+				$msg = "Successfully replaced $attrib."; $rlnb = 1;
+			}
 		}
 	} else {
-		if(! pql_set_domain_value($_pql->ldap_linkid, $rootdn, '', $value))
-		  $msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
-		else
-		  $msg = "Successfully replaced $attrib."; $rlnb = 1;
+		if(! pql_set_domain_value($_pql->ldap_linkid, $rootdn, '', $value)) {
+			$msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
+		} else {
+			$msg = "Successfully replaced $attrib."; $rlnb = 1;
+		}
 	}
 
 	attribute_forward($msg, $rlnb);
