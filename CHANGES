@@ -1,5 +1,12 @@
 phpQLAdmin 2.1 Change Log
 
+phpQLAdmin 2.1.5 TO BE ANNOUNCED
+	Bug fixes
+	GUI layout change
+	API changes
+	Misc changes	
+	Documentation changes
+
 phpQLAdmin 2.1.4 Release (Feb 24 2005)
 	Bug fixes
 	  - Don't use a default TTL of '604800' when creating a DNS host. Get the default
