@@ -3,7 +3,7 @@
 // concurrencylocal (may simultaneous local deliveries)
 // concurrencyremote (may simultaneous remote deliveries)
 //
-// $Id: attrib.control.concurrencylocal.inc,v 2.13 2004-01-01 12:35:33 turbo Exp $
+// $Id: attrib.control.concurrencylocal.inc,v 2.14 2004-02-12 14:00:17 turbo Exp $
 
 function concurrencylocal_check($type) {
 	global $error, $concurrencylocal, $concurrencyremote, $view, $LANG;
@@ -129,7 +129,7 @@ function concurrencylocal_save($type, $host) {
 		
 		if(in_array(false, $return))
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('bouncing options')));
+									   array('what' => $LANG->_('bouncing options')))
 			. ": " . pql_format_error(0);
 		else
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
