@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of user
-// $Id: user_edit_attribute.php,v 2.38 2004-03-11 18:13:32 turbo Exp $
+// $Id: user_edit_attribute.php,v 2.39 2004-04-29 13:50:44 dlw Exp $
 //
 // This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
 //   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -16,13 +16,16 @@ $url["domain"] = pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 $url["user"]   = pql_format_urls($_REQUEST["user"]);
 
-require_once("./dlw_porting.inc");
-// These variable are "_GET" the first time, and "_POST" the other times.
-if (empty($session)) {
-  dlw_expect_from(__FILE__, __LINE__, '_REQUEST', array('domain', 'user', 'rootdn', 'oldvalue', 'view', 'attrib', 'PHPSESSID'));
-  dlw_expect_from(__FILE__, __LINE__, '_POST', array());
-} else {
-  dlw_expect_from(__FILE__, __LINE__, '_POST', array('domain', 'user', 'rootdn', 'oldvalue', 'view', 'attrib', 'submit'));
+if (strpos($_SESSION['VERSION'], 'CVS') !== false) {
+  require_once("./dlw_porting.inc");
+
+  // These variable are "_GET" the first time, and "_POST" the other times.
+  if (empty($session)) {
+    dlw_expect_from(__FILE__, __LINE__, '_REQUEST', array('domain', 'user', 'rootdn', 'oldvalue', 'view', 'attrib', 'PHPSESSID'));
+    dlw_expect_from(__FILE__, __LINE__, '_POST', array());
+  } else {
+    dlw_expect_from(__FILE__, __LINE__, '_POST', array('domain', 'user', 'rootdn', 'oldvalue', 'view', 'attrib', 'submit'));
+  }
 }
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
