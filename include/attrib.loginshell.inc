@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // loginshell
-// $Id: attrib.loginshell.inc,v 2.9 2003-08-11 19:49:52 turbo Exp $
+// $Id: attrib.loginshell.inc,v 2.10 2003-08-18 08:26:11 turbo Exp $
 
 function attribute_check($type) {
     global $loginshell, $oldvalue, $_pql, $error, $LANG;
@@ -17,7 +17,7 @@ function attribute_check($type) {
 
 function attribute_init() {
     global $loginshell, $oldvalue;
-    $loginshell = $oldvalue;
+    $oldvalue = $loginshell;
 }
 
 function attribute_print_form() {
@@ -32,6 +32,7 @@ function attribute_print_form() {
           <td class="title"><?=$LANG->_('Login shell')?></td>
           <td>
             <?php echo format_error($error["loginshell"]); ?>
+
             <select name="loginshell">
               <option value="/bin/false" SELECTED>/bin/false</option>
 <?php
