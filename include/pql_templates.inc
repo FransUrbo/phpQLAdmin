@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_templates.inc,v 2.1.2.2 2005-03-07 06:26:10 turbo Exp $
+// $Id: pql_templates.inc,v 2.1.2.3 2005-03-18 06:35:32 turbo Exp $
 //
 
 // {{{ Generate the group template (hardcoded for the moment)
@@ -192,9 +192,9 @@ function pql_templates_check_attribute($linkid, $template, $attribute, $type = N
 // Called with '1' (MUST) or '2' (MAY).
 function pql_templates_mark_importance($importance) {
   if($importance == 1)
-	return "<font color=red>*</font> ";
+	return "<font color=red>*</font>\n";
   else
-	return "&nbsp;&nbsp;";
+	return "&nbsp;&nbsp;\n";
 }
 // }}}
 
