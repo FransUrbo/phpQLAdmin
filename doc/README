@@ -231,24 +231,68 @@ attributes in QmailLDAP/Controls object
 As of 2.0.14, phpQLAdmin will automaticly add the domain to any
 rcpthosts attribute of your QmailLDAP/Controls object(s).
 
-The trick with the this is that the master (email/qmail) server
-should only have 'locals', and the slaves should only have 'rcpthosts'
-attributes. This because the master have all the domains as local
-domains and the slaves should accept mails for those domains (but
-forward them to the master).
+Locals/RCPTHosts - trick 1
+	Automatic replication of locals:	on
+	Automatic replication of rcpthosts:	on
 
-This will make phpQLAdmin add the new domain (or the additionalDomainName
-in 'locals' on the master, and in the 'rcpthosts' on the slave(s).
+	The first locals/rcpthosts trick is when the master email
+	server should only have 'locals', and the slaves should
+	only have 'rcpthosts' attributes. This is because the master
+	have all the domains as local domains and the slaves should
+	only accept mails for those domains (but forward them to
+	the master).
 
-If you have a mixed setup (master have both locals and rcpthosts,
-as does the slaves) and don't want the new domain to be added to
-both locals and rcpthosts on all your QmailLDAP/Controls objects,
-you will have to disable the 'Automatically replicate domains to locals'
-and 'Automatically replicate domains to rcpthosts' in the
-'Show configuration' page.
+	This will make phpQLAdmin add the new domain (or the
+	additionalDomainName in 'locals' on the master, and in the
+	'rcpthosts' on the slave(s).
+
+Locals/RCPTHosts - trick 2
+	Automatic replication of locals:	off
+	Automatic replication of rcpthosts:	on
+
+	Another example would be if you have one or more main servers
+	and a bunch of slave servers. The slave servers don't have
+	any local(s) domains, only rcpthosts. That is, it does not
+	have any local accounts, it just listens (and receive mails
+	for) a(ll) domain(s). But the master email servers does not
+	have ALL domains local, only specific ones. 
+
+	Let's say you have two main mailservers and x slaves (the slaves
+	is not of interest here, they have ALL domains in rcpthosts).
+
+		Master server	Slave server
+		~~~~~~~~~~~~~	~~~~~~~~~~~~
+		bayour.com	frans.org
+		test.org	turbo.se
+
+	To be able to control to which server a new domain go (let's say
+	we're adding 'fredriksson.dj' to the system), you will have to
+	disable automatic replication of locals (but leave it on for
+	rcpthosts). Then, when you're adding defaultDomain (or additional
+	domain name), you will get the question on which host (ie,
+	QmailLDAP/Controls object) to add the domain to. Since rcpthosts
+	is automaticly replicated, but locals is not, the domain will be
+	added to ALL (!) hosts rcpthosts attribute, EXEPT the one which
+	you choosed for 'locals' addition. This means that the OTHER master
+	server will have the domain in rcpthosts (ie, it will be a slave
+	for this domain).
+
+	If this isn't desired, disable automatic replication completely!
+
+Having automatic replication of locals=on and rcpthosts=off (the
+opposit of trick 2) is of little use, since replication of locals will
+add the domain to all hosts (QmailLDAP/Controls object) and rcpthosts
+will not be written if the domain exists in locals...
 
 
-For more information on installations, please view doc/index.php
-through the webbrowser. Note though that documentation is not my
-stronges side while coding, so it is much out of date. I will
-evenually get to it, but... :)
+If neither 'trick 1' nor 'trick 2' is what you want, tell me (as verbose
+as you can, with examples) and I'll see what I can do. Until then, you
+will have to disable automatic replication on both locals and rcpthosts,
+and either specify what to write where (when adding domain to default
+or additional domain for branch).
+
+
+For more information on installations, please view doc/index.php through
+your web browser. Note though that documentation is not my stronges side
+while coding, so it is much out of date. I will evenually get to it,
+but... :)
