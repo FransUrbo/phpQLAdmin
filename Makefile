@@ -3,7 +3,7 @@
 #
 
 TMPDIR  := $(shell tempfile)
-VERSION := $(shell cat .version.old)
+VERSION := $(shell cat .version)
 INSTDIR := $(TMPDIR)/phpQLAdmin-$(VERSION)
 
 # Make a unified diff over the changes from the last version...
