@@ -1,5 +1,5 @@
 <? // http://www.thescripts.com/serversidescripting/php/articles/dynamicimagesinphp3.0/page0.html
-// $Id: navbutton.php,v 2.12 2003-11-14 13:13:41 turbo Exp $
+// $Id: navbutton.php,v 2.13 2003-11-20 11:10:25 turbo Exp $
 
 include("./include/pql.inc");
 
@@ -38,7 +38,7 @@ if(function_exists('ImageCreateFromPng') && (imagetypes() & IMG_PNG)) {
 // The reason for this is that the upper cased
 // letters are twice as wide as the lower cased...
 for($i = 0; $string[$i]; $i++) {
-    $tmp = non_internationalize($string[$i]);
+    $tmp = pql_format_international($string[$i]);
 
     // Correct: The letter 'I' is NOT counted here! It's wide as a small character.
     if(ereg("[ABCDEFGHJKLMNOPQRSTUVWXYZ]", $tmp))
