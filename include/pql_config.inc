@@ -3,19 +3,27 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.9 2003-03-06 10:40:48 turbo Exp $
+// $Id: pql_config.inc,v 1.10 2003-03-31 08:10:17 turbo Exp $
 //
 
 // We need this instead of define(), so that we can get rid
 // of 'Constant ... already defined' if running with
 //	error_reporting=E_ALL
 // in PHP...
-function pql_define($define, $value, $case_insensitive = false) {
+function pql_define($define, $value, $case_insensitive = false, $dn = NULL) {
+	global $config;
+
 	if($value == "1")
 	  $value = 'true';
 
 	if(! @constant($define))
 	  define($define, $value, $case_insensitive);
+
+	// Create a global two dimensional array with the config values
+	//	Dimension 1: define name
+	//	Dimension 2: root DN
+	if($dn)
+	  $config[$define][$dn] = $value;
 }
 
 // ----------------------------
@@ -109,50 +117,57 @@ if(!$USER_HOST) {
 	}
 }
 
-if(isset($USER_DN)) session_register("USER_DN");
+if(isset($USER_DN))
+	 session_register("USER_DN");
+
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
-$sr   = @ldap_read($_pql->ldap_linkid, $_pql->ldap_basedn[0], $_pql->ldap_basedn[0])
-	 or pql_errormsg($_pql->ldap_linkid);
-$info = ldap_get_entries($_pql->ldap_linkid, $sr)
-	 or pql_errormsg($_pql->ldap_linkid);
+foreach($_pql->ldap_basedn as $dn)  {
+	$sr = @ldap_read($_pql->ldap_linkid, $dn, $dn)
+	  or pql_errormsg($_pql->ldap_linkid);
+	$info = ldap_get_entries($_pql->ldap_linkid, $sr)
+	  or pql_errormsg($_pql->ldap_linkid);
 
-// If we got something, retreive the attributes
-for ($i=0; $i<$info["count"]; $i++) {
-	foreach($PQL_ATTRIBUTE as $key => $value) {
-		if(is_array($value)) {
-			foreach($value as $k => $v) {
-				$v = strtolower($v);
-				$nkey = $key."_".$k;
-
-				if(isset($info[$i][$v][0])) {
-					if($info[$i][$v][0] != '') {
-						if($info[$i][$v][0]=='0')
-						  $V = 'false';
-						elseif($info[$i][$v][0]=='1')
-						  $V = 'true';
-						else
-						  $V = $info[$i][$v][0];
-						
-						pql_define($nkey, $info[$i][$v][0], true);
+	// If we got something, retreive the attributes
+	for ($i=0; $i<$info["count"]; $i++) {
+		foreach($PQL_ATTRIBUTE as $key => $value) {
+			if(is_array($value)) {
+				foreach($value as $k => $v) {
+					$v = strtolower($v);
+					$nkey = $key."_".$k;
+					
+					if(isset($info[$i][$v][0])) {
+						if($info[$i][$v][0] != '') {
+							if($info[$i][$v][0]=='0')
+							  $V = 'false';
+							elseif($info[$i][$v][0]=='1')
+							  $V = 'true';
+							else
+							  $V = $info[$i][$v][0];
+							
+							pql_define($nkey, $info[$i][$v][0], true, $dn);
+						}
 					}
 				}
-			}
-		} else {
-			$value = strtolower($value);
-			if(isset($info[$i][$value][0])) {
-				if($info[$i][$value][0] != '') {
-					if($info[$i][$value][0]=='0')
-					  $V = 'false';
-					elseif($info[$i][$value][0]=='1')
-					  $V = 'true';
-					else
-					  $V = $info[$i][$value][0];
-					
-					pql_define($key, $info[$i][$value][0], true);
+			} else {
+				$value = strtolower($value);
+				if(isset($info[$i][$value][0])) {
+					if($info[$i][$value][0] != '') {
+						if($info[$i][$value][0]=='0')
+						  $V = 'false';
+						elseif($info[$i][$value][0]=='1')
+						  $V = 'true';
+						else
+						  $V = $info[$i][$value][0];
+						
+						pql_define($key, $info[$i][$value][0], true, $dn);
+					}
 				}
 			}
 		}
 	}
+
+	// 3. Load 'resonable defaults' for each top DN
+	require("./include/defaults.inc");
 }
 
 // Check some builtin ACL's
@@ -164,9 +179,6 @@ if($USER_DN) {
 	// Check the Control DN if the user is there -> Allow management of Controls information
 	$ALLOW_CONTROL_CREATE = pql_validate_administrator($_pql->ldap_linkid, $USER_SEARCH_DN_CTR, $USER_DN);
 }
-
-// 3. Load 'resonable defaults'
-require("./include/defaults.inc");
 
 session_register("ALLOW_BRANCH_CREATE", "ALLOW_CONTROL_CREATE");
 
