@@ -57,8 +57,8 @@ if($dns[0]) {
 	}
 
 	// Default values we can easily figure out
-	$defaultmaildir = user_generate_mailstore('', '', '', $entry, 'branch');
-	$defaulthomedir = user_generate_homedir('', '', '', $entry, 'branch');
+	$defaultmaildir = non_internationalize(user_generate_mailstore('', '', '', $entry, 'branch'));
+	$defaulthomedir = non_internationalize(user_generate_homedir('', '', '', $entry, 'branch'));
 
 	// Replace spaces with underscore - can't create dirs with spaces,
 	// it's bound to break SOMEWHERE!
@@ -70,7 +70,7 @@ if($dns[0]) {
 	// Save the attributes - Default domain
 	if($defaultdomain && !pql_set_domain_value($_pql->ldap_linkid,
 											   $dns[0], 'defaultDomain',
-											   $defaultdomain))
+											   pql_maybe_idna_encode($defaultdomain)))
 	  $msg = $LANG->_('Failed to change the default domainname') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	
 	// Save the attributes - Default home directory
@@ -92,6 +92,14 @@ if($dns[0]) {
 	// The creator is by default the administrator
 	if(! pql_set_domain_value($_pql->ldap_linkid, $dns[0], pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $USER_DN))
 	  $msg = $LANG->_('Failed to change the default domainname') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+
+	// Create a template DNS zone
+	if($template && $defaultdomain && pql_get_define("PQL_GLOB_BIND9_USE")) {
+		require("./include/pql_bind9.inc");
+
+		if(! pql_bind9_add_zone($_pql->ldap_linkid, $dns[0], $defaultdomain))
+		  $msg = pql_complete_constant($LANG->_("Failed to add domain %domainname%"), array("domainname" => $defaultdomain));
+	}
 
 	// redirect to domain-details
 	if($msg == "")
