@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.19 2003-01-16 15:08:15 turbo Exp $
+// $Id: pql.inc,v 2.20 2003-01-16 16:09:11 turbo Exp $
 //
 // ----------------------------
 // Note: There are a few " followed after PHP comment
@@ -1390,6 +1390,23 @@ function pql_branch_objectclasses() {
 	}
 
 	return $filter;
+}
+
+function pql_get_mx($domainname) {
+	$res = getmxrr($domainname, $rec, $weight);
+	if(count($rec) == 0) {
+		return 0;
+	} else {
+		// Take the MX with _LOWEST_ priority/weight.
+		asort($weight); $old_prio = 65555;
+		foreach($weight as $key => $prio){
+			if($prio < $old_prio) {
+				$old_prio = $prio; $prio_key = $key;
+			}
+		}
+		
+		return $rec[$prio_key];
+	}
 }
 
 /*

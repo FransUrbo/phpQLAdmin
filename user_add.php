@@ -103,20 +103,10 @@ if($submit == "two"){
 
 if(($submit == "two") or (($submit == "one") and !$ADVANCED_MODE)) {
 	// fetch dns information
-	$res = getmxrr($defaultdomain, $rec, $weight);
-	if(count($rec) == 0) {
+	$userhost = pql_get_mx($defaultdomain);
+	if(!$userhost) {
 		$error_text["userhost"] = PQL_DNS_NONE;
 		$error = true;
-	} else {
-		// Take the MX with _LOWEST_ priority/weight.
-		asort($weight); $old_prio = 65555;
-		foreach($weight as $key => $prio){
-			if($prio < $old_prio) {
-				$old_prio = $prio; $prio_key = $key;
-			}
-		}
-
-		$userhost = $rec[$prio_key];
 	}
 }
 
@@ -596,7 +586,13 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 			// set attributes
 			$entry[PQL_LDAP_ATTR_PASSWD]   = pql_password_hash($password, $pwscheme);
 			if($host == 'default') {
-				$entry[PQL_LDAP_ATTR_MAILHOST] = $mx;
+				// TODO: If there is no defaultDomain for the domain, get MX of the domain in the email address
+				if($mx) {
+					$entry[PQL_LDAP_ATTR_MAILHOST] = $mx;
+				} else {
+					$domainname = split('@', $entry[PQL_LDAP_ATTR_MAIL]);
+					$entry[PQL_LDAP_ATTR_MAILHOST] = pql_get_mx($domainname[1]);
+				}
 			} else {
 				$entry[PQL_LDAP_ATTR_MAILHOST] = $userhost;
 			}
