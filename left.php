@@ -72,13 +72,17 @@ if($advanced == 1) {
 
   <div id="el1Child" class="child">
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="user_search.php">Find user</a></nobr><br>
+<?php if($ADVANCED_MODE) { ?>
+<?php	if($ALLOW_BRANCH_CREATE) { ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="config_detail.php">Show configuration</a></nobr><br>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="config_ldaptest.php"><?php echo PQL_LANG_TEST_LDAP; ?></a></nobr><br>
+    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="config_ldap.php">LDAP server configuration</a></nobr><br>
+<?php	} ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="doc/index.php"><?=PQL_LANG_DOCUMENTATION?></a></nobr><br>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="TODO">What's left todo</a></nobr><br>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="CHANGES">What's been done</a></nobr>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://phpqladmin.bayour.com/">phpqladmin.bayour.com</a></nobr><br>
-    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="config_ldap.php">LDAP server configuration</a></nobr><br>
+<?php } ?>
   </div>
   <!-- HOME -->
 
