@@ -11,7 +11,7 @@
 // If you want to customise phpQLAdmin, do NOT do it here, the file
 // to customise is 'config_attributes.inc'.
 //
-// $Id: config_plugins.inc,v 2.13 2004-04-29 12:42:46 turbo Exp $
+// $Id: config_plugins.inc,v 2.14 2004-05-06 14:38:17 turbo Exp $
 
 pql_plugin_register(pql_get_define("PQL_ATTR_ISACTIVE"),
 					"attrib.accountstatus.inc",
@@ -128,6 +128,12 @@ pql_plugin_register(pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"),
 						  pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS"),
 						  pql_get_define("PQL_ATTR_AUTOCREATE_PASSWORD")));
 
+pql_plugin_register(pql_get_define("PQL_ATTR_GROUP_CONFIRM"),
+					"attrib.usertoggle.inc",
+					"",
+					array(pql_get_define("PQL_ATTR_GROUP_CONFIRM"),
+						  pql_get_define("PQL_ATTR_GROUP_MEMBERS_ONLY")));
+
 pql_plugin_register(pql_get_define("PQL_ATTR_USERNAME_PREFIX"),
 					"attrib.usernameprefix.inc",
 					"",
@@ -209,6 +215,12 @@ pql_plugin_register(pql_get_define("PQL_ATTR_ADDITIONAL_GROUP"),
 					"attrib.additionalgroup.inc",
 					"",
 					pql_get_define("PQL_ATTR_ADDITIONAL_GROUP"));
+
+pql_plugin_register(pql_get_define("PQL_ATTR_GROUP_CONFIRM_TEXT"),
+					"attrib.confirmtexts.inc",
+					"",
+					array(pql_get_define("PQL_ATTR_GROUP_CONFIRM_TEXT"),
+						  pql_get_define("PQL_ATTR_GROUP_MODERATOR_TEXT")));
 
 // List all registred attributes and their files
 // - Uncomment this piece of code to view which
