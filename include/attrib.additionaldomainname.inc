@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.1 2003-05-06 06:38:37 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.2 2003-05-06 11:34:08 turbo Exp $
 
 function attribute_check() {
     global $additionaldomainname, $domain, $oldvalue, $_pql, $error, $rootdn;
@@ -83,24 +83,21 @@ function attribute_save($type) {
 		if(!$delval)
 		  // Add the new value
 		  $entry[$attrib][] = $additionaldomainname;
-			
-		if(pql_set_domain_value($_pql->ldap_linkid, $domain, '', $entry))
-		  $msg = pql_complete_constant(PQL_LANG_DOMAIN_DEFAULT_CHANGE_OK, array("name" => $additionaldomainname));
-		else
-		  $msg = PQL_LANG_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+		elseif(!is_array($entry)) 
+		  // We're deleting the last entry...
+		  $entry[$attrib] = array();
 		
-		if($config["PQL_CONF_REFERENCE_DOMAINS_WITH"][$rootdn] == "dc") {
+		if(pql_set_domain_value($_pql->ldap_linkid, $domain, '', $entry)) {
+			$msg = pql_complete_constant(PQL_LANG_DOMAIN_DEFAULT_CHANGE_OK, array("name" => $additionaldomainname));
+
 			require("./include/pql_control.inc");
 			$_pql_control = new pql_control($GLOBALS["USER_HOST"], $GLOBALS["USER_DN"], $GLOBALS["USER_PASS"]);
 			
 			// update locals if control patch is enabled
-			if(pql_control_update_domains($_pql,
-										  $GLOBALS["USER_SEARCH_DN_CTR"],
-										  '*',
-										  array($oldvalue, $additionaldomainname))) {
-				// message ??
-			}
-		}
+			pql_control_update_domains($_pql_control, $GLOBALS["USER_SEARCH_DN_CTR"],
+									   '*', array($oldvalue, $additionaldomainname));
+		} else
+		  $msg = PQL_LANG_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 		
 		attribute_forward($msg);
 		break;
