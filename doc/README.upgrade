@@ -5,6 +5,15 @@ Upgrading from 2.0.4
 	You will have to re-configure (copy include/config.inc.CHANGE_ME
 	to include/config.inc) and go through include/config.inc again.
 
+	Lucily this seems to be the last time I need to do this. Most of
+	the configuration have been moved to the LDAP database, there's
+	only four defines left in the config.inc file!
+	The configuration is saved in the topmost DN, called 'suffix' in
+	the slapd.conf file) so make sure you have access to write there
+	if you want this feature... Also, you must have loaded the
+	phpQLAdmin.schema file into your LDAP server, it contains the
+	objectclass and attribute definitions that this uses.
+
 Upgrading from 2.0.2
 	There's been some slight code modifications that will break
 	an upgrade from 2.0.2 to 2.0.3.

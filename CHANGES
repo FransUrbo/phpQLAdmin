@@ -31,6 +31,9 @@ phpQLAdmin 2.0.5 Release - TO BE RELEASED
 	    + Objectclass name changed (from phpQLAdmin to phpQLAdminConfig)
 	    + Removed attribute ldapHost. What's the point!?
 	    + Add 'language' attribute
+	    + Add 'branchReference' attribute
+	  - Tripple check that we have an MX (userHost attribute) before creating
+	    the user.
 
 	GUI layout change
 	  - Only show following information if ADVANCED_MODE is set (in the
@@ -70,7 +73,6 @@ phpQLAdmin 2.0.5 Release - TO BE RELEASED
 	    GLOBALS["USER_SEARCH_DN_USR"])
 	  - Renamed some functions
 	  - Run files through 'dos2unix' to remove ^M
-	  - urlencode() only the 'Outlook values'
 	  - Add the two 'new' objectclasses (dcOrganizationNameForm and
 	    phpQLAdminBranch) in the PQL_LDAP_OBJECTCLASS_DOMAIN define. This
 	    will let us make it configurable at runtime later...
