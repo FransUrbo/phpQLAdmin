@@ -63,7 +63,7 @@ if(!is_array($aci)) {
 <?php } ?>
 
       <tr class="subtitle">
-        <td colspan="8"><a href="<?=$url?>&type=add"><img src="images/edit.png" width="12" height="12" alt="" border="0"> <?=$LANG->_('Register new ACI')?></a></td>
+        <td colspan="8"><a href="<?=$URL?>type=add"><img src="images/edit.png" width="12" height="12" alt="" border="0"> <?=$LANG->_('Register new ACI')?></a></td>
       </tr>
     </th>
   </table>
