@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.27 2003-01-22 10:30:38 turbo Exp $
+// $Id: pql.inc,v 2.28 2003-01-22 11:13:49 turbo Exp $
 //
 
 // ----------------------------
@@ -494,7 +494,7 @@ function pql_modify_user_addressbook($ldap_linkid, $user, $attribs){
 
 // check if domain exists
 function pql_domain_exist($ldap, $domain) {
-	$filter = '(&'.pql_branch_objectclasses().'('.PQL_LDAP_REFERENCE_DOMAINS_WITH.'='.$domain.'))';
+	$filter = '(&('.PQL_LDAP_REFERENCE_DOMAINS_WITH.'='.$domain.'))';
 
 	foreach($ldap->ldap_basedn as $dn) {
 		$sr = ldap_search($ldap->ldap_linkid, $dn, $filter);
