@@ -69,6 +69,7 @@ phpQLAdmin 2.0.18c TO BE ANNOUNCED
 	  - The file 'doc/INSTALL' was moved to '.' so that it's easily seen.
 	  - It's important that the 'person' object class is used when creating users
 	    if one's referencing users with the 'cn' attribute.
+	  - Don't show the 'undefined variable' warnings if not running a CVS version.
 
 phpQLAdmin 2.0.18b Release (Apr  6 2004)
 	Bug fixes
