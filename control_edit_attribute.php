@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of a control option
-// $Id: control_edit_attribute.php,v 2.24 2004-11-12 09:00:17 turbo Exp $
+// $Id: control_edit_attribute.php,v 2.25 2004-11-17 07:33:28 turbo Exp $
 //
 session_start();
 
@@ -28,8 +28,6 @@ include("./include/".pql_plugin_get_filename($plugin));
 
 // forward back to users detail page
 function attribute_forward($msg) {
-	global $user;
-
 	$msg = urlencode($msg);
 	$cat = pql_plugin_cat($_REQUEST["attrib"]);
 	if($_REQUEST["mxhost"])
