@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.5 2002-12-31 09:45:10 turbo Exp $
+// $Id: control_detail.php,v 1.6 2003-01-07 14:58:18 turbo Exp $
 session_start();
 
 require("./include/pql.inc");
@@ -68,11 +68,13 @@ if(PQL_LDAP_CONTROL_USE){
         <td class="title">RDN</td>
         <td><?=$cn?></td>
         <td></td>
+        <td></td>
       </tr>
   
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">Fully qualified domain name</td>
         <td><?=$host?></td>
+        <td></td>
         <td></td>
       </tr>
   
@@ -120,9 +122,9 @@ if(PQL_LDAP_CONTROL_USE){
 
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">LDAP Rebind</td>
-        <td><?php if($ldaprebind) { echo "Yes"; } else { echo "No"; } ?></td>
-        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=ldaprebind&type=add"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a></td>
-        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=ldaprebind&type=del"><img src="images/del.png" width="12" height="12" alt="" border="0"></a></td>
+        <td><?php if($ldaprebind) { echo "Yes"; $set=0; } else { echo "No"; $set=1; } ?></td>
+        <td><a href="control_edit_attribute.php?host=<?=$host?>&attrib=ldaprebind&submit=1&type=modify&set=<?=$set?>"><img src="images/edit.png" width="12" height="12" alt="toggle value" border="0"></a></td>
+        <td></td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
