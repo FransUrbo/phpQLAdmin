@@ -1,6 +1,6 @@
 <?php
 // start page
-// $Id: home.php,v 2.34 2004-03-11 18:13:32 turbo Exp $
+// $Id: home.php,v 2.35 2004-03-15 07:09:56 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -71,7 +71,7 @@ if(isset($submit)) {
 <?php		foreach($servers as $server) {
 			$host = split(';', $server);
 ?>
-          <option value="<?=$server?>"><?=$host[0]?>:<?=$host[1]?></option>
+          <option value="<?=$server?>"><?=pql_maybe_idna_decode(urldecode($host[0]))?><?php if(!eregi('^ldapi:', $host[0])) { echo ":".$host[1]; } ?></option>
 <?php		} ?>
         </select>
         <input type="submit" value="<?="--&gt;&gt;"?>" name="submit">

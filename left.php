@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.79 2004-03-14 10:29:56 turbo Exp $
+// $Id: left.php,v 2.80 2004-03-15 07:09:56 turbo Exp $
 //
 session_start();
 
@@ -45,7 +45,7 @@ if($_REQUEST["advanced"] == 1) {
   <div id="el2Parent" class="parent" style="margin-bottom: 5px">
     <?=$LANG->_('LDAP Server')?>:
     <nobr>
-      <span class="heada"><?=pql_maybe_idna_decode($host[0])?>:<?=$host[1]?></span>
+      <span class="heada"><?=pql_maybe_idna_decode($host[0])?><?php if(!eregi('^ldapi:', $host[0])) { echo ":".$host[1]; } ?></span>
     </nobr>
   </div>
 

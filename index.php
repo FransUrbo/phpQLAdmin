@@ -1,6 +1,6 @@
 <?php
 // logins to the system
-// $Id: index.php,v 2.34 2004-03-11 19:44:34 turbo Exp $
+// $Id: index.php,v 2.35 2004-03-15 07:09:56 turbo Exp $
 //
 // Start debuging
 // http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0
@@ -91,7 +91,7 @@ if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 			// If it's an LDAP URI, replace "%2f" with "/" -> URLdecode
 			$host[0] = urldecode($host[0]);
 ?>
-            <option value="<?=$server?>"><?=$host[0]?>:<?=$host[1]?></option>
+            <option value="<?=$server?>"><?=$host[0]?><?php if(!eregi('^ldapi:', $host[0])) { ?>:<?=$host[1]?><?php } ?></option>
 <?php	} ?>
           </select>
 <?php
