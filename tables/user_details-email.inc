@@ -36,7 +36,7 @@ if(is_array($aliases)){
 }
 ?>
       <tr>
-        <td class="subtitle" colspan="3"><a href="user_add_attribute.php?attrib=mailalternateaddress&domain=<?=$domain?>&user=<?=$userdn?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"><?=$LANG->_('Create new alias')?></a></td>
+        <td class="subtitle" colspan="3"><a href="user_add_attribute.php?rootdn=<?=$rootdn?>&attrib=mailalternateaddress&domain=<?=$domain?>&user=<?=$userdn?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"><?=$LANG->_('Create new alias')?></a></td>
       </tr>
     </th>
   </table>

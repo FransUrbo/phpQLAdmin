@@ -26,7 +26,7 @@
 
       <tr class="subtitle">
         <td colspan="2">
-          <a href="user_add_attribute.php?attrib=mailforwardingaddress&user=<?=$userdn?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"><?=$LANG->_('Create new forwarding address')?></a>
+          <a href="user_add_attribute.php?rootdn=<?=$rootdn?>&attrib=mailforwardingaddress&user=<?=$userdn?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"><?=$LANG->_('Create new forwarding address')?></a>
         </td>
       </tr>
     </th>
