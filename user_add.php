@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.116.2.8 2005-02-22 09:17:32 turbo Exp $
+// $Id: user_add.php,v 2.116.2.9 2005-02-22 09:20:52 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -535,7 +535,7 @@ switch($_REQUEST["page_curr"]) {
 
   // {{{ 'two': Tripplecheck the mail host value
   case "two":
-	if($_REQUEST["mail"] and ($_REQUEST["page_next"] == 'save') and
+	if($_REQUEST["mail"] and ($_REQUEST["page_next"] == 'save') and !isset($_REQUEST["host"]) and
 	   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILHOST")))
 	{
 	  $error = true;
