@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.2 2003-08-17 09:38:10 turbo Exp $
+// $Id: config_attributes.inc,v 2.3 2003-10-15 05:25:23 turbo Exp $
 
 // User object attributes
 pql_set_define("PQL_GLOB_ATTR_DOTMODE",				strtolower("qmailDotMode"),		false);
@@ -24,6 +24,7 @@ pql_set_define("PQL_GLOB_ATTR_FORWARDS",			strtolower("mailForwardingAddress"),	
 pql_set_define("PQL_GLOB_ATTR_GECOS",				strtolower("gecos"),			false);
 pql_set_define("PQL_GLOB_ATTR_HOMEDIR",				strtolower("homeDirectory"),		false);
 pql_set_define("PQL_GLOB_ATTR_ISACTIVE",			strtolower("accountStatus"),		false);
+pql_set_define("PQL_GLOB_ATTR_EXPIRATION",			strtolower("shadowExpire"),		false);
 pql_set_define("PQL_GLOB_ATTR_LOGINSHELL",			strtolower("loginShell"),		false);
 pql_set_define("PQL_GLOB_ATTR_MAIL",				strtolower("mail"),			false);
 pql_set_define("PQL_GLOB_ATTR_MAILALTERNATE",			strtolower("mailAlternateAddress"),	false);

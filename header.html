@@ -10,8 +10,30 @@
   if(ereg("opera", $br)) {
       $opera=true;
 ?>
-  <script src="opera.js" type="text/javascript" language="javascript1.2"></script>
+    <script src="opera.js" type="text/javascript" language="javascript1.2"></script>
 <?php } ?>
+
+<?php
+  // This is here because of one single function!
+  // user_edit_attribute.php:attrib.accountstatus.inc:attribute_print_form()
+  // Example from http://dynarch.com/mishoo/calendar/simple-1.html
+  if($rootdn && $domain && $user && $view && ($attrib == "shadowexpire")) {
+?>
+    <!-- calendar stylesheet -->
+    <link rel="stylesheet" type="text/css" media="all" href="jscalendar/calendar-win2k-cold-1.css" title="win2k-cold-1" />
+
+    <!-- main calendar program -->
+    <script type="text/javascript" src="jscalendar/calendar.js"></script>
+
+    <!-- language for the calendar -->
+    <script type="text/javascript" src="jscalendar/lang/calendar-en.js"></script>
+
+    <!-- the following script defines the Calendar.setup helper function, which makes
+         adding a calendar a matter of 1 or 2 lines of code. -->
+    <script type="text/javascript" src="jscalendar/calendar-setup.js"></script>
+<?php
+  }
+?>
   </head>
 
   <body bgcolor="#e7e7e7" background="images/bkg.png">
