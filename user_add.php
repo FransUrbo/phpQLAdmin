@@ -753,7 +753,10 @@ echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_FORWARD
 				   $config["PQL_GLOB_KRB5_ADMIN_SERVER"] and 
 				   $config["PQL_GLOB_KRB5_ADMIN_KEYTAB"]) {
 					putenv("PQL_KADMIN_CMD=".$config["PQL_GLOB_KRB5_ADMIN_COMMAND_PATH"]."/kadmin");
-					putenv("PQL_KADMIN_CL=-r ".$config["PQL_GLOB_KRB5_REALM"]." -p ".$config["PQL_GLOB_KRB5_ADMIN_PRINCIPAL"]." -s ".$config["PQL_GLOB_KRB5_ADMIN_SERVER"]." -k -t ".$config["PQL_GLOB_KRB5_ADMIN_KEYTAB"]);
+					putenv("PQL_KADMIN_REALM=".$config["PQL_GLOB_KRB5_REALM"]);
+					putenv("PQL_KADMIN_PRINC=".$config["PQL_GLOB_KRB5_ADMIN_PRINCIPAL"]);
+					putenv("PQL_KADMIN_SERVR=".$config["PQL_GLOB_KRB5_ADMIN_SERVER"]);
+					putenv("PQL_KADMIN_KEYTB=".$config["PQL_GLOB_KRB5_ADMIN_KEYTAB"]);
 				}
 
 				// Execute the user add script (0 => show output)
