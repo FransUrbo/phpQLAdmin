@@ -1,15 +1,16 @@
 # Nothing for you here! This is simply for me, so that I'll can do some
 # general CVS stuff easily.
 #
+
+# Make a unified diff over the changes from the last version...
 diff:
-	# Make a unified diff over the changes from the last version...
 	@(VERSION=`cat .version.old`; \
 	  MAJOR=`expr substr $$VERSION 1 1`; \
 	  MINOR=`expr substr $$VERSION 3 1`; \
 	  LEVEL=`expr substr $$VERSION 5 2`; \
-	  TAG="`echo REL_`echo $$MAJOR`_`echo $$MINOR`_`echo $$LEVEL`"; \
+	  TAG="REL_`echo $$MAJOR`_`echo $$MINOR`_`echo $$LEVEL`"; \
 	  echo cvs rdiff: $$TAG; \
-	  cvs rdiff -ur $$TAG $(PACKAGE); \
+	  cvs rdiff -ur $$TAG phpQLAdmin; \
 	)
 
 tag:
