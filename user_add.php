@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.104 2004-10-18 13:39:31 turbo Exp $
+// $Id: user_add.php,v 2.105 2004-10-20 06:08:17 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -171,7 +171,7 @@ switch($_REQUEST["page_curr"]) {
 			$_REQUEST["user"] .= "," . $_REQUEST["subbranch"];
 
 			// Now when we have the RDN, double check that it doesn't already exists!
-			if(!pql_get_dn($_pql->ldap_linkid, $_REQUEST["user"], '(objectclass=*)', 'BASE')) {
+			if(pql_get_dn($_pql->ldap_linkid, $_REQUEST["user"], '(objectclass=*)', 'BASE')) {
 				$error = true;
 				$error_text["source"] = pql_complete_constant($LANG->_('User %user% already exists'), array("user" => $_REQUEST["user"])) . "<br>";
 			} else {
@@ -222,8 +222,9 @@ switch($_REQUEST["page_curr"]) {
 		
 		// Verify username
 		$res = pql_check_attribute($objectclasses_schema, $objectclasses_included, 'sn');
+		$filter = "(&(objectclass=*)(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=$user))";
 		if(((pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_CN"))
-			or $res[0]) and pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], "(&(objectclass=*)(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=$user))", 'BASE')) {
+			or $res[0]) and pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], $filter, 'BASE')) {
 			$error = true;
 			$error_text["username"] = pql_complete_constant($LANG->_('User %user% already exists'), array("user" => $user));
 		}

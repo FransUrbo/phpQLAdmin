@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: domain_add.php,v 2.51 2004-10-19 10:40:40 turbo Exp $
+// $Id: domain_add.php,v 2.52 2004-10-20 06:08:17 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -42,7 +42,9 @@ if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $_REQUEST["rootdn"]) == "dc
 //}
 
 // check if domain exist
-if(!pql_get_dn($_pql->ldap_linkid, $_REQUEST["rootdn"], '(&(objectclass=*)(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $_REQUEST["rootdn"])."=".$_REQUEST["domain"]))', 'ONELEVEL')) {
+$filter  = '(&(objectclass=*)('.pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $_REQUEST["rootdn"]);
+$filter .= '='.$_REQUEST["domain"].'))';
+if(pql_get_dn($_pql->ldap_linkid, $_REQUEST["rootdn"], $filter, 'ONELEVEL')) {
 	$msg = urlencode($LANG->_('This domain already exists'));
 	header("Location: " . pql_get_define("PQL_CONF_URI") . "home.php?msg=$msg");
 	exit();
