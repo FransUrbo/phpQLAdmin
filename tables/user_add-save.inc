@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.25 2004-10-18 13:39:33 turbo Exp $
+// $Id: user_add-save.inc,v 1.26 2004-11-13 12:49:00 turbo Exp $
 
 // URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
 $_REQUEST["surname"] = urldecode($_REQUEST["surname"]);
@@ -268,6 +268,27 @@ if(!empty($default_quota)) {
 }
 // }}}
 
+// {{{ Create the RDN for the user
+if($entry[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])])
+	 $userdn = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) . "=" .
+	 $entry[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])] . ",";
+	 elseif($entry[pql_get_define("PQL_ATTR_UID")])
+	 $userdn = pql_get_define("PQL_ATTR_UID")."=".$entry[pql_get_define("PQL_ATTR_UID")].",";
+else {
+	echo "I can't figure out how to name the RDN!<br>";
+	echo "Both the user reference value (".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]);
+	echo ") and the backup reference (".pql_get_define("PQL_ATTR_UID").") is empty...<br>";
+	die("I have no idea how to continue from here...");
+}
+
+if($_REQUEST["subbranch"]) {
+	$userdn .= urldecode($_REQUEST["subbranch"]);
+} else { 
+	$userdn .= urldecode($_REQUEST["domain"]);
+}
+$userdn = pql_maybe_encode($userdn);
+// }}}
+
 // ============================================================================================
 // ============== ADD THE USER TO THE DATABASE
 
@@ -275,7 +296,7 @@ if(!empty($default_quota)) {
 // Hence, we must reverse this here ($_REQUEST["subbranch"] is already
 // URL decoded).
 $branch = pql_maybe_decode($_REQUEST["subbranch"]);
-$DNs = pql_user_add($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["cn"], $entry, $_REQUEST["account_type"], $branch);
+$DNs = pql_user_add($_pql->ldap_linkid, $_REQUEST["domain"], $userdn, $entry, $_REQUEST["account_type"], $branch);
 if($DNs[0]) {
 	// TODO: DNs[1] (the group object) might still be empty -> failed to add it.
 	
