@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // base homedirectory for domain
-// $Id: attrib.basemaildir.inc,v 2.7 2004-03-03 07:59:28 turbo Exp $
+// $Id: attrib.basemaildir.inc,v 2.7.6.1 2004-05-25 13:57:51 turbo Exp $
 
 function attribute_check() {
     global $error, $LANG;
@@ -26,7 +26,7 @@ function attribute_init() {
 }
 
 function attribute_print_form() {
-    global $error, $LANG, $orgname;
+    global $url, $error, $LANG, $orgname;
 	// DLW: Need a way to unset basemaildir.
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
@@ -42,8 +42,8 @@ function attribute_print_form() {
     <input type="hidden" name="submit"   value="2">
     <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="oldvalue" value="<?=$_REQUEST["basemaildir"]?>">
-    <input type="hidden" name="domain"   value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="rootdn"   value="<?=$_REQUEST["rootdn"]?>">
+    <input type="hidden" name="domain"   value="<?=$url["domain"]?>">
+    <input type="hidden" name="rootdn"   value="<?=$url["rootdn"]?>">
     <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">

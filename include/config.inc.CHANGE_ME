@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.50 2004-03-11 18:13:41 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.50.2.1.8.3 2004-10-11 08:33:12 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -10,9 +10,10 @@
 //
 
 // ----------------------------
-// PQL_CONF_HOST (FQDN|IP)
-// the host, port and base DN which is running the ldap-server
-// for the USERS database - separated with semi colon (;)
+// PQL_CONF_HOST (FQDN|IP|URI)
+// the host, port and base DN to the QmailLDAP/Controls object which is
+// running the ldap-server for the USERS database - separated with semi
+// colon (;)
 //
 // Fields:
 //	LDAP host		Fully Qualified Hostname
@@ -40,12 +41,16 @@
 // configuration (HOME->phpQLAdmin Configuration in Advanced mode) for this
 // to take effect.
 //
-// These two examples works directly with the demo database(s) distributed
+// These examples works directly with the demo database(s) distributed
 // in the demo directory. Don't use on live server, since my account and
 // password (quite easily cracked though :) is in there...
 //pql_set_define("PQL_CONF_HOST","ldaps://localhost/;;ou=QmailLDAP,c=SE");
 //pql_set_define("PQL_CONF_HOST","ldapi://%2fvar%2frun%2fldapi;;ou=QmailLDAP,c=SE");
 pql_set_define("PQL_CONF_HOST","localhost;389;ou=QmailLDAP,c=SE");
+
+// Either you use TLS (=> 'true') or you don't (=> 'false') when connecting
+// to the LDAP database...
+pql_set_define("PQL_CONF_USE_TLS", false);
 
 // ----------------------------
 // PQL_CONF_SUBTREE_USERS
@@ -292,29 +297,42 @@ function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $do
 // These are the ACI's that I use in my development system. Might not be
 // perfect, but it works for me...
 //function user_generate_aci($ldap_linkid, $user, $type) {
+//	global $_SESSION;
 //	$i = 0;
 //
 //	// Public entries
-//	$aci[$i] = "1.2.3#entry#grant;r;[entry]#public#"; $i++;
-//	$aci[$i] = "1.2.3#entry#grant;r,s,c;objectClass,entry#public#"; $i++;
+//	$aci[$i] = "$i#entry#grant;r,s,c;objectClass,[entry]#public#"; $i++;
 //	
 //	// Non-public entries
 //	if($type == 'user') {
-//		$aci[$i] = "1.2.3#entry#grant;x;userPassword,krb5PrincipalName#public#"; $i++;
-//		$aci[$i] = "1.2.3#entry#grant;r,s,c;uid,cn,accountStatus,uidNumber,gidNumber,gecos,homeDirectory,loginShell#public#"; $i++;
+//		$aci[$i] = "$i#entry#grant;x;userPassword,krb5PrincipalName#public#"; $i++;
+//		$aci[$i] = "$i#entry#grant;r,s,c;uid,cn,accountStatus,uidNumber,gidNumber,gecos,homeDirectory,loginShell#public#"; $i++;
 //
 //		// 'user'/'self' writable/readable entries
-//		$aci[$i] = "1.2.3#entry#grant;r,s,c;sn,givenName,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,mailMessageStore,o,l,st,telephoneNumber,postalCode,title#users#"; $i++;
-//		$aci[$i] = "1.2.3#entry#grant;r,s,c;sn,givenName,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,mailMessageStore,o,l,st,telephoneNumber,postalCode,title#self#"; $i++;
+//		$aci[$i] = "$i#entry#grant;r,s,c;sn,givenName,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,mailMessageStore,o,l,st,telephoneNumber,postalCode,title#users#"; $i++;
+//		$aci[$i] = "$i#entry#grant;r,s,c;sn,givenName,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,mailMessageStore,o,l,st,telephoneNumber,postalCode,title#self#"; $i++;
 //	} elseif($type == 'group') {
-//		$aci[$i] = "1.2.3#entry#grant;r,s,c;cn,gidNumber#public#"; $i++;
+//		$aci[$i] = "$i#entry#grant;r,s,c;cn,gidNumber#public#"; $i++;
 //	} elseif($type == 'qmail') {
-//		$aci[$i] = "1.2.3#entry#grant;r,s;[all]#access-id#ENTER_WHOEVER_YOUR_QMAILSERVER_USES"; $i++;
+//		$aci[$i] = "$i#entry#grant;r,s;[all]#access-id#ENTER_WHOEVER_YOUR_QMAILSERVER_USES"; $i++;
+//	} elseif($type == 'branch') {
+//		if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $_REQUEST["rootdn"]) == "o") {
+//			$aci[$i] = "$i#entry#grant;r,s,c;o#public#"; $i++;
+//		} else {
+//			$aci[$i] = "$i#entry#grant;r,s,c;dc#public#"; $i++;
+//		}
 //	}
 //
 //	// Non-public entries
-//	$aci[$i] = "1.2.3#entry#grant;w,r,s,c;[children]#access-id#$user"; $i++;
-//	$aci[$i] = "1.2.3#entry#grant;w,r,s,c,x;[all]#access-id#$user"; $i++;
+//	$aci[$i] = "$i#entry#grant;w,r,s,c;[children]#access-id#$user"; $i++;
+//
+//	// Add all the super admins with full access.
+//	$admins = pql_get_attribute($ldap_linkid, urldecode($_SESSION["BASE_DN"][0]), pql_get_define("PQL_ATTR_ADMINISTRATOR"));
+//	if(is_array($admins)) {
+//		foreach($admins as $admin) {
+//			$aci[$i] = "$i#entry#grant;w,r,s,c,x;[all]#access-id#$admin"; $i++;
+//		}
+//	}
 //
 //	return($aci);
 //}

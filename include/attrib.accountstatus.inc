@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // accountstatus (status of mailaccount)
-// $Id: attrib.accountstatus.inc,v 2.17 2004-03-11 18:13:41 turbo Exp $
+// $Id: attrib.accountstatus.inc,v 2.17.6.1 2004-05-25 13:57:50 turbo Exp $
 
 /* DLW: When the calendar gets a value of 2003.12.25, it gets stored or displayed as 2003/12/24 (@7am)
  *      I think it's having problems with time zones.  Look into it. */
@@ -48,7 +48,7 @@ function attribute_init() {
 }
 
 function attribute_print_form($type = "set") {
-    global $error, $LANG;
+    global $url, $error, $LANG;
 
     if($_REQUEST["set"] != 'expiration') {
 		// No form neccessary - save directly
@@ -79,9 +79,9 @@ function attribute_print_form($type = "set") {
 
     <input type="hidden" name="submit"   value="1">
     <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="domain"   value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="rootdn"   value="<?=$_REQUEST["rootdn"]?>">
-    <input type="hidden" name="user"     value="<?=$_REQUEST["user"]?>">
+    <input type="hidden" name="domain"   value="<?=$url["domain"]?>">
+    <input type="hidden" name="rootdn"   value="<?=$url["rootdn"]?>">
+    <input type="hidden" name="user"     value="<?=$url["user"]?>">
     <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">

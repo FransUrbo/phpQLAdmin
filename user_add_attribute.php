@@ -1,6 +1,6 @@
 <?php
 // adds an attribute 
-// $Id: user_add_attribute.php,v 2.27 2004-03-11 18:13:32 turbo Exp $
+// $Id: user_add_attribute.php,v 2.27.8.1 2004-10-04 09:07:26 turbo Exp $
 //
 /* This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
  *   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -23,6 +23,10 @@ if(empty($_REQUEST["domain"]) && !empty($_REQUEST["user"])) {
     } else
       $_REQUEST["domain"] = $tmpdn[count($tmpdn)-1];
 }
+
+$url["domain"] = pql_format_urls($_GET["domain"]);
+$url["user"]   = pql_format_urls($_GET["user"]);
+$url["rootdn"] = pql_format_urls($_GET["rootdn"]);
 
 // Make sure we can have a ' in branch (also affects the user DN).
 $_REQUEST["user"]   = eregi_replace("\\\'", "'", $_REQUEST["user"]);

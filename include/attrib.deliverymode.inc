@@ -1,8 +1,9 @@
 <?php
 // attribute plugin for
 // deliverymode (delivery preferences)
-// $Id: attrib.deliverymode.inc,v 2.21 2004-03-13 07:37:12 turbo Exp $
+// $Id: attrib.deliverymode.inc,v 2.21.6.2 2004-07-07 12:25:51 turbo Exp $
 
+// {{{ attribute_check(type)
 function attribute_check($type) {
     global $error, $LANG;
 
@@ -14,7 +15,9 @@ function attribute_check($type) {
 
 	return true;
 }
+// }}}
 
+// {{{ attribute_init(void)
 function attribute_init() {
     global $_pql;
 
@@ -40,9 +43,11 @@ function attribute_init() {
 	$mailreplytext = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_REPLYTEXT"));
 	$_REQUEST["mailreplytext"] = $mailreplytext[0];
 }
+// }}}
 
+// {{{ attribute_print_form(type)
 function attribute_print_form($type = "modify") {
-    global $error, $LANG;
+    global $url, $error, $LANG;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -107,9 +112,9 @@ function attribute_print_form($type = "modify") {
     <input type="hidden" name="attrib"       value="<?=$_REQUEST["attrib"]?>">
 	<!-- DLW: oldvalue should be 3 values for the 3 fields. -->
     <input type="hidden" name="oldvalue"     value="<?=$_REQUEST["oldvalue"]?>">
-    <input type="hidden" name="domain"       value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="rootdn"       value="<?=$_REQUEST["rootdn"]?>">
-    <input type="hidden" name="user"         value="<?=$_REQUEST["user"]?>">
+    <input type="hidden" name="domain"       value="<?=$url["domain"]?>">
+    <input type="hidden" name="rootdn"       value="<?=$url["rootdn"]?>">
+    <input type="hidden" name="user"         value="<?=$url["user"]?>">
     <input type="hidden" name="view"         value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
@@ -117,7 +122,9 @@ function attribute_print_form($type = "modify") {
 
 <?php
 }
+// }}}
 
+// {{{ attribute_save(type)
 function attribute_save($type) {
     global $_pql, $LANG;
 	$entry = array();
@@ -150,9 +157,10 @@ function attribute_save($type) {
 	if($_REQUEST["reply"] == "ok")
 	  $entry[pql_get_define("PQL_ATTR_MODE")][] = "reply";
 	
-	if (!empty($_REQUEST["mailreplytext"])) 
-	  $entry[pql_get_define("PQL_ATTR_REPLYTEXT")] = preg_replace('/\\\/', "", $_REQUEST["mailreplytext"]);
-	else {
+	if (!empty($_REQUEST["mailreplytext"])) {
+		$tmp = preg_replace('/\\\/', "", $_REQUEST["mailreplytext"]);
+		$entry[pql_get_define("PQL_ATTR_REPLYTEXT")] = pql_maybe_encode($tmp, 'mailreplytext', $_pql->ldap_linkid);
+	} else {
 		// Check if the entry in database is empty. 
 		// If not, we have choosen to DELETE the value
 		$mrt_db = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_REPLYTEXT"));
@@ -194,6 +202,7 @@ function attribute_save($type) {
 								  array('type' => $type, 'file' => __FILE__)));
 	}
 }
+// }}}
 
 // Local variables:
 // mode: php

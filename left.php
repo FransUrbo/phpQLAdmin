@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.90 2004-04-01 12:29:21 turbo Exp $
+// $Id: left.php,v 2.90.8.4 2004-10-10 08:34:35 turbo Exp $
 //
 session_start();
 
@@ -46,24 +46,27 @@ function left_htmlify_userlist($linkid, $rootdn, $domain, $subbranch, $users, &$
 	    }
 	}
     }
-    asort($cns);
+
+    if(is_array($cns)) {
+	asort($cns);
     
-    foreach($cns as $dn => $cn) {
-	$uid = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_UID"));
-	$uid = $uid[0];
-	
-	$uidnr = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_QMAILUID"));
-	$uidnr = $uidnr[0];
-	
-	if(($uid != 'root') or ($uidnr != '0')) {
-	    // Do NOT show root user(s) here! This should (for safty's sake)
-	    // not be availible to administrate through phpQLAdmin!
-	    if($subbranch)
-	      $new = array($cn => "user_detail.php?rootdn=$rootdn&domain=$domain&subbranch=$subbranch&user=".urlencode($dn));
-	    else
-	      $new = array($cn => "user_detail.php?rootdn=$rootdn&domain=$domain&user=".urlencode($dn));
-	    // Add the link to the main array
-	    $links = $links + $new;
+	foreach($cns as $dn => $cn) {
+	    $uid = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_UID"));
+	    $uid = $uid[0];
+	    
+	    $uidnr = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_QMAILUID"));
+	    $uidnr = $uidnr[0];
+	    
+	    if(($uid != 'root') or ($uidnr != '0')) {
+		// Do NOT show root user(s) here! This should (for safty's sake)
+		// not be availible to administrate through phpQLAdmin!
+		if($subbranch)
+		  $new = array($cn => "user_detail.php?rootdn=$rootdn&domain=$domain&subbranch=$subbranch&user=".urlencode($dn));
+		else
+		  $new = array($cn => "user_detail.php?rootdn=$rootdn&domain=$domain&user=".urlencode($dn));
+		// Add the link to the main array
+		$links = $links + $new;
+	    }
 	}
     }
 }
@@ -123,9 +126,21 @@ if($_REQUEST["advanced"] == 1) {
 
   <!-- Advanced Mode selector -->
   <div id="el4Parent" class="parent">
+<?php if($_SESSION["lynx"]) { ?>
+    <form method=post action="left.php" target="_top">
+<?php } else { ?>
     <form method=post action="index2.php" target="_top">
+<?php } ?>
 <?php if($_SESSION["konqueror"]) { ?>
       <input type="checkbox" name="advanced" accesskey="a" onClick="this.form.submit()"<?=$checked?>><?=$LANG->_('\uA\Udvanced mode')."\n"?>
+<?php } elseif($_SESSION["lynx"]) { ?>
+<?php   if($_REQUEST["advanced"] == 1) { ?>
+      <input type="hidden" name="advanced" value="0">
+      <input type="submit" value="<?=$LANG->_('Simple mode')."\n"?>">
+<?php   } else { ?>
+      <input type="hidden" name="advanced" value="1">
+      <input type="submit" value="<?=$LANG->_('Advanced mode')."\n"?>">
+<?php   } ?>
 <?php } else { ?>
       <input type="checkbox" name="advanced" accesskey="a" onChange="this.form.submit()"<?=$checked?>><?=$LANG->_('\uA\Udvanced mode')."\n"?>
 <?php } ?>
@@ -163,14 +178,15 @@ if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {
 		   $LANG->_('LDAP Matching rules')	=> 'config_ldap.php?type=matchingrules',
 		   $LANG->_('LDAP Attribute types')	=> 'config_ldap.php?type=attributetypes',
 		   $LANG->_('LDAP Object classes')	=> 'config_ldap.php?type=objectclasses');
-    if($_SESSION["MONITOR_BACKEND_ENABLED"] and $_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
-	$new = array(0					=> 0,
-		     $LANG->_('LDAP Server Status')	=> 'status_ldap.php?type=basics',
-		     $LANG->_('LDAP Connection Status')	=> 'status_ldap.php?type=connections',
-		     $LANG->_('LDAP Database Status')	=> 'status_ldap.php?type=databases');
-	$links = $links + $new;
-    }
     pql_format_tree($LANG->_('LDAP Server Configuration'), 0, $links, 1);
+
+    if($_SESSION["MONITOR_BACKEND_ENABLED"] and $_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
+	// Level 2c2: LDAP Server status
+	$links = array($LANG->_('LDAP Server Status')		=> 'status_ldap.php?type=basics',
+		       $LANG->_('LDAP Connection Status')	=> 'status_ldap.php?type=connections',
+		       $LANG->_('LDAP Database Status')		=> 'status_ldap.php?type=databases');
+	pql_format_tree($LANG->_('LDAP Server Statistics'), 0, $links, 1);
+    }
 }
 
 // Level 2d: Documentation etc
@@ -190,7 +206,7 @@ pql_format_tree($LANG->_('Documentation'), 0, $links, 1);
 if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {
     // Level 2e: Main site and general phpQLAdmin links
     $links = array('phpQLAdmin @ Bayour'			=> 'http://phpqladmin.bayour.com/',
-		   $LANG->_('Bugtracker')			=> 'http://apache.bayour.com/anthill/');
+		   $LANG->_('Bugtracker')			=> 'http://bugs.bayour.com/');
     pql_format_tree($LANG->_('phpQLAdmin Site Specifics'), 0, $links, 1);
 
     // Level 2f: Misc QmailLDAP/Controls links

@@ -139,14 +139,14 @@
 <?php	if(pql_validate_administrator($_pql->ldap_linkid, $_GET["rootdn"], $_GET["user"])) { ?>
         <td><?=$LANG->_('Yes')?></td>
         <td>
-          <a href="domain_edit_attributes.php?attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR")?>&rootdn=<?=$url["rootdn"]?>&user=<?=$url["user"]?>&submit=4&action=delete&view=<?=$_GET["view"]?>">
-            <img src="images/del.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Disallow user to create domains below %domain%'), array('domain', $_GET["rootdn"])); ?>">
+          <a href="domain_edit_attributes.php?attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR")?>&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&submit=4&<?=pql_get_define("PQL_ATTR_ADMINISTRATOR")?>=<?=$url["user"]?>&action=delete&view=<?=$_GET["view"]?>">
+            <img src="images/del.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Disallow user to create domains below %domain%'), array('domain' => $_GET["rootdn"])); ?>">
           </a>
         </td>
 <?php   } else { ?>
         <td><?=$LANG->_('No')?></td>
         <td>
-          <a href="domain_edit_attributes.php?attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR")?>&rootdn=<?=$url["rootdn"]?>&user=<?=$url["user"]?>&submit=4&action=add&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Allow user to create domains below %domain%'), array('domain', $_GET["rootdn"])); ?>">
+          <a href="domain_edit_attributes.php?attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR")?>&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&submit=4&action=add&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Allow user to create domains below %domain%'), array('domain' => $_GET["domain"])); ?>">
           </a>
         </td>
 <?php   } ?>

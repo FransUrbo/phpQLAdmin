@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.73 2004-03-18 12:45:54 turbo Exp $
+// $Id: user_detail.php,v 2.73.10.1.2.2 2004-08-26 18:24:37 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -15,7 +15,7 @@ $url["rootdn"] = pql_format_urls($_GET["rootdn"]);
 
 // Get default domain name for this domain
 if($_GET["domain"]) {
-	$defaultdomain = pql_domain_get_value($_pql, $_GET["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+	$defaultdomain = pql_domain_get_value($_pql, $url["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 }
 
 include("./header.html");
@@ -26,8 +26,8 @@ if(isset($_GET["msg"])) {
 }
 
 // reload navigation bar if needed
-if(isset($rlnb) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
-	if($rlnb == 1) {
+if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
+	if($_REQUEST["rlnb"] == 1) {
 ?>
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>
   <script language="JavaScript1.2"><!--
@@ -35,7 +35,7 @@ if(isset($rlnb) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
     refreshFrames();
   //--></script>
 <?php
-	} elseif($rlnb == 2) {
+	} elseif($_REQUEST["rlnb"] == 2) {
 ?>
   <script language="JavaScript1.2"><!--
     // reload navigation frame
@@ -74,7 +74,7 @@ if(empty($_GET["view"]))
 $attribs = array("cn"					=> pql_get_define("PQL_ATTR_CN"),
 				 "sn"					=> pql_get_define("PQL_ATTR_SN"),
 				 "uidnumber"			=> pql_get_define("PQL_ATTR_QMAILUID"),
-				 "gidNumber"			=> pql_get_define("PQL_ATTR_QMAILGID"),
+				 "gidnumber"			=> pql_get_define("PQL_ATTR_QMAILGID"),
 				 "loginshell"			=> pql_get_define("PQL_ATTR_LOGINSHELL"),
 				 "uid"					=> pql_get_define("PQL_ATTR_UID"),
 				 "userpassword"			=> pql_get_define("PQL_ATTR_PASSWD"),

@@ -1,4 +1,4 @@
-#!/usr/bin/suidperl -U
+#!/usr/bin/perl -U
 
 # Environment variables of interest
 # PQL_DOMAIN="test"

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.23 2004-03-19 10:03:46 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.23.10.1.2.1 2004-05-25 13:57:50 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -32,7 +32,7 @@ function attribute_init() {
 // {{{ attribute_print_form(void)
 
 function attribute_print_form() {
-    global $error, $LANG;
+    global $url, $error, $LANG;
 	global $orgname;			// Set by domain_edit_attributes.php.
 
 ?>
@@ -116,8 +116,8 @@ function attribute_print_form() {
     <input type="hidden" name="submit"   value="2">
     <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="oldvalue" value="<?=$_REQUEST["additionaldomainname"]?>">
-    <input type="hidden" name="domain"   value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="rootdn"   value="<?=$_REQUEST["rootdn"]?>">
+    <input type="hidden" name="domain"   value="<?=$url["domain"]?>">
+    <input type="hidden" name="rootdn"   value="<?=$url["rootdn"]?>">
     <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
@@ -187,81 +187,89 @@ function attribute_save($type) {
 			$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 			// -----------------------------------------
-			// update locals if control patch is enabled
-			$amount = $_POST[pql_get_define("PQL_ATTR_LOCALS")];
-			if($amount) {
-				if($_POST[pql_get_define("PQL_ATTR_LOCALS")."_".$amount] != 'on') {
-					for($i=0; $i < $amount; $i++)
-					  if($_POST[pql_get_define("PQL_ATTR_LOCALS")."_".$i])
-						$hosts[] = $_POST[pql_get_define("PQL_ATTR_LOCALS")."_".$i];
-
-					if(is_array($hosts)) {
-						foreach($hosts as $host)
-						  if($type == 'delete')
-							pql_control_update_domains($_pql_control, pql_get_define("PQL_ATTR_CN").'='.$host.','.$_SESSION["USER_SEARCH_DN_CTR"],
-													   '*', array($delval, ''), pql_get_define("PQL_ATTR_LOCALS"));
-						  else
-							pql_control_update_domains($_pql_control, pql_get_define("PQL_ATTR_CN").'='.$host.','.$_SESSION["USER_SEARCH_DN_CTR"],
-													   '*', array($oldvalue, $additionaldomainname), pql_get_define("PQL_ATTR_LOCALS"));
+			if(pql_get_define("PQL_CONF_CONTROL_AUTOADDLOCALS", $_REQUEST["rootdn"])) {
+				// update locals if control patch is enabled and we have decided to do auto replication
+				$amount = $_POST[pql_get_define("PQL_ATTR_LOCALS")];
+				if($amount) {
+					if($_POST[pql_get_define("PQL_ATTR_LOCALS")."_".$amount] != 'on') {
+						for($i=0; $i < $amount; $i++)
+						  if($_POST[pql_get_define("PQL_ATTR_LOCALS")."_".$i])
+							$hosts[] = $_POST[pql_get_define("PQL_ATTR_LOCALS")."_".$i];
+						
+						if(is_array($hosts)) {
+							foreach($hosts as $host)
+							  if($type == 'delete')
+								pql_control_update_domains($_pql_control, $_REQUEST["rootdn"],
+														   pql_get_define("PQL_ATTR_CN").'='.$host.','.$_SESSION["USER_SEARCH_DN_CTR"],
+														   '*', array($delval, ''), pql_get_define("PQL_ATTR_LOCALS"));
+							  else
+								pql_control_update_domains($_pql_control, $_REQUEST["rootdn"],
+														   pql_get_define("PQL_ATTR_CN").'='.$host.','.$_SESSION["USER_SEARCH_DN_CTR"],
+														   '*', array($oldvalue, $additionaldomainname), pql_get_define("PQL_ATTR_LOCALS"));
+						}
+					} else {
+						// Change all hosts
+						if($type == 'delete')
+						  pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
+													 '*', array($delval, ''),
+													 pql_get_define("PQL_ATTR_LOCALS"));
+						else
+						  pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
+													 '*', array($oldvalue, $additionaldomainname),
+													 pql_get_define("PQL_ATTR_LOCALS"));
 					}
 				} else {
-					// Change all hosts
-					if($type == 'delete')
-					  pql_control_update_domains($_pql_control, $_SESSION["USER_SEARCH_DN_CTR"],
-												 '*', array($delval, ''),
-												 pql_get_define("PQL_ATTR_LOCALS"));
-					else
-					  pql_control_update_domains($_pql_control, $_SESSION["USER_SEARCH_DN_CTR"],
-												 '*', array($oldvalue, $additionaldomainname),
-												 pql_get_define("PQL_ATTR_LOCALS"));
+					// We have not gone through the form for adding defaultDomain nor additionalDomainName.
+					// This _MUST_ be a 'delete {default,additional} domain'...
+					//
+					// Delete ALL locals/rcpthosts on ALL QmailLDAP/Controls that lists this domain.
+					pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
+											   '*', array($delval, ''));
 				}
-			} else {
-				// We have not gone through the form for adding defaultDomain nor additionalDomainName.
-				// This _MUST_ be a 'delete {default,additional} domain'...
-				//
-				// Delete ALL locals/rcpthosts on ALL QmailLDAP/Controls that lists this domain.
-				pql_control_update_domains($_pql_control, $_SESSION["USER_SEARCH_DN_CTR"],
-										   '*', array($delval, ''));
 			}
 
 			// -----------------------------------------
-			// update rcpthosts if control patch is enabled
-			$amount = $_POST[pql_get_define("PQL_ATTR_RCPTHOSTS")];
-			if($amount) {
-				if($_POST[pql_get_define("PQL_ATTR_RCPTHOSTS")."_".$amount] != 'on') {
-					for($i=0; $i < $amount; $i++)
-					  if($_POST[pql_get_define("PQL_ATTR_RCPTHOSTS")."_".$i])
-						$hosts[] = $_POST[pql_get_define("PQL_ATTR_RCPTHOSTS")."_".$i];
-
-					if(is_array($hosts)) {
-						foreach($hosts as $host)
-						  if($type == 'delete')
-							pql_control_update_domains($_pql_control, pql_get_define("PQL_ATTR_CN").'='.$host.','.$_SESSION["USER_SEARCH_DN_CTR"],
-													   '*', array($delval, ''),
-													   pql_get_define("PQL_ATTR_RCPTHOSTS"));
-						  else
-							pql_control_update_domains($_pql_control, pql_get_define("PQL_ATTR_CN").'='.$host.','.$_SESSION["USER_SEARCH_DN_CTR"],
-													   '*', array($oldvalue, $additionaldomainname),
-													   pql_get_define("PQL_ATTR_RCPTHOSTS"));
+			if(pql_get_define("PQL_CONF_CONTROL_AUTOADDRCPTHOSTS", $_REQUEST["rootdn"])) {
+				// update rcpthosts if control patch is enabled and we have decided to do auto replication
+				$amount = $_POST[pql_get_define("PQL_ATTR_RCPTHOSTS")];
+				if($amount) {
+					if($_POST[pql_get_define("PQL_ATTR_RCPTHOSTS")."_".$amount] != 'on') {
+						for($i=0; $i < $amount; $i++)
+						  if($_POST[pql_get_define("PQL_ATTR_RCPTHOSTS")."_".$i])
+							$hosts[] = $_POST[pql_get_define("PQL_ATTR_RCPTHOSTS")."_".$i];
+						
+						if(is_array($hosts)) {
+							foreach($hosts as $host)
+							  if($type == 'delete')
+								pql_control_update_domains($_pql_control, $_REQUEST["rootdn"],
+														   pql_get_define("PQL_ATTR_CN").'='.$host.','.$_SESSION["USER_SEARCH_DN_CTR"],
+														   '*', array($delval, ''),
+														   pql_get_define("PQL_ATTR_RCPTHOSTS"));
+							  else
+								pql_control_update_domains($_pql_control, $_REQUEST["rootdn"],
+														   pql_get_define("PQL_ATTR_CN").'='.$host.','.$_SESSION["USER_SEARCH_DN_CTR"],
+														   '*', array($oldvalue, $additionaldomainname),
+														   pql_get_define("PQL_ATTR_RCPTHOSTS"));
+						}
+					} else {
+						// Change all hosts
+						if($type == 'delete')
+						  pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
+													 '*', array($delval, ''),
+													 pql_get_define("PQL_ATTR_RCPTHOSTS"));
+						else
+						  pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
+													 '*', array($oldvalue, $additionaldomainname),
+													 pql_get_define("PQL_ATTR_RCPTHOSTS"));
 					}
 				} else {
-					// Change all hosts
-					if($type == 'delete')
-					  pql_control_update_domains($_pql_control, $_SESSION["USER_SEARCH_DN_CTR"],
-												 '*', array($delval, ''),
-												 pql_get_define("PQL_ATTR_RCPTHOSTS"));
-					else
-					  pql_control_update_domains($_pql_control, $_SESSION["USER_SEARCH_DN_CTR"],
-												 '*', array($oldvalue, $additionaldomainname),
-												 pql_get_define("PQL_ATTR_RCPTHOSTS"));
+					// We have not gone through the form for adding defaultDomain nor additionalDomainName.
+					// This _MUST_ be a 'delete {default,additional} domain'...
+					//
+					// Delete ALL locals/rcpthosts on ALL QmailLDAP/Controls that lists this domain.
+					pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
+											   '*', array($delval, ''));
 				}
-			} else {
-				// We have not gone through the form for adding defaultDomain nor additionalDomainName.
-				// This _MUST_ be a 'delete {default,additional} domain'...
-				//
-				// Delete ALL locals/rcpthosts on ALL QmailLDAP/Controls that lists this domain.
-				pql_control_update_domains($_pql_control, $_SESSION["USER_SEARCH_DN_CTR"],
-										   '*', array($delval, ''));
 			}
 		} else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),

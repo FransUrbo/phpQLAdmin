@@ -1,8 +1,9 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mail.inc,v 2.18 2004-03-11 18:13:41 turbo Exp $
+// $Id: attrib.mail.inc,v 2.18.6.2 2004-07-08 10:13:15 turbo Exp $
 
+// {{{ attribute_check(type)
 function attribute_check($type) {
     global $_pql, $LANG, $error, $defaultdomain;
     
@@ -34,13 +35,17 @@ function attribute_check($type) {
     
     return true;
 }
+// }}}
 
+// {{{ attribute_init(void)
 function attribute_init() {
     // dummy function
 }
+// }}}
 
+// {{{ attribute_print_form(void)
 function attribute_print_form() {
-    global $defaultdomain, $error, $LANG;
+    global $url, $defaultdomain, $error, $LANG;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -71,26 +76,30 @@ function attribute_print_form() {
     <input type="hidden" name="submit"   value="1">
     <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="oldvalue" value="<?=$_REQUEST["oldvalue"]?>">
-    <input type="hidden" name="domain"   value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="rootdn"   value="<?=$_REQUEST["rootdn"]?>">
-    <input type="hidden" name="user"     value="<?=$_REQUEST["user"]?>">
+    <input type="hidden" name="domain"   value="<?=$url["domain"]?>">
+    <input type="hidden" name="rootdn"   value="<?=$url["rootdn"]?>">
+    <input type="hidden" name="user"     value="<?=$url["user"]?>">
     <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
 <?php
 }
+// }}}
 
+// {{{ attribute_save(type)
 function attribute_save($type) {
     global $_pql, $LANG;
 
     switch($type) {
       case "add":
-		// no add operation possible with mail
+		// No add operation possible with mail - 'there can be only one'!
 		break;
 
       case "modify":
-		if(pql_modify_userattribute($_pql->ldap_linkid, $_POST["user"], pql_get_define("PQL_ATTR_MAIL"),
+		$user = urldecode($_POST["user"]);
+
+		if(pql_modify_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_MAIL"),
 									$_POST["oldvalue"], $_POST["mail"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									   array('what' => $LANG->_('main address'),
@@ -100,7 +109,7 @@ function attribute_save($type) {
 									   array('what' => $LANG->_('main address'))) . ": " . pql_format_error(0);
 		
 		// We use the mail attribute to reference users and it has just changed...
-		if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", pql_get_rootdn($_POST["user"], 'attrib.mail.inc:attribute_save')) == pql_get_define("PQL_ATTR_MAIL")) {
+		if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", pql_get_rootdn($user, 'attrib.mail.inc:attribute_save')) == pql_get_define("PQL_ATTR_MAIL")) {
 			// DLW: $_REQUEST["user"] is used by attribute_forward, and should be a paramater.
 			$_REQUEST["user"] = $_POST["mail"];
 			// Reload the navigation bar (if allowed by config)
@@ -115,6 +124,7 @@ function attribute_save($type) {
 								  array('type' => $type, 'file' => __FILE__)));
     }
 }
+// }}}
 
 // Local variables:
 // mode: php

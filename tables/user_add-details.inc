@@ -1,5 +1,4 @@
-<?php /* $Id: user_add-details.inc,v 1.21 2004-04-02 09:33:07 turbo Exp $ */ ?>
-<?php $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"])); ?>
+<?php /* $Id: user_add-details.inc,v 1.21.10.2 2004-05-05 07:57:15 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
@@ -25,7 +24,11 @@
 
 <?php }
 
-	  if(($_REQUEST["account_type"] != "mail") or in_array("person", $objectclasses_included)) {
+	  $res1 = pql_check_attribute($objectclasses_schema, $objectclasses_included, 'sn');
+	  $res2 = pql_check_attribute($objectclasses_schema, $objectclasses_included, 'cn');
+	  if(($_REQUEST["account_type"] != "mail") or ($res1[0] and $res2[0])) {
+		  // One (or more) of the object classes we've choosen to create users with allow
+		  // the attributes 'cn' and 'sn' - offer these to be set.
 ?>
         <!-- Firstname -->
         <tr class="<?php pql_format_table(); ?>">
@@ -292,7 +295,10 @@
 <?php
 	} // account_type == forward
   
-    if(($_REQUEST["account_type"] != 'shell') and in_array('trustaccount', $objectclasses_included)) {
+	$res = pql_check_attribute($objectclasses_schema, $objectclasses_included, 'accountstatus');
+    if(($_REQUEST["account_type"] != 'shell') and $res[0]) {
+		// One (or more) of the object classes we've choosen to create users with allow
+		// the attribute 'accountStatus' - offer this to be set.
 ?>
 
         <!-- Account status -->
@@ -322,7 +328,6 @@
     <input type="hidden" name="loginshell"    value="/bin/false">
     <input type="hidden" name="homedirectory" value="">
     <input type="hidden" name="maildirectory" value="">
-    <input type="hidden" name="host"          value="default">
 <?php	} ?>
     <input type="hidden" name="page_next"     value="save">
 <?php

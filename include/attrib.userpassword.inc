@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.23 2004-03-11 18:13:41 turbo Exp $
+// $Id: attrib.userpassword.inc,v 2.23.6.1 2004-05-25 13:57:51 turbo Exp $
 
 function attribute_check($type) {
 	global $error, $LANG;
@@ -29,7 +29,7 @@ function attribute_init() {
 }
 
 function attribute_print_form() {
-	global $error, $_pql, $LANG;
+	global $url, $error, $_pql, $LANG;
 
 	// Get the default password scheme for branch
 	$defaultpasswordscheme = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"));
@@ -87,9 +87,9 @@ function attribute_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
-    <input type="hidden" name="domain" value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="rootdn" value="<?=$_REQUEST["rootdn"]?>">
-    <input type="hidden" name="user"   value="<?=$_REQUEST["user"]?>">
+    <input type="hidden" name="domain" value="<?=$url["domain"]?>">
+    <input type="hidden" name="rootdn" value="<?=$url["rootdn"]?>">
+    <input type="hidden" name="user"   value="<?=$url["user"]?>">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>

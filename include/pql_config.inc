@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.61 2004-04-04 07:06:41 turbo Exp $
+// $Id: pql_config.inc,v 1.61.10.2.4.1.2.1 2004-09-17 14:43:32 turbo Exp $
 //
 
 // include the API files
@@ -54,9 +54,16 @@ function pql_get_define($define, $dn = NULL) {
 
 	if($dn) {
 		$dn = urldecode($dn);
-		return($config[$define][$dn]);
-	} else
-	  return($config[$define]);
+		$value = $config[$define][$dn];
+	} elseif(!is_array($config[$define]))
+	  $value = $config[$define];
+	else
+	  $value = NULL;
+
+	// Just incase it's a BOOLEAN...
+	$value = pql_format_bool($value);
+
+	return($value);
 }
 // }}}
 
@@ -82,7 +89,13 @@ if(!$_SESSION["USER_HOST"]) {
 	}
 }
 
+// Open a connection to the LDAP server
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
+
+// Remember the base DN's
+$_SESSION["BASE_DN"] = $_pql->ldap_basedn;
+
+// Get base configurations
 foreach($_pql->ldap_basedn as $dn)  {
 	$dn = urldecode($dn);
 
@@ -151,12 +164,16 @@ require("./include/pql_plugins.inc");
 $_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"] = pql_validate_administrator($_pql->ldap_linkid, $_pql->ldap_basedn[0], $_SESSION["USER_DN"]);
 
 if((empty($_SESSION["ACI_SUPPORT_ENABLED"]) and function_exists("user_generate_aci")) or empty($_SESSION["NEW_STYLE_QUOTA"])) {
-	$ocs = pql_get_subschema($_pql->ldap_linkid, attributeTypes);
+	$ocs = pql_get_subschema($_pql->ldap_linkid, 'attributeTypes');
 
-	// 9a. Check ifthe attribute openLdapAci exists - ACI support is enabled in the LDAP server.
-	if(empty($_SESSION["ACI_SUPPORT_ENABLED"]) and
-	   function_exists("user_generate_aci") and
-	   $ocs[pql_get_define("PQL_ATTR_LDAPACI")]["OID"])
+	// 9a. Check if the attribute openLdapAci exists - ACI support is enabled in the LDAP server
+	//     OR: We've specified (manually) to (en)force the use of ACI's via the baseDN attribute
+	//         'useACI'.
+	//     -> Just make sure that useACI isn't equal to 'FALSE' which means the user/admin have
+	//        elected to NOT use ACI's!
+	if(empty($_SESSION["ACI_SUPPORT_ENABLED"]) and function_exists("user_generate_aci") and
+	   ($ocs[pql_get_define("PQL_ATTR_LDAPACI")]["OID"] or pql_get_define("PQL_CONF_ACI_USE")) and
+	   (pql_get_define("PQL_CONF_ACI_USE") != 'FALSE'))
 	  $_SESSION["ACI_SUPPORT_ENABLED"] = 1;
 
 	// 9b. Check to see if the attributes mailQuotaSize and mailQuotaCount exists - new style quota.
@@ -189,6 +206,9 @@ if(!$MONITOR_BACKEND_ENABLED) {
 unset($host); unset($servers); unset($i);
 unset($pql_config_private_variable_which_irritates_me); unset($sr); unset($info);
 unset($v); unset($nkey); unset($k);
+
+// See bug #203...
+($_REQUEST["domain"] = $_GET["domain"] ) || ($_REQUEST["domain"] = $_POST["domain"]);
 
 /*
  * Local variables:

@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.23 2004-03-30 07:57:26 turbo Exp $
+// $Id: pql_formating.inc,v 2.23.10.1.4.1 2004-10-05 07:05:46 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -243,7 +243,7 @@ function pql_format_tree_span($text, $links, $level) {
     <nobr>
       <?=$nbsp?>
       <?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>"><?php } ?>
-      <a class="tblItem" title="<?=$text?>" href="<?=$link?>" <?php if(eregi('^http://', $link)) { echo 'target="_top"'; } else { echo 'target="pqlmain"'; } ?>><?=$text?></a>
+      <a class="tblItem" title="<?=$text?>" href="<?=$link?>" <?php if(eregi('^http://', $link)) { echo 'target="_new"'; } else { echo 'target="pqlmain"'; } ?>><?=$text?></a>
     </nobr>
 <?php			if($counter < ($count - 1)) { ?>
 
@@ -283,8 +283,73 @@ function pql_format_tree_end() {
 }
 // }}}
 
-// {{{ pql_format_timestamp(timestamp)
-function pql_format_timestamp($timestamp) {
+// {{{ pql_format_timestamp_human(beg, end)
+function pql_format_timestamp_human($beg, $end) {
+    global $LANG;
+
+    $seconds         = $end - $beg;
+
+	// -------------------------
+	// Get number of DAYS of uptime
+    $tmp  = $seconds / 86400;
+	if(ereg('\.', $tmp)) {
+		$tmp = split('\.', $tmp);
+		$uptime['days'] = $tmp[0];
+	} else
+	  $uptime['days'] = $tmp;
+
+	$uptime['weeks'] = round($uptime['days'] / 7);
+	$uptime['years'] = round($uptime['weeks'] / 52);
+
+	// -------------------------
+	// Get number of HOURS of uptime
+	$tmp = $seconds / 3600;
+	if(ereg('\.', $tmp)) {
+		$tmp = split('\.', $tmp);
+		$uptime['hour'] = $tmp[0];
+	} else
+	  $uptime['hour'] = $tmp;
+
+	// Take into account that we might have days as well.
+	// Othervise we'll get '1 day, 24 hours, -1374 minutes'
+	// when it's actually '1 day, 7 minutes'
+	$uptime['hour'] = $uptime['hour'] - ($uptime['days'] * 24);
+
+	// -------------------------
+	// Get number of MINUTES of uptime
+    $uptime['min']   = round( ($seconds - (($uptime['days'] * 86400) + ($uptime['hour'] * 3600))) / 60);
+	if($uptime['min'] < 0) {
+		$uptime['min']--;
+		$uptime['min'] = 60 + $uptime['min'];
+	}
+
+	// -------------------------
+	// Get number of SECONDS of uptime
+    $uptime['sec']   = $seconds - (($uptime['days'] * 86400) + ($uptime['hour'] * 3600) + ($uptime['min'] * 60));
+	if($uptime['sec'] < 0) {
+		$uptime['min']--;
+		$uptime['sec']--;
+
+		$uptime['sec'] = 60 + $uptime['sec'];
+	}
+    
+	// -------------------------
+	// Prettify the uptime
+	$uptime_string['years']   = ($uptime['years']) ? $uptime['years']." ".$LANG->_('years').", " : "";
+	$uptime_string['weeks']   = ($uptime['weeks']) ? $uptime['weeks']." ".$LANG->_('weeks').", " : "";
+	$uptime_string['days']    = ($uptime['days'])  ? $uptime['days']." ".$LANG->_('days').", "   : "";
+	$uptime_string['hours']   = ($uptime['hour'])  ? $uptime['hour']." ".$LANG->_('hours').", " : "";
+	$uptime_string['minutes'] = ($uptime['min'])   ? $uptime['min']." ".$LANG->_('minutes').", " : "";
+	$uptime_string['seconds'] = ($uptime['sec'])   ? $uptime['sec']." ".$LANG->_('seconds')."." : "";
+
+	$string  = $uptime_string['years'].$uptime_string['weeks'].$uptime_string['days'];
+	$string .= $uptime_string['hours'].$uptime_string['minutes'].$uptime_string['seconds']."\n";
+	return($string);
+}
+// }}}
+
+// {{{ pql_format_timestamp_unixtime(timestamp)
+function pql_format_timestamp_unixtime($timestamp) {
 	$timestamp = preg_replace('/Z$/', '', $timestamp);
 
 	$year   = $timestamp[0].$timestamp[1].$timestamp[2].$timestamp[3];
@@ -295,8 +360,13 @@ function pql_format_timestamp($timestamp) {
 	$minute = $timestamp[10].$timestamp[11];
 	$second = $timestamp[12].$timestamp[13];
 
-	$date   = date("r", mktime($hour, $minute, $second,
-							   $month, $day, $year));
+	return(mktime($hour, $minute, $second, $month, $day, $year));
+}
+// }}}
+
+// {{{ pql_format_timestamp(timestamp)
+function pql_format_timestamp($timestamp) {
+	$date   = date("r", pql_format_timestamp_unixtime($timestamp));
 	return($date);
 }
 // }}}

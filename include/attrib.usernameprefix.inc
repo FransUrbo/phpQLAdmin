@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
-// usernamePrefix/usernamePrefixLength
-// $Id: attrib.usernameprefix.inc,v 2.9 2004-03-03 07:59:28 turbo Exp $
+// userNamePrefix/userNamePrefixLength
+// $Id: attrib.usernameprefix.inc,v 2.9.10.1.2.1 2004-05-25 13:57:51 turbo Exp $
 
 function attribute_check($type = '') {
     global $error, $LANG;
@@ -16,11 +16,11 @@ function attribute_check($type = '') {
 }
 
 function attribute_print_form($type = "modify") {
-    global $error, $LANG;
+    global $url, $error, $LANG;
 	global $orgname;			// Set by domain_edit_attributes.php.
 
     $attrib = $_REQUEST["attrib"];
-	if(empty($_REQUEST[$attrib]))
+	if(empty($_REQUEST[$attrib]) and ($attrib == 'usernameprefixlength'))
 	  $_REQUEST[$attrib] = 4;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
@@ -60,8 +60,8 @@ function attribute_print_form($type = "modify") {
 
     <input type="hidden" name="submit" value="2">
     <input type="hidden" name="attrib" value="<?=$attrib?>">
-    <input type="hidden" name="domain" value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="rootdn" value="<?=$_REQUEST["rootdn"]?>">
+    <input type="hidden" name="domain" value="<?=$url["domain"]?>">
+    <input type="hidden" name="rootdn" value="<?=$url["rootdn"]?>">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">

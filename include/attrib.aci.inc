@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for OpenLDAPaci
-// $Id: attrib.aci.inc,v 1.6 2004-03-11 18:13:41 turbo Exp $
+// $Id: attrib.aci.inc,v 1.6.6.2 2004-05-25 13:57:50 turbo Exp $
 
 /* DLW: This has valid syntax, but I don't know how to test it. */
 
@@ -53,7 +53,7 @@ function attribute_check() {
 
 // {{{ attribute_print_form(action)
 function attribute_print_form($action) {
-    global $LANG;
+    global $url, $LANG;
 
 ?>
   <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post">
@@ -61,7 +61,7 @@ function attribute_print_form($action) {
       <th colspan="3" align="left"><?=$LANG->_('Access Control Information')?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Object DN')?></td>
-          <td><?php if(!empty($_REQUEST["user"]) { echo $_REQUEST["user"]; } else { echo $_REQUEST["domain"]; } ?></td>
+          <td><?php if(!empty($_REQUEST["user"])) { echo $_REQUEST["user"]; } else { echo $_REQUEST["domain"]; } ?></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
@@ -125,9 +125,9 @@ function attribute_print_form($action) {
       </th>
     </table>
 
-    <input type="hidden" name="rootdn"        value="<?=$_REQUEST["rootdn"]?>">
-    <input type="hidden" name="domain"        value="<?=$_REQUEST["domain"]?>">
-    <input type="hidden" name="user"          value="<?=$_REQUEST["user"]?>">
+    <input type="hidden" name="rootdn"        value="<?=$url["rootdn"]?>">
+    <input type="hidden" name="domain"        value="<?=$url["domain"]?>">
+    <input type="hidden" name="user"          value="<?=$url["user"]?>">
     <input type="hidden" name="attrib"        value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="view"          value="<?=$_REQUEST["view"]?>">
     <input type="hidden" name="type"          value="<?=$action?>">

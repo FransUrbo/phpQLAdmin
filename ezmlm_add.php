@@ -1,6 +1,6 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.30 2004-03-11 18:13:32 turbo Exp $
+// $Id: ezmlm_add.php,v 1.30.6.2 2004-05-06 08:09:46 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -9,21 +9,12 @@ $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PA
 
 // forward back to list detail page
 function list_forward($domainname, $msg) {
-	global $domain;
-
     $msg = urlencode($msg);
-    $url = "ezmlm_detail.php?domain=$domain&domainname=$domainname&msg=$msg&rlnb=3";
+    $url = "ezmlm_detail.php?domain=".$_REQUEST["domain"]."&domainname=$domainname&msg=$msg&rlnb=3";
     header("Location: " . pql_get_define("PQL_CONF_URI") . "$url");
 }
 
-if(!$subscribercount) {
-	$subscribercount = 0;
-}
-if(!$killcount) {
-	$killcount = 0;
-}
-
-if(!$domainname) {
+if(!$_REQUEST["domainname"]) {
 	// Get list of domains
 	foreach($_pql->ldap_basedn as $dn)  {
 		$dn = urldecode($dn);
@@ -93,12 +84,12 @@ $checked["indexed"]		= " CHECKED";	// -iI
 $checked["trailers"]	= " CHECKED";	// -tT
 $checked["public"]		= " CHECKED";	// -p
 
-if($domainname) {
-	if(ereg(';', $domainname))
-	  $data = split(';', $domainname);
+if($_REQUEST["domainname"]) {
+	if(ereg(';', $_REQUEST["domainname"]))
+	  $data = split(';', $_REQUEST["domainname"]);
 	else {
-		$data[0] = $domain;
-		$data[1] = $domainname;
+		$data[0] = $_REQUEST["domain"];
+		$data[1] = $_REQUEST["domainname"];
 	}
 	
 	// Get basemaildir path for domain
@@ -112,36 +103,43 @@ if($domainname) {
 }	
 
 // Create list
-if(isset($submit)) {
-	if($listname and $domainname)
-	  $ezmlm->updatelistentry(1, $listname, $data[1], $checked);
+if(isset($_REQUEST["submit"])) {
+	if($_REQUEST["listname"] and $_REQUEST["domainname"])
+	  $ezmlm->updatelistentry(1, $_REQUEST["listname"], $data[1], $checked);
 	else
 	  $error_text["listname"] = $LANG->_('Missing');
 }
 
 require("./header.html");
 
-if(!$domain) {
+if(!$_REQUEST["domain"]) {
 ?>
   <span class="title1"><?=$LANG->_('Create mailinglist')?></span>
 <?php
 } else {
-	$dom = pql_domain_get_value($_pql, $domain, pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"), $_SESSION["USER_DN"]);
+	$dom = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"), $_SESSION["USER_DN"]);
 	if(is_array($dom)) {
-		if($ezmlm->mailing_lists_hostsindex["COUNT"] > pql_get_define("PQL_CONF_MAXIMUM_MAILING_LISTS", $domain)) {
+		// How many domains do we have in this branch/domain?
+		$count = $ezmlm->mailing_lists_hostsindex["COUNT"];
+
+		// How many do we allow?
+		$max   = pql_get_define("PQL_CONF_MAXIMUM_MAILING_LISTS", $_REQUEST["domain"]);
+
+		// Incase maximum allowed is NULL, we allow unlimited (count + 1 is a good value :).
+		$max = $max ? $max : $count + 1;
+		if($count > $max) {
 ?>
   <span class="title2">
     <?=$LANG->_('Sorry, you have reached the maximum allowed mailinglists in this domain')?><br>
     <?php echo pql_complete_constant($LANG->_('You have %count% mailinglists, but only %allowed% is allowed.'),
-									 array('count'   => $ezmlm->mailing_lists_hostsindex["COUNT"],
-										   'allowed' => pql_get_define("PQL_CONF_MAXIMUM_MAILING_LISTS", $domain))); ?>
+									 array('count'   => $count, 'allowed' => $max)); ?>
 
   </span>
 <?php
 			die();
 		} else { ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Create mailinglist in domain %domain%'),
-														array('domain' => $domainname))?></span>
+														array('domain' => $_REQUEST["domainname"]))?></span>
 <?php
 		}
 	} else {
@@ -163,7 +161,7 @@ if(!$domain) {
           <td><?php echo pql_format_error_span($error_text["listname"]); ?>
 
 <?php
-if(!$domain) {
+if(!$_REQUEST["domain"]) {
 	// No domain - select box with existing domains
 ?>
             <input name="listname" value="<?=$listname?>"><b>@<?php
@@ -189,8 +187,8 @@ if(!$domain) {
 } else {
 	// Got domainname, show that (and remember it!)
 ?>
-            <input type="hidden" name="domainname" value="<?=$domainname?>">
-            <input name="listname" value="<?=$listname?>"><b>@<?=$domainname?></b>
+            <input type="hidden" name="domainname" value="<?=$_REQUEST["domainname"]?>">
+            <input name="listname" value="<?=$listname?>"><b>@<?=$_REQUEST["domainname"]?></b>
 <?php
 }
 ?>
@@ -341,58 +339,9 @@ if(!$domain) {
       </th>
     </table>
 
-    <br><!-- ======================================================= -->
+    <input type="hidden" name="domain" value="<?=$_REQUEST["domain"]?>">
 
-    <!-- add subscribers at creation -->
-    <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_('Subscriber address(es)')?></th>
-<?php
-	for($i = 1; $i <= $subscribercount; $i++) {
-?>
-        <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Subscriber')?></td>
-          <td><input type="text" name="subscriber[<?=$i?>]" value="<?=$subscriber[$i]?>"<?=$onchg?>></td>
-        </tr>
-<?php
-	}
-?>
-        <tr class="subtitle">
-          <td><a href="<?php echo $_SERVER["PHP_SELF"]; ?>?subscribercount=<?php echo ($subscribercount + 1); ?>">add <?php if($subscribercount) {echo $LANG->_('Additional');}?>address</a></td>
-        </tr>
-      </th>
-    </table>
-    <!-- add subscribers at creation -->
-
-    <br><!-- ======================================================= -->
-
-    <!-- add kill at creation -->
-    <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_('Rejected address(es)')?></th>
-<?php
-	for($i = 1; $i <= $killcount; $i++) {
-?>
-        <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Address')?></td>
-          <td><input type="text" name="killlist[<?=$i?>]" value="<?=$killlist[$i]?>"<?=$onchg?>></td>
-        </tr>
-
-<?php
-	}
-?>
-        <tr class="subtitle">
-          <td><a href="<?php echo $_SERVER["PHP_SELF"]; ?>?killcount=<?php echo ($killcount + 1); ?>">add <?php if($killcount) {echo $LANG->_('Additional');}?>address</a></td>
-        </tr>
-      </th>
-    </table>
-    <!-- add kill at creation -->
-
-    <br><!-- ======================================================= -->
-
-<?php for($i = 1; $i <= $subscribercount; $i++) { ?>
-    <input type="hidden" name="subscriber[<?=$i?>]" value="<?=$subscriber[$i]?>">
-<?php } for($i = 1; $i <= $killcount; $i++) { ?>
-    <input type="hidden" name="killlist[<?=$i?>]" value="<?=$killlist[$i]?>">
-<?php } ?>
+    <p>
 
     <input type="submit" name="submit" value="<?=$LANG->_('Create list')?>">
   </form>

@@ -1,11 +1,9 @@
 <?php
-// $Id: user_add-save.inc,v 1.16 2004-04-01 11:59:37 turbo Exp $
+// $Id: user_add-save.inc,v 1.16.4.2.2.6.4.2 2004-10-04 09:18:20 turbo Exp $
 
-// Find out what objectclasses to use when creating user
-$objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"]));
-
-// Get all objectclasses the LDAP server understand
-$objectclasses_schema   = pql_get_subschema($_pql->ldap_linkid, 'objectclasses');
+// URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
+$_REQUEST["surname"] = urldecode($_REQUEST["surname"]);
+$_REQUEST["name"]    = urldecode($_REQUEST["name"]);
 
 // ============================================================================================
 // ============== PREPARE THE USERS ATTRIBUTE(S)
@@ -18,8 +16,8 @@ if($_REQUEST["uid"]) {
 }
 
 // ------------------
-// If we've specified to use the object class 'inetOrgPerson', then allow 'givenName'.
-if(($_REQUEST["account_type"] != "mail") or in_array("inetorgperson", $objectclasses_included)) {
+$res = pql_check_attribute($objectclasses_schema, $objectclasses_included, pql_get_define("PQL_ATTR_SN"));
+if(($_REQUEST["account_type"] != "mail") or $res[0]) {
 	// Firstname
 	if($_REQUEST["surname"]) {
 		$entry[pql_get_define("PQL_ATTR_GIVENNAME")]	= $_REQUEST["surname"];
@@ -28,8 +26,7 @@ if(($_REQUEST["account_type"] != "mail") or in_array("inetorgperson", $objectcla
 	}
 }
 
-// If we've specified to use the object class 'person', then allow 'cn' and 'sn'.
-if(($_REQUEST["account_type"] != "mail") or in_array("person", $objectclasses_included)) {
+if(($_REQUEST["account_type"] != "mail") or $res[0]) {
 	// Lastname
 	if($_REQUEST["name"]) {
 		$entry[pql_get_define("PQL_ATTR_SN")]			= $_REQUEST["name"];
@@ -47,8 +44,8 @@ if(($_REQUEST["account_type"] != "mail") or in_array("person", $objectclasses_in
 
 // ------------------
 if($_REQUEST["account_type"] != 'shell') {
-	if(in_array('trustaccount', $objectclasses_included))
-	  // Only add 'accountStatus' if admin have enabled the 'trustAccount' object class.
+	$res = pql_check_attribute($objectclasses_schema, $objectclasses_included, pql_get_define("PQL_ATTR_ISACTIVE"));
+	if($res[0] and $_REQUEST["account_status"])
 	  $entry[pql_get_define("PQL_ATTR_ISACTIVE")]	= $_REQUEST["account_status"];
 
 	// Cleanup the email address a bit
@@ -83,31 +80,58 @@ if($_REQUEST["account_type"] == "forward") {
 	
 	// set attributes
 	$entry[pql_get_define("PQL_ATTR_FORWARDS")]	= $forwardingaddress;
-	$entry[pql_get_define("PQL_ATTR_MODE")][]	= "forwardonly";
-	$entry[pql_get_define("PQL_ATTR_MODE")][]	= "nombox";
+
+	if($_SESSION["NEW_STYLE_QUOTA"]) {
+		// With newer QmailLDAP, the 'deliveryMode' have changed.
+		$entry[pql_get_define("PQL_ATTR_MODE")][]	= "nolocal";
+	} else {
+		$entry[pql_get_define("PQL_ATTR_MODE")][]	= "forwardonly";
+		$entry[pql_get_define("PQL_ATTR_MODE")][]	= "nombox";
+	}
 	
 	if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
-	  $entry[pql_get_define("PQL_ATTR_HOMEDIR")]= "/tmp";
+	  $entry[pql_get_define("PQL_ATTR_HOMEDIR")]= pql_get_define("PQL_CONF_VIRTUAL_BASEHOME");
 } else {
 	// Any other account than 'forwarding'.
 
 	// -----------------
 	// Add [ug]id number to the entry array
-	if($_REQUEST["account_type"] != "mail") {
-		// Get a free UserID number (which we also use for GroupID number)
-		$uidnr = pql_get_next_ugidnumber($_pql, 'uid');
-		if($uidnr > 0)
-		  $entry[pql_get_define("PQL_ATTR_QMAILUID")] = $uidnr;
-		
-		$gidnr = pql_get_next_ugidnumber($_pql, 'gid');
-		if($gidnr > 0)
-		  $entry[pql_get_define("PQL_ATTR_QMAILGID")] = $gidnr;
-	
+	$res = pql_check_attribute($objectclasses_schema, $objectclasses_included, pql_get_define("PQL_ATTR_QMAILUID"));
+	if(($_REQUEST["account_type"] != "mail") or $res[0]) {
+		// We COULD end up here, EVEN if it's a mail account! So we have to tripple check again,
+		// and again so that we only add the [ug]idNumber if it's supposed to be added...
+		if($_REQUEST["account_type"] == "mail") {
+			// It's a mail account but we've decided to use 'posixAccount' when creating users,
+			// so use the predefined uid/gid number for this user...
+			$virtual_uid_number = pql_get_define("PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER", $_REQUEST["rootdn"]);
+
+			$entry[pql_get_define("PQL_ATTR_QMAILUID")] = $virtual_uid_number;
+			$entry[pql_get_define("PQL_ATTR_QMAILGID")] = $virtual_uid_number;
+		} else {
+			// It's not a mail account
+
+			// Get a free UserID number
+			$uidnr = pql_get_next_ugidnumber($_pql, 'uid');
+			if($uidnr > 0)
+			  $entry[pql_get_define("PQL_ATTR_QMAILUID")] = $uidnr;
+
+			// Get a free GroupID number
+			$gidnr = pql_get_next_ugidnumber($_pql, 'gid');
+			if($gidnr > 0)
+			  $entry[pql_get_define("PQL_ATTR_QMAILGID")] = $gidnr;
+		}
+
 		// -----------------
 		// Gecos is needed to do PAM/NSS LDAP login 
 		if($_REQUEST["surname"] && $_REQUEST["name"] &&
-		   (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))) {
-			$entry[pql_get_define("PQL_ATTR_GECOS")] = $_REQUEST["surname"] . " " . $_REQUEST["name"];
+		   (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")))
+		{
+			// Gecos is one attribute that can't be internationalized!
+			// Decode in two steps: UTF8 decoding and then translate international chars to non-us chars
+			$tmp1 = pql_maybe_decode($_REQUEST["surname"]); $tmp1 = pql_format_international($tmp1);
+			$tmp2 = pql_maybe_decode($_REQUEST["name"]);    $tmp2 = pql_format_international($tmp2);
+
+			$entry[pql_get_define("PQL_ATTR_GECOS")]  = $tmp1 . " " . $tmp2;
 		}
 	}
 	
@@ -151,11 +175,22 @@ if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "mai
 	if($_REQUEST["host"])
 	  // If using 'qlc' -> the FQDN
 	  $entry[pql_get_define("PQL_ATTR_MAILHOST")]   = $_REQUEST["host"];
-	elseif($_REQUEST["userhost"])
-	  // We've specified a host, but we never ticked the 'User defined' checkbox.
-	  $entry[pql_get_define("PQL_ATTR_MAILHOST")]   = $_REQUEST["userhost"];
+	elseif($_REQUEST["userhost"]) {
+		// We've specified a host, but we never ticked the 'User defined' checkbox.
+		if(is_array($_REQUEST["userhost"]) and $_REQUEST["userhost"]["dns"])
+		  // We have a DNS entry. This is default!
+		  $entry[pql_get_define("PQL_ATTR_MAILHOST")]   = $_REQUEST["userhost"]["dns"];
+		elseif(is_array($_REQUEST["userhost"]) and $_REQUEST["userhost"]["qlc"][0])
+		  // No DNS entry, but we have at least one QLC host. Take the first one we find...
+		  $entry[pql_get_define("PQL_ATTR_MAILHOST")]   = $_REQUEST["userhost"]["qlc"][0];
+		else
+		  $entry[pql_get_define("PQL_ATTR_MAILHOST")]   = $_REQUEST["userhost"];
+	}
 	
-	$entry[pql_get_define("PQL_ATTR_MODE")] = "localdelivery";
+	if(!$_SESSION["NEW_STYLE_QUOTA"])
+	  // The new QmailLDAP have a changed 'deliveryMode' setup.
+	  // Don't add this automaticly.
+	  $entry[pql_get_define("PQL_ATTR_MODE")] = "localdelivery";
 	
 	if(!$_REQUEST["maildirectory"])
 	  $entry[pql_get_define("PQL_ATTR_MAILSTORE")] = user_generate_mailstore($_pql, $_REQUEST["email"],
@@ -169,15 +204,15 @@ if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "mai
 	  $entry[pql_get_define("PQL_ATTR_MAILSTORE")] .= "/";
 	
 	// -----------------
-	if($_REQUEST["account_type"] == "system") {
+	if(($_REQUEST["account_type"] == "system") or in_array('posixaccount', $objectclasses_included)) {
 		// Add home directory to the entry array
 		if(!$_REQUEST["homedirectory"]) {
 			if(($_REQUEST["account_type"] == "mail") and !$_SESSION["ADVANCED_MODE"])
 			  // It's a mail account, and we where/is not running in
 			  // advanced mode. Use the maildirectory as homedirectory.
-			  $entry[pql_get_define("PQL_ATTR_HOMEDIR")] = user_generate_mailstore($_pql, $_REQUEST["email"],
-																				   $_REQUEST["domain"], $entry,
-																				   'user');
+			  $entry[pql_get_define("PQL_ATTR_HOMEDIR")] = user_generate_homedir($_pql, $_REQUEST["email"],
+																				 $_REQUEST["domain"], $entry,
+																				 'user');
 			else
 			  $entry[pql_get_define("PQL_ATTR_HOMEDIR")] = user_generate_homedir($_pql, $_REQUEST["email"],
 																				 $_REQUEST["domain"], $entry,

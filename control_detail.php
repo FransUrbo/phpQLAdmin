@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.32 2004-03-29 07:50:38 turbo Exp $
+// $Id: control_detail.php,v 1.32.6.1 2004-05-06 05:14:29 turbo Exp $
 session_start();
 require("./include/pql_config.inc");
 
@@ -71,7 +71,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 	  $quota = $ldapdefaultquota;
 
 	// reload navigation bar if needed
-	if(isset($rlnb) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
+	if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
 ?>
 
   <script src="frames.js" type="text/javascript" language="javascript1.2"></script>

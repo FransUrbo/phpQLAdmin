@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtproutes (max number of bytes in message)
 //
-// $Id: attrib.control.smtproutes.inc,v 2.18 2004-03-11 16:31:55 turbo Exp $
+// $Id: attrib.control.smtproutes.inc,v 2.18.6.2 2004-08-26 18:03:22 turbo Exp $
 
 // {{{ smtproutes_check(type)
 function smtproutes_check($type) {
@@ -155,7 +155,7 @@ function smtproutes_print_view($host) {
 
 // {{{ smtproutes_print_form(void)
 function smtproutes_print_form() {
-	global $_pql_control, $error, $LANG;
+	global $url, $_pql_control, $error, $LANG;
 
 	if($_REQUEST["attrib"] && $_REQUEST["rootdn"] && $_REQUEST["set"])
 	  // We're called from the domain details page -> the domain name is in $set
@@ -331,10 +331,10 @@ function smtproutes_print_form() {
     <input type="hidden" name="mxhost"        value="<?=$_REQUEST["mxhost"]?>">
 <?php } ?>
 <?php if($_REQUEST["rootdn"]) { ?>
-    <input type="hidden" name="rootdn"        value="<?=$_REQUEST["rootdn"]?>">
+    <input type="hidden" name="rootdn"        value="<?=$url["rootdn"]?>">
 <?php } ?>
 <?php if(!is_array($_REQUEST["domain"])) { ?>
-    <input type="hidden" name="domain"        value="<?=$_REQUEST["domain"]?>">
+    <input type="hidden" name="domain"        value="<?=$url["domain"]?>">
 <?php } ?>
     <input type="hidden" name="type"          value="<?=$_REQUEST["type"]?>">
     <input type="hidden" name="view"          value="<?=$_REQUEST["view"]?>">
@@ -350,8 +350,6 @@ function smtproutes_print_form() {
 function smtproutes_save($type, $host) {
 	global $_pql_control, $LANG;
 	$success = 0;
-echo "smtproutes_save($type, $host)<br>";
-printr($_REQUEST);
 
 	switch($type) {
 	  case "modify":

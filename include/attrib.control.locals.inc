@@ -2,11 +2,12 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.26 2004-03-27 11:43:31 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.26.10.2.2.1 2004-08-26 18:14:02 turbo Exp $
 
 // {{{ locals_check(type)
+
 function locals_check($type) {
-    global $error, $LANG;
+    global $_pql, $_pql_control, $error, $LANG;
     
     // check validity
     if(is_array($_REQUEST["locals"])) {
@@ -27,6 +28,7 @@ function locals_check($type) {
     
     return true;
 }
+
 // }}}
 
 // {{{ locals_init(host)
@@ -91,7 +93,7 @@ function locals_print_view($host) {
     } else {
   ?>
       <tr class="subtitle">
-        <td><a href="control_edit_attribute.php?rootdn=<?=$_REQUEST["rootdn"]?>&attrib=<?=pql_get_define("PQL_ATTR_LOCALS")?>&mxhost=<?=$host?>"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a> (<?=$LANG->_('The automatic replication with domain is disabled')?>)</td>
+        <td><a href="control_edit_attribute.php?rootdn=<?=$_REQUEST["rootdn"]?>&attrib=<?=pql_get_define("PQL_ATTR_LOCALS")?>&mxhost=<?=$host?>&view=hosts"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a> (<?=$LANG->_('The automatic replication with domain is disabled')?>)</td>
       </tr>
     </th>
 <?php }	?>
@@ -134,16 +136,16 @@ function locals_print_form() {
 // {{{ locals_save(type, host)
 function locals_save($type, $host) {
     global $_pql, $_pql_control, $LANG;
+	$success = 0;
 
 	if($_REQUEST["mxhost"])
 	  $host = $_REQUEST["mxhost"];
-	else
-	  $host = '*';
 
     switch($type) {
       case "replicate":
 		// start replication manually
-		if(pql_control_update_domains($_pql_control, pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		if(pql_control_update_domains($_pql_control, $_REQUEST["rootdn"],
+									  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 									  $host, '', pql_get_define("PQL_ATTR_LOCALS")))
 		  $msg = pql_complete_constant($LANG->_('Successfully replicated %what%'),
 									   array('what' => pql_get_define("PQL_ATTR_LOCALS")));
@@ -155,18 +157,51 @@ function locals_save($type, $host) {
 		break;
 
       case "del":
-		$locals = pql_control_get_attribute($_pql_control->ldap_linkid,
-											pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											pql_get_define("PQL_ATTR_LOCALS"));
-		for($i=0; $locals[$i]; $i++) {
-			if($locals[$i] != $_REQUEST["set"])
-			  $LOCALS[] = $locals[$i];
+		if(!$host) {
+			// Find the object(s) which contain this string
+			$ctrls = pql_control_search_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+												  "locals", $_REQUEST["set"], 1);
+			
+			// If it isn't an array, but it IS set -> make it an array!
+			if($ctrls && !is_array($ctrls)) {
+				$tmp = $ctrls; unset($ctrls);
+				$ctrls[] = $tmp;
+			}
+			
+			foreach($ctrls as $ctrl) {
+				// Retreive this QmailLDAP/Controls object current value(s)
+				$locals = pql_control_get_attribute($_pql_control->ldap_linkid, $ctrl, pql_get_define("PQL_ATTR_LOCALS"));
+				if(is_array($locals)) {
+					// Go through the locals, remove the one in $_REQUEST["set"]
+					for($i=0; $locals[$i]; $i++) {
+						if($locals[$i] != $_REQUEST["set"]) {
+							$LOCALS[] = $locals[$i];
+						}
+					}
+				}
+				
+				// Save this new array to the object, redirect back to host details
+				if(pql_control_replace_attribute($_pql_control->ldap_linkid, $ctrl,
+												 pql_get_define("PQL_ATTR_LOCALS"), $LOCALS))
+				  $success = 1;
+			}
+		} else {
+			// We're changing a specific mail server...
+			$locals = pql_control_get_attribute($_pql_control->ldap_linkid,
+												pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+												pql_get_define("PQL_ATTR_LOCALS"));
+			for($i=0; $locals[$i]; $i++) {
+				if($locals[$i] != $_REQUEST["set"])
+				  $LOCALS[] = $locals[$i];
+				
+				// remove specified domain from locals, redirect back to host details
+				if(pql_control_replace_attribute($_pql_control->ldap_linkid,
+												 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+												 pql_get_define("PQL_ATTR_LOCALS"), $LOCALS))
+				  $success = 1;
 		}
 
-		// remove specified domain from locals, redirect back to host details
-		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_ATTR_LOCALS"), $LOCALS))
+		if($success)
 		  $msg = pql_complete_constant($LANG->_('Successfully removed %domain% from %what%'),
 									   array('what'   => pql_get_define("PQL_ATTR_LOCALS"),
 											 'domain' => $_REQUEST["set"]));
@@ -182,12 +217,12 @@ function locals_save($type, $host) {
 		// adding specified domain to rcpthosts, redirect back to domain details
 		$success = 0;
 		if($_REQUEST["mxhost"]) {
-			if(pql_control_update_domains($_pql_control,
+			if(pql_control_update_domains($_pql_control, $_REQUEST["rootdn"],
 										  pql_get_define("PQL_ATTR_CN")."=".$_REQUEST["mxhost"].",".$_SESSION["USER_SEARCH_DN_CTR"],
 										  $host, array('', $_REQUEST["set"]), pql_get_define("PQL_ATTR_LOCALS")))
 			  $success = 1;
 		} else {
-			if(pql_control_update_domains($_pql_control, $_SESSION["USER_SEARCH_DN_CTR"],
+			if(pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
 										  '*', array('', $_REQUEST["set"]), pql_get_define("PQL_ATTR_LOCALS")))
 			  $success = 1;
 		}
