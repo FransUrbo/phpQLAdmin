@@ -2,6 +2,7 @@ Template: phpqladmin/webserver
 Type: select
 Choices: Apache, Apache-SSL, Both, None
 Choices-pl: Apache, Apache-SSL, Obydwa, ¯aden
+Choices-sv: Apache, Apache-SSL, Bagge, Ingen av dom
 Default: ${webserver}
 Description: Which web server would you like to reconfigure automatically?
  phpQLAdmin supports any web server that PHP4 does, but this
