@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.119 2003-11-14 09:39:50 turbo Exp $
+// $Id: pql.inc,v 2.120 2003-11-14 10:59:59 turbo Exp $
 //
 
 // ----------------------------
@@ -2285,6 +2285,7 @@ function pql_generate_button($buttons) {
 	  $i=0; // A button counter.
 	  foreach($buttons as $link => $text) {
 		  // Generate the button link etc
+		  $text = urlencode($text);
 ?>
     <a href="<?=$PHP_SELF?>?rootdn=<?=$rootdn?>&domain=<?=$domain?>&view=<?=$link?>"><img alt="/ <?=$LANG->_($text)?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_($text)?>"></a>
 <?php

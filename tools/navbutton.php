@@ -1,9 +1,10 @@
 <? // http://www.thescripts.com/serversidescripting/php/articles/dynamicimagesinphp3.0/page0.html
-// $Id: navbutton.php,v 2.10 2003-11-13 14:33:18 turbo Exp $
+// $Id: navbutton.php,v 2.11 2003-11-14 11:00:18 turbo Exp $
 
 include("./include/pql.inc");
 
 $string = implode($argv," ");
+$string = urldecode($string);
 
 // Prepare the text - remove unwanted characters etc
 $string = stripslashes($string);
