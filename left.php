@@ -189,25 +189,35 @@ if(!isset($domains)) {
 
 <?php         // From the user DN, get the CN.
 	      foreach ($users as $dn) {
-		  unset($cn); unset($sn);
+		  unset($cn); unset($sn); unset($gecos);
 
 		  $cn = pql_get_userattribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_GIVENNAME"));
 		  $sn = pql_get_userattribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_SN"));
-
-		  // Only remember users that have both a first and lastname.
 		  if($cn[0] && $sn[0])
-		    // We have a 'givenName' and a 'sn'
+		    // We have a givenName (first name) and a surName (last name) - combine the two
 		    $cns[$dn] = $sn[0].", ".$cn[0];
 		  else {
-		      // Probably don't have a 'givenName' - get the CN
+		      // Probably don't have a givenName - get the commonName
 		      $cn = pql_get_userattribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_CN"));
 		      if($cn[0]) {
-			  // Split it up in two based on space - This isn't perfect, but...
+			  // We have a commonName - split it up into two parts (which should be first and last name)
 			  $cn = split(" ", $cn[0]);
-			  $cns[$dn] = $cn[1].", ".$cn[0];
-		      } else
-			// Don't have a 'cn' either. MUST be a system 'user'.
-			$cns[$dn] = "System - ".$cn[0];
+			  if(!$cn[1])
+			    // Don't have second part (last name) of the commonName - MUST be a system 'user'.
+			    $cns[$dn] = "System - ".$cn[0];
+			  else {
+			      // We have two parts - combine into 'Lastname, Firstname'
+			      $cns[$dn] = $cn[1].", ".$cn[0];
+			  }
+		      } else {
+			  // No givenName, surName or commonName - last try, get the gecos
+			  $gecos = pql_get_userattribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_GLOB_ATTR_GECOS"));
+			  if($gecos[0])
+			    // We have a gecos - use that as is
+			    $cns[$dn] = $gecos[0];
+//			  else
+//			    // No gecos either. Now what!?
+		      }
 		  }
 	      }
               asort($cns);
