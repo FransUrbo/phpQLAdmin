@@ -30,7 +30,8 @@ tag:
 	  TAG="REL_`echo $$MAJOR`_`echo $$MINOR`_`echo $$LEVEL`"; \
 	  echo cvs tag: $$TAG; \
 	  cvs tag -RF $$TAG; \
-	  cvs commit -m "New release - $$MAJOR.$$MINOR.$$NEWLV." .version .version.old; \
+	  cvs commit -m "New release - $$MAJOR.$$MINOR.$$LEVEL." .version .version.old; \
+	  cvs tag -F $$TAG .version .version.old; \
 	)
 
 install: $(INSTDIR)
