@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.61.10.2.4.1.2.1 2004-09-17 14:43:32 turbo Exp $
+// $Id: pql_config.inc,v 1.61.10.2.4.1.2.1.4.1 2004-11-11 07:41:04 turbo Exp $
 //
 
 // include the API files
@@ -161,7 +161,8 @@ require("./include/pql_plugins.inc");
 
 // 7. Verify that the user have access to write the global phpQLAdmin config
 //    in the first base DN
-$_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"] = pql_validate_administrator($_pql->ldap_linkid, $_pql->ldap_basedn[0], $_SESSION["USER_DN"]);
+$_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"] = pql_validate_administrator($_pql->ldap_linkid, urldecode($_pql->ldap_basedn[0]),
+																   $_SESSION["USER_DN"]);
 
 if((empty($_SESSION["ACI_SUPPORT_ENABLED"]) and function_exists("user_generate_aci")) or empty($_SESSION["NEW_STYLE_QUOTA"])) {
 	$ocs = pql_get_subschema($_pql->ldap_linkid, 'attributeTypes');
