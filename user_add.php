@@ -104,8 +104,8 @@ if($submit == "two"){
 
 if(($submit == "two") or (($submit == "one") and !$ADVANCED_MODE)) {
 	// fetch dns information
-	$userhost = pql_get_mx($defaultdomain);
-	if(!$userhost) {
+	$userhost = pql_get_mx($_pql, $defaultdomain);
+	if(!$userhost[0]) {
 		$error_text["userhost"] = PQL_DNS_NONE;
 		$error = true;
 	}
@@ -152,11 +152,11 @@ if($submit == "save" and ($account_type == "normal" or $account_type == "system"
     }
 	
     if($host != "default"){
-		if($userhost == ""){
+		if($userhost[0] == ""){
 			$error = true;
 			$error_text["userhost"] = PQL_MISSING;
 		} else {
-			if(!preg_match("/^([a-z0-9]+\.{1,1}[a-z0-9]+)+$/i",$userhost)) {
+			if(!preg_match("/^([a-z0-9]+\.{1,1}[a-z0-9]+)+$/i",$userhost[1])) {
 				//
 				$error_text["userhost"] = PQL_INVALID;
 				$error = true;
@@ -442,7 +442,7 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
     <input type="hidden" name="loginshell" value="/bin/false">
     <input type="hidden" name="homedirectory" value="">
     <input type="hidden" name="maildirectory" value="">
-    <input type="hidden" name="userhost" value="<?=$userhost?>">
+    <input type="hidden" name="userhost" value="<?=$userhost[1]?>">
     <input type="hidden" name="host" value="default">
 <?php
 		}
@@ -484,7 +484,8 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 <?php if($account_type != "forward") { ?>
     <input type="hidden" name="password" value="<?php echo $password;?>">
     <input type="hidden" name="pwscheme" value="<?php echo $pwscheme;?>">
-  <?php	}?>
+<?php } ?>
+    <input type="hidden" name="subbranch" value="<?=$subbranch?>">
 
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo PQL_USER_ACCOUNT_PROPERTIES_MORE; ?></th>
@@ -525,23 +526,54 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 	  ?></td>
         </tr>
 
-        <br><br>
+        <tr></tr>
 
         <!-- Mailhost -->
+<?php
+		if($error_text["userhost"]) {
+?>
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"></td>
+          <td><?php echo format_error($error_text["userhost"]); ?></td>
+        </tr>
+<?php
+		}
+?>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"><?php echo PQL_LDAP_MAILHOST_TITLE; ?></td>
           <td>
-            <input type="hidden" name="mx" value="<?=$userhost?>">
-            <input type="radio" name="host" value="default" <?php if($host != "user"){ echo "checked";}?>><?php echo PQL_LDAP_MAILHOST_DEFAULT . ": <b>" . $userhost . "</b>";?>
+            <input type="hidden" name="mx" value="<?=$userhost[1]?>">
+            <input type="radio" name="host" value="default" <?php if($userhost[0] and ($host != "user")){ echo "checked";}?>><?php
+		echo PQL_LDAP_MAILHOST_DEFAULT . ": <b>";
+		if($userhost[0]) {
+			echo "$userhost[1]";
+		}
+		echo "</b>";?>
           </td>
         </tr>
+
+<?php
+		if(!$userhost[0] and $userhost[1]) {
+			// It's defined, but it comes from LDAP
+?>
+
+        <tr class="<?php table_bgcolor(); ?>">
+          <td class="title"></td>
+          <td>
+            <input type="radio" name="userhost" value="user" checked>qmailControls object: <b><?=$userhost[1]?></b>
+          </td>
+        </tr>
+<?php
+		}
+?>
   
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"></td>
           <td>
-            <input type="radio" name="userhost" value="user" <?php if($host == "user"){ echo "checked";}?>><?php echo PQL_LDAP_MAILQUOTA_USERDEFINED;?> <?php echo format_error($error_text["userhost"]); ?><input type="text" name="userhost">
+            <input type="radio" name="userhost" value="user" <?php if((!$userhost[0] and !$userhost[1]) or ($host == "user")){ echo "checked";}?>><?php echo PQL_LDAP_MAILQUOTA_USERDEFINED;?>  <input type="text" name="userhost"><br>
           </td>
         </tr>
+
 <?php
 	} // end of if-else
 ?>
@@ -628,7 +660,7 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 					$entry[PQL_LDAP_ATTR_MAILHOST] = pql_get_mx($domainname[1]);
 				}
 			} else {
-				$entry[PQL_LDAP_ATTR_MAILHOST] = $userhost;
+				$entry[PQL_LDAP_ATTR_MAILHOST] = $userhost[1];
 			}
 			$entry[PQL_LDAP_ATTR_MODE]     = "localdelivery";
 			if(!$maildirectory) {
@@ -650,7 +682,7 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 
         // ------------------
 		// Add the user to the database
-		$dns = pql_user_add($_pql->ldap_linkid, $domain, $cn, $entry, $account_type);
+		$dns = pql_user_add($_pql->ldap_linkid, $domain, $cn, $entry, $account_type, $subbranch);
 		if($dns[0]) {
 			// TODO: dns[1] (the group object) might still be empty -> failed to add it.
 
