@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.23 2003-04-04 16:49:08 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.24 2003-04-08 08:49:40 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -16,14 +16,18 @@ require("./include/lang.en.inc");
 // for the USERS database - separated with semi colon (;)
 //
 // Fields:
-//	LDAP host	Fully Qualified Hostname
-//				IP address
-//				LDAP URI (ldap://, ldaps://, ldapi:// etc)
-//	LDAP port	Port number
-//				NOTE: Use only if not using LDAP URI
+//	LDAP host		Fully Qualified Hostname
+//					or
+//					IP address
+//					or
+//					LDAP URI (ldap://, ldaps://, ldapi:// etc)
+//
+//	LDAP port		Port number
+//					NOTE: Use only if not using LDAP URI
+//
 //	Control base	Starting point for the LDAP controls information.
-//			NOTE: This is NOT the base DN, it's for QmailLDAP/Controls
-//			      objects.
+//					NOTE: This is NOT the base DN, or a login DN.
+//					It's where the QmailLDAP/Controls objects reside!
 //
 // Note: URI and SSL support were added in PHP v4.0.4.
 //
