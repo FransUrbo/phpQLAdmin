@@ -123,7 +123,7 @@ if ($submit == "save") {
 		$error_text["uid"] = PQL_LANG_INVALID;
 	}
 	if($error_text["uid"] == "" and pql_search_attribute($_pql->ldap_linkid, $domain,
-														 $config["PQL_GLOB_ATTR_UID, $uid"][get_root_dn($domain)])) {
+														 $config["PQL_GLOB_ATTR_UID, $uid"][pql_get_rootdn($domain)])) {
 		$error = true;
 		$error_text["uid"] = PQL_LANG_EXISTS;
 	}
@@ -668,10 +668,10 @@ echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_FORWARD
 
 			// set attributes
 			$entry[$config["PQL_GLOB_ATTR_PASSWD"]]   = pql_password_hash($password, $pwscheme);
-			if($pwscheme == "{KERBEROS}") {
-				$entry["krb5PrincipalName"] = $password;
-				$entry["objectClass"][] = "krb5Principal";
-			}
+			if($pwscheme == "{KERBEROS}")
+			  // Make sure that 'User objectclasses' contain krb5Principal (in the domain/branch config).
+			  // See the 'Show phpQLAdmin configuration' page...
+			  $entry["krb5PrincipalName"] = $password;
 
 			if($host == 'default') {
 				// TODO: If there is no defaultDomain for the domain, get MX of the domain in the email address
