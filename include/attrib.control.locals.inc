@@ -2,7 +2,7 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.25 2004-03-11 16:31:54 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.26 2004-03-27 11:43:31 turbo Exp $
 
 // {{{ locals_check(type)
 function locals_check($type) {
@@ -155,9 +155,18 @@ function locals_save($type, $host) {
 		break;
 
       case "del":
+		$locals = pql_control_get_attribute($_pql_control->ldap_linkid,
+											pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+											pql_get_define("PQL_ATTR_LOCALS"));
+		for($i=0; $locals[$i]; $i++) {
+			if($locals[$i] != $_REQUEST["set"])
+			  $LOCALS[] = $locals[$i];
+		}
+
 		// remove specified domain from locals, redirect back to host details
-		if(pql_control_update_domains($_pql_control, $_SESSION["USER_SEARCH_DN_CTR"],
-									  $host, array($_REQUEST["set"], ''), pql_get_define("PQL_ATTR_LOCALS")))
+		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
+										 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+										 pql_get_define("PQL_ATTR_LOCALS"), $LOCALS))
 		  $msg = pql_complete_constant($LANG->_('Successfully removed %domain% from %what%'),
 									   array('what'   => pql_get_define("PQL_ATTR_LOCALS"),
 											 'domain' => $_REQUEST["set"]));
@@ -173,7 +182,8 @@ function locals_save($type, $host) {
 		// adding specified domain to rcpthosts, redirect back to domain details
 		$success = 0;
 		if($_REQUEST["mxhost"]) {
-			if(pql_control_update_domains($_pql_control, pql_get_define("PQL_ATTR_CN")."=".$_REQUEST["mxhost"].",".$_SESSION["USER_SEARCH_DN_CTR"],
+			if(pql_control_update_domains($_pql_control,
+										  pql_get_define("PQL_ATTR_CN")."=".$_REQUEST["mxhost"].",".$_SESSION["USER_SEARCH_DN_CTR"],
 										  $host, array('', $_REQUEST["set"]), pql_get_define("PQL_ATTR_LOCALS")))
 			  $success = 1;
 		} else {
