@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.58 2004-10-18 13:39:32 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.59 2004-11-15 15:22:19 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -122,6 +122,12 @@ function user_generate_mailstore($ldap, $email, $dn, $entry, $type) {
 //
 //		// ... retreive the 'defaultDomainName' attribute value from the branch object.
 //		$domain    = pql_get_attribute($ldap->ldap_linkid, $dn, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+//
+//		// ... double check - do we have a home directory?
+//		if(!$mailstore)
+//		  // Nope. Maybe we have the 'virtualBaseHomeDir' attribute specified
+//		  // in the base object...
+//		  $mailstore = pql_get_define("PQL_CONF_VIRTUAL_BASEHOME");
 //	} else {
 //		// Default base directory
 //		$mailstore = "/var/mail";
@@ -226,6 +232,12 @@ function user_generate_homedir($ldap, $email, $dn, $entry, $type) {
 //
 //		// ... retreive the 'defaultDomainName' attribute value from the branch object.
 //		$domain  = pql_get_attribute($ldap->ldap_linkid, $dn, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+//
+//		// ... double check - do we have a home directory?
+//		if(!$homedir)
+//		  // Nope. Maybe we have the 'virtualBaseHomeDir' attribute specified
+//		  // in the base object...
+//		  $homedir = pql_get_define("PQL_CONF_VIRTUAL_BASEHOME");
 //	} else {
 //		// Default base directory
 //		$homedir = "/home";
