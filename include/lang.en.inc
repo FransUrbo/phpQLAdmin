@@ -1,7 +1,7 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 2.29 2003-07-02 07:59:01 turbo Exp $
+// $Id: lang.en.inc,v 2.30 2003-10-11 11:47:36 turbo Exp $
 //
 // if you have a translation to another language, please contact
 // me --> Turbo Fredriksson <phpqladmin@bayour.com>
@@ -401,7 +401,7 @@ $language = array(
 	"Remote" => "",
 	"Remote server" => "",
 	"Remove %domain% from %attribute%" => "",
-	"Remove attribute %attribute for user %user%" => "",
+	"Remove attribute %attribute% for user %user%" => "",
 	"Remove attribute %attribute%" => "",
 	"Remove contact person from" => "",
 	"Remove domain" => "",

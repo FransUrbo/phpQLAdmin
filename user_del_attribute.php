@@ -62,7 +62,7 @@ if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
     header("Location: " . pql_get_define("PQL_GLOB_URI") . "$url");
 } else {
 ?>
-  <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove attribute %attribute for user %user%'), array('attribute' => $attrib, 'user' => $username)); ?></span>
+  <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove attribute %attribute% for user %user%'), array('attribute' => $attrib, 'user' => $username)); ?></span>
   <br><br>
   <?=$LANG->_('Are you really sure')?>
   <form action="<?php echo $PHP_SELF; ?>" method="GET">
