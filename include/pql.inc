@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.178 2004-04-29 13:47:51 dlw Exp $
+// $Id: pql.inc,v 2.179 2004-05-06 15:33:33 turbo Exp $
 //
 
 // ----------------------------
@@ -284,6 +284,10 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 	  $ocs[] = '';
 
 	// -----
+	if($account_type == "group")
+	  $ocs[] = 'qmailgroup';
+
+	// -----
 	// Setup user entry variable
     foreach($attribs as $key => $value) {
 		// Check if we have a MUST in the objectclasses choosen
@@ -311,23 +315,25 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 			$MUST = $ldap[$oc]['MUST'];
 
 			foreach($entry as $attrib => $value) {
-				if(!is_array($value)) {
-					// Go through the MUST attributes for this objctclass,
-					// looking for an attribute we have NOT defined
-					for($i=0; isset($MUST[$i]); $i++)
-					  if(lc($MUST[$i]) == lc($attrib))
-						unset($MUST[$i]);
-					
-					// Before we rearrange the array, remove the count
-					// entry (othervise it's get renamed to a number).
-					unset($MUST['count']);
-					
-					// Rearrange the array
-					$MUST = array_values(array_unique($MUST));
-					
-					// Readd the count entry
-					$MUST['count'] = count($MUST);
+				// '$value' can be an array (such as 'mailAlternateAddress' etc),
+				// but we don't care. We're only interested in the attribute...
+
+				// Go through the MUST attributes for this objctclass,
+				// looking for an attribute we have NOT defined
+				for($i=0; isset($MUST[$i]); $i++) {
+					if(lc($MUST[$i]) == lc($attrib))
+					  unset($MUST[$i]);
 				}
+				
+				// Before we rearrange the array, remove the count
+				// entry (othervise it get's renamed to a number).
+				unset($MUST['count']);
+				
+				// Rearrange the array
+				$MUST = array_values(array_unique($MUST));
+				
+				// Readd the count entry
+				$MUST['count'] = count($MUST);
 			}
 			
 			if(!$MUST['count'])
@@ -335,23 +341,29 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 			  // isn't defined in the user object. Add this to the list
 			  // of objectclasses to add
 			  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = $oc;
-//			else {
-//				// Objectclass which have been removed from the list because
-//				// there's an MUST attribute missing
-//				echo "<b>Objectclass with missing attribute in MUST: $oc</b><br>";
-//				printr($MUST);
-//			}
+			else {
+				// Objectclass which have been removed from the list because
+				// there's an MUST attribute missing
+				echo "<b>Objectclass with missing attribute in MUST:</b> <u>$oc</u>";
+				printr($MUST);
+			}
 		}
 	}
 
 	// -----
 	// Create the RDN for the user
-	// NOTE: This will fail if:
-	//			1. cn is used to reference users with
-	//			2. cn isn't availible because 'person' objectclass isn't
-	//			   choosen as 'user creator'.
-	$userdn = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) . "=" .
-	          $entry[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)] . ",";
+	if($entry[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)])
+	  $userdn = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) . "=" .
+		$entry[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)] . ",";
+	elseif($entry[pql_get_define("PQL_ATTR_UID")])
+	  $userdn = pql_get_define("PQL_ATTR_UID")."=".$entry[pql_get_define("PQL_ATTR_UID")].",";
+	else {
+		echo "I can't figure out how to name the RDN!<br>";
+		echo "Both the user reference value (".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn);
+		echo ") and the backup reference (".pql_get_define("PQL_ATTR_UID").") is empty...<br>";
+		die("I have no idea how to continue from here...");
+	}
+
 	if($branch)
 	  $userdn .= urldecode($branch);
 	else
@@ -365,6 +377,9 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_user_add - user creation", $userdn, $entry);
 //die($LDIF);
+
+	if(file_exists("./.DEBUG_ME"))
+	  die($LDIF);
 
 	// -----
     // Add the user to the database
@@ -721,6 +736,9 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name) {
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_domain_add - create domain", $dn, $entry);
 
+	if(file_exists("./.DEBUG_ME"))
+	  die($LDIF);
+
     // adds the user
     if(! @ldap_add($ldap_linkid, $dn, $entry)) {
 		// Failed to add branch
@@ -801,6 +819,7 @@ function pql_domain_exist($ldap, $domain, $rootdn = '') {
 // }}}
 
 // {{{ pql_domain_get_value(ldap, dn, value, match, all)
+
 function pql_domain_get_value($ldap, $dn, $value, $match = '', $all = 0) {
 	$value = lc($value); $dn = urldecode($dn);
 
@@ -899,6 +918,7 @@ function pql_domain_get_value($ldap, $dn, $value, $match = '', $all = 0) {
 
 	return $results;
 }
+
 // }}}
 
 // {{{ pql_domain_set_value(linkid, dn, type, value)
@@ -1255,6 +1275,10 @@ function pql_replace_attribute($ldap_linkid, $objectdn, $attrib, $value) {
 	else
 	  $entry[$attrib] = pql_maybe_encode($value, $attrib, $ldap_linkid);
 
+	// Create a LDIF object to print in case of error
+	$LDIF = pql_create_ldif("pql_replace_attribute", $objectdn, $entry);
+//die($LDIF);
+
 	// replace the attribute
 	if(!@ldap_mod_replace($ldap_linkid, $objectdn, $entry)) {
 	    // if the value is empty (""), this causes an error in OpenLDAP 2.x, try to ldap_mod_del
@@ -1322,6 +1346,11 @@ function pql_get_next_ugidnumber($ldap, $type) {
 		$attrib = pql_get_define("PQL_ATTR_QMAILGID");
 		$minimum = pql_get_define("PQL_CONF_MINIMUM_GIDNUMBER");
 	}
+
+	// Just incase it's not defined, we set the minimum UID/GID
+	// number availible to a safe value.
+	if(!is_array($minimum))
+	  $minimum = array(100);
 
 	$min_id_val = 100;			// Set an absolute min so no one becomes root.
     foreach ($minimum as $min) {
@@ -1710,7 +1739,9 @@ function pql_get_rootdn($dn, $function = '') {
 		} elseif($counts < 1) {
 			// BUG! We don't have a hit!
 			echo "This is weird. We couldn't find the root dn for some reason. The DN we're trying to find a root DN for is: ";
-			echo "'$dn'.<p>$tracker";
+			echo "'$dn'.<p>$tracker<p>";
+			echo "Note that you <u><b>MUST</b></u> include exact details on how you got this error.";
+			echo "Every single mouse click etc - an URL won't suffice!";
 			die();
 		} else
 		  $dn = $DNs[0];
