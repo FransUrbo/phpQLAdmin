@@ -1,6 +1,41 @@
 phpQLAdmin 2.1 Change Log
 
 phpQLAdmin 2.1.2 TO BE ANNOUNCED
+	Bug fixes
+	  - De-globalization (in a LOT of places, to numeros to name!)
+	  - The whole thing that deals with cloning a QmailLDAP/Control object was faulty.
+	    It was never a FULL clone, just some 'randomly' choosen attributes (the ones
+	    I've choosen to extract from the object to clone). Instead retreive the WHOLE
+	    object, go through attributes and their value(s) and add the ones needed/wanted
+	    to the resulting array.
+	  - When cloning a QmailLDAP/Control object and 'include {locals,rcptHosts}' was
+	    choosen AND if locals/rcptHosts contain the FQDN of the cloned server, replace
+	    that with the FQDN of the new server.
+	  - Fix config_ldap.php->LDAP Server Configuration->LDAP Object classes. Now folds
+	    and unfolds the correct rows.
+	  - Fix and improve ACI generation and deletion. Now works better than ever
+	    thanx to include/attrib.{aci,administrator,modrdn}.inc rewrite.
+	  - Better support for old AND new style quota (at the same time).
+	  - Allow for multiple A/CNAME records in the DNS manager.
+	  - Make sure that the attribute we're using to reference users is retreived 
+	    (in the main 'retreival' section at the top). Just in case it isn't, we do
+	    it manually after all other values are retreived. If it isn't in the object,
+	    then we show a message that that's the case...
+            Closes bug 220.
+	  - More clever checking if {home,mail} directory is set or not (and auto generation
+	    if it isn't) . Some duplication of code removed...
+	  - Correctly ADD a new {user,branch}ObjectClass or passWordSchemes to existing
+	    values. Previosly overwrote (randomly) the previous value.
+	  - Allow for deleting the last of the 'passWordScheme', '{user,domain}ObjectClass'
+	    attributes...
+	    Closes bug 213.
+	  - Simplified and rewrite of showing QmailLDAP/Control frame or not.
+	  - Parse error(s) fixed
+	    Closes bug 214.
+	  - _SESSION[ADVANCED_MODE] isn't always known. If not, try _REQUEST[advanced].
+	  - If defaultquota{size,count} is unset, we set it to '0', so that the check
+	    after LDAP attribute retreival(s) is complete.
+
 	API changes
 	  - Removed the following functions because pql_search.inc:pql_search() can
 	    do the same job (with some modifications):
@@ -31,13 +66,33 @@ phpQLAdmin 2.1.2 TO BE ANNOUNCED
 	    + pql_control.inc:pql_control_remove_whole_attribute()
 	    + pql_control.inc:pql_control_remove_attribute()
 	    + pql_control.inc:pql_control_add_attribute()
+	    + Replaced a bunch of calls to pql_control_update_domains() (function still
+	      exists - it does a slightly different job).
 	  - Moved the following functions from pql.inc to pql_search.inc (and modified
 	    or rewrote it in the process):
 	    + pql_search_forwarders()
 	    + pql_email_exists()
 	    + pql_validate_administrator()
+	      - Rewrite - sligth change in param, added the attribute option so that
+	        we can check any other attribute than the 'administrator' (there's also
+	        the controlAdministrator and ezmlmAdministrator)...
+	      - Verifying what type (if at all) of administrator a user is is done
+	        in two steps for each root DN instead of one big chunk at the end
+	        (which was wrong anyway, since it checked the LAST root DN etc).
+	        A QmailLDAP/Control administrator can be located in two (three) places.
+	        1. In the root DN - administrator. If user is super admin, then he/she is
+	           also a QmailLDAP/Control administrator.
+	        2. In the root DN - controlAdministrator. (hm, I think that's a bug).
+	        3. In the Control DN object - controlAdministrator. (I think this is
+	           the correct place where that attribute should/can be).
 	    + pql_domain_get()
-	      Renamed to pql_get_domains() after rewrite/modifications.
+	      - Renamed to pql_get_domains() after rewrite/modifications.
+	      - Duplication of code removed - tried to 'find domains/branches below
+	        the top dn' twice. When getting domains, if the user subtree (ou=People
+	        for example) is defined and exists, we try to do a ONELEVEL search for
+	        more domains/branches there.
+	        After this, we look for branches in a ONELEVEL below the root DN. Bigger
+	        chance of actually getting all domains and/or branches...
 	    + pql_get_subschema()
 	    + pql_get_subschemas()
 	    + pql_get_rootdn()
@@ -61,6 +116,79 @@ phpQLAdmin 2.1.2 TO BE ANNOUNCED
 	    pql_write.inc:pql_modify_attribute().
 	    + Use the new pql_write.inc:pql_write_mod() function instead of duplicating
 	      the LDAP modification/write part.
+	  - Create a new CORE function: pql_write_add(). It supersedes the following
+	    functions (with some small adjustments):
+	    + pql_user_add() - now a 'wrapper' for pql_write_add(). It's still to
+	      specialized to remove completely. Changes to pql_user_add():
+	      - Change the third param from 'cn' to 'dn' - the RDN of the user object
+	        to be added.
+	      - If it's not a group object being added (i.e. must be a user), extract
+	        the object classes to use from the PQL_CONF_OBJECTCLASS_USER define.
+	        BUG: If creating a 'mail' account, and the object class is either
+	        'krb5principal' or 'trustaccount', then don't add those object
+	        classes. This bug should be fixed when pql_validate_object() works correctly.
+	      - Don't generate the user RDN here, it's now done in the tables/user_add-save.inc
+	        file (just before calling pql_user_add()).
+	    + Deleted pql_domain_add(). This lead to the following changes in domain_add.php:
+	      - Create the 'LDIF' before adding object. This means that it makes more sence
+	        of adding all the 'additional' branch attributes ('defaultDomain', 'baseHomeDir'
+	        and 'baseMailDir') directly, instead of adding the core object and THEN do
+	        a modify... Should be quicker this way.
+	      - Instead of just adding the creator as administrator of the domain, add all
+	        the super admins.
+	      - Slightly change the way pql_unit_add() is called. Call it with the dn we
+	        just created (the FQDN of the branch/domain) instead of just $_REQUEST["domain"]
+	        (which only contain the branch /name/ not a RDN). Also, call it directly
+	        with the DN of a subtree, not just the /name/ of the subtree.
+	      - Don't reference defaultQuota - I never specify that any where..
+	      - If we're debuging, don't redirect - die with message what we WOULD have done.
+	    + pql_unit_add() - now a 'wrapper' as well.
+	    + pql_websrv_add_server() - now a 'wrapper' as well.
+	  - Create a new function: pql_validate_object(). Most of this comes from
+	    include/pql_write.inc:pql_user_add(), but it's better suited in a separate
+	    function (it's now used by the pql_write_add() function).
+	  - Rewrite parts of pql_get_attribute() - now return as flat array/value as
+	    possible, not ALWAYS an array... This lead to a whole bunch of 'de-arraifying'.
+	  - It was possible for pql_split_oldvalues() to be called with empty option. Catch
+	    that by returning false...
+	  - A lot of pages used pql_validate_object(), pql_create_ldif() and/or
+	    ldap_{add,modify}() etc. With the API rewrite, there's better suited functions
+	    that can do this instead. Use them wherever possible.
+
+	GUI layout change
+	  - When finding user(s) in the search.php page, open any users found in a
+	    new browser. This because we don't have all the information to be able
+	    to link correctly in the main frame.
+	  - Allow for changing an in-addr.arpa zone in the DNS manager.
+	  - Make config details look like all the other - value to the left, edit
+	    URL to the right.
+	  - Simplify the generation of a webserver object - allow for creating DNS zone
+	    and host object.
+	  - The table row that showed the 'Minimum GID Number to be used for shell and
+	    system accounts' (in the config details/branch page) managed to get BEFORE
+	    the actual value retrieval resulting in an empty value being shown!
+	  - Draw a thicker border around the frames, so that it's easier to resize
+	    them in Mozilla (there's a bug in earlier Mozilla's).
+	  - Generate a quota string to be shown in tables/control_details-base.inc.
+	  - Duplication of information: 'Create <type> in domain <domain> - <TYPE> account'.
+	    No need for <type> (use only the <TYPE> value).
+
+	Misc changes	
+	  - Better debugging support. Don't die as soon as possible just because the
+	    .DEUG_ME file exists. Try to 'complete the mission' - create 'LDIF's for
+	    the whole task, not just the first object.
+	  - Lots of code duplication removed - use pql_format_table_single() all
+	    over the place.
+	    + pql_format_table_single() was trying to get an attribute for a object.
+	      If it's not a DN (such as it isn't when called in config_details.php),
+	      we got strange messages in the syslog (running slapd with some form of
+	      debugging).
+	    + In pql_format_table_single(), we must set username to the value we're
+	      called with if it's not a DN. Othervise we're shown a empty line.
+
+	Schema changes
+	  - The attribute 'minimumGIDNumber' wasn't added as a MAY in the 'phpQLAdminConfig'
+	    object class definition.
 
 phpQLAdmin 2.1.1 Release (Oct 16 2004)
 	Bug fixes
@@ -316,3 +444,5 @@ phpQLAdmin 2.1.1 Release (Oct 16 2004)
 	  - Replace the array_values(array_unique()) combo with the 'new' pql_uniq()
 	    function.
 	  - Update the qmailControl.schema file...
+
+[all changelog for the 2.0 branch is removed - get a 2.0 version if you really must know]
