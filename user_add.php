@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.112 2005-02-01 08:39:32 turbo Exp $
+// $Id: user_add.php,v 2.113 2005-02-04 09:26:57 turbo Exp $
 //
 // {{{ Setup session etc
 session_start();
@@ -365,12 +365,12 @@ switch($_REQUEST["page_curr"]) {
 			// Function user_generate_mailstore() doesn't exists but we have a base mail directory.
 			// Try creating the mail directory manually, using the username.
 
-			if(pql_get_define("PQL_ATTR_ALLOW_ABSOLUTE_PATH", $_REQUEST["rootdn"]))
-			  // We're not allowing an absolute path - don't use the baseMailDir.
-			  $_REQUEST["maildirectory"] = $_REQUEST["uid"]."/";
-			else
+			if(pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["rootdn"]))
 			  // Absolute path is ok - create 'baseMailDir/username/'
 			  $_REQUEST["maildirectory"] = $basemaildir.$_REQUEST["uid"]."/";
+			else
+			  // We're not allowing an absolute path - don't use the baseMailDir.
+			  $_REQUEST["maildirectory"] = $_REQUEST["uid"]."/";
 		  }
 
 		  if($_REQUEST["maildirectory"])
@@ -404,9 +404,17 @@ switch($_REQUEST["page_curr"]) {
 			$_REQUEST["homedirectory"] = user_generate_homedir($_pql, $_REQUEST["email"], $_REQUEST["domain"],
 															   array(pql_get_define("PQL_ATTR_UID") => $reference),
 															   'user');
-		  } else
-			// Function user_generate_homedir() doesn't exists. Try manually
-			$_REQUEST["homedirectory"] = $basehomedir.$_REQUEST["uid"]."/";
+		  } else {
+			// Function user_generate_homedir() doesn't exists but we have a base home directory.
+			// Try creating the home directory manually, using the username.
+
+			if(pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["rootdn"]))
+			  // Absolute path is ok - create 'baseHomeDir/username/'
+			  $_REQUEST["homedirectory"] = $basehomedir.$_REQUEST["uid"]."/";
+			else
+			  // We're not allowing an absolute path - don't use the baseHomeDir.
+			  $_REQUEST["homedirectory"] = $_REQUEST["uid"]."/";
+		  }
 			
 		  if($_REQUEST["homedirectory"]) {
 			// Replace space(s) with underscore(s)
