@@ -77,6 +77,8 @@ $domainname = pql_get_domain_value($_pql, $domain, 'o');
 if(!$domainname) {
 	$domainname = "<a href=\"domain_edit_attributes.php?type=modify&attrib=o&rootdn=$rootdn&domain=$domain\">".PQL_LANG_UNSET."</a>";
 }
+
+$additionaldomainname = pql_get_domain_value($_pql, $domain, "additionaldomainname");
 ?>
   <span class="title1">Organization: <?=urldecode($domainname)?></span>
 <?php
@@ -100,7 +102,37 @@ if($ADVANCED_MODE == 1) {
         <td><?php if($defaultdomain){echo $defaultdomain;}else{echo PQL_LANG_UNSET;} ?></td>
         <td><?=$defaultdomain_link?></td>
       </tr>
-  
+
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Additional domain name(s)</td>
+<?php if(is_array($additionaldomainname)) {
+		$new_tr = 0;
+		foreach($additionaldomainname as $additional) {
+			if($new_tr) {
+?>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title"></td>
+<?php		} ?>
+        <td><?=$additional?></td>
+        <td>
+          <a href="domain_edit_attributes.php?attrib=<?=lc($PQL_ATTRIBUTE["PQL_CONF_ADDITIONAL_DOMAIN_NAME"])?>&rootdn=<?=$rootdn?>&domain=<?=$domain?>&<?=lc($PQL_ATTRIBUTE["PQL_CONF_ADDITIONAL_DOMAIN_NAME"])?>=<?=$additional?>&submit=3&action=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify <?=lc($PQL_ATTRIBUTE["PQL_CONF_ADDITIONAL_DOMAIN_NAME"])?> for <?=$domain?>"></a>
+          <a href="domain_edit_attributes.php?attrib=<?=lc($PQL_ATTRIBUTE["PQL_CONF_ADDITIONAL_DOMAIN_NAME"])?>&rootdn=<?=$rootdn?>&domain=<?=$domain?>&delval=<?=$additional?>&submit=4&action=delete"><img src="images/del.png" width="12" height="12" alt="Delete additional domain name" border="0"></a>
+        </td>
+<?php		$new_tr = 1;
+		} // if new_tr
+?>
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title"></td>
+        <td colspan="4">
+          <a href="domain_edit_attributes.php?attrib=<?=lc($PQL_ATTRIBUTE["PQL_CONF_ADDITIONAL_DOMAIN_NAME"])?>&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add">Add additional domain name</a>
+        </td>
+      </tr>
+<?php } else { ?>
+        <td colspan="4">
+          <a href="domain_edit_attributes.php?attrib=<?=lc($PQL_ATTRIBUTE["PQL_CONF_ADDITIONAL_DOMAIN_NAME"])?>&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add">Add additional domain name</a>
+        </td>
+<?php } ?>
+
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?=PQL_LANG_DOMAIN_DEFAULT_HOMEDIR?></td>
         <td><?php if($basehomedir){echo $basehomedir;}else{echo PQL_LANG_UNSET;} ?></td>
@@ -129,8 +161,7 @@ if($ADVANCED_MODE == 1) {
 <?php } ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?=PQL_LANG_DOMAIN_ADMIN_TITLE?></td>
-<?php
-	if(is_array($admins)) {
+<?php if(is_array($admins)) {
 		$new_tr = 0;
 		foreach($admins as $admin) {
 			$username = pql_get_userattribute($_pql->ldap_linkid, $admin, 'cn');
@@ -143,9 +174,7 @@ if($ADVANCED_MODE == 1) {
 ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"></td>
-<?php
-			}
-?>
+<?php		} ?>
         <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$admin?>"><?=urldecode($username)?></a></td>
         <td>
           <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&administrator=<?=$admin?>&submit=3&action=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify administrators for <?=$domain?>"></a>

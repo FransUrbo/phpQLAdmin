@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.67 2003-05-04 08:46:14 turbo Exp $
+// $Id: pql.inc,v 2.68 2003-05-06 06:38:37 turbo Exp $
 //
 
 // ----------------------------
@@ -245,7 +245,7 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_user_add - user creation", $userdn, $entry);
-
+die($LDIF);
 	// -----
     // Add the user to the database
     if(! ldap_add($ldap_linkid, $userdn, $entry)){
@@ -1404,7 +1404,8 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '') {
 	// Go through the result, if there is any
 	for($i=0; $i < $result["count"]; $i++) {
 		// Extract all the descriptor fields
-		if((($value == 'administrator') or ($value == 'seealso')) and ($match != "*")) {
+		if((($value == 'administrator') or ($value == 'seealso') or ($value == 'additionaldomainname'))
+		   and ($match != "*")) {
 			// Return multiple values. If we're looking for 'administrator', return the DN
 			for($j=0; $j < $result[$i][$value]["count"]; $j++) {
 				// Filter out the top dn, we don't want that in the domain/branch list...
@@ -1415,7 +1416,7 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '') {
 					$success = 1;
 				}
 			}
-		} elseif(($value == 'administrator') or ($value == 'seealso')) {
+		} elseif(($value == 'administrator') or ($value == 'seealso') or ($value == 'additionaldomainname')) {
 			for($j=0; $j < $result[0][$value]["count"]; $j++) {
 				$results[] = $result[0][$value][$j];
 				$success = 1;
@@ -1435,11 +1436,12 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '') {
 		}
 	} // end for($i)
 
-	if(!$success and (($value != 'administrator') and ($value != 'seealso'))) {
+	if(!$success and (($value != 'administrator') and ($value != 'seealso') or ($value == 'additionaldomainname'))) {
 		return;
 	}
 
-	if($success and (($value == 'administrator') or ($value == 'seealso')) and !is_array($results)) {
+	if($success and (($value == 'administrator') or ($value == 'seealso') or ($value == 'additionaldomainname'))
+	   and !is_array($results)) {
 		// Convert a flat variable to a array
 		$tmp = $results; unset($results);
 		$results[] = $tmp;

@@ -9,7 +9,7 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 // forward back to users detail page
 function attribute_forward($msg){
-    global $domain, $user;
+    global $domain, $user, $rootdn;
 
     $msg = urlencode($msg);
 	if($user)
@@ -67,6 +67,9 @@ switch($attrib){
   case "postofficebox":
     $include = "attrib.outlook.inc";
     break;
+  case "additionaldomainname":
+	$include = "attrib.additionaldomainname.inc";
+	break;
   default:
     die("unknown attribute");
 }
