@@ -93,47 +93,51 @@ include("./header.html");
 	<td class="<?php table_bgcolor(); ?>"><?php echo $connection_control; ?>&nbsp;</td>
 </tr>
 
+<?php
+if($ADVANCED_MODE == 1) {
+?>
 <tr></tr>
 
 <tr>
 	<td class="title">LDAP server contains phpQLAdminConfig objectclass</td>
 <?php
-if(pql_get_subschemas($_pql->ldap_linkid, "phpQLAdminConfig")) {
+	if(pql_get_subschemas($_pql->ldap_linkid, "phpQLAdminConfig")) {
 ?>
 	<td class="<?php table_bgcolor(); ?>">Yes, it does&nbsp;</td>
 <?php
-} else {
+	} else {
 ?>
 	<td class="<?php table_bgcolor(); ?>">No, it doesn't. Please load <a href="phpQLAdmin.schema">phpQLAdmin.schema</a>&nbsp;</td>
 <?php
-}
+	}
 ?>
 </tr>
 <tr>
 	<td class="title">LDAP server contains phpQLAdminBranch objectclass</td>
 <?php
-if(pql_get_subschemas($_pql->ldap_linkid, "phpQLAdminBranch")) {
+	if(pql_get_subschemas($_pql->ldap_linkid, "phpQLAdminBranch")) {
 ?>
 	<td class="<?php table_bgcolor(); ?>">Yes, it does&nbsp;</td>
 <?php
-} else {
+	} else {
 ?>
 	<td class="<?php table_bgcolor(); ?>">No, it doesn't. Please load <a href="phpQLAdmin.schema">phpQLAdmin.schema</a>&nbsp;</td>
 <?php
-}
+	}
 ?>
 </tr>
 <tr>
     <td class="title">LDAP server contains schema for <a href="http://www.ietf.org/rfc/rfc2377.txt" target="_new">RFC 2377</a></td>
 <?php
-if(pql_get_subschemas($_pql->ldap_linkid, "dcOrganizationNameForm")) {
+	if(pql_get_subschemas($_pql->ldap_linkid, "dcOrganizationNameForm")) {
 ?>
 	<td class="<?php table_bgcolor(); ?>">Yes, it does&nbsp;</td>
 <?php
-} else {
+	} else {
 ?>
 	<td class="<?php table_bgcolor(); ?>">No, it doesn't. Please load <a href="rfc2377.schema">rfc2377.schema</a>&nbsp;</td>
 <?php
+	}
 }
 ?>
 </tr>
