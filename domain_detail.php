@@ -31,6 +31,10 @@ if(isset($rlnb) and pql_get_define("PQL_GLOB_AUTO_RELOAD")) {
 
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
+// Make sure we can have a ' in branch (also affects the user DN).
+$user   = eregi_replace("\\\'", "'", $user);
+$domain = eregi_replace("\\\'", "'", $domain);
+
 // check if domain exist
 if(!pql_domain_exist($_pql, $domain)) {
     echo "Domain &quot;$domain&quot; does not exists<br><br>";

@@ -7,6 +7,10 @@ require("./include/pql_config.inc");
 
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
+// Make sure we can have a ' in branch (also affects the user DN).
+$user   = eregi_replace("\\\'", "'", $user);
+$domain = eregi_replace("\\\'", "'", $domain);
+
 if(!$rootdn) {
 	$rootdn = pql_get_rootdn($user);
 }
