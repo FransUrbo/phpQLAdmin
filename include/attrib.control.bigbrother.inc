@@ -2,7 +2,7 @@
 // control attribute plugin for
 // bigbrother (max number of bytes in message)
 //
-// $Id: attrib.control.bigbrother.inc,v 2.3 2004-10-15 15:23:02 turbo Exp $
+// $Id: attrib.control.bigbrother.inc,v 2.4 2004-10-16 09:44:08 turbo Exp $
 
 // {{{ bigbrother_check(type)
 function bigbrother_check($type) {
@@ -39,8 +39,8 @@ function bigbrother_print_view($host) {
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="2" align="left">bigbrother (<?=$LANG->_('Global mail forwarding/surveillance')?>)
       <tr class="title">
-        <td><?=$LANG->_('Mail sent to')?></td>
-        <td><?=$LANG->_('Forward to')?></td>
+        <td><?=$LANG->_('Mail sent to/from')?></td>
+        <td><?=$LANG->_('Copy to')?></td>
       </tr>
 <?php
 	if(!is_array($_REQUEST["bigbrother"])) {
@@ -75,32 +75,42 @@ function bigbrother_print_view($host) {
 function bigbrother_print_form() {
 	global $error, $LANG;
 
-	if(($_REQUEST["bbcount"] < count($_REQUEST["bigbrother"]) - 1) and count($_REQUEST["qmqpservers"]) != 0)
-	  $_REQUEST["bbcount"] = count($_REQUEST["bigbrother"]) - 1;
+//	if(($_REQUEST["bbcount"] < count($_REQUEST["bigbrother"]) - 1) and count($_REQUEST["bbmail"]) != 0)
+//	  $_REQUEST["bbcount"] = count($_REQUEST["bigbrother"]) - 1;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">bigbrother (<?=$LANG->_('_CHANGE THIS_')?>)</th>
+      <th colspan="2" align="left">bigbrother (<?=$LANG->_('Global mail forwarding/surveillance')?>)</th>
         <tr class="title">
-          <td><?=$LANG->_('IP Address')?></td>
+          <td><?=$LANG->_('Mail sent to/from')?></td>
+          <td><?=$LANG->_('Copy to')?></td>
         </tr>
 
+<?php if(is_array($_REQUEST["bigbrother"])) {
+		for($i=0; $_REQUEST["bigbrother"][$i]; $i++) {
+			$line = split(':', $_REQUEST["bigbrother"][$i]);
+?>
         <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["bigbrother_0"]); ?><input type="text" name="qmqpservers[0]" value="<?=$_REQUEST["qmqpservers"][0]?>"></td>
+          <td><input type="text" name="bbmail_to[<?=$i?>]" value="<?=$line[0]?>"></td>
+          <td><input type="text" name="bbmail_cpy[<?=$i?>]" value="<?=$line[1]?>"></td>
         </tr>
 
-<?php for($i = 1; $i <= $_REQUEST["bbcount"]; $i++) { ?>
+<?php	}
+	  } else {
+		  $i=0;
+	  }
+?>
         <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["bigbrother_$i"]); ?><input type="text" name="qmqpservers[<?=$i?>]" value="<?=$_REQUEST["qmqpservers"][$i]?>"></td>
-        </tr>
-
-<?php } ?>
-        <tr class="subtitle">
-          <td><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&bbcount=<?=($_REQUEST["bbcount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
+          <td><input type="text" name="bbmail_to[0]"></td>
+          <td><input type="text" name="bbmail_cpy[0]"></td>
         </tr>
 
         <tr class="subtitle">
-          <td><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('To delete a QMQP server remove the value and save')?>.</td>
+          <td colspan="2"><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&bbcount=<?=($_REQUEST["bbcount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
+        </tr>
+
+        <tr class="subtitle">
+          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('To delete an address for surveillance, remove the value and save')?>.</td>
         </tr>
       </th>
     </table>
@@ -124,10 +134,12 @@ function bigbrother_save($type, $host)  {
 	  case "modify";
 	  case "add";
 		// save entries
+		for($i=0; $_REQUEST["bbmail_to"][$i] and $_REQUEST["bbmail_cpy"][$i]; $i++)
+		  $entry[] = $_REQUEST["bbmail_to"][$i] . ":" . $_REQUEST["bbmail_cpy"][$i];
+
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
 										 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-										 pql_get_define("PQL_ATTR_BIGBROTHER"),
-										 $_REQUEST["bigbrother"]))
+										 pql_get_define("PQL_ATTR_BIGBROTHER"), $entry))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('bigbrother options')));
 		else
@@ -152,7 +164,7 @@ function bigbrother_help() {
     This file is only used if BIGBROTHER was defined in the Makefile.
     For ISP that need to implement some surveillance method because of some
     beloved authoroties (like here in switzerland), you can enable a per
-    address queue extra feature. To automatically forward all mail to and from
+    address queue extra feature. To automatically send a copy of all mail to and from
     badguy@badplace.ch to bigbrother@admin.ch you need to add followong line to
     ~control/bigbrother: <u>badguy@badplace.ch:bigbrother@admin.ch</u>.<br>
     The address <b>bigbrother@admin.ch</b> can be a local, ldap or remote address.<br>
