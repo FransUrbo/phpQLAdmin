@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.47 2004-02-27 12:12:03 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.48 2004-03-02 17:01:18 dlw Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -219,7 +219,7 @@ function user_generate_homedir($ldap, $email, $dn, $entry, $type) {
 // (string)		name	 		- 	name
 // (string)		email			-	complete email-address
 // (string)		domain			-	branch in which you create the user
-// (string)		account_type	-	Chosen account type; "normal" or "forward"  
+// (string)		account_type	-	Chosen account type; "mail" or "forward"  
 //
 // Returns: (string) suggested uid; may be changed by the user
 function user_generate_uid($ldap, $surname, $name, $email, $domain, $account_type) {
@@ -243,7 +243,7 @@ function user_generate_uid($ldap, $surname, $name, $email, $domain, $account_typ
 // (string)		lastname 		- 	lastname
 // (string)		domainname		-	A domain name in the form 'domain.tld'
 // (string)		domain			-	branch in which you create the user
-// (string)		account_type	-	Chosen account type; "normal" or "forward"  
+// (string)		account_type	-	Chosen account type; "mail" or "forward"  
 //
 // Returns: (string) suggested email address
 function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $domain, $account_type) {

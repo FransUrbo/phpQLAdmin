@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-additional.inc,v 1.9 2004-03-01 10:46:49 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.10 2004-03-02 17:01:11 dlw Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <input type="hidden" name="surname" value="<?=$_REQUEST["surname"]?>">
     <input type="hidden" name="name" value="<?=$_REQUEST["name"]?>">
@@ -33,7 +33,7 @@
 <?php } ?>
         </tr>
 
-<?php if($_REQUEST["account_type"] == "normal" or $_REQUEST["account_type"] == "system") {
+<?php if($_REQUEST["account_type"] == "mail" or $_REQUEST["account_type"] == "system") {
 		// display forms for SYSTEM/MAIL account(s)
 ?>
         <input type="hidden" name="loginshell" value="<?=$_REQUEST["loginshell"]?>">

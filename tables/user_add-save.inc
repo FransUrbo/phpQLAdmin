@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.6 2004-02-27 12:19:39 turbo Exp $
+// $Id: user_add-save.inc,v 1.7 2004-03-02 17:01:11 dlw Exp $
 
 // Find out what objectclasses to use when creating user
 $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"]));
@@ -71,7 +71,7 @@ if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "she
 
 // ------------------
 if($_REQUEST["account_type"] != "forward") {
-	if($_REQUEST["account_type"] != "normal") {
+	if($_REQUEST["account_type"] != "mail") {
 		if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_GLOB_ATTR_UID")) {
 			// Get a free UserID number (which we also use for GroupID number)
 			$uidnr = pql_get_next_ugidnumber($_pql, 'uid');
@@ -123,7 +123,7 @@ if($_REQUEST["account_type"] != "forward") {
 	
 	if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_GLOB_ATTR_UID")) {
 		if(!$_REQUEST["homedirectory"]) {
-			if(($_REQUEST["account_type"] == "normal") and !$_SESSION["ADVANCED_MODE"])
+			if(($_REQUEST["account_type"] == "mail") and !$_SESSION["ADVANCED_MODE"])
 			  // It's a mail account, and we where/is not running in
 			  // advanced mode. Use the maildirectory as homedirectory.
 			  $entry[pql_get_define("PQL_GLOB_ATTR_HOMEDIR")] = user_generate_mailstore($_pql, $_REQUEST["email"],
@@ -139,7 +139,7 @@ if($_REQUEST["account_type"] != "forward") {
 }
 
 // ------------------
-if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "normal")) {
+if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "mail")) {
 	// normal mailbox account
 	
 	if($_REQUEST["userhost"])
