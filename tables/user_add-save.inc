@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.16.4.2.2.4 2004-05-05 07:57:15 turbo Exp $
+// $Id: user_add-save.inc,v 1.16.4.2.2.5 2004-05-05 09:46:59 turbo Exp $
 
 // ============================================================================================
 // ============== PREPARE THE USERS ATTRIBUTE(S)
@@ -188,8 +188,7 @@ if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "mai
 	  $entry[pql_get_define("PQL_ATTR_MAILSTORE")] .= "/";
 	
 	// -----------------
-	$res = pql_check_attribute($objectclasses_schema, $objectclasses_included, pql_get_define("PQL_ATTR_HOMEDIR"));
-	if(($_REQUEST["account_type"] == "system") or $res[0]) {
+	if(($_REQUEST["account_type"] == "system") or in_array('posixaccount', $objectclasses_included)) {
 		// Add home directory to the entry array
 		if(!$_REQUEST["homedirectory"]) {
 			if(($_REQUEST["account_type"] == "mail") and !$_SESSION["ADVANCED_MODE"])
