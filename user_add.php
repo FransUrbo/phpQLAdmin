@@ -689,7 +689,7 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 			// TODO: dns[1] (the group object) might still be empty -> failed to add it.
 
 			// Now it's time to run the special adduser script if defined...
-			if(PQL_EXTRA_SCRIPT_CREATE_USER) {
+			if(defined("PQL_EXTRA_SCRIPT_CREATE_USER")) {
 				// Setup the environment with the user details
 				putenv("PQL_DOMAIN=$domain");
 				putenv("PQL_WEBUSER=".posix_getuid());
@@ -721,7 +721,7 @@ echo PQL_LDAP_DELIVERYMODE_PROFILE . " " . PQL_LDAP_DELIVERYMODE_PROFILE_FORWARD
 				$url .= "domain=$domain&user=" . urlencode($dns[0]) . "&rlnb=2&msg=$msg";
 			}
 
-			if(PQL_EXTRA_SCRIPT_CREATE_USER) {
+			if(defined("PQL_EXTRA_SCRIPT_CREATE_USER")) {
 ?>
     <form action="<?=$url?>" method="post">
       <input type="submit" value="Continue">

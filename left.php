@@ -112,7 +112,7 @@ if(is_array($domains)){
   <div id="el<?=$j?>Child" class="child">
 <?php
       // iterate trough all users
-      if(PQL_SHOW_USERS) {
+      if(defined("PQL_SHOW_USERS")) {
 	  // Zero out the variables, othervise we won't get users in
 	  // specified domain, but also in the PREVIOUS domain shown!
 	  $users = ""; $cns = "";

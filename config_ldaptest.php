@@ -38,7 +38,7 @@ if(!function_exists("ldap_connect")){
 	}
 
 
-	if(PQL_LDAP_CONTROL_USE){
+	if(defined("PQL_LDAP_CONTROL_USE")) {
 		// control directory connection
 		$_pql_control = new pql_control($USER_HOST, '', '', true);
 		if(!$_pql_control->connect($USER_HOST)) {

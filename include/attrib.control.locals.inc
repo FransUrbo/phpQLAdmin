@@ -2,7 +2,7 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.5 2003-01-16 14:58:38 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.6 2003-01-23 08:01:54 turbo Exp $
 
 function locals_check($type){
     global $error, $locals;
@@ -66,7 +66,7 @@ function locals_print_view($host) {
         } // end foreach
     } // end if is_array
 
-    if(PQL_LDAP_CONTROL_AUTOADDLOCALS){
+    if(defined("PQL_LDAP_CONTROL_AUTOADDLOCALS")) {
 ?>
       <tr class="subtitle">
         <td><a href="control_edit_attribute.php?attrib=locals&type=replicate&host=<?=$host?>&submit=1"><img src="images/edit.png" width="12" height="12" border="0" alt="replicate">Click here to start replication manually</a></td>
@@ -100,7 +100,7 @@ function locals_print_form(){
     global $attrib, $PHP_SELF, $error, $locals, $localcount;
     
     // if automatic replication is enabled, don't display form
-    if(PQL_LDAP_CONTROL_AUTOADDLOCALS){
+    if(defined("PQL_LDAP_CONTROL_AUTOADDLOCALS")) {
 		return false;
     }
     

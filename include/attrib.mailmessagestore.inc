@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailmessagestore (path to mailbox)
-// $Id: attrib.mailmessagestore.inc,v 2.3 2003-01-16 14:58:38 turbo Exp $
+// $Id: attrib.mailmessagestore.inc,v 2.4 2003-01-23 08:01:55 turbo Exp $
 
 function attribute_check($type){
 	global $mailmessagestore, $domain, $oldvalue, $_pql, $error;
@@ -13,7 +13,7 @@ function attribute_check($type){
 	}
 	
 	// check for absolute paths
-	if(PQL_ALLOW_ABSOLUTE_PATH != true and preg_match("/^\//", $mailmessagestore)){
+	if(!defined("PQL_ALLOW_ABSOLUTE_PATH") and preg_match("/^\//", $mailmessagestore)) {
 		$error["general"] = PQL_LDAP_MAILMESSAGESTORE_ABSOLUTE_NOTALLOWED . "<br>";
 		return false;
 	}

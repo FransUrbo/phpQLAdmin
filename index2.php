@@ -13,7 +13,7 @@ if(isset($advanced)) {
 ?>
   <frameset cols="250,*" rows="*" border="1" frameborder="0">
 <?php
-	if(PQL_LDAP_EZMLM_USE or PQL_LDAP_CONTROL_USE) {
+	if(defined("PQL_LDAP_EZMLM_USE") or defined("PQL_LDAP_CONTROL_USE")) {
 ?>
     <frameset cols="*" rows="60%,*" border="1" frameborder="0">
 <?php
@@ -21,35 +21,35 @@ if(isset($advanced)) {
 ?>
       <frame src="left.php?advanced=1" name="pqlnav">
 <?php
-	if(PQL_LDAP_EZMLM_USE and PQL_LDAP_CONTROL_USE) {
+	if(defined("PQL_LDAP_EZMLM_USE") and defined("PQL_LDAP_CONTROL_USE")) {
 ?>
       <frameset cols="*" rows="50%,*" border="1" frameborder="0">
 <?php
 	}
 
-	if(PQL_LDAP_CONTROL_USE) {
+	if(defined("PQL_LDAP_CONTROL_USE")) {
 ?>
         <frame src="left-control.php" name="pqlnavctrl">
 <?php
 	}
 
-	if(PQL_LDAP_EZMLM_USE) {
+	if(defined("PQL_LDAP_EZMLM_USE")) {
 ?>
         <frame src="left-ezmlm.php" name="pqlnavezmlm">
 <?php
 	}
-	if(PQL_LDAP_EZMLM_USE and PQL_LDAP_CONTROL_USE) {
+	if(defined("PQL_LDAP_EZMLM_USE") and defined("PQL_LDAP_CONTROL_USE")) {
 ?>
       </frameset>
 <?php
 	}
 
-	if(PQL_LDAP_CONTROL_USE) {
+	if(defined("PQL_LDAP_CONTROL_USE")) {
 ?>
       <frame src="left-control.php" name="pqlnavctrl">
 <?php
 	}
-	if(PQL_LDAP_EZMLM_USE or PQL_LDAP_CONTROL_USE) {
+	if(defined("PQL_LDAP_EZMLM_USE") or defined("PQL_LDAP_CONTROL_USE")) {
 ?>
     </frameset>
 <?php

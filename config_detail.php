@@ -25,49 +25,49 @@ if(isset($rlnb) and PQL_AUTO_RELOAD) {
 <?php
 }
 
-if(PQL_SHOW_USERS){
+if(defined("PQL_SHOW_USERS")){
     $show_users = "yes";
 } else {
     $show_users = "no";
 }
 
-if(PQL_AUTO_RELOAD){
+if(defined("PQL_AUTO_RELOAD")){
     $auto_reload = "yes";
 } else {
     $auto_reload = "no";
 }
 
-if(PQL_LDAP_CONTROL_USE){
+if(defined("PQL_LDAP_CONTROL_USE")){
     $control_use = "yes";
 } else {
     $control_use = "no";
 }
 
-if(PQL_LDAP_CONTROL_AUTOADDLOCALS){
+if(defined("PQL_LDAP_CONTROL_AUTOADDLOCALS")){
     $control_autoaddlocals = "yes";
 } else {
     $control_autoaddlocals = "no";
 }
 
-if(PQL_ALLOW_ABSOLUTE_PATH){
+if(defined("PQL_ALLOW_ABSOLUTE_PATH")){
     $allow_absolute_path = "yes";
 } else {
     $allow_absolute_path = "no";
 }
 
-if(PQL_LDAP_CHANGE_SERVER){
+if(defined("PQL_LDAP_CHANGE_SERVER")){
     $allow_change_server = "yes";
 } else {
     $allow_change_server = "no";
 }
 
-if(PQL_LDAP_EZMLM_USE){
+if(defined("PQL_LDAP_EZMLM_USE")){
     $ezmlm_use = "yes";
 } else {
     $ezmlm_use = "no";
 }
 
-if(PQL_VERIFY_DELETE){
+if(defined("PQL_VERIFY_DELETE")){
     $verify_delete = "yes";
 } else {
     $verify_delete = "no";
@@ -110,7 +110,7 @@ foreach($_pql->ldap_basedn as $dn) {
 </tr>
 
 <?php
-	if(PQL_LDAP_CONTROL_USE) {
+	if(defined("PQL_LDAP_CONTROL_USE")) {
 ?>
 <tr>
 	<td class="title">LDAP control base dn</td>
@@ -120,7 +120,7 @@ foreach($_pql->ldap_basedn as $dn) {
 </tr>
 <?php
 	}
-	if(defined(PQL_DEFAULT_PATH)) {
+	if(defined("PQL_DEFAULT_PATH")) {
 ?>
 <tr>
 	<td class="title">Default mailbox path</td>
@@ -248,7 +248,7 @@ foreach($_pql->ldap_basedn as $dn) {
         <td class="<?=$class?>"></td>
 </tr>
 <?php
-		if(defined(PQL_LDAP_OBJECTCLASS_USER_EXTRA)) {
+		if(defined("PQL_LDAP_OBJECTCLASS_USER_EXTRA")) {
 		    $new_tr = 0;
 		    $objectclasses = split(" ", PQL_LDAP_OBJECTCLASS_USER_EXTRA);
 		    foreach($objectclasses as $oc) {

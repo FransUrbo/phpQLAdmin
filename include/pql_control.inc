@@ -4,27 +4,15 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.4 2003-01-16 14:58:38 turbo Exp $
+// $Id: pql_control.inc,v 2.5 2003-01-23 08:01:55 turbo Exp $
 //
 // version history:
 // $Log: pql_control.inc,v $
-// Revision 2.4  2003-01-16 14:58:38  turbo
-// * Completly redesigned how LDAP objects (users, domains etc) are referenced.
-//   To make sure that we don't mix similarly named users in different RDN's,
-//   we reference them with there full RDN. This forced almost all functions in
-//   the API to change how they are called. We don't need the 'basedn', because
-//   there is none. Also, most of the time the 'domain' variable was used to build
-//   the DN where we did searches from. This is no longer needed, since the 'domain'
-//   is now the RDN of the domain, instead of just a fraction of it.
-// * Renamed the following function (I think the new name sounds better :)
-// 	pql_add_user()    to pql_user_add()
-// 	pql_remove_user() to pql_user_del()
-// 	pql_add_domain()  to pql_domain_add()
-// 	pql_remove_user() to pql_domain_del()
-// * Changed '<?php echo ... ?>' to '<?=...?>' in some places
-// * Removed USER_SEARCH_DN_USR (and GLOBALS["USER_SEARCH_DN_USR"])
-// * Run files through 'dos2unix' to remove ^M
-// * urlencode() 'Outlook values'
+// Revision 2.5  2003-01-23 08:01:55  turbo
+// To make sure we really check for a define, we don't do "if(PQL_DEFINE)" but
+// use "if(defined(PQL_DEFINE))" which is correct. If the define wasn't defined
+// at all (ie, uncommented not just set to true/false etc) we'd get an error with
+// the first string...
 //
 // Revision 1.2  2001/09/06 11:36:24  mb
 // added no_connect option to pql_control-class
@@ -75,7 +63,7 @@ class pql_control extends pql {
     function pql_control($host, $binddn = "", $bindpw = "", $no_connect = false){
 		// call constructor of parent class
 	
-		if(PQL_LDAP_CONTROL_USE == false){
+		if(!defined("PQL_LDAP_CONTROL_USE")) {
 			// control patch is not enabled, leave
 			return false;
 		}
@@ -214,12 +202,12 @@ function pql_control_remove_whole_attribute($ldap_linkid, $ldap_control_basedn, 
 function pql_control_update_domains($ldap_linkid, $ldap_basedn, $ldap_control_linkid, $ldap_control_basedn, $host = ""){
     // replicate all registred domains to locals
     
-    if(PQL_LDAP_CONTROL_USE == false){
+    if(!defined("PQL_LDAP_CONTROL_USE")) {
 		// control patch is not enabled
 		return false;
     }
     
-    if(PQL_LDAP_CONTROL_AUTOADDLOCALS == false){
+    if(!defined("PQL_LDAP_CONTROL_AUTOADDLOCALS")) {
 		// do not replicate by myself, this is sysadmin's problem for now :)
 		return false;
     }
@@ -256,7 +244,7 @@ function pql_control_update_domains($ldap_linkid, $ldap_basedn, $ldap_control_li
 		}
 	}
 	
-    if(PQL_LDAP_CONTROL_AUTOADDLOCALS == true) {
+    if(defined("PQL_LDAP_CONTROL_AUTOADDLOCALS")) {
 		$entry[] = "localhost";
     }
 

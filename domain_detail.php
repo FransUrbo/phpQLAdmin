@@ -5,7 +5,7 @@
 session_start();
 require("./include/pql_config.inc");
 
-if(defined(PQL_LDAP_CONTROL_USE)) {
+if(defined("PQL_LDAP_CONTROL_USE")) {
     // include control api if control is used
     include("./include/pql_control.inc");
     $_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
@@ -380,7 +380,7 @@ if($ADVANCED_MODE == 1) {
   <br><br>
 
 <?php
-	if(defined(PQL_LDAP_CONTROL_USE)) {
+	if(defined("PQL_LDAP_CONTROL_USE")) {
 		if(pql_control_search_attribute($_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR, "locals", $defaultdomain)){
 			$locals = PQL_YES;
 			if(!defined(PQL_LDAP_CONTROL_AUTOADDLOCALS)) {

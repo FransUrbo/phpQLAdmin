@@ -67,7 +67,7 @@ if(isset($submit)) {
 	// if(($ADVANCED_MODE == 1) && ($USER_BASE == 'everything')){
 	if($ADVANCED_MODE == 1) {
 	    // Should we show the 'change server' choices
-	    if(PQL_LDAP_CHANGE_SERVER and eregi(" ", PQL_LDAP_HOST)) {
+	    if(defined("PQL_LDAP_CHANGE_SERVER") and eregi(" ", PQL_LDAP_HOST)) {
 		$servers = split(" ", PQL_LDAP_HOST);
 ?>
     <li>
