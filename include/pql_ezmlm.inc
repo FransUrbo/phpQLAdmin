@@ -3,7 +3,7 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ezmlm.inc,v 1.15 2003-04-23 12:06:39 turbo Exp $
+// $Id: pql_ezmlm.inc,v 1.16 2003-06-12 12:47:06 turbo Exp $
 session_start();
 
 class ezmlm {
@@ -196,7 +196,7 @@ class ezmlm {
 
 		// Get number of subscribers
 		$command = $this->_paths["list"] . " 2>&1 " . $list_path . " | wc -l";
-		$output  = @Exec($command, $output_array, $result);
+		$output  = do_exec($command, $output_array, $result);
 		if($result != 0) {
 			$this->error = "could not execute system command: '" . $command . "'" .
 			  ((!strcmp($output, "")) ? "" : (" (".$output.")"));
@@ -206,7 +206,7 @@ class ezmlm {
 
 		// Get subscriber addresses
 		$command = $this->_paths["list"] . " 2>&1 " . $list_path;
-		$output = @Exec($command, $output_array, $result);
+		$output = do_exec($command, $output_array, $result);
 		if($result != 0) {
 			$this->error = "could not execute system command: '" . $command . "'" .
 			  ((!strcmp($output, "")) ? "" : (" (".$output.")"));
@@ -239,7 +239,7 @@ class ezmlm {
 	function _verifysubscriber($list, $subscriber) {
 		$list_path = $this->user_home."/".$list;
 		$command   = $this->_paths["list"] . " 2>&1 ".$list_path;
-		$output    = @Exec($command, $output_array, $result);
+		$output    = do_exec($command, $output_array, $result);
 		if($result != 0) {
 			$this->error = "could not execute system command: ".$command
 			  . ((!strcmp($output,"")) ? "" : (" (".$output.")"));
@@ -442,7 +442,7 @@ class ezmlm {
 					. " " . $domain);
 
 		if(! $this->debug) {
-			$output = @Exec($command, $output_array, $result);
+			$output = do_exec($command, $output_array, $result);
 			if($result != 0) {
 				// Failed to create list
 
@@ -572,7 +572,7 @@ class ezmlm {
 
 		$command		= $this->_paths["sub"] . " 2>&1 " . $listpath . " " . $subscriber;
 		if(! $this->debug) {
-			$output    = @Exec($command, $output_array, $result);
+			$output    = do_exec($command, $output_array, $result);
 			if($result != 0) {
 				// Failed to subscribe user
 
@@ -609,7 +609,7 @@ class ezmlm {
 
 		$command		= $this->_paths["unsub"] . " 2>&1 " . $listpath . " " . $subscriber;
 		if(! $this->debug) {
-			$output    = @Exec($command, $output_array, $result);
+			$output    = do_exec($command, $output_array, $result);
 			if($result != 0) {
 				// Failed to unsubscribe user
 

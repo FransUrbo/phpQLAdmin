@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.28 2003-06-10 12:47:01 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.29 2003-06-12 12:47:06 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -212,6 +212,20 @@ function user_generate_uid($ldap, $surname, $name, $email, $domain, $account_typ
 	//	return(eregi_replace('@', '_',$email));	// complete email-address but '_' instead of '@'
 	//	return($surname . $name);				// "Firstname Lastname"
 	//	return(substr($surname, 0, 1) . $name);	// First character of ther surname + complete lastname
+}
+
+// ----------------------------
+// Execute command
+//
+// This function is here as a wrapper. If you don't want it to actually
+// DO anything, it should return a non zero value. If you on the other
+// hand wants it to really execute the command, uncomment the line which
+// does the execute.
+function do_exec($command, $output, &$return) {
+//	return(@exec($command, $output, $return));
+
+	$return = 100;
+	return(false);
 }
 
 /*
