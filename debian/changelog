@@ -18,8 +18,9 @@ phpqladmin (2.0.18c-1) unstable; urgency=low
   * If a define isn't set, the pql_get_define() will return an empty array with
     all rootdn's. Catch this, and return NULL if the define is unset.
   * Don't show the 'undefined variable' warnings if not running a CVS version.
+  * Don't add the 'deliveryMode: localdelivery' if we're running with newer QmailLDAP.
 
- -- Turbo Fredriksson <turbo@debian.org>  Wed, 28 Apr 2004 14:12:47 +0200
+ -- Turbo Fredriksson <turbo@debian.org>  Thu, 29 Apr 2004 08:32:36 +0200
 
 phpqladmin (2.0.18b-1) unstable; urgency=low
 
