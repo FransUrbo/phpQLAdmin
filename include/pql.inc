@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.162 2004-03-17 14:59:37 dlw Exp $
+// $Id: pql.inc,v 2.163 2004-03-18 07:41:15 turbo Exp $
 //
 
 // ----------------------------
@@ -269,7 +269,7 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 	foreach($ocs as $oc) {
 		if(!$ldap[$oc]['MUST']['count'])
 		  // An objectclass with no MUST, add this directly
-		  $entry['objectclass'][] = $oc;
+		  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = $oc;
 		else {
 			// This objectclass have one or more MUST attributes
 			// Do we have any of those MUST attributes defined?
@@ -299,7 +299,7 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 			  // This objectclass don't contain MUST attributes which
 			  // isn't defined in the user object. Add this to the list
 			  // of objectclasses to add
-			  $entry['objectclass'][] = $oc;
+			  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = $oc;
 //			else {
 //				// Objectclass which have been removed from the list because
 //				// there's an MUST attribute missing
@@ -328,11 +328,44 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 
 	// -----
     // Add the user to the database
-    if(! ldap_add($ldap_linkid, $userdn, $entry)){
+    if(! ldap_add($ldap_linkid, $userdn, $entry)) {
 		// failed to add user
-		pql_format_error(1);
-		die("$LDIF");
-		return false;
+		$failed = 1; pql_format_error(1);
+
+		$errno = ldap_errno($ldap_linkid);
+		if($errno == 32) {
+			// No such object - try adding the ou before it
+			if($branch)
+			  $ou_rdn .= urldecode($branch);
+			else
+			  $ou_rdn .= pql_get_define("PQL_CONF_SUBTREE_USERS").",".urldecode($domain);
+			$ou_rdn = pql_maybe_encode($ou_rdn);
+			
+			$reg = split("=", pql_get_define("PQL_CONF_SUBTREE_USERS"));
+			$ou_entry[$reg[0]] = $reg[1];
+			$ou_entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'organizationalUnit';
+			
+			// Create a LDIF object to print in case of error
+			$ou_LDIF = pql_create_ldif("pql_user_add - user creation/ou", $ou_rdn, $ou_entry);
+			if(! ldap_add($ldap_linkid, $ou_rdn, $ou_entry)) {
+				echo "I've tried to add the user object, but that failed because of error 32 - No such object. ";
+				echo "The idea was that it was missing the organizational unit container preceding it in the path. ";
+				echo "That didn't work either. I'm stumped...<br>";
+
+				echo "$ou_LDIF<p>";
+				$failed = 1;
+			} else {
+				// Adding the ou container worked! Try adding the user again.
+				$failed = 0;
+				if(! ldap_add($ldap_linkid, $userdn, $entry))
+				  $failed = 1;
+			}
+		}
+		
+		if($failed) {
+			pql_format_error(1);
+			die("$LDIF");
+		}
 	}
 	$dns[]  = $userdn;
 	echo "Added $userdn<br>";
@@ -556,7 +589,7 @@ function pql_domain_get($ldap) {
 
 		// -------------------
 		// Does this top DN contain the ou=People object?
-		$filter = 'objectclass=*';
+		$filter = pql_get_define("PQL_ATTR_OBJECTCLASS").'=*';
 		$dn = pql_get_define("PQL_CONF_SUBTREE_USERS").",$TOP_DN";
 
 		$sr = @ldap_read($ldap->ldap_linkid, $dn, $filter);
@@ -687,7 +720,7 @@ function pql_domain_del($ldap, $domain, $delete_forwards) {
 	}
 
 	// Searching for sub entries
-	$sr   = ldap_list($linkid, $domain, "objectClass=*");
+	$sr   = ldap_list($linkid, $domain, pql_get_define("PQL_ATTR_OBJECTCLASS")."=*");
 	$info = ldap_get_entries($linkid, $sr);
 	for($i=0; $i < $info['count']; $i++){
 		// Deleting recursively this sub entry
@@ -863,7 +896,7 @@ function pql_domain_set_value($linkid, $dn, $type, $value) {
 		}
 	}
 
-	if($value and !$entry["objectclass"]) {
+	if($value and !$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")]) {
 		// Setup objectclasses
 		if(!($entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_setup_branch_objectclasses(0, $dn, $linkid)))
 		  unset($entry[pql_get_define("PQL_ATTR_OBJECTCLASS")]);
@@ -1429,7 +1462,7 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 		// CMD: /usr/bin/ldapsearch -x -LLL -h localhost -s base -b 'cn=Subschema' 'objectClass=*' $attrib
 		$sr     = ldap_read($ldap_linkid,
 							$entry[0][pql_get_define("PQL_ATTR_SUBSCHEMASUBENTRY")][0],
-							'objectClass=*', array($attrib));
+							pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', array($attrib));
 		$entry  = ldap_get_entries($ldap_linkid, $sr);
 		for($i=0; $i < $entry[0][$attrib]["count"]; $i++) {
 			// ------------------------
@@ -1977,7 +2010,7 @@ function pql_setup_branch_objectclasses($filter = 0, $dn, $linkid = '') {
 	if($dn and $linkid) {
 		// Retreive existing objectClasses from the object
 		$object = ldap_explode_dn($dn, 0);
-		$sr     = @ldap_read($linkid, $dn, $object[0], array('objectclass'));
+		$sr     = @ldap_read($linkid, $dn, $object[0], array(pql_get_define("PQL_ATTR_OBJECTCLASS")));
 		$ocs    = @ldap_get_entries($linkid, $sr) or pql_format_error(1);
 		
 		for($j=0; $j < $ocs[0][pql_get_define("PQL_ATTR_OBJECTCLASS")]["count"]; $j++) {
@@ -2120,13 +2153,13 @@ function pql_missing_objectclasses($linkid, $dn, $entry) {
 	// Get objectclasses from the LDAP server, finding the objectclass
 	// that MUST (or if non is found, a MAY) have the attribute we're
 	// trying to modify.
-	$objectclasses = pql_get_subschema($linkid, 'objectclasses');
+	$objectclasses = pql_get_subschema($linkid, pql_get_define("PQL_ATTR_OBJECTCLASS"));
 	if(is_array($objectclasses)) {
 		foreach($entry as $attrib => $val) {
 			// For each of the attributes (exept the objectclass one)
 			// in the object, let's see if we can find it's objectclass.
 
-			if($attrib != "objectclass") {
+			if($attrib != pql_get_define("PQL_ATTR_OBJECTCLASS")) {
 				foreach($objectclasses as $key => $oc) {
 					// Go through the MUST attributes
 					for($i=0; $i < $oc[MUST]['count']; $i++)
