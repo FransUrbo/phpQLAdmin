@@ -28,11 +28,11 @@ function attribute_forward($msg) {
 
     // URL Encode some of the most important information
     // (root DN, domain/branch DN and user DN)
-    $rootdn = urlencode($rootdn);
-    $domain = urlencode($domain);
-    $user   = urlencode($user);
+    if(!eregi('%3D', $rootdn))  $rootdn = urlencode($rootdn);
+    if(!eregi('%3D', $domain))  $domain = urlencode($domain);
+    if(!eregi('%3D', $user))    $user   = urlencode($user);
     
-    $url = "user_detail.php?rootdn=$rootdn&domain=$domain&user=".urlencode($user)."&view=$view&msg=".urlencode($msg);
+    $url = "user_detail.php?rootdn=$rootdn&domain=$domain&user=$user&view=$view&msg=".urlencode($msg);
     header("Location: " . pql_get_define("PQL_GLOB_URI") . "$url");
 }
 
