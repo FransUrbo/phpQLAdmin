@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // uid (user id)
-// $Id: attrib.uid.inc,v 2.23 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.uid.inc,v 2.24 2004-11-05 13:14:28 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type){
@@ -88,24 +88,24 @@ function attribute_save($type) {
 			break;
     	}
 		
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_UID"), '' $_REQUEST["uid"]))
-		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% from %old% to %new%'),
-									   array('what' => $LANG->_('username'),
-											 'old'  => $_REQUEST["oldvalue"],
-											 'new'  => $_REQUEST["uid"]));
-		else
-		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('username'))) . ": " . pql_format_error(0);
-		
-		// We use the uid to reference users and it has just changed...
-		if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", pql_get_rootdn($_REQUEST["user"], 'attrib.uid.inc:attribute_save')) == pql_get_define("PQL_ATTR_UID")) {
-			$_REQUEST["user"] = $_REQUEST["uid"];
-			// Reload the navigation bar (if allowed by config)
-			attribute_forward($msg, true);
+		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_UID"), '', $_REQUEST["uid"])) {
+			$msg = pql_complete_constant($LANG->_('Successfully changed %what% from %old% to %new%'),
+										 array('what' => $LANG->_('username'),
+											   'old'  => $_REQUEST["oldvalue"],
+											   'new'  => $_REQUEST["uid"]));
+			if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", pql_get_rootdn($_REQUEST["user"], 'attrib.uid.inc:attribute_save')) == pql_get_define("PQL_ATTR_UID")) {
+				// TODO: We use the uid to reference users and it has just changed...
+
+				$_REQUEST["user"] = $_REQUEST["uid"];
+				// Reload the navigation bar (if allowed by config)
+				attribute_forward($msg, true);
+			}
 		} else {
+			$msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+										 array('what' => $LANG->_('username'))) . ": " . pql_format_error(0);
+		
 			attribute_forward($msg);
 		}
-		
 		break;
 
 	  default:
