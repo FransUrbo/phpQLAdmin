@@ -2,10 +2,44 @@ phpQLAdmin 2.1 Change Log
 
 phpQLAdmin 2.1.3 TO BE ANNOUNCED
 	Bug fixes
-	API changes
+	  - More (surprised!? :) deglobalization. And, actually a globalization - use of
+	    '$_REQUEST["orgname"]' instead of '$orgname' in 'domain_edit_attributes.php'.
+	  - Fix the ACI generation when adding/deleting/modifying a 'administrator' attribute
+	    + Make sure we don't have duplicate access-id entries.
+	  - Die just after forwarding to main page and just before a successful 'administrator'
+	    change have been done - in case the .DEBUG_ME file exists that is.
+	  - Remove hardcoded 'cn=<MailHostFQDN>' from 'control_del.php'. Use pql_get_define()
+	    to get the attribute ('cn' in most cases, but you never know :).
+	  - Make sure we try to delete the correct mailhost DN. In some cases, "oldmx"
+	    IS known, and in others it's "mxhost"...
+	    + Cleanup the MSG/URL redirect after a successful delete.
+	  - When retreiving a 'dNSTTL=xxx+relativeDomainName=@' object, that last part can
+	    NOT be left URL decoded - the '+' is removed, and we can't have that. It must be
+	    there (it's part of the DN!). Recreate that last part, adding the missing character.
+	  - I managed to get an empty OpenLDAPaci value (probably because of an earlier
+	    bug in phpQLAdmin) in the database. Make sure we go through ALL values, EVEN if the
+	    first one is empty/undefined (use count() and loop through).
+	  - URL decode the server RDN before exploading DN (in websrv_edit_attributes.php).
+	  - Don't overwrite the $url array (it contain urlencoded versions of rootdn/domain).
+	  - URL decode DN in pql_write_mod().
+
 	GUI layout change
+	  - Only show the delete icon/url in the domain_details-websrv.inc page if there
+	    IS a value to delete.
+
 	Misc changes	
+	  - Don't depend on 'php4-gd'. It's way to ancient to be usefull...
+	  - Allow (Depends) 'apache-ssl' or 'apache2' in addition to 'apache' and 'httpd'.
+	  - Recomend 'php4-idn'.
+	  - Some (code) documentation updates.
+	  - Add the file 'README.depends' which (very shortly) describes what's needed to get
+	    phpQLAdmin working (software vice)...
+
 	Schema changes
+	  - Three new attributes for the phpQLAdminWebSrv object class:
+	    webLDAPServer           1.3.6.1.4.1.8767.3.2.5.12
+	    webLDAPServerLoginDN    1.3.6.1.4.1.8767.3.2.5.13
+	    webLDAPServerLoginPW    1.3.6.1.4.1.8767.3.2.5.14
 
 phpQLAdmin 2.1.2 Release (Nov 17 2004)
 	Bug fixes
