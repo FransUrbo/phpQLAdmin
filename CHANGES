@@ -1,5 +1,13 @@
 phpQLAdmin 2.0 Change Log
 
+phpQLAdmin 2.0.8 - TO BE ANNOUNCED
+	Bug fixes
+
+	GUI layout change
+
+	Misc changes
+	  - Write protect user's top domain/branch.
+
 phpQLAdmin 2.0.7 Release (Jan 28 2003)
 	Bug fixes
 	  - Correct usage of PQL_VERIFY_DELETE. Should have been '!PQL_VERIFY_DELETE'.
