@@ -1,29 +1,31 @@
 <?php
 // add a domain
-// $Id: domain_add.php,v 2.46 2004-03-11 18:13:32 turbo Exp $
+// $Id: domain_add.php,v 2.47 2004-04-01 06:19:29 turbo Exp $
 //
 session_start();
-
-// Make sure we can have a ' in branch
-$domain = ereg_replace("\\\'", "'", $_REQUEST["domain"]);
-$rootdn = $_REQUEST["rootdn"];
-$defaultdomain = $_REQUEST["defaultdomain"];
-
 require("./include/pql_config.inc");
-require("./include/pql_control.inc");
+
+$url["domain"]		  = pql_format_urls($_REQUEST["domain"]);
+$url["rootdn"]		  = pql_format_urls($_REQUEST["rootdn"]);
+$url["defaultdomain"] = pql_format_urls($_REQUEST["rootdn"]);
+
+if(pql_get_define("PQL_CONF_CONTROL_USE")) {
+    // include control api if control is used
+    include("./include/pql_control.inc");
+    $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
+}
 
 include("./header.html");
 ?>
-  <span class="title1"><?=$LANG->_('Create domain')?>: <?=$domain?></span>
+  <span class="title1"><?=$LANG->_('Create domain')?>: <?=$_REQUEST["domain"]?></span>
   <br><br>
 <?php
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
-$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 // Should we force a dot in the domainname or not?
-if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $rootdn) == "dc" or
-   pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $rootdn) == "ou" or
-   pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $rootdn) == "o")
+if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $_REQUEST["rootdn"]) == "dc" or
+   pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $_REQUEST["rootdn"]) == "ou" or
+   pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $_REQUEST["rootdn"]) == "o")
 {
 	// We're using a domain or organization object, which
 	// means we should allow a domain name to be without dot.
@@ -33,29 +35,26 @@ if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $rootdn) == "dc" or
 }
 
 // check if domain is valid
-//if(!pql_check_hostaddress($domain, $force_dot)) {
+//if(!pql_check_hostaddress($_REQUEST["domain"], $force_dot)) {
 //	$msg = urlencode($LANG->_('Invalid domain name! Use: domain.tld (e.g. adfinis.com)'));
 //	header("Location: " . pql_get_define("PQL_CONF_URI") . "home.php?msg=$msg");
 //	exit();
 //}
 
 // check if domain exist
-if(pql_domain_exist($_pql, $domain, $rootdn)) {
+if(pql_domain_exist($_pql, $_REQUEST["domain"], $_REQUEST["rootdn"])) {
 	$msg = urlencode($LANG->_('This domain already exists'));
 	header("Location: " . pql_get_define("PQL_CONF_URI") . "home.php?msg=$msg");
 	exit();
 }
 
-$dns = pql_domain_add($_pql->ldap_linkid, $rootdn, $domain);
+$dns = pql_domain_add($_pql->ldap_linkid, $_REQUEST["rootdn"], $_REQUEST["domain"]);
 if($dns[0]) {
-	// Can't have ' in the branch (used when creating default{mail,home}dir)
-	$domain = ereg_replace("'", "", $domain);
+	$entry["BRANCH_NAME"] = $_REQUEST["domain"];
 
-	$entry["BRANCH_NAME"] = $domain;
-
-	if($defaultdomain != "") {
+	if($_REQUEST["defaultdomain"] != "") {
 		// update locals if control patch is enabled
-		pql_control_update_domains($_pql, $_SESSION["USER_SEARCH_DN_CTR"], '*', array('', $defaultdomain));
+		pql_control_update_domains($_pql, $_SESSION["USER_SEARCH_DN_CTR"], '*', array('', $_REQUEST["defaultdomain"]));
 	}
 
 	// Default values we can easily figure out
@@ -76,9 +75,9 @@ if($dns[0]) {
 	$msg = "";
 	
 	// Save the attributes - Default domain
-	if($defaultdomain && !pql_domain_set_value($_pql->ldap_linkid,
+	if($_REQUEST["defaultdomain"] && !pql_domain_set_value($_pql->ldap_linkid,
 											   $dns[0], 'defaultDomain',
-											   pql_maybe_idna_encode($defaultdomain)))
+											   pql_maybe_idna_encode($_REQUEST["defaultdomain"])))
 	  $msg = $LANG->_('Failed to change the default domainname') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	
 	// Save the attributes - Default home directory
@@ -102,31 +101,31 @@ if($dns[0]) {
 	  $msg = $LANG->_('Failed to change the default domainname') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 
 	// Create a template DNS zone
-	if($template && $defaultdomain && pql_get_define("PQL_CONF_BIND9_USE")) {
+	if($template && $_REQUEST["defaultdomain"] && pql_get_define("PQL_CONF_BIND9_USE")) {
 		require("./include/pql_bind9.inc");
 
-		if(! pql_bind9_add_zone($_pql->ldap_linkid, $dns[0], $defaultdomain))
-		  $msg = pql_complete_constant($LANG->_("Failed to add domain %domainname%"), array("domainname" => $defaultdomain));
+		if(! pql_bind9_add_zone($_pql->ldap_linkid, $dns[0], $_REQUEST["defaultdomain"]))
+		  $msg = pql_complete_constant($LANG->_("Failed to add domain %domainname%"), array("domainname" => $_REQUEST["defaultdomain"]));
 	}
 
 	// redirect to domain-details
 	if($msg == "")
 	  $msg = urlencode(pql_complete_constant($LANG->_('Domain %domain% successfully created'),
 											 array("domain" => pql_maybe_decode($dns[0])))) . ".";
-	$url = "domain_detail.php?rootdn=".urlencode($rootdn)."&domain=".urlencode($dns[0])."&msg=$msg&rlnb=1";
+	$url = "domain_detail.php?rootdn=".$url["rootdn"]."&domain=".urlencode($dns[0])."&msg=$msg&rlnb=1";
 
 	// Now it's time to run the special adduser script if defined...
-	if(pql_get_define("PQL_CONF_SCRIPT_CREATE_DOMAIN", $rootdn)) {
+	if(pql_get_define("PQL_CONF_SCRIPT_CREATE_DOMAIN", $_REQUEST["rootdn"])) {
 		// Setup the environment with the user details
-		putenv("PQL_DOMAIN=$domain");
-		putenv("PQL_DOMAINNAME=$defaultdomain");
+		putenv("PQL_DOMAIN=".$_REQUEST["domain"]);
+		putenv("PQL_DOMAINNAME=".$_REQUEST["defaultdomain"]);
 		putenv("PQL_HOMEDIRS=$defaulthomedir");
 		putenv("PQL_MAILDIRS=$defaultmaildir");
 		putenv("PQL_QUOTA=$defaultquota");
 		putenv("PQL_WEBUSER=".posix_getuid());
 		
 		// Execute the domain add script (0 => show output)
-		if(pql_execute(pql_get_define("PQL_CONF_SCRIPT_CREATE_DOMAIN", $rootdn), 0)) {
+		if(pql_execute(pql_get_define("PQL_CONF_SCRIPT_CREATE_DOMAIN", $_REQUEST["rootdn"]), 0)) {
 			echo pql_complete_constant($LANG->_('The %what% add script failed'),
 									   array('what' => $LANG->_('domain'))) . "!";
 			$msg .= " " . urlencode(pql_complete_constant($LANG->_('The %what% add script failed'),
@@ -138,7 +137,7 @@ if($dns[0]) {
 														  array('what' => $LANG->_('domain'))));
 		}
 
-		$url = "domain_detail.php?rootdn=".urlencode($rootdn)."&domain=".urlencode($dns[0]);
+		$url = "domain_detail.php?rootdn=".$url["rootdn"]."&domain=".urlencode($dns[0]);
 ?>
 
     <form action="<?=$url?>&msg=<?=$msg?>&rlnb=1" method="post">
