@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.14 2003-01-14 10:23:01 turbo Exp $
+// $Id: pql.inc,v 2.15 2003-01-14 15:58:31 turbo Exp $
 //
 // ----------------------------
 // Note: There are a few " followed after PHP comment
@@ -428,11 +428,15 @@ function pql_add_userattribute($ldap_linkid, $ldap_basedn, $domain, $user, $attr
 
 function pql_remove_userattribute($ldap_linkid, $ldap_basedn, $domain, $user, $attrib, $value){
     // removes an attribute of a user
-    
     $dn = pql_get_dn($ldap_linkid, $ldap_basedn, $user);
-    
-    $entry[$attrib] = $value;
-    
+
+    if(!$value) {
+	// Delete all attributes of this type, regardless of value
+	$entry[$attrib] = array();
+    } else {
+	$entry[$attrib] = $value;
+    }
+
     if(!ldap_mod_del($ldap_linkid, $dn, $entry)){
 		pql_errormsg($ldap_linkid);
 		return false;
