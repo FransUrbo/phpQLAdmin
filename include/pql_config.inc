@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.42 2003-11-11 07:21:33 turbo Exp $
+// $Id: pql_config.inc,v 1.43 2003-11-16 13:08:32 turbo Exp $
 //
 
 // {{{ pql_set_define(define, value, case_insensitive, dn)
@@ -264,6 +264,15 @@ require("./include/pql_plugins.inc");
 //    in the first base DN
 $ALLOW_GLOBAL_CONFIG_SAVE = pql_validate_administrator($_pql->ldap_linkid, $_pql->ldap_basedn[0], $USER_DN);
 session_register("ALLOW_GLOBAL_CONFIG_SAVE");
+
+// 9. Check if ACI support is enabled in LDAP server
+if(!$ACI_SUPPORT_ENABLED) {
+	$ocs = pql_get_subschema($_pql->ldap_linkid, attributeTypes);
+	if($ocs["openldapaci"]["OID"]) {
+		$ACI_SUPPORT_ENABLED = 1;
+		session_register("ACI_SUPPORT_ENABLED");
+	}
+}
 
 // Remove some variables so we don't clutter the global
 // variable name space!
