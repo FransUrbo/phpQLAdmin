@@ -158,7 +158,7 @@ if($submit == "save" and ($account_type == "normal" or $account_type == "system"
 		}
     }
 	
-    if($host != "default"){
+    if(($host != "default") and !$userhost[1]) {
 		if($userhost[0] == ""){
 			$error = true;
 			$error_text["userhost"] = PQL_LANG_MISSING;
@@ -193,12 +193,28 @@ if($submit == "save" and $error == true and !$ADVANCED_MODE) {
 
 include("./header.html");
 ?>
-  <span class="title1"><?php echo pql_complete_constant(PQL_LANG_USER_ADD_TITLE,array("domain" => $domain)); ?></span>
+  <span class="title1">
+    <?php echo pql_complete_constant(PQL_LANG_USER_ADD_TITLE,array("domain" => $domain)); ?>
+<?php
+if($ADVANCED_MODE && $account_type) {
+	if($account_type == 'normal')
+	  echo " - Mail";
+	elseif($account_type == 'system')
+	  echo " - System";
+	else
+	  echo " - Forwarding";
+
+	echo " account";
+}
+?>
+  </span>
+
   <br><br>
 
 <?php
 // select form to display
 switch($submit){
+    // ---------------------------------- NEXT PAGE: 1
 	case "":
 	  // first
 ?>
@@ -253,6 +269,7 @@ echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_FORWARD
 </form>
 <?php
       break;
+    // ---------------------------------- NEXT PAGE: 2
     case "one":
 	  // second form
 ?>
@@ -484,8 +501,11 @@ echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_FORWARD
     <input type="hidden" name="loginshell" value="/bin/false">
     <input type="hidden" name="homedirectory" value="">
     <input type="hidden" name="maildirectory" value="">
+<?php		if($userhost[1]) { ?>
     <input type="hidden" name="userhost" value="<?=$userhost[1]?>">
+<?php		} else { ?>
     <input type="hidden" name="host" value="default">
+<?php		} ?>
 <?php
 		}
 ?>
@@ -515,6 +535,7 @@ echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_FORWARD
 
 <?php
 		break;
+    // ---------------------------------- NEXT PAGE: 3
 	case "two":
 		// third
 ?>
@@ -637,6 +658,7 @@ echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_FORWARD
   </form>
 <?php
 		break;
+    // ---------------------------------- NEXT PAGE: 4
 	case "save":
 		// code for saving the user
 
@@ -704,9 +726,12 @@ echo PQL_LANG_DELIVERYMODE_PROFILE . " " . PQL_LANG_DELIVERYMODE_PROFILE_FORWARD
 			} else {
 				if($mx)
 				  $entry[$config["PQL_GLOB_ATTR_MAILHOST"]] = $mx;
+				elseif($userhost)
+				  $entry[$config["PQL_GLOB_ATTR_MAILHOST"]] = $userhost;
 				else
 				  $entry[$config["PQL_GLOB_ATTR_MAILHOST"]] = $userhost[1];
 			}
+
 			$entry[$config["PQL_GLOB_ATTR_MODE"]]     = "localdelivery";
 			if(!$maildirectory) {
 				$entry[$config["PQL_GLOB_ATTR_MAILSTORE"]] = user_generate_mailstore($_pql, $email, $domain, $entry);
