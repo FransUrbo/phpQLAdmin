@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.12 2004-02-14 17:07:50 turbo Exp $
+// $Id: pql_formating.inc,v 2.13 2004-02-21 12:53:51 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -256,6 +256,36 @@ function pql_format_timestamp($timestamp) {
 	$date   = date("r", mktime($hour, $minute, $second,
 							   $month, $day, $year));
 	return($date);
+}
+// }}}
+
+// {{{ pql_format_urls(string)
+function pql_format_urls(&$string) {
+	$tmp = $string;
+
+	if(ereg('%3D', $tmp)) {
+		// Already URL encoded
+
+		$tmp = urldecode($tmp);
+	}
+
+	// Make sure we can have a ' in branch (also affects the user DN).
+	if(ereg("\'", $tmp)) {
+		if(ereg("\\\'", $tmp)) {
+			// The string already contains \', remove it
+			$tmp = ereg_replace("\\\'", "'", $tmp);
+		} else {
+			$tmp = ereg_replace("\'", "'", $tmp);
+		}
+
+		// Update the ORIGINAL string!
+		$string = $tmp;
+	}
+
+	// URL encode the value
+	$tmp = urlencode($tmp);
+
+	return($tmp);
 }
 // }}}
 

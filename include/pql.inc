@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.144 2004-02-14 19:13:02 turbo Exp $
+// $Id: pql.inc,v 2.145 2004-02-21 12:53:51 turbo Exp $
 //
 
 // ----------------------------
@@ -27,6 +27,7 @@ class pql {
 	var $ldap_basedn = 0;					// array of base dns for future searches etc
 	
 	// {{{ string _find_base_option(attribute)
+
 	function _find_base_option($attrib) {
 	    $attrib = lc($attrib);
 
@@ -67,6 +68,7 @@ class pql {
 		} else
 		  return false;
 	}
+
 	// }}}
 
 	// {{{ string _find_basedn(void)
@@ -202,6 +204,7 @@ class pql {
 // ------------------------------------------------
 
 // {{{ pql_user_get(ldap_linkid, dn)
+
 // Get all users of a domain
 function pql_user_get($ldap_linkid, $dn) {
 	$dn = urldecode($dn);
@@ -221,6 +224,7 @@ function pql_user_get($ldap_linkid, $dn) {
 	
 	return $user;
 }
+
 // }}}
 
 // {{{ pql_user_add(ldap_linkid, domain, cn, attribs, account_type, branch)
@@ -1756,10 +1760,13 @@ function pql_generate_button($buttons, $link = '') {
 
 	// It's not sure we have a rootdn and/or domain, so only add those
 	// it's set
-	if(!empty($_REQUEST["rootdn"]))
-	  $url .= "rootdn=" . $_REQUEST["rootdn"] . "&";
-	if(!empty($_REQUEST["domain"]))
-	  $url .= "domain=" . $_REQUEST["domain"] . "&";
+	if(!empty($_REQUEST["rootdn"])) {
+		$url .= "rootdn=" . pql_format_urls($_REQUEST["rootdn"]) . "&";
+	}
+
+	if(!empty($_REQUEST["domain"])) {
+		$url .= "domain=" . pql_format_urls($_REQUEST["domain"]) . "&";
+	}
 ?>
 
   <table cellspacing="0" border="0" width="100%" cellpadding="0">

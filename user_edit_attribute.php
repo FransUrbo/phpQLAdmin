@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of user
-// $Id: user_edit_attribute.php,v 2.32 2004-02-14 15:26:47 turbo Exp $
+// $Id: user_edit_attribute.php,v 2.33 2004-02-21 12:53:33 turbo Exp $
 //
 // This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
 //   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -34,9 +34,9 @@ if(!$_REQUEST["domain"] && $_REQUEST["user"]) {
       $_REQUEST["domain"] = $tmpdn[count($tmpdn)-1];
 }
 
-// Make sure we can have a ' in branch (also affects the user DN).
-$_REQUEST["domain"] = eregi_replace("\\\'", "'", $_REQUEST["domain"]);
-$_REQUEST["user"]   = eregi_replace("\\\'", "'", $_REQUEST["user"]);
+$url["domain"] = pql_format_urls($_GET["domain"]);
+$url["rootdn"] = pql_format_urls($_GET["rootdn"]);
+$url["user"]   = pql_format_urls($_GET["user"]);
 
 // Get default domain name for this domain
 $defaultdomain = pql_domain_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
@@ -57,8 +57,8 @@ function attribute_forward($msg, $rlnb = false) {
     $_REQUEST["user"]   = urlencode($_REQUEST["user"]);
     $_REQUEST["rootdn"] = urlencode($_REQUEST["rootdn"]);
 
-    $url = "user_detail.php?rootdn=" . $_REQUEST["rootdn"] . "&domain=" . $_REQUEST["domain"]
-      . "&user=" . $_REQUEST["user"] . "&view=" . $_REQUEST["view"] . "&msg=".urlencode($msg);
+    $url = "user_detail.php?rootdn=" . $url["rootdn"] . "&domain=" . $url["domain"]
+      . "&user=" . $url["user"] . "&view=" . $_REQUEST["view"] . "&msg=".urlencode($msg);
     if ($rlnb)
       $url .= "&rlnb=2";
 

@@ -1,9 +1,12 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.74 2004-02-14 19:35:15 turbo Exp $
+// $Id: domain_detail.php,v 2.75 2004-02-21 12:53:33 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
+
+$url["domain"] = pql_format_urls($_REQUEST["domain"]);
+$url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 
 if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
     // include control api if control is used
@@ -31,10 +34,6 @@ if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_GLOB_AUTO_RELOAD")) {
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
-// Make sure we can have a ' in branch (also affects the user DN).
-$_REQUEST["user"]   = eregi_replace("\\\'", "'", $_REQUEST["user"]);
-$_REQUEST["domain"] = eregi_replace("\\\'", "'", $_REQUEST["domain"]);
-
 // check if domain exist
 if(!pql_domain_exist($_pql, $_REQUEST["domain"])) {
     echo "Domain &quot;" . $_REQUEST["domain"] . "&quot; does not exists<br><br>";
@@ -43,18 +42,6 @@ if(!pql_domain_exist($_pql, $_REQUEST["domain"])) {
 	echo "Please go to <a href=\"config_detail.php\">Show configuration</a> and double check.<br>";
 	echo "Look at the config option 'Reference domains with'.";
     exit();
-}
-
-// Look for a URL encoded '=' (%3D). If one isn't found, encode the DN
-// These variables ISN'T encoded "the first time", but they are after
-// a successfull/failed modification, so we don't want to encode them twice!
-if(! ereg("%3D", $_REQUEST["rootdn"])) {
-	// URL encode namingContexts
-	$_REQUEST["rootdn"] = urlencode($_REQUEST["rootdn"]);
-}
-if(! ereg("%3D", $_REQUEST["domain"])) {
-	// .. and/or domain DN
-	$_REQUEST["domain"] = urlencode($_REQUEST["domain"]);
 }
 
 // Get the organization name, or show 'Not set' with an URL to set it
@@ -123,10 +110,10 @@ foreach($attribs as $attrib) {
 									  array('attribute' => $attrib, 'domainname' => $domainname));
 
 		$$link = "<a href=\"domain_edit_attributes.php?type=modify&attrib=$attrib&rootdn="
-		  . $_REQUEST["rootdn"] . "&domain=" . $_REQUEST["domain"] . "&$attrib=". urlencode($value)
+		  . $url["rootdn"] . "&domain=" . $url["domain"] . "&$attrib=". urlencode($value)
 		  . "&view=" . $_REQUEST["view"] . "\"><img src=\"images/edit.png\" width=\"12\" height=\"12\""
 		  . "border=\"0\" alt=\"$alt1\"></a>&nbsp;<a href=\"domain_edit_attributes.php?type=delete&"
-		  . "submit=2&attrib=$attrib&rootdn=" . $_REQUEST["rootdn"] . "&domain=" . $_REQUEST["domain"]
+		  . "submit=2&attrib=$attrib&rootdn=" . $url["rootdn"] . "&domain=" . $url["domain"]
 		  . "&$attrib=". urlencode($value) . "&view=" . $_REQUEST["view"] . "\"><img src=\"images/del.png\""
 		  . "width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt2."\"></a>";
 	} else {
@@ -135,7 +122,7 @@ foreach($attribs as $attrib) {
 
 		// A phpQLAdminBranch attribute
 		$$link = "<a href=\"domain_edit_attributes.php?attrib=$attrib&rootdn="
-		  . $_REQUEST["rootdn"] . "&domain=" . $_REQUEST["domain"] . "&$attrib=$value&view="
+		  . $url["rootdn"] . "&domain=" . $url["domain"] . "&$attrib=$value&view="
 		  . $_REQUEST["view"] . "\"><img src=\"images/edit.png\" width=\"12\" height=\"12\""
 		  . "border=\"0\" alt=\"".$alt1."\"></a>";
 	}
@@ -189,7 +176,7 @@ $buttons = $buttons + $new;
 
   <br><br>
 <?php
-pql_generate_button($buttons, "domain=" . $_REQUEST["domain"]); echo "  <br>\n";
+pql_generate_button($buttons, "domain=" . $url["domain"]); echo "  <br>\n";
 
 if($_REQUEST["view"] == 'default') {
 	if($_SESSION["ADVANCED_MODE"]) {

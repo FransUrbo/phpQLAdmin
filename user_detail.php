@@ -1,21 +1,17 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.64 2004-02-14 15:31:48 turbo Exp $
+// $Id: user_detail.php,v 2.65 2004-02-21 12:53:33 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 
-$url["domain"] = urlencode($_GET["domain"]);
-$url["rootdn"] = urlencode($_GET["rootdn"]);
-$url["user"]   = urlencode($_GET["user"]);
-
-// Make sure we can have a ' in branch (also affects the user DN).
-$_GET["user"]   = eregi_replace("\\\'", "'", $_GET["user"]);
-$_GET["domain"] = eregi_replace("\\\'", "'", $_GET["domain"]);
-
-if(!$_GET["rootdn"]) {
-	$_GET["rootdn"] = pql_get_rootdn($_GET["user"]);
+if(!$url["rootdn"]) {
+	$url["rootdn"] = pql_get_rootdn($_GET["user"]);
 }
+
+$url["domain"] = pql_format_urls($_GET["domain"]);
+$url["rootdn"] = pql_format_urls($_GET["rootdn"]);
+$url["user"]   = pql_format_urls($_GET["user"]);
 
 // Get default domain name for this domain
 if($_GET["domain"]) {
@@ -176,7 +172,7 @@ if(!$_SESSION["SINGLE_USER"]) {
 	$buttons = $buttons + $new;
 }
 
-pql_generate_button($buttons, "user=" . urlencode($_GET["user"])); echo "  <br>\n";
+pql_generate_button($buttons, "user=".$url["user"]); echo "  <br>\n";
 
 if($_GET["view"] == '')
 	$_GET["view"] = 'basic';

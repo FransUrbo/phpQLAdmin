@@ -2,17 +2,17 @@
 // DLW: This is untested because I don't have any ACIs to play with.
 
 // Setup the URL redirection
-$URL  = "domain_edit_attributes.php?rootdn=".urlencode($_REQUEST["rootdn"])."&domain=".urlencode($_REQUEST["domain"]);
+$URL  = "domain_edit_attributes.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"];
 $URL .= "&attrib=".pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")."&view=" . $_REQUEST["view"] . "&";
 
 if(!empty($_REQUEST["user"])) {
     // Get the ACIs in this user object
     $aci = pql_aci_get($_pql->ldap_linkid, $_REQUEST["user"]);
 
-	$URL .= "user=".urlencode($_REQUEST["user"]);
+	$URL .= "user=".$url["user"];
 } else {
     // Get the ACIs in this branch object
-    $aci = pql_aci_get($_pql->ldap_linkid, urldecode($_REQUEST["domain"]));
+    $aci = pql_aci_get($_pql->ldap_linkid, $url["domain"]);
 }
 
 if(!is_array($aci)) {
