@@ -1,10 +1,19 @@
 <?php
 // attribute plugin for
 // accountstatus (status of mailaccount)
-// $Id: attrib.accountstatus.inc,v 2.25 2005-02-05 12:44:23 turbo Exp $
+// $Id: attrib.accountstatus.inc,v 2.26 2005-02-05 13:38:58 turbo Exp $
 
-/* DLW: When the calendar gets a value of 2003.12.25, it gets stored or displayed as 2003/12/24 (@7am)
- *      I think it's having problems with time zones.  Look into it. */
+/* DLW:   When the calendar gets a value of 2003.12.25, it gets stored or displayed as 2003/12/24 (@7am)
+ *        I think it's having problems with time zones.  Look into it.
+ *
+ * TURBO: It's not a problem with THIS file. I'm swede, so I'm used to the date format
+ *        '[YY]YYMMHH'. So I'm setting the JSCalendar widget to output such a value.
+ *        However, when DISPLAYING the value stored, phpQLAdmin must honor the time zone(s).
+ *
+ * The values created by the JSCalendar is used in two (?) places:
+ * - [user]->Account status->Account expiration date
+ * - [user]->Account status->Account deletion date   (outputs 'Feb 28, 2005' for example).
+ */
 
 // {{{ attribute_check(type)
 /* attribute_check is sometimes called directly (from attribute_print_form)
@@ -191,13 +200,18 @@ function attribute_save($type) {
 										 array('what' => $LANG->_('Status'),
 											   'new'  => pql_ldap_accountstatus($_REQUEST["set"])));
 
-			// Convert 
-			$epoc = pql_format_timestamp_unixtime($_REQUEST["date"]);
-
 			if($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_ISACTIVE")) {
-			  pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"],
-								   pql_get_define("PQL_ATTR_ACCOUNT_PURGE"),
-								   '', $epoc);
+			  if($_REQUEST["set"] == "deleted") {
+				// Convert YYYYMMDD to epoc
+				$epoc = pql_format_timestamp_unixtime($_REQUEST["date"]);
+				
+				pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_ACCOUNT_PURGE"), 1,$epoc);
+			  } else {
+				// Everything exept deletion - if we have a qmailAccountPurge attribute, this MUST be deleted.
+				$date = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_ACCOUNT_PURGE"));
+				if($date)
+				  pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_ACCOUNT_PURGE"), 1, '');
+			  }
 			}
 		} else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
