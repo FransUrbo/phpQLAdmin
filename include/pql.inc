@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.186 2004-10-05 07:52:22 turbo Exp $
+// $Id: pql.inc,v 2.187 2004-10-09 16:30:01 turbo Exp $
 //
 
 // ----------------------------
@@ -1881,8 +1881,8 @@ function pql_password_hash($password, $hash) {
 }
 // }}}
 
-// {{{ pql_password_generate(void)
-function pql_password_generate() {
+// {{{ pql_generate_password(void)
+function pql_generate_password() {
 	$amount = 8;
 
 	for(;;) {

@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.101 2004-05-08 08:51:50 turbo Exp $
+// $Id: user_add.php,v 2.102 2004-10-09 16:30:01 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -127,8 +127,8 @@ switch($_REQUEST["page_curr"]) {
 		}
 
 		if(($_REQUEST["account_type"] != "group") and empty($_REQUEST["password"]) and
-		   $autocreatepassword and function_exists('pql_password_generate'))
-		  $_REQUEST["password"] = pql_password_generate();
+		   $autocreatepassword and function_exists('pql_generate_password'))
+		  $_REQUEST["password"] = pql_generate_password();
 	}
 	break;
 	// }}}
@@ -238,9 +238,14 @@ switch($_REQUEST["page_curr"]) {
 		// Verify the password
 		if(($_REQUEST["account_type"] != "forward") and ($_REQUEST["account_type"] != "group")) {
 			// Only forward and group accounts is ok without password
-			if($_REQUEST["password"] == "") {
-				$error = true;
-				$error_text["password"] = $LANG->_('Missing');
+			if(($_REQUEST["password"] == "")) {
+				if(!$_REQUEST["autogenerate"]) {
+					$error = true;
+					$error_text["password"] = $LANG->_('Missing');
+				} elseif(function_exists('pql_generate_password')) {
+					// Autogenerate password
+					$_REQUEST["password"] = pql_generate_password();
+				}
 			}
 			
 			if(eregi("KERBEROS", $_REQUEST["pwscheme"])) {
@@ -444,7 +449,10 @@ switch($_REQUEST["page_next"]) {
 	
   case "save":
 	// Step 4 - Save the user into DB
-	include("./tables/user_add-save.inc");
+	if($_REQUEST["page_curr"] and $_REQUEST["autogenerate"] and !$_REQUEST["password_shown"])
+	  include("./tables/user_add-show_password.inc");
+	else
+	  include("./tables/user_add-save.inc");
 	break;
 }
 // }}}
