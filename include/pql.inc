@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.151 2004-03-03 07:59:28 turbo Exp $
+// $Id: pql.inc,v 2.152 2004-03-03 08:10:44 turbo Exp $
 //
 
 // ----------------------------
@@ -733,56 +733,6 @@ function pql_domain_get_value($ldap, $dn, $value, $match = '', $all = 0) {
 }
 // }}}
 
-// ------------------------------------------------
-
-// {{{ pql_replace_attribute(ldap_linkid, objectdn, attrib, value)
-
-// Replaces an attribute in a object (only use for single-field attributes)
-// Delete an attribute(s) if value is an empty string
-function pql_replace_attribute($ldap_linkid, $objectdn, $attrib, $value) {
-	$attrib = lc($attrib);
-
-    if(!$value)
-	  // Delete all attributes of this type, regardless of value
-	  $entry[$attrib] = array();
-	elseif(!$attrib)
-	  $entry = $value;
-	else
-	  $entry[$attrib] = pql_maybe_encode($value, $attrib, $ldap_linkid);
-
-	// replace the attribute
-	if(!@ldap_mod_replace($ldap_linkid, $objectdn, $entry)) {
-	    // if the value is empty (""), this causes an error in OpenLDAP 2.x, try to ldap_mod_del
-	    if($value == "") {
-			$oldvalue = pql_get_attribute($ldap_linkid, $objectdn, $attrib);
-			$oldvalue = $oldvalue[0];
-			$entry[$attrib] = $oldvalue;
-
-			if(ldap_mod_del($ldap_linkid, $objectdn, $entry))
-			  return true;
-			else {
-				pql_format_error(1);
-				return false;
-			}
-	    } else {
-			if(ldap_errno($ldap_linkid) == 65) {
-				// Object class violation - try to add the missing objectclass
-				$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")] = pql_missing_objectclasses($linkid, $objectdn, $entry);
-			}
-		}
-	    
-	    pql_format_error(1);
-	    return false;
-	}
-	
-	// user entry has changed -> remove the cached version
-	pql_cache_userentry_remove($objectdn);
-	
-	return true;
-}
-
-// }}}
-
 // {{{ pql_domain_set_value(linkid, dn, type, value)
 // Set a embedded domain default value
 function pql_domain_set_value($linkid, $dn, $type, $value) {
@@ -977,6 +927,63 @@ function pql_modify_user_addressbook($ldap_linkid, $user, $attribs) {
 }
 // }}}
 
+// {{{ pql_search_forwarders(ldap, user)
+// Search all accounts with forwarders to $user@$domain
+function pql_search_forwarders($ldap, $user) {
+	$return = '';
+	$linkid = $ldap->ldap_linkid;
+
+    // get all email addresses of a user
+    $email = pql_get_attribute($linkid, $user, pql_get_define("PQL_GLOB_ATTR_MAIL"));
+    $aliases = pql_get_attribute($linkid, $user, pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE"));
+    
+    $addresses[] = $email[0];
+    if(is_array($aliases)){
+		$addresses = array_merge($addresses, $aliases);
+    }
+    
+    // create filter
+    $filter = "(|";
+    foreach($addresses as $add){
+		$filter .= "(" . pql_get_define("PQL_GLOB_ATTR_FORWARDS") ."=" . $add . ")";
+    }
+    $filter .= ")";
+
+    // Go through each base DN in the database, looking
+	// for forwarders to this user
+	foreach($ldap->ldap_basedn as $dn) {
+		$dn = urldecode($dn);
+
+		$sr = ldap_search($linkid, $dn, $filter);
+		if(ldap_count_entries($linkid, $sr) > 0) {
+			// Get the entries found
+			$results = ldap_get_entries($linkid, $sr);
+
+			// Go through the entries
+			foreach($results as $key => $result){
+				if((string)$key != "count"){
+					$return[] = array("reference" => $result["dn"],
+									  pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $dn) => $result[pql_get_define("PQL_GLOB_ATTR_CN")][0],
+									  "email" => $result[pql_get_define("PQL_GLOB_ATTR_MAIL")][0]);
+					
+					if(is_array($result[pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE")])){
+						foreach($result[pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE")] as $key => $mailalternateaddress){
+							if((string)$key != "count"){
+								$return[] = array("reference" => $result["dn"],
+												  pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $dn) => $result[pql_get_define("PQL_GLOB_ATTR_CN")][0],
+												  "email" => $mailalternateaddress);
+							}
+						} // end foreach results
+					} // end if is_array
+				} // end if key != count
+			} // end foreach results
+		}
+	} // end foreach basedn
+    
+    return $return;
+}
+// }}}
+
 // {{{ pql_modify_userattribute(ldap_linkid, user, attrib, oldvalue, newvalue)
 // Change an attribute of a user
 function pql_modify_userattribute($ldap_linkid, $user, $attrib, $oldvalue, $newvalue) {
@@ -1038,61 +1045,52 @@ function pql_modify_userattribute($ldap_linkid, $user, $attrib, $oldvalue, $newv
 }
 // }}}
 
-// {{{ pql_search_forwarders(ldap, user)
-// Search all accounts with forwarders to $user@$domain
-function pql_search_forwarders($ldap, $user) {
-	$return = '';
-	$linkid = $ldap->ldap_linkid;
+// {{{ pql_replace_attribute(ldap_linkid, objectdn, attrib, value)
 
-    // get all email addresses of a user
-    $email = pql_get_attribute($linkid, $user, pql_get_define("PQL_GLOB_ATTR_MAIL"));
-    $aliases = pql_get_attribute($linkid, $user, pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE"));
-    
-    $addresses[] = $email[0];
-    if(is_array($aliases)){
-		$addresses = array_merge($addresses, $aliases);
-    }
-    
-    // create filter
-    $filter = "(|";
-    foreach($addresses as $add){
-		$filter .= "(" . pql_get_define("PQL_GLOB_ATTR_FORWARDS") ."=" . $add . ")";
-    }
-    $filter .= ")";
+// Replaces an attribute in a object (only use for single-field attributes)
+// Delete an attribute(s) if value is an empty string
+function pql_replace_attribute($ldap_linkid, $objectdn, $attrib, $value) {
+	$attrib = lc($attrib);
 
-    // Go through each base DN in the database, looking
-	// for forwarders to this user
-	foreach($ldap->ldap_basedn as $dn) {
-		$dn = urldecode($dn);
+    if(!$value)
+	  // Delete all attributes of this type, regardless of value
+	  $entry[$attrib] = array();
+	elseif(!$attrib)
+	  $entry = $value;
+	else
+	  $entry[$attrib] = pql_maybe_encode($value, $attrib, $ldap_linkid);
 
-		$sr = ldap_search($linkid, $dn, $filter);
-		if(ldap_count_entries($linkid, $sr) > 0) {
-			// Get the entries found
-			$results = ldap_get_entries($linkid, $sr);
+	// replace the attribute
+	if(!@ldap_mod_replace($ldap_linkid, $objectdn, $entry)) {
+	    // if the value is empty (""), this causes an error in OpenLDAP 2.x, try to ldap_mod_del
+	    if($value == "") {
+			$oldvalue = pql_get_attribute($ldap_linkid, $objectdn, $attrib);
+			$oldvalue = $oldvalue[0];
+			$entry[$attrib] = $oldvalue;
 
-			// Go through the entries
-			foreach($results as $key => $result){
-				if((string)$key != "count"){
-					$return[] = array("reference" => $result["dn"],
-									  pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $dn) => $result[pql_get_define("PQL_GLOB_ATTR_CN")][0],
-									  "email" => $result[pql_get_define("PQL_GLOB_ATTR_MAIL")][0]);
-					
-					if(is_array($result[pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE")])){
-						foreach($result[pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE")] as $key => $mailalternateaddress){
-							if((string)$key != "count"){
-								$return[] = array("reference" => $result["dn"],
-												  pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $dn) => $result[pql_get_define("PQL_GLOB_ATTR_CN")][0],
-												  "email" => $mailalternateaddress);
-							}
-						} // end foreach results
-					} // end if is_array
-				} // end if key != count
-			} // end foreach results
+			if(ldap_mod_del($ldap_linkid, $objectdn, $entry))
+			  return true;
+			else {
+				pql_format_error(1);
+				return false;
+			}
+	    } else {
+			if(ldap_errno($ldap_linkid) == 65) {
+				// Object class violation - try to add the missing objectclass
+				$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")] = pql_missing_objectclasses($linkid, $objectdn, $entry);
+			}
 		}
-	} // end foreach basedn
-    
-    return $return;
+	    
+	    pql_format_error(1);
+	    return false;
+	}
+	
+	// user entry has changed -> remove the cached version
+	pql_cache_userentry_remove($objectdn);
+	
+	return true;
 }
+
 // }}}
 
 // ------------------------------------------------
