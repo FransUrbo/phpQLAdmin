@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.172.2.1.6.3.2.2.2.2 2004-10-04 09:15:23 turbo Exp $
+// $Id: pql.inc,v 2.172.2.1.6.3.2.2.2.3 2004-10-14 11:04:07 turbo Exp $
 //
 
 // ----------------------------
@@ -434,9 +434,8 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 		$groupdn = pql_get_define("PQL_ATTR_CN") . "=" . $attribs[pql_get_define("PQL_ATTR_USER_RDN_ATTRIBUTE", $rootdn)] . $subrdn . "," . urldecode($domain);
 
 		// Add the OpenLDAPaci attribute (maybe)
-		if($_SESSION["ACI_SUPPORT_ENABLED"])
-		  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($ldap_linkid,
-																				  $_SESSION["USER_DN"], 'group');
+		if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci"))
+		  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($ldap_linkid, $_SESSION["USER_DN"], 'group');
 
 		// Create a LDIF object to print in case of error
 		$LDIF = pql_create_ldif("pql_user_add - group creation", $groupdn, $entry);
@@ -720,7 +719,7 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name) {
 	  $entry[pql_get_define("PQL_ATTR_O")] = 0;
 
 	// Add the OpenLDAPaci attribute (maybe)
-	if($_SESSION["ACI_SUPPORT_ENABLED"])
+	if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci"))
 	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($ldap_linkid, $_SESSION["USER_DN"], 'branch');
 
 	// Create a LDIF object to print in case of error
@@ -1716,7 +1715,7 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 
 // {{{ pql_get_rootdn(dn)
 function pql_get_rootdn($dn, $function = '') {
-	global $_pql;
+	global $_pql, $_SESSION;
 	$tracker = 'Please report this at the <a href="http://apache.bayour.com/anthill/" target="_new">bugtracker</a>.<br>';
 
 	if($dn == '') {
@@ -1736,6 +1735,26 @@ function pql_get_rootdn($dn, $function = '') {
 			if(eregi("$base\$", $dn))  {
 				$counts++;
 				$DNs[] = $base;
+			}
+		}
+
+		if(($counts < 1) and @$_SESSION["MONITOR_BACKEND_ENABLED"]) {
+			// We have ONE more shot in finding the root DN. Look in the
+			// 'cn=Databases,cn=Monitor:namingContexts' attribute(s).
+			require("./include/pql_status.inc");
+			$tmp = pql_get_status($_pql->ldap_linkid, "cn=Databases,cn=Monitor", 'namingContexts');
+			if(is_array($tmp)) {
+				// We got more than one namingContexts (i.e. an array). Go through each value...
+				foreach($tmp as $base) {
+					if(eregi("$base\$", $dn))  {
+						$counts++;
+						$DNs[] = $base;
+					}
+				}
+			} elseif(eregi($tmp, $dn)) {
+				// We've only got one namingContexts (i.e. not an array).
+				$counts++;
+				$DNs[] = $tmp;
 			}
 		}
 		
