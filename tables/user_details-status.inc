@@ -1,13 +1,15 @@
 <?php
 // Retreive 'days from Jan 1, 1970'
 $tmp  = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_EXPIRATION"));
-
-// Convert to UNIX timestamp
-$seconds = $tmp[0] * (60 * 60 * 24);
-
-// Convert to human readable
-$time_expiration = date("D M j h:i Y", $seconds);
-
+if($tmp[0]) {
+	// Convert to UNIX timestamp
+	$seconds = $tmp[0] * (60 * 60 * 24);
+	
+	// Convert to human readable
+	$time_expiration = date("D M j h:i Y", $seconds);
+} else {
+	$time_expiration = '<i>Not set</i>';
+}
 // Retreive the accountStatus attribute
 $tmp = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_ISACTIVE"));
 $status = $tmp[0];
@@ -18,13 +20,13 @@ $status = pql_ldap_accountstatus($status);
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="2" align="left"><?=$LANG->_('Account status')?></th>
       <tr class="<?php pql_format_table(); ?>">
-        <td>Account expiration date</td>
+        <td class="title">Account expiration date</td>
         <td><?=$time_expiration?></td>
         <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_EXPIRATION")?>&user=<?=$url["user"]?>&set=expiration&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Set expiration date"></a></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td>Status</td>
+        <td class="title">Status</td>
 <?php if(eregi('Active', $status)) { ?>
         <td><b><?=$LANG->_('Active')?></b></td>
         <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_ISACTIVE")?>&user=<?=$url["user"]?>&set=disabled&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="Disable account"></a></td>
