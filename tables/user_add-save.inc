@@ -1,8 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.30.2.3 2005-02-14 21:36:15 turbo Exp $
-
-// Retreive template we're using
-$template = pql_get_template($_pql->ldap_linkid, $_REQUEST["template"]);
+// $Id: user_add-save.inc,v 1.30.2.4 2005-02-15 10:02:25 turbo Exp $
 
 // {{{ URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
 if($_REQUEST["surname"]) {
@@ -84,8 +81,10 @@ if($_REQUEST["email"] and
 	 pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAIL")))
 	$entry[pql_get_define("PQL_ATTR_MAIL")] = $_REQUEST["email"];
   
-  if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILALTERNATE"))) {
+  if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILALTERNATE"), 'MUST')) {
 	// For group objects, we need a 'catchall' mail alias as well.
+	$email_temp = split('\@', $_REQUEST["email"]); $email_temp = $email_temp[0];
+
 	if($_REQUEST["email_domain"])
 	  $entry[pql_get_define("PQL_ATTR_MAILALTERNATE")][] = $email_temp . "-catchall@" . $_REQUEST["email_domain"];
 	elseif($defaultdomain)
@@ -120,39 +119,39 @@ if($_REQUEST["forwardingaddress"] and
   if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
 	$entry[pql_get_define("PQL_ATTR_HOMEDIR")]= pql_get_define("PQL_CONF_VIRTUAL_BASEHOME");
   // }}}
-} else {
-  // Any other account than 'forwarding'.
-  
-  // {{{ Add [ug]id number, gecos etc to the entry array
-  if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_QMAILUID"), 'MUST')) {
-	// Get a free UserID number
-	$uidnr = pql_get_next_ugidnumber($_pql, 'uid');
-	if($uidnr > 0)
-	  $entry[pql_get_define("PQL_ATTR_QMAILUID")] = $uidnr;
-	
-	// Get a free GroupID number
-	$gidnr = pql_get_next_ugidnumber($_pql, 'gid');
-	if($gidnr > 0)
-	  $entry[pql_get_define("PQL_ATTR_QMAILGID")] = $gidnr;
-	
-	// Gecos is needed to do PAM/NSS LDAP login 
-	if($_REQUEST["surname"] and $_REQUEST["name"] and
-	   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_GECOS")) and
-	   (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")))
-	  {
-		// We have first and last name, 'gecos' is allowed AND we're referencing users with 'uid'.
+}
 
-		// Gecos is one attribute that can't be internationalized!
-		// Decode in two steps: UTF8 decoding and then translate international chars to non-us chars
-		$tmp1 = pql_maybe_decode($_REQUEST["surname"]); $tmp1 = pql_format_international($tmp1);
-		$tmp2 = pql_maybe_decode($_REQUEST["name"]);    $tmp2 = pql_format_international($tmp2);
-		
-		$entry[pql_get_define("PQL_ATTR_GECOS")]  = $tmp1 . " " . $tmp2;
-	  }
-  }
+// {{{ Add [ug]id number, gecos etc to the entry array
+if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_QMAILUID"), 'MUST')) {
+  // Get a free UserID number
+  $uidnr = pql_get_next_ugidnumber($_pql, 'uid');
+  if($uidnr > 0)
+	$entry[pql_get_define("PQL_ATTR_QMAILUID")] = $uidnr;
+  
+  // Get a free GroupID number
+  $gidnr = pql_get_next_ugidnumber($_pql, 'gid');
+  if($gidnr > 0)
+	$entry[pql_get_define("PQL_ATTR_QMAILGID")] = $gidnr;
+  
+  // Gecos is needed to do PAM/NSS LDAP login 
+  if($_REQUEST["surname"] and $_REQUEST["name"] and
+	 pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_GECOS")) and
+	 (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")))
+	{
+	  // We have first and last name, 'gecos' is allowed AND we're referencing users with 'uid'.
+	  
+	  // Gecos is one attribute that can't be internationalized!
+	  // Decode in two steps: UTF8 decoding and then translate international chars to non-us chars
+	  $tmp1 = pql_maybe_decode($_REQUEST["surname"]); $tmp1 = pql_format_international($tmp1);
+	  $tmp2 = pql_maybe_decode($_REQUEST["name"]);    $tmp2 = pql_format_international($tmp2);
+	  
+	  $entry[pql_get_define("PQL_ATTR_GECOS")]  = $tmp1 . " " . $tmp2;
+	}
+}
 // }}}
-	
-  // {{{ Add the password to the entry array
+
+// {{{ Add the password to the entry array
+if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_PASSWD"))) {
   if(eregi('KERBEROS', $_REQUEST["pwscheme"])) {
 	// We're using the {KERBEROS} password scheme. Special circumstances.
 	// The userPassword and krb5PrincipalName needs to be set. This is 
@@ -174,12 +173,12 @@ if($_REQUEST["forwardingaddress"] and
 	if($_REQUEST["crypted"] and !$_REQUEST["autogenerate"])
 	  // Password is already encrypted, prefix with choosen password scheme
 	  $entry[pql_get_define("PQL_ATTR_PASSWD")] = $_REQUEST["pwscheme"] . $_REQUEST["password"];
-	else
+	elseif($_REQUEST["password"] and $_REQUEST["pwscheme"])
 	  // Password isn't already encrypted, create the hash using the password value
 	  $entry[pql_get_define("PQL_ATTR_PASSWD")] = pql_password_hash($_REQUEST["password"], $_REQUEST["pwscheme"]);
   }
-// }}}
 }
+// }}}
 
 // {{{ Add login shell
 if($_REQUEST["loginshell"] and
