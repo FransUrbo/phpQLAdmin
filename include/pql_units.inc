@@ -3,7 +3,7 @@
 // pql_units.inc
 // Sub units (ou=People, ou=Users, dc=host) etc
 //
-// $Id: pql_units.inc,v 1.7 2004-03-11 18:13:42 turbo Exp $
+// $Id: pql_units.inc,v 1.8 2004-03-14 07:43:45 turbo Exp $
 //
 
 // {{{ pql_unit_get(linkid, dn, filter)
@@ -67,10 +67,16 @@ function pql_unit_add($linkid, $domain, $unit) {
 	$rootdn = pql_get_rootdn($domain, 'pql_unit_add'); $rootdn = urldecode($rootdn);
 	$domain = urldecode($domain);
 
-	$tmp = split('=', $unit);
+	if(ereg('=', $unit)) {
+		$tmp = split('=', $unit);
 
-	$dn = $tmp[0]."=".$tmp[1].",$domain";
-	$entry[$tmp[0]] = $tmp[1];
+		$dn = $tmp[0]."=".$tmp[1].",$domain";
+		$entry[$tmp[0]] = $tmp[1];
+	} else {
+		$dn = "ou=$unit,$domain";
+		$entry["ou"] = $unit;
+	}
+
 	$entry['objectClass'] = "organizationalUnit";
 
 	// Add the OpenLDAPaci attribute (maybe)
