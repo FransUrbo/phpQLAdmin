@@ -19,7 +19,7 @@ include("./header.html");
       <tr>
         <td class="title">Show users (navigation bar)</td>
 	<?php
-		if(PQL_SHOW_USERS){
+	if(PQL_SHOW_USERS){
 			$show_users = "yes";
    	} else {
 			$show_users = "no";
@@ -29,7 +29,7 @@ include("./header.html");
 </tr>
 <tr>
 	<?php
-		if(PQL_AUTO_RELOAD){
+	if(PQL_AUTO_RELOAD){
 			$auto_reload = "yes";
    	} else {
 			$auto_reload = "no";
@@ -53,7 +53,7 @@ include("./header.html");
 <tr>
 	<td class="title">use control db</td>
 	<?php
-		if(PQL_LDAP_CONTROL_USE){
+	if(PQL_LDAP_CONTROL_USE){
 			$control_use = "yes";
    	} else {
 			$control_use = "no";
@@ -74,12 +74,8 @@ include("./header.html");
 	<td class="title">LDAP control root dn</td>
 	<td class="<?php table_bgcolor(); ?>"><?=$USER_DN?>&nbsp;</td>
 </tr>
-<tr>
-	<td class="title">value in 'me'</td>
-	<td class="<?php table_bgcolor(); ?>"><?php echo PQL_LDAP_CONTROL_ME; ?>&nbsp;</td>
-</tr>
 	<?php
-		if(PQL_LDAP_CONTROL_AUTOADDLOCALS){
+	if(PQL_LDAP_CONTROL_AUTOADDLOCALS){
 			$control_autoaddlocals = "yes";
    	} else {
 			$control_autoaddlocals = "no";
@@ -97,7 +93,7 @@ include("./header.html");
 <tr>
 	<td class="title">allow absolute mailbox paths</td>
 	<?php
-		if(PQL_ALLOW_ABSOLUTE_PATH){
+	if(PQL_ALLOW_ABSOLUTE_PATH){
 			$allow_absolute_path = "yes";
    	} else {
 			$allow_absolute_path = "no";
