@@ -1,6 +1,6 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.30.6.1 2004-05-06 07:07:22 turbo Exp $
+// $Id: ezmlm_add.php,v 1.30.6.2 2004-05-06 08:09:46 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -12,13 +12,6 @@ function list_forward($domainname, $msg) {
     $msg = urlencode($msg);
     $url = "ezmlm_detail.php?domain=".$_REQUEST["domain"]."&domainname=$domainname&msg=$msg&rlnb=3";
     header("Location: " . pql_get_define("PQL_CONF_URI") . "$url");
-}
-
-if(!$subscribercount) {
-	$subscribercount = 0;
-}
-if(!$killcount) {
-	$killcount = 0;
 }
 
 if(!$_REQUEST["domainname"]) {
@@ -346,59 +339,9 @@ if(!$_REQUEST["domain"]) {
       </th>
     </table>
 
-    <br><!-- ======================================================= -->
-
-    <!-- add subscribers at creation -->
-    <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_('Subscriber address(es)')?></th>
-<?php
-	for($i = 1; $i <= $subscribercount; $i++) {
-?>
-        <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Subscriber')?></td>
-          <td><input type="text" name="subscriber[<?=$i?>]" value="<?=$subscriber[$i]?>"<?=$onchg?>></td>
-        </tr>
-<?php
-	}
-?>
-        <tr class="subtitle">
-          <td><a href="<?php echo $_SERVER["PHP_SELF"]; ?>?subscribercount=<?php echo ($subscribercount + 1); ?>">add <?php if($subscribercount) {echo $LANG->_('Additional');}?>address</a></td>
-        </tr>
-      </th>
-    </table>
-    <!-- add subscribers at creation -->
-
-    <br><!-- ======================================================= -->
-
-    <!-- add kill at creation -->
-    <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?=$LANG->_('Rejected address(es)')?></th>
-<?php
-	for($i = 1; $i <= $killcount; $i++) {
-?>
-        <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Address')?></td>
-          <td><input type="text" name="killlist[<?=$i?>]" value="<?=$killlist[$i]?>"<?=$onchg?>></td>
-        </tr>
-
-<?php
-	}
-?>
-        <tr class="subtitle">
-          <td><a href="<?php echo $_SERVER["PHP_SELF"]; ?>?killcount=<?php echo ($killcount + 1); ?>">add <?php if($killcount) {echo $LANG->_('Additional');}?>address</a></td>
-        </tr>
-      </th>
-    </table>
-    <!-- add kill at creation -->
-
-    <br><!-- ======================================================= -->
-
-<?php for($i = 1; $i <= $subscribercount; $i++) { ?>
-    <input type="hidden" name="subscriber[<?=$i?>]" value="<?=$subscriber[$i]?>">
-<?php } for($i = 1; $i <= $killcount; $i++) { ?>
-    <input type="hidden" name="killlist[<?=$i?>]" value="<?=$killlist[$i]?>">
-<?php } ?>
     <input type="hidden" name="domain" value="<?=$_REQUEST["domain"]?>">
+
+    <p>
 
     <input type="submit" name="submit" value="<?=$LANG->_('Create list')?>">
   </form>
