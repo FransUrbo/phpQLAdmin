@@ -1,5 +1,4 @@
-<?php printr($_REQUEST); ?>
-<?php /* $Id: user_add-additional.inc,v 1.15.10.2 2004-05-05 08:04:41 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.15.10.3 2004-05-05 08:06:20 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <input type="hidden" name="surname"            value="<?=$_REQUEST["surname"]?>">
     <input type="hidden" name="name"               value="<?=$_REQUEST["name"]?>">
