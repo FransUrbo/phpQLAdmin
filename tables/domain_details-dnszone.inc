@@ -1,5 +1,5 @@
 <?php require("./include/pql_bind9.inc");
-      $zones = pql_bind9_get_zone($_pql->ldap_linkid, "ou=DNS,".urldecode($domain));
+      $zones = pql_bind9_get_zone($_pql->ldap_linkid, $domain);
       if(is_array($zones)) {
 ?>
   <table cellspacing="0" border="0" width="100%" cellpadding="0">
