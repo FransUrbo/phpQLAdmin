@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.30.2.2 2005-02-14 11:33:53 turbo Exp $
+// $Id: user_add-save.inc,v 1.30.2.3 2005-02-14 21:36:15 turbo Exp $
 
 // Retreive template we're using
 $template = pql_get_template($_pql->ldap_linkid, $_REQUEST["template"]);
@@ -23,66 +23,90 @@ if($_REQUEST["uid"]) {
 }
 // }}}
 
-// {{{ Add Firstname and/or Lastname
-if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_SN"))) {
-  // Firstname
-  if($_REQUEST["surname"] and
-	 pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_GIVENNAME")))
-  {
+// {{{ Add Firstname
+if(($_REQUEST["surname"]
+	or ($_REQUEST["uid"]
+		and
+		pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")))
+   and
+   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_GIVENNAME"), 'MUST'))
+{
+  if($_REQUEST["surname"]) 
 	$entry[pql_get_define("PQL_ATTR_GIVENNAME")]	= $_REQUEST["surname"];
-  } elseif(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")) {
+  elseif(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
 	$entry[pql_get_define("PQL_ATTR_GIVENNAME")]	= $_REQUEST["uid"];
-  }
+}
+// }}}
 
-  // Lastname
-  if($_REQUEST["name"]) {
+// {{{ Add Lastname
+if(($_REQUEST["name"]
+	or ($_REQUEST["uid"]
+		and
+		pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")))
+   and
+   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_SN"), 'MUST'))
+{
+  if($_REQUEST["name"])
 	$entry[pql_get_define("PQL_ATTR_SN")]			= $_REQUEST["name"];
-  } elseif(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")) {
+  elseif(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
 	$entry[pql_get_define("PQL_ATTR_SN")]			= $_REQUEST["uid"];
-  }
+}
+// }}}
 	
-  // Full (common) name
-  if($_REQUEST["surname"] && $_REQUEST["name"]) {
+// {{{ Add full (common) name
+if(((($_REQUEST["surname"] and $_REQUEST["name"])
+	 or ($_REQUEST["uid"] and
+		 pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")))
+	and
+	pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_SN")))
+   or
+   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_SN"), 'MUST'))
+{
+  if($_REQUEST["surname"] and $_REQUEST["name"])
 	$entry[pql_get_define("PQL_ATTR_CN")] = trim($_REQUEST["surname"]) . " " . trim($_REQUEST["name"]);
-  } elseif(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")) {
+  elseif(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
 	$entry[pql_get_define("PQL_ATTR_CN")] = $_REQUEST["uid"];
-  }
 }
 // }}}
 
 // {{{ Add mail and/or mail aliases
 if($_REQUEST["email"] and
-   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAIL")))
+   (pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAIL")) or
+	pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_ISACTIVE")) or
+	pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILALTERNATE"))))
 {
   if($_REQUEST["account_status"] and 
 	 pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_ISACTIVE")))
 	$entry[pql_get_define("PQL_ATTR_ISACTIVE")]	= $_REQUEST["account_status"];
-
+  
   // Add the primary mail address to the entry array
-  $entry[pql_get_define("PQL_ATTR_MAIL")]	= $_REQUEST["email"];
-
-  if($_REQUEST["template"] == "group") {
+  if($_REQUEST["email"] and
+	 pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAIL")))
+	$entry[pql_get_define("PQL_ATTR_MAIL")] = $_REQUEST["email"];
+  
+  if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILALTERNATE"))) {
 	// For group objects, we need a 'catchall' mail alias as well.
 	if($_REQUEST["email_domain"])
 	  $entry[pql_get_define("PQL_ATTR_MAILALTERNATE")][] = $email_temp . "-catchall@" . $_REQUEST["email_domain"];
-	else
+	elseif($defaultdomain)
 	  $entry[pql_get_define("PQL_ATTR_MAILALTERNATE")][] = $email_temp . "-catchall@" . $defaultdomain;
-  }
-
-  // Add the additional email addresses as well
-  if($include_additional == 'on' and is_array($additionaldomainname)) {
-	foreach($additionaldomainname as $additional)
-	  $entry[pql_get_define("PQL_ATTR_MAILALTERNATE")][] = strtolower($email_temp . "@" . $additional);
+	
+	// Add the additional email addresses as well
+	if(($include_additional == 'on') and is_array($additionaldomainname)) {
+	  foreach($additionaldomainname as $additional)
+		$entry[pql_get_define("PQL_ATTR_MAILALTERNATE")][] = strtolower($email_temp . "@" . $additional);
+	}
   }
 }
 // }}}
 
-if($_REQUEST["template"] == "forward") {
-  // {{{ Add forwardingaddress
-  $entry[pql_get_define("PQL_ATTR_FORWARDS")]	= strtolower($forwardingaddress);
-  // }}}
+if($_REQUEST["forwardingaddress"] and
+   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_FORWARDS")))
+{
+  // {{{ Setup mail forwarding
+  $entry[pql_get_define("PQL_ATTR_FORWARDS")]	= strtolower($_REQUEST["forwardingaddress"]);
   
-  // {{{ Setup the delivery modes
+  // Setup the delivery modes
   if(!$_SESSION["NEW_STYLE_QUOTA"]) {
 	// The new QmailLDAP have a changed 'deliveryMode' setup.
 	// Don't add this automaticly.
@@ -91,9 +115,8 @@ if($_REQUEST["template"] == "forward") {
   } else {
 	$entry[pql_get_define("PQL_ATTR_MODE")][]	= "nolocal";
   }
-  // }}}
   
-  // {{{ If we're referencing users with 'uid', we need the home directory (fake it)
+  // If we're referencing users with 'uid', we need the home directory (fake it)
   if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
 	$entry[pql_get_define("PQL_ATTR_HOMEDIR")]= pql_get_define("PQL_CONF_VIRTUAL_BASEHOME");
   // }}}
@@ -101,42 +124,31 @@ if($_REQUEST["template"] == "forward") {
   // Any other account than 'forwarding'.
   
   // {{{ Add [ug]id number, gecos etc to the entry array
-  if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_QMAILUID"))) {
-	// We COULD end up here, EVEN if it's a mail account! So we have to tripple check again,
-	// and again so that we only add the [ug]idNumber if it's supposed to be added...
-	if($_REQUEST["template"] == "mail") {
-	  // It's a mail account but we've decided to use 'posixAccount' when creating users,
-	  // so use the predefined uid/gid number for this user...
-	  $virtual_uid_number = pql_get_define("PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER", $_REQUEST["rootdn"]);
-	  
-	  $entry[pql_get_define("PQL_ATTR_QMAILUID")] = $virtual_uid_number;
-	  $entry[pql_get_define("PQL_ATTR_QMAILGID")] = $virtual_uid_number;
-	} else {
-	  // It's not a mail account
-	  
-	  // Get a free UserID number
-	  $uidnr = pql_get_next_ugidnumber($_pql, 'uid');
-	  if($uidnr > 0)
-		$entry[pql_get_define("PQL_ATTR_QMAILUID")] = $uidnr;
-	  
-	  // Get a free GroupID number
-	  $gidnr = pql_get_next_ugidnumber($_pql, 'gid');
-	  if($gidnr > 0)
-		$entry[pql_get_define("PQL_ATTR_QMAILGID")] = $gidnr;
-	}
+  if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_QMAILUID"), 'MUST')) {
+	// Get a free UserID number
+	$uidnr = pql_get_next_ugidnumber($_pql, 'uid');
+	if($uidnr > 0)
+	  $entry[pql_get_define("PQL_ATTR_QMAILUID")] = $uidnr;
+	
+	// Get a free GroupID number
+	$gidnr = pql_get_next_ugidnumber($_pql, 'gid');
+	if($gidnr > 0)
+	  $entry[pql_get_define("PQL_ATTR_QMAILGID")] = $gidnr;
 	
 	// Gecos is needed to do PAM/NSS LDAP login 
 	if($_REQUEST["surname"] and $_REQUEST["name"] and
 	   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_GECOS")) and
 	   (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")))
-	{
-	  // Gecos is one attribute that can't be internationalized!
-	  // Decode in two steps: UTF8 decoding and then translate international chars to non-us chars
-	  $tmp1 = pql_maybe_decode($_REQUEST["surname"]); $tmp1 = pql_format_international($tmp1);
-	  $tmp2 = pql_maybe_decode($_REQUEST["name"]);    $tmp2 = pql_format_international($tmp2);
-	  
-	  $entry[pql_get_define("PQL_ATTR_GECOS")]  = $tmp1 . " " . $tmp2;
-	}
+	  {
+		// We have first and last name, 'gecos' is allowed AND we're referencing users with 'uid'.
+
+		// Gecos is one attribute that can't be internationalized!
+		// Decode in two steps: UTF8 decoding and then translate international chars to non-us chars
+		$tmp1 = pql_maybe_decode($_REQUEST["surname"]); $tmp1 = pql_format_international($tmp1);
+		$tmp2 = pql_maybe_decode($_REQUEST["name"]);    $tmp2 = pql_format_international($tmp2);
+		
+		$entry[pql_get_define("PQL_ATTR_GECOS")]  = $tmp1 . " " . $tmp2;
+	  }
   }
 // }}}
 	
@@ -156,7 +168,8 @@ if($_REQUEST["template"] == "forward") {
 	  $entry[pql_get_define("PQL_ATTR_KRB5PRINCIPALNAME")] = $_REQUEST["uid"] . "@" . pql_get_define("PQL_CONF_KRB5_REALM");
 	
 	// Encrypt and create the hash using the krb5PrincipalName attribute
-	$entry[pql_get_define("PQL_ATTR_PASSWD")] = pql_password_hash($entry[pql_get_define("PQL_ATTR_KRB5PRINCIPALNAME")], $_REQUEST["pwscheme"]);
+	$entry[pql_get_define("PQL_ATTR_PASSWD")] = pql_password_hash($entry[pql_get_define("PQL_ATTR_KRB5PRINCIPALNAME")],
+																  $_REQUEST["pwscheme"]);
   } else {
 	if($_REQUEST["crypted"] and !$_REQUEST["autogenerate"])
 	  // Password is already encrypted, prefix with choosen password scheme
@@ -177,15 +190,11 @@ if($_REQUEST["loginshell"] and
 // }}}
 
 // {{{ Add mail directory
-if($_REQUEST["maildirectory"] and
+if($_REQUEST["email"] and $_REQUEST["maildirectory"] and
    pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILSTORE")))
 {
   // No auto generation - that's done in 'user_add.php'.
   $entry[pql_get_define("PQL_ATTR_MAILSTORE")] = $_REQUEST["maildirectory"];
-	
-  // Verify trailing slash!
-  if(! ereg("/$", $entry[pql_get_define("PQL_ATTR_MAILSTORE")]))
-	$entry[pql_get_define("PQL_ATTR_MAILSTORE")] .= "/";
 }
 // }}}
 
@@ -220,10 +229,6 @@ if($_REQUEST["email"] and ($_REQUEST["host"] or $_REQUEST["userhost"]) and
 	{
 		// No auto generation - that's done in 'user_add.php'.
 		$entry[pql_get_define("PQL_ATTR_HOMEDIR")] = $_REQUEST["homedirectory"];
-
-		// Verify trailing slash!
-		if(! ereg("/$", $entry[pql_get_define("PQL_ATTR_HOMEDIR")]))
-		  $entry[pql_get_define("PQL_ATTR_HOMEDIR")] .= "/";
 	  }
 } elseif($_REQUEST["template"] == "group") {
 	// Because we require the 'posixAccount' ('uid' attrib) when creating a
@@ -254,11 +259,11 @@ if($_REQUEST["email"] and
 $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = $template["userobjectclass"];
 // }}}
 
-// {{{ Create the RDN for the user
 if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
   echo "Entry array: "; printr($entry);
 }
 
+// {{{ Create the RDN for the user
 if($entry[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])])
 {
   $userdn = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) . "=" .
@@ -280,9 +285,7 @@ if($_REQUEST["subbranch"]) {
 $userdn = pql_maybe_encode($userdn);
 // }}}
 
-// ============================================================================================
-// ============== ADD THE USER TO THE DATABASE
-
+// {{{ Add the user to the database
 // pql_user_add() will first URL encode the value, THEN UTF8 encode it
 // Hence, we must reverse this here ($_REQUEST["subbranch"] is already
 // URL decoded).
@@ -356,6 +359,7 @@ if($DNs[0]) {
   $link = "domain_detail.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&msg=$msg";
   header("Location: " . $_SESSION["URI"] . "$link");
 }
+// }}}
 
 /*
  * Local variables:
