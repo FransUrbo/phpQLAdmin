@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // loginshell
-// $Id: attrib.loginshell.inc,v 2.13 2004-02-14 14:25:36 turbo Exp $
+// $Id: attrib.loginshell.inc,v 2.14 2004-02-14 16:36:14 turbo Exp $
 
 function attribute_check($type) {
     global $error, $LANG;
@@ -22,8 +22,18 @@ function attribute_init() {
 function attribute_print_form() {
     global $error, $LANG;
 
-	// DLW: This needs to be fixed to default to the users existing shell.
-    $shells = pql_get_valid_shells();
+	// Get all shells we can choose from
+    $shells   = pql_get_valid_shells();
+	$shells[] = '/bin/false';
+
+	// Get the users existing shell
+    $existing_shell = pql_get_attribute($_pql->ldap_linkid, $_GET["user"],
+										pql_get_define("PQL_GLOB_ATTR_LOGINSHELL"));
+	if(!empty($existing_shell[0])) {
+		$existing_shell = $existing_shell[0];
+	} else {
+		$existing_shell = '/bin/false';
+	}
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -34,11 +44,13 @@ function attribute_print_form() {
             <?php echo pql_format_error_span($error["loginshell"]); ?>
 
             <select name="loginshell">
-              <option value="/bin/false" SELECTED>/bin/false</option>
-<?php
+<?php 
     foreach($shells as $shell) {
 ?>
-              <option value="<?=$shell?>"><?=$shell?></option>
+              <option value="<?=$shell?>" <?php
+		if($existing_shell == $shell) {
+			echo "SELECTED";
+		}?>><?=$shell?></option>
 <?php
     }
 ?>
