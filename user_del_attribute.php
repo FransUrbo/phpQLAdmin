@@ -1,6 +1,6 @@
 <?php
 // delete attribute of a user
-// $Id: user_del_attribute.php,v 2.27 2004-03-11 18:13:32 turbo Exp $
+// $Id: user_del_attribute.php,v 2.28 2004-10-14 09:57:00 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -13,6 +13,14 @@ switch ($_REQUEST["attrib"]) {
   case "mailforwardingaddress";
     $_REQUEST["attrib"] = pql_get_define("PQL_ATTR_FORWARDS");
     break;
+
+  case "confirmtext";
+    $_REQUEST["attrib"] = pql_get_define("PQL_ATTR_GROUP_CONFIRM_TEXT");
+    break;
+
+  case "moderatortext";
+    $_REQUEST["attrib"] = pql_get_define("PQL_ATTR_GROUP_MODERATOR_TEXT");
+    break;
     
   default:
     die(pql_complete_constant($LANG->_('Unknown attribute %attribute% in %file%'), array('attribute' => $_REQUEST["attrib"], 'file' => __FILE__)));
@@ -23,16 +31,29 @@ include("./header.html");
 if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST["rootdn"])) {
     $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
     
+    if(lc($_REQUEST["attrib"]) == pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR"))
+      $what = $LANG->_('group moderator');
+    elseif(lc($_REQUEST["attrib"]) == pql_get_define("PQL_ATTR_GROUP_DN_MEMBER"))
+      $what = $LANG->_('group member');
+    elseif(lc($_REQUEST["attrib"]) == pql_get_define("PQL_ATTR_GROUP_DN_SENDER"))
+      $what = $LANG->_('group allowed sender');
+    elseif(lc($_REQUEST["attrib"]) == pql_get_define("PQL_ATTR_GROUP_CONFIRM_TEXT"))
+      $what = $LANG->_('QmailGroup confirmation text');
+    elseif(lc($_REQUEST["attrib"]) == pql_get_define("PQL_ATTR_GROUP_MODERATOR_TEXT"))
+      $what = $LANG->_('QmailGroup moderator text');
+    else
+      $what = $LANG->_('alias');
+
     // delete the user attribute
     if(pql_modify_userattribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], $_REQUEST["oldvalue"], '')) {
-	$msg = pql_complete_constant($LANG->_('Successfully removed alias %mail%'), array("mail" => pql_maybe_idna_decode($_REQUEST["oldvalue"])));
+	$msg = pql_complete_constant($LANG->_('Successfully removed %what% %oldvalue%'), array("what" => $what, "oldvalue" => pql_maybe_idna_decode($_REQUEST["oldvalue"])));
 	$success = true;
     } else {
-    	$msg = pql_complete_constant($LANG->_('Failed to removed alias %mail%'), array("mail" => pql_maybe_idna_decode($_REQUEST["oldvalue"]))) . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+    	$msg = pql_complete_constant($LANG->_('Failed to removed %what% %oldvalue%'), array("what" => $what, "oldvalue" => pql_maybe_idna_decode($_REQUEST["oldvalue"]))) . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	$success = false;
     }
     
-    if (lc($_REQUEST["attrib"]) == 'mailalternateaddress' and $success and isset($_REQUEST["delete_forwards"])) {
+    if (lc($_REQUEST["attrib"]) == pql_get_define("PQL_ATTR_MAILALTERNATE") and $success and isset($_REQUEST["delete_forwards"])) {
 	// does another account forward to this alias?
 	$sr = ldap_search($_pql->ldap_linkid, "(|(" . pql_get_define("PQL_ATTR_FORWARDS") ."=" . $_REQUEST["oldvalue"] . "))");
 	if (ldap_count_entries($_pql->ldap_linkid,$sr) > 0) {
@@ -61,7 +82,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
     
     // redirect to users detail page
     $url = "user_detail.php?rootdn=" . $_REQUEST["rootdn"] . "&domain=" . $_REQUEST["domain"]
-      . "&user=" . urlencode($_REQUEST["user"]) . "&msg=" . urlencode($msg);
+      . "&user=" . urlencode($_REQUEST["user"]) . "&msg=" . urlencode($msg) . "&view=" . $_REQUEST["view"];
     header("Location: " . pql_get_define("PQL_CONF_URI") . "$url");
 } else {
 ?>
