@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.39 2003-10-11 11:55:49 turbo Exp $
+// $Id: pql_config.inc,v 1.40 2003-10-12 17:03:18 turbo Exp $
 //
 
 // We need this instead of define(), so that we can get rid
@@ -190,35 +190,35 @@ foreach($_pql->ldap_basedn as $dn)  {
 
 	// If we got something, retreive the attributes
 	for ($i=0; $i<$info["count"]; $i++) {
-		foreach($PQL_ATTRIBUTE as $key => $value) {
-			if(is_array($value)) {
-				foreach($value as $k => $v) {
+		foreach($PQL_ATTRIBUTE as $key => $pql_config_private_variable_which_irritates_me) {
+			if(is_array($pql_config_private_variable_which_irritates_me)) {
+				foreach($pql_config_private_variable_which_irritates_me as $k => $v) {
 					$v = strtolower($v);
 					$nkey = $key."_".$k;
 					
 					if(isset($info[$i][$v][0])) {
-						if($values)
-						  $values .= ",".$info[$i][$v][0];
+						if($pql_config_private_array_which_irritates_me)
+						  $pql_config_private_array_which_irritates_me .= ",".$info[$i][$v][0];
 						else
-						  $values = $info[$i][$v][0];
+						  $pql_config_private_array_which_irritates_me = $info[$i][$v][0];
 					}
 				}
 			} else {
-				$value = strtolower($value);
+				$pql_config_private_variable_which_irritates_me = strtolower($pql_config_private_variable_which_irritates_me);
 
-				for($k=0; isset($info[$i][$value][$k]); $k++) {
-					if($values)
-					  $values .= ",".$info[$i][$value][$k];
+				for($k=0; isset($info[$i][$pql_config_private_variable_which_irritates_me][$k]); $k++) {
+					if($pql_config_private_array_which_irritates_me)
+					  $pql_config_private_array_which_irritates_me .= ",".$info[$i][$pql_config_private_variable_which_irritates_me][$k];
 					else
-					  $values = $info[$i][$value][$k];
+					  $pql_config_private_array_which_irritates_me = $info[$i][$pql_config_private_variable_which_irritates_me][$k];
 				}
 
 				if(ereg("_GLOB_", $key)) 
-				  pql_set_define($key, $values, true);
+				  pql_set_define($key, $pql_config_private_array_which_irritates_me, true);
 				else
-				  pql_set_define($key, $values, true, $dn);
+				  pql_set_define($key, $pql_config_private_array_which_irritates_me, true, $dn);
 
-				unset($values);
+				unset($pql_config_private_array_which_irritates_me);
 			}
 		}
 	}
@@ -257,7 +257,7 @@ session_register("ALLOW_GLOBAL_CONFIG_SAVE");
 // Remove some variables so we don't clutter the global
 // variable name space!
 unset($host); unset($servers); unset($i);
-unset($value); unset($sr); unset($info);
+unset($pql_config_private_variable_which_irritates_me); unset($sr); unset($info);
 unset($key); unset($v); unset($nkey);
 unset($k);
 
