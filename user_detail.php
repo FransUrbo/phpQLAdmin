@@ -45,7 +45,7 @@ if(!$username[0]) {
     // No common name, use uid field
     $username = pql_get_userattribute($_pql->ldap_linkid, $user, 'uid');
 }
-$username = $username[0];
+$username = maybe_decode($username[0]);
 ?>
 
   <span class="title1"><?=$username?></span>
@@ -68,12 +68,12 @@ foreach($attribs as $attrib) {
     $attrib = strtolower($attrib);
 
     $value = pql_get_userattribute($_pql->ldap_linkid, $user, $attrib);
-    $$attrib = utf8_decode($value[0]);
+    $$attrib = maybe_decode($value[0]);
     $value = urlencode($$attrib);
 
     // Setup edit links
     $link = $attrib . "_link";
-    $$link = "<a href=\"user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=$domain&attrib=$attrib&user=$user&$attrib=$value\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify $attrib for $username\"></a>";
+    $$link = "<a href=\"user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=$domain&attrib=$attrib&user=<?php echo urlencode($user); ?>&$attrib=$value\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify $attrib for $username\"></a>";
 }
 $quota = pql_get_userquota($_pql->ldap_linkid, $user);
 
@@ -95,16 +95,24 @@ if($mailmessagestore == "") {
 if($mailhost == "") {
     $mailhost = PQL_LANG_MAILHOST_NONE;
 }
+
+$mailmessagestore = maybe_decode($mailmessagestore);
+$mailhost = maybe_decode($mailhost);
+
+$userdn = urlencode($user);
 ?>
 
   <table cellspacing="0" border="0" width="100%" cellpadding="0">
     <tr>
-      <td colspan="2" valign="bottom" align="left" width="100%" colspan="2"><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$user&view=basic"?>"><img alt="/ User Data \" vspace="0" hspace="0" border="0" src="navbutton.php?User Data"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$user&view=personal"?>"><img alt="/ Personal Details \" vspace="0" hspace="0" border="0" src="navbutton.php?Personal Details"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$user&view=email"?>"><img alt="/ Registred Addresses \" vspace="0" hspace="0" border="0" src="navbutton.php?Registred Addresses"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$user&view=status"?>"><img alt="/ Account Status \" vspace="0" hspace="0" border="0" src="navbutton.php?Account Status"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$user&view=delivery"?>"><img alt="/ Delivery Mode \" vspace="0" hspace="0" border="0" src="navbutton.php?Delivery Mode"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$user&view=delivery_advanced"?>"><img alt="/ Advanced Delivery Properties \" vspace="0" hspace="0" border="0" src="navbutton.php?Delivery Properties"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$user&view=mailbox"?>"><img alt="/ Mailbox properties \" vspace="0" hspace="0" border="0" src="navbutton.php?Mailbox properties"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$user&view=forwards_from"?>"><img alt="/ Forwarders from other accounts \" vspace="0" hspace="0" border="0" src="navbutton.php?Forwards from account(s)"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$user&view=forwards_to"?>"><img alt="/ Forwarding to other account \" vspace="0" hspace="0" border="0" src="navbutton.php?Forwards to account(s)"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$user&view=access"?>"><img alt="/ User Access \" vspace="0" hspace="0" border="0" src="navbutton.php?User Access"></a><?php if(!$SINGLE_USER) { ?><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$user&view=actions"?>"><img alt="/ Actions \" vspace="0" hspace="0" border="0" src="navbutton.php?Actions"></a><?php } ?></td>
+      <td colspan="2" valign="bottom" align="left" width="100%" colspan="2"><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=basic"?>"><img alt="/ User Data \" vspace="0" hspace="0" border="0" src="navbutton.php?User Data"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=personal"?>"><img alt="/ Personal Details \" vspace="0" hspace="0" border="0" src="navbutton.php?Personal Details"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=email"?>"><img alt="/ Registred Addresses \" vspace="0" hspace="0" border="0" src="navbutton.php?Registred Addresses"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=status"?>"><img alt="/ Account Status \" vspace="0" hspace="0" border="0" src="navbutton.php?Account Status"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=delivery"?>"><img alt="/ Delivery Mode \" vspace="0" hspace="0" border="0" src="navbutton.php?Delivery Mode"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=delivery_advanced"?>"><img alt="/ Advanced Delivery Properties \" vspace="0" hspace="0" border="0" src="navbutton.php?Delivery Properties"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=mailbox"?>"><img alt="/ Mailbox properties \" vspace="0" hspace="0" border="0" src="navbutton.php?Mailbox properties"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=forwards_from"?>"><img alt="/ Forwarders from other accounts \" vspace="0" hspace="0" border="0" src="navbutton.php?Forwards from account(s)"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=forwards_to"?>"><img alt="/ Forwarding to other account \" vspace="0" hspace="0" border="0" src="navbutton.php?Forwards to account(s)"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=access"?>"><img alt="/ User Access \" vspace="0" hspace="0" border="0" src="navbutton.php?User Access"></a><?php if(!$SINGLE_USER) { ?><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=actions"?>"><img alt="/ Actions \" vspace="0" hspace="0" border="0" src="navbutton.php?Actions"></a><?php } ?></td>
   </tr>
 </table>
 
 <?php
-if(($view == 'basic') or ($view == ''))	include("./tables/user_details-basic.inc");
+if($view == '')
+	$view = 'basic';
+
+if($view == 'basic')					include("./tables/user_details-basic.inc");
 if($view == 'personal')					include("./tables/user_details-personal.inc");
 if($view == 'email')					include("./tables/user_details-email.inc");
 if($view == 'status')					include("./tables/user_details-status.inc");
