@@ -20,6 +20,161 @@
 #					administrator		4
 # -----------------------------------------
 
+# $Id: phpQLAdmin.schema,v 2.2 2003-01-15 06:09:19 turbo Exp $
+
+# PQL_SHOW_USERS (true | false)
+attributetype ( 1.3.6.1.4.1.8767.3.2.1.1 NAME 'showUsers'
+	DESC 'Shown users in the navigation frame [True/False]?'
+	EQUALITY booleanMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+	SINGLE-VALUE )
+
+# PQL_LDAP_CONTROL_USE (true | false)
+attributetype ( 1.3.6.1.4.1.8767.3.2.1.2 NAME 'useControls'
+	DESC 'Is ~controls information stored in LDAP database [True/False]?'
+	EQUALITY booleanMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+	SINGLE-VALUE )
+
+# PQL_LDAP_EZMLM_USE (true | false)
+attributetype ( 1.3.6.1.4.1.8767.3.2.1.3 NAME 'useEzmlm'
+	DESC 'Manage ezmlm mailinglists [True/False]?'
+	EQUALITY booleanMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+	SINGLE-VALUE )
+
+# PQL_AUTO_RELOAD (true | false)
+attributetype ( 1.3.6.1.4.1.8767.3.2.1.4 NAME 'autoReload'
+	DESC 'Automatically reload navigation bar(s) [True/False]?'
+	EQUALITY booleanMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+	SINGLE-VALUE )
+
+# PQL_TESTMAIL_AUTOSEND (true | false)
+attributetype ( 1.3.6.1.4.1.8767.3.2.1.5 NAME 'autoSend'
+	DESC 'Automatically send a testmail when a new user or alias has been added [True/False]?'
+	EQUALITY booleanMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+	SINGLE-VALUE )
+
+# PQL_LDAP_CONTROL_AUTOADDLOCALS (true | false)
+attributetype ( 1.3.6.1.4.1.8767.3.2.1.6 NAME 'autoAddLocals'
+	DESC 'Automatically add domain to ~controls/locals attribute [True/False]?'
+	EQUALITY booleanMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+	SINGLE-VALUE )
+
+# PQL_LDAP_CHANGE_SERVER (true | false)
+attributetype ( 1.3.6.1.4.1.8767.3.2.1.7 NAME 'allowServerChange'
+	DESC 'Should we allow LDAP server change [True/False]?'
+	EQUALITY booleanMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+	SINGLE-VALUE )
+
+# PQL_ALLOW_ABSOLUTE_PATH (true | false)
+attributetype ( 1.3.6.1.4.1.8767.3.2.1.8 NAME 'allowAbsoluteMailPath'
+	DESC 'Should we allow setting absolute path to mailbox directory [True/False]?'
+	EQUALITY booleanMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+	SINGLE-VALUE )
+
+# PQL_VERIFY_DELETE (true | false)
+attributetype ( 1.3.6.1.4.1.8767.3.2.1.9 NAME 'deleteVerification'
+	DESC 'Verify deletion of user objects etc [True/False]?'
+	EQUALITY booleanMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+	SINGLE-VALUE )
+
+# -----------------------------------------
+
+# PQL_WHOAREWE
+attributetype ( 1.3.6.1.4.1.8767.3.2.2.1 NAME 'whoAreWe'
+	DESC 'Title'
+	EQUALITY caseIgnoreIA5Match
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
+	SINGLE-VALUE )
+
+# PQL_LDAP_HOST (FQDN|IP)
+attributetype ( 1.3.6.1.4.1.8767.3.2.2.2 NAME 'ldapHost'
+	DESC 'LDAP servers'
+	EQUALITY caseIgnoreIA5Match
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+
+# PQL_LDAP_SUBTREE_USERS
+attributetype ( 1.3.6.1.4.1.8767.3.2.2.3 NAME 'subTreeUsers'
+	DESC 'Subtree value - Users'
+	EQUALITY caseIgnoreIA5Match
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
+	SINGLE-VALUE )
+
+# PQL_LDAP_SUBTREE_GROUPS
+attributetype ( 1.3.6.1.4.1.8767.3.2.2.4 NAME 'subTreeGroups'
+	DESC 'Subtree value - Groups'
+	EQUALITY caseIgnoreIA5Match
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
+	SINGLE-VALUE )
+
+# PQL_LDAP_OBJECTCLASS_DOMAIN (LDAP object classes)
+attributetype ( 1.3.6.1.4.1.8767.3.2.2.5 NAME 'branchObjectClass'
+	DESC 'Domain/Branch object classes'
+	EQUALITY caseIgnoreIA5Match
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+
+# PQL_LDAP_OBJECTCLASS_* (LDAP object classes)
+attributetype ( 1.3.6.1.4.1.8767.3.2.2.6 NAME 'userObjectClass'
+	DESC 'User object classes'
+	EQUALITY caseIgnoreIA5Match
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+
+# PQL_LDAP_REFERENCE_USERS_WITH (LDAP attribute name)
+attributetype ( 1.3.6.1.4.1.8767.3.2.2.7 NAME 'userReference'
+	DESC 'Defines which attribute phpQLAdmin passes to various functions when it needs to reference users'
+	EQUALITY caseIgnoreIA5Match
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
+	SINGLE-VALUE )
+
+# PQL_LDAP_EZMLM_PATH
+attributetype ( 1.3.6.1.4.1.8767.3.2.2.8 NAME 'ezmlmBinaryPath'
+	DESC 'Path to ezmlm-* binaries'
+	EQUALITY caseExactMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26
+	SINGLE-VALUE )
+
+# PQL_PASSWORD_SCHEMES
+attributetype ( 1.3.6.1.4.1.8767.3.2.2.9 NAME 'passWordScheme'
+	DESC 'Password scheme to allow'
+	EQUALITY caseExactMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26)
+
+# TODO: PQL_LDAP_ATTR_* (LDAP attribute names)
+# TODO: PQL_LDAP_USER_RDN_ATTRIBUTE
+# TODO: PQL_CATCHALLUSER
+
+# -----------------------------------------
+
+# PQL_HOSTMASTER (emailaddress)
+attributetype ( 1.3.6.1.4.1.8767.3.2.3.1 NAME 'hostMaster'
+	DESC 'Sender of testmails etc'
+	EQUALITY caseIgnoreIA5Match
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
+	SINGLE-VALUE )
+
+# PQL_TESTMAIL_SUBJECT (text)
+attributetype ( 1.3.6.1.4.1.8767.3.2.3.2 NAME 'testMailSubject'
+	DESC 'Subject of test mails'
+	EQUALITY caseIgnoreIA5Match
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
+	SINGLE-VALUE )
+
+# PQL_TESTMAIL_MAILTEXT (text)
+attributetype ( 1.3.6.1.4.1.8767.3.2.3.3 NAME 'testMailText'
+	DESC 'Content of test mails'
+	EQUALITY caseIgnoreIA5Match
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
+	SINGLE-VALUE )
+
+# -----------------------------------------
+
 # This is also availible in qmailControl.schema
 #attributetype ( 1.3.6.1.4.1.8767.3.2.4.1 NAME 'defaultDomain'
 #        DESC 'Default domain name for the branch'
@@ -45,6 +200,18 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.4.4 NAME 'administrator'
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024} )
 
 # -----------------------------------------
+
+objectclass ( 1.3.6.1.4.1.8767.3.1.1
+	NAME 'phpQLAdmin'
+	DESC 'phpQLAdmin configuration values'
+	MAY (	showUsers $ autoReload $ autoSend $
+		useControls $ autoAddLocals $ useEzmlm $
+		allowServerChange $ allowAbsoluteMailPath $
+		deleteVerification $ whoAreWe $ ldapHost $
+		subTreeUsers $ subTreeGroups $ branchObjectClass $
+		userObjectClass $ userReference $ ezmlmBinaryPath $
+		passwordScheme $ hostMaster $ testMailSubject $
+		testMailText) )
 
 objectclass ( 1.3.6.1.4.1.8767.3.1.2
         NAME 'phpQLAdminBranch'
