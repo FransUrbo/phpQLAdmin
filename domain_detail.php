@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 1.2 2002-12-12 11:50:27 turbo Exp $
+// $Id: domain_detail.php,v 1.3 2002-12-12 13:05:45 turbo Exp $
 //
 session_start();
 require("pql.inc");
@@ -199,11 +199,12 @@ if(count($rec) == 0){
       <td class="title"><?php echo PQL_DNS_PRIORITY ?></td>
     </tr>
 <?php
-	foreach($rec as $key => $host){
+	asort($weight);
+	foreach($weight as $key => $prio){
 ?>
     <tr class="<?php table_bgcolor(); ?>">
-      <td><?php echo $host; ?></td>
-      <td align="right"><?php echo $weight[$key]; ?></td>
+      <td><?php echo $rec[$key]; ?></td>
+      <td align="right"><?php echo $prio; ?></td>
     </tr>
 <?php
 	} // end foreach
