@@ -2,7 +2,7 @@
 // control attribute plugin for
 // relaymailfrom (allowed sender addresses for relaying)
 //
-// $Id: attrib.control.relaymailfrom.inc,v 2.16 2004-03-11 16:31:55 turbo Exp $
+// $Id: attrib.control.relaymailfrom.inc,v 2.17 2004-10-15 15:21:33 turbo Exp $
 
 // {{{ relaymailfrom_check(type)
 function relaymailfrom_check($type) {
@@ -148,7 +148,7 @@ function relaymailfrom_print_form() {
 }
 // }}}
 
-// relaymailfrom_save(type, host)
+// {{{ relaymailfrom_save(type, host)
 function relaymailfrom_save($type, $host) {
 	global $_pql_control, $LANG;
 
