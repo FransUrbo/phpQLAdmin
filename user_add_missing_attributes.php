@@ -6,9 +6,10 @@
 // and should NOT be called directly!
 //
 session_start();
+require("./include/pql_config.inc");
 ?>
 
-  <span class="title1">Object class violation</span>
+  <span class="title1"><?=$LANG->_('Object class violation')?></span>
   <br><br>
 
   Sorry, but the request you tried to perform (modify attribute <b><?=$MISSING['attrib']?></b>)

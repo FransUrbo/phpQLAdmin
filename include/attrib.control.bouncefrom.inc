@@ -3,26 +3,25 @@
 // bouncefrom (username of bounce sender)
 // bouncehost (hostname of bounce sender)
 //
-// $Id: attrib.control.bouncefrom.inc,v 2.8 2003-05-28 07:23:37 turbo Exp $
+// $Id: attrib.control.bouncefrom.inc,v 2.9 2003-07-02 07:59:00 turbo Exp $
 
 function bouncefrom_check($type) {
-	global $error, $bouncefrom, $bouncehost, $view;
+	global $error, $bouncefrom, $bouncehost, $view, $LANG;
 
 	// check validity
-	if($bouncefrom != "" and !check_email($bouncefrom . "@domain.tld")){
-		$error["bouncefrom"] = PQL_LANG_INVALID;
+	if($bouncefrom != "" and !check_email($bouncefrom . "@domain.tld")) {
+		$error["bouncefrom"] = $LANG->_('Invalid');
 		$is_error = true;
 	}
 
 	// check validity
-	if($bouncehost != "" and !check_hostaddress($bouncehost)){
-		$error["bouncehost"] = PQL_LANG_INVALID;
+	if($bouncehost != "" and !check_hostaddress($bouncehost)) {
+		$error["bouncehost"] = $LANG->_('Invalid');
 		$is_error = true;
 	}
 	
-	if($is_error == false){
-		return true;
- 	}
+	if($is_error == false)
+	  return true;
 }
 
 // init values
@@ -32,99 +31,86 @@ function bouncefrom_init($host) {
 	// fetch data from ldap server
 	$attribs = array("bouncefrom", "bouncehost");
 
-	foreach($attribs as $attrib){
+	foreach($attribs as $attrib) {
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
 										   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 										   $attrib);
 
-		if(!is_null($value)){
-			$$attrib = $value[0];
-		}
+		if(!is_null($value))
+		  $$attrib = $value[0];
 	}
 }
 
 function bouncefrom_print_view($host) {
-	global $_pql_control, $bouncefrom, $bouncehost, $view;
+	global $_pql_control, $bouncefrom, $bouncehost, $view, $LANG;
 	
 	// init data
 	bouncefrom_init($host);
 	
 	// set empty fields to their default value
-	if($bouncefrom == ""){
-		$bouncefrom = "MAILER-DAEMON (default)";
-	}
+	if($bouncefrom == "")
+	  $bouncefrom = $LANG->_('Default').": MAILER-DAEMON";
 
-	if($bouncehost == ""){
-		$bouncehost = $host . ", (default, taken from 'me')";
-	}
-
+	if($bouncehost == "")
+	  $bouncehost = $host . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left">bouncefrom, bouncehost (Bouncing source)</th>
+    <th colspan="3" align="left">bouncefrom, bouncehost (<?=$LANG->_('Bouncing source')?>)</th>
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title">User for bouncing</td>
-        <td><?php echo $bouncefrom; ?></td>
+        <td class="title"><?=$LANG->_('User for bouncing')?></td>
+        <td><?=$bouncefrom?></td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title">Host for bouncing</td>
-        <td><?php echo $bouncehost; ?></td>
+        <td class="title"><?=$LANG->_('Host for bouncing')?></td>
+        <td><?=$bouncehost?></td>
       </tr>
 
       <tr class="subtitle">
-        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=bouncefrom"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
+        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=bouncefrom"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
       </tr>
     </th>
   </table>
-
 <?php
 }
 
 function bouncefrom_print_form() {
-	global $attrib, $bouncefrom, $bouncehost, $PHP_SELF, $error, $mxhost, $view;
+	global $attrib, $bouncefrom, $bouncehost, $PHP_SELF, $error, $mxhost, $view, $LANG;
 ?>
-  <form action="<?php echo $PHP_SELF ?>" method="post">
+  <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">bouncefrom, bouncehost (Bouncing source)</th>
+      <th colspan="3" align="left">bouncefrom, bouncehost (<?=$LANG->_('Bouncing source')?>)</th>
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title">User for bouncing</td>
-          <td><?php echo format_error($error["bouncefrom"]); ?><input type="text" name="bouncefrom" value="<?php echo $bouncefrom; ?>"> Default: MAILER-DAEMON</td>
+          <td class="title"><?=$LANG->_('User for bouncing')?></td>
+          <td><?php echo format_error($error["bouncefrom"]); ?><input type="text" name="bouncefrom" value="<?=$bouncefrom?>"> <?=$LANG->_('Default')?>: MAILER-DAEMON</td>
         </tr>
 
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title">Host for bouncing</td>
-          <td><?php echo format_error($error["bouncehost"]); ?><input type="text" name="bouncehost" value="<?php echo $bouncehost; ?>"> Default: <?=$mxhost?> (value in 'me')</td>
+          <td class="title"><?=$LANG->_('Host for bouncing')?></td>
+          <td><?php echo format_error($error["bouncehost"]); ?><input type="text" name="bouncehost" value="<?=$bouncehost?>"> <?=$LANG->_('Default')?>: <?=$mxhost?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
         </tr>
 
         <tr class="subtitle">
-          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0">
-		The combination of user and host will return the email address used for bouning messages, e.g. MAILER-DAEMON@mail.host.ch.
-		<br>Leave the fields empty to use default configuration.
+          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('The combination of user and host will return the email address used for bouning messages, e.g. MAILER-DAEMON@mail.host.ch')?>.<br><?=$LANG->_('Leave the fields empty to use default configuration')?>.
           </td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="attrib" value="<?=$attrib?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
     <input type="hidden" name="view" value="<?=$view?>">
     <br>
-    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
+    <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
-
 <?php
 }
 
 function bouncefrom_save($type, $host) {
-	global $_pql_control, $attrib, $bouncefrom, $bouncehost, $error, $view;
+	global $_pql_control, $attrib, $bouncefrom, $bouncehost, $error, $view, $LANG;
 
-	// recontrol values
-	if(!bouncefrom_check($type)) {
- 		return false;
-	}
-
-	switch($type){
+	switch($type) {
 	  case "modify";
 	  case "add";
 		// save entries
@@ -135,20 +121,25 @@ function bouncefrom_save($type, $host) {
 												  "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 												  "bouncehost", $bouncehost);
 		
-		if(in_array(false, $return)){
-			$msg = "Error saving bouncing options: " . pql_ldap_error($_pql_control->ldap_linkid);
-		} else {
-    		$msg = "Successfully saved bouncing options";
-    	}
+		if(in_array(false, $return))
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+									   array('what' => $LANG->_('bouncing options')))
+			. ": " . pql_ldap_error($_pql_control->ldap_linkid);
+		else
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+									   array('what' => $LANG->_('bouncing options')));
 
 		attribute_forward($msg);
 		break;
+
 	  default:
-		die("unknown save type $type in " . __FILE__ . ", function save()");
+		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
+								  array('type' => $type, 'file' => __FILE__)));
 	}
 }
 
-function bouncefrom_help(){
+function bouncefrom_help() {
+	global $LANG;
 ?>
 	<b>User (bouncefrom)</b>
 	<br>
@@ -166,15 +157,14 @@ function bouncefrom_help(){
 <?php
 }
 
-function bouncefrom_help_cr(){
-?>
-	help text taken from qmail man pages
-<?php
+function bouncefrom_help_cr() {
+	global $LANG;
+	echo $LANG->_('Help text taken from qmail man pages');
 }
-/*
- * Local variables:
- * mode: php
- * mode: font-lock
- * tab-width: 4
- * End:
- */
+
+// Local variables:
+// mode: php
+// mode: font-lock
+// tab-width: 4
+// End:
+?>

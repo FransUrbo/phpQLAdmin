@@ -110,7 +110,7 @@ if(!$orgname) {
 include("./include/".$include);
 include("./header.html");
 ?>
-  <span class="title1"><?php echo PQL_LANG_DOMAIN_DEFAULT_TITLE; ?>
+  <span class="title1"><?php echo pql_complete_constant($LANG->_('Change %what% for domain %domain%'), array('what' => $LANG->_('default values'), 'domain' => $orgname)); ?>
   </span>
 
   <br><br>

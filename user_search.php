@@ -7,25 +7,25 @@ require("./include/pql_config.inc");
 
 include("./header.html");
 ?>
-  <span class="title2"><?php echo PQL_LANG_SEARCH_TITLE; ?></span>
+  <span class="title2"><?=$LANG->_('Find user(s) whose')?></span>
   <form method=post action="search.php">
     <select name=attribute>
-      <option value=<?php echo pql_get_define("PQL_GLOB_ATTR_UID"); ?> SELECTED><?php echo PQL_LANG_SEARCH_UID; ?></option>
-      <option value=<?php echo pql_get_define("PQL_GLOB_ATTR_CN"); ?>><?php echo PQL_LANG_SEARCH_CN; ?></option>
-      <option value=<?php echo pql_get_define("PQL_GLOB_ATTR_MAIL"); ?>><?php echo PQL_LANG_SEARCH_MAIL; ?></option>
-      <option value=<?php echo pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE"); ?>><?php echo PQL_LANG_SEARCH_MAILALTERNATEADDRESS; ?></option>
-      <option value=<?php echo pql_get_define("PQL_GLOB_ATTR_FORWARDS"); ?>><?php echo PQL_LANG_SEARCH_MAILFORWARDINGADDRESS; ?></option>
+      <option value=<?php echo pql_get_define("PQL_GLOB_ATTR_UID"); ?> SELECTED><?=$LANG->_('Username')?></option>
+      <option value=<?php echo pql_get_define("PQL_GLOB_ATTR_CN"); ?>><?=$LANG->_('Common name')?></option>
+      <option value=<?php echo pql_get_define("PQL_GLOB_ATTR_MAIL"); ?>><?=$LANG->_('Mail address')?></option>
+      <option value=<?php echo pql_get_define("PQL_GLOB_ATTR_MAILALTERNATE"); ?>><?=$LANG->_('Alias')?></option>
+      <option value=<?php echo pql_get_define("PQL_GLOB_ATTR_FORWARDS"); ?>><?=$LANG->_('Forwarding address')?></option>
     </select>
 
     <select name=filter_type>
-      <option value=contains SELECTED><?php echo PQL_LANG_SEARCH_CONTAINS; ?></option>
-      <option value=is><?php echo PQL_LANG_SEARCH_IS; ?></option>
-      <option value=starts_with><?php echo PQL_LANG_SEARCH_STARTSWITH; ?></option>
-      <option value=ends_with><?php echo PQL_LANG_SEARCH_ENDSWITH; ?></option>
+      <option value=contains SELECTED><?=$LANG->_('Contains')?></option>
+      <option value=is><?=$LANG->_('Is')?></option>
+      <option value=starts_with><?=$LANG->_('Starts with')?></option>
+      <option value=ends_with><?=$LANG->_('Ends with')?></option>
     </select>
 
     <br><input type="text" name="search_string" size="37">
-    <br><input type="submit" value="<?php echo PQL_LANG_SEARCH_FINDBUTTON; ?>">
+    <br><input type="submit" value="<?=$LANG->_('Find user')?>">
   </form>
 </body>
 </html>

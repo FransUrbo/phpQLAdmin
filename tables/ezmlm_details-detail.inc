@@ -1,13 +1,13 @@
-  <span class="title1">List: <?=$ezmlm->mailing_lists[$listno]["name"]."@".$domainname?></span>
+  <span class="title1"><?=$LANG->_('List')?>: <?=$ezmlm->mailing_lists[$listno]["name"]."@".$domainname?></span>
 
   <br><br>
 
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left">List information</th>
+    <th colspan="3" align="left"><?=$LANG->_('List information')?></th>
       <tr>
-        <td class="title">Configuration</td>
-        <td class="title">Value</td>
-        <td class="title">Options</td>
+        <td class="title"><?=$LANG->_('Configuration')?></td>
+        <td class="title"><?=$LANG->_('Value')?></td>
+        <td class="title"><?=$LANG->_('Options')?></td>
       </tr>
 <?php foreach($ezmlm->mailing_lists[$listno] as $key => $value) {
 		// Defined value
@@ -15,9 +15,9 @@
 			// Not an array (ie, not subscriber/text value)
 			
 			if($value == 1)
-			  $value = 'Yes';
+			  $value = $LANG->_('Yes');
 			elseif(!$value)
-			  $value = 'No';
+			  $value = $LANG->_('No');
 			
 			// if this is number of subscribers, don't output it
 			if(($key != 'subscribers') and ($key != 'directory') and ($key != 'dotpath')) {
@@ -40,7 +40,7 @@
         <td></td>
 <?php			} ?>
         <td><?=$x?></td>
-        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&domainname=<?=$domainname?>&listno=<?=$listno?>&attrib=<?=$key?>&value=<?=$x?>"><img src="images/del.png" width="12" height="12" alt="delete attribute" border="0"></a></td>
+        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&domainname=<?=$domainname?>&listno=<?=$listno?>&attrib=<?=$key?>&value=<?=$x?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete attribute')?>" border="0"></a></td>
 <?php			$j++;
 			}
 		}
@@ -51,7 +51,7 @@
 ?>
         <td></td>
 <?php		} else { // Editable/Deletable values ?>
-        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&domainname=<?=$domainname?>&listno=<?=$listno?>&attrib=<?=$key?>"><img src="images/edit.png" width="12" height="12" alt="toggle value" border="0"></a>&nbsp;&nbsp;<a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&domainname=<?=$domainname?>&listno=<?=$listno?>&attrib=<?=$key?>"></a></td>
+        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&domainname=<?=$domainname?>&listno=<?=$listno?>&attrib=<?=$key?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Toggle')?>" border="0"></a>&nbsp;&nbsp;<a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&domainname=<?=$domainname?>&listno=<?=$listno?>&attrib=<?=$key?>"></a></td>
 <?php		}
 		}
 ?>
@@ -59,7 +59,7 @@
 <?php } ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td></td>
-        <td><a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&domainname=<?=$domainname?>&listno=<?=$listno?>&attrib=subscriber">add subscriber</a></td>
+        <td><a href="ezmlm_edit_attribute.php?domain=<?=$domain?>&domainname=<?=$domainname?>&listno=<?=$listno?>&attrib=subscriber"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('subscriber'))); ?></a></td>
         <td></td>
       </tr>
     </th>
@@ -68,9 +68,9 @@
   <br><br>
 
   <table cellspacing="0" cellpadding="3" border="0">
-    <th align="left"><?=PQL_LANG_ACTIONS?></th>
+    <th align="left"><?=$LANG->_('Actions')?></th>
       <tr class="<?php table_bgcolor(); ?>">
-        <td><a href="ezmlm_del.php?domain=<?=$domain?>&listno=<?=$listno?>">Delete list</a></td>
+        <td><a href="ezmlm_del.php?domain=<?=$domain?>&listno=<?=$listno?>"><?=$LANG->_('Delete list')?></a></td>
       </tr>
     </th>
   </table>

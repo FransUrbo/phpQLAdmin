@@ -53,18 +53,18 @@ if (empty($uname) or empty($passwd)) {
 
   <table cellspacing="0" cellpadding="3" border="0" align=center>
     <tr>
-      <td bgcolor="#D0DCE0"><FONT size=3><?php echo PQL_LANG_WELCOME . " <B>" . pql_get_define("PQL_GLOB_WHOAREWE")?></B></FONT></td>
+      <td bgcolor="#D0DCE0"><FONT size=3><?php echo pql_complete_constant($LANG->_('Welcome to \b%whoarewe%\B'), array('whoarewe' => pql_get_define("PQL_GLOB_WHOAREWE"))); ?></FONT></td>
     </tr>
 
     <tr align="center">
-      <td class="title1"><? echo PQL_LANG_LOGIN; ?></td>
+      <td class="title1"><?=$LANG->_('Please login')?></td>
     </tr>
   </table>
 
   <form action="<?=$PHP_SELF?>" method=post name="phpqladmin" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0" align=center>
       <tr>
-        <td>LDAP Server:</td>
+        <td><?=$LANG->_('LDAP server')?>:</td>
         <td align="left">
 <?php
 	if(eregi('\+', pql_get_define("PQL_GLOB_HOST"))) {
@@ -90,12 +90,12 @@ if (empty($uname) or empty($passwd)) {
       <tr>
 
           <tr>
-            <td bgcolor="#D0DCE0"><b><?=PQL_LANG_USERNAME?>:</b></td>
+            <td bgcolor="#D0DCE0"><b><?=$LANG->_('Login ID')?>:</b></td>
             <td><input type=text name="uname" size="30"></td>
           </tr>
 
           <tr>
-             <td bgcolor="#D0DCE0"><b><?=PQL_LANG_USERPASS?>:</b></td>
+             <td bgcolor="#D0DCE0"><b><?=$LANG->_('Password')?>:</b></td>
              <td><input type=password name="passwd" size="30" onChange="this.form.submit()" autocomplete="OFF"></td>
           </tr>
 
@@ -172,7 +172,7 @@ if (empty($uname) or empty($passwd)) {
 	//       (under different branches/trees).
 	$rootdn = pql_get_dn($_pql, $uname, 1);
 	if(!$rootdn and !is_array($rootdn))
-	  die("Can't find you in the database!");
+	  die($LANG->_('Can\'t find you in the database')."!");
 	elseif(is_array($rootdn)) {
 		// We got multiple DN's. Try to bind as each one, keeping
 		// the one that succeeded.
@@ -194,7 +194,7 @@ if (empty($uname) or empty($passwd)) {
 	  $USER_PASS = $passwd;
 
 	if($error) {
-		$msg = PQL_LANG_ERROR . ": " . ldap_err2str($error);
+		$msg = $LANG->_('Error') . ": " . ldap_err2str($error);
 		header("Location:index.php?msg=" . urlencode($msg));
 		exit;
 	}
@@ -203,7 +203,7 @@ if (empty($uname) or empty($passwd)) {
 	$USER_DN	= $rootdn;
 
 	if(! session_register("USER_ID", "USER_PASS", "USER_DN"))
-	  die (PQL_LANG_SESSION_REG);
+	  die($LANG->_('Could not register session variables'));
 
 	$log = date("M d H:i:s");
 	$log .= " : Logged in ($rootdn)\n";

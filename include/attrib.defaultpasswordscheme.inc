@@ -1,14 +1,14 @@
 <?php
 // Attribute plugin for
 // defaultPasswordScheme
-// $Id: attrib.defaultpasswordscheme.inc,v 2.3 2003-06-25 07:07:02 turbo Exp $
+// $Id: attrib.defaultpasswordscheme.inc,v 2.4 2003-07-02 07:59:00 turbo Exp $
 
 function attribute_check($type = '') {
-	global $error, $attrib, $$attrib;
+	global $error, $attrib, $$attrib, $LANG;
 
     // is typed in ?
     if($attrib == "") {
-		$error[$attrib] = PQL_LANG_MISSING;
+		$error[$attrib] = $LANG->_('Missing');
 		return false;
     }
     
@@ -16,13 +16,13 @@ function attribute_check($type = '') {
 }
 
 function attribute_print_form($type = "modify") {
-	global $error, $attrib, $$attrib, $domain, $rootdn, $view, $orgname;
+	global $error, $attrib, $$attrib, $domain, $rootdn, $view, $orgname, $LANG;
 ?>
-  <form action="<?php echo $PHP_SELF ?>" method="post">
+  <form action="<?$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">Password scheme to use if not specifically specified</th>
+      <th colspan="3" align="left"><?=$LANG->_('Password scheme to use if not specifically specified')?></th>
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title">Default password scheme</td>
+          <td class="title"><?=$LANG->_('Default password scheme')?></td>
           <td>
             <?php echo format_error($error[$attrib]); ?>
             <select name="<?=$attrib?>">
@@ -44,41 +44,42 @@ function attribute_print_form($type = "modify") {
     <input type="hidden" name="rootdn" value="<?=$rootdn?>">
     <input type="hidden" name="view"   value="<?=$view?>">
     <br>
-    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
+    <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
-
 <?php
 }
 
 function attribute_save($type) {
-	global $error, $attrib, $$attrib, $domain, $rootdn, $type, $_pql, $view;
+	global $error, $attrib, $$attrib, $domain, $rootdn, $type, $_pql, $view, $LANG;
 	
     switch($type) {
       case "add":
       case "modify":
 	  case "delete":
-		if($type == 'delete') {
-			$$attrib = '';
-		}
+		if($type == 'delete')
+		  $$attrib = '';
 
 		if(pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, $$attrib))
-		  $msg = 'Successfully changed default password scheme for domain';
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% for domain %domain%'),
+									   array('what'   => $LANG->_('default password scheme'),
+											 'domain' => $domain));
 		else
-		  $msg = 'Failed to set/change default password scheme for domain: &nbsp;'.ldap_error($_pql->ldap_linkid);
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what% for domain %domain%'),
+									   array('what'   => $LANG->_('default password scheme'),
+											 'domain' => $domain)) . ":&nbsp;'.ldap_error($_pql->ldap_linkid);
 	
 		attribute_forward($msg);
 		break;
 		
       default:
-		die("unknown save type $type in " . __FILE__ . ", function save()");
+		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
+								  array('type' => $type, 'file' => __FILE__)));
     }
 }
 
-/*
- * Local variables:
- * mode: php
- * mode: font-lock
- * tab-width: 4
- * End:
- */
+// Local variables:
+// mode: php
+// mode: font-lock
+// tab-width: 4
+// End:
 ?>

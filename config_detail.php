@@ -10,7 +10,7 @@ include("./header.html");
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 // print status message, if one is available
-if(isset($msg)){
+if(isset($msg)) {
     print_status_msg($msg);
 }
 
@@ -30,13 +30,13 @@ foreach($_pql->ldap_basedn as $dn) {
       $show_kerberos_info = 1;
 }
 ?>
-  <span class="title1">phpQLAdmin configuration</span>
+  <span class="title1"><?=$LANG->_('phpQLAdmin configuration')?></span>
 
   <br><br>
 
   <table cellspacing="0" border="0" width="100%" cellpadding="0">
     <tr>
-      <td valign="bottom" align="left" width="100%" colspan="2"><a href="<?=$PHP_SELF."?view=default"?>"><img alt="/ Global Configuration \" vspace="0" hspace="0" border="0" src="navbutton.php?Global Configuration"></a><?php $i=1; foreach($_pql->ldap_basedn as $dn) { $dn = urldecode($dn); if(!($i%2)) { ?><br><?php } ?><a href="<?=$PHP_SELF."?view=branch&branch=$dn"?>"><img alt="/ Top Branch <?=$dn?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$dn?>"></a><?php $i++; } ?>
+      <td valign="bottom" align="left" width="100%" colspan="2"><a href="<?=$PHP_SELF."?view=default"?>"><img alt="/ <?=$LANG->_('Global configuration')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Global configuration')?>"></a><?php $i=1; foreach($_pql->ldap_basedn as $dn) { $dn = urldecode($dn); if(!($i%2)) { ?><br><?php } ?><a href="<?=$PHP_SELF."?view=branch&branch=$dn"?>"><img alt="/ <?=$LANG->_('Top branch')?> <?=$dn?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$dn?>"></a><?php $i++; } ?>
       </td>
     </tr>
   </table>

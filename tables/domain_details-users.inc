@@ -1,11 +1,11 @@
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left"><?=PQL_LANG_USER_REGISTRED?></th>
+    <th colspan="3" align="left"><?=$LANG->_('Registred users')?></th>
 <?php if(is_array($users)) { ?>
       <tr>
-        <td class="title"><?=PQL_LANG_USER?></td>
-        <td class="title"><?=PQL_LANG_USER_ID?></td>
-        <td class="title"><?=PQL_LANG_ACCOUNTSTATUS_STATUS?></td>
-        <td class="title"><?=PQL_LANG_OPTIONS?></td>
+        <td class="title"><?=$LANG->_('User')?></td>
+        <td class="title"><?=$LANG->_('Username')?></td>
+        <td class="title"><?=$LANG->_('Status')?></td>
+        <td class="title"><?=$LANG->_('Options')?></td>
       </tr>
 
 <?php	asort($users);
@@ -27,7 +27,7 @@
         <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$userdn?>"><?=$cn?></a></td>
         <td><?=$uid?></td>
         <td><?=$status?></td>
-        <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$userdn?>"><img src="images/edit.png" width="12" height="12" alt="<?=PQL_LANG_USER_EDIT?>" border="0"></a>&nbsp;&nbsp;<a href="user_del.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$userdn?>"><img src="images/del.png" width="12" height="12" alt="<?=PQL_LANG_USER_DELETE?>" border="0"></a></td>
+        <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$userdn?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change user data')?>" border="0"></a>&nbsp;&nbsp;<a href="user_del.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$userdn?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete user')?>" border="0"></a></td>
       </tr>
 
 <?php		}
@@ -36,12 +36,12 @@
 		  // no users registred
 ?>
       <tr class="<?php table_bgcolor(); ?>">
-        <td colspan="4"><?=PQL_LANG_USER_NONE?></td>
+        <td colspan="4"><?=$LANG->_('No users registred')?></td>
       </tr>
 <?php } ?>
 
       <tr class="subtitle">
-        <td colspan="4"><a href="user_add.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"> <?=PQL_LANG_USER_NEW?></a></td>
+        <td colspan="4"><a href="user_add.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"> <?=$LANG->_('Register new user')?></a></td>
       </tr>
     </th>
   </table>

@@ -6,17 +6,17 @@
       $deliveryprogrampath = $deliveryprogrampath[0];
 
       if($qmaildotmode == "") {
-	  $qmaildotmode = PQL_LANG_QMAILDOTMODE_NONE;
+		  $qmaildotmode = $LANG->_('Default');
       }
 
       if($deliveryprogrampath == "") {
-	  $deliveryprogrampath = PQL_LANG_DELIVERYPROGRAMPATH_NONE;
+		  $deliveryprogrampath = $LANG->_('None');
       }
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left"><?php echo PQL_LANG_USER_DELIVERYPROPERTIES; ?></th>
+    <th colspan="3" align="left"><?=$LANG->_('Advanced delivery properties')?></th>
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title"><?php echo PQL_LANG_QMAILDOTMODE_TITLE; ?></td>
+        <td class="title"><?=$LANG->_('Dot mode')?></td>
         <td><?=$qmaildotmode?></td>
         <td>
           <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=qmaildotmode&user=<?=$userdn?>&oldvalue=<?=$qmaildotmode?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>
@@ -24,7 +24,7 @@
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title"><?php echo PQL_LANG_DELIVERYPROGRAMPATH_TITLE; ?></td>
+        <td class="title"><?=$LANG->_('Delivery program')?></td>
         <td><?=$deliveryprogrampath?></td>
         <td>
           <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=deliveryprogrampath&user=<?=$userdn?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>

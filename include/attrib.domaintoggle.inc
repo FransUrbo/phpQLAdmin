@@ -1,31 +1,30 @@
 <?php
 // Attribute plugin for
 // autoCreateUsername and autoCreateMailAddress
-// $Id: attrib.domaintoggle.inc,v 2.1 2003-06-13 13:12:10 turbo Exp $
+// $Id: attrib.domaintoggle.inc,v 2.2 2003-07-02 07:59:00 turbo Exp $
 
 // It's a toggle. Change value directly.
 function attribute_save() {
-	global $error, $attrib, $$attrib, $domain, $rootdn, $type, $_pql, $view;
+	global $error, $attrib, $$attrib, $domain, $rootdn, $type, $_pql, $view, $LANG;
 
-	echo "$attrib: ".$$attrib."<br>";
 	if($$attrib)
 	  $newval = 'FALSE';
 	else
 	  $newval = 'TRUE';
 
 	if(pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, $newval))
-	  $msg = "Successfully toggled $attrib for domain";
+	  $msg = pql_complete_constant($LANG->_('Successfully changed %what% for domain %domain%'),
+								   array('what' => $attrib, 'domain' => $domain));
 	else
-	  $msg = "Failed to toggle $attrib for domain: &nbsp;".ldap_error($_pql->ldap_linkid);
+	  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+								   array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
 	
 	attribute_forward($msg);
 }
 
-/*
- * Local variables:
- * mode: php
- * mode: font-lock
- * tab-width: 4
- * End:
- */
+// Local variables:
+// mode: php
+// mode: font-lock
+// tab-width: 4
+// End:
 ?>

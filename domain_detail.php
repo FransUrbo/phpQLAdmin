@@ -14,7 +14,7 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 include("./header.html");
 
 // print status message, if one is available
-if(isset($msg)){
+if(isset($msg)) {
     print_status_msg($msg);
 }
 
@@ -55,9 +55,9 @@ if(! ereg("%3D", $domain)) {
 
 // Get the organization name, or show 'Not set' with an URL to set it
 $domainname = pql_get_domain_value($_pql, $domain, 'o');
-if(!$domainname) {
-	$domainname = "<a href=\"domain_edit_attributes.php?type=modify&attrib=o&rootdn=$rootdn&domain=$domain\">".PQL_LANG_UNSET."</a>";
-}
+//if(!$domainname) {
+// TODO: Resonable default!
+//}
 
 // Get some default values for this domain
 // Some of these (everything after the 'o' attribute)
@@ -94,10 +94,18 @@ foreach($attribs as $attrib) {
 		  }
 
 		// A dcOrganizationNameForm attribute
-		$$link = "<a href=\"domain_edit_attributes.php?type=modify&attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=". urlencode($value) ."\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify attribute $attrib for $domainname\"></a>&nbsp;<a href=\"domain_edit_attributes.php?type=delete&submit=2&attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=". urlencode($value) ."\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Delete attribute $attrib for $domainname\"></a>";
+		$alt1 = pql_complete_constant($LANG->_('Modify attribute %attribute% for %domainname%'),
+									  array('attribute' => $attrib, 'domainname' => $domainname));
+		$alt2 = pql_complete_constant($LANG->_('Delete attribute %attribute% for %domainname%'),
+									  array('attribute' => $attrib, 'domainname' => $domainname));
+
+		$$link = "<a href=\"domain_edit_attributes.php?type=modify&attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=". urlencode($value) ."\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt1."\"></a>&nbsp;<a href=\"domain_edit_attributes.php?type=delete&submit=2&attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=". urlencode($value) ."\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt2."\"></a>";
 	} else {
+		$alt1 = pql_complete_constant($LANG->_('Modify attribute %attribute% for %domainname%'),
+									  array('attribute' => $attrib, 'domainname' => $domainname));
+
 		// A phpQLAdminBranch attribute
-		$$link = "<a href=\"domain_edit_attributes.php?attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=$value\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify $attrib for $domainname\"></a>";
+		$$link = "<a href=\"domain_edit_attributes.php?attrib=$attrib&rootdn=$rootdn&domain=$domain&$attrib=$value\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt1."\"></a>";
 	}
 }
 $domain_admins		= pql_get_domain_value($_pql, $domain, "administrator");
@@ -107,13 +115,13 @@ $basequota			= pql_ldap_mailquota(pql_parse_quota($basequota));
 
 $additionaldomainname = pql_get_domain_value($_pql, $domain, "additionaldomainname");
 ?>
-  <span class="title1">Organization: <?=urldecode($domainname)?></span>
+  <span class="title1"><?=$LANG->_('Organization name')?>: <?=urldecode($domainname)?></span>
 
   <br><br>
 
   <table cellspacing="0" border="0" width="100%" cellpadding="0">
     <tr>
-      <td colspan="2" valign="bottom" align="left" width="100%"><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=default"?>"><img alt="/ Default Branch Values \" vspace="0" hspace="0" border="0" src="navbutton.php?Default Branch Values"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=users"?>"><img alt="/ Registred Users \" vspace="0" hspace="0" border="0" src="navbutton.php?Registred Users"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=chval"?>"><img alt="/ Change values of all users in this branch \" vspace="0" hspace="0" border="0" src="navbutton.php?Change values of all users"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=dnszone"?>"><img alt="/ DNS Zone \" vspace="0" hspace="0" border="0" src="navbutton.php?DNS Zone"></a><?php if($ADVANCED_MODE) { ?><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=owner"?>"><img alt="/ Branch Owner \" vspace="0" hspace="0" border="0" src="navbutton.php?Branch Owner"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=dnsinfo"?>"><img alt="/ MX Information \" vspace="0" hspace="0" border="0" src="navbutton.php?MX Information"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=options"?>"><img alt="/ Control Options \" vspace="0" hspace="0" border="0" src="navbutton.php?Control Options"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=action"?>"><img alt="/ Actions \" vspace="0" hspace="0" border="0" src="navbutton.php?Actions"></a><?php } ?></td>
+      <td colspan="2" valign="bottom" align="left" width="100%"><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=default"?>"><img alt="/ <?=$LANG->_('Default Branch Values')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Default Branch Values')?>"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=users"?>"><img alt="/ <?=$LANG->_('Registred users')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Registred users')?>"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=chval"?>"><img alt="/ <?=$LANG->_('Change values of all users')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Change values of all users')?>"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=dnszone"?>"><img alt="/ <?=$LANG->_('DNS Zone')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('DNS Zone')?>"></a><?php if($ADVANCED_MODE) { ?><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=owner"?>"><img alt="/ <?=$LANG->_('Branch Owner')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Branch Owner')?>"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=dnsinfo"?>"><img alt="/ <?=$LANG->_('MX Information')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('MX Information')?>"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=options"?>"><img alt="/ <?=$LANG->_('Control Options')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Control Options')?>"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&view=action"?>"><img alt="/ <?=$LANG->_('Actions')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Actions')?>"></a><?php } ?></td>
   </tr>
 </table>
 
@@ -146,7 +154,7 @@ if(($view == 'users') or ($view == 'chval')) {
 ?>
   <br><br>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="2" align="left">No users in this branch!</th>
+    <th colspan="2" align="left"><?=$LANG->_('No users in this branch')?>!</th>
   </table>
 <?php
 	}

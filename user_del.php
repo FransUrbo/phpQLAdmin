@@ -18,25 +18,24 @@ if(!$o) {
 }
 $cn = pql_get_userattribute($_pql->ldap_linkid, $user, 'cn'); $cn = $cn[0];
 ?>
-  <span class="title1"><?php echo pql_complete_constant(PQL_LANG_USER_DEL_TITLE, array("domain" => $o, "user" => $cn)); ?></span>
+  <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove user %user% from domain %domain%'), array("domain" => $o, "user" => $cn)); ?></span>
   <br><br>
 <?php
 if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
 	$delete_forwards = (isset($delete_forwards) || pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) ? true : false;
 	
 	// delete the user
-	if(pql_user_del($_pql, $domain, $user, $delete_forwards)){
-		$msg = PQL_LANG_USER_DEL_OK . ": <b>" . $cn . "</b>";
+	if(pql_user_del($_pql, $domain, $user, $delete_forwards)) {
+		$msg = $LANG->_('Successfully removed user') . ": <b>" . $cn . "</b>";
 		$rlnb = "&rlnb=1";
 	} else
-	  $msg = PQL_LANG_USER_DEL_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+	  $msg = $LANG->_('Failed to remove user') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 
 	switch($mail) {
 	  case "delete_mail":
 	  case "archive_mail":
 	  case "donate_mail":
-		$msg .= "<br>Sorry, no changes have been made to the mailbox. It's not implemented in ";
-		$msg .= "phpQLAdmin yet";
+		$msg .= "<br>".$LANG->_('Sorry, no changes have been made to the mailbox. It\'s not implemented in phpQLAdmin yet');
 		break;
 	}
 	
@@ -46,23 +45,23 @@ if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
 } else {
 ?>
 <br>
-  <form action="<?php echo $PHP_SELF; ?>" method="GET">
-    <input type="hidden" name="user" value="<?php echo $user; ?>">
-    <input type="hidden" name="domain" value="<?php echo $domain; ?>">
+  <form action="<?=$PHP_SELF?>" method="GET">
+    <input type="hidden" name="user" value="<?=$user?>">
+    <input type="hidden" name="domain" value="<?=$domain?>">
         
-    <span class="title3">What should we do with forwards to this user?</span><br>
-    <input type="checkbox" name="delete_forwards" checked> Delete all forwards<br><br>
+    <span class="title3"><?=$LANG->_('What should we do with forwards to this user')?>?</span><br>
+    <input type="checkbox" name="delete_forwards" checked> <?=$LANG->_('Delete all forwards')?><br><br>
 <?php if(0) { ?>
 
-    <span class="title3">What should we do with the users mailbox?</span><br>
-    <input type="radio" name="mail" value="delete_mail"> Delete it<br>
-    <input type="radio" name="mail" value="archive_mail" checked> Archive it<br>
-    <input type="radio" name="mail" value="donate_mail"> Donate it to another user<br><br>
+    <span class="title3"><?=$LANG->_('What should we do with the users mailbox')?>?</span><br>
+    <input type="radio" name="mail" value="delete_mail"> <?=$LANG->_('Delete it')?><br>
+    <input type="radio" name="mail" value="archive_mail" checked> <?=$LANG->_('Archive it')?><br>
+    <input type="radio" name="mail" value="donate_mail"> <?=$LANG->_('Donate it to another user')?><br><br>
 <?php } ?>
 
-    <span class="title2"><?=PQL_LANG_SURE?></span>
-    <input type="submit" name="ok" value="<?php echo PQL_LANG_YES; ?>">
-    <input type="button" name="back" value="<?php echo PQL_LANG_NO; ?>" onClick="history.back();">
+    <span class="title2"><?=$LANG->_('Are you really sure')?>?</span>
+    <input type="submit" name="ok" value="<?=$LANG->_('Yes')?>">
+    <input type="button" name="back" value="<?=$LANG->_('No')?>" onClick="history.back();">
   </form>
 <br>
 <?php

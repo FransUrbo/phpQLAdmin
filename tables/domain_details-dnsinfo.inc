@@ -1,14 +1,14 @@
 <?php $res = getmxrr($defaultdomain, $rec, $weight); ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left"><?=PQL_LANG_DNS_TITLE?></th>
+    <th colspan="3" align="left"><?=$LANG->_('DNS informations')?></th>
 <?php if(count($rec) == 0) { ?>
       <tr class="<?php table_bgcolor(); ?>">
-        <td colspan="2"><?=PQL_LANG_DNS_NONE?></td>
+        <td colspan="2"><?=$LANG->_('This domain isn\'t registred within the DNS system')?></td>
       </tr>
 <?php } else { ?>
       <tr>
-        <td class="title"><?=PQL_LANG_DNS_MAILHOST?></td>
-        <td class="title"><?=PQL_LANG_DNS_PRIORITY?></td>
+        <td class="title"><?=$LANG->_('Mailhost')?></td>
+        <td class="title"><?=$LANG->_('Priority')?></td>
       </tr>
 <?php	asort($weight);
 		foreach($weight as $key => $prio) {
@@ -22,7 +22,7 @@
 ?>
 
       <tr class="subtitle">
-        <td colspan="4"><a href="dnszonetemplate.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&defaultdomain=<?=$defaultdomain?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0">Create DNS template zone file</a></td>
+        <td colspan="4"><a href="dnszonetemplate.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&defaultdomain=<?=$defaultdomain?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Create DNS template zone file')?></a></td>
       </tr>
     </th>
   </table>

@@ -3,26 +3,25 @@
 // concurrencylocal (may simultaneous local deliveries)
 // concurrencyremote (may simultaneous remote deliveries)
 //
-// $Id: attrib.control.concurrencylocal.inc,v 2.8 2003-05-28 07:23:37 turbo Exp $
+// $Id: attrib.control.concurrencylocal.inc,v 2.9 2003-07-02 07:59:00 turbo Exp $
 
 function concurrencylocal_check($type) {
-	global $error, $concurrencylocal, $concurrencyremote, $view;
+	global $error, $concurrencylocal, $concurrencyremote, $view, $LANG;
 
 	// check validity
-	if(preg_match("/[^0-9]/", $concurrencylocal)){
-		$error["concurrencylocal"] = PQL_LANG_INVALID;
+	if(preg_match("/[^0-9]/", $concurrencylocal)) {
+		$error["concurrencylocal"] = $LANG->_('Invalid');
 		$is_error = true;
 	}
 
 	// check validity
-	if(preg_match("/[^0-9]/", $concurrencyremote)){
-		$error["concurrencyremote"] = PQL_LANG_INVALID;
+	if(preg_match("/[^0-9]/", $concurrencyremote)) {
+		$error["concurrencyremote"] = $LANG->_('Invalid');
 		$is_error = true;
 	}
 
-	if($is_error == false){
-		return true;
- 	}
+	if($is_error == false)
+	  return true;
 }
 
 // init values
@@ -32,104 +31,91 @@ function concurrencylocal_init($host) {
 	// fetch data from ldap server
 	$attribs = array("concurrencylocal", "concurrencyremote");
 
-	foreach($attribs as $attrib){
+	foreach($attribs as $attrib) {
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
 										   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 										   $attrib);
 		
-		if(!is_null($value)){
-			$$attrib = $value[0];
-		}
+		if(!is_null($value))
+		  $$attrib = $value[0];
 	}
 }
 
 function concurrencylocal_print_view($host) {
-	global $_pql_control, $concurrencylocal, $concurrencyremote, $view;
+	global $_pql_control, $concurrencylocal, $concurrencyremote, $view, $LANG;
 
 	// init data
 	concurrencylocal_init($host);
 
 	// set empty fields to their default value
-	if($concurrencylocal == ""){
-		$concurrencylocal = "10 (default)";
-	}
+	if($concurrencylocal == "")
+	  $concurrencylocal = "10 (".$LANG->_('Default', 4).")";
 	
-	if($concurrencylocal == 0){
-		$concurrencylocal = "0 (local delivery holded)";
-	}
+	if($concurrencylocal == 0)
+	  $concurrencylocal = "0 (".$LANG->_('local delivery holded').")";
 	
-	if($concurrencyremote == ""){
-		$concurrencyremote = "20 (default)";
-	}
+	if($concurrencyremote == "")
+	  $concurrencyremote = "20 (".$LANG->_('Default', 4).")";
 	
-	if($concurrencyremote == 0){
-		$concurrencyremote = "0 (remote delivery holded)";
-	}
-	
+	if($concurrencyremote == 0)
+	  $concurrencyremote = "0 (".$LANG->_('remote delivery holded').")";
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left">concurrencylocal, concurrencyremote (Max simultaneous deliveries)</th>
+    <th colspan="3" align="left">concurrencylocal, concurrencyremote (<?=$LANG->_('Maximum simultaneous deliveries')?>)</th>
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title">Local</td>
-        <td><?php echo $concurrencylocal; ?></td>
+        <td class="title"><?=$LANG->_('Local')?></td>
+        <td><?=$concurrencylocal?></td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title">Remote</td>
-        <td><?php echo $concurrencyremote; ?></td>
+        <td class="title"><?=$LANG->_('Remote')?></td>
+        <td><?=$concurrencyremote?></td>
       </tr>
 
       <tr class="subtitle">
-        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=concurrencylocal"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
+        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=concurrencylocal"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
       </tr>
     </th>
   </table>
-
 <?php
 }
 
-function concurrencylocal_print_form(){
-	global $attrib, $concurrencylocal, $concurrencyremote, $PHP_SELF, $error, $mxhost, $view;
+function concurrencylocal_print_form() {
+	global $attrib, $concurrencylocal, $concurrencyremote, $PHP_SELF, $error, $mxhost, $view, $LANG;
 ?>
-  <form action="<?php echo $PHP_SELF ?>" method="post">
+  <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">concurrencylocal, concurrencyremote (Max simultaneous deliveries)</th>
+      <th colspan="3" align="left">concurrencylocal, concurrencyremote (<?=$LANG->_('Maximum simultaneous deliveries')?>)</th>
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title">Local</td>
-          <td><?php echo format_error($error["concurrencylocal"]); ?><input type="text" name="concurrencylocal" value="<?php echo $concurrencylocal; ?>"> Default: 10</td>
+          <td class="title"><?=$LANG->_('Local')?></td>
+          <td><?php echo format_error($error["concurrencylocal"]); ?><input type="text" name="concurrencylocal" value="<?=$concurrencylocal?>"> <?=$LANG->_('Default')?>: 10</td>
         </tr>
 
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title">Remote</td>
-          <td><?php echo format_error($error["concurrencyremote"]); ?><input type="text" name="concurrencyremote" value="<?php echo $concurrencyremote; ?>"> Default: 20</td>
+          <td class="title"><?=$LANG->_('Remote')?></td>
+          <td><?php echo format_error($error["concurrencyremote"]); ?><input type="text" name="concurrencyremote" value="<?=$concurrencyremote?>"> <?=$LANG->_('Default')?>: 20</td>
         </tr>
 
         <tr class="subtitle">
-          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"> Leave the fields empty to set the default values</td>
+          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('Leave the fields empty to set the default values')?>.</td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="attrib" value="<?=$attrib?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
     <input type="hidden" name="view" value="<?=$view?>">
     <br>
-    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
+    <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
-
 <?php
 }
 
 function concurrencylocal_save($type, $host) {
-	global $_pql_control, $attrib, $concurrencylocal, $concurrencyremote, $error, $mxhost, $view;
+	global $_pql_control, $attrib, $concurrencylocal, $concurrencyremote, $error, $mxhost, $view, $LANG;
 
-	// recontrol values
-	if(!concurrencylocal_check($type)){
- 		return false;
-	}
-
-	switch($type){
+	switch($type) {
 	  case "modify";
 	  case "add";
 		// save entries
@@ -140,48 +126,50 @@ function concurrencylocal_save($type, $host) {
 												  "cn=" . $mxhost . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 												  "concurrencyremote", $concurrencyremote);
 		
-		if(in_array(false, $return)){
-			$msg = "Error saving bouncing options: " . pql_ldap_error($_pql_control->ldap_linkid);
-		} else {
-    		$msg = "Successfully saved bouncing options";
-    	}
+		if(in_array(false, $return))
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+									   array('what' => $LANG->_('bouncing options')))
+			. ": " . pql_ldap_error($_pql_control->ldap_linkid);
+		else
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+									   array('what' => $LANG->_('bouncing options')))
 		
 		attribute_forward($msg);
 		break;
+
 	  default:
-		die("unknown save type $type in " . __FILE__ . ", function save()");
+		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
+								  array('type' => $type, 'file' => __FILE__)));
 	}
 }
 
-function concurrencylocal_help(){
+function concurrencylocal_help() {
+	global $LANG;
 ?>
-
-	<b>Local</b>
+	<b><?=$LANG->_('Local')?></b>
 	<br>
 	Maximum number of simultaneous local delivery attempts.
 	Default: 10.  If 0, local deliveries will be put on
 	hold.  concurrencylocal is limited at compile time to
 	120.
 	<br><br>
-	<b>Remote</b>
+	<b><?=$LANG->_('Remote')?></b>
 	<br>
 	Maximum number of simultaneous remote delivery
 	attempts.  Default: 20.  If 0, remote deliveries will
 	be put on hold.  concurrencyremote is limited at
 	compile time to 120.
-
 <?php
 }
 
-function concurrencylocal_help_cr(){
+function concurrencylocal_help_cr() {
+	global $LANG;
+	echo $LANG->_('Help text taken from qmail man pages');
+}
+
+// Local variables:
+// mode: php
+// mode: font-lock
+// tab-width: 4
+// End:
 ?>
-	help text taken from qmail man pages
-<?php
-}
-/*
- * Local variables:
- * mode: php
- * mode: font-lock
- * tab-width: 4
- * End:
- */

@@ -8,7 +8,7 @@ require("./include/pql_control.inc");
 
 include("./header.html");
 ?>
-  <span class="title1"><?php echo PQL_LANG_DOMAIN_ADD; ?>: <?php echo $domain ?></span>
+  <span class="title1"><?php echo pql_complete_constant($LANG->_('Create domain %domain%'), array('domain' => $domain)); ?></span>
   <br><br>
 <?php
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
@@ -18,8 +18,8 @@ $_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
 $domain = strtolower($domain);
 
 // check if domain is valid
-if(!check_hostaddress($domain)){
-	$msg = urlencode(PQL_LANG_DOMAIN_INVALID);
+if(!check_hostaddress($domain)) {
+	$msg = urlencode($LANG->_('Invalid domain name! Use: domain.tld (e.g. adfinis.com)'));
 	header("Location: home.php?msg=$msg");
 	exit();
 }
@@ -27,7 +27,7 @@ if(!check_hostaddress($domain)){
 // "
 // check if unit exist
 if(pql_unit_exist($_pql->ldap_linkid, $domain, $unit)){
-	$msg = urlencode(PQL_LANG_DOMAIN_EXISTS);
+	$msg = urlencode($LANG->_('This domain already exists'));
 	header("Location: home.php?msg=$msg");
 	exit();
 }
@@ -39,10 +39,10 @@ if(pql_add_unit($_pql->ldap_linkid, $domain, $unit)){
 	}
 
 	// redirect to domain-details
-	$msg = urlencode(pql_complete_constant(PQL_LANG_DOMAIN_ADD_OK, array("domain" => $domain)));
+	$msg = urlencode(pql_complete_constant($LANG->_('Domain %domain% successfully created'), array("domain" => $domain)));
 	header("Location: domain_detail.php?domain=$domain&unit=$unit&msg=$msg&rlnb=1");
 } else {
-	$msg = urlencode(PQL_LANG_DOMAIN_ADD_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid));
+	$msg = urlencode($LANG->_('Failed to create the domain') . ":&nbsp;" . ldap_error($_pql->ldap_linkid));
 	header("Location: home.php?msg=$msg");
 }
 ?>

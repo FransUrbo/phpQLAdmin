@@ -2,10 +2,10 @@
 // control attribute plugin for
 // smtproutes (max number of bytes in message)
 //
-// $Id: attrib.control.smtproutes.inc,v 2.10 2003-06-28 09:21:06 turbo Exp $
+// $Id: attrib.control.smtproutes.inc,v 2.11 2003-07-02 07:59:00 turbo Exp $
 
 function smtproutes_check($type) {
-	global $error, $domain, $relay, $port, $view;
+	global $error, $domain, $relay, $port, $view, $LANG;
 	global $rootdn, $type, $set, $domainname;
 
 	// check all domains
@@ -13,7 +13,7 @@ function smtproutes_check($type) {
 		foreach($domainname as $key => $dom) {
 			if($dom) {
 				if(preg_match("/[^0-9a-z-\.]+/i",$dom)) {
-					$error["domain_$key"] = PQL_LANG_INVALID;
+					$error["domain_$key"] = $LANG->_('Invalid');
 					$is_error = true;
 				}
 			}
@@ -24,7 +24,7 @@ function smtproutes_check($type) {
 	if(is_array($relay)) {
 		foreach($relay as $key => $rel) {
 			if($rel != "" and !check_hostaddress($rel)) {
-				$error["relay_$key"] = PQL_LANG_INVALID;
+				$error["relay_$key"] = $LANG->_('Invalid');
 				$is_error = true;
 			}
 		}
@@ -34,7 +34,7 @@ function smtproutes_check($type) {
 	if(is_array($port) and ($type != 'del')) {
 		foreach($port as $key => $prt) {
 			if(preg_match("/[^0-9]+/i", $prt)) {
-				$error["port_$key"] = PQL_LANG_INVALID;
+				$error["port_$key"] = $LANG->_('Invalid');
 				$is_error = true;
 			}
 		}
@@ -75,7 +75,7 @@ function smtproutes_init($host) {
 }
 
 function smtproutes_print_view($host) {
-	global $_pql_control, $smtproutes, $view;
+	global $_pql_control, $smtproutes, $view, $LANG;
 	global $rootdn, $domain, $attrib, $type, $set;
 
 	// init data
@@ -85,11 +85,11 @@ function smtproutes_print_view($host) {
 		foreach($smtproutes as $route) {
 			// domain
 			if($route[0] == "")
-			  $route[0] = "&lt; all &gt;";
+			  $route[0] = "&lt; ".$LANG->_('All', 4)." &gt;";
 			
 			// relay host
 			if($route[1] == "")
-			  $route[1] = "MX-record";
+			  $route[1] = $LANG->_('MX record');
 			
 			// port
 			if($route[2] == "")
@@ -101,37 +101,37 @@ function smtproutes_print_view($host) {
 	
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left">smtproutes (Defined SMTP routes)</th>
+    <th colspan="3" align="left">smtproutes (<?=$LANG->_('Defined SMTP routes')?>)</th>
       <tr class="title">
-        <td>Source domain</td>
+        <td><?=$LANG->_('Source domain')?></td>
         <td>&nbsp;</td>
-        <td>Relay host</td>
+        <td><?=$LANG->_('Relay host')?></td>
         <td>&nbsp;</td>
-        <td>Port</td>
+        <td><?=$LANG->_('Port')?></td>
       </tr>
 <?php
 	if(!is_array($routes)) {
 ?>
       <tr class="<?php table_bgcolor(); ?>">
-        <td colspan="5">no routes defined</td>
+        <td colspan="5"><?=$LANG->_('No routes defined')?></td>
       </tr>
 <?php
 	} else {
 		foreach($routes as $route) {
 ?>
       <tr class="<?php table_bgcolor(); ?>">
-        <td><?php echo $route[0]; ?></td>
+        <td><?=$route[0]?></td>
         <td><b>=&gt;</b></td>
-        <td><?php echo $route[1]; ?></td>
+        <td><?=$route[1]?></td>
         <td><b>:</b></td>
-        <td><?php echo $route[2]; ?></td>
+        <td><?=$route[2]?></td>
       </tr>
 <?php
 		} // end foreach
 	} // end if is_array
 ?>
       <tr class="subtitle">
-        <td colspan="5"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=smtproutes"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
+        <td colspan="5"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=smtproutes"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
       </tr>
     </th>
   </table>
@@ -140,7 +140,7 @@ function smtproutes_print_view($host) {
 }
 
 function smtproutes_print_form() {
-	global $attrib, $PHP_SELF, $error, $domain, $relay, $port, $routecount, $mxhost, $view;
+	global $attrib, $PHP_SELF, $error, $domain, $relay, $port, $routecount, $mxhost, $view, $LANG;
 	global $rootdn, $domain, $attrib, $type, $set, $view, $_pql_control;
 
 	if($attrib && $rootdn && $set)
@@ -193,49 +193,49 @@ function smtproutes_print_form() {
 ?>
         <form action="<?php echo $PHP_SELF ?>" method="post">
           <table cellspacing="0" cellpadding="3" border="0">
-            <th colspan="3" align="left">smtproutes (SMTP routes)</th>
+            <th colspan="3" align="left">smtproutes (<?=$LANG->_('SMTP routes')?>)</th>
               <tr class="title">
-                <td>Source domain</td>
+                <td><?=$LANG->_('Source domain')?></td>
 <?php if($attrib && $rootdn && $set) { ?>
                 <td>QmailLDAP/Controls</td>
 <?php } else { ?>
-                <td>Relay host</td>
+                <td><?=$LANG->_('Relay host')?></td>
 <?php } ?>
 <?php if($type != 'del') { ?>
-                <td>Port</td>
+                <td><?=$LANG->_('Port')?></td>
 <?php } ?>
               </tr>
 
               <tr class="<?php table_bgcolor(); ?>">
-                <td><?php echo format_error($error["domainname_0"]); ?><input type="text" name="domainname[0]" value="<?php echo $domainname[0]; ?>">&nbsp;&nbsp;<b><?php if($type != 'del') { ?>=><?php } ?></b></td>
+                <td><?php echo format_error($error["domainname_0"]); ?><input type="text" name="domainname[0]" value="<?=$domainname[0]?>">&nbsp;&nbsp;<b><?php if($type != 'del') { ?>=><?php } ?></b></td>
 <?php if($attrib and is_array($hosts)) { ?>
                 <td>
                   <select name="relay[]" size="1" multiple>
-                    <option value="">Please select a host</option>
+                    <option value=""><?=$LANG->_('Please select a host')?></option>
 <?php	for($i=0; $hosts[$i]; $i++) { ?>
                     <option value="<?=$hosts[$i]?>"><?=$hosts[$i]?></option>
 <?php	} ?>
                   </select>
                 </td>
 <?php } else { ?>
-                <td><?php echo format_error($error["relay_0"]); ?><input type="text" name="relay[0]" value="<?php echo $relay[0]; ?>">&nbsp;&nbsp;<b>:</b></td>
+                <td><?php echo format_error($error["relay_0"]); ?><input type="text" name="relay[0]" value="<?=$relay[0]?>">&nbsp;&nbsp;<b>:</b></td>
 <?php } ?>
 <?php if($type != 'del') { ?>
-                <td><?php echo format_error($error["port_0"]); ?><input type="text" size="4" maxlength="4" name="port[0]" value="<?php echo $port[0]; ?>"></td>
+                <td><?php echo format_error($error["port_0"]); ?><input type="text" size="4" maxlength="4" name="port[0]" value="<?=$port[0]?>"></td>
 <?php } ?>
               </tr>
 
 <?php for($i = 1; $i <= $routecount; $i++){ ?>
               <tr class="<?php table_bgcolor(); ?>">
-                <td><?php echo format_error($error["domainname_$i"]); ?><input type="text" name="domainname[<?php echo $i; ?>]" value="<?php echo $domainname[$i]; ?>">&nbsp;&nbsp;<b>=></b></td>
-                <td><?php echo format_error($error["relay_$i"]); ?><input type="text" name="relay[<?php echo $i; ?>]" value="<?php echo $relay[$i]; ?>">&nbsp;&nbsp;<b>:</b></td>
-                <td><?php echo format_error($error["port_$i"]); ?><input type="text" size="4" maxlength="4" name="port[<?php echo $i; ?>]" value="<?php echo $port[$i]; ?>"></td>
+                <td><?php echo format_error($error["domainname_$i"]); ?><input type="text" name="domainname[<?=$i?>]" value="<?=$domainname[$i]?>">&nbsp;&nbsp;<b>=></b></td>
+                <td><?php echo format_error($error["relay_$i"]); ?><input type="text" name="relay[<?=$i?>]" value="<?$relay[$i]?>">&nbsp;&nbsp;<b>:</b></td>
+                <td><?php echo format_error($error["port_$i"]); ?><input type="text" size="4" maxlength="4" name="port[<?=$i?>]" value="<?=$port[$i]?>"></td>
               </tr>
 
 <?php } ?>
 <?php if(!$attrib) { ?>
               <tr class="subtitle">
-                <td colspan="3"><a href="<?=$PHP_SELF?>?attrib=<?=$attrib?>&routecount=<?=($routecount+1)?>&mxhost=<?=$mxhost?>">add additional route</a>(please save first, changes will be lost)</td>
+                <td colspan="3"><a href="<?=$PHP_SELF?>?attrib=<?=$attrib?>&routecount=<?=($routecount+1)?>&mxhost=<?=$mxhost?>">add additional route</a>(<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
               </tr>
 
 <?php } ?>
@@ -253,7 +253,7 @@ function smtproutes_print_form() {
           </table>
 
           <input type="hidden" name="submit" value="1">
-          <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+          <input type="hidden" name="attrib" value="<?=$attrib?>">
 <?php if($attrib) { ?>
           <input type="hidden" name="rootdn" value="<?=$rootdn?>">
           <input type="hidden" name="domain" value="<?=$domain?>">
@@ -263,13 +263,13 @@ function smtproutes_print_form() {
 <?php } ?>
           <input type="hidden" name="view"   value="<?=$view?>">
           <br>
-          <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
+          <input type="submit" value="<?=$LANG->_('Save')?>">
         </form>
 <?php
 }
 
 function smtproutes_save($type, $host) {
-	global $_pql_control, $attrib, $smtproutes, $error, $domain, $relay, $port, $view;
+	global $_pql_control, $attrib, $smtproutes, $error, $domain, $relay, $port, $view, $LANG;
 	global $rootdn, $type, $domainname;
 	$success = 0;
 
@@ -325,9 +325,11 @@ function smtproutes_save($type, $host) {
 		}
 
 		if($success)
-		  $msg = "Successfully saved smtproutes options";
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+									   array('what' => $LANG->_('smtproutes options')));
 		else
-		  $msg = "Failed saving smtproutes: " . pql_ldap_error($_pql_control->ldap_linkid);
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+									   array('what' => $LANG->_('smtproutes options'))) . ": " . pql_ldap_error($_pql_control->ldap_linkid);
 
 		attribute_forward($msg);
 		break;
@@ -357,19 +359,23 @@ function smtproutes_save($type, $host) {
 		}
 
 		if($success)
-		  $msg = "Successfully saved smtproutes options";
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+									   array('what' => $LANG->_('smtproutes options')));
 		else
-		  $msg = "Failed saving smtproutes: " . pql_ldap_error($_pql_control->ldap_linkid);
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+									   array('what' => $LANG->_('smtproutes options'))) . ": " . pql_ldap_error($_pql_control->ldap_linkid);
 
 		attribute_forward($msg);
 		break;
 
    	  default:
-		die("unknown save type $type in " . __FILE__ . ", function save()");
+		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
+								  array('type' => $type, 'file' => __FILE__)));
 	}
 }
 
 function smtproutes_help() {
+    global $LANG;
 ?>
 	Artificial SMTP routes.  Each route has the form
 	domain:relay, without any extra spaces.  If domain
@@ -398,15 +404,14 @@ function smtproutes_help() {
 <?php
 }
 
-function smtproutes_help_cr(){
-?>
-	help text taken from qmail man pages
-<?php
+function smtproutes_help_cr() {
+	global $LANG;
+	echo $LANG->_('Help text taken from qmail man pages');
 }
-/*
- * Local variables:
- * mode: php
- * mode: font-lock
- * tab-width: 4
- * End:
- */
+
+// Local variables:
+// mode: php
+// mode: font-lock
+// tab-width: 4
+// End:
+?>

@@ -2,34 +2,32 @@
 // control attribute plugin for
 // rcpthosts (blocked local addresses)
 //
-// $Id: attrib.control.rcpthosts.inc,v 2.14 2003-06-25 07:07:02 turbo Exp $
+// $Id: attrib.control.rcpthosts.inc,v 2.15 2003-07-02 07:59:00 turbo Exp $
 
-function rcpthosts_check($type){
-    global $error, $rcpthosts, $domain, $rootdn, $view;
+function rcpthosts_check($type) {
+    global $error, $rcpthosts, $domain, $rootdn, $view, $LANG;
 
     // check validity
-    if(is_array($rcpthosts)){
-		foreach($rcpthosts as $key => $host){
-			if($host == ""){
-				continue;
-			}
+    if(is_array($rcpthosts)) {
+		foreach($rcpthosts as $key => $host) {
+			if($host == "")
+			  continue;
 			
-			if(!check_hostaddress($host)){
-				$error["rcpthosts_$key"] = PQL_LANG_INVALID;
+			if(!check_hostaddress($host)) {
+				$error["rcpthosts_$key"] = $LANG->_('Invalid');
 				$is_error = true;
 			}
 		} // end foreach
     } // end if is_array
 	
-    if($is_error){
-		return false;
-    }
+    if($is_error)
+	  return false;
     
     return true;
 }
 
 // init values
-function rcpthosts_init($host){
+function rcpthosts_init($host) {
     global $_pql_control, $rcpthosts, $domain, $rootdn, $view;
 
     // fetch data from ldap server
@@ -42,16 +40,16 @@ function rcpthosts_init($host){
 }
 
 function rcpthosts_print_view($host) {
-    global $_pql_control, $rcpthosts, $view;
+    global $_pql_control, $rcpthosts, $view, $LANG;
     
     // init data
     rcpthosts_init($host);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th align="left">rcpthosts (allowed rcpt hosts) for host <u><?=$host?></u></th>
-      <tr class="title"><td>Domain</td></tr>
+    <th align="left"><?php echo pql_complete_constant($LANG->_('Allowed rcpt hosts for host %host%'), array('host' => $host)); ?></th>
+      <tr class="title"><td><?=$LANG->_('Domain')?></td></tr>
 <?php if(!is_array($rcpthosts)) { ?>
-      <tr class="<?php table_bgcolor(); ?>"><td>no rcpthosts defined</td></tr>
+      <tr class="<?php table_bgcolor(); ?>"><td><?=$LANG->_('No rcpthosts defined')?></td></tr>
 <?php } else {
 		asort($rcpthosts);
 		foreach($rcpthosts as $rcpt) {
@@ -63,7 +61,7 @@ function rcpthosts_print_view($host) {
     if(pql_get_define("PQL_GLOB_CONTROL_AUTOADDRCPTHOSTS")) {
 ?>
       <tr class="subtitle">
-        <td><a href="control_edit_attribute.php?attrib=rcpthosts&type=replicate&mxhost=<?=$host?>&submit=1"><img src="images/edit.png" width="12" height="12" border="0" alt="replicate">Click here to start replication manually</a></td>
+        <td><a href="control_edit_attribute.php?attrib=rcpthosts&type=replicate&mxhost=<?=$host?>&submit=1"><img src="images/edit.png" width="12" height="12" border="0" alt="replicate"><?=$LANG->_('Click here to start replication manually')?></a></td>
       </tr>
 
       <br>
@@ -80,7 +78,7 @@ function rcpthosts_print_view($host) {
       </tr>
 <?php } else { ?>
       <tr class="subtitle">
-        <td><a href="control_edit_attribute.php?attrib=rcpthosts&mxhost=<?=$host?>"><img src="images/edit.png" width="12" height="12" border="0"> change options</a> (The automatic replication with domain is disabled)</td>
+        <td><a href="control_edit_attribute.php?attrib=rcpthosts&mxhost=<?=$host?>"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a> (<?=$LANG->_('The automatic replication with domain is disabled')?>)</td>
       </tr>
     </th>
 <?php }	?>
@@ -88,12 +86,12 @@ function rcpthosts_print_view($host) {
 <?php
 }
 
-function rcpthosts_print_form(){
-    global $attrib, $PHP_SELF, $error, $rcpthosts, $mxhost, $domain, $rootdn, $view;
+function rcpthosts_print_form() {
+    global $attrib, $PHP_SELF, $error, $rcpthosts, $mxhost, $domain, $rootdn, $view, $LANG;
 ?>
-  <form action="<?php echo $PHP_SELF ?>" method="post">
+  <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">Add domain:</th>
+      <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain'))); ?>:</th>
         <tr class="<?php table_bgcolor(); ?>">
           <td><input type="text" name="set" size="30"></td>
         </tr>
@@ -101,23 +99,19 @@ function rcpthosts_print_form(){
     </table>
 
     <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="attrib" value="<?=$attrib?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
     <input type="hidden" name="domain" value="<?=$domain?>">
     <input type="hidden" name="rootdn" value="<?=$rootdn?>">
     <input type="hidden" name="view"   value="<?=$view?>">
     <br>
-    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
+    <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
 <?php
 }
 
 function rcpthosts_save($type, $host) {
-    global $_pql_control, $attrib, $rcpthosts, $set, $error, $rootdn, $domain, $view;
-
-    // recontrol values
-    if(!rcpthosts_check($type))
-	  return false;
+    global $_pql_control, $attrib, $rcpthosts, $set, $error, $rootdn, $domain, $view, $LANG;
 
 	if(!$host) {
 		// Get all QmailLDAP/Controls hosts
@@ -148,9 +142,8 @@ function rcpthosts_save($type, $host) {
 				  $HOSTS[] = $host;
 			}
 		}
-	} else {
-		$HOSTS[] = $host;
-	}
+	} else
+	  $HOSTS[] = $host;
 
 	if($HOSTS[1])
 	  // We have more than one host
@@ -159,45 +152,51 @@ function rcpthosts_save($type, $host) {
     switch($type) {
       case "replicate":
 		// start replication manually
-
 		if(pql_control_update_domains($_pql_control, "cn=$host,".$GLOBALS["USER_SEARCH_DN_CTR"], $host, '', 'rcpthosts'))
-		  $msg = "Successfully replicated rcpthosts";
+		  $msg = pql_complete_constant($LANG->_('Successfully replicated %what%'),
+									   array('what' => 'rcpthosts'));
 		else
-		  $msg = "Failed replicating rcpthosts: " . pql_ldap_error($_pql_control->ldap_linkid);
+		  $msg = pql_complete_constant($LANG->_('Failed to replicate %what%'),
+									   array('what' => 'rcpthosts')) . ": " . pql_ldap_error($_pql_control->ldap_linkid);
 	
 		attribute_forward($msg);
 		break;
 
       case "del":
 		// delete entry
-		
 		foreach($HOSTS as $host) {
 			// remove specified domain from rcpthosts in host object
 			if(pql_control_remove_attribute($_pql_control->ldap_linkid,
 											"cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 											"rcpthosts", $set))
-			  $msg = "Successfully removed $set from$all rcpthosts";
+			  $msg = pql_complete_constant($LANG->_('Successfully removed %domain% from %what%'),
+										   array('what'   => 'rcpthosts', 'domain' => $set));
 			else
-			  $msg = "Failed removing $set from$all rcpthosts: " . pql_ldap_error($_pql_control->ldap_linkid);
+			  $msg = pql_complete_constant($LANG->_('Failed to remove %domain% from %what%'),
+										   array('what'   => 'rcpthosts', 'domain' => $set))
+				. ": " . pql_ldap_error($_pql_control->ldap_linkid);
 		}
 		break;
 
       case "add":
 		// add entry
-
 		foreach($HOSTS as $host) {
 			// adding specified domain to rcpthosts in host object
 			if(pql_control_add_attribute($_pql_control->ldap_linkid,
 										 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 										 "rcpthosts", $set))
-			  $msg = "Successfully added $set to$all rcpthosts";
+			  $msg = pql_complete_constant($LANG->_('Successfully added %domain% to %value %what%'),
+										   array('what' => 'rcpthosts', 'domain' => $set, 'value' => $all));
 			else
-			  $msg = "Failed adding $set to$all rcpthosts: " . pql_ldap_error($_pql_control->ldap_linkid);
+			  $msg = pql_complete_constant($LANG->_('Failed adding %domain% to %value% %what%'),
+										   array('what' => 'rcpthosts', 'domain' => $set, 'value' => $all))
+				. ": " . pql_ldap_error($_pql_control->ldap_linkid);
 		}
 		break;
 
       default:
-		die("unknown save type $type in " . __FILE__ . ", function save()");
+		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
+								  array('type' => $type, 'file' => __FILE__)));
     }
 		
 	if($msg)
@@ -205,7 +204,8 @@ function rcpthosts_save($type, $host) {
 	  attribute_forward($msg);
 }
 
-function rcpthosts_help(){
+function rcpthosts_help() {
+	global $LANG;
 ?>
 Allowed RCPT domains.  If rcpthosts is supplied,
 qmail-smtpd will reject any envelope recipient address
@@ -226,15 +226,15 @@ allowed through.
 <?php
 }
 
-function rcpthosts_help_cr(){
-?>
-	help text taken from qmail man pages
-<?php
-/*
- * Local variables:
- * mode: php
- * mode: font-lock
- * tab-width: 4
- * End:
- */
+function rcpthosts_help_cr() {
+	global $LANG;
+	echo $LANG->_('Help text taken from qmail man pages');
 }
+
+// Local variables:
+// mode: php
+// mode: font-lock
+// tab-width: 4
+// End:
+?>
+

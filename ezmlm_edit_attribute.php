@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_edit_attribute.php,v 1.14 2003-06-25 07:06:25 turbo Exp $
+// $Id: ezmlm_edit_attribute.php,v 1.15 2003-07-02 07:58:31 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -8,7 +8,7 @@ require("./include/pql_ezmlm.inc");
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS, false, 0);
 
 // forward back to list detail page
-function list_forward($domainname, $msg){
+function list_forward($domainname, $msg) {
 	global $domain;
 
     $msg = urlencode($msg);
@@ -20,7 +20,7 @@ function list_forward($domainname, $msg){
 // Get base directory for mails
 if(!($path = pql_get_domain_value($_pql, $domain, "basemaildir"))) {
 	// TODO: What if we can't find the base maildir path!?
-	die("Can't get baseMailDir path from domain '$domain'!");
+	die(pql_complete_constant($LANG->_('Can\'t get baseMailDir path from %domain%'), array('domain' => $domain)));
 }
 
 // Load list of mailinglists
@@ -28,7 +28,7 @@ if($ezmlm = new ezmlm(pql_get_define("PQL_GLOB_EZMLM_USER"), $path)) {
 	if($ezmlm->mailing_lists[$listno]["name"]) {
 		$listname = $ezmlm->mailing_lists[$listno]["name"];
 	} else {
-		die("No listname defined for list $listno!<br>");
+		die(pql_complete_constant($LANG->_('No listname defined for list %listnr%'), array('listnr' => $listno)));
 	}
 
 	// TODO: Same for 'listparent' and 'fromaddress' when/if we need it...
@@ -37,11 +37,11 @@ if($ezmlm = new ezmlm(pql_get_define("PQL_GLOB_EZMLM_USER"), $path)) {
 
 		if(($submit != 'save') and !$value) {
 			if($attrib == 'subscriber') {
-				$title1 = 'Add email address to subscription list';
-				$title2 = 'Subscription address';
+				$title1 = $LANG->_('Add email address to subscription list');
+				$title2 = $LANG->_('Subscription address');
 			} elseif($attrib == 'owner') {
-				$title1 = 'Edit list owner address';
-				$title2 = 'List owner address';
+				$title1 = $LANG->_('Edit list owner address');
+				$title2 = $LANG->_('List owner address');
 			}
 
 			// Haven't submitted yet, output the questionaire
@@ -54,7 +54,7 @@ if($ezmlm = new ezmlm(pql_get_define("PQL_GLOB_EZMLM_USER"), $path)) {
 	<table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$title2?></th>
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?=PQL_LANG_EMAIL?></td>
+          <td class="title"><?=$LANG->_('Email')?></td>
 <?php
 			if($attrib == 'subscriber') {
 ?>

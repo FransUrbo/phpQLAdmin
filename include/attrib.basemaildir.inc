@@ -1,41 +1,40 @@
 <?php
 // attribute plugin for
 // base homedirectory for domain
-// $Id: attrib.basemaildir.inc,v 2.3 2003-06-25 07:07:01 turbo Exp $
+// $Id: attrib.basemaildir.inc,v 2.4 2003-07-02 07:59:00 turbo Exp $
 
-function attribute_check(){
-    global $basemaildir, $domain, $oldvalue, $_pql, $error;
+function attribute_check() {
+    global $basemaildir, $domain, $oldvalue, $_pql, $error, $LANG;
     
     // is typed in ?
-    if($basemaildir == ""){
-	$error["basemaildir"] = PQL_LANG_MISSING;
+    if($basemaildir == "") {
+	$error["basemaildir"] = $LANG->_('Missing');
 	return false;
     }
     
     // don't use ".."
-    if(preg_match("/(\.){2,}/", $basemaildir)){
-	$error["basemaildir"] = PQL_LANG_INVALID;
+    if(preg_match("/(\.){2,}/", $basemaildir)) {
+	$error["basemaildir"] = $LANG->_('Invalid');
 	return false;
     }
     
     return true;
 }
 
-function attribute_init(){
+function attribute_init() {
     global $basemaildir, $oldvalue;
-    
     $basemaildir = $oldvalue;
 }
 
-function attribute_print_form(){
-    global $basemaildir, $domain, $PHP_SELF, $attrib, $oldvalue, $error, $view, $orgname;
+function attribute_print_form() {
+    global $basemaildir, $domain, $PHP_SELF, $attrib, $oldvalue, $error, $view, $orgname, $LANG;
 ?>
-  <form action="<?php echo $PHP_SELF ?>" method="post">
+  <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?php echo PQL_LANG_DOMAIN_DEFAULT_CHANGE_MAILDIR . $orgname; ?></th>
+      <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Change %what% for domain %domain%'), array('what' => $LANG->_('default maildirectory base'), 'domain' => $orgname)); ?></th>
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_LANG_USER_MAILDIR; ?></td>
-          <td><?php echo format_error($error["basemaildir"]); ?><input type="text" name="basemaildir" value="<?php echo $basemaildir; ?>" size="50"></td>
+          <td class="title"><?=$LANG->_('Mail directory')?></td>
+          <td><?php echo format_error($error["basemaildir"]); ?><input type="text" name="basemaildir" value="<?=$basemaildir?>" size="50"></td>
         </tr>
       </th>
     </table>
@@ -47,40 +46,44 @@ function attribute_print_form(){
     <input type="hidden" name="rootdn"   value="<?=$rootdn?>">
     <input type="hidden" name="view"     value="<?=$view?>">
     <br>
-    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
+    <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
-
 <?php
 }
 
-function attribute_save($type){
-    global $domain, $attrib, $oldvalue, $basemaildir, $_pql, $view;
+function attribute_save($type) {
+    global $domain, $attrib, $oldvalue, $basemaildir, $_pql, $view, $LANG;
     
-    // recontrol values
-    if(!attribute_check($type)){
-	return false;
-    }
-    
-    switch($type){
+    switch($type) {
       case "add":
       case "modify":
-	if($basemaildir == $oldvalue){
-	    // don't change if new value equal to old one
-	    $msg = PQL_LANG_MAILMESSAGESTORE_UNCHANGED;
-	    attribute_forward($msg);
-	    break;
+		if($basemaildir == $oldvalue) {
+			// don't change if new value equal to old one
+			$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('Mailbox path')));
+			attribute_forward($msg);
+			break;
     	}
-	
-	if(pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, $basemaildir)){
-	    $msg = pql_complete_constant(PQL_LANG_DELIVERYPROGRAMPATH_CHANGE_OK, array("path" => $basemaildir));
-	} else {
-	    $msg = PQL_LANG_DELIVERYPROGRAMPATH_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+		
+		if(pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, $basemaildir))
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
+									   array('what' => $LANG->_('Path'),
+											 'new'  => $basemaildir));
+		else
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+									   array('what' => $LANG->_('Path'))) . ": " . ldap_error($_pql->ldap_linkid);
+		
+		attribute_forward($msg);
+		break;
+		
+	  default:
+		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
+								  array('type' => $type, 'file' => __FILE__)));
 	}
-	
-	attribute_forward($msg);
-	break;
-	
-      default:
-	die("unknown save type $type in " . __FILE__ . ", function save()");
-    }
 }
+
+// Local variables:
+// mode: php
+// mode: font-lock
+// tab-width: 4
+// End:
+?>

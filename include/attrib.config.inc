@@ -1,14 +1,14 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.23 2003-06-25 07:07:01 turbo Exp $
+// $Id: attrib.config.inc,v 1.24 2003-07-02 07:59:00 turbo Exp $
 
 function attribute_check() {
-    global $administrator, $domain, $oldvalue, $_pql, $error;
+    global $administrator, $domain, $oldvalue, $_pql, $error, $LANG;
 	global $attrib, $$attrib, $rootdn, $value;
 
     // is typed in ?
-    if($$attrib == ""){
-		$error[$attrib] = PQL_LANG_MISSING;
+    if($$attrib == "") {
+		$error[$attrib] = $LANG->_('Missing');
 		return false;
     }
     
@@ -53,11 +53,10 @@ function attribute_print_form() {
 		if($value != '')
 		  $oldvalue = $value;
 	}
-
 ?>
   <script type="text/javascript" language="javascript"><!--
     function errorWindow() {
-      myWindow = window.open("", "ProblemWindow", 'toolbar,width=850,height=400');
+      myWindow = window.open("", "ProblemWindow", 'toolbar,width=850,height=400'), $LANG;
       myWindow.document.write("I can.t retreive the subschemaSubentry entry from base NULL. ");
 	  myWindow.document.write("Make sure you have access to do a search that in the shell looks like this:<p>");
 
@@ -83,7 +82,7 @@ function attribute_print_form() {
     }
   //--></script>
 
-  <span class="title1">Change configuration value</span>
+  <span class="title1"><?=$LANG->_('Change options')?></span>
 
   <br><br>
 
@@ -92,13 +91,12 @@ function attribute_print_form() {
  		   ($attrib == lc($PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_DOMAIN"]))) {
 ?>
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">Set/Modify <?=$attrib."\n"?>
+      <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Set/Modify attribute %attribute%'), array('attribute' => $attrib))."\n"; ?>
         <tr class="subtitle">
           <table>
             <td colspan="2"><img src="images/info.png" width="16" height="16" border="0" align="left"></td>
             <td>
-              These are the objectclasses that exists in the LDAP server,<br>
-              exept those that's already included for use.
+              <?=$LANG->_('These are the objectclasses that exists in the LDAP server, exept those that\'s already included for use')?>.
             </td>
           </table>
         </tr>
@@ -109,7 +107,7 @@ function attribute_print_form() {
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title">Add to <?=$attrib."\n"?>
+          <td class="title"><?php echo pql_complete_constant($LANG->_('Add to attribute %attribute%'), array('attribute' => $attrib))."\n"; ?>
 <?php   if(($attrib == lc($PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_USER"])) or
  		   ($attrib == lc($PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_DOMAIN"]))) {
             if($attrib == 'userobjectclass')
@@ -154,7 +152,7 @@ function attribute_print_form() {
 <?php		} else {
 				// No objectclasses in LDAP!
 ?>
-          <td class="<?=$class?>"><i><a href="javascript:errorWindow()">No objectclasses!</i></a></td
+          <td class="<?=$class?>"><i><a href="javascript:errorWindow()"><?=$LANG->_('No objectclasses')?>!</i></a></td
 <?php
 			}
         } else {
@@ -195,7 +193,7 @@ function attribute_print_form() {
 <?php } ?>
     <input type="hidden" name="view" value="<?=$view?>">
     <br>
-    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
+    <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
 
   <script language="JavaScript">
@@ -207,7 +205,7 @@ function attribute_print_form() {
 }
 
 function attribute_save() {
-    global $domain, $attrib, $$attrib, $oldvalue, $administrator, $_pql;
+    global $domain, $attrib, $$attrib, $oldvalue, $administrator, $_pql, $LANG;
 	global $delval, $toggle, $PQL_ATTRIBUTE, $view, $rootdn;
 	$attrib = lc($attrib);
 
@@ -347,17 +345,23 @@ function attribute_save() {
 				}
 			}
 
-			if(! pql_set_domain_value($_pql->ldap_linkid, $dn, '', $entry)) {
-				$msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
-			} else {
-				$msg = "Successfully replaced $attrib."; $rlnb = 1;
+			if(! pql_set_domain_value($_pql->ldap_linkid, $dn, '', $entry))
+			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+										   array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
+			else {
+				$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+											 array('what' => $attrib));
+				$rlnb = 1;
 			}
 		}
 	} else {
-		if(! pql_set_domain_value($_pql->ldap_linkid, $rootdn, '', $entry)) {
-			$msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
-		} else {
-			$msg = "Successfully replaced $attrib."; $rlnb = 1;
+		if(! pql_set_domain_value($_pql->ldap_linkid, $rootdn, '', $entry)) 
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+									   array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
+		else {
+			$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+										 array('what' => $attrib));
+			$rlnb = 1;
 		}
 	}
 
@@ -380,11 +384,9 @@ function attribute_verify_objectclass($ldap) {
 	return 0;
 }
 
-/*
- * Local variables:
- * mode: php
- * mode: font-lock
- * tab-width: 4
- * End:
- */
+// Local variables:
+// mode: php
+// mode: font-lock
+// tab-width: 4
+// End:
 ?>

@@ -1,8 +1,8 @@
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left">Branch configuration
+    <th colspan="3" align="left"><?=$LANG->_('Branch configuration')?>
       <!-- -------------------- --!>
       <tr>
-        <td class="title">LDAP base dn</td>
+        <td class="title"><?=$LANG->_('LDAP base dn')?></td>
 <?php $class=table_bgcolor(0); ?>
         <td class="<?=$class?>"></td>
         <td class="<?=$class?>"><b><?=$branch?>&nbsp;</b></td>
@@ -10,49 +10,49 @@
 
       <!-- -------------------- --!>
       <tr>
-        <td class="title">Show users</td>
+        <td class="title"><?=$LANG->_('Show users')?></td>
 <?php $class=table_bgcolor(0);
       if($ALLOW_GLOBAL_CONFIG_SAVE) {
 ?>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$branch?>&toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_SHOW_USERS"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_CONF_SHOW_USERS"]?>"></a></td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$branch?>&toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_SHOW_USERS"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?> <?=$PQL_ATTRIBUTE["PQL_CONF_SHOW_USERS"]?>"></a></td>
 <?php } else { ?>
         <td class="<?=$class?>"></td>
 <?php } ?>
-        <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_SHOW_USERS", $branch)) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
+        <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_SHOW_USERS", $branch)) {echo $LANG->_('Yes');}else{echo $LANG->_('No');}?>&nbsp;</td>
       </tr>
 
       <!-- -------------------- --!>
       <tr>
-        <td class="title">Allow absolute mailbox paths</td>
+        <td class="title"><?=$LANG->_('Allow absolute mailbox paths')?></td>
 <?php $class=table_bgcolor(0);
        if($ALLOW_GLOBAL_CONFIG_SAVE) {
 ?>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$branch?>&toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_ALLOW_ABSOLUTE_PATH"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_CONF_ALLOW_ABSOLUTE_PATH"]?>"></a></td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$branch?>&toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_ALLOW_ABSOLUTE_PATH"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?> <?=$PQL_ATTRIBUTE["PQL_CONF_ALLOW_ABSOLUTE_PATH"]?>"></a></td>
 <?php } else { ?>
         <td class="<?=$class?>"></td>
 <?php } ?>
-        <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $branch)) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
+        <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $branch)) {echo $LANG->_('Yes');}else{echo $LANG->_('No');}?>&nbsp;</td>
       </tr>
 
       <!-- -------------------- --!>
       <tr>
-        <td class="title">Verify user/domain deletions etc <b>[recomended!]</b></td>
+        <td class="title"><?=$LANG->_('Verify user/domain deletions \i\urecomended!\U\I')?></td>
 <?php $class=table_bgcolor(0);
       if($ALLOW_GLOBAL_CONFIG_SAVE) {
 ?>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$branch?>&toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_VERIFY_DELETE"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_CONF_VERIFY_DELETE"]?>"></a></td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$branch?>&toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_VERIFY_DELETE"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?> <?=$PQL_ATTRIBUTE["PQL_CONF_VERIFY_DELETE"]?>"></a></td>
 <?php } else { ?>
         <td class="<?=$class?>"></td>
 <?php } ?>
-        <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_VERIFY_DELETE", $branch)) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
+        <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_VERIFY_DELETE", $branch)) {echo $LANG->_('Yes');}else{echo $LANG->_('No');}?>&nbsp;</td>
       </tr>
 
       <tr>
-        <td class="title">Reference users with</td>
+        <td class="title"><?php echo pql_complete_constant($LANG->_('Reference %what% with'), array('what' => $LANG->_('users'))); ?></td>
 <?php $class=table_bgcolor(0);
       if($ALLOW_GLOBAL_CONFIG_SAVE) {
 ?>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$branch?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_REFERENCE_USERS_WITH"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_CONF_REFERENCE_USERS_WITH"]?>"></a></td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$branch?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_REFERENCE_USERS_WITH"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?> <?=$PQL_ATTRIBUTE["PQL_CONF_REFERENCE_USERS_WITH"]?>"></a></td>
 <?php } else { ?>
         <td class="<?=$class?>"></td>
 <?php } ?>
@@ -61,11 +61,11 @@
 
       <!-- -------------------- --!>
       <tr>
-        <td class="title">Reference domains with</td>
+        <td class="title"><?php echo pql_complete_constant($LANG->_('Reference %what% with'), array('what' => $LANG->_('domains'))); ?></td>
 <?php $class=table_bgcolor(0); 
       if($ALLOW_GLOBAL_CONFIG_SAVE) {
 ?>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$branch?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_REFERENCE_DOMAINS_WITH"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_CONF_REFERENCE_DOMAINS_WITH"]?>"></a></td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$branch?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_REFERENCE_DOMAINS_WITH"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?> <?=$PQL_ATTRIBUTE["PQL_CONF_REFERENCE_DOMAINS_WITH"]?>"></a></td>
 <?php } else { ?>
         <td class="<?=$class?>"></td>
 <?php } ?>
@@ -74,7 +74,7 @@
 
       <!-- -------------------- --!>
       <tr>
-        <td class="title">Minimum UID/GID Number to be used for shell and system accounts</td>
+        <td class="title"><?=$LANG->_('Minimum UID/GID Number to be used for shell and system accounts')?></td>
 <?php $class=table_bgcolor(0);
       if($ALLOW_GLOBAL_CONFIG_SAVE) {
 ?>
@@ -90,13 +90,13 @@
       </tr>
 
       <tr>
-        <td class="title">UID Number to be used for forwarding accounts</td>
+        <td class="title">UID <?=$LANG->_('number to be used for forwarding accounts')?></td>
 <?php $class=table_bgcolor(0);
       if($ALLOW_GLOBAL_CONFIG_SAVE) {
 ?>
         <td class="<?=$class?>">
           <a href="config_edit_attribute.php?rootdn=<?=$branch?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER"]?>">
-            <img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=$PQL_ATTRIBUTE["PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER"]?>">
+            <img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?> <?=$PQL_ATTRIBUTE["PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER"]?>">
           </a>
         </td>
 <?php } else { ?>
@@ -110,7 +110,7 @@
 
       <!-- -------------------- --!>
       <tr>
-        <td class="title">External user creation script</td>
+        <td class="title"><?php echo pql_complete_constant($LANG->_('External %what% creation script'), array('what' => $LANG->_('user'))); ?></td>
 <?php	$class=table_bgcolor(0);
 		$new_tr = 0;
 ?>
@@ -128,7 +128,7 @@
 
       <!-- -------------------- --!>
       <tr>
-        <td class="title">External domain creation script</td>
+        <td class="title"><?php echo pql_complete_constant($LANG->_('External %what% creation script'), array('what' => $LANG->_('domain')));?></td>
 <?php	$class=table_bgcolor(0);
 		$new_tr = 0;
 ?>
@@ -148,7 +148,7 @@
 
       <!-- -------------------- --!>
       <tr>
-        <td class="title">Password encryption schemes</td>
+        <td class="title"><?=$LANG->_('Password encryption scheme')?></td>
 <?php     $class=table_bgcolor(0); $new_tr = 0;
 
           // Convert the array to a index
@@ -180,7 +180,7 @@
 
         <td class="<?=$class?>">
           <a href="config_edit_attribute.php?rootdn=<?=$branch?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_PASSWORD_SCHEMES"]?>&delval=<?=$sc[$i][$branch]?>">
-            <img src="images/del.png" width="12" height="12" border="0" alt="Delete attrib <?=$PQL_ATTRIBUTE["PQL_CONF_PASSWORD_SCHEMES"]?>=<?=$sc[$i][$branch]?>">
+            <img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Delete attribute')?> <?=$PQL_ATTRIBUTE["PQL_CONF_PASSWORD_SCHEMES"]?>=<?=$sc[$i][$branch]?>">
           </a>
         </td>
 <?php			  } else { ?>
@@ -194,7 +194,7 @@
         <td class="title"></td>
 <?php		  if($ALLOW_GLOBAL_CONFIG_SAVE) { ?>
         <td class="<?=$class?>"></td>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$branch?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_PASSWORD_SCHEMES"]?>">Add password enc scheme</a></td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$branch?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_PASSWORD_SCHEMES"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('password encryption scheme'))); ?></a></td>
 <?php		  } else { ?>
         <td class="<?=$class?>"></td>
 <?php		  } ?>
@@ -205,7 +205,7 @@
 
       <!-- -------------------- --!>
       <tr>
-        <td class="title">User objectclasses</td>
+        <td class="title"><?=$LANG->_('User objectclasses')?></td>
 <?php     $new_tr = 0; $max = 0;
 
           // Convert the array to a index
@@ -252,7 +252,7 @@
 <?php     if($ALLOW_GLOBAL_CONFIG_SAVE) { ?>
         <td class="<?=$class?>"></td>
         <td class="<?=$class?>">
-          <a href="config_edit_attribute.php?rootdn=<?=$branch?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_USER"]?>">Add user objectClass
+          <a href="config_edit_attribute.php?rootdn=<?=$branch?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_USER"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('user objectClass'))); ?></a>
         </td>
 <?php	  } ?>
       </tr>
@@ -260,7 +260,7 @@
         <td class="<?=$class?>"></td>
 <?php         if($ALLOW_GLOBAL_CONFIG_SAVE) { ?>
         <td class="<?=$class?>">
-          <a href="config_edit_attribute.php?rootdn=<?=$branch?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_USER"]?>">Add user objectClass</a>
+          <a href="config_edit_attribute.php?rootdn=<?=$branch?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_USER"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('user objectClass'))); ?></a>
         </td>
 <?php         } else { ?>
         <td class="<?=$class?>"></td>
@@ -272,7 +272,7 @@
 
       <!-- -------------------- --!>
       <tr>
-        <td class="title">Domain objectclasses</td>
+        <td class="title"><?=$LANG->_('Domain objectclasses')?></td>
 <?php     $new_tr = 0; $class=table_bgcolor(0); unset($oc); $max = 0;
 
           // Convert the array to a index
@@ -304,7 +304,7 @@
 ?>
         <td class="<?=$class?>">
            <a href="config_edit_attribute.php?rootdn=<?=$branch?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_DOMAIN"]?>&delval=<?=$oc[$i][$branch]?>">
-               <img src="images/del.png" width="12" height="12" border="0" alt="Delete attrib <?=$PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_DOMAIN"]?>=<?=$oc[$i][$branch]?>">
+               <img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Delete attribute')?> <?=$PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_DOMAIN"]?>=<?=$oc[$i][$branch]?>">
            </a>
         </td>
 <?php		  } else { ?>
@@ -320,7 +320,7 @@
 ?>
         <td class="<?=$class?>"></td>
         <td class="<?=$class?>">
-          <a href="config_edit_attribute.php?rootdn=<?=$branch?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_DOMAIN"]?>">Add domain objectClass</a>
+          <a href="config_edit_attribute.php?rootdn=<?=$branch?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_DOMAIN"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain objectClass'))); ?></a>
         </td>
 <?php	  	  }
 		  }

@@ -35,13 +35,13 @@ switch($attrib) {
     $include = "attrib.mailforwardingaddress.inc";
     break;
   default:
-    die("unknown attribute");
+    die(pql_complete_constant($LANG->_('Unknown attribute %attribute% in %file%'), array('attrib' => $attrib, 'file' => __FILE__));
 }
 
 include("./include/".$include);
 include("./header.html");
 ?>
-  <span class="title1"><?php echo PQL_LANG_USER_EDIT; ?> for <?=$username?></span>
+  <span class="title1"><?php echo pql_complete_constant($LANG->_('Change user data for %user%'), array('user', $username)); ?></span>
   <br><br>
 <?php
 // select what to do

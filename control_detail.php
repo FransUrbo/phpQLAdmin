@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.21 2003-06-25 07:06:25 turbo Exp $
+// $Id: control_detail.php,v 1.22 2003-07-02 07:58:31 turbo Exp $
 session_start();
 require("./include/pql_config.inc");
 
@@ -42,7 +42,7 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 			elseif($attrib == 'ldapbasedn')
 			  $$attrib = "<i>".$USER_SEARCH_DN_CTR."</i>";
 			else
-			  $$attrib = "<i>not set</i>";
+			  $$attrib = "<i>".$LANG->_('Not set')."</i>";
 		}
 	}
 

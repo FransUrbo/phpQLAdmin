@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.2 2003-06-25 07:07:02 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.3 2003-07-02 07:59:00 turbo Exp $
 
 function attribute_check() {
     global $domain, $rootdn, $rdn, $view, $action, $type, $action;
@@ -14,7 +14,7 @@ function attribute_check() {
 }
 
 function attribute_print_form() {
-    global $domain, $rootdn, $rdn, $view, $action, $type, $action;
+    global $domain, $rootdn, $rdn, $view, $action, $type, $action, $LANG, $LANG;
     global $_pql, $PHP_SELF, $attrib;
 
 	if($action != 'add') {
@@ -24,21 +24,21 @@ function attribute_print_form() {
 		$oldvalue = $oldvalue[0];
 	}
 ?>
-    <form action="<?php echo $PHP_SELF ?>" method="post">
+    <form action="<?=$PHP_SELF?>" method="post">
       <table cellspacing="0" cellpadding="3" border="0">
-        <th colspan="3" align="left">Change Bind9 value</th>
+        <th colspan="3" align="left"><?=$LANG->_('Change Bind9 value')?></th>
           <tr class="<?php table_bgcolor(); ?>">
-            <td class="title">Change <?=$attrib?></td>
+            <td class="title"><?php echo pql_complete_constant($LANG->_('Change attribute %attribute%'), array('attribute' => $attrib)); ?></td>
             <td><input type="text" name="<?=$attrib?>" value="<?=$oldvalue?>" size="20"></td>
 <?php	if(lc($attrib) == 'dnsttl') { ?>
             <td>
               <select name="time">
-                <option value="seconds" SELECTED>Seconds</option>
-                <option value="minutes">Minutes</option>
-                <option value="hours">Hours</option>
-                <option value="days">Days</option>
-                <option value="weeks">Weeks</option>
-                <option value="months">Months</option>
+                <option value="seconds" SELECTED><?=$LANG->_('Seconds')?></option>
+                <option value="minutes"><?=$LANG->_('Minutes')?></option>
+                <option value="hours"><?=$LANG->_('Hours')?></option>
+                <option value="days"><?=$LANG->_('Days')?></option>
+                <option value="weeks"><?=$LANG->_('Weeks')?></option>
+                <option value="months"><?=$LANG->_('Months')?></option>
               </select>
             </td>
 <?php	} else { ?>
@@ -48,7 +48,7 @@ function attribute_print_form() {
 <?php	if(lc($attrib) == 'mxrecord') { ?>
 
           <tr class="<?php table_bgcolor(); ?>">
-            <td class="title">MX Priority:</td>
+            <td class="title"><?=$LANG->_('MX Priority')?>:</td>
             <td><input type="text" name="priority" value="10" size="20"></td>
             <td></td>
           </tr>
@@ -68,13 +68,13 @@ function attribute_print_form() {
       <input type="hidden" name="action"   value="<?=$action?>">
       <input type="hidden" name="rdn"      value="<?=$rdn?>">
       <br>
-      <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
+      <input type="submit" value="<?=$LANG->_('Save')?>">
     </form>
 <?php
 }
 
 function attribute_save($action) {
-    global $domain, $rootdn, $rdn, $view, $action, $type, $action;
+    global $domain, $rootdn, $rdn, $view, $action, $type, $action, $LANG, $LANG;
     global $_pql, $PHP_SELF, $attrib, $$attrib, $oldvalue, $priority, $time;
 
 	if((lc($attrib) == 'mxrecord') && $priority)
@@ -106,16 +106,20 @@ function attribute_save($action) {
 		$entry[$attrib][] = $$attrib;
 
 		if(pql_bind9_set_record($_pql->ldap_linkid, $rdn, $entry))
-		  $msg = "Successfully added ".$$attrib.".";
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+									   array('what' => $$attrib)).".";
 		else
-		  $msg = "Failed to add ".$$attrib.": " . ldap_error($_pql->ldap_linkid);
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+									   array('what' => $$attrib)) . ": " . ldap_error($_pql->ldap_linkid);
 		break;
 
 	  case "modify":
 		if(pql_bind9_set_record($_pql->ldap_linkid, $rdn, $attrib, $$attrib))
-		  $msg = "Successfully replaced $attrib.";
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+									   array('what' => $attrib));
 		else
-		  $msg = "Failed to replace $attrib: " . ldap_error($_pql->ldap_linkid);
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+									   array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
 		break;
 
 	  case "del":
@@ -128,22 +132,20 @@ function attribute_save($action) {
 		}
 
 		if(pql_bind9_set_record($_pql->ldap_linkid, $rdn, $entry))
-		  $msg = "Successfully removed $oldvalue.";
+		  $msg = pql_complete_constant($LANG->_('Successfully removed %value%'),
+									   array('value' => $oldvalue));
 		else
-		  $msg = "Failed to remove $oldvalue: " . ldap_error($_pql->ldap_linkid);
+		  $msg = pql_complete_constant($LANG->_('Failed to remove %value%'),
+									   array('value' => $oldvalue)) . ": " . ldap_error($_pql->ldap_linkid);
 		break;
 	}
 
     attribute_forward($msg);
 }
 
-/*
- * Local variables:
- * mode: php
- * mode: font-lock
- * tab-width: 4
- * End:
- */
+// Local variables:
+// mode: php
+// mode: font-lock
+// tab-width: 4
+// End:
 ?>
-
-

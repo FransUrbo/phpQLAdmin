@@ -1,34 +1,33 @@
 <?php
 // attribute plugin for
 // cn (Full name)
-// $Id: attrib.cn.inc,v 2.11 2003-06-25 07:07:01 turbo Exp $
+// $Id: attrib.cn.inc,v 2.12 2003-07-02 07:59:00 turbo Exp $
 
-function attribute_check($type){
-    global $cn, $oldvalue, $_pql, $error;
+function attribute_check($type) {
+    global $cn, $oldvalue, $_pql, $error, $LANG;
     
     // is typed in ?
-    if($cn == ""){
-		$error["cn"] = PQL_LANG_MISSING;
+    if($cn == "") {
+		$error["cn"] = $LANG->_('Missing');
 		return false;
     }
     
     return true;
 }
 
-function attribute_init(){
+function attribute_init() {
     global $cn, $oldvalue;
-    
     $cn = $oldvalue;
 }
 
-function attribute_print_form(){
-    global $cn, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $view;
+function attribute_print_form() {
+    global $cn, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $view, $LANG;
 ?>
-  <form action="<?php echo $PHP_SELF ?>" method="post">
+  <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?php echo PQL_LANG_SEARCH_CN; ?></th>
+      <th colspan="3" align="left"><?=$LANG->_('Common name')?></th>
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_LANG_SEARCH_CN; ?></td>
+          <td class="title"><?=$LANG->_('Common name')?></td>
           <td><?php echo format_error($error["cn"]); ?><input type="text" name="cn"></td>
         </tr>
       </th>
@@ -42,29 +41,23 @@ function attribute_print_form(){
     <input type="hidden" name="user"     value="<?=$user?>">
     <input type="hidden" name="view"     value="<?=$view?>">
     <br>
-    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
+    <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
-
 <?php
 }
 
-function attribute_save($type){
-    global $domain, $user, $attrib, $oldvalue, $cn, $_pql, $view;
+function attribute_save($type) {
+    global $domain, $user, $attrib, $oldvalue, $cn, $_pql, $view, $LANG;
     
-    // recontrol values
-    if(!attribute_check($type)){
-		return false;
-    }
-    
-    switch($type){
+    switch($type) {
       case "add":
 		// no add operation possible with cn
 		break;
 
       case "modify";
-		if($cn == $oldvalue){
+		if($cn == $oldvalue) {
 			// don't change if new value equal to old one
-			$msg = PQL_LANG_CN_UNCHANGED;
+			$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('Common name')));
 			attribute_forward($msg);
 			break;
     	}
@@ -78,9 +71,13 @@ function attribute_save($type){
 			if(is_array($old)) {
 				// We have an old value of this array, try to change it...
 				if(pql_replace_userattribute($_pql->ldap_linkid, $user, $attrib, $cn))
-				  $msg = pql_complete_constant(PQL_LANG_CN_CHANGE_OK, array("old" => $oldvalue, "new" => $cn));
+				  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
+											   array('what' => $LANG->_('Common name')
+													 'new'  => $cn));
 				else
-				  $msg = PQL_LANG_CN_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+				  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+											   array('what' => $LANG->_('Common name')))
+					. ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 			}
 		}
 
@@ -105,15 +102,14 @@ function attribute_save($type){
 		break;
 
       default:
-		die("unknown save type $type in " . __FILE__ . ", function save()");
+		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
+								  array('type' => $type, 'file' => __FILE__)));
     }
 }
 
-/*
- * Local variables:
- * mode: php
- * mode: font-lock
- * tab-width: 4
- * End:
- */
+// Local variables:
+// mode: php
+// mode: font-lock
+// tab-width: 4
+// End:
 ?>

@@ -9,17 +9,16 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 include("./header.html");
 ?>
-  <span class="title1"><?php echo PQL_LANG_SENDMAIL ?></span>
+  <span class="title1"><?=$LANG->_('Send testmail')?></span>
   <br><br>
 <?php
-echo "User: $user<br>";
 if(!pql_user_exist($_pql->ldap_linkid, $user)) {
-    echo "user &quot;$user&quot; does not exist";
+    echo pql_complete_constant($LANG->_('User %user% does not exist'), array('user', $user));
     exit();
 }
 
-if($email == ""){
-    die("no email address given...");
+if($email == "") {
+    die($LANG->_('No email address given'));
 }
 
 $subject = PQL_CONF_TESTMAIL_SUBJECT;
@@ -44,7 +43,7 @@ if (is_array($quota)) {
     // Do we use the qmail-ldap/control patch?
     if (!pql_get_define("PQL_GLOB_CONTROL_USE")) {
 	// No -> quota is 'standard'
-	$vars['QUOTA'] = PQL_LANG_MAILQUOTA_DEFAULT;
+	$vars['QUOTA'] = $LANG->('Standard');
     } else {
 	// qmail-ldap/control patch is used
 	// search the standard quota...
@@ -70,9 +69,9 @@ if (!empty($msg)) {
 }
 
 if(mail($email, $subject, $message, $header)){
-    $msg .= pql_complete_constant(PQL_LANG_SENDMAIL_OK, array("email" => $email));
+    $msg .= pql_complete_constant($LANG->_('Successfully sended mail to %email%"'), array("email" => $email));
 } else {
-    $msg .= PQL_LANG_SENDMAIL_FAILED;
+    $msg .= $LANG->_('Failed sending mail');
 }
 
 $url = "user_detail.php?domain=$domain&user=".urlencode($user)."&msg=".urlencode($msg);

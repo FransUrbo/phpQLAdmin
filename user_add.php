@@ -51,7 +51,7 @@ if($submit == "") {
 			// We have reached the maximum amount of users.
 			include("./header.html");
 ?>
-  <span class="title1">Maximum amount of users reached</span>
+  <span class="title1"><?=$LANG->_('Maximum amount of users reached')?></span>
   <br><br>
   Sorry, but the maximum amount of users have been reached in this domain. You are not allowed
   to create more. Please talk to your administrator if you think this is wrong.
@@ -65,12 +65,12 @@ if($submit == "") {
 
     if($surname == ""){
 		$error = true;
-		$error_text["surname"] = PQL_LANG_MISSING;
+		$error_text["surname"] = $LANG->_('Missing');
     }
 	
     if($name == ""){
 		$error = true;
-		$error_text["name"] = PQL_LANG_MISSING;
+		$error_text["name"] = $LANG->_('Missing');
     }
 	
     $user = $surname . " " . $name;
@@ -78,28 +78,28 @@ if($submit == "") {
        and pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) == pql_get_define("PQL_GLOB_ATTR_CN")
        and pql_user_exist($_pql->ldap_linkid, $user)) {
 		$error = true;
-		$error_text["username"] = pql_complete_constant(PQL_LANG_USER_EXIST, array("user" => $user));
-		$error_text["name"] = PQL_LANG_EXISTS;
-		$error_text["surname"] = PQL_LANG_EXISTS;
+		$error_text["username"] = pql_complete_constant($LANG->_('User %user% already exists'), array("user" => $user));
+		$error_text["name"]		= $LANG->_('Already exists');
+		$error_text["surname"]	= $LANG->_('Already exists');
     }
 	
-    if($email == ""){
+    if($email == "") {
 		$error = true;
-		$error_text["email"] = PQL_LANG_MISSING;
+		$error_text["email"] = $LANG->_('Missing');
     }
 
     if(!check_email($email)){
 		$error = true;
-		$error_text["email"] = PQL_LANG_INVALID;
+		$error_text["email"] = $LANG->_('Invalid');
     }
 	
     if($error_text["email"] == "" and pql_email_exists($_pql, $email)) {
 		$error = true;
-		$error_text["email"] = PQL_LANG_EXISTS;
+		$error_text["email"] = $LANG->_('Already exists');
     }
 	
     // if an error occured, set displaying form to '' (initial display)
-    if(isset($submit) and $error == true){
+    if(isset($submit) and $error == true) {
 		$submit = "";
     } else {
 		$error_text = array();
@@ -108,7 +108,7 @@ if($submit == "") {
 
 // ------------------------------------------------
 // Page 2: uid, password, host, quota, userhost, quota_user
-if($submit == "two"){
+if($submit == "two") {
 	$error_text = array();
 	$error = false;
 
@@ -120,7 +120,7 @@ if($submit == "two"){
 		if(!$email) {
 			$submit = "one";
 			$error = true;
-			$error_text["email"] = PQL_LANG_MISSING;
+			$error_text["email"] = $LANG->_('Missing');
 		}
 	} else {
 		// Build the COMPLETE email address
@@ -141,17 +141,17 @@ if($submit == "two"){
 		if(!$uid) {
 			$submit = "one";
 			$error = true;
-			$error_text["uid"] = PQL_LANG_MISSING;
+			$error_text["uid"] = $LANG->_('Missing');
 		} else {
 			if(preg_match("/[^a-z0-9\.@%_-]/i", $uid)) {
 				$submit = "one";
 				$error = true;
-				$error_text["uid"] = PQL_LANG_INVALID;
+				$error_text["uid"] = $LANG->_('Invalid');
 			}
 		}
 	} else {
 		$error = true;
-		$error_text["uid"] = PQL_LANG_MISSING . " (can't autogenerate)";
+		$error_text["uid"] = $LANG->_('Missing') . " (" . $LANG->_('can\'t autogenerate') . ")";
 	}
 }
 
@@ -166,7 +166,7 @@ if ($submit == "save") {
 		if(!$email) {
 			$submit = "one";
 			$error = true;
-			$error_text["email"] = PQL_LANG_MISSING;
+			$error_text["email"] = $LANG->_('Missing');
 		}
 	} else {
 		// Build the COMPLETE email address
@@ -187,30 +187,30 @@ if ($submit == "save") {
 		if(!$uid) {
 			$submit = "one";
 			$error = true;
-			$error_text["uid"] = PQL_LANG_MISSING;
+			$error_text["uid"] = $LANG->_('Missing');
 		} else {
 			if(preg_match("/[^a-z0-9\.@%_-]/i", $uid)) {
 				$submit = "one";
 				$error = true;
-				$error_text["uid"] = PQL_LANG_INVALID;
+				$error_text["uid"] = $LANG->_('Invalid');
 			}
 		}
 	} else {
 		$error = true;
-		$error_text["uid"] = PQL_LANG_MISSING . " (can't autogenerate)";
+		$error_text["uid"] = $LANG->_('Missing') . " (" . $LANG->_('can\'t autogenerate') .")";
 	}
 	
 	if($error_text["uid"] == "" and pql_search_attribute($_pql->ldap_linkid, $domain,
 														 pql_get_define("PQL_GLOB_ATTR_UID"),
 														 $uid)) {
 		$error = true;
-		$error_text["uid"] = PQL_LANG_EXISTS;
+		$error_text["uid"] = $LANG->_('Already exists');
 	}
 
 	if($account_type == "normal" or $account_type == "system" or $account_type == "shell") {
 		if($password == "") {
 			$error = true;
-			$error_text["password"] = PQL_LANG_MISSING;
+			$error_text["password"] = $LANG->_('Missing');
 		}
 		
 		if(eregi("KERBEROS", $pwscheme)) {
@@ -218,13 +218,13 @@ if ($submit == "save") {
 			// TODO: Is this regexp correct!?
 			if(! preg_match("/^[a-zA-Z0-9]+[\._-a-z0-9]*[a-zA-Z0-9]+@[A-Z0-9][-A-Z0-9]+(\.[-A-Z0-9]+)+$/", $password)) {
 				$error = true;
-				$error_text["password"] = PQL_LANG_INVALID;
+				$error_text["password"] = $LANG->_('Invalid');
 			}
 		} elseif(!$crypted) {
 			// A password in cleartext, NOT already encrypted
 			if(preg_match("/[^a-z0-9]/i", $password)) {
 				$error = true;
-				$error_text["password"] = PQL_LANG_INVALID;
+				$error_text["password"] = $LANG->_('Invalid');
 			}
 		}
 		
@@ -232,12 +232,12 @@ if ($submit == "save") {
 		if(is_array($userhost)) {
 			if($host != "default")
 			  if(!preg_match("/^([a-z0-9]+\.{1,1}[a-z0-9]+)+$/i",$userhost[1])) {
-				  $error_text["userhost"] = PQL_LANG_INVALID;
+				  $error_text["userhost"] = $LANG->_('Invalid');
 				  $error = true;
 			  }
 		} elseif($userhost) {
 			if(!preg_match("/^([a-z0-9]+\.{1,1}[a-z0-9]+)+$/i",$userhost)) {
-				$error_text["userhost"] = PQL_LANG_INVALID;
+				$error_text["userhost"] = $LANG->_('Invalid');
 				$error = true;
 			}
 		} elseif($account_type != "shell") {
@@ -269,19 +269,19 @@ if ($submit == "save") {
 	} elseif($account_type == "forward") {
 		if(!check_email($forwardingaddress)){
 			$error = true;
-			$error_text["forwardingaddress"] = PQL_LANG_INVALID;
+			$error_text["forwardingaddress"] = $LANG->_('Invalid');
 		}
 		
-		if($forwardingaddress == ""){
+		if($forwardingaddress == "") {
 			$error = true;
-			$error_text["forwardingaddress"] = PQL_LANG_MISSING;
+			$error_text["forwardingaddress"] = $LANG->_('Missing');
 		}
 	}
 
 	// No host
 	if(!$host or !$userhost) {
 		$error = true;
-		$error_text["userhost"] = PQL_LANG_MISSING . " (can't autogenerate)";
+		$error_text["userhost"] = $LANG->_('Missing') . " (" . $LANG->_('can\'t autogenerate') . ")";
 	}
 
 	if(($error == true) and !$ADVANCED_MODE and !$submit)
@@ -299,19 +299,17 @@ if($pwscheme) {
 include("./header.html");
 ?>
   <span class="title1">
-    <?php echo pql_complete_constant(PQL_LANG_USER_ADD_TITLE,array("domain" => $orgname)); ?>
+    <?php echo pql_complete_constant($LANG->_('Create user in domain %domain%'), array("domain" => $orgname)); ?>
 <?php
 if($ADVANCED_MODE && $account_type) {
 	if($account_type == 'normal')
-	  echo " - Mail";
+	  echo " - ".$LANG->_('Mail account');
 	elseif($account_type == 'system')
-	  echo " - System";
+	  echo " - ".$LANG->_('System account');
 	elseif($account_type == 'shell')
-	  echo " - Shell";
+	  echo " - ".$LANG->_('Shell account');
 	else
-	  echo " - Forwarding";
-
-	echo " account";
+	  echo " - ".$LANG->_('Forwarding account');
 }
 ?>
   </span>
@@ -327,16 +325,16 @@ switch($submit) {
 ?>
 <form action="<?=$PHP_SELF?>" method="post" accept-charset="UTF-8">
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left"><?php echo PQL_LANG_USER_ACCOUNT_PROPERTIES; ?></th>
+    <th colspan="3" align="left"><?=$LANG->_('Account properties')?></th>
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title"><?php echo PQL_LANG_USER_ACCOUNT_TYPE; ?></td>
+        <td class="title"><?=$LANG->_('Type')?></td>
 
         <td>
           <select name="account_type">
-            <option value="normal" SELECTED><?php echo PQL_LANG_DELIVERYMODE_PROFILE_LOCAL; ?></option>
-            <option value="system"><?php echo PQL_LANG_DELIVERYMODE_PROFILE_SYSTEM; ?></option>
-            <option value="forward"><?php echo PQL_LANG_DELIVERYMODE_PROFILE_FORWARD; ?></option>
-            <option value="shell"><?php echo PQL_LANG_DELIVERYMODE_PROFILE_SHELL; ?></option>
+            <option value="normal" SELECTED><?=$LANG->_('Mail account')?></option>
+            <option value="system"><?=$LANG->_('System account')?></option>
+            <option value="forward"><?=$LANG->_('Forward account')?></option>
+            <option value="shell"><?=$LANG->_('Shell account')?></option>
           </select>
         </td>
       </tr>
@@ -346,8 +344,7 @@ switch($submit) {
         <td>
           <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
           <table>
-<?php echo PQL_LANG_DELIVERYMODE_PROFILE . " <b>" . PQL_LANG_DELIVERYMODE_PROFILE_LOCAL . "</b>" . PQL_LANG_DELIVERYMODE_PROFILE_INC .
-  PQL_LANG_DELIVERYMODE_PROFILE_LOCAL_INFO . ".";?>
+            <?php echo pql_complete_constant($LANG->_('Profile %type% account includes'), array('type' => $LANG->_('mail'))); ?>: <?=$LANG->_('local mailbox, POP account')?>.
           </table>
         </td>
       </tr>
@@ -357,8 +354,7 @@ switch($submit) {
         <td colspan="2">
           <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
           <table>
-<?php echo PQL_LANG_DELIVERYMODE_PROFILE . " <b>" . PQL_LANG_DELIVERYMODE_PROFILE_SYSTEM . "</b>" . PQL_LANG_DELIVERYMODE_PROFILE_INC .
-  PQL_LANG_DELIVERYMODE_PROFILE_SYSTEM_INFO . ", " . PQL_LANG_DELIVERYMODE_PROFILE_LOCAL_INFO;?>
+            <?php echo pql_complete_constant($LANG->_('Profile %type% account includes'), array('type' => $LANG->_('system'))); ?>: <?=$LANG->_('loginshell, homedirectory')?>, <?=$LANG->_('local mailbox, POP account')?>.
           </table>
         </td>
       </tr>
@@ -368,8 +364,7 @@ switch($submit) {
         <td>
           <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
           <table>
-<?php echo PQL_LANG_DELIVERYMODE_PROFILE . " <b>" . PQL_LANG_DELIVERYMODE_PROFILE_FORWARD . "</b>" . PQL_LANG_DELIVERYMODE_PROFILE_INC .
-  PQL_LANG_DELIVERYMODE_PROFILE_FORWARD_INFO . ".";?>
+            <?php echo pql_complete_constant($LANG->_('Profile %type% account includes'), array('type' => $LANG->_('forward'))); ?>: <?=$LANG->_('forward only, no local mailbox')?>.
           </table>
         </td>
       </tr>
@@ -379,8 +374,7 @@ switch($submit) {
         <td>
           <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
           <table>
-<?php echo PQL_LANG_DELIVERYMODE_PROFILE . " <b>" . PQL_LANG_DELIVERYMODE_PROFILE_SHELL . "</b>" . PQL_LANG_DELIVERYMODE_PROFILE_INC .
-  PQL_LANG_DELIVERYMODE_PROFILE_SHELL_INFO;?>
+            <?php echo pql_complete_constant($LANG->_('Profile %type% account includes'), array('type' => $LANG->_('shell'))); ?>: <?=$LANG->_('loginshell, homedirectory, no mail etc')?>.
           </table>
         </td>
       </tr>
@@ -404,21 +398,21 @@ switch($submit) {
 		 (pql_get_define("PQL_CONF_CREATE_USERNAME", $domain) and !function_exists('user_generate_uid')) or
 		 ($ADVANCED_MODE)) {
 ?>
-      <th colspan="3" align="left"><?php echo PQL_LANG_USER_ACCOUNT_PROPERTIES_MORE; ?></th>
+      <th colspan="3" align="left"><?=$LANG->_('Additional account properties')?></th>
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_LANG_USER_ID; ?></td>
+          <td class="title"><?=$LANG->_('Username')?></td>
           <td><?php echo format_error($error_text["uid"]); ?><input type="text" name="uid" value="<?=$uid?>"></td>
         </tr>
 
         <tr class="<?php table_bgcolor(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
-          <td><?=PQL_LANG_UID_HELP_SHORT?></td>
+          <td><?=$LANG->_('Numbers, letters and the following special chars: @, %, . (dot), _, -.\nIf left out, a username will be created automatically')?>.</td>
         </tr>
 
 <?php	} else { ?>
         <tr class="<?php table_bgcolor(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
-          <td>I will automatically generate the username.</td>
+          <td><?php echo pql_complete_constant($LANG->_('Automatically generate %what%'), array('what' => $LANG->_('username'))); ?>.</td>
         </tr>
 
 <?php	}
@@ -431,7 +425,7 @@ switch($submit) {
 ?>
         <!-- Password schema -->
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title">Password scheme</td>
+          <td class="title"><?=$LANG->_('Password encryption scheme')?></td>
           <td>
 <?php		if(eregi(',', pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn))) {
 				// We got more than one password scheme...
@@ -454,12 +448,12 @@ switch($submit) {
 
         <!-- Password -->
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_LANG_USERPASSWORD_TITLE; ?></td>
+          <td class="title"><?=$LANG->_('Password')?></td>
           <!-- Crude hackery. Using type=password won't be so good if we're using {KERBEROS} -->
           <td>
             <?php echo format_error($error_text["password"]); ?>
             <input type="input" name="password">
-            <input type="checkbox" name="crypted">Password is already encrypted
+            <input type="checkbox" name="crypted"><?=$LANG->_('Password is already encrypted')?>
             <?php echo format_error($error["pwscheme"]); ?>
           </td>
         </tr>
@@ -467,12 +461,12 @@ switch($submit) {
 <?php	if(eregi('KERBEROS', pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn))) { ?>
         <tr class="<?php table_bgcolor(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
-          <td><?=PQL_LANG_USERPASSWORD_HELP_KRB?></td>
+          <td><?=$LANG->_('If using {KERBEROS} as password scheme, make sure you include the correct REALM (principal@REALM.TLD)')?></td>
         </tr>
 <?php	} ?>
         <tr class="<?php table_bgcolor(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
-          <td>If you enter an already encrypted password, you must make sure that the password scheme you've choosen is the correct one. Also, choose the checkbox <u>Password is already encrypted</u></td>
+          <td><?=$LANG->_('If you enter an already encrypted password, you must make sure that the password scheme you\'ve choosen is the correct one. Also, choose the checkbox \uPassword is already encrypted\U')?></td>
         </tr>
 <?php
     } // account_type != forward
@@ -486,7 +480,7 @@ switch($submit) {
 
         <!-- Loginshell -->
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_LANG_USER_LOGINSHELL; ?></td>
+          <td class="title"><?=$LANG->_('Login shell')?></td>
           <td><?php echo format_error($error["loginshell"]); ?>
 
             <select name="loginshell">
@@ -514,7 +508,7 @@ switch($submit) {
 			// More than one subbranch - show a select menu
 ?>
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title">Put user in subbranch</td>
+          <td class="title"><?=$LANG->_('Put user in subbranch')?></td>
           <td>
             <select name="subbranch">
 <?php
@@ -558,10 +552,10 @@ switch($submit) {
     <br>
 
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?php echo PQL_LANG_USER_DATA; ?></th>
+      <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
         <!-- Firstname -->
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_LANG_USER_DATA_SURNAME; ?></td>
+          <td class="title"><?=$LANG->_('Surname')?></td>
           <td>
               <?php echo format_error($error_text["surname"]); ?>
               <input type="text" name="surname" value="<?=$surname?>">
@@ -570,7 +564,7 @@ switch($submit) {
 
         <!-- Lastname -->
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_LANG_USER_DATA_LASTNAME; ?></td>
+          <td class="title"><?=$LANG->_('Lastname')?></td>
           <td>
             <?php echo format_error($error_text["name"]); ?>
             <input type="text" name="name" value="<?=$name?>">
@@ -584,7 +578,7 @@ switch($submit) {
 ?>
         <!-- Email address -->
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_LANG_MAIL_TITLE; ?></td>
+          <td class="title"><?=$LANG->_('Main address')?></td>
           <td>
             <?php echo format_error($error_text["email"]); ?>
             <input type="text" name="email" value="<?=$email?>">
@@ -604,12 +598,12 @@ switch($submit) {
 
 <?php 		if(is_array($additionaldomainname)) { ?>
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_LANG_MAILALTERNATEADDRESS_TITLE; ?></td>
+          <td class="title"><?=$LANG->_('Alias')?></td>
           <td>
             <table>
               <td colspan="2"><input type="checkbox" name="include_additional" checked></td>
               <td>
-                Include username in additional domains as alias/aliases
+                <?=$LANG->_('Include username in additional domains as alias')?>
               </td>
             </table>
           </td>
@@ -619,14 +613,14 @@ switch($submit) {
 
         <tr class="subtitle">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
-          <td><?php echo PQL_LANG_USER_ADD_HELP2; ?></td>
+          <td><?=$LANG->_('The email address and the username will be automatically converted to lowercase')?></td>
         </tr>
 <?php 		}
 		} else {
 ?>
         <tr class="<?php table_bgcolor(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
-          <td>I will automatically generate the email address.</td>
+          <td><?php echo pql_complete_constant($LANG->_('Automatically generate %what%'), array('what' => $LANG->_('email address'))); ?>.</td>
         </tr>
 
 <?php	}
@@ -642,17 +636,17 @@ switch($submit) {
     <br>
   
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">Forward mails to</th>
+      <th colspan="3" align="left"><?=$LANG->_('Forward mails to')?></th>
         <!-- Forwarding address -->
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_LANG_SEARCH_MAILFORWARDINGADDRESS; ?></td>
+          <td class="title"><?=$LANG->_('Forwarding address')?></td>
           <td>
             <?php echo format_error($error_text["forwardingaddress"]); ?>
-            <input type="text" name="forwardingaddress" value="<?=$forwardingaddress?>"> <?php echo PQL_LANG_EMAIL; ?>
+            <input type="text" name="forwardingaddress" value="<?=$forwardingaddress?>"><?=$LANG->_('Email')?>
           </td>
         </tr>
         <tr class="subtitle">
-          <td colspan="2"><img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_LANG_MAILFORWARDINGADDRESS_ADD_HELP; ?></td>
+          <td colspan="2"><img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?=$LANG->_('You can add more forwarding address in the user details page')?></td>
         </tr>
       </th>
 <?php
@@ -664,15 +658,15 @@ switch($submit) {
   
 <?php if($account_type != 'shell') { ?>
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?php echo PQL_LANG_USER_ACCOUNT_PROPERTIES; ?></th>
+      <th colspan="3" align="left"><?=$LANG->_('Account properties')?></th>
         <!-- Account status -->
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_LANG_ACCOUNTSTATUS_STATUS; ?></td>
+          <td class="title"><?=$LANG->_('Status')?></td>
           <td>
             <select name="account_status">
-              <option value="active" SELECTED><?php echo PQL_LANG_ACCOUNTSTATUS_ACTIVE; ?></option>
-              <option value="nopop"><?php echo PQL_LANG_ACCOUNTSTATUS_NOPOP; ?></option>
-              <option value="disabled"><?php echo PQL_LANG_ACCOUNTSTATUS_DISABLE; ?></option>
+              <option value="active" SELECTED><?=$LANG->_('Active')?></option>
+              <option value="nopop"><?=$LANG->_('POP locked')?></option>
+              <option value="disabled"><?=$LANG->_('Locked')?></option>
             </select>
           </td>
         </tr>
@@ -719,7 +713,7 @@ switch($submit) {
 <?php
 	} else {
 ?>
-    <input type="submit" value="<?=PQL_LANG_SAVE?>">
+    <input type="submit" value="<?=$LANG->_('Save')?>">
 <?php
 	}
 ?>
@@ -747,7 +741,7 @@ switch($submit) {
     <input type="hidden" name="include_additional" value="<?=$include_additional?>">
 
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?php echo PQL_LANG_USER_ACCOUNT_PROPERTIES_MORE; ?></th>
+      <th colspan="3" align="left"><?=$LANG->_('Additional account properties')?></th>
 <?php
 	if($account_type == "normal" or $account_type == "system") {
 		// display forms for SYSTEM/MAIL account(s)
@@ -756,7 +750,7 @@ switch($submit) {
 
         <!-- MailMessageStore -->
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_LANG_MAILMESSAGESTORE_TITLE; ?></td>
+          <td class="title"><?=$LANG->_('Path to mailbox')?></td>
           <td><?php
 	  if(! ereg("/$", $basemaildir)) {
 		  $maildirectory = $basemaildir . "/" . $uid;
@@ -786,7 +780,7 @@ switch($submit) {
 		}
 ?>
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_LANG_MAILHOST_TITLE; ?></td>
+          <td class="title"><?=$LANG->_('Mail server')?></td>
           <td>
 <?php	if(is_array($userhost)) { ?>
             <input type="hidden" name="userhost" value="<?=$userhost[1]?>">
@@ -795,7 +789,7 @@ switch($submit) {
             <input type="hidden" name="userhost" value="<?=$userhost?>">
             <input type="radio" name="host" value="default" <?php if($userhost and ($host == "user")){ echo "checked";}?>>
 <?php	}
-		echo "            " . PQL_LANG_MAILHOST_DEFAULT . ": <b>";
+		echo "            " . $LANG->_('Standard (DNS entry)') . ": <b>";
 		if(is_array($userhost))
 		  echo $userhost[1];
 		else
@@ -812,7 +806,7 @@ switch($submit) {
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"></td>
           <td>
-            <input type="radio" name="host" value="user" checked>qmailControls object: <b><?=$userhost[1]?></b>
+            <input type="radio" name="host" value="user" checked><?=$LANG->_('QmailLDAP/Controls object')?>: <b><?=$userhost[1]?></b>
           </td>
         </tr>
 <?php
@@ -823,7 +817,7 @@ switch($submit) {
           <td class="title"></td>
           <td>
             <input type="radio" name="host" value="user" <?php if((!$userhost[0] and !$userhost[1]) or ($host == "user")){ echo "checked";}?>>
-            <?php echo PQL_LANG_MAILQUOTA_USERDEFINED;?>&nbsp;<input type="text" name="userhost"><br>
+            <?=$LANG->_('User defined')?>&nbsp;<input type="text" name="userhost"><br>
           </td>
         </tr>
 
@@ -843,7 +837,7 @@ switch($submit) {
     <input type="hidden" name="submit" value="save">
     <input type="hidden" name="domain" value="<?=$domain?>">
     <input type="hidden" name="rootdn" value="<?=$rootdn?>">
-    <input type="submit" value="<?=PQL_LANG_SAVE?>">
+    <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
 <?php
 		break;
@@ -1049,17 +1043,21 @@ switch($submit) {
 
 				// Execute the user add script (0 => show output)
 				if(pql_execute(pql_get_define("PQL_CONF_SCRIPT_CREATE_USER", $rootdn), 0)) {
-					echo PQL_LANG_USER_ADD_SCRIPT_FAILED . "<br>";
-					$msg = urlencode(PQL_LANG_USER_ADD_SCRIPT_FAILED) . ".&nbsp;<br>";
+					echo pql_complete_constant($LANG->_('The %what% add script failed'),
+											   array('what' => $LANG->_('user'))) . "!<br>";
+					$msg = urlencode(pql_complete_constant($LANG->_('The %what% add script failed'),
+														   array('what' => $LANG->_('user'))) ."!") . ".&nbsp;<br>";
 				} else {
-					echo "<b>" . PQL_LANG_USER_ADD_SCRIPT_OK . "</b><br>";
-					$msg = urlencode(PQL_LANG_USER_ADD_SCRIPT_OK) . ".&nbsp;<br>";
+					echo "<b>" . pql_complete_constant($LANG->_('Successfully executed the %what% add script'),
+													   array('what' => $LANG->_('user'))) . "</b><br>";
+					$msg = urlencode(pql_complete_constant($LANG->_('Successfully executed the %what% add script'),
+														   array('what' => $LANG->_('user')))) . ".&nbsp;<br>";
 				}
 
 				$url = "domain_detail.php?domain=$domain&msg=$msg";
 			}
 
-			$msg .= urlencode(PQL_LANG_USER_ADD_OK);
+			$msg .= urlencode($LANG->_('Successfully created the new user'));
 
 			if(pql_get_define("PQL_CONF_TESTMAIL_AUTOSEND", $rootdn)) {
 				$url  = "user_sendmail.php?email=" . urlencode($email) . "&";
@@ -1080,7 +1078,7 @@ switch($submit) {
 				header("Location: " . pql_get_define("PQL_GLOB_URI") . "$url");
 			}
 		} else {
-			$msg = urlencode(PQL_LANG_USER_ADD_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid));
+			$msg = urlencode($LANG->_('Failed to create the new user') . ":&nbsp;" . ldap_error($_pql->ldap_linkid));
 	   		$url = "domain_detail.php?domain=$domain&msg=$msg";
 			header("Location: " . pql_get_define("PQL_GLOB_URI") . "$url");
 		}

@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.3 2003-05-20 10:40:12 turbo Exp $
+// $Id: bind9_add.php,v 2.4 2003-07-02 07:58:31 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -16,15 +16,15 @@ if($domainname) {
 if(($action == 'add') and ($type == 'domain')) {
 	  if(!$domainname) {
 ?>
-  <span class="title1">Create a DNS zone in branch <?=$domain?></span>
+  <span class="title1"><?php echo pql_complete_constant($LANG->_('Create a DNS zone in branch %domain%'), array('domain' => $domain)); ?></span>
 
   <br><br>
 
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">Add domain to branch
+      <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain to branch'))); ?>
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title">Domain name</td>
+          <td class="title"><?=$LANG->_('Domain name')?></td>
           <td><input type="text" name="domainname" size="40"></td>
         </tr>
       </th>

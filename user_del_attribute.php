@@ -15,22 +15,22 @@ switch ($attrib) {
     break;
     
   default:
-    die("Unknown attribute '$attrib' in ". __FILE__);
+    die(pql_complete_constant($LANG->_('Unknown attribute %attribute% in %file%'), array('attrib' => $attrib, 'file' => __FILE__));
 }
 
 include("./header.html");
 ?>
-  <span class="title1"><?php pql_complete_constant(PQL_LANG_USER_DEL_ATTRIBUTE_TITLE, array("value" => $oldvalue));?></span>
+  <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove attribute %attribute%'), array('attribute' => $oldvalue));?></span>
 <?php
 if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
     $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
     
     // delete the user attribute
     if(pql_modify_userattribute($_pql->ldap_linkid, $user, $attrib, $oldvalue, '')) {
-	$msg = pql_complete_constant(PQL_LANG_MAILALTERNATEADDRESS_DEL_OK, array("mail" => $oldvalue));
+	$msg = pql_complete_constant($LANG->_('Successfully removed alias %mail%'), array("mail" => $oldvalue));
 	$success = true;
     } else {
-    	$msg = pql_complete_constant(PQL_LANG_MAILALTERNATEADDRESS_DEL_FAILED, array("mail" => $oldvalue)) . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+    	$msg = pql_complete_constant($LANG->_('Failed to removed alias %mail%'), array("mail" => $oldvalue)) . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	$success = false;
     }
     
@@ -59,9 +59,9 @@ if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
     header("Location: " . pql_get_define("PQL_GLOB_URI") . "$url");
 } else {
 ?>
-  <span class="title1">Remove attribute '<?=$attrib?>' for user <?=$username?></span>
+  <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove attribute %attribute for user %user%'), array('attribute' => $attrib, 'user' => $username)); ?></span>
   <br><br>
-  <?php echo PQL_LANG_SURE; ?>
+  <?=$LANG->_('Are you really sure')?>
   <form action="<?php echo $PHP_SELF; ?>" method="GET">
     <input type="hidden" name="user" value="<?=$user?>">
     <input type="hidden" name="domain" value="<?=$domain?>">
@@ -70,12 +70,12 @@ if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
 <?php
   if ($attrib == 'mailalternateaddress') {
 ?>	
-    <input type="checkbox" name="delete_forwards" checked> <?php echo PQL_LANG_MAILALTERNATEADDRESS_DEL_FORWARDS; ?><br><br>
+    <input type="checkbox" name="delete_forwards" checked><?=$LANG->_('Also delete forwards to this alias')?><br><br>
 <?php
   }
 ?>
-    <input type="submit" name="ok" value="<?php echo PQL_LANG_YES; ?>">
-    <input type="button" name="back" value="<?php echo PQL_LANG_NO; ?>" onClick="history.back();">
+    <input type="submit" name="ok" value="<?=$LANG->_('Yes')?>">
+    <input type="button" name="back" value="<?=$LANG->_('No')?>" onClick="history.back();">
   </form>
   <br>
 <?php

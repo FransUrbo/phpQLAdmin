@@ -1,41 +1,40 @@
 <?php
 // attribute plugin for
 // homedirectory (path to homedirectory)
-// $Id: attrib.homedirectory.inc,v 2.7 2003-06-25 07:07:02 turbo Exp $
+// $Id: attrib.homedirectory.inc,v 2.8 2003-07-02 07:59:00 turbo Exp $
 
-function attribute_check($type){
-    global $homedirectory, $domain, $oldvalue, $_pql, $error;
+function attribute_check($type) {
+    global $homedirectory, $domain, $oldvalue, $_pql, $error, $LANG;
     
     // is typed in ?
-    if($homedirectory == ""){
-		$error["homedirectory"] = PQL_LANG_MISSING;
+    if($homedirectory == "") {
+		$error["homedirectory"] = $LANG->_('Missing');
 		return false;
     }
     
     // don't use ".."
-    if(preg_match("/(\.){2,}/", $homedirectory)){
-		$error["homedirectory"] = PQL_LANG_INVALID;
+    if(preg_match("/(\.){2,}/", $homedirectory)) {
+		$error["homedirectory"] = $LANG->_('Invalid');
 		return false;
     }
     
     return true;
 }
 
-function attribute_init(){
+function attribute_init() {
     global $homedirectory, $oldvalue;
-    
     $homedirectory = $oldvalue;
 }
 
-function attribute_print_form(){
-    global $homedirectory, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $view;
+function attribute_print_form() {
+    global $homedirectory, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $view, $LANG;
 ?>
-  <form action="<?php echo $PHP_SELF ?>" method="post">
+  <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?php echo PQL_LANG_HOMEDIRECTORY_CHANGE; ?></th>
+      <th colspan="3" align="left"><?=$LANG->_('Change home directory')?></th>
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_LANG_HOMEDIRECTORY_CHANGE; ?></td>
-          <td><?php echo format_error($error["homedirectory"]); ?><input type="text" name="homedirectory" value="<?php echo $homedirectory; ?>" size="50"></td>
+          <td class="title"><?=$LANG->_('Change home directory')?></td>
+          <td><?php echo format_error($error["homedirectory"]); ?><input type="text" name="homedirectory" value="<?=$homedirectory?>" size="50"></td>
         </tr>
       </th>
     </table>
@@ -48,52 +47,47 @@ function attribute_print_form(){
     <input type="hidden" name="user"     value="<?=$user?>">
     <input type="hidden" name="view"     value="<?=$view?>">
     <br>
-    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
+    <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
-  
 <?php
 }
 
-function attribute_save($type){
-    global $domain, $user, $attrib, $oldvalue, $homedirectory, $_pql, $view;
+function attribute_save($type) {
+    global $domain, $user, $attrib, $oldvalue, $homedirectory, $_pql, $view, $LANG;
     
-    // recontrol values
-    if(!attribute_check($type)){
-		return false;
-    }
-    
-    switch($type){
+    switch($type) {
       case "add":
 		// no add operation possible with homedirectory
 		break;
 
-      case "modify";
-		if($homedirectory == $oldvalue){
+      case "modify":
+		if($homedirectory == $oldvalue) {
 			// don't change if new value equal to old one
-			$msg = PQL_LANG_HOMEDIRECTORY_UNCHANGED;
+			$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('Home directory')));
 			attribute_forward($msg);
 			break;
     	}
 		
-		if(pql_replace_userattribute($_pql->ldap_linkid, $user, $attrib,$homedirectory)) {
-			$msg = pql_complete_constant(PQL_LANG_HOMEDIRECTORY_CHANGE_OK, array("new" => $homedirectory));
-		} else {
-			$msg = PQL_LANG_HOMEDIRECTORY_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
-		}
+		if(pql_replace_userattribute($_pql->ldap_linkid, $user, $attrib,$homedirectory))
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
+									   array('what' => $LANG->_('Home directory', 4),
+											 'new'  => $homedirectory));
+		else
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+									   array('what' => $LANG->_('Home directory', 4))) . ": " . ldap_error($_pql->ldap_linkid);
 		
 		attribute_forward($msg);
 		break;
 		
       default:
-		die("unknown save type $type in " . __FILE__ . ", function save()");
+		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
+								  array('type' => $type, 'file' => __FILE__)));
     }
 }
 
-/*
- * Local variables:
- * mode: php
- * mode: font-lock
- * tab-width: 4
- * End:
- */
+// Local variables:
+// mode: php
+// mode: font-lock
+// tab-width: 4
+// End:
 ?>

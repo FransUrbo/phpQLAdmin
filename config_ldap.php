@@ -23,10 +23,10 @@ foreach($ldap as $x => $array) {
 ?>
 
         <tr>
-          <td>NAME</td>
-          <td>OID</td>
-          <td>SINGLE-VALUE</td>
-          <td>DESC</td>
+          <td><?=$LANG->_('Name')?></td>
+          <td><?=$LANG->_('Oid')?></td>
+          <td><?=$LANG->_('Single valued')?></td>
+          <td><?=$LANG->_('Description')?></td>
         </tr>
 
 <?php    foreach($array as $value) { ?>
@@ -46,7 +46,7 @@ foreach($ldap as $x => $array) {
 		$class = table_bgcolor(0);
 ?>
         <br>
-        <font size="1">Text in bold is a MUST, and non-bold is MAY.</font>
+        <font size="1"><?=$LANG->_('Text in bold is a MUST, and non-bold is MAY')?>.</font>
         <br>
 <?php	foreach($array as $value) { ?>
         <tr class="<?=$class?>">

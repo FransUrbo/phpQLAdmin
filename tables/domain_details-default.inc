@@ -1,21 +1,21 @@
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left"><?=PQL_LANG_DOMAIN_DEFAULT_VALUES?></th>
+    <th colspan="3" align="left"><?=$LANG->_('Default domain values')?></th>
 <?php if($ALLOW_BRANCH_CREATE) { ?>
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title">Domain/Branch DN</td>
+        <td class="title"><?=$LANG->_('Branch DN')?></td>
         <td><?php echo urldecode($domain); ?></td>
         <td><?=// TODO: Should we be able to rename the RDN? ?></td>
       </tr>
   
 <?php } ?>
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title"><?=PQL_LANG_DOMAIN_DEFAULT_NAME?></td>
-        <td><?php if($defaultdomain){echo $defaultdomain;}else{echo PQL_LANG_UNSET;} ?></td>
+        <td class="title"><?=$LANG->_('Default domain name')?></td>
+        <td><?php if($defaultdomain){echo $defaultdomain;}else{echo $LANG->_('Not set');} ?></td>
         <td><?=$defaultdomain_link?></td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title">Additional domain name(s)</td>
+        <td class="title"><?=$LANG->_('Additional domain name')?></td>
 <?php if(is_array($additionaldomainname)) {
 		$new_tr = 0;
 		foreach($additionaldomainname as $additional) {
@@ -26,8 +26,8 @@
 <?php		} ?>
         <td><?=$additional?></td>
         <td>
-          <a href="domain_edit_attributes.php?attrib=<?=lc($PQL_ATTRIBUTE["PQL_CONF_ADDITIONAL_DOMAIN_NAME"])?>&rootdn=<?=$rootdn?>&domain=<?=$domain?>&<?=lc($PQL_ATTRIBUTE["PQL_CONF_ADDITIONAL_DOMAIN_NAME"])?>=<?=$additional?>&submit=3&action=modify&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify <?=lc($PQL_ATTRIBUTE["PQL_CONF_ADDITIONAL_DOMAIN_NAME"])?> for <?=$domainname?>"></a>
-          <a href="domain_edit_attributes.php?attrib=<?=lc($PQL_ATTRIBUTE["PQL_CONF_ADDITIONAL_DOMAIN_NAME"])?>&rootdn=<?=$rootdn?>&domain=<?=$domain?>&delval=<?=$additional?>&submit=4&action=delete&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="Delete additional domain name" border="0"></a>
+          <a href="domain_edit_attributes.php?attrib=<?=lc($PQL_ATTRIBUTE["PQL_CONF_ADDITIONAL_DOMAIN_NAME"])?>&rootdn=<?=$rootdn?>&domain=<?=$domain?>&<?=lc($PQL_ATTRIBUTE["PQL_CONF_ADDITIONAL_DOMAIN_NAME"])?>=<?=$additional?>&submit=3&action=modify&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Modify %attribute% for %what%'), array('attribute' => lc($PQL_ATTRIBUTE["PQL_CONF_ADDITIONAL_DOMAIN_NAME"]), 'what' => $domainname)); ?>"></a>
+          <a href="domain_edit_attributes.php?attrib=<?=lc($PQL_ATTRIBUTE["PQL_CONF_ADDITIONAL_DOMAIN_NAME"])?>&rootdn=<?=$rootdn?>&domain=<?=$domain?>&delval=<?=$additional?>&submit=4&action=delete&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete additional domain name')?>" border="0"></a>
         </td>
 <?php		$new_tr = 1;
 		} // if new_tr
@@ -35,75 +35,75 @@
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"></td>
         <td colspan="4">
-          <a href="domain_edit_attributes.php?attrib=<?=lc($PQL_ATTRIBUTE["PQL_CONF_ADDITIONAL_DOMAIN_NAME"])?>&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add&view=<?=$view?>">Add additional domain name</a>
+          <a href="domain_edit_attributes.php?attrib=<?=lc($PQL_ATTRIBUTE["PQL_CONF_ADDITIONAL_DOMAIN_NAME"])?>&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional domain name'))); ?></a>
         </td>
       </tr>
 <?php } else { ?>
         <td colspan="4">
-          <a href="domain_edit_attributes.php?attrib=<?=lc($PQL_ATTRIBUTE["PQL_CONF_ADDITIONAL_DOMAIN_NAME"])?>&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add&view=<?=$view?>">Add additional domain name</a>
+          <a href="domain_edit_attributes.php?attrib=<?=lc($PQL_ATTRIBUTE["PQL_CONF_ADDITIONAL_DOMAIN_NAME"])?>&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional domain name'))); ?></a>
         </td>
 <?php } ?>
 
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title"><?=PQL_LANG_DOMAIN_DEFAULT_HOMEDIR?></td>
-        <td><?php if($basehomedir){echo $basehomedir;}else{echo PQL_LANG_UNSET;} ?></td>
+        <td class="title"><?=$LANG->_('Default homedirectory for users')?></td>
+        <td><?php if($basehomedir){echo $basehomedir;}else{echo $LANG->_('Not set');} ?></td>
         <td><?=$basehomedir_link?></td>
       </tr>
   
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title"><?=PQL_LANG_DOMAIN_DEFAULT_MAILDIR?></td>
-        <td><?php if($basemaildir){echo $basemaildir;}else{echo PQL_LANG_UNSET;} ?></td>
+        <td class="title"><?=$LANG->_('Default maildirectory for users')?></td>
+        <td><?php if($basemaildir){echo $basemaildir;}else{echo $LANG->_('Not set');} ?></td>
         <td><?=$basemaildir_link?></td>
       </tr>
   
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title"><?=PQL_LANG_MAILQUOTA_TITLE?></td>
-        <td><?php if($basequota){echo $basequota;}else{echo PQL_LANG_UNSET;} ?></td>
+        <td class="title"><?=$LANG->_('Default quota')?></td>
+        <td><?php if($basequota){echo $basequota;}else{echo $LANG->_('Not set');} ?></td>
         <td><?=$basequota_link?></td>
       </tr>
 
 <?php if($ALLOW_BRANCH_CREATE) { ?>
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title">Maximum allowed users in branch</td>
-        <td><?php if($maximumdomainusers){echo $maximumdomainusers;}else{echo "unlimited";} ?></td>
+        <td class="title"><?$LANG->_('Maximum allowed users in branch')?></td>
+        <td><?php if($maximumdomainusers){echo $maximumdomainusers;}else{echo $LANG->_('Unlimited');} ?></td>
         <td><?=$maximumdomainusers_link?></td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title">Maximum allowed mailinglist in branch</td>
-        <td><?php if($maximummailinglists){echo $maximummailinglists;}else{echo "unlimited";} ?></td>
+        <td class="title">$LANG->_('Maximum allowed users in branch')?></td>
+        <td><?php if($maximummailinglists){echo $maximummailinglists;}else{echo $LANG->_('Unlimited');} ?></td>
         <td><?=$maximummailinglists_link?></td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title">Default password scheme</td>
-        <td><?php if($defaultpasswordscheme){echo $defaultpasswordscheme;}else{echo "no default";} ?></td>
+        <td class="title"><?=$LANG->_('Default password scheme')?></td>
+        <td><?php if($defaultpasswordscheme){echo $defaultpasswordscheme;}else{echo $LANG->_('No default');} ?></td>
         <td><?=$defaultpasswordscheme_link?></td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title">Automaticly generate username</td>
-        <td><?php if($autocreateusername){echo 'Yes';}else{echo "No";} ?></td>
+        <td class="title"><?php echo pql_complete_constant($LANG->_('Automatically generate %what%'), array('what' => $LANG->_('username'))); ?></td>
+        <td><?php if($autocreateusername){echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
         <td><?=$autocreateusername_link?></td>
       </tr>
 
 <?php if($autocreateusername) { ?>
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title">Automatic generation username prefix</td>
-        <td><?php if($usernameprefix){echo $usernameprefix;}else{echo "<i>Not set</i>";} ?></td>
+        <td class="title"><?php echo pql_complete_constant($LANG->_('Automatically generate %what%'), array('what' => $LANG->_('username prefix'))); ?></td>
+        <td><?php if($usernameprefix){echo $usernameprefix;}else{echo "<i>".$LANG->_('Not set')."</i>";} ?></td>
         <td><?=$usernameprefix_link?></td>
       </tr>
 
 <?php } ?>
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title">Automaticly generate email address</td>
-        <td><?php if($autocreatemailaddress){echo 'Yes';}else{echo "No";} ?></td>
+        <td class="title"><?php echo pql_complete_constant($LANG->_('Automatically generate %what%'), array('what' => $LANG->_('email address'))); ?></td>
+        <td><?php if($autocreatemailaddress){echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
         <td><?=$autocreatemailaddress_link?></td>
       </tr>
 
 <?php } ?>
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title"><?=PQL_LANG_DOMAIN_ADMIN_TITLE?></td>
+        <td class="title"><?=$LANG->_('Domain administrator')?></td>
 <?php if(is_array($domain_admins)) {
 		$new_tr = 0;
 		foreach($domain_admins as $admin) {
@@ -127,8 +127,8 @@
         <td></td>
 <?php		} else { ?>
         <td>
-          <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&administrator=<?=$admin?>&submit=3&action=modify&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify administrators for <?=$domainname?>"></a>
-          <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&administrator=<?=$admin?>&submit=4&action=delete&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="<?=PQL_LANG_DOMAIN_ADMIN_DELETE?>" border="0"></a>
+          <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&administrator=<?=$admin?>&submit=3&action=modify&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Modify administrators for %domainname%'), array('domainname' => $domainname)); ?>"></a>
+          <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&administrator=<?=$admin?>&submit=4&action=delete&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Remove domain administrator')?>" border="0"></a>
         </td>
 <?php		} ?>
       </tr>
@@ -140,14 +140,14 @@
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"></td>
         <td colspan="4">
-          <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add&view=<?=$view?>"><?=PQL_LANG_DOMAIN_ADMIN_ADD?></a>
+          <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain administrator for domain'))); ?></a>
         </td>
       </tr>
 <?php
 	} else {
 ?>
         <td colspan="4">
-          <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add&view=<?=$view?>"><?=PQL_LANG_DOMAIN_ADMIN_ADD?></a>
+          <a href="domain_edit_attributes.php?attrib=administrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain administrator for domain'))); ?></a>
         </td>
 <?php
 	}
@@ -155,7 +155,7 @@
 
 <?php if(pql_get_define("maximummailinglists") >= 0) { ?>
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title">Mailinglist administrator(s)</td>
+        <td class="title"><?=$LANG->_('Mailinglist administrators')?></td>
 <?php	if(is_array($mailinglist_admins)) {
 			$new_tr = 0;
 			foreach($mailinglist_admins as $admin) {
@@ -179,8 +179,8 @@
         <td></td>
 <?php			} else { ?>
         <td>
-          <a href="domain_edit_attributes.php?attrib=ezmlmadministrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&ezmlmadministrator=<?=$admin?>&submit=3&action=modify&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Modify administrators for <?=$domainname?>"></a>
-          <a href="domain_edit_attributes.php?attrib=ezmlmadministrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&ezmlmadministrator=<?=$admin?>&submit=4&action=delete&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="<?=PQL_LANG_DOMAIN_ADMIN_DELETE?>" border="0"></a>
+          <a href="domain_edit_attributes.php?attrib=ezmlmadministrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&ezmlmadministrator=<?=$admin?>&submit=3&action=modify&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Modify administrators for %domainname%'), array('domainname' => $domainname)); ?>"></a>
+          <a href="domain_edit_attributes.php?attrib=ezmlmadministrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&ezmlmadministrator=<?=$admin?>&submit=4&action=delete&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Remove domain administrator')?>" border="0"></a>
         </td>
 <?php			} ?>
       </tr>
@@ -192,14 +192,14 @@
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"></td>
         <td colspan="4">
-          <a href="domain_edit_attributes.php?attrib=ezmlmadministrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add&view=<?=$view?>">Add mailinglist administrator for domain</a>
+          <a href="domain_edit_attributes.php?attrib=ezmlmadministrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('mailinglist administrator for domain'))); ?></a>
         </td>
       </tr>
 <?php
 		} else {
 ?>
         <td colspan="4">
-          <a href="domain_edit_attributes.php?attrib=ezmlmadministrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add&view=<?=$view?>">Add mailinglist administrator for domain</a>
+          <a href="domain_edit_attributes.php?attrib=ezmlmadministrator&rootdn=<?=$rootdn?>&domain=<?=$domain?>&submit=3&action=add&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('mailinglist administrator for domain'))); ?></a>
         </td>
 <?php	}
       }

@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for pilotPerson objects etc
-// $Id: attrib.outlook.inc,v 1.12 2003-06-25 07:07:02 turbo Exp $
+// $Id: attrib.outlook.inc,v 1.13 2003-07-02 07:59:01 turbo Exp $
 
 /*
 	Attributes managed here:
@@ -31,11 +31,11 @@
 */
 
 function attribute_check() {
-    global $user, $domain, $oldvalue, $_pql, $error, $attrib, $$attrib;
+    global $user, $domain, $oldvalue, $_pql, $error, $attrib, $$attrib, $LANG;
 
     // is typed in ?
-    if($$attrib == ""){
-		$error[$attrib] = PQL_LANG_MISSING;
+    if($$attrib == "") {
+		$error[$attrib] = $LANG->_('Missing');
 		return false;
     }
     
@@ -49,12 +49,12 @@ function attribute_init() {
 
 function attribute_print_form() {
     global $user, $domain, $rootdn, $PHP_SELF, $attrib, $$attrib, $oldvalue, $error, $_pql, $view;
-	global $orgname;
+	global $orgname, $LANG;
 ?>
 
-  <form action="<?php echo $PHP_SELF ?>" method="post" name="outlook">
+  <form action="<?=$PHP_SELF?>" method="post" name="outlook">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">Set/Modify <?=$attrib?></th>
+      <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Set/Modify attribute %attribute%'), array('attribute' => $attrib)); ?></th>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"><?=$attrib?></td>
           <td><?php echo format_error($error[$attrib]); ?><input type="text" name="<?=$attrib?>" value="<?=$$attrib?>" size="30"></td>
@@ -69,7 +69,7 @@ function attribute_print_form() {
     <input type="hidden" name="rootdn"   value="<?=$rootdn?>">
 	<input type="hidden" name="user"     value="<?=$user?>">
     <input type="hidden" name="view"     value="<?=$view?>">
-	<input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
+	<input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
 
   <script language="JavaScript">
@@ -81,14 +81,14 @@ function attribute_print_form() {
 }
 
 function attribute_save($type) {
-    global $user, $domain, $rootdn, $attrib, $$attrib, $oldvalue, $_pql, $view;
+    global $user, $domain, $rootdn, $attrib, $$attrib, $oldvalue, $_pql, $view, $LANG;
 
-    switch($type){
+    switch($type) {
       case "add":
       case "modify":
-		if($$attrib == $oldvalue){
+		if($$attrib == $oldvalue) {
 			// don't change if new value equal to old one
-			$msg = "$attrib unchanged ($$attrib == $oldvalue)";
+			$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $attrib));
 			attribute_forward($msg);
 			break;
 		}
@@ -104,9 +104,9 @@ function attribute_save($type) {
 		}
 
 		if($success)
-		  $msg = "Successfully replaced $attrib.";
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'), array('what' => $attrib));
 		else
-		  $msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'), array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
 
 		attribute_forward($msg);
 		break;
@@ -121,23 +121,22 @@ function attribute_save($type) {
 		}
 
 		if($success)
-		  $msg = "Successfully deleted $attrib.";
+		  $msg = pql_complete_constant($LANG->_('Successfully deleted %what%'), array('what' => $attrib)) . ".";
 		else
-		  $msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'), array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
 
 		attribute_forward($msg);
 		break;
 
       default:
-		die("unknown save type $type in " . __FILE__ . ", function save()");
+		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
+								  array('type' => $type, 'file' => __FILE__)));
     }
 }
 
-/*
- * Local variables:
- * mode: php
- * mode: font-lock
- * tab-width: 4
- * End:
- */
+// Local variables:
+// mode: php
+// mode: font-lock
+// tab-width: 4
+// End:
 ?>

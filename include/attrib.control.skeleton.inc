@@ -58,7 +58,7 @@
 //
 // Please look at other plugins to see which standard header text is recommanded.
 //
-// $Id: attrib.control.skeleton.inc,v 2.7 2003-05-28 07:23:37 turbo Exp $
+// $Id: attrib.control.skeleton.inc,v 2.8 2003-07-02 07:59:00 turbo Exp $
 //
 
 function xxx_check($type) {
@@ -92,7 +92,7 @@ function xxx_init() {
 
 
 function xxx_print_view($host) {
-	global $_pql_control, $view, $xxx;
+	global $_pql_control, $view, $xxx, $LANG;
 
 	// this function will display the configuration
 	// stored in the ldap database.
@@ -101,67 +101,63 @@ function xxx_print_view($host) {
 	xxx_init();
 
 	// set empty field to default value
-	if($xxx == ""){
-		$xxx = "set the default value here";
- 	}
-
+	if($xxx == "")
+	  $xxx = "set the default value here";
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">XXX title</th>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title">XXX attribute</td>
-        <td><?php echo $helohost; ?></td>
+        <td><?=$helohost?></td>
       </tr>
 
       <tr class="subtitle">
         <td colspan="2">
           <a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=xxx">
-            <img src="images/edit.png" width="12" height="12" border="0"> change options
+            <img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?>
           </a>
         </td>
       </tr>
     </th>
   </table>
-
 <?php
 }
 
 function xxx_print_form() {
-	global $attrib, $xxx, $PHP_SELF, $error, $mxhost, $view;
+	global $attrib, $xxx, $PHP_SELF, $error, $mxhost, $view, $LANG;
 
 	// this function displays the form to change the values
 	// for specified attribute.
-
 ?>
-  <form action="<?php echo $PHP_SELF ?>" method="post">
+  <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">XXX title</th>
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title">XXX attribute</td>
-          <td><?php echo format_error($error["xxx"]); ?><input type="text" name="xxx" value="<?php echo $xxx; ?>"> Default: write default value here</td>
+          <td><?php echo format_error($error["xxx"]); ?><input type="text" name="xxx" value="<?=$xxx?>"> <?=$LANG->_('Default')?>: write default value here</td>
         </tr>
 
         <tr>
           <td colspan="2" class="subtitle">
-            <img src="images/info.png" width="16" height="16" border="0">Leave the fields empty to use default configuration.
+            <img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('Leave the fields empty to use default configuration')?>.
           </td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="attrib" value="<?=$attrib?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
     <input type="hidden" name="view" value="<?=$view?>">
     <br>
-    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
+    <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
 
 <?php
 }
 
 function xxx_save($type, $host) {
-	global $_pql_control, $attrib, $xxx, $error, $view;
+	global $_pql_control, $attrib, $xxx, $error, $view, $LANG;
 
 	// this function will save the entered data.
 	// $type is most of the time "modify" so you
@@ -169,45 +165,45 @@ function xxx_save($type, $host) {
 	// used in special cases (like "add" or "del" to add or remove a sinlge
 	// value in multifield attributes).
 
-	// recontrol values
-	if(!helohost_check($type))
-	  return false;
-
 	switch($type) {
 	  case "modify";
 	  case "add";
 		// save entries
 		
-		if(pql_control_replace_attribute($_pql_control->ldap_linkid, $GLOBALS["USER_SEARCH_DN_CTR"], "xxx", $xxx)){
-			$msg = "Successfully saved xxx options";
-		} else {
-			$msg = "Failed saving xxx: " . pql_ldap_error($_pql_control->ldap_linkid);
-    	}
+		if(pql_control_replace_attribute($_pql_control->ldap_linkid, $GLOBALS["USER_SEARCH_DN_CTR"], "xxx", $xxx))
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+									   array('what' => $LANG->_('xxx options')));
+		else
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+									   array('what' => $LANG->_('xxx options'))) . ": " . pql_ldap_error($_pql_control->ldap_linkid);
 
 		// this will redirect to control_cat.php and display the message $msg
 		attribute_forward($msg);
       break;
 
    	default:
-	  die("unknown save type $type in " . __FILE__ . ", function save()");
+		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
+								  array('type' => $type, 'file' => __FILE__)));
 	}
 }
 
 function xxx_help() {
+	global $LANG;
 ?>
 	Help about the attribute...
 <?php
 }
 
-function xxx_help_cr(){
+function xxx_help_cr() {
+	global $LANG;
 ?>
 	copyright notice about help text comes here
 <?php
-/*
- * Local variables:
- * mode: php
- * mode: font-lock
- * tab-width: 4
- * End:
- */
 }
+
+// Local variables:
+// mode: php
+// mode: font-lock
+// tab-width: 4
+// End:
+?>

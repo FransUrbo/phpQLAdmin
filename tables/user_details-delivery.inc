@@ -1,18 +1,18 @@
   <!-- Deliverymode -->
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="2" align="left"><?php echo PQL_LANG_DELIVERYMODE_TITLE; ?></th></th>
+    <th colspan="2" align="left"><?=$LANG->_('Delivery mode')?></th></th>
       <tr>
-	<td class="title"><?php echo PQL_LANG_DELIVERYMODE_MODE; ?></td>
+        <td class="title"><?=$LANG->_('Mode')?></td>
       </tr>
 
 <?php	$deliverymode = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_MODE"));
 	if(empty($deliverymode)) {
 ?>
       <tr class="<?php table_bgcolor(); ?>">
-	<td><?php echo PQL_LANG_DELIVERYMODE_NULL; ?></td>
+        <td><?=$LANG->_('Default properties')?></td>
       </tr>
 <?php	} else {
-		foreach($deliverymode as $mode){
+		foreach($deliverymode as $mode) {
 		    $mode_text = pql_ldap_deliverymode($mode);
 ?>
       <tr class="<?php table_bgcolor(); ?>">
@@ -24,7 +24,7 @@
 
       <tr class="subtitle">
         <td>
-          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=deliverymode&user=<?=$userdn?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"><?php echo PQL_LANG_DELIVERYMODE_CHANGE; ?></a>
+          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=deliverymode&user=<?=$userdn?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"><?=$LANG->_('Change properties')?></a>
         </td>
       </tr>
     </th>

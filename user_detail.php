@@ -53,7 +53,7 @@ $username = $username[0];
 <?php
 // check if user exists
 if(!pql_user_exist($_pql->ldap_linkid, $user)) {
-    echo "User &quot;$user&quot; does not exist";
+    echo pql_complete_constant($LANG->_('User %user% does not exist'), array('user' => $user));
     exit();
 }
 
@@ -75,27 +75,28 @@ foreach($attribs as $attrib) {
     $link = $attrib . "_link";
 	$urluser = urlencode($user);
 
-    $$link = "<a href=\"user_edit_attribute.php?rootdn=$rootdn&domain=$domain&attrib=$attrib&user=$urluser&$attrib=$value\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"Modify $attrib for $username\"></a>";
+	$alt = pql_complete_constant($LANG->_('Modify %attribute% for %what%'), array('attribute' => $attrib, 'what' => $username));
+    $$link = "<a href=\"user_edit_attribute.php?rootdn=$rootdn&domain=$domain&attrib=$attrib&user=$urluser&$attrib=$value\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt."\"></a>";
 }
 $quota = pql_get_userquota($_pql->ldap_linkid, $user);
 
 if($userpassword == "") {
-    $userpassword = PQL_LANG_USERPASSWORD_NONE;
+    $userpassword = $LANG->_('None');
 } else {
     if(eregi("\{KERBEROS\}", $userpassword)) {
 		$princ = split("\}", $userpassword);
-		$userpassword = $princ[1] . " " . PQL_LANG_USERPASSWORD_KERBEROS;
+		$userpassword = $princ[1] . " (Kerberos V)";
     } else {
-		$userpassword = PQL_LANG_USERPASSWORD_ENCRYPTED;
+		$userpassword = $LANG->_('Encrypted');
     }
 }
 
 if($mailmessagestore == "") {
-    $mailmessagestore = PQL_LANG_MAILMESSAGESTORE_NONE;
+    $mailmessagestore = $LANG->_('None');
 }
 
 if($mailhost == "") {
-    $mailhost = PQL_LANG_MAILHOST_NONE;
+    $mailhost = $LANG->_('None');
 }
 
 $userdn = urlencode($user);
@@ -112,7 +113,7 @@ if(is_array($controladmins)) {
 
   <table cellspacing="0" border="0" width="100%" cellpadding="0">
     <tr>
-      <td colspan="2" valign="bottom" align="left" width="100%" colspan="2"><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=basic"?>"><img alt="/ User Data \" vspace="0" hspace="0" border="0" src="navbutton.php?User Data"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=personal"?>"><img alt="/ Personal Details \" vspace="0" hspace="0" border="0" src="navbutton.php?Personal Details"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=email"?>"><img alt="/ Registred Addresses \" vspace="0" hspace="0" border="0" src="navbutton.php?Registred Addresses"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=status"?>"><img alt="/ Account Status \" vspace="0" hspace="0" border="0" src="navbutton.php?Account Status"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=delivery"?>"><img alt="/ Delivery Mode \" vspace="0" hspace="0" border="0" src="navbutton.php?Delivery Mode"></a><?php if($ADVANCED_MODE) { ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=delivery_advanced"?>"><img alt="/ Advanced Delivery Properties \" vspace="0" hspace="0" border="0" src="navbutton.php?Delivery Properties"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=mailbox"?>"><img alt="/ Mailbox properties \" vspace="0" hspace="0" border="0" src="navbutton.php?Mailbox properties"></a><?php } ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=forwards_from"?>"><img alt="/ Forwarders from other accounts \" vspace="0" hspace="0" border="0" src="navbutton.php?Forwards from account(s)"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=forwards_to"?>"><img alt="/ Forwarding to other account \" vspace="0" hspace="0" border="0" src="navbutton.php?Forwards to account(s)"></a><?php if($ADVANCED_MODE) { ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=access"?>"><img alt="/ User Access \" vspace="0" hspace="0" border="0" src="navbutton.php?User Access"></a><br><?php } ?><?php if(!$SINGLE_USER) { ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=actions"?>"><img alt="/ Actions \" vspace="0" hspace="0" border="0" src="navbutton.php?Actions"></a><?php } ?></td>
+      <td colspan="2" valign="bottom" align="left" width="100%" colspan="2"><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=basic"?>"><img alt="/ <?=$LANG->_('User data')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('User data')?>"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=personal"?>"><img alt="/ <?=$LANG->_('Personal details')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Personal details')?>"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=email"?>"><img alt="/ <?=$LANG->_('Registred addresses')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Registred addresses')?>"></a><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=status"?>"><img alt="/ <?=$LANG->_('Account status')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Account status')?>"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=delivery"?>"><img alt="/ <?=$LANG->_('Delivery mode')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Delivery mode')?>"></a><?php if($ADVANCED_MODE) { ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=delivery_advanced"?>"><img alt="/ <?=$LANG->_('Advanced delivery properties')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Advanced delivery properties')?>"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=mailbox"?>"><img alt="/ <?=$LANG->_('Mailbox properties')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Mailbox properties')?>"></a><?php } ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=forwards_from"?>"><img alt="/ <?=$LANG->_('Forwarders from other accounts')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Forwarders from other accounts')?>"></a><br><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=forwards_to"?>"><img alt="/ <?=$LANG->_('Forwarders to other accounts')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Forwarders to other accounts')?>"></a><?php if($ADVANCED_MODE) { ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=access"?>"><img alt="/ <?=$LANG->_('User access')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('User access')?>"></a><br><?php } ?><?php if(!$SINGLE_USER) { ?><a href="<?=$PHP_SELF."?rootdn=$rootdn&domain=$domain&user=$userdn&view=actions"?>"><img alt="/ <?=$LANG->_('Actions')?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?=$LANG->_('Actions')?>"></a><?php } ?></td>
   </tr>
 </table>
 

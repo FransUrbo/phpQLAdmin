@@ -2,17 +2,16 @@
 // control attribute plugin for
 // ldaprebind (don't retrieve password, try to bind to dn)
 //
-// $Id: attrib.control.ldaprebind.inc,v 2.7 2003-05-28 07:23:37 turbo Exp $
+// $Id: attrib.control.ldaprebind.inc,v 2.8 2003-07-02 07:59:00 turbo Exp $
 
 // check values
-function ldaprebind_check($type){
+function ldaprebind_check($type) {
 	global $view;
-
 	return true;
 }
 
 // init values
-function ldaprebind_init($host){
+function ldaprebind_init($host) {
 	global $_pql_control, $ldaprebind, $view;
 	
 	// fetch data from ldap server
@@ -20,36 +19,34 @@ function ldaprebind_init($host){
 									   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 									   "ldaprebind");
 
-	if(!is_null($value)){
-		$ldaprebind = $value[0];
-	} else {
-		// set to default value
-		$ldaprebind = 0;
-	}
+	if(!is_null($value))
+	  $ldaprebind = $value[0];
+	else
+	  // set to default value
+	  $ldaprebind = 0;
 }
 
 function ldaprebind_print_view($host) {
-	global $ldaprebind, $view;
+	global $ldaprebind, $view, $LANG;
 	
 	// init data
 	ldaprebind_init($host);
 	
-	if($ldaprebind == 0){
-		$ldaprebind = "Disabled, don't rebind, retrieve password (Default)";
-	} else {
-		$ldaprebind = "Enabled, rebind with retrieved DN, don't retrieve password";
-	}
+	if($ldaprebind == 0)
+	  $ldaprebind = $LANG->_('Disabled, don\'t rebind, retrieve password (Default)');
+	else
+	  $ldaprebind = $LANG->_('Enabled, rebind with retrieved DN, don\'t retrieve password');
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="2" align="left">ldaprebind (Rebind to LDAP server)</th>
+    <th colspan="2" align="left">ldaprebind (<?=$LANG->_('Rebind to LDAP server')?>)</th>
       <tr class="<?php table_bgcolor(); ?>">
-        <td><?php echo $ldaprebind; ?></td>
+        <td><?=$ldaprebind?></td>
       </tr>
 
       <tr class="subtitle">
         <td>
-          <a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=ldaprebind&set=1">enable rebind</a> |
-          <a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=ldaprebind&set=0">disable rebind</a>
+          <a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=ldaprebind&set=1"><?=$LANG->_('Enable rebind')?></a> |
+          <a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=ldaprebind&set=0"><?=$LANG->_('Disable rebind')?></a>
         </td>
 	  </tr>
     </th>
@@ -66,36 +63,34 @@ function ldaprebind_print_form($host) {
 }
 
 function ldaprebind_save($type, $host) {
-	global $_pql_control, $set, $view;
+	global $_pql_control, $set, $view, $LANG;
 
-	// recontrol values
-	if(!ldaprebind_check($type)){
- 		return false;
-	}
-
-	switch($type){
+	switch($type) {
 		case "modify";
 		case "add";
 			// save entries
 			if(pql_control_replace_attribute($_pql_control->ldap_linkid,
 											 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-											 "ldaprebind", $set)){
-				$msg = "Successfully saved ldaprebind options";
-			} else {
-				$msg = "Failed saving ldaprebind options: " . pql_ldap_error($_pql_control->ldap_linkid);
-			}
+											 "ldaprebind", $set))
+			  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+										   array('what' => $LANG->_('ldaprebind options')));
+			else
+			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+										   array('what' => $LANG->_('ldaprebind options')))
+				. ": " . pql_ldap_error($_pql_control->ldap_linkid);
 		
 		attribute_forward($msg);
 		break;
+
 	  default:
-		die("unknown save type $type in " . __FILE__ . ", function save()");
+		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
+								  array('type' => $type, 'file' => __FILE__)));
 	}
 }
-/*
- * Local variables:
- * mode: php
- * mode: font-lock
- * tab-width: 4
- * End:
- */
+
+// Local variables:
+// mode: php
+// mode: font-lock
+// tab-width: 4
+// End:
 ?>

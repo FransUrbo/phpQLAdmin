@@ -1,17 +1,16 @@
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left">Global configuration
+    <th colspan="3" align="left"><?=$LANG->_('Global configuration')?>
       <tr>
-        <td class="title">LDAP host</td>
+        <td class="title"><?=$LANG->_('LDAP host')?></td>
 <?php $class=table_bgcolor(0); ?>
         <td class="<?=$class?>"></td>
         <td class="<?=$class?>"><?=$USER_HOST?>&nbsp;</td>
       </tr>
 
       <tr>
-        <td class="title">Language</td>
+        <td class="title"><?=$LANG->_('Language')?></td>
 <?php $class=table_bgcolor(0);
-      if($ALLOW_GLOBAL_CONFIG_SAVE and 0) {
-	  // TODO: Sorry, phpQLAdmin isn't translated propperly to anything else than English!
+      if($ALLOW_GLOBAL_CONFIG_SAVE) {
 ?>
         <td class="<?=$class?>">
           <a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_LANG"]?>">
@@ -21,18 +20,18 @@
 <?php } else { ?>
         <td class="<?=$class?>"></td>
 <?php } ?>
-        <td class="<?=$class?>"><?=PQL_LANG_LANG?>&nbsp;</td>
+        <td class="<?=$class?>"><?=$LANG->_('Language')?>&nbsp;</td>
       </tr>
 
       <tr>
-        <td class="title">Who are we</td>
+        <td class="title"><?=$LANG->_('Who are we')?></td>
 <?php $class=table_bgcolor(0); ?>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_WHOAREWE"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=$PQL_ATTRIBUTE["PQL_GLOB_WHOAREWE"]?>"></a></td>
         <td class="<?=$class?>"><?php echo pql_get_define("PQL_GLOB_WHOAREWE"); ?>&nbsp;</td>
       </tr>
 
       <tr>
-        <td class="title">Hostmaster</td>
+        <td class="title"><?=$LANG->_('Hostmaster')?></td>
 <?php $class=table_bgcolor(0);
       if($ALLOW_GLOBAL_CONFIG_SAVE) {
 ?>
@@ -45,7 +44,7 @@
 
 <?php if(pql_get_define("PQL_GLOB_CONTROL_USE")) { ?>
       <tr>
-        <td class="title">LDAP control base dn</td>
+        <td class="title"><?=$LANG->_('LDAP control base dn')?></td>
 <?php     $class=table_bgcolor(0);
           if($ALLOW_GLOBAL_CONFIG_SAVE) {
 ?>
@@ -60,7 +59,7 @@
       <tr></tr>
 
       <tr>
-        <td class="title">Manage Controls DB</td>
+        <td class="title"><?=$LANG->_('Manage Controls DB')?></td>
 <?php $class=table_bgcolor(0);
       if($ALLOW_GLOBAL_CONFIG_SAVE) {
 ?>
@@ -72,7 +71,7 @@
       </tr>
 
       <tr>
-        <td class="title">Manage EZMLM mailinglists</td>
+        <td class="title"><?=$LANG->_('Manage EZMLM mailinglists')?></td>
 <?php $class=table_bgcolor(0);
       if($ALLOW_GLOBAL_CONFIG_SAVE) {
 ?>
@@ -85,7 +84,7 @@
 
 <?php if($ADVANCED_MODE and 0) { // TODO: Currently disabled. Not even started. ?>
       <tr>
-        <td class="title">Manage Bind 9 DNSSEC domains</td>
+        <td class="title"><?=$LANG->_('Manage Bind 9 DNSSEC domains')?></td>
 <?php $class=table_bgcolor(0);
       if($ALLOW_GLOBAL_CONFIG_SAVE) {
 ?>
@@ -98,7 +97,7 @@
 <?php } ?>
 
       <tr>
-        <td class="title">Automatic reload of navigation bar</td>
+        <td class="title"><?=$LANG->_('Automatic reload of navigation bar')?></td>
 <?php $class=table_bgcolor(0);
       if($ALLOW_GLOBAL_CONFIG_SAVE) {
 ?>
@@ -110,7 +109,7 @@
       </tr>
 
       <tr>
-        <td class="title">Automatically replicate domains to locals</td>
+        <td class="title"><?php echo pql_complete_constant($LANG->_('Automatically replicate domains to %what%'), array('what' => $LANG->_('locals'))); ?></td>
 <?php $class=table_bgcolor(0);
       if($ALLOW_GLOBAL_CONFIG_SAVE) {
 ?>
@@ -122,7 +121,7 @@
       </tr>
 
       <tr>
-        <td class="title">Automatically replicate domains to rcpthosts</td>
+        <td class="title"><?php echo pql_complete_constant($LANG->_('Automatically replicate domains to %what%'), array('what' => $LANG->_('rcpthosts'))); ?></td>
 <?php $class=table_bgcolor(0);
       if($ALLOW_GLOBAL_CONFIG_SAVE) {
 ?>
@@ -134,7 +133,7 @@
       </tr>
 
       <tr>
-        <td class="title">Automatically add hostname to domain for replication</td>
+        <td class="title"><?=$LANG->_('Automatically add hostname to domain for replication')?></td>
 <?php $class=table_bgcolor(0);
       if($ALLOW_GLOBAL_CONFIG_SAVE) {
 ?>
@@ -146,7 +145,7 @@
       </tr>
 
       <tr>
-        <td class="title">Allow change of LDAP server</td>
+        <td class="title"><?=$LANG->_('Allow change of LDAP server')?></td>
 <?php $class=table_bgcolor(0);
       if($ALLOW_GLOBAL_CONFIG_SAVE) {
 ?>
@@ -162,31 +161,31 @@
 
       <!-- -------------------- --!>
       <tr>
-        <td class="title">Kerberos realm</td>
+        <td class="title"><?=$LANG->_('Kerberos realm')?></td>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_KRB5_REALM"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=$PQL_ATTRIBUTE["PQL_GLOB_KRB5_REALM"]?>"></a></td>
         <td class="<?=$class?>"><?php echo pql_get_define("PQL_GLOB_KRB5_REALM"); ?>&nbsp;</td>
       </tr>
 
       <tr>
-        <td class="title">Kerberos admin server</td>
+        <td class="title"><?=$LANG->_('Kerberos admin server')?></td>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_KRB5_ADMIN_SERVER"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=$PQL_ATTRIBUTE["PQL_GLOB_KRB5_ADMIN_SERVER"]?>"></a></td>
         <td class="<?=$class?>"><?php echo pql_get_define("PQL_GLOB_KRB5_ADMIN_SERVER"); ?>&nbsp;</td>
       </tr>
 
       <tr>
-        <td class="title">Kerberos admin principal</td>
+        <td class="title"><?=$LANG->_('Kerberos admin principal')?></td>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_KRB5_ADMIN_PRINCIPAL"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=$PQL_ATTRIBUTE["PQL_GLOB_KRB5_ADMIN_PRINCIPAL"]?>"></a></td>
         <td class="<?=$class?>"><?php echo pql_get_define("PQL_GLOB_KRB5_ADMIN_PRINCIPAL"); ?>&nbsp;</td>
       </tr>
 
       <tr>
-        <td class="title">Kerberos admin keytab</td>
+        <td class="title"><?=$LANG->_('Kerberos admin keytab')?></td>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_KRB5_ADMIN_KEYTAB"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=$PQL_ATTRIBUTE["PQL_GLOB_KRB5_ADMIN_KEYTAB"]?>"></a></td>
         <td class="<?=$class?>"><?php echo pql_get_define("PQL_GLOB_KRB5_ADMIN_KEYTAB"); ?>&nbsp;</td>
       </tr>
 
       <tr>
-        <td class="title">Path to Kerberos <u>kadmin</u> command</td>
+        <td class="title"><?=$LANG->_('Path to Kerberos \ukadmin\U command')?></td>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=$PQL_ATTRIBUTE["PQL_GLOB_KRB5_ADMIN_COMMAND_PATH"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=$PQL_ATTRIBUTE["PQL_GLOB_KRB5_ADMIN_COMMAND_PATH"]?>"></a></td>
         <td class="<?=$class?>"><?php echo pql_get_define("PQL_GLOB_KRB5_ADMIN_COMMAND_PATH"); ?>&nbsp;</td>
       </tr>

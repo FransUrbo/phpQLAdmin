@@ -1,35 +1,37 @@
 <?php
 // attribute plugin for
 // accountstatus (status of mailaccount)
-// $Id: attrib.accountstatus.inc,v 2.7 2003-06-25 07:07:01 turbo Exp $
+// $Id: attrib.accountstatus.inc,v 2.8 2003-07-02 07:59:00 turbo Exp $
 
-function attribute_check($type){
-    // attribute should be
+function attribute_check($type) {
+    // attribute should b, $LANGe
     // - active
     // - nopop
     // - disabled
     global $set, $error;
     
-    switch($set){
+    switch($set) {
       case "active":
       case "nopop":
       case "disabled":
 	return true;
+
       default:
-	$error["set"] = "unknown attribute value '" . $set . "' for accountstatus";
+	$error["set"] = pql_complete_constant($LANG->_('Unknown attribute value %value% for %attribute%'),
+					      array('value' => $set, 'attribute' => $LANG->_('accountstatus')));
 	return false;
     }
 }
 
-function attribute_init(){
+function attribute_init() {
     // dummy function
 }
 
-function attribute_print_form($type = "set"){
+function attribute_print_form($type = "set") {
     // no form neccessary, directly save
     global $error, $view;
     
-    if(!attribute_check($type)){
+    if(!attribute_check($type)) {
 	$msg = $error["set"];
 	attribute_forward($msg);
     }
@@ -37,54 +39,53 @@ function attribute_print_form($type = "set"){
     attribute_save($type);
 }
 
-function attribute_save($type){
-    global $domain, $user, $set, $attrib, $_pql, $view;
+function attribute_save($type) {
+    global $domain, $user, $set, $attrib, $_pql, $view, $LANG;
     
-    // recontrol values
-    if(!attribute_check($type)){
-	return false;
-    }
-    
-    switch($type){
+    switch($type) {
       case "fulldomain":
 	$users = pql_get_user($_pql->ldap_linkid, $domain);
 	
-	if(is_array($users)){
-	    foreach($users as $user){
-		$return[] = pql_replace_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_ISACTIVE"), $set);
-	    }
+	if(is_array($users)) {
+	    foreach($users as $user)
+	      $return[] = pql_replace_userattribute($_pql->ldap_linkid, $user,
+						    pql_get_define("PQL_GLOB_ATTR_ISACTIVE"),
+						    $set);
 	    
-	    if(in_array(false, $return)){
-		$msg = PQL_LANG_ACCOUNTSTATUS_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
-	    } else {
-		$msg = pql_complete_constant(PQL_LANG_ACCOUNTSTATUS_CHANGE_OK, array("status" => pql_ldap_accountstatus($set)));
-	    }
+	    if(in_array(false, $return))
+	      $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+					   array('what' => $LANG->_('Status')))
+		. ": " . pql_ldap_error($_pql->ldap_linkid);
+	    else
+	      $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
+					   array('what' => $LANG->_('Status'),
+						 'new'  => pql_ldap_accountstatus($set)));
 	    
 	    attribute_forward($msg);
 	}
-	
 	break;
 	
       case "set":
-	if(pql_replace_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_ISACTIVE"), $set)) {
-	    $msg = pql_complete_constant(PQL_LANG_ACCOUNTSTATUS_CHANGE_OK, array("status" => pql_ldap_accountstatus($set)));
-	} else {
-	    $msg = PQL_LANG_ACCOUNTSTATUS_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
-	}
+	if(pql_replace_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_ISACTIVE"), $set))
+	  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
+				       array('what' => $LANG->_('Status'),
+					     'new'  => pql_ldap_accountstatus($set)));
+	else
+	  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+				       array('what' => $LANG->_('Status'))) . ": " . pql_ldap_error($_pql->ldap_linkid);
 	
 	attribute_forward($msg);
 	break;
 	
       default:
-	die("unknown save type $type in " . __FILE__ . ", function save()");
+	die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
+				  array('type' => $type, 'file' => __FILE__)));
     }
 }
 
-/*
- * Local variables:
- * mode: php
- * mode: font-lock
- * tab-width: 4
- * End:
- */
+// Local variables:
+// mode: php
+// mode: font-lock
+// tab-width: 4
+// End:
 ?>

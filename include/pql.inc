@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.90 2003-06-28 15:22:36 turbo Exp $
+// $Id: pql.inc,v 2.91 2003-07-02 07:59:01 turbo Exp $
 //
 
 // ----------------------------
@@ -1273,47 +1273,51 @@ function pql_complete_constant($text, $replacement) {
 
 // returns human readable version of users quota
 function pql_ldap_mailquota($quota) {
+    global $LANG;
+
     if($quota["maxmails"] == "")
-	  $txt = PQL_LANG_MAILQUOTA_ECHO_MAXMAILS_UNLIMITED;
+	  $txt = $LANG->_('Unlimited amount');
 	else
-	  $txt = pql_complete_constant(PQL_LANG_MAILQUOTA_ECHO_MAXMAILS, array("maxmails" => $quota["maxmails"]));
+	  $txt = pql_complete_constant($LANG->_('Max %maxmails% mails'), array("maxmails" => $quota["maxmails"]));
     
     $txt .= ",<br>";
     
     if($quota["maxsize"] == "")
-	  $txt .= PQL_LANG_MAILQUOTA_ECHO_MAXSIZE_UNLIMITED;
+	  $txt .= $LANG->_('Unlimited size');
 	else
-	  $txt .= pql_complete_constant(PQL_LANG_MAILQUOTA_ECHO_MAXSIZE, array("maxsize" => $quota["maxsize"]));
+	  $txt .= pql_complete_constant($LANG->_('Max %maxsize% KB'), array("maxsize" => $quota["maxsize"]));
     
     return $txt;
 }
 
 // ------------------------------------------------
 
+// returns text of account-status
 function pql_ldap_accountstatus($status) {
-    // returns text of account-status
-    
+    global $LANG;
+
     // active [default]
     // nopop
     // disabled
     
     switch($status) {
       case "nopop":
-		return PQL_LANG_ACCOUNTSTATUS_NOPOP;
+		return $LANG->_('POP locked');
 
       case "disabled":
-		return PQL_LANG_ACCOUNTSTATUS_DISABLE;
+		return $LANG->_('Locked');
 
       default:
-		return PQL_LANG_ACCOUNTSTATUS_ACTIVE;
+		return $LANG->_('Active');
     }
 }
 
 // ------------------------------------------------
 
+// returns text of delivery mode
 function pql_ldap_deliverymode($mode) {
-    // returns text of delivery mode
-    
+    global $LANG;
+
     // normal [default]
     // forwardonly
     // nombox
@@ -1323,22 +1327,22 @@ function pql_ldap_deliverymode($mode) {
     
     switch($mode) {
       case "forwardonly":
-		return PQL_LANG_DELIVERYMODE_FORWARDONLY;
+		return $LANG->_('Only forward');
 
       case "nombox":
-		return PQL_LANG_DELIVERYMODE_NOMBOX;
+		return $LANG->_('No local mailbox');
 
       case "localdelivery":
-		return PQL_LANG_DELIVERYMODE_LOCALDELIVERY;
+		return $LANG->_('Save in local mailbox');
 
       case "reply":
-		return PQL_LANG_DELIVERYMODE_REPLY;
+		return $LANG->_('Do auto reply');
 
       case "echo":
-		return PQL_LANG_DELIVERYMODE_ECHO;
+		return $LANG->_('Echo to console (tricky)');
 
       default:
-		return PQL_LANG_DELIVERYMODE_NORMAL;
+		return $LANG->_('Normal');
     }
 }
 

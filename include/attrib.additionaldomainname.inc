@@ -1,20 +1,20 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.9 2003-06-25 07:07:01 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.10 2003-07-02 07:59:00 turbo Exp $
 
 function attribute_check() {
-    global $additionaldomainname, $domain, $oldvalue, $_pql, $error, $rootdn;
+    global $additionaldomainname, $domain, $oldvalue, $_pql, $error, $rootdn, $LANG;
     
     // is typed in ?
     if($additionaldomainname == "") {
-		$error["additionaldomainname"] = PQL_LANG_MISSING;
+		$error["additionaldomainname"] = $LANG->_('Missing');
 		return false;
     }
     
     // don't use ".."
     if(preg_match("/(\.){2,}/", $additionaldomainname)) {
-		$error["additionaldomainname"] = PQL_LANG_INVALID;
+		$error["additionaldomainname"] = $LANG->_('Invalid');
 		return false;
     }
     
@@ -23,22 +23,21 @@ function attribute_check() {
 
 function attribute_init() {
     global $additionaldomainname, $oldvalue, $rootdn;
-    
     $additionaldomainname = $oldvalue;
 }
 
 function attribute_print_form() {
-    global $additionaldomainname, $domain, $PHP_SELF, $attrib, $oldvalue, $error, $rootdn, $view;
+    global $additionaldomainname, $domain, $PHP_SELF, $attrib, $oldvalue, $error, $rootdn, $view, $LANG;
 	global $orgname;
 
     $oldvalue = $additionaldomainname;
 ?>
-  <form action="<?php echo $PHP_SELF ?>" method="post">
+  <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">Add an additional domain name for branch <?=$orgname?></th>
+      <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what% for domain %domain%'), array('what' => $LANG->_('additional domain name'), 'domain' => $orgname)); ?></th>
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title">Additional domain name</td>
-          <td><?php echo format_error($error["additionaldomainname"]); ?><input type="text" name="additionaldomainname" value="<?php echo $additionaldomainname; ?>" size="20"></td>
+          <td class="title"><?=$LANG->_('Additional domain name')?></td>
+          <td><?php echo format_error($error["additionaldomainname"]); ?><input type="text" name="additionaldomainname" value="<?=$additionaldomainname?>" size="20"></td>
         </tr>
 <?php if(!function_exists("pql_control"))
 		require("./include/pql_control.inc");
@@ -53,7 +52,7 @@ function attribute_print_form() {
         <tr></tr>
 
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title">Add domain to locals in following objects:</td>
+          <td class="title"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain to locals in following objects'))); ?>:</td>
           <td>
 <?php		if(!pql_get_define("PQL_GLOB_CONTROL_AUTOADDLOCALS")) {
 				$i = 0;
@@ -64,13 +63,13 @@ function attribute_print_form() {
 <?php	  			$i++;
 		  		}
 ?>
-            <input type="checkbox" name="locals_<?=$i?>">Add to all hosts<br>
+            <input type="checkbox" name="locals_<?=$i?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('to all hosts'))); ?><br>
             <input type="hidden" name="locals" value="<?=$i?>">
-            &nbsp;If all left unset, no replication will take place
+            &nbsp;<?=$LANG->_('If all left unset, no replication will take place')?>
 <?php		} else {
 				$cnt = count($hosts);
 ?>
-              &nbsp;Automatic replication configured
+              &nbsp;<?=$LANG->_('Automatic replication configured')?>
               <input type="hidden" name="locals_<?=$cnt?>" value="on">
               <input type="hidden" name="locals" value="<?=$cnt?>">
 <?php		} ?>
@@ -78,7 +77,7 @@ function attribute_print_form() {
         </tr>
 
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title">Add domain to rcpthosts in following objects:</td>
+          <td class="title"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain to rcpthosts in following objects'))); ?>:</td>
           <td>
 <?php		if(!pql_get_define("PQL_GLOB_CONTROL_AUTOADDRCPTHOSTS")) {
 		  		foreach($hosts as $host) {
@@ -87,13 +86,13 @@ function attribute_print_form() {
 <?php	  			$i++;
 		  		}
 ?>
-            <input type="checkbox" name="rcpthosts_<?=$i?>">Add to all hosts<br>
+            <input type="checkbox" name="rcpthosts_<?=$i?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('to all hosts'))); ?><br>
             <input type="hidden" name="rcpthosts" value="<?=$i?>">
-            &nbsp;If all left unset, no replication will take place
+            &nbsp;<?=$LANG->_('If all left unset, no replication will take place')?>
 <?php 		} else {
 				$cnt = count($hosts);
 ?>
-              &nbsp;Automatic replication configured
+              &nbsp;<?=$LANG->_('Automatic replication configured')?>
               <input type="hidden" name="rcpthosts_<?=$cnt?>" value="on">
               <input type="hidden" name="rcpthosts" value="<?=$cnt?>">
 <?php		} ?>
@@ -110,13 +109,13 @@ function attribute_print_form() {
     <input type="hidden" name="rootdn"   value="<?=$rootdn?>">
     <input type="hidden" name="view"     value="<?=$view?>">
     <br>
-    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
+    <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
 <?php
 }
 
 function attribute_save($type) {
-    global $domain, $attrib, $oldvalue, $additionaldomainname, $_pql, $domain, $delval, $view;
+    global $domain, $attrib, $oldvalue, $additionaldomainname, $_pql, $domain, $delval, $view, $LANG;
 
     // recontrol values
     if(!attribute_check($type) and !delval)
@@ -124,7 +123,7 @@ function attribute_save($type) {
 
 	if(($additionaldomainname == $oldvalue) and !$delval) {
 		// don't change if new value equal to old one
-		$msg = "Additional domain name unchanged";
+		$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('Additional domain name')));
 		attribute_forward($msg);
 		return false;
 	}
@@ -152,7 +151,8 @@ function attribute_save($type) {
 		  $entry[$attrib] = array();
 		
 		if(pql_set_domain_value($_pql->ldap_linkid, $domain, '', $entry)) {
-			$msg = pql_complete_constant("Successfully changed additional domainname", array("name" => $additionaldomainname));
+			$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+										 array('what' => $LANG->_('Additional domain name')))
 
 			require("./include/pql_control.inc");
 			$_pql_control = new pql_control($GLOBALS["USER_HOST"], $GLOBALS["USER_DN"], $GLOBALS["USER_PASS"]);
@@ -229,19 +229,21 @@ function attribute_save($type) {
 										   '*', array($delval, ''));
 			}
 		} else
-		  $msg = "Failed to change an additional domainname" . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+									   array('what' => $LANG->_('Additional domain name')))
+			. ": " . ldap_error($_pql->ldap_linkid);
 		
 		attribute_forward($msg);
 		break;
 		
       default:
-		die("unknown save type $type in " . __FILE__ . ", function save()");
+		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
+								  array('type' => $type, 'file' => __FILE__)));
     }
 }
 
-/*
- * Local variables:
- * mode: php
- * tab-width: 4
- * End:
- */
+// Local variables:
+// mode: php
+// mode: font-lock
+// tab-width: 4
+// End:

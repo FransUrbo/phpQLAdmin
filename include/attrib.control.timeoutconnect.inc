@@ -3,38 +3,37 @@
 // timeoutconnect (how long to wait for smtp connection)
 // timeoutremote (how long to wait for remote server)
 //
-// $Id: attrib.control.timeoutconnect.inc,v 2.8 2003-05-28 07:23:37 turbo Exp $
+// $Id: attrib.control.timeoutconnect.inc,v 2.9 2003-07-02 07:59:00 turbo Exp $
 
 function timeoutconnect_check($type) {
-	global $error, $timeoutconnect, $timeoutremote, $view;
+	global $error, $timeoutconnect, $timeoutremote, $view, $LANG;
 
 	// check validity
-	if(preg_match("/[^0-9]/", $timeoutconnect)){
-		$error["timeoutconnect"] = PQL_LANG_INVALID;
+	if(preg_match("/[^0-9]/", $timeoutconnect)) {
+		$error["timeoutconnect"] = $LANG->_('Invalid');
 		$is_error = true;
 	}
 
 	// must be > 0
-	if($error["timeoutconnect"] == "" and $timeoutconnect != "" and $timeoutconnect <= 0){
-		$error["timeoutconnect"] = PQL_LANG_GREATER_ZERO;
+	if($error["timeoutconnect"] == "" and $timeoutconnect != "" and $timeoutconnect <= 0) {
+		$error["timeoutconnect"] = $LANG->_('Must be above zero');
 		$is_error = true;
 	}
 
 	// check validity
-	if(preg_match("/[^0-9]/", $timeoutremote)){
-		$error["timeoutremote"] = PQL_LANG_INVALID;
+	if(preg_match("/[^0-9]/", $timeoutremote)) {
+		$error["timeoutremote"] = $LANG->_('Invalid');
 		$is_error = true;
 	}
 
 	// must be > 0
-	if($error["timeoutremote"] == "" and $timeoutremote != "" and $timeoutremote <= 0){
-		$error["timeoutremote"] = PQL_LANG_GREATER_ZERO;
+	if($error["timeoutremote"] == "" and $timeoutremote != "" and $timeoutremote <= 0) {
+		$error["timeoutremote"] = $LANG->_('Must be above zero');
 		$is_error = true;
 	}
 
-	if($is_error == false){
-		return true;
- 	}
+	if($is_error == false)
+	  return true;
 }
 
 function timeoutconnect_init($host) {
@@ -44,77 +43,73 @@ function timeoutconnect_init($host) {
 	// fetch data from ldap server
 	$attribs = array("timeoutconnect", "timeoutremote");
 
-	foreach($attribs as $attrib){
+	foreach($attribs as $attrib) {
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
 										   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 										   $attrib);
 
-		if(!is_null($value)){
-			$$attrib = $value[0];
-		}
+		if(!is_null($value))
+		  $$attrib = $value[0];
 	}
 }
 
 function timeoutconnect_print_view($host) {
-	global $_pql_control, $timeoutconnect, $timeoutremote, $view;
+	global $_pql_control, $timeoutconnect, $timeoutremote, $view, $LANG;
 
 	// init data
 	timeoutconnect_init($host);
 
 	// set empty fields to their default value
-	if($timeoutconnect == ""){
-		$timeoutconnect = "60 s (default)";
-	} else {
-		$timeoutconnect .= " s";
-	}
+	if($timeoutconnect == "")
+	  $timeoutconnect = "60 ".$LANG->_('Seconds', 4)." (".$LANG->_('Default', 4).")";
+	else
+	  $timeoutconnect .= " ".$LANG->_('Seconds', 4);
 	
-	if($timeoutremote == ""){
-		$timeoutremote = "1200 s (default)";
-	} else {
-		$timeoutremote .= " s";
-	}
-
+	if($timeoutremote == "")
+	  $timeoutremote = "1200 ".$LANG->_('Seconds', 4)." (".$LANG->_('Default', 4).")";
+	else
+	  $timeoutremote .= " ".$LANG->_('Seconds', 4);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left">timeoutconnect, timeoutremote (Timeouts)</th>
+    <th colspan="3" align="left">Timeoutconnect, timeoutremote (<?=$LANG->_('Timeouts')?>)</th>
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title">SMTP connection</td>
-        <td><?php echo $timeoutconnect; ?></td>
+        <td class="title"><?=$LANG->_('SMTP connection')?></td>
+        <td><?=$timeoutconnect?></td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title">Remote server</td>
-        <td><?php echo $timeoutremote; ?></td>
+        <td class="title"><?=$LANG->_('Remote server')?></td>
+        <td><?=$timeoutremote?></td>
       </tr>
 
       <tr class="subtitle">
-        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=timeoutconnect"><img src="images/edit.png" width="12" height="12" border="0"> change options</a></td>
+        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=timeoutconnect"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options', 4)?></a></td>
       </tr>
     </th>
   </table>
-
 <?php
 }
 
-function timeoutconnect_print_form(){
-	global $attrib, $timeoutconnect, $timeoutremote, $PHP_SELF, $error, $mxhost, $view;
-
+function timeoutconnect_print_form() {
+	global $attrib, $timeoutconnect, $timeoutremote, $PHP_SELF, $error, $mxhost, $view, $LANG;
+	$string  = $LANG->_('Seconds', 4) . ". ";
+	$string .= $LANG->_('Default');
 ?>
-  <form action="<?php echo $PHP_SELF ?>" method="post">
+  <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">timeoutconnect, timeoutremote (Timeouts)</th>
+      <th colspan="3" align="left">timeoutconnect, timeoutremote (<?=$LANG->_('Timeouts')?>)</th>
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title">SMTP connection</td>
-          <td><?php echo format_error($error["timeoutconnect"]); ?><input type="text" name="timeoutconnect" value="<?php echo $timeoutconnect; ?>"> seconds. Default: 60</td>
+          <td class="title"><?=$LANG->_('SMTP connection')?></td>
+          <td><?php echo format_error($error["timeoutconnect"]); ?><input type="text" name="timeoutconnect" value="<?=$timeoutconnect?>"><?=$string?>: 60</td>
         </tr>
 
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title">Remote server</td>
-          <td><?php echo format_error($error["timeoutremote"]); ?><input type="text" name="timeoutremote" value="<?php echo $timeoutremote; ?>"> seconds. Default: 1200</td>
+          <td class="title"><?=$LANG->_('Remote server')?></td>
+          <td><?php echo format_error($error["timeoutremote"]); ?><input type="text" name="timeoutremote" value="<?=$timeoutremote?>"> <?=$string?>: 1200</td>
         </tr>
 
         <tr class="subtitle">
-          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"> Leave the fields empty to set the default values</td>
+          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"> <?=$LANG->_('Leave the fields empty to set the default values')?></td>
         </tr>
       </th>
     </table>
@@ -124,21 +119,15 @@ function timeoutconnect_print_form(){
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
     <input type="hidden" name="view" value="<?=$view?>">
     <br>
-    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
+    <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
-
 <?php
 }
 
 function timeoutconnect_save($type, $host) {
-	global $_pql_control, $attrib, $timeoutconnect, $timeoutremote, $error, $mxhost, $view;
+	global $_pql_control, $attrib, $timeoutconnect, $timeoutremote, $error, $mxhost, $view, $LANG;
 
-	// recontrol values
-	if(!timeoutconnect_check($type)){
- 		return false;
-	}
-
-	switch($type){
+	switch($type) {
 	  case "modify";
 	  case "add";
 		// save entries
@@ -149,20 +138,24 @@ function timeoutconnect_save($type, $host) {
 												  "cn=" . $mxhost . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 												  "timeoutremote", $timeoutremote);
 		
-		if(in_array(false, $return)){
-			$msg = "Error saving remote timeout options: " . pql_ldap_error($_pql_control->ldap_linkid);
-		} else {
-    		$msg = "Successfully remote timeout options";
-    	}
+		if(in_array(false, $return))
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+									   array('what' => $LANG->_('remote timeout options'))) . ": " . pql_ldap_error($_pql_control->ldap_linkid);
+		else
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+									   array('what' => $LANG->_('remote timeout options')));
 
 		attribute_forward($msg);
 		break;
+
 	  default:
-		die("unknown save type $type in " . __FILE__ . ", function save()");
+		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
+								  array('type' => $type, 'file' => __FILE__)));
 	}
 }
 
-function timeoutconnect_help(){
+function timeoutconnect_help() {
+    global $LANG;
 ?>
 <b>SMTP connection</b><br>
 Number of seconds qmail-remote will wait for the remote
@@ -175,15 +168,14 @@ response from the remote SMTP server.  Default: 1200.
 <?php
 }
 
-function timeoutconnect_help_cr(){
-?>
-	help text taken from qmail man pages
-<?php
+function timeoutconnect_help_cr() {
+    global $LANG;
+	echo $LANG->_('Help text taken from qmail man pages');
 }
-/*
- * Local variables:
- * mode: php
- * mode: font-lock
- * tab-width: 4
- * End:
- */
+
+// Local variables:
+// mode: php
+// mode: font-lock
+// tab-width: 4
+// End:
+?>

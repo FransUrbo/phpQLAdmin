@@ -1,380 +1,648 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 2.28 2003-06-19 11:42:20 turbo Exp $
+// $Id: lang.en.inc,v 2.29 2003-07-02 07:59:01 turbo Exp $
 //
 // if you have a translation to another language, please contact
 // me --> Turbo Fredriksson <phpqladmin@bayour.com>
+//
 
-if(!isset($INCLUDE_LANG_EN_INC)) {
-	$INCLUDE_LANG_EN_INC=1;
-	
-	// Should we refere to the LDAP branch as 'branch' or 'domain'?
-	$DOMAIN = "branch";
-	if(defined("PQL_CONF_REFERENCE_DOMAINS_WITH")) {
-		if(PQL_CONF_REFERENCE_DOMAINS_WITH == "dc") {
-			$DOMAIN = "domain";
-		}
-	}
-	
-	// language definition
-	define("PQL_LANG_LANG","en");
-	
-	// welcome texts (home.php)
-	define("PQL_LANG_WELCOME", "Welcome to ");
-	
-	// login texts
-	define("PQL_LANG_LOGIN","Please Login");
-	define("PQL_LANG_USERNAME","Login ID");
-	define("PQL_LANG_USERPASS","Password");
-	define("PQL_LANG_RETYPE","Retype password");
-	define("PQL_LANG_ORG_BASE","Organization");
-	
-	define("PQL_LANG_HOME","Home");
-	define("PQL_LANG_LOGOUT","Log out");
-	
-	// general texts
-	define("PQL_LANG_SAVE", "Save");
-	define("PQL_LANG_OPTIONS", "Options");
-	define("PQL_LANG_EMAIL", "Email");
-	define("PQL_LANG_ACTIONS", "Actions");
-	
-	define("PQL_LANG_SURE", "Are you really sure ");
-	define("PQL_LANG_YES", "Yes");
-	define("PQL_LANG_NO", "No");
-	define("PQL_LANG_ADD", "create");
-	
-	define("PQL_LANG_DOCUMENTATION", "Documentation");
-	define("PQL_LANG_SHOW_CONFIG", "Show phpQLAdmin configuration");
-	define("PQL_LANG_TEST_LDAP", "Test LDAP-Connection");
-	
-	define("PQL_LANG_UNSET", "<i>Not set</i>");
-	
-	// error messages
-	define("PQL_LANG_INVALID", "invalid");
-	define("PQL_LANG_MISSING", "missing");
-	define("PQL_LANG_EXISTS", "already exists");
-	define("PQL_LANG_FAILED_RETYPE", "not exactly retyped");
-	define("PQL_LANG_NO_OBJECT", "attribute not found");
-	define("PQL_LANG_GREATER_ZERO", "must be > 0");
-	define("PQL_LANG_SESSION_REG", "Could not register session variables");
-	define("PQL_LANG_ERROR", "Error");
-	
-	// user/domain/address things
-	define("PQL_LANG_USER", "User");
-	define("PQL_LANG_USER_ID", "Username");
-	define("PQL_LANG_USER_DATA", "User data");
-	define("PQL_LANG_USER_DATA_SURNAME", "Surname");
-	define("PQL_LANG_USER_DATA_LASTNAME", "Lastname");
-	define("PQL_LANG_USER_DATA_NAME", "Name");
-	define("PQL_LANG_USER_HOMEDIR", "Home directory");
-	define("PQL_LANG_USER_MAILDIR", "Mail directory");
-	define("PQL_LANG_USER_LOGINSHELL", "Login shell");
-	
-	define("PQL_LANG_USER_REGISTRED","Registred users");
-	define("PQL_LANG_USER_NEW", "Register new user");
-	define("PQL_LANG_USER_DELETE", "Delete user");
-	define("PQL_LANG_USER_DELETE_FORWARDS", "Also delete forwards to this user");
-	define("PQL_LANG_USER_EDIT", "Change user data");
-	define("PQL_LANG_USER_EXIST", "User %user% already exists");
-	define("PQL_LANG_USER_NONE", "No users registred");
-	define("PQL_LANG_USER_MAILBOXPROPERTIES", "Mailbox properties");
-	define("PQL_LANG_USER_ADD", "Create user");
-	define("PQL_LANG_USER_ADD_TITLE", "Create user in $DOMAIN %domain%");
-	define("PQL_LANG_USER_ADD_HELP1", "The combination of surname and name (e.g. Zaphod Beeblebrox) must be unique in whole $DOMAIN. The username must be unique in whole system.");
-	define("PQL_LANG_USER_ADD_HELP2", "The email address and the username will be automatically converted to lowercase");
-	define("PQL_LANG_USER_ADD_OK", "Successfully created the new user");
-	define("PQL_LANG_USER_ADD_FAILED", "Failed to create the new user");
-	define("PQL_LANG_USER_ADD_SCRIPT_OK", "Successfully executed the user add script");
-	define("PQL_LANG_USER_ADD_SCRIPT_FAILED", "The user add script failed!");
-	define("PQL_LANG_USER_ACCOUNT_PROPERTIES", "Account properties");
-	define("PQL_LANG_USER_ACCOUNT_PROPERTIES_MORE", "Additional account properties");
-	define("PQL_LANG_USER_ACCOUNT_TYPE", "Type");
-	define("PQL_LANG_USER_DEL_TITLE", "Remove user '%user%' from $DOMAIN '%domain%'");
-	define("PQL_LANG_USER_DEL_OK", "Successfully removed user");
-	define("PQL_LANG_USER_DEL_FAILED", "Failed removing the user");
-	define("PQL_LANG_USER_DEL_ATTRIBUTE_TITLE", "Remove attribute (%value%)");
-	define("PQL_LANG_USER_DEL_ATTRIBUTE_OK", "Attribute removed");
-	define("PQL_LANG_USER_DEL_ATTRIBUTE_FAILED", "Failed removing attribute");
-	define("PQL_LANG_USER_DELIVERYPROPERTIES","Advanced delivery properties");
-	
-	define("PQL_LANG_DNS_TITLE", "DNS informations");
-	define("PQL_LANG_DNS_MAILHOST", "Mailhost");
-	define("PQL_LANG_DNS_PRIORITY", "Priority");
-	define("PQL_LANG_DNS_NONE", "This domain isn't registred within the DNS system");
-	
-	define("PQL_LANG_DOMAIN_CHANGE_ATTRIBUTE_TITLE", "Change values of all users in this $DOMAIN");
-	define("PQL_LANG_DOMAIN_CHANGE_ATTRIBUTE", "Attribute");
-	define("PQL_LANG_DOMAIN_EXISTS", "This $DOMAIN already exists");
-	define("PQL_LANG_DOMAIN_ADD", "Create $DOMAIN");
-	if($DOMAIN == "domain") {
-		define("PQL_LANG_DOMAIN_INVALID", "Invalid $DOMAIN name !! use: domain.tld (e.g. adfinis.com)");
-		define("PQL_LANG_DOMAIN_ADD_OK", "Domain %domain% successfully created.<br>You have to manually add this domain to the rpcthosts and locals files in the qmail/control directory !!");
-	} else {
-		define("PQL_LANG_DOMAIN_INVALID", "Invalid $DOMAIN name !! Don't use dots in the name, you're creating a BRANCH, not a domain.");
-		define("PQL_LANG_DOMAIN_ADD_OK", "Branch %domain% successfully created.");
-	}
-	define("PQL_LANG_DOMAIN_ADD_SCRIPT_OK", "Successfully executed the $DOMAIN add script");
-	define("PQL_LANG_DOMAIN_ADD_SCRIPT_FAILED", "The $DOMAIN add script failed!");
-	define("PQL_LANG_DOMAIN_ADD_FAILED", "Failed creating the $DOMAIN");
-	define("PQL_LANG_DOMAIN_ADD_INFO_DC", "Using $DOMAIN mode (dc separated).<br>Don't use '.' (dots) in $DOMAIN name");
-	define("PQL_LANG_DOMAIN_ADD_INFO_OU", "Using organizationUnit layout (ou separated).<br>Make sure youre using 'domain.tld' for domain name");
-	define("PQL_LANG_DOMAIN_ADD_INFO_O", "Using organization layout (o separated).");
-	define("PQL_LANG_DOMAIN_DEL", "Remove $DOMAIN");
-	define("PQL_LANG_DOMAIN_DEL_FORWARDS", "Also delete forwards to users in this $DOMAIN");
-	define("PQL_LANG_DOMAIN_DEL_TITLE", "Remove $DOMAIN %domain%");
-	define("PQL_LANG_DOMAIN_DEL_WARNING", "<b>Attention:</b> If you deleted a $DOMAIN, all users within this $DOMAIN will be deleted too !!");
-	define("PQL_LANG_DOMAIN_DEL_OK", "Successfully removed the $DOMAIN");
-	define("PQL_LANG_DOMAIN_DEL_FAILED", "Failed removing $DOMAIN");
-	define("PQL_LANG_DOMAIN_DEFAULT_TITLE", "Change default values for this $DOMAIN");
-	define("PQL_LANG_DOMAIN_DEFAULT_VALUES", "Default $DOMAIN values");
-	define("PQL_LANG_DOMAIN_DEFAULT_NAME", "Default domain name");
-	define("PQL_LANG_DOMAIN_DEFAULT_HOMEDIR", "Default homedirectory for users");
-	define("PQL_LANG_DOMAIN_DEFAULT_MAILDIR", "Default maildirectory for users");
-	define("PQL_LANG_DOMAIN_DEFAULT_CHANGE_NAME", "Change default $DOMAIN name for $DOMAIN ");
-	define("PQL_LANG_DOMAIN_DEFAULT_CHANGE_HOMEDIR", "Change default homedirectory base for $DOMAIN ");
-	define("PQL_LANG_DOMAIN_DEFAULT_CHANGE_MAILDIR", "Change default maildirectory base for $DOMAIN ");
-	define("PQL_LANG_DOMAIN_DEFAULT_CHANGE_OK", "Successfully changed default domainname");
-	define("PQL_LANG_DOMAIN_DEFAULT_CHANGE_FAILED", "Failed to change the default domainname");
-	define("PQL_LANG_DOMAIN_DEFAULT_CHANGE_UNCHANGED", "Default domainname unchanged");
-	
-	// database administrator texts
-	define("PQL_LANG_DOMAIN_ADMIN_TITLE", "Domain administrator(s)");
-	define("PQL_LANG_DOMAIN_ADMIN_DELETE", "Remove domain administrator");
-	define("PQL_LANG_DOMAIN_ADMIN_DELETE_OK", "Administrator removed successfully");
-	define("PQL_LANG_DOMAIN_ADMIN_DELETE_FAILED", "Could not delete administrator");
-	define("PQL_LANG_DOMAIN_ADMIN_ADD", "Add domain administrator for domain ");
-	define("PQL_LANG_DOMAIN_ADMIN_ADD_OK", "Administrator added successfully");
-	define("PQL_LANG_DOMAIN_ADMIN_ADD_FAILED", "Could not add administrator");
-	define("PQL_LANG_DOMAIN_ADMIN_CHANGE", "Administrator DN");
-	define("PQL_LANG_DOMAIN_ADMIN_CHANGE_OK", "Administrator added successfully");
-	define("PQL_LANG_DOMAIN_ADMIN_CHANGE_FAILED", "Could not add administrator DN");
-	define("PQL_LANG_DOMAIN_ADMIN_UNCHANGED", "Domain administrator unchanged");
-	
-	define("PQL_LANG_ADDRESS_REGISTRED", "Registred addresses");
-	define("PQL_LANG_ADDRESS_TYPE", "Type");
-	
-	define("PQL_LANG_SENDMAIL", "Send testmail");
-	define("PQL_LANG_SENDMAIL_OK", "Successfully sended mail to %email%");
-	define("PQL_LANG_SENDMAIL_FAILED", "Failed sending mail");
-	
-	// deliverymode texts
-	// (normal, forwardonly, nombox, localdelivery, reply, echo)
-	define("PQL_LANG_DELIVERYMODE_TITLE","Deliverymode");
-	define("PQL_LANG_DELIVERYMODE_MODE","Mode");
-	define("PQL_LANG_DELIVERYMODE_NORMAL","Normal");
-	define("PQL_LANG_DELIVERYMODE_FORWARDONLY","Only forward");
-	define("PQL_LANG_DELIVERYMODE_NOMBOX","No local mailbox");
-	define("PQL_LANG_DELIVERYMODE_LOCALDELIVERY","Save in local mailbox");
-	define("PQL_LANG_DELIVERYMODE_REPLY","Do auto reply");
-	define("PQL_LANG_DELIVERYMODE_REPLY_SEND","Send an auto reply");
-	define("PQL_LANG_DELIVERYMODE_REPLY_TEXT","Text for replying");
-	define("PQL_LANG_DELIVERYMODE_ECHO","Echo to console (tricky)");
-	define("PQL_LANG_DELIVERYMODE_CHANGE","Change properties");
-	define("PQL_LANG_DELIVERYMODE_CHANGE_OK","Deliverymode changed");
-	define("PQL_LANG_DELIVERYMODE_CHANGE_FAILED","Failed changing deliverymode");
-	define("PQL_LANG_DELIVERYMODE_NULL","Default properties");
-	define("PQL_LANG_DELIVERYMODE_PROFILE", "Profile");
-	define("PQL_LANG_DELIVERYMODE_PROFILE_LOCAL", "Mail account");
-	define("PQL_LANG_DELIVERYMODE_PROFILE_FORWARD", "Forward account");
-	define("PQL_LANG_DELIVERYMODE_PROFILE_SYSTEM", "System account");
-	define("PQL_LANG_DELIVERYMODE_PROFILE_SHELL", "Shell account");
-	
-	define("PQL_LANG_DELIVERYMODE_PROFILE_INC", " includes: ");
-	define("PQL_LANG_DELIVERYMODE_PROFILE_LOCAL_INFO", "local mailbox, POP account");
-	define("PQL_LANG_DELIVERYMODE_PROFILE_FORWARD_INFO", "forward only, no local mailbox");
-	define("PQL_LANG_DELIVERYMODE_PROFILE_SYSTEM_INFO", "loginshell, homedir");
-	define("PQL_LANG_DELIVERYMODE_PROFILE_SHELL_INFO", "loginshell, homedir, no mail etc.");
-	
-	// accountstatus texts
-	// (active, nopop, disable)
-	define("PQL_LANG_ACCOUNTSTATUS_TITLE","Account status");
-	define("PQL_LANG_ACCOUNTSTATUS_STATUS","Status");
-	define("PQL_LANG_ACCOUNTSTATUS_ACTIVE","active");
-	define("PQL_LANG_ACCOUNTSTATUS_NOPOP","POP locked");
-	define("PQL_LANG_ACCOUNTSTATUS_DISABLE","locked");
-	define("PQL_LANG_ACCOUNTSTATUS_CHANGE","Set status");
-	define("PQL_LANG_ACCOUNTSTATUS_CHANGE_OK","Successfully set status to %status%");
-	define("PQL_LANG_ACCOUNTSTATUS_CHANGE_FAILED","Failed setting status");
-	define("PQL_LANG_ACCOUNTSTATUS_CHANGE_ACTIVE","activate");
-	define("PQL_LANG_ACCOUNTSTATUS_CHANGE_NOPOP","lock POP account");
-	define("PQL_LANG_ACCOUNTSTATUS_CHANGE_DISABLE","lock");
-	
-	// mail texts
-	define("PQL_LANG_MAIL_TITLE","Main address");
-	define("PQL_LANG_MAIL_CHANGE","Change main address");
-	define("PQL_LANG_MAIL_HELP", "An address must be unique in whole domain");
-	define("PQL_LANG_MAIL_CHANGE_OK", "Successfully changed main address from %old% to %new%");
-	define("PQL_LANG_MAIL_CHANGE_FAILED", "Failed changing main address");
-	define("PQL_LANG_MAIL_UNCHANGED", "Main address unchanged");
-	
-	// mailforwardingaddress texts
-	define("PQL_LANG_MAILFORWARDINGADDRESS_TITLE","Forward");
-	define("PQL_LANG_MAILFORWARDINGADDRESS_OTHER", "Forwarders of other accounts to this user");
-	define("PQL_LANG_MAILFORWARDINGADDRESS_NEW","Create new forwarding address");
-	define("PQL_LANG_MAILFORWARDINGADDRESS_ADD_HELP", "You can add more forwarding address on user's details page");
-	define("PQL_LANG_MAILFORWARDINGADDRESS_ADD_OK", "Successfully created forward to %mail%");
-	define("PQL_LANG_MAILFORWARDINGADDRESS_ADD_FAILED", "Failed creating forward");
-	define("PQL_LANG_MAILFORWARDINGADDRESS_NONE","none");
-	define("PQL_LANG_MAILFORWARDINGADDRESS_CHANGE", "Change forwarding address");
-	define("PQL_LANG_MAILFORWARDINGADDRESS_CHANGE_OK", "Successfully changed forwarding address from %old% to %new%");
-	define("PQL_LANG_MAILFORWARDINGADDRESS_CHANGE_FAILED", "Failed modifying forwarding address");
-	define("PQL_LANG_MAILFORWARDINGADDRESS_UNCHANGED", "Forwarding address unchanged");
-	
-	// mailalternateaddress texts
-	define("PQL_LANG_MAILALTERNATEADDRESS_TITLE","Alias");
-	define("PQL_LANG_MAILALTERNATEADDRESS_NEW","Create new alias");
-	define("PQL_LANG_MAILALTERNATEADDRESS_DEL", "Delete alias");
-	define("PQL_LANG_MAILALTERNATEADDRESS_DEL_OK", "Successfully removed alias %mail%");
-	define("PQL_LANG_MAILALTERNATEADDRESS_DEL_FAILED", "Failed to removed alias %mail%");
-	define("PQL_LANG_MAILALTERNATEADDRESS_DEL_FORWARDS", "Also delete forwards to this alias");
-	define("PQL_LANG_MAILALTERNATEADDRESS_HELP", "An alias must be unique in whole domain");
-	define("PQL_LANG_MAILALTERNATEADDRESS_ADD_OK", "Successfully created alias %mail%");
-	define("PQL_LANG_MAILALTERNATEADDRESS_ADD_FAILED", "Failed creating alias");
-	define("PQL_LANG_MAILALTERNATEADDRESS_CHANGE", "Change alias");
-	define("PQL_LANG_MAILALTERNATEADDRESS_CHANGE_OK", "Successfully changed alias from %old% to %new%");
-	define("PQL_LANG_MAILALTERNATEADDRESS_CHANGE_FAILED", "Failed modifying alias");
-	define("PQL_LANG_MAILALTERNATEADDRESS_UNCHANGED","Alias unchanged");
-	
-	// userpassword texts
-	define("PQL_LANG_USERPASSWORD_TITLE", "Password");
-	define("PQL_LANG_USERPASSWORD_NONE", "none");
-	define("PQL_LANG_USERPASSWORD_ENCRYPTED", "encrypted");
-	define("PQL_LANG_USERPASSWORD_KERBEROS", "(Kerberos V)");
-	define("PQL_LANG_USERPASSWORD_NEW", "Set password");
-	define("PQL_LANG_USERPASSWORD_RETYPE", "Password (Retype)");
-	define("PQL_LANG_USERPASSWORD_HELP", "A password can only contain numbers and letters, special characters are not allowed");
-	define("PQL_LANG_USERPASSWORD_HELP_KRB", "If using {KERBEROS} as password scheme, make sure you include the correct REALM (principal@REALM.TLD).<br>");
-	define("PQL_LANG_USERPASSWORD_CHANGE_OK", "Successfully changed password");
-	define("PQL_LANG_USERPASSWORD_CHANGE_FAILED", "Failed changing password");
-	
-	// common name texts
-	define("PQL_LANG_CN_CHANGE", "Change common name");
-	define("PQL_LANG_CN_CHANGE_OK", "Successfully changed the common name to %new%");
-	define("PQL_LANG_CN_CHANGE_FAILED", "Failed to change the common name");
-	define("PQL_LANG_CN_UNCHANGED", "Common name unchanged");
-	
-	// homedirectory texts
-	define("PQL_LANG_HOMEDIRECTORY_CHANGE", "Change home directory");
-	define("PQL_LANG_HOMEDIRECTORY_CHANGE_OK", "Successfully changed homedirectory to %new%");
-	define("PQL_LANG_HOMEDIRECTORY_CHANGE_FAILED", "Failed to change the homedirectory");
-	define("PQL_LANG_HOMEDIRECTORY_UNCHANGED", "Homedirectory unchanged");
-	
-	// loginshell texts
-	define("PQL_LANG_LOGINSHELL_CHANGE", "Change login shell");
-	define("PQL_LANG_LOGINSHELL_CHANGE_OK", "Successfully changed login shell to %new%");
-	define("PQL_LANG_LOGINSHELL_CHANGE_FAILED", "Failed to change the login shell");
-	define("PQL_LANG_LOGINSHELL_UNCHANGED", "Login shell unchanged");
-	
-	// uid texts
-	define("PQL_LANG_UID_TITLE", "Username");
-	define("PQL_LANG_UID_NONE", "none");
-	define("PQL_LANG_UID_HELP", "The username can only contain numbers, letters and following special characters &quot;@&quot;, &quot;.&quot;, &quot;_&quot;, &quot;-&quot;. Additionally, the username should be unique in whole system.");
-	define("PQL_LANG_UID_HELP_SHORT", "Numbers, letters, and following special chars: &quot;@&quot;, &quot;%&quot;, &quot;.&quot;, &quot;_&quot;, &quot;-&quot;<br>If left out, a username will be created automatically.");
-	define("PQL_LANG_UID_CHANGE", "Change username");
-	define("PQL_LANG_UID_CHANGE_OK", "Successfully changed username from %old% to %new%");
-	define("PQL_LANG_UID_CHANGE_FAILED", "Failed changing the username");
-	define("PQL_LANG_UID_UNCHANGED","Username unchanged");
-	
-	// mailquota texts
-	define("PQL_LANG_MAILQUOTA_TITLE", "Default quota");
-	define("PQL_LANG_MAILQUOTA_NONE", "Standard");
-	define("PQL_LANG_MAILQUOTA_ECHO_MAXSIZE", "max %maxsize% KB");
-	define("PQL_LANG_MAILQUOTA_ECHO_MAXSIZE_UNLIMITED", "unlimited size");
-	define("PQL_LANG_MAILQUOTA_ECHO_MAXMAILS", "max %maxmails% mails");
-	define("PQL_LANG_MAILQUOTA_ECHO_MAXMAILS_UNLIMITED", "unlimited amount");
-	define("PQL_LANG_MAILQUOTA_HELP", "With 'Standard', qmail/ldap will get quotas from its configuration file");
-	define("PQL_LANG_MAILQUOTA_NONESELECTED", "You must select at least one type of quota");
-	define("PQL_LANG_MAILQUOTA_MAXSIZE_TITLE", "Max. size of mailbox");
-	define("PQL_LANG_MAILQUOTA_MAXMAILS_TITLE", "Max. number of mails");
-	define("PQL_LANG_MAILQUOTA_DEFAULT", "Standard");
-	define("PQL_LANG_MAILQUOTA_DEFAULT_CHANGE", "Change default quota for domain ");
-	define("PQL_LANG_MAILQUOTA_USERDEFINED", "User defined");
-	define("PQL_LANG_MAILQUOTA_CHANGE", "Change quota");
-	define("PQL_LANG_MAILQUOTA_CHANGE_OK", "Successfully set the quota to %quota%");
-	define("PQL_LANG_MAILQUOTA_CHANGE_FAILED", "Failed changing the quota");
-	define("PQL_LANG_MAILQUOTA_UNCHANGED","Quota unchanged");
-	
-	// mailhost texts
-	define("PQL_LANG_MAILHOST_TITLE", "Mailserver");
-	define("PQL_LANG_MAILHOST_FQDN", "Host address (FQDN)");
-	define("PQL_LANG_MAILHOST_NONE", "none");
-	define("PQL_LANG_MAILHOST_CHANGE", "Change host address of mailserver");
-	define("PQL_LANG_MAILHOST_CHANGE_OK", "Successfully changed mailserver to %mailhost%");
-	define("PQL_LANG_MAILHOST_CHANGE_FAILED", "Failed changing mailserver");
-	define("PQL_LANG_MAILHOST_DEFAULT", "Standard (DNS entry)");
-	define("PQL_LANG_MAILHOST_USERDEFINED", "User defined");
-	define("PQL_LANG_MAILHOST_UNCHANGED", "Mailserver unchanged");
-	define("PQL_LANG_MAILHOST_NOOPTION", "No option is set");
-	define("PQL_LANG_MAILHOST_HELP", "With option DNS, the first MX record of this domain will be taken");
-	
-	// mailmessagestore texts
-	define("PQL_LANG_MAILMESSAGESTORE_TITLE", "Path to mailbox");
-	define("PQL_LANG_MAILMESSAGESTORE_HELP", "If you don't provide an absolute path, it will be prefixed with the value in qmail/control/ldapmessagestore. '..' are not allowed.");
-	define("PQL_LANG_MAILMESSAGESTORE_ABSOLUTE_NOTALLOWED", "Absolute paths are denied by configuration");
-	define("PQL_LANG_MAILMESSAGESTORE_NONE", "none");
-	define("PQL_LANG_MAILMESSAGESTORE_CHANGE", "Change path to mailbox");
-	define("PQL_LANG_MAILMESSAGESTORE_CHANGE_OK", "Successfully changed mailbox path to %path%");
-	define("PQL_LANG_MAILMESSAGESTORE_CHANGE_FAILED", "Failed changing mailbox path");
-	define("PQL_LANG_MAILMESSAGESTORE_UNCHANGED", "Mailbox path unchanged");
-	
-	// qmaildotmode texts
-	define("PQL_LANG_QMAILDOTMODE_TITLE", "dotmode");
-	define("PQL_LANG_QMAILDOTMODE_HELP", "If you set dotmode to both or ldapwithprog you should add a deliveryprogram too");
-	define("PQL_LANG_QMAILDOTMODE_NONE", "default");
-	define("PQL_LANG_QMAILDOTMODE_CHANGE", "Change dotmode");
-	define("PQL_LANG_QMAILDOTMODE_CHANGE_OK", "Successfully changed dotmode to %mode%");
-	define("PQL_LANG_QMAILDOTMODE_CHANGE_FAILED", "Failed changing dotmode");
-	define("PQL_LANG_QMAILDOTMODE_UNCHANGED", "dotmode unchanged");
-	define("PQL_LANG_QMAILDOTMODE_MODE_DEFAULT", "default (taken from ldapdefaultdotmode)");
-	define("PQL_LANG_QMAILDOTMODE_MODE_BOTH", "both (deliveryProgramPath + .qmail)");
-	define("PQL_LANG_QMAILDOTMODE_MODE_DOTONLY", "dotonly (only .qmail)");
-	define("PQL_LANG_QMAILDOTMODE_MODE_LDAPONLY", "ldaponly (deliveryProgramPath + .qmail ignored for ldap deliveries)");
-	define("PQL_LANG_QMAILDOTMODE_MODE_LDAPWITHPROG", "ldapwithprog (deliveryProgramPath used, .qmail ignored)");
-	define("PQL_LANG_QMAILDOTMODE_MODE_NONE", "none (deliveryProgramPath + .qmail ignored)");
-	
-	// deliveryprogrampath texts
-	define("PQL_LANG_DELIVERYPROGRAMPATH_TITLE", "Deliveryprogram");
-	define("PQL_LANG_DELIVERYPROGRAMPATH_HELP", "This is the same as '|/path/to/someprog' in a .qmail file. Only used if qmailDotMode is set to ldapwithprog or both.");
-	define("PQL_LANG_DELIVERYPROGRAMPATH_NONE", "none");
-	define("PQL_LANG_DELIVERYPROGRAMPATH_CHANGE", "Change path to deliveryprogram");
-	define("PQL_LANG_DELIVERYPROGRAMPATH_CHANGE_OK", "Successfully changed path to %path%");
-	define("PQL_LANG_DELIVERYPROGRAMPATH_CHANGE_FAILED", "Failed changing path");
-	define("PQL_LANG_DELIVERYPROGRAMPATH_UNCHANGED", "deliveryprogram path unchanged");
-	define("PQL_LANG_DELIVERYPROGRAMPATH_DOTWARNING", "The qmaildotmode of this user is set to %qmaildotmode%. Please to set it to both or ldapwithprog to get the deliveryprogram running.");
-	
-	// search engine texts
-	define("PQL_LANG_SEARCH_TITLE","Find Users Whose");
-	define("PQL_LANG_SEARCH_TITLE2","Search Results");
-	define("PQL_LANG_SEARCH_UID","Username");
-	define("PQL_LANG_SEARCH_CN","Common Name");
-	define("PQL_LANG_SEARCH_MAIL","Mail Address");
-	define("PQL_LANG_SEARCH_MAILALTERNATEADDRESS","Mail Alias");
-	define("PQL_LANG_SEARCH_MAILFORWARDINGADDRESS","Forwarding Address");
-	define("PQL_LANG_SEARCH_CONTAINS","Contains");
-	define("PQL_LANG_SEARCH_IS","Is");
-	define("PQL_LANG_SEARCH_STARTSWITH","Starts With");
-	define("PQL_LANG_SEARCH_ENDSWITH","Ends With");
-	define("PQL_LANG_SEARCH_FINDBUTTON","find");
-	
-	// ldap connection test texts
-	define("PQL_LANG_TEST_TITLE", "phpQLAdmin ldap connection");
-	define("PQL_LANG_TEST_TESTS", "LDAP server connection and setup tests");
-	define("PQL_LANG_TEST_HELP", "This is a simple test to show if the ldap extension is loaded<br>and the connections are working. It also does some<br>rudimentary ACL tests.");
-	define("PQL_LANG_TEST_LDAP_EXT_TITLE", "PHP LDAP extension");
-	define("PQL_LANG_TEST_LDAP_EXT_NA", "not available");
-	define("PQL_LANG_TEST_LDAP_EXT_OK", "built in (loaded)");
-	define("PQL_LANG_TEST_CONNECTION_FAILED", "failed");
-	define("PQL_LANG_TEST_CONNECTION_RESOLVE_ERR", "the hostname %host% could not be resolved");
-	define("PQL_LANG_TEST_CONNECTION_CONNECT_ERR", "could not connect to port 389 at %host%, please make sure the service is up and it is not blocked with a firewall");
-	define("PQL_LANG_TEST_CONNECTION_CONNECT_OK", "Yes, working");
-	define("PQL_LANG_TEST_CONNECTION_OCEXISTS_OK", "Yes, it does");
-	define("PQL_LANG_TEST_CONNECTION_USER_TITLE", "User directory connection");
-	define("PQL_LANG_TEST_CONNECTION_USER_BIND_ERR", "Connection ok, but could not bind to the directory.");
-	define("PQL_LANG_TEST_CONNECTION_CONROL_TITLE", "Control directory connection");
-	define("PQL_LANG_TEST_CONNECTION_CONTROL_BIND_ERR", "Connection ok, but could not bind to the directory. Please check PQL_CONF_CONTROL_ROOTDN and PQL_CONF_CONTROL_ROOTPW");
-	define("PQL_LANG_TEST_CONNECTION_CONROL_INACTIVE", "Control extension deactivated");
-}
+$alphabet = array("A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z");
+
+// If you want HTML tags, you can have that in the translation string
+// (ie, the value AFTER the '=>' character).
+$language = array(
+	"%what% unchanged" => "",
+	"A limit of 0 (zero) means unlimited accounts" => "",
+	"A negative value means that no mailinglists are allowed" => "",
+	"A password can only contain numbers and letters, special characters are not allowed" => "",
+	"Absolute paths are denied by configuration" => "",
+	"Access to DN" => "",
+	"Access to create branches in DN %dn%" => "",
+	"Access to modify DN \b%dn\B" => "",
+	"Access to write phpQLAdmin configuration in DN %dn%" => "",
+	"Account properties" => "",
+	"Account status" => "",
+	"Actions" => "",
+	"Activate" => "",
+	"Active" => "",
+	"Add %what%" => "",
+	"Add %what% for domain %domain%" => "",
+	"Add %what% to %attribute%" => "",
+	"Add email address to subscription list" => "",
+	"Add to attribute %attribute%" => "",
+	"Additional account properties" => "",
+	"Additional bounce text" => "",
+	"Additional custom text in bounce messages, eg. for providing contact information" => "",
+	"Additional domain name" => "",
+	"Additional quota warning message" => "",
+	"Address" => "",
+	"Administrator DN" => "",
+	"Advanced delivery properties" => "",
+	"Alias" => "",
+	"Allow absolute mailbox paths" => "",
+	"Allow change of LDAP server" => "",
+	"Allow user to administrate Controls information" => "",
+	"Allow user to create domains below %domain%" => "",
+	"Allowed rcpt hosts for host %host%" => "",
+	"Already exists" => "",
+	"Also delete forwards to this alias" => "",
+	"Also delete forwards to users in this domain" => "",
+	"An alias must be unique to the domain" => "",
+	"An email address must be unique in whole domain" => "",
+	"Archive it" => "",
+	"Are you really sure" => "",
+	"Attention: If you deleted a domain, all users within this domain will be deleted too" => "",
+	"Attribute" => "",
+	"Attribute deliveryProgramPath is used if existant, .qmail files are ignored" => "",
+	"Automatic reload of navigation bar" => "",
+	"Automatic replication configured" => "",
+	"Automatically add hostname to domain for replication" => "",
+	"Automatically generate %what%" => "",
+	"Automatically replicate domains to %what%" => "",
+	"Base DN" => "",
+	"Blocked senders" => "",
+	"Both (deliveryProgramPath + .qmail)" => "",
+	"Both LDAP attribute and .qmail files are ignored" => "",
+	"Bouncing source" => "",
+	"Branch DN" => "",
+	"Branch Owner" => "",
+	"Branch base" => "",
+	"Branch configuration" => "",
+	"Branch name" => "",
+	"Branch owner" => "",
+	"Bugtracker" => "",
+	"Built in (loaded)" => "",
+	"Bytes" => "",
+	"CNAME" => "",
+	"Can't find you in the database" => "",
+	"Can't get baseMailDir path from %domain%" => "",
+	"Change %what% for domain %domain%" => "",
+	"Change Bind9 value" => "",
+	"Change alias" => "",
+	"Change attribute %attribute%" => "",
+	"Change common name" => "",
+	"Change dotmode" => "",
+	"Change forwarding address" => "",
+	"Change home directory" => "",
+	"Change login shell" => "",
+	"Change main address" => "",
+	"Change options" => "",
+	"Change path to deliveryprogram" => "",
+	"Change path to mailbox" => "",
+	"Change properties" => "",
+	"Change quota" => "",
+	"Change user data" => "",
+	"Change user data for %user%" => "",
+	"Change username" => "",
+	"Change values of all users" => "",
+	"Change values of all users in this domain" => "",
+	"City" => "",
+	"Click here to start replication manually" => "",
+	"Clustering support" => "",
+	"Common name" => "",
+	"Configuration" => "",
+	"Connection ok, but could not bind to the directory" => "",
+	"Contact person" => "",
+	"Contains" => "",
+	"Continue" => "",
+	"Control Options" => "",
+	"Control directory connection" => "",
+	"Control extension deactivated" => "",
+	"Could not connect to port 389 at %host%, please make sure the service is up and it is not blocked with a firewall" => "",
+	"Could not connect to port 389 at %host%, please make sure the service is up and that it's not blocked with a firewall" => "",
+	"Could not register session variables" => "",
+	"Create DNS template zone file" => "",
+	"Create a DNS zone in branch %domain%" => "",
+	"Create branches" => "",
+	"Create domain" => "",
+	"Create domain %domain%" => "",
+	"Create domain branch in LDAP server %server%" => "",
+	"Create mailserver install script" => "",
+	"Create new alias" => "",
+	"Create new forwarding address" => "",
+	"Create user in domain %domain%" => "",
+	"DN modification access - domain DN's" => "",
+	"DNS Zone" => "",
+	"DNS informations" => "",
+	"DNS zone" => "",
+	"Days" => "",
+	"Default" => "",
+	"Default (taken from ldapDefaultDotMode)" => "",
+	"Default Branch Values" => "",
+	"Default domain" => "",
+	"Default domain for addresses without @" => "",
+	"Default domain name" => "",
+	"Default domain values" => "",
+	"Default domainname" => "",
+	"Default dot mode" => "",
+	"Default homedirectory for users" => "",
+	"Default host" => "",
+	"Default mailbox prefix path" => "",
+	"Default maildirectory for users" => "",
+	"Default password scheme" => "",
+	"Default properties" => "",
+	"Default quota" => "",
+	"Defined SMTP routes" => "",
+	"Defined in %attribute%" => "",
+	"Delay submitting after %value% RCPTO's" => "",
+	"Delete additional domain name" => "",
+	"Delete alias" => "",
+	"Delete all forwards" => "",
+	"Delete attribute" => "",
+	"Delete attribute %attribute% for %domainname%" => "",
+	"Delete host" => "",
+	"Delete it" => "",
+	"Delete list" => "",
+	"Delete mailserver control object" => "",
+	"Delete user" => "",
+	"Deliver locally if ldap didn't match a user" => "",
+	"Delivery mode" => "",
+	"Delivery program" => "",
+	"Delivery program path" => "",
+	"Deliverymode" => "",
+	"Deny user admin access to domain" => "",
+	"Description" => "",
+	"Disable account" => "",
+	"Disable clustering" => "",
+	"Disable local lookup" => "",
+	"Disable rebind" => "",
+	"Disabled" => "",
+	"Disabled, don't rebind, retrieve password (Default)" => "",
+	"Disabled, single ldap server" => "",
+	"Disabled. Don't lookup for local users if ldap lookup didn't match" => "",
+	"Disallow user to administrate Controls information" => "",
+	"Disallow user to create domains below %domain%" => "",
+	"Do auto reply" => "",
+	"Documentation" => "",
+	"Domain" => "",
+	"Domain %domain% successfully created" => "",
+	"Domain administrator" => "",
+	"Domain modification access" => "",
+	"Domain name" => "",
+	"Domain objectclasses" => "",
+	"Domainname" => "",
+	"Domains" => "",
+	"Donate it to another user" => "",
+	"Dot mode" => "",
+	"Dotmode" => "",
+	"Dotonly (only .qmail)" => "",
+	"Echo to console (tricky)" => "",
+	"Edit list owner address" => "",
+	"Email" => "",
+	"Empty field to set to the default value (%default% seconds)" => "",
+	"Enable clustering" => "",
+	"Enable local lookup" => "",
+	"Enable rebind" => "",
+	"Enabled, rebind with retrieved DN, don't retrieve password" => "",
+	"Enabled, use native clustering" => "",
+	"Enabled. Lookup for local users if ldap lookup didn't match" => "",
+	"Encrypted" => "",
+	"Ends with" => "",
+	"Error" => "",
+	"Expire time" => "",
+	"External %what% creation script" => "",
+	"Failed" => "",
+	"Failed adding %domain% to %value% %what%" => "",
+	"Failed running a test connection to %server%" => "",
+	"Failed sending mail" => "",
+	"Failed to add %domain% to %what%" => "",
+	"Failed to change %what%" => "",
+	"Failed to change %what% for domain %domain%" => "",
+	"Failed to change the default domainname" => "",
+	"Failed to create the domain" => "",
+	"Failed to create the new user" => "",
+	"Failed to remove %domain% from %what%" => "",
+	"Failed to remove %value%" => "",
+	"Failed to remove the domain" => "",
+	"Failed to remove user" => "",
+	"Failed to removed alias %mail%" => "",
+	"Failed to replicate %what%" => "",
+	"Failed to set %what%" => "",
+	"Fax number" => "",
+	"Find user" => "",
+	"Find user(s) whose" => "",
+	"Forward" => "",
+	"Forward account" => "",
+	"Forward mails to" => "",
+	"Forwarders from other accounts" => "",
+	"Forwarders from other accounts to this user" => "",
+	"Forwarders to other accounts" => "",
+	"Forwarding account" => "",
+	"Forwarding address" => "",
+	"Give (more) admin rights" => "",
+	"Give admin rights" => "",
+	"Global configuration" => "",
+	"Help text taken from life with qmail-ldap" => "",
+	"Help text taken from qmail man pages" => "",
+	"Home" => "",
+	"Home directory" => "",
+	"Host" => "",
+	"Host address (FQDN)" => "",
+	"Host for bouncing" => "",
+	"Host name for Message-ID's" => "",
+	"Host(s)" => "",
+	"Hostmaster" => "",
+	"Hostname" => "",
+	"Hours" => "",
+	"IP Address" => "",
+	"If all left unset, no replication will take place" => "",
+	"If using {KERBEROS} as password scheme, make sure you include the correct REALM (principal@REALM.TLD)" => "",
+	"If you enter an already encrypted password, you must make sure that the password scheme you've choosen is the correct one. Also, choose the checkbox \uPassword is already encrypted\U" => "",
+	"If you set dotmode to both or ldapwithprog you should add a deliveryprogram too" => "",
+	"Include username in additional domains as alias" => "",
+	"Invalid" => "",
+	"Invalid category" => "",
+	"Invalid domain name! Use: domain.tld (e.g. adfinis.com)" => "",
+	"Is" => "",
+	"Kerberos admin keytab" => "",
+	"Kerberos admin principal" => "",
+	"Kerberos admin server" => "",
+	"Kerberos realm" => "",
+	"LDAP attribute " => "",
+	"LDAP attribute " => "",
+	"LDAP base dn" => "",
+	"LDAP control base dn" => "",
+	"LDAP host" => "",
+	"LDAP server" => "",
+	"LDAP server configuration" => "",
+	"LDAP server connection and setup tests" => "",
+	"LDAP server connection option" => "",
+	"LDAP server contains phpQLAdminBranch objectclass" => "",
+	"LDAP server contains phpQLAdminConfig objectclass" => "",
+	"LDAPOnly (deliveryProgramPath + .qmail ignored for ldap deliveries)" => "",
+	"LDAPWithProg (deliveryProgramPath used, .qmail ignored)" => "",
+	"Language" => "",
+	"Language translator" => "",
+	"Lastname" => "",
+	"Leave the fields empty to set the default values" => "",
+	"Leave the fields empty to use default configuration" => "",
+	"List" => "",
+	"List information" => "",
+	"List owner address" => "",
+	"Local" => "",
+	"Lock POP account" => "",
+	"Locked" => "",
+	"Log out" => "",
+	"Login" => "",
+	"Login (valid dn)" => "",
+	"Login ID" => "",
+	"Login again" => "",
+	"Login shell" => "",
+	"MX Information" => "",
+	"MX Priority" => "",
+	"MX record" => "",
+	"Mail account" => "",
+	"Mail address" => "",
+	"Mail directory" => "",
+	"Mail exchanger" => "",
+	"Mail server" => "",
+	"Mailbox path" => "",
+	"Mailbox properties" => "",
+	"Mailhost" => "",
+	"Mailinglist administrators" => "",
+	"Mails" => "",
+	"Mailserver" => "",
+	"Main address" => "",
+	"Manage Bind 9 DNSSEC domains" => "",
+	"Manage Controls DB" => "",
+	"Manage EZMLM mailinglists" => "",
+	"Max %maxmails% mails" => "",
+	"Max %maxsize% KB" => "",
+	"Max lifetime of a message in queue" => "",
+	"Maximum" => "",
+	"Maximum RCPT TO's" => "",
+	"Maximum allowed mailinglists in domain %domain%" => "",
+	"Maximum allowed users in branch" => "",
+	"Maximum amount of users reached" => "",
+	"Maximum number databytes in message" => "",
+	"Maximum number of RCPT TO's" => "",
+	"Maximum number of mails" => "",
+	"Maximum simultaneous deliveries" => "",
+	"Maximum size of mailbox" => "",
+	"Message" => "",
+	"Minutes" => "",
+	"Missing" => "",
+	"Mobile" => "",
+	"Mode" => "",
+	"Modification access - phpQLAdmin configuration" => "",
+	"Modify %attribute% for %what%" => "",
+	"Modify SOA value" => "",
+	"Modify administrators for %domainname%" => "",
+	"Modify attribute %attribute% for %domainname%" => "",
+	"Modify contact persons for %domain%" => "",
+	"Modify host value" => "",
+	"Months" => "",
+	"Must be above zero" => "",
+	"Name" => "",
+	"Name server" => "",
+	"No" => "",
+	"No address defined" => "",
+	"No default" => "",
+	"No email address given" => "",
+	"No listname defined for list %listnr%" => "",
+	"No local mailbox" => "",
+	"No objectclasses" => "",
+	"No rcpthosts defined" => "",
+	"No routes defined" => "",
+	"No users defined" => "",
+	"No users in this branch" => "",
+	"No users registred" => "",
+	"No zones configure for this branch" => "",
+	"No. Reason:" => "",
+	"None" => "",
+	"None (deliveryProgramPath + .qmail ignored)" => "",
+	"Normal" => "",
+	"Not available" => "",
+	"Not set" => "",
+	"Numbers, letters and the following special chars: @, %, . (dot), _, -.\nIf left out, a username will be created automatically" => "",
+	"Object class violation" => "",
+	"Oid" => "",
+	"Old address" => "",
+	"Old phpQLAdmin schema" => "",
+	"Only forward" => "",
+	"Options" => "",
+	"Organization name" => "",
+	"PHP LDAP extension" => "",
+	"POP locked" => "",
+	"Pager" => "",
+	"Password" => "",
+	"Password encryption scheme" => "",
+	"Password is already encrypted" => "",
+	"Password scheme to use if not specifically specified" => "",
+	"Path" => "",
+	"Path to Kerberos \ukadmin\U command" => "",
+	"Path to homedir creating script" => "",
+	"Path to mailbox" => "",
+	"Personal details" => "",
+	"Please load file" => "",
+	"Please login" => "",
+	"Please select a host" => "",
+	"Plus domain" => "",
+	"Port" => "",
+	"Post box" => "",
+	"Postal address" => "",
+	"Postal code" => "",
+	"Priority" => "",
+	"Profile %type% account includes" => "",
+	"Put user in subbranch" => "",
+	"QMQP servers" => "",
+	"Rebind to LDAP server" => "",
+	"Receiver" => "",
+	"Record" => "",
+	"Reference %what% with" => "",
+	"Refresh time" => "",
+	"Register new user" => "",
+	"Registred addresses" => "",
+	"Registred users" => "",
+	"Rejected local addresses" => "",
+	"Relay host" => "",
+	"Remain" => "",
+	"Remote" => "",
+	"Remote server" => "",
+	"Remove %domain% from %attribute%" => "",
+	"Remove attribute %attribute for user %user%" => "",
+	"Remove attribute %attribute%" => "",
+	"Remove contact person from" => "",
+	"Remove domain" => "",
+	"Remove domain %domain%" => "",
+	"Remove domain administrator" => "",
+	"Remove the domain %domain%" => "",
+	"Remove user %user% from domain %domain%" => "",
+	"Retry time" => "",
+	"Room number" => "",
+	"SMTP connection" => "",
+	"SMTP greeting message" => "",
+	"SMTP routes" => "",
+	"SOA Record" => "",
+	"SOA Value" => "",
+	"SOA value" => "",
+	"SRV" => "",
+	"Save" => "",
+	"Save in local mailbox" => "",
+	"Scheme" => "",
+	"Search Results" => "",
+	"Seconds" => "",
+	"Send an auto reply" => "",
+	"Send quota warnings" => "",
+	"Send testmail" => "",
+	"Serial number" => "",
+	"Server connection options" => "",
+	"Set password" => "",
+	"Set tarpit count to 0 to disable tarpitting" => "",
+	"Set to 0 to allow unlimited message size" => "",
+	"Set, but now shown" => "",
+	"Shell account" => "",
+	"Show configuration" => "",
+	"Show users" => "",
+	"Single valued" => "",
+	"Sorry, no changes have been made to the mailbox. It's not implemented in phpQLAdmin yet" => "",
+	"Source domain" => "",
+	"Standard" => "",
+	"Standard (DNS entry)" => "",
+	"Starts with" => "",
+	"State" => "",
+	"Status" => "",
+	"Street address" => "",
+	"Subscription address" => "",
+	"Substitution for local IP" => "",
+	"Successfully added %domain% to %value %what%" => "",
+	"Successfully added %domain% to %what%" => "",
+	"Successfully changed %what%" => "",
+	"Successfully changed %what% for domain %domain%" => "",
+	"Successfully changed %what% from %old% to %new%" => "",
+	"Successfully changed %what% to %new%" => "",
+	"Successfully created the new user" => "",
+	"Successfully deleted %what%" => "",
+	"Successfully executed the %what% add script" => "",
+	"Successfully removed %domain% from %what%" => "",
+	"Successfully removed %value%" => "",
+	"Successfully removed alias %mail%" => "",
+	"Successfully removed the domain" => "",
+	"Successfully removed user" => "",
+	"Successfully replicated %what%" => "",
+	"Successfully sended mail to %email%" => "",
+	"Surname" => "",
+	"System account" => "",
+	"Taken from 'me'" => "",
+	"Tarpit count" => "",
+	"Tarpit delay" => "",
+	"Tarpitting settings" => "",
+	"Telephone number" => "",
+	"Test LDAP-Connection" => "",
+	"Test connection after submitting form (it will be tested for each server seperatly)" => "",
+	"Text for replying" => "",
+	"Text in bold is a MUST, and non-bold is MAY" => "",
+	"The %what% add script failed" => "",
+	"The DN with the asterisk (*) is the DN where phpQLAdmin configurations are stored. If you add a user to that DN, the user will get 'Super Administration Rights'" => "",
+	"The automatic replication with domain is disabled" => "",
+	"The combination of user and host will return the email address used for bouning messages, e.g. MAILER-DAEMON@mail.host.ch" => "",
+	"The email address and the username will be automatically converted to lowercase" => "",
+	"The hostname %host% could not be resolved" => "",
+	"The qmaildotmode of this user is set to %qmaildotmode%. Please to set it to both or ldapWithProg to get the deliveryprogram running" => "",
+	"The username can only contain numbers, letters and following special characters @, . (dot), _, -. Additionally, the username should be unique in the system" => "",
+	"The username will be created with this as prefix, and a incrementing number after it when automaticly creating a username (uid)" => "",
+	"These are the objectclasses that exists in the LDAP server, exept those that's already included for use" => "",
+	"These must be a valid user ID and group ID for the system which is running qmail-ldap. Setting these to 0 (root) is a bad idea" => "",
+	"This affects LDAP delivery only. It doesn't work for local non-ldap deliveries" => "",
+	"This domain already exists" => "",
+	"This domain isn't registred within the DNS system" => "",
+	"This is a simple test to show if the ldap extension is loaded and that the connections are working. It also does some rudimentary ACL tests" => "",
+	"Time To Live" => "",
+	"Timeouts" => "",
+	"Timeoutsmtpd (How long to wait for SMTP client)" => "",
+	"Title" => "",
+	"To block a whole domain simply leave user empty (eg. @domain.com). To delete a blocked address remove the value and save" => "",
+	"To delete a QMQP server remove the value and save" => "",
+	"To delete a domain, remove the value and save" => "",
+	"To delete an address remove the value and save" => "",
+	"Toggle" => "",
+	"Top branch" => "",
+	"Type" => "",
+	"Unknown attribute %attribute% in %file%" => "",
+	"Unknown attribute value %value% for %attribute%" => "",
+	"Unknown save type %type% in file %file%, function save()" => "",
+	"Unlimited" => "",
+	"Unlimited amount" => "",
+	"Unlimited size" => "",
+	"Use additional message" => "",
+	"Use login and password" => "",
+	"User" => "",
+	"User %user% already exists" => "",
+	"User %user% does not exist" => "",
+	"User DN" => "",
+	"User access" => "",
+	"User data" => "",
+	"User defined" => "",
+	"User directory connection" => "",
+	"User for bouncing" => "",
+	"User objectclasses" => "",
+	"Username" => "",
+	"Username prefix" => "",
+	"Username prefix to use when automaticly creating username in domain %domain%" => "",
+	"Using domain mode (dc separated). Don't use '.' (dots) in domain name" => "",
+	"Using organization layout (o separated)" => "",
+	"Using organizationUnit layout (ou separated). Make sure you're using 'domain.tld' for domain name" => "",
+	"Value" => "",
+	"Value in 'me'" => "",
+	"Wait" => "",
+	"Weeks" => "",
+	"Welcome to \b%whoarewe%\B" => "",
+	"What should we do with forwards to this user" => "",
+	"What should we do with the users mailbox" => "",
+	"What's been done" => "",
+	"What's left todo" => "",
+	"Who are we" => "",
+	"With 'Standard', QmailLDAP will get quotas from its configuration file" => "",
+	"With option DNS, the first MX record of this domain will be taken" => "",
+	"Work" => "",
+	"Yes" => "",
+	"You can add more forwarding address in the user details page" => "",
+	"You have to provide a value to search for" => "",
+	"You have to set both, host and base dn to make qmail-ldap work" => "",
+	"You must select at least one type of quota" => "",
+	"\uA\Udvanced mode" => "",
+	"accountstatus" => "",
+	"additional address" => "",
+	"additional domain" => "",
+	"additional domain name" => "",
+	"alias" => "",
+	"badmailfrom options" => "",
+	"badrcptto options" => "",
+	"bouncing options" => "",
+	"can't autogenerate" => "",
+	"contact person" => "",
+	"contact person for domain" => "",
+	"custombouncetext message" => "",
+	"databytes options" => "",
+	"default domain name" => "",
+	"default homedirectory base" => "",
+	"default maildirectory base" => "",
+	"default password scheme" => "",
+	"default quota" => "",
+	"default values" => "",
+	"delivery mode" => "",
+	"dirmaker" => "",
+	"dirmaker options" => "",
+	"domain" => "",
+	"domain administrator" => "",
+	"domain administrator for domain" => "",
+	"domain branch" => "",
+	"domain objectClass" => "",
+	"domain to branch" => "",
+	"domain to locals in following objects" => "",
+	"domain to rcpthosts in following objects" => "",
+	"domains" => "",
+	"dot mode" => "",
+	"double bouncing options" => "",
+	"email address" => "",
+	"envnoathost options" => "",
+	"envnotathost options" => "",
+	"forward" => "",
+	"forward only, no local mailbox" => "",
+	"forwarding address" => "",
+	"helohost options" => "",
+	"host" => "",
+	"idhost options" => "",
+	"ldapcluster options" => "",
+	"ldapdefaultdotmode options" => "",
+	"ldaplocaldelivery options" => "",
+	"ldaprebind options" => "",
+	"ldapserver options" => "",
+	"local delivery holded" => "",
+	"local mailbox, POP account" => "",
+	"localiphost options" => "",
+	"locals" => "",
+	"login shell" => "",
+	"loginshell, homedirectory" => "",
+	"loginshell, homedirectory, no mail etc" => "",
+	"mail" => "",
+	"mailbox path" => "",
+	"mailbox path " => "",
+	"mailinglist administrator" => "",
+	"mailinglist administrator for domain" => "",
+	"mailserver" => "",
+	"main address" => "",
+	"maximum allowed mailinglists" => "",
+	"maximum allowed users" => "",
+	"maxrcptcount options" => "",
+	"more servers" => "",
+	"number to be used for forwarding accounts" => "",
+	"only .qmail" => "",
+	"password" => "",
+	"password encryption scheme" => "",
+	"path" => "",
+	"percenthack options" => "",
+	"phpQLAdmin configuration" => "",
+	"phpQLAdmin ldap connection" => "",
+	"qmqpservers options" => "",
+	"queuelifetime options" => "",
+	"quota" => "",
+	"quotawarning message" => "",
+	"rcpthosts" => "",
+	"relaymailfrom options" => "",
+	"remote delivery holded" => "",
+	"remote timeout options" => "",
+	"server not responding or invalid name" => "",
+	"shell" => "",
+	"smtpgreeting options" => "",
+	"smtproutes options" => "",
+	"subscriber" => "",
+	"successfully changed %what%" => "",
+	"system" => "",
+	"tarpitting options" => "",
+	"timeoutsmtpd options" => "",
+	"to all hosts" => "",
+	"user" => "",
+	"user objectClass" => "",
+	"username" => "",
+	"username prefix" => "",
+	"users" => "",
+	"virtual user options" => "",
+	"virtual user settings" => "",
+	"xxx options" => "",
+	"" => "",
+);
 
 /*
  * Local variables:

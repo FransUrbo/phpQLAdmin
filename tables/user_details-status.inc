@@ -5,7 +5,7 @@
 ?>
   <!-- accountstatus -->
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="2" align="left"><?php echo PQL_LANG_ACCOUNTSTATUS_TITLE; ?></th>
+    <th colspan="2" align="left"><?=$LANG->_('Account status')?></th>
       <tr class="<?php table_bgcolor(); ?>">
 	<td><?=$status?></td>
       </tr>
@@ -13,9 +13,9 @@
 <?php if(!$SINGLE_USER) { ?>
       <tr class="subtitle">
         <td>
-          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=accountstatus&user=<?=$userdn?>&set=active&view=<?=$view?>"><?php echo PQL_LANG_ACCOUNTSTATUS_CHANGE_ACTIVE; ?></a>
-	| <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=accountstatus&user=<?=$userdn?>&set=nopop&view=<?=$view?>"><?php echo PQL_LANG_ACCOUNTSTATUS_CHANGE_NOPOP; ?></a>
-	| <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=accountstatus&user=<?=$userdn?>&set=disabled&view=<?=$view?>"><?php echo PQL_LANG_ACCOUNTSTATUS_CHANGE_DISABLE; ?></a>
+          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=accountstatus&user=<?=$userdn?>&set=active&view=<?=$view?>"><?=$LANG->_('Activate')?></a>
+	| <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=accountstatus&user=<?=$userdn?>&set=nopop&view=<?=$view?>"><?=$LANG->_('Lock POP account')?></a>
+	| <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=accountstatus&user=<?=$userdn?>&set=disabled&view=<?=$view?>"><?=$LANG->_('Disable account')?></a>
 	</td>
       </tr>
 <?php } ?>

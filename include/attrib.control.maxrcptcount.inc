@@ -2,20 +2,20 @@
 // control attribute plugin for
 // maxrcptcount (maximum number of RCPT TO's)
 //
-// $Id: attrib.control.maxrcptcount.inc,v 2.7 2003-05-28 07:23:37 turbo Exp $
+// $Id: attrib.control.maxrcptcount.inc,v 2.8 2003-07-02 07:59:00 turbo Exp $
 
 function maxrcptcount_check($type) {
-	global $error, $maxrcptcount, $view;
+	global $error, $maxrcptcount, $view, $LANG;
 
 	// missing
-	if($maxrcptcount == ""){
-		$error["maxrcptcount"] = PQL_LANG_MISSING;
+	if($maxrcptcount == "") {
+		$error["maxrcptcount"] = $LANG->_('Missing');
 		return false;
 	}
 
 	// number ?
-	if(preg_match ("/[^0-9]/", $maxrcptcount)){
-		$error["maxrcptcount"] = PQL_LANG_INVALID;
+	if(preg_match ("/[^0-9]/", $maxrcptcount)) {
+		$error["maxrcptcount"] = $LANG->_('Invalid');
 		return false;
 	}
 
@@ -31,47 +31,44 @@ function maxrcptcount_init($host) {
 									   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 									   "maxrcptcount");
 
-	if(!is_null($value)){
-		$maxrcptcount = $value[0];
-	}
+	if(!is_null($value))
+	  $maxrcptcount = $value[0];
 }
 
 function maxrcptcount_print_view($host) {
-	global $_pql_control, $maxrcptcount, $view;
+	global $_pql_control, $maxrcptcount, $view, $LANG;
 
 	// init data
 	maxrcptcount_init($host);
 
 	// set empty field to "not set"
-	if($maxrcptcount == "" or $maxrcptcount == 0){
-		$maxrcptcount = "unlimited";
- 	}
+	if($maxrcptcount == "" or $maxrcptcount == 0)
+	  $maxrcptcount = "unlimited";
 ?>
 
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left">maxrcptcount (Maximum number of RCPT TO's)</th>
+    <th colspan="3" align="left">maxrcptcount (<?=$LANG->_('Maximum number of RCPT TO\'s')?>)</th>
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title">Max RCPT TO's</td>
+        <td class="title"><?=$LANG->_('Maximum RCPT TO\'s')?></td>
         <td><?=$maxrcptcount?></td>
       </tr>
 
       <tr class="subtitle">
-        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=maxrcptcount"><img src="images/edit.png" width="12" height="12" border="0">Change options</a></td>
+        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=maxrcptcount"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
       </tr>
     </th>
   </table>
-
 <?php
 }
 
 function maxrcptcount_print_form() {
-	global $attrib, $maxrcptcount, $PHP_SELF, $error, $mxhost, $view;
+	global $attrib, $maxrcptcount, $PHP_SELF, $error, $mxhost, $view, $LANG;
 ?>
   <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">maxrcptcount (Maximum number of RCPT TO's)</th>
+      <th colspan="3" align="left">maxrcptcount (<?=$LANG->_('Maximum number of RCPT TO\'s')?>)</th>
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title">Max RCPT TO's</td>
+          <td class="title"><?=$LANG->_('Maximum RCPT TO\'s')?></td>
           <td><?php echo format_error($error["maxrcptcount"]); ?><input type="text" name="maxrcptcount" value="<?=$maxrcptcount?>"></td>
         </tr>
 
@@ -86,42 +83,40 @@ function maxrcptcount_print_form() {
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
     <input type="hidden" name="view" value="<?=$view?>">
     <br>
-    <input type="submit" value="<?=PQL_LANG_SAVE?>">
+    <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
-
 <?php
 }
-
+// '
 function maxrcptcount_save($type, $host) {
-	global $_pql_control, $attrib, $maxrcptcount, $error, $view;
+	global $_pql_control, $attrib, $maxrcptcount, $error, $view, $LANG;
 
-	// recontrol values
-	if(!maxrcptcount_check($type)){
- 		return false;
-	}
-
-	switch($type){
+	switch($type) {
 		case "modify";
 		case "add";
 			// save entries
 			if(pql_control_replace_attribute($_pql_control->ldap_linkid,
 											 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
-											 "maxrcptcount", $maxrcptcount)){
-				$msg = "Successfully saved maxrcptcount options";
-			} else {
-				$msg = "Failed saving maxrcptcount: " . pql_ldap_error($_pql_control->ldap_linkid);
-			}
+											 "maxrcptcount", $maxrcptcount))
+			  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+										   array('what' => $LANG->_('maxrcptcount options')));
+			else
+			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+										   array('what' => $LANG->_('maxrcptcount options')))
+				. ": " . pql_ldap_error($_pql_control->ldap_linkid);
 
 			attribute_forward($msg);
 			break;
+
 		default:
-			die("unknown save type $type in " . __FILE__ . ", function save()");
+		  die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
+									array('type' => $type, 'file' => __FILE__)));
 	}
 }
-/*
- * Local variables:
- * mode: php
- * mode: font-lock
- * tab-width: 4
- * End:
- */
+
+// Local variables:
+// mode: php
+// mode: font-lock
+// tab-width: 4
+// End:
+?>

@@ -1,22 +1,22 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.20 2003-06-25 07:07:01 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.21 2003-07-02 07:59:00 turbo Exp $
 
 require("./left-head.html");
 
 function attribute_check() {
-    global $$attrib, $domain, $oldvalue, $_pql, $error, $$attrib;
+    global $$attrib, $domain, $oldvalue, $_pql, $error, $$attrib, $LANG;
 	$value = $$attrib;
     
     // is typed in ?
     if($value == "") {
-		$error[$attrib] = PQL_LANG_MISSING;
+		$error[$attrib] = $LANG->_('Missing');
 		return false;
     }
     
     // don't use ".."
     if(preg_match("/(\.){2,}/", $value)) {
-		$error[$attrib] = PQL_LANG_INVALID;
+		$error[$attrib] = $LANG->_('Invalid');
 		return false;
     }
     
@@ -24,34 +24,34 @@ function attribute_check() {
 }
 
 function attribute_print_form($action) {
-    global $$attrib, $domain, $rootdn, $PHP_SELF, $attrib, $oldvalue, $error, $_pql, $user, $view;
+    global $$attrib, $domain, $rootdn, $PHP_SELF, $attrib, $oldvalue, $error, $_pql, $user, $view, $LANG;
 	global $orgname;
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
 <?php if($attrib == 'seealso') { ?>
-      <th colspan="3" align="left">Add contact person for domain <?=$orgname?></th>
+      <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what% for domain %domain%'), array('what' => $LANG->_('contact person'), 'domain' => $orgname)); ?></th>
 <?php } elseif($attrib == 'ezmlmadministrator') { ?>
-      <th colspan="3" align="left">Add mailinglist administrator for domain <?=$orgname?></th>
+      <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what% for domain %domain%'), array('what' => $LANG->_('mailinglist administrator'), 'domain' => $orgname)); ?></th>
 <?php } else { ?>
-      <th colspan="3" align="left"><?php echo PQL_LANG_DOMAIN_ADMIN_ADD . $orgname; ?></th>
+      <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what% for domain %domain%'), array('what' => $LANG->_('domain administrator'), 'domain' => $orgname)); ?></th>
 <?php } ?>
         <tr class="<?php table_bgcolor(); ?>">
 <?php
 	if(($attrib == 'administrator') and $rootdn and $domain) {
 		// We're should give a user access to THIS branch
 ?>
-          <td class="title"><?=PQL_LANG_DOMAIN_ADMIN_CHANGE?></td>
+          <td class="title"><?=$LANG->_('Administrator DN')?></td>
 <?php
 	} elseif((($attrib == 'administrator') or ($attrib == 'ezmlmadministrator'))
 			 and !$rootdn and !$domain and $user) {
 		// We're giving a user access to ('random') branch
 ?>
-          <td class="title">Branch DN</td>
+          <td class="title"><?=$LANG->_('Branch DN')?></td>
 <?php
 	} else {
 ?>
-          <td class="title">User</td>
+          <td class="title"><?=$LANG->_('User')?></td>
 <?php
 	}
 ?>
@@ -165,8 +165,7 @@ function attribute_print_form($action) {
         <tr class="<?php table_bgcolor(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
           <td>
-            The DN with the asterisk (*) is the DN where phpQLAdmin configurations are stored.
-            If you add a user to that DN, the user will get 'Super Administration Rights'!
+            <?=$LANG->_('The DN with the asterisk (*) is the DN where phpQLAdmin configurations are stored. If you add a user to that DN, the user will get \'Super Administration Rights\'')?>!
           </td>
         </tr>
 <?php } ?>
@@ -186,13 +185,13 @@ function attribute_print_form($action) {
     <input type="hidden" name="oldvalue"      value="<?=$$attrib?>">
     <input type="hidden" name="view"          value="<?=$view?>">
     <br>
-    <input type="submit" value="<?=PQL_LANG_SAVE?>">
+    <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
 <?php
 }
 
 function attribute_save($type) {
-    global $domain, $rootdn, $attrib, $oldvalue, $$attrib, $_pql, $user, $view;
+    global $domain, $rootdn, $attrib, $oldvalue, $$attrib, $_pql, $user, $view, $LANG;
 	$value = $$attrib;
 
     switch($type) {
@@ -201,7 +200,7 @@ function attribute_save($type) {
       case "delete":
 		if($value and $oldvalue and ($value == $oldvalue)) {
 			// don't change if new value equal to old one
-			$msg = PQL_LANG_DOMAIN_ADMIN_UNCHANGED;
+			$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('Domain administrator')));
 			attribute_forward($msg);
 			break;
     	}
@@ -265,38 +264,30 @@ function attribute_save($type) {
 			  $success = 1;
 		}
 
-		if($success) {
-			if($type == 'add')
-			  $msg = pql_complete_constant(PQL_LANG_DOMAIN_ADMIN_ADD_OK, array("value" => $value));
-			elseif($type == 'delete')
-			  $msg = pql_complete_constant(PQL_LANG_DOMAIN_ADMIN_DELETE_OK, array("value" => $value));
-			else
-			  $msg = pql_complete_constant(PQL_LANG_DOMAIN_ADMIN_CHANGE_OK, array("value" => $value));
-		} else {
-			if($type == 'add')
-			  $msg = PQL_LANG_DOMAIN_ADMIN_ADD_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
-			elseif($type == 'delete')
-			  $msg = PQL_LANG_DOMAIN_ADMIN_DELETE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
-			else
-			  $msg = PQL_LANG_DOMAIN_ADMIN_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
-		}
+		if($success)
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+									   array('what' => $LANG->_('Domain administrator')));
+		else
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+									   array('what' => $LANG->_('Domain administrator')))
+			. ": " . ldap_error($_pql->ldap_linkid);
 		
 		attribute_forward($msg);
 		break;
 
       default:
-		die("unknown save type $type in " . __FILE__ . ", function save()");
+		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
+								  array('type' => $type, 'file' => __FILE__)));
     }
 }
 
 if(($attrib == 'administrator') or ($attrib == 'seealso') or ($attrib == 'ezmlmadministrator')) {
 	require("./left-trailer.html");
 }
-/*
- * Local variables:
- * mode: php
- * mode: font-lock
- * tab-width: 4
- * End:
- */
+
+// Local variables:
+// mode: php
+// mode: font-lock
+// tab-width: 4
+// End:
 ?>

@@ -1,14 +1,14 @@
 <?php
 // Attribute plugin for
 // usernamePrefix
-// $Id: attrib.usernameprefix.inc,v 2.2 2003-06-25 07:07:02 turbo Exp $
+// $Id: attrib.usernameprefix.inc,v 2.3 2003-07-02 07:59:01 turbo Exp $
 
 function attribute_check($type = '') {
-	global $error, $attrib, $$attrib;
+	global $error, $attrib, $$attrib, $LANG;
 
     // is typed in ?
     if($attrib == "") {
-		$error[$attrib] = PQL_LANG_MISSING;
+		$error[$attrib] = $LANG->_('Missing');
 		return false;
     }
     
@@ -16,13 +16,13 @@ function attribute_check($type = '') {
 }
 
 function attribute_print_form($type = "modify") {
-	global $error, $attrib, $$attrib, $domain, $rootdn, $view, $orgname;
+	global $error, $attrib, $$attrib, $domain, $rootdn, $view, $orgname, $LANG;
 ?>
-  <form action="<?php echo $PHP_SELF ?>" method="post">
+  <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">Username prefix to use when automaticly creating username in domain <?=$orgname?></th>
+      <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Username prefix to use when automaticly creating username in domain %domain%'), array('domain' => $orgname)); ?></th>
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title">Username prefix</td>
+          <td class="title"><?=$LANG->_('Username prefix')?></td>
           <td>
             <?php echo format_error($error[$attrib]); ?>
             <input type="text" name="<?=$attrib?>" value="<?=$$attrib?>" size="50">
@@ -34,8 +34,7 @@ function attribute_print_form($type = "modify") {
           <td>
             <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
             <table>
-              The username will be created with this as prefix, and a incrementing number after
-			  it when automaticly creating a username (uid)
+              <?=$LANG->_('The username will be created with this as prefix, and a incrementing number after it when automaticly creating a username (uid)')?>
             </table>
           </td>
         </tr>
@@ -48,40 +47,41 @@ function attribute_print_form($type = "modify") {
     <input type="hidden" name="rootdn" value="<?=$rootdn?>">
     <input type="hidden" name="view"   value="<?=$view?>">
     <br>
-    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
+    <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
 <?php
 }
 
 function attribute_save($type) {
-	global $error, $attrib, $$attrib, $domain, $rootdn, $type, $_pql, $view;
+	global $error, $attrib, $$attrib, $domain, $rootdn, $type, $_pql, $view, $LANG;
 	
     switch($type) {
       case "add":
       case "modify":
 	  case "delete":
-		if($type == 'delete') {
-			$$attrib = '';
-		}
+		if($type == 'delete')
+		  $$attrib = '';
 
 		if(pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, $$attrib))
-		  $msg = 'Successfully changed username prefix for domain';
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
+									   array('what' => $LANG->_('username prefix'),
+											 'new'  => $$attrib));
 		else
-		  $msg = 'Failed to set/change username prefix for domain: &nbsp;'.ldap_error($_pql->ldap_linkid);
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+									   array('what' => $LANG->_('username prefix'))) . ": ".ldap_error($_pql->ldap_linkid);
 	
 		attribute_forward($msg);
 		break;
 		
       default:
-		die("unknown save type $type in " . __FILE__ . ", function save()");
+		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
+								  array('type' => $type, 'file' => __FILE__)));
     }
 }
 
-/*
- * Local variables:
- * mode: php
- * mode: font-lock
- * tab-width: 4
- * End:
- */
+// Local variables:
+// mode: php
+// mode: font-lock
+// tab-width: 4
+// End:
 ?>

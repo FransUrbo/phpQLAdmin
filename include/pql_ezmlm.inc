@@ -3,7 +3,7 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ezmlm.inc,v 1.18 2003-06-25 07:07:02 turbo Exp $
+// $Id: pql_ezmlm.inc,v 1.19 2003-07-02 07:59:01 turbo Exp $
 session_start();
 
 class ezmlm {
@@ -285,8 +285,8 @@ class ezmlm {
 			//chown($files[$i], $uidnr);
 		}
 
-		putenv("PQL_LANG_USERGROUP=$uidnr.".posix_getuid());
-		putenv("PQL_CONF_DIRECTORY=".$directory);
+		putenv("PQL_USERGROUP=$uidnr.".posix_getuid());
+		putenv("PQL_DIRECTORY=".$directory);
 		pql_execute('./sub_ezmlm_create.pl', 1);
 	}
 

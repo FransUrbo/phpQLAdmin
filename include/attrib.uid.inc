@@ -1,52 +1,51 @@
 <?php
 // attribute plugin for
 // uid (user id)
-// $Id: attrib.uid.inc,v 2.9 2003-06-25 07:07:02 turbo Exp $
+// $Id: attrib.uid.inc,v 2.10 2003-07-02 07:59:01 turbo Exp $
 
 function attribute_check($type){
-	global $uid, $oldvalue, $_pql, $error, $domain;
+	global $uid, $oldvalue, $_pql, $error, $domain, $LANG;
 	
 	// is typed in ?
-	if($uid == ""){
-		$error["mail"] = PQL_LANG_MISSING;
+	if($uid == "") {
+		$error["mail"] = $LANG->_('Missing');
 		return false;
 	}
 	
 	// valid
-	if(preg_match("/[^a-z0-9\.@_-]/i",$uid)){
-		$error["uid"] = PQL_LANG_INVALID;
+	if(preg_match("/[^a-z0-9\.@_-]/i",$uid)) {
+		$error["uid"] = $LANG->_('Invalid')
 		return false;
 	}
 	
 	// if type is modify, check existance of old value, else the new one
 	if($oldvalue != $uid and pql_search_attribute($_pql->ldap_linkid, $domain, "uid", $uid)) {
-		$error["uid"] = PQL_LANG_EXISTS;
+		$error["uid"] = $LANG->_('Already exists');
 		return false;
 	}
 	
 	return true;
 }
 
-function attribute_init(){
+function attribute_init() {
 	global $uid, $oldvalue;
-	
 	$uid = $oldvalue;
 }
 
-function attribute_print_form(){
-	global $uid, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $view;
+function attribute_print_form() {
+	global $uid, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $view, $LANG;
 ?>
-  <form action="<?php echo $PHP_SELF ?>" method="post">
+  <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?php echo PQL_LANG_UID_CHANGE; ?></th>
+      <th colspan="3" align="left"><?=$LANG->_('Change username')?></th>
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_LANG_UID_TITLE; ?></td>
-          <td><?php echo format_error($error["uid"]); ?><input type="text" name="uid" value="<?php echo $uid; ?>"></td>
+          <td class="title"><?=$LANG->_('Username')?></td>
+          <td><?php echo format_error($error["uid"]); ?><input type="text" name="uid" value="<?=$uid?>"></td>
         </tr>
 
         <tr class="subtitle">
           <td colspan="2">
-            <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?php echo PQL_LANG_UID_HELP; ?>
+            <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?=$LANG->_('The username can only contain numbers, letters and following special characters @, . (dot), _, -. Additionally, the username should be unique in the system')?>
           </td>
         </tr>
       </th>
@@ -60,37 +59,40 @@ function attribute_print_form(){
     <input type="hidden" name="user"     value="<?=$user?>">
     <input type="hidden" name="view"     value="<?=$view?>">
     <br>
-    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
+    <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
 
 <?php
 }
 
-function attribute_save($type){
-	global $domain, $user, $attrib, $oldvalue, $uid, $_pql, $view;
+function attribute_save($type) {
+	global $domain, $user, $attrib, $oldvalue, $uid, $_pql, $view, $LANG;
 	
 	// recontrol values
-	if(!attribute_check($type)){
- 		return false;
-	}
+	if(!attribute_check($type))
+	  return false;
 	
-	switch($type){
+	switch($type) {
 	  case "add":
 		// no add operation possible with uid
 		break;
 
 	  case "modify";
-		if($uid == $oldvalue){
+		if($uid == $oldvalue) {
 			// don't change if new value equal to old one
-			$msg = PQL_LANG_UID_UNCHANGED;
+			$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('Username')));
 			attribute_forward($msg);
 			break;
     	}
 		
-		if(pql_replace_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_UID"), $uid)){
-			$msg = pql_complete_constant(PQL_LANG_UID_CHANGE_OK, array("old" => $oldvalue, "new" => $uid));
+		if(pql_replace_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_UID"), $uid)) {
+			$msg = pql_complete_constant($LANG->_('Successfully changed %what% from %old% to %new%'),
+										 array('what' => $LANG->_('username'),
+											   'old'  => $oldvalue,
+											   'new'  => $uid));
 		} else {
-			$msg = PQL_LANG_UID_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
+			$msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+										 array('what' => $LANG->_('username'))) . ": " . pql_ldap_error($_pql->ldap_linkid);
 		}
 		
 		// We use the uid to reference users and it has just changed...
@@ -105,15 +107,14 @@ function attribute_save($type){
 		break;
 
 	  default:
-		die("unknown save type $type in " . __FILE__ . ", function save()");
+		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
+								  array('type' => $type, 'file' => __FILE__)));
 	}
 }
 
-/*
- * Local variables:
- * mode: php
- * mode: font-lock
- * tab-width: 4
- * End:
- */
+// Local variables:
+// mode: php
+// mode: font-lock
+// tab-width: 4
+// End:
 ?>

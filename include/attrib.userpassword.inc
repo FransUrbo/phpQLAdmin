@@ -1,14 +1,14 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.13 2003-06-25 07:07:02 turbo Exp $
+// $Id: attrib.userpassword.inc,v 2.14 2003-07-02 07:59:01 turbo Exp $
 
-function attribute_check($type){
-	global $userpassword, $userpassword_check, $error, $pwscheme;
+function attribute_check($type) {
+	global $userpassword, $userpassword_check, $error, $pwscheme, $LANG;
 
 	// is typed in ?
-	if($userpassword == ""){
-		$error["userpassword"] = PQL_LANG_MISSING;
+	if($userpassword == "") {
+		$error["userpassword"] = $LANG->_('Missing');
 		return false;
   	}
 	
@@ -16,7 +16,7 @@ function attribute_check($type){
 	// password validity if it ISN'T a kerberos scheme...
 	if(!eregi('KERBEROS', $pwscheme)) {
 		if(preg_match("/[^a-z0-9]/i", $userpassword)){
-			$error["userpassword"] = PQL_LANG_INVALID;
+			$error["userpassword"] = $LANG->_('Invalid');
 			return false;
 		}
 	}
@@ -24,23 +24,23 @@ function attribute_check($type){
 	return true;
 }
 
-function attribute_init(){
+function attribute_init() {
 	// dummy function
 }
 
-function attribute_print_form(){
-	global $domain, $user, $PHP_SELF, $attrib, $error, $rootdn, $pwscheme, $view, $_pql;
+function attribute_print_form() {
+	global $domain, $user, $PHP_SELF, $attrib, $error, $rootdn, $pwscheme, $view, $_pql, $LANG;
 
 	// Get the default password scheme for branch
 	$defaultpasswordscheme = pql_get_domain_value($_pql, $domain, "defaultpasswordscheme");
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?php echo PQL_LANG_USERPASSWORD_NEW; ?></th>
+      <th colspan="3" align="left"><?=$LANG->_('Set password')?></th>
 <?php if(!$defaultpasswordscheme or $GLOBALS["ADVANCED_MODE"]) { ?>
         <!-- Password schema -->
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title">Password scheme</td>
+          <td class="title"><?=$LANG->_('Password encryption scheme')?></td>
           <td>
             <?php echo format_error($error["pwscheme"]); ?>
 <?php	if(eregi(',', pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn))) {
@@ -54,7 +54,7 @@ function attribute_print_form(){
 <?php			}
 			}
 	  	} else { ?>
-            Scheme: <b>{<?php echo pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn); ?>}</b>
+            <?=$LANG->_('Scheme')?>: <b>{<?php echo pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn); ?>}</b>
             <input type="hidden" name="pwscheme" value="<?php echo pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn)?>">
 <?php 	} ?>
           </td>
@@ -65,7 +65,7 @@ function attribute_print_form(){
 
         <!-- Password -->
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title"><?php echo PQL_LANG_USERPASSWORD_TITLE; ?></td>
+          <td class="title"><?=$LANG->_('Password')?></td>
           <td>
             <?php echo format_error($error["userpassword"]) . "\n"; ?>
             <!-- Ugly hack. Should realy have type=password here, but what's the use. Really!? -->
@@ -78,7 +78,7 @@ function attribute_print_form(){
           <td>
             <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
             <table>
-              <?php echo PQL_LANG_USERPASSWORD_HELP; ?>
+              <?=$LANG->_('A password can only contain numbers and letters, special characters are not allowed')?>
             </table>
           </td>
         </tr>
@@ -91,49 +91,44 @@ function attribute_print_form(){
     <input type="hidden" name="rootdn" value="<?=$rootdn?>">
     <input type="hidden" name="user"   value="<?=$user?>">
     <input type="hidden" name="view"   value="<?=$view?>">
-    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
+    <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
 <?php
 }
-
+// '
 function attribute_save($type) {
-	global $domain, $user, $attrib, $userpassword, $_pql, $pwscheme, $view;
-
-	// recontrol values
-	if(!attribute_check($type)) {
- 		return false;
-	}
+	global $domain, $user, $attrib, $userpassword, $_pql, $pwscheme, $view, $LANG;
 
 	switch($type) {
-		case "add":
-			// no add function for userpassword
-			break;
+	  case "add":
+		// no add function for userpassword
+		break;
+		
+	  case "modify";
+		$pw = pql_password_hash($userpassword, $pwscheme);
+		
+		if(pql_replace_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_PASSWD"), $pw)) {
+			$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+										 array('what' => $LANG->_('password')));
 
-  		case "modify";
-				$pw = pql_password_hash($userpassword, $pwscheme);
-
-				if(pql_replace_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_PASSWD"), $pw)) {
-					$msg = PQL_LANG_USERPASSWORD_CHANGE_OK;
-					if($user == $GLOBALS["USER_DN"])
-					    $GLOBALS["USER_PASS"] = $userpassword;
-				} else {
-					$msg = PQL_LANG_USERPASSWORD_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
-				}
-
-				attribute_forward($msg);
-  			break;
-
-			default:
-			  die("unknown save type $type in " . __FILE__ . ", function save()");
+			if($user == $GLOBALS["USER_DN"])
+			  $GLOBALS["USER_PASS"] = $userpassword;
+		} else
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+									   array('what' => $LANG->_('password'))) . ": " . pql_ldap_error($_pql->ldap_linkid);
+		
+		attribute_forward($msg);
+		break;
+		
+	  default:
+		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
+								  array('type' => $type, 'file' => __FILE__)));
 	}
-
 }
 
-/*
- * Local variables:
- * mode: php
- * mode: font-lock
- * tab-width: 4
- * End:
- */
+// Local variables:
+// mode: php
+// mode: font-lock
+// tab-width: 4
+// End:
 ?>

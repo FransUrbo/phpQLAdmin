@@ -1,20 +1,20 @@
 <?php
 // attribute plugin for
 // mailforwardingaddress (forward all mails to this address)
-// $Id: attrib.mailforwardingaddress.inc,v 2.10 2003-06-25 07:07:02 turbo Exp $
+// $Id: attrib.mailforwardingaddress.inc,v 2.11 2003-07-02 07:59:00 turbo Exp $
 
-function attribute_check($type){
-	global $mailforwardingaddress, $error;
+function attribute_check($type) {
+	global $mailforwardingaddress, $error, $LANG;
 
 	// is typed in ?
-	if($mailforwardingaddress == ""){
-		$error["mailforwardingaddress"] = PQL_LANG_MISSING;
+	if($mailforwardingaddress == "") {
+		$error["mailforwardingaddress"] = $LANG->_('Missing');
 		return false;
   	}
 
 	// valid
-	if(!check_email($mailforwardingaddress)){
-		$error["mailforwardingaddress"] = PQL_LANG_INVALID;
+	if(!check_email($mailforwardingaddress)) {
+		$error["mailforwardingaddress"] = $LANG->_('Invalid');
 		return false;
 	}
 
@@ -22,29 +22,29 @@ function attribute_check($type){
 	return true;
 }
 
-function attribute_init(){
+function attribute_init() {
 	// dummy function
 }
 
-function attribute_print_form(){
-	global $mailforwardingaddress, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $view;
+function attribute_print_form() {
+	global $mailforwardingaddress, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error, $view, $LANG;
 ?>
-  <form action="<?php echo $PHP_SELF ?>" method="post">
+  <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">
-        <?php if($oldvalue == ""){echo PQL_LANG_MAILFORWARDINGADDRESS_NEW;}else{echo PQL_LANG_MAILFORWARDINGADDRESS_CHANGE;} ?>
+        <?php if($oldvalue == ""){echo $LANG->_('Create new forwarding address');}else{echo $LANG->_('Change forwarding address');} ?>
       </th>
 <?php
 	// We're changing a MailForwardingAddress. Give the old as reference
 	if($oldvalue != "") {
 		echo "<tr class=\"c2\">";
-		echo "  <td class=\"title\">Old address</td>";
+		echo "  <td class=\"title\">".$LANG->_('Old address')."</td>";
 		echo "  <td>" . $mailforwardingaddress . "</td>";
 		echo "</tr>";
 	}
 ?>
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title"><?php echo PQL_LANG_EMAIL; ?></td>
+        <td class="title"><?=$LANG->_('Email')?></td>
         <td>
           <?php echo format_error($error["mailforwardingaddress"]); ?><input type="text" name="mailforwardingaddress" value="">
         </td>
@@ -59,59 +59,59 @@ function attribute_print_form(){
     <input type="hidden" name="user"     value="<?=$user?>">
     <input type="hidden" name="view"     value="<?=$view?>">
     <br>
-    <input type="submit" value="<?=PQL_LANG_SAVE?>">
+    <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
 
 <?php
 }
-
+// '
 function attribute_save($type) {
-	global $domain, $user, $attrib, $oldvalue, $view;
+	global $domain, $user, $attrib, $oldvalue, $view, $LANG;
 	global $mailforwardingaddress, $_pql;
 
-	// recontrol values
-	if(!attribute_check($type)){
- 		return false;
-	}
-	
-	switch($type){
+	switch($type) {
 	  case "add":
-		if(pql_modify_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_FORWARDS"), '', $mailforwardingaddress)) {
-			$msg = pql_complete_constant(PQL_LANG_MAILFORWARDINGADDRESS_ADD_OK, array("mail" => $mailforwardingaddress));
-		} else {
-			$msg = PQL_LANG_MAILFORWARDINGADDRESS_ADD_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
-		}
+		if(pql_modify_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_FORWARDS"),
+									'', $mailforwardingaddress))
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
+									   array('what' => $LANG->_('forwarding address'),
+											 'new'  => $mailforwardingaddress));
+		else
+		  $msg = pql_complete_constant($LANG->_('Failed to set %what%'),
+									   array('what' => $LANG->_('forwarding address'))) . ": " . pql_ldap_error($_pql->ldap_linkid);
 		
 		attribute_forward($msg);
 		break;
+
 	  case "modify";
 		$email = $mailforwardingaddress;
 		
-		if($email == $oldvalue){
+		if($email == $oldvalue) {
 			// don't change if new value equal to old one
-			$msg = PQL_LANG_MAILFORWARDINGADDRESS_UNCHANGED;
+			$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('forwarding address')));
 			attribute_forward($msg);
 			break;
     	}
 		
-		if(pql_modify_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_FORWARDS"), $oldvalue, $email)) {
-			$msg = pql_complete_constant(PQL_LANG_MAILFORWARDINGADDRESS_CHANGE_OK, array("old" => $oldvalue, "new" => $email));
-		} else {
-			$msg = PQL_LANG_MAILFORWARDINGADDRESS_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
-		}
+		if(pql_modify_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_FORWARDS"), $oldvalue, $email))
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
+									   array('what' => $LANG->_('forwarding address'),
+											 'new'  => $email));
+		else
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+									   array('what' => $LANG->_('forwarding address'))) . ": " . pql_ldap_error($_pql->ldap_linkid);
 		
 		attribute_forward($msg);
 		break;
 	  default:
-		die("unknown save type $type in " . __FILE__ . ", function save()");
+		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
+								  array('type' => $type, 'file' => __FILE__)));
 	}
 }
 
-/*
- * Local variables:
- * mode: php
- * mode: font-lock
- * tab-width: 4
- * End:
- */
+// Local variables:
+// mode: php
+// mode: font-lock
+// tab-width: 4
+// End:
 ?>

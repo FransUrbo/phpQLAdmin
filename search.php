@@ -9,7 +9,7 @@ require("./include/pql_search.inc");
 include("./header.html");
 
 // print status message, if one is available
-if(isset($msg)){
+if(isset($msg)) {
     print_status_msg($msg);
 }
 
@@ -25,7 +25,7 @@ if(isset($rlnb) and pql_get_define("PQL_GLOB_AUTO_RELOAD")) {
 <?php
 }
 ?>
-  <span class="title1"><?php echo PQL_LANG_SEARCH_TITLE2; ?></span>
+  <span class="title1"><?=$LANG->_('Search Results')?></span>
   <br><br>
 
 <?php
@@ -34,7 +34,7 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 // test for submission of variables
 if ($attribute == "" || $filter_type == "" || $search_string == "") {
     // invalid form submission
-    $msg = urlencode("You have to provide a value to search");
+    $msg = urlencode($LANG->_('You have to provide a value to search for'));
     header("Location: " . pql_get_define("PQL_GLOB_URI") . "home.php?msg=$msg");
     exit();
 }
@@ -62,18 +62,18 @@ foreach($_pql->ldap_basedn as $dn) {
 }
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="4" align="left"><?php echo PQL_LANG_USER_REGISTRED ?> (<?php echo sizeof($users); ?>)</th>
+    <th colspan="4" align="left"><?=$LANG->_('Registred users')?>: (<?php echo sizeof($users); ?>)</th>
 <?php if(is_array($users)) { ?>
       <tr>
-        <td class="title"><?php echo PQL_LANG_USER ?></td>
-        <td class="title"><?php echo PQL_LANG_USER_ID ?></td>
-        <td class="title"><?php echo PQL_LANG_EMAIL ?></td>
-        <td class="title"><?php echo PQL_LANG_ACCOUNTSTATUS_STATUS ?></td>
-        <td class="title"><?php echo PQL_LANG_OPTIONS ?></td>
+        <td class="title"><?=$LANG->_('User')?></td>
+        <td class="title"><?=$LANG->_('Username')?></td>
+        <td class="title"><?=$LANG->_('Email')?></td>
+        <td class="title"><?=$LANG->_('Status')?></td>
+        <td class="title"><?=$LANG->_('Options')?></td>
       </tr>
 <?php
   asort($users);
-  foreach($users as $user){
+  foreach($users as $user) {
       $uid  = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_UID"));  $uid  = $uid[0];
       $cn   = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_CN"));   $cn   = $cn[0];
       $mail = pql_get_userattribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_MAIL")); $mail = $mail[0];
@@ -88,9 +88,9 @@ foreach($_pql->ldap_basedn as $dn) {
         <td><?=$mail?></td>
         <td><?=$status?></td>
         <td>
-          <a href="user_detail.php?domain=<?php echo $domain ?>&user=<?php echo urlencode($user)?>"><img src="images/edit.png" width="12" height="12" alt="<?php echo PQL_LANG_USER_EDIT ?>" border="0"></a>
+          <a href="user_detail.php?domain=<?php echo $domain ?>&user=<?php echo urlencode($user)?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change user data')?>" border="0"></a>
           &nbsp;
-          <a href="user_del.php?domain=<?php echo $domain;?>&user=<?php echo urlencode($user); ?>"><img src="images/del.png" width="12" height="12" alt="<?php echo PQL_LANG_USER_DELETE ?>" border="0"></a>
+          <a href="user_del.php?domain=<?php echo $domain;?>&user=<?php echo urlencode($user); ?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete user')?>" border="0"></a>
         </td>
       </tr>
 <?php
@@ -99,7 +99,7 @@ foreach($_pql->ldap_basedn as $dn) {
     // no users registred
 ?>
       <tr class="<?php table_bgcolor(); ?>">
-        <td colspan="5"><?php echo PQL_LANG_USER_NONE ?></td>
+        <td colspan="5"><?=$LANG->_('No users registred')?></td>
       </tr>
 <?php
 }

@@ -8,19 +8,19 @@ require("./include/pql_control.inc");
 
 include("./header.html");
 ?>
-  <span class="title1"><?php echo pql_complete_constant(PQL_LANG_DOMAIN_DEL_TITLE, array("domain" => $domain))?></span>
+  <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove the domain %domain%'), array("domain" => $domain))?></span>
 <?php
-	if($ok != 1){
+	if($ok != 1) {
 ?>
 <br>
 <br>
 <img src="images/info.png" width="16" height="16" border="0">
-<?php echo PQL_LANG_DOMAIN_DEL_WARNING; ?>
+<?=$LANG->_('Attention: If you deleted a domain, all users within this domain will be deleted too')?>!
 <br>
 <br>
-<?php echo PQL_LANG_SURE; ?>
+<?=$LANG->_('Are you really sure')?>?
 <br>
-<a href="domain_del.php?domain=<?php echo $domain; ?>&unit=<?php echo $unit; ?>&ok=1"><?php echo PQL_LANG_YES; ?></a>, <a href="javascript:history.back()"><?php echo PQL_LANG_NO; ?></a>
+<a href="domain_del.php?domain=<?=$domain?>&unit=<?=$unit?>&ok=1"><?=$LANG->_('Yes')?></a>, <a href="javascript:history.back()"><?=$LANG->_('No')?></a>
 <br>
 <?php
   } else {
@@ -28,18 +28,18 @@ include("./header.html");
       $_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
 
       // delete the unit 
-      if(pql_remove_unit($_pql->ldap_linkid, $domain, $unit)){
+      if(pql_remove_unit($_pql->ldap_linkid, $domain, $unit)) {
 	  // update locals if control patch is enabled
 	  if(pql_control_update_domains($_pql, $USER_SEARCH_DN_CTR)) {
 	      // message ??
 	  }
 	  
 	  // redirect to home page
-	  $msg = PQL_LANG_DOMAIN_DEL_OK;
+	  $msg = $LANG->_('Successfully removed the domain');
 	  $msg = urlencode($msg);
 	  header("Location: home.php?msg=$msg&rlnb=1");
       } else {
-	  $msg = PQL_LANG_DOMAIN_DEL_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+	  $msg = $LANG->_('Failed to remove the domain') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	  // redirect to domain detail page
 	  $msg = urlencode($msg);
 	  header("Location: domain_detail.php?domain=$domain&unit=$unit&msg=$msg");

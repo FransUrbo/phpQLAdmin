@@ -13,29 +13,30 @@ $_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
 $control_plugins = pql_control_plugin_get_catplugins($cat);
 
 // valid category ??
-if(!is_array($control_plugins)){
-	die("invalid category !!");
+if(!is_array($control_plugins)) {
+	die($LANG->_('Invalid category')."!");
 }
 
 // include each defined plugin
-foreach($control_plugins as $plugin){
+foreach($control_plugins as $plugin) {
 	include("./include/".pql_control_plugin_get_filename($plugin));
 }
 
 include("./header.html");
 
 // print status message, if one is available
-if(isset($msg)){
+if(isset($msg)) {
     print_status_msg($msg);
 }
 ?>
-  <span class="title1"><?php echo $cat; ?></span>
+  <span class="title1"><?=$cat?></span>
   <br><br>
 <?php
 // call print_view functions for each plugin
-foreach($control_plugins as $plugin_name){
+foreach($control_plugins as $plugin_name) {
     $func = $plugin_name . "_print_view";
-    if(function_exists($func)){
+
+    if(function_exists($func)) {
 		call_user_func($func, $mxhost);
 		echo "<br><br>";
     }

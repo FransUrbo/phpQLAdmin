@@ -19,7 +19,7 @@ if(!$username[0]) {
 $username = $username[0];
 
 // forward back to users detail page
-function attribute_forward($msg, $rlnb = false){
+function attribute_forward($msg, $rlnb = false) {
     global $domain, $user;
     
     $url = "user_detail.php?domain=$domain&user=".urlencode($user)."&view=$view&msg=".urlencode($msg);
@@ -30,7 +30,7 @@ function attribute_forward($msg, $rlnb = false){
 }
 
 // select which attribute have to be included
-switch($attrib){
+switch($attrib) {
   case "mailalternateaddress":
     $include = "attrib.mailalternateaddress.inc";
     break;
@@ -101,7 +101,7 @@ switch($attrib){
 include("./include/".$include);
 include("./header.html");
 ?>
-  <span class="title1"><?php echo PQL_LANG_USER_EDIT; ?> for <?=$username?></span>
+  <span class="title1"><?php echo pql_complete_constant($LANG->_('Change user data for %user%'), array('user' => $username)); ?></span>
   <br><br>
 <?php
 // select what to do

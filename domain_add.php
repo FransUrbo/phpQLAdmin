@@ -8,7 +8,7 @@ require("./include/pql_control.inc");
 
 include("./header.html");
 ?>
-  <span class="title1"><?=PQL_LANG_DOMAIN_ADD?>: <?=$domain?></span>
+  <span class="title1"><?=$LANG->_('Create domain')?>: <?=$domain?></span>
   <br><br>
 <?php
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
@@ -28,14 +28,14 @@ if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $rootdn) == "dc" or
 
 // check if domain is valid
 //if(!check_hostaddress($domain, $force_dot)) {
-//	$msg = urlencode(PQL_LANG_DOMAIN_INVALID);
+//	$msg = urlencode($LANG->_('Invalid domain name! Use: domain.tld (e.g. adfinis.com)'));
 //	header("Location: " . pql_get_define("PQL_GLOB_URI") . "home.php?msg=$msg");
 //	exit();
 //}
 
 // check if domain exist
 if(pql_domain_exist($_pql, $domain, $rootdn)) {
-	$msg = urlencode(PQL_LANG_DOMAIN_EXISTS);
+	$msg = urlencode($LANG->_('This domain already exists'));
 	header("Location: " . pql_get_define("PQL_GLOB_URI") . "home.php?msg=$msg");
 	exit();
 }
@@ -66,31 +66,31 @@ if($dns[0]) {
 	if($defaultdomain && !pql_set_domain_value($_pql->ldap_linkid,
 											   $dns[0], 'defaultDomain',
 											   $defaultdomain))
-	  $msg = PQL_LANG_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+	  $msg = $LANG->_('Failed to change the default domainname') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	
 	// Save the attributes - Default home directory
 	if($defaulthomedir && !pql_set_domain_value($_pql->ldap_linkid,
 												$dns[0], 'baseHomeDir',
 												$defaulthomedir))
-	  $msg = PQL_LANG_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+	  $msg = $LANG->_('Failed to change the default domainname') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	
 	// Save the attributes - Default mail directory
 	if($defaultmaildir && !pql_set_domain_value($_pql->ldap_linkid,
 												$dns[0], 'baseMailDir',
 												$defaultmaildir))
-	  $msg = PQL_LANG_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+	  $msg = $LANG->_('Failed to change the default domainname') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	
 	// Save the attributes - Default quota
 	if($defaultquota && !pql_set_domain_value($_pql->ldap_linkid, $dns[0], 'baseQuota', $defaultquota))
-	  $msg = PQL_LANG_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+	  $msg = $LANG->_('Failed to change the default domainname') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	
 	// The creator is by default the administrator
 	if(! pql_set_domain_value($_pql->ldap_linkid, $dns[0], 'administrator', $USER_DN))
-	  $msg = PQL_LANG_DOMAIN_DEFAULT_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+	  $msg = $LANG->_('Failed to change the default domainname') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 
 	// redirect to domain-details
 	if($msg == "")
-	  $msg = urlencode(pql_complete_constant(PQL_LANG_DOMAIN_ADD_OK, array("domain" => $dns[0])));
+	  $msg = urlencode(pql_complete_constant($LANG->_('Domain %domain% successfully created'), array("domain" => $dns[0]))) . ".";
 	$url = "domain_detail.php?rootdn=$rootdn&domain=$dns[0]&msg=$msg&rlnb=1";
 
 	// Now it's time to run the special adduser script if defined...
@@ -105,18 +105,22 @@ if($dns[0]) {
 		
 		// Execute the domain add script (0 => show output)
 		if(pql_execute(pql_get_define("PQL_CONF_SCRIPT_CREATE_DOMAIN", $rootdn), 0)) {
-			echo PQL_LANG_DOMAIN_ADD_SCRIPT_FAILED;
-			$msg .= " " . urlencode(PQL_LANG_DOMAIN_ADD_SCRIPT_FAILED);
+			echo pql_complete_constant($LANG->_('The %what% add script failed'),
+									   array('what' => $LANG->_('domain'))) . "!";
+			$msg .= " " . urlencode(pql_complete_constant($LANG->_('The %what% add script failed'),
+														  array('what' => $LANG->_('domain'))) . "!");
 		} else {
-			echo "<b>" . PQL_LANG_DOMAIN_ADD_SCRIPT_OK . "</b><br>";
-			$msg .= " " . urlencode(PQL_LANG_DOMAIN_ADD_SCRIPT_OK);
+			echo "<b>" . pql_complete_constant($LANG->_('Successfully executed the %what% add script'),
+											   array('what' => $LANG->_('domain'))) . "</b><br>";
+			$msg .= " " . urlencode(pql_complete_constant($LANG->_('Successfully executed the %what% add script'),
+														  array('what' => $LANG->_('domain'))));
 		}
 
 		$url = "domain_detail.php?rootdn=$rootdn&domain=$dns[0]&";
 ?>
 
     <form action="<?=$url?>&msg=<?=$msg?>&rlnb=1" method="post">
-      <input type="submit" value="Continue">
+      <input type="submit" value="<?=$LANG->_('Continue')?>">
     </form>
 <?php
 
@@ -124,7 +128,7 @@ if($dns[0]) {
 	} else
 	  header("Location: " . pql_get_define("PQL_GLOB_URI") . $url);
 } else {
-	$msg = urlencode(PQL_LANG_DOMAIN_ADD_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid));
+	$msg = urlencode($LANG->_('Failed to create the domain') . ":&nbsp;" . ldap_error($_pql->ldap_linkid));
 	header("Location: " . pql_get_define("PQL_GLOB_URI") . "home.php?msg=$msg");
 }
 ?>

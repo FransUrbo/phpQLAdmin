@@ -16,7 +16,7 @@ if($_pql->ldap_error) {
     session_unregister("USER_PASS");
     session_unregister("USER_DN");
 
-    die("$_pql->ldap_error<br><a href=\"index.php\" target=\"_top\">Login again</a>");
+    die("$_pql->ldap_error<br><a href=\"index.php\" target=\"_top\">".$LANG->_('Login again')."</a>");
 }
 
 // find out if we're to run in ADVANCE/SIMPLE mode
@@ -33,31 +33,31 @@ if($advanced == 1) {
 }
 ?>
   <font color="black" class="heada">
-    <?=PQL_LANG_USER?>: <b><a href="user_detail.php?user=<?=$USER_DN?>"><?=$USER_ID?></a></b>
+    <?=$LANG->_('User')?>: <b><a href="user_detail.php?user=<?=$USER_DN?>"><?=$USER_ID?></a></b>
   </font>
   <br>
 <?php if($ADVANCED_MODE) {
 	$host = split(';', $USER_HOST);
 ?>
 
-  <font color="black" class="heada">Host: <b><?=$host[0]?>:<?=$host[1]?></b></font>
+  <font color="black" class="heada"><?=$LANG->_('Host')?>: <b><?=$host[0]?>:<?=$host[1]?></b></font>
   <br>
 <?php } ?>
 
   <font color="black" class="heada">
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <a href="index.php?logout=1" target="_parent"><?=PQL_LANG_LOGOUT?></a>
+    <a href="index.php?logout=1" target="_parent"><?=$LANG->_('Log out')?></a>
   </font>
 
   <br>
 
   <form method=post action="index2.php" target="_top">
-    <input type="checkbox" name="advanced" accesskey="a" onChange="this.form.submit()"<?=$checked?>><u>A</u>dvanced mode
+    <input type="checkbox" name="advanced" accesskey="a" onChange="this.form.submit()"<?=$checked?>><?=$LANG->_('\uA\Udvanced mode')?>
   </form>
 <?php if($ALLOW_BRANCH_CREATE and $ADVANCED_MODE) { ?>
 
   <div id="el2Parent" class="parent">
-    <nobr><a href="domain_add_form.php?rootdn=<?=$_pql->ldap_basedn[0]?>">Add domain branch</a></nobr>
+    <nobr><a href="domain_add_form.php?rootdn=<?=$_pql->ldap_basedn[0]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain branch'))); ?></a></nobr>
   </div>
 <?php  } ?>
 
@@ -68,23 +68,24 @@ if($advanced == 1) {
     </a>
 
     <a class="item" href="home.php">
-      <font color="black" class="heada"><b>Home</b></font>
+      <font color="black" class="heada"><b><?=$LANG->_('Home')?></b></font>
     </a>
   </div>
 
   <div id="el1Child" class="child">
-    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="user_search.php">Find user</a></nobr><br>
+    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="user_search.php"><?=$LANG->_('Find user')?></a></nobr><br>
 <?php if($ADVANCED_MODE) { ?>
 <?php	if($ALLOW_BRANCH_CREATE) { ?>
-    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="config_detail.php">Show configuration</a></nobr><br>
-    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="config_ldaptest.php"><?php echo PQL_LANG_TEST_LDAP; ?></a></nobr><br>
-    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="config_ldap.php">LDAP server configuration</a></nobr><br>
+    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="config_detail.php"><?=$LANG->_('Show configuration')?></a></nobr><br>
+    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="config_ldaptest.php"><?=$LANG->_('Test LDAP-Connection')?></a></nobr><br>
+    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="config_ldap.php"><?=$LANG->_('LDAP server configuration')?></a></nobr><br>
 <?php	} ?>
-    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="doc/index.php"><?=PQL_LANG_DOCUMENTATION?></a></nobr><br>
-    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="TODO">What's left todo</a></nobr><br>
-    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="CHANGES">What's been done</a></nobr><br>
+    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="doc/index.php"><?=$LANG->_('Documentation')?></a></nobr><br>
+    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="TODO"><?=$LANG->_('What\'s left todo')?></a></nobr><br>
+    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="CHANGES"><?=$LANG->_('What\'s been done')?></a></nobr><br>
+    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="update_translations.php" target="_new"><?=$LANG->_('Language translator')?></a></nobr><br>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://phpqladmin.bayour.com/">phpqladmin.bayour.com</a></nobr><br>
-    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://papadoc.bayour.com:23000/anthill/" target="_new">Bugtracker</a></nobr><br>
+    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://papadoc.bayour.com:23000/anthill/" target="_new"><?=$LANG->_('Bugtracker')?></a></nobr><br>
 <?php } ?>
   </div>
   <!-- HOME -->
@@ -171,15 +172,15 @@ if(!isset($domains)) {
 	      // no user available for this domain
 ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
-      <img src="images/mail_small.png" border="0" alt="no user defined">&nbsp;
-      <a href="user_add.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>">no user(s)</a>
+      <img src="images/mail_small.png" border="0" alt="<?=$LANG->_('No users defined')?>">&nbsp;
+      <a href="user_add.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>"><?=$LANG->_('No users defined')?></a>
     </nobr>
 
     <br>
 
 <?php	  } else { ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
-      <a href="user_add.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>">Add a user</a>
+      <a href="user_add.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('user'))); ?></a>
     </nobr>
 
     <br>

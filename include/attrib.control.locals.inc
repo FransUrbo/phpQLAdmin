@@ -2,29 +2,27 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.18 2003-06-25 07:07:02 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.19 2003-07-02 07:59:00 turbo Exp $
 
-function locals_check($type){
-    global $error, $locals, $rootdn, $domain, $view;
+function locals_check($type) {
+    global $error, $locals, $rootdn, $domain, $view, $LANG;
     
     // check validity
-    if(is_array($locals)){
-		foreach($locals as $key => $host){
-			if($host == ""){
-				continue;
-			}
+    if(is_array($locals)) {
+		foreach($locals as $key => $host) {
+			if($host == "")
+			  continue;
 			
-			if(!check_hostaddress($host)){
-				$error["locals_$key"] = PQL_LANG_INVALID;
+			if(!check_hostaddress($host)) {
+				$error["locals_$key"] = $LANG->_('Invalid');
 				$is_error = true;
 			}
 			
 		} // end foreach
     } // end if is_array
 	
-    if($is_error){
-		return false;
-    }
+    if($is_error)
+	  return false;
     
     return true;
 }
@@ -43,24 +41,24 @@ function locals_init($host) {
 }
 
 function locals_print_view($host) {
-    global $_pql_control, $locals, $view;
+    global $_pql_control, $locals, $view, $LANG;
     
     // init data
     locals_init($host);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th align="left">locals (Defined locals) for host <u><?=$host?></u></th>
-      <tr class="title"><td>Domain</td></tr>
+      <tr class="title"><td><?=$LANG->_('Domain')?></td></tr>
 <?php
-    if(!is_array($locals)){
+    if(!is_array($locals)) {
 ?>
-      <tr class="<?php table_bgcolor(); ?>"><td>no locals defined</td></tr>
+      <tr class="<?php table_bgcolor(); ?>"><td><?=$LANG->_('Not set')?></td></tr>
 <?php
     } else {
 		asort($locals);
-		foreach($locals as $localdomain){
+		foreach($locals as $localdomain) {
 ?>
-      <tr class="<?php table_bgcolor(); ?>"><td><?php echo $localdomain; ?></td></tr>
+      <tr class="<?php table_bgcolor(); ?>"><td><?=$localdomain?></td></tr>
 <?php
         } // end foreach
     } // end if is_array
@@ -68,7 +66,7 @@ function locals_print_view($host) {
     if(pql_get_define("PQL_GLOB_CONTROL_AUTOADDLOCALS")) {
 ?>
       <tr class="subtitle">
-        <td><a href="control_edit_attribute.php?attrib=locals&type=replicate&mxhost=<?=$host?>&submit=1"><img src="images/edit.png" width="12" height="12" border="0" alt="replicate">Click here to start replication manually</a></td>
+        <td><a href="control_edit_attribute.php?attrib=locals&type=replicate&mxhost=<?=$host?>&submit=1"><img src="images/edit.png" width="12" height="12" border="0" alt="replicate"><?=$LANG->_('Click here to start replication manually')?></a></td>
       </tr>
 
       <br>
@@ -87,16 +85,16 @@ function locals_print_view($host) {
     } else {
   ?>
       <tr class="subtitle">
-        <td><a href="control_edit_attribute.php?attrib=locals&mxhost=<?=$host?>"><img src="images/edit.png" width="12" height="12" border="0"> change options</a> (The automatic replication with domain is disabled)</td>
+        <td><a href="control_edit_attribute.php?attrib=locals&mxhost=<?=$host?>"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a> (<?=$LANG->_('The automatic replication with domain is disabled')?>)</td>
       </tr>
     </th>
-	<?php }	?>
+<?php }	?>
   </table>
-  <?php
+<?php
 }
 
-function locals_print_form(){
-    global $attrib, $PHP_SELF, $error, $locals, $mxhost, $view;
+function locals_print_form() {
+    global $attrib, $PHP_SELF, $error, $locals, $mxhost, $view, $LANG;
     
     // if automatic replication is enabled, don't display form
 // BUG?
@@ -104,9 +102,9 @@ function locals_print_form(){
 //		return false;
 //    }
 ?>
-  <form action="<?php echo $PHP_SELF ?>" method="post">
+  <form action="<?=$PHP_SELF?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">Add domain:</th>
+      <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain'))); ?></th>
         <tr class="<?php table_bgcolor(); ?>">
           <td><input type="text" name="set" size="30"></td>
         </tr>
@@ -114,17 +112,17 @@ function locals_print_form(){
     </table>
 
     <input type="hidden" name="submit" value="1">
-    <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
+    <input type="hidden" name="attrib" value="<?=$attrib?>">
     <input type="hidden" name="mxhost" value="<?=$mxhost?>">
     <input type="hidden" name="view" value="<?=$view?>">
     <br>
-    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
+    <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
 <?php
 }
 
-function locals_save($type, $host){
-    global $_pql, $_pql_control, $attrib, $locals, $set, $error, $rootdn, $domain, $mxhost, $view;
+function locals_save($type, $host) {
+    global $_pql, $_pql_control, $attrib, $locals, $set, $error, $rootdn, $domain, $mxhost, $view, $LANG;
 
 	if($mxhost)
 	  $host = $mxhost;
@@ -136,9 +134,11 @@ function locals_save($type, $host){
 		// start replication manually
 
 		if(pql_control_update_domains($_pql_control, "cn=$host,".$GLOBALS["USER_SEARCH_DN_CTR"], $host, '', 'locals'))
-		  $msg = "Successfully replicated locals";
+		  $msg = pql_complete_constant($LANG->_('Successfully replicated %what%'),
+									   array('what' => 'locals'));
 		else
-		  $msg = "Failed replicating locals: " . pql_ldap_error($_pql_control->ldap_linkid);
+		  $msg = pql_complete_constant($LANG->_('Failed to replicate %what%'),
+									   array('what' => 'locals')) . ": " . pql_ldap_error($_pql_control->ldap_linkid);
 	
 		attribute_forward($msg);
 		break;
@@ -147,9 +147,13 @@ function locals_save($type, $host){
 		// remove specified domain from locals, redirect back to host details
 		if(pql_control_update_domains($_pql_control, $GLOBALS["USER_SEARCH_DN_CTR"],
 									  $host, array($set, ''), "locals"))
-		  $msg = "Successfully removed $set from locals";
+		  $msg = pql_complete_constant($LANG->_('Successfully removed %domain% from %what%'),
+									   array('what'   => 'locals',
+											 'domain' => $set));
 		else
-		  $msg = "Failed removing $set from locals: " . pql_ldap_error($_pql_control->ldap_linkid);
+		  $msg = pql_complete_constant($LANG->_('Failed to remove %domain% from %what%'),
+									   array('what'   => 'locals',
+											 'domain' => $set)) . ": " . pql_ldap_error($_pql_control->ldap_linkid);
 		
 		attribute_forward($msg);
 		break;
@@ -168,19 +172,24 @@ function locals_save($type, $host){
 		}
 
 		if($success)
-		  $msg = "Successfully added $set to locals";
+		  $msg = pql_complete_constant($LANG->_('Successfully added %domain% to %what%'),
+									   array('what' => 'locals', 'domain' => $set));
 		else
-		  $msg = "Failed adding $set to locals: " . pql_ldap_error($_pql_control->ldap_linkid);
+		  $msg = pql_complete_constant($LANG->_('Failed to add %domain% to %what%'),
+									   array('what' => 'locals', 'domain' => $set))
+			. ": " . pql_ldap_error($_pql_control->ldap_linkid);
 		
 		attribute_forward($msg);
 		break;
 
       default:
-		die("unknown save type $type in " . __FILE__ . ", function save()");
+		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
+								  array('type' => $type, 'file' => __FILE__)));
     }
 }
 
-function locals_help(){
+function locals_help() {
+	global $LANG;
 ?>
 List of domain names that the current host receives
 mail for, one per line.  Default:  me, if that is
@@ -190,16 +199,14 @@ listed in locals.
 <?php
 }
 
-function locals_help_cr(){
-?>
-	help text taken from qmail man pages
-<?php
-/*
- * Local variables:
- * mode: php
- * mode: font-lock
- * tab-width: 4
- * End:
- */
+function locals_help_cr() {
+	global $LANG;
+	echo $LANG->_('Help text taken from qmail man pages');
 }
 
+// Local variables:
+// mode: php
+// mode: font-lock
+// tab-width: 4
+// End:
+?>

@@ -1,14 +1,14 @@
 <?php
 // Attribute plugin for
 // maximumDomainUsers
-// $Id: attrib.maximumdomainusers.inc,v 2.6 2003-06-25 07:07:02 turbo Exp $
+// $Id: attrib.maximumdomainusers.inc,v 2.7 2003-07-02 07:59:01 turbo Exp $
 
 function attribute_check($type = '') {
-	global $error, $attrib, $$attrib;
+	global $error, $attrib, $$attrib, $LANG;
 
     // is typed in ?
     if($attrib == "") {
-		$error[$attrib] = PQL_LANG_MISSING;
+		$error[$attrib] = $LANG->_('Missing');
 		return false;
     }
     
@@ -16,13 +16,13 @@ function attribute_check($type = '') {
 }
 
 function attribute_print_form($type = "modify") {
-	global $error, $attrib, $$attrib, $domain, $rootdn, $view, $orgname;
+	global $error, $attrib, $$attrib, $domain, $rootdn, $view, $orgname, $LANG;
 ?>
   <form action="<?php echo $PHP_SELF ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">Maximum allowed users in domain <?=$orgname?></th>
+      <th colspan="3" align="left"><?=$LANG->_('Maximum allowed users in branch')?></th>
         <tr class="<?php table_bgcolor(); ?>">
-          <td class="title">Maximum allowed users</td>
+          <td class="title"><?=$LANG->_('Maximum allowed users in branch')?></td>
           <td>
             <?php echo format_error($error[$attrib]); ?>
             <input type="text" name="<?=$attrib?>" value="<?=$$attrib?>" size="50">
@@ -34,7 +34,7 @@ function attribute_print_form($type = "modify") {
           <td>
             <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
             <table>
-              A limit of 0 (zero) means unlimited accounts.
+              <?=$LANG->_('A limit of 0 (zero) means unlimited accounts')?>.
             </table>
           </td>
         </tr>
@@ -47,13 +47,13 @@ function attribute_print_form($type = "modify") {
     <input type="hidden" name="rootdn" value="<?=$rootdn?>">
     <input type="hidden" name="view"   value="<?=$view?>">
     <br>
-    <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
+    <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
 <?php
 }
 
 function attribute_save($type) {
-	global $error, $attrib, $$attrib, $domain, $rootdn, $type, $_pql, $view;
+	global $error, $attrib, $$attrib, $domain, $rootdn, $type, $_pql, $view, $LANG;
 	
     switch($type) {
       case "add":
@@ -64,23 +64,26 @@ function attribute_save($type) {
 		}
 
 		if(pql_set_domain_value($_pql->ldap_linkid, $domain, $attrib, $$attrib))
-		  $msg = 'Successfully changed maximum allowed users for domain';
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% for domain %domain%'),
+									   array('what'   => $LANG->_('maximum allowed users'),
+											 'domain' => $domain));
 		else
-		  $msg = 'Failed to set/change maximum allowed users for domain: &nbsp;'.ldap_error($_pql->ldap_linkid);
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what% for domain %domain%'),
+									   array('what'   => $LANG->_('maximum allowed users'),
+											 'domain' => $domain)) . ": " . ldap_error($_pql->ldap_linkid);
 	
 		attribute_forward($msg);
 		break;
 		
       default:
-		die("unknown save type $type in " . __FILE__ . ", function save()");
+		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
+								  array('type' => $type, 'file' => __FILE__)));
     }
 }
 
-/*
- * Local variables:
- * mode: php
- * mode: font-lock
- * tab-width: 4
- * End:
- */
+// Local variables:
+// mode: php
+// mode: font-lock
+// tab-width: 4
+// End:
 ?>
