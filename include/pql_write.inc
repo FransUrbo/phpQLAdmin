@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.10 2004-11-14 09:42:33 turbo Exp $
+// $Id: pql_write.inc,v 2.10.4.1 2004-11-19 08:46:08 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -50,6 +50,7 @@ function pql_write_add($linkid, $dn, $entry, $type, $caller) {
 // {{{ pql_write_mod(linkid, dn, entry, caller)
 // MODIFY an object - called with an 'ldif' for modification.
 function pql_write_mod($linkid, $dn, $entry, $caller = NULL, $count = 0) {
+	$dn = urldecode($dn);
 	$count++;
 
 	// Create a LDIF object to print in case of error
