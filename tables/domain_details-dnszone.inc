@@ -228,6 +228,11 @@
       <tr class="<?php pql_format_table(); ?>">
         <td><a href="bind9_add.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&action=add&type=domain&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('DNS zone'))); ?></a></td>
       </tr>
+<?php if($dns_domain_name) { ?>
+      <tr class="<?php pql_format_table(); ?>">
+        <td><a href="bind9_del.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&dns_domain_name=<?=$dns_domain_name?>&action=del&type=domain&view=<?=$view?>"><?php echo pql_complete_constant($LANG->_('Remove this %what%'), array('what' => $LANG->_('DNS zone'))); ?></a></td>
+      </tr>
+<?php } ?>
     </th>
   </table>
 
