@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.95.10.3 2004-05-05 13:13:35 turbo Exp $
+// $Id: user_add.php,v 2.95.10.3.2.1 2004-05-08 08:49:22 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -305,7 +305,6 @@ switch($_REQUEST["page_curr"]) {
 			}
 		} else {
 			// Can't autogenerate!
-			$error = true;
 			$error_text["maildirectory"] = pql_complete_constant($LANG->_('Attribute <u>%what%</u> is missing. Can\'t autogenerate %type%.'),
 																 array('what' => pql_get_define("PQL_ATTR_BASEMAILDIR"), 
 																	   'type' => 'Path to mailbox'));
@@ -337,7 +336,6 @@ switch($_REQUEST["page_curr"]) {
 			}
 		} else {
 			// Can't autogenerate!
-			$error = true;
 			$error_text["homedirectory"] = pql_complete_constant($LANG->_('Attribute <u>%what%</u> is missing. Can\'t autogenerate %type%'),
 																 array('what' => pql_get_define("PQL_ATTR_BASEHOMEDIR"), 
 																	   'type' => 'Path to homedirectory'));
