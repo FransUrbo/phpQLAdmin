@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.16.4.2.2.1 2004-04-13 09:56:36 turbo Exp $
+// $Id: user_add-save.inc,v 1.16.4.2.2.2 2004-04-29 06:31:54 turbo Exp $
 
 // Find out what objectclasses to use when creating user
 $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"]));
@@ -177,7 +177,10 @@ if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "mai
 		  $entry[pql_get_define("PQL_ATTR_MAILHOST")]   = $_REQUEST["userhost"];
 	}
 	
-	$entry[pql_get_define("PQL_ATTR_MODE")] = "localdelivery";
+	if(!$_SESSION["NEW_STYLE_QUOTA"])
+	  // The new QmailLDAP have a changed 'deliveryMode' setup.
+	  // Don't add this automaticly.
+	  $entry[pql_get_define("PQL_ATTR_MODE")] = "localdelivery";
 	
 	if(!$_REQUEST["maildirectory"])
 	  $entry[pql_get_define("PQL_ATTR_MAILSTORE")] = user_generate_mailstore($_pql, $_REQUEST["email"],
