@@ -1,5 +1,9 @@
 phpQLAdmin 2.0 Change Log
 
+phpQLAdmin 2.0.18c TO BE ANNOUNCED
+	Bug fixes
+	  - 
+
 phpQLAdmin 2.0.18b Release (Apr  6 2004)
 	Bug fixes
 	  - New config option - PQL_CONF_USE_TLS (true/false) which have to be true
