@@ -270,6 +270,9 @@ should your user objects have? What objectclasses should your
 domain/branch objects have etc... This require knowledge on how LDAP
 works!
 
+Also look at the file README.virtual for some more examples and notes
+on schema issues.
+
 
 Administrator login
 ~~~~~~~~~~~~~~~~~~~
