@@ -1,8 +1,10 @@
 phpqladmin (2.0.18-1) unstable; urgency=low
 
   * New release. IDNA encoding and smaller bugfixes.
+  * Add japanese po-debconf template - patch by Hideki Yamane.
+    Closes: #222286
 
- -- Turbo Fredriksson <turbo@debian.org>  Thu, 13 Nov 2003 15:36:12 +0100
+ -- Turbo Fredriksson <turbo@debian.org>  Mon,  8 Dec 2003 07:53:48 +0100
 
 phpqladmin (2.0.17-1) unstable; urgency=low
 
