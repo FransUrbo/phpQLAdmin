@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliveryprogrampath (path to program running on delivery)
-// $Id: attrib.deliveryprogrampath.inc,v 2.1 2002-12-17 12:24:35 turbo Exp $
+// $Id: attrib.deliveryprogrampath.inc,v 2.2 2002-12-18 16:28:46 turbo Exp $
 
 function attribute_check($type){
 	global $deliveryprogrampath, $domain, $oldvalue, $_pql, $error;
@@ -18,7 +18,7 @@ function attribute_check($type){
 function attribute_init(){
 	global $deliveryprogrampath, $oldvalue, $_pql, $domain, $user;
 
-	$deliveryprogrampath = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_PROGRAM);
+	$deliveryprogrampath = pql_get_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, PQL_LDAP_ATTR_PROGRAM);
 	$deliveryprogrampath = $deliveryprogrampath[0];
 	$oldvalue = $deliveryprogrampath;
 
@@ -75,7 +75,7 @@ function attribute_save($type){
 				break;
     	}
 
-			if(pql_replace_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_PROGRAM, $deliveryprogrampath)){
+			if(pql_replace_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, PQL_LDAP_ATTR_PROGRAM, $deliveryprogrampath)){
 				if($deliveryprogrampath == ""){
 					$deliveryprogrampath = PQL_LDAP_DELIVERYPROGRAMPATH_NONE;
      		}
@@ -86,7 +86,7 @@ function attribute_save($type){
 			}
 
 			// check if qmaildotmode is set to 'both' or 'ldapwithprog'
-			$qmaildotmode = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_DOTMODE);
+			$qmaildotmode = pql_get_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, PQL_LDAP_ATTR_DOTMODE);
 			$qmaildotmode = $qmaildotmode[0];
 
       if($qmaildotmode != "both" and $qmaildotmode != "ldapwithprog"){

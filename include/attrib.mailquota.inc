@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mailquota.inc,v 2.1 2002-12-17 12:24:35 turbo Exp $
+// $Id: attrib.mailquota.inc,v 2.2 2002-12-18 16:28:46 turbo Exp $
 
 function attribute_check($type){
 	global $options, $use_maxsize, $use_maxmails, $maxsize, $maxmails, $error;
@@ -61,7 +61,7 @@ function attribute_check($type){
 
 function attribute_init(){
 	global $_pql, $use_maxsize, $use_maxmails, $maxsize, $maxmails, $domain, $user, $options;
-	$quota = pql_get_userquota($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user);
+	$quota = pql_get_userquota($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user);
 
 	if(is_array($quota)){
 		$maxmails = $quota["maxmails"];
@@ -163,11 +163,11 @@ function attribute_save($type){
 			break;
 
 		case "fulldomain":
-			 $users = pql_get_user($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain);
+			 $users = pql_get_user($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain);
 
 			 if(is_array($users)){
 					foreach($users as $user){
-						$return[] = pql_replace_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_QUOTA, $mailquota);
+						$return[] = pql_replace_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, PQL_LDAP_ATTR_QUOTA, $mailquota);
 					}
 
 					if(in_array(false, $return)){
@@ -181,7 +181,7 @@ function attribute_save($type){
 		case "modify";
 
 			// remove attribute if it is set to ""
-			$return = pql_replace_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_QUOTA, $mailquota);
+			$return = pql_replace_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, PQL_LDAP_ATTR_QUOTA, $mailquota);
 
 			if($return == false){
 				$msg = PQL_LDAP_MAILQUOTA_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);

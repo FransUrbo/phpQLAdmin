@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailforwardingaddress (forward all mails to this address)
-// $Id: attrib.mailforwardingaddress.inc,v 2.1 2002-12-17 12:24:35 turbo Exp $
+// $Id: attrib.mailforwardingaddress.inc,v 2.2 2002-12-18 16:28:46 turbo Exp $
 
 function attribute_check($type){
 	global $mailforwardingaddress, $error;
@@ -70,7 +70,7 @@ function attribute_save($type){
 
 	switch($type){
 		case "add":
-			if(pql_add_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_FORWARDS, $mailforwardingaddress)){
+			if(pql_add_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, PQL_LDAP_ATTR_FORWARDS, $mailforwardingaddress)){
 				$msg = pql_complete_constant(PQL_LDAP_MAILFORWARDINGADDRESS_ADD_OK, array("mail" => $mailforwardingaddress));
 			} else {
 				$msg = PQL_LDAP_MAILFORWARDINGADDRESS_ADD_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
@@ -88,7 +88,7 @@ function attribute_save($type){
 				break;
     	}
 
-			if(pql_modify_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_FORWARDS, $oldvalue, $email)){
+			if(pql_modify_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, PQL_LDAP_ATTR_FORWARDS, $oldvalue, $email)){
 				$msg = pql_complete_constant(PQL_LDAP_MAILFORWARDINGADDRESS_CHANGE_OK, array("old" => $oldvalue, "new" => $email));
 			} else {
 				$msg = PQL_LDAP_MAILFORWARDINGADDRESS_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);

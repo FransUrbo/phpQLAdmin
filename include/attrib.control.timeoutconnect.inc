@@ -3,7 +3,7 @@
 // timeoutconnect (how long to wait for smtp connection)
 // timeoutremote (how long to wait for remote server)
 //
-// $Id: attrib.control.timeoutconnect.inc,v 2.2 2002-12-17 12:24:35 turbo Exp $
+// $Id: attrib.control.timeoutconnect.inc,v 2.3 2002-12-18 16:28:46 turbo Exp $
 
 function timeoutconnect_check($type) {
 	global $error, $timeoutconnect, $timeoutremote;
@@ -46,7 +46,7 @@ function timeoutconnect_init($host) {
 
 	foreach($attribs as $attrib){
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-										   "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
+										   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 										   $attrib);
 
 		if(!is_null($value)){
@@ -139,10 +139,10 @@ function timeoutconnect_save($type){
 	  case "modify";
 		// save entries
 		$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-												  "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
+												  "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 												  "timeoutconnect", $timeoutconnect);
     	$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-												  "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
+												  "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 												  "timeoutremote", $timeoutremote);
 		
 		if(in_array(false, $return)){

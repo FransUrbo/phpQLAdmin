@@ -3,7 +3,7 @@
 // bouncefrom (username of bounce sender)
 // bouncehost (hostname of bounce sender)
 //
-// $Id: attrib.control.bouncefrom.inc,v 2.2 2002-12-17 12:24:35 turbo Exp $
+// $Id: attrib.control.bouncefrom.inc,v 2.3 2002-12-18 16:28:45 turbo Exp $
 
 function bouncefrom_check($type) {
 	global $error, $bouncefrom, $bouncehost;
@@ -34,7 +34,7 @@ function bouncefrom_init($host) {
 
 	foreach($attribs as $attrib){
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-										   "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
+										   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 										   $attrib);
 
 		if(!is_null($value)){
@@ -126,10 +126,10 @@ function bouncefrom_save($type, $host) {
 	  case "modify";
 		// save entries
 		$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-												  "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
+												  "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 												  "bouncefrom", $bouncefrom);
     	$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,
-												  "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
+												  "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 												  "bouncehost", $bouncehost);
 		
 		if(in_array(false, $return)){

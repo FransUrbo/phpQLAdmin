@@ -2,7 +2,7 @@
 // control attribute plugin for
 // qmqpservers (max number of bytes in message)
 //
-// $Id: attrib.control.qmqpservers.inc,v 2.2 2002-12-17 12:24:35 turbo Exp $
+// $Id: attrib.control.qmqpservers.inc,v 2.3 2002-12-18 16:28:46 turbo Exp $
 
 function qmqpservers_check($type) {
 	global $error, $qmqpservers;
@@ -56,7 +56,7 @@ function qmqpservers_init($host) {
 
 	// fetch data from ldap server
 	$qmqpservers = pql_control_get_attribute($_pql_control->ldap_linkid,
-											 "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
+											 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 											 "qmqpservers");
 
 	if(is_null($qmqpservers)){
@@ -157,7 +157,7 @@ function qmqpservers_save($type, $save) {
 	  case "modify";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
+										 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 										 "qmqpservers", $qmqpservers)){
 			$msg = "Successfully saved qmqpservers options";
 		} else {

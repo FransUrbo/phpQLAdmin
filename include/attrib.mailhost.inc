@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailhost (host address which resides the mailhost)
-// $Id: attrib.mailhost.inc,v 2.1 2002-12-17 12:24:35 turbo Exp $
+// $Id: attrib.mailhost.inc,v 2.2 2002-12-18 16:28:46 turbo Exp $
 
 function attribute_check($type){
 	global $options, $mailhost, $domain, $error;
@@ -107,7 +107,7 @@ function attribute_save($type){
 				break;
     	}
 
-			if(pql_replace_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_MAILHOST, $mailhost)){
+			if(pql_replace_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, PQL_LDAP_ATTR_MAILHOST, $mailhost)){
 				if($mailhost == ""){
 					$mailhost = PQL_LDAP_MAILHOST_NONE;
      		}
@@ -121,11 +121,11 @@ function attribute_save($type){
 			break;
 
    	case "fulldomain":
-			$users = pql_get_user($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain);
+			$users = pql_get_user($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain);
 
 			if(is_array($users)){
 					foreach($users as $user){
-						$return[] = pql_replace_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_MAILHOST, $mailhost);
+						$return[] = pql_replace_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, PQL_LDAP_ATTR_MAILHOST, $mailhost);
 					}
 
 					if(in_array(false, $return)){

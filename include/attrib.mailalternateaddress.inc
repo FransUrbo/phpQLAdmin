@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailalternateaddress (emailaddress alias)
-// $Id: attrib.mailalternateaddress.inc,v 2.1 2002-12-17 12:24:35 turbo Exp $
+// $Id: attrib.mailalternateaddress.inc,v 2.2 2002-12-18 16:28:46 turbo Exp $
 
 // Construct the emailaddress if it don't contain an at character. Needed later...
 if(($mailalternateaddress != "") && !ereg("@", $mailalternateaddress)) {
@@ -26,13 +26,13 @@ function attribute_check($type){
     // if type is modify, check existance of old value, else the new one
     if($type == "add"){
 	// add
-	if(pql_email_exists($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $mailalternateaddress)){
+	if(pql_email_exists($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $mailalternateaddress)){
 	    $error["mailalternateaddress"] = PQL_EXISTS;
 	    return false;
 	}
     } else {
 	// modify
-	if($oldvalue != $mailalternateaddress and pql_email_exists($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $mailalternateaddress)){
+	if($oldvalue != $mailalternateaddress and pql_email_exists($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $mailalternateaddress)){
 	    $error["mailalternateaddress"] = PQL_EXISTS;
 	    return false;
 	}
@@ -94,7 +94,7 @@ function attribute_save($type){
       case "add":
 	$email = $mailalternateaddress;
 	
-	if(pql_add_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_MAILALTERNATE, $email)){
+	if(pql_add_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, PQL_LDAP_ATTR_MAILALTERNATE, $email)){
 	    $msg = pql_complete_constant(PQL_LDAP_MAILALTERNATEADDRESS_ADD_OK, array("mail" => $email));
 	} else {
 	    $msg = PQL_LDAP_MAILALTERNATEADDRESS_ADD_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
@@ -118,7 +118,7 @@ function attribute_save($type){
 	    break;
 	}
 	
-	if(pql_modify_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_MAILALTERNATE, $oldvalue, $email)){
+	if(pql_modify_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, PQL_LDAP_ATTR_MAILALTERNATE, $oldvalue, $email)){
 	    $msg = pql_complete_constant(PQL_LDAP_MAILALTERNATEADDRESS_CHANGE_OK, array("old" => $oldvalue, "new" => $email));
 	} else {
 	    $msg = PQL_LDAP_MAILALTERNATEADDRESS_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // maxrcptcount (maximum number of RCPT TO's)
 //
-// $Id: attrib.control.maxrcptcount.inc,v 2.2 2002-12-17 12:24:35 turbo Exp $
+// $Id: attrib.control.maxrcptcount.inc,v 2.3 2002-12-18 16:28:46 turbo Exp $
 
 function maxrcptcount_check($type) {
 	global $error, $maxrcptcount;
@@ -28,7 +28,7 @@ function maxrcptcount_init($host) {
 
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
+									   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 									   "maxrcptcount");
 
 	if(!is_null($value)){
@@ -101,7 +101,7 @@ function maxrcptcount_save($type, $host) {
 		case "modify";
 			// save entries
 			if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-											 "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
+											 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 											 "maxrcptcount", $maxrcptcount)){
 				$msg = "Successfully saved maxrcptcount options";
 			} else {

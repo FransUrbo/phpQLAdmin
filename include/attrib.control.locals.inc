@@ -2,7 +2,7 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.2 2002-12-17 12:24:35 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.3 2002-12-18 16:28:46 turbo Exp $
 
 function locals_check($type){
     global $error, $locals;
@@ -35,7 +35,7 @@ function locals_init($host) {
     
     // fetch data from ldap server
     $locals = pql_control_get_attribute($_pql_control->ldap_linkid,
-										"cn=" . $host . "," . $USER_SEARCH_DN_CTR,
+										"cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 										"locals");
     
     if(is_null($locals)){
@@ -155,9 +155,9 @@ function locals_save($type, $host){
       case "replicate":
 		// start replication manually
 		if(pql_control_update_domains($_pql->ldap_linkid,
-									  $USER_SEARCH_DN_USR,
+									  $GLOBALS["USER_SEARCH_DN_USR"],
 									  $_pql_control->ldap_linkid,
-									  "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
+									  "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 									  $host)){
 			$msg = "Successfully replicated locals";
     	} else {
@@ -172,7 +172,7 @@ function locals_save($type, $host){
 		
 		// adding specified domain to rcpthosts, redirect back to domain details
 		if(pql_control_remove_attribute($_pql_control->ldap_linkid,
-										"cn=" . $host . "," . $USER_SEARCH_DN_CTR,
+										"cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 										"locals", $set)){
 			$msg = "Successfully removed $set from locals";
 		} else {
@@ -187,7 +187,7 @@ function locals_save($type, $host){
 		
 		// adding specified domain to rcpthosts, redirect back to domain details
 		if(pql_control_add_attribute($_pql_control->ldap_linkid,
-									 "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
+									 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 									 "locals", $set)){
 			$msg = "Successfully added $set to locals";
 		} else {
@@ -202,7 +202,7 @@ function locals_save($type, $host){
 		// save entries
 		
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
+										 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 										 "locals", $locals)){
 			$msg = "Successfully saved locals";
 		} else {

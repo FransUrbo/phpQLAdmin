@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // uid (user id)
-// $Id: attrib.uid.inc,v 2.1 2002-12-17 12:24:35 turbo Exp $
+// $Id: attrib.uid.inc,v 2.2 2002-12-18 16:28:46 turbo Exp $
 
 function attribute_check($type){
 	global $uid, $oldvalue, $_pql, $error;
@@ -19,7 +19,7 @@ function attribute_check($type){
 	}
 
 	// if type is modify, check existance of old value, else the new one
-	if($oldvalue != $uid and pql_search_attribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR,"uid",$uid)){
+	if($oldvalue != $uid and pql_search_attribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"],"uid",$uid)){
 			$error["uid"] = PQL_EXISTS;
 			return false;
 	}
@@ -83,7 +83,7 @@ function attribute_save($type){
 				break;
     	}
 
-			if(pql_replace_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_UID, $uid)){
+			if(pql_replace_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, PQL_LDAP_ATTR_UID, $uid)){
 				$msg = pql_complete_constant(PQL_LDAP_UID_CHANGE_OK, array("old" => $oldvalue, "new" => $uid));
 			} else {
 				$msg = PQL_LDAP_UID_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // loginshell
-// $Id: attrib.loginshell.inc,v 2.2 2002-12-17 15:07:30 turbo Exp $
+// $Id: attrib.loginshell.inc,v 2.3 2002-12-18 16:28:46 turbo Exp $
 
 function attribute_check($type){
     global $loginshell, $oldvalue, $_pql, $error;
@@ -77,7 +77,7 @@ function attribute_save($type){
 	    break;
     	}
 	
-	if(pql_replace_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, $attrib, $loginshell)){
+	if(pql_replace_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, $attrib, $loginshell)){
 	    $msg = pql_complete_constant(PQL_LDAP_LOGINSHELL_CHANGE_OK, array("old" => $oldvalue, "new" => $loginshell));
 	} else {
 	    $msg = PQL_LDAP_LOGINSHELL_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);

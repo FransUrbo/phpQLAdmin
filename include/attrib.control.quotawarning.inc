@@ -2,7 +2,7 @@
 // control attribute plugin for
 // quotawarning (additional quota warning message)
 //
-// $Id: attrib.control.quotawarning.inc,v 2.2 2002-12-17 12:24:35 turbo Exp $
+// $Id: attrib.control.quotawarning.inc,v 2.3 2002-12-18 16:28:46 turbo Exp $
 
 function quotawarning_check($type) {
 	global $error, $quotawarning, $use_quotawarning;
@@ -22,7 +22,7 @@ function quotawarning_init($host) {
 
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
+									   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 									   "quotawarning");
 
 	if(!is_null($value)){
@@ -110,7 +110,7 @@ function quotawarning_save($type, $host) {
 		}
 		
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
+										 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 										 "quotawarning", $quotawarning)){
 			$msg = "Successfully saved quotawarning message";
 		} else {

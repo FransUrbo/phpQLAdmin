@@ -2,7 +2,7 @@
 // control attribute plugin for
 // custombouncetext (additional bounce message)
 //
-// $Id: attrib.control.custombouncetext.inc,v 2.2 2002-12-17 12:24:35 turbo Exp $
+// $Id: attrib.control.custombouncetext.inc,v 2.3 2002-12-18 16:28:45 turbo Exp $
 
 function custombouncetext_check($type){
 	global $error, $custombouncetext, $use_custombouncetext;
@@ -22,7 +22,7 @@ function custombouncetext_init($host){
 	
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
+									   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 									   "custombouncetext");
 	
 	if(!is_null($value)){
@@ -116,7 +116,7 @@ function custombouncetext_save($type){
 		}
 		
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
+										 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 										 "custombouncetext", $custombouncetext)) {
 			$msg = "Successfully saved custombouncetext message";
 		} else {

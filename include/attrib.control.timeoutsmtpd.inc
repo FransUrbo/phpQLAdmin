@@ -2,7 +2,7 @@
 // control attribute plugin for
 // timeoutsmtpd (how long to wait for smtp client)
 //
-// $Id: attrib.control.timeoutsmtpd.inc,v 2.2 2002-12-17 12:24:35 turbo Exp $
+// $Id: attrib.control.timeoutsmtpd.inc,v 2.3 2002-12-18 16:28:46 turbo Exp $
 
 function timeoutsmtpd_check($type) {
 	global $error, $timeoutsmtpd;
@@ -28,7 +28,7 @@ function timeoutsmtpd_init($host) {
 	
 	// fetch data from ldap server
 	$value = pql_control_get_attribute($_pql_control->ldap_linkid,
-									   "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
+									   "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 									   "timeoutsmtpd");
 	
 	if(!is_null($value)){
@@ -103,7 +103,7 @@ function timeoutsmtpd_save($type){
 	  case "modify";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
-										 "cn=" . $host . "," . $USER_SEARCH_DN_CTR,
+										 "cn=" . $host . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
 										 "timeoutsmtpd", $timeoutsmtpd)){
 			$msg = "Successfully saved timeoutsmtpd options";
 		} else {

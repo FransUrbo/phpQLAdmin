@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // accountstatus (status of mailaccount)
-// $Id: attrib.accountstatus.inc,v 2.1 2002-12-17 12:24:35 turbo Exp $
+// $Id: attrib.accountstatus.inc,v 2.2 2002-12-18 16:28:45 turbo Exp $
 
 function attribute_check($type){
 	// attribute should be
@@ -49,11 +49,11 @@ function attribute_save($type){
 
 	switch($type){
 		case "fulldomain":
-			 $users = pql_get_user($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain);
+			 $users = pql_get_user($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain);
 
 			 if(is_array($users)){
 					foreach($users as $user){
-						$return[] = pql_replace_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_ISACTIVE, $set);
+						$return[] = pql_replace_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, PQL_LDAP_ATTR_ISACTIVE, $set);
 					}
 
 					if(in_array(false, $return)){
@@ -69,7 +69,7 @@ function attribute_save($type){
 			 break;
 		case "set":
 
-			if(pql_replace_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_ISACTIVE, $set)){
+			if(pql_replace_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, PQL_LDAP_ATTR_ISACTIVE, $set)){
 				$msg = pql_complete_constant(PQL_LDAP_ACCOUNTSTATUS_CHANGE_OK, array("status" => pql_ldap_accountstatus($set)));
 			} else {
 				$msg = PQL_LDAP_ACCOUNTSTATUS_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);

@@ -4,15 +4,12 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.2 2002-12-17 12:24:36 turbo Exp $
+// $Id: pql_control.inc,v 2.3 2002-12-18 16:28:46 turbo Exp $
 //
 // version history:
 // $Log: pql_control.inc,v $
-// Revision 2.2  2002-12-17 12:24:36  turbo
-// * Removed hardcoded values for LDAP host, user/controls database, and for
-//   the search base for these.
-//   Allow choosing from a predefined set of LDAP hosts at runtime (independent
-//   server choosing for user and controls database).
+// Revision 2.3  2002-12-18 16:28:46  turbo
+// Replace control DN define with the session variable.
 //
 // Revision 1.2  2001/09/06 11:36:24  mb
 // added no_connect option to pql_control-class
@@ -262,7 +259,7 @@ function pql_control_update_domains($ldap_linkid, $ldap_basedn, $ldap_control_li
 // ------------------------------------------------
 
 function pql_control_get_hosts($ldap_linkid, $ldap_basedn) {
-	// Find all hosts below the $USER_SEARCH_DN_CTR
+	// Find all hosts below the $GLOBALS["USER_SEARCH_DN_CTR"]
 	$sr = @ldap_search($ldap_linkid, $ldap_basedn,
 					   '(&(cn=*)(objectclass=qmailControl))',
 					   array('cn', 'dn'));

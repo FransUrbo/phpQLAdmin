@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliverymode (delivery preferences)
-// $Id: attrib.deliverymode.inc,v 2.1 2002-12-17 12:24:35 turbo Exp $
+// $Id: attrib.deliverymode.inc,v 2.2 2002-12-18 16:28:46 turbo Exp $
 
 function attribute_check($type){
 	global $error, $reply, $mailreplytext;
@@ -19,7 +19,7 @@ function attribute_init(){
 	global $reply, $mailreplytext, $deliverymode, $domain, $user, $_pql;
 	// initialize values directly from ldap
 
-	$mode = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_MODE);
+	$mode = pql_get_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, PQL_LDAP_ATTR_MODE);
 	// delivery profile
 
 	if(is_array($mode) and in_array("forwardonly",$mode)){
@@ -33,7 +33,7 @@ function attribute_init(){
 		$reply = "ok";
 	}
 
-	$mailreplytext = pql_get_userattribute($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user, PQL_LDAP_ATTR_REPLYTEXT);
+	$mailreplytext = pql_get_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, PQL_LDAP_ATTR_REPLYTEXT);
 	$mailreplytext = $mailreplytext[0];
 
 }
@@ -104,11 +104,11 @@ function attribute_save($type){
 	switch($type){
 		case "fulldomain":
 		
-			$users = pql_get_user($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain);
+			$users = pql_get_user($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain);
 
 			if(is_array($users)){
 				foreach($users as $user){
-					$return[] = pql_replace_userattributes($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user,$entry);
+					$return[] = pql_replace_userattributes($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user,$entry);
 				}
 
 				if(in_array(false, $return)){
@@ -124,7 +124,7 @@ function attribute_save($type){
 
 		case "modify":
 
-			if(pql_replace_userattributes($_pql->ldap_linkid, $USER_SEARCH_DN_USR, $domain, $user,$entry)){
+			if(pql_replace_userattributes($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user,$entry)){
 				$msg = PQL_LDAP_DELIVERYMODE_CHANGE_OK;
 			} else {
 				$msg = PQL_LDAP_DELIVERYMODE_CHANGE_FAILED . ":&nbsp;" . pql_ldap_error($_pql->ldap_linkid);
