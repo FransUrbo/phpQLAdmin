@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.65 2003-11-24 09:05:49 turbo Exp $
+// $Id: left.php,v 2.66 2003-11-24 12:22:49 turbo Exp $
 //
 session_start();
 
@@ -163,10 +163,14 @@ if(!isset($domains)) {
 	$rootdn = pql_get_rootdn($domain);
 
 	// Get the subbranches in this domain
-	$branches = pql_get_subbranch($_pql->ldap_linkid, $domain);
+	$branches = pql_unit_get($_pql->ldap_linkid, $domain);
 
-	if((count($branches) > 1))
-	  pql_format_tree($d, "domain_detail.php?rootdn=$rootdn&domain=$domain");
+	if((count($branches) > 1)) {
+	    $links = array("unit_add.php?rootdn=$rootdn&domain=$domain" =>
+			   pql_complete_constant($LANG->_('Add %what%'),
+						 array('what' => $LANG->_('sub unit'))));
+	    pql_format_tree($d, "domain_detail.php?rootdn=$rootdn&domain=$domain", $links, 0);
+	}
 
 	for($i = 0; $branches[$i]; $i++) {
 	    unset($subbranch);
@@ -185,31 +189,31 @@ if(!isset($domains)) {
 		    $users = pql_user_get($_pql->ldap_linkid, $domain);
 		}
 
-		if(!is_array($users)) {
-		    // No user available in this domain
+		// Level 2: The users
+		if(count($branches) > 1) {
+		    // We're only interested in the 'People', 'Users' etc value,
+		    // not the complete DN.
+		    $dnparts = ldap_explode_dn($branches[$i], 0);
+		    $dnparts = split('=', $dnparts[0]);
+		    $subbranch = $dnparts[1];
 		    
-		    // Level 2: The users
-		    $links = array("user_add.php?rootdn=$rootdn&domain=$domain" => $LANG->_('No users defined'));
+		    $links = array("user_add.php?rootdn=$rootdn&domain=$domain&subbranch=$subbranch" =>
+				   pql_complete_constant($LANG->_('Add %what%'),
+							 array('what' => $LANG->_('user'))));
 		} else {
+		    $links = array("unit_add.php?rootdn=$rootdn&domain=$domain" =>
+				   pql_complete_constant($LANG->_('Add %what%'),
+							 array('what' => $LANG->_('sub unit'))));
+		    $new = array("user_add.php?rootdn=$rootdn&domain=$domain" =>
+				 pql_complete_constant($LANG->_('Add %what%'),
+						       array('what' => $LANG->_('user'))));
+		    $links = $links + $new;
+		}
+		    
+
+		if(is_array($users)) {
 		    // We have users in this domain
 
-		    // Level 2: The users
-		    if(count($branches) > 1) {
-			// We're only interested in the 'People', 'Users' etc value,
-			// not the complete DN.
-			$dnparts = ldap_explode_dn($branches[$i], 0);
-			$dnparts = split('=', $dnparts[0]);
-			$subbranch = $dnparts[1];
-			
-			$links = array("user_add.php?rootdn=$rootdn&domain=$domain&subbranch=$subbranch" =>
-				       pql_complete_constant($LANG->_('Add %what%'),
-							     array('what' => $LANG->_('user'))));
-		    } else {
-			$links = array("user_add.php?rootdn=$rootdn&domain=$domain" =>
-				       pql_complete_constant($LANG->_('Add %what%'),
-							     array('what' => $LANG->_('user'))));
-		    }
-		    
 		    // Iterate trough all users in this domain/branch
 		    foreach ($users as $dn) {
 			unset($cn); unset($sn); unset($gecos);
@@ -277,7 +281,7 @@ if(!isset($domains)) {
 	    }
 	} // end foreach ($branches)
 
-	// This an ending for the initial parent (level 0)
+	// This an ending for the domain tree
 	pql_format_tree_end();
     } // end foreach ($domains)
 } // end if(is_array($domains))
