@@ -3,11 +3,13 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ezmlm.inc,v 1.3 2002-12-22 20:28:05 turbo Exp $
+// $Id: pql_ezmlm.inc,v 1.4 2002-12-23 12:13:22 turbo Exp $
 class ezmlm {
 	// Public variables
 	var $error_message				= "";
 	var $error						= "";
+	var $debug						= 1;
+
 	var $mailing_lists				= array();
 	var $mailing_lists_index		= array();
 	var $mailing_lists_hostindex	= array();
@@ -16,6 +18,7 @@ class ezmlm {
 	var $user_name = 'newsletters';
 	var $user_home = '/home/newsletters';
 
+	// Load list of mailinglists in directory
 	function readlists($loadtexts = 0) {
 		if(!(($directory = @opendir($this->user_home)) !=0)) {
 			$this->error="could not open the ezmlm user home directory";
@@ -50,18 +53,63 @@ class ezmlm {
 		return 1;
 	}
 
-	function updatelistentry($add) {
-		$command = ($this->srch_path."/ezmlm-make 2>&1 -".(($add) ? "E" : "e").(($this->edit_list_form_object->GetCheckedState("moderated")) ? "m" : "M").(($this->edit_list_form_object->GetCheckedState("archived")) ? "a" : "A")." -5 ".$this->edit_list_form_object->GetInputValue("list_owner")." ".$this->ezmlm_user_home."/".$this->list_name." ".$this->ezmlm_user_home."/.qmail-".$this->list_name." ".$this->list_name." ".$this->edit_list_form_object->GetInputValue("list_host"));
-		echo "Command: '$command'<br>";
-		die();
-		//  $output=@Exec($command,$output_array,$result);
-		if(($result!=0)) {
-			$this->error=("could not execute system command: ".$command.((!strcmp($output,"")) ? "" : (" (".$output.")")));
-			return 0;
+	// Create/Modify mailinglist
+	function updatelistentry($add, $listname, $domain, $options) {
+		// Public or Private
+		if($options["pubpriv"]) {
+			if($options["pubpriv"] == 'public') {
+				$p = "p";
+			} elseif($options["pubpriv"] == 'private') {
+				$p = "P";
+			}
+		} else {
+			$p = "";
 		}
+
+		$command = ($this->srch_path."/ezmlm-make 2>&1 -"
+					. ($options["archived"]			? "a" : "A")
+					. ($options["remotecfg"]		? "c" : "C")
+					. ($options["digest"]			? "d" : "D")
+					. ($add							? "E" : "e")
+					. ($options["prefix"]			? "f" : "F")
+					. ($options["guardedarchive"]	? "g" : "G")
+					. ($options["indexed"]			? "i" : "I")
+					. ($options["sublistable"]		? "l" : "L")
+					. ($options["moderated"]		? "m" : "M")
+					. ($p							? $p  : "")
+					. ($options["reqaddress"]		? "q" : "Q")
+					. ($options["remoteadm"]		? "r" : "R")
+					. ($options["submoderated"]		? "s" : "S")
+					. ($options["trailers"]			? "t" : "T")
+					. ($options["subonly"]			? "u" : "U")
+					. ($options["extras"]			? "x" : "")
+					. ($options["listparent"]		? " -0 ".$options["listparent"]  : "")
+					. ($options["fromaddress"]		? " -3 ".$options["fromaddress"] : "")
+					. ($options["listowner"]		? " -5 ".$options["listowner"]   : "")
+					. " "
+					. $this->user_home."/".$listname
+					. " "
+					. "~".$this->user_name."/.qmail-".$listname
+					. " "
+					. $listname
+					. " "
+					. $domain);
+
+		if(! $this->debug) {
+			$output = @Exec($command, $output_array, $result);
+			if($result != 0) {
+				$this->error = "could not execute system command: " . $command 
+				  . (!strcmp($output, "") ? "" : " (" . $output . ")");
+				return 0;
+			}
+		} else {
+			die("Command: <br><pre>$command</pre><br>");
+		}
+
 		return 1;
 	}
 
+	// Read list configuration
 	function readlistconfiguration($list, &$configuration, $loadtexts) {
 		$list_path = ($this->user_home."/".$list);
 		if(!( ($file = @fopen($list_path."/config", "r")) !=0)) {
@@ -118,7 +166,7 @@ class ezmlm {
 
 		// Get number of subscribers
 		$command = $this->srch_path . "/ezmlm-list 2>&1 " . $list_path . " | wc -l";
-		$output = @Exec($command, $output_array, $result);
+		$output  = @Exec($command, $output_array, $result);
 		if($result != 0) {
 			$this->error = "could not execute system command: '" . $command . "'" .
 			  ((!strcmp($output, "")) ? "" : (" (".$output.")"));
@@ -155,6 +203,97 @@ class ezmlm {
 		}
 
 		return 1;
+	}
+
+	// Create/Modify list text
+	function savelistentrytexts($listname, $text, $contents) {
+		// Create a temp file
+		if(! strcmp($path = tempnam($this->user_home."/".$listname."/text", $text.'.'), "")) {
+			$this->error = "could not create a temporary the mailing list text file name";
+			return 0;
+		}
+
+		// Open the temp file for write
+		if( ($file = @fopen($path, "w")) !=0 ) {
+			$this->error = "could not create a temporary the mailing list text file";
+			return 0;
+		}
+		
+		// Write text content to temp file
+		if( fwrite($file, $contents, strlen($contents)) !=0) {
+			fclose($file);
+			unlink($path);
+
+			$this->error = "could not write to a temporary the mailing list text file";
+			return 0;
+		}
+		fclose($file);
+
+		// Move the tempfile to the correct dir/filename
+		$success = copy($path, ($this->user_home."/".$listname."/text/".$text));
+		unlink($path);
+
+		return $success;
+	}
+
+	// Add subscriber
+	function subscribe($list, $subscriber) {
+		$list_path = $this->user_home."/".$list;
+		$command   = $this->srch_path."/ezmlm-sub 2>&1 ".$list_path." ".$subscriber;
+		if(! $this->debug) {
+			$output    = @Exec($command, $output_array, $result);
+			if($result != 0) {
+				$this->error = "could not execute system command: ".$command
+				  . ((!strcmp($output,"")) ? "" : (" (".$output.")"));
+				return 0;
+			}
+		} else {
+			die("Command: <br><pre>$command</pre><br>");
+		}
+
+		return 1;
+	}
+ 
+	// Remove subscriber
+	function unsubscribe($list, $subscriber) {
+		$list_path = $this->user_home."/".$list;
+		$command   = $this->srch_path."/ezmlm-unsub 2>&1 ".$list_path." ".$subscriber;
+		if(! $this->debug) {
+			$output    = @Exec($command, $output_array, $result);
+			if($result != 0) {
+				$this->error = "could not execute system command: ".$command
+				  . ((!strcmp($output,"")) ? "" : (" (".$output.")"));
+				return 0;
+			}
+		} else {
+			die("Command: <br><pre>$command</pre><br>");
+		}
+
+		return 1;
+	}
+
+	// Verify subscriber (is the address subscribed?)
+	function verifysubscriber($list, $subscriber) {
+		$list_path = $this->user_home."/".$list;
+		$command   = $this->srch_path."/ezmlm-list 2>&1 ".$list_path;
+		$output    = @Exec($command, $output_array, $result);
+		if($result != 0) {
+			$this->error = "could not execute system command: ".$command
+			  . ((!strcmp($output,"")) ? "" : (" (".$output.")"));
+			return 0;
+		}
+
+		$subscriber_address = strtolower($subscriber);
+		$address = 0;
+		$addresses = Count($output_array);
+		for(; $address < $addresses;) {
+			if(! strcmp($subscriber_address, strtolower($output_array[$address]))) {
+				return 1;
+			}
+			$address++;
+		}
+
+		return 0;
 	}
 }
 
