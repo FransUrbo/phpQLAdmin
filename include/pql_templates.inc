@@ -3,8 +3,22 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_templates.inc,v 2.1 2005-02-24 17:04:02 turbo Exp $
+// $Id: pql_templates.inc,v 2.2 2005-03-06 18:45:04 turbo Exp $
 //
+
+// {{{ Generate the group template (hardcoded for the moment)
+function pql_templates_group() {
+  if($_SESSION["NEW_STYLE_QUOTA"]) {
+	$TEMPLATE["dn"]    = 'internal';
+	$TEMPLATE["name"]  = 'group';
+	$TEMPLATE["short"] = 'Group account';
+	$TEMPLATE["long"]  = 'Group delivery with verification (~ mailinglists)';
+	$TEMPLATE["userobjectclass"] = array('qmailGroup');
+  }
+
+  return($TEMPLATE);
+}
+// }}}
 
 // {{{ pql_get_templates(linkid)
 function pql_get_templates($linkid) {
@@ -61,12 +75,19 @@ function pql_get_templates($linkid) {
 	// }}}
   }
   
+  // {{{ Add the group template to the list of templates
+  $TEMPLATE[$i] = pql_templates_group();
+  // }}}
+
   return($TEMPLATE);
 }
 // }}}
 
 // {{{ pql_get_template(linkid, name)
 function pql_get_template($linkid, $name) {
+  if($name == 'group') {
+	return pql_templates_group();
+  } else {
   // Get ALL templates
   $templates = pql_get_templates($linkid);
 
@@ -79,6 +100,7 @@ function pql_get_template($linkid, $name) {
 
   return false;
 }
+}
 // }}}
 
 // {{{ pql_templates_attributes(linkid, objectclasses)
@@ -88,7 +110,7 @@ function pql_templates_attributes($linkid, $objectclasses) {
   
   // Get all the MUST attributes for all the included object classes
   for($j=0; $objectclasses[$j]; $j++) {
-	$oc = $objectclasses[$j]; // short form
+	$oc = lc($objectclasses[$j]); // short form
 	if($schema[$oc]["MUST"]) {
 	  for($k=0; $schema[$oc]["MUST"][$k]; $k++) {
 		$must[] = $schema[$oc]["MUST"][$k];

@@ -24,7 +24,7 @@ $templates = pql_get_templates($_pql->ldap_linkid);
         <td class="title"><?=$LANG->_('Template description')?></td>
         <td class="<?=$class?>"><?=$templates[$i]["short"]?></td>
         <td class="<?=$class?>">
-          <a href="config_edit_attribute.php?rootdn=<?=$dn?>&attrib=<?=pql_get_define("PQL_ATTR_USER_TEMPLATE_DESC_SHORT")?>&view=template"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change user template description')?>"></a>
+          <a href="config_edit_attribute.php?rootdn=<?=$dn?>&attrib=<?=pql_get_define("PQL_ATTR_USER_TEMPLATE_DESC_SHORT")?>&view=template"><?php if(!$_SESSION["NEW_STYLE_QUOTA"] and ($templates[$i]["name"] != 'group')) { ?><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change user template description')?>"><?php } ?></a>
         </td>
       </tr>
 
@@ -33,17 +33,19 @@ $templates = pql_get_templates($_pql->ldap_linkid);
 			$url_tmp  = "config_edit_attribute.php?rootdn=".$dn."&attrib=".pql_get_define("PQL_ATTR_PASSWORD_SCHEMES");
 			$url_tmp .= "&view=template";
 
+			if(!$_SESSION["NEW_STYLE_QUOTA"] and ($templates[$i]["name"] != 'group')) {
 			if(!$templates[$i]["oldformat"]["passwordscheme"]) {
 			  $txt = array('tit' => $LANG->_('Allowed password encryption scheme'),
 						   'add' => $LANG->_('Add encryption scheme'),
 						   'del' => $LANG->_('Delete encryption scheme'));
-			  $url = array('add' => $url_tmp, 'del' => $url_tmp."&delval=1&submit=2");
+			  $url = array('add' => $url_tmp, 'del' => $url_tmp."&action=del");
 			} else {
 			  $txt = array('tit' => $LANG->_('Allowed password encryption scheme'));
 			  $url = array();
 			}
 			pql_format_table_single($_pql->ldap_linkid, $txt, $url, $templates[$i]["passwordscheme"],
 									pql_get_define("PQL_ATTR_PASSWORD_SCHEMES"), $class);
+			}
 ?>
 
       <tr></tr>
@@ -53,11 +55,13 @@ $templates = pql_get_templates($_pql->ldap_linkid);
 			$url_tmp  = "config_edit_attribute.php?rootdn=".$dn."&attrib=".pql_get_define("PQL_ATTR_OBJECTCLASS_USER");
 			$url_tmp .= "&view=template";
 
-			if(!$templates[$i]["oldformat"]["userobjectclass"]) {
+			if(!$templates[$i]["oldformat"]["userobjectclass"] and
+			   !$_SESSION["NEW_STYLE_QUOTA"] and ($templates[$i]["name"] != 'group'))
+			{
 			  $txt = array('tit' => $LANG->_('Allowed user objectclasses'),
 						   'add' => $LANG->_('Add objectclass'),
 						   'del' => $LANG->_('Delete objectclass'));
-			  $url = array('add' => $url_tmp, 'del' => $url_tmp."&delval=1&submit=2");
+			  $url = array('add' => $url_tmp, 'del' => $url_tmp."&action=del");
 			} else {
 			  $txt = array('tit' => $LANG->_('Allowed user objectclasses'));
 			  $url = array();
@@ -80,6 +84,8 @@ $templates = pql_get_templates($_pql->ldap_linkid);
 			// Show the list of allowed attributes. Also read only.
 			pql_format_table_single($_pql->ldap_linkid, array('tit' => $LANG->_('Allowed attributes')),
 									array(), $attribs["may"], '', pql_format_table(0));
+
+			if(!$_SESSION["NEW_STYLE_QUOTA"] and ($templates[$i]["name"] != 'group')) {
 ?>
 
       <tr>
@@ -89,6 +95,7 @@ $templates = pql_get_templates($_pql->ldap_linkid);
         </td>
         <td class="<?=$class?>"></td>
       </tr>
+<?php } ?>
     </th>
 <?php	} // for(templates) ?>
 
