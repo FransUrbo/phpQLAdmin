@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-details.inc,v 1.25 2004-04-29 07:06:37 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.26 2004-05-06 17:42:08 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
@@ -49,7 +49,7 @@
         </tr>
 <?php }
 
-	  if($_REQUEST["account_type"] != "forward") {
+	  if(($_REQUEST["account_type"] != "forward") and ($_REQUEST["account_type"] != "group")) {
 		// Get the default password scheme for branch
 		$_REQUEST["defaultpasswordscheme"] = pql_domain_get_value($_pql, $_REQUEST["domain"],
 																  pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"));
@@ -82,7 +82,7 @@
 <?php		} ?>
           </td>
         </tr>
-<?php	} else { ?>
+<?php	} elseif($_REQUEST["account_type"] != "group") { ?>
         <input type="hidden" name="pwscheme" value="<?=$_REQUEST["defaultpasswordscheme"]?>">
 <?php	} ?>
 
@@ -296,7 +296,7 @@
 	} // account_type == forward
   
 	$res = pql_check_attribute($objectclasses_schema, $objectclasses_included, 'accountstatus');
-    if(($_REQUEST["account_type"] != 'shell') and $res[0]) {
+    if(($_REQUEST["account_type"] != 'shell') and ($_REQUEST["account_type"] != "group") and $res[0]) {
 		// One (or more) of the object classes we've choosen to create users with allow
 		// the attribute 'accountStatus' - offer this to be set.
 ?>
@@ -316,7 +316,7 @@
             </select>
           </td>
         </tr>
-<?php } else { ?>
+<?php } elseif($_REQUEST["account_type"] != "group") { ?>
     <input type="hidden" name="account_status" value="">
 <?php }
 
@@ -352,7 +352,7 @@
     <input type="hidden" name="page_next"     value="save">
 <?php
 	} else {
-		if($_REQUEST["account_type"] != 'shell') {
+		if(($_REQUEST["account_type"] != 'shell') and ($_REQUEST["account_type"] != "group")) {
 ?>
     <input type="hidden" name="page_next"     value="two">
 <?php
