@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.36 2004-11-12 09:20:40 turbo Exp $
+// $Id: control_detail.php,v 1.37 2004-11-12 13:51:39 turbo Exp $
 session_start();
 require("./include/pql_config.inc");
 
@@ -32,31 +32,38 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 
 	foreach($attribs as $key => $attrib) {
 		$value = pql_get_attribute($_pql_control->ldap_linkid, $cn, $attrib);
-		if($key == "locals") {
-			if(!is_array($value))
-			  $value = array($value);
-
-			asort($value);
-			foreach($value as $val)
-			  $locals[] = $val;
-		} elseif($key == "rcpthosts") {
-			if(!is_array($value))
-			  $value = array($value);
-
-			asort($value);
-			foreach($value as $val)
-			  $rcpthosts[] = $val;
-		} elseif($key == "ldapserver")
-		  $$key = "<i>".$_SESSION["USER_HOST"]."</i>";
-		elseif($key == "ldapbasedn")
-		  $$key = "<i>".$_SESSION["USER_SEARCH_DN_CTR"]."</i>";
-		elseif($key == "ldappassword")
-		  $$key = "encrypted";
-		elseif(!$value)
-		  $$key = "<i>".$LANG->_('Not set')."</i>";
-		else
-		  $$key = $value;
+		if($value) {
+			if($key == "locals") {
+				if(!is_array($value))
+				  $value = array($value);
+				
+				asort($value);
+				foreach($value as $val)
+				  $locals[] = $val;
+			} elseif($key == "rcpthosts") {
+				if(!is_array($value))
+				  $value = array($value);
+				
+				asort($value);
+				foreach($value as $val)
+				  $rcpthosts[] = $val;
+			} elseif($key == "ldappassword")
+			  $$key = "encrypted";
+			else
+			  $$key = $value;
+		} elseif(!$value) {
+			if(($key != "defaultquotasize") and ($key != "defaultquotacount"))
+			  $$key = "<i>".$LANG->_('Not set')."</i>";
+			else
+			  $$key = 0;
+		}
 	}
+
+	if(isset($defaultquotasize) and isset($defaultquotacount)) {
+		$quota = pql_ldap_mailquota(array('maxmails' => $defaultquotacount,
+										  'maxsize'  => $defaultquotasize));
+	} elseif($ldapdefaultquota)
+		$quota = pql_ldap_mailquota(pql_parse_quota($quota));
 
 	// print status message, if one is available
 	if(isset($msg))
