@@ -1,5 +1,7 @@
 #!/usr/bin/suidperl -U
 
+exit(0);
+
 # Environment variables of interest
 # PQL_ACCOUNTSTATUS="active"
 # PQL_DELIVERYMODE="localdelivery"
