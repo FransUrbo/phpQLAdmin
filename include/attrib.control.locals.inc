@@ -2,12 +2,12 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.34 2004-11-12 09:30:12 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.35 2005-03-02 09:32:54 turbo Exp $
 
 // {{{ locals_check(type)
 function locals_check($type) {
-    global $_pql, $_pql_control, $error, $LANG;
-    
+    global $LANG;
+
     // check validity
     if(is_array($_REQUEST["locals"])) {
 		foreach($_REQUEST["locals"] as $key => $host) {
@@ -142,8 +142,8 @@ function locals_save($type, $host) {
 	  $host = $_REQUEST["mxhost"];
 
     switch($type) {
+	  // {{{ Start replication manually
       case "replicate":
-		// start replication manually
 		if(pql_control_update_domains($_pql_control, $_REQUEST["rootdn"],
 									  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 									  $host, '', pql_get_define("PQL_ATTR_LOCALS")))
@@ -155,7 +155,9 @@ function locals_save($type, $host) {
 	
 		attribute_forward($msg);
 		break;
+		// }}}
 
+	  // {{{ Delete entry
       case "del":
 		if(!$host) {
 			// Find the object(s) which contain this string
@@ -210,9 +212,10 @@ function locals_save($type, $host) {
 		
 		attribute_forward($msg);
 		break;
+		// }}}
 
+	  // {{{ Add entry
       case "add":
-		// adding specified domain to rcpthosts, redirect back to domain details
 		$success = 0;
 		if($_REQUEST["mxhost"]) {
 			if(pql_modify_attribute($_pql_control->ldap_linkid,
@@ -237,10 +240,13 @@ function locals_save($type, $host) {
 		
 		attribute_forward($msg);
 		break;
+		// }}}
 
+	  // {{{ Default
       default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
 								  array('type' => $type, 'file' => __FILE__)));
+		// }}}
     }
 }
 
