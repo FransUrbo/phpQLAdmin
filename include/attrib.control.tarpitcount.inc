@@ -3,7 +3,7 @@
 // tarpitcount (user id of virtual user)
 // tarpitdelay (group id of virtual user)
 //
-// $Id: attrib.control.tarpitcount.inc,v 2.6 2003-05-05 14:11:12 turbo Exp $
+// $Id: attrib.control.tarpitcount.inc,v 2.7 2003-05-06 07:45:09 turbo Exp $
 
 function tarpitcount_check($type) {
 	global $error, $tarpitcount, $tarpitdelay;
@@ -142,6 +142,7 @@ function tarpitcount_save($type, $host) {
 
 	switch($type){
 		case "modify";
+		case "add";
 			// save entries
 
 			$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,

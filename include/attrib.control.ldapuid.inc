@@ -3,7 +3,7 @@
 // ldapuid (user id of virtual user)
 // ldapgid (group id of virtual user)
 //
-// $Id: attrib.control.ldapuid.inc,v 2.5 2003-05-05 14:11:12 turbo Exp $
+// $Id: attrib.control.ldapuid.inc,v 2.6 2003-05-06 07:45:09 turbo Exp $
 
 function ldapuid_check($type) {
 	global $error, $ldapuid, $ldapgid;
@@ -135,6 +135,7 @@ function ldapuid_save($type, $host) {
 
 	switch($type){
 	  case "modify";
+	  case "add";
 		// save entries
 		
 		$return[] = pql_control_replace_attribute($_pql_control->ldap_linkid,

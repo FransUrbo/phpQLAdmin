@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtpgreeting (SMTP greeting message)
 //
-// $Id: attrib.control.smtpgreeting.inc,v 2.6 2003-05-05 14:11:12 turbo Exp $
+// $Id: attrib.control.smtpgreeting.inc,v 2.7 2003-05-06 07:45:09 turbo Exp $
 
 function smtpgreeting_check($type) {
 	global $error, $smtpgreeting;
@@ -90,6 +90,7 @@ function smtpgreeting_save($type, $host) {
 
 	switch($type){
 	  case "modify";
+	  case "add";
 		// save entries
 		if(pql_control_replace_attribute($_pql_control->ldap_linkid,
 										 "cn=" . $mxhost . "," . $GLOBALS["USER_SEARCH_DN_CTR"],
