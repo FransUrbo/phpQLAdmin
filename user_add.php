@@ -204,6 +204,22 @@ if($submit == "two") {
 		$error = true;
 		$error_text["userhost"] = $LANG->_('Missing') . " (" . $LANG->_('can\'t autogenerate') . ")";
 	}
+
+	// Check/Create the mail directory attribute/value
+	if(!$maildirectory) {
+		if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) == pql_get_define("PQL_GLOB_ATTR_UID")) {
+			$maildirectory = user_generate_mailstore($_pql, $email, $domain,
+													 array(pql_get_define("PQL_GLOB_ATTR_UID") => $uid));
+		} else {
+			$maildirectory = user_generate_mailstore($_pql, $email, $domain,
+													 array(pql_get_define("PQL_GLOB_ATTR_UID") => $surname." ".$name));
+		}
+
+		if($maildirectory) {
+			// Replace space(s) with underscore(s)
+			$maildirectory = preg_replace('/ /', '_', $maildirectory, -1);
+		}
+	}
 }
 
 // ------------------------------------------------
@@ -762,15 +778,10 @@ switch($submit) {
         <!-- MailMessageStore -->
         <tr class="<?php table_bgcolor(); ?>">
           <td class="title"><?=$LANG->_('Path to mailbox')?></td>
-          <td><?php
-	  if(! ereg("/$", $basemaildir)) {
-		  $maildirectory = $basemaildir . "/" . $uid;
-	  } else {
-		  $maildirectory = $basemaildir . $uid;
-	  }
-	  echo $maildirectory . "/";
-	  ?></td>
+          <td><?=$maildirectory?></td>
         </tr>
+        <input type="hidden"name="maildirectory" value="<?=$maildirectory?>">
+
 <?php	if(($account_type == "normal") and $maildirectory) {
 			$homedirectory = $maildirectory;
 ?>
