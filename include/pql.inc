@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.195 2004-10-20 06:32:37 turbo Exp $
+// $Id: pql.inc,v 2.196 2004-11-05 13:16:52 turbo Exp $
 //
 
 // ----------------------------
@@ -466,8 +466,11 @@ function pql_get_mx($domainname) {
 			$filter = "(&(objectclass=qmailControl)(".pql_get_define("PQL_ATTR_LOCALS")."=$domainname))";
 			$info = pql_search($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $filter);
 			for($i=0; is_array($info[$i]); $i++) {
-				if($info[$i]["cn"][0])
-				  $mx["qlc"][] = $info[$i]["cn"][0];
+				if($info[$i]["cn"])
+				  if(is_array($info[$i]["cn"]))
+					 $mx["qlc"][] = $info[$i]["cn"][0];
+				  else
+					 $mx["qlc"][] = $info[$i]["cn"];
 			}
 
 			// Make sure we don't use it any more than we have to...
