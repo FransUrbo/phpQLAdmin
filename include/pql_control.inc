@@ -4,12 +4,13 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.20 2003-05-18 16:48:26 turbo Exp $
+// $Id: pql_control.inc,v 2.21 2003-05-19 05:37:28 turbo Exp $
 //
 // version history:
 // $Log: pql_control.inc,v $
-// Revision 2.20  2003-05-18 16:48:26  turbo
-// Add additional domain name(s) to QmailLDAP/Controls object when doing manual replication.
+// Revision 2.21  2003-05-19 05:37:28  turbo
+// * Enforce locals/rcpthosts integrity (don't add domain to rcpthosts if domain
+//   exists in locals) in the pql_control_add_attribute() function.
 //
 // Revision 1.2  2001/09/06 11:36:24  mb
 // added no_connect option to pql_control-class
@@ -152,6 +153,17 @@ function pql_control_search_attribute($ldap_linkid, $ldap_basedn, $attribute, $v
 function pql_control_add_attribute($ldap_linkid, $ldap_control_basedn, $attrib, $value){
     // adds an attribute of a control property
     $entry[$attrib] = $value;
+
+	if(lc($attrib) == 'rcpthosts') {
+		// Check this object if the domain is in locals. If it is, don't add it to rcpthosts.
+		$locals = pql_control_get_attribute($ldap_linkid, $ldap_control_basedn, "locals");
+		if(!is_null($locals)) {
+			foreach($locals as $local) {
+				if(lc($value) == lc($local))
+				  return false;
+			}
+		}
+	}
     
     if(!@ldap_mod_add($ldap_linkid, $ldap_control_basedn, $entry)){
 		pql_errormsg($ldap_linkid);
@@ -202,6 +214,7 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 	  // control patch is not enabled
 	  return false;
 
+	// ----------------
 	if(($host != '*') and !$domain) {
 		$domains = pql_get_domains($ldap);
 		foreach($domains as $domain) {
@@ -245,7 +258,8 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
     if($config["PQL_GLOB_CONTROL_AUTOADDLOCALS"])
 	  $entry[] = "localhost";
 
-	if($host != '*') {
+	// ----------------
+	if(($host != '*') and is_array($entry)) {
 		if(($type == 'locals') or !$type) {
 			if(pql_control_replace_attribute($ldap->ldap_linkid, $dn, "locals", $entry))
 			  return true;
@@ -277,7 +291,7 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 						// Do not set locals for hosts which HAVE no locals (ie, slaves)
 						foreach($locals as $local) {
 							// Make sure the domain don't already exists...
-							if($domain[1] == $locals)
+							if(lc($domain[1]) == lc($locals))
 							  return false;
 
 							// As long as local isn't equal to domain to add, create the LDIF entry
@@ -305,13 +319,14 @@ function pql_control_update_domains($ldap, $dn, $host, $domain = "", $type = "")
 				}
 
 				// --------------------------------
-				if(($type == 'rcpthosts') or !$type) {
+				if($type == 'rcpthosts') {
 					// Check this object if the domain is in locals. If it is, don't add it to rcpthosts.
 					$locals = pql_control_get_attribute($ldap->ldap_linkid, $hostdn, "locals");
 					if(!is_null($locals)) {
-						foreach($locals as $local)
-						  if($domain[1] == $local)
-							return false;
+						foreach($locals as $local) {
+							if($domain[1] == $local)
+							  return false;
+						}
 					}
 
 					// Get current rcpthosts for this host
