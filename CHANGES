@@ -1,5 +1,10 @@
 phpQLAdmin 2.0 Change Log
 
+phpQLAdmin 2.0.14 TO BE ANNOUNCED
+	Bug fixes
+	GUI layout change
+	Misc changes
+
 phpQLAdmin 2.0.13 Release (May 5 2003)
 	Bug fixes
 	  - Don't check the domainname when creating a new branch. If the
