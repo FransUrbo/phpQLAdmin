@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.20 2003-03-26 06:37:01 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.21 2003-04-02 15:31:59 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -57,12 +57,6 @@ if(!$PQL_CONFIG_INCLUDED) {
 	// -> Do not add a comma after this, not needed.
 	//pql_define("PQL_LDAP_SUBTREE_GROUPS", "ou=Groups");
 	
-	// ----------------------------
-	// PQL_LDAP_OBJECTCLASS_USER_EXTRA
-	// What objectclasses to use when creating a user object?
-	//pql_define("PQL_LDAP_OBJECTCLASS_USER_EXTRA", "person pilotPerson organizationalPerson krb5Principal trustAccount inetOrgPerson posixAccount mailRecipient shadowAccount");
-	pql_define("PQL_LDAP_OBJECTCLASS_USER_EXTRA", "person pilotPerson organizationalPerson");
-
 	// ----------------------------
 	// mail(message)store generation
 	//
