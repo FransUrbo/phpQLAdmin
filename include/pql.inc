@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.131 2003-11-24 11:29:43 turbo Exp $
+// $Id: pql.inc,v 2.132 2003-11-24 13:22:17 turbo Exp $
 //
 
 // ----------------------------
@@ -512,62 +512,16 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name) {
 
     // Add the USER subtree if defined
     if(pql_get_define("PQL_GLOB_SUBTREE_USERS")) {
-		$entry = "";
-		$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][] = "top";
-		$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][] = "organizationalUnit";
-		
-		$ou = eregi_replace(",$", "", pql_get_define("PQL_GLOB_SUBTREE_USERS") . ",");
-		$ou = eregi_replace("^".pql_get_define("PQL_GLOB_ATTR_OU")."=", "", $ou); // Remove the 'ou=' from the attribute
-		$entry[pql_get_define("PQL_GLOB_ATTR_OU")] = $ou;
-		
-		$dn = pql_get_define("PQL_GLOB_SUBTREE_USERS") . "," .
-			  pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) .
-			  "=" . $branch_name . "," . $basedn;
-
-		// Add the OpenLDAPaci attribute (maybe)
-		if($GLOBALS["ACI_SUPPORT_ENABLED"])
-		  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($ldap_linkid, $GLOBALS["USER_DN"], 'branch');
-
-		// Create a LDIF object to print in case of error
-		$LDIF = pql_create_ldif("pql_domain_add - create subtree users", $dn, $entry);
-
-		// adds the user
-		if(!@ldap_add($ldap_linkid, $dn, $entry)){
-			// failed to add user subtree
-			pql_format_error_msg($ldap_linkid);
-			die($LDIF);
-			return $dns;
-		}
-		$dns[] = $dn;
+		$ou = split('=', pql_get_define("PQL_GLOB_SUBTREE_USERS"));
+		if(pql_unit_add($ldap_linkid, $dn, $ou[1]))
+		  $dns[] = pql_get_define("PQL_GLOB_SUBTREE_USERS").','.$dn;
     }
     
     // Add the GROUPS subtree if defined
     if(pql_get_define("PQL_GLOB_SUBTREE_GROUPS")) {
-		$entry = "";
-		$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][] = "top";
-		$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][] = "organizationalUnit";
-
-		$ou = eregi_replace(",$", "", pql_get_define("PQL_GLOB_SUBTREE_GROUPS") . ",");
-		$ou = eregi_replace("^".pql_get_define("PQL_GLOB_ATTR_OU")."=", "", $ou); // Remove the 'ou=' from the attribute
-		$entry[pql_get_define("PQL_GLOB_ATTR_OU")] = $ou;
-		
-		$dn = pql_get_define("PQL_GLOB_SUBTREE_GROUPS") . "," .
-			  pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) .
-			  "=" . $branch_name . "," . $basedn;
-
-		// Add the OpenLDAPaci attribute (maybe)
-		if($GLOBALS["ACI_SUPPORT_ENABLED"])
-		  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($ldap_linkid, $GLOBALS["USER_DN"], 'branch');
-
-		// Create a LDIF object to print in case of error
-		$LDIF = pql_create_ldif("pql_domain_add - create subtree groups", $dn, $entry);
-
-		if(!@ldap_add($ldap_linkid, $dn, $entry)){
-			pql_format_error_msg($ldap_linkid);
-			die($LDIF);
-			return $dns;
-		}
-		$dns[] = $dn;
+		$ou = split('=', pql_get_define("PQL_GLOB_SUBTREE_GROUPS"));
+		if(pql_unit_add($ldap_linkid, $dn, $ou[1]))
+		  $dns[] = pql_get_define("PQL_GLOB_SUBTREE_GROUPS").','.$dn;
     }
 
     return $dns;
