@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // usernamePrefix/usernamePrefixLength
-// $Id: attrib.usernameprefix.inc,v 2.7 2004-02-26 14:05:27 turbo Exp $
+// $Id: attrib.usernameprefix.inc,v 2.8 2004-02-27 12:11:32 turbo Exp $
 
 function attribute_check($type = '') {
     global $error, $LANG;
@@ -20,10 +20,12 @@ function attribute_print_form($type = "modify") {
 	global $orgname;			// Set by domain_edit_attributes.php.
 
     $attrib = $_REQUEST["attrib"];
+	if(empty($_REQUEST[$attrib]))
+	  $_REQUEST[$attrib] = 4;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Username prefix to use when automaticly creating username in domain %domain%'), array('domain' => $orgname)); ?></th>
+      <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Username prefix to use when automaticly creating username in domain %domain%'), array('domain' => urldecode(pql_format_urls($orgname)))); ?></th>
         <tr class="<?php pql_format_table(); ?>">
 <?php if($attrib == 'usernameprefix') { ?>
           <td class="title"><?=$LANG->_('Username prefix')?></td>
