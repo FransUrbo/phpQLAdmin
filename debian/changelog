@@ -1,6 +1,7 @@
 phpqladmin (2.0.13-1) unstable; urgency=low
 
   * Initial Release.
+    Closes: #191968
 
  -- Turbo Fredriksson <turbo@debian.org>  Mon,  5 May 2003 08:23:52 +0200
 
