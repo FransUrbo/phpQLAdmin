@@ -246,6 +246,23 @@ Locals/RCPTHosts - trick 1
 	additionalDomainName in 'locals' on the master, and in the
 	'rcpthosts' on the slave(s).
 
+	For this to work perfectly, you must already have (manually)
+	added a domain to locals and rcpthosts on the respective
+	host object, because phpQLAdmin will add the domain to the
+	object(s) which HAVE locals, and rcpthosts to object(s) which
+	have rcpthosts.
+
+	So for the very first branch/domain you add, disable automatic
+	replication (this is the default), then add domain manually
+	to your QmailLDAP/Controls objects locals or rcpthosts attribute.
+	THEN you can enable automatic replication.
+
+	If you do NOT do this (ie, start out with automatic replication
+	of both locals and rcpthosts), you will end up with the domain
+	added to ALL your QmailLDAP/Controls locals attribute, which
+	will say to qmail that the domain is local on ALL hosts, which
+	will most likley fail (eventually any way).
+
 Locals/RCPTHosts - trick 2
 	Automatic replication of locals:	off
 	Automatic replication of rcpthosts:	on
