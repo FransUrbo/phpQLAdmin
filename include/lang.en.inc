@@ -1,7 +1,7 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 2.14 2003-02-04 08:09:44 turbo Exp $
+// $Id: lang.en.inc,v 2.15 2003-04-02 16:03:29 turbo Exp $
 //
 // if you have a translation to another language, please contact
 // me --> Matthias Blaser <mb@adfinis.ch>
@@ -355,7 +355,7 @@ if(!isset($INCLUDE_LANG_EN_INC)) {
 	
 	// ldap connection test texts
 	define("PQL_TEST_TITLE", "phpQLAdmin ldap connection");
-	define("PQL_TEST_TESTS", "Tests");
+	define("PQL_TEST_TESTS", "LDAP server connection and setup tests");
 	define("PQL_TEST_HELP", "This is a simple test to show if the ldap extension is loaded<br>and the connections are working. It also does some<br>rudimentary ACL tests.");
 	define("PQL_TEST_LDAP_EXT_TITLE", "PHP LDAP extension");
 	define("PQL_TEST_LDAP_EXT_NA", "not available");
