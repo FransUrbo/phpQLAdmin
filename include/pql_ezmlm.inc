@@ -3,7 +3,7 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ezmlm.inc,v 1.22.6.1 2004-05-06 07:10:11 turbo Exp $
+// $Id: pql_ezmlm.inc,v 1.22.6.2 2004-05-06 08:24:54 turbo Exp $
 session_start();
 
 class ezmlm {
@@ -438,9 +438,11 @@ class ezmlm {
 		}
 
 		if(is_numeric($listname)) {
-			$listpath = $this->mailing_lists[$listname]["directory"];
-			$dotpath  = $this->mailing_lists[$listname]["dotpath"];
-			$listname = $this->mailing_lists[$listname]["name"];
+			$listno   = $listname;
+
+			$listpath = $this->mailing_lists[$listno]["directory"];
+			$dotpath  = $this->mailing_lists[$listno]["dotpath"];
+			$listname = $this->mailing_lists[$listno]["name"];
 		} else {
 			$listpath = $this->user_home . $listname;
 			// Find the absolute path to the home directory of the user
@@ -472,14 +474,14 @@ class ezmlm {
 				  . (!strcmp($output, "") ? "" : " " . $output . "</b>");
 
 				if(function_exists("list_forward"))
-				  list_forward($domain, $this->error);
+				  list_forward($domain, NULL, $this->error);
 			} else {
 				// Successfully created list
 
 				$this->_chmodown($listpath, $this->user_name);
 
 				if(function_exists("list_forward"))
-				  list_forward($domain, "Successfully created list " . $listname . "<br>");
+				  list_forward($domain, $listno, "Successfully modified list " . $listname . "<br>");
 			}
 		} else {
 			die("DEBUG Command:<br><pre>$command</pre><br>");
@@ -547,10 +549,10 @@ class ezmlm {
 			$this->error = "Could not delete mailinglist $lstname from directory $lstpath";
 
 			if(function_exists("list_forward"))
-			  list_forward($domain, $this->error);
+			  list_forward($domain, NULL, $this->error);
 		} else {
 			if(function_exists("list_forward"))
-			  list_forward($domain, "Successfully deleted mailinglist");
+			  list_forward($domain, $listnumber, "Successfully deleted mailinglist");
 		}
 	}
 	// }}}
@@ -617,11 +619,11 @@ class ezmlm {
 				  . (!strcmp($output, "") ? "" : " " . $output . "</b>");
 
 				if(function_exists("list_forward"))
-				  list_forward($domain, $this->error);
+				  list_forward($domain, NULL, $this->error);
 			} else {
 				// Successfully subscribed user
 				if(function_exists("list_forward"))
-				  list_forward($domain, "Successfully subscribed user to " . $listname . "<br>");
+				  list_forward($domain, $listno, "Successfully subscribed user to " . $listname . "<br>");
 			}
 		} else {
 			die("DEBUG Command:<br><pre>$command</pre><br>");
@@ -635,11 +637,14 @@ class ezmlm {
 	// Remove subscriber
 	function unsubscribe($listname, $subscriber) {
 		if(is_numeric($listname)) {
-			$domain     = $this->mailing_lists[$listname]["host"];
-			$listpath	= $this->mailing_lists[$listname]["directory"];
+			$listno   = $listname;
+
+			$domain   = $this->mailing_lists[$listno]["host"];
+			$listpath = $this->mailing_lists[$listno]["directory"];
+			$listname = $this->mailing_lists[$listno]["name"];
 		} else {
-			$domain     = $this->mailing_lists[0]["host"];
-			$listpath	= $this->user_home . "/" . $listname;
+			$domain   = $this->mailing_lists[0]["host"];
+			$listpath = $this->user_home . "/" . $listname;
 		}
 
 		$command		= $this->_paths["unsub"] . " 2>&1 " . $listpath . " " . $subscriber;
@@ -657,11 +662,11 @@ class ezmlm {
 				  . (!strcmp($output, "") ? "" : " " . $output . "</b>");
 
 				if(function_exists("list_forward"))
-				  list_forward($domain, $this->error);
+				  list_forward($domain, NULL, $this->error);
 			} else {
 				// Successfully subscribed user
 				if(function_exists("list_forward"))
-				  list_forward($domain, "Successfully unsubscribed user from " . $listname . "<br>");
+				  list_forward($domain, $listno, "Successfully unsubscribed user from " . $listname . "<br>");
 			}
 		} else {
 			die("DEBUG Command:<br><pre>$command</pre><br>");
