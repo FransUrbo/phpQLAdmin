@@ -159,27 +159,33 @@ if($mailhost == ""){
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title">Work telephone number</td>
+        <td class="title">Telephone number (Work)</td>
         <td><?php if($telephonenumber) { echo $telephonenumber; } else { echo PQL_UNSET; }?></td>
         <td><?=$telephonenumber_link?></td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title">Home telephone number</td>
+        <td class="title">Telephone number (Home)</td>
         <td><?php if($homephone) { echo $homephone; } else { echo PQL_UNSET; }?></td>
         <td><?=$homephone_link?></td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title">Mobile telephone number</td>
+        <td class="title">Telephone number (Mobile)</td>
         <td><?php if($mobile) { echo $mobile; } else { echo PQL_UNSET; }?></td>
         <td><?=$mobile_link?></td>
       </tr>
 
       <tr class="<?php table_bgcolor(); ?>">
-        <td class="title">Pager number</td>
+        <td class="title">Telephone number (Pager)</td>
         <td><?php if($pager) { echo $pager; } else { echo PQL_UNSET; }?></td>
         <td><?=$pager_link?></td>
+      </tr>
+
+      <tr class="<?php table_bgcolor(); ?>">
+        <td class="title">Street address (Home)</td>
+        <td><?php if($homepostaladdress) { echo $homepostaladdress; } else { echo PQL_UNSET; }?></td>
+        <td><?=$homepostaladdress_link?></td>
       </tr>
     </th>
   </table>
