@@ -1,2 +1,10 @@
 Things left to do
 	* Enable re-login to other LDAP server
+
+	EZMLM mailinglist
+	* Remove hardcoded texts (attributes and such).
+	* Stresstest list creation and modification
+	* Implement list deletion
+	* Remove 'hardcoded' path to /var/list. This
+	  IS configurable at runtime, but we need to
+	  look for lists in each domains 'baseMailDir'.
