@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.28 2003-01-22 11:13:49 turbo Exp $
+// $Id: pql.inc,v 2.29 2003-01-23 08:07:48 turbo Exp $
 //
 
 // ----------------------------
@@ -181,7 +181,7 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 	if($branch)
 	  $userdn .= $branch;
 	else {
-		if(PQL_LDAP_SUBTREE_USERS)
+		if(defined("PQL_LDAP_SUBTREE_USERS"))
           $subrdn = PQL_LDAP_SUBTREE_USERS . ",";
 
 		$userdn .= $subrdn . $domain;
@@ -225,7 +225,7 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 		$entry["cn"] = $attribs["uid"];
 		$entry["gidnumber"] = $gidnr;
 		
-		if(PQL_LDAP_SUBTREE_GROUPS)
+		if(defined("PQL_LDAP_SUBTREE_GROUPS"))
 		  $subrdn = "," . PQL_LDAP_SUBTREE_GROUPS . ",";
 
 		$groupdn = PQL_LDAP_ATTR_CN . "=" . $attribs[PQL_LDAP_USER_RDN_ATTRIBUTE] . $subrdn . $domain;
@@ -360,7 +360,7 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name){
 	$dns[] = $dn;
 
     // Add the USER subtree if defined
-    if(PQL_LDAP_SUBTREE_USERS) {
+    if(defined("PQL_LDAP_SUBTREE_USERS")) {
 		$entry = "";
 		$entry["objectClass"][] = "top";
 		$entry["objectClass"][] = "organizationalUnit";
@@ -377,7 +377,7 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name){
     }
     
     // Add the GROUPS subtree if defined
-    if(PQL_LDAP_SUBTREE_GROUPS) {
+    if(defined("PQL_LDAP_SUBTREE_GROUPS")) {
 		$entry = "";
 		$entry["objectClass"][] = "top";
 		$entry["objectClass"][] = "organizationalUnit";
@@ -419,8 +419,8 @@ function pql_domain_del($ldap, $domain, $delete_forwards) {
 			// Find every object under this DN and delete it
 			$sr = @ldap_search($linkid, $branches[$i], 'objectclass=*') or pql_errormsg($linkid);
 			$info = ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
-			for ($i=0; $i<$info["count"]; $i++) {
-				if(!ldap_delete($linkid, $info[$i]["dn"]))
+			for ($j=0; $j<$info["count"]; $j++) {
+				if(!ldap_delete($linkid, $info[$j]["dn"]))
 				  pql_errormsg($linkid);
 			}
 
@@ -445,7 +445,7 @@ function pql_domain_del($ldap, $domain, $delete_forwards) {
 
 function pql_modify_user_addressbook($ldap_linkid, $user, $attribs){
     // check if addressbook is disabled
-    if(PQL_USE_ADDRESSBOOK != true){
+    if(!defined("PQL_USE_ADDRESSBOOK")) {
 		return false;
     }
     
