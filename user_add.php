@@ -156,8 +156,9 @@ if ($submit == "save") {
 				$error = true;
 				$error_text["password"] = PQL_LANG_INVALID;
 			}
-		} else {
-			if(preg_match("/[^a-z0-9]/i", $password)){
+		} elseif(!$crypted) {
+			// A password in cleartext, NOT already encrypted
+			if(preg_match("/[^a-z0-9]/i", $password)) {
 				$error = true;
 				$error_text["password"] = PQL_LANG_INVALID;
 			}
@@ -341,7 +342,7 @@ switch($submit){
 
         <tr class="<?php table_bgcolor(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
-          <td><?php echo "<b>" . PQL_LANG_USER_ID . ":</b> " . PQL_LANG_UID_HELP_SHORT; ?></td>
+          <td><?=PQL_LANG_UID_HELP_SHORT?></td>
         </tr>
 
 <?php
@@ -379,6 +380,7 @@ switch($submit){
           <td>
             <?php echo format_error($error_text["password"]); ?>
             <input type="input" name="password">
+            <input type="checkbox" name="crypted">Password is already encrypted
             <?php echo format_error($error["pwscheme"]); ?>
           </td>
         </tr>
@@ -386,9 +388,14 @@ switch($submit){
 <?php	if(eregi('KERBEROS', $config["PQL_CONF_PASSWORD_SCHEMES"][$rootdn])) { ?>
         <tr class="<?php table_bgcolor(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
-          <td><?php echo "<b>" . PQL_LANG_USERPASSWORD_TITLE . ":</b> " . PQL_LANG_USERPASSWORD_HELP_KRB; ?></td>
+          <td><?=PQL_LANG_USERPASSWORD_HELP_KRB?></td>
         </tr>
-<?php	}
+<?php	} ?>
+        <tr class="<?php table_bgcolor(); ?>">
+          <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
+          <td>If you enter an already encrypted password, you must make sure that the password scheme you've choosen is the correct one. Also, choose the checkbox <u>Password is already encrypted</u></td>
+        </tr>
+<?php
     } // account_type != forward
 
     if(($account_type == "system") or ($account_type == "shell")) {
@@ -640,6 +647,7 @@ switch($submit){
 <?php if($account_type != "forward") { ?>
     <input type="hidden" name="password" value="<?=$password?>">
     <input type="hidden" name="pwscheme" value="<?=$pwscheme?>">
+    <input type="hidden" name="crypted" value="<?=$crypted?>">
 <?php } ?>
     <input type="hidden" name="subbranch" value="<?=$subbranch?>">
     <input type="hidden" name="email_domain" value="<?=$email_domain?>">
@@ -766,11 +774,20 @@ switch($submit){
 		}
 
 		// prepare the users attributes
-		$cn = $surname . " " . $name;
-		$entry[$config["PQL_GLOB_ATTR_CN"]]			= trim($surname) . " " . trim($name);
-		$entry[$config["PQL_GLOB_ATTR_SN"]]			= $surname;
-		$entry[$config["PQL_GLOB_ATTR_GIVENNAME"]]	= $name;
-		$entry[$config["PQL_GLOB_ATTR_UID"]]		= $uid;
+		$entry[$config["PQL_GLOB_ATTR_UID"]]			= $uid;
+		if($surname) {
+			$cn											= $surname . " " . $name;
+			$entry[$config["PQL_GLOB_ATTR_SN"]]			= $surname;
+		} else {
+			$entry[$config["PQL_GLOB_ATTR_SN"]]			= $uid;
+		}
+
+		if($name) {
+			$entry[$config["PQL_GLOB_ATTR_GIVENNAME"]]	= $name;
+			$entry[$config["PQL_GLOB_ATTR_CN"]]			= trim($surname) . " " . trim($name);
+		} else {
+			$entry[$config["PQL_GLOB_ATTR_CN"]]			= $uid;
+		}
 
         // ------------------
 		if($account_type != 'shell') {
@@ -809,7 +826,8 @@ switch($submit){
 			}
 
 			// Gecos is needed to do PAM/NSS LDAP login 
-			$entry["gecos"] = $surname . " " . $name;
+			if($surname && $name)
+			  $entry["gecos"] = $surname . " " . $name;
 
 			// set attributes
 			if(eregi('KERBEROS', $pwscheme)) {
@@ -828,9 +846,14 @@ switch($submit){
 
 				// Encrypt and create the hash using the krb5PrincipalName attribute
 				$entry[$config["PQL_GLOB_ATTR_PASSWD"]] = pql_password_hash($entry["krb5PrincipalName"], $pwscheme);
-			} else
-			  // Encrypt and create the hash using the password value
-			  $entry[$config["PQL_GLOB_ATTR_PASSWD"]]   = pql_password_hash($password, $pwscheme);
+			} else {
+				if($crypted)
+				  // Password is already encrypted, prefix with choosen password scheme
+				  $entry[$config["PQL_GLOB_ATTR_PASSWD"]] = $pwscheme . $password;
+				else
+				  // Password isn't already encrypted, create the hash using the password value
+				  $entry[$config["PQL_GLOB_ATTR_PASSWD"]] = pql_password_hash($password, $pwscheme);
+			}
 
 			if(!$homedirectory) {
 				if(($account_type == "normal") and !$ADVANCED_MODE)
