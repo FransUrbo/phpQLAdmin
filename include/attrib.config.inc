@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.11 2003-04-08 10:35:19 turbo Exp $
+// $Id: attrib.config.inc,v 1.12 2003-04-10 08:16:16 turbo Exp $
 
 function attribute_check() {
     global $administrator, $domain, $oldvalue, $_pql, $error;
@@ -76,21 +76,100 @@ function attribute_print_form() {
 	} else {
 		// Not a togglable value, show the input form
 ?>
+  <script type="text/javascript" language="javascript"><!--
+    function errorWindow() {
+      myWindow = window.open("", "ProblemWindow", 'toolbar,width=850,height=400');
+      myWindow.document.write("I can.t retreive the subschemaSubentry entry from base NULL. ");
+	  myWindow.document.write("Make sure you have access to do a search that in the shell looks like this:<p>");
+
+	  myWindow.document.write("<pre>");
+	  myWindow.document.write("/usr/bin/ldapsearch -x -LLL -h localhost -s base -b '' 'objectClass=*' subschemaSubentry");
+	  myWindow.document.write("</pre>");
+
+	  myWindow.document.write("You should retreive something like this back:<p>");
+
+	  myWindow.document.write("<pre>");
+	  myWindow.document.write("dn:\nsubschemaSubentry: cn=Subschema\n");
+	  myWindow.document.write("</pre>");
+
+	  myWindow.document.write("If this succeeds, then try the following command:");
+	  myWindow.document.write("<pre>");
+	  myWindow.document.write("/usr/bin/ldapsearch -x -LLL -h localhost -s base -b 'cn=Subschema' 'objectClass=*' objectclasses");
+	  myWindow.document.write("</pre>");
+	  myWindow.document.write("This should return every objectclass and what attributes wanted/required for those. ");
+	  myWindow.document.write("I that didn't work, debug your LDAP server possibly granting access to READ below the DN cn=Subschema");
+
+      myWindow.document.bgColor="white";
+      myWindow.document.close();
+    }
+  //--></script>
+
   <form action="<?php echo $PHP_SELF ?>" method="post" name="phpqladmin_modify">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">Set/Modify <?=$attrib?></th>
+      <th colspan="3" align="left">Set/Modify <?=$attrib."\n"?>
+        <tr class="subtitle">
+          <table>
+            <td colspan="2"><img src="images/info.png" width="16" height="16" border="0" align="left"></td>
+            <td>
+              These are the objectclasses that exists in the LDAP server,<br>
+              exept those that's already included for use.
+            </td>
+          </table>
+        </tr>
+      </th>
+    </table>
+
+    <table cellspacing="0" cellpadding="3" border="0">
+      <th colspan="3" align="left">
         <tr class="<?php table_bgcolor(); ?>">
-<?php   if(($test == 'userobjectclass') or ($test == 'branchobjectclass')) { ?>
           <td class="title">Add to <?=$attrib?>
-            <select name="<?=$attrib?>">
-<?php       $objectclasses = pql_get_subschema($_pql->ldap_linkid, "objectclasses");
-            foreach($objectclasses as $key => $oc) {
+<?php   if(($test == 'userobjectclass') or ($test == 'branchobjectclass')) {
+            if($test == 'userobjectclass')
+                $existing = $config["PQL_CONF_OBJECTCLASS_USER"][$dn];
+            else
+                $existing = $config["PQL_CONF_OBJECTCLASS_DOMAIN"][$dn];
+            $existing = pql_split_oldvalues($existing); // Convert to array
+
+            $objectclasses = pql_get_subschema($_pql->ldap_linkid, "objectclasses");
+			if(is_array($objectclasses)) {
+				$i = 0;
+				foreach($objectclasses as $key => $oc) {
+                    $print = 1; $gotit = 0;
+
+                    foreach($existing as $e) {
+                        if((($e == $key) or eregi('phpQLAdmin', $key)) and !$gotit) {
+                            $print = 0; $gotit = 1;
+                        }
+                    }
+
+                    if($print) {
+					    $class=table_bgcolor(0);
+					    if($new_tr) {
 ?>
-            <option value="<?=$key?>"><?=$objectclasses[$key]["NAME"]?></option>
-<?php       } ?>
-            </select>
+
+      <tr>
+        <td class="title"></td>
+<?php                   }
+				        $new_tr = 1;
+
+					    // TODO: We should use type="checkbox", indexed with $i here,
+					    //       but I'm not quite sure how to pass the value to attribute_save()...
+?>
+          <td class="<?=$class?>">
+            <input type="radio" name="<?=$attrib?>" value="<?=$key?>" size="50"><?=$objectclasses[$key]["NAME"]?>
           </td>
-<?php   } else { ?>
+
+<?php                   $i++;
+					}
+                }
+			} else {
+				// No objectclasses in LDAP!
+?>
+          <td class="<?=$class?>"><i><a href="javascript:errorWindow()">No objectclasses!</i></a></td
+<?php
+			}
+        } else {
+?>
           <td class="title"><?=$attrib?></td>
           <td>
             <?php echo format_error($error[$attrib]); ?><input type="text" name="<?=$attrib?>" value="<?php if(($test != 'passwordscheme') and ($test != 'whoarewe')) { echo $oldvalue; } ?>" size="40">
