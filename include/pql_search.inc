@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.33 2005-01-31 11:39:44 turbo Exp $
+// $Id: pql_search.inc,v 2.34 2005-02-01 07:31:36 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -181,7 +181,21 @@ function pql_get_domains($ldap) {
 		// -------------------
 		// Is there any users just below the top DN then?
 		$dn	    = $TOP_DN;
-		$ocs    = pql_setup_branch_objectclasses(1, $TOP_DN);
+
+		// BUG: I'd really like to use this, but I can't.
+		// The reason is: If I specify (in 'phpQLAdmin config->Branch config')
+		// to use the following object classeses when creating branches,
+		// AND all those object classes doesn't already exists in the branch
+		// object(s), no branches will be found!
+		// $ocs = '(objectClass=phpQLAdminBranch)(objectClass=phpQLAdminInfo)'
+		// But only the first (or none of them) exists -> no branches!!
+		//$ocs    = pql_setup_branch_objectclasses(1, $TOP_DN);
+
+		// Instead, I'll have to 'fake' it here.
+		if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN) == 'o')
+		  $ocs = '(objectClass=organization)';
+		else if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN) == 'dc')
+		  $ocs = '(objectClass=domain)'; // Could also be 'domainComponent'
 		
 		$filter = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $TOP_DN)."=*";
 		$new    = pql_get_dn($ldap->ldap_linkid, $TOP_DN, $filter, 'ONELEVEL');
