@@ -56,6 +56,9 @@ phpQLAdmin 2.0.15 Release (TO BE ANNOUNCED)
 	  - Don't output the 'No users in this branch!' if there is no
 	    users. We want the possibility to add users from this page.
 	    Closes bug 28
+	  - If we're modifying an additionalDomainName, we want to remove
+	    the old value and add the new.
+	    Closes bug 30
  
 	GUI layout change
 	  - Possibility to set a value in the domain branch saying we

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.11 2003-07-03 09:50:55 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.12 2003-07-03 10:01:32 turbo Exp $
 
 function attribute_check() {
     global $additionaldomainname, $domain, $oldvalue, $_pql, $error, $rootdn, $LANG;
@@ -131,6 +131,10 @@ function attribute_save($type) {
     switch($type) {
       case "add":
       case "modify":
+		$delval = $oldvalue;
+		$entry[$attrib][] = $additionaldomainname;
+		// fall through here, so that we ADD this new value
+
       case "delete":
 		// Fetch old values from DB
 		$oldvalues = pql_get_domain_value($_pql, $domain, $attrib);
