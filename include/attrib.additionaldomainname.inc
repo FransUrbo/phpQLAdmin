@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.6 2003-05-15 08:02:15 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.7 2003-05-27 08:53:48 turbo Exp $
 
 function attribute_check() {
     global $additionaldomainname, $domain, $oldvalue, $_pql, $error, $rootdn;
@@ -112,17 +112,17 @@ function attribute_print_form() {
 }
 
 function attribute_save($type) {
-    global $domain, $attrib, $oldvalue, $additionaldomainname, $_pql, $config, $rootdn, $delval;
+    global $domain, $attrib, $oldvalue, $additionaldomainname, $_pql, $config, $domain, $delval;
 
     // recontrol values
     if(!attribute_check($type) and !delval)
 	  return false;
 
-	if(($additionaldomainname == $oldvalue) and !delval) {
+	if(($additionaldomainname == $oldvalue) and !$delval) {
 		// don't change if new value equal to old one
 		$msg = "Additional domain name unchanged";
 		attribute_forward($msg);
-		break;
+		return false;
 	}
 		
     switch($type) {
@@ -130,7 +130,7 @@ function attribute_save($type) {
       case "modify":
       case "delete":
 		// Fetch old values from DB
-		$oldvalues = pql_get_domain_value($_pql, $rootdn, $attrib);
+		$oldvalues = pql_get_domain_value($_pql, $domain, $attrib);
 		if(is_array($oldvalues)) {
 			foreach($oldvalues as $val) {
 				if(!@eregi($delval, $val)) {
