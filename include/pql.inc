@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.11 2003-01-12 12:36:17 turbo Exp $
+// $Id: pql.inc,v 2.12 2003-01-13 07:27:55 turbo Exp $
 //
 // ----------------------------
 // Note: There are a few " followed after PHP comment
@@ -1382,7 +1382,7 @@ function pql_get_domain_value($linkid, $domain, $value, $match = "") {
     $result = @ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
 
     // Extract all the descriptor fields
-	if($value == 'administrator') {
+	if(($value == 'administrator') or ($value == 'seealso')) {
 		// Return multiple values. If we're looking for 'administrator',
 		// return the 'domain' part of the DN...
 		for($i=0; $i < $result["count"]; $i++) {
@@ -1392,21 +1392,21 @@ function pql_get_domain_value($linkid, $domain, $value, $match = "") {
 						$tmp = split(",", $result[$i]["dn"]);
 						$tmp = split("=", $tmp[count($tmp)-2]);
 						
-						$results[] = $tmp[1];
+						$results[] = urldecode($tmp[1]);
 					}
 				} else {
-					$results[] = $result[$i][$value][$j];
+					$results[] = urldecode($result[$i][$value][$j]);
 				}
 			}
 		}
 	} else {
 		// Return the value we're looking for (single valued).
-		$results = $result[0][$value][0];
+		$results = urldecode($result[0][$value][0]);
 	}
 	
-	if(!$results[1] and ($value != 'administrator'))
+	if(!$results[1] and (($value != 'administrator') and ($value != 'seealso')))
 	  return 0;
-		
+
 	return $results;
 }
 
@@ -1425,16 +1425,31 @@ function pql_set_domain_value($linkid, $domain, $type, $value) {
 	if(is_array($value)) {
 		// We're supplied with an array, add those values
 		foreach($value as $val) {
-			$entry[$type][] = $val;
+			if(($type != 'administrator') and ($type != 'seealso')) {
+				$entry[$type][] = urlencode($val);
+			} else {
+				$entry[$type][] = $val;
+			}
 		}
 	} else {
 		// Add the single value
-		$entry[$type][] = $value;
+		$entry[$type] = urlencode($value);
 	}		
 
-	if(!ldap_mod_replace($linkid, $dn, $entry)){
-		pql_errormsg($linkid);
-		return false;
+	if($value != '') {
+		// Replace the current attribute value
+		if(!ldap_mod_replace($linkid, $dn, $entry)){
+			pql_errormsg($linkid);
+			return false;
+		}
+	} else {
+		// Delete all attributes of this type, regardless of value
+		$entry[$type] = array();
+
+		if(!ldap_mod_del($linkid, $dn, $entry)){
+			pql_errormsg($linkid);
+			return false;
+		}
 	}
 	
     return true;
