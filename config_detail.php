@@ -45,11 +45,14 @@ foreach($_pql->ldap_basedn as $dn) {
   <br>
 
 <?php
-if(($view == 'default') or ($view == ''))
-	include("./tables/config_details-global.inc");
+if($view == '')
+     $view = 'default';
+
+if($view == 'default')
+     include("./tables/config_details-global.inc");
 
 if(($view == 'branch') and $branch)
-	include("./tables/config_details-branch.inc");
+     include("./tables/config_details-branch.inc");
 ?>
 </body>
 </html>

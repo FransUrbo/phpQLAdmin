@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.19 2003-05-28 10:13:15 turbo Exp $
+// $Id: control_detail.php,v 1.20 2003-06-10 11:29:06 turbo Exp $
 session_start();
 require("./include/pql_config.inc");
 
@@ -73,7 +73,10 @@ if($config["PQL_GLOB_CONTROL_USE"]) {
 </table>
 
 <?php
-	if(($view == 'default') or ($view == ''))
+	if($view == '')
+		$view = 'default';
+
+	if($view == 'default')
 		include("./tables/control_details-base.inc");
 
 	if($view == 'hosts')
