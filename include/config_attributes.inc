@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.25 2005-01-12 14:53:55 turbo Exp $
+// $Id: config_attributes.inc,v 2.26 2005-01-30 09:29:36 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 
@@ -180,6 +180,7 @@ pql_set_define("PQL_ATTR_NSRECORD",							strtolower("nsRecord"),						false);
 pql_set_define("PQL_ATTR_RELATIVEDOMAINNAME",				strtolower("relativeDomainName"),			false);
 pql_set_define("PQL_ATTR_ZONENAME",							strtolower("zoneName"),						false);
 pql_set_define("PQL_ATTR_SRVRECORD",						strtolower("srvRecord"),					false);
+pql_set_define("PQL_ATTR_SOARECORD",						strtolower("soaRecord"),					false);
 pql_set_define("PQL_ATTR_TXTRECORD",						strtolower("txtRecord"),					false);
 // }}}
 
