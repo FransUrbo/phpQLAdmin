@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.5 2003-01-16 14:58:38 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.6 2003-01-30 16:04:56 turbo Exp $
 
 function attribute_check() {
     global $$attrib, $domain, $oldvalue, $_pql, $error, $$attrib;
@@ -152,7 +152,10 @@ function attribute_save($type) {
 			}
 		}
 
-		attribute_forward($msg);
+		if($domain == $_pql->ldap_basedn[0])
+		  header("Location: " . PQL_URI . "home.php?msg=".urlencode($msg));
+		else
+		  attribute_forward($msg);
 		break;
 
       default:
