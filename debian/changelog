@@ -1,3 +1,9 @@
+phpqladmin (2.0.14-1) unstable; urgency=low
+
+  * New release. Lots of new features and functions...
+
+ -- Turbo Fredriksson <turbo@debian.org>  Thu, 12 Jun 2003 22:36:40 +0200
+
 phpqladmin (2.0.13-1) unstable; urgency=low
 
   * Initial Release.
