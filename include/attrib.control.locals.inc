@@ -2,10 +2,9 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.33 2004-11-05 12:29:44 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.34 2004-11-12 09:30:12 turbo Exp $
 
 // {{{ locals_check(type)
-
 function locals_check($type) {
     global $_pql, $_pql_control, $error, $LANG;
     
@@ -126,6 +125,7 @@ function locals_print_form() {
     <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
     <input type="hidden" name="rootdn" value="<?=$_REQUEST["rootdn"]?>">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="type"   value="<?=$_REQUEST["type"]?>">
     <br>
     <input type="submit" value="<?=$LANG->_('Save')?>">
   </form>
@@ -134,12 +134,11 @@ function locals_print_form() {
 // }}}
 
 // {{{ locals_save(type, host)
-
 function locals_save($type, $host) {
     global $_pql, $_pql_control, $LANG;
 	$success = 0;
 
-	if($_REQUEST["mxhost"])
+	if(!$host and $_REQUEST["mxhost"])
 	  $host = $_REQUEST["mxhost"];
 
     switch($type) {
@@ -216,13 +215,13 @@ function locals_save($type, $host) {
 		// adding specified domain to rcpthosts, redirect back to domain details
 		$success = 0;
 		if($_REQUEST["mxhost"]) {
-			if(pql_control_update_domains($_pql_control, $_REQUEST["rootdn"],
-										  pql_get_define("PQL_ATTR_CN")."=".$_REQUEST["mxhost"].",".$_SESSION["USER_SEARCH_DN_CTR"],
-										  $host, array('', $_REQUEST["set"]), pql_get_define("PQL_ATTR_LOCALS")))
+			if(pql_modify_attribute($_pql_control->ldap_linkid,
+									pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+									$_REQUEST["attrib"], '', $_REQUEST["set"]))
 			  $success = 1;
 		} else {
 			if(pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
-										  '*', array('', $_REQUEST["set"]), pql_get_define("PQL_ATTR_LOCALS")))
+										  '*', array('', $_REQUEST["set"]), $_REQUEST["attrib"]))
 			  $success = 1;
 		}
 
