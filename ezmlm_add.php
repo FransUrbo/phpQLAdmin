@@ -1,6 +1,6 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.14 2003-01-30 08:32:15 turbo Exp $
+// $Id: ezmlm_add.php,v 1.15 2003-01-30 16:07:18 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -105,7 +105,7 @@ if(!$domain) {
 ?>
   <br><br>
 
-  <form action="<?=$PHP_SELF?>" method="post" name"addlist">
+  <form action="<?=$PHP_SELF?>" method="post" name="addlist">
     <!-- Base configuration -->
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">Base configuration</th>
