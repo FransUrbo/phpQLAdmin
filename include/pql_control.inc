@@ -4,12 +4,12 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 1.1 2002-12-11 15:09:23 turbo Exp $
+// $Id: pql_control.inc,v 2.0 2002-12-13 14:34:58 turbo Exp $
 //
 // version history:
 // $Log: pql_control.inc,v $
-// Revision 1.1  2002-12-11 15:09:23  turbo
-// Initial revision
+// Revision 2.0  2002-12-13 14:34:58  turbo
+// Since I've forked, update the revision number...
 //
 // Revision 1.2  2001/09/06 11:36:24  mb
 // added no_connect option to pql_control-class
@@ -57,21 +57,19 @@
 // ----------------------------
 
 class pql_control extends pql {
-    var $ldap_host = PQL_LDAP_CONTROL_HOST;		// host to connect to
+    var $ldap_host	 = PQL_LDAP_CONTROL_HOST;		// host to connect to
     var $ldap_basedn = PQL_LDAP_CONTROL_BASEDN; 	// base dn
-    var $ldap_rootdn = PQL_LDAP_CONTROL_ROOTDN; 	// root dn
-    var $ldap_rootpw = PQL_LDAP_CONTROL_ROOTPW; 	// password to bind to root dn
     
-    function pql_control($no_connect = false){
-		// call constructor of parent class
-		
-		if(PQL_LDAP_CONTROL_USE == false){
-			// control patch is not enabled, leave
-			return false;
-		}
-		
-		$this->pql($no_connect);
+    function pql_control($binddn = "", $bindpw = "", $no_connect = false){
+	// call constructor of parent class
+	
+	if(PQL_LDAP_CONTROL_USE == false){
+	    // control patch is not enabled, leave
+	    return false;
 	}
+	
+	$this->pql($binddn, $bindpw, $no_connect);
+    }
 }
 
 // ------------------------------------------------
@@ -84,7 +82,7 @@ function pql_control_get_attribute($ldap_linkid, $ldap_control_basedn, $attribut
     $info = @ldap_get_entries($ldap_linkid, $sr);
     
     for ($i=0; $i < $info[0][$attribute]["count"]; $i++) {
-		$attrib[] = $info[0][$attribute][$i];
+	$attrib[] = $info[0][$attribute][$i];
     }
     
     return $attrib;
@@ -97,22 +95,22 @@ function pql_control_replace_attribute($ldap_linkid, $ldap_control_basedn, $attr
     
     // if $value == "" remove the attribute from tree
     if($value == ""){
-		return pql_control_remove_whole_attribute($ldap_linkid, $ldap_control_basedn, $attrib);
+	return pql_control_remove_whole_attribute($ldap_linkid, $ldap_control_basedn, $attrib);
     }
     
     // if $value is an array and all elements are "", remove attribute from tree
     if(is_array($value)){
-		$remove = true;
-		
-		foreach($value as $val){
-			if($val != ""){
-				$remove = false;
-			}
-		}
-		
-		if($remove){
-			return pql_control_remove_whole_attribute($ldap_linkid, $ldap_control_basedn, $attrib);
-		}
+	$remove = true;
+	
+	foreach($value as $val){
+	    if($val != ""){
+		$remove = false;
+	    }
+	}
+	
+	if($remove){
+	    return pql_control_remove_whole_attribute($ldap_linkid, $ldap_control_basedn, $attrib);
+	}
     }
     
     // format entry
@@ -120,8 +118,8 @@ function pql_control_replace_attribute($ldap_linkid, $ldap_control_basedn, $attr
     
     // replace
     if(!@ldap_mod_replace($ldap_linkid, $ldap_control_basedn, $entry)){
-		pql_errormsg($ldap_linkid);
-		return false;
+	pql_errormsg($ldap_linkid);
+	return false;
     }
     
     return true;
@@ -135,15 +133,15 @@ function pql_control_search_attribute($ldap_linkid, $ldap_basedn, $attribute, $v
     $sr = @ldap_search($ldap_linkid, $ldap_basedn, $filter, array($attribute));
     
     if($sr == false){
-		pql_errormsg($ldap_linkid);
-		return false;
+	pql_errormsg($ldap_linkid);
+	return false;
     }
     
     if(ldap_count_entries($ldap_linkid,$sr) > 0){
-		$ed = ldap_first_entry($ldap_linkid,$sr);
-		return ldap_get_dn($ldap_linkid,$ed);
+	$ed = ldap_first_entry($ldap_linkid,$sr);
+	return ldap_get_dn($ldap_linkid,$ed);
     } else {
-		return false;
+	return false;
     }
 }
 
@@ -155,8 +153,8 @@ function pql_control_add_attribute($ldap_linkid, $ldap_control_basedn, $attrib, 
     $entry[$attrib] = $value;
     
     if(!@ldap_mod_add($ldap_linkid, $ldap_control_basedn, $entry)){
-		pql_errormsg($ldap_linkid);
-		return false;
+	pql_errormsg($ldap_linkid);
+	return false;
     }
     
     return true;
