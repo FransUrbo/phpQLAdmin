@@ -160,6 +160,8 @@ if(!isset($domains)) {
 	$d = split(',', urldecode($domain)); $d = split('=', $d[0]); $d = $d[1];
 	$d = pql_maybe_decode($d);
 
+	$domain = urlencode($domain);
+
 	// Get Root DN
 	$rootdn = pql_get_rootdn($domain);
 
