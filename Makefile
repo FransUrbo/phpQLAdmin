@@ -38,7 +38,7 @@ tag:
 	)
 
 install: $(INSTDIR)
-	@(echo -n "Instdir: $(INSTDIR): "; find | cpio -p $(INSTDIR))
+	@(echo -n "Instdir:   $(INSTDIR): "; find | cpio -p $(INSTDIR))
 
 tarball: install
 	@(rm -Rf $(INSTDIR)/Makefile $(INSTDIR)/.version.old \
@@ -50,7 +50,8 @@ tarball: install
 	  cd $(TMPDIR) && tar -cz --exclude=README.cvs -f phpQLAdmin-$(VERSION).tar.gz phpQLAdmin-$(VERSION); \
 	  echo "done."; \
 	  echo -n "Tarball 2: $(TMPDIR)/phpQLAdmin-$(VERSION).tar.bz2: "; \
-	  cd $(TMPDIR) && tar -cj --exclude=README.cvs -f phpQLAdmin-$(VERSION).tar.bz2 phpQLAdmin-$(VERSION); \
+	  cd $(TMPDIR) && tar -cj --exclude=README.cvs --exclude=debian \
+		-f phpQLAdmin-$(VERSION).tar.bz2 phpQLAdmin-$(VERSION); \
 	  echo "done.")
 
 debian: install
