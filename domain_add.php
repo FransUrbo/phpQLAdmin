@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: domain_add.php,v 2.41 2003-11-20 08:01:28 turbo Exp $
+// $Id: domain_add.php,v 2.42 2004-01-20 07:47:11 turbo Exp $
 //
 session_start();
 
@@ -105,7 +105,7 @@ if($dns[0]) {
 	if($msg == "")
 	  $msg = urlencode(pql_complete_constant($LANG->_('Domain %domain% successfully created'),
 											 array("domain" => pql_maybe_decode($dns[0])))) . ".";
-	$url = "domain_detail.php?rootdn=$rootdn&domain=$dns[0]&msg=$msg&rlnb=1";
+	$url = "domain_detail.php?rootdn=".urlencode($rootdn)."&domain=".urlencode($dns[0])."&msg=$msg&rlnb=1";
 
 	// Now it's time to run the special adduser script if defined...
 	if(pql_get_define("PQL_CONF_SCRIPT_CREATE_DOMAIN", $rootdn)) {
@@ -130,7 +130,7 @@ if($dns[0]) {
 														  array('what' => $LANG->_('domain'))));
 		}
 
-		$url = "domain_detail.php?rootdn=$rootdn&domain=$dns[0]";
+		$url = "domain_detail.php?rootdn=".urlencode($rootdn)."&domain=".urlencode($dns[0]);
 ?>
 
     <form action="<?=$url?>&msg=<?=$msg?>&rlnb=1" method="post">
