@@ -1,7 +1,7 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 2.21 2003-04-27 18:19:01 turbo Exp $
+// $Id: lang.en.inc,v 2.22 2003-04-28 11:00:34 turbo Exp $
 //
 // if you have a translation to another language, please contact
 // me --> Turbo Fredriksson <phpqladmin@bayour.com>
@@ -178,11 +178,13 @@ if(!isset($INCLUDE_LANG_EN_INC)) {
 	define("PQL_LANG_DELIVERYMODE_PROFILE_LOCAL", "Mail account");
 	define("PQL_LANG_DELIVERYMODE_PROFILE_FORWARD", "Forward account");
 	define("PQL_LANG_DELIVERYMODE_PROFILE_SYSTEM", "System account");
+	define("PQL_LANG_DELIVERYMODE_PROFILE_SHELL", "Shell account");
 	
 	define("PQL_LANG_DELIVERYMODE_PROFILE_INC", " includes: ");
 	define("PQL_LANG_DELIVERYMODE_PROFILE_LOCAL_INFO", "local mailbox, POP account");
 	define("PQL_LANG_DELIVERYMODE_PROFILE_FORWARD_INFO", "forward only, no local mailbox");
 	define("PQL_LANG_DELIVERYMODE_PROFILE_SYSTEM_INFO", "loginshell, homedir");
+	define("PQL_LANG_DELIVERYMODE_PROFILE_SHELL_INFO", "loginshell, homedir, no mail etc.");
 	
 	// accountstatus texts
 	// (active, nopop, disable)
