@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.61 2003-04-27 18:17:38 turbo Exp $
+// $Id: pql.inc,v 2.62 2003-04-28 11:03:09 turbo Exp $
 //
 
 // ----------------------------
@@ -1341,7 +1341,14 @@ function pql_get_next_uidnumber($ldap) {
 			  }
 		}
 	}
+
+	if($highest)
 	$highest++; // Increase with one!
+	else
+	  if($config["PQL_GLOB_MINIMUM_UIDNUMBER"])
+		$highest = $config["PQL_GLOB_MINIMUM_UIDNUMBER"];
+	  else
+		$highest = 1000;
 	
     return $highest;
 }
@@ -1358,10 +1365,10 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '') {
 	}
 
 	// Setup a filter to look for DOMAINS (branches)
-	if($config["PQL_CONF_REFERENCE_DOMAINS_WITH"][pql_get_rootdn($dn)] == "o")
+//	if($config["PQL_CONF_REFERENCE_DOMAINS_WITH"][pql_get_rootdn($dn)] == "o")
 	  $filter = "$value=$match";
-	else
-	  $filter  = "(&($value=$match)(".$config["PQL_CONF_REFERENCE_DOMAINS_WITH"][pql_get_rootdn($dn)]."=*))";
+//	else
+//	  $filter  = "(&($value=$match)(".$config["PQL_CONF_REFERENCE_DOMAINS_WITH"][pql_get_rootdn($dn)]."=*))";
 	//echo "pql_get_domain_value(): '$dn' '$filter' $value<br>"; // DEBUG
 
 	// Search from the DN
