@@ -2,7 +2,7 @@
     <th colspan="3" align="left"><?=$LANG->_('Branch owner')?></th>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Organization name')?></td>
-        <td><?php if($o) {echo urldecode($o);}else{echo $LANG->_('Not set');}?></td>
+        <td><?php if($o) { echo urldecode($o); } else { echo $LANG->_('Not set'); }?></td>
         <td><?=$o_link?></td>
       </tr>
 
@@ -86,9 +86,9 @@
 			$sa = pql_maybe_encode($sa);
 
 			$username = pql_get_attribute($_pql->ldap_linkid, $sa, pql_get_define("PQL_ATTR_CN"));
-			if(!$username[0])
+			if(!$username)
 			  $username = $sa;
-			else
+			elseif(is_array($username))
 			  $username = $username[0];
 
 			if($new_tr) {
