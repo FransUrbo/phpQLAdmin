@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.48 2003-04-02 16:02:36 turbo Exp $
+// $Id: pql.inc,v 2.49 2003-04-03 11:25:16 turbo Exp $
 //
 
 // ----------------------------
@@ -42,7 +42,7 @@ class pql {
 	function _find_base_option($attrib) {
 	    $attrib = strtolower($attrib);
 
-	    $sr = @ldap_read($this->ldap_linkid, NULL, 'objectClass=*', array($attrib));
+	    $sr = @ldap_read($this->ldap_linkid, NULL, '(objectClass=*)', array($attrib));
 	    if(! $sr) die("Can't find base dn - ".ldap_error($this->ldap_linkid));
 	    $entry = ldap_get_entries($this->ldap_linkid, $sr);
 	    
@@ -72,15 +72,6 @@ class pql {
 	    return $this->_find_base_option("namingContexts");
 	}
 
-	function _supports_v3_bind() {
-	    $ver = $this->_find_base_option("supportedLDAPVersion");
-	    foreach($ver as $v)
-	      if($v == 3)
-			return true;
-		
-	    return false;
-	}
-	
 	function pql($host, $binddn = "", $bindpw = "", $no_connect = false, $do_die = 1) {
 		// constructor, connect to ldap host
 		if($no_connect == true){
@@ -90,32 +81,29 @@ class pql {
 		// Open a connection to the host
 		$this->connect($host) or die("<b>could not connect to ldap server</b>");
 
-		if(! $this->_supports_v3_bind()) {
-		    // LDAP server don't support a v3 bind. Make sure we do a v2 bind!
-		    echo "Don't support v3 bind<br>";
-		    @ldap_set_option($this->ldap_linkid, LDAP_OPT_PROTOCOL_VERSION, 2);
+		// Start with a LDAPv3 bind
+		if(! @ldap_set_option($this->ldap_linkid, LDAP_OPT_PROTOCOL_VERSION, 3)) {
+			// Didn't work. Try a LDAPv2 bind...
+			echo "Don't support v3 bind<br>";
+
+			if(! @ldap_set_option($this->ldap_linkid, LDAP_OPT_PROTOCOL_VERSION, 2))
+			  die("Neither protocol LDAPv3 nor LDAPv2 worked, strange!<p>LDAP Error: ".ldap_error($this->ldap_linkid));
 		}
 
 		// Bind to the host
 		if(!$this->bind($binddn, $bindpw)) {
-// TODO: Sometimes we get wrongfully logged out here!?
-//			session_unset();
-//			session_destroy();
-
 			$this->ldap_error = "<b>Could not bind to ldap server</b>: ";
 			$this->ldap_error = $this->ldap_error . ldap_error($this->ldap_linkid) . "<br>" .
 			  "Please <a href=\"index.php\" target=\"_top\">relogin</a>.";
 
-			if($do_die) {
-				die($this->ldap_error);
-			}
+			if($do_die)
+			  die($this->ldap_error);
 
 			return false;
 		}
 
 		// Find the base DN(s)
 		$this->ldap_basedn = $this->_find_basedn();
-
 		return true;
 	}
 	
@@ -744,7 +732,9 @@ function pql_get_domains($ldap) {
 function pql_get_user($ldap_linkid, $dn){
 	global $config;
 
-	$filter = $config["PQL_LDAP_REFERENCE_USERS_WITH"][pql_get_rootdn($dn)] . "=*";
+	// Filter out any object which is a posixGroup.
+	// (&(cn=*)(!(objectclass=posixgroup)))
+	$filter = "(&(" . $config["PQL_LDAP_REFERENCE_USERS_WITH"][pql_get_rootdn($dn)] . "=*)(!(objectclass=posixgroup)))";
 	
 	$sr = @ldap_search($ldap_linkid, $dn, $filter) or pql_errormsg($ldap_linkid);
 	$info = ldap_get_entries($ldap_linkid, $sr) or pql_errormsg($ldap_linkid);
