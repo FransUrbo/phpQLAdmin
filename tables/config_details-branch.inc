@@ -375,6 +375,58 @@
 	   }
 ?>
       </tr>
+
+      <tr></tr>
+
+      <!-- -------------------- -->
+      <tr>
+        <td class="title"><?=$LANG->_('Super administrators')?></td>
+<?php     $new_tr = 0; $class=pql_format_table(0); $max = 0;
+
+		  $attrib = pql_get_define("PQL_ATTR_ADMINISTRATOR"); lc($attrib);
+		  $sr = ldap_read($_pql->ldap_linkid, $_REQUEST["branch"], "$attrib=*", array($attrib));
+		  if($sr) {
+			  $entries = ldap_get_entries($_pql->ldap_linkid, $sr);
+			  for($i=0; $entries[0][$attrib][$i]; $i++)
+				$admins[] = $entries[0][$attrib][$i];
+		  }
+
+		  if($max < $i-1)
+			$max = $i-1;
+
+          if(is_array($admins)) {
+			  for($i=0; $i <= $max; $i++) {
+				  if($new_tr) {
+?>
+      <tr>
+        <td class="title"></td>
+<?php             }
+				  $new_tr = 1;
+
+				  if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"] and $oc[$i][$_REQUEST["branch"]]) {
+?>
+        <td class="<?=$class?>">
+           <a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&attrib=<?=pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN")?>&delval=<?=$oc[$i][$_REQUEST["branch"]]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Delete attribute')?> <?=pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN")?>=<?=$oc[$i][$_REQUEST["branch"]]?>"></a>
+        </td>
+<?php			  } else { ?>
+        <td class="<?=$class?>"></td>
+<?php			  } ?>
+        <td class="<?=$class?>"><?=$oc[$i][$_REQUEST["branch"]]?>&nbsp;</td>
+<?php		  } ?>
+      </tr>
+
+      <tr>
+        <td class="title"></td>
+<?php     	  if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
+?>
+        <td class="<?=$class?>"></td>
+        <td class="<?=$class?>">
+          <a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&attrib=<?=pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN")?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain objectClass'))); ?></a>
+        </td>
+<?php	  	  }
+		  }
+?>
+      </tr>
     </th>
   </table>
 
