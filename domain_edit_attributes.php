@@ -46,7 +46,7 @@ switch($attrib){
     $include = "attrib.basemaildir.inc";
     break;
   case "basequota";
-	$include = "attrib.basequota.inc";
+	$include = "attrib.mailquota.inc";
 	break;
   case "administrator";
   case "seealso":
@@ -84,23 +84,24 @@ include("./header.html");
 
 <?php
 // select what to do
-if($submit == 1){
-    if(attribute_check("fulldomain")){
-		attribute_save("fulldomain");
-    } else {
-		attribute_print_form("fulldomain");
-    }
+if($submit == 1) {
+	if($attrib == 'basequota') {
+		attribute_save("modify");
+	} else {
+	    if(attribute_check("fulldomain"))
+		  attribute_save("fulldomain");
+		else
+		  attribute_print_form("fulldomain");
+	}
 } elseif($submit == 2) {
     // Support for changing domain defaults
 	if($type != 'delete') {
-		if(attribute_check()) {
-			attribute_save("modify");
-		} else {
-			attribute_print_form();
-		}
-	} else {
-		attribute_save("delete");
-	}
+		if(attribute_check())
+		  attribute_save("modify");
+		else
+		  attribute_print_form();
+	} else
+	  attribute_save("delete");
 } elseif($submit == 3) {
 	// Support for changing domain administrator
 	attribute_print_form($action);
@@ -108,7 +109,10 @@ if($submit == 1){
 	// SAVE change of domain administrator
 	attribute_save($action);
 } else {
-    attribute_print_form("fulldomain");
+	if($attrib == 'basequota')
+	  attribute_print_form();
+	else
+	  attribute_print_form("fulldomain");
 }
 ?>
 </body>
