@@ -2,7 +2,9 @@
     <th colspan="3" align="left"><?=$LANG->_('Registred users')?></th>
       <tr>
         <td class="title"><?=$LANG->_('User')?></td>
+<?php if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) == pql_get_define("PQL_GLOB_ATTR_UID")) { ?>
         <td class="title"><?=$LANG->_('Username')?></td>
+<?php } ?>
         <td class="title"><?=$LANG->_('Status')?></td>
         <td class="title"><?=$LANG->_('Options')?></td>
       </tr>
@@ -30,7 +32,9 @@
 ?>
       <tr class="<?php table_bgcolor(); ?>">
         <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$userdn?>"><?=$cn?></a></td>
+<?php if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) == pql_get_define("PQL_GLOB_ATTR_UID")) { ?>
         <td><?=$uid?></td>
+<?php } ?>
         <td><?=$status?></td>
         <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$userdn?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change user data')?>" border="0"></a>&nbsp;&nbsp;<a href="user_del.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?=$userdn?>&view=<?=$view?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete user')?>" border="0"></a></td>
       </tr>
