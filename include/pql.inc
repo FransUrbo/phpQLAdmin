@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.13 2003-01-14 07:16:13 turbo Exp $
+// $Id: pql.inc,v 2.14 2003-01-14 10:23:01 turbo Exp $
 //
 // ----------------------------
 // Note: There are a few " followed after PHP comment
@@ -850,7 +850,7 @@ function pql_get_dn($ldap_linkid, $ldap_basedn, $reference){
     
     // dn not in cache -> search for it
     $dn = pql_search_attribute($ldap_linkid, $ldap_basedn, PQL_LDAP_REFERENCE_USERS_WITH, $reference);
-    
+
     if (!$dn) {
 		return(false);
     }
@@ -991,7 +991,7 @@ function pql_parse_quota($quota_string){
 
 function pql_search_attribute($ldap_linkid, $ldap_basedn, $attribute, $value){
     // search $attribute with $value in whole ldap tree, returns dn or false
-    
+
     $filter = "(" . $attribute . "=" . $value . ")";
     $sr = ldap_search($ldap_linkid, $ldap_basedn, $filter, array($attribute));
     
@@ -1369,19 +1369,21 @@ function pql_get_next_uidnumber($ldap_linkid) {
     return $highest;
 }
 
-function pql_get_domain_value($linkid, $domain, $value, $match = "") {
+function pql_get_domain_value($linkid, $domain, $value, $match = '*') {
     // In the domain object, there's embeded defaults using RFC2377
 	$results = "";
-
-    if($match == "") {
-		$match = "*";
-    }
 
     // (&(dc=bayour)
 	//   (|(objectclass=domain)(objectclass=phpQLAdminBranch)(objectclass=dcOrganizationNameForm))
 	//   ($value=$match))
-    $filter = "(&(" . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . ")(|(objectclass=" . PQL_LDAP_OBJECTCLASS_DOMAIN . ")(objectclass=phpQLAdminBranch)(objectclass=dcOrganizationNameForm))(" . $value . "=" . $match . "))";
-//	echo "Filter: $filter<br>";
+    $filter = "(&(" . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . ")"
+	  . "(|(objectclass=" . PQL_LDAP_OBJECTCLASS_DOMAIN . ")(objectclass=phpQLAdminBranch))"
+	  . "(" . $value . "=" . $match . "))";
+
+//	echo "<u>Filter</u>: $filter<br>";
+//	echo "<u>Search DN</u>: " . $GLOBALS["USER_SEARCH_DN_USR"] . "<br>";
+//	echo "<u>Looking for value</u>: $value<br>";
+
     $sr = ldap_search($linkid, $GLOBALS["USER_SEARCH_DN_USR"], $filter, array($value));
     $result = @ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
 
