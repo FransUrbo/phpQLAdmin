@@ -1,10 +1,10 @@
-<?php /* $Id: user_add-details.inc,v 1.12 2004-03-11 18:13:48 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.13 2004-03-17 20:42:14 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
 <?php if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")) {
-		if(!pql_get_define("PQL_CONF_AUTOCREATE_USERNAME", $_REQUEST["domain"]) or
-		   (pql_get_define("PQL_CONF_AUTOCREATE_USERNAME", $_REQUEST["domain"]) and !function_exists('user_generate_uid')) or
+		if(!pql_get_define("PQL_CONF_AUTOCREATE_USERNAME", $_REQUEST["rootdn"]) or
+		   (pql_get_define("PQL_CONF_AUTOCREATE_USERNAME", $_REQUEST["rootdn"]) and !function_exists('user_generate_uid')) or
 		   $_SESSION["ADVANCED_MODE"]) {
 ?>
         <!-- Username (UID) -->
@@ -23,6 +23,7 @@
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
           <td><?php echo pql_complete_constant($LANG->_('Automatically generate %what%'), array('what' => $LANG->_('username'))); ?>.</td>
         </tr>
+        <input type="hidden" name="uid" value="<?=$_REQUEST["uid"]?>">
 
 <?php	}
 	  }
@@ -46,13 +47,14 @@
         </tr>
 <?php if($_REQUEST["account_type"] != "forward") {
 		// Get the default password scheme for branch
-		$_REQUEST["defaultpasswordscheme"] = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"));
+		$_REQUEST["defaultpasswordscheme"] = pql_domain_get_value($_pql, $_REQUEST["domain"],
+																  pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"));
 
-		if(!$defaultpasswordscheme or $_SESSION["ADVANCED_MODE"])  {
+		if(!$_REQUEST["defaultpasswordscheme"] or $_SESSION["ADVANCED_MODE"])  {
 			// We have no default password scheme - display forms for SYSTEM/MAIL account
 ?>
 
-        <!-- Password schema -->
+        <!-- Password scheme -->
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Password encryption scheme')?></td>
           <td>
@@ -63,7 +65,7 @@
 				$schemes = split(",", pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"]));
 				foreach($schemes as $scheme) {
 ?>
-            <input type="radio" name="pwscheme" value="<?=$scheme?>" <?php if($defaultpasswordscheme == $scheme) { echo "CHECKED"; } ?>><?=$scheme?>
+            <input type="radio" name="pwscheme" value="<?=$scheme?>" <?php if($_REQUEST["defaultpasswordscheme"] == $scheme) { echo "CHECKED"; } ?>><?=$scheme?>
 <?php			}
 			} else { ?>
             Scheme: <b>{<?php echo pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"]); ?>}</b>
@@ -72,7 +74,7 @@
           </td>
         </tr>
 <?php	} else { ?>
-        <input type="hidden" name="pwscheme" value="<?=$defaultpasswordscheme?>">
+        <input type="hidden" name="pwscheme" value="<?=$_REQUEST["defaultpasswordscheme"]?>">
 <?php	} ?>
 
         <!-- Password -->
@@ -81,7 +83,7 @@
           <!-- Crude hackery. Using type=password won't be so good if we're using {KERBEROS} -->
           <td>
             <?php echo pql_format_error_span($error_text["password"]); ?>
-            <input type="input" name="password">
+            <input type="input" name="password" value="<?=$_REQUEST["password"]?>">
             <input type="checkbox" name="crypted"><?=$LANG->_('Password is already encrypted')?>
             <?php echo pql_format_error_span($error["pwscheme"]); ?>
           </td>
