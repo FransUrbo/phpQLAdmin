@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.70 2003-11-20 08:01:29 turbo Exp $
+// $Id: domain_detail.php,v 2.70.2.1 2003-11-24 18:07:02 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -8,7 +8,7 @@ require("./include/pql_config.inc");
 if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
     // include control api if control is used
     include("./include/pql_control.inc");
-    $_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
+    $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 }
 
 include("./header.html");
@@ -29,7 +29,7 @@ if(isset($rlnb) and pql_get_define("PQL_GLOB_AUTO_RELOAD")) {
 <?php
 }
 
-$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
+$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 // Make sure we can have a ' in branch (also affects the user DN).
 $user   = eregi_replace("\\\'", "'", $user);
@@ -138,7 +138,7 @@ $buttons = array('default'	=> 'Default Branch Values',
 				 'users'	=> 'Registred users',
 				 'chval'	=> 'Change values of all users');
 
-if($ADVANCED_MODE) {
+if($_SESSION["ADVANCED_MODE"]) {
 	$new = array('owner'	=> 'Branch Owner',
 				 'dnsinfo'	=> 'MX Information',
 				 'aci'		=> 'Access Control Information');
@@ -173,7 +173,7 @@ if(!$view)
   $view = 'default';
 
 if($view == 'default') {
-	if($ADVANCED_MODE) {
+	if($_SESSION["ADVANCED_MODE"]) {
 		include("./tables/domain_details-default.inc");
 	} else {
 		include("./tables/domain_details-owner.inc");
@@ -189,7 +189,7 @@ if($view == 'owner') {
 	include("./tables/domain_details-users.inc");
 } elseif($view == 'action') {
 	include("./tables/domain_details-action.inc");
-} elseif($ADVANCED_MODE == 1) {
+} elseif($_SESSION["ADVANCED_MODE"] == 1) {
 	if($view == 'dnsinfo')
 	  include("./tables/domain_details-dnsinfo.inc");
 	elseif($view == 'dnszone')

@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for web server configuration)
 //
-// $Id: pql_websrv.inc,v 1.4 2003-11-20 08:01:37 turbo Exp $
+// $Id: pql_websrv.inc,v 1.4.2.1 2003-11-24 18:07:08 dlw Exp $
 //
 
 // {{{ pql_websrv_get_servers(linkid, dn)
@@ -63,7 +63,7 @@ function pql_websrv_add_server($linkid, $domain, $server) {
 		$entry['ou'] = 'WEB';
 
 		// Add the OpenLDAPaci attribute (maybe)
-		if($ACI_SUPPORT_ENABLED)
+		if($_SESSION["ACI_SUPPORT_ENABLED"])
 		  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($linkid,
 																				  $GLOBALS["USER_DN"],
 																				  'websrv');
@@ -87,7 +87,7 @@ function pql_websrv_add_server($linkid, $domain, $server) {
 	$entry["cn"] = ereg_replace("\/.*$", "", $entry["cn"]);
 
 	// Add the OpenLDAPaci attribute (maybe)
-	if($ACI_SUPPORT_ENABLED)
+	if($_SESSION["ACI_SUPPORT_ENABLED"])
 	  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($linkid,
 																			  $GLOBALS["USER_DN"],
 																			  'websrv');

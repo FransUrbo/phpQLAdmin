@@ -48,7 +48,7 @@
         </td>
         <td></td>
       </tr>
-<?php   if($ALLOW_BRANCH_CREATE) {
+<?php   if($_SESSION["ALLOW_BRANCH_CREATE"]) {
 	    $class=pql_format_table(0);
 ?>
 

@@ -1,11 +1,11 @@
 <?php
-// $Id: ezmlm_del.php,v 1.17 2003-11-19 16:20:27 turbo Exp $
+// $Id: ezmlm_del.php,v 1.17.2.1 2003-11-24 18:07:02 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 require("./include/pql_ezmlm.inc");
 
-$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS, false, 0);
+x$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"], false, 0);
 
 include("./header.html");
 

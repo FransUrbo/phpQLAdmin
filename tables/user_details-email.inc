@@ -14,7 +14,7 @@
         <td><?=$LANG->_('Main address')?></td>
         <td><a href="mailto:<?=$email?>"><?=pql_maybe_idna_decode($email)?></a></td>
         <td>
-<?php if(!$SINGLE_USER) { ?>
+<?php if(!$_SESSION["SINGLE_USER"]) { ?>
           <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=mail&user=<?=$userdn?>&mail=<?=$email?>&oldvalue=<?=$email?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change main address')?>" border="0"></a>&nbsp;&nbsp;&nbsp;
 <?php } ?>
           <a href="user_sendmail.php?email=<?=$email?>&user=<?=$userdn?>&view=<?=$view?>"><img src="images/mail.png" width="16" height="11" alt="<?=$LANG->_('Send testmail')?>" border="0"></a>

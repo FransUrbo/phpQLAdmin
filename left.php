@@ -1,17 +1,17 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.63 2003-11-19 19:31:34 turbo Exp $
+// $Id: left.php,v 2.63.2.1 2003-11-24 18:07:02 dlw Exp $
 //
 session_start();
 
 require("./include/pql_config.inc");
 require("./left-head.html");
 
-$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS, false, 0);
+$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"], false, 0);
 if($_pql->ldap_error) {
-    session_unregister("USER_ID");
-    session_unregister("USER_PASS");
-    session_unregister("USER_DN");
+    unset($_SESSION["USER_ID"]);
+    unset($_SESSION["USER_PASS"]);
+    unset($_SESSION["USER_DN"]);
 
     die("$_pql->ldap_error<br><a href=\"index.php\" target=\"_top\">".$LANG->_('Login again')."</a>");
 }
@@ -19,22 +19,22 @@ if($_pql->ldap_error) {
 // find out if we're to run in ADVANCE/SIMPLE mode
 if($advanced == 1) {
     $checked  = " CHECKED";
-    $ADVANCED_MODE = 1;
+    $_SESSION["ADVANCED_MODE"] = 1;
 
-    session_register("ADVANCED_MODE");
+    /*session_register("ADVANCED_MODE");*/
 } else {
     $checked  = "";
-    $ADVANCED_MODE = 0;
+    $_SESSION["ADVANCED_MODE"] = 0;
 
-    session_register("ADVANCED_MODE");
+    /*session_register("ADVANCED_MODE");*/
 }
 ?>
   <font color="black" class="heada">
-    <?=$LANG->_('User')?>: <b><a href="user_detail.php?rootdn=<?php echo pql_get_rootdn($USER_DN)?>&user=<?=$USER_DN?>"><?=$USER_ID?></a></b>
+    <?=$LANG->_('User')?>: <b><a href="user_detail.php?rootdn=<?php echo pql_get_rootdn($_SESSION["USER_DN"])?>&user=<?=$_SESSION["USER_DN"]?>"><?=$_SESSION["USER_ID"]?></a></b>
   </font>
   <br>
-<?php if($ADVANCED_MODE) {
-	$host = split(';', $USER_HOST);
+<?php if($_SESSION["ADVANCED_MODE"]) {
+	$host = split(';', $_SESSION["USER_HOST"]);
 ?>
 
   <font color="black" class="heada"><?=$LANG->_('LDAP Server')?>: <b><?=$host[0]?>:<?=$host[1]?></b></font>
@@ -51,7 +51,7 @@ if($advanced == 1) {
   <form method=post action="index2.php" target="_top">
     <input type="checkbox" name="advanced" accesskey="a" onChange="this.form.submit()"<?=$checked?>><?=$LANG->_('\uA\Udvanced mode')?>
   </form>
-<?php if($ALLOW_BRANCH_CREATE and $ADVANCED_MODE) { ?>
+<?php if($_SESSION["ALLOW_BRANCH_CREATE"] and $_SESSION["ADVANCED_MODE"]) { ?>
 
   <div id="el2Parent" class="parent">
     <nobr><a href="domain_add_form.php?rootdn=<?=$_pql->ldap_basedn[0]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain branch'))); ?></a></nobr>
@@ -82,8 +82,8 @@ if($advanced == 1) {
   <div id="el1Child" class="child">
 <?php } ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="user_search.php"><?=$LANG->_('Find user')?></a></nobr><br>
-<?php if($ADVANCED_MODE) { ?>
-<?php	if($ALLOW_BRANCH_CREATE) { ?>
+<?php if($_SESSION["ADVANCED_MODE"]) { ?>
+<?php	if($_SESSION["ALLOW_BRANCH_CREATE"]) { ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="config_detail.php"><?=$LANG->_('Show configuration')?></a></nobr><br>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="config_ldaptest.php"><?=$LANG->_('Test LDAP-Connection')?></a></nobr><br>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;<a href="config_ldap.php"><?=$LANG->_('LDAP server configuration')?></a></nobr><br>
@@ -103,7 +103,7 @@ if($advanced == 1) {
   <!-- HOME -->
 
 <?php
-if($ALLOW_BRANCH_CREATE) {
+if($_SESSION["ALLOW_BRANCH_CREATE"]) {
     // This is a 'super-admin'. Should be able to read EVERYTHING!
     $domains = pql_domain_get($_pql);
 } else {
@@ -113,7 +113,7 @@ if($ALLOW_BRANCH_CREATE) {
     foreach($_pql->ldap_basedn as $dn)  {
 	$dn = urldecode($dn);
 
-	$dom = pql_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $USER_DN);
+	$dom = pql_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]);
 	if($dom) {
 	    foreach($dom as $d) {
 		$domains[] = urlencode($d);
@@ -124,12 +124,12 @@ if($ALLOW_BRANCH_CREATE) {
 
 if(!isset($domains)) {
     // No domain defined -> 'ordinary' user (only show this user)
-    $SINGLE_USER = 1; session_register("SINGLE_USER");
+    $_SESSION["SINGLE_USER"] = 1; /*session_register("SINGLE_USER");*/
 
-    $cn = pql_get_attribute($_pql->ldap_linkid, $USER_DN, pql_get_define("PQL_GLOB_ATTR_CN")); $cn = $cn[0];
+    $cn = pql_get_attribute($_pql->ldap_linkid, $_SESSION["USER_DN"], pql_get_define("PQL_GLOB_ATTR_CN")); $cn = $cn[0];
 
     // Try to get the DN of the domain
-    $dnparts = ldap_explode_dn($USER_DN, 0);
+    $dnparts = ldap_explode_dn($_SESSION["USER_DN"], 0);
     for($i=1; $dnparts[$i]; $i++) {
 	// Traverse the users DN backwards
 	$DN = $dnparts[$i];
@@ -146,13 +146,13 @@ if(!isset($domains)) {
     }
 ?>
   <!-- start domain parent -->
-  <a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?php echo urlencode($USER_DN); ?>"><img src="images/mail_small.png" border="0" alt="<?=$cn?>"></a>&nbsp;
-  <a class="item" href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?php echo urlencode($USER_DN); ?>"><?=$cn?></a>
+  <a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?php echo urlencode($_SESSION["USER_DN"]); ?>"><img src="images/mail_small.png" border="0" alt="<?=$cn?>"></a>&nbsp;
+  <a class="item" href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?php echo urlencode($_SESSION["USER_DN"]); ?>"><?=$cn?></a>
   <!-- end domain parent -->
 
 <?php
 } else {
-    $SINGLE_USER = 0; session_register("SINGLE_USER");
+    $_SESSION["SINGLE_USER"] = 0; /*session_register("SINGLE_USER");*/
 
     asort($domains);
     foreach($domains as $key => $domain) {

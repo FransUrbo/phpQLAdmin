@@ -1,12 +1,12 @@
 <?php
 // edit attributes of a webserver configuration
-// $Id: websrv_edit_attributes.php,v 2.1 2003-10-11 11:55:39 turbo Exp $
+// $Id: websrv_edit_attributes.php,v 2.1.2.1 2003-11-24 18:07:02 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 require("./include/pql_websrv.inc");
 
-$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
+$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 // forward back to domain detail page
 function attribute_forward($msg) {

@@ -1,11 +1,11 @@
-<?php /* $Id: user_add-details.inc,v 1.5 2003-11-20 08:01:46 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.5.2.1 2003-11-24 18:07:18 dlw Exp $ */ ?>
   <form action="<?=$PHP_SELF?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
 <?php if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) == pql_get_define("PQL_GLOB_ATTR_UID")) {
 		if(!pql_get_define("PQL_CONF_CREATE_USERNAME", $domain) or
 		   (pql_get_define("PQL_CONF_CREATE_USERNAME", $domain) and !function_exists('user_generate_uid')) or
-		   $ADVANCED_MODE) {
+		   $_SESSION["ADVANCED_MODE"]) {
 ?>
         <!-- Username (UID) -->
         <tr class="<?php pql_format_table(); ?>">
@@ -48,7 +48,7 @@
 		// Get the default password scheme for branch
 		$defaultpasswordscheme = pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_DEFAULTPASSWORDSCHEME"));
 
-		if(!$defaultpasswordscheme or $ADVANCED_MODE)  {
+		if(!$defaultpasswordscheme or $_SESSION["ADVANCED_MODE"])  {
 			// We have no default password scheme - display forms for SYSTEM/MAIL account
 ?>
 
@@ -108,7 +108,7 @@
 <?php if(($account_type == "system") or ($account_type == "shell")) {
 		// display forms for SYSTEM account
 
-		if($ADVANCED_MODE) {
+		if($_SESSION["ADVANCED_MODE"]) {
 			$shells = pql_get_valid_shells();
 ?>
 
@@ -137,7 +137,7 @@
 <?php if($account_type != "shell") {
 		if(!pql_get_define("PQL_CONF_CREATE_ADDRESS", $domain) or
 		   (pql_get_define("PQL_CONF_CREATE_ADDRESS", $domain) and !function_exists('user_generate_email')) or
-		   $ADVANCED_MODE or $error_text["email"]) {
+		   $_SESSION["ADVANCED_MODE"] or $error_text["email"]) {
 ?>
         <!-- Email address -->
         <tr class="<?php pql_format_table(); ?>">
@@ -191,7 +191,7 @@
 
         <!-- sub branch -->
 <?php
-	if($ADVANCED_MODE) {
+	if($_SESSION["ADVANCED_MODE"]) {
 		$branches = pql_get_subbranch($_pql->ldap_linkid, $domain);
 		if($branches[1]) {
 			// More than one subbranch - show a select menu
@@ -275,9 +275,9 @@
 
     <input type="hidden" name="page_curr" value="one">
 <?php
-	if(($ADVANCED_MODE == 0) or ($account_type == "forward")) {
+	if(($_SESSION["ADVANCED_MODE"] == 0) or ($account_type == "forward")) {
 		// Go to save, no next form...
-		if($ADVANCED_MODE == 0) {
+		if($_SESSION["ADVANCED_MODE"] == 0) {
 			// Autocreate some values by using 'safe' (?) defaults
 ?>
     <input type="hidden" name="loginshell" value="/bin/false">
@@ -306,7 +306,7 @@
     <br>
 
 <?php
-	if($ADVANCED_MODE == 1) {
+	if($_SESSION["ADVANCED_MODE"] == 1) {
 ?>
     <input type="submit" value="--&gt;&gt;">
 <?php

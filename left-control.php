@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.16 2003-10-16 06:22:45 turbo Exp $
+// $Id: left-control.php,v 2.16.2.1 2003-11-24 18:07:02 dlw Exp $
 //
 session_start();
 
@@ -10,7 +10,7 @@ require("./include/pql_control_plugins.inc");
 
 require("./left-head.html");
 
-$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS, false, 0);
+$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"], false, 0);
 
 // TODO: How do we know if the user is allowed to add domains?
 //       In the domain description we don't have that info...
@@ -26,8 +26,8 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
   </div>
 
 <?php
-	if($ADVANCED_MODE) {
-		$host = split(';', $USER_HOST);
+	if($_SESSION["ADVANCED_MODE"]) {
+		$host = split(';', $_SESSION["USER_HOST"]);
 ?>
   <font color="black" class="heada">
     Host: <font color="black" size=-4><b><?=$host[0]?>:<?=$host[1]?></b></font>
@@ -44,7 +44,7 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 
 	$j++;
 
-	$hosts = pql_control_get_hosts($_pql->ldap_linkid, $USER_SEARCH_DN_CTR);
+	$hosts = pql_control_get_hosts($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"]);
 	if(!is_array($hosts)) {
 ?>
 <?php if($opera) { ?>

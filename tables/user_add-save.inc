@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.4 2003-11-19 16:53:27 turbo Exp $
+// $Id: user_add-save.inc,v 1.4.2.1 2003-11-24 18:07:18 dlw Exp $
 
 // Find out what objectclasses to use when creating user
 $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $rootdn));
@@ -121,7 +121,7 @@ if($account_type != "forward") {
 	
 	if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) == pql_get_define("PQL_GLOB_ATTR_UID")) {
 		if(!$homedirectory) {
-			if(($account_type == "normal") and !$ADVANCED_MODE)
+			if(($account_type == "normal") and !$_SESSION["ADVANCED_MODE"])
 			  // It's a mail account, and we where/is not running in
 			  // advanced mode. Use the maildirectory as homedirectory.
 			  $entry[pql_get_define("PQL_GLOB_ATTR_HOMEDIR")] = user_generate_mailstore($_pql, $email,
@@ -146,7 +146,7 @@ if(($account_type == "system") or ($account_type == "normal")) {
 		$domainname = pql_strip_username($entry[pql_get_define("PQL_GLOB_ATTR_MAIL")]);
 		
 		// Initiate a connection to the QmailLDAP/Controls DN
-		$_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
+		$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 		
 		if($_pql_control->ldap_linkid) {
 			// Find MX (or QmailLDAP/Controls with locals=$domainname)

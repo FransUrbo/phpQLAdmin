@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: unit_add.php,v 2.13 2003-11-20 08:01:29 turbo Exp $
+// $Id: unit_add.php,v 2.13.2.1 2003-11-24 18:07:02 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -11,8 +11,8 @@ include("./header.html");
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Create domain %domain%'), array('domain' => $domain)); ?></span>
   <br><br>
 <?php
-$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
-$_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
+$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
+$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 // convert domain to lowercase
 $domain = strtolower($domain);
@@ -34,7 +34,7 @@ if(pql_unit_exist($_pql->ldap_linkid, $domain, $unit)){
 
 if(pql_add_unit($_pql->ldap_linkid, $domain, $unit)){
 	// update locals if control patch is enabled
-	if(pql_control_update_domains($_pql, $USER_SEARCH_DN_CTR)) {
+	if(pql_control_update_domains($_pql, $_SESSION["USER_SEARCH_DN_CTR"])) {
 	    // message ??
 	}
 

@@ -1,12 +1,12 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.34 2003-11-19 19:28:59 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.34.2.1 2003-11-24 18:07:02 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 require("./include/config_plugins.inc");
 
-$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
+$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 // forward back to users detail page
 function attribute_forward($msg) {

@@ -1,6 +1,6 @@
 <?php
 // start page
-// $Id: home.php,v 2.32 2003-11-20 08:01:29 turbo Exp $
+// $Id: home.php,v 2.32.2.1 2003-11-24 18:07:02 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -40,16 +40,16 @@ if(isset($rlnb) and pql_get_define("PQL_GLOB_AUTO_RELOAD")) {
 
 // find out which LDAP server(s) to use
 if(isset($submit)) {
-    $ADVANCED_MODE = 0;
-    session_register("ADVANCED_MODE");
+    $_SESSION["ADVANCED_MODE"] = 0;
+    /*session_register("ADVANCED_MODE");*/
 
     // Change LDAP server
     if($ldapserver) {
 	$host = split(';', $ldapserver);
 
-	$USER_HOST = $host[0] . ";" . $host[1] . ";" . $host[2];
+	$_SESSION["USER_HOST"] = $host[0] . ";" . $host[1] . ";" . $host[2];
 
-	session_register("USER_HOST", "USER_SEARCH_DN_CTR");
+	/*session_register("USER_HOST", "USER_SEARCH_DN_CTR");*/
     }
 
     // We need to disable advanced mode so that only the user frame
@@ -58,11 +58,11 @@ if(isset($submit)) {
 }
 ?>
 
-  <br><span class="title1"><?php echo pql_get_define("PQL_GLOB_WHOAREWE"); ?><?php if($ADVANCED_MODE) { ?><br>Version: <?=$VERSION?><?php } ?></span><br>
+  <br><span class="title1"><?php echo pql_get_define("PQL_GLOB_WHOAREWE"); ?><?php if($_SESSION["ADVANCED_MODE"]) { ?><br>Version: <?=$VERSION?><?php } ?></span><br>
 
   <ul>
 <?php
-	if($ADVANCED_MODE == 1) {
+	if($_SESSION["ADVANCED_MODE"] == 1) {
 	    // Should we show the 'change server' choices
 	    if(pql_get_define("PQL_GLOB_CHANGE_SERVER") and eregi('\+', pql_get_define("PQL_GLOB_HOST"))) {
 		$servers = split('\+', pql_get_define("PQL_GLOB_HOST"));
@@ -89,7 +89,7 @@ if(isset($submit)) {
   <br>
 
 <?php
-if($ALLOW_BRANCH_CREATE and $ADVANCED_MODE) {
+if($_SESSION["ALLOW_BRANCH_CREATE"] and $_SESSION["ADVANCED_MODE"]) {
     include("./trailer.html");
 }
 ?>

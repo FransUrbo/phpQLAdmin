@@ -1,11 +1,11 @@
 <?php
 // send a testmail to an emailaddress
-// $Id: user_sendmail.php,v 2.17 2003-11-19 19:38:19 turbo Exp $
+// $Id: user_sendmail.php,v 2.17.2.1 2003-11-24 18:07:02 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 
-$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
+$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 include("./header.html");
 ?>
@@ -47,9 +47,9 @@ if (is_array($quota)) {
     } else {
 	// QmailLDAP/Controls patch is used - get the standard quota
 	require("./include/pql_control.inc");
-	$_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
+	$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 	
-	$quota = pql_control_get_attribute($_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR,
+	$quota = pql_control_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 					   pql_get_define("PQL_GLOB_ATTR_LDAPDEFAULTQUOTA"));
 	
 	$vars['QUOTA'] = pql_ldap_mailquota($quota);

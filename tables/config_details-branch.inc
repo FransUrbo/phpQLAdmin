@@ -12,7 +12,7 @@
       <tr>
         <td class="title"><?=$LANG->_('Show users')?></td>
 <?php $class=pql_format_table(0);
-      if($ALLOW_GLOBAL_CONFIG_SAVE) {
+      if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
 ?>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$branch?>&toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_SHOW_USERS"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?> <?=$PQL_ATTRIBUTE["PQL_CONF_SHOW_USERS"]?>"></a></td>
 <?php } else { ?>
@@ -25,7 +25,7 @@
       <tr>
         <td class="title"><?=$LANG->_('Allow absolute mailbox paths')?></td>
 <?php $class=pql_format_table(0);
-       if($ALLOW_GLOBAL_CONFIG_SAVE) {
+       if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
 ?>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$branch?>&toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_ALLOW_ABSOLUTE_PATH"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?> <?=$PQL_ATTRIBUTE["PQL_CONF_ALLOW_ABSOLUTE_PATH"]?>"></a></td>
 <?php } else { ?>
@@ -38,7 +38,7 @@
       <tr>
         <td class="title"><?=$LANG->_('Verify user/domain deletions \i\urecomended!\U\I')?></td>
 <?php $class=pql_format_table(0);
-      if($ALLOW_GLOBAL_CONFIG_SAVE) {
+      if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
 ?>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$branch?>&toggle=1&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_VERIFY_DELETE"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?> <?=$PQL_ATTRIBUTE["PQL_CONF_VERIFY_DELETE"]?>"></a></td>
 <?php } else { ?>
@@ -50,7 +50,7 @@
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Reference %what% with'), array('what' => $LANG->_('users'))); ?></td>
 <?php $class=pql_format_table(0);
-      if($ALLOW_GLOBAL_CONFIG_SAVE) {
+      if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
 ?>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$branch?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_REFERENCE_USERS_WITH"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?> <?=$PQL_ATTRIBUTE["PQL_CONF_REFERENCE_USERS_WITH"]?>"></a></td>
 <?php } else { ?>
@@ -63,7 +63,7 @@
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Reference %what% with'), array('what' => $LANG->_('domains'))); ?></td>
 <?php $class=pql_format_table(0); 
-      if($ALLOW_GLOBAL_CONFIG_SAVE) {
+      if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
 ?>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$branch?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_REFERENCE_DOMAINS_WITH"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?> <?=$PQL_ATTRIBUTE["PQL_CONF_REFERENCE_DOMAINS_WITH"]?>"></a></td>
 <?php } else { ?>
@@ -76,7 +76,7 @@
       <tr>
         <td class="title"><?=$LANG->_('Minimum UID/GID Number to be used for shell and system accounts')?></td>
 <?php $class=pql_format_table(0);
-      if($ALLOW_GLOBAL_CONFIG_SAVE) {
+      if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
 ?>
         <td class="<?=$class?>">
           <a href="config_edit_attribute.php?rootdn=<?=$branch?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_MINIMUM_UIDNUMBER"]?>">
@@ -92,7 +92,7 @@
       <tr>
         <td class="title">UID <?=$LANG->_('number to be used for forwarding accounts')?></td>
 <?php $class=pql_format_table(0);
-      if($ALLOW_GLOBAL_CONFIG_SAVE) {
+      if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
 ?>
         <td class="<?=$class?>">
           <a href="config_edit_attribute.php?rootdn=<?=$branch?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_FORWARDINGACCOUNT_UIDNUMBER"]?>">
@@ -106,7 +106,7 @@
       </tr>
 
       <tr></tr>
-<?php if($ADVANCED_MODE) { ?>
+<?php if($_SESSION["ADVANCED_MODE"]) { ?>
 
       <!-- -------------------- --!>
       <tr>
@@ -175,7 +175,7 @@
 <?php             }
 				  $new_tr = 1;
 	      
-				  if($ALLOW_GLOBAL_CONFIG_SAVE and $sc[$i][$branch]) {
+				  if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"] and $sc[$i][$branch]) {
 ?>
 
         <td class="<?=$class?>">
@@ -192,7 +192,7 @@
 
       <tr>
         <td class="title"></td>
-<?php		  if($ALLOW_GLOBAL_CONFIG_SAVE) { ?>
+<?php		  if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
         <td class="<?=$class?>"></td>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$branch?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_PASSWORD_SCHEMES"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('password encryption scheme'))); ?></a></td>
 <?php		  } else { ?>
@@ -231,7 +231,7 @@
 <?php             }
 				  $new_tr = 1;
 
-				  if($ALLOW_GLOBAL_CONFIG_SAVE and $oc[$i][$branch]) {
+				  if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"] and $oc[$i][$branch]) {
 ?>
 
         <td class="<?=$class?>">
@@ -249,7 +249,7 @@
 
       <tr>
         <td class="title"></td>
-<?php     if($ALLOW_GLOBAL_CONFIG_SAVE) { ?>
+<?php     if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
         <td class="<?=$class?>"></td>
         <td class="<?=$class?>">
           <a href="config_edit_attribute.php?rootdn=<?=$branch?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_USER"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('user objectClass'))); ?></a>
@@ -258,7 +258,7 @@
       </tr>
 <?php     } else { ?>
         <td class="<?=$class?>"></td>
-<?php         if($ALLOW_GLOBAL_CONFIG_SAVE) { ?>
+<?php         if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
         <td class="<?=$class?>">
           <a href="config_edit_attribute.php?rootdn=<?=$branch?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_USER"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('user objectClass'))); ?></a>
         </td>
@@ -300,7 +300,7 @@
 <?php             }
 	          $new_tr = 1;
 
-			  if($ALLOW_GLOBAL_CONFIG_SAVE and $oc[$i][$branch]) {
+			  if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"] and $oc[$i][$branch]) {
 ?>
         <td class="<?=$class?>">
            <a href="config_edit_attribute.php?rootdn=<?=$branch?>&attrib=<?=$PQL_ATTRIBUTE["PQL_CONF_OBJECTCLASS_DOMAIN"]?>&delval=<?=$oc[$i][$branch]?>">
@@ -316,7 +316,7 @@
 
       <tr>
         <td class="title"></td>
-<?php     	  if($ALLOW_GLOBAL_CONFIG_SAVE) {
+<?php     	  if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
 ?>
         <td class="<?=$class?>"></td>
         <td class="<?=$class?>">

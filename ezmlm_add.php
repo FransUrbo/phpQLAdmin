@@ -1,11 +1,11 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.27 2003-11-20 08:01:29 turbo Exp $
+// $Id: ezmlm_add.php,v 1.27.2.1 2003-11-24 18:07:02 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 
-$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
+$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 // forward back to list detail page
 function list_forward($domainname, $msg) {
@@ -28,7 +28,7 @@ if(!$domainname) {
 	foreach($_pql->ldap_basedn as $dn)  {
 		$dn = urldecode($dn);
 
-		$dom = pql_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $USER_DN);
+		$dom = pql_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]);
 		foreach($dom as $d)
 		  $domains[] = $d;
 	}
@@ -126,7 +126,7 @@ if(!$domain) {
   <span class="title1"><?=$LANG->_('Create mailinglist')?></span>
 <?php
 } else {
-	$dom = pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR"), $USER_DN);
+	$dom = pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR"), $_SESSION["USER_DN"]);
 	if(is_array($dom)) {
 		if($ezmlm->mailing_lists_hostsindex["COUNT"] > pql_get_define("PQL_CONF_MAX_LISTS", $domain)) {
 ?>

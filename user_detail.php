@@ -1,11 +1,11 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.60 2003-11-20 08:01:29 turbo Exp $
+// $Id: user_detail.php,v 2.60.2.1 2003-11-24 18:07:02 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 
-$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
+$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 // Make sure we can have a ' in branch (also affects the user DN).
 $user   = eregi_replace("\\\'", "'", $user);
@@ -139,19 +139,19 @@ $buttons = array('basic'			=> 'User data',
 				 'forwards_from'	=> 'Forwarders from other accounts',
 				 'forwards_to'		=> 'Forwarders to other accounts');
 
-if($ADVANCED_MODE) {
+if($_SESSION["ADVANCED_MODE"]) {
 	$new = array('delivery_advanced'=> 'Advanced delivery properties',
 				 'mailbox'			=> 'Mailbox properties',
 				 'access'			=> 'User access');
 	$buttons = $buttons + $new;
 
-	if($ALLOW_BRANCH_CREATE && $ACI_SUPPORT_ENABLED) {
+	if($_SESSION["ALLOW_BRANCH_CREATE"] && $_SESSION["ACI_SUPPORT_ENABLED"]) {
 		$new = array('aci'			=> 'Access Control Information');
 		$buttons = $buttons + $new;
 	}
 }
 
-if(!$SINGLE_USER) {
+if(!$_SESSION["SINGLE_USER"]) {
 	$new = array('actions'			=> 'Actions');
 	$buttons = $buttons + $new;
 }
@@ -166,17 +166,17 @@ if($view == 'personal')					include("./tables/user_details-personal.inc");
 if($view == 'email')					include("./tables/user_details-email.inc");
 if($view == 'status')					include("./tables/user_details-status.inc");
 if($view == 'delivery')					include("./tables/user_details-delivery.inc");
-if($ADVANCED_MODE) {
+if($_SESSION["ADVANCED_MODE"]) {
 	if($view == 'delivery_advanced')	include("./tables/user_details-delivery_advanced.inc");
 	if($view == 'mailbox')				include("./tables/user_details-mailbox.inc");
 }
 if($view == 'forwards_from')			include("./tables/user_details-forwards_from.inc");
 if($view == 'forwards_to')				include("./tables/user_details-forwards_to.inc");
-if($ADVANCED_MODE and !$SINGLE_USER) {
+if($_SESSION["ADVANCED_MODE"] and !$_SESSION["SINGLE_USER"]) {
 	if($view == 'access')				include("./tables/user_details-access.inc");
 	if($view == 'aci')					include("./tables/user_details-aci.inc");
 }
-if(!$SINGLE_USER) {
+if(!$_SESSION["SINGLE_USER"]) {
 	if($view == 'actions')				include("./tables/user_details-action.inc");
 }
 

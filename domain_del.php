@@ -1,6 +1,6 @@
 <?php
 // delete a domain and all users within
-// $Id: domain_del.php,v 2.23 2003-11-19 16:20:26 turbo Exp $
+// $Id: domain_del.php,v 2.23.2.1 2003-11-24 18:07:02 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -16,8 +16,8 @@ $domain = urldecode($domain);
 														array("domain" => pql_maybe_decode($domain)))?></span>
 <?php
 if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
-	$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
-	$_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
+	$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
+	$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 	
 	$delete_forwards = (isset($delete_forwards) || pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) ? true : false;
 
@@ -33,18 +33,18 @@ if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
 
 		// Remove the domain name
 		if($domainname)
-		  pql_control_update_domains($_pql, $USER_SEARCH_DN_CTR, '*', array($domainname, ''));
+		  pql_control_update_domains($_pql, $_SESSION["USER_SEARCH_DN_CTR"], '*', array($domainname, ''));
 
 		// Remove the additional domain name(s)
 		if(is_array($additionals)) {
 			foreach($additionals as $additional)
-			  pql_control_update_domains($_pql, $USER_SEARCH_DN_CTR, '*', array($additional, ''));
+			  pql_control_update_domains($_pql, $_SESSION["USER_SEARCH_DN_CTR"], '*', array($additional, ''));
 		}
 	    
 		// Remove the SMTP route(s)
 		if(is_array($routes)) {
 			foreach($routes as $route)
-			  pql_control_update_domains($_pql, $USER_SEARCH_DN_CTR, '*', array($route, ''));
+			  pql_control_update_domains($_pql, $_SESSION["USER_SEARCH_DN_CTR"], '*', array($route, ''));
 		}
 	    
 	    $msg = $LANG->_('Successfully removed the domain');

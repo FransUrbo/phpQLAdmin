@@ -36,7 +36,7 @@ $status = pql_ldap_accountstatus($status);
     </th>
   </table>
 
-<?php if(!$SINGLE_USER) { ?>
+<?php if(!$_SESSION["SINGLE_USER"]) { ?>
   <p>
 
   <table cellspacing="0" cellpadding="3" border="0">

@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.14 2003-11-20 08:01:37 turbo Exp $
+// $Id: pql_bind9.inc,v 2.14.2.1 2003-11-24 18:07:08 dlw Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, dn)
@@ -163,7 +163,7 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 		$entry['ou'] = 'DNS';
 
 		// Add the OpenLDAPaci attribute (maybe)
-		if($ACI_SUPPORT_ENABLED)
+		if($_SESSION["ACI_SUPPORT_ENABLED"])
 		  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($ldap_linkid,
 																				  $GLOBALS["USER_DN"],
 																				  'dnszone');
@@ -189,7 +189,7 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 	$entry['objectclass'][] = 'domain';
 
 	// Add the OpenLDAPaci attribute (maybe)
-	if($ACI_SUPPORT_ENABLED) 
+	if($_SESSION["ACI_SUPPORT_ENABLED"]) 
 	  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($ldap_linkid,
 																			  $GLOBALS["USER_DN"],
 																			  'dnszone');
@@ -237,7 +237,7 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 	$entry['tXTRecord']			 = "$zonename";
 
 	// Add the OpenLDAPaci attribute (maybe)
-	if($ACI_SUPPORT_ENABLED)
+	if($_SESSION["ACI_SUPPORT_ENABLED"])
 	  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($ldap_linkid,
 																			  $GLOBALS["USER_DN"],
 																			  'dnszone');

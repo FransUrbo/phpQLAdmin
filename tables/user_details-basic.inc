@@ -6,13 +6,13 @@
 <?php $ref = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn); ?>
         <td><?=$$ref?></td>
         <td>
-<?php if(!$SINGLE_USER) { ?>
+<?php if(!$_SESSION["SINGLE_USER"]) { ?>
           <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=uid&user=<?=$userdn?>&oldvalue=<?=$uid?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change username')?>" border="0"></a>
 <?php } ?>
         </td>
       </tr>
 
-<?php if($ADVANCED_MODE) {
+<?php if($_SESSION["ADVANCED_MODE"]) {
 		// Part of the DN might be URL/UTF8 encoded...
 		$dnparts    = split(",", $user);							// Split up the DN to get the very first part
 		$userparts  = split("=", $dnparts[0]);						// Split the DN part into two parts - attribute and value.
@@ -28,7 +28,7 @@
         <td class="title"><?=$LANG->_('User DN')?></td>
         <td><?=$user?></td>
         <td>
-<?php if(!$SINGLE_USER) {
+<?php if(!$_SESSION["SINGLE_USER"]) {
 		@ldap_get_option($_pql->ldap_linkid, LDAP_OPT_PROTOCOL_VERSION, $version);
 		if($version >= 3) {
 			// Only allow an admin to rename object (if we're using LDAP v3)
@@ -55,12 +55,12 @@
         <td><a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=cn&user=<?=$userdn?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change common name')?>" border="0"></a></td>
       </tr>
 
-<?php if($ADVANCED_MODE) { ?>
+<?php if($_SESSION["ADVANCED_MODE"]) { ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Login shell')?></td>
         <td><?php if($loginshell){echo $loginshell;}else{echo $LANG->_('None');} ?></td>
         <td>
-<?php if(!$SINGLE_USER) { ?>
+<?php if(!$_SESSION["SINGLE_USER"]) { ?>
           <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=loginshell&user=<?=$userdn?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change login shell')?>" border="0"></a>
 <?php } ?>
         </td>
@@ -70,7 +70,7 @@
         <td class="title"><?=$LANG->_('Home directory')?></td>
         <td><?php if($homedirectory){echo $homedirectory;}else{echo $LANG->_('None');} ?></td>
         <td>
-<?php if(!$SINGLE_USER) { ?>
+<?php if(!$_SESSION["SINGLE_USER"]) { ?>
           <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=homedirectory&user=<?=$userdn?>&oldvalue=<?=urlencode($homedirectory);?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change home directory')?>" border="0"></a>
 <?php } ?>
         </td>

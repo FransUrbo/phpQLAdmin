@@ -1,6 +1,6 @@
 <?php
 // Add a new mailserver to the database
-// $Id: control_add_server.php,v 2.14 2003-11-20 08:01:28 turbo Exp $
+// $Id: control_add_server.php,v 2.14.2.1 2003-11-24 18:07:02 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -8,7 +8,7 @@ require("./include/pql_config.inc");
 if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
     // include control api if control is used
     include("./include/pql_control.inc");
-    $_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
+    $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
     include("./header.html");
 
@@ -50,7 +50,7 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 				if(isset($include_rcpthosts)) $attribs[] = pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS");
 				if(isset($include_password))  $attribs[] = pql_get_define("PQL_GLOB_ATTR_LDAPPASSWORD");
 
-				$cn = pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $cloneserver . "," . $USER_SEARCH_DN_CTR;
+				$cn = pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $cloneserver . "," . $_SESSION["USER_SEARCH_DN_CTR"];
 				foreach($attribs as $attrib) {
 					$value = pql_control_get_attribute($_pql_control->ldap_linkid, $cn, $attrib);
 					if(!is_null($value)) {
@@ -61,7 +61,7 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 				}
 
 				// Create the 'LDIF'
-				$dn						= pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $fqdn . "," . $USER_SEARCH_DN_CTR;
+				$dn						= pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $fqdn . "," . $_SESSION["USER_SEARCH_DN_CTR"];
 				$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][] = "top";
 				$entry[pql_get_define("PQL_GLOB_ATTR_OBJECTCLASS")][] = "qmailControl";
 				$entry[pql_get_define("PQL_GLOB_ATTR_CN")]			= $fqdn;
@@ -72,7 +72,7 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 				}
 
 				// Add the OpenLDAPaci attribute (maybe)
-				if($ACI_SUPPORT_ENABLED)
+				if($_SESSION["ACI_SUPPORT_ENABLED"])
 				  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($_pql_control->ldap_linkid, $GLOBALS["USER_DN"], 'qmail');
 				
 				// Create a LDIF object to print in case of error
@@ -93,7 +93,7 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 		}
 	}
 ?>
-  <span class="title1">Create mailserver controls object in LDAP server <?=$USER_HOST?></span>
+  <span class="title1">Create mailserver controls object in LDAP server <?=$_SESSION["USER_HOST"]?></span>
 
   <table cellspacing="0" cellpadding="3" border="0">
     <th>
@@ -120,7 +120,7 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
           <td class="title">Clone server</td>
           <td>
 <?php
-	$hosts = pql_control_get_hosts($_pql_control->ldap_linkid, $USER_SEARCH_DN_CTR);
+	$hosts = pql_control_get_hosts($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"]);
 	if(!is_array($hosts)) {
 ?>
             no LDAP control hosts defined
@@ -183,7 +183,7 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
         </tr>
   
 <?php
-	if($ADVANCED_MODE) {
+	if($_SESSION["ADVANCED_MODE"]) {
 ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">Plusdomain</td>
@@ -238,8 +238,8 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 	// ADVANCED_MODE set! But anyway, just incase I find a better way later :)
 ?>
         <input type="hidden" name="plusdomain" value="">
-        <input type="hidden" name="ldapserver" value="<?=$USER_HOST?>">
-        <input type="hidden" name="ldapbasedn" value="<?=$USER_HOST?>">
+        <input type="hidden" name="ldapserver" value="<?=$_SESSION["USER_HOST"]?>">
+        <input type="hidden" name="ldapbasedn" value="<?=$_SESSION["USER_HOST"]?>">
         <input type="hidden" name="ldapdefaultquota" value="">
         <input type="hidden" name="ldapdefaultdotmode" value="ldapwithprog">
         <input type="hidden" name="dirmaker" value="">

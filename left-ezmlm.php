@@ -1,6 +1,6 @@
 <?php
 // navigation bar - ezmlm mailinglists manager
-// $Id: left-ezmlm.php,v 2.21 2003-11-19 16:20:27 turbo Exp $
+// $Id: left-ezmlm.php,v 2.21.2.1 2003-11-24 18:07:02 dlw Exp $
 //
 session_start();
 
@@ -23,7 +23,7 @@ require("./left-head.html");
 
 <?php
 // Initialize
-$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS, false, 0);
+$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"], false, 0);
 
 // Get ALL domains we have access to.
 //	administrator: USER_DN
@@ -31,7 +31,7 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS, false, 0);
 foreach($_pql->ldap_basedn as $dn)  {
 	$dn = urldecode($dn);
 
-    $dom = pql_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR"), $USER_DN);
+    $dom = pql_domain_value($_pql, $dn, pql_get_define("PQL_GLOB_ATTR_EZMLMADMINISTRATOR"), $_SESSION["USER_DN"]);
     if($dom) {
 		foreach($dom as $d) {
 			$domains[] = urlencode($d);

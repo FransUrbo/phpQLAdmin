@@ -1,6 +1,6 @@
 <?php
 // delete attribute of a user
-// $Id: user_del_attribute.php,v 2.24 2003-11-14 11:55:52 turbo Exp $
+// $Id: user_del_attribute.php,v 2.24.2.1 2003-11-24 18:07:02 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -21,7 +21,7 @@ switch ($attrib) {
 include("./header.html");
 
 if(isset($ok) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
-    $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
+    $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
     
     // delete the user attribute
     if(pql_modify_userattribute($_pql->ldap_linkid, $user, $attrib, $oldvalue, '')) {

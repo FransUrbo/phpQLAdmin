@@ -1,13 +1,13 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.24 2003-11-20 08:01:28 turbo Exp $
+// $Id: control_detail.php,v 1.24.2.1 2003-11-24 18:07:02 dlw Exp $
 session_start();
 require("./include/pql_config.inc");
 
 if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
     // include control api if control is used
     include("./include/pql_control.inc");
-    $_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
+    $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 	include("./header.html");
 
@@ -25,7 +25,7 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 					 pql_get_define("PQL_GLOB_ATTR_RCPTHOSTS"),
 					 pql_get_define("PQL_GLOB_ATTR_LDAPLOGIN"),
 					 pql_get_define("PQL_GLOB_ATTR_LDAPPASSWORD"));
-	$cn = pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $mxhost . "," . $USER_SEARCH_DN_CTR;
+	$cn = pql_get_define("PQL_GLOB_ATTR_CN") . "=" . $mxhost . "," . $_SESSION["USER_SEARCH_DN_CTR"];
 
 	foreach($attribs as $attrib) {
 		$value = pql_control_get_attribute($_pql_control->ldap_linkid, $cn, $attrib);
@@ -47,9 +47,9 @@ if(pql_get_define("PQL_GLOB_CONTROL_USE")) {
 			}
 		} else {
 			if($attrib == pql_get_define("PQL_GLOB_ATTR_LDAPSERVER"))
-			  $$attrib = "<i>".$USER_HOST."</i>";
+			  $$attrib = "<i>".$_SESSION["USER_HOST"]."</i>";
 			elseif($attrib == pql_get_define("PQL_GLOB_ATTR_LDAPBASEDN"))
-			  $$attrib = "<i>".$USER_SEARCH_DN_CTR."</i>";
+			  $$attrib = "<i>".$_SESSION["USER_SEARCH_DN_CTR"]."</i>";
 			else
 			  $$attrib = "<i>".$LANG->_('Not set')."</i>";
 		}

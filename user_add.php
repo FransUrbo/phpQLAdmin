@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.78 2003-11-20 08:01:29 turbo Exp $
+// $Id: user_add.php,v 2.78.2.1 2003-11-24 18:07:02 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -48,7 +48,7 @@ switch($page_curr) {
   case "":
 	// ------------------------------------------------
 	// Step 1: Selected account type (see how many users there can be)
-	if($maxusers and !$ALLOW_BRANCH_CREATE) {
+	if($maxusers and !$_SESSION["ALLOW_BRANCH_CREATE"]) {
 		if(count(pql_user_get($_pql->ldap_linkid, $domain)) >= $maxusers) {
 			// We have reached the maximum amount of users.
 			include("./header.html");
@@ -208,7 +208,7 @@ switch($page_curr) {
 	// Check the mailHost attribute/value
 	if(($account_type != "shell") and pql_get_define("PQL_GLOB_CONTROL_USE")) {
 		// Initiate a connection to the QmailLDAP/Controls DN
-		$_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
+		$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 		
 		if($_pql_control->ldap_linkid) {
 			// Find MX (or QmailLDAP/Controls with locals=$email_domain)
@@ -281,7 +281,7 @@ include("./header.html");
   <span class="title1">
     <?php echo pql_complete_constant($LANG->_('Create user in domain %domain%'), array("domain" => $orgname)); ?>
 <?php
-if($ADVANCED_MODE && $account_type) {
+if($_SESSION["ADVANCED_MODE"] && $account_type) {
 	if($account_type == 'normal')
 	  echo " - ".$LANG->_('Mail account');
 	elseif($account_type == 'system')

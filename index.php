@@ -1,6 +1,6 @@
 <?php
 // logins to the system
-// $Id: index.php,v 2.30 2003-11-14 11:55:52 turbo Exp $
+// $Id: index.php,v 2.30.2.1 2003-11-24 18:07:02 dlw Exp $
 //
 // Start debuging
 // http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0
@@ -12,11 +12,11 @@ require("./include/pql_config.inc");
 if ($logout == 1 or !empty($msg)) {
 	if ($logout == 1) {
 		$log = date("M d H:i:s");
-		$log .= " : Logged out ($USER_DN)\n";
+		$log .= " : Logged out (" . $_SESSION["USER_DN"] . ")\n";
 		error_log($log, 3, "phpQLadmin.log");
 	}
 
-	session_unset();
+	$_SESSION = array();
 	session_destroy();
 
 	if ($logout == 1) {
@@ -31,12 +31,12 @@ if ($LOGIN_PASS == 1) {
 if (empty($uname) or empty($passwd)) {
 	include("./header.html");
 
-	if(!$USER_HOST) {
+	if(!$_SESSION["USER_HOST"]) {
 		if(! eregi('\+', pql_get_define("PQL_GLOB_HOST"))) {
 			$host = split(';', pql_get_define("PQL_GLOB_HOST"));
-			$USER_HOST = $host[0] . ";" . $host[1] . ";" . $host[2];
+			$_SESSION["USER_HOST"] = $host[0] . ";" . $host[1] . ";" . $host[2];
 			
-			session_register("USER_HOST");
+			/*session_register("USER_HOST");*/
 		}
 	}
 
@@ -83,7 +83,7 @@ if (empty($uname) or empty($passwd)) {
           </select>
 <?php
 	} else {
-		$server = split(';', $USER_HOST);
+		$server = split(';', $_SESSION["USER_HOST"]);
 ?>
         <b><?=$server[0].":".$server[1]?></b>
         <input type="hidden" name="server" value="<?php echo pql_get_define("PQL_GLOB_HOST"); ?>">
@@ -128,37 +128,37 @@ if (empty($uname) or empty($passwd)) {
 } else {
 	// -------------------------------------
 	// Get the LDAP server
-	if(!$USER_HOST) {
+	if(!$_SESSION["USER_HOST"]) {
 		$host = split(';', $server);
-		$USER_HOST = $host[0] . ";" . $host[1];
+		$_SESSION["USER_HOST"] = $host[0] . ";" . $host[1];
 		
-		session_register("USER_HOST");
-	} elseif(is_array($USER_HOST)) {
-		$host = $USER_HOST[0];
-		$USER_HOST = $host;
+		/*session_register("USER_HOST");*/
+	} elseif(is_array($_SESSION["USER_HOST"])) {
+		$host = $_SESSION["USER_HOST"][0];
+		$_SESSION["USER_HOST"] = $host;
 		
-		session_register("USER_HOST");
+		/*session_register("USER_HOST");*/
 	} elseif($server) {
-		$USER_HOST=$server;
-		session_register("USER_HOST");
+		$_SESSION["USER_HOST"]=$server;
+		/*session_register("USER_HOST");*/
 	}
 
 	// -------------------------------------
 	// Get the search base - controls database
-	if(!$USER_SEARCH_DN_CTR) {
+	if(!$_SESSION["USER_SEARCH_DN_CTR"]) {
 		// Get first entry -> default server:port
 		$host = split('\+', $server);
 
 		// Get hostname and base DN
 		$dn   = split(';', $host[0]);
-		$USER_SEARCH_DN_CTR = $dn[2];
+		$_SESSION["USER_SEARCH_DN_CTR"] = $dn[2];
 
-		session_register("USER_SEARCH_DN_CTR");
-	} elseif(is_array($USER_SEARCH_DN_CTR)) {
-		$host = $USER_HOST[2];
-		$USER_SEARCH_DN_CTR = $host;
+		/*session_register("USER_SEARCH_DN_CTR");*/
+	} elseif(is_array($_SESSION["USER_SEARCH_DN_CTR"])) {
+		$host = $_SESSION["USER_HOST"][2];
+		$_SESSION["USER_SEARCH_DN_CTR"] = $host;
 
-		session_register("USER_SEARCH_DN_CTR");
+		/*session_register("USER_SEARCH_DN_CTR");*/
 	}
 
 	// NOTE:
@@ -167,7 +167,7 @@ if (empty($uname) or empty($passwd)) {
 	// We must have read access (to the DN and CN/UID =>
 	// the PQL_CONF_REFERENCE_USERS_WITH define entry) as
 	// anonymous here!
-	$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
+	$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 	// -------------------------------------
 	// Get DN of user
@@ -194,8 +194,8 @@ if (empty($uname) or empty($passwd)) {
 		}
 	}
 
-	if($passwd and !$USER_PASS)
-	  $USER_PASS = $passwd;
+	if($passwd and !$_SESSION["USER_PASS"])
+	  $_SESSION["USER_PASS"] = $passwd;
 
 	if($error) {
 		$msg = $LANG->_('Error') . ": " . ldap_err2str($error);
@@ -203,11 +203,11 @@ if (empty($uname) or empty($passwd)) {
 		exit;
 	}
 
-	$USER_ID	= $uname;
-	$USER_DN	= $rootdn;
+	$_SESSION["USER_ID"]	= $uname;
+	$_SESSION["USER_DN"]	= $rootdn;
 
-	if(! session_register("USER_ID", "USER_PASS", "USER_DN"))
-	  die($LANG->_('Could not register session variables'));
+	/*if(! session_register("USER_ID", "USER_PASS", "USER_DN"))
+	  die($LANG->_('Could not register session variables'));*/
 
 	$log = date("M d H:i:s");
 	$log .= " : Logged in ($rootdn)\n";

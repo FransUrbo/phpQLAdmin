@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: domain_add.php,v 2.41 2003-11-20 08:01:28 turbo Exp $
+// $Id: domain_add.php,v 2.41.2.1 2003-11-24 18:07:02 dlw Exp $
 //
 session_start();
 
@@ -15,8 +15,8 @@ include("./header.html");
   <span class="title1"><?=$LANG->_('Create domain')?>: <?=$domain?></span>
   <br><br>
 <?php
-$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
-$_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
+$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
+$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 // Should we force a dot in the domainname or not?
 if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $rootdn) == "dc" or
@@ -53,7 +53,7 @@ if($dns[0]) {
 
 	if($defaultdomain != "") {
 		// update locals if control patch is enabled
-		pql_control_update_domains($_pql, $USER_SEARCH_DN_CTR, '*', array('', $defaultdomain));
+		pql_control_update_domains($_pql, $_SESSION["USER_SEARCH_DN_CTR"], '*', array('', $defaultdomain));
 	}
 
 	// Default values we can easily figure out
@@ -90,7 +90,7 @@ if($dns[0]) {
 	  $msg = $LANG->_('Failed to change the default domainname') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	
 	// The creator is by default the administrator
-	if(! pql_set_domain_value($_pql->ldap_linkid, $dns[0], pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $USER_DN))
+	if(! pql_set_domain_value($_pql->ldap_linkid, $dns[0], pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]))
 	  $msg = $LANG->_('Failed to change the default domainname') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 
 	// Create a template DNS zone

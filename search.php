@@ -1,6 +1,6 @@
 <?php
 // shows results of search
-// $Id: search.php,v 2.21 2003-11-20 08:01:29 turbo Exp $
+// $Id: search.php,v 2.21.2.1 2003-11-24 18:07:02 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -28,7 +28,7 @@ if(isset($rlnb) and pql_get_define("PQL_GLOB_AUTO_RELOAD")) {
   <br><br>
 
 <?php
-$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
+$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 // test for submission of variables
 if ($attribute == "" || $filter_type == "" || $search_string == "") {
@@ -83,7 +83,7 @@ if(!$GLOBALS["SINGLE_USER"]) {
 	$dn = '';
 
 	// Get branch for user
-    $dnparts = ldap_explode_dn($USER_DN, 0);
+    $dnparts = ldap_explode_dn($_SESSION["USER_DN"], 0);
 	for($i=1; $dnparts[$i]; $i++) {
 		$dn .= $dnparts[$i];
 		if($dnparts[$i+1])

@@ -1,13 +1,13 @@
 <?php
 // shows details of specified category of attributes
-// $Id: control_cat.php,v 2.13 2003-11-20 08:01:28 turbo Exp $
+// $Id: control_cat.php,v 2.13.2.1 2003-11-24 18:07:02 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
 require("./include/pql_control.inc");
 require("./include/pql_control_plugins.inc");
 
-$_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
+$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 // register all attribute plugins here (require)
 $plugins = pql_plugin_get_catplugins($cat);
