@@ -1,17 +1,18 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.40 2005-02-24 17:04:00 turbo Exp $
+// $Id: control_detail.php,v 1.41 2005-02-26 17:28:52 turbo Exp $
 session_start();
 require("./include/pql_config.inc");
 
 if(pql_get_define("PQL_CONF_CONTROL_USE")) {
-    // include control api if control is used
+    // {{{ Include control api if control is used
     include($_SESSION["path"]."/include/pql_control.inc");
     $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 	include($_SESSION["path"]."/header.html");
+	// }}}
 
-	// Get the values of the mailserver
+	// {{{ Get the values of the mailserver
 	$attribs = array("defaultdomain"		=> pql_get_define("PQL_ATTR_DEFAULTDOMAIN"),
 					 "plusdomain"			=> pql_get_define("PQL_ATTR_PLUSDOMAIN"),
 					 "ldapserver"			=> pql_get_define("PQL_ATTR_LDAPSERVER"),
@@ -64,19 +65,22 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 										  'maxsize'  => $defaultquotasize));
 	} elseif($ldapdefaultquota)
 		$quota = pql_ldap_mailquota(pql_parse_quota($quota));
+	// }}}
 
-	// print status message, if one is available
+	// {{{ Print status message, if one is available
 	if(isset($msg))
 	  pql_format_status_msg($msg);
+	// }}}
 
-	// Just incase we have a new style quota, but not an old one...
+	// {{{ Just incase we have a new style quota, but not an old one...
 	if(($defaultquotasize and !eregi('not set', $defaultquotasize)) and
 	   ($defaultquotacount and !eregi('not set', $defaultquotacount)))
 	  $quota = $defaultquotasize."S,".$defaultquotacount."C";
 	elseif($ldapdefaultquota and !eregi('not set', $ldapdefaultquota))
 	  $quota = $ldapdefaultquota;
+	// }}}
 
-	// reload navigation bar if needed
+	// {{{ Reload navigation bar if needed
 	if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
 ?>
 
@@ -85,7 +89,9 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 	// reload navigation frame
 	parent.frames.pqlnavctrl.location.reload();
   //--></script>
-<?php } ?>
+<?php }
+// }}}
+?>
 
   <span class="title1">Mailserver: <?=pql_maybe_idna_decode($_REQUEST["mxhost"])?></span>
 
@@ -93,7 +99,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 
   <table cellspacing="0" border="0" width="100%" cellpadding="0">
     <tr>
-      <td colspan="2" valign="bottom" align="left" width="100%"><a href="<?=$_SERVER["PHP_SELF"]."?mxhost=".$_REQUEST["mxhost"]."&view=default"?>"><img alt="/ Base Values \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?Base Values"></a><a href="<?=$_SERVER["PHP_SELF"]."?mxhost=".$_REQUEST["mxhost"]."&view=hosts"?>"><img alt="/ Locals and RCPT Hosts \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?Locals and RCPT Hosts"></a><br><a href="<?=$_SERVER["PHP_SELF"]."?mxhost=".$_REQUEST["mxhost"]."&view=action"?>"><img alt="/ Action \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?Action"></a></td>
+      <td colspan="2" valign="bottom" align="left" width="100%"><a href="<?=$_SERVER["PHP_SELF"]."?mxhost=".$_REQUEST["mxhost"]."&view=default"?>"><img alt="/ Base Values \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?Base Values"></a><a href="<?=$_SERVER["PHP_SELF"]."?mxhost=".$_REQUEST["mxhost"]."&view=hosts"?>"><img alt="/ Locals and RCPT Hosts \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?Locals and RCPT Hosts"></a><a href="<?=$_SERVER["PHP_SELF"]."?mxhost=".$_REQUEST["mxhost"]."&view=action"?>"><img alt="/ Action \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?Action"></a></td>
   </tr>
 </table>
 
@@ -117,7 +123,6 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 /*
  * Local variables:
  * mode: php
- * mode: font-lock
  * tab-width: 4
  * End:
  */
