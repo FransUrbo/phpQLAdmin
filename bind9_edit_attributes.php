@@ -1,6 +1,6 @@
 <?php
 // edit attributes of a BIND9 DNS zone
-// $Id: bind9_edit_attributes.php,v 2.6 2005-01-30 09:24:36 turbo Exp $
+// $Id: bind9_edit_attributes.php,v 2.7 2005-01-30 10:35:39 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -8,7 +8,7 @@ require("./include/pql_bind9.inc");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
-// forward back to domain detail page
+// {{{ Forward back to domain detail page
 function attribute_forward($msg) {
     $msg  = urlencode($msg);
     $url  = "domain_detail.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"]."&view=".$_REQUEST["view"];
@@ -16,6 +16,7 @@ function attribute_forward($msg) {
 
     header("Location: " . pql_get_define("PQL_CONF_URI") . "$url");
 }
+// }}}
 
 include("./header.html");
 include("./include/attrib.dnszone.inc");
@@ -24,7 +25,7 @@ include("./include/attrib.dnszone.inc");
     <br><br>
 
 <?php
-// Translate the TYPE to dNSZone objectclass attribute
+// {{{ Translate the TYPE to dNSZone objectclass attribute
 switch($_REQUEST["type"]) {
   case "a":
 	$_REQUEST["attrib"] = pql_get_define("PQL_ATTR_ARECORD");
@@ -53,8 +54,9 @@ switch($_REQUEST["type"]) {
   default:
 	die("unknown zone type '".$_REQUEST["type"]."'.");
 }
+// }}}
 
-// Select what to do
+// {{{ Select what to do
 if(($_REQUEST["action"] == 'del') && $_REQUEST["oldvalue"]) {
 	attribute_save($_REQUEST["action"]);
 } elseif($_REQUEST["submit"] == 1) {
@@ -65,6 +67,7 @@ if(($_REQUEST["action"] == 'del') && $_REQUEST["oldvalue"]) {
 } else {
     attribute_print_form();
 }
+// }}}
 ?>
   </body>
 </html>
