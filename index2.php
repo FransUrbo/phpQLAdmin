@@ -1,5 +1,5 @@
 <?php
-// $Id: index2.php,v 2.31.8.1 2004-10-05 15:38:38 turbo Exp $
+// $Id: index2.php,v 2.31.8.1.4.1 2004-11-06 08:31:36 turbo Exp $
 
 session_start();
 require("./include/pql_config.inc");
@@ -15,39 +15,41 @@ if(pql_get_define("PQL_CONF_EZMLM_USE")) {
 
 // -----------------
 // Check if this user is a QmailLDAP/Controls administrator
-foreach($_pql->ldap_basedn as $dn)  {
-    $dn = urldecode($dn);
-
-    $controladmins = pql_domain_get_value($_pql, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"));
-    if(is_array($controladmins)) {
-	foreach($controladmins as $admin)
-	  if($admin == $_SESSION["USER_DN"]) {
-	      $controlsadministrator = 1;
-	      continue;
-	  }
-    } elseif($controladmins == $_SESSION["USER_DN"]) {
-	$controlsadministrator = 1;
-	continue;
+$counted = 0; // Don't count each of the Control usage more than once
+if(pql_get_define("PQL_CONF_CONTROL_USE")) {
+    foreach($_pql->ldap_basedn as $dn)  {
+	$dn = urldecode($dn);
+	
+	$controladmins = pql_domain_get_value($_pql, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"));
+	if(is_array($controladmins)) {
+	    foreach($controladmins as $admin)
+	      if($admin == $_SESSION["USER_DN"]) {
+		  $controlsadministrator = 1;
+		  continue;
+	      }
+	} elseif($controladmins == $_SESSION["USER_DN"]) {
+	    $controlsadministrator = 1;
+	    continue;
+	}
+	
+	if(pql_validate_administrator($_pql->ldap_linkid, $dn, $_SESSION["USER_DN"]))
+	  // User is super administrator. Full access!
+	  $controlsadministrator = 1;
     }
 }
 
 // -----------------
 // Should we show the controls frame (ie, is controls configured
 // in ANY of the namingContexts)?
-$counted = 0; // Don't count each of the Control usage more than once
-foreach($_pql->ldap_basedn as $dn)  {
-    $dn = urldecode($dn);
-
-    if(pql_get_define("PQL_CONF_CONTROL_USE") and $_SESSION["ALLOW_CONTROL_CREATE"] and $controlsadministrator) {
-	$SHOW_FRAME["controls"] = 1;
-	if(!$counted) {
-	    $frames++;
-	    $counted = 1;
-	}
-
-        // We need this value for the quota change at least/well...
-        $_SESSION["USE_CONTROLS"] = 1;
+if($_SESSION["ALLOW_CONTROL_CREATE"] and $controlsadministrator) {
+    $SHOW_FRAME["controls"] = 1;
+    if(!$counted) {
+	$frames++;
+	$counted = 1;
     }
+    
+    // We need this value for the quota change at least/well...
+    $_SESSION["USE_CONTROLS"] = 1;
 }
 
 // -----------------
