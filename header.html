@@ -5,9 +5,9 @@
     <link rel="stylesheet" href="normal.css" type="text/css">
 
 <?php
-  $opera==0;
   $br = strtolower(getenv("HTTP_USER_AGENT"));
-  if(ereg("opera", $br)) {
+  $opera = eregi("opera", $br);
+  if($opera) {
       $opera=true;
 ?>
     <script src="opera.js" type="text/javascript" language="javascript1.2"></script>
