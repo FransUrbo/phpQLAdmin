@@ -72,7 +72,7 @@ attributetype ( 1.3.6.1.4.1.7006.1.2.1.26 NAME 'localIpHost'
 attributetype ( 1.3.6.1.4.1.7006.1.2.1.27 NAME 'locals'
 	DESC 'List of domain names that the current host receives mail for.'
 	EQUALITY caseIgnoreIA5Match
-	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{32768} )
 
 attributetype ( 1.3.6.1.4.1.7006.1.2.1.28 NAME 'moreRcptHosts'
 	DESC 'Extra allowed RCPT domains.'
@@ -102,7 +102,7 @@ attributetype ( 1.3.6.1.4.1.7006.1.2.1.32 NAME 'queueLifetime'
 attributetype ( 1.3.6.1.4.1.7006.1.2.1.33 NAME 'rcptHosts'
 	DESC 'Allowed RCPT domains.'
 	EQUALITY caseIgnoreIA5Match
-	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 )
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{32768} )
 
 attributetype ( 1.3.6.1.4.1.7006.1.2.1.34 NAME 'smtpGreeting'
 	DESC 'SMTP greeting message.'
