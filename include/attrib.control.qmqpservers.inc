@@ -2,7 +2,7 @@
 // control attribute plugin for
 // qmqpservers (max number of bytes in message)
 //
-// $Id: attrib.control.qmqpservers.inc,v 2.7 2003-05-06 07:52:59 turbo Exp $
+// $Id: attrib.control.qmqpservers.inc,v 2.8 2003-05-20 06:01:22 turbo Exp $
 
 function qmqpservers_check($type) {
 	global $error, $qmqpservers;
@@ -128,7 +128,7 @@ function qmqpservers_print_form() {
 
 <?php } ?>
         <tr class="subtitle">
-          <td><a href="<?php echo $PHP_SELF; ?>?attrib=<?php echo $attrib; ?>&qmqpcount=<?php echo ($qmqpcount + 1); ?>">add additional address</a> (please save first, changes will be lost)</td>
+          <td><a href="<?$PHP_SELF?>?attrib=<?$attrib?>&qmqpcount=<?=($qmqpcount+1)?>&mxhost=<?=$mxhost?>">add additional address</a> (please save first, changes will be lost)</td>
         </tr>
 
         <tr class="subtitle">
@@ -139,7 +139,6 @@ function qmqpservers_print_form() {
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 

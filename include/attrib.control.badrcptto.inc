@@ -2,7 +2,7 @@
 // control attribute plugin for
 // badrcptto (blocked local addresses)
 //
-// $Id: attrib.control.badrcptto.inc,v 2.7 2003-05-06 07:52:59 turbo Exp $
+// $Id: attrib.control.badrcptto.inc,v 2.8 2003-05-20 06:01:21 turbo Exp $
 
 function badrcptto_check($type) {
 	global $error, $badrcptto;
@@ -117,7 +117,7 @@ function badrcptto_print_form(){
 
 <?php } ?>
         <tr class="subtitle">
-          <td><a href="<?php echo $PHP_SELF; ?>?attrib=<?php echo $attrib; ?>&badcount=<?php echo ($badcount + 1); ?>">add additional address</a> (please save first, changes will be lost)</td>
+          <td><a href="<?=$PHP_SELF?>?attrib=<?=$attrib?>&badcount=<?=($badcount+1)?>&mxhost=<?=$mxhost?>">add additional address</a> (please save first, changes will be lost)</td>
         </tr>
 
         <tr class="subtitle">
@@ -128,7 +128,6 @@ function badrcptto_print_form(){
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?php echo $attrib; ?>">
-    <input type="hidden" name="mxhost" value="<?=$mxhost?>">
     <input type="submit" value="<?php echo PQL_LANG_SAVE; ?>">
   </form>
 
