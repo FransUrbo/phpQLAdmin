@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.23 2004-11-05 13:41:28 turbo Exp $
+// $Id: pql_search.inc,v 2.24 2004-11-08 10:26:56 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -261,13 +261,20 @@ function pql_email_exists($ldap, $email) {
 }
 // }}}
 
-// {{{ pql_validate_administrator(linkid, dn, admin)
-function pql_validate_administrator($linkid, $dn, $admin) {
-	$result = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR"));
-	if($result)
-	  return(true);
+// {{{ pql_validate_administrator(linkid, dn, attrib, admin)
+function pql_validate_administrator($linkid, $dn, $attrib, $admin) {
+	$dn = urldecode($dn);
 
-	return(false);
+	$result = pql_get_attribute($linkid, $dn, $attrib);
+	if(!$result)
+	  return(false);
+
+	if(is_array($result)) {
+		foreach($result as $res)
+		  if($admin == $res)
+			return(true);
+	} elseif($result == $admin)
+	  return(true);
 }
 // }}}
 
