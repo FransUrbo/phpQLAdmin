@@ -11,7 +11,7 @@
 // If you want to customise phpQLAdmin, do NOT do it here, the file
 // to customise is 'config_attributes.inc'.
 //
-// $Id: config_plugins.inc,v 2.1 2003-08-15 08:06:17 turbo Exp $
+// $Id: config_plugins.inc,v 2.2 2003-08-18 08:24:42 turbo Exp $
 
 pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_ISACTIVE"),
 					"attrib.accountstatus.inc",
@@ -163,6 +163,11 @@ pql_plugin_register(pql_get_define("PQL_GLOB_ATTR_CN"),
 					"attrib.cn.inc",
 					"",
 					pql_get_define("PQL_GLOB_ATTR_CN"));
+
+pql_plugin_register("modrdn",
+					"attrib.modrdn.inc",
+					"",
+					"modrdn");
 
 // List all registred attributes and their files
 // - Uncomment this piece of code to view which

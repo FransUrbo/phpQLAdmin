@@ -12,11 +12,32 @@
         </td>
       </tr>
 
-<?php if($ADVANCED_MODE) { ?>
+<?php if($ADVANCED_MODE) {
+		// Part of the DN might be URL/UTF8 encoded...
+		$dnparts    = split(",", $user);							// Split up the DN to get the very first part
+		$userparts  = split("=", $dnparts[0]);						// Split the DN part into two parts - attribute and value.
+		$userdnpart = maybe_decode($userparts[1], $userparts[0]);	// Maybe URL/UTF8 decode the value
+		$user = $userparts[0]."=".$userdnpart.",";					// Create a new DN part
+		for($i=1; $dnparts[$i]; $i++) {								// Add the rest of the DN
+			$user .= $dnparts[$i];
+			if($dnparts[$i+1])
+			  $user .= ",";
+		}
+?>
       <tr class="<?php table_bgcolor(); ?>">
         <td class="title"><?=$LANG->_('User DN')?></td>
         <td><?=$user?></td>
-        <td></td>
+        <td>
+<?php if(!$SINGLE_USER) {
+		@ldap_get_option($_pql->ldap_linkid, LDAP_OPT_PROTOCOL_VERSION, $version);
+		if($version >= 3) {
+			// Only allow an admin to rename object (if we're using LDAP v3)
+?>
+          <a href="user_edit_attribute.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&attrib=modrdn&user=<?=$userdn?>&view=<?=$view?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Rename DN')?>" border="0"></a>
+<?php	}
+	  }
+?>
+        </td>
       </tr>
 
 <?php } ?>
