@@ -74,6 +74,15 @@ phpQLAdmin 2.0.18e TO BE ANNOUNCED
 	  - Before adding the 'accountStatus' attribute (when creating a user), make
 	    sure that we have an object class that allows it AND that we've actually
 	    SET the value!
+	  - Make sure that the domain DN is included into the call to domain_edit_attributes.php
+	    so that adding/removing an administrator works.
+	    + Try to get the $_REQUEST array right depending on how we're called. There's
+	      still some confusion on the usage of $_REQUEST[{branchdn,user,domain}].
+	      Hopfully I got it right this time...
+	  - Decode the domain, user and root DN's (in user_add_attribute.php) and put
+	    them in the global $url array the same way that's done in all the other
+	    'main pages' in the top directory. It's used (amongs other) in
+	    include/attrib.mailalternateaddress.inc.
 
 	GUI layout change
 	  - Folding tags added in attrib.mail.inc.
@@ -86,6 +95,7 @@ phpQLAdmin 2.0.18e TO BE ANNOUNCED
 	    through the useACI attribute in the base DN(s).
 	  - I want the server statistics in its own subbranch. Have nothing (?) to do
 	    with configuration, so it makes more sense...
+	  - Non-java browser advanced/simple mode toggle.
 
 	Misc changes	
 	  - Remove some redundant printr() debug messages.
@@ -103,6 +113,15 @@ phpQLAdmin 2.0.18e TO BE ANNOUNCED
 	    is/was the recommended way anyway).
 	  - Add ACI example lines for branch additions and cleanup up the examples a
 	    little (more the way I want them :).
+	  - Update documentation for PQL_CONF_HOST - not a root DN.
+	  - Updating the ACI examples in include/config.inc.CHANGE_ME:
+	    + Instead of tagging the OID value in an ACI with '1.2.3', use a counter
+	      (which is/was the recommended way anyway).
+	    + Add ACI example lines for branch additions.
+	    + Cleanup the ACI examples a little (more the way I want them :).
+	  - When adding a user and just before adding the 'accountStatus' attribute,
+	    make sure that we have an object class that allows it AND that we've actually
+	    SET the value to something meaningfull!
 
 phpQLAdmin 2.0.18d Release (May 19 2004)
 	Bug fixes
