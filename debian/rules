@@ -49,30 +49,38 @@ install: build
 		find -type d -name CVS -o -name '.cvsignore' \
 			-o -name '*~' -o -name '.#*' \
 		| xargs rm -rf;\
+	  rm -Rf debian; \
 	  echo $(version)"-"$(revision)" (Debian GNU/Linux)" > .version; \
-	  cd include && ln -s ../../../../etc/config.inc .; \
+	  cd include && ln -s /etc/phpqladmin/config.inc .; \
 	)
 
 
 # Build architecture-independent files here.
 binary-indep: build install
-# We have nothing to do by default.
+	dh_testdir -i
+	dh_testroot -i
 
-# Build architecture-dependent files here.
-binary-arch: build install
-	dh_testdir
-	dh_testroot
-	dh_installdocs
-	dh_installexamples
-	dh_installcron
+	dh_installdocs -i
+	dh_installexamples -i
+	dh_installcron -i
 	dh_installchangelogs CHANGES
-	dh_compress
-	dh_fixperms
-	dh_installdeb
-	dh_shlibdeps
-	dh_gencontrol
-	dh_md5sums
-	dh_builddeb
+	dh_installdebconf -i
+
+	dh_compress -i
+	dh_fixperms -i
+
+	(cd $(INSTDIR) && \
+	  find -type f | xargs chmod 644; \
+	  chmod 755 *.pl)
+
+	dh_installdeb -i
+	dh_shlibdeps -i
+	dh_gencontrol -i
+
+	dh_md5sums -i
+	dh_builddeb -i
+
+binary-arch: build install
 
 binary: binary-indep binary-arch
 .PHONY: build clean binary-indep binary-arch binary install configure
