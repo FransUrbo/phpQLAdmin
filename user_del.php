@@ -1,7 +1,8 @@
 <?php
 // delete a user
-// $Id: user_del.php,v 2.36 2005-02-24 17:04:01 turbo Exp $
+// $Id: user_del.php,v 2.37 2005-02-25 07:33:15 turbo Exp $
 //
+// {{{ Setup session etc
 session_start();
 require("./include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_ezmlm.inc");
@@ -13,8 +14,9 @@ include($_SESSION["path"]."/header.html");
 $url["domain"]		= pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"]		= pql_format_urls($_REQUEST["rootdn"]);
 $url["user"]		= pql_format_urls($_REQUEST["user"]);
+// }}}
 
-// Get organization name for domain and common name of user
+// {{{ Get organization name for domain and common name of user
 $o = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_O"));
 if(!$o) {
 	// No 'organization' attribute (or it's not configured - 0)
@@ -26,17 +28,20 @@ $cn = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("P
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove user %user% from domain %domain%'), array("domain" => $o, "user" => $cn)); ?></span>
   <br><br>
 <?php
+// }}}
 
 if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST["rootdn"])) {
+	// {{{ Delete a user from the database
 	$delete_forwards = (isset($_REQUEST["delete_forwards"]) || pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST["rootdn"])) ? true : false;
 	$delete_admins   = (isset($_REQUEST["delete_admins"])   || pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST["rootdn"])) ? true : false;
 	$unsubscribe     = (isset($_REQUEST["unsubscribe"])     || pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST["rootdn"])) ? true : false;
 
-	if($unsubscribe) {
-		// We want to unsubscribe user from (all) mailing list(s).
-		// Get the users mail addresses before the object gets deleted
+	// {{{ Get the users mail addresses before the object gets deleted
+	if($_REQUEST["unsubscribe"]) {
 		$mails   = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_MAIL"));
 		$aliases = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_MAILALTERNATE"));
+		if($mails and !is_array($mails))
+		  $mails = array($mails);
 
 		// Combine the two attributes into one array.
 		if(is_array($aliases)) {
@@ -45,15 +50,17 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 		}
 	}	
 
-	// delete the user
+// }}}
+
+	// {{{ Delete the user
 	if(pql_user_del($_pql, $_REQUEST["domain"], $_REQUEST["user"], $delete_forwards)) {
 		$msg = $LANG->_('Successfully removed user') . ": <b>" . $cn . "</b>";
 		$rlnb = "&rlnb=1";
 
 		// ----------------------------------------
-		// Remove all administrator/ezmlmAdministrator/controlsAdministrator and seealso
+		// {{{ Remove all administrator/ezmlmAdministrator/controlsAdministrator and seealso
 		// attributes that reference this user.
-		if($delete_admins) {
+		if($_REQUEST["delete_admins"]) {
 			// We're only interested in these attributes
 			$attribs = array(pql_get_define("PQL_ATTR_ADMINISTRATOR"),
 							 pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
@@ -61,10 +68,10 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 							 pql_get_define("PQL_ATTR_SEEALSO"));
 			pql_replace_values($_pql, $attribs, $_REQUEST["user"]);
 		}
+		// }}}
 
-		// ----------------------------------------
-		// Unsubscribe user from all mailinglists (on this host naturaly :)
-		if($unsubscribe) {
+		// {{{ Unsubscribe user from all mailinglists (on this host naturaly :)
+		if($_REQUEST["unsubscribe"]) {
 			// Get all domains, looking for mailing lists
 			$domains = pql_get_domains($_pql);
 			if(is_array($domains)) {
@@ -97,10 +104,11 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 				} // FOREACH domain.
 			} // IF there are domains to check.
 		} // IF unsubscribing from all mailing lists.
+		// }}}
 
 		// ----------------------------------------
 		// Do _something_ to the users mailbox
-		switch($mail) {
+		switch($_REQUEST["mail_action"]) {
 		  case "delete_mail":
 		  case "archive_mail":
 		  case "donate_mail":
@@ -109,13 +117,56 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 		}
 	} else
 	  $msg = $LANG->_('Failed to remove user') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+// }}}
 
-	// redirect to domain-detail page
+	// {{{ Now it's time to run the special user removal script
+	if(pql_get_define("PQL_CONF_SCRIPT_DELETE_USER", $_REQUEST["rootdn"])) {
+	  // Setup the environment with the user details
+	  putenv("PQL_CONF_DOMAIN=$domain");
+	  putenv("PQL_CONF_WEBUSER=".posix_getuid());
+	  putenv("PQL_MAIL_ACTION=".$_REQUEST["mail_action"]);
+	  
+	  if(pql_get_define("PQL_CONF_KRB5_ADMIN_COMMAND_PATH") and 
+		 pql_get_define("PQL_CONF_KRB5_REALM") and
+		 pql_get_define("PQL_CONF_KRB5_ADMIN_PRINCIPAL") and
+		 pql_get_define("PQL_CONF_KRB5_ADMIN_SERVER") and 
+		 pql_get_define("PQL_CONF_KRB5_ADMIN_KEYTAB")) {
+		putenv("PQL_KADMIN_CMD=".pql_get_define("PQL_CONF_KRB5_ADMIN_COMMAND_PATH")."/kadmin");
+		putenv("PQL_KADMIN_REALM=".pql_get_define("PQL_CONF_KRB5_REALM"));
+		putenv("PQL_KADMIN_PRINC=".pql_get_define("PQL_CONF_KRB5_ADMIN_PRINCIPAL"));
+		putenv("PQL_KADMIN_SERVR=".pql_get_define("PQL_CONF_KRB5_ADMIN_SERVER"));
+		putenv("PQL_KADMIN_KEYTB=".pql_get_define("PQL_CONF_KRB5_ADMIN_KEYTAB"));
+	  }
+
+	  // Execute the user removal script (0 => show output)
+	  if(pql_execute(pql_get_define("PQL_CONF_SCRIPT_DELETE_USER", $_REQUEST["rootdn"]), 0)) {
+		echo pql_complete_constant($LANG->_('The %what% removal script failed'),
+								   array('what' => $LANG->_('user'))) . "!<br>";
+		$msg = urlencode(pql_complete_constant($LANG->_('The %what% removal script failed'),
+											   array('what' => $LANG->_('user'))) ."!") . ".&nbsp;<br>";
+	  } else {
+		echo "<b>" . pql_complete_constant($LANG->_('Successfully executed the %what% removal script'),
+										   array('what' => $LANG->_('user'))) . "</b><br>";
+		$msg = urlencode(pql_complete_constant($LANG->_('Successfully executed the %what% removal script'),
+											   array('what' => $LANG->_('user')))) . ".&nbsp;<br>";
+	  }
+	}
+// }}}
+	
+	// {{{ Redirect to domain-detail page
 	$msg = urlencode($msg);
-	$url = "domain_detail.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&view=basic&msg=$msg$rlnb";
+	$link = "domain_detail.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&view=basic&msg=$msg$rlnb";
 
-	header("Location: " . $_SESSION["URI"] . $url);
+	if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+	  echo "<br>If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
+	  die("<b>".$link."<b>");
+	} else
+	  header("Location: " . $_SESSION["URI"] . $link);
+// }}}
+
+	// }}}
 } else {
+	// {{{ Get confirmation and ask HOW to delete a user
 ?>
 <br>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="GET">
@@ -127,12 +178,12 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
     <input type="checkbox" name="delete_forwards" checked> <?=$LANG->_('Delete all forwards')?><br>
     <input type="checkbox" name="delete_admins" checked> <?=$LANG->_('Remove user from administrator/seeAlso')?><br>
     <input type="checkbox" name="unsubscribe" checked> <?=$LANG->_('Unsubscribe user from all mailing lists')?><br><br>
-<?php if(0) { ?>
+<?php if(pql_get_define("PQL_CONF_SCRIPT_DELETE_USER", $_REQUEST["rootdn"])) { ?>
 
     <span class="title3"><?=$LANG->_('What should we do with the users mailbox')?>?</span><br>
-    <input type="radio" name="mail" value="delete_mail"> <?=$LANG->_('Delete it')?><br>
-    <input type="radio" name="mail" value="archive_mail" checked> <?=$LANG->_('Archive it')?><br>
-    <input type="radio" name="mail" value="donate_mail"> <?=$LANG->_('Donate it to another user')?><br><br>
+    <input type="radio" name="mail_action" value="delete_mail"> <?=$LANG->_('Delete it')?><br>
+    <input type="radio" name="mail_action" value="archive_mail" checked> <?=$LANG->_('Archive it')?><br>
+    <input type="radio" name="mail_action" value="donate_mail"> <?=$LANG->_('Donate it to another user')?><br><br>
 <?php } ?>
 
     <span class="title2"><?=$LANG->_('Are you really sure')?>?</span>
@@ -141,6 +192,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
   </form>
 <br>
 <?php
+	// }}}
 } // end of if
 ?>
 </body>
