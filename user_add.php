@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.107 2004-11-17 07:30:07 turbo Exp $
+// $Id: user_add.php,v 2.107.4.1 2004-11-19 08:30:46 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -22,6 +22,7 @@ if(!$orgname) {
 } elseif(is_array($orgname)) {
 	$orgname = $orgname[0];
 }
+$_REQUEST["orgname"] = $orgname;
 
 // check if domain exist
 if(!pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], '(objectclass=*)', 'BASE')) {
@@ -418,7 +419,7 @@ include("./header.html");
 ?>
   <span class="title1">
     <?php echo pql_complete_constant($LANG->_('Create account in domain %domain%'),
-									 array("domain" => $orgname)); ?>
+									 array("domain" => $_REQUEST["orgname"])); ?>
 <?php
 if($_SESSION["ADVANCED_MODE"] && $_REQUEST["account_type"]) {
 	if($_REQUEST["account_type"] == 'mail')
