@@ -19,6 +19,7 @@
 #					allowServerChange	   7
 #					allowAbsoluteMailPath	   8
 #					deleteVerification	   9
+#					test			  10
 #
 #                               System texts            	 2
 #					whoAreWe		   1
@@ -47,7 +48,7 @@
 #					administrator		   4
 # -----------------------------------------
 
-# $Id: phpQLAdmin.schema,v 2.8 2003-01-24 10:10:39 turbo Exp $
+# $Id: phpQLAdmin.schema,v 2.9 2003-01-27 13:21:32 turbo Exp $
 
 # PQL_SHOW_USERS (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.1 NAME 'showUsers'
@@ -108,6 +109,12 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.1.8 NAME 'allowAbsoluteMailPath'
 # PQL_VERIFY_DELETE (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.9 NAME 'deleteVerification'
 	DESC 'Verify deletion of user objects etc [True/False]?'
+	EQUALITY booleanMatch
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+	SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.3.2.1.10 NAME 'test'
+	DESC 'Used to test write access, dont set yourself'
 	EQUALITY booleanMatch
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
 	SINGLE-VALUE )
@@ -264,12 +271,14 @@ objectclass ( 1.3.6.1.4.1.8767.3.1.1
 		userReference $ branchReference $
 		ezmlmBinaryPath $ passwordScheme $
 		hostMaster $ testMailSubject $
-		testMailText $ language $ forwardUIDNumber ) )
+		testMailText $ language $ 
+	        forwardUIDNumber $ test ) )
 
 objectclass ( 1.3.6.1.4.1.8767.3.1.2
         NAME 'phpQLAdminBranch'
         DESC 'phpQLAdmin branch ACL values'
-        MAY ( defaultDomain $ baseHomeDir $ baseMailDir $ administrator ) )
+        MAY ( defaultDomain $ baseHomeDir $ baseMailDir $
+	      administrator $ test ) )
 
 #
 # Local variables:

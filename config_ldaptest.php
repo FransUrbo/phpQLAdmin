@@ -6,6 +6,21 @@ session_start();
 require("./include/pql_config.inc");
 require("./include/pql_control.inc");
 
+function check_domain_value($linkid, $dn, $attrib, $value) {
+	$entry[$attrib] = $value;
+
+	if(! @ldap_mod_replace($linkid, $dn, $entry)) {
+		return("No. Reason: '<b>".ldap_error($linkid)."</b>'");
+	} else {
+		// Success - delete it again
+		unset($entry);
+		$entry['test'] = array();
+		ldap_mod_del($linkid, $basedn, $entry);
+
+		return(0);
+	}
+}
+
 if(!function_exists("ldap_connect")){
 	$ldap_ext = PQL_TEST_LDAP_EXT_NA;
 	$connection = "-";
@@ -71,6 +86,67 @@ if(!function_exists("ldap_connect")){
 	} else {
 		$connection_control = PQL_TEST_CONNECTION_CONROL_INACTIVE;
 	}
+
+	// Test access rights etc.
+	if($USER_DN and $USER_PASS) {
+		$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
+		$basedn = $_pql->ldap_basedn[0];
+
+		// ----------------------
+		// Try to set the attribute 'test' in the top DN
+		$fail = check_domain_value($_pql->ldap_linkid, $basedn, 'test', '1');
+		if($fail) {
+			$TEST["basedn"] = $fail;
+		} else {
+			$TEST["basedn"] = "Yes, you have";
+		}
+
+		// ----------------------
+		// Test to see if we have access to create domain/branches
+		// by creating a subbranch
+		unset($entry);
+		$entry["objectClass"][] = "top";
+		if(PQL_LDAP_REFERENCE_DOMAINS_WITH == "dc") {
+			$entry["objectClass"][] = "domain";
+		} else {
+			$entry["objectClass"][] = "organizationalUnit";
+			$entry["o"] = "test";
+		}
+		$entry[PQL_LDAP_REFERENCE_DOMAINS_WITH] = "phpQLAdmin_Branch_Test";
+		$dn = PQL_LDAP_REFERENCE_DOMAINS_WITH."=phpQLAdmin_Branch_Test,".$basedn;
+		if(!@ldap_add($_pql->ldap_linkid, $dn, $entry)) {
+			$TEST["branches"][$basedn] = "No. Reason: '<b>".ldap_error($_pql->ldap_linkid)."</b>'";
+		} else {
+			// Success - delete it again
+			ldap_delete($_pql->ldap_linkid, $dn);
+			$TEST["branches"][$basedn] = "Yes, you have";
+		}
+
+		// ----------------------
+		// Go through each domain/branch and check write access
+		foreach($_pql->ldap_basedn as $dn)  {
+			$sr = @ldap_list($_pql->ldap_linkid, $dn,
+							 "(" . PQL_LDAP_REFERENCE_DOMAINS_WITH . "=*)"
+							 ) or pql_errormsg($_pql->ldap_linkid);
+			$info = @ldap_get_entries($_pql->ldap_linkid, $sr) or pql_errormsg($_pql->ldap_linkid);
+			for ($i=0; $i<$info["count"]; $i++) {
+				$domains[] = $info[$i]["dn"];
+			}
+			
+		}
+
+		if(is_array($domains)) {
+			foreach($domains as $domain) {
+				// Check write access
+				$fail = check_domain_value($_pql->ldap_linkid, $domain, 'test', '1');
+				if($fail) {
+					$TEST["branches"][$domain] = $fail;
+				} else {
+					$TEST["branches"][$domain] = "Yes, you have";
+				}
+			}
+		}
+	}
 } // end if(function_exists...
 
 include("./header.html");
@@ -103,7 +179,7 @@ if($ADVANCED_MODE == 1) {
 <?php
 	if(pql_get_subschemas($_pql->ldap_linkid, "phpQLAdminConfig")) {
 ?>
-	<td class="<?php table_bgcolor(); ?>">Yes, it does&nbsp;</td>
+	<td class="<?php table_bgcolor(); ?>"><?=PQL_TEST_CONNECTION_OCEXISTS_OK?></td>
 <?php
 	} else {
 ?>
@@ -117,7 +193,7 @@ if($ADVANCED_MODE == 1) {
 <?php
 	if(pql_get_subschemas($_pql->ldap_linkid, "phpQLAdminBranch")) {
 ?>
-	<td class="<?php table_bgcolor(); ?>">Yes, it does&nbsp;</td>
+	<td class="<?php table_bgcolor(); ?>"><?=PQL_TEST_CONNECTION_OCEXISTS_OK?></td>
 <?php
 	} else {
 ?>
@@ -131,7 +207,7 @@ if($ADVANCED_MODE == 1) {
 <?php
 	if(pql_get_subschemas($_pql->ldap_linkid, "dcOrganizationNameForm")) {
 ?>
-	<td class="<?php table_bgcolor(); ?>">Yes, it does&nbsp;</td>
+	<td class="<?php table_bgcolor(); ?>"><?=PQL_TEST_CONNECTION_OCEXISTS_OK?></td>
 <?php
 	} else {
 ?>
@@ -141,6 +217,41 @@ if($ADVANCED_MODE == 1) {
 }
 ?>
 </tr>
+
+<?php
+if($basedn) {
+?>
+<tr></tr>
+
+<tr>
+	<td class="title">Write access to top DN (<?=$basedn?>)</td>
+    <?php $class=table_bgcolor(0); ?>
+	<td class="<?=$class?>"><?=$TEST["basedn"]?></td>
+</tr>
+	
+
+<tr>
+	<td class="title">Write access to create domains/branches</td>
+    <?php $class=table_bgcolor(0); ?>
+	<td class="<?=$class?>"><?=$TEST["branches"][$basedn]?></td>
+</tr>
+
+<?php
+	if(is_array($domains)) {
+		asort($domains);
+		foreach($domains as $key => $domain) {
+?>
+<tr>
+	<td class="title">Write access to DN <b><?=$domain?></b></td>
+    <?php $class=table_bgcolor(0); ?>
+	<td class="<?=$class?>"><?=$TEST["branches"][$domain]?></td>
+</tr>
+<?php
+		}	
+	}
+}
+?>
+
 <tr class="subtitle">
   <td>
     <table>
