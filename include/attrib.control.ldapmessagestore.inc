@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldapmessagestore (default prefix for mailbox paths)
 //
-// $Id: attrib.control.ldapmessagestore.inc,v 2.13 2004-03-11 16:31:54 turbo Exp $
+// $Id: attrib.control.ldapmessagestore.inc,v 2.14 2004-10-15 15:19:48 turbo Exp $
 
 // {{{ ldapmessagestore_check(type)
 function ldapmessagestore_check($type) {
@@ -144,6 +144,7 @@ function ldapmessagestore_help_cr() {
 	global $LANG;
 	echo $LANG->_('Help text taken from life with qmail-ldap');
 }
+// }}}
 
 // Local variables:
 // mode: php
