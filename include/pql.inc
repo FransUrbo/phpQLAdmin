@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.172.2.1.6.3.2.2.2.3.4.1 2004-11-11 07:37:50 turbo Exp $
+// $Id: pql.inc,v 2.172.2.1.6.3.2.2.2.3.4.2 2004-11-11 08:55:42 turbo Exp $
 //
 
 // ----------------------------
@@ -982,7 +982,11 @@ function pql_domain_set_value($linkid, $dn, $type, $value) {
 
 		$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_uniq($entry[pql_get_define("PQL_ATTR_OBJECTCLASS")]);
 	}
-	
+
+	// Add the OpenLDAPaci attribute (maybe)
+	if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci"))
+	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($ldap_linkid, $userdn, 'user');
+
 	// Create a LDIF object to print in case of error
 	$account_type = $type;
 	$LDIF = pql_create_ldif("pql_domain_set_value", $dn, $entry);
