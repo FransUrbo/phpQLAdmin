@@ -58,7 +58,7 @@ if(isset($submit)) {
 }
 ?>
 
-  <br><span class="title1"><?=PQL_LANG_DESCRIPTION?> - v<?=$VERSION?></span><br>
+  <br><span class="title1"><?=$config["PQL_GLOB_WHOAREWE"]?> - v<?=$VERSION?></span><br>
 
   <ul>
 <?php
