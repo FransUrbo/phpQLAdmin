@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.7 2004-03-02 17:01:11 dlw Exp $
+// $Id: user_add-save.inc,v 1.8 2004-03-04 19:27:03 turbo Exp $
 
 // Find out what objectclasses to use when creating user
 $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $_REQUEST["rootdn"]));
@@ -202,6 +202,20 @@ if($entry[pql_get_define("PQL_GLOB_ATTR_SN")]) {
 
 if($entry[pql_get_define("PQL_GLOB_ATTR_CN")]) {
 	$entry[pql_get_define("PQL_GLOB_ATTR_CN")] = $entry[pql_get_define("PQL_GLOB_ATTR_CN")];
+}
+
+// ------------------
+$default_quota = pql_domain_get_value($_pql, $_REQUEST["domain"], pql_get_define("PQL_GLOB_ATTR_BASEQUOTA"));
+if(!empty($default_quota)) {
+	if($_SESSION["NEW_STYLE_QUOTA"]) {
+		$tmp = split(',', $default_quota);
+		$tmp = pql_parse_quota(array($tmp[0], $tmp[1]));
+		
+		$entry[pql_get_define("PQL_GLOB_ATTR_QUOTA_SIZE")]  = $tmp["maxsize"];
+		$entry[pql_get_define("PQL_GLOB_ATTR_QUOTA_COUNT")] = $tmp["maxmails"];
+	} else {
+		$entry[pql_get_define("PQL_GLOB_ATTR_QUOTA_VALUE")] = $default_quota;
+	}
 }
 
 // ------------------
