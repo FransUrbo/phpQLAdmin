@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mail.inc,v 2.5 2003-01-24 09:01:23 turbo Exp $
+// $Id: attrib.mail.inc,v 2.6 2003-04-02 15:30:47 turbo Exp $
 
 function attribute_check($type){
     global $mail, $domain, $oldvalue, $_pql, $error, $defaultdomain;
@@ -77,7 +77,7 @@ function attribute_print_form(){
 }
 
 function attribute_save($type){
-    global $domain, $user, $attrib, $oldvalue, $mail, $_pql;
+    global $domain, $user, $attrib, $oldvalue, $mail, $_pql, $config;
 
     // recontrol values
     if(!attribute_check($type)){
@@ -96,7 +96,7 @@ function attribute_save($type){
 	}
 	
 	// We use the mail attribute to reference users and it has just changed...
-	if (PQL_LDAP_REFERENCE_USERS_WITH == PQL_LDAP_ATTR_MAIL) {
+	if ($config["PQL_LDAP_REFERENCE_USERS_WITH"][pql_get_rootdn($user)] == PQL_LDAP_ATTR_MAIL) {
 	    $user = $mail;
 	    // Reload the navigation bar (if allowed by config)
 	    attribute_forward($msg, true);

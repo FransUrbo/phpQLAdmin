@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // uid (user id)
-// $Id: attrib.uid.inc,v 2.4 2003-02-04 08:03:11 turbo Exp $
+// $Id: attrib.uid.inc,v 2.5 2003-04-02 15:30:47 turbo Exp $
 
 function attribute_check($type){
 	global $uid, $oldvalue, $_pql, $error, $domain;
@@ -63,7 +63,7 @@ function attribute_print_form(){
 }
 
 function attribute_save($type){
-	global $domain, $user, $attrib, $oldvalue, $uid, $_pql;
+	global $domain, $user, $attrib, $oldvalue, $uid, $_pql, $config;
 	
 	// recontrol values
 	if(!attribute_check($type)){
@@ -90,7 +90,7 @@ function attribute_save($type){
 		}
 		
 		// We use the uid to reference users and it has just changed...
-		if (PQL_LDAP_REFERENCE_USERS_WITH == PQL_LDAP_ATTR_UID) {
+		if ($config["PQL_LDAP_REFERENCE_USERS_WITH"][pql_get_rootdn($user)] == PQL_LDAP_ATTR_UID) {
 			$user = $uid;
 			// Reload the navigation bar (if allowed by config)
 			attribute_forward($msg, true);
