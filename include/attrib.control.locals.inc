@@ -2,7 +2,7 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.26 2004-03-27 11:43:31 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.26.10.1 2004-05-04 08:03:17 turbo Exp $
 
 // {{{ locals_check(type)
 function locals_check($type) {
@@ -143,7 +143,8 @@ function locals_save($type, $host) {
     switch($type) {
       case "replicate":
 		// start replication manually
-		if(pql_control_update_domains($_pql_control, pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		if(pql_control_update_domains($_pql_control, $_REQUEST["rootdn"],
+									  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 									  $host, '', pql_get_define("PQL_ATTR_LOCALS")))
 		  $msg = pql_complete_constant($LANG->_('Successfully replicated %what%'),
 									   array('what' => pql_get_define("PQL_ATTR_LOCALS")));
@@ -182,12 +183,12 @@ function locals_save($type, $host) {
 		// adding specified domain to rcpthosts, redirect back to domain details
 		$success = 0;
 		if($_REQUEST["mxhost"]) {
-			if(pql_control_update_domains($_pql_control,
+			if(pql_control_update_domains($_pql_control, $_REQUEST["rootdn"],
 										  pql_get_define("PQL_ATTR_CN")."=".$_REQUEST["mxhost"].",".$_SESSION["USER_SEARCH_DN_CTR"],
 										  $host, array('', $_REQUEST["set"]), pql_get_define("PQL_ATTR_LOCALS")))
 			  $success = 1;
 		} else {
-			if(pql_control_update_domains($_pql_control, $_SESSION["USER_SEARCH_DN_CTR"],
+			if(pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
 										  '*', array('', $_REQUEST["set"]), pql_get_define("PQL_ATTR_LOCALS")))
 			  $success = 1;
 		}

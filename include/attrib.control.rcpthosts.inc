@@ -2,7 +2,7 @@
 // control attribute plugin for
 // rcpthosts (blocked local addresses)
 //
-// $Id: attrib.control.rcpthosts.inc,v 2.21 2004-03-11 16:31:55 turbo Exp $
+// $Id: attrib.control.rcpthosts.inc,v 2.21.10.1 2004-05-04 08:03:17 turbo Exp $
 
 // {{{ rcpthosts_check(type)
 function rcpthosts_check($type) {
@@ -161,7 +161,9 @@ function rcpthosts_save($type, $host) {
     switch($type) {
       case "replicate":
 		// start replication manually
-		if(pql_control_update_domains($_pql_control, pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"], $host, '', 'rcpthosts'))
+		if(pql_control_update_domains($_pql_control, $_REQUEST["rootdn"],
+									  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+									  $host, '', 'rcpthosts'))
 		  $msg = pql_complete_constant($LANG->_('Successfully replicated %what%'),
 									   array('what' => pql_get_define("PQL_ATTR_RCPTHOSTS")));
 		else

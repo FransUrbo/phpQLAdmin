@@ -1,6 +1,6 @@
 <?php
 // delete a domain and all users within
-// $Id: domain_del.php,v 2.28 2004-04-01 06:22:13 turbo Exp $
+// $Id: domain_del.php,v 2.28.10.1 2004-05-04 08:02:29 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -39,18 +39,22 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 
 		// Remove the domain name
 		if($domainname)
-		  pql_control_update_domains($_pql, $_SESSION["USER_SEARCH_DN_CTR"], '*', array($domainname, ''));
+		  // NOTE: Even if autoreplication is disabled, this should still be done!
+		  pql_control_update_domains($_pql, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
+									 '*', array($domainname, ''));
 
 		// Remove the additional domain name(s)
 		if(is_array($additionals)) {
 			foreach($additionals as $additional)
-			  pql_control_update_domains($_pql, $_SESSION["USER_SEARCH_DN_CTR"], '*', array($additional, ''));
+			  pql_control_update_domains($_pql, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
+										 '*', array($additional, ''));
 		}
 	    
 		// Remove the SMTP route(s)
 		if(is_array($routes)) {
 			foreach($routes as $route)
-			  pql_control_update_domains($_pql, $_SESSION["USER_SEARCH_DN_CTR"], '*', array($route, ''));
+			  pql_control_update_domains($_pql, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
+										 '*', array($route, ''));
 		}
 	    
 	    $msg = $LANG->_('Successfully removed the domain');
