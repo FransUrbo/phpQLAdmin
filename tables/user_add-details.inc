@@ -1,10 +1,10 @@
-<?php /* $Id: user_add-details.inc,v 1.8 2004-02-14 14:25:41 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.9 2004-02-19 11:57:02 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
 <?php if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) == pql_get_define("PQL_GLOB_ATTR_UID")) {
-		if(!pql_get_define("PQL_GLOB_ATTR_AUTOCREATEUSERNAME", $_GET["domain"]) or
-		   (pql_get_define("PQL_GLOB_ATTR_AUTOCREATEUSERNAME", $_GET["domain"]) and !function_exists('user_generate_uid')) or
+		if(!pql_get_define("PQL_GLOB_ATTR_AUTOCREATEUSERNAME", $_REQUEST["domain"]) or
+		   (pql_get_define("PQL_GLOB_ATTR_AUTOCREATEUSERNAME", $_REQUEST["domain"]) and !function_exists('user_generate_uid')) or
 		   $_SESSION["ADVANCED_MODE"]) {
 ?>
         <!-- Username (UID) -->
@@ -135,8 +135,8 @@
 ?>
 
 <?php if($account_type != "shell") {
-		if(!pql_get_define("PQL_GLOB_ATTR_CREATE_ADDRESS", $_GET["domain"]) or
-		   (pql_get_define("PQL_GLOB_ATTR_CREATE_ADDRESS", $_GET["domain"]) and !function_exists('user_generate_email')) or
+		if(!pql_get_define("PQL_GLOB_ATTR_CREATE_ADDRESS", $_REQUEST["domain"]) or
+		   (pql_get_define("PQL_GLOB_ATTR_CREATE_ADDRESS", $_REQUEST["domain"]) and !function_exists('user_generate_email')) or
 		   $_SESSION["ADVANCED_MODE"] or $error_text["email"]) {
 ?>
         <!-- Email address -->
@@ -153,7 +153,7 @@
 <?php   		} ?>
             </select>
 <?php 		} else { ?>
-            <b>@<?=$defaultdomain?></b>
+            <b>@<?=pql_maybe_idna_decode($defaultdomain)?></b>
             <input type="hidden" name="email_domain" value="<?=$defaultdomain?>">
 <?php 		} ?>
           </td>
@@ -192,7 +192,7 @@
         <!-- sub branch -->
 <?php
 	if($_SESSION["ADVANCED_MODE"]) {
-		$branches = pql_unit_get($_pql->ldap_linkid, $_GET["domain"]);
+		$branches = pql_unit_get($_pql->ldap_linkid, $_REQUEST["domain"]);
 		if($branches[1]) {
 			// More than one subbranch - show a select menu
 ?>
