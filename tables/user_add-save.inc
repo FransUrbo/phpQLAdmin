@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.19 2004-04-14 09:24:27 turbo Exp $
+// $Id: user_add-save.inc,v 1.20 2004-04-29 07:16:59 turbo Exp $
 
 // ============================================================================================
 // ============== PREPARE THE USERS ATTRIBUTE(S)
@@ -171,7 +171,10 @@ if(($_REQUEST["account_type"] == "system") or ($_REQUEST["account_type"] == "mai
 		  $entry[pql_get_define("PQL_ATTR_MAILHOST")]   = $_REQUEST["userhost"];
 	}
 	
-	$entry[pql_get_define("PQL_ATTR_MODE")] = "localdelivery";
+	if(!$_SESSION["NEW_STYLE_QUOTA"])
+	  // The new QmailLDAP have a changed 'deliveryMode' setup.
+	  // Don't add this automaticly.
+	  $entry[pql_get_define("PQL_ATTR_MODE")] = "localdelivery";
 	
 	if(!$_REQUEST["maildirectory"])
 	  $entry[pql_get_define("PQL_ATTR_MAILSTORE")] = user_generate_mailstore($_pql, $_REQUEST["email"],
