@@ -59,6 +59,11 @@ phpQLAdmin 2.0.15 Release (TO BE ANNOUNCED)
 	  - If we're modifying an additionalDomainName, we want to remove
 	    the old value and add the new.
 	    Closes bug 30
+	  - In the domain details -> Control Options, show each domain that
+	    is configured in the branch (default and additional) separately.
+	    Allow for deleting these domain(s) from the QmailLDAP/Controls
+	    object(s). This EVEN if automatic replication is configured.
+	    Closes bug 19
  
 	GUI layout change
 	  - Possibility to set a value in the domain branch saying we
