@@ -1,6 +1,6 @@
 <?php
 // navigation bar - ezmlm mailinglists manager
-// $Id: left-ezmlm.php,v 2.6 2002-12-25 01:13:06 turbo Exp $
+// $Id: left-ezmlm.php,v 2.7 2002-12-25 11:30:43 turbo Exp $
 //
 session_start();
 
@@ -8,7 +8,7 @@ require("./include/pql.inc");
 require("./include/pql_ezmlm.inc");
 
 // Initialize
-$ezmlm = new ezmlm('/usr/bin', 'alias', '/var/lists');
+$ezmlm = new ezmlm('alias', '/var/lists');
 
 require("./left-head.html");
 ?>

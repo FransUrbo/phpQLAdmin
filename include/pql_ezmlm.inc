@@ -3,12 +3,12 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ezmlm.inc,v 1.6 2002-12-25 01:23:50 turbo Exp $
+// $Id: pql_ezmlm.inc,v 1.7 2002-12-25 11:30:47 turbo Exp $
 class ezmlm {
 	// ===================================================
 	// Private section
 	var $_option   = array();
-	var $srch_path = '';
+	var $srch_path = '/usr/bin';
 	var $user_name = '';
 	var $user_home = '';
 
@@ -165,7 +165,7 @@ class ezmlm {
 	// Couldn't do this 'globaly', at variable declaration
 	// above, so I had to do it in the costructor. I don't
 	// have a better use for it anyway :)
-	function ezmlm($srch_path = '/usr/bin', $user_name = 'newsletters', $user_home = '/home/newsletters') {
+	function ezmlm($user_name = 'newsletters', $user_home = '/home/newsletters') {
 		$this->_option["archived"]["on"]		= "a";	$this->_option["archived"]["off"]		= "A";
 		$this->_option["remotecfg"]["on"]		= "c";	$this->_option["remotecfg"]["off"]		= "C";
 		$this->_option["digest"]["on"]			= "d";	$this->_option["digest"]["off"]			= "D";
@@ -186,7 +186,6 @@ class ezmlm {
 		$this->_option["subonly"]["on"]			= "u";	$this->_option["subonly"]["off"]		= "U";
 		$this->_option["extras"]["on"]			= "x";	$this->_option["extras"]["off"]			= "X";
 
-		$this->srch_path = $srch_path;
 		$this->user_name = $user_name;
 		$this->user_home = $user_home;
 	}
