@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.40 2003-08-20 08:36:47 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.41 2003-08-26 18:04:07 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -115,13 +115,13 @@ function user_generate_mailstore($ldap, $email, $dn, $entry, $type) {
 	//	} else {
 	//		$mailstore = $mailstore . $branch . "%u%";
 	//	}
-	//	$mailstore = pql_complete_constant($mailstore, array("d" => $domain, 
+	//	$mailstore = pql_complete_constant($mailstore, array("d" => non_internationalize($domain), 
 	//														 "u" => $entry[pql_get_define("PQL_GLOB_ATTR_UID")], 
 	//														 "h" => $entry[pql_get_define("PQL_GLOB_ATTR_MAILHOST")]));
 	//
 	// -------------- example: "%d/%u" (=> domain.tld/username) 
 	//	$mailstore = "%d%/%u%"; 
-	//	$mailstore = pql_complete_constant($mailstore, array(	"d" => $domain, 
+	//	$mailstore = pql_complete_constant($mailstore, array(	"d" => non_internationalize($domain), 
 	//															"u" => $entry[pql_get_define("PQL_GLOB_ATTR_UID")],
 	//															"h" => $entry[pql_get_define("PQL_GLOB_ATTR_MAILHOST")]));
 	//
@@ -132,7 +132,7 @@ function user_generate_mailstore($ldap, $email, $dn, $entry, $type) {
 	//	$mailstore = substr($domain, 0, 1) . '/' . $domain . '/'. $entry[pql_get_define("PQL_GLOB_ATTR_UID")];
 	//
 	// -------------- example: mail.host.tld/domain.tld/username
-	//	$mailstore = $entry[pql_get_define("PQL_GLOB_ATTR_MAILHOST")] . '/' . $domain . '/'. $entry[pql_get_define("PQL_GLOB_ATTR_UID")];
+	//	$mailstore = $entry[pql_get_define("PQL_GLOB_ATTR_MAILHOST")] . '/' . non_internationalize($domain) . '/'. $entry[pql_get_define("PQL_GLOB_ATTR_UID")];
 	//
 	// -------------- example: mail@domain.tld (complete email-address)
 	//	$mailstore = $entry[pql_get_define("PQL_GLOB_ATTR_MAIL")];
@@ -197,7 +197,7 @@ function user_generate_homedir($ldap, $email, $dn, $entry, $type) {
 	//	} else {
 	//		$homedir = $homedir . $branch . "%u%";
 	//	}
-	//	$homedir = pql_complete_constant($homedir, array("d" => $domain, 
+	//	$homedir = pql_complete_constant($homedir, array("d" => non_internationalize($domain), 
 	//													 "u" => $entry[pql_get_define("PQL_GLOB_ATTR_UID")],
 	//													 "h" => $entry[pql_get_define("PQL_GLOB_ATTR_MAILHOST")]));
 	
