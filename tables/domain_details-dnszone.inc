@@ -166,7 +166,7 @@
 						$type = lc($TYPE);
 
 						$HREF  = "bind9_edit_attributes.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"];
-						$HREF .= "&action=modify&type=host&rdn=".urlencode($data['RDN'])."&type=$type&view=".$_REQUEST["view"];
+						$HREF .= "&action=modify&type=host&rdn=".urlencode($data['RDN'])."&attrib=$type&view=$view";
 
 						if($data[$TYPE]) {
 							unset($records);
