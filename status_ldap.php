@@ -1,6 +1,6 @@
 <?php
 // Show Connection/Suffixes status of LDAP server
-// $Id: status_ldap.php,v 2.4 2004-02-14 14:01:00 turbo Exp $
+// $Id: status_ldap.php,v 2.5 2004-10-09 16:38:53 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -11,25 +11,21 @@ include("./header.html");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
-// Get the LDAP server bootup time
-$tmp = pql_get_status($_pql->ldap_linkid, "cn=Start,cn=Time,cn=Monitor", "createTimeStamp");
-$timestamp_start = preg_replace('/Z$/', '', $tmp);
-$time_start = pql_format_timestamp($tmp);
-
-// Get the current LDAP server time
-$tmp = pql_get_status($_pql->ldap_linkid, "cn=Current,cn=Time,cn=Monitor", "modifyTimeStamp");
+// Get the LDAP server bootup and current time
+//
+// dn: cn=Current,cn=Time,cn=Monitor
+// monitorTimestamp: 20041004133358Z  <- current time
+// createTimestamp: 20041004064512Z   <- bootup time
+$tmp = pql_get_status($_pql->ldap_linkid, "cn=Current,cn=Time,cn=Monitor", array("createTimeStamp", "monitorTimestamp"));
 if($tmp) {
-	$timestamp_current = preg_replace('/Z$/', '', $tmp);
-	$time_current = pql_format_timestamp($tmp);
-} else {
-	$timestamp_current = $time_current = "n/a";
-}
+    $timestamp_start = pql_format_timestamp_unixtime($tmp['createtimestamp']);
+    $time_start = pql_format_timestamp($tmp['createtimestamp']);
 
-// Calculate the uptime
-if($timestamp_current and $timestamp_start) {
-	$time_uptime  = round(($timestamp_current - $timestamp_start) / 60, 2);
+    $timestamp_current = pql_format_timestamp_unixtime($tmp['monitortimestamp']);
+    $time_current = pql_format_timestamp($tmp['monitortimestamp']);
 } else {
-	$time_uptime  = "n/a";
+    $timestampstart = $time_start = "0";
+    $timestamp_current = $time_current = "0";
 }
 
 if($type == 'basics') {

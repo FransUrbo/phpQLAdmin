@@ -1,32 +1,75 @@
 <?php
 // Get total number of connections
-$connections_total = pql_get_status($_pql->ldap_linkid, "cn=Total,cn=Connections,cn=Monitor", "description");
-$connections_average = round($connections_total / $time_uptime, 2);
+$connections_total = pql_get_status($_pql->ldap_linkid, "cn=Total,cn=Connections,cn=Monitor", "monitorCounter");
+if($connections_total) {
+	$connections_average = round($connections_total / (($timestamp_current - $timestamp_start) / 3600), 2);
+} else {
+	$connections_total   = '<i>unknown</i>';
+	$connections_average = '<i>unknown</i>';
+}
 
-// Get number of initiated operations
-$operations_initiated = pql_get_status($_pql->ldap_linkid, "cn=Initiated,cn=Operations,cn=Monitor", "description");
-$operations_initiated_average = round($operations_initiated / $time_uptime, 2);
+// Get number of initiated and completed operations
+$tmp = pql_get_status($_pql->ldap_linkid, "cn=Operations,cn=Monitor", array("monitorOpInitiated", "monitorOpCompleted"));
+if($tmp) {
+	// Initiated operations
+	$operations_initiated         = $tmp['monitoropinitiated'];
+	$operations_initiated_average = round($tmp['monitoropinitiated'] / (($timestamp_current - $timestamp_start) / 3600), 2);
 
-// Get number of completed operations
-$operations_completed = pql_get_status($_pql->ldap_linkid, "cn=Completed,cn=Operations,cn=Monitor", "description");
-$operations_completed_average = round($operations_completed / $time_uptime, 2);
+	// Completed operations
+	$operations_completed         = $tmp['monitoropcompleted'];
+	$operations_completed_average = round($operations_completed / (($timestamp_current - $timestamp_start) / 3600), 2);
+} else {
+	$operations_initiated         = '<i>unknown</i>';
+	$operations_initiated_average = '<i>unknown</i>';
+
+	$operations_completed         = '<i>unknown</i>';
+	$operations_completed_average = '<i>unknown</i>';
+}
 
 // Get number of entries sent to client(s)
-$sent_entries = pql_get_status($_pql->ldap_linkid, "cn=Entries,cn=Statistics,cn=Monitor", "description");
-$sent_entries_average = round($sent_entries / $time_uptime, 2);
+$sent_entries = pql_get_status($_pql->ldap_linkid, "cn=Entries,cn=Statistics,cn=Monitor", "monitorCounter");
+if($sent_entries) {
+	$sent_entries_average         = round($sent_entries / (($timestamp_current - $timestamp_start) / 3600), 2);
+} else {
+	$sent_entries                 = '<i>unknown</i>';
+	$sent_entries_average         = '<i>unknown</i>';
+}
 
 // Get number of bytes sent to client(s)
-$sent_bytes  = pql_get_status($_pql->ldap_linkid, "cn=Bytes,cn=Statistics,cn=Monitor", "description");
-$sent_kbytes = round($sent_bytes / 1024, 2);
-$sent_kbytes_average = round(($sent_bytes / 1024) / $time_uptime, 2);
+$sent_bytes  = pql_get_status($_pql->ldap_linkid, "cn=Bytes,cn=Statistics,cn=Monitor", "monitorCounter");
+if($sent_bytes) {
+	$sent_kbytes = round($sent_bytes / 1024, 2);
+	$sent_kbytes_average = round(($sent_bytes / 1024) / (($timestamp_current - $timestamp_start) / 3600), 2);
+} else {
+	$sent_bytes                   = '<i>unknown</i>';
+	$sent_kbytes                  = '<i>unknown</i>';
+	$sent_kbytes_average          = '<i>unknown</i>';
+}
 
 // Get number of current open connections
-$connections_current = pql_get_status($_pql->ldap_linkid, "cn=Current,cn=Connections,cn=Monitor", "description");
+$connections_current = pql_get_status($_pql->ldap_linkid, "cn=Current,cn=Connections,cn=Monitor", "monitorCounter");
+if(!$connections_current) {
+	$connections_current          = '<i>unknown</i>';
+}
 
 // Get number of threads
-$tmp = pql_get_status($_pql->ldap_linkid, "cn=Threads,cn=Monitor", "description");
-$val = split('=', $tmp[0]); $connections_threads  = "Max ".$val[1];
-$val = split('=', $tmp[1]); $connections_threads .= ", Backlog ".$val[1];
+$tmp1 = pql_get_status($_pql->ldap_linkid, "cn=Threads,cn=Monitor", "monitoredInfo");
+for($i=0; $tmp1[$i]; $i++) {
+	$tmp2 = split('=', $tmp1[$i]);
+
+	if($tmp2[0] == 'max') {
+		$threads['max'] = $tmp2[1];
+	} elseif($tmp2[0] == 'backload') {
+		$threads['backload'] = $tmp2[1];
+	}
+}
+
+if(is_array($threads)) {
+	$connections_threads  = "Max ".$threads['max'];
+	$connections_threads .= ", Backlog ".$threads['backload'];
+} else {
+	$connections_threads  = '<i>unknown</i>';
+}
 
 // Get number of active databases
 $databases = pql_get_subentries($_pql->ldap_linkid, "cn=Databases,cn=Monitor");
@@ -34,7 +77,7 @@ $databases = pql_get_subentries($_pql->ldap_linkid, "cn=Databases,cn=Monitor");
 // Get current connection informations
 $connections_information = pql_get_subentries($_pql->ldap_linkid,
 											  "cn=Connections,cn=Monitor",
-											  'description', "cn=Connection*");
+											  'monitoredInfo', "cn=Connection*");
 ?>
   <span class="title1"><?=$LANG->_('LDAP Server Connection Status')?></span>
 

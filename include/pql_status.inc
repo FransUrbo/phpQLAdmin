@@ -4,27 +4,40 @@
 // Retreive LDAP connection and database status
 // from the cn=Monitor backend.
 //
-// $Id: pql_status.inc,v 1.1 2004-01-26 05:28:04 turbo Exp $
+// $Id: pql_status.inc,v 1.2 2004-10-09 16:38:53 turbo Exp $
 //
 
 // {{{ pql_get_status(linkid, dn, attribute)
 function pql_get_status($linkid, $dn, $attrib) {
-    $attrib = lc($attrib);
+	if(!is_array($attrib)) {
+		$attrib = lc($attrib);
+		$attribs = array($attrib);
+	} else {
+		foreach($attrib as $val) {
+			$attribs[] = lc($val);
+		}
+	}
 
-    $sr = @ldap_read($linkid, $dn, 'objectClass=*', array($attrib));
+    $sr = @ldap_read($linkid, $dn, 'objectClass=*', $attribs);
     if($sr) {
 		$entry = ldap_get_entries($linkid, $sr);
-		
-		if($entry[0][$attrib]['count'] <= 1)
-		  return($entry[0][$attrib][0]);
-		else {
-			// Return an array - we got more than one value
+		if(!is_array($attrib) and $entry[0][$attrib]['count'] > 1) {
 			for($i=0; $entry[0][$attrib][$i]; $i++)
-			  $values[] = $entry[0][$attrib][$i];
+			  $new[] = $entry[0][$attrib][$i];
+
+			return($new);
+		} elseif($entry[0]['count'] <= 1) {
+			return($entry[0][$attrib][0]);
+		} else {
+			// Return an array - we got more than one value
+			foreach($attribs as $attrib) {
+				for($i=0; $entry[0][$attrib][$i]; $i++)
+				  $values[$attrib] = $entry[0][$attrib][$i];
+			}
 			
 			return($values);
 		}
-    }
+	}
 
 	return(NULL);
 }
@@ -43,6 +56,8 @@ function pql_get_subentries($linkid, $basedn, $attrib = 0, $filter = 0) {
 			  return($entry['count']);
 		}
 	} else {
+		$attrib = lc($attrib);
+
 		$sr = @ldap_list($linkid, $basedn, $filter, array($attrib));
 		if($sr) {
 			$entry = ldap_get_entries($linkid, $sr);
@@ -61,8 +76,8 @@ function pql_get_subentries($linkid, $basedn, $attrib = 0, $filter = 0) {
 
 // {{{ pql_get_status_databases(linkid, suffix)
 function pql_get_status_databases($linkid, $suffix = 0) {
-	$filter  = '(&(cn=Database*)(namingContexts=*))';
-	$attribs = array('description', 'namingContexts', 'seeAlso');
+	$filter  = '(&(cn=Database*)(|(namingContexts=*)(monitorContext=*)))';
+	$attribs = array('monitoredInfo', 'namingContexts', 'monitorContext', 'seeAlso');
 
 	$sr1 = ldap_list($linkid, 'cn=Databases,cn=Monitor', $filter, $attribs);
 	if($sr1) {
@@ -71,19 +86,21 @@ function pql_get_status_databases($linkid, $suffix = 0) {
 		for($i=0; $i < $entry1['count']; $i++) {
 			foreach($attribs as $attrib) {
 				$attrib = lc($attrib);
-
+				
 				if(($attrib == 'seealso') and $entry1[$i]['seealso'][0]) {
 					// Follow reference to backend information
 					$sr2 = ldap_read($linkid, $entry1[$i]['seealso'][0],
 									 'objectClass=*', array('supportedControl'));
 					if($sr2) {
 						$entry2 = ldap_get_entries($linkid, $sr2);
-
+						
 						for($j=0; $j < $entry2[0]['supportedcontrol']['count']; $j++) {
 							$values[$entry1[$i]['dn']]['supportedcontrol'][] = $entry2[0]['supportedcontrol'][$j];
 						}
 					}
-				} else
+				} elseif($entry1[$i][$attrib][0] == $suffix)
+				  return(array($attrib => $suffix, 'monitoredinfo' => $entry1[$i]['monitoredinfo'][0]));
+				else
 				  $values[$entry1[$i]['dn']][$attrib] = $entry1[$i][$attrib][0];
 			}
 		}
