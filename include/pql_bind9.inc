@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.14 2003-11-20 08:01:37 turbo Exp $
+// $Id: pql_bind9.inc,v 2.15 2003-11-24 13:48:59 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, dn)
@@ -157,26 +157,9 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 
 	// ----------------
 	// See if the sub branch exists. If not, create it.
-    $sr = @ldap_read($linkid, $dn, 'objectClass=organizationalUnit');
-    if(!$sr) {
-		$entry['objectclass'][] = 'organizationalUnit';
-		$entry['ou'] = 'DNS';
-
-		// Add the OpenLDAPaci attribute (maybe)
-		if($ACI_SUPPORT_ENABLED)
-		  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($ldap_linkid,
-																				  $GLOBALS["USER_DN"],
-																				  'dnszone');
-
-		// Create a LDIF object to print in case of error
-		$LDIF = pql_create_ldif("pql_bind9_add_zone - ou", $dn, $entry);
-
-		if(! ldap_add($linkid, $dn, $entry)) {
-			// Can't add the organizational unit
-			pql_format_error_msg($linkid);
-			echo "Can't add the organizational unit...<br>\n";
-			die($LDIF);
-		} else
+	if(!pql_unit_exist($linkid, $dn, 'DNS')) {
+		// Does not exists - create it
+		if(pql_unit_add($linkid, $dn, 'DNS'))
 		  $DNs[] = $dn;
 	}
 
@@ -189,7 +172,7 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 	$entry['objectclass'][] = 'domain';
 
 	// Add the OpenLDAPaci attribute (maybe)
-	if($ACI_SUPPORT_ENABLED) 
+	if($GLOBALS["ACI_SUPPORT_ENABLED"])
 	  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($ldap_linkid,
 																			  $GLOBALS["USER_DN"],
 																			  'dnszone');
@@ -237,7 +220,7 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 	$entry['tXTRecord']			 = "$zonename";
 
 	// Add the OpenLDAPaci attribute (maybe)
-	if($ACI_SUPPORT_ENABLED)
+	if($GLOBALS["ACI_SUPPORT_ENABLED"])
 	  $entry[pql_get_define("PQL_GLOB_ATTR_OPENLDAPACI")] = user_generate_aci($ldap_linkid,
 																			  $GLOBALS["USER_DN"],
 																			  'dnszone');
