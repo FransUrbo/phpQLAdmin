@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.175 2004-04-13 11:16:52 turbo Exp $
+// $Id: pql.inc,v 2.176 2004-04-14 08:58:10 turbo Exp $
 //
 
 // ----------------------------
@@ -343,6 +343,10 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 
 	// -----
 	// Create the RDN for the user
+	// NOTE: This will fail if:
+	//			1. cn is used to reference users with
+	//			2. cn isn't availible because 'person' objectclass isn't
+	//			   choosen as 'user creator'.
 	$userdn = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn) . "=" .
 	          $entry[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)] . ",";
 	if($branch)
@@ -357,6 +361,7 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif("pql_user_add - user creation", $userdn, $entry);
+//die($LDIF);
 
 	// -----
     // Add the user to the database
@@ -715,7 +720,7 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name) {
 
     // adds the user
     if(! @ldap_add($ldap_linkid, $dn, $entry)) {
-		// failed to add user
+		// Failed to add branch
 		pql_format_error(1);
 		die("$LDIF");
 		return false;
