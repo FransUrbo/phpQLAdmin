@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // default domain name (the default domainname for a domain)
-// $Id: attrib.defaultdomain.inc,v 2.4 2002-12-24 12:01:55 turbo Exp $
+// $Id: attrib.defaultdomain.inc,v 2.5 2003-01-10 18:11:36 turbo Exp $
 
 function attribute_check(){
     global $defaultdomain, $domain, $oldvalue, $_pql, $error;
@@ -74,11 +74,12 @@ function attribute_save($type){
 		}
 		
 		if(PQL_LDAP_OBJECTCLASS_DOMAIN == "domain") {
-			require("./pql_control.inc");
-			$_pql_control = new pql_control($USER_HOST_CTR, $USER_DN, $USER_PASS);
+			require("./include/pql_control.inc");
+			$_pql_control = new pql_control($GLOBALS["USER_HOST_CTR"], $GLOBALS["USER_DN"], $GLOBALS["USER_PASS"]);
 			
 			// update locals if control patch is enabled
-			if(pql_control_update_domains($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"],
+			if(pql_control_update_domains($_pql->ldap_linkid,
+										  $GLOBALS["USER_SEARCH_DN_USR"],
 										  $_pql_control->ldap_linkid,
 										  $GLOBALS["USER_SEARCH_DN_CTR"])) {
 				// message ??
