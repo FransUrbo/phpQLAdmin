@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.81 2004-02-27 12:10:27 turbo Exp $
+// $Id: user_add.php,v 2.82 2004-03-02 07:25:56 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -59,11 +59,11 @@ switch($_REQUEST["page_curr"]) {
 		foreach($attribs as $attrib) {
 			// Get default value
 			$value = pql_domain_value($_pql, $_REQUEST["domain"], $attrib);
-			$$attrib = $value;
+			$$attrib = pql_format_bool($value);
 		}
 
 		// Verify/Create uid - But only if we're referencing users with UID...
-		if(!$_REQUEST["uid"] and $autocreateusername and function_exists('user_generate_uid') and 
+		if(empty($_REQUEST["uid"]) and $autocreateusername and function_exists('user_generate_uid') and 
 		   (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_GLOB_ATTR_UID"))) {
 			// Generate the username
 			$_REQUEST["uid"] = strtolower(user_generate_uid($_pql, $_REQUEST["surname"],
@@ -85,9 +85,6 @@ switch($_REQUEST["page_curr"]) {
 					$error_text["uid"] = $LANG->_('Invalid');
 				}
 			}
-		} else {
-			$error = true;
-			$error_text["uid"] = $LANG->_('Missing');
 		}
 		
 		// Verify/Create email address
