@@ -12,17 +12,17 @@ include("./header.html");
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 
 $ldap = pql_get_subschemas($_pql->ldap_linkid);
+$j = 0;
 ?>
     <table cellspacing="0" cellpadding="3" border="0">
 <?php
-$j = 0;
-
 foreach($ldap as $x => $array) {
 ?>
-      <th colspan="3" align="left"><?=$x?></th>
+      <th colspan="3" align="left"><?=$x?>
 <?php
-	if(!eregi($x, 'objectClasses')) {
+	if(!eregi(lc($x), 'objectclasses')) {
 ?>
+
         <tr>
           <td>NAME</td>
           <td>OID</td>
@@ -46,9 +46,10 @@ foreach($ldap as $x => $array) {
 		// Objectclasses
 		$class = table_bgcolor(0);
 ?>
-<?php
-		foreach($array as $value) {
-?>
+        <br>
+        <font size="1">Text in bold is a MUST, and non-bold is MAY.</font>
+        <br>
+<?php	foreach($array as $value) { ?>
         <tr class="<?=$class?>">
           <td>
             <div id="el<?=$j?>Parent" class="parent">
@@ -61,12 +62,12 @@ foreach($ldap as $x => $array) {
 
             <div id="el<?=$j?>Child" class="child">
 <?php		for($i=0; $i < $value['MUST']['count']; $i++) { // MUST attributes ?>
-              &nbsp;&nbsp;&nbsp;<b><?=$value['MUST'][$i]?></b><br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<b><?=$value['MUST'][$i]?></b><br>
 <?php		} 
 
 			for($i=0; $i < $value['MAY']['count']; $i++) {  // MAY attributes
 ?>
-              &nbsp;&nbsp;&nbsp;<?=$value['MAY'][$i]?><br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<?=$value['MAY'][$i]?><br>
 <?php		} ?>
             </div>
           </td>
@@ -80,7 +81,7 @@ foreach($ldap as $x => $array) {
             </div>
             <div id="el<?=$j?>Child" class="child">
 <?php		for($i=0; $i < $value['MUST']['count']; $i++) { // MUST attributes ?>
-              &nbsp;&nbsp;&nbsp;<b><?php
+              &nbsp;&nbsp;&nbsp;&nbsp;<b><?php
 				if($ldap['attributetypes'][lc($value['MUST'][$i])]['OID']) {
 					echo $ldap['attributetypes'][lc($value['MUST'][$i])]['OID'];
 				} else {
@@ -95,7 +96,7 @@ foreach($ldap as $x => $array) {
 <?php       }
 
             for($i=0; $i < $value['MAY']['count']; $i++) { // MAY attributes ?>
-              &nbsp;&nbsp;&nbsp;<?php
+              &nbsp;&nbsp;&nbsp;&nbsp;<?php
 				if($ldap['attributetypes'][lc($value['MAY'][$i])]['OID']) {
 					echo $ldap['attributetypes'][lc($value['MAY'][$i])]['OID'];
 				} else {
