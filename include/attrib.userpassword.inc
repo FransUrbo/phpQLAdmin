@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.20 2004-02-14 14:25:36 turbo Exp $
+// $Id: attrib.userpassword.inc,v 2.21 2004-02-14 16:02:34 turbo Exp $
 
 function attribute_check($type) {
 	global $error, $LANG;
@@ -114,7 +114,6 @@ function attribute_save($type) {
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										 array('what' => $LANG->_('password')));
 
-			// DLW: If I'm changing my own password, save it in the session too?
 			if($_REQUEST["user"] == $_SESSION["USER_DN"])
 			  $_SESSION["USER_PASS"] = $userpassword;
 		} else
