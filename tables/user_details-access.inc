@@ -6,7 +6,7 @@
 		$branch = urldecode($branch);
 
 		// Check the top-most (namingContexts) DN's if user is admin of that...
-		if(pql_validate_administrator($_pql->ldap_linkid, $branch, $_GET["user"])) {
+		if(pql_validate_administrator($_pql->ldap_linkid, $branch, pql_get_define("PQL_ATTR_ADMINISTRATOR"), $_GET["user"])) {
 			$domains_admins[$branch][] = $branch;
 			$super_admin = 1;
 		}
@@ -138,7 +138,7 @@
 ?>
       <tr class="<?=$class?>">
         <td class="title"><?=$LANG->_('Create branches')?></td>
-<?php	if(pql_validate_administrator($_pql->ldap_linkid, $_GET["rootdn"], $_GET["user"])) { ?>
+<?php	if(pql_validate_administrator($_pql->ldap_linkid, $_GET["rootdn"], pql_get_define("PQL_ATTR_ADMINISTRATOR"), $_GET["user"])) { ?>
         <td><?=$LANG->_('Yes')?></td>
         <td>
           <a href="domain_edit_attributes.php?attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR")?>&rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&submit=4&<?=pql_get_define("PQL_ATTR_ADMINISTRATOR")?>=<?=$url["user"]?>&action=delete&view=<?=$_GET["view"]?>">
