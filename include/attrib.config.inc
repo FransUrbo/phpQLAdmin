@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.14 2003-04-24 07:50:59 turbo Exp $
+// $Id: attrib.config.inc,v 1.15 2003-04-28 10:59:13 turbo Exp $
 
 function attribute_check() {
     global $administrator, $domain, $oldvalue, $_pql, $error;
@@ -231,13 +231,13 @@ function attribute_print_form() {
 
 function attribute_save() {
     global $domain, $attrib, $$attrib, $oldvalue, $administrator, $_pql, $rootdn;
-	global $delval;
+	global $delval, $PQL_ATTRIBUTE, $config;
 
 	if($$attrib) {
 		if(strtolower($attrib) == 'passwordscheme') {
-			$value[$attrib][] = strtoupper($$attrib);
+			$entry[$attrib][] = strtoupper($$attrib);
 		} else {
-			$value[$attrib][] = $$attrib;
+			$entry[$attrib][] = $$attrib;
 		}
     }
 
@@ -245,15 +245,35 @@ function attribute_save() {
 	if($oldvalue and $toggle) {
 		$values = pql_split_oldvalues($oldvalue);
 		for($i=0; $values[$i]; $i++)
-		  $value[$attrib][] = $values[$i];
+		  $entry[$attrib][] = $values[$i];
 	} else {
 		// No old value, and it's not a toggle...
 		// Fetch old values from DB
 		$oldvalues = pql_get_domain_value($_pql, $rootdn, $attrib);
+		if(is_array($oldvalues)) {
 		foreach($oldvalues as $val) {
 			if(!@eregi($delval, $val)) {
 			   // Remove the one we don't want
-			   $value[$attrib][] = $val;
+					$entry[$attrib][] = $val;
+				}
+			}
+		} else {
+			// We don't have any values in the LDAP database, we're using
+			// the default values - get the old values from the define
+			foreach($PQL_ATTRIBUTE as $key => $value) {
+				if(!is_array($value)) {
+					if((lc($value) == lc($attrib)) and $config[$key][$rootdn]) {
+						// Split this value into an array
+						$values = pql_split_oldvalues($config[$key][$rootdn]);
+						foreach($values as $val) {
+							// Add all values EXEPT the one to remove
+							if(lc($val) != lc($delval))
+							  $entry[$attrib][] = $val;
+						}
+
+						break;
+					}
+				}
             }
         }
 	}
@@ -262,14 +282,14 @@ function attribute_save() {
 		// We don't have a root DN. This means it's a global
 		// variable, and should be set in every namingContexts
 		foreach($_pql->ldap_basedn as $dn) {
-			if(! pql_set_domain_value($_pql->ldap_linkid, $dn, '', $value)) {
+			if(! pql_set_domain_value($_pql->ldap_linkid, $dn, '', $entry)) {
 				$msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
 			} else {
 				$msg = "Successfully replaced $attrib."; $rlnb = 1;
 			}
 		}
 	} else {
-		if(! pql_set_domain_value($_pql->ldap_linkid, $rootdn, '', $value)) {
+		if(! pql_set_domain_value($_pql->ldap_linkid, $rootdn, '', $entry)) {
 			$msg = "Failed to add/replace $attrib: " . ldap_error($_pql->ldap_linkid);
 		} else {
 			$msg = "Successfully replaced $attrib."; $rlnb = 1;
