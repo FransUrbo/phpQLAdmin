@@ -1,7 +1,7 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.41 2005-02-26 17:28:52 turbo Exp $
-session_start();
+// $Id: control_detail.php,v 1.41.2.1 2005-03-04 11:59:44 turbo Exp $
+require("./include/pql_session.inc");
 require("./include/pql_config.inc");
 
 if(pql_get_define("PQL_CONF_CONTROL_USE")) {
