@@ -1,6 +1,6 @@
 phpQLAdmin 2.0 Change Log
 
-phpQLAdmin 2.0.17 TO BE ANNOUNCED
+phpQLAdmin 2.0.17 Release (Oct 30 2003)
 	Bug fixes
 	  - Missing inclusion of the domain and/or rootdn value in URLs.
 	    Closes bug 47
