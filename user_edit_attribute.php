@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of user
-// $Id: user_edit_attribute.php,v 2.39 2004-04-29 13:50:44 dlw Exp $
+// $Id: user_edit_attribute.php,v 2.40 2004-05-07 04:41:21 turbo Exp $
 //
 // This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
 //   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -16,16 +16,13 @@ $url["domain"] = pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 $url["user"]   = pql_format_urls($_REQUEST["user"]);
 
-if (strpos($_SESSION['VERSION'], 'CVS') !== false) {
-  require_once("./dlw_porting.inc");
-
-  // These variable are "_GET" the first time, and "_POST" the other times.
-  if (empty($session)) {
-    dlw_expect_from(__FILE__, __LINE__, '_REQUEST', array('domain', 'user', 'rootdn', 'oldvalue', 'view', 'attrib', 'PHPSESSID'));
-    dlw_expect_from(__FILE__, __LINE__, '_POST', array());
-  } else {
-    dlw_expect_from(__FILE__, __LINE__, '_POST', array('domain', 'user', 'rootdn', 'oldvalue', 'view', 'attrib', 'submit'));
-  }
+require_once("./dlw_porting.inc");
+// These variable are "_GET" the first time, and "_POST" the other times.
+if (empty($session)) {
+  dlw_expect_from(__FILE__, __LINE__, '_REQUEST', array('domain', 'user', 'rootdn', 'oldvalue', 'view', 'attrib', 'PHPSESSID'));
+  dlw_expect_from(__FILE__, __LINE__, '_POST', array());
+} else {
+  dlw_expect_from(__FILE__, __LINE__, '_POST', array('domain', 'user', 'rootdn', 'oldvalue', 'view', 'attrib', 'submit'));
 }
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
@@ -64,10 +61,17 @@ function attribute_forward($msg, $rlnb = false) {
     header("Location: " . pql_get_define("PQL_CONF_URI") . "$link");
 }
 
-// Select which attribute have to be included
-include("./include/".pql_plugin_get_filename(pql_plugin_get($_REQUEST["attrib"])));
-
 include("./header.html");
+
+// Select which attribute have to be included
+$plugin = pql_plugin_get_filename(pql_plugin_get($_REQUEST["attrib"]));
+if(!$plugin) {
+    die("<span class=\"error\">ERROR: No plugin file defined for attribute '<i>".$_REQUEST["attrib"]."</i>'</span>");
+} elseif(!file_exists("./include/$plugin")) {
+    die("<span class=\"error\">ERROR: Plugin file defined for attribute '<i>".$_REQUEST["attrib"]."</i>' does not exists!</span>");
+}
+
+include("./include/$plugin");
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Change user data for %user%'), array('user' => $username)); ?></span>
   <br><br>
@@ -85,8 +89,14 @@ if(($_REQUEST["submit"] == 1) or ($_REQUEST["submit"] == 2)) {
 	// SAVE change directly, no need for a form
 	attribute_save($action);
 } else {
-    attribute_init();
-    attribute_print_form();
+    if(($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_GROUP_CONFIRM")) or
+       ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_GROUP_MEMBERS_ONLY"))) {
+	// It's one of those user toggles - go save!
+	attribute_save($action);
+    } else {
+	attribute_init();
+	attribute_print_form();
+    }
 }
 ?>
 </body>
