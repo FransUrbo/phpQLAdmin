@@ -2,7 +2,7 @@
 <head>
 	<title>phpQL</title>
 	<link rel="stylesheet" href="../normal.css" type="text/css">
-	<!-- $Id: conf.php,v 2.7 2004-03-16 10:54:26 turbo Exp $ -->
+	<!-- $Id: conf.php,v 2.8 2004-03-18 07:34:33 turbo Exp $ -->
 </head>
 
 <body bgcolor="#e7e7e7" background="../images/bkg.png">
@@ -23,7 +23,7 @@ with PQL_CONF_CONTROL_ are only required for qmail-ldap/control support within p
 have to set unless you want support for qmail-ldap/control.
 <br>
 <br>
-<b>include langugage definition</b>
+<b>Langugage definition</b>
 <br>
 Change filename of the required language file to change the language
 of the application. Language files have the name lang.xx.inc, where
@@ -31,6 +31,12 @@ xx stands for the abbreviation of the language (e.g. de for german,
 en for english and so on). Look in your include directory to see
 which languages are supported. Currently, only English (en) is supported, but I hope
 there will be other users who contribute their languages.
+<p>
+If your language isn't supported, and you really want it in your language,
+you will have to translate it yourself. Call the 'update_translations.php'
+(from the left frame 'Home->Documentation->Language translator' URL visible
+only in Advanced mode). Please send me the translation when your're done, so
+others can benefit...
 <p>
 <b>PQL_CONF_HOST</b>
 <br>
@@ -46,21 +52,22 @@ In each server define, there is three fields separated by semicolon (;).<br>
 <b>Second field</b> is the port number,<br>
 <b>Third field</b> is the DN path to the qmail-ldap/controls database.
 <p>
-<u>Example:</u> Two LDAP servers on separate ports and using separate TLD (bind without SSL,
+<u>Examples:</u><br>
+<li>Two LDAP servers on separate ports and using separate TLD (bind without SSL,
 one on standard port 389 and one on another port - 3389).
 <pre>
-localhost;;ou=QmailLDAP,dc=example,dc=com+localhost;3389;ou=QmailLDAP,dc=domain,dc=net
+	localhost;;ou=QmailLDAP,dc=example,dc=com+localhost;3389;ou=QmailLDAP,dc=domain,dc=net
 </pre>
-Since the PHP LDAP module supports LDAP URIs, naturaly you could use that here as well
+<li>Since the PHP LDAP module supports LDAP URIs, naturaly you could use that here as well
 (note that the path to the socket <b>must</b> be URL encoded). Also note that this socket
 must be readable and writable by the user Apache is running as.
 <pre>
-ldapi://%2fvar%2frun%2fldapi;;ou=QmailLDAP,dc=example,dc=com
+	ldapi://%2fvar%2frun%2fldapi;;ou=QmailLDAP,dc=example,dc=com
 </pre>
-Using SSL is also possible. Take special care to make sure that the LDAP server acctually
+<li>Using SSL is also possible. Take special care to make sure that the LDAP server acctually
 works with SSL (certificate is ok and that you've configured slapd to listen on ldaps).
 <pre>
-ldaps://server.example.com;;ou=QmailLDAP,dc=example,dc=com
+	ldaps://server.example.com;;ou=QmailLDAP,dc=example,dc=com
 </pre>
 In both the <b>ldapi</b> and <b>ldaps</b> examples, the <u>port</u> value is pointless.<br>
 As you might notice (especially if you're used to older versions of this
@@ -98,9 +105,9 @@ directories) the mailinglist. This is usually 'alias', as in
 <b>Other</b>
 <br>
 that this, <b><u>NO</u></b> other values need to be entered
-into the config.inc file! Everything else is configured from the
-user interface. Select 'Advanced mode' in the left frame and unfold
-the <u>Home</u> branch. There you'll see <u>phpQLAdmin Configuration</u>
-(once as a branch name and once as a URL for a page).
+into the config.inc file! Everything else is <a href="../config_detail.php">
+configured</a> from the user interface. Select 'Advanced mode' in the left
+frame and unfold the <u>Home</u> branch. There you'll see <u>phpQLAdmin 
+Configuration</u> (once as a branch name and once as a URL for a page).
 </body>
 </html>

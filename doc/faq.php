@@ -2,7 +2,7 @@
 <head>
 	<title>phpQL</title>
 	<link rel="stylesheet" href="../normal.css" type="text/css">
-	<!-- $Id: faq.php,v 2.2 2004-03-16 17:09:08 turbo Exp $ -->
+	<!-- $Id: faq.php,v 2.3 2004-03-18 07:34:33 turbo Exp $ -->
 </head>
 
 <body bgcolor="#e7e7e7" background="../images/bkg.png">
@@ -49,35 +49,5 @@ Crypt cannot handle passwords longer than eight chars (<u>12345678xxx</u> matche
 <u>12345678</u> stored in the user database). If you want to use longer passwords for sure, you
 may use SHA or MD5. Unfortunately, LDAP does not support salted SHA / MD5, so the hash is
 the same for every call of the encryption function.
-<p>
-<b>I'm getting the error "Object class violation" when saving control stuff</b><br>
-The qmail-ldap/control database must support the qmailcontrol objectclass and within this
-objectclass all qmail control files have to be registred (eg. if the control file has the 
-name 'ldaplogin', there must be a registred attribute 'ldaplogin' within qmailcontrol 
-objectclass). Otherwise, you can't read / store the attributes, and qmail-ldap/control 
-will not work.
-<p>
-<b>I'm getting the error "called with an empty DN"</b><br>
-TODO
-<p>
-<b>I'm getting the error "Could not bind to ldap server: Can't contact LDAP server"</b><br>
-TODO
-<p>
-<b>I'm getting the error "This is weird. We couldn't find the root dn for some reason."</b><br>
-TODO
-<p>
-<b>Netscape says 'Document contains no data' when requesting phpQLAdmin</b><br>
-This error is mostly caused when PHP does not have the LDAP extension installed. Please check the phpinfo() function
-to see if the LDAP extension is there, it should be printed something like this:<br>
-<h2 align="center"><a NAME="module_ldap">ldap</a></h2>
-<table BORDER=0 CELLPADDING=3 CELLSPACING=1 WIDTH=600 BGCOLOR="#000000" ALIGN="CENTER">
-  <tr VALIGN="baseline" BGCOLOR="#CCCCCC">
-    <td BGCOLOR="#CCCCFF" ><b>LDAP Support</b></td>
-    <td ALIGN="left">enabled</td>
-  </tr>
-</table>
-<br>
-If this is there, but the error occurs however, PHP seems to crash when executing an ldap function. Try to reinstall the ldap libraries and
-rebuild PHP. If it still no work, try to ask in a the phpQLAdmin or a PHP mailinglist.
 </body>
 </html>
