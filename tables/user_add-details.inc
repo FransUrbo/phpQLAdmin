@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-details.inc,v 1.29.2.4 2005-02-15 09:38:30 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.29.2.5 2005-02-21 07:41:57 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
@@ -189,15 +189,15 @@
 	  if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAIL"))) {
 		if(!pql_get_define("PQL_CONF_CREATE_ADDRESS", $_REQUEST["domain"]) or
 		   (pql_get_define("PQL_CONF_CREATE_ADDRESS", $_REQUEST["domain"]) and !function_exists('user_generate_email')) or
-		   $_SESSION["ADVANCED_MODE"] or $error_text["email"]) {
+		   $_SESSION["ADVANCED_MODE"] or $error_text["mail"]) {
 ?>
         <!-- Email address -->
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Main address')?></td>
           <td>
-            <?=pql_format_error_span($error_text["email"]); ?>
+            <?=pql_format_error_span($error_text["mail"]); ?>
             <?=pql_templates_mark_importance($mark); ?>
-            <input type="text" name="email" value="<?=$_REQUEST["email"]?>">
+            <input type="text" name="mail" value="<?=$_REQUEST["mail"]?>">
 <?php 		if(is_array($additionaldomainname)) { ?>
             <b>@ <select name="email_domain"></b>
               <option value="<?=$defaultdomain?>"><?=pql_maybe_idna_decode($defaultdomain)?></option>

@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.30.2.4 2005-02-15 10:02:25 turbo Exp $
+// $Id: user_add-save.inc,v 1.30.2.5 2005-02-21 07:41:57 turbo Exp $
 
 // {{{ URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
 if($_REQUEST["surname"]) {
@@ -67,7 +67,7 @@ if(((($_REQUEST["surname"] and $_REQUEST["name"])
 // }}}
 
 // {{{ Add mail and/or mail aliases
-if($_REQUEST["email"] and
+if($_REQUEST["mail"] and
    (pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAIL")) or
 	pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_ISACTIVE")) or
 	pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILALTERNATE"))))
@@ -77,13 +77,13 @@ if($_REQUEST["email"] and
 	$entry[pql_get_define("PQL_ATTR_ISACTIVE")]	= $_REQUEST["account_status"];
   
   // Add the primary mail address to the entry array
-  if($_REQUEST["email"] and
+  if($_REQUEST["mail"] and
 	 pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAIL")))
-	$entry[pql_get_define("PQL_ATTR_MAIL")] = $_REQUEST["email"];
+	$entry[pql_get_define("PQL_ATTR_MAIL")] = $_REQUEST["mail"];
   
   if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILALTERNATE"), 'MUST')) {
 	// For group objects, we need a 'catchall' mail alias as well.
-	$email_temp = split('\@', $_REQUEST["email"]); $email_temp = $email_temp[0];
+	$email_temp = split('\@', $_REQUEST["mail"]); $email_temp = $email_temp[0];
 
 	if($_REQUEST["email_domain"])
 	  $entry[pql_get_define("PQL_ATTR_MAILALTERNATE")][] = $email_temp . "-catchall@" . $_REQUEST["email_domain"];
@@ -189,7 +189,7 @@ if($_REQUEST["loginshell"] and
 // }}}
 
 // {{{ Add mail directory
-if($_REQUEST["email"] and $_REQUEST["maildirectory"] and
+if($_REQUEST["mail"] and $_REQUEST["maildirectory"] and
    pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILSTORE")))
 {
   // No auto generation - that's done in 'user_add.php'.
@@ -198,7 +198,7 @@ if($_REQUEST["email"] and $_REQUEST["maildirectory"] and
 // }}}
 
 // {{{ Add mail host, home directory and add local delivery to delivery mode
-if($_REQUEST["email"] and ($_REQUEST["host"] or $_REQUEST["userhost"]) and
+if($_REQUEST["mail"] and ($_REQUEST["host"] or $_REQUEST["userhost"]) and
    pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILHOST")))
 {
 	if($_REQUEST["host"])
@@ -237,7 +237,7 @@ if($_REQUEST["email"] and ($_REQUEST["host"] or $_REQUEST["userhost"]) and
 // }}}
 
 // {{{ Add the mail quota
-if($_REQUEST["email"] and
+if($_REQUEST["mail"] and
    (pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_QUOTA_SIZE"))) or
    (pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_QUOTA_COUNT"))))
 {
@@ -335,7 +335,7 @@ if($DNs[0]) {
 	
   // {{{ Send a test mail or redirect to user details page
   if(pql_get_define("PQL_CONF_TESTMAIL_AUTOSEND", $_REQUEST["rootdn"])) {
-	$link  = "user_sendmail.php?email=" . urlencode($_REQUEST["email"]) . "&";
+	$link  = "user_sendmail.php?email=" . urlencode($_REQUEST["mail"]) . "&";
 	$link .= "rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&user=" . urlencode($DNs[0]) . "&rlnb=2&msg=$msg";
   } else {
 	$link  = "user_detail.php?rootdn=".$url["rootdn"]."&";

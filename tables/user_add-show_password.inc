@@ -1,7 +1,7 @@
     <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
       <input type="hidden" name="surname"            value="<?=urlencode($_REQUEST["surname"])?>">
       <input type="hidden" name="name"               value="<?=urlencode($_REQUEST["name"])?>">
-      <input type="hidden" name="email"              value="<?=$_REQUEST["email"]?>">
+      <input type="hidden" name="mail"               value="<?=$_REQUEST["mail"]?>">
       <input type="hidden" name="uid"                value="<?=$_REQUEST["uid"]?>">
 <?php if($_REQUEST["template"] != "forward") { ?>
       <input type="hidden" name="autogenerate"       value="<?=$_REQUEST["autogenerate"]?>">

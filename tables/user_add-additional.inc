@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-additional.inc,v 1.24.2.3 2005-02-15 16:47:55 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.24.2.4 2005-02-21 07:41:57 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <!-- Some hidden values from previous page(s) -->
 <?php if($_REQUEST["surname"] and pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_CN"))) { ?>
@@ -7,8 +7,8 @@
 <?php if($_REQUEST["name"] and pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_SN"))) { ?>
     <input type="hidden" name="name"               value="<?=urlencode($_REQUEST["name"])?>">
 <?php } ?>
-<?php if($_REQUEST["email"] and pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_MAIL"))) { ?>
-    <input type="hidden" name="email"              value="<?=$_REQUEST["email"]?>">
+<?php if($_REQUEST["mail"] and pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_MAIL"))) { ?>
+    <input type="hidden" name="mail"               value="<?=$_REQUEST["mail"]?>">
     <input type="hidden" name="email_domain"       value="<?=$_REQUEST["email_domain"]?>">
     <input type="hidden" name="include_additional" value="<?=$_REQUEST["include_additional"]?>">
 <?php } ?>
@@ -68,7 +68,7 @@
 
 <?php } // Allowing home directory
 
-	  if($_REQUEST["email"] and
+	  if($_REQUEST["mail"] and
 		 pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_MAILSTORE")))
       {
 		if($_SESSION["ADVANCED_MODE"] or !$_REQUEST["maildirectory"]) {
@@ -92,7 +92,7 @@
 <?php	}
 	  }
 
-	  if($_REQUEST["email"] and
+	  if($_REQUEST["mail"] and
 		 pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_MAILHOST")))
       {
 ?>

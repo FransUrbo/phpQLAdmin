@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.116.2.6 2005-02-15 16:44:13 turbo Exp $
+// $Id: user_add.php,v 2.116.2.7 2005-02-21 07:41:57 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -121,16 +121,16 @@ switch($_REQUEST["page_curr"]) {
 		// }}}
 		
 		// {{{ Verify/Create email address
-		if(empty($_REQUEST["email"]) and $autocreatemailaddress and function_exists('user_generate_email') and
+		if(empty($_REQUEST["mail"]) and $autocreatemailaddress and function_exists('user_generate_email') and
 		   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAIL"), 'MUST'))
 		{
 			// It's not supplied - generate one
-			$_REQUEST["email"] = strtolower(user_generate_email($_pql, $_REQUEST["uid"], "", "",
+			$_REQUEST["mail"] = strtolower(user_generate_email($_pql, $_REQUEST["uid"], "", "",
 																$_REQUEST["domain"], $_REQUEST["template"]));
 			
-			if(ereg(" ", $_REQUEST["email"]))
+			if(ereg(" ", $_REQUEST["mail"]))
 			  // Replace spaces with underscore
-			  $_REQUEST["email"] = preg_replace(" ", "_", $_REQUEST["email"], -1);
+			  $_REQUEST["mail"] = preg_replace(" ", "_", $_REQUEST["mail"], -1);
 		}
 		// }}}
 
@@ -299,35 +299,35 @@ switch($_REQUEST["page_curr"]) {
 		// If email is set and allowed.
 		// or:
 		// If email isn't set but is required.
-		if(($_REQUEST["email"] and
+		if(($_REQUEST["mail"] and
 			pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAIL")))
 		   or
-		   (empty($_REQUEST["email"]) and
+		   (empty($_REQUEST["mail"]) and
 			pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAIL"), 'MUST')))
 		{
-		  if(!ereg("@", $_REQUEST["email"])) {
+		  if(!ereg("@", $_REQUEST["mail"])) {
 			if($_REQUEST["email_domain"])
-			  $_REQUEST["email"] = $_REQUEST["email"] . "@" . $_REQUEST["email_domain"];
+			  $_REQUEST["mail"] = $_REQUEST["mail"] . "@" . $_REQUEST["email_domain"];
 			else
-			  $_REQUEST["email"] = $_REQUEST["email"] . "@" . $defaultdomain;
+			  $_REQUEST["mail"] = $_REQUEST["mail"] . "@" . $defaultdomain;
 			
-			if(!pql_check_email($_REQUEST["email"])) {
+			if(!pql_check_email($_REQUEST["mail"])) {
 			  $error = true;
-			  $error_text["email"] = $LANG->_('Invalid');
+			  $error_text["mail"] = $LANG->_('Invalid');
 			}
 		  }
 		
 		  // It exists, it's valid. Does it already exists in the database?
-		  if($error_text["email"] == "" and pql_email_exists($_pql, $_REQUEST["email"])) {
+		  if($error_text["mail"] == "" and pql_email_exists($_pql, $_REQUEST["mail"])) {
 			$error = true;
-			$error_text["email"] = pql_complete_constant($LANG->_('Mail address %address% already exists'),
-														 array("address" => '<i>'.$_REQUEST["email"].'</i>'));
-			unset($_REQUEST["email"]);
+			$error_text["mail"] = pql_complete_constant($LANG->_('Mail address %address% already exists'),
+														 array("address" => '<i>'.$_REQUEST["mail"].'</i>'));
+			unset($_REQUEST["mail"]);
 		  } else {
 			// The mail address is perfectly ok, but if user specify an exact email address (which most
 			// likley don't match the email_domain we must change the email_domain request value for
 			// the rest of the checks to work correctly.
-			$tmp = split('@', $_REQUEST["email"]);
+			$tmp = split('@', $_REQUEST["mail"]);
 			$_REQUEST["email_domain"] = $tmp[1];
 		  }
 		}
@@ -401,7 +401,7 @@ switch($_REQUEST["page_curr"]) {
 		// }}}
 
 		// {{{ Generate the mailHost attribute/value
-		if($_REQUEST["email"] and
+		if($_REQUEST["mail"] and
 		   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILHOST")))
 		{
 			// Find MX (or QmailLDAP/Controls with locals=$email_domain)
@@ -421,7 +421,7 @@ switch($_REQUEST["page_curr"]) {
 		// }}}
 
 		// {{{ Generate the mail directory value
-		if($_REQUEST["email"] and
+		if($_REQUEST["mail"] and
 		   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILSTORE")))
 		{
 		  if(!empty($basemaildir)) {
@@ -435,22 +435,24 @@ switch($_REQUEST["page_curr"]) {
 				$reference = $_REQUEST["surname"];
 			  elseif($_REQUEST["name"])
 				$reference = $_REQUEST["name"];
-			  elseif($_REQUEST["email"]) {
-				$reference = split('@', $_REQUEST["email"]);
+			  elseif($_REQUEST["mail"]) {
+				$reference = split('@', $_REQUEST["mail"]);
 				$reference = $reference[0];
 			  }
 			  
-			  $_REQUEST["maildirectory"] = user_generate_mailstore($_pql, $_REQUEST["email"], $_REQUEST["domain"],
+			  $_REQUEST["maildirectory"] = user_generate_mailstore($_pql, $_REQUEST["mail"], $_REQUEST["domain"],
 																   array(pql_get_define("PQL_ATTR_UID") => $reference),
 																   'user');
 			} else {
 			  // Function user_generate_mailstore() doesn't exists but we have a base mail directory.
 			  // Try creating the mail directory manually, using the username.
 			  
-			  if(pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["rootdn"]))
+			  if(pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["rootdn"])) {
 				// Absolute path is ok - create 'baseMailDir/username/'
-				$_REQUEST["maildirectory"] = $basemaildir.$_REQUEST["uid"]."/";
-			  else
+				$ref = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]);
+				if($_REQUEST[$ref])
+				  $_REQUEST["maildirectory"] = $basemaildir.$_REQUEST[$ref]."/";
+			  } else
 				// We're not allowing an absolute path - don't use the baseMailDir.
 				$_REQUEST["maildirectory"] = $_REQUEST["uid"]."/";
 			}
@@ -480,22 +482,24 @@ switch($_REQUEST["page_curr"]) {
 				$reference = $_REQUEST["surname"];
 			  elseif($_REQUEST["name"])
 				$reference = $_REQUEST["name"];
-			  elseif($_REQUEST["email"]) {
-				$reference = split('@', $_REQUEST["email"]);
+			  elseif($_REQUEST["mail"]) {
+				$reference = split('@', $_REQUEST["mail"]);
 				$reference = $reference[0];
 			  }
 			  
-			  $_REQUEST["homedirectory"] = user_generate_homedir($_pql, $_REQUEST["email"], $_REQUEST["domain"],
+			  $_REQUEST["homedirectory"] = user_generate_homedir($_pql, $_REQUEST["mail"], $_REQUEST["domain"],
 																 array(pql_get_define("PQL_ATTR_UID") => $reference),
 																 'user');
 			} else {
 			  // Function user_generate_homedir() doesn't exists but we have a base home directory.
 			  // Try creating the home directory manually, using the username.
 			  
-			  if(pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["rootdn"]))
+			  if(pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["rootdn"])) {
 				// Absolute path is ok - create 'baseHomeDir/username/'
-				$_REQUEST["homedirectory"] = $basehomedir.$_REQUEST["uid"]."/";
-			  else
+				$ref = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]);
+				if($_REQUEST[$ref])
+				  $_REQUEST["homedirectory"] = $basehomedir.$_REQUEST[$ref]."/";
+			  } else
 				// We're not allowing an absolute path - don't use the baseHomeDir.
 				$_REQUEST["homedirectory"] = $_REQUEST["uid"]."/";
 			}
