@@ -7,6 +7,7 @@
 
 <?php
   $br = strtolower(getenv("HTTP_USER_AGENT"));
+  $_SESSION["konqueror"] = eregi("konqueror", $br);
   $_SESSION["opera"] = eregi("opera", $br);
   if($_SESSION["opera"]) {
 ?>

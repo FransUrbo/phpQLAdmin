@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.71 2004-02-14 14:01:00 turbo Exp $
+// $Id: left.php,v 2.72 2004-02-15 12:17:41 turbo Exp $
 //
 session_start();
 
@@ -45,7 +45,11 @@ if($_REQUEST["advanced"] == 1) {
   <br>
 
   <form method=post action="index2.php" target="_top">
+<?php if($_SESSION["konqueror"]) { ?>
+    <input type="checkbox" name="advanced" accesskey="a" onClick="this.form.submit()"<?=$checked?>><?=$LANG->_('\uA\Udvanced mode')."\n"?>
+<?php } else { ?>
     <input type="checkbox" name="advanced" accesskey="a" onChange="this.form.submit()"<?=$checked?>><?=$LANG->_('\uA\Udvanced mode')."\n"?>
+<?php } ?>
   </form>
 <?php if($_SESSION["ALLOW_BRANCH_CREATE"] and $_SESSION["ADVANCED_MODE"]) { ?>
 

@@ -22,15 +22,19 @@
     // Uggly fix for Opera and Konqueror 2.2 that are half DOM compliant
     if (capable) {
         if (typeof(window.opera) != 'undefined') {
-            capable = 0;
+            var browserName = ' ' + navigator.userAgent.toLowerCase();
+            if ((browserName.indexOf('konqueror 7') == 0)) {
+                capable = 0;
+            }
         }
         else if (typeof(navigator.userAgent) != 'undefined') {
             var browserName = ' ' + navigator.userAgent.toLowerCase();
-            if (browserName.indexOf('konqueror') > 0) {
+            if ((browserName.indexOf('konqueror') > 0) && (browserName.indexOf('konqueror/3') == 0)) {
                 capable = 0;
             }
         } // end if... else if...
     } // end if
+
     var fontFamily = 'verdana, helvetica, arial, geneva, sans-serif';
     var fontSize   = 'x-small';
     var fontBig    = 'medium';
@@ -44,6 +48,7 @@
   <script src="left.js" type="text/javascript" language="javascript1.2"></script>
 <?php
   $br = strtolower(getenv("HTTP_USER_AGENT"));
+  $_SESSION["konqueror"] = eregi("konqueror", $br);
   $_SESSION["opera"] = eregi("opera", $br);
   if($_SESSION["opera"]) {
       $_SESSION["opera"]=true;
