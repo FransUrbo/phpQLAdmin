@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for administrator and seealso modification
 // Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
-// $Id: attrib.administrator.inc,v 1.48 2004-11-06 23:25:51 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.48.4.1 2004-11-19 08:43:57 turbo Exp $
 
 // There is serious problems with this. I fix for one usage and break another
 // one! Let's try to remember (and document) how it's called. It's called from
@@ -139,7 +139,6 @@ function attribute_check() {
 // {{{ attribute_print_form(action)
 function attribute_print_form($action) {
     global $_pql, $error, $LANG;
-    global $orgname; 			// Set by domain_edit_attributes.php
 
 	$attrib = $_REQUEST["attrib"];
 ?>
@@ -165,7 +164,7 @@ function attribute_print_form($action) {
 		}
 	}
 ?>
-      <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what% for domain %domain%'), array('what' => $what, 'domain' => $orgname)); ?></th>
+      <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what% for domain %domain%'), array('what' => $what, 'domain' => $_REQUEST["orgname"])); ?></th>
         <tr class="<?php pql_format_table(); ?>">
 <?php if(($_REQUEST["attrib"] == 'dnmember') or
 		 ($_REQUEST["attrib"] == 'dnmoderator') or
