@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for administrator and seealso modification
 // Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
-// $Id: attrib.administrator.inc,v 1.42 2004-10-14 05:46:13 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.43 2004-10-14 08:50:32 turbo Exp $
 
 require("./left-head.html");
 
@@ -287,120 +287,127 @@ function attribute_save($type) {
 	// There is serious problems with this. I fix for one usage and break another
 	// one! Let's try to remember (and document) how it's called. It's called from
 	// the following places:
-	// * left.php->user->User access->Allow user to create domains below domain
-	// * left.php->user->User access->Disallow user to create domains below domain
+	// * left.php->[user]->User access->Allow user to create domains below domain
+	// * left.php->[user]->User access->Disallow user to create domains below domain
+	// * left.php->[user]->Group stuff->Member DN(s)->Add member
+	// * left.php->[user]->Group stuff->Sender DN(s)->Add sender
+	// * left.php->[user]->Group stuff->Moderator DN(s)->Add moderator
 	// [anything else!?]
 
 	$attrib = $_REQUEST["attrib"];
 	$value = $_REQUEST[$attrib];
 
-    switch($type) {
-      case "add":
-      case "modify":
-      case "delete":
-		if($_REQUEST["branchdn"])
-		  $DN = $_REQUEST["branchdn"];
-		elseif(!$_REQUEST["user"])
-		  $DN = $_REQUEST["domain"];
-		elseif($_REQUEST["view"] == 'group')
-		  // We're adding a subscriber,allowed sender or moderator to a qmailGroup object.
-		  $DN = $_REQUEST["user"];
-		else
-		  $DN = $_REQUEST["rootdn"];
-
-		if($value and $_REQUEST["oldvalue"] and ($value == $_REQUEST["oldvalue"])) {
-			// don't change if new value equal to old one
-			$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('Domain administrator')));
-			attribute_forward($msg);
-			break;
-    	}
-
-		// Get the old values, so we can remove the one we're modifying
-		// (delete the one we want to delete, keep the others etc)
-		$admins = pql_domain_get_value($_pql, $DN, $attrib);
-
-		$ADMs[$attrib] = array();
-
-		if(is_array($admins)) {
-			foreach($admins as $admin)
-			  $ADMs[$attrib][] = $admin;
-		}
-
-		if($type == 'delete') {
-			// Delete user DN from array of administrators
-			foreach($ADMs[$attrib] as $adm) {
-				if(!eregi($value, $adm))
-				  $adms[] = $adm;
-			}
-			
-			$ADMs[$attrib] = $adms;
-			
-			if(!$_REQUEST["user"] and !$_REQUEST["branchdn"])
-			  unset($_REQUEST[$attrib]);
-		} else {
-			// Add user 
-			// NOTE: No ACI additions/modifications if we're modifying a qmailGroup object!
-			if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci") and ($_REQUEST["view"] != 'group'))
-			  $old_acis = pql_aci_get($_pql->ldap_linkid, $_REQUEST["domain"]);
-
-			if($_REQUEST["user"] and ($_REQUEST["view"] != 'group')) {
-				$ADMs[$attrib][] = $_REQUEST["user"];
-
-				// Add the OpenLDAPaci attribute (maybe)
-				if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci"))
-				  $ACIs = attribute_setup_aci($old_acis, $_REQUEST["user"]);
-			} elseif($value) {
-				$amount = $value;
-				for($i=0; $i < $amount; $i++) {
-					$var_name = $attrib . "_$i";
-					if($_POST[$var_name])  {
-						$ADMs[$attrib][] = $_POST[$var_name];
-
-						// Add the OpenLDAPaci attribute (maybe)
-						if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci") and
-						   ($_REQUEST["view"] != 'group'))
-						{
-							if(!is_array($ACIs))
-							  $ACIs = array();
-
-							$new  = attribute_setup_aci($old_acis, $_POST[$var_name]);
-							$ACIs = $ACIs + $new;
-						}
-					}
-				}
-
-				unset($_REQUEST[$attrib]);
-			}
-
-			if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci") and is_array($ACIs))
-			  $ADMs[pql_get_define("PQL_ATTR_LDAPACI")] = $ACIs;
-		}
-
-		$success = 0;
-		if(pql_domain_set_value($_pql->ldap_linkid, $DN, $attrib, $ADMs))
-		  $success = 1;
-
-		if($success)
-		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
-									   array('what' => $LANG->_('Domain administrator')));
-		else
-		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('Domain administrator')))
-			. ": " . ldap_error($_pql->ldap_linkid);
-		
+	// Which DN should we use?
+	if($_REQUEST["branchdn"])
+	  $DN = $_REQUEST["branchdn"];
+	elseif(!$_REQUEST["user"])
+	  $DN = $_REQUEST["domain"];
+	elseif($_REQUEST["view"] == 'group')
+	  // We're adding a subscriber,allowed sender or moderator to a qmailGroup object.
+	  $DN = $_REQUEST["user"];
+	else
+	  $DN = $_REQUEST["rootdn"];
+	
+	if($value and $_REQUEST["oldvalue"] and ($value == $_REQUEST["oldvalue"])) {
+		// don't change if new value equal to old one
+		$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('Domain administrator')));
 		attribute_forward($msg);
 		break;
-
-      default:
-		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
-								  array('type' => $type, 'file' => __FILE__)));
-    }
+	}
+	
+	// Get the old values, so we can remove the one we're modifying
+	// (delete the one we want to delete, keep the others etc)
+	$admins = pql_domain_get_value($_pql, $DN, $attrib);
+	
+	// Add the old values to the resulting array.
+	$ADMs[$attrib] = array();
+	if(is_array($admins)) {
+		foreach($admins as $admin)
+		  $ADMs[$attrib][] = $admin;
+	} elseif($admins)
+	  $ADMs[$attrib][] = $admins;
+	
+	if($type == 'delete') {
+		// Delete user DN from array of administrators
+		foreach($ADMs[$attrib] as $adm) {
+			if(!eregi($value, $adm))
+			  $adms[] = $adm;
+		}
+		
+		$ADMs[$attrib] = $adms;
+		
+		if(!$_REQUEST["user"] and !$_REQUEST["branchdn"])
+		  unset($_REQUEST[$attrib]);
+	} else {
+		// Add user 
+		// NOTE: No ACI additions/modifications if we're modifying a qmailGroup object!
+		if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci") and ($_REQUEST["view"] != 'group'))
+		  $old_acis = pql_aci_get($_pql->ldap_linkid, $_REQUEST["domain"]);
+		
+		if($_REQUEST["user"] and ($_REQUEST["view"] != 'group')) {
+			$ADMs[$attrib][] = $_REQUEST["user"];
+			
+			// Add the OpenLDAPaci attribute (maybe)
+			if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci"))
+			  $ACIs = attribute_setup_aci($old_acis, $_REQUEST["user"]);
+		} elseif($value) {
+			$amount = $value;
+			for($i=0; $i < $amount; $i++) {
+				$var_name = $attrib . "_$i";
+				if($_POST[$var_name])  {
+					$ADMs[$attrib][] = $_POST[$var_name];
+					
+					// Add the OpenLDAPaci attribute (maybe)
+					if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci") and
+					   ($_REQUEST["view"] != 'group'))
+					  {
+						  if(!is_array($ACIs))
+							$ACIs = array();
+						  
+						  $new  = attribute_setup_aci($old_acis, $_POST[$var_name]);
+						  $ACIs = $ACIs + $new;
+					  }
+				}
+			}
+			
+			unset($_REQUEST[$attrib]);
+		}
+		
+		if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci") and is_array($ACIs))
+		  $ADMs[pql_get_define("PQL_ATTR_LDAPACI")] = $ACIs;
+	}
+	
+	$success = 0;
+	if(pql_domain_set_value($_pql->ldap_linkid, $DN, $attrib, $ADMs))
+	  $success = 1;
+	
+	if($attrib == pql_get_define("PQL_ATTR_SEEALSO"))
+	  $what = $LANG->_('contact person');
+	elseif($attrib == pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR"))
+	  $what = $LANG->_('group moderator');
+	elseif($attrib == pql_get_define("PQL_ATTR_GROUP_DN_MEMBER"))
+	  $what = $LANG->_('group member');
+	elseif($attrib == pql_get_define("PQL_ATTR_GROUP_DN_SENDER"))
+	  $what = $LANG->_('group allowed sender');
+	else
+	  $what = $LANG->_('domain administrator');
+	
+	if($success)
+	  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'), array('what' => $what));
+	else
+	  $msg = pql_complete_constant($LANG->_('Failed to change %what%'), array('what' => $what))
+		. ": " . ldap_error($_pql->ldap_linkid);
+	
+	attribute_forward($msg);
 }
 // }}}
 
 if(($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_ADMINISTRATOR")) or
    ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_SEEALSO")) or
-   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM")))
+   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM")) or
+   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR")) or
+   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_GROUP_DN_MEMBER")) or
+   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_GROUP_DN_SENDER")))
 {
 	require("./left-trailer.html");
 }
