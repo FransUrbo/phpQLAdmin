@@ -1,7 +1,7 @@
 <?php
 // lang.en.inc
 // english language definition file
-// $Id: lang.en.inc,v 2.18 2003-04-07 08:25:44 turbo Exp $
+// $Id: lang.en.inc,v 2.19 2003-04-07 15:33:57 turbo Exp $
 //
 // if you have a translation to another language, please contact
 // me --> Turbo Fredriksson <phpqladmin@bayour.com>
@@ -285,7 +285,7 @@ if(!isset($INCLUDE_LANG_EN_INC)) {
 	define("PQL_LANG_MAILQUOTA_MAXSIZE_TITLE", "Max. size of mailbox");
 	define("PQL_LANG_MAILQUOTA_MAXMAILS_TITLE", "Max. number of mails");
 	define("PQL_LANG_MAILQUOTA_DEFAULT", "Standard");
-	define("PQL_LANG_MAILQUOTA_DEFAULT_CHANGE", "Change default max quota for domain ");
+	define("PQL_LANG_MAILQUOTA_DEFAULT_CHANGE", "Change default quota for domain ");
 	define("PQL_LANG_MAILQUOTA_USERDEFINED", "User defined");
 	define("PQL_LANG_MAILQUOTA_CHANGE", "Change quota");
 	define("PQL_LANG_MAILQUOTA_CHANGE_OK", "Successfully set the quota to %quota%");
