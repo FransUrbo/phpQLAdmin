@@ -27,11 +27,11 @@ include("./include/".pql_control_plugin_get_filename($control_plugin));
 
 // forward back to users detail page
 function attribute_forward($msg){
-	global $domain, $user, $attrib, $host;
+	global $domain, $user, $attrib, $mxhost;
 
 	$msg = urlencode($msg);
 	$cat = pql_control_plugin_cat($attrib);
-	$url = "control_detail.php?host=$host&msg=$msg";
+	$url = "control_detail.php?mxhost=$mxhost&msg=$msg";
 	header("Location: " . $config["PQL_GLOB_URI"] . "$url");
 }
 
@@ -55,13 +55,13 @@ if(function_exists($control_plugin . "_help")){
 // select what to do
 if($submit == 1){
     if(call_user_func($control_plugin . "_check", $type)){
-		call_user_func($control_plugin . "_save", $type, $host);
+		call_user_func($control_plugin . "_save", $type, $mxhost);
     } else {
-		call_user_func($control_plugin . "_print_form", $host);
+		call_user_func($control_plugin . "_print_form", $mxhost);
     }
 } else {
-    call_user_func($control_plugin . "_init", $host);
-    call_user_func($control_plugin . "_print_form", $host);
+    call_user_func($control_plugin . "_init", $mxhost);
+    call_user_func($control_plugin . "_print_form", $mxhost);
 }
 
 if(function_exists($control_plugin . "_help")) {
