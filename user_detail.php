@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.80 2004-10-18 13:39:31 turbo Exp $
+// $Id: user_detail.php,v 2.81 2004-11-05 11:00:52 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -71,6 +71,9 @@ $username = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define(
 if(!$username) {
     // No common name, use uid field
     $username = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_UID"));
+}
+if($username and is_array($username)) {
+	$username = $username[0];
 }
 ?>
 
