@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.201 2005-02-24 17:04:01 turbo Exp $
+// $Id: pql.inc,v 2.201.2.1 2005-03-17 08:23:02 turbo Exp $
 //
 
 // ----------------------------
@@ -792,6 +792,13 @@ function pql_recreate_dnsttl($dn) {
   $newdn = $tmp[0]."+".$tmp[1].",".$newdn;
   
   return($newdn);
+}
+// }}}
+
+// {{{ pql_header(uri)
+function pql_header($uri) {
+	header("Location: ".$_SESSION["URI"].$uri);
+	exit;
 }
 // }}}
 
