@@ -1,8 +1,8 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.104.2.1 2005-03-03 13:08:45 turbo Exp $
+// $Id: left.php,v 2.104.2.2 2005-03-04 11:59:45 turbo Exp $
 //
-session_start();
+require("./include/pql_session.inc");
 
 require("./include/pql_config.inc");
 require($_SESSION["path"]."/left-head.html");
