@@ -126,8 +126,6 @@ if (empty($uname) or empty($passwd)) {
 
 <?php
 } else {
-	$uname = strtolower($uname);	
-
 	// -------------------------------------
 	// Get the LDAP server
 	if(!$USER_HOST) {
