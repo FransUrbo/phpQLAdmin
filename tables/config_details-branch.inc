@@ -1,6 +1,6 @@
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=$LANG->_('Branch configuration')?>
-      <!-- -------------------- --!>
+      <!-- -------------------- -->
       <tr>
         <td class="title"><?=$LANG->_('LDAP base dn')?></td>
 <?php $class=pql_format_table(0); ?>
@@ -8,7 +8,7 @@
         <td class="<?=$class?>"><b><?=$_REQUEST["branch"]?>&nbsp;</b></td>
       </tr>
 
-      <!-- -------------------- --!>
+      <!-- -------------------- -->
       <tr>
         <td class="title"><?=$LANG->_('Show users')?></td>
 <?php $class=pql_format_table(0);
@@ -21,7 +21,7 @@
         <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_SHOW_USERS", $_REQUEST["branch"])) {echo $LANG->_('Yes');}else{echo $LANG->_('No');}?>&nbsp;</td>
       </tr>
 
-      <!-- -------------------- --!>
+      <!-- -------------------- -->
       <tr>
         <td class="title"><?=$LANG->_('Allow absolute mailbox paths')?></td>
 <?php $class=pql_format_table(0);
@@ -34,7 +34,7 @@
         <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_ALLOW_ABSOLUTE_PATH", $_REQUEST["branch"])) {echo $LANG->_('Yes');}else{echo $LANG->_('No');}?>&nbsp;</td>
       </tr>
 
-      <!-- -------------------- --!>
+      <!-- -------------------- -->
       <tr>
         <td class="title"><?=$LANG->_('Verify user/domain deletions \i\urecomended!\U\I')?></td>
 <?php $class=pql_format_table(0);
@@ -59,7 +59,7 @@
         <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["branch"])?></td>
       </tr>
 
-      <!-- -------------------- --!>
+      <!-- -------------------- -->
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Reference %what% with'), array('what' => $LANG->_('domains'))); ?></td>
 <?php $class=pql_format_table(0); 
@@ -72,7 +72,7 @@
         <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $_REQUEST["branch"])?></td>
       </tr>
 
-      <!-- -------------------- --!>
+      <!-- -------------------- -->
       <tr>
         <td class="title"><?=$LANG->_('Minimum UID Number to be used for shell and system accounts')?></td>
 <?php $class=pql_format_table(0);
@@ -87,7 +87,7 @@
         <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_MINIMUM_UIDNUMBER", $_REQUEST["branch"])?></td>
       </tr>
 
-      <!-- -------------------- --!>
+      <!-- -------------------- -->
       <tr>
         <td class="title"><?=$LANG->_('Minimum GID Number to be used for shell and system accounts')?></td>
 <?php $class=pql_format_table(0);
@@ -124,7 +124,7 @@
       <tr></tr>
 <?php if($_SESSION["ADVANCED_MODE"]) { ?>
 
-      <!-- -------------------- --!>
+      <!-- -------------------- -->
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('External %what% creation script'), array('what' => $LANG->_('user'))); ?></td>
 <?php	$class=pql_format_table(0);
@@ -140,7 +140,7 @@
 <?php	} ?>
       </tr>
 
-      <!-- -------------------- --!>
+      <!-- -------------------- -->
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('External %what% creation script'), array('what' => $LANG->_('domain')));?></td>
 <?php	$class=pql_format_table(0);
@@ -158,7 +158,7 @@
 
       <tr></tr>
 
-      <!-- -------------------- --!>
+      <!-- -------------------- -->
       <tr>
         <td class="title"><?=$LANG->_('Automatically add hostname to domain for replication')?></td>
 <?php $class=pql_format_table(0);
@@ -183,6 +183,8 @@
         <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_CONTROL_AUTOADDLOCALS", $_REQUEST["branch"])) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
       </tr>
 
+      <tr></tr>
+
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Automatically replicate domains to %what%'), array('what' => $LANG->_('rcpthosts'))); ?></td>
 <?php $class=pql_format_table(0);
@@ -195,7 +197,7 @@
         <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_CONTROL_AUTOADDRCPTHOSTS", $_REQUEST["branch"])) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
       </tr>
 
-      <!-- -------------------- --!>
+      <!-- -------------------- -->
       <tr>
 		<!-- DLW: This doesnt work in the original either. -->
         <td class="title"><?=$LANG->_('Password encryption scheme')?></td>
@@ -251,7 +253,7 @@
 
       <tr></tr>
 
-      <!-- -------------------- --!>
+      <!-- -------------------- -->
       <tr>
         <td class="title"><?=$LANG->_('User objectclasses')?></td>
 <?php     $new_tr = 0; $max = 0;
@@ -316,7 +318,7 @@
 
       <tr></tr>
 
-      <!-- -------------------- --!>
+      <!-- -------------------- -->
       <tr>
 		<!-- DLW: I cant add phpQLAdminBranch.  I cant remove the last entry. -->
         <td class="title"><?=$LANG->_('Domain objectclasses')?></td>
