@@ -1,6 +1,6 @@
 <?php
 // Input form page to create a domain branch in database
-// $Id: domain_add_form.php,v 1.15 2003-11-12 09:31:33 turbo Exp $
+// $Id: domain_add_form.php,v 1.16 2003-11-12 14:10:05 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -75,7 +75,7 @@ $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
         <tr>
           <td class="title"><?=$LANG->_('Create a template zone')?></td>
           <td>
-            <input type="checkbox" name="template" CHECKED>
+            <input type="checkbox" name="template" CHECKED> Yes
           </td>
         </tr>
 
