@@ -52,7 +52,7 @@ $attribs = array('defaultdomain', 'basehomedir', 'basemaildir', 'o', 'l',
 foreach($attribs as $attrib) {
 	// Get default value
 	$value = pql_get_domain_value($_pql, $domain, $attrib);
-	$$attrib = utf8_decode($value);
+	$$attrib = maybe_decode($value);
 
 	// Setup edit links. If it's a dcOrganizationNameForm attribute, then
 	// we add a delete link as well.
@@ -91,9 +91,12 @@ $additionaldomainname = pql_get_domain_value($_pql, $domain, "additionaldomainna
 </table>
 
 <?php
-if($ADVANCED_MODE and (($view == 'default') or ($view == ''))) {
+if($view == '')
+	$view = 'default';
+
+if($ADVANCED_MODE and ($view == 'default')) {
 	include("./tables/domain_details-default.inc");
-} elseif($view == '') {
+} else {
 	// Fallback if we're not running in advanced mode
 	$view = 'owner';
 }
