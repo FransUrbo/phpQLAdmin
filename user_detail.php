@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.60.2.1 2003-11-24 18:07:02 dlw Exp $
+// $Id: user_detail.php,v 2.60.2.2 2003-12-02 20:47:53 dlw Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -8,23 +8,23 @@ require("./include/pql_config.inc");
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 // Make sure we can have a ' in branch (also affects the user DN).
-$user   = eregi_replace("\\\'", "'", $user);
-$domain = eregi_replace("\\\'", "'", $domain);
+$_GET["user"]   = eregi_replace("\\\'", "'", $_GET["user"]);
+$_GET["domain"] = eregi_replace("\\\'", "'", $_GET["domain"]);
 
-if(!$rootdn) {
-	$rootdn = pql_get_rootdn($user);
+if(!$_GET["rootdn"]) {
+	$_GET["rootdn"] = pql_get_rootdn($_GET["user"]);
 }
 
 // Get default domain name for this domain
-if($domain) {
-	$defaultdomain = pql_domain_value($_pql, $domain, pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
+if($_GET["domain"]) {
+	$defaultdomain = pql_domain_value($_pql, $_GET["domain"], pql_get_define("PQL_GLOB_ATTR_DEFAULTDOMAIN"));
 }
 
 include("./header.html");
 
 // print status message, if one is available
-if(isset($msg)) {
-	pql_format_status_msg($msg);
+if(isset($_GET["msg"])) {
+	pql_format_status_msg($_GET["msg"]);
 }
 
 // reload navigation bar if needed
@@ -46,10 +46,10 @@ if(isset($rlnb) and pql_get_define("PQL_GLOB_AUTO_RELOAD")) {
 <?php   }
 }
 
-$username = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_CN"));
+$username = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_GLOB_ATTR_CN"));
 if(!$username[0]) {
     // No common name, use uid field
-    $username = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_GLOB_ATTR_UID"));
+    $username = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_GLOB_ATTR_UID"));
 }
 $username = $username[0];
 ?>
@@ -58,8 +58,8 @@ $username = $username[0];
   <br><br>
 <?php
 // check if user exists
-if(!pql_user_exist($_pql->ldap_linkid, $user)) {
-    echo pql_complete_constant($LANG->_('User %user% does not exist'), array('user' => '<u>'.$user.'</u>'));
+if(!pql_user_exist($_pql->ldap_linkid, $_GET["user"])) {
+    echo pql_complete_constant($LANG->_('User %user% does not exist'), array('user' => '<u>'.$_GET["user"].'</u>'));
     exit();
 }
 
@@ -87,19 +87,22 @@ $attribs = array(pql_get_define("PQL_GLOB_ATTR_CN"),
 foreach($attribs as $attrib) {
     $attrib = strtolower($attrib);
 
-    $value = pql_get_attribute($_pql->ldap_linkid, $user, $attrib);
+    $value = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], $attrib);
     $$attrib = $value[0];
     $value = urlencode($$attrib);
 
     // Setup edit links
     $link = $attrib . "_link";
-	$urluser = urlencode($user);
+	$urluser = urlencode($_GET["user"]);
 
 	$alt = pql_complete_constant($LANG->_('Modify %attribute% for %what%'), array('attribute' => $attrib, 'what' => $username));
-    $$link = "<a href=\"user_edit_attribute.php?rootdn=$rootdn&domain=$domain&attrib=$attrib&user=$urluser&$attrib=$value\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt."\"></a>";
+    $$link = "<a href=\"user_edit_attribute.php?rootdn=" . $_GET["rootdn"] . "&domain=" . $_GET["domain"]
+	         . "&attrib=$attrib&user=$urluser&$attrib=$value\">"
+	         . "<img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt."\"></a>";
 }
-$quota = pql_get_userquota($_pql->ldap_linkid, $user);
+$quota = pql_get_userquota($_pql->ldap_linkid, $_GET["user"]);
 
+// Some of these get set from the "$$attrib = $value[0]" line above.
 if($userpassword == "") {
     $userpassword = $LANG->_('None');
 } else {
@@ -119,14 +122,14 @@ if($mailhost == "") {
     $mailhost = $LANG->_('None');
 }
 
-$userdn = urlencode($user);
+$userdn = urlencode($_GET["user"]);
 
-$controladmins = pql_domain_value($_pql, $rootdn, pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR"));
+$controladmins = pql_domain_value($_pql, $_GET["rootdn"], pql_get_define("PQL_GLOB_ATTR_CONTROLSADMINISTRATOR"));
 if(is_array($controladmins)) {
 	foreach($controladmins as $admin)
-	  if($admin == $user)
+	  if($admin == $_GET["user"])
 		$controlsadministrator = 1;
-} elseif($controladmins == $user) {
+} elseif($controladmins == $_GET["user"]) {
 	$controlsadministrator = 1;
 }
 
@@ -156,28 +159,28 @@ if(!$_SESSION["SINGLE_USER"]) {
 	$buttons = $buttons + $new;
 }
 
-pql_generate_button($buttons, "user=".urlencode($user)); echo "  <br>\n";
+pql_generate_button($buttons, "user=".urlencode($_GET["user"])); echo "  <br>\n";
 
-if($view == '')
-	$view = 'basic';
+if($_GET["view"] == '')
+	$_GET["view"] = 'basic';
 
-if($view == 'basic')					include("./tables/user_details-basic.inc");
-if($view == 'personal')					include("./tables/user_details-personal.inc");
-if($view == 'email')					include("./tables/user_details-email.inc");
-if($view == 'status')					include("./tables/user_details-status.inc");
-if($view == 'delivery')					include("./tables/user_details-delivery.inc");
+if($_GET["view"] == 'basic')					include("./tables/user_details-basic.inc");
+if($_GET["view"] == 'personal')					include("./tables/user_details-personal.inc");
+if($_GET["view"] == 'email')					include("./tables/user_details-email.inc");
+if($_GET["view"] == 'status')					include("./tables/user_details-status.inc");
+if($_GET["view"] == 'delivery')					include("./tables/user_details-delivery.inc");
 if($_SESSION["ADVANCED_MODE"]) {
-	if($view == 'delivery_advanced')	include("./tables/user_details-delivery_advanced.inc");
-	if($view == 'mailbox')				include("./tables/user_details-mailbox.inc");
+	if($_GET["view"] == 'delivery_advanced')	include("./tables/user_details-delivery_advanced.inc");
+	if($_GET["view"] == 'mailbox')				include("./tables/user_details-mailbox.inc");
 }
-if($view == 'forwards_from')			include("./tables/user_details-forwards_from.inc");
-if($view == 'forwards_to')				include("./tables/user_details-forwards_to.inc");
+if($_GET["view"] == 'forwards_from')			include("./tables/user_details-forwards_from.inc");
+if($_GET["view"] == 'forwards_to')				include("./tables/user_details-forwards_to.inc");
 if($_SESSION["ADVANCED_MODE"] and !$_SESSION["SINGLE_USER"]) {
-	if($view == 'access')				include("./tables/user_details-access.inc");
-	if($view == 'aci')					include("./tables/user_details-aci.inc");
+	if($_GET["view"] == 'access')				include("./tables/user_details-access.inc");
+	if($_GET["view"] == 'aci')					include("./tables/user_details-aci.inc");
 }
 if(!$_SESSION["SINGLE_USER"]) {
-	if($view == 'actions')				include("./tables/user_details-action.inc");
+	if($_GET["view"] == 'actions')				include("./tables/user_details-action.inc");
 }
 
 /*

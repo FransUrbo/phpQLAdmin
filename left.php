@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.63.2.1 2003-11-24 18:07:02 dlw Exp $
+// $Id: left.php,v 2.63.2.2 2003-12-02 20:47:53 dlw Exp $
 //
 session_start();
 
@@ -17,7 +17,7 @@ if($_pql->ldap_error) {
 }
 
 // find out if we're to run in ADVANCE/SIMPLE mode
-if($advanced == 1) {
+if($_REQUEST["advanced"] == 1) {
     $checked  = " CHECKED";
     $_SESSION["ADVANCED_MODE"] = 1;
 
@@ -146,8 +146,9 @@ if(!isset($domains)) {
     }
 ?>
   <!-- start domain parent -->
-  <a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?php echo urlencode($_SESSION["USER_DN"]); ?>"><img src="images/mail_small.png" border="0" alt="<?=$cn?>"></a>&nbsp;
-  <a class="item" href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&user=<?php echo urlencode($_SESSION["USER_DN"]); ?>"><?=$cn?></a>
+  <!-- DLW: Im not sure where all these values are comming from. -->
+  <a href="user_detail.php?rootdn=<?=dlw_v('rootdn','')?>&domain=<?=dlw_v('domain','')?>&user=<?php echo urlencode($_SESSION["USER_DN"]); ?>"><img src="images/mail_small.png" border="0" alt="<?=dlw_v('cn', '')?>"></a>&nbsp;
+  <a class="item" href="user_detail.php?rootdn=<?=dlw_v('rootdn','')?>&domain=<?=dlw_v('domain','')?>&user=<?php echo urlencode($_SESSION["USER_DN"]); ?>"><?=dlw_v('cn', '')?></a>
   <!-- end domain parent -->
 
 <?php

@@ -1,34 +1,45 @@
 <?php
 // logins to the system
-// $Id: index.php,v 2.30.2.1 2003-11-24 18:07:02 dlw Exp $
+// $Id: index.php,v 2.30.2.2 2003-12-02 20:47:53 dlw Exp $
 //
 // Start debuging
 // http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0
 //apd_set_pprof_trace();
 
+require_once("./dlw_porting.inc");
+
 session_start();
 require("./include/pql_config.inc");
 
-if ($logout == 1 or !empty($msg)) {
-	if ($logout == 1) {
+// DLW: I'm not sure if $msg ever gets set in a _POST, but for now I'll play it safe.
+if (!empty($_POST["msg"])) {
+		$log = date("M d H:i:s");
+		$log .= " : Unexpected _POST[msg])\n";
+		error_log($log, 3, "phpQLadmin.log");
+}
+
+// DLW: I think !empty($_GET["logout"]) will work here better than $_GET["logout"] == 1.
+if ($_GET["logout"] == 1 or !empty($_GET["msg"])) {
+	if ($_GET["logout"] == 1) {
 		$log = date("M d H:i:s");
 		$log .= " : Logged out (" . $_SESSION["USER_DN"] . ")\n";
 		error_log($log, 3, "phpQLadmin.log");
 	}
 
 	$_SESSION = array();
-	session_destroy();
+	session_destroy();			// DLW: Should you destroy the session if there is a $_POST["msg"]?
 
-	if ($logout == 1) {
+	if ($_GET["logout"] == 1) {
 		header("Location:index.php");
 	}
 }
 
+// DLW: Does this ever get set?
 if ($LOGIN_PASS == 1) {
 	Header("Location:index2.php");
 }
 
-if (empty($uname) or empty($passwd)) {
+if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 	include("./header.html");
 
 	if(!$_SESSION["USER_HOST"]) {
@@ -41,12 +52,12 @@ if (empty($uname) or empty($passwd)) {
 	}
 
 	// print status message, if one is available
-	if(isset($msg)) {
+	if(isset($_GET["msg"])) {
 ?>
 
   <table cellpadding="3" cellspacing="0" border="0" width="100%">
     <tr>
-      <td class="message"><img src="images/info.png" width="16" height="16" border="0"> <?php echo $msg; ?></td>
+      <td class="message"><img src="images/info.png" width="16" height="16" border="0"> <?php echo $_GET["msg"]; ?></td>
     </tr>
   </table>
 
@@ -65,7 +76,7 @@ if (empty($uname) or empty($passwd)) {
     </tr>
   </table>
 
-  <form action="<?=$PHP_SELF?>" method=post name="phpqladmin" accept-charset="UTF-8">
+  <form action="<?=$_SERVER["PHP_SELF"]?>" method=post name="phpqladmin" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0" align=center>
       <tr>
         <td><?=$LANG->_('LDAP server')?>:</td>
@@ -129,7 +140,8 @@ if (empty($uname) or empty($passwd)) {
 	// -------------------------------------
 	// Get the LDAP server
 	if(!$_SESSION["USER_HOST"]) {
-		$host = split(';', $server);
+	    // DLW: This code assumes that $_POST["server"] is set, but lower down it check to see if $_POST["server"] is set.
+		$host = split(';', $_POST["server"]);
 		$_SESSION["USER_HOST"] = $host[0] . ";" . $host[1];
 		
 		/*session_register("USER_HOST");*/
@@ -138,8 +150,8 @@ if (empty($uname) or empty($passwd)) {
 		$_SESSION["USER_HOST"] = $host;
 		
 		/*session_register("USER_HOST");*/
-	} elseif($server) {
-		$_SESSION["USER_HOST"]=$server;
+	} elseif($_POST["server"]) {
+		$_SESSION["USER_HOST"]=$_POST["server"];
 		/*session_register("USER_HOST");*/
 	}
 
@@ -147,7 +159,7 @@ if (empty($uname) or empty($passwd)) {
 	// Get the search base - controls database
 	if(!$_SESSION["USER_SEARCH_DN_CTR"]) {
 		// Get first entry -> default server:port
-		$host = split('\+', $server);
+		$host = split('\+', $_POST["server"]);
 
 		// Get hostname and base DN
 		$dn   = split(';', $host[0]);
@@ -174,16 +186,16 @@ if (empty($uname) or empty($passwd)) {
 	// TODO: This is wrong. There might (?) be multiple
 	//       users with the same uid in the database
 	//       (under different branches/trees).
-	$rootdn = pql_get_dn($_pql, $uname, 1);
+	$rootdn = pql_get_dn($_pql, $_POST["uname"], 1);
 	if(!$rootdn and !is_array($rootdn))
-	  die($LANG->_('Can\'t find you in the database')."!");
+	  die($LANG->_('Can\'t find you in the database')."!");	// DLW: This should be a $msg error.
 	elseif(is_array($rootdn)) {
 		// We got multiple DN's. Try to bind as each one, keeping
 		// the one that succeeded.
 
-		$got_rootdn = 0;
+		$got_rootdn = 0;		// DLW: Do we need this variable?
 		foreach($rootdn as $dn) {
-			$_pql->bind($dn, $passwd);
+			$_pql->bind($dn, $_POST["passwd"]);
 			$error = ldap_errno($_pql->ldap_linkid);
 			if(!$error and !$got_rootdn){
 				// That worked, keep it!
@@ -194,16 +206,18 @@ if (empty($uname) or empty($passwd)) {
 		}
 	}
 
-	if($passwd and !$_SESSION["USER_PASS"])
-	  $_SESSION["USER_PASS"] = $passwd;
-
 	if($error) {
+	    // DLW: Maybe hand the uname back through so the user doesn't have to type it again.
 		$msg = $LANG->_('Error') . ": " . ldap_err2str($error);
 		header("Location:index.php?msg=" . urlencode($msg));
 		exit;
 	}
 
-	$_SESSION["USER_ID"]	= $uname;
+	// We made it, so set all the session variables.
+	if($_POST["passwd"] and !$_SESSION["USER_PASS"])
+	  $_SESSION["USER_PASS"] = $_POST["passwd"];
+
+	$_SESSION["USER_ID"]	= $_POST["uname"];
 	$_SESSION["USER_DN"]	= $rootdn;
 
 	/*if(! session_register("USER_ID", "USER_PASS", "USER_DN"))

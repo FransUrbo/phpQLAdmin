@@ -1,5 +1,5 @@
 <?php
-// $Id: index2.php,v 2.26.2.1 2003-11-24 18:07:02 dlw Exp $
+// $Id: index2.php,v 2.26.2.2 2003-12-02 20:47:53 dlw Exp $
 
 session_start();
 require("./include/pql_config.inc");
@@ -61,7 +61,7 @@ $size = sprintf("%d", $size);
 
   <!-- frames == <?=$frames?> --!>
 
-<?php if(isset($advanced) and !$_SESSION["SINGLE_USER"]) { // Advance mode - show controls and mailinglist managers ?>
+<?php if(isset($_REQUEST["advanced"]) and !$_SESSION["SINGLE_USER"]) { // Advance mode - show controls and mailinglist managers ?>
   <frameset cols="260,*" rows="*" border="1" frameborder="0"><!-- $frames >= 2 --!>
     <!-- LEFT frame --!>
 <?php   if($frames >= 3) { ?>
