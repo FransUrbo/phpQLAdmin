@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for administrator and seealso modification
-// $Id: attrib.administrator.inc,v 1.18 2003-06-12 15:26:51 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.19 2003-06-12 15:30:07 turbo Exp $
 
 require("./left-head.html");
 
@@ -78,9 +78,9 @@ function attribute_print_form($action) {
 
 				if(isset($domains)) {
 					asort($domains);
-					foreach($domains as $key => $domain) {
+					foreach($domains as $key => $branch) {
 						// Get domain part from the DN (Example: 'dc=test,dc=net' => 'test').
-						$d = split(',', $domain); $d = split('=', $d[0]); $d = $d[1];
+						$d = split(',', $branch); $d = split('=', $d[0]); $d = $d[1];
 ?>
 
             <div id="el<?=$j?>Parent" class="parent">
@@ -95,7 +95,7 @@ function attribute_print_form($action) {
         
             <div id="el<?=$j?>Child" class="child">
 <?php					// Get all users (their DN) in this domain
-						$users = pql_get_user($_pql->ldap_linkid, $domain);
+						$users = pql_get_user($_pql->ldap_linkid, $branch);
 						if(is_array($users)) {
 							// Zero out the variables, othervise we won't get users in
 							// specified domain, but also in the PREVIOUS domain shown!
