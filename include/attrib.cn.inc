@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // cn (Full name)
-// $Id: attrib.cn.inc,v 2.2 2002-12-18 16:28:45 turbo Exp $
+// $Id: attrib.cn.inc,v 2.3 2003-01-06 11:57:09 turbo Exp $
 
 function attribute_check($type){
     global $cn, $oldvalue, $_pql, $error;
@@ -23,14 +23,14 @@ function attribute_init(){
 
 function attribute_print_form(){
     global $cn, $domain, $user, $PHP_SELF, $attrib, $oldvalue, $error;
-      
+
     ?>
 	<form action="<?php echo $PHP_SELF ?>" method="post">
 	<table cellspacing="0" cellpadding="3" border="0">
 	<th colspan="3" align="left"><?php echo PQL_SEARCH_CN; ?></th>
 	<tr class="<?php table_bgcolor(); ?>">
 		<td class="title"><?php echo PQL_SEARCH_CN; ?></td>
-		<td><?php echo format_error($error["cn"]); ?><input type="text" name="cn" value="<?php echo $cn; ?>"></td>
+		<td><?php echo format_error($error["cn"]); ?><input type="text" name="cn"></td>
 	</tr>
 	</table>
 	<input type="hidden" name="submit" value="1">
@@ -66,16 +66,24 @@ function attribute_save($type){
 	    break;
     	}
 	
-	if(pql_replace_userattribute($_pql->ldap_linkid, $GLOBALS["USER_SEARCH_DN_USR"], $domain, $user, $attrib, $cn)){
-	    $msg = pql_complete_constant(PQL_LDAP_CN_CHANGE_OK, array("old" => $oldvalue, "new" => $cn));
-	} else {
-	    $msg = PQL_LDAP_CN_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+	// TODO: Should this be configurable? What if we don't
+	//       use gecos and/or given/Name!?!?
+	$attribs = array($attrib, 'gecos', 'givenName');
+	foreach($attribs as $attrib) {
+	    if(pql_replace_userattribute($_pql->ldap_linkid,
+					   $GLOBALS["USER_SEARCH_DN_USR"],
+					   $domain,
+					   $user,
+					   $attrib,
+					   $cn))
+	      {
+		  $msg = pql_complete_constant(PQL_LDAP_CN_CHANGE_OK, array("old" => $oldvalue, "new" => $cn));
+	      } else {
+		  $msg = PQL_LDAP_CN_CHANGE_FAILED . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+		  attribute_forward($msg);
+	      }
 	}
-	
-	attribute_forward($msg);
-	
 	break;
-
       default:
 	die("unknown save type $type in " . __FILE__ . ", function save()");
     }
