@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.139 2004-01-15 13:55:25 turbo Exp $
+// $Id: pql.inc,v 2.140 2004-01-16 05:38:03 turbo Exp $
 //
 
 // ----------------------------
@@ -438,10 +438,12 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 // }}}
 
 // {{{ pql_user_exist(ldap_linkid, user)
-function pql_user_exist($linkid, $rootdn, $user) {
+function pql_user_exist($linkid, $dn, $user) {
+	$dn = urldecode($dn);
+
     // check if user exists
-	$filter = "(&(objectclass=*)(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)."=$user))";
-    if(!pql_search($linkid, $rootdn, $filter))
+	$filter = "(&(objectclass=*)(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $dn)."=$user))";
+    if(!pql_search($linkid, $dn, $filter))
 	  // User does not exist in LDAP tree
 	  return(false); 
 
