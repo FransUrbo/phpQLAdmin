@@ -1,10 +1,10 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.48 2005-03-04 11:55:32 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.49 2005-03-15 09:48:13 turbo Exp $
 //
-// {{{ Initialize and setup
+// {{{ Setup session etc
 require("./include/pql_session.inc");
-require("./include/pql_config.inc");
+require($_SESSION["path"]."/include/pql_config.inc");
 require($_SESSION["path"]."/include/config_plugins.inc");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
@@ -12,6 +12,8 @@ $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PA
 $url["domain"] = pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 $url["user"]   = pql_format_urls($_REQUEST["user"]);
+
+include($_SESSION["path"]."/header.html");
 // }}}
 
 // {{{ Forward back to users detail page
@@ -51,7 +53,7 @@ function attribute_forward($msg) {
 }
 // }}}
 
-// {{{ Select which attribute have to be included
+// {{{ Select and load attribute plugin file
 $plugin = pql_plugin_get_filename(pql_plugin_get($_REQUEST["attrib"]));
 if(!$plugin) {
     die("<span class=\"error\">ERROR: No plugin file defined for attribute '<i>".$_REQUEST["attrib"]."</i>'</span>");
@@ -62,7 +64,6 @@ include($_SESSION["path"]."/include/$plugin");
 // }}}
 
 // {{{ Get the organization name, or the DN if it's unset
-
 $orgname = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_O"));
 if(!$orgname) {
 	$orgname = urldecode($_REQUEST["domain"]);
@@ -71,10 +72,7 @@ if(is_array($orgname)) {
 	$orgname = $orgname[0];
 }
 $_REQUEST["orgname"] = $orgname;
-
 // }}}
-
-include($_SESSION["path"]."/header.html");
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Change %what% for domain %domain%'), array('what' => $LANG->_('default values'), 'domain' => $_REQUEST["orgname"])); ?>
   </span>
@@ -82,21 +80,68 @@ include($_SESSION["path"]."/header.html");
   <br><br>
 
 <?php
-// Pages that call us (domain_edit_attributes.php) with
-// * only 'type=':
+// {{{ Pages that call us
+// * with 'type=':
 //		domain_detail.php
-//		domain_details-aci.inc
-// * only 'action=':
-//		domain_details-default.inc
-//		domain_details-owner.inc
-//		user_details-access.inc
-// * neither 'type=' nor 'action=':
-//		domain_details-users_chval.inc
-//		config_details-branch.inc
+//		tables/domain_details-aci.inc
 //
-// * Values for type/action:
+// * with 'submit=':
+//		domain_detail.php
+//		tables/config_details-branch.inc
+//		tables/domain_details-aci.inc
+//		tables/domain_details-default.inc
+//		tables/domain_details-owner.inc
+//		tables/user_details-access.inc
+//
+// * with 'action=':
+//		tables/config_details-branch.inc
+//		tables/domain_details-default.inc
+//		tables/domain_details-owner.inc
+//		tables/user_details-access.inc
+//
+// * with 'set=':
+//		tables/domain_details-users_chval.inc
+//
+// * Values for type/submit/action:
 //		type={edit,delete,moveup,movedown,host,del}
+//		submit=[1-4]
 //		action={modify,delete,add}
+//
+// * Values for attrib:
+//		OpenLDAPaci					autoCreateUserName				mobile
+//		accountStatus				baseHomeDir						o
+//		additionalDomainName		baseMailDir						postalAddress
+//		administrator				baseQuota						postalCode
+//		deliveryMode				defaultDomain					postOfficeBox
+//		ezmlmAdministrator			defaultPasswordScheme			registeredAddress
+//		mailHost					ezmlmVirtualUser				st
+//		mailQuota					facsimileTelePhoneNumber		street
+//		seeAlso						info							streetAddress
+//		startWithAdvancedMode		l								telePhoneNumber
+//		autoCreateMailAddress		maximumDomainUsers				userNamePrefix
+//		autoCreatePassWord			maximumMailingLists				userNamePrefixLength
+//		vatNumber
+//
+// * Files that manages the attribs above:
+//		include/attrib.accountstatus.inc
+//		include/attrib.aci.inc
+//		include/attrib.additionaldomainname.inc
+//		include/attrib.administrator.inc
+//		include/attrib.basehomedir.inc
+//		include/attrib.basemaildir.inc
+//		include/attrib.defaultdomain.inc
+//		include/attrib.defaultpasswordscheme.inc
+//		include/attrib.deliverymode.inc
+//		include/attrib.domaintoggle.inc
+//		include/attrib.ezmlmuser.inc
+//		include/attrib.mailhost.inc
+//		include/attrib.mailquota.inc
+//		include/attrib.maximumdomainusers.inc
+//		include/attrib.maximummailinglists.inc
+//		include/attrib.outlook.inc
+//		include/attrib.usernameprefix.inc
+//		include/attrib.usertoggle.inc
+// }}}
 
 if(!$_REQUEST["type"]) {
   if (!empty($_REQUEST["action"])) { // DLW: I'm wingining it here.

@@ -167,7 +167,7 @@
 <?php       if($controlsadministrator) { ?>
         <td><?=$LANG->_('Yes')?></td>
         <td>
-          <a href="config_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")?>&delval=<?=$url["user"]?>&submit=2&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Disallow user to administrate Controls information')?>"></a>
+          <a href="config_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")?>&action=del&<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")?>=<?=$url["user"]?>&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Disallow user to administrate Controls information')?>"></a>
         </td>
 <?php       } else {
 				if(@$super_admin) {
@@ -179,7 +179,7 @@
 <?php			} ?>
         <td>
 <?php			if(!@$super_admin) { ?>
-          <a href="config_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")?>&<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")?>=<?=$url["user"]?>&submit=2&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Allow user to administrate Controls information')?>"></a>
+          <a href="config_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")?>&action=del&<?=pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")?>=<?=$url["user"]?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Allow user to administrate Controls information')?>"></a>
 <?php			} ?>
         </td>
 <?php      } ?>

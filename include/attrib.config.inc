@@ -1,10 +1,14 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.45 2005-02-26 17:41:56 turbo Exp $
+// $Id: attrib.config.inc,v 1.46 2005-03-15 09:48:14 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
     global $error, $LANG;
+
+	if(@$_REQUEST["toggle"])
+	  // No point in checking a toggle...
+	  return true;
 
 	$attrib = $_REQUEST["attrib"];
 	if(($attrib != pql_get_define("PQL_ATTR_SCRIPT_CREATE_USER")) and
@@ -280,7 +284,6 @@ function attribute_save() {
 	$toggle     = @$_REQUEST["toggle"];
 	$rootdn     = @$_REQUEST["rootdn"];
 	$domain		= @$_REQUEST["domain"];
-	$delval     = @$_REQUEST["delval"];
 
 	if($domain)
 	  $dn = $domain;
@@ -292,7 +295,7 @@ function attribute_save() {
 	
 	$entry = array();
 
-	if($attrib_val and !$delval) {
+	if($attrib_val and !$attrib_val) {
 		// {{{ We're adding, not deleting a value. Used for defaultPasswordScheme or multiple choices in POST
 		if($attrib == pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME")) {
 			$entry[$attrib][] = strtoupper($attrib_val);
@@ -314,7 +317,7 @@ function attribute_save() {
 		$oldvalue = pql_get_attribute($_pql->ldap_linkid, $dn, $attrib);
     }
 		  
-	if($attrib_val and $delval and (($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) or
+	if($attrib_val and $attrib_val and (($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) or
 									($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN")) or
 									($attrib == pql_get_define("PQL_ATTR_PASSWORD_SCHEMES")))) {
 		// {{{ We're deleting one of the multivalued attributes. Retreive the old value(s) from the LDAP db.
@@ -348,13 +351,13 @@ function attribute_save() {
 				  $entry[$attrib][] = $values[$i];
 			}
 			// }}}
-		} elseif($oldvalue and $delval) {
+		} elseif($oldvalue and $attrib_val) {
 			// {{{ We should delete one attribute
 			$values = pql_split_oldvalues($oldvalue);
 			
 			// Go through existing attributes, removing the chosen one
 			for($i=0; $values[$i]; $i++)
-			  if(! eregi($delval, $values[$i]))
+			  if(! eregi($attrib_val, $values[$i]))
 				$entry[$attrib][] = $values[$i];
 			// }}}
 		} elseif($attrib_val and
@@ -382,7 +385,7 @@ function attribute_save() {
 									$values = pql_split_oldvalues(pql_get_define($key, $rootdn));
 									foreach($values as $val) {
 										// Add all values EXEPT the one to remove
-										if(lc($val) != lc($delval))
+										if(lc($val) != lc($attrib_val))
 										  $entry[$attrib][] = $val;
 									}
 									
@@ -428,7 +431,7 @@ function attribute_save() {
 
 					if(is_array($oldvalues)) {
 						foreach($oldvalues as $val) {
-							if(!@eregi($delval, $val)) {
+							if(!@eregi($attrib_val, $val)) {
 								// Remove the one we don't want
 								$entry[$attrib][] = $val;
 							}
@@ -495,7 +498,7 @@ function attribute_save() {
 
 				if(is_array($oldvalues)) {
 					foreach($oldvalues as $val) {
-						if(!@eregi($delval, $val)) {
+						if(!@eregi($attrib_val, $val)) {
 							// Remove the one we don't want
 							$entry[$attrib][] = $val;
 						}

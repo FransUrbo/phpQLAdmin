@@ -1,14 +1,16 @@
 <?php
-// $Id: ezmlm_edit_attribute.php,v 1.28 2005-03-04 11:55:32 turbo Exp $
+// $Id: ezmlm_edit_attribute.php,v 1.29 2005-03-15 09:48:14 turbo Exp $
 //
+// {{{ Setup session etc
 require("./include/pql_session.inc");
-require("./include/pql_config.inc");
+require($_SESSION["path"]."/include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_ezmlm.inc");
 
 $url["domain"] = pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
+// }}}
 
-// forward back to list detail page
+// {{{ Forward back to list detail page
 function list_forward($domainname, $listno, $msg) {
     $msg    = urlencode($msg);
 	$domain = urlencode($_REQUEST["domain"]);
@@ -19,12 +21,14 @@ function list_forward($domainname, $listno, $msg) {
 
     header("Location: " . $_SESSION["URI"] . "$url");
 }
+// }}}
 
-// Get base directory for mails
+// {{{ Get base directory for mails
 if(!($path = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEMAILDIR")))) {
 	// TODO: What if we can't find the base maildir path!?
 	die(pql_complete_constant($LANG->_('Can\'t get baseMailDir path from %domain%'), array('domain' => $_REQUEST["domain"])));
 }
+// }}}
 
 // Load list of mailinglists
 $user = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_EZMLM_USER"));
@@ -36,14 +40,16 @@ if($ezmlm = new ezmlm($user, $path)) {
 	}
 
 	// TODO: Same for 'listparent' and 'fromaddress' when/if we need it...
-	if(($_REQUEST["attrib"] == 'subscriber') or ($_REQUEST["attrib"] == 'owner')) {
+	if(($_REQUEST["type"] == 'subscriber') or ($_REQUEST["type"] == 'owner')) {
 		include($_SESSION["path"]."/header.html");
 
-		if(($_REQUEST["submit"] != 'save') and !$value) {
-			if($_REQUEST["attrib"] == 'subscriber') {
+		$type = $_REQUEST["type"];
+
+		if(!@$_REQUEST["submit"] and !$_REQUEST[$type]) {
+			if($_REQUEST["type"] == 'subscriber') {
 				$title1 = $LANG->_('Add email address to subscription list');
 				$title2 = $LANG->_('Subscription address');
-			} elseif($_REQUEST["attrib"] == 'owner') {
+			} elseif($_REQUEST["type"] == 'owner') {
 				$title1 = $LANG->_('Edit list owner address');
 				$title2 = $LANG->_('List owner address');
 			}
@@ -60,11 +66,11 @@ if($ezmlm = new ezmlm($user, $path)) {
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Email')?></td>
 <?php
-			if($_REQUEST["attrib"] == 'subscriber') {
+			if($_REQUEST["type"] == 'subscriber') {
 ?>
           <td><input type="text" name="subscriber" value="<?=$_REQUEST["subscriber"]?>" size="50"></td>
 <?php
-			} elseif($_REQUEST["attrib"] == 'owner') {
+			} elseif($_REQUEST["type"] == 'owner') {
 ?>
           <td><input type="text" name="owner" value="<?=$_REQUEST["owner"]?>"></td>
 <?php
@@ -77,7 +83,7 @@ if($ezmlm = new ezmlm($user, $path)) {
     <input type="hidden" name="listno"     value="<?=$_REQUEST["listno"]?>">
     <input type="hidden" name="domain"     value="<?=$_REQUEST["domain"]?>">
     <input type="hidden" name="domainname" value="<?=$_REQUEST["domainname"]?>">
-    <input type="hidden" name="attrib"     value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="type"       value="<?=$_REQUEST["type"]?>">
 
     <p>
 
@@ -86,21 +92,20 @@ if($ezmlm = new ezmlm($user, $path)) {
 <?php
 		} else {
 			// Save the value of list owner
-
-			if($_REQUEST["attrib"] == 'subscriber') {
-				if($value) {
-					$ezmlm->unsubscribe($listname, $value);
+			if($_REQUEST["type"] == 'subscriber') {
+				if($_REQUEST[$type]) {
+					$ezmlm->unsubscribe($listname, $_REQUEST[$type]);
 				} else {
 					$ezmlm->subscribe($listname, $_REQUEST["subscriber"]);
 				}
-			} elseif($_REQUEST["attrib"] == 'owner') {
-				$ezmlm->updatelistentry(0, $_REQUEST["listno"], $_REQUEST["domainname"], $_REQUEST["attrib"],
+			} elseif($_REQUEST["type"] == 'owner') {
+				$ezmlm->updatelistentry(0, $_REQUEST["listno"], $_REQUEST["domainname"], $_REQUEST["type"],
 										$_REQUEST["owner"]);
 			}
 		}
 	} else {
 		// Toggle configuration value
-		$ezmlm->updatelistentry(0, $_REQUEST["listno"], $_REQUEST["domainname"], $_REQUEST["attrib"], $ezmlm->mailing_lists[$_REQUEST["listno"]]);
+		$ezmlm->updatelistentry(0, $_REQUEST["listno"], $_REQUEST["domainname"], $_REQUEST["type"], $ezmlm->mailing_lists[$_REQUEST["listno"]]);
 	}
 }
 

@@ -221,7 +221,7 @@
 		$txt = array('tit' => $LANG->_('Allowed domain objectclasses'),
 					 'add' => $LANG->_('Add objectclass'),
 					 'del' => $LANG->_('Delete objectclass'));
-		$url = array('add' => $url_tmp, 'del' => $url_tmp."&delval=1&submit=2");
+		$url = array('add' => $url_tmp, 'del' => $url_tmp."&action=del");
 //&delval=".$oc[$i][$_REQUEST["branch"]]
 
 		pql_format_table_single($_pql->ldap_linkid, $txt, $url, $objectclasses, pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN"), $class);
