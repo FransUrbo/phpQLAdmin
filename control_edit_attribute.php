@@ -29,11 +29,11 @@ include("./include/".pql_control_plugin_get_filename($control_plugin));
 
 // forward back to users detail page
 function attribute_forward($msg){
-	global $domain, $user, $attrib;
+	global $domain, $user, $attrib, $host;
 
 	$msg = urlencode($msg);
 	$cat = pql_control_plugin_cat($attrib);
-	$url = "control_cat.php?cat=" . urlencode($cat) . "&msg=$msg";
+	$url = "control_detail.php?host=$host&msg=$msg";
 	header("Location: " . PQL_URI . "$url");
 }
 
