@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.53 2003-04-07 08:11:21 turbo Exp $
+// $Id: pql.inc,v 2.54 2003-04-07 15:28:03 turbo Exp $
 //
 
 // ----------------------------
@@ -242,6 +242,8 @@ function pql_user_add($ldap_linkid, $domain, $cn, $attribs, $account_type, $bran
 
 // Delete a user from the LDAP database
 function pql_user_del($ldap, $domain, $user, $delete_forwards) {
+	global $config;
+
 	$linkid = $ldap->ldap_linkid;
 
     if(!pql_user_exist($linkid, $user)) {
@@ -400,6 +402,8 @@ function pql_domain_add($ldap_linkid, $basedn, $branch_name){
 
 // removes a domain with all listed users
 function pql_domain_del($ldap, $domain, $delete_forwards) {
+	global $config;
+
 	$linkid = $ldap->ldap_linkid;
 
 	// Make sure that the logged in user isn't located under the
@@ -535,6 +539,8 @@ function pql_user_exist($ldap_linkid, $user) {
 
 // check if any mail or mailalternateaddress record with this email exists in the ldap tree
 function pql_email_exists($ldap, $email){
+	global $config;
+
 	$filter = "(|(" . $config["PQL_GLOB_ATTR_MAIL"] . "=" . $email . ")(" . $config["PQL_GLOB_ATTR_MAILALTERNATE"] . "=" . $email . "))";
 
 	foreach($ldap->ldap_basedn as $dn) {
@@ -726,6 +732,8 @@ function pql_get_user($ldap_linkid, $dn){
 // ------------------------------------------------
 // function based in PQL_CONF_GET_USER to search by the cn first letter
 function pql_get_user_letter($ldap_linkid, $domain, $letra) {
+	global $config;
+
     $sr = ldap_search($ldap_linkid, $domain, "(".$config["PQL_GLOB_ATTR_UID"]."=".$letra."*)");
     $info = ldap_get_entries($ldap_linkid, $sr);
     
@@ -776,19 +784,17 @@ function pql_get_userattribute($ldap_linkid, $user, $attribute) {
 // ------------------------------------------------
 function pql_get_userentry($ldap_linkid, $user) {
     $sr = @ldap_read($ldap_linkid, $user, "(objectClass=*)");
-    if($sr == false){
-		return false;
-    }
+    if($sr == false)
+	  return false;
     
     // build array of all attributes
     $rid = @ldap_first_entry($ldap_linkid, $sr);
     $attribs[] = strtolower(@ldap_first_attribute($ldap_linkid, $rid, $berid));
-    while($attrib = @ldap_next_attribute($ldap_linkid, $rid, $berid)) {
-		$attribs[] = strtolower($attrib);
-	}
-    
+    while($attrib = @ldap_next_attribute($ldap_linkid, $rid, $berid))
+	  $attribs[] = strtolower($attrib);
+
     // build entry array with all attributes and values
-    foreach($attribs as $attrib){
+    foreach($attribs as $attrib) {
 		$values = @ldap_get_values($ldap_linkid, $rid, $attrib);
 		unset($values["count"]);
 		$entry[$attrib] = $values;
@@ -803,16 +809,15 @@ function pql_get_userentry($ldap_linkid, $user) {
 
 // ------------------------------------------------
 
-function pql_get_userquota($ldap_linkid, $user){
-    // get formated quota of a user
-    
+// get formated quota of a user
+function pql_get_userquota($ldap_linkid, $user) {
+	global $config;
+
     $quota = pql_get_userattribute($ldap_linkid, $user, $config["PQL_GLOB_ATTR_QUOTA"]);
-    
-    if(!is_array($quota)){
-		return false;
-    }
-    
-    return pql_parse_quota($quota[0]);
+    if(!is_array($quota))
+	  return false;
+	else    
+	  return pql_parse_quota($quota[0]);
 }
 
 // ------------------------------------------------
@@ -879,7 +884,7 @@ function pql_ldap_error($ldap_linkid, $attrib = ""){
 
 // ------------------------------------------------
 
-function pql_parse_quota($quota_string){
+function pql_parse_quota($quota_string) {
 	$quota = '';
 
     // get max bytes
@@ -1028,7 +1033,7 @@ function table_bgcolor($echo = 1) {
 // ------------------------------------------------
 
 function format_error($msg){
-    return "<span class=\"error\">" . $msg . "</span>";
+    return "<span class=\"error\">" . $msg . "</span>\n";
 }
 
 // ------------------------------------------------
@@ -1146,39 +1151,34 @@ function pql_strip_username($email){
 
 // ------------------------------------------------
 
-function pql_complete_constant($text, $replacement){
-	// replaces dynamic vars in constants
-	// %key% will be replaced with $replacement["key"]
-	
-    if(!is_array($replacement)){
-		return false;
-    }
+// replaces dynamic vars in constants
+// %key% will be replaced with $replacement["key"]
+function pql_complete_constant($text, $replacement) {
+    if(!is_array($replacement))
+	  return false;
     
-    foreach($replacement as $key => $value){
-		// prepare patterns
+	// prepare patterns
+    foreach($replacement as $key => $value)
 		$pattern[] = "/(%$key%)/i";
-    }
     
     return preg_replace($pattern, $replacement, $text);
 }
 
 // ------------------------------------------------
-function pql_check_config(&$result, $enhanced = false){
+function pql_check_config(&$result, $enhanced = false) {
     $result = array();
     
     // language definition
-    if(!defined("PQL_LANG_LANG")){
-		$result[] = "no language definition file included!!";
-    }
+    if(!defined("PQL_LANG_LANG"))
+	  $result[] = "no language definition file included!!";
     
     if($enhanced){
 		// enhance configuration check
         // --> to be done
     }
     
-    if(count($result) > 0){
-		return false;
-    }
+    if(count($result) > 0)
+	  return false;
     
     return true;
 }
@@ -1188,22 +1188,19 @@ function pql_check_config(&$result, $enhanced = false){
 // format ldap attribute codes to text
 // --------------------------------------
 
-function pql_ldap_mailquota($quota){
-    // returns human readable version of users quota
-    
-    if($quota["maxmails"] == ""){
-		$txt = PQL_LANG_MAILQUOTA_ECHO_MAXMAILS_UNLIMITED;
-    } else {
-		$txt = pql_complete_constant(PQL_LANG_MAILQUOTA_ECHO_MAXMAILS, array("maxmails" => $quota["maxmails"]));
-    }
+// returns human readable version of users quota
+function pql_ldap_mailquota($quota) {
+    if($quota["maxmails"] == "")
+	  $txt = PQL_LANG_MAILQUOTA_ECHO_MAXMAILS_UNLIMITED;
+	else
+	  $txt = pql_complete_constant(PQL_LANG_MAILQUOTA_ECHO_MAXMAILS, array("maxmails" => $quota["maxmails"]));
     
     $txt .= ", ";
     
-    if($quota["maxsize"] == ""){
-		$txt .= PQL_LANG_MAILQUOTA_ECHO_MAXSIZE_UNLIMITED;
-    } else {
-		$txt .= pql_complete_constant(PQL_LANG_MAILQUOTA_ECHO_MAXSIZE, array("maxsize" => $quota["maxsize"]));
-    }
+    if($quota["maxsize"] == "")
+	  $txt .= PQL_LANG_MAILQUOTA_ECHO_MAXSIZE_UNLIMITED;
+	else
+	  $txt .= pql_complete_constant(PQL_LANG_MAILQUOTA_ECHO_MAXSIZE, array("maxsize" => $quota["maxsize"]));
     
     return $txt;
 }
@@ -1257,6 +1254,8 @@ function pql_ldap_deliverymode($mode){
 
 // Returns the next free UID/GID number
 function pql_get_next_uidnumber($ldap) {
+	global $config;
+
     $filter = "(&(" . $config["PQL_GLOB_ATTR_QMAILUID"] . "=*)(objectclass=posixaccount))";
 
 	foreach($ldap->ldap_basedn as $dn) {
@@ -1355,7 +1354,6 @@ function pql_get_domain_value($ldap, $dn, $value, $match = '') {
 function pql_set_domain_value($linkid, $dn, $type, $value) {
 	$DEBUG = 0;
 
-	// Lowercase type...
 	if($type) {
 		$type = strtolower($type);
 		
