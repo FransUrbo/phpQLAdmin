@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.5 2004-11-08 09:02:09 turbo Exp $
+// $Id: pql_write.inc,v 2.6 2004-11-12 09:49:49 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -101,8 +101,11 @@ function pql_write_mod($linkid, $dn, $entry, $caller = NULL, $count = 0) {
 function pql_replace_values($ldap, $attribs, $old, $new = NULL) {
 	// Setup the search filter
 	$filter = '(|';
-	foreach($attribs as $attrib)
-	  $filter .= "($attrib=$old)";
+	if(is_array($attribs)) {
+		foreach($attribs as $attrib)
+		  $filter .= "($attrib=$old)";
+	} else
+	  $filter .= "($attribs=$old)";
 	$filter .= ')';
 
 	// Go through the namingContexts one by one
