@@ -1,7 +1,7 @@
 <?php
-// $Id: index2.php,v 2.39.6.1 2005-03-03 14:54:22 turbo Exp $
+// $Id: index2.php,v 2.39.6.2 2005-03-04 11:59:45 turbo Exp $
 // {{{ Setup session etc
-session_start();
+require("./include/pql_session.inc");
 require("./include/pql_config.inc");
 // }}}
 
