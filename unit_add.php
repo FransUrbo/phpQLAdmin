@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: unit_add.php,v 2.13 2003-11-20 08:01:29 turbo Exp $
+// $Id: unit_add.php,v 2.14 2003-11-24 11:36:25 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -8,42 +8,54 @@ require("./include/pql_control.inc");
 
 include("./header.html");
 ?>
-  <span class="title1"><?php echo pql_complete_constant($LANG->_('Create domain %domain%'), array('domain' => $domain)); ?></span>
+  <span class="title1"><?php echo pql_complete_constant($LANG->_('Create subbranch in domain %domain%'), array('domain' => urldecode($domain))); ?></span>
   <br><br>
 <?php
-$_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
-$_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
 
-// convert domain to lowercase
-$domain = strtolower($domain);
-
-// check if domain is valid
-if(!pql_check_hostaddress($domain)) {
-	$msg = urlencode($LANG->_('Invalid domain name! Use: domain.tld (e.g. adfinis.com)'));
-	header("Location: home.php?msg=$msg");
+// check if domain exist
+if(!pql_domain_exist($_pql, $domain)) {
+	echo "Domain &quot;$domain&quot; does not exists";
 	exit();
 }
 
-// "
-// check if unit exist
-if(pql_unit_exist($_pql->ldap_linkid, $domain, $unit)){
-	$msg = urlencode($LANG->_('This domain already exists'));
+if($unit) {
+    // Check if unit exist
+    if(pql_unit_exist($_pql->ldap_linkid, $domain, $unit)) {
+	$msg = urlencode($LANG->_('This sub unit already exists'));
 	header("Location: home.php?msg=$msg");
-	exit();
-}
+    }
+    
+    if(pql_unit_add($_pql->ldap_linkid, $domain, $unit)) {
+	// Redirect to domain-details
+	$msg = urlencode(pql_complete_constant($LANG->_('Sub unit %unit% successfully created'), array("unit" => $unit)));
 
-if(pql_add_unit($_pql->ldap_linkid, $domain, $unit)){
-	// update locals if control patch is enabled
-	if(pql_control_update_domains($_pql, $USER_SEARCH_DN_CTR)) {
-	    // message ??
-	}
+	if(pql_get_define("PQL_GLOB_AUTO_RELOAD"))
+	  $rlnb = "&rlnb=1";
 
-	// redirect to domain-details
-	$msg = urlencode(pql_complete_constant($LANG->_('Domain %domain% successfully created'), array("domain" => $domain)));
-	header("Location: domain_detail.php?domain=$domain&unit=$unit&msg=$msg&rlnb=1");
+	header("Location: domain_detail.php?rootdn=$rootdn&domain=$domain&msg=$msg$rlnb");
+    } else {
+	$msg = urlencode($LANG->_('Failed to create the sub unit') . ":&nbsp;" . ldap_error($_pql->ldap_linkid));
+	header("Location: home.php?msg=$msg");
+    }
 } else {
-	$msg = urlencode($LANG->_('Failed to create the domain') . ":&nbsp;" . ldap_error($_pql->ldap_linkid));
-	header("Location: home.php?msg=$msg");
+    // Show form
+?>
+  <form action="<?=$PHP_SELF?>" method="post">
+    <table cellspacing="0" cellpadding="3" border="0">
+      <th colspan="3" align="left"><?=$LANG->_('Create unit')?></th>
+        <tr>
+          <td class="title"><?=$LANG->_('Unit name')?></td>
+          <td><input type="text" name="unit" size="30"></td>
+        </tr>
+
+        <tr><td><input type="submit" value="Create"></td></tr>
+      </th>
+    </table>
+
+    <input type="hidden" name="rootdn" value="<?=urlencode($rootdn)?>">
+    <input type="hidden" name="domain" value="<?=urlencode($domain)?>">
+  </form>
+<?php
 }
 ?>
 
