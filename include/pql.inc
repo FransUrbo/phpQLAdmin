@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.12 2003-01-13 07:27:55 turbo Exp $
+// $Id: pql.inc,v 2.13 2003-01-14 07:16:13 turbo Exp $
 //
 // ----------------------------
 // Note: There are a few " followed after PHP comment
@@ -337,25 +337,30 @@ function pql_add_domain($ldap_linkid, $ldap_basedn, $domain){
     // adds a domain into ldap-tree (ou|dc-record)
     
     $entry["objectClass"][] = "top";
+	$entry["objectClass"][] = "phpQLAdminBranch";
     $entry["objectClass"][] = PQL_LDAP_OBJECTCLASS_DOMAIN;
+
+	$entry["objectClass"][] = "dcOrganizationNameForm";
+	$entry["o"] = 0;
+
     $entry[PQL_LDAP_ATTR_DOMAIN] = $domain;
 	$dn = PQL_LDAP_ATTR_DOMAIN . "=" . $domain . "," . $ldap_basedn;
 
 //	// --------------------------
 //	// DEBUG mode: Print the LDIF
 //	echo "<br>--- DEBUG: pql_add_domain() ---<br>";
-//	echo "dn: '$dn'<br>";
+//	echo "dn: $dn<br>";
 //	foreach($entry as $key => $e) {
 //		if(eregi("objectclass", $key)) {
 //			// We have a objectClass
 //			if(is_array($entry[$key])) {
 //				// ... in an array. Go through each one, creating the LDAP entry
 //				foreach($entry[$key] as $oc) {
-//					echo "$key: '$oc'<br>";
+//					echo "$key: $oc<br>";
 //				}
 //			}
 //		} else {
-//			echo "$key: '$entry[$key]'<br>";
+//			echo "$key: $entry[$key]<br>";
 //		}
 //	}
 //	die("--- DEBUG ---");
@@ -365,7 +370,7 @@ function pql_add_domain($ldap_linkid, $ldap_basedn, $domain){
 		pql_errormsg($ldap_linkid);
 		return false;
     }
-    
+
     // Add the USER subtree if defined
     if(PQL_LDAP_SUBTREE_USERS) {
 		$entry = "";
@@ -1372,13 +1377,12 @@ function pql_get_domain_value($linkid, $domain, $value, $match = "") {
 		$match = "*";
     }
 
-	$attrib[] = $value;
-	
     // (&(dc=bayour)
 	//   (|(objectclass=domain)(objectclass=phpQLAdminBranch)(objectclass=dcOrganizationNameForm))
 	//   ($value=$match))
     $filter = "(&(" . PQL_LDAP_ATTR_DOMAIN . "=" . $domain . ")(|(objectclass=" . PQL_LDAP_OBJECTCLASS_DOMAIN . ")(objectclass=phpQLAdminBranch)(objectclass=dcOrganizationNameForm))(" . $value . "=" . $match . "))";
-    $sr = ldap_search($linkid, $GLOBALS["USER_SEARCH_DN_USR"], $filter, $attrib);
+//	echo "Filter: $filter<br>";
+    $sr = ldap_search($linkid, $GLOBALS["USER_SEARCH_DN_USR"], $filter, array($value));
     $result = @ldap_get_entries($linkid, $sr) or pql_errormsg($linkid);
 
     // Extract all the descriptor fields
@@ -1390,7 +1394,7 @@ function pql_get_domain_value($linkid, $domain, $value, $match = "") {
 				if($match != "*") {
 					if($result[$i][$value][$j] == $match) {
 						$tmp = split(",", $result[$i]["dn"]);
-						$tmp = split("=", $tmp[count($tmp)-2]);
+						$tmp = split("=", $tmp[0]);
 						
 						$results[] = urldecode($tmp[1]);
 					}
@@ -1405,7 +1409,7 @@ function pql_get_domain_value($linkid, $domain, $value, $match = "") {
 	}
 	
 	if(!$results[1] and (($value != 'administrator') and ($value != 'seealso')))
-	  return 0;
+	  return;
 
 	return $results;
 }
@@ -1433,7 +1437,11 @@ function pql_set_domain_value($linkid, $domain, $type, $value) {
 		}
 	} else {
 		// Add the single value
-		$entry[$type] = urlencode($value);
+		if(($type != 'administrator') and ($type != 'seealso')) {
+			$entry[$type] = urlencode($value);
+		} else {
+			$entry[$type] = $value;
+		}
 	}		
 
 	if($value != '') {
