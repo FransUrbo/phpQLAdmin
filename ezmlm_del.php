@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_del.php,v 1.25.2.1 2005-03-04 11:59:45 turbo Exp $
+// $Id: ezmlm_del.php,v 1.25.2.2 2005-03-17 08:23:01 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -18,7 +18,7 @@ include($_SESSION["path"]."/header.html");
 function list_forward($domainname, $msg) {
     $msg = urlencode($msg);
     $url = "home.php?msg=$msg&rlnb=3";
-    header("Location: " . $_SESSION["URI"] . "$url");
+    pql_header($url);
 }
 // }}}
 
