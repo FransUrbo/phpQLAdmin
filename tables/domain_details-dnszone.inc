@@ -193,7 +193,7 @@
 
         <td><?=$LANG->_($TYPE)?></td>
         <td>
-          <a href="<?=$HREF?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Modify host value')." CNAME"?>"></a>
+          <a href="<?=$HREF?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Modify host value')." $TYPE"?>"></a>
           <?=$record?>
         </td>
 
