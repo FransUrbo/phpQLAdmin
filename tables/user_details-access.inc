@@ -24,6 +24,8 @@
 		$new_tr = 0;
 		foreach($domains as $branch => $doms) {
 			foreach($doms as $branch) {
+				$branch = urlencode($branch);
+
 				if($new_tr) {
 ?>
 
@@ -35,7 +37,7 @@
 <?php			} $new_tr = 1; ?>
         <td><a href="domain_detail.php?rootdn=<?=$branch?>&domain=<?=$branch?>"><?php echo urldecode($branch); ?></a></td>
         <td>
-          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR");?>&domain=<?=$branch?>&user=<?=$url["user"]?>&submit=4&action=delete&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Deny user admin access to domain')?>"></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR");?>&rootdn=<?=$branch?>&domain=<?=$branch?>&branchdn=<?=$branch?>&administrator=<?=$url["user"]?>&submit=4&action=delete&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Deny user admin access to domain')?>"></a>
         </td>
       </tr>
 <?php		}
@@ -44,7 +46,7 @@
       <tr class="<?=$class?>">
         <td class="title"></td>
         <td>
-          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR");?>&rootdn=<?=$url["rootdn"]?>&domain=<?=$branch?>&user=<?=$url["user"]?>&submit=3&action=add"><?=$LANG->_('Give (more) admin rights')?></a>
+          <a href="domain_edit_attributes.php?attrib=<?php echo pql_get_define("PQL_GLOB_ATTR_ADMINISTRATOR");?>&rootdn=<?=$url["rootdn"]?>&domain=<?=$branch?>&user=<?=$url["user"]?>&submit=3&action=add&view=<?=$_GET["view"]?>"><?=$LANG->_('Give (more) admin rights')?></a>
         </td>
         <td></td>
       </tr>
