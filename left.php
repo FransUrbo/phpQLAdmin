@@ -36,9 +36,11 @@ if($advanced == 1) {
     <?=PQL_LANG_USER?>: <b><a href="user_detail.php?user=<?=$USER_DN?>"><?=$USER_ID?></a></b>
   </font>
   <br>
-<?php if($ADVANCED_MODE) { ?>
+<?php if($ADVANCED_MODE) {
+	$host = split(';', $USER_HOST);
+?>
 
-  <font color="black" class="heada">Host: <b><?=$USER_HOST?></b></font>
+  <font color="black" class="heada">Host: <b><?=$host[0]?>:<?=$host[1]?></b></font>
   <br>
 <?php } ?>
 
@@ -174,25 +176,23 @@ if(!isset($domains)) {
 
     <br>
 
-<?php
-          } else {
-?>
+<?php	  } else { ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
       <a href="user_add.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>">Add a user</a>
     </nobr>
 
     <br>
 
-<?php
-              // From the user DN, get the CN.
+<?php         // From the user DN, get the CN.
 	      foreach ($users as $dn) {
-		  $cn = pql_get_userattribute($_pql->ldap_linkid, $dn, $config["PQL_GLOB_ATTR_CN"]);
-		  $cns[$dn] = $cn[0];
+		  $cn = pql_get_userattribute($_pql->ldap_linkid, $dn, $config["PQL_GLOB_ATTR_GIVENNAME"]);
+		  $sn = pql_get_userattribute($_pql->ldap_linkid, $dn, $config["PQL_GLOB_ATTR_SN"]);
+		  $cns[$dn] = $sn[0].", ".$cn[0];
 	      }
               asort($cns);
 
 	      foreach($cns as $dn => $cn) {
-		  $uid   = pql_get_userattribute($_pql->ldap_linkid, $dn, $config["PQL_GLOB_ATTR_UID"]);
+		  $uid = pql_get_userattribute($_pql->ldap_linkid, $dn, $config["PQL_GLOB_ATTR_UID"]);
 		  $uid = $uid[0];
 
 		  $uidnr = pql_get_userattribute($_pql->ldap_linkid, $dn, $config["PQL_GLOB_ATTR_QMAILUID"]);

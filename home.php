@@ -47,7 +47,7 @@ if(isset($submit)) {
     if($ldapserver) {
 	$host = split(';', $ldapserver);
 
-	$USER_HOST = $host[0] . ";" . $host[1];
+	$USER_HOST = $host[0] . ";" . $host[1] . ";" . $host[2];
 
 	session_register("USER_HOST", "USER_SEARCH_DN_CTR");
     }
@@ -71,15 +71,11 @@ if(isset($submit)) {
       <form action="<?=$PHP_SELF?>" target="_top">
 	Change LDAP server<br>
         <select name="ldapserver">
-<?php
-		foreach($servers as $server) {
-		    // We're only interssted in the HOST entry (othervise the list will be to long)
-		    $host = split(';', $server);
+<?php		foreach($servers as $server) {
+			$host = split(';', $server);
 ?>
-          <option value="<?=$server?>"><?=$host[0]?></option>
-<?php
-		}
-?>
+          <option value="<?=$server?>"><?=$host[0]?>:<?=$host[1]?></option>
+<?php		} ?>
         </select>
         <input type="submit" value="<?="--&gt;&gt;"?>" name="submit">
       </form>

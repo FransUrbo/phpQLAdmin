@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.12 2003-04-30 07:30:49 turbo Exp $
+// $Id: left-control.php,v 2.13 2003-06-02 08:10:42 turbo Exp $
 //
 session_start();
 
@@ -27,9 +27,10 @@ if($config["PQL_GLOB_CONTROL_USE"]) {
 
 <?php
 	if($ADVANCED_MODE) {
+		$host = split(';', $USER_HOST);
 ?>
   <font color="black" class="heada">
-    Host: <font color="black" size=-4><b><?=$USER_HOST?></b></font>
+    Host: <font color="black" size=-4><b><?=$host[0]?>:<?=$host[1]?></b></font>
   </font>
 
   <div id="el2Parent" class="parent">

@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.26 2003-05-18 13:36:54 turbo Exp $
+// $Id: pql_config.inc,v 1.27 2003-06-02 08:11:02 turbo Exp $
 //
 global $config;
 
@@ -132,7 +132,7 @@ require("./include/pql.inc");
 if(!$USER_HOST) {
 	if(! eregi('\+', PQL_GLOB_HOST)) {
 		$host = split(';', PQL_GLOB_HOST);
-		$USER_HOST = $host[0] . ";" . $host[1];
+		$USER_HOST = $host[0] . ";" . $host[1] . ";" . $host[2];
 		
 		session_register("USER_HOST");
 	} else {
@@ -141,7 +141,7 @@ if(!$USER_HOST) {
 
 		// For the time beeing, use the first value
 		$host = split(';', $servers[0]);
-		$USER_HOST = $host[0] . ";" . $host[1];
+		$USER_HOST = $host[0] . ";" . $host[1] . ";" . $host[2];
 		
 		session_register("USER_HOST");
 	}
@@ -152,7 +152,7 @@ if(isset($USER_DN))
 
 $_pql = new pql($USER_HOST, $USER_DN, $USER_PASS);
 foreach($_pql->ldap_basedn as $dn)  {
-	$sr = @ldap_read($_pql->ldap_linkid, $dn, $dn)
+	$sr = @ldap_read($_pql->ldap_linkid, $dn, ('objectClass=*'))
 	  or pql_errormsg($_pql->ldap_linkid);
 	$info = ldap_get_entries($_pql->ldap_linkid, $sr)
 	  or pql_errormsg($_pql->ldap_linkid);

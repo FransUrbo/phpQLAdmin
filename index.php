@@ -30,7 +30,7 @@ if (empty($uname) or empty($passwd)) {
 	if(!$USER_HOST) {
 		if(! eregi('\+', $config["PQL_GLOB_HOST"])) {
 			$host = split(';', $config["PQL_GLOB_HOST"]);
-			$USER_HOST = $host[0] . ";" . $host[1];
+			$USER_HOST = $host[0] . ";" . $host[1] . ";" . $host[2];
 			
 			session_register("USER_HOST");
 		}
@@ -71,21 +71,17 @@ if (empty($uname) or empty($passwd)) {
 		$servers = split('\+', $config["PQL_GLOB_HOST"]);
 ?>
           <select name="server">
-<?php
-		foreach($servers as $server) {
-			// We're only interssted in the HOST entry (othervise the list will be to long)
+<?php	foreach($servers as $server) {
 			$host = split(';', $server);
 ?>
-            <option value="<?=$server?>"><?=$host[0]?></option>
-<?php
-		}
-?>
+            <option value="<?=$server?>"><?=$host[0]?>:<?=$host[1]?></option>
+<?php	} ?>
           </select>
 <?php
 	} else {
-		$server = $USER_HOST;
+		$server = split(';', $USER_HOST);
 ?>
-        <b><?=$server.";".$_pql->ldap_basedn[0]?></b>
+        <b><?=$server[0].":".$server[1]?></b>
         <input type="hidden" name="server" value="<?=$config["PQL_GLOB_HOST"]?>">
 <?php
 	}
@@ -138,6 +134,9 @@ if (empty($uname) or empty($passwd)) {
 		$USER_HOST = $host;
 		
 		session_register("USER_HOST");
+	} elseif($server) {
+		$USER_HOST=$server;
+		session_register("USER_HOST");
 	}
 
 	// -------------------------------------
@@ -186,6 +185,7 @@ if (empty($uname) or empty($passwd)) {
 				// That worked, keep it!
 				$got_rootdn = 1;
 				$rootdn = $dn;
+				break;
 			}
 		}
 	}
