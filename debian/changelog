@@ -34,8 +34,10 @@ phpqladmin (2.0.18d-1) unstable; urgency=low
     the user data page. We should get to the next page, which will give the user
     a chance to input a correct value.
     Closes bug 186
+  * Make sure that the 'tarball' target (used when releasing) removes any '.DEBUG_ME'
+    file. That file should not be included. It's up to the user(s) to create...
 
- -- Turbo Fredriksson <turbo@debian.org>  Sat,  8 May 2004 10:51:37 +0200
+ -- Turbo Fredriksson <turbo@debian.org>  Sun,  9 May 2004 12:05:34 +0200
 
 phpqladmin (2.0.18c-1) unstable; urgency=low
 

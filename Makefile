@@ -43,7 +43,8 @@ install: $(INSTDIR)
 tarball: install
 	@(rm -Rf $(INSTDIR)/Makefile $(INSTDIR)/.version.old \
 		$(INSTDIR)/manual $(INSTDIR)/include/config.inc \
-		$(INSTDIR)/phpQLadmin.log $(INSTDIR)/README.Monitor; \
+		$(INSTDIR)/phpQLadmin.log $(INSTDIR)/README.Monitor \
+		$(INSTDIR)/.DEBUG_ME; \
 	  cd $(INSTDIR) && find -type d -name CVS -o -name '.cvsignore' -o -name '*~' | \
 		xargs rm -rf; \
 	  echo -n "Tarball 1: $(TMPDIR)/phpQLAdmin-$(VERSION).tar.gz: "; \
