@@ -42,7 +42,14 @@ if(pql_domain_exist($_pql, $domain, $rootdn)) {
 
 $dns = pql_domain_add($_pql->ldap_linkid, $rootdn, $domain);
 if($dns[0]) {
-	$entry[BRANCH_NAME] = $domain;
+	$entry["BRANCH_NAME"] = $domain;
+
+	if($defaultdomain != "") {
+		// update locals if control patch is enabled
+		if(pql_control_update_domains($_pql, $USER_SEARCH_DN_CTR, '*', array('', $defaultdomain))) {
+			// message ??
+		}
+	}
 
 	// Default values we can easily figure out
 	$defaultmaildir = user_generate_mailstore('', '', '', $entry);
@@ -53,13 +60,6 @@ if($dns[0]) {
 	$defaultmaildir = preg_replace('/ /', '_', $defaultmaildir);
 	$defaulthomedir = preg_replace('/ /', '_', $defaulthomedir);
 
-	if($defaultdomain != "") {
-		// update locals if control patch is enabled
-		if(pql_control_update_domains($_pql, $USER_SEARCH_DN_CTR, '*', array('', $defaultdomain))) {
-			// message ??
-		}
-	}
-	
 	$msg = "";
 	
 	// Save the attributes - Default domain
