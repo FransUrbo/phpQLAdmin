@@ -1,6 +1,6 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.35 2004-02-14 14:01:00 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.36 2004-02-14 23:05:33 turbo Exp $
 //
 session_start();
 require("./include/pql_config.inc");
@@ -11,12 +11,15 @@ $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PA
 // forward back to users detail page
 function attribute_forward($msg) {
     $msg = urlencode($msg);
-	if($user)
+	if($_REQUEST["user"])
 	  $url = "user_detail.php?rootdn=" . $_REQUEST["rootdn"] . "&domain=" . $_REQUEST["domain"]
-		. "&user=". urlencode($user) . "&view=" . $_REQUEST["view"] . "&msg=$msg";
-	elseif($administrator)		// DLW: Bug? $administrator isn't visable.
+		. "&user=". urlencode($_REQUEST["user"]) . "&view=" . $_REQUEST["view"] . "&msg=$msg";
+	elseif($_REQUEST["administrator"])
+	  // Administrators is _always_ added/change here, NOT from user_edit_attribute.php
+	  // as one would think. I.e. when giving a user access to branch from the
+	  // 'User details->User access' page...
 	  $url = "user_detail.php?rootdn=" . $_REQUEST["rootdn"] . "&domain=" . $_REQUEST["domain"]
-	    . "&user=$administrator&view=" . $_REQUEST["view"] . "&msg=$msg";
+	    . "&user=" . $_REQUEST["administrator"] . "&view=" . $_REQUEST["view"] . "&msg=$msg";
 	else
 	  $url = "domain_detail.php?rootdn=" . $_REQUEST["rootdn"] . "&domain=" . $_REQUEST["domain"]
 		. "&view=" . $_REQUEST["view"] . "&msg=$msg";
@@ -90,7 +93,10 @@ if(@$_REQUEST["submit"] == 1) {
 	attribute_print_form($_REQUEST["type"]);
 } elseif(@$_REQUEST["submit"] == 4) {
 	// SAVE change of domain administrator, mailinglist admin and contact person
-	attribute_save($_REQUEST["type"]);
+	if($_REQUEST["action"])
+	  attribute_save($_REQUEST["action"]);
+	elseif($_REQUEST["type"])
+	  attribute_save($_REQUEST["type"]);
 } else {
 	if($_REQUEST["attrib"] == pql_get_define("PQL_GLOB_ATTR_BASEQUOTA"))
 	  attribute_print_form();
