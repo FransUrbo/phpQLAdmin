@@ -48,6 +48,15 @@ phpQLAdmin 2.1.2 TO BE ANNOUNCED
 	  - Renamed the function pql.inc:pql_domain_replace_admins() to
 	    pql_write.inc:pql_replace_values() and reflect the change (no references
 	    to admin attributes in the function).
+	  - Moved the following functions from pql.inc to pql_write.inc:
+	    + pql_user_add()
+	    + pql_user_del()
+	    + pql_domain_add()
+	    + pql_domain_del()
+	  - Moved the following functions from pql.inc to pql_formating.inc:
+	    + pql_generate_button()
+	    + pql_strip_domain()
+	    + pql_strip_username()
 	  - Renamed the function pql.inc:pql_modify_userattribute() to
 	    pql_write.inc:pql_modify_attribute().
 	    + Use the new pql_write.inc:pql_write_mod() function instead of duplicating

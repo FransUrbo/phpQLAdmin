@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.30 2004-10-19 10:40:42 turbo Exp $
+// $Id: pql_formating.inc,v 2.31 2004-10-20 06:32:37 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -46,6 +46,42 @@ function pql_complete_constant($text, $replacement) {
     
     return preg_replace($pattern, $replacement, $text);
 }
+// }}}
+
+// {{{ pql_generate_button(button array)
+function pql_generate_button($buttons, $link = '') {
+    global $LANG;
+
+	$url = $_SERVER["PHP_SELF"] . "?";
+
+	// It's not sure we have a rootdn and/or domain, so only add those
+	// it's set
+	if(!empty($_REQUEST["rootdn"])) {
+		$url .= "rootdn=" . pql_format_urls($_REQUEST["rootdn"]) . "&";
+	}
+
+	if(!empty($_REQUEST["domain"])) {
+		$url .= "domain=" . pql_format_urls($_REQUEST["domain"]) . "&";
+	}
+?>
+
+  <table cellspacing="0" border="0" width="100%" cellpadding="0">
+<?php
+	  $i=0; // A button counter.
+	  foreach($buttons as $view => $text) {
+		  // Generate the button link etc
+?>
+    <a href="<?=$url?>view=<?=$view?><?php if($link) { echo "&$link"; } ?>"><img alt="/ <?=$LANG->_($text)?> \" vspace="0" hspace="0" border="0" src="navbutton.php?<?php echo urlencode($LANG->_($text)); ?>"></a>
+<?php
+		  // Increase button counter"
+		  $i++;
+	  }
+?>
+  </table>
+
+<?php
+}
+
 // }}}
 
 // {{{ pql_format_error(output)
@@ -512,6 +548,30 @@ function pql_ldap_mailquota($quota, $newline = 1) {
 	  $txt .= pql_complete_constant($LANG->_('Max %maxsize% KB'), array("maxsize" => $quota["maxsize"]));
     
     return $txt;
+}
+// }}}
+
+// {{{ pql_strip_domain(email)
+// Get the username of an email address
+function pql_strip_domain($email) {
+    $email = split("@", $email);
+    
+    if(count($email) == 2)
+	  return $email[0];
+    
+    return false;
+}
+// }}}
+
+// {{{ pql_strip_username(email)
+// Get the domainname of an email address
+function pql_strip_username($email) {
+    $email = split("@", $email);
+    
+    if(count($email) == 2)
+	  return $email[1];
+    
+    return false;
 }
 // }}}
 
