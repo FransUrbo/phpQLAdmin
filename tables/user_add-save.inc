@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.3 2003-11-14 12:33:38 turbo Exp $
+// $Id: user_add-save.inc,v 1.4 2003-11-19 16:53:27 turbo Exp $
 
 // Find out what objectclasses to use when creating user
 $objectclasses_included = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_USER", $rootdn));
@@ -55,8 +55,7 @@ if($account_type != 'shell') {
 	$entry[pql_get_define("PQL_GLOB_ATTR_MAIL")]		= $email;
 	if($include_additional == 'on' and is_array($additionaldomainname)) {
 		if(ereg("@", $email)) {
-			$email_temp = split('@', $email);
-			$email_temp = $email_temp[0];
+			$email_temp = pql_strip_domain($email);
 		} else
 		  $email_temp = $email;
 		
@@ -144,14 +143,14 @@ if(($account_type == "system") or ($account_type == "normal")) {
 	if($userhost)
 	  $entry[pql_get_define("PQL_GLOB_ATTR_MAILHOST")] = $userhost;
 	else {
-		$domainname = split('@', $entry[pql_get_define("PQL_GLOB_ATTR_MAIL")]);
+		$domainname = pql_strip_username($entry[pql_get_define("PQL_GLOB_ATTR_MAIL")]);
 		
 		// Initiate a connection to the QmailLDAP/Controls DN
 		$_pql_control = new pql_control($USER_HOST, $USER_DN, $USER_PASS);
 		
 		if($_pql_control->ldap_linkid) {
 			// Find MX (or QmailLDAP/Controls with locals=$domainname)
-			$mx = pql_get_mx($_pql_control->ldap_linkid, $domainname[1]);
+			$mx = pql_get_mx($_pql_control->ldap_linkid, $domainname);
 			if(is_array($mx))
 			  $entry[pql_get_define("PQL_GLOB_ATTR_MAILHOST")] = $mx[1];
 		}
