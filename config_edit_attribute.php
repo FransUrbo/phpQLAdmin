@@ -1,6 +1,6 @@
 <?php
 // Edit and set configuration values in the LDAP database
-// $Id: config_edit_attribute.php,v 1.11 2004-03-11 18:13:32 turbo Exp $
+// $Id: config_edit_attribute.php,v 1.12 2004-11-05 10:42:26 turbo Exp $
 //
 session_start();
 
@@ -18,8 +18,8 @@ function attribute_forward($msg, $rlnb = false) {
 	if(lc($attrib) == 'controlsadministrator') {
 		if($_REQUEST[$attrib])
 		  $userdn = urlencode($_REQUEST[$attrib]);
-		elseif($_REQUEST["delval"])
-		  $userdn = urlencode($_REQUEST["delval"]);
+		elseif($_REQUEST[$attrib])
+		  $userdn = urlencode($_REQUEST[$attrib]);
 
 		$url = "user_detail.php?rootdn=" . $_REQUEST["rootdn"]
 		  . "&domain=" . $_REQUEST["domain"] . "&user=$userdn&view=" . $_REQUEST["view"] . "&msg=$msg";
@@ -45,7 +45,7 @@ if(@$_REQUEST["submit"] == 1) {
     }
 } elseif(@$_REQUEST["submit"] == 2) {
 	attribute_save();
-} elseif(!empty($_REQUEST["delval"]) or !empty($_REQUEST["toggle"])) {
+} elseif(!empty($_REQUEST[$attrib]) or !empty($_REQUEST["toggle"])) {
 	attribute_save();
 } else {
     attribute_print_form();
