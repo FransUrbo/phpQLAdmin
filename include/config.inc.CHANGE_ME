@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.59 2004-11-15 15:22:19 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.60 2005-01-20 06:15:11 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -154,41 +154,89 @@ function user_generate_mailstore($ldap, $email, $dn, $entry, $type) {
 	// -------------- Template 2: domain.tld/username
 //	$mailstore = "%d%/%u%"; 
 	
-	// -------------- Template 3: d/domain.tld/username (First character of the domainname / domainname / uid)
-//	$mailstore = substr($domain, 0, 1) . "/%d%/%u%";
-
-	// -------------- Template 4: mail.host.tld/domain.tld/username
-//	$mailstore = "%h%/%d%/%u%";
-
-	// -------------- Template 5: mail@domain.tld (complete email-address)
-	$mailstore = "%m%";
-
-	// -------------- Template 6: 123456
-	// Generate a random (6 digit) number and make sure no other user has
-	// the same mailstore. This will be slow if you have many users, use
-	// some hash instead of random numbers
+	// you feel comfortable with the old way phpQLAdmin generates the mailstore?
+	// Uncomment this example and change the string. 
 	//
-	// Seed the random number generator
-//	$seed = list($usec, $sec) = explode(' ', microtime());
-//	$seed = (float) $sec + ((float) $usec * 100000);
-//	mt_srand($seed);
-//	
-//	for(;;) {
-//	 	// Generate a random numer between 100000 and 999999 (6 digits)
-//	 	$mailstore = mt_rand(100000, 999999);
-//
-//	 	// Check whether another user already has this mailstore. If yes,
-//		// generate another random number.
-//	 	// TODO: ldap_basedn isn't availible any more (it's an array of base DN's)!
-//	 	$filter = pql_get_define("PQL_ATTR_MAILSTORE") . "=" . pql_maybe_encode($mailstore,
-//																				pql_get_define("PQL_ATTR_MAILSTORE"),
-//																				$ldap);
-//	 	if(!pql_search($ldap, $ldap_basedn, $filter)) {
-//	 		break;
-//	 	}
-//	}
-
-	// -------------- Note 1:
+	// supported variables: %d% = domain, %u% = username, %h% = mailhost
+	//
+	// -------------- example: domains baseMailDir/uid
+	//	if($dn) {
+	//		$mailstore = pql_get_attribute($ldap, $dn, pql_get_define("PQL_ATTR_BASEMAILDIR"));
+	//		if(is_array($mailstore))
+	//		  $mailstore = $mailstore[0];
+	//
+	//		$domain    = pql_get_attribute($ldap, $dn, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+	//		if(is_array($domain))
+	//		  $domain = $domain[0];
+	//	} else {
+	//		$mailstore = "/var/mail";
+	//		$domain    = $entry["BRANCH_NAME"];
+	//	}
+	//
+	//	if($type == 'branch')
+	//	  // We're creating a branch, so add the domain to string
+	//	  $branch = '%d%/';
+	//	
+	//	if(! ereg("/$", $mailstore)) {
+	//		$mailstore = $mailstore . "/" . $branch . "%u%";
+	//	} else {
+	//		$mailstore = $mailstore . $branch . "%u%";
+	//	}
+	//	$mailstore = pql_complete_constant($mailstore, array("d" => pql_format_international($domain), 
+	//														 "u" => $entry[pql_get_define("PQL_ATTR_UID")], 
+	//														 "h" => $entry[pql_get_define("PQL_ATTR_MAILHOST")]));
+	//
+	// -------------- example: "%d/%u" (=> domain.tld/username) 
+	//	$mailstore = "%d%/%u%"; 
+	//	$mailstore = pql_complete_constant($mailstore, array(	"d" => pql_format_international($domain), 
+	//															"u" => $entry[pql_get_define("PQL_ATTR_UID")],
+	//															"h" => $entry[pql_get_define("PQL_ATTR_MAILHOST")]));
+	//
+	// -------------- example: domain.tld/username
+	//	$mailstore = $domain . '/'. $entry[pql_get_define("PQL_ATTR_UID")];
+	//
+	// -------------- example: d/domain.tld/username (first character of the domainname / domainname / uid)
+	//	$mailstore = substr($domain, 0, 1) . '/' . $domain . '/'. $entry[pql_get_define("PQL_ATTR_UID")];
+	//
+	// -------------- example: mail.host.tld/domain.tld/username
+	//	$mailstore = $entry[pql_get_define("PQL_ATTR_MAILHOST")] . '/' . pql_format_international($domain) . '/'. $entry[pql_get_define("PQL_ATTR_UID")];
+	//
+	// -------------- example: mail@domain.tld (complete email-address)
+	//	$mailstore = $entry[pql_get_define("PQL_ATTR_MAIL")];
+	//
+	// -------------- example: 123456
+	// generate a random (6 digit) number and make sure 
+	// no other user has the same mailstore 
+	// This will be slow if you have many users, use some hash
+	// instead of random numbers
+	//
+	// seed the random number generator
+	//	$seed = list($usec, $sec) = explode(' ', microtime());
+	//	$seed = (float) $sec + ((float) $usec * 100000);
+	//	mt_srand($seed);
+	//	
+	// for(;;) {
+	// 	// Generate a random numer between 100000 and 999999 (6 digits)
+	// 	$mailstore = mt_rand(100000, 999999);
+	//
+	//	// Check whether another user already has this mailstore. If yes,
+	//	// generate another random number.
+	// 	// TODO: ldap_basedn isn't availible any more (it's an array of base DN's)!
+	// 	$filter = pql_get_define("PQL_ATTR_MAILSTORE") . "=" . pql_maybe_encode($mailstore,
+	// 																				 pql_get_define("PQL_ATTR_MAILSTORE"),
+	// 																				 $ldap);
+	// 	if(!pql_search($ldap, $ldap_basedn, $filter)) {
+	// 		break;
+	// 	}
+	// }
+	//
+	//
+	// All examples above generate a relative path.
+	// If you like to make absolute paths, uncomment this.
+	// Prefix the path with  "/home/mailusers/"
+	// i.e.: domain.tld/username => /home/mailusers/domain.tld/username
+	//	$mailstore = "/home/mailusers/" . $mailstore; 
+	//
 	// Convert the whole mailstore to lowercase? Uncomment next line. 
 //	$mailstore = strtolower($mailstore);
 
@@ -217,62 +265,32 @@ function user_generate_mailstore($ldap, $email, $dn, $entry, $type) {
 // See information about function user_generate_mailstore()
 // Above. Exact same options apply
 function user_generate_homedir($ldap, $email, $dn, $entry, $type) {
-    $homedir = '';
-
-	// -------------- Debugging 1:
-	// If you suspect that this function isn't doing what it's supposed to do,
-	// uncomment the next few lines. This can also be used in bugtracker or the
-	// mailinglist for help...
-//	echo "user_generate_homedir('<i>linkid</i>', '$email', '$dn', '<i>array</i>', '$type')<br>";
-//	echo "The entry array: "; printr($entry);
-
-//	if($dn) {
-//		// ... retreive the 'baseHomeDir' attribute value from the branch object.
-//		$homedir = pql_get_attribute($ldap->ldap_linkid, $dn, pql_get_define("PQL_ATTR_BASEHOMEDIR"));
-//
-//		// ... retreive the 'defaultDomainName' attribute value from the branch object.
-//		$domain  = pql_get_attribute($ldap->ldap_linkid, $dn, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
-//
-//		// ... double check - do we have a home directory?
-//		if(!$homedir)
-//		  // Nope. Maybe we have the 'virtualBaseHomeDir' attribute specified
-//		  // in the base object...
-//		  $homedir = pql_get_define("PQL_CONF_VIRTUAL_BASEHOME");
-//	} else {
-//		// Default base directory
-//		$homedir = "/home";
-//
-//		// The branch name is (should be) included in the calling of the function.
-//		$domain  = $entry["BRANCH_NAME"];
-//	}
-//	
-//	if($type == 'branch') {
-//		// We're creating a branch, so add the domain to string
-//		$branch = '%d%/';
-//	}
-//	
-//	if(! ereg("/$", $homedir)) {
-//		// The base home directory value doesn't end with a slash, add one.
-//		// The '$branch' variable will be empty for users, set if a branch.
-//		$homedir = $homedir . "/" . $branch . "%u%";
-//	} else {
-//		// The base home directory value doesn't end with a slash, add one.
-//		// The '$branch' variable will be empty for users, set if a branch.
-//		$homedir = $homedir . $branch . "%u%";
-//	}
-
-	// ----------------------------------------------
-	// Add a trailing slash for Maildir's.
-	if(! ereg("/$", $homedir)) {
-		$homedir .= "/";
-	}
-
-	// Substitue the '%X%' values with real values...
-	$homedir = pql_complete_constant($homedir, array("d" => pql_format_international($domain), 
-													 "u" => $entry[pql_get_define("PQL_ATTR_UID")], 
-													 "h" => $entry[pql_get_define("PQL_ATTR_MAILHOST")],
-													 "m" => $entry[pql_get_define("PQL_ATTR_MAIL")]));
-
+	//	if($dn) {
+	//		$homedir = pql_get_attribute($ldap, $dn, pql_get_define("PQL_ATTR_BASEHOMEDIR"));
+	//		if(is_array($homedir))
+	//		  $homedir = $homedir[0];
+	//
+	//		$domain  = pql_get_attribute($ldap, $dn, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+	//		if(is_array($domain))
+	//		  $domain = $domain[0];
+	//	} else {
+	//		$homedir = "/home";
+	//		$domain  = $entry["BRANCH_NAME"];
+	//	}
+	//	
+	//	if($type == 'branch')
+	//	  // We're creating a branch, so add the domain to string
+	//	  $branch = '%d%/';
+	//	
+	//	if(! ereg("/$", $basemaildir)) {
+	//		$homedir = $homedir . "/" . $branch . "%u%";
+	//	} else {
+	//		$homedir = $homedir . $branch . "%u%";
+	//	}
+	//	$homedir = pql_complete_constant($homedir, array("d" => pql_format_international($domain), 
+	//													 "u" => $entry[pql_get_define("PQL_ATTR_UID")],
+	//													 "h" => $entry[pql_get_define("PQL_ATTR_MAILHOST")]));
+	
 	return($homedir);
 }
 
@@ -370,6 +388,12 @@ function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $do
 //		$aci[$i] = "$i#entry#grant;r,s,c;sn,givenName,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,mailMessageStore,o,l,st,telephoneNumber,postalCode,title#self#"; $i++;
 //	} elseif($type == 'group') {
 //		$aci[$i] = "$i#entry#grant;r,s,c;cn,gidNumber#public#"; $i++;
+//	} elseif($type == 'dnszone') {
+//		$aci[$i] = "$i#entry#grant;r,s,c;dc#public#"; $i++;
+//		$aci[$i] = "$i#entry#grant;w,r,s,c;[all]#access-id#ENTER_WHOEVER_YOUR_DNSSERVER_USES"; $i++;
+//	} elseif($type == 'websrv') {
+//		$aci[$i] = "$i#entry#grant;r,s,c;cn#public#"; $i++;
+//		$aci[$i] = "$i#entry#grant;w,r,s,c;[all]#access-id#ENTER_WHOEVER_YOUR_WEBSERVER_USES"; $i++;
 //	} elseif($type == 'qmail') {
 //		$aci[$i] = "$i#entry#grant;r,s;[all]#access-id#ENTER_WHOEVER_YOUR_QMAILSERVER_USES"; $i++;
 //	} elseif($type == 'branch') {
@@ -388,7 +412,7 @@ function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $do
 //	if(is_array($admins)) {
 //		foreach($admins as $admin)
 //		  $aci[$i] = "$i#entry#grant;w,r,s,c,x;[all]#access-id#$admin"; $i++;
-//	} else
+//	} elseif($admins)
 //	  $aci[$i] = "$i#entry#grant;w,r,s,c,x;[all]#access-id#$admins"; $i++;
 //
 //	return($aci);
