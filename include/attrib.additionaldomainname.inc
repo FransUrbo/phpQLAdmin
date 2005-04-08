@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.30 2005-02-24 17:04:01 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.30.2.1 2005-03-17 18:58:16 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -131,7 +131,6 @@ function attribute_print_form() {
 // }}}
 
 // {{{ attribute_save(type)
-
 function attribute_save($type) {
     global $_pql, $LANG;
 
@@ -213,17 +212,18 @@ function attribute_save($type) {
 													 '', $additionaldomainname);
 						}
 					} else {
-						// Change all hosts
+					  // Change all hosts 
+					  $filter  = "(&(".pql_get_define("PQL_ATTR_CN")."=*)(";
+					  $filter .= pql_get_define("PQL_ATTR_OBJECTCLASS")."=qmailControl))";
+					  $hosts = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $filter);
+					  for($i=0; $hosts[$i]; $i++) {
 						if($type == 'delete')
-						  pql_modify_attribute($_pql_control->ldap_linkid,
-											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											   pql_get_define("PQL_ATTR_LOCALS"),
+						  pql_modify_attribute($_pql_control->ldap_linkid, $hosts[$i], pql_get_define("PQL_ATTR_LOCALS"),
 											   $delval, '');
 						else
-						  pql_modify_attribute($_pql_control->ldap_linkid,
-											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											   pql_get_define("PQL_ATTR_LOCALS"),
+						  pql_modify_attribute($_pql_control->ldap_linkid, $hosts[$i], pql_get_define("PQL_ATTR_LOCALS"),
 											   '', $additionaldomainname);
+					  }
 					}
 				} else {
 					// We have not gone through the form for adding defaultDomain nor additionalDomainName.
@@ -264,7 +264,7 @@ function attribute_save($type) {
 						  pql_modify_attribute($_pql_control->ldap_linkid,
 											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 											   pql_get_define("PQL_ATTR_RCPTHOSTS"),
-											   $delval, '')
+											   $delval, '');
 						else
 						  pql_modify_attribute($_pql_control->ldap_linkid,
 											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
@@ -293,7 +293,6 @@ function attribute_save($type) {
 								  array('type' => $type, 'file' => __FILE__)));
     }
 }
-
 // }}}
 
 // Local variables:

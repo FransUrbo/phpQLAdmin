@@ -13,11 +13,14 @@
 		// ------------------------------
 		foreach($attributes as $attrib) {
 			foreach($domainnames as $d) {
-				if($attrib == 'smtproutes')
+				if($attrib == 'smtproutes') {
 				  // Special circumstances - An smtproute isn't just the domain, so we need a wildcard.
 				  $val = $d."*";
-				else
+				  $submit = '';
+				} else {
 				  $val = $d;
+				  $submit = "&submit=1";
+				}
 
 				if(pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 							  "(&(cn=*)(objectclass=qmailControl)($attrib=$val))", 'ONELEVEL')) {
@@ -26,14 +29,14 @@
 					$alt = pql_complete_constant($LANG->_('Remove %domain% from %attribute%'),
 												 array('domain' => $d, 'attribute' => $attrib));
 						
-					$LINKS[$attrib][$d] = "<a href=\"control_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&attrib=$attrib&type=del&set=$d&submit=1&view=".$_REQUEST["view"]."\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"$alt\"></a>";
+					$LINKS[$attrib][$d] = "<a href=\"control_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&attrib=$attrib&type=del&set=$d$submit&view=".$_REQUEST["view"]."\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"$alt\"></a>";
 				} else {
 					$DEFINED[$attrib][$d] = $LANG->_('No');
 
 					$alt = pql_complete_constant($LANG->_('Add %what% to %attribute%'),
 												 array('what' => $d, 'attribute' => $attrib));
 					
-					$LINKS[$attrib][$d] = "<a href=\"control_edit_attribute.php?attrib=$attrib&rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"]."&type=add&set=$d&view=".$_REQUEST["view"]."\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"$alt\"></a>";
+					$LINKS[$attrib][$d] = "<a href=\"control_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&attrib=$attrib&type=add&set=$d$submit&view=".$_REQUEST["view"]."\"><img src=\"images/edit.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"$alt\"></a>";
 				}
 			}
 		}

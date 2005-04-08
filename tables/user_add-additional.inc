@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-additional.inc,v 1.26 2005-03-01 18:09:08 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.26.2.2 2005-03-27 11:55:01 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <!-- Some hidden values from previous page(s) -->
 <?php if($_REQUEST["surname"] and pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_CN"))) { ?>
@@ -124,46 +124,36 @@
 		   ($_REQUEST["mail"] or
 			pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILHOST"), 'MUST')))
 		{
-			 echo pql_templates_mark_importance(1);
+			 echo "            ".pql_templates_mark_importance(1);
 		}
 ?>
             <?php echo pql_format_error_span($error_text["userhost"]); ?>
-<?php	$i=0;
+<?php	// 'retreive' all MX hosts
+		$MX_HOSTS = array(); // So that in_array() won't fail if there is no QLC hosts...
 		if($_REQUEST["userhost"]["qlc"]) {
 			// It's defined - QmailLDAP/Controls object
-
-			for(; $_REQUEST["userhost"]["qlc"][$i]; $i++) {
-?>
-
-            <input type="hidden" name="host_<?=$i?>" value="<?=$_REQUEST["userhost"]["qlc"][$i]?>">
-            <input type="radio"  name="host"   value="<?=$i?>" <?php
-				if(!$_REQUEST["userhost"]["qlc"][1] and !$_REQUEST["userhost"]["dns"] and !$checked) { 
-				  // This is the default, IF:
-				  // 1. There's only ONE QmailLDAP/Controls object
-				  //    AND
-				  // 2. There's no DNS entry
-				  $checked = 1;
-				  echo "CHECKED";
-				}
-?>>
-            <b><?=pql_maybe_idna_decode($_REQUEST["userhost"]["qlc"][$i])?></b><br>
-<?php		}
+			for($i=0; $_REQUEST["userhost"]["qlc"][$i]; $i++)
+			  $MX_HOSTS[] = $_REQUEST["userhost"]["qlc"][$i];
 		}
 
-		if($_REQUEST["userhost"]["dns"] and
-		   ($_REQUEST["userhost"]["qlc"] and !in_array($_REQUEST["userhost"]["dns"], $_REQUEST["userhost"]["qlc"])))
-		{
-			// It's defined - DNS entry (and it don't exists as QMailLDAP/Controls object)
+		if($_REQUEST["userhost"]["dns"] and !in_array($_REQUEST["userhost"]["dns"], $MX_HOSTS))
+		  $MX_HOSTS[] = $_REQUEST["userhost"]["dns"];
+
+
+		// Show all MX hosts we know about
+		for($i=0; $MX_HOSTS[$i]; $i++) {
+?>
+            <input type="hidden" name="host_<?=$i?>" value="<?=$MX_HOSTS[$i]?>">
+<?php		if($i >= 1) echo "&nbsp;&nbsp;"; ?>
+            <input type="radio"  name="host"   value="<?=$i?>"<?php if($i==0) { $checked = 1; ?> CHECKED<?php } ?>>
+            <b><?=pql_maybe_idna_decode($MX_HOSTS[$i])?></b><br>
+<?php	}
 ?>
 
-            <input type="hidden" name="host_<?=$i?>" value="<?=$_REQUEST["userhost"]["dns"]?>">
-            <input type="radio"  name="host"   value="<?=$i?>" <?php if(!$checked) { $checked = 1; ?>CHECKED<?php } $i++; ?>>
-            <b><?=$_REQUEST["userhost"]["dns"]?></b><br>
-<?php	} ?>
-
-            <input type="radio"  name="host"   value="<?=$i?>" <?php if(!$checked) { $checked = 1; ?>CHECKED<?php } ?>>
+<?php	if($i >= 1) echo "&nbsp;&nbsp;"; ?>
+            <input type="radio"  name="host"   value="<?=$i?>"<?php if(!$checked) { $checked = 1; ?> CHECKED<?php } ?>>
             <b><?=$LANG->_('User defined')?></b>:<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php if($i >= 1) { echo "&nbsp;&nbsp;\n"; } else { echo "\n"; } ?>
             <input type="text"   name="host_<?=$i?>" size="56">
             <input type="hidden" name="text_host" value="<?=$i?>">
           </td>

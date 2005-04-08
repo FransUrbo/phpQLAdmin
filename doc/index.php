@@ -2,7 +2,7 @@
 <head>
 	<title>phpQL</title>
 	<link rel="stylesheet" href="../tools/normal.css" type="text/css">
-	<!-- $Id: index.php,v 2.5 2005-01-12 20:08:39 turbo Exp $ -->
+	<!-- $Id: index.php,v 2.5.6.1 2005-03-27 13:10:57 turbo Exp $ -->
 </head>
 
 <body bgcolor="#e7e7e7" background="../images/bkg.png">
@@ -35,7 +35,7 @@ phpQLAdmin was initially developped by <a href="http://www.adfinis.com/">adfinis
 	<li><b>core development, API, some design things</b> - Matthias Blaser (mb@adfinis.ch)
   <li><b>additional development, testing</b> - Michael Moser (mm@adfinis.ch)
 </ul>
-phpQLAdmin was taken over by Turbo Fredriksson on 11 Dec 2002, and is now relocated to <a href="http://phpqladmin.bayour.com/">phpqladmin.bayour.com</a>.
+phpQLAdmin was taken over by Turbo Fredriksson on 11 Dec 2002, and is now relocated to <a href="http://phpqladmin.com/">phpqladmin.com</a>.
 <br><br>
 phpQLAdmin is Open Source, so you're invited to contribute.
 You can help to make this a useful tool.

@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.104.2.2 2005-03-04 11:59:45 turbo Exp $
+// $Id: left.php,v 2.104.2.3 2005-03-27 13:10:56 turbo Exp $
 //
 require("./include/pql_session.inc");
 
@@ -220,7 +220,7 @@ pql_format_tree($LANG->_('Documentation'), 0, $links, 1);
 // {{{ Level 2[ef]:  Main site and misc QmailLDAP links
 if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {
     // Level 2e: Main site and general phpQLAdmin links
-    $links = array('phpQLAdmin @ Bayour'			=> 'http://phpqladmin.bayour.com/',
+    $links = array('phpQLAdmin @ Bayour'			=> 'http://phpqladmin.com/',
 		   $LANG->_('Bugtracker')			=> 'http://bugs.bayour.com/');
     pql_format_tree($LANG->_('phpQLAdmin Site Specifics'), 0, $links, 1);
 
