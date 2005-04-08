@@ -1,0 +1,5 @@
+/etc/phpqladmin/apache.conf
+/etc/phpqladmin/config.inc
+/etc/phpqladmin/config_attributes.inc
+/etc/phpqladmin/config_plugins.inc
+/etc/phpqladmin/defaults.inc

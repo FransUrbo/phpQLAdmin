@@ -1,0 +1,32 @@
+There is two things that are specially important to be able to
+use phpQLAdmin as a manager for the ezmlm mailinglists.
+
+
+We need root access, therefor the baseMailDir/mailinglists
+needs to be created (recursivly) by root and it (the last
+entry, mailinglists) needs to be owned by the user the webserver
+is running as.
+
+This is accomplished by the included create_domain.pl script.
+Make sure this is owned by root, and is suid.
+
+For the mailserver to be able to write/read in the mailinglists
+directory, it have to be owned (recursivly) by the mailinglist
+user (ususally 'alias') and the group the webserver is running
+as (in a Debian GNU/Linux system this is 'www-data'). It need to 
+also have the right permissions (directory mode is 0775 and file
+permissions is 0660).
+
+phpQLAdmin will take care of the chmod, but we need an external
+(suid) script to take care of the chown. This in turn is accomplished
+with the sub_ezmlm_create.pl suidperl script.
+
+
+So the commands you will have to execute in the shell before you
+begin, is:
+
+	chown root.root ./create_domain.pl ./sub_ezmlm_create
+	chmod u+s ./create_domain.pl ./sub_ezmlm_create
+
+WARNING: This might be dangerous, do not enable unless you know
+	 what you're doing!

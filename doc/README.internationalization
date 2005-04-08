@@ -1,0 +1,57 @@
+Being Swedish, with Swedish customers and users it is quite
+natural that having international characters in the LDAP
+database is of gravest importance. And with the resent
+(Nov 1, 2003) opening of using international characters 
+in the domainname system by NIC-SE (administrator of the
+.se zone) the use of the three special Swedish characters
+is even more important.
+
+Using international characters have always (for a very
+long time at least :) been possible to do. It's accomplished
+by UTF-8 encoding strings. It looks impossible to read when
+looking at the string un-decoded, but that's not a big problem
+if you always use the same tool. This is phpQLAdmin. It will
+make sure that all encoding back and forward is always
+correct and no matter what it looks like in the database,
+it will present the data as it's supposed to - readable by
+a human. A UTF-8 encoded value might look like this:
+'baseHomeDir:: L2hvbWUvw5ZzdGVuX8OEbGZoc3Ryw7ZtLw=='. Decoded,
+this will look like '/home/Östen_Älfhström/' (which is a bug
+in it self, but... :)
+
+
+In all aspects of phpQLAdmin when it comes to international
+characters, EXEPT for the Bind9 editor, UTF-8 encoding and
+decoding comes 'for free' with PHP. But to be backward
+compatible, those that specified the new DNS standards for
+international characters had to do some heavy magic...
+This is called IDNA. This makes it possible to convert a
+Swedish domainname like 'räksmörgås.josefßon.org' will have
+to be written as 'xn--rksmrgs-5wao1o.josefsson.org' in the
+zone files of the DNS server. Any modern webbrowser (yes,
+unfortunatly they couldn't be 100% backward compatible)
+will be able to find the host by just inputting the first
+(international) URL.
+
+A GPL implementation of the IDNA standards was made by 
+Simon josefsson and is called LibIDN[1]. His examples
+showed how to use the shell command through the web,
+but I never liked such solutions. Hence I wrote PHP-IDN[2].
+With this module, it is now possible to have 100% support
+for international characters in the DNS system. The
+administrator will feed it (phpQLAdmin) the first string
+(the one with international characters) above, and
+phpQLAdmin will write the SECOND string (the one that
+starts with 'xn--') into the LDAP server. To be perfectly
+readable by humans when looking at the records through
+phpQLAdmin, the IDNA string will naturaly be decoded
+to the international string again. So phpQLAdmin will
+never show a weird string (it will STORE 'weird' strings,
+but that's another matter :), only the human reality.
+
+
+1. Simon Josefsson LibIDN release page
+   http://josefsson.org/libidn/releases/
+
+2. PHP implementation of the IDNA API
+   http://php-idn.bayour.com/

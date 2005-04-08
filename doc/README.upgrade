@@ -1,0 +1,179 @@
+Upgrading from 2.1.4
+	Support for user/branch deletion script(s). Update your schema at
+	the LDAP server and restart it.
+
+	No more support for my own Apache web server configuration schema
+	hack. I now fully support Brian Ferris' 'mod_ldap_cfg' (see the
+	file doc/README.apache) module. Please remove all old web server
+	objects and create new. No upgrade path is supported/recommended.
+	+ The object class phpQLAdminWebSrv (1.3.6.1.4.1.8767.3.1.4) and
+	  all it's attributes have been deleted. Update your LDAP server
+	  schema file, because I might reuse it...
+
+Upgrading from 2.1.3
+	New user templates system. Please read doc/README.Templates for
+	more information on this. This required a schema change, so make
+	sure you update your phpQLAdmin.schema file on the LDAP server.
+
+Upgrading from 2.1.1
+	I've changed the API - removed duplicate functions etc... Make sure
+	to update the 'include/config.inc.CHANGE_ME' file! 
+
+Upgrading from 2.0.18d
+	More schema updates, make sure the schema file is updated on the LDAP
+	server(s)!
+
+Upgrading from 2.0.18
+	There's been more API changes that will break the upgrade
+	to 2.0.19. Update your include/config.inc file....
+
+	Also update the schema, that have changed as well.
+	Note that if you have been using phpQLAdmin for a while on your
+	LDAP database, you must run the script 'scripts/modify_objectclasses.sh'
+	to update all your base DN's. This is because I've moved some
+	attributes from the 'phpQLAdminConfig' object class to the new
+	'phpQLAdminGlobal'. Do this AFTER you've updated the schema file
+	in the LDAP server...
+
+	Dale Wiles have removed the dependency for the register_globals
+	PHP configuration option, so this can now be turned of if you
+	so desire (PHP ships this turned off by default). Previosly
+	you had to enable this...
+
+	include/config.inc.CHANGE_ME have changed user_generate_email()
+	(smarter - some variables isn't needed sometimes).
+
+	As of Qmail-LDAP v20030901, the mailQuota attribute have been
+	split into TWO attributes - mailQuotaSize and mailQuotaCount.
+	Make sure you DO NOT use the newer schema on an older Qmail-LDAP!
+	phpQLAdmin looks for the presence of these attributes when it
+	tries to figure out which type of quota it will create!
+
+Upgrading from 2.0.17
+	There's been some API code modifications that will break
+	an upgrade to 2.0.18. You will have to re-configure (copy
+	include/config.inc.CHANGE_ME to include/config.inc) and go
+	through include/config.inc again.
+
+Upgrading from 2.0.14
+	The schema have been updated, so don't forget to load the new
+	version!
+
+	I've added a template user_generate_email() function (among other
+	changes) to the file include/config.inc.CHANGE_ME. So either copy
+	that function to your include/config.inc file, or start with a new
+	copy - which is recomended, since there are more changes than that.
+	See the README file.
+
+Upgrading from 2.0.13
+	The schema have been updated, so don't forget to load the new
+	version!
+
+	Also, some new features have been added (automatic replication
+	of rcpthosts attributes), so please read the README file again.
+
+	It is now possible to UTF-8 encode branches. That is, use national
+	characters! This is however not possible if using 'dc' branches.
+	That's a 'problem' (?) in the schema, not phpQLAdmin.
+	To be able to UTF-8 encode locals/rcpthosts attributes in a
+	QmailLDAP/Controls object, those attribute definitions have to
+	be changed. This is done by changing the SYNTAX value to
+		1.3.6.1.4.1.1466.115.121.1.15{32768}
+	I have included MY copy of the QmailLDAP/Controls schema file.
+	But since I haven't done a release 'in ages' of this patch, and
+	there are others that might have done updates to it, please verify
+	that it's correct before use!
+
+	The config file have changed again. If you want ezmlm mailinglist
+	creation to work, you will have to update the 'config.inc' file.
+
+Upgrading from 2.0.10
+	The schema have been updated, so don't forget to load the new
+	version! Please re-read the file README (subjects 'Schema issues'
+	and 'Kerberos principal creation') before restarting your LDAP
+	server.
+
+	Also, the include/config.inc file must be recreated. Please
+	remove your old copy, copy include/config.inc.CHANGE_ME to
+	include/config.inc and configure that from scratch...
+
+	A lot of configuration options have been moved from the config
+	file (include/config.inc) to the LDAP server, so please read
+	the file README (subjects 'Configuration in LDAP') before trying
+	to login.
+
+Upgrading from 2.0.9
+	The schema have been updated, so don't forget to load the new
+	version!
+
+Upgrading from 2.0.8
+	The schema have been updated, so don't forget to load the new
+	version!
+
+	If this is the first setup, go to the config details page and
+	setup your user and domain objectclasses to use when creating
+	an object.
+
+Upgrading from 2.0.8
+	The schema have been updated, so don't forget to load the new
+	version!
+
+	Separation of LDAP servers in the PQL_LDAP_HOST define is now
+	done with the plus (=> +) character instead of space. This so
+	that we can have spaces within our search/base DN. This means
+	that you'll have to update the include/config.inc file yet
+	again!
+
+Upgrading from 2.0.7
+	The schema have been updated, so don't forget to load the new
+	version!
+
+Upgrading from 2.0.6
+	The schema have been updated, so don't forget to load the new
+	version!
+
+Upgrading from 2.0.5
+	The schema have been updated, so don't forget to load the new
+	version!
+
+Upgrading from 2.0.4
+	There's been some slight code modifications that will break
+	an upgrade from 2.0.2 to 2.0.3.
+
+	You will have to re-configure (copy include/config.inc.CHANGE_ME
+	to include/config.inc) and go through include/config.inc again.
+
+	Lucily this seems to be the last time I need to do this. Most of
+	the configuration have been moved to the LDAP database, there's
+	only four defines left in the config.inc file!
+	The configuration is saved in the topmost DN, called 'suffix' in
+	the slapd.conf file) so make sure you have access to write there
+	if you want this feature... Also, you must have loaded the
+	phpQLAdmin.schema file into your LDAP server, it contains the
+	objectclass and attribute definitions that this uses.
+
+Upgrading from 2.0.2
+	There's been some slight code modifications that will break
+	an upgrade from 2.0.2 to 2.0.3.
+
+	You will have to re-configure (copy include/config.inc.CHANGE_ME
+	to include/config.inc) and go through include/config.inc again.
+
+	Another thing that's changed, is that instead of storing the
+	domain/branch informations in the 'description' field of the
+	branch object, it is now using it's own attributes. Therefor
+	you will have to install the 'phpQLAdmin.schema' file into
+	your LDAP server. It defines the attributes and object classes
+	that we'll use to store the information we need.
+
+	Please read the file README.acl again, since it's changed a little.
+
+	To be able to store information on the owner of the branch,
+	you will need the 'rfc2377.schema' file installed into the
+	LDAP server. It defines the 'dcOrganizationNameForm' object
+	class and this is used to store telephone number, contact
+	person etc of the branch owner. The values are editable
+	in the domain detail page of each domain/branch. If the
+	schema isn't installed, you'll get an error if trying to change
+	any of the values...
+
