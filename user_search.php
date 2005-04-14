@@ -1,6 +1,6 @@
 <?php
 // start page
-// $Id: user_search.php,v 2.11 2005-03-09 09:59:03 turbo Exp $
+// $Id: user_search.php,v 2.12 2005-04-14 11:08:27 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -22,6 +22,7 @@ include($_SESSION["path"]."/header.html");
       <option value="is"><?=$LANG->_('Is')?></option>
       <option value="starts_with"><?=$LANG->_('Starts with')?></option>
       <option value="ends_with"><?=$LANG->_('Ends with')?></option>
+      <option value="not"><?=$LANG->_('Not contains')?></option>
     </select>
 
     <br><input type="text" name="search_string" size="37">
@@ -40,6 +41,11 @@ include($_SESSION["path"]."/header.html");
         <tr class="<?php pql_format_table(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0"></td>
           <td><?=$LANG->_('Searching for mail address will do a search for mail OR alias.')?></td>
+        </tr>
+
+        <tr class="<?php pql_format_table(); ?>">
+          <td><img src="images/info.png" width="16" height="16" alt="" border="0"></td>
+          <td><?=$LANG->_('Searching for mailhost NOT containing x will do a search for: "(mail OR alias) AND NOT mailhost"')?></td>
         </tr>
       </th>
     </table>

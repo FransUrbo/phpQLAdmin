@@ -1,6 +1,6 @@
 <?php
 // shows results of search
-// $Id: search.php,v 2.34 2005-03-17 09:13:10 turbo Exp $
+// $Id: search.php,v 2.35 2005-04-14 11:08:27 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -41,8 +41,9 @@ if($_REQUEST["attribute"] == pql_get_define("PQL_ATTR_MAILHOST")) {
 	// IDNA decode the FQDN
 	$_REQUEST["search_string"] = pql_maybe_idna_encode($_REQUEST["search_string"]);
 
-	// We must force an 'is', since it's not possible to do a substring match
-	$_REQUEST["filter_type"] = 'is';
+	if(($_REQUEST["filter_type"] != 'not') && ($_REQUEST["filter_type"] != 'is'))
+	  // We must force an 'is', since it's not possible to do a substring match
+	  $_REQUEST["filter_type"] = 'is';
 }
 
 // make filter to comply with filter_type and search_string
@@ -72,6 +73,19 @@ switch($_REQUEST["filter_type"]) {
 	} else
 	  $filter = $_REQUEST["attribute"] . "=" . $_REQUEST["search_string"] . "*";
     break;
+  case "not":
+	if($_REQUEST["attribute"] == pql_get_define("PQL_ATTR_MAIL")) {
+		$filter  = '(&(!(('.pql_get_define("PQL_ATTR_MAIL").'='.$_REQUEST["search_string"].'*';
+		$filter .= ')('.pql_get_define("PQL_ATTR_MAILALTERNATE").'='.$_REQUEST["search_string"].'*';
+		$filter .= '))))';
+	} else {
+	  $filter  = '(&(|('.pql_get_define("PQL_ATTR_MAIL").'=*)('.pql_get_define("PQL_ATTR_MAILALTERNATE").'=*))';
+	  $filter .= '(!('.$_REQUEST["attribute"] . "=" . $_REQUEST["search_string"];
+	  if($_REQUEST["attribute"] != pql_get_define("PQL_ATTR_MAILHOST"))
+		$filter .= '*';
+	  $filter .= ')))';
+	}
+	break;
   default:
 	if($_REQUEST["attribute"] == pql_get_define("PQL_ATTR_MAIL")) {
 		$filter  = '(|('.pql_get_define("PQL_ATTR_MAIL").'=*'.$_REQUEST["search_string"].'*';
@@ -86,8 +100,23 @@ if(!$_SESSION["SINGLE_USER"]) {
 	// Admin of some sort - look in the whole database for a user
 	// that matches filter
 	foreach($_SESSION["BASE_DN"] as $dn) {
-		if($_REQUEST["debug"])
-		  echo "$dn: $filter<br>";
+		if($_REQUEST["debug"]) {
+?>
+  <table cellspacing="0" cellpadding="3" border="0">
+	<th colspan="4" align="left"><h5><u><?=$LANG->_('Search filter debugging')?></u></h5>
+      <tr>
+        <td>DN:</td>
+        <td><b><?=$dn?></b></td>
+      <tr>
+
+      <tr>
+        <td>Filter:</td>
+        <td><b><?=$filter?></b></td>
+      <tr>
+    </th>
+  </table>
+  <p>
+<?php	}
 
 		$usrs = pql_get_dn($_pql->ldap_linkid, $dn, $filter, 'SUBTREE');
 		for($i=0; $usrs[$i]; $i++) {

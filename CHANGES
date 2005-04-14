@@ -29,6 +29,7 @@ phpQLAdmin 2.3.0 TO BE ANNOUNCED
 	    Allow this with two radio buttons in the 'Additional account properties' page -
 	    'Copy to' (default) or 'Forward to'.
 	    + Create objects with real home dirs...
+	  - Include a 'NOT' option for user search. Describe what it does and how it works.
 
 	Documentation changes
 	Schema changes
