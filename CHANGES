@@ -18,6 +18,10 @@ phpQLAdmin 2.2.3 TO BE ANNOUNCED
 	    Closes: #253
 	  - Document (via the FAQ) that the ldap.conf:BASE option should be removed.
 	    Closes: #254
+	  - When a branch only had ONE additional domain name, they where not included
+	    in a manual RCPTHosts (probably not for a 'locals' either) replication.
+	    Fix this and make sure that any domain names found isn't duplicated.
+	    Closes: #257 (part 1)
 
 	Misc changes
 
