@@ -2,7 +2,7 @@
 <head>
 	<title>phpQL</title>
 	<link rel="stylesheet" href="../tools/normal.css" type="text/css">
-	<!-- $Id: faq.php,v 2.4 2005-01-12 20:08:39 turbo Exp $ -->
+	<!-- $Id: faq.php,v 2.5 2005-04-15 11:18:51 turbo Exp $ -->
 </head>
 
 <body bgcolor="#e7e7e7" background="../images/bkg.png">
@@ -49,5 +49,12 @@ Crypt cannot handle passwords longer than eight chars (<u>12345678xxx</u> matche
 <u>12345678</u> stored in the user database). If you want to use longer passwords for sure, you
 may use SHA or MD5. Unfortunately, LDAP does not support salted SHA / MD5, so the hash is
 the same for every call of the encryption function.
+<p>
+<b>phpQLAdmin returns <i><u>"Can't find base dn - No such object"</u></i> directly at login
+(initial installations)</b><br>
+In most cases this is because the <b>BASE</b> option in <i>/etc/ldap.conf</i> (or <i>/etc/ldap/ldap.conf</i>
+in Debian systems) is defined.<br>
+For more information, please see the thread that starts at <a href="http://apache.bayour.com/list/phpQLAdmin/?action=show_msg&actionargs[]=0&actionargs[]=85">
+problems binding to ldap server</a>.
 </body>
 </html>
