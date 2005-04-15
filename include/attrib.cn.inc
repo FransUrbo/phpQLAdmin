@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // cn (Full name)
-// $Id: attrib.cn.inc,v 2.26 2005-03-27 14:18:46 turbo Exp $
+// $Id: attrib.cn.inc,v 2.27 2005-04-15 13:03:57 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -97,21 +97,19 @@ function attribute_save($type) {
 		  // Completley replace the attribute
 		  $old = 1;
 		
-		// Well. Gecos is the same thing as CN, so we should
-		// try to change that as well... But only if it
-		// already exist in the object.
-		$attribs = array($_REQUEST["attrib"], 'gecos');
-		foreach($attribs as $attrib) {
-			// We have an old value of this array, try to change it...
-			if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], $attrib, $old, $_REQUEST["cn"]))
-			  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
-										   array('what' => $LANG->_('Common name'),
-												 'new'  => $_REQUEST["cn"]));
-			else
-			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-										   array('what' => $LANG->_('Common name')))
-				. ":&nbsp;" . ldap_error($_pql->ldap_linkid);
-		}
+		// Replace the specified attribute
+		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], $old, $_REQUEST["cn"]))
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
+									   array('what' => $LANG->_('Common name'),
+											 'new'  => $_REQUEST["cn"]));
+		else
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+									   array('what' => $LANG->_('Common name')))
+			. ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+
+		if(pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_GECOS")))
+		  // The 'gecos' attribute exists in the object, try to change it. Ignore failures...
+		  pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_GECOS"), 1, $_REQUEST["cn"]);
 
 		// Get first and last name from the 'CN'.
 		$name = split(" ", $_REQUEST["cn"]);
