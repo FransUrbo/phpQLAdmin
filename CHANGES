@@ -10,6 +10,9 @@ phpQLAdmin 2.2.3 TO BE ANNOUNCED
 	  - Move the 'path fixing' from user_add.php to pql.inc:pql_fix_path() and add
 	    a replace for dots.
 	    Closes: #249
+	  - Spelling error in 'include/attrib.control.badrcptto.inc':
+	    s/$_REQUEST["host"]/$_REQUEST["mxhost"]/;
+	    Closes: #252
 
 	Misc changes
 
