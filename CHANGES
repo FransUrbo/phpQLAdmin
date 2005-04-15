@@ -1,5 +1,9 @@
 phpQLAdmin 2.2 Change Log
 
+phpQLAdmin 2.2.3 TO BE ANNOUNCED
+	Bug fixes
+	Misc changes
+
 phpQLAdmin 2.2.2 Release (Apr  8 2005)
 	Bug fixes
 	  - If the additional domain name value in the branch object is defined, but
