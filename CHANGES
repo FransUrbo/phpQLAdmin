@@ -7,6 +7,9 @@ phpQLAdmin 2.2.3 TO BE ANNOUNCED
 	    the password have been modified which lead to failures (wrong credentials
 	    returned from the LDAP server).
 	    Closes: #256
+	  - Move the 'path fixing' from user_add.php to pql.inc:pql_fix_path() and add
+	    a replace for dots.
+	    Closes: #249
 
 	Misc changes
 
