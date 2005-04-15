@@ -8,7 +8,7 @@ for this to work correctly.
    [left:branch]->Branch Defaults->Base mail directory for users
 
 2. In the branch configuration
-   Home->phpQLAdmin Configuration->[rootdn]->Allow asolute mailbox paths
+   Home->phpQLAdmin Configuration->[rootdn]->Allow absolute mailbox paths
 
 Example 1:
 When creating a user with the uid value set to 'test1', the mail directory
@@ -52,3 +52,10 @@ way is to have the user_generate_mailstore() and/or user_generate_homedir()
 functions defined in the file 'include/config.inc'. Those functions is mostly
 used if you have any special requirements and ways to generate the directory
 values.
+
+
+One special note about the paths are that any 'illegal' character(s) are
+replaced with underscore(s). The function responsible for this is
+include/pql.inc:pql_fix_path() and the characters that phpQLAdmin deems
+'illegal' are: space, ampersand, at's and dot's.
+In the future more characters might be added...
