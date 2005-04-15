@@ -22,6 +22,9 @@ phpQLAdmin 2.2.3 TO BE ANNOUNCED
 	    in a manual RCPTHosts (probably not for a 'locals' either) replication.
 	    Fix this and make sure that any domain names found isn't duplicated.
 	    Closes: #257 (part 1)
+	  - Document the replacement of 'illegal' characters in (mail) paths to
+	    doc/README.directories.
+	    Closes: #249
 
 	Misc changes
 
