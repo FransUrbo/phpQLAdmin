@@ -25,6 +25,9 @@ phpQLAdmin 2.2.3 TO BE ANNOUNCED
 	  - Document the replacement of 'illegal' characters in (mail) paths to
 	    doc/README.directories.
 	    Closes: #249
+	  - Only change the 'gecos' field (when modifying the 'cn' value) IF it already
+	    exists!
+	    Closes: #255
 
 	Misc changes
 
