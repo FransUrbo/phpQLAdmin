@@ -13,6 +13,9 @@ phpQLAdmin 2.2.3 TO BE ANNOUNCED
 	  - Spelling error in 'include/attrib.control.badrcptto.inc':
 	    s/$_REQUEST["host"]/$_REQUEST["mxhost"]/;
 	    Closes: #252
+	  - Spelling error in 'include/attrib.control.smtproutes.inc':
+	    s/pql_set_define/pql_get_define/;
+	    Closes: #253
 
 	Misc changes
 
