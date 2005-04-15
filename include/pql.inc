@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.201.2.1 2005-03-17 08:23:02 turbo Exp $
+// $Id: pql.inc,v 2.201.2.2 2005-04-15 10:09:38 turbo Exp $
 //
 
 // ----------------------------
@@ -799,6 +799,19 @@ function pql_recreate_dnsttl($dn) {
 function pql_header($uri) {
 	header("Location: ".$_SESSION["URI"].$uri);
 	exit;
+}
+// }}}
+
+// {{{ pql_fix_path(path)
+// Replace some 'invalid' characters from the path
+function pql_fix_path($path) {
+  // Replace space(s), '&' and '@' with underscore(s)
+  $path = preg_replace('/ /',  '_', $path, -1);
+  $path = preg_replace('/&/',  '_', $path, -1);
+  $path = preg_replace('/@/',  '_', $path, -1);
+  $path = preg_replace('/\./', '_', $path, -1);
+
+  return($path);
 }
 // }}}
 
