@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.124 2005-03-17 09:13:10 turbo Exp $
+// $Id: user_add.php,v 2.125 2005-04-15 10:50:21 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -513,11 +513,7 @@ switch($_REQUEST["page_curr"]) {
 			  if(!pql_get_define("PQL_CONF_CREATE_MBOX"))
 				// We're not putting mails in a MBox - add a slash at the end to make it a Maildir.
 				$_REQUEST["maildirectory"] .= '/';
-
-			  // Replace space(s), '&' and '@' with underscore(s)
-			  $_REQUEST["maildirectory"] = preg_replace('/ /', '_', $_REQUEST["maildirectory"], -1);
-			  $_REQUEST["maildirectory"] = preg_replace('/&/', '_', $_REQUEST["maildirectory"], -1);
-			  $_REQUEST["maildirectory"] = preg_replace('/@/', '_', $_REQUEST["maildirectory"], -1);
+			  $_REQUEST["maildirectory"] = pql_fix_path($_REQUEST["maildirectory"]);
 			}
 		  } else {
 			// Can't autogenerate!

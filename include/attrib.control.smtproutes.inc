@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtproutes (max number of bytes in message)
 //
-// $Id: attrib.control.smtproutes.inc,v 2.24 2004-11-05 12:30:45 turbo Exp $
+// $Id: attrib.control.smtproutes.inc,v 2.25 2005-04-15 10:50:24 turbo Exp $
 
 // {{{ smtproutes_check(type)
 
@@ -476,7 +476,7 @@ function smtproutes_save($type, $host) {
 			
 			// Find the object(s) which contain this string
 			$ctrls = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-							"(&(cn=*)(objectclass=qmailControl)(".pql_set_define("PQL_ATTR_SMTPROUTES")."=".$_REQUEST["set"]."))",
+							"(&(cn=*)(objectclass=qmailControl)(".pql_get_define("PQL_ATTR_SMTPROUTES")."=".$_REQUEST["set"]."))",
 								'ONELEVEL');
 			// If it isn't an array, but it IS set -> make it an array!
 			if($ctrls && !is_array($ctrls)) {
