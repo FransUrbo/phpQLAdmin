@@ -2,6 +2,12 @@ phpQLAdmin 2.2 Change Log
 
 phpQLAdmin 2.2.3 TO BE ANNOUNCED
 	Bug fixes
+	  - The updating of the session (password for the logged in user) was to late.
+	    The function pql_modify_attribute() does some reading from the DB _after_
+	    the password have been modified which lead to failures (wrong credentials
+	    returned from the LDAP server).
+	    Closes: #256
+
 	Misc changes
 
 phpQLAdmin 2.2.2 Release (Apr  8 2005)
