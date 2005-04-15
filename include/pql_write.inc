@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.23 2005-03-27 14:16:03 turbo Exp $
+// $Id: pql_write.inc,v 2.24 2005-04-15 07:49:50 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -292,6 +292,12 @@ function pql_modify_attribute($linkid, $dn, $attrib, $old, $new) {
 
 	// {{{ Do modifications
 	if(pql_write_mod($linkid, $dn, $object, 'pql_modify_attribute')) {
+		// Object has changed && we've changed our own password -> update the password in the session!
+ 		if((lc($dn) == lc($_SESSION["USER_DN"])) and ($attrib == pql_get_define("PQL_ATTR_PASSWD"))) {
+		  $_SESSION["USER_PASS"] = $_SESSION["NEW_PASS"];
+		  unset($_SESSION["NEW_PASS"]);
+		}
+
 		// Object has changed -> remove the cached version
 		pql_cache_userentry_remove($dn);
 
