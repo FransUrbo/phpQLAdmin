@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.24 2005-04-15 07:49:50 turbo Exp $
+// $Id: pql_write.inc,v 2.25 2005-04-17 09:34:41 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -83,9 +83,13 @@ function pql_write_mod($linkid, $dn, $entry, $caller = NULL, $count = 0) {
 				$new = pql_missing_objectclasses($linkid, $dn, $entry);
 				if($new and !is_array($new))
 				  $new = array($new);
+
+				$ocs = $old;
+				for($i=0; $new[$i]; $i++)
+				  $ocs[] = $new[$i];
 				
 				// Combine the old with the new.
-				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_uniq($old + $new);
+				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_uniq($ocs);
 				
 				// Recursion... Only try five times...
 				if($count >= 6) { // The very first time $count=1, so...
@@ -292,8 +296,8 @@ function pql_modify_attribute($linkid, $dn, $attrib, $old, $new) {
 
 	// {{{ Do modifications
 	if(pql_write_mod($linkid, $dn, $object, 'pql_modify_attribute')) {
-		// Object has changed && we've changed our own password -> update the password in the session!
  		if((lc($dn) == lc($_SESSION["USER_DN"])) and ($attrib == pql_get_define("PQL_ATTR_PASSWD"))) {
+		  // Object has changed && we've changed our own password -> update the password in the session!
 		  $_SESSION["USER_PASS"] = $_SESSION["NEW_PASS"];
 		  unset($_SESSION["NEW_PASS"]);
 		}
