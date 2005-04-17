@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of a control option
-// $Id: control_edit_attribute.php,v 2.30 2005-03-17 09:13:10 turbo Exp $
+// $Id: control_edit_attribute.php,v 2.31 2005-04-17 09:30:14 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -28,7 +28,19 @@ if($_REQUEST["type"] == "") {
 
 // {{{ Get and load the plugin file
 $plugin = pql_plugin_get($_REQUEST["attrib"]);
-include($_SESSION["path"]."/include/".pql_plugin_get_filename($plugin));
+if($plugin) {
+  $file = $_SESSION["path"]."/include/".pql_plugin_get_filename($plugin);
+  if(!file_exists($file)) {
+	echo pql_format_error_span("Configuration error: ");
+	echo pql_complete_constant($LANG->_('Plugin file for %attrib% does not exists'), array('attrib' => $_REQUEST["attrib"]));
+	die();
+  } else
+	include($file);
+} else {
+  echo pql_format_error_span("Configuration error: ");
+  echo pql_complete_constant($LANG->_('No plugin defined for %attrib%'), array('attrib' => $_REQUEST["attrib"]));
+  die();
+}
 // }}}
 
 // {{{ Forward back to users detail page
