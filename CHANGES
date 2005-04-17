@@ -28,6 +28,9 @@ phpQLAdmin 2.2.3 TO BE ANNOUNCED
 	  - Only change the 'gecos' field (when modifying the 'cn' value) IF it already
 	    exists!
 	    Closes: #255
+	  - Spelling error(s) in include/attrib.control.locals.inc:
+	    s/RCPTHOSTS/LOCALS/g;
+	    Closes: #257 (part 1b)
 
 	Misc changes
 
