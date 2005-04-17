@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.43 2005-03-09 09:59:03 turbo Exp $
+// $Id: control_detail.php,v 1.44 2005-04-17 09:38:56 turbo Exp $
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
 
@@ -28,7 +28,8 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 					 "locals"				=> pql_get_define("PQL_ATTR_LOCALS"),
 					 "rcpthosts"			=> pql_get_define("PQL_ATTR_RCPTHOSTS"),
 					 "ldaplogin"			=> pql_get_define("PQL_ATTR_LDAPLOGIN"),
-					 "ldappassword"			=> pql_get_define("PQL_ATTR_LDAPPASSWORD"));
+					 "ldappassword"			=> pql_get_define("PQL_ATTR_LDAPPASSWORD"),
+					 "nonprimaryrcpthosts"  => pql_get_define("PQL_ATTR_NONPRIMARY_RCPT_HOSTS"));
 	$cn = pql_get_define("PQL_ATTR_CN") . "=" . $_REQUEST["mxhost"] . "," . $_SESSION["USER_SEARCH_DN_CTR"];
 
 	foreach($attribs as $key => $attrib) {
@@ -89,21 +90,26 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 	// reload navigation frame
 	parent.frames.pqlnavctrl.location.reload();
   //--></script>
-<?php }
-// }}}
+<?php
+	}
+	// }}}
+
+	// {{{ Setup the buttons
+	$buttons = array('default' => 'Base values',
+					 'hosts'   => 'Locals and RCPTHosts',
+					 'nonprim' => 'Non-primary MX domains',
+					 'action'  => 'Action');
+	// }}}
 ?>
 
   <span class="title1">Mailserver: <?=pql_maybe_idna_decode($_REQUEST["mxhost"])?></span>
 
   <br><br>
 
-  <table cellspacing="0" border="0" width="100%" cellpadding="0">
-    <tr>
-      <td colspan="2" valign="bottom" align="left" width="100%"><a href="<?=$_SERVER["PHP_SELF"]."?mxhost=".$_REQUEST["mxhost"]."&view=default"?>"><img alt="/ Base Values \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?Base Values"></a><a href="<?=$_SERVER["PHP_SELF"]."?mxhost=".$_REQUEST["mxhost"]."&view=hosts"?>"><img alt="/ Locals and RCPT Hosts \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?Locals and RCPT Hosts"></a><a href="<?=$_SERVER["PHP_SELF"]."?mxhost=".$_REQUEST["mxhost"]."&view=action"?>"><img alt="/ Action \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?Action"></a></td>
-  </tr>
-</table>
-
 <?php
+	// Output the buttons
+	pql_generate_button($buttons, "mxhost=".$_REQUEST["mxhost"]); echo "  <br>\n";
+
 	if($_REQUEST["view"] == '')
 		$_REQUEST["view"] = 'default';
 
@@ -112,6 +118,9 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 
 	if($_REQUEST["view"] == 'hosts')
 		include("./tables/control_details-hosts.inc");
+
+	if($_REQUEST["view"] == 'nonprim')
+		include("./tables/control_details-nonprimmx.inc");
 
 	if($_REQUEST["view"] == 'action')
 		include("./tables/control_details-action.inc");

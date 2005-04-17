@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.47 2005-04-15 12:00:16 turbo Exp $
+// $Id: pql_control.inc,v 2.48 2005-04-17 09:38:56 turbo Exp $
 //
 
 // {{{ control connection class
@@ -37,9 +37,12 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 
 	// ----------------
 	if(($host != '*') and !$domain) {
+		// We're (probably?) doing a manual replication for ONE specific (MX/QLC) host
+
+		// Get all branches from the database
 		$domains = pql_get_domains($ldap);
 		foreach($domains as $domain) {
-			// Get default domain name for this domain
+			// Get default domain name for this domain/branch
 			$domainname = pql_get_attribute($ldap->ldap_linkid, $domain, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 			if($domainname) {
 				// Before we add this domain to the list, make sure it don't already exist
@@ -88,7 +91,41 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 			  if(!$ent_exists)
 				$entry[] = $additional;
 			}
-		}    
+		}
+
+		if($type == pql_get_define("PQL_ATTR_RCPTHOSTS")) {
+		  // We're replicating rcptHosts - get all non-primary MX host value(s) in this MX/QLC object
+		  $nonprimmx = pql_get_attribute($ldap->ldap_linkid, $dn, pql_get_define("PQL_ATTR_NONPRIMARY_RCPT_HOSTS"));
+		  if(is_array($nonprimmx)) {
+			foreach($nonprimmx as $dom) {
+				// Before we add this domain to the list, make sure it don't already exist
+				$ent_exists = 0;
+				if(is_array($entry)) {
+					foreach($entry as $ent) {
+						if($ent == $dom) {
+							$ent_exists = 1;
+						}
+					}
+				}
+				
+				if(!$ent_exists)
+				  $entry[] = $dom;
+			}
+		  } elseif($nonprimmx) {
+			// Before we add this domain to the list, make sure it don't already exist
+			$ent_exists = 0;
+			if(is_array($entry)) {
+			  foreach($entry as $ent) {
+				if($ent == $nonprimmx) {
+				  $ent_exists = 1;
+				}
+			  }
+			}
+				
+			if(!$ent_exists)
+			  $entry[] = $nonprimmx;
+		  }
+		}
 	}
 
     // Get the hostname

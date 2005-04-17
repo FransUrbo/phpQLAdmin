@@ -16,6 +16,7 @@
 #          phpQLAdminInfo                   5
 #          phpQLAdminUser                   6
 #          phpQLAdminUserTemplate           7
+#          phpQLAdminMXHostAddition         8
 #
 #        Attributes                       2
 #          Toggles                          1
@@ -94,13 +95,14 @@
 #            userTemplateDescriptionLong     19
 #            ezmlmRemoteHost                 20
 #            ezmlmRemoteUser                 21
+#            nonPrimaryRcptHosts             22
 # --------------------------------------------
 #
 # *mod_cfg_ldap => Also defined (with other name) in mod_cfg_ldap
 # availible from http://sourceforge.net/projects/modcfgldap/
 # See doc/README.apache for more information.
 
-# $Id: phpQLAdmin.schema,v 2.56 2005-03-15 09:45:03 turbo Exp $
+# $Id: phpQLAdmin.schema,v 2.57 2005-04-17 09:38:56 turbo Exp $
 
 # PQL_ATTR_SHOW_USERS (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.1 NAME 'showUsers'
@@ -570,6 +572,13 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.4.21 NAME 'ezmlmRemoteUser'
   SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{64}
   SINGLE-VALUE )
 
+# PQL_ATTR_NONPRIMARY_RCPT_HOSTS
+attributetype ( 1.3.6.1.4.1.8767.3.2.4.22 NAME 'nonPrimaryRcptHosts'
+  DESC 'Same thing as rcptHosts, but a helper to phpQLAdmin.'
+  EQUALITY caseIgnoreMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{128}
+  SINGLE-VALUE )
+
 # -----------------------------------------
 
 objectclass ( 1.3.6.1.4.1.8767.3.1.1
@@ -635,6 +644,12 @@ objectclass ( 1.3.6.1.4.1.8767.3.1.7
   MAY  ( userTemplateDescriptionLong $ userObjectClass $
          passWordScheme )
   SUP top STRUCTURAL )
+
+objectclass ( 1.3.6.1.4.1.8767.3.1.8
+  NAME 'phpQLAdminMXHostAddition'
+  DESC 'Additions for phpQLAdmin that wont fit in a QmailLDAP/Controls object'
+  MAY  ( nonPrimaryRcptHosts )
+  SUP top AUXILIARY )
 
 #
 # Local variables:

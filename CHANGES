@@ -42,6 +42,15 @@ phpQLAdmin 2.3.0 TO BE ANNOUNCED
 	    ezmlmRemoteHost			1.3.6.1.4.1.8767.3.2.4.20
 	    ezmlmRemoteUser			1.3.6.1.4.1.8767.3.2.4.21
 	    ezmlmRemoteRetreiveScript		1.3.6.1.4.1.8767.3.2.2.21
+	  - To be able to remember localy added rcptHosts, I (phpQLAdmin) must put them
+	    in another attribute. This to protected the value(s) from a manual replication.
+	    The example comes from bug #257 - if the QLC host is only _listenening_ ('backup
+	    MX') then there is no branch(es) that have the domain(s) configured as primary
+	    nor additional domainname. If a manual replication takes place, then the information
+	    about the domain(s) can't be found anywhere...
+	    A new object class and a new attribute to add to the QLC object(s):
+	    phpQLAdminMXHostAddition            1.3.6.1.4.1.8767.3.1.8      (object class)
+            nonPrimaryRcptHosts                 1.3.6.1.4.1.8767.3.2.4.22   (attribute)
 
 	Misc changes
 	  - Administration of mailinglists located on remote server (i.e. not on the same

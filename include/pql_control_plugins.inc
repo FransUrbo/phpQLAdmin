@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control plugins)
 //
-// $Id: pql_control_plugins.inc,v 2.7 2004-04-11 09:18:33 turbo Exp $
+// $Id: pql_control_plugins.inc,v 2.8 2005-04-17 09:38:56 turbo Exp $
 //
 
 // ----------------------------
@@ -293,6 +293,13 @@ if($_SESSION["NEW_STYLE_QUOTA"]) {
 						"q-l popbeforesmtp",
 						pql_get_define("PQL_ATTR_PBS_ENV"));
 }
+
+// ----- Fix for bug 257
+// : Manually added rcpthost values not keept with a manual replication
+pql_plugin_register(pql_get_define("PQL_ATTR_NONPRIMARY_RCPT_HOSTS"),
+					"attrib.control.nonprimmx.inc",
+					pql_get_define("PQL_ATTR_NONPRIMARY_RCPT_HOSTS"),
+					pql_get_define("PQL_ATTR_NONPRIMARY_RCPT_HOSTS"));
 
 // List all registred attributes and their files
 // - Uncomment this piece of code to view which
