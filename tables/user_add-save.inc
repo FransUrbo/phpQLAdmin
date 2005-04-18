@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.32.2.2 2005-03-17 08:23:02 turbo Exp $
+// $Id: user_add-save.inc,v 1.32.2.3 2005-04-18 14:33:36 turbo Exp $
 
 // {{{ URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
 if($_REQUEST["surname"]) {
@@ -341,7 +341,7 @@ if($DNs[0]) {
 	$link .= "rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&user=" . urlencode($DNs[0]) . "&rlnb=2&msg=$msg";
   } else {
 	$link  = "user_detail.php?rootdn=".$url["rootdn"]."&";
-	$link .= "domain=".$url["domain"]."&user=" . urlencode($DNs[0]) . "&rlnb=2&msg=$msg";
+	$link .= "domain=".$url["domain"]."&user=".urlencode(pql_maybe_decode($DNs[0]))."&rlnb=2&msg=$msg";
   }
 // }}}
 	
