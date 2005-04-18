@@ -34,6 +34,9 @@ phpQLAdmin 2.2.3 TO BE ANNOUNCED
 	  - After deleting a user, the browser got redirected to domain details,
 	    view=basic (which don't exists). This lead to an empty domain details page
 	    being shown.
+	  - Attribute forwarding function in user_edit_attribute.php used an (old,
+	    non-up to date) version of the '$url' array. It get's changed in 
+	    'include/attrib.modrdn.inc'. Re-generate the array with 'fresh' values.
 
 	Misc changes
 
