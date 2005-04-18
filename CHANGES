@@ -47,6 +47,10 @@ phpQLAdmin 2.2.3 TO BE ANNOUNCED
 	  - When we've successfully (and non-successfully to for that matter) renamed
 	    the RDN we must update the 'global' user reference variable to be able to
 	    get the correct user view.
+	  - Somewhere between 2.0 and 2.1, the internationalization was removed (not
+	    intentionally that I know of!). Make sure all DN's are Base64/UTF8 encoded
+	    before calling PHP ldap* function(s).
+	    Closes: #259
 
 	Misc changes
 
