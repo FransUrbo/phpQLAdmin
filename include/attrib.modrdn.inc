@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for changing/renaming the DN
 //
-// $Id: attrib.modrdn.inc,v 2.13 2005-01-31 11:39:44 turbo Exp $
+// $Id: attrib.modrdn.inc,v 2.13.4.1 2005-04-18 13:34:22 turbo Exp $
 
 // {{{ attribute_setup_aci(linkid, dn, old, new)
 function attribute_setup_aci($linkid, $dn, $old, $new) {
@@ -55,21 +55,20 @@ function attribute_print_form() {
 		  $rdn .= ",";
 	}
 
-	$len = strlen($dnparts[0]);
-
 	$dnattrs = split("=", $dnparts[0]);
+	$len = strlen($dnattrs[1]);
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Rename this RDN')?></th>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Old RDN')?></td>
-          <td><?php echo pql_maybe_decode($_REQUEST["oldvalue"]); ?></td>
+          <td><?=$_REQUEST["oldvalue"]?></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('New RDN')?></td>
-          <td><b><input type="text" name="user" size="<?=$len+1?>"><b>,<?=$rdn?></b></td>
+          <td><b><?=$dnattrs[0]?>=<input type="text" name="user" size="<?=$len+1?>"><b>,<?=$rdn?></b></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
@@ -116,6 +115,10 @@ function attribute_save($type) {
 								   array('old' => $_REQUEST["oldvalue"],
 										 'new' => $user));
 
+	  // Currently the $_REQUEST["newrdn"] variable only contain the username.
+	  // It is NOT a DN - regenerate the user DN
+	  $_REQUEST["user"] = $user.",".$_REQUEST["rdn"];
+
 		// {{{ Replace all references to this user in the admin attributes
 		// We're only interested in these attributes
 		$attribs = array(pql_get_define("PQL_ATTR_ADMINISTRATOR"),
@@ -141,9 +144,14 @@ function attribute_save($type) {
 			}
 		}
 		// }}}
-	} else
+	} else {
 	  $msg = pql_complete_constant($LANG->_('Failed to rename RDN %user%'),
 								   array('user' => $_REQUEST["oldvalue"])) . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+
+	  // Currently the $_REQUEST["user"] variable only contain the username.
+	  // It is NOT a DN - regenerate the user DN
+	  $_REQUEST["user"] = $_REQUEST["oldvalue"];
+	}
 	// }}}
 
 	// Redirect to the user details page...
