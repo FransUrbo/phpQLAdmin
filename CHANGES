@@ -37,6 +37,16 @@ phpQLAdmin 2.2.3 TO BE ANNOUNCED
 	  - Attribute forwarding function in user_edit_attribute.php used an (old,
 	    non-up to date) version of the '$url' array. It get's changed in 
 	    'include/attrib.modrdn.inc'. Re-generate the array with 'fresh' values.
+	  - Don't Base64/UTF8 decode the old value before showing it to the browser -
+	    it's already done.
+	  - The new RDN have the same attribute reference as the old, so show this
+	    to the user/admin so we don't end up with input such as 'uid=xxx' which
+	    would lead to a faulty DN: 'uid=uid=xxx'...
+	  - Use the 'xxx' value (see point two above), NOT 'uid=xxx' for calculating
+	    how big input field the new RDN should have.
+	  - When we've successfully (and non-successfully to for that matter) renamed
+	    the RDN we must update the 'global' user reference variable to be able to
+	    get the correct user view.
 
 	Misc changes
 
