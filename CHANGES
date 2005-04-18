@@ -31,6 +31,9 @@ phpQLAdmin 2.2.3 TO BE ANNOUNCED
 	  - Spelling error(s) in include/attrib.control.locals.inc:
 	    s/RCPTHOSTS/LOCALS/g;
 	    Closes: #257 (part 1b)
+	  - After deleting a user, the browser got redirected to domain details,
+	    view=basic (which don't exists). This lead to an empty domain details page
+	    being shown.
 
 	Misc changes
 
