@@ -1,6 +1,6 @@
 <?php
 // delete a domain and all users within
-// $Id: domain_del.php,v 2.36 2005-03-17 09:13:10 turbo Exp $
+// $Id: domain_del.php,v 2.37 2005-04-19 04:44:32 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -17,7 +17,7 @@ $domain = urldecode($domain);
 // }}}
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove domain %domain%'),
-														array("domain" => pql_maybe_decode($domain)))?></span>
+														array("domain" => $domain))?></span>
   <br><br>
 <?php
 if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST["rootdn"])) {

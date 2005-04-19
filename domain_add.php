@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: domain_add.php,v 2.60 2005-03-19 10:58:49 turbo Exp $
+// $Id: domain_add.php,v 2.61 2005-04-19 04:44:32 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -70,7 +70,7 @@ if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $_REQUEST["rootdn"]) == "o"
 
 // Add default domain to the object
 if($_REQUEST["defaultdomain"]) {
-	$entry[pql_get_define("PQL_ATTR_DEFAULTDOMAIN")] = $_REQUEST["defaultdomain"];
+	$entry[pql_get_define("PQL_ATTR_DEFAULTDOMAIN")] = pql_maybe_idna_encode($_REQUEST["defaultdomain"]);
 }
 
 // This is needed by the user_generate_{homedir,mailstore}() functions. It will be unset
@@ -150,7 +150,7 @@ if(pql_write_add($_pql->ldap_linkid, $dn, $entry, 'branch', 'domain_add.php')) {
 	// {{{ Prepare for redirecting to domain-details
 	if($msg == "")
 	  $msg = urlencode(pql_complete_constant($LANG->_('Domain %domain% successfully created'),
-											 array("domain" => pql_maybe_decode($dn)))) . ".";
+											 array("domain" => $dn))) . ".";
 	$url = "domain_detail.php?rootdn=".$url["rootdn"]."&domain=".urlencode($dn)."&msg=$msg&rlnb=1";
 	// }}}
 

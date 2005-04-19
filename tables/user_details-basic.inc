@@ -26,7 +26,7 @@
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('User DN')?></td>
-        <td><?=pql_maybe_decode($_GET["user"])?></td>
+        <td><?=$_GET["user"]?></td>
         <td>
 <?php if(!$_SESSION["SINGLE_USER"]) {
 		@ldap_get_option($_pql->ldap_linkid, LDAP_OPT_PROTOCOL_VERSION, $version);
