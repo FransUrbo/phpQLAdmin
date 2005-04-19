@@ -51,6 +51,11 @@ phpQLAdmin 2.2.3 TO BE ANNOUNCED
 	    intentionally that I know of!). Make sure all DN's are Base64/UTF8 encoded
 	    before calling PHP ldap* function(s).
 	    Closes: #259
+	  - Single badMailFrom values in the database wasn't shown on the page - not
+	    an array. Solution was to convert it to an array if it wasn't already.
+	    + Spelling error in PHP (missing equal as '<?=') in the URL to 'Add additional
+	      address'.
+	    Closes: #260
 
 	Misc changes
 
