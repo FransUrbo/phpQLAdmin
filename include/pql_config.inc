@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.76 2005-03-01 09:38:33 turbo Exp $
+// $Id: pql_config.inc,v 1.76.2.1 2005-04-20 17:59:15 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -104,7 +104,7 @@ if($_SESSION["USER_HOST"]) {
 	foreach($_pql->ldap_basedn as $dn)  {
 		$dn = urldecode($dn);
 
-		if(!$_SESSION["BASE_DN"])
+		if((is_array($_SESSION["BASE_DN"]) and !in_array($dn, $_SESSION["BASE_DN"])) or !$_SESSION["BASE_DN"])
 		  // Remember the base DN's
 		  $_SESSION["BASE_DN"][] = $dn;
 		
