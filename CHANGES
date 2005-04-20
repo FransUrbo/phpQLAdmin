@@ -67,6 +67,9 @@ phpQLAdmin 2.2.3 TO BE ANNOUNCED
 	    the domain/branch isn't "remembered".
 	  - After retreiving all resonable domains/branches, sort the array correctly
 	    by only using the actual domain/branch _name_, not it's DN.
+	  - Only the _first_ root DN was only added to the BASE_DN session array.
+	    Add the DN only if: It isn't already there, the array isn't set/known or
+	    it's already an array.
 
 	Misc changes
 
