@@ -56,6 +56,9 @@ phpQLAdmin 2.2.3 TO BE ANNOUNCED
 	    + Spelling error in PHP (missing equal as '<?=') in the URL to 'Add additional
 	      address'.
 	    Closes: #260
+	  - When an object class violation occured when adding an attribute to a object,
+	    the combination of the old and the new object classes failed. Fix...
+	    Closes: #263
 
 	Misc changes
 
