@@ -74,6 +74,8 @@ phpQLAdmin 2.2.3 TO BE ANNOUNCED
 	    means: 'use default' => 'Yes') or specifically set to 'Yes'.
 	  - If organization name is a domain name (bayour.com for example), then we
 	    must IDNA decode the value, othervise just URL decode it...
+	  - Don't IDNA decode the domain/branch DN's in 'Put user in subbranch' selector.
+	    The're already decoded.
 
 	Misc changes
 
