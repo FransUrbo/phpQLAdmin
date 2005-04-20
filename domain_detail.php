@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.91.2.2 2005-03-17 18:58:16 turbo Exp $
+// $Id: domain_detail.php,v 2.91.2.3 2005-04-20 18:04:13 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -215,8 +215,17 @@ if($_SESSION["ADVANCED_MODE"]) {
 
 $new = array('action' => 'Actions');
 $buttons = $buttons + $new;
+
+if($domainname) {
 ?>
-  <span class="title1"><?=$LANG->_('Organization name')?>: <?=urldecode($domainname)?></span>
+  <span class="title1"><?=$LANG->_('Organization name')?>: <?=pql_maybe_idna_decode(urldecode($domainname))?></span>
+<?php
+} elseif($o) {
+?>
+  <span class="title1"><?=$LANG->_('Organization name')?>: <?=urldecode($o)?></span>
+<?php
+}
+?>
 
   <br><br>
 <?php
