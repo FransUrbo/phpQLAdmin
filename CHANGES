@@ -70,6 +70,8 @@ phpQLAdmin 2.2.3 TO BE ANNOUNCED
 	  - Only the _first_ root DN was only added to the BASE_DN session array.
 	    Add the DN only if: It isn't already there, the array isn't set/known or
 	    it's already an array.
+	  - Show users in domain/branch if the show_users value is either empty (which
+	    means: 'use default' => 'Yes') or specifically set to 'Yes'.
 
 	Misc changes
 
