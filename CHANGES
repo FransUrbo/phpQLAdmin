@@ -59,6 +59,14 @@ phpQLAdmin 2.2.3 TO BE ANNOUNCED
 	  - When an object class violation occured when adding an attribute to a object,
 	    the combination of the old and the new object classes failed. Fix...
 	    Closes: #263
+	  - Correctly merge two arrays togheter using new pql_add2array() function.
+	  - When retreiving domains and user reference for the specific root DN isn't
+	    set/known, use a 'resonable default' (uid).
+	  - If the root DN is a 'dc' object and domain/branch reference is 'ou',
+	    we MUST use 'organizationalUnit' in the object class filter, otherwise
+	    the domain/branch isn't "remembered".
+	  - After retreiving all resonable domains/branches, sort the array correctly
+	    by only using the actual domain/branch _name_, not it's DN.
 
 	Misc changes
 
