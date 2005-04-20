@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.20.2.4 2005-04-18 14:33:35 turbo Exp $
+// $Id: pql_write.inc,v 2.20.2.5 2005-04-20 17:41:38 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -86,9 +86,10 @@ function pql_write_mod($linkid, $dn, $entry, $caller = NULL, $count = 0) {
 				$new = pql_missing_objectclasses($linkid, $dn, $entry);
 				if($new and !is_array($new))
 				  $new = array($new);
-				
+
 				// Combine the old with the new.
-				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_uniq($old + $new);
+				$old = pql_add2array($old, $new);
+				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_uniq($old);
 				
 				// Recursion... Only try five times...
 				if($count >= 6) { // The very first time $count=1, so...
