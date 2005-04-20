@@ -76,6 +76,9 @@ phpQLAdmin 2.2.3 TO BE ANNOUNCED
 	    must IDNA decode the value, othervise just URL decode it...
 	  - Don't IDNA decode the domain/branch DN's in 'Put user in subbranch' selector.
 	    The're already decoded.
+	  - If the fifth (new value) option to pql_modify_attribute() is an array, the
+	    functions third (attribute) option should be unset...
+	    Closes: #264
 
 	Misc changes
 
