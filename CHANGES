@@ -79,6 +79,9 @@ phpQLAdmin 2.2.3 TO BE ANNOUNCED
 	  - If the fifth (new value) option to pql_modify_attribute() is an array, the
 	    functions third (attribute) option should be unset...
 	    Closes: #264
+	  - Some of the PopBeforeSmtp stuff is multivalued, but pql_get_attribute() isn't
+	    returning array for single values any more. Convert an existing value to array.
+	    Closes: #261
 
 	Misc changes
 
