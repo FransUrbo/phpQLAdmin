@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-alias.inc,v 1.4 2005-02-24 17:04:02 turbo Exp $ */
+<?php /* $Id: user_add-alias.inc,v 1.5 2005-04-23 08:58:53 turbo Exp $ */
       // Retreive domain branches for this domain (for the subbranch value below)
       $branches = pql_unit_get($_pql->ldap_linkid, $_REQUEST["domain"]);
 ?>
@@ -40,7 +40,6 @@
 <?php // This is the ugly part (see include/attrib.administrator.inc).
 	  $domains = pql_get_domains($_pql);
 	  if(isset($domains)) {
-	  	asort($domains);
 		foreach($domains as $key => $domain) {
 			// Get domain part from the DN (Example: 'dc=test,dc=net' => 'test').
 			$d = split(',', $domain); $d = split('=', $d[0]); $d = $d[1];

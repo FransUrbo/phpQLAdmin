@@ -1,6 +1,6 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.39 2005-03-17 09:13:10 turbo Exp $
+// $Id: ezmlm_add.php,v 1.40 2005-04-23 08:58:53 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -47,8 +47,6 @@ if(!$_REQUEST["domainname"]) {
 	  // if no domain defined - fatal error
 	  die("<b>".$LANG->_('Can\'t find any domains!')."</b><br>");
 	else {
-		asort($domains);
-
 		// Get the domainname from the domain object
 		foreach($domains as $key => $d) {
 			$dont_add = 0;

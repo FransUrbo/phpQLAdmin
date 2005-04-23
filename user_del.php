@@ -1,6 +1,6 @@
 <?php
 // delete a user
-// $Id: user_del.php,v 2.41 2005-04-19 04:44:32 turbo Exp $
+// $Id: user_del.php,v 2.42 2005-04-23 08:58:53 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -75,7 +75,6 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 			// Get all domains, looking for mailing lists
 			$domains = pql_get_domains($_pql);
 			if(is_array($domains)) {
-				asort($domains);
 				foreach($domains as $key => $this_domain) {
 					// Get base directory for mails in all domains
 					if(($basemaildir = pql_get_attribute($_pql->ldap_linkid, $this_domain, pql_get_define("PQL_ATTR_BASEMAILDIR")))) {

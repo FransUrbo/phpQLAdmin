@@ -1,6 +1,6 @@
 <?php
 // navigation bar - ezmlm mailinglists manager
-// $Id: left-ezmlm.php,v 2.35 2005-03-09 09:59:03 turbo Exp $
+// $Id: left-ezmlm.php,v 2.36 2005-04-23 08:58:53 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -71,7 +71,6 @@ if(!is_array($domains)) {
 	die(); // No point in continuing from here!
 } else {
     // {{{ We got at least one domain - get it's mailing lists
-	asort($domains);
 	foreach($domains as $key => $domain) {
 		$number_of_lists = -1; // So that we end up with 0 for first list!
 
