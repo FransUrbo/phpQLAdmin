@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.48 2005-04-17 09:38:56 turbo Exp $
+// $Id: pql_control.inc,v 2.49 2005-04-23 08:46:04 turbo Exp $
 //
 
 // {{{ control connection class

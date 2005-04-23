@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.29 2005-04-15 07:49:50 turbo Exp $
+// $Id: attrib.userpassword.inc,v 2.30 2005-04-23 08:46:04 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {

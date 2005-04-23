@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for changing/renaming the DN
 //
-// $Id: attrib.modrdn.inc,v 2.14 2005-04-19 04:44:32 turbo Exp $
+// $Id: attrib.modrdn.inc,v 2.15 2005-04-23 08:46:04 turbo Exp $
 
 // {{{ attribute_setup_aci(linkid, dn, old, new)
 function attribute_setup_aci($linkid, $dn, $old, $new) {

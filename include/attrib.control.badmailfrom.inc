@@ -2,7 +2,7 @@
 // control attribute plugin for
 // badmailfrom (blocked from addresses)
 //
-// $Id: attrib.control.badmailfrom.inc,v 2.21 2005-04-19 05:03:30 turbo Exp $
+// $Id: attrib.control.badmailfrom.inc,v 2.22 2005-04-23 08:46:04 turbo Exp $
 
 // {{{ badmailfrom_check(type)
 

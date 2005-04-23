@@ -1,6 +1,6 @@
 <?php
 // delete a domain and all users within
-// $Id: domain_del.php,v 2.37 2005-04-19 04:44:32 turbo Exp $
+// $Id: domain_del.php,v 2.38 2005-04-23 08:45:29 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");

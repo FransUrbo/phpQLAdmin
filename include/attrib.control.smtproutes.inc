@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtproutes (max number of bytes in message)
 //
-// $Id: attrib.control.smtproutes.inc,v 2.25 2005-04-15 10:50:24 turbo Exp $
+// $Id: attrib.control.smtproutes.inc,v 2.26 2005-04-23 08:46:04 turbo Exp $
 
 // {{{ smtproutes_check(type)
 

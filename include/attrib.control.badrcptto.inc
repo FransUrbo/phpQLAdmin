@@ -2,7 +2,7 @@
 // control attribute plugin for
 // badrcptto (blocked local addresses)
 //
-// $Id: attrib.control.badrcptto.inc,v 2.21 2005-04-15 10:50:24 turbo Exp $
+// $Id: attrib.control.badrcptto.inc,v 2.22 2005-04-23 08:46:04 turbo Exp $
 
 // {{{ badrcptto_check(type)
 function badrcptto_check($type) {
