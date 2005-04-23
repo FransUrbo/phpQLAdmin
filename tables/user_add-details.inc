@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-details.inc,v 1.31 2005-03-03 12:22:12 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.32 2005-04-23 09:10:02 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
@@ -266,12 +266,13 @@
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Put user in subbranch')?></td>
           <td>
+            &nbsp;&nbsp;
             <select name="subbranch">
-              <option value="<?=pql_format_urls($_REQUEST["domain"])?>"><?=pql_maybe_decode($_REQUEST["domain"])?></option>
+              <option value="<?=pql_format_urls($_REQUEST["domain"])?>"><?=$_REQUEST["domain"]?></option>
 <?php
 				for($i=0; $branches[$i]; $i++) {
 ?>
-              <option value="<?=pql_format_urls($branches[$i])?>"><?=pql_maybe_decode($branches[$i])?></option>
+              <option value="<?=pql_format_urls($branches[$i])?>"><?=$branches[$i]?></option>
 <?php
 				}
 ?>
