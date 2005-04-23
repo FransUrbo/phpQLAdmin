@@ -3,7 +3,7 @@
 // This file contains what I think is 'resonable defaults'.
 // Don't change here, change any values in the web interface!
 //
-// $Id: defaults.inc,v 2.33 2005-03-14 19:39:40 turbo Exp $
+// $Id: defaults.inc,v 2.34 2005-04-23 09:13:31 turbo Exp $
 
 // NOTE: Some of these defines isn't called with the (root/top)
 //       DN. They are (site) global variables, not per branch.
@@ -175,6 +175,11 @@ pql_set_define("PQL_CONF_PASSWORD_SCHEMES", "CRYPT,MD5,SHA,CLEAR,KERBEROS", fals
 // How is your tree organized? What objectClass is used
 // It's either 'ou=domain,<LDAP_BASEDN>' or 'dc=domain,<LDAP_BASEDN>'
 pql_set_define("PQL_CONF_REFERENCE_DOMAINS_WITH", "ou", false, $dn);
+
+// ----------------------------
+// PQL_CONF_REFERENCE_USERS_WITH (uid | mail | ...)
+// What attribute to use as user reference.
+pql_set_define("PQL_CONF_REFERENCE_USERS_WITH", "uid", false, $dn);
 
 // ----------------------------
 // PQL_CONF_USER_RDN_ATTRIBUTE (LDAP attribute name)
