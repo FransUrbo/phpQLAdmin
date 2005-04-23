@@ -25,8 +25,8 @@ phpQLAdmin 2.2.3 TO BE ANNOUNCED
 	  - Document the replacement of 'illegal' characters in (mail) paths to
 	    doc/README.directories.
 	    Closes: #249
-	  - Only change the 'gecos' field (when modifying the 'cn' value) IF it already
-	    exists!
+	  - ONLY (!) change 'gecos', 'sn' and/or 'givenName IF the attribute already
+	    exists in the object!
 	    Closes: #255
 	  - Spelling error(s) in include/attrib.control.locals.inc:
 	    s/RCPTHOSTS/LOCALS/g;
