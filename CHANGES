@@ -1,5 +1,8 @@
 phpQLAdmin 2.2 Change Log
 
+phpQLAdmin 2.2.4 TO BE ANNOUNCED
+	Bug fixes
+
 phpQLAdmin 2.2.3 Release (Apr 25 2005)
 	Bug fixes
 	  - The updating of the session (password for the logged in user) was to late.
