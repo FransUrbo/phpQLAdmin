@@ -2,6 +2,9 @@ phpQLAdmin 2.2 Change Log
 
 phpQLAdmin 2.2.4 TO BE ANNOUNCED
 	Bug fixes
+	  - Figure out if user is ezmlm administrator in any branch. If yes (and ezmlm is
+	    in use), then show ezmlm list frame.
+	  - Load defaults.inc for _EACH_ dn configure (within the foreach(branches) loop).
 
 phpQLAdmin 2.2.3 Release (Apr 25 2005)
 	Bug fixes
