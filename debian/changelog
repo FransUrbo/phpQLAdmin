@@ -1,3 +1,9 @@
+phpqladmin (2.2.4-1) unstable; urgency=low
+
+  * New upstream version
+
+ -- Turbo Fredriksson <turbo@debian.org>  Wed, 27 Apr 2005 11:49:17 +0200
+
 phpqladmin (2.2.3-1) unstable; urgency=low
 
   * New upstream version
