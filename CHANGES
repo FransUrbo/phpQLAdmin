@@ -9,6 +9,8 @@ phpQLAdmin 2.2.4 TO BE ANNOUNCED
 	  - After changing a global configuration option, add the user DN correctly to the
 	    redirect link - controlsAdministrator uses 'delval' as information on which
 	    user we're changing for example.
+	  - The old java function refreshFrames() don't seem to work any more (!?!?). Instead
+	    manually reload all frames using 'parent.frames.<FRAME>.location.reload()'.
 
 phpQLAdmin 2.2.3 Release (Apr 25 2005)
 	Bug fixes
