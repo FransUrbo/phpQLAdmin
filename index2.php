@@ -1,5 +1,5 @@
 <?php
-// $Id: index2.php,v 2.39.6.2 2005-03-04 11:59:45 turbo Exp $
+// $Id: index2.php,v 2.39.6.3 2005-04-27 09:58:18 turbo Exp $
 // {{{ Setup session etc
 require("./include/pql_session.inc");
 require("./include/pql_config.inc");
@@ -20,22 +20,28 @@ if(pql_get_define("PQL_CONF_START_ADVANCED", $_SESSION["USER_DN"])) {
 $frames = 2; // Default 2 frames - left and main
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
-// -----------------
-// Count how many frames we should open
-if(pql_get_define("PQL_CONF_EZMLM_USE")) {
-    $frames++;
-}
+// If something changed, make sure we start with these undefined!
+unset($_SESSION["USE_EZMLM"]);
+unset($_SESSION["USE_CONTROLS"]);
 
 // -----------------
-// Should we show the controls frame (ie, is controls configured
-// in ANY of the namingContexts)?
-if(pql_get_define("PQL_CONF_CONTROL_USE") and $_SESSION["ALLOW_CONTROL_CREATE"] and 
-   ($_SESSION["ADVANCED_MODE"] or $_REQUEST["advanced"])) {
+// Count how many frames we should open
+if($_SESSION["ADVANCED_MODE"] or $_REQUEST["advanced"]) {
+  if(pql_get_define("PQL_CONF_EZMLM_USE") and $_SESSION["ALLOW_EZMLM_CREATE"]) {
     $frames++;
-    
+
+    $_SESSION["USE_EZMLM"] = 1;
+  }
+
+  // Should we show the controls frame (ie, is controls configured
+  // in ANY of the namingContexts)?
+  if(pql_get_define("PQL_CONF_CONTROL_USE") and $_SESSION["ALLOW_CONTROL_CREATE"]) {
+    $frames++;
+
     // We need this value for the quota change at least/well...
     // include/attrib.{control.ldapdefaultquota,mailquota}.inc
     $_SESSION["USE_CONTROLS"] = 1;
+  }
 }
 
 // -----------------
@@ -88,7 +94,7 @@ if($_SESSION["mozilla"]) {
       <frameset cols="*" rows="<?=$size?>%,*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 5 -->
 <?php   }
 
-       if(pql_get_define("PQL_CONF_EZMLM_USE")) { ?>
+       if($_SESSION["USE_EZMLM"]) { ?>
       <frame src="left-ezmlm.php"   name="pqlnavezmlm">
 <?php   }
 
