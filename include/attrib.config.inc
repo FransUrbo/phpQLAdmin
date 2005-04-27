@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.45 2005-02-26 17:41:56 turbo Exp $
+// $Id: attrib.config.inc,v 1.45.2.1 2005-04-27 11:41:11 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -486,23 +486,27 @@ function attribute_save() {
 		// set in every namingContexts
 		foreach($_SESSION["BASE_DN"] as $dn) {
 			if($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")) {
-				unset($entry);
+				$entry = array();
 				if($attrib_val)
 				  $entry[$attrib][] = $attrib_val;
 
 				// Fetch old values from DB
 				unset($oldvalues); $oldvalues = pql_get_attribute($_pql->ldap_linkid, $dn, $attrib);
 
-				if(is_array($oldvalues)) {
-					foreach($oldvalues as $val) {
-						if(!@eregi($delval, $val)) {
-							// Remove the one we don't want
-							$entry[$attrib][] = $val;
-						}
-					}
-				} elseif($oldvalues) {
-					// Only one value, add it
-					$entry[$attrib][] = $oldvalues;
+				if(!is_array($oldvalues))
+				  $oldvalues = array($oldvalues);
+
+				foreach($oldvalues as $val) {
+				  if(!@eregi($delval, $val)) {
+					// Remove the one we don't want
+					$entry[$attrib][] = $val;
+				  }
+				}
+
+				// Just incase this is (was) the last entry...
+				if(!is_array($entry[$attrib])) {
+				  unset($entry);
+				  $entry[$attrib] = array();
 				}
 			}
 
