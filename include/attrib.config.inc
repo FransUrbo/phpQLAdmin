@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.45.2.2 2005-05-12 13:38:04 turbo Exp $
+// $Id: attrib.config.inc,v 1.45.2.3 2005-05-12 14:05:23 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -428,9 +428,16 @@ function attribute_save() {
 
 					if(is_array($oldvalues)) {
 						foreach($oldvalues as $val) {
-							if(!@eregi($delval, $val)) {
-								// Remove the one we don't want
-								$entry[$attrib][] = $val;
+							if($toggle) {
+							  if($val)
+								$entry[$attrib][] = 'TRUE';
+							  else
+								$entry[$attrib][] = 'FALSE';
+							} else {
+								if(!@eregi($delval, $val)) {
+									// Remove the one we don't want
+									$entry[$attrib][] = $val;
+								}
 							}
 						}
 					} elseif($oldvalues) {
