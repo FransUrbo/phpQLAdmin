@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.201.2.3 2005-04-20 17:41:38 turbo Exp $
+// $Id: pql.inc,v 2.201.2.4 2005-05-12 20:51:43 turbo Exp $
 //
 
 // ----------------------------
@@ -323,19 +323,21 @@ function pql_user_modify_addressbook($ldap_linkid, $user, $attribs) {
 
 // {{{ pql_get_next_ugidnumber(ldap, type)
 // Returns the next free UID/GID number
-function pql_get_next_ugidnumber($ldap, $type) {
-    //: Get the minimum allowable ID.
+function pql_get_next_ugidnumber($ldap, $type, $rootdn) {
+    // Get the minimum allowable ID.
 	if($type == 'uid') {
 		$attrib  = pql_get_define("PQL_ATTR_QMAILUID");
-		$minimum = pql_get_define("PQL_CONF_MINIMUM_UIDNUMBER");
+		$minimum = pql_get_define("PQL_CONF_MINIMUM_UIDNUMBER", $rootdn);
 	} else {
 		$attrib = pql_get_define("PQL_ATTR_QMAILGID");
-		$minimum = pql_get_define("PQL_CONF_MINIMUM_GIDNUMBER");
+		$minimum = pql_get_define("PQL_CONF_MINIMUM_GIDNUMBER", $rootdn);
 	}
 
 	// Just incase it's not defined, we set the minimum UID/GID
 	// number availible to a safe value.
-	if(!is_array($minimum))
+	if($minimum && !is_array($minimum))
+	  $minimum = array($minimum);
+	elseif(!$minimum)
 	  $minimum = array(100);
 
 	$min_id_val = 100;			// Set an absolute min so no one becomes root.
@@ -345,20 +347,20 @@ function pql_get_next_ugidnumber($ldap, $type) {
 	  }
 	}
 
-    //: Make a list of all the already used IDs.
+    // Make a list of all the already used IDs.
     $filter = "(&($attrib=*)(objectclass=posixaccount))";
 
 	$ids = array();
 	foreach($_SESSION["BASE_DN"] as $dn) {
 		$results = pql_search($ldap->ldap_linkid, $dn, $filter);
 		for($i=0; $i < count($results); $i++) {
-		  if ($results[$i][$attrib][0] >= $min_id_val) {
-		    $ids[] = $results[$i][$attrib][0];
+		  if ($results[$i][$attrib] >= $min_id_val) {
+		    $ids[] = $results[$i][$attrib];
 		  }
 		}
 	}
 
-	//: Look for a hole in the ID list.
+	// Look for a hole in the ID list.
 	$found_id = null;
 	if (empty($ids)) {
 	  $found_id = $min_id_val;
