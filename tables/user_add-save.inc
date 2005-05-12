@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.32.2.3 2005-04-18 14:33:36 turbo Exp $
+// $Id: user_add-save.inc,v 1.32.2.4 2005-05-12 20:52:09 turbo Exp $
 
 // {{{ URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
 if($_REQUEST["surname"]) {
@@ -131,12 +131,12 @@ if($_REQUEST["forwardingaddress"] and
 // {{{ Add [ug]id number, gecos etc to the entry array
 if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_QMAILUID"), 'MUST')) {
   // Get a free UserID number
-  $uidnr = pql_get_next_ugidnumber($_pql, 'uid');
+  $uidnr = pql_get_next_ugidnumber($_pql, 'uid', $_REQUEST["rootdn"]);
   if($uidnr > 0)
 	$entry[pql_get_define("PQL_ATTR_QMAILUID")] = $uidnr;
   
   // Get a free GroupID number
-  $gidnr = pql_get_next_ugidnumber($_pql, 'gid');
+  $gidnr = pql_get_next_ugidnumber($_pql, 'gid', $_REQUEST["rootdn"]);
   if($gidnr > 0)
 	$entry[pql_get_define("PQL_ATTR_QMAILGID")] = $gidnr;
   
