@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.45.2.1 2005-04-27 11:41:11 turbo Exp $
+// $Id: attrib.config.inc,v 1.45.2.2 2005-05-12 13:38:04 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -460,9 +460,6 @@ function attribute_save() {
 							}
 						}
 					} // ELSIF it's a toggle.
-
-					// Add the new value to the entry
-					$entry[$attrib][] = $attrib_val;
 				} // IF attrib == externalScript{User,Domain}
 				// }}}
 			} elseif($toggle) {
