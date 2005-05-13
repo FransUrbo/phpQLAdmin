@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.119.2.5 2005-05-13 12:37:00 turbo Exp $
+// $Id: user_add.php,v 2.119.2.6 2005-05-13 13:54:29 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -169,10 +169,31 @@ switch($_REQUEST["page_curr"]) {
 		// }}}
 
 		// {{{ Generate a password
-		if(($_REQUEST["template"] != "group") and empty($_REQUEST["password"]) and
-		   $autocreatepassword and function_exists('pql_generate_password') and
+		if(($_REQUEST["template"] != "internal_group") and empty($_REQUEST["password"]) and
+		   ($autocreatepassword or (!$schemes[1] and ($schemes[0] == 'KERBEROS'))) and
+		   function_exists('pql_generate_password') and
 		   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_PASSWD")))
-		  $_REQUEST["password"] = pql_generate_password();
+		{
+		  // If we only have one password scheme, and it's a Kerberos V scheme, then we generate a Kerberos V
+		  // principal and generate a password which we put in the clear_text_password value.
+		  // Also, since we only have one scheme which is allowed, put this as a default for the rest of the
+		  // user add session.
+		  //
+		  // We MUST autogenerate a password here, even if it's not specified. This because othervise
+		  // the create user script will create a randomized password, which we have no idea what it is..
+		  if(!$schemes[1] and ($schemes[0] == 'KERBEROS')) {
+			$_REQUEST["password"]            = $_REQUEST["uid"]."@".pql_get_define("PQL_CONF_KRB5_REALM");
+			$_REQUEST["pwscheme"]            = $schemes[0];
+
+			if($autocreatepassword)
+			  $_REQUEST["clear_text_password"] = pql_generate_password();
+
+			// Just so that we'll get the opportunity to add a password in tables/user_add-details.inc which
+			// is/should be next...
+			$auto_generated_kerberos_pw      = 1;
+		  } else
+			$_REQUEST["password"] = pql_generate_password();
+		}
 		// }}}
 	} else {
 	  // {{{ Step 1: Make sure we have at least one user template
