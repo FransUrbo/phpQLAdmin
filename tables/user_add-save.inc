@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.32.2.4 2005-05-12 20:52:09 turbo Exp $
+// $Id: user_add-save.inc,v 1.32.2.5 2005-05-13 12:48:38 turbo Exp $
 
 // {{{ URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
 if($_REQUEST["surname"]) {
@@ -184,6 +184,17 @@ if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("
 	  // Password isn't already encrypted, create the hash using the password value
 	  $entry[pql_get_define("PQL_ATTR_PASSWD")] = pql_password_hash($_REQUEST["password"], $_REQUEST["pwscheme"]);
   }
+
+  // We're allowing PQL_ATTR_PASSWD. Do we also allow the 'clearTextPassword'?
+  if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_PASSWD_CLEAR"))) {
+	if($_REQUEST["clear_text_password"]) {
+	  // Probably a Kerberos V scheme, use the cleartext password value
+	  $entry[pql_get_define("PQL_ATTR_PASSWD_CLEAR")] = $_REQUEST["clear_text_password"];
+	} elseif($_REQUEST["password"]) {
+	  // Add the unencrypted password
+	  $entry[pql_get_define("PQL_ATTR_PASSWD_CLEAR")] = $_REQUEST["password"];
+	}
+  }
 }
 // }}}
 
@@ -316,6 +327,9 @@ if($DNs[0]) {
 	  putenv("PQL_KADMIN_PRINC=".pql_get_define("PQL_CONF_KRB5_ADMIN_PRINCIPAL"));
 	  putenv("PQL_KADMIN_SERVR=".pql_get_define("PQL_CONF_KRB5_ADMIN_SERVER"));
 	  putenv("PQL_KADMIN_KEYTB=".pql_get_define("PQL_CONF_KRB5_ADMIN_KEYTAB"));
+
+	  if($_REQUEST["clear_text_password"])
+		putenv("PQL_CLEARTEXT_PASSWORD=".$_REQUEST["clear_text_password"]);
 	}
 	
 	// Execute the user add script (0 => show output)
