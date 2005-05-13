@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-additional.inc,v 1.26.2.2 2005-03-27 11:55:01 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.26.2.3 2005-05-13 13:55:39 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <!-- Some hidden values from previous page(s) -->
 <?php if($_REQUEST["surname"] and pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_CN"))) { ?>
@@ -20,6 +20,9 @@
     <input type="hidden" name="password"           value="<?=$_REQUEST["password"]?>">
     <input type="hidden" name="pwscheme"           value="<?=$_REQUEST["pwscheme"]?>">
     <input type="hidden" name="crypted"            value="<?=$_REQUEST["crypted"]?>">
+<?php } ?>
+<?php if($_REQUEST["clear_text_password"] and pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_PASSWD_CLEAR"))) { ?>
+    <input type="hidden" name="clear_text_password" value="<?=$_REQUEST["clear_text_password"]?>">
 <?php } ?>
 <?php if($_REQUEST["forwardingaddress"] and pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_FORWARDS"))) { ?>
     <input type="hidden" name="forwardingaddress"  value="<?=$_REQUEST["forwardingaddress"]?>">
