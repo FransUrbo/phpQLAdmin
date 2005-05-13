@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.119.2.4 2005-04-15 10:09:38 turbo Exp $
+// $Id: user_add.php,v 2.119.2.5 2005-05-13 12:37:00 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -396,6 +396,9 @@ switch($_REQUEST["page_curr"]) {
 					$error = true;
 					$error_text["password"] = $LANG->_('Invalid');
 
+					// Since this is a Kerberos V 'password', we must remember the _real_ password.
+					$_REQUEST["clear_text_password"] = $_REQUEST["password"];
+
 					// Try generating a new value. We SHOULD know all we need
 					$_REQUEST["password"] = $_REQUEST["uid"]."@".pql_get_define("PQL_CONF_KRB5_REALM");
 				}
@@ -645,30 +648,35 @@ if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
 switch($_REQUEST["page_next"]) {
   case "":
 	// Step 1 - Choose account properties (type of account)
-	include("./tables/user_add-properties.inc");
+	$include = "./tables/user_add-properties.inc";
 	break;
 	
   case "one":
 	// Step 2 - Choose user details (name, password etc)
 	if($_REQUEST["template"] == "alias")
-	  include("./tables/user_add-alias.inc");
+	  $include = "./tables/user_add-alias.inc";
 	else
-	  include("./tables/user_add-details.inc");
+	  $include = "./tables/user_add-details.inc";
 	break;
 	
   case "two":
 	// Step 3 - Choose additional information (mailhost, maildir etc)
-	include("./tables/user_add-additional.inc");
+	$include = "./tables/user_add-additional.inc";
 	break;
 	
   case "save":
 	// Step 4 - Save the user into DB
 	if($_REQUEST["page_curr"] and $_REQUEST["autogenerate"] and empty($_REQUEST["password_shown"]))
-	  include("./tables/user_add-show_password.inc");
+	  $include = "./tables/user_add-show_password.inc";
 	else
-	  include("./tables/user_add-save.inc");
+	  $include = "./tables/user_add-save.inc";
 	break;
 }
+
+if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+  echo "Including file '$include'<br>";
+}
+include($include);
 
 // }}}
 
