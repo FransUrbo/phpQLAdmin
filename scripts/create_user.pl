@@ -128,7 +128,11 @@ if(($ENV{"PQL_USERPASSWORD"} =~ /kerberos/i) || ($ENV{"PQL_USERPASSWORD"} =~ /sa
 
 	if(!$exists) {
 	    @CMD = @args;
-	    push(@CMD, "'ank -randkey $principal'");
+	    if($ENV{"PQL_CLEARTEXT_PASSWORD"}) {
+		push(@CMD, "'ank -pw ".$ENV{"PQL_CLEARTEXT_PASSWORD"}." $principal'");
+	    } else {
+		push(@CMD, "'ank -randkey $principal'");
+	    }
 	    push(@CMD, "2> /dev/null");
 	    $cmd = &setup_command(@CMD);
 
