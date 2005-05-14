@@ -5,6 +5,8 @@ phpQLAdmin 2.2.5 TO BE ANNOUNCED
 	  - Include the ./include/pql_session.inc file in ./control.php to avoid PHP errors etc.
 	  - Extract only the LDAP URI/URL (instead of using the whole USER_HOST session
 	    variable) in the control_add_server.php page.
+	  - If we're creating a Kerberos V password, we should NOT create a {KERBEROS}.
+	    This is the old, depricated format. Instead, return a {SASL} formated 'password'.
 
 	Misc changes
 
