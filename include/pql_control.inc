@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.45.6.1 2005-03-28 10:23:11 turbo Exp $
+// $Id: pql_control.inc,v 2.45.6.2 2005-04-15 11:59:08 turbo Exp $
 //
 
 // {{{ control connection class
@@ -62,8 +62,31 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 			$additional = pql_get_attribute($ldap->ldap_linkid, $domain, pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
 			if(is_array($additional)) {
 				$additional = pql_uniq($additional); // Remove duplicates (which was allowed in OpenLDAP <2.1).
-				for($i=0; $i < count($additional); $i++) 
-				  $entry[] = $additional[$i];
+				for($i=0; $i < count($additional); $i++) {
+				  // Before we add this domain to the list, make sure it don't already exist
+				  $ent_exists = 0;
+				  if(is_array($entry)) {
+					foreach($entry as $ent)
+					  if($ent == $additional[$i])
+						$ent_exists = 1;
+				  }
+				  
+				  if(!$ent_exists)
+					$entry[] = $additional[$i];
+				}
+			} elseif($additional) {
+			  // Not an array, but defined.
+
+			  // Before we add this domain to the list, make sure it don't already exist
+			  $ent_exists = 0;
+			  if(is_array($entry)) {
+				foreach($entry as $ent)
+				  if($ent == $additional)
+					$ent_exists = 1;
+			  }
+			  
+			  if(!$ent_exists)
+				$entry[] = $additional;
 			}
 		}    
 	}

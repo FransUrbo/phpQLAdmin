@@ -45,8 +45,7 @@ if [ -f /usr/share/wwwconfig-common/apache-uninclude_all.sh ]; then
 fi
 # End of package maintainer's commands
 
-db_stop
-
 #DEBHELPER#
 
+db_stop
 exit 0

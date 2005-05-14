@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.31 2005-03-01 09:38:33 turbo Exp $
+// $Id: config_attributes.inc,v 2.31.2.1 2005-05-13 12:37:15 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -208,6 +208,7 @@ pql_set_define("PQL_ATTR_WEBSRV_OC",	 					array(strtolower('device'),
 
 // {{{ Miscellaneous external attributes
 pql_set_define("PQL_ATTR_SPAMASSASSIN", 					strtolower('spamAssassin'),					false);
+pql_set_define("PQL_ATTR_PASSWD_CLEAR", 					strtolower('clearTextPassword'),			false);
 // }}}
 
 // {{{ These are the internal phpQLAdmin attributes - GLOBAL configuration

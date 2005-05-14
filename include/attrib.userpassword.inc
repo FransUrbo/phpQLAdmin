@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.27.4.1 2005-03-23 11:49:47 turbo Exp $
+// $Id: attrib.userpassword.inc,v 2.27.4.2 2005-04-15 07:35:56 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -113,13 +113,16 @@ function attribute_save($type) {
 
 	  case "modify":
 		$pw = pql_password_hash($_REQUEST["userpassword"], $_REQUEST["pwscheme"]);
+
+		if($_REQUEST["user"] == $_SESSION["USER_DN"]) {
+		  // Make the new password a session variable as well, so that
+		  // we can update the used session password value in pql_modify_attribute()
+		  $_SESSION["NEW_PASS"] = $_REQUEST["userpassword"];
+		}
 	
 		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_PASSWD"), 1, $pw)) {
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										 array('what' => $LANG->_('password')));
-			
-			if($_REQUEST["user"] == $_SESSION["USER_DN"])
-			  $_SESSION["USER_PASS"] = $userpassword;
 		} else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('password'))) . ": " . pql_format_error(0);

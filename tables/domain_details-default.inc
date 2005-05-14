@@ -3,7 +3,7 @@
 <?php if($_SESSION["ALLOW_BRANCH_CREATE"]) { ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Branch DN')?></td>
-        <td><?php echo pql_maybe_decode(urldecode($url["domain"])); ?></td>
+        <td><?=$_REQUEST["domain"]?></td>
         <td><?=// TODO: Should we be able to rename the RDN? ?></td>
       </tr>
   

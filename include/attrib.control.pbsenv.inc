@@ -2,7 +2,7 @@
 // control attribute plugin for
 // pbsenv (max number of bytes in message)
 //
-// $Id: attrib.control.pbsenv.inc,v 2.7 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.control.pbsenv.inc,v 2.7.4.1 2005-04-22 08:28:16 turbo Exp $
 
 // {{{ pbsenv_check(type)
 function pbsenv_check($type) {
@@ -25,6 +25,8 @@ function pbsenv_init($host) {
 
 	if(is_null($_REQUEST["pbsenv"]))
 	  return true;
+	elseif($_REQUEST["pbsenv"] and !is_array($_REQUEST["pbsenv"]))
+	  $_REQUEST["pbsenv"] = array($_REQUEST["pbsenv"]);
 }
 // }}}
 

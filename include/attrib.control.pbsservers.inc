@@ -2,7 +2,7 @@
 // control attribute plugin for
 // pbsservers (max number of bytes in message)
 //
-// $Id: attrib.control.pbsservers.inc,v 2.6 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.control.pbsservers.inc,v 2.6.4.1 2005-04-22 08:28:16 turbo Exp $
 
 // {{{ pbsservers_check(type)
 function pbsservers_check($type) {
@@ -62,6 +62,8 @@ function pbsservers_init($host) {
 	
 	if(is_null($_REQUEST["pbsservers"]))
 	  return true;
+	elseif($_REQUEST["pbsservers"] and !is_array($_REQUEST["pbsservers"]))
+	  $_REQUEST["pbsservers"] = array($_REQUEST["pbsservers"]);
 }
 // }}}
 

@@ -76,14 +76,23 @@ binary-indep: build install
 	dh_fixperms -i
 
 	(cd $(INSTDIR) && \
-	  rm *-stamp *.schema; \
-	  find -type f | xargs chmod 644)
+	  rm -f *-stamp *.schema .DEBUG_ME .cvsignore .version.old; \
+	  find -type f | xargs chmod 644; \
+	  chmod 755 scripts/*.pl scripts/*.sh)
 
 	dh_installdeb -i
 	dh_shlibdeps -i
 	dh_gencontrol -i
 
 	dh_md5sums -i
+
+	# Fix the templates for woody
+	(ver=`cat /etc/debian_version`; \
+	 if [ "$$ver" = "3.0" ]; then \
+	   cat debian/phpqladmin/DEBIAN/templates | sed 's@^_@@' > debian/phpqladmin/DEBIAN/templates.new; \
+	   mv debian/phpqladmin/DEBIAN/templates.new debian/phpqladmin/DEBIAN/templates; \
+	 fi)
+
 	dh_builddeb -i
 
 binary-arch: build install

@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.86.2.1 2005-03-04 11:59:45 turbo Exp $
+// $Id: user_detail.php,v 2.86.2.2 2005-04-27 12:29:54 turbo Exp $
 //
 // {{{ Setup session
 require("./include/pql_session.inc");
@@ -58,7 +58,13 @@ if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
   <script src="tools/frames.js" type="text/javascript" language="javascript1.2"></script>
   <script language="JavaScript1.2"><!--
     // reload navigation frame
-    refreshFrames();
+    // This doesn't work as it's supposed to... Don't know enough java to figure it out either...
+    //refreshFrames();
+
+    // This work perfectly though...
+    parent.frames.pqlnav.location.reload();
+    parent.frames.pqlnavctrl.location.reload();
+    parent.frames.pqlnavezmlm.location.reload();
   //--></script>
 <?php
 	} elseif($_REQUEST["rlnb"] == 2) {
