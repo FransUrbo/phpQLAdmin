@@ -57,8 +57,15 @@ if($ENV{"PQL_MAILMESSAGESTORE"}) {
 
 	$directory .= $dirs[$i+1] . '/';
     }
+
+    # Chown' the mail directory to the user, group mail.
+    chown($ENV{"PQL_UIDNUMBER"}, "mail", $DIR);
+
+    # Create the Maildir structure inside the mail directory
+    mkdir($DIR."/new"); chown($ENV{"PQL_UIDNUMBER"}, "mail", $DIR."/new");
+    mkdir($DIR."/cur"); chown($ENV{"PQL_UIDNUMBER"}, "mail", $DIR."/cur");
+    mkdir($DIR."/tmp"); chown($ENV{"PQL_UIDNUMBER"}, "mail", $DIR."/tmp");
 }
-chown($ENV{"PQL_UIDNUMBER"}, "mail", $DIR);
 
 # Create the home directory: $PQL_HOMEDIRECTORY
 if($ENV{"PQL_HOMEDIRECTORY"}) {
