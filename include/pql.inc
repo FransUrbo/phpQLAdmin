@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.201.2.4 2005-05-12 20:51:43 turbo Exp $
+// $Id: pql.inc,v 2.201.2.5 2005-05-14 18:14:56 turbo Exp $
 //
 
 // ----------------------------
@@ -497,7 +497,7 @@ function pql_password_hash($password, $hash) {
     // - {SHA}kldfaldkjadsfdsad=
     // - {MD5}lkasjfdndiasdfee=
     // - {crypt}cryptedpassword
-    // - {KERBEROS}principal@realm
+    // - {SASL}principal@realm
     // - cleartextpasswort
 
 	if(!function_exists("mhash") and ($hash = "{MD5}")) {
@@ -531,7 +531,8 @@ function pql_password_hash($password, $hash) {
 
       case "{KERBEROS}":
 		// Kerberos V mapping
-		return $hash . $password;
+		// NEW FORMAT: '{SASL}principal@REALM.TLD'
+		return '{SASL}' . $password;
 
       default:
 		$salt_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./"; 
