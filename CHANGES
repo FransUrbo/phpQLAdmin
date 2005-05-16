@@ -9,6 +9,16 @@ phpQLAdmin 2.2.5 TO BE ANNOUNCED
 	    This is the old, depricated format. Instead, return a {SASL} formated 'password'.
 	  - If the login shell value is set, remember it throughout the form via a hidden input
 	    in 'tables/user_add-additional.inc'.
+	  - Don't call pql_header() with the URI session variable in index.php. This is added
+	    inside the function pql_header(). Patch by Sergio Monteiro Basto.
+	  - Complete rewrite of include/pql_session.inc. This time it works as I intended!
+	    + Extract our location in the file system using the PHP define __FILE__ as base.
+	    + Extract our location on the webserver using the server variable DOCUMENT_ROOT
+	      _and_ the PHP define __FILE__ as base.
+	    + Extract the server name (including protocol, FQDN and port) using the server
+	      variable HTTP_REFERER as base.
+	    = This will give uniq sessions, even if running multiple phpQLAdmin's on the same
+	      (virtual) server (previosly ALL cookies had the path '/').
 
 	Misc changes
 	  - Instead of using the template _name_ in 'tables/user_add-additional.inc', use the
