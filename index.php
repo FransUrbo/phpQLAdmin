@@ -1,6 +1,6 @@
 <?php
 // logins to the system
-// $Id: index.php,v 2.42.2.2 2005-03-17 08:27:59 turbo Exp $
+// $Id: index.php,v 2.42.2.3 2005-05-16 08:37:08 turbo Exp $
 //
 // Start debuging
 // http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0
@@ -216,7 +216,7 @@ if(!($whoarewe = pql_get_define("PQL_CONF_WHOAREWE")))
 
 		unset($_POST);
 		session_write_close();
-		pql_header($_SESSION["URI"] . "index.php?msg=$msg");
+		pql_header("index.php?msg=$msg");
 	}
 
 	// We made it, so set all the session variables.
