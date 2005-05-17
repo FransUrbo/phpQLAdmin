@@ -9,6 +9,7 @@ phpQLAdmin 2.2.5 TO BE ANNOUNCED
 	    This is the old, depricated format. Instead, return a {SASL} formated 'password'.
 	  - If the login shell value is set, remember it throughout the form via a hidden input
 	    in 'tables/user_add-additional.inc'.
+	    + Catch this in the user details/data page as well.
 	  - Don't call pql_header() with the URI session variable in index.php. This is added
 	    inside the function pql_header(). Patch by Sergio Monteiro Basto.
 	  - Complete rewrite of include/pql_session.inc. This time it works as I intended!
