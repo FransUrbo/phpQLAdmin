@@ -26,6 +26,11 @@ phpQLAdmin 2.2.5 TO BE ANNOUNCED
 	    lot of time and LDAP requests. Especially considering it's done twenty times,
 	    only in 'tables/user_add-additional.inc'!
 	  - Create the mailMessageStore/{cur,new,tmp} directories if it's a mail account.
+	  - Don't show the 'QmailLDAP/Controls Options' in the domain details if the user
+	    isn't allowed to administrate controls (or is super admin).
+	  - Don't show the 'Access Control Information' button if user isn't super-admin.
+	    This is a _very_ dangerous operation and shouldn't be allowed to be changed
+	    by just anyone.
 
 phpQLAdmin 2.2.4 Release (May 14 2005)
 	Bug fixes
