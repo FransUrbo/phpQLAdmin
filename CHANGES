@@ -22,6 +22,7 @@ phpQLAdmin 2.2.5 TO BE ANNOUNCED
 	  - When calculating the UNIX timestamp from the LDAP server, the value's can be
 	    zero (which is perfectly ok). But that makes the if() fail - use 'if(isset(value))'
 	    instead.
+	  - Don't process ezmlm list if the array is empty.
 
 	Misc changes
 	  - Instead of using the template _name_ in 'tables/user_add-additional.inc', use the
