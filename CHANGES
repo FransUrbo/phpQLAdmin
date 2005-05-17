@@ -19,6 +19,9 @@ phpQLAdmin 2.2.5 TO BE ANNOUNCED
 	      variable HTTP_REFERER as base.
 	    = This will give uniq sessions, even if running multiple phpQLAdmin's on the same
 	      (virtual) server (previosly ALL cookies had the path '/').
+	  - When calculating the UNIX timestamp from the LDAP server, the value's can be
+	    zero (which is perfectly ok). But that makes the if() fail - use 'if(isset(value))'
+	    instead.
 
 	Misc changes
 	  - Instead of using the template _name_ in 'tables/user_add-additional.inc', use the
