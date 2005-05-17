@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.86.2.2 2005-04-27 12:29:54 turbo Exp $
+// $Id: user_detail.php,v 2.86.2.3 2005-05-17 17:20:37 turbo Exp $
 //
 // {{{ Setup session
 require("./include/pql_session.inc");
@@ -158,7 +158,7 @@ if(!$got_user_reference_attribute) {
 if($userpassword == "") {
     $userpassword = $LANG->_('None');
 } else {
-    if(eregi("\{KERBEROS\}", $userpassword)) {
+    if(eregi("\{KERBEROS\}", $userpassword) or eregi("\{SASL\}", $userpassword)) {
 		$princ = split("\}", $userpassword);
 		$userpassword = $princ[1] . " (Kerberos V)";
     } else {
