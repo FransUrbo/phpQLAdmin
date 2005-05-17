@@ -25,6 +25,10 @@ phpQLAdmin 2.2.5 TO BE ANNOUNCED
 	    instead.
 	  - Don't process ezmlm list if the array is empty.
 
+	GUI layout changes
+	  - When changing the delivery mode for a user, retreive existing value(s) and fill
+	    the selects.
+
 	Misc changes
 	  - Instead of using the template _name_ in 'tables/user_add-additional.inc', use the
 	    template _array_ (which is retreived in ./user_add.php). This will save us a whole
