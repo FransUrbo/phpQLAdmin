@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.37 2005-02-24 17:04:01 turbo Exp $
+// $Id: pql_formating.inc,v 2.37.2.1 2005-05-17 11:05:52 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -472,19 +472,21 @@ function pql_format_timestamp_unixtime($date) {
 	$month  = $date[4].$date[5];
 	$day    = $date[6].$date[7];
 
-	if($date[8] and $date[9]) {
+	if(isset($date[8]) and isset($date[9]))
 	  $hour   = $date[8].$date[9];
-	  $minute = $date[10].$date[11];
+	else
+	  $hour   = "00";
 
-	  if($date[12] and $date[13])
-		$second = $date[12].$date[13];
-	  else
-		// Not called with seconds, fake it.
-		$second = "00";
-	} else {
-	  // Only YYMMDD specified, fake it.
-	  $hour = "00"; $minute = "00"; $second = "00";
-	}
+	if(isset($date[10]) and isset($date[11]))
+	  $minute = $date[10].$date[11];
+	else
+	  $minute = "00";
+
+	if(isset($date[12]) and isset($date[13]))
+	  $second = $date[12].$date[13];
+	else
+	  // Not called with seconds, fake it.
+	  $second = "00";
 
 	return(mktime($hour, $minute, $second, $month, $day, $year));
 }
