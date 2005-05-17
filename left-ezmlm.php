@@ -1,6 +1,6 @@
 <?php
 // navigation bar - ezmlm mailinglists manager
-// $Id: left-ezmlm.php,v 2.33.2.2 2005-04-20 17:50:57 turbo Exp $
+// $Id: left-ezmlm.php,v 2.33.2.3 2005-05-17 17:07:45 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -93,18 +93,20 @@ if(!is_array($domains)) {
 			$index = array();
 
 			foreach($entry as $listnumber => $listarray) {
-				$listname = $lists[$dom][$listnumber]["name"];
-				$listhost = $lists[$dom][$listnumber]["host"];
-				
-				// Remember the listname, so we can sort below.
-				$index[]  = $listname;
-				
-				foreach($listarray as $key => $value) {
+				if(is_array($listarray)) {
+				  $listname = $lists[$dom][$listnumber]["name"];
+				  $listhost = $lists[$dom][$listnumber]["host"];
+
+				  // Remember the listname, so we can sort below.
+				  $index[]  = $listname;
+				  
+				  foreach($listarray as $key => $value) {
 					$mailinglists[$listnumber][$key]= $value;
 					$mailinglists_index[$listname]	= $listnumber;
+				  }
+				  
+				  $listnumber++;
 				}
-				
-				$listnumber++;
 			}
 			
 			// Sort the domainname lists alphabetically.
