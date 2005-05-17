@@ -28,6 +28,7 @@ phpQLAdmin 2.2.5 TO BE ANNOUNCED
 	GUI layout changes
 	  - When changing the delivery mode for a user, retreive existing value(s) and fill
 	    the selects.
+	  - Include the delivery program (if set) in the user details->Delivery mode page.
 
 	Misc changes
 	  - Instead of using the template _name_ in 'tables/user_add-additional.inc', use the
