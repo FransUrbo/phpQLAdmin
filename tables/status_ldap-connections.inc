@@ -8,7 +8,16 @@ if($connections_total) {
 	$connections_average = '<i>unknown</i>';
 }
 
-// Get number of initiated and completed operations
+// Get all operations
+$operations = array('Bind', 'Unbind', 'Add', 'Delete', 'Modrdn', 'Modify', 'Compare', 'Search', 'Abandon', 'Extended');
+foreach($operations as $operation) {
+  $key = lc($operation);
+  $$key = pql_get_status($_pql->ldap_linkid, "cn=$operation,cn=Operations,cn=Monitor", array("monitorOpInitiated", "monitorOpCompleted"));
+  if(!$$key)
+	$$key = array("monitoropinitiated" => 0, "monitoropcompleted" => 0);
+}
+
+// Get TOTAL number of initiated and completed operations
 $tmp = pql_get_status($_pql->ldap_linkid, "cn=Operations,cn=Monitor", array("monitorOpInitiated", "monitorOpCompleted"));
 if($tmp) {
 	// Initiated operations
@@ -81,25 +90,18 @@ $connections_information = pql_get_subentries($_pql->ldap_linkid,
 ?>
   <span class="title1"><?=$LANG->_('LDAP Server Connection Status')?></span>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left"><?=$LANG->_('LDAP Server Resource Summary')?>
+    <th colspan="3" align="left">
       <tr>
         <td class="title2"><?=$LANG->_('Resource')?></td>
-        <td class="title3"><?=$LANG->_('Usage Since Startup')?></td>
+        <td class="title3"><?=$LANG->_('Since Startup')?></td>
         <td class="title3"><?=$LANG->_('Average Per Minute')?></td>
       </tr>
 
       <tr>
         <?php $class=pql_format_table(0); ?>
-        <td class="title"><?=$LANG->_('Connections')?></td>
+        <td class="title"><?=$LANG->_('Total Connections')?></td>
         <td class="<?=$class?>"><?=$connections_total?></td>
         <td class="<?=$class?>"><?=$connections_average?></td>
-      </tr>
-
-      <tr>
-        <?php $class=pql_format_table(0); ?>
-        <td class="title"><?=$LANG->_('Operations Initiated')?></td>
-        <td class="<?=$class?>"><?=$operations_initiated?></td>
-        <td class="<?=$class?>"><?=$operations_initiated_average?></td>
       </tr>
 
       <tr>
@@ -118,7 +120,44 @@ $connections_information = pql_get_subentries($_pql->ldap_linkid,
     </th>
   </table>
 
-  <br>
+  <br><br>
+
+  <span class="title1"><?=$LANG->_('LDAP Server operations')?></span>
+  <table cellspacing="0" cellpadding="3" border="0">
+    <th colspan="3" align="left">
+      <tr>
+        <td class="title2"><?=$LANG->_('Resource')?></td>
+        <td class="title3"><?=$LANG->_('Initiated')?></td>
+        <td class="title3"><?=$LANG->_('Completed')?></td>
+        <td class="title3"><?=$LANG->_('Average Per Minute')?></td>
+      </tr>
+
+<?php foreach($operations as $operation) {
+		$key = lc($operation);
+		$value = $$key;
+
+		$average = round($value['monitoropcompleted'] / (($timestamp_current - $timestamp_start) / 3600), 2);
+?>
+      <tr>
+        <?php $class=pql_format_table(0); ?>
+        <td class="title"><?=$operation?></td>
+        <td class="<?=$class?>"><?=$value["monitoropinitiated"]?></td>
+        <td class="<?=$class?>"><?=$value["monitoropcompleted"]?></td>
+        <td class="<?=$class?>"><?=$average?></td>
+      </tr>
+
+<?php } ?>
+      <tr>
+        <?php $class=pql_format_table(0); ?>
+        <td class="title"><?=$LANG->_('Total Operations')?></td>
+        <td class="<?=$class?>"><?=$operations_initiated?></td>
+        <td class="<?=$class?>"><?=$operations_completed?></td>
+        <td class="<?=$class?>"><?=$operations_completed_average?></td>
+      </tr>
+    </th>
+  </table>
+
+  <br><br>
 
   <span class="title1"><?=$LANG->_('Current LDAP Server Resource Usage')?></span>
   <table cellspacing="0" cellpadding="3" border="0">
@@ -144,7 +183,7 @@ $connections_information = pql_get_subentries($_pql->ldap_linkid,
   </table>
 
 <?php	if($connections_information[0]) { ?>
-  <br>
+  <br><br>
 
   <span class="title1"><?=$LANG->_('Open Connections')?></span>
   <table cellspacing="0" cellpadding="3" border="0">
