@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-details.inc,v 1.32 2005-04-23 09:10:02 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.33 2005-05-18 20:29:22 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
@@ -104,7 +104,7 @@
 <?php		} ?>
           </td>
         </tr>
-<?php	} elseif($_REQUEST["template"] != "group") { ?>
+<?php	} elseif($_REQUEST["template"] != "internal_group") { ?>
         <input type="hidden" name="pwscheme" value="<?=$_REQUEST["defaultpasswordscheme"]?>">
 <?php   }
 
@@ -121,23 +121,54 @@
 ?>
 
         <!-- Password -->
-<?php	if(in_array('KERBEROS', $schemes) or $_SESSION["ADVANCED_MODE"]) { ?>
-        <tr class="<?php pql_format_table(); ?>">
+<?php	if(in_array('KERBEROS', $schemes) or $_SESSION["ADVANCED_MODE"]) {
+			$class = pql_format_table(0);
+?>
+        <tr class="<?=$class?>">
+<?php if(!eregi("KERBEROS", $_REQUEST["pwscheme"])) { ?>
           <td class="title"><?=$LANG->_('Password')?></td>
+<?php } else { ?>
+          <td class="title"><?=$LANG->_('Kerberos V Principal')?></td>
+<?php } ?>
+<?php if(!eregi("KERBEROS", $_REQUEST["pwscheme"])) { ?>
           <td>&nbsp;&nbsp;<input type="checkbox" name="autogenerate"><?=$LANG->_('Autogenerate password')?></td>
         </tr>
 
-        <tr class="<?php pql_format_table(); ?>">
+        <tr class="<?=$class?>">
           <td class="title"></td>
+<?php } ?>
           <!-- Crude hackery. Using type=password won't be so good if we're using {KERBEROS} -->
           <td>
             <?=pql_format_error_span($error_text["password"]); ?>
             <?=pql_templates_mark_importance($mark); ?>
             <input type="text" name="password" value="<?=$_REQUEST["password"]?>"<?php if(in_array('KERBEROS', $schemes)) { ?> size="30"<?php } ?>>
+<?php if(!eregi("KERBEROS", $_REQUEST["pwscheme"])) { ?>
             <input type="checkbox" name="crypted"><?=$LANG->_('Password is already encrypted')?>
             <?php echo pql_format_error_span($error["pwscheme"]); ?>
+<?php } ?>
           </td>
         </tr>
+
+<?php if($_REQUEST["clear_text_password"]) { ?>
+        <tr class="<?=$class?>">
+          <td class="title"></td>
+          <td>
+            <?=pql_templates_mark_importance($mark); ?>
+            <?=$LANG->_('Password that will be set')?>: <b><?=$_REQUEST["clear_text_password"]?></b>
+          </td>
+        </tr>
+        <input type="hidden" name="clear_text_password" value="<?=$_REQUEST["clear_text_password"]?>">
+
+<?php } elseif($auto_generated_kerberos_pw) { ?>
+        <tr class="<?=$class?>">
+          <td class="title"><?=$LANG->_('Password')?></td>
+          <td>
+            <?=pql_templates_mark_importance($mark); ?>
+            <input type="text" name="clear_text_password" value="<?=$_REQUEST["clear_text_password"]?>">
+          </td>
+        </tr>
+
+<?php } ?>
 
         <tr class="<?php pql_format_table(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
@@ -373,7 +404,7 @@
             </select>
           </td>
         </tr>
-<?php } elseif($_REQUEST["template"] != "group") { ?>
+<?php } elseif($_REQUEST["template"] != "internal_group") { ?>
     <input type="hidden" name="account_status" value="">
 <?php }
 // }}}
@@ -415,7 +446,7 @@
 <?php	} ?>
     <input type="hidden" name="page_next"     value="save">
 <?php } else {
-		if(($_REQUEST["template"] != 'shell') and ($_REQUEST["template"] != "group")) {
+		if(($_REQUEST["template"] != 'shell') and ($_REQUEST["template"] != "internal_group")) {
 ?>
     <input type="hidden" name="page_next"     value="two">
 <?php	} else {

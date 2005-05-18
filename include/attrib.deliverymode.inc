@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliverymode (delivery preferences)
-// $Id: attrib.deliverymode.inc,v 2.27 2004-11-05 12:39:38 turbo Exp $
+// $Id: attrib.deliverymode.inc,v 2.28 2005-05-18 20:29:16 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -50,7 +50,19 @@ function attribute_init() {
 
 // {{{ attribute_print_form(type)
 function attribute_print_form($type = "modify") {
-    global $error, $LANG;
+    global $error, $LANG, $_pql;
+
+	// {{{ Retreive old value(s)
+	$deliverymode = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_MODE"));
+	if(!is_array($deliverymode))
+	  $deliverymode = array($deliverymode);
+
+	if(in_array('nolocal', $deliverymode) and !$_REQUEST["programpath"])
+	  $_REQUEST["programpath"] = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_PROGRAM"));
+
+	if(in_array('reply', $deliverymode) and !$_REQUEST["mailreplytext"])
+	  $_REQUEST["mailreplytext"] = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_REPLYTEXT"));
+	// }}}
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -69,10 +81,14 @@ function attribute_print_form($type = "modify") {
           <td class="title"><?=$LANG->_('Delivery mode')?></td>
           <td>
             <?=pql_format_error_span($error["deliverymode"])?>
-            <input type="checkbox" name="nolocal"   <?php if($_REQUEST["nolocal"])   { echo "CHECKED"; } ?>><?=$LANG->_('Do not deliver to local mail box')?><br>
-            <input type="checkbox" name="noforward" <?php if($_REQUEST["noforward"]) { echo "CHECKED"; } ?>><?=$LANG->_('Do not forward mail to other account/address')?><br>
-            <input type="radio" name="delivery_type" value="noprogram" <?php if($_REQUEST["noprogram"]) { echo "CHECKED"; } ?>><?=$LANG->_('No program deliveries')?><br>
+            <input type="checkbox" name="nolocal"   <?php if($_REQUEST["nolocal"] or in_array('nolocal', $deliverymode)) { echo "CHECKED"; } ?>><?=$LANG->_('Do not deliver to local mail box')?><br>
+            <input type="checkbox" name="noforward" <?php if($_REQUEST["noforward"] or in_array('noforward', $deliverymode)) { echo "CHECKED"; } ?>><?=$LANG->_('Do not forward mail to other account/address')?><br>
+            <input type="radio" name="delivery_type" value="noprogram" <?php if($_REQUEST["noprogram"] or in_array('noprogram', $deliverymode)) { echo "CHECKED"; } ?>><?=$LANG->_('No program deliveries')?><br>
+<?php if(in_array('nolocal', $deliverymode) and $_REQUEST["programpath"]) { ?>
+            <input type="radio" name="delivery_type" value="program" CHECKED><input type="text" name="programpath" value="<?=$_REQUEST["programpath"]?>">
+<?php } else { ?>
             <input type="radio" name="delivery_type" value="program"><input type="text" name="programpath">
+<?php } ?>
           </td>
         </tr>
 
@@ -96,7 +112,7 @@ function attribute_print_form($type = "modify") {
 ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Send automatic reply')?></td>
-          <td><input type="checkbox" name="reply" value="ok" <?php if($_REQUEST["reply"] == "ok"){ echo "checked";} ?>><?=$LANG->_('Send an auto reply')?></td>
+          <td><input type="checkbox" name="reply" value="ok" <?php if(($_REQUEST["reply"] == "ok") or in_array('reply', $deliverymode)) { echo "CHECKED"; } ?>><?=$LANG->_('Send an auto reply')?></td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">

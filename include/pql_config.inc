@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.77 2005-04-23 09:08:50 turbo Exp $
+// $Id: pql_config.inc,v 1.78 2005-05-18 20:29:16 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -99,7 +99,7 @@ if($_SESSION["USER_HOST"]) {
 	  // Open a connection to the LDAP server
 	  $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
-	$_SESSION["ALLOW_BRANCH_CREATE"] = 0; $_SESSION["ALLOW_CONTROL_CREATE"] = 0;
+	$_SESSION["ALLOW_BRANCH_CREATE"] = 0; $_SESSION["ALLOW_CONTROL_CREATE"] = 0; $_SESSION["ALLOW_EZMLM_CREATE"] = 0;
 
 	foreach($_pql->ldap_basedn as $dn)  {
 		$dn = urldecode($dn);
@@ -156,8 +156,11 @@ if($_SESSION["USER_HOST"]) {
 																		  pql_get_define("PQL_ATTR_ADMINISTRATOR"),
 																		  $_SESSION["USER_DN"]);
 
-			// User is super administrator - allow for administrating QmailLDAP/Control objects as well.
-			$_SESSION["ALLOW_CONTROL_CREATE"] = 1;
+			// User is super administrator - allow for administrating QmailLDAP/Control objects and ezmlm lists as well.
+			if($_SESSION["ALLOW_BRANCH_CREATE"]) {
+			  $_SESSION["ALLOW_CONTROL_CREATE"] = 1;
+			  $_SESSION["ALLOW_EZMLM_CREATE"]   = 1;
+			}
 		}
 		
 		// 4b. Verify if the user is controlsAdministrator in the topmost DN -> Allow administration of QmailLDAP/Control objects.
@@ -166,21 +169,25 @@ if($_SESSION["USER_HOST"]) {
 																		 pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
 																		 $_SESSION["USER_DN"]);
 
+		// 4c. Verify if the user is ezmlmAdministrator in the topmost DN -> Allow administration of Ezmlm lists.
+		if($_SESSION["USER_DN"] && !$_SESSION["ALLOW_EZMLM_CREATE"])
+		  $_SESSION["ALLOW_EZMLM_CREATE"] = pql_get_dn($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM").'='.$_SESSION["USER_DN"]);
+
 		if(!pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $dn)) {
 		  $ref = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_REFERENCE_USERS_WITH"));
 		  pql_set_define("PQL_CONF_REFERENCE_USERS_WITH", $ref, false, $dn);
 		}
+
+		// 4d. Load 'resonable defaults' for each top DN
+		require($_SESSION["path"]."/include/defaults.inc");
 	}
 
-	// 4c. Check the Control DN if the user is there -> Allow management of Controls information
+	// 5. Check the Control DN if the user is there -> Allow management of Controls information
 	if(!$_SESSION["ALLOW_CONTROL_CREATE"])
 	  $_SESSION["ALLOW_CONTROL_CREATE"] = pql_validate_administrator($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 																	 pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
 																	 $_SESSION["USER_DN"]);
 
-	// 5. Load 'resonable defaults' for each top DN
-	require($_SESSION["path"]."/include/defaults.inc");
-	
 	// 6. Get user configuration for phpQLAdmin
 	$user_object = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_DN"], "(objectClass=*)", 'BASE');
 	foreach($PQL_ATTRIBUTE["USER"] as $key => $attrib) {

@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.94 2005-04-23 09:00:05 turbo Exp $
+// $Id: domain_detail.php,v 2.95 2005-05-18 20:29:12 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -188,12 +188,17 @@ $buttons = $buttons + $new;
 
 if($_SESSION["ADVANCED_MODE"]) {
 	if($_SESSION["ACI_SUPPORT_ENABLED"]) {
-		$new = array('dnsinfo'	=> 'MX Information',
-					 'aci'		=> 'Access Control Information');
+		$new = array('dnsinfo'	=> 'MX Information');
 		$buttons = $buttons + $new;
+
+		if($_SESSION["ALLOW_BRANCH_CREATE"]) {
+		  // This is a 'super-admin'.
+		  $new = array('aci'	=> 'Access Control Information');
+		  $buttons = $buttons + $new;
+		}
 	}
 
-	if(pql_get_define("PQL_CONF_CONTROL_USE")) {
+	if(pql_get_define("PQL_CONF_CONTROL_USE") and $_SESSION["ALLOW_CONTROL_CREATE"]) {
 		$new = array('options' => 'QmailLDAP/Controls Options');
 		$buttons = $buttons + $new;
 	}

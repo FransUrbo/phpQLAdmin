@@ -3,15 +3,15 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_templates.inc,v 2.4 2005-03-19 10:50:54 turbo Exp $
+// $Id: pql_templates.inc,v 2.5 2005-05-18 20:29:16 turbo Exp $
 //
 
 // {{{ Generate the group template (hardcoded for the moment)
 function pql_templates_group() {
   if($_SESSION["NEW_STYLE_QUOTA"]) {
 	$TEMPLATE["dn"]    = 'internal';
-	$TEMPLATE["name"]  = 'group';
-	$TEMPLATE["short"] = 'Group account';
+	$TEMPLATE["name"]  = 'internal_group';
+	$TEMPLATE["short"] = 'Internal group account';
 	$TEMPLATE["long"]  = 'Group delivery with verification (~ mailinglists)';
 
 	// We need the 'person' object class because 'qmailGroup' (and 'qmailUser')

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // qmail uid and gid
-// $Id: attrib.ugidnumber.inc,v 2.5 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.ugidnumber.inc,v 2.6 2005-05-18 20:29:16 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -57,10 +57,10 @@ function attribute_init() {
     list($_REQUEST["uidnumber"], $_REQUEST["gidnumber"]) = parse_oldvalue();
 
 	if (empty($_REQUEST["uidnumber"])) {
-	  $_REQUEST["uidnumber"] = pql_get_next_ugidnumber($_pql, 'uid');
+	  $_REQUEST["uidnumber"] = pql_get_next_ugidnumber($_pql, 'uid', $_REQUEST["rootdn"]);
 	}
 	if (empty($_REQUEST["gidnumber"])) {
-	  $_REQUEST["gidnumber"] = pql_get_next_ugidnumber($_pql, 'gid');
+	  $_REQUEST["gidnumber"] = pql_get_next_ugidnumber($_pql, 'gid', $_REQUEST["rootdn"]);
 	}
 }
 // }}}
