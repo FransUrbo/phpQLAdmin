@@ -80,9 +80,6 @@ $connections_information = pql_get_subentries($_pql->ldap_linkid,
 											  'monitoredInfo', "cn=Connection*");
 ?>
   <span class="title1"><?=$LANG->_('LDAP Server Connection Status')?></span>
-
-  <br><br>
-
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=$LANG->_('LDAP Server Resource Summary')?>
       <tr>
@@ -119,8 +116,13 @@ $connections_information = pql_get_subentries($_pql->ldap_linkid,
         <td class="<?=$class?>"><?=$sent_kbytes_average?></td>
       </tr>
     </th>
+  </table>
 
-    <th colspan="3" align="left"><?=$LANG->_('Current LDAP Server Resource Usage')?>
+  <br>
+
+  <span class="title1"><?=$LANG->_('Current LDAP Server Resource Usage')?></span>
+  <table cellspacing="0" cellpadding="3" border="0">
+    <th colspan="3" align="left">
       <tr>
         <?php $class=pql_format_table(0); ?>
         <td class="title"><?=$LANG->_('Open Connections')?></td>
@@ -142,10 +144,13 @@ $connections_information = pql_get_subentries($_pql->ldap_linkid,
   </table>
 
 <?php	if($connections_information[0]) { ?>
+  <br>
+
+  <span class="title1"><?=$LANG->_('Open Connections')?></span>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left"><?=$LANG->_('Open Connections')?>
+    <th colspan="3" align="left">
       <tr>
-        <td class="title3"><?=$LANG->_('Connection Number')?></td>
+        <td class="title2"><?=$LANG->_('Connection')?></td>
         <td class="title3"><?=$LANG->_('Time Opened')?></td>
         <td class="title3"><?=$LANG->_('Received')?></td>
         <td class="title3"><?=$LANG->_('Completed')?></td>
@@ -165,7 +170,7 @@ $connections_information = pql_get_subentries($_pql->ldap_linkid,
 				$compl = split('/', $tmp[2]);
 ?>
       <tr>
-        <td class="title"><?=$tmp[0]?></td>
+        <td class="title" align="right"><?=$tmp[0]?>&nbsp;&nbsp;</td>
         <td class="<?=$class?>"><?=$time_opened?></td>
         <td class="<?=$class?>"><?=$compl[0]?></td>
         <td class="<?=$class?>"><?=$compl[3]?></td>
