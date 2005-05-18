@@ -1,6 +1,6 @@
 <?php
 // Manage PHP sessions per phpQLAdmin instance
-// $Id: pql_session.inc,v 1.1.2.4 2005-05-16 08:37:05 turbo Exp $
+// $Id: pql_session.inc,v 1.1.2.5 2005-05-18 08:27:46 turbo Exp $
 
 // {{{ Get the URI path
 // Replace '/' with '\/' so that regexp will work
@@ -11,6 +11,9 @@ $uri = preg_replace("/$root/", '', __FILE__);
 
 // Remove the actual path to the file
 $uri = '/'.preg_replace("/include\/pql_session.inc/", '', $uri);
+if($uri == '//') {
+  $uri = '/';
+}
 // }}}
 
 // {{{ Retreive the protocol and server name
