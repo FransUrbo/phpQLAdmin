@@ -31,6 +31,13 @@ phpQLAdmin 2.2.5 TO BE ANNOUNCED
 	  - Include the delivery program (if set) in the user details->Delivery mode page.
 	  - Add listeners and overlay statistics information to the stats (basic) page.
 	  - Prettify the connection status page a little.
+	  - Separate the operations information into it's own table (still in the Connections
+	    status page though).
+	    + Add status information for ALL operations ('Bind', 'Unbind', 'Add', 'Delete',
+	     'Modrdn', 'Modify', 'Compare', 'Search', 'Abandon' and 'Extended').
+	    + Show initiated _and_ completed in addition to 'average per minute'.
+	    + The 'average per minute' should be based on the _completed_ operations, not
+	      the initiated.
 
 	Misc changes
 	  - Instead of using the template _name_ in 'tables/user_add-additional.inc', use the
