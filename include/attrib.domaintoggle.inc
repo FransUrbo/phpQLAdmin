@@ -1,7 +1,8 @@
 <?php
 // Attribute plugin for
-// autoCreateUsername and autoCreateMailAddress
-// $Id: attrib.domaintoggle.inc,v 2.9 2004-10-19 10:40:41 turbo Exp $
+// autoCreateUsername, autoCreateMailAddress, autoCreatePassWord,
+// simScanSpamAssassin, simScanClamAntiVirus and simScanTrophie
+// $Id: attrib.domaintoggle.inc,v 2.10 2005-05-26 15:53:18 turbo Exp $
 
 // {{{ attribute_save(void)
 // It's a toggle. Change value directly.

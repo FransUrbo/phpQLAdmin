@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.36 2005-05-18 20:29:16 turbo Exp $
+// $Id: config_attributes.inc,v 2.37 2005-05-26 15:53:18 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -203,6 +203,16 @@ pql_set_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_DN", 		strtolower('webLDAPServ
 pql_set_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_PW", 		strtolower('webLDAPServerLoginPW'),			false);
 // }}}
 
+// {{{ Attributes used by the SimScan config
+pql_set_define("PQL_ATTR_SIMSCAN_USE", 						strtolower('useSimScan'),					false);
+pql_set_define("PQL_ATTR_SIMSCAN_SPAM",						strtolower('simScanSpamAssassin'),			false);
+pql_set_define("PQL_ATTR_SIMSCAN_CLAM",						strtolower('simScanClamAntiVirus'),			false);
+pql_set_define("PQL_ATTR_SIMSCAN_TROPHIE",					strtolower('simScanTrophie'),				false);
+
+pql_set_define("PQL_ATTR_SIMSCAN_SPAM_HITS",				strtolower('simScanSpamAssassinHits'),		false);
+pql_set_define("PQL_ATTR_SIMSCAN_ATTACHMENTS",				strtolower('simScanAttachmentSuffix'),		false);
+// }}}
+
 // {{{ Attributes for external ezmlm mailing lists
 pql_set_define("PQL_ATTR_EZMLM_REMOTE", 					strtolower('ezmlmRemote'),					false);
 pql_set_define("PQL_ATTR_EZMLM_REMOTE_HOST", 				strtolower('ezmlmRemoteHost'),				false);
@@ -303,6 +313,7 @@ pql_set_define("PQL_ATTR_USER_TEMPLATE_DESC_LONG",			strtolower("userTemplateDes
 $PQL_ATTRIBUTE["GLOBAL"] = array("PQL_CONF_CONTROL_USE"					=> pql_get_define("PQL_ATTR_CONTROL_USE"),
 								 "PQL_CONF_EZMLM_USE"					=> pql_get_define("PQL_ATTR_EZMLM_USE"),
 								 "PQL_CONF_BIND9_USE"					=> pql_get_define("PQL_ATTR_BIND9_USE"),
+								 "PQL_CONF_SIMSCAN_USE"					=> pql_get_define("PQL_ATTR_SIMSCAN_USE"),
 								 "PQL_CONF_ACI_USE"						=> pql_get_define("PQL_ATTR_ACI_USE"),
 								 "PQL_CONF_WEBSRV_USE"					=> pql_get_define("PQL_ATTR_WEBSRV_USE"),
 								 "PQL_CONF_AUTO_RELOAD"					=> pql_get_define("PQL_ATTR_AUTO_RELOAD"),
@@ -368,7 +379,13 @@ $PQL_ATTRIBUTE["BRANCH"] = array("PQL_CONF_SHOW_USERS"					=> pql_get_define("PQ
 								 "PQL_CONF_SUBTREE_USERS"				=> pql_get_define("PQL_ATTR_SUBTREE_USERS"),
 								 "PQL_CONF_SUBTREE_GROUPS"				=> pql_get_define("PQL_ATTR_SUBTREE_GROUPS"),
 								 "PQL_CONF_EZMLM_USER"					=> pql_get_define("PQL_ATTR_EZMLM_USER"),
-								 "PQL_CONF_VAT_NUMBER"					=> pql_get_define("PQL_ATTR_VAT_NUMBER"));
+								 "PQL_CONF_VAT_NUMBER"					=> pql_get_define("PQL_ATTR_VAT_NUMBER"),
+								 "PQL_CONF_SIMSCAN_SPAM"				=> pql_get_define("PQL_ATTR_SIMSCAN_SPAM"),
+								 "PQL_CONF_SIMSCAN_CLAM"				=> pql_get_define("PQL_ATTR_SIMSCAN_CLAM"),
+								 "PQL_CONF_SIMSCAN_TROPHIE"				=> pql_get_define("PQL_ATTR_SIMSCAN_TROPHIE"),
+								 "PQL_CONF_SIMSCAN_SPAM_HITS"			=> pql_get_define("PQL_ATTR_SIMSCAN_SPAM_HITS"),
+								 "PQL_CONF_SIMSCAN_ATTACHMENTS"			=> pql_get_define("PQL_ATTR_SIMSCAN_ATTACHMENTS"),
+);
 // }}}
 
 // {{{ Map attribute to configuration define - USER

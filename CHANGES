@@ -51,6 +51,19 @@ phpQLAdmin 2.3.0 TO BE ANNOUNCED
 	    A new object class and a new attribute to add to the QLC object(s):
 	    phpQLAdminMXHostAddition            1.3.6.1.4.1.8767.3.1.8      (object class)
             nonPrimaryRcptHosts                 1.3.6.1.4.1.8767.3.2.4.22   (attribute)
+	  - Support SimScan configuration (added as MAY to phpQLAdminMXHostAddition and
+	    phpQLAdminGlobal):
+	    useSimScan	                        1.3.6.1.4.1.8767.3.2.1.22
+	    simScanSpamAssassin                 1.3.6.1.4.1.8767.3.2.1.23
+	    simScanClamAntiVirus                1.3.6.1.4.1.8767.3.2.1.24
+	    simScanTrophie                      1.3.6.1.4.1.8767.3.2.1.25
+	    simScanSpamAssassinHits             1.3.6.1.4.1.8767.3.2.4.23
+	    simScanAttachmentSuffix             1.3.6.1.4.1.8767.3.2.4.24
+	    + Configured/enabled in two places:
+	      * Globaly per MX host (in a QmailLDAP/Controls object).
+	      * Per branch object
+	    + Script to extract and generate the simcontrol file (scripts/extract_simscan.pl)
+	      is only started, not finished!
 
 	Misc changes
 	  - Administration of mailinglists located on remote server (i.e. not on the same

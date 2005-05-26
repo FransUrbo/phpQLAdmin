@@ -1,8 +1,11 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.44 2005-04-17 09:38:56 turbo Exp $
+// $Id: control_detail.php,v 1.45 2005-05-26 15:53:14 turbo Exp $
+
+// {{{ Setup session etc
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
+// }}}
 
 if(pql_get_define("PQL_CONF_CONTROL_USE")) {
     // {{{ Include control api if control is used
@@ -10,7 +13,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
     $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 	include($_SESSION["path"]."/header.html");
-	// }}}
+// }}}
 
 	// {{{ Get the values of the mailserver
 	$attribs = array("defaultdomain"		=> pql_get_define("PQL_ATTR_DEFAULTDOMAIN"),
@@ -66,12 +69,12 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 										  'maxsize'  => $defaultquotasize));
 	} elseif($ldapdefaultquota)
 		$quota = pql_ldap_mailquota(pql_parse_quota($quota));
-	// }}}
+// }}}
 
 	// {{{ Print status message, if one is available
 	if(isset($msg))
 	  pql_format_status_msg($msg);
-	// }}}
+// }}}
 
 	// {{{ Just incase we have a new style quota, but not an old one...
 	if(($defaultquotasize and !eregi('not set', $defaultquotasize)) and
@@ -79,7 +82,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 	  $quota = $defaultquotasize."S,".$defaultquotacount."C";
 	elseif($ldapdefaultquota and !eregi('not set', $ldapdefaultquota))
 	  $quota = $ldapdefaultquota;
-	// }}}
+// }}}
 
 	// {{{ Reload navigation bar if needed
 	if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
@@ -92,14 +95,8 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
   //--></script>
 <?php
 	}
-	// }}}
+// }}}
 
-	// {{{ Setup the buttons
-	$buttons = array('default' => 'Base values',
-					 'hosts'   => 'Locals and RCPTHosts',
-					 'nonprim' => 'Non-primary MX domains',
-					 'action'  => 'Action');
-	// }}}
 ?>
 
   <span class="title1">Mailserver: <?=pql_maybe_idna_decode($_REQUEST["mxhost"])?></span>
@@ -107,23 +104,37 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
   <br><br>
 
 <?php
-	// Output the buttons
-	pql_generate_button($buttons, "mxhost=".$_REQUEST["mxhost"]); echo "  <br>\n";
+	// {{{ Setup the buttons
+	$buttons = array('default' => 'Base values',
+					 'hosts'   => 'Locals and RCPTHosts',
+					 'nonprim' => 'Non-primary MX domains');
 
+	if(pql_get_define("PQL_CONF_SIMSCAN_USE")) {
+	  $new = array('simscan' => 'SimScan config');
+	  $buttons = $buttons + $new;
+	}
+
+	$new = array('action'  => 'Action');
+	$buttons = $buttons + $new;
+
+	pql_generate_button($buttons, "mxhost=".$_REQUEST["mxhost"]); echo "  <br>\n";
+// }}}
+
+	// {{{ Load the requested control details page
 	if($_REQUEST["view"] == '')
 		$_REQUEST["view"] = 'default';
 
 	if($_REQUEST["view"] == 'default')
 		include("./tables/control_details-base.inc");
-
-	if($_REQUEST["view"] == 'hosts')
+	elseif($_REQUEST["view"] == 'hosts')
 		include("./tables/control_details-hosts.inc");
-
-	if($_REQUEST["view"] == 'nonprim')
+	elseif($_REQUEST["view"] == 'nonprim')
 		include("./tables/control_details-nonprimmx.inc");
-
-	if($_REQUEST["view"] == 'action')
+	elseif($_REQUEST["view"] == 'simscan')
+		include("./tables/domain_details-simscan.inc");
+	elseif($_REQUEST["view"] == 'action')
 		include("./tables/control_details-action.inc");
+// }}}
 } else {
 ?>
   <span class="title1">PQL_CONF_CONTROL_USE isn't set, won't show control information</span>

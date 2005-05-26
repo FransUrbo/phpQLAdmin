@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.95 2005-05-18 20:29:12 turbo Exp $
+// $Id: domain_detail.php,v 2.96 2005-05-26 15:53:14 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -94,7 +94,7 @@ $attribs = array("autocreatemailaddress"	=> pql_get_define("PQL_ATTR_AUTOCREATE_
 foreach($attribs as $key => $attrib) {
 	// Get default value
 	$value = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib);
-	if(is_array($value))
+	if(is_array($value) and ($key != 'simscanattachmentsuffix'))
 	  $value = $value[0];
 	$$key = $value;
 
@@ -107,17 +107,16 @@ foreach($attribs as $key => $attrib) {
 	// we add a delete link as well.
 	$link = $key . "_link";
 	if(($key != 'defaultdomain') and ($key != 'basehomedir') and ($key != 'basemaildir')) {
-		if(!$value and (($key == 'maximumdomainusers') or ($key == 'maximummailinglists') or
-						($key == 'autocreateusername') or ($key == 'autocreatemailaddress') or
+		if(!$value and (($key == 'maximumdomainusers')   or ($key == 'maximummailinglists') or
+						($key == 'autocreateusername')   or ($key == 'autocreatemailaddress') or
 						($key == 'autocreatepassword')))
 		  $value = 0;
-		else
+		else {
 		  // We have a value
-		  if(($key == 'autocreateusername') or
-			 ($key == 'autocreatemailaddress') or
-			 ($key == 'autocreatepassword'))
+		  if(($key == 'autocreateusername')   or ($key == 'autocreatemailaddress') or ($key == 'autocreatepassword'))
 			// It's a toggle. Convert the boolean value to an integer
 			$$key = pql_format_bool($value);
+		}
 
 		// A dcOrganizationNameForm attribute
 		$alt1 = pql_complete_constant($LANG->_('Modify attribute %attribute% for %domainname%'),
@@ -214,6 +213,11 @@ if($_SESSION["ADVANCED_MODE"]) {
 	}
 }
 
+if(pql_get_define("PQL_CONF_SIMSCAN_USE")) {
+  $new = array('simscan' => 'SimScan config');
+  $buttons = $buttons + $new;
+}
+
 $new = array('action' => 'Actions');
 $buttons = $buttons + $new;
 
@@ -252,6 +256,8 @@ if($_REQUEST["view"] == 'owner') {
 	include("./tables/domain_details-users.inc");
 } elseif($_REQUEST["view"] == 'action') {
 	include("./tables/domain_details-action.inc");
+} elseif($_REQUEST["view"] == 'simscan') {
+	include("./tables/domain_details-simscan.inc");
 } elseif($_SESSION["ADVANCED_MODE"] == 1) {
 	if($_REQUEST["view"] == 'dnsinfo')
 	  include("./tables/domain_details-dnsinfo.inc");

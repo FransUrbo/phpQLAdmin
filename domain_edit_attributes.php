@@ -1,6 +1,6 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.50 2005-03-17 09:13:10 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.51 2005-05-26 15:53:14 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -120,7 +120,8 @@ $_REQUEST["orgname"] = $orgname;
 //		startWithAdvancedMode		l								telePhoneNumber
 //		autoCreateMailAddress		maximumDomainUsers				userNamePrefix
 //		autoCreatePassWord			maximumMailingLists				userNamePrefixLength
-//		vatNumber
+//		vatNumber					simscanspamassassin				simscanclamantivirus
+//		simscantrophie
 //
 // * Files that manages the attribs above:
 //		include/attrib.accountstatus.inc
@@ -201,7 +202,10 @@ if(@$_REQUEST["submit"] == 1) {
 	  attribute_print_form();
 	elseif(($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME")) or
 		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS")) or
-		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_AUTOCREATE_PASSWORD")))
+		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_AUTOCREATE_PASSWORD")) or
+		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_SIMSCAN_SPAM")) or
+		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_SIMSCAN_CLAM")) or
+		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_SIMSCAN_TROPHIE")))
 	  attribute_save();
 	else
 	  attribute_print_form($_REQUEST["type"]);

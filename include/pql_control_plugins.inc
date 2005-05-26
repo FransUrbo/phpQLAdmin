@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control plugins)
 //
-// $Id: pql_control_plugins.inc,v 2.8 2005-04-17 09:38:56 turbo Exp $
+// $Id: pql_control_plugins.inc,v 2.9 2005-05-26 15:53:18 turbo Exp $
 //
 
 // ----------------------------
@@ -194,6 +194,15 @@ pql_plugin_register(pql_get_define("PQL_ATTR_RCPTHOSTS"),
 					"attrib.control.rcpthosts.inc",
 					pql_get_define("PQL_ATTR_RCPTHOSTS"),
 					pql_get_define("PQL_ATTR_RCPTHOSTS"));
+
+pql_plugin_register("simscan",
+					"attrib.control.simscan.inc",
+					"simscan",
+					array(pql_get_define("PQL_ATTR_SIMSCAN_SPAM"),
+						  pql_get_define("PQL_ATTR_SIMSCAN_CLAM"),
+						  pql_get_define("PQL_ATTR_SIMSCAN_TROPHIE"),
+						  pql_get_define("PQL_ATTR_SIMSCAN_SPAM_HITS"),
+						  pql_get_define("PQL_ATTR_SIMSCAN_ATTACHMENTS")));
 
 if($_SESSION["NEW_STYLE_QUOTA"]) {
 	// Oki, so these have nothing to do with quota, but the varible

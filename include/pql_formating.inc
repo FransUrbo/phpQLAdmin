@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.40 2005-05-18 20:29:16 turbo Exp $
+// $Id: pql_formating.inc,v 2.41 2005-05-26 15:53:18 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -229,9 +229,9 @@ function pql_format_table_single($linkid, $text, $url, $array, $attrib, $class =
 			$new_tr = 1;
 ?>
         <td class="<?=$class?>"><?=$username?></td>
-        <td class="<?=$class?>">
+        <td class="<?=$class?>" align="right">
           <?php if($url["mod"]) { ?><a href="<?=$url["mod"]?>&<?=$attrib?>=<?=$value?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$text["mod"]?>"></a><?php } ?>
-          <?php if($url["del"]) { ?><a href="<?=$url["del"]?>&<?=$attrib?>=<?=$value?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$text["del"]?>"></a><?php } ?>
+          <?php if($url["del"]) { ?><a href="<?=$url["del"]?>&<?=$attrib?>=<?=$value?>"><img src="images/del.png"  width="12" height="12" border="0" alt="<?=$text["del"]?>"></a><?php } ?>
         </td>
       </tr>
 <?php	}
@@ -541,6 +541,12 @@ function pql_format_bool(&$value) {
 	} elseif($value == 'FALSE') {
 		settype($value, "boolean");
 		$value = '0';
+	} elseif($value == '1') {
+		settype($value, "boolean");
+		$value = 'TRUE';
+	} elseif($value == '0') {
+		settype($value, "boolean");
+		$value = 'FALSE';
 	}
 
 	return($value);

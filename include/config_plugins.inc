@@ -11,7 +11,7 @@
 // If you want to customise phpQLAdmin, do NOT do it here, the file
 // to customise is 'config_attributes.inc'.
 //
-// $Id: config_plugins.inc,v 2.18 2004-10-14 05:46:13 turbo Exp $
+// $Id: config_plugins.inc,v 2.19 2005-05-26 15:53:18 turbo Exp $
 
 pql_plugin_register(pql_get_define("PQL_ATTR_ISACTIVE"),
 					"attrib.accountstatus.inc",
@@ -126,7 +126,10 @@ pql_plugin_register(pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"),
 					"",
 					array(pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"),
 						  pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS"),
-						  pql_get_define("PQL_ATTR_AUTOCREATE_PASSWORD")));
+						  pql_get_define("PQL_ATTR_AUTOCREATE_PASSWORD"),
+						  pql_get_define("PQL_ATTR_SIMSCAN_SPAM"),
+						  pql_get_define("PQL_ATTR_SIMSCAN_CLAM"),
+						  pql_get_define("PQL_ATTR_SIMSCAN_TROPHIE")));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_GROUP_CONFIRM"),
 					"attrib.usertoggle.inc",
@@ -245,6 +248,16 @@ pql_plugin_register(pql_get_define("PQL_ATTR_EZMLM_USER"),
 					"attrib.ezmlmuser.inc",
 					"",
 					pql_get_define("PQL_ATTR_EZMLM_USER"));
+
+pql_plugin_register(pql_get_define("PQL_ATTR_SIMSCAN_SPAM_HITS"),
+					"attrib.sahits.inc",
+					"",
+					pql_get_define("PQL_ATTR_SIMSCAN_SPAM_HITS"));
+
+pql_plugin_register(pql_get_define("PQL_ATTR_SIMSCAN_ATTACHMENTS"),
+					"attrib.saattach.inc",
+					"",
+					pql_get_define("PQL_ATTR_SIMSCAN_ATTACHMENTS"));
 
 // List all registred attributes and their files
 // - Uncomment this piece of code to view which
