@@ -1,11 +1,12 @@
 <?php
 // delete a user
-// $Id: user_del.php,v 2.42 2005-04-23 08:58:53 turbo Exp $
+// $Id: user_del.php,v 2.43 2005-05-27 10:52:47 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_ezmlm.inc");
+require($_SESSION["path"]."/include/pql_krbafs.inc");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
@@ -35,6 +36,12 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 	$delete_forwards = (isset($_REQUEST["delete_forwards"]) || pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST["rootdn"])) ? true : false;
 	$delete_admins   = (isset($_REQUEST["delete_admins"])   || pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST["rootdn"])) ? true : false;
 	$unsubscribe     = (isset($_REQUEST["unsubscribe"])     || pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST["rootdn"])) ? true : false;
+
+	// {{{ Get the user principal
+	$principal = kadmin_get_principal($_pql->ldap_linkid, $_REQUEST["user"]);
+	if($principal)
+	  kadmin_delprinc($_pql->ldap_linkid, $principal);
+	// }}}
 
 	// {{{ Get the users mail addresses before the object gets deleted
 	if($_REQUEST["unsubscribe"]) {
@@ -125,18 +132,6 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 	  putenv("PQL_CONF_WEBUSER=".posix_getuid());
 	  putenv("PQL_MAIL_ACTION=".$_REQUEST["mail_action"]);
 	  
-	  if(pql_get_define("PQL_CONF_KRB5_ADMIN_COMMAND_PATH") and 
-		 pql_get_define("PQL_CONF_KRB5_REALM") and
-		 pql_get_define("PQL_CONF_KRB5_ADMIN_PRINCIPAL") and
-		 pql_get_define("PQL_CONF_KRB5_ADMIN_SERVER") and 
-		 pql_get_define("PQL_CONF_KRB5_ADMIN_KEYTAB")) {
-		putenv("PQL_KADMIN_CMD=".pql_get_define("PQL_CONF_KRB5_ADMIN_COMMAND_PATH")."/kadmin");
-		putenv("PQL_KADMIN_REALM=".pql_get_define("PQL_CONF_KRB5_REALM"));
-		putenv("PQL_KADMIN_PRINC=".pql_get_define("PQL_CONF_KRB5_ADMIN_PRINCIPAL"));
-		putenv("PQL_KADMIN_SERVR=".pql_get_define("PQL_CONF_KRB5_ADMIN_SERVER"));
-		putenv("PQL_KADMIN_KEYTB=".pql_get_define("PQL_CONF_KRB5_ADMIN_KEYTAB"));
-	  }
-
 	  // Execute the user removal script (0 => show output)
 	  if(pql_execute(pql_get_define("PQL_CONF_SCRIPT_DELETE_USER", $_REQUEST["rootdn"]), 0)) {
 		echo pql_complete_constant($LANG->_('The %what% removal script failed'),

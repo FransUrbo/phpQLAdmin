@@ -1,5 +1,6 @@
 <?php
-// $Id: user_add-save.inc,v 1.37 2005-05-18 20:29:22 turbo Exp $
+// $Id: user_add-save.inc,v 1.38 2005-05-27 10:52:59 turbo Exp $
+require($_SESSION["path"]."/include/pql_krbafs.inc");
 
 // {{{ URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
 if($_REQUEST["surname"]) {
@@ -303,7 +304,17 @@ $branch = pql_maybe_decode($_REQUEST["subbranch"]);
 $DNs = pql_user_add($_pql->ldap_linkid, $_REQUEST["domain"], $userdn, $entry, 'user', $branch);
 if($DNs[0]) {
   // TODO: DNs[1] (the group object) might still be empty -> failed to add it.
-  
+
+  // Add the user principal (if a Kerberos V 'password')
+  if(pql_get_define("PQL_ATTR_KRB5PRINCIPALNAME") &&  $entry["krb5principalname"])
+	kadmin_ank($_pql->ldap_linkid, $entry["krb5principalname"], $entry["cleartextpassword"]);
+
+  if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+	echo "DNs added: ";
+	printr($DNs);
+	die();
+  }
+
   // {{{ Now it's time to run the special adduser script if defined...
   if(pql_get_define("PQL_CONF_SCRIPT_CREATE_USER", $_REQUEST["rootdn"])) {
 	// Setup the environment with the user details

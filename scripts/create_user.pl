@@ -20,12 +20,6 @@
 # PQL_MAILHOST="mail.test.org"
 # PQL_MAILMESSAGESTORE="/var/mail/test/test"
 
-# PQL_KADMIN_CMD="/usr/sbin/kadmin"
-# PQL_KADMIN_REALM="TEST.ORG"
-# PQL_KADMIN_PRINC="phpQLAdmin"
-# PQL_KADMIN_SERVR="kerberos.test.org"
-# PQL_KADMIN_KEYTB="/etc/krb5.keytab.phpQLAdmin"
-
 sub setup_command {
     my @cmd = @_;
     my $cmd;
@@ -85,78 +79,3 @@ if($ENV{"PQL_HOMEDIRECTORY"}) {
     }
 }
 chown($ENV{"PQL_UIDNUMBER"}, $ENV{"PQL_GIDNUMBER"}, $DIR);
-
-if(($ENV{"PQL_USERPASSWORD"} =~ /kerberos/i) || ($ENV{"PQL_USERPASSWORD"} =~ /sasl/i)) {
-    # Add the Kerberos principal
-    if(-x $ENV{"PQL_KADMIN_CMD"} && $ENV{"PQL_USERPASSWORD"}) {
-	$principal = (split('}', $ENV{"PQL_USERPASSWORD"}))[1];
-	$principal = (split('\@', $principal))[0];
-	print "Creating KerberosV principal '$principal': ";
-	
-	push(@args, $ENV{"PQL_KADMIN_CMD"});
-	if($ENV{"PQL_KADMIN_REALM"}) {
-	    push(@args, "-r");
-	    push(@args, $ENV{"PQL_KADMIN_REALM"});
-	}
-	
-	if($ENV{"PQL_KADMIN_PRINC"}) {
-	    push(@args, "-p");
-	    push(@args, $ENV{"PQL_KADMIN_PRINC"});
-	}
-	
-	if($ENV{"PQL_KADMIN_SERVR"}) {
-	    push(@args, "-s");
-	    push(@args, $ENV{"PQL_KADMIN_SERVR"});
-	}
-	
-	if($ENV{"PQL_KADMIN_KEYTB"}) {
-	    push(@args, "-k");
-	    push(@args, "-t");
-	    push(@args, $ENV{"PQL_KADMIN_KEYTB"});
-	}
-	push(@args, "-q");
-	
-	# See if the principal already exists
-	@CMD = @args;
-	push(@CMD, "'getprinc $principal'");
-	push(@CMD, "2> /dev/null");
-	$cmd = &setup_command(@CMD);
-
-	$exists = 0;
-	open(CMD, "$cmd |") || die "Can't execute '$cmd', $!\n";
-	while(! eof(CMD)) {
-	    $line = <CMD>; chomp($line);
-	    if($line =~ /^Expiration date:/) {
-		$exists = 1;
-		print "already exists\n";
-		exit 0;
-	    }
-	}
-
-	if(!$exists) {
-	    @CMD = @args;
-	    if($ENV{"PQL_CLEARTEXT_PASSWORD"}) {
-		push(@CMD, "'ank -pw ".$ENV{"PQL_CLEARTEXT_PASSWORD"}." $principal'");
-	    } else {
-		push(@CMD, "'ank -randkey $principal'");
-	    }
-	    push(@CMD, "2> /dev/null");
-	    $cmd = &setup_command(@CMD);
-
-	    $created = 0;
-	    open(CMD, "$cmd |") || die "Can't execute '$cmd', $!\n";
-	    while(! eof(CMD)) {
-		$line = <CMD>; chomp($line);
-		if($line =~ /^Principal .* created\.$/) {
-		    $created = 1;
-		}
-	    }
-
-	    if($created) {
-		print "done.\n";
-	    } else {
-		print "FAILED.\n";
-	    }
-	}
-    }
-}

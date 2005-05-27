@@ -68,5 +68,9 @@ phpQLAdmin 2.3.0 TO BE ANNOUNCED
 	Misc changes
 	  - Administration of mailinglists located on remote server (i.e. not on the same
 	    host where phpQLAdmin is running). See WARNING.txt!
+	  - Native support for Kerberos V, using the php4-kadm5 module (from the URL
+	    http://freshmeat.net/projects/php-kadm5).
+	    + Do not export variables PQL_KADMIN_* to the support scripts.
+	    + Closes bug 273.
 
 [all changelog for <2.3 branch have been removed for space reasons]

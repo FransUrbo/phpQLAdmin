@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.30 2005-04-23 08:46:04 turbo Exp $
+// $Id: attrib.userpassword.inc,v 2.31 2005-05-27 10:52:48 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -28,7 +28,7 @@ function attribute_check($type) {
 
 // {{{ attribute_init(void)
 function attribute_init() {
-	// dummy function
+  // dummy funciton
 }
 // }}}
 
@@ -36,14 +36,22 @@ function attribute_init() {
 function attribute_print_form() {
 	global $error, $_pql, $LANG;
 
-	// Get the default password scheme for branch
-	$defaultpasswordscheme = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"));
+	// Get current password
+	$principal = kadmin_get_principal($_pql->ldap_linkid, $_REQUEST["user"]);
+	if($principal)
+	  unset($password);
+
+	if($principal)
+	  $defaultpasswordscheme = 'KERBEROS';
+	else
+	  // Get the default password scheme for branch
+	  $defaultpasswordscheme = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"));
 ?>
   <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Set password')?></th>
 <?php if(!$defaultpasswordscheme or $_SESSION["ADVANCED_MODE"]) { ?>
-        <!-- Password schema -->
+        <!-- Password scheme -->
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Password encryption scheme')?></td>
           <td>
@@ -52,29 +60,38 @@ function attribute_print_form() {
 			// We got more than one password scheme...
 			$schemes = split(",", pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"]));
 			foreach($schemes as $scheme) {
-				if(!eregi('KERBEROS', $scheme)) {
 ?>
             <input type="radio" name="pwscheme" value="{<?=$scheme?>}" <?php if($defaultpasswordscheme == $scheme) { echo "CHECKED"; } ?>><?=$scheme?>
 
-<?php			}
-			}
-	  	} else { ?>
+<?php		}
+		} else { ?>
             <?=$LANG->_('Scheme')?>: <b><?=pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"])?></b>
             <input type="hidden" name="pwscheme" value="{<?=pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"])?>}">
-<?php 	} ?>
+<?php	} ?>
           </td>
         </tr>
-<?php } elseif($defaultpasswordscheme) { ?>
+<?php } elseif($defaultpasswordscheme and !$principal) { ?>
         <input type="hidden" name="pwscheme" value="{<?=$defaultpasswordscheme?>}">
+<?php } elseif($principal) { ?>
+        <input type="hidden" name="pwscheme" value="{KERBEROS}">
 <?php } ?>
 
+<?php if($principal) { ?>
+        <!-- Kerberos V principal -->
+        <tr class="<?php pql_format_table(); ?>">
+          <td class="title"><?=$LANG->_('Kerberos V principal')?></td>
+          <td><?=$principal?></td>
+        </tr>
+        <input type="hidden" name="principal" value="<?=$principal?>">
+
+<?php } ?>
         <!-- Password -->
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Password')?></td>
           <td>
             <?php echo pql_format_error_span($error["userpassword"]) . "\n"; ?>
             <!-- Ugly hack. Should really have type=password here, but what''s the use. Really!? -->
-            <input type="input" name="userpassword">
+            <input type="input" name="userpassword" size="40">
           </td>
         </tr>
 
@@ -112,20 +129,28 @@ function attribute_save($type) {
 		break;
 
 	  case "modify":
-		$pw = pql_password_hash($_REQUEST["userpassword"], $_REQUEST["pwscheme"]);
-
 		if($_REQUEST["user"] == $_SESSION["USER_DN"]) {
 		  // Make the new password a session variable as well, so that
 		  // we can update the used session password value in pql_modify_attribute()
 		  $_SESSION["NEW_PASS"] = $_REQUEST["userpassword"];
 		}
+
+		if($_REQUEST["principal"] and extension_loaded('kadm5') and function_exists("kadm5_init_with_password") and ($_REQUEST["pwscheme"] == 'KERBEROS')) {
+		  // Change an Kerberos V password
+		  require($_SESSION["path"]."/include/pql_krbafs.inc");
+
+		  kadmin_cpw($_pql->ldap_linkid, $_REQUEST["principal"], $_REQUEST["userpassword"]);
+		} else {
+		  // Change an 'ordinary' LDAP password
+		  $pw = pql_password_hash($_REQUEST["userpassword"], $_REQUEST["pwscheme"]);
 	
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_PASSWD"), 1, $pw)) {
+		  if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_PASSWD"), 1, $pw)) {
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										 array('what' => $LANG->_('password')));
-		} else
-		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('password'))) . ": " . pql_format_error(0);
+		  } else
+			$msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+										 array('what' => $LANG->_('password'))) . ": " . pql_format_error(0);
+		}
 		
 		attribute_forward($msg);
 		break;
