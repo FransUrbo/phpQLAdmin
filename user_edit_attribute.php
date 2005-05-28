@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of user
-// $Id: user_edit_attribute.php,v 2.54 2005-04-23 08:45:29 turbo Exp $
+// $Id: user_edit_attribute.php,v 2.55 2005-05-28 15:10:23 turbo Exp $
 //
 // This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
 //   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -13,6 +13,7 @@
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
 require($_SESSION["path"]."/include/config_plugins.inc");
+require($_SESSION["path"]."/include/pql_krbafs.inc");
 
 $url["domain"] = pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
