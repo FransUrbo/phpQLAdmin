@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.31 2005-05-27 10:52:48 turbo Exp $
+// $Id: attrib.userpassword.inc,v 2.32 2005-05-28 15:14:10 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -122,6 +122,7 @@ function attribute_print_form() {
 // {{{ attribute_save(type)
 function attribute_save($type) {
 	global $_pql, $LANG;
+	$success = 0;
 
 	switch($type) {
 	  case "add":
@@ -135,22 +136,23 @@ function attribute_save($type) {
 		  $_SESSION["NEW_PASS"] = $_REQUEST["userpassword"];
 		}
 
-		if($_REQUEST["principal"] and extension_loaded('kadm5') and function_exists("kadm5_init_with_password") and ($_REQUEST["pwscheme"] == 'KERBEROS')) {
-		  // Change an Kerberos V password
-		  require($_SESSION["path"]."/include/pql_krbafs.inc");
-
-		  kadmin_cpw($_pql->ldap_linkid, $_REQUEST["principal"], $_REQUEST["userpassword"]);
+		if($_REQUEST["principal"] and extension_loaded('kadm5') and function_exists("kadm5_init_with_password") and ($_REQUEST["pwscheme"] == '{KERBEROS}')) {
+		  if(kadmin_cpw($_pql->ldap_linkid, $_REQUEST["principal"], $_REQUEST["userpassword"]))
+			success = 1;
 		} else {
 		  // Change an 'ordinary' LDAP password
 		  $pw = pql_password_hash($_REQUEST["userpassword"], $_REQUEST["pwscheme"]);
 	
-		  if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_PASSWD"), 1, $pw)) {
-			$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
-										 array('what' => $LANG->_('password')));
-		  } else
-			$msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-										 array('what' => $LANG->_('password'))) . ": " . pql_format_error(0);
+		  if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_PASSWD"), 1, $pw))
+			success =1
 		}
+
+		if($success)
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+									   array('what' => $LANG->_('password')));
+		else
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+									   array('what' => $LANG->_('password'))) . ": " . pql_format_error(0);
 		
 		attribute_forward($msg);
 		break;
