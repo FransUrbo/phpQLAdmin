@@ -14,6 +14,8 @@ phpQLAdmin 2.3.0 TO BE ANNOUNCED
 	      sure it does...
 	      Should fix some problems with sessions that won't die or get's overwritten.
 	      Not sure exactly what the problem is/was...
+	  - Overloading of variables in tables/domain_details-websrv.inc fixed ($server*
+	    to $web_srv*).
 
 	GUI layout changes
 	  - Rewrite the way users are listed in the left frame. The attribute 'cn' is
