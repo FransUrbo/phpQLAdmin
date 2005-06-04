@@ -38,6 +38,8 @@ phpQLAdmin 2.2.5 TO BE ANNOUNCED
 	    + Show initiated _and_ completed in addition to 'average per minute'.
 	    + The 'average per minute' should be based on the _completed_ operations, not
 	      the initiated.
+	  - Slightly better looking output from the DNS zone creation script.
+	    + Output any PTR's correctly.
 
 	Misc changes
 	  - Instead of using the template _name_ in 'tables/user_add-additional.inc', use the
