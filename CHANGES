@@ -16,6 +16,13 @@ phpQLAdmin 2.3.0 TO BE ANNOUNCED
 	      Not sure exactly what the problem is/was...
 	  - Overloading of variables in tables/domain_details-websrv.inc fixed ($server*
 	    to $web_srv*).
+ 	  - If one enters a mailForwardingAddress and:
+ 	    + qmailDotMode		!= none
+ 	    + deliveryMode		!= noprogram
+ 	    + deliveryProgramPath	!= NULL
+ 	    + ldapDefaultDotMode	== ldapwithprog
+ 	    then there will be a COPY in the users local mailbox. Solve this by changing
+ 	    the 'qmailDotMode' and 'deliveryMode'.
 
 	GUI layout changes
 	  - Rewrite the way users are listed in the left frame. The attribute 'cn' is
@@ -32,6 +39,8 @@ phpQLAdmin 2.3.0 TO BE ANNOUNCED
 	    'Copy to' (default) or 'Forward to'.
 	    + Create objects with real home dirs...
 	  - Include a 'NOT' option for user search. Describe what it does and how it works.
+ 	  - Add a 'Force no local delivery' checkbox when _creating_ a mail forwarding address.
+ 	    ('Bug fixes' point 3 - mailForwardingAddress creation - above)
 
 	Documentation changes
 	Schema changes

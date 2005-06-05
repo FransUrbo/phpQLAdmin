@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailforwardingaddress (forward all mails to this address)
-// $Id: attrib.mailforwardingaddress.inc,v 2.22 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.mailforwardingaddress.inc,v 2.23 2005-06-05 13:06:39 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -35,7 +35,7 @@ function attribute_init() {
 
 // {{{ attribute_print_form(void)
 function attribute_print_form() {
-	global $rootdn, $domain, $user, $error, $LANG;
+	global $rootdn, $domain, $user, $error, $LANG, $_pql;
 
 	// URLify the basic values...
 	$url["rootdn"] = urlencode($rootdn);
@@ -62,6 +62,26 @@ function attribute_print_form() {
           <?php echo pql_format_error_span($error["mailforwardingaddress"]); ?><input type="text" name="mailforwardingaddress" value="">
         </td>
       </tr>
+<?php $modes = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_MODE"));
+      if(!is_array($modes)) $modes = array($modes);
+
+      $dotmode = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_DOTMODE"));
+      if(!is_array($dotmode)) $dotmode = array($dotmode);
+
+      if(!in_array('noprogram', $modes) and !in_array('none', $dotmode)) {
+?>
+
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title"><?=$LANG->_('Force no local delivery')?></td>
+        <td><input type="checkbox" name="force_no_local_delivery"></td>
+      </tr>
+
+      <tr class="subtitle">
+        <td colspan="2">
+          <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?=$LANG->_("If \bForce no local delivery\B isn't set, a copy will be saved in the local mailbox.")?>
+        </td>
+      </tr>
+<?php } ?>
     </table>
 
     <input type="hidden" name="submit"   value="1">
@@ -94,7 +114,10 @@ function attribute_save($type) {
 		  $msg = pql_complete_constant($LANG->_('Failed to add %what%'),
 									   array('what' => $LANG->_('forwarding address'))) . ": " . pql_format_error(0);
 		
-		attribute_forward($msg);
+		if($_REQUEST["force_no_local_delivery"] == 'on') {
+		  pql_modify_attribute($_pql->ldap_linkid, urldecode($_REQUEST["user"]), pql_get_define("PQL_ATTR_MODE"), '', 'noprogram');
+		  pql_modify_attribute($_pql->ldap_linkid, urldecode($_REQUEST["user"]), pql_get_define("PQL_ATTR_DOTMODE"), '', 'none');
+		}
 		break;
 
 	  case "modify":
@@ -115,13 +138,16 @@ function attribute_save($type) {
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('forwarding address'))) . ": " . pql_format_error(0);
-		
-		attribute_forward($msg);
 		break;
 	  default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
 								  array('type' => $type, 'file' => __FILE__)));
 	}
+
+	if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+	  die();
+	else
+	  attribute_forward($msg);
 }
 // }}}
 
