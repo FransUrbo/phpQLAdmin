@@ -1,10 +1,14 @@
 <?php
 // delete attribute of a user
-// $Id: user_del_attribute.php,v 2.34 2005-03-17 09:13:10 turbo Exp $
-//
+// $Id: user_del_attribute.php,v 2.35 2005-06-05 12:55:24 turbo Exp $
+
+// {{{ Setup session etc
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
+include($_SESSION["path"]."/header.html");
+// }}}
 
+// {{{ Retreive the _LDAP_ attribute name
 switch ($_REQUEST["attrib"]) {
   case "mailalternateaddress":
     $_REQUEST["attrib"] = pql_get_define("PQL_ATTR_MAILALTERNATE");
@@ -25,12 +29,12 @@ switch ($_REQUEST["attrib"]) {
   default:
     die(pql_complete_constant($LANG->_('Unknown attribute %attribute% in %file%'), array('attribute' => $_REQUEST["attrib"], 'file' => __FILE__)));
 }
-
-include($_SESSION["path"]."/header.html");
+// }}}
 
 if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST["rootdn"])) {
     $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
     
+    // {{{ Setup the information header
     if(lc($_REQUEST["attrib"]) == pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR"))
       $what = $LANG->_('group moderator');
     elseif(lc($_REQUEST["attrib"]) == pql_get_define("PQL_ATTR_GROUP_DN_MEMBER"))
@@ -43,16 +47,35 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
       $what = $LANG->_('QmailGroup moderator text');
     else
       $what = $LANG->_('alias');
+    // }}}
 
-    // delete the user attribute
+    // {{{ Delete the user attribute
     if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], $_REQUEST["oldvalue"], '')) {
 	$msg = pql_complete_constant($LANG->_('Successfully removed %what% %oldvalue%'), array("what" => $what, "oldvalue" => pql_maybe_idna_decode($_REQUEST["oldvalue"])));
 	$success = true;
+
+	if($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_MAILALTERNATE")) {
+	  // {{{ Make sure we enable local delivery (again).
+	  // Retreive the 'deliveryMode attribute(s) and remove the 'noprogram' value if it's there
+	  $modes = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_MODE"));
+	  if(!is_array($modes)) $modes = array($modes);
+	  if(in_array('noprogram', $modes))
+	    pql_modify_attribute($_pql->ldap_linkid, urldecode($_REQUEST["user"]), pql_get_define("PQL_ATTR_MODE"), 'noprogram', '');
+	  
+	  // Retreive the 'qmailDotMode' attribute(s) and remove the 'none' value if it's there
+	  $dotmode = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_DOTMODE"));
+	  if(!is_array($dotmode)) $dotmode = array($dotmode);
+	  if(in_array('none', $dotmode))
+	    pql_modify_attribute($_pql->ldap_linkid, urldecode($_REQUEST["user"]), pql_get_define("PQL_ATTR_DOTMODE"), 'none', '');
+	  // }}}
+	}
     } else {
     	$msg = pql_complete_constant($LANG->_('Failed to removed %what% %oldvalue%'), array("what" => $what, "oldvalue" => pql_maybe_idna_decode($_REQUEST["oldvalue"]))) . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 	$success = false;
     }
+    // }}}
     
+    // {{{ Remove any forwarders TO this mail address
     if (lc($_REQUEST["attrib"]) == pql_get_define("PQL_ATTR_MAILALTERNATE") and $success and isset($_REQUEST["delete_forwards"])) {
 	// does another account forward to this alias?
 	$sr = ldap_search($_pql->ldap_linkid, "(|(" . pql_get_define("PQL_ATTR_FORWARDS") ."=" . $_REQUEST["oldvalue"] . "))");
@@ -79,12 +102,21 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 	    }
 	}
     }
+    // }}}
     
-    // redirect to users detail page
+    // {{{ Redirect to users detail page
     $url = "user_detail.php?rootdn=" . $_REQUEST["rootdn"] . "&domain=" . $_REQUEST["domain"]
       . "&user=" . urlencode($_REQUEST["user"]) . "&msg=" . urlencode($msg) . "&view=" . $_REQUEST["view"];
+
+    if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+      echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
+      die("<b>$url</b>");
+    }
+
     pql_header($url);
+    // }}}
 } else {
+  // {{{ Verify attribute removal
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Remove attribute %attribute% for user %user%'), array('attribute' => $_REQUEST["attrib"], 'user' => $_REQUEST["user"])); ?></span>
   <br><br>
@@ -106,6 +138,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
   </form>
   <br>
 <?php
+   // }}}
 } // end of if
 ?>
 </body>
