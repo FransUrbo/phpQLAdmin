@@ -1,6 +1,6 @@
 <?php
 // adds an attribute 
-// $Id: user_add_attribute.php,v 2.37 2005-04-23 08:45:29 turbo Exp $
+// $Id: user_add_attribute.php,v 2.38 2005-06-05 17:41:14 turbo Exp $
 //
 /* This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
  *   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -19,7 +19,6 @@ $url["domain"] = pql_format_urls($_GET["domain"]);
 $url["user"]   = pql_format_urls($_GET["user"]);
 $url["rootdn"] = pql_format_urls($_GET["rootdn"]);
 
-include($_SESSION["path"]."/include/".$include);
 include($_SESSION["path"]."/header.html");
 // }}}
 
@@ -79,6 +78,7 @@ switch($_REQUEST["attrib"]) {
     die(pql_complete_constant($LANG->_('Unknown attribute %attribute% in %file%'),
 			      array('attribute' => $_REQUEST["attrib"], 'file' => __FILE__)));
 }
+include($_SESSION["path"]."/include/".$include);
 // }}}
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Change user data for %user%'),
