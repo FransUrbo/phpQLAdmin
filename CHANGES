@@ -83,5 +83,7 @@ phpQLAdmin 2.3.0 TO BE ANNOUNCED
 	    http://freshmeat.net/projects/php-kadm5).
 	    + Do not export variables PQL_KADMIN_* to the support scripts.
 	    + Closes bug 273.
+	  - New function - pql_format_return_unixtime() - to return current time as
+	    a UNIX timestamp. Good for profiling
 
 [all changelog for <2.3 branch have been removed for space reasons]

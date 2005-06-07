@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.41 2005-05-26 15:53:18 turbo Exp $
+// $Id: pql_formating.inc,v 2.42 2005-06-07 17:49:34 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -466,6 +466,19 @@ function pql_format_timestamp_human($beg, $end) {
 	$string  = $uptime_string['years'].$uptime_string['weeks'].$uptime_string['days'];
 	$string .= $uptime_string['hours'].$uptime_string['minutes'].$uptime_string['seconds']."\n";
 	return($string);
+}
+// }}}
+
+// {{{ pql_format_return_unixtime(void)
+// Return a UNIX time stamp
+//
+// Very good for profiling (once before and once after function
+// you'd like to profile):
+//	$now = pql_format_return_unixtime();
+//	echo "Now: (FUNCTION)'$now'<br>";
+function pql_format_return_unixtime() {
+  $now = date("YhdHis");
+  return(pql_format_timestamp_unixtime($now));
 }
 // }}}
 
