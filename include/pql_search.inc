@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.37 2005-04-23 08:57:38 turbo Exp $
+// $Id: pql_search.inc,v 2.38 2005-06-07 18:05:48 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -386,9 +386,20 @@ function pql_validate_object($linkid, $dn, $object, $type) {
 			// looking for an attribute we have NOT defined
 			for($i=0; isset($MUST[$i]); $i++) {
 			  $must = lc($MUST[$i]);
-			  
-			  if($attrib == $must)
-				unset($MUST[$i]);
+
+			  if(ereg(':', $must)) {
+				// We have alias(es). Check each for a match!
+				$aliases = split(':', $must);
+				for($j=0; $aliases[$j]; $j++) {
+					if($attrib == $aliases[$j]) {
+					  unset($MUST[$i]);
+					  break;
+					}
+				}
+			  } else {
+				if($attrib == $must)
+				  unset($MUST[$i]);
+			  }
 			}
 			
 			// Before we rearrange the array, remove the count
@@ -506,6 +517,9 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 					
 					$VALUE[$name]["NAME"] = $words[2];
 					for($j=3; $words[$j]; $j++) {
+						$VALUE["ALIAS"][$name][] = $words[$j];
+						$VALUE["ALIAS"][$words[$j]][] = $name;
+
 						$VALUE[$name]["ALIAS"][] = $words[$j];
 					}
 				} else {
@@ -653,6 +667,39 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 		 * phpQLAdmin will fail here...  */
 		if(is_array($VALUE))
 		  ksort($VALUE);
+
+		// TODO: Document what/how it works - IT'S UGGLY!!!
+		if($attrib == 'objectclasses') {
+		  // There might be aliases, so we must retreive all attribute types...
+		  // All attribute(s) that have aliases is in $ATTRS["ALIAS"].
+		  $ATTRS = pql_get_subschema($ldap_linkid, 'attributeTypes');
+
+		  // Save this so it doesn't interfere
+		  $OC_ALIAS = $VALUE["ALIAS"];
+		  unset($VALUE["ALIAS"]);
+
+		  // Go through each object class
+		  foreach($VALUE as $value_attrib => $value_data) {
+			// Go through each MUST attribute(s)
+			for($j=0; $value_data["MUST"][$j]; $j++) {
+			  // Go through each attribute alias(es)
+			  foreach($ATTRS["ALIAS"] as $attrs_attrib => $attrs_data) {
+				if(lc($value_data["MAY"][$j]) == lc($attrs_attrib)) {
+				  foreach($attrs_data as $alias) 
+					$VALUE[$value_attrib]["MAY"][$j] .= ":$alias";
+				}
+
+				if(lc($value_data["MUST"][$j]) == lc($attrs_attrib)) {
+				  foreach($attrs_data as $alias) 
+					$VALUE[$value_attrib]["MUST"][$j] .= ":$alias";
+				}
+			  }
+			}
+		  }
+
+		  // Add the object class alias(es) back
+		  $VALUE["ALIAS"] = $OC_ALIAS; 
+		}
 
 		return $VALUE;
     } else

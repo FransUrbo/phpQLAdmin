@@ -23,6 +23,9 @@ phpQLAdmin 2.3.0 TO BE ANNOUNCED
  	    + ldapDefaultDotMode	== ldapwithprog
  	    then there will be a COPY in the users local mailbox. Solve this by changing
  	    the 'qmailDotMode' and 'deliveryMode'.
+	  - When (if) retreiving object classes the LDAP server understands, we must catch
+	    attribute alias(es). A MAY/MUST on 'domainComponent' must translate to 'dc'
+	    and back...
 
 	GUI layout changes
 	  - Rewrite the way users are listed in the left frame. The attribute 'cn' is
