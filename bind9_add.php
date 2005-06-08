@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.18.2.2 2005-03-17 08:23:01 turbo Exp $
+// $Id: bind9_add.php,v 2.18.2.3 2005-06-08 14:17:27 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -135,6 +135,13 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
             </select>
           </td>
           <td><input type="text" name="dest" value="<?=$_REQUEST["dest"]?>" size="20"></td>
+        </tr>
+
+        <tr class="subtitle">
+          <td colspan="4">
+            <img src="images/info.png" width="16" height="16" alt="" border="0">
+            <?=$LANG->_('\bNOTE\B: If destination is not IP and not within current zone, it \umust\U end with dot!')?>
+          </td>
         </tr>
       </th>
     </table>
