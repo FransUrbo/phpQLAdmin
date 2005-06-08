@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.21 2005-03-17 09:13:10 turbo Exp $
+// $Id: bind9_add.php,v 2.22 2005-06-08 14:02:49 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -136,6 +136,13 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
           </td>
           <td><input type="text" name="dest" value="<?=$_REQUEST["dest"]?>" size="20"></td>
         </tr>
+
+        <tr class="subtitle">
+          <td colspan="4">
+            <img src="images/info.png" width="16" height="16" alt="" border="0">
+            <?=$LANG->_('\bNOTE\B: If destination is not IP and not within current zone, it \umust\U end with dot!')?>
+          </td>
+        </tr>
       </th>
     </table>
 
@@ -192,12 +199,13 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 		  $url  = "domain_detail.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"]."&view=".$_REQUEST["view"];
 		  $url .= "&dns_domain_name=".$_REQUEST["dns_domain_name"]."&msg=$msg";
 
-		  if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
-			die($url);
-		  else
+		  if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+			echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
+			die("<b>$url</b>");
+		  } else
 			pql_header($url);
+		  // }}}
 	  }
-	  // }}}
 }
 ?>
 </body>
