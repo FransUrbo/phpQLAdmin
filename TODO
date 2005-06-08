@@ -1,7 +1,5 @@
 Things left to do
 	IMPORTANT
-	* Delete or modify the Kerberos principal if using {KERBEROS}
-	  password scheme.
 	* If we're modifying a value and we're missing an objectclass
 	  and the objectclass we find that REQUIRE (MAY) some attributes
 	  which we're missing, ask user/admin to fill in the missing
@@ -21,7 +19,3 @@ Things left to do
 	  - How can I create/delete lists in domain's baseMailDir/mailinglists,
 	    AND create the directories if they don't exists - ie, when creating
 	    a new domain.
-	* Mailinglists on another host than the one phpQLAdmin runs on...
-	  Problem is 'include/pql_ezmlm.inc:ezmlm->_readlists()'. It uses
-	  opendir() and readdir() (etc) to load list information. This needs
-	  rewriting, maybe with some kind of wrapper...
