@@ -7,6 +7,8 @@ phpQLAdmin 2.3.1 TO BE ANNOUNCED
 	Documentation changes
 	API changes
 	Misc changes
+	  - Support sub-zones in the DNS manager. Only one level is supported at this
+	    time though...
 
 phpQLAdmin 2.3.0 Release (Jun  8 2005)
 	Bug fixes

@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.35 2005-04-23 08:46:04 turbo Exp $
+// $Id: pql_bind9.inc,v 2.36 2005-06-08 14:07:28 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -225,27 +225,27 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 	// Create a template SOA record
 	$zonename = pql_maybe_idna_encode($zone);
 	$date     = date("Ymd01", time());
-
+	
 	unset($entry);
-	$entry['objectClass'][]		 = 'top';
-	$entry['objectClass'][]		 = 'dNSZone';
-
-	$entry['relativeDomainName'] = '@';
-	$entry['zoneName']			 = $zonename;
-	$entry['dNSTTL']			 = 604800;
-
-	$entry['sOARecord']			 = "$zonename. registry.$zonename. $date 172800 86400 2419200 604800";
-	$entry['nSRecord'][]		 = "ns1.$zonename.";
-	$entry['nSRecord'][]		 = "ns2.$zonename.";
-	$entry['mXRecord']			 = "10 mail.$zonename.";
-	$entry['tXTRecord']			 = "$zonename";
-
+	$entry['objectClass'][]			= 'top';
+	$entry['objectClass'][]			= 'dNSZone';
+	
+	$entry['relativeDomainName']	= '@';
+	$entry['zoneName']				= $zonename;
+	$entry['dNSTTL']				= 604800;
+	
+	$entry['sOARecord']				= "$zonename. registry.$zonename. $date 172800 86400 2419200 604800";
+	$entry['nSRecord'][]			= "ns1.$zonename.";
+	$entry['nSRecord'][]			= "ns2.$zonename.";
+	$entry['mXRecord']				= "10 mail.$zonename.";
+	$entry['tXTRecord']				= "$zonename";
+	
 	// Add the OpenLDAPaci attribute (maybe)
 	if($_SESSION["ACI_SUPPORT_ENABLED"])
 	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($linkid, $_SESSION["USER_DN"], 'dnszone');
-
+	
 	$dn = "relativeDomainName=".$entry['relativeDomainName'].",$dn";
-
+	
 	if(!pql_get_dn($linkid, $dn, 'objectClass=dNSZone', 'BASE')) {
 	  if(!pql_write_add($linkid, $dn, $entry, 'bind9/zone', 'pql_bind9_add_zone')) {
 		// Can't add SOA record
@@ -274,7 +274,65 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 		else
 		  $dn = "dc=".$dc_tmp;
 	}
-	$dn = "relativeDomainName=".$entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")].",$dn,ou=DNS,$basedn";
+
+	// Remember the hostname. Need it when/if a sub-domain 'host' is added...
+	$tmp = $entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")];
+
+	if(ereg('.', $entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")])) {
+	  // This is a sub-zone! Create something like this:
+	  // dn: relativeDomainName=test,dc=domain,dc=tld,ou=DNS,o=Branch,c=SE
+	  // dn: relativeDomainName=ns1.test,dc=domain,dc=tld,ou=DNS,o=Branch,c=SE
+
+	  // Split it up in dc components and add each one as a separate dc object.
+	  $dc = split('\.', $entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")]);
+	  if($dc[1]) {
+		// dc[1] is unset the second time around...
+
+		// Remember (and overwrite) the record type so it can be restored
+		// after adding the sub-domain.
+		$tmp_hostname = $entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")];
+		if($entry[pql_get_define("PQL_ATTR_ARECORD")]) {
+		  $tmp_record = pql_get_define("PQL_ATTR_ARECORD");
+		  $tmp_value  = $entry[pql_get_define("PQL_ATTR_ARECORD")];
+		} elseif($entry[pql_get_define("PQL_ATTR_CNAMERECORD")]) {
+		  $tmp_record = pql_get_define("PQL_ATTR_CNAMERECORD");
+		  $tmp_value  = $entry[pql_get_define("PQL_ATTR_CNAMERECORD")];
+		} elseif($entry[pql_get_define("PQL_ATTR_MXRECORD")]) {
+		  $tmp_record = pql_get_define("PQL_ATTR_MXRECORD");
+		  $tmp_value  = $entry[pql_get_define("PQL_ATTR_MXRECORD")];
+		} elseif($entry[pql_get_define("PQL_ATTR_NSRECORD")]) {
+		  $tmp_record = pql_get_define("PQL_ATTR_NSRECORD");
+		  $tmp_value  = $entry[pql_get_define("PQL_ATTR_NSRECORD")];
+		}
+
+		// Remove the original record type from the object.
+		unset($entry[$tmp_record]);
+
+		// What type should the sub-domain be, CName or A record?
+		if(ereg("^[0-9].*[0-9]", $tmp_value)) {
+		  // Starts and ends with a number - best guess is that it's an IP address.
+		  $entry[pql_get_define("PQL_ATTR_ARECORD")] = $tmp_value;
+		  $record_to_remove = pql_get_define("PQL_ATTR_ARECORD");
+		} else {
+		  // Not an IP, must be a FQDN..
+		  $entry[pql_get_define("PQL_ATTR_CNAMERECORD")] = $tmp_value;
+		  $record_to_remove = pql_get_define("PQL_ATTR_CNAMERECORD");
+		}
+
+		// Add the sub-domain 'host'.
+		$entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")] = $dc[1];
+		pql_bind9_add_host($linkid, $basedn, $entry);
+
+		// Remove the sub-domain record and add the original back.
+		unset($entry[$record_to_remove]);
+		$entry[$tmp_record] = $tmp_value;
+
+		// Restore the original hostname and record type.
+		$entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")] = $tmp_hostname;
+	  }
+	}
+
+	$dn = "relativeDomainName=$tmp,$dn,ou=DNS,$basedn";
 	// }}}
 
 	$entry['objectClass'][] = 'top';
