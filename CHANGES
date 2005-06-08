@@ -1,5 +1,13 @@
 phpQLAdmin 2.3 Change Log
 
+phpQLAdmin 2.3.1 TO BE ANNOUNCED
+	Bug fixes
+	GUI layout changes
+	Schema changes
+	Documentation changes
+	API changes
+	Misc changes
+
 phpQLAdmin 2.3.0 Release (Jun  8 2005)
 	Bug fixes
 	  - Session was started with the path specified in php.ini:session.cookie_path.
