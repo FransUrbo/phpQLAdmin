@@ -1,6 +1,6 @@
 phpQLAdmin 2.3 Change Log
 
-phpQLAdmin 2.3.0 TO BE ANNOUNCED
+phpQLAdmin 2.3.0 Release (Jun  8 2005)
 	Bug fixes
 	  - Session was started with the path specified in php.ini:session.cookie_path.
 	    For me that was '/' which meant that if I have two (or more) phpQLAdmin
