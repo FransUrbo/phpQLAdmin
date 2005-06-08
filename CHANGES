@@ -42,6 +42,9 @@ phpQLAdmin 2.2.5 TO BE ANNOUNCED
 	    + Output any PTR's correctly.
 	  - Before showing the 'Forwarders to other accounts', make sure we really HAVE any
 	    forwarders to show!
+	  - When adding a host in a DNS zone, note that the destination MUST contain a dot
+	    if it's not an IP and it's not in the same zone it's being added to.
+	  - Show NS and MX records as well in the 'DNS Zone' domain view.
 
 	Misc changes
 	  - Instead of using the template _name_ in 'tables/user_add-additional.inc', use the
