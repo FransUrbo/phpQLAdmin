@@ -161,7 +161,7 @@
 <?php	if(is_array($zones[$dns_domain_name])) {
 			foreach($zones[$dns_domain_name] as $data) {
 				if($data['HOST'] != '@') {
-					$TYPES = array('CNAME', 'A', 'SRV', 'TXT', 'PTR');
+					$TYPES = array('CNAME', 'A', 'SRV', 'TXT', 'PTR', 'NS', 'MX');
 					foreach($TYPES as $TYPE) {
 						$type = lc($TYPE);
 
