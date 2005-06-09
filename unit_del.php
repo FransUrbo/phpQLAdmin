@@ -1,6 +1,6 @@
 <?php
 // delete a domain and all users within
-// $Id: unit_del.php,v 2.18 2005-03-17 09:13:10 turbo Exp $
+// $Id: unit_del.php,v 2.19 2005-06-09 15:05:36 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -48,3 +48,14 @@ include($_SESSION["path"]."/header.html");
 ?>
 </body>
 </html>
+<?php
+pql_flush();
+
+/*
+ * Local variables:
+ * mode: php
+ * mode: font-lock
+ * tab-width: 4
+ * End:
+ */
+?>

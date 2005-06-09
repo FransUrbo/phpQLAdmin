@@ -1,6 +1,6 @@
 <?php
 // show details of control
-// $Id: control.php,v 2.6 2005-03-09 09:59:03 turbo Exp $
+// $Id: control.php,v 2.7 2005-06-09 15:05:35 turbo Exp $
 //
 //require($_SESSION["path"]."/include/pql_config.inc");
 //include($_SESSION["path"]."/header.html");
@@ -15,3 +15,14 @@ in the navigation bar below control. q-l stands for qmail-ldap.
 
 </body>
 </html>
+<?php
+pql_flush();
+
+/*
+ * Local variables:
+ * mode: php
+ * mode: font-lock
+ * tab-width: 4
+ * End:
+ */
+?>

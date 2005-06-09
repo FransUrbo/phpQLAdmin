@@ -1,6 +1,6 @@
 <?php
 // remove a domain from a bind9 ldap db
-// $Id: bind9_del.php,v 2.8 2005-03-17 09:13:10 turbo Exp $
+// $Id: bind9_del.php,v 2.9 2005-06-09 15:05:35 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -47,6 +47,8 @@ if(($_REQUEST["action"] == 'del') and ($_REQUEST["type"] == 'domain') and $_REQU
 </html>
 
 <?php
+pql_flush();
+
 /*
  * Local variables:
  * mode: php

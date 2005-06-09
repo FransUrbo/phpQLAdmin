@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm.php,v 1.7 2005-03-09 09:59:03 turbo Exp $
+// $Id: ezmlm.php,v 1.8 2005-06-09 15:05:35 turbo Exp $
 //
 require($_SESSION["path"]."/include/pql_config.inc");
 include($_SESSION["path"]."/header.html");
@@ -11,8 +11,9 @@ Here you can manage your ezmlm mailinglists. Mailing lists have to be located un
 
   </body>
 </html>
-
 <?php
+pql_flush();
+
 /*
  * Local variables:
  * mode: php

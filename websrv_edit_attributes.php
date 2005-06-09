@@ -1,6 +1,6 @@
 <?php
 // edit attributes of a webserver configuration
-// $Id: websrv_edit_attributes.php,v 2.9 2005-03-17 09:13:10 turbo Exp $
+// $Id: websrv_edit_attributes.php,v 2.10 2005-06-09 15:05:36 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -50,8 +50,9 @@ if(@$_REQUEST["submit"] or ($_REQUEST["action"] == 'del')) {
 ?>
   </body>
 </html>
-
 <?php
+pql_flush();
+
 /*
  * Local variables:
  * mode: php

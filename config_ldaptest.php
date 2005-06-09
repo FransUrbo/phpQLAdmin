@@ -1,6 +1,6 @@
 <?php
 // make some simple tests on ldap connection
-// $Id: config_ldaptest.php,v 2.34 2005-03-09 11:01:58 turbo Exp $
+// $Id: config_ldaptest.php,v 2.35 2005-06-09 15:05:35 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -378,6 +378,8 @@ include($_SESSION["path"]."/header.html");
 </html>
 
 <?php
+pql_flush();
+
 /*
  * Local variables:
  * mode: php

@@ -1,6 +1,6 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.40 2005-04-23 08:58:53 turbo Exp $
+// $Id: ezmlm_add.php,v 1.41 2005-06-09 15:05:35 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -493,8 +493,9 @@ if(!$_REQUEST["domainname"]) {
   </form>
   </body>
 </html>
-
 <?php
+pql_flush();
+
 /*
  * Local variables:
  * mode: php

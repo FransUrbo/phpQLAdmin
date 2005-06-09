@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.32 2005-03-09 09:59:03 turbo Exp $
+// $Id: left-control.php,v 2.33 2005-06-09 15:05:35 turbo Exp $
 //
 require("./include/pql_session.inc");
 
@@ -145,6 +145,8 @@ if(pql_get_define("PQL_CONF_CONTROL_USE") && $_SESSION["ALLOW_CONTROL_CREATE"]) 
 } // end if PQL_CONF_CONTROL_USE
 
 require("./left-trailer.html");
+
+pql_flush();
 
 /*
  * Local variables:

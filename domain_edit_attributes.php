@@ -1,6 +1,6 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.51 2005-05-26 15:53:14 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.52 2005-06-09 15:05:35 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -214,8 +214,9 @@ if(@$_REQUEST["submit"] == 1) {
 ?>
 </body>
 </html>
-
 <?php
+pql_flush();
+
 /*
  * Local variables:
  * mode: php

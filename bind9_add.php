@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.22 2005-06-08 14:02:49 turbo Exp $
+// $Id: bind9_add.php,v 2.23 2005-06-09 15:05:35 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -211,6 +211,8 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 </body>
 </html>
 <?php
+pql_flush();
+
 /*
  * Local variables:
  * mode: php

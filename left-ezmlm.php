@@ -1,6 +1,6 @@
 <?php
 // navigation bar - ezmlm mailinglists manager
-// $Id: left-ezmlm.php,v 2.37 2005-05-18 20:29:12 turbo Exp $
+// $Id: left-ezmlm.php,v 2.38 2005-06-09 15:05:35 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -150,6 +150,11 @@ if(!is_array($domains)) {
 	} 
 }
 require("./left-trailer.html");
+?>
+  </body>
+</html>
+<?php
+pql_flush();
 
 /*
  * Local variables:
@@ -159,5 +164,3 @@ require("./left-trailer.html");
  * End:
  */
 ?>
-  </body>
-</html>

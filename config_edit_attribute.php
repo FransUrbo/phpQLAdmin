@@ -1,6 +1,6 @@
 <?php
 // Edit and set configuration values in the LDAP database
-// $Id: config_edit_attribute.php,v 1.20 2005-05-18 20:29:12 turbo Exp $
+// $Id: config_edit_attribute.php,v 1.21 2005-06-09 15:05:35 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -61,6 +61,11 @@ if(@$_REQUEST["submit"] or @$_REQUEST["toggle"] or ($_REQUEST["action"] == 'del'
     attribute_print_form();
 }
 // }}}
+?>
+  </body>
+</html>
+<?php
+pql_flush();
 
 /*
  * Local variables:
@@ -70,5 +75,3 @@ if(@$_REQUEST["submit"] or @$_REQUEST["toggle"] or ($_REQUEST["action"] == 'del'
  * End:
  */
 ?>
-  </body>
-</html>

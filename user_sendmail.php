@@ -1,6 +1,6 @@
 <?php
 // send a testmail to an emailaddress
-// $Id: user_sendmail.php,v 2.29 2005-03-17 09:13:10 turbo Exp $
+// $Id: user_sendmail.php,v 2.30 2005-06-09 15:05:36 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -80,3 +80,14 @@ pql_header($url);
 ?>
 </body>
 </html>
+<?php
+pql_flush();
+
+/*
+ * Local variables:
+ * mode: php
+ * mode: font-lock
+ * tab-width: 4
+ * End:
+ */
+?>

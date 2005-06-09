@@ -1,6 +1,6 @@
 <?php
 // Add a webserver configuration to the LDAP db
-// $Id: websrv_add.php,v 2.14 2005-03-17 09:13:10 turbo Exp $
+// $Id: websrv_add.php,v 2.15 2005-06-09 15:05:36 turbo Exp $
 //
 // {{{ Setup session
 require("./include/pql_session.inc");
@@ -167,6 +167,8 @@ if(($error == 'true') or !$_REQUEST["serverip"] or !$_REQUEST["serverurl"] or !$
   </body>
 </html>
 <?php
+pql_flush();
+
 /*
  * Local variables:
  * mode: php

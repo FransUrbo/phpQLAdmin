@@ -1,6 +1,6 @@
 <?php
 // shows results of search
-// $Id: search.php,v 2.35 2005-04-14 11:08:27 turbo Exp $
+// $Id: search.php,v 2.36 2005-06-09 15:05:35 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -208,7 +208,12 @@ if(!$_SESSION["SINGLE_USER"]) {
       <tr class="<?php pql_format_table(); ?>">
         <td colspan="5"><?=$LANG->_('No users found')?></td>
       </tr>
-<?php }
+<?php } ?>
+    </table>
+  </body>
+</html>
+<?php
+pql_flush();
 
 /*
  * Local variables:
@@ -218,6 +223,3 @@ if(!$_SESSION["SINGLE_USER"]) {
  * End:
  */
 ?>
-    </table>
-  </body>
-</html>

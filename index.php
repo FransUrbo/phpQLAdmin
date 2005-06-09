@@ -1,6 +1,6 @@
 <?php
 // logins to the system
-// $Id: index.php,v 2.46 2005-05-18 20:29:12 turbo Exp $
+// $Id: index.php,v 2.47 2005-06-09 15:05:35 turbo Exp $
 //
 // Start debuging
 // http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0
@@ -236,6 +236,8 @@ if(!($whoarewe = pql_get_define("PQL_CONF_WHOAREWE")))
 	else
 	  pql_header("index2.php");
 }
+
+pql_flush();
 
 /*
  * Local variables:

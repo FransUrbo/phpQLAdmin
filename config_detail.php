@@ -106,3 +106,14 @@ if(empty($_REQUEST["view"]) or $_REQUEST["view"] == 'default') {
 ?>
   </body>
 </html>
+<?php
+pql_flush();
+
+/*
+ * Local variables:
+ * mode: php
+ * mode: font-lock
+ * tab-width: 4
+ * End:
+ */
+?>

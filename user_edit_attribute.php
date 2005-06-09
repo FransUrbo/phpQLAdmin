@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of user
-// $Id: user_edit_attribute.php,v 2.55 2005-05-28 15:10:23 turbo Exp $
+// $Id: user_edit_attribute.php,v 2.56 2005-06-09 15:05:36 turbo Exp $
 //
 // This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
 //   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -120,6 +120,11 @@ if(($_REQUEST["submit"] == 1) or ($_REQUEST["submit"] == 2)) {
   }
 }
 // }}}
+?>
+  </body>
+</html>
+<?php
+pql_flush();
 
 /*
  * Local variables:
@@ -129,5 +134,3 @@ if(($_REQUEST["submit"] == 1) or ($_REQUEST["submit"] == 2)) {
  * End:
  */
 ?>
-  </body>
-</html>

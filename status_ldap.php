@@ -1,6 +1,6 @@
 <?php
 // Show Connection/Suffixes status of LDAP server
-// $Id: status_ldap.php,v 2.8 2005-03-09 09:59:03 turbo Exp $
+// $Id: status_ldap.php,v 2.9 2005-06-09 15:05:35 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -39,6 +39,8 @@ if($type == 'basics') {
 
 <?php
 require("./left-trailer.html");
+
+pql_flush();
 
 /*
  * Local variables:

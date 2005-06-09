@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of a control option
-// $Id: control_edit_attribute.php,v 2.31 2005-04-17 09:30:14 turbo Exp $
+// $Id: control_edit_attribute.php,v 2.32 2005-06-09 15:05:35 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -130,6 +130,8 @@ if(function_exists($plugin . "_help")) {
 </html>
 
 <?php
+pql_flush();
+
 /*
  * Local variables:
  * mode: php

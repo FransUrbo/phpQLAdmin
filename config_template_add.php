@@ -1,6 +1,6 @@
 <?php
 // Add a user template
-// $Id: config_template_add.php,v 2.5 2005-03-17 09:13:10 turbo Exp $
+// $Id: config_template_add.php,v 2.6 2005-06-09 15:05:35 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -125,6 +125,12 @@ if(($error == 'true')) {
 	pql_header($url);
 // }}}
 }
+?>
+  </body>
+</html>
+<?php
+pql_flush();
+
 /*
  * Local variables:
  * mode: php
@@ -133,5 +139,3 @@ if(($error == 'true')) {
  * End:
  */
 ?>
-  </body>
-</html>

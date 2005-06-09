@@ -1,6 +1,6 @@
 <?php
 // delete attribute of a user
-// $Id: user_del_attribute.php,v 2.35 2005-06-05 12:55:24 turbo Exp $
+// $Id: user_del_attribute.php,v 2.36 2005-06-09 15:05:36 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -143,3 +143,14 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 ?>
 </body>
 </html>
+<?php
+pql_flush();
+
+/*
+ * Local variables:
+ * mode: php
+ * mode: font-lock
+ * tab-width: 4
+ * End:
+ */
+?>

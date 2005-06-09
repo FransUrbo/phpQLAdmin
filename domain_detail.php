@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.96 2005-05-26 15:53:14 turbo Exp $
+// $Id: domain_detail.php,v 2.97 2005-06-09 15:05:35 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -274,8 +274,9 @@ if($_REQUEST["view"] == 'owner') {
 ?>
 </body>
 </html>
-
 <?php
+pql_flush();
+
 /*
  * Local variables:
  * mode: php

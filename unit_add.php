@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: unit_add.php,v 2.26 2005-03-17 09:13:10 turbo Exp $
+// $Id: unit_add.php,v 2.27 2005-06-09 15:05:36 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -83,6 +83,12 @@ if($_REQUEST["unit"]) {
 <?php
 // }}}
 }
+?>
+
+  </body>
+</html>
+<?php
+pql_flush();
 
 /*
  * Local variables:
@@ -92,6 +98,3 @@ if($_REQUEST["unit"]) {
  * End:
  */
 ?>
-
-  </body>
-</html>

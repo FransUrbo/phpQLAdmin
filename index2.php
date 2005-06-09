@@ -1,5 +1,5 @@
 <?php
-// $Id: index2.php,v 2.42 2005-05-18 20:29:12 turbo Exp $
+// $Id: index2.php,v 2.43 2005-06-09 15:05:35 turbo Exp $
 
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -125,3 +125,14 @@ if($_SESSION["mozilla"]) {
     </body>
   </noframes>
 </html>
+<?php
+pql_flush();
+
+/*
+ * Local variables:
+ * mode: php
+ * mode: font-lock
+ * tab-width: 4
+ * End:
+ */
+?>

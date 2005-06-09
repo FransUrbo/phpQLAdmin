@@ -1,6 +1,6 @@
 <?php
 // Input form page to create a domain branch in database
-// $Id: domain_add_form.php,v 1.25 2005-03-09 09:59:03 turbo Exp $
+// $Id: domain_add_form.php,v 1.26 2005-06-09 15:05:35 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -88,3 +88,14 @@ $server = urldecode($server[0]);
   </form>
   </body>
 </html>
+<?php
+pql_flush();
+
+/*
+ * Local variables:
+ * mode: php
+ * mode: font-lock
+ * tab-width: 4
+ * End:
+ */
+?>

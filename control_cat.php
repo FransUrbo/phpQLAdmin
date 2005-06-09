@@ -1,6 +1,6 @@
 <?php
 // shows details of specified category of attributes
-// $Id: control_cat.php,v 2.19 2005-03-09 09:59:03 turbo Exp $
+// $Id: control_cat.php,v 2.20 2005-06-09 15:05:35 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -41,6 +41,11 @@ foreach($plugins as $name) {
 		echo "<br><br>";
     }
 }
+?>
+</body>
+</html>
+<?php
+pql_flush();
 
 /*
  * Local variables:
@@ -50,5 +55,3 @@ foreach($plugins as $name) {
  * End:
  */
 ?>
-</body>
-</html>

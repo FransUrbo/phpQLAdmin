@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.45 2005-05-26 15:53:14 turbo Exp $
+// $Id: control_detail.php,v 1.46 2005-06-09 15:05:35 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -140,12 +140,17 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
   <span class="title1">PQL_CONF_CONTROL_USE isn't set, won't show control information</span>
 <?php
 }
+?>
+  </body>
+</html>
+<?php
+pql_flush();
+
 /*
  * Local variables:
  * mode: php
+ * mode: font-lock
  * tab-width: 4
  * End:
  */
 ?>
-  </body>
-</html>

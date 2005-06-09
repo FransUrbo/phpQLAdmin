@@ -1,6 +1,6 @@
 <?php
 // delete a user
-// $Id: user_del.php,v 2.43 2005-05-27 10:52:47 turbo Exp $
+// $Id: user_del.php,v 2.44 2005-06-09 15:05:36 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -191,8 +191,9 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 ?>
 </body>
 </html>
-
 <?php
+pql_flush();
+
 /*
  * Local variables:
  * mode: php

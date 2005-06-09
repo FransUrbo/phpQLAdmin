@@ -1,6 +1,6 @@
 <?php
 // Delete a mailserver controls object
-// $Id: control_del.php,v 2.22 2005-03-17 09:13:10 turbo Exp $
+// $Id: control_del.php,v 2.23 2005-06-09 15:05:35 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -189,6 +189,11 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 	// }}}
 }
 // else - PQL_CONF_CONTROL_USE isn't set!
+?>
+  </body>
+</html>
+<?php
+pql_flush();
 
 /*
  * Local variables:
@@ -198,5 +203,3 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
  * End:
  */
 ?>
-  </body>
-</html>

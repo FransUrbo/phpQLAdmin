@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.127 2005-05-18 20:29:12 turbo Exp $
+// $Id: user_add.php,v 2.128 2005-06-09 15:05:36 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -697,6 +697,11 @@ if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
 include($include);
 
 // }}}
+?>
+  </body>
+</html>
+<?php
+pql_flush();
 
 /*
  * Local variables:
@@ -706,5 +711,3 @@ include($include);
  * End:
  */
 ?>
-  </body>
-</html>

@@ -1,6 +1,6 @@
 <?php
 // delete a domain and all users within
-// $Id: domain_del.php,v 2.38 2005-04-23 08:45:29 turbo Exp $
+// $Id: domain_del.php,v 2.39 2005-06-09 15:05:35 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -141,8 +141,9 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 ?>
 </body>
 </html>
-
 <?php
+pql_flush();
+
 /*
  * Local variables:
  * mode: php

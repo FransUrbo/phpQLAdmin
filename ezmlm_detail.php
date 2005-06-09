@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_detail.php,v 1.32 2005-03-09 10:50:18 turbo Exp $
+// $Id: ezmlm_detail.php,v 1.33 2005-06-09 15:05:35 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -52,6 +52,8 @@ if($_REQUEST["domain"]) {
 		include("./tables/ezmlm_details-detail.inc");
 	}
 }
+
+pql_flush();
 
 /*
  * Local variables:

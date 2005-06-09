@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_del.php,v 1.28 2005-03-17 09:13:10 turbo Exp $
+// $Id: ezmlm_del.php,v 1.29 2005-06-09 15:05:35 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -42,6 +42,8 @@ if($ezmlm = new ezmlm($user, $basedir)) {
 	}
 }
 // }}}
+
+pql_flush();
 
 /*
  * Local variables:

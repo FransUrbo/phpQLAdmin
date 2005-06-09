@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_edit_attribute.php,v 1.30 2005-03-17 09:13:10 turbo Exp $
+// $Id: ezmlm_edit_attribute.php,v 1.31 2005-06-09 15:05:35 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -108,6 +108,11 @@ if($ezmlm = new ezmlm($user, $path)) {
 		$ezmlm->updatelistentry(0, $_REQUEST["listno"], $_REQUEST["domainname"], $_REQUEST["type"], $ezmlm->mailing_lists[$_REQUEST["listno"]]);
 	}
 }
+?>
+  </body>
+</html>
+<?php
+pql_flush();
 
 /*
  * Local variables:
@@ -117,5 +122,3 @@ if($ezmlm = new ezmlm($user, $path)) {
  * End:
  */
 ?>
-  </body>
-</html>

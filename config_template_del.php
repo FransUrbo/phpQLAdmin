@@ -1,6 +1,6 @@
 <?php
 // Delete a user template object
-// $Id: config_template_del.php,v 2.6 2005-03-17 09:13:10 turbo Exp $
+// $Id: config_template_del.php,v 2.7 2005-06-09 15:05:35 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -40,6 +40,8 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 <?php
 // }}}
 }
+
+pql_flush();
 
 /*
  * Local variables:

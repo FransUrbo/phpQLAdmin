@@ -1,6 +1,6 @@
 <?php
 // Fix a 'object class violation' by adding missing MUST attributes
-// $Id: user_add_missing_attributes.php,v 2.5 2005-03-09 09:59:03 turbo Exp $
+// $Id: user_add_missing_attributes.php,v 2.6 2005-06-09 15:05:36 turbo Exp $
 //
 // This file is INCLUDED from pql.inc:pql_replace_userattribute()
 // and should NOT be called directly!
@@ -41,6 +41,8 @@ for($i=0; $MISSING['attributes'][$i]; $i++) {
 
   The offending file is 'user_add_missing_attributes.php'...
 <?php
+pql_flush();
+
 /*
  * Local variables:
  * mode: php

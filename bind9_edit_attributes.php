@@ -1,6 +1,6 @@
 <?php
 // edit attributes of a BIND9 DNS zone
-// $Id: bind9_edit_attributes.php,v 2.11 2005-03-17 09:13:10 turbo Exp $
+// $Id: bind9_edit_attributes.php,v 2.12 2005-06-09 15:10:19 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -77,6 +77,8 @@ if(($_REQUEST["action"] == 'del') && $_REQUEST["rdn"]) {
 </html>
 
 <?php
+pql_flush();
+
 /*
  * Local variables:
  * mode: php

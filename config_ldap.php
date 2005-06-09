@@ -1,6 +1,6 @@
 <?php
 // shows configuration of phpQLAdmin
-// $Id: config_ldap.php,v 1.16 2005-03-09 09:59:03 turbo Exp $
+// $Id: config_ldap.php,v 1.17 2005-06-09 15:05:35 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -163,14 +163,6 @@ foreach($ldap as $x => $array) {
         }
 	}
 }
-
-/*
- * Local variables:
- * mode: php
- * mode: font-lock
- * tab-width: 4
- * End:
- */
 ?>
       </th>
     </table>
@@ -188,3 +180,14 @@ foreach($ldap as $x => $array) {
     </script>
   </body>
 </html>
+<?php
+pql_flush();
+
+/*
+ * Local variables:
+ * mode: php
+ * mode: font-lock
+ * tab-width: 4
+ * End:
+ */
+?>

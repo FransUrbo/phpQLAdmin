@@ -9,6 +9,9 @@ phpQLAdmin 2.3.1 TO BE ANNOUNCED
 	Misc changes
 	  - Support sub-zones in the DNS manager. Only one level is supported at this
 	    time though...
+	  - Do some output buffer flushing at the end of each page. Might improve
+	    performance somewhat (even though it don't seem like it).
+	    Done with my own wrapper pql_flush().
 
 phpQLAdmin 2.3.0 Release (Jun  8 2005)
 	Bug fixes
