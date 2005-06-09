@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.109 2005-04-23 09:04:42 turbo Exp $
+// $Id: left.php,v 2.110 2005-06-09 15:16:13 turbo Exp $
 //
 require("./include/pql_session.inc");
 
@@ -267,26 +267,26 @@ pql_format_tree_end();
 
 // {{{ ---------------- GET THE DOMAINS/BRANCHES
 if($_SESSION["ALLOW_BRANCH_CREATE"]) {
-    // This is a 'super-admin'. Should be able to read EVERYTHING!
-    $domains = pql_get_domains($_pql);
+  // This is a 'super-admin'. Should be able to read EVERYTHING!
+  $domains = pql_get_domains($_pql);
 } else {
-    // {{{ Get ALL domains we have access.
-    //	'administrator: USER_DN'
-    // in the domain object
-    foreach($_SESSION["BASE_DN"] as $dn)  {
+  // {{{ Get ALL domains we have access.
+  //	'administrator: USER_DN'
+  // in the domain object
+  foreach($_SESSION["BASE_DN"] as $dn)  {
 	$dom = pql_get_dn($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR")."=".$_SESSION["USER_DN"]);
 	if($dom) {
-	    foreach($dom as $d) {
+	  foreach($dom as $d) {
 		$domains[] = urlencode($d);
-	    }
+	  }
 	}
-    }
-    // }}}
+  }
+  // }}}
 }
 // }}}
 
 // {{{ ---------------- GET THE USERS OF THE BRANCH
-if(!isset($domains)) {
+if(!isset($domains) or !is_array($domains)) {
     // {{{ No domain defined -> 'ordinary' user (only show this user)
     $_SESSION["SINGLE_USER"] = 1;
 
@@ -297,20 +297,20 @@ if(!isset($domains)) {
     // Try to get the DN of the domain
     $dnparts = ldap_explode_dn($_SESSION["USER_DN"], 0);
     for($i=1; $dnparts[$i]; $i++) {
-	// Traverse the users DN backwards
-	$DN = $dnparts[$i];
-	for($j=$i+1; $dnparts[$j]; $j++)
-	  $DN .= "," . $dnparts[$j];
-	
-	// Look in DN for attribute 'defaultdomain'.
-	$defaultdomain = pql_get_attribute($_pql->ldap_linkid, $DN, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
-	if($defaultdomain) {
-	    // A hit. This is the domain under which the user is located.
-	    $domain = $DN;
-	    break;
-	}
+	  // Traverse the users DN backwards
+	  $DN = $dnparts[$i];
+	  for($j=$i+1; $dnparts[$j]; $j++)
+		$DN .= "," . $dnparts[$j];
+	  
+	  // Look in DN for attribute 'defaultdomain'.
+	  $defaultdomain = pql_get_attribute($_pql->ldap_linkid, $DN, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+	  if($defaultdomain) {
+		// A hit. This is the domain under which the user is located.
+		$domain = $DN;
+		break;
+	  }
     }
-
+	
     if(empty($domain) and $_REQUEST["domain"])
       $domain = $_REQUEST["domain"];
 
@@ -420,5 +420,19 @@ if(!isset($domains)) {
 } // end if(is_array($domains))
 // }}}
 
+if(file_exists($_SESSION["path"]."/.DEBUG_ME") and file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
+  $now = pql_format_return_unixtime(); echo "Now: <b>$now</b><br>";
+}
+
 require("./left-trailer.html");
+
+pql_flush();
+
+/*
+ * Local variables:
+ * mode: php
+ * mode: font-lock
+ * tab-width: 4
+ * End:
+ */
 ?>
