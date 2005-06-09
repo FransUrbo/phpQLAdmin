@@ -6,6 +6,12 @@ phpQLAdmin 2.3.1 TO BE ANNOUNCED
 	Schema changes
 	Documentation changes
 	API changes
+	  - Rewrite and correctly implement caching. Not that I gained much, but still.
+	    Example: Loading the left frame with my database (99 users) took 9 seconds
+	             without caching and 6 seconds with...
+	    No other speed increases where found (adding domains etc which usually take
+	    some time).
+
 	Misc changes
 	  - Support sub-zones in the DNS manager. Only one level is supported at this
 	    time though...

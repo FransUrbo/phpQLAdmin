@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.38 2005-06-07 18:05:48 turbo Exp $
+// $Id: pql_search.inc,v 2.39 2005-06-09 15:56:55 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -11,19 +11,15 @@
 // ------------------------------------------------
 
 // {{{ pql_search(linkid, dn, filter, level, referrals, operational)
-// Return all users (whole object!!) matching filter.
+// Lock for object(s) which match the filter.
 function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $operational = 0) {
 	// URL decode the object DN if it's URL ENcoded
 	$dn = pql_maybe_encode(urldecode($dn));
 
+	// {{{ Convert a DNS TTL RDN to something I (phpQLAdmin) can understand
 	if(eregi("^dNSTTL=", $dn))
+	  // 'dNSTTL=3600+relativeDomainName=@,dc=domain,dc=tld,ou=DNS,o=Branch,c=SE'
 	  $dn = pql_recreate_dnsttl($dn);
-
-    // {{{ Check whether the object is cached - TODO
-//    $value = '';
-//	if(pql_cache_userentry_get($dn, $attribute, $value))
-//	  // The object is cached  -> return the value for the requested attribute  .
-//	  return($value);
 	// }}}
 
 	// {{{ Which ldap_{search,list,read}() function to use
@@ -40,15 +36,30 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
 	  $op = array();
 
 	// {{{ Retreive the whole object.
-	$sr = @$func($linkid, $dn, $filter, $op);
-	if(!$sr)
-	  // No such object - problem with the search string?
-	  return false;
+	if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE"))
+	  echo "pql_search() - 1: Looking for '$dn': "; // DEBUG
+
+	if(($level == "BASE") and pql_cache_get($dn, $object)) {
+	  // The object is cached -> return this (don't look for it in LDAP).
+	  return($object);
+	} else {
+	  // It's either not a ONE level search or it doesn't exist in the
+	  // cache. Fetch it...
+	  $sr = @$func($linkid, $dn, $filter, $op);
+	  if(!$sr)
+		// No such object - problem with the search string?
+		return false;
+	}
 	// }}}
 
 	// {{{ Get ALL hits and rearrange the array.
 	$object = ldap_get_entries($linkid, $sr) or pql_format_error(1);
 	for($i=0; $i < $object["count"]; $i++) {
+	  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE"))
+		echo "pql_search() - 2: Looking for '$dn': "; // DEBUG
+
+	  if(!pql_cache_get($object[$i]["dn"], $entry[$i])) {
+		// This object isn't cached.
 		foreach($object[$i] as $key => $value) {
 			if(eregi('^[a-z]', $key) and $key != 'count') {
 				// Ignore the 'count' value and values with a number
@@ -72,6 +83,10 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
 				  $entry[$i][$key] = pql_maybe_decode($value[0]);
 			}
 		}
+
+		// Cache this/these object
+		pql_cache_add($dn, $entry[$i]);
+	  }
 	}
 	// }}}
 
@@ -107,11 +122,6 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
 //	}
 	// }}}
 
-	// {{{ Cache this/these object
-//	for($i=0; $entry[$i]; $i++)
-//	  pql_cache_userentry_add($dn, $entry[$i]);
-	// }}}
-
 	return($entry);
 }
 // }}}
@@ -123,8 +133,11 @@ function pql_get_attribute($linkid, $dn, $attribute, $operational = 0) {
 
     // Get the object and return only the attributes of interest.
 	$object = pql_search($linkid, $dn, "(".pql_get_define("PQL_ATTR_OBJECTCLASS")."=*)", 'BASE', 1, $operational);
-    if($object)
+    if($object and $object[0][$attribute])
 	  return($object[0][$attribute]);
+	elseif($object and $object[$attribute])
+	  // Most likley returned from a cached object...
+	  return($object[$attribute]);
 
 	return(false);
 }
@@ -140,6 +153,11 @@ function pql_get_attribute($linkid, $dn, $attribute, $operational = 0) {
 // the DN's of the matches...
 function pql_get_dn($linkid, $dn, $filter, $level = 'SUBTREE') {
 	unset($entry);
+
+	// NOTE:
+	// This function is VERY UNLIKLEY to do a ONE level search,
+	// so I'm not going to bother to check for cached objects.
+	// Besides, pql_search() is quite clever about that...
 
 	$objects = pql_search($linkid, $dn, $filter, $level, 1);
 	for($i=0; $objects[$i]; $i++)

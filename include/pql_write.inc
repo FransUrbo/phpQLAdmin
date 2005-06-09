@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.29 2005-05-27 10:39:54 turbo Exp $
+// $Id: pql_write.inc,v 2.30 2005-06-09 15:56:55 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -43,6 +43,9 @@ function pql_write_add($linkid, $dn, $entry, $type, $caller) {
 			echo "Error: #$errno ($error)<p>";
 			die($LDIF);
 		}
+
+		// Cache this object
+		pql_cache_add($dn, $entry);
 	}
 
 	return(true);
@@ -122,6 +125,9 @@ function pql_write_mod($linkid, $dn, $entry, $caller = NULL, $count = 0) {
 				die($LDIF);
 			}
 		}
+
+		// Remove this cached object so it's loaded fresh next time around.
+		pql_cache_remove($dn);
 	}
 
 	return(true);
@@ -138,8 +144,12 @@ function pql_write_ren($linkid, $old, $parent, $new, $keepold = TRUE) {
 	$new = pql_maybe_encode($new);
 	$parent = pql_maybe_encode($parent);
 
-	if(ldap_rename($linkid, $old, $new, $parent, $keepold))
+	if(ldap_rename($linkid, $old, $new, $parent, $keepold)) {
+	  // Remove this cached object so it's loaded fresh next time around.
+	  pql_cache_remove($dn);
+
 	  return true;
+	}
   }
 
   return false;
@@ -152,8 +162,12 @@ function pql_write_del($linkid, $dn) {
 	echo "Removing DN<br>'<b>$dn</b>'<br>";
 	return true;
   } else {
-	if(ldap_delete($linkid, $dn))
+	if(ldap_delete($linkid, $dn)) {
+	  // Remove this cached object.
+	  pql_cache_remove($dn);
+
 	  return true;
+	}
   }
 
   return false;
@@ -307,12 +321,12 @@ function pql_modify_attribute($linkid, $dn, $attrib, $old, $new) {
 		}
 
 		// Object has changed -> remove the cached version
-		pql_cache_userentry_remove($dn);
+		//pql_cache_remove($dn);
 
 		// What's the Root DN (namingContexts) of this user
-		$rootdn = pql_get_rootdn($dn, 'pql_modify_attribute'); $rootdn = urldecode($rootdn);
-		if($attrib == pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn))
-		  pql_cache_userdn_remove($dn);
+		//$rootdn = pql_get_rootdn($dn, 'pql_modify_attribute'); $rootdn = urldecode($rootdn);
+		//if($attrib == pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn))
+		//  pql_cache_remove($dn);
 		
 		return true;
 	}
@@ -513,7 +527,7 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 	}
     
     // user entry has been removed -> remove the cached version
-    pql_cache_userentry_remove($user);
+    //pql_cache_remove($user);
     
     // delete forwards to this account?
     if ($delete_forwards and $forwarders) {
