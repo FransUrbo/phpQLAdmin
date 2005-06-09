@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.78 2005-05-18 20:29:16 turbo Exp $
+// $Id: pql_config.inc,v 1.79 2005-06-09 15:21:32 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -13,6 +13,12 @@ require($_SESSION["path"]."/include/pql_cache.inc");			// Cache API
 require($_SESSION["path"]."/include/pql_search.inc");			// Search API
 require($_SESSION["path"]."/include/pql_write.inc");			// Write API
 require($_SESSION["path"]."/include/pql_units.inc");			// Sub branch API
+// }}}
+
+// {{{ Start profiling - what time is it now?
+if(file_exists($_SESSION["path"]."/.DEBUG_ME") and file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
+  $now = pql_format_return_unixtime(); echo "Now: <b>$now</b><br>";
+}
 // }}}
 
 // {{{ pql_set_define(define, value, case_insensitive, dn)
@@ -51,7 +57,7 @@ function pql_set_define($define, $value, $case_insensitive = false, $dn = NULL) 
 		if(!isset($config[$define][$dn])) {
 			$config[$define][$dn] = $value;
 
-			if(file_exists("./.DEBUG_ME_DEFINES"))
+			if(file_exists("./.DEBUG_DEFINES"))
 			  echo "config[$define][$dn] = $value<br>"; // DEBUG
 		}
 	} else {
@@ -60,7 +66,7 @@ function pql_set_define($define, $value, $case_insensitive = false, $dn = NULL) 
 		if(!isset($config[$define])) {
 		  $config[$define] = $value;
 		  
-		  if(file_exists("./.DEBUG_ME_DEFINES"))
+		  if(file_exists("./.DEBUG_DEFINES"))
 			echo "config[$define] = '$value'<br>"; // DEBUG
 		}
 	}
@@ -78,9 +84,6 @@ function pql_get_define($define, $dn = NULL) {
 	  $value = $config[$define];
 	else
 	  $value = NULL;
-
-	// Just incase it's a BOOLEAN...
-	$value = pql_format_bool($value);
 
 	return($value);
 }
