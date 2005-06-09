@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.90 2005-05-18 20:29:13 turbo Exp $
+// $Id: user_detail.php,v 2.91 2005-06-09 15:17:47 turbo Exp $
 //
 // {{{ Setup session
 require("./include/pql_session.inc");
@@ -285,6 +285,15 @@ if(!$_SESSION["SINGLE_USER"]) {
 }
 // }}}
 
+if(file_exists($_SESSION["path"]."/.DEBUG_ME") and file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
+  $now = pql_format_return_unixtime(); echo "Now: <b>$now</b><br>";
+}
+?>
+</body>
+</html>
+<?php
+pql_flush();
+
 /*
  * Local variables:
  * mode: php
@@ -293,5 +302,3 @@ if(!$_SESSION["SINGLE_USER"]) {
  * End:
  */
 ?>
-</body>
-</html>
