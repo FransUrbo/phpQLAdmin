@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: domain_add.php,v 2.62 2005-04-23 08:45:29 turbo Exp $
+// $Id: domain_add.php,v 2.63 2005-06-09 15:12:44 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -186,6 +186,9 @@ if(pql_write_add($_pql->ldap_linkid, $dn, $entry, 'branch', 'domain_add.php')) {
 		die();
 		// }}}
 	} elseif(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+	  if(file_exists($_SESSION["path"]."/.DEBUG_PROFILING"))
+		$now = pql_format_return_unixtime(); echo "Now: <b>$now</b><br>";
+
 		echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
 		die("<b>$url</b>");
 	} else {
@@ -200,6 +203,8 @@ if(pql_write_add($_pql->ldap_linkid, $dn, $entry, 'branch', 'domain_add.php')) {
   </body>
 </html>
 <?php
+pql_flush();
+
 /*
  * Local variables:
  * mode: php
