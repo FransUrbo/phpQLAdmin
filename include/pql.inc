@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.205 2005-05-18 20:29:16 turbo Exp $
+// $Id: pql.inc,v 2.206 2005-06-09 15:19:24 turbo Exp $
 //
 
 // ----------------------------
@@ -15,7 +15,16 @@ fclose($fp);
 
 // ----------------------------
 // turn on output-buffering by default
-ob_start();
+// http://www.sitepoint.com/print/php-anthology-2-5-caching
+if(function_exists("ob_get_level")) {
+  // Only availible in PHP >= 4.2.0
+  if(ob_get_level() == 0)
+	// Only start the buffer if it isn't already there
+	ob_start();
+} else {
+  // Start it anyway...
+  ob_start();
+}
 
 // ----------------------------
 // API classes
@@ -827,6 +836,16 @@ function pql_add2array($old, $new) {
 	$old[] = $entry;
 
   return($old);
+}
+// }}}
+
+// {{{ pql_flush(void)
+function pql_flush() {
+  if(function_exists("ob_flush"))
+	// Only exists in PHP >= 4.2.0
+	ob_flush();
+
+  flush();
 }
 // }}}
 
