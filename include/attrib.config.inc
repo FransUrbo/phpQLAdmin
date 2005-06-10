@@ -1,6 +1,109 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.47 2005-05-18 20:29:16 turbo Exp $
+// $Id: attrib.config.inc,v 1.48 2005-06-10 13:07:30 turbo Exp $
+
+// {{{ Bug #221 information
+// This is how we're called, from where and why (question we answer):
+// * config_template_add.php
+//   - tables/config_details-template.inc
+//     Add template
+// 
+// * config_edit_attribute.php
+//   - tables/config_details-global.inc
+//     Language
+//     Who are we
+//     Hostmaster
+//     LDAP control base dn
+//     Manage Access Control Information
+//     Manage Controls DB
+//     Manage EZMLM mailinglists
+//     Path to EZMLM commands
+//     EZMLM server is remote
+//     EZMLM remote host
+//     EZMLM remote/rsh user
+//     Remote EZMLM mailinglist information retreival script
+//     Manage DNS domains
+//     Manage webserver config
+//     Manage SimScan config
+//     Automatic reload of navigation bar
+//     Allow change of LDAP server
+//     Use MBox format instead of Maildir for mail store
+//     Kerberos realm
+//     Kerberos admin server
+//     Kerberos admin principal
+//     Kerberos admin keytab
+//     Path to Kerberos kadmin command
+// 
+//   - tables/config_details-template.inc
+//     Template description
+//     Allowed password encryption scheme
+//       Add encryption scheme
+//       Delete encryption scheme
+//     Allowed user objectclasses
+//       Add objectclass
+//       Delete objectclass
+// 
+//   - tables/config_details-branch.inc
+//     Show users
+//     Allow absolute mailbox paths
+//     Verify user/domain deletions
+//     Reference users with
+//     Reference domains with
+//     Minimum UID Number to be used for shell and system accounts
+//       Minimum GID Number to be used for shell and system accounts
+//     UID number to be used for forwarding accounts
+//     External user creation script
+//     External domain creation script
+//     External user removal script
+//     External domain removal script
+//     Automatically add hostname to domain for replication
+//     Automatically replicate domains to locals
+//     Automatically replicate domains to rcpthosts
+//     Allowed domain objectclasses
+//       Add objectclass
+//       Delete objectclass
+//     Super administrator
+//       Add administrator
+//       Delete administrator
+// 
+//   - tables/user_details-access.inc
+//     Administrate QmailLDAP/Controls  (Globaly and per user)
+// }}}
+
+// {{{ attribute_output_java_window(void)
+function attribute_output_java_window() {
+  global $LANG;
+?>
+  <script type="text/javascript" language="javascript"><!--
+    function errorWindow() {
+      myWindow = window.open("", "ProblemWindow", 'toolbar,width=850,height=400'), $LANG;
+      myWindow.document.write("I can.t retreive the subschemaSubentry entry from base NULL. ");
+	  myWindow.document.write("Make sure you have access to do a search that in the shell looks like this:<p>");
+
+	  myWindow.document.write("<pre>");
+	  myWindow.document.write("/usr/bin/ldapsearch -x -LLL -h localhost -s base -b '' 'objectClass=*' subschemaSubentry");
+	  myWindow.document.write("</pre>");
+
+	  myWindow.document.write("You should retreive something like this back:<p>");
+
+	  myWindow.document.write("<pre>");
+	  myWindow.document.write("dn:\nsubschemaSubentry: cn=Subschema\n");
+	  myWindow.document.write("</pre>");
+
+	  myWindow.document.write("If this succeeds, then try the following command:");
+	  myWindow.document.write("<pre>");
+	  myWindow.document.write("/usr/bin/ldapsearch -x -LLL -h localhost -s base -b 'cn=Subschema' 'objectClass=*' objectclasses");
+	  myWindow.document.write("</pre>");
+	  myWindow.document.write("This should return every objectclass and what attributes wanted/required for those. ");
+	  myWindow.document.write("I that didn't work, debug your LDAP server possibly granting access to READ below the DN cn=Subschema");
+
+      myWindow.document.bgColor="white";
+      myWindow.document.close();
+    }
+  //--></script>
+<?php
+}
+// }}}
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -71,34 +174,9 @@ function attribute_print_form() {
 		if($value != '')
 		  $oldvalue = $value;
 	}
+
+	attribute_output_java_window();
 ?>
-  <script type="text/javascript" language="javascript"><!--
-    function errorWindow() {
-      myWindow = window.open("", "ProblemWindow", 'toolbar,width=850,height=400'), $LANG;
-      myWindow.document.write("I can.t retreive the subschemaSubentry entry from base NULL. ");
-	  myWindow.document.write("Make sure you have access to do a search that in the shell looks like this:<p>");
-
-	  myWindow.document.write("<pre>");
-	  myWindow.document.write("/usr/bin/ldapsearch -x -LLL -h localhost -s base -b '' 'objectClass=*' subschemaSubentry");
-	  myWindow.document.write("</pre>");
-
-	  myWindow.document.write("You should retreive something like this back:<p>");
-
-	  myWindow.document.write("<pre>");
-	  myWindow.document.write("dn:\nsubschemaSubentry: cn=Subschema\n");
-	  myWindow.document.write("</pre>");
-
-	  myWindow.document.write("If this succeeds, then try the following command:");
-	  myWindow.document.write("<pre>");
-	  myWindow.document.write("/usr/bin/ldapsearch -x -LLL -h localhost -s base -b 'cn=Subschema' 'objectClass=*' objectclasses");
-	  myWindow.document.write("</pre>");
-	  myWindow.document.write("This should return every objectclass and what attributes wanted/required for those. ");
-	  myWindow.document.write("I that didn't work, debug your LDAP server possibly granting access to READ below the DN cn=Subschema");
-
-      myWindow.document.bgColor="white";
-      myWindow.document.close();
-    }
-  //--></script>
 
   <span class="title1"><?=$LANG->_('Change options')?></span>
 
