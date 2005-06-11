@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.42 2005-06-07 17:49:34 turbo Exp $
+// $Id: pql_formating.inc,v 2.43 2005-06-11 11:04:06 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -251,6 +251,12 @@ function pql_format_table_single($linkid, $text, $url, $array, $attrib, $class =
         <td colspan="2"><?php if($url["add"]) { ?><a href="<?=$url["add"]?>"><?=$text["add"]?></a><?php } ?></td>
       </tr>
 <?php
+}
+// }}}
+
+// {{{ pql_format_table_empty()
+function pql_format_table_empty() {
+  echo "<th><td><h5>&nbsp</h5></td><td><h5>&nbsp</h5></td><td><h5>&nbsp</h5></td></th>";
 }
 // }}}
 
@@ -548,18 +554,15 @@ function pql_format_urls(&$string) {
 
 // {{{ pql_format_bool(string)
 function pql_format_bool(&$value) {
-	if($value == 'TRUE') {
+	if(($value == 'TRUE') or ($value == 'true')) {
 		settype($value, "boolean");
 		$value = '1';
-	} elseif($value == 'FALSE') {
+	} elseif(($value == 'FALSE') or ($value == 'false')) {
 		settype($value, "boolean");
 		$value = '0';
 	} elseif($value == '1') {
 		settype($value, "boolean");
 		$value = 'TRUE';
-	} elseif($value == '0') {
-		settype($value, "boolean");
-		$value = 'FALSE';
 	}
 
 	return($value);
