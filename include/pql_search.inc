@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.39 2005-06-09 15:56:55 turbo Exp $
+// $Id: pql_search.inc,v 2.40 2005-06-11 10:49:24 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -41,6 +41,11 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
 
 	if(($level == "BASE") and pql_cache_get($dn, $object)) {
 	  // The object is cached -> return this (don't look for it in LDAP).
+	  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE")) {
+		echo "pql_search(): Returning object '$dn'<br>";
+		printr($object);
+	  }
+
 	  return($object);
 	} else {
 	  // It's either not a ONE level search or it doesn't exist in the
@@ -131,7 +136,7 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
 function pql_get_attribute($linkid, $dn, $attribute, $operational = 0) {
     $attribute = lc($attribute);
 
-    // Get the object and return only the attributes of interest.
+    // Get the (WHOLE) object but only return only the attributes of interest.
 	$object = pql_search($linkid, $dn, "(".pql_get_define("PQL_ATTR_OBJECTCLASS")."=*)", 'BASE', 1, $operational);
     if($object and $object[0][$attribute])
 	  return($object[0][$attribute]);
