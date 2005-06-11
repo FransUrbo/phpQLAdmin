@@ -3,8 +3,6 @@ require($_SESSION["path"]."/include/pql_templates.inc");
 $templates = pql_get_templates($_pql->ldap_linkid);
 
 if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
-  echo "_SESSION: "; printr($_SESSION);
-  printr($templates);
 }
 ?>
   <br>
@@ -20,15 +18,13 @@ if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
 		  
 		  $dn = urlencode($templates[$i]["dn"]);
 ?>
-<th colspan="3" align="left"><?=pql_complete_constant($LANG->_('User template configuration - %name%'),
-													  array('name' => $templates[$i]["name"]))?>
-
+    <th colspan="3" align="left">
       <!-- -------------------- -->
 <?php 		$class=pql_format_table(0); ?>
       <tr>
-        <td class="title"><?=$LANG->_('Template description')?></td>
-        <td class="<?=$class?>"><?=$templates[$i]["short"]?></td>
-        <td class="<?=$class?>">
+        <td class="title" colspan="2"><h4><?=$templates[$i]["short"]?></h4> (<?=pql_complete_constant($LANG->_('User template configuration - %name%'),
+																									  array('name' => $templates[$i]["name"]))?>)</td>
+        <td class="title">
           <a href="config_edit_attribute.php?rootdn=<?=$dn?>&attrib=<?=pql_get_define("PQL_ATTR_USER_TEMPLATE_DESC_SHORT")?>&view=template"><?php if($templates[$i]["name"] != 'internal_group') { ?><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change user template description')?>"><?php } ?></a>
         </td>
       </tr>
@@ -39,17 +35,17 @@ if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
 			$url_tmp .= "&view=template";
 
 			if(!$_SESSION["NEW_STYLE_QUOTA"] and ($templates[$i]["name"] != 'internal_group')) {
-			if(!$templates[$i]["oldformat"]["passwordscheme"]) {
-			  $txt = array('tit' => $LANG->_('Allowed password encryption scheme'),
-						   'add' => $LANG->_('Add encryption scheme'),
-						   'del' => $LANG->_('Delete encryption scheme'));
-			  $url = array('add' => $url_tmp, 'del' => $url_tmp."&action=del");
-			} else {
-			  $txt = array('tit' => $LANG->_('Allowed password encryption scheme'));
-			  $url = array();
-			}
-			pql_format_table_single($_pql->ldap_linkid, $txt, $url, $templates[$i]["passwordscheme"],
-									pql_get_define("PQL_ATTR_PASSWORD_SCHEMES"), $class);
+			  if(!$templates[$i]["oldformat"]["passwordscheme"]) {
+				$txt = array('tit' => $LANG->_('Allowed password encryption scheme'),
+							 'add' => $LANG->_('Add encryption scheme'),
+							 'del' => $LANG->_('Delete encryption scheme'));
+				$url = array('add' => $url_tmp, 'del' => $url_tmp."&action=del");
+			  } else {
+				$txt = array('tit' => $LANG->_('Allowed password encryption scheme'));
+				$url = array();
+			  }
+			  pql_format_table_single($_pql->ldap_linkid, $txt, $url, $templates[$i]["passwordscheme"],
+									  pql_get_define("PQL_ATTR_PASSWORD_SCHEMES"), $class);
 			}
 ?>
 
@@ -102,7 +98,11 @@ if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
       </tr>
 <?php } ?>
     </th>
-<?php	} // for(templates) ?>
+<?php		if($templates[$i+1]) {
+				pql_format_table_empty();
+			}
+		} // for(templates)
+?>
 
     <th>
       <tr>
