@@ -1,7 +1,7 @@
 <?php
 // phpQLAdmin cache Application Programming Interface (API)
 //
-// $Id: pql_cache.inc,v 2.3 2005-06-09 15:56:55 turbo Exp $
+// $Id: pql_cache.inc,v 2.4 2005-06-11 10:54:29 turbo Exp $
 //
 
 // Global variables
@@ -27,7 +27,7 @@ function pql_cache_add($dn, $object) {
 function pql_cache_get($dn, &$object) {
     global $pql_cache, $_SESSION;
 	if(file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE"))
-	  return;
+	  return(false);
 
 	// URL decode the object DN if it's URL ENcoded
 	$dn = pql_maybe_encode(urldecode(lc($dn)));
