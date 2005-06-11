@@ -11,6 +11,8 @@ phpQLAdmin 2.3.1 TO BE ANNOUNCED
 	             without caching and 6 seconds with...
 	    No other speed increases where found (adding domains etc which usually take
 	    some time).
+	  - Complete rewrite of the include/attrib.config.inc:attribute_save() function.
+	    Closes: #221
 
 	Misc changes
 	  - Support sub-zones in the DNS manager. Only one level is supported at this
