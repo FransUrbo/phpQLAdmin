@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.92 2005-06-11 10:49:24 turbo Exp $
+// $Id: user_detail.php,v 2.93 2005-06-11 12:20:00 turbo Exp $
 //
 // {{{ Setup session
 require("./include/pql_session.inc");
@@ -25,7 +25,7 @@ if(!$_GET and ($_REQUEST["view"] == "antispam")) {
 
 // Check if user exists
 if(!pql_get_dn($_pql->ldap_linkid, $_GET["user"], '(objectclass=*)', 'BASE')) {
-    echo pql_complete_constant($LANG->_('User %user% does not exist'), array('user' => '<u>'.$_GET["user"].'</u>'));
+    echo pql_complete_constant($LANG->_('User \u%user%\U does not exist'), array('user' => $_GET["user"]));
     exit();
 }
 
