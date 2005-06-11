@@ -96,12 +96,14 @@
         <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=pql_get_define("PQL_ATTR_EZMLM_REMOTE_HOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_EZMLM_REMOTE_HOST")?>"></a></td>
       </tr>
 
+<?php	$class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('EZMLM remote/rsh user')?></td>
         <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_EZMLM_REMOTE_USER"); ?>&nbsp;</td>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=pql_get_define("PQL_ATTR_EZMLM_REMOTE_USER")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_EZMLM_REMOTE_USER")?>"></a></td>
       </tr>
 
+<?php	$class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Remote EZMLM mailinglist<br>information retreival script')?></td>
         <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_EZMLM_REMOTE_RETREIVE_SCRIPT"); ?>&nbsp;</td>
