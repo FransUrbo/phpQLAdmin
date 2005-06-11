@@ -1,74 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.48 2005-06-10 13:07:30 turbo Exp $
-
-// {{{ Bug #221 information
-// This is how we're called, from where and why (question we answer):
-// * config_template_add.php
-//   - tables/config_details-template.inc
-//     Add template
-// 
-// * config_edit_attribute.php
-//   - tables/config_details-global.inc
-//     Language
-//     Who are we
-//     Hostmaster
-//     LDAP control base dn
-//     Manage Access Control Information
-//     Manage Controls DB
-//     Manage EZMLM mailinglists
-//     Path to EZMLM commands
-//     EZMLM server is remote
-//     EZMLM remote host
-//     EZMLM remote/rsh user
-//     Remote EZMLM mailinglist information retreival script
-//     Manage DNS domains
-//     Manage webserver config
-//     Manage SimScan config
-//     Automatic reload of navigation bar
-//     Allow change of LDAP server
-//     Use MBox format instead of Maildir for mail store
-//     Kerberos realm
-//     Kerberos admin server
-//     Kerberos admin principal
-//     Kerberos admin keytab
-//     Path to Kerberos kadmin command
-// 
-//   - tables/config_details-template.inc
-//     Template description
-//     Allowed password encryption scheme
-//       Add encryption scheme
-//       Delete encryption scheme
-//     Allowed user objectclasses
-//       Add objectclass
-//       Delete objectclass
-// 
-//   - tables/config_details-branch.inc
-//     Show users
-//     Allow absolute mailbox paths
-//     Verify user/domain deletions
-//     Reference users with
-//     Reference domains with
-//     Minimum UID Number to be used for shell and system accounts
-//       Minimum GID Number to be used for shell and system accounts
-//     UID number to be used for forwarding accounts
-//     External user creation script
-//     External domain creation script
-//     External user removal script
-//     External domain removal script
-//     Automatically add hostname to domain for replication
-//     Automatically replicate domains to locals
-//     Automatically replicate domains to rcpthosts
-//     Allowed domain objectclasses
-//       Add objectclass
-//       Delete objectclass
-//     Super administrator
-//       Add administrator
-//       Delete administrator
-// 
-//   - tables/user_details-access.inc
-//     Administrate QmailLDAP/Controls  (Globaly and per user)
-// }}}
+// $Id: attrib.config.inc,v 1.49 2005-06-11 12:24:04 turbo Exp $
 
 // {{{ attribute_output_java_window(void)
 function attribute_output_java_window() {
@@ -354,285 +286,141 @@ function attribute_print_form() {
 
 // {{{ attribute_save(void)
 function attribute_save() {
-    global $_pql, $LANG, $PQL_ATTRIBUTE;
+  global $_pql, $LANG, $PQL_ATTRIBUTE;
+  $entry = array();
 
-	$attrib     = lc($_REQUEST["attrib"]);
-	$attrib_val = @$_REQUEST[$attrib];
-	$oldvalue   = @$_REQUEST["oldvalue"];
-	$toggle     = @$_REQUEST["toggle"];
-	$rootdn     = @$_REQUEST["rootdn"];
-	$domain		= @$_REQUEST["domain"];
+  // ---------------------------------
 
-	if($domain)
-	  $dn = $domain;
-	elseif($rootdn)
-	  $dn = $rootdn;
+  $rootdn		= @$_REQUEST["rootdn"];
+  $domain		= @$_REQUEST["domain"];
 
-	// DLW: This should be chopped up into functions to make it more readable.
-	// TURBO: Completely agree! See bug #221
-	
-	$entry = array();
+  $attrib		= lc($_REQUEST["attrib"]);
+  $attrib_val	= @$_REQUEST[$attrib];
+  $oldvalue		= @$_REQUEST["oldvalue"];
+  $toggle		= @$_REQUEST["toggle"];
+  
+  if($domain)
+	$dn = $domain;
+  elseif($rootdn)
+	$dn = $rootdn;
+  // else: It's a config value and should be
+  //       applied on ALL base DN's.
+  
+  // ---------------------------------
 
-	if($attrib_val and !$attrib_val) {
-		// {{{ We're adding, not deleting a value. Used for defaultPasswordScheme or multiple choices in POST
-		if($attrib == pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME")) {
-			$entry[$attrib][] = strtoupper($attrib_val);
-		} elseif(is_array($_POST)) {
-			for($i=0; $i < $_POST[$attrib]; $i++) {
-				$var_name = $attrib . "_$i";
-				if($_POST[$var_name]) 
-				  $entry[$attrib][] = $_POST[$var_name];
-			}
-		} // DLW: Why isn't plain old $entry[$attrib][] = $attrib_val here?
-		  // TURBO: Because if we've choosen a objectClass, then we have MULTIPLE
-		  //		choices - amount if in the hidden input 'name=$attrib', and
-		  //		all the choosen values are in 'name=$attrib\_$counter'.
-		  //		See the section that starts with 'if(is_array($objectclasses)) {' above.
-		  //		Also see the file 'attrib.administrator.inc' for more examples.
-		// }}}
-	} elseif(!$oldvalue and $toggle) {
-		// A togglable value, but we don't know the previous value
+  if($toggle) {
+	// {{{ A togglable value.
+	if(!$oldvalue) {
+	  // We don't know the previous value, fetch it.
+	  if($dn)
 		$oldvalue = pql_get_attribute($_pql->ldap_linkid, $dn, $attrib);
-    }
-		  
-	if($attrib_val and $attrib_val and (($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) or
-									($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN")) or
-									($attrib == pql_get_define("PQL_ATTR_PASSWORD_SCHEMES")))) {
-		// {{{ We're deleting one of the multivalued attributes. Retreive the old value(s) from the LDAP db.
-		if($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN")) {
-			$allowed = pql_split_oldvalues(pql_get_define("PQL_CONF_OBJECTCLASS_DOMAIN", $rootdn));
-		} else {
-			$allowed = pql_get_attribute($_pql->ldap_linkid, $rootdn, $attrib);
-		}
-
-		if($allowed) {
-			for($i=0; $allowed[$i]; $i++) {
-				if(lc($allowed[$i]) != lc($attrib_val))
-				  $entry[$attrib][] = $allowed[$i];
-			}
-		}
-
-		// Just incase this is (was) the last entry...
-		if(!is_array($entry[$attrib]))
-		  $entry[$attrib] = array();
-		// }}}
-	} else {
-		if($oldvalue and $toggle) {
-			// {{{ A togglable value, reverse state
-			if($oldvalue == 'FALSE')
-			  $entry[$attrib][] = 'TRUE';
-			elseif($oldvalue == 'TRUE')
-			  $entry[$attrib][] = 'FALSE';
-			else {
-				$values = pql_split_oldvalues($oldvalue);
-				for($i=0; $values[$i]; $i++)
-				  $entry[$attrib][] = $values[$i];
-			}
-			// }}}
-		} elseif($oldvalue and $attrib_val) {
-			// {{{ We should delete one attribute
-			$values = pql_split_oldvalues($oldvalue);
-			
-			// Go through existing attributes, removing the chosen one
-			for($i=0; $values[$i]; $i++)
-			  if(! eregi($attrib_val, $values[$i]))
-				$entry[$attrib][] = $values[$i];
-			// }}}
-		} elseif($attrib_val and
-				 ($attrib != pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME")) and
-				 ($attrib != pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) and
-				 ($attrib != pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN")) and
-				 ($attrib != pql_get_define("PQL_ATTR_PASSWORD_SCHEMES"))) {
-			// {{{ We have a value for the attribute we're changing.
-			// Any attribute BUT: defaultPasswordScheme, userObjectClass or branchObjectClass
-			$entry[$attrib][] = $attrib_val;
-			// }}}
-		} else {
-			if(($attrib == pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME")) or
-			   ($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) or
-			   ($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN"))) {
-				// {{{ Changing defaultPasswordScheme OR {user,domain}ObjectClass
-				$oldvalues = pql_get_attribute($_pql->ldap_linkid, $rootdn, $attrib);
-				if(!$oldvalues) {
-					// We don't have any old values in the LDAP database. Maybe we have some defaults?
-					foreach($PQL_ATTRIBUTE as $level => $array) {
-						foreach($array as $key => $value) {
-							if(!is_array($value)) {
-								if((lc($value) == lc($attrib)) and pql_get_define($key, $rootdn) and !eregi('_GLOB_', $key)) {
-									// Split this value into an array
-									$values = pql_split_oldvalues(pql_get_define($key, $rootdn));
-									foreach($values as $val) {
-										// Add all values EXEPT the one to remove
-										if(lc($val) != lc($attrib_val))
-										  $entry[$attrib][] = $val;
-									}
-									
-									break;
-								}
-							} else {
-								$entry[$attrib][] = $attrib_val;
-							}
-						}
-					}
-				} elseif(is_array($oldvalues)) {
-					// Add the old values to the new array
-					foreach($oldvalues as $value) {
-						$entry[$attrib][] = $value;
-					}
-				} else
-				  $entry[$attrib][] = $oldvalues;
-				// }}}
-			} elseif($rootdn and ($attrib != pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"))) {
-				// {{{ Any attribute BUT controlsAdministrator - fetch old values from DB
-				if(!$attrib_val and 
-				   (($attrib == pql_get_define("PQL_ATTR_SCRIPT_CREATE_USER")) or
-					($attrib == pql_get_define("PQL_ATTR_SCRIPT_CREATE_DOMAIN")))) {
-					// If 'externalScript{User,Domain}' attribute(s) are empty, then
-					// special circumstances!
-					$delete[$attrib] = 1;
-				} else {
-					unset($oldvalues); $oldvalues = pql_get_attribute($_pql->ldap_linkid, $rootdn, $attrib);
-					if(!$oldvalues) {
-						// We don't have any old values in the LDAP database. Maybe we have some defaults?
-						foreach($PQL_ATTRIBUTE as $level => $array) {
-							foreach($array as $key => $value) {
-								if(!is_array($value)) {
-									if((lc($value) == lc($attrib)) and pql_get_define($key, $rootdn) and !eregi('_GLOB_', $key)) {
-										// Split this value into an array
-										$oldvalues = pql_split_oldvalues(pql_get_define($key, $rootdn));
-										break;
-									}
-								}
-							}
-						}
-					}
-
-					if(is_array($oldvalues)) {
-						foreach($oldvalues as $val) {
-							if(!@eregi($attrib_val, $val)) {
-								// Remove the one we don't want
-								$entry[$attrib][] = $val;
-							}
-						}
-					} elseif($oldvalues) {
-						if($toggle) {
-							if($oldvalues == 'TRUE')
-							  $entry[$attrib][] = 'FALSE';
-							else
-							  $entry[$attrib][] = 'TRUE';
-						} else {
-							// Only one value, add it
-							$entry[$attrib][] = $oldvalues;
-						}
-					} elseif($toggle) {
-						// No old values and it's a toggle -> check default and reverse it
-						foreach($PQL_ATTRIBUTE as $level => $array) {
-							foreach($array as $key => $value) {
-								if(!is_array($value)) {
-									if(lc($value) == $attrib) {
-										if(pql_get_define($key, $rootdn) or (pql_get_define($key, $rootdn) == 'TRUE'))
-										  $entry[$attrib][] = 'FALSE';
-										else
-										  $entry[$attrib][] = 'TRUE';
-										
-										break;
-									}
-								}
-							}
-						}
-					} // ELSIF it's a toggle.
-
-					// Add the new value to the entry
-					$entry[$attrib][] = $attrib_val;
-				} // IF attrib == externalScript{User,Domain}
-				// }}}
-			} elseif($toggle) {
-				// {{{ We don't have a Root DN, it's not a PasswordScheme or {user,domain}ObjectClass
-				// but it's a toggle. Get the old value and reverse it
-				
-				unset($oldvalues); $oldvalues = pql_get_attribute($_pql->ldap_linkid, $_SESSION["BASE_DN"][0], $attrib);
-				if($oldvalues == 'TRUE')
-				  $entry[$attrib][] = 'FALSE';
-				else
-				  $entry[$attrib][] = 'TRUE';
-				// }}}
-			}
-		}
+	  else
+		$oldvalue = pql_get_attribute($_pql->ldap_linkid, $_SESSION["BASE_DN"][0], $attrib);
 	}
 
-	// Do the actual modification(s)
-	if(!$rootdn or ($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")) or $toggle) {
-		// {{{ We don't have a root DN, we're changing controlsAdministrator OR it's a toggle.
-		// This means it's a global variable, and should be
-		// set in every namingContexts
-		foreach($_SESSION["BASE_DN"] as $dn) {
-			if($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")) {
-				$entry = array();
-				if($attrib_val)
-				  $entry[$attrib][] = $attrib_val;
-
-				// Fetch old values from DB
-				unset($oldvalues); $oldvalues = pql_get_attribute($_pql->ldap_linkid, $dn, $attrib);
-
-				if(!is_array($oldvalues))
-				  $oldvalues = array($oldvalues);
-
-				foreach($oldvalues as $val) {
-				  if(!@eregi($delval, $val)) {
-					// Remove the one we don't want
-					$entry[$attrib][] = $val;
-				  }
-				}
-
-				// Just incase this is (was) the last entry...
-				if(!is_array($entry[$attrib])) {
-				  unset($entry);
-				  $entry[$attrib] = array();
-				}
+	// Check again (this time falling back to defaults set in include/{defaults,config}.inc etc)
+	if($oldvalue == '') {
+	  foreach($PQL_ATTRIBUTE as $level => $array) {
+		foreach($array as $key => $value) {
+		  if(!is_array($value)) {
+			if(lc($value) == $attrib) {
+			  $oldvalue = pql_get_define($key, $rootdn);
+			  break;
 			}
-
-			if(!pql_modify_attribute($_pql->ldap_linkid, $dn, '', '', $entry))
-			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-										   array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
-			else {
-				$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
-											 array('what' => $attrib));
-				$rlnb = 1;
-			}
-		} // FOREACH $_SESSION["BASE_DN"]
-		// }}}
-	} else {
-		// {{{ Have rootdn etc
-		$success = 0;
-
-		if(@$delete[$attrib]) {
-			// We're deleting the 'externalScript{User,Domain}' attribute(s).
-			if(pql_modify_attribute($_pql->ldap_linkid, $rootdn, $attrib, '', ''))
-              $success = 1;
-		} else {
-		  if(!$entry[$attrib])
-			$entry[$attrib] = $attrib_val;
-		  else
-			// Sort and 'uniqify' the 'LDIF'.
-			$entry[$attrib] = pql_uniq($entry[$attrib]);
-
-		  if(pql_modify_attribute($_pql->ldap_linkid, $rootdn, '', '', $entry)) 
-			$success = 1;
+		  }
 		}
-
-		if($success) {
-			$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
-										 array('what' => $attrib));
-			$rlnb = 1;
-		} else {
-			$msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-										 array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
-		}
-		// }}}
+	  }
 	}
+	
+	// Reverse state
+	if(($oldvalue == 1) or ($oldvalue == 'TRUE'))
+	  $entry[$attrib][] = 'FALSE';
+	elseif(($oldvalue == 0) or $oldvalue == 'FALSE')
+	  $entry[$attrib][] = 'TRUE';
+	// }}}
 
-	attribute_forward($msg, $rlnb);
-	break;
+  } elseif(($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) or
+		   ($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN")))
+  {
+	// {{{ One of the many multivalued values (add or del)
+	// ($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"))
+	// ($attrib == pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"))
+	// ($attrib == pql_get_define("PQL_ATTR_PASSWORD_SCHEMES"))
+
+	// {{{ Retreive the old value(s).
+	if($dn)
+	  $oldvalue = pql_get_attribute($_pql->ldap_linkid, $dn, $attrib);
+	else
+	  $oldvalue = pql_get_attribute($_pql->ldap_linkid, $_SESSION["BASE_DN"][0], $attrib);
+
+	if($oldvalue) {
+	  if(!is_array($oldvalue))
+		$oldvalue = array($oldvalue);
+
+	  for($i=0; $oldvalue[$i]; $i++) {
+		if($_REQUEST["action"] == 'del') {
+		  if(!eregi($attrib_val, $oldvalue[$i]))
+			$entry[$attrib][] = $oldvalue[$i];
+		} else
+		  $entry[$attrib][] = $oldvalue[$i];
+	  }
+	}
+	// }}}
+
+	// {{{ Add ALL of the specified values to the array we're sending to the LDAP server.
+	if($_REQUEST["action"] != 'del') {
+	  $got_attrib_val = 0;
+	  for($i=0; $i < $_POST[$attrib]; $i++) {
+		$var_name = $attrib . "_$i";
+		if($_POST[$var_name]) {
+		  $got_attrib_val = 1;
+		  $entry[$attrib][] = $_POST[$var_name];
+		}
+	  }
+	  
+	  if(!$got_attrib_val)
+		// This is just case we haven't specified multiple values to add
+		$entry[$attrib][] = $attrib_val;
+	}
+	// }}}
+	// }}}
+
+  } else
+	$entry[$attrib][] = $attrib_val;
+
+  // ---------------------------------
+
+  // {{{ Do the actual modification(s)
+  if(!$rootdn or ($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")) or $toggle) {
+	// {{{ We don't have a DN, we're changing controlsAdministrator OR it's a toggle.
+	// This means it's a global variable, and should be set in every namingContexts
+	foreach($_SESSION["BASE_DN"] as $dn) {
+	  if(!pql_modify_attribute($_pql->ldap_linkid, $dn, '', 1, $entry))
+		$msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+									 array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
+	  else {
+		$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+									 array('what' => $attrib));
+		$rlnb = 1;
+	  }
+	} // FOREACH $_SESSION["BASE_DN"]
+	// }}}
+  } else {
+	// {{{ Have a DN
+	if(pql_modify_attribute($_pql->ldap_linkid, $rootdn, '', 1, $entry)) {
+	  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+								   array('what' => $attrib));
+	  $rlnb = 1;
+	} else {
+	  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+								   array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
+	}
+  }
+  // }}}
+	
+  attribute_forward($msg, $rlnb);
+  break;
+  // }}}
 }
 // }}}
 
