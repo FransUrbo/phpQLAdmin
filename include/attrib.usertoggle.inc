@@ -5,9 +5,9 @@
 // This is the exact same as 'attrib.domaintoggle.inc',
 // just applied for users instead of domains...
 //
-// $Id: attrib.usertoggle.inc,v 2.2 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.usertoggle.inc,v 2.3 2005-06-11 10:53:13 turbo Exp $
 
-// {{{ attribute_save()
+// {{{ attribute_save(void)
 // It's a toggle. Change value directly.
 function attribute_save() {
     global $_pql, $LANG;
