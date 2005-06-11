@@ -1,0 +1,36 @@
+There are a number of files you can create in this
+directory to simplify bugfixing. They all start with
+'.DEBUG_' (notice the dot -> makes it 'hidden').
+
+.DEBUG_ME
+	General debug information. Will not write
+	to the LDAP server, but instead show you
+	and LDIF on what it (phpQLAdmin) WOULD
+	send to the LDAP server.
+
+.DEBUG_CACHE
+	Shows information about the caching system.
+	- Requires the '.DEBUG_ME' file.
+
+.DEBUG_DISABLE_CACHE
+	Disables caching completely
+
+.DEBUG_DEFINES
+	Show information about retreival and setting
+	of the 'defines' (global config values).
+
+.DEBUG_PROFILING
+	Shows the current date and time (as a UNIX
+	timestamp - seconds from Jan 1, 1970) at
+	the beginning and ending of a script.
+	Can be used to do profiling (how long does
+	an action take).
+	You'll still have to calculate the amount
+	of seconds it took yourself :)
+
+
+
+When sending in bugreports, please have _at least_
+the .DEBUG_ME file and cut-and-past the resulting
+output. The more information you send, the bigger
+chance I have in finding and fixing the bug(s).
