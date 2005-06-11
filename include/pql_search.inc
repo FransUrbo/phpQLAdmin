@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.40 2005-06-11 10:49:24 turbo Exp $
+// $Id: pql_search.inc,v 2.41 2005-06-11 11:47:24 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -165,8 +165,11 @@ function pql_get_dn($linkid, $dn, $filter, $level = 'SUBTREE') {
 	// Besides, pql_search() is quite clever about that...
 
 	$objects = pql_search($linkid, $dn, $filter, $level, 1);
-	for($i=0; $objects[$i]; $i++)
-	  $entry[] = $objects[$i]['dn'];
+	if($objects[0]) {
+	  for($i=0; $objects[$i]; $i++)
+		$entry[] = $objects[$i]['dn'];
+	} elseif($objects and $objects['dn'])
+	  $entry[] = $objects['dn'];
 
 	if(is_array($entry))
 	  return($entry);
