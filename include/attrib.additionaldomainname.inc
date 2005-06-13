@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.30 2005-02-24 17:04:01 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.31 2005-06-13 12:14:25 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -30,7 +30,6 @@ function attribute_init() {
 // }}}
 
 // {{{ attribute_print_form(void)
-
 function attribute_print_form() {
     global $error, $LANG;
 ?>
@@ -73,12 +72,8 @@ function attribute_print_form() {
             <input type="checkbox" name="<?php echo pql_get_define('PQL_ATTR_LOCALS');?>_<?=$i?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('to all hosts'))); ?><br>
             <input type="hidden" name="<?php echo pql_get_define('PQL_ATTR_LOCALS');?>" value="<?=$i?>">
             &nbsp;<?=$LANG->_('If all left unset, no replication will take place')?>
-<?php		} else {
-				$cnt = count($hosts);
-?>
+<?php		} else { ?>
               &nbsp;<?=$LANG->_('Automatic replication configured')?>
-              <input type="hidden" name="<?php echo pql_get_define('PQL_ATTR_LOCALS');?>_<?=$cnt?>" value="on">
-              <input type="hidden" name="<?php echo pql_get_define('PQL_ATTR_LOCALS');?>" value="<?=$cnt?>">
 <?php		} ?>
           </td>
         </tr>
@@ -96,12 +91,8 @@ function attribute_print_form() {
             <input type="checkbox" name="<?php echo pql_get_define('PQL_ATTR_RCPTHOSTS');?>_<?=$i?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('to all hosts'))); ?><br>
             <input type="hidden" name="<?php echo pql_get_define('PQL_ATTR_RCPTHOSTS');?>" value="<?=$i?>">
             &nbsp;<?=$LANG->_('If all left unset, no replication will take place')?>
-<?php 		} else {
-				$cnt = count($hosts);
-?>
+<?php 		} else { ?>
               &nbsp;<?=$LANG->_('Automatic replication configured')?>
-              <input type="hidden" name="<?php echo pql_get_define('PQL_ATTR_RCPTHOSTS');?>_<?=$cnt?>" value="on">
-              <input type="hidden" name="<?php echo pql_get_define('PQL_ATTR_RCPTHOSTS');?>" value="<?=$cnt?>">
 <?php		} ?>
           </td>
         </tr>
@@ -127,11 +118,9 @@ function attribute_print_form() {
   </form>
 <?php
 }
-
 // }}}
 
 // {{{ attribute_save(type)
-
 function attribute_save($type) {
     global $_pql, $LANG;
 
@@ -156,7 +145,10 @@ function attribute_save($type) {
       case "delete":
 		// Fetch old values from DB
 		$oldvalues = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib);
-		if(is_array($oldvalues)) {
+		if($oldvalues) {
+		  if(!is_array($oldvalues))
+			$oldvalues = array($oldvalues);
+
 			foreach($oldvalues as $val) {
 				if(!@eregi($delval, $val)) {
 					// Remove the one we don't want
@@ -178,20 +170,20 @@ function attribute_save($type) {
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										 array('what' => $LANG->_('Additional domain name')));
 
-			// Create a template DNS zone
+			// {{{ Create a template DNS zone
 			if($_REQUEST["template"] && $additionaldomainname && pql_get_define("PQL_CONF_BIND9_USE")) {
 				require($_SESSION["path"]."/include/pql_bind9.inc");
 				
 				if(! pql_bind9_add_zone($_pql->ldap_linkid, $_REQUEST["domain"], $additionaldomainname))
 				  $msg = pql_complete_constant($LANG->_("Failed to add domain %domainname%"), array("domainname" => $defaultdomain));
 			}
+			// }}}
 
 			require($_SESSION["path"]."/include/pql_control.inc");
 			$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
-			// -----------------------------------------
+			// {{{ Update locals if control patch is enabled and we have decided to do auto replication
 			if(pql_get_define("PQL_CONF_CONTROL_AUTOADDLOCALS", $_REQUEST["rootdn"])) {
-				// update locals if control patch is enabled and we have decided to do auto replication
 				$amount = $_POST[pql_get_define("PQL_ATTR_LOCALS")];
 				if($amount) {
 					if($_POST[pql_get_define("PQL_ATTR_LOCALS")."_".$amount] != 'on') {
@@ -227,17 +219,24 @@ function attribute_save($type) {
 					}
 				} else {
 					// We have not gone through the form for adding defaultDomain nor additionalDomainName.
-					// This _MUST_ be a 'delete {default,additional} domain'...
-					//
-					// Delete ALL locals/rcpthosts on ALL QmailLDAP/Controls that lists this domain.
-					pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
-											   '*', array($delval, ''));
+					if(!$delval)
+					  // We're ADDING a domain name
+					  $entry = array('', $additionaldomainname);
+					elseif($additionaldomainname)
+					  // We're REPLACING a domain name
+					  $entry = array($delval, $additionaldomainname);
+					else
+					  // We're REMOVING a domain name
+					  $entry = array($delval, '');
+
+					pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"], '*', $entry);
 				}
 			}
+			// }}}
 
-			// -----------------------------------------
+			// {{{ Update rcpthosts if control patch is enabled and we have decided to do auto replication
+
 			if(pql_get_define("PQL_CONF_CONTROL_AUTOADDRCPTHOSTS", $_REQUEST["rootdn"])) {
-				// update rcpthosts if control patch is enabled and we have decided to do auto replication
 				$amount = $_POST[pql_get_define("PQL_ATTR_RCPTHOSTS")];
 				if($amount) {
 					if($_POST[pql_get_define("PQL_ATTR_RCPTHOSTS")."_".$amount] != 'on') {
@@ -264,7 +263,7 @@ function attribute_save($type) {
 						  pql_modify_attribute($_pql_control->ldap_linkid,
 											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 											   pql_get_define("PQL_ATTR_RCPTHOSTS"),
-											   $delval, '')
+											   $delval, '');
 						else
 						  pql_modify_attribute($_pql_control->ldap_linkid,
 											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
@@ -280,6 +279,8 @@ function attribute_save($type) {
 											   '*', array($delval, ''));
 				}
 			}
+
+			// }}}
 		} else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('Additional domain name')))
@@ -293,7 +294,6 @@ function attribute_save($type) {
 								  array('type' => $type, 'file' => __FILE__)));
     }
 }
-
 // }}}
 
 // Local variables:
