@@ -3,12 +3,13 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.43 2005-06-11 11:04:06 turbo Exp $
+// $Id: pql_formating.inc,v 2.44 2005-06-13 11:48:51 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
 function pql_create_ldif($func, $dn, $entry, $extra_newline = 0) {
 	global $account_type;
+	$command = 0;
 
 	if($extra_newline)
 	  $nl = '<br>';
@@ -23,11 +24,21 @@ function pql_create_ldif($func, $dn, $entry, $extra_newline = 0) {
 			  // ... in an array. Go through each one, creating the LDAP entry
 			  if(!ereg('_add', $func)) {
 				if($entry[$key]) {
+				  if($command)
+					$LDIF .= "-\n";
+
 				  $LDIF .= "replace: $key$nl\n";
+				  $command = 1;
+
 				  foreach($entry[$key] as $x)
 					$LDIF .= "$key: $x$nl\n";
-				} else
+				} else {
+				  if($command)
+					$LDIF .= "-\n";
+
 				  $LDIF .= "delete: $key$nl\n";
+				  $command = 1;
+				}
 			  } else {
 				// We're (probably) ADDING an _object_. Print the values as is.
 				foreach($entry[$key] as $x)
@@ -36,10 +47,20 @@ function pql_create_ldif($func, $dn, $entry, $extra_newline = 0) {
 			} else {
 			  if(!ereg('_add', $func)) {
 				if($entry[$key]) {
+				  if($command)
+					$LDIF .= "-\n";
+
 				  $LDIF .= "replace: $key$nl\n";
+				  $command = 1;
+
 				  $LDIF .= "$key: $entry[$key]$nl\n";
-				} else
+				} else {
+				  if($command)
+					$LDIF .= "-\n";
+
 				  $LDIF .= "delete: $key$nl\n";
+				  $command = 1;
+				}
 			  } else
 				// We're (probably) ADDING an _object_. Print the values as is.
 				$LDIF .= "$key: $entry[$key]$nl\n";
@@ -693,7 +714,6 @@ function pql_format_international($string) {
 // }}}
 
 // {{{ pql_maybe_encode(string, attrib, linkid)
-
 // Check if we SHOULD encode the string...
 function pql_maybe_encode($string, $attrib = '', $linkid = '') {
 	$old = $string;
@@ -737,7 +757,6 @@ function pql_maybe_encode($string, $attrib = '', $linkid = '') {
 
 	return($string);
 }
-
 // }}}
 
 // {{{ pql_maybe_decode(string)
