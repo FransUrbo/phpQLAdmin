@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // default domain name (the default domainname for a domain)
-// $Id: attrib.defaultdomain.inc,v 2.34 2005-06-13 12:43:44 turbo Exp $
+// $Id: attrib.defaultdomain.inc,v 2.35 2005-06-13 17:22:19 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -99,7 +99,7 @@ function attribute_print_form() {
 
         <tr class="subtitle">
           <td colspan="2">
-            <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?=$LANG->_('If empty, \bremove\B ('unset') default domain name')?>
+            <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?=$LANG->_("If empty, \bremove\B ('unset') default domain name")?>
           </td>
         </tr>
       </th>
@@ -120,125 +120,85 @@ function attribute_print_form() {
 
 // {{{ attribute_save(type)
 function attribute_save($type) {
-    global $_pql, $LANG;
+  global $_pql, $LANG;
+  
+  $oldvalue = @$_REQUEST["oldvalue"];
+  $defaultdomain = @$_REQUEST["defaultdomain"];
+  
+  // {{{ Don't change if new value equal to old one
+  if($defaultdomain == $oldvalue) {
+	$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('Default domainname')));
+	attribute_forward($msg);
+	break;
+  }
+  // }}}
+  
+  switch($type) {
+  case "add":
+  case "modify":
+	if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["attrib"], 1, $defaultdomain)) {
+	  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
+								   array('what' => $LANG->_('Default domainname', 4),
+										 'new'  => $defaultdomain));
+	  
+	  // {{{ Update locals and/or rcptHosts
+	  // .. If control patch is enabled and we have decided to do auto replication
+	  require($_SESSION["path"]."/include/pql_control.inc");
+	  $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
+	  
+	  $attribs = array(pql_get_define("PQL_ATTR_LOCALS")    => pql_get_define("PQL_CONF_CONTROL_AUTOADDLOCALS", $_REQUEST["rootdn"]),
+					   pql_get_define("PQL_ATTR_RCPTHOSTS") => pql_get_define("PQL_CONF_CONTROL_AUTOADDLOCALS", $_REQUEST["rootdn"]));
+	  foreach($attribs as $attrib => $autoadd) {
+		if($autoadd) {
+		  $amount = $_POST[$attrib];
+		  if($amount) {
+			if($_POST[$attrib."_".$amount] != 'on') {
+			  for($i=0; $i < $amount; $i++)
+				if($_POST[$attrib."_".$i])
+				  $hosts[] = $_POST[$attrib."_".$i];
+			  
+			  if(is_array($hosts)) {
+				foreach($hosts as $host) {
+				  $hostdn = pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"];
 
-    $oldvalue = @$_REQUEST["oldvalue"];
-	$defaultdomain = @$_REQUEST["defaultdomain"];
-
-	if($defaultdomain == $oldvalue) {
-		// don't change if new value equal to old one
-		$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('Default domainname')));
-		attribute_forward($msg);
-		break;
-	}
-		
-    switch($type) {
-      case "add":
-      case "modify":
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["attrib"], 1, $defaultdomain)) {
-			$msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
-										 array('what' => $LANG->_('Default domainname', 4),
-											   'new'  => $defaultdomain));
-			
-			require($_SESSION["path"]."/include/pql_control.inc");
-			$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
-
-			// -----------------------------------------
-			if(pql_get_define("PQL_CONF_CONTROL_AUTOADDLOCALS", $_REQUEST["rootdn"])) {
-				// update locals if control patch is enabled and we have decided to do auto replication
-				$amount = $_POST[pql_get_define("PQL_ATTR_LOCALS")];
-				if($amount) {
-					if($_POST[pql_get_define("PQL_ATTR_LOCALS")."_".$amount] != 'on') {
-						for($i=0; $i < $amount; $i++)
-						  if($_POST[pql_get_define("PQL_ATTR_LOCALS")."_".$i])
-							$hosts[] = $_POST[pql_get_define("PQL_ATTR_LOCALS")."_".$i];
-						
-						if(is_array($hosts)) {
-							foreach($hosts as $host) {
-								pql_modify_attribute($_pql_control->ldap_linkid,
-													 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-													 pql_get_define("PQL_ATTR_LOCALS"),
-													 '', $defaultdomain);
-							}
-						}
-					} else {
-						// Change all hosts
-						if($type == 'delete')
-						  pql_modify_attribute($_pql_control->ldap_linkid,
-											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											   pql_get_define("PQL_ATTR_LOCALS"),
-											   $oldvalue, '');
-						else
-						  pql_modify_attribute($_pql_control->ldap_linkid,
-											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											   pql_get_define("PQL_ATTR_LOCALS"),
-											   '', $defaultdomain);
-					}
-				} else {
-					// We have not gone through the form for adding defaultDomain nor additionalDomainName.
-					if(!$oldvalue)
-					  // We're ADDING a domain name
-					  $entry = array('', $defaultdomain);
-					elseif($defaultdomain)
-					  // We're REPLACING a domain name
-					  $entry = array($oldvalue, $defaultdomain);
-					else
-					  // We're REMOVING a domain name
-					  $entry = array($oldvalue, '');
-
-					pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"], '*', $entry);
+				  pql_modify_attribute($_pql_control->ldap_linkid, $hostdn, $attrib, '', $defaultdomain);
 				}
+			  }
+			} else {
+			  // Change all hosts
+			  if($type == 'delete')
+				pql_modify_attribute($_pql_control->ldap_linkid, $hostdn, $attrib, $oldvalue, '');
+			  else
+				pql_modify_attribute($_pql_control->ldap_linkid, $hostdn, $attrib, '', $defaultdomain);
 			}
+		  } else {
+			// We have not gone through the form for adding defaultDomain nor additionalDomainName.
+			if(!$oldvalue)
+			  // We're ADDING a domain name
+			  $entry = array('', $defaultdomain);
+			elseif($defaultdomain)
+			  // We're REPLACING a domain name
+			  $entry = array($oldvalue, $defaultdomain);
+			else
+			  // We're REMOVING a domain name
+			  $entry = array($oldvalue, '');
+		  }
+		}
+	  }
 
-			// -----------------------------------------
-			if(pql_get_define("PQL_CONF_CONTROL_AUTOADDRCPTHOSTS", $_REQUEST["rootdn"])) {
-				// update rcpthosts if control patch is enabled and we have decided to do auto replication
-				$amount = $_POST[pql_get_define("PQL_ATTR_RCPTHOSTS")];
-				if($amount) {
-					if($_POST[pql_get_define("PQL_ATTR_RCPTHOSTS")."_".$amount] != 'on') {
-						for($i=0; $i < $amount; $i++)
-						  if($_POST[pql_get_define("PQL_ATTR_RCPTHOSTS")."_".$i])
-							$hosts[] = $_POST[pql_get_define("PQL_ATTR_RCPTHOSTS")."_".$i];
-						
-						if(is_array($hosts)) {
-							foreach($hosts as $host)
-							  if($type == 'delete')
-								pql_modify_attribute($_pql_control->ldap_linkid,
-													 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-													 pql_get_define("PQL_ATTR_RCPTHOSTS"),
-													 $oldvalue, '');
-							  else
-								pql_modify_attribute($_pql_control->ldap_linkid,
-													 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-													 pql_get_define("PQL_ATTR_RCPTHOSTS"),
-													 '', $defaultdomain);
-						}
-					} else {
-						// Change all hosts
-						if($type == 'delete')
-						  pql_modify_attribute($_pql_control->ldap_linkid,
-											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											   pql_get_define("PQL_ATTR_RCPTHOSTS"),
-											   $oldvalue, '');
-						else
-						  pql_modify_attribute($_pql_control->ldap_linkid,
-											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											   pql_get_define("PQL_ATTR_RCPTHOSTS"),
-											   '', $defaultdomain);
-					}
-				}
-			}
-		} else
-		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('Default domainname'))).": ".ldap_error($_pql->ldap_linkid);
-
-		attribute_forward($msg);
-		break;
-		
-      default:
-		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
-								  array('type' => $type, 'file' => __FILE__)));
-    }
+	  pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"], '*', $entry);
+	  // }}}
+	} else
+	  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+								   array('what' => $LANG->_('Default domainname'))).": ".ldap_error($_pql->ldap_linkid);
+	
+	attribute_forward($msg);
+	break;
+	
+  default:
+	die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
+							  array('type' => $type, 'file' => __FILE__)));
+  }
 }
 // }}}
 
