@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.206 2005-06-09 15:19:24 turbo Exp $
+// $Id: pql.inc,v 2.207 2005-06-13 11:46:26 turbo Exp $
 //
 
 // ----------------------------
@@ -225,6 +225,7 @@ class pql {
 // ------------------------------------------------
 
 // {{{ pql_user_get_quota(ldap_linkid, user)
+
 // Get formated quota of a user
 function pql_user_get_quota($ldap_linkid, $user) {
 	if($_SESSION["NEW_STYLE_QUOTA"]) {
@@ -829,8 +830,11 @@ function pql_fix_path($path) {
 
 // {{{ pql_add2array($old, $new)
 function pql_add2array($old, $new) {
-  if(!is_array($old))
+  if($old and !is_array($old))
 	$old = array($old);
+
+  if($new and !is_array($new))
+	$new = array($new);
 
   foreach($new as $entry)
 	$old[] = $entry;
