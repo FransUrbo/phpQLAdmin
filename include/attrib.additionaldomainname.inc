@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.31 2005-06-13 12:14:25 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.32 2005-06-13 17:09:22 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -122,177 +122,118 @@ function attribute_print_form() {
 
 // {{{ attribute_save(type)
 function attribute_save($type) {
-    global $_pql, $LANG;
-
-    $attrib = $_REQUEST["attrib"];
-	$oldvalue = @$_REQUEST["oldvalue"];
-	$additionaldomainname = $_REQUEST["additionaldomainname"];
-	$delval = @$_REQUEST["delval"];
-
-	if(($additionaldomainname == $oldvalue) and !$delval) {
-		// don't change if new value equal to old one
-		$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('Additional domain name')));
-		attribute_forward($msg);
-		return false;
-	}
-
-    switch($type) {
-      case "add":
-      case "modify":
-		$delval = $oldvalue;
-		// fall through here, so that we ADD this new value
-
-      case "delete":
-		// Fetch old values from DB
-		$oldvalues = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib);
-		if($oldvalues) {
-		  if(!is_array($oldvalues))
-			$oldvalues = array($oldvalues);
-
-			foreach($oldvalues as $val) {
-				if(!@eregi($delval, $val)) {
-					// Remove the one we don't want
-					$entry[$attrib][] = $val;
-				}
-			}
+  global $_pql, $LANG;
+  
+  $attrib = $_REQUEST["attrib"];
+  $oldvalue = @$_REQUEST["oldvalue"];
+  $additionaldomainname = $_REQUEST["additionaldomainname"];
+  $delval = @$_REQUEST["delval"];
+  
+  // {{{ Don't change if new value equal to old one
+  if(($additionaldomainname == $oldvalue) and !$delval) {
+	$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $LANG->_('Additional domain name')));
+	attribute_forward($msg);
+	return false;
+  }
+  // }}}
+  
+  switch($type) {
+  case "add":
+  case "modify":
+	$delval = $oldvalue;
+	// fall through here, so that we ADD this new value
+	
+  case "delete":
+	// {{{ Fetch old (attrib) values from DB
+	$oldvalues = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib);
+	if($oldvalues) {
+	  if(!is_array($oldvalues))
+		$oldvalues = array($oldvalues);
+	  
+	  foreach($oldvalues as $val) {
+		if(!@eregi($delval, $val)) {
+		  // Remove the one we don't want
+		  $entry[$attrib][] = $val;
 		}
-
-		/* DLW: The code that decides whether to delete or add needs to be
-		 *      thought through a bit more. */
-		if($additionaldomainname)
-		  // Add the new value
-		  $entry[$attrib][] = pql_maybe_idna_encode($additionaldomainname);
-		elseif(!is_array($entry)) 
-		  // We're deleting the last entry...
-		  $entry[$attrib] = array();
-
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], '', '', $entry)) {
-			$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
-										 array('what' => $LANG->_('Additional domain name')));
-
-			// {{{ Create a template DNS zone
-			if($_REQUEST["template"] && $additionaldomainname && pql_get_define("PQL_CONF_BIND9_USE")) {
-				require($_SESSION["path"]."/include/pql_bind9.inc");
-				
-				if(! pql_bind9_add_zone($_pql->ldap_linkid, $_REQUEST["domain"], $additionaldomainname))
-				  $msg = pql_complete_constant($LANG->_("Failed to add domain %domainname%"), array("domainname" => $defaultdomain));
-			}
-			// }}}
-
-			require($_SESSION["path"]."/include/pql_control.inc");
-			$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
-
-			// {{{ Update locals if control patch is enabled and we have decided to do auto replication
-			if(pql_get_define("PQL_CONF_CONTROL_AUTOADDLOCALS", $_REQUEST["rootdn"])) {
-				$amount = $_POST[pql_get_define("PQL_ATTR_LOCALS")];
-				if($amount) {
-					if($_POST[pql_get_define("PQL_ATTR_LOCALS")."_".$amount] != 'on') {
-						for($i=0; $i < $amount; $i++)
-						  if($_POST[pql_get_define("PQL_ATTR_LOCALS")."_".$i])
-							$hosts[] = $_POST[pql_get_define("PQL_ATTR_LOCALS")."_".$i];
-						
-						if(is_array($hosts)) {
-							foreach($hosts as $host)
-							  if($type == 'delete')
-								pql_modify_attribute($_pql_control->ldap_linkid,
-													 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-													 pql_get_define("PQL_ATTR_LOCALS"),
-													 $delval, '');
-							  else
-								pql_modify_attribute($_pql_control->ldap_linkid,
-													 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-													 pql_get_define("PQL_ATTR_LOCALS"),
-													 '', $additionaldomainname);
-						}
-					} else {
-						// Change all hosts
-						if($type == 'delete')
-						  pql_modify_attribute($_pql_control->ldap_linkid,
-											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											   pql_get_define("PQL_ATTR_LOCALS"),
-											   $delval, '');
-						else
-						  pql_modify_attribute($_pql_control->ldap_linkid,
-											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											   pql_get_define("PQL_ATTR_LOCALS"),
-											   '', $additionaldomainname);
-					}
-				} else {
-					// We have not gone through the form for adding defaultDomain nor additionalDomainName.
-					if(!$delval)
-					  // We're ADDING a domain name
-					  $entry = array('', $additionaldomainname);
-					elseif($additionaldomainname)
-					  // We're REPLACING a domain name
-					  $entry = array($delval, $additionaldomainname);
-					else
-					  // We're REMOVING a domain name
-					  $entry = array($delval, '');
-
-					pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"], '*', $entry);
-				}
-			}
-			// }}}
-
-			// {{{ Update rcpthosts if control patch is enabled and we have decided to do auto replication
-
-			if(pql_get_define("PQL_CONF_CONTROL_AUTOADDRCPTHOSTS", $_REQUEST["rootdn"])) {
-				$amount = $_POST[pql_get_define("PQL_ATTR_RCPTHOSTS")];
-				if($amount) {
-					if($_POST[pql_get_define("PQL_ATTR_RCPTHOSTS")."_".$amount] != 'on') {
-						for($i=0; $i < $amount; $i++)
-						  if($_POST[pql_get_define("PQL_ATTR_RCPTHOSTS")."_".$i])
-							$hosts[] = $_POST[pql_get_define("PQL_ATTR_RCPTHOSTS")."_".$i];
-						
-						if(is_array($hosts)) {
-							foreach($hosts as $host)
-							  if($type == 'delete')
-								pql_modify_attribute($_pql_control->ldap_linkid,
-													 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-													 pql_get_define("PQL_ATTR_RCPTHOSTS"),
-													 $delval, '');
-							  else
-								pql_modify_attribute($_pql_control->ldap_linkid,
-													 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-													 pql_get_define("PQL_ATTR_RCPTHOSTS"),
-													 '', $additionaldomainname);
-						}
-					} else {
-						// Change all hosts
-						if($type == 'delete')
-						  pql_modify_attribute($_pql_control->ldap_linkid,
-											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											   pql_get_define("PQL_ATTR_RCPTHOSTS"),
-											   $delval, '');
-						else
-						  pql_modify_attribute($_pql_control->ldap_linkid,
-											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											   pql_get_define("PQL_ATTR_RCPTHOSTS"),
-											   '', $additionaldomainname);
-					}
-				} else {
-					// We have not gone through the form for adding defaultDomain nor additionalDomainName.
-					// This _MUST_ be a 'delete {default,additional} domain'...
-					//
-					// Delete ALL locals/rcpthosts on ALL QmailLDAP/Controls that lists this domain.
-					pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
-											   '*', array($delval, ''));
-				}
-			}
-
-			// }}}
-		} else
-		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('Additional domain name')))
-			. ": " . ldap_error($_pql->ldap_linkid);
+	  }
+	}
+	// }}}
+	
+	if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], '', '', $entry)) {
+	  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+								   array('what' => $LANG->_('Additional domain name')));
+	  
+	  // {{{ Create a template DNS zone
+	  if($_REQUEST["template"] && $additionaldomainname && pql_get_define("PQL_CONF_BIND9_USE")) {
+		require($_SESSION["path"]."/include/pql_bind9.inc");
 		
-		attribute_forward($msg);
-		break;
-		
-      default:
-		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
-								  array('type' => $type, 'file' => __FILE__)));
-    }
+		if(! pql_bind9_add_zone($_pql->ldap_linkid, $_REQUEST["domain"], $additionaldomainname))
+		  $msg = pql_complete_constant($LANG->_("Failed to add domain %domainname%"), array("domainname" => $defaultdomain));
+	  }
+	  // }}}
+	  
+	  // {{{ Update locals and/or rcptHosts
+	  // .. If control patch is enabled and we have decided to do auto replication
+	  require($_SESSION["path"]."/include/pql_control.inc");
+	  $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
+	  
+	  $attribs = array(pql_get_define("PQL_ATTR_LOCALS")    => pql_get_define("PQL_CONF_CONTROL_AUTOADDLOCALS", $_REQUEST["rootdn"]),
+					   pql_get_define("PQL_ATTR_RCPTHOSTS") => pql_get_define("PQL_CONF_CONTROL_AUTOADDLOCALS", $_REQUEST["rootdn"]));
+	  foreach($attribs as $attrib => $autoadd) {
+		if($autoadd) {
+		  $amount = $_POST[$attrib];
+		  if($amount) {
+			if($_POST[$attrib."_".$amount] != 'on') {
+			  for($i=0; $i < $amount; $i++)
+				if($_POST[$attrib."_".$i])
+				  $hosts[] = $_POST[$attrib."_".$i];
+			  
+			  if(is_array($hosts)) {
+				foreach($hosts as $host) {
+				  $hostdn = pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"];
+				  
+				  if($type == 'delete')
+					pql_modify_attribute($_pql_control->ldap_linkid, $hostdn, $attrib, $delval, '');
+				  else
+					pql_modify_attribute($_pql_control->ldap_linkid, $hostdn, $attrib, '', $additionaldomainname);
+				}
+			  }
+			} else {
+			  // Change all hosts
+			  if($type == 'delete')
+				pql_modify_attribute($_pql_control->ldap_linkid, $hostdn, $attrib, $delval, '');
+			  else
+				pql_modify_attribute($_pql_control->ldap_linkid, $hostdn, $attrib, '', $additionaldomainname);
+			}
+		  } else {
+			// We have not gone through the form for adding defaultDomain nor additionalDomainName.
+			if(!$delval)
+			  // We're ADDING a domain name
+			  $entry = array('', $additionaldomainname);
+			elseif($additionaldomainname)
+			  // We're REPLACING a domain name
+			  $entry = array($delval, $additionaldomainname);
+			else
+			  // We're REMOVING a domain name
+			  $entry = array($delval, '');
+		  }
+		}
+	  }
+	  
+	  pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"], '*', $entry);
+	  // }}}
+	} else
+	  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+								   array('what' => $LANG->_('Additional domain name')))
+		. ": " . ldap_error($_pql->ldap_linkid);
+	
+	attribute_forward($msg);
+	break;
+	
+  default:
+	die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
+							  array('type' => $type, 'file' => __FILE__)));
+  }
 }
 // }}}
 

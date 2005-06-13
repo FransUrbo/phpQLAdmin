@@ -16,6 +16,9 @@ phpQLAdmin 2.3.1 TO BE ANNOUNCED
 	  - Not so much a rewrite as cleanup of the include/pql_control.inc:pql_control_update_domains()
 	    function. Move some parts as separate functions into include/pql_search.inc.
 	    Closes: #258
+	  - Not so much a rewrite as a cleanup of the include/attrib.additionaldomainname.inc
+	    file. Remove duplication and redundant code. Simplify add/del/change decision(s).
+	    Closes: #274
 
 	Misc changes
 	  - Support sub-zones in the DNS manager. Only one level is supported at this
