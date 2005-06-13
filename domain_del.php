@@ -1,6 +1,6 @@
 <?php
 // delete a domain and all users within
-// $Id: domain_del.php,v 2.39 2005-06-09 15:05:35 turbo Exp $
+// $Id: domain_del.php,v 2.40 2005-06-13 11:37:20 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -50,10 +50,14 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 										 '*', array($domainname, ''));
 			
 			// ... remove the additional domain name(s)
-			if(is_array($additionals)) {
+			if($additionals) {
+			  if(is_array($additionals)) {
 				foreach($additionals as $additional)
 				  pql_control_update_domains($_pql, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
 											 '*', array($additional, ''));
+			  } else
+				pql_control_update_domains($_pql, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
+										   '*', array($additional, ''));
 			}
 			
 			// ... remove the SMTP route(s)
