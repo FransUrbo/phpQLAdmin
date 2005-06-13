@@ -2,7 +2,7 @@
 // control attribute plugin for
 // rcpthosts (blocked local addresses)
 //
-// $Id: attrib.control.rcpthosts.inc,v 2.28 2005-03-02 09:33:57 turbo Exp $
+// $Id: attrib.control.rcpthosts.inc,v 2.29 2005-06-13 11:43:41 turbo Exp $
 
 // {{{ rcpthosts_check(type)
 function rcpthosts_check($type) {
@@ -50,6 +50,8 @@ function rcpthosts_print_view($host) {
     
     // init data
     rcpthosts_init($host);
+
+	$_REQUEST["rootdn"] = pql_get_rootdn(pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"]);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th align="left"><?=pql_complete_constant($LANG->_('Allowed %attrib% for host %host%'), array('host' => $host, 'attrib' => pql_get_define("PQL_ATTR_RCPTHOSTS")))?></th>
