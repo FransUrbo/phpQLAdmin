@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.30 2005-06-09 15:56:55 turbo Exp $
+// $Id: pql_write.inc,v 2.31 2005-06-13 12:03:17 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -241,7 +241,7 @@ function pql_replace_values($ldap, $attribs, $old, $new = NULL) {
 // * If $old == 1  && $new != '' -> replace existing value with $new
 // * If $old == 1  && $new == '' -> delete whole attribute
 // * If $new == array            -> called with 'ldif', replace
-//   + In this case, it is ok with an empty $attrib.
+//   + In this case, it is _a must_ (!) with an empty '$attrib' value.
 function pql_modify_attribute($linkid, $dn, $attrib, $old, $new) {
 	if(!is_array($new)) {
 		$attrib = lc($attrib);
@@ -558,30 +558,39 @@ function pql_domain_del($ldap, $domain, $delete_forwards) {
 	$domain = pql_maybe_encode(urldecode($domain));
 	$linkid = $ldap->ldap_linkid;
 
-	// Make sure that the logged in user isn't located under the
-	// domain/branch being deleted...
+	// {{{ Convert a DNS TTL RDN to something I (phpQLAdmin) can understand
+	if(eregi("^dNSTTL=", $domain))
+	  // 'dNSTTL=3600+relativeDomainName=@,dc=domain,dc=tld,ou=DNS,o=Branch,c=SE'
+	  $domain = pql_recreate_dnsttl($domain);
+	// }}}
+
+	// {{{ Make sure that the logged in user isn't located under the domain/branch being deleted...
 	if(eregi($domain, $_SESSION["USER_DN"])) {
 		$msg=urlencode(pql_format_error_span("Sorry, I can't allow you to delete the branch under which you yourself is situated!"));
 		pql_header("domain_detail.php?domain=$domain&msg=$msg");
 	}
+	// }}}
 
-	// Searching for sub entries
+	// {{{ Searching for sub entries
 	$sr   = ldap_list($linkid, $domain, pql_get_define("PQL_ATTR_OBJECTCLASS")."=*");
-	$info = ldap_get_entries($linkid, $sr);
-	for($i=0; $i < $info['count']; $i++){
+	if($sr) {
+	  $info = ldap_get_entries($linkid, $sr);
+	  for($i=0; $i < $info['count']; $i++){
 		// Deleting recursively this sub entry
 		$result = pql_domain_del($ldap, $info[$i]['dn'], $delete_forwards);
 		if(!$result) {
-			// Return result code if delete fails
-			return($result);
+		  // Return result code if delete fails
+		  return($result);
 		}
+	  }
+	  
+	  if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+		echo "delete (domain): '$domain'<br>";
+		return TRUE;
+	  } else
+		return(pql_write_del($linkid, $domain));
 	}
-
-	if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
-	  echo "delete (domain): '$domain'<br>";
-	  return TRUE;
-	} else
-	  return(pql_write_del($linkid, $domain));
+	// }}}
 }
 // }}}
 
