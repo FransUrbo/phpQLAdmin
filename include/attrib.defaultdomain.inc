@@ -1,23 +1,20 @@
 <?php
 // attribute plugin for
 // default domain name (the default domainname for a domain)
-// $Id: attrib.defaultdomain.inc,v 2.33 2005-02-24 17:04:01 turbo Exp $
+// $Id: attrib.defaultdomain.inc,v 2.34 2005-06-13 12:43:44 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
     global $error, $LANG;
     
     // is typed in ?
-    if(empty($_REQUEST["defaultdomain"])) {
-		$error[pql_get_define("PQL_ATTR_DEFAULTDOMAIN")] = $LANG->_('Missing');
-		return false;
-    }
-
-    // don't use ".."
-    if(preg_match("/(\.){2,}/", $_REQUEST["defaultdomain"])) {
+    if($_REQUEST["defaultdomain"]) {
+	  // don't use ".."
+	  if(preg_match("/(\.){2,}/", $_REQUEST["defaultdomain"])) {
 		$error[pql_get_define("PQL_ATTR_DEFAULTDOMAIN")] = $LANG->_('Invalid');
 		return false;
-    }
+	  }
+	}
     
     return true;
 }
@@ -74,12 +71,8 @@ function attribute_print_form() {
             <input type="checkbox" name="<?=pql_get_define("PQL_ATTR_LOCALS")?>_<?=$i?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('to all hosts'))); ?><br>
             <input type="hidden" name="<?=pql_get_define("PQL_ATTR_LOCALS")?>" value="<?=$i?>">
             &nbsp;<?=$LANG->_('If all left unset, no replication will take place')?>
-<?php		} else {
-				$cnt = count($hosts);
-?>
+<?php		} else { ?>
               &nbsp;<?=$LANG->_('Automatic replication configured')?>
-              <input type="hidden" name="<?pql_get_define("PQL_ATTR_LOCALS")?>_<?=$cnt?>" value="on">
-              <input type="hidden" name="<?pql_get_define("PQL_ATTR_LOCALS")?>" value="<?=$cnt?>">
 <?php		} ?>
           </td>
         </tr>
@@ -97,16 +90,18 @@ function attribute_print_form() {
             <input type="checkbox" name="<?=pql_get_define("PQL_ATTR_RCPTHOSTS")?>_<?=$i?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('to all hosts'))); ?><br>
             <input type="hidden" name="<?=pql_get_define("PQL_ATTR_RCPTHOSTS")?>" value="<?=$i?>">
             &nbsp;<?=$LANG->_('If all left unset, no replication will take place')?>
-<?php 		} else {
-				$cnt = count($hosts);
-?>
+<?php 		} else { ?>
               &nbsp;<?=$LANG->_('Automatic replication configured')?>
-              <input type="hidden" name="<?=pql_get_define("PQL_ATTR_RCPTHOSTS")?>_<?=$cnt?>" value="on">
-              <input type="hidden" name="<?=pql_get_define("PQL_ATTR_RCPTHOSTS")?>" value="<?=$cnt?>">
 <?php 		} ?>
           </td>
         </tr>
 <?php	} // if(is_array($hosts)) ?>
+
+        <tr class="subtitle">
+          <td colspan="2">
+            <img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;<?=$LANG->_('If empty, \bremove\B ('unset') default domain name')?>
+          </td>
+        </tr>
       </th>
     </table>
 
@@ -172,7 +167,7 @@ function attribute_save($type) {
 						  pql_modify_attribute($_pql_control->ldap_linkid,
 											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 											   pql_get_define("PQL_ATTR_LOCALS"),
-											   $delval, '');
+											   $oldvalue, '');
 						else
 						  pql_modify_attribute($_pql_control->ldap_linkid,
 											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
@@ -181,11 +176,17 @@ function attribute_save($type) {
 					}
 				} else {
 					// We have not gone through the form for adding defaultDomain nor additionalDomainName.
-					// This _MUST_ be a 'delete {default,additional} domain'...
-					//
-					// Delete ALL locals/rcpthosts on ALL QmailLDAP/Controls that lists this domain.
-					pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
-											   '*', array($delval, ''));
+					if(!$oldvalue)
+					  // We're ADDING a domain name
+					  $entry = array('', $defaultdomain);
+					elseif($defaultdomain)
+					  // We're REPLACING a domain name
+					  $entry = array($oldvalue, $defaultdomain);
+					else
+					  // We're REMOVING a domain name
+					  $entry = array($oldvalue, '');
+
+					pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"], '*', $entry);
 				}
 			}
 
@@ -205,7 +206,7 @@ function attribute_save($type) {
 								pql_modify_attribute($_pql_control->ldap_linkid,
 													 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 													 pql_get_define("PQL_ATTR_RCPTHOSTS"),
-													 $delval, '');
+													 $oldvalue, '');
 							  else
 								pql_modify_attribute($_pql_control->ldap_linkid,
 													 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
@@ -218,7 +219,7 @@ function attribute_save($type) {
 						  pql_modify_attribute($_pql_control->ldap_linkid,
 											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 											   pql_get_define("PQL_ATTR_RCPTHOSTS"),
-											   $delval, '');
+											   $oldvalue, '');
 						else
 						  pql_modify_attribute($_pql_control->ldap_linkid,
 											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
