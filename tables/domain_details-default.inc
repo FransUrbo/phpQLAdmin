@@ -20,7 +20,11 @@
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Additional domain name')?></td>
-<?php if(is_array($additionaldomainname)) {
+<?php if($additionaldomainname) {
+		if(!is_array($additionaldomainname)) {
+		  $additionaldomainname = array($additionaldomainname);
+		}
+
 		$new_tr = 0;
 		foreach($additionaldomainname as $additional) {
 			$additional = pql_maybe_idna_decode($additional);
