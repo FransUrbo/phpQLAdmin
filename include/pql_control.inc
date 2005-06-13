@@ -4,22 +4,20 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.50 2005-06-11 12:45:02 turbo Exp $
+// $Id: pql_control.inc,v 2.51 2005-06-13 12:55:56 turbo Exp $
 //
 
 // {{{ control connection class
-
 class pql_control extends pql {
-    function pql_control($host, $binddn = "", $bindpw = "", $no_connect = false) {
-		if(!pql_get_define("PQL_CONF_CONTROL_USE"))
-		  // control patch is not enabled, leave
-		  return false;
-		
-		// call constructor of parent class
-		$this->pql($host, $binddn, $bindpw, $no_connect);
-    }
+  function pql_control($host, $binddn = "", $bindpw = "", $no_connect = false) {
+	if(!pql_get_define("PQL_CONF_CONTROL_USE"))
+	  // control patch is not enabled, leave
+	  return false;
+	
+	// call constructor of parent class
+	$this->pql($host, $binddn, $bindpw, $no_connect);
+  }
 }
-
 // }}}
 
 // ------------------------------------------------
@@ -29,300 +27,204 @@ class pql_control extends pql {
 // {{{ pql_control_update_domains(ldap, rootdn, dn, host, domain = "", type = "")
 // Replicate all registred domains to locals
 // domain is array as: 'oldvalue', 'newvalue'
-//
-// {{{ Information about bug #258:
-// This function is referenced in the following files:
-//	unit_del.php
-//	domain_del.php
-//	domain_add.php
-//	include/attrib.control.rcpthosts.inc
-//	include/attrib.control.locals.inc
-//	include/attrib.defaultdomain.inc
-//	include/attrib.additionaldomainname.inc
-// }}}
 function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $type = "") {
-    if(!pql_get_define("PQL_CONF_CONTROL_USE"))
-	  // control patch is not enabled
-	  return false;
+  if(!pql_get_define("PQL_CONF_CONTROL_USE"))
+	// control patch is not enabled
+	return false;
+  
+  // {{{ Get the hostname (if we should add the hostname to each domain)
+  if($host and ($host != "*") and pql_get_define("PQL_CONF_CONTROL_AUTOADDHOSTNAME", $rootdn)) {
+	$hostname = split("\.", $host);
+	$hostname = pql_maybe_encode($hostname[0]);
+  }
+  // }}}
 
-	// ----------------
-	if(($host != '*') and !$domain) {
-		// {{{ Do a manual replication for ONE specific (MX/QLC) host
+  if($host != '*') {
+	if(!$domain) {
+	  // {{{ Do a MANUAL replication for ONE specific QLC host
 
-		// {{{ Get all branches from the database
-		$domains = pql_get_domains($ldap);
-		foreach($domains as $domain) {
-			// {{{ Get default domain name for this domain/branch
-			$domainname = pql_get_attribute($ldap->ldap_linkid, $domain, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
-			if($domainname) {
-				// Before we add this domain to the list, make sure it don't already exist
-				$ent_exists = 0;
-				if(is_array($entry)) {
-					foreach($entry as $ent) {
-						if($ent == $domainname) {
-							$ent_exists = 1;
-						}
-					}
-				}
-				
-				if(!$ent_exists) {
-					$temp[]  = $domainname;
-					$entry[] = $domainname;
-				}
-			}
-			// }}}
+	  // Get all default and additinal domain name(s)
+	  $entry = pql_get_branch_domains($ldap);
 
-			// {{{ Get additional domain names
-			$additional = pql_get_attribute($ldap->ldap_linkid, $domain, pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
-			if(is_array($additional)) {
-				$additional = pql_uniq($additional); // Remove duplicates (which was allowed in OpenLDAP <2.1).
-				for($i=0; $i < count($additional); $i++) {
-				  // Before we add this domain to the list, make sure it don't already exist
-				  $ent_exists = 0;
-				  if(is_array($entry)) {
-					foreach($entry as $ent)
-					  if($ent == $additional[$i])
-						$ent_exists = 1;
-				  }
-				  
-				  if(!$ent_exists)
-					$entry[] = $additional[$i];
-				}
-			} elseif($additional) {
-			  // Not an array, but defined.
-
-			  // Before we add this domain to the list, make sure it don't already exist
-			  $ent_exists = 0;
-			  if(is_array($entry)) {
-				foreach($entry as $ent)
-				  if($ent == $additional)
-					$ent_exists = 1;
-			  }
-			  
-			  if(!$ent_exists)
-				$entry[] = $additional;
-			}
-			// }}}
+	  // Get all email address domains for users which have this host as MX
+	  $tmp = pql_get_email_domains($ldap->ldap_linkid, $host);
+	  $entry = pql_add2array($entry, $tmp);
+	  
+	  // {{{ If we're replicating rcptHosts, get all non-primary MX host value(s) in this MX/QLC object
+	  if($type == pql_get_define("PQL_ATTR_RCPTHOSTS")) {
+		$nonprimmx = pql_get_attribute($ldap->ldap_linkid, $dn, pql_get_define("PQL_ATTR_NONPRIMARY_RCPT_HOSTS"));
+		if($nonprimmx) {
+		  if(!is_array($nonprimmx))
+			$nonprimmx = array($nonprimmx);
+		  
+		  // Add the list of domain names to the entry to add
+		  $entry = pql_add2array($entry, $nonprimmx);
 		}
-		// }}}
+	  }
+	  // }}}
+	  
+	  // {{{ Extra precaution: Uniqify and IDNA encode all domain names
+	  // Uniqify the list of domain names.
+	  $entry = pql_uniq($entry);
+	  
+	  // IDNA encode the domain name(s)
+	  $count = count($entry);
+	  for($i=0; $i <= $count; $i++) {
+		$entry[$i] = pql_maybe_idna_encode($entry[$i]);
 
-		if($type == pql_get_define("PQL_ATTR_RCPTHOSTS")) {
-		  // {{{ We're replicating rcptHosts - get all non-primary MX host value(s) in this MX/QLC object
-		  $nonprimmx = pql_get_attribute($ldap->ldap_linkid, $dn, pql_get_define("PQL_ATTR_NONPRIMARY_RCPT_HOSTS"));
-		  if(is_array($nonprimmx)) {
-			foreach($nonprimmx as $dom) {
-				// Before we add this domain to the list, make sure it don't already exist
-				$ent_exists = 0;
-				if(is_array($entry)) {
-					foreach($entry as $ent) {
-						if($ent == $dom) {
-							$ent_exists = 1;
-						}
-					}
-				}
-				
-				if(!$ent_exists)
-				  $entry[] = $dom;
-			}
-		  } elseif($nonprimmx) {
-			// Before we add this domain to the list, make sure it don't already exist
-			$ent_exists = 0;
-			if(is_array($entry)) {
-			  foreach($entry as $ent) {
-				if($ent == $nonprimmx) {
-				  $ent_exists = 1;
+		// Add the hostname to this domainname
+		if($hostname)
+		  $entry[] = $hostname . "." . $entry[$i];
+	  }
+	  // }}}
+
+	  // Send modifications to the LDAP server
+	  if(pql_modify_attribute($ldap->ldap_linkid, $dn, $type, 1, $entry))
+		return true;
+	  // }}}
+	} else {
+	  // {{{ Add {locals,rcpthosts} to ONE specific QLC object
+	  if(!$type)
+		$type = pql_get_define("PQL_ATTR_LOCALS");
+	  
+	  // {{{ Add the hostname to each domainname
+	  if(pql_get_define("PQL_CONF_CONTROL_AUTOADDLOCALS", $rootdn)) {
+		foreach($entry as $domain_name)
+		  $entry[] = $hostname . "." . $domain_name;
+		
+		$entry[] = "localhost";
+	  }
+	  // }}}
+	  
+	  if(pql_modify_attribute($ldap->ldap_linkid, $dn, $type, '', $entry))
+		return true;
+	  // }}}
+	}
+  } elseif(($host == '*') and ($domain[0] or $domain[1])) {
+	// {{{ Add, delete or replace {locals,rcpthosts} in _all_ QLC objects
+	// '$host=* && $domain!=NULL' => Modify ALL servers
+	//		domain[0] => oldvalue
+	//		domain[1] => newvalue
+	//
+	//	If domain[0]!=NULL && domain[1]!=NULL	=> REPLACE domain[0] w/ domain[1]
+	//	If domain[0]!=NULL && domain[1]==NULL	=> REMOVE domain[0]
+	//	If domain[0]==NULL && domain[1]!=NULL	=> ADD domain[1]
+	//	NOTE: BOTH can be set but not NULL!
+	
+	// {{{ Retreive and go through each QmailLDAP control object
+	$hosts = pql_get_dn($ldap->ldap_linkid, $dn, '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+	if($hosts) {
+	  if(!is_array($hosts))
+		$hosts = array($hosts);
+	  
+	  foreach($hosts as $host) {
+		$attribs = array('locals'    => pql_get_define("PQL_ATTR_LOCALS"),
+						 'rcpthosts' => pql_get_define("PQL_ATTR_RCPTHOSTS"));
+		foreach($attribs as $key => $attrib) {
+		  if(($type == $attrib) or !$type) {
+			// Get current 'attrib' value for this QLC object
+			$values = pql_get_attribute($ldap->ldap_linkid, $host, $attrib);
+			if($values) {
+			  if(!is_array($values))
+				$values = array($values);
+			  $$key = $values;
+			  
+			  // {{{ Add, delete or replace a domain name depending on domain array content
+			  foreach($values as $value) {
+				if($domain[0] and $domain[1]) {
+				  // {{{ We're REPLACING a domainname
+				  if(lc($value) == lc($domain[0])) {
+					if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+					  echo "pql_control_update_domains(): Replacing '<b>$value</b>' with '<b>".$domain[1]."</b>' in QLC '$host:$key'<br>";
+
+					$entry[$key][] = $domain[1];
+				  } else {
+					$entry[$key][] = $value;
+				  }
+				  // }}}
+				} elseif($domain[0] and !$domain[1]) {
+				  // {{{ We're REMOVING a domainname
+				  if(lc($domain[0]) != lc($value))
+					$entry[$key][] = $value;
+				  else
+					if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+					  echo "pql_control_update_domains(): Removing domain '<b>".$domain[0]."</b>' from QLC '$host:$key'<br>";
+				  // }}}
+				} elseif(!$domain[0] and $domain[1]) {
+				  // {{{ We're ADDING a domainname. Add (all) the old one(s)
+				  $entry[$key][] = $value;
+				  // }}}
 				}
 			  }
+			  // }}}
 			}
-				
-			if(!$ent_exists)
-			  $entry[] = $nonprimmx;
+
+			if(!$domain[0] and $domain[1]) {
+			  // No previous values and we want to ADD a domain
+			  if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+				echo "pql_control_update_domains(): Adding domain '<b>".$domain[1]."</b>' to QLC '$host:$key'<br>";
+			  
+			  $entry[$key][] = $domain[1];
+			}
+			// NOTE: If there is no previous values and we want to REMOVE a domain, then we
+			//       don't need to do anything (can't delete something that isn't there! :).
 		  }
+
+		  // {{{ Extra precaution: IDNA encode and uniqify all domain names 
+		  // IDNA encode the domain name(s)
+		  $count = count($entry[$key]);
+		  for($i=0; $i < $count; $i++) {
+			$entry[$key][$i] = pql_maybe_idna_encode($entry[$key][$i]);
+			
+			// Add the hostname to this domainname
+			if($hostname)
+			  $entry[$key][] = $hostname . "." . $entry[$key][$i];
+		  }
+		  
+		  // Uniqify the list of domain names.
+		  $tmp = $entry[$key]; unset($entry[$key]);
+		  $entry[$key] = pql_uniq($tmp);
 		  // }}}
 		}
+
+		// {{{ Do modification
+		if($entry["locals"][0] or $entry["rcpthosts"][0])
+		  pql_modify_attribute($ldap->ldap_linkid, $host, '', '', $entry);
 		// }}}
+	  }
 	}
-
-    // {{{ Get the hostname (if we should add the hostname to each domain)
-    if($host and ($host != '*') and pql_get_define("PQL_CONF_CONTROL_AUTOADDHOSTNAME", $rootdn)) {
-		$hostname = split("\.", $host);
-		$hostname = pql_maybe_encode($hostname[0]);
-	
-		foreach($temp as $tmp)
-		  $entry[] = $hostname . "." . $tmp;
-	}
-
-    if(pql_get_define("PQL_CONF_CONTROL_AUTOADDLOCALS", $rootdn))
-	  $entry[] = "localhost";
 	// }}}
-
-	// ----------------
-	if(($host != '*') and is_array($entry)) {
-		// {{{ Add {locals,rcpthosts} to one specific QLC object
-		if(($type == pql_get_define("PQL_ATTR_LOCALS")) or !$type) {
-			if(pql_modify_attribute($ldap->ldap_linkid, $dn, pql_get_define("PQL_ATTR_LOCALS"), '', $entry))
-			  return true;
-		} elseif($type == pql_get_define("PQL_ATTR_RCPTHOSTS"))	{
-			if(pql_modify_attribute($ldap->ldap_linkid, $dn, pql_get_define("PQL_ATTR_RCPTHOSTS"), '', $entry))
-			  return true;
-		}
-		// }}}
-	} else {
-		// {{{ Add {locals,rcpthosts} to _all_ QLC objects
-		// '$host=* && $domain!=NULL' => Modify ALL servers
-		//		domain[0] => oldvalue
-		//		domain[1] => newvalue
-
-		// Maybe IDNA encode the domain name
-		if($domain[1])
-		  $domain[1] = pql_maybe_idna_encode($domain[1]);
-
-		// {{{ Get all QmailLDAP/Control hosts.
-
-		$result = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
-		for($i=0; $result[$i]; $i++)
-		  $hosts[] = pql_get_attribute($_pql_control->ldap_linkid, $result[$i], pql_get_define("PQL_ATTR_CN"));
-
-		// }}}
-
-		// {{{ Go through each QmailLDAP control object
-		if(is_array($hosts)) {
-			foreach($hosts as $h) {
-				if(!eregi('^cn', $dn))
-				  $hostdn = "cn=$h,$dn";
-				else
-				  $hostdn = $dn;
-
-				// {{{ host:PQL_ATTR_LOCALS
-				if(($type == pql_get_define("PQL_ATTR_LOCALS")) or !$type) {
-					$dont_add = 0; unset($entry);
-
-					// Get current locals for this host
-					$locals = pql_get_attribute($ldap->ldap_linkid, $hostdn, pql_get_define("PQL_ATTR_LOCALS"));
-					if(is_array($locals)) {
-						// {{{ Rearrange the array
-						asort($locals); reset($locals);
-						$locals = pql_uniq($locals);
-						// }}}
-
-						// {{{ Do not set locals for hosts which HAVE no locals (ie, slaves)
-						foreach($locals as $local) {
-							// Make sure the domain don't already exists...
-							if(lc($domain[1]) == lc($local))
-							  $dont_add = 1;
-							else {
-								// As long as local isn't equal to domain to add, create the LDIF entry
-								if($domain[0]) {
-									if(!eregi($domain[0], $local))
-									  $entry[] = $local;
-								} else
-								  $entry[] = $local;
-							}
-						}
-						// }}}
-						
-						// {{{ Add the domain to the LDIF entry
-						if($domain[1] && !$dont_add)
-						  $entry[] = $domain[1];
-						// }}}
-
-						// {{{ Add 'hostname.newdomain' to LDIF entry
-						if($h and $domain[1] and pql_get_define("PQL_CONF_CONTROL_AUTOADDHOSTNAME", $rootdn)) {
-							$hostname = split("\.", $h);
-							$entry[] = $hostname[0] . "." . $domain[1];
-						}
-						// }}}
-
-						if(is_array($entry))
-						  pql_modify_attribute($ldap->ldap_linkid, $hostdn, pql_get_define("PQL_ATTR_LOCALS"), '', $entry);
-					} else
-					  // No previous values, add domain
-					  pql_modify_attribute($ldap->ldap_linkid, $hostdn, pql_get_define("PQL_ATTR_LOCALS"), 1, $domain[1]);
-				}
-				// }}}
-
-				// {{{ host:PQL_ATTR_RCPTHOSTS
-				if($type == pql_get_define("PQL_ATTR_RCPTHOSTS") or !$type) {
-					$dont_add = 0; unset($entry);
-
-					// Get current rcpthosts for this host
-					$rcpthosts = pql_get_attribute($ldap->ldap_linkid, $hostdn, pql_get_define("PQL_ATTR_RCPTHOSTS"));
-					if(is_array($rcpthosts)) {
-						// {{{ Rearrange the array
-						asort($rcpthosts); reset($rcpthosts);
-						$rcpthosts = pql_uniq($rcpthosts);
-						// }}}
-						
-						// {{{ Do not set rcpthosts for hosts which HAVE no rcpthosts (ie, masters)
-						foreach($rcpthosts as $rcpt) {
-							// Make sure the domain don't already exists...
-							if($domain[1] == $rcpt)
-							  $dont_add = 1;
-							else {
-								// As long as local isn't equal to domain to add, create the LDIF entry
-								if($domain[0]) {
-									if(!eregi($domain[0], $rcpt))
-									  $entry[] = $rcpt;
-								} else
-								  $entry[] = $rcpt;
-							}
-						}
-						// }}}
-						
-						// {{{ Add the domain to the LDIF entry
-						if($domain[1] && !$dont_add)
-						  $entry[] = $domain[1];
-						// }}}
-						
-						// {{{ Add 'hostname.newdomain' to LDIF entry
-						if($h and $domain[1] and pql_get_define("PQL_CONF_CONTROL_AUTOADDHOSTNAME", $rootdn)) {
-							$hostname = split("\.", $h);
-							$entry[] = $hostname[0] . "." . $domain[1];
-						}
-						// }}}
-						
-						if(is_array($entry))
-						  pql_modify_attribute($ldap->ldap_linkid, $hostdn, pql_get_define("PQL_ATTR_RCPTHOSTS"), '', $entry);
-					} else
-					  // No previous values, add domain
-					  pql_modify_attribute($ldap->ldap_linkid, $hostdn, pql_get_define("PQL_ATTR_RCPTHOSTS"), 1, $domain[1]);
-				}
-				// }}}
-			}
-		}
-		// }}}
-
-		// }}}
-	}
-
-    return true;
+	
+	// }}}
+  }
+  
+  return true;
 }
 // }}}
 
 // {{{ pql_control_print_filesize(bytes)
 function pql_control_print_filesize($bytes) {
-    // print out human readable filesizes
-    
-    // at which byte/kb/mb count switch to the next upper level
-    $switch_bytes = "750";
-    
-    if($bytes >= ($switch_bytes * 1048576)){
-		$gb = number_format($bytes / 1073741824, 2, ".", "'");
-		return $gb . " GB";
-    }
-    
-    if($bytes >= ($switch_bytes * 1024)){
-		$mb = number_format($bytes / 1048576, 2, ".", "'");
-		return $mb . " MB";
-    }
-    
-    if($bytes >= $switch_bytes){
-		$mb =  number_format($bytes / 1024, 2, ".", "'");
-		return $mb . " KB";
-    }
-    
-    return $bytes . " Bytes";
+  // print out human readable filesizes
+  
+  // at which byte/kb/mb count switch to the next upper level
+  $switch_bytes = "750";
+  
+  if($bytes >= ($switch_bytes * 1048576)){
+	$gb = number_format($bytes / 1073741824, 2, ".", "'");
+	return $gb . " GB";
+  }
+  
+  if($bytes >= ($switch_bytes * 1024)){
+	$mb = number_format($bytes / 1048576, 2, ".", "'");
+	return $mb . " MB";
+  }
+  
+  if($bytes >= $switch_bytes){
+	$mb =  number_format($bytes / 1024, 2, ".", "'");
+	return $mb . " KB";
+  }
+  
+  return $bytes . " Bytes";
 }
 // }}}
 

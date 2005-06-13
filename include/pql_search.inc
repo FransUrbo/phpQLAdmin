@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.41 2005-06-11 11:47:24 turbo Exp $
+// $Id: pql_search.inc,v 2.42 2005-06-13 12:55:56 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -281,6 +281,79 @@ function pql_get_domains($ldap) {
 	  return $domains;
 	} else
 	  return false;
+}
+// }}}
+
+// {{{ pql_get_branch_domains(ldap)
+function pql_get_branch_domains($ldap) {
+  // Get all branches in the database
+  $branches = pql_get_domains($ldap);
+  foreach($branches as $branch) {
+	// {{{ Get default domain name for this domain/branch
+	$default_domain = pql_get_attribute($ldap->ldap_linkid, $branch, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+	if($default_domain) {
+	  if(!is_array($default_domain))
+		$default_domain = array($default_domain);
+
+	  $domain_names = pql_add2array($domain_names, $default_domain);
+	}
+	// }}}
+	
+	// {{{ Get additional domain name(s)
+	$additional = pql_get_attribute($ldap->ldap_linkid, $branch, pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
+	if($additional) {
+	  if(!is_array($additional))
+		$additional = array($additional);
+
+	  $domain_names = pql_add2array($domain_names, $additional);
+	}
+	// }}}
+  }
+
+  // {{{ Extra precaution: IDNA encode and uniqify all domain names 
+  // IDNA encode the domain name(s)
+  $count = count($domain_names);
+  for($i=0; $i < $count; $i++)
+	$domain_names[$i] = pql_maybe_idna_encode($domain_names[$i]);
+  
+  // Uniqify the list of domain names.
+  $tmp = $domain_names; unset($domain_names);
+  $domain_names = pql_uniq($tmp);
+  // }}}
+
+  return($domain_names);
+}
+// }}}
+
+// {{{ pql_get_email_domains(linkid, host)
+function pql_get_email_domains($linkid, $host) {
+  // {{{ Go through each base DN, retreive mail and mail aliases
+  foreach($_SESSION["BASE_DN"] as $base) {
+	$users = pql_search($linkid, $base, pql_get_define("PQL_ATTR_MAIL").'=*', "SUBTREE");
+	for($i=0; $users[$i]; $i++) {
+	  $mails[] = $users[$i][pql_get_define("PQL_ATTR_MAIL")];
+
+	  if($users[$i][pql_get_define("PQL_ATTR_MAILALTERNATE")]) {
+		$tmp = $mails; unset($mails);
+		$mails = pql_add2array($tmp, $users[$i][pql_get_define("PQL_ATTR_MAILALTERNATE")]);
+	  }
+	}
+  }
+  // }}}
+
+  // {{{ Extract only the domain name part from the email address(es)
+  for($i=0; $mails[$i]; $i++) {
+	$tmp = split('@', $mails[$i]);
+	$mails[$i] = pql_maybe_idna_encode($tmp[1]);
+  }
+  // }}}
+
+  // {{{ Uniqify all domain names 
+  $tmp = $mails; unset($mails);
+  $mails = pql_uniq($tmp);
+  // }}}
+
+  return($mails);
 }
 // }}}
 

@@ -13,6 +13,9 @@ phpQLAdmin 2.3.1 TO BE ANNOUNCED
 	    some time).
 	  - Complete rewrite of the include/attrib.config.inc:attribute_save() function.
 	    Closes: #221
+	  - Not so much a rewrite as cleanup of the include/pql_control.inc:pql_control_update_domains()
+	    function. Move some parts as separate functions into include/pql_search.inc.
+	    Closes: #258
 
 	Misc changes
 	  - Support sub-zones in the DNS manager. Only one level is supported at this
