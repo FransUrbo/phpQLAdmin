@@ -2,7 +2,7 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.35 2005-03-02 09:32:54 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.36 2005-06-13 11:42:42 turbo Exp $
 
 // {{{ locals_check(type)
 function locals_check($type) {
@@ -52,6 +52,8 @@ function locals_print_view($host) {
     
     // init data
     locals_init($host);
+
+	$_REQUEST["rootdn"] = pql_get_rootdn(pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"]);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th align="left"><?=pql_get_define("PQL_ATTR_LOCALS")?> (Defined <?php echo pql_get_define("PQL_ATTR_LOCALS");?>) for host <u><?=$host?></u></th>
@@ -70,7 +72,7 @@ function locals_print_view($host) {
         } // end foreach
     } // end if is_array
 
-    if(pql_get_define("PQL_CONF_CONTROL_AUTOADDLOCALS", $_REQUEST["branch"])) {
+    if(pql_get_define("PQL_CONF_CONTROL_AUTOADDLOCALS", $_REQUEST["rootdn"])) {
 ?>
       <tr class="subtitle">
         <td><a href="control_edit_attribute.php?rootdn=<?=$_REQUEST["rootdn"]?>&attrib=<?=pql_get_define("PQL_ATTR_LOCALS")?>&type=replicate&mxhost=<?=$host?>&submit=1"><img src="images/edit.png" width="12" height="12" border="0" alt="replicate"><?=$LANG->_('Click here to start replication manually')?></a></td>
@@ -179,11 +181,11 @@ function locals_save($type, $host) {
 						}
 					}
 				}
-				
-				// Save this new array to the object, redirect back to host details
-				if(pql_modify_attribute($_pql_control->ldap_linkid, $ctrl, pql_get_define("PQL_ATTR_LOCALS"), '', $LOCALS))
-				  $success = 1;
 			}
+				
+			// Save this new array to the object, redirect back to host details
+			if(pql_modify_attribute($_pql_control->ldap_linkid, $ctrl, pql_get_define("PQL_ATTR_LOCALS"), '', $LOCALS))
+			  $success = 1;
 		} else {
 			// We're changing a specific mail server...
 			$locals = pql_get_attribute($_pql_control->ldap_linkid,
@@ -192,13 +194,13 @@ function locals_save($type, $host) {
 			for($i=0; $locals[$i]; $i++) {
 				if($locals[$i] != $_REQUEST["set"])
 				  $LOCALS[] = $locals[$i];
-				
-				// remove specified domain from locals, redirect back to host details
-				if(pql_modify_attribute($_pql_control->ldap_linkid,
-										pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-										pql_get_define("PQL_ATTR_LOCALS"), '', $LOCALS))
-				  $success = 1;
 			}
+				
+			// remove specified domain from locals, redirect back to host details
+			if(pql_modify_attribute($_pql_control->ldap_linkid,
+									pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+									pql_get_define("PQL_ATTR_LOCALS"), '', $LOCALS))
+			  $success = 1;
 		}
 
 		if($success)
@@ -224,7 +226,7 @@ function locals_save($type, $host) {
 			  $success = 1;
 		} else {
 			if(pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
-										  '*', array('', $_REQUEST["set"]), $_REQUEST["attrib"]))
+										  '*', array('', $_REQUEST["set"])))
 			  $success = 1;
 		}
 
