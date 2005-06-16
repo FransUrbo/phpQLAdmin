@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.16 2005-02-24 17:04:01 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.16.2.1 2005-06-16 10:49:02 turbo Exp $
 
 // {{{ attribute_translate_type(attrib)
 function attribute_translate_type($attrib) {
@@ -183,7 +183,7 @@ function attribute_save($action) {
 	if($_REQUEST["newvalue"]) {
 	  $newvalue = $_REQUEST["newvalue"];
 	  
-	  if(@(lc($attrib) == 'mxrecord') && $_REQUEST["priority"])
+	  if(@(lc($attrib) == 'mxrecord') && isset($_REQUEST["priority"]))
 		$newvalue = $_REQUEST["priority"] . " " . $newvalue;
 	}
 
