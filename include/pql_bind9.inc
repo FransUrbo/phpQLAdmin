@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.32.2.1 2005-04-18 14:33:35 turbo Exp $
+// $Id: pql_bind9.inc,v 2.32.2.2 2005-06-16 10:17:02 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -287,6 +287,47 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 		  $dn = "dc=".$dc_tmp;
 	}
 	$dn = "relativeDomainName=".$entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")].",$dn,ou=DNS,$basedn";
+	// }}}
+
+	// {{{ Just in case the object already exists, we merge the new with the old...
+
+	// Try to find out which attribute we're trying to add/modify
+	$TYPES = array(pql_get_define("PQL_ATTR_ARECORD"),     pql_get_define("PQL_ATTR_CNAMERECORD"), 
+				   pql_get_define("PQL_ATTR_HINFORECORD"), pql_get_define("PQL_ATTR_MXRECORD"),
+				   pql_get_define("PQL_ATTR_NSRECORD"),    pql_get_define("PQL_ATTR_PTRRECORD"));
+	foreach($TYPES as $TYPE) {
+	  $type = lc($TYPE);
+	  if($entry[$type]) {
+		// This one is defined. That's the attribute!
+		$attrib = $type;
+		break;
+	  }
+	}
+
+	// Does the object exists (with this attribute)?
+	if($attrs = pql_get_attribute($linkid, $dn, $attrib)) {
+	  // It DOES exists!
+
+	  // Add the new attribute to the old list
+	  $attrs[] = $entry[$attrib];
+
+	  // Recreate the LDIF
+	  unset($entry);
+	  $entry[$attrib] = $attrs;
+
+	  // Create a LDIF object to print in case of error
+	  $LDIF = pql_create_ldif("pql_bind9_add_host", $dn, $entry);
+	  if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+		echo $LDIF;
+	  } else {
+		if(!pql_write_mod($linkid, $dn, $entry, "pql_bind9_add_host")) {
+		  pql_format_error(1);
+		  die($LDIF);
+		}
+	  }
+
+	  return $dn;
+	}
 	// }}}
 
 	$entry['objectClass'][] = 'top';
