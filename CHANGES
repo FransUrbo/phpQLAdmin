@@ -30,6 +30,7 @@ phpQLAdmin 2.2.5 TO BE ANNOUNCED
 	    Closes: #277
 	  - Allow for ADDING a round-robbin alias to existing alias(es).
 	    Closes: #278
+	  - Allow Bind9 MX priority to be '0' (was treated as 'unset' previosly).
 
 	GUI layout changes
 	  - When changing the delivery mode for a user, retreive existing value(s) and fill
