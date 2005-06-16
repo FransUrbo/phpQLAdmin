@@ -28,6 +28,8 @@ phpQLAdmin 2.2.5 TO BE ANNOUNCED
 	    Closes: #276
 	  - Correctly show PTR records in the Bind9 manager.
 	    Closes: #277
+	  - Allow for ADDING a round-robbin alias to existing alias(es).
+	    Closes: #278
 
 	GUI layout changes
 	  - When changing the delivery mode for a user, retreive existing value(s) and fill
