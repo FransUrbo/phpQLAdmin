@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.31.2.1 2005-05-13 12:37:15 turbo Exp $
+// $Id: config_attributes.inc,v 2.31.2.2 2005-06-16 08:38:42 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -179,6 +179,7 @@ pql_set_define("PQL_ATTR_ZONENAME",							strtolower("zoneName"),						false);
 pql_set_define("PQL_ATTR_SRVRECORD",						strtolower("srvRecord"),					false);
 pql_set_define("PQL_ATTR_SOARECORD",						strtolower("soaRecord"),					false);
 pql_set_define("PQL_ATTR_TXTRECORD",						strtolower("txtRecord"),					false);
+pql_set_define("PQL_ATTR_PTRRECORD",						strtolower("PTRRecord"),					false);
 // }}}
 
 // {{{ Attributes used by the Apache config
