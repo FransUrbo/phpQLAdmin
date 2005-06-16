@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.32.2.2 2005-06-16 10:17:02 turbo Exp $
+// $Id: pql_bind9.inc,v 2.32.2.3 2005-06-16 10:23:36 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -307,6 +307,9 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 	// Does the object exists (with this attribute)?
 	if($attrs = pql_get_attribute($linkid, $dn, $attrib)) {
 	  // It DOES exists!
+
+	  if(!is_array($attrs))
+		$attrs = array($attrs);
 
 	  // Add the new attribute to the old list
 	  $attrs[] = $entry[$attrib];
