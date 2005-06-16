@@ -26,6 +26,8 @@ phpQLAdmin 2.2.5 TO BE ANNOUNCED
 	  - Don't process ezmlm list if the array is empty.
 	  - Correctly create PTR records in the Bind9 manager.
 	    Closes: #276
+	  - Correctly show PTR records in the Bind9 manager.
+	    Closes: #277
 
 	GUI layout changes
 	  - When changing the delivery mode for a user, retreive existing value(s) and fill
