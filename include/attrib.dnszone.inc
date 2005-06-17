@@ -1,13 +1,14 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.16.2.1 2005-06-16 10:49:02 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.16.2.2 2005-06-17 09:09:58 turbo Exp $
 
 // {{{ attribute_translate_type(attrib)
 function attribute_translate_type($attrib) {
   // Translate the TYPE to dNSZone objectclass attribute
-  switch($_REQUEST["attrib"]) {
+  switch($attrib) {
 	case "a":
+	  return 'aRecord';
 	case "host":
 	  return 'relativeDomainName';
 	case "ttl":
@@ -118,6 +119,7 @@ function attribute_print_form() {
 <?php	} ?>
           </tr>
 
+          <input type="hidden" name="old_type" value="<?=preg_replace('/record/', '', $attrib)?>">
 <?php	if(lc($attrib) == 'mxrecord') { ?>
           <tr class="<?php pql_format_table(); ?>">
             <td class="title" align="right">
@@ -131,11 +133,11 @@ function attribute_print_form() {
             <td class="title">New record type</td>
             <td>
               <select name="type">
-                <option value="a" <?php     if($_REQUEST[$attrib] == 'a')     { echo "SELECTED"; } ?>>A</option>
-                <option value="cname" <?php if($_REQUEST[$attrib] == 'cname') { echo "SELECTED"; } ?>>CNAME</option>
-                <option value="hinfo" <?php if($_REQUEST[$attrib] == 'hinfo') { echo "SELECTED"; } ?>>HINFO</option>
-                <option value="mx" <?php    if($_REQUEST[$attrib] == 'mx')    { echo "SELECTED"; } ?>>MX</option>
-                <option value="ns" <?php    if($_REQUEST[$attrib] == 'ns')    { echo "SELECTED"; } ?>>NS</option>
+                <option value="a"<?php     if($attrib == 'arecord')     { echo " SELECTED"; } ?>>A</option>
+                <option value="cname"<?php if($attrib == 'cnamerecord') { echo " SELECTED"; } ?>>CNAME</option>
+                <option value="hinfo"<?php if($attrib == 'hinforecord') { echo " SELECTED"; } ?>>HINFO</option>
+                <option value="mx"<?php    if($attrib == 'mxrecord')    { echo " SELECTED"; } ?>>MX</option>
+                <option value="ns"<?php    if($attrib == 'nsrecord')    { echo " SELECTED"; } ?>>NS</option>
               </select>
             </td>
             <td></td>
@@ -151,6 +153,7 @@ function attribute_print_form() {
 <?php		} else { ?>
       <input type="hidden" name="oldvalue"        value="<?=$_REQUEST["oldvalue"]?>">
 <?php		} ?>
+<?php	} else { ?>
       <input type="hidden" name="type"            value="<?=$type?>">
 <?php	} ?>
       <input type="hidden" name="domain"          value="<?=urlencode($_REQUEST["domain"])?>">
@@ -179,6 +182,9 @@ function attribute_save($action) {
 
 	if($_REQUEST["type"])
 	  $attrib = attribute_translate_type($_REQUEST["type"]);
+
+	if($_REQUEST["old_type"])
+	  $oldtype = attribute_translate_type($_REQUEST["old_type"]);
 
 	if($_REQUEST["newvalue"]) {
 	  $newvalue = $_REQUEST["newvalue"];
@@ -257,11 +263,11 @@ function attribute_save($action) {
 		// }}}
 
 	  	// {{{ if(oldtype != newtype)
-		if($oldtype != $newtype) {
+		if(lc($oldtype) != lc($attrib)) {
 		  // Remove the 'oldtype' value
-		  if(!pql_modify_attribute($_pql->ldap_linkid, $dn, $_REQUEST["oldtype"], '', ''))
+		  if(!pql_modify_attribute($_pql->ldap_linkid, $dn, $oldtype, '', ''))
 			// This shouldn't really be possible, but until I find out that/if I'm wrong, I'll just die here!
-			die("Failed to remove the old attribute ".$_REQUEST["oldtype"]." with value ".$_REQUEST["oldvalue"]);
+			die("Failed to remove the old attribute '$oldtype' with value ".$_REQUEST["oldvalue"]);
 		}
 		// }}}
 
