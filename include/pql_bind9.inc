@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.32.2.3 2005-06-16 10:23:36 turbo Exp $
+// $Id: pql_bind9.inc,v 2.32.2.4 2005-06-17 08:26:52 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -56,7 +56,7 @@ function pql_bind9_get_zone($linkid, $branchname, $domainname = '') {
 					  // Remove the domain name, so we're left with the hostname.
 					  $cname = str_replace(".$zone.", "", $cname);
 					
-					$ZONE[$zone][$host]['CNAME'] = $cname;
+					$ZONE[$zone][$host]['CNAME'][] = $cname;
 				}
 			} else {
 				$cname = pql_maybe_idna_decode($objects[$i]['cnamerecord']);
@@ -77,7 +77,7 @@ function pql_bind9_get_zone($linkid, $branchname, $domainname = '') {
 		if($objects[$i]['srvrecord']) {
 			if(is_array($objects[$i]['srvrecord'])) {
 				foreach($objects[$i]['srvrecord'] as $record)
-				  $ZONE[$zone][$host]['SRV'] = $record;
+				  $ZONE[$zone][$host]['SRV'][] = $record;
 			} else
 			  $ZONE[$zone][$host]['SRV'] = $objects[$i]['srvrecord'];
 		}
