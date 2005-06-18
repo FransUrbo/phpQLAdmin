@@ -1,6 +1,6 @@
 phpQLAdmin 2.2 Change Log
 
-phpQLAdmin 2.2.5 TO BE ANNOUNCED
+phpQLAdmin 2.2.5 Release (Jun 18 2005)
 	Bug fixes
 	  - Include the ./include/pql_session.inc file in ./control.php to avoid PHP errors etc.
 	  - Extract only the LDAP URI/URL (instead of using the whole USER_HOST session
