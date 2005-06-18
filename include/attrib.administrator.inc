@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for administrator and seealso modification
 // Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
-// $Id: attrib.administrator.inc,v 1.51 2005-02-24 17:04:01 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.51.2.2 2005-04-20 19:48:35 turbo Exp $
 
 // There is serious problems with this. I fix for one usage and break another
 // one! Let's try to remember (and document) how it's called. It's called from
@@ -205,11 +205,9 @@ function attribute_print_form($action) {
 			// Get all domains in the database.
 			$domains = pql_get_domains($_pql);
 			if(isset($domains)) {
-				asort($domains);
 				foreach($domains as $key => $domain) {
 					// Get domain part from the DN (Example: 'dc=test,dc=net' => 'test').
 					$d = split(',', $domain); $d = split('=', $d[0]); $d = $d[1];
-					$d = pql_maybe_decode($d);
 
 					// Create a user search filter (only look for mail users - !?!?).
 					$filter  = "(&(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*)(";
@@ -276,14 +274,13 @@ function attribute_print_form($action) {
 
 			if(is_array($domains)) {
 				$domains = pql_uniq($domains);
-				asort($domains);
 				foreach($domains as $domain) {
 					if($domain == $_SESSION["BASE_DN"][0]) {
 						$shown_first_rootdn = 1;
 ?>
-              <option value="<?=$domain?>">*&nbsp;<?=pql_maybe_decode($domain)?></option>
+              <option value="<?=$domain?>">*&nbsp;<?=$domain?></option>
 <?php				} else { ?>
-              <option value="<?=$domain?>">&nbsp;&nbsp;&nbsp;<?=pql_maybe_decode($domain)?></option>
+              <option value="<?=$domain?>">&nbsp;&nbsp;&nbsp;<?=$domain?></option>
 <?php				}
 				}
 			}

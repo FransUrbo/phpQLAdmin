@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // cn (Full name)
-// $Id: attrib.cn.inc,v 2.23.4.2 2005-03-27 14:17:25 turbo Exp $
+// $Id: attrib.cn.inc,v 2.23.4.4 2005-04-23 08:40:28 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -72,33 +72,41 @@ function attribute_save($type) {
 		  // Replace specific value.
 		  $old = $_REQUEST["oldvalue"];
 		else
-		  // Completley replace the attribute
+		  // Completely replace the attribute
 		  $old = 1;
 		
-		// Well. Gecos is the same thing as CN, so we should
-		// try to change that as well... But only if it
-		// already exist in the object.
-		$attribs = array($_REQUEST["attrib"], 'gecos');
-		foreach($attribs as $attrib) {
-			// We have an old value of this array, try to change it...
-			if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], $attrib, $old, $_REQUEST["cn"]))
-			  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
-										   array('what' => $LANG->_('Common name'),
-												 'new'  => $_REQUEST["cn"]));
-			else
-			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-										   array('what' => $LANG->_('Common name')))
-				. ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+		// {{{ Replace the specified attribute
+		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], $old, $_REQUEST["cn"]))
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
+									   array('what' => $LANG->_('Common name'),
+											 'new'  => $_REQUEST["cn"]));
+		else
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+									   array('what' => $LANG->_('Common name')))
+			. ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+		// }}}
+
+		// {{{ Replace the 'gecos' value
+		$gecos = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_GECOS"));
+		if($gecos)
+		  pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_GECOS"), 1, $_REQUEST["cn"]);
+		// }}}
+
+		// {{{ Replace the 'givenName' (first name)
+		$givenname = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_GIVENNAME"));
+		if($givenname) {
+		  // Get first and last name from the 'CN'.
+		  $name = split(" ", $_REQUEST["cn"]);
+		  
+		  pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_GIVENNAME"), $old, $name[0]);
 		}
+		// }}}
 
-		// Get first and last name from the 'CN'.
-		$name = split(" ", $_REQUEST["cn"]);
-
-		// Change givenName which is the first name
-		pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_GIVENNAME"), $old, $name[0]);
-
-		// Change SN which is the last name
-		pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_SN"), $old, $name[1]);
+		// {{{ Replace the 'sn' (last name)
+		$sn = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_SN"));
+		if($sn)
+		  pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_SN"), $old, $name[1]);
+		// }}}
 
 		attribute_forward($msg, true);
 		break;

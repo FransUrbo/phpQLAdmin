@@ -1,46 +1,52 @@
-<?php /* $Id: user_add-additional.inc,v 1.26.2.2 2005-03-27 11:55:01 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.26.2.4 2005-05-14 18:19:08 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <!-- Some hidden values from previous page(s) -->
-<?php if($_REQUEST["surname"] and pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_CN"))) { ?>
+<?php if($_REQUEST["surname"] and pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_CN"))) { ?>
     <input type="hidden" name="surname"            value="<?=urlencode($_REQUEST["surname"])?>">
 <?php } ?>
-<?php if($_REQUEST["name"] and pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_SN"))) { ?>
+<?php if($_REQUEST["name"] and pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_SN"))) { ?>
     <input type="hidden" name="name"               value="<?=urlencode($_REQUEST["name"])?>">
 <?php } ?>
-<?php if($_REQUEST["mail"] and pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_MAIL"))) { ?>
+<?php if($_REQUEST["mail"] and pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAIL"))) { ?>
     <input type="hidden" name="mail"               value="<?=$_REQUEST["mail"]?>">
     <input type="hidden" name="email_domain"       value="<?=$_REQUEST["email_domain"]?>">
     <input type="hidden" name="include_additional" value="<?=$_REQUEST["include_additional"]?>">
 <?php } ?>
-<?php if($_REQUEST["uid"] and pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_UID"))) { ?>
+<?php if($_REQUEST["uid"] and pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_UID"))) { ?>
     <input type="hidden" name="uid"                value="<?=$_REQUEST["uid"]?>">
 <?php } ?>
-<?php if($_REQUEST["password"] and pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_PASSWD"))) { ?>
+<?php if($_REQUEST["password"] and pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_PASSWD"))) { ?>
     <input type="hidden" name="autogenerate"       value="<?=$_REQUEST["autogenerate"]?>">
     <input type="hidden" name="password"           value="<?=$_REQUEST["password"]?>">
     <input type="hidden" name="pwscheme"           value="<?=$_REQUEST["pwscheme"]?>">
     <input type="hidden" name="crypted"            value="<?=$_REQUEST["crypted"]?>">
 <?php } ?>
-<?php if($_REQUEST["forwardingaddress"] and pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_FORWARDS"))) { ?>
+<?php if($_REQUEST["clear_text_password"] and pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_PASSWD_CLEAR"))) { ?>
+    <input type="hidden" name="clear_text_password" value="<?=$_REQUEST["clear_text_password"]?>">
+<?php } ?>
+<?php if($_REQUEST["forwardingaddress"] and pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_FORWARDS"))) { ?>
     <input type="hidden" name="forwardingaddress"  value="<?=$_REQUEST["forwardingaddress"]?>">
 <?php } ?>
     <input type="hidden" name="subbranch"          value="<?=$url["subbranch"]?>">
-<?php if($_REQUEST["account_status"] and pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_ISACTIVE"))) { ?>
-    <input type="hidden" name="account_status" value="<?=$_REQUEST["account_status"]?>">
+<?php if($_REQUEST["account_status"] and pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_ISACTIVE"))) { ?>
+    <input type="hidden" name="account_status"     value="<?=$_REQUEST["account_status"]?>">
+<?php } ?>
+<?php if($_REQUEST["loginshell"] and pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_LOGINSHELL"))) { ?>
+    <input type="hidden" name="loginshell"         value="<?=$_REQUEST["loginshell"]?>">
 <?php } ?>
 
     <table cellspacing="0" cellpadding="3" border="0">
-<?php if(($_REQUEST["autogenerate"] and pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"],
+<?php if(($_REQUEST["autogenerate"] and pql_templates_check_attribute($_pql->ldap_linkid, $template,
 																	  pql_get_define("PQL_ATTR_PASSWD"))) or
-		 pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_HOMEDIR")) or
-		 pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_MAILSTORE")) or
-		 pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_MAILHOST")))
+		 pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_HOMEDIR")) or
+		 pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILSTORE")) or
+		 pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILHOST")))
 	  {
 ?>
       <th colspan="3" align="left"><?=$LANG->_('Additional account properties')?></th>
 <?php }
 
-	  if($_REQUEST["autogenerate"] and pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_PASSWD"))) {
+	  if($_REQUEST["autogenerate"] and pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_PASSWD"))) {
 ?>
         <!-- Show the autogenerated password -->
         <tr class="<?php pql_format_table(); ?>">
@@ -51,7 +57,7 @@
         <input type="hidden" name="password_shown" value="1">
 <?php }
 
-	  if(pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_HOMEDIR"))) {
+	  if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_HOMEDIR"))) {
 ?>
         <!-- Home directory -->
         <tr class="<?php pql_format_table(); ?>">
@@ -69,7 +75,7 @@
 <?php } // Allowing home directory
 
 	  if($_REQUEST["mail"] and
-		 pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_MAILSTORE")))
+		 pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILSTORE")))
       {
 		if($_SESSION["ADVANCED_MODE"] or !$_REQUEST["maildirectory"]) {
 ?>
@@ -93,7 +99,7 @@
 	  } // Allowing mailbox path
 
 	  if($_REQUEST["mail"] and
-		 pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_FORWARDS")))
+		 pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_FORWARDS")))
       {
 ?>
         <tr class="<?php pql_format_table(); ?>">
@@ -111,7 +117,7 @@
 <?php } // Allowing mail forwarding address
 
 	  if($_REQUEST["mail"] and
-		 pql_templates_check_attribute($_pql->ldap_linkid, $_REQUEST["template"], pql_get_define("PQL_ATTR_MAILHOST")))
+		 pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILHOST")))
       {
 ?>
         <!-- Mailhost -->

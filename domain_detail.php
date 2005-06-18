@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.91.2.2 2005-03-17 18:58:16 turbo Exp $
+// $Id: domain_detail.php,v 2.91.2.4 2005-05-17 09:18:57 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -192,12 +192,17 @@ $buttons = $buttons + $new;
 
 if($_SESSION["ADVANCED_MODE"]) {
 	if($_SESSION["ACI_SUPPORT_ENABLED"]) {
-		$new = array('dnsinfo'	=> 'MX Information',
-					 'aci'		=> 'Access Control Information');
+		$new = array('dnsinfo'	=> 'MX Information');
 		$buttons = $buttons + $new;
+
+		if($_SESSION["ALLOW_BRANCH_CREATE"]) {
+		  // This is a 'super-admin'.
+		  $new = array('aci'	=> 'Access Control Information');
+		  $buttons = $buttons + $new;
+		}
 	}
 
-	if(pql_get_define("PQL_CONF_CONTROL_USE")) {
+	if(pql_get_define("PQL_CONF_CONTROL_USE") and $_SESSION["ALLOW_CONTROL_CREATE"]) {
 		$new = array('options' => 'QmailLDAP/Controls Options');
 		$buttons = $buttons + $new;
 	}
@@ -215,8 +220,17 @@ if($_SESSION["ADVANCED_MODE"]) {
 
 $new = array('action' => 'Actions');
 $buttons = $buttons + $new;
+
+if($domainname) {
 ?>
-  <span class="title1"><?=$LANG->_('Organization name')?>: <?=urldecode($domainname)?></span>
+  <span class="title1"><?=$LANG->_('Organization name')?>: <?=pql_maybe_idna_decode(urldecode($domainname))?></span>
+<?php
+} elseif($o) {
+?>
+  <span class="title1"><?=$LANG->_('Organization name')?>: <?=urldecode($o)?></span>
+<?php
+}
+?>
 
   <br><br>
 <?php

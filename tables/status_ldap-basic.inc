@@ -14,9 +14,6 @@ if($timestamp_current and $timestamp_start) {
 ?>
 
   <span class="title1"><?=$LANG->_('Basic LDAP Server Status')?></span>
-
-  <br><br>
-
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=$LANG->_('LDAP Server Status')?>
       <tr>
@@ -44,6 +41,54 @@ if($timestamp_current and $timestamp_start) {
       </tr>
     </th>
   </table>
+
+<?php
+// Get LDAP listeners this server have opened
+$listeners = pql_get_subentries($_pql->ldap_linkid, "cn=Listeners,cn=Monitor", "labeledURI", "cn=Listener*");
+if(is_array($listeners)) {
+?>
+  <br>
+
+  <span class="title1"><?=$LANG->_('LDAP Server listeners opened')?></span>
+  <table cellspacing="0" cellpadding="3" border="0">
+    <th colspan="3" align="left">
+<?php foreach($listeners as $nr => $url) {
+		$url = urldecode($url);
+?>
+      <tr>
+        <td class="title"><?=$LANG->_('Listener #').$nr?></td>
+        <?php $class=pql_format_table(0); ?>
+        <td class="<?=$class?>"><?=$url?></td>
+      </tr>
+<?php } ?>
+    </th> 
+  </table>
+<?php
+}
+?>
+
+<?php
+// Get LDAP overlays this server have opened/started.
+$overlays = pql_get_subentries($_pql->ldap_linkid, "cn=Overlay,cn=Monitor", "monitoredInfo", "cn=Overlay*");
+if(is_array($overlays)) {
+?>
+  <br>
+
+  <span class="title1"><?=$LANG->_('LDAP Server overlays')?></span>
+  <table cellspacing="0" cellpadding="3" border="0">
+    <th colspan="3" align="left">
+<?php foreach($overlays as $nr => $overlay) { ?>
+      <tr>
+        <td class="title"><?=$LANG->_('Overlay #').$nr?></td>
+        <?php $class=pql_format_table(0); ?>
+        <td class="<?=$class?>"><?=$overlay?></td>
+      </tr>
+<?php } ?>
+    </th> 
+  </table>
+<?php
+}
+?>
 <?php
 /*
  * Local variables:

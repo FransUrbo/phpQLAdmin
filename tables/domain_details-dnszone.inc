@@ -161,7 +161,7 @@
 <?php	if(is_array($zones[$dns_domain_name])) {
 			foreach($zones[$dns_domain_name] as $data) {
 				if($data['HOST'] != '@') {
-					$TYPES = array('CNAME', 'A', 'SRV', 'TXT', 'PTR');
+					$TYPES = array('CNAME', 'A', 'SRV', 'TXT', 'PTR', 'NS', 'MX');
 					foreach($TYPES as $TYPE) {
 						$type = lc($TYPE);
 
@@ -180,6 +180,30 @@
 							foreach($records as $record) {
 								if(($TYPE == 'CNAME') and !eregi('\.$', $record)) {
 									$record .= '.'.pql_maybe_idna_decode($dns_domain_name).'.';
+								}
+
+								if($TYPE == 'PTR') {
+									unset($rev);
+
+									// '168.192.in-addr.arpa' => Remove the '.in-addr.arpa' part
+									$zone = preg_replace('/\.in-addr\.arpa/', '', $data["ZONE"]);
+
+									// Reverse what's left => '192.168'
+									$tmp = split('\.', $zone);
+									$count = count($tmp);
+									for($i=$count-1; $tmp[$i]; $i--) {
+										$rev .= $tmp[$i];
+										if($tmp[$i-1])
+											$rev .= ".";
+									}
+
+									// Add what's missing in reverse order => '192.168'+'.1.10'
+									$tmp = split('\.', $record);
+									for($i=3; $i >= $count; $i--) {
+										$rev .= '.'.$tmp[$i];
+									}
+
+									$record = $rev;
 								}
 ?>
       <tr class="<?php pql_format_table(); ?>">

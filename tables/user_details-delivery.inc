@@ -3,7 +3,7 @@
     <th colspan="2" align="left"><?=$LANG->_('Delivery mode')?></th></th>
 <?php	$deliverymode = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_MODE"));
 		if(!is_array($deliverymode))
-			$deliverymode = array($deliverymode);	 
+			$deliverymode = array($deliverymode);
 	    $class = pql_format_table(0);
 
 		if(empty($deliverymode)) {
@@ -32,6 +32,15 @@
 
 				$new_tr = 1;
 			} // end of foreach
+
+			$deliveryprog = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_PROGRAM"));
+			if($deliveryprog and in_array('nolocal', $deliverymode)) {
+?>
+      <tr>
+        <td class="title"><?=$LANG->_('Mail delivery program')?></td>
+        <td class="<?=pql_format_table()?>"><?=$deliveryprog?></td>
+      </tr>
+<?php		}
 		} // end of if-else
 ?>
 

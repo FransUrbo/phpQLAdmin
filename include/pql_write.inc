@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.20.2.2 2005-03-27 14:15:11 turbo Exp $
+// $Id: pql_write.inc,v 2.20.2.6 2005-05-13 14:24:20 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -13,6 +13,8 @@
 // {{{ pql_write_add(linkid, dn, entry, type, caller)
 // ADD an object - called with an 'ldif' for modification.
 function pql_write_add($linkid, $dn, $entry, $type, $caller) {
+	$dn = pql_maybe_encode(urldecode($dn));
+
 	// Verify that the object have what it needs to be able to be added
 	$entry = pql_validate_object($linkid, $dn, $entry, $type);
 
@@ -53,6 +55,7 @@ function pql_write_mod($linkid, $dn, $entry, $caller = NULL, $count = 0) {
 	$dn = urldecode($dn);
 	if(eregi("^dNSTTL=", $dn))
 	  $dn = pql_recreate_dnsttl($dn);
+	$dn = pql_maybe_encode($dn);
 
 	$count++;
 
@@ -83,9 +86,10 @@ function pql_write_mod($linkid, $dn, $entry, $caller = NULL, $count = 0) {
 				$new = pql_missing_objectclasses($linkid, $dn, $entry);
 				if($new and !is_array($new))
 				  $new = array($new);
-				
+
 				// Combine the old with the new.
-				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_uniq($old + $new);
+				$old = pql_add2array($old, $new);
+				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_uniq($old);
 				
 				// Recursion... Only try five times...
 				if($count >= 6) { // The very first time $count=1, so...
@@ -130,6 +134,10 @@ function pql_write_ren($linkid, $old, $parent, $new, $keepold = TRUE) {
 	echo "Renaming<br>'<b>$old</b>'<br>to<br>'<b>$new,$parent</b>'<br>";
 	return true;
   } else {
+	$old = pql_maybe_encode($old);
+	$new = pql_maybe_encode($new);
+	$parent = pql_maybe_encode($parent);
+
 	if(ldap_rename($linkid, $old, $new, $parent, $keepold))
 	  return true;
   }
@@ -278,6 +286,12 @@ function pql_modify_attribute($linkid, $dn, $attrib, $old, $new) {
 
 	// {{{ Do modifications
 	if(pql_write_mod($linkid, $dn, $object, 'pql_modify_attribute')) {
+		// Object has changed && we've changed our own password -> update the password in the session!
+ 		if((lc($dn) == lc($_SESSION["USER_DN"])) and ($attrib == pql_get_define("PQL_ATTR_PASSWD"))) {
+		  $_SESSION["USER_PASS"] = $_SESSION["NEW_PASS"];
+		  unset($_SESSION["NEW_PASS"]);
+		}
+
 		// Object has changed -> remove the cached version
 		pql_cache_userentry_remove($dn);
 
@@ -367,7 +381,9 @@ function pql_user_add($ldap_linkid, $domain, $dn, $entry, $type, $branch) {
 	// }}}
     
 	// {{{ If this is a 'system' account, create the Group object
-	if($type == "system" and $entry[pql_get_define("PQL_ATTR_QMAILGID")]) {
+	if(in_array('posixaccount', $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")]) and
+	   $entry[pql_get_define("PQL_ATTR_QMAILGID")])
+	{
 		// Remember this for the NEW entry object...
 		$gidnr   = $entry[pql_get_define("PQL_ATTR_QMAILGID")];
 		$rdnattr = $entry[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)];
@@ -414,6 +430,7 @@ function pql_user_add($ldap_linkid, $domain, $dn, $entry, $type, $branch) {
 // Delete a user from the LDAP database
 function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 	$linkid = $ldap->ldap_linkid;
+	$user = pql_maybe_encode(urldecode($user));
 
 	if(!pql_get_dn($ldap->ldap_linkid, $user, '(objectclass=*)', 'BASE'))
 	  // user does not exist
@@ -517,6 +534,7 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 // {{{ pql_domain_del(ldap, domain, delete_forwards)
 // Removes a domain with all listed users
 function pql_domain_del($ldap, $domain, $delete_forwards) {
+	$domain = pql_maybe_encode(urldecode($domain));
 	$linkid = $ldap->ldap_linkid;
 
 	// Make sure that the logged in user isn't located under the

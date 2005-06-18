@@ -2,7 +2,7 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.35.2.1 2005-03-17 19:37:40 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.35.2.2 2005-04-17 10:08:51 turbo Exp $
 
 // {{{ locals_check(type)
 function locals_check($type) {
@@ -158,7 +158,7 @@ function locals_save($type, $host) {
 											pql_get_define("PQL_ATTR_LOCALS"));
 				if(is_array($locals)) {
 					foreach($locals as $local) {
-						// In the RCPTHosts configured for the host, do we have what we're looking for?
+						// In the 'locals' configured for the host, do we have what we're looking for?
 						if($local == $_REQUEST["set"])
 						  if($type == 'add')
 							$modify_host = 0; // The domain exists, don't add
@@ -198,16 +198,16 @@ function locals_save($type, $host) {
 	  // {{{ Delete entry
       case "del":
 		foreach($HOSTS as $host) {
-			// remove specified domain from rcpthosts in host object
+			// remove specified domain from locals in host object
 			if(pql_modify_attribute($_pql_control->ldap_linkid,
 									pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-									pql_get_define("PQL_ATTR_RCPTHOSTS"), $_REQUEST["set"], ''))
+									pql_get_define("PQL_ATTR_LOCALS"), $_REQUEST["set"], ''))
 			  $msg = pql_complete_constant($LANG->_('Successfully removed %domain% from %what%'),
-										   array('what'   => pql_get_define("PQL_ATTR_RCPTHOSTS"),
+										   array('what'   => pql_get_define("PQL_ATTR_LOCALS"),
 												 'domain' => $_REQUEST["set"]));
 			else
 			  $msg = pql_complete_constant($LANG->_('Failed to remove %domain% from %what%'),
-										   array('what'   => pql_get_define("PQL_ATTR_RCPTHOSTS"),
+										   array('what'   => pql_get_define("PQL_ATTR_LOCALS"),
 												 'domain' => $_REQUEST["set"]))
 				. ": " . pql_format_error(0);
 		}

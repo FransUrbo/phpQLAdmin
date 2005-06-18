@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailalternateaddress (emailaddress alias)
-// $Id: attrib.mailalternateaddress.inc,v 2.31.2.1 2005-03-17 08:23:02 turbo Exp $
+// $Id: attrib.mailalternateaddress.inc,v 2.31.2.2 2005-04-20 19:46:34 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -215,7 +215,7 @@ function attribute_save($type) {
 		}
 		$OLD[$attrib] = $values;
 
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], $attrib, '', $OLD))
+		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], '', '', $OLD))
 		  $success = 1;
 
 		if(($attrib == pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR")) or
