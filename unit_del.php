@@ -1,6 +1,6 @@
 <?php
 // delete a domain and all users within
-// $Id: unit_del.php,v 2.19 2005-06-09 15:05:36 turbo Exp $
+// $Id: unit_del.php,v 2.20 2005-06-22 13:37:13 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -29,20 +29,20 @@ include($_SESSION["path"]."/header.html");
 
       // delete the unit 
       if(pql_remove_unit($_pql->ldap_linkid, $domain, $unit)) {
-	  // update locals if control patch is enabled
-	  if(pql_control_update_domains($_pql, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"])) {
+		// update locals if control patch is enabled
+		if(pql_control_update_domains($_pql, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"])) {
 	      // message ??
-	  }
+		}
 	  
-	  // redirect to home page
-	  $msg = $LANG->_('Successfully removed the domain');
-	  $msg = urlencode($msg);
-	  pql_header("home.php?msg=$msg&rlnb=1");
+		// redirect to home page
+		$msg = $LANG->_('Successfully removed the domain');
+		$msg = urlencode($msg);
+		pql_header("home.php?msg=$msg&rlnb=1");
       } else {
-	  $msg = $LANG->_('Failed to remove the domain') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
-	  // redirect to domain detail page
-	  $msg = urlencode($msg);
-	  pql_header("domain_detail.php?domain=$domain&unit=$unit&msg=$msg");
+		$msg = $LANG->_('Failed to remove the domain') . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
+		// redirect to domain detail page
+		$msg = urlencode($msg);
+		pql_header("domain_detail.php?domain=$domain&unit=$unit&msg=$msg");
       }
   } // end of if
 ?>
