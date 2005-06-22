@@ -2,7 +2,7 @@
 // control attribute plugin for
 // maxrcptcount (maximum number of RCPT TO's)
 //
-// $Id: attrib.control.maxrcptcount.inc,v 2.16 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.control.maxrcptcount.inc,v 2.17 2005-06-22 13:58:33 turbo Exp $
 
 // {{{ maxrcptcount_check(type)
 function maxrcptcount_check($type) {
@@ -46,21 +46,15 @@ function maxrcptcount_print_view($host) {
 
 	// init data
 	maxrcptcount_init($host);
-
-	// set empty field to "not set"
-	if($_REQUEST["maxrcptcount"] == "" or $_REQUEST["maxrcptcount"] == 0)
-	  $_REQUEST["maxrcptcount"] = "unlimited";
 ?>
 
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">maxrcptcount (<?=$LANG->_('Maximum number of RCPT TO\'s')?>)</th>
-      <tr class="<?php pql_format_table(); ?>">
+<?php $class=pql_format_table(0); ?>
+      <tr>
         <td class="title"><?=$LANG->_('Maximum RCPT TO\'s')?></td>
-        <td><?=$_REQUEST["maxrcptcount"]?></td>
-      </tr>
-
-      <tr class="subtitle">
-        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=maxrcptcount"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
+        <td class="<?=$class?>"><?php if($_REQUEST["maxrcptcount"]) { echo $_REQUEST["maxrcptcount"]; } else { echo '<i>'.$LANG->_('unlimited').'</i>'; }?></td>
+        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_MAXRCPTCOUNT")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_MAXRCPTCOUNT")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -87,6 +81,7 @@ function maxrcptcount_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="type"   value="modify">
     <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
@@ -107,7 +102,7 @@ function maxrcptcount_save($type, $host) {
 			// save entries
 			if(pql_modify_attribute($_pql_control->ldap_linkid,
 									pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-									pql_get_define("PQL_ATTR_MAXRCPTCOUNT"), '', $_REQUEST["maxrcptcount"]))
+									pql_get_define("PQL_ATTR_MAXRCPTCOUNT"), 1, $_REQUEST["maxrcptcount"]))
 			  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										   array('what' => $LANG->_('maxrcptcount options')));
 			else

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // bigbrother (max number of bytes in message)
 //
-// $Id: attrib.control.bigbrother.inc,v 2.7 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.control.bigbrother.inc,v 2.8 2005-06-22 13:58:33 turbo Exp $
 
 // {{{ bigbrother_check(type)
 function bigbrother_check($type) {
@@ -23,8 +23,10 @@ function bigbrother_init($host) {
 												pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 												pql_get_define("PQL_ATTR_BIGBROTHER"));
 
-	if(is_null($_REQUEST["bigbrother"]))
+	if(!$_REQUEST["bigbrother"])
 	  return true;
+	elseif(!is_array($_REQUEST["bigbrother"]))
+	  $_REQUEST["bigbrother"] = array($_REQUEST["bigbrother"]);
 }
 // }}}
 
@@ -41,12 +43,13 @@ function bigbrother_print_view($host) {
       <tr class="title">
         <td><?=$LANG->_('Mail sent to/from')?></td>
         <td><?=$LANG->_('Copy to')?></td>
+        <td></td>
       </tr>
 <?php
 	if(!is_array($_REQUEST["bigbrother"])) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td colspan="2"><?=$LANG->_('Not set')?></td>
+        <td colspan="3"><?=$LANG->_('Not set')?></td>
       </tr>
 <?php
 	} else {
@@ -56,13 +59,16 @@ function bigbrother_print_view($host) {
       <tr class="<?php pql_format_table(); ?>">
         <td><?=$address[0]?></td>
         <td><?=$address[1]?></td>
+        <td align="right">
+          <a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_BIGBROTHER")?>&type=del&submit=1&<?=pql_get_define("PQL_ATTR_BIGBROTHER")?>=<?=urldecode($addresses)?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Remove address')?>"></a>
+        </td>
       </tr>
 <?php
 		} // end foreach
 	} // end if is_array
 ?>
       <tr class="subtitle">
-        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=bigbrother"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
+        <td colspan="3"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_BIGBROTHER")?>"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Add address')?></a></td>
       </tr>
     </th>
   </table>
@@ -74,11 +80,12 @@ function bigbrother_print_view($host) {
 // {{{ bigbrother_print_form(void)
 function bigbrother_print_form() {
 	global $error, $LANG;
-
-//	if(($_REQUEST["bbcount"] < count($_REQUEST["bigbrother"]) - 1) and count($_REQUEST["bbmail"]) != 0)
-//	  $_REQUEST["bbcount"] = count($_REQUEST["bigbrother"]) - 1;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+<?php for($i = 0; $_REQUEST["bigbrother"][$i]; $i++) { ?>
+    <input type="hidden" name="bigbrother[<?=$i?>]" value="<?=$_REQUEST["bigbrother"][$i]?>">
+<?php } ?>
+
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="2" align="left">bigbrother (<?=$LANG->_('Global mail forwarding/surveillance')?>)</th>
         <tr class="title">
@@ -86,36 +93,15 @@ function bigbrother_print_form() {
           <td><?=$LANG->_('Copy to')?></td>
         </tr>
 
-<?php if(is_array($_REQUEST["bigbrother"])) {
-		for($i=0; $_REQUEST["bigbrother"][$i]; $i++) {
-			$line = split(':', $_REQUEST["bigbrother"][$i]);
-?>
         <tr class="<?php pql_format_table(); ?>">
-          <td><input type="text" name="bbmail_to[<?=$i?>]" value="<?=$line[0]?>"></td>
-          <td><input type="text" name="bbmail_cpy[<?=$i?>]" value="<?=$line[1]?>"></td>
-        </tr>
-
-<?php	}
-	  } else {
-		  $i=0;
-	  }
-?>
-        <tr class="<?php pql_format_table(); ?>">
-          <td><input type="text" name="bbmail_to[0]"></td>
-          <td><input type="text" name="bbmail_cpy[0]"></td>
-        </tr>
-
-        <tr class="subtitle">
-          <td colspan="2"><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&bbcount=<?=($_REQUEST["bbcount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
-        </tr>
-
-        <tr class="subtitle">
-          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('To delete an address for surveillance, remove the value and save')?>.</td>
+          <td><input type="text" name="bbmail_to"></td>
+          <td><input type="text" name="bbmail_cpy"></td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="type"   value="modify">
     <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
@@ -134,11 +120,13 @@ function bigbrother_save($type, $host)  {
 	  case "modify":
 	  case "add":
 		// save entries
-		for($i=0; $_REQUEST["bbmail_to"][$i] and $_REQUEST["bbmail_cpy"][$i]; $i++)
-		  $entry[] = $_REQUEST["bbmail_to"][$i] . ":" . $_REQUEST["bbmail_cpy"][$i];
+		for($i=0; $_REQUEST["bigbrother"][$i]; $i++)
+		  $entry[] = $_REQUEST["bigbrother"][$i];
+		$entry[] = $_REQUEST["bbmail_to"].":".$_REQUEST["bbmail_cpy"];
 
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"], '', '', $entry))
+								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								pql_get_define("PQL_ATTR_BIGBROTHER"), 1, $entry))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('bigbrother options')));
 		else
@@ -148,6 +136,21 @@ function bigbrother_save($type, $host)  {
 
 		attribute_forward($msg);
 		break;
+
+	  case "del":
+		if(pql_modify_attribute($_pql_control->ldap_linkid,
+								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								pql_get_define("PQL_ATTR_BIGBROTHER"), $_REQUEST["bigbrother"], ''))
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+									   array('what' => $LANG->_('Blocking list')));
+		else
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+									   array('what' => $LANG->_('Blocking list')))
+			. ": " . pql_format_error(0);
+
+		attribute_forward($msg);
+		break;
+
 	  default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
 								  array('type' => $type, 'file' => __FILE__)));

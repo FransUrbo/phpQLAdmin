@@ -4,7 +4,7 @@
 // or, if using new style quota
 // 	defaultQuotaSize and defaultQuotaCount
 //
-// $Id: attrib.control.ldapdefaultquota.inc,v 2.19 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.control.ldapdefaultquota.inc,v 2.20 2005-06-22 13:58:33 turbo Exp $
 
 // {{{ ldapdefaultquota_check(type)
 function ldapdefaultquota_check($type) {
@@ -100,20 +100,18 @@ function ldapdefaultquota_print_view($host) {
       defaultQuotaSize, defaultQuotaCount
 <?php } ?>
       (<?=$LANG->_('Default quota')?>)</th>
-      <tr class="<?php pql_format_table(); ?>">
+<?php $class=pql_format_table(0); ?>
+      <tr>
         <td class="title"><?=$LANG->_('Maximum number of mails')?></td>
-        <td><?=$quota["maxmails"]?></td>
+        <td class="<?=$class?>"><?=$quota["maxmails"]?></td>
+        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change option').' '.pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA")?>"></a></td>
       </tr>
 
-      <tr class="<?php pql_format_table(); ?>">
+<?php $class=pql_format_table(0); ?>
+      <tr>
         <td class="title"><?=$LANG->_('Maximum size of mailbox')?></td>
-        <td><?=$quota["maxsize"]?></td>
-      </tr>
-
-      <tr class="subtitle">
-        <td colspan="2">
-          <a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=ldapdefaultquota"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a>
-        </td>
+        <td class="<?=$class?>"><?=$quota["maxsize"]?></td>
+        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change option').' '.pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -154,6 +152,7 @@ function ldapdefaultquota_print_form($type = "modify") {
     </table>
 
     <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="type"   value="modify">
     <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
@@ -197,7 +196,8 @@ function ldapdefaultquota_save($type, $host) {
 		break;
 
       case "default":
-		unset($mailquota);
+		$_REQUEST["maxsize"] = 0;
+		$_REQUEST["maxmails"] = 0;
 
 		$msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									 array('what' => $LANG->_('quota'),
@@ -212,17 +212,17 @@ function ldapdefaultquota_save($type, $host) {
 
 		if($_SESSION["OLD_STYLE_QUOTA"])  {
 			// Set the old style quota value
-			if(!pql_modify_attribute($_pql_control->ldap_linkid, $dn, pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"), '', $mailquota))
+			if(!pql_modify_attribute($_pql_control->ldap_linkid, $dn, pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"), 1, $mailquota))
 			  $failed = 1;
 		}
 
 		if($_SESSION["NEW_STYLE_QUOTA"])  {
 			// Set the new style quota values
-			if(!pql_modify_attribute($_pql_control->ldap_linkid, $dn, pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA_SIZE"), '',
+			if(!pql_modify_attribute($_pql_control->ldap_linkid, $dn, pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA_SIZE"), 1,
 									 $_REQUEST["maxsize"] * 1024))
 			  $failed = 1;
 
-			if(!pql_modify_attribute($_pql_control->ldap_linkid, $dn, pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA_COUNT"), '',
+			if(!pql_modify_attribute($_pql_control->ldap_linkid, $dn, pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA_COUNT"), 1,
 									 $_REQUEST["maxmails"]))
 			  $failed = 1;
 		}

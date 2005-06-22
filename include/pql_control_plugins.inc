@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control plugins)
 //
-// $Id: pql_control_plugins.inc,v 2.9 2005-05-26 15:53:18 turbo Exp $
+// $Id: pql_control_plugins.inc,v 2.10 2005-06-22 13:58:33 turbo Exp $
 //
 
 // ----------------------------
@@ -13,8 +13,8 @@
 
 // qmail-ldap specific options
 pql_plugin_register(pql_get_define("PQL_ATTR_LDAPSERVER"),
+					"LDAP Core",
 					"attrib.control.ldapserver.inc",
-					"q-l ldap core",
 					array(pql_get_define("PQL_ATTR_LDAPSERVER"),
 						  pql_get_define("PQL_ATTR_LDAPBASEDN"),
 						  pql_get_define("PQL_ATTR_LDAPLOGIN"),
@@ -23,181 +23,182 @@ pql_plugin_register(pql_get_define("PQL_ATTR_LDAPSERVER"),
 						  pql_get_define("PQL_ATTR_GROUP_PASSWD")));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_LDAPREBIND"),
+					"LDAP Core",
 					"attrib.control.ldaprebind.inc",
-					"q-l ldap core",
 					pql_get_define("PQL_ATTR_LDAPREBIND"));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_LDAPCLUSTER"),
+					"LDAP Clustering",
 					"attrib.control.ldapcluster.inc",
-					"q-l ldap cluster",
 					pql_get_define("PQL_ATTR_LDAPCLUSTER"));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"),
+					"Mail Deliveries",
 					"attrib.control.ldapdefaultquota.inc",
-					"q-l mailbox",
 					pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_LDAPMESSAGESTORE"),
+					"Mail Deliveries",
 					"attrib.control.ldapmessagestore.inc",
-					"q-l mailbox",
 					pql_get_define("PQL_ATTR_LDAPMESSAGESTORE"));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_DIRMAKER"),
+					"Mail Deliveries",
 					"attrib.control.dirmaker.inc",
-					"q-l mailbox",
 					pql_get_define("PQL_ATTR_DIRMAKER"));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY"),
+					"Mail Deliveries",
 					"attrib.control.ldaplocaldelivery.inc",
-					"q-l mailbox",
 					pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY"));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_QUOTA_WARNING"),
+					"Mail Deliveries",
 					"attrib.control.quotawarning.inc",
-					"q-l mailbox",
 					pql_get_define("PQL_ATTR_QUOTA_WARNING"));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"),
+					"Mail Deliveries",
 					"attrib.control.ldapdefaultdotmode.inc",
-					"q-l mailbox",
 					pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_LDAPUID"),
+					"Virtual User",
 					"attrib.control.ldapuid.inc",
-					"q-l virtual user",
 					array(pql_get_define("PQL_ATTR_LDAPUID"),
 						  pql_get_define("PQL_ATTR_LDAPGID")));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_CUSTOMBOUNCETEXT"),
+					"Mail Bouncing",
 					"attrib.control.custombouncetext.inc",
-					"q-l bounce",
 					pql_get_define("PQL_ATTR_CUSTOMBOUNCETEXT"));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_TARPITCOUNT"),
+					"Spam Control",
 					"attrib.control.tarpitcount.inc",
-					"q-l spam control",
 					array(pql_get_define("PQL_ATTR_TARPITCOUNT"),
 						  pql_get_define("PQL_ATTR_TARPITDELAY")));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_MAXRCPTCOUNT"),
+					"Spam Control",
 					"attrib.control.maxrcptcount.inc",
-					"q-l spam control",
 					pql_get_define("PQL_ATTR_MAXRCPTCOUNT"));
 
 // core qmail specific options
 pql_plugin_register(pql_get_define("PQL_ATTR_BOUNCEFROM"),
+					"Mail Bouncing",
 					"attrib.control.bouncefrom.inc",
-					"q-l bounce",
 					array(pql_get_define("PQL_ATTR_BOUNCEFROM"),
 						  pql_get_define("PQL_ATTR_BOUNCEHOST")));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_CONCURRENCYLOCAL"),
-					"attrib.control.concurrencylocal.inc",
 					"qmail-send",
+					"attrib.control.concurrencylocal.inc",
 					array(pql_get_define("PQL_ATTR_CONCURRENCYLOCAL"),
 						  pql_get_define("PQL_ATTR_CONCURRENCYREMOTE")));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_DOUBLEBOUNCEHOST"),
+					"Mail Bouncing",
 					"attrib.control.doublebouncehost.inc",
-					"q-l bounce",
 					array(pql_get_define("PQL_ATTR_DOUBLEBOUNCEHOST"),
 						  pql_get_define("PQL_ATTR_DOUBLEBOUNCETO")));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_DATABYTES"),
-					"attrib.control.databytes.inc",
 					"qmail-smtpd",
+					"attrib.control.databytes.inc",
 					pql_get_define("PQL_ATTR_DATABYTES"));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_QUEUELIFETIME"),
-					"attrib.control.queuelifetime.inc",
 					"qmail-send",
+					"attrib.control.queuelifetime.inc",
 					pql_get_define("PQL_ATTR_QUEUELIFETIME"));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_SMTPROUTES"),
-					"attrib.control.smtproutes.inc",
 					"qmail-remote",
+					"attrib.control.smtproutes.inc",
 					pql_get_define("PQL_ATTR_SMTPROUTES"));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_LOCALS"),
+					"Accepted domains",
 					"attrib.control.locals.inc",
-					pql_get_define("PQL_ATTR_LOCALS"),
 					pql_get_define("PQL_ATTR_LOCALS"));
 
+pql_plugin_register(pql_get_define("PQL_ATTR_RCPTHOSTS"),
+					"Accepted domains",
+					"attrib.control.rcpthosts.inc",
+					pql_get_define("PQL_ATTR_RCPTHOSTS"));
+
 pql_plugin_register(pql_get_define("PQL_ATTR_DEFAULTDOMAIN"),
+					"Mail Preprocessing",
 					"attrib.control.defaultdomain.inc",
-					"qmail-inject",
 					array(pql_get_define("PQL_ATTR_DEFAULTDOMAIN"),
-						  pql_get_define("PQL_ATTR_DEFAULTHOST")));
+						  pql_get_define("PQL_ATTR_DEFAULTHOST"),
+						  pql_get_define("PQL_ATTR_PLUSDOMAIN")));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_BADMAILFROM"),
-					"attrib.control.badmailfrom.inc",
 					"qmail-smtpd",
+					"attrib.control.badmailfrom.inc",
 					pql_get_define("PQL_ATTR_BADMAILFROM"));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_ENVNOATHOST"),
-					"attrib.control.envnoathost.inc",
 					"qmail-send",
+					"attrib.control.envnoathost.inc",
 					pql_get_define("PQL_ATTR_ENVNOATHOST"));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_HELOHOST"),
-					"attrib.control.helohost.inc",
 					"qmail-remote",
+					"attrib.control.helohost.inc",
 					pql_get_define("PQL_ATTR_HELOHOST"));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_IDHOST"),
+					"Mail Preprocessing",
 					"attrib.control.idhost.inc",
-					"qmail-inject",
 					pql_get_define("PQL_ATTR_IDHOST"));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_LOCALIPHOST"),
-					"attrib.control.localiphost.inc",
 					"qmail-smtpd",
+					"attrib.control.localiphost.inc",
 					pql_get_define("PQL_ATTR_LOCALIPHOST"));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_PERCENTHACK"),
-					"attrib.control.percenthack.inc",
 					"qmail-send",
+					"attrib.control.percenthack.inc",
 					pql_get_define("PQL_ATTR_PERCENTHACK"));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_TIMEOUTSMTPD"),
-					"attrib.control.timeoutsmtpd.inc",
 					"qmail-smtpd",
+					"attrib.control.timeoutsmtpd.inc",
 					pql_get_define("PQL_ATTR_TIMEOUTSMTPD"));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_TIMEOUTCONNECT"),
-					"attrib.control.timeoutconnect.inc",
 					"qmail-remote",
+					"attrib.control.timeoutconnect.inc",
 					array(pql_get_define("PQL_ATTR_TIMEOUTCONNECT"),
 						  pql_get_define("PQL_ATTR_TIMEOUTREMOTE")));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_SMTPGREETING"),
-					"attrib.control.smtpgreeting.inc",
 					"qmail-smtpd",
+					"attrib.control.smtpgreeting.inc",
 					pql_get_define("PQL_ATTR_SMTPGREETING"));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_QMQPSERVERS"),
+					"Mail Queueing",
 					"attrib.control.qmqpservers.inc",
-					"qmail-qmqpc",
 					pql_get_define("PQL_ATTR_QMQPSERVERS"));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_RELAYMAILFROM"),
+					"Mail Relaying",
 					"attrib.control.relaymailfrom.inc",
-					"q-l relay",
 					pql_get_define("PQL_ATTR_RELAYMAILFROM"));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_BADRCPTTO"),
+					"Spam Control",
 					"attrib.control.badrcptto.inc",
-					"q-l spam control",
 					pql_get_define("PQL_ATTR_BADRCPTTO"));
 
-pql_plugin_register(pql_get_define("PQL_ATTR_RCPTHOSTS"),
-					"attrib.control.rcpthosts.inc",
-					pql_get_define("PQL_ATTR_RCPTHOSTS"),
-					pql_get_define("PQL_ATTR_RCPTHOSTS"));
-
 pql_plugin_register("simscan",
+					"Simscan Setup",
 					"attrib.control.simscan.inc",
-					"simscan",
 					array(pql_get_define("PQL_ATTR_SIMSCAN_SPAM"),
 						  pql_get_define("PQL_ATTR_SIMSCAN_CLAM"),
 						  pql_get_define("PQL_ATTR_SIMSCAN_TROPHIE"),
@@ -213,101 +214,101 @@ if($_SESSION["NEW_STYLE_QUOTA"]) {
 	// ----- LDAP stuff
 
 	pql_plugin_register(pql_get_define("PQL_ATTR_LDAPTIMEOUT"),
+						"LDAP Core",
 						"attrib.control.ldaptimeout.inc",
-						"q-l ldap core",
 						pql_get_define("PQL_ATTR_LDAPTIMEOUT"));
 	
 	// ----- Cluster stuff
 
 	pql_plugin_register(pql_get_define("PQL_ATTR_LDAPCLUSTER_HOSTS"),
+						"LDAP Clustering",
 						"attrib.control.ldapclusterhosts.inc",
-						"q-l ldap cluster",
 						pql_get_define("PQL_ATTR_LDAPCLUSTER_HOSTS"));
 	
 	pql_plugin_register(pql_get_define("PQL_ATTR_LDAPCLUSTER_COOKIE"),
+						"LDAP Clustering",
 						"attrib.control.ldapclustercookie.inc",
-						"q-l ldap cluster",
 						pql_get_define("PQL_ATTR_LDAPCLUSTER_COOKIE"));
 
 	// ----- SMTP stuff
 
 	pql_plugin_register(pql_get_define("PQL_ATTR_OUTGOINGIP"),
-						"attrib.control.outgoingip.inc",
 						"qmail-smtpd",
+						"attrib.control.outgoingip.inc",
 						pql_get_define("PQL_ATTR_OUTGOINGIP"));
 
 	pql_plugin_register(pql_get_define("PQL_ATTR_GOODADDRESS"),
-						"attrib.control.goodaddress.inc",
 						"qmail-smtpd",
+						"attrib.control.goodaddress.inc",
 						pql_get_define("PQL_ATTR_GOODADDRESS"));
 
 	// ----- QMQP stuff
 
 	pql_plugin_register(pql_get_define("PQL_ATTR_QMQPCIP"),
+						"Mail Queueing",
 						"attrib.control.qmqpcip.inc",
-						"qmail-qmqpc",
 						pql_get_define("PQL_ATTR_QMQPCIP"));
 
 	// ----- Other/Misc stuff
 
 	pql_plugin_register(pql_get_define("PQL_ATTR_BIGBROTHER"),
-						"attrib.control.bigbrother.inc",
 						"qmail-send",
+						"attrib.control.bigbrother.inc",
 						pql_get_define("PQL_ATTR_BIGBROTHER"));
 
 	pql_plugin_register(pql_get_define("PQL_ATTR_RBLLIST"),
+						"Spam Control",
 						"attrib.control.rbllist.inc",
-						"q-l spam control",
 						pql_get_define("PQL_ATTR_RBLLIST"));
 
 	pql_plugin_register(pql_get_define("PQL_ATTR_BOUNCESIZE"),
+						"Mail Bouncing",
 						"attrib.control.bouncesize.inc",
-						"q-l bounce",
 						pql_get_define("PQL_ATTR_BOUNCESIZE"));
 
 	// ----- PopBeforeSmtp stuff
 
 	pql_plugin_register(pql_get_define("PQL_ATTR_PBS_SERVERS"),
+						"POP before SMTP",
 						"attrib.control.pbsservers.inc",
-						"q-l popbeforesmtp",
 						pql_get_define("PQL_ATTR_PBS_SERVERS"));
 
 	pql_plugin_register(pql_get_define("PQL_ATTR_PBS_IP"),
+						"POP before SMTP",
 						"attrib.control.pbsip.inc",
-						"q-l popbeforesmtp",
 						pql_get_define("PQL_ATTR_PBS_IP"));
 
 	pql_plugin_register(pql_get_define("PQL_ATTR_PBS_PORT"),
+						"POP before SMTP",
 						"attrib.control.pbsport.inc",
-						"q-l popbeforesmtp",
 						pql_get_define("PQL_ATTR_PBS_PORT"));
 
 	pql_plugin_register(pql_get_define("PQL_ATTR_PBS_SECRET"),
+						"POP before SMTP",
 						"attrib.control.pbssecret.inc",
-						"q-l popbeforesmtp",
 						pql_get_define("PQL_ATTR_PBS_SECRET"));
 
 	pql_plugin_register(pql_get_define("PQL_ATTR_PBS_CACHESIZE"),
+						"POP before SMTP",
 						"attrib.control.pbscachesize.inc",
-						"q-l popbeforesmtp",
 						pql_get_define("PQL_ATTR_PBS_CACHESIZE"));
 
 	pql_plugin_register(pql_get_define("PQL_ATTR_PBS_TIMEOUT"),
+						"POP before SMTP",
 						"attrib.control.pbstimeout.inc",
-						"q-l popbeforesmtp",
 						pql_get_define("PQL_ATTR_PBS_TIMEOUT"));
 
 	pql_plugin_register(pql_get_define("PQL_ATTR_PBS_ENV"),
+						"POP before SMTP",
 						"attrib.control.pbsenv.inc",
-						"q-l popbeforesmtp",
 						pql_get_define("PQL_ATTR_PBS_ENV"));
 }
 
 // ----- Fix for bug 257
 // : Manually added rcpthost values not keept with a manual replication
 pql_plugin_register(pql_get_define("PQL_ATTR_NONPRIMARY_RCPT_HOSTS"),
+					"Accepted domains",
 					"attrib.control.nonprimmx.inc",
-					pql_get_define("PQL_ATTR_NONPRIMARY_RCPT_HOSTS"),
 					pql_get_define("PQL_ATTR_NONPRIMARY_RCPT_HOSTS"));
 
 // List all registred attributes and their files

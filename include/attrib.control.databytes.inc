@@ -2,7 +2,7 @@
 // control attribute plugin for
 // databytes (max number of bytes in message)
 //
-// $Id: attrib.control.databytes.inc,v 2.18 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.control.databytes.inc,v 2.19 2005-06-22 13:58:33 turbo Exp $
 
 // {{{ databytes_check(type)
 function databytes_check($type) {
@@ -40,25 +40,14 @@ function databytes_print_view($host) {
 
 	// init data
 	databytes_init($host);
-
-	// set empty field to "not set"
-	if($_REQUEST["databytes"] == "" or $_REQUEST["databytes"] == 0)
-	  $_REQUEST["databytes"] = "unlimited";
-	else {
-		$hr_databytes = "(" . pql_control_print_filesize($databytes) . ")";
-		$_REQUEST["databytes"] .= " ".$LANG->_('Bytes');
-	}
-	
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">databytes (<?=$LANG->_('Maximum number databytes in message')?>)</th>
-      <tr class="<?php pql_format_table(); ?>">
+<?php $class=pql_format_table(0); ?>
+      <tr>
         <td class="title"><?=$LANG->_('Maximum')?></td>
-        <td><?=$_REQUEST["databytes"]." ".$hr_databytes?></td>
-      </tr>
-
-      <tr class="subtitle">
-        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=databytes"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
+        <td class="<?=$class?>"><?php if($_REQUEST["databytes"]) { echo $_REQUEST["databytes"].' '.pql_control_print_filesize($databytes); } else { echo '<i>'.$LANG->_('unlimited').'</i>'; }?></td>
+        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_DATABYTES")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_DATABYTES")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -85,6 +74,7 @@ function databytes_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="type"   value="modify">
     <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
     <input type="hidden" name="view"   value="<?=$view?>">
@@ -105,7 +95,7 @@ function databytes_save($type, $host) {
 		// save entries
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_DATABYTES"), '', $_REQUEST["databytes"]))
+								pql_get_define("PQL_ATTR_DATABYTES"), 1, $_REQUEST["databytes"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('databytes options')));
 		else

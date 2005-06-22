@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldaplocaldelivery (search for local account, if ldap search is not successful)
 //
-// $Id: attrib.control.ldaplocaldelivery.inc,v 2.16 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.control.ldaplocaldelivery.inc,v 2.17 2005-06-22 13:58:33 turbo Exp $
 
 // {{{ ldaplocaldelivery_check(type)
 function ldaplocaldelivery_check($type) {
@@ -32,23 +32,14 @@ function ldaplocaldelivery_print_view($host) {
 
 	// init data
 	ldaplocaldelivery_init($host);
-	
-	if($_REQUEST["ldaplocaldelivery"] == 0)
-	  $_REQUEST["ldaplocaldelivery"] = $LANG->_('Disabled. Don\'t lookup for local users if ldap lookup didn\'t match');
-	else
-	  $_REQUEST["ldaplocaldelivery"] = $LANG->_('Enabled. Lookup for local users if ldap lookup didn\'t match');
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="2" align="left">ldaplocaldelivery (<?=$LANG->_('Deliver locally if ldap didn\'t match a user')?>)</th>
-      <tr class="<?php pql_format_table(); ?>">
-        <td><?=$_REQUEST["ldaplocaldelivery"]?></td>
-      </tr>
-
-      <tr class="subtitle">
-        <td>
-          <a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=ldaplocaldelivery&set=1"><?=$LANG->_('Enable local lookup')?></a> |
-          <a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=ldaplocaldelivery&set=0"><?=$LANG->_('Disable local lookup')?></a>
-        </td>
+    <th colspan="3" align="left">ldaplocaldelivery (<?=$LANG->_('Deliver locally if ldap didn\'t match a user')?>)
+<?php $class=pql_format_table(0); ?>
+      <tr>
+        <td class="title"><?=$LANG->_('Local deliveries')?></td>
+        <td class="<?=$class?>"><?php if($_REQUEST["ldaplocaldelivery"]) { echo $LANG->_('Yes'); } else { echo $LANG->_('No'); }?></td>
+        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY")?>&<?=pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY")?>=<?php if($_REQUEST["ldaplocaldelivery"]) { echo "0"; } else { echo "1"; }?>&type=modify&submit=1"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -66,6 +57,7 @@ function ldaplocaldelivery_print_form() {
 // {{{ ldaplocaldelivery_save(type, host)
 function ldaplocaldelivery_save($type, $host) {
 	global $_pql_control, $LANG;
+	$attrib = $_REQUEST["attrib"];
 
 	switch($type) {
 	  case "modify":
@@ -73,7 +65,7 @@ function ldaplocaldelivery_save($type, $host) {
 		// save entries
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY"), '', $_REQUEST["set"]))
+								pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY"), 1, $_REQUEST[$attrib]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('ldaplocaldelivery options')));
 		else

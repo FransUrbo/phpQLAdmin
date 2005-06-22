@@ -2,7 +2,7 @@
 // control attribute plugin for
 // SimScan
 //
-// $Id: attrib.control.simscan.inc,v 2.1 2005-05-26 15:53:18 turbo Exp $
+// $Id: attrib.control.simscan.inc,v 2.2 2005-06-22 13:58:33 turbo Exp $
 
 // {{{ simscan_check(type)
 function simscan_check($type) {
@@ -139,6 +139,12 @@ function simscan_print_view($host) {
 		pql_format_table_single($_pql->ldap_linkid, $tbl_txt, $tbl_url, $_REQUEST["simscanattachmentsuffix"],
 								pql_get_define("PQL_ATTR_SIMSCAN_ATTACHMENTS"), $class);
 ?>
+      <tr class="<?php pql_format_table(); ?>">
+        <td colspan="4">
+          <img src="images/info.png" width="16" height="16" alt="" border="0">
+          <?=$LANG->_('QmailLDAP/Controls will NOT read/use these. You will have to have a script that extracts this information to use it.')?>
+        </td>
+      </tr>
     </th>
   </table>
 <?php

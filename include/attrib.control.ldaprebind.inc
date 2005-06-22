@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldaprebind (don't retrieve password, try to bind to dn)
 //
-// $Id: attrib.control.ldaprebind.inc,v 2.16 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.control.ldaprebind.inc,v 2.17 2005-06-22 13:58:33 turbo Exp $
 
 // {{{ ldaprebind_check(type)
 function ldaprebind_check($type) {
@@ -31,24 +31,15 @@ function ldaprebind_print_view($host) {
 	
 	// init data
 	ldaprebind_init($host);
-	
-	if($_REQUEST["ldaprebind"] == 0)
-	  $_REQUEST["ldaprebind"] = $LANG->_('Disabled, don\'t rebind, retrieve password (Default)');
-	else
-	  $_REQUEST["ldaprebind"] = $LANG->_('Enabled, rebind with retrieved DN, don\'t retrieve password');
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="2" align="left">ldaprebind (<?=$LANG->_('Rebind to LDAP server')?>)</th>
-      <tr class="<?php pql_format_table(); ?>">
-        <td><?=$_REQUEST["ldaprebind"]?></td>
+    <th colspan="3" align="left">ldaprebind (<?=$LANG->_('Rebind to LDAP server')?>)</th>
+<?php $class=pql_format_table(0); ?>
+      <tr class="<?=$class?>">
+        <td class="title"><?=$LANG->_('Do rebind')?></td>
+        <td class="<?=$class?>"><?php if($_REQUEST["ldaprebind"]) { echo $LANG->_('Yes'); } else { echo $LANG->_('No'); }?></td>
+        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPREBIND")?>&<?=pql_get_define("PQL_ATTR_LDAPREBIND")?>=<?php if($_REQUEST["ldaprebind"]) { echo "0"; } else { echo "1"; }?>&submit=1&type=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_LDAPREBIND")?>"></a></td>
       </tr>
-
-      <tr class="subtitle">
-        <td>
-          <a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=ldaprebind&set=1"><?=$LANG->_('Enable rebind')?></a> |
-          <a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=ldaprebind&set=0"><?=$LANG->_('Disable rebind')?></a>
-        </td>
-	  </tr>
     </th>
   </table>
 
@@ -59,13 +50,14 @@ function ldaprebind_print_view($host) {
 // {{{ ldaprebind_print_form(host)
 function ldaprebind_print_form($host) {
 	// don't print form, save directly
-	ldaprebind_save("modify", $_REQUEST["host"]);
+	ldaprebind_save("modify", $host);
 }
 // }}}
 
 // {{{ ldaprebind_save(type, host)
 function ldaprebind_save($type, $host) {
 	global $_pql_control, $LANG;
+	$attrib = $_REQUEST["attrib"];
 
 	switch($type) {
 		case "modify":
@@ -73,7 +65,7 @@ function ldaprebind_save($type, $host) {
 			// save entries
 			if(pql_modify_attribute($_pql_control->ldap_linkid,
 									pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-									pql_get_define("PQL_ATTR_LDAPREBIND"), '', $_REQUEST["set"]))
+									pql_get_define("PQL_ATTR_LDAPREBIND"), 1, $_REQUEST[$attrib]))
 			  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										   array('what' => $LANG->_('ldaprebind options')));
 			else

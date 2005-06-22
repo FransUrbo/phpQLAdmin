@@ -2,7 +2,7 @@
 // control attribute plugin for
 // qmqpservers (max number of bytes in message)
 //
-// $Id: attrib.control.qmqpservers.inc,v 2.20 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.control.qmqpservers.inc,v 2.21 2005-06-22 13:58:33 turbo Exp $
 
 // {{{ qmqpservers_check(type)
 function qmqpservers_check($type) {
@@ -60,8 +60,10 @@ function qmqpservers_init($host) {
 												 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 												 pql_get_define("PQL_ATTR_QMQPSERVERS"));
 
-	if(is_null($_REQUEST["qmqpservers"]))
+	if(!$_REQUEST["qmqpservers"])
 	  return true;
+	elseif(!is_array($_REQUEST["qmqpservers"]))
+	  $_REQUEST["qmqpservers"] = array($_REQUEST["qmqpservers"]);
 }
 // }}}
 
@@ -74,30 +76,20 @@ function qmqpservers_print_view($host) {
 	qmqpservers_init($host);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th align="left">qmqpservers (<?=$LANG->_('QMQP servers')?>)</th>
-      <tr class="title">
-        <td>IP</td>
+    <th align="left">qmqpservers
+      <tr>
+        <td class="title" colspan="3"><?=$LANG->_('QMQP servers')?></td>
       </tr>
+
 <?php
-	if(!is_array($_REQUEST["qmqpservers"])) {
+	$class   = pql_format_table(0);
+	$url_tmp = "control_edit_attribute.php?mxhost=$host&attrib=".pql_get_define("PQL_ATTR_QMQPSERVERS");
+
+	$tbl_txt = array('tit' => $LANG->_('Servers'), 'add' => $LANG->_('Add server'), 'del' => $LANG->_('Remove server'));
+	$tbl_url = array('add' => $url_tmp.'&type=add', 'del' => $url_tmp.'&type=del&submit=1');
+	pql_format_table_single($_pql_control->ldap_linkid, $tbl_txt, $tbl_url, $_REQUEST["qmqpservers"],
+							pql_get_define("PQL_ATTR_QMQPSERVERS"), $class);
 ?>
-      <tr class="<?php pql_format_table(); ?>">
-        <td><?=$LANG->_('Not set')?></td>
-      </tr>
-<?php
-	} else {
-		foreach($_REQUEST["qmqpservers"] as $server) {
-?>
-      <tr class="<?php pql_format_table(); ?>">
-        <td><?=pql_maybe_idna_decode($server)?></td>
-      </tr>
-<?php
-		} // end foreach
-	} // end if is_array
-?>
-      <tr class="subtitle">
-        <td><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=qmqpservers"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
-      </tr>
     </th>
   </table>
 
@@ -108,38 +100,27 @@ function qmqpservers_print_view($host) {
 // {{{ qmqpservers_print_form(void)
 function qmqpservers_print_form() {
 	global $error, $LANG;
-
-	if(($_REQUEST["qmqpcount"] < count($_REQUEST["qmqpservers"]) - 1) and count($_REQUEST["qmqpservers"]) != 0)
-	  $_REQUEST["qmqpcount"] = count($_REQUEST["qmqpservers"]) - 1;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+<?php for($i = 0; $_REQUEST["qmqpservers"][$i]; $i++) { ?>
+    <input type="hidden" name="qmqpservers[<?=$i?>]" value="<?=$_REQUEST["qmqpservers"][$i]?>">
+<?php } ?>
+
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">qmqpservers (<?=$LANG->_('QMQP servers')?>)</th>
-        <tr class="title">
-          <td><?=$LANG->_('IP Address')?></td>
-        </tr>
-
-        <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["qmqpservers_0"]); ?><input type="text" name="qmqpservers[0]" value="<?=$_REQUEST["qmqpservers"][0]?>"></td>
-        </tr>
-
-<?php for($i = 1; $i <= $_REQUEST["qmqpcount"]; $i++) { ?>
-        <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["qmqpservers_$i"]); ?><input type="text" name="qmqpservers[<?=$i?>]" value="<?=$_REQUEST["qmqpservers"][$i]?>"></td>
-        </tr>
-
-<?php } ?>
-        <tr class="subtitle">
-          <td><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&qmqpcount=<?=($_REQUEST["qmqpcount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
-        </tr>
-
-        <tr class="subtitle">
-          <td><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('To delete a QMQP server remove the value and save')?>.</td>
+<?php $class = pql_format_table(0); ?>
+        <tr>
+          <td class="title"><?=$LANG->_('IP Address')?></td>
+          <td class="<?=$class?>">
+            <?php echo pql_format_error_span($error["qmqpservers"][$i]); ?>
+            <input type="text" name="qmqpservers[<?=$i?>]" size="40">
+          </td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="type"   value="modify">
     <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
@@ -160,7 +141,7 @@ function qmqpservers_save($type, $host)  {
 		// save entries
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_QMQPSERVERS"), '', $_REQUEST["qmqpservers"]))
+								pql_get_define("PQL_ATTR_QMQPSERVERS"), 1, $_REQUEST["qmqpservers"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('qmqpservers options')));
 		else
@@ -170,6 +151,21 @@ function qmqpservers_save($type, $host)  {
 
 		attribute_forward($msg);
 		break;
+
+	  case "del":
+		if(pql_modify_attribute($_pql_control->ldap_linkid,
+								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								pql_get_define("PQL_ATTR_QMQPSERVERS"), $_REQUEST["qmqpservers"], ''))
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+									   array('what' => $LANG->_('QMQP Server options')));
+		else
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+									   array('what' => $LANG->_('QMQP Server options')))
+			. ": " . pql_format_error(0);
+
+		attribute_forward($msg);
+		break;
+
 	  default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
 								  array('type' => $type, 'file' => __FILE__)));

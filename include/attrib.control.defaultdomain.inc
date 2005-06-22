@@ -3,7 +3,7 @@
 // defaultdomain (default domain)
 // defaulthost (default hostname)
 //
-// $Id: attrib.control.defaultdomain.inc,v 2.17 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.control.defaultdomain.inc,v 2.18 2005-06-22 13:58:33 turbo Exp $
 
 // {{{ defaultdomain_check(type)
 function defaultdomain_check($type) {
@@ -56,36 +56,28 @@ function defaultdomain_print_view($host) {
 
 	// init data
 	defaultdomain_init($host);
-
-	// set empty fields to their default value
-	if($_REQUEST["defaultdomain"] == "")
-	  $_REQUEST["defaultdomain"] = pql_maybe_idna_decode($host) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";
-	
-	if($defaulthost == "")
-	  $_REQUEST["defaulthost"] = pql_maybe_idna_decode($host) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";
-	
-	if($_REQUEST["plusdomain"] == "") 
-	  $_REQUEST["plusdomain"] = pql_maybe_idna_decode($host) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left">defaultdomain, defaulthost, plusdomain (<?=$LANG->_('Default domain / host')?>)</th>
-      <tr class="<?php pql_format_table(); ?>">
+    <th colspan="3" align="left">defaultdomain, defaulthost, plusdomain (<?=$LANG->_('Default domain / host')?>)
+<?php $class=pql_format_table(0); ?>
+      <tr>
         <td class="title"><?=$LANG->_('Default domain')?></td>
-        <td><?=$_REQUEST["defaultdomain"]?></td>
+        <td class="<?=$class?>"><?php if($_REQUEST["defaultdomain"]) { echo $_REQUEST["defaultdomain"]; } else { pql_maybe_idna_decode($host) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";}?></td>
+        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_DEFAULTDOMAIN")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_DEFAULTDOMAIN")?>"></a></td>
       </tr>
 
-      <tr class="<?php pql_format_table(); ?>">
+<?php $class=pql_format_table(0); ?>
+      <tr>
         <td class="title"><?=$LANG->_('Default host')?></td>
-        <td><?=$_REQUEST["defaulthost"]?></td>
+        <td class="<?=$class?>"><?php if($_REQUEST["defaulthost"]) { echo $_REQUEST["defaulthost"]; } else { pql_maybe_idna_decode($host) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")"; }?></td>
+        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_DEFAULTHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_DEFAULTHOST")?>"></a></td>
       </tr>
 
-      <tr class="<?php pql_format_table(); ?>">
+<?php $class=pql_format_table(0); ?>
+      <tr>
         <td class="title"><?=$LANG->_('Plus domain')?></td>
-        <td><?=$_REQUEST["plusdomain"]?></td>
-      </tr>
-
-      <tr class="subtitle">
-        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=defaultdomain"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
+        <td class="<?=$class?>"><?php if($_REQUEST["plusdomain"]) { echo $_REQUEST["plusdomain"]; } else { pql_maybe_idna_decode($host) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")"; }?></td>
+        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_PLUSDOMAIN")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_PLUSDOMAIN")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -99,22 +91,26 @@ function defaultdomain_print_form() {
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">defaultdomain, defaulthost, plusdomain (<?=$LANG->_('Default domain / host')?>)</th>
+      <th colspan="3" align="left">
+<?php if($_REQUEST["attrib"] == "defaultdomain") { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Default domain')?></td>
-          <td><?php echo pql_format_error_span($error["defaultdomain"]); ?><input type="text" name="defaultdomain" value="<?=$_REQUEST["defaultdomain"]?>"> <?=$LANG->_('Default')?>: <?=$host?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
+          <td><?php echo pql_format_error_span($error["defaultdomain"]); ?><input type="text" name="defaultdomain" value="<?=$_REQUEST["defaultdomain"]?>"> <?=$LANG->_('Default')?>: <?=$_REQUEST["mxhost"]?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
         </tr>
 
+<?php } if($_REQUEST["attrib"] == "defaulthost") { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Default host')?></td>
-          <td><?php echo pql_format_error_span($error["defaulthost"]); ?><input type="text" name="defaulthost" value="<?=$_REQUEST["defaulthost"]?>"> <?=$LANG->_('Default')?>: <?=$host?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
+          <td><?php echo pql_format_error_span($error["defaulthost"]); ?><input type="text" name="defaulthost" value="<?=$_REQUEST["defaulthost"]?>"> <?=$LANG->_('Default')?>: <?=$_REQUEST["mxhost"]?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
         </tr>
 
+<?php } if($_REQUEST["attrib"] == "plusdomain") { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Plus domain')?></td>
-          <td><?php echo pql_format_error_span($error["plusdomain"]); ?><input type="text" name="plusdomain" value="<?=$_REQUEST["plusdomain"]?>"> <?=$LANG->_('Default')?>: <?=$host?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
+          <td><?php echo pql_format_error_span($error["plusdomain"]); ?><input type="text" name="plusdomain" value="<?=$_REQUEST["plusdomain"]?>"> <?=$LANG->_('Default')?>: <?=$_REQUEST["mxhost"]?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
         </tr>
 
+<?php } ?>
         <tr class="subtitle">
           <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('Leave the fields empty to use default configuration')?>.</td>
         </tr>
@@ -122,6 +118,7 @@ function defaultdomain_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="type"   value="modify">
     <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
@@ -143,10 +140,12 @@ function defaultdomain_save($type, $host) {
 		$attribs = array("defaultdomain" => pql_get_define("PQL_ATTR_DEFAULTDOMAIN"),
 						 "defaulthost"   => pql_get_define("PQL_ATTR_DEFAULTHOST"),
 						 "plusdomain"    => pql_get_define("PQL_ATTR_PLUSDOMAIN"));
-		foreach($attribs as $key => $attrib)
-		  $return[] = pql_modify_attribute($_pql_control->ldap_linkid,
-										   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-										   $attrib, '', $_REQUEST[$key]);
+		foreach($attribs as $key => $attrib) {
+		  if($_REQUEST[$key])
+			$return[] = pql_modify_attribute($_pql_control->ldap_linkid,
+											 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+											 $attrib, 1, $_REQUEST[$key]);
+		}
 		
 		if(in_array(false, $return))
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
@@ -171,6 +170,7 @@ function defaultdomain_save($type, $host) {
 function defaultdomain_help() {
 	global $LANG;
 ?>
+<?php if($_REQUEST["attrib"] == "defaultdomain") { ?>
 	<b>Default domain name</b>.<br>
 	Default:  me, if that is supplied, otherwise the literal name defaultdomain,
 	which is probably not what you want.  qmail-inject adds
@@ -180,7 +180,7 @@ function defaultdomain_help() {
 	<br><br>
 	The QMAILDEFAULTDOMAIN environment variable overrides
 	defaultdomain.
-	<br><br>
+<?php } if($_REQUEST["attrib"] == "defaulthost") { ?>
 	<b>Default host name</b>.  <br>
 	Default:  me, if that is supplied, otherwise the literal name defaulthost, which is
 	probably not what you want.  qmail-inject adds this
@@ -191,7 +191,7 @@ function defaultdomain_help() {
 	<br><br>
 	The QMAILDEFAULTHOST environment variable overrides
 	defaulthost.
-	<br><br>
+<?php } if($_REQUEST["attrib"] == "plusdomain") { ?>
 	<b>Plus domain name.</b>
 	<br>Default:  me, if that is supplied;
 	otherwise the literal name plusdomain, which is
@@ -204,7 +204,7 @@ function defaultdomain_help() {
 	<br><br>
 	The QMAILPLUSDOMAIN environment variable overrides
 	plusdomain.
-<?php
+<?php }
 }
 // }}}
 

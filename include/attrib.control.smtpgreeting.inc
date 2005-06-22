@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtpgreeting (SMTP greeting message)
 //
-// $Id: attrib.control.smtpgreeting.inc,v 2.18 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.control.smtpgreeting.inc,v 2.19 2005-06-22 13:58:33 turbo Exp $
 
 // {{{ smtpgreeting_check(type)
 function smtpgreeting_check($type) {
@@ -35,22 +35,14 @@ function smtpgreeting_print_view($host) {
     
     // init data
     smtpgreeting_init($host);
-    
-    // set empty field to default value
-    if($_REQUEST["smtpgreeting"] == "")
-      $_REQUEST["smtpgreeting"] = pql_maybe_idna_decode($host) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";
-	else
-	  $_REQUEST["smtpgreeting"] = pql_maybe_idna_decode($_REQUEST["smtpgreeting"]);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">smtpgreeting (<?=$LANG->_('SMTP greeting message')?>)</th>
-      <tr class="<?php pql_format_table(); ?>">
+<?php $class=pql_format_table(0); ?>
+      <tr>
         <td class="title"><?=$LANG->_('Message')?></td>
-        <td><?=$_REQUEST["smtpgreeting"]?></td>
-      </tr>
-
-      <tr class="subtitle">
-        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=smtpgreeting"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
+        <td class="<?=$class?>"><?php if($_REQUEST["smtpgreeting"]) { echo pql_maybe_idna_decode($_REQUEST["smtpgreeting"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($host)." (".$LANG->_('Taken from \'me\'') . ")"; }?></td>
+        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_SMTPGREETING")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_SMTPGREETING")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -77,6 +69,7 @@ function smtpgreeting_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="type"   value="modify">
     <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
@@ -97,7 +90,7 @@ function smtpgreeting_save($type, $host) {
 		// save entries
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_SMTPGREETING"), '', $_REQUEST["smtpgreeting"]))
+								pql_get_define("PQL_ATTR_SMTPGREETING"), 1, $_REQUEST["smtpgreeting"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('smtpgreeting options')));
 		else

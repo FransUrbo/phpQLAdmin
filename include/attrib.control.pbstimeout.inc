@@ -2,7 +2,7 @@
 // control attribute plugin for
 // pbstimeout (max number of bytes in message)
 //
-// $Id: attrib.control.pbstimeout.inc,v 2.6 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.control.pbstimeout.inc,v 2.7 2005-06-22 13:58:33 turbo Exp $
 
 // {{{ pbstimeout_check(type)
 function pbstimeout_check($type) {
@@ -38,20 +38,11 @@ function pbstimeout_print_view($host) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">pbstimeout (<?=$LANG->_('POP before SMTP server timeout')?>)
-      <tr class="<?php pql_format_table(); ?>">
+<?php $class=pql_format_table(0); ?>
+      <tr>
         <td class="title"><?=$LANG->_('Seconds')?></td>
-<?php
-	if(!$_REQUEST["pbstimeout"]) {
-?>
-        <td><i><?=$LANG->_('Not set')?></i></td>
-<?php
-	} else {
-?>
-        <td><?=$_REQUEST["pbstimeout"]?></td>
-<?php
-	} // end if is_array
-?>
-        <td><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=pbstimeout"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options')?>"></a></td>
+        <td class="<?=$class?>"><?php if($_REQUEST["pbstimeout"]) { echo $_REQUEST["pbstimeout"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
+        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_PBS_TIMEOUT")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_PBS_TIMEOUT")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -75,6 +66,7 @@ function pbstimeout_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="type"   value="modify">
     <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
@@ -95,7 +87,7 @@ function pbstimeout_save($type, $host)  {
 		// save entries
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_PBS_TIMEOUT"), '', $_REQUEST["pbstimeout"]))
+								pql_get_define("PQL_ATTR_PBS_TIMEOUT"), 1, $_REQUEST["pbstimeout"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('pbstimeout options')));
 		else

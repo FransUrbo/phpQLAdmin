@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.46 2005-06-09 15:05:35 turbo Exp $
+// $Id: control_detail.php,v 1.47 2005-06-22 13:58:27 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -31,8 +31,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 					 "locals"				=> pql_get_define("PQL_ATTR_LOCALS"),
 					 "rcpthosts"			=> pql_get_define("PQL_ATTR_RCPTHOSTS"),
 					 "ldaplogin"			=> pql_get_define("PQL_ATTR_LDAPLOGIN"),
-					 "ldappassword"			=> pql_get_define("PQL_ATTR_LDAPPASSWORD"),
-					 "nonprimaryrcpthosts"  => pql_get_define("PQL_ATTR_NONPRIMARY_RCPT_HOSTS"));
+					 "ldappassword"			=> pql_get_define("PQL_ATTR_LDAPPASSWORD"));
 	$cn = pql_get_define("PQL_ATTR_CN") . "=" . $_REQUEST["mxhost"] . "," . $_SESSION["USER_SEARCH_DN_CTR"];
 
 	foreach($attribs as $key => $attrib) {
@@ -104,13 +103,16 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
   <br><br>
 
 <?php
-	// {{{ Setup the buttons
-	$buttons = array('default' => 'Base values',
-					 'hosts'   => 'Locals and RCPTHosts',
-					 'nonprim' => 'Non-primary MX domains');
+	// {{{ Load plugin categories
+	require($_SESSION["path"]."/include/pql_control_plugins.inc");
+	$cats = pql_plugin_get_cats();
+	asort($cats);
+// }}}
 
-	if(pql_get_define("PQL_CONF_SIMSCAN_USE")) {
-	  $new = array('simscan' => 'SimScan config');
+	// {{{ Setup the buttons
+	$buttons = array('default' => 'Base values');
+	foreach($cats as $cat) {
+	  $new = array($cat => $cat);
 	  $buttons = $buttons + $new;
 	}
 
@@ -128,12 +130,15 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 		include("./tables/control_details-base.inc");
 	elseif($_REQUEST["view"] == 'hosts')
 		include("./tables/control_details-hosts.inc");
-	elseif($_REQUEST["view"] == 'nonprim')
-		include("./tables/control_details-nonprimmx.inc");
 	elseif($_REQUEST["view"] == 'simscan')
 		include("./tables/domain_details-simscan.inc");
 	elseif($_REQUEST["view"] == 'action')
 		include("./tables/control_details-action.inc");
+	else {
+	  // This is ugly. We're called with a 'view' which is actually a 'category'.
+	  $url = "control_cat.php?mxhost=".$_REQUEST["mxhost"]."&cat=".urlencode($_REQUEST["view"]);
+	  pql_header($url);
+	}
 // }}}
 } else {
 ?>

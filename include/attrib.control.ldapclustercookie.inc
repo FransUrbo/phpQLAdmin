@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtpclustercookie (max number of bytes in message)
 //
-// $Id: attrib.control.ldapclustercookie.inc,v 2.7 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.control.ldapclustercookie.inc,v 2.8 2005-06-22 13:58:33 turbo Exp $
 
 // {{{ smtpclustercookie_check(type)
 function smtpclustercookie_check($type) {
@@ -39,19 +39,10 @@ function smtpclustercookie_print_view($host) {
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">smtpclustercookie (<?=$LANG->_('Cluster cookie')?>)
       <tr class="<?php pql_format_table(); ?>">
+<?php $class=pql_format_table(0); ?>
         <td class="title"><?=$LANG->_('Cookie')?></td>
-<?php
-	if(!$_REQUEST["smtpclustercookie"]) {
-?>
-        <td><i><?=$LANG->_('Not set')?></i></td>
-<?php
-	} else {
-?>
-        <td><?=$_REQUEST["smtpclustercookie"]?></td>
-<?php
-	} // end if is_array
-?>
-        <td><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=smtpclustercookie"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options')?>"></a></td>
+        <td class="<?=$class?>"><?php if($_REQUEST["smtpclustercookie"]) { echo $_REQUEST["smtpclustercookie"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
+        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPCLUSTER_COOKIE")?>&type=add"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options')?>"></a></td>
       </tr>
     </th>
   </table>
@@ -75,6 +66,7 @@ function smtpclustercookie_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="type"   value="<?=$_REQUEST["type"]?>">
     <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">

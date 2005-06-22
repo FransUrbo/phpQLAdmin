@@ -2,7 +2,7 @@
 // control attribute plugin for
 // helohost (host name used in SMTP HELO command)
 //
-// $Id: attrib.control.helohost.inc,v 2.18 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.control.helohost.inc,v 2.19 2005-06-22 13:58:33 turbo Exp $
 
 // {{{ helohost_check(type)
 function helohost_check($type) {
@@ -39,20 +39,14 @@ function helohost_print_view($host) {
 
 	// init data
 	helohost_init($host);
-
-	// set empty field to default value
-	if($_REQUEST["helohost"] == "")
-	  $_REQUEST["helohost"] = $host . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">helohost (Helo host)</th>
-      <tr class="<?php pql_format_table(); ?>">
+<?php $class=pql_format_table(0); ?>
+      <tr>
         <td class="title"><?=$LANG->_('Host')?></td>
-        <td><?=pql_maybe_idna_decode($_REQUEST["helohost"])?></td>
-      </tr>
-
-      <tr class="subtitle">
-        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=helohost"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
+        <td class="<?=$class?>"><?php if($_REQUEST["helohost"]) { echo pql_maybe_idna_decode($_REQUEST["helohost"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($host)." (".$LANG->_('Taken from \'me\'') . ")"; }?></td>
+        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_HELOHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_HELOHOST")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -79,6 +73,7 @@ function helohost_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="type"   value="modify">
     <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
@@ -99,7 +94,7 @@ function helohost_save($type, $host) {
 		// save entries
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_HELOHOST"), '', $_REQUEST["helohost"]))
+								pql_get_define("PQL_ATTR_HELOHOST"), 1, $_REQUEST["helohost"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('helohost options')));
 		else

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // badmailfrom (blocked from addresses)
 //
-// $Id: attrib.control.badmailfrom.inc,v 2.22 2005-04-23 08:46:04 turbo Exp $
+// $Id: attrib.control.badmailfrom.inc,v 2.23 2005-06-22 13:58:33 turbo Exp $
 
 // {{{ badmailfrom_check(type)
 
@@ -48,9 +48,9 @@ function badmailfrom_init($host) {
 												 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 												 pql_get_define("PQL_ATTR_BADMAILFROM"));
     
-    if(is_null($_REQUEST["badmailfrom"]))
+    if(!$_REQUEST["badmailfrom"])
 	  return true;
-	elseif($_REQUEST["badmailfrom"] && !is_array($_REQUEST["badmailfrom"]))
+	elseif(!is_array($_REQUEST["badmailfrom"]))
 	  $_REQUEST["badmailfrom"] = array($_REQUEST["badmailfrom"]);
 }
 
@@ -71,30 +71,20 @@ function badmailfrom_print_view($host) {
     }
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th align="left">badmailfrom (<?=$LANG->_('Blocked senders')?>)</th>
-      <tr class="title">
-        <td><?=$LANG->_('Email')?></td>
+    <th align="left">badmailfrom
+      <tr>
+        <td class="title" colspan="3"><?=$LANG->_('Blocked senders')?></td>
       </tr>
- <?php
-	if(!is_array($_REQUEST["badmailfrom"])) {
-?>
-      <tr class="<?php pql_format_table(); ?>">
-        <td><?=$LANG->_('Not set')?></td>
-      </tr>
+
 <?php
-	} else {
-		foreach($_REQUEST["badmailfrom"] as $mail) {
+	$class   = pql_format_table(0);
+	$url_tmp = "control_edit_attribute.php?mxhost=$host&attrib=".pql_get_define("PQL_ATTR_BADMAILFROM");
+
+	$tbl_txt = array('tit' => $LANG->_('Email'), 'add' => $LANG->_('Add address'), 'del' => $LANG->_('Remove address'));
+	$tbl_url = array('add' => $url_tmp.'&type=add', 'del' => $url_tmp.'&type=del&submit=1');
+	pql_format_table_single($_pql_control->ldap_linkid, $tbl_txt, $tbl_url, $_REQUEST["badmailfrom"],
+							pql_get_define("PQL_ATTR_BADMAILFROM"), $class);
 ?>
-      <tr class="<?php pql_format_table(); ?>">
-        <td><?=$mail?></td>
-      </tr>
-<?php
-		} // end foreach
-	} // end if is_array
-?>
-      <tr class="subtitle">
-        <td><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=badmailfrom"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
-      </tr>
     </th>
   </table>
 <?php
@@ -104,38 +94,31 @@ function badmailfrom_print_view($host) {
 // {{{ badmailfrom_print_form(void)
 function badmailfrom_print_form() {
     global $error, $LANG;
-    
-    if(($_REQUEST["badcount"] < count($_REQUEST["badmailfrom"]) - 1) and count($_REQUEST["badmailfrom"]) != 0)
-	  $_REQUEST["badcount"] = count($_REQUEST["badmailfrom"]) - 1;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
-    <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">badmailfrom (<?=$LANG->_('Blocked senders')?>)</th>
-        <tr class="title">
-          <td><?=$LANG->_('Email')?></td>
-        </tr>
-
-        <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["badmailfrom_0"]); ?><input type="text" name="badmailfrom[0]" value="<?=$_REQUEST["badmailfrom"][0]?>"></td>
-        </tr>
-
-<?php for($i = 1; $i <= $_REQUEST["badcount"]; $i++) { ?>
-        <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["badmailfrom_$i"]); ?><input type="text" name="badmailfrom[<?=$i?>]" value="<?=$_REQUEST["badmailfrom"][$i]?>"></td>
-        </tr>
-
+<?php for($i = 0; $_REQUEST["badmailfrom"][$i]; $i++) { ?>
+    <input type="hidden" name="badmailfrom[<?=$i?>]" value="<?=$_REQUEST["badmailfrom"][$i]?>">
 <?php } ?>
-        <tr class="subtitle">
-          <td><a href="<?=$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&badcount=<?=($_REQUEST["badcount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
+
+    <table cellspacing="0" cellpadding="3" border="0">
+      <th colspan="3" align="left">badmailfrom (<?=$LANG->_('Blocked senders')?>)
+<?php $class = pql_format_table(0); ?>
+        <tr>
+          <td class="title"><?=$LANG->_('Email')?></td>
+          <td class="<?=$class?>">
+            <?php echo pql_format_error_span($error["badmailfrom"][$i]); ?>
+            <input type="text" name="badmailfrom[<?=$i?>]" size="40">
+          </td>
         </tr>
 
         <tr class="subtitle">
-          <td><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('To block a whole domain simply leave user empty (eg. @domain.com). To delete a blocked address remove the value and save')?>.</td>
+          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('To block a whole domain simply leave user empty (eg. @domain.com). To delete a blocked address remove the value and save')?>.</td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="type"   value="modify">
     <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
@@ -162,6 +145,20 @@ function badmailfrom_save($type, $host) {
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('badmailfrom options')))
+			. ": " . pql_format_error(0);
+
+		attribute_forward($msg);
+		break;
+
+	  case "del":
+		if(pql_modify_attribute($_pql_control->ldap_linkid,
+								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								pql_get_define("PQL_ATTR_BADMAILFROM"), $_REQUEST["badmailfrom"], ''))
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+									   array('what' => $LANG->_('Bad mail from options')));
+		else
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+									   array('what' => $LANG->_('Bad mail from options')))
 			. ": " . pql_format_error(0);
 
 		attribute_forward($msg);

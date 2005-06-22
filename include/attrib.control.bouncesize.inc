@@ -2,7 +2,7 @@
 // control attribute plugin for
 // bouncemaxbytes (max number of bytes in message)
 //
-// $Id: attrib.control.bouncesize.inc,v 2.6 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.control.bouncesize.inc,v 2.7 2005-06-22 13:58:33 turbo Exp $
 
 // {{{ bouncemaxbytes_check(type)
 function bouncemaxbytes_check($type) {
@@ -37,21 +37,12 @@ function bouncemaxbytes_print_view($host) {
 	bouncemaxbytes_init($host);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left">bouncemaxbytes (<?=$LANG->_('Maximum bounce message size.')?>)
-      <tr class="<?php pql_format_table(); ?>">
+    <th colspan="3" align="left">bouncemaxbytes (<?=$LANG->_('Maximum bounce message size')?>)
+<?php $class=pql_format_table(0); ?>
+      <tr>
         <td class="title">Bytes</td>
-<?php
-	if(!$_REQUEST["bouncemaxbytes"]) {
-?>
-        <td><i><?=$LANG->_('Not set')?></i></td>
-<?php
-	} else {
-?>
-        <td><?=$_REQUEST["bouncemaxbytes"]?></td>
-<?php
-	} // end if is_array
-?>
-        <td><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=bouncemaxbytes"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options')?>"></a></td>
+        <td class="<?=$class?>"><?php if($_REQUEST["bouncemaxbytes"]) { echo $_REQUEST["bouncemaxbytes"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
+        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_BOUNCESIZE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options')?>"></a></td>
       </tr>
     </th>
   </table>
@@ -66,7 +57,7 @@ function bouncemaxbytes_print_form() {
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="2" align="left">bouncemaxbytes (<?=$LANG->_('Maximum bounce message size.')?>)
+      <th colspan="2" align="left">bouncemaxbytes (<?=$LANG->_('Maximum bounce message size')?>)
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Bytes')?></td>
           <td><?php echo pql_format_error_span($error["bouncemaxbytes"]); ?><input type="text" name="bouncemaxbytes" value="<?=$_REQUEST["bouncemaxbytes"]?>"></td>
@@ -75,6 +66,7 @@ function bouncemaxbytes_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="type"   value="modify">
     <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
@@ -95,7 +87,7 @@ function bouncemaxbytes_save($type, $host)  {
 		// save entries
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_BOUNCESIZE"), '', $_REQUEST["bouncemaxbytes"]))
+								pql_get_define("PQL_ATTR_BOUNCESIZE"), 1, $_REQUEST["bouncemaxbytes"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('bouncemaxbytes options')));
 		else

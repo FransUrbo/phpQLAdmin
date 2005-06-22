@@ -2,7 +2,7 @@
 // control attribute plugin for
 // quotawarning (additional quota warning message)
 //
-// $Id: attrib.control.quotawarning.inc,v 2.18 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.control.quotawarning.inc,v 2.19 2005-06-22 13:58:33 turbo Exp $
 
 // {{{ quotawarning_check(type)
 function quotawarning_check($type) {
@@ -43,19 +43,14 @@ function quotawarning_print_view($host) {
 	
 	// init data
 	quotawarning_init($host);
-	
-	if($_REQUEST["use_quotawarning"] == "0")
-	  $_REQUEST["quotawarning"] = "disabled";
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">quotawarning (<?=$LANG->_('Additional quota warning message')?>)</th>
-      <tr class="<?php pql_format_table(); ?>">
+<?php $class=pql_format_table(0); ?>
+      <tr>
         <td class="title"><?=$LANG->_('Message')?></td>
-        <td><?php echo nl2br($_REQUEST["quotawarning"]); ?></td>
-      </tr>
-
-      <tr class="subtitle">
-        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=quotawarning"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
+        <td class="<?=$class?>"><?php if($_REQUEST["quotawarning"]) { echo nl2br($_REQUEST["quotawarning"]); } else { echo '<i>'.$LANG->_('disabled').'</i>'; }?></td>
+        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_QUOTA_WARNING")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_QUOTA_WARNING")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -86,6 +81,7 @@ function quotawarning_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="type"   value="modify">
     <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
@@ -109,7 +105,7 @@ function quotawarning_save($type, $host) {
 		
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_QUOTA_WARNING"), '', $_REQUEST["quotawarning"]))
+								pql_get_define("PQL_ATTR_QUOTA_WARNING"), 1, $_REQUEST["quotawarning"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('quotawarning message')));
 		else

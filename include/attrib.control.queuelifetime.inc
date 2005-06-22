@@ -2,7 +2,7 @@
 // control attribute plugin for
 // queuelifetime (maximum number of RCPT TO's)
 //
-// $Id: attrib.control.queuelifetime.inc,v 2.16 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.control.queuelifetime.inc,v 2.17 2005-06-22 13:58:33 turbo Exp $
 
 // {{{ queuelifetime_check(type)
 function queuelifetime_check($type) {
@@ -46,22 +46,14 @@ function queuelifetime_print_view($host) {
 
 	// init data
 	queuelifetime_init($host);
-
-	// set empty field to "not set"
-	if($_REQUEST["queuelifetime"] == "")
-	  $_REQUEST["queuelifetime"] = "604800 ".$LANG->_('Seconds', 4). " (".$LANG->_('Default', 4).")";
-	else
-	  $_REQUEST["queuelifetime"] .= " ".$LANG->_('Seconds', 4);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">queuelifetime (<?=$LANG->_('Max lifetime of a message in queue')?>)</th>
-      <tr class="<?php pql_format_table(); ?>">
+<?php $class=pql_format_table(0); ?>
+      <tr>
         <td class="title"><?=$LANG->_('Remain')?></td>
-        <td><?=$_REQUEST["queuelifetime"]?></td>
-      </tr>
-
-      <tr class="subtitle">
-        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=queuelifetime"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
+        <td class="<?=$class?>"><?php if($_REQUEST["queuelifetime"]) { echo $_REQUEST["queuelifetime"]; } else { echo $LANG->_('Default', 4).': 604800'; }?> <?=$LANG->_('Seconds', 4)?></td>
+        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_QUEUELIFETIME")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_QUEUELIFETIME")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -89,6 +81,7 @@ function queuelifetime_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="type"   value="modify">
     <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
@@ -109,7 +102,7 @@ function queuelifetime_save($type, $host) {
 		// save entries
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_QUEUELIFETIME"), '', $_REQUEST["queuelifetime"]))
+								pql_get_define("PQL_ATTR_QUEUELIFETIME"), 1, $_REQUEST["queuelifetime"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('queuelifetime options')));
 		else

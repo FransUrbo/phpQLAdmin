@@ -2,19 +2,19 @@
 // control attribute plugin for
 // ldapdefaultdotmode (default mode how to interpret .qmail files)
 //
-// $Id: attrib.control.ldapdefaultdotmode.inc,v 2.17 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.control.ldapdefaultdotmode.inc,v 2.18 2005-06-22 13:58:33 turbo Exp $
 
 // {{{ ldapdefaultdotmode_check(type)
 function ldapdefaultdotmode_check($type) {
-	global $error, $ldapdefaultdotmode, $view, $LANG;
+	global $error, $LANG;
 	
 	// missing
-	if($ldapdefaultdotmode == "") {
+	if($_REQUEST["ldapdefaultdotmode"] == "") {
 		$error["ldapdefaultdotmode"] = $LANG->_('Missing');
 		return false;
 	}
 	
-	switch($ldapdefaultdotmode) {
+	switch($_REQUEST["ldapdefaultdotmode"]) {
 	  case "both":
 	  case "dotonly":
 	  case "ldaponly":
@@ -53,20 +53,14 @@ function ldapdefaultdotmode_print_view($host) {
 
 	// init data
 	ldapdefaultdotmode_init($host);
-
-	// set empty field to "not set"
-	if($_REQUEST["ldapdefaultdotmode"] == "")
-	  $_REQUEST["ldapdefaultdotmode"] = $LANG->_('Not set');
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">ldapdefaultdotmode (<?=$LANG->_('Default dot mode')?>)</th>
+<?php $class=pql_format_table(0); ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Mode')?></td>
-        <td><?=$_REQUEST["ldapdefaultdotmode"]?></td>
-      </tr>
-
-      <tr class="subtitle">
-        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=ldapdefaultdotmode"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
+        <td class="<?=$class?>"><?php if($_REQUEST["ldapdefaultdotmode"]) { echo $_REQUEST["ldapdefaultdotmode"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
+        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -101,6 +95,7 @@ function ldapdefaultdotmode_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="type"   value="modify">
     <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
@@ -121,7 +116,7 @@ function ldapdefaultdotmode_save($type, $host) {
 		// save entries
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"), '', $_REQUEST["ldapdefaultdotmode"]))
+								pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"), 1, $_REQUEST["ldapdefaultdotmode"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('ldapdefaultdotmode options')));
 		else

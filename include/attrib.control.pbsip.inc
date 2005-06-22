@@ -2,7 +2,7 @@
 // control attribute plugin for
 // pbsip (max number of bytes in message)
 //
-// $Id: attrib.control.pbsip.inc,v 2.6 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.control.pbsip.inc,v 2.7 2005-06-22 13:58:33 turbo Exp $
 
 // {{{ pbsip_check(type)
 function pbsip_check($type) {
@@ -75,20 +75,11 @@ function pbsip_print_view($host) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">pbsip (<?=$LANG->_('POP before SMTP server IP')?>)
-      <tr class="<?php pql_format_table(); ?>">
+<?php $class=pql_format_table(0); ?>
+      <tr>
         <td class="title">IP</td>
-<?php
-	if(!$_REQUEST["pbsip"]) {
-?>
-        <td><i><?=$LANG->_('Not set')?></i></td>
-<?php
-	} else {
-?>
-        <td><?=$_REQUEST["pbsip"]?></td>
-<?php
-	} // end if is_array
-?>
-        <td><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=pbsip"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options')?>"></a></td>
+        <td class="<?=$class?>"><?php if($_REQUEST["pbsip"]) { echo $_REQUEST["pbsip"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
+        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_PBS_IP")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_PBS_IP")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -112,6 +103,7 @@ function pbsip_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="type"   value="modify">
     <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
@@ -132,7 +124,7 @@ function pbsip_save($type, $host)  {
 		// save entries
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_PBS_IP"), '', $_REQUEST["pbsip"]))
+								pql_get_define("PQL_ATTR_PBS_IP"), 1, $_REQUEST["pbsip"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('POP before SMTP server IP address')));
 		else

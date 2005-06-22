@@ -2,7 +2,7 @@
 // control attribute plugin for
 // localiphost (name substituted for local IP address)
 //
-// $Id: attrib.control.localiphost.inc,v 2.18 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.control.localiphost.inc,v 2.19 2005-06-22 13:58:33 turbo Exp $
 
 // {{{ ocaliphost_check(type)
 function localiphost_check($type) {
@@ -40,20 +40,14 @@ function localiphost_print_view($host) {
 	
 	// init data
 	localiphost_init($host);
-
-	// set empty field to default value
-	if(empty($_REQUEST["localiphost"]))
-	  $_REQUEST["localiphost"] = $host . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">localiphost (<?=$LANG->_('Substitution for local IP')?>)</th>
-      <tr class="<?php pql_format_table(); ?>">
+<?php $class=pql_format_table(0); ?>
+      <tr>
         <td class="title"><?=$LANG->_('Host')?></td>
-        <td><?=pql_maybe_idna_decode($_REQUEST["localiphost"])?></td>
-      </tr>
-
-      <tr class="subtitle">
-        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=localiphost"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
+        <td class="<?=$class?>"><?php if($_REQUEST["localiphost"]) { echo pql_maybe_idna_decode($_REQUEST["localiphost"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($host)." (" . $LANG->_('Taken from \'me\'') . ")"; }?></td>
+        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LOCALIPHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_LOCALIPHOST")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -80,6 +74,7 @@ function localiphost_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="type"   value="modify">
     <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
@@ -100,7 +95,7 @@ function localiphost_save($type, $host) {
 		// save entries
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_LOCALIPHOST"), '', $_REQUEST["localiphost"]))
+								pql_get_define("PQL_ATTR_LOCALIPHOST"), 1, $_REQUEST["localiphost"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('localiphost options')));
 		else
@@ -110,6 +105,7 @@ function localiphost_save($type, $host) {
 
 		attribute_forward($msg);
 		break;
+
 	  default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
 								  array('type' => $type, 'file' => __FILE__)));

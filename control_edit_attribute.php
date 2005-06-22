@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of a control option
-// $Id: control_edit_attribute.php,v 2.32 2005-06-09 15:05:35 turbo Exp $
+// $Id: control_edit_attribute.php,v 2.33 2005-06-22 13:58:27 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -19,10 +19,6 @@ include($_SESSION["path"]."/header.html");
 // {{{ Initial check
 if($_REQUEST["attrib"] == "") {
 	die("no attribute requested !!");
-}
-
-if($_REQUEST["type"] == "") {
-	$_REQUEST["type"] = "add";
 }
 // }}}
 

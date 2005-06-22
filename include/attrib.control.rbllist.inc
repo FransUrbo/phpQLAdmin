@@ -2,7 +2,7 @@
 // control attribute plugin for
 // rbllist (max number of bytes in message)
 //
-// $Id: attrib.control.rbllist.inc,v 2.7 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.control.rbllist.inc,v 2.8 2005-06-22 13:58:33 turbo Exp $
 
 // {{{ rbllist_check(type)
 function rbllist_check($type) {
@@ -23,8 +23,10 @@ function rbllist_init($host) {
 											 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 											 pql_get_define("PQL_ATTR_RBLLIST"));
 
-	if(is_null($_REQUEST["rbllist"]))
+	if(!$_REQUEST["rbllist"])
 	  return true;
+	elseif(!is_array($_REQUEST["rbllist"]))
+	  $_REQUEST["rbllist"] = array($_REQUEST["rbllist"]);
 }
 // }}}
 
@@ -43,12 +45,13 @@ function rbllist_print_view($host) {
         <td><?=$LANG->_('Action')?></td>
         <td><?=$LANG->_('Match on')?></td>
         <td><?=$LANG->_('Message')?></td>
+        <td></td>
       </tr>
 <?php
 	if(!is_array($_REQUEST["rbllist"])) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td colspan="4"><?=$LANG->_('Not set')?></td>
+        <td colspan="5"><?=$LANG->_('Not set')?></td>
       </tr>
 <?php
 	} else {
@@ -60,13 +63,16 @@ function rbllist_print_view($host) {
         <td><?=$line[1]?></td>
         <td><?=$line[2]?></td>
         <td><?php for($i=3; $line[$i]; $i++) { echo $line[$i]." "; } ?></td>
+        <td align="right">
+          <a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_RBLLIST")?>&type=del&submit=1&<?=pql_get_define("PQL_ATTR_RBLLIST")?>=<?=urldecode($server)?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Remove blocking list')?>"></a>
+        </td>
       </tr>
 <?php
 		} // end foreach
 	} // end if is_array
 ?>
       <tr class="subtitle">
-        <td colspan="4"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=rbllist"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
+        <td colspan="5"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_RBLLIST")?>"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Add blocking list')?></a></td>
       </tr>
     </th>
   </table>
@@ -78,11 +84,12 @@ function rbllist_print_view($host) {
 // {{{ rbllist_print_form(void)
 function rbllist_print_form() {
 	global $error, $LANG;
-
-//	if(($_REQUEST["rblcount"] < count($_REQUEST["rbllist"]) - 1) and count($_REQUEST["rblserver"]) != 0)
-//	  $_REQUEST["rblcount"] = count($_REQUEST["rbllist"]) - 1;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+<?php for($i = 0; $_REQUEST["rbllist"][$i]; $i++) { ?>
+    <input type="hidden" name="rbllist[<?=$i?>]" value="<?=$_REQUEST["rbllist"][$i]?>">
+<?php } ?>
+
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="4" align="left">rbllist (<?=$LANG->_('Realtime Blackhole List')?>)</th>
         <tr class="title">
@@ -92,52 +99,23 @@ function rbllist_print_form() {
           <td><?=$LANG->_('Message')?></td>
         </tr>
 
-<?php if(is_array($_REQUEST["rbllist"])) { 
-		for($i=0; $_REQUEST["rbllist"][$i]; $i++) {
-			$line = split(' ', $_REQUEST["rbllist"][$i]);
-?>
         <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["rbllist_$i"]); ?><input type="text" name="rblserver[<?=$i?>]" value="<?=$line[0]?>"></td>
+          <td><input type="text" name="rblserver"></td>
           <td>
-            <?php echo pql_format_error_span($error["rbllist_$i"]); ?>
-            <select name="rblaction[<?=$i?>]">
-              <option value="reject" <?php if($line[1] == "reject") { echo "SELECTED"; } ?>><?=$LANG->_('Reject mail')?></option>
-              <option value="addheader" <?php if($line[1] == "addheader") { echo "SELECTED"; } ?>><?=$LANG->_('Add header')?></option>
-            </select>
-          </td>
-          <td><?php echo pql_format_error_span($error["rbllist_$i"]); ?><input type="text" name="rblmatch[<?=$i?>]" value="<?=$line[2]?>" size="10"></td>
-          <td><?php echo pql_format_error_span($error["rbllist_$i"]); ?><input type="text" name="rblmessage[<?=$i?>]" value="<?php for($j=3; $line[$j]; $j++) { echo $line[$j]." "; } ?>" size="40"></td>
-        </tr>
-
-<?php 	}
-      } else {
-		  $i=0;
-	  }
-?>
-        <tr class="<?php pql_format_table(); ?>">
-          <td><input type="text" name="rblserver[<?=$i?>]"></td>
-          <td>
-            <?php echo pql_format_error_span($error["rbllist_<?=$i?>"]); ?>
-            <select name="rblaction[<?=$i?>]">
+            <?php echo pql_format_error_span($error["rbllist"]); ?>
+            <select name="rblaction">
               <option value="reject"><?=$LANG->_('Reject mail')?></option>
               <option value="addheader"><?=$LANG->_('Add header')?></option>
             </select>
           </td>
-          <td><input type="text" name="rblmatch[<?=$i?>]" size="10"></td>
-          <td><input type="text" name="rblmessage[<?=$i?>]" size="40"></td>
-        </tr>
-
-        <tr class="subtitle">
-          <td colspan="4"><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&rblcount=<?=($_REQUEST["rblcount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
-        </tr>
-
-        <tr class="subtitle">
-          <td colspan="4"><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('To delete a RBL server, remove the value and save')?>.</td>
+          <td><input type="text" name="rblmatch" size="10"></td>
+          <td><input type="text" name="rblmessage" size="40"></td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="type"   value="modify">
     <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
@@ -157,12 +135,13 @@ function rbllist_save($type, $host)  {
 	  case "add":
 		// save entries
 
-		for($i=0; $_REQUEST["rblserver"][$i]; $i++)
-		  $entry[] = $_REQUEST["rblserver"][$i]." ".$_REQUEST["rblaction"][$i]." ".$_REQUEST["rblmatch"][$i]." ".$_REQUEST["rblmessage"][$i];
+		for($i=0; $_REQUEST["rbllist"][$i]; $i++)
+		  $entry[] = $_REQUEST["rbllist"][$i];
+		$entry[] = $_REQUEST["rblserver"]." ".$_REQUEST["rblaction"]." ".$_REQUEST["rblmatch"]." ".$_REQUEST["rblmessage"];
 
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,". $_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_RBLLIST"), '', $entry))
+								pql_get_define("PQL_ATTR_RBLLIST"), 1, $entry))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('rbllist options')));
 		else
@@ -172,6 +151,21 @@ function rbllist_save($type, $host)  {
 
 		attribute_forward($msg);
 		break;
+
+	  case "del":
+		if(pql_modify_attribute($_pql_control->ldap_linkid,
+								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								pql_get_define("PQL_ATTR_RBLLIST"), $_REQUEST["rbllist"], ''))
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+									   array('what' => $LANG->_('Blocking list')));
+		else
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+									   array('what' => $LANG->_('Blocking list')))
+			. ": " . pql_format_error(0);
+
+		attribute_forward($msg);
+		break;
+
 	  default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
 								  array('type' => $type, 'file' => __FILE__)));

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // custombouncetext (additional bounce message)
 //
-// $Id: attrib.control.custombouncetext.inc,v 2.18 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.control.custombouncetext.inc,v 2.19 2005-06-22 13:58:33 turbo Exp $
 
 // {{{ custombouncetext_check(type)
 function custombouncetext_check($type) {
@@ -89,6 +89,7 @@ function custombouncetext_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="type"   value="modify">
     <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
@@ -112,7 +113,7 @@ function custombouncetext_save($type, $host) {
 		
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_CUSTOMBOUNCETEXT"), '', $_REQUEST["custombouncetext"])) 
+								pql_get_define("PQL_ATTR_CUSTOMBOUNCETEXT"), 1, $_REQUEST["custombouncetext"])) 
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('custombouncetext message')));
 		else

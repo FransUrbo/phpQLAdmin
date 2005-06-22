@@ -3,22 +3,26 @@
 // concurrencylocal (may simultaneous local deliveries)
 // concurrencyremote (may simultaneous remote deliveries)
 //
-// $Id: attrib.control.concurrencylocal.inc,v 2.20 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.control.concurrencylocal.inc,v 2.21 2005-06-22 13:58:33 turbo Exp $
 
 // {{{ concurrencylocal_check(type)
 function concurrencylocal_check($type) {
 	global $error, $LANG;
 
-	// check validity
-	if(preg_match("/[^0-9]/", $_REQUEST["concurrencylocal"])) {
+	// concurrencyLocal
+	if($_REQUEST["attrib"] == "concurrencylocal") {
+	  if(preg_match("/[^0-9]/", $_REQUEST["concurrencylocal"])) {
 		$error["concurrencylocal"] = $LANG->_('Invalid');
 		$is_error = true;
+	  }
 	}
 
-	// check validity
-	if(preg_match("/[^0-9]/", $_REQUEST["concurrencyremote"])) {
+	// concurrencyRemote
+	if($_REQUEST["attrib"] == "concurrencyremote") {
+	  if(preg_match("/[^0-9]/", $_REQUEST["concurrencyremote"])) {
 		$error["concurrencyremote"] = $LANG->_('Invalid');
 		$is_error = true;
+	  }
 	}
 
 	if($is_error == false)
@@ -51,26 +55,26 @@ function concurrencylocal_print_view($host) {
 	concurrencylocal_init($host);
 
 	// set empty fields to their default value
-	if($_REQUEST["concurrencylocal"] == "")	  $_REQUEST["concurrencylocal"] = "10 (".$LANG->_('Default', 4).")";
-	if($_REQUEST["concurrencylocal"] == 0)	  $_REQUEST["concurrencylocal"] = "0 (".$LANG->_('local delivery holded').")";
+	if($_REQUEST["concurrencylocal"] == "")	  $LANG->_('Default', 4).': '.$_REQUEST["concurrencylocal"] = "10";
+	if($_REQUEST["concurrencylocal"] == 0)	  $_REQUEST["concurrencylocal"] = "0 (".$LANG->_('local delivery disabled').")";
 	
-	if($_REQUEST["concurrencyremote"] == "")  $_REQUEST["concurrencyremote"] = "20 (".$LANG->_('Default', 4).")";
-	if($_REQUEST["concurrencyremote"] == 0)	  $_REQUEST["concurrencyremote"] = "0 (".$LANG->_('remote delivery holded').")";
+	if($_REQUEST["concurrencyremote"] == "")  $LANG->_('Default', 4).': '.$_REQUEST["concurrencyremote"] = "20";
+	if($_REQUEST["concurrencyremote"] == 0)	  $_REQUEST["concurrencyremote"] = "0 (".$LANG->_('remote delivery disabled').")";
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left">concurrencylocal, concurrencyremote (<?=$LANG->_('Maximum simultaneous deliveries')?>)</th>
-      <tr class="<?php pql_format_table(); ?>">
+    <th colspan="3" align="left">concurrencylocal, concurrencyremote<br>(<?=$LANG->_('Maximum simultaneous deliveries')?>)</th>
+<?php $class=pql_format_table(0); ?>
+      <tr>
         <td class="title"><?=$LANG->_('Local')?></td>
-        <td><?=$_REQUEST["concurrencylocal"]?></td>
+        <td class="<?=$class?>"><?=$_REQUEST["concurrencylocal"]?></td>
+        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_CONCURRENCYLOCAL")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_CONCURRENCYLOCAL")?>"></a></td>
       </tr>
 
-      <tr class="<?php pql_format_table(); ?>">
+<?php $class=pql_format_table(0); ?>
+      <tr>
         <td class="title"><?=$LANG->_('Remote')?></td>
-        <td><?=$_REQUEST["concurrencyremote"]?></td>
-      </tr>
-
-      <tr class="subtitle">
-        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=concurrencylocal"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
+        <td class="<?=$class?>"><?=$_REQUEST["concurrencyremote"]?></td>
+        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_CONCURRENCYREMOTE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_CONCURRENCYREMOTE")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -85,16 +89,19 @@ function concurrencylocal_print_form() {
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">concurrencylocal, concurrencyremote (<?=$LANG->_('Maximum simultaneous deliveries')?>)</th>
+<?php if($_REQUEST["attrib"] == "concurrencylocal") { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Local')?></td>
           <td><?php echo pql_format_error_span($error["concurrencylocal"]); ?><input type="text" name="concurrencylocal" value="<?=$_REQUEST["concurrencylocal"]?>"> <?=$LANG->_('Default')?>: 10</td>
         </tr>
 
+<?php } if($_REQUEST["attrib"] == "concurrencyremote") { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Remote')?></td>
           <td><?php echo pql_format_error_span($error["concurrencyremote"]); ?><input type="text" name="concurrencyremote" value="<?=$_REQUEST["concurrencyremote"]?>"> <?=$LANG->_('Default')?>: 20</td>
         </tr>
 
+<?php } ?>
         <tr class="subtitle">
           <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('Leave the fields empty to set the default values')?>.</td>
         </tr>
@@ -102,6 +109,7 @@ function concurrencylocal_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="type"   value="modify">
     <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
@@ -122,10 +130,13 @@ function concurrencylocal_save($type, $host) {
 		// save entries
 		$attribs = array("concurrencylocal"  => pql_get_define("PQL_ATTR_CONCURRENCYLOCAL"),
 						 "concurrencyremote" => pql_get_define("PQL_ATTR_CONCURRENCYREMOTE"));
-		foreach($attribs as $key => $attrib)
-		  $return[] = pql_modify_attribute($_pql_control->ldap_linkid,
-										   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-										   $attrib, '', $_REQUEST[$key]);
+		foreach($attribs as $key => $attrib) {
+		  // Allow for value to be '0'.
+		  if(isset($_REQUEST[$key]))
+			$return[] = pql_modify_attribute($_pql_control->ldap_linkid,
+											 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+											 $attrib, 1, $_REQUEST[$key]);
+		}
 		
 		if(in_array(false, $return))
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
@@ -150,20 +161,19 @@ function concurrencylocal_save($type, $host) {
 function concurrencylocal_help() {
 	global $LANG;
 ?>
-	<b><?=$LANG->_('Local')?></b>
-	<br>
+<?php if($_REQUEST["attrib"] == "concurrencylocal") { ?>
+	<b><?=$LANG->_('Local')?></b><br>
 	Maximum number of simultaneous local delivery attempts.
 	Default: 10.  If 0, local deliveries will be put on
 	hold.  concurrencylocal is limited at compile time to
 	120.
-	<br><br>
-	<b><?=$LANG->_('Remote')?></b>
-	<br>
+<?php } if($_REQUEST["attrib"] == "concurrencyremote") { ?>
+	<b><?=$LANG->_('Remote')?></b><br>
 	Maximum number of simultaneous remote delivery
 	attempts.  Default: 20.  If 0, remote deliveries will
 	be put on hold.  concurrencyremote is limited at
 	compile time to 120.
-<?php
+<?php }
 }
 // }}}
 

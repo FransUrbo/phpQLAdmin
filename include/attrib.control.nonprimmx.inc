@@ -2,7 +2,7 @@
 // control attribute plugin for
 // Non-Primary MX host values
 //
-// $Id: attrib.control.nonprimmx.inc,v 2.1 2005-04-17 09:38:56 turbo Exp $
+// $Id: attrib.control.nonprimmx.inc,v 2.2 2005-06-22 13:58:33 turbo Exp $
 
 // {{{ nonprimaryrcpthosts_check(type)
 function nonprimaryrcpthosts_check($type) {
@@ -22,28 +22,56 @@ function nonprimaryrcpthosts_init($host) {
 													   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 													   pql_get_define("PQL_ATTR_NONPRIMARY_RCPT_HOSTS"));
   
-  if(is_null($_REQUEST["nonprimaryrcpthosts"]))
+  if(!$_REQUEST["nonprimaryrcpthosts"])
 	return true;
+  elseif(!is_array($_REQUEST["nonprimaryrcpthosts"]))
+	$_REQUEST["nonprimaryrcpthosts"] = array($_REQUEST["nonprimaryrcpthosts"]);
 }
 // }}}
 
 
-// {{{ nonprimaryrcpthosts_print_form(void)
-function nonprimaryrcpthosts_print_form() {
+// {{{ nonprimaryrcpthosts_print_view(host)
+function nonprimaryrcpthosts_print_view($host) {
 	global $_pql_control, $LANG;
 
 	// init data
 	nonprimaryrcpthosts_init($host);
+?>
+  <table cellspacing="0" cellpadding="3" border="0">
+    <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('non-primary MX host')))?>
+      <tr>
+        <td class="title" colspan="3"><?=$LANG->_('Domain names')?></td>
+      </tr>
+
+<?php
+	$class   = pql_format_table(0);
+	$url_tmp = "control_edit_attribute.php?mxhost=$host&attrib=".pql_get_define("PQL_ATTR_NONPRIMARY_RCPT_HOSTS");
+
+	$tbl_txt = array('tit' => $LANG->_('Domains'), 'add' => $LANG->_('Add domain'), 'del' => $LANG->_('Remove domain'));
+	$tbl_url = array('add' => $url_tmp.'&type=add', 'del' => $url_tmp.'&type=del&submit=1');
+	pql_format_table_single($_pql_control->ldap_linkid, $tbl_txt, $tbl_url, $_REQUEST["nonprimaryrcpthosts"],
+							pql_get_define("PQL_ATTR_NONPRIMARY_RCPT_HOSTS"), $class);
+?>
+      </th>
+    </table>
+
+<?php
+}
+// }}}
+
+// {{{ nonprimaryrcpthosts_print_form(void)
+function nonprimaryrcpthosts_print_form() {
+	global $error, $LANG;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('non-primary MX host')))?>
         <tr class="title">
           <td><?=$LANG->_('Domain name')?></td>
-          <td><input type="text" name="set" size="30"></td>
+          <td><input type="text" name="nonprimaryrcpthosts" size="40"></td>
         </tr>
-      </th>
-    </table>
+        </th>
+     </table>
 
     <input type="hidden" name="submit" value="1">
     <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
@@ -68,15 +96,14 @@ function nonprimaryrcpthosts_save($type, $host) {
 	  case "add":
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								$_REQUEST["attrib"], '', $_REQUEST["set"]))
+								$_REQUEST["attrib"], '', $_REQUEST["nonprimaryrcpthosts"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully added %domain% to %what%'),
 									   array('what'   => $_REQUEST["attrib"],
-											 'domain' => $_REQUEST["set"]));
+											 'domain' => $_REQUEST["nonprimaryrcpthosts"]));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to add %domain% to %what%'),
 									   array('what'   => $_REQUEST["attrib"],
-											 'domain' => $_REQUEST["set"]))
-			. ": " . pql_format_error(0);
+											 'domain' => $_REQUEST["nonprimaryrcpthosts"])) . ": " . pql_format_error(0);
 		
 		attribute_forward($msg);
 		break;
@@ -87,14 +114,14 @@ function nonprimaryrcpthosts_save($type, $host) {
 		// remove specified domain from locals, redirect back to host details
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								$_REQUEST["attrib"], $_REQUEST["set"], ''))
+								$_REQUEST["attrib"], $_REQUEST["nonprimaryrcpthosts"], ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully removed %domain% from %what%'),
 									   array('what'   => $_REQUEST["attrib"],
-											 'domain' => $_REQUEST["set"]));
+											 'domain' => $_REQUEST["nonprimaryrcpthosts"]));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to remove %domain% from %what%'),
 									   array('what'   => $_REQUEST["attrib"],
-											 'domain' => $_REQUEST["set"])) . ": " . pql_format_error(0);
+											 'domain' => $_REQUEST["nonprimaryrcpthosts"])) . ": " . pql_format_error(0);
 		
 		attribute_forward($msg);
 		break;

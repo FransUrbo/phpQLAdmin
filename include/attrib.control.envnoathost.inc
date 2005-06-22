@@ -2,7 +2,7 @@
 // control attribute plugin for
 // envnoathost (default prefix for mailbox paths)
 //
-// $Id: attrib.control.envnoathost.inc,v 2.18 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.control.envnoathost.inc,v 2.19 2005-06-22 13:58:33 turbo Exp $
 
 // {{{ envnoathost_check(type)
 function envnoathost_check($type) {
@@ -46,20 +46,14 @@ function envnoathost_print_view($host) {
 
 	// init data
 	envnoathost_init($host);
-
-	// set empty field to default value
-	if($_REQUEST["envnoathost"] == "")
-	  $_REQUEST["envnoathost"] = $host . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">envnoathost (<?=$LANG->_('Default domain for addresses without @')?>)</th>
-      <tr class="<?php pql_format_table(); ?>">
+<?php $class=pql_format_table(0); ?>
+      <tr>
         <td class="title"><?=$LANG->_('Email')?></td>
-        <td><?=pql_maybe_idna_decode($_REQUEST["envnoathost"])?></td>
-      </tr>
-
-      <tr class="subtitle">
-        <td colspan="2"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=envnoathost"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
+        <td class="<?=$class?>"><?php if($_REQUEST["envnoathost"]) { echo pql_maybe_idna_decode($_REQUEST["envnoathost"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($host)." (" . $LANG->_('Taken from \'me\'') . ")"; }?></td>
+        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_ENVNOATHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_ENVNOATHOST")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -79,13 +73,14 @@ function envnoathost_print_form() {
           <td><?php echo pql_format_error_span($error["envnoathost"]); ?><input type="text" name="envnoathost" value="<?=$_REQUEST["envnoathost"]?>"> <?=$LANG->_('Default')?>: <?=$mxhost?> (<?=$LANG->_('Taken from \'me\'')?>)</td>
         </tr>
 
-        <tr>
+        <tr class="subtitle">
           <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('Leave the fields empty to use default configuration')?>.</td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="type"   value="modify">
     <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
@@ -106,7 +101,7 @@ function envnoathost_save($type, $host) {
 		// save entries
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_ENVNOATHOST"), '', $_REQUEST["envnoathost"]))
+								pql_get_define("PQL_ATTR_ENVNOATHOST"), 1, $_REQUEST["envnoathost"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('envnotathost options')));
 		else 

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // pbscachesize (max number of bytes in message)
 //
-// $Id: attrib.control.pbscachesize.inc,v 2.6 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.control.pbscachesize.inc,v 2.7 2005-06-22 13:58:33 turbo Exp $
 
 // {{{ pbscachesize_check(type)
 function pbscachesize_check($type) {
@@ -38,20 +38,11 @@ function pbscachesize_print_view($host) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">pbscachesize (<?=$LANG->_('POP before SMTP cache size')?>)
-      <tr class="<?php pql_format_table(); ?>">
+<?php $class=pql_format_table(0); ?>
+      <tr>
         <td class="title"><?=$LANG->_('Bytes')?></td>
-<?php
-	if(!$_REQUEST["pbscachesize"]) {
-?>
-        <td><i><?=$LANG->_('Not set')?></i></td>
-<?php
-	} else {
-?>
-        <td><?=$_REQUEST["pbscachesize"]?></td>
-<?php
-	} // end if is_array
-?>
-        <td><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=pbscachesize"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options')?>"></a></td>
+        <td class="<?=$class?>"><?php if($_REQUEST["pbscachesize"]) { echo $_REQUEST["pbscachesize"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
+        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_PBS_CACHESIZE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_PBS_CACHESIZE")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -75,6 +66,7 @@ function pbscachesize_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="type"   value="modify">
     <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
@@ -95,7 +87,7 @@ function pbscachesize_save($type, $host)  {
 		// save entries
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_PBS_CACHESIZE"), '', $_REQUEST["pbscachesize"]))
+								pql_get_define("PQL_ATTR_PBS_CACHESIZE"), 1, $_REQUEST["pbscachesize"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('pbscachesize options')));
 		else

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // pbsservers (max number of bytes in message)
 //
-// $Id: attrib.control.pbsservers.inc,v 2.7 2005-04-23 09:07:17 turbo Exp $
+// $Id: attrib.control.pbsservers.inc,v 2.8 2005-06-22 13:58:33 turbo Exp $
 
 // {{{ pbsservers_check(type)
 function pbsservers_check($type) {
@@ -62,7 +62,7 @@ function pbsservers_init($host) {
 	
 	if(is_null($_REQUEST["pbsservers"]))
 	  return true;
-	elseif($_REQUEST["pbsservers"] and !is_array($_REQUEST["pbsservers"]))
+	elseif(!is_array($_REQUEST["pbsservers"]))
 	  $_REQUEST["pbsservers"] = array($_REQUEST["pbsservers"]);
 }
 // }}}
@@ -76,30 +76,20 @@ function pbsservers_print_view($host) {
 	pbsservers_init($host);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th align="left">pbsservers (<?=$LANG->_('POP before SMTP servers')?>)</th>
+    <th align="left">pbsservers
       <tr class="title">
-        <td>IP</td>
+        <td class="title" colspan="3"><?=$LANG->_('POP before SMTP servers')?></td>
       </tr>
+
 <?php
-	if(!is_array($_REQUEST["pbsservers"])) {
+	$class   = pql_format_table(0);
+	$url_tmp = "control_edit_attribute.php?mxhost=$host&attrib=".pql_get_define("PQL_ATTR_PBS_SERVERS");
+
+	$tbl_txt = array('tit' => $LANG->_('IP'), 'add' => $LANG->_('Add server'), 'del' => $LANG->_('Remove server'));
+	$tbl_url = array('add' => $url_tmp.'&type=add', 'del' => $url_tmp.'&type=del&submit=1');
+	pql_format_table_single($_pql_control->ldap_linkid, $tbl_txt, $tbl_url, $_REQUEST["pbsservers"],
+							pql_get_define("PQL_ATTR_PBS_SERVERS"), $class);
 ?>
-      <tr class="<?php pql_format_table(); ?>">
-        <td><?=$LANG->_('Not set')?></td>
-      </tr>
-<?php
-	} else {
-		foreach($_REQUEST["pbsservers"] as $server) {
-?>
-      <tr class="<?php pql_format_table(); ?>">
-        <td><?=pql_maybe_idna_decode($server)?></td>
-      </tr>
-<?php
-		} // end foreach
-	} // end if is_array
-?>
-      <tr class="subtitle">
-        <td><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=pbsservers"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Add server')?></a></td>
-      </tr>
     </th>
   </table>
 
@@ -110,38 +100,27 @@ function pbsservers_print_view($host) {
 // {{{ pbsservers_print_form(void)
 function pbsservers_print_form() {
 	global $error, $LANG;
-
-	if(($_REQUEST["pbscount"] < count($_REQUEST["pbsservers"]) - 1) and count($_REQUEST["pbsservers"]) != 0)
-	  $_REQUEST["pbscount"] = count($_REQUEST["pbsservers"]) - 1;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
+<?php for($i = 0; $_REQUEST["pbsservers"][$i]; $i++) { ?>
+    <input type="hidden" name="pbsservers[<?=$i?>]" value="<?=$_REQUEST["pbsservers"][$i]?>">
+<?php } ?>
+
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">pbsservers (<?=$LANG->_('POP before SMTP servers')?>)</th>
-        <tr class="title">
-          <td><?=$LANG->_('IP Address')?></td>
-        </tr>
-
-        <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["pbsservers_0"]); ?><input type="text" name="pbsservers[0]" value="<?=$_REQUEST["pbsservers"][0]?>"></td>
-        </tr>
-
-<?php for($i = 1; $i <= $_REQUEST["pbscount"]; $i++) { ?>
-        <tr class="<?php pql_format_table(); ?>">
-          <td><?php echo pql_format_error_span($error["pbsservers_$i"]); ?><input type="text" name="pbsservers[<?=$i?>]" value="<?=$_REQUEST["pbsservers"][$i]?>"></td>
-        </tr>
-
-<?php } ?>
-        <tr class="subtitle">
-          <td><a href="<?$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&pbscount=<?=($_REQUEST["pbscount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
-        </tr>
-
-        <tr class="subtitle">
-          <td><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('To delete a PBS server, remove the value and save')?>.</td>
+<?php $class = pql_format_table(0); ?>
+        <tr>
+          <td class="title"><?=$LANG->_('IP Address')?></td>
+          <td class="<?=$class?>">
+            <?php echo pql_format_error_span($error["pbsservers"][$i]); ?>
+            <input type="text" name="pbsservers[<?=$i?>]" size="40">
+          </td>
         </tr>
       </th>
     </table>
 
     <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="type"   value="modify">
     <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
@@ -172,6 +151,21 @@ function pbsservers_save($type, $host)  {
 
 		attribute_forward($msg);
 		break;
+
+	  case "del":
+		if(pql_modify_attribute($_pql_control->ldap_linkid,
+								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								pql_get_define("PQL_ATTR_PBS_SERVERS"), $_REQUEST["pbsservers"], ''))
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+									   array('what' => $LANG->_('PBS server options')));
+		else
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+									   array('what' => $LANG->_('PBS server options')))
+			. ": " . pql_format_error(0);
+
+		attribute_forward($msg);
+		break;
+
 	  default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
 								  array('type' => $type, 'file' => __FILE__)));

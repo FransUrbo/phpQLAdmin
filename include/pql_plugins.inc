@@ -3,7 +3,7 @@
 // pql_plugins.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_plugins.inc,v 2.3 2003-12-13 13:44:09 turbo Exp $
+// $Id: pql_plugins.inc,v 2.4 2005-06-22 13:58:33 turbo Exp $
 
 // Plugin register class
 class pql_plugin_storage {
@@ -14,7 +14,6 @@ class pql_plugin_storage {
 	// {{{ add_plugin(name, file, cat)
     // Add an attribute plugin to the plugin storage
     function add_plugin($name, $file, $cat) {
-		
 		if(isset($this->plugins[$name]))
 		  // plugin with this name already exists
 		  return false;
@@ -33,7 +32,6 @@ class pql_plugin_storage {
 	// {{{ add_attrib(attrib, name)
     // Add an attribute to a registred plugin
     function add_attrib($attrib, $name) {
-		
 		if(!isset($this->plugins[$name]))
 		  // plugin with this name does not exist
 		  return false;
@@ -86,7 +84,7 @@ class pql_plugin_storage {
     }
 	// }}}
     
-	// {{{ !get_cats()
+	// {{{ get_cats()
     // Return all registred categories
     function get_cats() {
 		foreach($this->cats as $cat => $value)
@@ -144,9 +142,9 @@ function pql_plugin_get_filename($name) {
 }
 // }}}
 
-// {{{ pql_plugin_register(name, file, cat, attribs)
+// {{{ pql_plugin_register(name, cat, file, attribs)
 // Register a plugin for specified attribute
-function pql_plugin_register($name, $file, $cat, $attribs) {
+function pql_plugin_register($name, $cat, $file, $attribs) {
     global $_pql_plugins;
 
     $_pql_plugins->add_plugin($name, $file, $cat);

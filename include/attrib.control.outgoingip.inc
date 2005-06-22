@@ -2,7 +2,7 @@
 // control attribute plugin for
 // outgoingip (max number of bytes in message)
 //
-// $Id: attrib.control.outgoingip.inc,v 2.6 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.control.outgoingip.inc,v 2.7 2005-06-22 13:58:33 turbo Exp $
 
 // {{{ outgoingip_check(type)
 function outgoingip_check($type) {
@@ -75,20 +75,11 @@ function outgoingip_print_view($host) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">outgoingip (<?=$LANG->_('IP that qmail-remote binds to')?>)
-      <tr class="<?php pql_format_table(); ?>">
+<?php $class=pql_format_table(0); ?>
+      <tr>
         <td class="title">IP</td>
-<?php
-	if(!$_REQUEST["outgoingip"]) {
-?>
-        <td><i><?=$LANG->_('Not set')?></i></td>
-<?php
-	} else {
-?>
-        <td><?=$_REQUEST["outgoingip"]?></td>
-<?php
-	} // end if is_array
-?>
-        <td><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=outgoingip"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options')?>"></a></td>
+        <td class="<?=$class?>"><?php if($_REQUEST["outgoingip"]) { echo $_REQUEST["outgoingip"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
+        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_OUTGOINGIP")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_OUTGOINGIP")?>"></a></td>
       </tr>
     </th>
   </table>
@@ -111,6 +102,7 @@ function outgoingip_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="type"   value="modify">
     <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
@@ -131,7 +123,7 @@ function outgoingip_save($type, $host)  {
 		// save entries
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_OUTGOINGIP"), '', $_REQUEST["outgoingip"]))
+								pql_get_define("PQL_ATTR_OUTGOINGIP"), 1, $_REQUEST["outgoingip"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('outgoingip options')));
 		else
