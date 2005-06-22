@@ -4,6 +4,11 @@ phpQLAdmin 2.3.1 TO BE ANNOUNCED
 	Bug fixes
 	GUI layout changes
 	Schema changes
+	  - Missing attributes 'relayMailFrom', 'maxRcptCount' and 'qmqpcIp' added.
+	    1.3.6.1.4.1.7006.1.2.1.79 => 'relayMailFrom'
+	    1.3.6.1.4.1.7006.1.2.1.80 => 'maxRcptCount'
+	    1.3.6.1.4.1.7006.1.2.1.81 => 'qmqpcIp'
+
 	Documentation changes
 	API changes
 	  - Rewrite and correctly implement caching. Not that I gained much, but still.
