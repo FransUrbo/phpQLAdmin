@@ -1,5 +1,13 @@
 phpQLAdmin 2.2 Change Log
 
+phpQLAdmin 2.2.6 TO BE ANNOUNCED
+	Bug fixes
+	  - Make sure that the Bind9 manager editor remembers what TYPE of record we're changing
+	    (as a 'hidden' input).
+
+	GUI layout changes
+	Misc changes
+
 phpQLAdmin 2.2.5 Release (Jun 18 2005)
 	Bug fixes
 	  - Include the ./include/pql_session.inc file in ./control.php to avoid PHP errors etc.
