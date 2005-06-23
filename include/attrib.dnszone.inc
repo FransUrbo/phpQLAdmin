@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.16.2.2 2005-06-17 09:09:58 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.16.2.2.2.1 2005-06-23 07:59:49 turbo Exp $
 
 // {{{ attribute_translate_type(attrib)
 function attribute_translate_type($attrib) {
@@ -166,6 +166,7 @@ function attribute_print_form() {
 <?php	} ?>
       <input type="hidden" name="rdn"             value="<?=urlencode($_REQUEST["rdn"])?>">
       <input type="hidden" name="dns_domain_name" value="<?=$_REQUEST["dns_domain_name"]?>">
+      <input type="hidden" name="type"            value="<?=$_REQUEST["type"]?>">
       <br>
       <input type="submit" value="<?=$LANG->_('Save')?>">
     </form>
