@@ -1,9 +1,13 @@
 <?php
 // Create a DNS zone file
-// $Id: dnszonetemplate.php,v 1.7.2.1 2005-06-04 10:13:39 turbo Exp $
-session_start();
+// $Id: dnszonetemplate.php,v 1.7.2.1.2.1 2005-07-22 16:40:17 turbo Exp $
+require("../include/pql_session.inc");
 require("../include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_bind9.inc");
+
+$TYPES = array('CNAME', 'A', 'SRV', 'TXT', 'PTR');
+$domain = $_REQUEST["domain"];
+$defaultdomain = $_REQUEST["defaultdomain"];
 
 $zone = pql_bind9_get_zone($_pql->ldap_linkid, $domain, $defaultdomain);
 if(is_array($zone)) {
@@ -114,21 +118,20 @@ $printed_hosts = 0;
 if(is_array($zone[$defaultdomain])) {
     foreach($zone[$defaultdomain] as $data) {
 	if($data['HOST'] != '@') {
-	    printf("%-25s %8d IN	", $data['HOST'], $data['TTL']);
-
-	    if($data['CNAME']) {
-		printf("%-6s	%s\n", 'CNAME', $data['CNAME']);
-	    } elseif($data['A']) {
-		printf("%-6s	%s\n", 'A', $data['A']);
-	    } elseif($data['SRV']) {
-		printf("%-6s	%s\n", 'SRV', $data['SRV']);
-	    } elseif($data['TXT']) {
-		printf("%-6s	%s\n", "TXT", $data['TXT']);
-	    } elseif($data['PTR']) {
-		printf("%-6s	%s\n", "PTR", $data['PTR']);
+	  foreach($TYPES as $type) {
+	    if($data[$type]) {
+	      unset($records);
+	      if(!is_array($data[$type]))
+		$records[] = $data[$type];
+	      else
+		$records = $data[$type];
+	      
+	      foreach($records as $record)
+		printf("%-25s %8d IN	%-6s	%s\n", $data['HOST'], $data['TTL'], $type, $record);
+	      
+	      $printed_hosts = 1;
 	    }
-
-	    $printed_hosts = 1;
+	  }
 	}
     } 
 }
