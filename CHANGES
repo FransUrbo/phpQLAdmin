@@ -10,6 +10,9 @@ phpQLAdmin 2.2.6 TO BE ANNOUNCED
 	  - Fix URL session initialization. Patch by Aaron Collins.
 	  - When deleting a DNS object, the DN to the SOA must start with 'dNSTTL=3600+relativeDomainName=...',
 	    not just 'relativeDomainName=...'.
+	  - Slight rewrite of the tools/dnszonetemplate.php file. Catch round-robin aliases
+	    (destination was previosly labeled as 'Array' :).
+	    + De globalize initial base values (domain and defaultdomain).
 
 	GUI layout changes
 	Misc changes
