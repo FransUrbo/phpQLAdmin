@@ -8,6 +8,8 @@ phpQLAdmin 2.2.6 TO BE ANNOUNCED
 	  - Fix spelling error in include/pql_search.inc:pql_get_domains(). Used define
 	    PQL_CONF_REFERENCE_USERS_WITH when I should have used PQL_CONF_REFERENCE_DOMAINS_WITH.
 	  - Fix URL session initialization. Patch by Aaron Collins.
+	  - When deleting a DNS object, the DN to the SOA must start with 'dNSTTL=3600+relativeDomainName=...',
+	    not just 'relativeDomainName=...'.
 
 	GUI layout changes
 	Misc changes
