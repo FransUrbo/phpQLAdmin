@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.42 2005-06-13 12:55:56 turbo Exp $
+// $Id: pql_search.inc,v 2.43 2005-07-22 10:09:28 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -224,8 +224,8 @@ function pql_get_domains($ldap) {
 		else if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN) == 'dc')
 		  $ocs = '(objectClass=domain)'; // Could also be 'domainComponent'
 		
-		if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $TOP_DN))
-		  $filter = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $TOP_DN)."=*";
+		if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN))
+		  $filter = pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN)."=*";
 		else
 		  // User reference for this branch/domain not specified. Use default...
 		  $filter = 'uid=*';
@@ -278,7 +278,7 @@ function pql_get_domains($ldap) {
 	  }
 	  $domains = $tmp;
 
-	  return $domains;
+	  return pql_uniq($domains);
 	} else
 	  return false;
 }
