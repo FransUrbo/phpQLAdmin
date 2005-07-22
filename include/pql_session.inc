@@ -1,16 +1,13 @@
 <?php
 // Manage PHP sessions per phpQLAdmin instance
-// $Id: pql_session.inc,v 1.4 2005-05-18 20:29:16 turbo Exp $
+// $Id: pql_session.inc,v 1.5 2005-07-22 10:26:53 turbo Exp $
 
 // {{{ Get the URI path
-// Replace '/' with '\/' so that regexp will work
-$root = preg_replace("/\//", "\\/", $_SERVER["DOCUMENT_ROOT"]);
-
-// Remove the document root from _MY_ location.
-$uri = preg_replace("/$root/", '', __FILE__);
-
-// Remove the actual path to the file
-$uri = '/'.preg_replace("/include\/pql_session.inc/", '', $uri);
+// Fix the URI Retgathering
+$uri = $_SERVER['REQUEST_URI'];
+$me  = basename($uri);
+$uri = preg_replace("/$me/", '', $uri);
+$uri = preg_replace("/\/\//", '/\//', $uri);
 // }}}
 
 // {{{ Retreive the protocol and server name
@@ -33,6 +30,12 @@ session_start();
 
 // Put together a better and clean URI value
 $_SESSION["URI"]  = $server.$uri;
+
+// If you can't login correctly (you get the error
+// "Can't find you in the database", try uncomment
+// the following two lines...
+//print_r($_SESSION);
+//die($uri);
 
 // Remember our path in the file system.
 $_SESSION["path"] = $path;
