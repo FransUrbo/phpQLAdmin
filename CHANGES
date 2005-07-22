@@ -4,6 +4,9 @@ phpQLAdmin 2.2.6 TO BE ANNOUNCED
 	Bug fixes
 	  - Make sure that the Bind9 manager editor remembers what TYPE of record we're changing
 	    (as a 'hidden' input).
+	  - Fix double branch listing (reported by GG Noris on mailinglist).
+	  - Fix spelling error in include/pql_search.inc:pql_get_domains(). Used define
+	    PQL_CONF_REFERENCE_USERS_WITH when I should have used PQL_CONF_REFERENCE_DOMAINS_WITH.
 
 	GUI layout changes
 	Misc changes
