@@ -15,7 +15,18 @@ phpQLAdmin 2.2.6 TO BE ANNOUNCED
 	    + De globalize initial base values (domain and defaultdomain).
 
 	GUI layout changes
+	  - Support viewing, changing and deleting the AFSDB records.
+	  - Replace the 'A' name for the domain address in the DNS view for a domain. Call
+	    it just that - 'Domain address'.
+	  - Accept empty NS, MX and/or AFSDB records (don't show empty <td></td>) in the
+	    DNS view for a domain.
+	  - Add a pluralis suffix for MX/NS in the DNS view for a domain if there is
+	    more than one value.
+
 	Misc changes
+	  - ACI is good - enable it by default in the 'demo/database-main.ldif' file.
+	  - Remove hardcoded attributes with the PQL_ATTR_* defines from
+	    include/attrib.dnszone.inc:attribute_translate_type().
 
 phpQLAdmin 2.2.5 Release (Jun 18 2005)
 	Bug fixes
