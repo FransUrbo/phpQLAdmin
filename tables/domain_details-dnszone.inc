@@ -78,7 +78,7 @@
 
 <?php		if($new_tr) { $new_tr = 0; ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Name server')?></td>
+        <td class="title"><?=$LANG->_('Name servers')?></td>
 <?php		} else { ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"></td>
@@ -115,7 +115,7 @@
 
 <?php		if($new_tr) { $new_tr = 0; ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Mail exchanger')?></td>
+        <td class="title"><?=$LANG->_('Mail exchangers')?></td>
 <?php		} else { ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"></td>
@@ -141,6 +141,43 @@
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"></td>
         <td><a href="bind9_edit_attributes.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&action=add&rdn=<?php echo urlencode($zones[$dns_domain_name]['@']['RDN']); ?>&type=mx&mx=<?=$mx?>&view=<?=$_REQUEST["view"]?>&dns_domain_name=<?=$dns_domain_name?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('SOA value')))." MX"?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('SOA value')))." MX"?></a></td>
+        <td></td>
+      </tr>
+
+<?php if(is_array($zones[$dns_domain_name]['@']['AFSDB'])) {
+	$new_tr = 1;
+
+	foreach($zones[$dns_domain_name]['@']['AFSDB'] as $afsdb) {
+?>
+
+<?php		if($new_tr) { $new_tr = 0; ?>
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title"><?=$LANG->_('AFS Database servers')?></td>
+<?php		} else { ?>
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title"></td>
+<?php		} ?>
+        <td><a href="bind9_edit_attributes.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&action=modify&rdn=<?php echo urlencode($zones[$dns_domain_name]['@']['RDN']); ?>&type=afsdb&afsdb=<?=$afsdb?>&view=<?=$_REQUEST["view"]?>&dns_domain_name=<?=$dns_domain_name?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Modify SOA value')." AFSDB"?>"></a>&nbsp;<?=$afsdb?></td>
+        <td>
+          <a href="bind9_edit_attributes.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&action=del&rdn=<?php echo urlencode($zones[$dns_domain_name]['@']['RDN']); ?>&type=afsdb&oldvalue=<?=$afsdb?>&view=<?=$_REQUEST["view"]?>&dns_domain_name=<?=$dns_domain_name?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Delete host')?>"></a>
+        </td>
+      </tr>
+<?php	  }
+      } else {
+?>
+
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title"><?=$LANG->_('AFS Database Server')?></td>
+        <td><a href="bind9_edit_attributes.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&action=modify&rdn=<?php echo urlencode($zones[$dns_domain_name]['@']['RDN']); ?>&type=afsdb&afsdb=<?=$afsdb?>&view=<?=$_REQUEST["view"]?>&dns_domain_name=<?=$dns_domain_name?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Modify SOA value')." AFSDB"?>"></a>&nbsp;<?=$zones[$dns_domain_name]['@']['AFSDB']?></td>
+        <td>
+          <a href="bind9_edit_attributes.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&action=del&rdn=<?php echo urlencode($zones[$dns_domain_name]['@']['RDN']); ?>&type=afsdb&oldvalue=<?=$zones[$dns_domain_name]['@']['AFSDB']?>&view=<?=$_REQUEST["view"]?>&dns_domain_name=<?=$dns_domain_name?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Delete host')?>"></a>
+        </td>
+      </tr>
+<?php } ?>
+
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title"></td>
+        <td><a href="bind9_edit_attributes.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&action=add&rdn=<?php echo urlencode($zones[$dns_domain_name]['@']['RDN']); ?>&type=afsdb&afsdb=<?=$afsdb?>&view=<?=$_REQUEST["view"]?>&dns_domain_name=<?=$dns_domain_name?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('SOA value')))." AFSDB"?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('SOA value')))." AFSDB"?></a></td>
         <td></td>
       </tr>
     </th>
