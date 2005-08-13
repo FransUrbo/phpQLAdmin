@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.32.2.4 2005-06-17 08:26:52 turbo Exp $
+// $Id: pql_bind9.inc,v 2.32.2.4.2.1 2005-08-13 14:52:37 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -128,6 +128,16 @@ function pql_bind9_get_zone($linkid, $branchname, $domainname = '') {
 			$ZONE[$zone][$host]['SOA']['RETRY']   = $soa[4];
 			$ZONE[$zone][$host]['SOA']['EXPIRE']  = $soa[5];
 			$ZONE[$zone][$host]['SOA']['TTL']     = $soa[6];
+		}
+
+		// AFS Record
+		if($objects[$i]['afsdbrecord']) {
+			if(is_array($objects[$i]['afsdbrecord'])) {
+				// We have multiple records
+				foreach($objects[$i]['afsdbrecord'] as $record)
+				  $ZONE[$zone][$host]['AFSDB'][] = pql_maybe_idna_decode($record);
+			} else
+			  $ZONE[$zone][$host]['AFSDB'] = pql_maybe_idna_decode($objects[$i]['afsdbrecord']);
 		}
 		
 		// Sort the host array 
