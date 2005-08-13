@@ -63,7 +63,7 @@
       <tr></tr>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title">A</td>
+        <td class="title"><?=$LANG->_('Domain address')?></td>
         <td><a href="bind9_edit_attributes.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&action=modify&rdn=<?php echo urlencode($zones[$dns_domain_name]['@']['RDN']); ?>&type=a&view=<?=$_REQUEST["view"]?>&dns_domain_name=<?=$dns_domain_name?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Modify SOA value')." A"?>"></a>&nbsp;<?=$zones[$dns_domain_name]['@']['A']?></td>
         <td>
           <a href="bind9_edit_attributes.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&action=del&rdn=<?php echo urlencode($zones[$dns_domain_name]['@']['RDN']); ?>&type=a&view=<?=$_REQUEST["view"]?>&oldvalue=<?=$zones[$dns_domain_name]['@']['A']?>&dns_domain_name=<?=$dns_domain_name?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Delete host')?>"></a>
@@ -89,7 +89,7 @@
         </td>
       </tr>
 <?php	  }
-      } else {
+      } elseif($zones[$dns_domain_name]['@']['NS']) {
 ?>
 
       <tr class="<?php pql_format_table(); ?>">
@@ -99,13 +99,21 @@
           <a href="bind9_edit_attributes.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&action=del&rdn=<?php echo urlencode($zones[$dns_domain_name]['@']['RDN']); ?>&type=ns&oldvalue=<?=$zones[$dns_domain_name]['@']['NS']?>&view=<?=$_REQUEST["view"]?>&dns_domain_name=<?=$dns_domain_name?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Delete host')?>"></a>
         </td>
       </tr>
-<?php } ?>
+<?php } else { ?>
 
       <tr class="<?php pql_format_table(); ?>">
+        <td class="title"><?=$LANG->_('Mail exchanger')?></td>
+<?php } ?>
+
+<?php if($zones[$dns_domain_name]['@']['NS']) { ?>
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"></td>
+<?php } ?>
         <td><a href="bind9_edit_attributes.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&action=add&rdn=<?php echo urlencode($zones[$dns_domain_name]['@']['RDN']); ?>&type=ns&ns=<?=$ns?>&view=<?=$_REQUEST["view"]?>&dns_domain_name=<?=$dns_domain_name?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('SOA value')))." NS"?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('SOA value')))." NS"?></a></td>
         <td></td>
+<?php if($zones[$dns_domain_name]['@']['NS']) { ?>
       </tr>
+<?php } ?>
 
 <?php if(is_array($zones[$dns_domain_name]['@']['MX'])) {
 	$new_tr = 1;
@@ -126,7 +134,7 @@
         </td>
       </tr>
 <?php	  }
-      } else {
+      } elseif($zones[$dns_domain_name]['@']['MX']) {
 ?>
 
       <tr class="<?php pql_format_table(); ?>">
@@ -136,13 +144,21 @@
           <a href="bind9_edit_attributes.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&action=del&rdn=<?php echo urlencode($zones[$dns_domain_name]['@']['RDN']); ?>&type=mx&oldvalue=<?=$zones[$dns_domain_name]['@']['MX']?>&view=<?=$_REQUEST["view"]?>&dns_domain_name=<?=$dns_domain_name?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Delete host')?>"></a>
         </td>
       </tr>
-<?php } ?>
+<?php } else { ?>
 
       <tr class="<?php pql_format_table(); ?>">
+        <td class="title"><?=$LANG->_('Mail exchanger')?></td>
+<?php } ?>
+
+<?php if($zones[$dns_domain_name]['@']['MX']) { ?>
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"></td>
+<?php } ?>
         <td><a href="bind9_edit_attributes.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&action=add&rdn=<?php echo urlencode($zones[$dns_domain_name]['@']['RDN']); ?>&type=mx&mx=<?=$mx?>&view=<?=$_REQUEST["view"]?>&dns_domain_name=<?=$dns_domain_name?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('SOA value')))." MX"?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('SOA value')))." MX"?></a></td>
         <td></td>
+<?php if($zones[$dns_domain_name]['@']['MX']) { ?>
       </tr>
+<?php } ?>
 
 <?php if(is_array($zones[$dns_domain_name]['@']['AFSDB'])) {
 	$new_tr = 1;
@@ -163,7 +179,7 @@
         </td>
       </tr>
 <?php	  }
-      } else {
+      } elseif($zones[$dns_domain_name]['@']['AFSDB']) {
 ?>
 
       <tr class="<?php pql_format_table(); ?>">
@@ -173,13 +189,21 @@
           <a href="bind9_edit_attributes.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&action=del&rdn=<?php echo urlencode($zones[$dns_domain_name]['@']['RDN']); ?>&type=afsdb&oldvalue=<?=$zones[$dns_domain_name]['@']['AFSDB']?>&view=<?=$_REQUEST["view"]?>&dns_domain_name=<?=$dns_domain_name?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Delete host')?>"></a>
         </td>
       </tr>
-<?php } ?>
+<?php } else { ?>
 
       <tr class="<?php pql_format_table(); ?>">
+        <td class="title"><?=$LANG->_('Mail exchanger')?></td>
+<?php } ?>
+
+<?php if($zones[$dns_domain_name]['@']['AFSDB']) { ?>
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"></td>
+<?php } ?>
         <td><a href="bind9_edit_attributes.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&action=add&rdn=<?php echo urlencode($zones[$dns_domain_name]['@']['RDN']); ?>&type=afsdb&afsdb=<?=$afsdb?>&view=<?=$_REQUEST["view"]?>&dns_domain_name=<?=$dns_domain_name?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('SOA value')))." AFSDB"?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('SOA value')))." AFSDB"?></a></td>
         <td></td>
+<?php if($zones[$dns_domain_name]['@']['AFSDB']) { ?>
       </tr>
+<?php } ?>
     </th>
   </table>
 
