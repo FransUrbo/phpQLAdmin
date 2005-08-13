@@ -1,28 +1,31 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.16.2.2.2.2 2005-07-22 12:22:58 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.16.2.2.2.3 2005-08-13 14:56:47 turbo Exp $
 
 // {{{ attribute_translate_type(attrib)
 function attribute_translate_type($attrib) {
   // Translate the TYPE to dNSZone objectclass attribute
   switch($attrib) {
 	case "a":
-	  return 'aRecord';
+	  return pql_get_define("PQL_ATTR_ARECORD");
 	case "host":
-	  return 'relativeDomainName';
+	  return pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME");
 	case "ttl":
-	  return 'dNSTTL';
+	  return pql_get_define("PQL_ATTR_DNSTTL");
 	case "ns":
-	  return 'nSRecord';
+	  return pql_get_define("PQL_ATTR_NSRECORD");
 	case "mx":
-	  return 'mXRecord';
+	  return pql_get_define("PQL_ATTR_MXRECORD");
 	case "cname":
-	  return 'cNAMERecord';
+	  return pql_get_define("PQL_ATTR_CNAMERECORD");
 	case "srv":
-	  return 'sRVRecord';
+	  return pql_get_define("PQL_ATTR_SRVRECORD");
 	case "txt":
-	  return 'tXTRecord';
+	  return pql_get_define("PQL_ATTR_TXTRECORD");
+	case "afsdb":
+	  return pql_get_define("PQL_ATTR_AFSRECORD");
+
 	default:
 	  return $_REQUEST["attrib"];
   }
@@ -60,7 +63,7 @@ function attribute_print_form() {
 		}
 	}
 
-	if((lc($attrib) == 'mxrecord')) {
+	if((lc($attrib) == 'mxrecord') or (lc($attrib) == 'afsdbrecord')) {
 		if($_REQUEST["oldvalue"]) {
 			$tmp  = split(' ', $_REQUEST["oldvalue"]);
 			$prio = $tmp[0];
@@ -92,9 +95,9 @@ function attribute_print_form() {
 	   }
 ?>
         </th>
-<?php	if(lc($attrib) == 'mxrecord') { ?>
+<?php	if((lc($attrib) == 'mxrecord') or (lc($attrib) == 'afsdbrecord')) { ?>
           <tr class="<?php pql_format_table(); ?>">
-            <td class="title"><?=$LANG->_('MX Priority')?>:</td>
+            <td class="title"><?=$LANG->_('Priority')?>:</td>
             <td><input type="text" name="priority" value="<?=$prio?>" size="20"></td>
             <td></td>
           </tr>
@@ -120,7 +123,7 @@ function attribute_print_form() {
           </tr>
 
           <input type="hidden" name="old_type" value="<?=preg_replace('/record/', '', $attrib)?>">
-<?php	if(lc($attrib) == 'mxrecord') { ?>
+<?php	if((lc($attrib) == 'mxrecord') or (lc($attrib) == 'afsdbrecord')) { ?>
           <tr class="<?php pql_format_table(); ?>">
             <td class="title" align="right">
               <img src="images/info.png" width="16" height="16" alt="" border="0" align="right">
@@ -138,6 +141,7 @@ function attribute_print_form() {
                 <option value="hinfo"<?php if($attrib == 'hinforecord') { echo " SELECTED"; } ?>>HINFO</option>
                 <option value="mx"<?php    if($attrib == 'mxrecord')    { echo " SELECTED"; } ?>>MX</option>
                 <option value="ns"<?php    if($attrib == 'nsrecord')    { echo " SELECTED"; } ?>>NS</option>
+                <option value="afsdb"<?php if($attrib == 'afsdbrecord') { echo " SELECTED"; } ?>>AFSDB</option>
               </select>
             </td>
             <td></td>
@@ -147,7 +151,7 @@ function attribute_print_form() {
 
       <input type="hidden" name="submit"          value="1">
 <?php	if($action != 'add') {
-			if((lc($attrib) == 'mxrecord')) {
+			if((lc($attrib) == 'mxrecord') or (lc($attrib) == 'mxrecord')) {
 ?>
       <input type="hidden" name="oldvalue"        value="<?=$prio." ".$_REQUEST["oldvalue"]?>">
 <?php		} else { ?>
@@ -190,7 +194,7 @@ function attribute_save($action) {
 	if($_REQUEST["newvalue"]) {
 	  $newvalue = $_REQUEST["newvalue"];
 	  
-	  if(@(lc($attrib) == 'mxrecord') && isset($_REQUEST["priority"]))
+	  if((@(lc($attrib) == 'mxrecord') or @(lc($attrib) == 'afsdbrecord')) && isset($_REQUEST["priority"]))
 		$newvalue = $_REQUEST["priority"] . " " . $newvalue;
 	}
 
