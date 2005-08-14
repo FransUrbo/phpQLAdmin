@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.37 2005-05-26 15:53:18 turbo Exp $
+// $Id: config_attributes.inc,v 2.38 2005-08-14 11:34:05 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -180,6 +180,8 @@ pql_set_define("PQL_ATTR_ZONENAME",							strtolower("zoneName"),						false);
 pql_set_define("PQL_ATTR_SRVRECORD",						strtolower("srvRecord"),					false);
 pql_set_define("PQL_ATTR_SOARECORD",						strtolower("soaRecord"),					false);
 pql_set_define("PQL_ATTR_TXTRECORD",						strtolower("txtRecord"),					false);
+pql_set_define("PQL_ATTR_PTRRECORD",						strtolower("PTRRecord"),					false);
+pql_set_define("PQL_ATTR_AFSRECORD",						strtolower("afsDBRecord"),					false);
 // }}}
 
 // {{{ Attributes used by the Apache config
@@ -225,6 +227,23 @@ pql_set_define("PQL_ATTR_SPAMASSASSIN", 					strtolower('spamAssassin'),					fal
 pql_set_define("PQL_ATTR_PASSWD_CLEAR", 					strtolower('clearTextPassword'),			false);
 // }}}
 
+// {{{ Samba Attributes
+pql_set_define("PQL_ATTR_SAMBASID",							strtolower('sambaSID'),						false);
+pql_set_define("PQL_ATTR_SAMBAPROFILEPATH",					strtolower('sambaProfilePath'),				false);
+pql_set_define("PQL_ATTR_SAMBAHOMEDRIVE",					strtolower('sambaHomeDrive'),				false);
+pql_set_define("PQL_ATTR_SAMBAHOMEPATH",					strtolower('sambaHomePath'),				false);
+pql_set_define("PQL_ATTR_SAMBADOMAINNAME",					strtolower('sambaDomainName'),				false);
+pql_set_define("PQL_ATTR_SAMBALOGONSCRIPT",					strtolower('sambaLogonScript'),				false);
+pql_set_define("PQL_ATTR_SAMBAUSERWORKSTATIONS",			strtolower('sambaUserWorkstations'),		false);
+pql_set_define("PQL_ATTR_SAMBALMPASSWORD",					strtolower('sambaLMPassword'),				false);
+pql_set_define("PQL_ATTR_SAMBANTPASSWORD",					strtolower('sambaNTPassword'),				false);
+pql_set_define("PQL_ATTR_SAMBAACCTFLAGS",					strtolower('sambaAcctFlags'),				false);
+pql_set_define("PQL_ATTR_SAMBAACCTFLAGS",					strtolower('sambaAcctFlags'),				false);
+pql_set_define("PQL_ATTR_SAMBAPWDMUSTCHANGE",				strtolower('sambaPwdMustChange'),			false);
+pql_set_define("PQL_ATTR_SAMBAPWDLASTSET",					strtolower('sambaPwdLastSet'),				false);
+pql_set_define("PQL_ATTR_SAMBAOBJECTCLASS",					strtolower('sambaSamAccount'),				false);
+// }}}
+
 // {{{ These are the internal phpQLAdmin attributes - GLOBAL configuration
 // Toggles
 pql_set_define("PQL_ATTR_CONTROL_USE", 						strtolower('useControls'),					false);
@@ -266,7 +285,6 @@ pql_set_define("PQL_ATTR_CONTROL_AUTOADDLOCALS", 			strtolower('autoAddLocals'),
 pql_set_define("PQL_ATTR_CONTROL_AUTOADDRCPTHOSTS", 		strtolower('autoAddRCPTHosts'),				false);
 
 // Setup
-pql_set_define("PQL_ATTR_ADMINISTRATOR",					strtolower('administrator'),				false);
 pql_set_define("PQL_ATTR_SEEALSO",							strtolower('seeAlso'),						false);
 pql_set_define("PQL_ATTR_BASEHOMEDIR",						strtolower('baseHomeDir'),					false);
 pql_set_define("PQL_ATTR_BASEMAILDIR",						strtolower('baseMailDir'),					false);
