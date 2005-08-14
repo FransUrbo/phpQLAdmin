@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.23 2005-06-09 15:05:35 turbo Exp $
+// $Id: bind9_add.php,v 2.24 2005-08-14 10:53:27 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -132,6 +132,7 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
               <option value="hinfo" <?php if($_REQUEST["record_type"] == 'hinfo') { echo "SELECTED"; } ?>>HINFO</option>
               <option value="mx" <?php if($_REQUEST["record_type"] == 'mx') { echo "SELECTED"; } ?>>MX</option>
               <option value="ns" <?php if($_REQUEST["record_type"] == 'ns') { echo "SELECTED"; } ?>>NS</option>
+              <option value="ptr" <?php if($_REQUEST["record_type"] == 'ptr') { echo "SELECTED"; } ?>>PTR</option>
             </select>
           </td>
           <td><input type="text" name="dest" value="<?=$_REQUEST["dest"]?>" size="20"></td>
@@ -161,7 +162,30 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 		// }}}
 	  } else {
 		  // {{{ Add bind9 host
-		  $entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")]	= pql_maybe_idna_encode($_REQUEST["hostname"]);
+		  if($_REQUEST["record_type"] == "ptr") {
+			// {{{ Special circumstances - it's a PTR.
+
+			// Reverse the hostname ('192.168.156.1').
+			$tmp  = split('\.', $_REQUEST["hostname"]);
+			$count = count($tmp);
+			for($i=$count-1; $tmp[$i]; $i--) {
+			  $rev .= $tmp[$i];
+			  if($tmp[$i-1])
+				$rev .= ".";
+			}
+			// rev='4.156.168.192'
+
+			// Extract the zone part from the zone/domain name ('168.192.in-addr.arpa').
+			$zone = preg_replace('/\.in-addr\.arpa/', '', $_REQUEST["domainname"]);
+			$zone = preg_replace('/\./', '\\\.', $zone, -1); // Just so that next regexp doesn't catch the dot.
+
+			// Remove the zone ('.168.192') from the reverse ('4.156.168.192') => '4.156'.
+			$host = preg_replace("/\.$zone/", '', $rev);
+
+			$entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")]	= $host;
+			// }}}
+		  } else
+			$entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")]	= pql_maybe_idna_encode($_REQUEST["hostname"]);
 		  $entry[pql_get_define("PQL_ATTR_ZONENAME")]			= $_REQUEST["domainname"];
 		  $entry[pql_get_define("PQL_ATTR_DNSTTL")]				= pql_bind9_get_ttl($_pql->ldap_linkid, $_REQUEST["domainname"]);
 		  switch($_REQUEST["record_type"]) {
@@ -179,6 +203,9 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 			  break;
 			case "ns":
 			  $entry[pql_get_define("PQL_ATTR_NSRECORD")]		= pql_maybe_idna_encode($_REQUEST["dest"]);
+			  break;
+			case "ptr":
+			  $entry[pql_get_define("PQL_ATTR_PTRRECORD")]		= pql_maybe_idna_encode($_REQUEST["dest"]);
 			  break;
 		  }
 
