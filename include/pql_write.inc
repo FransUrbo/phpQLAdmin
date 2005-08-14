@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.31 2005-06-13 12:03:17 turbo Exp $
+// $Id: pql_write.inc,v 2.32 2005-08-14 18:43:57 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -45,7 +45,7 @@ function pql_write_add($linkid, $dn, $entry, $type, $caller) {
 		}
 
 		// Cache this object
-		pql_cache_add($dn, $entry);
+		pql_cache_add($entry);
 	}
 
 	return(true);
@@ -408,8 +408,10 @@ function pql_user_add($ldap_linkid, $domain, $dn, $entry, $type, $branch) {
 	echo "Added $dn<br>";
 	// }}}
     
-	// {{{ If this is a 'system' account, create the Group object
-	if($type == "system" and $entry[pql_get_define("PQL_ATTR_QMAILGID")]) {
+	// {{{ If this is a 'posixAccount' object, create the Group object
+	if(in_array('posixaccount', $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")]) and 
+	   $entry[pql_get_define("PQL_ATTR_QMAILGID")]) 
+	{
 		// Remember this for the NEW entry object...
 		$gidnr   = $entry[pql_get_define("PQL_ATTR_QMAILGID")];
 		$rdnattr = $entry[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)];
