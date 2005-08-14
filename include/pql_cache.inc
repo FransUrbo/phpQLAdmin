@@ -1,24 +1,29 @@
 <?php
 // phpQLAdmin cache Application Programming Interface (API)
 //
-// $Id: pql_cache.inc,v 2.4 2005-06-11 10:54:29 turbo Exp $
+// $Id: pql_cache.inc,v 2.5 2005-08-14 15:01:40 turbo Exp $
 //
 
 // Global variables
 $pql_cache = array();
 
-// {{{ pql_cache_add(dn, object)
+// {{{ pql_cache_add(object)
 // Adds an LDAP object to the cache
-function pql_cache_add($dn, $object) {
+function pql_cache_add($object) {
 	global $pql_cache, $_SESSION;
 	if(file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE"))
 	  return;
 
 	// URL decode the object DN if it's URL ENcoded
-	$dn = pql_maybe_encode(urldecode(lc($dn)));
+	$dn = pql_maybe_encode(urldecode(lc($object["dn"])));
 
 	// It might exists, but we don't care! Overwrite it if do exist...
 	$pql_cache[$dn] = $object;
+
+	if(file_exists($_SESSION["path"]."/.DEBUG_CACHE")) {
+	  echo "Caching '$dn':";
+	  printr($object);
+	}
 }
 // }}}
 
