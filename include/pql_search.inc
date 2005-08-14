@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.43 2005-07-22 10:09:28 turbo Exp $
+// $Id: pql_search.inc,v 2.44 2005-08-14 15:16:34 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -70,13 +70,13 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
 				// Ignore the 'count' value and values with a number
 				// ldap_get_entries() returns a very funny array - flatten
 				// it!
-				if(is_array($value) and $value[1]) {
+				if(is_array($value) and !empty($value[1])) {
 					// A multi value - such as 'mailAlternateAddress'
 					// or 'objectClass' etc. Take ALL values, ignoring
 					// any empty values that might exists.
 					$count = count($value);
 					for($j=0; $j <= $count; $j++) {
-					  if($value[$j])
+					  if(!empty($value[$j]))
 						$entry[$i][$key][] = pql_maybe_decode($value[$j]);
 					}
 				} elseif(!is_array($value))
@@ -90,7 +90,7 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
 		}
 
 		// Cache this/these object
-		pql_cache_add($dn, $entry[$i]);
+		pql_cache_add($entry[$i]);
 	  }
 	}
 	// }}}
@@ -138,7 +138,7 @@ function pql_get_attribute($linkid, $dn, $attribute, $operational = 0) {
 
     // Get the (WHOLE) object but only return only the attributes of interest.
 	$object = pql_search($linkid, $dn, "(".pql_get_define("PQL_ATTR_OBJECTCLASS")."=*)", 'BASE', 1, $operational);
-    if($object and $object[0][$attribute])
+    if(!empty($object) and !empty($object[0][$attribute]))
 	  return($object[0][$attribute]);
 	elseif($object and $object[$attribute])
 	  // Most likley returned from a cached object...
@@ -780,15 +780,19 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 		  // Go through each object class
 		  foreach($VALUE as $value_attrib => $value_data) {
 			// Go through each MUST attribute(s)
-			for($j=0; $value_data["MUST"][$j]; $j++) {
+			for($j=0; !empty($value_data["MUST"][$j]); $j++) {
 			  // Go through each attribute alias(es)
 			  foreach($ATTRS["ALIAS"] as $attrs_attrib => $attrs_data) {
-				if(lc($value_data["MAY"][$j]) == lc($attrs_attrib)) {
+				if(!empty($value_data["MAY"][$j]) and
+				   (lc($value_data["MAY"][$j]) == lc($attrs_attrib)))
+				{
 				  foreach($attrs_data as $alias) 
 					$VALUE[$value_attrib]["MAY"][$j] .= ":$alias";
 				}
 
-				if(lc($value_data["MUST"][$j]) == lc($attrs_attrib)) {
+				if(!empty($value_data["MUST"][$j]) and
+				   (lc($value_data["MUST"][$j]) == lc($attrs_attrib)))
+				{
 				  foreach($attrs_data as $alias) 
 					$VALUE[$value_attrib]["MUST"][$j] .= ":$alias";
 				}
