@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.36 2005-06-08 14:07:28 turbo Exp $
+// $Id: pql_bind9.inc,v 2.37 2005-08-14 14:50:02 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -56,7 +56,7 @@ function pql_bind9_get_zone($linkid, $branchname, $domainname = '') {
 					  // Remove the domain name, so we're left with the hostname.
 					  $cname = str_replace(".$zone.", "", $cname);
 					
-					$ZONE[$zone][$host]['CNAME'] = $cname;
+					$ZONE[$zone][$host]['CNAME'][] = $cname;
 				}
 			} else {
 				$cname = pql_maybe_idna_decode($objects[$i]['cnamerecord']);
@@ -77,7 +77,7 @@ function pql_bind9_get_zone($linkid, $branchname, $domainname = '') {
 		if($objects[$i]['srvrecord']) {
 			if(is_array($objects[$i]['srvrecord'])) {
 				foreach($objects[$i]['srvrecord'] as $record)
-				  $ZONE[$zone][$host]['SRV'] = $record;
+				  $ZONE[$zone][$host]['SRV'][] = $record;
 			} else
 			  $ZONE[$zone][$host]['SRV'] = $objects[$i]['srvrecord'];
 		}
@@ -128,6 +128,16 @@ function pql_bind9_get_zone($linkid, $branchname, $domainname = '') {
 			$ZONE[$zone][$host]['SOA']['RETRY']   = $soa[4];
 			$ZONE[$zone][$host]['SOA']['EXPIRE']  = $soa[5];
 			$ZONE[$zone][$host]['SOA']['TTL']     = $soa[6];
+		}
+
+		// AFS Record
+		if($objects[$i]['afsdbrecord']) {
+			if(is_array($objects[$i]['afsdbrecord'])) {
+				// We have multiple records
+				foreach($objects[$i]['afsdbrecord'] as $record)
+				  $ZONE[$zone][$host]['AFSDB'][] = pql_maybe_idna_decode($record);
+			} else
+			  $ZONE[$zone][$host]['AFSDB'] = pql_maybe_idna_decode($objects[$i]['afsdbrecord']);
 		}
 		
 		// Sort the host array 
@@ -333,6 +343,52 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 	}
 
 	$dn = "relativeDomainName=$tmp,$dn,ou=DNS,$basedn";
+	// }}}
+
+	// {{{ Just in case the object already exists, we merge the new with the old...
+	// Try to find out which attribute we're trying to add/modify
+	$TYPES = array(pql_get_define("PQL_ATTR_ARECORD"),
+				   pql_get_define("PQL_ATTR_CNAMERECORD"), 
+				   pql_get_define("PQL_ATTR_HINFORECORD"),
+				   pql_get_define("PQL_ATTR_MXRECORD"),
+				   pql_get_define("PQL_ATTR_NSRECORD"),
+				   pql_get_define("PQL_ATTR_PTRRECORD"));
+	foreach($TYPES as $TYPE) {
+	  $type = lc($TYPE);
+	  if($entry[$type]) {
+		// This one is defined. That's the attribute!
+		$attrib = $type;
+		break;
+	  }
+	}
+
+	// Does the object exists (with this attribute)?
+	if($attrs = pql_get_attribute($linkid, $dn, $attrib)) {
+	  // It DOES exists!
+
+	  if(!is_array($attrs))
+		$attrs = array($attrs);
+
+	  // Add the new attribute to the old list
+	  $attrs[] = $entry[$attrib];
+
+	  // Recreate the LDIF
+	  unset($entry);
+	  $entry[$attrib] = $attrs;
+
+	  // Create a LDIF object to print in case of error
+	  $LDIF = pql_create_ldif("pql_bind9_add_host", $dn, $entry);
+	  if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+		echo $LDIF;
+	  } else {
+		if(!pql_write_mod($linkid, $dn, $entry, "pql_bind9_add_host")) {
+		  pql_format_error(1);
+		  die($LDIF);
+		}
+	  }
+
+	  return $dn;
+	}
 	// }}}
 
 	$entry['objectClass'][] = 'top';
