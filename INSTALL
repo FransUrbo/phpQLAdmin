@@ -1,6 +1,6 @@
 phpQLAdmin - Installation Guide
 -------------------------------
-$Id: INSTALL,v 2.6 2005-02-24 17:04:00 turbo Exp $
+$Id: INSTALL,v 2.7 2005-08-14 11:09:52 turbo Exp $
 
 Software Requirements:
 ----------------------
@@ -25,8 +25,10 @@ PHP additionals (nice-to-have-features):
 Additional Requirements for qmail-ldap/control patch support:
 -------------------------------------------------------------
 - LDAP server with support for "qmailControl" objectclass
-- "qmailControl" objectclass must contain all attributes which you want
-  to administrate trough phpQLAdmin
+  The "qmailControl" objectclass must contain all attributes which
+  you want to administrate trough phpQLAdmin
+- LDAP server with support for the "sambaSamAccount" objectclass
+  (see doc/README.samba for more information).
 
 Install:
 --------
