@@ -1,27 +1,31 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.18 2005-07-22 12:26:48 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.19 2005-08-14 11:26:47 turbo Exp $
 
 // {{{ attribute_translate_type(attrib)
 function attribute_translate_type($attrib) {
   // Translate the TYPE to dNSZone objectclass attribute
   switch($_REQUEST["attrib"]) {
 	case "a":
+	  return pql_get_define("PQL_ATTR_ARECORD");
 	case "host":
-	  return 'relativeDomainName';
+	  return pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME");
 	case "ttl":
-	  return 'dNSTTL';
+	  return pql_get_define("PQL_ATTR_DNSTTL");
 	case "ns":
-	  return 'nSRecord';
+	  return pql_get_define("PQL_ATTR_NSRECORD");
 	case "mx":
-	  return 'mXRecord';
+	  return pql_get_define("PQL_ATTR_MXRECORD");
 	case "cname":
-	  return 'cNAMERecord';
+	  return pql_get_define("PQL_ATTR_CNAMERECORD");
 	case "srv":
-	  return 'sRVRecord';
+	  return pql_get_define("PQL_ATTR_SRVRECORD");
 	case "txt":
-	  return 'tXTRecord';
+	  return pql_get_define("PQL_ATTR_TXTRECORD");
+	case "afsdb":
+	  return pql_get_define("PQL_ATTR_AFSRECORD");
+
 	default:
 	  return $_REQUEST["attrib"];
   }
@@ -59,7 +63,7 @@ function attribute_print_form() {
 		}
 	}
 
-	if((lc($attrib) == 'mxrecord')) {
+	if((lc($attrib) == 'mxrecord') or (lc($attrib) == 'afsdbrecord')) {
 		if($_REQUEST["oldvalue"]) {
 			$tmp  = split(' ', $_REQUEST["oldvalue"]);
 			$prio = $tmp[0];
@@ -91,9 +95,9 @@ function attribute_print_form() {
 	   }
 ?>
         </th>
-<?php	if(lc($attrib) == 'mxrecord') { ?>
+<?php	if((lc($attrib) == 'mxrecord') or (lc($attrib) == 'afsdbrecord')) { ?>
           <tr class="<?php pql_format_table(); ?>">
-            <td class="title"><?=$LANG->_('MX Priority')?>:</td>
+            <td class="title"><?=$LANG->_('Priority')?>:</td>
             <td><input type="text" name="priority" value="<?=$prio?>" size="20"></td>
             <td></td>
           </tr>
@@ -118,7 +122,8 @@ function attribute_print_form() {
 <?php	} ?>
           </tr>
 
-<?php	if(lc($attrib) == 'mxrecord') { ?>
+          <input type="hidden" name="old_type" value="<?=preg_replace('/record/', '', $attrib)?>">
+<?php	if((lc($attrib) == 'mxrecord') or (lc($attrib) == 'afsdbrecord')) { ?>
           <tr class="<?php pql_format_table(); ?>">
             <td class="title" align="right">
               <img src="images/info.png" width="16" height="16" alt="" border="0" align="right">
@@ -131,11 +136,12 @@ function attribute_print_form() {
             <td class="title">New record type</td>
             <td>
               <select name="type">
-                <option value="a" <?php     if($_REQUEST[$attrib] == 'a')     { echo "SELECTED"; } ?>>A</option>
-                <option value="cname" <?php if($_REQUEST[$attrib] == 'cname') { echo "SELECTED"; } ?>>CNAME</option>
-                <option value="hinfo" <?php if($_REQUEST[$attrib] == 'hinfo') { echo "SELECTED"; } ?>>HINFO</option>
-                <option value="mx" <?php    if($_REQUEST[$attrib] == 'mx')    { echo "SELECTED"; } ?>>MX</option>
-                <option value="ns" <?php    if($_REQUEST[$attrib] == 'ns')    { echo "SELECTED"; } ?>>NS</option>
+                <option value="a"<?php     if($attrib == 'arecord')     { echo " SELECTED"; } ?>>A</option>
+                <option value="cname"<?php if($attrib == 'cnamerecord') { echo " SELECTED"; } ?>>CNAME</option>
+                <option value="hinfo"<?php if($attrib == 'hinforecord') { echo " SELECTED"; } ?>>HINFO</option>
+                <option value="mx"<?php    if($attrib == 'mxrecord')    { echo " SELECTED"; } ?>>MX</option>
+                <option value="ns"<?php    if($attrib == 'nsrecord')    { echo " SELECTED"; } ?>>NS</option>
+                <option value="afsdb"<?php if($attrib == 'afsdbrecord') { echo " SELECTED"; } ?>>AFSDB</option>
               </select>
             </td>
             <td></td>
@@ -145,12 +151,13 @@ function attribute_print_form() {
 
       <input type="hidden" name="submit"          value="1">
 <?php	if($action != 'add') {
-			if((lc($attrib) == 'mxrecord')) {
+			if((lc($attrib) == 'mxrecord') or (lc($attrib) == 'mxrecord')) {
 ?>
       <input type="hidden" name="oldvalue"        value="<?=$prio." ".$_REQUEST["oldvalue"]?>">
 <?php		} else { ?>
       <input type="hidden" name="oldvalue"        value="<?=$_REQUEST["oldvalue"]?>">
 <?php		} ?>
+<?php	} else { ?>
       <input type="hidden" name="type"            value="<?=$type?>">
 <?php	} ?>
       <input type="hidden" name="domain"          value="<?=urlencode($_REQUEST["domain"])?>">
@@ -163,6 +170,7 @@ function attribute_print_form() {
 <?php	} ?>
       <input type="hidden" name="rdn"             value="<?=urlencode($_REQUEST["rdn"])?>">
       <input type="hidden" name="dns_domain_name" value="<?=$_REQUEST["dns_domain_name"]?>">
+      <input type="hidden" name="type"            value="<?=$_REQUEST["type"]?>">
       <br>
       <input type="submit" value="<?=$LANG->_('Save')?>">
     </form>
@@ -180,10 +188,13 @@ function attribute_save($action) {
 	if($_REQUEST["type"])
 	  $attrib = attribute_translate_type($_REQUEST["type"]);
 
+	if($_REQUEST["old_type"])
+	  $oldtype = attribute_translate_type($_REQUEST["old_type"]);
+
 	if($_REQUEST["newvalue"]) {
 	  $newvalue = $_REQUEST["newvalue"];
 	  
-	  if(@(lc($attrib) == 'mxrecord') && $_REQUEST["priority"])
+	  if((@(lc($attrib) == 'mxrecord') or @(lc($attrib) == 'afsdbrecord')) && isset($_REQUEST["priority"]))
 		$newvalue = $_REQUEST["priority"] . " " . $newvalue;
 	}
 
@@ -257,11 +268,11 @@ function attribute_save($action) {
 		// }}}
 
 	  	// {{{ if(oldtype != newtype)
-		if($oldtype != $newtype) {
+		if(lc($oldtype) != lc($attrib)) {
 		  // Remove the 'oldtype' value
-		  if(!pql_modify_attribute($_pql->ldap_linkid, $dn, $_REQUEST["oldtype"], '', ''))
+		  if(!pql_modify_attribute($_pql->ldap_linkid, $dn, $oldtype, '', ''))
 			// This shouldn't really be possible, but until I find out that/if I'm wrong, I'll just die here!
-			die("Failed to remove the old attribute ".$_REQUEST["oldtype"]." with value ".$_REQUEST["oldvalue"]);
+			die("Failed to remove the old attribute '$oldtype' with value ".$_REQUEST["oldvalue"]);
 		}
 		// }}}
 
