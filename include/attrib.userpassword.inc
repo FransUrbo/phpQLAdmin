@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.32 2005-05-28 15:14:10 turbo Exp $
+// $Id: attrib.userpassword.inc,v 2.33 2005-08-14 11:29:50 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -134,6 +134,30 @@ function attribute_save($type) {
 		  // Make the new password a session variable as well, so that
 		  // we can update the used session password value in pql_modify_attribute()
 		  $_SESSION["NEW_PASS"] = $_REQUEST["userpassword"];
+		}
+
+		// Check if samba is in use so we can keep the passwords in sync.
+		// TODO: Perhaps we should give the admin the choice of weather or
+		//       not we should use lanman since it's so insecure.
+		//       -> Thoughts anyone?
+		$objectclasses = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"],
+										   pql_get_define("PQL_ATTR_OBJECTCLASS"));
+		if($objectclasses and !is_array($objectclasses))
+		  // Make it an array for the following foreach() to work..
+		  $objectclasses = array($objectclasses);
+
+		foreach($objectclasses as $oc) {
+		  if(eregi(pql_get_define("PQL_ATTR_SAMBAOBJECTCLASS"), $oc))
+			$USER_IS_SAMBA = 1;
+		}
+		
+		if($USER_IS_SAMBA){
+		  $nt = pql_password_hash($_REQUEST["userpassword"], '{ntpasswd}');
+		  $lm = pql_password_hash($_REQUEST["userpassword"], '{lmpasswd}');
+		  pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"],
+							   pql_get_define("PQL_ATTR_SAMBANTPASSWORD"), 1, $nt);
+		  pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"],
+							   pql_get_define("PQL_ATTR_SAMBALMPASSWORD"), 1, $lm);
 		}
 
 		if($_REQUEST["principal"] and extension_loaded('kadm5') and function_exists("kadm5_init_with_password") and ($_REQUEST["pwscheme"] == '{KERBEROS}')) {
