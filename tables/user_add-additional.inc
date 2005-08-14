@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-additional.inc,v 1.30 2005-05-18 20:29:22 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.31 2005-08-14 18:59:29 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <!-- Some hidden values from previous page(s) -->
 <?php if($_REQUEST["surname"] and pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_CN"))) { ?>
@@ -63,9 +63,9 @@
         <tr class="<?php pql_format_table(); ?>">
           <td class="title" valign="top"><?=$LANG->_('Path to homedirectory')?></td>
           <td>
-            &nbsp;&nbsp;&nbsp;
 <?php   if($_REQUEST["homedirectory"]) { ?>
             <?=$_REQUEST["homedirectory"]?>
+
             <input type="hidden" name="homedirectory" value="<?=$_REQUEST["homedirectory"]?>">
 <?php   } else { ?>
             <input type="text" name="homedirectory" size="60">
