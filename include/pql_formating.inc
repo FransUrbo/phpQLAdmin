@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.44 2005-06-13 11:48:51 turbo Exp $
+// $Id: pql_formating.inc,v 2.45 2005-08-14 15:15:02 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -112,7 +112,7 @@ function pql_generate_button($buttons, $link = '') {
 	  foreach($buttons as $view => $text) {
 		  // Generate the button link etc
 ?>
-    <a href="<?=$url?>view=<?=$view?><?php if($link) { echo "&$link"; } ?>"><img alt="/ <?=$LANG->_($text)?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?<?php echo urlencode($LANG->_($text)); ?>"></a>
+    <a href="<?=$url?>view=<?=$view?><?php if($link) { echo "&$link"; } ?>"><img alt="/ <?=$LANG->_($text)?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?php echo urlencode($LANG->_($text)); ?>"></a>
 <?php
 		  // Increase button counter"
 		  $i++;
