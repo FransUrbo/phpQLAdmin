@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.93 2005-06-11 12:20:00 turbo Exp $
+// $Id: user_detail.php,v 2.94 2005-08-14 11:06:15 turbo Exp $
 //
 // {{{ Setup session
 require("./include/pql_session.inc");
@@ -104,6 +104,7 @@ if(empty($_GET["view"]))
 // uses 'objectClass: pilotPerson' -> http://rfc-1274.rfcindex.net/
 $attribs = array("cn"					=> pql_get_define("PQL_ATTR_CN"),
 				 "sn"					=> pql_get_define("PQL_ATTR_SN"),
+				 "givenname"			=> pql_get_define("PQL_ATTR_GIVENNAME"),
 				 "uidnumber"			=> pql_get_define("PQL_ATTR_QMAILUID"),
 				 "gidnumber"			=> pql_get_define("PQL_ATTR_QMAILGID"),
 				 "loginshell"			=> pql_get_define("PQL_ATTR_LOGINSHELL"),
@@ -114,6 +115,7 @@ $attribs = array("cn"					=> pql_get_define("PQL_ATTR_CN"),
 				 "mailhost"				=> pql_get_define("PQL_ATTR_MAILHOST"),
 				 "homedirectory"		=> pql_get_define("PQL_ATTR_HOMEDIR"),
 				 "roomnumber"			=> pql_get_define("PQL_ATTR_ROOMNUMBER"),
+				 "o"					=> pql_get_define("PQL_ATTR_O"),
 				 "telephonenumber"		=> pql_get_define("PQL_ATTR_TELEPHONENUMBER"),
 				 "homephone"			=> pql_get_define("PQL_ATTR_HOMEPHONE"),
 				 "homepostaladdress"	=> pql_get_define("PQL_ATTR_HOMEPOSTALADDRESS"),
@@ -121,6 +123,13 @@ $attribs = array("cn"					=> pql_get_define("PQL_ATTR_CN"),
 				 "personaltitle"		=> pql_get_define("PQL_ATTR_PERSONALTITLE"),
 				 "mobile"				=> pql_get_define("PQL_ATTR_MOBILE"),
 				 "pager"				=> pql_get_define("PQL_ATTR_PAGER"),
+				 "sambasid"				=> pql_get_define("PQL_ATTR_SAMBASID"),
+				 "sambaprofilepath"		=> pql_get_define("PQL_ATTR_SAMBAPROFILEPATH"),
+				 "sambahomedrive"		=> pql_get_define("PQL_ATTR_SAMBAHOMEDRIVE"),
+				 "sambahomepath"		=> pql_get_define("PQL_ATTR_SAMBAHOMEPATH"),
+				 "sambadomainname"		=> pql_get_define("PQL_ATTR_SAMBADOMAINNAME"),
+				 "sambalogonscript"		=> pql_get_define("PQL_ATTR_SAMBALOGONSCRIPT"),
+				 "sambauserworkstations"=> pql_get_define("PQL_ATTR_SAMBAUSERWORKSTATIONS"),
 				 "startwithadvancedmode"=> pql_get_define("PQL_ATTR_START_ADVANCED"));
 foreach($attribs as $key => $attrib) {
 	if($attrib == pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_GET["rootdn"]))
@@ -195,13 +204,8 @@ if($uid) {
 	$memberuid = array();
 	foreach($_SESSION["BASE_DN"] as $base) {
 		$base  = urldecode($base);
-// BUG: This won't work - wrong params!!
-		$muids = pql_search($_pql->ldap_linkid, $base,
-							pql_get_define("PQL_ATTR_ADDITIONAL_GROUP")."=".$uid,
-							pql_get_define("PQL_ATTR_CN"));
-
-		for($i=0; isset($muids[$i]); $i++)
-		  $memberuid[] = $muids[$i];
+		$memberuid = pql_search($_pql->ldap_linkid, $base,
+								pql_get_define("PQL_ATTR_ADDITIONAL_GROUP")."=".$uid);
 	}
 }
 // }}}
@@ -215,8 +219,11 @@ if($objectclasses and !is_array($objectclasses)) {
   $objectclasses = array($objectclasses);
 }
 foreach($objectclasses as $oc) {
-	if(eregi('qmailGroup', $oc))
+	if(eregi(pql_get_define("PQL_ATTR_GROUP_OC"), $oc))
 	  $USER_IS_GROUP = 1;
+
+	if(eregi(pql_get_define("PQL_ATTR_SAMBAOBJECTCLASS"), $oc))
+	  $USER_IS_SAMBA = 1;
 }
 // }}}
 
@@ -239,6 +246,12 @@ $buttons = $buttons + $new;
 if(!$USER_IS_GROUP) {
 	$new = array('forwards_to'		=> 'Forwarders to other accounts',
 				 'antispam'			=> 'Antispam configuration');
+	$buttons = $buttons + $new;
+}
+
+// If they had the objectClass, then show them the menu
+if($USER_IS_SAMBA) {
+	$new = array('samba'			=> 'Samba Settings');
 	$buttons = $buttons + $new;
 }
 
@@ -276,6 +289,7 @@ if($_SESSION["ADVANCED_MODE"]) {
 if($_GET["view"] == 'forwards_from')			include("./tables/user_details-forwards_from.inc");
 if($_GET["view"] == 'forwards_to')				include("./tables/user_details-forwards_to.inc");
 if($_GET["view"] == 'antispam')					include("./tables/user_details-antispam.inc");
+if($_GET["view"] == 'samba')					include("./tables/user_details-samba.inc");
 if($_SESSION["ADVANCED_MODE"] and !$_SESSION["SINGLE_USER"]) {
 	if($_GET["view"] == 'access')				include("./tables/user_details-access.inc");
 	if($_GET["view"] == 'aci')					include("./tables/user_details-aci.inc");
