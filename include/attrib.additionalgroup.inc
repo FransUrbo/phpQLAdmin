@@ -1,9 +1,8 @@
 <?php
 // Attribute plugin for additional group (memberUID)
-// $Id: attrib.additionalgroup.inc,v 2.9 2005-01-31 11:39:44 turbo Exp $
+// $Id: attrib.additionalgroup.inc,v 2.10 2005-08-14 11:23:05 turbo Exp $
 
 // {{{ attribute_init(void)...
-
 function attribute_init() {
     global $_pql, $LANG;
 
@@ -11,7 +10,6 @@ function attribute_init() {
 	$uid = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], lc(pql_get_define("PQL_ATTR_UID")));
 	$_REQUEST["uid"] = $uid[0];
 }
-
 // }}}
 
 // {{{ attribute_check(void)...
@@ -23,9 +21,9 @@ function attribute_check() {
 // }}}
 
 // {{{ attribute_print_form(void)...
-
 function attribute_print_form() {
     global $_pql, $LANG;
+	$_REQUEST["uid"] = $_GET['uid'];
 
 	// Initialize variables etc
 	attribute_init();
@@ -45,10 +43,9 @@ function attribute_print_form() {
 			for($i=0; $i < count($grps); $i++) {
 				$is_member = 0;
 				
-				// Get additional members in this group
-				$additional = pql_get_attribute($_pql->ldap_linkid, $grps[$i],
-												pql_get_define("PQL_ATTR_ADDITIONAL_GROUP"));
-				
+				// Add additional members to this group
+				$additional = $grps[$i]['memberuid'];
+
 				// Make sure the user isn't part of this group
 				for($j=0; $j < count($additional); $j++) {
 					if($additional[$j] == $_REQUEST["uid"])
@@ -56,11 +53,8 @@ function attribute_print_form() {
 				}
 				
 				if(!$is_member) {
-					// Get the group name for this group
-					$groupname = pql_get_attribute($_pql->ldap_linkid, $grps[$i], pql_get_define("PQL_ATTR_CN"));
-					$groups[$groupname[0]]["DN"] = $grps[$i];
-					
-					$groups[$groupname[0]]["MEMBERS"] = $additional;
+				  $groups[$grps[$i]['cn']]["DN"] = $grps[$i]['dn'];
+				  $groups[$grps[$i]['cn']]["MEMBERS"] = $additional;
 				}
 			}
 		}
@@ -82,8 +76,12 @@ function attribute_print_form() {
 <?php
 		$links = array();
 		for($i=0; $i< count($data["MEMBERS"]); $i++) {
-			$new = array("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Current member: ".$data["MEMBERS"][$i] => '');
-			$links = $links + $new;
+		  if(is_array($data["MEMBERS"]))
+			$uniquemember = $data["MEMBERS"][$i];
+		  else
+			$uniquemember = $data["MEMBERS"];
+		  $new = array("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Current member: ".$uniquemember => '');
+		  $links = $links + $new;
 		}
 
 		$text = "<input type='checkbox' name='" . $_REQUEST["attrib"] . "_$j' value='".$data["DN"]."'>$name";
@@ -102,6 +100,7 @@ function attribute_print_form() {
     <input type="hidden" name="domain"   value="<?=urlencode($_REQUEST["domain"])?>">
     <input type="hidden" name="rootdn"   value="<?=urlencode($_REQUEST["rootdn"])?>">
     <input type="hidden" name="user"     value="<?=urlencode($_REQUEST["user"])?>">
+    <input type="hidden" name="uid"      value="<?=urlencode($_REQUEST["uid"])?>">
     <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
     <input type="hidden" name="action"   value="<?=$_REQUEST["action"]?>">
@@ -111,13 +110,12 @@ function attribute_print_form() {
   </form>
 <?php
 }
-
 // }}}
 
 // {{{ attribute_save(action)...
-
 function attribute_save($action) {
     global $_pql, $LANG;
+	$_REQUEST["uid"] = $_POST['uid'];
 
 	/* Sometimes attribute_save gets called directly, bypassing attribute_print_form.
 	 * That's why attribute_init has to be called here, even if we cached the results of
@@ -129,27 +127,15 @@ function attribute_save($action) {
 	  // {{{ case: delete
 
 	  case "delete":
-		// Setup the search filter to get the exact DN of the group
-		$filter  = "(&($attrib_name=" . $_REQUEST["uid"] . ")(".pql_get_define("PQL_ATTR_CN")
-		  ."=".$_REQUEST[$attrib_name]."))";
-
-		// Get the DN of the group we're removing the user from
-		foreach($_SESSION["BASE_DN"] as $base) {
-			if(!isset($group)) {
-				$group = pql_search($_pql->ldap_linkid, $base, $filter);
-				$group = $group[0];
-			}
-		}
-
-		if(pql_modify_attribute($_pql->ldap_linkid, $group, $attrib_name, $_REQUEST["uid"], ''))
+		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST['group'], $attrib_name, $_REQUEST["memberuid"], ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully removed %user% from %what% %group%'),
 									   array('what'  => $LANG->_('additional group'),
-											 'user'  => $_REQUEST["uid"],
-											 'group' => $_REQUEST[$attrib_name]));
+											 'user'  => $_REQUEST["memberuid"],
+											 'group' => $_REQUEST['group']));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to remove %user% from %what%'),
 									   array('what' => $LANG->_('additional group'),
-											 'user'  => $_REQUEST["uid"])) . ": " . pql_format_error(0);
+											 'user'  => $_REQUEST["memberuid"])) . ": " . pql_format_error(0);
 
 		attribute_forward($msg);
 		break;
@@ -187,7 +173,6 @@ function attribute_save($action) {
 								  array('type' => $type, 'file' => __FILE__)));
     }
 }
-
 // }}}
 
 // Local variables:
