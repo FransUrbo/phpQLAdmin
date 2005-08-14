@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of user
-// $Id: user_edit_attribute.php,v 2.56 2005-06-09 15:05:36 turbo Exp $
+// $Id: user_edit_attribute.php,v 2.57 2005-08-14 11:07:45 turbo Exp $
 //
 // This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
 //   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -100,6 +100,7 @@ if(($_REQUEST["submit"] == 1) or ($_REQUEST["submit"] == 2)) {
 	  attribute_print_form();
     }
 } elseif(($_REQUEST["submit"] == 3) and (($_REQUEST["attrib"] == 'dnmember') or
+										 ($_REQUEST["attrib"] == 'memberuid') or
 										 ($_REQUEST["attrib"] == 'dnmoderator') or
 										 ($_REQUEST["attrib"] == 'dnsender'))) {
   attribute_print_form($_REQUEST["action"]);
