@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.67 2005-03-15 09:45:03 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.68 2005-08-14 11:32:13 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -68,6 +68,23 @@ pql_set_define("PQL_CONF_USE_TLS", false);
 // what subtree is the groups located?
 // -> Do not add a comma after this, not needed.
 //pql_set_define("PQL_CONF_SUBTREE_GROUPS", "ou=Groups");
+
+// ----------------------------
+// => Please see doc/README.samba <=
+//
+// PQL_CONF_SAMBA_SID
+// The base of your SID
+//pql_set_define("PQL_CONF_SAMBA_SID", 'S-1-5-21-2168627515-2449411438-2839018642');
+//
+// How many days before expiring/requesting to change password
+//pql_set_define("PQL_CONF_DAYSUNTILEXPIRE", '90');
+//
+// In what subtree to put Samba computers users are allowed to
+// login to
+//pql_set_define("PQL_CONF_SUBTREE_COMPUTERS", "ou=Computers");
+//
+// Full path to the mkntpw binary
+//pql_set_define("PQL_CONF_MKNTPW_PATH", '/usr/local/sbin/mkntpwd');
 
 // ----------------------------
 // mail(message)store generation
