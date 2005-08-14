@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.79 2005-06-09 15:21:32 turbo Exp $
+// $Id: pql_config.inc,v 1.80 2005-08-14 15:09:54 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -35,9 +35,9 @@ function pql_set_define($define, $value, $case_insensitive = false, $dn = NULL) 
 	  if(is_array($value)) {
 		unset($tmp);
 
-		for($i=0; $value[$i]; $i++) {
+		for($i=0; !empty($value[$i]); $i++) {
 		  $tmp .= $value[$i];
-		  if($value[$i+1])
+		  if(!empty($value[$i+1]))
 			$tmp .= ',';
 		}
 
@@ -98,9 +98,13 @@ require($_SESSION["path"]."/include/config.inc");			// Generic site configuratio
 require($_SESSION["path"]."/include/config_attributes.inc");		// Attribute definitions
 
 if($_SESSION["USER_HOST"]) {
-	if(!$_pql)
+	if(empty($_pql)) {
 	  // Open a connection to the LDAP server
-	  $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
+	  $binddn = (!empty($_SESSION["USER_DN"]))   ? $_SESSION["USER_DN"]   : '';
+	  $bindpw = (!empty($_SESSION["USER_PASS"])) ? $_SESSION["USER_PASS"] : '';
+
+	  $_pql = new pql($_SESSION["USER_HOST"], $binddn, $bindpw);
+	}
 
 	$_SESSION["ALLOW_BRANCH_CREATE"] = 0; $_SESSION["ALLOW_CONTROL_CREATE"] = 0; $_SESSION["ALLOW_EZMLM_CREATE"] = 0;
 
@@ -154,7 +158,7 @@ if($_SESSION["USER_HOST"]) {
 		}
 
 		// 4a. Verify if the user is administrator on the topmost DN (i.e. 'super admin') -> Allow creation of domain/branches.
-		if($_SESSION["USER_DN"] && !$_SESSION["ALLOW_BRANCH_CREATE"]) {
+		if(!empty($_SESSION["USER_DN"]) && !$_SESSION["ALLOW_BRANCH_CREATE"]) {
 			$_SESSION["ALLOW_BRANCH_CREATE"] = pql_validate_administrator($_pql->ldap_linkid, $dn,
 																		  pql_get_define("PQL_ATTR_ADMINISTRATOR"),
 																		  $_SESSION["USER_DN"]);
@@ -165,15 +169,15 @@ if($_SESSION["USER_HOST"]) {
 			  $_SESSION["ALLOW_EZMLM_CREATE"]   = 1;
 			}
 		}
-		
+
 		// 4b. Verify if the user is controlsAdministrator in the topmost DN -> Allow administration of QmailLDAP/Control objects.
-		if($_SESSION["USER_DN"] && !$_SESSION["ALLOW_CONTROL_CREATE"])
+		if(!empty($_SESSION["USER_DN"]) && empty($_SESSION["ALLOW_CONTROL_CREATE"]))
 		  $_SESSION["ALLOW_CONTROL_CREATE"] = pql_validate_administrator($_pql->ldap_linkid, $dn,
 																		 pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
 																		 $_SESSION["USER_DN"]);
 
 		// 4c. Verify if the user is ezmlmAdministrator in the topmost DN -> Allow administration of Ezmlm lists.
-		if($_SESSION["USER_DN"] && !$_SESSION["ALLOW_EZMLM_CREATE"])
+		if(!empty($_SESSION["USER_DN"]) && empty($_SESSION["ALLOW_EZMLM_CREATE"]))
 		  $_SESSION["ALLOW_EZMLM_CREATE"] = pql_get_dn($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM").'='.$_SESSION["USER_DN"]);
 
 		if(!pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $dn)) {
@@ -186,7 +190,7 @@ if($_SESSION["USER_HOST"]) {
 	}
 
 	// 5. Check the Control DN if the user is there -> Allow management of Controls information
-	if(!$_SESSION["ALLOW_CONTROL_CREATE"])
+		if(empty($_SESSION["ALLOW_CONTROL_CREATE"]))
 	  $_SESSION["ALLOW_CONTROL_CREATE"] = pql_validate_administrator($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 																	 pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
 																	 $_SESSION["USER_DN"]);
