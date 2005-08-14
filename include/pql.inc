@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.207 2005-06-13 11:46:26 turbo Exp $
+// $Id: pql.inc,v 2.208 2005-08-14 14:32:42 turbo Exp $
 //
 
 // ----------------------------
@@ -506,9 +506,11 @@ function pql_password_hash($password, $hash) {
     // - {SSHA}askdfjklödjfnddnu
     // - {SHA}kldfaldkjadsfdsad=
     // - {MD5}lkasjfdndiasdfee=
-    // - {crypt}cryptedpassword
+    // - {CRYPT}cryptedpassword
+	// - {NTPASSWD}NT Password
+	// - {LMPASSWD}Lan Manager
     // - {SASL}principal@realm
-    // - cleartextpasswort
+    // - cleartextpassword
 
 	if(!function_exists("mhash") and ($hash = "{MD5}")) {
 		// We do not have access to MD5 encryption - force {CRYPT}!
@@ -539,6 +541,22 @@ function pql_password_hash($password, $hash) {
 		// Password in the clear (JUCK! :)
 		return $password;
 
+	  case "{ntpasswd}":
+		// NT Password
+		$passwd_cmd = pql_get_define("PQL_CONF_MKNTPW_PATH") . " $password";
+		$HashPass = `$passwd_cmd`;
+		$ntpassword = substr($HashPass, strpos($HashPass, ':')+1);
+		$ntpassword = rtrim($ntpassword);
+		return $ntpassword;
+	  
+	  case "{lmpasswd}":
+		// Lan Manager
+		$passwd_cmd = pql_get_define("PQL_CONF_MKNTPW_PATH") . " $password";
+		$HashPass = `$passwd_cmd`;
+		$lmpassword = substr($HashPass, 0, strpos($HashPass, ':'));
+		$lmpassword = rtrim($lmpassword);
+		return $lmpassword;
+	  
       case "{KERBEROS}":
 		// Kerberos V mapping
 		// NEW FORMAT: '{SASL}principal@REALM.TLD'
