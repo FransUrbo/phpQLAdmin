@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_templates.inc,v 2.5 2005-05-18 20:29:16 turbo Exp $
+// $Id: pql_templates.inc,v 2.6 2005-08-14 18:41:59 turbo Exp $
 //
 
 // {{{ Generate the group template (hardcoded for the moment)
@@ -119,16 +119,16 @@ function pql_templates_attributes($linkid, $objectclasses) {
   $schema = pql_get_subschema($linkid, 'objectclasses');
   
   // Get all the MUST attributes for all the included object classes
-  for($j=0; $objectclasses[$j]; $j++) {
+  for($j=0; !empty($objectclasses[$j]); $j++) {
 	$oc = lc($objectclasses[$j]); // short form
-	if($schema[$oc]["MUST"]) {
-	  for($k=0; $schema[$oc]["MUST"][$k]; $k++) {
+	if(!empty($schema[$oc]["MUST"])) {
+	  for($k=0; !empty($schema[$oc]["MUST"][$k]); $k++) {
 		$must[] = $schema[$oc]["MUST"][$k];
 	  }
 	}
 
-	if($schema[$oc]["MAY"]) {
-	  for($k=0; $schema[$oc]["MAY"][$k]; $k++) {
+	if(!empty($schema[$oc]["MAY"])) {
+	  for($k=0; !empty($schema[$oc]["MAY"][$k]); $k++) {
 		$may[] = $schema[$oc]["MAY"][$k];
 	  }
 	}
@@ -167,7 +167,13 @@ function pql_templates_check_attribute($linkid, $template, $attribute, $type = N
   $attribs = pql_templates_attributes($linkid, $template_def["userobjectclass"]);
 
   if(!$type or (lc($type) == "must")) {
-	for($i=0; $attribs['must'][$i]; $i++) {
+	for($i=0; !empty($attribs['must'][$i]); $i++) {
+	  if(ereg(":", $attribs['must'][$i])){
+		list($real, $alias) = split(":", $attribs['must'][$i]);
+		if( (lc($real) == lc($attribute)) or (lc($alias) == lc($attribute)) )
+		  return 1;
+	  }
+
 	  if(lc($attribs['must'][$i]) == lc($attribute))
 		return 1;
 	}
@@ -175,6 +181,12 @@ function pql_templates_check_attribute($linkid, $template, $attribute, $type = N
 
   if(!$type or (lc($type) == "may")) {
 	for($i=0; $attribs['may'][$i]; $i++) {
+	  if(ereg(":", $attribs['may'][$i])){
+		list($real, $alias) = split(":", $attribs['may'][$i]);
+		if( (lc($real) == lc($attribute)) or (lc($alias) == lc($attribute)) )
+		  return 2;
+	  }
+
 	  if(lc($attribs['may'][$i]) == lc($attribute))
 		return 2;
 	}
