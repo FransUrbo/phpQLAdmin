@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-alias.inc,v 1.5 2005-04-23 08:58:53 turbo Exp $ */
+<?php /* $Id: user_add-alias.inc,v 1.6 2005-08-14 19:21:12 turbo Exp $ */
       // Retreive domain branches for this domain (for the subbranch value below)
       $branches = pql_unit_get($_pql->ldap_linkid, $_REQUEST["domain"]);
 ?>
@@ -68,8 +68,8 @@
 <?php		}
         
 			// Create a user search filter (only look for mail users - !?!?).
-			$filter  = "(&(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*)(";
-			$filter .= pql_get_define("PQL_ATTR_MAIL")."=*))";
+			$filter  = "(&(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*)(|(";
+			$filter .= pql_get_define("PQL_ATTR_MAIL")."=*)(sambaSID=*)))";
 
 			// Retreive all users in this branch/domain.
 			$users   = pql_get_dn($_pql->ldap_linkid, $domain, $filter);
@@ -79,7 +79,12 @@
 				unset($cns);
 				foreach($users as $username) {
 					$cn = pql_get_attribute($_pql->ldap_linkid, $username, pql_get_define("PQL_ATTR_CN"));
-					$cns[$username] = $cn[0];
+					if(is_array($cn))
+					  $cns[$username] = $cn[0];
+					elseif($cn)
+					  $cns[$username] = $cn;
+					else
+					  $cns[$username] = 'unknown ('.$username.')';
 				}
 				asort($cns);
 				
