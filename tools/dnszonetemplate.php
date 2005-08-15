@@ -1,11 +1,15 @@
 <?php
 // Create a DNS zone file
-// $Id: dnszonetemplate.php,v 1.10 2005-07-22 19:50:50 turbo Exp $
+// $Id: dnszonetemplate.php,v 1.11 2005-08-15 05:19:58 turbo Exp $
 // {{{ Setup session etc
 require("../include/pql_session.inc");
 require("../include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_bind9.inc");
 // }}}
+
+$TYPES = array('CNAME', 'A', 'SRV', 'TXT', 'PTR');
+$domain = $_REQUEST["domain"];
+$defaultdomain = $_REQUEST["defaultdomain"];
 
 $TYPES = array('CNAME', 'A', 'SRV', 'TXT', 'PTR');
 $domain = $_REQUEST["domain"];
