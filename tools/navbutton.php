@@ -1,10 +1,10 @@
 <? // http://www.thescripts.com/serversidescripting/php/articles/dynamicimagesinphp3.0/page0.html
-// $Id: navbutton.php,v 2.17 2005-01-13 05:33:39 turbo Exp $
+// $Id: navbutton.php,v 2.18 2005-08-15 06:13:11 turbo Exp $
 
 require("../include/pql_formating.inc");
 
-$string = implode($_SERVER["argv"]," ");
-$string = urldecode($string);
+$string = $_REQUEST["label"];
+//$string = urldecode($string);
 
 // Prepare the text - remove unwanted characters etc
 $string = stripslashes($string);
