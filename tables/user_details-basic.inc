@@ -51,7 +51,18 @@
       </tr>
 
 <?php }
-
+?>
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title"><?=$LANG->_('Firstname')?></td>
+        <td><?=$givenname?></td>
+        <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=givenname&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>&oldvalue=<?=$givenname?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change First name')?>" border="0"></a></td>
+      </tr>
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title"><?=$LANG->_('Lastname')?></td>
+        <td><?=$sn?></td>
+        <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=sn&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>&oldvalue=<?=$sn?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change last name')?>" border="0"></a></td>
+      </tr>
+<?php
 // {{{ Surname and Lastname
 // - Can/'should' be multi-valued, hence pql_format_table_single()
 $class=pql_format_table(0);
@@ -104,8 +115,9 @@ pql_format_table_single($_pql->ldap_linkid, $txt, $link, $cn,
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Additional group(s)')?></td>
-<?php if(isset($memberuid[1])) {
+<?php if(isset($memberuid)) {
 		$new_tr = 0;
+		$username = $$ref;
 		foreach($memberuid as $muid) {
 			$muid = pql_maybe_idna_decode($muid);
 
