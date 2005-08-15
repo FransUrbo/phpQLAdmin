@@ -1,0 +1,57 @@
+dn: userTemplateName=mail,ou=Templates,c=SE
+objectClass: phpQLAdminUserTemplate
+userTemplateName: mail
+userTemplateDescriptionLong: Mail address and/or forwarding address etc
+userTemplateDescriptionShort: Mail account
+passWordScheme: MD5
+userObjectClass: person
+userObjectClass: qmailuser
+
+dn: userTemplateName=shell,ou=Templates,c=SE
+userTemplateName: shell
+userTemplateDescriptionShort: Shell account
+userTemplateDescriptionLong: Login shell and homedirectory.
+objectClass: phpQLAdminUserTemplate
+userObjectClass: krb5principal
+userObjectClass: person
+userObjectClass: posixaccount
+userObjectClass: shadowaccount
+userObjectClass: extraPosixAccount
+passWordScheme: KERBEROS
+
+dn: userTemplateName=full,ou=Templates,c=SE
+userTemplateName: full
+userTemplateDescriptionShort: Shell and Mail account
+userTemplateDescriptionLong: Combination between shell and mail account types.
+  Allows both shell login AND mail receiving.
+objectClass: phpQLAdminUserTemplate
+passWordScheme: KERBEROS
+userObjectClass: inetorgperson
+userObjectClass: krb5principal
+userObjectClass: person
+userObjectClass: phpqladminuser
+userObjectClass: posixaccount
+
+dn: userTemplateName=samba,ou=Templates,c=SE
+userTemplateName: samba
+userTemplateDescriptionShort: Samba account
+userTemplateDescriptionLong: Used to create users that can authenticate agains
+ t a Samba server from an SMB client (Windows or *NIX).
+objectClass: phpQLAdminUserTemplate
+userObjectClass: sambasamaccount
+userObjectClass: phpqladminuser
+userObjectClass: person
+
+dn: userTemplateName=smbsh,ou=Templates,c=SE
+userTemplateName: smbsh
+userTemplateDescriptionShort: Shell and Samba Account
+userTemplateDescriptionLong: Used to create users that can authenticate agains
+ t a Samba server from an SMB client (Windows or *NIX) with access to a shell.
+objectClass: phpQLAdminUserTemplate
+userObjectClass: krb5principal
+userObjectClass: person
+userObjectClass: phpqladminuser
+userObjectClass: posixaccount
+userObjectClass: sambasamaccount
+userObjectClass: shadowaccount
+
