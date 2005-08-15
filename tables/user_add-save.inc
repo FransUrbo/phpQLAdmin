@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.38 2005-05-27 10:52:59 turbo Exp $
+// $Id: user_add-save.inc,v 1.39 2005-08-15 05:13:58 turbo Exp $
 require($_SESSION["path"]."/include/pql_krbafs.inc");
 
 // {{{ URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
@@ -27,7 +27,7 @@ if(($_REQUEST["surname"]
 		and
 		pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")))
    and
-   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_GIVENNAME"), 'MUST'))
+   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_GIVENNAME")))
 {
   if($_REQUEST["surname"]) 
 	$entry[pql_get_define("PQL_ATTR_GIVENNAME")]	= $_REQUEST["surname"];
@@ -42,7 +42,7 @@ if(($_REQUEST["name"]
 		and
 		pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")))
    and
-   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_SN"), 'MUST'))
+   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_SN")))
 {
   if($_REQUEST["name"])
 	$entry[pql_get_define("PQL_ATTR_SN")]			= $_REQUEST["name"];
@@ -58,7 +58,7 @@ if(((($_REQUEST["surname"] and $_REQUEST["name"])
 	and
 	pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_SN")))
    or
-   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_SN"), 'MUST'))
+   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_SN")))
 {
   if($_REQUEST["surname"] and $_REQUEST["name"])
 	$entry[pql_get_define("PQL_ATTR_CN")] = trim($_REQUEST["surname"]) . " " . trim($_REQUEST["name"]);
@@ -88,7 +88,7 @@ if($_REQUEST["mail"] and
 	// {{{ Add the additional email addresses as well
 	$email_temp = split('\@', $_REQUEST["mail"]); $email_temp = $email_temp[0];
 	
-	if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILALTERNATE"), 'MUST')) {
+	if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILALTERNATE"))) {
 		// For group objects, we need a 'catchall' mail alias as well.
 		if($_REQUEST["email_domain"])
 		  $entry[pql_get_define("PQL_ATTR_MAILALTERNATE")][] = $email_temp . "-catchall@" . $_REQUEST["email_domain"];
@@ -128,7 +128,7 @@ if($_REQUEST["forwardingaddress"] and
 }
 
 // {{{ Add [ug]id number, gecos etc to the entry array
-if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_QMAILUID"), 'MUST')) {
+if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_QMAILUID"))) {
   // Get a free UserID number
   $uidnr = pql_get_next_ugidnumber($_pql, 'uid', $_REQUEST["rootdn"]);
   if($uidnr > 0)
@@ -159,7 +159,7 @@ if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("
 // {{{ Add the password to the entry array
 if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_PASSWD"))) {
   if(eregi('KERBEROS', $_REQUEST["pwscheme"])) {
-	// We're using the {KERBEROS} password scheme. Special circumstances.
+	// {{{ We're using the {KERBEROS} password scheme. Special circumstances.
 	// The userPassword and krb5PrincipalName needs to be set. This is 
 	// automagicly created with the help of the username (uid) value and
 	// the REALM name.
@@ -175,6 +175,7 @@ if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("
 	// Encrypt and create the hash using the krb5PrincipalName attribute
 	$entry[pql_get_define("PQL_ATTR_PASSWD")] = pql_password_hash($entry[pql_get_define("PQL_ATTR_KRB5PRINCIPALNAME")],
 																  $_REQUEST["pwscheme"]);
+	// }}}
   } else {
 	if($_REQUEST["crypted"] and !$_REQUEST["autogenerate"])
 	  // Password is already encrypted, prefix with choosen password scheme
@@ -270,6 +271,35 @@ if($_REQUEST["mail"] and
 $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = $template["userobjectclass"];
 // }}}
 
+// {{{ Check if this is a samba user/account
+if(in_array(pql_get_define("PQL_ATTR_SAMBAOBJECTCLASS"), $template["userobjectclass"])) {
+  // {{{ Set account flags
+  $days = pql_get_define("PQL_CONF_DAYSUNTILEXPIRE");
+  if(!empty($days)) {
+	$acctflags = '[U ]';
+  } else {
+	$acctflags = '[UX ]';
+  }
+  $sid = pql_get_define("PQL_CONF_SAMBA_SID");
+  //$entry[pql_get_define("PQL_ATTR_QMAILUID")]
+  // }}}
+  
+  // {{{ Convert uid to lowercase
+  if($_REQUEST["uid"]) {
+	$entry[pql_get_define("PQL_ATTR_SAMBASID")] = $sid . '-' . (3 * $entry[pql_get_define("PQL_ATTR_QMAILUID")]);
+	$entry[pql_get_define("PQL_ATTR_SAMBALMPASSWORD")] = pql_password_hash($_REQUEST["password"], '{lmpasswd}');
+	$entry[pql_get_define("PQL_ATTR_SAMBANTPASSWORD")] = pql_password_hash($_REQUEST["password"], '{ntpasswd}');
+	$entry[pql_get_define("PQL_ATTR_SAMBAPWDLASTSET")] = time();
+	$entry[pql_get_define("PQL_ATTR_SAMBAPWDMUSTCHANGE")] = time() + ($days * 24 * 60 * 60);
+	$entry[pql_get_define("PQL_ATTR_SAMBAACCTFLAGS")] = $acctflags;
+  }
+  // }}}
+}
+// }}}
+
+// -------------------------------
+// User object setup done here!
+
 if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
   echo "Entry array: "; printr($entry);
 }
@@ -305,15 +335,15 @@ $DNs = pql_user_add($_pql->ldap_linkid, $_REQUEST["domain"], $userdn, $entry, 'u
 if($DNs[0]) {
   // TODO: DNs[1] (the group object) might still be empty -> failed to add it.
 
-  // Add the user principal (if a Kerberos V 'password')
-  if(pql_get_define("PQL_ATTR_KRB5PRINCIPALNAME") &&  $entry["krb5principalname"])
-	kadmin_ank($_pql->ldap_linkid, $entry["krb5principalname"], $entry["cleartextpassword"]);
-
   if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
 	echo "DNs added: ";
 	printr($DNs);
 	die();
   }
+
+  // Add the user principal (if a Kerberos V 'password')
+  if(pql_get_define("PQL_ATTR_KRB5PRINCIPALNAME") &&  $entry["krb5principalname"])
+	kadmin_ank($_pql->ldap_linkid, $entry["krb5principalname"], $entry["cleartextpassword"]);
 
   // {{{ Now it's time to run the special adduser script if defined...
   if(pql_get_define("PQL_CONF_SCRIPT_CREATE_USER", $_REQUEST["rootdn"])) {
