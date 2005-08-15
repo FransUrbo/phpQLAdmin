@@ -1,6 +1,12 @@
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=$LANG->_('Personal details')?></th>
       <tr class="<?php pql_format_table(); ?>">
+        <td class="title"><?=$LANG->_('Company/Organization')?></td>
+        <td><?php if($o) { echo $o; } else { echo $LANG->_('Not set'); }?></td>
+        <td><?=$o_link?></td>
+      </tr>
+
+      <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Title')?></td>
         <td><?php if($personaltitle) { echo $personaltitle; } else { echo $LANG->_('Not set'); }?></td>
         <td><?=$personaltitle_link?></td>
