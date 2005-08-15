@@ -1,0 +1,71 @@
+Requirements:
+You need to get the tool mkntpwd from 
+http://www.samba.org/cgi-bin/cvsweb/samba/examples/LDAP/smbldap-tools/mkntpwd/
+This is usally also in your samba 3 source under examples/LDAP/smbldap-tools/mkntpwd/
+
+Once you have this tool compiled place it in /usr/sbin/mkntpwd I hard
+coded that value path for now, I know it should be in the config file
+or ldap but this is the first version of samba support
+
+
+In order to add samba functionality to the phpQLadmin project you have
+to define a few extra things in your include/config.inc eventually
+very soon these will be added to the schema and give a proper config
+place in the ldap dir. As it stands you need to define the atleast
+the following in the config. The last step after adding the following
+to your config is to make sure that you template has sambaSamAccount
+as one of the objectlasses See end of this file for an example ldif
+
+You'll need a line similar to the following to indicate the base of
+your sid. When users get created you need this to create the samba
+sid.
+
+	pql_set_define("PQL_CONF_SAMBA_SID", 'S-1-5-21-2168627515-2449411438-2839018642');
+
+
+If you define the following then it will take advantage of the samba
+password expire feature by setting the attribute sambaPwdMustChange,
+The integer value you set it to is in days, so for a soax compliance
+of three months, the following value of 90 would mean 90 days
+
+	pql_set_define("PQL_CONF_DAYSUNTILEXPIRE", '90');
+
+This define is to tell the app where to find the computers in the
+domain. This is used by samba to create a access list for the
+computers each user will be allowed to login to.
+
+	pql_set_define("PQL_CONF_SUBTREE_COMPUTERS", "ou=Computers");
+
+The samba attributes are added to the $entry array in a file calle
+tables/user_add-samba.inc it is only included in the
+tables/user_add-save.inc if it finds the sambaSamAccount objectclass
+is part of the template your are using.
+
+PASSWORDSCHEMA
+  It really shouldn't matter which password schema you use, because when
+  it comes time to change the password, the password change script will
+  check to see if you've got the sambaSamAccount objectClass and changes
+  the samba nt and lm passwords as well to keep your passwords in
+  synch. Note that if you change your samba password via windows, you're
+  password will no longer be in synch.
+
+LDIF EXAMPLE
+  The following is ab example template that you would need to create to
+  utilize the samba functionality  The user_add.php script will check
+  your template to see if the sambaSamAccount is listed and only if it
+  is will it added the needed samba attributes. Also when you login, if
+  you don't have the sambaSamAccount in the dn of the user you want to
+  edit, then you wont see the Samba Settings options
+
+	dn: userTemplateName=employee,ou=Templates,dc=example,dc=com
+	userTemplateName: employee
+	userTemplateDescriptionShort: Employee
+	userTemplateDescriptionLong: Our Employee Format
+	objectClass: phpQLAdminUserTemplate
+	userObjectClass: qmailUser
+	userObjectClass: person
+	userObjectClass: inetOrgPerson
+	userObjectClass: shadowAccount
+	userObjectClass: posixAccount
+	userObjectClass: sambaSamAccount
+
