@@ -1,6 +1,11 @@
 <?php 
 require($_SESSION["path"]."/include/pql_templates.inc");
 $templates = pql_get_templates($_pql->ldap_linkid);
+
+if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+  echo "_SESSION: "; printr($_SESSION);
+  printr($templates);
+}
 ?>
   <br>
 
@@ -24,7 +29,7 @@ $templates = pql_get_templates($_pql->ldap_linkid);
         <td class="title"><?=$LANG->_('Template description')?></td>
         <td class="<?=$class?>"><?=$templates[$i]["short"]?></td>
         <td class="<?=$class?>">
-          <a href="config_edit_attribute.php?rootdn=<?=$dn?>&attrib=<?=pql_get_define("PQL_ATTR_USER_TEMPLATE_DESC_SHORT")?>&view=template"><?php if(!$_SESSION["NEW_STYLE_QUOTA"] and ($templates[$i]["name"] != 'group')) { ?><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change user template description')?>"><?php } ?></a>
+          <a href="config_edit_attribute.php?rootdn=<?=$dn?>&attrib=<?=pql_get_define("PQL_ATTR_USER_TEMPLATE_DESC_SHORT")?>&view=template"><?php if($templates[$i]["name"] != 'internal_group') { ?><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change user template description')?>"><?php } ?></a>
         </td>
       </tr>
 
@@ -33,7 +38,7 @@ $templates = pql_get_templates($_pql->ldap_linkid);
 			$url_tmp  = "config_edit_attribute.php?rootdn=".$dn."&attrib=".pql_get_define("PQL_ATTR_PASSWORD_SCHEMES");
 			$url_tmp .= "&view=template";
 
-			if(!$_SESSION["NEW_STYLE_QUOTA"] and ($templates[$i]["name"] != 'group')) {
+			if($templates[$i]["name"] != 'internal_group') {
 			  if(!$templates[$i]["oldformat"]["passwordscheme"]) {
 				$txt = array('tit' => $LANG->_('Allowed password encryption scheme'),
 							 'add' => $LANG->_('Add encryption scheme'),
@@ -56,7 +61,7 @@ $templates = pql_get_templates($_pql->ldap_linkid);
 			$url_tmp .= "&view=template";
 
 			if(!$templates[$i]["oldformat"]["userobjectclass"] and
-			   !$_SESSION["NEW_STYLE_QUOTA"] and ($templates[$i]["name"] != 'group'))
+			   ($templates[$i]["name"] != 'internal_group'))
 			{
 			  $txt = array('tit' => $LANG->_('Allowed user objectclasses'),
 						   'add' => $LANG->_('Add objectclass'),
@@ -85,7 +90,7 @@ $templates = pql_get_templates($_pql->ldap_linkid);
 			pql_format_table_single($_pql->ldap_linkid, array('tit' => $LANG->_('Allowed attributes')),
 									array(), $attribs["may"], '', pql_format_table(0));
 
-			if(!$_SESSION["NEW_STYLE_QUOTA"] and ($templates[$i]["name"] != 'group')) {
+			if($templates[$i]["name"] != 'internal_group') {
 ?>
 
       <tr>

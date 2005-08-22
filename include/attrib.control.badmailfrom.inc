@@ -2,7 +2,7 @@
 // control attribute plugin for
 // badmailfrom (blocked from addresses)
 //
-// $Id: attrib.control.badmailfrom.inc,v 2.20 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.control.badmailfrom.inc,v 2.20.4.1 2005-04-19 05:02:32 turbo Exp $
 
 // {{{ badmailfrom_check(type)
 
@@ -39,7 +39,6 @@ function badmailfrom_check($type) {
 // }}}
 
 // {{{ badmailfrom_init($host)
-
 // init values
 function badmailfrom_init($host) {
     global $_pql_control;
@@ -51,6 +50,8 @@ function badmailfrom_init($host) {
     
     if(is_null($_REQUEST["badmailfrom"]))
 	  return true;
+	elseif($_REQUEST["badmailfrom"] && !is_array($_REQUEST["badmailfrom"]))
+	  $_REQUEST["badmailfrom"] = array($_REQUEST["badmailfrom"]);
 }
 
 // }}}
@@ -125,7 +126,7 @@ function badmailfrom_print_form() {
 
 <?php } ?>
         <tr class="subtitle">
-          <td><a href="<?=$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&badcount=<?($_REQUEST["badcount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
+          <td><a href="<?=$_SERVER["PHP_SELF"]?>?attrib=<?=$_REQUEST["attrib"]?>&badcount=<?=($_REQUEST["badcount"]+1)?>&mxhost=<?=$_REQUEST["mxhost"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('additional address'))); ?></a> (<?=$LANG->_('Please save first, changes will be lost', 4)?>)</td>
         </tr>
 
         <tr class="subtitle">

@@ -12,6 +12,7 @@ branchObjectClass: organization
 branchObjectClass: phpQLAdminBranch
 userObjectClass: posixaccount
 userObjectClass: pilotperson
+useACI: TRUE
 administrator: uid=demo1,o=Main Branch,c=SE
 OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
 OpenLDAPaci: 1#entry#grant;r,s,c;c,userReference,branchReference,administrator#public#

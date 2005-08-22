@@ -1,6 +1,6 @@
 <?php
 // Add a new mailserver to the database
-// $Id: control_add_server.php,v 2.25.2.2 2005-03-17 08:23:01 turbo Exp $
+// $Id: control_add_server.php,v 2.25.2.3 2005-05-14 18:09:54 turbo Exp $
 //
 require("./include/pql_session.inc");
 require("./include/pql_config.inc");
@@ -131,8 +131,14 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 			  $error_text["fqdn_clone"] = 'missing';
 		}
 	}
+
+	// Extract the LDAP host/server name from the session
+	$server = split(';', $_SESSION["USER_HOST"]);
+
+	// If it's an LDAP URI, replace "%2f" with "/" -> URLdecode
+	$server = urldecode($server[0]);
 ?>
-  <span class="title1">Create mailserver controls object in LDAP server <?=$_SESSION["USER_HOST"]?></span>
+  <span class="title1">Create mailserver controls object in LDAP server <?=$server?></span>
 
   <table cellspacing="0" cellpadding="3" border="0">
     <th>

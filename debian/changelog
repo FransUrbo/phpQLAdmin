@@ -1,0 +1,49 @@
+phpqladmin (2.2.6-1) unstable; urgency=low
+
+  * New upstream version
+
+ -- Turbo Fredriksson <turbo@debian.org>  Mon, 22 Aug 2005 08:35:41 +0200
+
+phpqladmin (2.2.5-1) unstable; urgency=low
+
+  * New upstream version
+
+ -- Turbo Fredriksson <turbo@debian.org>  Sat, 14 May 2005 20:05:33 +0200
+
+phpqladmin (2.2.4-1) unstable; urgency=low
+
+  * New upstream version
+  * Move the db_stop command _AFTER_ (instead of before) the debhelper
+    included stuff.
+    Closes: #226751
+  * Update the debhelper build depends to 4.0.2 (bug recomends 4.1.16, but
+    4.0.2 should be ok).
+    Closes: #302126, #308187
+  * Czech debconf translation courtesy of Miroslav Kure.
+    Closes: #293605
+
+ -- Turbo Fredriksson <turbo@debian.org>  Sat, 14 May 2005 15:48:01 +0200
+
+phpqladmin (2.2.3-1) unstable; urgency=low
+
+  * New upstream version
+
+ -- Turbo Fredriksson <turbo@debian.org>  Fri, 15 Apr 2005 09:24:12 +0200
+
+phpqladmin (2.2.2-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Turbo Fredriksson <turbo@debian.org>  Fri,  8 Apr 2005 07:46:27 +0200
+
+phpqladmin (2.2.1-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Turbo Fredriksson <turbo@debian.org>  Thu, 17 Mar 2005 10:13:22 +0100
+
+phpqladmin (2.2.0-1) unstable; urgency=low
+
+  * New stable upstream version.
+
+ -- Turbo Fredriksson <turbo@debian.org>  Wed,  2 Mar 2005 12:50:09 +0100

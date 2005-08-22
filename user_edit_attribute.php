@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of user
-// $Id: user_edit_attribute.php,v 2.48.2.2 2005-03-17 08:23:01 turbo Exp $
+// $Id: user_edit_attribute.php,v 2.48.2.3 2005-04-18 13:25:08 turbo Exp $
 //
 // This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
 //   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -53,7 +53,9 @@ if(!$username) {
 
 // {{{ Forward back to users detail page (called by attribute_save).
 function attribute_forward($msg, $rlnb = false) {
-    global $url;
+	$url["domain"] = pql_format_urls($_REQUEST["domain"]);
+	$url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
+	$url["user"]   = pql_format_urls($_REQUEST["user"]);
 
     $link = "user_detail.php?rootdn=" . $url["rootdn"] . "&domain=" . $url["domain"]
       . "&user=" . $url["user"] . "&view=" . $_REQUEST["view"] . "&msg=".urlencode($msg);

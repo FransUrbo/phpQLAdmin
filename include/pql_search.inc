@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.36 2005-02-24 17:04:02 turbo Exp $
+// $Id: pql_search.inc,v 2.36.2.1.2.1 2005-07-22 10:08:31 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -174,7 +174,7 @@ function pql_get_domains($ldap) {
 					$filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN) . "=*)$ocs)";
 					$new = pql_get_dn($ldap->ldap_linkid, $dn, $filter, 'ONELEVEL');
 					if(is_array($new))
-					  $domains = $domains + $new;
+					  $domains = pql_add2array($domains, $new);
 				}
 			}
 		}
@@ -198,22 +198,62 @@ function pql_get_domains($ldap) {
 		else if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN) == 'dc')
 		  $ocs = '(objectClass=domain)'; // Could also be 'domainComponent'
 		
-		$filter = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $TOP_DN)."=*";
+		if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN))
+		  $filter = pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN)."=*";
+		else
+		  // User reference for this branch/domain not specified. Use default...
+		  $filter = 'uid=*';
 		$new    = pql_get_dn($ldap->ldap_linkid, $TOP_DN, $filter, 'ONELEVEL');
 
 		if(is_array($new))
-		  $domains = $domains + $new;
+		  $domains = pql_add2array($domains, $new);
 		
 		// Just to be safe - is there any branches here?
 		$filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN) . "=*)$ocs)";
 		$new    = pql_get_dn($ldap->ldap_linkid, $TOP_DN, $filter, 'ONELEVEL');
 		if(is_array($new))
-		  $domains = $domains + $new;
+		  $domains = pql_add2array($domains, $new);
+
+		// Now, if the base/root DN is a 'dc' object and domain/branch reference
+		// is 'ou', we MUST use 'organizationalUnit' in the object class filter...
+		$filter = '(&('.pql_get_define("PQL_ATTR_OU").'=*)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=organizationalUnit))';
+		$new    = pql_get_dn($ldap->ldap_linkid, $TOP_DN, $filter, 'ONELEVEL');
+		if(is_array($new) and !in_array('ou=Templates'.','.$TOP_DN, $new))
+		  $domains = pql_add2array($domains, $new);
 	}
 
-	if($domains[0])
-	  return $domains;
-	else
+	if($domains[0]) {
+	  // Sort the domain array by extracting the actual domain/branch name
+	  // and sort by that, not the DN ('ou=', 'o=', 'dc=' etc).
+	  for($i=0; $domains[$i]; $i++) {
+		// o=Bayour.COM,c=SE => Get 'Bayour.COM'
+		$tmp = split(',', $domains[$i]);
+		$tmp = split('=', $tmp[0]);
+		$tmp = $tmp[1];
+
+		$dom[$domains[$i]] = lc($tmp);
+	  }
+
+	  // The array now looks like:
+	  // o=Bayour.COM,c=SE => bayour.com
+
+	  // Sort by _value_ (which is lower cased).
+	  asort($dom, SORT_LOCALE_STRING);
+
+	  unset($tmp); // I'd like to reuse this variable...
+
+	  // Move the new array (which is correctly sorted) to the
+	  // original array.
+	  foreach($dom as $dn => $value) {
+		for($i=0; $domains[$i]; $i++) {
+		  if(lc($dn) == lc($domains[$i]))
+			$tmp[] = $dn;
+		}
+	  }
+	  $domains = $tmp;
+
+	  return pql_uniq($domains);
+	} else
 	  return false;
 }
 // }}}

@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.119.2.3 2005-03-17 08:23:01 turbo Exp $
+// $Id: user_add.php,v 2.119.2.6 2005-05-13 13:54:29 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -169,10 +169,31 @@ switch($_REQUEST["page_curr"]) {
 		// }}}
 
 		// {{{ Generate a password
-		if(($_REQUEST["template"] != "group") and empty($_REQUEST["password"]) and
-		   $autocreatepassword and function_exists('pql_generate_password') and
+		if(($_REQUEST["template"] != "internal_group") and empty($_REQUEST["password"]) and
+		   ($autocreatepassword or (!$schemes[1] and ($schemes[0] == 'KERBEROS'))) and
+		   function_exists('pql_generate_password') and
 		   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_PASSWD")))
-		  $_REQUEST["password"] = pql_generate_password();
+		{
+		  // If we only have one password scheme, and it's a Kerberos V scheme, then we generate a Kerberos V
+		  // principal and generate a password which we put in the clear_text_password value.
+		  // Also, since we only have one scheme which is allowed, put this as a default for the rest of the
+		  // user add session.
+		  //
+		  // We MUST autogenerate a password here, even if it's not specified. This because othervise
+		  // the create user script will create a randomized password, which we have no idea what it is..
+		  if(!$schemes[1] and ($schemes[0] == 'KERBEROS')) {
+			$_REQUEST["password"]            = $_REQUEST["uid"]."@".pql_get_define("PQL_CONF_KRB5_REALM");
+			$_REQUEST["pwscheme"]            = $schemes[0];
+
+			if($autocreatepassword)
+			  $_REQUEST["clear_text_password"] = pql_generate_password();
+
+			// Just so that we'll get the opportunity to add a password in tables/user_add-details.inc which
+			// is/should be next...
+			$auto_generated_kerberos_pw      = 1;
+		  } else
+			$_REQUEST["password"] = pql_generate_password();
+		}
 		// }}}
 	} else {
 	  // {{{ Step 1: Make sure we have at least one user template
@@ -396,6 +417,9 @@ switch($_REQUEST["page_curr"]) {
 					$error = true;
 					$error_text["password"] = $LANG->_('Invalid');
 
+					// Since this is a Kerberos V 'password', we must remember the _real_ password.
+					$_REQUEST["clear_text_password"] = $_REQUEST["password"];
+
 					// Try generating a new value. We SHOULD know all we need
 					$_REQUEST["password"] = $_REQUEST["uid"]."@".pql_get_define("PQL_CONF_KRB5_REALM");
 				}
@@ -516,11 +540,7 @@ switch($_REQUEST["page_curr"]) {
 			  if(!pql_get_define("PQL_CONF_CREATE_MBOX"))
 				// We're not putting mails in a MBox - add a slash at the end to make it a Maildir.
 				$_REQUEST["maildirectory"] .= '/';
-
-			  // Replace space(s), '&' and '@' with underscore(s)
-			  $_REQUEST["maildirectory"] = preg_replace('/ /', '_', $_REQUEST["maildirectory"], -1);
-			  $_REQUEST["maildirectory"] = preg_replace('/&/', '_', $_REQUEST["maildirectory"], -1);
-			  $_REQUEST["maildirectory"] = preg_replace('/@/', '_', $_REQUEST["maildirectory"], -1);
+			  $_REQUEST["maildirectory"] = pql_fix_path($_REQUEST["maildirectory"]);
 			}
 		  } else {
 			// Can't autogenerate!
@@ -649,30 +669,35 @@ if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
 switch($_REQUEST["page_next"]) {
   case "":
 	// Step 1 - Choose account properties (type of account)
-	include("./tables/user_add-properties.inc");
+	$include = "./tables/user_add-properties.inc";
 	break;
 	
   case "one":
 	// Step 2 - Choose user details (name, password etc)
 	if($_REQUEST["template"] == "alias")
-	  include("./tables/user_add-alias.inc");
+	  $include = "./tables/user_add-alias.inc";
 	else
-	  include("./tables/user_add-details.inc");
+	  $include = "./tables/user_add-details.inc";
 	break;
 	
   case "two":
 	// Step 3 - Choose additional information (mailhost, maildir etc)
-	include("./tables/user_add-additional.inc");
+	$include = "./tables/user_add-additional.inc";
 	break;
 	
   case "save":
 	// Step 4 - Save the user into DB
 	if($_REQUEST["page_curr"] and $_REQUEST["autogenerate"] and empty($_REQUEST["password_shown"]))
-	  include("./tables/user_add-show_password.inc");
+	  $include = "./tables/user_add-show_password.inc";
 	else
-	  include("./tables/user_add-save.inc");
+	  $include = "./tables/user_add-save.inc";
 	break;
 }
+
+if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+  echo "Including file '$include'<br>";
+}
+include($include);
 
 // }}}
 

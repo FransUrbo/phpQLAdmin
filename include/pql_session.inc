@@ -1,46 +1,47 @@
 <?php
 // Manage PHP sessions per phpQLAdmin instance
-// $Id: pql_session.inc,v 1.1.2.3 2005-03-17 08:29:03 turbo Exp $
+// $Id: pql_session.inc,v 1.1.2.5.2.1 2005-07-22 10:24:37 turbo Exp $
 
-// {{{ Start session
-if(!ereg('/$', $_SERVER["REQUEST_URI"])) {
-  $_SERVER["REQUEST_URI"] .= '/';
+// {{{ Get the URI path
+// Fix the URI Retgathering
+$uri = $_SERVER['REQUEST_URI'];
+$me  = basename($uri);
+$uri = preg_replace("/$me/", '', $uri);
+$uri = preg_replace("/\/\//", '/\//', $uri);
+if($uri == '//') {
+  $uri = '/';
 }
-//ini_set("session.cookie_path", $_SERVER["REQUEST_URI"]);
-session_start();
+// }}}
+
+// {{{ Retreive the protocol and server name
+// Replace '/' with '\/' so that regexp will work
+$tmp1 = preg_replace("/\//", "\\/", $_SERVER["HTTP_REFERER"]);
+$tmp2 = preg_replace("/\//", "\\/", $uri);
+
+// Remove the URI.* part from the HTTP_REFERER
+$server = preg_replace("/$tmp2.*/", '', $_SERVER["HTTP_REFERER"]);
 // }}}
 
 // {{{ Get 'PWD' so we can find our include files
-if($_SERVER["PATH_TRANSLATED"]) {
-  $tmp = split('/', $_SERVER["PATH_TRANSLATED"]);
-  $count = count($tmp) - 2;
-
-  // Extract the _path_ (not including the file)
-  $path = '/';
-  for($i=1; $i <= $count; $i++) {
-	$path .= $tmp[$i];
-	if($tmp[$i+1])
-	  $path .= '/';
-  }
-  $path = preg_replace('/\/$/', '', $path);
-
-  // Remember the path
-  $_SESSION["path"] = $path;
-
-  // Remove temporary variables
-  unset($path); unset($i); unset($count);
-}
+$path = preg_replace("/include\/pql_session.inc/", '', __FILE__);
 // }}}
 
-// {{{ Find out our location in the URL
-if(!$_SESSION["URI"]) {
-  $tmp1 = preg_quote($_SERVER["DOCUMENT_ROOT"], '/');
-  $tmp2 = preg_replace("/$tmp1/", "", $_SESSION["path"]);
-  $_SESSION["URI"] = '/'.$tmp2.'/';
-
-  unset($tmp1); unset($tmp2);
-}
+// {{{ Start session
+ini_set("session.cookie_path", $uri);
+session_start();
 // }}}
+
+// Put together a better and clean URI value
+$_SESSION["URI"]  = $server.$uri;
+
+// If you can't login correctly (you get the error
+// "Can't find you in the database", try uncomment
+// the following two lines...
+//print_r($_SESSION);
+//die($uri);
+
+// Remember our path in the file system.
+$_SESSION["path"] = $path;
 
 /*
  * Local variables:

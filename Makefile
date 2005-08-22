@@ -32,9 +32,7 @@ tag:
 	  TAG="REL_`echo $$MAJOR`_`echo $$MINOR`_`echo $$LEVEL`"; \
 	  echo -n $(TAG) > .tag; \
 	  echo cvs tag: $$TAG; \
-	  cvs commit -m "New release - $$MAJOR.$$MINOR.$$LEVEL." \
-		.version .version.old CHANGES; \
-	  cvs tag -bRF $$TAG; \
+	  cvs tag -RF $$TAG; \
 	)
 
 install: $(INSTDIR)
@@ -73,23 +71,28 @@ debian: install
 	  debuild; \
 	  echo "Files is in: "$(DESTDIR))
 
-release: changes tarball debian
+release: changes tag tarball debian
 	@(rcp -x $(TMPDIR)/phpQLAdmin-$(VERSION).tar.gz  aurora:/var/www/phpqladmin/; \
 	  rcp -x $(TMPDIR)/phpQLAdmin-$(VERSION).tar.bz2 aurora:/var/www/phpqladmin/; \
 	  rcp -x $(TMPDIR)/phpQLAdmin-$(VERSION).zip     aurora:/var/www/phpqladmin/; \
 	  rcp -x CHANGES aurora:/var/www/phpqladmin/CHANGES_devel.txt; \
-	  rcp -x $(TMPDIR)/../*.deb aurora:/var/www/phpqladmin)
+	  rcp -x $(TMPDIR)/*.deb *.dsc *.tar.gz *.changes aurora:/var/www/phpqladmin)
 
 $(INSTDIR):
 	@rm -f $(TMPDIR) && mkdir -p $(INSTDIR)
 
-changes:
+changes: version
 	@( \
 	  echo "Date: $(DATE)"; \
 	  cat CHANGES | sed "s@TO BE ANNOUNCED@Release \($(DATE)\)@" > CHANGES.new; \
 	  mv CHANGES.new CHANGES; \
-	  cvs commit -m "New release - `cat .version | sed 's@ .*@@'`" CHANGES; \
+	  cvs commit -m "New release - `cat .version | sed 's@ .*@@'`" CHANGES .version; \
 	)
+
+version:
+	@(cat .version | sed 's@ (.*@@' > .version.new; \
+	  mv .version.new .version)
+
 clean:
 	@(find -name '*~' -o -name '.*~' -o -name '.#*' -o -name '#*' | \
 	  xargs --no-run-if-empty rm)
