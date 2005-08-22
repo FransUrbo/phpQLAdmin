@@ -1,6 +1,6 @@
 phpQLAdmin 2.3 Change Log
 
-phpQLAdmin 2.3.1 TO BE ANNOUNCED
+phpQLAdmin 2.3.1 Release (Aug 22 2005)
 	Bug fixes
 	  - Remove a duplicated 'if user is (super)admin' check in tables/user_details-access.inc.
 	  - It is (very) possible for a user to have only ONE mail alias. In that case,
