@@ -1,6 +1,6 @@
 phpQLAdmin 2.2 Change Log
 
-phpQLAdmin 2.2.6 TO BE ANNOUNCED
+phpQLAdmin 2.2.6 Release (Aug 22 2005)
 	Bug fixes
 	  - Make sure that the Bind9 manager editor remembers what TYPE of record we're changing
 	    (as a 'hidden' input).
