@@ -10,89 +10,140 @@ file (httpd.conf).  The script is intended to run as a cron job every
 now and then (once every hour sounds resonable) to create the
 <VirtualHost> file.
 
-Since I'm stuck with Apache 1.3 for a little while longer, I'm forced
-to use the module 'mod_ldap_cfg' (availible at the URL
-http://www4.ncsu.edu/~bdferris/) which I have been unsuccessful to
-get working - Apache segfaults just after loading all the virtual hosts
-from the LDAP database.
-
-Brian Ferris seems to have quit/graduated from NCSU and his page(s)
-have been removed the documentation for the module with it...  I
-however managed to save the tarball on my own site
-(http://phpqladmin.com/mod_ldap_cfg-turbo.tar.gz) if someone
-can manage to get it working (I'm currently having a chat on the
-apache-modules list about this).
+NOTE: Since I'm stuck with Apache 1.3 for a little while longer, I'm
+      forced to use the module 'mod_ldap_cfg' (availible at the URL
+      http://www.cs.washington.edu/homes/bdferris/) which I have just
+      been able to get working. Works great and will render the two
+      scripts and cron setup redundant.
 
 
-As of 2.1.5, I have desided to fully support this module instead of my
-own schema hack. This even though I couldn't get it working. It's the
-only module that seems resonable and have enough options to be
-usefull. If you're upgrading from a phpQLAdmin earlier than 2.1.5 and
-have created webserver objects (look in your database with the search
-string 'objectClass=phpQLAdminWebSrv'), you will have to delete them
-and create new in the new format. The rest of this file now describes
-the _new_ object format...
+As of phpQLAdmin version 2.1.5, I have desided to fully support this
+module instead of my own schema hack. It's the only module that seems
+resonable and have enough options to be usefull. If you're upgrading
+from a phpQLAdmin earlier than 2.1.5 and have created webserver
+objects (look in your database with the search string
+'objectClass=phpQLAdminWebSrv'), you will have to delete all of them
+and create new in the new format.
+
+NOTE: The rest of this file now describes the _new_ object format...
 
 phpQLAdmin can't (at the moment) handle ALL the values possible, but
 the most common (i.e. the ones _I_ use/need :).
 
-This is an example LDIF, showing ONE vhost, using MY objectclass
-(phpQLAdminWebSrv):
------ s n i p -----
-dn: cn=testing.bayour.com,ou=WEB,o=Bayour.COM,c=SE
-objectClass: device
-objectClass: ApacheSectionObj
-objectClass: ApacheVirtualHostObj
-objectClass: ApacheModLogConfigObj
-cn: testing.bayour.com
-ApacheSectionName: VirtualHost
-ApacheSectionArg: 192.168.1.4
-ApacheServerName: testing.bayour.com
-ApacheDocumentRoot: /var/www/testing
-ApacheServerAdmin: turbo@phpqladmin.com
-ApacheErrorLog: /var/log/apache/testing_error.log
-ApacheTransferLog: /var/log/apache/testing_access.log
------ s n i p -----
 
-This will create a vhost entry that looks like:
+There is an example LDIF file in the demo directory ('apache.ldif')
+and this file will create a branch named 'ou=WEB' (below the
+'o=Main Branch,c=SE' which was/is created with the 'database-main.ldif'
+LDIF example file) where the first 'cn' branch (third object) is like
+an organizational unit, but for this specific (physical)
+webserver. The FQDN 'websrv1.domain.tld' is the actual machine name,
+NOT a vhost name!
+
+The reason we add ':80' in this 'base' DN is because we must separate
+the non-ssl listener from the ssl enabled one (see the last two objects).
+This is the tree you'll get with that LDIF:
+
+  [o=Main Branch,c=SE]
+    ou=WEB
+      cn=websrv1.domain.tld:80
+        ApacheServerName=websrv1.domain.tld
+        ApacheServerName=www1.domain.tld
+          ApacheSectionArg=/doc
+        ApacheServerName=www2.domain.tld
+        ApacheServerName=www3.domain.tld
+      cn=websrv1.domain.tld:443
+        ApacheServerName=www1.domain.tld
+      [cn=websrv2.domain.tld:80]
+        [ApacheServerName=www4.domain.tld]
+        [etc]
+
+Here you can clearly see why it is/was important to add the port part
+in the DN. We have TWO virtual hosts named 'www1.domain.tld'. One is
+listening on port 80 (normal/non-ssl or 'http://...') and the second
+is listening on port 443 (the ssl or 'https://...'). Without the port,
+the two vhosts whould have the same DN, which wouldn't work (you can't
+put TWO vhosts in the same object!).  Another (DB/branch) idea would
+be to put an extra cn between the 'ou=WEB' DN and the
+'cn=websrv1.domain.tld:XX' DN (named 'cn=websrv1.domain.tld'), but
+that wouldn't be as 'pretty' in the long run :). Besides, as _I_ see
+vhosts, it isn't important _where_ the vhost is (what physical
+machine), only the _name_ of the vhost.
+
+  [o=Main Branch,c=SE - created in database-main.ldif]
+    ou=WEB
+      cn=websrv1.domain.tld
+        cn=websrv1.domain.tld:80
+          ApacheServerName=websrv1.domain.tld
+          ApacheServerName=www1.domain.tld
+            ApacheSectionArg=/doc
+          ApacheServerName=www2.domain.tld
+          ApacheServerName=www3.domain.tld
+        cn=websrv1.domain.tld:443
+          ApacheServerName=www1.domain.tld
+      [cn=websrv2.domain.tld]
+        [cn=websrv2.domain.tld:80]
+          [ApacheServerName=www4.domain.tld]
+          [etc]
+
+The branch below 'websrv2.domain.tld' in these two examples isn't
+created here, they're just here to show how it the rest of the
+DB can look like (and where to put the NEXT physical webserver).
+
+The LDIF will make Apache generate the following configuration
+snippet (for the non-ssl Apache instance):
+
 ----- s n i p -----
-<VirtualHost 192.168.1.4>
-        ServerName testing.bayour.com
-        DocumentRoot /var/www/testing/
-        ErrorLog /var/log/apache/testing-error.log
-        TransferLog /var/log/apache/testing-trans.log
-        ServerAdmin turbo@phpqladmin.com
+<VirtualHost 192.168.1.9:80 >
+    ServerName websrv1.domain.tld
+    ServerAdmin turbo@bayour.com
+    DocumentRoot /home/apache/websrv1
+</VirtualHost>
+<VirtualHost 192.168.1.9:80 >
+    ServerName www1.domain.tld
+    ServerAdmin turbo@bayour.com
+    DocumentRoot /home/apache/www1
+    <Location /doc >
+        Order deny,allow
+        Deny from all
+        Allow from 192.168.1
+        Allow from 192.168.15
+        Options Indexes MultiViews
+    </Location>
+</VirtualHost>
+<VirtualHost 192.168.1.9:80 >
+    ServerName www2.domain.tld
+    ServerAdmin turbo@bayour.com
+    DocumentRoot /home/apache/www2
+    ErrorLog /var/log/apache/www2-error.log
+    TransferLog /var/log/apache/www2-access.log
+</VirtualHost>
+<VirtualHost 192.168.1.9:80 >
+    ServerName www3.domain.tld
+    ServerAdmin turbo@bayour.com
+    DocumentRoot /home/apache/www3
+    RewriteEngine on
+    RewriteRule ^/(.*) https://www2.domain.tld/$1
 </VirtualHost>
 ----- s n i p -----
 
-The httpd.conf will need the following entry to allow
-virtual hosting in the LDAP server:
------ s n i p -----
-# http://www4.ncsu.edu/~bdferris/mod_ldap_cfg/index.html
-LoadModule ldap_cfg_module    /root/apache/mod_ldap_cfg.so
-<IfModule mod_ldap_cfg.c>
-  #   1: Prints all configuration directives as sent to Apache
-  #   2: Prints all configurations directives with line numbers
-  #   4: Prints LDAP search information
-  #   8: Prints LDAP connection information
-  #  16: Prints LDAP SASL connection information
-  #  32: Prints handling of "LDAPCfg_*" directives
-  #  64: Prints every mod_ldap_cfg function call made
-  # 128: Everything else that only a developer could love
-  #  -1: All of it
-#  LDAPCfg_Debug         -1
 
-  LDAPCfg_BindDN        "<dn>"
-  LDAPCfg_Password      <secret>
+The file 'demo/apache.conf' can/should be included from your
+httpd.conf to allow virtual hosting from the LDAP server.
 
-  LDAPCfg_BaseDN        <basedn>
-  LDAPCfg_SearchScope   sub
+Some important notes about this file; the 'NameVirtualHost'
+configuration directive _must_ contain the port number,
+the 'LDAPCfg_BaseDN' _must_ be the base of this physical
+servers DN (the 'dn: cn=...' object DN) and finaly, for
+all this to work, the 'LDAPCfg_Load' must be '(objectClass=*)'.
 
-  LDAPCfg_URI           <ldapuri>
-  LDAPCfg_ProtoVer      3
-  LDAPCfg_UseSimpleBind
-
-  LDAPCfg_Load          "ApacheSectionArg=192.168.1.4*"
-</IfModule>
------ s n i p -----
-
+This because we can't give it a BaseDN of 'c=SE' and then
+look for '(ApacheSectionArg=192.168.1.9:80)' which would
+be the most obvious (I tried for a day until I resorted
+to read the source :). The reason for this is that the
+module does only _one_ search. And since the 'Location'
+stuff is in a _separate_ (sub) DN, it (the module) won't
+be able to see/find it... Hence, we must specify the exact
+branch where this (physical) servers vhosts is located,
+and then load EVERYTHING.
+The module is clever enough to figure out what sub DN 
+is part of which parent configuration section.
