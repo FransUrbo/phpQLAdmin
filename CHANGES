@@ -110,6 +110,8 @@ phpQLAdmin 2.3.1 Release (Aug 22 2005)
 	    other debug files...
 	  - Create the file DEBUGGING.txt which describes how debuing can be done.
 	  - Include a working Apache/mod_ldap_cfg config snippet and database branch example.
+	  - Update the Apache readme (doc/README.apache) with the new Apache/mod_ldap_cfg
+	    demo files.
 
 phpQLAdmin 2.3.0 Release (Jun  8 2005)
 	Bug fixes
