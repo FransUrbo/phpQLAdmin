@@ -1,0 +1,136 @@
+dn: uid=apache,o=Main Branch,c=SE
+objectClass: top
+objectClass: simpleSecurityObject
+objectClass: account
+uid: apache
+userPassword: {MD5}9Jz5UX94nDINjCphiTezlA==
+OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
+OpenLDAPaci: 1#entry#grant;x;userPassword#public#
+OpenLDAPaci: 2#entry#grant;r,s,c;uid#public#
+OpenLDAPaci: 3#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
+OpenLDAPaci: 4#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo2,o=Main Branch,c=SE
+
+dn: ou=WEB,o=Main Branch,c=SE
+objectClass: organizationalUnit
+ou: WEB
+OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,o,[entry]#public#
+OpenLDAPaci: 1#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
+OpenLDAPaci: 2#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo2,o=Main Branch,c=SE
+
+dn: cn=websrv1.domain.tld:80,ou=WEB,o=Main Branch,c=SE
+objectClass: device
+cn: websrv1.domain.tld:80
+OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
+OpenLDAPaci: 1#entry#grant;r,s,c;ou#public#
+OpenLDAPaci: 2#entry#grant;w,r,s,c;[all]#access-id#uid=demo1,o=Main Branch,c=SE
+OpenLDAPaci: 3#entry#grant;r,s,c;[all]#access-id#uid=apache,o=Main Branch,c=SE
+
+dn: ApacheServerName=websrv1.domain.tld,cn=websrv1.domain.tld:80,ou=WEB,o=Main Branch,c=SE
+objectClass: device
+objectClass: ApacheSectionObj
+objectClass: ApacheVirtualHostObj
+cn: websrv1.domain.tld
+ApacheServerName: websrv1.domain.tld
+ApacheServerAdmin: turbo@bayour.com
+ApacheDocumentRoot: /home/apache/websrv1
+ApacheSectionName: VirtualHost
+ApacheSectionArg: 192.168.1.9:80
+OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
+OpenLDAPaci: 1#entry#grant;r,s,c;ou#public#
+OpenLDAPaci: 2#entry#grant;w,r,s,c;[all]#access-id#uid=demo1,o=Main Branch,c=SE
+OpenLDAPaci: 3#entry#grant;r,s,c;[all]#access-id#uid=apache,o=Main Branch,c=SE
+
+dn: ApacheServerName=www1.domain.tld,cn=websrv1.domain.tld:80,ou=WEB,o=Main Branch,c=SE
+objectClass: device
+objectClass: ApacheSectionObj
+objectClass: ApacheVirtualHostObj
+cn: www1.domain.tld
+ApacheServerName: www1.domain.tld
+ApacheServerAdmin: turbo@bayour.com
+ApacheDocumentRoot: /home/apache/www1
+ApacheSectionName: VirtualHost
+ApacheSectionArg: 192.168.1.9:80
+OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
+OpenLDAPaci: 1#entry#grant;r,s,c;ou#public#
+OpenLDAPaci: 2#entry#grant;w,r,s,c;[all]#access-id#uid=demo1,o=Main Branch,c=SE
+OpenLDAPaci: 3#entry#grant;r,s,c;[all]#access-id#uid=apache,o=Main Branch,c=SE
+
+dn: ApacheSectionArg=/doc,ApacheServerName=www1.domain.tld,cn=websrv1.domain.tld:80,ou=WEB,o=Main Branch,c=SE
+objectClass: device
+objectclass: ApacheSectionObj
+objectclass: ApacheDirectoryObj
+objectclass: ApacheModAccessObj
+cn: /doc
+ApacheSectionArg: /doc
+ApacheSectionName: Location
+ApacheOrder: deny,allow
+ApacheDeny: from all
+ApacheAllow: from 192.168.1
+ApacheAllow: from 192.168.15
+ApacheOptions: Indexes MultiViews
+OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
+OpenLDAPaci: 1#entry#grant;r,s,c;ou#public#
+OpenLDAPaci: 2#entry#grant;w,r,s,c;[all]#access-id#uid=turbo,ou=People,o=Fredriksson,c=SE
+OpenLDAPaci: 3#entry#grant;r,s,c;[all]#access-id#uid=apache,ou=System,o=Main Branch,c=SE
+
+dn: ApacheServerName=www2.domain.tld,cn=websrv1.domain.tld:80,ou=WEB,o=Main Branch,c=SE
+objectClass: device
+objectClass: ApacheSectionObj
+objectClass: ApacheVirtualHostObj
+objectClass: ApacheModLogConfigObj
+cn: www2.domain.tld
+ApacheServerName: www2.domain.tld
+ApacheServerAdmin: turbo@bayour.com
+ApacheDocumentRoot: /home/apache/www2
+ApacheSectionName: VirtualHost
+ApacheSectionArg: 192.168.1.9:80
+ApacheErrorLog: /var/log/apache/www2-error.log
+ApacheTransferLog: /var/log/apache/www2-access.log
+OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
+OpenLDAPaci: 1#entry#grant;r,s,c;ou#public#
+OpenLDAPaci: 2#entry#grant;w,r,s,c;[all]#access-id#uid=demo1,o=Main Branch,c=SE
+OpenLDAPaci: 3#entry#grant;r,s,c;[all]#access-id#uid=apache,o=Main Branch,c=SE
+
+dn: ApacheServerName=www3.domain.tld,cn=websrv1.domain.tld:80,ou=WEB,o=Main Branch,c=SE
+objectClass: device
+objectClass: ApacheSectionObj
+objectClass: ApacheVirtualHostObj
+objectClass: ApacheModRewriteObj
+cn: www3.domain.tld
+ApacheServerName: www3.domain.tld
+ApacheServerAdmin: turbo@bayour.com
+ApacheDocumentRoot: /home/apache/www3
+ApacheSectionName: VirtualHost
+ApacheSectionArg: 192.168.1.9:80
+ApacheRewriteEngine: on
+ApacheRewriteRule: ^/(.*) https://www2.domain.tld/$1
+OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
+OpenLDAPaci: 1#entry#grant;r,s,c;ou#public#
+OpenLDAPaci: 2#entry#grant;w,r,s,c;[all]#access-id#uid=demo1,o=Main Branch,c=SE
+OpenLDAPaci: 3#entry#grant;r,s,c;[all]#access-id#uid=apache,o=Main Branch,c=SE
+
+dn: cn=websrv1.domain.tld:443,ou=WEB,o=Main Branch,c=SE
+objectClass: device
+cn: websrv1.domain.tld:443
+OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
+OpenLDAPaci: 1#entry#grant;r,s,c;ou#public#
+OpenLDAPaci: 2#entry#grant;w,r,s,c;[all]#access-id#uid=demo1,o=Main Branch,c=SE
+OpenLDAPaci: 3#entry#grant;r,s,c;[all]#access-id#uid=apache,o=Main Branch,c=SE
+
+dn: ApacheServerName=www1.domain.tld,cn=websrv1.domain.tld:443,ou=WEB,o=Main Branch,c=SE
+objectClass: device
+objectClass: ApacheSectionObj
+objectClass: ApacheVirtualHostObj
+cn: www1.domain.tld
+ApacheServerName: www1.domain.tld
+ApacheServerAdmin: turbo@bayour.com
+ApacheDocumentRoot: /home/apache/www1
+ApacheSectionName: VirtualHost
+ApacheSectionArg: 192.168.1.9:443
+ApacheRawArg: SSLEnable
+ApacheRawArg: SSLCertificateFile /etc/ssl/certs/www1_domain_tld.pub
+ApacheRawArg: SSLCertificateKeyFile /etc/ssl/certs/www1_domain_tld.prv
+OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
+OpenLDAPaci: 1#entry#grant;r,s,c;ou#public#
+OpenLDAPaci: 2#entry#grant;w,r,s,c;[all]#access-id#uid=demo1,o=Main Branch,c=SE
+OpenLDAPaci: 3#entry#grant;r,s,c;[all]#access-id#uid=apache,o=Main Branch,c=SE
