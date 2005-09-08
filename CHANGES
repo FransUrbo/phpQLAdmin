@@ -109,6 +109,7 @@ phpQLAdmin 2.3.1 Release (Aug 22 2005)
 	  - Rename the .DEBUG_ME_DEFINES to .DEBUG_DEFINES. More in line with the
 	    other debug files...
 	  - Create the file DEBUGGING.txt which describes how debuing can be done.
+	  - Include a working Apache/mod_ldap_cfg config snippet and database branch example.
 
 phpQLAdmin 2.3.0 Release (Jun  8 2005)
 	Bug fixes
