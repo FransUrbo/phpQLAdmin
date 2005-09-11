@@ -2,33 +2,61 @@
 #  OID Base (Turbo Fredriksson)   8767
 #
 #  OID assignments:
-#      LDAP Elements                                  1 (defined elsewhere)
+#      LDAP Elements                                  1	(defined elsewhere)
 #      SNMP Elements                                  2 (defined elsewhere)
 #      phpQLAdmin Elements                            3 (defined elsewhere)
 #      cacti Elements                                 4
 #        Objectclasses                                  1
-#        Objectclasses                                  1
 #         cactiAccessPolicy                               1
+#         cactiGraphSettings                              2
 #
 #        Attributes                                     2
-#         Toggles                                         1
-#           cactiShowTree                                   1
-#           cactiShowList                                   2
-#           cactiShowPreview                                3
-#           cactiGraphSettings                              4
+#         User Settings                                   1
+#           cactiShowTree                                    1
+#           cactiShowList                                    2
+#           cactiShowPreview                                 3
+#           cactiGraphSettings                               4
 #
-#         Value                                           2
-#           cactiLoginOpts                                  1
-#           cactiPolicyGraphs                               2
-#           cactiPolicyTrees                                3
-#           cactiPolicyHosts                                4
-#           cactiGraphTemplates                             5
-#           cactiItemID                                     6
-#           cactiRealmAccess                                7
+#         User Policy                                     2
+#           cactiLoginOpts                                   1
+#           cactiPolicyGraphs                                2
+#           cactiPolicyTrees                                 3
+#           cactiPolicyHosts                                 4
+#           cactiGraphTemplates                              5
+#           cactiItemID                                      6
+#           cactiRealmAccess                                 7
+#
+#         Graph Settings                                  3
+#           cactiGraphSettingDefaultRRAId                    1
+#           cactiGraphSettingDefaultViewMode                 2
+#           cactiGraphSettingDefaultTimespan                 3
+#           cactiGraphSettingTimespanSelector                4
+#           cactiGraphSettingDefaultDateMode                 5
+#           cactiGraphSettingDefaultDateChar                 6
+#           cactiGraphSettingDefaultPageRefresh              7
+#           cactiGraphSettingDefaultThumbnailHeight          8
+#           cactiGraphSettingDefaultThumbnailWidth           9
+#           cactiGraphSettingDefaultThumbnailColumns        10
+#           cactiGraphSettingThumbnailSectionPreview        11
+#           cactiGraphSettingThumbnailSectionSinglePane     12
+#           cactiGraphSettingThumbnailSectionDualPane       13
+#           cactiGraphSettingDefaultTreeId                  14
+#           cactiGraphSettingDefaultTreeViewMode            15
+#           cactiGraphSettingExpandHosts                    16
+#           cactiGraphSettingGraphsPerPagePreview           17
+#           cactiGraphSettingGraphsPerPageListview          18
+#           cactiGraphSettingTitleFontSize                  19
+#           cactiGraphSettingTitleFontFile                  20
+#           cactiGraphSettingLegendFontSize                 21
+#           cactiGraphSettingLegendFontFile                 22
+#           cactiGraphSettingAxisFontSize                   23
+#           cactiGraphSettingAxisFontFile                   24
+#           cactiGraphSettingUnitFontSize                   25
+#           cactiGraphSettingUnitFontFile                   26
 
-# $Id: cacti.schema,v 1.1 2005-09-11 10:28:13 turbo Exp $
+# $Id: cacti.schema,v 1.2 2005-09-11 12:13:51 turbo Exp $
 
-# ------------ Boolean/toggles:
+# ------------ User settings
 attributetype ( 1.3.6.1.4.1.8767.4.2.1.1 NAME 'cactiShowTree'
   DESC 'User Has Rights to Tree View [True/False]?'
   EQUALITY booleanMatch
@@ -53,7 +81,7 @@ attributetype ( 1.3.6.1.4.1.8767.4.2.1.4 NAME 'cactiGraphSettings'
   SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
   SINGLE-VALUE )
 
-# ------------ integers
+# ------------ User Policy
 attributetype ( 1.3.6.1.4.1.8767.4.2.2.1 NAME 'cactiLoginOpts'
   DESC 'What to do when this user logs in.'
   EQUALITY integerMatch
@@ -94,18 +122,205 @@ attributetype ( 1.3.6.1.4.1.8767.4.2.2.7 NAME 'cactiRealmAccess'
   EQUALITY integerMatch
   SYNTAX 1.3.6.1.4.1.1466.115.121.1.27{8} )
 
-# ------------ objectclass(es)
-objectclass ( 1.3.6.1.4.1.8767.4.1.1
-  NAME 'cactiAccessPolicy'
+# ------------ Graph Settings
+# NOTE: See (within cacti) 'site/include/config_settings.php:settings_graphs'
+#       array for more about these.
+attributetype ( 1.3.6.1.4.1.8767.4.2.3.1 NAME 'cactiGraphSettingDefaultRRAId'
+  DESC 'The default RRA to use when thumbnail graphs are not being displayed or when "Thumbnail Timespan" is set to "0".'
+  EQUALITY integerMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27{1}
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.3.2 NAME 'cactiGraphSettingDefaultViewMode'
+  DESC 'Which mode you want displayed when you visit "graph_view.php"?'
+  EQUALITY integerMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27{1}
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.3.3 NAME 'cactiGraphSettingDefaultTimespan'
+  DESC 'The default timespan you wish to be displayed when you display graphs.'
+  EQUALITY integerMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27{1}
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.3.4 NAME 'cactiGraphSettingTimespanSelector'
+  DESC 'Choose if you want the time span selection box to be displayed.'
+  EQUALITY booleanMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.3.5 NAME 'cactiGraphSettingDefaultDateMode'
+  DESC 'The date format to use for graphs.'
+  EQUALITY integerMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27{5}
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.3.6 NAME 'cactiGraphSettingDefaultDateChar'
+  DESC 'The date separator to be used for graphs.'
+  EQUALITY integerMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27{1}
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.3.7 NAME 'cactiGraphSettingDefaultPageRefresh'
+  DESC 'The number of seconds between automatic page refreshes.'
+  EQUALITY integerMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27{10}
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.3.8 NAME 'cactiGraphSettingDefaultThumbnailHeight'
+  DESC 'The height of thumbnail graphs in pixels.'
+  EQUALITY integerMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27{10}
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.3.9 NAME 'cactiGraphSettingDefaultThumbnailWidth'
+  DESC 'The width of thumbnail graphs in pixels.'
+  EQUALITY integerMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27{10}
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.3.10 NAME 'cactiGraphSettingDefaultThumbnailColumns'
+  DESC 'The number of columns to use when displaying thumbnail graphs.'
+  EQUALITY integerMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27{5}
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.3.11 NAME 'cactiGraphSettingThumbnailSectionPreview'
+  DESC 'Which sections of Cacti thumbnail graphs should be used for - preview mode.'
+  EQUALITY booleanMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.3.12 NAME 'cactiGraphSettingThumbnailSectionSinglePane'
+  DESC 'Which sections of Cacti thumbnail graphs should be used for - tree view (single pane).'
+  EQUALITY booleanMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.3.13 NAME 'cactiGraphSettingThumbnailSectionDualPane'
+  DESC 'Which sections of Cacti thumbnail graphs should be used for - tree view (dual pane).'
+  EQUALITY booleanMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.3.14 NAME 'cactiGraphSettingDefaultTreeId'
+  DESC 'The default graph tree to use when displaying graphs in tree mode.'
+  EQUALITY integerMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27{1}
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.3.15 NAME 'cactiGraphSettingDefaultTreeViewMode'
+  DESC 'The default mode that will be used when viewing tree mode.'
+  EQUALITY integerMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27{1}
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.3.16 NAME 'cactiGraphSettingExpandHosts'
+  DESC 'Choose whether to expand the graph templates used for a host on the dual pane tree.'
+  EQUALITY booleanMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.3.17 NAME 'cactiGraphSettingGraphsPerPagePreview'
+  DESC 'The number of graphs to display on one page in preview mode.'
+  EQUALITY integerMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27{10}
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.3.18 NAME 'cactiGraphSettingGraphsPerPageListview'
+  DESC 'The number of graphs to display on one page in list view mode.'
+  EQUALITY integerMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27{10}
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.3.19 NAME 'cactiGraphSettingTitleFontSize'
+  DESC 'The size of the font used for Graph Titles'
+  EQUALITY integerMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27{10}
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.3.20 NAME 'cactiGraphSettingTitleFontFile'
+  DESC 'The font file to use for Graph Titles'
+  EQUALITY caseIgnoreMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{100}
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.3.21 NAME 'cactiGraphSettingLegendFontSize'
+  DESC 'The size of the font used for Graph Legend items'
+  EQUALITY integerMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27{10}
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.3.22 NAME 'cactiGraphSettingLegendFontFile'
+  DESC 'The font file to be used for Graph Legend items'
+  EQUALITY caseIgnoreMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{100}
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.3.23 NAME 'cactiGraphSettingAxisFontSize'
+  DESC 'The size of the font used for Graph Axis'
+  EQUALITY integerMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27{10}
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.3.24 NAME 'cactiGraphSettingAxisFontFile'
+  DESC 'The font file to be used for Graph Legend items'
+  EQUALITY caseIgnoreMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{100}
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.3.25 NAME 'cactiGraphSettingUnitFontSize'
+  DESC 'The size of the font used for Graph Units'
+  EQUALITY integerMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27{10}
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.3.26 NAME 'cactiGraphSettingUnitFontFile'
+  DESC 'The size of the font used for Graph Unit items'
+  EQUALITY caseIgnoreMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{100}
+  SINGLE-VALUE )
+
+# ------------ Objectclass(es)
+# NOTE: These attributes should NOT be user-modifiable.
+objectclass ( 1.3.6.1.4.1.8767.4.1.1 NAME 'cactiAccessPolicy'
   DESC 'Cacti access policy values'
-  MAY ( cactiShowTree $ cactiShowList $
-        cactiShowPreview $ cactiGraphSettings $
-        cactiLoginOpts $ cactiPolicyGraphs $
-        cactiPolicyTrees $ cactiPolicyHosts $
-        cactiGraphTemplates $ cactiItemID $
-        cactiRealmAccess )
-  MUST cn
+  MUST ( cn $ cactiRealmAccess )
+  MAY  ( cactiShowTree $ cactiShowList $
+         cactiShowPreview $ cactiGraphSettings $
+         cactiLoginOpts $ cactiPolicyGraphs $
+         cactiPolicyTrees $ cactiPolicyHosts $
+         cactiGraphTemplates $ cactiItemID )
   SUP top AUXILIARY )
+
+# NOTE: These attributes can (should?) be user-modifiable.
+objectclass ( 1.3.6.1.4.1.8767.4.1.2 NAME 'cactiGraphSettings'
+  DESC 'Graph settings control how graphs are displayed for this user.'
+  MAY  ( cactiGraphSettingDefaultRRAId $
+         cactiGraphSettingDefaultViewMode $
+         cactiGraphSettingDefaultTimespan $
+         cactiGraphSettingTimespanSelector $
+         cactiGraphSettingDefaultDateMode $
+         cactiGraphSettingDefaultDateChar $
+         cactiGraphSettingDefaultPageRefresh $
+         cactiGraphSettingDefaultThumbnailHeight $
+         cactiGraphSettingDefaultThumbnailWidth $
+         cactiGraphSettingDefaultThumbnailColumns $
+         cactiGraphSettingThumbnailSection $
+         cactiGraphSettingDefaultTreeId $
+         cactiGraphSettingDefaultTreeViewMode $
+         cactiGraphSettingExpandHosts $
+         cactiGraphSettingGraphsPerPagePreview $
+         cactiGraphSettingGraphsPerPageListview $
+         cactiGraphSettingTitleFontSize $
+         cactiGraphSettingTitleFontFile $
+         cactiGraphSettingLegendFontSize $
+         cactiGraphSettingLegendFontFile $
+         cactiGraphSettingAxisFontSize $
+         cactiGraphSettingUnitFontSize $
+         cactiGraphSettingUnitFontFile )
+  SUP top AUXILIARY )
+
 
 #
 # Local variables:
