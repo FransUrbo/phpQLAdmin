@@ -1,0 +1,116 @@
+#  OID base (IANA)                1.3.6.1.4.1
+#  OID Base (Turbo Fredriksson)   8767
+#
+#  OID assignments:
+#      LDAP Elements                                  1 (defined elsewhere)
+#      SNMP Elements                                  2 (defined elsewhere)
+#      phpQLAdmin Elements                            3 (defined elsewhere)
+#      cacti Elements                                 4
+#        Objectclasses                                  1
+#        Objectclasses                                  1
+#         cactiAccessPolicy                               1
+#
+#        Attributes                                     2
+#         Toggles                                         1
+#           cactiShowTree                                   1
+#           cactiShowList                                   2
+#           cactiShowPreview                                3
+#           cactiGraphSettings                              4
+#
+#         Value                                           2
+#           cactiLoginOpts                                  1
+#           cactiPolicyGraphs                               2
+#           cactiPolicyTrees                                3
+#           cactiPolicyHosts                                4
+#           cactiGraphTemplates                             5
+#           cactiItemID                                     6
+#           cactiRealmAccess                                7
+
+# $Id: cacti.schema,v 1.1 2005-09-11 10:28:13 turbo Exp $
+
+# ------------ Boolean/toggles:
+attributetype ( 1.3.6.1.4.1.8767.4.2.1.1 NAME 'cactiShowTree'
+  DESC 'User Has Rights to Tree View [True/False]?'
+  EQUALITY booleanMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.1.2 NAME 'cactiShowList'
+  DESC 'User Has Rights to List View [True/False]?'
+  EQUALITY booleanMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.1.3 NAME 'cactiShowPreview'
+  DESC 'User Has Rights to Preview View [True/False]?'
+  EQUALITY booleanMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.1.4 NAME 'cactiGraphSettings'
+  DESC 'Allow this User to Keep Custom Graph Settings [True/False]?'
+  EQUALITY booleanMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+  SINGLE-VALUE )
+
+# ------------ integers
+attributetype ( 1.3.6.1.4.1.8767.4.2.2.1 NAME 'cactiLoginOpts'
+  DESC 'What to do when this user logs in.'
+  EQUALITY integerMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27{1}
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.2.2 NAME 'cactiPolicyGraphs'
+  DESC '?????'
+  EQUALITY integerMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27{1}
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.2.3 NAME 'cactiPolicyTrees'
+  DESC '?????'
+  EQUALITY integerMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27{1}
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.2.4 NAME 'cactiPolicyHosts'
+  DESC '?????'
+  EQUALITY integerMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27{1}
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.2.5 NAME 'cactiGraphTemplates'
+  DESC '?????'
+  EQUALITY integerMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27{1}
+  SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.2.6 NAME 'cactiItemID'
+  DESC '?????'
+  EQUALITY integerMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27{8} )
+
+attributetype ( 1.3.6.1.4.1.8767.4.2.2.7 NAME 'cactiRealmAccess'
+  DESC '?????'
+  EQUALITY integerMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27{8} )
+
+# ------------ objectclass(es)
+objectclass ( 1.3.6.1.4.1.8767.4.1.1
+  NAME 'cactiAccessPolicy'
+  DESC 'Cacti access policy values'
+  MAY ( cactiShowTree $ cactiShowList $
+        cactiShowPreview $ cactiGraphSettings $
+        cactiLoginOpts $ cactiPolicyGraphs $
+        cactiPolicyTrees $ cactiPolicyHosts $
+        cactiGraphTemplates $ cactiItemID $
+        cactiRealmAccess )
+  MUST cn
+  SUP top AUXILIARY )
+
+#
+# Local variables:
+# mode: fundamental
+# mode: font-lock
+# tab-width: 2
+# indent-tabs-mode: nil
+# End:
