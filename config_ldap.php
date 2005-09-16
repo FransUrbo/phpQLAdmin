@@ -1,6 +1,6 @@
 <?php
 // shows configuration of phpQLAdmin
-// $Id: config_ldap.php,v 1.17 2005-06-09 15:05:35 turbo Exp $
+// $Id: config_ldap.php,v 1.18 2005-09-16 20:33:37 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -11,18 +11,22 @@ include($_SESSION["path"]."/header.html");
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 $ldap = pql_get_subschemas($_pql->ldap_linkid);
-if($type) {
-	$tmp = $ldap; unset($ldap);
-
-	$ldap[$type] = $tmp[$type];
-	$attributetypes = $tmp['attributetypes'];
+if($_REQUEST["type"]) {
+  $type = $_REQUEST["type"];
+  $tmp = $ldap; unset($ldap);
+  
+  $ldap[$type] = $tmp[$type];
+  $attributetypes = $tmp['attributetypes'];
 } else {
-	$attributetypes = $ldap['attributetypes'];
+  $attributetypes = $ldap['attributetypes'];
 }
 $j = 1; $oc_counter = 0;
 ?>
     <table cellspacing="0" cellpadding="3" border="0">
 <?php
+// I won't be needing this and it's in the way...
+unset($ldap['objectclasses']['ALIAS']);
+
 foreach($ldap as $x => $array) {
 ?>
       <th colspan="3" align="left"><?=$x?>
@@ -39,10 +43,10 @@ foreach($ldap as $x => $array) {
 
 <?php    foreach($array as $value) { ?>
         <tr class="<?php pql_format_table(); ?>">
-<?php       echo "          <td>".$value['NAME']."</td>\n";
-			echo "          <td>".$value['OID']."</td>\n";
-			echo "          <td>".$value['SINGLE-VALUE']."</td>\n";
-			echo "          <td>".$value['DESC']."</td>\n";
+<?php       echo "          <td>".@$value['NAME']."</td>\n";
+			echo "          <td>".@$value['OID']."</td>\n";
+			echo "          <td>".@$value['SINGLE-VALUE']."</td>\n";
+			echo "          <td>".@$value['DESC']."</td>\n";
 ?>
         </tr>
 <?php    } ?>
@@ -56,7 +60,7 @@ foreach($ldap as $x => $array) {
 
         <p><font size="1"><?=$LANG->_('Text in bold is a MUST, and non-bold is MAY')?>.</font><br>
 
-<?php	foreach($array as $value) { ?>
+<?php	foreach($array as $x => $value) { ?>
         <!-- --------------------------------------------------- -->
         <!-- Objectclass #<?=$oc_counter?>: '<?=$value['NAME']?>:<?=$value['OID']?>' -->
         <tr class="<?=$class?>">
@@ -75,22 +79,33 @@ foreach($ldap as $x => $array) {
         
               <a class="item"><font color="black" class="heada"><?=$value['NAME']?></font></a>
             </div>
-<?php		} ?>
+<?php		}
 
-<?php		if($_SESSION["opera"]) { ?>
+			if($_SESSION["opera"]) {
+?>
             <span id="el<?=$j?>aSpn" style="display:''">
 <?php		} else { ?>
             <div id="el<?=$j?>Child" class="child">
-<?php		} ?>
-<?php		for($i=0; $i < $value['MUST']['count']; $i++) { // MUST attributes ?>
-              &nbsp;&nbsp;&nbsp;&nbsp;<b><?=$value['MUST'][$i]?></b><br>
 <?php		} 
 
-			for($i=0; $i < $value['MAY']['count']; $i++) {  // MAY attributes
+			if(isset($value['MUST'])) {
+			  for($i=0; $i < $value['MUST']['count']; $i++) {
+				// MUST attributes
+?>
+              &nbsp;&nbsp;&nbsp;&nbsp;<b><?=$value['MUST'][$i]?></b><br>
+<?php		  }
+			}
+
+			if(isset($value['MAY'])) {
+			  for($i=0; $i < $value['MAY']['count']; $i++) {
+				// MAY attributes
 ?>
               &nbsp;&nbsp;&nbsp;&nbsp;<?=$value['MAY'][$i]?><br>
-<?php		} ?>
-<?php		if($_SESSION["opera"]) { ?>
+<?php		  }
+			}
+
+			if($_SESSION["opera"]) {
+?>
             </span>
 <?php		} else { ?>
             </div>
@@ -116,35 +131,58 @@ foreach($ldap as $x => $array) {
             </div>
 
             <div id="el<?=$j?>Child" class="child">
-<?php		} ?>
-<?php		for($i=0; $i < $value['MUST']['count']; $i++) { // MUST attributes ?>
+<?php		}
+
+			if(isset($value['MUST'])) {
+			  for($i=0; $i < $value['MUST']['count']; $i++) {
+				// MUST attributes
+?>
               &nbsp;&nbsp;&nbsp;&nbsp;<b><?php
-			  	if($attributetypes[lc($value['MUST'][$i])]['OID']) {
-					echo $attributetypes[lc($value['MUST'][$i])]['OID'];
+			  	if(@$attributetypes[lc($value['MUST'][$i])]['OID']) {
+				  echo $attributetypes[lc($value['MUST'][$i])]['OID'];
 				} else {
-					// It's an alias
-					foreach($attributetypes as $attrib) {
-						if($attrib['ALIAS'][0])
-						  if(lc($value['MUST'][$i]) == lc($attrib['ALIAS'][0]))
-							echo $attrib['OID'];
+				  // It's an alias
+				  $alias_attribs = split(':', $value['MUST'][$i]);
+
+				  foreach($attributetypes as $attrib) {
+					if(isset($attrib['ALIAS'][0])) {
+					  foreach($alias_attribs as $alias) {
+						if(lc($alias) == lc($attrib['ALIAS'][0])) {
+						  echo $attrib['OID'];
+						}
+					  }
 					}
-				} ?></b><br>
+				  }
+				}
+			  } ?></b><br>
 <?php       }
 
-            for($i=0; $i < $value['MAY']['count']; $i++) { // MAY attributes ?>
+			if(isset($value['MAY'])) {
+			  for($i=0; $i < $value['MAY']['count']; $i++) {
+				// MAY attributes
+?>
               &nbsp;&nbsp;&nbsp;&nbsp;<?php
-				if($attributetypes[lc($value['MAY'][$i])]['OID']) {
-					echo $attributetypes[lc($value['MAY'][$i])]['OID'];
+				if(@$attributetypes[lc($value['MAY'][$i])]['OID']) {
+				  echo $attributetypes[lc($value['MAY'][$i])]['OID'];
 				} else {
-					// It's an alias
-					foreach($attributetypes as $attrib) {
-						if($attrib['ALIAS'][0])
-						  if(lc($value['MAY'][$i]) == lc($attrib['ALIAS'][0]))
-							echo $attrib['OID'];
+				  // It's an alias
+				  $alias_attribs = split(':', $value['MAY'][$i]);
+
+				  foreach($attributetypes as $attrib) {
+					if(isset($attrib['ALIAS'][0])) {
+					  foreach($alias_attribs as $alias) {
+						if(lc($alias) == lc($attrib['ALIAS'][0])) {
+						  echo $attrib['OID'];
+						}
+					  }
 					}
-				}?><br>
-<?php       } ?>
-<?php		if($_SESSION["opera"]) { ?>
+				  }
+				} ?><br>
+<?php         }
+			}
+
+			if($_SESSION["opera"]) {
+?>
             </span>
 <?php		} else { ?>
             </div>
@@ -155,7 +193,7 @@ foreach($ldap as $x => $array) {
           <td></td>
 
           <!-- OBJECTCLASS DESCRIPTION -->
-          <td><?=$value['DESC']?></td>
+          <td><?=@$value['DESC']?></td>
         </tr>
 
 <?php		$class = pql_format_table(0);
