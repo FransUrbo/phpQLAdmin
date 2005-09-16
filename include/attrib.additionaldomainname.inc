@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.32 2005-06-13 17:09:22 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.33 2005-09-16 06:08:46 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -49,7 +49,7 @@ function attribute_print_form() {
 	  // Get all QmailLDAP/Control hosts.
       $result = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 						   '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
-	  for($i=0; $result[$i]; $i++)
+	  for($i=0; $i < count($result); $i++)
 		$hosts[] = pql_get_attribute($_pql_control->ldap_linkid, $result[$i], pql_get_define("PQL_ATTR_CN"));
 
 	  if(is_array($hosts)) {

@@ -7,7 +7,7 @@ $attribs = array("senderconfirm"	=> pql_get_define("PQL_ATTR_GROUP_CONFIRM"),
 foreach($attribs as $key => $attrib) {
 	// Get default value
 	$value = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], $attrib);
-	if(($key == 'senderconfirm') or ($key == 'membersonly')) {
+	if(($key == pql_get_define("PQL_ATTR_GROUP_CONFIRM")) or ($key == pql_get_define("PQL_ATTR_GROUP_MEMBERS_ONLY"))) {
 	    // It's a user toggle
 		$$key = $value[0];
 	    if(!$$key)
@@ -17,7 +17,7 @@ foreach($attribs as $key => $attrib) {
 	      $$key = pql_format_bool($$key);
 	} elseif(($key == pql_get_define("PQL_ATTR_GROUP_CONFIRM_TEXT")) or ($key == pql_get_define("PQL_ATTR_GROUP_MODERATOR_TEXT")))
 	  // It's a multi-line text
-	  $$key = eregi_replace("\n", "<br>", $value[0]);
+	  $$key = eregi_replace("\n", "<br>", $value);
 
 	// Generate the link URL 
 	$link   = $key . "_link";
@@ -47,7 +47,8 @@ foreach($attribs as $key => $attrib) {
 		$$key  = array($value);
 	  else
 		$$key  = $value;
-	}
+	} else
+	  $$key	   = '';
 }
 
 $url_tmp    = "user_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&user=".$url["user"]."&";

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldaprebind (don't retrieve password, try to bind to dn)
 //
-// $Id: attrib.control.ldaprebind.inc,v 2.17 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.ldaprebind.inc,v 2.18 2005-09-16 06:08:46 turbo Exp $
 
 // {{{ ldaprebind_check(type)
 function ldaprebind_check($type) {
@@ -19,7 +19,7 @@ function ldaprebind_init($host) {
 	$_REQUEST["ldaprebind"] = pql_get_attribute($_pql_control->ldap_linkid,
 												pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 												pql_get_define("PQL_ATTR_LDAPREBIND"));
-	if(is_null($_REQUEST["ldaprebind"]))
+	if(@is_null($_REQUEST["ldaprebind"]))
 	  return true;
 }
 // }}}
@@ -37,8 +37,8 @@ function ldaprebind_print_view($host) {
 <?php $class=pql_format_table(0); ?>
       <tr class="<?=$class?>">
         <td class="title"><?=$LANG->_('Do rebind')?></td>
-        <td class="<?=$class?>"><?php if($_REQUEST["ldaprebind"]) { echo $LANG->_('Yes'); } else { echo $LANG->_('No'); }?></td>
-        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPREBIND")?>&<?=pql_get_define("PQL_ATTR_LDAPREBIND")?>=<?php if($_REQUEST["ldaprebind"]) { echo "0"; } else { echo "1"; }?>&submit=1&type=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_LDAPREBIND")?>"></a></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["ldaprebind"]) { echo $LANG->_('Yes'); } else { echo $LANG->_('No'); }?></td>
+        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPREBIND")?>&<?=pql_get_define("PQL_ATTR_LDAPREBIND")?>=<?php if(@$_REQUEST["ldaprebind"]) { echo "0"; } else { echo "1"; }?>&submit=1&type=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_LDAPREBIND")?>"></a></td>
       </tr>
     </th>
   </table>

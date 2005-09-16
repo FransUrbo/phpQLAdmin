@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldapdefaultdotmode (default mode how to interpret .qmail files)
 //
-// $Id: attrib.control.ldapdefaultdotmode.inc,v 2.18 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.ldapdefaultdotmode.inc,v 2.19 2005-09-16 06:08:46 turbo Exp $
 
 // {{{ ldapdefaultdotmode_check(type)
 function ldapdefaultdotmode_check($type) {
@@ -41,7 +41,7 @@ function ldapdefaultdotmode_init($host) {
 														pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 														pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"));
 	
-	if(is_null($_REQUEST["ldapdefaultdotmode"]))
+	if(@is_null($_REQUEST["ldapdefaultdotmode"]))
 	  return true;
 }
 // }}}
@@ -59,7 +59,7 @@ function ldapdefaultdotmode_print_view($host) {
 <?php $class=pql_format_table(0); ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Mode')?></td>
-        <td class="<?=$class?>"><?php if($_REQUEST["ldapdefaultdotmode"]) { echo $_REQUEST["ldapdefaultdotmode"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["ldapdefaultdotmode"]) { echo $_REQUEST["ldapdefaultdotmode"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE")?>"></a></td>
       </tr>
     </th>

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldapmessagestore (default prefix for mailbox paths)
 //
-// $Id: attrib.control.ldapmessagestore.inc,v 2.18 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.ldapmessagestore.inc,v 2.19 2005-09-16 06:08:46 turbo Exp $
 
 // {{{ ldapmessagestore_check(type)
 function ldapmessagestore_check($type) {
@@ -28,7 +28,7 @@ function ldapmessagestore_init($host) {
 													  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 													  pql_get_define("PQL_ATTR_LDAPMESSAGESTORE"));
 
-	if(is_null($_REQUEST["ldapmessagestore"]))
+	if(@is_null($_REQUEST["ldapmessagestore"]))
 	  return true;
 }
 // }}}
@@ -46,7 +46,7 @@ function ldapmessagestore_print_view($host) {
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Path')?></td>
-        <td class="<?=$class?>"><?php if($_REQUEST["ldapmessagestore"]) { echo $_REQUEST["ldapmessagestore"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; } ?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["ldapmessagestore"]) { echo $_REQUEST["ldapmessagestore"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; } ?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPMESSAGESTORE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_LDAPMESSAGESTORE")?>"></a></td>
       </tr>
     </th>

@@ -1,6 +1,6 @@
 <?php
 // Edit and set configuration values in the LDAP database
-// $Id: config_edit_attribute.php,v 1.21 2005-06-09 15:05:35 turbo Exp $
+// $Id: config_edit_attribute.php,v 1.22 2005-09-16 06:08:41 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -10,7 +10,7 @@ $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PA
 
 include($_SESSION["path"]."/include/attrib.config.inc");
 include($_SESSION["path"]."/header.html");
-if($_REQUEST["view"] == "template") {
+if(@$_REQUEST["view"] == "template") {
   include($_SESSION["path"]."/left-head.html");
 }
 // }}}
@@ -23,15 +23,15 @@ function attribute_forward($msg, $rlnb = false) {
 	if(lc($attrib) == 'controlsadministrator') {
 		if($_REQUEST[$attrib])
 		  $userdn = urlencode($_REQUEST[$attrib]);
-		elseif($_REQUEST["delval"])
+		elseif(@$_REQUEST["delval"])
 		  $userdn = urlencode($_REQUEST["delval"]);
 
 		$url = "user_detail.php?rootdn=" . $_REQUEST["rootdn"]
 		  . "&domain=" . $_REQUEST["domain"] . "&user=$userdn&view=" . $_REQUEST["view"] . "&msg=$msg";
 	} else {
-		if($_REQUEST["view"] == "template")
+		if(@$_REQUEST["view"] == "template")
 		  $url = "config_detail.php?branch=" . $_REQUEST["rootdn"] . "&view=template&msg=$msg";
-		elseif($_REQUEST["rootdn"])
+		elseif(@$_REQUEST["rootdn"])
 		  $url = "config_detail.php?branch=" . $_REQUEST["rootdn"] . "&view=branch&msg=$msg";
 		else
 		  $url = "config_detail.php?msg=$msg";
@@ -50,7 +50,7 @@ function attribute_forward($msg, $rlnb = false) {
 
 // {{{ Select what to do
 $attrib = $_REQUEST["attrib"];
-if(@$_REQUEST["submit"] or @$_REQUEST["toggle"] or ($_REQUEST["action"] == 'del'))
+if(@$_REQUEST["submit"] or @$_REQUEST["toggle"] or @($_REQUEST["action"] == 'del'))
 {
     if(attribute_check()) {
 		attribute_save();

@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.32 2005-08-14 18:43:57 turbo Exp $
+// $Id: pql_write.inc,v 2.33 2005-09-16 06:08:52 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -203,14 +203,14 @@ function pql_replace_values($ldap, $attribs, $old, $new = NULL) {
 	foreach($_SESSION["BASE_DN"] as $dn) {
 		// Get all objects that have this object ($old) in any of the $attribs attributes.
 		$result = pql_search($ldap->ldap_linkid, $dn, $filter);
-		for($i=0; $result[$i]; $i++) {
+		for($i=0; $i < count($result); $i++) {
 			unset($dn); unset($entry); unset($LDIF);
 			
 			// Go through the attributes we're interested in, looking for
 			// the (old) object DN
 			foreach($attribs as $attrib) {
 				if(is_array($result[$i][$attrib])) {
-					for($j=0; $result[$i][$attrib][$j]; $j++) {
+					for($j=0; $j < count($result[$attrib]); $j++) {
 						// TODO: Only replace the attribute(s) if it have changed
 						if($old == $result[$i][$attrib][$j]) {
 							// Got a match ...
@@ -251,7 +251,7 @@ function pql_modify_attribute($linkid, $dn, $attrib, $old, $new) {
 	// {{{ Recreate an 'ldif' we can send to the LDAP server
 	if(is_array($new)) {
 		if($attrib) {
-			for($i=0; $new[$i]; $i++)
+			for($i=0; $i < count($new); $i++)
 			  $object[$attrib][] = pql_maybe_encode($new[$i], $attrib, $linkid);
 		} else
 		  $object = $new;
@@ -264,7 +264,7 @@ function pql_modify_attribute($linkid, $dn, $attrib, $old, $new) {
 				if(!is_array($entry))
 				  $object[$attrib][] = pql_maybe_encode($entry, $attrib, $linkid);
 				else {
-					for($i=0; $entry[$i]; $i++)
+					for($i=0; $i < count($entry); $i++)
 					  $object[$attrib][] = pql_maybe_encode($entry[$i], $attrib, $linkid);
 				}
 				
@@ -463,12 +463,12 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 	foreach($_SESSION["BASE_DN"] as $dn) {
 		$sr = ldap_search($linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR")."=$user");
 		$info = ldap_get_entries($linkid, $sr) or pql_format_error(1);
-		for($i=0; $i<$info["count"]; $i++) {
+		for($i=0; $i < $info["count"]; $i++) {
 			unset($entry); unset($adms);
 
 			// Get administrator attributes for this domain/branch DN
 			$admins	= pql_get_attribute($ldap->ldap_linkid, $info[$i]["dn"], pql_get_define("PQL_ATTR_ADMINISTRATOR"));
-			for($j=0; $admins[$j]; $j++) {
+			for($j=0; $j < count($admins); $j++) {
 				if($admins[$j] != $user)
 				  $adms[] = $admins[$j];
 			}

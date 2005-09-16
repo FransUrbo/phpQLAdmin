@@ -2,7 +2,7 @@
 // control attribute plugin for
 // rbllist (max number of bytes in message)
 //
-// $Id: attrib.control.rbllist.inc,v 2.8 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.rbllist.inc,v 2.9 2005-09-16 06:08:49 turbo Exp $
 
 // {{{ rbllist_check(type)
 function rbllist_check($type) {
@@ -23,9 +23,9 @@ function rbllist_init($host) {
 											 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 											 pql_get_define("PQL_ATTR_RBLLIST"));
 
-	if(!$_REQUEST["rbllist"])
+	if(!@$_REQUEST["rbllist"])
 	  return true;
-	elseif(!is_array($_REQUEST["rbllist"]))
+	elseif(!@is_array($_REQUEST["rbllist"]))
 	  $_REQUEST["rbllist"] = array($_REQUEST["rbllist"]);
 }
 // }}}
@@ -48,7 +48,7 @@ function rbllist_print_view($host) {
         <td></td>
       </tr>
 <?php
-	if(!is_array($_REQUEST["rbllist"])) {
+	if(!@is_array($_REQUEST["rbllist"])) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td colspan="5"><?=$LANG->_('Not set')?></td>
@@ -62,7 +62,7 @@ function rbllist_print_view($host) {
         <td><?=$line[0]?></td>
         <td><?=$line[1]?></td>
         <td><?=$line[2]?></td>
-        <td><?php for($i=3; $line[$i]; $i++) { echo $line[$i]." "; } ?></td>
+        <td><?php for($i=3; $i < count($line); $i++) { echo $line[$i]." "; } ?></td>
         <td align="right">
           <a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_RBLLIST")?>&type=del&submit=1&<?=pql_get_define("PQL_ATTR_RBLLIST")?>=<?=urldecode($server)?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Remove blocking list')?>"></a>
         </td>
@@ -86,7 +86,7 @@ function rbllist_print_form() {
 	global $error, $LANG;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
-<?php for($i = 0; $_REQUEST["rbllist"][$i]; $i++) { ?>
+<?php for($i=0; $i < count($_REQUEST["rbllist"]); $i++) { ?>
     <input type="hidden" name="rbllist[<?=$i?>]" value="<?=$_REQUEST["rbllist"][$i]?>">
 <?php } ?>
 
@@ -135,7 +135,7 @@ function rbllist_save($type, $host)  {
 	  case "add":
 		// save entries
 
-		for($i=0; $_REQUEST["rbllist"][$i]; $i++)
+		for($i=0; $i < count($_REQUEST["rbllist"]); $i++)
 		  $entry[] = $_REQUEST["rbllist"][$i];
 		$entry[] = $_REQUEST["rblserver"]." ".$_REQUEST["rblaction"]." ".$_REQUEST["rblmatch"]." ".$_REQUEST["rblmessage"];
 

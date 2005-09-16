@@ -1,6 +1,6 @@
 <?php
 // Create a DNS zone file
-// $Id: dnszonetemplate.php,v 1.11 2005-08-15 05:19:58 turbo Exp $
+// $Id: dnszonetemplate.php,v 1.12 2005-09-16 06:08:55 turbo Exp $
 // {{{ Setup session etc
 require("../include/pql_session.inc");
 require("../include/pql_config.inc");
@@ -20,7 +20,7 @@ if(is_array($zone)) {
     // We have a zone, fill in some variables used in the output
     $date = $zone[$defaultdomain]["@"]["SOA"]["SERIAL"];
 
-    for($i=0; $zone[$defaultdomain]["@"]["NS"][$i]; $i++) 
+    for($i=0; $i < count($zone[$defaultdomain]["@"]["NS"]); $i++) 
       $nameservers[] = pql_maybe_idna_encode($zone[$defaultdomain]["@"]["NS"][$i]);
     if(!is_array($nameservers))
       // Resonable default...
@@ -85,7 +85,7 @@ if(!$primaryip) {
 
 // Create a template (empty) zone file
 $dnsparts = split('\.', $defaultdomain);
-for($i=0; $dnsparts[$i]; $i++) {
+for($i=0; $i < count($dnsparts); $i++) {
     $origin = $dnsparts[$i];
 }
     

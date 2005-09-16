@@ -1,7 +1,7 @@
 <?php
 // Convert the old ways of storing 'user template' information
 // 
-// $Id: update_templates.php,v 1.4 2005-03-17 09:13:11 turbo Exp $
+// $Id: update_templates.php,v 1.5 2005-09-16 06:08:52 turbo Exp $
 
 // {{{ Setup session etc
 require("../include/pql_session.inc");
@@ -20,7 +20,7 @@ $templates = pql_get_templates($_pql->ldap_linkid);
 // them from the root DN.
 if(is_array($templates)) {
   // {{{ Add value(s) to template(s)
-  for($i=0; $templates[$i]; $i++) {
+  for($i=0; $i < count($templates); $i++) {
 	$dn = urlencode($templates[$i]["dn"]);
 
 	foreach($templates[$i]["oldformat"] as $attrib => $value) {
@@ -34,7 +34,7 @@ if(is_array($templates)) {
 
   // {{{ Remove the value(s) from the root DN.
   if(is_array($success)) {
-	for($i=0; $success[$i]; $i++) {
+	for($i=0; $i < count($success); $i++) {
 	  if(!pql_modify_attribute($_pql->ldap_linkid, $_SESSION["BASE_DN"][0], $success[$i], '', ''))
 		$failed["rem"][] = $attrib;
 	}

@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_templates.inc,v 2.6 2005-08-14 18:41:59 turbo Exp $
+// $Id: pql_templates.inc,v 2.7 2005-09-16 06:08:52 turbo Exp $
 //
 
 // {{{ Generate the group template (hardcoded for the moment)
@@ -16,7 +16,7 @@ function pql_templates_group() {
 
 	// We need the 'person' object class because 'qmailGroup' (and 'qmailUser')
 	// is AUXILIARY, and OpenLDAP >2.2 _require one_ STRUCTURAL.
-	if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
+	if(@pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
 	  // Need 'uidObject' because of the 'uid' attribute we're referencing users with...
 	  $TEMPLATE["userobjectclass"] = array('person', 'uidObject', 'qmailGroup');
 	else
@@ -43,7 +43,7 @@ function pql_get_templates($linkid) {
 				   "passwordscheme"  => pql_get_define("PQL_ATTR_PASSWORD_SCHEMES"));
   // }}}
 
-  for($i=0; $templates[$i]; $i++) {
+  for($i=0; $i < count($templates); $i++) {
 	// Remember the DN
 	$TEMPLATE[$i]["dn"] = $templates[$i];
     
@@ -64,9 +64,8 @@ function pql_get_templates($linkid) {
 	// }}}
 
 	// {{{ The old way (pre 2.1.4) of doing it was to have the values in the root DN(s).
-	
 	// Look for the password scheme
-	if(!$TEMPLATE[$i]["passwordscheme"]) {
+	if(!@$TEMPLATE[$i]["passwordscheme"]) {
 	  $passwordscheme = pql_get_attribute($linkid, $_SESSION["BASE_DN"][0], pql_get_define("PQL_ATTR_PASSWORD_SCHEMES"));
 	  if($passwordscheme) {
 		$TEMPLATE[$i]["passwordscheme"] = $passwordscheme;
@@ -102,7 +101,7 @@ function pql_get_template($linkid, $name) {
   $templates = pql_get_templates($linkid);
 
   // Get the one we where asked for
-  for($i=0; $templates[$i]; $i++) {
+  for($i=0; $i < count($templates); $i++) {
   	if($templates[$i]["name"] == lc($name)) {
 	  return $templates[$i];
 	}
@@ -119,16 +118,16 @@ function pql_templates_attributes($linkid, $objectclasses) {
   $schema = pql_get_subschema($linkid, 'objectclasses');
   
   // Get all the MUST attributes for all the included object classes
-  for($j=0; !empty($objectclasses[$j]); $j++) {
+  for($j=0; $j < count($objectclasses); $j++) {
 	$oc = lc($objectclasses[$j]); // short form
 	if(!empty($schema[$oc]["MUST"])) {
-	  for($k=0; !empty($schema[$oc]["MUST"][$k]); $k++) {
+	  for($k=0; $k < count($schema[$oc]["MUST"]); $k++) {
 		$must[] = $schema[$oc]["MUST"][$k];
 	  }
 	}
 
 	if(!empty($schema[$oc]["MAY"])) {
-	  for($k=0; !empty($schema[$oc]["MAY"][$k]); $k++) {
+	  for($k=0; $k < count($schema[$oc]["MAY"]); $k++) {
 		$may[] = $schema[$oc]["MAY"][$k];
 	  }
 	}
@@ -167,7 +166,7 @@ function pql_templates_check_attribute($linkid, $template, $attribute, $type = N
   $attribs = pql_templates_attributes($linkid, $template_def["userobjectclass"]);
 
   if(!$type or (lc($type) == "must")) {
-	for($i=0; !empty($attribs['must'][$i]); $i++) {
+	for($i=0; $i < count($attribs['must']); $i++) {
 	  if(ereg(":", $attribs['must'][$i])){
 		list($real, $alias) = split(":", $attribs['must'][$i]);
 		if( (lc($real) == lc($attribute)) or (lc($alias) == lc($attribute)) )
@@ -180,7 +179,7 @@ function pql_templates_check_attribute($linkid, $template, $attribute, $type = N
   }
 
   if(!$type or (lc($type) == "may")) {
-	for($i=0; $attribs['may'][$i]; $i++) {
+	for($i=0; $i < count($attribs['may']); $i++) {
 	  if(ereg(":", $attribs['may'][$i])){
 		list($real, $alias) = split(":", $attribs['may'][$i]);
 		if( (lc($real) == lc($attribute)) or (lc($alias) == lc($attribute)) )

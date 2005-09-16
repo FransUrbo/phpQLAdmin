@@ -2,14 +2,14 @@
 // control attribute plugin for
 // localiphost (name substituted for local IP address)
 //
-// $Id: attrib.control.localiphost.inc,v 2.19 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.localiphost.inc,v 2.20 2005-09-16 06:08:46 turbo Exp $
 
 // {{{ ocaliphost_check(type)
 function localiphost_check($type) {
 	global $error, $LANG;
 
 	// validity
-	if($_REQUEST["localiphost"] != "" and !pql_check_hostaddress($_REQUEST["localiphost"])) {
+	if(($_REQUEST["localiphost"] != "") and !pql_check_hostaddress($_REQUEST["localiphost"])) {
 		$error["localiphost"] = $LANG->_('Invalid');
 		return false;
 	}
@@ -28,7 +28,7 @@ function localiphost_init($host) {
 												 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 												 pql_get_define("PQL_ATTR_LOCALIPHOST"));
 	
-	if(is_null($_REQUEST["localiphost"]))
+	if(@is_null($_REQUEST["localiphost"]))
 	  return true;
 }
 // }}}
@@ -46,7 +46,7 @@ function localiphost_print_view($host) {
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Host')?></td>
-        <td class="<?=$class?>"><?php if($_REQUEST["localiphost"]) { echo pql_maybe_idna_decode($_REQUEST["localiphost"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($host)." (" . $LANG->_('Taken from \'me\'') . ")"; }?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["localiphost"]) { echo pql_maybe_idna_decode($_REQUEST["localiphost"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($host)." (" . $LANG->_('Taken from \'me\'') . ")"; }?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LOCALIPHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_LOCALIPHOST")?>"></a></td>
       </tr>
     </th>

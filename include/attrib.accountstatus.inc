@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // accountstatus (status of mailaccount)
-// $Id: attrib.accountstatus.inc,v 2.27 2005-02-24 17:04:01 turbo Exp $
+// $Id: attrib.accountstatus.inc,v 2.28 2005-09-16 06:08:45 turbo Exp $
 
 /* DLW:   When the calendar gets a value of 2003.12.25, it gets stored or displayed as 2003/12/24 (@7am)
  *        I think it's having problems with time zones.  Look into it.
@@ -148,7 +148,7 @@ function attribute_save($type) {
 			$entry = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], 'objectclass');
 
 			// Make sure that the user have the 'shadowAccount' objectclass
-			for($i=0; $entry[$i]; $i++) {
+			for($i=0; $i < count($entry); $i++) {
 				$new_entry["objectclass"][] = $entry[$i];
 
 				if($entry[$i] == pql_get_define("PQL_ATTR_EXPIRATION"))

@@ -7,7 +7,7 @@ require($_SESSION["path"]."/include/pql_config.inc");
 include($_SESSION["path"]."/header.html");
 
 // {{{ Possibly clear session
-if($_REQUEST["action"] == "clear_session") {
+if(@$_REQUEST["action"] == "clear_session") {
     $view	= $_REQUEST["view"];
 
     // SOME variables should be remembered in the next session

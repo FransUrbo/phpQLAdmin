@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-alias.inc,v 1.6 2005-08-14 19:21:12 turbo Exp $ */
+<?php /* $Id: user_add-alias.inc,v 1.7 2005-09-16 06:08:54 turbo Exp $ */
       // Retreive domain branches for this domain (for the subbranch value below)
       $branches = pql_unit_get($_pql->ldap_linkid, $_REQUEST["domain"]);
 ?>
@@ -14,7 +14,7 @@
             <input type="text" name="source" value="<?=$_REQUEST["source"]?>">,
 <?php if($branches[1]) { // More than one subbranch - show a select menu ?>
             <select name="subbranch">
-<?php	for($i=0; $branches[$i]; $i++) { ?>
+<?php	for($i=0; $i < count($branches); $i++) { ?>
               <option value="<?=$branches[$i]?>"><?=$branches[$i]?></option>
 <?php	} ?>
             </select>

@@ -2,14 +2,14 @@
 // control attribute plugin for
 // quotawarning (additional quota warning message)
 //
-// $Id: attrib.control.quotawarning.inc,v 2.19 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.quotawarning.inc,v 2.20 2005-09-16 06:08:49 turbo Exp $
 
 // {{{ quotawarning_check(type)
 function quotawarning_check($type) {
 	global $error, $LANG;
 
 	// missing
-	if($_REQUEST["use_quotawarning"] == 1 and $_REQUEST["quotawarning"] == "") {
+	if(($_REQUEST["use_quotawarning"] == 1) and @empty($_REQUEST["quotawarning"])) {
 		$error["quotawarning"] = $LANG->_('Missing');
 		return false;
 	}
@@ -29,7 +29,7 @@ function quotawarning_init($host) {
 												  pql_get_define("PQL_ATTR_QUOTA_WARNING"));
 
 	// initialize radio button
-	if(!$_REQUEST["quotawarning"])
+	if(!@$_REQUEST["quotawarning"])
 	  $_REQUEST["use_quotawarning"] = 0;
 	else
 	  $_REQUEST["use_quotawarning"] = 1;
@@ -49,7 +49,7 @@ function quotawarning_print_view($host) {
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Message')?></td>
-        <td class="<?=$class?>"><?php if($_REQUEST["quotawarning"]) { echo nl2br($_REQUEST["quotawarning"]); } else { echo '<i>'.$LANG->_('disabled').'</i>'; }?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["quotawarning"]) { echo nl2br($_REQUEST["quotawarning"]); } else { echo '<i>'.$LANG->_('disabled').'</i>'; }?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_QUOTA_WARNING")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_QUOTA_WARNING")?>"></a></td>
       </tr>
     </th>
@@ -68,8 +68,8 @@ function quotawarning_print_form() {
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Send quota warnings')?></td>
           <td>
-            <input type="radio" name="use_quotawarning" value="0" <?php if($_REQUEST["use_quotawarning"] == "0"){ echo "checked"; } //" ?>> no
-            <input type="radio" name="use_quotawarning" value="1" <?php if($_REQUEST["use_quotawarning"] == "1"){ echo "checked"; } //" ?>> yes
+            <input type="radio" name="use_quotawarning" value="0" <?php if($_REQUEST["use_quotawarning"] == "0"){ echo "checked"; }?>> no
+            <input type="radio" name="use_quotawarning" value="1" <?php if($_REQUEST["use_quotawarning"] == "1"){ echo "checked"; }?>> yes
           </td>
         </tr>
 
@@ -100,7 +100,7 @@ function quotawarning_save($type, $host) {
 	  case "modify":
 	  case "add":
 		// save entries
-		if($_REQUEST["use_quotawarning"] == "0")
+		if(!@$_REQUEST["use_quotawarning"])
 		  $_REQUEST["quotawarning"] = "";
 		
 		if(pql_modify_attribute($_pql_control->ldap_linkid,

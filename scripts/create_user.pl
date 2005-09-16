@@ -41,7 +41,7 @@ if($ENV{"PQL_MAILMESSAGESTORE"}) {
     @dirs = split('/', $DIR);
 
     $directory = '/' . $dirs[1] . '/';
-    for($i=1; $dirs[$i]; $i++) {
+    for($i=1; $i < count($dirs); $i++) {
 	if(! -d $directory) {
 	    print "Creating $directory\n";
 	    if(! mkdir($directory) ) {
@@ -67,7 +67,7 @@ if($ENV{"PQL_HOMEDIRECTORY"}) {
     @dirs = split('/', $DIR);
 
     $directory = '/' . $dirs[1] . '/';
-    for($i=1; $dirs[$i]; $i++) {
+    for($i=1; $i < count($dirs); $i++) {
 	if(! -d $directory) {
 	    print "Creating $directory\n";
 	    if(! mkdir($directory) ) {

@@ -1,6 +1,6 @@
 <?php
 // Add a new mailserver to the database
-// $Id: control_add_server.php,v 2.30 2005-06-09 15:05:35 turbo Exp $
+// $Id: control_add_server.php,v 2.31 2005-09-16 06:08:41 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -170,7 +170,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 						 $_SESSION["USER_SEARCH_DN_CTR"],
 						 '(&(cn=*)(objectclass=qmailControl))',
 						 'ONELEVEL');
-    for($i=0; $result[$i]; $i++)
+    for($i=0; $i < count($result); $i++)
       $hosts[] = pql_get_attribute($_pql_control->ldap_linkid, $result[$i], pql_get_define("PQL_ATTR_CN"));
 
 	if(!is_array($hosts)) {

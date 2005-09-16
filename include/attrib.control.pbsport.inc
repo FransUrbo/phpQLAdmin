@@ -2,7 +2,7 @@
 // control attribute plugin for
 // pbsport (max number of bytes in message)
 //
-// $Id: attrib.control.pbsport.inc,v 2.7 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.pbsport.inc,v 2.8 2005-09-16 06:08:49 turbo Exp $
 
 // {{{ pbsport_check(type)
 function pbsport_check($type) {
@@ -23,7 +23,7 @@ function pbsport_init($host) {
 											 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 											 pql_get_define("PQL_ATTR_PBS_PORT"));
 
-	if(is_null($_REQUEST["pbsport"]))
+	if(@is_null($_REQUEST["pbsport"]))
 	  return true;
 }
 // }}}
@@ -41,7 +41,7 @@ function pbsport_print_view($host) {
 <?php $class=pql_format_table(0); ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title">Port number</td>
-        <td class="<?=$class?>"><?php if($_REQUEST["pbsport"]) { echo $_REQUEST["pbsport"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["pbsport"]) { echo $_REQUEST["pbsport"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_PBS_PORT")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_PBS_PORT")?>"></a></td>
       </tr>
     </th>

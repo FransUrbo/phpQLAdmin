@@ -1,6 +1,6 @@
 <?php
 // Add a webserver configuration to the LDAP db
-// $Id: websrv_add.php,v 2.15 2005-06-09 15:05:36 turbo Exp $
+// $Id: websrv_add.php,v 2.16 2005-09-16 06:08:44 turbo Exp $
 //
 // {{{ Setup session
 require("./include/pql_session.inc");
@@ -126,7 +126,7 @@ if(($error == 'true') or !$_REQUEST["serverip"] or !$_REQUEST["serverurl"] or !$
 
 			// Separate the domainname and hostname from the FQDN by removing the FIRST part of the FQDN.
 			$tmp = split('\.', $fqdn); $domainname = ''; $hostname = $tmp[0];
-			for($i=1; $tmp[$i]; $i++) {
+			for($i=1; $i < count($tmp); $i++) {
 				$domainname .= $tmp[$i];
 				if($tmp[$i+1])
 				  $domainname .= ".";

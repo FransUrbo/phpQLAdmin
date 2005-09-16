@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-properties.inc,v 1.15 2005-03-06 18:45:04 turbo Exp $ */ ?>
+<?php /* $Id: user_add-properties.inc,v 1.16 2005-09-16 06:08:54 turbo Exp $ */ ?>
 <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=$LANG->_('Account properties')?></th>
@@ -7,7 +7,7 @@
 
         <td>
           <select name="template">
-<?php for($i=0; $templates[$i]; $i++) { ?>
+<?php for($i=0; $i < count($templates); $i++) { ?>
             <option value="<?=$templates[$i]["name"]?>"><?=$templates[$i]["short"]?></option>
 <?php } ?>
             <option value="alias"><?=$LANG->_('Alias object')?></option>
@@ -15,7 +15,7 @@
         </td>
       </tr>
 
-<?php for($i=0; $templates[$i]; $i++) { ?>
+<?php for($i=0; $i < count($templates); $i++) { ?>
       <tr>
         <td></td>
         <td>

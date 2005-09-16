@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.33 2005-06-09 15:05:35 turbo Exp $
+// $Id: left-control.php,v 2.34 2005-09-16 06:08:43 turbo Exp $
 //
 require("./include/pql_session.inc");
 
@@ -42,7 +42,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE") && $_SESSION["ALLOW_CONTROL_CREATE"]) 
     // Get all QmailLDAP/Control hosts.
     $result = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
                          '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
-    for($i=0; $result[$i]; $i++)
+    for($i=0; $i < count($result); $i++)
       $hosts[] = pql_get_attribute($_pql->ldap_linkid, $result[$i], pql_get_define("PQL_ATTR_CN"));
 
 	if(!is_array($hosts)) {

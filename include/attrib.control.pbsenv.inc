@@ -2,7 +2,7 @@
 // control attribute plugin for
 // pbsenv (max number of bytes in message)
 //
-// $Id: attrib.control.pbsenv.inc,v 2.9 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.pbsenv.inc,v 2.10 2005-09-16 06:08:46 turbo Exp $
 
 // {{{ pbsenv_check(type)
 function pbsenv_check($type) {
@@ -23,9 +23,9 @@ function pbsenv_init($host) {
 											pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 											pql_get_define("PQL_ATTR_PBS_ENV"));
 
-	if(is_null($_REQUEST["pbsenv"]) or !$_REQUEST["pbsenv"][0])
+	if(@is_null($_REQUEST["pbsenv"]) or !@$_REQUEST["pbsenv"][0])
 	  return true;
-	elseif(!is_array($_REQUEST["pbsenv"]))
+	elseif(!@is_array($_REQUEST["pbsenv"]))
 	  $_REQUEST["pbsenv"] = array($_REQUEST["pbsenv"]);
 }
 // }}}
@@ -65,7 +65,7 @@ function pbsenv_print_form() {
 	global $error, $LANG;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
-<?php for($i = 0; $_REQUEST["pbsenv"][$i]; $i++) { ?>
+<?php for($i=0; $i < count($_REQUEST["pbsenv"]); $i++) { ?>
     <input type="hidden" name="pbsenv[<?=$i?>]" value="<?=$_REQUEST["pbsenv"][$i]?>"></td>
 <?php } ?>
 
@@ -111,7 +111,7 @@ function pbsenv_save($type, $host)  {
 	  case "modify":
 	  case "add":
 		// save entries
-		for($i=0; $_REQUEST["pbsenv"][$i]; $i++)
+		for($i=0; $i < count($_REQUEST["pbsenv"]); $i++)
 		  $entry[] = $_REQUEST["pbsenv"][$i];
 		$entry[] = $_REQUEST["pbsenvariable_name"].'='.$_REQUEST["pbsenvariable_value"];
 

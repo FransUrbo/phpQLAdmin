@@ -2,16 +2,16 @@
 // control attribute plugin for
 // percenthack (allowed domains for %-relaying)
 //
-// $Id: attrib.control.percenthack.inc,v 2.20 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.percenthack.inc,v 2.21 2005-09-16 06:08:49 turbo Exp $
 
 // {{{ percenthack_check(type)
 function percenthack_check($type) {
 	global $error, $LANG;
 	
 	// check each field
-	if(is_array($_REQUEST["percenthack"])) {
+	if(@is_array($_REQUEST["percenthack"])) {
 		foreach($_REQUEST["percenthack"] as $key => $server) {
-			if($server == "")
+			if(empty($server))
 			  continue;
 			
 			// it is a valid domain name
@@ -40,9 +40,9 @@ function percenthack_init($host) {
 												 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 												 pql_get_define("PQL_ATTR_PERCENTHACK"));
 	
-	if(!$_REQUEST["percenthack"])
+	if(!@$_REQUEST["percenthack"])
 	  return true;
-	elseif(!is_array($_REQUEST["percenthack"]))
+	elseif(!@is_array($_REQUEST["percenthack"]))
 	  $_REQUEST["percenthack"] = array($_REQUEST["percenthack"]);
 }
 // }}}
@@ -81,7 +81,7 @@ function percenthack_print_form() {
 	global $error, $LANG;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
-<?php for($i = 0; $_REQUEST["percenthack"][$i]; $i++) { ?>
+<?php for($i=0; $i < count($_REQUEST["percenthack"]); $i++) { ?>
     <input type="hidden" name="percenthack[<?=$i?>]" value="<?=$_REQUEST["percenthack"][$i]?>">
 <?php } ?>
 

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldapcluster (clustering support)
 //
-// $Id: attrib.control.ldapcluster.inc,v 2.18 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.ldapcluster.inc,v 2.19 2005-09-16 06:08:46 turbo Exp $
 
 // {{{ ldapcluster_check(type)
 function ldapcluster_check($type) {
@@ -20,7 +20,7 @@ function ldapcluster_init() {
 												 pql_get_define("PQL_ATTR_CN").'='.$_REQUEST["mxhost"].",".$_SESSION["USER_SEARCH_DN_CTR"],
 												 pql_get_define("PQL_ATTR_LDAPCLUSTER"));
 
-	if(is_null($_REQUEST["ldapcluster"])) {
+	if(@is_null($_REQUEST["ldapcluster"])) {
 		// set to default value
 		$_REQUEST["ldapcluster"] = 0;
 		return true;
@@ -41,8 +41,8 @@ function ldapcluster_print_view($host) {
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Clustering')?></td>
-        <td class="<?=$class?>"><?php if($_REQUEST["ldapcluster"]) { echo $LANG->_('Yes'); } else { echo $LANG->_('No'); }?></td>
-        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPCLUSTER")?>&<?=pql_get_define("PQL_ATTR_LDAPCLUSTER")?>=<?php if($_REQUEST["ldapcluster"]) { echo "0"; } else { echo "1"; }?>&submit=1&type=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_LDAPCLUSTER")?>"></a></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["ldapcluster"]) { echo $LANG->_('Yes'); } else { echo $LANG->_('No'); }?></td>
+        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPCLUSTER")?>&<?=pql_get_define("PQL_ATTR_LDAPCLUSTER")?>=<?php if(@$_REQUEST["ldapcluster"]) { echo "0"; } else { echo "1"; }?>&submit=1&type=modify"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_LDAPCLUSTER")?>"></a></td>
       </tr>
 
       <tr class="subtitle" colspan="3">

@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.37 2005-08-14 14:50:02 turbo Exp $
+// $Id: pql_bind9.inc,v 2.38 2005-09-16 06:08:51 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -17,7 +17,7 @@ function pql_bind9_get_zone($linkid, $branchname, $domainname = '') {
 	  $filter = 'objectClass=dNSZone';
 
 	$objects = pql_search($linkid, $dn, $filter);
-	for($i=0; $objects[$i]['zonename']; $i++) {
+	for($i=0; @$objects[$i]['zonename']; $i++) {
 		$zone = $objects[$i]['zonename'];
 		$host = $objects[$i]['relativedomainname'];
 		
@@ -30,7 +30,7 @@ function pql_bind9_get_zone($linkid, $branchname, $domainname = '') {
 			$tmp = split('\.', $tmp);
 			
 			unset($PTR);
-			for($j=count($tmp)-1; $tmp[$j]; $j--)
+			for($j=count($tmp)-1; !empty($tmp[$j]); $j--)
 			  $PTR .= $tmp[$j].'.';
 			
 			$ZONE[$zone][$host]['PTR'] = $PTR.$host;
@@ -38,7 +38,7 @@ function pql_bind9_get_zone($linkid, $branchname, $domainname = '') {
 		  $ZONE[$zone][$host]['HOST'] = pql_maybe_idna_decode($host);
 		
 		// A Record(s)
-		if($objects[$i]['arecord']) {
+		if(@$objects[$i]['arecord']) {
 			if(is_array($objects[$i]['arecord'])) {
 				foreach($objects[$i]['arecord'] as $record)
 				  $ZONE[$zone][$host]['A'][] = pql_maybe_idna_decode($record);
@@ -47,7 +47,7 @@ function pql_bind9_get_zone($linkid, $branchname, $domainname = '') {
 		}
 		
 		// CNAME Record
-		if($objects[$i]['cnamerecord']) {
+		if(@$objects[$i]['cnamerecord']) {
 			if(is_array($objects[$i]['cnamerecord'])) {
 				foreach($objects[$i]['cnamerecord'] as $record) {
 					$cname = pql_maybe_idna_decode($record);
@@ -70,11 +70,11 @@ function pql_bind9_get_zone($linkid, $branchname, $domainname = '') {
 		}
 		
 		// HINFO Record
-		if($objects[$i]['hinforecord'])
+		if(@$objects[$i]['hinforecord'])
 		  $ZONE[$zone][$host]['HINFO'] = $objects[$i]['hinforecord'];
 		
 		// SRV Record
-		if($objects[$i]['srvrecord']) {
+		if(@$objects[$i]['srvrecord']) {
 			if(is_array($objects[$i]['srvrecord'])) {
 				foreach($objects[$i]['srvrecord'] as $record)
 				  $ZONE[$zone][$host]['SRV'][] = $record;
@@ -83,11 +83,11 @@ function pql_bind9_get_zone($linkid, $branchname, $domainname = '') {
 		}
 		
 		// TXT Record
-		if($objects[$i]['txtrecord'])
+		if(@$objects[$i]['txtrecord'])
 		  $ZONE[$zone][$host]['TXT'] = $objects[$i]['txtrecord'];
 		
 		// NS Record(s)
-		if($objects[$i]['nsrecord']) {
+		if(@$objects[$i]['nsrecord']) {
 			if(is_array($objects[$i]['nsrecord'])) {
 				// We have multiple records
 				foreach($objects[$i]['nsrecord'] as $record)
@@ -97,7 +97,7 @@ function pql_bind9_get_zone($linkid, $branchname, $domainname = '') {
 		}
 		
 		// MX Record(s)
-		if($objects[$i]['mxrecord']) {
+		if(@$objects[$i]['mxrecord']) {
 			if(is_array($objects[$i]['mxrecord'])) {
 				// We have multiple records
 				foreach($objects[$i]['mxrecord'] as $record)
@@ -107,16 +107,16 @@ function pql_bind9_get_zone($linkid, $branchname, $domainname = '') {
 		}
 
 		// PTR Record
-		if($objects[$i]['ptrrecord'])
+		if(@$objects[$i]['ptrrecord'])
 		  $ZONE[$zone][$host]['HOST'] = $objects[$i]['ptrrecord'];
 
 		// SOA Record
-		if($objects[$i]['soarecord']) {
+		if(@$objects[$i]['soarecord']) {
 			$soa = split(' ', $objects[$i]['soarecord']);
 
 			$tmp   = split('\.', $soa[1]);
 			$admin = $tmp[0]."@";
-			for($j=1; $tmp[$j]; $j++) {
+			for($j=1; $j < count($tmp); $j++) {
 				$admin .= $tmp[$j];
 				if($tmp[$j+1])
 				  $admin .= ".";
@@ -131,7 +131,7 @@ function pql_bind9_get_zone($linkid, $branchname, $domainname = '') {
 		}
 
 		// AFS Record
-		if($objects[$i]['afsdbrecord']) {
+		if(@$objects[$i]['afsdbrecord']) {
 			if(is_array($objects[$i]['afsdbrecord'])) {
 				// We have multiple records
 				foreach($objects[$i]['afsdbrecord'] as $record)
@@ -159,7 +159,7 @@ function pql_bind9_get_acis($linkid, $zone) {
   $filter = '(&('.pql_get_define("PQL_ATTR_ZONENAME")."=$zone)(".pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME").'=@))';
   foreach($_SESSION["BASE_DN"] as $base) {
 	$object = pql_search($linkid, $base, $filter, 'SUBTREE', 1, 1);
-	if(is_array($object[0]))
+	if(@is_array($object[0]))
 	  return $object[0][pql_get_define("PQL_ATTR_LDAPACI")];
   }
 
@@ -173,7 +173,7 @@ function pql_bind9_get_ttl($linkid, $zone) {
   $filter = '(&('.pql_get_define("PQL_ATTR_ZONENAME")."=$zone)(".pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME").'=@))';
   foreach($_SESSION["BASE_DN"] as $base) {
 	$object = pql_search($linkid, $base, $filter);
-	if(is_array($object[0]))
+	if(@is_array($object[0]))
 	  return $object[0]['dnsttl'];
   }
 
@@ -207,10 +207,10 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 	$entry['objectclass'][] = 'domain';
 
 	// Add the OpenLDAPaci attribute (maybe)
-	if($_SESSION["ACI_SUPPORT_ENABLED"]) 
+	if(@$_SESSION["ACI_SUPPORT_ENABLED"]) 
 	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($linkid, $_SESSION["USER_DN"], 'dnszone');
 
-	for($i=count($dc)-1; $dc[$i]; $i--) {
+	for($i=count($dc)-1; !empty($dc[$i]); $i--) {
 		$dc_tmp = pql_maybe_idna_encode($dc[$i]);
 
 		$entry[pql_get_define("PQL_ATTR_DC")] = $dc_tmp;
@@ -251,7 +251,7 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 	$entry['tXTRecord']				= "$zonename";
 	
 	// Add the OpenLDAPaci attribute (maybe)
-	if($_SESSION["ACI_SUPPORT_ENABLED"])
+	if(@$_SESSION["ACI_SUPPORT_ENABLED"])
 	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($linkid, $_SESSION["USER_DN"], 'dnszone');
 	
 	$dn = "relativeDomainName=".$entry['relativeDomainName'].",$dn";
@@ -276,7 +276,7 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 
 	// {{{ Create each of the domain components in the domainname
 	$dc = split('\.', $entry[pql_get_define("PQL_ATTR_ZONENAME")]);
-	for($i=count($dc)-1; $dc[$i]; $i--) {
+	for($i=count($dc)-1; !empty($dc[$i]); $i--) {
 		$dc_tmp = pql_maybe_idna_encode($dc[$i]);
 
 		if($dn)
@@ -295,22 +295,22 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 
 	  // Split it up in dc components and add each one as a separate dc object.
 	  $dc = split('\.', $entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")]);
-	  if($dc[1]) {
+	  if(@$dc[1]) {
 		// dc[1] is unset the second time around...
 
 		// Remember (and overwrite) the record type so it can be restored
 		// after adding the sub-domain.
 		$tmp_hostname = $entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")];
-		if($entry[pql_get_define("PQL_ATTR_ARECORD")]) {
+		if(@$entry[pql_get_define("PQL_ATTR_ARECORD")]) {
 		  $tmp_record = pql_get_define("PQL_ATTR_ARECORD");
 		  $tmp_value  = $entry[pql_get_define("PQL_ATTR_ARECORD")];
-		} elseif($entry[pql_get_define("PQL_ATTR_CNAMERECORD")]) {
+		} elseif(@$entry[pql_get_define("PQL_ATTR_CNAMERECORD")]) {
 		  $tmp_record = pql_get_define("PQL_ATTR_CNAMERECORD");
 		  $tmp_value  = $entry[pql_get_define("PQL_ATTR_CNAMERECORD")];
-		} elseif($entry[pql_get_define("PQL_ATTR_MXRECORD")]) {
+		} elseif(@$entry[pql_get_define("PQL_ATTR_MXRECORD")]) {
 		  $tmp_record = pql_get_define("PQL_ATTR_MXRECORD");
 		  $tmp_value  = $entry[pql_get_define("PQL_ATTR_MXRECORD")];
-		} elseif($entry[pql_get_define("PQL_ATTR_NSRECORD")]) {
+		} elseif(@$entry[pql_get_define("PQL_ATTR_NSRECORD")]) {
 		  $tmp_record = pql_get_define("PQL_ATTR_NSRECORD");
 		  $tmp_value  = $entry[pql_get_define("PQL_ATTR_NSRECORD")];
 		}
@@ -355,7 +355,7 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 				   pql_get_define("PQL_ATTR_PTRRECORD"));
 	foreach($TYPES as $TYPE) {
 	  $type = lc($TYPE);
-	  if($entry[$type]) {
+	  if(@$entry[$type]) {
 		// This one is defined. That's the attribute!
 		$attrib = $type;
 		break;
@@ -378,7 +378,7 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 
 	  // Create a LDIF object to print in case of error
 	  $LDIF = pql_create_ldif("pql_bind9_add_host", $dn, $entry);
-	  if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+	  if(@file_exists($_SESSION["path"]."/.DEBUG_ME")) {
 		echo $LDIF;
 	  } else {
 		if(!pql_write_mod($linkid, $dn, $entry, "pql_bind9_add_host")) {
@@ -395,7 +395,7 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 	$entry['objectClass'][] = 'dNSZone';
 
 	// {{{ Add the OpenLDAPaci attribute (maybe)
-	if($_SESSION["ACI_SUPPORT_ENABLED"]) 
+	if(@$_SESSION["ACI_SUPPORT_ENABLED"]) 
 	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = pql_bind9_get_acis($linkid, $entry[pql_get_define("PQL_ATTR_ZONENAME")]);
 																	  
 	// }}}
@@ -416,7 +416,7 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 // {{{ pql_bind9_del_zone(linkid, dn, zone)
 function pql_bind9_del_zone($linkid, $dn, $zone) {
 	$dnsparts = split('\.', $zone);
-	for($i=0; $dnsparts[$i]; $i++) {
+	for($i=0; $i < count($dnsparts); $i++) {
 	    $dn_to_remove .= "dc=".$dnsparts[$i].",";
 	}
 	$dn_to_remove .= "ou=DNS,".$dn;
@@ -448,16 +448,16 @@ function pql_bind9_del_zone($linkid, $dn, $zone) {
 
 	// Get the TLD DN
 	$dnparts = split(',', $dn_to_remove);
-	for($i=1; $dnparts[$i]; $i++) {
+	for($i=1; $i < count($dnparts); $i++) {
 		$tld .= $dnparts[$i];
-		if($dnparts[$i+1])
+		if(@$dnparts[$i+1])
 		  $tld .= ",";
 	}
 
 	// Look in this DN if there's objects.
     $sr = ldap_search($linkid, $tld, 'objectClass=*');
     $info = ldap_get_entries($linkid, $sr) or pql_format_error(1);
-	if(! $info[1]) {
+	if(!@$info[1]) {
 		// We don't have more than the DN object, delete it.
 		if(!pql_write_del($linkid, $tld)) {
 			pql_format_error(1);
@@ -472,16 +472,16 @@ function pql_bind9_del_zone($linkid, $dn, $zone) {
 
 	// Get the ou DN
 	$dnparts = split(',', $tld);
-	for($i=1; $dnparts[$i]; $i++) {
+	for($i=1; $i < count($dnparts); $i++) {
 		$ou .= $dnparts[$i];
-		if($dnparts[$i+1])
+		if(@$dnparts[$i+1])
 		  $ou .= ",";
 	}
 
 	// Look in this DN if there's objects.
     $sr = ldap_search($linkid, $ou, 'objectClass=*');
     $info = ldap_get_entries($linkid, $sr) or pql_format_error(1);
-	if(! $info[1]) {
+	if(!@$info[1]) {
 		// We don't have more than the DN object, delete it.
 		if(!pql_write_del($linkid, $ou)) {
 			pql_format_error(1);
@@ -502,7 +502,7 @@ function pql_bind9_update_serial($linkid, $dn) {
   $filter = '(&('.pql_get_define("PQL_ATTR_ZONENAME")."=$zone)(".pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME").'=@))';
   foreach($_SESSION["BASE_DN"] as $base) {
 	$object = pql_search($linkid, $base, $filter);
-	if(is_array($object[0])) {
+	if(@is_array($object[0])) {
 	  // "there can be only one" - anything else should (?) be an error.
 	  $soa["dn"]  = $object[0]["dn"];
 	  $soa["soa"] = $object[0][lc(pql_get_define("PQL_ATTR_SOARECORD"))];

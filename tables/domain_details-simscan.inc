@@ -5,7 +5,7 @@
 // code so much...
 
 require($_SESSION["path"]."/include/attrib.control.simscan.inc");
-if($_REQUEST["mxhost"]) {
+if(@$_REQUEST["mxhost"]) {
   simscan_init($_REQUEST["mxhost"]);
   simscan_print_view($_REQUEST["mxhost"]);
 } else {

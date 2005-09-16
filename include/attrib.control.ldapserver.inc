@@ -7,26 +7,26 @@
 // ldapgrouplogin (dn of a database user - used by qmail-group)
 // ldapgrouppassword (password for bind - used with ldapgrouplogin)
 //
-// $Id: attrib.control.ldapserver.inc,v 2.19 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.ldapserver.inc,v 2.20 2005-09-16 06:08:46 turbo Exp $
 
 // {{{ ldapserver_check(type)
 function ldapserver_check($type) {
 	global $error, $LANG;
 	$attrib = $_REQUEST["attrib"];
 
-	if(($attrib == 'ldapserver') and is_array($_REQUEST["ldapserver"])) {
+	if(($attrib == 'ldapserver') and @is_array($_REQUEST["ldapserver"])) {
 	  // check for valid fqdn for all servers
 	  foreach($_REQUEST["ldapserver"] as $key => $server) {
-		if($server != "" and !pql_check_hostaddress($server, true)) {
+		if(!empty($server) and !pql_check_hostaddress($server, true)) {
 		  $error["ldapserver_$key"] = $LANG->_('Invalid');
 		  $is_error = true;
 		}
 	  }
 
 	  // test connection
-	  if($_REQUEST["ldap_test"] == "1" and $is_error == false) {
+	  if(($_REQUEST["ldap_test"] == "1") and ($is_error == false)) {
 		foreach($_REQUEST["ldapserver"] as $server) {
-		  if($server == "")
+		  if(empty($server))
 			continue;
 		  
 		  $linkid = @ldap_connect($server);
@@ -60,7 +60,7 @@ function ldapserver_check($type) {
 		  @ldap_close($linkid);
 		}
 	  }
-	} elseif(!$_REQUEST[$attrib]) {
+	} elseif(!@$_REQUEST[$attrib]) {
 	  // missing
 	  $error[$attrib] = $LANG->_('Missing');
 	  $is_error = true;
@@ -90,12 +90,12 @@ function ldapserver_init($host) {
 	}
 	
 	// init checkbox
-	if($_REQUEST["ldaplogin"])
+	if(@$_REQUEST["ldaplogin"])
 	  $_REQUEST["ldaplogin_use"] = 1;
 	
 	// map different hostnames sperated by space to an array
 	$_REQUEST["ldapserver"] = split(" ", $_REQUEST["ldapserver"]);
-	if($_REQUEST["srvcount"] == "")
+	if(@empty($_REQUEST["srvcount"]))
 	  $_REQUEST["srvcount"] = count($_REQUEST["ldapserver"]) - 1;
 }
 // }}}
@@ -109,7 +109,7 @@ function ldapserver_print_view($host) {
 	ldapserver_init($host);
 
 	// don't display passwords
-	if($_REQUEST["ldappassword"] != "")
+	if(!@empty($_REQUEST["ldappassword"]))
 	  $_REQUEST["ldappassword"] = $LANG->_('Set, but now shown');
 
 	// set empty field to "not set"
@@ -120,7 +120,7 @@ function ldapserver_print_view($host) {
 					 "ldapgrouplogin"	=> pql_get_define("PQL_ATTR_GROUP_LOGIN"),
 					 "ldapgrouppassword"=> pql_get_define("PQL_ATTR_GROUP_PASSWD"));
 	foreach($attribs as $key => $attrib) {
-		if($_REQUEST[$key] == "")
+		if(@empty($_REQUEST[$key]))
 		  $_REQUEST[$key] = '<i>'.$LANG->_('Not set').'</i>';
 	}
 
@@ -189,7 +189,7 @@ function ldapserver_print_form() {
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('LDAP server connection option')?></th>
 <?php if($_REQUEST["attrib"] == 'ldapserver') {
-	 	for($i = 0; $_REQUEST["ldapserver"][$i]; $i++) { ?>
+	 	for($i=0; $i < count($_REQUEST["ldapserver"]); $i++) { ?>
 	<input type="hidden" name="ldapserver[<?=$i?>]" value="<?=$_REQUEST["ldapserver"][$i]?>">
 <?php 	} ?>
 
@@ -239,13 +239,13 @@ function ldapserver_print_form() {
 <?php } ?>
 <?php if($_REQUEST["attrib"] == 'ldapserver') { ?>
         <tr class="<?php pql_format_table(); ?>">
-          <td colspan="2"><input type="checkbox" name="ldap_test" value="1" <?php if($_REQUEST["ldap_test"] == "1"){ echo "checked"; } //" ?>>
+          <td colspan="2"><input type="checkbox" name="ldap_test" value="1" <?php if($_REQUEST["ldap_test"] == "1") { echo "checked"; }?>>
 			<?=$LANG->_('Test connection after submitting form (it will be tested for each server seperatly)')?>
           </td>
         </tr>
 
 <?php } ?>
-<?php if($error["ldap_test"] != "") { ?>
+<?php if(!@empty($error["ldap_test"])) { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td colspan="2"><?php echo pql_format_error_span($error["ldap_test"]); ?></td>
         </tr>

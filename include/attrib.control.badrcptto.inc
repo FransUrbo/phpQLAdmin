@@ -2,14 +2,14 @@
 // control attribute plugin for
 // badrcptto (blocked local addresses)
 //
-// $Id: attrib.control.badrcptto.inc,v 2.23 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.badrcptto.inc,v 2.24 2005-09-16 06:08:46 turbo Exp $
 
 // {{{ badrcptto_check(type)
 function badrcptto_check($type) {
 	global $error, $LANG;
 
 	// check validity
-	if(is_array($_REQUEST["badrcptto"])) {
+	if(@is_array($_REQUEST["badrcptto"])) {
 		foreach($_REQUEST["badrcptto"] as $key => $badmail) {
 		 	if($badmail == "")
 			  continue;
@@ -38,9 +38,9 @@ function badrcptto_init($host) {
 											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 											   pql_get_define("PQL_ATTR_BADRCPTTO"));
 
-	if(is_null($_REQUEST["badrcptto"]))
+	if(@is_null($_REQUEST["badrcptto"]))
 	  return true;
-	if(!is_array($_REQUEST["badrcptto"]))
+	if(!@is_array($_REQUEST["badrcptto"]))
 	  $_REQUEST["badrcptto"] = array($_REQUEST["badrcptto"]);
 }
 // }}}
@@ -53,7 +53,7 @@ function badrcptto_print_view($host) {
 	// init data
 	badrcptto_init($host);
 
-	if(is_array($_REQUEST["badrcptto"])) {
+	if(@is_array($_REQUEST["badrcptto"])) {
 		foreach($_REQUEST["badrcptto"] as $key => $mail) {
 			if(preg_match("/^@/", $mail))
 			  $_REQUEST["badrcptto"][$key] = "all of " . pql_strip_username($mail);
@@ -86,7 +86,7 @@ function badrcptto_print_form() {
 	global $error, $LANG;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
-<?php for($i = 0; $_REQUEST["badrcptto"][$i]; $i++) { ?>
+<?php for($i=0; $i < count($_REQUEST["badrcptto"]); $i++) { ?>
     <input type="hidden" name="badrcptto[<?=$i?>]" value="<?=$_REQUEST["badrcptto"][$i]?>">
 <?php } ?>
 

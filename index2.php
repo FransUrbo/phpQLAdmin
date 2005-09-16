@@ -1,5 +1,5 @@
 <?php
-// $Id: index2.php,v 2.43 2005-06-09 15:05:35 turbo Exp $
+// $Id: index2.php,v 2.44 2005-09-16 06:08:43 turbo Exp $
 
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -12,12 +12,12 @@ $frames = 2; // Default 2 frames - left and main
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 // If something changed, make sure we start with these undefined!
-unset($_SESSION["USE_EZMLM"]);
-unset($_SESSION["USE_CONTROLS"]);
+$_SESSION["USE_EZMLM"] = 0;
+$_SESSION["USE_CONTROLS"] = 0;
 
 // -----------------
 // Count how many frames we should open
-if($_SESSION["ADVANCED_MODE"] or $_REQUEST["advanced"]) {
+if($_SESSION["ADVANCED_MODE"] or @$_REQUEST["advanced"]) {
   if(pql_get_define("PQL_CONF_EZMLM_USE") and $_SESSION["ALLOW_EZMLM_CREATE"]) {
     $frames++;
 
@@ -66,7 +66,7 @@ if($_SESSION["mozilla"]) {
 
   <!-- frames == <?=$frames?> -->
 
-<?php if($_REQUEST["advanced"] and !$_SESSION["SINGLE_USER"]) { // Advance mode - show controls and mailinglist managers ?>
+<?php if(@$_REQUEST["advanced"] and !$_SESSION["SINGLE_USER"]) { // Advance mode - show controls and mailinglist managers ?>
   <frameset cols="260,*" rows="*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 2 -->
     <!-- LEFT frame -->
 <?php   if($frames >= 3) { ?>

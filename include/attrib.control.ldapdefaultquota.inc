@@ -4,7 +4,7 @@
 // or, if using new style quota
 // 	defaultQuotaSize and defaultQuotaCount
 //
-// $Id: attrib.control.ldapdefaultquota.inc,v 2.20 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.ldapdefaultquota.inc,v 2.21 2005-09-16 06:08:46 turbo Exp $
 
 // {{{ ldapdefaultquota_check(type)
 function ldapdefaultquota_check($type) {
@@ -22,46 +22,45 @@ function ldapdefaultquota_check($type) {
 	// in controls/ldapdefaultquota
 	
 	// empty
-	if($maxsize == "" and $options == "user") {
+	if(($maxsize == "") and ($options == "user")) {
 		$error["maxsize"] = $LANG->_('Missing');
 		$failed = true;
 	}
 	
 	// valid (numeric)
-	if($maxsize != "" and preg_match("/[^0-9]/", $maxsize) and $options == "user") {
+	if(($maxsize != "") and preg_match("/[^0-9]/", $maxsize) and ($options == "user")) {
 		$error["maxsize"] = $LANG->_('Invalid');
 		$failed = true;
 	}
 	
 	// bigger than 0
-	if($error["maxsize"] == "" and $maxsize <= 0 and $options == "user") {
+	if(($error["maxsize"] == "") and ($maxsize <= 0) and ($options == "user")) {
 		$error["maxsize"] = $LANG->_('Must be above zero');
 		$failed = true;
 	}
 	
 	// empty
-	if($maxmails == ""  and $options == "user") {
+	if(($maxmails == "") and ($options == "user")) {
 		$error["maxmails"] = $LANG->_('Missing');
 		$failed = true;
 	}
 	
 	// valid (numeric)
-	if($maxmails != "" and preg_match("/[^0-9]/", $maxmails)  and $options == "user") {
+	if(($maxmails != "") and preg_match("/[^0-9]/", $maxmails) and ($options == "user")) {
 		$error["maxmails"] = $LANG->_('Invalid');
 		$failed = true;
 	}
 	
 	// bigger than 0
-	if($error["maxmails"] == "" and $maxmails <= 0 and $options == "user"){
+	if(($error["maxmails"] == "") and ($maxmails <= 0) and ($options == "user")) {
 		$error["maxmails"] = $LANG->_('Must be above zero');
 		$failed = true;
 	}
 	
-	if($failed) {
-		return false;
-	} else {
-		return true;
-  }
+	if($failed)
+	  return false;
+	else
+	  return true;
 }
 // }}}
 
@@ -94,7 +93,7 @@ function ldapdefaultquota_print_view($host) {
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">
-<?php if(!$_SESSION["NEW_STYLE_QUOTA"])  { ?>
+<?php if(!@$_SESSION["NEW_STYLE_QUOTA"])  { ?>
       ldapDefaultQuota
 <?php } else { ?>
       defaultQuotaSize, defaultQuotaCount
@@ -126,7 +125,7 @@ function ldapdefaultquota_print_form($type = "modify") {
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Change quota')?></th>
-<?php if(!empty($_SESSION["USE_CONTROLS"])) { ?>
+<?php if(!@empty($_SESSION["USE_CONTROLS"])) { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Options')?></td>
           <td><input type="radio" name="options" value="default" <?php if($_REQUEST["options"] == "default"){ echo "checked"; }?>> Unlimited <input type="radio" name="options" value="user" <?php if($_REQUEST["options"] == "user"){ echo "checked"; }?>> <?=$LANG->_('User defined')?></td>
@@ -169,7 +168,7 @@ function ldapdefaultquota_save($type, $host) {
     global $_pql_control, $LANG;
 
 	// Just incase user 'forgets' to tick in the 'User defined' field...
-	if(empty($_REQUEST["options"]) and (!empty($_REQUEST["maxsize"]) or !empty($_REQUEST["maxmails"]))) {
+	if(@empty($_REQUEST["options"]) and (!@empty($_REQUEST["maxsize"]) or !@empty($_REQUEST["maxmails"]))) {
 		// Neither 'Standard' nor 'User defined' entered, but we have value(s) for quota
 		$_REQUEST["options"] = "user";
 	}
@@ -210,13 +209,13 @@ function ldapdefaultquota_save($type, $host) {
 		$dn = pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"];
 		$failed = 0;
 
-		if($_SESSION["OLD_STYLE_QUOTA"])  {
+		if(@$_SESSION["OLD_STYLE_QUOTA"])  {
 			// Set the old style quota value
 			if(!pql_modify_attribute($_pql_control->ldap_linkid, $dn, pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"), 1, $mailquota))
 			  $failed = 1;
 		}
 
-		if($_SESSION["NEW_STYLE_QUOTA"])  {
+		if(@$_SESSION["NEW_STYLE_QUOTA"])  {
 			// Set the new style quota values
 			if(!pql_modify_attribute($_pql_control->ldap_linkid, $dn, pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA_SIZE"), 1,
 									 $_REQUEST["maxsize"] * 1024))

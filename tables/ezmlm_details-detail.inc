@@ -102,7 +102,7 @@ $link = "ezmlm_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domai
       </tr>
 <?php }
 
-	  if(!$ezmlm->mailing_lists[$listno]["subscriber"][0]) {
+	  if(!@$ezmlm->mailing_lists[$listno]["subscriber"][0]) {
 ?>
 
       <tr class="<?php pql_format_table(); ?>">
@@ -112,7 +112,7 @@ $link = "ezmlm_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domai
       </tr>
 <?php }
 
-	  if(!$ezmlm->mailing_lists[$listno]["killlist"][0]) {
+	  if(!@$ezmlm->mailing_lists[$listno]["killlist"][0]) {
 ?>
 
 	  <tr><td></td><td></td><td></td></tr>

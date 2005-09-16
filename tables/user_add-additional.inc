@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-additional.inc,v 1.31 2005-08-14 18:59:29 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.32 2005-09-16 06:08:54 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <!-- Some hidden values from previous page(s) -->
 <?php if($_REQUEST["surname"] and pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_CN"))) { ?>
@@ -155,7 +155,7 @@
 		$MX_HOSTS = array(); // So that in_array() won't fail if there is no QLC hosts...
 		if($_REQUEST["userhost"]["qlc"]) {
 			// It's defined - QmailLDAP/Controls object
-			for($i=0; $_REQUEST["userhost"]["qlc"][$i]; $i++)
+			for($i=0; $i < count($_REQUEST["userhost"]["qlc"]); $i++)
 			  $MX_HOSTS[] = $_REQUEST["userhost"]["qlc"][$i];
 		}
 
@@ -164,7 +164,7 @@
 
 
 		// Show all MX hosts we know about
-		for($i=0; $MX_HOSTS[$i]; $i++) {
+		for($i=0; $i < count($MX_HOSTS); $i++) {
 ?>
             <input type="hidden" name="host_<?=$i?>" value="<?=$MX_HOSTS[$i]?>">
 <?php		if($i >= 1) echo "&nbsp;&nbsp;"; ?>

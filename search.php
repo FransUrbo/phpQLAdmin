@@ -1,6 +1,6 @@
 <?php
 // shows results of search
-// $Id: search.php,v 2.36 2005-06-09 15:05:35 turbo Exp $
+// $Id: search.php,v 2.37 2005-09-16 06:08:43 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -119,12 +119,12 @@ if(!$_SESSION["SINGLE_USER"]) {
 <?php	}
 
 		$usrs = pql_get_dn($_pql->ldap_linkid, $dn, $filter, 'SUBTREE');
-		for($i=0; $usrs[$i]; $i++) {
+		for($i=0; $i < count($usrs); $i++) {
 			$is_group = 0;
 			
 			// Check if this object is a (posix)Group object.
 			$ocs = pql_get_attribute($_pql->ldap_linkid, $usrs[$i], pql_get_define("PQL_ATTR_OBJECTCLASS"));
-			for($j=0; $ocs[$j]; $j++) {
+			for($j=0; $j < count($ocs); $j++) {
 				if(eregi('group', $ocs[$j]))
 				  $is_group = 1;
 			}
@@ -140,7 +140,7 @@ if(!$_SESSION["SINGLE_USER"]) {
 
 	// Get branch for user
     $dnparts = ldap_explode_dn($_SESSION["USER_DN"], 0);
-	for($i=1; $dnparts[$i]; $i++) {
+	for($i=1; $i < count($dnparts); $i++) {
 		$dn .= $dnparts[$i];
 		if($dnparts[$i+1])
 		  $dn .= ",";
@@ -148,12 +148,12 @@ if(!$_SESSION["SINGLE_USER"]) {
 
 	// Search for the user below this DN
 	$usrs = pql_search($_pql->ldap_linkid, $dn, $filter);
-	for($i=0; $usrs[$i]; $i++) {
+	for($i=0; $i < count($usrs); $i++) {
 		$is_group = 0;
 		
 		// Check if this object is a (posix)Group object.
 		$ocs = pql_get_attribute($_pql->ldap_linkid, $usrs[$i], pql_get_define("PQL_ATTR_OBJECTCLASS"));
-		for($j=0; $ocs[$j]; $j++) {
+		for($j=0; $j < count($ocs); $j++) {
 			if(eregi('group', $ocs[$j]))
 			  $is_group = 1;
 		}

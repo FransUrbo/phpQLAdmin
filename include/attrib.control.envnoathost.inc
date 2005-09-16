@@ -2,7 +2,7 @@
 // control attribute plugin for
 // envnoathost (default prefix for mailbox paths)
 //
-// $Id: attrib.control.envnoathost.inc,v 2.19 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.envnoathost.inc,v 2.20 2005-09-16 06:08:46 turbo Exp $
 
 // {{{ envnoathost_check(type)
 function envnoathost_check($type) {
@@ -34,7 +34,7 @@ function envnoathost_init($host) {
 												 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 												 pql_get_define("PQL_ATTR_ENVNOATHOST"));
 
-	if(is_null($_REQUEST["envnoathost"]))
+	if(@is_null($_REQUEST["envnoathost"]))
 	  return true;
 }
 // }}}
@@ -52,7 +52,7 @@ function envnoathost_print_view($host) {
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Email')?></td>
-        <td class="<?=$class?>"><?php if($_REQUEST["envnoathost"]) { echo pql_maybe_idna_decode($_REQUEST["envnoathost"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($host)." (" . $LANG->_('Taken from \'me\'') . ")"; }?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["envnoathost"]) { echo pql_maybe_idna_decode($_REQUEST["envnoathost"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($host)." (" . $LANG->_('Taken from \'me\'') . ")"; }?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_ENVNOATHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_ENVNOATHOST")?>"></a></td>
       </tr>
     </th>

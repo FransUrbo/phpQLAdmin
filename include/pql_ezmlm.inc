@@ -3,7 +3,7 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ezmlm.inc,v 1.29 2005-03-15 09:45:03 turbo Exp $
+// $Id: pql_ezmlm.inc,v 1.30 2005-09-16 06:08:51 turbo Exp $
 class ezmlm {
 	// {{{ Private section
 	var $_option					= array();
@@ -96,7 +96,7 @@ class ezmlm {
 				// directory - recursive invocation
 				
 				$e = $this->_getfsentries($dir . "/" . $entry);
-				for($i=0; $e[$i]; $i++) {
+				for($i=0; $i < count($e); $i++) {
 					$entries[] = $e[$i];
 				}
 			}
@@ -141,7 +141,7 @@ class ezmlm {
 			
 			if(is_array($out) and !$res) {
 			  for($j=0; $j <= count($out); $j++) {
-				for($i=0; $regexp[$i]; $i++) {
+				for($i=0; $i < count($regexp); $i++) {
 				  $lookfor = $dir.'.*/'.$base.$regexp[$i];
 				  
 				  if(ereg($lookfor, $out[$j]))
@@ -164,7 +164,7 @@ class ezmlm {
 			if(@is_link($target)) {
 				// It's a link.
 
-				for($i=0; $regexp[$i]; $i++) {
+				for($i=0; $i < count($regexp); $i++) {
 					$lookfor = $dir.'.*/'.$base.$regexp[$i];
 
 					if(ereg($lookfor, $target)) {
@@ -202,7 +202,7 @@ class ezmlm {
 		  if(is_array($out) and !$res) {
 			$list_index = count($out);
 
-			for($i=0; $out[$i]; $i++) {
+			for($i=0; $i < count($out); $i++) {
 			  $entry_name = basename($out[$i]);
 			  if(!$this->_readlistconfiguration($entry_name,
 												$this->mailing_lists[$i],
@@ -263,7 +263,7 @@ class ezmlm {
 	function _readlistconfiguration($list, &$configuration, $loadtexts) {
 		$configuration["name"] = $list;
 
-		if(! ereg("/$", $user_home))
+		if(!ereg("/$", $this->user_home))
 		  $list_path = ($this->user_home.$list);
 		else
 		  $list_path = ($this->user_home."/$list");
@@ -387,7 +387,7 @@ class ezmlm {
 		}
 
 		$configuration["subscribers"] = count($out);
-		for($i=0; $out[$i]; $i++)
+		for($i=0; $i < count($out); $i++)
 		  $configuration["subscriber"][] = $out[$i];
 
 		// ------------------------
@@ -431,7 +431,7 @@ class ezmlm {
 		}
 
 		$configuration["killlisted"] = count($out);
-		for($i=0; $out[$i]; $i++)
+		for($i=0; $i < count($out); $i++)
 		  $configuration["killlist"][] = $out[$i];
 
 		if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
@@ -509,7 +509,7 @@ class ezmlm {
 		_chmod($directory, octdec($dirmode));
 
 		$files = $this->_getfsentries($directory);
-		for($i=0; $files[$i]; $i++) {
+		for($i=0; $i < count($files); $i++) {
 			if(is_dir($files[$i]))
 			  _chmod($files[$i], octdec($dirmode));
 			else
@@ -787,7 +787,7 @@ class ezmlm {
 		} else {
 		  $files = $this->_getfsentries($lstpath);
 		  $files[] = $lstpath;
-		  for($i=0; $files[$i]; $i++) {
+		  for($i=0; $i < count($files); $i++) {
 			if(is_dir($files[$i])) {
 				// This is a DIRECTORY entry
 				if(!$this->debug and !file_exists($_SESSION["path"]."/.DEBUG_ME")) {
@@ -839,7 +839,7 @@ class ezmlm {
 			  $unsuccessful = 1;
 		  }
 		} else {
-		  for($i=0; $links[$i]; $i++) {
+		  for($i=0; $i < count($links); $i++) {
 			if(!$this->debug and !file_exists($_SESSION["path"]."/.DEBUG_ME")) {
 				if(! unlink($links[$i]) ) {
 					echo "Could not delete link $links[$i]<br>";

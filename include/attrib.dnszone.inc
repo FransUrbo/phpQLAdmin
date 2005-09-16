@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.19 2005-08-14 11:26:47 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.20 2005-09-16 06:08:50 turbo Exp $
 
 // {{{ attribute_translate_type(attrib)
 function attribute_translate_type($attrib) {
@@ -54,7 +54,7 @@ function attribute_print_form() {
 		$dn = urldecode($_REQUEST["rdn"]);
 		$_REQUEST["oldvalue"] = pql_get_attribute($_pql->ldap_linkid, $dn, $attrib);
 		if(is_array($_REQUEST["oldvalue"])) {
-		  for($i=0; $_REQUEST["oldvalue"][$i]; $i++) {
+		  for($i=0; $i < count($_REQUEST["oldvalue"]); $i++) {
 			if(eregi($type_value, $_REQUEST["oldvalue"][$i]))
 			  $oldvalue = $_REQUEST["oldvalue"][$i];
 		  }
@@ -222,7 +222,7 @@ function attribute_save($action) {
 		  $oldvalues = array($oldvalues);
 
 		// Add the old values to the array
-		for($i=0; $oldvalues[$i]; $i++)
+		for($i=0; $i < count($oldvalues); $i++)
 		  $entry[$attrib][] = $oldvalues[$i];
 
 		// Add the new value to the array
@@ -247,7 +247,7 @@ function attribute_save($action) {
 			$dnattrs = explode(",", urldecode($dn));
 
 			$new_dn  = pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")."=$newvalue";
-			for($i=1; $dnattrs[$i]; $i++) {
+			for($i=1; $i < count($dnattrs); $i++) {
 				$parent .= $dnattrs[$i];
 				if($dnattrs[$i+1])
 				  $parent .= ",";
@@ -328,7 +328,7 @@ function attribute_save($action) {
 			if($oldvalues and !is_array($oldvalues))
 			$oldvalues = array($oldvalues);
 
-			for($i=0; $oldvalues[$i]; $i++) {
+			for($i=0; $i < count($oldvalues); $i++) {
 				// Filter out the value to delete
 				if($oldvalues[$i] != $_REQUEST["oldvalue"])
 				  $entry[$attrib][] = $oldvalues[$i];
@@ -359,7 +359,7 @@ function attribute_save($action) {
 		  if($success) {
 			// {{{ Recreate a new DN for pql_bind9_update_serial() below.
 			$dn_parts = split(',', $dn);
-			for($i=1; $dn_parts[$i]; $i++) {
+			for($i=1; $i < count($dn_parts); $i++) {
 			  $newdn .= $dn_parts[$i];
 			  if($dn_parts[$i+1])
 				$newdn .= ',';

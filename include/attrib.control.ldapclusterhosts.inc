@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldapclusterhosts (max number of bytes in message)
 //
-// $Id: attrib.control.ldapclusterhosts.inc,v 2.7 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.ldapclusterhosts.inc,v 2.8 2005-09-16 06:08:46 turbo Exp $
 
 // {{{ ldapclusterhosts_check(type)
 function ldapclusterhosts_check($type) {
@@ -23,9 +23,9 @@ function ldapclusterhosts_init($host) {
 													  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 													  pql_get_define("PQL_ATTR_LDAPCLUSTER_HOSTS"));
 
-	if($_REQUEST["ldapclusterhosts"])
+	if(@$_REQUEST["ldapclusterhosts"])
 	  return true;
-	elseif(!is_array($_REQUEST["ldapclusterhosts"]))
+	elseif(!@is_array($_REQUEST["ldapclusterhosts"]))
 	  $_REQUEST["ldapclusterhosts"] = array($_REQUEST["ldapclusterhosts"]);
 }
 // }}}
@@ -69,7 +69,7 @@ function ldapclusterhosts_print_form() {
 	global $error, $LANG;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
-<?php for($i = 0; $_REQUEST["ldapclusterhosts"][$i]; $i++) { ?>
+<?php for($i=0; $i < count($_REQUEST["ldapclusterhosts"]); $i++) { ?>
     <input type="hidden" name="ldapclusterhosts[<?=$i?>]" value="<?=$_REQUEST["ldapclusterhosts"][$i]?>">
 <?php } ?>
 

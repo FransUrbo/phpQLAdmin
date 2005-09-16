@@ -228,7 +228,7 @@
         <table>
           <tr>
             <td>
-              <?php echo pql_format_error_span($error["selected"]); ?>
+              <?=@pql_format_error_span($error["selected"])?>
               <img src="images/info.png" width="16" height="16" alt="" border="0">
             </td>
             <td>

@@ -2,16 +2,16 @@
 // control attribute plugin for
 // relaymailfrom (allowed sender addresses for relaying)
 //
-// $Id: attrib.control.relaymailfrom.inc,v 2.21 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.relaymailfrom.inc,v 2.22 2005-09-16 06:08:50 turbo Exp $
 
 // {{{ relaymailfrom_check(type)
 function relaymailfrom_check($type) {
 	global $error, $LANG;
 	
 	// check validity
-	if(is_array($_REQUEST["relaymailfrom"])) {
+	if(@is_array($_REQUEST["relaymailfrom"])) {
 		foreach($_REQUEST["relaymailfrom"] as $key => $badmail) {
-		 	if($badmail == "")
+		 	if(empty($badmail))
 			  continue;
 			
 			if(preg_match("/^@/", $badmail)) {
@@ -46,9 +46,9 @@ function relaymailfrom_init($host) {
 												   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 												   pql_get_define("PQL_ATTR_RELAYMAILFROM"));
 	
-	if(is_null($_REQUEST["relaymailfrom"]))
+	if(@is_null($_REQUEST["relaymailfrom"]))
 	  return true;
-	elseif(!is_array($_REQUEST["relaymailfrom"]))
+	elseif(!@is_array($_REQUEST["relaymailfrom"]))
 	  $_REQUEST["relaymailfrom"] = array($_REQUEST["relaymailfrom"]);
 }
 // }}}
@@ -61,7 +61,7 @@ function relaymailfrom_print_view($host) {
 	// init data
 	relaymailfrom_init($host);
 	
-	if(is_array($_REQUEST["relaymailfrom"])) {
+	if(@is_array($_REQUEST["relaymailfrom"])) {
 		foreach($_REQUEST["relaymailfrom"] as $key => $mail) {
 			if(preg_match("/^@/", $mail))
 			  $_REQUEST["relaymailfrom"][$key] = "all of " . pql_strip_username($mail);
@@ -94,7 +94,7 @@ function relaymailfrom_print_form() {
 	global $error, $LANG;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
-<?php for($i = 0; $_REQUEST["relaymailfrom"][$i]; $i++) { ?>
+<?php for($i=0; $i < count($_REQUEST["relaymailfrom"]); $i++) { ?>
     <input type="hidden" name="relaymailfrom[<?=$i?>]" value="<?=$_REQUEST["relaymailfrom"][$i]?>">
 <?php } ?>
 

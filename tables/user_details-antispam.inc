@@ -15,7 +15,7 @@ if(is_array($spamassassin)) {
 		   unset($_REQUEST[$key]);
 	}
 
-	for($i=0; $spamassassin[$i]; $i++) {
+	for($i=0; $i < count($spamassassin); $i++) {
 		unset($values); $values = split(' ', $spamassassin[$i]);
 		
 		// Convert the flat structure to something that looks like the form.
@@ -35,7 +35,7 @@ if(is_array($spamassassin)) {
 				} else {
 					// We have more than one value (ok_languages etc). Make it
 					// a two dimensional array.
-					for($j=1; $values[$j]; $j++)
+					for($j=1; $j < count($values); $j++)
 					  $_REQUEST[$tag][] = $values[$j];
 				}
 			} else {
@@ -44,6 +44,18 @@ if(is_array($spamassassin)) {
 			}
 		}
 	}
+} else {
+  // Not previous information - use defaults.
+  $_REQUEST["required_hits"]	= '5';
+  $_REQUEST["report_safe"]		= '0';
+
+  $_REQUEST["spam_level_stars"]	= '0';
+  $_REQUEST["spam_level_char"]	= '*';
+
+  $_REQUEST["rewrite_subject"]	= '1';
+  $_REQUEST["subject_tag"]		= '*****SPAM*****';
+
+  $_REQUEST["ok_languages"]		= array();
 }
 ?>
 
@@ -80,7 +92,7 @@ if(is_array($spamassassin)) {
                     <input type="radio" name="required_hits" value="8"  <?php if($_REQUEST["required_hits"] ==  8) { echo "CHECKED"; }?>>&nbsp;
                     <input type="radio" name="required_hits" value="7"  <?php if($_REQUEST["required_hits"] ==  7) { echo "CHECKED"; }?>>&nbsp;
                     <input type="radio" name="required_hits" value="6"  <?php if($_REQUEST["required_hits"] ==  6) { echo "CHECKED"; }?>>&nbsp;
-                    <input type="radio" name="required_hits" value="5"  <?php if(($_REQUEST["required_hits"]==  5) or (!$_REQUEST["required_hits"])) { echo "CHECKED"; }?>>&nbsp;
+                    <input type="radio" name="required_hits" value="5"  <?php if($_REQUEST["required_hits"] ==  5) { echo "CHECKED"; }?>>&nbsp;
                     <input type="radio" name="required_hits" value="4"  <?php if($_REQUEST["required_hits"] ==  4) { echo "CHECKED"; }?>>&nbsp;
                     <input type="radio" name="required_hits" value="3"  <?php if($_REQUEST["required_hits"] ==  3) { echo "CHECKED"; }?>>&nbsp;
                     <input type="radio" name="required_hits" value="2"  <?php if($_REQUEST["required_hits"] ==  2) { echo "CHECKED"; }?>>&nbsp;
@@ -106,10 +118,10 @@ if(is_array($spamassassin)) {
         <tr class="<?php pql_format_table(); ?>">
           <td class="title" valign="top"><?=$LANG->_('Spam report')?></td>
           <td>
-            <input type="radio" name="report_safe" value="0" <?php if(($_REQUEST["report_safe"] == "0") or (!$_REQUEST["report_safe"])) { echo "CHECKED"; } ?>>Include report in headers of original message<br>
+            <input type="radio" name="report_safe" value="0" <?php if($_REQUEST["report_safe"] == "0") { echo "CHECKED"; } ?>>Include report in headers of original message<br>
             <input type="radio" name="report_safe" value="1" <?php if($_REQUEST["report_safe"] == "1") { echo "CHECKED"; } ?>>Include original as MIME attachment to report (Default)<br>
             <input type="radio" name="report_safe" value="2" <?php if($_REQUEST["report_safe"] == "2") { echo "CHECKED"; } ?>>Include original as text-only attachment to report<br>
-            <input type="checkbox" name="use_terse_report" value="1" <?php if($_REQUEST["terse_control"]) { echo "CHECKED"; } ?>>Use abbreviated report<br>
+            <input type="checkbox" name="use_terse_report" value="1" <?php if(!@empty($_REQUEST["terse_control"])) { echo "CHECKED"; } ?>>Use abbreviated report<br>
           </td>
 
           <td valign="top">
@@ -127,9 +139,9 @@ if(is_array($spamassassin)) {
         <tr class="<?php pql_format_table(); ?>">
           <td class="title" valign="top"><?=$LANG->_('Header control')?></td>
           <td>
-            <input type="checkbox" name="always_add_headers" value="1" <?php if($_REQUEST["always_add_headers"]) { echo "CHECKED"; } ?>>Add headers to non-spam messages<br>
-            <input type="checkbox" name="fold_headers" value="1" <?php if($_REQUEST["fold_headers"]) { echo "CHECKED"; } ?>>Allow multiple lines in headers<br>
-            <input type="checkbox" name="spam_level_stars" value="1" <?php if($_REQUEST["spam_level_stars"]) { echo "CHECKED"; } ?>>Use "Spam Level" header, using the character <input type="text" name="spam_level_char" value="<?php if($_REQUEST["spam_level_char"]) { echo $_REQUEST["spam_level_char"]; } else { echo "*"; }?>" size="1">
+            <input type="checkbox" name="always_add_headers" value="1" <?php if(!@empty($_REQUEST["always_add_headers"])) { echo "CHECKED"; } ?>>Add headers to non-spam messages<br>
+            <input type="checkbox" name="fold_headers"       value="1" <?php if(!@empty($_REQUEST["fold_headers"])) { echo "CHECKED"; } ?>>Allow multiple lines in headers<br>
+            <input type="checkbox" name="spam_level_stars"   value="1" <?php if($_REQUEST["spam_level_stars"]) { echo "CHECKED"; } ?>>Use "Spam Level" header, using the character <input type="text" name="spam_level_char" value="<?php if($_REQUEST["spam_level_char"]) { echo $_REQUEST["spam_level_char"]; } else { echo "*"; }?>" size="1">
           </td>
   
           <td valign="top">
@@ -255,10 +267,10 @@ if(is_array($spamassassin)) {
         <tr class="<?php pql_format_table(); ?>">
           <td class="title" valign="top"><?=$LANG->_('Network tests')?></td>
           <td>
-            <input type="checkbox" name="use_razor1" value="1" <?php if($_REQUEST["use_razor1"]) { echo "CHECKED"; } ?>>Use <a href="http://razor.sourceforge.net" target="_new">Razor v1</a><br>
-            <input type="checkbox" name="use_razor2" value="1" <?php if($_REQUEST["use_razor2"]) { echo "CHECKED"; } ?>>Use <a href="http://razor.sourceforge.net" target="_new">Razor v2</a><br>
-            <input type="checkbox" name="use_pyzor" value="1" <?php if($_REQUEST["use_pyzor"]) { echo "CHECKED"; } ?>>Use <a href="http://pyzor.sourceforge.net" target="_new">Pyzor</a><br>
-            <input type="checkbox" name="use_dcc" value="1" <?php if($_REQUEST["use_dcc"]) { echo "CHECKED"; } ?>>Use <a href="http://www.dcc-servers.net/dcc/" target="_new">DCC</a> (Distributed Checksum Clearinghouse)<br>
+            <input type="checkbox" name="use_razor1" value="1" <?php if(!@empty($_REQUEST["use_razor1"])) { echo "CHECKED"; } ?>>Use <a href="http://razor.sourceforge.net" target="_new">Razor v1</a><br>
+            <input type="checkbox" name="use_razor2" value="1" <?php if(!@empty($_REQUEST["use_razor2"])) { echo "CHECKED"; } ?>>Use <a href="http://razor.sourceforge.net" target="_new">Razor v2</a><br>
+            <input type="checkbox" name="use_pyzor"  value="1" <?php if(!@empty($_REQUEST["use_pyzor"]))  { echo "CHECKED"; } ?>>Use <a href="http://pyzor.sourceforge.net" target="_new">Pyzor</a><br>
+            <input type="checkbox" name="use_dcc"    value="1" <?php if(!@empty($_REQUEST["use_dcc"]))    { echo "CHECKED"; } ?>>Use <a href="http://www.dcc-servers.net/dcc/" target="_new">DCC</a> (Distributed Checksum Clearinghouse)<br>
             <input type="checkbox" name="skip_rbl_checks" value="0" <?php if(@$_REQUEST["skip_rbl_checks"] == "0") { echo "CHECKED"; } ?>>Use <a href="http://mail.abuse.net/rbl" target="_new">RBL</a> (Realtime Blackhole List)<br>
           </td>
   
@@ -277,8 +289,8 @@ if(is_array($spamassassin)) {
 
       <th colspan="2" align="left"><?=$LANG->_('Custom filter rules')."\n"?>
 <?php $i=0;
-	  if(is_array($_REQUEST["addresses"])) {
-		for(; $_REQUEST["addresses"][$i];) {
+	  if(@is_array($_REQUEST["addresses"])) {
+		for(; $i < count($_REQUEST["addresses"]);) {
 ?>
         <!-- <?=$_REQUEST["addresses"][$i]?>:<?=$_REQUEST["addresses"][$i+1]?> -->
         <tr class="<?php pql_format_table(); ?>">
@@ -304,7 +316,7 @@ if(is_array($spamassassin)) {
 		}
 	  }
 
-	  if($_REQUEST["key"] and $_REQUEST["email"]) {
+	  if(@$_REQUEST["key"] and @$_REQUEST["email"]) {
 ?>
         <!-- <?=$_REQUEST["key"]?>:<?=$_REQUEST["email"]?> -->
         <tr class="<?php pql_format_table(); ?>">

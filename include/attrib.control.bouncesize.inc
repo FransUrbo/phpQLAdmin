@@ -2,7 +2,7 @@
 // control attribute plugin for
 // bouncemaxbytes (max number of bytes in message)
 //
-// $Id: attrib.control.bouncesize.inc,v 2.7 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.bouncesize.inc,v 2.8 2005-09-16 06:08:46 turbo Exp $
 
 // {{{ bouncemaxbytes_check(type)
 function bouncemaxbytes_check($type) {
@@ -23,7 +23,7 @@ function bouncemaxbytes_init($host) {
 													pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 													pql_get_define("PQL_ATTR_BOUNCESIZE"));
 
-	if(is_null($_REQUEST["bouncemaxbytes"]))
+	if(@is_null($_REQUEST["bouncemaxbytes"]))
 	  return true;
 }
 // }}}
@@ -41,7 +41,7 @@ function bouncemaxbytes_print_view($host) {
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title">Bytes</td>
-        <td class="<?=$class?>"><?php if($_REQUEST["bouncemaxbytes"]) { echo $_REQUEST["bouncemaxbytes"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["bouncemaxbytes"]) { echo $_REQUEST["bouncemaxbytes"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_BOUNCESIZE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options')?>"></a></td>
       </tr>
     </th>

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // queuelifetime (maximum number of RCPT TO's)
 //
-// $Id: attrib.control.queuelifetime.inc,v 2.17 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.queuelifetime.inc,v 2.18 2005-09-16 06:08:49 turbo Exp $
 
 // {{{ queuelifetime_check(type)
 function queuelifetime_check($type) {
@@ -15,7 +15,7 @@ function queuelifetime_check($type) {
 	}
 	
 	// must be > 0
-	if($_REQUEST["queuelifetime"] != "" and $error["queuelifetime"] == "" and $_REQUEST["queuelifetime"] <= 0) {
+	if(!@empty($_REQUEST["queuelifetime"]) and @($error["queuelifetime"] == "") and @($_REQUEST["queuelifetime"] <= 0)) {
 		$error["queuelifetime"] = $LANG->_('Must be above zero');
 		return false;
 	}
@@ -34,7 +34,7 @@ function queuelifetime_init($host) {
 												   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 												   pql_get_define("PQL_ATTR_QUEUELIFETIME"));
 
-	if(is_null($_REQUEST["queuelifetime"]))
+	if(@is_null($_REQUEST["queuelifetime"]))
 	  return true;
 }
 // }}}
@@ -52,7 +52,7 @@ function queuelifetime_print_view($host) {
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Remain')?></td>
-        <td class="<?=$class?>"><?php if($_REQUEST["queuelifetime"]) { echo $_REQUEST["queuelifetime"]; } else { echo $LANG->_('Default', 4).': 604800'; }?> <?=$LANG->_('Seconds', 4)?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["queuelifetime"]) { echo $_REQUEST["queuelifetime"]; } else { echo $LANG->_('Default', 4).': 604800'; }?> <?=$LANG->_('Seconds', 4)?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_QUEUELIFETIME")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_QUEUELIFETIME")?>"></a></td>
       </tr>
     </th>

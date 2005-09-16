@@ -2,7 +2,7 @@
 // control attribute plugin for
 // badmailfrom (blocked from addresses)
 //
-// $Id: attrib.control.badmailfrom.inc,v 2.23 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.badmailfrom.inc,v 2.24 2005-09-16 06:08:46 turbo Exp $
 
 // {{{ badmailfrom_check(type)
 
@@ -10,7 +10,7 @@ function badmailfrom_check($type) {
     global $error, $LANG;
     
     // check validity
-    if(is_array($_REQUEST["badmailfrom"])) {
+    if(@is_array($_REQUEST["badmailfrom"])) {
 		foreach($_REQUEST["badmailfrom"] as $key => $badmail) {
 			if($badmail == "")
 			  continue;
@@ -48,9 +48,9 @@ function badmailfrom_init($host) {
 												 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 												 pql_get_define("PQL_ATTR_BADMAILFROM"));
     
-    if(!$_REQUEST["badmailfrom"])
+    if(!@$_REQUEST["badmailfrom"])
 	  return true;
-	elseif(!is_array($_REQUEST["badmailfrom"]))
+	elseif(!@is_array($_REQUEST["badmailfrom"]))
 	  $_REQUEST["badmailfrom"] = array($_REQUEST["badmailfrom"]);
 }
 
@@ -63,7 +63,7 @@ function badmailfrom_print_view($host) {
     // init data
     badmailfrom_init($host);
     
-    if(is_array($_REQUEST["badmailfrom"])) {
+    if(@is_array($_REQUEST["badmailfrom"])) {
 		foreach($_REQUEST["badmailfrom"] as $key => $mail) {
 			if(preg_match("/^@/", $mail))
 			  $_REQUEST["badmailfrom"][$key] = "all of " . pql_strip_username($mail);
@@ -96,7 +96,7 @@ function badmailfrom_print_form() {
     global $error, $LANG;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
-<?php for($i = 0; $_REQUEST["badmailfrom"][$i]; $i++) { ?>
+<?php for($i=0; $i < count($_REQUEST["badmailfrom"]); $i++) { ?>
     <input type="hidden" name="badmailfrom[<?=$i?>]" value="<?=$_REQUEST["badmailfrom"][$i]?>">
 <?php } ?>
 

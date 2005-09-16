@@ -2,7 +2,7 @@
 // control attribute plugin for
 // custombouncetext (additional bounce message)
 //
-// $Id: attrib.control.custombouncetext.inc,v 2.19 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.custombouncetext.inc,v 2.20 2005-09-16 06:08:46 turbo Exp $
 
 // {{{ custombouncetext_check(type)
 function custombouncetext_check($type) {
@@ -28,7 +28,7 @@ function custombouncetext_init($host) {
 													  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 													  pql_get_define("PQL_ATTR_CUSTOMBOUNCETEXT"));
 	
-	if(is_null($_REQUEST["custombouncetext"]))
+	if(@is_null($_REQUEST["custombouncetext"]))
 	  $_REQUEST["use_custombouncetext"] = 0;
 	else
 	  $_REQUEST["use_custombouncetext"] = 1;

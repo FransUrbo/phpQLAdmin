@@ -3,7 +3,7 @@
 // timeoutconnect (how long to wait for smtp connection)
 // timeoutremote (how long to wait for remote server)
 //
-// $Id: attrib.control.timeoutconnect.inc,v 2.18 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.timeoutconnect.inc,v 2.19 2005-09-16 06:08:50 turbo Exp $
 
 // {{{ timeoutconnect_check(type)
 function timeoutconnect_check($type) {
@@ -16,7 +16,7 @@ function timeoutconnect_check($type) {
 	}
 
 	// must be > 0
-	if($error["timeoutconnect"] == "" and $_REQUEST["timeoutconnect"] != "" and $_REQUEST["timeoutconnect"] <= 0) {
+	if(@empty($error["timeoutconnect"]) and !@empty($_REQUEST["timeoutconnect"]) and ($_REQUEST["timeoutconnect"] <= 0)) {
 		$error["timeoutconnect"] = $LANG->_('Must be above zero');
 		$is_error = true;
 	}
@@ -28,7 +28,7 @@ function timeoutconnect_check($type) {
 	}
 
 	// must be > 0
-	if($error["timeoutremote"] == "" and $_REQUEST["timeoutremote"] != "" and $_REQUEST["timeoutremote"] <= 0) {
+	if(@empty($error["timeoutremote"]) and !@empty($_REQUEST["timeoutremote"]) and ($_REQUEST["timeoutremote"] <= 0)) {
 		$error["timeoutremote"] = $LANG->_('Must be above zero');
 		$is_error = true;
 	}
@@ -67,14 +67,14 @@ function timeoutconnect_print_view($host) {
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('SMTP connection')?></td>
-        <td class="<?=$class?>"><?php if($_REQUEST["timeoutconnect"]) { echo $_REQUEST["timeoutconnect"]; } else { echo $LANG->_('Default', 4).': &nbsp;&nbsp;&nbsp;&nbsp;60 '; }?><?=$LANG->_('Seconds', 4)?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["timeoutconnect"]) { echo $_REQUEST["timeoutconnect"]; } else { echo $LANG->_('Default', 4).': &nbsp;&nbsp;&nbsp;&nbsp;60 '; }?><?=$LANG->_('Seconds', 4)?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_TIMEOUTCONNECT")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options', 4).' '.pql_get_define("PQL_ATTR_TIMEOUTCONNECT")?>"></a></td>
       </tr>
 
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Remote server')?></td>
-        <td class="<?=$class?>"><?php if($_REQUEST["timeoutremote"]) { echo $_REQUEST["timeoutremote"]; } else { echo $LANG->_('Default', 4).': 1200 '; }?><?=$LANG->_('Seconds', 4)?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["timeoutremote"]) { echo $_REQUEST["timeoutremote"]; } else { echo $LANG->_('Default', 4).': 1200 '; }?><?=$LANG->_('Seconds', 4)?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_TIMEOUTREMOTE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options', 4).' '.pql_get_define("PQL_ATTR_TIMEOUTREMOTE")?>"></a></td>
       </tr>
     </th>
@@ -135,7 +135,7 @@ function timeoutconnect_save($type, $host) {
 		$attribs = array("timeoutconnect" => pql_get_define("PQL_ATTR_TIMEOUTCONNECT"),
 						 "timeoutremote"  => pql_get_define("PQL_ATTR_TIMEOUTREMOTE"));
 		foreach($attribs as $key => $attrib) {
-		  if($_REQUEST[$key])
+		  if(!@empty($_REQUEST[$key]))
 			$return[] = pql_modify_attribute($_pql_control->ldap_linkid,
 											 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 											 $attrib, 1, $_REQUEST[$key]);

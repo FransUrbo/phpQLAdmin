@@ -2,16 +2,16 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.37 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.38 2005-09-16 06:08:46 turbo Exp $
 
 // {{{ locals_check(type)
 function locals_check($type) {
     global $LANG;
 
     // check validity
-    if(is_array($_REQUEST["locals"])) {
+    if(@is_array($_REQUEST["locals"])) {
 		foreach($_REQUEST["locals"] as $key => $host) {
-			if($host == "")
+			if(!empty($host))
 			  continue;
 			
 			if(!pql_check_hostaddress($host)) {
@@ -40,9 +40,9 @@ function locals_init($host) {
 											pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 											pql_get_define("PQL_ATTR_LOCALS"));
     
-    if(!$_REQUEST["locals"])
+    if(!@$_REQUEST["locals"])
 	  return true;
-	elseif(!is_array($_REQUEST["locals"]))
+	elseif(!@is_array($_REQUEST["locals"]))
 	  $_REQUEST["locals"] = array($_REQUEST["locals"]);
 }
 // }}}
@@ -137,9 +137,9 @@ function locals_save($type, $host) {
 	$success = 0;
 
 	if(!$host) {
-	  if($_REQUEST["mxhost"])
+	  if(@$_REQUEST["mxhost"])
 		$host = $_REQUEST["mxhost"];
-	  elseif( $_REQUEST["set"])
+	  elseif(@$_REQUEST["set"])
 		$host = $_REQUEST["set"];
 	  else
 		die("NO HOST!?!?");

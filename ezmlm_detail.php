@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_detail.php,v 1.33 2005-06-09 15:05:35 turbo Exp $
+// $Id: ezmlm_detail.php,v 1.34 2005-09-16 06:08:43 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -43,7 +43,7 @@ if($_REQUEST["domain"]) {
 <?php
 	}
 
-	if(!is_numeric($_REQUEST["listno"])) {
+	if(!@is_numeric($_REQUEST["listno"])) {
 		// No list, show all lists in the domain
 		include("./tables/ezmlm_details-lists.inc");
 	} else {

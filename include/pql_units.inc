@@ -3,13 +3,14 @@
 // pql_units.inc
 // Sub units (ou=People, ou=Users, dc=host) etc
 //
-// $Id: pql_units.inc,v 1.14 2004-11-14 10:42:46 turbo Exp $
+// $Id: pql_units.inc,v 1.15 2005-09-16 06:08:52 turbo Exp $
 //
 
 // {{{ pql_unit_get(linkid, dn, filter)
 function pql_unit_get($linkid, $dn, $filter = 1) {
 	// What's the Root DN (namingContexts) for this domain
 	$rootdn = pql_get_rootdn($dn, 'pql_unit_get'); $rootdn = urldecode($rootdn);
+	$subd = array(); // Just to keep PHP quiet!
 
 	if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $rootdn) == "dc")
 	  // Look for sub-domains below this domain branch.
@@ -22,7 +23,7 @@ function pql_unit_get($linkid, $dn, $filter = 1) {
 
 	// Join the two values
 	$info = array_merge($subd, $ocs);
-	for($i=0; $info[$i]; $i++) {
+	for($i=0; $i < count($info); $i++) {
 		if($filter) {
 			// Filter out the most obvious subbranches we don't put users in...
 			if(!eregi('group',  $info[$i]) and
@@ -35,7 +36,10 @@ function pql_unit_get($linkid, $dn, $filter = 1) {
 		  $branches[] = $info[$i];
 	}
 
-	return $branches;
+	if(isset($branches))
+	  return $branches;
+	else
+	  return false;
 }
 // }}}
 

@@ -2,14 +2,14 @@
 // control attribute plugin for
 // maxrcptcount (maximum number of RCPT TO's)
 //
-// $Id: attrib.control.maxrcptcount.inc,v 2.17 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.maxrcptcount.inc,v 2.18 2005-09-16 06:08:46 turbo Exp $
 
 // {{{ maxrcptcount_check(type)
 function maxrcptcount_check($type) {
 	global $error, $LANG;
 
 	// missing
-	if($_REQUEST["maxrcptcount"] == "") {
+	if(@empty($_REQUEST["maxrcptcount"])) {
 		$error["maxrcptcount"] = $LANG->_('Missing');
 		return false;
 	}
@@ -34,7 +34,7 @@ function maxrcptcount_init($host) {
 												  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 												  pql_get_define("PQL_ATTR_MAXRCPTCOUNT"));
 
-	if(is_null($_REQUEST["maxrcptcount"]))
+	if(@is_null($_REQUEST["maxrcptcount"]))
 	  return true;
 }
 // }}}
@@ -53,7 +53,7 @@ function maxrcptcount_print_view($host) {
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Maximum RCPT TO\'s')?></td>
-        <td class="<?=$class?>"><?php if($_REQUEST["maxrcptcount"]) { echo $_REQUEST["maxrcptcount"]; } else { echo '<i>'.$LANG->_('unlimited').'</i>'; }?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["maxrcptcount"]) { echo $_REQUEST["maxrcptcount"]; } else { echo '<i>'.$LANG->_('unlimited').'</i>'; }?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_MAXRCPTCOUNT")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_MAXRCPTCOUNT")?>"></a></td>
       </tr>
     </th>

@@ -2,16 +2,16 @@
 // control attribute plugin for
 // pbsip (max number of bytes in message)
 //
-// $Id: attrib.control.pbsip.inc,v 2.7 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.pbsip.inc,v 2.8 2005-09-16 06:08:49 turbo Exp $
 
 // {{{ pbsip_check(type)
 function pbsip_check($type) {
 	global $error, $LANG;
 
 	// check each field
-	if(is_array($_REQUEST["pbsip"])) {
+	if(@is_array($_REQUEST["pbsip"])) {
 		foreach($_REQUEST["pbsip"] as $key => $server) {
-			if($server == "")
+			if(empty($server))
 			  continue;
 			
 			// it is an ip address
@@ -26,14 +26,14 @@ function pbsip_check($type) {
 					switch((int)$ip_key) {
 					  case 0:
 					  case 3:
-						if($ip_part <= 0 or $ip_part > 254) {
+						if(($ip_part <= 0) or ($ip_part > 254)) {
 							$is_error = true;
 							$error["pbsip_$key"] = $LANG->_('Invalid');
 						}
 						break;
 						
 					  default:
-						if($ip_part < 0 or $ip_part > 255) {
+						if(($ip_part < 0) or ($ip_part > 255)) {
 							$is_error = true;
 							$error["pbsip_$key"] = $LANG->_('Invalid');
 						}
@@ -60,7 +60,7 @@ function pbsip_init($host) {
 										   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 										   pql_get_define("PQL_ATTR_PBS_IP"));
 
-	if(is_null($_REQUEST["pbsip"]))
+	if(@is_null($_REQUEST["pbsip"]))
 	  return true;
 }
 // }}}
@@ -78,7 +78,7 @@ function pbsip_print_view($host) {
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title">IP</td>
-        <td class="<?=$class?>"><?php if($_REQUEST["pbsip"]) { echo $_REQUEST["pbsip"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["pbsip"]) { echo $_REQUEST["pbsip"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_PBS_IP")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_PBS_IP")?>"></a></td>
       </tr>
     </th>

@@ -3,7 +3,7 @@
 // tarpitcount (user id of virtual user)
 // tarpitdelay (group id of virtual user)
 //
-// $Id: attrib.control.tarpitcount.inc,v 2.19 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.tarpitcount.inc,v 2.20 2005-09-16 06:08:50 turbo Exp $
 
 // {{{ tarpitcount_check(type)
 function tarpitcount_check($type) {
@@ -11,7 +11,7 @@ function tarpitcount_check($type) {
 
 	// tarPitCount
 	if($_REQUEST["attrib"] == "tarpitcount") {
-	  if($_REQUEST["tarpitcount"] == "") {
+	  if(@empty($_REQUEST["tarpitcount"])) {
 		$error["tarpitcount"] = $LANG->_('Missing');
 		$is_error = true;
 	  }
@@ -25,7 +25,7 @@ function tarpitcount_check($type) {
 
 	// tarPitDelay
 	if($_REQUEST["attrib"] == "tarpitdelay") {
-	  if($_REQUEST["tarpitdelay"] == "") {
+	  if(@empty($_REQUEST["tarpitdelay"])) {
 		$error["tarpitdelay"] = $LANG->_('Missing');
 		$is_error = true;
 	  }
@@ -37,7 +37,7 @@ function tarpitcount_check($type) {
 	  }
 	  
 	  // must be > 0
-	  if($error["tarpitdelay"] == "" and $_REQUEST["tarpitdelay"] <= 0) {
+	  if(($error["tarpitdelay"] == "") and ($_REQUEST["tarpitdelay"] <= 0)) {
 		$error["tarpitdelay"] = $LANG->_('Must be above zero');
 		$is_error = true;
 	  }
@@ -77,14 +77,14 @@ function tarpitcount_print_view($host) {
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Tarpitting settings')?></td>
-        <td class="<?=$class?>"><?php if($_REQUEST["tarpitcount"]) { echo pql_complete_constant($LANG->_('Delay submitting after %value% RCPTO\'s'), array('value' => $_REQUEST["tarpitcount"])); } else { echo '<i>'.$LANG->_('Disabled').'</i>'; }?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["tarpitcount"]) { echo pql_complete_constant($LANG->_('Delay submitting after %value% RCPTO\'s'), array('value' => $_REQUEST["tarpitcount"])); } else { echo '<i>'.$LANG->_('Disabled').'</i>'; }?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_TARPITCOUNT")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options', 4).' '.pql_get_define("PQL_ATTR_TARPITCOUNT")?>"></a></td>
       </tr>
 
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Tarpit delay')?></td>
-        <td class="<?=$class?>"><?php if($_REQUEST["tarpitdelay"]) { echo $_REQUEST["tarpitdelay"]; } else { echo $LANG->_('Default').': 5'; }?> <?=$LANG->_('Seconds', 4)?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["tarpitdelay"]) { echo $_REQUEST["tarpitdelay"]; } else { echo $LANG->_('Default').': 5'; }?> <?=$LANG->_('Seconds', 4)?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_TARPITDELAY")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options', 4).' '.pql_get_define("PQL_ATTR_TARPITDELAY")?>"></a></td>
       </tr>
     </th>
@@ -143,7 +143,7 @@ function tarpitcount_save($type, $host) {
 						 "tarpitdelay" => pql_get_define("PQL_ATTR_TARPITDELAY"));
 		foreach($attribs as $key => $attrib) {
 		  // Allow 'tarpit{Count,Delay}' to be '0' (disable).
-		  if(isset($_REQUEST[$key]))
+		  if(@isset($_REQUEST[$key]))
 			$return[] = pql_modify_attribute($_pql_control->ldap_linkid,
 											 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 											 $attrib, 1, $_REQUEST[$key]);

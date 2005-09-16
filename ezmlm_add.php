@@ -1,6 +1,6 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.41 2005-06-09 15:05:35 turbo Exp $
+// $Id: ezmlm_add.php,v 1.42 2005-09-16 06:08:41 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -57,7 +57,7 @@ if(!$_REQUEST["domainname"]) {
 			// Remove duplicates
 			if($domain_list) {
 				foreach($domain_list as $branch => $data)
-				  for($i=0; $data[$i]; $i++)
+				  for($i=0; $i < count($data); $i++)
 					if($data[$i] == $defaultdomainname)
 					  $dont_add = 1;
 			}
@@ -77,7 +77,7 @@ if(!$_REQUEST["domainname"]) {
 					// Remove duplicates
 					if($domain_list) {
 						foreach($domain_list as $branch => $data)
-						  for($i=0; $data[$i]; $i++)
+						  for($i=0; $i < count($data); $i++)
 							if($data[$i] == $additional)
 							  $dont_add = 1;
 					}
@@ -242,7 +242,7 @@ if(!$_REQUEST["domainname"]) {
 ?></b>
             <select name="domainname">
 <?php	foreach($domain_list as $branch => $data) {
-			for($i=0; $data[$i]; $i++) {
+			for($i=0; $i < count($data); $i++) {
 ?>
 	          <option value="<?=$branch.";".$data[$i]?>"><?=$data[$i]?></option>
 <?php
@@ -418,7 +418,7 @@ if(!$_REQUEST["domainname"]) {
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Subscriber address(es)')?></th>
 <?php
-	for($i = 1; $i <= $_REQUEST["subscribercount"]; $i++) {
+	for($i=1; $i <= $_REQUEST["subscribercount"]; $i++) {
 ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Subscriber')?></td>
@@ -452,7 +452,7 @@ if(!$_REQUEST["domainname"]) {
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('Rejected address(es)')?></th>
 <?php
-	for($i = 1; $i <= $_REQUEST["killcount"]; $i++) {
+	for($i=1; $i <= $_REQUEST["killcount"]; $i++) {
 ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Address')?></td>

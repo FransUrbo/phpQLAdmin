@@ -22,7 +22,7 @@ if($ENV{"PQL_MAILDIRS"} && $ENV{"PQL_WEBUSER"}) {
     @dirs = split('/', $DIR);
 
     $directory = '/' . $dirs[1] . '/';
-    for($i=1; $dirs[$i]; $i++) {
+    for($i=1; $i < count($dirs); $i++) {
 	if(! -d $directory) {
 	    print "Creating $directory\n";
 	    if(! mkdir($directory) ) {
@@ -41,7 +41,7 @@ if($ENV{"PQL_HOMEDIRS"}) {
     @dirs = split('/', $DIR);
 
     $directory = '/' . $dirs[1] . '/';
-    for($i=1; $dirs[$i]; $i++) {
+    for($i=1; $i < count($dirs); $i++) {
 	if(! -d $directory) {
 	    print "Creating $directory\n";
 	    if(! mkdir($directory) ) {

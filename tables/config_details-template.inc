@@ -11,8 +11,8 @@ if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
 <?php if(is_array($templates)) {
 		$div_counter = 10; // Initialize the global counter
 
-		for($i=0; $templates[$i]; $i++) {
-		  if(is_array($templates[$i]["oldformat"])) {
+		for($i=0; $i < count($templates); $i++) {
+		  if(@is_array($templates[$i]["oldformat"])) {
 			$oldformat = 1;
 		  }
 		  
@@ -56,9 +56,7 @@ if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
 			$url_tmp  = "config_edit_attribute.php?rootdn=".$dn."&attrib=".pql_get_define("PQL_ATTR_OBJECTCLASS_USER");
 			$url_tmp .= "&view=template";
 
-			if(!$templates[$i]["oldformat"]["userobjectclass"] and
-			   ($templates[$i]["name"] != 'internal_group'))
-			{
+			if(!@$templates[$i]["oldformat"]["userobjectclass"] and ($templates[$i]["name"] != 'internal_group')) {
 			  $txt = array('tit' => $LANG->_('Allowed user objectclasses'),
 						   'add' => $LANG->_('Add objectclass'),
 						   'del' => $LANG->_('Delete objectclass'));
@@ -98,7 +96,7 @@ if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
       </tr>
 <?php } ?>
     </th>
-<?php		if($templates[$i+1]) {
+<?php		if(!empty($templates[$i+1])) {
 				pql_format_table_empty();
 			}
 		} // for(templates)
@@ -112,7 +110,7 @@ if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
         </td>
         <td class="<?=$class?>"></td>
       </tr>
-<?php	if($oldformat) { ?>
+<?php	if(!empty($oldformat)) { ?>
 
       <tr>
         <td class="title"></td>
@@ -137,7 +135,7 @@ if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
 <?php } ?>
   </table>
 
-<?php if($oldformat) { ?>
+<?php if(!empty($oldformat)) { ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th>
       <tr>

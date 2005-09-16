@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.24 2005-08-14 10:53:27 turbo Exp $
+// $Id: bind9_add.php,v 2.25 2005-09-16 06:08:40 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -168,7 +168,7 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 			// Reverse the hostname ('192.168.156.1').
 			$tmp  = split('\.', $_REQUEST["hostname"]);
 			$count = count($tmp);
-			for($i=$count-1; $tmp[$i]; $i--) {
+			for($i=$count-1; $i < count($tmp); $i--) {
 			  $rev .= $tmp[$i];
 			  if($tmp[$i-1])
 				$rev .= ".";

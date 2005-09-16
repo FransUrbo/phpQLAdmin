@@ -4,7 +4,7 @@
 // Retreive LDAP connection and database status
 // from the cn=Monitor backend.
 //
-// $Id: pql_status.inc,v 1.2 2004-10-09 16:38:53 turbo Exp $
+// $Id: pql_status.inc,v 1.3 2005-09-16 06:08:51 turbo Exp $
 //
 
 // {{{ pql_get_status(linkid, dn, attribute)
@@ -22,7 +22,7 @@ function pql_get_status($linkid, $dn, $attrib) {
     if($sr) {
 		$entry = ldap_get_entries($linkid, $sr);
 		if(!is_array($attrib) and $entry[0][$attrib]['count'] > 1) {
-			for($i=0; $entry[0][$attrib][$i]; $i++)
+			for($i=0; $i < count($entry[0][$attrib]); $i++)
 			  $new[] = $entry[0][$attrib][$i];
 
 			return($new);
@@ -31,11 +31,14 @@ function pql_get_status($linkid, $dn, $attrib) {
 		} else {
 			// Return an array - we got more than one value
 			foreach($attribs as $attrib) {
-				for($i=0; $entry[0][$attrib][$i]; $i++)
+				for($i=0; $i < count($entry[0][$attrib]); $i++)
 				  $values[$attrib] = $entry[0][$attrib][$i];
 			}
 			
-			return($values);
+			if(!empty($values))
+			  return($values);
+			else
+			  return false;
 		}
 	}
 
@@ -98,9 +101,9 @@ function pql_get_status_databases($linkid, $suffix = 0) {
 							$values[$entry1[$i]['dn']]['supportedcontrol'][] = $entry2[0]['supportedcontrol'][$j];
 						}
 					}
-				} elseif($entry1[$i][$attrib][0] == $suffix)
+				} elseif(@$entry1[$i][$attrib][0] == $suffix)
 				  return(array($attrib => $suffix, 'monitoredinfo' => $entry1[$i]['monitoredinfo'][0]));
-				else
+				elseif(@$entry1[$i][$attrib][0])
 				  $values[$entry1[$i]['dn']][$attrib] = $entry1[$i][$attrib][0];
 			}
 		}

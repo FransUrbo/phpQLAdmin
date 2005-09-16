@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.129 2005-08-14 11:01:23 turbo Exp $
+// $Id: user_add.php,v 2.130 2005-09-16 06:08:43 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -225,7 +225,7 @@ switch($_REQUEST["page_curr"]) {
 	  // {{{ Step 2: Make sure that the attribute we're using for user reference(s) is availible
 	  //             in at least ONE object class we've choosen to use when creating users...
 	  $attrib_is_availible = 0;
-	  for($i=0; $templates[$i]; $i++) {
+	  for($i=0; $i < count($templates); $i++) {
 		if(pql_templates_check_attribute($_pql->ldap_linkid, $templates[$i],
 										 pql_get_define("PQL_CONF_REFERENCE_USERS_WITH",
 														$_REQUEST["rootdn"])))

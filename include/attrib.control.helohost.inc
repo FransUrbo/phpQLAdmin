@@ -2,14 +2,14 @@
 // control attribute plugin for
 // helohost (host name used in SMTP HELO command)
 //
-// $Id: attrib.control.helohost.inc,v 2.19 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.helohost.inc,v 2.20 2005-09-16 06:08:46 turbo Exp $
 
 // {{{ helohost_check(type)
 function helohost_check($type) {
 	global $error, $LANG;
 
 	// validity
-	if($_REQUEST["helohost"] != "" and !pql_check_hostaddress($_REQUEST["helohost"])) {
+	if(($_REQUEST["helohost"] != "") and !pql_check_hostaddress($_REQUEST["helohost"])) {
 		$error["helohost"] = $LANG->_('Invalid');
 		return false;
 	}
@@ -27,7 +27,7 @@ function helohost_init($host) {
 	$value = pql_get_attribute($_pql_control->ldap_linkid,
 							   pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
 							   pql_get_define("PQL_ATTR_HELOHOST"));
-	if(is_array($value))
+	if(@is_array($value))
 	  $_REQUEST["helohost"] = $value[0];
 }
 // }}}
@@ -45,7 +45,7 @@ function helohost_print_view($host) {
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Host')?></td>
-        <td class="<?=$class?>"><?php if($_REQUEST["helohost"]) { echo pql_maybe_idna_decode($_REQUEST["helohost"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($host)." (".$LANG->_('Taken from \'me\'') . ")"; }?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["helohost"]) { echo pql_maybe_idna_decode($_REQUEST["helohost"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($host)." (".$LANG->_('Taken from \'me\'') . ")"; }?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_HELOHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_HELOHOST")?>"></a></td>
       </tr>
     </th>

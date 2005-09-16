@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for changing/renaming the DN
 //
-// $Id: attrib.modrdn.inc,v 2.15 2005-04-23 08:46:04 turbo Exp $
+// $Id: attrib.modrdn.inc,v 2.16 2005-09-16 06:08:50 turbo Exp $
 
 // {{{ attribute_setup_aci(linkid, dn, old, new)
 function attribute_setup_aci($linkid, $dn, $old, $new) {
@@ -9,7 +9,7 @@ function attribute_setup_aci($linkid, $dn, $old, $new) {
 	$old_acis = pql_aci_get($linkid, $dn);
 
 	// Look for the user
-	for($i=0, $oid=0; $old_acis[$i]; $i++, $oid++) {
+	for($i=0, $oid=0; $i < count($old_acis); $i++, $oid++) {
 		if($old_acis[$i]['SUBJECT']) {
 			if(lc($old_acis[$i]['SUBJECT']) == lc($old)) {
 				// Replace the old value with the new.
@@ -49,7 +49,7 @@ function attribute_print_form() {
     global $LANG, $error;
 
 	$dnparts = split(",", $_REQUEST["oldvalue"]);
-	for($i=1; $dnparts[$i]; $i++) {
+	for($i=1; $i < count($dnparts); $i++) {
 		$rdn .= $dnparts[$i];
 		if($dnparts[$i+1])
 		  $rdn .= ",";
@@ -135,7 +135,7 @@ function attribute_save($type) {
 		if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci")) {
 			foreach($_SESSION["BASE_DN"] as $dn) {
 				$objects = pql_get_dn($_pql->ldap_linkid, $dn, 'objectClass=*');
-				for($i=0; $objects[$i]; $i++) {
+				for($i=0; $i < count($objects); $i++) {
 					$ACIs = attribute_setup_aci($_pql->ldap_linkid, $objects[$i], $_REQUEST["oldvalue"], $user);
 
 					// Modify this object. BUG: Should we care about failure/successes?!

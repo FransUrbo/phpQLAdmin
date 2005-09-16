@@ -3,7 +3,7 @@
 // ldapuid (user id of virtual user)
 // ldapgid (group id of virtual user)
 //
-// $Id: attrib.control.ldapuid.inc,v 2.17 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.ldapuid.inc,v 2.18 2005-09-16 06:08:46 turbo Exp $
 
 // {{{ ldapuid_check(type)
 function ldapuid_check($type) {
@@ -11,7 +11,7 @@ function ldapuid_check($type) {
 
 	// LDAP UID
 	if($_REQUEST["attrib"] == "ldapuid") {
-	  if($_REQUEST["ldapuid"] == "") {
+	  if(@empty($_REQUEST["ldapuid"])) {
 		$error["ldapuid"] = $LANG->_('Missing');
 		$is_error = true;
 	  }
@@ -25,7 +25,7 @@ function ldapuid_check($type) {
 	
 	// LDAP GID
 	if($_REQUEST["attrib"] == "ldapgid") {
-	  if($_REQUEST["ldapgid"] == "") {
+	  if(@empty($_REQUEST["ldapgid"])) {
 		$error["ldapgid"] = $LANG->_('Missing');
 		$is_error = true;
 	  }
@@ -71,14 +71,14 @@ function ldapuid_print_view($host) {
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title">UID</td>
-        <td class="<?=$class?>"><?php if($_REQUEST["ldapuid"]) { echo $_REQUEST["ldapuid"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["ldapuid"]) { echo $_REQUEST["ldapuid"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPUID")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_LDAPUID")?>"></a></td>
       </tr>
 
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title">GID</td>
-        <td class="<?=$class?>"><?php if($_REQUEST["ldapgid"]) { echo $_REQUEST["ldapgid"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["ldapgid"]) { echo $_REQUEST["ldapgid"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LDAPGID")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_LDAPGID")?>"></a></td>
       </tr>
     </th>
@@ -94,13 +94,13 @@ function ldapuid_print_form() {
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">uid, gid (<?=$LANG->_('virtual user settings')?>)</th>
-<?php if($_REQUEST["attrib"] == "ldapuid") { ?>
+<?php if(@$_REQUEST["attrib"] == "ldapuid") { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">UID</td>
           <td><?=pql_format_error_span($error["ldapuid"])?><input type="text" name="ldapuid" value="<?=$_REQUEST["ldapuid"]?>"></td>
         </tr>
 
-<?php } if($_REQUEST["attrib"] == "ldapgid") { ?>
+<?php } if(@$_REQUEST["attrib"] == "ldapgid") { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">GID</td>
           <td><?=pql_format_error_span($error["ldapgid"])?><input type="text" name="ldapgid" value="<?=$_REQUEST["ldapgid"]?>"></td>
@@ -136,7 +136,7 @@ function ldapuid_save($type, $host) {
 		$attribs = array("ldapuid" => pql_get_define("PQL_ATTR_LDAPUID"),
 						 "ldapgid" => pql_get_define("PQL_ATTR_LDAPGID"));
 		foreach($attribs as $key => $attrib) {
-		  if($_REQUEST[$key])
+		  if(!@empty($_REQUEST[$key]))
 			$return[] = pql_modify_attribute($_pql_control->ldap_linkid,
 											 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 											 $attrib, 1, $_REQUEST[$key]);

@@ -3,7 +3,7 @@
 // bouncefrom (username of bounce sender)
 // bouncehost (hostname of bounce sender)
 //
-// $Id: attrib.control.bouncefrom.inc,v 2.19 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.bouncefrom.inc,v 2.20 2005-09-16 06:08:46 turbo Exp $
 
 // {{{ bouncefrom_check(type)
 
@@ -13,7 +13,7 @@ function bouncefrom_check($type) {
 
 	// check validity
 	if($attrib == "bouncefrom") {
-	  if($_REQUEST["bouncefrom"] != "" and !pql_check_email($_REQUEST["bouncefrom"] . "@domain.tld")) {
+	  if(($_REQUEST["bouncefrom"] != "") and !pql_check_email($_REQUEST["bouncefrom"] . "@domain.tld")) {
 		$error["bouncefrom"] = $LANG->_('Invalid');
 		$is_error = true;
 	  }
@@ -21,7 +21,7 @@ function bouncefrom_check($type) {
 
 	// check validity
 	if($attrib == "bouncehost") {
-	  if($_REQUEST["bouncehost"] != "" and !pql_check_hostaddress($_REQUEST["bouncehost"])) {
+	  if(($_REQUEST["bouncehost"] != "") and !pql_check_hostaddress($_REQUEST["bouncehost"])) {
 		$error["bouncehost"] = $LANG->_('Invalid');
 		$is_error = true;
 	  }
@@ -64,14 +64,14 @@ function bouncefrom_print_view($host) {
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('User for bouncing')?></td>
-        <td class="<?=$class?>"><?php if($_REQUEST["bouncefrom"]) { echo $_REQUEST["bouncefrom"]; } else { echo $LANG->_('Default').": MAILER-DAEMON"; }?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["bouncefrom"]) { echo $_REQUEST["bouncefrom"]; } else { echo $LANG->_('Default').": MAILER-DAEMON"; }?></td>
         <td class="<?=$class?>"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_BOUNCEFROM")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_BOUNCEFROM")?>"></a></td>
       </tr>
 
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Host for bouncing')?></td>
-        <td class="<?=$class?>"><?php if($_REQUEST["bouncehost"]) { echo pql_maybe_idna_decode($_REQUEST["bouncehost"]); } else { echo $LANG->_('Default') . ': ' . pql_maybe_idna_decode($host)." (" . $LANG->_('Taken from \'me\'') . ")";}?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["bouncehost"]) { echo pql_maybe_idna_decode($_REQUEST["bouncehost"]); } else { echo $LANG->_('Default') . ': ' . pql_maybe_idna_decode($host)." (" . $LANG->_('Taken from \'me\'') . ")";}?></td>
         <td class="<?=$class?>"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_BOUNCEHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_BOUNCEHOST")?>"></a></td>
       </tr>
     </th>
@@ -130,7 +130,7 @@ function bouncefrom_save($type, $host) {
 		$attribs = array("bouncefrom" => pql_get_define("PQL_ATTR_BOUNCEFROM"),
 						 "bouncehost" => pql_get_define("PQL_ATTR_BOUNCEHOST"));
 		foreach($attribs as $key => $attrib) {
-		  if($_REQUEST[$key]) 
+		  if(@$_REQUEST[$key]) 
 			$return[] = pql_modify_attribute($_pql_control->ldap_linkid,
 											 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 											 $attrib, 1, $_REQUEST[$key]);

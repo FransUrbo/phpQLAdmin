@@ -20,7 +20,7 @@ $database_contexts = pql_get_status($_pql->ldap_linkid, "cn=Databases,cn=Monitor
 
 			// Get all information about this database/suffix
 			$database_status = pql_get_status_databases($_pql->ldap_linkid, $database_contexts[$attrib]);
-			if($database_status[$attrib]) {
+			if(isset($database_status[$attrib])) {
 ?>
       <tr>
         <?php $class=pql_format_table(0); ?>

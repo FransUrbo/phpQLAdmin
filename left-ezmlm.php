@@ -1,6 +1,6 @@
 <?php
 // navigation bar - ezmlm mailinglists manager
-// $Id: left-ezmlm.php,v 2.38 2005-06-09 15:05:35 turbo Exp $
+// $Id: left-ezmlm.php,v 2.39 2005-09-16 06:08:43 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -79,7 +79,7 @@ if(!is_array($domains)) {
 			// Get (and remember) lists in this directory
 			$user = pql_get_attribute($_pql->ldap_linkid, $domain, pql_get_define("PQL_ATTR_EZMLM_USER"));
 			if($ezmlm = new ezmlm($user, $basemaildir)) {
-				if($ezmlm->mailing_lists[0]["name"]) {
+				if(@$ezmlm->mailing_lists[0]["name"]) {
 					$lists[$domain] = $ezmlm->mailing_lists;
 				}
 			}

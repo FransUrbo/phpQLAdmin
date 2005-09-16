@@ -2,7 +2,7 @@
 // control attribute plugin for
 // Non-Primary MX host values
 //
-// $Id: attrib.control.nonprimmx.inc,v 2.2 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.nonprimmx.inc,v 2.3 2005-09-16 06:08:46 turbo Exp $
 
 // {{{ nonprimaryrcpthosts_check(type)
 function nonprimaryrcpthosts_check($type) {
@@ -22,9 +22,9 @@ function nonprimaryrcpthosts_init($host) {
 													   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 													   pql_get_define("PQL_ATTR_NONPRIMARY_RCPT_HOSTS"));
   
-  if(!$_REQUEST["nonprimaryrcpthosts"])
+  if(!@empty($_REQUEST["nonprimaryrcpthosts"]))
 	return true;
-  elseif(!is_array($_REQUEST["nonprimaryrcpthosts"]))
+  elseif(!@is_array($_REQUEST["nonprimaryrcpthosts"]))
 	$_REQUEST["nonprimaryrcpthosts"] = array($_REQUEST["nonprimaryrcpthosts"]);
 }
 // }}}

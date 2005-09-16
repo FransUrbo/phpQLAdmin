@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.49 2005-06-11 12:24:04 turbo Exp $
+// $Id: attrib.config.inc,v 1.50 2005-09-16 06:08:46 turbo Exp $
 
 // {{{ attribute_output_java_window(void)
 function attribute_output_java_window() {
@@ -94,7 +94,7 @@ function attribute_print_form() {
 	// If it's an array, make it a comma separated list
 	if(is_array($value)) {
 		unset($oldval);
-		for($i=0; $value[$i]; $i++) {
+		for($i=0; $i < count($value); $i++) {
 			if($oldval)
 			  $oldval .= ",".$value[$i];
 			else
@@ -239,7 +239,7 @@ function attribute_print_form() {
 				if(is_array($values)) {
 ?>
           <td>
-<?php				for($i=0, $j=0; $values[$i]; $i++) {
+<?php				for($i=0, $j=0; $i < count($values); $i++) {
 						if(!eregi($values[$i], pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $rootdn))) {
 							// We don't want to include schemes we've already
 							// configured branch to use...
@@ -303,8 +303,9 @@ function attribute_save() {
 	$dn = $domain;
   elseif($rootdn)
 	$dn = $rootdn;
-  // else: It's a config value and should be
-  //       applied on ALL base DN's.
+  else
+	// It's a config value and should be applied on ALL base DN's.
+	$dn = '';
   
   // ---------------------------------
 
@@ -357,7 +358,7 @@ function attribute_save() {
 	  if(!is_array($oldvalue))
 		$oldvalue = array($oldvalue);
 
-	  for($i=0; $oldvalue[$i]; $i++) {
+	  for($i=0; $i < count($oldvalue); $i++) {
 		if($_REQUEST["action"] == 'del') {
 		  if(!eregi($attrib_val, $oldvalue[$i]))
 			$entry[$attrib][] = $oldvalue[$i];

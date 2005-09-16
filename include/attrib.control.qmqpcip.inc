@@ -2,16 +2,16 @@
 // control attribute plugin for
 // qmqpcip (max number of bytes in message)
 //
-// $Id: attrib.control.qmqpcip.inc,v 2.6 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.qmqpcip.inc,v 2.7 2005-09-16 06:08:49 turbo Exp $
 
 // {{{ qmqpcip_check(type)
 function qmqpcip_check($type) {
 	global $error, $LANG;
 
 	// check each field
-	if(is_array($_REQUEST["qmqpcip"])) {
+	if(@is_array($_REQUEST["qmqpcip"])) {
 		foreach($_REQUEST["qmqpcip"] as $key => $server) {
-			if($server == "")
+			if(empty($server))
 			  continue;
 			
 			// it is an ip address
@@ -26,14 +26,14 @@ function qmqpcip_check($type) {
 					switch((int)$ip_key) {
 					  case 0:
 					  case 3:
-						if($ip_part <= 0 or $ip_part > 254) {
+						if(($ip_part <= 0) or ($ip_part > 254)) {
 							$is_error = true;
 							$error["qmqpcip_$key"] = $LANG->_('Invalid');
 						}
 						break;
 						
 					  default:
-						if($ip_part < 0 or $ip_part > 255) {
+						if(($ip_part < 0) or ($ip_part > 255)) {
 							$is_error = true;
 							$error["qmqpcip_$key"] = $LANG->_('Invalid');
 						}
@@ -59,7 +59,7 @@ function qmqpcip_init($host) {
 	$_REQUEST["qmqpcip"] = pql_get_attribute($_pql_control->ldap_linkid,
 											 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 											 pql_get_define("PQL_ATTR_QMQPCIP"));
-	if(!$_REQUEST["qmqpcip"])
+	if(!@$_REQUEST["qmqpcip"])
 	  return true;
 }
 // }}}
@@ -77,7 +77,7 @@ function qmqpcip_print_view($host) {
 <?php $class = pql_format_table(0); ?>
       <tr>
         <td class="title">IP</td>
-        <td class="<?=$class?>"><?php if($_REQUEST["qmqpcip"]) { echo $_REQUEST["qmqpcip"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["qmqpcip"]) { echo $_REQUEST["qmqpcip"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_QMQPCIP")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_QMQPCIP")?>"></a></td>
       </tr>
     </th>

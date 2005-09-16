@@ -1,6 +1,6 @@
 <?php
 // Delete a mailserver controls object
-// $Id: control_del.php,v 2.23 2005-06-09 15:05:35 turbo Exp $
+// $Id: control_del.php,v 2.24 2005-09-16 06:08:41 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -16,7 +16,7 @@ function control_del_find_users($link, $host) {
 	foreach($_SESSION["BASE_DN"] as $dn) {
 		$usrs = pql_search($link->ldap_linkid, $dn, $filter);
 		if(is_array($usrs)) {
-			for($i=0; $usrs[$i]; $i++)
+			for($i=0; $i < count($usrs); $i++)
 			  $users[] = $usrs[$i];
 		}
 	}
@@ -50,7 +50,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 									 $_SESSION["USER_SEARCH_DN_CTR"],
 									 '(&(cn=*)(objectclass=qmailControl))',
 									 'ONELEVEL');
-				for($i=0; $result[$i]; $i++)
+				for($i=0; $i < count($result); $i++)
 				  $hosts[] = pql_get_attribute($_pql_control->ldap_linkid, $result[$i], pql_get_define("PQL_ATTR_CN"));
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="GET">
@@ -67,7 +67,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 				echo "<br>";
 			}
 
-			for($i=0; $hosts[$i]; $i++) {
+			for($i=0; $i < count($hosts); $i++) {
 				if($hosts[$i] != $_REQUEST["mxhost"]) {
 					$host = pql_maybe_idna_decode($hosts[$i]);
 ?>
@@ -105,7 +105,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 			  // {{{ 1. Delete all users
 			  $users = control_del_find_users($_pql, $_REQUEST["oldmx"]);
 			  if(is_array($users)) {
-				  for($i=0; $users[$i]; $i++)
+				  for($i=0; $i < count($users); $i++)
 					pql_user_del($_pql, $_REQUEST["domain"], $users[$i], 1);
 			  }
 			  // }}}
@@ -141,7 +141,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 
 					  $users = control_del_find_users($_pql, $_REQUEST["oldmx"]);
 					  if(is_array($users)) {
-						  for($i=0; $users[$i]; $i++) {
+						  for($i=0; $i < count($users); $i++) {
 							  pql_modify_attribute($_pql->ldap_linkid, $users[$i],
 												   pql_get_define("PQL_ATTR_MAILHOST"),
 												   '', $host);

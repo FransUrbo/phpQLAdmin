@@ -2,7 +2,7 @@
 // control attribute plugin for
 // goodmailaddr (max number of bytes in message)
 //
-// $Id: attrib.control.goodaddress.inc,v 2.7 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.goodaddress.inc,v 2.8 2005-09-16 06:08:46 turbo Exp $
 
 // {{{ goodmailaddr_check(type)
 function goodmailaddr_check($type) {
@@ -22,9 +22,9 @@ function goodmailaddr_init($host) {
 	$_REQUEST["goodmailaddr"] = pql_get_attribute($_pql_control->ldap_linkid,
 												  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 												  pql_get_define("PQL_ATTR_GOODADDRESS"));
-	if(!$_REQUEST["goodmailaddr"])
+	if(!@$_REQUEST["goodmailaddr"])
 	  return true;
-	elseif(!is_array($_REQUEST["goodmailaddr"]))
+	elseif(!@is_array($_REQUEST["goodmailaddr"]))
 	  $_REQUEST["goodmailaddr"] = array($_REQUEST["goodmailaddr"]);
 }
 // }}}
@@ -64,7 +64,7 @@ function goodmailaddr_print_form() {
 	global $error, $LANG;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
-<?php for($i = 0; $_REQUEST["goodmailaddr"][$i]; $i++) { ?>
+<?php for($i=0; $i < count($_REQUEST["goodmailaddr"]); $i++) { ?>
     <input type="hidden" name="goodmailaddr[<?=$i?>]" value="<?=$_REQUEST["goodmailaddr"][$i]?>">
 <?php } ?>
 

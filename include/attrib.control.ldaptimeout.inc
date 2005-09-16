@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldaptimeout (max number of bytes in message)
 //
-// $Id: attrib.control.ldaptimeout.inc,v 2.7 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.ldaptimeout.inc,v 2.8 2005-09-16 06:08:46 turbo Exp $
 
 // {{{ ldaptimeout_check(type)
 function ldaptimeout_check($type) {
@@ -23,7 +23,7 @@ function ldaptimeout_init($host) {
 												 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 												 pql_get_define("PQL_ATTR_LDAPTIMEOUT"));
 
-	if(is_null($_REQUEST["ldaptimeout"]))
+	if(@is_null($_REQUEST["ldaptimeout"]))
 	  return true;
 }
 // }}}
@@ -41,7 +41,7 @@ function ldaptimeout_print_view($host) {
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Seconds')?></td>
 <?php
-	if(!$_REQUEST["ldaptimeout"]) {
+	if(!@$_REQUEST["ldaptimeout"]) {
 ?>
         <td><i><?=$LANG->_('Not set')?></i></td>
 <?php

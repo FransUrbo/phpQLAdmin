@@ -2,7 +2,7 @@
 // control attribute plugin for
 // bigbrother (max number of bytes in message)
 //
-// $Id: attrib.control.bigbrother.inc,v 2.8 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.bigbrother.inc,v 2.9 2005-09-16 06:08:46 turbo Exp $
 
 // {{{ bigbrother_check(type)
 function bigbrother_check($type) {
@@ -23,9 +23,9 @@ function bigbrother_init($host) {
 												pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 												pql_get_define("PQL_ATTR_BIGBROTHER"));
 
-	if(!$_REQUEST["bigbrother"])
+	if(!@$_REQUEST["bigbrother"])
 	  return true;
-	elseif(!is_array($_REQUEST["bigbrother"]))
+	elseif(!@is_array($_REQUEST["bigbrother"]))
 	  $_REQUEST["bigbrother"] = array($_REQUEST["bigbrother"]);
 }
 // }}}
@@ -46,7 +46,7 @@ function bigbrother_print_view($host) {
         <td></td>
       </tr>
 <?php
-	if(!is_array($_REQUEST["bigbrother"])) {
+	if(!@is_array($_REQUEST["bigbrother"])) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td colspan="3"><?=$LANG->_('Not set')?></td>
@@ -82,7 +82,7 @@ function bigbrother_print_form() {
 	global $error, $LANG;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
-<?php for($i = 0; $_REQUEST["bigbrother"][$i]; $i++) { ?>
+<?php for($i=0; $i < count($_REQUEST["bigbrother"]); $i++) { ?>
     <input type="hidden" name="bigbrother[<?=$i?>]" value="<?=$_REQUEST["bigbrother"][$i]?>">
 <?php } ?>
 
@@ -120,7 +120,7 @@ function bigbrother_save($type, $host)  {
 	  case "modify":
 	  case "add":
 		// save entries
-		for($i=0; $_REQUEST["bigbrother"][$i]; $i++)
+		for($i=0; $i < count($_REQUEST["bigbrother"]); $i++)
 		  $entry[] = $_REQUEST["bigbrother"][$i];
 		$entry[] = $_REQUEST["bbmail_to"].":".$_REQUEST["bbmail_cpy"];
 

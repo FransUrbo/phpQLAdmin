@@ -1,6 +1,6 @@
 <?php
 // Fix a 'object class violation' by adding missing MUST attributes
-// $Id: user_add_missing_attributes.php,v 2.6 2005-06-09 15:05:36 turbo Exp $
+// $Id: user_add_missing_attributes.php,v 2.7 2005-09-16 06:08:44 turbo Exp $
 //
 // This file is INCLUDED from pql.inc:pql_replace_userattribute()
 // and should NOT be called directly!
@@ -22,7 +22,7 @@ require($_SESSION["path"]."/include/pql_config.inc");
   <br><br>
   <center>
 <?php
-for($i=0; $MISSING['attributes'][$i]; $i++) {
+for($i=0; $i < count($MISSING['attributes']); $i++) {
 	echo "<b>".$MISSING['attributes'][$i]."</b>";
 	if(!$MISSING['attributes'][$i+2] and $MISSING['attributes'][$i+1])
 		echo " and ";

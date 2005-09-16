@@ -2,7 +2,7 @@
 // ----------------------------
 // Retreive, modify and delete ACIs (per-object access control lists)
 //
-// $Id: pql_aci.inc,v 2.11 2005-01-12 14:53:55 turbo Exp $
+// $Id: pql_aci.inc,v 2.12 2005-09-16 06:08:51 turbo Exp $
 
 // {{{ pql_aci_get(linkid, dn, number)
 // Get ACI entries from object
@@ -21,7 +21,7 @@ function pql_aci_get($linkid, $dn, $number = 0) {
 		//	3#entry#grant;r,s,c;macAddress;s,c;[all]#group#cn=customer,ou=groups,dc=planetsky,dc=com
 		$n = 0; 
 
-		for($j=0; $result[$j]; $j++) {
+		for($j=0; $j < count($result); $j++) {
 			$ACI[$n]["LINE"]   = $result[$j];
 
 			$got_more_rights = 0;
@@ -36,14 +36,14 @@ function pql_aci_get($linkid, $dn, $number = 0) {
 			$ACI[$n]["RIGHTS"]["ACTION"]		= $tmp2[0]; // 'grant' or 'deny'
 			
 			$tmp3 = split(",", $tmp2[1]); // Divide up the PERMISSIONS (w,r,s,c and/or x) into an array
-			for($k=0; $tmp3[$k]; $k++)
+			for($k=0; $k < count($tmp3); $k++)
 			  $ACI[$n]["RIGHTS"]["PERMISSIONS"][$k] = $tmp3[$k]; // w,r,s,c or x
 			
 			$tmp3 = split(",", $tmp2[2]); // Divide up the TARGET (attributes) into an array
-			for($k=0; $tmp3[$k]; $k++)
+			for($k=0; $k < count($tmp3); $k++)
 			  $ACI[$n]["RIGHTS"]["TARGET"][$k]	= $tmp3[$k];
 			
-			if($tmp2[3])
+			if(!@empty($tmp2[3]))
 			  // We have more permission/target combos. Deal with them later.
 			  $got_more_rights = 1;
 			// --------------
@@ -55,7 +55,7 @@ function pql_aci_get($linkid, $dn, $number = 0) {
 			
 			if($got_more_rights) {
 				// Deal with the additional permission/target - separate array.
-				for($k=3; $tmp2[$k];) {
+				for($k=3; $k < count($tmp2);) {
 					// Duplicate the majority of the information from the previous array.
 					$ACI[$n]["OID"]				 = $ACI[$n-1]["OID"];
 					$ACI[$n]["SCOPE"]			 = $ACI[$n-1]["SCOPE"];
@@ -63,11 +63,11 @@ function pql_aci_get($linkid, $dn, $number = 0) {
 					
 					// --------------
 					$tmp3 = split(",", $tmp2[$k]); // Divide up the PERMISSIONS (w,r,s,c and/or x) into an array
-					for($l=0; $tmp3[$l]; $l++)
+					for($l=0; $l < count($tmp3); $l++)
 					  $ACI[$n]["RIGHTS"]["PERMISSIONS"][$l] = $tmp3[$l];
 					
 					$tmp3 = split(",", $tmp2[$k+1]); // Divide up the TARGET (attributes) into an array
-					for($l=0; $tmp3[$l]; $l++)
+					for($l=0; $l < count($tmp3); $l++)
 					  $ACI[$n]["RIGHTS"]["TARGET"][$l]	= $tmp3[$l];
 					// --------------
 					

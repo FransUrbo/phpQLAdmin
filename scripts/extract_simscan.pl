@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: extract_simscan.pl,v 1.1 2005-05-26 15:53:30 turbo Exp $
+# $Id: extract_simscan.pl,v 1.2 2005-09-16 06:08:52 turbo Exp $
 
 $DEBUG		 = 1;
 $SIMSCAN_CONF	 = "/etc/qmail/simcontrol";
@@ -81,7 +81,7 @@ print "\n";
 foreach $attr (@ATTRS) {
     $attr = lc($attr);
 
-    for($i=1; $VALUE[$i]; $i++) {
+    for($i=1; $i < count($VALUE); $i++) {
 	if($VALUE[$i]{$attr}) {
 	    print "VALUE ($i/$attr): '",$VALUE[$i]{$attr},"'\n";
 	}

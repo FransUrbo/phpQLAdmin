@@ -2,7 +2,7 @@
 // control attribute plugin for
 // timeoutsmtpd (how long to wait for smtp client)
 //
-// $Id: attrib.control.timeoutsmtpd.inc,v 2.18 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.timeoutsmtpd.inc,v 2.19 2005-09-16 06:08:50 turbo Exp $
 
 // {{{ timeoutsmtpd_check(type)
 function timeoutsmtpd_check($type) {
@@ -15,7 +15,7 @@ function timeoutsmtpd_check($type) {
 	}
 
 	// must be > 0
-	if($error["timeoutsmtpd"] == "" and $_REQUEST["timeoutsmtpd"] <= 0) {
+	if(@empty($error["timeoutsmtpd"]) and ($_REQUEST["timeoutsmtpd"] <= 0)) {
 		$error["timeoutsmtpd"] = $LANG->_('Must be above zero');
 		return false;
 	}
@@ -34,7 +34,7 @@ function timeoutsmtpd_init($host) {
 												  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 												  pql_get_define("PQL_ATTR_TIMEOUTSMTPD"));
 	
-	if(is_null($_REQUEST["qmqpcip"]))
+	if(@is_null($_REQUEST["qmqpcip"]))
 	  return true;
 }
 // }}}
@@ -52,7 +52,7 @@ function timeoutsmtpd_print_view($host) {
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Wait')?></td>
-        <td class="<?=$class?>"><?php if($_REQUEST["timeoutsmtpd"]) { echo $_REQUEST["timeoutsmtpd"]; } else { echo $LANG->_('Default', 4).': 1200'; }?> <?=$LANG->_('Seconds', 4)?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["timeoutsmtpd"]) { echo $_REQUEST["timeoutsmtpd"]; } else { echo $LANG->_('Default', 4).': 1200'; }?> <?=$LANG->_('Seconds', 4)?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_TIMEOUTSMTPD")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options', 4).' '.pql_get_define("PQL_ATTR_TIMEOUTSMTPD")?>"></a></td>
       </tr>
     </th>

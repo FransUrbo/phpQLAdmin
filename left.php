@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.112 2005-08-14 10:55:26 turbo Exp $
+// $Id: left.php,v 2.113 2005-09-16 06:08:43 turbo Exp $
 //
 require("./include/pql_session.inc");
 
@@ -9,8 +9,8 @@ require($_SESSION["path"]."/left-head.html");
 
 // {{{ left_htmlify_userlist(linkid, rootdn, domain, subbranch, users, &links)
 function left_htmlify_userlist($linkid, $rootdn, $domain, $subbranch, $users, &$links) {
-    // Iterate trough all users in this domain/branch
-    for($i=0; $users[$i]; $i++) {
+  // Iterate trough all users in this domain/branch
+  for($i=0; $i < count($users); $i++) {
 	$dn = $users[$i];
 	unset($cn); unset($sn); unset($gecos);
 	
@@ -35,97 +35,97 @@ function left_htmlify_userlist($linkid, $rootdn, $domain, $subbranch, $users, &$
 	    // The idea is that the very _last_ part is the last name, and all
 	    // the other is firstname(s). This won't hold true for arabic/chinese
 	    // names for example (not that I know of any way)...
-
+		
 	    // Arrays always start with 0, but count() doesn't.
 	    $count = count($cn) - 1;
-
+		
 	    // This is/should be the last name
 	    $cns[$dn] = $cn[$count].', ';
-
+		
 	    // Add (all) the first name(s)
 	    for($j=0; $j < $count; $j++) {
 	      $cns[$dn] .= $cn[$j];
-
+		  
 	      if($cn[$j+1])
-		// More first name(s), separate with space...
-		$cns[$dn] .= ' ';
+			// More first name(s), separate with space...
+			$cns[$dn] .= ' ';
 	    }
 	  }
 	} else {
 	  // }}}
-
-	// {{{ 2. No commonnName. Get the givenName and SN.
+	  
+	  // {{{ 2. No commonnName. Get the givenName and SN.
 	  $cn = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_GIVENNAME"));
 	  $sn = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_SN"));
 	  if($cn && $sn) {
 	    // We have a givenName (first name) and a surName (last name) - combine the two
 	    if($sn != '_') {
 	      if(is_array($sn))
-		$cns[$dn] = $sn[0].", ".$cn;
+			$cns[$dn] = $sn[0].", ".$cn;
 	      else
-		$cns[$dn] = $sn.", ".$cn;
+			$cns[$dn] = $sn.", ".$cn;
 	    } else {
 	      $cns[$dn] = $cn;
 	    }
 	  } else {
 	    // }}}
-
-	// {{{ 3. No givenName, surName or commonName. Get the gecos
+		
+		// {{{ 3. No givenName, surName or commonName. Get the gecos
 	    $gecos = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_GECOS"));
 	    if($gecos)
 	      // We have a gecos - use that as is
 	      $cns[$dn] = $gecos;
 	    else {
 	      // }}}
-
-	// {{{ 4. No gecos either. Last chance - use the user reference attribute
+		  
+		  // {{{ 4. No gecos either. Last chance - use the user reference attribute
 	      $ref = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn);
 	      $cns[$dn] = pql_get_attribute($linkid, $dn, $ref);
 	    }
 	  }
 	}
 	// }}}
-    }
-
-    if(is_array($cns)) {
+  }
+  
+  if(is_array($cns)) {
 	asort($cns);
 	foreach($cns as $dn => $cn) {
-	    // Only get these two so that we don't show root user(s)!
-	    $uid   = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_UID"));
-	    $uidnr = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_QMAILUID"));
-	    
-	    if(($uid != 'root') or ($uidnr != '0')) {
+	  // Only get these two so that we don't show root user(s)!
+	  $uid   = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_UID"));
+	  $uidnr = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_QMAILUID"));
+	  
+	  if(($uid != 'root') or ($uidnr != '0')) {
 		// Do NOT show root user(s) here! This should (for safty's sake)
 		// not be availible to administrate through phpQLAdmin!
 		if($subbranch)
 		  $new = array($cn => "user_detail.php?rootdn=$rootdn&domain=$domain&subbranch=$subbranch&user=".urlencode($dn));
 		else
 		  $new = array($cn => "user_detail.php?rootdn=$rootdn&domain=$domain&user=".urlencode($dn));
-
+		
 		// Add the link to the main array
 		$links = $links + $new;
-	    }
+	  }
 	}
-    }
+  }
 }
 // }}}
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"], false, 0);
 if($_pql->ldap_error) {
-    unset($_SESSION["USER_ID"]);
-    unset($_SESSION["USER_PASS"]);
-    unset($_SESSION["USER_DN"]);
-
-    die("$_pql->ldap_error<br><a href=\"index.php\" target=\"_top\">".$LANG->_('Login again')."</a>");
+  unset($_SESSION["USER_ID"]);
+  unset($_SESSION["USER_PASS"]);
+  unset($_SESSION["USER_DN"]);
+  
+  die("$_pql->ldap_error<br><a href=\"index.php\" target=\"_top\">".$LANG->_('Login again')."</a>");
 }
 
 // {{{ Find out if we're to run in ADVANCE/SIMPLE mode
 if($_REQUEST["advanced"] == 1) {
-    $checked  = " CHECKED";
-    $_SESSION["ADVANCED_MODE"] = 1;
+  $checked  = " CHECKED";
+  $_SESSION["ADVANCED_MODE"] = 1;
 } else {
-    $checked  = "";
-    $_SESSION["ADVANCED_MODE"] = 0;
+  $checked  = "";
+  $_SESSION["ADVANCED_MODE"] = 0;
 }
 // }}}
 
@@ -142,10 +142,10 @@ if($_REQUEST["advanced"] == 1) {
   </div>
 
 <?php if($_SESSION["ADVANCED_MODE"]) {
-	$host = split(';', $_SESSION["USER_HOST"]);
+		$host = split(';', $_SESSION["USER_HOST"]);
 
-	// If it's an LDAP URI, replace "%2f" with "/" -> URLdecode
-	$host[0] = urldecode($host[0]);
+		// If it's an LDAP URI, replace "%2f" with "/" -> URLdecode
+		$host[0] = urldecode($host[0]);
 ?>
   <!-- LDAP Server information -->
   <div id="el2Parent" class="parent" style="margin-bottom: 5px">
@@ -197,9 +197,9 @@ if($_REQUEST["advanced"] == 1) {
 
   <!-- Home branch -->
 <?php
-// {{{ ---------------- HOME BRANCH (PROJECT URLS ETC)
-// {{{ Level 1:      phpQLAdmin configuration etc
-$div_counter = 10; // Initialize the global counter
+  // {{{ ---------------- HOME BRANCH (PROJECT URLS ETC)
+  // {{{ Level 1:      phpQLAdmin configuration etc
+  $div_counter = 10; // Initialize the global counter
 pql_format_tree("<b>".$LANG->_('Home')."</b>", 'home.php');
 // }}}
 
@@ -209,55 +209,55 @@ $links = array($LANG->_('Find user') => 'user_search.php');
 pql_format_tree($LANG->_('Search'), 0, $links, 1);
 
 if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {
-    // Level 2b: Configuration and tests
-    $links = array($LANG->_('phpQLAdmin Configuration')	=> 'config_detail.php',
-		   $LANG->_('Test LDAP-Connection')	=> 'config_ldaptest.php');
-    pql_format_tree($LANG->_('phpQLAdmin Configuration'), 0, $links, 1);
-    
-    // Level 2c: LDAP server setup etc
-    $links = array($LANG->_('LDAP Syntaxes')		=> 'config_ldap.php?type=ldapsyntaxes',
-		   $LANG->_('LDAP Matching rules')	=> 'config_ldap.php?type=matchingrules',
-		   $LANG->_('LDAP Attribute types')	=> 'config_ldap.php?type=attributetypes',
-		   $LANG->_('LDAP Object classes')	=> 'config_ldap.php?type=objectclasses');
-    pql_format_tree($LANG->_('LDAP Server Configuration'), 0, $links, 1);
-
-    if($_SESSION["MONITOR_BACKEND_ENABLED"] and $_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
+  // Level 2b: Configuration and tests
+  $links = array($LANG->_('phpQLAdmin Configuration')	=> 'config_detail.php',
+				 $LANG->_('Test LDAP-Connection')	=> 'config_ldaptest.php');
+  pql_format_tree($LANG->_('phpQLAdmin Configuration'), 0, $links, 1);
+  
+  // Level 2c: LDAP server setup etc
+  $links = array($LANG->_('LDAP Syntaxes')		=> 'config_ldap.php?type=ldapsyntaxes',
+				 $LANG->_('LDAP Matching rules')	=> 'config_ldap.php?type=matchingrules',
+				 $LANG->_('LDAP Attribute types')	=> 'config_ldap.php?type=attributetypes',
+				 $LANG->_('LDAP Object classes')	=> 'config_ldap.php?type=objectclasses');
+  pql_format_tree($LANG->_('LDAP Server Configuration'), 0, $links, 1);
+  
+  if($_SESSION["MONITOR_BACKEND_ENABLED"] and $_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) {
 	// Level 2c2: LDAP Server status
 	$links = array($LANG->_('LDAP Server Status')		=> 'status_ldap.php?type=basics',
-		       $LANG->_('LDAP Connection Status')	=> 'status_ldap.php?type=connections',
-		       $LANG->_('LDAP Database Status')		=> 'status_ldap.php?type=databases');
+				   $LANG->_('LDAP Connection Status')	=> 'status_ldap.php?type=connections',
+				   $LANG->_('LDAP Database Status')		=> 'status_ldap.php?type=databases');
 	pql_format_tree($LANG->_('LDAP Server Statistics'), 0, $links, 1);
-    }
+  }
 }
 // }}}
 
 // {{{ Level 2d:     Documentation etc
 $links = array($LANG->_('Documentation')		=> 'doc/index.php');
 if($_SESSION["ADVANCED_MODE"]) {
-    $new = array($LANG->_('What\'s left todo')		=> 'TODO',
-		 $LANG->_('What\'s been done')		=> 'CHANGES');
-    $links = $links + $new;
-
-    if($_SESSION["ALLOW_BRANCH_CREATE"]) {
+  $new = array($LANG->_('What\'s left todo')		=> 'TODO',
+			   $LANG->_('What\'s been done')		=> 'CHANGES');
+  $links = $links + $new;
+  
+  if($_SESSION["ALLOW_BRANCH_CREATE"]) {
 	$new = array($LANG->_('Language translator')	=> 'tools/update_translations.php');
 	$links = $links + $new;
-    }
+  }
 }
 pql_format_tree($LANG->_('Documentation'), 0, $links, 1);
 // }}}
 
 // {{{ Level 2[ef]:  Main site and misc QmailLDAP links
 if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {
-    // Level 2e: Main site and general phpQLAdmin links
-    $links = array('phpQLAdmin @ Bayour'			=> 'http://phpqladmin.com/',
-		   $LANG->_('Bugtracker')			=> 'http://bugs.bayour.com/');
-    pql_format_tree($LANG->_('phpQLAdmin Site Specifics'), 0, $links, 1);
-
-    // Level 2f: Misc QmailLDAP/Controls links
-    $links = array('Official Qmail-LDAP pages'			=> 'http://www.qmail-ldap.org/',
-		   'Life with Qmail-LDAP'			=> 'http://www.lifewithqmail.org/ldap/',
-		   'Life with Qmail'				=> 'http://www.lifewithqmail.org/');
-    pql_format_tree($LANG->_('Misc Qmail & Qmail-LDAP'), 0, $links, 1);
+  // Level 2e: Main site and general phpQLAdmin links
+  $links = array('phpQLAdmin @ Bayour'			=> 'http://phpqladmin.com/',
+				 $LANG->_('Bugtracker')			=> 'http://bugs.bayour.com/');
+  pql_format_tree($LANG->_('phpQLAdmin Site Specifics'), 0, $links, 1);
+  
+  // Level 2f: Misc QmailLDAP/Controls links
+  $links = array('Official Qmail-LDAP pages'			=> 'http://www.qmail-ldap.org/',
+				 'Life with Qmail-LDAP'			=> 'http://www.lifewithqmail.org/ldap/',
+				 'Life with Qmail'				=> 'http://www.lifewithqmail.org/');
+  pql_format_tree($LANG->_('Misc Qmail & Qmail-LDAP'), 0, $links, 1);
 }
 // }}}
 
@@ -287,136 +287,138 @@ if($_SESSION["ALLOW_BRANCH_CREATE"]) {
 
 // {{{ ---------------- GET THE USERS OF THE BRANCH
 if(!isset($domains) or !is_array($domains)) {
-    // {{{ No domain defined -> 'ordinary' user (only show this user)
-    $_SESSION["SINGLE_USER"] = 1;
-
-    $cn = pql_get_attribute($_pql->ldap_linkid, $_SESSION["USER_DN"], pql_get_define("PQL_ATTR_CN"));
-    if(is_array($cn))
-       $cn = $cn[0];
-
-    // Try to get the DN of the domain
-    $dnparts = ldap_explode_dn($_SESSION["USER_DN"], 0);
-    for($i=1; $dnparts[$i]; $i++) {
-	  // Traverse the users DN backwards
-	  $DN = $dnparts[$i];
-	  for($j=$i+1; $dnparts[$j]; $j++)
-		$DN .= "," . $dnparts[$j];
-	  
-	  // Look in DN for attribute 'defaultdomain'.
-	  $defaultdomain = pql_get_attribute($_pql->ldap_linkid, $DN, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
-	  if($defaultdomain) {
-		// A hit. This is the domain under which the user is located.
-		$domain = $DN;
-		break;
-	  }
-    }
+  // {{{ No domain defined -> 'ordinary' user (only show this user)
+  $_SESSION["SINGLE_USER"] = 1;
+  
+  $cn = pql_get_attribute($_pql->ldap_linkid, $_SESSION["USER_DN"], pql_get_define("PQL_ATTR_CN"));
+  if(is_array($cn))
+	$cn = $cn[0];
+  
+  // Try to get the DN of the domain
+  $dnparts = ldap_explode_dn($_SESSION["USER_DN"], 0);
+  for($i=1; $i < count($dnparts); $i++) {
+	// Traverse the users DN backwards
+	$DN = $dnparts[$i];
+	for($j=$i+1; $j < count($dnparts); $j++)
+	  $DN .= "," . $dnparts[$j];
 	
-    if(empty($domain) and $_REQUEST["domain"])
-      $domain = $_REQUEST["domain"];
-
-    if(empty($rootdn) and empty($_REQUEST["rootdn"]))
-      $rootdn = pql_get_rootdn($_SESSION["USER_DN"], 'left.php');
-
-    $links = array($cn => "user_detail.php?rootdn=".$rootdn."&domain=$domain&user=".urlencode($_SESSION["USER_DN"]));
-    echo "<br>";
-    pql_format_tree_span($cn, $links, -1);
-    // }}}
+	// Look in DN for attribute 'defaultdomain'.
+	$defaultdomain = pql_get_attribute($_pql->ldap_linkid, $DN, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+	if($defaultdomain) {
+	  // A hit. This is the domain under which the user is located.
+	  $domain = $DN;
+	  break;
+	}
+  }
+  
+  if(empty($domain) and $_REQUEST["domain"])
+	$domain = $_REQUEST["domain"];
+  
+  if(empty($rootdn) and empty($_REQUEST["rootdn"]))
+	$rootdn = pql_get_rootdn($_SESSION["USER_DN"], 'left.php');
+  
+  $links = array($cn => "user_detail.php?rootdn=".$rootdn."&domain=$domain&user=".urlencode($_SESSION["USER_DN"]));
+  echo "<br>";
+  pql_format_tree_span($cn, $links, -1);
+  // }}}
 } else {
-    // {{{ We got at least one domain - get it's users
-    $_SESSION["SINGLE_USER"] = 0;
+  // {{{ We got at least one domain - get it's users
+  $_SESSION["SINGLE_USER"] = 0;
 ?>
 
   <!-- Domain branches -->
 <?php
-    foreach($domains as $key => $domain) {
-	// Get domain part from the DN (Example: 'dc=test,dc=net' => 'test').
-	$d = split(',', urldecode($domain)); $d = split('=', $d[0]); $d = $d[1];
-
-	if(!eregi('%3D', $domain))
-	  $domain = urlencode($domain);
-
-	// Get Root DN
-	$rootdn = pql_get_rootdn($domain, 'left.php');
-
-	// Create a user search filter (only look for mail users - !?!? - or Samba accounts).
-	$filter  = "(&(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)."=*)(|(";
-	$filter .= pql_get_define("PQL_ATTR_MAIL")."=*)(sambaSID=*)))";
-
-	// Get the subbranches in this domain
-	$branches = pql_unit_get($_pql->ldap_linkid, $domain);
-	if((count($branches) > 1)) {
-	    $links = array(pql_complete_constant($LANG->_('Add %what%'),
-						 array('what' => $LANG->_('sub unit')))
-			   => "unit_add.php?rootdn=$rootdn&domain=$domain",
-
-			   pql_complete_constant($LANG->_('Add %what%'),
-						 array('what' => $LANG->_('user')))
-			   => "user_add.php?rootdn=$rootdn&domain=$domain");
-
-	    // Just incase there's user(s) at the base of the domain branch...
-	    $users = pql_get_dn($_pql->ldap_linkid, $domain, $filter, 'ONELEVEL');
-	    if(is_array($users))
-	      // We have users in this domain
-	      left_htmlify_userlist($_pql->ldap_linkid, $rootdn, $domain, $subbranch, $users, $links);
-
-	    pql_format_tree($d, "domain_detail.php?rootdn=$rootdn&domain=$domain", $links, 0);
-	} else
-	  // This branch don't have any sub units (flat structure)
-	  // -> make sure we still jump into the for loop!
-	  $branches[0] = $domain;
-
-	for($i = 0; $branches[$i]; $i++) {
-	    unset($subbranch);
-
-	    // Show users is either 'Yes', unset (same thing) or 'No'.
-	    $show_users = pql_get_define("PQL_CONF_SHOW_USERS", $rootdn);
-	    if($show_users or !isset($show_users)) {
-		// Zero out the variables, othervise we won't get users in
-		// specified domain, but also in the PREVIOUS domain shown!
-		unset($users); unset($links); unset($cns);
-		
-		// Get all users (their DN) in this domain (sub)branch
-		$users = pql_get_dn($_pql->ldap_linkid, $branches[$i], $filter);
-
-		// Level 2: The users
-		if(count($branches) > 1) {
-		    // We're only interested in the 'People', 'Users' etc value,
-		    // not the complete DN.
-		    $dnparts = ldap_explode_dn($branches[$i], 0);
-		    $dnparts = split('=', $dnparts[0]);
-		    $subbranch = urlencode($dnparts[1]);
-		    
-		    $links = array(pql_complete_constant($LANG->_('Add %what%'),
-							 array('what' => $LANG->_('user')))
-				   => "user_add.php?rootdn=$rootdn&domain=$domain&subbranch=$subbranch");
-		} else {
-		    $links = array(pql_complete_constant($LANG->_('Add %what%'),
-							 array('what' => $LANG->_('sub unit')))
-				    => "unit_add.php?rootdn=$rootdn&domain=$domain",
-
-				   pql_complete_constant($LANG->_('Add %what%'),
-							 array('what' => $LANG->_('user')))
-				   => "user_add.php?rootdn=$rootdn&domain=$domain");
-		}
-
-		if(is_array($users))
-		  // We have users in this domain
-		  left_htmlify_userlist($_pql->ldap_linkid, $rootdn, $domain, $subbranch, $users, $links);
-	    }
-
-	    // Level 1: The domain name with it's users
-	    if((count($branches) > 1) and $subbranch)
-		pql_format_tree(pql_maybe_decode(urldecode($subbranch)), $url, $links, 1);
-	    else {
-		pql_format_tree($d, "domain_detail.php?rootdn=$rootdn&domain=$domain", $links, 0);
-		echo "\n";
-	    }
-	} // end foreach ($branches)
-
-	// This an ending for the domain tree
-	pql_format_tree_end();
-    } // end foreach ($domains)
-    // }}}
+	 foreach($domains as $key => $domain) {
+	   // Get domain part from the DN (Example: 'dc=test,dc=net' => 'test').
+	   $d = split(',', urldecode($domain)); $d = split('=', $d[0]); $d = $d[1];
+	   
+	   if(!eregi('%3D', $domain))
+		 $domain = urlencode($domain);
+	   
+	   // Get Root DN
+	   $rootdn = pql_get_rootdn($domain, 'left.php');
+	   
+	   // Create a user search filter (only look for mail users - !?!? - or Samba accounts).
+	   $filter  = "(&(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)."=*)(|(";
+	   $filter .= pql_get_define("PQL_ATTR_MAIL")."=*)(sambaSID=*)))";
+	   
+	   // Get the subbranches in this domain
+	   $branches = pql_unit_get($_pql->ldap_linkid, $domain);
+	   if((count($branches) > 1)) {
+		 $links = array(pql_complete_constant($LANG->_('Add %what%'),
+											  array('what' => $LANG->_('sub unit')))
+						=> "unit_add.php?rootdn=$rootdn&domain=$domain",
+						
+						pql_complete_constant($LANG->_('Add %what%'),
+											  array('what' => $LANG->_('user')))
+						=> "user_add.php?rootdn=$rootdn&domain=$domain");
+		 
+		 // Just incase there's user(s) at the base of the domain branch...
+		 $users = pql_get_dn($_pql->ldap_linkid, $domain, $filter, 'ONELEVEL');
+		 if(is_array($users))
+		   // We have users in this domain
+		   left_htmlify_userlist($_pql->ldap_linkid, $rootdn, $domain, $subbranch, $users, $links);
+		 
+		 pql_format_tree($d, "domain_detail.php?rootdn=$rootdn&domain=$domain", $links, 0);
+	   } else
+		 // This branch don't have any sub units (flat structure)
+		 // -> make sure we still jump into the for loop!
+		 $branches[0] = $domain;
+	   
+	   for($i=0; $i < count($branches); $i++) {
+		 $subbranch = '';
+		 
+		 // Show users is either 'Yes', unset (same thing) or 'No'.
+		 $show_users = pql_get_define("PQL_CONF_SHOW_USERS", $rootdn);
+		 if($show_users or !isset($show_users)) {
+		   // Zero out the variables, othervise we won't get users in
+		   // specified domain, but also in the PREVIOUS domain shown!
+		   unset($users); unset($links); unset($cns);
+		   
+		   // Get all users (their DN) in this domain (sub)branch
+		   $users = pql_get_dn($_pql->ldap_linkid, $branches[$i], $filter);
+		   
+		   // Level 2: The users
+		   if(count($branches) > 1) {
+			 // We're only interested in the 'People', 'Users' etc value,
+			 // not the complete DN.
+			 $dnparts   = ldap_explode_dn($branches[$i], 0);
+			 $dnparts   = split('=', $dnparts[0]);
+			 $subbranch = urlencode($dnparts[1]);
+			 $url		= '';
+			 
+			 $links = array(pql_complete_constant($LANG->_('Add %what%'),
+												  array('what' => $LANG->_('user')))
+							=> "user_add.php?rootdn=$rootdn&domain=$domain&subbranch=$subbranch");
+		   } else {
+			 $links = array(pql_complete_constant($LANG->_('Add %what%'),
+												  array('what' => $LANG->_('sub unit')))
+							=> "unit_add.php?rootdn=$rootdn&domain=$domain",
+							
+							pql_complete_constant($LANG->_('Add %what%'),
+												  array('what' => $LANG->_('user')))
+							=> "user_add.php?rootdn=$rootdn&domain=$domain");
+		   }
+		   
+		   if(is_array($users))
+			 // We have users in this domain
+			 left_htmlify_userlist($_pql->ldap_linkid, $rootdn, $domain, $subbranch, $users, $links);
+		 }
+		 
+		 // Level 1: The domain name with it's users
+		 if((count($branches) > 1) and $subbranch)
+		   pql_format_tree(pql_maybe_decode(urldecode($subbranch)), $url, $links, 1);
+		 else {
+		   pql_format_tree($d, "domain_detail.php?rootdn=$rootdn&domain=$domain", $links, 0);
+		   echo "\n";
+		 }
+	   } // end foreach ($branches)
+	   
+	   // This an ending for the domain tree
+	   pql_format_tree_end();
+	 } // end foreach ($domains)
+  
+  // }}}
 } // end if(is_array($domains))
 // }}}
 

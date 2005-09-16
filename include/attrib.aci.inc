@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for OpenLDAPaci
-// $Id: attrib.aci.inc,v 1.10 2004-11-05 11:18:20 turbo Exp $
+// $Id: attrib.aci.inc,v 1.11 2005-09-16 06:08:46 turbo Exp $
 
 /* DLW: This has valid syntax, but I don't know how to test it. */
 
@@ -71,7 +71,7 @@ function attribute_print_form($action) {
 
 	if(is_array($aci)) {
 		echo "<u>Current values:</u><p>";
-		for($i=0; $aci[$i]; $i++)
+		for($i=0; $i < count($aci); $i++)
 		  echo $aci[$i]["LINE"]."<br>";
 	}
 ?>
@@ -181,7 +181,7 @@ function attribute_save($action) {
       $acis = pql_aci_get($_pql->ldap_linkid, $domain);
 	
     // Extract only the ACI line that's stored in LDAP
-    for($i=0; $acis[$i]["LINE"]; $i++)
+    for($i=0; @$acis[$i]["LINE"]; $i++)
 	  $ACIs[$attrib][] = $acis[$i]["LINE"];
 
 	$oidnr = $acis[$i-1]['OID'] + 1;
@@ -205,7 +205,7 @@ function attribute_save($action) {
 		unset($ACIs);
 		
 		// Remove specific entry
-		for($i=0; $acis[pql_get_define("PQL_ATTR_LDAPACI")][$i]; $i++) {
+		for($i=0; $i < count($acis[pql_get_define("PQL_ATTR_LDAPACI")]); $i++) {
 			if($acis[pql_get_define("PQL_ATTR_LDAPACI")][$i] != $value)
 			  // This is not a value to be delete it, remember it
 			  $ACIs[pql_get_define("PQL_ATTR_LDAPACI")][] = $acis[pql_get_define("PQL_ATTR_LDAPACI")][$i];
@@ -217,7 +217,7 @@ function attribute_save($action) {
 
 		// {{{ case: moveup
 	  case "moveup":
-		for($i=0; $acis[$attrib][$i]; $i++) {
+		for($i=0; $i < count($acis[$attrib]); $i++) {
 			// If the NEXT value is what we're looking for,
 			// it will have to be put in THIS position
 			if($value == $acis[$attrib][$i+1]) {
@@ -237,7 +237,7 @@ function attribute_save($action) {
 
 		// {{{ case: movedown
 	  case "movedown":
-		for($i=0; $acis[$attrib][$i]; $i++) {
+		for($i=0; $i < count($acis[$attrib]); $i++) {
 			if($value == $acis[$attrib][$i]) {
 				// This value is the one we're looking for - take next and put that here
 				$new[$attrib][] = $acis[$attrib][$i+1];

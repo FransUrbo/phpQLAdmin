@@ -2,16 +2,16 @@
 // control attribute plugin for
 // rcpthosts (blocked local addresses)
 //
-// $Id: attrib.control.rcpthosts.inc,v 2.30 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.rcpthosts.inc,v 2.31 2005-09-16 06:08:49 turbo Exp $
 
 // {{{ rcpthosts_check(type)
 function rcpthosts_check($type) {
     global $LANG;
 
     // check validity
-    if(is_array($_REQUEST["rcpthosts"])) {
+    if(@is_array($_REQUEST["rcpthosts"])) {
 		foreach($_REQUEST["rcpthosts"] as $key => $host) {
-			if($host == "")
+			if(empty($host))
 			  continue;
 			
 			if(!pql_check_hostaddress($host)) {
@@ -38,9 +38,9 @@ function rcpthosts_init($host) {
 											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 											   pql_get_define("PQL_ATTR_RCPTHOSTS"));
 
-    if(!$_REQUEST["rcpthosts"])
+    if(!@$_REQUEST["rcpthosts"])
 	  return true;
-	elseif(!is_array($_REQUEST["rcpthosts"]))
+	elseif(!@is_array($_REQUEST["rcpthosts"]))
 	  $_REQUEST["rcpthosts"] = array($_REQUEST["rcpthosts"]);
 }
 // }}}
@@ -127,9 +127,9 @@ function rcpthosts_save($type, $host) {
     global $_pql_control, $LANG;
 
 	if(!$host) {
-	  if($_REQUEST["mxhost"])
+	  if(@$_REQUEST["mxhost"])
 		$host = $_REQUEST["mxhost"];
-	  elseif( $_REQUEST["set"])
+	  elseif(@$_REQUEST["set"])
 		$host = $_REQUEST["set"];
 	  else
 		die("NO HOST!?!?");

@@ -60,7 +60,7 @@ foreach $dn (@DNs) {
     if($OLD_SLAPD) {
 	# Add the original object classes from the object
 	print "replace: objectClass\n";
-	for($i=0; $OCs{$dn}[$i]; $i++) {
+	for($i=0; $i < count($OCs{$dn}); $i++) {
 	    print "objectClass: $OCs{$dn}[$i]\n";
 	}
 	

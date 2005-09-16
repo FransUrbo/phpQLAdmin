@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for administrator and seealso modification
 // Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
-// $Id: attrib.administrator.inc,v 1.54 2005-06-11 10:52:02 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.55 2005-09-16 06:08:46 turbo Exp $
 
 // There is serious problems with this. I fix for one usage and break another
 // one! Let's try to remember (and document) how it's called. It's called from
@@ -35,19 +35,19 @@ function attribute_setup_aci($linkid, $dn, $userdn, $action) {
 		//	$old_acis[?][RIGHTS][TARGET][?] == [children]
 		// Then the user we're giving admin access should be inserted in
 		//	$old_acis[?][SUBJECT]
-		for($i=0, $oid=0; $old_acis[$i]; $i++, $oid++) {
+		for($i=0, $oid=0; $i < count($old_acis); $i++, $oid++) {
 			// {{{ Generate a new ACI line (with updated OID number)
 			$line  = "$oid#";
 			$line .= $old_acis[$i]["SCOPE"]."#";
 			$line .= $old_acis[$i]["RIGHTS"]["ACTION"].";";
-			for($j=0; $old_acis[$i]["RIGHTS"]["PERMISSIONS"][$j]; $j++) {
+			for($j=0; $j < count($old_acis[$i]["RIGHTS"]["PERMISSIONS"]); $j++) {
 				$line .= $old_acis[$i]["RIGHTS"]["PERMISSIONS"][$j];
 				if($old_acis[$i]["RIGHTS"]["PERMISSIONS"][$j+1])
 				  $line .= ",";
 				else
 				  $line .= ";";
 			}
-			for($j=0; $old_acis[$i]["RIGHTS"]["TARGET"][$j]; $j++) {
+			for($j=0; $j < count($old_acis[$i]["RIGHTS"]["TARGET"]); $j++) {
 				$line .= $old_acis[$i]["RIGHTS"]["TARGET"][$j];
 				if($old_acis[$i]["RIGHTS"]["TARGET"][$j+1])
 				  $line .= ",";
@@ -66,7 +66,7 @@ function attribute_setup_aci($linkid, $dn, $userdn, $action) {
 						// Next ACI entry is an 'access-id/entry'. Put the 'access-id/children' here...
 						
 						$new_acis[]  = $line; $oid++;
-						for($j=0; $userdn[$j]; $j++) {
+						for($j=0; $j < count($userdn); $j++) {
 							$new_acis[]  = "$oid#entry#grant;w,r,s,c;[children]#access-id#".$userdn[$j];
 							if($userdn[$j+1])
 							  $oid++;
@@ -80,7 +80,7 @@ function attribute_setup_aci($linkid, $dn, $userdn, $action) {
 			} else {
 				// {{{ We're removing an administrator - find the user(s) and remove them from the ACI list.
 				if($old_acis[$i]['SUBJECT']) {
-					for($j=0; $userdn[$j]; $j++) {
+					for($j=0; $j < count($userdn); $j++) {
 						if(lc($old_acis[$i]['SUBJECT']) != lc($userdn[$j]))
 						  $new_acis[] = $line;
 					}
@@ -91,11 +91,11 @@ function attribute_setup_aci($linkid, $dn, $userdn, $action) {
 		}
 
 		if(!$added_user_full and ($action == 'add')) {
-		  for($j=0; $userdn[$j]; $j++) {
+		  for($j=0; $j < count($userdn); $j++) {
 			// Just make sure the user don't already exists in the ACI list...
 			$add_user = 1;
 
-			for($i=0; $old_acis[$i]; $i++) {
+			for($i=0; $i < count($old_acis); $i++) {
 			  if(lc($old_acis[$i]["SUBJECT"]) == lc($userdn[$j]))
 				$add_user = 0;
 			}
@@ -428,7 +428,7 @@ function attribute_save($type) {
 			// Get all the objects below this branch.
 			$branches = pql_get_dn($_pql->ldap_linkid, $DN, 'objectClass=*');
 
-			for($i=0; $branches[$i]; $i++) {
+			for($i=0; $i < count($branches); $i++) {
 				if($branches[$i] != $DN) {
 					// Create an ACI entry for this branch.
 					if($type == 'delete') {

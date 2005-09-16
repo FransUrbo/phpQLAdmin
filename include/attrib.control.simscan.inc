@@ -2,7 +2,7 @@
 // control attribute plugin for
 // SimScan
 //
-// $Id: attrib.control.simscan.inc,v 2.2 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.simscan.inc,v 2.3 2005-09-16 06:08:50 turbo Exp $
 
 // {{{ simscan_check(type)
 function simscan_check($type) {
@@ -26,18 +26,18 @@ function simscan_init($host) {
 	
 	foreach($attribs as $key => $attrib) {
 	  // Get default value
-	  if($_REQUEST["mxhost"]) {
+	  if(@$_REQUEST["mxhost"]) {
 		$cn = pql_get_define("PQL_ATTR_CN") . "=" . $_REQUEST["mxhost"] . "," . $_SESSION["USER_SEARCH_DN_CTR"];
 		$value = pql_get_attribute($_pql_control->ldap_linkid, $cn, $attrib);
 	  } else
 		$value = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib);
 	  
 	  $submit = ''; $set = '';
-	  if(($attrib == "simscanspamassassin") or ($attrib == "simscanclamantivirus") or ($attrib == simscantrophie)) {
+	  if(($attrib == "simscanspamassassin") or ($attrib == "simscanclamantivirus") or ($attrib == "simscantrophie")) {
 		// We have a value and it's a toggle - Convert the boolean value to an integer
 		$value = pql_format_bool($value);
 		
-		if($_REQUEST["mxhost"]) {
+		if(@$_REQUEST["mxhost"]) {
 		  if($value)
 			$set = '&set=0';
 		  else
@@ -53,7 +53,7 @@ function simscan_init($host) {
 	  // Setup edit links. If it's a dcOrganizationNameForm attribute, then
 	  // we add a delete link as well.
 	  $_REQUEST["links"][$key] = $key . "_link";
-	  if($_REQUEST["mxhost"]) {
+	  if(@$_REQUEST["mxhost"]) {
 		// Called from control_details.ph
 		$alt1 = pql_complete_constant($LANG->_('Modify attribute %attribute% for %host%'),
 									  array('attribute' => $attrib, 'host' => $_REQUEST["mxhost"]));
@@ -63,14 +63,17 @@ function simscan_init($host) {
 		$_REQUEST["links"][$key]  = '<a href="control_edit_attribute.php?mxhost='.$_REQUEST["mxhost"].'&attrib='.$attrib.$submit.'&type=modify'.$set;
 		$_REQUEST["links"][$key] .= '"><img src="images/edit.png" width="12" height="12" border="0" alt="'.$alt1.'"></a>';
 	  } else {
-		// Called from domain_details.ph
-		global $url; // Defined in domain_details.php
+		// Called from domain_details.php
+		global $url, $domainname; // Defined in domain_details.php
 
 		$alt1 = pql_complete_constant($LANG->_('Modify attribute %attribute% for %domainname%'),
 									  array('attribute' => $attrib, 'domainname' => $domainname));
 		$alt2 = pql_complete_constant($LANG->_('Delete attribute %attribute% for %domainname%'),
 									  array('attribute' => $attrib, 'domainname' => $domainname));
 		
+		if($attrib == 'simscanattachmentsuffix')
+		  $value = $value[0];
+
 		$_REQUEST["links"][$key] = "<a href=\"domain_edit_attributes.php?type=modify&attrib=$attrib&rootdn="
 		  . $url["rootdn"] . "&domain=" . $url["domain"] . "&$attrib=". urlencode($value)
 		  . "&view=" . $_REQUEST["view"] . "\"><img src=\"images/edit.png\" width=\"12\" height=\"12\""
@@ -83,7 +86,7 @@ function simscan_init($host) {
 
 // {{{ simscan_print_view(host)
 function simscan_print_view($host) {
-	global $LANG;
+	global $_pql, $LANG, $url;
 	
 	// init data
 	simscan_init($host);
@@ -92,19 +95,19 @@ function simscan_print_view($host) {
     <th colspan="3" align="left"><?=$LANG->_('SimScan configuration')?></th>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Run SpamAssassin')?></td>
-        <td><?php if($_REQUEST["simscanspamassassin"]) { echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
+        <td><?php if(@$_REQUEST["simscanspamassassin"]) { echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
         <td align="right"><?=$_REQUEST["links"]["simscanspamassassin"]?></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Run Clam Anti Virus')?></td>
-        <td><?php if($_REQUEST["simscanclamantivirus"]) { echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
+        <td><?php if(@$_REQUEST["simscanclamantivirus"]) { echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
         <td align="right"><?=$_REQUEST["links"]["simscanclamantivirus"]?></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Run Trophie')?></td>
-        <td><?php if($_REQUEST["simscantrophie"]) { echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
+        <td><?php if(@$_REQUEST["simscantrophie"]) { echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
         <td align="right"><?=$_REQUEST["links"]["simscantrophie"]?></td>
       </tr>
 
@@ -116,7 +119,7 @@ function simscan_print_view($host) {
 
 <?php	// Attachments to check
 		$class = pql_format_table(0);
-		if($_REQUEST["mxhost"]) {
+		if(@$_REQUEST["mxhost"]) {
 		  $url_tmp  = "control_edit_attribute.php?mxhost=".$_REQUEST["mxhost"];
 		  $url_tmp .= "&attrib=".pql_get_define("PQL_ATTR_SIMSCAN_ATTACHMENTS");
 		} else {
@@ -128,7 +131,7 @@ function simscan_print_view($host) {
 						 'add' => $LANG->_('Add attachment check for domain '),
 						 'del' => $LANG->_('Remove attachment check'));
 
-		if($_REQUEST["mxhost"]) {
+		if(@$_REQUEST["mxhost"]) {
 		  $tbl_url = array('add' => $url_tmp."&type=add",
 						   'del' => $url_tmp."&submit=1&type=delete");
 		} else {
@@ -254,8 +257,8 @@ function simscan_save($type, $host) {
 			if(!is_array($old))
 			  $old = array($old);
 
-			for($i=0; $old[$i]; $i++) {
-			  if(lc($old[$i]) != lc($_REQUEST[$attrib]))
+			for($i=0; $i < count($old); $i++) {
+			  if(@lc($old[$i]) != @lc($_REQUEST[$attrib]))
 				$OLD[] = $old[$i];
 			}
 

@@ -3,177 +3,178 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.45 2005-08-14 15:15:02 turbo Exp $
+// $Id: pql_formating.inc,v 2.46 2005-09-16 06:08:51 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
 function pql_create_ldif($func, $dn, $entry, $extra_newline = 0) {
-	global $account_type;
-	$command = 0;
-
-	if($extra_newline)
-	  $nl = '<br>';
-
-	if($func)
-	  $LDIF .= "<br>\n<pre>\n--- DEBUG: $func($account_type) ---$nl\n";
-
-	$LDIF .= "dn: $dn$nl\n";
-	if(is_array($entry)) {
-		foreach($entry as $key => $e) {
-			if(is_array($entry[$key])) {
-			  // ... in an array. Go through each one, creating the LDAP entry
-			  if(!ereg('_add', $func)) {
-				if($entry[$key]) {
-				  if($command)
-					$LDIF .= "-\n";
-
-				  $LDIF .= "replace: $key$nl\n";
-				  $command = 1;
-
-				  foreach($entry[$key] as $x)
-					$LDIF .= "$key: $x$nl\n";
-				} else {
-				  if($command)
-					$LDIF .= "-\n";
-
-				  $LDIF .= "delete: $key$nl\n";
-				  $command = 1;
-				}
-			  } else {
-				// We're (probably) ADDING an _object_. Print the values as is.
-				foreach($entry[$key] as $x)
-				  $LDIF .= "$key: $x$nl\n";
-			  }
-			} else {
-			  if(!ereg('_add', $func)) {
-				if($entry[$key]) {
-				  if($command)
-					$LDIF .= "-\n";
-
-				  $LDIF .= "replace: $key$nl\n";
-				  $command = 1;
-
-				  $LDIF .= "$key: $entry[$key]$nl\n";
-				} else {
-				  if($command)
-					$LDIF .= "-\n";
-
-				  $LDIF .= "delete: $key$nl\n";
-				  $command = 1;
-				}
-			  } else
-				// We're (probably) ADDING an _object_. Print the values as is.
-				$LDIF .= "$key: $entry[$key]$nl\n";
-			}
+  global $account_type;
+  $command = 0; $LDIF = '';
+  
+  if($extra_newline)
+	$nl = '<br>';
+  else
+	$nl = '';
+  
+  if($func)
+	$LDIF .= "<br>\n<pre>\n--- DEBUG: $func($account_type) ---$nl\n";
+  
+  $LDIF .= "dn: $dn$nl\n";
+  if(is_array($entry)) {
+	foreach($entry as $key => $e) {
+	  if(is_array($entry[$key])) {
+		// ... in an array. Go through each one, creating the LDAP entry
+		if(!ereg('_add', $func)) {
+		  if($entry[$key]) {
+			if($command)
+			  $LDIF .= "-\n";
+			
+			$LDIF .= "replace: $key$nl\n";
+			$command = 1;
+			
+			foreach($entry[$key] as $x)
+			  $LDIF .= "$key: $x$nl\n";
+		  } else {
+			if($command)
+			  $LDIF .= "-\n";
+			
+			$LDIF .= "delete: $key$nl\n";
+			$command = 1;
+		  }
+		} else {
+		  // We're (probably) ADDING an _object_. Print the values as is.
+		  foreach($entry[$key] as $x)
+			$LDIF .= "$key: $x$nl\n";
 		}
+	  } else {
+		if(!ereg('_add', $func)) {
+		  if($entry[$key]) {
+			if($command)
+			  $LDIF .= "-\n";
+			
+			$LDIF .= "replace: $key$nl\n";
+			$command = 1;
+			
+			$LDIF .= "$key: $entry[$key]$nl\n";
+		  } else {
+			if($command)
+			  $LDIF .= "-\n";
+			
+			$LDIF .= "delete: $key$nl\n";
+			$command = 1;
+		  }
+		} else
+		  // We're (probably) ADDING an _object_. Print the values as is.
+		  $LDIF .= "$key: $entry[$key]$nl\n";
+	  }
 	}
-
-	if($func)
-	  $LDIF .= "--- DEBUG ---\n</pre>\n";
-
-	return($LDIF);
+  }
+  
+  if($func)
+	$LDIF .= "--- DEBUG ---\n</pre>\n";
+  
+  return($LDIF);
 }
 // }}}
 
 // {{{ pql_complete_constant(text, replacement)
 // Replaces dynamic vars in constants %key% will be replaced with $replacement["key"]
 function pql_complete_constant($text, $replacement) {
-    if(!is_array($replacement))
-	  return false;
-    
-	// prepare patterns
-    foreach($replacement as $key => $value)
-		$pattern[] = "/(%$key%)/i";
-    
-    return preg_replace($pattern, $replacement, $text);
+  if(!is_array($replacement))
+	return false;
+  
+  // prepare patterns
+  foreach($replacement as $key => $value)
+	$pattern[] = "/(%$key%)/i";
+  
+  return preg_replace($pattern, $replacement, $text);
 }
 // }}}
 
 // {{{ pql_generate_button(button array)
 function pql_generate_button($buttons, $link = '') {
-    global $LANG;
-
-	$url = $_SERVER["PHP_SELF"] . "?";
-
-	// It's not sure we have a rootdn and/or domain, so only add those
-	// it's set
-	if(!empty($_REQUEST["rootdn"])) {
-		$url .= "rootdn=" . pql_format_urls($_REQUEST["rootdn"]) . "&";
-	}
-
-	if(!empty($_REQUEST["domain"])) {
-		$url .= "domain=" . pql_format_urls($_REQUEST["domain"]) . "&";
-	}
+  global $LANG;
+  
+  $url = $_SERVER["PHP_SELF"] . "?";
+  
+  // It's not sure we have a rootdn and/or domain, so only add those
+  // it's set
+  if(!empty($_REQUEST["rootdn"])) {
+	$url .= "rootdn=" . pql_format_urls($_REQUEST["rootdn"]) . "&";
+  }
+  
+  if(!empty($_REQUEST["domain"])) {
+	$url .= "domain=" . pql_format_urls($_REQUEST["domain"]) . "&";
+  }
 ?>
 
   <table cellspacing="0" border="0" width="100%" cellpadding="0">
 <?php
-	  $i=0; // A button counter.
-	  foreach($buttons as $view => $text) {
-		  // Generate the button link etc
+  $i=0; // A button counter.
+  foreach($buttons as $view => $text) {
+	// Generate the button link etc
 ?>
     <a href="<?=$url?>view=<?=$view?><?php if($link) { echo "&$link"; } ?>"><img alt="/ <?=$LANG->_($text)?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?php echo urlencode($LANG->_($text)); ?>"></a>
 <?php
-		  // Increase button counter"
-		  $i++;
-	  }
+	// Increase button counter"
+	$i++;
+  }
 ?>
   </table>
 
 <?php
 }
-
 // }}}
 
 // {{{ pql_format_error(output)
 // an error-message wrapper for adding special comments to some
 // error conditions
 function pql_format_error($output) {
-	global $_pql;
-
-    $errno = ldap_errno($_pql->ldap_linkid);
-    $error = ldap_error($_pql->ldap_linkid);
-    
-	$url = "<a href='config_detail.php?view=".$_pql->ldap_basedn[0]."' target='_new'>Show configuration</a>";
-
-    switch($errno) {
-	  case 17:
-		// Undefined attribute type -> invalid schema
-		$comment  = "This error is caused by an invalid schema. Have you updated them recently? If not, copy the new schema ";
-		$comment .= "that defines this attribute, and restart your LDAP server.";
-		break;
-      case 18:
-		// Inappropriate matching --> invalid schema
-		$comment = "This error is caused by an invalid schema file.";
-		break;
-	  case 21:
-		// Invalid syntax
-		$comment  = "This error is caused because an attribute is used, but there is no <i>value</i> for it (i.e. an empty ";
-		$comment .= "attribute/value pair).<br>";
-		$comment .= "The attribute is most likley <b>objectClass</b> and is usually caused because you're missing ";
-		$comment .= "objectclasses for this type of object. Go to $url and setup the appropriate <b>objectclasses</b>.";
-		break;
-	  case 41:
-		// Object Class Violation
-		$comment  = "This error is caused because you're using an attribute but haven't included the correct object class.";
-		$comment .= "<br>Please go to $url and setup the appropriate <b>objectClasses</b>.";
-		break;
-    }
-    
-    $msg = "<p>".pql_format_error_span("LDAP-Error #$errno: $error");
-    if($comment)
-	  $msg .= "<br>$comment<p>";
-
-	if($output)
-	  echo $msg."<br>";
-	else
-	  return $msg;
+  global $_pql;
+  
+  $errno = ldap_errno($_pql->ldap_linkid);
+  $error = ldap_error($_pql->ldap_linkid);
+  
+  $url = "<a href='config_detail.php?view=".$_pql->ldap_basedn[0]."' target='_new'>Show configuration</a>";
+  
+  switch($errno) {
+  case 17:
+	// Undefined attribute type -> invalid schema
+	$comment  = "This error is caused by an invalid schema. Have you updated them recently? If not, copy the new schema ";
+	$comment .= "that defines this attribute, and restart your LDAP server.";
+	break;
+  case 18:
+	// Inappropriate matching --> invalid schema
+	$comment = "This error is caused by an invalid schema file.";
+	break;
+  case 21:
+	// Invalid syntax
+	$comment  = "This error is caused because an attribute is used, but there is no <i>value</i> for it (i.e. an empty ";
+	$comment .= "attribute/value pair).<br>";
+	$comment .= "The attribute is most likley <b>objectClass</b> and is usually caused because you're missing ";
+	$comment .= "objectclasses for this type of object. Go to $url and setup the appropriate <b>objectclasses</b>.";
+	break;
+  case 41:
+	// Object Class Violation
+	$comment  = "This error is caused because you're using an attribute but haven't included the correct object class.";
+	$comment .= "<br>Please go to $url and setup the appropriate <b>objectClasses</b>.";
+	break;
+  }
+  
+  $msg = "<p>".pql_format_error_span("LDAP-Error #$errno: $error");
+  if($comment)
+	$msg .= "<br>$comment<p>";
+  
+  if($output)
+	echo $msg."<br>";
+  else
+	return $msg;
 }
 // }}}
 
 // {{{ pql_format_error_span(msg)
 function pql_format_error_span($msg) {
-    return "<span class=\"error\">" . $msg . "</span>\n";
+  return "<span class=\"error\">" . $msg . "</span>\n";
 }
 // }}}
 
@@ -200,54 +201,59 @@ function pql_format_status_msg($msg){
 
 // {{{ pql_format_table(echo = 1)
 function pql_format_table($echo = 1) {
-    global $flag;
-    
-    if($flag) {
-		$flag = false;
-		$ret="c1";
-    } else {
-		$flag = true;
-		$ret="c2";
-    }
-
-	if($echo) {
-		echo $ret;
-	} else {
-		return $ret;
-	}
+  global $flag;
+  
+  if($flag) {
+	$flag = false;
+	$ret="c1";
+  } else {
+	$flag = true;
+	$ret="c2";
+  }
+  
+  if($echo) {
+	echo $ret;
+  } else {
+	return $ret;
+  }
 }
 // }}}
 
 // {{{ pql_format_table_single(linkid, text, url, array, attribute, class)
 function pql_format_table_single($linkid, $text, $url, $array, $attrib, $class = 0) {
-	if(is_array($array)) { 
-		$new_tr = 0;
-		asort($array);
-		foreach($array as $value) {
-			if(!$class)
-			  $class  = pql_format_table(0);
-
-			if(ereg('=', $value)) {
-				// Hopfully this is a DN
-				$username = pql_get_attribute($linkid, $value, pql_get_define("PQL_ATTR_CN"));
-				if(!$username[0])
-				  $username = $value;
-				elseif(is_array($username))
-				  $username = $username[0];
-			} else
-			  $username = $value;
-
-			if($new_tr) {
+  // Stop PHP for nagging about undefined index.
+  $url["mod"] = (isset($url["mod"])) ? $url["mod"] : 0;
+  $url["del"] = (isset($url["del"])) ? $url["del"] : 0;
+  $url["add"] = (isset($url["add"])) ? $url["add"] : 0;
+  
+  if(is_array($array)) { 
+	$new_tr = 0;
+	asort($array);
+	foreach($array as $value) {
+	  if(!$class)
+		$class  = pql_format_table(0);
+	  
+	  if(ereg('=', $value)) {
+		// Hopfully this is a DN
+		$username = pql_get_attribute($linkid, $value, pql_get_define("PQL_ATTR_CN"));
+		if(!$username[0])
+		  $username = $value;
+		elseif(is_array($username))
+		  $username = $username[0];
+	  } else
+		$username = $value;
+	  
+	  if($new_tr) {
 ?>
 
       <tr class="<?=$class?>">
         <td class="title"></td>
-<?php		} else { ?>
+<?php } else { ?>
       <tr class="<?=$class?>">
         <td class="title"><?=$text["tit"]?>:</td>
-<?php		}
+<?php }
 
-			$new_tr = 1;
+	  $new_tr = 1;
 ?>
         <td class="<?=$class?>"><?=$username?></td>
         <td class="<?=$class?>" align="right">
@@ -255,8 +261,9 @@ function pql_format_table_single($linkid, $text, $url, $array, $attrib, $class =
           <?php if($url["del"]) { ?><a href="<?=$url["del"]?>&<?=$attrib?>=<?=$value?>"><img src="images/del.png"  width="12" height="12" border="0" alt="<?=$text["del"]?>"></a><?php } ?>
         </td>
       </tr>
-<?php	}
-	}
+<?php
+    }
+  }
 ?>
 
 <?php if(!$class) { ?>
@@ -283,41 +290,41 @@ function pql_format_table_empty() {
 
 // {{{ pql_format_tree(text, url, links, level)
 function pql_format_tree($text, $url, $links = '', $level = 0) {
-	global $div_counter;
-
-	if(empty($div_counter))
-	  $div_counter = 0;
-
-	$child  = $div_counter . "Child";
-	$parent = "Parent";
-
-	if($_SESSION["opera"])
-	  pql_format_tree_opera($div_counter, $text, $url, $level, $parent, $child);
-	else
-	  pql_format_tree_other($div_counter, $text, $url, $level, $parent, $child);
-
-	if(is_array($links))
-	  pql_format_tree_span($text, $links, $level);
-
-	if($level)
-	  pql_format_tree_end();
-
-	$div_counter++;
+  global $div_counter;
+  
+  if(empty($div_counter))
+	$div_counter = 0;
+  
+  $child  = $div_counter . "Child";
+  $parent = "Parent";
+  
+  if($_SESSION["opera"])
+	pql_format_tree_opera($div_counter, $text, $url, $level, $parent, $child);
+  else
+	pql_format_tree_other($div_counter, $text, $url, $level, $parent, $child);
+  
+  if(is_array($links))
+	pql_format_tree_span($text, $links, $level);
+  
+  if($level)
+	pql_format_tree_end();
+  
+  $div_counter++;
 }
 // }}}
 
 // {{{ pql_format_tree_opera(counter, text, url, level, parent, child)
 function pql_format_tree_opera($cnt, $text, $url, $level, $parent, $child) {
-	$nbsp = '';
-
-	$mouse["click"] = 'onclick="showhide(el'.$child.', el'.$cnt.'Img)"';
-	$mouse["over"]  = 'onmouseover="if (isDOM || isIE4) {hilightBase(\'el'.$cnt.'\', \'#CCFFCC\')}"';
-	$mouse["out"]   = 'onmouseout="if (isDOM || isIE4) {hilightBase(\'el'.$cnt.'\', \'#D0DCE0\')}"';
-
-	if($level) {
-		for($i=0; $i < ($level * 4); $i++) 
-		  $nbsp .= "&nbsp;";
-	}
+  $nbsp = '';
+  
+  $mouse["click"] = 'onclick="showhide(el'.$child.', el'.$cnt.'Img)"';
+  $mouse["over"]  = 'onmouseover="if (isDOM || isIE4) {hilightBase(\'el'.$cnt.'\', \'#CCFFCC\')}"';
+  $mouse["out"]   = 'onmouseout="if (isDOM || isIE4) {hilightBase(\'el'.$cnt.'\', \'#D0DCE0\')}"';
+  
+  if($level) {
+	for($i=0; $i < ($level * 4); $i++) 
+	  $nbsp .= "&nbsp;";
+  }
 ?>
   <div id="el<?=$cnt?><?=$parent?>" class="parent" <?=$mouse["over"]." ".$mouse["out"]." ".$mouse["click"]?>>
     <?=$nbsp?><img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$cnt?>Img">
@@ -331,22 +338,22 @@ function pql_format_tree_opera($cnt, $text, $url, $level, $parent, $child) {
 
 // {{{ pql_format_tree_other(counter, text, url, level, parent, child)
 function pql_format_tree_other($cnt, $text, $url, $level, $parent, $child) {
-	$nbsp = '';
-
-	$mouse["over"]  = 'onmouseover="if (isDOM || isIE4) {hilightBase(\'el'.$cnt.'\', \'#CCFFCC\')}"';
-	$mouse["out"]   = 'onmouseout="if (isDOM || isIE4) {hilightBase(\'el'.$cnt.'\', \'#D0DCE0\')}"';
-
-	if($level) {
-		for($i=0; $i < ($level * 4); $i++) 
-		  $nbsp .= "&nbsp;";
-	}
-
-	if($url) {
-		if(eregi('^http', $url))
-		  $url = "href=\"$url\" target=\"_top\"";
-		else
-		  $url = "href=\"$url\"";
-	}
+  $nbsp = '';
+  
+  $mouse["over"]  = 'onmouseover="if (isDOM || isIE4) {hilightBase(\'el'.$cnt.'\', \'#CCFFCC\')}"';
+  $mouse["out"]   = 'onmouseout="if (isDOM || isIE4) {hilightBase(\'el'.$cnt.'\', \'#D0DCE0\')}"';
+  
+  if($level) {
+	for($i=0; $i < ($level * 4); $i++) 
+	  $nbsp .= "&nbsp;";
+  }
+  
+  if($url) {
+	if(eregi('^http', $url))
+	  $url = "href=\"$url\" target=\"_top\"";
+	else
+	  $url = "href=\"$url\"";
+  }
 ?>
   <div id="el<?=$cnt?>Parent" class="parent" <?=$mouse["over"]." ".$mouse["out"]?>>
     <nobr>
@@ -367,37 +374,37 @@ function pql_format_tree_other($cnt, $text, $url, $level, $parent, $child) {
 
 // {{{ pql_format_tree_span(text, links, level)
 function pql_format_tree_span($text, $links, $level) {
-	$nbsp = '';
-	for($i=0; $i < (($level + 1) * 4); $i++)
-	  $nbsp .= "&nbsp;";
-
-	$count = count($links); $counter = 0;
-	foreach($links as $text => $link) {
-		// If it's a user, we want an icon before the list...
-		// DIRTY HACK: An option to the function instead?
-		$icon = 0;
-		if(eregi("user_detail\.php", $link) or eregi("ezmlm_detail\.php", $link))
-		  $icon = 1;
-
-		if($text) {
-			if($link) {
+  $nbsp = '';
+  for($i=0; $i < (($level + 1) * 4); $i++)
+	$nbsp .= "&nbsp;";
+  
+  $count = count($links); $counter = 0;
+  foreach($links as $text => $link) {
+	// If it's a user, we want an icon before the list...
+	// DIRTY HACK: An option to the function instead?
+	$icon = 0;
+	if(eregi("user_detail\.php", $link) or eregi("ezmlm_detail\.php", $link))
+	  $icon = 1;
+	
+	if($text) {
+	  if($link) {
 ?>
     <nobr>
       <?=$nbsp?>
 
-<?php			if(is_array($link)) { ?>
+<?php	if(is_array($link)) { ?>
       <input type="checkbox" name="<?=$link[0]?>_<?=$link[1]?>" value="<?=$link[2]?>"><?=$text?>
-<?php			} else { ?>
+<?php	} else { ?>
       <?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>"><?php } ?>
       <a class="tblItem" title="<?=$text?>" href="<?=$link?>" <?php if(eregi('^http://', $link)) { echo 'target="_new"'; } else { echo 'target="pqlmain"'; } ?>><?=$text?></a>
-<?php			} ?>
+<?php	} ?>
 
     </nobr>
-<?php			if($counter < ($count - 1)) { ?>
+<?php	if($counter < ($count - 1)) { ?>
 
     <br />
-<?php			}
-			} else { ?>
+<?php	}
+	  } else { ?>
     <nobr>
       <?=$nbsp?>
       <?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>"><?php } ?>
@@ -405,20 +412,20 @@ function pql_format_tree_span($text, $links, $level) {
     </nobr>
 
     <br />
-<?php		}
-		} else { ?>
+<?php }
+	} else { ?>
     <nobr>
       <?=$nbsp?>
       ---------------
     </nobr>
-<?php		if($counter < ($count - 1)) { ?>
+<?php if($counter < ($count - 1)) { ?>
 
     <br />
-<?php		}
-		}
-
-		$counter++;
+<?php }
 	}
+
+	$counter++;
+  }
 }
 // }}}
 
@@ -778,44 +785,44 @@ function pql_maybe_decode($string) {
 
 // {{{ pql_maybe_idna_encode(string)
 function pql_maybe_idna_encode($string) {
-	$old = $string;
-
-	$new = pql_format_international($old);
-	if($old != $new) {
-		// The two strings isn't equal -> something have been replaced
-
-		if(function_exists("idn_to_ascii")) {
-			if(ereg("@", $old)) {
-				$domain = idn_to_ascii(pql_strip_domain($old));
-
-				return(pql_strip_domain($old)."@".$domain);
-			} else
-			  return(idn_to_ascii($old));
-		} else
-		  // IDNA isn't availible, return the modified string
-		  return($new);
+  $old = $string;
+  
+  $new = pql_format_international($old);
+  if($old != $new) {
+	// The two strings isn't equal -> something have been replaced
+	
+	if(function_exists("idn_to_ascii")) {
+	  if(ereg("@", $old)) {
+		$domain = idn_to_ascii(pql_strip_domain($old));
+		
+		return(pql_strip_domain($old)."@".$domain);
+	  } else
+		return(idn_to_ascii($old));
 	} else
-	  // No change - return original string
-	  return($string);
+	  // IDNA isn't availible, return the modified string
+	  return($new);
+  } else
+	// No change - return original string
+	return($string);
 }
 // }}}
 
 // {{{ pql_maybe_idna_decode(string)
 function pql_maybe_idna_decode($string) {
-	if(eregi("xn--", $string) and function_exists("idn_to_utf8")) {
-		// It's an IDNA string, and we have the IDN module loaded
-
-		// Catch email addresses (can't decode the @)
-		if(ereg("@", $string)) {
-			$domain = pql_maybe_decode(idn_to_utf8(pql_strip_username($old)));
-
-			return(pql_strip_domain($old)."@".$domain);
-		} else 
-		  // First IDNA decode it, then UTF-8 decode it
-		  return(pql_maybe_decode(idn_to_utf8($string)));
-	} else {
-		return(pql_maybe_decode($string));
-	}
+  if(eregi("xn--", $string) and function_exists("idn_to_utf8")) {
+	// It's an IDNA string, and we have the IDN module loaded
+	
+	// Catch email addresses (can't decode the @)
+	if(ereg("@", $string)) {
+	  $domain = pql_maybe_decode(idn_to_utf8(pql_strip_username($old)));
+	  
+	  return(pql_strip_domain($old)."@".$domain);
+	} else 
+	  // First IDNA decode it, then UTF-8 decode it
+	  return(pql_maybe_decode(idn_to_utf8($string)));
+  } else {
+	return(pql_maybe_decode($string));
+  }
 }
 // }}}
 

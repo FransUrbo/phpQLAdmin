@@ -4,7 +4,7 @@ $URL  = "domain_edit_attributes.php?rootdn=".$url["rootdn"]."&domain=".$url["dom
 $URL .= "&attrib=".pql_get_define("PQL_ATTR_LDAPACI")."&view=" . $_REQUEST["view"] . "&";
 
 // We can be called either from either domain_detail.php or tables/user_details-aci.inc
-if(!empty($_REQUEST["user"])) {
+if(!@empty($_REQUEST["user"])) {
     // Get the ACIs in this user object
     $aci = pql_aci_get($_pql->ldap_linkid, $_REQUEST["user"]);
 
@@ -33,7 +33,7 @@ if(!is_array($aci)) {
         <td class="title"><?=$LANG->_('Options')?></td>
       </tr>
 
-<?php for($i=0; $aci[$i]; $i++) {
+<?php for($i=0; $i < $aci['count']; $i++) {
 		$url = $URL . pql_get_define("PQL_ATTR_LDAPACI") . "=" . urlencode($aci[$i]["LINE"]);
 ?>
       <tr class="<?php pql_format_table(); ?>">
@@ -57,7 +57,7 @@ if(!is_array($aci)) {
 
         <td><?=$aci[$i]["TYPE"]?></td>
         <td><?=$aci[$i]["SUBJECT"]?></td>
-        <td align="center"><a href="<?=$url?>&submit=3&type=edit"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change value')?>" border="0"></a>&nbsp;&nbsp;<a href="<?=$url?>&submit=2&type=delete"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete value')?>" border="0"></a>&nbsp;&nbsp;<?php if($i==0) { ?><img src="images/spacer_12x12.png" width="12" height="12" border="0"><?php } else { ?><a href="<?=$url?>&submit=4&type=moveup"><img src="images/up.png" width="12" height="12" alt="move up" border="0"></a><?php } ?><?php if(!$aci[$i+1]["LINE"]) { ?><img src="images/spacer_12x12.png" width="12" height="12" border="0"><?php } else { ?><a href="<?=$url?>&submit=4&type=movedown"><img src="images/down.png" width="12" height="12" alt="move down" border="0"></a><?php } ?></td>
+        <td align="center"><a href="<?=$url?>&submit=3&type=edit"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change value')?>" border="0"></a>&nbsp;&nbsp;<a href="<?=$url?>&submit=2&type=delete"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete value')?>" border="0"></a>&nbsp;&nbsp;<?php if($i==0) { ?><img src="images/spacer_12x12.png" width="12" height="12" border="0"><?php } else { ?><a href="<?=$url?>&submit=4&type=moveup"><img src="images/up.png" width="12" height="12" alt="move up" border="0"></a><?php } ?><?php if(@empty($aci[$i+1]["LINE"])) { ?><img src="images/spacer_12x12.png" width="12" height="12" border="0"><?php } else { ?><a href="<?=$url?>&submit=4&type=movedown"><img src="images/down.png" width="12" height="12" alt="move down" border="0"></a><?php } ?></td>
       </tr>
 <?php } ?>
 

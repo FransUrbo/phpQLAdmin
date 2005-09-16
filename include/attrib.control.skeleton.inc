@@ -58,7 +58,7 @@
 //
 // Please look at other plugins to see which standard header text is recommanded.
 //
-// $Id: attrib.control.skeleton.inc,v 2.17 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.control.skeleton.inc,v 2.18 2005-09-16 06:08:50 turbo Exp $
 //
 
 // {{{ xxx_check(type)
@@ -91,7 +91,7 @@ function xxx_init() {
 							   pql_get_define("PQL_ATTR_CN")."=".$_REQUEST["mxhost"].",".$_SESSION["USER_SEARCH_DN_CTR"],
 							   pql_get_define("PQL_ATTR_xxx"));
 	
-	if(is_null($value))
+	if(@is_null($value))
 	  return true;
 }
 // }}}
@@ -108,7 +108,7 @@ function xxx_print_view($host) {
 	xxx_init();
 
 	// set empty field to default value
-	if($_REQUEST["xxx"] == "")
+	if(@empty($_REQUEST["xxx"]))
 	  $_REQUEST["xxx"] = "set the default value here";
 ?>
   <table cellspacing="0" cellpadding="3" border="0">

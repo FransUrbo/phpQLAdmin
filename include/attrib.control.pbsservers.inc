@@ -2,16 +2,16 @@
 // control attribute plugin for
 // pbsservers (max number of bytes in message)
 //
-// $Id: attrib.control.pbsservers.inc,v 2.8 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.pbsservers.inc,v 2.9 2005-09-16 06:08:49 turbo Exp $
 
 // {{{ pbsservers_check(type)
 function pbsservers_check($type) {
 	global $error, $LANG;
 
 	// check each field
-	if(is_array($_REQUEST["pbsservers"])) {
+	if(@is_array($_REQUEST["pbsservers"])) {
 		foreach($_REQUEST["pbsservers"] as $key => $server) {
-			if($server == "")
+			if(empty($server))
 			  continue;
 			
 			// it is an ip address
@@ -26,14 +26,14 @@ function pbsservers_check($type) {
 					switch((int)$ip_key) {
 					  case 0:
 					  case 3:
-						if($ip_part <= 0 or $ip_part > 254) {
+						if(($ip_part <= 0) or ($ip_part > 254)) {
 							$is_error = true;
 							$error["pbsservers_$key"] = $LANG->_('Invalid');
 						}
 						break;
 						
 					  default:
-						if($ip_part < 0 or $ip_part > 255) {
+						if(($ip_part < 0) or ($ip_part > 255)) {
 							$is_error = true;
 							$error["pbsservers_$key"] = $LANG->_('Invalid');
 						}
@@ -60,9 +60,9 @@ function pbsservers_init($host) {
 												pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 												pql_get_define("PQL_ATTR_PBS_SERVERS"));
 	
-	if(is_null($_REQUEST["pbsservers"]))
+	if(@is_null($_REQUEST["pbsservers"]))
 	  return true;
-	elseif(!is_array($_REQUEST["pbsservers"]))
+	elseif(!@is_array($_REQUEST["pbsservers"]))
 	  $_REQUEST["pbsservers"] = array($_REQUEST["pbsservers"]);
 }
 // }}}
@@ -102,7 +102,7 @@ function pbsservers_print_form() {
 	global $error, $LANG;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
-<?php for($i = 0; $_REQUEST["pbsservers"][$i]; $i++) { ?>
+<?php for($i=0; $i < count($_REQUEST["pbsservers"]); $i++) { ?>
     <input type="hidden" name="pbsservers[<?=$i?>]" value="<?=$_REQUEST["pbsservers"][$i]?>">
 <?php } ?>
 

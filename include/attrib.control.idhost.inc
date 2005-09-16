@@ -2,14 +2,14 @@
 // control attribute plugin for
 // idhost (host name for message id's)
 //
-// $Id: attrib.control.idhost.inc,v 2.20 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.idhost.inc,v 2.21 2005-09-16 06:08:46 turbo Exp $
 
 // {{{ idhost_check(type)
 function idhost_check($type) {
 	global $error, $LANG;
 
 	// validity
-	if($_REQUEST["idhost"] != "" and !pql_check_hostaddress($_REQUEST["idhost"])) {
+	if(($_REQUEST["idhost"] != "") and !pql_check_hostaddress($_REQUEST["idhost"])) {
 		$error["idhost"] = $LANG->_('Invalid');
 		return false;
 	}
@@ -28,7 +28,7 @@ function idhost_init($host) {
 											pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 											pql_get_define("PQL_ATTR_IDHOST"));
 	
-	if(is_null($_REQUEST["idhost"]))
+	if(@is_null($_REQUEST["idhost"]))
 	  return true;
 }
 // }}}
@@ -46,7 +46,7 @@ function idhost_print_view($host) {
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Host')?></td>
-        <td class="<?=$class?>"><?php if($_REQUEST["idhost"]) { echo pql_maybe_idna_decode($_REQUEST["idhost"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($host)." (".$LANG->_('Taken from \'me\'') . ")"; }?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["idhost"]) { echo pql_maybe_idna_decode($_REQUEST["idhost"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($host)." (".$LANG->_('Taken from \'me\'') . ")"; }?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_IDHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_IDHOST")?>"></a></td>
       </tr>
     </th>

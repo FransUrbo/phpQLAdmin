@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.208 2005-08-14 14:32:42 turbo Exp $
+// $Id: pql.inc,v 2.209 2005-09-16 06:08:50 turbo Exp $
 //
 
 // ----------------------------
@@ -791,7 +791,7 @@ function pql_missing_objectclasses($linkid, $dn, $entry) {
 
 		if(is_array($objectclass)) {
 			// We've found objectclass(es) that provide the attributes in the object.
-			for($i=0; $existing[$i]; $i++)
+			for($i=0; $i < count($existing); $i++)
 			  $objectclass[] = $existing[$i];
 
 			return($objectclass);
@@ -826,9 +826,10 @@ function pql_recreate_dnsttl($dn) {
 }
 // }}}
 
-// {{{ pql_header(uri)
-function pql_header($uri) {
-	header("Location: ".$_SESSION["URI"].$uri);
+// {{{ pql_header(url)
+function pql_header($url) {
+	$uri = $_SESSION["URI"].$url;
+	header("Location: $url");
 	exit;
 }
 // }}}

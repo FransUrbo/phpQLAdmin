@@ -2,16 +2,16 @@
 // control attribute plugin for
 // qmqpservers (max number of bytes in message)
 //
-// $Id: attrib.control.qmqpservers.inc,v 2.21 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.qmqpservers.inc,v 2.22 2005-09-16 06:08:49 turbo Exp $
 
 // {{{ qmqpservers_check(type)
 function qmqpservers_check($type) {
 	global $error, $LANG;
 
 	// check each field
-	if(is_array($_REQUEST["qmqpservers"])) {
+	if(@is_array($_REQUEST["qmqpservers"])) {
 		foreach($_REQUEST["qmqpservers"] as $key => $server) {
-			if($server == "")
+			if(empty($server))
 			  continue;
 			
 			// it is an ip address
@@ -26,14 +26,14 @@ function qmqpservers_check($type) {
 					switch((int)$ip_key) {
 					  case 0:
 					  case 3:
-						if($ip_part <= 0 or $ip_part > 254) {
+						if(($ip_part <= 0) or ($ip_part > 254)) {
 							$is_error = true;
 							$error["qmqpservers_$key"] = $LANG->_('Invalid');
 						}
 						break;
 						
 					  default:
-						if($ip_part < 0 or $ip_part > 255) {
+						if(($ip_part < 0) or ($ip_part > 255)) {
 							$is_error = true;
 							$error["qmqpservers_$key"] = $LANG->_('Invalid');
 						}
@@ -60,9 +60,9 @@ function qmqpservers_init($host) {
 												 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 												 pql_get_define("PQL_ATTR_QMQPSERVERS"));
 
-	if(!$_REQUEST["qmqpservers"])
+	if(!@$_REQUEST["qmqpservers"])
 	  return true;
-	elseif(!is_array($_REQUEST["qmqpservers"]))
+	elseif(!@is_array($_REQUEST["qmqpservers"]))
 	  $_REQUEST["qmqpservers"] = array($_REQUEST["qmqpservers"]);
 }
 // }}}
@@ -102,7 +102,7 @@ function qmqpservers_print_form() {
 	global $error, $LANG;
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
-<?php for($i = 0; $_REQUEST["qmqpservers"][$i]; $i++) { ?>
+<?php for($i=0; $i < count($_REQUEST["qmqpservers"]); $i++) { ?>
     <input type="hidden" name="qmqpservers[<?=$i?>]" value="<?=$_REQUEST["qmqpservers"][$i]?>">
 <?php } ?>
 

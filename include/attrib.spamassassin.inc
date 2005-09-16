@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for spamAssassin
-// $Id: attrib.spamassassin.inc,v 2.2 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.spamassassin.inc,v 2.3 2005-09-16 06:08:50 turbo Exp $
 
 // {{{ attribute_save($request)
 function attribute_save($request) {
@@ -43,7 +43,7 @@ function attribute_save($request) {
 	if(is_array($request["addresses"])) {
 		unset($entry["addresses"]);
 
-		for($i=0; $request["addresses"][$i];) {
+		for($i=0; $i < count($request]);) {
 			$tag = $request["addresses"][$i];
 
 			$entry[$tag][] = $request["addresses"][$i+1];

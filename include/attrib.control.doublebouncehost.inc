@@ -3,7 +3,7 @@
 // doublebouncehost (username of bounce sender)
 // doublebounceto (hostname of bounce sender)
 //
-// $Id: attrib.control.doublebouncehost.inc,v 2.19 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.doublebouncehost.inc,v 2.20 2005-09-16 06:08:46 turbo Exp $
 
 // {{{ doublebouncehost_check(type)
 function doublebouncehost_check($type) {
@@ -11,7 +11,7 @@ function doublebouncehost_check($type) {
 
 	// check validity
 	if($_REQUEST["attrib"] == "doublebounceto") {
-	  if($_REQUEST["doublebounceto"] != "" and !pql_check_email($_REQUEST["doublebounceto"] . "@domain.tld")) {
+	  if(($_REQUEST["doublebounceto"] != "") and !pql_check_email($_REQUEST["doublebounceto"] . "@domain.tld")) {
 		$error["doublebounceto"] = $LANG->_('Invalid');
 		$is_error = true;
 	  }
@@ -19,7 +19,7 @@ function doublebouncehost_check($type) {
 
 	// check validity
 	if($_REQUEST["attrib"] == "doublebouncehost") {
-	  if($_REQUEST["doublebouncehost"] != "" and !pql_check_hostaddress($_REQUEST["doublebouncehost"])) {
+	  if(($_REQUEST["doublebouncehost"] != "") and !pql_check_hostaddress($_REQUEST["doublebouncehost"])) {
 		$error["doublebouncehost"] = $LANG->_('Invalid');
 		$is_error = true;
 	  }
@@ -59,14 +59,14 @@ function doublebouncehost_print_view($host) {
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Receiver')?></td>
-        <td class="<?=$class?>"><?php if($_REQUEST["doublebounceto"]) { echo $_REQUEST["doublebounceto"]; } else { echo $LANG->_('Default').": postmaster"; }?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["doublebounceto"]) { echo $_REQUEST["doublebounceto"]; } else { echo $LANG->_('Default').": postmaster"; }?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_DOUBLEBOUNCETO")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_DOUBLEBOUNCETO")?>"></a></td>
       </tr>
 
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Host')?></td>
-        <td class="<?=$class?>"><?php if($_REQUEST["doublebouncehost"]) { echo pql_maybe_idna_decode($_REQUEST["doublebouncehost"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($host)." (".$LANG->_('Taken from \'me\'').")"; }?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["doublebouncehost"]) { echo pql_maybe_idna_decode($_REQUEST["doublebouncehost"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($host)." (".$LANG->_('Taken from \'me\'').")"; }?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_DOUBLEBOUNCEHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_DOUBLEBOUNCEHOST")?>"></a></td>
       </tr>
     </th>
@@ -126,7 +126,7 @@ function doublebouncehost_save($type, $host) {
 		$attribs = array("doublebouncehost" => pql_get_define("PQL_ATTR_DOUBLEBOUNCEHOST"),
 						 "doublebounceto"   => pql_get_define("PQL_ATTR_DOUBLEBOUNCETO"));
 		foreach($attribs as $key => $attrib) {
-		  if($_REQUEST[$key])
+		  if(!@empty($_REQUEST[$key]))
 			$return[] = pql_modify_attribute($_pql_control->ldap_linkid,
 											 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 											 $attrib, 1, $_REQUEST[$key]);

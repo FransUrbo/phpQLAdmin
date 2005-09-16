@@ -3,26 +3,26 @@
 // defaultdomain (default domain)
 // defaulthost (default hostname)
 //
-// $Id: attrib.control.defaultdomain.inc,v 2.18 2005-06-22 13:58:33 turbo Exp $
+// $Id: attrib.control.defaultdomain.inc,v 2.19 2005-09-16 06:08:46 turbo Exp $
 
 // {{{ defaultdomain_check(type)
 function defaultdomain_check($type) {
 	global $error, $LANG;
 
 	// check validity
-	if($_REQUEST["defaultdomain"] != "" and !pql_check_hostaddress($_REQUEST["defaultdomain"])) {
+	if(($_REQUEST["defaultdomain"] != "") and !pql_check_hostaddress($_REQUEST["defaultdomain"])) {
 		$error["defaultdomain"] = $LANG->_('Invalid');
 		$is_error = true;
 	}
 
 	// check validity
-	if($_REQUEST["defaulthost"] != "" and !pql_check_hostaddress($_REQUEST["defaulthost"])) {
+	if(($_REQUEST["defaulthost"] != "") and !pql_check_hostaddress($_REQUEST["defaulthost"])) {
 		$error["defaulthost"] = $LANG->_('Invalid');
 		$is_error = true;
 	}
 
 	// check validity
-	if($_REQUEST["plusdomain"] != "" and !pql_check_hostaddress($_REQUEST["plusdomain"])) {
+	if(($_REQUEST["plusdomain"] != "") and !pql_check_hostaddress($_REQUEST["plusdomain"])) {
 		$error["plusdomain"] = $LANG->_('Invalid');
 		$is_error = true;
 	}
@@ -62,21 +62,21 @@ function defaultdomain_print_view($host) {
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Default domain')?></td>
-        <td class="<?=$class?>"><?php if($_REQUEST["defaultdomain"]) { echo $_REQUEST["defaultdomain"]; } else { pql_maybe_idna_decode($host) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";}?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["defaultdomain"]) { echo $_REQUEST["defaultdomain"]; } else { pql_maybe_idna_decode($host) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";}?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_DEFAULTDOMAIN")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_DEFAULTDOMAIN")?>"></a></td>
       </tr>
 
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Default host')?></td>
-        <td class="<?=$class?>"><?php if($_REQUEST["defaulthost"]) { echo $_REQUEST["defaulthost"]; } else { pql_maybe_idna_decode($host) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")"; }?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["defaulthost"]) { echo $_REQUEST["defaulthost"]; } else { pql_maybe_idna_decode($host) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")"; }?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_DEFAULTHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_DEFAULTHOST")?>"></a></td>
       </tr>
 
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Plus domain')?></td>
-        <td class="<?=$class?>"><?php if($_REQUEST["plusdomain"]) { echo $_REQUEST["plusdomain"]; } else { pql_maybe_idna_decode($host) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")"; }?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["plusdomain"]) { echo $_REQUEST["plusdomain"]; } else { pql_maybe_idna_decode($host) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")"; }?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_PLUSDOMAIN")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_PLUSDOMAIN")?>"></a></td>
       </tr>
     </th>
@@ -141,7 +141,7 @@ function defaultdomain_save($type, $host) {
 						 "defaulthost"   => pql_get_define("PQL_ATTR_DEFAULTHOST"),
 						 "plusdomain"    => pql_get_define("PQL_ATTR_PLUSDOMAIN"));
 		foreach($attribs as $key => $attrib) {
-		  if($_REQUEST[$key])
+		  if(!@empty($_REQUEST[$key]))
 			$return[] = pql_modify_attribute($_pql_control->ldap_linkid,
 											 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 											 $attrib, 1, $_REQUEST[$key]);
