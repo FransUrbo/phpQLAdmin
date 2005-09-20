@@ -1,6 +1,6 @@
 <?php
 // make some simple tests on ldap connection
-// $Id: config_ldaptest.php,v 2.35 2005-06-09 15:05:35 turbo Exp $
+// $Id: config_ldaptest.php,v 2.36 2005-09-20 05:14:27 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -271,13 +271,16 @@ include($_SESSION["path"]."/header.html");
         <td class="title"><?=$LANG->_('Control directory connection')?></td>
         <td class="<?php pql_format_table(); ?>"><?=$connection_control?>&nbsp;</td>
       </tr>
-<?php if($_SESSION["ADVANCED_MODE"] == 1) { ?>
+<?php if($_SESSION["ADVANCED_MODE"] == 1) {
+		// Just so that we don't have to call pql_get_subschemas() multiple times here - takes time!
+		$ldap = pql_get_subschemas($_pql->ldap_linkid);
+?>
 
       <tr></tr>
 
       <tr>
         <td class="title"><?=$LANG->_('LDAP server contains phpQLAdminConfig objectclass')?></td>
-<?php    if(pql_get_subschemas($_pql->ldap_linkid, "phpQLAdminConfig")) { ?>
+<?php	 if($ldap["objectclasses"]["phpqladminconfig"]) { ?>
         <td class="<?php pql_format_table(); ?>"><?=$LANG->_('Yes')?></td>
 <?php    } else { ?>
         <td class="<?php pql_format_table(); ?>"><?=$LANG->_('No')?>. <?=$LANG->_('Please load file')?> <a href="phpQLAdmin.schema">phpQLAdmin.schema</a>&nbsp;</td>
@@ -286,7 +289,7 @@ include($_SESSION["path"]."/header.html");
 
       <tr>
         <td class="title"><?=$LANG->_('LDAP server contains phpQLAdminBranch objectclass')?></td>
-<?php    if(pql_get_subschemas($_pql->ldap_linkid, "phpQLAdminBranch")) { ?>
+<?php	 if($ldap["objectclasses"]["phpqladminbranch"]) { ?>
         <td class="<?php pql_format_table(); ?>"><?=$LANG->_('Yes')?></td>
 <?php    } else { ?>
 	<td class="<?php pql_format_table(); ?>"><?=$LANG->_('No')?>. <?=$LANG->_('Please load file')?> <a href="phpQLAdmin.schema">phpQLAdmin.schema</a>&nbsp;</td>
@@ -295,7 +298,7 @@ include($_SESSION["path"]."/header.html");
 
       <tr>
         <td class="title">LDAP server contains schema for <a href="http://www.ietf.org/rfc/rfc2377.txt" target="_new">RFC 2377</a></td>
-<?php    if(pql_get_subschemas($_pql->ldap_linkid, "dcOrganizationNameForm")) { ?>
+<?php	 if($ldap["objectclasses"]["dcorganizationnameform"]) { ?>
         <td class="<?php pql_format_table(); ?>"><?=$LANG->_('Yes')?></td>
 <?php    } else { ?>
         <td class="<?php pql_format_table(); ?>"><?=$LANG->_('No')?>. <?=$LANG->_('Please load file')?> <a href="rfc2377.schema">rfc2377.schema</a>&nbsp;</td>
