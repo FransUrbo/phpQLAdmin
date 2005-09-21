@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.97 2005-06-09 15:05:35 turbo Exp $
+// $Id: domain_detail.php,v 2.98 2005-09-21 05:17:46 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -51,7 +51,7 @@ if(!pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], '(objectclass=*)', 'BASE
 // }}}
 
 // {{{ Get the organization name, or show 'Not set' with an URL to set it
-$domainname = pql_get_attribute($_pql->ldap_linkid, $domain, pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+$domainname = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
 if(!$domainname) {
   // TODO: Resonable default!
   $domainname = '';				// DLW: Just to shut off some warnings.
@@ -75,7 +75,7 @@ $attribs = array("autocreatemailaddress"	=> pql_get_define("PQL_ATTR_AUTOCREATE_
 				 "facsimiletelephonenumber"	=> pql_get_define("PQL_ATTR_FACSIMILETELEPHONENUMBER"),
 				 "l"						=> pql_get_define("PQL_ATTR_L"),
 				 "maximumdomainusers"		=> pql_get_define("PQL_ATTR_MAXIMUM_DOMAIN_USERS"),
-				 "maximumMailingLists"		=> pql_get_define("PQL_ATTR_MAXIMUM_MAILING_LISTS"),
+				 "maximummailinglists"		=> pql_get_define("PQL_ATTR_MAXIMUM_MAILING_LISTS"),
 				 "o"						=> pql_get_define("PQL_ATTR_O"),
 				 "postaladdress"			=> pql_get_define("PQL_ATTR_POSTALADDRESS"),
 				 "streetaddress"			=> pql_get_define("PQL_ATTR_STREETADDRESS"),
@@ -164,11 +164,17 @@ if($seealso and !is_array($seealso)) {
 // The quota value retreived from the object is a one liner.
 // Split it up into it's parts (SIZE and AMOUNT) and
 // create an array that pql_ldap_mailquota() understands.
-$temp		= split(',', $basequota);
-$temp[1]	= eregi_replace("C$", "", $temp[1]);
-$temp[0]	= eregi_replace("S$", "", $temp[0]);
-$quota		= array(); $quota["maxmails"] = $temp[1]; $quota["maxsize"]  = $temp[0];
-$basequota	= pql_ldap_mailquota($quota);
+if($basequota) {
+  $temp		= split(',', $basequota);
+  $temp[1]	= eregi_replace("C$", "", $temp[1]);
+  $temp[0]	= eregi_replace("S$", "", $temp[0]);
+
+  $quota			 = array();
+  $quota["maxmails"] = $temp[1];
+  $quota["maxsize"]	 = $temp[0];
+
+  $basequota		 = pql_ldap_mailquota($quota);
+}
 
 $additionaldomainname = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
 // }}}
