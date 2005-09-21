@@ -1,6 +1,6 @@
 <?php
 // logins to the system
-// $Id: index.php,v 2.47 2005-06-09 15:05:35 turbo Exp $
+// $Id: index.php,v 2.48 2005-09-21 05:23:01 turbo Exp $
 //
 // Start debuging
 // http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0
@@ -16,7 +16,7 @@ if (!empty($_POST["msg"])) {
 }
 
 // DLW: I think !empty($_GET["logout"]) will work here better than $_GET["logout"] == 1.
-if ($_GET["logout"] == 1 or !empty($_GET["msg"])) {
+if(@$_GET["logout"] == 1 or !empty($_GET["msg"])) {
 	if ($_GET["logout"] == 1) {
 		$log = date("M d H:i:s");
 		$log .= " : Logged out (" . $_SESSION["USER_DN"] . ")\n";
@@ -54,13 +54,6 @@ require($_SESSION["path"]."/include/pql_config.inc");
 
 if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 	include($_SESSION["path"]."/header.html");
-
-	if(!$_SESSION["USER_HOST"]) {
-		if(! eregi('\+', pql_get_define("PQL_CONF_HOST"))) {
-			$host = split(';', pql_get_define("PQL_CONF_HOST"));
-			$_SESSION["USER_HOST"] = $host[0] . ";" . $host[1] . ";" . $host[2];
-		}
-	}
 
 	// print status message, if one is available
 	if(isset($_GET["msg"])) {
@@ -126,7 +119,7 @@ if(!($whoarewe = pql_get_define("PQL_CONF_WHOAREWE")))
 
           <tr>
             <td bgcolor="#D0DCE0"><b><?=$LANG->_('Login ID')?>:</b></td>
-            <td><input type=text name="uname" value="<?=$_GET["uname"]?>" size="30"></td>
+            <td><input type=text name="uname" value="<?=@$_GET["uname"]?>" size="30"></td>
           </tr>
 
           <tr>
@@ -162,19 +155,6 @@ if(!($whoarewe = pql_get_define("PQL_CONF_WHOAREWE")))
 <?php
 } else {
 	// -------------------------------------
-	if($_POST["server"]) {
-		// Get the LDAP server
-		if(!$_SESSION["USER_HOST"])
-		  $_SESSION["USER_HOST"] = $_POST["server"];
-
-		// Get the search base - controls database
-		if(!$_SESSION["USER_SEARCH_DN_CTR"]) {
-			$dn = split(';', $_SESSION["USER_HOST"]);
-			$_SESSION["USER_SEARCH_DN_CTR"] = $dn[2];
-		}
-	} else
-	  die("No LDAP server to login to is defined. Weird.");
-
 	// NOTE:
 	// User DN and password will be NULL the first time,
 	// so we will bind anonymously... 
@@ -230,10 +210,10 @@ if(!($whoarewe = pql_get_define("PQL_CONF_WHOAREWE")))
 	$log .= " : Logged in ($userdn)\n";
 	error_log($log, 3, "phpQLadmin.log");
 
-	session_write_close();
-	if(pql_get_attribute($_pql->ldap_linkid, $_SESSION["USER_DN"], pql_get_define("PQL_ATTR_START_ADVANCED")))
+	if(pql_get_attribute($_pql->ldap_linkid, $_SESSION["USER_DN"], pql_get_define("PQL_ATTR_START_ADVANCED"))) {
+	  session_write_close();
 	  pql_header("index2.php?advanced=1");
-	else
+	} else
 	  pql_header("index2.php");
 }
 
