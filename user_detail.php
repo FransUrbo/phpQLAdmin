@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.94 2005-08-14 11:06:15 turbo Exp $
+// $Id: user_detail.php,v 2.95 2005-09-21 05:28:19 turbo Exp $
 //
 // {{{ Setup session
 require("./include/pql_session.inc");
@@ -144,7 +144,12 @@ foreach($attribs as $key => $attrib) {
 	  $value = array($value);
 
 	$$key = $value;
-	$value = urlencode($value);
+	if(!is_array($value))
+	  $value = urlencode($value);
+	else {
+	  for($i=0; $i < count($value); $i++)
+		$value[$i] = urlencode($value[$i]);
+	}
 
     // Setup edit links
     $link = $key . "_link";
@@ -168,7 +173,7 @@ if(!$got_user_reference_attribute) {
 }
 
 // Some of these get set from the "$$key = $value[0]" line above.
-if($userpassword == "") {
+if(empty($userpassword)) {
     $userpassword = $LANG->_('None');
 } else {
     if(eregi("\{KERBEROS\}", $userpassword) or eregi("\{SASL\}", $userpassword)) {
@@ -179,11 +184,11 @@ if($userpassword == "") {
     }
 }
 
-if($mailmessagestore == "") {
+if(empty($mailmessagestore)) {
     $mailmessagestore = $LANG->_('None');
 }
 
-if($mailhost == "") {
+if(empty($mailhost)) {
     $mailhost = $LANG->_('None');
 }
 
@@ -194,18 +199,27 @@ if(is_array($controladmins)) {
 		$controlsadministrator = 1;
 } elseif($controladmins == $_GET["user"]) {
 	$controlsadministrator = 1;
+} else {
+  $controlsadministrator = 0;
 }
 // }}}
 
 // {{{ Load groups user is member of
 // If this user have a username (ie, 'uid') then let's see if this user is member
 // of more groups (listed in the 'memberUid' attribute).
-if($uid) {
+if(!empty($uid)) {
 	$memberuid = array();
 	foreach($_SESSION["BASE_DN"] as $base) {
-		$base  = urldecode($base);
-		$memberuid = pql_search($_pql->ldap_linkid, $base,
-								pql_get_define("PQL_ATTR_ADDITIONAL_GROUP")."=".$uid);
+		$base = urldecode($base);
+		$tmp  = pql_search($_pql->ldap_linkid, $base,
+						   pql_get_define("PQL_ATTR_ADDITIONAL_GROUP")."=".$uid);
+
+		if(is_array($tmp)) {
+		  for($i=0; $i < count($tmp); $i++)
+			$memberuid[] = $tmp[$i]['cn'];
+
+		  unset($tmp);
+		}
 	}
 }
 // }}}
@@ -229,7 +243,7 @@ foreach($objectclasses as $oc) {
 
 // {{{ Setup the buttons
 $buttons = array('basic'			=> 'User data');
-if(!$USER_IS_GROUP) {
+if(empty($USER_IS_GROUP)) {
 	$new = array('personal'			=> 'Personal details',
 				 'status'			=> 'Account status',
 				 'delivery'			=> 'Delivery mode');
@@ -243,19 +257,19 @@ $new = array('email'				=> 'Registred addresses',
 			 'forwards_from'		=> 'Forwarders from other accounts');
 $buttons = $buttons + $new;
 
-if(!$USER_IS_GROUP) {
+if(empty($USER_IS_GROUP)) {
 	$new = array('forwards_to'		=> 'Forwarders to other accounts',
 				 'antispam'			=> 'Antispam configuration');
 	$buttons = $buttons + $new;
 }
 
 // If they had the objectClass, then show them the menu
-if($USER_IS_SAMBA) {
+if(!empty($USER_IS_SAMBA)) {
 	$new = array('samba'			=> 'Samba Settings');
 	$buttons = $buttons + $new;
 }
 
-if($_SESSION["ADVANCED_MODE"] and !$USER_IS_GROUP) {
+if(!@empty($_SESSION["ADVANCED_MODE"]) and empty($USER_IS_GROUP)) {
 	$new = array('delivery_advanced'=> 'Advanced delivery properties',
 				 'mailbox'			=> 'Mailbox properties',
 				 'access'			=> 'User access');
