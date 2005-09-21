@@ -1,6 +1,6 @@
 <?php
 // Show Connection/Suffixes status of LDAP server
-// $Id: status_ldap.php,v 2.9 2005-06-09 15:05:35 turbo Exp $
+// $Id: status_ldap.php,v 2.10 2005-09-21 05:23:53 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -28,11 +28,11 @@ if($tmp) {
     $timestamp_current = $time_current = "0";
 }
 
-if($type == 'basics') {
+if($_REQUEST["type"] == 'basics') {
 	include("./tables/status_ldap-basic.inc");
-} elseif($type == 'connections') {
+} elseif($_REQUEST["type"] == 'connections') {
 	include("./tables/status_ldap-connections.inc");
-} elseif($type == 'databases') {
+} elseif($_REQUEST["type"] == 'databases') {
 	include("./tables/status_ldap-databases.inc");
 }
 ?>
