@@ -1,35 +1,30 @@
 <?php
 require($_SESSION["path"]."/include/pql_websrv.inc");
 
-// {{{ Setup the object class filter
-$ocs = pql_split_oldvalues(pql_get_define("PQL_CONF_WEBSRV_OC"));
-$filter = '(&';
-for($i=0; $ocs[$i]; $i++) {
-  $filter .= '(objectClass='.$ocs[$i].')';
-}
-$filter .= ')';
-// }}}
+// Setup the object class filter
+$filter = '(&(objectClass=ApacheSectionObj)(objectClass=device))';
 
 // {{{ Retreive the Apache web server object(s)
-$result = pql_search($_pql->ldap_linkid, 'ou=Web,'.$_REQUEST["domain"], $filter);
-for($i=0; $result[$i]; $i++) {
+$result = pql_search($_pql->ldap_linkid, 'ou=Web,'.$_REQUEST["domain"], $filter, "ONELEVEL");
+for($i=0; $i < count($result); $i++) {
   // Oki, we have webserver configuration(s) in LDAP.
   $name = $result[$i][pql_get_define("PQL_ATTR_CN")];
   $web_srvs[$name] = $result[$i];
 }
 // }}}
 
-if(is_array($web_srvs)) {
-  if(!$web_srv) {
+if(@is_array($web_srvs)) {
+  if(empty($_REQUEST["server"])) {
 	// Use the first server as default (ie, if we're not called with a specific server to show)
-	foreach($web_srvs as $web_srv => $data) break;
-  } elseif(eregi('=', $web_srv)) {
+	foreach($web_srvs as $_REQUEST["server"] => $data) break;
+  } elseif(eregi('=', $_REQUEST["server"])) {
 	// Server is a RDN				   -> server   = 'cn=testing.somwehere.tld,ou=WEB,dc=somewhere,dc=tld'
 	// This will happen after changing a value with websrv_edit_attributes.php.
-	$web_srv = split('=', $web_srv);    // -> server[1]= 'testing.somwehere.tld,ou'
-	$web_srv = split(',', $web_srv[1]); // -> server[0]= 'testing.somwehere.tld'
-	$web_srv = $web_srv[0];
+	$tmp = split('=', $_REQUEST["server"]);	// -> server[1]= 'testing.somwehere.tld,ou'
+	$tmp = split(',', $web_srv[1]);			// -> server[0]= 'testing.somwehere.tld'
+	$_REQUEST["server"] = $tmp[0];
   }
+  $web_srv = $_REQUEST["server"];
 ?>
   <table cellspacing="0" border="0" width="100%" cellpadding="0" size="100%">
     <tr>
@@ -49,37 +44,37 @@ if(is_array($web_srvs)) {
     <th colspan="3" align="left"><?=$LANG->_('Webserver administration')?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Server DN')?></td>
-        <td><?=$web_srvs[$web_srv]["dn"]?></td>
+        <td><?=@$web_srvs[$web_srv]["dn"]?></td>
         <td></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Server IP')?></td>
-        <td><?=$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_SRV_IP")]?></td>
+        <td><?=@$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_SRV_IP")]?></td>
         <td><a href="<?=$LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_IP")?>&oldvalue=<?=$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_SRV_IP")]?>"><?=$img["mod"]?></a></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Server URL')?></td>
-        <td><?=$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_SRV_URL")]?></td>
+        <td><?=@$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_SRV_URL")]?></td>
         <td><a href="<?=$LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_URL")?>&oldvalue=<?=$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_SRV_URL")]?>"><?=$img["mod"]?></a></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Server administrator')?></td>
-        <td><?=$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_SRV_ADMIN")]?></td>
+        <td><?=@$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_SRV_ADMIN")]?></td>
         <td><a href="<?=$LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_ADMIN")?>&oldvalue=<?=$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_SRV_ADMIN")]?>"><?=$img["mod"]?></a></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Document root')?></td>
-        <td><?=$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_DOCROOT")]?></td>
+        <td><?=@$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_DOCROOT")]?></td>
         <td><a href="<?=$LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_DOCROOT")?>&oldvalue=<?=$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_DOCROOT")]?>"><?=$img["mod"]?></a></td>
       </tr>
 
       <tr></tr>
 
-<?php if(is_array($web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS")])) {
+<?php if(@is_array($web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS")])) {
         $new_tr = 1;
 
         foreach($web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS")] as $srv) {
@@ -118,10 +113,10 @@ if(is_array($web_srvs)) {
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Script alias URL')?></td>
-        <td><?=$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_URL")]?></td>
+        <td><?=@$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_URL")]?></td>
         <td>
           <a href="<?=$LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_URL")?>&oldvalue=<?=$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_URL")]?>"><?=$img["mod"]?></a>
-<?php if($web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_URL")]) { ?>
+<?php if(@$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_URL")]) { ?>
           <a href="<?=$LINK_URL?>&action=del&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_URL")?>&oldvalue=<?=$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_URL")]?>"><?=$img["del"]?></a>
 <?php } ?>
         </td>
@@ -129,10 +124,10 @@ if(is_array($web_srvs)) {
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Script alias path')?></td>
-        <td><?=$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_PATH")]?></td>
+        <td><?=@$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_PATH")]?></td>
         <td>
           <a href="<?=$LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_PATH")?>&oldvalue=<?=$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_PATH")]?>"><?=$img["mod"]?></a>
-<?php if($web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_PATH")]) { ?>
+<?php if(@$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_PATH")]) { ?>
           <a href="<?=$LINK_URL?>&action=del&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_PATH")?>&oldvalue=<?=$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_SCRIPT_PATH")]?>"><?=$img["del"]?></a>
 <?php } ?>
         </td>
@@ -140,10 +135,10 @@ if(is_array($web_srvs)) {
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Error logfile')?></td>
-        <td><?=$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_LOG_ERROR")]?></td>
+        <td><?=@$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_LOG_ERROR")]?></td>
         <td>
           <a href="<?=$LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_LOG_ERROR")?>&oldvalue=<?=$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_LOG_ERROR")]?>"><?=$img["mod"]?></a>
-<?php if($web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_LOG_ERROR")]) { ?>
+<?php if(@$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_LOG_ERROR")]) { ?>
           <a href="<?=$LINK_URL?>&action=del&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_LOG_ERROR")?>&oldvalue=<?=$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_LOG_ERROR")]?>"><?=$img["del"]?></a>
 <?php } ?>
         </td>
@@ -151,16 +146,16 @@ if(is_array($web_srvs)) {
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Transfer logfile')?></td>
-        <td><?=$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_LOG_TRANSFER")]?></td>
+        <td><?=@$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_LOG_TRANSFER")]?></td>
         <td>
           <a href="<?=$LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_LOG_TRANSFER")?>&oldvalue=<?=$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_LOG_TRANSFER")]?>"><?=$img["mod"]?></a>
-<?php if($web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_LOG_TRANSFER")]) { ?>
+<?php if(@$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_LOG_TRANSFER")]) { ?>
           <a href="<?=$LINK_URL?>&action=del&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_LOG_TRANSFER")?>&oldvalue=<?=$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_LOG_TRANSFER")]?>"><?=$img["del"]?></a>
 <?php } ?>
         </td>
       </tr>
 
-<?php if(is_array($web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_OPTIONS")])) {
+<?php if(@is_array($web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_OPTIONS")])) {
         $new_tr = 1;
 
         foreach($web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_OPTIONS")] as $srv) {
@@ -201,10 +196,10 @@ if(is_array($web_srvs)) {
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('LDAP Server')?></td>
-        <td><?=$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER")]?></td>
+        <td><?=@$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER")]?></td>
         <td>
           <a href="<?=$LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER")?>&oldvalue=<?=$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER")]?>"><?=$img["mod"]?></a>
-<?php if($web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER")]) { ?>
+<?php if(@$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER")]) { ?>
           <a href="<?=$LINK_URL?>&action=del&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER")?>&oldvalue=<?=$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER")]?>"><?=$img["del"]?></a>
 <?php } ?>
         </td>
@@ -212,10 +207,10 @@ if(is_array($web_srvs)) {
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('LDAP Login DN')?></td>
-        <td><?=$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_DN")]?></td>
+        <td><?=@$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_DN")]?></td>
         <td>
           <a href="<?=$LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_DN")?>&oldvalue=<?=$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_DN")]?>"><?=$img["mod"]?></a>
-<?php if($web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_DN")]) { ?>
+<?php if(@$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_DN")]) { ?>
           <a href="<?=$LINK_URL?>&action=del&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_DN")?>&oldvalue=<?=$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_DN")]?>"><?=$img["del"]?></a>
 <?php } ?>
         </td>
@@ -223,10 +218,10 @@ if(is_array($web_srvs)) {
 
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('LDAP Login Password')?></td>
-        <td><?=$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_PW")]?></td>
+        <td><?=@$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_PW")]?></td>
         <td>
           <a href="<?=$LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_PW")?>&oldvalue=<?=$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_PW")]?>"><?=$img["mod"]?></a>
-<?php if($web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_PW")]) { ?>
+<?php if(@$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_PW")]) { ?>
           <a href="<?=$LINK_URL?>&action=del&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_PW")?>&oldvalue=<?=$web_srvs[$web_srv][pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_PW")]?>"><?=$img["del"]?></a>
 <?php } ?>
         </td>
