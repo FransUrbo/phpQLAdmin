@@ -2,7 +2,7 @@
 // ----------------------------
 // pql_update_translations.php
 //
-// $Id: update_translations.php,v 2.6 2005-02-24 17:04:03 turbo Exp $
+// $Id: update_translations.php,v 2.7 2005-09-22 08:45:39 turbo Exp $
 //
 
 // ----------------------------
@@ -15,12 +15,24 @@
 // be more in line with the rest of the phpQLAdmin
 // package.
 
-require_once("../include/pql_config.inc");
-	
+require("../include/pql_session.inc");
+require($_SESSION["path"]."/include/pql_config.inc");
+require($_SESSION["path"]."/include/pql_translations.inc");
+
 $outputFile = "translations/lang.new.inc";
 $baseDir = ".\/"; // were we start searching for strings
 	
-$user_lang = isset( $_POST['user_lang'] ) ? $_POST['user_lang'] : '';
+$user_lang = isset($_POST['user_lang']) ? $_POST['user_lang'] : '';
+
+// Set the OS type, only Linux and Windows known to work for sure
+$os_name = pql_get_os_name();
+if($os_name == "unix") { //matches most unixes
+  $pathSeparator = "/";
+  $baseDir = ".\/"; // were we start searching for strings
+} else if($os_name == "windows") {
+  $pathSeparator = "\\";
+  $baseDir = "."; // were we start searching for strings
+}
 ?>
 <html>
   <head>
@@ -54,13 +66,13 @@ $user_lang = isset( $_POST['user_lang'] ) ? $_POST['user_lang'] : '';
 	if(!$fp) {
 	  die("<p>Can't open language file 'include/lang.$lang.inc' for read. Does it exists?");
 	}
-	require ($_SESSION["path"]."/include/lang.$lang.inc");
+	require($_SESSION["path"]."/include/lang.$lang.inc");
 	$buffer = fgets($fp, 4096); // chop off the php start part
 	$read = true;
 	$file_text = "";
 	while($read) {
 		$buffer = fgets($fp, 4096);
-		if(preg_match("/language/", $buffer, $matches))
+		if(preg_match("/the alphabet of the language/", $buffer, $matches))
 		  $read=false;
 		else
 		  $file_text .= $buffer;
@@ -84,12 +96,25 @@ $alphabet = array("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K",
                   "W", "X", "Y", "Z");
 
 // If you want HTML tags, you can have that in the translation string
-// (ie, the value AFTER the '=>' character).</textarea>
+// (ie, the value AFTER the '=>' character).
+</textarea>
 
   <p>
 
 <?php
-	$return = shell_exec('find $baseDir -name "*.php" -o -name "*.inc" | xargs egrep "\->_\(\'.*?\'\)"');
+// "
+	if((bool)ini_get('safe_mode') or ($os_name=="windows")) {
+	  // have to use PHP functions for find and grep, this is slower
+	  find($baseDir, $files, '/.*?\.php$/', $pathSeparator);
+	  $array = grep($files, "/\->_\(\'.*?\'\)/");
+	} else {
+	  // We can use find and grep
+echo "do 'find - exec'<br>";
+	  $return = shell_exec("find $baseDir -follow -name \"*.php\" -exec egrep \"\->_\(\'.*?\'\)\" {} /dev/null \\;");
+	  $array = preg_split("/$baseDir/", $return);
+	}
+echo "Return: '$return'<br>";
+
 	$array  = preg_split ("/$baseDir/", $return);
 	$keys   = array();
 
@@ -99,7 +124,7 @@ $alphabet = array("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K",
 			if(count($matches[$i]) > 1) {
 				for($j=0; $j < count($matches[$i]); $j++)
 				  $keys[$matches[$i][$j]] = "";
-			} else
+			} elseif(isset($matches[$i][0]))
 			  $keys[$matches[$i][0]] = "b";
 		}
 	}
