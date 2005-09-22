@@ -1,6 +1,6 @@
 <?php
 // Attribute plugin for additional group (memberUID)
-// $Id: attrib.additionalgroup.inc,v 2.10 2005-08-14 11:23:05 turbo Exp $
+// $Id: attrib.additionalgroup.inc,v 2.11 2005-09-22 08:51:15 turbo Exp $
 
 // {{{ attribute_init(void)...
 function attribute_init() {
@@ -75,7 +75,7 @@ function attribute_print_form() {
           <td>
 <?php
 		$links = array();
-		for($i=0; $i< count($data["MEMBERS"]); $i++) {
+		for($i=0; $i < count($data["MEMBERS"]); $i++) {
 		  if(is_array($data["MEMBERS"]))
 			$uniquemember = $data["MEMBERS"][$i];
 		  else
