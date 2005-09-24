@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.81 2005-09-22 06:30:14 turbo Exp $
+// $Id: pql_config.inc,v 1.82 2005-09-24 09:45:58 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -83,11 +83,12 @@ function pql_get_define($define, $dn = NULL) {
 		  $value = $config[$define][$dn];
 		else
 		  $value = 0;
-	} elseif(!is_array($config[$define]))
-	  $value = $config[$define];
-	else
+	} elseif(!empty($config[$define])) {
+	  if(!is_array($config[$define]))
+		$value = $config[$define];
+	} else
 	  $value = NULL;
-
+	  
 	return($value);
 }
 
@@ -142,6 +143,7 @@ $_SESSION["SINGLE_USER"]			= (!empty($_SESSION["SINGLE_USER"]))			? $_SESSION["S
 // Load configuration from the database...
 foreach($_pql->ldap_basedn as $dn)  {
   $dn = urldecode($dn);
+  unset($info);
 
   if(@(is_array($_SESSION["BASE_DN"]) and !in_array($dn, $_SESSION["BASE_DN"])) or !@$_SESSION["BASE_DN"])
 	// Remember the base DN's
@@ -170,20 +172,22 @@ foreach($_pql->ldap_basedn as $dn)  {
 		foreach($array as $key => $pql_config_private_variable_which_irritates_me) {
 		  $pql_config_private_variable_which_irritates_me = strtolower($pql_config_private_variable_which_irritates_me);
 		  $pql_config_private_array_which_irritates_me = NULL;
-		  
-		  for($k=0; $k < count($info[$i][$pql_config_private_variable_which_irritates_me]); $k++) {
-			if($pql_config_private_array_which_irritates_me)
-			  $pql_config_private_array_which_irritates_me .= ",".$info[$i][$pql_config_private_variable_which_irritates_me][$k];
+
+		  if(!empty($info[$i][$pql_config_private_variable_which_irritates_me])) {
+			for($k=0; $k < $info[$i][$pql_config_private_variable_which_irritates_me]["count"]; $k++) {
+			  if($pql_config_private_array_which_irritates_me)
+				$pql_config_private_array_which_irritates_me .= ",".$info[$i][$pql_config_private_variable_which_irritates_me][$k];
+			  else
+				$pql_config_private_array_which_irritates_me = $info[$i][$pql_config_private_variable_which_irritates_me][$k];
+			}
+
+			if($level == 'GLOBAL')
+			  pql_set_define($key, $pql_config_private_array_which_irritates_me, true);
 			else
-			  $pql_config_private_array_which_irritates_me = $info[$i][$pql_config_private_variable_which_irritates_me][$k];
+			  pql_set_define($key, $pql_config_private_array_which_irritates_me, true, $dn);
+
+			unset($pql_config_private_array_which_irritates_me);
 		  }
-		  
-		  if($level == 'GLOBAL')
-			pql_set_define($key, $pql_config_private_array_which_irritates_me, true);
-		  else
-			pql_set_define($key, $pql_config_private_array_which_irritates_me, true, $dn);
-		  
-		  unset($pql_config_private_array_which_irritates_me);
 		}
 	  }
 	}

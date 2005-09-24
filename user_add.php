@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.130 2005-09-16 06:08:43 turbo Exp $
+// $Id: user_add.php,v 2.131 2005-09-24 09:45:56 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -14,6 +14,13 @@ $url["domain"]		= pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"]		= pql_format_urls($_REQUEST["rootdn"]);
 $url["subbranch"]	= pql_format_urls($_REQUEST["subbranch"]);
 $url["user"]		= pql_format_urls($_REQUEST["user"]);
+
+if(empty($_REQUEST["page_curr"])) {
+  $_REQUEST["page_curr"] = '';
+}
+if(empty($_REQUEST["page_next"])) {
+  $_REQUEST["page_next"] = '';
+}
 // }}}
 
 // {{{ Get the organization name, or the DN if it's unset
@@ -56,7 +63,7 @@ $objectclasses_schema   = pql_get_subschema($_pql->ldap_linkid, 'objectclasses')
 // }}}
 
 // {{{ Retreive the template definition
-if($_REQUEST["template"] and !is_array($template)) {
+if(!empty($_REQUEST["template"]) and !@is_array($template)) {
   $template = pql_get_template($_pql->ldap_linkid, $_REQUEST["template"]);
 } else {
   $templates = pql_get_templates($_pql->ldap_linkid);
@@ -82,7 +89,10 @@ function pql_user_add_retreive_encryption_schemes($linkid, $template, $rootdn) {
 	}
   }
 
-  return($schemes);
+  if(empty($schemes))
+	return false;
+  else
+	return($schemes);
 }
 // }}}
 
@@ -125,9 +135,12 @@ switch($_REQUEST["page_curr"]) {
 			  (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == 'uid')))
 		  {
 			// Generate the username
-			$_REQUEST["uid"] = strtolower(user_generate_uid($_pql, $_REQUEST["surname"],
-															$_REQUEST["name"], $email,
-															$_REQUEST["domain"], $_REQUEST["template"]));
+			$_REQUEST["uid"] = strtolower(user_generate_uid($_pql,
+															(empty($_REQUEST["surname"]) ? '' : $_REQUEST["surname"]),
+															(empty($_REQUEST["name"]) ? '' : $_REQUEST["name"]),
+															(empty($email) ? '' : $email),
+															(empty($_REQUEST["domain"]) ? '' : $_REQUEST["domain"]),
+															(empty($_REQUEST["template"]) ? '' : $_REQUEST["template"])));
 			
 			// Check again. There should be a user name, either from the input
 			// form OR from the user_generate_uid() function above...
@@ -169,6 +182,7 @@ switch($_REQUEST["page_curr"]) {
 		// }}}
 
 		// {{{ Generate a password
+		$auto_generated_kerberos_pw = 0;
 		if(($_REQUEST["template"] != "internal_group") and empty($_REQUEST["password"]) and
 		   ($autocreatepassword or (!$schemes[1] and ($schemes[0] == 'KERBEROS'))) and
 		   function_exists('pql_generate_password') and
@@ -181,7 +195,7 @@ switch($_REQUEST["page_curr"]) {
 		  //
 		  // We MUST autogenerate a password here, even if it's not specified. This because othervise
 		  // the create user script will create a randomized password, which we have no idea what it is..
-		  if(!$schemes[1] and ($schemes[0] == 'KERBEROS')) {
+		  if(empty($schemes[1]) and ($schemes[0] == 'KERBEROS')) {
 			$_REQUEST["password"]            = $_REQUEST["uid"]."@".pql_get_define("PQL_CONF_KRB5_REALM");
 			$_REQUEST["pwscheme"]            = $schemes[0];
 
@@ -231,7 +245,7 @@ switch($_REQUEST["page_curr"]) {
 														$_REQUEST["rootdn"])))
 		{
 		  $attrib_is_availible = 1;
-		  last;
+		  break;
 		}
 	  }
 
@@ -660,9 +674,9 @@ include($_SESSION["path"]."/header.html");
     <?php echo pql_complete_constant($LANG->_('Create account in domain %domain%'),
 									 array("domain" => $_REQUEST["orgname"])); ?>
 <?php
-if(!empty($_SESSION["ADVANCED_MODE"]) && is_array($template)) {
+if(!empty($_SESSION["ADVANCED_MODE"]) and @is_array($template)) {
   echo ': '.$template["short"];
-} elseif(!is_array($template)) {
+} elseif(!empty($template) and !@is_array($template)) {
   // Retreive template we're using
   $template = pql_get_template($_pql->ldap_linkid, $_REQUEST["template"]);
   echo ': '.$template["short"];
@@ -671,6 +685,8 @@ if(!empty($_SESSION["ADVANCED_MODE"]) && is_array($template)) {
 }
 ?>
   </span>
+
+  <br><font color=red>*</font> = Required value<br>
 
   <br><br>
 

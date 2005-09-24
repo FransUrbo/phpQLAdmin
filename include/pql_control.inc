@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.51 2005-06-13 12:55:56 turbo Exp $
+// $Id: pql_control.inc,v 2.52 2005-09-24 09:45:58 turbo Exp $
 //
 
 // {{{ control connection class
@@ -36,7 +36,8 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
   if($host and ($host != "*") and pql_get_define("PQL_CONF_CONTROL_AUTOADDHOSTNAME", $rootdn)) {
 	$hostname = split("\.", $host);
 	$hostname = pql_maybe_encode($hostname[0]);
-  }
+  } else
+	$hostname = '';
   // }}}
 
   if($host != '*') {

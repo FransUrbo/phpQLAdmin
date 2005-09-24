@@ -3,7 +3,7 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ezmlm.inc,v 1.30 2005-09-16 06:08:51 turbo Exp $
+// $Id: pql_ezmlm.inc,v 1.31 2005-09-24 09:45:58 turbo Exp $
 class ezmlm {
 	// {{{ Private section
 	var $_option					= array();
@@ -11,16 +11,14 @@ class ezmlm {
 
 	// {{{ _remote_list_setup(remote)
 	function _remote_list_setup($remote) {
-	  $cmd = pql_get_define("PQL_CONF_EZMLM_REMOTE_RETREIVE_SCRIPT");
-	  $usr = pql_get_define("PQL_CONF_EZMLM_REMOTE_USER");
-	  $hst = pql_get_define("PQL_CONF_EZMLM_REMOTE_HOST");
+	  $cmd = (pql_get_define("PQL_CONF_EZMLM_REMOTE_RETREIVE_SCRIPT") ? pql_get_define("PQL_CONF_EZMLM_REMOTE_RETREIVE_SCRIPT") : '');
+	  $usr = (pql_get_define("PQL_CONF_EZMLM_REMOTE_USER") ? pql_get_define("PQL_CONF_EZMLM_REMOTE_USER") : '');
+	  $hst = (pql_get_define("PQL_CONF_EZMLM_REMOTE_HOST") ? pql_get_define("PQL_CONF_EZMLM_REMOTE_HOST") : '');
 	  
-	  if($cmd and $usr and $hst) {
-		if(file_exists($cmd))
-		  return("env -i $cmd $hst $usr $remote");
-	  }
-
-	  return(false);
+	  if(!empty($cmd) and !empty($usr) and !empty($hst))
+		return("env -i $cmd $hst $usr $remote");
+	  else
+		return("$remote");
 	}
 // }}}
 
@@ -228,7 +226,7 @@ class ezmlm {
 				@is_dir($this->user_home."/".$entry_name) &&
 				file_exists($this->user_home."/".$entry_name."/config")))
 			  {
-				  $list_index = Count($this->mailing_lists);
+				  $list_index = count($this->mailing_lists);
 				  if(!$this->_readlistconfiguration($entry_name,
 													$this->mailing_lists[$list_index],
 													$loadtexts))
@@ -640,9 +638,9 @@ class ezmlm {
 					 . ($options["trailers"]		? "t"  : "")
 					 . ($options["subonly"]			? "u"  : "")
 					 . ($options["extras"]			? "x"  : "")
-					 . ($options["listparent"]	? " -0 ".$options["listparent"]  : "")
-					 . ($options["fromaddress"]	? " -3 ".$options["fromaddress"] : "")
-					 . ($options["listowner"]	? " -5 ".$options["listowner"]   : ""));
+					 . ($options["listparent"]		? " -0 ".$options["listparent"]  : "")
+					 . ($options["fromaddress"]		? " -3 ".$options["fromaddress"] : "")
+					 . ($options["listowner"]		? " -5 ".$options["listowner"]   : ""));
 		} else {
 			// Toggle a value
 			// Change listowner, fromaddress or listparent - address is in $curropts
@@ -696,19 +694,24 @@ class ezmlm {
 				  }
 				}
 			  } else {
-				$fp = fopen("/var/qmail/users/assign", "r");
-				while($line = fgetcsv($fp, 1000, ":")) {
-				  list($user, $alias, $uid, $gid, $dot_home, $x1, $fw, $x2) = $line;
-				  $user = preg_replace('/^=/', '',  $user);
-				  if($user == $this->user_name)
-					break;
+				// Get the dot_home for 'this->user_name'.
+				if(file_exists("/var/qmail/users/assign")) {
+				  $fp = fopen("/var/qmail/users/assign", "r");
+				  while($line = fgetcsv($fp, 1000, ":")) {
+					list($user, $alias, $uid, $gid, $dot_home, $x1, $fw, $x2) = $line;
+					$user = preg_replace('/^=/', '',  $user);
+					if($user == $this->user_name)
+					  // Found it, break out!
+					  break;
+				  }
+				  fclose($fp);
 				}
-				fclose($fp);
 			  }
 			  
-//			  if(!$dot_home) {
-//				// TODO: It's not a qmail virtual user either!
-//			  }
+			  if(empty($dot_home)) {
+				// TODO: It's not a qmail virtual user either!
+				$dot_home = '';
+			  }
 // }}}
 			}
 
@@ -749,6 +752,13 @@ class ezmlm {
 		} else
 		  echo "Command:<br><pre>$command</pre><br>";
 // }}}
+
+		// Update '$this->mailing_lists' array so we don't have to re-read!
+		$list_index = count($this->mailing_lists);
+		$this->mailing_lists[$list_index]["directory"]	= $listpath;
+		$this->mailing_lists[$list_index]["dotpath"]	= $dotpath;
+		$this->mailing_lists[$list_index]["name"]		= $listname;
+		$this->mailing_lists[$list_index]["host"]		= $domain;
 
 		return true;
 	}
@@ -916,33 +926,44 @@ class ezmlm {
 
 			$domain     = $this->mailing_lists[$listname]["host"];
 			$listname	= $this->mailing_lists[$listname]["name"];
-			$listpath	= $this->mailing_lists[$listname]["directory"] . "/" . $listname;
-		} else {
+
+			if(!ereg("/$", $this->mailing_lists[$listname]["directory"]))
+			  $listpath	= $this->mailing_lists[$listname]["directory"] . "/" . $listname;
+			else
+			  $listpath	= $this->mailing_lists[$listname]["directory"] . $listname;
+		} elseif(!empty($this->mailing_lists)) {
 			$domain     = $this->mailing_lists[0]["host"];
-			$listpath	= $this->user_home . "/" . $listname;
-		}
+
+			if(!ereg("/$", $this->user_home))
+			  $listpath	= $this->user_home . "/" . $listname;
+			else
+			  $listpath	= $this->user_home . $listname;
+		} // TODO: else!?
 
 		if(pql_get_define("PQL_CONF_EZMLM_REMOTE")) {
 		  unset($out); unset($res);
 
-		  $command = $this->_paths["sub"] . " $listpath $subscriber";
-		  if($this->debug or file_exists($_SESSION["path"]."/.DEBUG_ME"))
-			$command = "echo $command";
+		  // {{{ Execute ezmlm-sub
+		  $command = $this->_remote_list_setup($this->_paths["sub"] . " $listpath $subscriber");
 
-		  if($cmd = $this->_remote_list_setup($command)) {
-			if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
-			  echo "CMD (subscribe): '$cmd'<br>";
-			
-			$ret = @exec($cmd, $out, $res);
-			if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
-			  printr($out);
+		  if(!$this->debug or !file_exists($_SESSION["path"]."/.DEBUG_ME"))
+			$output = do_exec($command, $out, $res);
+		  else {
+			echo "Command:<br><pre>$command</pre><br>";
+			$res = 0;
 		  }
+		  // }}}
 		} else {
-		  $command = $this->_paths["sub"] . " 2>&1 " . $listpath . " " . $subscriber;
+		  // {{{ Execute ezmlm-sub
+		  $command = $this->_remote_list_setup($this->_paths["sub"] . " 2>&1 $listpath $subscriber");
+
 		  if(!$this->debug and !file_exists($_SESSION["path"]."/.DEBUG_ME"))
 			$output = do_exec($command, $out, $res);
-		  else
+		  else {
 			echo "Command:<br><pre>$command</pre><br>";
+			$res = 0;
+		  }
+		  // }}}
 		}
 
 		if($res) {

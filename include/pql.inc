@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.209 2005-09-16 06:08:50 turbo Exp $
+// $Id: pql.inc,v 2.210 2005-09-24 09:45:58 turbo Exp $
 //
 
 // ----------------------------
@@ -423,7 +423,7 @@ function pql_get_next_username($ldap, $domain) {
 			  $USERS[] = $tmp[$i][pql_get_define("PQL_ATTR_UID")][0];
 		}
 
-		if(!$USERS) {
+		if(empty($USERS)) {
 			$suffix = sprintf("$suffix_length", 1);
 		} else {
 			// We have previous values in the DB. 
@@ -483,7 +483,7 @@ function pql_get_mx($domainname) {
 		if($_pql_control->ldap_linkid) {
 			$filter = "(&(objectclass=qmailControl)(".pql_get_define("PQL_ATTR_LOCALS")."=$domainname))";
 			$info = pql_search($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $filter);
-			for($i=0; is_array($info[$i]); $i++) {
+			for($i=0; $i < count($info); $i++) {
 				if($info[$i]["cn"])
 				  if(is_array($info[$i]["cn"]))
 					 $mx["qlc"][] = $info[$i]["cn"][0];

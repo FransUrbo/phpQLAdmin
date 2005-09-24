@@ -1,5 +1,5 @@
 <? // http://www.thescripts.com/serversidescripting/php/articles/dynamicimagesinphp3.0/page0.html
-// $Id: navbutton.php,v 2.19 2005-09-16 06:08:55 turbo Exp $
+// $Id: navbutton.php,v 2.20 2005-09-24 09:46:02 turbo Exp $
 
 require("../include/pql_formating.inc");
 
@@ -39,7 +39,7 @@ if(function_exists('ImageCreateFromPng') && (imagetypes() & IMG_PNG)) {
 // letters are twice as wide as the lower cased...
 $upper_case_chars = 0;
 $lower_case_chars = 0;
-for($i = 0; $i < count($string); $i++) {
+for($i = 0; $i < strlen($string); $i++) {
     $tmp = pql_format_international($string[$i]);
 
     // Correct: The letter 'I' is NOT counted here! It's wide as a small character.

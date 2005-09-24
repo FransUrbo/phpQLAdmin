@@ -1,6 +1,6 @@
 <?php
 // Add a new mailserver to the database
-// $Id: control_add_server.php,v 2.31 2005-09-16 06:08:41 turbo Exp $
+// $Id: control_add_server.php,v 2.32 2005-09-24 09:45:56 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -156,8 +156,8 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
       <th colspan="3" align="left">Clone mailserver object</th>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">Fully qualified domain name<br>of new mail server</td>
-          <td><?php echo pql_format_error_span($error_text["fqdn_clone"]); ?>
-            <input type="text" name="fqdn" value="<?=$_REQUEST["fqdn"]?>" size="30">
+          <td><?php if(!empty($error_text["fqdn_clone"])) { echo pql_format_error_span($error_text["fqdn_clone"]); }?>
+            <input type="text" name="fqdn" <?php if(!empty($_REQUEST["fqdn"])) { echo 'value="'.$_REQUEST["fqdn"].'"'; }?> size="30">
           </td>
         </tr>
 
@@ -222,15 +222,15 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
       <th colspan="3" align="left">Create mailserver object</th>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">Fully qualified domain name</td>
-          <td><?php echo pql_format_error_span($error_text["fqdn_create"]); ?>
-            <input type="text" name="fqdn" value="<?=$_REQUEST["fqdn"]?>" size="30">
+          <td><?php if(!empty($error_text["fqdn_create"])) { echo pql_format_error_span($error_text["fqdn_create"]); }?>
+            <input type="text" name="fqdn" <?php if(!empty($_REQUEST["fqdn"])) { echo 'value="'.$_REQUEST["fqdn"].'"'; }?> size="30">
           </td>
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">Default domainname</td>
-          <td><?php echo pql_format_error_span($error_text["defaultdomain"]); ?>
-              <input type="text" name="defaultdomain" value="<?=$_REQUEST["defaultdomain"]?>" size="30">
+          <td><?php if(!empty($error_text["defaultdomain"])) { echo pql_format_error_span($error_text["defaultdomain"]); }?>
+              <input type="text" name="defaultdomain" <?php if(!empty($_REQUEST["defaultdomain"])) { echo 'value="'.$_REQUEST["defaultdomain"].'"'; }?> size="30">
           </td>
         </tr>
   
@@ -239,54 +239,54 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">Plusdomain</td>
-          <td><input type="text" name="plusdomain" value="<?=$_REQUEST["plusdomain"]?>" size="30">
+          <td><input type="text" name="plusdomain" <?php if(!empty($_REQUEST["plusdomain"])) { echo 'value="'.$_REQUEST["plusdomain"].'"'; }?> size="30">
         </tr>
   
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">LDAP Server</td>
-          <td><?php echo pql_format_error_span($error_text["ldapserver"]); ?>
-              <input type="text" name="ldapserver" value="<?=$_REQUEST["ldapserver"]?>" size="30">
+          <td><?php if(!empty($error_text["ldapserver"])) { echo pql_format_error_span($error_text["ldapserver"]); }?>
+              <input type="text" name="ldapserver" <?php if(!empty($_REQUEST["ldapserver"])) { echo 'value="'.$_REQUEST["ldapserver"].'"'; }?> size="30">
           </td>
         </tr>
   
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">LDAP Search base</td>
-          <td><?php echo pql_format_error_span($error_text["ldapbasedn"]); ?>
-              <input type="text" name="ldapbasedn" value="<?=$_REQUEST["ldapbasedn"]?>" size="30">
+          <td><?php if(!empty($error_text["ldapbasedn"])) { echo pql_format_error_span($error_text["ldapbasedn"]); }?>
+              <input type="text" name="ldapbasedn" <?php if(!empty($_REQUEST["ldapbasedn"])) { echo 'value="'.$_REQUEST["ldapbasedn"].'"'; }?> size="30">
           </td>
         </tr>
   
 <?php if(!$_SESSION["NEW_STYLE_QUOTA"])  { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">Default quota</td>
-          <td><input type="text" name="ldapdefaultquota" value="<?=$_REQUEST["ldapdefaultquota"]?>" size="30">
+          <td><input type="text" name="ldapdefaultquota" <?php if(!empty($_REQUEST["ldapdefaultquota"])) { echo 'value="'.$_REQUEST["ldapdefaultquota"].'"'; }?> size="30">
         </tr>
   
 <?php } else { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">Default quota size</td>
-          <td><input type="text" name="ldapdefaultquotasize" value="<?=$_REQUEST["ldapdefaultquotasize"]?>" size="30">
+          <td><input type="text" name="ldapdefaultquotasize" <?php if(!empty($_REQUEST["ldapdefaultquotasize"])) { echo 'value="'.$_REQUEST["ldapdefaultquotasize"].'"'; }?> size="30">
         </tr>
   
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">Default quota count</td>
-          <td><input type="text" name="ldapdefaultquotacount" value="<?=$_REQUEST["ldapdefaultquotacount"]?>" size="30">
+          <td><input type="text" name="ldapdefaultquotacount" <?php if(!empty($_REQUEST["ldapdefaultquotacount"])) { echo 'value="'.$_REQUEST["ldapdefaultquotacount"].'"'; }?> size="30">
         </tr>
   
 <?php } ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">Default DOT mode</td>
-          <td><input type="text" name="ldapdefaultdotmode" value="<?=$_REQUEST["ldapdefaultdotmode"]?>" size="30">
+          <td><input type="text" name="ldapdefaultdotmode" <?php if(!empty($_REQUEST["ldapdefaultdotmode"])) { echo 'value="'.$_REQUEST["ldapdefaultdotmode"].'"'; }?> size="30">
         </tr>
   
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">Directory maker</td>
-          <td><input type="text" name="dirmaker" value="<?=$_REQUEST["dirmaker"]?>" size="30">
+          <td><input type="text" name="dirmaker" <?php if(!empty($_REQUEST["dirmaker"])) { echo 'value="'.$_REQUEST["dirmaker"].'"'; }?> size="30">
         </tr>
   
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">Default quota warning</td>
-          <td><input type="text" name="quotawarning" value="<?=$_REQUEST["quotawarning"]?>" size="30">
+          <td><input type="text" name="quotawarning" <?php if(!empty($_REQUEST["quotawarning"])) { echo 'value="'.$_REQUEST["quotawarning"].'"'; }?> size="30">
         </tr>
 
         <tr class="<?php pql_format_table(); ?>">
@@ -302,14 +302,14 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 	// This won't really happen, since we're not getting this form if we haven't
 	// ADVANCED_MODE set! But anyway, just incase I find a better way later :)
 ?>
-        <input type="hidden" name="plusdomain"            value="<?=$_REQUEST["plusdomain"]?>">
-        <input type="hidden" name="ldapserver"            value="<?=$_SESSION["USER_HOST"]?>">
-        <input type="hidden" name="ldapbasedn"            value="<?=$_SESSION["USER_HOST"]?>">
-        <input type="hidden" name="ldapdefaultquota"      value="<?=$_REQUEST["ldapdefaultquota"]?>">
-        <input type="hidden" name="ldapdefaultquotacount" value="<?=$_REQUEST["ldapdefaultquotacount"]?>">
-        <input type="hidden" name="ldapdefaultquotasize"  value="<?=$_REQUEST["ldapdefaultquotasize"]?>">
+        <input type="hidden" name="plusdomain"            <?php if(!empty($_REQUEST["plusdomain"])) { echo 'value="'.$_REQUEST["plusdomain"].'"'; }?>>
+        <input type="hidden" name="ldapserver"            <?php if(!empty($_REQUEST["USER_HOST"])) { echo 'value="'.$_SESSION["USER_HOST"].'"'; }?>>
+        <input type="hidden" name="ldapbasedn"            <?php if(!empty($_REQUEST["USER_HOST"])) { echo 'value="'.$_SESSION["USER_HOST"].'"'; }?>>
+        <input type="hidden" name="ldapdefaultquota"      <?php if(!empty($_REQUEST["ldapdefaultquota"])) { echo 'value="'.$_REQUEST["ldapdefaultquota"].'"'; }?>>
+        <input type="hidden" name="ldapdefaultquotacount" <?php if(!empty($_REQUEST["ldapdefaultquotacount"])) { echo 'value="'.$_REQUEST["ldapdefaultquotacount"].'"'; }?>>
+        <input type="hidden" name="ldapdefaultquotasize"  <?php if(!empty($_REQUEST["ldapdefaultquotasize"])) { echo 'value="'.$_REQUEST["ldapdefaultquotasize"].'"'; }?>>
         <input type="hidden" name="ldapdefaultdotmode"    value="ldapwithprog">
-        <input type="hidden" name="dirmaker"              value="<?=$_REQUEST["dirmaker"]?>">
+        <input type="hidden" name="dirmaker"              <?php if(!empty($_REQUEST["dirmaker"])) { echo 'value="'.$_REQUEST["dirmaker"].'"'; }?>>
         <input type="hidden" name="quotawarning"          value="User is above quota level!">
         <input type="hidden" name="ldaprebind"            value="1">
 <?php

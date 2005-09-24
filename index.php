@@ -1,6 +1,6 @@
 <?php
 // logins to the system
-// $Id: index.php,v 2.48 2005-09-21 05:23:01 turbo Exp $
+// $Id: index.php,v 2.49 2005-09-24 09:45:56 turbo Exp $
 //
 // Start debuging
 // http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0
@@ -161,7 +161,7 @@ if(!($whoarewe = pql_get_define("PQL_CONF_WHOAREWE")))
 	// We must have read access (to the DN and CN/UID =>
 	// the PQL_CONF_REFERENCE_USERS_WITH define entry) as
 	// anonymous here!
-	$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
+	$_pql = new pql($_SESSION["USER_HOST"], @$_SESSION["USER_DN"], @$_SESSION["USER_PASS"]);
 
 	// -------------------------------------
 	// Get DN of user

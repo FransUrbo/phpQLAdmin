@@ -1,12 +1,12 @@
 <?php
-// $Id: user_add-save.inc,v 1.39 2005-08-15 05:13:58 turbo Exp $
+// $Id: user_add-save.inc,v 1.40 2005-09-24 09:45:59 turbo Exp $
 require($_SESSION["path"]."/include/pql_krbafs.inc");
 
 // {{{ URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
-if($_REQUEST["surname"]) {
+if(!empty($_REQUEST["surname"])) {
   $_REQUEST["surname"] = urldecode($_REQUEST["surname"]);
 }
-if($_REQUEST["name"]) {
+if(!empty($_REQUEST["name"])) {
   $_REQUEST["name"]    = urldecode($_REQUEST["name"]);
 }
 // }}}
@@ -15,21 +15,21 @@ if($_REQUEST["name"]) {
 // ============== PREPARE THE USERS ATTRIBUTE(S)
 
 // {{{ Convert uid to lowercase
-if($_REQUEST["uid"]) {
+if(!empty($_REQUEST["uid"])) {
 	$_REQUEST["uid"] = strtolower($_REQUEST["uid"]);
 	$entry[pql_get_define("PQL_ATTR_UID")] = $_REQUEST["uid"];
 }
 // }}}
 
 // {{{ Add Firstname
-if(($_REQUEST["surname"]
-	or ($_REQUEST["uid"]
-		and
-		pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")))
+if(!empty($_REQUEST["surname"])
+   or ($_REQUEST["uid"]
+	   and
+	   pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
    and
    pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_GIVENNAME")))
 {
-  if($_REQUEST["surname"]) 
+  if(!empty($_REQUEST["surname"])) 
 	$entry[pql_get_define("PQL_ATTR_GIVENNAME")]	= $_REQUEST["surname"];
   elseif(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
 	$entry[pql_get_define("PQL_ATTR_GIVENNAME")]	= $_REQUEST["uid"];
@@ -37,14 +37,14 @@ if(($_REQUEST["surname"]
 // }}}
 
 // {{{ Add Lastname
-if(($_REQUEST["name"]
-	or ($_REQUEST["uid"]
-		and
-		pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")))
+if(!empty($_REQUEST["name"])
+   or ($_REQUEST["uid"]
+	   and
+	   pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
    and
    pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_SN")))
 {
-  if($_REQUEST["name"])
+  if(!empty($_REQUEST["name"]))
 	$entry[pql_get_define("PQL_ATTR_SN")]			= $_REQUEST["name"];
   elseif(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
 	$entry[pql_get_define("PQL_ATTR_SN")]			= $_REQUEST["uid"];
@@ -52,7 +52,7 @@ if(($_REQUEST["name"]
 // }}}
 	
 // {{{ Add full (common) name
-if(((($_REQUEST["surname"] and $_REQUEST["name"])
+if((((!empty($_REQUEST["surname"]) and !empty($_REQUEST["name"]))
 	 or ($_REQUEST["uid"] and
 		 pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")))
 	and
@@ -60,7 +60,7 @@ if(((($_REQUEST["surname"] and $_REQUEST["name"])
    or
    pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_SN")))
 {
-  if($_REQUEST["surname"] and $_REQUEST["name"])
+  if(!empty($_REQUEST["surname"]) and !empty($_REQUEST["name"]))
 	$entry[pql_get_define("PQL_ATTR_CN")] = trim($_REQUEST["surname"]) . " " . trim($_REQUEST["name"]);
   elseif(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
 	$entry[pql_get_define("PQL_ATTR_CN")] = $_REQUEST["uid"];
@@ -68,19 +68,19 @@ if(((($_REQUEST["surname"] and $_REQUEST["name"])
 // }}}
 
 // {{{ Add mail and/or mail aliases
-if($_REQUEST["mail"] and
+if(!empty($_REQUEST["mail"]) and
    (pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAIL")) or
 	pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_ISACTIVE")) or
 	pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILALTERNATE"))))
 {
 	// {{{ Add the account status attribute
-	if($_REQUEST["account_status"] and 
+	if(!empty($_REQUEST["account_status"]) and 
 	   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_ISACTIVE")))
 	  $entry[pql_get_define("PQL_ATTR_ISACTIVE")]	= $_REQUEST["account_status"];
 	// }}}
 
 	// {{{ Add the primary mail address to the entry array
-	if($_REQUEST["mail"] and
+	if(!empty($_REQUEST["mail"]) and
 	   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAIL")))
 	  $entry[pql_get_define("PQL_ATTR_MAIL")] = $_REQUEST["mail"];
 	// }}}
@@ -90,7 +90,7 @@ if($_REQUEST["mail"] and
 	
 	if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILALTERNATE"))) {
 		// For group objects, we need a 'catchall' mail alias as well.
-		if($_REQUEST["email_domain"])
+		if(!empty($_REQUEST["email_domain"]))
 		  $entry[pql_get_define("PQL_ATTR_MAILALTERNATE")][] = $email_temp . "-catchall@" . $_REQUEST["email_domain"];
 		elseif($defaultdomain)
 		  $entry[pql_get_define("PQL_ATTR_MAILALTERNATE")][] = $email_temp . "-catchall@" . $defaultdomain;
@@ -106,14 +106,14 @@ if($_REQUEST["mail"] and
 }
 // }}}
 
-if($_REQUEST["forwardingaddress"] and
+if(!empty($_REQUEST["forwardingaddress"]) and
    pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_FORWARDS")))
 {
   // {{{ Setup mail forwarding
   $entry[pql_get_define("PQL_ATTR_FORWARDS")]	= strtolower($_REQUEST["forwardingaddress"]);
   
   // Setup the delivery modes
-  if(!$_SESSION["NEW_STYLE_QUOTA"]) {
+  if(empty($_SESSION["NEW_STYLE_QUOTA"])) {
 	// The new QmailLDAP have a changed 'deliveryMode' setup.
 	// Don't add this automaticly.
 	if($_REQUEST["forwardingtype"] == 'moveto')
@@ -140,7 +140,7 @@ if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("
 	$entry[pql_get_define("PQL_ATTR_QMAILGID")] = $gidnr;
   
   // Gecos is needed to do PAM/NSS LDAP login 
-  if($_REQUEST["surname"] and $_REQUEST["name"] and
+  if(!empty($_REQUEST["surname"]) and !empty($_REQUEST["name"]) and
 	 pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_GECOS")) and
 	 (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")))
 	{
@@ -177,20 +177,20 @@ if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("
 																  $_REQUEST["pwscheme"]);
 	// }}}
   } else {
-	if($_REQUEST["crypted"] and !$_REQUEST["autogenerate"])
+	if(!empty($_REQUEST["crypted"]) and empty($_REQUEST["autogenerate"]))
 	  // Password is already encrypted, prefix with choosen password scheme
 	  $entry[pql_get_define("PQL_ATTR_PASSWD")] = $_REQUEST["pwscheme"] . $_REQUEST["password"];
-	elseif($_REQUEST["password"] and $_REQUEST["pwscheme"])
+	elseif(!empty($_REQUEST["password"]) and !empty($_REQUEST["pwscheme"]))
 	  // Password isn't already encrypted, create the hash using the password value
 	  $entry[pql_get_define("PQL_ATTR_PASSWD")] = pql_password_hash($_REQUEST["password"], $_REQUEST["pwscheme"]);
   }
 
   // We're allowing PQL_ATTR_PASSWD. Do we also allow the 'clearTextPassword'?
   if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_PASSWD_CLEAR"))) {
-	if($_REQUEST["clear_text_password"]) {
+	if(!empty($_REQUEST["clear_text_password"])) {
 	  // Probably a Kerberos V scheme, use the cleartext password value
 	  $entry[pql_get_define("PQL_ATTR_PASSWD_CLEAR")] = $_REQUEST["clear_text_password"];
-	} elseif($_REQUEST["password"]) {
+	} elseif(!empty($_REQUEST["password"])) {
 	  // Add the unencrypted password
 	  $entry[pql_get_define("PQL_ATTR_PASSWD_CLEAR")] = $_REQUEST["password"];
 	}
@@ -199,7 +199,7 @@ if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("
 // }}}
 
 // {{{ Add login shell
-if($_REQUEST["loginshell"] and
+if(!empty($_REQUEST["loginshell"]) and
    pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_LOGINSHELL")))
 {
 	$entry[pql_get_define("PQL_ATTR_LOGINSHELL")] = $_REQUEST["loginshell"];
@@ -207,7 +207,7 @@ if($_REQUEST["loginshell"] and
 // }}}
 
 // {{{ Add mail directory
-if($_REQUEST["mail"] and $_REQUEST["maildirectory"] and
+if(!empty($_REQUEST["mail"]) and !empty($_REQUEST["maildirectory"]) and
    pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILSTORE")))
 {
   // No auto generation - that's done in 'user_add.php'.
@@ -217,13 +217,13 @@ if($_REQUEST["mail"] and $_REQUEST["maildirectory"] and
 
 // {{{ Add mail host
 // 'host' can be zero (0) hence isset().
-if($_REQUEST["mail"] and isset($_REQUEST["host"]) and
+if(!empty($_REQUEST["mail"]) and !empty($_REQUEST["host"]) and
    pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILHOST")))
 {
-	if(isset($_REQUEST["host"]) or isset($_REQUEST["text_host"])) {
+	if(!empty($_REQUEST["host"]) or !empty($_REQUEST["text_host"])) {
 		// Is the manual input field set/used?
 		$nr = $_REQUEST["text_host"];
-		if($_REQUEST["host_".$nr])
+		if(!empty($_REQUEST["host_".$nr]))
 		  $entry[pql_get_define("PQL_ATTR_MAILHOST")]       = $_REQUEST["host_".$nr];
 		else {
 			// ... no it isn't. Use the one that is.
@@ -232,7 +232,7 @@ if($_REQUEST["mail"] and isset($_REQUEST["host"]) and
 		}
 	}
 	
-	if(!$_SESSION["NEW_STYLE_QUOTA"] and
+	if(empty($_SESSION["NEW_STYLE_QUOTA"]) and
 	   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MODE")))
 	  // The new QmailLDAP have a changed 'deliveryMode' setup.
 	  // Don't add this automaticly.
@@ -241,7 +241,7 @@ if($_REQUEST["mail"] and isset($_REQUEST["host"]) and
 // }}}
 
 // {{{ Add home directory to the entry array
-if($_REQUEST["homedirectory"] and
+if(!empty($_REQUEST["homedirectory"]) and
    pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_HOMEDIR")))
 {
   // No auto generation - that's done in 'user_add.php'.
@@ -250,13 +250,13 @@ if($_REQUEST["homedirectory"] and
 // }}}
 
 // {{{ Add the mail quota
-if($_REQUEST["mail"] and
+if(!empty($_REQUEST["mail"]) and
    (pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_QUOTA_SIZE"))) or
    (pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_QUOTA_COUNT"))))
 {
   $default_quota = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEQUOTA"));
   if(!empty($default_quota)) {
-	if($_SESSION["NEW_STYLE_QUOTA"]) {
+	if(!empty($_SESSION["NEW_STYLE_QUOTA"])) {
 	  $tmp = pql_parse_quota($default_quota);
 	  
 	  $entry[pql_get_define("PQL_ATTR_QUOTA_SIZE")]  = $tmp["maxsize"];
@@ -285,7 +285,7 @@ if(in_array(pql_get_define("PQL_ATTR_SAMBAOBJECTCLASS"), $template["userobjectcl
   // }}}
   
   // {{{ Convert uid to lowercase
-  if($_REQUEST["uid"]) {
+  if(!empty($_REQUEST["uid"])) {
 	$entry[pql_get_define("PQL_ATTR_SAMBASID")] = $sid . '-' . (3 * $entry[pql_get_define("PQL_ATTR_QMAILUID")]);
 	$entry[pql_get_define("PQL_ATTR_SAMBALMPASSWORD")] = pql_password_hash($_REQUEST["password"], '{lmpasswd}');
 	$entry[pql_get_define("PQL_ATTR_SAMBANTPASSWORD")] = pql_password_hash($_REQUEST["password"], '{ntpasswd}');
@@ -305,11 +305,11 @@ if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
 }
 
 // {{{ Create the RDN for the user
-if($entry[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])])
+if(!empty($entry[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])]))
 {
   $userdn = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) . "=" .
 	$entry[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])] . ",";
-} elseif($entry[pql_get_define("PQL_ATTR_UID")]) {
+} elseif(!empty($entry[pql_get_define("PQL_ATTR_UID")])) {
   $userdn = pql_get_define("PQL_ATTR_UID")."=".$entry[pql_get_define("PQL_ATTR_UID")].",";
 } else {
   echo "I can't figure out how to name the RDN!<br>";
@@ -318,7 +318,7 @@ if($entry[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])])
   die("I have no idea how to continue from here...");
 }
 
-if($_REQUEST["subbranch"]) {
+if(!empty($_REQUEST["subbranch"])) {
 	$userdn .= urldecode($_REQUEST["subbranch"]);
 } else { 
 	$userdn .= urldecode($_REQUEST["domain"]);
@@ -332,7 +332,7 @@ $userdn = pql_maybe_encode($userdn);
 // URL decoded).
 $branch = pql_maybe_decode($_REQUEST["subbranch"]);
 $DNs = pql_user_add($_pql->ldap_linkid, $_REQUEST["domain"], $userdn, $entry, 'user', $branch);
-if($DNs[0]) {
+if(!empty($DNs[0])) {
   // TODO: DNs[1] (the group object) might still be empty -> failed to add it.
 
   if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
@@ -367,7 +367,7 @@ if($DNs[0]) {
 	  putenv("PQL_KADMIN_SERVR=".pql_get_define("PQL_CONF_KRB5_ADMIN_SERVER"));
 	  putenv("PQL_KADMIN_KEYTB=".pql_get_define("PQL_CONF_KRB5_ADMIN_KEYTAB"));
 
-	  if($_REQUEST["clear_text_password"])
+	  if(!empty($_REQUEST["clear_text_password"]))
 		putenv("PQL_CLEARTEXT_PASSWORD=".$_REQUEST["clear_text_password"]);
 	}
 	

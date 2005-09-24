@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_templates.inc,v 2.7 2005-09-16 06:08:52 turbo Exp $
+// $Id: pql_templates.inc,v 2.8 2005-09-24 09:45:58 turbo Exp $
 //
 
 // {{{ Generate the group template (hardcoded for the moment)
@@ -121,25 +121,26 @@ function pql_templates_attributes($linkid, $objectclasses) {
   for($j=0; $j < count($objectclasses); $j++) {
 	$oc = lc($objectclasses[$j]); // short form
 	if(!empty($schema[$oc]["MUST"])) {
-	  for($k=0; $k < count($schema[$oc]["MUST"]); $k++) {
+	  for($k=0; $k < $schema[$oc]["MUST"]["count"]; $k++)
 		$must[] = $schema[$oc]["MUST"][$k];
-	  }
 	}
 
 	if(!empty($schema[$oc]["MAY"])) {
-	  for($k=0; $k < count($schema[$oc]["MAY"]); $k++) {
+	  for($k=0; $k < $schema[$oc]["MAY"]["count"]; $k++)
 		$may[] = $schema[$oc]["MAY"][$k];
-	  }
 	}
   }
   
-  // Sort and 'uniquify' the array of MUST attributes
-  $must = pql_uniq($must);
+  if(!empty($must))
+	// Sort and 'uniquify' the array of MUST attributes
+	$must = pql_uniq($must);
 
-  // Sort and 'uniquify' the array of MAY attributes
-  $may = pql_uniq($may);
+  if(!empty($may))
+	// Sort and 'uniquify' the array of MAY attributes
+	$may = pql_uniq($may);
 
-  return(array('must'=>$must, 'may'=>$may));
+  return(array('must' => (empty($must) ? NULL : $must),
+			   'may'  => (empty($may) ? NULL : $may)));
 }
 // }}}
 
@@ -155,12 +156,11 @@ function pql_templates_check_attribute($linkid, $template, $attribute, $type = N
 	return 1;
   }
 
-  if(is_array($template)) {
+  if(is_array($template))
 	$template_def = $template;
-  } else {
+  else
 	// Retreive the user template we've choosen to use when creating this user
 	$template_def = pql_get_template($linkid, $template);
-  }
 
   // For each of the userObjectClass'es in the template, get required attributes 
   $attribs = pql_templates_attributes($linkid, $template_def["userobjectclass"]);

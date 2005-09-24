@@ -15,10 +15,11 @@ $link = "ezmlm_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domai
         <td class="title">Options</td>
       </tr>
 
-<?php foreach($ezmlm->mailing_lists_hostsindex as $listdomain => $listarray) {
-		if(is_array($listarray)) {
-			// Go through each list in the domain
-			foreach($listarray as $listname => $listno) {
+<?php if(!empty($ezmlm->mailing_lists_hostsindex)) {
+		foreach($ezmlm->mailing_lists_hostsindex as $listdomain => $listarray) {
+			if(is_array($listarray)) {
+				// Go through each list in the domain
+				foreach($listarray as $listname => $listno) {
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td><?=$listname."@".$listdomain?></td>
@@ -26,9 +27,10 @@ $link = "ezmlm_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domai
         <td><?=$ezmlm->mailing_lists[$listno]["owner"]?></td>
         <td><a href="ezmlm_detail.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&domainname=<?=$_REQUEST["domainname"]?>&listno=<?=$listno?>"><img src="images/edit.png" width="12" height="12" alt="edit list" border="0"></a>&nbsp;&nbsp;<a href="<?=$link?>&listno=<?=$listno?>&type=subscriber">add subscriber</a></td>
       </tr>
-<?php		}
-	  	}
-	}
+<?php			}
+	  		}
+		}
+	  }
 ?>
 
       <tr class="subtitle">

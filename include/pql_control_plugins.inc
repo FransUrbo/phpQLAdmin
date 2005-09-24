@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control plugins)
 //
-// $Id: pql_control_plugins.inc,v 2.10 2005-06-22 13:58:33 turbo Exp $
+// $Id: pql_control_plugins.inc,v 2.11 2005-09-24 09:45:58 turbo Exp $
 //
 
 // ----------------------------
@@ -205,7 +205,7 @@ pql_plugin_register("simscan",
 						  pql_get_define("PQL_ATTR_SIMSCAN_SPAM_HITS"),
 						  pql_get_define("PQL_ATTR_SIMSCAN_ATTACHMENTS")));
 
-if($_SESSION["NEW_STYLE_QUOTA"]) {
+if(!empty($_SESSION["NEW_STYLE_QUOTA"])) {
 	// Oki, so these have nothing to do with quota, but the varible
 	// (the existance of the new style quota attributes) existance
 	// (in the LDAP server) should indicate that we're running a newer

@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.68 2005-08-14 11:32:13 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.69 2005-09-24 09:45:58 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -156,15 +156,16 @@ pql_set_define("PQL_CONF_USE_TLS", false);
 //		$branch = '%d%/';
 //	}
 //	
-//	if(! ereg("/$", $mailstore)) {
+//	if(! ereg("/$", $mailstore))
 //		// The base mail directory value doesn't end with a slash, add one.
 //		// The '$branch' variable will be empty for users, set if a branch.
 //		$mailstore = $mailstore . "/" . $branch . "%u%";
-//	} else {
+//	elseif(!empty($branch))
 //		// The base mail directory value doesn't end with a slash, add one.
 //		// The '$branch' variable will be empty for users, set if a branch.
 //		$mailstore = $mailstore . $branch . "%u%";
-//	}
+//	else
+//		$mailstore = $mailstore . "%u%";
 //	
 //	// -------------- Template 2: domain.tld/username
 //	$mailstore = "%d%/%u%"; 
@@ -192,11 +193,13 @@ pql_set_define("PQL_CONF_USE_TLS", false);
 //	  // We're creating a branch, so add the domain to string
 //	  $branch = '%d%/';
 //	
-//	if(! ereg("/$", $mailstore)) {
+//	if(! ereg("/$", $mailstore))
 //		$mailstore = $mailstore . "/" . $branch . "%u%";
-//	} else {
+//	elseif(!empty($branch))
 //		$mailstore = $mailstore . $branch . "%u%";
-//	}
+//	else
+//		$mailstore = $mailstore . "%u%";
+//
 //	$mailstore = pql_complete_constant($mailstore, array("d" => pql_format_international($domain), 
 //														 "u" => $entry[pql_get_define("PQL_ATTR_UID")], 
 //														 "h" => $entry[pql_get_define("PQL_ATTR_MAILHOST")]));
@@ -297,14 +300,19 @@ pql_set_define("PQL_CONF_USE_TLS", false);
 //	  // We're creating a branch, so add the domain to string
 //	  $branch = '%d%/';
 //	
-//	if(! ereg("/$", $basemaildir)) {
-//		$homedir = $homedir . "/" . $branch . "%u%";
-//	} else {
-//		$homedir = $homedir . $branch . "%u%";
-//	}
-//	$homedir = pql_complete_constant($homedir, array("d" => pql_format_international($domain), 
-//													 "u" => $entry[pql_get_define("PQL_ATTR_UID")],
-//													 "h" => $entry[pql_get_define("PQL_ATTR_MAILHOST")]));
+//  if(!empty($basemaildir)) {
+//	if(! ereg("/$", $basemaildir))
+//	  $homedir = $homedir . "/" . $branch . "%u%";
+//	else
+//	  $homedir = $homedir . $branch . "%u%";
+//  } else {
+//	$homedir = $homedir . $branch . "%u%";
+//  }
+//  
+//  // Substitue the '%X%' values with real values...
+//  $homedir = pql_complete_constant($homedir, array("d" => pql_format_international($domain),
+//												   "u" => (empty($entry[pql_get_define("PQL_ATTR_UID")]) ? '' : $entry[pql_get_define("PQL_ATTR_UID")]),
+//												   "h" => (empty($entry[pql_get_define("PQL_ATTR_MAILHOST")]) ? '' : $entry[pql_get_define("PQL_ATTR_MAILHOST")])));
 //
 //	return($homedir);
 //}
