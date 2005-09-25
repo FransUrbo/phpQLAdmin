@@ -1,7 +1,7 @@
 <?php
 // phpQLAdmin cache Application Programming Interface (API)
 //
-// $Id: pql_cache.inc,v 2.5 2005-08-14 15:01:40 turbo Exp $
+// $Id: pql_cache.inc,v 2.6 2005-09-25 08:09:43 turbo Exp $
 //
 
 // Global variables
@@ -17,13 +17,13 @@ function pql_cache_add($object) {
 	// URL decode the object DN if it's URL ENcoded
 	$dn = pql_maybe_encode(urldecode(lc($object["dn"])));
 
-	// It might exists, but we don't care! Overwrite it if do exist...
-	$pql_cache[$dn] = $object;
-
 	if(file_exists($_SESSION["path"]."/.DEBUG_CACHE")) {
-	  echo "Caching '$dn':";
+	  echo "<font size=\"+1\">Caching '$dn':</font>";
 	  printr($object);
 	}
+	
+	// It might exists, but we don't care! Overwrite it if do exist...
+	$pql_cache[$dn] = $object;
 }
 // }}}
 
@@ -37,19 +37,19 @@ function pql_cache_get($dn, &$object) {
 	// URL decode the object DN if it's URL ENcoded
 	$dn = pql_maybe_encode(urldecode(lc($dn)));
     
-    if(!isset($pql_cache[$dn])) {
+    if(empty($pql_cache[$dn])) {
 	  // We don't have this object yet.
 	  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE"))
 		echo "Object '$dn' <b>not</b> cached!<br>";
 
 	  return(false);
+	} else {
+	  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE"))
+		echo "Object '$dn' <b>is</b> cached<br>";
+	  
+	  $object = $pql_cache[$dn];
+	  return(true);
 	}
-
-	if(file_exists($_SESSION["path"]."/.DEBUG_CACHE"))
-	  echo "Object '$dn' <b>is</b> cached<br>";
-
-	$object = $pql_cache[$dn];
-	return(true);
 }
 // }}}
 
