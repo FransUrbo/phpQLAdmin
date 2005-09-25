@@ -1,6 +1,6 @@
 <?php
 // Attribute plugin for additional group (memberUID)
-// $Id: attrib.additionalgroup.inc,v 2.11 2005-09-22 08:51:15 turbo Exp $
+// $Id: attrib.additionalgroup.inc,v 2.12 2005-09-25 10:38:58 turbo Exp $
 
 // {{{ attribute_init(void)...
 function attribute_init() {
@@ -156,10 +156,10 @@ function attribute_save($action) {
 		$msg = '';
 		for($i=0; $i< count($groups); $i++) {
 			if(pql_modify_attribute($_pql->ldap_linkid, $groups[$i], $attrib_name, '', $_REQUEST["uid"])) {
-				$msg .= pql_complete_constant($LANG->_('Successfully added user %user% to group %group%<br>'),
+				$msg .= pql_complete_constant($LANG->_('Successfully added user %user% to group %group%\n'),
 											  array('user' => $_REQUEST["uid"], 'group' => $groups[$i]));
 			} else {
-				$msg .= pql_complete_constant($LANG->_('Failed to add user %user% to group %group%<br>'),
+				$msg .= pql_complete_constant($LANG->_('Failed to add user %user% to group %group%\n'),
 											  array('user' => $_REQUEST["uid"], 'group' => $groups[$i]));
 			}
 		}
