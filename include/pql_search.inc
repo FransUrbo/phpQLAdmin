@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.45 2005-09-22 06:46:02 turbo Exp $
+// $Id: pql_search.inc,v 2.46 2005-09-25 08:16:22 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -39,10 +39,10 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
   if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE"))
 	echo "pql_search() - 1: Looking for '<b>$dn</b>': "; // DEBUG
   
-  if(($level == "BASE") and pql_cache_get($dn, $object) and !$operational) {
+  if(($level == "BASE") and pql_cache_get($dn, $object)) {
 	// The object is cached -> return this (don't look for it in LDAP).
 	if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE")) {
-	  echo "<b>is</b> cached. Returning object '$dn' <b>-&gt;</b>";
+	  echo "<font size=\"+1\">Returning '$dn':</font>";
 	  printr($object);
 	}
 	
@@ -144,11 +144,14 @@ function pql_get_attribute($linkid, $dn, $attribute, $operational = 0) {
   
   // Get the (WHOLE) object but only return only the attributes of interest.
   $object = pql_search($linkid, $dn, "(".pql_get_define("PQL_ATTR_OBJECTCLASS")."=*)", 'BASE', 1, $operational);
-  if(!empty($object) and !empty($object[0][$attribute]))
-	return($object[0][$attribute]);
-  elseif($object and !empty($object[$attribute]))
-	// Most likley returned from a cached object...
-	return($object[$attribute]);
+  if(!empty($object)) {
+	if(!empty($object[0])) {
+	  if(!empty($object[0][$attribute]))
+		return($object[0][$attribute]);
+	} elseif(!empty($object[$attribute]))
+	  // Most likley returned from a cached object...
+	  return($object[$attribute]);
+  }
   
   return(false);
 }
@@ -171,7 +174,7 @@ function pql_get_dn($linkid, $dn, $filter, $level = 'SUBTREE') {
   // Besides, pql_search() is quite clever about that...
   
   $objects = pql_search($linkid, $dn, $filter, $level, 1);
-  if($objects[0]) {
+  if(!empty($objects[0])) {
 	for($i=0; $i < count($objects); $i++)
 	  $entry[] = $objects[$i]['dn'];
   } elseif($objects and $objects['dn'])
@@ -480,7 +483,7 @@ function pql_validate_object($linkid, $dn, $object, $type) {
 	foreach($ocs as $oc) {
 	  $oc = lc($oc);
 	  
-	  if(!$ldap[$oc]['MUST']['count'])
+	  if(empty($ldap[$oc]['MUST']['count']))
 		// An objectclass with no MUST, add this directly
 		$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = $oc;
 	  else {
@@ -493,7 +496,7 @@ function pql_validate_object($linkid, $dn, $object, $type) {
 		  
 		  // Go through the MUST attributes for this objctclass,
 		  // looking for an attribute we have NOT defined
-		  for($i=0; $i < count($MUST); $i++) {
+		  for($i=0; $i < $MUST["count"]; $i++) {
 			$must = lc($MUST[$i]);
 			
 			if(ereg(':', $must)) {
@@ -597,220 +600,238 @@ function pql_get_subschema($ldap_linkid, $attrib) {
   // CMD: /usr/bin/ldapsearch -x -LLL -h localhost -s base -b '' 'objectClass=*' subschemaSubentry
   //
   // TODO: Resue the $this->_find_base_option() function here!
-  $sr    = ldap_read($ldap_linkid, NULL, '(objectClass=*)', array('subschemaSubentry'));
-  $entry = ldap_get_entries($ldap_linkid, $sr);
-  if($entry[0][pql_get_define("PQL_ATTR_SUBSCHEMASUBENTRY")][0]) {
+  $entry = pql_get_attribute($ldap_linkid, NULL, 'subschemaSubentry', 1);
+  if($entry) {
 	// Get the subSchemaAttributes from the subSchema
 	// CMD: /usr/bin/ldapsearch -x -LLL -h localhost -s base -b 'cn=Subschema' 'objectClass=subSchema' $attrib
-	$sr     = ldap_read($ldap_linkid,
-						$entry[0][pql_get_define("PQL_ATTR_SUBSCHEMASUBENTRY")][0],
-						pql_get_define("PQL_ATTR_OBJECTCLASS").'=subSchema', array($attrib));
-	$entry  = ldap_get_entries($ldap_linkid, $sr);
-	for($i=0; $i < $entry[0][$attrib]["count"]; $i++) {
-	  // ------------------------
-	  // Retreive NAME
-	  $words = split("NAME", $entry[0][$attrib][$i]);
-	  if(!empty($words[1])) {
-		if(ereg("^ \(", $words[1])) {
-		  $words = split("\)", $words[1]);
-		  $words = ereg_replace("\'", "", $words[0]);
-		  $words = split(" ", $words);
-		  $name  = lc($words[2]);
-		  
-		  $VALUE[$name]["NAME"] = $words[2];
-		  for($j=3; $j < count($words); $j++) {
-			$VALUE["ALIAS"][$name][] = $words[$j];
-			$VALUE["ALIAS"][$words[$j]][] = $name;
+	$entry = pql_search($ldap_linkid, $entry, pql_get_define("PQL_ATTR_OBJECTCLASS").'=subSchema', 'BASE', 0, 1);
+	if(!empty($entry)) {
+	  // TODO: For some reason (?), I sometimes get it in a '$entry[0]'
+	  //       array, and sometimes flat... !?!?
+	  if(empty($entry[0])) {
+		$tmp = $entry; unset($entry);
+		$entry[0] = $tmp; unset($tmp);
+	  }
+
+	  for($i=0; $i < count($entry[0][$attrib]); $i++) {
+		// ------------------------
+		// Retreive NAME
+		$words = split("NAME", $entry[0][$attrib][$i]);
+		if(!empty($words[1])) {
+		  if(ereg("^ \(", $words[1])) {
+			$words = split("\)", $words[1]);
+			$words = ereg_replace("\'", "", $words[0]);
+			$words = split(" ", $words);
+			$name  = lc($words[2]);
 			
-			$VALUE[$name]["ALIAS"][] = $words[$j];
+			$VALUE[$name]["NAME"] = $words[2];
+			for($j=3; $j < count($words); $j++) {
+			  $VALUE["ALIAS"][$name][] = $words[$j];
+			  $VALUE["ALIAS"][$words[$j]][] = $name;
+			  
+			  $VALUE[$name]["ALIAS"][] = $words[$j];
+			}
+		  } else {
+			$words = split("\' ", $words[1]);
+			$words = split(" \'", $words[0]);
+			$name  = lc($words[1]);
+			
+			$VALUE[$name]["NAME"] = $words[1];
 		  }
-		} else {
+		} elseif($attrib == 'ldapsyntaxes') {
+		  $words = split(" ", $entry[0][$attrib][$i]);
+		  $name  = lc($words[1]);
+		}
+		
+		// ------------------------
+		// Get the OID number
+		$words = split(" ", $entry[0][$attrib][$i]);
+		$VALUE[$name]["OID"] = $words[1];
+		
+		// ------------------------
+		// Retreive DESC
+		$words = split("DESC", $entry[0][$attrib][$i]);
+		if(! empty($words[1])) {
 		  $words = split("\' ", $words[1]);
 		  $words = split(" \'", $words[0]);
-		  $name  = lc($words[1]);
 		  
-		  $VALUE[$name]["NAME"] = $words[1];
-		}
-	  } elseif($attrib == 'ldapsyntaxes') {
-		$words = split(" ", $entry[0][$attrib][$i]);
-		$name  = lc($words[1]);
-	  }
-	  
-	  // ------------------------
-	  // Get the OID number
-	  $words = split(" ", $entry[0][$attrib][$i]);
-	  $VALUE[$name]["OID"] = $words[1];
-	  
-	  // ------------------------
-	  // Retreive DESC
-	  $words = split("DESC", $entry[0][$attrib][$i]);
-	  if(! empty($words[1])) {
-		$words = split("\' ", $words[1]);
-		$words = split(" \'", $words[0]);
-		
-		$VALUE[$name]["DESC"] = $words[1];
-	  }
-	  
-	  // ------------------------
-	  // Retreive MAY's
-	  $words = split("MAY", $entry[0][$attrib][$i]);
-	  if(! empty($words[1])) {
-		if(ereg("\(", $words[1])) {
-		  $words = split("\(", $words[1]);
-		  $words = split("\)", $words[1]);
-		} else {
-		  $words = split("\)", $words[1]);
+		  $VALUE[$name]["DESC"] = $words[1];
 		}
 		
-		// Remove spaces
-		$words = ereg_replace(" ", "", $words[0]);
-		$words = split('\$', $words);
-		
-		$j = 0;
-		foreach($words as $may) {
-		  $VALUE[$name]["MAY"][] = $may;
-		  $j++;
-		}
-		$VALUE[$name]["MAY"]["count"] = $j;
-	  }
-	  
-	  // ------------------------
-	  // Retreive MUST's
-	  $words = split("MUST", $entry[0][$attrib][$i]);
-	  if(! empty($words[1])) {
-		if(ereg("^ \(", $words[1])) {
-		  $words = split("\(", $words[1]);
-		  $words = split("\)", $words[1]);
-		  $word  = $words[0];
-		} else {
-		  $words = split(" ", $words[1]);
-		  $word  = $words[1];
+		// ------------------------
+		// Retreive MAY's
+		$words = split("MAY", $entry[0][$attrib][$i]);
+		if(! empty($words[1])) {
+		  if(ereg("\(", $words[1])) {
+			$words = split("\(", $words[1]);
+			$words = split("\)", $words[1]);
+		  } else {
+			$words = split("\)", $words[1]);
+		  }
+		  
+		  // Remove spaces
+		  $words = ereg_replace(" ", "", $words[0]);
+		  $words = split('\$', $words);
+		  
+		  $j = 0;
+		  foreach($words as $may) {
+			$VALUE[$name]["MAY"][] = $may;
+			$j++;
+		  }
+		  $VALUE[$name]["MAY"]["count"] = $j;
 		}
 		
-		// Remove spaces
-		$words = ereg_replace(" ", "", $word);
-		$words = split('\$', $words);
-		
-		$j = 0;
-		foreach($words as $must) {
-		  $VALUE[$name]["MUST"][] = $must;
-		  $j++;
-		}
-		$VALUE[$name]["MUST"]["count"] = $j;
-	  }
-	  
-	  // ------------------------
-	  // Retreive EQUALITY
-	  $words = split("EQUALITY", $entry[0][$attrib][$i]);
-	  if(! empty($words[1])) {
-		$words = split(" ", $words[1]);
-		$VALUE[$name]["EQUALITY"] = $words[1];
-	  }
-	  
-	  // ------------------------
-	  // Retreive SYNTAX
-	  $words = split("SYNTAX", $entry[0][$attrib][$i]);
-	  if(! empty($words[1])) {
-		$words = split(" ", $words[1]);
-		$VALUE[$name]["SYNTAX"] = $words[1];
-	  }
-	  
-	  // ------------------------
-	  // Retreive USAGE
-	  $words = split("USAGE", $entry[0][$attrib][$i]);
-	  if(! empty($words[1])) {
-		$words = split(" ", $words[1]);
-		$VALUE[$name]["USAGE"] = $words[1];
-	  }
-	  
-	  // ------------------------
-	  // Retreive SUP
-	  if(eregi("SUP", $entry[0][$attrib][$i])) {
-		$words = split("SUP", $entry[0][$attrib][$i]);
+		// ------------------------
+		// Retreive MUST's
+		$words = split("MUST", $entry[0][$attrib][$i]);
 		if(! empty($words[1])) {
 		  if(ereg("^ \(", $words[1])) {
 			$words = split("\(", $words[1]);
 			$words = split("\)", $words[1]);
-			
-			// Remove spaces
-			$words = ereg_replace(" ", "", $words[0]);
-			$words = split('\$', $words);
-			
-			for($j=0; $j < count($words); $j++)
-			  $VALUE[$name]["SUP"][] = $words[$j];
+			$word  = $words[0];
 		  } else {
-			$words = split(" ",  $words[1]);
-			
-			// Remove spaces
-			$VALUE[$name]["SUP"] = ereg_replace(" ", "", $words[1]);
+			$words = split(" ", $words[1]);
+			$word  = $words[1];
+		  }
+		  
+		  // Remove spaces
+		  $words = ereg_replace(" ", "", $word);
+		  $words = split('\$', $words);
+		  
+		  $j = 0;
+		  foreach($words as $must) {
+			$VALUE[$name]["MUST"][] = $must;
+			$j++;
+		  }
+		  $VALUE[$name]["MUST"]["count"] = $j;
+		}
+		
+		// ------------------------
+		// Retreive EQUALITY
+		$words = split("EQUALITY", $entry[0][$attrib][$i]);
+		if(! empty($words[1])) {
+		  $words = split(" ", $words[1]);
+		  $VALUE[$name]["EQUALITY"] = $words[1];
+		}
+		
+		// ------------------------
+		// Retreive SYNTAX
+		$words = split("SYNTAX", $entry[0][$attrib][$i]);
+		if(! empty($words[1])) {
+		  $words = split(" ", $words[1]);
+		  $VALUE[$name]["SYNTAX"] = $words[1];
+		}
+		
+		// ------------------------
+		// Retreive USAGE
+		$words = split("USAGE", $entry[0][$attrib][$i]);
+		if(! empty($words[1])) {
+		  $words = split(" ", $words[1]);
+		  $VALUE[$name]["USAGE"] = $words[1];
+		}
+		
+		// ------------------------
+		// Retreive SUP
+		if(eregi("SUP", $entry[0][$attrib][$i])) {
+		  $words = split("SUP", $entry[0][$attrib][$i]);
+		  if(! empty($words[1])) {
+			if(ereg("^ \(", $words[1])) {
+			  $words = split("\(", $words[1]);
+			  $words = split("\)", $words[1]);
+			  
+			  // Remove spaces
+			  $words = ereg_replace(" ", "", $words[0]);
+			  $words = split('\$', $words);
+			  
+			  for($j=0; $j < count($words); $j++)
+				$VALUE[$name]["SUP"][] = $words[$j];
+			} else {
+			  $words = split(" ",  $words[1]);
+			  
+			  // Remove spaces
+			  $VALUE[$name]["SUP"] = ereg_replace(" ", "", $words[1]);
+			}
 		  }
 		}
+		
+		// ------------------------
+		// Retreive SINGLE-VALUE
+		if(eregi("SINGLE-VALUE", $entry[0][$attrib][$i]))
+		  $VALUE[$name]["SINGLE-VALUE"] = 'TRUE';
+		
+		// ------------------------
+		// Retreive NO-USER-MODIFICATION
+		if(eregi("NO-USER-MODIFICATION", $entry[0][$attrib][$i]))
+		  $VALUE[$name]["NO-USER-MODIFICATION"] = 'TRUE';
+		
+		// ------------------------
+		// Retreive X-BINARY-TRANSFER-REQUIRED
+		if(eregi("X-BINARY-TRANSFER-REQUIRED", $entry[0][$attrib][$i]))
+		  $VALUE[$name]["X-BINARY-TRANSFER-REQUIRED"] = 'TRUE';
+		
+		// ------------------------
+		// Retreive X-NOT-HUMAN-READABLE
+		if(eregi("X-NOT-HUMAN-READABLE", $entry[0][$attrib][$i]))
+		  $VALUE[$name]["X-NOT-HUMAN-READABLE"] = 'TRUE';
 	  }
-	  
-	  // ------------------------
-	  // Retreive SINGLE-VALUE
-	  if(eregi("SINGLE-VALUE", $entry[0][$attrib][$i]))
-		$VALUE[$name]["SINGLE-VALUE"] = 'TRUE';
-	  
-	  // ------------------------
-	  // Retreive NO-USER-MODIFICATION
-	  if(eregi("NO-USER-MODIFICATION", $entry[0][$attrib][$i]))
-		$VALUE[$name]["NO-USER-MODIFICATION"] = 'TRUE';
-	  
-	  // ------------------------
-	  // Retreive X-BINARY-TRANSFER-REQUIRED
-	  if(eregi("X-BINARY-TRANSFER-REQUIRED", $entry[0][$attrib][$i]))
-		$VALUE[$name]["X-BINARY-TRANSFER-REQUIRED"] = 'TRUE';
-	  
-	  // ------------------------
-	  // Retreive X-NOT-HUMAN-READABLE
-	  if(eregi("X-NOT-HUMAN-READABLE", $entry[0][$attrib][$i]))
-		$VALUE[$name]["X-NOT-HUMAN-READABLE"] = 'TRUE';
 	}
 	
 	/* If there's no anonymous read access to the 'cn=Subschema',
 	 * phpQLAdmin will fail here...  */
-	if(is_array($VALUE))
-	  ksort($VALUE);
+	if(!empty($VALUE)) {
+	  if(is_array($VALUE))
+		ksort($VALUE);
 	
-	// TODO: Document what/how it works - IT'S UGGLY!!!
-	if($attrib == 'objectclasses') {
-	  // There might be aliases, so we must retreive all attribute types...
-	  // All attribute(s) that have aliases is in $ATTRS["ALIAS"].
-	  $ATTRS = pql_get_subschema($ldap_linkid, 'attributeTypes');
-	  
-	  // Save this so it doesn't interfere
-	  $OC_ALIAS = $VALUE["ALIAS"];
-	  unset($VALUE["ALIAS"]);
-	  
-	  // Go through each object class
-	  foreach($VALUE as $value_attrib => $value_data) {
-		// Go through each MUST attribute(s)
-		for($j=0; $j < count($value_data["MUST"]); $j++) {
-		  // Go through each attribute alias(es)
-		  foreach($ATTRS["ALIAS"] as $attrs_attrib => $attrs_data) {
-			if(!empty($value_data["MAY"][$j]) and
-			   (lc($value_data["MAY"][$j]) == lc($attrs_attrib)))
-			  {
-				foreach($attrs_data as $alias) 
-				  $VALUE[$value_attrib]["MAY"][$j] .= ":$alias";
+	  // TODO: Document what/how it works - IT'S UGGLY!!!
+	  if($attrib == 'objectclasses') {
+		// There might be aliases, so we must retreive all attribute types...
+		// All attribute(s) that have aliases is in $ATTRS["ALIAS"].
+		$ATTRS = pql_get_subschema($ldap_linkid, 'attributeTypes');
+		
+		if(!empty($VALUE["ALIAS"])) {
+		  // Save this so it doesn't interfere
+		  $OC_ALIAS = $VALUE["ALIAS"];
+		  unset($VALUE["ALIAS"]);
+		}
+		
+		// Go through each object class
+		foreach($VALUE as $value_attrib => $value_data) {
+		  if(!empty($value_data["MUST"])) {
+			// Go through each MUST attribute(s)
+			for($j=0; $j < $value_data["MUST"]["count"]; $j++) {
+			  if(!empty($ATTRS["ALIAS"])) {
+				// Go through each attribute alias(es)
+				foreach($ATTRS["ALIAS"] as $attrs_attrib => $attrs_data) {
+				  if(!empty($value_data["MAY"][$j]) and
+					 (lc($value_data["MAY"][$j]) == lc($attrs_attrib)))
+					{
+					  foreach($attrs_data as $alias) 
+						$VALUE[$value_attrib]["MAY"][$j] .= ":$alias";
+					}
+				  
+				  if(!empty($value_data["MUST"][$j]) and
+					 (lc($value_data["MUST"][$j]) == lc($attrs_attrib)))
+					{
+					  foreach($attrs_data as $alias) 
+						$VALUE[$value_attrib]["MUST"][$j] .= ":$alias";
+					}
+				}
 			  }
-			
-			if(!empty($value_data["MUST"][$j]) and
-			   (lc($value_data["MUST"][$j]) == lc($attrs_attrib)))
-			  {
-				foreach($attrs_data as $alias) 
-				  $VALUE[$value_attrib]["MUST"][$j] .= ":$alias";
-			  }
+			}
 		  }
 		}
+		
+		if(!empty($OC_ALIAS)) {
+		  // Add the object class alias(es) back
+		  $VALUE["ALIAS"] = $OC_ALIAS; 
+		}
 	  }
-	  
-	  // Add the object class alias(es) back
-	  $VALUE["ALIAS"] = $OC_ALIAS; 
 	}
 	
-	return $VALUE;
+	if(empty($VALUE))
+	  return false;
+	else
+	  return $VALUE;
   } else
 	return false;
 }
