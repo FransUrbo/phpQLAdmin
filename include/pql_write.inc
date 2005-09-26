@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.20.2.6 2005-05-13 14:24:20 turbo Exp $
+// $Id: pql_write.inc,v 2.20.2.6.2.1 2005-09-26 09:07:12 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -410,12 +410,6 @@ function pql_user_add($ldap_linkid, $domain, $dn, $entry, $type, $branch) {
 	}
 	// }}}
 	
-	if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
-		echo "DNs added: ";
-		printr($dns);
-		die();
-	}
-
     return $dns;
 }
 
