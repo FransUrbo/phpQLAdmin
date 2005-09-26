@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // qmail uid and gid
-// $Id: attrib.ugidnumber.inc,v 2.5.4.1 2005-05-12 20:51:43 turbo Exp $
+// $Id: attrib.ugidnumber.inc,v 2.5.4.1.2.1 2005-09-26 09:00:09 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -115,7 +115,7 @@ function attribute_save($type) {
 
 	    //die($_REQUEST["user"]);
 		if ($_REQUEST["uidnumber"] != $old_uidnumber) {
-			if (pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], "uidnumber", '', $_REQUEST["uidnumber"]))
+			if (pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_QMAILUID"), 1, $_REQUEST["uidnumber"]))
 			  $msgs[] = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 											  array('what' => $LANG->_('UID', 4),
 													'new'  => $_REQUEST["uidnumber"]));
@@ -125,7 +125,7 @@ function attribute_save($type) {
 		}
 
 		if ($_REQUEST["gidnumber"] != $old_gidnumber) {
-			if (pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], "gidnumber", '', $_REQUEST["gidnumber"]))
+			if (pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_QMAILGID"), 1, $_REQUEST["gidnumber"]))
 			  $msgs[] = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 											  array('what' => $LANG->_('GID', 4),
 													'new'  => $_REQUEST["gidnumber"]));
