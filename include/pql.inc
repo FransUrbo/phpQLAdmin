@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.201.2.5 2005-05-14 18:14:56 turbo Exp $
+// $Id: pql.inc,v 2.201.2.5.2.1 2005-09-26 09:02:53 turbo Exp $
 //
 
 // ----------------------------
@@ -496,34 +496,37 @@ function pql_password_hash($password, $hash) {
     // - {SSHA}askdfjklödjfnddnu
     // - {SHA}kldfaldkjadsfdsad=
     // - {MD5}lkasjfdndiasdfee=
-    // - {crypt}cryptedpassword
+    // - {CRYPT}cryptedpassword
     // - {SASL}principal@realm
     // - cleartextpasswort
 
-	if(!function_exists("mhash") and ($hash = "{MD5}")) {
-		// We do not have access to MD5 encryption - force {CRYPT}!
-		unset($hash);
-
+	if(!function_exists("mhash")) {
 		$log = date("M d H:i:s");
-		$log .= "MD5 encryption (mhash) not compiled into PHP. Please review the file doc/INSTALL. Falling back to using {CRYPT}";
+
+		if($hash == "{MD5}") {
+			// We do not have access to MD5 encryption - force {CRYPT}!
+			unset($hash);
+
+			$log .= "MD5 encryption (mhash) not compiled into PHP. Please review the file doc/INSTALL. Falling back to using {CRYPT}";
+		} else {
+			$log .= "Function mhash() not compiled into PHP. Please review the file doc/INSTALL.";
+		}
+
 		@error_log($log, 3, "phpQLadmin.log");
 	}
 
     switch($hash){
       case "{SSHA}":
 		// SHA1 hashing (salted)
-		if(function_exists("mhash"))
-		  return "{SSHA}" . base64_encode(mhash(MHASH_SHA1, $password, uniqid(microtime())));
+		return "{SSHA}" . base64_encode(mhash(MHASH_SHA1, $password, uniqid(microtime())));
 
       case "{SHA}":
 		// SHA1 hashing
-		if(function_exists("mhash"))
-		  return "{SHA}" . base64_encode(mhash(MHASH_SHA1, $password));
+		return "{SHA}" . base64_encode(mhash(MHASH_SHA1, $password));
 
       case "{MD5}":
 		// MD5 hashing
-		if(function_exists("mhash"))
-		  return "{MD5}" . base64_encode(mhash(MHASH_MD5, $password));
+		return "{MD5}" . base64_encode(mhash(MHASH_MD5, $password));
 
       case "{CLEAR}":
 		// Password in the clear (JUCK! :)
