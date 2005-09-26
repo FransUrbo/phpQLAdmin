@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.32.2.5 2005-05-13 12:48:38 turbo Exp $
+// $Id: user_add-save.inc,v 1.32.2.5.2.1 2005-09-26 09:10:47 turbo Exp $
 
 // {{{ URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
 if($_REQUEST["surname"]) {
@@ -26,7 +26,7 @@ if(($_REQUEST["surname"]
 		and
 		pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")))
    and
-   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_GIVENNAME"), 'MUST'))
+   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_GIVENNAME")))
 {
   if($_REQUEST["surname"]) 
 	$entry[pql_get_define("PQL_ATTR_GIVENNAME")]	= $_REQUEST["surname"];
@@ -41,7 +41,7 @@ if(($_REQUEST["name"]
 		and
 		pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")))
    and
-   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_SN"), 'MUST'))
+   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_SN")))
 {
   if($_REQUEST["name"])
 	$entry[pql_get_define("PQL_ATTR_SN")]			= $_REQUEST["name"];
@@ -57,7 +57,7 @@ if(((($_REQUEST["surname"] and $_REQUEST["name"])
 	and
 	pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_SN")))
    or
-   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_SN"), 'MUST'))
+   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_SN")))
 {
   if($_REQUEST["surname"] and $_REQUEST["name"])
 	$entry[pql_get_define("PQL_ATTR_CN")] = trim($_REQUEST["surname"]) . " " . trim($_REQUEST["name"]);
@@ -87,7 +87,7 @@ if($_REQUEST["mail"] and
 	// {{{ Add the additional email addresses as well
 	$email_temp = split('\@', $_REQUEST["mail"]); $email_temp = $email_temp[0];
 	
-	if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILALTERNATE"), 'MUST')) {
+	if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILALTERNATE"))) {
 		// For group objects, we need a 'catchall' mail alias as well.
 		if($_REQUEST["email_domain"])
 		  $entry[pql_get_define("PQL_ATTR_MAILALTERNATE")][] = $email_temp . "-catchall@" . $_REQUEST["email_domain"];
@@ -129,7 +129,7 @@ if($_REQUEST["forwardingaddress"] and
 }
 
 // {{{ Add [ug]id number, gecos etc to the entry array
-if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_QMAILUID"), 'MUST')) {
+if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_QMAILUID"))) {
   // Get a free UserID number
   $uidnr = pql_get_next_ugidnumber($_pql, 'uid', $_REQUEST["rootdn"]);
   if($uidnr > 0)
@@ -307,42 +307,44 @@ if($DNs[0]) {
   // TODO: DNs[1] (the group object) might still be empty -> failed to add it.
   
   // {{{ Now it's time to run the special adduser script if defined...
-  if(pql_get_define("PQL_CONF_SCRIPT_CREATE_USER", $_REQUEST["rootdn"])) {
-	// Setup the environment with the user details
-	putenv("PQL_CONF_DOMAIN=$domain");
-	putenv("PQL_CONF_WEBUSER=".posix_getuid());
-	foreach($entry as $key => $e) {
-	  $key = "PQL_" . strtoupper($key);
-	  if($key != 'PQL_CONF_OBJECTCLASS')
-		putenv("$key=$e");
-	}
-	
-	if(pql_get_define("PQL_CONF_KRB5_ADMIN_COMMAND_PATH") and 
-	   pql_get_define("PQL_CONF_KRB5_REALM") and
-	   pql_get_define("PQL_CONF_KRB5_ADMIN_PRINCIPAL") and
-	   pql_get_define("PQL_CONF_KRB5_ADMIN_SERVER") and 
-	   pql_get_define("PQL_CONF_KRB5_ADMIN_KEYTAB")) {
-	  putenv("PQL_KADMIN_CMD=".pql_get_define("PQL_CONF_KRB5_ADMIN_COMMAND_PATH")."/kadmin");
-	  putenv("PQL_KADMIN_REALM=".pql_get_define("PQL_CONF_KRB5_REALM"));
-	  putenv("PQL_KADMIN_PRINC=".pql_get_define("PQL_CONF_KRB5_ADMIN_PRINCIPAL"));
-	  putenv("PQL_KADMIN_SERVR=".pql_get_define("PQL_CONF_KRB5_ADMIN_SERVER"));
-	  putenv("PQL_KADMIN_KEYTB=".pql_get_define("PQL_CONF_KRB5_ADMIN_KEYTAB"));
-
-	  if($_REQUEST["clear_text_password"])
-		putenv("PQL_CLEARTEXT_PASSWORD=".$_REQUEST["clear_text_password"]);
-	}
-	
-	// Execute the user add script (0 => show output)
-	if(pql_execute(pql_get_define("PQL_CONF_SCRIPT_CREATE_USER", $_REQUEST["rootdn"]), 0)) {
-	  echo pql_complete_constant($LANG->_('The %what% add script failed'),
-								 array('what' => $LANG->_('user'))) . "!<br>";
-	  $msg = urlencode(pql_complete_constant($LANG->_('The %what% add script failed'),
-											 array('what' => $LANG->_('user'))) ."!") . ".&nbsp;<br>";
-	} else {
-	  echo "<b>" . pql_complete_constant($LANG->_('Successfully executed the %what% add script'),
-										 array('what' => $LANG->_('user'))) . "</b><br>";
-	  $msg = urlencode(pql_complete_constant($LANG->_('Successfully executed the %what% add script'),
-											 array('what' => $LANG->_('user')))) . ".&nbsp;<br>";
+  if(!file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+	if(pql_get_define("PQL_CONF_SCRIPT_CREATE_USER", $_REQUEST["rootdn"])) {
+	  // Setup the environment with the user details
+	  putenv("PQL_CONF_DOMAIN=$domain");
+	  putenv("PQL_CONF_WEBUSER=".posix_getuid());
+	  foreach($entry as $key => $e) {
+		$key = "PQL_" . strtoupper($key);
+		if($key != 'PQL_CONF_OBJECTCLASS')
+		  putenv("$key=$e");
+	  }
+	  
+	  if(pql_get_define("PQL_CONF_KRB5_ADMIN_COMMAND_PATH") and 
+		 pql_get_define("PQL_CONF_KRB5_REALM") and
+		 pql_get_define("PQL_CONF_KRB5_ADMIN_PRINCIPAL") and
+		 pql_get_define("PQL_CONF_KRB5_ADMIN_SERVER") and 
+		 pql_get_define("PQL_CONF_KRB5_ADMIN_KEYTAB")) {
+		putenv("PQL_KADMIN_CMD=".pql_get_define("PQL_CONF_KRB5_ADMIN_COMMAND_PATH")."/kadmin");
+		putenv("PQL_KADMIN_REALM=".pql_get_define("PQL_CONF_KRB5_REALM"));
+		putenv("PQL_KADMIN_PRINC=".pql_get_define("PQL_CONF_KRB5_ADMIN_PRINCIPAL"));
+		putenv("PQL_KADMIN_SERVR=".pql_get_define("PQL_CONF_KRB5_ADMIN_SERVER"));
+		putenv("PQL_KADMIN_KEYTB=".pql_get_define("PQL_CONF_KRB5_ADMIN_KEYTAB"));
+		
+		if($_REQUEST["clear_text_password"])
+		  putenv("PQL_CLEARTEXT_PASSWORD=".$_REQUEST["clear_text_password"]);
+	  }
+	  
+	  // Execute the user add script (0 => show output)
+	  if(pql_execute(pql_get_define("PQL_CONF_SCRIPT_CREATE_USER", $_REQUEST["rootdn"]), 0)) {
+		echo pql_complete_constant($LANG->_('The %what% add script failed'),
+								   array('what' => $LANG->_('user'))) . "!<br>";
+		$msg = urlencode(pql_complete_constant($LANG->_('The %what% add script failed'),
+											   array('what' => $LANG->_('user'))) ."!") . ".&nbsp;<br>";
+	  } else {
+		echo "<b>" . pql_complete_constant($LANG->_('Successfully executed the %what% add script'),
+										   array('what' => $LANG->_('user'))) . "</b><br>";
+		$msg = urlencode(pql_complete_constant($LANG->_('Successfully executed the %what% add script'),
+											   array('what' => $LANG->_('user')))) . ".&nbsp;<br>";
+	  }
 	}
   }
 // }}}
@@ -350,7 +352,7 @@ if($DNs[0]) {
   $msg .= urlencode($LANG->_('Successfully created the new user'));
 	
   // {{{ Send a test mail or redirect to user details page
-  if(pql_get_define("PQL_CONF_TESTMAIL_AUTOSEND", $_REQUEST["rootdn"])) {
+  if(pql_get_define("PQL_CONF_TESTMAIL_AUTOSEND", $_REQUEST["rootdn"]) and !file_exists($_SESSION["path"]."/.DEBUG_ME")) {
 	$link  = "user_sendmail.php?email=" . urlencode($_REQUEST["mail"]) . "&";
 	$link .= "rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&user=" . urlencode($DNs[0]) . "&rlnb=2&msg=$msg";
   } else {
@@ -359,7 +361,7 @@ if($DNs[0]) {
   }
 // }}}
 	
-  if(pql_get_define("PQL_CONF_SCRIPT_CREATE_USER", $_REQUEST["rootdn"])) {
+  if(pql_get_define("PQL_CONF_SCRIPT_CREATE_USER", $_REQUEST["rootdn"]) and !file_exists($_SESSION["path"]."/.DEBUG_ME")) {
 ?>
     <form action="<?=$link?>" method="post">
       <input type="submit" value="Continue">
@@ -367,7 +369,14 @@ if($DNs[0]) {
 <?php
 	   die();
   } else {
-	pql_header($link);
+	if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+		echo "DNs 'added' by pql_user_add(): ";
+		printr($DNs);
+
+		echo "MSG: <b>".urldecode($msg)."</b><br>I'm debugging, but I <u>would</u> have redirected you to the url:<br><br>";
+		die("<b>".urldecode($link)."</br>");
+	} else
+	  pql_header($link);
   }
 } else {
   $msg = urlencode($LANG->_('Failed to create the new user') . ":&nbsp;" . ldap_error($_pql->ldap_linkid));
