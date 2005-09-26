@@ -1,3 +1,11 @@
+phpqladmin (2.2.7-1) unstable; urgency=low
+
+  * New upstream version.
+  * Include Vietnamese translation for debconf by Clytie Siddall.
+    Closes: #316843
+
+ --
+
 phpqladmin (2.2.6-1) unstable; urgency=low
 
   * New upstream version
