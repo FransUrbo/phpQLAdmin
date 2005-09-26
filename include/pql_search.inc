@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.36.2.1.2.1 2005-07-22 10:08:31 turbo Exp $
+// $Id: pql_search.inc,v 2.36.2.1.2.2 2005-09-26 09:05:12 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -238,7 +238,11 @@ function pql_get_domains($ldap) {
 	  // o=Bayour.COM,c=SE => bayour.com
 
 	  // Sort by _value_ (which is lower cased).
-	  asort($dom, SORT_LOCALE_STRING);
+	  if(defined("SORT_LOCALE_STRING"))
+	    // Added in PHP 4.4.0 and 5.0.2.
+		asort($dom, SORT_LOCALE_STRING);
+	  else
+	    asort($dom);
 
 	  unset($tmp); // I'd like to reuse this variable...
 
