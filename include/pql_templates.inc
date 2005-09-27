@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_templates.inc,v 2.8 2005-09-24 09:45:58 turbo Exp $
+// $Id: pql_templates.inc,v 2.9 2005-09-27 14:09:44 turbo Exp $
 //
 
 // {{{ Generate the group template (hardcoded for the moment)
@@ -36,11 +36,12 @@ function pql_get_templates($linkid) {
   $templates = pql_get_dn($linkid, 'ou=Templates,'.$_SESSION["BASE_DN"][0], $filter, 'ONELEVEL');
 
   // {{{ Setup attributes to retreive.
-  $attribs = array("name"            => pql_get_define("PQL_ATTR_USER_TEMPLATE_NAME"),
-				   "short"           => pql_get_define("PQL_ATTR_USER_TEMPLATE_DESC_SHORT"),
-				   "long"            => pql_get_define("PQL_ATTR_USER_TEMPLATE_DESC_LONG"),
-				   "userobjectclass" => pql_get_define("PQL_ATTR_OBJECTCLASS_USER"),
-				   "passwordscheme"  => pql_get_define("PQL_ATTR_PASSWORD_SCHEMES"));
+  $attribs = array("name"            		=> pql_get_define("PQL_ATTR_USER_TEMPLATE_NAME"),
+				   "short"           		=> pql_get_define("PQL_ATTR_USER_TEMPLATE_DESC_SHORT"),
+				   "long"            		=> pql_get_define("PQL_ATTR_USER_TEMPLATE_DESC_LONG"),
+				   "userobjectclass" 		=> pql_get_define("PQL_ATTR_OBJECTCLASS_USER"),
+				   "passwordscheme"  		=> pql_get_define("PQL_ATTR_PASSWORD_SCHEMES"),
+				   "autocreateugidnumber"	=> pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER"));
   // }}}
 
   for($i=0; $i < count($templates); $i++) {
@@ -51,7 +52,9 @@ function pql_get_templates($linkid) {
     foreach($attribs as $key => $attrib) {
       $value = pql_get_attribute($linkid, $templates[$i], $attrib);
 	  if($value) {
-		if(!is_array($value) and ($key != "name") and ($key != "short") and ($key != "long") and ($key != "reference")) {
+		if(!is_array($value) and ($key != "name") and ($key != "short") and ($key != "long") and
+		   ($key != "reference") and ($key != "autocreateugidnumber"))
+		{
 		  // Must be an array for pql_format_table_single() to work...
 		  // At the time of this writing, the only stuff that should be an array is 'userObjectClass'
 		  // and 'passWordScheme' but I'm predicting a change :)
@@ -59,6 +62,13 @@ function pql_get_templates($linkid) {
 		} else
 		  // name, short or long description. Isn't used with pql_format_table_single().
 		  $TEMPLATE[$i][$key] = $value;
+	  }
+
+	  // Deal with the boolean(s)
+	  if($attrib == pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER")) {
+		if(empty($TEMPLATE[$i][pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER")]))
+		  $TEMPLATE[$i][pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER")] = 'FALSE';
+		pql_format_bool($TEMPLATE[$i][pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER")]);
 	  }
 	}
 	// }}}

@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.40 2005-09-24 09:45:59 turbo Exp $
+// $Id: user_add-save.inc,v 1.41 2005-09-27 14:10:08 turbo Exp $
 require($_SESSION["path"]."/include/pql_krbafs.inc");
 
 // {{{ URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
@@ -128,7 +128,9 @@ if(!empty($_REQUEST["forwardingaddress"]) and
 }
 
 // {{{ Add [ug]id number, gecos etc to the entry array
-if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_QMAILUID"))) {
+if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_QMAILUID"))
+   and $template[pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER")])
+{
   // Get a free UserID number
   $uidnr = pql_get_next_ugidnumber($_pql, 'uid', $_REQUEST["rootdn"]);
   if($uidnr > 0)

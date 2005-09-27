@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.50 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.config.inc,v 1.51 2005-09-27 14:09:44 turbo Exp $
 
 // {{{ attribute_output_java_window(void)
 function attribute_output_java_window() {
@@ -392,7 +392,16 @@ function attribute_save() {
   // ---------------------------------
 
   // {{{ Do the actual modification(s)
-  if(!$rootdn or ($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")) or $toggle) {
+  if(!empty($rootdn) and $toggle) {
+	// {{{ One place where this could happen: 'tables/config_details-template.inc->Generate uid and gid numbers [y/n]'
+	if(!pql_modify_attribute($_pql->ldap_linkid, $dn, '', 1, $entry))
+	  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+								   array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
+	else
+	  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+								   array('what' => $attrib));
+	// }}}
+  } elseif(empty($rootdn) or ($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")) or $toggle) {
 	// {{{ We don't have a DN, we're changing controlsAdministrator OR it's a toggle.
 	// This means it's a global variable, and should be set in every namingContexts
 	foreach($_SESSION["BASE_DN"] as $dn) {

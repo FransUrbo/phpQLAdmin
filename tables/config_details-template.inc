@@ -87,6 +87,17 @@ if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
 			if($templates[$i]["name"] != 'internal_group') {
 ?>
 
+      <!-- -------------------- -->
+<?php $class=pql_format_table(0); ?>
+      <tr>
+        <td class="title"><?=$LANG->_('Generate uid and gid numbers')?></td>
+        <td class="<?=$class?>"><?php if($templates[$i][pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER")]) {echo $LANG->_('Yes');}else{echo $LANG->_('No');}?>&nbsp;</td>
+        <td class="<?=$class?>">
+          <a href="config_edit_attribute.php?rootdn=<?=$dn?>&attrib=<?=pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER")?>&view=template&toggle=1"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?> <?=pql_get_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER")?>"></a>
+        </td>
+      </tr>
+      </tr>
+
       <tr>
         <td class="title"></td>
         <td class="<?=$class?>">

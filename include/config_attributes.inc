@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.38 2005-08-14 11:34:05 turbo Exp $
+// $Id: config_attributes.inc,v 2.39 2005-09-27 14:09:44 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -324,6 +324,7 @@ pql_set_define("PQL_ATTR_START_ADVANCED",					strtolower("startWithAdvancedMode"
 pql_set_define("PQL_ATTR_USER_TEMPLATE_NAME",				strtolower("userTemplateName"),				false);
 pql_set_define("PQL_ATTR_USER_TEMPLATE_DESC_SHORT",			strtolower("userTemplateDescriptionShort"),	false);
 pql_set_define("PQL_ATTR_USER_TEMPLATE_DESC_LONG",			strtolower("userTemplateDescriptionLong"),	false);
+pql_set_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER",			strtolower('autoCreateUGidNumber'),			false);
 // }}}
 
 // {{{ Map attribute to configuration define - GLOBAL
