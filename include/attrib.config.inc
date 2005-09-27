@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.51 2005-09-27 14:09:44 turbo Exp $
+// $Id: attrib.config.inc,v 1.52 2005-09-27 18:12:08 turbo Exp $
 
 // {{{ attribute_output_java_window(void)
 function attribute_output_java_window() {
@@ -67,9 +67,9 @@ function attribute_print_form() {
 
 	// Save some typing.
 	$attrib = strtolower($_REQUEST["attrib"]);
-	$oldvalue = @$_REQUEST["oldvalue"];
 	$rootdn = $_REQUEST["rootdn"];
-	$toggle = $_REQUEST["toggle"];
+	$oldvalue = (empty($_REQUEST["oldvalue"]) ? '' : $_REQUEST["oldvalue"]);
+	$toggle   = (empty($_REQUEST["toggle"]) ? 0 : 1);
 
 	// Get the old values from the define
 	foreach($PQL_ATTRIBUTE as $level => $array) {
@@ -93,7 +93,7 @@ function attribute_print_form() {
 
 	// If it's an array, make it a comma separated list
 	if(is_array($value)) {
-		unset($oldval);
+		$oldval = '';
 		for($i=0; $i < count($value); $i++) {
 			if($oldval)
 			  $oldval .= ",".$value[$i];
@@ -159,6 +159,9 @@ function attribute_print_form() {
 				foreach($objectclasses as $key => $oc) {
                     $print = 1; $gotit = 0;
 
+					if($key == 'ALIAS')
+					  break;
+
                     foreach($existing as $e) {
                         if((($e == $key) or eregi('phpQLAdmin', $key)) and !$gotit) {
                             $print = 0; $gotit = 1;
@@ -186,9 +189,8 @@ function attribute_print_form() {
 <?php						echo "            ";
 							for($counter=0; $counter < $objectclasses[$key]["MUST"]["count"]; $counter++) {
 								echo $objectclasses[$key]["MUST"][$counter];
-								if($objectclasses[$key]["MUST"][$counter+1]) {
+								if(!empty($objectclasses[$key]["MUST"][$counter+1]))
 								  echo ", ";
-								}
 							}
 						}
 
@@ -199,9 +201,8 @@ function attribute_print_form() {
 <?php						echo "            ";
 							for($counter=0; $counter < $objectclasses[$key]["MAY"]["count"]; $counter++) {
 								echo $objectclasses[$key]["MAY"][$counter];
-								if($objectclasses[$key]["MAY"][$counter+1]) {
+								if(!empty($objectclasses[$key]["MAY"][$counter+1]))
 								  echo ", ";
-								}
 							}
 						}
 
@@ -291,13 +292,14 @@ function attribute_save() {
 
   // ---------------------------------
 
-  $rootdn		= @$_REQUEST["rootdn"];
-  $domain		= @$_REQUEST["domain"];
+  $rootdn		= (empty($_REQUEST["rootdn"]) ? '' : $_REQUEST["rootdn"]);
+  $domain		= (empty($_REQUEST["domain"]) ? '' : $_REQUEST["domain"]);
 
   $attrib		= lc($_REQUEST["attrib"]);
-  $attrib_val	= @$_REQUEST[$attrib];
-  $oldvalue		= @$_REQUEST["oldvalue"];
-  $toggle		= @$_REQUEST["toggle"];
+  $attrib_val	= (empty($_REQUEST[$attrib]) ? '' : $_REQUEST[$attrib]);
+  $oldvalue		= (empty($_REQUEST["oldvalue"]) ? '' : $_REQUEST["oldvalue"]);
+  $toggle		= (empty($_REQUEST["toggle"]) ? 0 : 1);
+  $action		= (empty($_REQUEST["action"]) ? '' : $_REQUEST["action"]);
   
   if($domain)
 	$dn = $domain;
@@ -320,7 +322,7 @@ function attribute_save() {
 	}
 
 	// Check again (this time falling back to defaults set in include/{defaults,config}.inc etc)
-	if($oldvalue == '') {
+	if(empty($oldvalue)) {
 	  foreach($PQL_ATTRIBUTE as $level => $array) {
 		foreach($array as $key => $value) {
 		  if(!is_array($value)) {
@@ -336,13 +338,11 @@ function attribute_save() {
 	// Reverse state
 	if(($oldvalue == 1) or ($oldvalue == 'TRUE'))
 	  $entry[$attrib][] = 'FALSE';
-	elseif(($oldvalue == 0) or $oldvalue == 'FALSE')
+	elseif(($oldvalue == 0) or ($oldvalue == 'FALSE') or empty($oldvalue))
 	  $entry[$attrib][] = 'TRUE';
 	// }}}
-
   } elseif(($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) or
-		   ($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN")))
-  {
+		   ($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN"))) {
 	// {{{ One of the many multivalued values (add or del)
 	// ($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"))
 	// ($attrib == pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"))
@@ -359,7 +359,7 @@ function attribute_save() {
 		$oldvalue = array($oldvalue);
 
 	  for($i=0; $i < count($oldvalue); $i++) {
-		if($_REQUEST["action"] == 'del') {
+		if($action == 'del') {
 		  if(!eregi($attrib_val, $oldvalue[$i]))
 			$entry[$attrib][] = $oldvalue[$i];
 		} else
@@ -369,11 +369,11 @@ function attribute_save() {
 	// }}}
 
 	// {{{ Add ALL of the specified values to the array we're sending to the LDAP server.
-	if($_REQUEST["action"] != 'del') {
+	if($action != 'del') {
 	  $got_attrib_val = 0;
 	  for($i=0; $i < $_POST[$attrib]; $i++) {
 		$var_name = $attrib . "_$i";
-		if($_POST[$var_name]) {
+		if(!empty($_POST[$var_name])) {
 		  $got_attrib_val = 1;
 		  $entry[$attrib][] = $_POST[$var_name];
 		}
@@ -385,7 +385,6 @@ function attribute_save() {
 	}
 	// }}}
 	// }}}
-
   } else
 	$entry[$attrib][] = $attrib_val;
 
@@ -408,23 +407,19 @@ function attribute_save() {
 	  if(!pql_modify_attribute($_pql->ldap_linkid, $dn, '', 1, $entry))
 		$msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									 array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
-	  else {
+	  else
 		$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									 array('what' => $attrib));
-		$rlnb = 1;
-	  }
 	} // FOREACH $_SESSION["BASE_DN"]
 	// }}}
   } else {
 	// {{{ Have a DN
-	if(pql_modify_attribute($_pql->ldap_linkid, $rootdn, '', 1, $entry)) {
+	if(pql_modify_attribute($_pql->ldap_linkid, $rootdn, '', 1, $entry))
 	  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 								   array('what' => $attrib));
-	  $rlnb = 1;
-	} else {
+	else
 	  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 								   array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
-	}
   }
   // }}}
 	
