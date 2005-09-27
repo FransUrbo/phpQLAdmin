@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.46 2005-09-25 08:16:22 turbo Exp $
+// $Id: pql_search.inc,v 2.47 2005-09-27 07:06:13 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -12,13 +12,18 @@
 
 // {{{ pql_search(linkid, dn, filter, level, referrals, operational)
 // Lock for object(s) which match the filter.
+// Level can be:
+//		SUBTREE
+//		ONELEVEL
+//		BASE
 function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $operational = 0) {
   // URL decode the object DN if it's URL ENcoded
   $dn = pql_maybe_encode(urldecode($dn));
   
   // {{{ Convert a DNS TTL RDN to something I (phpQLAdmin) can understand
   if(eregi("^dNSTTL=", $dn))
-	// 'dNSTTL=3600+relativeDomainName=@,dc=domain,dc=tld,ou=DNS,o=Branch,c=SE'
+	// FROM: dNSTTL=3600 relativeDomainName=@,dc=domain,dc=tld,ou=DNS,o=Branch,c=SE
+	// TO:   dNSTTL=3600+relativeDomainName=@,dc=domain,dc=tld,ou=DNS,o=Branch,c=SE
 	$dn = pql_recreate_dnsttl($dn);
   // }}}
   
