@@ -3,9 +3,9 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.46 2005-09-16 06:08:51 turbo Exp $
+// $Id: pql_formating.inc,v 2.47 2005-09-27 07:03:55 turbo Exp $
 
-// {{{ pql_create_ldif(func, dn, entry)
+// {{{ pql_create_ldif(func, dn, entry, extra_newline)
 // Create a LDIF object to print in case of error
 function pql_create_ldif($func, $dn, $entry, $extra_newline = 0) {
   global $account_type;
@@ -19,12 +19,16 @@ function pql_create_ldif($func, $dn, $entry, $extra_newline = 0) {
   if($func)
 	$LDIF .= "<br>\n<pre>\n--- DEBUG: $func($account_type) ---$nl\n";
   
-  $LDIF .= "dn: $dn$nl\n";
+  if($dn)
+	$LDIF .= "dn: $dn$nl\n";
+  elseif($entry["dn"])
+	$LDIF .= "dn: ".$entry["dn"]."$nl\n";
+
   if(is_array($entry)) {
 	foreach($entry as $key => $e) {
 	  if(is_array($entry[$key])) {
 		// ... in an array. Go through each one, creating the LDAP entry
-		if(!ereg('_add', $func)) {
+		if($func and !ereg('_add', $func)) {
 		  if($entry[$key]) {
 			if($command)
 			  $LDIF .= "-\n";
@@ -41,13 +45,14 @@ function pql_create_ldif($func, $dn, $entry, $extra_newline = 0) {
 			$LDIF .= "delete: $key$nl\n";
 			$command = 1;
 		  }
-		} else {
+		} elseif($key != 'dn') {
 		  // We're (probably) ADDING an _object_. Print the values as is.
 		  foreach($entry[$key] as $x)
 			$LDIF .= "$key: $x$nl\n";
 		}
 	  } else {
-		if(!ereg('_add', $func)) {
+		// ... not an array, create the LDAP entry
+		if($func and !ereg('_add', $func)) {
 		  if($entry[$key]) {
 			if($command)
 			  $LDIF .= "-\n";
@@ -63,9 +68,10 @@ function pql_create_ldif($func, $dn, $entry, $extra_newline = 0) {
 			$LDIF .= "delete: $key$nl\n";
 			$command = 1;
 		  }
-		} else
+		} elseif($key != 'dn') {
 		  // We're (probably) ADDING an _object_. Print the values as is.
 		  $LDIF .= "$key: $entry[$key]$nl\n";
+		}
 	  }
 	}
   }
