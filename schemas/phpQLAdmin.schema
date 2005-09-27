@@ -109,7 +109,7 @@
 # availible from http://sourceforge.net/projects/modcfgldap/
 # See doc/README.apache for more information.
 
-# $Id: phpQLAdmin.schema,v 2.60 2005-09-27 14:09:52 turbo Exp $
+# $Id: phpQLAdmin.schema,v 2.61 2005-09-27 18:19:14 turbo Exp $
 
 # PQL_ATTR_SHOW_USERS (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.1 NAME 'showUsers'
@@ -202,7 +202,7 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.1.13 NAME 'autoAddHostName'
   SINGLE-VALUE )
 
 # PQL_ATTR_AUTOCREATE_USERNAME
-attributetype ( 1.3.6.1.4.1.8767.3.2.1.14 NAME 'autoCreateUsername'
+attributetype ( 1.3.6.1.4.1.8767.3.2.1.14 NAME 'autoCreateUserName'
   DESC 'Automatically create username when creating a user [True/False]?'
   EQUALITY booleanMatch
   SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
