@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.41 2005-09-27 14:10:08 turbo Exp $
+// $Id: user_add-save.inc,v 1.42 2005-09-27 18:35:11 turbo Exp $
 require($_SESSION["path"]."/include/pql_krbafs.inc");
 
 // {{{ URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
@@ -88,7 +88,7 @@ if(!empty($_REQUEST["mail"]) and
 	// {{{ Add the additional email addresses as well
 	$email_temp = split('\@', $_REQUEST["mail"]); $email_temp = $email_temp[0];
 	
-	if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILALTERNATE"))) {
+	if($_REQUEST["template"] == "internal_group") {
 		// For group objects, we need a 'catchall' mail alias as well.
 		if(!empty($_REQUEST["email_domain"]))
 		  $entry[pql_get_define("PQL_ATTR_MAILALTERNATE")][] = $email_temp . "-catchall@" . $_REQUEST["email_domain"];
