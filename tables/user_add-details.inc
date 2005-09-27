@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-details.inc,v 1.36 2005-09-24 09:45:59 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.37 2005-09-27 18:33:30 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
@@ -221,9 +221,9 @@
           <td><?php echo pql_format_error_span($error["loginshell"]); ?>
 
             <select name="loginshell">
-              <option value="/bin/false"<?php if(!$_REQUEST["loginshell"]) { ?> SELECTED<? } ?>>/bin/false</option>
+              <option value="/bin/false"<?php if(empty($_REQUEST["loginshell"])) { ?> SELECTED<? } ?>>/bin/false</option>
 <?php	  foreach($shells as $shell) { ?>
-              <option value="<?=$shell?>"<?php if($_REQUEST["loginshell"] == $shell) { ?> SELECTED<? } ?>><?=$shell?></option>
+              <option value="<?=$shell?>"<?php if(@($_REQUEST["loginshell"] == $shell)) { ?> SELECTED<? } ?>><?=$shell?></option>
 <?php	  } ?>
             </select>
           </td>
