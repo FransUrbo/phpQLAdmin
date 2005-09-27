@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.131 2005-09-24 09:45:56 turbo Exp $
+// $Id: user_add.php,v 2.132 2005-09-27 18:08:55 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -163,7 +163,7 @@ switch($_REQUEST["page_curr"]) {
 		
 		// {{{ Verify/Create email address
 		if(empty($_REQUEST["mail"]) and $autocreatemailaddress and function_exists('user_generate_email') and
-		   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAIL"), 'MUST'))
+		   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAIL")))
 		{
 			// It's not supplied - generate one
 			$_REQUEST["mail"] = strtolower(user_generate_email($_pql, $_REQUEST["uid"], "", "",
