@@ -1,5 +1,12 @@
 phpQLAdmin 2.3 Change Log
 
+phpQLAdmin 2.3.2 TO BE ANNOUNCED
+	Bug fixes
+	GUI layout changes
+	Schema changes
+	API changes
+	Misc changes
+
 phpQLAdmin 2.3.1 Release (Aug 22 2005)
 	Bug fixes
 	  - Remove a duplicated 'if user is (super)admin' check in tables/user_details-access.inc.
