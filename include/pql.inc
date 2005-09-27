@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.210 2005-09-24 09:45:58 turbo Exp $
+// $Id: pql.inc,v 2.211 2005-09-27 06:59:10 turbo Exp $
 //
 
 // ----------------------------
@@ -808,13 +808,13 @@ function pql_recreate_dnsttl($dn) {
   // (which urldecode() removes!):
   // 
   // dNSTTL=3600+relativeDomainName=@,dc=domain,dc=tld,ou=DNS,o=Branch,c=SE
+  $newdn = '';
   $dn_parts = explode(',', $dn);
   
   // Create the new DN with all but the very first part.
-  $count = count($dn_parts);
-  for($i=1; $i <= $count; $i++) {
+  for($i=1; $i < count($dn_parts); $i++) {
 	$newdn .= $dn_parts[$i];
-	if($dn_parts[$i+1])
+	if(!empty($dn_parts[$i+1]))
 	  $newdn .= ",";
   }
   
