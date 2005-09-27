@@ -1,6 +1,6 @@
 <?php
 // Edit and set configuration values in the LDAP database
-// $Id: config_edit_attribute.php,v 1.22 2005-09-16 06:08:41 turbo Exp $
+// $Id: config_edit_attribute.php,v 1.23 2005-09-27 18:07:38 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -50,7 +50,7 @@ function attribute_forward($msg, $rlnb = false) {
 
 // {{{ Select what to do
 $attrib = $_REQUEST["attrib"];
-if(@$_REQUEST["submit"] or @$_REQUEST["toggle"] or @($_REQUEST["action"] == 'del'))
+if(!empty($_REQUEST["submit"]) or !empty($_REQUEST["toggle"]) or @($_REQUEST["action"] == 'del'))
 {
     if(attribute_check()) {
 		attribute_save();
