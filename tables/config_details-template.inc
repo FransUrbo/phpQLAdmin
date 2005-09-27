@@ -1,9 +1,6 @@
 <?php 
 require($_SESSION["path"]."/include/pql_templates.inc");
 $templates = pql_get_templates($_pql->ldap_linkid);
-
-if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
-}
 ?>
   <br>
 
@@ -48,8 +45,6 @@ if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
 									  pql_get_define("PQL_ATTR_PASSWORD_SCHEMES"), $class);
 			}
 ?>
-
-      <tr></tr>
 
       <!-- -------------------- -->
 <?php		$class=pql_format_table(0);
@@ -105,9 +100,10 @@ if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
         </td>
         <td class="<?=$class?>"></td>
       </tr>
-<?php } ?>
     </th>
-<?php		if(!empty($templates[$i+1])) {
+<?php		}
+
+			if(!empty($templates[$i+1])) {
 				pql_format_table_empty();
 			}
 		} // for(templates)
