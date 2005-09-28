@@ -1,8 +1,12 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.95 2005-09-21 05:28:19 turbo Exp $
+// $Id: user_detail.php,v 2.96 2005-09-28 12:52:19 turbo Exp $
 //
 // {{{ Setup session
+header("Expires: 0");
+header('Cache-control: no-store, no-cache, must-revalidate');
+header('Cache-control: pre-check=0, post-check=0, max-age=0', false);
+
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
 

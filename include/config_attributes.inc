@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.40 2005-09-27 18:16:41 turbo Exp $
+// $Id: config_attributes.inc,v 2.41 2005-09-28 12:52:21 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -225,6 +225,7 @@ pql_set_define("PQL_ATTR_EZMLM_REMOTE_RETREIVE_SCRIPT", 	strtolower('ezmlmRemote
 // {{{ Miscellaneous external attributes
 pql_set_define("PQL_ATTR_SPAMASSASSIN", 					strtolower('spamAssassin'),					false);
 pql_set_define("PQL_ATTR_PASSWD_CLEAR", 					strtolower('clearTextPassword'),			false);
+pql_set_define("PQL_ATTR_PHOTO",							strtolower('jpegPhoto'),					false);
 // }}}
 
 // {{{ Samba Attributes

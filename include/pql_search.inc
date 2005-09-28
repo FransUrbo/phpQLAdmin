@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.47 2005-09-27 07:06:13 turbo Exp $
+// $Id: pql_search.inc,v 2.48 2005-09-28 12:52:21 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -17,6 +17,8 @@
 //		ONELEVEL
 //		BASE
 function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $operational = 0) {
+  global $_SESSION;
+
   // URL decode the object DN if it's URL ENcoded
   $dn = pql_maybe_encode(urldecode($dn));
   
@@ -29,18 +31,18 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
   
   // {{{ Which ldap_{search,list,read}() function to use
   switch($level) {
-  case "SUBTREE":	$func = "ldap_search";	break;
-  case "ONELEVEL":	$func = "ldap_list";	break;
-  default:			$func = "ldap_read";	break;
+    case "SUBTREE":		$func = "ldap_search";	break;
+    case "ONELEVEL":	$func = "ldap_list";	break;
+    default:			$func = "ldap_read";	break;
   }
-  // }}}
   
   if($operational)
 	$op = array('+');
   else
 	$op = array();
+  // }}}
   
-  // {{{ Retreive the whole object.
+  // {{{ Search for object(s)
   if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE"))
 	echo "pql_search() - 1: Looking for '<b>$dn</b>': "; // DEBUG
   
@@ -62,45 +64,89 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
 	if(!$sr)
 	  // No such object - problem with the search string?
 	  return false;
+
+	// Get number of objects found.
+	$nr_entries = ldap_count_entries($linkid, $sr);
+	if(!$nr_entries)
+	  // No objects found.
+	  return false;
   }
   // }}}
-  
+
   // {{{ Get ALL hits and rearrange the array.
-  $object = ldap_get_entries($linkid, $sr) or pql_format_error(1);
-  for($i=0; $i < $object["count"]; $i++) {
-	if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE"))
-	  echo "pql_search() - 2 ($i/".$object["count"]."): Looking for '<b>".$object[$i]["dn"]."</b>': "; // DEBUG
-	
-	if(!pql_cache_get($object[$i]["dn"], $entry[$i]) or $operational) {
-	  // This object isn't cached (or: force update on for example OpenLDAPaci's).
-	  foreach($object[$i] as $key => $value) {
-		if(eregi('^[a-z]', $key) and $key != 'count') {
-		  // Ignore the 'count' value and values with a number.
-		  // ldap_get_entries() returns a very 'funny' array -
-		  // flatten it!
-		  if(is_array($value) and !empty($value[1])) {
+  // Initialize the resulting array.
+   $entry = array();
+
+  $entries = 0; // Counter to keep tab on how many entries to return
+  $object = ldap_first_entry($linkid, $sr) or pql_format_error(1);
+  do {
+	// Get the DN of the object
+	$dn = ldap_get_dn($linkid, $object);
+
+	// To cache or not to cache (the object)...
+	if(file_exists($_SESSION["path"]."/.DEBUG_CACHE"))
+	  echo "pql_search() - 2 ($i/".$object["count"]."): Looking for '<b>$dn</b>': ";
+	  
+	if(pql_cache_get($dn, $cached_object) or $operational) {
+	  // Object cached. Add it as-is to the resulting array.
+	  if($nr_entries > 1)
+		$entry[$entries] = $cached_object;
+	  else
+		$entry = $cached_object;
+	} else {
+	  // Not cached (or cache disabled). Get all attributes in this object
+	  $attributes = ldap_get_attributes($linkid, $object);
+	  
+	  // Go through all attributes in the object and retreive
+	  // the value(s). Ignore the 'count' part and values with
+	  // a number (remnants from the ldap_get_attributes() call)..
+	  for($i=0; $i < $attributes['count']; $i++) {
+		$key   = lc($attributes[$i]); // Save some typing
+		$value = ldap_get_values_len($linkid, $object, $attributes[$i]);
+		
+		if(eregi('^[a-z]', $key) and ($key != 'count')) {
+		  if($key == pql_get_define("PQL_ATTR_PHOTO")) {
+			// A jpegPhoto. Save it in the resulting array as-is.
+			if($nr_entries > 1)
+			  $entry[$entries][$key] = $value[0];
+			else
+			  $entry[$key] = $value[0];
+		  } elseif(is_array($value) and !empty($value[1])) {
 			// A multi value - such as 'mailAlternateAddress'
 			// or 'objectClass' etc. Take ALL values, ignoring
 			// any empty values that might exists.
-			$count = count($value);
-			for($j=0; $j <= $count; $j++) {
-			  if(!empty($value[$j]))
-				$entry[$i][$key][] = pql_maybe_decode($value[$j]);
+			for($j=0; $j < $value["count"]; $j++) {
+			  if($nr_entries > 1)
+				$entry[$entries][$key][$j] = pql_maybe_decode($value[$j]);
+			  else
+				$entry[$key][$j] = pql_maybe_decode($value[$j]);
 			}
-		  } elseif(!is_array($value))
-			// The 'dn' attribute probably. It is NOT an array...
-			$entry[$i][$key] = pql_maybe_decode($value);
-		  else
+		  } else
 			// Single valued such as 'uid' and 'mail' etc...
 			// Just take the ONE value
-			$entry[$i][$key] = pql_maybe_decode($value[0]);
+			if($nr_entries > 1)
+			  $entry[$entries][$key] = pql_maybe_decode($value[0]);
+			else
+			  $entry[$key] = pql_maybe_decode($value[0]);
 		}
 	  }
+
+	  // Save the DN in the resulting array.
+	  if($nr_entries > 1)
+		$entry[$entries]["dn"] = $dn;
+	  else
+		$entry["dn"] = $dn;
 	  
-	  // Cache this/these object
-	  pql_cache_add($entry[$i]);
+	  // -------------
+	  // Cache this object
+	  if($nr_entries > 1)
+		pql_cache_add($entry[$entries]);
+	  else
+		pql_cache_add($entry);
 	}
-  }
+
+	$entries++;
+  } while($object = ldap_next_entry($linkid, $object));
   // }}}
   
   // {{{ Chase referals

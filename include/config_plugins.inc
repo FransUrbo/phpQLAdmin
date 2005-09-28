@@ -11,7 +11,7 @@
 // If you want to customise phpQLAdmin, do NOT do it here, the file
 // to customise is 'config_attributes.inc'.
 //
-// $Id: config_plugins.inc,v 2.20 2005-08-14 14:30:55 turbo Exp $
+// $Id: config_plugins.inc,v 2.21 2005-09-28 12:52:21 turbo Exp $
 
 pql_plugin_register(pql_get_define("PQL_ATTR_ISACTIVE"), "",
 					"attrib.accountstatus.inc",
@@ -253,6 +253,10 @@ pql_plugin_register(pql_get_define("PQL_ATTR_SIMSCAN_SPAM_HITS"), "",
 pql_plugin_register(pql_get_define("PQL_ATTR_SIMSCAN_ATTACHMENTS"), "",
 					"attrib.saattach.inc",
 					pql_get_define("PQL_ATTR_SIMSCAN_ATTACHMENTS"));
+
+pql_plugin_register(pql_get_define("PQL_ATTR_PHOTO"), "",
+					"attrib.photo.inc",
+					pql_get_define("PQL_ATTR_PHOTO"));
 
 // List all registred attributes and their files
 // - Uncomment this piece of code to view which
