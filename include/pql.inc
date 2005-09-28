@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.211 2005-09-27 06:59:10 turbo Exp $
+// $Id: pql.inc,v 2.212 2005-09-28 13:11:43 turbo Exp $
 //
 
 // ----------------------------
@@ -228,7 +228,9 @@ class pql {
 
 // Get formated quota of a user
 function pql_user_get_quota($ldap_linkid, $user) {
-	if($_SESSION["NEW_STYLE_QUOTA"]) {
+	global $_SESSION;
+
+	if(!empty($_SESSION["NEW_STYLE_QUOTA"])) {
 		$quota_size  = pql_get_attribute($ldap_linkid, $user, pql_get_define("PQL_ATTR_QUOTA_SIZE"));
 		$quota_count = pql_get_attribute($ldap_linkid, $user, pql_get_define("PQL_ATTR_QUOTA_COUNT"));
 		
