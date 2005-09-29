@@ -35,6 +35,18 @@
       <!-- -------------------- -->
 <?php $class=pql_format_table(0); ?>
       <tr>
+        <td class="title"><?=$LANG->_('Allow \uall\U characters in passwords')?></td>
+        <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_ALLOW_ALL_CHARS", $_REQUEST["branch"])) {echo $LANG->_('Yes');}else{echo $LANG->_('No');}?>&nbsp;</td>
+        <td class="<?=$class?>">
+<?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
+          <a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&toggle=1&attrib=<?=pql_get_define("PQL_ATTR_ALLOW_ALL_CHARS")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Toggle')?><?=pql_get_define("PQL_CONF_ALLOW_ALL_CHARS", $_REQUEST["branch"])?>"></a>
+<?php } ?>
+        </td>
+      </tr>
+
+      <!-- -------------------- -->
+<?php $class=pql_format_table(0); ?>
+      <tr>
         <td class="title"><?=$LANG->_('Verify user/domain deletions \i\urecomended!\U\I')?></td>
         <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST["branch"])) {echo $LANG->_('Yes');}else{echo $LANG->_('No');}?>&nbsp;</td>
         <td class="<?=$class?>">

@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.96 2005-09-28 12:52:19 turbo Exp $
+// $Id: user_detail.php,v 2.97 2005-09-29 05:03:12 turbo Exp $
 //
 // {{{ Setup session
 header("Expires: 0");
@@ -218,9 +218,15 @@ if(!empty($uid)) {
 		$tmp  = pql_search($_pql->ldap_linkid, $base,
 						   pql_get_define("PQL_ATTR_ADDITIONAL_GROUP")."=".$uid);
 
-		if(is_array($tmp)) {
-		  for($i=0; $i < count($tmp); $i++)
-			$memberuid[] = $tmp[$i]['cn'];
+		if(!empty($tmp) and is_array($tmp)) {
+		  if(empty($tmp[pql_get_define("PQL_ATTR_ADDITIONAL_GROUP")]) and !empty($tmp[0])) {
+			// Multidimensional array
+			for($i=0; $i < count($tmp); $i++)
+			  $memberuid[] = $tmp[$i][pql_get_define("PQL_ATTR_CN")];
+		  } else {
+			for($i=0; $i < count($tmp); $i++)
+			  $memberuid[] = $tmp[pql_get_define("PQL_ATTR_ADDITIONAL_GROUP")][$i];
+		  }
 
 		  unset($tmp);
 		}

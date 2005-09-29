@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.132 2005-09-27 18:08:55 turbo Exp $
+// $Id: user_add.php,v 2.133 2005-09-29 05:03:12 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -442,7 +442,9 @@ switch($_REQUEST["page_curr"]) {
 			if(eregi("KERBEROS", $_REQUEST["pwscheme"])) {
 				// Should be in the form: userid@DOMAIN.LTD
 				// TODO: Is this regexp correct!?
-				if(! preg_match("/^[a-zA-Z0-9]+[\._-a-z0-9]*[a-zA-Z0-9]+@[A-Z0-9][-A-Z0-9]+(\.[-A-Z0-9]+)+$/", $_REQUEST["password"])) {
+				if(!pql_get_define("PQL_CONF_ALLOW_ALL_CHARS", $_REQUEST["rootdn"]) and
+				   !preg_match("/^[a-zA-Z0-9]+[\._-a-z0-9]*[a-zA-Z0-9]+@[A-Z0-9][-A-Z0-9]+(\.[-A-Z0-9]+)+$/", $_REQUEST["password"]))
+				{
 					$error = true;
 					$error_text["password"] = $LANG->_('Invalid');
 
@@ -454,7 +456,9 @@ switch($_REQUEST["page_curr"]) {
 				}
 			} elseif(empty($_REQUEST["crypted"])) {
 				// A password in cleartext, NOT already encrypted
-				if(preg_match("/[^a-z0-9]/i", $_REQUEST["password"])) {
+				if(!pql_get_define("PQL_CONF_ALLOW_ALL_CHARS", $_REQUEST["rootdn"]) and
+				   preg_match("/[^a-z0-9]/i", $_REQUEST["password"]))
+				{
 					$error = true;
 					$error_text["password"] = $LANG->_('Invalid');
 				}

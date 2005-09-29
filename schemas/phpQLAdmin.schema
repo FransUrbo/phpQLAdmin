@@ -46,6 +46,7 @@
 #            simScanClamAntiVirus            24
 #            simScanTrophie                  25
 #            autoCreateUGidNumber            26
+#            allowAllPasswordChars           27
 #
 #          System texts                     2
 #            whoAreWe                         1
@@ -109,7 +110,7 @@
 # availible from http://sourceforge.net/projects/modcfgldap/
 # See doc/README.apache for more information.
 
-# $Id: phpQLAdmin.schema,v 2.61 2005-09-27 18:19:14 turbo Exp $
+# $Id: phpQLAdmin.schema,v 2.62 2005-09-29 05:03:24 turbo Exp $
 
 # PQL_ATTR_SHOW_USERS (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.1 NAME 'showUsers'
@@ -288,6 +289,13 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.1.25 NAME 'simScanTrophie'
 # PQL_ATTR_AUTOCREATE_UGIDNUMBER (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.26 NAME 'autoCreateUGidNumber'
   DESC 'Automatically create the uidNumber and gidNumber [True/False]?'
+  EQUALITY booleanMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+  SINGLE-VALUE )
+
+# PQL_ATTR_ALLOW_ALL_CHARS (true | false)
+attributetype ( 1.3.6.1.4.1.8767.3.2.1.27 NAME 'allowAllPasswordChars'
+  DESC 'Allow all characters in passwords [True/False]?'
   EQUALITY booleanMatch
   SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
   SINGLE-VALUE )
@@ -650,7 +658,7 @@ objectclass ( 1.3.6.1.4.1.8767.3.1.1
         externalScriptDomain $ minimumUIDNumber $
         minimumGIDNumber $ autoAddRCPTHosts $
         autoAddHostName $ externalScriptUserDelete $
-        externalScriptDomainDelete )
+        externalScriptDomainDelete $ allowAllPasswordChars )
   SUP top AUXILIARY )
 
 objectclass ( 1.3.6.1.4.1.8767.3.1.2

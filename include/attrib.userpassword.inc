@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.33 2005-08-14 11:29:50 turbo Exp $
+// $Id: attrib.userpassword.inc,v 2.34 2005-09-29 05:03:18 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -16,7 +16,7 @@ function attribute_check($type) {
 	// valid - A KERBEROS scheme is ALWAYS valid! We only check
 	// password validity if it ISN'T a kerberos scheme...
 	if(!eregi('KERBEROS', $_REQUEST["pwscheme"])) {
-		if(preg_match("/[^a-z0-9]/i", $_REQUEST["userpassword"])){
+		if(!pql_get_define("PQL_CONF_ALLOW_ALL_CHARS", $_REQUEST["rootdn"]) and preg_match("/[^a-z0-9]/i", $_REQUEST["userpassword"])) {
 			$error["userpassword"] = $LANG->_('Invalid');
 			return false;
 		}
@@ -94,6 +94,7 @@ function attribute_print_form() {
             <input type="input" name="userpassword" size="40">
           </td>
         </tr>
+<?php if(!pql_get_define("PQL_CONF_ALLOW_ALL_CHARS", $_REQUEST["rootdn"])) { ?>
 
         <tr class="subtitle">
           <td></td>
@@ -104,6 +105,7 @@ function attribute_print_form() {
             </table>
           </td>
         </tr>
+<?php } ?>
       </th>
     </table>
 
