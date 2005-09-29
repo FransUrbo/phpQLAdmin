@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.52 2005-09-27 18:12:08 turbo Exp $
+// $Id: attrib.config.inc,v 1.53 2005-09-29 05:14:08 turbo Exp $
 
 // {{{ attribute_output_java_window(void)
 function attribute_output_java_window() {
@@ -314,6 +314,8 @@ function attribute_save() {
   if($toggle) {
 	// {{{ A togglable value.
 	if(!$oldvalue) {
+	  settype($oldvalue, "boolean");
+
 	  // We don't know the previous value, fetch it.
 	  if($dn)
 		$oldvalue = pql_get_attribute($_pql->ldap_linkid, $dn, $attrib);
@@ -334,11 +336,15 @@ function attribute_save() {
 		}
 	  }
 	}
-	
+
 	// Reverse state
-	if(($oldvalue == 1) or ($oldvalue == 'TRUE'))
+	if($oldvalue == 1)
 	  $entry[$attrib][] = 'FALSE';
-	elseif(($oldvalue == 0) or ($oldvalue == 'FALSE') or empty($oldvalue))
+	elseif($oldvalue == 'TRUE')
+	  $entry[$attrib][] = 'FALSE';
+	elseif(($oldvalue == 0) or empty($oldvalue))
+	  $entry[$attrib][] = 'TRUE';
+	elseif($oldvalue == 'FALSE')
 	  $entry[$attrib][] = 'TRUE';
 	// }}}
   } elseif(($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) or
