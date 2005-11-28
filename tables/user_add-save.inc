@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.32.2.5.2.1 2005-09-26 09:10:47 turbo Exp $
+// $Id: user_add-save.inc,v 1.32.2.5.2.2 2005-11-28 08:52:38 turbo Exp $
 
 // {{{ URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
 if($_REQUEST["surname"]) {
@@ -87,12 +87,16 @@ if($_REQUEST["mail"] and
 	// {{{ Add the additional email addresses as well
 	$email_temp = split('\@', $_REQUEST["mail"]); $email_temp = $email_temp[0];
 	
-	if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILALTERNATE"))) {
+	if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILALTERNATE"))
+	   and ($_REQUEST["template"] == 'internal_group'))
+	{
 		// For group objects, we need a 'catchall' mail alias as well.
 		if($_REQUEST["email_domain"])
 		  $entry[pql_get_define("PQL_ATTR_MAILALTERNATE")][] = $email_temp . "-catchall@" . $_REQUEST["email_domain"];
 		elseif($defaultdomain)
 		  $entry[pql_get_define("PQL_ATTR_MAILALTERNATE")][] = $email_temp . "-catchall@" . $defaultdomain;
+
+		$entry[pql_get_define("PQL_ATTR_MAILSTORE")]= pql_get_define("PQL_CONF_VIRTUAL_BASEHOME");
 	}
 	
 	if(($_REQUEST["include_additional"] == 'on') and is_array($additionaldomainname) and
@@ -131,14 +135,22 @@ if($_REQUEST["forwardingaddress"] and
 // {{{ Add [ug]id number, gecos etc to the entry array
 if(pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_QMAILUID"))) {
   // Get a free UserID number
+	if(function_exists("user_generate_ugidnr"))
+	  $entry[pql_get_define("PQL_ATTR_QMAILUID")] = user_generate_ugidnr($_pql, $_REQUEST["domain"], $template);
+	else {
   $uidnr = pql_get_next_ugidnumber($_pql, 'uid', $_REQUEST["rootdn"]);
   if($uidnr > 0)
 	$entry[pql_get_define("PQL_ATTR_QMAILUID")] = $uidnr;
+	}
   
   // Get a free GroupID number
+	if(function_exists("user_generate_ugidnr"))
+	  $entry[pql_get_define("PQL_ATTR_QMAILGID")] = user_generate_ugidnr($_pql, $_REQUEST["domain"], $template);
+	else {
   $gidnr = pql_get_next_ugidnumber($_pql, 'gid', $_REQUEST["rootdn"]);
   if($gidnr > 0)
 	$entry[pql_get_define("PQL_ATTR_QMAILGID")] = $gidnr;
+	}
   
   // Gecos is needed to do PAM/NSS LDAP login 
   if($_REQUEST["surname"] and $_REQUEST["name"] and
@@ -228,7 +240,7 @@ if($_REQUEST["mail"] and isset($_REQUEST["host"]) and
 		else {
 			// ... no it isn't. Use the one that is.
 			$nr = $_REQUEST["host"];
-			$entry[pql_get_define("PQL_ATTR_MAILHOST")]       = $_REQUEST["host_".$nr];
+			$entry[pql_get_define("PQL_ATTR_MAILHOST")]       = $_REQUEST["host"];
 		}
 	}
 	
