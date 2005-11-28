@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.36.2.1.2.2 2005-09-26 09:05:12 turbo Exp $
+// $Id: pql_search.inc,v 2.36.2.1.2.3 2005-11-28 08:44:12 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -445,8 +445,46 @@ function pql_validate_object($linkid, $dn, $object, $type) {
 	// }}}
 
 	// {{{ Add the OpenLDAPaci attribute (maybe)
-	if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci"))
+	if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci")) {
+		if(eregi("ou=Templates,", $dn)) {
+			// {{{ We're adding a template - special circumstances
+			// Get all 'administrator's and add them to the READ list.
+			global $_SESSION;
+			foreach($_SESSION["BASE_DN"] as $base_dn)  {
+				$admin_dns = pql_get_dn($linkid, urldecode($base_dn), pql_get_define("PQL_ATTR_ADMINISTRATOR").'=*');
+				foreach($admin_dns as $admin_dn) {
+					$admins = pql_get_attribute($linkid, urldecode($admin_dn), pql_get_define("PQL_ATTR_ADMINISTRATOR"));
+					if(is_array($admins)) {
+						for($j=0; $admins[$j]; $j++) {
+							$admin = lc($admins[$j]);
+							$acis[] = "#entry#grant;w,r,s,c,x;[all]#access-id#$admin";
+						}
+					} elseif($admins) {
+						$admin = lc($admins);
+						$acis[] = "#entry#grant;w,r,s,c,x;[all]#access-id#$admin";
+					}
+				}
+			}
+
+			// Sort and 'uniquify' the array of MAY attributes
+			$acis = pql_uniq($acis);
+
+
+			// Generate the REAL ACI list.
+			$i = 1;
+
+			// Add the 'normal' (public) ACI'.
+			$entry[pql_get_define("PQL_ATTR_LDAPACI")][$i] = "$i#entry#grant;r,s,c;objectClass,[entry]#public#"; $i++;
+
+			// Add the ACI's generated above, with the OID (aci counter) value.
+			foreach($acis as $aci) {
+				$entry[pql_get_define("PQL_ATTR_LDAPACI")][$i] = "$i$aci";
+				$i++;
+			}
+			// }}}
+		} else
 	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($linkid, $dn, $type);
+	}
 	// }}}
 
 	return($entry);
