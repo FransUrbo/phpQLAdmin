@@ -2,7 +2,45 @@ phpQLAdmin 2.2 Change Log
 
 phpQLAdmin 2.2.7 TO BE ANNOUNCED
 	Bug fixes
+	  - Remove hardcoded '[ug]idnumber' attribute with correct define in include/attrib.ugidnumber.inc.
+	  - Call pql_modify_attribute() with REPLACE option (not ADD) (in include/attrib.ugidnumber.inc).
+	  - More logging if missing the mhash() function (and possibly fallback to using
+	    {CRYPT}).
+	    + Remove redundant checks for mhash() function.
+	  - The "SORT_LOCALE_STRING" option to asort() isn't availible until PHP 4.4.0,
+	    so check that...
+	  - Don't die in include/pql_write.inc:pql_user_add() if we're debugging. It's better to do that
+	    in 'tables/user_add-save.inc'.
+	  - Remove all 'MUST' checks from pql_templates_check_attribute() call. If
+	    it (the attribute) is allowed, include it!
+	  - Since we no longer die in the user_add() function, make sure we don't
+	    execute the adduser script(s).
+	    + Nore should test mail's be sent..
+	  - Bugfixes in the user_del_attribute.php file:
+	    + Missing param to ldap_search(): the DN value (second param).
+	    + Go through each base DN, and do the search.
+	    + URL encode the root DN and the domain DN before redirecting.
+	    + Include the root and domain DN's in the 'are you really sure' verification form. so
+	      they don't get lost.
+	  - Include a template 'generate UID/GID number' function in config.inc.
+	    + Call this (if it's defined) in the user_add-save.inc table page.
+	  - When validating an object and we're adding the OpenLDAPaci attribute, we can't call
+	    user_generate_aci() if it's a Template object.
+	    We must find all administrators and add them to the access list in the base DN. This
+	    because they must have (read) access to the OpenLDAPaci attributes in ALL objects.
+	  - Some changes in getting the URI path in pql_session.inc.
+	  - When adding an object and the .DEBUG_ME file exists, we need to output the _SESSION
+	    array. This to ease debugging. But remove the password before outputting it!
+	  - Only add the '...-catchall@...' mail alias if it's a QmailGroup object.
+	    + Add the 'mailMessageStore' attribute as well.
+
 	GUI layout changes
+	  - Simplify the adding of PTR records in the Bind9 manager.
+	    + Include the zone/in-addr.arpa IP prefix before the input field.
+	    + Change the headings to make sure user is inputting correct value in correct input field.
+	    + Remove redundant extraction and removal of the in-addr.arpa values. It's already done
+	      (with the changes above) when commiting the form.
+
 	Misc changes
 
 phpQLAdmin 2.2.6 Release (Aug 22 2005)
