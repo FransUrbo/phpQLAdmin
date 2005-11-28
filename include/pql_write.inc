@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.20.2.6.2.1 2005-09-26 09:07:12 turbo Exp $
+// $Id: pql_write.inc,v 2.20.2.6.2.2 2005-11-28 09:07:12 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -21,9 +21,13 @@ function pql_write_add($linkid, $dn, $entry, $type, $caller) {
 	// -----
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif($caller, $dn, $entry);
-	if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
-	  echo $LDIF;
-	else {
+	if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+		// Print the session array.
+		pql_session_print($caller);
+
+		// Print the 'LDIF'
+		echo $LDIF;
+	} else {
 		// -----
 		// Add this object to the database
 		if(! ldap_add($linkid, $dn, $entry)) {
@@ -41,6 +45,8 @@ function pql_write_add($linkid, $dn, $entry, $type, $caller) {
 			
 			pql_format_error(1);
 			echo "Error: #$errno ($error)<p>";
+
+			pql_session_print($caller);
 			die($LDIF);
 		}
 	}
