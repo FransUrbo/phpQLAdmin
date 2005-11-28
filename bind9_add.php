@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.18.2.4 2005-06-16 08:38:39 turbo Exp $
+// $Id: bind9_add.php,v 2.18.2.4.2.1 2005-11-28 08:31:41 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -81,6 +81,14 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 				  $error_text["dest"] = $LANG->_('Resource destination missing');
 			  }
 		  }
+
+		  if(eregi("in-addr.arpa", $_REQUEST["domainname"])) {
+			$rev = split('\.', $_REQUEST["domainname"]);
+
+			$REV = '';
+			for($i=count($rev)-3; $rev[$i]; $i--)
+			  $REV .= $rev[$i].".";
+		  }
 ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Add a record to domain %domain%'), array('domain' => pql_maybe_idna_decode($_REQUEST["domainname"]))); ?></span>
 
@@ -91,9 +99,17 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
       <th colspan="3" align="left">Add host to domain
         <tr class="title">
           <td></td>
+<?php	  if(eregi("in-addr.arpa", $_REQUEST["domainname"])) { ?>
+          <td>Address</td>
+<?php	  } else { ?>
           <td>Source</td>
+<?php	  } ?>
           <td>Type</td>
+<?php	  if(eregi("in-addr.arpa", $_REQUEST["domainname"])) { ?>
+          <td>Name (FQDN)</td>
+<?php	  } else { ?>
           <td>Destination</td>
+<?php	  } ?>
         </tr>
 
 <?php	  if($error == true) { ?>
@@ -123,8 +139,19 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 <?php	  } ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">Host name</td>
-          <td><input type="text" name="hostname" value="<?=$_REQUEST["hostname"]?>" size="15"></td>
           <td>
+<?php	  if(eregi("in-addr.arpa", $_REQUEST["domainname"])) { ?>
+            <?=$REV."\n"?>
+            <input type="hidden" name="rev_prefix" value="<?=$REV?>">
+<?php	  } ?>
+            <input type="text" name="hostname" value="<?=$_REQUEST["hostname"]?>" size="15">
+          </td>
+
+          <td>
+<?php	  if(eregi("in-addr.arpa", $_REQUEST["domainname"])) { ?>
+           PTR
+           <input type="hidden" name="record_type" value="ptr">
+<?php	  } else { ?>
             <select name="record_type">
               <option value="">Please select record type</option>
               <option value="a" <?php if($_REQUEST["record_type"] == 'a') { echo "SELECTED"; } ?>>A</option>
@@ -134,8 +161,12 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
               <option value="ns" <?php if($_REQUEST["record_type"] == 'ns') { echo "SELECTED"; } ?>>NS</option>
               <option value="ptr" <?php if($_REQUEST["record_type"] == 'ptr') { echo "SELECTED"; } ?>>PTR</option>
             </select>
+<?php	  } ?>
           </td>
-          <td><input type="text" name="dest" value="<?=$_REQUEST["dest"]?>" size="20"></td>
+
+          <td>
+            <input type="text" name="dest" value="<?=$_REQUEST["dest"]?>" size="20">
+          </td>
         </tr>
 
         <tr class="subtitle">
@@ -165,7 +196,7 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 		  if($_REQUEST["record_type"] == "ptr") {
 			// {{{ Special circumstances - it's a PTR.
 
-			// Reverse the hostname ('192.168.156.1').
+			// Reverse the hostname ('156.1').
 			$tmp  = split('\.', $_REQUEST["hostname"]);
 			$count = count($tmp);
 			for($i=$count-1; $tmp[$i]; $i--) {
@@ -173,19 +204,13 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 			  if($tmp[$i-1])
 				$rev .= ".";
 			}
-			// rev='4.156.168.192'
+			// rev='1.156'
 
-			// Extract the zone part from the zone/domain name ('168.192.in-addr.arpa').
-			$zone = preg_replace('/\.in-addr\.arpa/', '', $_REQUEST["domainname"]);
-			$zone = preg_replace('/\./', '\\\.', $zone, -1); // Just so that next regexp doesn't catch the dot.
-
-			// Remove the zone ('.168.192') from the reverse ('4.156.168.192') => '4.156'.
-			$host = preg_replace("/\.$zone/", '', $rev);
-
-			$entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")]	= $host;
+			$entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")]	= $rev;
 			// }}}
 		  } else
 			$entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")]	= pql_maybe_idna_encode($_REQUEST["hostname"]);
+
 		  $entry[pql_get_define("PQL_ATTR_ZONENAME")]			= $_REQUEST["domainname"];
 		  $entry[pql_get_define("PQL_ATTR_DNSTTL")]				= pql_bind9_get_ttl($_pql->ldap_linkid, $_REQUEST["domainname"]);
 		  switch($_REQUEST["record_type"]) {
@@ -211,6 +236,9 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 
 		  $dn = pql_bind9_add_host($_pql->ldap_linkid, $_REQUEST["domain"], $entry);
 		  if($dn) {
+			if($_REQUEST["rev_prefix"])
+			  $msg = "Successfully added host <u>".$_REQUEST["rev_prefix"].$_REQUEST["hostname"]."</u>";
+			else
 			$msg = "Successfully added host <u>".$_REQUEST["hostname"].".".pql_maybe_idna_decode($_REQUEST["domainname"])."</u>";
 
 			if(!file_exists($_SESSION["path"]."/.DEBUG_ME")) {
@@ -219,8 +247,12 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 			  if(!pql_bind9_update_serial($_pql->ldap_linkid, $dn))
 				die("failed to update SOA serial number");
 			}
-		  } else
+		  } else {
+			if($_REQUEST["rev_prefix"])
+			  $msg = "Failed to add ".$_REQUEST["rev_prefix"].$_REQUEST["hostname"]." to ".$_REQUEST["domainname"];
+			else
 			$msg = "Failed to add ".$_REQUEST["hostname"]." to ".$_REQUEST["domainname"];
+		  }
 
 		  $msg = urlencode($msg);
 		  $url  = "domain_detail.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"]."&view=".$_REQUEST["view"];
