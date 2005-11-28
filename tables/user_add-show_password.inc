@@ -23,6 +23,14 @@
             <td><?=$_REQUEST["password"]?></td>
           </tr>
         </th>
+<?php if($_REQUEST["userhost"]["dns"]) { ?>
+
+        <tr class="<?php pql_format_table(); ?>">
+          <td class="title" valign="top"><?=$LANG->_('Mail (MX) host')?></td>
+          <td><?=$_REQUEST["userhost"]["dns"]?></td>
+        </tr>
+        <input type="hidden" name="host"             value="<?=$_REQUEST["userhost"]["dns"]?>">
+<?php } ?>
       </table>
 
       <input type="hidden" name="password_shown" value="1">
