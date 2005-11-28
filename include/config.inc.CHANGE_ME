@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.64.2.1 2005-03-07 09:51:18 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.64.2.1.6.1 2005-11-28 08:37:07 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -323,6 +323,31 @@ function user_generate_uid($ldap, $surname, $name, $email, $domain, $account_typ
 }
 
 // ----------------------------
+// UID/GID number generation
+//
+// user_generate_ugidnr (function)
+// This function is called to suggest a value for the [ug]idNumber attribute
+// when you add a user. You may add some code here or just uncomment one of
+// the examples below.
+// Input parameters:
+// (resource)	ldap		 	-	A LDAP resource identifier 
+// (string)		domain			-	branch in which you create the user
+// (string)		account_type	-	Chosen account type; "mail" or "forward"  
+//
+// Returns: (string) suggested uid/gid number; may be changed by the user
+//function user_generate_ugidnr($ldap, $domain, $account_type) {
+//	// Hardcoded return value
+//	return('256');
+//
+//	// Get next UID/GID number
+//	$uidnr = pql_get_next_ugidnumber($_pql, 'uid', $_REQUEST["rootdn"]);
+//	if($uidnr > 0)
+//	  return($uidnr);
+//	else
+//	  return(false);
+//}
+
+// ----------------------------
 // EMAIL generation
 //
 // user_generate_email (function)
@@ -425,10 +450,12 @@ function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $do
 //	// Add all the super admins with full access.
 //	$admins = pql_get_attribute($ldap_linkid, urldecode($_SESSION["BASE_DN"][0]), pql_get_define("PQL_ATTR_ADMINISTRATOR"));
 //	if(is_array($admins)) {
-//		foreach($admins as $admin)
+//		foreach($admins as $admin) {
 //		  $aci[$i] = "$i#entry#grant;w,r,s,c,x;[all]#access-id#$admin"; $i++;
-//	} elseif($admins)
+//		}
+//	} elseif($admins) {
 //	  $aci[$i] = "$i#entry#grant;w,r,s,c,x;[all]#access-id#$admins"; $i++;
+//	}
 //
 //	return($aci);
 //}
