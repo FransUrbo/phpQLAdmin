@@ -33,6 +33,11 @@ phpQLAdmin 2.2.7 TO BE ANNOUNCED
 	    array. This to ease debugging. But remove the password before outputting it!
 	  - Only add the '...-catchall@...' mail alias if it's a QmailGroup object.
 	    + Add the 'mailMessageStore' attribute as well.
+	  - Misuse of '$_pql_control->ldap_linkid' (should be '$ldap->ldap_linkid') in the 
+	    include/pql_control.inc:pql_control_update_domains() function. Function IS already
+	    called with the class pointer!
+	  - Faulty use of form value. The MX value (NR to the MX!) to use is in "host", not in
+	    "text_host". The latter is only a counter on HOW MANY MX's there is/was.
 
 	GUI layout changes
 	  - Simplify the adding of PTR records in the Bind9 manager.
@@ -42,6 +47,10 @@ phpQLAdmin 2.2.7 TO BE ANNOUNCED
 	      (with the changes above) when commiting the form.
 
 	Misc changes
+	  - Sort and reset the array BEFORE rearranging it in the pql_uniq() function. Then sort
+	    and reset it again AFTER rearranging.
+	    - Remove redundant asort()/reset() calls in include/pql_control.inc:pql_control_update_domains().
+	    - Sort locals/rcpthosts before modification in include/pql_control.inc:pql_control_update_domains().
 
 phpQLAdmin 2.2.6 Release (Aug 22 2005)
 	Bug fixes
