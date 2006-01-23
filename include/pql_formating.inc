@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.37.2.1 2005-05-17 11:05:52 turbo Exp $
+// $Id: pql_formating.inc,v 2.37.2.1.2.1 2006-01-23 10:24:51 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry)
 // Create a LDIF object to print in case of error
@@ -621,8 +621,9 @@ function pql_strip_username($email) {
 // {{{ pql_uniq(array)
 function pql_uniq($array) {
 	if(is_array($array)) {
+		asort($array); reset($array);
 		$array = array_values(array_unique($array));
-		asort($array);
+		asort($array); reset($array);
 	}
 
 	return($array);
