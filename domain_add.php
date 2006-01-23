@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: domain_add.php,v 2.56.2.3 2005-04-18 14:33:35 turbo Exp $
+// $Id: domain_add.php,v 2.56.2.3.2.1 2006-01-23 10:20:29 turbo Exp $
 //
 require("./include/pql_session.inc");
 require("./include/pql_config.inc");
@@ -126,8 +126,10 @@ if(pql_write_add($_pql->ldap_linkid, $dn, $entry, 'branch', 'domain_add.php')) {
 	// }}}
 
 	// {{{ Update locals if control patch is enabled
-	if(($_REQUEST["defaultdomain"] != "") and pql_get_define("PQL_CONF_CONTROL_USE") and
-	   pql_get_define("PQL_CONF_CONTROL_AUTOADDLOCALS", $_REQUEST["rootdn"])) {
+	if(isset($_REQUEST["defaultdomain"]) and
+	   pql_get_define("PQL_CONF_CONTROL_USE") and
+	   pql_get_define("PQL_CONF_CONTROL_AUTOADDLOCALS", $_REQUEST["rootdn"]))
+	{
 		pql_control_update_domains($_pql, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
 								   '*', array('', $_REQUEST["defaultdomain"]));
 	}
