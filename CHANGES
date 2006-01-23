@@ -1,6 +1,6 @@
 phpQLAdmin 2.2 Change Log
 
-phpQLAdmin 2.2.7 TO BE ANNOUNCED
+phpQLAdmin 2.2.7 Release (Jan 23 2006)
 	Bug fixes
 	  - Remove hardcoded '[ug]idnumber' attribute with correct define in include/attrib.ugidnumber.inc.
 	  - Call pql_modify_attribute() with REPLACE option (not ADD) (in include/attrib.ugidnumber.inc).
