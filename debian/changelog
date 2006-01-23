@@ -4,7 +4,7 @@ phpqladmin (2.2.7-1) unstable; urgency=low
   * Include Vietnamese translation for debconf by Clytie Siddall.
     Closes: #316843
 
- --
+ -- Turbo Fredriksson <turbo@debian.org>  Mon, 23 Jan 2006 11:29:53 +0100
 
 phpqladmin (2.2.6-1) unstable; urgency=low
 
