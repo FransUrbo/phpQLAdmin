@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.32.2.5.2.2 2005-11-28 08:52:38 turbo Exp $
+// $Id: user_add-save.inc,v 1.32.2.5.2.3 2006-01-23 10:27:59 turbo Exp $
 
 // {{{ URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
 if($_REQUEST["surname"]) {
@@ -232,16 +232,16 @@ if($_REQUEST["mail"] and $_REQUEST["maildirectory"] and !$_REQUEST["forwardingad
 if($_REQUEST["mail"] and isset($_REQUEST["host"]) and
    pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILHOST")))
 {
-	if(isset($_REQUEST["host"]) or isset($_REQUEST["text_host"])) {
-		// Is the manual input field set/used?
-		$nr = $_REQUEST["text_host"];
-		if($_REQUEST["host_".$nr])
-		  $entry[pql_get_define("PQL_ATTR_MAILHOST")]       = $_REQUEST["host_".$nr];
-		else {
-			// ... no it isn't. Use the one that is.
-			$nr = $_REQUEST["host"];
-			$entry[pql_get_define("PQL_ATTR_MAILHOST")]       = $_REQUEST["host"];
-		}
+	if(isset($_REQUEST["host"]) and isset($_REQUEST["text_host"])) {
+	    // Is the manual input field set/used?
+	    $nr = $_REQUEST["host"];
+	    if($_REQUEST["host_".$nr])
+	      $entry[pql_get_define("PQL_ATTR_MAILHOST")]	= $_REQUEST["host_".$nr];
+	    else {
+		// ... no it isn't. Use the one that is.
+		$nr = $_REQUEST["host"];
+		$entry[pql_get_define("PQL_ATTR_MAILHOST")]	= $_REQUEST["host"];
+	    }
 	}
 	
 	if(!$_SESSION["NEW_STYLE_QUOTA"] and
