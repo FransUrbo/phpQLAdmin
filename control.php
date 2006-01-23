@@ -1,7 +1,8 @@
 <?php
 // show details of control
-// $Id: control.php,v 2.4 2005-02-24 17:04:00 turbo Exp $
+// $Id: control.php,v 2.4.2.1 2005-05-14 18:08:02 turbo Exp $
 //
+require("./include/pql_session.inc");
 require("./include/pql_config.inc");
 include($_SESSION["path"]."/header.html");
 ?>

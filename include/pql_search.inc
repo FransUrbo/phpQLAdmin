@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.36 2005-02-24 17:04:02 turbo Exp $
+// $Id: pql_search.inc,v 2.36.2.1.2.3 2005-11-28 08:44:12 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -174,7 +174,7 @@ function pql_get_domains($ldap) {
 					$filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN) . "=*)$ocs)";
 					$new = pql_get_dn($ldap->ldap_linkid, $dn, $filter, 'ONELEVEL');
 					if(is_array($new))
-					  $domains = $domains + $new;
+					  $domains = pql_add2array($domains, $new);
 				}
 			}
 		}
@@ -198,22 +198,66 @@ function pql_get_domains($ldap) {
 		else if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN) == 'dc')
 		  $ocs = '(objectClass=domain)'; // Could also be 'domainComponent'
 		
-		$filter = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $TOP_DN)."=*";
+		if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN))
+		  $filter = pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN)."=*";
+		else
+		  // User reference for this branch/domain not specified. Use default...
+		  $filter = 'uid=*';
 		$new    = pql_get_dn($ldap->ldap_linkid, $TOP_DN, $filter, 'ONELEVEL');
 
 		if(is_array($new))
-		  $domains = $domains + $new;
+		  $domains = pql_add2array($domains, $new);
 		
 		// Just to be safe - is there any branches here?
 		$filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN) . "=*)$ocs)";
 		$new    = pql_get_dn($ldap->ldap_linkid, $TOP_DN, $filter, 'ONELEVEL');
 		if(is_array($new))
-		  $domains = $domains + $new;
+		  $domains = pql_add2array($domains, $new);
+
+		// Now, if the base/root DN is a 'dc' object and domain/branch reference
+		// is 'ou', we MUST use 'organizationalUnit' in the object class filter...
+		$filter = '(&('.pql_get_define("PQL_ATTR_OU").'=*)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=organizationalUnit))';
+		$new    = pql_get_dn($ldap->ldap_linkid, $TOP_DN, $filter, 'ONELEVEL');
+		if(is_array($new) and !in_array('ou=Templates'.','.$TOP_DN, $new))
+		  $domains = pql_add2array($domains, $new);
 	}
 
-	if($domains[0])
-	  return $domains;
-	else
+	if($domains[0]) {
+	  // Sort the domain array by extracting the actual domain/branch name
+	  // and sort by that, not the DN ('ou=', 'o=', 'dc=' etc).
+	  for($i=0; $domains[$i]; $i++) {
+		// o=Bayour.COM,c=SE => Get 'Bayour.COM'
+		$tmp = split(',', $domains[$i]);
+		$tmp = split('=', $tmp[0]);
+		$tmp = $tmp[1];
+
+		$dom[$domains[$i]] = lc($tmp);
+	  }
+
+	  // The array now looks like:
+	  // o=Bayour.COM,c=SE => bayour.com
+
+	  // Sort by _value_ (which is lower cased).
+	  if(defined("SORT_LOCALE_STRING"))
+	    // Added in PHP 4.4.0 and 5.0.2.
+		asort($dom, SORT_LOCALE_STRING);
+	  else
+	    asort($dom);
+
+	  unset($tmp); // I'd like to reuse this variable...
+
+	  // Move the new array (which is correctly sorted) to the
+	  // original array.
+	  foreach($dom as $dn => $value) {
+		for($i=0; $domains[$i]; $i++) {
+		  if(lc($dn) == lc($domains[$i]))
+			$tmp[] = $dn;
+		}
+	  }
+	  $domains = $tmp;
+
+	  return pql_uniq($domains);
+	} else
 	  return false;
 }
 // }}}
@@ -401,8 +445,46 @@ function pql_validate_object($linkid, $dn, $object, $type) {
 	// }}}
 
 	// {{{ Add the OpenLDAPaci attribute (maybe)
-	if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci"))
+	if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci")) {
+		if(eregi("ou=Templates,", $dn)) {
+			// {{{ We're adding a template - special circumstances
+			// Get all 'administrator's and add them to the READ list.
+			global $_SESSION;
+			foreach($_SESSION["BASE_DN"] as $base_dn)  {
+				$admin_dns = pql_get_dn($linkid, urldecode($base_dn), pql_get_define("PQL_ATTR_ADMINISTRATOR").'=*');
+				foreach($admin_dns as $admin_dn) {
+					$admins = pql_get_attribute($linkid, urldecode($admin_dn), pql_get_define("PQL_ATTR_ADMINISTRATOR"));
+					if(is_array($admins)) {
+						for($j=0; $admins[$j]; $j++) {
+							$admin = lc($admins[$j]);
+							$acis[] = "#entry#grant;w,r,s,c,x;[all]#access-id#$admin";
+						}
+					} elseif($admins) {
+						$admin = lc($admins);
+						$acis[] = "#entry#grant;w,r,s,c,x;[all]#access-id#$admin";
+					}
+				}
+			}
+
+			// Sort and 'uniquify' the array of MAY attributes
+			$acis = pql_uniq($acis);
+
+
+			// Generate the REAL ACI list.
+			$i = 1;
+
+			// Add the 'normal' (public) ACI'.
+			$entry[pql_get_define("PQL_ATTR_LDAPACI")][$i] = "$i#entry#grant;r,s,c;objectClass,[entry]#public#"; $i++;
+
+			// Add the ACI's generated above, with the OID (aci counter) value.
+			foreach($acis as $aci) {
+				$entry[pql_get_define("PQL_ATTR_LDAPACI")][$i] = "$i$aci";
+				$i++;
+			}
+			// }}}
+		} else
 	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($linkid, $dn, $type);
+	}
 	// }}}
 
 	return($entry);

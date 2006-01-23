@@ -2,7 +2,7 @@
 // control attribute plugin for
 // badrcptto (blocked local addresses)
 //
-// $Id: attrib.control.badrcptto.inc,v 2.20 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.control.badrcptto.inc,v 2.20.4.1 2005-04-15 10:38:05 turbo Exp $
 
 // {{{ badrcptto_check(type)
 function badrcptto_check($type) {
@@ -84,7 +84,7 @@ function badrcptto_print_view($host) {
 	} // end if is_array
 ?>
       <tr class="subtitle">
-        <td><a href="control_edit_attribute.php?mxhost=<?=$_REQUEST["host"]?>&attrib=badrcptto"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
+        <td><a href="control_edit_attribute.php?mxhost=<?=$_REQUEST["mxhost"]?>&attrib=badrcptto"><img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?></a></td>
       </tr>
     </th>
   </table>

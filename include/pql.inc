@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.201.2.1 2005-03-17 08:23:02 turbo Exp $
+// $Id: pql.inc,v 2.201.2.5.2.1 2005-09-26 09:02:53 turbo Exp $
 //
 
 // ----------------------------
@@ -323,19 +323,21 @@ function pql_user_modify_addressbook($ldap_linkid, $user, $attribs) {
 
 // {{{ pql_get_next_ugidnumber(ldap, type)
 // Returns the next free UID/GID number
-function pql_get_next_ugidnumber($ldap, $type) {
-    //: Get the minimum allowable ID.
+function pql_get_next_ugidnumber($ldap, $type, $rootdn) {
+    // Get the minimum allowable ID.
 	if($type == 'uid') {
 		$attrib  = pql_get_define("PQL_ATTR_QMAILUID");
-		$minimum = pql_get_define("PQL_CONF_MINIMUM_UIDNUMBER");
+		$minimum = pql_get_define("PQL_CONF_MINIMUM_UIDNUMBER", $rootdn);
 	} else {
 		$attrib = pql_get_define("PQL_ATTR_QMAILGID");
-		$minimum = pql_get_define("PQL_CONF_MINIMUM_GIDNUMBER");
+		$minimum = pql_get_define("PQL_CONF_MINIMUM_GIDNUMBER", $rootdn);
 	}
 
 	// Just incase it's not defined, we set the minimum UID/GID
 	// number availible to a safe value.
-	if(!is_array($minimum))
+	if($minimum && !is_array($minimum))
+	  $minimum = array($minimum);
+	elseif(!$minimum)
 	  $minimum = array(100);
 
 	$min_id_val = 100;			// Set an absolute min so no one becomes root.
@@ -345,20 +347,20 @@ function pql_get_next_ugidnumber($ldap, $type) {
 	  }
 	}
 
-    //: Make a list of all the already used IDs.
+    // Make a list of all the already used IDs.
     $filter = "(&($attrib=*)(objectclass=posixaccount))";
 
 	$ids = array();
 	foreach($_SESSION["BASE_DN"] as $dn) {
 		$results = pql_search($ldap->ldap_linkid, $dn, $filter);
 		for($i=0; $i < count($results); $i++) {
-		  if ($results[$i][$attrib][0] >= $min_id_val) {
-		    $ids[] = $results[$i][$attrib][0];
+		  if ($results[$i][$attrib] >= $min_id_val) {
+		    $ids[] = $results[$i][$attrib];
 		  }
 		}
 	}
 
-	//: Look for a hole in the ID list.
+	// Look for a hole in the ID list.
 	$found_id = null;
 	if (empty($ids)) {
 	  $found_id = $min_id_val;
@@ -494,34 +496,37 @@ function pql_password_hash($password, $hash) {
     // - {SSHA}askdfjklödjfnddnu
     // - {SHA}kldfaldkjadsfdsad=
     // - {MD5}lkasjfdndiasdfee=
-    // - {crypt}cryptedpassword
-    // - {KERBEROS}principal@realm
+    // - {CRYPT}cryptedpassword
+    // - {SASL}principal@realm
     // - cleartextpasswort
 
-	if(!function_exists("mhash") and ($hash = "{MD5}")) {
-		// We do not have access to MD5 encryption - force {CRYPT}!
-		unset($hash);
-
+	if(!function_exists("mhash")) {
 		$log = date("M d H:i:s");
-		$log .= "MD5 encryption (mhash) not compiled into PHP. Please review the file doc/INSTALL. Falling back to using {CRYPT}";
+
+		if($hash == "{MD5}") {
+			// We do not have access to MD5 encryption - force {CRYPT}!
+			unset($hash);
+
+			$log .= "MD5 encryption (mhash) not compiled into PHP. Please review the file doc/INSTALL. Falling back to using {CRYPT}";
+		} else {
+			$log .= "Function mhash() not compiled into PHP. Please review the file doc/INSTALL.";
+		}
+
 		@error_log($log, 3, "phpQLadmin.log");
 	}
 
     switch($hash){
       case "{SSHA}":
 		// SHA1 hashing (salted)
-		if(function_exists("mhash"))
-		  return "{SSHA}" . base64_encode(mhash(MHASH_SHA1, $password, uniqid(microtime())));
+		return "{SSHA}" . base64_encode(mhash(MHASH_SHA1, $password, uniqid(microtime())));
 
       case "{SHA}":
 		// SHA1 hashing
-		if(function_exists("mhash"))
-		  return "{SHA}" . base64_encode(mhash(MHASH_SHA1, $password));
+		return "{SHA}" . base64_encode(mhash(MHASH_SHA1, $password));
 
       case "{MD5}":
 		// MD5 hashing
-		if(function_exists("mhash"))
-		  return "{MD5}" . base64_encode(mhash(MHASH_MD5, $password));
+		return "{MD5}" . base64_encode(mhash(MHASH_MD5, $password));
 
       case "{CLEAR}":
 		// Password in the clear (JUCK! :)
@@ -529,7 +534,8 @@ function pql_password_hash($password, $hash) {
 
       case "{KERBEROS}":
 		// Kerberos V mapping
-		return $hash . $password;
+		// NEW FORMAT: '{SASL}principal@REALM.TLD'
+		return '{SASL}' . $password;
 
       default:
 		$salt_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./"; 
@@ -799,6 +805,31 @@ function pql_recreate_dnsttl($dn) {
 function pql_header($uri) {
 	header("Location: ".$_SESSION["URI"].$uri);
 	exit;
+}
+// }}}
+
+// {{{ pql_fix_path(path)
+// Replace some 'invalid' characters from the path
+function pql_fix_path($path) {
+  // Replace space(s), '&' and '@' with underscore(s)
+  $path = preg_replace('/ /',  '_', $path, -1);
+  $path = preg_replace('/&/',  '_', $path, -1);
+  $path = preg_replace('/@/',  '_', $path, -1);
+  $path = preg_replace('/\./', '_', $path, -1);
+
+  return($path);
+}
+// }}}
+
+// {{{ pql_add2array($old, $new)
+function pql_add2array($old, $new) {
+  if(!is_array($old))
+	$old = array($old);
+
+  foreach($new as $entry)
+	$old[] = $entry;
+
+  return($old);
 }
 // }}}
 

@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.104.2.3 2005-03-27 13:10:56 turbo Exp $
+// $Id: left.php,v 2.104.2.4 2005-04-20 18:02:08 turbo Exp $
 //
 require("./include/pql_session.inc");
 
@@ -299,7 +299,6 @@ if(!isset($domains)) {
 
   <!-- Domain branches -->
 <?php
-    asort($domains);
     foreach($domains as $key => $domain) {
 	// Get domain part from the DN (Example: 'dc=test,dc=net' => 'test').
 	$d = split(',', urldecode($domain)); $d = split('=', $d[0]); $d = $d[1];
@@ -340,7 +339,9 @@ if(!isset($domains)) {
 	for($i = 0; $branches[$i]; $i++) {
 	    unset($subbranch);
 
-	    if(pql_get_define("PQL_CONF_SHOW_USERS", $rootdn)) {
+	    // Show users is either 'Yes', unset (same thing) or 'No'.
+	    $show_users = pql_get_define("PQL_CONF_SHOW_USERS", $rootdn);
+	    if($show_users or !isset($show_users)) {
 		// Zero out the variables, othervise we won't get users in
 		// specified domain, but also in the PREVIOUS domain shown!
 		unset($users); unset($links); unset($cns);

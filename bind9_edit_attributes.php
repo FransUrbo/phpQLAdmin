@@ -1,6 +1,6 @@
 <?php
 // edit attributes of a BIND9 DNS zone
-// $Id: bind9_edit_attributes.php,v 2.8.2.2 2005-03-17 08:23:01 turbo Exp $
+// $Id: bind9_edit_attributes.php,v 2.8.2.2.6.1 2005-08-13 14:52:36 turbo Exp $
 //
 require("./include/pql_session.inc");
 require("./include/pql_config.inc");
@@ -51,6 +51,10 @@ switch($_REQUEST["type"]) {
   case "txt":
 	$_REQUEST["attrib"] = pql_get_define("PQL_ATTR_TXTRECORD");
 	break;
+  case "afsdb";
+	$_REQUEST["attrib"] = pql_get_define("PQL_ATTR_AFSRECORD");
+	break;
+
   default:
 	if($_REQUEST["action"] != "del") {
 	  die("unknown zone type '".$_REQUEST["type"]."'.");

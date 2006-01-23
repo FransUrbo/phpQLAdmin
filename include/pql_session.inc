@@ -1,46 +1,87 @@
 <?php
 // Manage PHP sessions per phpQLAdmin instance
-// $Id: pql_session.inc,v 1.1.2.3 2005-03-17 08:29:03 turbo Exp $
+// $Id: pql_session.inc,v 1.1.2.5.2.2 2005-11-28 09:05:05 turbo Exp $
+
+//echo "_SERVER: "; echo "<pre>"; print_r($_SERVER); echo "</pre>";
+
+// {{{ Print the session array (w/o password)
+function pql_session_print($caller) {
+	global $_SESSION;
+	
+	// Remove the password from the session array.
+	$pass = $_SESSION["USER_PASS"];
+	$_SESSION["USER_PASS"] = "<hidden>";
+	
+	echo "<pre>";
+	echo "_SESSION array ($caller):";
+	print_r($_SESSION);
+	echo "</pre>";
+	
+	// Add the password back!
+	$_SESSION["USER_PASS"] = $pass;
+}
+// }}}
+
+// {{{ Get the path in the filesystem
+$path = preg_replace("@/include/pql_session.inc@", '', __FILE__);
+// }}}
+
+// {{{ Get the path in the URI
+$uri = $_SERVER['REQUEST_URI'];
+if(eregi('\.php', $uri) or eregi('\.inc', $uri) or eregi('\.css', $uri)) {
+  // '[REQUEST_URI] => /phpQLAdmin-HEAD/index.php'
+  // '[REQUEST_URI] => /phpQLAdmin-HEAD/tools/dnszonetemplate.php'
+  // '[REQUEST_URI] => /phpQLAdmin-HEAD/control_detail.php?view=Accepted+domains&mxhost=mx1.domain.tld'
+  // We'll remove the '/tools/' below...
+
+  // Remove all options included in the URI.
+  $uri = preg_replace('/\?.*/', '', $uri);
+
+  // Extract the directory name/path.
+  $uri = dirname($uri);
+} // else '[REQUEST_URI] => /phpQLAdmin-HEAD/'
+
+//   file `rgrep pql_session.inc . | \
+//   sed -e 's@:.*@@' -e 's@\./@@' -e 's@/.*@@' | \
+//   sort | uniq` | grep directory
+$pattern = array('@/include@',
+				 '@/scripts@',
+				 '@/tools@');
+
+$uri = preg_replace($pattern, "/", $uri);
+if(!ereg('/$', $uri)) {
+  $uri .= '/';
+}
+// }}}
 
 // {{{ Start session
-if(!ereg('/$', $_SERVER["REQUEST_URI"])) {
-  $_SERVER["REQUEST_URI"] .= '/';
-}
-//ini_set("session.cookie_path", $_SERVER["REQUEST_URI"]);
+//echo "ini_set('session.cookie_path', '$uri')<br>";
+ini_set("session.cookie_path", $uri);
 session_start();
 // }}}
 
-// {{{ Get 'PWD' so we can find our include files
-if($_SERVER["PATH_TRANSLATED"]) {
-  $tmp = split('/', $_SERVER["PATH_TRANSLATED"]);
-  $count = count($tmp) - 2;
-
-  // Extract the _path_ (not including the file)
-  $path = '/';
-  for($i=1; $i <= $count; $i++) {
-	$path .= $tmp[$i];
-	if($tmp[$i+1])
-	  $path .= '/';
-  }
-  $path = preg_replace('/\/$/', '', $path);
-
-  // Remember the path
-  $_SESSION["path"] = $path;
-
-  // Remove temporary variables
-  unset($path); unset($i); unset($count);
-}
+// {{{ Remember the URI and path values
+$_SESSION["URI"]  = $uri;
+$_SESSION["path"] = $path;
 // }}}
 
-// {{{ Find out our location in the URL
-if(!$_SESSION["URI"]) {
-  $tmp1 = preg_quote($_SERVER["DOCUMENT_ROOT"], '/');
-  $tmp2 = preg_replace("/$tmp1/", "", $_SESSION["path"]);
-  $_SESSION["URI"] = '/'.$tmp2.'/';
-
-  unset($tmp1); unset($tmp2);
-}
+// {{{ Get user agent
+$br = strtolower($_SERVER["HTTP_USER_AGENT"]);
+$_SESSION["lynx"]      = (eregi("lynx", $br))		? 1 : 0;
+$_SESSION["konqueror"] = (eregi("konqueror", $br))	? 1 : 0;
+$_SESSION["opera"]     = (eregi("opera", $br))		? 1 : 0;
+$_SESSION["mozilla"]   = (eregi("mozilla", $br))	? 1 : 0;
 // }}}
+
+// {{{ If you can't login correctly
+// (you get the error "Can't find you in the database",
+// try uncomment the following two lines...
+//echo "_SESSION: <pre>"; print_r($_SESSION); echo "</pre>";
+//die("URI: '$uri'");
+// }}}
+
+// Unset some variables to un-clutter the global (variable) name space...
+unset($br); unset($path); unset($uri); 
 
 /*
  * Local variables:

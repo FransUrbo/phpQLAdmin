@@ -1,6 +1,6 @@
 <?php
 // delete attribute of a user
-// $Id: user_del_attribute.php,v 2.31.2.2 2005-03-17 08:23:01 turbo Exp $
+// $Id: user_del_attribute.php,v 2.31.2.2.6.1 2005-11-28 08:34:56 turbo Exp $
 //
 require("./include/pql_session.inc");
 require("./include/pql_config.inc");
@@ -54,8 +54,11 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
     }
     
     if (lc($_REQUEST["attrib"]) == pql_get_define("PQL_ATTR_MAILALTERNATE") and $success and isset($_REQUEST["delete_forwards"])) {
-	// does another account forward to this alias?
-	$sr = ldap_search($_pql->ldap_linkid, "(|(" . pql_get_define("PQL_ATTR_FORWARDS") ."=" . $_REQUEST["oldvalue"] . "))");
+		// Does another account forward to this alias?
+		foreach($_pql->ldap_basedn as $dn)  {
+			$dn = urldecode($dn);
+			
+			$sr = ldap_search($_pql->ldap_linkid, $dn, "(|(" . pql_get_define("PQL_ATTR_FORWARDS") ."=" . $_REQUEST["oldvalue"] . "))");
 	if (ldap_count_entries($_pql->ldap_linkid,$sr) > 0) {
 	    $results = ldap_get_entries($_pql->ldap_linkid, $sr);
 	    foreach($results as $key => $result){
@@ -69,6 +72,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 					   "email"	=> $result[pql_get_define("PQL_ATTR_MAIL")][0]);
 		}
 	    }
+				
 	    var_dump($forwarders);
 	    foreach($forwarders as $forward) {
 		// we found a forward -> remove it 
@@ -79,9 +83,10 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 	    }
 	}
     }
+    }
     
     // redirect to users detail page
-    $url = "user_detail.php?rootdn=" . $_REQUEST["rootdn"] . "&domain=" . $_REQUEST["domain"]
+    $url = "user_detail.php?rootdn=" . urlencode($_REQUEST["rootdn"]) . "&domain=" . urlencode($_REQUEST["domain"])
       . "&user=" . urlencode($_REQUEST["user"]) . "&msg=" . urlencode($msg) . "&view=" . $_REQUEST["view"];
     pql_header($url);
 } else {
@@ -91,8 +96,10 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
   <?=$LANG->_('Are you really sure')?>
   <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="GET">
     <input type="hidden" name="user" value="<?=$_REQUEST["user"]?>">
+    <input type="hidden" name="rootdn" value="<?=$_REQUEST["rootdn"]?>">
     <input type="hidden" name="domain" value="<?=$_REQUEST["domain"]?>">
     <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
     <input type="hidden" name="oldvalue" value="<?=$_REQUEST["oldvalue"]?>">
 <?php
   if ($_REQUEST["attrib"] == 'mailalternateaddress') {

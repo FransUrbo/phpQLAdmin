@@ -1,9 +1,13 @@
 <?php
 // Create a DNS zone file
-// $Id: dnszonetemplate.php,v 1.7 2005-02-24 17:04:03 turbo Exp $
-session_start();
+// $Id: dnszonetemplate.php,v 1.7.2.1.2.1 2005-07-22 16:40:17 turbo Exp $
+require("../include/pql_session.inc");
 require("../include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_bind9.inc");
+
+$TYPES = array('CNAME', 'A', 'SRV', 'TXT', 'PTR');
+$domain = $_REQUEST["domain"];
+$defaultdomain = $_REQUEST["defaultdomain"];
 
 $zone = pql_bind9_get_zone($_pql->ldap_linkid, $domain, $defaultdomain);
 if(is_array($zone)) {
@@ -92,7 +96,7 @@ $basedomain = eregi_replace("\.".$origin, "", $defaultdomain);
 <?php
 echo "; LDAP DN: 'ou=DNS,".pql_maybe_decode($domain)."'\n";
 echo "\$ORIGIN $origin.\n";
-printf("%-15s %8s	IN	SOA	%s %s. (\n", $basedomain, $negttl, $nameservers[0], $admin);
+printf("%-25s %8s	IN	SOA	%s %s. (\n", $basedomain, $negttl, $nameservers[0], $admin);
 printf("%58d  ; Serial number\n", $date);
 printf("%58d  ; Refresh\n", $refresh);
 printf("%58d  ; Retry\n", $retry);
@@ -100,12 +104,12 @@ printf("%58d  ; Expire\n", $expire);
 printf("%58d) ; Negative Cache TTL\n", $negttl);
 
 echo "; ------------------------------\n";
-printf("%15s %8s	IN	A	$primaryip\n", " ", $retry);
+printf("%25s %8s IN	A	$primaryip\n", " ", $retry);
 foreach($nameservers as $ns) {
-  printf("%15s %8s	IN	NS	$ns\n", " ", $retry);
+  printf("%25s %8s IN	NS	$ns\n", " ", $retry);
 }
 foreach($mailservers as $prio => $key) {
-  printf("%15s %8s	IN	MX	%-4s $key\n", " ", $retry, $prio);
+  printf("%25s %8s IN	MX	%-4s $key\n", " ", $retry, $prio);
 }
 
 echo "; ------------------------------\n";
@@ -114,19 +118,20 @@ $printed_hosts = 0;
 if(is_array($zone[$defaultdomain])) {
     foreach($zone[$defaultdomain] as $data) {
 	if($data['HOST'] != '@') {
-	    printf("%-15s %8d	IN	", $data['HOST'], $data['TTL']);
-
-	    if($data['CNAME']) {
-		printf("%-6s	%s\n", 'CNAME', $data['CNAME']);
-	    } elseif($data['A']) {
-		printf("%-6s	%s\n", 'A', $data['A']);
-	    } elseif($data['SRV']) {
-		printf("%-6s	%s\n", 'SRV', $data['SRV']);
-	    } elseif($data['TXT']) {
-		printf("%-6s	%s\n", "TXT", $data['TXT']);
+	  foreach($TYPES as $type) {
+	    if($data[$type]) {
+	      unset($records);
+	      if(!is_array($data[$type]))
+		$records[] = $data[$type];
+	      else
+		$records = $data[$type];
+	      
+	      foreach($records as $record)
+		printf("%-25s %8d IN	%-6s	%s\n", $data['HOST'], $data['TTL'], $type, $record);
+	      
+	      $printed_hosts = 1;
 	    }
-
-	    $printed_hosts = 1;
+	  }
 	}
     } 
 }

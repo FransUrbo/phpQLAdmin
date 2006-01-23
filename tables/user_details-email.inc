@@ -15,12 +15,20 @@
 
       <tr class="<?php pql_format_table(); ?>">
         <td><?=$LANG->_('Main address')?></td>
-        <td><a href="mailto:<?=$email?>"><?=$mail?></a></td>
+        <td>
+<?php if($email and $mail) { ?>
+          <a href="mailto:<?=$email?>"><?=$mail?></a>
+<?php } else { ?>
+          <i><b>unset</b></i>
+<?php } ?>
+        </td>
         <td>
 <?php if(!$_SESSION["SINGLE_USER"]) { ?>
           <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=mail&user=<?=$url["user"]?>&mail=<?=$email?>&oldvalue=<?=$email?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change main address')?>" border="0"></a>&nbsp;&nbsp;&nbsp;
 <?php } ?>
+<?php if($email and $mail) { ?>
           <a href="user_sendmail.php?email=<?=$email?>&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>"><img src="images/mail.png" width="16" height="11" alt="<?=$LANG->_('Send testmail')?>" border="0"></a>
+<?php } ?>
         </td>
       </tr>
 
@@ -51,9 +59,11 @@ if(is_array($aliases)) {
 <?php
 }
 ?>
+<?php if($email and $mail) { ?>
       <tr>
         <td class="subtitle" colspan="3"><a href="user_add_attribute.php?rootdn=<?=$url["rootdn"]?>&attrib=mailalternateaddress&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"><?=$LANG->_('Create new alias')?></a></td>
       </tr>
+<?php } ?>
     </th>
   </table>
 
