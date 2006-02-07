@@ -359,6 +359,16 @@ attributetype ( 1.3.6.1.4.1.7006.1.2.1.81 NAME 'qmqpcIp'
 	EQUALITY caseIgnoreIA5Match
 	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
 
+attributetype ( 1.3.6.1.4.1.7006.1.2.1.82 NAME 'defaultDelivery'
+	DESC 'Default delivery mode used by and only by the startup scripts.'
+	EQUALITY caseIgnoreIA5Match
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+
+attributetype ( 1.3.6.1.4.1.7006.1.2.1.83 NAME 'ldapObjectClass'
+	DESC 'The ldap objectclass the search will be limited to'
+	EQUALITY caseIgnoreIA5Match
+	SYNTAX 1.3.6.1.4.1.1466.115.121.1.26 SINGLE-VALUE )
+
 # Object Class Definitions
 
 objectclass ( 1.3.6.1.4.1.7006.1.2.2.2 NAME 'qmailControl'
@@ -381,4 +391,4 @@ objectclass ( 1.3.6.1.4.1.7006.1.2.2.2 NAME 'qmailControl'
 	      pbsEnv $ smtpCert $ ldapClusterHosts $ ldapTimeOut $ 
 	      outgoingIp $ smtpClusterCookie $ goodMailAddr $ bounceMaxBytes $
 	      rblList $ bigBrother $ relayMailFrom $ maxRcptCount $
-	      qmqpcIp ) )
+	      qmqpcIp $ defaultDelivery $ ldapObjectClass ) )
