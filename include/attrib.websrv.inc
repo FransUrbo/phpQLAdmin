@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for the Webserver Configuration editor
 //
-// $Id: attrib.websrv.inc,v 1.12 2005-09-16 06:08:50 turbo Exp $
+// $Id: attrib.websrv.inc,v 1.13 2006-02-09 09:00:11 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -77,12 +77,14 @@ function attribute_save($action) {
 	  case "add":
 		// {{{ Setup the object class filter
 		$ocs = pql_split_oldvalues(pql_get_define("PQL_CONF_WEBSRV_OC"));
-		$filter = '(&';
+		$filter = "(&($attrib=*)(|";
 		for($i=0; $i < count($ocs); $i++) {
 		  $filter .= '(objectClass='.$ocs[$i].')';
 		}
-		$filter .= '($attrib=*))';
+		$filter .= "))";
 		// }}}
+
+		$_REQUEST["server"] = urldecode($_REQUEST["server"]);
 
 		// {{{ Fetch the old values from the DB
 		$sr   = ldap_read($_pql->ldap_linkid, $_REQUEST["server"], $filter, array($attrib));
@@ -138,6 +140,29 @@ function attribute_save($action) {
 		  $msg = pql_complete_constant($LANG->_('Failed to remove %value%'),
 									   array('value' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
 		break;
+
+	  case "toggle":
+		// {{{ A togglable value.
+		$oldvalue = $_REQUEST[$attrib];
+		if(!$oldvalue) {
+		  settype($oldvalue, "boolean");
+		  $oldvalue = 'off';
+		}
+		
+		// Reverse state
+		if($oldvalue == 'on')
+		  $newvalue = 'off';
+		elseif($oldvalue == 'off')
+		  $newvalue = 'on';
+
+		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["server"], $attrib, $oldvalue, $newvalue))
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+									   array('what' => $attrib));
+		else
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+									   array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
+		break;
+		// }}}
 	}
 
     attribute_forward($msg);
