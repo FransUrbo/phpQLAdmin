@@ -1,6 +1,6 @@
 <?php
 // edit attributes of a webserver configuration
-// $Id: websrv_edit_attributes.php,v 2.10 2005-06-09 15:05:36 turbo Exp $
+// $Id: websrv_edit_attributes.php,v 2.11 2006-02-09 08:58:18 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -43,6 +43,9 @@ if(@$_REQUEST["submit"] or ($_REQUEST["action"] == 'del')) {
       attribute_save($_REQUEST["action"]);
     else
       attribute_print_form();
+} elseif(!empty($_REQUEST["toggle"])) {
+  // No point in checking a toggle...
+  attribute_save('toggle');
 } else {
     attribute_print_form();
 }
