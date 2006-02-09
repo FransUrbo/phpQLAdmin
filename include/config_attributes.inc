@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.42 2005-09-29 05:03:18 turbo Exp $
+// $Id: config_attributes.inc,v 2.43 2006-02-09 09:01:25 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -193,12 +193,22 @@ pql_set_define("PQL_ATTR_WEBSRV_SCRIPT_URL", 				strtolower('ApacheScriptAlias')
 pql_set_define("PQL_ATTR_WEBSRV_SCRIPT_PATH", 				strtolower('ApacheAlias'),					false);
 pql_set_define("PQL_ATTR_WEBSRV_LOG_ERROR", 				strtolower('ApacheErrorLog'),				false);
 pql_set_define("PQL_ATTR_WEBSRV_LOG_TRANSFER", 				strtolower('ApacheTransferLog'),			false);
-pql_set_define("PQL_ATTR_WEBSRV_OPTIONS", 					strtolower('ApacheRewriteOptions'),			false);
 
 pql_set_define("PQL_ATTR_WEBSRV_DOCROOT", 					strtolower('ApacheDocumentRoot'),			false);
 pql_set_define("PQL_ATTR_WEBSRV_SRV_ALIAS", 				strtolower('ApacheServerAlias'),			false);
 pql_set_define("PQL_ATTR_WEBSRV_SRV_ADMIN", 				strtolower('ApacheServerAdmin'),			false);
 pql_set_define("PQL_ATTR_WEBSRV_SRV_NAME", 					strtolower('ApacheServerName'),				false);
+
+pql_set_define("PQL_ATTR_WEBSRV_SRV_REWRITE_ENGINE",		strtolower('ApacheRewriteEngine'),			false);
+pql_set_define("PQL_ATTR_WEBSRV_SRV_REWRITE_RULE",			strtolower('ApacheRewriteRule'),			false);
+pql_set_define("PQL_ATTR_WEBSRV_SRV_REWRITE_OPTIONS", 		strtolower('ApacheRewriteOptions'),			false);
+
+pql_set_define("PQL_ATTR_WEBSRV_SRV_SECTION_NAME",			strtolower('ApacheSectionName'),			false);
+pql_set_define("PQL_ATTR_WEBSRV_SRV_SET_HANDLER",			strtolower('ApacheSetHandler'),				false);
+pql_set_define("PQL_ATTR_WEBSRV_SRV_ACCESS_ORDER",			strtolower('ApacheOrder'),					false);
+pql_set_define("PQL_ATTR_WEBSRV_SRV_ACCESS_DENY",			strtolower('ApacheDeny'),					false);
+pql_set_define("PQL_ATTR_WEBSRV_SRV_ACCESS_ALLOW",			strtolower('ApacheAllow'),					false);
+pql_set_define("PQL_ATTR_WEBSRV_SRV_OPTIONS",				strtolower('ApacheOptions'),				false);
 
 pql_set_define("PQL_ATTR_WEBSRV_LDAP_SERVER", 				strtolower('webLDAPServer'),				false);
 pql_set_define("PQL_ATTR_WEBSRV_LDAP_SERVER_LOGIN_DN", 		strtolower('webLDAPServerLoginDN'),			false);
