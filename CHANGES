@@ -8,6 +8,7 @@ phpQLAdmin 2.3.2 TO BE ANNOUNCED
 	  - Add a 'Allow all chars in passwds' to the branch configuration page
 	    (and check this new value whenever we verify the password).
 	    Closes: #262
+	  - Fix group management code. Patch by Aaron Collins.
 
 	Schema changes
 	  - Add attribute to specify if autogenerate uidNumber and gidNumber.
