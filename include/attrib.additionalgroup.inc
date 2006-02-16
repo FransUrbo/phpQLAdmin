@@ -1,6 +1,6 @@
 <?php
 // Attribute plugin for additional group (memberUID)
-// $Id: attrib.additionalgroup.inc,v 2.12 2005-09-25 10:38:58 turbo Exp $
+// $Id: attrib.additionalgroup.inc,v 2.13 2006-02-16 10:54:16 turbo Exp $
 
 // {{{ attribute_init(void)...
 function attribute_init() {
@@ -8,7 +8,10 @@ function attribute_init() {
 
 	// Get the UID value for this user
 	$uid = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], lc(pql_get_define("PQL_ATTR_UID")));
-	$_REQUEST["uid"] = $uid[0];
+
+	if(!isset($_REQUEST["uid"])){
+		$_REQUEST["uid"] = $uid[0];
+	}
 }
 // }}}
 
@@ -115,7 +118,9 @@ function attribute_print_form() {
 // {{{ attribute_save(action)...
 function attribute_save($action) {
     global $_pql, $LANG;
-	$_REQUEST["uid"] = $_POST['uid'];
+	if(!isset($_REQUEST["uid"])){
+		$_REQUEST["uid"] = $_POST['uid'];
+	}
 
 	/* Sometimes attribute_save gets called directly, bypassing attribute_print_form.
 	 * That's why attribute_init has to be called here, even if we cached the results of
@@ -127,10 +132,17 @@ function attribute_save($action) {
 	  // {{{ case: delete
 
 	  case "delete":
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST['group'], $attrib_name, $_REQUEST["memberuid"], ''))
+		//Get Group dn
+		if(pql_get_define("PQL_CONF_SUBTREE_GROUPS")) {
+		  $_REQUEST['group'] = "cn=" . $_REQUEST['memberuid'] . ', ' .
+		  pql_get_define("PQL_CONF_SUBTREE_GROUPS") . ', ' . $_REQUEST['domain'];
+		}
+
+
+		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST['group'], $attrib_name, $_REQUEST["uid"], ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully removed %user% from %what% %group%'),
 									   array('what'  => $LANG->_('additional group'),
-											 'user'  => $_REQUEST["memberuid"],
+											 'user'  => $_REQUEST["uid"],
 											 'group' => $_REQUEST['group']));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to remove %user% from %what%'),
