@@ -119,6 +119,7 @@
 			
 				$tmp  = "user_edit_attribute.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"];
 				$tmp .= "&user=".$url["user"]."&attrib=".pql_get_define("PQL_ATTR_ADDITIONAL_GROUP");
+				$tmp .= "&uid=".$uid;
 				$tmp .= "&view=".$_GET["view"];
 				
 				$txt  = array('tit' => $LANG->_('Additional group(s)'),
