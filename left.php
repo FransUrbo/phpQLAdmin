@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.113 2005-09-16 06:08:43 turbo Exp $
+// $Id: left.php,v 2.114 2006-02-28 08:56:06 turbo Exp $
 //
 require("./include/pql_session.inc");
 
@@ -351,7 +351,11 @@ if(!isset($domains) or !is_array($domains)) {
 						
 						pql_complete_constant($LANG->_('Add %what%'),
 											  array('what' => $LANG->_('user')))
-						=> "user_add.php?rootdn=$rootdn&domain=$domain");
+						=> "user_add.php?rootdn=$rootdn&domain=$domain",
+						
+						pql_complete_constant($LANG->_('Configure %what%'), 
+											  array('what' => $LANG->_('Host Control')))
+						=> "host_control.php?rootdn=$rootdn&domain=$domain");
 		 
 		 // Just incase there's user(s) at the base of the domain branch...
 		 $users = pql_get_dn($_pql->ldap_linkid, $domain, $filter, 'ONELEVEL');
@@ -397,7 +401,11 @@ if(!isset($domains) or !is_array($domains)) {
 							
 							pql_complete_constant($LANG->_('Add %what%'),
 												  array('what' => $LANG->_('user')))
-							=> "user_add.php?rootdn=$rootdn&domain=$domain");
+							=> "user_add.php?rootdn=$rootdn&domain=$domain",
+
+							pql_complete_constant($LANG->_('Configure %what%'), 
+												  array('what' => $LANG->_('Host Control')))
+							=> "host_control.php?rootdn=$rootdn&domain=$domain");
 		   }
 		   
 		   if(is_array($users))

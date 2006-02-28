@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.48 2005-09-28 12:52:21 turbo Exp $
+// $Id: pql_search.inc,v 2.49 2006-02-28 08:56:08 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -235,6 +235,15 @@ function pql_get_dn($linkid, $dn, $filter, $level = 'SUBTREE') {
 	return($entry);
   else
 	return false;
+}
+// }}}
+// the uid of the user...
+function pql_get_uid($linkid, $dn) {
+  $filter = "uid=*";
+  $objects = pql_search($linkid, $dn, $filter, "BASE");
+
+  // LDAP should only ever allow one person to have a specific uid. return it
+  return $objects[0]['uid'];
 }
 // }}}
 

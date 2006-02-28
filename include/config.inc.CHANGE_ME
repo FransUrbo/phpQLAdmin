@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.69 2005-09-24 09:45:58 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.70 2006-02-28 08:56:08 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -85,6 +85,9 @@ pql_set_define("PQL_CONF_USE_TLS", false);
 //
 // Full path to the mkntpw binary
 //pql_set_define("PQL_CONF_MKNTPW_PATH", '/usr/local/sbin/mkntpwd');
+//
+// Where do the sudoers roles belong
+//pql_set_define("PQL_CONF_SUBTREE_SUDOERS", "ou=SUDOers");
 
 // ----------------------------
 // mail(message)store generation

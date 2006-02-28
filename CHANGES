@@ -39,6 +39,7 @@ phpQLAdmin 2.3.2 TO BE ANNOUNCED
 	    + Reword the 'headers' to the Apache information.
 	    + The "PQL_ATTR_WEBSRV_OPTIONS" define was renamed to "PQL_ATTR_WEBSRV_SRV_REWRITE_OPTIONS".
 	    + Add rewrite stuff (use pql_format_table_single() for Access{Deny,Allow}).
+	  - Host ACL and Sudo manager. Patch by Aaron Collins.
 
 phpQLAdmin 2.3.1 Release (Aug 22 2005)
 	Bug fixes

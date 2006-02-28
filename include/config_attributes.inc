@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.43 2006-02-09 09:01:25 turbo Exp $
+// $Id: config_attributes.inc,v 2.44 2006-02-28 08:56:08 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -166,6 +166,8 @@ pql_set_define("PQL_ATTR_SUBSCHEMASUBENTRY",				strtolower("subSchemaSubEntry"),
 pql_set_define("PQL_ATTR_TELEPHONENUMBER",					strtolower("telePhoneNumber"),				false);
 pql_set_define("PQL_ATTR_TITLE",							strtolower("title"),						false);
 pql_set_define("PQL_ATTR_ADDITIONAL_GROUP",					strtolower("memberUid"),					false);
+pql_set_define("PQL_ATTR_UNIQUE_GROUP",                                 strtolower("uniqueMember"),                                     false);
+pql_set_define("PQL_ATTR_IPHOSTNUMBER",                                 strtolower("ipHostNumber"),                                     false);
 // }}}
 
 // {{{ Attributes used by the Bind9/LDAP sdb driver
@@ -362,6 +364,10 @@ $PQL_ATTRIBUTE["GLOBAL"] = array("PQL_CONF_CONTROL_USE"					=> pql_get_define("P
 								 "PQL_CONF_ADMINISTRATOR"				=> pql_get_define("PQL_ATTR_ADMINISTRATOR"),
 								 "PQL_CONF_ADMINISTRATOR_EZMLM"	    	=> pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"),
 								 "PQL_CONF_ADMINISTRATOR_CONTROLS"		=> pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
+								 "PQL_CONF_VIRTUAL_BASEHOME"			=> pql_get_define("PQL_ATTR_VIRTUAL_BASEHOME"),
+								 "PQL_CONF_ACI_USE"						=> pql_get_define("PQL_ATTR_ACI_USE"),
+								 "PQL_CONF_SUDO_USE"					=> pql_get_define("PQL_ATTR_SUDO_USE"),
+								 "PQL_CONF_HOSTACL_USE"					=> pql_get_define("PQL_ATTR_HOSTACL_USE"),
 								 "PQL_CONF_CREATE_MBOX"					=> pql_get_define("PQL_ATTR_CREATE_MBOX"),
 								 "PQL_CONF_EZMLM_REMOTE"				=> pql_get_define("PQL_ATTR_EZMLM_REMOTE"),
 								 "PQL_CONF_EZMLM_REMOTE_HOST"			=> pql_get_define("PQL_ATTR_EZMLM_REMOTE_HOST"),
@@ -423,6 +429,19 @@ $PQL_ATTRIBUTE["BRANCH"] = array("PQL_CONF_SHOW_USERS"					=> pql_get_define("PQ
 // {{{ Map attribute to configuration define - USER
 $PQL_ATTRIBUTE["USER"] = array("PQL_CONF_START_ADVANCED"	=> pql_get_define("PQL_ATTR_START_ADVANCED"));
 // }}}
+
+// {{{ Sudo Attributes
+pql_set_define("PQL_ATTR_SUDO_USE",                            strtolower('useSudo'),                          false);
+pql_set_define("PQL_ATTR_SUDOUSER",                            strtolower('sudoUser'),                         false);
+pql_set_define("PQL_ATTR_SUDORUNAS",                           strtolower('sudoRunAs'),                        false);
+pql_set_define("PQL_ATTR_SUDOHOST",                            strtolower('sudoHost'),                         false);
+pql_set_define("PQL_ATTR_SUDOPTION",                           strtolower('sudoOption'),                       false);
+pql_set_define("PQL_ATTR_SUDOCOMMAND",                         strtolower('sudoCommand'),                      false);
+pql_set_define("PQL_ATTR_SUDOOBJECTCLASS",                     strtolower('sudoRole'),                         false);
+// }}}
+
+pql_set_define("PQL_ATTR_HOSTACL_USE",                         strtolower('useHostACL'),                       false);
+pql_set_define("PQL_ATTR_ACI_USE",                             strtolower('useACI'),                           false);
 
 // Local variables:
 // mode: php

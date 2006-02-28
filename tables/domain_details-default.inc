@@ -151,7 +151,36 @@
         <td><?=$ezmlmvirtualuser_link?></td>
       </tr>
 
-<?php }
+<?php } ?>
+      <!-- -------------------- --!>
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title"><?=$LANG->_('Use Host ACL')?></td>
+        <td>
+<?php if($usehostacl) {
+		echo $usehostacl;
+	  } else {
+		echo "<i>False</i>";
+	  }
+?>
+        &nbsp;</td>
+        <td><?=$usehostacl_link?></td>
+      </tr>
+
+      <!-- -------------------- --!>
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title"><?=$LANG->_('Use Sudo')?></td>
+        <td>
+<?php if($usesudo) {
+		echo $usesudo;
+	  } else {
+		echo "<i>False</i>";
+	  }
+?>
+        &nbsp;</td>
+        <td><?=$usesudo_link?></td>
+      </tr>
+
+<?php
 
 	  // Domain administrators
 	  $class = pql_format_table(0);

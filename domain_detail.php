@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.98 2005-09-21 05:17:46 turbo Exp $
+// $Id: domain_detail.php,v 2.99 2006-02-28 08:56:06 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -90,6 +90,8 @@ $attribs = array("autocreatemailaddress"	=> pql_get_define("PQL_ATTR_AUTOCREATE_
 				 "usernameprefixlength"		=> pql_get_define("PQL_ATTR_USERNAME_PREFIX_LENGTH"),
 				 "vatnumber"				=> pql_get_define("PQL_ATTR_VAT_NUMBER"),
 				 "ezmlmvirtualuser"			=> pql_get_define("PQL_ATTR_EZMLM_USER"),
+                                 "usehostacl"                   => pql_get_define("PQL_ATTR_HOSTACL_USE"),
+                                 "usesudo"                      => pql_get_define("PQL_ATTR_SUDO_USE"),
 				 "info"						=> pql_get_define("PQL_ATTR_INFO"));
 foreach($attribs as $key => $attrib) {
 	// Get default value
@@ -106,7 +108,7 @@ foreach($attribs as $key => $attrib) {
 	// Setup edit links. If it's a dcOrganizationNameForm attribute, then
 	// we add a delete link as well.
 	$link = $key . "_link";
-	if(($key != 'defaultdomain') and ($key != 'basehomedir') and ($key != 'basemaildir')) {
+	if(($key != 'defaultdomain') and ($key != 'basehomedir') and ($key != 'basemaildir') and ($key != 'usehostacl') and ($key != 'usesudo') ) {
 		if(!$value and (($key == 'maximumdomainusers')   or ($key == 'maximummailinglists') or
 						($key == 'autocreateusername')   or ($key == 'autocreatemailaddress') or
 						($key == 'autocreatepassword')))
@@ -131,6 +133,17 @@ foreach($attribs as $key => $attrib) {
 		  . "submit=2&attrib=$attrib&rootdn=" . $url["rootdn"] . "&domain=" . $url["domain"]
 		  . "&$attrib=". urlencode($value) . "&view=" . $_REQUEST["view"] . "\"><img src=\"images/del.png\""
 		  . "width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt2."\"></a>";
+        } elseif( ($key == 'usehostacl') or ($key == 'usesudo') ) {
+                $alt1 = pql_complete_constant($LANG->_('Modify attribute %attribute% for %domainname%'),
+                                                                          array('attribute' => $attrib, 'domainname' => $domainname));
+                if(isset($value) and $value != ''){ $plus = "&action=mod"; }
+                else{ $plus = "&action=add"; }
+
+                // A phpQLAdminBranch attribute
+                $$link = "<a href=\"domain_edit_attributes.php?attrib=$attrib&rootdn="
+                  . $url["rootdn"] . "&domain=" . $url["domain"] . "&$attrib=$value" . $plus . "&view="
+                  . $_REQUEST["view"] . "\"><img src=\"images/edit.png\" width=\"12\" height=\"12\""
+                  . "border=\"0\" alt=\"".$alt1."\"></a>";
 	} else {
 		$alt1 = pql_complete_constant($LANG->_('Modify attribute %attribute% for %domainname%'),
 									  array('attribute' => $attrib, 'domainname' => $domainname));
