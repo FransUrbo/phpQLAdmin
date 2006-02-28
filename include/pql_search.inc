@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.49 2006-02-28 08:56:08 turbo Exp $
+// $Id: pql_search.inc,v 2.50 2006-02-28 20:59:58 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -237,7 +237,8 @@ function pql_get_dn($linkid, $dn, $filter, $level = 'SUBTREE') {
 	return false;
 }
 // }}}
-// the uid of the user...
+
+// {{{ the uid of the user...
 function pql_get_uid($linkid, $dn) {
   $filter = "uid=*";
   $objects = pql_search($linkid, $dn, $filter, "BASE");
