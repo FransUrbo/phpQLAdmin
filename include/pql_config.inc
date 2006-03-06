@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.82 2005-09-24 09:45:58 turbo Exp $
+// $Id: pql_config.inc,v 1.83 2006-03-06 09:45:55 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -63,7 +63,7 @@ function pql_set_define($define, $value, $case_insensitive = false, $dn = NULL) 
 	} else {
 		// Create a site global array with the config values
 		// This variable type is only one dimensional (not DN specific)
-		if(empty($config[$define])) {
+		if(!isset($config[$define])) {
 		  $config[$define] = $value;
 		  
 		  if(file_exists("./.DEBUG_DEFINES"))
