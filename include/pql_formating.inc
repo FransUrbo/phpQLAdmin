@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.47 2005-09-27 07:03:55 turbo Exp $
+// $Id: pql_formating.inc,v 2.48 2006-03-06 09:47:23 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry, extra_newline)
 // Create a LDIF object to print in case of error
@@ -180,7 +180,7 @@ function pql_format_error($output) {
 
 // {{{ pql_format_error_span(msg)
 function pql_format_error_span($msg) {
-  return "<span class=\"error\">" . $msg . "</span>\n";
+  return "<span class=\"error\">" . $msg . "</span>";
 }
 // }}}
 
