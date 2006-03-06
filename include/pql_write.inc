@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.33 2005-09-16 06:08:52 turbo Exp $
+// $Id: pql_write.inc,v 2.34 2006-03-06 09:50:05 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -18,13 +18,11 @@ function pql_write_add($linkid, $dn, $entry, $type, $caller) {
 	// Verify that the object have what it needs to be able to be added
 	$entry = pql_validate_object($linkid, $dn, $entry, $type);
 
-	// -----
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif($caller, $dn, $entry);
 	if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
 	  echo $LDIF;
 	else {
-		// -----
 		// Add this object to the database
 		if(! ldap_add($linkid, $dn, $entry)) {
 			// Failed!
