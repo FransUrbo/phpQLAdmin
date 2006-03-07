@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for the Webserver Configuration editor
 //
-// $Id: attrib.websrv.inc,v 1.13 2006-02-09 09:00:11 turbo Exp $
+// $Id: attrib.websrv.inc,v 1.14 2006-03-07 11:20:27 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -55,6 +55,12 @@ function attribute_print_form() {
       <input type="hidden" name="rootdn"   value="<?=$url["rootdn"]?>">
       <input type="hidden" name="domain"   value="<?=$url["domain"]?>">
       <input type="hidden" name="server"   value="<?=$url["server"]?>">
+<?php if($_REQUEST["virthost"]) { ?>
+      <input type="hidden" name="virthost" value="<?=$_REQUEST["virthost"]?>">
+<?php } ?>
+<?php if($_REQUEST["hostdir"]) { ?>
+      <input type="hidden" name="hostdir"  value="<?=$_REQUEST["hostdir"]?>">
+<?php } ?>
       <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
       <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
       <input type="hidden" name="action"   value="<?=$_REQUEST["action"]?>">
@@ -70,11 +76,21 @@ function attribute_print_form() {
 function attribute_save($action) {
     global $_pql, $LANG;
 
+	// {{{ Setup the resulting DN
+	// ... depending on if it's a server, virtual host or a location object
+	$dn = urldecode($_REQUEST["server"]);
+	if($_REQUEST["virthost"])
+	  $dn = pql_get_define("PQL_ATTR_WEBSRV_SRV_URL")."=".$_REQUEST["virthost"].",".$dn;
+	if($_REQUEST["hostdir"])
+	  $dn = pql_get_define("PQL_ATTR_WEBSRV_SRV_IP")."=".$_REQUEST["hostdir"].",".$dn;
+	// }}}
+
 	// Just so that we can avoid using '$_REQUEST[$_REQUEST["attrib"]]'.
 	$attrib = $_REQUEST["attrib"];
 
     switch($action) {
 	  case "add":
+		// {{{ Add a value
 		// {{{ Setup the object class filter
 		$ocs = pql_split_oldvalues(pql_get_define("PQL_CONF_WEBSRV_OC"));
 		$filter = "(&($attrib=*)(|";
@@ -84,10 +100,8 @@ function attribute_save($action) {
 		$filter .= "))";
 		// }}}
 
-		$_REQUEST["server"] = urldecode($_REQUEST["server"]);
-
 		// {{{ Fetch the old values from the DB
-		$sr   = ldap_read($_pql->ldap_linkid, $_REQUEST["server"], $filter, array($attrib));
+		$sr   = ldap_read($_pql->ldap_linkid, $dn, $filter, array($attrib));
 		$info = ldap_get_entries($_pql->ldap_linkid, $sr)
 		  or pql_format_error(0);
 		for($i=0; $i < $info[0][$attrib]["count"]; $i++) {
@@ -100,20 +114,19 @@ function attribute_save($action) {
 		$entry[$attrib][] = $_REQUEST[$attrib];
 
 		// Create a LDIF object to print in case of error
-		$LDIF = pql_create_ldif("attrib.websrv.inc", $_REQUEST["server"], $entry);
-		if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
-		  die($LDIF);
-
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["server"], '', '', $entry))
-		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+		$LDIF = pql_create_ldif("attrib.websrv.inc", $dn, $entry);
+		if(pql_modify_attribute($_pql->ldap_linkid, $dn, '', '', $entry))
+		  $msg = pql_complete_constant($LANG->_('Successfully added %what%'),
 									   array('what' => $_REQUEST[$attrib])).".";
 		else
-		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+		  $msg = pql_complete_constant($LANG->_('Failed to add %what%'),
 									   array('what' => $_REQUEST[$attrib])) . ": "
 										 . ldap_error($_pql->ldap_linkid);
 		break;
+		// }}}
 
 	  case "mod":
+		// {{{ Modify a avalue
 		if(($attrib == pql_get_define("PQL_ATTR_WEBSRV_LDAP_SERVER")) and eregi('^ldapi', $_REQUEST[$attrib])) {
 			// It is an LDAP URI - urlencode.
 			
@@ -122,24 +135,27 @@ function attribute_save($action) {
 			$_REQUEST[$attrib] = 'ldapi://' . urlencode($uri);
 		}
 
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["server"], $attrib, '', $_REQUEST[$attrib]))
+		if(pql_modify_attribute($_pql->ldap_linkid, $dn, $attrib, '', $_REQUEST[$attrib]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $attrib));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
 		break;
+		// }}}
 
 	  case "del":
+		// {{{ Delete a value
 		$entry[$attrib] = array();
 
-		if(ldap_mod_del($_pql->ldap_linkid, $_REQUEST["server"], $entry))
+		if(ldap_mod_del($_pql->ldap_linkid, $dn, $entry))
 		  $msg = pql_complete_constant($LANG->_('Successfully removed %value%'),
 									   array('value' => $attrib));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to remove %value%'),
 									   array('value' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
 		break;
+		// }}}
 
 	  case "toggle":
 		// {{{ A togglable value.
@@ -155,7 +171,7 @@ function attribute_save($action) {
 		elseif($oldvalue == 'off')
 		  $newvalue = 'on';
 
-		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["server"], $attrib, $oldvalue, $newvalue))
+		if(pql_modify_attribute($_pql->ldap_linkid, $dn, $attrib, $oldvalue, $newvalue))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $attrib));
 		else
