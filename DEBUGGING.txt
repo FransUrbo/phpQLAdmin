@@ -28,7 +28,10 @@ directory to simplify bugfixing. They all start with
 	You'll still have to calculate the amount
 	of seconds it took yourself :)
 
-
+.DEBUG_WEBSRV
+	Shows all arrays (servers, virtual servers
+	and virtual server directories) in the domain
+	details->Webserver manager.
 
 When sending in bugreports, please have _at least_
 the .DEBUG_ME file and cut-and-past the resulting
