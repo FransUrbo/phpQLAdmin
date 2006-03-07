@@ -39,6 +39,12 @@ phpQLAdmin 2.3.2 TO BE ANNOUNCED
 	    + Reword the 'headers' to the Apache information.
 	    + The "PQL_ATTR_WEBSRV_OPTIONS" define was renamed to "PQL_ATTR_WEBSRV_SRV_REWRITE_OPTIONS".
 	    + Add rewrite stuff (use pql_format_table_single() for Access{Deny,Allow}).
+	    + Actually support the three levels of Apache objects described in doc/README.apache!
+	      1. Server FQDN Container object (a very simple 'device' object).
+	      2. Apache Virtual Host object (a 'ApacheServerName'd object).
+	      3. Apache Location object (a 'ApacheSectionArg'd object).
+	      This now reflects true in both the 'domain details->webserver manager' page AND in
+	      creation and modifications of the three different type of objects.
 	  - Host ACL and Sudo manager. Patch by Aaron Collins.
 
 phpQLAdmin 2.3.1 Release (Aug 22 2005)
