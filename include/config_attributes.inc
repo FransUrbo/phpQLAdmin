@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.45 2006-03-08 14:24:33 turbo Exp $
+// $Id: config_attributes.inc,v 2.46 2006-03-08 19:16:06 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -382,8 +382,6 @@ $PQL_ATTRIBUTE["GLOBAL"] = array("PQL_CONF_CONTROL_USE"					=> pql_get_define("P
 								 "PQL_CONF_ADMINISTRATOR_CONTROLS"		=> pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
 								 "PQL_CONF_VIRTUAL_BASEHOME"			=> pql_get_define("PQL_ATTR_VIRTUAL_BASEHOME"),
 								 "PQL_CONF_ACI_USE"						=> pql_get_define("PQL_ATTR_ACI_USE"),
-								 "PQL_CONF_SUDO_USE"					=> pql_get_define("PQL_ATTR_SUDO_USE"),
-								 "PQL_CONF_HOSTACL_USE"					=> pql_get_define("PQL_ATTR_HOSTACL_USE"),
 								 "PQL_CONF_CREATE_MBOX"					=> pql_get_define("PQL_ATTR_CREATE_MBOX"),
 								 "PQL_CONF_EZMLM_REMOTE"				=> pql_get_define("PQL_ATTR_EZMLM_REMOTE"),
 								 "PQL_CONF_EZMLM_REMOTE_HOST"			=> pql_get_define("PQL_ATTR_EZMLM_REMOTE_HOST"),
@@ -392,8 +390,8 @@ $PQL_ATTRIBUTE["GLOBAL"] = array("PQL_CONF_CONTROL_USE"					=> pql_get_define("P
 
 // }}}
 
-// {{{ Map attribute to configuration define - BRANCH
-$PQL_ATTRIBUTE["BRANCH"] = array("PQL_CONF_SHOW_USERS"					=> pql_get_define("PQL_ATTR_SHOW_USERS"),
+// {{{ Map attribute to configuration define - SUFFIX
+$PQL_ATTRIBUTE["SUFFIX"] = array("PQL_CONF_SHOW_USERS"					=> pql_get_define("PQL_ATTR_SHOW_USERS"),
 								 "PQL_CONF_TESTMAIL_AUTOSEND"			=> pql_get_define("PQL_ATTR_TESTMAIL_AUTOSEND"),
 								 "PQL_CONF_ALLOW_ABSOLUTE_PATH"			=> pql_get_define("PQL_ATTR_ALLOW_ABSOLUTE_PATH"),
 								 "PQL_CONF_ALLOW_ALL_CHARS"				=> pql_get_define("PQL_ATTR_ALLOW_ALL_CHARS"),
