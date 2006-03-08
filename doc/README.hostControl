@@ -1,34 +1,42 @@
-So here's how it works.
-This is the first round of this addition, so expect things
-to change in the future.
+So here's how it works (in short).
+==================================
+
+This is the first round of this addition, so expect things to change
+in the future.
 
 In order to make your host control ACL work you need to first create a
-sub branch under your domain something like the following
-'ou=Computers'
+sub branch under your domain something like 'ou=Computers'.
 
-You should also define this sub branch in your config.inc like the following
-pql_set_define("PQL_CONF_SUBTREE_COMPUTERS", "ou=Computers");
+You should also define this sub branch in your config.inc like the
+following:
 
-In order to make you servers respect the ACL edit /etc/ldap.conf to define the 
-path to the object that holds the servers acl.  If you always use fully
-qualified domain names when adding your servers, you should be able to add a 
-method like the following to your servers.
-Changes to /etc/ldap.conf
-# Group to enforce membership of
-pam_groupdn cn=server.example.com,ou=Computers,dc=<domain>
+	pql_set_define("PQL_CONF_SUBTREE_COMPUTERS", "ou=Computers");
 
-The last step is to go to the domain_detail.php page in your browser and turn 
-on Host ACL and/or Sudo access. Please see the following page for compiling and
-version requirements. http://www.courtesan.com/sudo/readme_ldap.html
+In order to make you servers respect the ACL edit /etc/ldap.conf to
+define the  path to the object that holds the servers acl.  If you
+always use fully qualified domain names when adding your servers, you
+should be able to add a  method like the following to your servers.
+Changes to /etc/ldap.conf:
 
+	# Group to enforce membership of
+	pam_groupdn cn=server.example.com,ou=Computers,dc=<domain>
 
-
-In order to make Sudo work you need to first set the Use Sudo option to true in
-the domain_detail.php page. 
-
-Next create a sub branch under your domain like
-'ou=SUDOers'
-and define it in your include/config.inc
-pql_set_define("PQL_CONF_SUBTREE_SUDOERS", "ou=SUDOers");
+The last step is to go to the domain_detail.php page in your browser
+and turn  on Host ACL and/or Sudo access. Please see the following
+page for compiling and version
+requirements. http://www.courtesan.com/sudo/readme_ldap.html
 
 
+
+In order to make Sudo work you need to first set the 'Use Sudo' option
+to true in the domain_detail.php page.
+
+Next create a sub branch under your domain like 'ou=SUDOers' and
+define it in your include/config.inc:
+
+	pql_set_define("PQL_CONF_SUBTREE_SUDOERS", "ou=SUDOers");
+
+
+NOTE: As of phpQLAdmin version 2.3.2 (CVS commit 20060308), these organization
+      units will be created automatically by phpQLAdmin. PROVIDED the above
+      defines are set!
