@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.50 2006-02-28 20:59:58 turbo Exp $
+// $Id: pql_search.inc,v 2.51 2006-03-08 14:19:36 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -75,7 +75,7 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
 
   // {{{ Get ALL hits and rearrange the array.
   // Initialize the resulting array.
-   $entry = array();
+  $entry = array();
 
   $entries = 0; // Counter to keep tab on how many entries to return
   $object = ldap_first_entry($linkid, $sr) or pql_format_error(1);
@@ -238,7 +238,7 @@ function pql_get_dn($linkid, $dn, $filter, $level = 'SUBTREE') {
 }
 // }}}
 
-// {{{ the uid of the user...
+// {{{ pql_get_uid(linkid, dn)
 function pql_get_uid($linkid, $dn) {
   $filter = "uid=*";
   $objects = pql_search($linkid, $dn, $filter, "BASE");
