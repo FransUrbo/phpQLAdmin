@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.49 2006-03-07 10:56:57 turbo Exp $
+// $Id: pql_formating.inc,v 2.50 2006-03-08 14:17:34 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry, extra_newline)
 // Create a LDIF object to print in case of error
@@ -444,6 +444,114 @@ function pql_format_tree_end() {
 	  echo "  </span>\n\n";
 	else
 	  echo "  </div>\n\n";
+}
+// }}}
+
+// {{{ pql_left_htmlify_userlist(linkid, rootdn, domain, subbranch, users, &links)
+function pql_left_htmlify_userlist($linkid, $rootdn, $domain, $subbranch, $users, &$links) {
+  // Iterate trough all users in this domain/branch
+  for($i=0; $i < count($users); $i++) {
+	$dn = $users[$i];
+	unset($cn); unset($sn); unset($gecos);
+	
+	// {{{ 1. Get the commonName
+	$cn = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_CN"));
+	if($cn) {
+	  // We have a commonName - split it up into two parts (which should be first and last name)
+	  if(is_array($cn))
+	    $cn = split(" ", $cn[0]);
+	  else
+	    $cn = split(" ", $cn);
+	  
+	  if(!$cn[1]) {
+	    // Don't have second part (last name) of the commonName - MUST be a system 'user'.
+	    $cns[$dn] = "System - ".$cn[0];
+	  } else {
+	    // We have two parts (or more) - combine into 'Lastname, Firstname'
+	    // Do this in a for loop so that we can convert something like
+	    // 'Test User 3' into '3, Test User'... This sucks for testing, but
+	    // it's true :)
+	    //
+	    // The idea is that the very _last_ part is the last name, and all
+	    // the other is firstname(s). This won't hold true for arabic/chinese
+	    // names for example (not that I know of any way)...
+		
+	    // Arrays always start with 0, but count() doesn't.
+	    $count = count($cn) - 1;
+		
+	    // This is/should be the last name
+	    $cns[$dn] = $cn[$count].', ';
+		
+	    // Add (all) the first name(s)
+	    for($j=0; $j < $count; $j++) {
+	      $cns[$dn] .= $cn[$j];
+		  
+	      if($cn[$j+1])
+			// More first name(s), separate with space...
+			$cns[$dn] .= ' ';
+	    }
+	  }
+	} else {
+	  // }}}
+	  
+	  // {{{ 2. No commonnName. Get the givenName and SN.
+	  $cn = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_GIVENNAME"));
+	  $sn = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_SN"));
+	  if($cn && $sn) {
+	    // We have a givenName (first name) and a surName (last name) - combine the two
+	    if($sn != '_') {
+	      if(is_array($sn))
+			$cns[$dn] = $sn[0].", ".$cn;
+	      else
+			$cns[$dn] = $sn.", ".$cn;
+	    } else {
+	      $cns[$dn] = $cn;
+	    }
+	  } else {
+	    // }}}
+		
+		// {{{ 3. No givenName, surName or commonName. Get the gecos
+	    $gecos = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_GECOS"));
+	    if($gecos)
+	      // We have a gecos - use that as is
+	      $cns[$dn] = $gecos;
+	    else {
+	      // }}}
+		  
+		  // {{{ 4. No gecos either. Last chance - use the user reference attribute
+	      $ref = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn);
+	      $cns[$dn] = pql_get_attribute($linkid, $dn, $ref);
+	    }
+	  }
+	}
+	// }}}
+  }
+  
+  if(is_array($cns)) {
+	asort($cns);
+
+	if($links != NULL) {
+	  foreach($cns as $dn => $cn) {
+		// Only get these two so that we don't show root user(s)!
+		$uid   = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_UID"));
+		$uidnr = pql_get_attribute($linkid, $dn, pql_get_define("PQL_ATTR_QMAILUID"));
+		
+		if(($uid != 'root') or ($uidnr != '0')) {
+		  // Do NOT show root user(s) here! This should (for safty's sake)
+		  // not be availible to administrate through phpQLAdmin!
+		  if($subbranch)
+			$new = array($cn => "user_detail.php?rootdn=$rootdn&domain=$domain&subbranch=$subbranch&user=".urlencode($dn));
+		  else
+			$new = array($cn => "user_detail.php?rootdn=$rootdn&domain=$domain&user=".urlencode($dn));
+		  
+		  // Add the link to the main array
+		  $links = $links + $new;
+		}
+	  }
+	}
+
+	return($cns);
+  }
 }
 // }}}
 
