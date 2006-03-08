@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.44 2006-02-28 08:56:08 turbo Exp $
+// $Id: config_attributes.inc,v 2.45 2006-03-08 14:24:33 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -166,8 +166,8 @@ pql_set_define("PQL_ATTR_SUBSCHEMASUBENTRY",				strtolower("subSchemaSubEntry"),
 pql_set_define("PQL_ATTR_TELEPHONENUMBER",					strtolower("telePhoneNumber"),				false);
 pql_set_define("PQL_ATTR_TITLE",							strtolower("title"),						false);
 pql_set_define("PQL_ATTR_ADDITIONAL_GROUP",					strtolower("memberUid"),					false);
-pql_set_define("PQL_ATTR_UNIQUE_GROUP",                                 strtolower("uniqueMember"),                                     false);
-pql_set_define("PQL_ATTR_IPHOSTNUMBER",                                 strtolower("ipHostNumber"),                                     false);
+pql_set_define("PQL_ATTR_UNIQUE_GROUP",						strtolower("uniqueMember"),					false);
+pql_set_define("PQL_ATTR_IPHOSTNUMBER",						strtolower("ipHostNumber"),					false);
 // }}}
 
 // {{{ Attributes used by the Bind9/LDAP sdb driver
@@ -234,13 +234,7 @@ pql_set_define("PQL_ATTR_EZMLM_REMOTE_USER", 				strtolower('ezmlmRemoteUser'),	
 pql_set_define("PQL_ATTR_EZMLM_REMOTE_RETREIVE_SCRIPT", 	strtolower('ezmlmRemoteRetreiveScript'),	false);
 // }}}
 
-// {{{ Miscellaneous external attributes
-pql_set_define("PQL_ATTR_SPAMASSASSIN", 					strtolower('spamAssassin'),					false);
-pql_set_define("PQL_ATTR_PASSWD_CLEAR", 					strtolower('clearTextPassword'),			false);
-pql_set_define("PQL_ATTR_PHOTO",							strtolower('jpegPhoto'),					false);
-// }}}
-
-// {{{ Samba Attributes
+// {{{ Attributes used by the Samba config
 pql_set_define("PQL_ATTR_SAMBASID",							strtolower('sambaSID'),						false);
 pql_set_define("PQL_ATTR_SAMBAPROFILEPATH",					strtolower('sambaProfilePath'),				false);
 pql_set_define("PQL_ATTR_SAMBAHOMEDRIVE",					strtolower('sambaHomeDrive'),				false);
@@ -256,6 +250,28 @@ pql_set_define("PQL_ATTR_SAMBAPWDMUSTCHANGE",				strtolower('sambaPwdMustChange'
 pql_set_define("PQL_ATTR_SAMBAPWDLASTSET",					strtolower('sambaPwdLastSet'),				false);
 pql_set_define("PQL_ATTR_SAMBAOBJECTCLASS",					strtolower('sambaSamAccount'),				false);
 // }}}
+
+// {{{ Attributes used by the Sudo config
+pql_set_define("PQL_ATTR_SUDO_USE",                            strtolower('useSudo'),                          false);
+pql_set_define("PQL_ATTR_SUDOUSER",                            strtolower('sudoUser'),                         false);
+pql_set_define("PQL_ATTR_SUDORUNAS",                           strtolower('sudoRunAs'),                        false);
+pql_set_define("PQL_ATTR_SUDOHOST",                            strtolower('sudoHost'),                         false);
+pql_set_define("PQL_ATTR_SUDOPTION",                           strtolower('sudoOption'),                       false);
+pql_set_define("PQL_ATTR_SUDOCOMMAND",                         strtolower('sudoCommand'),                      false);
+pql_set_define("PQL_ATTR_SUDOOBJECTCLASS",                     strtolower('sudoRole'),                         false);
+// }}}
+
+// {{{ Attributes used by the HostACL config
+pql_set_define("PQL_ATTR_HOSTACL_USE",                         strtolower('useHostACL'),                       false);
+pql_set_define("PQL_ATTR_ACI_USE",                             strtolower('useACI'),                           false);
+// }}}
+
+// {{{ Miscellaneous external attributes
+pql_set_define("PQL_ATTR_SPAMASSASSIN", 					strtolower('spamAssassin'),					false);
+pql_set_define("PQL_ATTR_PASSWD_CLEAR", 					strtolower('clearTextPassword'),			false);
+pql_set_define("PQL_ATTR_PHOTO",							strtolower('jpegPhoto'),					false);
+// }}}
+
 
 // {{{ These are the internal phpQLAdmin attributes - GLOBAL configuration
 // Toggles
@@ -429,19 +445,6 @@ $PQL_ATTRIBUTE["BRANCH"] = array("PQL_CONF_SHOW_USERS"					=> pql_get_define("PQ
 // {{{ Map attribute to configuration define - USER
 $PQL_ATTRIBUTE["USER"] = array("PQL_CONF_START_ADVANCED"	=> pql_get_define("PQL_ATTR_START_ADVANCED"));
 // }}}
-
-// {{{ Sudo Attributes
-pql_set_define("PQL_ATTR_SUDO_USE",                            strtolower('useSudo'),                          false);
-pql_set_define("PQL_ATTR_SUDOUSER",                            strtolower('sudoUser'),                         false);
-pql_set_define("PQL_ATTR_SUDORUNAS",                           strtolower('sudoRunAs'),                        false);
-pql_set_define("PQL_ATTR_SUDOHOST",                            strtolower('sudoHost'),                         false);
-pql_set_define("PQL_ATTR_SUDOPTION",                           strtolower('sudoOption'),                       false);
-pql_set_define("PQL_ATTR_SUDOCOMMAND",                         strtolower('sudoCommand'),                      false);
-pql_set_define("PQL_ATTR_SUDOOBJECTCLASS",                     strtolower('sudoRole'),                         false);
-// }}}
-
-pql_set_define("PQL_ATTR_HOSTACL_USE",                         strtolower('useHostACL'),                       false);
-pql_set_define("PQL_ATTR_ACI_USE",                             strtolower('useACI'),                           false);
 
 // Local variables:
 // mode: php
