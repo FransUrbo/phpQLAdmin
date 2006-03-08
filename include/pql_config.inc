@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.83 2006-03-06 09:45:55 turbo Exp $
+// $Id: pql_config.inc,v 1.84 2006-03-08 19:22:18 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -230,11 +230,12 @@ if(!empty($_SESSION["USER_DN"]) and empty($_SESSION["ALLOW_CONTROL_CREATE"])) {
   $_SESSION["ALLOW_CONTROL_CREATE"] = pql_validate_administrator($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 																 pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
 																 $_SESSION["USER_DN"]);
-  
-  // 6. Get user configuration for phpQLAdmin
-  $user_object = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_DN"], "(objectClass=*)", 'BASE');
-  foreach($PQL_ATTRIBUTE["USER"] as $key => $attrib)
-	pql_set_define($key, $user_object[$attrib][0], true, $_SESSION["USER_DN"]);
+}
+
+// 6. Get user configuration for phpQLAdmin
+$user_object = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_DN"], "(objectClass=*)", 'BASE');
+foreach($PQL_ATTRIBUTE["USER"] as $key => $attrib) {
+  pql_set_define($key, $user_object[$attrib][0], true, $_SESSION["USER_DN"]);
 }
 
 // 7. Get language translation
