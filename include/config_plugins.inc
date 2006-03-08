@@ -11,7 +11,13 @@
 // If you want to customise phpQLAdmin, do NOT do it here, the file
 // to customise is 'config_attributes.inc'.
 //
-// $Id: config_plugins.inc,v 2.22 2006-02-28 08:56:08 turbo Exp $
+// Options to pql_plugin_register():
+//	name		Name of the plugin
+//	cat			Category/Group (usually NULL/undefined)
+//	file		File that manage the plugin
+//	attribs		Attribute(s) that the plugin manages
+//
+// $Id: config_plugins.inc,v 2.23 2006-03-08 14:32:50 turbo Exp $
 
 pql_plugin_register(pql_get_define("PQL_ATTR_ISACTIVE"), "",
 					"attrib.accountstatus.inc",
@@ -111,7 +117,9 @@ pql_plugin_register(pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"), "",
 						  pql_get_define("PQL_ATTR_AUTOCREATE_PASSWORD"),
 						  pql_get_define("PQL_ATTR_SIMSCAN_SPAM"),
 						  pql_get_define("PQL_ATTR_SIMSCAN_CLAM"),
-						  pql_get_define("PQL_ATTR_SIMSCAN_TROPHIE")));
+						  pql_get_define("PQL_ATTR_SIMSCAN_TROPHIE"),
+						  pql_get_define("PQL_ATTR_HOSTACL_USE"),
+						  pql_get_define("PQL_ATTR_SUDO_USE")));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_GROUP_CONFIRM"), "",
 					"attrib.usertoggle.inc",
@@ -257,16 +265,6 @@ pql_plugin_register(pql_get_define("PQL_ATTR_SIMSCAN_ATTACHMENTS"), "",
 pql_plugin_register(pql_get_define("PQL_ATTR_PHOTO"), "",
 					"attrib.photo.inc",
 					pql_get_define("PQL_ATTR_PHOTO"));
-
-pql_plugin_register(pql_get_define("PQL_ATTR_HOSTACL_USE"),
-                                        "attrib.usehostacl.inc",
-					"",
-                                        pql_get_define("PQL_ATTR_HOSTACL_USE"));
-
-pql_plugin_register(pql_get_define("PQL_ATTR_SUDO_USE"),
-                                        "attrib.usesudo.inc",
-					"",
-                                        pql_get_define("PQL_ATTR_SUDO_USE"));
 
 // List all registred attributes and their files
 // - Uncomment this piece of code to view which

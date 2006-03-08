@@ -1,6 +1,6 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.53 2005-06-11 10:49:24 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.54 2006-03-08 14:32:49 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -210,7 +210,9 @@ if(@$_REQUEST["submit"] == 1) {
 		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_AUTOCREATE_PASSWORD")) or
 		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_SIMSCAN_SPAM")) or
 		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_SIMSCAN_CLAM")) or
-		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_SIMSCAN_TROPHIE")))
+		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_SIMSCAN_TROPHIE")) or
+		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_HOSTACL_USE")) or
+		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_SUDO_USE")))
 	  attribute_save();
 	else
 	  attribute_print_form($_REQUEST["type"]);

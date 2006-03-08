@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.99 2006-02-28 08:56:06 turbo Exp $
+// $Id: domain_detail.php,v 2.100 2006-03-08 14:32:49 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -90,8 +90,8 @@ $attribs = array("autocreatemailaddress"	=> pql_get_define("PQL_ATTR_AUTOCREATE_
 				 "usernameprefixlength"		=> pql_get_define("PQL_ATTR_USERNAME_PREFIX_LENGTH"),
 				 "vatnumber"				=> pql_get_define("PQL_ATTR_VAT_NUMBER"),
 				 "ezmlmvirtualuser"			=> pql_get_define("PQL_ATTR_EZMLM_USER"),
-                                 "usehostacl"                   => pql_get_define("PQL_ATTR_HOSTACL_USE"),
-                                 "usesudo"                      => pql_get_define("PQL_ATTR_SUDO_USE"),
+				 "usehostacl"				=> pql_get_define("PQL_ATTR_HOSTACL_USE"),
+				 "usesudo"					=> pql_get_define("PQL_ATTR_SUDO_USE"),
 				 "info"						=> pql_get_define("PQL_ATTR_INFO"));
 foreach($attribs as $key => $attrib) {
 	// Get default value
@@ -108,51 +108,45 @@ foreach($attribs as $key => $attrib) {
 	// Setup edit links. If it's a dcOrganizationNameForm attribute, then
 	// we add a delete link as well.
 	$link = $key . "_link";
-	if(($key != 'defaultdomain') and ($key != 'basehomedir') and ($key != 'basemaildir') and ($key != 'usehostacl') and ($key != 'usesudo') ) {
-		if(!$value and (($key == 'maximumdomainusers')   or ($key == 'maximummailinglists') or
-						($key == 'autocreateusername')   or ($key == 'autocreatemailaddress') or
-						($key == 'autocreatepassword')))
+	if(($key != 'defaultdomain') and ($key != 'basehomedir') and ($key != 'basemaildir')) {
+	  if(!$value and ($key == 'maximumdomainusers') or ($key == 'maximummailinglists'))
+		// No value, no toggle
+		$value = 0;
+	  elseif(($key == 'autocreateusername') or ($key == 'autocreatemailaddress') or
+			($key == 'autocreatepassword') or ($key == 'usehostacl') or ($key == 'usesudo'))
+	  {
+		// A toggle value
+		if(!$value)
+		  // No value
 		  $value = 0;
 		else {
-		  // We have a value
-		  if(($key == 'autocreateusername')   or ($key == 'autocreatemailaddress') or ($key == 'autocreatepassword'))
-			// It's a toggle. Convert the boolean value to an integer
-			$$key = pql_format_bool($value);
+		  // Got a value
+		  $$key = pql_format_bool($value);
 		}
-
-		// A dcOrganizationNameForm attribute
-		$alt1 = pql_complete_constant($LANG->_('Modify attribute %attribute% for %domainname%'),
-									  array('attribute' => $attrib, 'domainname' => $domainname));
-		$alt2 = pql_complete_constant($LANG->_('Delete attribute %attribute% for %domainname%'),
-									  array('attribute' => $attrib, 'domainname' => $domainname));
-
-		$$link = "<a href=\"domain_edit_attributes.php?type=modify&attrib=$attrib&rootdn="
-		  . $url["rootdn"] . "&domain=" . $url["domain"] . "&$attrib=". urlencode($value)
-		  . "&view=" . $_REQUEST["view"] . "\"><img src=\"images/edit.png\" width=\"12\" height=\"12\""
-		  . "border=\"0\" alt=\"$alt1\"></a>&nbsp;<a href=\"domain_edit_attributes.php?type=delete&"
-		  . "submit=2&attrib=$attrib&rootdn=" . $url["rootdn"] . "&domain=" . $url["domain"]
-		  . "&$attrib=". urlencode($value) . "&view=" . $_REQUEST["view"] . "\"><img src=\"images/del.png\""
-		  . "width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt2."\"></a>";
-        } elseif( ($key == 'usehostacl') or ($key == 'usesudo') ) {
-                $alt1 = pql_complete_constant($LANG->_('Modify attribute %attribute% for %domainname%'),
-                                                                          array('attribute' => $attrib, 'domainname' => $domainname));
-                if(isset($value) and $value != ''){ $plus = "&action=mod"; }
-                else{ $plus = "&action=add"; }
-
-                // A phpQLAdminBranch attribute
-                $$link = "<a href=\"domain_edit_attributes.php?attrib=$attrib&rootdn="
-                  . $url["rootdn"] . "&domain=" . $url["domain"] . "&$attrib=$value" . $plus . "&view="
-                  . $_REQUEST["view"] . "\"><img src=\"images/edit.png\" width=\"12\" height=\"12\""
-                  . "border=\"0\" alt=\"".$alt1."\"></a>";
+	  }
+	  
+	  // A dcOrganizationNameForm attribute
+	  $alt1 = pql_complete_constant($LANG->_('Modify attribute %attribute% for %domainname%'),
+									array('attribute' => $attrib, 'domainname' => $domainname));
+	  $alt2 = pql_complete_constant($LANG->_('Delete attribute %attribute% for %domainname%'),
+									array('attribute' => $attrib, 'domainname' => $domainname));
+	  
+	  $$link = "<a href=\"domain_edit_attributes.php?type=modify&attrib=$attrib&rootdn="
+		. $url["rootdn"] . "&domain=" . $url["domain"] . "&$attrib=". urlencode($value)
+		. "&view=" . $_REQUEST["view"] . "\"><img src=\"images/edit.png\" width=\"12\" height=\"12\""
+		. "border=\"0\" alt=\"$alt1\"></a>&nbsp;<a href=\"domain_edit_attributes.php?type=delete&"
+		. "submit=2&attrib=$attrib&rootdn=" . $url["rootdn"] . "&domain=" . $url["domain"]
+		. "&$attrib=". urlencode($value) . "&view=" . $_REQUEST["view"] . "\"><img src=\"images/del.png\""
+		. "width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt2."\"></a>";
 	} else {
-		$alt1 = pql_complete_constant($LANG->_('Modify attribute %attribute% for %domainname%'),
-									  array('attribute' => $attrib, 'domainname' => $domainname));
-
-		// A phpQLAdminBranch attribute
-		$$link = "<a href=\"domain_edit_attributes.php?attrib=$attrib&rootdn="
-		  . $url["rootdn"] . "&domain=" . $url["domain"] . "&$attrib=$value&view="
-		  . $_REQUEST["view"] . "\"><img src=\"images/edit.png\" width=\"12\" height=\"12\""
-		  . "border=\"0\" alt=\"".$alt1."\"></a>";
+	  $alt1 = pql_complete_constant($LANG->_('Modify attribute %attribute% for %domainname%'),
+									array('attribute' => $attrib, 'domainname' => $domainname));
+	  
+	  // A phpQLAdminBranch attribute
+	  $$link = "<a href=\"domain_edit_attributes.php?attrib=$attrib&rootdn="
+		. $url["rootdn"] . "&domain=" . $url["domain"] . "&$attrib=$value&view="
+		. $_REQUEST["view"] . "\"><img src=\"images/edit.png\" width=\"12\" height=\"12\""
+		. "border=\"0\" alt=\"".$alt1."\"></a>";
 	}
 }
 $domain_admins      = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR"));
@@ -237,6 +231,16 @@ if(pql_get_define("PQL_CONF_SIMSCAN_USE")) {
   $buttons = $buttons + $new;
 }
 
+if(pql_get_define("PQL_ATTR_HOSTACL_USE")) {
+  $new = array('hostacl' => 'Host control');
+  $buttons = $buttons + $new;
+}
+
+if(pql_get_define("PQL_ATTR_SUDO_USE")) {
+  $new = array('sudo' => 'Sudoers access');
+  $buttons = $buttons + $new;
+}
+
 $new = array('action' => 'Actions');
 $buttons = $buttons + $new;
 
@@ -288,6 +292,10 @@ if($_REQUEST["view"] == 'owner') {
 	  include("./tables/domain_details-aci.inc");
 	elseif($_REQUEST["view"] == 'websrv')
 	  include("./tables/domain_details-websrv.inc");
+	elseif($_REQUEST["view"] == 'hostacl')
+	  include($_SESSION["path"]."/host_modify.php");
+	elseif($_REQUEST["view"] == 'sudo')
+	  include($_SESSION["path"]."/sudo_modify.php");
 }
 // }}}
 ?>
