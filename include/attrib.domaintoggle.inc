@@ -3,7 +3,7 @@
 // autoCreateUsername, autoCreateMailAddress, autoCreatePassWord,
 // simScanSpamAssassin, simScanClamAntiVirus, simScanTrophie,
 // useHostACL and useSudo
-// $Id: attrib.domaintoggle.inc,v 2.11 2006-03-08 16:43:31 turbo Exp $
+// $Id: attrib.domaintoggle.inc,v 2.12 2006-03-08 16:58:08 turbo Exp $
 
 // {{{ attribute_save(void)
 // It's a toggle. Change value directly.
@@ -37,7 +37,7 @@ function attribute_save() {
 			if($_SESSION["ACI_SUPPORT_ENABLED"])
 			  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($linkid, $_SESSION["USER_DN"], 'unit');
 			
-			if(!pql_write_add($linkid, $dn, $entry, 'unit', 'attrib.domaintoggle.inc:attribute_save')) {
+			if(!pql_write_add($_pql->ldap_linkid, $dn, $entry, 'unit', 'attrib.domaintoggle.inc:attribute_save')) {
 			  // Can't add the organizational unit
 			  pql_format_error(1);
 			  echo "Can't add the organizational unit...<br>\n";
