@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.115 2006-03-08 14:17:32 turbo Exp $
+// $Id: left.php,v 2.116 2006-03-09 06:19:48 turbo Exp $
 //
 require("./include/pql_session.inc");
 
@@ -305,10 +305,8 @@ if(!isset($domains) or !is_array($domains)) {
 		 // Level 1: The domain name with it's users
 		 if((count($branches) > 1) and $subbranch)
 		   pql_format_tree(pql_maybe_decode(urldecode($subbranch)), $url, $links, 1);
-		 else {
+		 else
 		   pql_format_tree($d, "domain_detail.php?rootdn=$rootdn&domain=$domain", $links, 0);
-		   echo "\n";
-		 }
 	   } // end foreach ($branches)
 	   
 	   // This an ending for the domain tree
