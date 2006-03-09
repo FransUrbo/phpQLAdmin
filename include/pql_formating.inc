@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.50 2006-03-08 14:17:34 turbo Exp $
+// $Id: pql_formating.inc,v 2.51 2006-03-09 06:21:21 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry, extra_newline)
 // Create a LDIF object to print in case of error
@@ -405,12 +405,10 @@ function pql_format_tree_span($text, $links, $level) {
       <input type="checkbox" name="<?=$link[0]?>_<?=$link[1]?>" value="<?=$link[2]?>"><?=$text?>
 <?php	} else { ?>
       <?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>"><?php } ?>
-      <a class="tblItem" title="<?=$text?>" href="<?=$link?>" <?php if(eregi('^http://', $link)) { echo 'target="_new"'; } else { echo 'target="pqlmain"'; } ?>><?=$text?></a>
+<a class="tblItem" title="<?=$text?>" href="<?=$link?>" <?php if(eregi('^http://', $link)) { echo 'target="_new"'; } else { echo 'target="pqlmain"'; } ?>><?=$text?></a>
 <?php	} ?>
-
     </nobr>
 <?php	if($counter < ($count - 1)) { ?>
-
     <br />
 <?php	}
 	  } else { ?>
@@ -428,7 +426,6 @@ function pql_format_tree_span($text, $links, $level) {
       ---------------
     </nobr>
 <?php if($counter < ($count - 1)) { ?>
-
     <br />
 <?php }
 	}
