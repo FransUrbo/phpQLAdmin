@@ -1,4 +1,5 @@
 <?php
+require($_SESSION["path"]."/include/pql_hostctrl.inc");
 if(isset($_REQUEST['action']) && $_REQUEST['action'] == 'add_sudo_role') {
   // {{{ Add sudo role
   $domain = $_REQUEST["domain"];
@@ -94,6 +95,7 @@ if(is_array($sudo_results)) {
           <td>
             <select name='userdn'>
               <option value='none'><?=$LANG->_("None")?></option>
+              <option value='ALL'><?=$LANG->_("ALL")?></option>
 <?php foreach($user_results as $dn => $user) {
 		print "              <option value='$user'>$user</option>\n";
       }
