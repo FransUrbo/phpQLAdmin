@@ -72,11 +72,11 @@ debian: install
 	  echo "Files is in: "$(DESTDIR))
 
 release: changes tag tarball debian
-	@(rcp -x $(TMPDIR)/phpQLAdmin-$(VERSION).tar.gz  aurora:/var/www/phpqladmin/; \
-	  rcp -x $(TMPDIR)/phpQLAdmin-$(VERSION).tar.bz2 aurora:/var/www/phpqladmin/; \
-	  rcp -x $(TMPDIR)/phpQLAdmin-$(VERSION).zip     aurora:/var/www/phpqladmin/; \
-	  rcp -x CHANGES aurora:/var/www/phpqladmin/CHANGES_devel.txt; \
-	  rcp -x $(TMPDIR)/*.deb *.dsc *.tar.gz *.changes aurora:/var/www/phpqladmin)
+	@(cp $(TMPDIR)/phpQLAdmin-$(VERSION).tar.gz  /web/phpqladmin/; \
+	  cp $(TMPDIR)/phpQLAdmin-$(VERSION).tar.bz2 /web/phpqladmin/; \
+	  cp $(TMPDIR)/phpQLAdmin-$(VERSION).zip     /web/phpqladmin/; \
+	  cp CHANGES /web/phpqladmin/CHANGES_devel.txt; \
+	  cp $(TMPDIR)/*.deb *.dsc *.tar.gz *.changes /web/phpqladmin)
 
 $(INSTDIR):
 	@rm -f $(TMPDIR) && mkdir -p $(INSTDIR)
