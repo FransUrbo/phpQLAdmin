@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliverymode (delivery preferences)
-// $Id: attrib.deliverymode.inc,v 2.27.6.1 2005-05-17 18:19:23 turbo Exp $
+// $Id: attrib.deliverymode.inc,v 2.27.6.1.2.1 2006-03-12 14:35:39 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -43,8 +43,7 @@ function attribute_init() {
 		$_REQUEST["noprogram"] = "ok";
 	}
 	
-	$mailreplytext = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_REPLYTEXT"));
-	$_REQUEST["mailreplytext"] = $mailreplytext[0];
+	$_REQUEST["mailreplytext"] = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_REPLYTEXT"));
 }
 // }}}
 
