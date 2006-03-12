@@ -1,5 +1,10 @@
 phpQLAdmin 2.2 Change Log
 
+phpQLAdmin 2.2.8 TO BE ANNOUNCED
+	Bug fixes
+	  - Fix mailReplyText in include/attrib.deliverymode.inc -> Not an array!
+	    Closes: #296
+
 phpQLAdmin 2.2.7 Release (Jan 23 2006)
 	Bug fixes
 	  - Remove hardcoded '[ug]idnumber' attribute with correct define in include/attrib.ugidnumber.inc.
