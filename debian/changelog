@@ -1,3 +1,10 @@
+phpqladmin (2.2.8-1) unstable; urgency=low
+
+  * New upstream version.
+  * Fix mailReplyText -> Not an array!
+
+ -- Turbo Fredriksson <turbo@debian.org>  Sun, 12 Mar 2006 15:30:48 +0100
+
 phpqladmin (2.2.7-1) unstable; urgency=low
 
   * New upstream version.
