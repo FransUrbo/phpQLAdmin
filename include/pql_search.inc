@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.51 2006-03-08 14:19:36 turbo Exp $
+// $Id: pql_search.inc,v 2.52 2006-03-13 11:35:37 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -46,31 +46,33 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
   if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE"))
 	echo "pql_search() - 1: Looking for '<b>$dn</b>': "; // DEBUG
   
-  if(($level == "BASE") and pql_cache_get($dn, $object)) {
-	// The object is cached -> return this (don't look for it in LDAP).
-	if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE")) {
-	  echo "<font size=\"+1\">Returning '$dn':</font>";
-	  printr($object);
-	}
-	
-	return($object);
-  } else {
-	// It's either not a ONE level search or it doesn't exist in the
-	// cache. Fetch it...
-	if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE"))
-	  echo "<b>not</b> cached (or '$level != BASE'). Searching with: $func() below '$dn', filter '$filter'<br>";
+  if(($level == "BASE") and !$operational) {
+	if(pql_cache_get($dn, $object)) {
+	  // The object is cached -> return this (don't look for it in LDAP).
+	  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE")) {
+		echo "<font size=\"+1\">Returning '$dn':</font>";
+		printr($object);
+	  }
+	  
+	  return($object);
+	} // else fall through
+  } // else fall through
 
-	$sr = @$func($linkid, $dn, $filter, $op);
-	if(!$sr)
-	  // No such object - problem with the search string?
-	  return false;
-
-	// Get number of objects found.
-	$nr_entries = ldap_count_entries($linkid, $sr);
-	if(!$nr_entries)
-	  // No objects found.
-	  return false;
-  }
+  // It's either not a ONE level search or it doesn't exist in the
+  // cache. Fetch it...
+  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE"))
+	echo "<b>not</b> cached (or 'level != BASE' or operational). Searching with: $func() below '$dn', filter '$filter'<br>";
+  
+  $sr = @$func($linkid, $dn, $filter, $op);
+  if(!$sr)
+	// No such object - problem with the search string?
+	return false;
+  
+  // Get number of objects found.
+  $nr_entries = ldap_count_entries($linkid, $sr);
+  if(!$nr_entries)
+	// No objects found.
+	return false;
   // }}}
 
   // {{{ Get ALL hits and rearrange the array.
@@ -85,9 +87,9 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
 
 	// To cache or not to cache (the object)...
 	if(file_exists($_SESSION["path"]."/.DEBUG_CACHE"))
-	  echo "pql_search() - 2 ($i/".$object["count"]."): Looking for '<b>$dn</b>': ";
+	  echo "pql_search() - 2: Looking for '<b>$dn</b>': ";
 	  
-	if(pql_cache_get($dn, $cached_object) or $operational) {
+	if(pql_cache_get($dn, $cached_object) and !$operational) {
 	  // Object cached. Add it as-is to the resulting array.
 	  if($nr_entries > 1)
 		$entry[$entries] = $cached_object;
@@ -138,11 +140,13 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
 		$entry["dn"] = $dn;
 	  
 	  // -------------
-	  // Cache this object
-	  if($nr_entries > 1)
-		pql_cache_add($entry[$entries]);
-	  else
-		pql_cache_add($entry);
+	  if(($level == "BASE") and !$operational) {
+		// Cache this object
+		if($nr_entries > 1)
+		  pql_cache_add($entry[$entries]);
+		else
+		  pql_cache_add($entry);
+	  }
 	}
 
 	$entries++;
