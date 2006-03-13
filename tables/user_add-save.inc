@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.42 2005-09-27 18:35:11 turbo Exp $
+// $Id: user_add-save.inc,v 1.43 2006-03-13 11:47:49 turbo Exp $
 require($_SESSION["path"]."/include/pql_krbafs.inc");
 
 // {{{ URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
@@ -22,10 +22,10 @@ if(!empty($_REQUEST["uid"])) {
 // }}}
 
 // {{{ Add Firstname
-if(!empty($_REQUEST["surname"])
-   or ($_REQUEST["uid"]
-	   and
-	   pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
+if((!empty($_REQUEST["surname"])
+	or ($_REQUEST["uid"]
+		and
+		pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")))
    and
    pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_GIVENNAME")))
 {
@@ -37,10 +37,10 @@ if(!empty($_REQUEST["surname"])
 // }}}
 
 // {{{ Add Lastname
-if(!empty($_REQUEST["name"])
-   or ($_REQUEST["uid"]
-	   and
-	   pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))
+if((!empty($_REQUEST["name"])
+	or ($_REQUEST["uid"]
+		and
+		pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")))
    and
    pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_SN")))
 {
@@ -52,9 +52,9 @@ if(!empty($_REQUEST["name"])
 // }}}
 	
 // {{{ Add full (common) name
-if((((!empty($_REQUEST["surname"]) and !empty($_REQUEST["name"]))
-	 or ($_REQUEST["uid"] and
-		 pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")))
+if(((((!empty($_REQUEST["surname"]) and !empty($_REQUEST["name"]))
+	  or ($_REQUEST["uid"] and
+		  pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID"))))
 	and
 	pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_SN")))
    or
@@ -219,7 +219,7 @@ if(!empty($_REQUEST["mail"]) and !empty($_REQUEST["maildirectory"]) and
 
 // {{{ Add mail host
 // 'host' can be zero (0) hence isset().
-if(!empty($_REQUEST["mail"]) and !empty($_REQUEST["host"]) and
+if(!empty($_REQUEST["mail"]) and isset($_REQUEST["host"]) and
    pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILHOST")))
 {
 	if(!empty($_REQUEST["host"]) or !empty($_REQUEST["text_host"])) {
@@ -253,8 +253,8 @@ if(!empty($_REQUEST["homedirectory"]) and
 
 // {{{ Add the mail quota
 if(!empty($_REQUEST["mail"]) and
-   (pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_QUOTA_SIZE"))) or
-   (pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_QUOTA_COUNT"))))
+   (pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_QUOTA_SIZE")) or
+	pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_QUOTA_COUNT"))))
 {
   $default_quota = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_BASEQUOTA"));
   if(!empty($default_quota)) {
