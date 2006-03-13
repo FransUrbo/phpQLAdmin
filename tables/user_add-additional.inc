@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-additional.inc,v 1.33 2005-09-24 09:45:59 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.34 2006-03-13 11:30:03 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <!-- Some hidden values from previous page(s) -->
 <?php if(!empty($_REQUEST["surname"]) and pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_CN"))) { ?>
@@ -84,7 +84,6 @@
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Path to mailbox')?></td>
           <td>
-            &nbsp;&nbsp;&nbsp;
 <?php		if(!empty($_REQUEST["maildirectory"])) { ?>
             <?=$_REQUEST["maildirectory"]?>
             <input type="hidden" name="maildirectory" value="<?=$_REQUEST["maildirectory"]?>">
@@ -110,7 +109,6 @@
         <tr class="<?php pql_format_table(); ?>">
           <td class="title" valign="top"><?=$LANG->_('Forward mail to')?></td>
           <td>
-            &nbsp;&nbsp;&nbsp;
 <?php   if(!empty($_REQUEST["forwardingaddress"])) { ?>
             <?=$_REQUEST["forwardingaddress"]?>
             <input type="hidden" name="forwardingaddress" value="<?=$_REQUEST["forwardingaddress"]?>">
@@ -118,7 +116,6 @@
             <input type="text" name="forwardingaddress" size="60">
 <?php   } ?>
             <br>
-            &nbsp;&nbsp;&nbsp;
             <input type="radio"  name="forwardingtype" value="copyto" <?php if(($_REQUEST["forwardingtype"] == 'copyto') or empty($forwardingtype)) { ?>CHECKED<?php } ?>><?=$LANG->_('Copy to')?>
             <input type="radio"  name="forwardingtype" value="moveto" <?php if($_REQUEST["forwardingtype"] == 'moveto') { ?>CHECKED<?php } ?>><?=$LANG->_('Forward to')?>
             <br>
@@ -128,7 +125,6 @@
         <tr class="<?php pql_format_table(); ?>">
           <td class="title" valign="top"></td>
           <td class="message">
-            &nbsp;&nbsp;&nbsp;
             <img src="images/info.png" width="16" height="16" border="0">
             <?=$LANG->_('(Only used if forwarding address is specified)')?>
           </td>
