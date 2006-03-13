@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for administrator and seealso modification
 // Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
-// $Id: attrib.administrator.inc,v 1.55 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.56 2006-03-13 11:26:58 turbo Exp $
 
 // There is serious problems with this. I fix for one usage and break another
 // one! Let's try to remember (and document) how it's called. It's called from
@@ -35,7 +35,7 @@ function attribute_setup_aci($linkid, $dn, $userdn, $action) {
 		//	$old_acis[?][RIGHTS][TARGET][?] == [children]
 		// Then the user we're giving admin access should be inserted in
 		//	$old_acis[?][SUBJECT]
-		for($i=0, $oid=0; $i < count($old_acis); $i++, $oid++) {
+		for($i=0, $oid=0; $i < $old_acis["count"]; $i++, $oid++) {
 			// {{{ Generate a new ACI line (with updated OID number)
 			$line  = "$oid#";
 			$line .= $old_acis[$i]["SCOPE"]."#";
