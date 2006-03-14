@@ -1,10 +1,10 @@
 <?php
-// $Id: ezmlm_del.php,v 1.29 2005-06-09 15:05:35 turbo Exp $
+// $Id: ezmlm_del.php,v 1.29.2.1 2006-03-14 14:46:30 turbo Exp $
 //
 // {{{ Setup session etc
-require("./include/pql_session.inc");
-require($_SESSION["path"]."/include/pql_config.inc");
-require($_SESSION["path"]."/include/pql_ezmlm.inc");
+require("./libs/pql_session.inc");
+require($_SESSION["path"]."/libs/pql_config.inc");
+require($_SESSION["path"]."/libs/pql_ezmlm.inc");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"], false, 0);
 

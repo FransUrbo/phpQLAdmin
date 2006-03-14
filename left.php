@@ -1,10 +1,10 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.116 2006-03-09 06:19:48 turbo Exp $
+// $Id: left.php,v 2.116.2.1 2006-03-14 14:46:30 turbo Exp $
 //
-require("./include/pql_session.inc");
+require("./libs/pql_session.inc");
 
-require($_SESSION["path"]."/include/pql_config.inc");
+require($_SESSION["path"]."/libs/pql_config.inc");
 require($_SESSION["path"]."/left-head.html");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"], false, 0);

@@ -1,12 +1,12 @@
 <?php
 // Fix a 'object class violation' by adding missing MUST attributes
-// $Id: user_add_missing_attributes.php,v 2.7 2005-09-16 06:08:44 turbo Exp $
+// $Id: user_add_missing_attributes.php,v 2.7.2.1 2006-03-14 14:46:30 turbo Exp $
 //
 // This file is INCLUDED from pql.inc:pql_replace_userattribute()
 // and should NOT be called directly!
 //
-require("./include/pql_session.inc");
-require($_SESSION["path"]."/include/pql_config.inc");
+require("./libs/pql_session.inc");
+require($_SESSION["path"]."/libs/pql_config.inc");
 ?>
 
   <span class="title1"><?=$LANG->_('Object class violation')?></span>

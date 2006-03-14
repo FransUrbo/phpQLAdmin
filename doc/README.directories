@@ -49,13 +49,13 @@ so if you'd like MBox format (i.e. no trailing slash), change the latter to
 
 At the top I said that there might be _three_ ways in doing this. The third
 way is to have the user_generate_mailstore() and/or user_generate_homedir()
-functions defined in the file 'include/config.inc'. Those functions is mostly
+functions defined in the file 'config/config.inc'. Those functions is mostly
 used if you have any special requirements and ways to generate the directory
 values.
 
 
 One special note about the paths are that any 'illegal' character(s) are
 replaced with underscore(s). The function responsible for this is
-include/pql.inc:pql_fix_path() and the characters that phpQLAdmin deems
+libs/pql.inc:pql_fix_path() and the characters that phpQLAdmin deems
 'illegal' are: space, ampersand, at's and dot's.
 In the future more characters might be added...

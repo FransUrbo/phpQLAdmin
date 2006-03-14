@@ -1,10 +1,10 @@
 <?php
-// $Id: ezmlm_edit_attribute.php,v 1.31 2005-06-09 15:05:35 turbo Exp $
+// $Id: ezmlm_edit_attribute.php,v 1.31.2.1 2006-03-14 14:46:30 turbo Exp $
 //
 // {{{ Setup session etc
-require("./include/pql_session.inc");
-require($_SESSION["path"]."/include/pql_config.inc");
-require($_SESSION["path"]."/include/pql_ezmlm.inc");
+require("./libs/pql_session.inc");
+require($_SESSION["path"]."/libs/pql_config.inc");
+require($_SESSION["path"]."/libs/pql_ezmlm.inc");
 
 $url["domain"] = pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);

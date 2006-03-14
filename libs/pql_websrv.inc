@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for web server configuration)
 //
-// $Id: pql_websrv.inc,v 1.18 2006-03-07 11:24:23 turbo Exp $
+// $Id: pql_websrv.inc,v 1.1.2.1 2006-03-14 14:46:40 turbo Exp $
 //
 
 // {{{ pql_websrv_add_server(linkid, domain, dn, entry, type)

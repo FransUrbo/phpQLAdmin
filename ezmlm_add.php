@@ -1,9 +1,9 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.43 2005-09-25 08:07:27 turbo Exp $
+// $Id: ezmlm_add.php,v 1.43.2.1 2006-03-14 14:46:30 turbo Exp $
 //
-require("./include/pql_session.inc");
-require($_SESSION["path"]."/include/pql_config.inc");
+require("./libs/pql_session.inc");
+require($_SESSION["path"]."/libs/pql_config.inc");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
@@ -115,7 +115,7 @@ if(empty($_REQUEST["domainname"])) {
 								array('what'   => pql_get_define("PQL_ATTR_BASEMAILDIR"),
 									  'domain' => $_REQUEST["domainname"])));
 	
-	require($_SESSION["path"]."/include/pql_ezmlm.inc");
+	require($_SESSION["path"]."/libs/pql_ezmlm.inc");
 
 	$user  = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_EZMLM_USER"));
 	$ezmlm = new ezmlm($user, $basemaildir);

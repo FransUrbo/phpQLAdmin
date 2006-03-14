@@ -1,3 +1,8 @@
+Upgrading from 2.3.2
+	The config (notably the config.inc) files have been moved from
+	the 'include' directory to the 'config' directory. Please make
+	sure that your config.inc is in the new location (just move it).
+
 Upgrading from 2.1.4
 	Support for user/branch deletion script(s). Update your schema at
 	the LDAP server and restart it.

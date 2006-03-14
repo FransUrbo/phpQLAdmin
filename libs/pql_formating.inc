@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.51 2006-03-09 06:21:21 turbo Exp $
+// $Id: pql_formating.inc,v 1.1.2.1 2006-03-14 14:46:40 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry, extra_newline)
 // Create a LDIF object to print in case of error

@@ -1,9 +1,9 @@
 <?php
 // start page
-// $Id: user_search.php,v 2.13 2005-06-09 15:05:36 turbo Exp $
+// $Id: user_search.php,v 2.13.2.1 2006-03-14 14:46:30 turbo Exp $
 //
-require("./include/pql_session.inc");
-require($_SESSION["path"]."/include/pql_config.inc");
+require("./libs/pql_session.inc");
+require($_SESSION["path"]."/libs/pql_config.inc");
 
 include($_SESSION["path"]."/header.html");
 ?>

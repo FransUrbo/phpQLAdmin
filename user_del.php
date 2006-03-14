@@ -1,12 +1,12 @@
 <?php
 // delete a user
-// $Id: user_del.php,v 2.45 2005-09-27 07:09:37 turbo Exp $
+// $Id: user_del.php,v 2.45.2.1 2006-03-14 14:46:30 turbo Exp $
 //
 // {{{ Setup session etc
-require("./include/pql_session.inc");
-require($_SESSION["path"]."/include/pql_config.inc");
-require($_SESSION["path"]."/include/pql_ezmlm.inc");
-require($_SESSION["path"]."/include/pql_krbafs.inc");
+require("./libs/pql_session.inc");
+require($_SESSION["path"]."/libs/pql_config.inc");
+require($_SESSION["path"]."/libs/pql_ezmlm.inc");
+require($_SESSION["path"]."/libs/pql_krbafs.inc");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 

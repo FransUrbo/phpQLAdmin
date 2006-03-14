@@ -1,12 +1,12 @@
 <?php
 // edit an attribute of a control option
-// $Id: control_edit_attribute.php,v 2.33 2005-06-22 13:58:27 turbo Exp $
+// $Id: control_edit_attribute.php,v 2.33.2.1 2006-03-14 14:46:30 turbo Exp $
 //
 // {{{ Setup session etc
-require("./include/pql_session.inc");
-require($_SESSION["path"]."/include/pql_config.inc");
-require($_SESSION["path"]."/include/pql_control.inc");
-require($_SESSION["path"]."/include/pql_control_plugins.inc");
+require("./libs/pql_session.inc");
+require($_SESSION["path"]."/libs/pql_config.inc");
+require($_SESSION["path"]."/libs/pql_control.inc");
+require($_SESSION["path"]."/libs/pql_control_plugins.inc");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);

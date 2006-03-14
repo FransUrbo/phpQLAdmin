@@ -47,7 +47,7 @@ excludelist:
 	    -o -name '.#*' | sed 's@\./@@' >> exclude.list; \
 	  cat exclude.list | sort | uniq > new; \
 	  echo	$(INSTDIR)/Makefile $(INSTDIR)/.version.old \
-		$(INSTDIR)/manual $(INSTDIR)/include/config.inc \
+		$(INSTDIR)/manual $(INSTDIR)/config/config.inc \
 		$(INSTDIR)/phpQLadmin.log $(INSTDIR)/doc/README.Monitor \
 		$(INSTDIR)/.DEBUG_ME >> new; \
 	  mv new exclude.list; \

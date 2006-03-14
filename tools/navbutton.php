@@ -1,7 +1,7 @@
 <? // http://www.thescripts.com/serversidescripting/php/articles/dynamicimagesinphp3.0/page0.html
-// $Id: navbutton.php,v 2.20 2005-09-24 09:46:02 turbo Exp $
+// $Id: navbutton.php,v 2.20.2.1 2006-03-14 14:46:51 turbo Exp $
 
-require("../include/pql_formating.inc");
+require("../libs/pql_formating.inc");
 
 $string = $_REQUEST["label"];
 //$string = urldecode($string);
@@ -62,7 +62,7 @@ ImageCopyResized($newimg, $myimage, 0, 0, 0, 0, $new_width,
 
 $black = imagecolorallocate($newimg, 0, 0, 0);
 // Write text to image (after decoding it to fix international characters)
-ImageTTFText($newimg, 10, 0, 10, 14, $black, realpath("../include/thryn.ttf"), $string);
+ImageTTFText($newimg, 10, 0, 10, 14, $black, realpath("thryn.ttf"), $string);
     
 // Show image
 if($imgtype == 'png') {

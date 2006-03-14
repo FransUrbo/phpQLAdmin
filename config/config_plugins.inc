@@ -17,7 +17,7 @@
 //	file		File that manage the plugin
 //	attribs		Attribute(s) that the plugin manages
 //
-// $Id: config_plugins.inc,v 2.23 2006-03-08 14:32:50 turbo Exp $
+// $Id: config_plugins.inc,v 1.1.2.1 2006-03-14 14:46:31 turbo Exp $
 
 pql_plugin_register(pql_get_define("PQL_ATTR_ISACTIVE"), "",
 					"attrib.accountstatus.inc",

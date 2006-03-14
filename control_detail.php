@@ -1,15 +1,15 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.48 2005-09-20 05:28:42 turbo Exp $
+// $Id: control_detail.php,v 1.48.2.1 2006-03-14 14:46:30 turbo Exp $
 
 // {{{ Setup session etc
-require("./include/pql_session.inc");
-require($_SESSION["path"]."/include/pql_config.inc");
+require("./libs/pql_session.inc");
+require($_SESSION["path"]."/libs/pql_config.inc");
 // }}}
 
 if(pql_get_define("PQL_CONF_CONTROL_USE")) {
     // {{{ Include control api if control is used
-    include($_SESSION["path"]."/include/pql_control.inc");
+    include($_SESSION["path"]."/libs/pql_control.inc");
     $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 	include($_SESSION["path"]."/header.html");
@@ -104,7 +104,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 
 <?php
 	// {{{ Load plugin categories
-	require($_SESSION["path"]."/include/pql_control_plugins.inc");
+	require($_SESSION["path"]."/libs/pql_control_plugins.inc");
 	$cats = pql_plugin_get_cats();
 	asort($cats);
 // }}}

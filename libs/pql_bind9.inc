@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.38 2005-09-16 06:08:51 turbo Exp $
+// $Id: pql_bind9.inc,v 1.1.2.1 2006-03-14 14:46:40 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)

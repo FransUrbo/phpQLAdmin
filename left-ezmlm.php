@@ -1,12 +1,12 @@
 <?php
 // navigation bar - ezmlm mailinglists manager
-// $Id: left-ezmlm.php,v 2.39 2005-09-16 06:08:43 turbo Exp $
+// $Id: left-ezmlm.php,v 2.39.2.1 2006-03-14 14:46:30 turbo Exp $
 //
 // {{{ Setup session etc
-require("./include/pql_session.inc");
+require("./libs/pql_session.inc");
 
-require($_SESSION["path"]."/include/pql_config.inc");
-require($_SESSION["path"]."/include/pql_ezmlm.inc");
+require($_SESSION["path"]."/libs/pql_config.inc");
+require($_SESSION["path"]."/libs/pql_ezmlm.inc");
 require($_SESSION["path"]."/left-head.html");
 // }}}
 ?>

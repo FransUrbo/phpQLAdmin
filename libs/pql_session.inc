@@ -1,11 +1,11 @@
 <?php
 // Manage PHP sessions per phpQLAdmin instance
-// $Id: pql_session.inc,v 1.6 2005-09-22 07:32:18 turbo Exp $
+// $Id: pql_session.inc,v 1.1.2.1 2006-03-14 14:46:40 turbo Exp $
 
 //echo "_SERVER: "; echo "<pre>"; print_r($_SERVER); echo "</pre>";
 
 // {{{ Get the path in the filesystem
-$path = preg_replace("@/include/pql_session.inc@", '', __FILE__);
+$path = preg_replace("@/libs/pql_session.inc@", '', __FILE__);
 // }}}
 
 // {{{ Get the path in the URI

@@ -54,7 +54,7 @@
 #           cactiGraphSettingUnitFontSize                   25
 #           cactiGraphSettingUnitFontFile                   26
 
-# $Id: cacti.schema,v 1.4 2005-09-11 14:57:38 turbo Exp $
+# $Id: cacti.schema,v 1.4.2.1 2006-03-14 14:46:40 turbo Exp $
 
 # ------------ User settings
 attributetype ( 1.3.6.1.4.1.8767.4.2.1.1 NAME 'cactiShowTree'
@@ -123,7 +123,7 @@ attributetype ( 1.3.6.1.4.1.8767.4.2.2.7 NAME 'cactiRealmAccess'
   SYNTAX 1.3.6.1.4.1.1466.115.121.1.27{8} )
 
 # ------------ Graph Settings
-# NOTE: See (within cacti) 'site/include/config_settings.php:settings_graphs'
+# NOTE: See (within cacti) 'site/config/config_settings.php:settings_graphs'
 #       array for more about these.
 attributetype ( 1.3.6.1.4.1.8767.4.2.3.1 NAME 'cactiGraphSettingRRAId'
   DESC 'The default RRA to use when thumbnail graphs are not being displayed or when "Thumbnail Timespan" is set to "0".'

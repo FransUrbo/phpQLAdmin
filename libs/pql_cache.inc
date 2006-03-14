@@ -1,7 +1,7 @@
 <?php
 // phpQLAdmin cache Application Programming Interface (API)
 //
-// $Id: pql_cache.inc,v 2.6 2005-09-25 08:09:43 turbo Exp $
+// $Id: pql_cache.inc,v 1.1.2.1 2006-03-14 14:46:40 turbo Exp $
 //
 
 // Global variables

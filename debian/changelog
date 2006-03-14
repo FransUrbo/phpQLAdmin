@@ -1,3 +1,9 @@
+phpqladmin (2.3.3.1-1) unstable; urgency=low
+
+  * New upstream version - GUI Templates branch.
+
+ -- Turbo Fredriksson <turbo@debian.org>  Tue, 14 Mar 2006 15:44:39 +0100
+
 phpqladmin (2.3.2-1) unstable; urgency=low
 
   * New upstream version.

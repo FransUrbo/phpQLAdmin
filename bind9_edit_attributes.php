@@ -1,11 +1,11 @@
 <?php
 // edit attributes of a BIND9 DNS zone
-// $Id: bind9_edit_attributes.php,v 2.13 2005-08-14 10:54:39 turbo Exp $
+// $Id: bind9_edit_attributes.php,v 2.13.2.1 2006-03-14 14:46:30 turbo Exp $
 //
 // {{{ Setup session etc
-require("./include/pql_session.inc");
-require($_SESSION["path"]."/include/pql_config.inc");
-require($_SESSION["path"]."/include/pql_bind9.inc");
+require("./libs/pql_session.inc");
+require($_SESSION["path"]."/libs/pql_config.inc");
+require($_SESSION["path"]."/libs/pql_bind9.inc");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 

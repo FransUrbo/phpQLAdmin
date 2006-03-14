@@ -9,7 +9,7 @@ or ldap but this is the first version of samba support
 
 
 In order to add samba functionality to the phpQLadmin project you have
-to define a few extra things in your include/config.inc eventually
+to define a few extra things in your config/config.inc eventually
 very soon these will be added to the schema and give a proper config
 place in the ldap dir. As it stands you need to define the atleast
 the following in the config. The last step after adding the following

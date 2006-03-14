@@ -1,5 +1,21 @@
 phpQLAdmin 2.3 Change Log
 
+phpQLAdmin 2.3.3/GUI_TEMPLATE TO BE ANNOUNCED
+	Bug fixes
+	GUI layout changes
+	Schema changes
+	API changes
+	  - Files moved about
+	    + include/pql*		=> libs/
+	    + include/dlw_porting.inc	=> libs/
+	    + include/config*		=> config/
+	    + include/defaults.inc	=> config/
+	    + include/lang.en.inc	=> translations/
+	    + include/thryn.ttf		=> tools/
+	    > All references in all files was updated!
+
+	Misc changes
+
 phpQLAdmin 2.3.2 Release (Mar 11 2006)
 	Bug fixes
 	GUI layout changes

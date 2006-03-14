@@ -1,10 +1,10 @@
 <?php
 // delete attribute of a user
-// $Id: user_del_attribute.php,v 2.36 2005-06-09 15:05:36 turbo Exp $
+// $Id: user_del_attribute.php,v 2.36.2.1 2006-03-14 14:46:30 turbo Exp $
 
 // {{{ Setup session etc
-require("./include/pql_session.inc");
-require($_SESSION["path"]."/include/pql_config.inc");
+require("./libs/pql_session.inc");
+require($_SESSION["path"]."/libs/pql_config.inc");
 include($_SESSION["path"]."/header.html");
 // }}}
 

@@ -1,6 +1,6 @@
 phpQLAdmin - Installation Guide
 -------------------------------
-$Id: INSTALL,v 2.7 2005-08-14 11:09:52 turbo Exp $
+$Id: INSTALL,v 2.7.2.1 2006-03-14 14:46:30 turbo Exp $
 
 Software Requirements:
 ----------------------
@@ -35,7 +35,7 @@ Install:
 1. Untar the distribution (tar -zxf phpQLAdmin-x.x.x.tgz) to a directory
    below webserver's root.
 
-2. Copy the file 'include/config.inc.CHANGE_ME' to 'include/config.inc'
+2. Copy the file 'config/config.inc.CHANGE_ME' to 'config/config.inc'
    and edit config.inc. Change the properties needed to access your
    LDAP database (have a look at the configuration section in the
    documentation)

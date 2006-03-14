@@ -1,12 +1,12 @@
 <?php
 // Add a webserver configuration to the LDAP db
-// $Id: websrv_add.php,v 2.17 2006-03-07 11:17:14 turbo Exp $
+// $Id: websrv_add.php,v 2.17.2.1 2006-03-14 14:46:30 turbo Exp $
 //
 // {{{ Setup session
-require("./include/pql_session.inc");
-require($_SESSION["path"]."/include/pql_config.inc");
-require($_SESSION["path"]."/include/pql_control.inc");
-require($_SESSION["path"]."/include/pql_websrv.inc");
+require("./libs/pql_session.inc");
+require($_SESSION["path"]."/libs/pql_config.inc");
+require($_SESSION["path"]."/libs/pql_control.inc");
+require($_SESSION["path"]."/libs/pql_websrv.inc");
 
 $url["domain"] = pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
@@ -309,7 +309,7 @@ if(($error == 'true') or !$_REQUEST["type"] or
 	// {{{ Create the DNS object(s)
 	echo "<br>----------------------------<br>";
 	if($_REQUEST["dns"] and pql_get_define("PQL_CONF_BIND9_USE")) {
-	  require($_SESSION["path"]."/include/pql_bind9.inc");
+	  require($_SESSION["path"]."/libs/pql_bind9.inc");
 	  
 	  // Separate the domainname and hostname from the FQDN by removing the FIRST part of the FQDN.
 	  $fqdn = ereg_replace(':.*', '', $_REQUEST["serverurl"]);

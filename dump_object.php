@@ -1,10 +1,10 @@
 <?php
 // Dump either a specific object or a specific LDAP branch
-// $Id: dump_object.php,v 1.1 2005-09-27 06:28:29 turbo Exp $
+// $Id: dump_object.php,v 1.1.2.1 2006-03-14 14:46:30 turbo Exp $
 
 // {{{ Setup session etc
-require("./include/pql_session.inc");
-require($_SESSION["path"]."/include/pql_config.inc");
+require("./libs/pql_session.inc");
+require($_SESSION["path"]."/libs/pql_config.inc");
 // }}}
 
 if(empty($_REQUEST["submit"])) {
@@ -16,7 +16,7 @@ if(empty($_REQUEST["submit"])) {
       <input type="hidden" name="dn"    value="<?=urlencode($_REQUEST["dn"])?>">
 
       <span class="title3"><?=$LANG->_('Search options')?></span><br>
-      <!-- The code to follow referrals isn't implemented in 'include/pql_search.inc:pql_search()', so disable this -->
+      <!-- The code to follow referrals isn't implemented in 'libs/pql_search.inc:pql_search()', so disable this -->
       <!-- <input type="checkbox" name="referrals"> <?=$LANG->_('Follow referrals')?><br> -->
       <input type="checkbox" name="operationals" CHECKED> <?=$LANG->_('Include operational attributes')?><br>
 

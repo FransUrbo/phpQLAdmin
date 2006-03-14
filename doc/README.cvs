@@ -3,7 +3,7 @@ you REALLY (!!) need to subscribe to the cvs-phpqladmin@phpqladmin.com
 mailinglist (send a mail to cvs-phpqladmin-request@phpqladmin.com).
 
 I'm bound to break phpQLAdmin by adding/removing/moving functionality
-(especially include/config.inc format will change every now and then).
+(especially config/config.inc format will change every now and then).
 
 If you don't want that (there's quite a lot of mail's there), make sure
 you follow README.upgrade. I don't promise I'll always keep that up to

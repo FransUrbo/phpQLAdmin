@@ -1,13 +1,13 @@
 <?php
 // Add a new mailserver to the database
-// $Id: control_add_server.php,v 2.32 2005-09-24 09:45:56 turbo Exp $
+// $Id: control_add_server.php,v 2.32.2.1 2006-03-14 14:46:30 turbo Exp $
 //
-require("./include/pql_session.inc");
-require($_SESSION["path"]."/include/pql_config.inc");
+require("./libs/pql_session.inc");
+require($_SESSION["path"]."/libs/pql_config.inc");
 
 if(pql_get_define("PQL_CONF_CONTROL_USE")) {
     // Include control api if control is used
-    include($_SESSION["path"]."/include/pql_control.inc");
+    include($_SESSION["path"]."/libs/pql_control.inc");
     $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
     include($_SESSION["path"]."/header.html");

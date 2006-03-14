@@ -3,7 +3,7 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ezmlm.inc,v 1.31 2005-09-24 09:45:58 turbo Exp $
+// $Id: pql_ezmlm.inc,v 1.1.2.1 2006-03-14 14:46:40 turbo Exp $
 class ezmlm {
 	// {{{ Private section
 	var $_option					= array();

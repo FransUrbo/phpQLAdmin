@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // default domain name (the default domainname for a domain)
-// $Id: attrib.defaultdomain.inc,v 2.36 2005-09-16 06:08:50 turbo Exp $
+// $Id: attrib.defaultdomain.inc,v 2.36.2.1 2006-03-14 14:46:38 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -40,7 +40,7 @@ function attribute_print_form() {
           <td><?php echo pql_format_error_span($error[pql_get_define("PQL_ATTR_DEFAULTDOMAIN")]); ?><input type="text" name="defaultdomain" value="<?=$defaultdomain?>" size="20"></td>
         </tr>
 <?php if(!function_exists("pql_control"))
-		require($_SESSION["path"]."/include/pql_control.inc");
+		require($_SESSION["path"]."/libs/pql_control.inc");
 
 	  // Initiate a connection to the QmailLDAP/Controls DN
 	  $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
@@ -143,7 +143,7 @@ function attribute_save($type) {
 	  
 	  // {{{ Update locals and/or rcptHosts
 	  // .. If control patch is enabled and we have decided to do auto replication
-	  require($_SESSION["path"]."/include/pql_control.inc");
+	  require($_SESSION["path"]."/libs/pql_control.inc");
 	  $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 	  
 	  $attribs = array(pql_get_define("PQL_ATTR_LOCALS")    => pql_get_define("PQL_CONF_CONTROL_AUTOADDLOCALS", $_REQUEST["rootdn"]),

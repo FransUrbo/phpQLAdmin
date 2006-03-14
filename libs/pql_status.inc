@@ -4,7 +4,7 @@
 // Retreive LDAP connection and database status
 // from the cn=Monitor backend.
 //
-// $Id: pql_status.inc,v 1.3 2005-09-16 06:08:51 turbo Exp $
+// $Id: pql_status.inc,v 1.1.2.1 2006-03-14 14:46:40 turbo Exp $
 //
 
 // {{{ pql_get_status(linkid, dn, attribute)

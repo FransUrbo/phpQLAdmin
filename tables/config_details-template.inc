@@ -1,5 +1,5 @@
 <?php 
-require($_SESSION["path"]."/include/pql_templates.inc");
+require($_SESSION["path"]."/libs/pql_templates.inc");
 $templates = pql_get_templates($_pql->ldap_linkid);
 ?>
   <br>

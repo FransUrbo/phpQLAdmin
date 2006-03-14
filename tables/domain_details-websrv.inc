@@ -1,5 +1,5 @@
 <?php
-require($_SESSION["path"]."/include/pql_websrv.inc");
+require($_SESSION["path"]."/libs/pql_websrv.inc");
 
 // {{{ ---------------- GET WEB SERVER OBJECTS
 $servers = pql_websrv_find_servers($_pql->ldap_linkid, $_REQUEST["domain"]);

@@ -3,7 +3,7 @@
 // pql_units.inc
 // Sub units (ou=People, ou=Users, dc=host) etc
 //
-// $Id: pql_units.inc,v 1.15 2005-09-16 06:08:52 turbo Exp $
+// $Id: pql_units.inc,v 1.1.2.1 2006-03-14 14:46:40 turbo Exp $
 //
 
 // {{{ pql_unit_get(linkid, dn, filter)

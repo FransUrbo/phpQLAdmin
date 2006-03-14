@@ -3,16 +3,16 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.84 2006-03-08 19:22:18 turbo Exp $
+// $Id: pql_config.inc,v 1.1.2.1 2006-03-14 14:46:40 turbo Exp $
 //
 
 // {{{ Include the API files
-require($_SESSION["path"]."/include/pql.inc");					// Main API file
-require($_SESSION["path"]."/include/pql_formating.inc");		// Output formating API
-require($_SESSION["path"]."/include/pql_cache.inc");			// Cache API
-require($_SESSION["path"]."/include/pql_search.inc");			// Search API
-require($_SESSION["path"]."/include/pql_write.inc");			// Write API
-require($_SESSION["path"]."/include/pql_units.inc");			// Sub branch API
+require($_SESSION["path"]."/libs/pql.inc");					// Main API file
+require($_SESSION["path"]."/libs/pql_formating.inc");		// Output formating API
+require($_SESSION["path"]."/libs/pql_cache.inc");			// Cache API
+require($_SESSION["path"]."/libs/pql_search.inc");			// Search API
+require($_SESSION["path"]."/libs/pql_write.inc");			// Write API
+require($_SESSION["path"]."/libs/pql_units.inc");			// Sub branch API
 // }}}
 
 // {{{ Start profiling - what time is it now?
@@ -96,10 +96,10 @@ function pql_get_define($define, $dn = NULL) {
 
 // ----------------------------
 // 1. Load site specific configuration
-require($_SESSION["path"]."/include/config.inc");
+require($_SESSION["path"]."/config/config.inc");
 
 // 2. Include the attribute configuration
-require($_SESSION["path"]."/include/config_attributes.inc");
+require($_SESSION["path"]."/config/config_attributes.inc");
 
 // Get the LDAP host and port
 if(empty($_SESSION["USER_HOST"])) {
@@ -239,11 +239,11 @@ foreach($PQL_ATTRIBUTE["USER"] as $key => $attrib) {
 }
 
 // 7. Get language translation
-require($_SESSION["path"]."/include/pql_lang.inc");
+require($_SESSION["path"]."/libs/pql_lang.inc");
 $LANG = new pql_lang($_pql);
 
 // 8. Include the plugin API
-require($_SESSION["path"]."/include/pql_plugins.inc");
+require($_SESSION["path"]."/libs/pql_plugins.inc");
 
 if(!empty($_SESSION["USER_DN"])) {
   // 9. Verify that the user have access to write the global phpQLAdmin config
@@ -289,7 +289,7 @@ if(!@$MONITOR_BACKEND_ENABLED) {
 }
 
 if(@$_SESSION["ACI_SUPPORT_ENABLED"]) {
-  require($_SESSION["path"]."/include/pql_aci.inc");
+  require($_SESSION["path"]."/libs/pql_aci.inc");
 }
 
 // Remove some variables so we don't clutter the global variable name space!

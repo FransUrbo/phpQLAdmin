@@ -1,10 +1,10 @@
 <?php
 // make some simple tests on ldap connection
-// $Id: config_ldaptest.php,v 2.36 2005-09-20 05:14:27 turbo Exp $
+// $Id: config_ldaptest.php,v 2.36.2.1 2006-03-14 14:46:30 turbo Exp $
 //
-require("./include/pql_session.inc");
-require($_SESSION["path"]."/include/pql_config.inc");
-require($_SESSION["path"]."/include/pql_control.inc");
+require("./libs/pql_session.inc");
+require($_SESSION["path"]."/libs/pql_config.inc");
+require($_SESSION["path"]."/libs/pql_control.inc");
 
 // {{{ Check a domain value
 function check_domain_value($linkid, $dn, $attrib, $value) {

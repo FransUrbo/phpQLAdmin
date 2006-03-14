@@ -1,7 +1,7 @@
 .ht*
 phpQLadmin.log
 phpQLAdmin.log
-include/config.inc
+config/config.inc
 SETUP_ALIASES.sh
 .DEBUG_*
 .tag

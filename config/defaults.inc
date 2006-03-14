@@ -3,7 +3,7 @@
 // This file contains what I think is 'resonable defaults'.
 // Don't change here, change any values in the web interface!
 //
-// $Id: defaults.inc,v 2.34 2005-04-23 09:13:31 turbo Exp $
+// $Id: defaults.inc,v 1.1.2.1 2006-03-14 14:46:31 turbo Exp $
 
 // NOTE: Some of these defines isn't called with the (root/top)
 //       DN. They are (site) global variables, not per branch.

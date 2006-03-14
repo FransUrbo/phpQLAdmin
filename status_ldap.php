@@ -1,10 +1,10 @@
 <?php
 // Show Connection/Suffixes status of LDAP server
-// $Id: status_ldap.php,v 2.10 2005-09-21 05:23:53 turbo Exp $
+// $Id: status_ldap.php,v 2.10.2.1 2006-03-14 14:46:30 turbo Exp $
 //
-require("./include/pql_session.inc");
-require($_SESSION["path"]."/include/pql_config.inc");
-require($_SESSION["path"]."/include/pql_status.inc");
+require("./libs/pql_session.inc");
+require($_SESSION["path"]."/libs/pql_config.inc");
+require($_SESSION["path"]."/libs/pql_status.inc");
 
 require("./left-head.html");
 include($_SESSION["path"]."/header.html");

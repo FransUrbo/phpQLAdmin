@@ -28,8 +28,8 @@ a thing in the world of LDAP :).
 
 Configuration and layout
 ~~~~~~~~~~~~~~~~~~~~~~~~
-To configure phpQLAdmin, copy the file include/config.inc.CHANGE_ME
-to include/config.inc and change the latter. Go throug each line,
+To configure phpQLAdmin, copy the file config/config.inc.CHANGE_ME
+to config/config.inc and change the latter. Go throug each line,
 and decide where the database is (ie FQDN - Fully Qualified Domain Name
 or IP address - of the LDAP server), what's the base dn of your
 QMailLDAP objects etc.

@@ -3,7 +3,7 @@
 // pql_hostctrl.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_hostctrl.inc,v 1.1 2006-03-08 14:37:00 turbo Exp $
+// $Id: pql_hostctrl.inc,v 1.1.2.1 2006-03-14 14:46:40 turbo Exp $
 
 // {{{ pql_update_sudo(ldap, dn, type, attribute)
 function pql_update_sudo($ldap, $dn, $type, $attribute) {

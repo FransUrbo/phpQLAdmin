@@ -1,14 +1,14 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.133 2005-09-29 05:03:12 turbo Exp $
+// $Id: user_add.php,v 2.133.2.1 2006-03-14 14:46:30 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
 // {{{ Setup session etc
-require("./include/pql_session.inc");
-require($_SESSION["path"]."/include/pql_config.inc");
-require($_SESSION["path"]."/include/pql_control.inc");
-require($_SESSION["path"]."/include/pql_templates.inc");
+require("./libs/pql_session.inc");
+require($_SESSION["path"]."/libs/pql_config.inc");
+require($_SESSION["path"]."/libs/pql_control.inc");
+require($_SESSION["path"]."/libs/pql_templates.inc");
 
 $url["domain"]		= pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"]		= pql_format_urls($_REQUEST["rootdn"]);
@@ -126,7 +126,7 @@ switch($_REQUEST["page_curr"]) {
 		// But only if:
 		// 1. We haven't specified this ourself (Hmmm, how could we!? We have not been given a choice before this! TODO)
 		// 2. We have set autoCreateUserName to TRUE for this branch/domain
-		// 3. The function 'user_generate_uid()' is defined in include/config.inc.
+		// 3. The function 'user_generate_uid()' is defined in config/config.inc.
 		// 4. At least one of the objects we've choosen to use when creating users MAY or MUST the 'uid' attribute..
 		if(empty($_REQUEST["uid"]) and pql_templates_check_attribute($_pql->ldap_linkid, $template, 'uid')) {
 		  if(function_exists('user_generate_uid') and empty($_REQUEST["uid"]) and

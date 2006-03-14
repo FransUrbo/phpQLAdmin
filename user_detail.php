@@ -1,14 +1,14 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.97 2005-09-29 05:03:12 turbo Exp $
+// $Id: user_detail.php,v 2.97.2.1 2006-03-14 14:46:30 turbo Exp $
 //
 // {{{ Setup session
 header("Expires: 0");
 header('Cache-control: no-store, no-cache, must-revalidate');
 header('Cache-control: pre-check=0, post-check=0, max-age=0', false);
 
-require("./include/pql_session.inc");
-require($_SESSION["path"]."/include/pql_config.inc");
+require("./libs/pql_session.inc");
+require($_SESSION["path"]."/libs/pql_config.inc");
 
 if(!$_GET and ($_REQUEST["view"] == "antispam")) {
 	// We're coming from "./tables/user_details-antispam.inc",

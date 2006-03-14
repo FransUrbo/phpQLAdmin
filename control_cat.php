@@ -1,12 +1,12 @@
 <?php
 // shows details of specified category of attributes
-// $Id: control_cat.php,v 2.22 2005-09-20 05:25:00 turbo Exp $
+// $Id: control_cat.php,v 2.22.2.1 2006-03-14 14:46:30 turbo Exp $
 //
 // {{{ Setup session etc
-require("./include/pql_session.inc");
-require($_SESSION["path"]."/include/pql_config.inc");
-require($_SESSION["path"]."/include/pql_control.inc");
-require($_SESSION["path"]."/include/pql_control_plugins.inc");
+require("./libs/pql_session.inc");
+require($_SESSION["path"]."/libs/pql_config.inc");
+require($_SESSION["path"]."/libs/pql_control.inc");
+require($_SESSION["path"]."/libs/pql_control_plugins.inc");
 
 $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
@@ -14,7 +14,7 @@ include($_SESSION["path"]."/header.html");
 // }}}
 
 // {{{ Load plugin categories
-require($_SESSION["path"]."/include/pql_control_plugins.inc");
+require($_SESSION["path"]."/libs/pql_control_plugins.inc");
 $cats = pql_plugin_get_cats();
 asort($cats);
 // }}}

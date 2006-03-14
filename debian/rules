@@ -40,12 +40,12 @@ install: build
 	  find | cpio -p $(INSTDIR); \
 	  rm -Rf $(INSTDIR)/Makefile $(INSTDIR)/.version* \
 		$(INSTDIR)/doc/README.* $(INSTDIR)/manual \
-		$(INSTDIR)/include/config.inc \
+		$(INSTDIR)/config/config.inc \
 		$(INSTDIR)/phpQLadmin.log \
 		$(INSTDIR)/validateEmailFormat-1.0; \
 	  cp debian/apache.conf debian/phpqladmin/etc/phpqladmin; \
-	  mv $(INSTDIR)/include/config.inc.CHANGE_ME debian/phpqladmin/etc/phpqladmin/config.inc; \
-	  mv $(INSTDIR)/include/config_attributes.inc $(INSTDIR)/include/config_plugins.inc \
+	  mv $(INSTDIR)/config/config.inc.CHANGE_ME debian/phpqladmin/etc/phpqladmin/config.inc; \
+	  mv $(INSTDIR)/config/config_attributes.inc $(INSTDIR)/config/config_plugins.inc \
 		$(INSTDIR)/include/defaults.inc debian/phpqladmin/etc/phpqladmin/; \
 	  cd $(INSTDIR) && \
 		find -type d -name CVS -o -name '.cvsignore' \

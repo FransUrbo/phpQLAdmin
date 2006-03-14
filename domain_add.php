@@ -1,10 +1,10 @@
 <?php
 // add a domain
-// $Id: domain_add.php,v 2.65 2005-09-16 06:08:41 turbo Exp $
+// $Id: domain_add.php,v 2.65.2.1 2006-03-14 14:46:30 turbo Exp $
 //
 // {{{ Setup session etc
-require("./include/pql_session.inc");
-require($_SESSION["path"]."/include/pql_config.inc");
+require("./libs/pql_session.inc");
+require($_SESSION["path"]."/libs/pql_config.inc");
 
 $url["domain"]		  = pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"]		  = pql_format_urls($_REQUEST["rootdn"]);
@@ -13,7 +13,7 @@ $url["defaultdomain"] = pql_format_urls($_REQUEST["rootdn"]);
 
 // {{{ Include control api if control is used
 if(pql_get_define("PQL_CONF_CONTROL_USE")) {
-    include($_SESSION["path"]."/include/pql_control.inc");
+    include($_SESSION["path"]."/libs/pql_control.inc");
     $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 }
 
@@ -140,7 +140,7 @@ if(pql_write_add($_pql->ldap_linkid, $dn, $entry, 'branch', 'domain_add.php')) {
 	
 	// {{{ Create a template DNS zone
 	if($_REQUEST["template"] && $_REQUEST["defaultdomain"] && pql_get_define("PQL_CONF_BIND9_USE")) {
-		require($_SESSION["path"]."/include/pql_bind9.inc");
+		require($_SESSION["path"]."/libs/pql_bind9.inc");
 
 		if(! pql_bind9_add_zone($_pql->ldap_linkid, $dn, $_REQUEST["defaultdomain"]))
 		  $msg = pql_complete_constant($LANG->_("Failed to add domain %domainname%"), array("domainname" => $_REQUEST["defaultdomain"]));

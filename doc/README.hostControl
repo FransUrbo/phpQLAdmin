@@ -32,7 +32,7 @@ In order to make Sudo work you need to first set the 'Use Sudo' option
 to true in the domain_detail.php page.
 
 Next create a sub branch under your domain like 'ou=SUDOers' and
-define it in your include/config.inc:
+define it in your config/config.inc:
 
 	pql_set_define("PQL_CONF_SUBTREE_SUDOERS", "ou=SUDOers");
 

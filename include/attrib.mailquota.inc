@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mailquota.inc,v 2.32 2005-09-16 06:08:50 turbo Exp $
+// $Id: attrib.mailquota.inc,v 2.32.2.1 2006-03-14 14:46:38 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -193,7 +193,7 @@ function attribute_save($type) {
 
 			// Instead of doing this again, we include the file where this is done.
 			global $quota, $_pql_control;
-			include($_SESSION["path"]."/include/pql_control.inc");
+			include($_SESSION["path"]."/libs/pql_control.inc");
 			include($_SESSION["path"]."/include/attrib.control.ldapdefaultquota.inc");
 
 			// Initialize a QmailLDAP/Controls session

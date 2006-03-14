@@ -1,5 +1,5 @@
 <?php
-require($_SESSION["path"]."/include/pql_hostctrl.inc");
+require($_SESSION["path"]."/libs/pql_hostctrl.inc");
 if(isset($_REQUEST['action']) && $_REQUEST['action'] == 'add_sudo_role') {
   // {{{ Add sudo role
   $domain = $_REQUEST["domain"];

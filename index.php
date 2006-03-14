@@ -1,12 +1,12 @@
 <?php
 // logins to the system
-// $Id: index.php,v 2.49 2005-09-24 09:45:56 turbo Exp $
+// $Id: index.php,v 2.49.2.1 2006-03-14 14:46:30 turbo Exp $
 //
 // Start debuging
 // http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0
 //apd_set_pprof_trace();
-require_once("./include/dlw_porting.inc");
-require("./include/pql_session.inc");
+require_once("./libs/dlw_porting.inc");
+require("./libs/pql_session.inc");
 
 // DLW: I'm not sure if $msg ever gets set in a _POST, but for now I'll play it safe.
 if (!empty($_POST["msg"])) {
@@ -47,10 +47,10 @@ if(@$_GET["logout"] == 1 or !empty($_GET["msg"])) {
 	}
 
 	// Create a new session
-	require("./include/pql_session.inc");
+	require("./libs/pql_session.inc");
 }
 
-require($_SESSION["path"]."/include/pql_config.inc");
+require($_SESSION["path"]."/libs/pql_config.inc");
 
 if (empty($_POST["uname"]) or empty($_POST["passwd"])) {
 	include($_SESSION["path"]."/header.html");

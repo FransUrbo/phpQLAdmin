@@ -1,12 +1,12 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.70 2006-02-28 08:56:08 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 1.1.2.1 2006-03-14 14:46:31 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
 // don't forget to change:
 //	./phpQLAdmin.schema
-//	./include/pql_config.inc
+//	./libs/pql_config.inc
 //
 
 // ----------------------------
@@ -465,7 +465,7 @@ function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $do
 function do_exec($command, $output, &$return) {
   $return = 100;
   $msg  = "<p>";
-  $msg .= "Command execution disabled. See ./include/config.inc:do_exec(). ";
+  $msg .= "Command execution disabled. See ./config/config.inc:do_exec(). ";
   $msg .= "Command to execute was: <br><br><b>$command</b><br>";
   return($msg);
 

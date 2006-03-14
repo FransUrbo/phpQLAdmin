@@ -3,7 +3,7 @@
 // pql_plugins.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_plugins.inc,v 2.4 2005-06-22 13:58:33 turbo Exp $
+// $Id: pql_plugins.inc,v 1.1.2.1 2006-03-14 14:46:40 turbo Exp $
 
 // Plugin register class
 class pql_plugin_storage {

@@ -28,7 +28,7 @@ http://apache.bayour.com/list/phpQLAdmin/?action=show_msg&actionargs[]=8&actiona
 As of phpQLAdmin version 2.0.19-pre CVS Mon May 10 2004, the EZMLM
 manager now first looks in /etc/passwd for the defined user (which
 in turn is now set in the 'phpQLAdmin Configuration->BRANCH' instead
-of include/config.inc as previous) and it's home directory. If that
+of config/config.inc as previous) and it's home directory. If that
 fails, it will look in '/var/qmail/users/assign' for the users home
 directory.
 

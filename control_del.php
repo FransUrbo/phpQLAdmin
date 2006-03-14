@@ -1,9 +1,9 @@
 <?php
 // Delete a mailserver controls object
-// $Id: control_del.php,v 2.24 2005-09-16 06:08:41 turbo Exp $
+// $Id: control_del.php,v 2.24.2.1 2006-03-14 14:46:30 turbo Exp $
 //
-require("./include/pql_session.inc");
-require($_SESSION["path"]."/include/pql_config.inc");
+require("./libs/pql_session.inc");
+require($_SESSION["path"]."/libs/pql_config.inc");
 
 // {{{ Get users that uses this mailserver - we need to know this twice.
 // Once the first time we're called, and once when the acctuall deletion
@@ -27,7 +27,7 @@ function control_del_find_users($link, $host) {
 
 if(pql_get_define("PQL_CONF_CONTROL_USE")) {
     // {{{ include control api if control is used
-    include($_SESSION["path"]."/include/pql_control.inc");
+    include($_SESSION["path"]."/libs/pql_control.inc");
     $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 // }}}
 
