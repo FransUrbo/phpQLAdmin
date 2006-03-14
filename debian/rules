@@ -46,7 +46,7 @@ install: build
 	  cp debian/apache.conf debian/phpqladmin/etc/phpqladmin; \
 	  mv $(INSTDIR)/config/config.inc.CHANGE_ME debian/phpqladmin/etc/phpqladmin/config.inc; \
 	  mv $(INSTDIR)/config/config_attributes.inc $(INSTDIR)/config/config_plugins.inc \
-		$(INSTDIR)/include/defaults.inc debian/phpqladmin/etc/phpqladmin/; \
+		$(INSTDIR)/config/defaults.inc debian/phpqladmin/etc/phpqladmin/; \
 	  cd $(INSTDIR) && \
 		find -type d -name CVS -o -name '.cvsignore' \
 			-o -name '*~' -o -name '.#*' \

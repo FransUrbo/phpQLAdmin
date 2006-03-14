@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.1.2.1 2006-03-14 14:46:40 turbo Exp $
+// $Id: pql_config.inc,v 1.1.2.2 2006-03-14 14:52:34 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -222,7 +222,7 @@ foreach($_pql->ldap_basedn as $dn)  {
   }
   
   // 4d. Load 'resonable defaults' for each top DN
-  require($_SESSION["path"]."/include/defaults.inc");
+  require($_SESSION["path"]."/config/defaults.inc");
 }
 
 // 5. Check the Control DN if the user is there -> Allow management of Controls information
