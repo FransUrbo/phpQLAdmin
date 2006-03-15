@@ -1,8 +1,8 @@
 <html>
 <head>
 	<title>phpQL</title>
-	<link rel="stylesheet" href="../tools/normal.css" type="text/css">
-	<!-- $Id: data.php,v 2.2 2005-01-12 20:08:39 turbo Exp $ -->
+	<link rel="stylesheet" href="../templates/normal.css" type="text/css">
+	<!-- $Id: data.php,v 2.2.12.1 2006-03-15 09:40:40 turbo Exp $ -->
 </head>
 
 <body bgcolor="#e7e7e7" background="../images/bkg.png">

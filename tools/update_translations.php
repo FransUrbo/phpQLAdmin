@@ -2,7 +2,7 @@
 // ----------------------------
 // pql_update_translations.php
 //
-// $Id: update_translations.php,v 2.8.2.1 2006-03-14 14:46:51 turbo Exp $
+// $Id: update_translations.php,v 2.8.2.2 2006-03-15 09:40:45 turbo Exp $
 //
 
 // ----------------------------
@@ -34,7 +34,7 @@ $baseDir = $_SESSION["path"]; // were we start searching for strings
 ?>
 <html>
   <head>
-    <link rel="stylesheet" href="tools/normal.css" type="text/css">
+    <link rel="stylesheet" href="templates/normal.css" type="text/css">
   </head>
 
   <body>

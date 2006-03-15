@@ -12,6 +12,7 @@ phpQLAdmin 2.3.3/GUI_TEMPLATE TO BE ANNOUNCED
 	    + include/defaults.inc	=> config/
 	    + include/lang.en.inc	=> translations/
 	    + include/thryn.ttf		=> tools/
+	    + tools/normal.css		=> templates/
 	    > All references in all files was updated!
 	  - Remove the validateEmailFormat directory. Never used, I had my own
 	    function(s) for this.
