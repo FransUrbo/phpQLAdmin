@@ -30,7 +30,7 @@
  * @version 2.6.13-dev
  */
 
-/* $Id: smarty.inc,v 1.1.2.1 2006-03-14 17:14:00 turbo Exp $ */
+/* $Id: smarty.inc,v 1.1.2.1 2006-03-15 06:02:46 turbo Exp $ */
 
 /**
  * DIR_SEP isn't used anymore, but third party apps might
