@@ -25,7 +25,7 @@
  * @package Smarty
  */
 
-/* $Id: smarty_config_file.inc,v 1.1.2.1 2006-03-15 06:02:46 turbo Exp $ */
+/* $Id: smarty_config_file.inc,v 1.1.2.3 2006-03-15 09:01:05 turbo Exp $ */
 
 /**
  * Config file reading class

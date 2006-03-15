@@ -26,7 +26,7 @@
  * @package Smarty
  */
 
-/* $Id: smarty_compiler.inc,v 1.1.2.1 2006-03-15 06:02:46 turbo Exp $ */
+/* $Id: smarty_compiler.inc,v 1.1.2.3 2006-03-15 09:01:04 turbo Exp $ */
 
 /**
  * Template compiling class
