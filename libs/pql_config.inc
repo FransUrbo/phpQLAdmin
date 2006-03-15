@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.1.2.2 2006-03-14 14:52:34 turbo Exp $
+// $Id: pql_config.inc,v 1.1.2.3 2006-03-15 10:35:02 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -225,29 +225,38 @@ foreach($_pql->ldap_basedn as $dn)  {
   require($_SESSION["path"]."/config/defaults.inc");
 }
 
-// 5. Check the Control DN if the user is there -> Allow management of Controls information
+// 5. Get user options (PQL_ATTRIBUTE["USER"]) from the user's DN
+$info = pql_search($_pql->ldap_linkid, $_SESSION["USER_DN"], 'objectClass=*', 'BASE');
+foreach($PQL_ATTRIBUTE["USER"] as $key => $pql_config_private_variable_which_irritates_me) {
+  if(!empty($info[$pql_config_private_variable_which_irritates_me])) {
+	pql_set_define($key, $info[$pql_config_private_variable_which_irritates_me], true, $_SESSION["USER_DN"]);
+  }
+}
+
+
+// 6. Check the Control DN if the user is there -> Allow management of Controls information
 if(!empty($_SESSION["USER_DN"]) and empty($_SESSION["ALLOW_CONTROL_CREATE"])) {
   $_SESSION["ALLOW_CONTROL_CREATE"] = pql_validate_administrator($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 																 pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
 																 $_SESSION["USER_DN"]);
 }
 
-// 6. Get user configuration for phpQLAdmin
+// 7. Get user configuration for phpQLAdmin
 $user_object = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_DN"], "(objectClass=*)", 'BASE');
 foreach($PQL_ATTRIBUTE["USER"] as $key => $attrib) {
   pql_set_define($key, $user_object[$attrib][0], true, $_SESSION["USER_DN"]);
 }
 
-// 7. Get language translation
+// 8. Get language translation
 require($_SESSION["path"]."/libs/pql_lang.inc");
 $LANG = new pql_lang($_pql);
 
-// 8. Include the plugin API
+// 9. Include the plugin API
 require($_SESSION["path"]."/libs/pql_plugins.inc");
 
 if(!empty($_SESSION["USER_DN"])) {
-  // 9. Verify that the user have access to write the global phpQLAdmin config
-  //    in the first base DN
+  // 10. Verify that the user have access to write the global phpQLAdmin config
+  //     in the first base DN
   $_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"] = pql_validate_administrator($_pql->ldap_linkid, $_pql->ldap_basedn[0],
 																	 pql_get_define("PQL_ATTR_ADMINISTRATOR"),
 																	 $_SESSION["USER_DN"]);
@@ -256,22 +265,22 @@ if(!empty($_SESSION["USER_DN"])) {
 if((empty($_SESSION["ACI_SUPPORT_ENABLED"]) and function_exists("user_generate_aci")) or empty($_SESSION["NEW_STYLE_QUOTA"])) {
   $ocs = pql_get_subschema($_pql->ldap_linkid, 'attributeTypes');
   
-  // 9a. Check ifthe attribute OpenLDAPaci exists - ACI support is enabled in the LDAP server.
-  //     OR: We've specified (manually) to (en)force the use of ACI's via the baseDN attribute
-  //         'useACI'.
-  //     -> Just make sure that useACI isn't equal to 'FALSE' which means the user/admin have
-  //        elected to NOT use ACI's!
+  // 10a. Check ifthe attribute OpenLDAPaci exists - ACI support is enabled in the LDAP server.
+  //      OR: We've specified (manually) to (en)force the use of ACI's via the baseDN attribute
+  //          'useACI'.
+  //      -> Just make sure that useACI isn't equal to 'FALSE' which means the user/admin have
+  //         elected to NOT use ACI's!
   if(empty($_SESSION["ACI_SUPPORT_ENABLED"]) and function_exists("user_generate_aci") and
 	 (!empty($ocs[pql_get_define("PQL_ATTR_LDAPACI")]["OID"]) or pql_get_define("PQL_CONF_ACI_USE")) and
 	 (pql_get_define("PQL_CONF_ACI_USE") != 'FALSE'))
 	$_SESSION["ACI_SUPPORT_ENABLED"] = 1;
   
-  // 9b. Check to see if the attributes mailQuotaSize and mailQuotaCount exists - new style quota.
+  // 10b. Check to see if the attributes mailQuotaSize and mailQuotaCount exists - new style quota.
   if(!empty($ocs[pql_get_define("PQL_ATTR_QUOTA_SIZE")]["OID"]) and
 	 !empty($ocs[pql_get_define("PQL_ATTR_QUOTA_COUNT")]["OID"]))
 	$_SESSION["NEW_STYLE_QUOTA"] = 1;
   
-  // 9c. Do we support old style quota, even if new style is enabled?
+  // 10c. Do we support old style quota, even if new style is enabled?
   if(empty($ocs[pql_get_define("PQL_ATTR_QUOTA_VALUE")]["OID"])) {
 	// The old style quota attribute isn't defined - don't support it
 	$_SESSION["OLD_STYLE_QUOTA"] = 0;
@@ -281,7 +290,7 @@ if((empty($_SESSION["ACI_SUPPORT_ENABLED"]) and function_exists("user_generate_a
   }
 }
 
-// 10. Check to see if the cn=Monitor backend is availble/readable
+// 11. Check to see if the cn=Monitor backend is availble/readable
 if(!@$MONITOR_BACKEND_ENABLED) {
   $sr = @ldap_read($_pql->ldap_linkid, "cn=Monitor", 'objectClass=*');
   if($sr)
