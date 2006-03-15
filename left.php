@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.116.2.1 2006-03-14 14:46:30 turbo Exp $
+// $Id: left.php,v 2.116.2.2 2006-03-15 09:33:11 turbo Exp $
 //
 require("./libs/pql_session.inc");
 
@@ -94,9 +94,9 @@ if($_REQUEST["advanced"] == 1) {
 
   <!-- Home branch -->
 <?php
-  // {{{ ---------------- HOME BRANCH (PROJECT URLS ETC)
-  // {{{ Level 1:      phpQLAdmin configuration etc
-  $div_counter = 10; // Initialize the global counter
+// {{{ ---------------- HOME BRANCH (PROJECT URLS ETC)
+// {{{ Level 1:      phpQLAdmin configuration etc
+$div_counter = 10; // Initialize the global counter
 pql_format_tree("<b>".$LANG->_('Home')."</b>", 'home.php');
 // }}}
 
