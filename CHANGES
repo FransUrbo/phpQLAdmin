@@ -19,6 +19,8 @@ phpQLAdmin 2.3.3/GUI_TEMPLATE TO BE ANNOUNCED
 	    with the soon-to-bee template driven phpQLAdmin.
 	  - Add the PHPLib Template to Smarty Template (http://www.sanisoft.com/phplib2smarty/)
 	    version 0.1 for use with the soon-to-bee template driven phpQLAdmin.
+	  - Add the PHP Base Library (http://phplib.sourceforge.net/) version 7.4a for use
+	    with the soon-to-bee template driven phpQLAdmin.
 
 	Misc changes
 
