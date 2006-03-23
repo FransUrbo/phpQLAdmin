@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.102.2.1 2006-03-14 14:46:30 turbo Exp $
+// $Id: domain_detail.php,v 2.102.2.2 2006-03-23 09:29:03 turbo Exp $
 //
 // {{{ Setup session etc
 require("./libs/pql_session.inc");
@@ -8,8 +8,6 @@ require($_SESSION["path"]."/libs/pql_config.inc");
 
 $url["domain"] = pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
-
-include($_SESSION["path"]."/header.html");
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 // }}}
@@ -22,6 +20,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 // }}}
 
 // {{{ Print status message, if one is available
+include($_SESSION["path"]."/header.html");
 if(isset($_REQUEST["msg"])) {
     pql_format_status_msg($_REQUEST["msg"]);
 }
@@ -41,12 +40,9 @@ if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
 
 // {{{ Check if domain exist
 if(!pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], '(objectclass=*)', 'BASE')) {
-    echo "Domain &quot;" . $_REQUEST["domain"] . "&quot; does not exists<br><br>";
-	echo "Is this perhaps a Top Level DN (namingContexts), and you haven't configured ";
-	echo "how to reference domains/branches in this database!?<br><br>";
-	echo "Please go to <a href=\"config_detail.php\">Show configuration</a> and double check.<br>";
-	echo "Look at the config option 'Reference domains with'.";
-    exit();
+  $smarty->assign('domain', $_REQUEST["domain"]);
+  $smarty->display($_SESSION["path"]."/templates/".pql_get_define("PQL_CONF_GUI_TEMPLATE")."/dontexists_domain.tpl");
+  exit();
 }
 // }}}
 
@@ -58,115 +54,183 @@ if(!$domainname) {
 }
 // }}}
 
-if(empty($_REQUEST["view"]))
+if(empty($_REQUEST["view"])) {
   $_REQUEST["view"] = 'default';
+}
 
 // {{{ Get all needed default values for this domain
 // Some of these (everything after the 'o' attribute)
 // uses 'objectClass: dcOrganizationNameForm' -> http://rfc-2377.rfcindex.net/
-$attribs = array("autocreatemailaddress"	=> pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS"),
-				 "autocreateusername"		=> pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"),
-				 "autocreatepassword"		=> pql_get_define("PQL_ATTR_AUTOCREATE_PASSWORD"),
-				 "basehomedir"				=> pql_get_define("PQL_ATTR_BASEHOMEDIR"),
-				 "basemaildir"				=> pql_get_define("PQL_ATTR_BASEMAILDIR"),
-				 "basequota"				=> pql_get_define("PQL_ATTR_BASEQUOTA"),
-				 "defaultdomain"			=> pql_get_define("PQL_ATTR_DEFAULTDOMAIN"),
-				 "defaultpasswordscheme"	=> pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"),
-				 "facsimiletelephonenumber"	=> pql_get_define("PQL_ATTR_FACSIMILETELEPHONENUMBER"),
-				 "l"						=> pql_get_define("PQL_ATTR_L"),
-				 "maximumdomainusers"		=> pql_get_define("PQL_ATTR_MAXIMUM_DOMAIN_USERS"),
-				 "maximummailinglists"		=> pql_get_define("PQL_ATTR_MAXIMUM_MAILING_LISTS"),
-				 "o"						=> pql_get_define("PQL_ATTR_O"),
-				 "postaladdress"			=> pql_get_define("PQL_ATTR_POSTALADDRESS"),
-				 "streetaddress"			=> pql_get_define("PQL_ATTR_STREETADDRESS"),
-				 "registeredaddress"		=> pql_get_define("PQL_ATTR_REGISTEREDADDRESS"),
-				 "postalcode"				=> pql_get_define("PQL_ATTR_POSTALCODE"),
-				 "postofficebox"			=> pql_get_define("PQL_ATTR_POSTOFFICEBOX"),
-				 "st"						=> pql_get_define("PQL_ATTR_ST"),
-				 "street"					=> pql_get_define("PQL_ATTR_STREET"),
-				 "telephonenumber"			=> pql_get_define("PQL_ATTR_TELEPHONENUMBER"),
-				 "mobile"					=> pql_get_define("PQL_ATTR_MOBILE"),
-				 "usernameprefix"			=> pql_get_define("PQL_ATTR_USERNAME_PREFIX"),
-				 "usernameprefixlength"		=> pql_get_define("PQL_ATTR_USERNAME_PREFIX_LENGTH"),
-				 "vatnumber"				=> pql_get_define("PQL_ATTR_VAT_NUMBER"),
-				 "ezmlmvirtualuser"			=> pql_get_define("PQL_ATTR_EZMLM_USER"),
-				 "usehostacl"				=> pql_get_define("PQL_ATTR_HOSTACL_USE"),
-				 "usesudo"					=> pql_get_define("PQL_ATTR_SUDO_USE"),
-				 "info"						=> pql_get_define("PQL_ATTR_INFO"));
+
+// {{{ Setup attributes to retreive
+// Array Format:	key = array(attribute, text[, [[bool][multi][integer]]]
+if(($_REQUEST["view"] == 'default') and $_SESSION["ADVANCED_MODE"]) {
+  $smarty->assign('title', $LANG->_('Default domain values'));
+  $show[] = array('title' => $LANG->_('Branch DN'), 'value' => $_REQUEST["domain"]);
+  
+  $attribs = array("defaultdomain"				=> array(pql_get_define("PQL_ATTR_DEFAULTDOMAIN"),
+														 $LANG->_('Default domain name')));
+  
+  if($_SESSION["ALLOW_BRANCH_CREATE"]) {
+	$new = array(  "basehomedir"				=> array(pql_get_define("PQL_ATTR_BASEHOMEDIR"),
+														 $LANG->_('Base home directory for users')),
+				   "basemaildir"				=> array(pql_get_define("PQL_ATTR_BASEMAILDIR"),
+														 $LANG->_('Base mail directory for users')),
+				   "basequota"					=> array(pql_get_define("PQL_ATTR_BASEQUOTA"),
+														 $LANG->_('Default quota'),
+														 'integer'),
+				   "maximumdomainusers"			=> array(pql_get_define("PQL_ATTR_MAXIMUM_DOMAIN_USERS"),
+														 $LANG->_('Maximum allowed users in branch'),
+														 'integer'),
+				   "maximummailinglists"		=> array(pql_get_define("PQL_ATTR_MAXIMUM_MAILING_LISTS"),
+														 $LANG->_('Maximum allowed mailinglists in branch'),
+														 'integer'),
+				   "defaultpasswordscheme"		=> array(pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"),
+														 $LANG->_('Default password scheme')),
+				   "autocreateusername"			=> array(pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"),
+														 pql_complete_constant($LANG->_('Automatically generate %what%'), array('what' => $LANG->_('username'))),
+														 'bool'),
+				   "usernameprefix"				=> array(pql_get_define("PQL_ATTR_USERNAME_PREFIX"),
+														 $LANG->_('Username prefix')),
+				   "usernameprefixlength"		=> array(pql_get_define("PQL_ATTR_USERNAME_PREFIX_LENGTH"),
+														 $LANG->_('Length of user suffix'),
+														 'integer'),
+				   "autocreatemailaddress"		=> array(pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS"),
+														 pql_complete_constant($LANG->_('Automatically generate %what%'), array('what' => $LANG->_('email address'))),
+														 'bool'),
+				   "autocreatepassword"			=> array(pql_get_define("PQL_ATTR_AUTOCREATE_PASSWORD"),
+														 pql_complete_constant($LANG->_('Automatically generate %what%'), array('what' => $LANG->_('password'))),
+														 'bool'));
+	$attribs = $attribs + $new;
+	
+	if(pql_get_define("PQL_CONF_EZMLM_USE")) {
+	  $new = array("ezmlmvirtualuser"			=> array(pql_get_define("PQL_ATTR_EZMLM_USER"),
+														 $LANG->_('EZMLM Virtual User')));
+	  $attribs = $attribs + $new;
+	}
+	
+	$new = array(  "usehostacl"					=> array(pql_get_define("PQL_ATTR_HOSTACL_USE"),
+														 $LANG->_('Use Host ACL'),
+														 'bool'),
+				   "usesudo"					=> array(pql_get_define("PQL_ATTR_SUDO_USE"),
+														 $LANG->_('Use Sudo'),
+														 'bool'));
+	$attribs = $attribs + $new;
+  }
+} elseif(($_REQUEST["view"] == 'default') or ($_REQUEST["view"] == 'owner')) {
+  $smarty->assign('title', $LANG->_('Branch owner'));
+  $attribs = array("o"							=> array(pql_get_define("PQL_ATTR_O"),
+														 $LANG->_('Organization name')),
+				   "vatnumber"					=> array(pql_get_define("PQL_ATTR_VAT_NUMBER"),
+														 $LANG->_('VAT number')),
+				   "postalcode"					=> array(pql_get_define("PQL_ATTR_POSTALCODE"),
+														 $LANG->_('Postal code')),
+				   "postofficebox"				=> array(pql_get_define("PQL_ATTR_POSTOFFICEBOX"),
+														 $LANG->_('Post box')),
+				   "postaladdress"				=> array(pql_get_define("PQL_ATTR_POSTALADDRESS"),
+														 $LANG->_('Postal address')),
+				   "streetaddress"				=> array(pql_get_define("PQL_ATTR_STREETADDRESS"),
+														 $LANG->_('Street address')),
+				   "street"						=> array(pql_get_define("PQL_ATTR_STREET"),
+														 $LANG->_('Street address')),
+				   "l"							=> array(pql_get_define("PQL_ATTR_L"),
+														 $LANG->_('City')),
+				   "st"							=> array(pql_get_define("PQL_ATTR_ST"),
+														 $LANG->_('State')),
+				   "telephonenumber"			=> array(pql_get_define("PQL_ATTR_TELEPHONENUMBER"),
+															 $LANG->_('Telephone number')),
+				   "facsimiletelephonenumber"	=> array(pql_get_define("PQL_ATTR_FACSIMILETELEPHONENUMBER"),
+														 $LANG->_('Fax number')),
+				   "mobile"						=> array(pql_get_define("PQL_ATTR_MOBILE"),
+														 $LANG->_('Telephone number')),
+				   "info"						=> array(pql_get_define("PQL_ATTR_INFO"),
+														 $LANG->_(''),
+														 'multi'));
+} else {
+  $attribs = array();
+}
+// }}}
+
+// {{{ Go through each attribute, retreive it's value(s)
 foreach($attribs as $key => $attrib) {
-	// Get default value
-	$value = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib);
-	if(is_array($value) and ($key != 'simscanattachmentsuffix'))
-	  $value = $value[0];
-	$$key = $value;
+  // $attrib is an array, with the following dimensions:
+  //	0: attribute
+  //	1: text
+  //	2: type			(optional!)
 
-	if($attrib == pql_get_define("PQL_ATTR_INFO")) {
-		// Special circumstance - multiple lines...
-		$$key = eregi_replace("\n", "<br>", $$key);
-	}
-
-	// Setup edit links. If it's a dcOrganizationNameForm attribute, then
-	// we add a delete link as well.
-	$link = $key . "_link";
-	if(($key != 'defaultdomain') and ($key != 'basehomedir') and ($key != 'basemaildir')) {
-	  if(!$value and ($key == 'maximumdomainusers') or ($key == 'maximummailinglists'))
-		// No value, no toggle
+  // Get default value
+  $value = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib[0]);
+  if(is_array($value) and ($key != 'simscanattachmentsuffix'))
+	$value = $value[0];
+  $$key = $value;
+  
+  if(@$attrib[2] == 'multi') {
+	// Special circumstances - multiple lines...
+	$$key = eregi_replace("\n", "<br>", $$key);
+  }
+  
+  if(($key != 'defaultdomain') and ($key != 'basehomedir') and ($key != 'basemaildir')) {
+	if(!$value) {
+	  if(@$attrib[2] == 'integer') {
+		// No value, no toggle, but an integer.
 		$value = 0;
-	  elseif(($key == 'autocreateusername') or ($key == 'autocreatemailaddress') or
-			($key == 'autocreatepassword') or ($key == 'usehostacl') or ($key == 'usesudo'))
-	  {
-		// A toggle value
-		if(!$value)
-		  // No value
-		  $value = 0;
-		else {
-		  // Got a value
-		  $$key = pql_format_bool($value);
-		}
-	  }
-	  
-	  // A dcOrganizationNameForm attribute
-	  $alt1 = pql_complete_constant($LANG->_('Modify attribute %attribute% for %domainname%'),
-									array('attribute' => $attrib, 'domainname' => $domainname));
-	  $alt2 = pql_complete_constant($LANG->_('Delete attribute %attribute% for %domainname%'),
-									array('attribute' => $attrib, 'domainname' => $domainname));
-	  
-	  $$link = "<a href=\"domain_edit_attributes.php?type=modify&attrib=$attrib&rootdn="
-		. $url["rootdn"] . "&domain=" . $url["domain"] . "&$attrib=". urlencode($value)
-		. "&view=" . $_REQUEST["view"] . "\"><img src=\"images/edit.png\" width=\"12\" height=\"12\""
-		. "border=\"0\" alt=\"$alt1\"></a>&nbsp;<a href=\"domain_edit_attributes.php?type=delete&"
-		. "submit=2&attrib=$attrib&rootdn=" . $url["rootdn"] . "&domain=" . $url["domain"]
-		. "&$attrib=". urlencode($value) . "&view=" . $_REQUEST["view"] . "\"><img src=\"images/del.png\""
-		. "width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt2."\"></a>";
-	} else {
-	  $alt1 = pql_complete_constant($LANG->_('Modify attribute %attribute% for %domainname%'),
-									array('attribute' => $attrib, 'domainname' => $domainname));
-	  
-	  // A phpQLAdminBranch attribute
-	  $$link = "<a href=\"domain_edit_attributes.php?attrib=$attrib&rootdn="
-		. $url["rootdn"] . "&domain=" . $url["domain"] . "&$attrib=$value&view="
-		. $_REQUEST["view"] . "\"><img src=\"images/edit.png\" width=\"12\" height=\"12\""
-		. "border=\"0\" alt=\"".$alt1."\"></a>";
+		$$key = "<i>".$LANG->_('Unlimited')."</i>";
+	  } else
+		$$key = "<i>".$LANG->_('Not set')."</i>";
+	} elseif(@$attrib[2] == 'bool') {
+	  // A toggle value
+	  if(!$value) {
+		// No value
+		$value = 0;
+		$$key = pql_format_bool(0);
+	  } else
+		// Got a value
+		$$key = pql_format_bool($value);
 	}
+	
+	// A dcOrganizationNameForm attribute
+	$alt1 = pql_complete_constant($LANG->_('Modify attribute %attribute% for %domainname%'),
+								  array('attribute' => $attrib[0], 'domainname' => $domainname));
+	$alt2 = pql_complete_constant($LANG->_('Delete attribute %attribute% for %domainname%'),
+								  array('attribute' => $attrib[0], 'domainname' => $domainname));
+	
+	if($_SESSION["ALLOW_BRANCH_CREATE"]) {
+	  // Setup edit links. If it's a dcOrganizationNameForm attribute, then
+	  // we add a delete link as well.
+	  $link  = $key . "_link";
+	  $$link = "<a href=\"domain_edit_attributes.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]
+		. "&attrib=".$attrib[0]."&".$attrib[0]."=".urlencode($value)."&type=modify"."&view=".$_REQUEST["view"]
+		. "\"><img src=\"images/edit.png\" width=\"12\" height=\"12\""."border=\"0\" alt=\"$alt1\">"
+		. "</a>&nbsp;<a href=\"domain_edit_attributes.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]
+		. "type=delete&submit=2&attrib=".$attrib[0]."&".$attrib[0]."=".urlencode($value)."&view=".$_REQUEST["view"]
+		. "\"><img src=\"images/del.png\" width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt2."\"></a>";
+	}
+  } else {
+	// A phpQLAdminBranch attribute
+	$alt1 = pql_complete_constant($LANG->_('Modify attribute %attribute% for %domainname%'),
+								  array('attribute' => $attrib[0], 'domainname' => $domainname));
+	
+	if($_SESSION["ALLOW_BRANCH_CREATE"]) {
+	  // Setup edit links. If it's a dcOrganizationNameForm attribute, then
+	  // we add a delete link as well.
+	  $link  = $key . "_link";
+	  $$link = "<a href=\"domain_edit_attributes.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]
+		. "attrib=".$attrib[0]."&".$attrib[0]."=$value&view=".$_REQUEST["view"]."\"><img src=\"images/edit.png\" "
+		. "width=\"12\" height=\"12\" border=\"0\" alt=\"".$alt1."\"></a>";
+	}
+  }
+
+  // Put together the show array for Smarty template generator (below)
+  $show[] = array('title' => $attrib[1],
+				  'value' => ((@$attrib[2] == 'bool') ? ($$key ? $LANG->_('Yes') : $LANG->_('No')) : $$key),
+				  'link'  => $$link);
 }
+// }}}
+
+// {{{ Get additional multi valued attributes
 $domain_admins      = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR"));
-if($domain_admins and !is_array($domain_admins)) {
-	// It's defined, but it's not an array. Convert it so we don't get into trouble below.
-	$domain_admins = array($domain_admins);
-}
-
-$mailinglist_admins = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"],
-										pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"));
-if($mailinglist_admins and !is_array($mailinglist_admins)) {
-	// It's defined, but it's not an array. Convert it so we don't get into trouble below.
-	$mailinglist_admins = array($mailinglist_admins);
-}
-
+$mailinglist_admins = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"));
 $seealso            = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_SEEALSO"));
-if($seealso and !is_array($seealso)) {
-	// It's defined, but it's not an array. Convert it so we don't get into trouble below.
-	$seealso = array($seealso);
-}
 
 // The quota value retreived from the object is a one liner.
 // Split it up into it's parts (SIZE and AMOUNT) and
@@ -184,6 +248,7 @@ if($basequota) {
 }
 
 $additionaldomainname = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
+// }}}
 // }}}
 
 // {{{ Setup the buttons
@@ -263,16 +328,22 @@ pql_generate_button($buttons, "domain=" . $url["domain"]); echo "  <br>\n";
 // }}}
 
 // {{{ Load the requested domain details page
+if(@is_array($show)) {
+  $smarty->assign('show', $show);
+  $smarty->display($_SESSION["path"]."/templates/".pql_get_define("PQL_CONF_GUI_TEMPLATE")."/domain_details.tpl");
+}
+
+// Load additional stuff that can't be fixed with Smarty
 if($_REQUEST["view"] == 'default') {
-	if($_SESSION["ADVANCED_MODE"]) {
-		include("./tables/domain_details-default.inc");
-	} else {
-		include("./tables/domain_details-owner.inc");
-	}
+  if($_SESSION["ADVANCED_MODE"]) {
+	include("./tables/domain_details-default.inc");
+  } else {
+	include("./tables/domain_details-owner.inc");
+  }
 }
 
 if($_REQUEST["view"] == 'owner') {
-	include("./tables/domain_details-owner.inc");
+  include("./tables/domain_details-owner.inc");
 } elseif($_REQUEST["view"] == 'chval') {
 	include("./tables/domain_details-users_chval.inc");
 } elseif($_REQUEST["view"] == 'users') {
