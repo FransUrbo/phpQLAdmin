@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.34.2.1 2006-03-23 09:13:15 turbo Exp $
+// $Id: attrib.userpassword.inc,v 2.34.2.2 2006-03-23 15:25:19 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -55,7 +55,7 @@ function attribute_print_form() {
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Password encryption scheme')?></td>
           <td>
-            <?php echo pql_format_error_span($error["pwscheme"]); ?>
+            <?php echo pql_format_error_span($error["pwscheme"])."\n"; ?>
 <?php	if(eregi(',', pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"]))) {
 			// We got more than one password scheme...
 			$schemes = split(",", pql_get_define("PQL_CONF_PASSWORD_SCHEMES", $_REQUEST["rootdn"]));
@@ -90,7 +90,7 @@ function attribute_print_form() {
           <td class="title"><?=$LANG->_('Password')?></td>
           <td>
             <?php echo pql_format_error_span($error["userpassword"]) . "\n"; ?>
-            <!-- Ugly hack. Should really have type=password here, but what''s the use. Really!? -->
+            <!-- Ugly hack. Should really have type=password here, but what's the use. Really!? -->
             <input type="input" name="userpassword" size="40">
           </td>
         </tr>
@@ -101,7 +101,7 @@ function attribute_print_form() {
           <td>
             <img src="images/info.png" width="16" height="16" alt="" border="0" align="left">
             <table>
-              <?=$LANG->_('A password can only contain numbers and letters, special characters are not allowed')?>
+              <?=$LANG->_('A password can only contain numbers and letters, special characters are not allowed')."\n"?>
             </table>
           </td>
         </tr>
@@ -164,13 +164,13 @@ function attribute_save($type) {
 
 		if($_REQUEST["principal"] and extension_loaded('kadm5') and function_exists("kadm5_init_with_password") and ($_REQUEST["pwscheme"] == '{KERBEROS}')) {
 		  if(kadmin_cpw($_pql->ldap_linkid, $_REQUEST["principal"], $_REQUEST["userpassword"]))
-			success = 1;
+			$success = 1;
 		} else {
 		  // Change an 'ordinary' LDAP password
 		  $pw = pql_password_hash($_REQUEST["userpassword"], $_REQUEST["pwscheme"]);
 	
 		  if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_PASSWD"), 1, $pw))
-			success =1
+			$success = 1;
 		}
 
 		if($success)

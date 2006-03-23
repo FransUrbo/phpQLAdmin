@@ -13,9 +13,9 @@
   if($_SESSION["opera"]) {
 ?>
     <script src="tools/opera.js" type="text/javascript" language="javascript1.2"></script>
-<?php } ?>
-
 <?php
+  }
+
   // This is here because of one single function!
   // user_edit_attribute.php->attrib.accountstatus.inc:attribute_print_form()
   // Example from http://dynarch.com/mishoo/calendar/simple-1.html
@@ -25,6 +25,7 @@
      {
        //if(dlw_v('rootdn') && dlw_v('domain') && dlw_v('user') && dlw_v('view') && (dlw_v('attrib') == "shadowexpire")) {
 ?>
+
     <!-- calendar stylesheet -->
     <link rel="stylesheet" type="text/css" media="all" href="jscalendar/calendar-win2k-cold-1.css" title="win2k-cold-1" />
 

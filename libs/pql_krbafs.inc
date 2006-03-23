@@ -3,7 +3,7 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_krbafs.inc,v 1.1.2.1 2006-03-14 14:46:40 turbo Exp $
+// $Id: pql_krbafs.inc,v 1.1.2.2 2006-03-23 15:25:20 turbo Exp $
 
 // Requires the OpenAFS JavaAPI
 // http://grand.central.org/twiki/bin/view/AFSLore/JavaAPI
@@ -140,4 +140,3 @@ function setquota() {
  * End:
  */
 ?>
-
