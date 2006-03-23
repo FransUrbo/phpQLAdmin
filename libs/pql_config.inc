@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.1.2.3 2006-03-15 10:35:02 turbo Exp $
+// $Id: pql_config.inc,v 1.1.2.4 2006-03-23 09:36:58 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -14,6 +14,20 @@ require($_SESSION["path"]."/libs/pql_search.inc");			// Search API
 require($_SESSION["path"]."/libs/pql_write.inc");			// Write API
 require($_SESSION["path"]."/libs/pql_units.inc");			// Sub branch API
 // }}}
+
+// {{{ Start a Smarty template session
+if (!defined('SMARTY_DIR')) {
+  require($_SESSION["path"]."/libs/smarty.inc");
+}
+
+if(!is_object($smarty)) {
+  $smarty = new Smarty;
+  $smarty->compile_check = true;
+  if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+	$smarty->debugging = true;
+}
+// }}}
+
 
 // {{{ Start profiling - what time is it now?
 if(file_exists($_SESSION["path"]."/.DEBUG_ME") and file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
@@ -151,9 +165,9 @@ foreach($_pql->ldap_basedn as $dn)  {
   
   // 3. Load configurations from LDAP base DN
   $sr = @ldap_read($_pql->ldap_linkid, $dn, ('objectClass=*'))
-	or pql_format_error(1);
+	or pql_format_error();
   $info = ldap_get_entries($_pql->ldap_linkid, $sr)
-	or pql_format_error(1);
+	or pql_format_error();
   
   // Below I use two variables with VERY 'strange' names. I can't call them what I WANT to call
   // them or what's obvious because I'm afraid of variable overloading...
