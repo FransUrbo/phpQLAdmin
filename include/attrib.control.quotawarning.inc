@@ -2,7 +2,7 @@
 // control attribute plugin for
 // quotawarning (additional quota warning message)
 //
-// $Id: attrib.control.quotawarning.inc,v 2.20 2005-09-16 06:08:49 turbo Exp $
+// $Id: attrib.control.quotawarning.inc,v 2.20.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ quotawarning_check(type)
 function quotawarning_check($type) {
@@ -108,10 +108,11 @@ function quotawarning_save($type, $host) {
 								pql_get_define("PQL_ATTR_QUOTA_WARNING"), 1, $_REQUEST["quotawarning"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('quotawarning message')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('quotawarning message')))
-			. ": " . pql_format_error(0);
+									   array('what' => $LANG->_('quotawarning message')));
+		}
 
 		attribute_forward($msg);
 		break;

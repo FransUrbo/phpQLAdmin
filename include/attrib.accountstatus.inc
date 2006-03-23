@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // accountstatus (status of mailaccount)
-// $Id: attrib.accountstatus.inc,v 2.28 2005-09-16 06:08:45 turbo Exp $
+// $Id: attrib.accountstatus.inc,v 2.28.2.1 2006-03-23 09:13:14 turbo Exp $
 
 /* DLW:   When the calendar gets a value of 2003.12.25, it gets stored or displayed as 2003/12/24 (@7am)
  *        I think it's having problems with time zones.  Look into it.
@@ -163,9 +163,10 @@ function attribute_save($type) {
 			$new_entry[pql_get_define("PQL_ATTR_EXPIRATION")] = $_REQUEST["days"];
 
 			// Modify the object
-			if(!pql_write_mod($_pql->ldap_linkid, $_REQUEST["user"], $new_entry, "attrib.accountstatus.inc:attribute_save()/1"))
-			  $msg  = $LANG->_('Failed to set account expiration date') . ": " . pql_format_error(0);
-			else
+			if(!pql_write_mod($_pql->ldap_linkid, $_REQUEST["user"], $new_entry, "attrib.accountstatus.inc:attribute_save()/1")) {
+			  pql_format_error();
+			  $msg  = $LANG->_('Failed to set account expiration date');
+			} else
 			  $msg = $LANG->_('Successfully set account expiration date');
 		} else {
 			// Create a user search filter (only look for mail users - !?!?).
@@ -178,9 +179,9 @@ function attribute_save($type) {
 				foreach($users as $user)
 				  if(!pql_modify_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_ISACTIVE"),
 										   '', $_REQUEST["set"])) {
+					  pql_format_error();
 					  $msg  = pql_complete_constant($LANG->_('Failed to change %what%'),
 													array('what' => $LANG->_('Status')));
-					  $msg .= ": " . pql_format_error(0);
 				  } else
 					$msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 												 array('what' => $LANG->_('Status'),
@@ -213,9 +214,11 @@ function attribute_save($type) {
 				  pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_ACCOUNT_PURGE"), 1, '');
 			  }
 			}
-		} else
+		} else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('Status'))) . ": " . pql_format_error(0);
+									   array('what' => $LANG->_('Status')));
+		}
 		
 		if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
 		  die($msg);

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldapmessagestore (default prefix for mailbox paths)
 //
-// $Id: attrib.control.ldapmessagestore.inc,v 2.19 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.ldapmessagestore.inc,v 2.19.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ ldapmessagestore_check(type)
 function ldapmessagestore_check($type) {
@@ -94,10 +94,11 @@ function ldapmessagestore_save($type, $host) {
 								pql_get_define("PQL_ATTR_LDAPMESSAGESTORE"), 1, $_REQUEST["ldapmessagestore"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('ldapserver options')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('ldapserver options')))
-			. ": " . pql_format_error(0);
+									   array('what' => $LANG->_('ldapserver options')));
+		}
 		
 		attribute_forward($msg);
 		break;

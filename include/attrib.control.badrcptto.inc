@@ -2,7 +2,7 @@
 // control attribute plugin for
 // badrcptto (blocked local addresses)
 //
-// $Id: attrib.control.badrcptto.inc,v 2.24 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.badrcptto.inc,v 2.24.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ badrcptto_check(type)
 function badrcptto_check($type) {
@@ -128,10 +128,11 @@ function badrcptto_save($type, $host) {
 								pql_get_define("PQL_ATTR_BADRCPTTO"), '', $_REQUEST["badrcptto"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('badrcptto options')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('badrcptto options')))
-			. ": " . pql_format_error(0);
+									   array('what' => $LANG->_('badrcptto options')));
+		}
 
 		attribute_forward($msg);
 		break;
@@ -142,10 +143,11 @@ function badrcptto_save($type, $host) {
 								pql_get_define("PQL_ATTR_BADRCPTTO"), $_REQUEST["badrcptto"], ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('Bad RCPT to\'s options')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('Bad RCPT to\'s options')))
-			. ": " . pql_format_error(0);
+									   array('what' => $LANG->_('Bad RCPT to\'s options')));
+		}
 
 		attribute_forward($msg);
 		break;

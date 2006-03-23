@@ -1,6 +1,6 @@
 <?php
 // Delete a user template object
-// $Id: config_template_del.php,v 2.7.2.1 2006-03-14 14:46:30 turbo Exp $
+// $Id: config_template_del.php,v 2.7.2.2 2006-03-23 09:13:09 turbo Exp $
 //
 // {{{ Setup session etc
 require("./libs/pql_session.inc");
@@ -18,7 +18,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
     die("Should have deleted '<b>".$_REQUEST["rootdn"]."</b>'<br>");
   } else {
     if(!pql_write_del($_pql->ldap_linkid, $_REQUEST["rootdn"])) {
-      pql_format_error(1);
+      pql_format_error();
       die();
     }
 

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // percenthack (allowed domains for %-relaying)
 //
-// $Id: attrib.control.percenthack.inc,v 2.21 2005-09-16 06:08:49 turbo Exp $
+// $Id: attrib.control.percenthack.inc,v 2.21.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ percenthack_check(type)
 function percenthack_check($type) {
@@ -123,10 +123,11 @@ function percenthack_save($type, $host) {
 								pql_get_define("PQL_ATTR_PERCENTHACK"), '', $_REQUEST["percenthack"])) 
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('percenthack options')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('percenthack options')))
-			. ": " . pql_format_error(0);
+									   array('what' => $LANG->_('percenthack options')));
+		}
 
 		attribute_forward($msg);
 		break;
@@ -138,10 +139,11 @@ function percenthack_save($type, $host) {
 								pql_get_define("PQL_ATTR_PERCENTHACK"), $_REQUEST["percenthack"], ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('Percent hack options')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('Percent hack options')))
-			. ": " . pql_format_error(0);
+									   array('what' => $LANG->_('Percent hack options')));
+		}
 
 		attribute_forward($msg);
 		break;

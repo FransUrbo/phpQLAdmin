@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mailquota.inc,v 2.32.2.1 2006-03-14 14:46:38 turbo Exp $
+// $Id: attrib.mailquota.inc,v 2.32.2.2 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -248,9 +248,11 @@ function attribute_save($type) {
 			foreach($users as $user)
 			  $return[] = pql_modify_attribute($_pql->ldap_linkid, $user, '', '', $mailquota);
 
-			if(in_array(false, $return)) 
+			if(in_array(false, $return)) {
+			  pql_format_error();
 			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-										   array('what' => $LANG->_('quota'))) . ": " . pql_format_error(0);
+										   array('what' => $LANG->_('quota')));
+			}
 			
 			attribute_forward($msg);
 		}
@@ -274,9 +276,11 @@ function attribute_save($type) {
 												 'domain' => $domaindn)) . ": " . pql_ldap_error(0);
 			// The success msg is set above (in the switch($type) code).
 		} else {
-			if(!pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], '', '', $mailquota))
+			if(!pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], '', '', $mailquota)) {
+			  pql_format_error();
 			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-										   array('what' => $LANG->_('quota'))) . ": " . pql_format_error(0);
+										   array('what' => $LANG->_('quota')));
+			}
 		}
 		
 		attribute_forward($msg);

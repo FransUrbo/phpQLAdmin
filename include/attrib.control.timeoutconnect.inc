@@ -3,7 +3,7 @@
 // timeoutconnect (how long to wait for smtp connection)
 // timeoutremote (how long to wait for remote server)
 //
-// $Id: attrib.control.timeoutconnect.inc,v 2.19 2005-09-16 06:08:50 turbo Exp $
+// $Id: attrib.control.timeoutconnect.inc,v 2.19.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ timeoutconnect_check(type)
 function timeoutconnect_check($type) {
@@ -141,10 +141,11 @@ function timeoutconnect_save($type, $host) {
 											 $attrib, 1, $_REQUEST[$key]);
 		}
 		
-		if(in_array(false, $return))
+		if(in_array(false, $return)) {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('remote timeout options'))) . ": " . pql_format_error(0);
-		else
+									   array('what' => $LANG->_('remote timeout options')));
+		} else
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('remote timeout options')));
 

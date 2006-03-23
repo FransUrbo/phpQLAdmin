@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.20 2005-09-16 06:08:50 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.20.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ attribute_translate_type(attrib)
 function attribute_translate_type($attrib) {
@@ -260,7 +260,7 @@ function attribute_save($action) {
 				if(pql_write_ren($_pql->ldap_linkid, $dn, $new_dn, $parent, true))
 				  $dn = $new_dn.','.$parent;
 				else {
-					pql_format_error(1);
+					pql_format_error();
 					die("failed rename");
 				}
 			}
@@ -350,7 +350,7 @@ function attribute_save($action) {
 			if(pql_write_del($_pql->ldap_linkid, $dn))
 			  $success = 1;
 			else
-			  pql_format_error(1);
+			  pql_format_error();
 		  }
 
 		  // Extact the host part of the DN

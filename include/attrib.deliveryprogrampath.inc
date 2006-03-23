@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliveryprogrampath (path to program running on delivery)
-// $Id: attrib.deliveryprogrampath.inc,v 2.18 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.deliveryprogrampath.inc,v 2.18.14.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -91,8 +91,9 @@ function attribute_save($type) {
 										 array('what' => $LANG->_('path'),
 											   'new'  => $_REQUEST["deliveryprogrampath"]));
 		} else {
+			pql_format_error();
 			$msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-										 array('what' => $LANG->_('path'))) . ": " . pql_format_error(0);
+										 array('what' => $LANG->_('path')));
 		}
 
 		// DLW: This shouldn't care if deliveryprogrampath gets set to None.

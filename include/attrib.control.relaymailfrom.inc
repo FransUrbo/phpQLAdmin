@@ -2,7 +2,7 @@
 // control attribute plugin for
 // relaymailfrom (allowed sender addresses for relaying)
 //
-// $Id: attrib.control.relaymailfrom.inc,v 2.22 2005-09-16 06:08:50 turbo Exp $
+// $Id: attrib.control.relaymailfrom.inc,v 2.22.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ relaymailfrom_check(type)
 function relaymailfrom_check($type) {
@@ -147,9 +147,11 @@ function relaymailfrom_save($type, $host) {
 									pql_get_define("PQL_ATTR_RELAYMAILFROM"), '', $_REQUEST["relaymailfrom"]))
 			  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										   array('what' => $LANG->_('relaymailfrom options')));
-			else
+			else {
+			  pql_format_error();
 			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-										   array('what' => $LANG->_('relaymailfrom options'))) . ": " . pql_format_error(0);
+										   array('what' => $LANG->_('relaymailfrom options')));
+			}
 
 			attribute_forward($msg);
 		    break;
@@ -160,10 +162,11 @@ function relaymailfrom_save($type, $host) {
 									pql_get_define("PQL_ATTR_RELAYMAILFROM"), $_REQUEST["relaymailfrom"], ''))
 			  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										   array('what' => $LANG->_('ldapclusterhosts options')));
-			else
+			else {
+			  pql_format_error();
 			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-										   array('what' => $LANG->_('ldapclusterhosts options')))
-				. ": " . pql_format_error(0);
+										   array('what' => $LANG->_('ldapclusterhosts options')));
+			}
 
 			attribute_forward($msg);
 			break;

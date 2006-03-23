@@ -2,7 +2,7 @@
 // control attribute plugin for
 // qmqpcip (max number of bytes in message)
 //
-// $Id: attrib.control.qmqpcip.inc,v 2.7 2005-09-16 06:08:49 turbo Exp $
+// $Id: attrib.control.qmqpcip.inc,v 2.7.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ qmqpcip_check(type)
 function qmqpcip_check($type) {
@@ -130,10 +130,11 @@ function qmqpcip_save($type, $host)  {
 								pql_get_define("PQL_ATTR_QMQPCIP"), 1, $_REQUEST["qmqpcip"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('qmqpcip options')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('qmqpcip options')))
-			. ": " . pql_format_error(0);
+									   array('what' => $LANG->_('qmqpcip options')));
+		}
 
 		attribute_forward($msg);
 		break;

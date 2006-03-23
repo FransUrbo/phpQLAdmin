@@ -3,7 +3,7 @@
 // This file contains what I think is 'resonable defaults'.
 // Don't change here, change any values in the web interface!
 //
-// $Id: defaults.inc,v 1.1.2.1 2006-03-14 14:46:31 turbo Exp $
+// $Id: defaults.inc,v 1.1.2.2 2006-03-23 09:13:10 turbo Exp $
 
 // NOTE: Some of these defines isn't called with the (root/top)
 //       DN. They are (site) global variables, not per branch.
@@ -11,6 +11,11 @@
 // ----------------------------
 // PQL_CONF_WHOAREWE
 pql_set_define("PQL_CONF_WHOAREWE", "phpQLAdmin", false);
+
+// ----------------------------
+// PQL_GUI_TEMPLATE
+// What directory inside templates to use as template dir?
+pql_set_define("PQL_CONF_GUI_TEMPLATE", "default", false);
 
 // ----------------------------
 // Default language (is changed through the GUI)

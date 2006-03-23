@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for web server configuration)
 //
-// $Id: pql_websrv.inc,v 1.1.2.1 2006-03-14 14:46:40 turbo Exp $
+// $Id: pql_websrv.inc,v 1.1.2.2 2006-03-23 09:13:17 turbo Exp $
 //
 
 // {{{ pql_websrv_add_server(linkid, domain, dn, entry, type)
@@ -25,7 +25,7 @@ function pql_websrv_add_server($linkid, $domain, $dn, $entry, $type) {
 		else {
 		  if(!pql_write_add($linkid, $dn, $entry, 'websrv', 'pql_websrv_add_server/1')) {
 			// Can't add the organizational unit
-			pql_format_error(1);
+			pql_format_error();
 			echo "Can't add the organizational unit...<br>\n";
 			die($LDIF);
 		  }
@@ -60,7 +60,7 @@ function pql_websrv_add_server($linkid, $domain, $dn, $entry, $type) {
 	  // {{{ Add the server configuration to the database
 	  if(!pql_write_add($linkid, $dn, $entry, 'websrv', 'pql_websrv_add_server/2')) {
 		// failed to add configuration
-		pql_format_error(1);
+		pql_format_error();
 		echo "Can't add webserver object ".$entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")]."<p>";
 		die("$LDIF");
 	  }

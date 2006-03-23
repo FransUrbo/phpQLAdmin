@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 1.1.2.1 2006-03-14 14:46:40 turbo Exp $
+// $Id: pql_bind9.inc,v 1.1.2.2 2006-03-23 09:13:17 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -223,7 +223,7 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 		if(!pql_get_dn($linkid, $dn, 'objectClass=domain', 'BASE')) {
 		  if(!pql_write_add($linkid, $dn, $entry, 'objectclass', 'pql_bind9_add_zone')) {
 			// Can't add domain component
-			pql_format_error(1);
+			pql_format_error();
 			echo "Can't add domain component...<br>\n";
 			die($LDIF);
 		  } else
@@ -259,7 +259,7 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 	if(!pql_get_dn($linkid, $dn, 'objectClass=dNSZone', 'BASE')) {
 	  if(!pql_write_add($linkid, $dn, $entry, 'bind9/zone', 'pql_bind9_add_zone')) {
 		// Can't add SOA record
-		pql_format_error(1);
+		pql_format_error();
 		echo "Can't add the 'relativeDomainName=@' entry...<br>\n";
 		die($LDIF);
 	  } else
@@ -382,7 +382,7 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 		echo $LDIF;
 	  } else {
 		if(!pql_write_mod($linkid, $dn, $entry, "pql_bind9_add_host")) {
-		  pql_format_error(1);
+		  pql_format_error();
 		  die($LDIF);
 		}
 	  }
@@ -402,7 +402,7 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 
 	// {{{ Add the object to the database
 	if(!pql_write_add($linkid, $dn, $entry, 'bind9/host', 'pql_bind9_add_host')) {
-	  pql_format_error(1);
+	  pql_format_error();
 	  die($LDIF);
 	  return false;
 	}
@@ -425,20 +425,20 @@ function pql_bind9_del_zone($linkid, $dn, $zone) {
 	
 	// Retreive ALL objects below this DN
 	$sr = ldap_search($linkid, $dn_to_remove, 'objectClass=*');
-	$info = ldap_get_entries($linkid, $sr) or pql_format_error(1);
+	$info = ldap_get_entries($linkid, $sr) or pql_format_error();
 	for ($i=0; $i < $info["count"]; $i++) {
 		$lc_dn = lc($info[$i]["dn"]);
 
 		if($lc_dn != $lc_zone) {
 			// Don't delete the acctuall zone quite yet
 			if(!pql_write_del($linkid, $info[$i]["dn"]))
-			  pql_format_error(1);
+			  pql_format_error();
 		}
 	}
 
 	// Delete the zone itself
 	if(!pql_write_del($linkid, $dn_to_remove)) {
-		pql_format_error(1);
+		pql_format_error();
 		return false;
 	}
 
@@ -456,11 +456,11 @@ function pql_bind9_del_zone($linkid, $dn, $zone) {
 
 	// Look in this DN if there's objects.
     $sr = ldap_search($linkid, $tld, 'objectClass=*');
-    $info = ldap_get_entries($linkid, $sr) or pql_format_error(1);
+    $info = ldap_get_entries($linkid, $sr) or pql_format_error();
 	if(!@$info[1]) {
 		// We don't have more than the DN object, delete it.
 		if(!pql_write_del($linkid, $tld)) {
-			pql_format_error(1);
+			pql_format_error();
 			return false;
 		}
 	}
@@ -480,11 +480,11 @@ function pql_bind9_del_zone($linkid, $dn, $zone) {
 
 	// Look in this DN if there's objects.
     $sr = ldap_search($linkid, $ou, 'objectClass=*');
-    $info = ldap_get_entries($linkid, $sr) or pql_format_error(1);
+    $info = ldap_get_entries($linkid, $sr) or pql_format_error();
 	if(!@$info[1]) {
 		// We don't have more than the DN object, delete it.
 		if(!pql_write_del($linkid, $ou)) {
-			pql_format_error(1);
+			pql_format_error();
 			return false;
 		}
 	}

@@ -58,7 +58,7 @@
 //
 // Please look at other plugins to see which standard header text is recommanded.
 //
-// $Id: attrib.control.skeleton.inc,v 2.18 2005-09-16 06:08:50 turbo Exp $
+// $Id: attrib.control.skeleton.inc,v 2.18.2.1 2006-03-23 09:13:15 turbo Exp $
 //
 
 // {{{ xxx_check(type)
@@ -184,9 +184,11 @@ function xxx_save($type, $host) {
 								$_SESSION["USER_SEARCH_DN_CTR"], pql_get_define("PQL_ATTR_xxx"), '', $_REQUEST["xxx"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('xxx options')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('xxx options'))) . ": " . pql_format_error(0);
+									   array('what' => $LANG->_('xxx options')));
+		}
 
 		// this will redirect to control_cat.php and display the message $msg
 		attribute_forward($msg);

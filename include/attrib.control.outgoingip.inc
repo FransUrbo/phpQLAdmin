@@ -2,7 +2,7 @@
 // control attribute plugin for
 // outgoingip (max number of bytes in message)
 //
-// $Id: attrib.control.outgoingip.inc,v 2.8 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.outgoingip.inc,v 2.8.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ outgoingip_check(type)
 function outgoingip_check($type) {
@@ -126,10 +126,11 @@ function outgoingip_save($type, $host)  {
 								pql_get_define("PQL_ATTR_OUTGOINGIP"), 1, $_REQUEST["outgoingip"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('outgoingip options')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('outgoingip options')))
-			. ": " . pql_format_error(0);
+									   array('what' => $LANG->_('outgoingip options')));
+		}
 
 		attribute_forward($msg);
 		break;

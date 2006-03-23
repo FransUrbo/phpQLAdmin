@@ -2,7 +2,7 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.38 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.38.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ locals_check(type)
 function locals_check($type) {
@@ -153,9 +153,11 @@ function locals_save($type, $host) {
 									  $host, '', pql_get_define("PQL_ATTR_LOCALS")))
 		  $msg = pql_complete_constant($LANG->_('Successfully replicated %what%'),
 									   array('what' => pql_get_define("PQL_ATTR_LOCALS")));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to replicate %what%'),
-									   array('what' => pql_get_define("PQL_ATTR_LOCALS"))).": ".pql_format_error(0);
+									   array('what' => pql_get_define("PQL_ATTR_LOCALS")));
+		}
 	
 		attribute_forward($msg);
 		break;
@@ -170,10 +172,12 @@ function locals_save($type, $host) {
 		  $msg = pql_complete_constant($LANG->_('Successfully removed %domain% from %what%'),
 									   array('what'   => pql_get_define("PQL_ATTR_LOCALS"),
 											 'domain' => $$host));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to remove %domain% from %what%'),
 									   array('what'   => pql_get_define("PQL_ATTR_LOCALS"),
-											 'domain' => $host)) . ": " . pql_format_error(0);
+											 'domain' => $host));
+		}
 		
 		attribute_forward($msg);
 		break;
@@ -188,10 +192,12 @@ function locals_save($type, $host) {
 		  $msg = pql_complete_constant($LANG->_('Successfully added %domain% to %what%'),
 									   array('what'   => pql_get_define("PQL_ATTR_LOCALS"),
 											 'domain' => $host));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to add %domain% to %what%'),
 									   array('what'   => pql_get_define("PQL_ATTR_LOCALS"),
-											 'domain' => $host)) . ": " . pql_format_error(0);
+											 'domain' => $host));
+		}
 		
 		attribute_forward($msg);
 		break;

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // Non-Primary MX host values
 //
-// $Id: attrib.control.nonprimmx.inc,v 2.3 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.nonprimmx.inc,v 2.3.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ nonprimaryrcpthosts_check(type)
 function nonprimaryrcpthosts_check($type) {
@@ -100,10 +100,12 @@ function nonprimaryrcpthosts_save($type, $host) {
 		  $msg = pql_complete_constant($LANG->_('Successfully added %domain% to %what%'),
 									   array('what'   => $_REQUEST["attrib"],
 											 'domain' => $_REQUEST["nonprimaryrcpthosts"]));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to add %domain% to %what%'),
 									   array('what'   => $_REQUEST["attrib"],
-											 'domain' => $_REQUEST["nonprimaryrcpthosts"])) . ": " . pql_format_error(0);
+											 'domain' => $_REQUEST["nonprimaryrcpthosts"]));
+		}
 		
 		attribute_forward($msg);
 		break;
@@ -118,10 +120,12 @@ function nonprimaryrcpthosts_save($type, $host) {
 		  $msg = pql_complete_constant($LANG->_('Successfully removed %domain% from %what%'),
 									   array('what'   => $_REQUEST["attrib"],
 											 'domain' => $_REQUEST["nonprimaryrcpthosts"]));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to remove %domain% from %what%'),
 									   array('what'   => $_REQUEST["attrib"],
-											 'domain' => $_REQUEST["nonprimaryrcpthosts"])) . ": " . pql_format_error(0);
+											 'domain' => $_REQUEST["nonprimaryrcpthosts"]));
+		}
 		
 		attribute_forward($msg);
 		break;

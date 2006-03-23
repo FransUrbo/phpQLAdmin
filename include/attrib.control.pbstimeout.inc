@@ -2,7 +2,7 @@
 // control attribute plugin for
 // pbstimeout (max number of bytes in message)
 //
-// $Id: attrib.control.pbstimeout.inc,v 2.8 2005-09-16 06:08:49 turbo Exp $
+// $Id: attrib.control.pbstimeout.inc,v 2.8.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ pbstimeout_check(type)
 function pbstimeout_check($type) {
@@ -90,10 +90,11 @@ function pbstimeout_save($type, $host)  {
 								pql_get_define("PQL_ATTR_PBS_TIMEOUT"), 1, $_REQUEST["pbstimeout"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('pbstimeout options')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('pbstimeout options')))
-			. ": " . pql_format_error(0);
+									   array('what' => $LANG->_('pbstimeout options')));
+		}
 
 		attribute_forward($msg);
 		break;

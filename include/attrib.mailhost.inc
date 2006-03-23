@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailhost (host address which resides the mailhost)
-// $Id: attrib.mailhost.inc,v 2.21 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.mailhost.inc,v 2.21.10.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -121,9 +121,11 @@ function attribute_save($type) {
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 										 array('what' => $LANG->_('mailserver'),
 											   'new'  => $_REQUEST["mailhost"]));
-		} else
+		} else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('mailserver'))) . ": " . pql_format_error(0);
+									   array('what' => $LANG->_('mailserver')));
+		}
 		
 		attribute_forward($msg);
 		break;
@@ -143,10 +145,11 @@ function attribute_save($type) {
 												 $old, $_REQUEST["mailhost"]);
 			}
 			
-			if(in_array(false, $return))
+			if(in_array(false, $return)) {
+			  pql_format_error();
 			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-										   array('what' => $LANG->_('mailserver'))).": ".pql_format_error(0);
-			else
+										   array('what' => $LANG->_('mailserver')));
+			} else
 			  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 										   array('what' => $LANG->_('mailserver'),
 												 'new'  => $_REQUEST["mailhost"]));

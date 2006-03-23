@@ -1,8 +1,8 @@
 <html>
 <head>
 	<title>phpQL</title>
-	<link rel="stylesheet" href="../templates/normal.css" type="text/css">
-	<!-- $Id: index.php,v 2.7.2.1 2006-03-15 09:40:40 turbo Exp $ -->
+	<link rel="stylesheet" href="../templates/<?=pql_get_define("PQL_CONF_GUI_TEMPLATE")?>/normal.css" type="text/css">
+	<!-- $Id: index.php,v 2.7.2.2 2006-03-23 09:13:10 turbo Exp $ -->
 </head>
 
 <body bgcolor="#e7e7e7" background="../images/bkg.png">

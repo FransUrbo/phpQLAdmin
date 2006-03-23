@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailforwardingaddress (forward all mails to this address)
-// $Id: attrib.mailforwardingaddress.inc,v 2.23 2005-06-05 13:06:39 turbo Exp $
+// $Id: attrib.mailforwardingaddress.inc,v 2.23.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -110,9 +110,11 @@ function attribute_save($type) {
 		  $msg = pql_complete_constant($LANG->_('Successfully added %what% %new%'),
 									   array('what' => $LANG->_('forwarding address'),
 											 'new'  => pql_maybe_idna_decode($_REQUEST["mailforwardingaddress"])));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to add %what%'),
-									   array('what' => $LANG->_('forwarding address'))) . ": " . pql_format_error(0);
+									   array('what' => $LANG->_('forwarding address')));
+		}
 		
 		if($_REQUEST["force_no_local_delivery"] == 'on') {
 		  pql_modify_attribute($_pql->ldap_linkid, urldecode($_REQUEST["user"]), pql_get_define("PQL_ATTR_MODE"), '', 'noprogram');
@@ -135,9 +137,11 @@ function attribute_save($type) {
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									   array('what' => $LANG->_('forwarding address'),
 											 'new'  => $email));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('forwarding address'))) . ": " . pql_format_error(0);
+									   array('what' => $LANG->_('forwarding address')));
+		}
 		break;
 	  default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),

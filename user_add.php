@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.133.2.1 2006-03-14 14:46:30 turbo Exp $
+// $Id: user_add.php,v 2.133.2.2 2006-03-23 09:13:09 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -329,7 +329,7 @@ switch($_REQUEST["page_curr"]) {
 				// Add the object to the database
 				if(!pql_write_add($_pql->ldap_linkid, $_REQUEST["user"], $entry, 'alias', 'user_add.php')) {
 					// failed to add user
-					pql_format_error(1);
+					pql_format_error();
 					die($LDIF);
 				}
 				

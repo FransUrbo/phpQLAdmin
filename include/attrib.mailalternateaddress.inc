@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailalternateaddress (emailaddress alias)
-// $Id: attrib.mailalternateaddress.inc,v 2.33 2005-04-23 09:12:32 turbo Exp $
+// $Id: attrib.mailalternateaddress.inc,v 2.33.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -152,9 +152,11 @@ function attribute_save($type) {
 			$msg = pql_complete_constant($LANG->_('Successfully added %what% %new%'),
 										 array('what' => $LANG->_('alias'),
 											   'new'  => $mail));
-		} else
+		} else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to add %what%'),
-									   array('what' => $LANG->_('alias'))) . ": " . pql_format_error(0);
+									   array('what' => $LANG->_('alias')));
+		}
 		
 		if (pql_get_define("PQL_CONF_TESTMAIL_AUTOSEND", $_REQUEST["rootdn"])) {
 			$url = "user_sendmail.php?root=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["branch"]."&email="
@@ -181,9 +183,11 @@ function attribute_save($type) {
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 										 array('what' => $LANG->_('alias'),
 											   'new'  => $mail));
-		} else
+		} else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('alias'))) . ": " . pql_format_error(0);
+									   array('what' => $LANG->_('alias')));
+		}
 		
 		if(pql_get_define("PQL_CONF_TESTMAIL_AUTOSEND", $_REQUEST["rootdn"])) {
 			$url = "user_sendmail.php?root=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["branch"]."&email="

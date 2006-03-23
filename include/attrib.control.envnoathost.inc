@@ -2,7 +2,7 @@
 // control attribute plugin for
 // envnoathost (default prefix for mailbox paths)
 //
-// $Id: attrib.control.envnoathost.inc,v 2.20 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.envnoathost.inc,v 2.20.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ envnoathost_check(type)
 function envnoathost_check($type) {
@@ -104,10 +104,11 @@ function envnoathost_save($type, $host) {
 								pql_get_define("PQL_ATTR_ENVNOATHOST"), 1, $_REQUEST["envnoathost"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('envnotathost options')));
-		else 
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('envnoathost options')))
-			. ": " . pql_format_error(0);
+									   array('what' => $LANG->_('envnoathost options')));
+		}
 		
 		attribute_forward($msg);
 		break;

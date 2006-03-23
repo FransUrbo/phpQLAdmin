@@ -2,7 +2,7 @@
 // control attribute plugin for
 // pbsenv (max number of bytes in message)
 //
-// $Id: attrib.control.pbsenv.inc,v 2.10 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.pbsenv.inc,v 2.10.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ pbsenv_check(type)
 function pbsenv_check($type) {
@@ -120,10 +120,11 @@ function pbsenv_save($type, $host)  {
 								pql_get_define("PQL_ATTR_PBS_ENV"), '', $entry))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('pbsenv options')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('pbsenv options')))
-			. ": " . pql_format_error(0);
+									   array('what' => $LANG->_('pbsenv options')));
+		}
 
 		attribute_forward($msg);
 		break;
@@ -134,10 +135,11 @@ function pbsenv_save($type, $host)  {
 								pql_get_define("PQL_ATTR_PBS_ENV"), $_REQUEST["pbsenv"], ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('PBS environment variable')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('')))
-			. ": " . pql_format_error(0);
+									   array('what' => $LANG->_('')));
+		}
 
 		attribute_forward($msg);
 		break;

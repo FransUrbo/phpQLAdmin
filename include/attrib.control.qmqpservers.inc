@@ -2,7 +2,7 @@
 // control attribute plugin for
 // qmqpservers (max number of bytes in message)
 //
-// $Id: attrib.control.qmqpservers.inc,v 2.22 2005-09-16 06:08:49 turbo Exp $
+// $Id: attrib.control.qmqpservers.inc,v 2.22.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ qmqpservers_check(type)
 function qmqpservers_check($type) {
@@ -144,10 +144,11 @@ function qmqpservers_save($type, $host)  {
 								pql_get_define("PQL_ATTR_QMQPSERVERS"), 1, $_REQUEST["qmqpservers"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('qmqpservers options')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('qmqpservers options')))
-			. ": " . pql_format_error(0);
+									   array('what' => $LANG->_('qmqpservers options')));
+		}
 
 		attribute_forward($msg);
 		break;
@@ -158,10 +159,11 @@ function qmqpservers_save($type, $host)  {
 								pql_get_define("PQL_ATTR_QMQPSERVERS"), $_REQUEST["qmqpservers"], ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('QMQP Server options')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('QMQP Server options')))
-			. ": " . pql_format_error(0);
+									   array('what' => $LANG->_('QMQP Server options')));
+		}
 
 		attribute_forward($msg);
 		break;

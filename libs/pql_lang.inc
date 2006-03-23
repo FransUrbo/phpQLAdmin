@@ -3,7 +3,7 @@
 // pql_lang.inc
 // phpQLAdmin Language Application Programming Interface (API)
 //
-// $Id: pql_lang.inc,v 1.1.2.1 2006-03-14 14:46:40 turbo Exp $
+// $Id: pql_lang.inc,v 1.1.2.2 2006-03-23 09:13:17 turbo Exp $
 //
 
 // ----------------------------
@@ -44,7 +44,7 @@ class pql_lang {
 			if(!$sr) return false;
 
 			$info = ldap_get_entries($ldap->ldap_linkid, $sr)
-			  or pql_format_error(1);
+			  or pql_format_error();
 
 			if($info["count"])
 			  // We got a hit. Return the very first entry

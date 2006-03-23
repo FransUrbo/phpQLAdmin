@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 1.1.2.1 2006-03-14 14:46:40 turbo Exp $
+// $Id: pql_write.inc,v 1.1.2.2 2006-03-23 09:13:17 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -37,8 +37,7 @@ function pql_write_add($linkid, $dn, $entry, $type, $caller) {
 				break;
 			}
 			
-			pql_format_error(1);
-			echo "Error: #$errno ($error)<p>";
+			pql_format_error();
 			die($LDIF);
 		}
 
@@ -119,7 +118,7 @@ function pql_write_mod($linkid, $dn, $entry, $caller = NULL, $count = 0) {
 //			break;
 				
 			  default:
-				pql_format_error(1);
+				pql_format_error();
 				die($LDIF);
 			}
 		}
@@ -367,7 +366,7 @@ function pql_user_add($ldap_linkid, $domain, $dn, $entry, $type, $branch) {
     // {{{ Add the user to the database
     if(!pql_write_add($ldap_linkid, $dn, $entry, $type, 'pql_user_add - user creation/1')) {
 		// failed to add user
-		$failed = 1; pql_format_error(1);
+		$failed = 1; pql_format_error();
 
 		$errno = ldap_errno($ldap_linkid);
 		if($errno == 32) {
@@ -398,7 +397,7 @@ function pql_user_add($ldap_linkid, $domain, $dn, $entry, $type, $branch) {
 		}
 		
 		if($failed) {
-			pql_format_error(1);
+			pql_format_error();
 			die();
 		}
 	}
@@ -428,7 +427,7 @@ function pql_user_add($ldap_linkid, $domain, $dn, $entry, $type, $branch) {
 		// --------------------------
 		if(!pql_write_add($ldap_linkid, $groupdn, $entry, 'group', 'pql_user_add - group creation')) {
 			// failed to add user
-			pql_format_error(1);
+			pql_format_error();
 			die();
 		}
 		$dns[] = $groupdn;
@@ -460,7 +459,7 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 	// Remove all administrator entries which contain the user DN
 	foreach($_SESSION["BASE_DN"] as $dn) {
 		$sr = ldap_search($linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR")."=$user");
-		$info = ldap_get_entries($linkid, $sr) or pql_format_error(1);
+		$info = ldap_get_entries($linkid, $sr) or pql_format_error();
 		for($i=0; $i < $info["count"]; $i++) {
 			unset($entry); unset($adms);
 
@@ -475,7 +474,7 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 				// Add the administrators that's left to the DN
 				$entry[pql_get_define("PQL_ATTR_ADMINISTRATOR")] = $adms;
 				if(! ldap_mod_replace($linkid, $info[$i]["dn"], $entry))
-				  pql_format_error(1);
+				  pql_format_error();
 			}
 		}
 	}
@@ -521,7 +520,7 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 	  return TRUE;
 	} else {
 	  if(!pql_write_del($linkid, $user)) {
-		pql_format_error(1);
+		pql_format_error();
 		return false;
 	  }
 	}

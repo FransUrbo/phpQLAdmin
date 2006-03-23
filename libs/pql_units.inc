@@ -3,7 +3,7 @@
 // pql_units.inc
 // Sub units (ou=People, ou=Users, dc=host) etc
 //
-// $Id: pql_units.inc,v 1.1.2.1 2006-03-14 14:46:40 turbo Exp $
+// $Id: pql_units.inc,v 1.1.2.2 2006-03-23 09:13:17 turbo Exp $
 //
 
 // {{{ pql_unit_get(linkid, dn, filter)
@@ -66,7 +66,7 @@ function pql_unit_add($linkid, $domain, $unit) {
 	// Add the unit to the database
 	if(!pql_write_add($linkid, $dn, $entry, 'unit', 'pql_unit_add')) {
 		// failed to add unit
-		pql_format_error(1);
+		pql_format_error();
 		return false;
 	}
 

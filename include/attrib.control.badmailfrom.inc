@@ -2,7 +2,7 @@
 // control attribute plugin for
 // badmailfrom (blocked from addresses)
 //
-// $Id: attrib.control.badmailfrom.inc,v 2.24 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.badmailfrom.inc,v 2.24.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ badmailfrom_check(type)
 
@@ -142,10 +142,11 @@ function badmailfrom_save($type, $host) {
 								pql_get_define("PQL_ATTR_BADMAILFROM"), '', $_REQUEST["badmailfrom"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('badmailfrom options')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('badmailfrom options')))
-			. ": " . pql_format_error(0);
+									   array('what' => $LANG->_('badmailfrom options')));
+		}
 
 		attribute_forward($msg);
 		break;
@@ -156,10 +157,11 @@ function badmailfrom_save($type, $host) {
 								pql_get_define("PQL_ATTR_BADMAILFROM"), $_REQUEST["badmailfrom"], ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('Bad mail from options')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('Bad mail from options')))
-			. ": " . pql_format_error(0);
+									   array('what' => $LANG->_('Bad mail from options')));
+		}
 
 		attribute_forward($msg);
 		break;

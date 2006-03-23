@@ -2,7 +2,7 @@
 // control attribute plugin for
 // goodmailaddr (max number of bytes in message)
 //
-// $Id: attrib.control.goodaddress.inc,v 2.8 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.goodaddress.inc,v 2.8.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ goodmailaddr_check(type)
 function goodmailaddr_check($type) {
@@ -106,10 +106,11 @@ function goodmailaddr_save($type, $host)  {
 								pql_get_define("PQL_ATTR_GOODADDRESS"), '', $_REQUEST["goodmailaddr"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('goodmailaddr options')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('goodmailaddr options')))
-			. ": " . pql_format_error(0);
+									   array('what' => $LANG->_('goodmailaddr options')));
+		}
 
 		attribute_forward($msg);
 		break;
@@ -120,10 +121,11 @@ function goodmailaddr_save($type, $host)  {
 								pql_get_define("PQL_ATTR_GOODADDRESS"), $_REQUEST["goodmailaddr"], ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('ldapclusterhosts options')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('ldapclusterhosts options')))
-			. ": " . pql_format_error(0);
+									   array('what' => $LANG->_('ldapclusterhosts options')));
+		}
 
 		attribute_forward($msg);
 		break;

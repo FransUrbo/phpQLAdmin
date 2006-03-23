@@ -56,6 +56,13 @@
 <?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
 <?php	$class=pql_format_table(0); ?>
       <tr>
+        <td class="title"><?=$LANG->_('GUI Template')?></td>
+        <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_GUI_TEMPLATE")?></td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=pql_get_define("PQL_ATTR_GUI_TEMPLATE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_GUI_TEMPLATE")?>"></a></td>
+      </tr>
+
+<?php	$class=pql_format_table(0); ?>
+      <tr>
         <td class="title"><?=$LANG->_('Manage Access Control Information')?></td>
         <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_ACI_USE")) {echo 'Yes';} else {echo 'No';}?>&nbsp;</td>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=pql_get_define("PQL_ATTR_ACI_USE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_ACI_USE")?>"></a></td>

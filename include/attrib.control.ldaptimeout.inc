@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldaptimeout (max number of bytes in message)
 //
-// $Id: attrib.control.ldaptimeout.inc,v 2.8 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.ldaptimeout.inc,v 2.8.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ ldaptimeout_check(type)
 function ldaptimeout_check($type) {
@@ -99,10 +99,11 @@ function ldaptimeout_save($type, $host)  {
 								pql_get_define("PQL_ATTR_LDAPTIMEOUT"), 1, $_REQUEST["ldaptimeout"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('ldaptimeout options')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('ldaptimeout options')))
-			. ": " . pql_format_error(0);
+									   array('what' => $LANG->_('ldaptimeout options')));
+		}
 
 		attribute_forward($msg);
 		break;

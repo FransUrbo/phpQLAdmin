@@ -106,13 +106,14 @@
 #            nonPrimaryRcptHosts             22
 #            simScanSpamAssassinHits         23
 #            simScanAttachmentSuffix         24
+#            guiTemplateName                 25
 # --------------------------------------------
 #
 # *mod_cfg_ldap => Also defined (with other name) in mod_cfg_ldap
 # availible from http://sourceforge.net/projects/modcfgldap/
 # See doc/README.apache for more information.
 
-# $Id: phpQLAdmin.schema,v 2.63 2006-03-08 14:21:06 turbo Exp $
+# $Id: phpQLAdmin.schema,v 2.63.2.1 2006-03-23 09:13:23 turbo Exp $
 
 # PQL_ATTR_SHOW_USERS (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.1 NAME 'showUsers'
@@ -657,12 +658,18 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.4.24 NAME 'simScanAttachmentSuffix'
   EQUALITY caseIgnoreMatch
   SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{128} )
 
+# PQL_ATTR_GUI_TEMPLATE
+attributetype ( 1.3.6.1.4.1.8767.3.2.4.25 NAME 'guiTemplateName'
+  DESC 'GUI Template directory in [ROOT]/templates/ to use as GUI template dir'
+  EQUALITY caseIgnoreMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{128} )
+
 # -----------------------------------------
 
 objectclass ( 1.3.6.1.4.1.8767.3.1.1
   NAME 'phpQLAdminConfig'
   DESC 'phpQLAdmin BRANCH configuration values'
-  MAY (  showUsers $ autoSend $ autoAddLocals $
+  MAY ( showUsers $ autoSend $ autoAddLocals $
         allowAbsoluteMailPath $ deleteVerification $
         subTreeUsers $ subTreeGroups $
         branchObjectClass $ userObjectClass $
@@ -680,7 +687,7 @@ objectclass ( 1.3.6.1.4.1.8767.3.1.1
 objectclass ( 1.3.6.1.4.1.8767.3.1.2
   NAME 'phpQLAdminGlobal'
   DESC 'phpQLAdmin GLOBAL configuration values'
-  MAY (  useControls $ useEzmlm $ useBind9 $ useWebSrv $
+  MAY ( useControls $ useEzmlm $ useBind9 $ useWebSrv $
         autoReload $ allowServerChange $ whoAreWe $
         language $ hostMaster $ ezmlmBinaryPath $
         krb5RealmName $ krb5AdminServer $ krb5PrincipalName $
@@ -691,7 +698,7 @@ objectclass ( 1.3.6.1.4.1.8767.3.1.2
         ezmlmRemoteRetreiveScript $ useSimScan $
         simScanSpamAssassin $ simScanClamAntiVirus $
         simScanTrophie $ simScanSpamAssassinHits $
-        simScanAttachmentSuffix )
+        simScanAttachmentSuffix $ guiTemplateName )
   SUP top AUXILIARY )
 
 objectclass ( 1.3.6.1.4.1.8767.3.1.3

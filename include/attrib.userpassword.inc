@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.34 2005-09-29 05:03:18 turbo Exp $
+// $Id: attrib.userpassword.inc,v 2.34.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -176,9 +176,11 @@ function attribute_save($type) {
 		if($success)
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('password')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('password'))) . ": " . pql_format_error(0);
+									   array('what' => $LANG->_('password')));
+		}
 		
 		attribute_forward($msg);
 		break;

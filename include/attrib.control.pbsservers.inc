@@ -2,7 +2,7 @@
 // control attribute plugin for
 // pbsservers (max number of bytes in message)
 //
-// $Id: attrib.control.pbsservers.inc,v 2.9 2005-09-16 06:08:49 turbo Exp $
+// $Id: attrib.control.pbsservers.inc,v 2.9.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ pbsservers_check(type)
 function pbsservers_check($type) {
@@ -144,10 +144,11 @@ function pbsservers_save($type, $host)  {
 								pql_get_define("PQL_ATTR_PBS_SERVERS"), '', $_REQUEST["pbsservers"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('pbsservers options')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('pbsservers options')))
-			. ": " . pql_format_error(0);
+									   array('what' => $LANG->_('pbsservers options')));
+		}
 
 		attribute_forward($msg);
 		break;
@@ -158,10 +159,11 @@ function pbsservers_save($type, $host)  {
 								pql_get_define("PQL_ATTR_PBS_SERVERS"), $_REQUEST["pbsservers"], ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('PBS server options')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('PBS server options')))
-			. ": " . pql_format_error(0);
+									   array('what' => $LANG->_('PBS server options')));
+		}
 
 		attribute_forward($msg);
 		break;

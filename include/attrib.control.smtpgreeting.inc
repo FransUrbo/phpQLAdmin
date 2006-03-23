@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtpgreeting (SMTP greeting message)
 //
-// $Id: attrib.control.smtpgreeting.inc,v 2.20 2005-09-16 06:08:50 turbo Exp $
+// $Id: attrib.control.smtpgreeting.inc,v 2.20.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ smtpgreeting_check(type)
 function smtpgreeting_check($type) {
@@ -93,9 +93,11 @@ function smtpgreeting_save($type, $host) {
 								pql_get_define("PQL_ATTR_SMTPGREETING"), 1, $_REQUEST["smtpgreeting"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('smtpgreeting options')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('smtpgreeting options'))) . ": " . pql_format_error(0);
+									   array('what' => $LANG->_('smtpgreeting options')));
+		}
 																							   
 		attribute_forward($msg);
 		break;

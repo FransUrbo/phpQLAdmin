@@ -2,7 +2,7 @@
 // control attribute plugin for
 // timeoutsmtpd (how long to wait for smtp client)
 //
-// $Id: attrib.control.timeoutsmtpd.inc,v 2.19 2005-09-16 06:08:50 turbo Exp $
+// $Id: attrib.control.timeoutsmtpd.inc,v 2.19.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ timeoutsmtpd_check(type)
 function timeoutsmtpd_check($type) {
@@ -105,9 +105,11 @@ function timeoutsmtpd_save($type, $host) {
 								pql_get_define("PQL_ATTR_TIMEOUTSMTPD"), 1, $_REQUEST["timeoutsmtpd"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('timeoutsmtpd options')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('timeoutsmtpd options'))) . ": " . pql_format_error(0);
+									   array('what' => $LANG->_('timeoutsmtpd options')));
+		}
 
 		attribute_forward($msg);
 		break;

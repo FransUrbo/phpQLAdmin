@@ -7,7 +7,7 @@
 // ldapgrouplogin (dn of a database user - used by qmail-group)
 // ldapgrouppassword (password for bind - used with ldapgrouplogin)
 //
-// $Id: attrib.control.ldapserver.inc,v 2.20 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.ldapserver.inc,v 2.20.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ ldapserver_check(type)
 function ldapserver_check($type) {
@@ -293,10 +293,11 @@ function ldapserver_save($type, $host) {
 								  $attrib, $old, $_REQUEST[$attrib]))
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										 array('what' => $LANG->_('ldapserver options')));
-		  else
+		  else {
+			pql_format_error();
 			$msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-										 array('what' => $LANG->_('ldapserver options')))
-			  . ": " . pql_format_error(0);
+										 array('what' => $LANG->_('ldapserver options')));
+		  }
 		  
 		  attribute_forward($msg);
 		  break;

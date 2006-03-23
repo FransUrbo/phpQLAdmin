@@ -2,7 +2,7 @@
 // control attribute plugin for
 // pbssecret (max number of bytes in message)
 //
-// $Id: attrib.control.pbssecret.inc,v 2.8 2005-09-16 06:08:49 turbo Exp $
+// $Id: attrib.control.pbssecret.inc,v 2.8.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ pbssecret_check(type)
 function pbssecret_check($type) {
@@ -90,10 +90,11 @@ function pbssecret_save($type, $host)  {
 								pql_get_define("PQL_ATTR_PBS_SECRET"), 1, $_REQUEST["pbssecret"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('pbssecret options')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('pbssecret options')))
-			. ": " . pql_format_error(0);
+									   array('what' => $LANG->_('pbssecret options')));
+		}
 
 		attribute_forward($msg);
 		break;

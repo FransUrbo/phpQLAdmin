@@ -4,7 +4,7 @@
 // or, if using new style quota
 // 	defaultQuotaSize and defaultQuotaCount
 //
-// $Id: attrib.control.ldapdefaultquota.inc,v 2.21 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.ldapdefaultquota.inc,v 2.21.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ ldapdefaultquota_check(type)
 function ldapdefaultquota_check($type) {
@@ -226,9 +226,11 @@ function ldapdefaultquota_save($type, $host) {
 			  $failed = 1;
 		}
 
-		if($failed)
+		if($failed) {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('quota'))) . ": " . pql_format_error(0);
+									   array('what' => $LANG->_('quota')))
+		}
 
 		attribute_forward($msg);
 		break;

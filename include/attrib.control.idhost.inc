@@ -2,7 +2,7 @@
 // control attribute plugin for
 // idhost (host name for message id's)
 //
-// $Id: attrib.control.idhost.inc,v 2.21 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.idhost.inc,v 2.21.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ idhost_check(type)
 function idhost_check($type) {
@@ -98,10 +98,11 @@ function idhost_save($type, $host) {
 								pql_get_define("PQL_ATTR_IDHOST"), '', $_REQUEST["idhost"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('idhost options')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('idhost options')))
-			. ": " . pql_format_error(0);
+									   array('what' => $LANG->_('idhost options')));
+		}
 
 		attribute_forward($msg);
 		break;

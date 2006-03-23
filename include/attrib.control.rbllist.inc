@@ -2,7 +2,7 @@
 // control attribute plugin for
 // rbllist (max number of bytes in message)
 //
-// $Id: attrib.control.rbllist.inc,v 2.9 2005-09-16 06:08:49 turbo Exp $
+// $Id: attrib.control.rbllist.inc,v 2.9.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ rbllist_check(type)
 function rbllist_check($type) {
@@ -144,10 +144,11 @@ function rbllist_save($type, $host)  {
 								pql_get_define("PQL_ATTR_RBLLIST"), 1, $entry))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('rbllist options')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('rbllist options')))
-			. ": " . pql_format_error(0);
+									   array('what' => $LANG->_('rbllist options')));
+		}
 
 		attribute_forward($msg);
 		break;
@@ -158,10 +159,11 @@ function rbllist_save($type, $host)  {
 								pql_get_define("PQL_ATTR_RBLLIST"), $_REQUEST["rbllist"], ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('Blocking list')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('Blocking list')))
-			. ": " . pql_format_error(0);
+									   array('what' => $LANG->_('Blocking list')));
+		}
 
 		attribute_forward($msg);
 		break;

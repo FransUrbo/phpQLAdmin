@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mail.inc,v 2.22 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.mail.inc,v 2.22.14.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -109,9 +109,11 @@ function attribute_save($type) {
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									   array('what' => $LANG->_('main address'),
 											 'new'  => $_POST["mail"]));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('main address'))) . ": " . pql_format_error(0);
+									   array('what' => $LANG->_('main address')));
+		}
 
 		if($_POST["keepold"]) {
 			// Put the old primary email address as an alias.
@@ -120,9 +122,11 @@ function attribute_save($type) {
 			  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 										   array('what' => $LANG->_('main address'),
 												 'new'  => $_POST["mail"]));
-			else
+			else {
+			  pql_format_error();
 			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-										   array('what' => $LANG->_('main address'))) . ": " . pql_format_error(0);
+										   array('what' => $LANG->_('main address')));
+			}
 		}
 
 		// We use the mail attribute to reference users and it has just changed...

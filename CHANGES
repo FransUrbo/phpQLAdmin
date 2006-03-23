@@ -12,7 +12,7 @@ phpQLAdmin 2.3.3/GUI_TEMPLATE TO BE ANNOUNCED
 	    + include/defaults.inc	=> config/
 	    + include/lang.en.inc	=> translations/
 	    + include/thryn.ttf		=> tools/
-	    + tools/normal.css		=> templates/
+	    + tools/normal.css		=> templates/default/
 	    > All references in all files was updated!
 	  - Remove the validateEmailFormat directory. Never used, I had my own
 	    function(s) for this.
@@ -22,6 +22,8 @@ phpQLAdmin 2.3.3/GUI_TEMPLATE TO BE ANNOUNCED
 	    version 0.1 for use with the soon-to-bee template driven phpQLAdmin.
 	  - Add the PHP Base Library (http://phplib.sourceforge.net/) version 7.4a for use
 	    with the soon-to-bee template driven phpQLAdmin.
+	  - Now using templates for pql_format_error() which means option is redundant.
+	    + Change all references to pql_format_error() to not return value.
 
 	Misc changes
 

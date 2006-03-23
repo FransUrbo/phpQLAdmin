@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldaprebind (don't retrieve password, try to bind to dn)
 //
-// $Id: attrib.control.ldaprebind.inc,v 2.18 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.ldaprebind.inc,v 2.18.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ ldaprebind_check(type)
 function ldaprebind_check($type) {
@@ -68,10 +68,11 @@ function ldaprebind_save($type, $host) {
 									pql_get_define("PQL_ATTR_LDAPREBIND"), 1, $_REQUEST[$attrib]))
 			  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										   array('what' => $LANG->_('ldaprebind options')));
-			else
+			else {
+			  pql_format_error();
 			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-										   array('what' => $LANG->_('ldaprebind options')))
-				. ": " . pql_format_error(0);
+										   array('what' => $LANG->_('ldaprebind options')));
+			}
 		
 		attribute_forward($msg);
 		break;

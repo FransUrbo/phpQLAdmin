@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailmessagestore (path to mailbox)
-// $Id: attrib.mailmessagestore.inc,v 2.20 2005-02-01 07:29:39 turbo Exp $
+// $Id: attrib.mailmessagestore.inc,v 2.20.10.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -96,9 +96,11 @@ function attribute_save($type) {
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what% to %new%'),
 									   array('what' => $LANG->_('mailbox path '),
 											 'new'  => $_REQUEST["mailmessagestore"]));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('mailbox path'))) . ": " . pql_format_error(0);
+									   array('what' => $LANG->_('mailbox path')));
+		}
 		
 		attribute_forward($msg);
 		break;

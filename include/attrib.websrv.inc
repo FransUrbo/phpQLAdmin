@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for the Webserver Configuration editor
 //
-// $Id: attrib.websrv.inc,v 1.14 2006-03-07 11:20:27 turbo Exp $
+// $Id: attrib.websrv.inc,v 1.14.2.1 2006-03-23 09:13:16 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -103,7 +103,7 @@ function attribute_save($action) {
 		// {{{ Fetch the old values from the DB
 		$sr   = ldap_read($_pql->ldap_linkid, $dn, $filter, array($attrib));
 		$info = ldap_get_entries($_pql->ldap_linkid, $sr)
-		  or pql_format_error(0);
+		  or pql_format_error();
 		for($i=0; $i < $info[0][$attrib]["count"]; $i++) {
 			// Add the old value(s) to the array
 			$entry[$attrib][] = $info[0][$attrib][$i];

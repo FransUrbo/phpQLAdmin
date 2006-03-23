@@ -2,7 +2,7 @@
 // control attribute plugin for
 // pbscachesize (max number of bytes in message)
 //
-// $Id: attrib.control.pbscachesize.inc,v 2.8 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.pbscachesize.inc,v 2.8.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ pbscachesize_check(type)
 function pbscachesize_check($type) {
@@ -90,10 +90,11 @@ function pbscachesize_save($type, $host)  {
 								pql_get_define("PQL_ATTR_PBS_CACHESIZE"), 1, $_REQUEST["pbscachesize"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('pbscachesize options')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('pbscachesize options')))
-			. ": " . pql_format_error(0);
+									   array('what' => $LANG->_('pbscachesize options')));
+		}
 
 		attribute_forward($msg);
 		break;

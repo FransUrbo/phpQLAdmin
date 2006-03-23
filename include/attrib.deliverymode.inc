@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliverymode (delivery preferences)
-// $Id: attrib.deliverymode.inc,v 2.28 2005-05-18 20:29:16 turbo Exp $
+// $Id: attrib.deliverymode.inc,v 2.28.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -214,10 +214,11 @@ function attribute_save($type) {
 			foreach($users as $user)
 			  $return[] = pql_modify_attribute($_pql->ldap_linkid, $user, '', '', $entry);
 
-			if(in_array(false, $return))
+			if(in_array(false, $return)) {
+			  pql_format_error();
 			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-										   array('what' => $LANG->_('delivery mode'))) . ": " . pql_format_error(0);
-			else
+										   array('what' => $LANG->_('delivery mode')));
+			} else
 			  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										   array('what' => $LANG->_('delivery mode')));
 			
@@ -229,9 +230,11 @@ function attribute_save($type) {
 		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], '', '', $entry))
 		  $msg = pql_complete_constant($LANG->_('successfully changed %what%'),
 									   array('what' => $LANG->_('delivery mode')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('delivery mode'))) . ": " . pql_format_error(0);
+									   array('what' => $LANG->_('delivery mode')));
+		}
 		
 		attribute_forward($msg);
 		break;

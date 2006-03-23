@@ -2,7 +2,7 @@
 // control attribute plugin for
 // SimScan
 //
-// $Id: attrib.control.simscan.inc,v 2.3 2005-09-16 06:08:50 turbo Exp $
+// $Id: attrib.control.simscan.inc,v 2.3.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ simscan_check(type)
 function simscan_check($type) {
@@ -243,10 +243,11 @@ function simscan_save($type, $host) {
 									$attrib, $replace, $_REQUEST["set"]))
 			  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										   array('what' => $LANG->_('SimScan option')));
-			else
+			else {
+			  pql_format_error();
 			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-										   array('what' => $LANG->_('SimScan option')))
-				. ": " . pql_format_error(0);
+										   array('what' => $LANG->_('SimScan option')));
+			}
 			break;
 
 			// }}}
@@ -266,10 +267,11 @@ function simscan_save($type, $host) {
 									$attrib, $replace, $OLD))
 			  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										   array('what' => $LANG->_('SimScan option')));
-			else
+			else {
+			  pql_format_error();
 			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-										   array('what' => $LANG->_('SimScan option')))
-				. ": " . pql_format_error(0);
+										   array('what' => $LANG->_('SimScan option')));
+			}
 			break;
 		  // }}}
 

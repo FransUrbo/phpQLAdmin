@@ -2,7 +2,7 @@
 // ----------------------------
 // pql_update_translations.php
 //
-// $Id: update_translations.php,v 2.8.2.2 2006-03-15 09:40:45 turbo Exp $
+// $Id: update_translations.php,v 2.8.2.3 2006-03-23 09:13:37 turbo Exp $
 //
 
 // ----------------------------
@@ -34,7 +34,7 @@ $baseDir = $_SESSION["path"]; // were we start searching for strings
 ?>
 <html>
   <head>
-    <link rel="stylesheet" href="templates/normal.css" type="text/css">
+    <link rel="stylesheet" href="templates/<?=pql_get_define("PQL_CONF_GUI_TEMPLATE")?>/normal.css" type="text/css">
   </head>
 
   <body>
@@ -190,7 +190,8 @@ $alphabet = array("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K",
 	$header  = stripslashes($header);
 
 	// Remove any M$ newlines...
-	$header  = eregi_replace("", "", $header);
+	$header  = eregi_replace("
+", "", $header);
 
 	$total   = $_REQUEST['total_keys'];
 

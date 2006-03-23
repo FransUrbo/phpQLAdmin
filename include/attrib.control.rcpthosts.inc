@@ -2,7 +2,7 @@
 // control attribute plugin for
 // rcpthosts (blocked local addresses)
 //
-// $Id: attrib.control.rcpthosts.inc,v 2.31 2005-09-16 06:08:49 turbo Exp $
+// $Id: attrib.control.rcpthosts.inc,v 2.31.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ rcpthosts_check(type)
 function rcpthosts_check($type) {
@@ -143,10 +143,11 @@ function rcpthosts_save($type, $host) {
 									  $host, '', pql_get_define("PQL_ATTR_RCPTHOSTS")))
 		  $msg = pql_complete_constant($LANG->_('Successfully replicated %what%'),
 									   array('what' => pql_get_define("PQL_ATTR_RCPTHOSTS")));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to replicate %what%'),
-									   array('what' => pql_get_define("PQL_ATTR_RCPTHOSTS")))
-			. ": " . pql_format_error(0);
+									   array('what' => pql_get_define("PQL_ATTR_RCPTHOSTS")));
+		}
 	
 		attribute_forward($msg);
 		break;
@@ -161,10 +162,12 @@ function rcpthosts_save($type, $host) {
 		  $msg = pql_complete_constant($LANG->_('Successfully removed %domain% from %what%'),
 									   array('what'   => pql_get_define("PQL_ATTR_RCPTHOSTS"),
 											 'domain' => $host));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to remove %domain% from %what%'),
 									   array('what'   => pql_get_define("PQL_ATTR_RCPTHOSTS"),
-											 'domain' => $host)) . ": " . pql_format_error(0);
+											 'domain' => $host));
+		}
 
 		attribute_forward($msg);
 		break;
@@ -179,10 +182,12 @@ function rcpthosts_save($type, $host) {
 		  $msg = pql_complete_constant($LANG->_('Successfully added %domain% to %value% %what%'),
 									   array('what'   => $_REQUEST["attrib"],
 											 'domain' => $host));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed adding %domain% to %value% %what%'),
 									   array('what'   => $_REQUEST["attrib"],
-											 'domain' => $_REQUEST["set"])) . ": " . pql_format_error(0);
+											 'domain' => $_REQUEST["set"]));
+		}
 
 		attribute_forward($msg);
 		break;

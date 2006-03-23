@@ -3,7 +3,7 @@
 // tarpitcount (user id of virtual user)
 // tarpitdelay (group id of virtual user)
 //
-// $Id: attrib.control.tarpitcount.inc,v 2.20 2005-09-16 06:08:50 turbo Exp $
+// $Id: attrib.control.tarpitcount.inc,v 2.20.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ tarpitcount_check(type)
 function tarpitcount_check($type) {
@@ -149,10 +149,11 @@ function tarpitcount_save($type, $host) {
 											 $attrib, 1, $_REQUEST[$key]);
 		}
 		
-		if(in_array(false, $return))
+		if(in_array(false, $return)) {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('tarpitting options'))) . ": " . pql_format_error(0);
-		else
+									   array('what' => $LANG->_('tarpitting options')));
+		} else
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('tarpitting options')));
 																							 

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // pbsip (max number of bytes in message)
 //
-// $Id: attrib.control.pbsip.inc,v 2.8 2005-09-16 06:08:49 turbo Exp $
+// $Id: attrib.control.pbsip.inc,v 2.8.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ pbsip_check(type)
 function pbsip_check($type) {
@@ -127,10 +127,11 @@ function pbsip_save($type, $host)  {
 								pql_get_define("PQL_ATTR_PBS_IP"), 1, $_REQUEST["pbsip"]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('POP before SMTP server IP address')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('POP before SMTP server IP address')))
-			. ": " . pql_format_error(0);
+									   array('what' => $LANG->_('POP before SMTP server IP address')));
+		}
 
 		attribute_forward($msg);
 		break;

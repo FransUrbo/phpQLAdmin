@@ -1,6 +1,6 @@
 <?php
 // Attribute plugin for additional group (memberUID)
-// $Id: attrib.additionalgroup.inc,v 2.13 2006-02-16 10:54:16 turbo Exp $
+// $Id: attrib.additionalgroup.inc,v 2.13.2.1 2006-03-23 09:13:14 turbo Exp $
 
 // {{{ attribute_init(void)...
 function attribute_init() {
@@ -144,10 +144,12 @@ function attribute_save($action) {
 									   array('what'  => $LANG->_('additional group'),
 											 'user'  => $_REQUEST["uid"],
 											 'group' => $_REQUEST['group']));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to remove %user% from %what%'),
 									   array('what' => $LANG->_('additional group'),
-											 'user'  => $_REQUEST["memberuid"])) . ": " . pql_format_error(0);
+											 'user'  => $_REQUEST["memberuid"]));
+		}
 
 		attribute_forward($msg);
 		break;

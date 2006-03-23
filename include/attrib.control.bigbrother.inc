@@ -2,7 +2,7 @@
 // control attribute plugin for
 // bigbrother (max number of bytes in message)
 //
-// $Id: attrib.control.bigbrother.inc,v 2.9 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.bigbrother.inc,v 2.9.2.1 2006-03-23 09:13:15 turbo Exp $
 
 // {{{ bigbrother_check(type)
 function bigbrother_check($type) {
@@ -129,10 +129,11 @@ function bigbrother_save($type, $host)  {
 								pql_get_define("PQL_ATTR_BIGBROTHER"), 1, $entry))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('bigbrother options')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('bigbrother options')))
-			. ": " . pql_format_error(0);
+									   array('what' => $LANG->_('bigbrother options')));
+		}
 
 		attribute_forward($msg);
 		break;
@@ -143,10 +144,11 @@ function bigbrother_save($type, $host)  {
 								pql_get_define("PQL_ATTR_BIGBROTHER"), $_REQUEST["bigbrother"], ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('Blocking list')));
-		else
+		else {
+		  pql_format_error();
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('Blocking list')))
-			. ": " . pql_format_error(0);
+									   array('what' => $LANG->_('Blocking list')));
+		}
 
 		attribute_forward($msg);
 		break;

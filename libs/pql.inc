@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 1.1.2.1 2006-03-14 14:46:40 turbo Exp $
+// $Id: pql.inc,v 1.1.2.2 2006-03-23 09:13:17 turbo Exp $
 //
 
 // ----------------------------
@@ -420,7 +420,7 @@ function pql_get_next_username($ldap, $domain) {
 		foreach($_SESSION["BASE_DN"] as $dn) {
 			$dn  = urldecode($dn);
 			$sr  = ldap_search($ldap->ldap_linkid, $dn, $filter, array(pql_get_define("PQL_ATTR_UID")));
-			$tmp = ldap_get_entries($ldap->ldap_linkid, $sr) or pql_format_error(1);
+			$tmp = ldap_get_entries($ldap->ldap_linkid, $sr) or pql_format_error();
 			for($i=0; $i < $tmp["count"]; $i++)
 			  $USERS[] = $tmp[$i][pql_get_define("PQL_ATTR_UID")][0];
 		}
