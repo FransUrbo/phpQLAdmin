@@ -4,6 +4,7 @@ Things left to do
 	  and the objectclass we find that REQUIRE (MAY) some attributes
 	  which we're missing, ask user/admin to fill in the missing
 	  attributes, THEN retry to add/modify the object.
+	* Chase referrals in libs/pql_search.inc:pql_search()
 
 	WISHLIST/Not so very important
 	* Support for alias-domains: phpQLAdmin will be able to create
