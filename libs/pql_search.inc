@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 1.1.2.1 2006-03-14 14:46:40 turbo Exp $
+// $Id: pql_search.inc,v 1.1.2.2 2006-03-23 09:41:19 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -78,7 +78,7 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
   $entry = array();
 
   $entries = 0; // Counter to keep tab on how many entries to return
-  $object = ldap_first_entry($linkid, $sr) or pql_format_error(1);
+  $object = ldap_first_entry($linkid, $sr) or pql_format_error();
   do {
 	// Get the DN of the object
 	$dn = ldap_get_dn($linkid, $object);
@@ -195,11 +195,11 @@ function pql_get_attribute($linkid, $dn, $attribute, $operational = 0) {
   
   // Get the (WHOLE) object but only return only the attributes of interest.
   $object = pql_search($linkid, $dn, "(".pql_get_define("PQL_ATTR_OBJECTCLASS")."=*)", 'BASE', 1, $operational);
-  if(!empty($object)) {
-	if(!empty($object[0])) {
-	  if(!empty($object[0][$attribute]))
+  if(isset($object)) {
+	if(isset($object[0])) {
+	  if(isset($object[0][$attribute]))
 		return($object[0][$attribute]);
-	} elseif(!empty($object[$attribute]))
+	} elseif(isset($object[$attribute]))
 	  // Most likley returned from a cached object...
 	  return($object[$attribute]);
   }
@@ -463,7 +463,7 @@ function pql_search_forwarders($ldap, $user) {
 	  $object = pql_search($linkid, $results[$i], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', 'BASE', 0);
 	  
 	  $return[] = array("reference" => $object[0]['dn'],
-						$ref		  => $object[0][$ref],
+						$ref		=> $object[0][$ref],
 						"email"     => $object[0][pql_get_define("PQL_ATTR_MAIL")]);
 	  
 	} // end foreach results
@@ -900,15 +900,16 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 
 // {{{ pql_get_rootdn(dn)
 function pql_get_rootdn($dn, $function = '') {
-  global $_pql, $_SESSION;
-  $tracker = 'Please report this at the <a href="http://bugs.bayour.com/" target="_new">bugtracker</a>.<br>';
+  global $_pql, $_SESSION, $smarty;
   
   if($function)
 	$function = " (from $function)";
   
-  if($dn == '')
-	die("This is weird. We're called$function with an empty DN! $tracker");
-  else
+  if($dn == '') {
+	$smarty->assign('function', $function);
+	$smarty->display($_SESSION["path"]."/templates/".pql_get_define("PQL_CONF_GUI_TEMPLATE")."/dontexists_rootdn.tpl");
+	die();
+  } else
 	$dn = urldecode($dn);
   
   if(is_array($_SESSION["BASE_DN"])) {
@@ -973,10 +974,8 @@ function pql_get_rootdn($dn, $function = '') {
 	  die("You've ended up in a place where I didn't expect you to get... How exactly did you get here!? $tracker");
 	} elseif($counts < 1) {
 	  // BUG! We don't have a hit!
-	  echo "This is weird. We couldn't find the root dn for some reason. The DN we're trying to find a root DN for is: ";
-	  echo "'$dn'.<p>$tracker<p>";
-	  echo "Note that you <u><b>MUST</b></u> include exact details on how you got this error.";
-	  echo "Every single mouse click etc - an URL won't suffice!";
+	  $smarty->assign('rootdn', $dn);
+	  $smarty->display($_SESSION["path"]."/templates/".pql_get_define("PQL_CONF_GUI_TEMPLATE")."/dontexists_rootdn.tpl");
 	  die();
 	} else
 	  $dn = $DNs[0];
@@ -1008,7 +1007,7 @@ function pql_setup_branch_objectclasses($filter = 0, $dn, $linkid = '') {
 	// Retreive existing objectClasses from the object
 	$object = ldap_explode_dn($dn, 0);
 	$sr     = @ldap_read($linkid, $dn, $object[0], array(pql_get_define("PQL_ATTR_OBJECTCLASS")));
-	$ocs    = @ldap_get_entries($linkid, $sr) or pql_format_error(1);
+	$ocs    = @ldap_get_entries($linkid, $sr) or pql_format_error();
 	for($j=0; $j < $ocs[0][pql_get_define("PQL_ATTR_OBJECTCLASS")]["count"]; $j++) {
 	  if(eregi('phpQLAdminBranch', $ocs[0][pql_get_define("PQL_ATTR_OBJECTCLASS")][$j]))
 		$got_phpqladmin_objectclass_branch = 1;

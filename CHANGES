@@ -24,6 +24,7 @@ phpQLAdmin 2.3.3/GUI_TEMPLATE TO BE ANNOUNCED
 	    with the soon-to-bee template driven phpQLAdmin.
 	  - Now using templates for pql_format_error() which means option is redundant.
 	    + Change all references to pql_format_error() to not return value.
+	  - Move all HTML from the libs/pql*.inc files into Smarty templates.
 
 	Misc changes
 

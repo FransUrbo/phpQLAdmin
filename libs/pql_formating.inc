@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 1.1.2.1 2006-03-14 14:46:40 turbo Exp $
+// $Id: pql_formating.inc,v 1.1.2.2 2006-03-23 09:41:19 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry, extra_newline)
 // Create a LDIF object to print in case of error
@@ -99,82 +99,48 @@ function pql_complete_constant($text, $replacement) {
 
 // {{{ pql_generate_button(button array)
 function pql_generate_button($buttons, $link = '') {
-  global $LANG;
+  global $LANG, $smarty;
   
+  // It's not sure we have a rootdn and/or domain, so only add those if it's set
   $url = $_SERVER["PHP_SELF"] . "?";
-  
-  // It's not sure we have a rootdn and/or domain, so only add those
-  // it's set
-  if(!empty($_REQUEST["rootdn"])) {
-	$url .= "rootdn=" . pql_format_urls($_REQUEST["rootdn"]) . "&";
-  }
-  
-  if(!empty($_REQUEST["domain"])) {
-	$url .= "domain=" . pql_format_urls($_REQUEST["domain"]) . "&";
-  }
-?>
+  if(!empty($_REQUEST["rootdn"])) $url .= "rootdn=" . pql_format_urls($_REQUEST["rootdn"]) . "&";
+  if(!empty($_REQUEST["domain"])) $url .= "domain=" . pql_format_urls($_REQUEST["domain"]) . "&";
 
-  <table cellspacing="0" border="0" width="100%" cellpadding="0">
-<?php
-  $i=0; // A button counter.
-  foreach($buttons as $view => $text) {
-	// Generate the button link etc
-?>
-    <a href="<?=$url?>view=<?=$view?><?php if($link) { echo "&$link"; } ?>"><img alt="/ <?=$LANG->_($text)?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?php echo urlencode($LANG->_($text)); ?>"></a>
-<?php
-	// Increase button counter"
-	$i++;
-  }
-?>
-  </table>
-
-<?php
+  $smarty->assign(array('url' => $url, 'link' => $link, 'buttons' => array($buttons)));
+  $smarty->display($_SESSION["path"]."/templates/".pql_get_define("PQL_CONF_GUI_TEMPLATE")."/buttons.tpl");
 }
 // }}}
 
-// {{{ pql_format_error(output)
+// {{{ pql_format_error(void)
 // an error-message wrapper for adding special comments to some
 // error conditions
-function pql_format_error($output) {
-  global $_pql;
+function pql_format_error() {
+  global $_pql, $smarty;
   
   $errno = ldap_errno($_pql->ldap_linkid);
   $error = ldap_error($_pql->ldap_linkid);
   
   $url = "<a href='config_detail.php?view=".$_pql->ldap_basedn[0]."' target='_new'>Show configuration</a>";
   
+  $smarty->assign(array('errno' => $errno, 'error' => $error));
   switch($errno) {
   case 17:
 	// Undefined attribute type -> invalid schema
-	$comment  = "This error is caused by an invalid schema. Have you updated them recently? If not, copy the new schema ";
-	$comment .= "that defines this attribute, and restart your LDAP server.";
+	$smarty->display($_SESSION["path"]."/templates/".pql_get_define("PQL_CONF_GUI_TEMPLATE")."/error_17.tpl");
 	break;
   case 18:
 	// Inappropriate matching --> invalid schema
-	$comment = "This error is caused by an invalid schema file.";
+	$smarty->display($_SESSION["path"]."/templates/".pql_get_define("PQL_CONF_GUI_TEMPLATE")."/error_18.tpl");
 	break;
   case 21:
 	// Invalid syntax
-	$comment  = "This error is caused because an attribute is used, but there is no <i>value</i> for it (i.e. an empty ";
-	$comment .= "attribute/value pair).<br>";
-	$comment .= "The attribute is most likley <b>objectClass</b> and is usually caused because you're missing ";
-	$comment .= "objectclasses for this type of object. Go to $url and setup the appropriate <b>objectclasses</b>.";
+	$smarty->display($_SESSION["path"]."/templates/".pql_get_define("PQL_CONF_GUI_TEMPLATE")."/error_21.tpl");
 	break;
   case 41:
 	// Object Class Violation
-	$comment  = "This error is caused because you're using an attribute but haven't included the correct object class.";
-	$comment .= "<br>Please go to $url and setup the appropriate <b>objectClasses</b>.";
+	$smarty->display($_SESSION["path"]."/templates/".pql_get_define("PQL_CONF_GUI_TEMPLATE")."/error_41.tpl");
 	break;
   }
-  
-  $msg = "<p>".pql_format_error_span("LDAP-Error #$errno: $error");
-  if($comment)
-	$msg .= "<br>$comment<p>";
-  
-  if($output)
-	echo $msg."<br>";
-  else
-	return $msg;
 }
 // }}}
 
@@ -185,23 +151,10 @@ function pql_format_error_span($msg) {
 // }}}
 
 // {{{ pql_format_status_msg(msg)
-function pql_format_status_msg($msg){
-?>
-  <table cellpadding="3" cellspacing="0" border="0" width="100%">
-    <th colspan="3" align="left">
-      <tr class="message">
-        <td colspan="2" class="message">
-          <img src="images/info.png" width="16" height="16" border="0" align="left">
-          <table>
-            <?php echo stripslashes($msg) . "\n"; ?>
-          </table>
-        </td>
-      </tr>
-    </th>
-  </table>
-
-  <br><br>
-<?php
+function pql_format_status_msg($msg) {
+  global $smarty;
+  $smarty->assign('message', stripslashes($msg));
+  $smarty->display($_SESSION["path"]."/templates/".pql_get_define("PQL_CONF_GUI_TEMPLATE")."/message.tpl");
 }
 // }}}
 
@@ -232,7 +185,7 @@ function pql_format_table_single($linkid, $text, $url, $array, $attrib, $class =
   $url["del"] = (isset($url["del"])) ? $url["del"] : 0;
   $url["add"] = (isset($url["add"])) ? $url["add"] : 0;
 
-  if(isset($array) and !is_array($array))
+  if(!empty($array) and !is_array($array))
 	$array = array($array);
   
   if(is_array($array)) { 
@@ -813,7 +766,7 @@ function printr($string) {
 // }}}
 
 // {{{ lc(string)
-// I'm a perlhacker really, does it show!? :)
+// I'm originally perl hacker, does it show!? :)
 function lc($string) {
 	return(strtolower($string));
 }

@@ -3,7 +3,7 @@
 // pql_hostctrl.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_hostctrl.inc,v 1.1.2.1 2006-03-14 14:46:40 turbo Exp $
+// $Id: pql_hostctrl.inc,v 1.1.2.2 2006-03-23 09:41:19 turbo Exp $
 
 // {{{ pql_update_sudo(ldap, dn, type, attribute)
 function pql_update_sudo($ldap, $dn, $type, $attribute) {
@@ -21,41 +21,17 @@ function pql_update_sudo($ldap, $dn, $type, $attribute) {
 // }}}
 
 // {{{ pql_list_expand(role, alist, attribute, extraURL)
+// TODO: Verify that this works since move to Smarty template!
 function pql_list_expand($role, $alist, $attribute, $extraURL) {
-  if(is_array($alist)) {
-?>
-  <div id='<?php echo $role.$attribute; ?>Parent' class='parent'>
-    <a href="<?php echo $_SERVER['REQUEST_URI']; ?>"
-       onClick="if (capable) {expandBase('<?php echo $role.$attribute; ?>', true); return false;}">
-       <img name='imEx' src='images/plus.png' border='0' alt='+' width='9' height='9' id='<?php echo $role.$attribute; ?>Img'>
-    </a>
-    <?php echo $alist[0]; ?>
-    <a href="<?php echo $_SERVER['REQUEST_URI']; ?>&<?php echo $extraURL;?>&<?php echo $attribute; ?>=<?php echo $list[0]; ?>">
-      <img src='images/del.png' width='12' height='12' border='0' alt="<?=$LANG->_('Delete')?> <?php echo $alist[0]; ?> <?=$LANG->_('from Sudo role')?>"></a><br>
-  </div>
+  global $_SESSION, $smarty;
 
-  <div id='<?php echo $role.$attribute; ?>Child' class='child'>
-    <nobr>
-<?php for($w = 1; $w < count($alist); $w++) {
-	print "\t\t" . $alist[$w];
-	print " <a href=\"" . $_SERVER['REQUEST_URI'] . $extraURL;
-	print "&attribute=" . $attribute . "&" . $attribute . "=" . $alist[$w] . "\">";
-	print "<img src='images/del.png' width='12' height='12' border='0' alt=\"Delete ";
-	print $alist[$w] . " from Sudo role\"></a><br>\n";
-      }
-  } else {
-    if(isset($alist)) {
-      print "\t\t" . $alist;
-      print " <a href=\"" . $_SERVER['REQUEST_URI'] . $extraURL;
-      print "&attribute=" . $attribute . "&" . $attribute . "=" . $alist . "\">";
-      print "<img src='images/del.png' width='12' height='12' border='0' alt='".$LANG->_('Delete');
-      print $alist . $LANG->_(' from Sudo role') . "'></a>\n";
-    } else {
-      print "&nbsp;";
-    }
-  }
-
-  print "</nobr></div>";
+  $show = array('role'   => $role,
+		'attrib' => $attribute,
+		'url'    => $extraURL,
+		'alt'    => pql_complete_constant($LANG->_('Delete %what% from Sudo role'), array('what' => $alist[0])),
+		'data'   => $alist);
+  $smarty->assign('show', $show);
+  $smarty->display($_SESSION["path"]."/templates/".pql_get_define("PQL_CONF_GUI_TEMPLATE")."/hostctrl_listexpand.tpl");
 }
 // }}}
 
