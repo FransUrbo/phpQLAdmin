@@ -1,5 +1,5 @@
 <?php
-// $Id: index2.php,v 2.44.2.1 2006-03-14 14:46:30 turbo Exp $
+// $Id: index2.php,v 2.44.2.2 2006-03-23 09:33:18 turbo Exp $
 
 require("./libs/pql_session.inc");
 require($_SESSION["path"]."/libs/pql_config.inc");
@@ -67,7 +67,7 @@ if($_SESSION["mozilla"]) {
   <!-- frames == <?=$frames?> -->
 
 <?php if(@$_REQUEST["advanced"] and !$_SESSION["SINGLE_USER"]) { // Advance mode - show controls and mailinglist managers ?>
-  <frameset cols="260,*" rows="*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 2 -->
+  <frameset cols="270,*" rows="*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 2 -->
     <!-- LEFT frame -->
 <?php   if($frames >= 3) { ?>
     <frameset cols="*" rows="70%,*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 3 -->
