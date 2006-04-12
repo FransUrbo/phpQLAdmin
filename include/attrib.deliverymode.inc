@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliverymode (delivery preferences)
-// $Id: attrib.deliverymode.inc,v 2.27.6.1.2.1 2006-03-12 14:35:39 turbo Exp $
+// $Id: attrib.deliverymode.inc,v 2.27.6.1.2.2 2006-04-12 07:11:04 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -195,8 +195,27 @@ function attribute_save($type) {
 	  $entry[pql_get_define("PQL_ATTR_MODE")][] = "reply";
 	
 	if(!empty($_REQUEST["mailreplytext"])) {
+	  if(!$_REQUEST["reply"]) {
+		// Reply is set, and so is mailReplyText > Remove the mailReplyText value!
+		$entry[pql_get_define("PQL_ATTR_REPLYTEXT")] = array();
+
+		// First retreive old value(s)
+		$deliverymode = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_MODE"));
+		if(!is_array($deliverymode))
+		  $deliverymode = array($deliverymode);
+
+		// Then go through the array and remove the 'reply' part of the deliveryMode if it's set
+		for($i=0; $deliverymode[$i]; $i++) {
+		  if(eregi("reply", $deliverymode[$i]))
+			unset($deliverymode[$i]);
+		}
+
+		// Do a modify on the deliveryMode attribute.
+		$entry[pql_get_define("PQL_ATTR_MODE")] = $deliverymode;
+	  } else {
 		$tmp = preg_replace('/\\\/', "", $_REQUEST["mailreplytext"]);
 		$entry[pql_get_define("PQL_ATTR_REPLYTEXT")] = pql_maybe_encode($tmp, 'mailreplytext', $_pql->ldap_linkid);
+	  }
 	} elseif($type != "fulldomain")
 	  // Delete the old value from the database
 	  pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_REPLYTEXT"), '', '');
