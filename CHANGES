@@ -4,6 +4,8 @@ phpQLAdmin 2.2.8 TO BE ANNOUNCED
 	Bug fixes
 	  - Fix mailReplyText in include/attrib.deliverymode.inc -> Not an array!
 	    Closes: #296
+	  - If changing deliveryMode by unmarking the "Send an auto reply" but leaving the mailReplyText
+	    value set, the deliveryMode must have it's "reply" value removed.
 
 phpQLAdmin 2.2.7 Release (Jan 23 2006)
 	Bug fixes
