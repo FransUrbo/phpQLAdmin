@@ -3,7 +3,7 @@
 // pql_units.inc
 // Sub units (ou=People, ou=Users, dc=host) etc
 //
-// $Id: pql_units.inc,v 1.14 2004-11-14 10:42:46 turbo Exp $
+// $Id: pql_units.inc,v 1.14.6.1 2006-04-19 13:27:59 turbo Exp $
 //
 
 // {{{ pql_unit_get(linkid, dn, filter)
@@ -14,6 +14,8 @@ function pql_unit_get($linkid, $dn, $filter = 1) {
 	if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $rootdn) == "dc")
 	  // Look for sub-domains below this domain branch.
 	  $subd = pql_get_dn($linkid, $dn, 'objectclass=domain', 'ONELEVEL');
+	else
+	  $subd = array();
 
 	// Either we couldn't find any sub-domains below the domain branch, OR
 	// we have the database layout organized with organization.
