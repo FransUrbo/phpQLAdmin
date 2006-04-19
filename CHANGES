@@ -6,6 +6,8 @@ phpQLAdmin 2.2.8 TO BE ANNOUNCED
 	    Closes: #296
 	  - If changing deliveryMode by unmarking the "Send an auto reply" but leaving the mailReplyText
 	    value set, the deliveryMode must have it's "reply" value removed.
+	  - If pql_get_dn() returns FALSE in include/pql_units.inc:pql_unit_get(), the array_merge() will
+	    fail. Thanx to Sabbe Guillaume for pointing this out.
 
 phpQLAdmin 2.2.7 Release (Jan 23 2006)
 	Bug fixes
