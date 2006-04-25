@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.30.2.1 2005-03-17 18:58:16 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.30.2.1.4.1 2006-04-25 10:45:00 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -260,16 +260,19 @@ function attribute_save($type) {
 						}
 					} else {
 						// Change all hosts
-						if($type == 'delete')
-						  pql_modify_attribute($_pql_control->ldap_linkid,
-											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											   pql_get_define("PQL_ATTR_RCPTHOSTS"),
-											   $delval, '');
-						else
-						  pql_modify_attribute($_pql_control->ldap_linkid,
-											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											   pql_get_define("PQL_ATTR_RCPTHOSTS"),
-											   '', $additionaldomainname);
+						$filter  = "(&(".pql_get_define("PQL_ATTR_CN")."=*)(";
+						$filter .= pql_get_define("PQL_ATTR_OBJECTCLASS")."=qmailControl))";
+						$hosts = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $filter);
+						for($i=0; $hosts[$i]; $i++) {
+						  if($type == 'delete') 
+							pql_modify_attribute($_pql_control->ldap_linkid, $hosts[$i],
+												 pql_get_define("PQL_ATTR_RCPTHOSTS"),
+												 $delval, '');
+						  else
+							pql_modify_attribute($_pql_control->ldap_linkid, $hosts[$i], 
+												 pql_get_define("PQL_ATTR_RCPTHOSTS"),
+												 '', $additionaldomainname);
+						}
 					}
 				} else {
 					// We have not gone through the form for adding defaultDomain nor additionalDomainName.
