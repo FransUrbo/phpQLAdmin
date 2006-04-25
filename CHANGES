@@ -8,6 +8,9 @@ phpQLAdmin 2.2.8 TO BE ANNOUNCED
 	    value set, the deliveryMode must have it's "reply" value removed.
 	  - If pql_get_dn() returns FALSE in include/pql_units.inc:pql_unit_get(), the array_merge() will
 	    fail. Thanx to Sabbe Guillaume for pointing this out.
+	  - When adding an additionalDomainName, we first modify the 'locals' attribute on all QLC objects
+	    THEN all 'rcpthosts' on all QLC objects. This last part was faulty. There where no retreival
+	    of QLC objects and no for() loop that cycled through them...
 
 phpQLAdmin 2.2.7 Release (Jan 23 2006)
 	Bug fixes
