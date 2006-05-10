@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.30.2.1.4.1 2006-04-25 10:45:00 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.30.2.1.4.1.2.1 2006-05-10 10:03:27 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -155,6 +155,9 @@ function attribute_save($type) {
       case "delete":
 		// Fetch old values from DB
 		$oldvalues = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib);
+		if(isset($oldvalues) and !is_array($oldvalues))
+			$oldvalues = array($oldvalues);
+			   
 		if(is_array($oldvalues)) {
 			foreach($oldvalues as $val) {
 				if(!@eregi($delval, $val)) {
