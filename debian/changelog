@@ -1,3 +1,18 @@
+phpqladmin (2.2.8-2) unstable; urgency=low
+
+  * Add depends on debconf-2.0
+    Closes: #332066
+  * Add a link in /var/www pointing to /usr/share/phpqladmin.
+    Closes: #348601
+  * Remove the /usr/doc softlink.
+    Closes: #359545
+  * Add swedish debconf template - patch by Daniel Nylander.
+    Closes: #332387
+  * Add Portuguese debconf template - patch by Miguel Figueiredo.
+    Closes: #336849
+
+ -- Turbo Fredriksson <turbo@debian.org>  Fri, 19 May 2006 15:11:59 +0200
+
 phpqladmin (2.2.8-1) unstable; urgency=low
 
   * New upstream version.
