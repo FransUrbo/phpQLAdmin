@@ -5,6 +5,11 @@ phpQLAdmin 2.3.3 TO BE ANNOUNCED
 	  - Account status time fixes from Aaron Collins.
 
 	GUI layout changes
+	  - Add a 'Global' branch tree in the left-controls.php page - Get (and later
+	    modify) ALL QLC object attributes in one 'simple' swoop.
+	  - Support LDAP URI's ('ldap://', 'ldaps://' and 'ldapi://') and not just
+	    hostnames in 'ldapserver'
+
 	Schema changes
 	API changes
 	Misc changes
