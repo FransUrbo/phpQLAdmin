@@ -7,7 +7,7 @@
 // ldapgrouplogin (dn of a database user - used by qmail-group)
 // ldapgrouppassword (password for bind - used with ldapgrouplogin)
 //
-// $Id: attrib.control.ldapserver.inc,v 2.20 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.ldapserver.inc,v 2.21 2006-05-19 07:00:20 turbo Exp $
 
 // {{{ ldapserver_check(type)
 function ldapserver_check($type) {
@@ -16,48 +16,69 @@ function ldapserver_check($type) {
 
 	if(($attrib == 'ldapserver') and @is_array($_REQUEST["ldapserver"])) {
 	  // check for valid fqdn for all servers
-	  foreach($_REQUEST["ldapserver"] as $key => $server) {
-		if(!empty($server) and !pql_check_hostaddress($server, true)) {
-		  $error["ldapserver_$key"] = $LANG->_('Invalid');
-		  $is_error = true;
+	  for($i=0; $i < count($_REQUEST["ldapserver"]); $i++) {
+		$server = $_REQUEST["ldapserver"][$i];
+
+		if(eregi('^ldap://', $server)) {
+		  $uri = "ldap://";
+		  $server = eregi_replace($uri, '', $server);
+		} elseif(eregi('^ldaps://', $server)) {
+		  $uri = "ldaps://";
+		  $server = eregi_replace($uri, '', $server);
+		} elseif(eregi('^ldapi://', $server)) {
+		  $uri = "ldapi://";
+		  
+		  $server = eregi_replace($uri, '', $server);
+
+		  if(eregi('^/', $server))
+			$_REQUEST["ldapserver"][$i] = $uri.urlencode($server);
+		}
+
+		if(($uri == "ldap://") or ($uri == "ldaps://")) {
+		  if(!empty($server) and !pql_check_hostaddress($server, true)) {
+			$error["ldapserver_$i"] = $LANG->_('Invalid');
+			$is_error = true;
+		  }
 		}
 	  }
 
-	  // test connection
-	  if(($_REQUEST["ldap_test"] == "1") and ($is_error == false)) {
-		foreach($_REQUEST["ldapserver"] as $server) {
-		  if(empty($server))
-			continue;
-		  
-		  $linkid = @ldap_connect($server);
-		  if($linkid) {
-			if($_REQUEST["ldaplogin_use"] == "1") {
-			  if(!@ldap_bind($linkid, $_REQUEST["ldaplogin"], $_REQUEST["ldappassword"])) {
-				$error["ldap_test"] .= pql_complete_constant($LANG->_('Failed running a test connection to %server%'),
-															 array('server' => $server)) . ": " . ldap_error($linkid) . "<br>";
-				$is_error = true;
+	  if(($uri == "ldap://") or ($uri == "ldaps://")) {
+		// test connection
+		if(($_REQUEST["ldap_test"] == "1") and ($is_error == false)) {
+		  foreach($_REQUEST["ldapserver"] as $server) {
+			if(empty($server))
+			  continue;
+			
+			$linkid = @ldap_connect($server);
+			if($linkid) {
+			  if($_REQUEST["ldaplogin_use"] == "1") {
+				if(!@ldap_bind($linkid, $_REQUEST["ldaplogin"], $_REQUEST["ldappassword"])) {
+				  $error["ldap_test"] .= pql_complete_constant($LANG->_('Failed running a test connection to %server%'),
+															   array('server' => $server)) . ": " . ldap_error($linkid) . "<br>";
+				  $is_error = true;
+				}
+			  } else {
+				if(!@ldap_bind($linkid)) {
+				  $error["ldap_test"] .= pql_complete_constant($LANG->_('Failed running a test connection to %server%'),
+															   array('server' => $server)) . ": " . ldap_error($linkid) . "<br>";
+				  $is_error = true;
+				}
 			  }
 			} else {
-			  if(!@ldap_bind($linkid)) {
-				$error["ldap_test"] .= pql_complete_constant($LANG->_('Failed running a test connection to %server%'),
-															 array('server' => $server)) . ": " . ldap_error($linkid) . "<br>";
-				$is_error = true;
-			  }
+			  // connection failed
+			  $error["ldap_test"] .= pql_complete_constant($LANG->_('Failed running a test connection to %server%'),
+														   array('server' => $server))
+				. '(' . $LANG->_('server not responding or invalid name') . ')<br>';
+			  $is_error = true;
 			}
-		  } else {
-			// connection failed
-			$error["ldap_test"] .= pql_complete_constant($LANG->_('Failed running a test connection to %server%'),
-														 array('server' => $server))
-			  . '(' . $LANG->_('server not responding or invalid name') . ')<br>';
-			$is_error = true;
-		  }
-		  
-		  // search for base dn
-		  //if($is_error == false) 
-		  // TODO: How to check basedn???
 			
-		  @ldap_unbind($linkid);
-		  @ldap_close($linkid);
+			// search for base dn
+			//if($is_error == false) 
+			// TODO: How to check basedn???
+			
+			@ldap_unbind($linkid);
+			@ldap_close($linkid);
+		  }
 		}
 	  }
 	} elseif(!@$_REQUEST[$attrib]) {
@@ -83,7 +104,12 @@ function ldapserver_init($host) {
 					 "ldappassword"		=> pql_get_define("PQL_ATTR_LDAPPASSWORD"),
 					 "ldapgrouplogin"	=> pql_get_define("PQL_ATTR_GROUP_LOGIN"),
 					 "ldapgrouppassword"=> pql_get_define("PQL_ATTR_GROUP_PASSWD"));
-	foreach($attribs as $key => $attrib) {
+	if($host == "Global") {
+	  foreach($attribs as $key => $attrib)
+		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+											$attrib, 0, pql_get_define("PQL_ATTR_CN")."=*");
+	} else {
+	  foreach($attribs as $key => $attrib)
 		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid,
 											pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 											$attrib);
@@ -268,6 +294,7 @@ function ldapserver_print_form() {
 // {{{ ldapserver_save(type, host)
 function ldapserver_save($type, $host) {
 	global $_pql_control, $error, $LANG;
+	$success = 0;
 	$attrib = $_REQUEST["attrib"];
 	
 	if($attrib == 'ldapserver') {
@@ -287,10 +314,25 @@ function ldapserver_save($type, $host) {
 	switch($type) {
 		case "modify":
 		case "add":
-		  // save entries
-		  if(pql_modify_attribute($_pql_control->ldap_linkid,
-								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								  $attrib, $old, $_REQUEST[$attrib]))
+		  // {{{ save entries
+		  if($host == "Global") {
+			// Get all QLC host
+			$qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+							   '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+			
+			$success = 1;
+			foreach($qlcs as $host) {
+			  if(!pql_modify_attribute($_pql_control->ldap_linkid, $host, $attrib, '', $_REQUEST[$attrib]))
+				$success = 0;
+			}
+		  } else {
+			if(pql_modify_attribute($_pql_control->ldap_linkid,
+									pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+									$attrib, $old, $_REQUEST[$attrib]))
+			  $success = 1;
+		  }
+
+		  if($success)
 			$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										 array('what' => $LANG->_('ldapserver options')));
 		  else
@@ -300,6 +342,7 @@ function ldapserver_save($type, $host) {
 		  
 		  attribute_forward($msg);
 		  break;
+		  // }}}
 
 		default:
 		  die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
@@ -317,14 +360,16 @@ function ldapserver_help() {
   <b><?=$LANG->_('Host')?></b><br>
 	Your ldap server's hostname. If you want more than one ldap-server for redundancy,
 	use the "add more servers" link to add another server. To clear additional server simply
-	remove the value and save.
-	<br><br>
+	remove the value and save.<p>
+    <b>NOTE 1:</b> It is possible to use URI in the hostname field (such as <u>ldaps://ldap.domain.tld</u>). If using
+    LDAPI, then the path to the socket can be either URL encoded (such as <u>ldapi://%2Fvar%2Frun%2Fldapi</u>) or
+    not encoded (such as <u>ldapi:///var/run/ldapi</u> - phpQLAdmin will automatically URL encode the value for you).<br>
+    <b>NOTE 2:</b> If using LDAPI, the connection will <u><i>not</i></u> be tested!
 <?php } if($_REQUEST["attrib"] == 'ldapbasedn') { ?>
   <b><?=$LANG->_('Base DN')?></b><br>
     The BaseDN for ldap searches. See OpenLDAP's documentation for more information about BaseDN. Required.
     <br>
     <i>Example: <u>o=yourcorp,c=ch</u></i>
-	<br><br>
 <?php } if($_REQUEST["attrib"] == 'ldaplogin') { ?>
   <b><?=$LANG->_('Login')?></b><br>
 	If you need to authentificate against your ldap server to retrieve the user information, this is the username to do so.
@@ -332,13 +377,11 @@ function ldapserver_help() {
 	<i>Note1: This is a ldap dn, not a unix username.</i>
     <br>
 	<i>Note2: If unset, all searches will be done anonymously so make sure everyone can read the relevant values.</i>
-	<br><br>
 <?php } if($_REQUEST["attrib"] == 'ldappassword') { ?>
   <b><?=$LANG->_('Password')?></b><br>
 	The password for the user defined in ldaplogin if needed.
     <br>
     <i>Note: This should be entered as cleartext, not encrypted!</i>
-	<br><br>
 <?php } if($_REQUEST["attrib"] == 'ldapgrouplogin') { ?>
   <b><?=$LANG->_('Group login')?></b><br>
 	If qmail-group need to authentificate against your ldap server to retrieve the user information, this is the username
@@ -347,14 +390,13 @@ function ldapserver_help() {
 	<i>Note1: This is a ldap dn, not a unix username.</i>
     <br>
 	<i>Note2: If unset, it will default to the value in ldaplogin.</i>
-	<br><br>
 <?php } if($_REQUEST["attrib"] == 'ldapgrouppassword') { ?>
   <b><?=$LANG->_('Group login password')?></b><br>
 	The password for the user defined in ldapgrouplogin if needed.
     <br>
-    <i>Note1: This should be entered as cleartext, not encrypted!</i>
+    <b>NOTE 1:</b> This should be entered as cleartext, not encrypted!</i>
     <br>
-	<i>Note2: If unset, it will default to the value in ldappassword.</i>
+	<b>NOTE 2:</b> If unset, it will default to the value in ldappassword.</i>
 <?php }
 }
 // }}}
