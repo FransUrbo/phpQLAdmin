@@ -2,6 +2,8 @@ phpQLAdmin 2.3 Change Log
 
 phpQLAdmin 2.3.3 TO BE ANNOUNCED
 	Bug fixes
+	  - Account status time fixes from Aaron Collins.
+
 	GUI layout changes
 	Schema changes
 	API changes

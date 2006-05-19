@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // accountstatus (status of mailaccount)
-// $Id: attrib.accountstatus.inc,v 2.28 2005-09-16 06:08:45 turbo Exp $
+// $Id: attrib.accountstatus.inc,v 2.29 2006-05-19 06:33:11 turbo Exp $
 
 /* DLW:   When the calendar gets a value of 2003.12.25, it gets stored or displayed as 2003/12/24 (@7am)
  *        I think it's having problems with time zones.  Look into it.
@@ -37,11 +37,12 @@ function attribute_check($type) {
 			return false;
 		}
 	} else {
-		$tmp = split("\.", $_REQUEST["date"]);
+		$year = substr($_REQUEST["date"], 0, 4);
+		$month = substr($_REQUEST["date"], 4, 2);
+		$day = substr($_REQUEST["date"], 6, 2);
 
 		// Convert the YYYY.MM.DD date to UNIX std time (sec from 1 Jan 1970)
-		$_REQUEST["date"] = date("U", mktime(0,0,0,$tmp[1],$tmp[2],$tmp[0]));
-
+		$_REQUEST["date"] = date("U", mktime(0,0,0,$month,$day,$year));
 		// Get 'days from Jan 1, 1970' which is the correct integer for shadowExpire
 		$_REQUEST["days"] = split('\.', $_REQUEST["date"] / (60 * 60 * 24));
 		$_REQUEST["days"] = $_REQUEST["days"][0];
@@ -151,7 +152,7 @@ function attribute_save($type) {
 			for($i=0; $i < count($entry); $i++) {
 				$new_entry["objectclass"][] = $entry[$i];
 
-				if($entry[$i] == pql_get_define("PQL_ATTR_EXPIRATION"))
+				if(lc($entry[$i]) == lc('shadowAccount') )
 				  $got_objectclass = 1;
 			}
 

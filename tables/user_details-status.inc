@@ -1,9 +1,10 @@
 <?php
 // Retreive 'days from Jan 1, 1970'
 $tmp  = pql_get_attribute($_pql->ldap_linkid, $_GET["user"], pql_get_define("PQL_ATTR_EXPIRATION"));
-if($tmp[0]) {
+if($tmp) {
+	$tmp++;
 	// Convert to UNIX timestamp
-	$seconds = $tmp[0] * (60 * 60 * 24);
+	$seconds = $tmp * (60 * 60 * 24);
 	
 	// Convert to human readable
 	$time_expiration = date("D M j h:i Y", $seconds);
