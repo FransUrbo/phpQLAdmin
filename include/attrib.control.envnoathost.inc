@@ -2,7 +2,7 @@
 // control attribute plugin for
 // envnoathost (default prefix for mailbox paths)
 //
-// $Id: attrib.control.envnoathost.inc,v 2.20 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.envnoathost.inc,v 2.21 2006-05-19 06:55:31 turbo Exp $
 
 // {{{ envnoathost_check(type)
 function envnoathost_check($type) {
@@ -30,9 +30,14 @@ function envnoathost_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	$_REQUEST["envnoathost"] = pql_get_attribute($_pql_control->ldap_linkid,
-												 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-												 pql_get_define("PQL_ATTR_ENVNOATHOST"));
+	if($host == "Global") {
+	  $_REQUEST["envnoathost"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+												   pql_get_define("PQL_ATTR_ENVNOATHOST"), 0, pql_get_define("PQL_ATTR_CN")."=*");
+	} else {
+	  $_REQUEST["envnoathost"] = pql_get_attribute($_pql_control->ldap_linkid,
+												   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+												   pql_get_define("PQL_ATTR_ENVNOATHOST"));
+	}
 
 	if(@is_null($_REQUEST["envnoathost"]))
 	  return true;
@@ -94,14 +99,31 @@ function envnoathost_print_form() {
 // {{{ envnoathost_save(type, host)
 function envnoathost_save($type, $host) {
 	global $_pql_control, $LANG;
+	$success = 0;
 
 	switch($type) {
 	  case "modify":
 	  case "add":
-		// save entries
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_ENVNOATHOST"), 1, $_REQUEST["envnoathost"]))
+		// {{{ save entries
+		if($host == "Global") {
+		  // Get all QLC host
+		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+		  
+		  $success = 1;
+		  foreach($qlcs as $host) {
+			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+									 pql_get_define("PQL_ATTR_ENVNOATHOST"), '', $_REQUEST["envnoathost"]))
+			  $success = 0;
+		  }
+		} else {
+		  if(pql_modify_attribute($_pql_control->ldap_linkid,
+								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								  pql_get_define("PQL_ATTR_ENVNOATHOST"), 1, $_REQUEST["envnoathost"]))
+			$success = 1;
+		}
+
+		if($success)
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('envnotathost options')));
 		else 
@@ -111,6 +133,7 @@ function envnoathost_save($type, $host) {
 		
 		attribute_forward($msg);
 		break;
+		// }}}
 
 	  default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),

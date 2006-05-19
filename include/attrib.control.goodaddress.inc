@@ -2,7 +2,7 @@
 // control attribute plugin for
 // goodmailaddr (max number of bytes in message)
 //
-// $Id: attrib.control.goodaddress.inc,v 2.8 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.goodaddress.inc,v 2.9 2006-05-19 06:55:31 turbo Exp $
 
 // {{{ goodmailaddr_check(type)
 function goodmailaddr_check($type) {
@@ -19,9 +19,15 @@ function goodmailaddr_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	$_REQUEST["goodmailaddr"] = pql_get_attribute($_pql_control->ldap_linkid,
-												  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-												  pql_get_define("PQL_ATTR_GOODADDRESS"));
+	if($host == "Global") {
+	  $_REQUEST["goodmailaddr"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+													pql_get_define("PQL_ATTR_GOODADDRESS"), 0, pql_get_define("PQL_ATTR_CN")."=*");
+	} else {
+	  $_REQUEST["goodmailaddr"] = pql_get_attribute($_pql_control->ldap_linkid,
+													pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+													pql_get_define("PQL_ATTR_GOODADDRESS"));
+	}
+
 	if(!@$_REQUEST["goodmailaddr"])
 	  return true;
 	elseif(!@is_array($_REQUEST["goodmailaddr"]))
@@ -96,14 +102,31 @@ function goodmailaddr_print_form() {
 // {{{ goodmailaddr_save(type, host)
 function goodmailaddr_save($type, $host)  {
 	global $_pql_control, $error, $LANG;
+	$success = 0;
 
 	switch($type) {
 	  case "modify":
 	  case "add":
-		// save entries
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_GOODADDRESS"), '', $_REQUEST["goodmailaddr"]))
+		// {{{ save entries
+		if($host == "Global") {
+		  // Get all QLC host
+		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+		  
+		  $success = 1;
+		  foreach($qlcs as $host) {
+			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+									 pql_get_define("PQL_ATTR_GOODADDRESS"), '', $_REQUEST["goodmailaddr"]))
+			  $success = 0;
+		  }
+		} else {
+		  if(pql_modify_attribute($_pql_control->ldap_linkid,
+								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								  pql_get_define("PQL_ATTR_GOODADDRESS"), '', $_REQUEST["goodmailaddr"]))
+			$success = 1;
+		}
+		
+		if($success)
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('goodmailaddr options')));
 		else
@@ -113,8 +136,10 @@ function goodmailaddr_save($type, $host)  {
 
 		attribute_forward($msg);
 		break;
+		// }}}
 
 	  case "del":
+		// {{{ delete value
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 								pql_get_define("PQL_ATTR_GOODADDRESS"), $_REQUEST["goodmailaddr"], ''))
@@ -127,6 +152,7 @@ function goodmailaddr_save($type, $host)  {
 
 		attribute_forward($msg);
 		break;
+		// }}}
 
 	  default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),

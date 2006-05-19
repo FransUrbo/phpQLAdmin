@@ -2,7 +2,7 @@
 // control attribute plugin for
 // pbsservers (max number of bytes in message)
 //
-// $Id: attrib.control.pbsservers.inc,v 2.9 2005-09-16 06:08:49 turbo Exp $
+// $Id: attrib.control.pbsservers.inc,v 2.10 2006-05-19 06:55:31 turbo Exp $
 
 // {{{ pbsservers_check(type)
 function pbsservers_check($type) {
@@ -56,9 +56,14 @@ function pbsservers_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	$_REQUEST["pbsservers"] = pql_get_attribute($_pql_control->ldap_linkid,
-												pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-												pql_get_define("PQL_ATTR_PBS_SERVERS"));
+	if($host == "Global") {
+	  $_REQUEST["pbsservers"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+												  pql_get_define("PQL_ATTR_PBS_SERVERS"), 0, pql_get_define("PQL_ATTR_CN")."=*");
+	} else {
+	  $_REQUEST["pbsservers"] = pql_get_attribute($_pql_control->ldap_linkid,
+												  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+												  pql_get_define("PQL_ATTR_PBS_SERVERS"));
+	}
 	
 	if(@is_null($_REQUEST["pbsservers"]))
 	  return true;
@@ -134,14 +139,31 @@ function pbsservers_print_form() {
 // {{{ pbsservers_save(type, host)
 function pbsservers_save($type, $host)  {
 	global $_pql_control, $error, $LANG;
+	$success = 0;
 
 	switch($type) {
 	  case "modify":
 	  case "add":
-		// save entries
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_PBS_SERVERS"), '', $_REQUEST["pbsservers"]))
+		// {{{ save entries
+		if($host == "Global") {
+		  // Get all QLC host
+		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+		  
+		  $success = 1;
+		  foreach($qlcs as $host) {
+			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+									 pql_get_define("PQL_ATTR_PBS_SERVERS"), '', $_REQUEST["pbsservers"]))
+			  $success = 0;
+		  }
+		} else {
+		  if(pql_modify_attribute($_pql_control->ldap_linkid,
+								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								  pql_get_define("PQL_ATTR_PBS_SERVERS"), '', $_REQUEST["pbsservers"]))
+			$success = 1;
+		}
+
+		if($success)
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('pbsservers options')));
 		else
@@ -151,6 +173,7 @@ function pbsservers_save($type, $host)  {
 
 		attribute_forward($msg);
 		break;
+		// }}}
 
 	  case "del":
 		if(pql_modify_attribute($_pql_control->ldap_linkid,

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // maxrcptcount (maximum number of RCPT TO's)
 //
-// $Id: attrib.control.maxrcptcount.inc,v 2.18 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.maxrcptcount.inc,v 2.19 2006-05-19 06:55:31 turbo Exp $
 
 // {{{ maxrcptcount_check(type)
 function maxrcptcount_check($type) {
@@ -30,9 +30,14 @@ function maxrcptcount_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	$_REQUEST["maxrcptcount"] = pql_get_attribute($_pql_control->ldap_linkid,
-												  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-												  pql_get_define("PQL_ATTR_MAXRCPTCOUNT"));
+	if($host == "Global") {
+	  $_REQUEST["maxrcptcount"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+													pql_get_define("PQL_ATTR_MAXRCPTCOUNT"), 0, pql_get_define("PQL_ATTR_CN")."=*");
+	} else {
+	  $_REQUEST["maxrcptcount"] = pql_get_attribute($_pql_control->ldap_linkid,
+													pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+													pql_get_define("PQL_ATTR_MAXRCPTCOUNT"));
+	}
 
 	if(@is_null($_REQUEST["maxrcptcount"]))
 	  return true;
@@ -95,14 +100,31 @@ function maxrcptcount_print_form() {
 // {{{ maxrcptcount_save(type, host)
 function maxrcptcount_save($type, $host) {
 	global $_pql_control, $LANG;
+	$success = 0;
 
 	switch($type) {
 		case "modify":
 		case "add":
-			// save entries
-			if(pql_modify_attribute($_pql_control->ldap_linkid,
-									pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-									pql_get_define("PQL_ATTR_MAXRCPTCOUNT"), 1, $_REQUEST["maxrcptcount"]))
+			// {{{ save entries
+			if($host == "Global") {
+			  // Get all QLC host
+			  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+								 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+
+			  $success = 1;
+			  foreach($qlcs as $host) {
+			    if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+									     pql_get_define("PQL_ATTR_MAXRCPTCOUNT"), '', $_REQUEST["maxrcptcount"]))
+			      $success = 0;
+			  }
+			} else {
+			  if(pql_modify_attribute($_pql_control->ldap_linkid,
+									  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+									  pql_get_define("PQL_ATTR_MAXRCPTCOUNT"), 1, $_REQUEST["maxrcptcount"]))
+				$success = 1;
+			}
+
+			if($success)
 			  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										   array('what' => $LANG->_('maxrcptcount options')));
 			else
@@ -112,6 +134,7 @@ function maxrcptcount_save($type, $host) {
 
 			attribute_forward($msg);
 			break;
+			// }}}
 
 		default:
 		  die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),

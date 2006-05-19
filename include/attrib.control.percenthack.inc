@@ -2,7 +2,7 @@
 // control attribute plugin for
 // percenthack (allowed domains for %-relaying)
 //
-// $Id: attrib.control.percenthack.inc,v 2.21 2005-09-16 06:08:49 turbo Exp $
+// $Id: attrib.control.percenthack.inc,v 2.22 2006-05-19 06:55:31 turbo Exp $
 
 // {{{ percenthack_check(type)
 function percenthack_check($type) {
@@ -36,9 +36,14 @@ function percenthack_init($host) {
 	global $_pql_control;
 	
 	// fetch data from ldap server
-	$_REQUEST["percenthack"] = pql_get_attribute($_pql_control->ldap_linkid,
-												 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-												 pql_get_define("PQL_ATTR_PERCENTHACK"));
+	if($host == "Global") {
+	  $_REQUEST["percenthack"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+												   pql_get_define("PQL_ATTR_PERCENTHACK"), 0, pql_get_define("PQL_ATTR_CN")."=*");
+	} else {
+	  $_REQUEST["percenthack"] = pql_get_attribute($_pql_control->ldap_linkid,
+												   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+												   pql_get_define("PQL_ATTR_PERCENTHACK"));
+	}
 	
 	if(!@$_REQUEST["percenthack"])
 	  return true;
@@ -113,14 +118,31 @@ function percenthack_print_form() {
 // {{{ percenthack_save(type, host)
 function percenthack_save($type, $host) {
 	global $_pql_control, $error, $LANG;
+	$success = 0;
 
 	switch($type) {
 	  case "modify":
 	  case "add":
-		// save entries
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_PERCENTHACK"), '', $_REQUEST["percenthack"])) 
+		// {{{ save entries
+		if($host == "Global") {
+		  // Get all QLC host
+		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+		  
+		  $success = 1;
+		  foreach($qlcs as $host) {
+			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+									 pql_get_define("PQL_ATTR_PERCENTHACK"), '', $_REQUEST["percenthack"]))
+			  $success = 0;
+		  }
+		} else {
+		  if(pql_modify_attribute($_pql_control->ldap_linkid,
+								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								  pql_get_define("PQL_ATTR_PERCENTHACK"), '', $_REQUEST["percenthack"])) 
+			$success = 1;
+		}
+
+		if($success)
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('percenthack options')));
 		else
@@ -130,7 +152,7 @@ function percenthack_save($type, $host) {
 
 		attribute_forward($msg);
 		break;
-
+		// }}}
 
 	  case "del":
 		if(pql_modify_attribute($_pql_control->ldap_linkid,

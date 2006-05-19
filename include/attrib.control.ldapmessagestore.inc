@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldapmessagestore (default prefix for mailbox paths)
 //
-// $Id: attrib.control.ldapmessagestore.inc,v 2.19 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.ldapmessagestore.inc,v 2.20 2006-05-19 06:55:31 turbo Exp $
 
 // {{{ ldapmessagestore_check(type)
 function ldapmessagestore_check($type) {
@@ -24,9 +24,14 @@ function ldapmessagestore_init($host) {
 	global $_pql_control;
 	
 	// fetch data from ldap server
-	$_REQUEST["ldapmessagestore"] = pql_get_attribute($_pql_control->ldap_linkid,
-													  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-													  pql_get_define("PQL_ATTR_LDAPMESSAGESTORE"));
+	if($host == "Global") {
+	  $_REQUEST["ldapmessagestore"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+														pql_get_define("PQL_ATTR_LDAPMESSAGESTORE"), 0, pql_get_define("PQL_ATTR_CN")."=*");
+	} else {
+	  $_REQUEST["ldapmessagestore"] = pql_get_attribute($_pql_control->ldap_linkid,
+														pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+														pql_get_define("PQL_ATTR_LDAPMESSAGESTORE"));
+	}
 
 	if(@is_null($_REQUEST["ldapmessagestore"]))
 	  return true;
@@ -84,14 +89,31 @@ function ldapmessagestore_print_form() {
 // {{{ ldapmessagestore_save(type, host)
 function ldapmessagestore_save($type, $host) {
 	global $_pql_control, $LANG;
+	$success = 0;
 	
 	switch($type) {
 	  case "modify":
 	  case "add":
-		// save entries
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_LDAPMESSAGESTORE"), 1, $_REQUEST["ldapmessagestore"]))
+		// {{{ save entries
+		if($host == "Global") {
+		  // Get all QLC host
+		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+		  
+		  $success = 1;
+		  foreach($qlcs as $host) {
+			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+									 pql_get_define("PQL_ATTR_LDAPMESSAGESTORE"), '', $_REQUEST["ldapmessagestore"]))
+			  $success = 0;
+		  }
+		} else {
+		  if(pql_modify_attribute($_pql_control->ldap_linkid,
+								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								  pql_get_define("PQL_ATTR_LDAPMESSAGESTORE"), 1, $_REQUEST["ldapmessagestore"]))
+			$success = 1;
+		}
+
+		if($success)
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('ldapserver options')));
 		else
@@ -101,6 +123,7 @@ function ldapmessagestore_save($type, $host) {
 		
 		attribute_forward($msg);
 		break;
+		// }}}
 
 	  default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),

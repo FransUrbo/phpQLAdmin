@@ -2,7 +2,7 @@
 // control attribute plugin for
 // bigbrother (max number of bytes in message)
 //
-// $Id: attrib.control.bigbrother.inc,v 2.9 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.bigbrother.inc,v 2.10 2006-05-19 06:55:31 turbo Exp $
 
 // {{{ bigbrother_check(type)
 function bigbrother_check($type) {
@@ -19,9 +19,14 @@ function bigbrother_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	$_REQUEST["bigbrother"] = pql_get_attribute($_pql_control->ldap_linkid,
-												pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-												pql_get_define("PQL_ATTR_BIGBROTHER"));
+	if($host == "Global") {
+	  $_REQUEST["bigbrother"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+												  pql_get_define("PQL_ATTR_BIGBROTHER"), 0, pql_get_define("PQL_ATTR_CN")."=*");
+	} else {
+	  $_REQUEST["bigbrother"] = pql_get_attribute($_pql_control->ldap_linkid,
+												  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+												  pql_get_define("PQL_ATTR_BIGBROTHER"));
+	}
 
 	if(!@$_REQUEST["bigbrother"])
 	  return true;
@@ -115,18 +120,35 @@ function bigbrother_print_form() {
 // {{{ bigbrother_save(type, host)
 function bigbrother_save($type, $host)  {
 	global $_pql_control, $error, $LANG;
+	$success = 0;
 
 	switch($type) {
 	  case "modify":
 	  case "add":
-		// save entries
+		// {{{ save entries
 		for($i=0; $i < count($_REQUEST["bigbrother"]); $i++)
 		  $entry[] = $_REQUEST["bigbrother"][$i];
 		$entry[] = $_REQUEST["bbmail_to"].":".$_REQUEST["bbmail_cpy"];
 
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_BIGBROTHER"), 1, $entry))
+		if($host == "Global") {
+		  // Get all QLC host
+		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+		  
+		  $success = 1;
+		  foreach($qlcs as $host) {
+			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+									 pql_get_define("PQL_ATTR_BIGBROTHER"), '', $entry))
+			  $success = 0;
+		  }
+		} else {
+		  if(pql_modify_attribute($_pql_control->ldap_linkid,
+								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								  pql_get_define("PQL_ATTR_BIGBROTHER"), 1, $entry))
+			$success = 1;
+		}
+
+		if($success)
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('bigbrother options')));
 		else
@@ -136,8 +158,10 @@ function bigbrother_save($type, $host)  {
 
 		attribute_forward($msg);
 		break;
+		// }}}
 
 	  case "del":
+		// {{{ delete value
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 								pql_get_define("PQL_ATTR_BIGBROTHER"), $_REQUEST["bigbrother"], ''))
@@ -150,6 +174,7 @@ function bigbrother_save($type, $host)  {
 
 		attribute_forward($msg);
 		break;
+		// }}}
 
 	  default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),

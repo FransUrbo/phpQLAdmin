@@ -2,7 +2,7 @@
 // control attribute plugin for
 // pbssecret (max number of bytes in message)
 //
-// $Id: attrib.control.pbssecret.inc,v 2.8 2005-09-16 06:08:49 turbo Exp $
+// $Id: attrib.control.pbssecret.inc,v 2.9 2006-05-19 06:55:31 turbo Exp $
 
 // {{{ pbssecret_check(type)
 function pbssecret_check($type) {
@@ -19,9 +19,14 @@ function pbssecret_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	$_REQUEST["pbssecret"] = pql_get_attribute($_pql_control->ldap_linkid,
-											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											   pql_get_define("PQL_ATTR_PBS_SECRET"));
+	if($host == "Global") {
+	  $_REQUEST["pbssecret"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+												 pql_get_define("PQL_ATTR_PBS_SECRET"), 0, pql_get_define("PQL_ATTR_CN")."=*");
+	} else {
+	  $_REQUEST["pbssecret"] = pql_get_attribute($_pql_control->ldap_linkid,
+												 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+												 pql_get_define("PQL_ATTR_PBS_SECRET"));
+	}
 
 	if(@is_null($_REQUEST["pbssecret"]))
 	  return true;
@@ -80,14 +85,31 @@ function pbssecret_print_form() {
 // {{{ pbssecret_save(type, host)
 function pbssecret_save($type, $host)  {
 	global $_pql_control, $error, $LANG;
+	$success = 0;
 
 	switch($type) {
 	  case "modify":
 	  case "add":
-		// save entries
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_PBS_SECRET"), 1, $_REQUEST["pbssecret"]))
+		// {{{ save entries
+		if($host == "Global") {
+		  // Get all QLC host
+		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+		  
+		  $success = 1;
+		  foreach($qlcs as $host) {
+			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+									 pql_get_define("PQL_ATTR_PBS_SECRET"), '', $_REQUEST["pbssecret"]))
+			  $success = 0;
+		  }
+		} else {
+		  if(pql_modify_attribute($_pql_control->ldap_linkid,
+								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								  pql_get_define("PQL_ATTR_PBS_SECRET"), 1, $_REQUEST["pbssecret"]))
+			$success = 1;
+		}
+
+		if($success)
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('pbssecret options')));
 		else
@@ -97,6 +119,8 @@ function pbssecret_save($type, $host)  {
 
 		attribute_forward($msg);
 		break;
+		// }}}
+
 	  default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
 								  array('type' => $type, 'file' => __FILE__)));

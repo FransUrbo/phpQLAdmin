@@ -2,7 +2,7 @@
 // control attribute plugin for
 // quotawarning (additional quota warning message)
 //
-// $Id: attrib.control.quotawarning.inc,v 2.20 2005-09-16 06:08:49 turbo Exp $
+// $Id: attrib.control.quotawarning.inc,v 2.21 2006-05-19 06:55:31 turbo Exp $
 
 // {{{ quotawarning_check(type)
 function quotawarning_check($type) {
@@ -24,9 +24,14 @@ function quotawarning_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	$_REQUEST["quotawarning"] = pql_get_attribute($_pql_control->ldap_linkid,
-												  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-												  pql_get_define("PQL_ATTR_QUOTA_WARNING"));
+	if($host == "Global") {
+	  $_REQUEST["quotawarning"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+													pql_get_define("PQL_ATTR_QUOTA_WARNING"), 0, pql_get_define("PQL_ATTR_CN")."=*");
+	} else {
+	  $_REQUEST["quotawarning"] = pql_get_attribute($_pql_control->ldap_linkid,
+													pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+													pql_get_define("PQL_ATTR_QUOTA_WARNING"));
+	}
 
 	// initialize radio button
 	if(!@$_REQUEST["quotawarning"])
@@ -95,17 +100,34 @@ function quotawarning_print_form() {
 // {{{ quotawarning_save(type, host)
 function quotawarning_save($type, $host) {
 	global $_pql_control, $LANG;
+	$success = 0;
 
 	switch($type) {
 	  case "modify":
 	  case "add":
-		// save entries
+		// {{{ save entries
 		if(!@$_REQUEST["use_quotawarning"])
 		  $_REQUEST["quotawarning"] = "";
 		
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_QUOTA_WARNING"), 1, $_REQUEST["quotawarning"]))
+		if($host == "Global") {
+		  // Get all QLC host
+		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+		  
+		  $success = 1;
+		  foreach($qlcs as $host) {
+			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+									 pql_get_define("PQL_ATTR_QUOTA_WARNING"), '', $_REQUEST["quotawarning"]))
+			  $success = 0;
+		  }
+		} else {
+		  if(pql_modify_attribute($_pql_control->ldap_linkid,
+								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								  pql_get_define("PQL_ATTR_QUOTA_WARNING"), 1, $_REQUEST["quotawarning"]))
+			$success = 1;
+		}
+
+		if($success)
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('quotawarning message')));
 		else
@@ -115,6 +137,8 @@ function quotawarning_save($type, $host) {
 
 		attribute_forward($msg);
 		break;
+		// }}}
+
 	  default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
 								  array('type' => $type, 'file' => __FILE__)));

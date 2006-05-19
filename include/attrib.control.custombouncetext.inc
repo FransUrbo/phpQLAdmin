@@ -2,7 +2,7 @@
 // control attribute plugin for
 // custombouncetext (additional bounce message)
 //
-// $Id: attrib.control.custombouncetext.inc,v 2.20 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.custombouncetext.inc,v 2.21 2006-05-19 06:55:31 turbo Exp $
 
 // {{{ custombouncetext_check(type)
 function custombouncetext_check($type) {
@@ -24,9 +24,14 @@ function custombouncetext_init($host) {
 	global $_pql_control;
 	
 	// fetch data from ldap server
-	$_REQUEST["custombouncetext"] = pql_get_attribute($_pql_control->ldap_linkid,
-													  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-													  pql_get_define("PQL_ATTR_CUSTOMBOUNCETEXT"));
+	if($host == "Global") {
+	  $_REQUEST["custombouncetext"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+														pql_get_define("PQL_ATTR_CUSTOMBOUNCETEXT"), 0, pql_get_define("PQL_ATTR_CN")."=*");
+	} else {
+	  $_REQUEST["custombouncetext"] = pql_get_attribute($_pql_control->ldap_linkid,
+														pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+														pql_get_define("PQL_ATTR_CUSTOMBOUNCETEXT"));
+	}
 	
 	if(@is_null($_REQUEST["custombouncetext"]))
 	  $_REQUEST["use_custombouncetext"] = 0;
@@ -103,17 +108,34 @@ function custombouncetext_print_form() {
 // {{{ custombouncetext_save(type, host)
 function custombouncetext_save($type, $host) {
 	global $_pql_control, $LANG;
+	$success = 0;
 	
 	switch($type) {
 	  case "modify":
 	  case "add":
-		// save entries
+		// {{{ save entries
 		if($_REQUEST["use_custombouncetext"] == "0")
 		  $_REQUEST["custombouncetext"] = "";
 		
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_CUSTOMBOUNCETEXT"), 1, $_REQUEST["custombouncetext"])) 
+		if($host == "Global") {
+		  // Get all QLC host
+		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+		  
+		  $success = 1;
+		  foreach($qlcs as $host) {
+			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+									 pql_get_define("PQL_ATTR_CUSTOMBOUNCETEXT"), '', $_REQUEST["custombouncetext"]))
+			  $success = 0;
+		  }
+		} else {
+		  if(pql_modify_attribute($_pql_control->ldap_linkid,
+								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								  pql_get_define("PQL_ATTR_CUSTOMBOUNCETEXT"), 1, $_REQUEST["custombouncetext"]))
+			$success = 1;
+		}
+
+		if($success)
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('custombouncetext message')));
 		else
@@ -123,6 +145,7 @@ function custombouncetext_save($type, $host) {
 		
 		attribute_forward($msg);
 		break;
+		// }}}
 
 	  default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),

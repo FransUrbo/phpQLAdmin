@@ -3,7 +3,7 @@
 // doublebouncehost (username of bounce sender)
 // doublebounceto (hostname of bounce sender)
 //
-// $Id: attrib.control.doublebouncehost.inc,v 2.20 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.doublebouncehost.inc,v 2.21 2006-05-19 06:55:31 turbo Exp $
 
 // {{{ doublebouncehost_check(type)
 function doublebouncehost_check($type) {
@@ -38,7 +38,12 @@ function doublebouncehost_init($host) {
 	// fetch data from ldap server
 	$attribs = array("doublebouncehost" => pql_get_define("PQL_ATTR_DOUBLEBOUNCEHOST"),
 					 "doublebounceto"   => pql_get_define("PQL_ATTR_DOUBLEBOUNCETO"));
-	foreach($attribs as $key => $attrib) {
+	if($host == "Global") {
+	  foreach($attribs as $key => $attrib)
+		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+											$attrib, 0, pql_get_define("PQL_ATTR_CN")."=*");
+	} else {
+	  foreach($attribs as $key => $attrib)
 		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid,
 											pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 											$attrib);
@@ -118,30 +123,46 @@ function doublebouncehost_print_form() {
 // {{{ doublebouncehost_save(type, host)
 function doublebouncehost_save($type, $host) {
 	global $_pql_control, $LANG;
+	$success = 0;
 
 	switch($type) {
 	  case "modify":
 	  case "add":
-		// save entries
+		// {{{ save entries
 		$attribs = array("doublebouncehost" => pql_get_define("PQL_ATTR_DOUBLEBOUNCEHOST"),
 						 "doublebounceto"   => pql_get_define("PQL_ATTR_DOUBLEBOUNCETO"));
 		foreach($attribs as $key => $attrib) {
-		  if(!@empty($_REQUEST[$key]))
-			$return[] = pql_modify_attribute($_pql_control->ldap_linkid,
-											 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											 $attrib, 1, $_REQUEST[$key]);
+		  if(!@empty($_REQUEST[$key])) {
+			if($host == "Global") {
+			  // Get all QLC host
+			  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+								 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+			  
+			  $success = 1;
+			  foreach($qlcs as $host) {
+				if(!pql_modify_attribute($_pql_control->ldap_linkid, $host, $attrib, '', $_REQUEST[$key]))
+				  $success = 0;
+			  }
+			} else {
+			  if(pql_modify_attribute($_pql_control->ldap_linkid,
+									  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+									  $attrib, 1, $_REQUEST[$key]))
+				$success = 1;
+			}
+		  }
 		}
 
-		if(in_array(false, $return))
+		if($success)
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+									   array('what' => $LANG->_('double bouncing options')));
+		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('double bouncing options')))
 			. ": " . pql_format_error(0);
-		else
-		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
-									   array('what' => $LANG->_('double bouncing options')));
 		
 		attribute_forward($msg);
 		break;
+		// }}}
 
 	  default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),

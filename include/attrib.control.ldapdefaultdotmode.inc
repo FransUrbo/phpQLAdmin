@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldapdefaultdotmode (default mode how to interpret .qmail files)
 //
-// $Id: attrib.control.ldapdefaultdotmode.inc,v 2.19 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.ldapdefaultdotmode.inc,v 2.20 2006-05-19 06:55:31 turbo Exp $
 
 // {{{ ldapdefaultdotmode_check(type)
 function ldapdefaultdotmode_check($type) {
@@ -37,9 +37,14 @@ function ldapdefaultdotmode_init($host) {
 	global $_pql_control;
 	
 	// fetch data from ldap server
-	$_REQUEST["ldapdefaultdotmode"] = pql_get_attribute($_pql_control->ldap_linkid,
-														pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-														pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"));
+	if($host == "Global") {
+	  $_REQUEST["ldapdefaultdotmode"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+														  pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"), 0, pql_get_define("PQL_ATTR_CN")."=*");
+	} else {
+	  $_REQUEST["ldapdefaultdotmode"] = pql_get_attribute($_pql_control->ldap_linkid,
+														  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+														  pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"));
+	}
 	
 	if(@is_null($_REQUEST["ldapdefaultdotmode"]))
 	  return true;
@@ -89,7 +94,7 @@ function ldapdefaultdotmode_print_form() {
         </tr>
 
         <tr class="subtitle">
-          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_('This affects LDAP delivery only. It doesn\'t work for local non-ldap deliveries')?>.</td>
+          <td colspan="2"><img src="images/info.png" width="16" height="16" border="0"><?=$LANG->_("This affects LDAP delivery only. It doesnt work for local non-ldap deliveries")?>.</td>
         </tr>
       </th>
     </table>
@@ -109,14 +114,31 @@ function ldapdefaultdotmode_print_form() {
 // {{{ ldapdefaultdotmode_save(type, host)
 function ldapdefaultdotmode_save($type, $host) {
 	global $_pql_control, $error, $LANG;
+	$success = 0;
 
 	switch($type) {
 	  case "modify":
 	  case "add":
-		// save entries
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"), 1, $_REQUEST["ldapdefaultdotmode"]))
+		// {{{ save entries
+		if($host == "Global") {
+			// Get all QLC host
+			$qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+							   '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+
+			$success = 1;
+			foreach($qlcs as $host) {
+				if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+										 pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"), '', $_REQUEST["ldapdefaultdotmode"]))
+	 				$success = 0;
+			}
+		} else {
+			if(pql_modify_attribute($_pql_control->ldap_linkid,
+									pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+									pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"), 1, $_REQUEST["ldapdefaultdotmode"]))
+				$success = 1;
+		}
+
+		if($success) 
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('ldapdefaultdotmode options')));
 		else
@@ -126,6 +148,7 @@ function ldapdefaultdotmode_save($type, $host) {
 
 		attribute_forward($msg);
 		break;
+		// }}}
 
 	  default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),

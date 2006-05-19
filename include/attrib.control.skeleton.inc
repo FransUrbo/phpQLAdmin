@@ -58,7 +58,7 @@
 //
 // Please look at other plugins to see which standard header text is recommanded.
 //
-// $Id: attrib.control.skeleton.inc,v 2.18 2005-09-16 06:08:50 turbo Exp $
+// $Id: attrib.control.skeleton.inc,v 2.19 2006-05-19 06:55:32 turbo Exp $
 //
 
 // {{{ xxx_check(type)
@@ -79,7 +79,7 @@ function xxx_check($type) {
 
 // {{{ xxx_init(void)
 // init values
-function xxx_init() {
+function xxx_init($host) {
 	global $_pql_control;
 	
 	// initiate values from ldap database
@@ -87,9 +87,14 @@ function xxx_init() {
 	// available for the other functions
 	
 	// fetch data from ldap server
-	$value = pql_get_attribute($_pql_control->ldap_linkid,
-							   pql_get_define("PQL_ATTR_CN")."=".$_REQUEST["mxhost"].",".$_SESSION["USER_SEARCH_DN_CTR"],
-							   pql_get_define("PQL_ATTR_xxx"));
+	if($host == "Global") {
+	  $value = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+								 pql_get_define("PQL_ATTR_xxx"), 0, pql_get_define("PQL_ATTR_CN")."=*");
+	} else {
+	  $value = pql_get_attribute($_pql_control->ldap_linkid,
+								 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								 pql_get_define("PQL_ATTR_xxx"));
+	}
 	
 	if(@is_null($value))
 	  return true;
@@ -168,6 +173,7 @@ function xxx_print_form() {
 // {{{ xxx_save(type, host)
 function xxx_save($type, $host) {
 	global $_pql_control, $error, $LANG;
+	$success = 0;
 
 	// this function will save the entered data.
 	// $type is most of the time "modify" so you
@@ -178,19 +184,35 @@ function xxx_save($type, $host) {
 	switch($type) {
 	  case "modify":
 	  case "add":
-		// save entries
-		
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								$_SESSION["USER_SEARCH_DN_CTR"], pql_get_define("PQL_ATTR_xxx"), '', $_REQUEST["xxx"]))
+		// {{{ save entries
+		if($host == "Global") {
+		  // Get all QLC host
+		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+		  
+		  $success = 1;
+		  foreach($qlcs as $host) {
+			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+									 pql_get_define("PQL_ATTR_xxx"), '', $_REQUEST["xxx"]))
+			  $success = 0;
+		  }
+		} else {
+		  if(pql_modify_attribute($_pql_control->ldap_linkid,
+								  $_SESSION["USER_SEARCH_DN_CTR"], pql_get_define("PQL_ATTR_xxx"), '', $_REQUEST["xxx"]))
+			$success = 1;
+		}
+
+		if($success)
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('xxx options')));
 		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('xxx options'))) . ": " . pql_format_error(0);
-
+		
 		// this will redirect to control_cat.php and display the message $msg
 		attribute_forward($msg);
-      break;
+		break;
+		// }}}
 
    	default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),

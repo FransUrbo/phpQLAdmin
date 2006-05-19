@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldaprebind (don't retrieve password, try to bind to dn)
 //
-// $Id: attrib.control.ldaprebind.inc,v 2.18 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.ldaprebind.inc,v 2.19 2006-05-19 06:55:31 turbo Exp $
 
 // {{{ ldaprebind_check(type)
 function ldaprebind_check($type) {
@@ -16,9 +16,15 @@ function ldaprebind_init($host) {
 	global $_pql_control;
 	
 	// fetch data from ldap server
-	$_REQUEST["ldaprebind"] = pql_get_attribute($_pql_control->ldap_linkid,
-												pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-												pql_get_define("PQL_ATTR_LDAPREBIND"));
+	if($host == "Global") {
+	  $_REQUEST["ldaprebind"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+												  pql_get_define("PQL_ATTR_LDAPREBIND"), 0, pql_get_define("PQL_ATTR_CN")."=*");
+	} else {
+	  $_REQUEST["ldaprebind"] = pql_get_attribute($_pql_control->ldap_linkid,
+												  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+												  pql_get_define("PQL_ATTR_LDAPREBIND"));
+	}
+
 	if(@is_null($_REQUEST["ldaprebind"]))
 	  return true;
 }
@@ -57,28 +63,46 @@ function ldaprebind_print_form($host) {
 // {{{ ldaprebind_save(type, host)
 function ldaprebind_save($type, $host) {
 	global $_pql_control, $LANG;
+	$success = 0;
 	$attrib = $_REQUEST["attrib"];
 
 	switch($type) {
 		case "modify":
 		case "add":
-			// save entries
+		  // {{{ save entries
+		  if($host == "Global") {
+			// Get all QLC host
+			$qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+							   '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+			
+			$success = 1;
+			foreach($qlcs as $host) {
+			  if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+									   pql_get_define("PQL_ATTR_LDAPREBIND"), '', $_REQUEST[$attrib]))
+				$success = 0;
+			}
+		  } else {
 			if(pql_modify_attribute($_pql_control->ldap_linkid,
 									pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 									pql_get_define("PQL_ATTR_LDAPREBIND"), 1, $_REQUEST[$attrib]))
-			  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
-										   array('what' => $LANG->_('ldaprebind options')));
-			else
-			  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-										   array('what' => $LANG->_('ldaprebind options')))
-				. ": " . pql_format_error(0);
-		
-		attribute_forward($msg);
-		break;
+			  $success = 1;
+		  }
 
-	  default:
-		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
-								  array('type' => $type, 'file' => __FILE__)));
+		  if($success)
+			$msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+										 array('what' => $LANG->_('ldaprebind options')));
+		  else
+			$msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+										 array('what' => $LANG->_('ldaprebind options')))
+			  . ": " . pql_format_error(0);
+		  
+		  attribute_forward($msg);
+		  break;
+		  // }}}
+
+		default:
+		  die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
+									array('type' => $type, 'file' => __FILE__)));
 	}
 }
 // }}}

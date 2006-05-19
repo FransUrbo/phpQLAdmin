@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtproutes (max number of bytes in message)
 //
-// $Id: attrib.control.smtproutes.inc,v 2.28 2005-09-16 06:08:50 turbo Exp $
+// $Id: attrib.control.smtproutes.inc,v 2.29 2006-05-19 06:55:32 turbo Exp $
 
 // {{{ smtproutes_check(type)
 
@@ -56,9 +56,15 @@ function smtproutes_init($host) {
 
 	if(!empty($host)) {
 		// fetch data from ldap server
-		$value = pql_get_attribute($_pql_control->ldap_linkid,
-								   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								   pql_get_define("PQL_ATTR_SMTPROUTES"));
+		if($host == "Global") {
+		  $value = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+									 pql_get_define("PQL_ATTR_SMTPROUTES"), 0, pql_get_define("PQL_ATTR_CN")."=*");
+		} else {
+		  $value = pql_get_attribute($_pql_control->ldap_linkid,
+									 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+									 pql_get_define("PQL_ATTR_SMTPROUTES"));
+		}
+
 		if(empty($value))
 		  return true;
 		elseif(is_array($value)) {
@@ -363,7 +369,7 @@ function smtproutes_save($type, $host) {
 	  case "modify":
 		// Fall trough. Modify and Add is basically the same thing (at lease it uses the same functions).
 	  case "add":
-		// save entries - combine attributes
+		// {{{ save entries - combine attributes
 		if(!empty($host)) {
 			// We're called from the control details page -> we know what object to update
 
@@ -403,10 +409,23 @@ function smtproutes_save($type, $host) {
 			}
 
 			// Update the object
-			if(pql_modify_attribute($_pql_control->ldap_linkid,
-									pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-									pql_get_define("PQL_ATTR_SMTPROUTES"), '', $smtproutes))
+			if($host == "Global") {
+			  // Get all QLC host
+			  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+								 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+
 			  $success = 1;
+			  foreach($qlcs as $host) {
+				if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+										 pql_get_define("PQL_ATTR_SMTPROUTES"), '', $smtproutes))
+				  $success = 0;
+			  }
+			} else {
+			  if(pql_modify_attribute($_pql_control->ldap_linkid,
+									  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+									  pql_get_define("PQL_ATTR_SMTPROUTES"), '', $smtproutes))
+				$success = 1;
+			}
 		} else {
 			// We're called from the domain details page -> we must find out what object to update
 
@@ -444,9 +463,10 @@ function smtproutes_save($type, $host) {
 
 		attribute_forward($msg);
 		break;
+		// }}}
 
 	  case "del":
-		// We'd like to remove a domain from one (or more) QmailLDAP/Controls objects
+		// {{{ We'd like to remove a domain from one (or more) QmailLDAP/Controls objects
 		// Go through each QmailLDAP/Controls object, fetching old values
 		if(@$_REQUEST["relay"]) {
 			// We're called from the control details page -> we know what object to update
@@ -536,6 +556,7 @@ function smtproutes_save($type, $host) {
 
 		attribute_forward($msg);
 		break;
+		// }}}
 
    	  default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
@@ -555,17 +576,18 @@ function smtproutes_help() {
 	matches host, qmail-remote will connect to relay, as if
 	host had relay as its only MX.  (It will also avoid
 	doing any CNAME lookups on recip.)  host may include a
-	colon and a port number to use instead of the normal
-	SMTP port, 25:
-	<br><br>
-			inside.af.mil:firewall.af.mil:26
-	<br><br>
+	port number to use instead of the normal SMTP port, 25:
+    <pre>
+            Source:      inside.af.mil
+            Destination: firewall.af.mil
+            Port:        26
+    </pre>
 	relay may be empty; this tells qmail-remote to look up
 	MX records as usual.  smtproutes may include wildcards:
-	<br><br>
-			.af.mil:<br>
-			:heaven.af.mil
-	<br><br>
+    <pre>
+            Source:      .af.mil
+            Destination: heaven.af.mil
+    </pre>
 	Here any address ending with .af.mil (but not af.mil
 	itself) is routed by its MX records; any other address
 	is artificially routed to heaven.af.mil.

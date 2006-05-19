@@ -4,7 +4,7 @@
 // or, if using new style quota
 // 	defaultQuotaSize and defaultQuotaCount
 //
-// $Id: attrib.control.ldapdefaultquota.inc,v 2.21 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.ldapdefaultquota.inc,v 2.22 2006-05-19 06:55:31 turbo Exp $
 
 // {{{ ldapdefaultquota_check(type)
 function ldapdefaultquota_check($type) {
@@ -67,10 +67,17 @@ function ldapdefaultquota_check($type) {
 // {{{ ldapdefaultquota_init(host)
 function ldapdefaultquota_init($host) {
     global $_pql_control;
-    
-    $quota = pql_get_attribute($_pql_control->ldap_linkid,
-							   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-							   pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"));
+
+    // fetch data from ldap server
+	if($host == "Global") {
+	  $quota = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+								 pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"), 0, pql_get_define("PQL_ATTR_CN")."=*");
+	} else {
+	  $quota = pql_get_attribute($_pql_control->ldap_linkid,
+								 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								 pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"));
+	}
+
     if(!is_null($quota)) {
 		$quota = pql_parse_quota($quota);
 		
@@ -83,6 +90,7 @@ function ldapdefaultquota_init($host) {
       $_REQUEST["options"] = "default";
 }
 // }}}
+
 
 // {{{ ldapdefaultquota_print_view(host)
 // shows information about defaultquota
@@ -166,6 +174,7 @@ function ldapdefaultquota_print_form($type = "modify") {
 // {{{ ldapdefaultquota_save(type, host)
 function ldapdefaultquota_save($type, $host) {
     global $_pql_control, $LANG;
+	$success = 0;
 
 	// Just incase user 'forgets' to tick in the 'User defined' field...
 	if(@empty($_REQUEST["options"]) and (!@empty($_REQUEST["maxsize"]) or !@empty($_REQUEST["maxmails"]))) {
@@ -206,32 +215,39 @@ function ldapdefaultquota_save($type, $host) {
     switch($type) {
       case "modify":
       case "add":
-		$dn = pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"];
-		$failed = 0;
-
-		if(@$_SESSION["OLD_STYLE_QUOTA"])  {
-			// Set the old style quota value
-			if(!pql_modify_attribute($_pql_control->ldap_linkid, $dn, pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"), 1, $mailquota))
-			  $failed = 1;
-		}
+		// {{{ save values
+		if(@$_SESSION["OLD_STYLE_QUOTA"])
+		  $entry[pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA")] = $mailquota;
 
 		if(@$_SESSION["NEW_STYLE_QUOTA"])  {
-			// Set the new style quota values
-			if(!pql_modify_attribute($_pql_control->ldap_linkid, $dn, pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA_SIZE"), 1,
-									 $_REQUEST["maxsize"] * 1024))
-			  $failed = 1;
-
-			if(!pql_modify_attribute($_pql_control->ldap_linkid, $dn, pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA_COUNT"), 1,
-									 $_REQUEST["maxmails"]))
-			  $failed = 1;
+		  $entry[pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA_SIZE")]  = $_REQUEST["maxsize"] * 1024;
+		  $entry[pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA_COUNT")] = $_REQUEST["maxmails"];
 		}
 
-		if($failed)
+		if($host == "Global") {
+		  // Get all QLC host
+		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+		  
+		  $success = 1;
+		  foreach($qlcs as $host) {
+			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host, '', '', $entry))
+			  $success = 0;
+		  }
+		} else {
+		  if(pql_modify_attribute($_pql_control->ldap_linkid,
+								  pql_get_define("PQL_ATTR_CN") . "=" . $host . "," . $_SESSION["USER_SEARCH_DN_CTR"],
+								  '', 1, $entry))
+			$success = 1;
+		}
+
+		if(!$success)
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('quota'))) . ": " . pql_format_error(0);
 
 		attribute_forward($msg);
 		break;
+		// }}}
 							    
       default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),

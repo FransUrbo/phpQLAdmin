@@ -2,7 +2,7 @@
 // control attribute plugin for
 // relaymailfrom (allowed sender addresses for relaying)
 //
-// $Id: attrib.control.relaymailfrom.inc,v 2.22 2005-09-16 06:08:50 turbo Exp $
+// $Id: attrib.control.relaymailfrom.inc,v 2.23 2006-05-19 06:55:32 turbo Exp $
 
 // {{{ relaymailfrom_check(type)
 function relaymailfrom_check($type) {
@@ -42,9 +42,14 @@ function relaymailfrom_init($host) {
 	global $_pql_control;
 	
 	// fetch data from ldap server
-	$_REQUEST["relaymailfrom"] = pql_get_attribute($_pql_control->ldap_linkid,
-												   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-												   pql_get_define("PQL_ATTR_RELAYMAILFROM"));
+	if($host == "Global") {
+	  $_REQUEST["relaymailfrom"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+													 pql_get_define("PQL_ATTR_RELAYMAILFROM"), 0, pql_get_define("PQL_ATTR_CN")."=*");
+	} else {
+	  $_REQUEST["relaymailfrom"] = pql_get_attribute($_pql_control->ldap_linkid,
+													 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+													 pql_get_define("PQL_ATTR_RELAYMAILFROM"));
+	}
 	
 	if(@is_null($_REQUEST["relaymailfrom"]))
 	  return true;
@@ -137,14 +142,31 @@ function relaymailfrom_print_form() {
 // {{{ relaymailfrom_save(type, host)
 function relaymailfrom_save($type, $host) {
 	global $_pql_control, $LANG;
+	$success = 0;
 
 	switch($type) {
 		case "modify":
 		case "add":
-			// save entries
-			if(pql_modify_attribute($_pql_control->ldap_linkid,
-									pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-									pql_get_define("PQL_ATTR_RELAYMAILFROM"), '', $_REQUEST["relaymailfrom"]))
+			// {{{ save entries
+			if($host == "Global") {
+			  // Get all QLC host
+			  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+							     '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+
+			  $success = 1;
+			  foreach($qlcs as $host) {
+			    if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+									     pql_get_define("PQL_ATTR_RELAYMAILFROM"), '', $_REQUEST["relaymailfrom"]))
+			      $success = 0;
+				}
+			  } else {
+				if(pql_modify_attribute($_pql_control->ldap_linkid,
+										pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+										pql_get_define("PQL_ATTR_RELAYMAILFROM"), '', $_REQUEST["relaymailfrom"]))
+				  $success = 1;
+			}
+
+			if($success)
 			  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										   array('what' => $LANG->_('relaymailfrom options')));
 			else
@@ -153,8 +175,10 @@ function relaymailfrom_save($type, $host) {
 
 			attribute_forward($msg);
 		    break;
+			// }}}
 
 		case "del":
+			// {{{ delete value
 			if(pql_modify_attribute($_pql_control->ldap_linkid,
 									pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 									pql_get_define("PQL_ATTR_RELAYMAILFROM"), $_REQUEST["relaymailfrom"], ''))
@@ -167,6 +191,7 @@ function relaymailfrom_save($type, $host) {
 
 			attribute_forward($msg);
 			break;
+			// }}}
 
 		default:
 		  die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
@@ -174,6 +199,7 @@ function relaymailfrom_save($type, $host) {
 	}
 }
 // }}}
+
 
 // {{{ relaymailfrom_help(void)
 function relaymailfrom_help() {

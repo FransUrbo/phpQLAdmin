@@ -2,7 +2,7 @@
 // control attribute plugin for
 // idhost (host name for message id's)
 //
-// $Id: attrib.control.idhost.inc,v 2.21 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.idhost.inc,v 2.22 2006-05-19 06:55:31 turbo Exp $
 
 // {{{ idhost_check(type)
 function idhost_check($type) {
@@ -24,9 +24,14 @@ function idhost_init($host) {
 	global $_pql_control;
 	
 	// fetch data from ldap server
-	$_REQUEST["idhost"] = pql_get_attribute($_pql_control->ldap_linkid,
-											pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											pql_get_define("PQL_ATTR_IDHOST"));
+	if($host == "Global") {
+	  $_REQUEST["idhost"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+											  pql_get_define("PQL_ATTR_IDHOST"), 0, pql_get_define("PQL_ATTR_CN")."=*");
+	} else {
+	  $_REQUEST["idhost"] = pql_get_attribute($_pql_control->ldap_linkid,
+											  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+											  pql_get_define("PQL_ATTR_IDHOST"));
+	}
 	
 	if(@is_null($_REQUEST["idhost"]))
 	  return true;
@@ -88,14 +93,31 @@ function idhost_print_form() {
 // {{{ idhost_save(type, host)
 function idhost_save($type, $host) {
 	global $_pql_control, $LANG;
+	$success = 0;
 
 	switch($type) {
 	  case "modify":
 	  case "add":
-		// save entries
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_IDHOST"), '', $_REQUEST["idhost"]))
+		// {{{ save entries
+		if($host == "Global") {
+		  // Get all QLC host
+		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+		  
+		  $success = 1;
+		  foreach($qlcs as $host) {
+			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+									 pql_get_define("PQL_ATTR_IDHOST"), '', $_REQUEST["idhost"]))
+			  $success = 0;
+		  }
+		} else {
+		  if(pql_modify_attribute($_pql_control->ldap_linkid,
+								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								  pql_get_define("PQL_ATTR_IDHOST"), '', $_REQUEST["idhost"]))
+			$success = 0;
+		}
+
+		if($success)
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('idhost options')));
 		else
@@ -105,6 +127,7 @@ function idhost_save($type, $host) {
 
 		attribute_forward($msg);
 		break;
+		// }}}
 
 	  default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),

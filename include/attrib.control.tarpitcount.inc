@@ -3,7 +3,7 @@
 // tarpitcount (user id of virtual user)
 // tarpitdelay (group id of virtual user)
 //
-// $Id: attrib.control.tarpitcount.inc,v 2.20 2005-09-16 06:08:50 turbo Exp $
+// $Id: attrib.control.tarpitcount.inc,v 2.21 2006-05-19 06:55:32 turbo Exp $
 
 // {{{ tarpitcount_check(type)
 function tarpitcount_check($type) {
@@ -56,7 +56,12 @@ function tarpitcount_init($host) {
 	// fetch data from ldap server
 	$attribs = array("tarpitcount" => pql_get_define("PQL_ATTR_TARPITCOUNT"),
 					 "tarpitdelay" => pql_get_define("PQL_ATTR_TARPITDELAY"));
-	foreach($attribs as $key => $attrib) {
+	if($host == "Global") {
+	  foreach($attribs as $key => $attrib)
+		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+											$attrib, 0, pql_get_define("PQL_ATTR_CN")."=*");
+	} else {
+	  foreach($attribs as $key => $attrib)
 		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid,
 											pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 											$attrib);
@@ -134,30 +139,46 @@ function tarpitcount_print_form() {
 // {{{ tarpitcount_save(type, host)
 function tarpitcount_save($type, $host) {
 	global $_pql_control, $LANG;
+	$success = 0;
 
 	switch($type) {
 	  case "modify":
 	  case "add":
-		// save entries
+		// {{{ save entries
 		$attribs = array("tarpitcount" => pql_get_define("PQL_ATTR_TARPITCOUNT"),
 						 "tarpitdelay" => pql_get_define("PQL_ATTR_TARPITDELAY"));
 		foreach($attribs as $key => $attrib) {
 		  // Allow 'tarpit{Count,Delay}' to be '0' (disable).
-		  if(@isset($_REQUEST[$key]))
-			$return[] = pql_modify_attribute($_pql_control->ldap_linkid,
-											 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											 $attrib, 1, $_REQUEST[$key]);
+		  if(@isset($_REQUEST[$key])) {
+			if($host == "Global") {
+			  // Get all QLC host
+			  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+								 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+			  
+			  $success = 1;
+			  foreach($qlcs as $host) {
+				if(!pql_modify_attribute($_pql_control->ldap_linkid, $host, $attrib, '', $_REQUEST[$key]))
+				  $success = 0;
+			  }
+			} else {
+			  if(pql_modify_attribute($_pql_control->ldap_linkid,
+									  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+									  $attrib, 1, $_REQUEST[$key]))
+				$success = 1;
+			}
+		  }
 		}
 		
-		if(in_array(false, $return))
-		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
-									   array('what' => $LANG->_('tarpitting options'))) . ": " . pql_format_error(0);
-		else
+		if($success)
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('tarpitting options')));
+		else
+		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
+									   array('what' => $LANG->_('tarpitting options'))) . ": " . pql_format_error(0);
 																							 
 		attribute_forward($msg);
 		break;
+		// }}}
 
 	  default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),

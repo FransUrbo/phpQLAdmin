@@ -2,7 +2,7 @@
 // control attribute plugin for
 // pbsip (max number of bytes in message)
 //
-// $Id: attrib.control.pbsip.inc,v 2.8 2005-09-16 06:08:49 turbo Exp $
+// $Id: attrib.control.pbsip.inc,v 2.9 2006-05-19 06:55:31 turbo Exp $
 
 // {{{ pbsip_check(type)
 function pbsip_check($type) {
@@ -56,9 +56,14 @@ function pbsip_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	$_REQUEST["pbsip"] = pql_get_attribute($_pql_control->ldap_linkid,
-										   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-										   pql_get_define("PQL_ATTR_PBS_IP"));
+	if($host == "Global") {
+	  $_REQUEST["pbsip"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+											 pql_get_define("PQL_ATTR_PBS_IP"), 0, pql_get_define("PQL_ATTR_CN")."=*");
+	} else {
+	  $_REQUEST["pbsip"] = pql_get_attribute($_pql_control->ldap_linkid,
+											 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+											 pql_get_define("PQL_ATTR_PBS_IP"));
+	}
 
 	if(@is_null($_REQUEST["pbsip"]))
 	  return true;
@@ -117,14 +122,31 @@ function pbsip_print_form() {
 // {{{ pbsip_save(type, host)
 function pbsip_save($type, $host)  {
 	global $_pql_control, $error, $LANG;
+	$success = 1;
 
 	switch($type) {
 	  case "modify":
 	  case "add":
-		// save entries
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_PBS_IP"), 1, $_REQUEST["pbsip"]))
+		// {{{ save entries
+		if($host == "Global") {
+		  // Get all QLC host
+		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+		  
+		  $success = 1;
+		  foreach($qlcs as $host) {
+			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+									 pql_get_define("PQL_ATTR_PBS_IP"), '', $_REQUEST["pbsip"]))
+			  $success = 0;
+		  }
+		} else {
+		  if(pql_modify_attribute($_pql_control->ldap_linkid,
+								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								  pql_get_define("PQL_ATTR_PBS_IP"), 1, $_REQUEST["pbsip"]))
+			$success = 1;
+		}
+
+		if($success)
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('POP before SMTP server IP address')));
 		else
@@ -134,6 +156,8 @@ function pbsip_save($type, $host)  {
 
 		attribute_forward($msg);
 		break;
+		// }}}
+
 	  default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
 								  array('type' => $type, 'file' => __FILE__)));

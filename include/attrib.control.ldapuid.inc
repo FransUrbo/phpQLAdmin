@@ -3,7 +3,7 @@
 // ldapuid (user id of virtual user)
 // ldapgid (group id of virtual user)
 //
-// $Id: attrib.control.ldapuid.inc,v 2.18 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.ldapuid.inc,v 2.19 2006-05-19 06:55:31 turbo Exp $
 
 // {{{ ldapuid_check(type)
 function ldapuid_check($type) {
@@ -50,7 +50,12 @@ function ldapuid_init($host) {
 	// fetch data from ldap server
 	$attribs = array("ldapuid" => pql_get_define("PQL_ATTR_LDAPUID"),
 					 "ldapgid" => pql_get_define("PQL_ATTR_LDAPGID"));
-	foreach($attribs as $key => $attrib) {
+	if($host == "Global") {
+	  foreach($attribs as $key => $attrib)
+		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+											$attrib, 0, pql_get_define("PQL_ATTR_CN")."=*");
+	} else {
+	  foreach($attribs as $key => $attrib)
 		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid,
 											pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 											$attrib);
@@ -132,17 +137,33 @@ function ldapuid_save($type, $host) {
 	switch($type) {
 	  case "modify":
 	  case "add":
-		// save entries
+		// {{{ save entries
 		$attribs = array("ldapuid" => pql_get_define("PQL_ATTR_LDAPUID"),
 						 "ldapgid" => pql_get_define("PQL_ATTR_LDAPGID"));
+
+		$success = 1;
 		foreach($attribs as $key => $attrib) {
-		  if(!@empty($_REQUEST[$key]))
-			$return[] = pql_modify_attribute($_pql_control->ldap_linkid,
-											 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											 $attrib, 1, $_REQUEST[$key]);
+		  if(!@empty($_REQUEST[$key])) {
+			if($host == "Global") {
+			  // Get all QLC host
+			  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+								 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+			  
+			  foreach($qlcs as $host) {
+				if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+										 $attrib, '', $_REQUEST[$key]))
+				  $success = 0;
+			  }
+			} else {
+			  if(!pql_modify_attribute($_pql_control->ldap_linkid,
+									   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+									   $attrib, 1, $_REQUEST[$key]))
+				$success = 0;
+			}
+		  }
 		}
 		
-		if(in_array(false, $return))
+		if(!$success)
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('virtual user options')))
 			. ": " . pql_format_error(0);
@@ -159,7 +180,6 @@ function ldapuid_save($type, $host) {
 	}
 }
 // }}}
-
 
 // {{{ ldapuid_help(void)
 function ldapuid_help() {

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // badrcptto (blocked local addresses)
 //
-// $Id: attrib.control.badrcptto.inc,v 2.24 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.badrcptto.inc,v 2.25 2006-05-19 06:55:31 turbo Exp $
 
 // {{{ badrcptto_check(type)
 function badrcptto_check($type) {
@@ -34,9 +34,14 @@ function badrcptto_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	$_REQUEST["badrcptto"] = pql_get_attribute($_pql_control->ldap_linkid,
-											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											   pql_get_define("PQL_ATTR_BADRCPTTO"));
+	if($host == "Global") {
+	  $_REQUEST["badrcptto"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+												 pql_get_define("PQL_ATTR_BADRCPTTO"), 0, pql_get_define("PQL_ATTR_CN")."=*");
+	} else {
+	  $_REQUEST["badrcptto"] = pql_get_attribute($_pql_control->ldap_linkid,
+												 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+												 pql_get_define("PQL_ATTR_BADRCPTTO"));
+	}
 
 	if(@is_null($_REQUEST["badrcptto"]))
 	  return true;
@@ -118,14 +123,31 @@ function badrcptto_print_form() {
 // {{{ badrcptto_save(type, host)
 function badrcptto_save($type, $host) {
 	global $_pql_control, $LANG;
+	$success = 0;
 
 	switch($type) {
 	  case "modify":
 	  case "add":
-		// save entries
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_BADRCPTTO"), '', $_REQUEST["badrcptto"]))
+		// {{{ save entries
+		if($host == "Global") {
+		  // Get all QLC host
+		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+
+		  $success = 1;
+		  foreach($qlcs as $host) {
+			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+									 pql_get_define("PQL_ATTR_BADRCPTTO"), '', $_REQUEST["badrcptto"]))
+			  $success = 0;
+		  }
+		} else {
+		  if(pql_modify_attribute($_pql_control->ldap_linkid,
+								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								  pql_get_define("PQL_ATTR_BADRCPTTO"), '', $_REQUEST["badrcptto"]))
+			$success = 1;
+		}
+
+		if($success)
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('badrcptto options')));
 		else
@@ -135,8 +157,10 @@ function badrcptto_save($type, $host) {
 
 		attribute_forward($msg);
 		break;
+		// }}}
 
 	  case "del":
+		// {{{ delete value
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 								pql_get_define("PQL_ATTR_BADRCPTTO"), $_REQUEST["badrcptto"], ''))
@@ -149,6 +173,7 @@ function badrcptto_save($type, $host) {
 
 		attribute_forward($msg);
 		break;
+		// }}}
 
 	  default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),

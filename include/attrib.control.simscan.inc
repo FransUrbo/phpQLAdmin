@@ -2,7 +2,7 @@
 // control attribute plugin for
 // SimScan
 //
-// $Id: attrib.control.simscan.inc,v 2.3 2005-09-16 06:08:50 turbo Exp $
+// $Id: attrib.control.simscan.inc,v 2.4 2006-05-19 06:55:32 turbo Exp $
 
 // {{{ simscan_check(type)
 function simscan_check($type) {
@@ -27,8 +27,13 @@ function simscan_init($host) {
 	foreach($attribs as $key => $attrib) {
 	  // Get default value
 	  if(@$_REQUEST["mxhost"]) {
-		$cn = pql_get_define("PQL_ATTR_CN") . "=" . $_REQUEST["mxhost"] . "," . $_SESSION["USER_SEARCH_DN_CTR"];
-		$value = pql_get_attribute($_pql_control->ldap_linkid, $cn, $attrib);
+		if($host == "Global") {
+		  $value = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $attrib, 0
+									 pql_get_define("PQL_ATTR_CN")."=*");
+		} else {
+		  $cn = pql_get_define("PQL_ATTR_CN") . "=" . $_REQUEST["mxhost"] . "," . $_SESSION["USER_SEARCH_DN_CTR"];
+		  $value = pql_get_attribute($_pql_control->ldap_linkid, $cn, $attrib);
+		}
 	  } else
 		$value = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib);
 	  
@@ -194,21 +199,19 @@ function simscan_print_form($host) {
 // {{{ simscan_save(type, host)
 function simscan_save($type, $host) {
 	global $_pql_control, $LANG;
-	echo "simscan_save($type, $host)<br>";
+	$success = 0;
 
 	$attrib = $_REQUEST["attrib"];
 	switch($type) {
 		case "modify":
 		case "add":
 			// {{{ Add or Modify an entry
-
 			if($attrib == 'simscanattachmentsuffix')
 			  $replace = '';
 			else
 			  $replace = 1;
 
-			// -------------------------
-			// Make sure the QmailLDAP/Controls object contain the objectclass 'phpQLAdminMXHostAddition'.
+			// {{{ Make sure the QmailLDAP/Controls object contain the objectclass 'phpQLAdminMXHostAddition'.
 			$ocs = pql_get_attribute($_pql_control->ldap_linkid, pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 									 pql_get_define("PQL_ATTR_OBJECTCLASS"));
 			if((!is_array($ocs) and !eregi('phpQLAdminMXHostAddition', $ocs)) or
@@ -221,26 +224,56 @@ function simscan_save($type, $host) {
 			  else
 				$ocs[] = 'phpQLAdminMXHostAddition';
 
-			  if(!pql_modify_attribute($_pql_control->ldap_linkid,
-									  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-									  pql_get_define("PQL_ATTR_OBJECTCLASS"), $replace, $ocs))
-			  {
+			  if($host == "Global") {
+				// Get all QLC host
+				$qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+								   '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+				
+				$success = 1;
+				foreach($qlcs as $host) {
+				  if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+										   pql_get_define("PQL_ATTR_OBJECTCLASS"), '', $ocs))
+					$success = 0;
+				}
+			  } else {
+				if(pql_modify_attribute($_pql_control->ldap_linkid,
+										pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+										pql_get_define("PQL_ATTR_OBJECTCLASS"), $replace, $ocs))
+				  $success = 1;
+			  }
+
+			  if(!$success)
 				if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
-				  echo "<font color=\"red\">Can't add object class 'phpQLAdminMXHostAddition'</font>";
+				  die("<font color=\"red\">Can't add object class 'phpQLAdminMXHostAddition'</font>");
 				else
 				  die("Can't add object class 'phpQLAdminMXHostAddition'");
 			  }
 			}
+			// }}}
 
-			// -------------------------
-			// Modify attribute
+			// {{{ Modify attribute
 			if(($attrib == "simscanspamassassin") or ($attrib == "simscanclamantivirus") or ($attrib == simscantrophie))
 			  // We have a value and it's a toggle - Convert the boolean value to an integer
 			  $_REQUEST["set"] = pql_format_bool($_REQUEST["set"]);
 
-			if(pql_modify_attribute($_pql_control->ldap_linkid,
-									pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-									$attrib, $replace, $_REQUEST["set"]))
+			if($host == "Global") {
+			  // Get all QLC host
+			  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+								 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+			  
+			  $success = 1;
+			  foreach($qlcs as $host) {
+				if(!pql_modify_attribute($_pql_control->ldap_linkid, $host, $attrib, '', $_REQUEST["set"]))
+				  $success = 0;
+			  }
+			} else {
+			  if(pql_modify_attribute($_pql_control->ldap_linkid,
+									  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+									  $attrib, $replace, $_REQUEST["set"]))
+				$success = 1;
+			}
+
+			if($success)
 			  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										   array('what' => $LANG->_('SimScan option')));
 			else
@@ -248,6 +281,7 @@ function simscan_save($type, $host) {
 										   array('what' => $LANG->_('SimScan option')))
 				. ": " . pql_format_error(0);
 			break;
+			// }}}
 
 			// }}}
 

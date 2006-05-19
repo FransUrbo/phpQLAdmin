@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldaplocaldelivery (search for local account, if ldap search is not successful)
 //
-// $Id: attrib.control.ldaplocaldelivery.inc,v 2.18 2005-09-21 05:29:46 turbo Exp $
+// $Id: attrib.control.ldaplocaldelivery.inc,v 2.19 2006-05-19 06:55:31 turbo Exp $
 
 // {{{ ldaplocaldelivery_check(type)
 function ldaplocaldelivery_check($type) {
@@ -16,9 +16,14 @@ function ldaplocaldelivery_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	$_REQUEST["ldaplocaldelivery"] = pql_get_attribute($_pql_control->ldap_linkid,
-													   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-													   pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY"));
+	if($host == "Global") {
+	  $_REQUEST["ldaplocaldelivery"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+														 pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY"), 0, pql_get_define("PQL_ATTR_CN")."=*");
+	} else {
+	  $_REQUEST["ldaplocaldelivery"] = pql_get_attribute($_pql_control->ldap_linkid,
+														 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+														 pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY"));
+	}
 
 	if(@is_null($_REQUEST["ldaplocaldelivery"] ))
 	  return true;
@@ -57,15 +62,32 @@ function ldaplocaldelivery_print_form() {
 // {{{ ldaplocaldelivery_save(type, host)
 function ldaplocaldelivery_save($type, $host) {
 	global $_pql_control, $LANG;
+	$success = 0;
 	$attrib = $_REQUEST["attrib"];
 
 	switch($type) {
 	  case "modify":
 	  case "add":
-		// save entries
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY"), 1, $_REQUEST[$attrib]))
+		// {{{ save entries
+		if($host == "Global") {
+		  // Get all QLC host
+		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+		  
+		  $success = 1;
+		  foreach($qlcs as $host) {
+			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+									 pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY"), '', $_REQUEST[$attrib]))
+			  $success = 0;
+		  }
+		} else {
+		  if(pql_modify_attribute($_pql_control->ldap_linkid,
+								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								  pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY"), 1, $_REQUEST[$attrib]))
+			$success = 1;
+		}
+
+		if($success)
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('ldaplocaldelivery options')));
 		else
@@ -75,6 +97,7 @@ function ldaplocaldelivery_save($type, $host) {
 
 		attribute_forward($msg);
 		break;
+		// }}}
 
 	  default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),

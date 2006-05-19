@@ -3,7 +3,7 @@
 // defaultdomain (default domain)
 // defaulthost (default hostname)
 //
-// $Id: attrib.control.defaultdomain.inc,v 2.19 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.defaultdomain.inc,v 2.20 2006-05-19 06:55:31 turbo Exp $
 
 // {{{ defaultdomain_check(type)
 function defaultdomain_check($type) {
@@ -41,11 +41,17 @@ function defaultdomain_init($host) {
 	$attribs = array("defaultdomain" => pql_get_define("PQL_ATTR_DEFAULTDOMAIN"),
 					 "defaulthost"   => pql_get_define("PQL_ATTR_DEFAULTHOST"),
 					 "plusdomain"    => pql_get_define("PQL_ATTR_PLUSDOMAIN"));
-	foreach($attribs as $key => $attrib) {
+	if($host == "Global") {
+	  foreach($attribs as $key => $attrib)
+		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+											$attrib, 0, pql_get_define("PQL_ATTR_CN")."=*");
+	} else {
+	  foreach($attribs as $key => $attrib)
 		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid,
 											pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 											$attrib);
 	}
+
 }
 // }}}
 
@@ -132,31 +138,47 @@ function defaultdomain_print_form() {
 // {{{ defaultdomain_save(type, host)
 function defaultdomain_save($type, $host) {
 	global $_pql_control, $LANG;
+	$success = 0;
 
 	switch($type) {
 	  case "modify":
 	  case "add":
-		// save entries
+		// {{{ save entries
 		$attribs = array("defaultdomain" => pql_get_define("PQL_ATTR_DEFAULTDOMAIN"),
 						 "defaulthost"   => pql_get_define("PQL_ATTR_DEFAULTHOST"),
 						 "plusdomain"    => pql_get_define("PQL_ATTR_PLUSDOMAIN"));
 		foreach($attribs as $key => $attrib) {
-		  if(!@empty($_REQUEST[$key]))
-			$return[] = pql_modify_attribute($_pql_control->ldap_linkid,
-											 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											 $attrib, 1, $_REQUEST[$key]);
+		  if(!@empty($_REQUEST[$key])) {
+			if($host == "Global") {
+			  // Get all QLC host
+			  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+								 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+			  
+			  $success = 1;
+			  foreach($qlcs as $host) {
+				if(!pql_modify_attribute($_pql_control->ldap_linkid, $host, $attrib, '', $_REQUEST[$key]))
+				  $success = 0;
+			  }
+			} else {
+			  if(pql_modify_attribute($_pql_control->ldap_linkid,
+									  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+									  $attrib, 1, $_REQUEST[$key]))
+				$success = 1;
+			}
+		  }
 		}
 		
-		if(in_array(false, $return))
+		if($success)
+		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
+									   array('what' => $LANG->_('default host / domain options')));
+		else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('default host / domain options')))
 			. ": " . pql_format_error(0);
-		else
-		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
-									   array('what' => $LANG->_('default host / domain options')));
 
 		attribute_forward($msg);
 		break;
+		// }}}
 
 	  default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),

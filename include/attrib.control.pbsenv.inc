@@ -2,7 +2,7 @@
 // control attribute plugin for
 // pbsenv (max number of bytes in message)
 //
-// $Id: attrib.control.pbsenv.inc,v 2.10 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.pbsenv.inc,v 2.11 2006-05-19 06:55:31 turbo Exp $
 
 // {{{ pbsenv_check(type)
 function pbsenv_check($type) {
@@ -19,9 +19,14 @@ function pbsenv_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	$_REQUEST["pbsenv"] = pql_get_attribute($_pql_control->ldap_linkid,
-											pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											pql_get_define("PQL_ATTR_PBS_ENV"));
+	if($host == "Global") {
+	  $_REQUEST["pbsenv"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+											  pql_get_define("PQL_ATTR_PBS_ENV"), 0, pql_get_define("PQL_ATTR_CN")."=*");
+	} else {
+	  $_REQUEST["pbsenv"] = pql_get_attribute($_pql_control->ldap_linkid,
+											  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+											  pql_get_define("PQL_ATTR_PBS_ENV"));
+	}
 
 	if(@is_null($_REQUEST["pbsenv"]) or !@$_REQUEST["pbsenv"][0])
 	  return true;
@@ -106,18 +111,35 @@ function pbsenv_print_form() {
 // {{{ pbsenv_save(type, host)
 function pbsenv_save($type, $host)  {
 	global $_pql_control, $error, $LANG;
+	$success = 0;
 
 	switch($type) {
 	  case "modify":
 	  case "add":
-		// save entries
+		// {{{ save entries
 		for($i=0; $i < count($_REQUEST["pbsenv"]); $i++)
 		  $entry[] = $_REQUEST["pbsenv"][$i];
 		$entry[] = $_REQUEST["pbsenvariable_name"].'='.$_REQUEST["pbsenvariable_value"];
 
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_PBS_ENV"), '', $entry))
+		if($host == "Global") {
+		  // Get all QLC host
+		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+		  
+		  $success = 1;
+		  foreach($qlcs as $host) {
+			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+									 pql_get_define("PQL_ATTR_PBS_ENV"), '', $entry))
+			  $success = 0;
+		  }
+		} else {
+		  if(pql_modify_attribute($_pql_control->ldap_linkid,
+								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								  pql_get_define("PQL_ATTR_PBS_ENV"), '', $entry))
+			$success = 1;
+		}
+
+		if($success)
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('pbsenv options')));
 		else
@@ -127,8 +149,10 @@ function pbsenv_save($type, $host)  {
 
 		attribute_forward($msg);
 		break;
+		// }}}
 
 	  case "del":
+		// {{{ delete value
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 								pql_get_define("PQL_ATTR_PBS_ENV"), $_REQUEST["pbsenv"], ''))
@@ -141,6 +165,7 @@ function pbsenv_save($type, $host)  {
 
 		attribute_forward($msg);
 		break;
+		// }}}
 
 	  default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),

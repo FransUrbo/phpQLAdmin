@@ -2,7 +2,7 @@
 // control attribute plugin for
 // dirmaker (default prefix for mailbox paths)
 //
-// $Id: attrib.control.dirmaker.inc,v 2.19 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.dirmaker.inc,v 2.20 2006-05-19 06:55:31 turbo Exp $
 
 // {{{ dirmaker_check(type)
 function dirmaker_check($type) {
@@ -30,9 +30,14 @@ function dirmaker_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	$_REQUEST["dirmaker"] = pql_get_attribute($_pql_control->ldap_linkid,
-											  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											  pql_get_define("PQL_ATTR_DIRMAKER"));
+	if($host == "Global") {
+	  $_REQUEST["dirmaker"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+												pql_get_define("PQL_ATTR_DIRMAKER"), 0, pql_get_define("PQL_ATTR_CN")."=*");
+	} else {
+	  $_REQUEST["dirmaker"] = pql_get_attribute($_pql_control->ldap_linkid,
+												pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+												pql_get_define("PQL_ATTR_DIRMAKER"));
+	}
 
 	if(@is_null($_REQUEST["dirmaker"]))
 	  return true;
@@ -90,14 +95,31 @@ function dirmaker_print_form() {
 // {{{ dirmaker_save(type, host)
 function dirmaker_save($type, $host) {
 	global $_pql_control, $LANG;
+	$success = 0;
 
 	switch($type) {
 	  case "modify":
 	  case "add":
-		// save entries
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_DIRMAKER"), 1, $_REQUEST["dirmaker"]))
+		// {{{ save entries
+		if($host == "Global") {
+		  // Get all QLC host
+		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+		  
+		  $success = 1;
+		  foreach($qlcs as $host) {
+			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+									 pql_get_define("PQL_ATTR_DIRMAKER"), '', $_REQUEST["dirmaker"]))
+			  $success = 0;
+		  }
+		} else {
+		  if(pql_modify_attribute($_pql_control->ldap_linkid,
+								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								  pql_get_define("PQL_ATTR_DIRMAKER"), 1, $_REQUEST["dirmaker"]))
+			$success = 1;
+		}
+
+		if($success)
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('dirmaker options')));
 		else
@@ -107,6 +129,7 @@ function dirmaker_save($type, $host) {
 
 		attribute_forward($msg);
 		break;
+		// }}}
 
 	  default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),

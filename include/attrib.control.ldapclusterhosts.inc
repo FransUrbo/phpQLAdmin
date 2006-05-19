@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldapclusterhosts (max number of bytes in message)
 //
-// $Id: attrib.control.ldapclusterhosts.inc,v 2.8 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.ldapclusterhosts.inc,v 2.9 2006-05-19 06:55:31 turbo Exp $
 
 // {{{ ldapclusterhosts_check(type)
 function ldapclusterhosts_check($type) {
@@ -19,14 +19,17 @@ function ldapclusterhosts_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	$_REQUEST["ldapclusterhosts"] = pql_get_attribute($_pql_control->ldap_linkid,
-													  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-													  pql_get_define("PQL_ATTR_LDAPCLUSTER_HOSTS"));
+	if($host == "Global") {
+	  $_REQUEST["ldapclusterhosts"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+														pql_get_define("PQL_ATTR_LDAPCLUSTER_HOSTS"), 0, pql_get_define("PQL_ATTR_CN")."=*");
+	} else {
+	  $_REQUEST["ldapclusterhosts"] = pql_get_attribute($_pql_control->ldap_linkid,
+														pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+														pql_get_define("PQL_ATTR_LDAPCLUSTER_HOSTS"));
+	}
 
 	if(@$_REQUEST["ldapclusterhosts"])
 	  return true;
-	elseif(!@is_array($_REQUEST["ldapclusterhosts"]))
-	  $_REQUEST["ldapclusterhosts"] = array($_REQUEST["ldapclusterhosts"]);
 }
 // }}}
 
@@ -101,14 +104,31 @@ function ldapclusterhosts_print_form() {
 // {{{ ldapclusterhosts_save(type, host)
 function ldapclusterhosts_save($type, $host)  {
 	global $_pql_control, $error, $LANG;
+	$success = 0;
 
 	switch($type) {
 	  case "modify":
 	  case "add":
-		// save entries
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_LDAPCLUSTER_HOSTS"), '', $_REQUEST["ldapclusterhosts"]))
+		// {{{ save entries
+		if($host == "Global") {
+		  // Get all QLC host
+		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+		  
+		  $success = 1;
+		  foreach($qlcs as $host) {
+			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+									 pql_get_define("PQL_ATTR_LDAPCLUSTER_HOSTS"), '', $_REQUEST["ldapclusterhosts"]))
+			  $success = 0;
+		  }
+		} else {
+		  if(pql_modify_attribute($_pql_control->ldap_linkid,
+								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+								  pql_get_define("PQL_ATTR_LDAPCLUSTER_HOSTS"), '', $_REQUEST["ldapclusterhosts"]))
+			$success = 1;
+		}
+
+		if($success)
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('ldapclusterhosts options')));
 		else
@@ -118,8 +138,10 @@ function ldapclusterhosts_save($type, $host)  {
 
 		attribute_forward($msg);
 		break;
+		// }}}
 
 	  case "del":
+		// {{{ delete value
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 								pql_get_define("PQL_ATTR_LDAPCLUSTER_HOSTS"), $_REQUEST["ldapclusterhosts"], ''))
@@ -132,6 +154,7 @@ function ldapclusterhosts_save($type, $host)  {
 
 		attribute_forward($msg);
 		break;
+		// }}}
 
 	  default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),

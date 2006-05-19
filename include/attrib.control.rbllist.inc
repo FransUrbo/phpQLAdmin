@@ -2,7 +2,7 @@
 // control attribute plugin for
 // rbllist (max number of bytes in message)
 //
-// $Id: attrib.control.rbllist.inc,v 2.9 2005-09-16 06:08:49 turbo Exp $
+// $Id: attrib.control.rbllist.inc,v 2.10 2006-05-19 06:55:32 turbo Exp $
 
 // {{{ rbllist_check(type)
 function rbllist_check($type) {
@@ -19,9 +19,14 @@ function rbllist_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	$_REQUEST["rbllist"] = pql_get_attribute($_pql_control->ldap_linkid,
-											 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											 pql_get_define("PQL_ATTR_RBLLIST"));
+	if($host == "Global") {
+	  $_REQUEST["rbllist"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+											   pql_get_define("PQL_ATTR_RBLLIST"), 0, pql_get_define("PQL_ATTR_CN")."=*");
+	} else {
+	  $_REQUEST["rbllist"] = pql_get_attribute($_pql_control->ldap_linkid,
+											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+											   pql_get_define("PQL_ATTR_RBLLIST"));
+	}
 
 	if(!@$_REQUEST["rbllist"])
 	  return true;
@@ -129,19 +134,35 @@ function rbllist_print_form() {
 // {{{ rbllist_save(type, host)
 function rbllist_save($type, $host)  {
 	global $_pql_control, $error, $LANG;
+	$success = 0;
 
 	switch($type) {
 	  case "modify":
 	  case "add":
-		// save entries
-
+		// {{{ save entries
 		for($i=0; $i < count($_REQUEST["rbllist"]); $i++)
 		  $entry[] = $_REQUEST["rbllist"][$i];
 		$entry[] = $_REQUEST["rblserver"]." ".$_REQUEST["rblaction"]." ".$_REQUEST["rblmatch"]." ".$_REQUEST["rblmessage"];
 
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,". $_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_RBLLIST"), 1, $entry))
+		if($host == "Global") {
+		  // Get all QLC host
+		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+		  
+		  $success = 1;
+		  foreach($qlcs as $host) {
+			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+									 pql_get_define("PQL_ATTR_RBLLIST"), '', $entry))
+			  $success = 0;
+		  }
+		} else {
+		  if(pql_modify_attribute($_pql_control->ldap_linkid,
+								  pql_get_define("PQL_ATTR_CN")."=$host,". $_SESSION["USER_SEARCH_DN_CTR"],
+								  pql_get_define("PQL_ATTR_RBLLIST"), 1, $entry))
+			$success = 1;
+		}
+
+		if($success)
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('rbllist options')));
 		else
@@ -151,8 +172,10 @@ function rbllist_save($type, $host)  {
 
 		attribute_forward($msg);
 		break;
+		// }}}
 
 	  case "del":
+		// {{{ delete value
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 								pql_get_define("PQL_ATTR_RBLLIST"), $_REQUEST["rbllist"], ''))
@@ -165,6 +188,7 @@ function rbllist_save($type, $host)  {
 
 		attribute_forward($msg);
 		break;
+		// }}}
 
 	  default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
