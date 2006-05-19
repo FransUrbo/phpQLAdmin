@@ -2,7 +2,7 @@
 // control attribute plugin for
 // badmailfrom (blocked from addresses)
 //
-// $Id: attrib.control.badmailfrom.inc,v 2.24 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.control.badmailfrom.inc,v 2.25 2006-05-19 06:45:01 turbo Exp $
 
 // {{{ badmailfrom_check(type)
 
@@ -38,15 +38,20 @@ function badmailfrom_check($type) {
 
 // }}}
 
-// {{{ badmailfrom_init($host)
+// {{{ badmailfrom_init(host)
 // init values
 function badmailfrom_init($host) {
     global $_pql_control;
     
     // fetch data from ldap server
-    $_REQUEST["badmailfrom"] = pql_get_attribute($_pql_control->ldap_linkid,
-												 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-												 pql_get_define("PQL_ATTR_BADMAILFROM"));
+	if($host == "Global") {
+	  $_REQUEST["badmailfrom"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+												   pql_get_define("PQL_ATTR_BADMAILFROM"), 0, pql_get_define("PQL_ATTR_CN")."=*");
+	} else {
+	  $_REQUEST["badmailfrom"] = pql_get_attribute($_pql_control->ldap_linkid,
+												   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+												   pql_get_define("PQL_ATTR_BADMAILFROM"));
+	}
     
     if(!@$_REQUEST["badmailfrom"])
 	  return true;
@@ -55,6 +60,7 @@ function badmailfrom_init($host) {
 }
 
 // }}}
+
 
 // {{{ badmailfrom_print_view(host)
 function badmailfrom_print_view($host) {
@@ -132,14 +138,31 @@ function badmailfrom_print_form() {
 // {{{ badmailfrom_save(type, host)
 function badmailfrom_save($type, $host) {
     global $_pql_control, $LANG;
+	$success = 0;
     
     switch($type) {
       case "modify":
       case "add":
-		// save entries
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,". $_SESSION["USER_SEARCH_DN_CTR"],
-								pql_get_define("PQL_ATTR_BADMAILFROM"), '', $_REQUEST["badmailfrom"]))
+		// {{{ save entries
+		if($host == "Global") {
+		  // Get all QLC host
+		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+
+		  $success = 1;
+		  foreach($qlcs as $host) {
+			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
+									 pql_get_define("PQL_ATTR_BADMAILFROM"), '', $_REQUEST["badmailfrom"]))
+			  $success = 0;
+		  }
+		} else {
+		  if(pql_modify_attribute($_pql_control->ldap_linkid,
+								  pql_get_define("PQL_ATTR_CN")."=$host,". $_SESSION["USER_SEARCH_DN_CTR"],
+								  pql_get_define("PQL_ATTR_BADMAILFROM"), '', $_REQUEST["badmailfrom"]))
+			$success = 1;
+		}
+
+		if($success)
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('badmailfrom options')));
 		else
@@ -149,8 +172,10 @@ function badmailfrom_save($type, $host) {
 
 		attribute_forward($msg);
 		break;
+		// }}}
 
 	  case "del":
+		// {{{ delete entries
 		if(pql_modify_attribute($_pql_control->ldap_linkid,
 								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
 								pql_get_define("PQL_ATTR_BADMAILFROM"), $_REQUEST["badmailfrom"], ''))
@@ -163,6 +188,7 @@ function badmailfrom_save($type, $host) {
 
 		attribute_forward($msg);
 		break;
+		// }}}
 
       default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),
