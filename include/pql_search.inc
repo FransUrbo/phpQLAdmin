@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.52 2006-03-13 11:35:37 turbo Exp $
+// $Id: pql_search.inc,v 2.53 2006-05-19 07:08:57 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -192,13 +192,20 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
 }
 // }}}
 
-// {{{ pql_get_attribute(linkid, dn, attribute, operational)
+// {{{ pql_get_attribute(linkid, dn, attribute, operational, filter)
 // Return only a subset of an object (retreived with pql_search()).
-function pql_get_attribute($linkid, $dn, $attribute, $operational = 0) {
+function pql_get_attribute($linkid, $dn, $attribute, $operational = 0, $filter = NULL) {
   $attribute = lc($attribute);
+
+  if(!$filter) {
+	$filter = "(".pql_get_define("PQL_ATTR_OBJECTCLASS")."=*)";
+	$scope = "BASE";
+  } else {
+	$scope = "SUBTREE";
+  }
   
   // Get the (WHOLE) object but only return only the attributes of interest.
-  $object = pql_search($linkid, $dn, "(".pql_get_define("PQL_ATTR_OBJECTCLASS")."=*)", 'BASE', 1, $operational);
+  $object = pql_search($linkid, $dn, $filter, $scope, 1, $operational);
   if(!empty($object)) {
 	if(!empty($object[0])) {
 	  if(!empty($object[0][$attribute]))
