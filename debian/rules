@@ -58,7 +58,7 @@ install: build
 	  ln -s /etc/phpqladmin/config_attributes.inc config_attributes.inc; \
 	  ln -s /etc/phpqladmin/config_plugins.inc config_plugins.inc; \
 	  ln -s /etc/phpqladmin/defaults.inc defaults.inc; \
-	  cd ($INSTDIR)/../../../var/www; \
+	  cd $(INSTDIR)/../../../var/www; \
 	  ln -s /usr/share/phpqladmin .; \
 	)
 	chmod -x debian/phpqladmin/etc/phpqladmin/*
