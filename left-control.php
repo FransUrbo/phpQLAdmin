@@ -1,7 +1,8 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.34 2005-09-16 06:08:43 turbo Exp $
+// $Id: left-control.php,v 2.35 2006-05-19 06:43:17 turbo Exp $
 //
+// {{{ Setup session etc
 require("./include/pql_session.inc");
 
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -9,10 +10,13 @@ require($_SESSION["path"]."/include/pql_control.inc");
 require($_SESSION["path"]."/include/pql_control_plugins.inc");
 
 require("./left-head.html");
+// }}}
 
 if(pql_get_define("PQL_CONF_CONTROL_USE") && $_SESSION["ALLOW_CONTROL_CREATE"]) {
-	// We're administrating QmailLDAP/Control and the user is allowed to administrate.
-	$j = 1;
+  // We're administrating QmailLDAP/Control and the user is allowed to administrate.
+  $j = 1;
+  
+  // {{{ Server control header
 ?>
   <!-- Server Control -->
   <div id="el<?=$j?>Parent" class="parent">
@@ -22,11 +26,14 @@ if(pql_get_define("PQL_CONF_CONTROL_USE") && $_SESSION["ALLOW_CONTROL_CREATE"]) 
   </div>
 
 <?php
-	if($_SESSION["ADVANCED_MODE"]) {
-		$host = split(';', $_SESSION["USER_HOST"]);
+// }}}
 
-		// If it's an LDAP URI, replace "%2f" with "/" -> URLdecode
-		$host[0] = urldecode($host[0]);
+  // {{{ Add mail server
+  if($_SESSION["ADVANCED_MODE"]) {
+	$host = split(';', $_SESSION["USER_HOST"]);
+	
+	// If it's an LDAP URI, replace "%2f" with "/" -> URLdecode
+	$host[0] = urldecode($host[0]);
 ?>
   <div id="el2Parent" class="parent">
     <nobr>
@@ -35,17 +42,20 @@ if(pql_get_define("PQL_CONF_CONTROL_USE") && $_SESSION["ALLOW_CONTROL_CREATE"]) 
   </div>
 
 <?php
-	}
+  }
+// }}}
 
-	$j++;
+  $j++;
 
-    // Get all QmailLDAP/Control hosts.
-    $result = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-                         '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
-    for($i=0; $i < count($result); $i++)
-      $hosts[] = pql_get_attribute($_pql->ldap_linkid, $result[$i], pql_get_define("PQL_ATTR_CN"));
+  // {{{ Get all QmailLDAP/Control hosts.
+  $result = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+					   '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+  for($i=0; $i < count($result); $i++)
+	$hosts[] = pql_get_attribute($_pql->ldap_linkid, $result[$i], pql_get_define("PQL_ATTR_CN"));
+// }}}
 
-	if(!is_array($hosts)) {
+  if(!is_array($hosts)) {
+	// {{{ No QLC hosts
 ?>
 <?php if($_SESSION["opera"]) { ?>
   <div id="el<?=$j?>Parent" class="parent" onclick="showhide(el<?=$j?>Spn, el<?=$j?>Img)">
@@ -60,9 +70,19 @@ if(pql_get_define("PQL_CONF_CONTROL_USE") && $_SESSION["ALLOW_CONTROL_CREATE"]) 
 <?php } ?>
 
 <?php
-	} else {
-		// for each host, get LDAP/Control plugins
-		foreach($hosts as $host) {
+// }}}
+  } else {
+	// {{{ Add a 'Global' tree as first tree
+	//     then add the rest of the hosts after that.
+	$tmp[] = "Global";
+	foreach($hosts as $host)
+	  $tmp[] = $host;
+	$hosts = $tmp;
+// }}}
+
+	// For each host, get LDAP/Control plugins
+	foreach($hosts as $host) {
+	  // {{{ Root of tree
 ?>
   <!-- start server control host: <?=pql_maybe_idna_decode($host)?> -->
 <?php if($_SESSION["opera"]) { ?>
@@ -86,8 +106,11 @@ if(pql_get_define("PQL_CONF_CONTROL_USE") && $_SESSION["ALLOW_CONTROL_CREATE"]) 
   <!-- end server control host -->
 
 <?php
-			$cats = pql_plugin_get_cats();
-			if(!is_array($cats)) {
+// }}}
+
+	  $cats = pql_plugin_get_cats();
+	  if(!is_array($cats)) {
+		// {{{ No QLC plugins
 ?>
   <!-- start server control attribute -->
 <?php if($_SESSION["opera"]) { ?>
@@ -107,18 +130,22 @@ if(pql_get_define("PQL_CONF_CONTROL_USE") && $_SESSION["ALLOW_CONTROL_CREATE"]) 
   <!-- end server control attribute -->
 
 <?php
-			} else {
-				asort($cats);
+// }}}
+	  } else {
+		asort($cats);
+
+		// {{{ Div start
 ?>
   <!-- start server control attribute: <?=$cat?> -->
-<?php if($_SESSION["opera"]) { ?>
+<?php   if($_SESSION["opera"]) { ?>
   <span id="el<?=$j?>Spn" style="display:''">
-<?php } else { ?>
+<?php   } else { ?>
   <div id="el<?=$j?>Child" class="child">
-<?php } ?>
-<?php
+<?php   }
+// }}}
 
-				foreach($cats as $cat){
+		foreach($cats as $cat){
+		  // {{{ Plugin entry
 ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
       <a href="control_cat.php?mxhost=<?=$host?>&cat=<?=urlencode($cat)?>"><img src="images/navarrow.png" width="9" height="9" border="0"></a>&nbsp;
@@ -127,21 +154,21 @@ if(pql_get_define("PQL_CONF_CONTROL_USE") && $_SESSION["ALLOW_CONTROL_CREATE"]) 
 
     <br>
 
-<?php
-				} // end foreach controls
+<?php	} // end foreach controls
+// }}}
 ?>
-<?php if($_SESSION["opera"]) { ?>
+<?php	  if($_SESSION["opera"]) { ?>
   </span>
-<?php } else { ?>
+<?php	  } else { ?>
   </div>
-<?php } ?>
+<?php	  } ?>
   <!-- end server control attribute -->
 <?php
-			} // end if is_array($cats)
+	  } // end if is_array($cats)
 
-			$j++;
-		} // end foreach host
-	} // end if is_array($hosts)
+	  $j++;
+	} // end foreach host
+  } // end if is_array($hosts)
 } // end if PQL_CONF_CONTROL_USE
 
 require("./left-trailer.html");
