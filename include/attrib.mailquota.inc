@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mailquota.inc,v 2.31 2005-02-24 17:04:01 turbo Exp $
+// $Id: attrib.mailquota.inc,v 2.31.2.1 2006-05-30 07:17:09 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -262,12 +262,12 @@ function attribute_save($type) {
 			$domaindn = urldecode($_REQUEST["domain"]);
 
 			// Setup the array to send to LDAP server
-			$entry['baseQuota']     = $mailquota;
-			$entry['objectClass']   = pql_setup_branch_objectclasses(0, $domaindn, $_pql->ldap_linkid);
-			$entry['objectClass'][] = 'phpQLAdminConfig';
+			$entry[pql_get_define("PQL_ATTR_BASEQUOTA")]     = $mailquota;
+			$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")]   = pql_setup_branch_objectclasses(0, $domaindn, $_pql->ldap_linkid);
+			$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'phpQLAdminConfig';
 
 			// We're setting default quota for domain, not user.
-			if(!pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], 'baseQuota', '', $entry))
+			if(!pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], '', '', $entry))
 			  // Failed
 			  $msg = pql_complete_constant($LANG->_('Failed to change %what% for domain %domain%'),
 										   array('what'   => $LANG->_('default quota'),
