@@ -13,6 +13,8 @@ phpQLAdmin 2.2.8 TO BE ANNOUNCED
 	    of QLC objects and no for() loop that cycled through them...
 	  - Fix ADDITING an additionalDomainName to a branch (pql_get_attribute() doesn't return an array
 	    if there's only ONE value).
+	  - Default quota values for a domain didn't work correctly - pql_modify_attribute() called with
+	    third argument (attrib) which isn't needed since fourth arg is array...
 
 phpQLAdmin 2.2.7 Release (Jan 23 2006)
 	Bug fixes
