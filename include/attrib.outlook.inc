@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for pilotPerson objects etc
-// $Id: attrib.outlook.inc,v 1.28 2005-03-27 12:25:11 turbo Exp $
+// $Id: attrib.outlook.inc,v 1.29 2006-07-04 20:15:23 turbo Exp $
 
 /*
 	Attributes managed here:
@@ -54,7 +54,11 @@ function attribute_init() {
 
 // {{{ attribute_print_form(void)
 function attribute_print_form() {
-    global $LANG, $error;
+	global $LANG, $error;
+
+	// Is there an english word for this attribute?
+	require($_SESSION["path"]."/include/config_attribute_aliases.inc");
+	$ALTERNATE_ATTRIBUTE_NAME = $ATTRIBUTE_ALIAS[$_REQUEST["attrib"]];
 
 	// Just to save some typeing.
 	$attrib = $_REQUEST["attrib"];
@@ -63,7 +67,11 @@ function attribute_print_form() {
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Set/Modify attribute %attribute%'), array('attribute' => $attrib)); ?></th>
         <tr class="<?php pql_format_table(); ?>">
+<?php if(@$ALTERNATE_ATTRIBUTE_NAME) { ?>
+          <td class="title"><?=$ALTERNATE_ATTRIBUTE_NAME?></td>
+<?php } else { ?>
           <td class="title"><?=$attrib?></td>
+<?php } ?>
           <td>
             <?php echo pql_format_error_span($error[$attrib]); ?>
             <?php if($attrib == pql_get_define("PQL_ATTR_INFO")) { ?><textarea name="<?=$attrib?>" rows="10" cols="50"><?=$_REQUEST[$attrib]?></textarea><?php } else { ?><input type="text" name="<?=$attrib?>" value="<?=$_REQUEST[$attrib]?>" size="30">

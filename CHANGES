@@ -9,6 +9,9 @@ phpQLAdmin 2.3.3 TO BE ANNOUNCED
 	    modify) ALL QLC object attributes in one 'simple' swoop.
 	  - Support LDAP URI's ('ldap://', 'ldaps://' and 'ldapi://') and not just
 	    hostnames in 'ldapserver'
+	  - Setup a attribute aliases file to translate the more/most obscure attributes
+	    to more 'humanly readable' word.
+	    Closes: #126
 
 	Schema changes
 	API changes
