@@ -1,5 +1,14 @@
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">Base values</th>
+<?php if($_REQUEST["mxhost"] == "Global") { ?>
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title" valign="center" align="right"><img src="images/info.png" width="16" height="16" alt="" border="0"></td>
+        <td colspan="3">
+          <?=$LANG->_('\b\uNote\B\U that any changes here, will affect \ball\B\nQmailLDAP/Control hosts in the database!')?>
+        </td>
+      </tr>
+
+<?php } ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title">RDN</td>
         <td><?=$cn?></td>
