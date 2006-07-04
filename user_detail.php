@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.97 2005-09-29 05:03:12 turbo Exp $
+// $Id: user_detail.php,v 2.98 2006-07-04 20:07:02 turbo Exp $
 //
 // {{{ Setup session
 header("Expires: 0");
@@ -93,6 +93,7 @@ if($username and is_array($username)) {
 ?>
 
   <span class="title1"><?=$username?></span>
+
   <br><br>
 <?php
 // }}}
