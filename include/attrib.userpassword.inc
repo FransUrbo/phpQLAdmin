@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.34 2005-09-29 05:03:18 turbo Exp $
+// $Id: attrib.userpassword.inc,v 2.35 2006-07-05 09:42:12 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -164,13 +164,13 @@ function attribute_save($type) {
 
 		if($_REQUEST["principal"] and extension_loaded('kadm5') and function_exists("kadm5_init_with_password") and ($_REQUEST["pwscheme"] == '{KERBEROS}')) {
 		  if(kadmin_cpw($_pql->ldap_linkid, $_REQUEST["principal"], $_REQUEST["userpassword"]))
-			success = 1;
+			$success = 1;
 		} else {
 		  // Change an 'ordinary' LDAP password
 		  $pw = pql_password_hash($_REQUEST["userpassword"], $_REQUEST["pwscheme"]);
 	
 		  if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_PASSWD"), 1, $pw))
-			success =1
+			$success = 1;
 		}
 
 		if($success)

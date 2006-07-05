@@ -2,7 +2,7 @@
 // control attribute plugin for
 // SimScan
 //
-// $Id: attrib.control.simscan.inc,v 2.4 2006-05-19 06:55:32 turbo Exp $
+// $Id: attrib.control.simscan.inc,v 2.5 2006-07-05 09:42:12 turbo Exp $
 
 // {{{ simscan_check(type)
 function simscan_check($type) {
@@ -28,7 +28,7 @@ function simscan_init($host) {
 	  // Get default value
 	  if(@$_REQUEST["mxhost"]) {
 		if($host == "Global") {
-		  $value = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $attrib, 0
+		  $value = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $attrib, 0,
 									 pql_get_define("PQL_ATTR_CN")."=*");
 		} else {
 		  $cn = pql_get_define("PQL_ATTR_CN") . "=" . $_REQUEST["mxhost"] . "," . $_SESSION["USER_SEARCH_DN_CTR"];
@@ -242,7 +242,7 @@ function simscan_save($type, $host) {
 				  $success = 1;
 			  }
 
-			  if(!$success)
+			  if(!$success) {
 				if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
 				  die("<font color=\"red\">Can't add object class 'phpQLAdminMXHostAddition'</font>");
 				else
