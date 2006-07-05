@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.102 2006-03-08 19:12:32 turbo Exp $
+// $Id: domain_detail.php,v 2.103 2006-07-05 09:36:44 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -231,16 +231,18 @@ if(pql_get_define("PQL_CONF_SIMSCAN_USE")) {
   $buttons = $buttons + $new;
 }
 
-$key = pql_get_define("PQL_ATTR_HOSTACL_USE");
-if($$key) {
-  $new = array('hostacl' => 'Host control');
-  $buttons = $buttons + $new;
-}
+if($_SESSION["ADVANCED_MODE"]) {
+  $key = pql_get_define("PQL_ATTR_HOSTACL_USE");
+  if($$key) {
+	$new = array('hostacl' => 'Host control');
+	$buttons = $buttons + $new;
+  }
 
-$key = pql_get_define("PQL_ATTR_SUDO_USE");
-if($$key) {
-  $new = array('sudo' => 'Sudoers access');
-  $buttons = $buttons + $new;
+  $key = pql_get_define("PQL_ATTR_SUDO_USE");
+  if($$key) {
+	$new = array('sudo' => 'Sudoers access');
+	$buttons = $buttons + $new;
+  }
 }
 
 $new = array('action' => 'Actions');

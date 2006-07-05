@@ -12,6 +12,8 @@ phpQLAdmin 2.3.3 TO BE ANNOUNCED
 	  - Setup a attribute aliases file to translate the more/most obscure attributes
 	    to more 'humanly readable' word.
 	    Closes: #126
+	  - The 'Host control' and 'Sudoers access' buttons in the domain details page
+	    should only be visable if running in advanced mode.
 
 	Schema changes
 	API changes
