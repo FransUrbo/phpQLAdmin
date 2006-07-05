@@ -22,6 +22,11 @@ phpQLAdmin 2.3.3 TO BE ANNOUNCED
 	API changes
 	Misc changes
 	  - Add useSimScan to the list of attributes that 'users' need read access to.
+	  - When debugging the pql_config.inc:pql_set_define() function, only output
+	    debugging if: File .DEBUG_DEFINES exists _AND_ it's a '_CONF_' define
+	    (i.e. ignore any _ATTR_ definition).
+	  - Rewrite the part that goes through the $PQL_ATTRIBUTE array and sets
+	    config and attribute defines. Should be a little easier to follow now...
 
 phpQLAdmin 2.3.2 Release (Mar 11 2006)
 	Bug fixes

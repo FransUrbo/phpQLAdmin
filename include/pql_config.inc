@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.84 2006-03-08 19:22:18 turbo Exp $
+// $Id: pql_config.inc,v 1.85 2006-07-05 09:52:36 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -57,7 +57,7 @@ function pql_set_define($define, $value, $case_insensitive = false, $dn = NULL) 
 		if(empty($config[$define][$dn])) {
 			$config[$define][$dn] = $value;
 
-			if(file_exists("./.DEBUG_DEFINES"))
+			if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $define))
 			  echo "config[$define][$dn] = $value<br>"; // DEBUG
 		}
 	} else {
@@ -66,7 +66,7 @@ function pql_set_define($define, $value, $case_insensitive = false, $dn = NULL) 
 		if(!isset($config[$define])) {
 		  $config[$define] = $value;
 		  
-		  if(file_exists("./.DEBUG_DEFINES"))
+		  if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $define))
 			echo "config[$define] = '$value'<br>"; // DEBUG
 		}
 	}
@@ -154,37 +154,29 @@ foreach($_pql->ldap_basedn as $dn)  {
 	or pql_format_error(1);
   $info = ldap_get_entries($_pql->ldap_linkid, $sr)
 	or pql_format_error(1);
-  
-  // Below I use two variables with VERY 'strange' names. I can't call them what I WANT to call
-  // them or what's obvious because I'm afraid of variable overloading...
-  // That is, if I use the variable name _ANY_ (!!) where else, and I need to remember that,
-  // it will be 'destroyed' (or at least contain a value which have nothing to do with the
-  // original value...
-  //
-  // Hence the name's "pql_config_private_{variable,array}_which_irritates_me".
-  // - The "variable" variable will contain the LDAP attribute name.
-  // - The "array" variable will contain the value(s) for this array from the db.
-  
-  // If we got something, retreive the attributes
+
+  // Go through the PQL_ATTRIBUTE defined in include/config_attributes.inc
+  // once for each level (GLOBAL, SUFFIX, USER), looking for the attribute.
+  // If it have a value (usually TRUE/FALSE), then set the appropriate define.
   for($i=0; $i < $info["count"]; $i++) {
-	foreach($PQL_ATTRIBUTE as $level => $array) {
+	foreach($PQL_ATTRIBUTE as $level => $level_array) {
 	  if($level != 'USER') {
-		foreach($array as $key => $pql_config_private_variable_which_irritates_me) {
-		  $pql_config_private_variable_which_irritates_me = strtolower($pql_config_private_variable_which_irritates_me);
+		foreach($level_array as $define_name => $define_attribute) {
+		  $define_attribute = strtolower($define_attribute);
 		  $pql_config_private_array_which_irritates_me = NULL;
 
-		  if(!empty($info[$i][$pql_config_private_variable_which_irritates_me])) {
-			for($k=0; $k < $info[$i][$pql_config_private_variable_which_irritates_me]["count"]; $k++) {
+		  if(!empty($info[$i][$define_attribute])) {
+			for($k=0; $k < $info[$i][$define_attribute]["count"]; $k++) {
 			  if($pql_config_private_array_which_irritates_me)
-				$pql_config_private_array_which_irritates_me .= ",".$info[$i][$pql_config_private_variable_which_irritates_me][$k];
+				$pql_config_private_array_which_irritates_me .= ",".$info[$i][$define_attribute][$k];
 			  else
-				$pql_config_private_array_which_irritates_me = $info[$i][$pql_config_private_variable_which_irritates_me][$k];
+				$pql_config_private_array_which_irritates_me = $info[$i][$define_attribute][$k];
 			}
 
 			if($level == 'GLOBAL')
-			  pql_set_define($key, $pql_config_private_array_which_irritates_me, true);
+			  pql_set_define($define_name, $pql_config_private_array_which_irritates_me, true);
 			else
-			  pql_set_define($key, $pql_config_private_array_which_irritates_me, true, $dn);
+			  pql_set_define($define_name, $pql_config_private_array_which_irritates_me, true, $dn);
 
 			unset($pql_config_private_array_which_irritates_me);
 		  }
@@ -234,8 +226,8 @@ if(!empty($_SESSION["USER_DN"]) and empty($_SESSION["ALLOW_CONTROL_CREATE"])) {
 
 // 6. Get user configuration for phpQLAdmin
 $user_object = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_DN"], "(objectClass=*)", 'BASE');
-foreach($PQL_ATTRIBUTE["USER"] as $key => $attrib) {
-  pql_set_define($key, $user_object[$attrib][0], true, $_SESSION["USER_DN"]);
+foreach($PQL_ATTRIBUTE["USER"] as $define_name => $attrib) {
+  pql_set_define($define_name, $user_object[$attrib][0], true, $_SESSION["USER_DN"]);
 }
 
 // 7. Get language translation
@@ -294,7 +286,7 @@ if(@$_SESSION["ACI_SUPPORT_ENABLED"]) {
 
 // Remove some variables so we don't clutter the global variable name space!
 unset($host); unset($servers); unset($i);
-unset($pql_config_private_variable_which_irritates_me); unset($sr); unset($info);
+unset($define_attribute); unset($sr); unset($info);
 unset($v); unset($nkey); unset($k); unset($ref);
 
 // See bug #203...
