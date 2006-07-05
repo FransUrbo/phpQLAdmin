@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.46 2006-03-08 19:16:06 turbo Exp $
+// $Id: config_attributes.inc,v 2.47 2006-07-05 09:43:25 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -358,7 +358,8 @@ pql_set_define("PQL_ATTR_AUTOCREATE_UGIDNUMBER",			strtolower('autoCreateUGidNum
 // }}}
 
 // {{{ Map attribute to configuration define - GLOBAL
-
+// Format:   Define to set => Attribute where value is located
+// Location: In the base DN(s)
 $PQL_ATTRIBUTE["GLOBAL"] = array("PQL_CONF_CONTROL_USE"					=> pql_get_define("PQL_ATTR_CONTROL_USE"),
 								 "PQL_CONF_EZMLM_USE"					=> pql_get_define("PQL_ATTR_EZMLM_USE"),
 								 "PQL_CONF_BIND9_USE"					=> pql_get_define("PQL_ATTR_BIND9_USE"),
@@ -391,6 +392,8 @@ $PQL_ATTRIBUTE["GLOBAL"] = array("PQL_CONF_CONTROL_USE"					=> pql_get_define("P
 // }}}
 
 // {{{ Map attribute to configuration define - SUFFIX
+// Format:   Define to set => Attribute where value is located
+// Location: In the branch DN(s)
 $PQL_ATTRIBUTE["SUFFIX"] = array("PQL_CONF_SHOW_USERS"					=> pql_get_define("PQL_ATTR_SHOW_USERS"),
 								 "PQL_CONF_TESTMAIL_AUTOSEND"			=> pql_get_define("PQL_ATTR_TESTMAIL_AUTOSEND"),
 								 "PQL_CONF_ALLOW_ABSOLUTE_PATH"			=> pql_get_define("PQL_ATTR_ALLOW_ABSOLUTE_PATH"),
@@ -441,6 +444,8 @@ $PQL_ATTRIBUTE["SUFFIX"] = array("PQL_CONF_SHOW_USERS"					=> pql_get_define("PQ
 // }}}
 
 // {{{ Map attribute to configuration define - USER
+// Format:   Define to set => Attribute where value is located
+// Location: In the user DN(s)
 $PQL_ATTRIBUTE["USER"] = array("PQL_CONF_START_ADVANCED"	=> pql_get_define("PQL_ATTR_START_ADVANCED"));
 // }}}
 
