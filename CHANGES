@@ -3,6 +3,8 @@ phpQLAdmin 2.3 Change Log
 phpQLAdmin 2.3.3 TO BE ANNOUNCED
 	Bug fixes
 	  - Account status time fixes from Aaron Collins.
+	  - When giving a user admin access to branch, I forgot to add the user DN to
+	    the ACI lists of all leafs below the branch he/she got access to.
 
 	GUI layout changes
 	  - Add a 'Global' branch tree in the left-controls.php page - Get (and later
@@ -14,11 +16,11 @@ phpQLAdmin 2.3.3 TO BE ANNOUNCED
 	    Closes: #126
 	  - The 'Host control' and 'Sudoers access' buttons in the domain details page
 	    should only be visable if running in advanced mode.
-	  - Add useSimScan to the list of attributes that 'users' need read access to.
 
 	Schema changes
 	API changes
 	Misc changes
+	  - Add useSimScan to the list of attributes that 'users' need read access to.
 
 phpQLAdmin 2.3.2 Release (Mar 11 2006)
 	Bug fixes

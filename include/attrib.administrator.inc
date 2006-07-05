@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for administrator and seealso modification
 // Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
-// $Id: attrib.administrator.inc,v 1.56 2006-03-13 11:26:58 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.57 2006-07-05 09:40:18 turbo Exp $
 
 // There is serious problems with this. I fix for one usage and break another
 // one! Let's try to remember (and document) how it's called. It's called from
@@ -162,7 +162,7 @@ function attribute_print_form($action) {
 	  } else {
 		if($_REQUEST["user"]) {
 			$_REQUEST[$attrib] = $_REQUEST["user"];
-			$what = pql_maybe_decode($_REQUEST["user"]).$LANG->_('as administrator');
+			$what = pql_maybe_decode($_REQUEST["user"])." ".$LANG->_('as administrator');
 		} else {
 			$what = $LANG->_('domain administrator');
 		}
@@ -339,7 +339,6 @@ function attribute_save($type) {
 	  $DN = $_REQUEST["user"];
 	else
 	  $DN = $_REQUEST["rootdn"];
-
 	// }}}
 
 	// NOTE: No ACI additions/modifications if we're modifying a qmailGroup object,
@@ -436,6 +435,14 @@ function attribute_save($type) {
 					} else {
 						$ACIs = attribute_setup_aci($_pql->ldap_linkid, $branches[$i], $admins2add, $type);
 					}
+
+					// What's the highes ACI number?
+					$nr = count($ACIs);
+					$tmp = split('#', $ACIs[$nr-1]);
+					$new_nr = $tmp[0] + 1;
+
+					// Add the user DN to list of ACI's for this leaf.
+					$ACIs[] = $new_nr."#entry#grant;w,r,s,c;[all]#access-id#".$_REQUEST["user"];
 
 					// Modify this object. BUG: Should we care about failure/successes?!
 					pql_modify_attribute($_pql->ldap_linkid, $branches[$i], pql_get_define("PQL_ATTR_LDAPACI"), '', $ACIs);
