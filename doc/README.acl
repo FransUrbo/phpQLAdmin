@@ -238,6 +238,8 @@ c=SE branch):
 
 ----- s n i p -----
 access to dn="c=SE"
-        attrs=useControls,useEzmlm,useBind9,useWebSrv,autoReload,allowServerChange,whoAreWe,language,hostMaster,ezmlmBinaryPath,krb5RealmName,krb5AdminServer,krb5PrincipalName,krb5AdminKeytab,krb5AdminCommandPath,controlBaseDn,ezmlmAdministrator,controlsAdministrator,useACI
+        attrs=useControls,useEzmlm,useBind9,useWebSrv,autoReload,allowServerChange,whoAreWe,language,hostMaster,ezmlmBinaryPath,krb5RealmName,krb5AdminServer,krb5PrincipalName,krb5AdminKeytab,krb5AdminCommandPath,controlBaseDn,ezmlmAdministrator,controlsAdministrator,useACI,useSimScan
         by users read
 ----- s n i p -----
+
+

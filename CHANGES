@@ -14,6 +14,7 @@ phpQLAdmin 2.3.3 TO BE ANNOUNCED
 	    Closes: #126
 	  - The 'Host control' and 'Sudoers access' buttons in the domain details page
 	    should only be visable if running in advanced mode.
+	  - Add useSimScan to the list of attributes that 'users' need read access to.
 
 	Schema changes
 	API changes
