@@ -14,6 +14,9 @@ phpQLAdmin 2.3.3 TO BE ANNOUNCED
 	    + Use 'dn' not 'user' in the select option.
 	    + Include left-head.html.
 	    + Fix some translations in include/pql_hostctrl.inc:pql_list_expand().
+	    + The missing functions include/pql_write.inc:pql_add_computer() and 
+	      include/pql_write.inc:pql_add_sudo_role() sent to me months ago, is now
+	      added.
 
 	GUI layout changes
 	  - Add a 'Global' branch tree in the left-controls.php page - Get (and later

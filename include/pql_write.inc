@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.34 2006-03-06 09:50:05 turbo Exp $
+// $Id: pql_write.inc,v 2.35 2006-07-06 15:11:25 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -439,6 +439,78 @@ function pql_user_add($ldap_linkid, $domain, $dn, $entry, $type, $branch) {
     return $dns;
 }
 
+// }}}
+
+// {{{ pql_add_computer(linkid, hostname, ip)
+function pql_add_computer($linkid, $domain, $hostname, $ip) {
+  if(pql_get_define("PQL_CONF_SUBTREE_COMPUTERS"))
+	$subrdn = pql_get_define("PQL_CONF_SUBTREE_COMPUTERS") . ",";
+  
+  $dn = "cn=" . $hostname . "," . $subrdn . $domain;
+  //$entry['dn'] = $dn;
+  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'top';
+  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'groupOfUniqueNames';
+  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'ipHost';
+  $entry[pql_get_define("PQL_ATTR_CN")] = $hostname;
+  $entry[pql_get_define("PQL_ATTR_IPHOSTNUMBER")] = $ip;
+
+  //The Current admin adding this entry is auto added as the first
+  //uniqueMember to satisfy the must requirements of groupofuniquenames
+  $entry[pql_get_define("PQL_ATTR_UNIQUE_GROUP")] = $_SESSION['USER_DN'];
+  
+  if(!pql_write_add($linkid, $dn, $entry, $type, 'pql_add_computer computer add')) {
+	// Failed to add user
+	$failed = 1;
+	pql_format_error(1);
+	
+	$errno = ldap_errno($ldap_linkid);
+	
+	if($failed)
+	  pql_format_error(1);
+  }
+
+  return(true);
+}
+// }}}
+
+// {{{ pql_add_sudo_role(linkid, domain, rolename, user, command, runas, host)
+function pql_add_sudo_role($linkid, $domain, $rolename, $user, $command, $runas, $host) {
+  if(pql_get_define("PQL_CONF_SUBTREE_SUDOERS"))
+	$subrdn =  pql_get_define("PQL_CONF_SUBTREE_SUDOERS") . ", ";
+  
+  $dn = "cn=" . $rolename . ", " . $subrdn . $domain;
+  
+  $user = pql_get_attribute($linkid, $user,	pql_get_define("PQL_ATTR_UID"));
+  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'top';
+  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'sudoRole';
+  $entry[pql_get_define("PQL_ATTR_CN")] = $rolename;
+
+  if(isset($user) && $user != 'none')
+	$entry[pql_get_define("PQL_ATTR_SUDOUSER")] = $user;
+
+  if(isset($command) && $command != '')
+	$entry[pql_get_define("PQL_ATTR_SUDOCOMMAND")] = $command;
+
+  if(isset($runas) && $runas != '')
+	$entry[pql_get_define("PQL_ATTR_SUDORUNAS")] = $runas;
+
+  if(isset($host) && $host != 'none')
+	$entry[pql_get_define("PQL_ATTR_SUDOHOST")] = $host;
+  
+  if(!pql_write_add($linkid, $dn, $entry, $type, 'pql_add_sudo_role Add Sudo Role')) {
+	// Failed to add user
+	$failed = 1; pql_format_error(1);
+	
+	$errno = ldap_errno($ldap_linkid);
+	
+	if($failed) {
+	  pql_format_error(1);
+	  die();
+	}
+  }
+
+  return(true);
+}
 // }}}
 
 // ------------------------------------------------
