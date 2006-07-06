@@ -9,6 +9,11 @@ phpQLAdmin 2.3.3 TO BE ANNOUNCED
 	  - Make sure that host_modify.php:$computer_results is a numbered array. It isn't
 	    if there's only ONE computer object in the database...
 	  - Some missing and faulty hidden input's in host_modify.php fixed.
+	  - Some bugfixes for sudo_modify.php, include/pql_hostctrl.inc by Aaron Collins.
+	    + Computer must be used in call to pql_add_sudo_role().
+	    + Use 'dn' not 'user' in the select option.
+	    + Include left-head.html.
+	    + Fix some translations in include/pql_hostctrl.inc:pql_list_expand().
 
 	GUI layout changes
 	  - Add a 'Global' branch tree in the left-controls.php page - Get (and later

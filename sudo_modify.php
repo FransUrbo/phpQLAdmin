@@ -3,12 +3,12 @@ require($_SESSION["path"]."/include/pql_hostctrl.inc");
 if(isset($_REQUEST['action']) && $_REQUEST['action'] == 'add_sudo_role') {
   // {{{ Add sudo role
   $domain = $_REQUEST["domain"];
-  
+
   if(isset($_REQUEST['role']) && $_REQUEST['role'] == '') {
 	pql_format_status_msg($LANG->_("Failed To Add New Sudo Role, Must Define The Role."));
   } else {
 	if(pql_add_sudo_role($_pql->ldap_linkid, $domain, $_REQUEST['role'], $_REQUEST['userdn'],
-						 $_REQUEST['command'], $_REQUEST['runas'], $_REQUEST[''] )) {
+						 $_REQUEST['command'], $_REQUEST['runas'], $_REQUEST['computer'] )) {
 	  pql_format_status_msg(pql_complete_constant($LANG->_("New Sudo Role: %role% Has Been Added Successfully"),
 												  array('role' => $_REQUEST['role'])));
 	} else {
@@ -97,7 +97,7 @@ if(is_array($sudo_results)) {
               <option value='none'><?=$LANG->_("None")?></option>
               <option value='ALL'><?=$LANG->_("ALL")?></option>
 <?php foreach($user_results as $dn => $user) {
-		print "              <option value='$user'>$user</option>\n";
+		print "              <option value='$dn'>$user</option>\n";
       }
       print "            </select></td>\n";
 ?>
@@ -153,7 +153,7 @@ if(is_array($sudo_results)) {
 						  "&action=remove_attribute_from_sudoRole&sudodn=" . $sudodn);
 		  print "</td>";
 		  
-		  // To list the Users
+		  // To list the Commands
 		  print "          <td>";
 		  pql_list_expand($role, $commands, pql_get_define("PQL_ATTR_SUDOCOMMAND"), 
 						  "&action=remove_attribute_from_sudoRole&sudodn=" . $sudodn);
