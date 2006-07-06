@@ -77,6 +77,13 @@ $sudo_results = pql_search($_pql->ldap_linkid, $sudodn, $filter);
 if(is_array($sudo_results)) {
   asort($sudo_results);
 }
+
+if(is_array($sudo_results) and !@$sudo_results[0]) {
+  // Make sure it's a numbered array...
+  $tmp = $sudo_results;
+  unset($sudo_results);
+  $sudo_results[] = $tmp;
+}
 // }}}
 ?>
   <form method="post">
