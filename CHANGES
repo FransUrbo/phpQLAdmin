@@ -5,7 +5,10 @@ phpQLAdmin 2.3.3 TO BE ANNOUNCED
 	  - Account status time fixes from Aaron Collins.
 	  - When giving a user admin access to branch, I forgot to add the user DN to
 	    the ACI lists of all leafs below the branch he/she got access to.
-	  - Fixing some parse errors in some of the include/attrib.* files.
+	  - Fixing some parse errors in some of the include/attrib.*, host_modify.php files.
+	  - Make sure that host_modify.php:$computer_results is a numbered array. It isn't
+	    if there's only ONE computer object in the database...
+	  - Some missing and faulty hidden input's in host_modify.php fixed.
 
 	GUI layout changes
 	  - Add a 'Global' branch tree in the left-controls.php page - Get (and later
@@ -17,9 +20,19 @@ phpQLAdmin 2.3.3 TO BE ANNOUNCED
 	    Closes: #126
 	  - The 'Host control' and 'Sudoers access' buttons in the domain details page
 	    should only be visable if running in advanced mode.
+	  - Only show the '[domain]->Host control->Host Control Access' stuff if there
+	    actually IS any computers in the database. This to avoid information that is
+	    of no use (can't add a user to a non-existent computer!).
+	    + If no computers, output a little notify about this, and what to do next.
+	  - Add support for Opera in host_modify.php. Faulty DOM implementation and I
+	    use Opera...
+	  - Cleanup/fix the showing of the hosts IP address. Got a little 'of-beat'.
 
 	Schema changes
 	API changes
+	  - Remove the redundant pql_get_uid() function. It didn't work in the first
+	    place, and I find it cleaner to use the pql_get_attribute().
+
 	Misc changes
 	  - Add useSimScan to the list of attributes that 'users' need read access to.
 	  - When debugging the pql_config.inc:pql_set_define() function, only output
