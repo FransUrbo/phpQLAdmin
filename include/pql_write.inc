@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.35 2006-07-06 15:11:25 turbo Exp $
+// $Id: pql_write.inc,v 2.36 2006-07-06 18:01:55 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -458,7 +458,7 @@ function pql_add_computer($linkid, $domain, $hostname, $ip) {
   //uniqueMember to satisfy the must requirements of groupofuniquenames
   $entry[pql_get_define("PQL_ATTR_UNIQUE_GROUP")] = $_SESSION['USER_DN'];
   
-  if(!pql_write_add($linkid, $dn, $entry, $type, 'pql_add_computer computer add')) {
+  if(!pql_write_add($linkid, $dn, $entry, $type, 'pql_add_computer')) {
 	// Failed to add user
 	$failed = 1;
 	pql_format_error(1);
@@ -476,9 +476,9 @@ function pql_add_computer($linkid, $domain, $hostname, $ip) {
 // {{{ pql_add_sudo_role(linkid, domain, rolename, user, command, runas, host)
 function pql_add_sudo_role($linkid, $domain, $rolename, $user, $command, $runas, $host) {
   if(pql_get_define("PQL_CONF_SUBTREE_SUDOERS"))
-	$subrdn =  pql_get_define("PQL_CONF_SUBTREE_SUDOERS") . ", ";
+	$subrdn =  pql_get_define("PQL_CONF_SUBTREE_SUDOERS") . ",";
   
-  $dn = "cn=" . $rolename . ", " . $subrdn . $domain;
+  $dn = "cn=" . $rolename . "," . $subrdn . $domain;
   
   $user = pql_get_attribute($linkid, $user,	pql_get_define("PQL_ATTR_UID"));
   $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'top';
@@ -497,7 +497,7 @@ function pql_add_sudo_role($linkid, $domain, $rolename, $user, $command, $runas,
   if(isset($host) && $host != 'none')
 	$entry[pql_get_define("PQL_ATTR_SUDOHOST")] = $host;
   
-  if(!pql_write_add($linkid, $dn, $entry, $type, 'pql_add_sudo_role Add Sudo Role')) {
+  if(!pql_write_add($linkid, $dn, $entry, $type, 'pql_add_sudo_role')) {
 	// Failed to add user
 	$failed = 1; pql_format_error(1);
 	
