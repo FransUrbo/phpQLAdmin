@@ -3,28 +3,34 @@
 // pql_hostctrl.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_hostctrl.inc,v 1.2 2006-07-06 15:08:26 turbo Exp $
+// $Id: pql_hostctrl.inc,v 1.3 2006-07-06 18:01:07 turbo Exp $
 
 $LANG = new pql_lang($_pql) or die("Couldn't make a new LANG object");
 require($_SESSION["path"]."/left-head.html");
 
 // {{{ pql_update_sudo(ldap, dn, type, attribute)
 function pql_update_sudo($ldap, $dn, $type, $attribute) {
-  global $_REQUEST;
+  global $_REQUEST, $LANG;
 
   if(isset($_REQUEST[$type]) && (($_REQUEST[$type] == '') or ($_REQUEST[$type] == 'none')))
     return;
 
   if(isset($_REQUEST[$type]) && ($_REQUEST[$type] != 'none') &&
      pql_modify_attribute($ldap, $dn, $attribute, '', $_REQUEST[$type] ))
-    pql_format_status_msg("Added $type=" . $_REQUEST[$type] . " To Sudo Role: " . $dn);
+    pql_format_status_msg(pql_complete_constant($LANG->_('Added %type%=%value% to sudo role %role%'),
+						array('type' => $type, 'value' => $_REQUEST[$type],
+						      'role' => $dn)));
   else
-    pql_format_status_msg("Failed To Add $type=" . $_REQUEST[$type] . " To Sudo Role: " . $dn);
+    pql_format_status_msg(pql_complete_constant($LANG->_('Failed to add %type%=%value% to sudo role '%role%''),
+						array('type' => $type, 'value' => $_REQUEST[$type],
+						      'role' => $dn)));
 }
 // }}}
 
 // {{{ pql_list_expand(role, alist, attribute, extraURL)
 function pql_list_expand($role, $alist, $attribute, $extraURL) {
+  global $LANG;
+
   if(is_array($alist)) {
 ?>
   <div id='<?php echo $role.$attribute; ?>Parent' class='parent'>
