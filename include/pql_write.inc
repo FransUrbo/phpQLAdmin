@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.37 2006-07-07 09:22:41 turbo Exp $
+// $Id: pql_write.inc,v 2.38 2006-07-07 21:52:45 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -446,7 +446,7 @@ function pql_add_computer($linkid, $domain, $hostname, $ip) {
   if(pql_get_define("PQL_CONF_SUBTREE_COMPUTERS"))
 	$subrdn = pql_get_define("PQL_CONF_SUBTREE_COMPUTERS") . ",";
   
-  $dn = "cn=" . $hostname . "," . $subrdn . $domain;
+  $dn = pql_get_define("PQL_ATTR_CN") . "=" . $hostname . "," . $subrdn . $domain;
   //$entry['dn'] = $dn;
   $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'top';
   $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'groupOfUniqueNames';
