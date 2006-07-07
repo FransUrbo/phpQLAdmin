@@ -35,6 +35,7 @@ phpQLAdmin 2.3.3 TO BE ANNOUNCED
 	  - Add support for Opera in host_modify.php. Faulty DOM implementation and I
 	    use Opera...
 	  - Cleanup/fix the showing of the hosts IP address. Got a little 'of-beat'.
+	  - Some slight changes to debug message(s) when removing/renaming an object.
 
 	Schema changes
 	API changes

@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.36 2006-07-06 18:01:55 turbo Exp $
+// $Id: pql_write.inc,v 2.37 2006-07-07 09:22:41 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -135,7 +135,7 @@ function pql_write_mod($linkid, $dn, $entry, $caller = NULL, $count = 0) {
 // {{{ pql_write_ren(linkid, old, parent, new, keepold)
 function pql_write_ren($linkid, $old, $parent, $new, $keepold = TRUE) {
   if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
-	echo "Renaming<br>'<b>$old</b>'<br>to<br>'<b>$new,$parent</b>'<br>";
+	echo "Renaming DN: '<b>$old</b>' to '<b>$new,$parent</b>'<br>";
 	return true;
   } else {
 	$old = pql_maybe_encode($old);
@@ -157,7 +157,7 @@ function pql_write_ren($linkid, $old, $parent, $new, $keepold = TRUE) {
 // {{{ pql_write_del(linkid, dn)
 function pql_write_del($linkid, $dn) {
   if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
-	echo "Removing DN<br>'<b>$dn</b>'<br>";
+	echo "Removing DN: '<b>$dn</b>'<br>";
 	return true;
   } else {
 	if(ldap_delete($linkid, $dn)) {
