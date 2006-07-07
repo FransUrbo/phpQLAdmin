@@ -17,6 +17,12 @@ phpQLAdmin 2.3.3 TO BE ANNOUNCED
 	    + The missing functions include/pql_write.inc:pql_add_computer() and 
 	      include/pql_write.inc:pql_add_sudo_role() sent to me months ago, is now
 	      added.
+	  - If the last user from a host ACL is removed, LDAP throws an error. The
+	    uniqueMember attribute (where the user is located) is REQUIRED so one can't
+	    remove the last one.
+	    + Retreive users and computers FIRST (before any action check)
+	    + Count the number of uniqueMember attribute values in the specific computer
+	      object. If the last, remove the object all together...
 
 	GUI layout changes
 	  - Add a 'Global' branch tree in the left-controls.php page - Get (and later

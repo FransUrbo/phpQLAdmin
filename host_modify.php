@@ -1,18 +1,64 @@
 <?php
 require($_SESSION["path"]."/left-head.html");
 
+// {{{ Retreive all users
+if(pql_get_define("PQL_CONF_SUBTREE_USERS")) {
+  $subrdn =  pql_get_define("PQL_CONF_SUBTREE_USERS") . ",";
+}
+$userdn = $subrdn . $_GET["domain"];
+$filter = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*";
+$users = pql_get_dn($_pql->ldap_linkid, $userdn, $filter);
+
+// Extract 'human readable' name from the user DN's found
+$user_results = pql_left_htmlify_userlist($_pql->ldap_linkid, $_REQUEST["rootdn"], $_REQUEST["domain"],
+										  $userdn, $users, ($links = NULL));
+// }}}
+
+// {{{ Retreive all computers
+if(pql_get_define("PQL_CONF_SUBTREE_COMPUTERS")) {
+  $subrdn =  pql_get_define("PQL_CONF_SUBTREE_COMPUTERS") . ",";
+}
+$computerdn = $subrdn . $_GET["domain"];
+$filter = "(& (objectClass=ipHost)(cn=*))";
+$computer_results = pql_search($_pql->ldap_linkid, $computerdn, $filter);
+
+if(is_array($computer_results) and !@$computer_results[0]) {
+  // Make sure it's a numbered array...
+  $tmp = $computer_results;
+  unset($computer_results);
+  $computer_results[] = $tmp;
+}
+// }}}
+
 if(isset($_REQUEST['action']) && ($_REQUEST['action'] == 'remove_user_from_host')) {
   // {{{ Remove user from host
-  // BUG: Removing the last uniqueMember will result in:
+
+  // NOTE: Removing the last uniqueMember will result in:
   // ldap_modify: Object class violation (65)
   //				additional info: object class 'groupOfUniqueNames' requires attribute 'uniqueMember'
-  $msg = pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["groupdn"],
-							  pql_get_define("PQL_ATTR_UNIQUE_GROUP"),
-							  $_REQUEST["userdn"], '');
-  if(isset($msg) && ($msg == 1))
-	pql_format_status_msg(pql_complete_constant($LANG->_("Host ACL Updated Successfully<br>Removed: %what%<br>From %where% ACL"),
-												array("what"  => $_REQUEST['userdn'],
-													  "where" => $_REQUEST['groupdn'])));
+  // Check to see if this is the last uniqueMember in this groupDN
+  for($i=0; $computer_results[$i]; $i++) {
+    if(lc($computer_results[$i]["dn"]) == lc($_REQUEST["groupdn"]))
+      $count = count($computer_results[$i][pql_get_define("PQL_ATTR_UNIQUE_GROUP")]);
+  }
+
+  if($count > 1) {
+    // There's more than one uniqueMember value, remove the requested one.
+    $msg = pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["groupdn"],
+				pql_get_define("PQL_ATTR_UNIQUE_GROUP"),
+				$_REQUEST["userdn"], '');
+
+    if(isset($msg) && ($msg == 1))
+      pql_format_status_msg(pql_complete_constant($LANG->_("Host ACL Updated Successfully<br>Removed: %what%<br>From: %where% ACL"),
+						  array("what"  => $_REQUEST['userdn'], "where" => $_REQUEST['groupdn'])));
+  } else {
+    // This IS the last uniqueMember value, remove the whole object.
+    $msg = pql_write_del($_pql->ldap_linkid, $_REQUEST["groupdn"]);
+    if(isset($msg) && ($msg == 1))
+      pql_format_status_msg(pql_complete_constant($LANG->_("Host ACL Updated Successfully<br>Removed: %what%<br>From: %where% ACL"),
+						  array("what"  => $LANG->_('last user'), "where" => $_REQUEST['groupdn'])));
+  }
+
 // }}}
 } elseif(isset($_REQUEST['action']) && $_REQUEST['action'] == 'add_new_host') {
   // {{{ Add new host
@@ -45,35 +91,6 @@ if(isset($_REQUEST['action']) && ($_REQUEST['action'] == 'remove_user_from_host'
   }
 // }}}
 }
-
-// {{{ Retreive all users
-if(pql_get_define("PQL_CONF_SUBTREE_USERS")) {
-  $subrdn =  pql_get_define("PQL_CONF_SUBTREE_USERS") . ",";
-}
-$userdn = $subrdn . $_GET["domain"];
-$filter = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*";
-$users = pql_get_dn($_pql->ldap_linkid, $userdn, $filter);
-
-// Extract 'human readable' name from the user DN's found
-$user_results = pql_left_htmlify_userlist($_pql->ldap_linkid, $_REQUEST["rootdn"], $_REQUEST["domain"],
-										  $userdn, $users, ($links = NULL));
-// }}}
-
-// {{{ Retreive all computers
-if(pql_get_define("PQL_CONF_SUBTREE_COMPUTERS")) {
-  $subrdn =  pql_get_define("PQL_CONF_SUBTREE_COMPUTERS") . ",";
-}
-$computerdn = $subrdn . $_GET["domain"];
-$filter = "(& (objectClass=ipHost)(cn=*))";
-$computer_results = pql_search($_pql->ldap_linkid, $computerdn, $filter);
-
-if(is_array($computer_results) and !@$computer_results[0]) {
-  // Make sure it's a numbered array...
-  $tmp = $computer_results;
-  unset($computer_results);
-  $computer_results[] = $tmp;
-}
-// }}}
 
 if(is_array($computer_results[0])) {
 ?>
