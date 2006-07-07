@@ -23,6 +23,9 @@ phpQLAdmin 2.3.3 TO BE ANNOUNCED
 	    + Retreive users and computers FIRST (before any action check)
 	    + Count the number of uniqueMember attribute values in the specific computer
 	      object. If the last, remove the object all together...
+	  - Since users/computers is now retreived before add/delete/modification of 
+	    a host ACL, we need to manually update the array so that displayed content
+	    in the frame is correct.
 
 	GUI layout changes
 	  - Add a 'Global' branch tree in the left-controls.php page - Get (and later
