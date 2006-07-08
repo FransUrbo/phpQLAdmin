@@ -32,19 +32,37 @@ the most common (i.e. the ones _I_ use/need :).
 
 
 There is an example LDIF file in the demo directory ('apache.ldif')
-and this file will create a branch named 'ou=WEB' (below the
-'o=Main Branch,c=SE' which was/is created with the 'database-main.ldif'
-LDIF example file) where the first 'cn' branch (third object) is like
-an organizational unit, but for this specific (physical)
-webserver. The FQDN 'websrv1.domain.tld' is the actual machine name,
-NOT a vhost name!
+which will setup one physical server with two virtual machines. One
+listening on FQDN:PORT of 'websrv1.domain.tld:80', the other listens
+on the same FQDN, but on port 443 (SSL).
+
+As of phpQLAdmin v2.3.3 (CVS commit at July 8, 2006), the organization
+unit for the sub-branch is defined in include/config.inc (the
+PQL_CONF_SUBTREE_APACHE define) so the demo file must be modified
+before use. Replace all occurrences of the following string
+
+	%PQL_CONF_SUBTREE_APACHE%
+
+with the value you've selected in include/config.inc for the 
+PQL_CONF_SUBTREE_APACHE define. This must be done BEFORE any attempt
+of loading the LDIF!
+
+Please also make sure to update the 'scripts/extract_webserver_objects.pl'
+script. It also have the '%PQL_CONF_SUBTREE_APACHE%' stuff that needs
+replacing...
+
+The LDIF file will create the webserver branch (below the 'o=Main Branch,c=SE'
+which was/is created with the 'database-main.ldif' LDIF example file)
+where the first 'cn' branch (third object) is like an organizational
+unit, but for this specific (physical) webserver. The FQDN
+'websrv1.domain.tld' is the actual machine name, NOT a vhost name!
 
 The reason we add ':80' in this 'base' DN is because we must separate
 the non-ssl listener from the ssl enabled one (see the last two objects).
 This is the tree you'll get with that LDIF:
 
   [o=Main Branch,c=SE]
-    ou=WEB
+    PQL_CONF_SUBTREE_APACHE define
       cn=websrv1.domain.tld:80
         ApacheServerName=websrv1.domain.tld
         ApacheServerName=www1.domain.tld
@@ -63,14 +81,14 @@ listening on port 80 (normal/non-ssl or 'http://...') and the second
 is listening on port 443 (the ssl or 'https://...'). Without the port,
 the two vhosts whould have the same DN, which wouldn't work (you can't
 put TWO vhosts in the same object!).  Another (DB/branch) idea would
-be to put an extra cn between the 'ou=WEB' DN and the
-'cn=websrv1.domain.tld:XX' DN (named 'cn=websrv1.domain.tld'), but
-that wouldn't be as 'pretty' in the long run :). Besides, as _I_ see
-vhosts, it isn't important _where_ the vhost is (what physical
+be to put an extra cn between the PQL_CONF_SUBTREE_APACHE define DN
+and the 'cn=websrv1.domain.tld:XX' DN (named 'cn=websrv1.domain.tld'),
+but that wouldn't be as 'pretty' in the long run :). Besides, as _I_
+see vhosts, it isn't important _where_ the vhost is (what physical
 machine), only the _name_ of the vhost.
 
   [o=Main Branch,c=SE - created in database-main.ldif]
-    ou=WEB
+    PQL_CONF_SUBTREE_APACHE define
       cn=websrv1.domain.tld
         cn=websrv1.domain.tld:80
           ApacheServerName=websrv1.domain.tld

@@ -52,6 +52,8 @@ phpQLAdmin 2.3.3 TO BE ANNOUNCED
 	    place, and I find it cleaner to use the pql_get_attribute().
 	  - Remove all hardcoded 'ou=DNS' with propper pql_get_define()'s.
 	    Closes: #304
+	  - Remove all hardcoded 'ou=WEB' with propper pql_get_define()'s.
+	    Closes: #305
 
 	Misc changes
 	  - Add useSimScan to the list of attributes that 'users' need read access to.

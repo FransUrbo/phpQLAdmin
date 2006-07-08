@@ -1,6 +1,6 @@
 <?php
 // Add a webserver configuration to the LDAP db
-// $Id: websrv_add.php,v 2.17 2006-03-07 11:17:14 turbo Exp $
+// $Id: websrv_add.php,v 2.18 2006-07-08 14:36:46 turbo Exp $
 //
 // {{{ Setup session
 require("./include/pql_session.inc");
@@ -261,7 +261,7 @@ if(($error == 'true') or !$_REQUEST["type"] or
 		// As of phpQLAdmin > 20060304, a web server object have it's
 		// IP address in the 'description' attribute ('device' object class).
 		// Let's see if this is availible...
-		$dn = pql_get_define("PQL_ATTR_CN")."=".$host.",ou=WEB,".$_REQUEST["domain"];
+		$dn = pql_get_define("PQL_ATTR_CN")."=".$host.",".pql_get_define("PQL_CONF_SUBTREE_APACHE").",".$_REQUEST["domain"];
 		$ip = pql_get_attribute($_pql->ldap_linkid, $dn, 'description');
 		if(!$ip) {
 		  // Try again. This time doing a DNS query
@@ -298,7 +298,7 @@ if(($error == 'true') or !$_REQUEST["type"] or
 	  // }}}
 	  
 	  // {{{ Add the web server object
-	  $dn = pql_get_define("PQL_ATTR_CN")."=".$host.",ou=WEB,".$_REQUEST["domain"];
+	  $dn = pql_get_define("PQL_ATTR_CN")."=".$host.",".pql_get_define("PQL_CONF_SUBTREE_APACHE").",".$_REQUEST["domain"];
 	  if(pql_websrv_add_server($_pql->ldap_linkid, $_REQUEST["domain"], $dn, $entry, $_REQUEST["type"]))
 		$msg = "Successfully added webserver configuration ".$_REQUEST["serverurl"];
 	  else
@@ -348,7 +348,7 @@ if(($error == 'true') or !$_REQUEST["type"] or
 	  $_REQUEST["serverurl"] .= ":".$_REQUEST["serverport"];
 
 	// {{{ Setup the DN and the entry array
-	$dn = pql_get_define("PQL_ATTR_CN")."=".$_REQUEST["serverurl"].",ou=WEB,".$_REQUEST["domain"];
+	$dn = pql_get_define("PQL_ATTR_CN")."=".$_REQUEST["serverurl"].",".pql_get_define("PQL_CONF_SUBTREE_APACHE").",".$_REQUEST["domain"];
 	$entry[pql_get_define("PQL_ATTR_CN")] = $_REQUEST["serverurl"];
 	$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = "device";
 	$entry[pql_get_define("PQL_ATTR_DESCRIPTION")] = $_REQUEST["serverip"];

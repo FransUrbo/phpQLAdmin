@@ -2,7 +2,7 @@
 
 $LDAP_SEARCH="/usr/bin/ldapsearch -LLL";
 $LDAP_SERVER="-H ldapi://%2fvar%2frun%2fslapd%2fldapi.main";
-$LDAP_BASEDN="ou=WEB,o=Bayour.COM,c=SE";
+$LDAP_BASEDN="%PQL_CONF_SUBTREE_APACHE%,o=Bayour.COM,c=SE";
 $LDAP_PARAMS="-Y GSSAPI";
 
 $cmd = "$LDAP_SEARCH $LDAP_PARAMS $LDAP_SERVER -b '$LDAP_BASEDN' '(&(objectClass=ApacheVirtualHostObj)(cn=*))'";

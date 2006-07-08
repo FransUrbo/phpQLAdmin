@@ -4,13 +4,13 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for web server configuration)
 //
-// $Id: pql_websrv.inc,v 1.18 2006-03-07 11:24:23 turbo Exp $
+// $Id: pql_websrv.inc,v 1.19 2006-07-08 14:36:48 turbo Exp $
 //
 
 // {{{ pql_websrv_add_server(linkid, domain, dn, entry, type)
 function pql_websrv_add_server($linkid, $domain, $dn, $entry, $type) {
 	// {{{ See if the sub branch exists. If not, create it.
-	if(!pql_get_dn($linkid, 'ou=WEB,'.$domain, 'objectClass=organizationalUnit', 'BASE')) {
+	if(!pql_get_dn($linkid, pql_get_define("PQL_CONF_SUBTREE_APACHE").','.$domain, 'objectClass=organizationalUnit', 'BASE')) {
 		$entry['objectclass'][] = 'organizationalUnit';
 		$entry['ou'] = 'WEB';
 
@@ -73,8 +73,8 @@ function pql_websrv_add_server($linkid, $domain, $dn, $entry, $type) {
 
 // {{{ pql_websrv_find_servers(linkid, domain)
 function pql_websrv_find_servers($linkid, $domain) {
-  // Search below the ou=WEB of the domain.
-  $dn = "ou=WEB,".$domain;
+  // Search below the PQL_CONF_SUBTREE_APACHE of the domain.
+  $dn = pql_get_define("PQL_CONF_SUBTREE_APACHE").",".$domain;
   
   $temp = pql_get_dn($linkid, $dn, "objectClass=device", "ONELEVEL");
   if(is_array($temp)) {

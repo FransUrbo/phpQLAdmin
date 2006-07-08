@@ -10,14 +10,14 @@ OpenLDAPaci: 2#entry#grant;r,s,c;uid#public#
 OpenLDAPaci: 3#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
 OpenLDAPaci: 4#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo2,o=Main Branch,c=SE
 
-dn: ou=WEB,o=Main Branch,c=SE
+dn: %PQL_CONF_SUBTREE_APACHE%,o=Main Branch,c=SE
 objectClass: organizationalUnit
 ou: WEB
 OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,o,[entry]#public#
 OpenLDAPaci: 1#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
 OpenLDAPaci: 2#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo2,o=Main Branch,c=SE
 
-dn: cn=websrv1.domain.tld:80,ou=WEB,o=Main Branch,c=SE
+dn: cn=websrv1.domain.tld:80,%PQL_CONF_SUBTREE_APACHE%,o=Main Branch,c=SE
 objectClass: device
 cn: websrv1.domain.tld:80
 OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
@@ -25,7 +25,7 @@ OpenLDAPaci: 1#entry#grant;r,s,c;ou#public#
 OpenLDAPaci: 2#entry#grant;w,r,s,c;[all]#access-id#uid=demo1,o=Main Branch,c=SE
 OpenLDAPaci: 3#entry#grant;r,s,c;[all]#access-id#uid=apache,o=Main Branch,c=SE
 
-dn: ApacheServerName=websrv1.domain.tld,cn=websrv1.domain.tld:80,ou=WEB,o=Main Branch,c=SE
+dn: ApacheServerName=websrv1.domain.tld,cn=websrv1.domain.tld:80,%PQL_CONF_SUBTREE_APACHE%,o=Main Branch,c=SE
 objectClass: device
 objectClass: ApacheSectionObj
 objectClass: ApacheVirtualHostObj
@@ -40,7 +40,7 @@ OpenLDAPaci: 1#entry#grant;r,s,c;ou#public#
 OpenLDAPaci: 2#entry#grant;w,r,s,c;[all]#access-id#uid=demo1,o=Main Branch,c=SE
 OpenLDAPaci: 3#entry#grant;r,s,c;[all]#access-id#uid=apache,o=Main Branch,c=SE
 
-dn: ApacheServerName=www1.domain.tld,cn=websrv1.domain.tld:80,ou=WEB,o=Main Branch,c=SE
+dn: ApacheServerName=www1.domain.tld,cn=websrv1.domain.tld:80,%PQL_CONF_SUBTREE_APACHE%,o=Main Branch,c=SE
 objectClass: device
 objectClass: ApacheSectionObj
 objectClass: ApacheVirtualHostObj
@@ -55,7 +55,7 @@ OpenLDAPaci: 1#entry#grant;r,s,c;ou#public#
 OpenLDAPaci: 2#entry#grant;w,r,s,c;[all]#access-id#uid=demo1,o=Main Branch,c=SE
 OpenLDAPaci: 3#entry#grant;r,s,c;[all]#access-id#uid=apache,o=Main Branch,c=SE
 
-dn: ApacheSectionArg=/doc,ApacheServerName=www1.domain.tld,cn=websrv1.domain.tld:80,ou=WEB,o=Main Branch,c=SE
+dn: ApacheSectionArg=/doc,ApacheServerName=www1.domain.tld,cn=websrv1.domain.tld:80,%PQL_CONF_SUBTREE_APACHE%,o=Main Branch,c=SE
 objectClass: device
 objectclass: ApacheSectionObj
 objectclass: ApacheDirectoryObj
@@ -73,7 +73,7 @@ OpenLDAPaci: 1#entry#grant;r,s,c;ou#public#
 OpenLDAPaci: 2#entry#grant;w,r,s,c;[all]#access-id#uid=turbo,ou=People,o=Fredriksson,c=SE
 OpenLDAPaci: 3#entry#grant;r,s,c;[all]#access-id#uid=apache,ou=System,o=Main Branch,c=SE
 
-dn: ApacheServerName=www2.domain.tld,cn=websrv1.domain.tld:80,ou=WEB,o=Main Branch,c=SE
+dn: ApacheServerName=www2.domain.tld,cn=websrv1.domain.tld:80,%PQL_CONF_SUBTREE_APACHE%,o=Main Branch,c=SE
 objectClass: device
 objectClass: ApacheSectionObj
 objectClass: ApacheVirtualHostObj
@@ -91,7 +91,7 @@ OpenLDAPaci: 1#entry#grant;r,s,c;ou#public#
 OpenLDAPaci: 2#entry#grant;w,r,s,c;[all]#access-id#uid=demo1,o=Main Branch,c=SE
 OpenLDAPaci: 3#entry#grant;r,s,c;[all]#access-id#uid=apache,o=Main Branch,c=SE
 
-dn: ApacheServerName=www3.domain.tld,cn=websrv1.domain.tld:80,ou=WEB,o=Main Branch,c=SE
+dn: ApacheServerName=www3.domain.tld,cn=websrv1.domain.tld:80,%PQL_CONF_SUBTREE_APACHE%,o=Main Branch,c=SE
 objectClass: device
 objectClass: ApacheSectionObj
 objectClass: ApacheVirtualHostObj
@@ -109,7 +109,7 @@ OpenLDAPaci: 1#entry#grant;r,s,c;ou#public#
 OpenLDAPaci: 2#entry#grant;w,r,s,c;[all]#access-id#uid=demo1,o=Main Branch,c=SE
 OpenLDAPaci: 3#entry#grant;r,s,c;[all]#access-id#uid=apache,o=Main Branch,c=SE
 
-dn: cn=websrv1.domain.tld:443,ou=WEB,o=Main Branch,c=SE
+dn: cn=websrv1.domain.tld:443,%PQL_CONF_SUBTREE_APACHE%,o=Main Branch,c=SE
 objectClass: device
 cn: websrv1.domain.tld:443
 OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
@@ -117,7 +117,7 @@ OpenLDAPaci: 1#entry#grant;r,s,c;ou#public#
 OpenLDAPaci: 2#entry#grant;w,r,s,c;[all]#access-id#uid=demo1,o=Main Branch,c=SE
 OpenLDAPaci: 3#entry#grant;r,s,c;[all]#access-id#uid=apache,o=Main Branch,c=SE
 
-dn: ApacheServerName=www1.domain.tld,cn=websrv1.domain.tld:443,ou=WEB,o=Main Branch,c=SE
+dn: ApacheServerName=www1.domain.tld,cn=websrv1.domain.tld:443,%PQL_CONF_SUBTREE_APACHE%,o=Main Branch,c=SE
 objectClass: device
 objectClass: ApacheSectionObj
 objectClass: ApacheVirtualHostObj

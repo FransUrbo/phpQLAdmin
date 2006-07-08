@@ -21,7 +21,7 @@ if(!$_REQUEST["server"] and count($servers)) {
 	$server_name = $_REQUEST["server"];
 
 	// Generate a server DN
-	$server = pql_get_define("PQL_ATTR_CN")."=".$_REQUEST["server"].",ou=WEB,".$_REQUEST["domain"];
+	$server = pql_get_define("PQL_ATTR_CN")."=".$_REQUEST["server"].",".pql_get_define("PQL_CONF_SUBTREE_APACHE").",".$_REQUEST["domain"];
   }
 }
 $server_reference = $server_name;
