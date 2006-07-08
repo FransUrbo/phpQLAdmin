@@ -1,6 +1,6 @@
 <?php
 // Create a DNS zone file
-// $Id: dnszonetemplate.php,v 1.12 2005-09-16 06:08:55 turbo Exp $
+// $Id: dnszonetemplate.php,v 1.13 2006-07-08 10:29:38 turbo Exp $
 // {{{ Setup session etc
 require("../include/pql_session.inc");
 require("../include/pql_config.inc");
@@ -100,7 +100,7 @@ $basedomain = eregi_replace("\.".$origin, "", $defaultdomain);
 ?>
     <pre>
 <?php
-echo "; LDAP DN: 'ou=DNS,".pql_maybe_decode($domain)."'\n";
+echo "; LDAP DN: ".pql_get_define("PQL_CONF_SUBTREE_BIND9")."',".pql_maybe_decode($domain)."'\n";
 echo "\$ORIGIN $origin.\n";
 printf("%-25s %8s	IN	SOA	%s %s. (\n", $basedomain, $negttl, $nameservers[0], $admin);
 printf("%58d  ; Serial number\n", $date);

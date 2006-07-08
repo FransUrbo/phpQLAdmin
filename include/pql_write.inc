@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.38 2006-07-07 21:52:45 turbo Exp $
+// $Id: pql_write.inc,v 2.39 2006-07-08 10:29:36 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -632,7 +632,7 @@ function pql_domain_del($ldap, $domain, $delete_forwards) {
 
 	// {{{ Convert a DNS TTL RDN to something I (phpQLAdmin) can understand
 	if(eregi("^dNSTTL=", $domain))
-	  // 'dNSTTL=3600+relativeDomainName=@,dc=domain,dc=tld,ou=DNS,o=Branch,c=SE'
+	  // 'dNSTTL=3600+relativeDomainName=@,dc=domain,dc=tld,PQL_CONF_SUBTREE_BIND9,o=Branch,c=SE'
 	  $domain = pql_recreate_dnsttl($domain);
 	// }}}
 

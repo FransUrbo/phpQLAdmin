@@ -50,6 +50,8 @@ phpQLAdmin 2.3.3 TO BE ANNOUNCED
 	API changes
 	  - Remove the redundant pql_get_uid() function. It didn't work in the first
 	    place, and I find it cleaner to use the pql_get_attribute().
+	  - Remove all hardcoded 'ou=DNS' with propper pql_get_define()'s.
+	    Closes: #304
 
 	Misc changes
 	  - Add useSimScan to the list of attributes that 'users' need read access to.

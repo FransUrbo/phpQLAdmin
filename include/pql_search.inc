@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.54 2006-07-06 15:09:32 turbo Exp $
+// $Id: pql_search.inc,v 2.55 2006-07-08 10:29:36 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -24,8 +24,8 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
   
   // {{{ Convert a DNS TTL RDN to something I (phpQLAdmin) can understand
   if(eregi("^dNSTTL=", $dn))
-	// FROM: dNSTTL=3600 relativeDomainName=@,dc=domain,dc=tld,ou=DNS,o=Branch,c=SE
-	// TO:   dNSTTL=3600+relativeDomainName=@,dc=domain,dc=tld,ou=DNS,o=Branch,c=SE
+	// FROM: dNSTTL=3600 relativeDomainName=@,dc=domain,dc=tld,PQL_CONF_SUBTREE_BIND9,o=Branch,c=SE
+	// TO:   dNSTTL=3600+relativeDomainName=@,dc=domain,dc=tld,,o=Branch,c=SE
 	$dn = pql_recreate_dnsttl($dn);
   // }}}
   

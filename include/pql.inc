@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.212 2005-09-28 13:11:43 turbo Exp $
+// $Id: pql.inc,v 2.213 2006-07-08 10:29:36 turbo Exp $
 //
 
 // ----------------------------
@@ -809,7 +809,7 @@ function pql_recreate_dnsttl($dn) {
   // We're missing the '+' between dNSTTL and relativeDomainName
   // (which urldecode() removes!):
   // 
-  // dNSTTL=3600+relativeDomainName=@,dc=domain,dc=tld,ou=DNS,o=Branch,c=SE
+  // dNSTTL=3600+relativeDomainName=@,dc=domain,dc=tld,PQL_CONF_SUBTREE_BIND9,o=Branch,c=SE
   $newdn = '';
   $dn_parts = explode(',', $dn);
   

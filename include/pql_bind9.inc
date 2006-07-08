@@ -4,12 +4,12 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.38 2005-09-16 06:08:51 turbo Exp $
+// $Id: pql_bind9.inc,v 2.39 2006-07-08 10:29:36 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
 function pql_bind9_get_zone($linkid, $branchname, $domainname = '') {
-	$dn = "ou=DNS,".urldecode($branchname);
+	$dn = pql_get_define("PQL_CONF_SUBTREE_BIND9").",".urldecode($branchname);
 
 	if(!empty($domainname))
 	  $filter = "(&(zoneName=$domainname)(objectClass=dNSZone))";
@@ -188,14 +188,14 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 
 	// ----------------
 	// See if the sub branch exists. If not, create it.
-	$filter = "(&(ou=DNS)(objectclass=organizationalUnit))";
+	$filter = "(&(".pql_get_define("PQL_CONF_SUBTREE_BIND9").")(objectclass=organizationalUnit))";
 
     if(!pql_get_dn($linkid, $_REQUEST["domain"], $filter, 'ONELEVEL')) {
 		// Does not exists - create it
-		if(!pql_unit_add($linkid, $MASTER_DN, 'ou=DNS'))
-		  die("Could not create 'ou=DNS,$MASTER_DN'");
+		if(!pql_unit_add($linkid, $MASTER_DN, pql_get_define("PQL_CONF_SUBTREE_BIND9")))
+		  die("Could not create ".pql_get_define("PQL_CONF_SUBTREE_BIND9")."',$MASTER_DN'");
 	}
-	$dn = "ou=DNS,$MASTER_DN";
+	$dn = pql_get_define("PQL_CONF_SUBTREE_BIND9").",$MASTER_DN";
 	$DNs[] = $dn;
 
 	// ----------------
@@ -290,8 +290,8 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 
 	if(ereg('.', $entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")])) {
 	  // This is a sub-zone! Create something like this:
-	  // dn: relativeDomainName=test,dc=domain,dc=tld,ou=DNS,o=Branch,c=SE
-	  // dn: relativeDomainName=ns1.test,dc=domain,dc=tld,ou=DNS,o=Branch,c=SE
+	  // dn: relativeDomainName=test,dc=domain,dc=tld,PQL_CONF_SUBTREE_BIND9,o=Branch,c=SE
+	  // dn: relativeDomainName=ns1.test,dc=domain,dc=tld,PQL_CONF_SUBTREE_BIND9,o=Branch,c=SE
 
 	  // Split it up in dc components and add each one as a separate dc object.
 	  $dc = split('\.', $entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")]);
@@ -342,7 +342,7 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 	  }
 	}
 
-	$dn = "relativeDomainName=$tmp,$dn,ou=DNS,$basedn";
+	$dn = "relativeDomainName=$tmp,$dn,".pql_get_define("PQL_CONF_SUBTREE_BIND9").",$basedn";
 	// }}}
 
 	// {{{ Just in case the object already exists, we merge the new with the old...
@@ -419,7 +419,7 @@ function pql_bind9_del_zone($linkid, $dn, $zone) {
 	for($i=0; $i < count($dnsparts); $i++) {
 	    $dn_to_remove .= "dc=".$dnsparts[$i].",";
 	}
-	$dn_to_remove .= "ou=DNS,".$dn;
+	$dn_to_remove .= pql_get_define("PQL_CONF_SUBTREE_BIND9").",".$dn;
 
 	$lc_zone = lc($dn_to_remove);
 	
@@ -468,7 +468,7 @@ function pql_bind9_del_zone($linkid, $dn, $zone) {
 
 	// -------------------------------------------------------------
 	// If this was the last TLD in this branch, remove the organiztionalUnit
-	// ou=DNS as well.
+	// PQL_CONF_SUBTREE_BIND9 as well.
 
 	// Get the ou DN
 	$dnparts = split(',', $tld);
