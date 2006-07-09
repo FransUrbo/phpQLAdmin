@@ -15,11 +15,11 @@ phpQLAdmin GUI_TEMPLATE branch
 	  - Remove the validateEmailFormat directory. Never used, I had my own
 	    function(s) for this.
 	  - Add the Smarty Template Engine (http://smarty.php.net) version 2.6.13 for use
-	    with the soon-to-bee template driven phpQLAdmin.
+	    with the soon-to-be template driven phpQLAdmin.
 	  - Add the PHPLib Template to Smarty Template (http://www.sanisoft.com/phplib2smarty/)
-	    version 0.1 for use with the soon-to-bee template driven phpQLAdmin.
+	    version 0.1 for use with the soon-to-be template driven phpQLAdmin.
 	  - Add the PHP Base Library (http://phplib.sourceforge.net/) version 7.4a for use
-	    with the soon-to-bee template driven phpQLAdmin.
+	    with the soon-to-be template driven phpQLAdmin.
 	  - Now using templates for pql_format_error() which means option is redundant.
 	    + Change all references to pql_format_error() to not return value.
 	  - Move all HTML from the libs/pql*.inc files into Smarty templates.
