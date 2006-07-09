@@ -3,7 +3,7 @@
 // pql_hostctrl.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_hostctrl.inc,v 1.1.2.2 2006-03-23 09:41:19 turbo Exp $
+// $Id: pql_hostctrl.inc,v 1.1.2.3 2006-07-09 11:53:16 turbo Exp $
 
 // {{{ pql_update_sudo(ldap, dn, type, attribute)
 function pql_update_sudo($ldap, $dn, $type, $attribute) {
@@ -31,7 +31,7 @@ function pql_list_expand($role, $alist, $attribute, $extraURL) {
 		'alt'    => pql_complete_constant($LANG->_('Delete %what% from Sudo role'), array('what' => $alist[0])),
 		'data'   => $alist);
   $smarty->assign('show', $show);
-  $smarty->display($_SESSION["path"]."/templates/".pql_get_define("PQL_CONF_GUI_TEMPLATE")."/hostctrl_listexpand.tpl");
+  pql_display_smarty("hostctrl_listexpand.tpl");
 }
 // }}}
 

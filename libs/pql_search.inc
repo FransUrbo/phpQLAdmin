@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 1.1.2.2 2006-03-23 09:41:19 turbo Exp $
+// $Id: pql_search.inc,v 1.1.2.3 2006-07-09 11:53:16 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -907,7 +907,7 @@ function pql_get_rootdn($dn, $function = '') {
   
   if($dn == '') {
 	$smarty->assign('function', $function);
-	$smarty->display($_SESSION["path"]."/templates/".pql_get_define("PQL_CONF_GUI_TEMPLATE")."/dontexists_rootdn.tpl");
+	pql_display_smarty("dontexists_rootdn.tpl");
 	die();
   } else
 	$dn = urldecode($dn);
@@ -975,7 +975,7 @@ function pql_get_rootdn($dn, $function = '') {
 	} elseif($counts < 1) {
 	  // BUG! We don't have a hit!
 	  $smarty->assign('rootdn', $dn);
-	  $smarty->display($_SESSION["path"]."/templates/".pql_get_define("PQL_CONF_GUI_TEMPLATE")."/dontexists_rootdn.tpl");
+	  pql_display_smarty("dontexists_rootdn.tpl");
 	  die();
 	} else
 	  $dn = $DNs[0];

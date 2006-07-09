@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 1.1.2.2 2006-03-23 09:41:19 turbo Exp $
+// $Id: pql_formating.inc,v 1.1.2.3 2006-07-09 11:53:16 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry, extra_newline)
 // Create a LDIF object to print in case of error
@@ -107,7 +107,7 @@ function pql_generate_button($buttons, $link = '') {
   if(!empty($_REQUEST["domain"])) $url .= "domain=" . pql_format_urls($_REQUEST["domain"]) . "&";
 
   $smarty->assign(array('url' => $url, 'link' => $link, 'buttons' => array($buttons)));
-  $smarty->display($_SESSION["path"]."/templates/".pql_get_define("PQL_CONF_GUI_TEMPLATE")."/buttons.tpl");
+  pql_display_smarty("buttons.tpl");
 }
 // }}}
 
@@ -126,19 +126,19 @@ function pql_format_error() {
   switch($errno) {
   case 17:
 	// Undefined attribute type -> invalid schema
-	$smarty->display($_SESSION["path"]."/templates/".pql_get_define("PQL_CONF_GUI_TEMPLATE")."/error_17.tpl");
+	pql_display_smarty("error_17.tpl");
 	break;
   case 18:
 	// Inappropriate matching --> invalid schema
-	$smarty->display($_SESSION["path"]."/templates/".pql_get_define("PQL_CONF_GUI_TEMPLATE")."/error_18.tpl");
+	pql_display_smarty("error_18.tpl");
 	break;
   case 21:
 	// Invalid syntax
-	$smarty->display($_SESSION["path"]."/templates/".pql_get_define("PQL_CONF_GUI_TEMPLATE")."/error_21.tpl");
+	pql_display_smarty("error_21.tpl");
 	break;
   case 41:
 	// Object Class Violation
-	$smarty->display($_SESSION["path"]."/templates/".pql_get_define("PQL_CONF_GUI_TEMPLATE")."/error_41.tpl");
+	pql_display_smarty("error_41.tpl");
 	break;
   }
 }
@@ -154,7 +154,7 @@ function pql_format_error_span($msg) {
 function pql_format_status_msg($msg) {
   global $smarty;
   $smarty->assign('message', stripslashes($msg));
-  $smarty->display($_SESSION["path"]."/templates/".pql_get_define("PQL_CONF_GUI_TEMPLATE")."/message.tpl");
+  pql_display_smarty("message.tpl");
 }
 // }}}
 

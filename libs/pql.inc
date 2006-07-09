@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 1.1.2.2 2006-03-23 09:13:17 turbo Exp $
+// $Id: pql.inc,v 1.1.2.3 2006-07-09 11:53:16 turbo Exp $
 //
 
 // ----------------------------
@@ -871,6 +871,13 @@ function pql_flush() {
 	ob_flush();
 
   flush();
+}
+// }}}
+
+// {{{ pql_display_smarty(file)
+function pql_display_smarty($file) {
+  global $smarty;
+  $smarty->display($_SESSION["path"]."/templates/".pql_get_define("PQL_CONF_GUI_TEMPLATE")."/".$file);
 }
 // }}}
 

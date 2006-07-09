@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.102.2.2 2006-03-23 09:29:03 turbo Exp $
+// $Id: domain_detail.php,v 2.102.2.3 2006-07-09 11:53:14 turbo Exp $
 //
 // {{{ Setup session etc
 require("./libs/pql_session.inc");
@@ -41,7 +41,7 @@ if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
 // {{{ Check if domain exist
 if(!pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], '(objectclass=*)', 'BASE')) {
   $smarty->assign('domain', $_REQUEST["domain"]);
-  $smarty->display($_SESSION["path"]."/templates/".pql_get_define("PQL_CONF_GUI_TEMPLATE")."/dontexists_domain.tpl");
+  pql_display_smarty("dontexists_domain.tpl");
   exit();
 }
 // }}}
@@ -330,7 +330,7 @@ pql_generate_button($buttons, "domain=" . $url["domain"]); echo "  <br>\n";
 // {{{ Load the requested domain details page
 if(@is_array($show)) {
   $smarty->assign('show', $show);
-  $smarty->display($_SESSION["path"]."/templates/".pql_get_define("PQL_CONF_GUI_TEMPLATE")."/domain_details.tpl");
+  pql_display_smarty("domain_details.tpl");
 }
 
 // Load additional stuff that can't be fixed with Smarty
