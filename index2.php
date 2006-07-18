@@ -1,8 +1,13 @@
 <?php
-// $Id: index2.php,v 2.44 2005-09-16 06:08:43 turbo Exp $
+// $Id: index2.php,v 2.45 2006-07-18 13:08:35 turbo Exp $
 
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
+
+if(!@$_SESSION["USER_DN"]) {
+  /* The user haven't loged in, force a login */
+  pql_header("index.php");
+}
 
 if(pql_get_define("PQL_CONF_START_ADVANCED", $_SESSION["USER_DN"])) {
     $_REQUEST["advanced"] = $_SESSION["ADVANCED_MODE"] = 1;
