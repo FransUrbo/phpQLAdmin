@@ -1,6 +1,6 @@
 <?php
 // shows configuration of phpQLAdmin
-// $Id: config_ldap.php,v 1.18 2005-09-16 20:33:37 turbo Exp $
+// $Id: config_ldap.php,v 1.19 2006-07-18 13:00:40 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -31,7 +31,7 @@ foreach($ldap as $x => $array) {
 ?>
       <th colspan="3" align="left"><?=$x?>
 <?php
-	if(!eregi(lc($x), 'objectclasses')) {
+	if(!eregi($x, 'objectclasses')) {
 ?>
 
         <tr>
