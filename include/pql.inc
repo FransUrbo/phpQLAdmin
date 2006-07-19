@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.213 2006-07-08 10:29:36 turbo Exp $
+// $Id: pql.inc,v 2.214 2006-07-19 21:17:44 turbo Exp $
 //
 
 // ----------------------------
@@ -851,14 +851,20 @@ function pql_fix_path($path) {
 
 // {{{ pql_add2array($old, $new)
 function pql_add2array($old, $new) {
+  // Make sure 'old' is an array
   if($old and !is_array($old))
 	$old = array($old);
 
+  // Make sure 'new' is an array
   if($new and !is_array($new))
 	$new = array($new);
 
-  foreach($new as $entry)
-	$old[] = $entry;
+  // Add all entries in 'new' to 'old'
+  foreach($new as $entry) {
+	if(!@in_array($entry, $old))
+	  // This is a unique entry, add it
+	  $old[] = $entry;
+  }
 
   return($old);
 }
