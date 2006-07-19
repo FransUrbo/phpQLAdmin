@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.55 2006-07-08 10:29:36 turbo Exp $
+// $Id: pql_search.inc,v 2.56 2006-07-19 21:27:31 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -258,7 +258,6 @@ function pql_get_domains($ldap) {
 	if(pql_get_define("PQL_CONF_SUBTREE_USERS")) {
 	  // There's a subtree defined - look if it's there
 	  $dn     = pql_get_define("PQL_CONF_SUBTREE_USERS").",$TOP_DN";
-	  
 	  $filter = pql_get_define("PQL_ATTR_OBJECTCLASS").'=*';
 	  $result = pql_get_dn($ldap->ldap_linkid, $dn, $filter, 'BASE');
 	  if(is_array($result)) {
@@ -269,16 +268,16 @@ function pql_get_domains($ldap) {
 		if(is_array($domains)) {
 		  // Just to be safe - is there any branches here?
 		  $filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN) . "=*)$ocs)";
-		  $new = pql_get_dn($ldap->ldap_linkid, $dn, $filter, 'ONELEVEL');
+		  $new    = pql_get_dn($ldap->ldap_linkid, $dn, $filter, 'ONELEVEL');
 		  if(is_array($new))
 			$domains = pql_add2array($domains, $new);
 		}
 	  }
 	}
-	
+
 	// -------------------
 	// Is there any users just below the top DN then?
-	$dn	    = $TOP_DN;
+	$dn	= $TOP_DN;
 	
 	// BUG: I'd really like to use this, but I can't.
 	// The reason is: If I specify (in 'phpQLAdmin config->Branch config')
@@ -301,7 +300,7 @@ function pql_get_domains($ldap) {
 	  // User reference for this branch/domain not specified. Use default...
 	  $filter = 'uid=*';
 	$new    = pql_get_dn($ldap->ldap_linkid, $TOP_DN, $filter, 'ONELEVEL');
-	
+
 	if(is_array($new))
 	  $domains = pql_add2array($domains, $new);
 	
@@ -310,13 +309,18 @@ function pql_get_domains($ldap) {
 	$new    = pql_get_dn($ldap->ldap_linkid, $TOP_DN, $filter, 'ONELEVEL');
 	if(is_array($new))
 	  $domains = pql_add2array($domains, $new);
-	
+
 	// Now, if the base/root DN is a 'dc' object and domain/branch reference
 	// is 'ou', we MUST use 'organizationalUnit' in the object class filter...
 	$filter = '(&('.pql_get_define("PQL_ATTR_OU").'=*)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=organizationalUnit))';
 	$new    = pql_get_dn($ldap->ldap_linkid, $TOP_DN, $filter, 'ONELEVEL');
-	if(is_array($new) and !in_array('ou=Templates'.','.$TOP_DN, $new))
-	  $domains = pql_add2array($domains, $new);
+	if(is_array($new)) {
+	  for($i=0; $new[$i]; $i++) {
+		if(!eregi('^ou=Templates', $new[$i]))
+		  // It's not a Templates object, add it to the list of domains.
+		  $domains = pql_add2array($domains, $new);
+	  }
+	}
   }
   
   if($domains[0]) {
@@ -675,6 +679,51 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 		$entry[0] = $tmp; unset($tmp);
 	  }
 
+	  // {{{ Examples (each objectClasses attribute on ONE line!):
+	  // * ldapSyntaxes
+	  //	ldapSyntaxes: ( 1.3.6.1.4.1.1466.115.121.1.49 DESC 'Supported Algorithm' X-BINARY-TRANSFER-REQUIRED 'TRUE' X-NOT-HUMAN-READABLE 'TRUE' )
+	  //	ldapSyntaxes: ( 1.3.6.1.4.1.1466.115.121.1.45 DESC 'SubtreeSpecification' )
+	  //
+	  //	-> The X-BINARY-TRANSFER-REQUIRED and X-NOT-HUMAN-READABLE seems to
+	  //	   be optional...
+	  //
+	  // * matchingRules
+	  //	matchingRules: ( 2.5.13.5 NAME 'caseExactMatch' SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
+	  //
+	  //	-> Very simple and uniform...
+	  //
+	  // * attributeTypes
+	  //	attributeTypes: ( 2.5.4.35 NAME 'userPassword' DESC 'RFC2256/2307: password of user' 
+	  //		EQUALITY octetStringMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.40{128} )
+	  //	attributeTypes: ( 2.5.4.3 NAME ( 'cn' 'commonName' ) DESC 'RFC2256: common name(s) for which the entity is known by' 
+	  //		SUP name )
+	  //	attributeTypes: ( 1.3.6.1.4.1.4203.666.1.12 NAME 'queryid' DESC 'list of queries the entry belongs to' 
+	  //		EQUALITY octetStringMatch SYNTAX 1.3.6.1.4.1.1466.115.121.1.40{64} NO-USER-MODIFICATION 
+	  //		USAGE directoryOperation )
+	  //
+	  //	-> Only NAME and DESC seems to be required, all the rest is optional.
+	  //
+	  // * objectClasses
+	  //	objectClasses: ( 2.5.6.6 NAME 'person' DESC 'RFC2256: a person' 
+	  //		SUP top STRUCTURAL MUST ( sn $ cn ) MAY ( userPassword $ 
+	  //		telephoneNumber $ seeAlso $ description ) )
+	  //	objectClasses: ( 1.3.6.1.4.1.7914.1.2.2.1 NAME 'qmailUser' DESC 
+	  //		'QMail-LDAP User' SUP top AUXILIARY MUST mail MAY ( uid $ 
+	  //		mailMessageStore $ homeDirectory $ userPassword $ mailAlternateAddress $ 
+	  //		qmailUID $ qmailGID $ mailHost $ mailForwardingAddress $ deliveryProgramPath $ 
+	  //		qmailDotMode $ deliveryMode $ mailReplyText $ accountStatus $ qmailAccountPurge $ 
+	  //		mailQuotaSize $ mailQuotaCount $ mailSizeMax ) )
+	  //
+	  //	-> If there's only one MUST/MAY then there's no parentheses, but
+	  //	   if there's more than one, then there's parentheses around the
+	  //	   attributes, just like a schema definition.
+	  //
+	  // * Problem (on Fedora Directory Server)
+	  //	objectclasses: ( 2.5.6.6 NAME 'person' DESC 'Standard LDAP objectclass' 
+	  //		SUP top STRUCTURAL MUST ( sn $ cn ) MAY ( description $ seeAlso $ 
+	  //		telephoneNumber $ userPassword ) X-ORIGIN 'RFC 2256' )
+// }}}
+
 	  for($i=0; $i < count($entry[0][$attrib]); $i++) {
 		// ------------------------
 		// Retreive NAME
@@ -704,7 +753,7 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 		  $words = split(" ", $entry[0][$attrib][$i]);
 		  $name  = lc($words[1]);
 		}
-		
+
 		// ------------------------
 		// Get the OID number
 		$words = split(" ", $entry[0][$attrib][$i]);
@@ -817,6 +866,16 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 		}
 		
 		// ------------------------
+		// Retreive X-ORIGIN (Fedora Directory Server)
+		$words = split("X-ORIGIN", $entry[0][$attrib][$i]);
+		if(! empty($words[1])) {
+		  $words = split("\' ", $words[1]);
+		  $words = split(" \'", $words[0]);
+		  
+		  $VALUE[$name]["X-ORIGIN"] = $words[1];
+		}
+
+		// ------------------------
 		// Retreive SINGLE-VALUE
 		if(eregi("SINGLE-VALUE", $entry[0][$attrib][$i]))
 		  $VALUE[$name]["SINGLE-VALUE"] = 'TRUE';
@@ -867,15 +926,19 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 				  if(!empty($value_data["MAY"][$j]) and
 					 (lc($value_data["MAY"][$j]) == lc($attrs_attrib)))
 					{
-					  foreach($attrs_data as $alias) 
-						$VALUE[$value_attrib]["MAY"][$j] .= ":$alias";
+					  foreach($attrs_data as $alias) {
+						if(!empty($alias))
+						  $VALUE[$value_attrib]["MAY"][$j] .= ":$alias";
+					  }
 					}
 				  
 				  if(!empty($value_data["MUST"][$j]) and
 					 (lc($value_data["MUST"][$j]) == lc($attrs_attrib)))
 					{
-					  foreach($attrs_data as $alias) 
-						$VALUE[$value_attrib]["MUST"][$j] .= ":$alias";
+					  foreach($attrs_data as $alias) {
+						if(!empty($alias))
+						  $VALUE[$value_attrib]["MUST"][$j] .= ":$alias";
+					  }
 					}
 				}
 			  }
@@ -889,7 +952,7 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 		}
 	  }
 	}
-	
+
 	if(empty($VALUE))
 	  return false;
 	else
