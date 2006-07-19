@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.52 2006-05-19 07:18:24 turbo Exp $
+// $Id: pql_formating.inc,v 2.53 2006-07-19 21:12:33 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry, extra_newline)
 // Create a LDIF object to print in case of error
@@ -404,7 +404,7 @@ function pql_format_tree_span($text, $links, $level) {
 <?php	if(is_array($link)) { ?>
       <input type="checkbox" name="<?=$link[0]?>_<?=$link[1]?>" value="<?=$link[2]?>"><?=$text?>
 <?php	} else { ?>
-      <?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>"><?php } ?>
+      <?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>">&nbsp;<?php } ?>
 <a class="tblItem" title="<?=$text?>" href="<?=$link?>" <?php if(eregi('^http://', $link)) { echo 'target="_new"'; } else { echo 'target="pqlmain"'; } ?>><?=$text?></a>
 <?php	} ?>
     </nobr>
@@ -414,7 +414,7 @@ function pql_format_tree_span($text, $links, $level) {
 	  } else { ?>
     <nobr>
       <?=$nbsp?>
-      <?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>"><?php } ?>
+      <?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>">&nbsp;<?php } ?>
       <?=$text?>
     </nobr>
 
@@ -446,7 +446,7 @@ function pql_format_tree_end() {
 
 // {{{ pql_left_htmlify_userlist(linkid, rootdn, domain, subbranch, users, &links)
 function pql_left_htmlify_userlist($linkid, $rootdn, $domain, $subbranch, $users, &$links) {
-  // Iterate trough all users in this domain/branch
+  // {{{ Iterate trough all users in this domain/branch to find a suitable reference value
   for($i=0; $i < count($users); $i++) {
 	$dn = $users[$i];
 	unset($cn); unset($sn); unset($gecos);
@@ -523,6 +523,7 @@ function pql_left_htmlify_userlist($linkid, $rootdn, $domain, $subbranch, $users
 	}
 	// }}}
   }
+  // }}}
   
   if(is_array($cns)) {
 	asort($cns);
