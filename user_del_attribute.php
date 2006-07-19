@@ -1,6 +1,6 @@
 <?php
 // delete attribute of a user
-// $Id: user_del_attribute.php,v 2.36 2005-06-09 15:05:36 turbo Exp $
+// $Id: user_del_attribute.php,v 2.37 2006-07-19 21:08:16 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -78,7 +78,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
     // {{{ Remove any forwarders TO this mail address
     if (lc($_REQUEST["attrib"]) == pql_get_define("PQL_ATTR_MAILALTERNATE") and $success and isset($_REQUEST["delete_forwards"])) {
 	// does another account forward to this alias?
-	$sr = ldap_search($_pql->ldap_linkid, "(|(" . pql_get_define("PQL_ATTR_FORWARDS") ."=" . $_REQUEST["oldvalue"] . "))");
+	$sr = ldap_search($_pql->ldap_linkid, $_REQUEST["user"], "(|(" . pql_get_define("PQL_ATTR_FORWARDS") ."=" . $_REQUEST["oldvalue"] . "))");
 	if (ldap_count_entries($_pql->ldap_linkid,$sr) > 0) {
 	    $results = ldap_get_entries($_pql->ldap_linkid, $sr);
 	    foreach($results as $key => $result){
