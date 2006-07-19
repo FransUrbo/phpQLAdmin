@@ -3,7 +3,7 @@
 // pql_units.inc
 // Sub units (ou=People, ou=Users, dc=host) etc
 //
-// $Id: pql_units.inc,v 1.15 2005-09-16 06:08:52 turbo Exp $
+// $Id: pql_units.inc,v 1.16 2006-07-19 21:03:36 turbo Exp $
 //
 
 // {{{ pql_unit_get(linkid, dn, filter)
@@ -22,16 +22,19 @@ function pql_unit_get($linkid, $dn, $filter = 1) {
 	$ocs = pql_get_dn($linkid, $dn, 'objectclass=organizationalUnit', 'ONELEVEL');
 
 	// Join the two values
-	$info = array_merge($subd, $ocs);
-	for($i=0; $i < count($info); $i++) {
+	$subd = pql_add2array($subd, $ocs);
+	for($i=0; $i < count($subd); $i++) {
 		if($filter) {
 			// Filter out the most obvious subbranches we don't put users in...
-			if(!eregi('group',  $info[$i]) and
-			   !eregi('qmail',  $info[$i]) and
-			   !eregi('auto\.', $info[$i]) and
-			   !eregi('web',    $info[$i]) and
-			   !eregi('dns',	$info[$i]))
-			  $branches[] = $info[$i];
+			if(!eregi('qmail',  		$subd[$i]) and
+			   !eregi('auto\.', 		$subd[$i]) and
+			   !eregi('mailinglists',	$subd[$i]) and
+			   (pql_get_define("PQL_CONF_SUBTREE_GROUPS")    and !eregi(pql_get_define("PQL_CONF_SUBTREE_GROUPS"), 		$subd[$i])) and
+			   (pql_get_define("PQL_CONF_SUBTREE_APACHE")    and !eregi(pql_get_define("PQL_CONF_SUBTREE_APACHE"),		$subd[$i])) and
+			   (pql_get_define("PQL_CONF_SUBTREE_BIND9")     and !eregi(pql_get_define("PQL_CONF_SUBTREE_BIND9"),		$subd[$i])) and
+			   (pql_get_define("PQL_CONF_SUBTREE_COMPUTERS") and !eregi(pql_get_define("PQL_CONF_SUBTREE_COMPUTERS"),	$subd[$i])) and
+			   (pql_get_define("PQL_CONF_SUBTREE_SUDOERS")   and !eregi(pql_get_define("PQL_CONF_SUBTREE_SUDOERS"),		$subd[$i])))
+			  $branches[] = $subd[$i];
 		} else
 		  $branches[] = $info[$i];
 	}
