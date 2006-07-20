@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.116 2006-03-09 06:19:48 turbo Exp $
+// $Id: left.php,v 2.117 2006-07-20 17:07:35 turbo Exp $
 //
 require("./include/pql_session.inc");
 
@@ -255,13 +255,13 @@ if(!isset($domains) or !is_array($domains)) {
 		 if(is_array($users))
 		   // We have users in this domain
 		   pql_left_htmlify_userlist($_pql->ldap_linkid, $rootdn, $domain, $subbranch, $users, $links);
-		 
+
 		 pql_format_tree($d, "domain_detail.php?rootdn=$rootdn&domain=$domain", $links, 0);
 	   } else
 		 // This branch don't have any sub units (flat structure)
 		 // -> make sure we still jump into the for loop!
 		 $branches[0] = $domain;
-	   
+
 	   for($i=0; $i < count($branches); $i++) {
 		 $subbranch = '';
 		 
@@ -279,11 +279,14 @@ if(!isset($domains) or !is_array($domains)) {
 		   if(count($branches) > 1) {
 			 // We're only interested in the 'People', 'Users' etc value,
 			 // not the complete DN.
-			 $dnparts   = ldap_explode_dn($branches[$i], 0);
-			 $dnparts   = split('=', $dnparts[0]);
-			 $subbranch = urlencode($dnparts[1]);
+			 // Three steps because pql_get_domains() and pql_get_dn()
+			 // returns normalized DN's which isn't as pretty.
+			 $dnparts	= ldap_explode_dn($branches[$i], 0);
+			 $tmp		= split('=', $dnparts[0]);
+			 $attrib	= $tmp[0];
+			 $subbranch	= pql_get_attribute($_pql->ldap_linkid, $branches[$i], $attrib);
+
 			 $url		= '';
-			 
 			 $links = array(pql_complete_constant($LANG->_('Add %what%'),
 												  array('what' => $LANG->_('user')))
 							=> "user_add.php?rootdn=$rootdn&domain=$domain&subbranch=$subbranch");
