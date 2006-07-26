@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for the Webserver Configuration editor
 //
-// $Id: attrib.websrv.inc,v 1.14 2006-03-07 11:20:27 turbo Exp $
+// $Id: attrib.websrv.inc,v 1.15 2006-07-26 21:31:09 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -78,7 +78,7 @@ function attribute_save($action) {
 
 	// {{{ Setup the resulting DN
 	// ... depending on if it's a server, virtual host or a location object
-	$dn = urldecode($_REQUEST["server"]);
+	$dn = pql_format_normalize_dn($_REQUEST["server"]);
 	if($_REQUEST["virthost"])
 	  $dn = pql_get_define("PQL_ATTR_WEBSRV_SRV_URL")."=".$_REQUEST["virthost"].",".$dn;
 	if($_REQUEST["hostdir"])

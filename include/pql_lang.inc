@@ -3,7 +3,7 @@
 // pql_lang.inc
 // phpQLAdmin Language Application Programming Interface (API)
 //
-// $Id: pql_lang.inc,v 2.12 2006-03-14 10:06:52 turbo Exp $
+// $Id: pql_lang.inc,v 2.13 2006-07-26 21:31:09 turbo Exp $
 //
 
 // ----------------------------
@@ -38,7 +38,7 @@ class pql_lang {
 	// Get default language from database
 	function _get_database_language($ldap) {
 		foreach($ldap->ldap_basedn as $dn) {
-			$dn   = urldecode($dn);
+			$dn   = pql_format_normalize_dn($dn);
 			
 			$sr   = @ldap_read($ldap->ldap_linkid, $dn, "language=*", array("language"));
 			if(!$sr) return false;

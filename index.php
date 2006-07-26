@@ -1,6 +1,6 @@
 <?php
 // logins to the system
-// $Id: index.php,v 2.49 2005-09-24 09:45:56 turbo Exp $
+// $Id: index.php,v 2.50 2006-07-26 21:31:02 turbo Exp $
 //
 // Start debuging
 // http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0
@@ -204,7 +204,7 @@ if(!($whoarewe = pql_get_define("PQL_CONF_WHOAREWE")))
 	  $_SESSION["USER_PASS"] = $_POST["passwd"];
 
 	$_SESSION["USER_ID"]	= $_POST["uname"];
-	$_SESSION["USER_DN"]	= $userdn;
+	$_SESSION["USER_DN"]	= pql_format_normalize_dn($userdn);
 
 	$log = date("M d H:i:s");
 	$log .= " : Logged in ($userdn)\n";

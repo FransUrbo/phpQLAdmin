@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.39 2006-07-08 10:29:36 turbo Exp $
+// $Id: pql_write.inc,v 2.40 2006-07-26 21:31:09 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -523,7 +523,10 @@ function pql_add_sudo_role($linkid, $domain, $rolename, $user, $command, $runas,
 // Delete a user from the LDAP database
 function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 	$linkid = $ldap->ldap_linkid;
-	$user = pql_maybe_encode(urldecode($user));
+
+	// Normalize the User and Domain DN
+	$user = pql_format_normalize_dn($user);
+	$domain = pql_format_normalize_dn($domain);
 
 	if(!pql_get_dn($ldap->ldap_linkid, $user, '(objectclass=*)', 'BASE'))
 	  // user does not exist
@@ -627,7 +630,8 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 // {{{ pql_domain_del(ldap, domain, delete_forwards)
 // Removes a domain with all listed users
 function pql_domain_del($ldap, $domain, $delete_forwards) {
-	$domain = pql_maybe_encode(urldecode($domain));
+	// Normalize the Domain DN
+	$domain = pql_format_normalize_dn($domain);
 	$linkid = $ldap->ldap_linkid;
 
 	// {{{ Convert a DNS TTL RDN to something I (phpQLAdmin) can understand

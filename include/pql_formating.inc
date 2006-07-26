@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.53 2006-07-19 21:12:33 turbo Exp $
+// $Id: pql_formating.inc,v 2.54 2006-07-26 21:31:09 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry, extra_newline)
 // Create a LDIF object to print in case of error
@@ -709,6 +709,24 @@ function pql_format_bool(&$value) {
 	}
 
 	return($value);
+}
+// }}}
+
+// {{{ pql_format_normalize_dn(dn)
+// 1. URL decode the DN
+// 2. Lower case DN
+// 3. Remove any spaces _after_ commas
+//    dn: uid=administrator, ou=People, dc=domain,dc=tld
+//	  =>
+//	  dn: uid=administrator,ou=People,dc=domain,dc=tld
+// 4. Encode the string with international characters
+function pql_format_normalize_dn($dn) {
+  $dn = urldecode($dn);
+  $dn = strtolower($dn);
+  $dn = preg_replace('/, /', ',', $dn);
+  $dn = pql_maybe_encode($dn);
+
+  return($dn);
 }
 // }}}
 

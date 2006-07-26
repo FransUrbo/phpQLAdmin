@@ -4,6 +4,10 @@ phpQLAdmin 2.3.4 TO BE ANNOUNCED
 	Bug fixes
 	  - Retreiving ALL operational attributes with '+' is an OpenLDAP thing ONLY.
 	    On all other (?), one must specify the attributes in question directly.
+	  - Instead of doing urldecode() all over the place and to normalize the DN
+	    (of users and domains etc), create a pql_format_normalize_dn() function
+	    that will: urldecode, strtolower, replace ', ' with ',' and lastly country
+	    encode the DN.
 
 	GUI layout changes
 	Schema changes

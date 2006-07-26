@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.85 2006-07-05 09:52:36 turbo Exp $
+// $Id: pql_config.inc,v 1.86 2006-07-26 21:31:09 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -51,8 +51,7 @@ function pql_set_define($define, $value, $case_insensitive = false, $dn = NULL) 
 		// Create a global two dimensional array with the config values
 		//	Dimension 1: define name
 		//	Dimension 2: root DN
-
-		$dn = urldecode($dn);
+		$dn = pql_format_normalize_dn($dn);
 
 		if(empty($config[$define][$dn])) {
 			$config[$define][$dn] = $value;
@@ -78,7 +77,7 @@ function pql_get_define($define, $dn = NULL) {
 	global $config;
 
 	if($dn) {
-		$dn = urldecode($dn);
+		$dn = pql_format_normalize_dn($dn);
 		if(!empty($config[$define][$dn]))
 		  $value = $config[$define][$dn];
 		else
@@ -119,7 +118,7 @@ if(empty($_SESSION["USER_HOST"])) {
 // Get the search base - controls database
 if(empty($_SESSION["USER_SEARCH_DN_CTR"])) {
   $dn = split(';', $_SESSION["USER_HOST"]);
-  $_SESSION["USER_SEARCH_DN_CTR"] = $dn[2];
+  $_SESSION["USER_SEARCH_DN_CTR"] = pql_format_normalize_dn($dn[2]);
 
   unset($dn);
 }
@@ -142,7 +141,7 @@ $_SESSION["SINGLE_USER"]			= (!empty($_SESSION["SINGLE_USER"]))			? $_SESSION["S
 
 // Load configuration from the database...
 foreach($_pql->ldap_basedn as $dn)  {
-  $dn = urldecode($dn);
+  $dn = pql_format_normalize_dn($dn);
   unset($info);
 
   if(@(is_array($_SESSION["BASE_DN"]) and !in_array($dn, $_SESSION["BASE_DN"])) or !@$_SESSION["BASE_DN"])

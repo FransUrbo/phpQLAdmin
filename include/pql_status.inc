@@ -4,11 +4,13 @@
 // Retreive LDAP connection and database status
 // from the cn=Monitor backend.
 //
-// $Id: pql_status.inc,v 1.3 2005-09-16 06:08:51 turbo Exp $
+// $Id: pql_status.inc,v 1.4 2006-07-26 21:31:09 turbo Exp $
 //
 
 // {{{ pql_get_status(linkid, dn, attribute)
 function pql_get_status($linkid, $dn, $attrib) {
+	$dn = pql_format_normalize_dn($dn);
+
 	if(!is_array($attrib)) {
 		$attrib = lc($attrib);
 		$attribs = array($attrib);
@@ -50,6 +52,8 @@ function pql_get_status($linkid, $dn, $attrib) {
 // If called without attrib and filter -> just return number
 // of entries found.
 function pql_get_subentries($linkid, $basedn, $attrib = 0, $filter = 0) {
+	$basedn = pql_format_normalize_dn($basedn);
+
 	if(!$attrib and !$filter) {
 		$sr = @ldap_list($linkid, $basedn, 'objectClass=*');
 		if($sr) {
@@ -92,7 +96,7 @@ function pql_get_status_databases($linkid, $suffix = 0) {
 				
 				if(($attrib == 'seealso') and $entry1[$i]['seealso'][0]) {
 					// Follow reference to backend information
-					$sr2 = ldap_read($linkid, $entry1[$i]['seealso'][0],
+					$sr2 = ldap_read($linkid, pql_format_normalize_dn($entry1[$i]['seealso'][0]),
 									 'objectClass=*', array('supportedControl'));
 					if($sr2) {
 						$entry2 = ldap_get_entries($linkid, $sr2);

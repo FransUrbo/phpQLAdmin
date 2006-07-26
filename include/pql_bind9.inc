@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.40 2006-07-26 20:22:39 turbo Exp $
+// $Id: pql_bind9.inc,v 2.41 2006-07-26 21:31:09 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -416,6 +416,7 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 
 // {{{ pql_bind9_del_zone(linkid, dn, zone)
 function pql_bind9_del_zone($linkid, $dn, $zone) {
+	$dn = pql_format_normalize_dn($dn);
 	$dnsparts = split('\.', $zone);
 	for($i=0; $i < count($dnsparts); $i++) {
 	    $dn_to_remove .= "dc=".$dnsparts[$i].",";
@@ -448,6 +449,7 @@ function pql_bind9_del_zone($linkid, $dn, $zone) {
 	// If this was the last zone in this TLD, remove the TLD as well
 
 	// Get the TLD DN
+	$dn_to_remove = pql_format_normalize_dn($dn_to_remove);
 	$dnparts = split(',', $dn_to_remove);
 	for($i=1; $i < count($dnparts); $i++) {
 		$tld .= $dnparts[$i];

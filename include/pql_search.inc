@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.57 2006-07-26 20:22:39 turbo Exp $
+// $Id: pql_search.inc,v 2.58 2006-07-26 21:31:09 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -19,8 +19,8 @@
 function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $operational = 0) {
   global $_SESSION;
 
-  // URL decode the object DN if it's URL ENcoded
-  $dn = pql_maybe_encode(urldecode($dn));
+  // Normalize the DN
+  $dn = pql_format_normalize_dn($dn);
   
   // {{{ Convert a DNS TTL RDN to something I (phpQLAdmin) can understand
   if(eregi("^dNSTTL=", $dn))
@@ -241,9 +241,9 @@ function pql_get_dn($linkid, $dn, $filter, $level = 'SUBTREE') {
   $objects = pql_search($linkid, $dn, $filter, $level, 1);
   if(!empty($objects[0])) {
 	for($i=0; $i < count($objects); $i++)
-	  $entry[] = $objects[$i]['dn'];
+	  $entry[] = pql_format_normalize_dn($objects[$i]['dn']);
   } elseif($objects and $objects['dn'])
-	$entry[] = $objects['dn'];
+	$entry[] = pql_format_normalize_dn($objects['dn']);
   
   if(@is_array($entry))
 	return($entry);
@@ -498,17 +498,17 @@ function pql_email_exists($ldap, $email) {
 
 // {{{ pql_validate_administrator(linkid, dn, attrib, admin)
 function pql_validate_administrator($linkid, $dn, $attrib, $admin) {
-  $dn = urldecode($dn);
-  
   $result = pql_get_attribute($linkid, $dn, $attrib);
   if(!$result)
 	return(false);
   
   if(is_array($result)) {
-	foreach($result as $res)
+	foreach($result as $res) {
+	  $res = pql_format_normalize_dn($res);
 	  if($admin == $res)
 		return(true);
-  } elseif($result == $admin)
+	}
+  } elseif(pql_format_normalize_dn($result) == $admin)
 	return(true);
 }
 // }}}
@@ -1072,6 +1072,8 @@ function pql_get_rootdn($dn, $function = '') {
 // necessary objectclasses
 function pql_setup_branch_objectclasses($filter = 0, $dn, $linkid = '') {
   if($dn and $linkid) {
+	$dn = pql_format_normalize_dn($dn);
+
 	// Retreive existing objectClasses from the object
 	$object = ldap_explode_dn($dn, 0);
 	$sr     = @ldap_read($linkid, $dn, $object[0], array(pql_get_define("PQL_ATTR_OBJECTCLASS")));
