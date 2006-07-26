@@ -1,3 +1,7 @@
+NOTE: This only (!) applies to OpenLDAP. Fedora Directory Server (etc) uses a completely
+      different type of ACI's and phpQLAdmin does NOT yet have support for this. So if
+      you're not running OpenLDAP, do NOT use ACI's!!
+
 * As of version 2.0.17, phpQLAdmin supports per-object ACIs. An
   ACI looks something like this (example from the openldap-software list)
 
