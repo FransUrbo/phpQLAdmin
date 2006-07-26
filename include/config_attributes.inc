@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.47 2006-07-05 09:43:25 turbo Exp $
+// $Id: config_attributes.inc,v 2.48 2006-07-26 21:15:06 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -252,18 +252,18 @@ pql_set_define("PQL_ATTR_SAMBAOBJECTCLASS",					strtolower('sambaSamAccount'),		
 // }}}
 
 // {{{ Attributes used by the Sudo config
-pql_set_define("PQL_ATTR_SUDO_USE",                            strtolower('useSudo'),                          false);
-pql_set_define("PQL_ATTR_SUDOUSER",                            strtolower('sudoUser'),                         false);
-pql_set_define("PQL_ATTR_SUDORUNAS",                           strtolower('sudoRunAs'),                        false);
-pql_set_define("PQL_ATTR_SUDOHOST",                            strtolower('sudoHost'),                         false);
-pql_set_define("PQL_ATTR_SUDOPTION",                           strtolower('sudoOption'),                       false);
-pql_set_define("PQL_ATTR_SUDOCOMMAND",                         strtolower('sudoCommand'),                      false);
-pql_set_define("PQL_ATTR_SUDOOBJECTCLASS",                     strtolower('sudoRole'),                         false);
+pql_set_define("PQL_ATTR_SUDO_USE",							strtolower('useSudo'),						false);
+pql_set_define("PQL_ATTR_SUDOUSER",							strtolower('sudoUser'),						false);
+pql_set_define("PQL_ATTR_SUDORUNAS",						strtolower('sudoRunAs'),					false);
+pql_set_define("PQL_ATTR_SUDOHOST",							strtolower('sudoHost'),						false);
+pql_set_define("PQL_ATTR_SUDOPTION",						strtolower('sudoOption'),					false);
+pql_set_define("PQL_ATTR_SUDOCOMMAND",						strtolower('sudoCommand'),					false);
+pql_set_define("PQL_ATTR_SUDOOBJECTCLASS",					strtolower('sudoRole'),						false);
 // }}}
 
 // {{{ Attributes used by the HostACL config
-pql_set_define("PQL_ATTR_HOSTACL_USE",                         strtolower('useHostACL'),                       false);
-pql_set_define("PQL_ATTR_ACI_USE",                             strtolower('useACI'),                           false);
+pql_set_define("PQL_ATTR_HOSTACL_USE",						strtolower('useHostACL'),					false);
+pql_set_define("PQL_ATTR_ACI_USE",							strtolower('useACI'),						false);
 // }}}
 
 // {{{ Miscellaneous external attributes
