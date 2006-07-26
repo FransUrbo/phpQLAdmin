@@ -1,6 +1,6 @@
 <?php
 // Dump either a specific object or a specific LDAP branch
-// $Id: dump_object.php,v 1.1 2005-09-27 06:28:29 turbo Exp $
+// $Id: dump_object.php,v 1.2 2006-07-26 20:22:38 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -48,7 +48,7 @@ if(empty($_REQUEST["submit"])) {
 	// scope=subtree. Search and retreive object(s).
 
 	// Get the non-operational attributes for all objects below DN.
-	$objects1 = pql_search($_pql->ldap_linkid, $_REQUEST["dn"], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', "SUBTREE", $_REQUEST["referrals"], 0);
+	$objects1 = pql_search($_pql->ldap_linkid, $_REQUEST["dn"], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', "SUBTREE", $_REQUEST["referrals"]);
 	
 	for($i=0; $i < count($objects1); $i++) {
 	  if($_REQUEST["operationals"])
@@ -73,7 +73,7 @@ if(empty($_REQUEST["submit"])) {
 	}
   } elseif($_REQUEST["scope"] == "base") {
 	// Get the non-operational attributes
-	$objects1 = pql_search($_pql->ldap_linkid, $_REQUEST["dn"], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', "BASE", 0, 0);
+	$objects1 = pql_search($_pql->ldap_linkid, $_REQUEST["dn"], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', "BASE");
 	
 	if($_REQUEST["operationals"]) {
 	  // Get the operational attributes

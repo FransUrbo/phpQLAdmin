@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.56 2006-07-19 21:27:31 turbo Exp $
+// $Id: pql_search.inc,v 2.57 2006-07-26 20:22:39 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -13,7 +13,7 @@
 // {{{ pql_search(linkid, dn, filter, level, referrals, operational)
 // Lock for object(s) which match the filter.
 // Level can be:
-//		SUBTREE
+//		SUBTREE		=> default!
 //		ONELEVEL
 //		BASE
 function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $operational = 0) {
@@ -37,7 +37,10 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
   }
   
   if($operational)
-	$op = array('+');
+	if(!is_array($operational))
+	  $op = array($operational);
+	else
+	  $op = $operational;
   else
 	$op = array();
   // }}}
@@ -665,12 +668,12 @@ function pql_get_subschema($ldap_linkid, $attrib) {
   // Get the DN for the subSchema
   // CMD: /usr/bin/ldapsearch -x -LLL -h localhost -s base -b '' 'objectClass=*' subschemaSubentry
   //
-  // TODO: Resue the $this->_find_base_option() function here!
-  $entry = pql_get_attribute($ldap_linkid, NULL, 'subschemaSubentry', 1);
+  // TODO: Reuse the $this->_find_base_option() function here!
+  $entry = pql_get_attribute($ldap_linkid, NULL, 'subschemaSubentry', 'subschemaSubentry');
   if($entry) {
 	// Get the subSchemaAttributes from the subSchema
 	// CMD: /usr/bin/ldapsearch -x -LLL -h localhost -s base -b 'cn=Subschema' 'objectClass=subSchema' $attrib
-	$entry = pql_search($ldap_linkid, $entry, pql_get_define("PQL_ATTR_OBJECTCLASS").'=subSchema', 'BASE', 0, 1);
+	$entry = pql_search($ldap_linkid, $entry, pql_get_define("PQL_ATTR_OBJECTCLASS").'=subSchema', 'BASE', 0, $attrib);
 	if(!empty($entry)) {
 	  // TODO: For some reason (?), I sometimes get it in a '$entry[0]'
 	  //       array, and sometimes flat... !?!?
