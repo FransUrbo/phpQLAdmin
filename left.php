@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.117 2006-07-20 17:07:35 turbo Exp $
+// $Id: left.php,v 2.118 2006-07-26 21:34:10 turbo Exp $
 //
 require("./include/pql_session.inc");
 
@@ -167,14 +167,13 @@ if($_SESSION["ALLOW_BRANCH_CREATE"]) {
   // This is a 'super-admin'. Should be able to read EVERYTHING!
   $domains = pql_get_domains($_pql);
 } else {
-  // {{{ Get ALL domains we have access.
-  //	'administrator: USER_DN'
-  // in the domain object
+  // {{{ Get ALL domains we have access to.
+  //     I.e., all DN's with 'administrator: USER_DN'
   foreach($_SESSION["BASE_DN"] as $dn)  {
 	$dom = pql_get_dn($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR")."=".$_SESSION["USER_DN"]);
 	if($dom) {
 	  foreach($dom as $d) {
-		$domains[] = urlencode($d);
+		$domains[] = $d;
 	  }
 	}
   }
@@ -226,8 +225,24 @@ if(!isset($domains) or !is_array($domains)) {
   <!-- Domain branches -->
 <?php
 	 foreach($domains as $key => $domain) {
-	   // Get domain part from the DN (Example: 'dc=test,dc=net' => 'test').
-	   $d = split(',', urldecode($domain)); $d = split('=', $d[0]); $d = $d[1];
+	   // {{{ Get domain name part from the DN
+	   // Three steps because pql_get_domains() and pql_get_dn()
+	   // returns normalized DN's which isn't as pretty.
+	   // 1. Get each part of the DN
+	   $dnparts = ldap_explode_dn($domain, 0);
+
+	   // 2. Extract the attribute from the first RDN
+	   $tmp = split('=', $dnparts[0]);
+	   $attrib = $tmp[0];
+
+	   // 3. Get the attribute value from the object
+	   $d = pql_get_attribute($_pql->ldap_linkid, $domain, $attrib);
+	   if(is_array($d))
+		 // Happens if the object have '> 1' attribute values in it's reference.
+		 // It's impossible to figure out WHICH of the values to use, so we
+		 // take the first. Better than nothing...
+		 $d = $d[0];
+	   // }}}
 	   
 	   if(!eregi('%3D', $domain))
 		 $domain = urlencode($domain);
@@ -263,7 +278,7 @@ if(!isset($domains) or !is_array($domains)) {
 		 $branches[0] = $domain;
 
 	   for($i=0; $i < count($branches); $i++) {
-		 $subbranch = '';
+		 $subbranch = 0;
 		 
 		 // Show users is either 'Yes', unset (same thing) or 'No'.
 		 $show_users = pql_get_define("PQL_CONF_SHOW_USERS", $rootdn);
