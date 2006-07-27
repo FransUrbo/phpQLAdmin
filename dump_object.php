@@ -1,6 +1,6 @@
 <?php
 // Dump either a specific object or a specific LDAP branch
-// $Id: dump_object.php,v 1.2 2006-07-26 20:22:38 turbo Exp $
+// $Id: dump_object.php,v 1.3 2006-07-27 05:46:37 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -38,12 +38,12 @@ if(empty($_REQUEST["submit"])) {
 	$_REQUEST["referrals"] = 0;
   else
 	$_REQUEST["referrals"] = 1;
-  
+
   if(empty($_REQUEST["operationals"]))
 	$_REQUEST["operationals"] = 0;
   else
 	$_REQUEST["operationals"] = 1;
-	
+
   if($_REQUEST["scope"] == "sub") {
 	// scope=subtree. Search and retreive object(s).
 
@@ -53,7 +53,9 @@ if(empty($_REQUEST["submit"])) {
 	for($i=0; $i < count($objects1); $i++) {
 	  if($_REQUEST["operationals"])
 		// Get the operational attributes for each object
-		$objects2 = pql_search($_pql->ldap_linkid, $objects1[$i]["dn"], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', "BASE", $_REQUEST["referrals"], 1);
+		$objects2 = pql_search($_pql->ldap_linkid, $objects1[$i]["dn"], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', "BASE", $_REQUEST["referrals"],
+							   array('structuralObjectClass', 'entryUUID', 'creatorsName', 'createTimestamp', 'OpenLDAPaci', 'entryCSN', 'modifiersName',
+									 'modifyTimestamp', 'subschemaSubentry', 'hasSubordinates', 'aci'));
 	  
 	  // URL decode a 'DNS TTL RDN'.
 	  if(eregi("^dNSTTL=", $objects1[$i]["dn"]))
@@ -77,7 +79,9 @@ if(empty($_REQUEST["submit"])) {
 	
 	if($_REQUEST["operationals"]) {
 	  // Get the operational attributes
-	  $objects2 = pql_search($_pql->ldap_linkid, $_REQUEST["dn"], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', "BASE", 0, 1);
+	  $objects2 = pql_search($_pql->ldap_linkid, $_REQUEST["dn"], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', "BASE", 0,
+							   array('structuralObjectClass', 'entryUUID', 'creatorsName', 'createTimestamp', 'OpenLDAPaci', 'entryCSN', 'modifiersName',
+									 'modifyTimestamp', 'subschemaSubentry', 'hasSubordinates', 'aci'));
 	  
 	  // Merge the two arrays
 	  $objects = $objects1[0] + $objects2[0];
