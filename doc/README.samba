@@ -68,4 +68,10 @@ LDIF EXAMPLE
 	userObjectClass: shadowAccount
 	userObjectClass: posixAccount
 	userObjectClass: sambaSamAccount
+	autoCreateUGidNumber: TRUE
+
+  The last entry is needed to make sure that the uid and gid numbers
+  are generated automatically. A uid/gid number is required by the
+  posixAccount objectclass and the LDAP server will refuse to add
+  the user if those values isn't available.
 

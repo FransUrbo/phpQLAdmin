@@ -13,6 +13,14 @@ phpQLAdmin 2.3.4 TO BE ANNOUNCED
 	Schema changes
 	API changes
 	Misc changes
+	  - When using posixAccount in a user/template, the 'autoCreateUGidNumber'
+	    attribute is required. Change all templates to have this attribute set.
+	    + Also document this in doc/README.samba.
+	  - When only having ONE domain/organization and this is also the top DN
+	    (suffix), phpQLAdmin won't offer to change domain/organization values.
+	    This because the domain/branch _isn't_ the domain/organization, but the
+	    'ou' _below_ it. Describe the problem with this in the doc/README file.
+	  - Note about not running PHP with 'error_reporting = E_ALL'.
 
 phpQLAdmin 2.3.3 Release (Jul  9 2006)
 	Bug fixes

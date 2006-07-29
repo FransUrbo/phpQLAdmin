@@ -34,6 +34,9 @@ and decide where the database is (ie FQDN - Fully Qualified Domain Name
 or IP address - of the LDAP server), what's the base dn of your
 QMailLDAP objects etc.
 
+In the layouts here, the lines that is at the most far left is the top
+DN (the 'suffix' entry of the database).
+
   Domain layout        Organization layout    Organization layout/mixed
   =============        ===================    =========================
   dc=com               c=SE                   c=SE
@@ -174,6 +177,45 @@ Domain branch four does not need to be moved or changed (unless starts
 looking like the first branch, which I guess is a high probability :).
 
 
+Another problem by using a flat database, where you've specified to use
+the suffix of your domain/organization is that you'd get all the ou's
+in phpQLAdmin as domains. This is not acceptable by phpQLAdmin, because
+'People' isn't a domain/organization and it can't add the specific
+domain/organization values in an organizationUnit.
+
+Example:
+
+  dc=organization,dc=tld
+    ou=People
+      uid=User 1
+      uid=User 2
+    ou=Groups
+      cn=Group 1
+      cn=Group 2
+
+What you would see in phpQLAdmin is only 'People' and 'Groups' and
+phpQLAdmin won't allow you to set default domain/organization values
+(such as defaultPasswordScheme etc) into the 'dc=organization,dc=tld' object.
+What you should do is rearrange the directory layout to look like this:
+
+  dc=tld
+    dc=organization
+      ou=People
+        uid=User 1
+        uid=User 2
+      ou=Groups
+        cn=Group 1
+        cn=Group 2
+
+In OpenLDAP this is most easily accomplished by doing a full dump of
+your database, remove the current database (remove the database files
+specified in the 'directory' configuration option), change the 'suffix'
+entry in slapd.conf to contain 'dc=tld' instead of 'dc=organization,dc=tld'
+and lastly load your database again. It's possible this could be done
+without doing a dump/reload, but you would have to figure out that for
+your self...
+
+
 Configuration in LDAP
 ~~~~~~~~~~~~~~~~~~~~~
 With version 2.0.5, it's possible to have site specific configurations
@@ -304,6 +346,11 @@ Apache configuration
 As of phpQLAdmin version 2.0.18, there is no need to do any modifications
 to the PHP configuration (php.ini file). Previosly, you had to enable
 'register_globals', but this is not needed any more.
+
+Please also don't run PHP with 'error_reporting = E_ALL'. It will generate
+a little to much interference. I recommend 'E_ALL & ~E_NOTICE' which would
+be sufficient. It will show all errors, but filter out all those notices
+about 'use of uninitialized variable'.
 
 
 QmailLDAP/Controls restart
