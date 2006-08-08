@@ -132,7 +132,7 @@ if(is_array($computer_results[0])) {
           <td class="title"><?=$LANG->_("Allow")?></td>
 <?php
   if(isset($_REQUEST['userdn']) && isset($_REQUEST['uid'])) {
-	// {{{ If user info is passed in the request string then their is no need to grab all the users from ldap
+    // {{{ If user info is passed in the request string then their is no need to grab all the users from ldap
 ?>
           <td class="title">
             <?php echo $_REQUEST['uid']; ?>
@@ -141,13 +141,13 @@ if(is_array($computer_results[0])) {
 <?php
 // }}}
   } else {
-	// {{{ No user was passed in in request string so make the list
-	print "          <td class='title'>\n";
-	print "            <select name='userdn'>\n";
-  
-	foreach($user_results as $dn => $user)
-	  print "              <option value='$dn'>$user</option>\n";
-	print "            </select>\n          </td>\n";
+    // {{{ No user was passed in in request string so make the list
+    print "          <td class='title'>\n";
+    print "            <select name='userdn'>\n";
+    
+    foreach($user_results as $dn => $user)
+      print "              <option value='$dn'>$user</option>\n";
+    print "            </select>\n          </td>\n";
 // }}}
   }
 ?>
@@ -157,9 +157,9 @@ if(is_array($computer_results[0])) {
             <select name="computer">
 <?php
   for($i=0; $i < count($computer_results); $i++) {
-	$host = $computer_results[$i][pql_get_define("PQL_ATTR_CN")];
-	$hostdn = $computer_results[$i]['dn'];
-	print "              <option value='" . $hostdn . "'>" . $host . "</option>\n";
+    $host = $computer_results[$i][pql_get_define("PQL_ATTR_CN")];
+    $hostdn = $computer_results[$i]['dn'];
+    print "              <option value='" . $hostdn . "'>" . $host . "</option>\n";
   }
 ?>
             </select>
@@ -182,49 +182,50 @@ if(is_array($computer_results[0])) {
 <?php
   $row = 'c1';
   for($i=0; $i < count($computer_results); $i++) {
-	$host   = $computer_results[$i][pql_get_define("PQL_ATTR_CN")];
-	$hostdn = $computer_results[$i]['dn'];
-	$hostIP = $computer_results[$i][pql_get_define("PQL_ATTR_IPHOSTNUMBER")];
+    $host   = $computer_results[$i][pql_get_define("PQL_ATTR_CN")];
+    $hostdn = $computer_results[$i]['dn'];
+    $hostIP = $computer_results[$i][pql_get_define("PQL_ATTR_IPHOSTNUMBER")];
 ?>	
       <tr class="<?=$row?>">
         <!-- HOSTNAME AND USERS -->
         <td>
 <?php if($_SESSION["opera"]) { ?>
-          <div id="el<?=$i?>Parent" class="parent" onclick="showhide(el<?=$i?>aSpn, el<?=$i?>aImg); showhide(el<?=$i?>bSpn, el<?=$i?>bImg);">
+          <div id="el<?=$i?>aParent" class="parent" onclick="showhide(el<?=$i?>aSpn, el<?=$i?>aImg); showhide(el<?=$i?>bSpn, el<?=$i?>bImg);">
             <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$i?>aImg">
             <a class="item"><font color="black" class="heada"><?=$host?></font></a>
           </div>
 <?php } else { ?>
-          <div id="el<?=$i."Parent"?>" class="parent">
+          <div id="el<?=$i."aParent"?>" class="parent">
             <a href="<?=$_SERVER['REQUEST_URI']?>" onClick="if (capable) {expandBase('el<?=$i+1?>', true); return false;}">
               <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$i."Img"?>"></a>
 	
             <font color="black" class="heada"><?=$host?></font>
           </div>
-<?php } ?>
+<?php }
 
-<?php $users = $computer_results[$i][pql_get_define('PQL_ATTR_UNIQUE_GROUP')];
-	  if(@$users) {
-		// {{{ Is there any users?
-		if(is_array($users)) {
-		  if($_SESSION["opera"]) {
+      $users = $computer_results[$i][pql_get_define('PQL_ATTR_UNIQUE_GROUP')];
+      if(@$users) {
+	if($_SESSION["opera"]) {
 ?>
           <span id="el<?=$i?>aSpn" style="display:''">
-<?php	  } else { ?>
-          <div id="<?=$i."Child"?>" class="child">
-<?php	  } ?>
-<?php	  for($j=0; $j < count($users); $j++) {
-			$user = pql_get_attribute($_pql->ldap_linkid, $users[$j],
-									  pql_get_define("PQL_ATTR_UID"));
+<?php	} else { ?>
+          <div id="<?=$i."aChild"?>" class="child">
+<?php	}
+
+	// {{{ Is there any users?
+	if(is_array($users)) {
+	  for($j=0; $j < count($users); $j++) {
+	    $user = pql_get_attribute($_pql->ldap_linkid, $users[$j],
+				      pql_get_define("PQL_ATTR_UID"));
 ?>
               &nbsp;&nbsp;&nbsp;<img src="images/navarrow.png" width="9" height="9" border="0">&nbsp;<?=$user."\n"?>
               <a href="<?=$_SERVER['REQUEST_URI']?>&groupdn=<?=$hostdn?>&userdn=<?=$users[$j]?>&action=remove_user_from_host">
                 <img src="images/del.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Delete %user% from computer"), array('user' => $user))?>"></a>
               <br>
 <?php	  }
-		} else {
-		  $user = pql_get_attribute($_pql->ldap_linkid, $users,
-									pql_get_define("PQL_ATTR_UID"));
+	} else {
+	  $user = pql_get_attribute($_pql->ldap_linkid, $users,
+				    pql_get_define("PQL_ATTR_UID"));
 ?>
               &nbsp;&nbsp;&nbsp;&nbsp;
               <img src="images/navarrow.png" width="9" height="9" border="0">
@@ -240,59 +241,58 @@ if(is_array($computer_results[0])) {
             </div>
 <?php	}
 // }}}
-	  }
+      }
 ?>
           </td>
 <?php if($hostIP) {
-		// {{{ Is there is an IP address?
-		$host_ip = '';
-		if(is_array($hostIP)) {
-		  for($z = 0; $z < count($hostIP); $z++) {
-			$host_ip .= $hostIP[$z];
-			if($hostIP[$z+1])
-			  $host_ip .= ",&nbsp";
-		  }
-		} else
-		  $host_ip = $hostIP;
+	// {{{ Is there is an IP address?
+	$host_ip = '';
+	if(is_array($hostIP)) {
+	  for($z = 0; $z < count($hostIP); $z++) {
+	    $host_ip .= $hostIP[$z];
+	    if($hostIP[$z+1])
+	      $host_ip .= ",&nbsp";
+	  }
+	} else
+	  $host_ip = $hostIP;
 
 ?>
 
           <!-- IP ADDRESS -->
           <td>
-<?php	if($_SESSION["opera"]) { ?>
-            <div id="el<?=$i+1?>Parent" class="parent" onclick="showhide(el<?=$i+1?>aSpn, el<?=$i+1?>aImg); showhide(el<?=$i+1?>bSpn, el<?=$i+1?>bImg);">
-              <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$i+1?>bImg">
+<?php	  if($_SESSION["opera"]) { ?>
+            <div id="el<?=$i?>bParent" class="parent" onclick="showhide(el<?=$i?>aSpn, el<?=$i?>aImg); showhide(el<?=$i?>bSpn, el<?=$i?>bImg);">
+              <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$i?>bImg">
               <a class="item"><font color="black" class="heada"><?=$host_ip?></font></a>
             </div>
 
-            <span id="el<?=$i+1?>bSpn" style="display:''">
-<?php	} else { ?>
-            <div id="el<?=$i+1?>Parent" class="parent">
-              <a class="item" onClick="if (capable) {expandBase('el<?=$i?>', true); expandBase('el<?=$i+1?>', true); return false;}">
-                <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$i+1?>Img">
+            <span id="el<?=$i?>bSpn" style="display:''">
+<?php	  } else { ?>
+            <div id="el<?=$i?>bParent" class="parent">
+              <a class="item" onClick="if (capable) {expandBase('el<?=$i?>', true); return false;}">
+                <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$i?>Img">
               </a>
               <a class="item"><font color="black" class="heada"><?=$host_ip?></font></a>
             </div>
 
-            <div id="el<?=$i+1?>Child" class="child">
-<?php	}
-		echo "<br>";
+            <div id="el<?=$i?>bChild" class="child">
+<?php	  }
+	  echo "            <br>\n";
 
-		if($_SESSION["opera"]) {
-?>
-            </span>
-<?php	} else { ?>
-            </div>
-<?php	}
-
-		print "          </td>\n        </tr>\n";
-  
-		if($row == 'c1')
-		  $row = 'c2';
-		else
-		  $row = 'c1';
-// }}}
+	  if($_SESSION["opera"]) {
+	    echo "            </span>\n";
+	  } else {
+	    echo "            </div>\n";
 	  }
+	  
+	  print "          </td>\n        </tr>\n";
+	  
+	  if($row == 'c1')
+	    $row = 'c2';
+	  else
+	    $row = 'c1';
+// }}}
+      }
   } // for($i=0; $i < count($computer_results); $i++)
 ?>
       </table>
