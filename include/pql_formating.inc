@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.54 2006-07-26 21:31:09 turbo Exp $
+// $Id: pql_formating.inc,v 2.55 2006-08-09 08:18:40 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry, extra_newline)
 // Create a LDIF object to print in case of error
@@ -323,24 +323,60 @@ function pql_format_tree($text, $url, $links = '', $level = 0) {
 // }}}
 
 // {{{ pql_format_tree_opera(counter, text, url, level, parent, child)
+// In tables/domain_details-automount.inc, the list is using a five column
+// table. To be able to use this function in such a cenario, we need to call
+// this function with specific child counters. That's why the last param can
+// be an array. If it is, extract the information about the childs from that
+// array...
 function pql_format_tree_opera($cnt, $text, $url, $level, $parent, $child) {
   $nbsp = '';
-  
-  $mouse["click"] = 'onclick="showhide(el'.$child.', el'.$cnt.'Img)"';
-  $mouse["over"]  = 'onmouseover="if (isDOM || isIE4) {hilightBase(\'el'.$cnt.'\', \'#CCFFCC\')}"';
-  $mouse["out"]   = 'onmouseout="if (isDOM || isIE4) {hilightBase(\'el'.$cnt.'\', \'#D0DCE0\')}"';
-  
+
+  if(is_array($child)) {
+	$child_nr = ($child[0] * 2) + 1;
+
+	$cnt1 = $cnt+1;
+	$mouse["click"] = 'onclick="';
+	for($i=1; $child[$i]; ) {
+	  $mouse["click"] .= 'showhide(el' . $cnt.$child[$i] . ', el' . $cnt.$child[$i+1];
+	  if($noicon)
+		  $mouse["click"] .= ', true';
+	  $mouse["click"] .= ');';
+
+	  if($child[$i+2])
+		  $mouse["click"] .= ' ';
+
+	  $i += 2;
+	}
+	$mouse["click"] .= '"';
+
+	$mouse["over"]  = 'onmouseover="if (isDOM || isIE4) {hilightBase(\'el'.$cnt.'\', \'#CCFFCC\'); hilightBase(\'el'.$cnt1.'\', \'#CCFFCC\')}"';
+	$mouse["out"]   = 'onmouseout="if (isDOM || isIE4) {hilightBase(\'el'.$cnt.'\', \'#D0DCE0\'); hilightBase(\'el'.$cnt1.'\', \'#D0DCE0\')}"';
+  } else {
+	$mouse["click"] = 'onclick="showhide(el'.$child.', el'.$cnt.'Img)"';
+	$mouse["over"]  = 'onmouseover="if (isDOM || isIE4) {hilightBase(\'el'.$cnt.'\', \'#CCFFCC\')}"';
+	$mouse["out"]   = 'onmouseout="if (isDOM || isIE4) {hilightBase(\'el'.$cnt.'\', \'#D0DCE0\')}"';
+  }
+
   if($level) {
 	for($i=0; $i < ($level * 4); $i++) 
 	  $nbsp .= "&nbsp;";
   }
 ?>
-  <div id="el<?=$cnt?><?=$parent?>" class="parent" <?=$mouse["over"]." ".$mouse["out"]." ".$mouse["click"]?>>
-    <?=$nbsp?><img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$cnt?>Img">
-    <?php if($url) { ?><a href="<?=$url?>"><?php } ?><font color="black" class="heada"><?=$text?></font><?php if($url) { ?></a><?php } ?>
+          <div id="el<?=$cnt?><?=$parent?>" class="parent"<?="\n\t\t".$mouse["over"]."\n\t\t".$mouse["out"]."\n\t\t".$mouse["click"]?>>
+<?php if(is_array($child)) { ?>
+            <?=$nbsp?><img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$cnt.$child[$child_nr+1]?>">
+<?php } else { ?>
+            <?=$nbsp?><img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$cnt?>Img">
+<?php } ?>
+            <?php if($url) { ?><a href="<?=$url?>"><?php } ?><font color="black" class="heada"><?=$text?></font><?php if($url) { ?></a><?php } ?>
 
-  </div>
-  <span id="el<?=$child?>" style="display:''">
+          </div>
+
+<?php if(is_array($child)) { ?>
+          <span id="el<?=$cnt.$child[$child_nr]?>" style="display:''">
+<?php } else { ?>
+          <span id="el<?=$child?>" style="display:''">
+<?php } ?>
 <?php	
 }
 // }}}
@@ -352,11 +388,14 @@ function pql_format_tree_other($cnt, $text, $url, $level, $parent, $child) {
   $mouse["over"]  = 'onmouseover="if (isDOM || isIE4) {hilightBase(\'el'.$cnt.'\', \'#CCFFCC\')}"';
   $mouse["out"]   = 'onmouseout="if (isDOM || isIE4) {hilightBase(\'el'.$cnt.'\', \'#D0DCE0\')}"';
   
+  if(is_array($child))
+	$child_nr = ($child[0] * 2) + 1;
+
   if($level) {
 	for($i=0; $i < ($level * 4); $i++) 
 	  $nbsp .= "&nbsp;";
   }
-  
+
   if($url) {
 	if(eregi('^http', $url))
 	  $url = "href=\"$url\" target=\"_top\"";
@@ -367,7 +406,7 @@ function pql_format_tree_other($cnt, $text, $url, $level, $parent, $child) {
   <div id="el<?=$cnt?>Parent" class="parent" <?=$mouse["over"]." ".$mouse["out"]?>>
     <nobr>
       <a class="item" <?=$url?> onclick="if (capable) {expandBase('el<?=$cnt?>', true); return false;}">
-        <?=$nbsp?><img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$cnt?>Img">
+        <?=$nbsp?><img name="imEx" src="images/minus.png" border="0" alt="+" width="9" height="9" id="el<?=$cnt?>Img">
       </a>
 
       <a class="item" <?=$url?> onclick="if (capable) {expandBase('el<?=$cnt?>', false)}">
@@ -376,7 +415,11 @@ function pql_format_tree_other($cnt, $text, $url, $level, $parent, $child) {
     </nobr>
   </div>
 
+<?php if(is_array($child)) { ?>
+  <div id="el<?=$child[$child_nr]?>" class="child" style="margin-bottom: 5px" <?=$mouse["over"]." ".$mouse["out"]?>>
+<?php } else { ?>
   <div id="el<?=$child?>" class="child" style="margin-bottom: 5px" <?=$mouse["over"]." ".$mouse["out"]?>>
+<?php } ?>
 <?php	
 }
 // }}}
@@ -438,9 +481,9 @@ function pql_format_tree_span($text, $links, $level) {
 // {{{ pql_format_tree_end(void)
 function pql_format_tree_end() {
 	if($_SESSION["opera"])
-	  echo "  </span>\n\n";
+	  echo "          </span>\n";
 	else
-	  echo "  </div>\n\n";
+	  echo "          </div>\n";
 }
 // }}}
 
