@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.118 2006-07-26 21:34:10 turbo Exp $
+// $Id: left.php,v 2.119 2006-08-09 08:08:18 turbo Exp $
 //
 require("./include/pql_session.inc");
 
@@ -224,112 +224,128 @@ if(!isset($domains) or !is_array($domains)) {
 
   <!-- Domain branches -->
 <?php
-	 foreach($domains as $key => $domain) {
-	   // {{{ Get domain name part from the DN
-	   // Three steps because pql_get_domains() and pql_get_dn()
-	   // returns normalized DN's which isn't as pretty.
-	   // 1. Get each part of the DN
-	   $dnparts = ldap_explode_dn($domain, 0);
+  $domains = pql_uniq($domains);
+  if(file_exists($_SESSION["path"]."/.DEBUG_DOMAINS")) {
+	echo "<br>Domains:"; printr($domains);
+  }
+  foreach($domains as $key => $domain) {
+	// {{{ Get domain name part from the DN
+	// Three steps because pql_get_domains() and pql_get_dn()
+	// returns normalized DN's which isn't as pretty.
+	// 1. Get each part of the DN
+	$dnparts = ldap_explode_dn($domain, 0);
+	
+	// 2. Extract the attribute from the first RDN
+	$tmp = split('=', $dnparts[0]);
+	$attrib = $tmp[0];
+	
+	// 3. Get the attribute value from the object
+	$d = pql_get_attribute($_pql->ldap_linkid, $domain, $attrib);
+	if(is_array($d))
+	  // Happens if the object have '> 1' attribute values in it's reference.
+	  // It's impossible to figure out WHICH of the values to use, so we
+	  // take the first. Better than nothing...
+	  $d = $d[0];
+	// }}}
+	
+	if(!eregi('%3D', $domain))
+	  $domain = urlencode($domain);
+	
+	// Get Root DN
+	$rootdn = pql_get_rootdn($domain, 'left.php');
+	
+	// Create a user search filter (only look for mail users - !?!? - or Samba accounts).
+	$filter  = "(&(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)."=*)(|(";
+	$filter .= pql_get_define("PQL_ATTR_MAIL")."=*)(sambaSID=*)))";
+	
+	// Get the subbranches in this domain
+	$branches = pql_unit_get($_pql->ldap_linkid, $domain);
+	if((count($branches) > 1)) {
+	  // More than one subbranch
+	  $links = array(pql_complete_constant($LANG->_('Add %what%'),
+										   array('what' => $LANG->_('sub unit')))
+					 => "unit_add.php?rootdn=$rootdn&domain=$domain",
+					 
+					 pql_complete_constant($LANG->_('Add %what%'),
+										   array('what' => $LANG->_('user')))
+					 => "user_add.php?rootdn=$rootdn&domain=$domain");
+	  
+	  // Just incase there's user(s) at the base of the domain branch...
+	  $users = pql_get_dn($_pql->ldap_linkid, $domain, $filter, 'ONELEVEL');
+	  if(is_array($users))
+		// We have users in this domain
+		pql_left_htmlify_userlist($_pql->ldap_linkid, $rootdn, $domain, $subbranch, $users, $links);
+	  
+	  pql_format_tree($d, "domain_detail.php?rootdn=$rootdn&domain=$domain", $links, 0);
+	} elseif((count($branches) < 1))
+	  // This branch don't have any sub units (flat structure)
+	  // -> make sure we still jump into the for loop!
+	  $branches[0] = $domain;
 
-	   // 2. Extract the attribute from the first RDN
-	   $tmp = split('=', $dnparts[0]);
-	   $attrib = $tmp[0];
+	// Just to make sure that the branches variable is really count()'able...
+	if(!@$branches[0])
+	  $branches = array();
 
-	   // 3. Get the attribute value from the object
-	   $d = pql_get_attribute($_pql->ldap_linkid, $domain, $attrib);
-	   if(is_array($d))
-		 // Happens if the object have '> 1' attribute values in it's reference.
-		 // It's impossible to figure out WHICH of the values to use, so we
-		 // take the first. Better than nothing...
-		 $d = $d[0];
-	   // }}}
-	   
-	   if(!eregi('%3D', $domain))
-		 $domain = urlencode($domain);
-	   
-	   // Get Root DN
-	   $rootdn = pql_get_rootdn($domain, 'left.php');
-	   
-	   // Create a user search filter (only look for mail users - !?!? - or Samba accounts).
-	   $filter  = "(&(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $rootdn)."=*)(|(";
-	   $filter .= pql_get_define("PQL_ATTR_MAIL")."=*)(sambaSID=*)))";
-	   
-	   // Get the subbranches in this domain
-	   $branches = pql_unit_get($_pql->ldap_linkid, $domain);
-	   if((count($branches) > 1)) {
-		 $links = array(pql_complete_constant($LANG->_('Add %what%'),
-											  array('what' => $LANG->_('sub unit')))
-						=> "unit_add.php?rootdn=$rootdn&domain=$domain",
-						
-						pql_complete_constant($LANG->_('Add %what%'),
-											  array('what' => $LANG->_('user')))
-						=> "user_add.php?rootdn=$rootdn&domain=$domain");
-		 
-		 // Just incase there's user(s) at the base of the domain branch...
-		 $users = pql_get_dn($_pql->ldap_linkid, $domain, $filter, 'ONELEVEL');
-		 if(is_array($users))
-		   // We have users in this domain
-		   pql_left_htmlify_userlist($_pql->ldap_linkid, $rootdn, $domain, $subbranch, $users, $links);
+	if(file_exists($_SESSION["path"]."/.DEBUG_DOMAINS")) {
+	  echo "<br>Branches ($domain): "; printr($branches);
+	}
 
-		 pql_format_tree($d, "domain_detail.php?rootdn=$rootdn&domain=$domain", $links, 0);
-	   } else
-		 // This branch don't have any sub units (flat structure)
-		 // -> make sure we still jump into the for loop!
-		 $branches[0] = $domain;
+	// Show users is either 'Yes', unset (same thing) or 'No'.
+	$show_users = pql_get_define("PQL_CONF_SHOW_USERS", $rootdn);
 
-	   for($i=0; $i < count($branches); $i++) {
-		 $subbranch = 0;
-		 
-		 // Show users is either 'Yes', unset (same thing) or 'No'.
-		 $show_users = pql_get_define("PQL_CONF_SHOW_USERS", $rootdn);
-		 if($show_users or !isset($show_users)) {
-		   // Zero out the variables, othervise we won't get users in
-		   // specified domain, but also in the PREVIOUS domain shown!
-		   unset($users); unset($links); unset($cns);
-		   
-		   // Get all users (their DN) in this domain (sub)branch
-		   $users = pql_get_dn($_pql->ldap_linkid, $branches[$i], $filter);
-		   
-		   // Level 2: The users
-		   if(count($branches) > 1) {
-			 // We're only interested in the 'People', 'Users' etc value,
-			 // not the complete DN.
-			 // Three steps because pql_get_domains() and pql_get_dn()
-			 // returns normalized DN's which isn't as pretty.
-			 $dnparts	= ldap_explode_dn($branches[$i], 0);
-			 $tmp		= split('=', $dnparts[0]);
-			 $attrib	= $tmp[0];
-			 $subbranch	= pql_get_attribute($_pql->ldap_linkid, $branches[$i], $attrib);
-
-			 $url		= '';
-			 $links = array(pql_complete_constant($LANG->_('Add %what%'),
-												  array('what' => $LANG->_('user')))
-							=> "user_add.php?rootdn=$rootdn&domain=$domain&subbranch=$subbranch");
-		   } else {
-			 $links = array(pql_complete_constant($LANG->_('Add %what%'),
-												  array('what' => $LANG->_('sub unit')))
-							=> "unit_add.php?rootdn=$rootdn&domain=$domain",
-							
-							pql_complete_constant($LANG->_('Add %what%'),
-												  array('what' => $LANG->_('user')))
-							=> "user_add.php?rootdn=$rootdn&domain=$domain");
-		   }
-		   
-		   if(is_array($users))
-			 // We have users in this domain
-			 pql_left_htmlify_userlist($_pql->ldap_linkid, $rootdn, $domain, $subbranch, $users, $links);
-		 }
-		 
-		 // Level 1: The domain name with it's users
-		 if((count($branches) > 1) and $subbranch)
-		   pql_format_tree(pql_maybe_decode(urldecode($subbranch)), $url, $links, 1);
-		 else
-		   pql_format_tree($d, "domain_detail.php?rootdn=$rootdn&domain=$domain", $links, 0);
-	   } // end foreach ($branches)
-	   
-	   // This an ending for the domain tree
-	   pql_format_tree_end();
-	 } // end foreach ($domains)
+	for($i=0; $i < count($branches); $i++) {
+	  $subbranch = 0;
+	  
+	  if($show_users or !isset($show_users)) {
+		// Zero out the variables, othervise we won't get users in
+		// specified domain, but also in the PREVIOUS domain shown!
+		unset($users); unset($links); unset($cns);
+		
+		// Get all users (their DN) in this domain (sub)branch
+		if(file_exists($_SESSION["path"]."/.DEBUG_DOMAINS"))
+		  echo "Retreiving users in branch '".$branches[$i]."'<br>";
+		$users = pql_get_dn($_pql->ldap_linkid, $branches[$i], $filter);
+		
+		// Level 2: The users
+		if(count($branches) > 1) {
+		  // We're only interested in the 'People', 'Users' etc value,
+		  // not the complete DN.
+		  // Three steps because pql_get_domains() and pql_get_dn()
+		  // returns normalized DN's which isn't as pretty.
+		  $dnparts		= ldap_explode_dn($branches[$i], 0);
+		  $tmp			= split('=', $dnparts[0]);
+		  $attrib		= $tmp[0];
+		  $subbranch	= pql_get_attribute($_pql->ldap_linkid, $branches[$i], $attrib);
+		  
+		  $url			= '';
+		  $links = array(pql_complete_constant($LANG->_('Add %what%'),
+											   array('what' => $LANG->_('user')))
+						 => "user_add.php?rootdn=$rootdn&domain=$domain&subbranch=$subbranch");
+		} else {
+		  $links = array(pql_complete_constant($LANG->_('Add %what%'),
+											   array('what' => $LANG->_('sub unit')))
+						 => "unit_add.php?rootdn=$rootdn&domain=$domain",
+						 
+						 pql_complete_constant($LANG->_('Add %what%'),
+											   array('what' => $LANG->_('user')))
+						 => "user_add.php?rootdn=$rootdn&domain=$domain");
+		}
+		
+		if(is_array($users))
+		  // We have users in this domain
+		  pql_left_htmlify_userlist($_pql->ldap_linkid, $rootdn, $domain, $subbranch, $users, $links);
+	  }
+	  
+	  // Level 1: The domain name with it's users
+	  if((count($branches) > 1) and $subbranch)
+		pql_format_tree(pql_maybe_decode(urldecode($subbranch)), $url, $links, 1);
+	  else
+		pql_format_tree($d, "domain_detail.php?rootdn=$rootdn&domain=$domain", $links, 0);
+	} // end foreach ($branches)
+	
+	// This an ending for the domain tree
+	pql_format_tree_end();
+  } // end foreach ($domains)
   
   // }}}
 } // end if(is_array($domains))
