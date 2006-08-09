@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.215 2006-07-26 21:31:09 turbo Exp $
+// $Id: pql.inc,v 2.216 2006-08-09 08:10:05 turbo Exp $
 //
 
 // ----------------------------
@@ -37,7 +37,6 @@ class pql {
 	var $ldap_basedn = 0;					// array of base dns for future searches etc
 	
 	// {{{ string _find_base_option(attribute)
-
 	function _find_base_option($attrib) {
 	    $attrib = lc($attrib);
 
@@ -78,7 +77,6 @@ class pql {
 		} else
 		  return false;
 	}
-
 	// }}}
 
 	// {{{ string _find_basedn(void)
@@ -850,12 +848,15 @@ function pql_fix_path($path) {
 
 // {{{ pql_add2array($old, $new)
 function pql_add2array($old, $new) {
+  if(!@$new)
+	return($old);
+
   // Make sure 'old' is an array
   if($old and !is_array($old))
 	$old = array($old);
 
   // Make sure 'new' is an array
-  if($new and !is_array($new))
+  if(!is_array($new))
 	$new = array($new);
 
   // Add all entries in 'new' to 'old'
