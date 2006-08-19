@@ -2,7 +2,7 @@
 // ----------------------------
 // pql_update_translations.php
 //
-// $Id: update_translations.php,v 2.8 2005-09-25 10:57:15 turbo Exp $
+// $Id: update_translations.php,v 2.9 2006-08-19 08:23:18 turbo Exp $
 //
 
 // ----------------------------
@@ -60,11 +60,11 @@ $baseDir = $_SESSION["path"]; // were we start searching for strings
     </select>
 <?php
 	// Now we should load up the language file select by the user or by browser detection
-	$fp = @fopen($_SESSION["path"]."/include/lang.$lang.inc", "r");
+	$fp = @fopen($_SESSION["path"]."/translations/lang.$lang.inc", "r");
 	if(!$fp) {
-	  die("<p>Can't open language file 'include/lang.$lang.inc' for read. Does it exists?");
+	  die("<p>Can't open language file 'translations/lang.$lang.inc' for read. Does it exists?");
 	}
-	require($_SESSION["path"]."/include/lang.$lang.inc");
+	require($_SESSION["path"]."/translations/lang.$lang.inc");
 	$buffer = fgets($fp, 4096); // chop off the php start part
 	$read = true;
 	$file_text = "";
@@ -190,7 +190,8 @@ $alphabet = array("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K",
 	$header  = stripslashes($header);
 
 	// Remove any M$ newlines...
-	$header  = eregi_replace("", "", $header);
+	$header  = eregi_replace("
+", "", $header);
 
 	$total   = $_REQUEST['total_keys'];
 
