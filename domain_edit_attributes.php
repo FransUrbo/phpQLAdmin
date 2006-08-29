@@ -1,6 +1,6 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.54 2006-03-08 14:32:49 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.55 2006-08-29 15:39:27 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -51,7 +51,7 @@ function attribute_forward($msg) {
 		echo "Now: <b>$now</b><br>";
 	  }
 
-	  echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
+	  echo "<p>If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
 	  die("<b>".$_SESSION["URI"].$link."</b>");
 	} else
 	  pql_header($link);
@@ -102,6 +102,7 @@ $_REQUEST["orgname"] = $orgname;
 //		tables/config_details-branch.inc
 //		tables/domain_details-default.inc
 //		tables/domain_details-owner.inc
+//		tables/domain_details-automount.inc
 //		tables/user_details-access.inc
 //
 // * with 'set=':
@@ -126,7 +127,7 @@ $_REQUEST["orgname"] = $orgname;
 //		autoCreateMailAddress		maximumDomainUsers				userNamePrefix
 //		autoCreatePassWord			maximumMailingLists				userNamePrefixLength
 //		vatNumber					simscanspamassassin				simscanclamantivirus
-//		simscantrophie
+//		simscantrophie				automountinformation
 //
 // * Files that manages the attribs above:
 //		include/attrib.accountstatus.inc
@@ -147,6 +148,7 @@ $_REQUEST["orgname"] = $orgname;
 //		include/attrib.outlook.inc
 //		include/attrib.usernameprefix.inc
 //		include/attrib.usertoggle.inc
+//		include/attrib.automount.inc
 // }}}
 
 if(!$_REQUEST["type"]) {
@@ -157,13 +159,21 @@ if(!$_REQUEST["type"]) {
   }
 }
 
-// {{{ Select what to do
+if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+  echo "REQUEST:";
+  ksort($_REQUEST);
+  printr($_REQUEST);
+}
+
+// -------------------
+// Select what to do
+// {{{ submit == 1
 if(@$_REQUEST["submit"] == 1) {
 	// Called from:
 	//	tables/domain_details-dnszone.inc
 	//	tables/domain_details-options.inc
 
-	if($_REQUEST["attrib"] == 'basequota') {
+	if($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_BASEQUOTA")) {
 		attribute_save("modify");
 	} else {
 	    if(attribute_check($_REQUEST["type"]))
@@ -171,18 +181,27 @@ if(@$_REQUEST["submit"] == 1) {
 		else
 		  attribute_print_form($_REQUEST["type"]);
 	}
+// }}}
+// {{{ submit == 2
 } elseif(@$_REQUEST["submit"] == 2) {
     // Support for changing domain defaults
 	// Called from:
 	//	tables/domain_details-aci.inc
+	//	tables/domain_details-automount.inc (when deleting and saving)
 
 	if($_REQUEST["type"] != 'delete') {
-		if(attribute_check())
-		  attribute_save("modify");
-		else
+		if(attribute_check()) {
+		  if($_REQUEST["type"])
+			attribute_save($_REQUEST["type"]);
+		  else
+			attribute_save("modify");
+		} else {
 		  attribute_print_form();
+		}
 	} else
 	  attribute_save("delete");
+// }}}
+// {{{ submit == 3
 } elseif(@$_REQUEST["submit"] == 3) {
 	// Support for changing domain administrator
 	// Called from:
@@ -191,6 +210,8 @@ if(@$_REQUEST["submit"] == 1) {
 	//	tables/domain_details-owner.inc
 
 	attribute_print_form($_REQUEST["type"]);
+// }}}
+// {{{ submit == 4
 } elseif(@$_REQUEST["submit"] == 4) {
 	// SAVE change of domain administrator, mailinglist admin and contact person
 	// Called from:
@@ -202,6 +223,8 @@ if(@$_REQUEST["submit"] == 1) {
 	  attribute_save($_REQUEST["action"]);
 	elseif($_REQUEST["type"])
 	  attribute_save($_REQUEST["type"]);
+// }}} 
+// {{{ submit == else
 } else {
 	if($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_BASEQUOTA"))
 	  attribute_print_form();
@@ -212,14 +235,16 @@ if(@$_REQUEST["submit"] == 1) {
 		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_SIMSCAN_CLAM")) or
 		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_SIMSCAN_TROPHIE")) or
 		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_HOSTACL_USE")) or
-		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_SUDO_USE")))
+		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_SUDO_USE")) or
+		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_AUTOMOUNT_USE")))
+	  // A toggle or boolean change - jump to 'save changes' directly
 	  attribute_save();
 	else
 	  attribute_print_form($_REQUEST["type"]);
 }
 // }}}
 ?>
-</body>
+  </body>
 </html>
 <?php
 pql_flush();
