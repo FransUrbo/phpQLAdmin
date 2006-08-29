@@ -2,8 +2,8 @@
 // Attribute plugin for
 // autoCreateUsername, autoCreateMailAddress, autoCreatePassWord,
 // simScanSpamAssassin, simScanClamAntiVirus, simScanTrophie,
-// useHostACL and useSudo
-// $Id: attrib.domaintoggle.inc,v 2.12 2006-03-08 16:58:08 turbo Exp $
+// useHostACL, useSudo and useAutoMount
+// $Id: attrib.domaintoggle.inc,v 2.13 2006-08-29 15:22:17 turbo Exp $
 
 // {{{ attribute_save(void)
 // It's a toggle. Change value directly.

@@ -1,0 +1,37 @@
+Automount configuration
+~~~~~~~~~~~~~~~~~~~~~~~
+As of 2.3.4, phpQLAdmin have support for storing Automount information
+in the LDAP server.
+
+The included example LDIF (demo/automounts.ldif) would create automount
+maps for the floppy, cdrom (two SCSI cdroms) a chroot environment and a
+mount point for MP3s. The organization unit for the sub-branch is defined
+in include/config.inc (the PQL_CONF_SUBTREE_AUTOMOUNTS define) so the
+demo file must be modified before use. Replace all occurances of the 
+following string
+
+	%PQL_CONF_SUBTREE_AUTOMOUNTS%
+
+with the value you've selected in include/config.inc for the 
+PQL_CONF_SUBTREE_AUTOMOUNTS define. This must be done BEFORE any attempt
+of loading the LDIF!
+
+
+The LDIF file will create the automount branch below the 'o=Main Branch,c=SE'
+which was/is created with the 'database-main.ldif' LDIF example file) where
+the first 'cn' branch (second object) is like an organizational unit,
+but for this specific (physical) host. This is the tree you'd get with
+this LDIF:
+
+  [o=Main Branch,c=SE]
+    PQL_CONF_SUBTREE_AUTOMOUNTS define
+      cn=host1.domain.tld
+        ou=auto.mnt		(Manages mountpoints below /mnt)
+          /dev/fd0  on /mnt/floppy
+          /dev/sdb9 on /mnt/chroot
+          /dev/hdb1 on /mnt/mp3s
+          ou=auto.mnt.cdrom	(Manages mountpoints below /mnt/cdrom)
+            /dev/scd1 on /mnt/cdrom/1
+            /dev/scd2 on /mnt/cdrom/2
+        ou=auto.smb		(Manages mountpoints below /smb)
+          //smbhost1/Shared on /smb/shared

@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.48 2006-07-26 21:15:06 turbo Exp $
+// $Id: config_attributes.inc,v 2.49 2006-08-29 15:22:17 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -264,6 +264,11 @@ pql_set_define("PQL_ATTR_SUDOOBJECTCLASS",					strtolower('sudoRole'),						fals
 // {{{ Attributes used by the HostACL config
 pql_set_define("PQL_ATTR_HOSTACL_USE",						strtolower('useHostACL'),					false);
 pql_set_define("PQL_ATTR_ACI_USE",							strtolower('useACI'),						false);
+// }}}
+
+// {{{ Attributes used by the Automount config
+pql_set_define("PQL_ATTR_AUTOMOUNT_USE",					strtolower('useAutoMount'),					false);
+pql_set_define("PQL_ATTR_AUTOMOUNT_INFO",					strtolower('autoMountInformation'),			false);
 // }}}
 
 // {{{ Miscellaneous external attributes

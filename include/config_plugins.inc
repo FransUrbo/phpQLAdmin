@@ -17,7 +17,7 @@
 //	file		File that manage the plugin
 //	attribs		Attribute(s) that the plugin manages
 //
-// $Id: config_plugins.inc,v 2.23 2006-03-08 14:32:50 turbo Exp $
+// $Id: config_plugins.inc,v 2.24 2006-08-29 15:22:17 turbo Exp $
 
 pql_plugin_register(pql_get_define("PQL_ATTR_ISACTIVE"), "",
 					"attrib.accountstatus.inc",
@@ -119,7 +119,8 @@ pql_plugin_register(pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"), "",
 						  pql_get_define("PQL_ATTR_SIMSCAN_CLAM"),
 						  pql_get_define("PQL_ATTR_SIMSCAN_TROPHIE"),
 						  pql_get_define("PQL_ATTR_HOSTACL_USE"),
-						  pql_get_define("PQL_ATTR_SUDO_USE")));
+						  pql_get_define("PQL_ATTR_SUDO_USE"),
+						  pql_get_define("PQL_ATTR_AUTOMOUNT_USE")));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_GROUP_CONFIRM"), "",
 					"attrib.usertoggle.inc",
@@ -265,6 +266,10 @@ pql_plugin_register(pql_get_define("PQL_ATTR_SIMSCAN_ATTACHMENTS"), "",
 pql_plugin_register(pql_get_define("PQL_ATTR_PHOTO"), "",
 					"attrib.photo.inc",
 					pql_get_define("PQL_ATTR_PHOTO"));
+
+pql_plugin_register(pql_get_define("PQL_ATTR_AUTOMOUNT_INFO"), "",
+					"attrib.automount.inc",
+					pql_get_define("PQL_ATTR_AUTOMOUNT_INFO"));
 
 // List all registred attributes and their files
 // - Uncomment this piece of code to view which

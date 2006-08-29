@@ -33,6 +33,13 @@ directory to simplify bugfixing. They all start with
 	and virtual server directories) in the domain
 	details->Webserver manager.
 
+.DEBUG_AUTOMOUNT
+	Shows some debugging regarding Automounts
+
+.DEBUG_DOMAINS
+	Shows information about domain/branch retreivals.
+	Use this if you have problem in seeing your domains.
+
 When sending in bugreports, please have _at least_
 the .DEBUG_ME file and cut-and-past the resulting
 output. The more information you send, the bigger

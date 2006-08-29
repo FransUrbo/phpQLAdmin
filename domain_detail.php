@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.103 2006-07-05 09:36:44 turbo Exp $
+// $Id: domain_detail.php,v 2.104 2006-08-29 15:21:38 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -10,6 +10,9 @@ $url["domain"] = pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 
 include($_SESSION["path"]."/header.html");
+if($_REQUEST["view"] == 'automount') {
+  include($_SESSION["path"]."/left-head.html");
+}
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 // }}}
@@ -92,6 +95,7 @@ $attribs = array("autocreatemailaddress"	=> pql_get_define("PQL_ATTR_AUTOCREATE_
 				 "ezmlmvirtualuser"			=> pql_get_define("PQL_ATTR_EZMLM_USER"),
 				 "usehostacl"				=> pql_get_define("PQL_ATTR_HOSTACL_USE"),
 				 "usesudo"					=> pql_get_define("PQL_ATTR_SUDO_USE"),
+				 "useautomount"				=> pql_get_define("PQL_ATTR_AUTOMOUNT_USE"),
 				 "info"						=> pql_get_define("PQL_ATTR_INFO"));
 foreach($attribs as $key => $attrib) {
 	// Get default value
@@ -243,6 +247,12 @@ if($_SESSION["ADVANCED_MODE"]) {
 	$new = array('sudo' => 'Sudoers access');
 	$buttons = $buttons + $new;
   }
+
+  $key = pql_get_define("PQL_ATTR_AUTOMOUNT_USE");
+  if($$key) {
+	$new = array('automount' => 'Automount information');
+	$buttons = $buttons + $new;
+  }
 }
 
 $new = array('action' => 'Actions');
@@ -296,6 +306,8 @@ if($_REQUEST["view"] == 'owner') {
 	  include("./tables/domain_details-aci.inc");
 	elseif($_REQUEST["view"] == 'websrv')
 	  include("./tables/domain_details-websrv.inc");
+	elseif($_REQUEST["view"] == 'automount')
+	  include("./tables/domain_details-automount.inc");
 	elseif($_REQUEST["view"] == 'hostacl')
 	  include($_SESSION["path"]."/host_modify.php");
 	elseif($_REQUEST["view"] == 'sudo')

@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.72 2006-07-08 14:36:48 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.73 2006-08-29 15:22:17 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -98,6 +98,11 @@ pql_set_define("PQL_CONF_USE_TLS", false);
 // PQL_CONF_SUBTREE_APACHE
 // Below what sub-DN is your Apache information stored?
 //pql_set_define("PQL_CONF_SUBTREE_APACHE", "ou=WEB");
+
+// ----------------------------
+// PQL_CONF_SUBTREE_AUTOMOUNTS
+// Below what sub-DN is your automount information stored?
+//pql_set_define("PQL_CONF_SUBTREE_AUTOMOUNTS", "ou=AutoMounts");
 
 // ----------------------------
 // mail(message)store generation
@@ -449,13 +454,24 @@ function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $do
 //		}
 //	} elseif($type == 'template') {
 //		// No defaults for this, the public and 'access-id#me' stuff is perfectly ok for me...
+//		;
+//	} elseif($type == 'automount') {
+//		// No defaults for this, the public and 'access-id#me' stuff is perfectly ok for me...
+//		;
 //	}
 //
 //	// Non-public entries
 //	$aci[$i] = "$i#entry#grant;w,r,s,c;[children]#access-id#$user"; $i++;
 //
-//	// Add all the super admins with full access.
-//	$admins = pql_get_attribute($ldap_linkid, urldecode($_SESSION["BASE_DN"][0]), pql_get_define("PQL_ATTR_ADMINISTRATOR"));
+//	// Get all the super admins with full access.
+//	$root_admins = pql_get_attribute($ldap_linkid, urldecode($_SESSION["BASE_DN"][0]), pql_get_define("PQL_ATTR_ADMINISTRATOR"));
+//
+//	// Add all domain/branch administrators
+//	if(@$_REQUEST["domain"])
+//	  $base_admins = pql_get_attribute($ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR"));
+//
+//	// Merge the two values and unique them
+//	$admins = pql_add2array($root_admins, $base_admins);
 //	if(is_array($admins)) {
 //		foreach($admins as $admin)
 //		  $aci[$i] = "$i#entry#grant;w,r,s,c,x;[all]#access-id#$admin"; $i++;

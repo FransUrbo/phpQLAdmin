@@ -10,7 +10,13 @@ phpQLAdmin 2.3.4 TO BE ANNOUNCED
 	    encode the DN.
 
 	GUI layout changes
+	  - Add a Automount manager.
+	    Closes: #307
+
 	Schema changes
+	  - Add attribute 'useAutoMount' (oid 1.3.6.1.4.1.8767.3.2.1.30) for use with 
+	    the Automount manager.
+
 	API changes
 	Misc changes
 	  - When using posixAccount in a user/template, the 'autoCreateUGidNumber'
