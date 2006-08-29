@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.58 2006-07-26 21:31:09 turbo Exp $
+// $Id: pql_search.inc,v 2.59 2006-08-29 15:43:09 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -255,33 +255,10 @@ function pql_get_dn($linkid, $dn, $filter, $level = 'SUBTREE') {
 // {{{ pql_get_domains(ldap)
 // Get all domains listed in ldap-tree (ou|dc-records)
 function pql_get_domains($ldap) {
+  global $_SESSION;
   $domains = array();
   
   foreach($_SESSION["BASE_DN"] as $TOP_DN)  {
-	if(pql_get_define("PQL_CONF_SUBTREE_USERS")) {
-	  // There's a subtree defined - look if it's there
-	  $dn     = pql_get_define("PQL_CONF_SUBTREE_USERS").",$TOP_DN";
-	  $filter = pql_get_define("PQL_ATTR_OBJECTCLASS").'=*';
-	  $result = pql_get_dn($ldap->ldap_linkid, $dn, $filter, 'BASE');
-	  if(is_array($result)) {
-		// ------------------- BUG: THIS IS YET UNTESTED AFTER API (2.1.1-2.1.2) REWRITE!
-		// Yes it does - Is there any users just below the ou=People object?
-		$filter  = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $TOP_DN)."=*";
-		$domains = pql_get_dn($ldap->ldap_linkid, $dn, $filter, 'ONELEVEL');
-		if(is_array($domains)) {
-		  // Just to be safe - is there any branches here?
-		  $filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN) . "=*)$ocs)";
-		  $new    = pql_get_dn($ldap->ldap_linkid, $dn, $filter, 'ONELEVEL');
-		  if(is_array($new))
-			$domains = pql_add2array($domains, $new);
-		}
-	  }
-	}
-
-	// -------------------
-	// Is there any users just below the top DN then?
-	$dn	= $TOP_DN;
-	
 	// BUG: I'd really like to use this, but I can't.
 	// The reason is: If I specify (in 'phpQLAdmin config->Branch config')
 	// to use the following object classeses when creating branches,
@@ -291,7 +268,46 @@ function pql_get_domains($ldap) {
 	// But only the first (or none of them) exists -> no branches!!
 	//$ocs    = pql_setup_branch_objectclasses(1, $TOP_DN);
 	
-	// Instead, I'll have to 'fake' it here.
+	if(pql_get_define("PQL_CONF_SUBTREE_USERS")) {
+	  // There's a subtree defined - look if it's there
+	  $dn = pql_get_define("PQL_CONF_SUBTREE_USERS").",$TOP_DN";
+	  
+	  $filter = pql_get_define("PQL_ATTR_OBJECTCLASS").'=*';
+	  $result = pql_get_dn($ldap->ldap_linkid, $dn, $filter, 'BASE');
+	  if(file_exists($_SESSION["path"]."/.DEBUG_DOMAINS")) {
+		echo "pql_get_domains(): result"; printr($result);
+	  }
+	  if(is_array($result)) {
+		// The PQL_CONF_SUBTREE_USERS,TOP_DN exists
+		
+		// Is there any users just below that?
+		$filter  = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $TOP_DN)."=*";
+		$new = pql_get_dn($ldap->ldap_linkid, $dn, $filter, 'ONELEVEL');
+		if(file_exists($_SESSION["path"]."/.DEBUG_DOMAINS")) {
+		  echo "pql_get_domains(): new(1)"; printr($new);
+		}
+		if(is_array($new)) {
+		  // Yes, there are users here. Add this DN to the domains list
+		  $domains = pql_add2array($domains, $TOP_DN);
+		  
+		  // Just to be safe - is there any branches here?
+		  $filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN) . "=*)$ocs)";
+		  $new    = pql_get_dn($ldap->ldap_linkid, $dn, $filter, 'ONELEVEL');
+		  if(file_exists($_SESSION["path"]."/.DEBUG_DOMAINS")) {
+			echo "pql_get_domains(): new (2)"; printr($new);
+		  }
+		  if(is_array($new))
+			$domains = pql_add2array($domains, $new);
+		}
+	  }
+	}
+
+	// else/and:
+
+	// -------------------
+	// Is there any users just below the top DN then?
+	
+	// Can't use $ocs (see above), so instead, I'll have to 'fake' it here.
 	if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN) == 'o')
 	  $ocs = '(objectClass=organization)';
 	else if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN) == 'dc')
@@ -303,26 +319,31 @@ function pql_get_domains($ldap) {
 	  // User reference for this branch/domain not specified. Use default...
 	  $filter = 'uid=*';
 	$new    = pql_get_dn($ldap->ldap_linkid, $TOP_DN, $filter, 'ONELEVEL');
-
+	if(file_exists($_SESSION["path"]."/.DEBUG_DOMAINS")) {
+	  echo "pql_get_domains(): new(3)"; printr($new);
+	}
 	if(is_array($new))
 	  $domains = pql_add2array($domains, $new);
 	
 	// Just to be safe - is there any branches here?
 	$filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN) . "=*)$ocs)";
 	$new    = pql_get_dn($ldap->ldap_linkid, $TOP_DN, $filter, 'ONELEVEL');
+	if(file_exists($_SESSION["path"]."/.DEBUG_DOMAINS")) {
+	  echo "pql_get_domains(): new(4)"; printr($new);
+	}
 	if(is_array($new))
 	  $domains = pql_add2array($domains, $new);
 
 	// Now, if the base/root DN is a 'dc' object and domain/branch reference
 	// is 'ou', we MUST use 'organizationalUnit' in the object class filter...
 	$filter = '(&('.pql_get_define("PQL_ATTR_OU").'=*)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=organizationalUnit))';
-	$new    = pql_get_dn($ldap->ldap_linkid, $TOP_DN, $filter, 'ONELEVEL');
+	$new    = pql_unit_get($ldap->ldap_linkid, $TOP_DN, $filter);
+	if(file_exists($_SESSION["path"]."/.DEBUG_DOMAINS")) {
+	  echo "pql_get_domains(): new(5)"; printr($new);
+	}
 	if(is_array($new)) {
-	  for($i=0; $new[$i]; $i++) {
-		if(!eregi('^ou=Templates', $new[$i]))
-		  // It's not a Templates object, add it to the list of domains.
-		  $domains = pql_add2array($domains, $new);
-	  }
+	  for($i=0; $new[$i]; $i++)
+		$domains = pql_add2array($domains, $new);
 	}
   }
   
@@ -348,10 +369,9 @@ function pql_get_domains($ldap) {
 	else
 	  asort($dom);
 	
-	unset($tmp); // I'd like to reuse this variable...
-	
 	// Move the new array (which is correctly sorted) to the
 	// original array.
+	unset($tmp); // I'm reusing this variable below...
 	foreach($dom as $dn => $value) {
 	  for($i=0; $i < count($domains); $i++) {
 		if(lc($dn) == lc($domains[$i]))
@@ -436,6 +456,91 @@ function pql_get_email_domains($linkid, $host) {
   // }}}
   
   return($mails);
+}
+// }}}
+
+// {{{ pql_get_automount_maps(linkid, domain, host)
+// Retreive ALL automount maps (recursivly) for a specific host in a specific domain
+function pql_get_automount_maps($linkid, $domain, $host) {
+  // {{{ Setup the DN for this host
+  if(pql_get_define("PQL_CONF_SUBTREE_AUTOMOUNTS")) {
+	$subrdn =  pql_get_define("PQL_CONF_SUBTREE_AUTOMOUNTS") . ",";
+  }
+  $computerdn = pql_get_define("PQL_ATTR_CN")."=".$host.",".$subrdn.$domain;
+  // }}}
+
+  // {{{ Retreive the base mount points
+  // Find the auto.master object
+  $filter = '(&(objectClass=autoMountMap)(|('.pql_get_define("PQL_ATTR_CN").'=auto.master)('.pql_get_define("PQL_ATTR_OU").'=auto.master)))';
+  $auto_master = pql_search($linkid, $computerdn, $filter, 'ONELEVEL'); $auto_master = $auto_master["dn"];
+
+  if(isset($auto_master))
+	// Get automount maps below auto.master
+	$maps = pql_get_automount_map($linkid, $auto_master);
+  else
+	// Get automount maps below computer DN
+	$maps = pql_get_automount_map($linkid, $computerdn);
+  // }}}
+
+  if(empty($maps))
+	return NULL;
+  else
+	return($maps);
+}
+// }}}
+
+// {{{ pql_get_automount_map(linkid, dn)
+// Retreive automount maps below a specific mountpoint
+function pql_get_automount_map($linkid, $dn) {
+  global $_SESSION;
+
+  // Retreive all automountMap(s) directly below the DN
+  $filter = '(&(objectClass=automount)(|('.pql_get_define("PQL_ATTR_CN").'=*)('.pql_get_define("PQL_ATTR_OU").'=*)))';
+  $maps = pql_search($linkid, $dn, $filter, 'ONELEVEL');
+
+  if(file_exists($_SESSION["path"]."/.DEBUG_AUTOMOUNT")) {
+	echo "pql_get_automount_map(): Maps for DN '<b>$dn</b>'";
+	printr($maps);
+  }
+
+  // Make sure the array is a _numbered_ array...
+  if(is_array($maps) and !@$maps[0]) {
+	$tmp = $maps;
+	unset($maps);
+	$maps[] = $tmp;
+  }
+
+  // For each of these base mount points, retreive all mount information
+  if(is_array($maps)) {
+	for($i=0; $maps[$i]; $i++) {
+	  $cn = $maps[$i][pql_get_define("PQL_ATTR_CN")];
+	  unset($maps[$i]["objectclass"]);
+
+	  if(eregi('ldap', $maps[$i][pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")])) {
+		// Extract any links to another LDAP automount map
+		// [automountinformation] => -fstype=autofs ldap:ou=auto.mnt.cdrom,ou=Automounts,o=Main Branch,c=SE
+		$dn = preg_replace('/.*:/', '', $maps[$i][pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")]);
+
+		// Call ourselfs recursivly to get automount maps below this mountpoint.
+		$AUTOMASTER[$cn] = pql_get_automount_map($linkid, $dn);
+	  } else {
+		if($maps[$i][pql_get_define("PQL_ATTR_DESCRIPTION")])
+		  $AUTOMASTER[$cn][pql_get_define("PQL_ATTR_DESCRIPTION")] = $maps[$i][pql_get_define("PQL_ATTR_DESCRIPTION")];
+		else
+		  $AUTOMASTER[$cn][pql_get_define("PQL_ATTR_DESCRIPTION")] = '';
+		
+		if($maps[$i][pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")])
+		  $AUTOMASTER[$cn][pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")] = $maps[$i][pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")];
+		else
+		  $AUTOMASTER[$cn][pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")] = '';
+
+		// Remember the DN (normalized) so we can easily reference it
+		$AUTOMASTER[$cn]["dn"] = pql_format_normalize_dn($maps[$i]["dn"]);
+	  }
+	}
+  }
+
+  return($AUTOMASTER);
 }
 // }}}
 
