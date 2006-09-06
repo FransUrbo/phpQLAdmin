@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // default domain name (the default domainname for a domain)
-// $Id: attrib.defaultdomain.inc,v 2.33 2005-02-24 17:04:01 turbo Exp $
+// $Id: attrib.defaultdomain.inc,v 2.33.2.1 2006-09-06 06:40:30 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -78,8 +78,8 @@ function attribute_print_form() {
 				$cnt = count($hosts);
 ?>
               &nbsp;<?=$LANG->_('Automatic replication configured')?>
-              <input type="hidden" name="<?pql_get_define("PQL_ATTR_LOCALS")?>_<?=$cnt?>" value="on">
-              <input type="hidden" name="<?pql_get_define("PQL_ATTR_LOCALS")?>" value="<?=$cnt?>">
+              <input type="hidden" name="<?=pql_get_define("PQL_ATTR_LOCALS")?>_<?=$cnt?>" value="on">
+              <input type="hidden" name="<?=pql_get_define("PQL_ATTR_LOCALS")?>" value="<?=$cnt?>">
 <?php		} ?>
           </td>
         </tr>
@@ -136,7 +136,7 @@ function attribute_save($type) {
 		attribute_forward($msg);
 		break;
 	}
-		
+
     switch($type) {
       case "add":
       case "modify":
@@ -157,7 +157,7 @@ function attribute_save($type) {
 						for($i=0; $i < $amount; $i++)
 						  if($_POST[pql_get_define("PQL_ATTR_LOCALS")."_".$i])
 							$hosts[] = $_POST[pql_get_define("PQL_ATTR_LOCALS")."_".$i];
-						
+
 						if(is_array($hosts)) {
 							foreach($hosts as $host) {
 								pql_modify_attribute($_pql_control->ldap_linkid,
@@ -168,16 +168,26 @@ function attribute_save($type) {
 						}
 					} else {
 						// Change all hosts
-						if($type == 'delete')
-						  pql_modify_attribute($_pql_control->ldap_linkid,
-											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											   pql_get_define("PQL_ATTR_LOCALS"),
-											   $delval, '');
-						else
-						  pql_modify_attribute($_pql_control->ldap_linkid,
-											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											   pql_get_define("PQL_ATTR_LOCALS"),
-											   '', $defaultdomain);
+						// Get all QmailLDAP/Control hosts.
+						$result = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+											 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+						for($i=0; $result[$i]; $i++)
+						  $hosts[] = pql_get_attribute($_pql_control->ldap_linkid, $result[$i], pql_get_define("PQL_ATTR_CN"));
+						
+						if(is_array($hosts)) {
+							foreach($hosts as $host) {
+								if($type == 'delete')
+								  pql_modify_attribute($_pql_control->ldap_linkid,
+													   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+													   pql_get_define("PQL_ATTR_LOCALS"),
+													   $delval, '');
+								else
+								  pql_modify_attribute($_pql_control->ldap_linkid,
+													   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+													   pql_get_define("PQL_ATTR_LOCALS"),
+													   '', $defaultdomain);
+							}
+						}
 					}
 				} else {
 					// We have not gone through the form for adding defaultDomain nor additionalDomainName.
@@ -214,16 +224,27 @@ function attribute_save($type) {
 						}
 					} else {
 						// Change all hosts
-						if($type == 'delete')
-						  pql_modify_attribute($_pql_control->ldap_linkid,
-											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											   pql_get_define("PQL_ATTR_RCPTHOSTS"),
-											   $delval, '');
-						else
-						  pql_modify_attribute($_pql_control->ldap_linkid,
-											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											   pql_get_define("PQL_ATTR_RCPTHOSTS"),
-											   '', $defaultdomain);
+						// Get all QmailLDAP/Control hosts.
+						unset($hosts);
+						$result = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+											 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+						for($i=0; $result[$i]; $i++)
+						  $hosts[] = pql_get_attribute($_pql_control->ldap_linkid, $result[$i], pql_get_define("PQL_ATTR_CN"));
+						
+						if(is_array($hosts)) {
+							foreach($hosts as $host) {
+								if($type == 'delete')
+								  pql_modify_attribute($_pql_control->ldap_linkid,
+													   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+													   pql_get_define("PQL_ATTR_RCPTHOSTS"),
+													   $delval, '');
+								else
+								  pql_modify_attribute($_pql_control->ldap_linkid,
+													   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+													   pql_get_define("PQL_ATTR_RCPTHOSTS"),
+													   '', $defaultdomain);
+							}
+						}
 					}
 				}
 			}
