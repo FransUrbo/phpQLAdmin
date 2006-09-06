@@ -15,6 +15,9 @@ phpQLAdmin 2.2.8 TO BE ANNOUNCED
 	    if there's only ONE value).
 	  - Default quota values for a domain didn't work correctly - pql_modify_attribute() called with
 	    third argument (attrib) which isn't needed since fourth arg is array...
+	  - PHP tag used wrongly '(s/<?/<?=/)' in include/attrib.defaultdomain.inc
+	  - When automatic replication is enabled and changing defaultdomain, one can't use pql_modify_attribute()
+	    only. Get ALL host and cycle through them. For both the locals and rcptHosts attributes.
 
 phpQLAdmin 2.2.7 Release (Jan 23 2006)
 	Bug fixes
