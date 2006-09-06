@@ -18,6 +18,8 @@ phpQLAdmin 2.2.8 TO BE ANNOUNCED
 	  - PHP tag used wrongly '(s/<?/<?=/)' in include/attrib.defaultdomain.inc
 	  - When automatic replication is enabled and changing defaultdomain, one can't use pql_modify_attribute()
 	    only. Get ALL host and cycle through them. For both the locals and rcptHosts attributes.
+	  - Use of wrong variable '(s/$dir/$directory/g)' in scripts/create_user.pl
+	    + Also print password on STDOUT if adding a KerberosV principal.
 
 phpQLAdmin 2.2.7 Release (Jan 23 2006)
 	Bug fixes
