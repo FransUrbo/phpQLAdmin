@@ -20,6 +20,7 @@ phpQLAdmin 2.2.8 TO BE ANNOUNCED
 	    only. Get ALL host and cycle through them. For both the locals and rcptHosts attributes.
 	  - Use of wrong variable '(s/$dir/$directory/g)' in scripts/create_user.pl
 	    + Also print password on STDOUT if adding a KerberosV principal.
+	  - Rewriting scripts/extract_dnsserver_zones.sh 
 
 phpQLAdmin 2.2.7 Release (Jan 23 2006)
 	Bug fixes
