@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.32.2.5.2.3 2006-01-23 10:27:59 turbo Exp $
+// $Id: user_add-save.inc,v 1.32.2.5.2.3.2.1 2006-09-06 06:49:55 turbo Exp $
 
 // {{{ URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
 if($_REQUEST["surname"]) {
@@ -319,44 +319,51 @@ if($DNs[0]) {
   // TODO: DNs[1] (the group object) might still be empty -> failed to add it.
   
   // {{{ Now it's time to run the special adduser script if defined...
-  if(!file_exists($_SESSION["path"]."/.DEBUG_ME")) {
-	if(pql_get_define("PQL_CONF_SCRIPT_CREATE_USER", $_REQUEST["rootdn"])) {
-	  // Setup the environment with the user details
-	  putenv("PQL_CONF_DOMAIN=$domain");
-	  putenv("PQL_CONF_WEBUSER=".posix_getuid());
-	  foreach($entry as $key => $e) {
-		$key = "PQL_" . strtoupper($key);
-		if($key != 'PQL_CONF_OBJECTCLASS')
-		  putenv("$key=$e");
-	  }
+  if(pql_get_define("PQL_CONF_SCRIPT_CREATE_USER", $_REQUEST["rootdn"])) {
+	// Setup the environment with the user details
+	putenv("PQL_CONF_DOMAIN=$domain");
+	putenv("PQL_CONF_WEBUSER=".posix_getuid());
+	foreach($entry as $key => $e) {
+	  $key = "PQL_" . strtoupper($key);
+	  if($key != 'PQL_CONF_OBJECTCLASS')
+		putenv("$key=$e");
+	}
+	
+	if(pql_get_define("PQL_CONF_KRB5_ADMIN_COMMAND_PATH") and 
+	   pql_get_define("PQL_CONF_KRB5_REALM") and
+	   pql_get_define("PQL_CONF_KRB5_ADMIN_PRINCIPAL") and
+	   pql_get_define("PQL_CONF_KRB5_ADMIN_SERVER") and 
+	   pql_get_define("PQL_CONF_KRB5_ADMIN_KEYTAB")) {
+	  putenv("PQL_KADMIN_CMD=".pql_get_define("PQL_CONF_KRB5_ADMIN_COMMAND_PATH")."/kadmin");
+	  putenv("PQL_KADMIN_REALM=".pql_get_define("PQL_CONF_KRB5_REALM"));
+	  putenv("PQL_KADMIN_PRINC=".pql_get_define("PQL_CONF_KRB5_ADMIN_PRINCIPAL"));
+	  putenv("PQL_KADMIN_SERVR=".pql_get_define("PQL_CONF_KRB5_ADMIN_SERVER"));
+	  putenv("PQL_KADMIN_KEYTB=".pql_get_define("PQL_CONF_KRB5_ADMIN_KEYTAB"));
 	  
-	  if(pql_get_define("PQL_CONF_KRB5_ADMIN_COMMAND_PATH") and 
-		 pql_get_define("PQL_CONF_KRB5_REALM") and
-		 pql_get_define("PQL_CONF_KRB5_ADMIN_PRINCIPAL") and
-		 pql_get_define("PQL_CONF_KRB5_ADMIN_SERVER") and 
-		 pql_get_define("PQL_CONF_KRB5_ADMIN_KEYTAB")) {
-		putenv("PQL_KADMIN_CMD=".pql_get_define("PQL_CONF_KRB5_ADMIN_COMMAND_PATH")."/kadmin");
-		putenv("PQL_KADMIN_REALM=".pql_get_define("PQL_CONF_KRB5_REALM"));
-		putenv("PQL_KADMIN_PRINC=".pql_get_define("PQL_CONF_KRB5_ADMIN_PRINCIPAL"));
-		putenv("PQL_KADMIN_SERVR=".pql_get_define("PQL_CONF_KRB5_ADMIN_SERVER"));
-		putenv("PQL_KADMIN_KEYTB=".pql_get_define("PQL_CONF_KRB5_ADMIN_KEYTAB"));
-		
-		if($_REQUEST["clear_text_password"])
-		  putenv("PQL_CLEARTEXT_PASSWORD=".$_REQUEST["clear_text_password"]);
-	  }
+	  if($_REQUEST["clear_text_password"])
+		putenv("PQL_CLEARTEXT_PASSWORD=".$_REQUEST["clear_text_password"]);
+	}
+	
+	if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+	  echo "<p>DNs added: ";
+	  printr($DNs);
+	  echo "Would have executed: <b>".pql_get_define("PQL_CONF_SCRIPT_CREATE_USER", $_REQUEST["rootdn"])."</b> with the environment of:<br>";
+	  pql_execute("env", 0);
 	  
-	  // Execute the user add script (0 => show output)
-	  if(pql_execute(pql_get_define("PQL_CONF_SCRIPT_CREATE_USER", $_REQUEST["rootdn"]), 0)) {
-		echo pql_complete_constant($LANG->_('The %what% add script failed'),
-								   array('what' => $LANG->_('user'))) . "!<br>";
-		$msg = urlencode(pql_complete_constant($LANG->_('The %what% add script failed'),
-											   array('what' => $LANG->_('user'))) ."!") . ".&nbsp;<br>";
-	  } else {
-		echo "<b>" . pql_complete_constant($LANG->_('Successfully executed the %what% add script'),
-										   array('what' => $LANG->_('user'))) . "</b><br>";
-		$msg = urlencode(pql_complete_constant($LANG->_('Successfully executed the %what% add script'),
-											   array('what' => $LANG->_('user')))) . ".&nbsp;<br>";
-	  }
+	  die();
+	}
+	
+	// Execute the user add script (0 => show output)
+	if(pql_execute(pql_get_define("PQL_CONF_SCRIPT_CREATE_USER", $_REQUEST["rootdn"]), 0)) {
+	  echo pql_complete_constant($LANG->_('The %what% add script failed'),
+								 array('what' => $LANG->_('user'))) . "!<br>";
+	  $msg = urlencode(pql_complete_constant($LANG->_('The %what% add script failed'),
+											 array('what' => $LANG->_('user'))) ."!") . ".&nbsp;<br>";
+	} else {
+	  echo "<b>" . pql_complete_constant($LANG->_('Successfully executed the %what% add script'),
+										 array('what' => $LANG->_('user'))) . "</b><br>";
+	  $msg = urlencode(pql_complete_constant($LANG->_('Successfully executed the %what% add script'),
+											 array('what' => $LANG->_('user')))) . ".&nbsp;<br>";
 	}
   }
 // }}}
@@ -380,16 +387,8 @@ if($DNs[0]) {
     </form>
 <?php
 	   die();
-  } else {
-	if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
-		echo "DNs 'added' by pql_user_add(): ";
-		printr($DNs);
-
-		echo "MSG: <b>".urldecode($msg)."</b><br>I'm debugging, but I <u>would</u> have redirected you to the url:<br><br>";
-		die("<b>".urldecode($link)."</br>");
-	} else
-	  pql_header($link);
-  }
+  } else
+	pql_header($link);
 } else {
   $msg = urlencode($LANG->_('Failed to create the new user') . ":&nbsp;" . ldap_error($_pql->ldap_linkid));
   $link = "domain_detail.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&msg=$msg";
