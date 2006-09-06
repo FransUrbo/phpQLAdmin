@@ -23,6 +23,7 @@ phpQLAdmin 2.2.8 TO BE ANNOUNCED
 	  - Rewriting scripts/extract_dnsserver_zones.sh 
 	  - Make sure that webservers don't wrap prematurly in tables/domain_details-websrv.inc. We want
 	    all buttons to go as far to the right as possible before wrapping.
+	  - Make sure to setup for create add user script, but don't execute it if .DEBUG_ME exists.
 
 phpQLAdmin 2.2.7 Release (Jan 23 2006)
 	Bug fixes
