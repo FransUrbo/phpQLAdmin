@@ -21,6 +21,8 @@ phpQLAdmin 2.2.8 TO BE ANNOUNCED
 	  - Use of wrong variable '(s/$dir/$directory/g)' in scripts/create_user.pl
 	    + Also print password on STDOUT if adding a KerberosV principal.
 	  - Rewriting scripts/extract_dnsserver_zones.sh 
+	  - Make sure that webservers don't wrap prematurly in tables/domain_details-websrv.inc. We want
+	    all buttons to go as far to the right as possible before wrapping.
 
 phpQLAdmin 2.2.7 Release (Jan 23 2006)
 	Bug fixes
