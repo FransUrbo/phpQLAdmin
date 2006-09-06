@@ -51,7 +51,7 @@ if($ENV{"PQL_MAILMESSAGESTORE"}) {
 	if(! -d $directory) {
 	    print "Creating $directory\n";
 	    if(! mkdir($directory) ) {
-		die("Unsuccessfull in creating $dir, $!\n");
+		die("Unsuccessfull in creating dir '$directory', $!\n");
 	    }
 	}
 
@@ -77,7 +77,7 @@ if($ENV{"PQL_HOMEDIRECTORY"}) {
 	if(! -d $directory) {
 	    print "Creating $directory\n";
 	    if(! mkdir($directory) ) {
-		die("Unsuccessfull in creating $dir, $!\n");
+		die("Unsuccessfull in creating dir '$dir', $!\n");
 	    }
 	}
 
@@ -91,7 +91,7 @@ if(($ENV{"PQL_USERPASSWORD"} =~ /kerberos/i) || ($ENV{"PQL_USERPASSWORD"} =~ /sa
     if(-x $ENV{"PQL_KADMIN_CMD"} && $ENV{"PQL_USERPASSWORD"}) {
 	$principal = (split('}', $ENV{"PQL_USERPASSWORD"}))[1];
 	$principal = (split('\@', $principal))[0];
-	print "Creating KerberosV principal '$principal': ";
+	print "Creating KerberosV principal '$principal' (pw=".$ENV{"PQL_CLEARTEXT_PASSWORD"}."): ";
 	
 	push(@args, $ENV{"PQL_KADMIN_CMD"});
 	if($ENV{"PQL_KADMIN_REALM"}) {
