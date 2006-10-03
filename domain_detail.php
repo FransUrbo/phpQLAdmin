@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.104 2006-08-29 15:21:38 turbo Exp $
+// $Id: domain_detail.php,v 2.105 2006-10-03 15:31:39 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -75,6 +75,7 @@ $attribs = array("autocreatemailaddress"	=> pql_get_define("PQL_ATTR_AUTOCREATE_
 				 "basequota"				=> pql_get_define("PQL_ATTR_BASEQUOTA"),
 				 "defaultdomain"			=> pql_get_define("PQL_ATTR_DEFAULTDOMAIN"),
 				 "defaultpasswordscheme"	=> pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"),
+				 "defaultaccounttype"		=> pql_get_define("PQL_ATTR_DEFAULT_ACCOUNTTYPE"),
 				 "facsimiletelephonenumber"	=> pql_get_define("PQL_ATTR_FACSIMILETELEPHONENUMBER"),
 				 "l"						=> pql_get_define("PQL_ATTR_L"),
 				 "maximumdomainusers"		=> pql_get_define("PQL_ATTR_MAXIMUM_DOMAIN_USERS"),
@@ -96,7 +97,12 @@ $attribs = array("autocreatemailaddress"	=> pql_get_define("PQL_ATTR_AUTOCREATE_
 				 "usehostacl"				=> pql_get_define("PQL_ATTR_HOSTACL_USE"),
 				 "usesudo"					=> pql_get_define("PQL_ATTR_SUDO_USE"),
 				 "useautomount"				=> pql_get_define("PQL_ATTR_AUTOMOUNT_USE"),
-				 "info"						=> pql_get_define("PQL_ATTR_INFO"));
+				 "info"						=> pql_get_define("PQL_ATTR_INFO"),
+				 "lockusername"				=> pql_get_define("PQL_ATTR_LOCK_USERNAME"),
+				 "lockemailaddress"			=> pql_get_define("PQL_ATTR_LOCK_EMAILADDRESS"),
+				 "lockdomainaddress"		=> pql_get_define("PQL_ATTR_LOCK_DOMAINADDRESS"),
+				 "lockpassword"				=> pql_get_define("PQL_ATTR_LOCK_PASSWORD"),
+				 "lockaccounttype"			=> pql_get_define("PQL_ATTR_LOCK_ACCOUNTTYPE"));
 foreach($attribs as $key => $attrib) {
 	// Get default value
 	$value = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib);
@@ -117,7 +123,10 @@ foreach($attribs as $key => $attrib) {
 		// No value, no toggle
 		$value = 0;
 	  elseif(($key == 'autocreateusername') or ($key == 'autocreatemailaddress') or
-			($key == 'autocreatepassword') or ($key == 'usehostacl') or ($key == 'usesudo'))
+			 ($key == 'autocreatepassword') or ($key == 'usehostacl') or
+			 ($key == 'usesudo') or ($key == 'lockusername') or ($key == 'lockemailaddress') or
+			 ($key == 'lockdomainaddress') or ($key == 'lockpassword') or
+			 ($key == 'lockaccounttype'))
 	  {
 		// A toggle value
 		if(!$value)

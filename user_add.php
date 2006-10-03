@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.133 2005-09-29 05:03:12 turbo Exp $
+// $Id: user_add.php,v 2.134 2006-10-03 15:31:39 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -14,13 +14,6 @@ $url["domain"]		= pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"]		= pql_format_urls($_REQUEST["rootdn"]);
 $url["subbranch"]	= pql_format_urls($_REQUEST["subbranch"]);
 $url["user"]		= pql_format_urls($_REQUEST["user"]);
-
-if(empty($_REQUEST["page_curr"])) {
-  $_REQUEST["page_curr"] = '';
-}
-if(empty($_REQUEST["page_next"])) {
-  $_REQUEST["page_next"] = '';
-}
 // }}}
 
 // {{{ Get the organization name, or the DN if it's unset
@@ -41,22 +34,50 @@ if(!pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], '(objectclass=*)', 'BASE
 // }}}
 
 // {{{ Get default domain values for this domain
-$defaultdomain			= pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
-$maxusers				= pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_MAXIMUM_DOMAIN_USERS"));
-$additionaldomainname	= pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
-
-// Get the {home,mail} directory values
-$attribs = array("basehomedir" => pql_get_define("PQL_ATTR_BASEHOMEDIR"),
-				 "basemaildir" => pql_get_define("PQL_ATTR_BASEMAILDIR"));
+$additionaldomainname = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
+$attribs = array("defaultdomain"		=> pql_get_define("PQL_ATTR_DEFAULTDOMAIN"),
+				 "maxusers"				=> pql_get_define("PQL_ATTR_MAXIMUM_DOMAIN_USERS"),
+				 "basehomedir"			=> pql_get_define("PQL_ATTR_BASEHOMEDIR"),
+				 "basemaildir"			=> pql_get_define("PQL_ATTR_BASEMAILDIR"),
+				 "defaultaccounttype"	=> pql_get_define("PQL_ATTR_DEFAULT_ACCOUNTTYPE"),
+				 "lockusername"			=> pql_get_define("PQL_ATTR_LOCK_USERNAME"),
+				 "lockemailaddress"		=> pql_get_define("PQL_ATTR_LOCK_EMAILADDRESS"),
+				 "lockdomainaddress"	=> pql_get_define("PQL_ATTR_LOCK_DOMAINADDRESS"),
+				 "lockpassword"			=> pql_get_define("PQL_ATTR_LOCK_PASSWORD"),
+				 "lockaccounttype"		=> pql_get_define("PQL_ATTR_LOCK_ACCOUNTTYPE"));
 foreach($attribs as $key => $attrib) {
-  // Get default value
-  $value = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib);
-  if(!ereg('/$', $value))
-	$value . '/';
+	// Get default value
+	$value = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], $attrib);
+	if(is_array($value))
+	  $value = $value[0];
 
-  $$key = $value;
+	if(($key == 'lockusername') or ($key == 'lockemailaddress') or
+	   ($key == 'lockdomainaddress') or ($key == 'lockpassword') or
+	   ($key == 'lockaccounttype'))
+	{
+	  // A toggle value
+	  if(!$value)
+		// No value
+		$value = 0;
+	  else
+		// Got a value
+		$value = pql_format_bool($value);
+	}
+
+	$$key = $value;
 }
 // }}}
+
+if(empty($_REQUEST["page_curr"])) {
+  $_REQUEST["page_curr"] = '';
+}
+if(empty($_REQUEST["page_next"])) {
+  if($defaultaccounttype && $lockaccounttype) {
+	$_REQUEST["template"] = $defaultaccounttype;
+	$_REQUEST["page_next"] = 'one';
+  } else
+	$_REQUEST["page_next"] = '';
+}
 
 // {{{ Get all objectclasses the LDAP server understand
 $objectclasses_schema   = pql_get_subschema($_pql->ldap_linkid, 'objectclasses');
@@ -195,6 +216,11 @@ switch($_REQUEST["page_curr"]) {
 		  //
 		  // We MUST autogenerate a password here, even if it's not specified. This because othervise
 		  // the create user script will create a randomized password, which we have no idea what it is..
+		  //
+		  // NOTE:
+		  // It is very possible that the defaultPasswordScheme in the domain defaults DIFFER from the
+		  // password scheme used by the template!
+		  // If this is the case, the templates password scheme overrides.
 		  if(empty($schemes[1]) and ($schemes[0] == 'KERBEROS')) {
 			$_REQUEST["password"]            = $_REQUEST["uid"]."@".pql_get_define("PQL_CONF_KRB5_REALM");
 			$_REQUEST["pwscheme"]            = $schemes[0];
@@ -386,14 +412,19 @@ switch($_REQUEST["page_curr"]) {
 		{
 		  if(!ereg("@", $_REQUEST["mail"])) {
 			if($_REQUEST["email_domain"])
-			  $_REQUEST["mail"] = $_REQUEST["mail"] . "@" . $_REQUEST["email_domain"];
+			  $_REQUEST["mail"] .= "@" . $_REQUEST["email_domain"];
 			else
-			  $_REQUEST["mail"] = $_REQUEST["mail"] . "@" . $defaultdomain;
+			  $_REQUEST["mail"] .= "@" . $defaultdomain;
 			
 			if(!pql_check_email($_REQUEST["mail"])) {
 			  $error = true;
 			  $error_text["mail"] = $LANG->_('Invalid');
 			}
+		  } elseif($lockdomainaddress) {
+			// There's an @ in the emailaddress, but we've specifically said that this isn't allowed. Remove
+			// the domain part and replace it with the default domain.
+			$tmp = preg_replace('/@.*/', '', $_REQUEST["mail"]);
+			$_REQUEST["mail"] = $tmp . "@" . $_REQUEST["email_domain"];
 		  }
 		
 		  // It exists, it's valid. Does it already exists in the database?
@@ -402,7 +433,7 @@ switch($_REQUEST["page_curr"]) {
 			$error_text["mail"] = pql_complete_constant($LANG->_('Mail address %address% already exists'),
 														 array("address" => '<i>'.$_REQUEST["mail"].'</i>'));
 			unset($_REQUEST["mail"]);
-		  } else {
+		  } elseif(!$lockdomainaddress) {
 			// The mail address is perfectly ok, but if user specify an exact email address (which most
 			// likley don't match the email_domain we must change the email_domain request value for
 			// the rest of the checks to work correctly.

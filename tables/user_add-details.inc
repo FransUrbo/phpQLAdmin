@@ -1,30 +1,37 @@
-<?php /* $Id: user_add-details.inc,v 1.37 2005-09-27 18:33:30 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.38 2006-10-03 15:31:45 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
 <?php
-// {{{ Username
-	  if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $template, 'uid')) {
-		if((!pql_get_define("PQL_CONF_AUTOCREATE_USERNAME", $_REQUEST["rootdn"]) and $_SESSION["ADVANCED_MODE"]) or
-		   empty($_REQUEST["uid"]))
-		{
+	// {{{ Username
+	if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $template, 'uid')) {
+	  if((!pql_get_define("PQL_CONF_AUTOCREATE_USERNAME", $_REQUEST["rootdn"]) and $_SESSION["ADVANCED_MODE"]) or
+		 empty($_REQUEST["uid"]))
+	  {
 ?>
         <!-- Username (UID) -->
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Username')?></td>
           <td>
             <?php if(!empty($error_text["uid"])) { pql_format_error_span($error_text["uid"]); } ?>
+<?php		if($lockusername) { ?>
+            <input type="hidden" name="uid" value="<?=$_REQUEST["uid"]?>">
+            &nbsp;&nbsp;&nbsp;<b><?=$_REQUEST["uid"]?></b>
+<?php		} else { ?>
             <?=pql_templates_mark_importance($mark); ?>
             <input type="text" name="uid" value="<?=$_REQUEST["uid"]?>">
+<?php		} ?>
           </td>
         </tr>
 
+<?php		if(!$lockusername) { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
           <td><?=$LANG->_('Numbers, letters and the following special chars: @, %, . (dot), _, -.\nIf left out, a username will be created automatically')?>.</td>
         </tr>
 
-<?php	} else { ?>
+<?php		}
+		} else { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
           <td><?php echo pql_complete_constant($LANG->_('Automatically generated %what%'), array('what' => $LANG->_('username'))); ?> => <b><?=$_REQUEST["uid"]?></b>.</td>
@@ -35,8 +42,8 @@
 	  }
 // }}}
 
-	  // {{{ Firstname
-	  if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $template, 'sn')) {
+	// {{{ Firstname
+	if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $template, 'sn')) {
 ?>
         <!-- Firstname -->
         <tr class="<?php pql_format_table(); ?>">
@@ -50,8 +57,8 @@
 <?php }
 // }}}
 
-	  // {{{ Lastname
-	  if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $template, 'cn')) {
+	// {{{ Lastname
+	if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $template, 'cn')) {
 ?>
 
         <!-- Lastname -->
@@ -66,17 +73,13 @@
 <?php }
 // }}}
 
-	  if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_PASSWD"))) {
-		// Get the default password scheme for branch
-		$_REQUEST["defaultpasswordscheme"] = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"],
-															   pql_get_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME"));
-		
-		// {{{ Password encryption scheme
-		if((!$_REQUEST["defaultpasswordscheme"] or $_SESSION["ADVANCED_MODE"]) and
-		   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_PASSWD")))
-		{
-			// We have no default password scheme (or we're running in advanced mode) and password is allowed.
-			// -> Allow password to be entered...
+	if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_PASSWD"))) {
+	  // {{{ Password encryption scheme
+	  if((!$_REQUEST["defaultpasswordscheme"] or $_SESSION["ADVANCED_MODE"]) and !$lockpassword and 
+		 pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_PASSWD")))
+	  {
+		// We have no default password scheme (or we're running in advanced mode) and password is allowed.
+		// -> Allow password to be entered...
 ?>
 
         <!-- Password scheme -->
@@ -84,84 +87,105 @@
           <td class="title"><?=$LANG->_('Password encryption scheme')?></td>
           <td>
             <?=pql_templates_mark_importance($mark); ?>
-<?php		if(!empty($schemes[1])) {
-				// We got more than one password scheme...
+
+<?php	if(!empty($schemes[1])) {
+			// We got more than one password scheme...
 	  
-  				// Show each of the schemes as radio buttons
-				foreach($schemes as $scheme) {
-				  if(!(($_REQUEST["template"] == "mail") and ($scheme == "KERBEROS"))) {
-					// Do not show the KERBEROS scheme if it's a mail account! We don't have
-					// uidNumber and/or gidNumber for that account type, so we can't mapp the
-					// user correctly if using KERBEROS!
-					$_REQUEST["pwscheme"] = $scheme;
+			// Show each of the schemes as radio buttons
+			foreach($schemes as $scheme) {
+			  if(!(($_REQUEST["template"] == "mail") and ($scheme == "KERBEROS"))) {
+				// Do not show the KERBEROS scheme if it's a mail account! We don't have
+				// uidNumber and/or gidNumber for that account type, so we can't mapp the
+				// user correctly if using KERBEROS!
+				$_REQUEST["pwscheme"] = $scheme;
 ?>
-            <input type="radio" name="pwscheme" value="<?=$scheme?>" <?php if(($_REQUEST["defaultpasswordscheme"] == $scheme) or eregi($scheme, $_REQUEST["pwscheme"])) { echo "CHECKED"; } ?>><?=$scheme?>
-<?php			  }
-				}
-			} else {
-			  $_REQUEST["pwscheme"] = $schemes[0];
+            <input type="radio" name="pwscheme" value="<?=$scheme?>"<?php if(($_REQUEST["defaultpasswordscheme"] == $scheme) or eregi($scheme, $_REQUEST["pwscheme"])) { echo " CHECKED"; } ?>><?=$scheme?>
+																																																	
+<?php		  }
+			}
+		} else {
+		  $_REQUEST["pwscheme"] = $schemes[0];
 ?>
             Scheme: <b>{<?=$schemes[0]?>}</b>
-            <input type="hidden" name="pwscheme" value="<?=$schemes[0]?>">
-<?php		} ?>
+            <input type="hidden" name="pwscheme" value="<?=$schemes[0]?>"<?php if($_REQUEST["defaultpasswordscheme"] == $scheme) { echo " CHECKED"; }?>>
+<?php	} ?>
           </td>
         </tr>
-<?php	} elseif($_REQUEST["template"] != "internal_group") { ?>
-        <input type="hidden" name="pwscheme" value="<?=$_REQUEST["defaultpasswordscheme"]?>">
-<?php   }
+<?php } elseif($_REQUEST["template"] != "internal_group") {
+		// We got a default password scheme OR we don't allow changing of password (then we can't allow
+		// changing the default password scheme either).
+  //$_REQUEST["pwscheme"] = $_REQUEST["defaultpasswordscheme"];
+?>
+        <input type="hidden" name="pwscheme" value="<?=$_REQUEST["pwscheme"]?>">
+<?php	if($lockpassword) { ?>
+        <!-- Password scheme -->
+        <tr class="<?php pql_format_table(); ?>">
+          <td class="title"><?=$LANG->_('Password encryption scheme')?></td>
+          <td>&nbsp;&nbsp;&nbsp;<b><?=$_REQUEST["pwscheme"]?></b></td>
+        </tr>
 
-		if(in_array('KERBEROS', $schemes) and (!$_REQUEST["defaultpasswordscheme"] or $_SESSION["ADVANCED_MODE"])) {
+<?php	} ?>
+<?php }
+
+	  if(in_array('KERBEROS', $schemes) and !$lockpassword and (!$_REQUEST["defaultpasswordscheme"] or $_SESSION["ADVANCED_MODE"])) {
 ?>
         <tr class="<?php pql_format_table(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
           <td><?=$LANG->_('If using {KERBEROS} as password scheme, make sure you include the correct REALM (principal@REALM.TLD)')?></td>
         </tr>
-<?php	}
+<?php }
 // }}}
 
-		// {{{ Password
+	  // {{{ Password
 ?>
 
         <!-- Password -->
-<?php	if(in_array('KERBEROS', $schemes) or $_SESSION["ADVANCED_MODE"]) {
+<?php if(in_array('KERBEROS', $schemes) or $_SESSION["ADVANCED_MODE"]) {
 			$class = pql_format_table(0);
 ?>
         <tr class="<?=$class?>">
-<?php if(!eregi("KERBEROS", $_REQUEST["pwscheme"])) { ?>
+<?php	if(!eregi("KERBEROS", $_REQUEST["pwscheme"])) { ?>
           <td class="title"><?=$LANG->_('Password')?></td>
-<?php } else { ?>
+<?php	} else { ?>
           <td class="title"><?=$LANG->_('Kerberos V Principal')?></td>
-<?php } ?>
-<?php if(!eregi("KERBEROS", $_REQUEST["pwscheme"])) { ?>
+<?php	}
+
+		if(!eregi("KERBEROS", $_REQUEST["pwscheme"])) {
+?>
           <td>&nbsp;&nbsp;<input type="checkbox" name="autogenerate"<?php if($autogenerated_password) { echo " CHECKED"; } ?>><?=$LANG->_('Autogenerate password')?></td>
         </tr>
 
         <tr class="<?=$class?>">
           <td class="title"></td>
-<?php } ?>
+<?php	} ?>
           <!-- Crude hackery. Using type=password won't be so good if we're using {KERBEROS} -->
           <td>
             <?php if(!empty($error_text["password"])) { pql_format_error_span($error_text["password"]); }?>
             <?=pql_templates_mark_importance($mark); ?>
+<?php	if($lockpassword) { ?>
+            <input type="hidden" name="password" value="<?=$_REQUEST["password"]?>">
+            <b><?=$_REQUEST["password"]?></b>
+<?php	} else { ?>
             <input type="text" name="password" value="<?=$_REQUEST["password"]?>"<?php if(in_array('KERBEROS', $schemes)) { ?> size="30"<?php } ?>>
-<?php if(!eregi("KERBEROS", $_REQUEST["pwscheme"])) { ?>
+<?php	} ?>
+<?php	if(!eregi("KERBEROS", $_REQUEST["pwscheme"])) { ?>
             <input type="checkbox" name="crypted"><?=$LANG->_('Password is already encrypted')?>
             <?php echo pql_format_error_span($error["pwscheme"]); ?>
-<?php } ?>
+<?php	} ?>
           </td>
         </tr>
 
-<?php if(!empty($_REQUEST["clear_text_password"])) { ?>
+<?php	if(!empty($_REQUEST["clear_text_password"])) { ?>
         <tr class="<?=$class?>">
-          <td class="title"></td>
+          <td class="title"><?=$LANG->_('Password that will be set')?></td>
           <td>
             <?=pql_templates_mark_importance($mark); ?>
-            <?=$LANG->_('Password that will be set')?>: <b><?=$_REQUEST["clear_text_password"]?></b>
+            <b><?=$_REQUEST["clear_text_password"]?></b>
           </td>
         </tr>
         <input type="hidden" name="clear_text_password" value="<?=$_REQUEST["clear_text_password"]?>">
 
-<?php } elseif($auto_generated_kerberos_pw) { ?>
+<?php	} elseif($auto_generated_kerberos_pw) { ?>
         <tr class="<?=$class?>">
           <td class="title"><?=$LANG->_('Password')?></td>
           <td>
@@ -170,21 +194,23 @@
           </td>
         </tr>
 
-<?php } ?>
+<?php	} ?>
 
+<?php	if($_REQUEST["pwscheme"] != "KERBEROS") { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
           <td><?=$LANG->_('If you enter an already encrypted password, you must make sure that the password scheme you\'ve choosen is the correct one. Also, choose the checkbox \uPassword is already encrypted\U')?></td>
         </tr>
-<?php	} else { ?>
+<?php	}
+	  } else { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Password')?></td>
           <td><?=$LANG->_('Will be auto generated')?></td>
         </tr>
         <input type="hidden" name="autogenerate" value="on">
-<?php	}
+<?php }
 // }}}
-	  }
+	}
 ?>
       </th>
     </table>
@@ -218,8 +244,9 @@
         <!-- Loginshell -->
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Login shell')?></td>
-          <td><?php echo pql_format_error_span($error["loginshell"]); ?>
-
+          <td>
+            <?php echo pql_format_error_span($error["loginshell"]); ?>
+            &nbsp;&nbsp;
             <select name="loginshell">
               <option value="/bin/false"<?php if(empty($_REQUEST["loginshell"])) { ?> SELECTED<? } ?>>/bin/false</option>
 <?php	  foreach($shells as $shell) { ?>
@@ -238,13 +265,18 @@
 		   (pql_get_define("PQL_CONF_CREATE_ADDRESS", $_REQUEST["domain"]) and !function_exists('user_generate_email')) or
 		   $_SESSION["ADVANCED_MODE"] or !empty($error_text["mail"])) {
 ?>
+
         <!-- Email address -->
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Main address')?></td>
           <td>
             <?php if(!empty($error_text["mail"])) { pql_format_error_span($error_text["mail"]); }?>
+<?php		if($lockemailaddress) { ?>
+            &nbsp;&nbsp;&nbsp;<b><?=$_REQUEST["mail"]?></b>
+<?php		} else { ?>
             <?=pql_templates_mark_importance($mark); ?>
             <input type="text" name="mail" value="<?=$_REQUEST["mail"]?>">
+<?php		} ?>
 <?php 		if(is_array($additionaldomainname)) { ?>
             <b>@ <select name="email_domain"></b>
               <option value="<?=$defaultdomain?>"><?=pql_maybe_idna_decode($defaultdomain)?></option>

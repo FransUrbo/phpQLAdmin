@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.49 2006-08-29 15:22:17 turbo Exp $
+// $Id: config_attributes.inc,v 2.50 2006-10-03 15:31:40 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -325,6 +325,7 @@ pql_set_define("PQL_ATTR_BASEHOMEDIR",						strtolower('baseHomeDir'),					false
 pql_set_define("PQL_ATTR_BASEMAILDIR",						strtolower('baseMailDir'),					false);
 pql_set_define("PQL_ATTR_BASEQUOTA",						strtolower('baseQuota'),					false);
 pql_set_define("PQL_ATTR_DEFAULT_PASSWORDSCHEME",			strtolower('defaultPasswordScheme'),		false);
+pql_set_define("PQL_ATTR_DEFAULT_ACCOUNTTYPE",				strtolower('defaultAccountType'),			false);
 pql_set_define("PQL_ATTR_USERNAME_PREFIX",					strtolower('userNamePrefix'),				false);
 pql_set_define("PQL_ATTR_USERNAME_PREFIX_LENGTH",			strtolower('userNamePrefixLength'),			false);
 pql_set_define("PQL_ATTR_ADDITIONAL_DOMAINNAME", 			strtolower('additionalDomainName'),			false);
@@ -348,6 +349,11 @@ pql_set_define("PQL_ATTR_REFERENCE_DOMAINS_WITH", 			strtolower('branchReference
 pql_set_define("PQL_ATTR_SUBTREE_USERS", 					strtolower('subTreeUsers'),					false);
 pql_set_define("PQL_ATTR_SUBTREE_GROUPS", 					strtolower('subTreeGroups'),				false);
 pql_set_define("PQL_ATTR_VAT_NUMBER",						strtolower('vatNumber'),					false);
+pql_set_define("PQL_ATTR_LOCK_USERNAME",					strtolower('lockUserName'),					false);
+pql_set_define("PQL_ATTR_LOCK_EMAILADDRESS",				strtolower('lockEmailAddress'),				false);
+pql_set_define("PQL_ATTR_LOCK_DOMAINADDRESS",				strtolower('lockDomainAddress'),			false);
+pql_set_define("PQL_ATTR_LOCK_PASSWORD",					strtolower('lockPassword'),					false);
+pql_set_define("PQL_ATTR_LOCK_ACCOUNTTYPE",					strtolower('lockAccountType'),				false);
 // }}}
 
 // {{{ These are the internal phpQLAdmin attributes - USER configuration

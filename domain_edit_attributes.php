@@ -1,6 +1,6 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.55 2006-08-29 15:39:27 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.56 2006-10-03 15:31:39 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -236,7 +236,12 @@ if(@$_REQUEST["submit"] == 1) {
 		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_SIMSCAN_TROPHIE")) or
 		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_HOSTACL_USE")) or
 		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_SUDO_USE")) or
-		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_AUTOMOUNT_USE")))
+		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_AUTOMOUNT_USE")) or
+		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_LOCK_USERNAME")) or
+		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_LOCK_EMAILADDRESS")) or
+		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_LOCK_DOMAINADDRESS")) or
+		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_LOCK_PASSWORD")) or
+		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_LOCK_ACCOUNTTYPE")))
 	  // A toggle or boolean change - jump to 'save changes' directly
 	  attribute_save();
 	else

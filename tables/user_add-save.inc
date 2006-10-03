@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.43 2006-03-13 11:47:49 turbo Exp $
+// $Id: user_add-save.inc,v 1.44 2006-10-03 15:31:45 turbo Exp $
 require($_SESSION["path"]."/include/pql_krbafs.inc");
 
 // {{{ URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
@@ -395,8 +395,8 @@ if(!empty($DNs[0])) {
 	$link  = "user_sendmail.php?email=" . urlencode($_REQUEST["mail"]) . "&";
 	$link .= "rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&user=" . urlencode($DNs[0]) . "&rlnb=2&msg=$msg";
   } else {
-	$link  = "user_detail.php?rootdn=".$url["rootdn"]."&";
-	$link .= "domain=".$url["domain"]."&user=".urlencode(pql_maybe_decode($DNs[0]))."&rlnb=2&msg=$msg";
+	$link  = "user_detail.php?rootdn=".$url["rootdn"]."&"."domain=".$url["domain"];
+	$link .= "&user=".urlencode(pql_maybe_decode($DNs[0]))."&view=personal&rlnb=2&msg=$msg";
   }
 // }}}
 	

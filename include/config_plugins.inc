@@ -17,7 +17,7 @@
 //	file		File that manage the plugin
 //	attribs		Attribute(s) that the plugin manages
 //
-// $Id: config_plugins.inc,v 2.24 2006-08-29 15:22:17 turbo Exp $
+// $Id: config_plugins.inc,v 2.25 2006-10-03 15:31:40 turbo Exp $
 
 pql_plugin_register(pql_get_define("PQL_ATTR_ISACTIVE"), "",
 					"attrib.accountstatus.inc",
@@ -62,6 +62,10 @@ pql_plugin_register(pql_get_define("PQL_ATTR_BASEMAILDIR"), "",
 pql_plugin_register(pql_get_define("PQL_ATTR_BASEQUOTA"), "",
 					"attrib.mailquota.inc",
 					pql_get_define("PQL_ATTR_BASEQUOTA"));
+
+pql_plugin_register(pql_get_define("PQL_ATTR_DEFAULT_ACCOUNTTYPE"), "",
+					"attrib.defaultaccounttype.inc",
+					pql_get_define("PQL_ATTR_DEFAULT_ACCOUNTTYPE"));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_ADMINISTRATOR"), "",
 					"attrib.administrator.inc",
@@ -120,15 +124,21 @@ pql_plugin_register(pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"), "",
 						  pql_get_define("PQL_ATTR_SIMSCAN_TROPHIE"),
 						  pql_get_define("PQL_ATTR_HOSTACL_USE"),
 						  pql_get_define("PQL_ATTR_SUDO_USE"),
-						  pql_get_define("PQL_ATTR_AUTOMOUNT_USE")));
+						  pql_get_define("PQL_ATTR_AUTOMOUNT_USE"),
+						  pql_get_define("PQL_ATTR_LOCK_USERNAME"),
+						  pql_get_define("PQL_ATTR_LOCK_EMAILADDRESS"),
+						  pql_get_define("PQL_ATTR_LOCK_DOMAINADDRESS"),
+						  pql_get_define("PQL_ATTR_LOCK_PASSWORD"),
+						  pql_get_define("PQL_ATTR_LOCK_ACCOUNTTYPE")));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_GROUP_CONFIRM"), "",
 					"attrib.usertoggle.inc",
 					array(pql_get_define("PQL_ATTR_GROUP_CONFIRM"),
 						  pql_get_define("PQL_ATTR_GROUP_MEMBERS_ONLY"),
-						  pql_get_define("PQL_ATTR_START_ADVANCED"),
 						  pql_get_define("PQL_ATTR_GROUP_CONFIRM"),
-						  pql_get_define("PQL_ATTR_GROUP_MEMBERS_ONLY")));
+						  pql_get_define("PQL_ATTR_GROUP_MEMBERS_ONLY"),
+						  pql_get_define("PQL_ATTR_START_ADVANCED"),
+						  pql_get_define("PQL_ATTR_USERNAME_PREFIX")));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_USERNAME_PREFIX"), "",
 					"attrib.usernameprefix.inc",

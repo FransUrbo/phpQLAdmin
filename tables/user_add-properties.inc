@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-properties.inc,v 1.16 2005-09-16 06:08:54 turbo Exp $ */ ?>
+<?php /* $Id: user_add-properties.inc,v 1.17 2006-10-03 15:31:45 turbo Exp $ */ ?>
 <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left"><?=$LANG->_('Account properties')?></th>
@@ -8,7 +8,7 @@
         <td>
           <select name="template">
 <?php for($i=0; $i < count($templates); $i++) { ?>
-            <option value="<?=$templates[$i]["name"]?>"><?=$templates[$i]["short"]?></option>
+            <option value="<?=$templates[$i]["name"]?>" <?php if($templates[$i]["name"] == $defaultaccounttype) { echo "SELECTED"; }?>><?=$templates[$i]["short"]?></option>
 <?php } ?>
             <option value="alias"><?=$LANG->_('Alias object')?></option>
           </select>

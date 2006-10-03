@@ -19,7 +19,7 @@
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Additional domain name')?></td>
+        <td class="title">&nbsp;&nbsp;&nbsp;<?=$LANG->_('Additional domain name')?></td>
 <?php if($additionaldomainname) {
 		if(!is_array($additionaldomainname)) {
 		  $additionaldomainname = array($additionaldomainname);
@@ -79,16 +79,6 @@
 <?php } ?>
       </tr>
   
-      <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Default quota')?></td>
-        <td><?php if($basequota){echo $basequota;}else{echo $LANG->_('Not set');} ?></td>
-<?php if($_SESSION["ALLOW_BRANCH_CREATE"]) { ?>
-        <td><?=$basequota_link?></td>
-<?php } else { ?>
-        <td></td>
-<?php } ?>
-      </tr>
-
 <?php if($_SESSION["ALLOW_BRANCH_CREATE"]) { ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Maximum allowed users in branch')?></td>
@@ -101,13 +91,43 @@
         <td><?php if($maximummailinglists){echo $maximummailinglists;}else{echo $LANG->_('Unlimited');} ?></td>
         <td><?=$maximummailinglists_link?></td>
       </tr>
+<?php } ?>
 
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title"><?=$LANG->_('Default quota')?></td>
+        <td><?php if($basequota){echo $basequota;}else{echo "<i>".$LANG->_('Not set')."</i>";} ?></td>
+<?php if($_SESSION["ALLOW_BRANCH_CREATE"]) { ?>
+        <td><?=$basequota_link?></td>
+<?php } else { ?>
+        <td></td>
+<?php } ?>
+      </tr>
+
+<?php if($_SESSION["ALLOW_BRANCH_CREATE"]) { ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Default password scheme')?></td>
         <td><?php if($defaultpasswordscheme){echo $defaultpasswordscheme;}else{echo $LANG->_('No default');} ?></td>
         <td><?=$defaultpasswordscheme_link?></td>
       </tr>
 
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title"><?=$LANG->_('Default account type')?></td>
+        <td><?php if($defaultaccounttype) {
+		  // Retreive the short name of the account type (template name)
+		  require($_SESSION["path"]."/include/pql_templates.inc");
+		  $template = pql_get_template($_pql->ldap_linkid, $defaultaccounttype);
+		  echo $template["short"];}else{echo $LANG->_('No default');} ?></td>
+        <td><?=$defaultaccounttype_link?></td>
+      </tr>
+
+<?php	if($defaultaccounttype) { ?>
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title">&nbsp;&nbsp;&nbsp;<?=$LANG->_('Lock account type')?></td>
+        <td><?php if($lockaccounttype){echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
+        <td><?=$lockaccounttype_link?></td>
+      </tr>
+
+<?php	} ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?php echo pql_complete_constant($LANG->_('Automatically generate %what%'), array('what' => $LANG->_('username'))); ?></td>
         <td><?php if($autocreateusername){echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
@@ -116,13 +136,19 @@
 
 <?php	if($autocreateusername) { ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Username prefix')?></td>
+        <td class="title">&nbsp;&nbsp;&nbsp;<?=$LANG->_('Lock username field')?></td>
+        <td><?php if($lockusername){echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
+        <td><?=$lockusername_link?></td>
+      </tr>
+
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title">&nbsp;&nbsp;&nbsp;<?=$LANG->_('Username prefix')?></td>
         <td><?php if($usernameprefix){echo $usernameprefix;}else{echo "<i>".$LANG->_('Not set')."</i>";} ?></td>
         <td><?=$usernameprefix_link?></td>
       </tr>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Length of user suffix')?></td>
+        <td class="title">&nbsp;&nbsp;&nbsp;<?=$LANG->_('Length of user suffix')?></td>
         <td><?php if($usernameprefixlength){echo $usernameprefixlength;}else{echo "4 (<i>".$LANG->_('Default')."</i>)";} ?></td>
         <td><?=$usernameprefixlength_link?></td>
       </tr>
@@ -134,12 +160,34 @@
         <td><?=$autocreatemailaddress_link?></td>
       </tr>
 
+<?php   if($autocreatemailaddress) { ?>
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title">&nbsp;&nbsp;&nbsp;<?=$LANG->_('Lock email address field')?></td>
+        <td><?php if($lockemailaddress){echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
+        <td><?=$lockemailaddress_link?></td>
+      </tr>
+
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title">&nbsp;&nbsp;&nbsp;<?=$LANG->_('Lock domain address')?></td>
+        <td><?php if($lockdomainaddress){echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
+        <td><?=$lockdomainaddress_link?></td>
+      </tr>
+
+<?php	} ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?php echo pql_complete_constant($LANG->_('Automatically generate %what%'), array('what' => $LANG->_('password'))); ?></td>
         <td><?php if($autocreatepassword){echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
         <td><?=$autocreatepassword_link?></td>
       </tr>
 
+<?php   if($autocreatepassword) { ?>
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title">&nbsp;&nbsp;&nbsp;<?=$LANG->_('Lock password field')?></td>
+        <td><?php if($lockpassword){echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
+        <td><?=$lockpassword_link?></td>
+      </tr>
+
+<?php	} ?>
 <?php }
 
 	  if(pql_get_define("PQL_CONF_EZMLM_USE")) {
