@@ -8,6 +8,7 @@ phpQLAdmin 2.3.4 TO BE ANNOUNCED
 	    (of users and domains etc), create a pql_format_normalize_dn() function
 	    that will: urldecode, strtolower, replace ', ' with ',' and lastly country
 	    encode the DN.
+	  - Duplicate functions _chmod(). The later should have been named _chown().
 
 	GUI layout changes
 	  - Add a Automount manager.

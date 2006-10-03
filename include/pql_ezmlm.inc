@@ -3,7 +3,7 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ezmlm.inc,v 1.31 2005-09-24 09:45:58 turbo Exp $
+// $Id: pql_ezmlm.inc,v 1.32 2006-10-03 18:46:47 turbo Exp $
 class ezmlm {
 	// {{{ Private section
 	var $_option					= array();
@@ -43,7 +43,7 @@ class ezmlm {
 	// }}}
 
 	// {{{ _chown(file, user)
-	function _chmod($file, $user) {
+	function _chown($file, $user) {
 	  if(pql_get_define("PQL_CONF_EZMLM_REMOTE")) {
 		unset($out); unset($res);
 		if($cmd = $this->_remote_list_setup("chown $user $file")) {
