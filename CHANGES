@@ -1,5 +1,12 @@
 phpQLAdmin 2.3 Change Log
 
+phpQLAdmin 2.3.5 TO BE ANNOUNCED
+	Bug fixes
+	GUI layout changes
+	Schema changes
+	API changes
+	Misc changes
+
 phpQLAdmin 2.3.4 Release (Oct 20 2006)
 	Bug fixes
 	  - Retreiving ALL operational attributes with '+' is an OpenLDAP thing ONLY.
