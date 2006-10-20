@@ -41,6 +41,8 @@ phpQLAdmin 2.3.4 TO BE ANNOUNCED
 	    This because the domain/branch _isn't_ the domain/organization, but the
 	    'ou' _below_ it. Describe the problem with this in the doc/README file.
 	  - Note about not running PHP with 'error_reporting = E_ALL'.
+	  - Add support for adding extra mail headers in the 'Antispam configuration'
+	    table.
 
 phpQLAdmin 2.3.3 Release (Jul  9 2006)
 	Bug fixes

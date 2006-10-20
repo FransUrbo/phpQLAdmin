@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.55 2006-08-09 08:18:40 turbo Exp $
+// $Id: pql_formating.inc,v 2.56 2006-10-20 12:06:02 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry, extra_newline)
 // Create a LDIF object to print in case of error
@@ -114,7 +114,7 @@ function pql_generate_button($buttons, $link = '') {
   }
 ?>
 
-  <table cellspacing="0" border="0" width="100%" cellpadding="0">
+  <table cellspacing="0" border="2" width="50%" cellpadding="0">
 <?php
   $i=0; // A button counter.
   foreach($buttons as $view => $text) {

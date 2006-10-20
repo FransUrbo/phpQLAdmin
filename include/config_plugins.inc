@@ -17,7 +17,7 @@
 //	file		File that manage the plugin
 //	attribs		Attribute(s) that the plugin manages
 //
-// $Id: config_plugins.inc,v 2.25 2006-10-03 15:31:40 turbo Exp $
+// $Id: config_plugins.inc,v 2.26 2006-10-20 12:06:02 turbo Exp $
 
 pql_plugin_register(pql_get_define("PQL_ATTR_ISACTIVE"), "",
 					"attrib.accountstatus.inc",
@@ -280,6 +280,11 @@ pql_plugin_register(pql_get_define("PQL_ATTR_PHOTO"), "",
 pql_plugin_register(pql_get_define("PQL_ATTR_AUTOMOUNT_INFO"), "",
 					"attrib.automount.inc",
 					pql_get_define("PQL_ATTR_AUTOMOUNT_INFO"));
+
+/* This is actually a fake, but it's the easiest way */
+pql_plugin_register("add_header", "",
+					"attrib.spamassassin.inc",
+					"add_header");
 
 // List all registred attributes and their files
 // - Uncomment this piece of code to view which

@@ -1,6 +1,6 @@
 <?php
 // adds an attribute 
-// $Id: user_add_attribute.php,v 2.39 2005-06-09 15:05:36 turbo Exp $
+// $Id: user_add_attribute.php,v 2.40 2006-10-20 12:06:01 turbo Exp $
 //
 /* This file gets iterated through at least 2 times for any attribute (sequenced by "$submit"):
  *   1) $submit is unset: Set the default value of the attribute (usually from "$oldvalue")
@@ -65,19 +65,26 @@ if(!$username) {
 if($username and is_array($username)) {
   $username = $username[0];
 }
+// }}}
 
 // {{{ Select which attribute have to be included
 switch($_REQUEST["attrib"]) {
   case "mailalternateaddress":
     $include = "attrib.mailalternateaddress.inc";
     break;
+
   case "mailforwardingaddress":
     $include = "attrib.mailforwardingaddress.inc";
     break;
+
+  case "add_header":
+	$include = "attrib.spamassassin.inc";
+	break;
+
   default:
-    die(pql_complete_constant($LANG->_('Unknown attribute %attribute% in %file%'),
-			      array('attribute' => $_REQUEST["attrib"], 'file' => __FILE__)));
+    die("<span class=\"error\">ERROR: No plugin file defined for attribute '<i>".$_REQUEST["attrib"]."</i>'</span>");
 }
+
 include($_SESSION["path"]."/include/".$include);
 // }}}
 ?>
@@ -86,14 +93,14 @@ include($_SESSION["path"]."/include/".$include);
   <br><br>
 <?php
 // {{{ Select what to do
-if($_REQUEST["submit"] == 1) {
-    if(attribute_check("add")) {
+if(($_REQUEST["submit"] == 1) or ($_REQUEST["submit"] == 2)) {
+  if(attribute_check("add")) {
 	attribute_save("add");
-    } else {
+  } else {
 	attribute_print_form();
-    }
+  }
 } else {
-    attribute_print_form();
+  attribute_print_form();
 }
 // }}}
 ?>

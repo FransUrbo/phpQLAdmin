@@ -32,6 +32,26 @@ if(is_array($spamassassin)) {
 				if($tag == 'subject_tag') {
 					// More than one value, but spaces is ok/required.
 					$_REQUEST[$tag] = eregi_replace("subject_tag ", "", $spamassassin[$i]);
+				} elseif($tag == 'add_header') {
+					// Convert into a three dimensional array
+					unset($tmp);
+					$tmp[0] = $values[1]; // where (all)
+					$tmp[1] = $values[2]; // X-Spam-XXX line
+					for($j=3; $j < count($values); $j++) {
+					  $tmp[2] .= $values[$j];
+					  if($values[$j+1])
+						$tmp[2] .= " ";
+					}
+
+					$_REQUEST[$tag][] = $tmp;
+				} elseif($tag == 'rewrite_header') {
+					unset($tmp);
+					for($j=2; $j < count($values); $j++) {
+                      $tmp .= $values[$j];
+                      if($values[$j+1])
+                        $tmp .= " ";
+                    }
+					$_REQUEST[rewrite_header] = $tmp;
 				} else {
 					// We have more than one value (ok_languages etc). Make it
 					// a two dimensional array.
@@ -60,11 +80,11 @@ if(is_array($spamassassin)) {
 ?>
 
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
-    <input type="hidden" name="rootdn"        value="<?=$url["rootdn"]?>">
-    <input type="hidden" name="domain"        value="<?=$url["domain"]?>">
-    <input type="hidden" name="user"          value="<?=$url["user"]?>">
-    <input type="hidden" name="view"          value="<?=$_REQUEST["view"]?>">
-    <input type="hidden" name="attrib"        value="spamassassin">
+    <input type="hidden" name="rootdn" value="<?=$url["rootdn"]?>">
+    <input type="hidden" name="domain" value="<?=$url["domain"]?>">
+    <input type="hidden" name="user"   value="<?=$url["user"]?>">
+    <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
+    <input type="hidden" name="attrib" value="spamassassin">
 
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="2" align="left"><?=$LANG->_('Antispam configuration')?>
@@ -108,7 +128,7 @@ if(is_array($spamassassin)) {
               <th>
                 <tr>
                   <td valign="top"><img src="images/info.png" width="16" height="16" alt="" border="0"></td>
-                  <td><i>You can adjust how sensitive the filter is by using the scale below. A setting in the middle is usually sufficient.</i></td>
+                  <td><i>This is the <b>required_hits</b>' value, you can adjust how sensitive the filter is by using the scale below. A setting in the middle is usually sufficient.</i></td>
                 </tr>
               </th>
             </table>
@@ -352,9 +372,37 @@ if(is_array($spamassassin)) {
           <td align="right"><input type="submit" name="addrule" value="<?=$LANG->_('Add Rule')?>"></td>
         </tr>
 
-        <tr>
+        <tr colspan="1">
+          <td><input type="submit" name="commit" value="<?=$LANG->_('Commit changes to LDAP')?>"></td>
+        </tr>
+      </th>
+    </table>
+
+    <!-- Add header to mail(s) -->
+    <table cellspacing="0" cellpadding="3" border="0">
+      <th colspan="2" align="left"><?=$LANG->_('Add header line to mail')."\n"?>
+        <tr class="<?php pql_format_table(); ?>">
+          <td class="title"><?=$LANG->_('Where')?></td>
+          <td class="title"><?=$LANG->_('X-Spam-???')?></td>
+          <td class="title"><?=$LANG->_('What')?></td>
+          <td class="title"></td>
+        </tr>
+
+<?php for($i=0; $_REQUEST["add_header"][$i]; $i++) {
+		$spamassassin = "add_header"." ".$_REQUEST["add_header"][$i][0]." ".$_REQUEST["add_header"][$i][1]." ".$_REQUEST["add_header"][$i][2];
+?>
+        <tr class="<?php pql_format_table(); ?>">
+          <td><?=$_REQUEST["add_header"][$i][0]?></td>
+          <td><?=$_REQUEST["add_header"][$i][1]?></td>
+          <td><?=$_REQUEST["add_header"][$i][2]?></td>
+          <td><a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=add_header&user=<?=$url["user"]?>&oldvalue=<?=$spamassassin?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" alt="" border="0"></a>&nbsp;&nbsp;<a href="user_del_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&attrib=add_header&user=<?=$url["user"]?>&oldvalue=<?=$spamassassin?>&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete line')?>" border="0"></a></td>
+        </tr>
+<?php } ?>
+
+        <tr class="<?php pql_format_table(); ?>">
           <td></td>
-          <td align="right"><input type="submit" name="commit" value="<?=$LANG->_('Commit changes to LDAP')?>"></td>
+          <td><a href="user_add_attribute.php?rootdn=<?=$url["rootdn"]?>&attrib=add_header&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&view=<?=$_GET["view"]?>"><img src="images/edit.png" width\="12" height="12" alt="" border="0"><?=$LANG->_('Add line')?></a></td>
+          <td></td>
           <td></td>
         </tr>
       </th>
