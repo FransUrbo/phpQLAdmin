@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-details.inc,v 1.39 2006-10-24 11:50:36 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.40 2006-10-24 12:27:44 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
@@ -20,7 +20,7 @@
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Username')?></td>
           <td>
-            <?php if(!empty($error_text["uid"])) { pql_format_error_span($error_text["uid"]); } ?>
+            <?php if(!empty($error_text["uid"])) { echo pql_format_error_span($error_text["uid"]); } ?>
 <?php		if($lockusername) { ?>
             <input type="hidden" name="uid" value="<?=$_REQUEST["uid"]?>">
             &nbsp;&nbsp;&nbsp;<b><?=$_REQUEST["uid"]?></b>
@@ -56,7 +56,7 @@
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Surname')?></td>
           <td>
-            <?php if(!empty($error_text["surname"])) { pql_format_error_span($error_text["surname"]); }?>
+            <?php if(!empty($error_text["surname"])) { echo pql_format_error_span($error_text["surname"]); }?>
             <?=pql_templates_mark_importance($mark); ?>
             <input type="text" name="surname" value="<?php if(!empty($_REQUEST["surname"])) { echo $_REQUEST["surname"]; }?>">
           </td>
@@ -72,7 +72,7 @@
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Lastname')?></td>
           <td>
-            <?php if(!empty($error_text["name"])) { pql_format_error_span($error_text["name"]); }?>
+            <?php if(!empty($error_text["name"])) { echo pql_format_error_span($error_text["name"]); }?>
             <?=pql_templates_mark_importance($mark); ?>
             <input type="text" name="name" value="<?php if(!empty($_REQUEST["name"])) { echo $_REQUEST["name"]; }?>">
           </td>
@@ -167,7 +167,7 @@
 <?php	} ?>
           <!-- Crude hackery. Using type=password won't be so good if we're using {KERBEROS} -->
           <td>
-            <?php if(!empty($error_text["password"])) { pql_format_error_span($error_text["password"]); }?>
+            <?php if(!empty($error_text["password"])) { echo pql_format_error_span($error_text["password"]); }?>
             <?=pql_templates_mark_importance($mark); ?>
 <?php	if($lockpassword) { ?>
             <input type="hidden" name="password" value="<?=$_REQUEST["password"]?>">
@@ -277,7 +277,7 @@
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Main address')?></td>
           <td>
-            <?php if(!empty($error_text["mail"])) { pql_format_error_span($error_text["mail"]); }?>
+            <?php if(!empty($error_text["mail"])) { echo pql_format_error_span($error_text["mail"]); }?>
 <?php		if($lockemailaddress) { ?>
             &nbsp;&nbsp;&nbsp;<b><?=$_REQUEST["mail"]?></b>
 <?php		} else { ?>
@@ -412,7 +412,7 @@
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Forwarding address')?></td>
           <td>
-            <?php if(!empty($error_text["forwardingaddress"])) { pql_format_error_span($error_text["forwardingaddress"]); }?>
+            <?php if(!empty($error_text["forwardingaddress"])) { echo pql_format_error_span($error_text["forwardingaddress"]); }?>
             <?=pql_templates_mark_importance($mark); ?>
             <input type="text" name="forwardingaddress" value="<?=$_REQUEST["forwardingaddress"]?>"><?=$LANG->_('Email')?>
           </td>

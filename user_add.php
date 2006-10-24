@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.134 2006-10-03 15:31:39 turbo Exp $
+// $Id: user_add.php,v 2.135 2006-10-24 12:27:44 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -390,13 +390,27 @@ switch($_REQUEST["page_curr"]) {
 		// }}}
 
 		// {{{ Verify username
-		$filter = "(&(objectclass=*)(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=$user))";
+		unset($filter);
 		if(pql_templates_check_attribute($_pql->ldap_linkid, $template, 'sn') and
-		   (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_CN")) and
-		   pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], $filter, 'BASE'))
+		   (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_CN")))
 		{
+			// 1. Template allows attribute 'sn'
+			// 2. 'sn' is used to reference users
+			$filter = "(&(objectclass=*)(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=$user))";
+			$error_user = $user;
+		} elseif(pql_templates_check_attribute($_pql->ldap_linkid, $template, 'uid') and
+		   (pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == pql_get_define("PQL_ATTR_UID")))
+		{
+			// 1. Template allows attribute 'uid'
+			// 2. 'uid' is used to reference users
+			$filter = "(&(objectclass=*)(".pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=".$_REQUEST['uid']."))";
+			$error_user = $_REQUEST['uid'];
+		}
+
+		if(pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], $filter, 'BASE')) {
 			$error = true;
-			$error_text["username"] = pql_complete_constant($LANG->_('User %user% already exists'), array("user" => $user));
+			$error_text["uid"] = pql_complete_constant($LANG->_('User %user% already exists'), array("user" => $error_user));
+			unset($_REQUEST['uid']);
 		}
 		// }}}
 
@@ -768,7 +782,7 @@ switch($_REQUEST["page_next"]) {
 }
 
 if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
-  echo "Including file '$include'<br>";
+  echo "Including file '$include'<br>\n";
 }
 include($include);
 

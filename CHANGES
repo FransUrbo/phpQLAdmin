@@ -2,6 +2,11 @@ phpQLAdmin 2.3 Change Log
 
 phpQLAdmin 2.3.5 TO BE ANNOUNCED
 	Bug fixes
+	  - Correctly verify user (different depending on what PQL_CONF_REFERENCE_USERS_WITH
+	    is set to - uid or sn).
+	  - pql_format_error_span() needs to be prefixed/called with 'echo' to get any
+	    output.
+
 	GUI layout changes
 	Schema changes
 	API changes
