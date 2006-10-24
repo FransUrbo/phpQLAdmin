@@ -1,8 +1,15 @@
-<?php /* $Id: user_add-details.inc,v 1.38 2006-10-03 15:31:45 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.39 2006-10-24 11:50:36 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
 <?php
+	// {{{ Does KERBEROS exists in $schemes
+	$krb_scheme = 0;
+	if($schemes && in_array('KERBEROS', $schemes)) {
+	  $krb_scheme = 1;
+	}
+// }}}
+
 	// {{{ Username
 	if($mark = pql_templates_check_attribute($_pql->ldap_linkid, $template, 'uid')) {
 	  if((!pql_get_define("PQL_CONF_AUTOCREATE_USERNAME", $_REQUEST["rootdn"]) and $_SESSION["ADVANCED_MODE"]) or
@@ -127,7 +134,7 @@
 <?php	} ?>
 <?php }
 
-	  if(in_array('KERBEROS', $schemes) and !$lockpassword and (!$_REQUEST["defaultpasswordscheme"] or $_SESSION["ADVANCED_MODE"])) {
+	  if($krb_scheme and !$lockpassword and (!$_REQUEST["defaultpasswordscheme"] or $_SESSION["ADVANCED_MODE"])) {
 ?>
         <tr class="<?php pql_format_table(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
@@ -140,7 +147,7 @@
 ?>
 
         <!-- Password -->
-<?php if(in_array('KERBEROS', $schemes) or $_SESSION["ADVANCED_MODE"]) {
+<?php if($krb_scheme or $_SESSION["ADVANCED_MODE"]) {
 			$class = pql_format_table(0);
 ?>
         <tr class="<?=$class?>">
@@ -166,7 +173,7 @@
             <input type="hidden" name="password" value="<?=$_REQUEST["password"]?>">
             <b><?=$_REQUEST["password"]?></b>
 <?php	} else { ?>
-            <input type="text" name="password" value="<?=$_REQUEST["password"]?>"<?php if(in_array('KERBEROS', $schemes)) { ?> size="30"<?php } ?>>
+            <input type="text" name="password" value="<?=$_REQUEST["password"]?>"<?php if($krb_scheme) { ?> size="30"<?php } ?>>
 <?php	} ?>
 <?php	if(!eregi("KERBEROS", $_REQUEST["pwscheme"])) { ?>
             <input type="checkbox" name="crypted"><?=$LANG->_('Password is already encrypted')?>
