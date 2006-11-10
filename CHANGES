@@ -8,6 +8,7 @@ phpQLAdmin 2.3.5 TO BE ANNOUNCED
 	    output.
 	  - Faulty include/attrib.dnszone.inc:attribute_translate_type(). Tried to verify
 	    $_REQUEST["attrib"] instead of param to function ('$attrib').
+	  - Form value 'type' was overwritten by a hidden input in include/attrib.dnszone.inc:attribute_print_form().
 
 	GUI layout changes
 	Schema changes
