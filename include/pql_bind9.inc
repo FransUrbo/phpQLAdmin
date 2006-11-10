@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.41 2006-07-26 21:31:09 turbo Exp $
+// $Id: pql_bind9.inc,v 2.42 2006-11-10 11:53:43 root Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -159,7 +159,7 @@ function pql_bind9_get_acis($linkid, $zone) {
   $filter = '(&('.pql_get_define("PQL_ATTR_ZONENAME")."=$zone)(".pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME").'=@))';
   foreach($_SESSION["BASE_DN"] as $base) {
 	// OpenLDAP uses 'OpenLDAPaci', but everyone else uses 'aci'...
-	$object = pql_search($linkid, $base, $filter, 'SUBTREE', 1, array('OpenLDAPaci', 'aci'););
+	$object = pql_search($linkid, $base, $filter, 'SUBTREE', 1, array('OpenLDAPaci', 'aci'));
 	if(@is_array($object[0]))
 	  return $object[0][pql_get_define("PQL_ATTR_LDAPACI")];
   }
