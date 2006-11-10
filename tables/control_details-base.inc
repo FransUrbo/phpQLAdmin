@@ -8,7 +8,7 @@
         </td>
       </tr>
 
-<?php } ?>
+<?php } else { ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title">RDN</td>
         <td><?=$cn?></td>
@@ -23,6 +23,7 @@
         <td></td>
       </tr>
   
+<?php } ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title">Default domainname</td>
         <td><?=pql_maybe_idna_decode($defaultdomain)?></td>

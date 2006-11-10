@@ -13,6 +13,9 @@ phpQLAdmin 2.3.5 TO BE ANNOUNCED
 	    therefor check both 'is_array($object[0])' AND 'is_array($object)'.
 
 	GUI layout changes
+	  - RDN and FQDN should not be shown in if we're viewing the 'Global' 
+	    QmailLDAP/Control frame.
+
 	Schema changes
 	API changes
 	Misc changes
