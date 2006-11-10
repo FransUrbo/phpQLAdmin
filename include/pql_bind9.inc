@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.42 2006-11-10 11:53:43 root Exp $
+// $Id: pql_bind9.inc,v 2.43 2006-11-10 14:48:00 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -505,10 +505,14 @@ function pql_bind9_update_serial($linkid, $dn) {
   $filter = '(&('.pql_get_define("PQL_ATTR_ZONENAME")."=$zone)(".pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME").'=@))';
   foreach($_SESSION["BASE_DN"] as $base) {
 	$object = pql_search($linkid, $base, $filter);
-	if(@is_array($object[0])) {
+
 	  // "there can be only one" - anything else should (?) be an error.
+	if(@is_array($object[0])) {
 	  $soa["dn"]  = $object[0]["dn"];
 	  $soa["soa"] = $object[0][lc(pql_get_define("PQL_ATTR_SOARECORD"))];
+	} elseif(@is_array($object)) {
+	  $soa["dn"]  = $object["dn"];
+	  $soa["soa"] = $object[lc(pql_get_define("PQL_ATTR_SOARECORD"))];
 	}
   }
 

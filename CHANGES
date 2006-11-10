@@ -9,6 +9,8 @@ phpQLAdmin 2.3.5 TO BE ANNOUNCED
 	  - Faulty include/attrib.dnszone.inc:attribute_translate_type(). Tried to verify
 	    $_REQUEST["attrib"] instead of param to function ('$attrib').
 	  - Form value 'type' was overwritten by a hidden input in include/attrib.dnszone.inc:attribute_print_form().
+	  - The pql_search() might return a 'flat' array in include/pql_bind9.inc:pql_bind9_update_serial(),
+	    therefor check both 'is_array($object[0])' AND 'is_array($object)'.
 
 	GUI layout changes
 	Schema changes
