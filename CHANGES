@@ -6,11 +6,14 @@ phpQLAdmin 2.3.5 TO BE ANNOUNCED
 	    is set to - uid or sn).
 	  - pql_format_error_span() needs to be prefixed/called with 'echo' to get any
 	    output.
+	  - Faulty include/attrib.dnszone.inc:attribute_translate_type(). Tried to verify
+	    $_REQUEST["attrib"] instead of param to function ('$attrib').
 
 	GUI layout changes
 	Schema changes
 	API changes
 	Misc changes
+	  - Add support for searching for DNS hostname/ip address in search page.
 
 phpQLAdmin 2.3.4 Release (Oct 20 2006)
 	Bug fixes

@@ -1,12 +1,12 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.20 2005-09-16 06:08:50 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.21 2006-11-10 14:42:51 turbo Exp $
 
 // {{{ attribute_translate_type(attrib)
 function attribute_translate_type($attrib) {
   // Translate the TYPE to dNSZone objectclass attribute
-  switch($_REQUEST["attrib"]) {
+  switch($attrib) {
 	case "a":
 	  return pql_get_define("PQL_ATTR_ARECORD");
 	case "host":
@@ -170,7 +170,6 @@ function attribute_print_form() {
 <?php	} ?>
       <input type="hidden" name="rdn"             value="<?=urlencode($_REQUEST["rdn"])?>">
       <input type="hidden" name="dns_domain_name" value="<?=$_REQUEST["dns_domain_name"]?>">
-      <input type="hidden" name="type"            value="<?=$_REQUEST["type"]?>">
       <br>
       <input type="submit" value="<?=$LANG->_('Save')?>">
     </form>
@@ -240,7 +239,6 @@ function attribute_save($action) {
 
 	  case "modify":
 		// {{{ mod
-
 		// {{{ if($attrib == relativeDomainName)
 		if($attrib == pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")) {
 			// We must also change the RDN!
@@ -288,6 +286,7 @@ function attribute_save($action) {
 		} else
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
+
 		break;
 		// }}}
 
@@ -345,7 +344,7 @@ function attribute_save($action) {
 		  // Delete a whole object
 		  if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
 			$success = 1;
-			echo "Deleting a whole object: '$dn'<br>";
+			echo "Deleting a whole object (DEBUG): '$dn'<br>";
 		  } else {
 			if(pql_write_del($_pql->ldap_linkid, $dn))
 			  $success = 1;
