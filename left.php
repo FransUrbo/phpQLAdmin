@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.119 2006-08-09 08:08:18 turbo Exp $
+// $Id: left.php,v 2.120 2006-11-10 14:40:31 turbo Exp $
 //
 require("./include/pql_session.inc");
 
@@ -102,7 +102,7 @@ pql_format_tree("<b>".$LANG->_('Home')."</b>", 'home.php');
 
 // {{{ Level 2[abc]: Search links, configuration and tests and setup
 // Level 2a: Search links
-$links = array($LANG->_('Find user') => 'user_search.php');
+$links = array($LANG->_('Directory search') => 'user_search.php');
 pql_format_tree($LANG->_('Search'), 0, $links, 1);
 
 if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {

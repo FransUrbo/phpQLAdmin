@@ -1,18 +1,20 @@
 <?php
 // shows results of search
-// $Id: search.php,v 2.37 2005-09-16 06:08:43 turbo Exp $
+// $Id: search.php,v 2.38 2006-11-10 14:40:31 turbo Exp $
 //
+// {{{ Includes
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
-
 include($_SESSION["path"]."/header.html");
+// }}}
 
-// print status message, if one is available
+// {{{ Print status message, if one is available
 if(isset($msg)) {
     pql_format_status_msg($msg);
 }
+// }}}
 
-// reload navigation bar if needed
+// {{{ Reload navigation bar if needed
 if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
 ?>
   <script src="tools/frames.js" type="text/javascript" language="javascript1.2"></script>
@@ -23,6 +25,7 @@ if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
 
 <?php
 }
+// }}}
 ?>
   <span class="title1"><?=$LANG->_('Search Results')?></span>
   <br><br>
@@ -30,12 +33,13 @@ if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
 <?php
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
-// test for submission of variables
-if (empty($_REQUEST["attribute"]) || empty($_REQUEST["filter_type"]) || empty($_REQUEST["search_string"])) {
-    // invalid form submission
+// {{{ Test for submission of variables
+if(empty($_REQUEST["attribute"]) or empty($_REQUEST["filter_type"]) or empty($_REQUEST["search_string"])) {
+    // Invalid form submission
     $msg = urlencode($LANG->_('You have to provide a value to search for'));
     pql_header("home.php?msg=$msg");
 }
+// }}}
 
 if($_REQUEST["attribute"] == pql_get_define("PQL_ATTR_MAILHOST")) {
 	// IDNA decode the FQDN
@@ -46,8 +50,9 @@ if($_REQUEST["attribute"] == pql_get_define("PQL_ATTR_MAILHOST")) {
 	  $_REQUEST["filter_type"] = 'is';
 }
 
-// make filter to comply with filter_type and search_string
+// {{{ Make filter to comply with filter_type and search_string
 $filter = "";
+if($_REQUEST["attribute"] != pql_get_define("PQL_ATTR_ARECORD")) {
 switch($_REQUEST["filter_type"]) {
   case "is":
 	if($_REQUEST["attribute"] == pql_get_define("PQL_ATTR_MAIL")) {
@@ -95,10 +100,14 @@ switch($_REQUEST["filter_type"]) {
 	  $filter = $_REQUEST["attribute"] . "=*" . $_REQUEST["search_string"] . "*";
     break;
 }
+} else {
+  // Looking for an IP address - Can only search with 'is'!
+  $filter = $_REQUEST["attribute"] . "=" . $_REQUEST["search_string"];
+}
+// }}}
 
 if(!$_SESSION["SINGLE_USER"]) {
-	// Admin of some sort - look in the whole database for a user
-	// that matches filter
+	// {{{ Admin of some sort - look in the whole database for a user that matches filter
 	foreach($_SESSION["BASE_DN"] as $dn) {
 		if($_REQUEST["debug"]) {
 ?>
@@ -118,12 +127,13 @@ if(!$_SESSION["SINGLE_USER"]) {
   <p>
 <?php	}
 
-		$usrs = pql_get_dn($_pql->ldap_linkid, $dn, $filter, 'SUBTREE');
-		for($i=0; $i < count($usrs); $i++) {
+		$enrs = pql_get_dn($_pql->ldap_linkid, $dn, $filter, 'SUBTREE');
+		if(!empty($enrs)) {
+		  for($i=0; $i < count($enrs); $i++) {
 			$is_group = 0;
 			
 			// Check if this object is a (posix)Group object.
-			$ocs = pql_get_attribute($_pql->ldap_linkid, $usrs[$i], pql_get_define("PQL_ATTR_OBJECTCLASS"));
+			$ocs = pql_get_attribute($_pql->ldap_linkid, $enrs[$i], pql_get_define("PQL_ATTR_OBJECTCLASS"));
 			for($j=0; $j < count($ocs); $j++) {
 				if(eregi('group', $ocs[$j]))
 				  $is_group = 1;
@@ -131,11 +141,14 @@ if(!$_SESSION["SINGLE_USER"]) {
 			
 			if(!$is_group)
 			  // It's NOT a (posix)Group object, show it in the list...
-			  $users[] = $usrs[$i];
+			  $entries[] = $enrs[$i];
 		}
+		} else
+		  $entries = array();
 	}
+// }}}
 } else {
-	// Single user - only look in the same branch as the user is located in
+	// {{{ Single user - only look in the same branch as the user is located in
 	$dn = '';
 
 	// Get branch for user
@@ -147,12 +160,13 @@ if(!$_SESSION["SINGLE_USER"]) {
 	}
 
 	// Search for the user below this DN
-	$usrs = pql_search($_pql->ldap_linkid, $dn, $filter);
-	for($i=0; $i < count($usrs); $i++) {
+	$enrs = pql_search($_pql->ldap_linkid, $dn, $filter);
+	if(!empty($enrs)) {
+	  for($i=0; $i < count($enrs); $i++) {
 		$is_group = 0;
 		
 		// Check if this object is a (posix)Group object.
-		$ocs = pql_get_attribute($_pql->ldap_linkid, $usrs[$i], pql_get_define("PQL_ATTR_OBJECTCLASS"));
+		$ocs = pql_get_attribute($_pql->ldap_linkid, $enrs[$i], pql_get_define("PQL_ATTR_OBJECTCLASS"));
 		for($j=0; $j < count($ocs); $j++) {
 			if(eregi('group', $ocs[$j]))
 			  $is_group = 1;
@@ -160,13 +174,21 @@ if(!$_SESSION["SINGLE_USER"]) {
 		
 		if(!$is_group)
 		  // It's NOT a (posix)Group object, show it in the list...
-		  $users[] = $usrs[$i];
+		  $entries[] = $enrs[$i];
 	}
+	} else
+	  $entries = array();
+// }}}
 }
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="4" align="left"><?=$LANG->_('Registred users')?>: <?php echo count($users); ?></th>
-<?php if(is_array($users)) { ?>
+    <th colspan="4" align="left"><?=$LANG->_('Objects found')?>: <?php echo count($entries); ?></th>
+<?php if(is_array($entries)) {
+		if(($_REQUEST["attribute"] != pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")) and
+		   ($_REQUEST["attribute"] != pql_get_define("PQL_ATTR_ARECORD")))
+		{
+		  // {{{ NOT DNS hostname
+?>
       <tr>
         <td class="title"><?=$LANG->_('User')?></td>
         <td class="title"><?=$LANG->_('Username')?></td>
@@ -175,40 +197,157 @@ if(!$_SESSION["SINGLE_USER"]) {
         <td class="title"><?=$LANG->_('Options')?></td>
       </tr>
 <?php
-		asort($users);
-		foreach($users as $user) {
-			$uid    = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_UID"));
+// }}}
+		} else {
+		  // {{{ DNS Hostname, A/Cname records
+?>
+      <tr>
+        <td class="title"><?=$LANG->_('FQDN')?></td>
+        <td class="title"><?=$LANG->_('Target')?></td>
+        <td class="title"><?=$LANG->_('Domain branch')?></td>
+        <td class="title"><?=$LANG->_('Options')?></td>
+      </tr>
+<?php
+// }}}
+		}
+
+		asort($entries);
+		foreach($entries as $entry) {
+		  $rootdn = pql_get_rootdn($entry, 'search.php');
+		  $entry  = urlencode($entry);
+
+		  if(($_REQUEST["attribute"] != pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")) and
+			 ($_REQUEST["attribute"] != pql_get_define("PQL_ATTR_ARECORD"))) {
+			// {{{ NOT DNS hostname
+			$uid    = pql_get_attribute($_pql->ldap_linkid, $entry, pql_get_define("PQL_ATTR_UID"));
 
 			// DLW: I think displayname would be a better choice.
-			$cn     = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_CN"));
+			$cn     = pql_get_attribute($_pql->ldap_linkid, $entry, pql_get_define("PQL_ATTR_CN"));
 			if(is_array($cn)) $cn = $cn[0];
-			$mail   = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_MAIL"));
+			$mail   = pql_get_attribute($_pql->ldap_linkid, $entry, pql_get_define("PQL_ATTR_MAIL"));
 			
-			$status = pql_get_attribute($_pql->ldap_linkid, $user, pql_get_define("PQL_ATTR_ISACTIVE"));
+			$status = pql_get_attribute($_pql->ldap_linkid, $entry, pql_get_define("PQL_ATTR_ISACTIVE"));
 			$status = pql_ldap_accountstatus($status);
+// }}}
+		  } else {
+			// {{{ Look for a DNS hostname or IP address
+			$host   = pql_get_attribute($_pql->ldap_linkid, $entry, pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME"));
+			$ip     = pql_get_attribute($_pql->ldap_linkid, $entry, pql_get_define("PQL_ATTR_ARECORD"));
 
-			$rootdn = pql_get_rootdn($user, 'search.php');
+			if($_REQUEST["attribute"] == pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")) {
+			  // Looking for hostname - special case regarding IP
+			  if(empty($ip)) {
+				$ip   = pql_get_attribute($_pql->ldap_linkid, $entry, pql_get_define("PQL_ATTR_CNAMERECORD"));
+				if(empty($ip))
+				  $ip = '<b>unknown</b>';
+			  }
+
+			  // Add the domain name to the hostname
+			  $host .= $dns_domain_name;
+			} elseif($_REQUEST["attribute"] == pql_get_define("PQL_ATTR_ARECORD")) {
+			  // Looking for IP address - special case regarding hostname
+			  if($host == '@')
+				// The SOA -> Replace with zoneName
+				$host   = pql_get_attribute($_pql->ldap_linkid, $entry, pql_get_define("PQL_ATTR_ZONENAME"));
+			  else
+				// This is a hostname. Add the domainname to the end to create a FQDN.
+				$host  .= '.'.$dns_domain_name;
+			}
+
+			if(is_array($ip))
+			  $ip = '<b>round robin</b>';
+			
+			// Get the zone name
+			$dns_domain_name = pql_get_attribute($_pql->ldap_linkid, $entry, pql_get_define("PQL_ATTR_ZONENAME"));
+			$dns_domain_name = urlencode($dns_domain_name);
+
+			if(empty($domain)) {
+			  // Try to figure out what domain this zone belongs to
+			  // 1. Find the SOA record
+			  // ldapsearch -LLL -b c=se '(&(zoneName=bayour.com)(relativeDomainName=@))'
+			  $filter = '(&('.pql_get_define("PQL_ATTR_ZONENAME").'='.$dns_domain_name.')('.pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME").'=@))';
+			  $soa    = pql_get_dn($_pql->ldap_linkid, $rootdn, $filter, 'SUBTREE');
+			  if(!empty($soa))
+				$soa  = $soa[0];
+			  
+			  // soa => 'dNSTTL=3600 relativeDomainName=@,dc=bayour,dc=com,ou=DNS,o=Bayour.COM,c=SE'
+			  if(pql_get_define("PQL_CONF_SUBTREE_BIND9")) {
+				$soa = preg_replace("/.*".lc(pql_get_define("PQL_CONF_SUBTREE_BIND9")).",/", "", $soa);
+			  } else {
+				//  Remove the SOA part of the DN. ldap_explode_dn() don't seem to like it!?!?
+				$soa = preg_replace("/.*@,/", "", $soa);
+				// soa => 'dc=bayour,dc=com,ou=DNS,o=Bayour.COM,c=SE'
+			  }
+
+			  // 2. Go two steps up, that should be the domain DN (also remove the PQL_CONF_SUBTREE_BIND9 part)
+			  //    => o=Bayour.COM,c=SE
+			  $dnparts = ldap_explode_dn($soa, 0);
+			  
+			  // 3. Put together a DN based on $dnparts
+			  for($i=0; $i < $dnparts["count"]; $i++) {
+				$domain .= $dnparts[$i];
+				if($dnparts[$i+1])
+				  $domain .= ",";
+			  }
+			  $domain = urlencode($domain);
+			}
+// }}}
+		  }
+
+		  if(($_REQUEST["attribute"] != pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")) and
+			 ($_REQUEST["attribute"] != pql_get_define("PQL_ATTR_ARECORD")))
+		  {
+			// {{{ NOT DNS hostname
 ?>
-
       <tr class="<?php pql_format_table(); ?>">
-        <td><a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$_REQUEST["domain"]?>&user=<?=urlencode($user)?>" target="_new"><?=$cn?></a></td>
+        <td><a href="<?=$HREF?>" target="_new"><?=$cn?></a></td>
         <td><?=$uid?></td>
         <td><?=$mail?></td>
         <td><?=$status?></td>
         <td>
-          <a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$_REQUEST["domain"]?>&user=<?php echo urlencode($user)?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change user data')?>" border="0"></a>
+          <a href="user_detail.php?rootdn=<?=$rootdn?>&domain=<?=$_REQUEST["domain"]?>&user=<?php echo urlencode($entry)?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change user data')?>" border="0"></a>
           &nbsp;
-          <a href="user_del.php?rootdn=<?=$rootdn?>&domain=<?=$_REQUEST["domain"]?>&user=<?php echo urlencode($user); ?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete user')?>" border="0"></a>
+          <a href="user_del.php?rootdn=<?=$rootdn?>&domain=<?=$_REQUEST["domain"]?>&user=<?php echo urlencode($entry); ?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete user')?>" border="0"></a>
         </td>
       </tr>
-<?php	}
+<?php
+// }}}
+		  } else {
+			// {{{ DNS Hostname
+?>
+      <tr class="<?php pql_format_table(); ?>">
+<?php		if($_REQUEST["attribute"] == pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")) { ?>
+        <td><?=$host?></td>
+        <td><?=$ip?></td>
+<?php		} elseif($_REQUEST["attribute"] == pql_get_define("PQL_ATTR_ARECORD")) { ?>
+        <td><?=$ip?></td>
+        <td><?=$host?></td>
+<?php		} ?>
+        <td><a href="domain_detail.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&view=dnszone&dns_domain_name=<?=$dns_domain_name?>"><?=urldecode($domain)?></td>
+        <td align="right">
+          <a href="bind9_edit_attributes.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&action=modify&rdn=<?=$entry?>&view=dnszone&dns_domain_name=<?=$dns_domain_name?>"><img src="images/edit.png" width="12" height="12" alt="<?=$LANG->_('Change host data')?>" border="0"></a>
+          &nbsp;
+          <a href="bind9_edit_attributes.php?rootdn=<?=$rootdn?>&domain=<?=$domain?>&action=del&rdn=<?=$entry?>&view=dnszone&dns_domain_name=<?=$dns_domain_name?>"><img src="images/del.png" width="12" height="12" alt="<?=$LANG->_('Delete host')?>" border="0"></a>
+        </td>
+      </tr>
+<?php
+// }}}
+		  }
+
+		  unset($domain);
+		} // END: foreach entries
 	  } else {
-		  // no users registred
+		// {{{ No users registred
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td colspan="5"><?=$LANG->_('No users found')?></td>
       </tr>
-<?php } ?>
+<?php
+// }}}
+	  }
+
+	  // {{{ Table and file end etc
+?>
     </table>
   </body>
 </html>
@@ -222,4 +361,5 @@ pql_flush();
  * tab-width: 4
  * End:
  */
+// }}}
 ?>
