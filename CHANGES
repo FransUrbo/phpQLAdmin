@@ -13,6 +13,7 @@ phpQLAdmin 2.3.5 TO BE ANNOUNCED
 	    therefor check both 'is_array($object[0])' AND 'is_array($object)'.
 	  - Setup missing $_REQUEST["view"] value _before_ any pql_generate_button().
 	  - Send '&mark=yes' to tools/navbutton.php IF the button is mentioned in $_REQUEST["view"].
+	  - In tools/navbutton.php, make the text red if called with the 'mark' value.
 
 	GUI layout changes
 	  - RDN and FQDN should not be shown in if we're viewing the 'Global' 

@@ -1,9 +1,10 @@
 <? // http://www.thescripts.com/serversidescripting/php/articles/dynamicimagesinphp3.0/page0.html
-// $Id: navbutton.php,v 2.20 2005-09-24 09:46:02 turbo Exp $
+// $Id: navbutton.php,v 2.21 2006-11-11 14:41:30 turbo Exp $
 
 require("../include/pql_formating.inc");
 
 $string = $_REQUEST["label"];
+$mark   = $_REQUEST["mark"];
 //$string = urldecode($string);
 
 // Prepare the text - remove unwanted characters etc
@@ -60,9 +61,13 @@ $newimg = ImageCreateTrueColor($new_width, $new_height);
 ImageCopyResized($newimg, $myimage, 0, 0, 0, 0, $new_width, 
 		 $new_height, ImageSX($myimage), ImageSY($myimage));
 
-$black = imagecolorallocate($newimg, 0, 0, 0);
 // Write text to image (after decoding it to fix international characters)
-ImageTTFText($newimg, 10, 0, 10, 14, $black, realpath("../include/thryn.ttf"), $string);
+if($mark) {
+  $color = imagecolorallocate($newimg, 255, 0, 0);
+} else {
+  $color = imagecolorallocate($newimg, 0, 0, 0);
+}
+ImageTTFText($newimg, 10, 0, 10, 14, $color, realpath("../include/thryn.ttf"), $string);
     
 // Show image
 if($imgtype == 'png') {
