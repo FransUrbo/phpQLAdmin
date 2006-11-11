@@ -3,7 +3,7 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ezmlm.inc,v 1.32 2006-10-03 18:46:47 turbo Exp $
+// $Id: pql_ezmlm.inc,v 1.33 2006-11-11 09:29:03 root Exp $
 class ezmlm {
 	// {{{ Private section
 	var $_option					= array();
@@ -431,11 +431,6 @@ class ezmlm {
 		$configuration["killlisted"] = count($out);
 		for($i=0; $i < count($out); $i++)
 		  $configuration["killlist"][] = $out[$i];
-
-		if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
-		  echo "LIST '$list':"; printr($configuration);
-		  echo "-----------<p>";
-		}
 
 		// ------------------------
 		// TODO: How do we 'remotify' this!?!?
