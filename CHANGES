@@ -19,6 +19,9 @@ phpQLAdmin 2.3.5 TO BE ANNOUNCED
 	  - In include/pql_status.inc:pql_get_status(), the call to count($entry[0][$attrib])
 	    might return '2'. This mean '0' and '1' but '1' is empty. Deduct one from the
 	    count to make sure we get the value correctly.
+	  - ldap_read() must be called with additional fourth parameter (attributes to
+	    retreive) as 'array(+)' if one wants the operational attributes. This works
+	    on OpenLDAP, but might break other LDAP servers...
 
 	GUI layout changes
 	  - RDN and FQDN should not be shown in if we're viewing the 'Global' 
@@ -28,6 +31,7 @@ phpQLAdmin 2.3.5 TO BE ANNOUNCED
 	API changes
 	Misc changes
 	  - Add support for searching for DNS hostname/ip address in search page.
+	  - Extra debugging in include/pql_search.inc:pql_search() regarding cache.
 
 phpQLAdmin 2.3.4 Release (Oct 20 2006)
 	Bug fixes

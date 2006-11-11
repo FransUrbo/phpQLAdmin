@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.59 2006-08-29 15:43:09 turbo Exp $
+// $Id: pql_search.inc,v 2.60 2006-11-11 15:36:46 root Exp $
 //
 
 // ------------------------------------------------
@@ -37,10 +37,8 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
   }
   
   if($operational)
-	if(!is_array($operational))
-	  $op = array($operational);
-	else
-	  $op = $operational;
+	// This works with OpenLDAP at least!!
+	$op = array('+');
   else
 	$op = array();
   // }}}
@@ -92,15 +90,20 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
 	if(file_exists($_SESSION["path"]."/.DEBUG_CACHE"))
 	  echo "pql_search() - 2: Looking for '<b>$dn</b>': ";
 	  
-	if(pql_cache_get($dn, $cached_object) and !$operational) {
+	if(!$operational and pql_cache_get($dn, $cached_object)) {
 	  // Object cached. Add it as-is to the resulting array.
+	  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE"))
+		echo "<b>Object cached</b> - add it as-is to the resulting array.<br>";
+
 	  if($nr_entries > 1)
 		$entry[$entries] = $cached_object;
 	  else
 		$entry = $cached_object;
 	} else {
 	  // Not cached (or cache disabled). Get all attributes in this object
-	  $attributes = ldap_get_attributes($linkid, $object);
+	  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and $operational)
+		echo "<b>Cache disabled</b> - get all attributes in this object.<br>";
+	  $attributes = ldap_get_attributes($linkid, $object);+e
 	  
 	  // Go through all attributes in the object and retreive
 	  // the value(s). Ignore the 'count' part and values with
