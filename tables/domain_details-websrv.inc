@@ -39,10 +39,12 @@ if(count($servers)) {
   // {{{ -------------- SETUP THE SERVER BUTTONS
   if(count($servers)) {
 ?>
-  <table cellspacing="0" border="0" width="100%" cellpadding="0">
+  <table cellspacing="0" border="0" width="50%" cellpadding="0">
+    <th colspan="3" align="left">
 <?php foreach($servers as $srv => $dn) { ?>
     <a href="<?=$_SERVER["PHP_SELF"]."?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&view=".$_REQUEST["view"]."&server=".urlencode($dn)?>"><img alt="/ <?=$srv?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?=$srv?>"></a>
 <?php } ?>
+    </th>
   </table>
 
   <br>
@@ -72,11 +74,13 @@ if(count($servers)) {
 	// {{{ -------------- SETUP THE VIRTUAL HOST BUTTONS
 	if(count($virt_hosts) > 1) {
 ?>
-  <table cellspacing="0" border="0" width="100%" cellpadding="0">
+  <table cellspacing="0" border="0" width="50%" cellpadding="0">
+    <th colspan="3" align="left">
     &nbsp;&nbsp;
 <?php foreach($virt_hosts as $srv => $data) { ?>
     <a href="<?=$_SERVER["PHP_SELF"]."?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&view=".$_REQUEST["view"]."&server=".urlencode($server)."&virthost=$srv"?>"><img alt="/ <?=$srv?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?=$srv?>"></a>
 <?php } ?>
+    </th>
   </table>
 
   <br>
@@ -108,11 +112,13 @@ if(count($servers)) {
 	// {{{ -------------- SETUP THE VIRTUAL HOST DIRECTORY BUTTONS
 	if(count($virt_host_dirs) > 1) {
 ?>
-  <table cellspacing="0" border="0" width="100%" cellpadding="0">
+  <table cellspacing="0" border="0" width="50%" cellpadding="0">
+    <th colspan="3" align="left">
     &nbsp;&nbsp;&nbsp;&nbsp;
 <?php foreach($virt_host_dirs as $srv => $data) { ?>
     <a href="<?=$_SERVER["PHP_SELF"]."?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&view=".$_REQUEST["view"]."&server=".urlencode($server)."&virthost=$virt_host&hostdir=$srv"?>"><img alt="/ <?=$srv?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?=$srv?>"></a>
 <?php } ?>
+    </th>
   </table>
 
   <br>

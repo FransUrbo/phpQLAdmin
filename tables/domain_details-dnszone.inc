@@ -2,7 +2,8 @@
       $zones = pql_bind9_get_zone($_pql->ldap_linkid, $_REQUEST["domain"]);
       if(is_array($zones)) {
 ?>
-  <table cellspacing="0" border="0" width="100%" cellpadding="0">
+  <table cellspacing="0" border="0" width="50%" cellpadding="0">
+    <th colspan="3" align="left">
 <?php	foreach($zones as $dname => $zone_data) {
 			if(!@$_REQUEST["dns_domain_name"] and !@$dns_domain_name)
 				// Use the first zone as default (ie, if we're not called with a specific zone to show)
@@ -12,7 +13,10 @@
 ?>
     <a href="<?=$_SERVER["PHP_SELF"]?>?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&view=<?=$_REQUEST["view"]?>&dns_domain_name=<?=$dname?>"><img alt="/ <?=$dname?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?php echo urlencode($dname)?>"></a>
 <?php	} ?>
+    </th>
   </table>
+
+  <br>
 
   <table cellspacing="0" cellpadding="3" border="0" size="100%">
     <th colspan="3" align="left"><?=$LANG->_('Domainname')?>: <?=pql_maybe_idna_decode($dns_domain_name)?>
