@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.60 2006-11-11 15:36:46 root Exp $
+// $Id: pql_search.inc,v 2.61 2006-11-11 15:39:03 root Exp $
 //
 
 // ------------------------------------------------
@@ -103,7 +103,7 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
 	  // Not cached (or cache disabled). Get all attributes in this object
 	  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and $operational)
 		echo "<b>Cache disabled</b> - get all attributes in this object.<br>";
-	  $attributes = ldap_get_attributes($linkid, $object);+e
+	  $attributes = ldap_get_attributes($linkid, $object);
 	  
 	  // Go through all attributes in the object and retreive
 	  // the value(s). Ignore the 'count' part and values with
