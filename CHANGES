@@ -16,6 +16,9 @@ phpQLAdmin 2.3.5 TO BE ANNOUNCED
 	  - In tools/navbutton.php, make the text red if called with the 'mark' value.
 	  - pql_get_status() might return empty array in status_ldap.php, so can't check
 	    for just '$tmp'. Use $tmp[createtimestamp] and $tmp[monitortimestamp].
+	  - In include/pql_status.inc:pql_get_status(), the call to count($entry[0][$attrib])
+	    might return '2'. This mean '0' and '1' but '1' is empty. Deduct one from the
+	    count to make sure we get the value correctly.
 
 	GUI layout changes
 	  - RDN and FQDN should not be shown in if we're viewing the 'Global' 

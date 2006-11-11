@@ -4,7 +4,7 @@
 // Retreive LDAP connection and database status
 // from the cn=Monitor backend.
 //
-// $Id: pql_status.inc,v 1.4 2006-07-26 21:31:09 turbo Exp $
+// $Id: pql_status.inc,v 1.5 2006-11-11 14:59:16 turbo Exp $
 //
 
 // {{{ pql_get_status(linkid, dn, attribute)
@@ -33,8 +33,8 @@ function pql_get_status($linkid, $dn, $attrib) {
 		} else {
 			// Return an array - we got more than one value
 			foreach($attribs as $attrib) {
-				for($i=0; $i < count($entry[0][$attrib]); $i++)
-				  $values[$attrib] = $entry[0][$attrib][$i];
+			  for($i=0; $i < count($entry[0][$attrib])-1; $i++)
+				$values[$attrib] = $entry[0][$attrib][$i];
 			}
 			
 			if(!empty($values))
