@@ -79,12 +79,16 @@ if($_SESSION["lynx"]) {
   <br><br>
 
 <?php
+if(@empty($_REQUEST["view"])) {
+  $_REQUEST["view"] = 'default';
+}
+
 // Output the buttons to the browser
 pql_generate_button($buttons);
 // }}}
 
 // {{{ Include table view
-if(empty($_REQUEST["view"]) or $_REQUEST["view"] == 'default') {
+if($_REQUEST["view"] == 'default') {
     include("./tables/config_details-global.inc");
 } elseif($_REQUEST["view"] == 'template') {
     include("./tables/config_details-template.inc");

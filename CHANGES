@@ -11,6 +11,7 @@ phpQLAdmin 2.3.5 TO BE ANNOUNCED
 	  - Form value 'type' was overwritten by a hidden input in include/attrib.dnszone.inc:attribute_print_form().
 	  - The pql_search() might return a 'flat' array in include/pql_bind9.inc:pql_bind9_update_serial(),
 	    therefor check both 'is_array($object[0])' AND 'is_array($object)'.
+	  - Setup missing $_REQUEST["view"] value _before_ any pql_generate_button().
 
 	GUI layout changes
 	  - RDN and FQDN should not be shown in if we're viewing the 'Global' 

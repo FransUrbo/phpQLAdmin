@@ -1,6 +1,6 @@
 <?php
 // shows details of specified category of attributes
-// $Id: control_cat.php,v 2.22 2005-09-20 05:25:00 turbo Exp $
+// $Id: control_cat.php,v 2.23 2006-11-11 14:37:46 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -53,6 +53,11 @@ if(isset($msg)) {
   <span class="title1"><?=$_REQUEST["cat"]?></span>
   <br><br>
 <?php
+// {{{ Load the requested control category
+if(@empty($_REQUEST["view"])) {
+  $_REQUEST["view"] = $plugins[0];
+}
+// }}}
 
 // {{{ Output the buttons to the browser
 // The fiddeling with the '$_SERVER["PHP_SELF"]' value
@@ -66,12 +71,6 @@ pql_generate_button($buttons1, "mxhost=".$_REQUEST["mxhost"]); echo "  <br>\n";
 
 $_SERVER["PHP_SELF"] = $tmp; unset($tmp);
 pql_generate_button($buttons2, 'mxhost='.$_REQUEST["mxhost"].'&cat='.urlencode($_REQUEST["cat"])); echo "  <br>\n";
-// }}}
-
-// {{{ Load the requested control category
-if(@empty($_REQUEST["view"])) {
-  $_REQUEST["view"] = $plugins[0];
-}
 // }}}
 
 // {{{ Show the view for this plugin
