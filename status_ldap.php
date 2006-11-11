@@ -1,6 +1,6 @@
 <?php
 // Show Connection/Suffixes status of LDAP server
-// $Id: status_ldap.php,v 2.10 2005-09-21 05:23:53 turbo Exp $
+// $Id: status_ldap.php,v 2.11 2006-11-11 14:57:26 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -17,7 +17,7 @@ $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PA
 // monitorTimestamp: 20041004133358Z  <- current time
 // createTimestamp: 20041004064512Z   <- bootup time
 $tmp = pql_get_status($_pql->ldap_linkid, "cn=Current,cn=Time,cn=Monitor", array("createTimeStamp", "monitorTimestamp"));
-if($tmp) {
+if($tmp['createtimestamp'] and $tmp['monitortimestamp']) {
     $timestamp_start = pql_format_timestamp_unixtime($tmp['createtimestamp']);
     $time_start = pql_format_timestamp($tmp['createtimestamp']);
 
