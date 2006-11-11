@@ -2,7 +2,7 @@
 // control attribute plugin for
 // helohost (host name used in SMTP HELO command)
 //
-// $Id: attrib.control.helohost.inc,v 2.21 2006-05-19 06:55:31 turbo Exp $
+// $Id: attrib.control.helohost.inc,v 2.22 2006-11-11 14:38:21 turbo Exp $
 
 // {{{ helohost_check(type)
 function helohost_check($type) {
@@ -35,7 +35,7 @@ function helohost_init($host) {
 
 	if(@is_array($value))
 	  $_REQUEST["helohost"] = $value[0];
-	elsif($value)
+	elseif($value)
 	  $_REQUEST["helohost"] = $value;
 }
 // }}}
