@@ -22,6 +22,12 @@ phpQLAdmin 2.3.5 TO BE ANNOUNCED
 	  - ldap_read() must be called with additional fourth parameter (attributes to
 	    retreive) as 'array(+)' if one wants the operational attributes. This works
 	    on OpenLDAP, but might break other LDAP servers...
+	  - Ignore a missing serverip form value if more than one web server container is
+	    selected.
+	  - Calculate (and extract all hosts) selected at the 'Create virtual host' link
+	    as early as possible - before checking if 'serverip' is set (not needed if
+	    more than one web server container is selected).
+	  - Don't add a trailing slash after server URL (hu?!?).
 
 	GUI layout changes
 	  - RDN and FQDN should not be shown in if we're viewing the 'Global' 

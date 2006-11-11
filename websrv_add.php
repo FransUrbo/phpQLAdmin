@@ -1,6 +1,6 @@
 <?php
 // Add a webserver configuration to the LDAP db
-// $Id: websrv_add.php,v 2.18 2006-07-08 14:36:46 turbo Exp $
+// $Id: websrv_add.php,v 2.19 2006-11-11 19:25:33 turbo Exp $
 //
 // {{{ Setup session
 require("./include/pql_session.inc");
@@ -25,7 +25,22 @@ if($_REQUEST["submit"]) {
 		$error_text["mountpoint"] = $LANG->_('Missing');
 	  }
 	} else {
-	  if(!$_REQUEST["serverip"]) {
+	  // {{{ Calculate number of _choosen_ servers
+	  unset($hosts);
+	  $choosen_servers = 0;
+	  $amount = $_REQUEST["hosts"];
+	  if($amount) {
+		if($_REQUEST["host_".$amount] != 'on') {
+		  for($i=0; $i <= $amount; $i++)
+			if($_REQUEST["host_".$i]) {
+			  $choosen_servers++;
+			  $hosts[] = urldecode($_REQUEST["host_".$i]);
+			}
+		}
+	  }
+	  // }}}
+
+	  if(!$_REQUEST["serverip"] and ($choosen_servers <= 1)) {
 		$error = true;
 		$error_text["serverip"] = $LANG->_('Missing');
 	  }
@@ -33,8 +48,15 @@ if($_REQUEST["submit"]) {
 	  if(!$_REQUEST["serverurl"]) {
 		$error = true;
 		$error_text["serverurl"] = $LANG->_('Missing');
-	  } elseif(!ereg('\/$', $_REQUEST["serverurl"]))
-		$_REQUEST["serverurl"] .= '/';
+	  }
+	  // ----------------------------------------------------
+	  //	  } elseif(!ereg('\/$', $_REQUEST["serverurl"]))
+	  //		$_REQUEST["serverurl"] .= '/';
+	  // BUG: Have no idea where this came from!
+	  // 		Entered 'www.bayour.com' in the 'Server FQDN'
+	  //		question and ended up with a server URL
+	  //		such as 'www.bayour.com/'!
+	  // ----------------------------------------------------
 	  
 	  if(!$_REQUEST["serveradmin"]) {
 		$error = true;
@@ -57,8 +79,8 @@ if($_REQUEST["submit"]) {
 // }}}
 
 if(($error == 'true') or !$_REQUEST["type"] or
-   (($_REQUEST["type"] == "websrv")   and (!$_REQUEST["serverport"] or !$_REQUEST["serverip"]  or !$_REQUEST["serverurl"])) or
-   (($_REQUEST["type"] == "vrtsrv")   and (!$_REQUEST["serverip"]   or !$_REQUEST["serverurl"] or !$_REQUEST["serveradmin"] or !$_REQUEST["documentroot"])) or
+   (($_REQUEST["type"] == "websrv")   and (!$_REQUEST["serverport"] or !$_REQUEST["serverurl"])) or 
+   (($_REQUEST["type"] == "vrtsrv")   and (!$_REQUEST["serverurl"] or !$_REQUEST["serveradmin"] or !$_REQUEST["documentroot"])) or
    (($_REQUEST["type"] == "location") and  !$_REQUEST["mountpoint"]))
 {
   // Get servers
@@ -71,7 +93,7 @@ if(($error == 'true') or !$_REQUEST["type"] or
 <?php
   } elseif($_REQUEST["server"]) {
 ?>
-  <span class="title1"><?php echo pql_complete_constant($LANG->_('Create a virtual host for %server%'), array('domain' => $_REQUEST["server"])); ?></span>
+  <span class="title1"><?php echo pql_complete_constant($LANG->_('Create a virtual host for %server%'), array('server' => $_REQUEST["server"])); ?></span>
 <?php } else { ?>
   <span class="title1"><?php echo pql_complete_constant($LANG->_('Create a web server in branch %domain%'), array('domain' => $_REQUEST["domain"])); ?></span>
 <?php } ?>
@@ -239,17 +261,6 @@ if(($error == 'true') or !$_REQUEST["type"] or
   // {{{ No errors (i.e. no missing values). We're good to go!
   if($_REQUEST["type"] == "vrtsrv") {
 	// {{{ Create a virtual host
-	// {{{ Extract all hosts we want to add the virtual server to
-	$amount = $_REQUEST["hosts"];
-	if($amount) {
-	  if($_REQUEST["host_".$amount] != 'on') {
-		for($i=0; $i <= $amount; $i++)
-		  if($_REQUEST["host_".$i])
-			$hosts[] = urldecode($_REQUEST["host_".$i]);
-	  }
-	}
-	// }}}
-	
 	foreach($hosts as $host) {
 	  // {{{ Setup the entry array
 	  $entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_URL")]		= $_REQUEST["serverurl"];
@@ -307,7 +318,6 @@ if(($error == 'true') or !$_REQUEST["type"] or
 	}
 
 	// {{{ Create the DNS object(s)
-	echo "<br>----------------------------<br>";
 	if($_REQUEST["dns"] and pql_get_define("PQL_CONF_BIND9_USE")) {
 	  require($_SESSION["path"]."/include/pql_bind9.inc");
 	  
