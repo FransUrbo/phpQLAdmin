@@ -5,7 +5,7 @@ require($_SESSION["path"]."/include/pql_websrv.inc");
 $servers = pql_websrv_find_servers($_pql->ldap_linkid, $_REQUEST["domain"]);
 if(!$_REQUEST["server"] and count($servers)) {
   // Take the first server as default one.
-  foreach($servers as $server_name => $server) break;
+  foreach($servers as $server_name => $_REQUEST["server"]) break;
 } else {
   // We're called with a webserver. Make sure we use this in all following queries.
   if(eregi('^'.pql_get_define("PQL_ATTR_CN"), $_REQUEST["server"])) {
@@ -41,8 +41,14 @@ if(count($servers)) {
 ?>
   <table cellspacing="0" border="0" width="50%" cellpadding="0">
     <th colspan="3" align="left">
-<?php foreach($servers as $srv => $dn) { ?>
-    <a href="<?=$_SERVER["PHP_SELF"]."?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&view=".$_REQUEST["view"]."&server=".urlencode($dn)?>"><img alt="/ <?=$srv?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?=$srv?>"></a>
+<?php foreach($servers as $srv => $dn) {
+		if($dn == $_REQUEST["server"]) {
+		  $mark = "&mark=yes";
+		} else {
+		  unset($mark);
+		}
+?>
+    <a href="<?=$_SERVER["PHP_SELF"]."?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&view=".$_REQUEST["view"]."&server=".urlencode($dn)?>"><img alt="/ <?=$srv?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?=$srv?><?=$mark?>"></a>
 <?php } ?>
     </th>
   </table>
@@ -76,9 +82,14 @@ if(count($servers)) {
 ?>
   <table cellspacing="0" border="0" width="50%" cellpadding="0">
     <th colspan="3" align="left">
-    &nbsp;&nbsp;
-<?php foreach($virt_hosts as $srv => $data) { ?>
-    <a href="<?=$_SERVER["PHP_SELF"]."?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&view=".$_REQUEST["view"]."&server=".urlencode($server)."&virthost=$srv"?>"><img alt="/ <?=$srv?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?=$srv?>"></a>
+<?php foreach($virt_hosts as $srv => $data) {
+		if($srv == $_REQUEST["virthost"]) {
+		  $mark = "&mark=yes";
+		} else {
+		  unset($mark);
+		}
+?>
+    <a href="<?=$_SERVER["PHP_SELF"]."?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&view=".$_REQUEST["view"]."&server=".urlencode($server)."&virthost=$srv"?>"><img alt="/ <?=$srv?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?=$srv?><?=$mark?>"></a>
 <?php } ?>
     </th>
   </table>
@@ -96,7 +107,7 @@ if(count($servers)) {
 	  // Shortcut to simplify referencing the virtual host
 	  if(empty($_REQUEST["hostdir"])) {
 		// Use the first virtual host directory as default (ie, if we're not called with a specific virtual host to show)
-		foreach($virt_host_dirs as $virt_host_dir => $data) break;
+		foreach($virt_host_dirs as $_REQUEST["hostdir"] => $data) break;
 	  } else {
 		$virt_host_dir = $_REQUEST["hostdir"];
 		$server_reference = $server_name." => ".$virt_host." => ".$virt_host_dir;
@@ -114,9 +125,14 @@ if(count($servers)) {
 ?>
   <table cellspacing="0" border="0" width="50%" cellpadding="0">
     <th colspan="3" align="left">
-    &nbsp;&nbsp;&nbsp;&nbsp;
-<?php foreach($virt_host_dirs as $srv => $data) { ?>
-    <a href="<?=$_SERVER["PHP_SELF"]."?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&view=".$_REQUEST["view"]."&server=".urlencode($server)."&virthost=$virt_host&hostdir=$srv"?>"><img alt="/ <?=$srv?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?=$srv?>"></a>
+<?php foreach($virt_host_dirs as $srv => $data) {
+		if($srv == $_REQUEST["hostdir"]) {
+		  $mark = "&mark=yes";
+		} else {
+		  unset($mark);
+		}
+?>
+    <a href="<?=$_SERVER["PHP_SELF"]."?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&view=".$_REQUEST["view"]."&server=".urlencode($server)."&virthost=$virt_host&hostdir=$srv"?>"><img alt="/ <?=$srv?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?=$srv?><?=$mark?>"></a>
 <?php } ?>
     </th>
   </table>

@@ -12,6 +12,7 @@ phpQLAdmin 2.3.5 TO BE ANNOUNCED
 	  - The pql_search() might return a 'flat' array in include/pql_bind9.inc:pql_bind9_update_serial(),
 	    therefor check both 'is_array($object[0])' AND 'is_array($object)'.
 	  - Setup missing $_REQUEST["view"] value _before_ any pql_generate_button().
+	  - Send '&mark=yes' to tools/navbutton.php IF the button is mentioned in $_REQUEST["view"].
 
 	GUI layout changes
 	  - RDN and FQDN should not be shown in if we're viewing the 'Global' 

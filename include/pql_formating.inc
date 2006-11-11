@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.56 2006-10-20 12:06:02 turbo Exp $
+// $Id: pql_formating.inc,v 2.57 2006-11-11 14:40:43 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry, extra_newline)
 // Create a LDIF object to print in case of error
@@ -99,8 +99,8 @@ function pql_complete_constant($text, $replacement) {
 
 // {{{ pql_generate_button(button array)
 function pql_generate_button($buttons, $link = '') {
-  global $LANG;
-  
+  global $LANG, $_REQUEST;
+
   $url = $_SERVER["PHP_SELF"] . "?";
   
   // It's not sure we have a rootdn and/or domain, so only add those
@@ -119,8 +119,12 @@ function pql_generate_button($buttons, $link = '') {
   $i=0; // A button counter.
   foreach($buttons as $view => $text) {
 	// Generate the button link etc
+	if(($view == $_REQUEST["view"]) or ($text == $_REQUEST["cat"]))
+	  $mark = "&mark=yes";
+	else
+	  unset($mark);
 ?>
-    <a href="<?=$url?>view=<?=$view?><?php if($link) { echo "&$link"; } ?>"><img alt="/ <?=$LANG->_($text)?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?php echo urlencode($LANG->_($text)); ?>"></a>
+    <a href="<?=$url?>view=<?=$view?><?php if($link) { echo "&$link"; } ?>"><img alt="/ <?=$LANG->_($text)?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?php echo urlencode($LANG->_($text)); ?><?=$mark?>"></a>
 <?php
 	// Increase button counter"
 	$i++;

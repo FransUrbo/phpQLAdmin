@@ -5,13 +5,21 @@
   <table cellspacing="0" border="0" width="50%" cellpadding="0">
     <th colspan="3" align="left">
 <?php	foreach($zones as $dname => $zone_data) {
-			if(!@$_REQUEST["dns_domain_name"] and !@$dns_domain_name)
-				// Use the first zone as default (ie, if we're not called with a specific zone to show)
-				$dns_domain_name = $dname;
-			elseif(@$_REQUEST["dns_domain_name"])
-				$dns_domain_name = $_REQUEST["dns_domain_name"];
+			if(!@$_REQUEST["dns_domain_name"] and !@$dns_domain_name) {
+			  // Use the first zone as default (ie, if we're not called with a specific zone to show)
+			  $dns_domain_name = $dname;
+			  $_REQUEST["dns_domain_name"] = $dns_domain_name;
+			} elseif(@$_REQUEST["dns_domain_name"]) {
+			  $dns_domain_name = $_REQUEST["dns_domain_name"];
+			}
+
+			if($dname == $_REQUEST["dns_domain_name"]) {
+			  $mark = "&mark=yes";
+			} else {
+			  unset($mark);
+			}
 ?>
-    <a href="<?=$_SERVER["PHP_SELF"]?>?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&view=<?=$_REQUEST["view"]?>&dns_domain_name=<?=$dname?>"><img alt="/ <?=$dname?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?php echo urlencode($dname)?>"></a>
+    <a href="<?=$_SERVER["PHP_SELF"]?>?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&view=<?=$_REQUEST["view"]?>&dns_domain_name=<?=$dname?>"><img alt="/ <?=$dname?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?php echo urlencode($dname)?><?=$mark?>"></a>
 <?php	} ?>
     </th>
   </table>
