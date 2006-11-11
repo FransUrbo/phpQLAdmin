@@ -6,6 +6,7 @@ $servers = pql_websrv_find_servers($_pql->ldap_linkid, $_REQUEST["domain"]);
 if(!$_REQUEST["server"] and count($servers)) {
   // Take the first server as default one.
   foreach($servers as $server_name => $_REQUEST["server"]) break;
+  $server = $_REQUEST["server"];
 } else {
   // We're called with a webserver. Make sure we use this in all following queries.
   if(eregi('^'.pql_get_define("PQL_ATTR_CN"), $_REQUEST["server"])) {
