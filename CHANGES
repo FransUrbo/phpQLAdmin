@@ -28,6 +28,7 @@ phpQLAdmin 2.3.5 TO BE ANNOUNCED
 	    as early as possible - before checking if 'serverip' is set (not needed if
 	    more than one web server container is selected).
 	  - Don't add a trailing slash after server URL (hu?!?).
+	  - When creating the DNS SOA record object, include 'dNSTTL=xxx ' in the DN.
 
 	GUI layout changes
 	  - RDN and FQDN should not be shown in if we're viewing the 'Global' 

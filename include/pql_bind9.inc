@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.43 2006-11-10 14:48:00 turbo Exp $
+// $Id: pql_bind9.inc,v 2.44 2006-11-11 19:27:00 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -243,7 +243,7 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 	
 	$entry['relativeDomainName']	= '@';
 	$entry['zoneName']				= $zonename;
-	$entry['dNSTTL']				= 604800;
+	$entry['dNSTTL']				= 604800; // Seven days default.
 	
 	$entry['sOARecord']				= "$zonename. registry.$zonename. $date 172800 86400 2419200 604800";
 	$entry['nSRecord'][]			= "ns1.$zonename.";
@@ -255,7 +255,7 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 	if(@$_SESSION["ACI_SUPPORT_ENABLED"])
 	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($linkid, $_SESSION["USER_DN"], 'dnszone');
 	
-	$dn = "relativeDomainName=".$entry['relativeDomainName'].",$dn";
+	$dn = "dNSTTL=".$entry['dNSTTL']." relativeDomainName=".$entry['relativeDomainName'].",$dn";
 	
 	if(!pql_get_dn($linkid, $dn, 'objectClass=dNSZone', 'BASE')) {
 	  if(!pql_write_add($linkid, $dn, $entry, 'bind9/zone', 'pql_bind9_add_zone')) {
