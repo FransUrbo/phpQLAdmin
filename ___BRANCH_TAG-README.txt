@@ -58,6 +58,17 @@ From this:
       > cn=host2.domain.tld
         ....
     + ou=Web
+      + cn=host1.domain.tld
+        + ApacheServerName=virthost1.domain.tld
+	  > ApacheSectionArg=/doc
+	    ....
+        + ApacheServerName=virthost2.domain.tld
+	  ....
+      + cn=host2.domain.tld
+        + ApacheServerName=virthost3.domain.tld
+        + ApacheServerName=virthost4.domain.tld
+        ....
+    + ou=Computers
       > cn=host1.domain.tld
       > cn=host2.domain.tld
         ....
@@ -68,45 +79,62 @@ To something like this:
 + dc=tld
   + dc=domain
     + ou=Computers
-      + cn=host1.domain.tld [*1]
-        > user1 [*2]
-        > <QmailLDAP/Controls attributes> [*3]
+      + cn=host1.domain.tld	 [*1]
+        > user1			 [*2]
+	> user2
+	  ....
+        + cn=host1.domain.tld	 [*3]
         + cn=host1.domain.tld:80 [*4]
-          + <Virtualhost1> [*5]
+          + <Virtualhost1>	 [*5]
+	    > ApacheSectionArg
+	  + <Virtualhost2>
+	    ....
 ----- s n i p -----
 
-*1: Simple 'ipHost' container:
+*1: Simple 'device' container:
 
+    ----- s n i p -----
     dn: cn=host1.domain.tld,ou=Computers,dc=domain,dc=tld
-    objectClass: ipHost
+    objectClass: device
     cn: host1.domain.tld
+    ----- s n i p -----
 
 *2: If user is added to host, the *1 is changed into this:
-    dn: cn=host1.domain.tld,ou=Computers,dc=domain,dc=tld
 
+    ----- s n i p -----
+    dn: cn=host1.domain.tld,ou=Computers,dc=domain,dc=tld
     cn: host1.domain.tld
     objectClass: ipHost
-    objectClass: top
     objectClass: groupOfUniqueNames
     ipHostNumber: 192.168.1.9
     uniqueMember: uid=turbo,ou=people,dc=domain,dc=tld
+    ----- s n i p -----
 
-*3: If the QLC stuff is added to the host, then the QLC
-    attributes is added to the host object (the objectClass
-    'qmailControl' is added to the object).
+*3: The QLC object needs to be a separate object because
+    it's not possible to merge the 'groupOfUniqueNames'
+    (for Host ACLs) object class with the 'qmailControl'
+    (for QmailLDAP/Controls) object class. They are both
+    STRUCTURAL.
 
 *4: Since the port needs to be (or should be) specified
     in a webserver container, we make a separate subbranch
     for the webserver containers. This is just a simple
     'device' object:
 
+    ----- s n i p -----
     dn: cn=host1.domain.tld:80,cn=host1.domain.tld,ou=Computers,dc=domain,dc=tld
     objectClass: device
     cn: host1.domain.tld:80
+    ----- s n i p -----
+
+    NOTE: This isn't as pretty as I'd like, because this object
+	  looks almost identical to the one in *1 (exept the
+	  port).
 
 *5: Any virtual host is added _below_ the webserver
     container object. Example:
 
+    ----- s n i p -----
     dn: ApacheServerName=virthost1.domain.tld,cn=host1.domain.tld:80,cn=host1.domain.tld,ou=Computers,dc=domain,dc=tld
     objectClass: device
     objectClass: ApacheSectionObj
@@ -120,6 +148,7 @@ To something like this:
     ApacheErrorLog: /var/log/apache/apache-error.log
     ApacheTransferLog: /var/log/apache/apache-access.log
     ApacheDocumentRoot: /var/www-ldap
+    ----- s n i p -----
 
     This would result in the following LDAP tree:
 
