@@ -1,7 +1,8 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.120 2006-11-10 14:40:31 turbo Exp $
-//
+// $Id: left.php,v 2.121 2006-11-12 21:43:20 turbo Exp $
+
+// {{{ Setup session etc
 require("./include/pql_session.inc");
 
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -15,6 +16,7 @@ if($_pql->ldap_error) {
   
   die("$_pql->ldap_error<br><a href=\"index.php\" target=\"_top\">".$LANG->_('Login again')."</a>");
 }
+// }}}
 
 // {{{ Find out if we're to run in ADVANCE/SIMPLE mode
 if($_REQUEST["advanced"] == 1) {
@@ -108,7 +110,7 @@ pql_format_tree($LANG->_('Search'), 0, $links, 1);
 if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {
   // Level 2b: Configuration and tests
   $links = array($LANG->_('phpQLAdmin Configuration')	=> 'config_detail.php',
-				 $LANG->_('Test LDAP-Connection')	=> 'config_ldaptest.php');
+				 $LANG->_('Test LDAP-Connection')		=> 'config_ldaptest.php');
   pql_format_tree($LANG->_('phpQLAdmin Configuration'), 0, $links, 1);
   
   // Level 2c: LDAP server setup etc
