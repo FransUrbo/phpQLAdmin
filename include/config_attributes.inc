@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.50 2006-10-03 15:31:40 turbo Exp $
+// $Id: config_attributes.inc,v 2.51 2006-11-12 22:42:19 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -189,7 +189,6 @@ pql_set_define("PQL_ATTR_AFSRECORD",						strtolower("afsDBRecord"),					false);
 // {{{ Attributes used by the Apache config
 pql_set_define("PQL_ATTR_WEBSRV_USE", 						strtolower('useWebSrv'),					false);
 pql_set_define("PQL_ATTR_WEBSRV_SRV_IP", 					strtolower('ApacheSectionArg'),				false);
-pql_set_define("PQL_ATTR_WEBSRV_SRV_NAME", 					strtolower('ApacheSectionName'),			false);
 pql_set_define("PQL_ATTR_WEBSRV_SRV_URL", 					strtolower('ApacheServerName'),				false);
 pql_set_define("PQL_ATTR_WEBSRV_SCRIPT_URL", 				strtolower('ApacheScriptAlias'),			false);
 pql_set_define("PQL_ATTR_WEBSRV_SCRIPT_PATH", 				strtolower('ApacheAlias'),					false);
