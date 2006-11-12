@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.35 2006-05-19 06:43:17 turbo Exp $
+// $Id: left-control.php,v 2.35.4.1 2006-11-12 22:35:21 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -14,18 +14,19 @@ require("./left-head.html");
 
 if(pql_get_define("PQL_CONF_CONTROL_USE") && $_SESSION["ALLOW_CONTROL_CREATE"]) {
   // We're administrating QmailLDAP/Control and the user is allowed to administrate.
-  $j = 1;
+  $div_counter = 1;
   
   // {{{ Server control header
 ?>
-  <!-- Server Control -->
-  <div id="el<?=$j?>Parent" class="parent">
-    <a class="item" href="control.php">
-      <font color="black" class="heada"><b>QmailLDAP/Controls</b></font>
-    </a>
-  </div>
+    <!-- Server Control -->
+    <div id="el<?=$div_counter?>Parent" class="parent">
+      <a class="item" href="control.php">
+        <font color="black" class="heada"><b>Computers</b></font>
+      </a>
+    </div>
 
 <?php
+  $div_counter++;
 // }}}
 
   // {{{ Add mail server
@@ -35,44 +36,40 @@ if(pql_get_define("PQL_CONF_CONTROL_USE") && $_SESSION["ALLOW_CONTROL_CREATE"]) 
 	// If it's an LDAP URI, replace "%2f" with "/" -> URLdecode
 	$host[0] = urldecode($host[0]);
 ?>
-  <div id="el2Parent" class="parent">
-    <nobr>
-      <a href="control_add_server.php">Add mail server</a>
-    </nobr>
-  </div>
+    <!-- Add physical server link -->
+    <div id="el<?=$div_counter?>Parent" class="parent">
+      <a href="host_add.php">Add physical server/host</a>
+    </div>
 
 <?php
+	$div_counter++;
   }
 // }}}
 
-  $j++;
-
-  // {{{ Get all QmailLDAP/Control hosts.
-  $result = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-					   '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
-  for($i=0; $i < count($result); $i++)
-	$hosts[] = pql_get_attribute($_pql->ldap_linkid, $result[$i], pql_get_define("PQL_ATTR_CN"));
-// }}}
+  // {{{ Get all computer objects
+  $hosts = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+					  '(&(cn=*)(|(objectclass=ipHost)(objectclass=device)))',
+					  'ONELEVEL');
+  // }}}
 
   if(!is_array($hosts)) {
-	// {{{ No QLC hosts
+	// {{{ No servers
 ?>
 <?php if($_SESSION["opera"]) { ?>
-  <div id="el<?=$j?>Parent" class="parent" onclick="showhide(el<?=$j?>Spn, el<?=$j?>Img)">
-    <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$j?>Img">
-    <font color="black" class="heada">no LDAP control hosts defined</font>
+  <div id="el<?=$div_counter?>Parent" class="parent" onclick="showhide(el<?=$div_counter?>Spn, el<?=$div_counter?>Img)">
+    <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$div_counter?>Img">
+    <font color="black" class="heada">no server hosts defined</font>
   </div>
 <?php } else { ?>
-  <div id="el<?=$j?>Parent" class="parent">
+  <div id="el<?=$div_counter?>Parent" class="parent">
     <img src="images/navarrow.png" width="9" height="9" border="0">
-    <font color="black" class="heada">no LDAP control hosts defined</font>
+    <font color="black" class="heada">no server hosts defined</font>
   </div>
-<?php } ?>
-
-<?php
+<?php }
+	echo "\n"; 
 // }}}
   } else {
-	// {{{ Add a 'Global' tree as first tree
+	// {{{ Add a 'Global' branch as first branch
 	//     then add the rest of the hosts after that.
 	$tmp[] = "Global";
 	foreach($hosts as $host)
@@ -80,97 +77,194 @@ if(pql_get_define("PQL_CONF_CONTROL_USE") && $_SESSION["ALLOW_CONTROL_CREATE"]) 
 	$hosts = $tmp;
 // }}}
 
-	// For each host, get LDAP/Control plugins
-	foreach($hosts as $host) {
-	  // {{{ Root of tree
+	foreach($hosts as $host_dn) {
+	  // {{{ Get hostname for display
 ?>
-  <!-- start server control host: <?=pql_maybe_idna_decode($host)?> -->
-<?php if($_SESSION["opera"]) { ?>
-  <div id="el<?=$j?>Parent" class="parent" onclick="showhide(el<?=$j?>Spn, el<?=$j?>Img)">
-    <img name="imEx" src="images/minus.png" border="0" alt="-" width="9" height="9" id="el<?=$j?>Img">
-    <a class="item" href="control_detail.php?mxhost=<?=$host?>">
-      <font color="black" class="heada"><?=pql_maybe_idna_decode($host)?></font>
-    </a>
-  </div>
-<?php } else { ?>
-  <div id="el<?=$j?>Parent" class="parent">
-    <a class="item" href="control_detail.php?mxhost=<?=$host?>" onClick="if (capable) {expandBase('el<?=$j?>', true); return false;}">
-      <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$j?>Img">
-    </a>
-
-    <a class="item" href="control_detail.php?mxhost=<?=$host?>">
-      <font color="black" class="heada"><?=pql_maybe_idna_decode($host)?></font>
-    </a>
-  </div>
-<?php } ?>
-  <!-- end server control host -->
-
+          <!-- Physical server: <?=$host_dn?> -->
 <?php
+	  if($host_dn == 'Global')
+		$host = 'Global';
+	  else
+		$host = pql_get_attribute($_pql->ldap_linkid, $host_dn, pql_get_define("PQL_ATTR_CN"));
 // }}}
 
-	  $cats = pql_plugin_get_cats();
-	  if(!is_array($cats)) {
-		// {{{ No QLC plugins
+	  // {{{ Root of host tree
+	  if($host_dn == 'Global') {
+		pql_format_tree($host, "host_detail.php?host=".urlencode($host_dn));
+	  } else {
+		$links = array($LANG->_('Add mail server') => "control_add_server.php",
+					   $LANG->_('Add web server')  => "web_add_server.php");
+		pql_format_tree($host, "host_detail.php?host=".urlencode($host_dn), $links, 0);
+	  }
+// }}}
+
+	  // {{{ For each host - get QmailLDAP/Control hosts
+	  $qlcs = pql_get_dn($_pql->ldap_linkid, $host_dn, '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+	  if(is_array($qlcs) or ($host_dn == 'Global')) {
+		// {{{ QLC Object(s)
+		if($host_dn == 'Global')
+		  $qlcs = array('Global'); // Fake this so that the foreach() won't complain.
+
+		foreach($qlcs as $qlc_dn) {
+		  // {{{ Get server name for display
+		  if($qlc_dn == 'Global')
+			$qlc = 'Global';
+		  else
+			$qlc = pql_get_attribute($_pql->ldap_linkid, $qlc_dn, pql_get_define("PQL_ATTR_CN"));
+		  $qlc = pql_complete_constant($LANG->_('Mailserver - %host%'), array('host' => $qlc));
+// }}}
+
+		  // Get QLC categories for this QLC object
+		  $cats = pql_plugin_get_cats();
+		  if(!is_array($cats)) {
+			// {{{ No QLC plugins
+			if($_SESSION["opera"]) {
 ?>
-  <!-- start server control attribute -->
-<?php if($_SESSION["opera"]) { ?>
-  <span id="el<?=$j?>Spn" style="display:''">
-<?php } else { ?>
-  <div id="el<?=$j?>Child" class="child">
-<?php } ?>
+  <span id="el<?=$div_counter?>Spn" style="display:''">
+<?php		} else { ?>
+  <div id="el<?=$div_counter?>Child" class="child">
+<?php		} ?>
     <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
       <img src="images/navarrow.png" width="9" height="9" border="0">
       <font color="black" class="heada">no plugins defined</font>
     </nobr>
-<?php if($_SESSION["opera"]) { ?>
+<?php		if($_SESSION["opera"]) { ?>
   </span>
-<?php } else { ?>
+<?php		} else { ?>
   </div>
-<?php } ?>
-  <!-- end server control attribute -->
+<?php		}
+// }}}
+		  } else {
+			asort($cats);
 
-<?php
+			// {{{ Setup and show the branch
+			$links = array();
+			foreach($cats as $cat) {
+			  $new = array($cat => "control_cat.php?mxhost=".urlencode($host_dn)."&cat=".urlencode($cat));
+			  $links = $links + $new;
+			}
+
+			pql_format_tree($qlc, "control_detail.php?mxhost=".urlencode($host_dn), $links, 1);
+// }}}
+		  } // end if is_array($cats)
+		} // end foreach($qlcs)
 // }}}
 	  } else {
-		asort($cats);
-
-		// {{{ Div start
+		// {{{ No QLC Object(s)
+		if($_SESSION["opera"]) {
 ?>
-  <!-- start server control attribute: <?=$cat?> -->
-<?php   if($_SESSION["opera"]) { ?>
-  <span id="el<?=$j?>Spn" style="display:''">
-<?php   } else { ?>
-  <div id="el<?=$j?>Child" class="child">
-<?php   }
-// }}}
-
-		foreach($cats as $cat){
-		  // {{{ Plugin entry
-?>
-    <nobr>&nbsp;&nbsp;&nbsp;&nbsp;
-      <a href="control_cat.php?mxhost=<?=$host?>&cat=<?=urlencode($cat)?>"><img src="images/navarrow.png" width="9" height="9" border="0"></a>&nbsp;
-      <a class="item" href="control_cat.php?mxhost=<?=$host?>&cat=<?=urlencode($cat)?>"><?=$cat?></a>
+  <span id="el<?=$div_counter?>Spn" style="display:''">
+<?php	} else { ?>
+  <div id="el<?=$div_counter?>Child" class="child">
+<?php	} ?>
+    <nobr>&nbsp;&nbsp;&nbsp;
+      <img src="images/navarrow.png" width="9" height="9" border="0">
+      <font color="black" class="heada">no mailserver defined</font>
     </nobr>
-
     <br>
-
-<?php	} // end foreach controls
-// }}}
-?>
-<?php	  if($_SESSION["opera"]) { ?>
+<?php	if($_SESSION["opera"]) { ?>
   </span>
-<?php	  } else { ?>
+<?php	} else { ?>
   </div>
-<?php	  } ?>
-  <!-- end server control attribute -->
-<?php
-	  } // end if is_array($cats)
+<?php	}
+// }}}
+	  } // end if(is_array(qlcs)
+// }}}
 
-	  $j++;
-	} // end foreach host
-  } // end if is_array($hosts)
+	  // {{{ For each host - get Webserver container object(s)
+	  $web_containers = pql_get_dn($_pql->ldap_linkid, $host_dn, '(&(cn=*)(objectclass=device))', 'ONELEVEL');
+	  if(is_array($web_containers) or ($host_dn == 'Global')) {
+		// {{{ Web container object(s)
+		if($host_dn == 'Global')
+		  $web_containers = array('Global'); // Fake this so that the foreach() won't complain.
+
+		$links = array();
+		foreach($web_containers as $container_dn) {
+		  // {{{ Get container name for display
+		  if($host_dn == 'Global')
+			$container = 'Global';
+		  else
+			$container = pql_get_attribute($_pql->ldap_linkid, $container_dn, pql_get_define("PQL_ATTR_CN"));
+// }}}
+
+		  // {{{ Extract the port number
+		  if(ereg(':', $container))
+			$port = ' - ' . $LANG->_('port') . ' ' . preg_replace('/.*:/', '', $container);
+		  elseif($host_dn == 'Global')
+			$port = ' - Global';
+		  else
+			$port = "";
+
+		  $container = pql_complete_constant($LANG->_('Webserver%port%'), array('port' => $port));
+// }}}
+
+		  if($container_dn != 'Global') {
+			// {{{ Get Virtual host(s) for this web server container
+			$virt_hosts = pql_get_dn($_pql->ldap_linkid, $container_dn,
+									 '(&(objectClass=ApacheVirtualHostObj)(objectClass=ApacheSectionObj))',
+									 'ONELEVEL');
+			if(is_array($virt_hosts)) {
+			  // {{{ Go through the Virtual host(s)
+			  asort($virt_hosts);
+
+			  foreach($virt_hosts as $virt_dn) {
+				$virt = pql_get_attribute($_pql->ldap_linkid, $virt_dn, pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME"));
+				
+				// {{{ Setup the branch
+				$new = array($virt => "web_detail.php?host=".urlencode($virt_dn));
+				$links = $links + $new;
+// }}}
+			  } // end foreach virt_hosts
+// }}}
+			}
+// }}}
+		  } else {
+			// {{{ Fake virtual host for the Global branch
+			$links = array('none' => 'none');
+// }}}
+		  } // end if(container != Global)
+
+		  pql_format_tree($container, "web_detail.php?host=".urlencode($container_dn), $links, 1);
+		} // end foreach($web_containers)
+// }}}
+	  } else {
+		// {{{ No Web container object(s)
+		if($_SESSION["opera"]) {
+?>
+
+          <span id="el<?=$div_counter?>Spn" style="display:''">
+<?php	} else { ?>
+          <div id="el<?=$div_counter?>Child" class="child">
+<?php	} ?>
+            <nobr>&nbsp;&nbsp;&nbsp;
+              <img src="images/navarrow.png" width="9" height="9" border="0">
+              <font color="black" class="heada">no webserver defined</font>
+            </nobr>
+<?php	if($_SESSION["opera"]) { ?>
+          </span>
+<?php	} else { ?>
+          </div>
+<?php	}
+// }}}
+	  } // endif(is_array(web_containers)
+// }}}
+
+	  // {{{ End of the span/div - host
+	  if($_SESSION["opera"]) {
+?>
+        </span>
+<?php } else { ?>
+        </div>
+<?php }
+
+	  echo "\n";
+// }}}
+	} // end foreach($hosts)
+
+  } // end if(is_array(hosts)
 } // end if PQL_CONF_CONTROL_USE
 
+echo "\n";
 require("./left-trailer.html");
 
 pql_flush();
