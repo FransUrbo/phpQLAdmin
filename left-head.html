@@ -62,4 +62,12 @@
     <style type="text/css"><!-- body {  font-family: Arial, Helvetica, sans-serif; font-size: 10pt} //--></style>
   </head>
 
+<?php // Sometimes this file is included to get folding stuff. Only show
+      // the ugly blueish color if it's called from left*.php
+      $left_head_uri = preg_replace('/.*\//', '', $_SERVER["PHP_SELF"]);
+      if(ereg('^left', $left_head_uri)) {
+?>
   <body bgcolor="#D0DCE0">
+<?php } else { ?>
+  <body>
+<?php } ?>
