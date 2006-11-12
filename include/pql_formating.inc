@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.57 2006-11-11 14:40:43 turbo Exp $
+// $Id: pql_formating.inc,v 2.58 2006-11-12 21:48:20 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry, extra_newline)
 // Create a LDIF object to print in case of error
@@ -431,7 +431,7 @@ function pql_format_tree_other($cnt, $text, $url, $level, $parent, $child) {
 // {{{ pql_format_tree_span(text, links, level)
 function pql_format_tree_span($text, $links, $level) {
   $nbsp = '';
-  for($i=0; $i < (($level + 1) * 4); $i++)
+  for($i=0; $i < ((($level + 1) * 4) - 1); $i++)
 	$nbsp .= "&nbsp;";
   
   $count = count($links); $counter = 0;
@@ -443,38 +443,45 @@ function pql_format_tree_span($text, $links, $level) {
 	  $icon = 1;
 	
 	if($text) {
+	  // {{{ $text is set
 	  if($link) {
+		// {{{ $link is set
 ?>
-    <nobr>
-      <?=$nbsp?>
+            <nobr>
+              <?=$nbsp?>
 
 <?php	if(is_array($link)) { ?>
-      <input type="checkbox" name="<?=$link[0]?>_<?=$link[1]?>" value="<?=$link[2]?>"><?=$text?>
+              <input type="checkbox" name="<?=$link[0]?>_<?=$link[1]?>" value="<?=$link[2]?>"><?=$text?>
 <?php	} else { ?>
-      <?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>">&nbsp;<?php } ?>
+              <?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>">&nbsp;<?php } ?>
 <a class="tblItem" title="<?=$text?>" href="<?=$link?>" <?php if(eregi('^http://', $link)) { echo 'target="_new"'; } else { echo 'target="pqlmain"'; } ?>><?=$text?></a>
 <?php	} ?>
-    </nobr>
-<?php	if($counter < ($count - 1)) { ?>
-    <br />
-<?php	}
-	  } else { ?>
-    <nobr>
-      <?=$nbsp?>
-      <?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>">&nbsp;<?php } ?>
-      <?=$text?>
-    </nobr>
-
-    <br />
+            </nobr>
+            <br />
+<?php
+// }}}
+	  } else {
+		// {{{ $link unset
+?>
+          <nobr>
+            <?=$nbsp?>
+            <?php if($icon) { ?><img src="images/mail_small.png" border="0" alt="<?=$text?>">&nbsp;<?php } ?>
+            <?=$text?>
+          </nobr>
+          <br />
 <?php }
-	} else { ?>
-    <nobr>
-      <?=$nbsp?>
-      ---------------
-    </nobr>
-<?php if($counter < ($count - 1)) { ?>
-    <br />
-<?php }
+// }}}
+// }}}
+	} else {
+	  // {{{ $text UNSET
+?>
+          <nobr>
+            <?=$nbsp?>
+            ---------------
+          </nobr>
+          <br />
+<?php
+// }}}
 	}
 
 	$counter++;
