@@ -2,7 +2,7 @@
 // control attribute plugin for
 // idhost (host name for message id's)
 //
-// $Id: attrib.control.idhost.inc,v 2.22 2006-05-19 06:55:31 turbo Exp $
+// $Id: attrib.control.idhost.inc,v 2.22.4.1 2006-11-13 07:16:04 turbo Exp $
 
 // {{{ idhost_check(type)
 function idhost_check($type) {
@@ -24,14 +24,11 @@ function idhost_init($host) {
 	global $_pql_control;
 	
 	// fetch data from ldap server
-	if($host == "Global") {
+	if($host == "Global")
 	  $_REQUEST["idhost"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 											  pql_get_define("PQL_ATTR_IDHOST"), 0, pql_get_define("PQL_ATTR_CN")."=*");
-	} else {
-	  $_REQUEST["idhost"] = pql_get_attribute($_pql_control->ldap_linkid,
-											  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											  pql_get_define("PQL_ATTR_IDHOST"));
-	}
+	else
+	  $_REQUEST["idhost"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_IDHOST"));
 	
 	if(@is_null($_REQUEST["idhost"]))
 	  return true;
@@ -45,13 +42,14 @@ function idhost_print_view($host) {
 
 	// init data
 	idhost_init($host);
+	$cn = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_CN"));
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">idhost (<?=$LANG->_('Host name for Message-ID\'s')?>)</th>
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Host')?></td>
-        <td class="<?=$class?>"><?php if(@$_REQUEST["idhost"]) { echo pql_maybe_idna_decode($_REQUEST["idhost"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($host)." (".$LANG->_('Taken from \'me\'') . ")"; }?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["idhost"]) { echo pql_maybe_idna_decode($_REQUEST["idhost"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($cn)." (".$LANG->_('Taken from \'me\'') . ")"; }?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_IDHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_IDHOST")?>"></a></td>
       </tr>
     </th>
@@ -102,7 +100,7 @@ function idhost_save($type, $host) {
 		if($host == "Global") {
 		  // Get all QLC host
 		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {

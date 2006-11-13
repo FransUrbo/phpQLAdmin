@@ -2,7 +2,7 @@
 // control attribute plugin for
 // percenthack (allowed domains for %-relaying)
 //
-// $Id: attrib.control.percenthack.inc,v 2.22 2006-05-19 06:55:31 turbo Exp $
+// $Id: attrib.control.percenthack.inc,v 2.22.4.1 2006-11-13 07:16:05 turbo Exp $
 
 // {{{ percenthack_check(type)
 function percenthack_check($type) {
@@ -36,14 +36,11 @@ function percenthack_init($host) {
 	global $_pql_control;
 	
 	// fetch data from ldap server
-	if($host == "Global") {
+	if($host == "Global")
 	  $_REQUEST["percenthack"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 												   pql_get_define("PQL_ATTR_PERCENTHACK"), 0, pql_get_define("PQL_ATTR_CN")."=*");
-	} else {
-	  $_REQUEST["percenthack"] = pql_get_attribute($_pql_control->ldap_linkid,
-												   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-												   pql_get_define("PQL_ATTR_PERCENTHACK"));
-	}
+	else
+	  $_REQUEST["percenthack"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_PERCENTHACK"));
 	
 	if(!@$_REQUEST["percenthack"])
 	  return true;
@@ -127,7 +124,7 @@ function percenthack_save($type, $host) {
 		if($host == "Global") {
 		  // Get all QLC host
 		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {

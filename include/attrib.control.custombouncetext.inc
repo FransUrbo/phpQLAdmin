@@ -2,7 +2,7 @@
 // control attribute plugin for
 // custombouncetext (additional bounce message)
 //
-// $Id: attrib.control.custombouncetext.inc,v 2.21 2006-05-19 06:55:31 turbo Exp $
+// $Id: attrib.control.custombouncetext.inc,v 2.21.4.1 2006-11-13 07:16:04 turbo Exp $
 
 // {{{ custombouncetext_check(type)
 function custombouncetext_check($type) {
@@ -24,14 +24,11 @@ function custombouncetext_init($host) {
 	global $_pql_control;
 	
 	// fetch data from ldap server
-	if($host == "Global") {
+	if($host == "Global")
 	  $_REQUEST["custombouncetext"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 														pql_get_define("PQL_ATTR_CUSTOMBOUNCETEXT"), 0, pql_get_define("PQL_ATTR_CN")."=*");
-	} else {
-	  $_REQUEST["custombouncetext"] = pql_get_attribute($_pql_control->ldap_linkid,
-														pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-														pql_get_define("PQL_ATTR_CUSTOMBOUNCETEXT"));
-	}
+	else
+	  $_REQUEST["custombouncetext"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_CUSTOMBOUNCETEXT"));
 	
 	if(@is_null($_REQUEST["custombouncetext"]))
 	  $_REQUEST["use_custombouncetext"] = 0;
@@ -50,9 +47,11 @@ function custombouncetext_print_view($host) {
 	
 	if($_REQUEST["use_custombouncetext"] == "0")
 	  $_REQUEST["custombouncetext"] = "disabled";
+
+	$cn = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_CN"));
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left">custombouncetext (<?=$LANG->_('Additional bounce text')?>) for host <u><?=$host?></u></th>
+    <th colspan="3" align="left">custombouncetext (<?=$LANG->_('Additional bounce text')?>) for host <u><?=$cn?></u></th>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Message')?></td>
         <td><?php echo nl2br($_REQUEST["custombouncetext"]); ?></td>
@@ -120,7 +119,7 @@ function custombouncetext_save($type, $host) {
 		if($host == "Global") {
 		  // Get all QLC host
 		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {

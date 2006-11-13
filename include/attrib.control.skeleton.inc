@@ -58,7 +58,7 @@
 //
 // Please look at other plugins to see which standard header text is recommanded.
 //
-// $Id: attrib.control.skeleton.inc,v 2.19 2006-05-19 06:55:32 turbo Exp $
+// $Id: attrib.control.skeleton.inc,v 2.19.4.1 2006-11-13 07:16:05 turbo Exp $
 //
 
 // {{{ xxx_check(type)
@@ -87,14 +87,11 @@ function xxx_init($host) {
 	// available for the other functions
 	
 	// fetch data from ldap server
-	if($host == "Global") {
+	if($host == "Global")
 	  $value = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 								 pql_get_define("PQL_ATTR_xxx"), 0, pql_get_define("PQL_ATTR_CN")."=*");
-	} else {
-	  $value = pql_get_attribute($_pql_control->ldap_linkid,
-								 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								 pql_get_define("PQL_ATTR_xxx"));
-	}
+	else
+	  $value = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_xxx"));
 	
 	if(@is_null($value))
 	  return true;
@@ -111,6 +108,9 @@ function xxx_print_view($host) {
 
 	// init data (must be here)
 	xxx_init();
+
+	// If you need the host FQDN
+	//$cn = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_CN"));
 
 	// set empty field to default value
 	if(@empty($_REQUEST["xxx"]))
@@ -188,7 +188,7 @@ function xxx_save($type, $host) {
 		if($host == "Global") {
 		  // Get all QLC host
 		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {

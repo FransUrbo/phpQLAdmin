@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtpgreeting (SMTP greeting message)
 //
-// $Id: attrib.control.smtpgreeting.inc,v 2.21 2006-05-19 06:55:32 turbo Exp $
+// $Id: attrib.control.smtpgreeting.inc,v 2.21.4.1 2006-11-13 07:16:05 turbo Exp $
 
 // {{{ smtpgreeting_check(type)
 function smtpgreeting_check($type) {
@@ -19,14 +19,11 @@ function smtpgreeting_init($host) {
     global $_pql_control;
     
     // fetch data from ldap server
-	if($host == "Global") {
+	if($host == "Global")
 	  $_REQUEST["smtpgreeting"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 													pql_get_define("PQL_ATTR_SMTPGREETING"), 0, pql_get_define("PQL_ATTR_CN")."=*");
-	} else {
-	  $_REQUEST["smtpgreeting"] = pql_get_attribute($_pql_control->ldap_linkid,
-													pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-													pql_get_define("PQL_ATTR_SMTPGREETING"));
-	}
+	else
+	  $_REQUEST["smtpgreeting"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_SMTPGREETING"));
     
     if(@is_null($_REQUEST["smtpgreeting"]))
 	  return true;
@@ -40,13 +37,14 @@ function smtpgreeting_print_view($host) {
     
     // init data
     smtpgreeting_init($host);
+	$cn = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_CN"));
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">smtpgreeting (<?=$LANG->_('SMTP greeting message')?>)</th>
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Message')?></td>
-        <td class="<?=$class?>"><?php if(@$_REQUEST["smtpgreeting"]) { echo pql_maybe_idna_decode($_REQUEST["smtpgreeting"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($host)." (".$LANG->_('Taken from \'me\'') . ")"; }?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["smtpgreeting"]) { echo pql_maybe_idna_decode($_REQUEST["smtpgreeting"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($cn)." (".$LANG->_('Taken from \'me\'') . ")"; }?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_SMTPGREETING")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_SMTPGREETING")?>"></a></td>
       </tr>
     </th>
@@ -97,7 +95,7 @@ function smtpgreeting_save($type, $host) {
 		if($host == "Global") {
 		  // Get all QLC host
 		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {

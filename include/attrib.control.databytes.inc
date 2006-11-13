@@ -2,7 +2,7 @@
 // control attribute plugin for
 // databytes (max number of bytes in message)
 //
-// $Id: attrib.control.databytes.inc,v 2.21 2006-05-19 06:55:31 turbo Exp $
+// $Id: attrib.control.databytes.inc,v 2.21.4.1 2006-11-13 07:16:04 turbo Exp $
 
 // {{{ databytes_check(type)
 function databytes_check($type) {
@@ -24,14 +24,11 @@ function databytes_init($host) {
 	global $_pql_control;
 	
 	// fetch data from ldap server
-	if($host == "Global") {
+	if($host == "Global")
 	  $_REQUEST["databytes"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 												 pql_get_define("PQL_ATTR_DATABYTES"), 0, pql_get_define("PQL_ATTR_CN")."=*");
-	} else {
-	  $_REQUEST["databytes"] = pql_get_attribute($_pql_control->ldap_linkid,
-												 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-												 pql_get_define("PQL_ATTR_DATABYTES"));
-	}
+	else
+	  $_REQUEST["databytes"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_DATABYTES"));
 
 	if(@is_null($_REQUEST["databytes"]))
 	  return true;
@@ -102,7 +99,7 @@ function databytes_save($type, $host) {
 		if($host == "Global") {
 		  // Get all QLC host
 		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {

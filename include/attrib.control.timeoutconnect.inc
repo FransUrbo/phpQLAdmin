@@ -3,7 +3,7 @@
 // timeoutconnect (how long to wait for smtp connection)
 // timeoutremote (how long to wait for remote server)
 //
-// $Id: attrib.control.timeoutconnect.inc,v 2.20 2006-05-19 06:55:32 turbo Exp $
+// $Id: attrib.control.timeoutconnect.inc,v 2.20.4.1 2006-11-13 07:16:05 turbo Exp $
 
 // {{{ timeoutconnect_check(type)
 function timeoutconnect_check($type) {
@@ -46,16 +46,13 @@ function timeoutconnect_init($host) {
 	// fetch data from ldap server
 	$attribs = array("timeoutconnect" => pql_get_define("PQL_ATTR_TIMEOUTCONNECT"),
 					 "timeoutremote"  => pql_get_define("PQL_ATTR_TIMEOUTREMOTE"));
-	if($host == "Global") {
+	if($host == "Global")
 	  foreach($attribs as $key => $attrib)
 		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 											$attrib, 0, pql_get_define("PQL_ATTR_CN")."=*");
-	} else {
+	else
 	  foreach($attribs as $key => $attrib)
-		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid,
-											pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											$attrib);
-	}
+		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid, $host, $attrib);
 }
 // }}}
 
@@ -145,7 +142,7 @@ function timeoutconnect_save($type, $host) {
 			if($host == "Global") {
 			  // Get all QLC host
 			  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-								 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+								 '(&(cn=*)(objectclass=qmailControl))');
 			  
 			  $success = 1;
 			  foreach($qlcs as $host) {

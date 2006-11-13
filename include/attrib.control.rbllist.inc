@@ -2,7 +2,7 @@
 // control attribute plugin for
 // rbllist (max number of bytes in message)
 //
-// $Id: attrib.control.rbllist.inc,v 2.10 2006-05-19 06:55:32 turbo Exp $
+// $Id: attrib.control.rbllist.inc,v 2.10.4.1 2006-11-13 07:16:05 turbo Exp $
 
 // {{{ rbllist_check(type)
 function rbllist_check($type) {
@@ -19,14 +19,11 @@ function rbllist_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	if($host == "Global") {
+	if($host == "Global")
 	  $_REQUEST["rbllist"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 											   pql_get_define("PQL_ATTR_RBLLIST"), 0, pql_get_define("PQL_ATTR_CN")."=*");
-	} else {
-	  $_REQUEST["rbllist"] = pql_get_attribute($_pql_control->ldap_linkid,
-											   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											   pql_get_define("PQL_ATTR_RBLLIST"));
-	}
+	else
+	  $_REQUEST["rbllist"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_RBLLIST"));
 
 	if(!@$_REQUEST["rbllist"])
 	  return true;
@@ -147,7 +144,7 @@ function rbllist_save($type, $host)  {
 		if($host == "Global") {
 		  // Get all QLC host
 		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {

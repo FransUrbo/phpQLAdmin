@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtproutes (max number of bytes in message)
 //
-// $Id: attrib.control.smtproutes.inc,v 2.29 2006-05-19 06:55:32 turbo Exp $
+// $Id: attrib.control.smtproutes.inc,v 2.29.4.1 2006-11-13 07:16:05 turbo Exp $
 
 // {{{ smtproutes_check(type)
 
@@ -56,14 +56,11 @@ function smtproutes_init($host) {
 
 	if(!empty($host)) {
 		// fetch data from ldap server
-		if($host == "Global") {
+		if($host == "Global")
 		  $value = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 									 pql_get_define("PQL_ATTR_SMTPROUTES"), 0, pql_get_define("PQL_ATTR_CN")."=*");
-		} else {
-		  $value = pql_get_attribute($_pql_control->ldap_linkid,
-									 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-									 pql_get_define("PQL_ATTR_SMTPROUTES"));
-		}
+		else
+		  $value = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_SMTPROUTES"));
 
 		if(empty($value))
 		  return true;
@@ -211,15 +208,14 @@ function smtproutes_print_form() {
 		if(@empty($_REQUEST["mxhost"])) {
 			// Get all QmailLDAP/Control hosts.
 			$result = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-								 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+								 '(&(cn=*)(objectclass=qmailControl))');
 			for($i=0; $i < count($result); $i++)
 			  $hosts[] = pql_get_attribute($_pql_control->ldap_linkid, $result[$i], pql_get_define("PQL_ATTR_CN"));
 		}
 	} else {
 		// Get all hosts which have this domain in 'attrib'
 		$hosts = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-							"(&(cn=*)(objectclass=qmailControl)(".$_REQUEST["attrib"]."=".$_REQUEST["set"]."*))",
-							'ONELEVEL');
+							"(&(cn=*)(objectclass=qmailControl)(".$_REQUEST["attrib"]."=".$_REQUEST["set"]."*))");
 		// Convert the DN into a host list
 		for($i=0; $i < count($hosts); $i++) {
 			$host = split(',', $hosts[$i]);
@@ -412,7 +408,7 @@ function smtproutes_save($type, $host) {
 			if($host == "Global") {
 			  // Get all QLC host
 			  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-								 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+								 '(&(cn=*)(objectclass=qmailControl))');
 
 			  $success = 1;
 			  foreach($qlcs as $host) {
@@ -496,8 +492,7 @@ function smtproutes_save($type, $host) {
 			
 			// Find the object(s) which contain this string
 			$ctrls = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-							"(&(cn=*)(objectclass=qmailControl)(".pql_get_define("PQL_ATTR_SMTPROUTES")."=".$_REQUEST["set"]."))",
-								'ONELEVEL');
+								"(&(cn=*)(objectclass=qmailControl)(".pql_get_define("PQL_ATTR_SMTPROUTES")."=".$_REQUEST["set"]."))");
 			// If it isn't an array, but it IS set -> make it an array!
 			if($ctrls && !is_array($ctrls)) {
 				$tmp = $ctrls; unset($ctrls);
@@ -523,8 +518,7 @@ function smtproutes_save($type, $host) {
 
 			// Find QmailLDAP/Controls object(s) which contain this domain in SMTPRoutes
 			$ctrls = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-							"(&(cn=*)(objectclass=qmailControl)(".pql_set_define("PQL_ATTR_SMTPROUTES")."=".$_REQUEST["set"]."*))",
-								'ONELEVEL');
+								"(&(cn=*)(objectclass=qmailControl)(".pql_set_define("PQL_ATTR_SMTPROUTES")."=".$_REQUEST["set"]."*))");
 			// If it isn't an array, but it IS set -> make it an array!
 			if($ctrls && !is_array($ctrls)) {
 				$tmp = $ctrls; unset($ctrls);

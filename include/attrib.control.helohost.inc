@@ -2,7 +2,7 @@
 // control attribute plugin for
 // helohost (host name used in SMTP HELO command)
 //
-// $Id: attrib.control.helohost.inc,v 2.22 2006-11-11 14:38:21 turbo Exp $
+// $Id: attrib.control.helohost.inc,v 2.22.2.1 2006-11-13 07:16:04 turbo Exp $
 
 // {{{ helohost_check(type)
 function helohost_check($type) {
@@ -24,14 +24,11 @@ function helohost_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	if($host == "Global") {
+	if($host == "Global")
 	  $value = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 								 pql_get_define("PQL_ATTR_HELOHOST"), 0, pql_get_define("PQL_ATTR_CN")."=*");
-	} else {
-	  $value = pql_get_attribute($_pql_control->ldap_linkid,
-								 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								 pql_get_define("PQL_ATTR_HELOHOST"));
-	}
+	else
+	  $value = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_HELOHOST"));
 
 	if(@is_array($value))
 	  $_REQUEST["helohost"] = $value[0];
@@ -47,13 +44,14 @@ function helohost_print_view($host) {
 
 	// init data
 	helohost_init($host);
+	$cn = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_CN"));
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">helohost (Helo host)</th>
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Host')?></td>
-        <td class="<?=$class?>"><?php if(@$_REQUEST["helohost"]) { echo pql_maybe_idna_decode($_REQUEST["helohost"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($host)." (".$LANG->_('Taken from \'me\'') . ")"; }?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["helohost"]) { echo pql_maybe_idna_decode($_REQUEST["helohost"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($cn)." (".$LANG->_('Taken from \'me\'') . ")"; }?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_HELOHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_HELOHOST")?>"></a></td>
       </tr>
     </th>
@@ -104,7 +102,7 @@ function helohost_save($type, $host) {
 		if($host == "Global") {
 		  // Get all QLC host
 		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {

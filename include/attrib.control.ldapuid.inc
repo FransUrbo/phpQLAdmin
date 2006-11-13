@@ -3,7 +3,7 @@
 // ldapuid (user id of virtual user)
 // ldapgid (group id of virtual user)
 //
-// $Id: attrib.control.ldapuid.inc,v 2.19 2006-05-19 06:55:31 turbo Exp $
+// $Id: attrib.control.ldapuid.inc,v 2.19.4.1 2006-11-13 07:16:04 turbo Exp $
 
 // {{{ ldapuid_check(type)
 function ldapuid_check($type) {
@@ -50,15 +50,13 @@ function ldapuid_init($host) {
 	// fetch data from ldap server
 	$attribs = array("ldapuid" => pql_get_define("PQL_ATTR_LDAPUID"),
 					 "ldapgid" => pql_get_define("PQL_ATTR_LDAPGID"));
-	if($host == "Global") {
+	if($host == "Global")
 	  foreach($attribs as $key => $attrib)
 		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 											$attrib, 0, pql_get_define("PQL_ATTR_CN")."=*");
-	} else {
+	else
 	  foreach($attribs as $key => $attrib)
-		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid,
-											pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											$attrib);
+		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid, $host, $attrib);
 	}
 }
 // }}}
@@ -146,9 +144,8 @@ function ldapuid_save($type, $host) {
 		  if(!@empty($_REQUEST[$key])) {
 			if($host == "Global") {
 			  // Get all QLC host
-			  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-								 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
-			  
+			  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], '(&(cn=*)(objectclass=qmailControl))');
+
 			  foreach($qlcs as $host) {
 				if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
 										 $attrib, '', $_REQUEST[$key]))
@@ -173,6 +170,7 @@ function ldapuid_save($type, $host) {
 
 		attribute_forward($msg);
 		break;
+// }}}
 
 	  default:
 		die(pql_complete_constant($LANG->_('Unknown save type %type% in file %file%, function save()'),

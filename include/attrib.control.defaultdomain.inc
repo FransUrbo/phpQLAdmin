@@ -3,7 +3,7 @@
 // defaultdomain (default domain)
 // defaulthost (default hostname)
 //
-// $Id: attrib.control.defaultdomain.inc,v 2.20 2006-05-19 06:55:31 turbo Exp $
+// $Id: attrib.control.defaultdomain.inc,v 2.20.4.1 2006-11-13 07:16:04 turbo Exp $
 
 // {{{ defaultdomain_check(type)
 function defaultdomain_check($type) {
@@ -47,9 +47,7 @@ function defaultdomain_init($host) {
 											$attrib, 0, pql_get_define("PQL_ATTR_CN")."=*");
 	} else {
 	  foreach($attribs as $key => $attrib)
-		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid,
-											pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											$attrib);
+		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid, $host, $attrib);
 	}
 
 }
@@ -62,27 +60,28 @@ function defaultdomain_print_view($host) {
 
 	// init data
 	defaultdomain_init($host);
+	$cn = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_CN"));
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">defaultdomain, defaulthost, plusdomain (<?=$LANG->_('Default domain / host')?>)
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Default domain')?></td>
-        <td class="<?=$class?>"><?php if(@$_REQUEST["defaultdomain"]) { echo $_REQUEST["defaultdomain"]; } else { pql_maybe_idna_decode($host) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";}?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["defaultdomain"]) { echo $_REQUEST["defaultdomain"]; } else { pql_maybe_idna_decode($cn) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")";}?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_DEFAULTDOMAIN")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_DEFAULTDOMAIN")?>"></a></td>
       </tr>
 
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Default host')?></td>
-        <td class="<?=$class?>"><?php if(@$_REQUEST["defaulthost"]) { echo $_REQUEST["defaulthost"]; } else { pql_maybe_idna_decode($host) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")"; }?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["defaulthost"]) { echo $_REQUEST["defaulthost"]; } else { pql_maybe_idna_decode($cn) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")"; }?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_DEFAULTHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_DEFAULTHOST")?>"></a></td>
       </tr>
 
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Plus domain')?></td>
-        <td class="<?=$class?>"><?php if(@$_REQUEST["plusdomain"]) { echo $_REQUEST["plusdomain"]; } else { pql_maybe_idna_decode($host) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")"; }?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["plusdomain"]) { echo $_REQUEST["plusdomain"]; } else { pql_maybe_idna_decode($cn) . ", (" . $LANG->_('Default') . ", " . $LANG->_('Taken from \'me\'') . ")"; }?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_PLUSDOMAIN")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_PLUSDOMAIN")?>"></a></td>
       </tr>
     </th>
@@ -152,7 +151,7 @@ function defaultdomain_save($type, $host) {
 			if($host == "Global") {
 			  // Get all QLC host
 			  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-								 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+								 '(&(cn=*)(objectclass=qmailControl))');
 			  
 			  $success = 1;
 			  foreach($qlcs as $host) {

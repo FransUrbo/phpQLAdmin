@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldapcluster (clustering support)
 //
-// $Id: attrib.control.ldapcluster.inc,v 2.20 2006-05-19 06:55:31 turbo Exp $
+// $Id: attrib.control.ldapcluster.inc,v 2.20.4.1 2006-11-13 07:16:04 turbo Exp $
 
 // {{{ ldapcluster_check(type)
 function ldapcluster_check($type) {
@@ -10,20 +10,17 @@ function ldapcluster_check($type) {
 }
 // }}}
 
-// {{{ ldapcluster_init(void)
+// {{{ ldapcluster_init(host)
 // init values
-function ldapcluster_init() {
+function ldapcluster_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	if($_REQUEST["mxhost"] == "Global") {
+	if($host == "Global")
 	  $_REQUEST["ldapcluster"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 												   pql_get_define("PQL_ATTR_LDAPCLUSTER"), 0, pql_get_define("PQL_ATTR_CN")."=*");
-	} else {
-	  $_REQUEST["ldapcluster"] = pql_get_attribute($_pql_control->ldap_linkid,
-												   pql_get_define("PQL_ATTR_CN").'='.$_REQUEST["mxhost"].",".$_SESSION["USER_SEARCH_DN_CTR"],
-												   pql_get_define("PQL_ATTR_LDAPCLUSTER"));
-	}
+	else
+	  $_REQUEST["ldapcluster"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_LDAPCLUSTER"));
 
 	if(@is_null($_REQUEST["ldapcluster"])) {
 		// set to default value
@@ -39,7 +36,7 @@ function ldapcluster_print_view($host) {
 	global $ldapcluster, $view, $LANG;
 
 	// init data
-	ldapcluster_init();
+	ldapcluster_init($host);
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">ldapcluster (<?=$LANG->_('Clustering support')?>)
@@ -79,7 +76,7 @@ function ldapcluster_save($type, $host) {
 		if($host == "Global") {
 		  // Get all QLC host
 		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {

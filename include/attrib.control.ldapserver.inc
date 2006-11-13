@@ -7,7 +7,7 @@
 // ldapgrouplogin (dn of a database user - used by qmail-group)
 // ldapgrouppassword (password for bind - used with ldapgrouplogin)
 //
-// $Id: attrib.control.ldapserver.inc,v 2.21 2006-05-19 07:00:20 turbo Exp $
+// $Id: attrib.control.ldapserver.inc,v 2.21.4.1 2006-11-13 07:16:04 turbo Exp $
 
 // {{{ ldapserver_check(type)
 function ldapserver_check($type) {
@@ -104,16 +104,13 @@ function ldapserver_init($host) {
 					 "ldappassword"		=> pql_get_define("PQL_ATTR_LDAPPASSWORD"),
 					 "ldapgrouplogin"	=> pql_get_define("PQL_ATTR_GROUP_LOGIN"),
 					 "ldapgrouppassword"=> pql_get_define("PQL_ATTR_GROUP_PASSWD"));
-	if($host == "Global") {
+	if($host == "Global")
 	  foreach($attribs as $key => $attrib)
 		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 											$attrib, 0, pql_get_define("PQL_ATTR_CN")."=*");
-	} else {
+	else
 	  foreach($attribs as $key => $attrib)
-		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid,
-											pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											$attrib);
-	}
+		$_REQUEST[$key] = pql_get_attribute($_pql_control->ldap_linkid, $host, $attrib);
 	
 	// init checkbox
 	if(@$_REQUEST["ldaplogin"])
@@ -318,7 +315,7 @@ function ldapserver_save($type, $host) {
 		  if($host == "Global") {
 			// Get all QLC host
 			$qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-							   '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+							   '(&(cn=*)(objectclass=qmailControl))');
 			
 			$success = 1;
 			foreach($qlcs as $host) {
