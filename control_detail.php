@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.49 2006-11-11 14:37:46 turbo Exp $
+// $Id: control_detail.php,v 1.49.2.1 2006-11-13 07:07:03 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -31,11 +31,11 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 					 "locals"				=> pql_get_define("PQL_ATTR_LOCALS"),
 					 "rcpthosts"			=> pql_get_define("PQL_ATTR_RCPTHOSTS"),
 					 "ldaplogin"			=> pql_get_define("PQL_ATTR_LDAPLOGIN"),
-					 "ldappassword"			=> pql_get_define("PQL_ATTR_LDAPPASSWORD"));
-	$cn = pql_get_define("PQL_ATTR_CN") . "=" . $_REQUEST["mxhost"] . "," . $_SESSION["USER_SEARCH_DN_CTR"];
+					 "ldappassword"			=> pql_get_define("PQL_ATTR_LDAPPASSWORD"),
+					 "cn"					=> pql_get_define("PQL_ATTR_CN"));
 
 	foreach($attribs as $key => $attrib) {
-		$value = pql_get_attribute($_pql_control->ldap_linkid, $cn, $attrib);
+		$value = pql_get_attribute($_pql_control->ldap_linkid, $_REQUEST["mxhost"], $attrib);
 		if($value) {
 			if($key == "locals") {
 				if(!is_array($value))

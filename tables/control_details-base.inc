@@ -11,14 +11,14 @@
 <?php } else { ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title">RDN</td>
-        <td><?=$cn?></td>
+        <td><?=$_REQUEST["mxhost"]?></td>
         <td></td>
         <td></td>
       </tr>
   
       <tr class="<?php pql_format_table(); ?>">
         <td class="title">Fully qualified domain name</td>
-        <td><?=pql_maybe_idna_decode($_REQUEST["mxhost"])?></td>
+        <td><?=pql_maybe_idna_decode($cn)?></td>
         <td></td>
         <td></td>
       </tr>
