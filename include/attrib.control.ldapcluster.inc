@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldapcluster (clustering support)
 //
-// $Id: attrib.control.ldapcluster.inc,v 2.20.4.1 2006-11-13 07:16:04 turbo Exp $
+// $Id: attrib.control.ldapcluster.inc,v 2.20.4.2 2006-11-13 13:22:25 turbo Exp $
 
 // {{{ ldapcluster_check(type)
 function ldapcluster_check($type) {
@@ -81,7 +81,7 @@ function ldapcluster_save($type, $host) {
 		  $success = 1;
 		  foreach($qlcs as $host) {
 			if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
-									 pql_get_define("PQL_ATTR_LDAPCLUSTER"), '', $_REQUEST[$attrib]))
+									 pql_get_define("PQL_ATTR_LDAPCLUSTER"), 1, $_REQUEST[$attrib]))
 			  $success = 0;
 		  }
 		} else {
