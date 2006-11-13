@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.61 2006-11-11 15:39:03 root Exp $
+// $Id: pql_search.inc,v 2.61.2.1 2006-11-13 15:11:19 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -462,20 +462,13 @@ function pql_get_email_domains($linkid, $host) {
 }
 // }}}
 
-// {{{ pql_get_automount_maps(linkid, domain, host)
+// {{{ pql_get_automount_maps(linkid, $computerdn, host)
 // Retreive ALL automount maps (recursivly) for a specific host in a specific domain
-function pql_get_automount_maps($linkid, $domain, $host) {
-  // {{{ Setup the DN for this host
-  if(pql_get_define("PQL_CONF_SUBTREE_AUTOMOUNTS")) {
-	$subrdn =  pql_get_define("PQL_CONF_SUBTREE_AUTOMOUNTS") . ",";
-  }
-  $computerdn = pql_get_define("PQL_ATTR_CN")."=".$host.",".$subrdn.$domain;
-  // }}}
-
+function pql_get_automount_maps($linkid, $computerdn, $host) {
   // {{{ Retreive the base mount points
   // Find the auto.master object
   $filter = '(&(objectClass=autoMountMap)(|('.pql_get_define("PQL_ATTR_CN").'=auto.master)('.pql_get_define("PQL_ATTR_OU").'=auto.master)))';
-  $auto_master = pql_search($linkid, $computerdn, $filter, 'ONELEVEL'); $auto_master = $auto_master["dn"];
+  $auto_master = pql_search($linkid, $computerdn, $filter); $auto_master = $auto_master["dn"];
 
   if(isset($auto_master))
 	// Get automount maps below auto.master
@@ -502,8 +495,11 @@ function pql_get_automount_map($linkid, $dn) {
   $maps = pql_search($linkid, $dn, $filter, 'ONELEVEL');
 
   if(file_exists($_SESSION["path"]."/.DEBUG_AUTOMOUNT")) {
-	echo "pql_get_automount_map(): Maps for DN '<b>$dn</b>'";
-	printr($maps);
+	echo "pql_get_automount_map(): Maps for DN '<b>$dn</b>': ";
+	if($maps) 
+	  printr($maps);
+	else
+	  echo "<i>empty</i><br>";
   }
 
   // Make sure the array is a _numbered_ array...
