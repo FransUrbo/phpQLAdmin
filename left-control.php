@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.35.4.1 2006-11-12 22:35:21 turbo Exp $
+// $Id: left-control.php,v 2.35.4.2 2006-11-13 07:13:32 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -140,11 +140,11 @@ if(pql_get_define("PQL_CONF_CONTROL_USE") && $_SESSION["ALLOW_CONTROL_CREATE"]) 
 			// {{{ Setup and show the branch
 			$links = array();
 			foreach($cats as $cat) {
-			  $new = array($cat => "control_cat.php?mxhost=".urlencode($host_dn)."&cat=".urlencode($cat));
+			  $new = array($cat => "control_cat.php?mxhost=".urlencode($qlc_dn)."&cat=".urlencode($cat));
 			  $links = $links + $new;
 			}
 
-			pql_format_tree($qlc, "control_detail.php?mxhost=".urlencode($host_dn), $links, 1);
+			pql_format_tree($qlc, "control_detail.php?mxhost=".urlencode($qlc_dn), $links, 1);
 // }}}
 		  } // end if is_array($cats)
 		} // end foreach($qlcs)
