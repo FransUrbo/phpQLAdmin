@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.58 2006-11-12 21:48:20 turbo Exp $
+// $Id: pql_formating.inc,v 2.59 2006-11-13 13:28:25 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry, extra_newline)
 // Create a LDIF object to print in case of error
@@ -114,7 +114,7 @@ function pql_generate_button($buttons, $link = '') {
   }
 ?>
 
-  <table cellspacing="0" border="2" width="50%" cellpadding="0">
+    <table cellspacing="0" border="2" width="50%" cellpadding="0">
 <?php
   $i=0; // A button counter.
   foreach($buttons as $view => $text) {
@@ -124,13 +124,13 @@ function pql_generate_button($buttons, $link = '') {
 	else
 	  unset($mark);
 ?>
-    <a href="<?=$url?>view=<?=$view?><?php if($link) { echo "&$link"; } ?>"><img alt="/ <?=$LANG->_($text)?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?php echo urlencode($LANG->_($text)); ?><?=$mark?>"></a>
+      <a href="<?=$url?>view=<?=$view?><?php if($link) { echo "&$link"; } ?>"><img alt="/ <?=$LANG->_($text)?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?php echo urlencode($LANG->_($text)); ?><?=$mark?>"></a>
 <?php
 	// Increase button counter"
 	$i++;
   }
 ?>
-  </table>
+    </table>
 
 <?php
 }
