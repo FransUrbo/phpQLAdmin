@@ -214,13 +214,6 @@
         <td><?=$usesudo_link?></td>
       </tr>
 
-      <!-- -------------------- --!>
-      <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Use Automount')?></td>
-        <td><?php if($useautomount) {echo $LANG->_('Yes');} else {echo $LANG->_('No');}?></td>
-        <td><?=$useautomount_link?></td>
-      </tr>
-
 <?php
 
 	  // Domain administrators
