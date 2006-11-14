@@ -56,11 +56,6 @@ if($_REQUEST["host"] == 'Global') {
 
 }
 $server_reference = pql_get_attribute($_pql->ldap_linkid, $server_dn, pql_get_define("PQL_ATTR_CN"));
-
-if(file_exists($_SESSION["path"]."/.DEBUG_WEBSRV")) {
-  echo "DEBUG (server containers): default=<b>$server_dn</b>";
-  printr($servers);
-}
 // }}}
 
 if(count($servers)) {
