@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.58.2.2 2006-11-14 16:00:29 turbo Exp $
+// $Id: pql_formating.inc,v 2.58.2.3 2006-11-14 21:19:20 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry, extra_newline)
 // Create a LDIF object to print in case of error
@@ -98,10 +98,13 @@ function pql_complete_constant($text, $replacement) {
 // }}}
 
 // {{{ pql_generate_button(button array)
-function pql_generate_button($buttons, $link = '') {
+function pql_generate_button($buttons, $link = '', $url = '') {
   global $LANG, $_REQUEST;
 
-  $url = $_SERVER["PHP_SELF"] . "?";
+  if(empty($url))
+	$url = $_SERVER["PHP_SELF"] . "?";
+  else
+	$url .= '?';
   
   // It's not sure we have a rootdn and/or domain, so only add those
   // it's set

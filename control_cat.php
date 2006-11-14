@@ -1,6 +1,6 @@
 <?php
 // shows details of specified category of attributes
-// $Id: control_cat.php,v 2.23.2.1 2006-11-14 16:13:44 turbo Exp $
+// $Id: control_cat.php,v 2.23.2.2 2006-11-14 21:19:19 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -70,7 +70,7 @@ if($_REQUEST["ref"]) {
 				   'automount' => 'Automount Information',
 				   'mailsrv'   => 'Mailserver Administration',
 				   'websrv'    => 'Webserver Administration');
-  pql_generate_button($buttons, "host=".urlencode($_REQUEST["host"])."&ref=".$_REQUEST["ref"]); echo "    <br>\n";
+  pql_generate_button($buttons, "host=".urlencode($_REQUEST["host"])."&ref=".$_REQUEST["ref"], 'host_detail.php'); echo "    <br>\n";
   
   if(@$tmp)
 	// Restore the view value

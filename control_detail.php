@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.49.2.2 2006-11-14 16:18:35 turbo Exp $
+// $Id: control_detail.php,v 1.49.2.3 2006-11-14 21:19:19 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -13,6 +13,10 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
     $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 	include($_SESSION["path"]."/header.html");
+
+	if(@$_REQUEST["host"] and !@$_REQUEST["mxhost"])
+	  // Called via host_detail.php
+	  $_REQUEST["mxhost"] = $_REQUEST["host"];
 // }}}
 
 	// {{{ Retreive the actual QLC object if we're called with a physical host (as in via host_detail.php).
@@ -133,7 +137,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 					   'automount' => 'Automount Information',
 					   'mailsrv'   => 'Mailserver Administration',
 					   'websrv'    => 'Webserver Administration');
-	  pql_generate_button($buttons, "host=".urlencode($_REQUEST["host"])."&ref=".$_REQUEST["ref"]); echo "    <br>\n";
+	  pql_generate_button($buttons, "host=".urlencode($_REQUEST["host"])."&ref=".$_REQUEST["ref"], 'host_detail.php'); echo "    <br>\n";
 
 	  if(@$tmp)
 		// Restore the view value
