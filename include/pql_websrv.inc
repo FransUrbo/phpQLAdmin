@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for web server configuration)
 //
-// $Id: pql_websrv.inc,v 1.19.2.1 2006-11-14 16:06:10 turbo Exp $
+// $Id: pql_websrv.inc,v 1.19.2.2 2006-11-14 19:12:30 turbo Exp $
 //
 
 // {{{ pql_websrv_add_server(linkid, domain, dn, entry, type)
@@ -129,7 +129,14 @@ function pql_websrv_get_virtual_host_objects($linkid, $server) {
   
   // Retreive the Apache web server virtual host object(s)
   $result = pql_search($linkid, $server, $filter, "ONELEVEL");
-  for($i=0; $i < count($result)-1; $i++) {
+  if($result["dn"]) {
+	// Oups, flat object
+	$tmp = $result;		// Save the array
+	unset($result);		// Unset the old array
+	$result[] = $tmp;	// Recreate the array, number indexed
+  }
+
+  for($i=0; $i < count($result); $i++) {
 	// Oki, we have webserver configuration(s) in LDAP.
 	$name = $result[$i][pql_get_define("PQL_ATTR_CN")];
 	
