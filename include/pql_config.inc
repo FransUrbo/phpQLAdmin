@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.86 2006-07-26 21:31:09 turbo Exp $
+// $Id: pql_config.inc,v 1.87 2006-11-14 16:24:48 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -289,7 +289,14 @@ unset($define_attribute); unset($sr); unset($info);
 unset($v); unset($nkey); unset($k); unset($ref);
 
 // See bug #203...
-@(($_REQUEST["domain"] = $_GET["domain"]) || ($_REQUEST["domain"] = $_POST["domain"]));
+// This created an empty '$_REQUEST["domain"]' value sometimes...
+//@(($_REQUEST["domain"] = $_GET["domain"]) || ($_REQUEST["domain"] = $_POST["domain"]));
+if(!@$_REQUEST["domain"]) {
+  if(@$_GET["domain"])
+	$_REQUEST["domain"] = $_GET["domain"];
+  elseif(@$_POST["domain"])
+	$_REQUEST["domain"] = $_POST["domain"];
+}
 
 /*
  * Local variables:

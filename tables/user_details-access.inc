@@ -2,6 +2,7 @@
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="2" align="left"><?=$LANG->_('User access')?></th>
 <?php
+	$super_admin = 0;
     foreach($_SESSION["BASE_DN"] as $branch) {
 		$branch = urldecode($branch);
 
@@ -9,8 +10,6 @@
 		if(pql_validate_administrator($_pql->ldap_linkid, $branch, pql_get_define("PQL_ATTR_ADMINISTRATOR"), $_GET["user"])) {
 			$domains_admins[$branch][] = $branch;
 			$super_admin = 1;
-		} else {
-			$super_admin = 0;
 		}
 
 		// Find all branches the user is admin of
