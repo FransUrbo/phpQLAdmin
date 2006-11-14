@@ -1,7 +1,7 @@
 <?php
 // View information about physical host object
 // (mainly Host ACL's)
-// $Id: host_detail.php,v 1.1.2.2 2006-11-14 15:46:58 turbo Exp $
+// $Id: host_detail.php,v 1.1.2.3 2006-11-14 19:14:43 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -30,11 +30,17 @@ if(empty($_REQUEST["view"])) {
   $_REQUEST["view"] = 'hostacl';
 }
 
-$buttons = array('hostacl'   => 'Host Control',
-				 'automount' => 'Automount Information',
-				 'mailsrv'   => 'Mailserver Administration',
-				 'websrv'    => 'Webserver Administration');
-pql_generate_button($buttons, "host=".urlencode($_REQUEST["host"])."&ref=".$_REQUEST["ref"]); echo "    <br>\n";
+if(($_REQUEST["server"] != 'Global') and !@$_REQUEST["virthost"] and @($_REQUEST["ref"] != 'left2')) {
+  // Do NOT show if:
+  //	Left host frame/Webserver - Global
+  //	Left host frame/[physical]/Webserver - Port xx
+  //	Left host frame/[physical]/Webserver - Port xx/Virtual host
+  $buttons = array('hostacl'   => 'Host Control',
+				   'automount' => 'Automount Information',
+				   'mailsrv'   => 'Mailserver Administration',
+				   'websrv'    => 'Webserver Administration');
+  pql_generate_button($buttons, "host=".urlencode($_REQUEST["host"])."&ref=".$_REQUEST["ref"]); echo "    <br>\n";
+}
 // }}}
 
 // {{{ Load the requested domain details page
