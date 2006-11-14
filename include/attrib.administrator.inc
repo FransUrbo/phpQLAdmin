@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for administrator and seealso modification
 // Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
-// $Id: attrib.administrator.inc,v 1.57 2006-07-05 09:40:18 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.57.2.1 2006-11-14 15:53:23 turbo Exp $
 
 // There is serious problems with this. I fix for one usage and break another
 // one! Let's try to remember (and document) how it's called. It's called from
@@ -327,7 +327,7 @@ function attribute_save($type) {
     global $_pql, $LANG;
 
 	$attrib = $_REQUEST["attrib"];
-	$value  = $_REQUEST[$attrib];
+	$value = $_REQUEST[$attrib];
 
 	// {{{ Which DN should we use?
 	if($_REQUEST["branchdn"])
@@ -421,12 +421,11 @@ function attribute_save($type) {
 	if(pql_modify_attribute($_pql->ldap_linkid, $DN, '', '', $ADMs)) {
 		$success = 1;
 
-		if($use_aci and $value and ($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR"))) {
+		if($use_aci and ($value or @$_REQUEST["user"]) and ($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR"))) {
 			// We're using ACI's and we're adding/removing an administrator.
 
 			// Get all the objects below this branch.
 			$branches = pql_get_dn($_pql->ldap_linkid, $DN, 'objectClass=*');
-
 			for($i=0; $i < count($branches); $i++) {
 				if($branches[$i] != $DN) {
 					// Create an ACI entry for this branch.
