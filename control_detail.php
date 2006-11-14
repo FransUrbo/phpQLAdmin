@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.49.2.1 2006-11-13 07:07:03 turbo Exp $
+// $Id: control_detail.php,v 1.49.2.2 2006-11-14 16:18:35 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -13,6 +13,20 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
     $_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 
 	include($_SESSION["path"]."/header.html");
+// }}}
+
+	// {{{ Retreive the actual QLC object if we're called with a physical host (as in via host_detail.php).
+	if($_REQUEST["ref"]) {
+	  // Get the FQDN of the host
+	  $cn = pql_get_attribute($_pql_control->ldap_linkid, $_REQUEST["mxhost"], pql_get_define("PQL_ATTR_CN"));
+
+	  $filter = "(&(".pql_get_define("PQL_ATTR_OBJECTCLASS")."=qmailControl)(cn=$cn))";
+	  $result = pql_get_dn($_pql_control->ldap_linkid, $_REQUEST["mxhost"], $filter, 'ONELEVEL');
+	  if(is_array($result))
+		$_REQUEST["mxhost"] = $result[0];
+	  elseif(@$result)
+		$_REQUEST["mxhost"] = $result;
+	}
 // }}}
 
 	// {{{ Get the values of the mailserver
@@ -33,7 +47,6 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 					 "ldaplogin"			=> pql_get_define("PQL_ATTR_LDAPLOGIN"),
 					 "ldappassword"			=> pql_get_define("PQL_ATTR_LDAPPASSWORD"),
 					 "cn"					=> pql_get_define("PQL_ATTR_CN"));
-
 	foreach($attribs as $key => $attrib) {
 		$value = pql_get_attribute($_pql_control->ldap_linkid, $_REQUEST["mxhost"], $attrib);
 		if($value) {
@@ -98,7 +111,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 
 ?>
 
-  <span class="title1">Mailserver: <?=pql_maybe_idna_decode($_REQUEST["mxhost"])?></span>
+  <span class="title1">Mailserver: <?=pql_maybe_idna_decode($cn)?></span>
 
   <br><br>
 
@@ -109,12 +122,34 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 	asort($cats);
 // }}}
 
-	if(@empty($_REQUEST["view"]))
-		$_REQUEST["view"] = 'default';
-	if(@empty($_REQUEST["cat"]))
-		$_REQUEST["cat"] = 'default';
+	// {{{ Setup the host view buttons
+	if($_REQUEST["ref"]) {
+	  if(@$_REQUEST["view"])
+		// Save this so it doesn't disappear
+		$tmp = $_REQUEST["view"];
 
-	// {{{ Setup the buttons
+	  $_REQUEST["view"] = 'mailsrv';
+	  $buttons = array('hostacl'   => 'Host Control',
+					   'automount' => 'Automount Information',
+					   'mailsrv'   => 'Mailserver Administration',
+					   'websrv'    => 'Webserver Administration');
+	  pql_generate_button($buttons, "host=".urlencode($_REQUEST["host"])."&ref=".$_REQUEST["ref"]); echo "    <br>\n";
+
+	  if(@$tmp)
+		// Restore the view value
+		$_REQUEST["view"] = $tmp;
+	  else
+		// Unset the view value (so it can be set below)
+		unset($_REQUEST["view"]);
+	}
+// }}}
+
+	// {{{ Setup the controls view buttons
+	if(@empty($_REQUEST["cat"]))
+	  $_REQUEST["cat"] = 'default';
+	if(@empty($_REQUEST["view"]))
+	  $_REQUEST["view"] = 'default';
+
 	$buttons = array('default' => 'Base values');
 	foreach($cats as $cat) {
 	  $new = array(urlencode($cat) => $cat);
@@ -124,7 +159,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 	$new = array('action'  => 'Action');
 	$buttons = $buttons + $new;
 
-	pql_generate_button($buttons, "mxhost=".$_REQUEST["mxhost"]); echo "  <br>\n";
+	pql_generate_button($buttons, "mxhost=".urlencode($_REQUEST["mxhost"])."&ref=".$_REQUEST["ref"]); echo "  <br>\n";
 // }}}
 
 	// {{{ Load the requested control details page
@@ -138,7 +173,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 		include("./tables/control_details-action.inc");
 	else {
 	  // This is ugly. We're called with a 'view' which is actually a 'category'.
-	  $url = "control_cat.php?mxhost=".$_REQUEST["mxhost"]."&cat=".urlencode($_REQUEST["view"]);
+	  $url = "control_cat.php?mxhost=".$_REQUEST["mxhost"]."&cat=".urlencode($_REQUEST["view"])."&ref=".$_REQUEST["ref"];
 	  pql_header($url);
 	}
 // }}}
