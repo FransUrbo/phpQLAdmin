@@ -1,7 +1,7 @@
 <?php
 // View information about physical host object
 // (mainly Host ACL's)
-// $Id: host_detail.php,v 1.1.2.1 2006-11-13 13:18:46 turbo Exp $
+// $Id: host_detail.php,v 1.1.2.2 2006-11-14 15:46:58 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -9,7 +9,7 @@ require($_SESSION["path"]."/include/pql_config.inc");
 require($_SESSION["path"]."/left-head.html");
 // }}}
 
-// {{{ Setup hosts array
+// {{{ Retreive and setup physical hosts array
 if($_REQUEST["host"] == 'Global') {
   $hosts = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 					  '(&(cn=*)(|(objectclass=ipHost)(objectclass=device)))',
@@ -30,20 +30,24 @@ if(empty($_REQUEST["view"])) {
   $_REQUEST["view"] = 'hostacl';
 }
 
-$buttons = array();
-if(pql_get_define("PQL_ATTR_SUDO_USE")) {
-  $new = array('hostacl' => 'Host control');
-  $buttons = $buttons + $new;
-}
-if(pql_get_define("PQL_ATTR_AUTOMOUNT_USE")) {
-  $new = array('automount' => 'Automount information');
-  $buttons = $buttons + $new;
-}
-
-pql_generate_button($buttons, "host=".urlencode($_REQUEST["host"])); echo "    <br>\n";
+$buttons = array('hostacl'   => 'Host Control',
+				 'automount' => 'Automount Information',
+				 'mailsrv'   => 'Mailserver Administration',
+				 'websrv'    => 'Webserver Administration');
+pql_generate_button($buttons, "host=".urlencode($_REQUEST["host"])."&ref=".$_REQUEST["ref"]); echo "    <br>\n";
 // }}}
 
-include("./tables/host_details-acl.inc");
+// {{{ Load the requested domain details page
+if($_REQUEST["view"] == 'hostacl') {
+  include("./tables/host_details-acl.inc");
+} elseif($_REQUEST["view"] == 'automount') {
+  include("./tables/host_details-automount.inc");
+} elseif($_REQUEST["view"] == 'mailsrv') {
+  pql_header("control_detail.php?mxhost=".urlencode($_REQUEST["host"])."&ref=".$_REQUEST["ref"]);
+} elseif($_REQUEST["view"] == 'websrv') {
+  include("./tables/host_details-websrv.inc");
+}
+// }}}
 
 /*
  * Local variables:
