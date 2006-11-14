@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.86 2006-07-26 21:31:09 turbo Exp $
+// $Id: pql_config.inc,v 1.86.2.1 2006-11-14 15:55:53 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -189,7 +189,7 @@ foreach($_pql->ldap_basedn as $dn)  {
 	$_SESSION["ALLOW_BRANCH_CREATE"] = pql_validate_administrator($_pql->ldap_linkid, $dn,
 																  pql_get_define("PQL_ATTR_ADMINISTRATOR"),
 																  $_SESSION["USER_DN"]);
-	
+
 	// User is super administrator - allow for administrating QmailLDAP/Control objects and ezmlm lists as well.
 	if($_SESSION["ALLOW_BRANCH_CREATE"]) {
 	  $_SESSION["ALLOW_CONTROL_CREATE"] = 1;
@@ -289,7 +289,14 @@ unset($define_attribute); unset($sr); unset($info);
 unset($v); unset($nkey); unset($k); unset($ref);
 
 // See bug #203...
-@(($_REQUEST["domain"] = $_GET["domain"]) || ($_REQUEST["domain"] = $_POST["domain"]));
+// This created an empty '$_REQUEST["domain"]' value sometimes...
+//@(($_REQUEST["domain"] = $_GET["domain"]) || ($_REQUEST["domain"] = $_POST["domain"]));
+if(!@$_REQUEST["domain"]) {
+  if(@$_GET["domain"])
+	$_REQUEST["domain"] = $_GET["domain"];
+  elseif(@$_POST["domain"])
+	$_REQUEST["domain"] = $_POST["domain"];
+}
 
 /*
  * Local variables:
