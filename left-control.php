@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.35.4.3 2006-11-14 15:51:32 turbo Exp $
+// $Id: left-control.php,v 2.35.4.4 2006-11-14 19:16:50 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -90,10 +90,10 @@ if(pql_get_define("PQL_CONF_CONTROL_USE") && $_SESSION["ALLOW_CONTROL_CREATE"]) 
 
 	  // {{{ Root of host tree
 	  if($host_dn == 'Global') {
-		pql_format_tree($host, "host_detail.php?host=".urlencode($host_dn));
+		pql_format_tree($host, "host_detail.php?host=".urlencode($host_dn)."&ref=left");
 	  } else {
 		$links = array($LANG->_('Add mail server') => "control_add_server.php",
-					   $LANG->_('Add web server')  => "websrv_add.php?view=".$_REQUEST["view"]);
+					   $LANG->_('Add web server')  => "websrv_add.php?view=websrv");
 		pql_format_tree($host, "host_detail.php?host=".urlencode($host_dn)."&ref=left", $links, 0);
 	  }
 // }}}
@@ -211,7 +211,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE") && $_SESSION["ALLOW_CONTROL_CREATE"]) 
 				$virt = pql_get_attribute($_pql->ldap_linkid, $virt_dn, pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME"));
 				
 				// {{{ Setup the branch
-				$new = array($virt => "host_detail.php?host=".urlencode($container_dn)."&virthost=".urlencode($virt)."&view=websrv&ref=left");
+				$new = array($virt => "host_detail.php?host=".urlencode($host_dn)."&server=".urlencode($container_dn)."&virthost=".urlencode($virt)."&view=websrv&ref=left2");
 				$links = $links + $new;
 // }}}
 			  } // end foreach virt_hosts
@@ -227,7 +227,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE") && $_SESSION["ALLOW_CONTROL_CREATE"]) 
 // }}}
 		  } // end if(container != Global)
 
-		  pql_format_tree($container, "host_detail.php?host=".urlencode($container_dn)."&view=websrv", $links, 1);
+		  pql_format_tree($container, "host_detail.php?host=".urlencode($host_dn)."&server=".urlencode($container_dn)."&view=websrv&ref=left2", $links, 1);
 		} // end foreach($web_containers)
 // }}}
 	  } else {
