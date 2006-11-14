@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for web server configuration)
 //
-// $Id: pql_websrv.inc,v 1.19 2006-07-08 14:36:48 turbo Exp $
+// $Id: pql_websrv.inc,v 1.19.2.1 2006-11-14 16:06:10 turbo Exp $
 //
 
 // {{{ pql_websrv_add_server(linkid, domain, dn, entry, type)
@@ -71,11 +71,8 @@ function pql_websrv_add_server($linkid, $domain, $dn, $entry, $type) {
 }
 // }}}
 
-// {{{ pql_websrv_find_servers(linkid, domain)
-function pql_websrv_find_servers($linkid, $domain) {
-  // Search below the PQL_CONF_SUBTREE_APACHE of the domain.
-  $dn = pql_get_define("PQL_CONF_SUBTREE_APACHE").",".$domain;
-  
+// {{{ pql_websrv_find_servers(linkid, dn)
+function pql_websrv_find_servers($linkid, $dn) {
   $temp = pql_get_dn($linkid, $dn, "objectClass=device", "ONELEVEL");
   if(is_array($temp)) {
 	foreach($temp as $s) {
@@ -132,7 +129,7 @@ function pql_websrv_get_virtual_host_objects($linkid, $server) {
   
   // Retreive the Apache web server virtual host object(s)
   $result = pql_search($linkid, $server, $filter, "ONELEVEL");
-  for($i=0; $i < count($result); $i++) {
+  for($i=0; $i < count($result)-1; $i++) {
 	// Oki, we have webserver configuration(s) in LDAP.
 	$name = $result[$i][pql_get_define("PQL_ATTR_CN")];
 	
@@ -148,8 +145,11 @@ function pql_websrv_get_virtual_host_objects($linkid, $server) {
 	$virt_host_objs[$name] = $result[$i];
   }
 
-  ksort($virt_host_objs);
-  return($virt_host_objs);
+  if(is_array($virt_host_objs)) {
+	ksort($virt_host_objs);
+	return($virt_host_objs);
+  } else
+	return(NULL);
 }
 // }}}
 
