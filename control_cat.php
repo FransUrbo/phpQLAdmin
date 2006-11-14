@@ -1,6 +1,6 @@
 <?php
 // shows details of specified category of attributes
-// $Id: control_cat.php,v 2.23 2006-11-11 14:37:46 turbo Exp $
+// $Id: control_cat.php,v 2.23.2.1 2006-11-14 16:13:44 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -26,7 +26,7 @@ if(!is_array($plugins)) {
 }
 // }}}
 
-// {{{ Setup the buttons
+// {{{ Setup the controls view buttons
 // ---- First the 'top' buttons (same as on control_detail.php)
 $buttons1 = array('default' => 'Base values');
 foreach($cats as $cat) {
@@ -56,6 +56,28 @@ if(isset($msg)) {
 // {{{ Load the requested control category
 if(@empty($_REQUEST["view"])) {
   $_REQUEST["view"] = $plugins[0];
+}
+// }}}
+
+// {{{ Setup the host view buttons
+if($_REQUEST["ref"]) {
+  if(@$_REQUEST["view"])
+	// Save this so it doesn't disappear
+	$tmp = $_REQUEST["view"];
+  
+  $_REQUEST["view"] = 'mailsrv';
+  $buttons = array('hostacl'   => 'Host Control',
+				   'automount' => 'Automount Information',
+				   'mailsrv'   => 'Mailserver Administration',
+				   'websrv'    => 'Webserver Administration');
+  pql_generate_button($buttons, "host=".urlencode($_REQUEST["host"])."&ref=".$_REQUEST["ref"]); echo "    <br>\n";
+  
+  if(@$tmp)
+	// Restore the view value
+	$_REQUEST["view"] = $tmp;
+  else
+	// Unset the view value (so it can be set below)
+	unset($_REQUEST["view"]);
 }
 // }}}
 
