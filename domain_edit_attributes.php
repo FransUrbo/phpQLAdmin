@@ -1,6 +1,6 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.56 2006-10-03 15:31:39 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.56.2.1 2006-11-14 15:44:57 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -65,6 +65,10 @@ if(!$plugin) {
 } elseif(!file_exists($_SESSION["path"]."/include/$plugin")) {
     die("<span class=\"error\">ERROR: Plugin file defined for attribute '<i>".$_REQUEST["attrib"]."</i>' does not exists!</span>");
 }
+if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+  echo "include: include/$plugin<br>";
+}
+
 include($_SESSION["path"]."/include/$plugin");
 // }}}
 
