@@ -1,7 +1,7 @@
 <?php
 // View information about physical host object
 // (mainly Host ACL's)
-// $Id: host_detail.php,v 1.1.2.4 2006-11-14 21:19:19 turbo Exp $
+// $Id: host_detail.php,v 1.1.2.5 2006-11-15 13:30:35 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -18,6 +18,36 @@ if($_REQUEST["host"] == 'Global') {
 } else {
   $hosts = array($_REQUEST["host"]);
   $host = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["host"], pql_get_define("PQL_ATTR_CN"));
+}
+// }}}
+
+// {{{ Print status message, if one is available
+if(isset($_REQUEST["msg"])) {
+    pql_format_status_msg($_REQUEST["msg"]);
+}
+// }}}
+
+// {{{ Reload navigation bar if needed
+if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
+	if($_REQUEST["rlnb"] == 1) {
+?>
+  <script src="tools/frames.js" type="text/javascript" language="javascript1.2"></script>
+  <script language="JavaScript1.2"><!--
+    // reload navigation frame
+    // This doesn't work as it's supposed to... Don't know enough java to figure it out either...
+    //refreshFrames();
+
+    // This work perfectly though...
+    parent.frames.pqlnavctrl.location.reload();
+  //--></script>
+<?php
+	} elseif($_REQUEST["rlnb"] == 2) {
+?>
+  <script language="JavaScript1.2"><!--
+    // reload navigation frame
+    parent.frames.pqlnav.location.reload();
+  //--></script>
+<?php   }
 }
 // }}}
 ?>
@@ -43,7 +73,7 @@ if(($_REQUEST["server"] != 'Global') and !@$_REQUEST["virthost"] and @($_REQUEST
 }
 // }}}
 
-// {{{ Load the requested domain details page
+// {{{ Load the requested host details page
 if($_REQUEST["view"] == 'hostacl') {
   include("./tables/host_details-acl.inc");
 } elseif($_REQUEST["view"] == 'automount') {
