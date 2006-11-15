@@ -1,6 +1,6 @@
 <?php
 // Add a webserver configuration to the LDAP db
-// $Id: websrv_add.php,v 2.19.2.2 2006-11-15 16:28:26 turbo Exp $
+// $Id: websrv_add.php,v 2.19.2.3 2006-11-15 16:55:46 turbo Exp $
 //
 // {{{ Setup session
 require("./include/pql_session.inc");
@@ -186,9 +186,20 @@ if(($error == 'true') or !$_REQUEST["type"] or
 		else
 		  $serverurl = $_REQUEST["serverurl"];
 
-		if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"])
-		  // Super admin in advanced mode - get ALL servers
-		  $servers = pql_websrv_find_servers($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"]);
+		if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {
+		  // Super admin in advanced mode - First get all physical servers
+		  $filter = '(&(cn=*)(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)))';
+		  $physical = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $filter, 'ONELEVEL');
+		  if(is_array($physical)) {
+			// For each physical host, get all its web servers
+			$servers = array();
+			for($i=0; $physical[$i]; $i++) {
+			  $tmp = pql_websrv_find_servers($_pql->ldap_linkid, $physical[$i]);
+			  if(is_array($tmp))
+				$servers = $servers + $tmp;
+			}
+		  }
+		}
 ?>
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('virtual host'))); ?>
         <tr class="<?php pql_format_table(); ?>">
