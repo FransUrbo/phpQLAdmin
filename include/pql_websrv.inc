@@ -4,40 +4,16 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for web server configuration)
 //
-// $Id: pql_websrv.inc,v 1.19.2.2 2006-11-14 19:12:30 turbo Exp $
+// $Id: pql_websrv.inc,v 1.19.2.3 2006-11-15 13:44:50 turbo Exp $
 //
 
-// {{{ pql_websrv_add_server(linkid, domain, dn, entry, type)
-function pql_websrv_add_server($linkid, $domain, $dn, $entry, $type) {
-	// {{{ See if the sub branch exists. If not, create it.
-	if(!pql_get_dn($linkid, pql_get_define("PQL_CONF_SUBTREE_APACHE").','.$domain, 'objectClass=organizationalUnit', 'BASE')) {
-		$entry['objectclass'][] = 'organizationalUnit';
-		$entry['ou'] = 'WEB';
-
-		// Add the OpenLDAPaci attribute (maybe)
-		if($_SESSION["ACI_SUPPORT_ENABLED"])
-		  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($linkid, $_SESSION["USER_DN"], 'websrv');
-
-		// Create a LDIF object to print in case of error
-		$LDIF = pql_create_ldif("pql_websrv_add_server - ou", $dn, $entry);
-		if(file_exists($_SESSION["path"]."/.DEBUG_WEBSRV"))
-		  echo $LDIF;
-		else {
-		  if(!pql_write_add($linkid, $dn, $entry, 'websrv', 'pql_websrv_add_server/1')) {
-			// Can't add the organizational unit
-			pql_format_error(1);
-			echo "Can't add the organizational unit...<br>\n";
-			die($LDIF);
-		  }
-		}
-	}
-	// }}}
-
+// {{{ pql_websrv_add_server(linkid, dn, entry, type)
+function pql_websrv_add_server($linkid, $dn, $entry, $type) {
 	if($type == "vrtsrv") {
 	  // This is a virtual host object
 	  $entry[pql_get_define("PQL_ATTR_CN")] = $entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")];
 	  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_split_oldvalues(pql_get_define("PQL_CONF_WEBSRV_OC"));
-	  $entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")] = 'VirtualHost';
+	  $entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_SECTION_NAME")] = 'VirtualHost';
 	} elseif($type == "location") {
 	  $entry[pql_get_define("PQL_ATTR_CN")] = $entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_IP")];
 	  $entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_SECTION_NAME")] = "Location";
@@ -136,25 +112,27 @@ function pql_websrv_get_virtual_host_objects($linkid, $server) {
 	$result[] = $tmp;	// Recreate the array, number indexed
   }
 
-  for($i=0; $i < count($result); $i++) {
-	// Oki, we have webserver configuration(s) in LDAP.
-	$name = $result[$i][pql_get_define("PQL_ATTR_CN")];
-	
-	foreach($attribs as $attrib) {
-	  if(@$result[$i][$attrib] && !@is_array($result[$i][$attrib])) {
-		$tmp = $result[$i][$attrib];
-		unset($result[$i][$attrib]);
-		
-		$result[$i][$attrib][] = $tmp;
+  if(is_array($result)) {
+	for($i=0; $i < count($result); $i++) {
+	  // Oki, we have webserver configuration(s) in LDAP.
+	  $name = $result[$i][pql_get_define("PQL_ATTR_CN")];
+	  
+	  foreach($attribs as $attrib) {
+		if(@$result[$i][$attrib] && !@is_array($result[$i][$attrib])) {
+		  $tmp = $result[$i][$attrib];
+		  unset($result[$i][$attrib]);
+		  
+		  $result[$i][$attrib][] = $tmp;
+		}
 	  }
+	  
+	  $virt_host_objs[$name] = $result[$i];
 	}
 	
-	$virt_host_objs[$name] = $result[$i];
-  }
-
-  if(is_array($virt_host_objs)) {
-	ksort($virt_host_objs);
-	return($virt_host_objs);
+	if(is_array($virt_host_objs)) {
+	  ksort($virt_host_objs);
+	  return($virt_host_objs);
+	}
   } else
 	return(NULL);
 }
