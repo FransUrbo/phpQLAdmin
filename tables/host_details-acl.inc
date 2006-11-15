@@ -75,7 +75,7 @@ foreach($hosts as $host_dn) {
 ?>
              &nbsp;&nbsp;&nbsp;
              <img src="images/navarrow.png" width="9" height="9" border="0">&nbsp;<?=$user."\n"?>
-               <a href="<?=$_SERVER['REQUEST_URI']?>&groupdn=<?=$hostdn?>&userdn=<?=$host_users[$j]?>&action=remove_user_from_host">
+               <a href="host_modify.php?host=<?=urlencode($host_dn)?>&userdn=<?=urlencode($host_users[$j])?>&action=remove_user_from_host">
                  <img src="images/del.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Delete %user% from computer"), array('user' => $user))?>">
                </a>
                <br>
