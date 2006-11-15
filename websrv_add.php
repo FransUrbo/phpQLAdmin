@@ -1,15 +1,12 @@
 <?php
 // Add a webserver configuration to the LDAP db
-// $Id: websrv_add.php,v 2.19.2.1 2006-11-15 14:00:12 turbo Exp $
+// $Id: websrv_add.php,v 2.19.2.2 2006-11-15 16:28:26 turbo Exp $
 //
 // {{{ Setup session
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_control.inc");
 require($_SESSION["path"]."/include/pql_websrv.inc");
-
-$url["domain"] = pql_format_urls($_REQUEST["domain"]);
-$url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 
 include($_SESSION["path"]."/header.html");
 // }}}
@@ -25,23 +22,20 @@ if($_REQUEST["submit"]) {
 		$error_text["mountpoint"] = $LANG->_('Missing');
 	  }
 	} else {
-	  if($_REQUEST["virthost"]) {
-		// {{{ Calculate number of _choosen_ servers
-		unset($hosts);
-		$choosen_servers = 0;
-		$amount = $_REQUEST["hosts"];
-		if($amount) {
-		  if($_REQUEST["host_".$amount] != 'on') {
-			for($i=0; $i <= $amount; $i++)
-			  if($_REQUEST["host_".$i]) {
-				$choosen_servers++;
-				$hosts[] = urldecode($_REQUEST["host_".$i]);
-			  }
-		  }
+	  // {{{ Calculate number of _choosen_ servers
+	  unset($hosts);
+	  $choosen_servers = 0;
+	  $amount = $_REQUEST["hosts"];
+	  if($amount) {
+		if($_REQUEST["host_".$amount] != 'on') {
+		  for($i=0; $i <= $amount; $i++)
+			if($_REQUEST["host_".$i]) {
+			  $choosen_servers++;
+			  $hosts[] = urldecode($_REQUEST["host_".$i]);
+			}
 		}
-		// }}}
-	  } else
-		$choosen_servers = 1;
+	  }
+	  // }}}
 
 	  if(!$_REQUEST["serverip"] and ($choosen_servers < 1)) {
 		$error = true;
@@ -80,6 +74,20 @@ if($_REQUEST["submit"]) {
 		  $_REQUEST["documentroot"] .= '/';
 	  }
 	}
+
+	if($_REQUEST["type"] == "vrtsrv") {
+	  // Last, but not least, check to see that the virtual host doesn't already exist
+	  $dn = pql_get_dn($_pql->ldap_linkid, $_REQUEST["server"], pql_get_define("PQL_ATTR_WEBSRV_SRV_URL").'='.$_REQUEST["serverurl"]);
+	  if($dn[0]) {
+		$error = true;
+		$error_text["serverurl"] = $LANG->_('Already exists');
+	  }
+	}
+}
+
+if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+  echo "_REQUEST:";
+  printr($_REQUEST);
 }
 // }}}
 
@@ -177,6 +185,10 @@ if(($error == 'true') or !$_REQUEST["type"] or
 		  $serverurl = preg_replace('/:.*/', '', $server_reference); // Remove the port (if any) from the web server
 		else
 		  $serverurl = $_REQUEST["serverurl"];
+
+		if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"])
+		  // Super admin in advanced mode - get ALL servers
+		  $servers = pql_websrv_find_servers($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"]);
 ?>
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('virtual host'))); ?>
         <tr class="<?php pql_format_table(); ?>">
@@ -188,11 +200,13 @@ if(($error == 'true') or !$_REQUEST["type"] or
           <td class="title"><?=$LANG->_('Server IP[:PORT]')?></td>
           <td><?php echo pql_format_error_span($error_text["serverip"]); ?><input type="text" name="serverip" size="40" value="<?=$serverip?>"></td>
         </tr>
+<?php if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"] and is_array($servers) and (count($servers) > 1)) { ?>
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
-          <td><?=$LANG->_('The IP:PORT input is only relevant if only one \bAdd to server\B option below is added!')?></td>
+          <td><?=$LANG->_('The IP:PORT input is ignore if \imore\I than one\n\bAdd to existing server\B option below is selected!')?></td>
         </tr>
+<?php } ?>
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Server Administrator')?></td>
@@ -203,23 +217,27 @@ if(($error == 'true') or !$_REQUEST["type"] or
           <td class="title"><?=$LANG->_('Document root')?></td>
           <td><?php echo pql_format_error_span($error_text["documentroot"]); ?><input type="text" name="documentroot" size="40" value="<?=$_REQUEST["documentroot"]?>"></td>
         </tr>
-<?php 	if(count($servers) > 1) { ?>
+<?php if($_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"] and is_array($servers) and (count($servers) > 1)) { ?>
 
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Add to server')?></td>
+          <td class="title"><?=$LANG->_('Add to existing server')?></td>
           <td>
             <?php
 			echo pql_format_error_span($error_text["documentroot"])."\n";
 			$i = 1;
-			foreach($servers as $server => $dn) {
+			foreach($servers as $server_fqdn => $server_dn) {
+			  if($server_dn != $_REQUEST["server"]) {
 ?>
-            <input type="checkbox" name="host_<?=$i?>" value="<?=urlencode($server)?>"<?php if($dn == $_REQUEST["server"]) {?> CHECKED<?php } ?>>
-            <b><?=$server?></b><br>
+            <input type="checkbox" name="host_<?=$i?>" value="<?=urlencode($server_dn)?>"><b><?=$server_fqdn?></b><br>
+<?php		  } else { ?>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b><?=$server_fqdn?></b>&nbsp;<font color=red>(<?=$LANG->_('Preselected')?>)</font>
+            <input type="hidden"   name="host_<?=$i?>" value="<?=urlencode($server_dn)?>">
+<?php		  }
 
-<?php		$i++;
+			  $i++;
 	 		}
 ?>
-            <input type="hidden" name="hosts" value="<?=count($servers)?>">
+            <input type="hidden"   name="hosts"  value="<?=count($servers)?>">
           </td>
         </tr>
 <?php	} else { ?>
@@ -231,7 +249,7 @@ if(($error == 'true') or !$_REQUEST["type"] or
 <?php	if(pql_get_define("PQL_CONF_BIND9_USE")) { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Create DNS object')?></td>
-          <td><input type="checkbox" name="dns"></td>
+          <td><input type="checkbox" name="dns">&nbsp;<?=$LANG->_('Yes')?></td>
         </tr>
 
 <?php	}
@@ -268,6 +286,7 @@ if(($error == 'true') or !$_REQUEST["type"] or
     <input type="hidden" name="action" value="add">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
     <input type="hidden" name="host"   value="<?=$_REQUEST["host"]?>">
+    <input type="hidden" name="server" value="<?=$_REQUEST["server"]?>">
     <br>
     <input type="submit" value="Create">
   </form>
@@ -277,66 +296,69 @@ if(($error == 'true') or !$_REQUEST["type"] or
   // {{{ No errors (i.e. no missing values). We're good to go!
   if($_REQUEST["type"] == "vrtsrv") {
 	// {{{ Create a virtual host
-	// {{{ Extract the host FQDN from the URL. A little crude...
-	if(eregi('.*://', $_REQUEST["serverurl"]))
-	  $fqdn = eregi_replace('.*://', '', $_REQUEST["serverurl"]);
-	else
-	  $fqdn = $_REQUEST["serverurl"];
-	if(eregi(':', $fqdn)) { $fqdn = eregi_replace(':.*', '', $fqdn); }
-	if(eregi('/', $fqdn)) { $fqdn = eregi_replace('/.*', '', $fqdn); }
-	// }}}
-	
-	// {{{ Setup the entry array
-	$entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_URL")]	= $_REQUEST["serverurl"];
-	$entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_ADMIN")]	= $_REQUEST["serveradmin"];
-	$entry[pql_get_define("PQL_ATTR_WEBSRV_DOCROOT")]	= $_REQUEST["documentroot"];
-	$entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_IP")]	= $_REQUEST["serverip"];
-	$entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")]	= $fqdn;
-	// }}}
+	for($i=0; $hosts[$i]; $i++) {
+	  // {{{ Extract the host FQDN from the URL. A little crude...
+	  if(eregi('.*://', $_REQUEST["serverurl"]))
+		$fqdn = eregi_replace('.*://', '', $_REQUEST["serverurl"]);
+	  else
+		$fqdn = $_REQUEST["serverurl"];
+	  if(eregi(':', $fqdn)) { $fqdn = eregi_replace(':.*', '', $fqdn); }
+	  if(eregi('/', $fqdn)) { $fqdn = eregi_replace('/.*', '', $fqdn); }
+	  // }}}
 	  
-	// {{{ Add the web server object
-	$dn = pql_get_define("PQL_ATTR_WEBSRV_SRV_URL")."=".$fqdn.",".urldecode($_REQUEST["host_1"]);
-	if(pql_websrv_add_server($_pql->ldap_linkid, $dn, $entry, $_REQUEST["type"]))
-	  $msg = "Successfully added webserver configuration ".$_REQUEST["serverurl"];
-	else
-	  $msg = "Failed to add webserver configuration ".$_REQUEST["serverurl"];
-	// }}}
+	  // {{{ Setup the entry array
+	  $entry = array();
+	  $entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_URL")]	= $_REQUEST["serverurl"];
+	  $entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_ADMIN")]	= $_REQUEST["serveradmin"];
+	  $entry[pql_get_define("PQL_ATTR_WEBSRV_DOCROOT")]	= $_REQUEST["documentroot"];
+	  $entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_IP")]	= $_REQUEST["serverip"];
+	  $entry[pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")]	= $fqdn;
+	  // }}}
+	  
+	  // {{{ Add the web server object
+	  $dn = pql_get_define("PQL_ATTR_WEBSRV_SRV_URL")."=".$fqdn.",".$hosts[$i];
+	  if(pql_websrv_add_server($_pql->ldap_linkid, $dn, $entry, $_REQUEST["type"]))
+		$msg = "Successfully added webserver configuration ".$_REQUEST["serverurl"];
+	  else
+		$msg = "Failed to add webserver configuration ".$_REQUEST["serverurl"];
+	  // }}}
 
-	// {{{ Create the DNS object(s)
-	if($_REQUEST["dns"] and pql_get_define("PQL_CONF_BIND9_USE")) {
-	  echo "<b>TODO: Create the DNS record</b><p>";
-	//	  require($_SESSION["path"]."/include/pql_bind9.inc");
-	//	  
-	//	  // Separate the domainname and hostname from the FQDN by removing the FIRST part of the FQDN.
-	//	  $fqdn = ereg_replace(':.*', '', $_REQUEST["serverurl"]);
-	//	  $tmp = split('\.', $fqdn);
-	//	  $domainname = ''; $hostname = $tmp[0];
-	//
-	//	  for($i=1; $i < count($tmp); $i++) {
-	//		$domainname .= $tmp[$i];
-	//		if($tmp[$i+1])
-	//		  $domainname .= ".";
-	//	  }
-	//	  
-	//	  // First make sure that the zone exists.
-	//	  if(pql_bind9_add_zone($_pql->ldap_linkid, $_REQUEST["domain"], $domainname)) {
-	//		$msg .= "<br>Successfully added domain $domainname";
-	//		
-	//		// Create a host entry
-	//		unset($entry);
-	//		$entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")]	= pql_maybe_idna_encode($hostname);
-	//		$entry[pql_get_define("PQL_ATTR_ZONENAME")]				= $domainname;
-	//		$entry[pql_get_define("PQL_ATTR_DNSTTL")]				= 604800;
-	//		$entry[pql_get_define("PQL_ATTR_ARECORD")]				= $_REQUEST["serverip"];
-	//		
-	//		if(pql_bind9_add_host($_pql->ldap_linkid, $_REQUEST["domain"], $entry))
-	//		  $msg .= "<br>Successfully added host $hostname";
-	//		else
-	//		  $msg .= "<br>Failed to add host $hostname";
-	//	  } else
-	//		$msg .= "<br>Failed to add domain $domainname";
-	}
+	  // {{{ Create the DNS object(s)
+	  if($_REQUEST["dns"] and pql_get_define("PQL_CONF_BIND9_USE")) {
+		echo "<b>TODO: Create the DNS record</b><p>";
+		//	  require($_SESSION["path"]."/include/pql_bind9.inc");
+		//	  
+		//	  // Separate the domainname and hostname from the FQDN by removing the FIRST part of the FQDN.
+		//	  $fqdn = ereg_replace(':.*', '', $_REQUEST["serverurl"]);
+		//	  $tmp = split('\.', $fqdn);
+		//	  $domainname = ''; $hostname = $tmp[0];
+		//
+		//	  for($i=1; $i < count($tmp); $i++) {
+		//		$domainname .= $tmp[$i];
+		//		if($tmp[$i+1])
+		//		  $domainname .= ".";
+		//	  }
+		//	  
+		//	  // First make sure that the zone exists.
+		//	  if(pql_bind9_add_zone($_pql->ldap_linkid, $_REQUEST["domain"], $domainname)) {
+		//		$msg .= "<br>Successfully added domain $domainname";
+		//		
+		//		// Create a host entry
+		//		unset($entry);
+		//		$entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")]	= pql_maybe_idna_encode($hostname);
+		//		$entry[pql_get_define("PQL_ATTR_ZONENAME")]				= $domainname;
+		//		$entry[pql_get_define("PQL_ATTR_DNSTTL")]				= 604800;
+		//		$entry[pql_get_define("PQL_ATTR_ARECORD")]				= $_REQUEST["serverip"];
+		//		
+		//		if(pql_bind9_add_host($_pql->ldap_linkid, $_REQUEST["domain"], $entry))
+		//		  $msg .= "<br>Successfully added host $hostname";
+		//		else
+		//		  $msg .= "<br>Failed to add host $hostname";
+		//	  } else
+		//		$msg .= "<br>Failed to add domain $domainname";
+	  }
 // }}}
+	}
 
 	// Fix the DN so that it works with the redirect below
 	$_REQUEST["virthost"] = $_REQUEST["serverurl"];
@@ -437,11 +459,13 @@ if(($error == 'true') or !$_REQUEST["type"] or
 
   // {{{ Redirect to host details page
   $url  = "host_detail.php?host=".urlencode($_REQUEST["host"]);
-  $url .= "&server=".urlencode($dn);
+  $url .= "&server=".urlencode($_REQUEST["server"]);
   if($_REQUEST["virthost"]) $url .= "&virthost=".$_REQUEST["virthost"];
   if($_REQUEST["hostdir"])  $url .= "&hostdir=".$_REQUEST["hostdir"];
   $url .= "&view=".$_REQUEST["view"]."&msg=".urlencode($msg);
-  $url .= "&rlnb=1";
+  if($_REQUEST["type"] == "websrv")
+	// Only reload left frame if adding a web server container
+	$url .= "&rlnb=1";
   
   if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
 	echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
