@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.40 2006-07-26 21:31:09 turbo Exp $
+// $Id: pql_write.inc,v 2.40.2.1 2006-11-15 13:48:21 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -442,15 +442,10 @@ function pql_user_add($ldap_linkid, $domain, $dn, $entry, $type, $branch) {
 // }}}
 
 // {{{ pql_add_computer(linkid, hostname, ip)
-function pql_add_computer($linkid, $domain, $hostname, $ip) {
-  if(pql_get_define("PQL_CONF_SUBTREE_COMPUTERS"))
-	$subrdn = pql_get_define("PQL_CONF_SUBTREE_COMPUTERS") . ",";
-  
-  $dn = pql_get_define("PQL_ATTR_CN") . "=" . $hostname . "," . $subrdn . $domain;
-  //$entry['dn'] = $dn;
-  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'top';
-  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'groupOfUniqueNames';
+function pql_add_computer($linkid, $hostname, $ip) {
+  $dn = pql_get_define("PQL_ATTR_CN") . "=" . $hostname . "," . $_SESSION["USER_SEARCH_DN_CTR"];
   $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'ipHost';
+  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'groupOfUniqueNames';
   $entry[pql_get_define("PQL_ATTR_CN")] = $hostname;
   $entry[pql_get_define("PQL_ATTR_IPHOSTNUMBER")] = $ip;
 
@@ -458,7 +453,7 @@ function pql_add_computer($linkid, $domain, $hostname, $ip) {
   //uniqueMember to satisfy the must requirements of groupofuniquenames
   $entry[pql_get_define("PQL_ATTR_UNIQUE_GROUP")] = $_SESSION['USER_DN'];
   
-  if(!pql_write_add($linkid, $dn, $entry, $type, 'pql_add_computer')) {
+  if(!pql_write_add($linkid, $dn, $entry, 'host', 'pql_add_computer')) {
 	// Failed to add user
 	$failed = 1;
 	pql_format_error(1);
