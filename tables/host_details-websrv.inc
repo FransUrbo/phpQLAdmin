@@ -233,12 +233,12 @@ if($_REQUEST["hostdir"]) {
     <th align="left"><?=$LANG->_('Actions')?></th>
 <?php if($servers) { ?>
       <tr class="<?php pql_format_table(); ?>">
-        <td><a href="websrv_add.php?view=<?=$_REQUEST["view"]?>&host=<?=urlencode($server_dn)?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('virtual server'))); ?></a></td>
+        <td><a href="websrv_add.php?view=<?=$_REQUEST["view"]?>&host=<?=urlencode($_REQUEST["host"])?>&server=<?=urlencode($server_dn)?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('virtual server'))); ?></a></td>
       </tr>
 <?php	if($got_virt_hosts) { ?>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td><a href="websrv_add.php?view=<?=$_REQUEST["view"]?>&host=<?=urlencode($server)?>&virthost=<?=urlencode($virt_host)?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('virtual server directory'))); ?></a></td>
+        <td><a href="websrv_add.php?view=<?=$_REQUEST["view"]?>&host=<?=urlencode($_REQUEST["host"])?>&server=<?=urlencode($server)?>&virthost=<?=urlencode($virt_host)?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('virtual server directory'))); ?></a></td>
       </tr>
 <?php	}
 	  }
