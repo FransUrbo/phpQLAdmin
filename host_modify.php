@@ -1,5 +1,15 @@
 <?php
+// Modify Host ACLs
+// $Id: host_modify.php,v 2.6.2.2 2006-11-15 13:38:11 turbo Exp $
+
+// {{{ Setup session etc
+if(!@$_SESSION) {
+  // Called directly - as in modifying something with a host
+  require("./include/pql_session.inc");
+  require($_SESSION["path"]."/include/pql_config.inc");
+}
 require($_SESSION["path"]."/left-head.html");
+// }}}
 
 // {{{ Retreive all users
 if(pql_get_define("PQL_CONF_SUBTREE_USERS")) {
@@ -21,96 +31,69 @@ $computer_results = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR
 			       'ONELEVEL');
 // }}}
 
-if(isset($_REQUEST['action']) && ($_REQUEST['action'] == 'remove_user_from_host')) {
-  // {{{ Remove user from host
-
-  // NOTE: Removing the last uniqueMember will result in:
-  // ldap_modify: Object class violation (65)
-  //				additional info: object class 'groupOfUniqueNames' requires attribute 'uniqueMember'
-  // Check to see if this is the last uniqueMember in this groupDN
-  for($i=0; $computer_results[$i]; $i++) {
-    if(lc($computer_results[$i]["dn"]) == lc($_REQUEST["groupdn"])) {
-      $count = count($computer_results[$i][pql_get_define("PQL_ATTR_UNIQUE_GROUP")]);
-      $computer_number = $i; // Needed to manual remove below.
-    }
-  }
-
-  if($count > 1) {
-    // There's more than one uniqueMember value, remove the requested one.
-    $msg = pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["groupdn"],
-				pql_get_define("PQL_ATTR_UNIQUE_GROUP"),
-				$_REQUEST["userdn"], '');
-
-    if(isset($msg) && ($msg == 1))
-      pql_format_status_msg(pql_complete_constant($LANG->_("Host ACL Updated Successfully<br>Removed: %what%<br>From: %where% ACL"),
-						  array("what"  => $_REQUEST['userdn'], "where" => $_REQUEST['groupdn'])));
-  } else {
-    // This IS the last uniqueMember value, remove the whole object.
-    $msg = pql_write_del($_pql->ldap_linkid, $_REQUEST["groupdn"]);
-    if(isset($msg) && ($msg == 1))
-      pql_format_status_msg(pql_complete_constant($LANG->_("Host ACL Updated Successfully<br>Removed: %what%<br>From: %where% ACL"),
-						  array("what"  => $LANG->_('last user'), "where" => $_REQUEST['groupdn'])));
-  }
-
-  // If there was no error, we must remove the user from the computer array we got above. This
-  // so changes will be visable directly (without a reload of the frame).
-  if(isset($msg) && ($msg == 1)) {
-    if($count > 1) {
-      // There was more than one uniqueMember value. Go through all of them, remove the requested one
-      for($i=0; $computer_results[$computer_number][pql_get_define("PQL_ATTR_UNIQUE_GROUP")][$i]; $i++) {
-	if(lc($computer_results[$computer_number][pql_get_define("PQL_ATTR_UNIQUE_GROUP")][$i]) == lc($_REQUEST['userdn']))
-	  unset($computer_results[$computer_number][pql_get_define("PQL_ATTR_UNIQUE_GROUP")][$i]);
+if(isset($_REQUEST['action']) {
+  if($_REQUEST['action'] == 'remove_user_from_host') {
+    // {{{ Remove user from host
+    
+    // NOTE: Removing the last uniqueMember will result in:
+    // ldap_modify: Object class violation (65)
+    //				additional info: object class 'groupOfUniqueNames' requires attribute 'uniqueMember'
+    // Check to see if this is the last uniqueMember in this groupDN
+    for($i=0; $computer_results[$i]; $i++) {
+      if(lc($computer_results[$i]) == lc($_REQUEST["host"])) {
+	// Retreive uniqueMember from this host
+	$host_users = pql_get_attribute($_pql->ldap_linkid, $computer_results[$i], pql_get_define("PQL_ATTR_UNIQUE_GROUP"));
+	
+	$count = count($host_users);
+	$computer_number = $i; // Needed to manual remove below.
+	break;
       }
-    } else {
-      // There was only one uniqueMember value. Undefine the whole sub-array.
-      unset($computer_results[$computer_number]);
     }
-  }
-// }}}
-} elseif(isset($_REQUEST['action']) && $_REQUEST['action'] == 'add_new_host') {
-  // {{{ Add new host
-  $num = "(\\d|[1-9]\\d|1\\d\\d|2[0-4]\\d|25[0-5])";
-  if(!isset($_REQUEST['hostip']) || !preg_match("/^$num\\.$num\\.$num\\.$num$/", $_REQUEST['hostip']) )
-    pql_format_status_msg($LANG->_("Invalid IP address"));
-  elseif(!isset($_REQUEST['hostname']) || !preg_match("/\w\\.\w/i", $_REQUEST['hostname']) )
-    pql_format_status_msg($LANG->_("Invalid hostname"));
-  else {
-    // Inputs look good, lets add them
-    if(pql_add_computer($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST['hostname'], $_REQUEST['hostip']) ) {
-      pql_format_status_msg(pql_complete_constant($LANG->_("Host %host% added successfully."), array('host' => $_REQUEST['hostname'])));
-
-      // Since we've alredy got all hosts (above), we add this host to the list. This is more
-      // or less a 'copy' of 'include/pql_write.inc:pql_add_computer()'...
-      if(pql_get_define("PQL_CONF_SUBTREE_COMPUTERS"))
-	$new_computer_subrdn = pql_get_define("PQL_CONF_SUBTREE_COMPUTERS") . ",";
-      $new_computer_dn = pql_get_define("PQL_ATTR_CN") . "=" . $_REQUEST['hostname'] . "," . $new_computer_subrdn . $_REQUEST["domain"];
-      $computer_results[] = array(pql_get_define("PQL_ATTR_CN")		=> $_REQUEST['hostname'],
-				  pql_get_define("PQL_ATTR_IPHOSTNUMBER")	=> $_REQUEST['hostip'],
-				  pql_get_define("PQL_ATTR_UNIQUE_GROUP")	=> $_SESSION['USER_DN'],
-				  pql_get_define("PQL_ATTR_OBJECTCLASS")	=> array('top', 'groupOfUniqueNames', 'ipHost'),
-				  "dn"					=> $new_computer_dn);
+    
+    if($count > 1)
+      // There's more than one uniqueMember value, remove the requested one.
+      $msg = pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["host"],
+				  pql_get_define("PQL_ATTR_UNIQUE_GROUP"),
+				  $_REQUEST["userdn"], '');
+    else
+      // This IS the last uniqueMember value, remove the whole object.
+      $msg = pql_write_del($_pql->ldap_linkid, $_REQUEST["host"]);
+    
+    if(isset($msg) && ($msg == 1))
+      $msg = pql_complete_constant($LANG->_("Host ACL Updated Successfully. Removed: %what% From: %where%"),
+				   array("what"  => $_REQUEST['userdn'], "where" => $_REQUEST['host']));
+    else
+      $msg = pql_complete_constant($LANG->_("Failed to update Host ACL. Could not remove %what%"),
+				   array("what" => $_REQUEST['userdn']));
+    
+    $url = "host_detail.php?host=".urlencode($_REQUEST["host"])."&msg=".urlencode($msg);
+    
+    if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+      echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url: '<b>$url</b>'<br>";
+      die($msg);
     } else
-      pql_format_status_msg(pql_complete_constant($LANG->_("Host %host% failed to add"), array('host' => $_REQUEST['hostname'])));
-  }
-// }}} 
-} elseif(isset($_REQUEST['action']) && $_REQUEST['action'] == 'add_user_to_host') {
-  // {{{ Add user to host
-  if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST['computer'], pql_get_define('PQL_ATTR_UNIQUE_GROUP'), '', $_REQUEST['userdn'])) {
-    pql_format_status_msg(pql_complete_constant($LANG->_("Successfully added %user% to host ACL"), array('user' => $_REQUEST['userdn'])));
-
-    // Since we've already retreived all hosts, we must manually add the user to the correct part of the array(s).
-    if(is_array($computer_results[$computer_number][pql_get_define("PQL_ATTR_UNIQUE_GROUP")])) 
-      $computer_results[$computer_number][pql_get_define("PQL_ATTR_UNIQUE_GROUP")][] = $_REQUEST['userdn'];
-    else {
-      $tmp = $computer_results[$computer_number][pql_get_define("PQL_ATTR_UNIQUE_GROUP")]; // Save the current (flat) value
-      unset($computer_results[$computer_number][pql_get_define("PQL_ATTR_UNIQUE_GROUP")]); // Undefine the value, so it can be re-initialized
-
-      $computer_results[$computer_number][pql_get_define("PQL_ATTR_UNIQUE_GROUP")][] = $tmp; // Add the original value
-      $computer_results[$computer_number][pql_get_define("PQL_ATTR_UNIQUE_GROUP")][] = $_REQUEST['userdn']; // Add the new user DN
-    }
-  } else
-    pql_format_status_msg(pql_complete_constant($LANG->_("Failed to add %user% to Host ACL"), array('user' => $_REQUEST['userdn'])));
+      pql_header($url);
 // }}}
+
+  } elseif($_REQUEST['action'] == 'add_user_to_host') {
+    // {{{ Add user to host
+    if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST['computer'], pql_get_define('PQL_ATTR_UNIQUE_GROUP'), '', $_REQUEST['userdn'])) {
+      pql_format_status_msg(pql_complete_constant($LANG->_("Successfully added %user% to host ACL"), array('user' => $_REQUEST['userdn'])));
+      
+      // Since we've already retreived all hosts, we must manually add the user to the correct part of the array(s).
+      if(is_array($computer_results[$computer_number][pql_get_define("PQL_ATTR_UNIQUE_GROUP")])) 
+	$computer_results[$computer_number][pql_get_define("PQL_ATTR_UNIQUE_GROUP")][] = $_REQUEST['userdn'];
+      else {
+	$tmp = $computer_results[$computer_number][pql_get_define("PQL_ATTR_UNIQUE_GROUP")]; // Save the current (flat) value
+	unset($computer_results[$computer_number][pql_get_define("PQL_ATTR_UNIQUE_GROUP")]); // Undefine the value, so it can be re-initialized
+	
+	$computer_results[$computer_number][pql_get_define("PQL_ATTR_UNIQUE_GROUP")][] = $tmp; // Add the original value
+	$computer_results[$computer_number][pql_get_define("PQL_ATTR_UNIQUE_GROUP")][] = $_REQUEST['userdn']; // Add the new user DN
+      }
+    } else
+      pql_format_status_msg(pql_complete_constant($LANG->_("Failed to add %user% to Host ACL"), array('user' => $_REQUEST['userdn'])));
+// }}}
+  }
 }
 
 if(is_array($computer_results)) {
