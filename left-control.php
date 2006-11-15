@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.35.4.4 2006-11-14 19:16:50 turbo Exp $
+// $Id: left-control.php,v 2.35.4.5 2006-11-15 13:39:24 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -92,8 +92,8 @@ if(pql_get_define("PQL_CONF_CONTROL_USE") && $_SESSION["ALLOW_CONTROL_CREATE"]) 
 	  if($host_dn == 'Global') {
 		pql_format_tree($host, "host_detail.php?host=".urlencode($host_dn)."&ref=left");
 	  } else {
-		$links = array($LANG->_('Add mail server') => "control_add_server.php",
-					   $LANG->_('Add web server')  => "websrv_add.php?view=websrv");
+		$links = array($LANG->_('Add mail server') => "control_add_server.php?host=".urlencode($host_dn),
+					   $LANG->_('Add web server')  => "websrv_add.php?view=websrv&host=".urlencode($host_dn));
 		pql_format_tree($host, "host_detail.php?host=".urlencode($host_dn)."&ref=left", $links, 0);
 	  }
 // }}}
