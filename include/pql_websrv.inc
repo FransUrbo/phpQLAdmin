@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for web server configuration)
 //
-// $Id: pql_websrv.inc,v 1.19.2.3 2006-11-15 13:44:50 turbo Exp $
+// $Id: pql_websrv.inc,v 1.19.2.4 2006-11-16 06:19:04 turbo Exp $
 //
 
 // {{{ pql_websrv_add_server(linkid, dn, entry, type)
@@ -106,7 +106,7 @@ function pql_websrv_get_virtual_host_objects($linkid, $server) {
   // Retreive the Apache web server virtual host object(s)
   $result = pql_search($linkid, $server, $filter, "ONELEVEL");
   if($result["dn"]) {
-	// Oups, flat object
+	// Oups, flat object - i.e. only ONE object
 	$tmp = $result;		// Save the array
 	unset($result);		// Unset the old array
 	$result[] = $tmp;	// Recreate the array, number indexed
@@ -146,14 +146,24 @@ function pql_websrv_get_virtual_host_directories($linkid, $server, $virtualhost)
   // Retreive the Apache web server virtual host directories
   $dn = pql_get_define("PQL_ATTR_WEBSRV_SRV_URL")."=".$virtualhost.",".$server;
   $result = pql_search($linkid, $dn, $filter, "ONELEVEL");
-  for($i=0; $i < count($result); $i++) {
-	// Oki, we have webserver virtual host directories in LDAP.
-	$name = $result[$i][pql_get_define("PQL_ATTR_CN")];
-	$virt_host_dirs[$name] = $result[$i];
+  if($result["dn"]) {
+	// Oups, flat object - i.e. only ONE object
+	$tmp = $result;		// Save the array
+	unset($result);		// Unset the old array
+	$result[] = $tmp;	// Recreate the array, number indexed
   }
 
-  ksort($virt_host_dirs);
-  return($virt_host_dirs);
+  if(is_array($result)) {
+	for($i=0; $i < count($result); $i++) {
+	  // Oki, we have webserver virtual host directories in LDAP.
+	  $name = $result[$i][pql_get_define("PQL_ATTR_CN")];
+	  $virt_host_dirs[$name] = $result[$i];
+	}
+	
+	ksort($virt_host_dirs);
+	return($virt_host_dirs);
+  } else
+	return(NULL);
 }
 // }}}
 
