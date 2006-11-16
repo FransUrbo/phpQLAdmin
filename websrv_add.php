@@ -1,6 +1,6 @@
 <?php
 // Add a webserver configuration to the LDAP db
-// $Id: websrv_add.php,v 2.19.2.3 2006-11-15 16:55:46 turbo Exp $
+// $Id: websrv_add.php,v 2.19.2.4 2006-11-16 06:17:18 turbo Exp $
 //
 // {{{ Setup session
 require("./include/pql_session.inc");
@@ -165,9 +165,10 @@ if(($error == 'true') or !$_REQUEST["type"] or
 
         <input type="hidden" name="type"     value="location">
         <input type="hidden" name="server"   value="<?=urlencode($_REQUEST["server"])?>">
-        <input type="hidden" name="virthost" value="<?=$_REQUEST["virthost"]?>">
+        <input type="hidden" name="virthost" value="<?=urlencode($_REQUEST["virthost"])?>">
 <?php
 		// }}}
+
 	  } elseif($_REQUEST["server"]) {
 		// {{{ Input for Virtual Host Object
 		if(empty($_REQUEST["serverip"])) {
@@ -265,6 +266,7 @@ if(($error == 'true') or !$_REQUEST["type"] or
 
 <?php	}
 		// }}}
+
 	  } else {
 		// {{{ Input for Web Server Device
 		// Set a default port
@@ -296,8 +298,8 @@ if(($error == 'true') or !$_REQUEST["type"] or
     <input type="hidden" name="submit" value="submit">
     <input type="hidden" name="action" value="add">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
-    <input type="hidden" name="host"   value="<?=$_REQUEST["host"]?>">
-    <input type="hidden" name="server" value="<?=$_REQUEST["server"]?>">
+    <input type="hidden" name="host"   value="<?=urlencode($_REQUEST["host"])?>">
+    <input type="hidden" name="server" value="<?=urlencode($_REQUEST["server"])?>">
     <br>
     <input type="submit" value="Create">
   </form>
@@ -459,7 +461,7 @@ if(($error == 'true') or !$_REQUEST["type"] or
 	// }}}
 	// }}}
 
-	if(pql_websrv_add_server($_pql->ldap_linkid, $_REQUEST["domain"], $dn, $entry, $_REQUEST["type"]))
+	if(pql_websrv_add_server($_pql->ldap_linkid, $dn, $entry, $_REQUEST["type"]))
 	  $msg = "Successfully added the virtual host location ".$_REQUEST["mountpoint"];
 	else
 	  $msg = "Failed to add webserver configuration ".$_REQUEST["mountpoint"];
