@@ -27,6 +27,8 @@ if($_REQUEST["host"] == 'Global') {
 
 } elseif($_REQUEST["ref"]) {
   // {{{ Originally called from the physical host link - Get all web servers below this physical host
+  // NOTE: The physical host is called with 'ref=left', the web server container 'ref=left1'
+  //       and the virtual host 'ref=left2' in the URL.
   if(!$_REQUEST["virthost"] or ($_REQUEST["ref"] == 'left')) {
 	// Left host frame/[physical]->Webserver administration->Webserver
 	// Left host frame/[physical]->Webserver administration->{Webserver->}virtual host
@@ -93,15 +95,6 @@ if(count($servers)) {
 	  }
 	}
   }
-
-  // Shortcut to simplify referencing the virtual host
-  $virt_host = $_REQUEST["virthost"];
-  $server_reference = $server_reference . " => " . $virt_host;
-
-  if(file_exists($_SESSION["path"]."/.DEBUG_WEBSRV")) {
-   	echo "DEBUG (virtual hosts): default=<b>$virt_host</b>";
-   	printr($virt_hosts);
-  }
 // }}}
 
   // {{{ -------------- SETUP THE SERVER BUTTONS
@@ -140,6 +133,16 @@ if(count($servers)) {
 
   if(count($virt_hosts) > 0) {
 	$got_virt_hosts = 1; // if we should give option to create virtual server directory or not
+
+	// {{{ Shortcut to simplify referencing the virtual host
+	$virt_host = $_REQUEST["virthost"];
+	$server_reference = $server_reference . " => " . $virt_host;
+	
+	if(file_exists($_SESSION["path"]."/.DEBUG_WEBSRV")) {
+	  echo "DEBUG (virtual hosts): default=<b>$virt_host</b>";
+	  printr($virt_hosts);
+	}
+// }}}
 
 	// {{{ -------------- GET VIRTUAL HOST DIRECTORIES
 	$virt_host_dirs = pql_websrv_get_virtual_host_directories($_pql->ldap_linkid, $server_dn, $virt_host);
@@ -238,16 +241,18 @@ if($_REQUEST["hostdir"]) {
   } else {
 	// {{{ -------------- NO VIRTUAL HOSTS DEFINED
 	$got_virt_hosts = 0;
-?>
-  <?=$LANG->_('No virtual hosts in this server')?>.
-<?php
+
+	if(count($servers) == 1) {
+	  // We got no virtual host and only ONE web server container.
+	  // Output special message, so that isn't 'lost'.
+	  echo pql_complete_constant($LANG->_('Got \ione\I web server (\b%container%\B), but no virtual hosts'), array('container' => $server_reference)).".<br>";
+	} else
+	  echo $LANG->_('No virtual hosts in this server').".<br>";
 // }}}
   }
 } else {
   // {{{ -------------- NO WEB SERVER OBJECTS
-?>
-  <?=$LANG->_('No web servers for this physical server defined.')?>.
-<?php
+  echo $LANG->_('No web servers for this physical server defined.').".<br>";
 // }}}
 }
 
