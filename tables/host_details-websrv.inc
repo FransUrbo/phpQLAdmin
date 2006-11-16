@@ -34,9 +34,11 @@ if($_REQUEST["host"] == 'Global') {
 
 	if($_REQUEST["server"])
 	  $server_dn = $_REQUEST["server"];
-	else
+	else {
 	  // Take the first server as default one.
 	  foreach($servers as $server_name => $server_dn) break;
+	  $_REQUEST["server"] = $server_dn; // Just in case it's used below (can't remember)
+	}
   } else {
 	// Left host frame/[physical]/Webserver/Virtual host
 	$servers = array($_REQUEST["virthost"] => $_REQUEST["server"]);
@@ -64,28 +66,6 @@ if(count($servers)) {
   $img["del"]  = '<img src="images/del.png"  width="12" height="12" alt="Delete value" border="0">';
 
   $LINK_URL    = "websrv_edit_attributes.php?host=".urlencode($server_dn)."&view=".$_REQUEST["view"];
-// }}}
-
-  // {{{ -------------- SETUP THE SERVER BUTTONS
-  if(($_REQUEST["host"] == 'Global') or $_REQUEST["ref"]) {
-?>
-  <table cellspacing="0" border="0" width="50%" cellpadding="0">
-    <th colspan="3" align="left">
-<?php foreach($servers as $srv => $srv_dn) {
-		if($srv_dn == $server_dn) {
-		  $mark = "&mark=yes";
-		} else {
-		  unset($mark);
-		}
-?>
-    <a href="<?=$_SERVER["PHP_SELF"]."?view=".$_REQUEST["view"]."&host=".urlencode($_REQUEST["host"])."&server=".urlencode($srv_dn)."&ref=".$_REQUEST["ref"]?>"><img alt="// <?=$srv?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?=$srv?><?=$mark?>"></a>
-<?php } ?>
-    </th>
-  </table>
-
-  <br>
-<?php
-  }
 // }}}
 
   // {{{ -------------- GET VIRTUAL HOST OBJECTS
@@ -124,11 +104,76 @@ if(count($servers)) {
   }
 // }}}
 
+  // {{{ -------------- SETUP THE SERVER BUTTONS
+  // If called from base Global->Webserver Administration:		ref='left'
+  // If called from Webserver - Global:							ref='left1'
+  // If called from Physical host->Webserver Administration:	ref='left'
+  // If called from Physical host/Webserver						ref='left1'
+  // If called from Physical host/Webserver/Virtual host:		ref='left2'
+  if(($_REQUEST["host"] == 'Global') or ($_REQUEST["ref"] and
+										 ($_REQUEST["ref"] == 'left') and 
+										 (count($virt_hosts) > 1)))
+  {
+	// Do not show these buttons if
+	//	1. Called from virtual host
+	//	2. Called from container, with one or less vitual hosts
+	//	3. Called from container, with multiple containers
+?>
+  <table cellspacing="0" border="0" width="50%" cellpadding="0">
+    <th colspan="3" align="left">
+<?php foreach($servers as $srv => $srv_dn) {
+		if($srv_dn == $server_dn) {
+		  $mark = "&mark=yes";
+		} else {
+		  unset($mark);
+		}
+?>
+    <a href="<?=$_SERVER["PHP_SELF"]."?view=".$_REQUEST["view"]."&host=".urlencode($_REQUEST["host"])."&server=".urlencode($srv_dn)."&ref=".$_REQUEST["ref"]?>"><img alt="// <?=$srv?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?=$srv?><?=$mark?>"></a>
+<?php } ?>
+    </th>
+  </table>
+
+  <br>
+<?php
+  }
+// }}}
+
   if(count($virt_hosts) > 0) {
 	$got_virt_hosts = 1; // if we should give option to create virtual server directory or not
 
+	// {{{ -------------- GET VIRTUAL HOST DIRECTORIES
+	$virt_host_dirs = pql_websrv_get_virtual_host_directories($_pql->ldap_linkid, $server_dn, $virt_host);
+	if(count($virt_host_dirs) >= 1) {
+	  // NOTE: We should NOT have a default virtual host location!
+	  //	   If we did, it wouldn't be possible to access the actual
+	  //	   web server container and it's setup!
+	  if(@$_REQUEST["hostdir"]) {
+		$virt_host_dir = $_REQUEST["hostdir"];
+		$server_reference = $server_reference . " => " . $virt_host_dir;
+	  }
+	
+	  if(file_exists($_SESSION["path"]."/.DEBUG_WEBSRV")) {
+		echo "DEBUG (virtual host directories): default=<b>$virt_host_dir</b>";
+		printr($virt_host_dirs);
+	  }
+	}
+// }}}
+
 	// {{{ -------------- SETUP THE VIRTUAL HOST BUTTONS
-	if(count($virt_hosts) > 1) {
+	// If called from web server container:	virt_hosts     >= 1, ref=left1
+	// If called from virtual host:			virt_host_dirs == 1, ref=left2
+	if((count($virt_hosts) >= 1) and
+	   ((($_REQUEST["ref"] == 'left1') or ($_REQUEST["ref"] == 'left'))
+		or
+		((count($virt_hosts) >= 1) and
+		 (count($virt_host_dirs) >= 1) and
+		 ($_REQUEST["ref"] == 'left2'))))
+	{
+	  // Show these buttons if:
+	  //	1. Called from container with one or more virtual host(s)						TODO(?)
+	  //	2. Called from container with one or more virtual host(s), where the default
+	  //	   (or the one) virtual host have one or more virtual host location(s)
+	  //	3. Called from virtual host, with one or more virtual host location(s)
 ?>
   <table cellspacing="0" border="0" width="50%" cellpadding="0">
     <th colspan="3" align="left">
@@ -150,27 +195,8 @@ if(count($servers)) {
 	$LINK_URL .= "&virthost=".urlencode($virt_host);
 // }}}
 
-	// {{{ -------------- GET VIRTUAL HOST DIRECTORIES
-	$virt_host_dirs = pql_websrv_get_virtual_host_directories($_pql->ldap_linkid, $server_dn, $virt_host);
-	if(count($virt_host_dirs) > 1) {
-	  // Shortcut to simplify referencing the virtual host
-	  if(empty($_REQUEST["hostdir"])) {
-		// Use the first virtual host directory as default (ie, if we're not called with a specific virtual host to show)
-		foreach($virt_host_dirs as $_REQUEST["hostdir"] => $data) break;
-	  }
-
-	  $virt_host_dir = $_REQUEST["hostdir"];
-	  $server_reference = $server_reference . " => " . $virt_host_dir;
-	
-	  if(file_exists($_SESSION["path"]."/.DEBUG_WEBSRV")) {
-		echo "DEBUG (virtual host directories): default=<b>$virt_host_dir</b>";
-		printr($virt_host_dirs);
-	  }
-	}
-// }}}
-
 	// {{{ -------------- SETUP THE VIRTUAL HOST DIRECTORY BUTTONS
-	if(count($virt_host_dirs) > 1) {
+	if(count($virt_host_dirs) >= 1) {
 ?>
   <table cellspacing="0" border="0" width="50%" cellpadding="0">
     <th colspan="3" align="left">
@@ -238,7 +264,7 @@ if($_REQUEST["hostdir"]) {
 <?php	if($got_virt_hosts) { ?>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td><a href="websrv_add.php?view=<?=$_REQUEST["view"]?>&host=<?=urlencode($_REQUEST["host"])?>&server=<?=urlencode($server)?>&virthost=<?=urlencode($virt_host)?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('virtual server directory'))); ?></a></td>
+        <td><a href="websrv_add.php?view=<?=$_REQUEST["view"]?>&host=<?=urlencode($_REQUEST["host"])?>&server=<?=urlencode($server_dn)?>&virthost=<?=urlencode($virt_host)?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('virtual server directory'))); ?></a></td>
       </tr>
 <?php	}
 	  }
