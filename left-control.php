@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.35.4.5 2006-11-15 13:39:24 turbo Exp $
+// $Id: left-control.php,v 2.35.4.6 2006-11-16 06:05:45 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -227,7 +227,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE") && $_SESSION["ALLOW_CONTROL_CREATE"]) 
 // }}}
 		  } // end if(container != Global)
 
-		  pql_format_tree($container, "host_detail.php?host=".urlencode($host_dn)."&server=".urlencode($container_dn)."&view=websrv&ref=left2", $links, 1);
+		  pql_format_tree($container, "host_detail.php?host=".urlencode($host_dn)."&server=".urlencode($container_dn)."&view=websrv&ref=left1", $links, 1);
 		} // end foreach($web_containers)
 // }}}
 	  } else {
