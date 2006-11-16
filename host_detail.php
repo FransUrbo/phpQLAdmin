@@ -1,7 +1,7 @@
 <?php
 // View information about physical host object
 // (mainly Host ACL's)
-// $Id: host_detail.php,v 1.1.2.5 2006-11-15 13:30:35 turbo Exp $
+// $Id: host_detail.php,v 1.1.2.6 2006-11-16 06:08:38 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -60,7 +60,7 @@ if(empty($_REQUEST["view"])) {
   $_REQUEST["view"] = 'hostacl';
 }
 
-if(($_REQUEST["server"] != 'Global') and !@$_REQUEST["virthost"] and @($_REQUEST["ref"] != 'left2')) {
+if(($_REQUEST["server"] != 'Global') and !@$_REQUEST["virthost"] and @($_REQUEST["ref"] == 'left')) {
   // Do NOT show if:
   //	Left host frame/Webserver - Global
   //	Left host frame/[physical]/Webserver - Port xx
