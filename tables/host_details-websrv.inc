@@ -1,6 +1,6 @@
 <?php
 // View everything about web servers - virtual hosts and virtual host locations
-// $Id: host_details-websrv.inc,v 1.1.2.7 2006-11-17 14:02:29 turbo Exp $
+// $Id: host_details-websrv.inc,v 1.1.2.8 2006-11-17 17:27:59 turbo Exp $
 
 // {{{ Include Webserver API etc
 require($_SESSION["path"]."/include/pql_websrv.inc");
@@ -273,6 +273,22 @@ if($_REQUEST["hostdir"]) {
 
       <tr class="<?php pql_format_table(); ?>">
         <td><a href="websrv_add.php?view=<?=$_REQUEST["view"]?>&host=<?=urlencode($_REQUEST["host"])?>&server=<?=urlencode($server_dn)?>&virthost=<?=urlencode($virt_host)?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('virtual server directory'))); ?></a></td>
+      </tr>
+
+      <tr class="<?php pql_format_table(); ?>">
+        <td><a href="host_del.php?view=<?=$_REQUEST["view"]?>&host=<?=urlencode($_REQUEST["host"])?>&server=<?=urlencode($server_dn)?>&virthost=<?=urlencode($virt_host)?>"><?php echo pql_complete_constant($LANG->_('Delete %what%'), array('what' => $LANG->_('this virtual server'))); ?></a></td>
+      </tr>
+<?php		if($_REQUEST["hostdir"]) { ?>
+
+      <tr class="<?php pql_format_table(); ?>">
+        <td><a href="host_del.php?view=<?=$_REQUEST["view"]?>&host=<?=urlencode($_REQUEST["host"])?>&server=<?=urlencode($server_dn)?>&virthost=<?=urlencode($virt_host)?>&hostdir=<?=$_REQUEST["hostdir"]?>"><?php echo pql_complete_constant($LANG->_('Delete %what%'), array('what' => $LANG->_('this virtual server directory'))); ?></a></td>
+      </tr>
+<?php		}
+		}
+?>
+<?php	if($_REQUEST["ref"] == 'left') { ?>
+      <tr class="<?php pql_format_table(); ?>">
+        <td><a href="host_del.php?view=<?=$_REQUEST["view"]?>&host=<?=urlencode($_REQUEST["host"])?>&server=<?=urlencode($server_dn)?>"><?php echo pql_complete_constant($LANG->_('Delete %what%'), array('what' => $LANG->_('this web server'))); ?></a></td>
       </tr>
 <?php	}
 	  }
