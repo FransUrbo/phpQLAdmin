@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.73 2006-08-29 15:22:17 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.73.2.1 2006-11-17 14:01:07 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -46,7 +46,7 @@
 // password (quite easily cracked though :) is in there...
 //pql_set_define("PQL_CONF_HOST","ldaps://localhost/;;ou=QmailLDAP,c=SE");
 //pql_set_define("PQL_CONF_HOST","ldapi://%2fvar%2frun%2fldapi;;ou=QmailLDAP,c=SE");
-pql_set_define("PQL_CONF_HOST","localhost;389;ou=QmailLDAP,c=SE");
+pql_set_define("PQL_CONF_HOST","localhost;389;ou=Computers,c=SE");
 
 // Either you use TLS (=> 'true') or you don't (=> 'false') when connecting
 // to the LDAP database...
@@ -79,30 +79,13 @@ pql_set_define("PQL_CONF_USE_TLS", false);
 // How many days before expiring/requesting to change password
 //pql_set_define("PQL_CONF_DAYSUNTILEXPIRE", '90');
 //
-// In what subtree to put Samba computers users are allowed to
-// login to
-//pql_set_define("PQL_CONF_SUBTREE_COMPUTERS", "ou=Computers");
-//
 // Full path to the mkntpw binary
 //pql_set_define("PQL_CONF_MKNTPW_PATH", '/usr/local/sbin/mkntpwd');
-//
-// Where do the sudoers roles belong
-//pql_set_define("PQL_CONF_SUBTREE_SUDOERS", "ou=SUDOers");
 
 // ----------------------------
 // PQL_CONF_SUBTREE_BIND9
 // Below what sub-DN is your DNS information stored?
 //pql_set_define("PQL_CONF_SUBTREE_BIND9", "ou=DNS");
-
-// ----------------------------
-// PQL_CONF_SUBTREE_APACHE
-// Below what sub-DN is your Apache information stored?
-//pql_set_define("PQL_CONF_SUBTREE_APACHE", "ou=WEB");
-
-// ----------------------------
-// PQL_CONF_SUBTREE_AUTOMOUNTS
-// Below what sub-DN is your automount information stored?
-//pql_set_define("PQL_CONF_SUBTREE_AUTOMOUNTS", "ou=AutoMounts");
 
 // ----------------------------
 // mail(message)store generation
