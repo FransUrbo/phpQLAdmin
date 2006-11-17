@@ -1,6 +1,6 @@
 <?php
 // edit attributes of a webserver configuration
-// $Id: websrv_edit_attributes.php,v 2.12 2006-03-07 11:17:54 turbo Exp $
+// $Id: websrv_edit_attributes.php,v 2.12.6.1 2006-11-17 13:45:57 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -9,6 +9,11 @@ require($_SESSION["path"]."/include/pql_websrv.inc");
 
 include($_SESSION["path"]."/header.html");
 include($_SESSION["path"]."/include/attrib.websrv.inc");
+
+if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+  echo "_REQUEST:";
+  printr($_REQUEST);
+}
 // }}}
 
 // {{{ Forward back to domain detail page
