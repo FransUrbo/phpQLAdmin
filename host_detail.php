@@ -1,7 +1,7 @@
 <?php
 // View information about physical host object
 // (mainly Host ACL's)
-// $Id: host_detail.php,v 1.1.2.6 2006-11-16 06:08:38 turbo Exp $
+// $Id: host_detail.php,v 1.1.2.7 2006-11-17 13:53:25 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -65,10 +65,28 @@ if(($_REQUEST["server"] != 'Global') and !@$_REQUEST["virthost"] and @($_REQUEST
   //	Left host frame/Webserver - Global
   //	Left host frame/[physical]/Webserver - Port xx
   //	Left host frame/[physical]/Webserver - Port xx/Virtual host
-  $buttons = array('hostacl'   => 'Host Control',
-				   'automount' => 'Automount Information',
-				   'mailsrv'   => 'Mailserver Administration',
-				   'websrv'    => 'Webserver Administration');
+  $buttons = array();
+
+  if(pql_get_define("PQL_CONF_HOSTACL_USE")) {
+	$new = array('hostacl' => 'Host Control');
+	$buttons = $buttons + $new;
+  }
+
+  if(pql_get_define("PQL_CONF_AUTOMOUNT_USE")) {
+	$new = array('automount' => 'Automount Information');
+	$buttons = $buttons + $new;
+  }
+
+  if(pql_get_define("PQL_CONF_CONTROL_USE")) {
+	$new = array('mailsrv'   => 'Mailserver Administration');
+	$buttons = $buttons + $new;
+  }
+
+  if(pql_get_define("PQL_CONF_WEBSRV_USE")) {
+	$new = array('websrv' => 'Webserver Administration');
+	$buttons = $buttons + $new;
+  }				 
+
   pql_generate_button($buttons, "host=".urlencode($_REQUEST["host"])."&ref=".$_REQUEST["ref"]); echo "    <br>\n";
 }
 // }}}

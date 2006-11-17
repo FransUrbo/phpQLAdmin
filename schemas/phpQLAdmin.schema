@@ -119,7 +119,7 @@
 # availible from http://sourceforge.net/projects/modcfgldap/
 # See doc/README.apache for more information.
 
-# $Id: phpQLAdmin.schema,v 2.65 2006-10-03 15:31:40 turbo Exp $
+# $Id: phpQLAdmin.schema,v 2.65.2.1 2006-11-17 13:53:28 turbo Exp $
 
 # PQL_ATTR_SHOW_USERS (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.1 NAME 'showUsers'
@@ -739,11 +739,11 @@ objectclass ( 1.3.6.1.4.1.8767.3.1.2
         autoReload $ allowServerChange $ whoAreWe $
         language $ hostMaster $ ezmlmBinaryPath $
         krb5RealmName $ krb5AdminServer $ krb5PrincipalName $
-        krb5AdminKeytab $ krb5AdminCommandPath $
-        controlBaseDn $ ezmlmAdministrator $ 
+        krb5AdminKeytab $ krb5AdminCommandPath $ useSudo $
+        controlBaseDn $ ezmlmAdministrator $  useHostACL $
         controlsAdministrator $ useACI $ useMBox $
         ezmlmRemote $ ezmlmRemoteHost $ ezmlmRemoteUser $
-        ezmlmRemoteRetreiveScript $ useSimScan $
+        ezmlmRemoteRetreiveScript $ useSimScan $ useAutoMount $
         simScanSpamAssassin $ simScanClamAntiVirus $
         simScanTrophie $ simScanSpamAssassinHits $
         simScanAttachmentSuffix $ defaultAccountType )
@@ -758,9 +758,9 @@ objectclass ( 1.3.6.1.4.1.8767.3.1.3
         maximumMailingLists $ ezmlmVirtualUser $
         autoCreateUsername $ autoCreateMailAddress $
         autoCreatePassWord $ userNamePrefix $
-        userNamePrefixLength $ useHostACL $ useSudo $
-        useAutoMount $ lockUserName $ lockEmailAddress $
-        lockDomainAddress $ lockPassword $ lockAccountType )
+        userNamePrefixLength $ lockUserName $ 
+        lockEmailAddress $ lockDomainAddress $
+        lockPassword $ lockAccountType )
   SUP top AUXILIARY )
 
 objectclass ( 1.3.6.1.4.1.8767.3.1.5

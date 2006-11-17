@@ -17,7 +17,7 @@
 //	file		File that manage the plugin
 //	attribs		Attribute(s) that the plugin manages
 //
-// $Id: config_plugins.inc,v 2.26 2006-10-20 12:06:02 turbo Exp $
+// $Id: config_plugins.inc,v 2.26.2.1 2006-11-17 13:53:27 turbo Exp $
 
 pql_plugin_register(pql_get_define("PQL_ATTR_ISACTIVE"), "",
 					"attrib.accountstatus.inc",
@@ -122,9 +122,6 @@ pql_plugin_register(pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"), "",
 						  pql_get_define("PQL_ATTR_SIMSCAN_SPAM"),
 						  pql_get_define("PQL_ATTR_SIMSCAN_CLAM"),
 						  pql_get_define("PQL_ATTR_SIMSCAN_TROPHIE"),
-						  pql_get_define("PQL_ATTR_HOSTACL_USE"),
-						  pql_get_define("PQL_ATTR_SUDO_USE"),
-						  pql_get_define("PQL_ATTR_AUTOMOUNT_USE"),
 						  pql_get_define("PQL_ATTR_LOCK_USERNAME"),
 						  pql_get_define("PQL_ATTR_LOCK_EMAILADDRESS"),
 						  pql_get_define("PQL_ATTR_LOCK_DOMAINADDRESS"),

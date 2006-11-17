@@ -199,22 +199,7 @@
         <td><?=$ezmlmvirtualuser_link?></td>
       </tr>
 
-<?php } ?>
-      <!-- -------------------- --!>
-      <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Use Host ACL')?></td>
-        <td><?php if($usehostacl) {echo $LANG->_('Yes');} else {echo $LANG->_('No');}?></td>
-        <td><?=$usehostacl_link?></td>
-      </tr>
-
-      <!-- -------------------- --!>
-      <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Use Sudo')?></td>
-        <td><?php if($usesudo) {echo $LANG->_('Yes');} else {echo $LANG->_('No');}?></td>
-        <td><?=$usesudo_link?></td>
-      </tr>
-
-<?php
+<?php }
 
 	  // Domain administrators
 	  $class = pql_format_table(0);

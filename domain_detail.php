@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.105.2.1 2006-11-13 15:05:05 turbo Exp $
+// $Id: domain_detail.php,v 2.105.2.2 2006-11-17 13:53:25 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -90,8 +90,6 @@ $attribs = array("autocreatemailaddress"	=> pql_get_define("PQL_ATTR_AUTOCREATE_
 				 "usernameprefixlength"		=> pql_get_define("PQL_ATTR_USERNAME_PREFIX_LENGTH"),
 				 "vatnumber"				=> pql_get_define("PQL_ATTR_VAT_NUMBER"),
 				 "ezmlmvirtualuser"			=> pql_get_define("PQL_ATTR_EZMLM_USER"),
-				 "usehostacl"				=> pql_get_define("PQL_ATTR_HOSTACL_USE"),
-				 "usesudo"					=> pql_get_define("PQL_ATTR_SUDO_USE"),
 				 "info"						=> pql_get_define("PQL_ATTR_INFO"),
 				 "lockusername"				=> pql_get_define("PQL_ATTR_LOCK_USERNAME"),
 				 "lockemailaddress"			=> pql_get_define("PQL_ATTR_LOCK_EMAILADDRESS"),
@@ -237,20 +235,6 @@ if($_SESSION["ADVANCED_MODE"]) {
 if(pql_get_define("PQL_CONF_SIMSCAN_USE")) {
   $new = array('simscan' => 'SimScan config');
   $buttons = $buttons + $new;
-}
-
-if($_SESSION["ADVANCED_MODE"]) {
-  $key = pql_get_define("PQL_ATTR_HOSTACL_USE");
-  if($$key) {
-	$new = array('hostacl' => 'Host control');
-	$buttons = $buttons + $new;
-  }
-
-  $key = pql_get_define("PQL_ATTR_SUDO_USE");
-  if($$key) {
-	$new = array('sudo' => 'Sudoers access');
-	$buttons = $buttons + $new;
-  }
 }
 
 $new = array('action' => 'Actions');
