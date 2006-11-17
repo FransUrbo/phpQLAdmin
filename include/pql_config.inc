@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.86.2.1 2006-11-14 15:55:53 turbo Exp $
+// $Id: pql_config.inc,v 1.86.2.2 2006-11-17 16:42:59 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -53,7 +53,7 @@ function pql_set_define($define, $value, $case_insensitive = false, $dn = NULL) 
 		//	Dimension 2: root DN
 		$dn = pql_format_normalize_dn($dn);
 
-		if(empty($config[$define][$dn])) {
+		if(!isset($config[$define][$dn])) {
 			$config[$define][$dn] = $value;
 
 			if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $define))
@@ -213,7 +213,11 @@ foreach($_pql->ldap_basedn as $dn)  {
   }
   
   // 4d. Load 'resonable defaults' for each top DN
+  if(file_exists("./.DEBUG_DEFINES"))
+	echo "<b>Loading 'resonable defaults'<br>";
   require($_SESSION["path"]."/include/defaults.inc");
+  if(file_exists("./.DEBUG_DEFINES"))
+	echo "</b><p>";
 }
 
 // 5. Check the Control DN if the user is there -> Allow management of Controls information
