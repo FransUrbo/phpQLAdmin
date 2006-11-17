@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.49.2.4 2006-11-17 13:53:25 turbo Exp $
+// $Id: control_detail.php,v 1.49.2.5 2006-11-17 16:40:14 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -143,17 +143,17 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 	  
 	  if(pql_get_define("PQL_CONF_AUTOMOUNT_USE")) {
 		$new = array('automount' => 'Automount Information');
-		$buttons = $buttons + new;
+		$buttons = $buttons + $new;
 	  }
 	  
 	  if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 		$new = array('mailsrv'   => 'Mailserver Administration');
-		$buttons = $buttons + new;
+		$buttons = $buttons + $new;
 	  }
 	  
 	  if(pql_get_define("PQL_CONF_WEBSRV_USE")) {
 		$new = array('websrv' => 'Webserver Administration');
-		$buttons = $buttons + new;
+		$buttons = $buttons + $new;
 	  }				 
 
 	  pql_generate_button($buttons, "host=".urlencode($_REQUEST["host"])."&ref=".$_REQUEST["ref"], 'host_detail.php'); echo "    <br>\n";
