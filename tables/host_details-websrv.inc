@@ -1,4 +1,7 @@
 <?php
+// View everything about web servers - virtual hosts and virtual host locations
+// $Id: host_details-websrv.inc,v 1.1.2.7 2006-11-17 14:02:29 turbo Exp $
+
 // {{{ Include Webserver API etc
 require($_SESSION["path"]."/include/pql_websrv.inc");
 
