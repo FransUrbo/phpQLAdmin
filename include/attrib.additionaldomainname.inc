@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.33 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.33.6.1 2006-11-17 13:47:55 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -109,6 +109,7 @@ function attribute_print_form() {
 
     <input type="hidden" name="submit"   value="2">
     <input type="hidden" name="attrib"   value="<?=$_REQUEST["attrib"]?>">
+    <input type="hidden" name="type"     value="<?=$_REQUEST["type"]?>">
     <input type="hidden" name="oldvalue" value="<?=$_REQUEST["additionaldomainname"]?>">
     <input type="hidden" name="domain"   value="<?=urlencode($_REQUEST["domain"])?>">
     <input type="hidden" name="rootdn"   value="<?=urlencode($_REQUEST["rootdn"])?>">
@@ -136,11 +137,12 @@ function attribute_save($type) {
 	return false;
   }
   // }}}
-  
+
   switch($type) {
   case "add":
   case "modify":
 	$delval = $oldvalue;
+	$entry[$attrib][] = $additionaldomainname;
 	// fall through here, so that we ADD this new value
 	
   case "delete":
