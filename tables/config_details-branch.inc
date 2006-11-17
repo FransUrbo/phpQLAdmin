@@ -47,7 +47,7 @@
       <!-- -------------------- -->
 <?php $class=pql_format_table(0); ?>
       <tr>
-        <td class="title"><?=$LANG->_('Verify user/domain deletions \i\urecomended!\U\I')?></td>
+        <td class="title"><?=$LANG->_('Verify deletions \i\urecomended!\U\I')?></td>
         <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST["branch"])) {echo $LANG->_('Yes');}else{echo $LANG->_('No');}?>&nbsp;</td>
         <td class="<?=$class?>">
 <?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
