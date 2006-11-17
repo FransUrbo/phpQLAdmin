@@ -50,71 +50,37 @@
 <?php   } ?>
       </tr>
 <?php } ?>
+    </th>
 
-      <tr><td></td></tr>
+    <tr><th><td></td></th></tr>
 
+    <th colspan="3" align="left"><?=$LANG->_('Plugin configuration')?>
 <?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
 <?php	$class=pql_format_table(0); ?>
       <tr>
-        <td class="title"><?=$LANG->_('Manage Access Control Information')?></td>
+        <td class="title"><?=$LANG->_('Access Control Information (ACI)')?></td>
         <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_ACI_USE")) {echo 'Yes';} else {echo 'No';}?>&nbsp;</td>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=pql_get_define("PQL_ATTR_ACI_USE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_ACI_USE")?>"></a></td>
       </tr>
 
 <?php	$class=pql_format_table(0); ?>
       <tr>
-        <td class="title"><?=$LANG->_('Manage Controls DB')?></td>
+        <td class="title"><?=$LANG->_('Mailserver configuration')?></td>
         <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_CONTROL_USE")) {echo 'Yes';} else {echo 'No';}?>&nbsp;</td>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=pql_get_define("PQL_ATTR_CONTROL_USE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_CONTROL_USE")?>"></a></td>
       </tr>
 
 <?php	$class=pql_format_table(0); ?>
       <tr>
-        <td class="title"><?=$LANG->_('Manage EZMLM mailinglists')?></td>
+        <td class="title"><?=$LANG->_('EZMLM mailinglists')?></td>
         <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_EZMLM_USE")) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=pql_get_define("PQL_ATTR_EZMLM_USE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_EZMLM_USE")?>"></a></td>
       </tr>
 <?php } ?>
-<?php if(pql_get_define("PQL_CONF_EZMLM_USE")) { $class=pql_format_table(0); ?>
-      <tr>
-        <td class="title"><?=$LANG->_('Path to EZMLM commands')?></td>
-        <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_EZMLM_PATH"); ?>&nbsp;</td>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=pql_get_define("PQL_ATTR_EZMLM_PATH")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_EZMLM_PATH")?>"></a></td>
-      </tr>
-
-<?php	$class=pql_format_table(0); ?>
-      <tr>
-        <td class="title"><?=$LANG->_('EZMLM server is remote')?></td>
-        <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_EZMLM_REMOTE")) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=pql_get_define("PQL_ATTR_EZMLM_REMOTE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_EZMLM_REMOTE")?>"></a></td>
-      </tr>
-<?php	if(pql_get_define("PQL_CONF_EZMLM_REMOTE")) { $class=pql_format_table(0); ?>
-
-      <tr>
-        <td class="title"><?=$LANG->_('EZMLM remote host')?></td>
-        <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_EZMLM_REMOTE_HOST"); ?>&nbsp;</td>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=pql_get_define("PQL_ATTR_EZMLM_REMOTE_HOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_EZMLM_REMOTE_HOST")?>"></a></td>
-      </tr>
-
-<?php	$class=pql_format_table(0); ?>
-      <tr>
-        <td class="title"><?=$LANG->_('EZMLM remote/rsh user')?></td>
-        <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_EZMLM_REMOTE_USER"); ?>&nbsp;</td>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=pql_get_define("PQL_ATTR_EZMLM_REMOTE_USER")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_EZMLM_REMOTE_USER")?>"></a></td>
-      </tr>
-
-<?php	$class=pql_format_table(0); ?>
-      <tr>
-        <td class="title"><?=$LANG->_('Remote EZMLM mailinglist\ninformation retreival script')?></td>
-        <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_EZMLM_REMOTE_RETREIVE_SCRIPT"); ?>&nbsp;</td>
-        <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=pql_get_define("PQL_ATTR_EZMLM_REMOTE_RETREIVE_SCRIPT")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_EZMLM_REMOTE_RETREIVE_SCRIPT")?>"></a></td>
-      </tr>
-<?php	} ?>
-<?php } ?>
 
 <?php $class=pql_format_table(0); ?>
       <tr>
-        <td class="title"><?=$LANG->_('Manage DNS domains')?></td>
+        <td class="title"><?=$LANG->_('DNS information')?></td>
         <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_BIND9_USE")) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
 <?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=pql_get_define("PQL_ATTR_BIND9_USE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_BIND9_USE")?>"></a></td>
@@ -125,7 +91,7 @@
 
 <?php $class=pql_format_table(0); ?>
       <tr>
-        <td class="title"><?=$LANG->_('Manage webserver config')?></td>
+        <td class="title"><?=$LANG->_('Webserver configuration')?></td>
         <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_WEBSRV_USE")) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
 <?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_USE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_WEBSRV_USE")?>"></a></td>
@@ -136,7 +102,7 @@
 
 <?php $class=pql_format_table(0); ?>
       <tr>
-        <td class="title"><?=$LANG->_('Manage SimScan config')?></td>
+        <td class="title"><?=$LANG->_('SimScan configuration')?></td>
         <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_SIMSCAN_USE")) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
 <?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=pql_get_define("PQL_ATTR_SIMSCAN_USE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_SIMSCAN_USE")?>"></a></td>
@@ -145,6 +111,43 @@
 <?php } ?>
       </tr>
 
+<?php $class=pql_format_table(0); ?>
+      <tr>
+        <td class="title"><?=$LANG->_('Host ACL configuration')?></td>
+        <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_HOSTACL_USE")) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
+<?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=pql_get_define("PQL_ATTR_HOSTACL_USE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_HOSTACL_USE")?>"></a></td>
+<?php } else { ?>
+        <td class="<?=$class?>"></td>
+<?php } ?>
+      </tr>
+
+<?php $class=pql_format_table(0); ?>
+      <tr>
+        <td class="title"><?=$LANG->_('Sudo configuration')?></td>
+        <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_SUDO_USE")) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
+<?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=pql_get_define("PQL_ATTR_SUDO_USE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_SUDO_USE")?>"></a></td>
+<?php } else { ?>
+        <td class="<?=$class?>"></td>
+<?php } ?>
+      </tr>
+
+<?php $class=pql_format_table(0); ?>
+      <tr>
+        <td class="title"><?=$LANG->_('Automount configuration')?></td>
+        <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_AUTOMOUNT_USE")) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
+<?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"]) { ?>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=pql_get_define("PQL_ATTR_AUTOMOUNT_USE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_AUTOMOUNT_USE")?>"></a></td>
+<?php } else { ?>
+        <td class="<?=$class?>"></td>
+<?php } ?>
+      </tr>
+    </th>
+
+    <tr><th><td></td></th></tr>
+
+    <th colspan="3" align="left"><?=$LANG->_('Behaviour configuration')?>
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Automatic reload of navigation bar')?></td>
@@ -173,11 +176,12 @@
         <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_CREATE_MBOX")) {echo 'Yes';} else {echo 'No';}?>&nbsp;</td>
         <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=pql_get_define("PQL_ATTR_CREATE_MBOX")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_CREATE_MBOX")?>"></a></td>
       </tr>
+    </th>
 <?php if($show_kerberos_info) { ?>
 
-      <tr><td></td></tr>
+    <tr><th><td></td></th></tr>
 
-      <!-- -------------------- -->
+    <th colspan="3" align="left"><?=$LANG->_('Kerberos configuration')?>
 <?php	$class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Kerberos realm')?></td>
@@ -214,6 +218,47 @@
       </tr>
 <?php } ?>
     </th>
+<?php if(pql_get_define("PQL_CONF_EZMLM_USE")) { $class=pql_format_table(0); ?>
+
+    <tr><th><td></td></th></tr>
+
+    <th colspan="3" align="left"><?=$LANG->_('EZMLM configuration')?>
+      <tr>
+        <td class="title"><?=$LANG->_('Path to EZMLM commands')?></td>
+        <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_EZMLM_PATH"); ?>&nbsp;</td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=pql_get_define("PQL_ATTR_EZMLM_PATH")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_EZMLM_PATH")?>"></a></td>
+      </tr>
+
+<?php	$class=pql_format_table(0); ?>
+      <tr>
+        <td class="title"><?=$LANG->_('EZMLM server is remote')?></td>
+        <td class="<?=$class?>"><?php if(pql_get_define("PQL_CONF_EZMLM_REMOTE")) {echo 'Yes';}else{echo 'No';}?>&nbsp;</td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=pql_get_define("PQL_ATTR_EZMLM_REMOTE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Toggle <?=pql_get_define("PQL_ATTR_EZMLM_REMOTE")?>"></a></td>
+      </tr>
+<?php	if(pql_get_define("PQL_CONF_EZMLM_REMOTE")) { $class=pql_format_table(0); ?>
+
+      <tr>
+        <td class="title"><?=$LANG->_('EZMLM remote host')?></td>
+        <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_EZMLM_REMOTE_HOST"); ?>&nbsp;</td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=pql_get_define("PQL_ATTR_EZMLM_REMOTE_HOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_EZMLM_REMOTE_HOST")?>"></a></td>
+      </tr>
+
+<?php		$class=pql_format_table(0); ?>
+      <tr>
+        <td class="title"><?=$LANG->_('EZMLM remote/rsh user')?></td>
+        <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_EZMLM_REMOTE_USER"); ?>&nbsp;</td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=pql_get_define("PQL_ATTR_EZMLM_REMOTE_USER")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_EZMLM_REMOTE_USER")?>"></a></td>
+      </tr>
+
+<?php		$class=pql_format_table(0); ?>
+      <tr>
+        <td class="title"><?=$LANG->_('Remote EZMLM mailinglist\ninformation retreival script')?></td>
+        <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_EZMLM_REMOTE_RETREIVE_SCRIPT"); ?>&nbsp;</td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?attrib=<?=pql_get_define("PQL_ATTR_EZMLM_REMOTE_RETREIVE_SCRIPT")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_EZMLM_REMOTE_RETREIVE_SCRIPT")?>"></a></td>
+      </tr>
+<?php	} ?>
+    </th>
+<?php } ?>
   </table>
 
   <br><br>
