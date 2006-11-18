@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.35.4.8 2006-11-18 11:39:03 turbo Exp $
+// $Id: left-control.php,v 2.35.4.9 2006-11-18 15:43:57 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -56,7 +56,7 @@ if((pql_get_define("PQL_CONF_CONTROL_USE") or
   $hosts = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 					  '(&(cn=*)(|(objectclass=ipHost)(objectclass=device)))',
 					  'ONELEVEL');
-  // }}}
+// }}}
 
   if(!is_array($hosts)) {
 	// {{{ No physical hosts
@@ -115,7 +115,8 @@ if((pql_get_define("PQL_CONF_CONTROL_USE") or
 
 	  // {{{ For each host - get QmailLDAP/Control hosts - if enabled
 	  if(pql_get_define("PQL_CONF_CONTROL_USE")) {
-		$qlcs = pql_get_dn($_pql->ldap_linkid, $host_dn, '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+		if($host_dn != 'Global')
+		  $qlcs = pql_get_dn($_pql->ldap_linkid, $host_dn, '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
 		if(is_array($qlcs) or ($host_dn == 'Global')) {
 		  // {{{ Got QLC Object(s)
 		  if($host_dn == 'Global')
@@ -191,7 +192,8 @@ if((pql_get_define("PQL_CONF_CONTROL_USE") or
 
 	  // {{{ For each host - get Webserver container object(s) - if enabled
 	  if(pql_get_define("PQL_CONF_WEBSRV_USE")) {
-		$web_containers = pql_get_dn($_pql->ldap_linkid, $host_dn, '(&(cn=*)(objectclass=device))', 'ONELEVEL');
+		if($host_dn != 'Global')
+		  $web_containers = pql_get_dn($_pql->ldap_linkid, $host_dn, '(&(cn=*)(objectclass=device))', 'ONELEVEL');
 		if(is_array($web_containers) or ($host_dn == 'Global')) {
 		  // {{{ Got Web container object(s)
 		  if($host_dn == 'Global')
