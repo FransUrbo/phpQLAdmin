@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.35.4.7 2006-11-17 13:53:25 turbo Exp $
+// $Id: left-control.php,v 2.35.4.8 2006-11-18 11:39:03 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -225,6 +225,10 @@ if((pql_get_define("PQL_CONF_CONTROL_USE") or
 			  if(is_array($virt_hosts)) {
 				// {{{ Go through the Virtual host(s)
 				asort($virt_hosts);
+
+				// Add a 'Add virtual server' link
+				$new = array('<i>=> Add virtual server</i>' => "websrv_add.php?view=websrv&host=".urlencode($host_dn)."&server=".urlencode($container_dn));
+				$links = $links + $new;
 				
 				foreach($virt_hosts as $virt_dn) {
 				  $virt = pql_get_attribute($_pql->ldap_linkid, $virt_dn, pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME"));
@@ -237,6 +241,10 @@ if((pql_get_define("PQL_CONF_CONTROL_USE") or
 // }}}
 			  } else {
 				$new = array('no virtual hosts' => '');
+				$links = $links + $new;
+
+				// Add a 'Add virtual server' link
+				$new = array('<i>=> Add virtual server</i>' => "websrv_add.php?view=websrv&host=".urlencode($host_dn)."&server=".urlencode($container_dn));
 				$links = $links + $new;
 			  }
 // }}}
