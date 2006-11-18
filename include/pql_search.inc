@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.61.2.1 2006-11-13 15:11:19 turbo Exp $
+// $Id: pql_search.inc,v 2.61.2.2 2006-11-18 13:58:27 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -737,7 +737,7 @@ function pql_validate_object($linkid, $dn, $object, $type) {
   // }}}
   
   // {{{ Add the OpenLDAPaci attribute (maybe)
-  if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci"))
+  if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci") and empty($entry[pql_get_define("PQL_ATTR_LDAPACI")]))
 	$entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($linkid, $dn, $type);
   // }}}
   
