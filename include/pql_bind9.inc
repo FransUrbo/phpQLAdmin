@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.44 2006-11-11 19:27:00 turbo Exp $
+// $Id: pql_bind9.inc,v 2.45 2006-11-18 14:02:32 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -162,6 +162,9 @@ function pql_bind9_get_acis($linkid, $zone) {
 	$object = pql_search($linkid, $base, $filter, 'SUBTREE', 1, array('OpenLDAPaci', 'aci'));
 	if(@is_array($object[0]))
 	  return $object[0][pql_get_define("PQL_ATTR_LDAPACI")];
+	elseif($object["dn"])
+	  // Flat object
+	  return $object[pql_get_define("PQL_ATTR_LDAPACI")];
   }
 
   return false;
@@ -290,9 +293,10 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 	$tmp = $entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")];
 
 	if(ereg('.', $entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")])) {
-	  // This is a sub-zone! Create something like this:
-	  // dn: relativeDomainName=test,dc=domain,dc=tld,PQL_CONF_SUBTREE_BIND9,o=Branch,c=SE
-	  // dn: relativeDomainName=ns1.test,dc=domain,dc=tld,PQL_CONF_SUBTREE_BIND9,o=Branch,c=SE
+	  // {{{ This is a sub-zone!
+	  // Create something like this:
+	  //	dn: relativeDomainName=test,dc=domain,dc=tld,PQL_CONF_SUBTREE_BIND9,o=Branch,c=SE
+	  //	dn: relativeDomainName=ns1.test,dc=domain,dc=tld,PQL_CONF_SUBTREE_BIND9,o=Branch,c=SE
 
 	  // Split it up in dc components and add each one as a separate dc object.
 	  $dc = split('\.', $entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")]);
@@ -341,6 +345,7 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 		// Restore the original hostname and record type.
 		$entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")] = $tmp_hostname;
 	  }
+	  // }}}
 	}
 
 	$dn = "relativeDomainName=$tmp,$dn,".pql_get_define("PQL_CONF_SUBTREE_BIND9").",$basedn";
@@ -366,28 +371,50 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 	// Does the object exists (with this attribute)?
 	if($attrs = pql_get_attribute($linkid, $dn, $attrib)) {
 	  // It DOES exists!
-
 	  if(!is_array($attrs))
+		// Not an array - make it one.
 		$attrs = array($attrs);
 
-	  // Add the new attribute to the old list
-	  $attrs[] = $entry[$attrib];
-
-	  // Recreate the LDIF
-	  unset($entry);
-	  $entry[$attrib] = $attrs;
-
-	  // Create a LDIF object to print in case of error
-	  $LDIF = pql_create_ldif("pql_bind9_add_host", $dn, $entry);
-	  if(@file_exists($_SESSION["path"]."/.DEBUG_ME")) {
-		echo $LDIF;
-	  } else {
-		if(!pql_write_mod($linkid, $dn, $entry, "pql_bind9_add_host")) {
-		  pql_format_error(1);
-		  die($LDIF);
+	  // {{{ Go through the existing attributes, make sure that the new value don't already exist
+	  $value_exists = 0; 
+	  for($i=0; $attrs[$i]; $i++) {
+		if(is_array($entry[$attrib])) {
+		  for($j=0; $entry[$attrib][$j]; $j++) {
+			if($attrs[$i] == $entry[$attrib][$j]) {
+			  $value_exists = 1;
+			  break;
+			}
+		  }
+		} else {
+		  if($attrs[$i] == $entry[$attrib]) {
+			$value_exists = 1;
+			break;
+		  }
 		}
 	  }
+	  // }}}
 
+	  if(!$value_exists) {
+		// {{{ Add the new attribute to the old list
+		$attrs[] = $entry[$attrib];
+		
+		// Recreate the LDIF
+		unset($entry);
+		$entry[$attrib] = $attrs;
+
+		// Create a LDIF object to print in case of error
+		$LDIF = pql_create_ldif("pql_bind9_add_host", $dn, $entry);
+		if(@file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+		  echo $LDIF;
+		} else {
+		  if(!pql_write_mod($linkid, $dn, $entry, "pql_bind9_add_host")) {
+			pql_format_error(1);
+			die($LDIF);
+		  }
+		}
+		// }}}
+	  }
+		
 	  return $dn;
 	}
 	// }}}
@@ -398,7 +425,6 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 	// {{{ Add the OpenLDAPaci attribute (maybe)
 	if(@$_SESSION["ACI_SUPPORT_ENABLED"]) 
 	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = pql_bind9_get_acis($linkid, $entry[pql_get_define("PQL_ATTR_ZONENAME")]);
-																	  
 	// }}}
 
 	// {{{ Add the object to the database
