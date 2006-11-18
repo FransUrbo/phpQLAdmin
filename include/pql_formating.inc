@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.58.2.3 2006-11-14 21:19:20 turbo Exp $
+// $Id: pql_formating.inc,v 2.58.2.4 2006-11-18 13:56:01 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry, extra_newline)
 // Create a LDIF object to print in case of error
@@ -201,8 +201,13 @@ function pql_format_status_msg($msg){
       <tr class="message">
         <td colspan="2" class="message">
           <img src="images/info.png" width="16" height="16" border="0" align="left">
+        </td>
+
+        <td colspan="2" class="message">
           <table>
-            <?php echo stripslashes($msg) . "\n"; ?>
+            <th align="left">
+              <?php echo stripslashes($msg) . "\n"; ?>
+            </th>
           </table>
         </td>
       </tr>
