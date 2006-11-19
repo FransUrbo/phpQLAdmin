@@ -1,6 +1,6 @@
 <?php
 // delete a physical host
-// $Id: host_del.php,v 1.1.2.1 2006-11-17 17:27:57 turbo Exp $
+// $Id: host_del.php,v 1.1.2.2 2006-11-19 12:10:40 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -80,14 +80,45 @@ if(!$_REQUEST["dns"]) {
 
   echo "    <p>\n";
 }
+
+if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+  echo "_REQUEST:";
+  printr($_REQUEST);
+}
 // }}}
 
 if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn)) {
-  // {{{ Delete the marked DN's
-  printr($_REQUEST);
+  // {{{ Delete the FIRST DN recursivly
   if(pql_domain_del($_pql, $_REQUEST["dn_0"], 0)) {
 	$msg = urlencode(pql_complete_constant($LANG->_('Successfully removed %what%'), array('what' => $_REQUEST["dn_0"])));
+
+	// {{{ Delete any DNS host entries that pointed to this <whatever>
+	// {{{ Separate the domainname and hostname from the FQDN
+	if($_REQUEST["virthost"])
+	  $server_reference = $_REQUEST["virthost"];
+	elseif($_REQUEST["server"]) {
+	  $server_reference = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["server"], pql_get_define("PQL_ATTR_CN"));
+	} elseif($_REQUEST["host"]) {
+	  $server_reference = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["host"], pql_get_define("PQL_ATTR_CN"));
+	}
+	$tmp = pql_separate_host_domain($server_reference);
+	$hostname = $tmp[0]; $domainname = $tmp[1];
+// }}}
+  
+	// {{{ Find this host entry in the DNS
+	$filter = '(&('.pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")."=$hostname)(".pql_get_define("PQL_ATTR_ZONENAME")."=$domainname))";
+	$dns_entry = pql_get_dn($_pql->ldap_linkid, $rootdn, $filter);
+// }}}
+
+	// {{{ Delete the DNS record
+	if(@$dns_entry[0]) {
+	  if(pql_write_del($_pql->ldap_linkid, $dns_entry[0]))
+		$msg .= "<br>".urlencode(pql_complete_constant($LANG->_('Successfully removed %what%'), array('what' => $dns_entry[0])));
+	}
+// }}}
+
 	$link = "home.php?msg=$msg&rlnb=2";
+// }}}
   } else {
 	$msg  = urlencode(pql_complete_constant($LANG->_('Failed to remove %what%'), array('what' => $_REQUEST["dn_0"]))) . ":&nbsp;" . ldap_error($_pql->ldap_linkid);
 
@@ -143,9 +174,8 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn))
     <?php echo $LANG->_('Attention: If you delete a physical host, all mail- and webservers, host ACL, sudoers, auto mount information etc, etc will be deleted too'); ?>!
 <?php } ?>
     <p>
-    <?php echo $LANG->_('Are you really sure'); ?>
-    <br>
     <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="GET">
+      <?=$LANG->_('Delete any DNS host entries?')?>&nbsp;<input type="checkbox" name="del_dns_host">&nbsp;<?=$LANG->_('Yes')?><br>
 <?php	for($i=0; $dns[$i]; $i++) { ?>
       <input type="hidden" name="dn_<?=$i?>" value="<?=urlencode($dns[$i])?>">
 <?php	} ?>
@@ -157,6 +187,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn))
       <input type="hidden" name="hostdir"  value="<?=$_REQUEST["hostdir"]?>">
       <input type="hidden" name="view"     value="<?=$_REQUEST["view"]?>">
 
+		 <?php echo $LANG->_('Are you really sure'); ?>?&nbsp;
       <input type="submit" name="ok" value="<?php echo $LANG->_('Yes'); ?>">
       <input type="button" name="back" value="<?php echo $LANG->_('No'); ?>" onClick="history.back();">
     </form>
