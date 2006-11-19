@@ -1,6 +1,6 @@
 <?php
 // Add a webserver configuration to the LDAP db
-// $Id: websrv_add.php,v 2.19.2.5 2006-11-18 13:48:07 turbo Exp $
+// $Id: websrv_add.php,v 2.19.2.6 2006-11-19 12:09:35 turbo Exp $
 //
 // {{{ Setup session
 require("./include/pql_session.inc");
@@ -344,22 +344,8 @@ if(($error == 'true') or !$_REQUEST["type"] or
 		require($_SESSION["path"]."/include/pql_bind9.inc");
 
 		// Separate the domainname and hostname from the FQDN
-		$fqdn = ereg_replace(':.*', '', $_REQUEST["serverurl"]);
-		$tmp = split('\.', $fqdn);
-
-		$cnt = count($tmp)-1;
-
-		// Domain name is/should be the last two parts
-		$domainname = $tmp[$cnt-1].'.'.$tmp[$cnt];
-		unset($tmp[$cnt-1]); unset($tmp[$cnt]);
-
-		// Hostname is everything UP TO the domainname
-		$hostname = '';
-		for($i=0; $i < $cnt-1; $i++) {
-		  $hostname .= $tmp[$i];
-		  if($tmp[$i+1])
-			$hostname .= ".";
-		}
+		$tmp = pql_separate_host_domain($_REQUEST["serverurl"]);
+		$hostname = $tmp[0]; $domainname = $tmp[1];
 
 		// Get the root DN
 		$rootdn = pql_get_rootdn($_SESSION["USER_SEARCH_DN_CTR"], 'websrv_add.php'); $rootdn = urldecode($rootdn);

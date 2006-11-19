@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.58.2.4 2006-11-18 13:56:01 turbo Exp $
+// $Id: pql_formating.inc,v 2.58.2.5 2006-11-19 12:09:37 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry, extra_newline)
 // Create a LDIF object to print in case of error
@@ -868,6 +868,30 @@ function pql_strip_username($email) {
 	  return $email[1];
     
     return false;
+}
+// }}}
+
+// {{{ pql_separate_host_domain(fqdn)
+// Separate the domainname and hostname from the FQDN
+function pql_separate_host_domain($fqdn) {
+  $fqdn = ereg_replace(':.*', '', $fqdn); // Remove any port
+  $tmp = split('\.', $fqdn);
+  
+  $cnt = count($tmp)-1;
+  
+  // Domain name is/should be the last two parts
+  $domainname = $tmp[$cnt-1].'.'.$tmp[$cnt];
+  unset($tmp[$cnt-1]); unset($tmp[$cnt]);
+  
+  // Hostname is everything UP TO the domainname
+  $hostname = '';
+  for($i=0; $i < $cnt-1; $i++) {
+	$hostname .= $tmp[$i];
+	if($tmp[$i+1])
+	  $hostname .= ".";
+  }
+
+  return(array($hostname, $domainname));
 }
 // }}}
 
