@@ -29,10 +29,45 @@ phpQLAdmin 2.3.5 TO BE ANNOUNCED
 	    more than one web server container is selected).
 	  - Don't add a trailing slash after server URL (hu?!?).
 	  - When creating the DNS SOA record object, include 'dNSTTL=xxx ' in the DN.
+	  - Bug fix merges from BRANCH_HOST_MERGE:
+	    + De-globalize 'ok' value in bind9_del.php
+	    + Remember the 'type' throughout the additionalDomainName form.
+	    + When _adding_ a additionalDomainName, the object needs to be setup.
+	    + Be more restrictive on WHEN to add the ACI attributes in attrib.administrator.inc.
+	    + Faulty use of pql_modify_attribute() in attrib.control.ldapcluster.inc (need
+	      fourth param to be '1', not '').
+	    + Duplicate (and wrong!) define of PQL_ATTR_WEBSRV_SRV_NAME removed.
+	    + The values returned with pql_search() in include/pql_bind9.inc:pql_bind9_get_acis()
+	      can be a flat array. Catch this.
+	    + Make sure that pql_bind9_add_host() isn't adding a value that already exists.
+	    + Can't use 'if(empty(...))' in include/pql_config.inc:pql_set_define(). It doesn't
+	      catch if the value is '0'! use 'if(!isset(...))' instead.
+	    + Bugfix for #203 accidently CREATED an empty array entry if 'domain' value didn't
+	      exists. Rewrite it so it doesn't happen. Prettier debugging :)
+	    + Only generate the ACI entry if there isn't already ACI values!
+	    + Catch flat objects returned by pql_search() in
+	      include/pql_websrv.inc:pql_websrv_get_virtual_host_objects().
+	    + Make sure that the 'super_admin' value isn't overwritten in tables/user_details-access.inc.
+	      If there are _more_ than one root/suffix in the database and the user is super admin in
+	      the first, but not in the second, then the value was overwritten...
 
 	GUI layout changes
 	  - RDN and FQDN should not be shown in if we're viewing the 'Global' 
 	    QmailLDAP/Control frame.
+	  - Bug fix merges from BRANCH_HOST_MERGE:
+	    + Don't show the DN in Mailserver header. Use the FQDN instead.
+	    + Don't show a blue background if left-head.html isn't called from
+	      left*.php
+	    + Verbose about loading the include/defaults.inc file (if .DEBUG_ME
+	      exists) in include/pql_config.inc.
+	    + Cleanup the HTML in include/pql_formating.inc:pql_generate_button().
+	      Buttons is yet again left justified (I'm not sure if the 'center'
+	      justification was on purpose or not, but I didn't like it).
+	      - Same fix for pql_format_status_msg(). Message was center justified,
+		and it wasn't very pretty.
+	    + Fix calculation on how many '&nbsp;'s to output in
+	      include/pql_formating.inc:pql_format_tree_span(). It's now more aligned
+	      with line(s) above.
 
 	Schema changes
 	API changes
