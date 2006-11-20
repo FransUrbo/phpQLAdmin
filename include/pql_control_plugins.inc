@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control plugins)
 //
-// $Id: pql_control_plugins.inc,v 2.11 2005-09-24 09:45:58 turbo Exp $
+// $Id: pql_control_plugins.inc,v 2.11.6.1 2006-11-20 19:59:08 turbo Exp $
 //
 
 // ----------------------------
@@ -61,6 +61,11 @@ pql_plugin_register(pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"),
 					"Mail Deliveries",
 					"attrib.control.ldapdefaultdotmode.inc",
 					pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"));
+
+pql_plugin_register(pql_get_define("PQL_ATTR_MAILSIZEMAX"),
+					"Mail Deliveries",
+					"attrib.control.mailsizemax.inc",
+					pql_get_define("PQL_ATTR_MAILSIZEMAX"));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_LDAPUID"),
 					"Virtual User",
