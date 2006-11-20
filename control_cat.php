@@ -1,6 +1,6 @@
 <?php
 // shows details of specified category of attributes
-// $Id: control_cat.php,v 2.23.2.3 2006-11-17 13:53:25 turbo Exp $
+// $Id: control_cat.php,v 2.23.2.4 2006-11-20 18:56:32 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -76,17 +76,17 @@ if($_REQUEST["ref"]) {
 
   if(pql_get_define("PQL_CONF_AUTOMOUNT_USE")) {
 	$new = array('automount' => 'Automount Information');
-	$buttons = $buttons + new;
+	$buttons = $buttons + $new;
   }
 
   if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 	$new = array('mailsrv'   => 'Mailserver Administration');
-	$buttons = $buttons + new;
+	$buttons = $buttons + $new;
   }
 
   if(pql_get_define("PQL_CONF_WEBSRV_USE")) {
 	$new = array('websrv' => 'Webserver Administration');
-	$buttons = $buttons + new;
+	$buttons = $buttons + $new;
   }				 
 
   pql_generate_button($buttons, "host=".urlencode($_REQUEST["host"])."&ref=".$_REQUEST["ref"], 'host_detail.php'); echo "    <br>\n";
