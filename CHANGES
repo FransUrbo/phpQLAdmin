@@ -74,6 +74,7 @@ phpQLAdmin 2.3.5 TO BE ANNOUNCED
 	Misc changes
 	  - Add support for searching for DNS hostname/ip address in search page.
 	  - Extra debugging in include/pql_search.inc:pql_search() regarding cache.
+	  - Merge from BRANCH_HOST_MERGE: Support for the mailSizeMax attribute.
 
 phpQLAdmin 2.3.4 Release (Oct 20 2006)
 	Bug fixes

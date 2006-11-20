@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.51 2006-11-12 22:42:19 turbo Exp $
+// $Id: config_attributes.inc,v 2.52 2006-11-20 20:05:25 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -102,6 +102,7 @@ pql_set_define("PQL_ATTR_BIGBROTHER",						strtolower("bigBrother"),					false);
 pql_set_define("PQL_ATTR_RBLLIST",							strtolower("rblList"),						false);
 pql_set_define("PQL_ATTR_GOODADDRESS",						strtolower("goodMailAddr"),					false);
 pql_set_define("PQL_ATTR_NONPRIMARY_RCPT_HOSTS",			strtolower("nonPrimaryRcptHosts"),			false);
+pql_set_define("PQL_ATTR_MAILSIZEMAX",						strtolower("mailSizeMax"),					false);
 // }}}
 
 // {{{ Qmail-Group attributes in QmailLDAP
