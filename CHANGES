@@ -50,6 +50,8 @@ phpQLAdmin 2.3.5 TO BE ANNOUNCED
 	    + Make sure that the 'super_admin' value isn't overwritten in tables/user_details-access.inc.
 	      If there are _more_ than one root/suffix in the database and the user is super admin in
 	      the first, but not in the second, then the value was overwritten...
+	    + Don't show the option (in domain details->default) for Mailinglist administrators
+	      if useEzmlm isn't true.
 
 	GUI layout changes
 	  - RDN and FQDN should not be shown in if we're viewing the 'Global' 
