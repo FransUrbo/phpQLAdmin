@@ -58,7 +58,7 @@
 //
 // Please look at other plugins to see which standard header text is recommanded.
 //
-// $Id: attrib.control.skeleton.inc,v 2.19.4.1 2006-11-13 07:16:05 turbo Exp $
+// $Id: attrib.control.skeleton.inc,v 2.19.4.2 2006-11-20 19:57:38 turbo Exp $
 //
 
 // {{{ xxx_check(type)
@@ -68,6 +68,12 @@ function xxx_check($type) {
 	// form validation comes here.
 	// this function returns true if the check was successful and the values
 	// can be stored. it returns false, if something was wrong.
+
+	if($_REQUEST["xxx"] == "") {
+	  // Missing
+	  $error["xxx"] = $LANG->_('Missing');
+	  return false;
+	}
 	
 	// use the error array to provide error description to the
 	// form. the format is:
@@ -78,8 +84,7 @@ function xxx_check($type) {
 // }}}
 
 // {{{ xxx_init(void)
-// init values
-function xxx_init($host) {
+function xxx_init() {
 	global $_pql_control;
 	
 	// initiate values from ldap database
@@ -106,7 +111,7 @@ function xxx_print_view($host) {
 	// this function will display the configuration
 	// stored in the ldap database.
 
-	// init data (must be here)
+	// Init data (must be here)
 	xxx_init();
 
 	// If you need the host FQDN
@@ -117,18 +122,11 @@ function xxx_print_view($host) {
 	  $_REQUEST["xxx"] = "set the default value here";
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left">XXX title</th>
+    <th colspan="3" align="left">xxx title</th>
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title">XXX attribute</td>
-        <td><?=$_REQUEST["xxx"]?></td>
-      </tr>
-
-      <tr class="subtitle">
-        <td colspan="2">
-          <a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=xxx">
-            <img src="images/edit.png" width="12" height="12" border="0"><?=$LANG->_('Change options')?>
-          </a>
-        </td>
+        <td class="title"><?=$LANG->_('value')?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["xxx"]) { echo $_REQUEST["xxx"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
+        <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=urlencode($host)?>&attrib=<?=pql_get_define("PQL_ATTR_xxx")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options')?>"></a></td>
       </tr>
     </th>
   </table>
@@ -145,9 +143,9 @@ function xxx_print_form() {
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left">XXX title</th>
+      <th colspan="3" align="left">xxx <?=$LANG->_('title')?></th>
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title">XXX attribute</td>
+          <td class="title">xxx attribute</td>
           <td><?php echo pql_format_error_span($error["xxx"]); ?><input type="text" name="xxx" value="<?=$_REQUEST["xxx"]?>"> <?=$LANG->_('Default')?>: write default value here</td>
         </tr>
 
@@ -160,6 +158,7 @@ function xxx_print_form() {
     </table>
 
     <input type="hidden" name="submit" value="1">
+    <input type="hidden" name="type"   value="modify">
     <input type="hidden" name="attrib" value="<?=$_REQUEST["attrib"]?>">
     <input type="hidden" name="mxhost" value="<?=$_REQUEST["mxhost"]?>">
     <input type="hidden" name="view"   value="<?=$_REQUEST["view"]?>">
@@ -197,8 +196,9 @@ function xxx_save($type, $host) {
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid,
-								  $_SESSION["USER_SEARCH_DN_CTR"], pql_get_define("PQL_ATTR_xxx"), '', $_REQUEST["xxx"]))
+		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
+								  pql_get_define("PQL_ATTR_xxx"),
+								  1, $_REQUEST["xxx"]))
 			$success = 1;
 		}
 
@@ -226,7 +226,7 @@ function xxx_save($type, $host) {
 function xxx_help() {
 	global $LANG;
 ?>
-	Help about the attribute...
+  <?=$LANG->_('Help about the attribute")?>
 <?php
 }
 // }}}
