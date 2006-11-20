@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtproutes (max number of bytes in message)
 //
-// $Id: attrib.control.smtproutes.inc,v 2.29.4.1 2006-11-13 07:16:05 turbo Exp $
+// $Id: attrib.control.smtproutes.inc,v 2.29.4.2 2006-11-20 19:55:00 turbo Exp $
 
 // {{{ smtproutes_check(type)
 
@@ -417,8 +417,7 @@ function smtproutes_save($type, $host) {
 				  $success = 0;
 			  }
 			} else {
-			  if(pql_modify_attribute($_pql_control->ldap_linkid,
-									  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+			  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 									  pql_get_define("PQL_ATTR_SMTPROUTES"), '', $smtproutes))
 				$success = 1;
 			}

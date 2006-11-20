@@ -3,7 +3,7 @@
 // ldapuid (user id of virtual user)
 // ldapgid (group id of virtual user)
 //
-// $Id: attrib.control.ldapuid.inc,v 2.19.4.1 2006-11-13 07:16:04 turbo Exp $
+// $Id: attrib.control.ldapuid.inc,v 2.19.4.2 2006-11-20 19:55:00 turbo Exp $
 
 // {{{ ldapuid_check(type)
 function ldapuid_check($type) {
@@ -152,8 +152,7 @@ function ldapuid_save($type, $host) {
 				  $success = 0;
 			  }
 			} else {
-			  if(!pql_modify_attribute($_pql_control->ldap_linkid,
-									   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+				if(!pql_modify_attribute($_pql_control->ldap_linkid, $host,
 									   $attrib, 1, $_REQUEST[$key]))
 				$success = 0;
 			}

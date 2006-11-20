@@ -2,7 +2,7 @@
 // control attribute plugin for
 // relaymailfrom (allowed sender addresses for relaying)
 //
-// $Id: attrib.control.relaymailfrom.inc,v 2.23.4.1 2006-11-13 07:16:05 turbo Exp $
+// $Id: attrib.control.relaymailfrom.inc,v 2.23.4.2 2006-11-20 19:55:00 turbo Exp $
 
 // {{{ relaymailfrom_check(type)
 function relaymailfrom_check($type) {
@@ -157,8 +157,7 @@ function relaymailfrom_save($type, $host) {
 			      $success = 0;
 				}
 			  } else {
-				if(pql_modify_attribute($_pql_control->ldap_linkid,
-										pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+				if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 										pql_get_define("PQL_ATTR_RELAYMAILFROM"), '', $_REQUEST["relaymailfrom"]))
 				  $success = 1;
 			}
@@ -176,8 +175,7 @@ function relaymailfrom_save($type, $host) {
 
 		case "del":
 			// {{{ delete value
-			if(pql_modify_attribute($_pql_control->ldap_linkid,
-									pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+			if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 									pql_get_define("PQL_ATTR_RELAYMAILFROM"), $_REQUEST["relaymailfrom"], ''))
 			  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										   array('what' => $LANG->_('ldapclusterhosts options')));

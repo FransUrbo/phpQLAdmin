@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldapclusterhosts (max number of bytes in message)
 //
-// $Id: attrib.control.ldapclusterhosts.inc,v 2.9.4.1 2006-11-13 07:16:04 turbo Exp $
+// $Id: attrib.control.ldapclusterhosts.inc,v 2.9.4.2 2006-11-20 19:55:00 turbo Exp $
 
 // {{{ ldapclusterhosts_check(type)
 function ldapclusterhosts_check($type) {
@@ -119,8 +119,7 @@ function ldapclusterhosts_save($type, $host)  {
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid,
-								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								  pql_get_define("PQL_ATTR_LDAPCLUSTER_HOSTS"), '', $_REQUEST["ldapclusterhosts"]))
 			$success = 1;
 		}
@@ -139,8 +138,7 @@ function ldapclusterhosts_save($type, $host)  {
 
 	  case "del":
 		// {{{ delete value
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								pql_get_define("PQL_ATTR_LDAPCLUSTER_HOSTS"), $_REQUEST["ldapclusterhosts"], ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('ldapclusterhosts options')));

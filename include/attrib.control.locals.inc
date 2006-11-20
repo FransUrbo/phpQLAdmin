@@ -2,7 +2,7 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.39.4.1 2006-11-13 07:16:04 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.39.4.2 2006-11-20 19:55:00 turbo Exp $
 
 // {{{ locals_check(type)
 function locals_check($type) {
@@ -153,8 +153,7 @@ function locals_save($type, $host) {
     switch($type) {
       case "replicate":
 		// {{{ Start replication manually
-		if(pql_control_update_domains($_pql_control, $_REQUEST["rootdn"],
-									  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		if(pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $host,
 									  $host, '', pql_get_define("PQL_ATTR_LOCALS")))
 		  $msg = pql_complete_constant($LANG->_('Successfully replicated %what%'),
 									   array('what' => pql_get_define("PQL_ATTR_LOCALS")));
@@ -168,8 +167,7 @@ function locals_save($type, $host) {
 
       case "del":
 		// {{{ remove specified domain from locals in host object
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								pql_get_define("PQL_ATTR_LOCALS"), $host, ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully removed %domain% from %what%'),
 									   array('what'   => pql_get_define("PQL_ATTR_LOCALS"),
@@ -197,8 +195,7 @@ function locals_save($type, $host) {
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid,
-								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								  $_REQUEST["attrib"], '', $_REQUEST["set"]))
 			$success = 1;
 		}

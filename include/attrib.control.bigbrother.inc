@@ -2,7 +2,7 @@
 // control attribute plugin for
 // bigbrother (max number of bytes in message)
 //
-// $Id: attrib.control.bigbrother.inc,v 2.10.4.1 2006-11-13 07:16:04 turbo Exp $
+// $Id: attrib.control.bigbrother.inc,v 2.10.4.2 2006-11-20 19:55:00 turbo Exp $
 
 // {{{ bigbrother_check(type)
 function bigbrother_check($type) {
@@ -139,8 +139,7 @@ function bigbrother_save($type, $host)  {
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid,
-								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								  pql_get_define("PQL_ATTR_BIGBROTHER"), 1, $entry))
 			$success = 1;
 		}
@@ -159,8 +158,7 @@ function bigbrother_save($type, $host)  {
 
 	  case "del":
 		// {{{ delete value
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								pql_get_define("PQL_ATTR_BIGBROTHER"), $_REQUEST["bigbrother"], ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('Blocking list')));

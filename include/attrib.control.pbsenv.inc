@@ -2,7 +2,7 @@
 // control attribute plugin for
 // pbsenv (max number of bytes in message)
 //
-// $Id: attrib.control.pbsenv.inc,v 2.11.4.1 2006-11-13 07:16:05 turbo Exp $
+// $Id: attrib.control.pbsenv.inc,v 2.11.4.2 2006-11-20 19:55:00 turbo Exp $
 
 // {{{ pbsenv_check(type)
 function pbsenv_check($type) {
@@ -130,8 +130,7 @@ function pbsenv_save($type, $host)  {
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid,
-								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								  pql_get_define("PQL_ATTR_PBS_ENV"), '', $entry))
 			$success = 1;
 		}
@@ -150,8 +149,7 @@ function pbsenv_save($type, $host)  {
 
 	  case "del":
 		// {{{ delete value
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								pql_get_define("PQL_ATTR_PBS_ENV"), $_REQUEST["pbsenv"], ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('PBS environment variable')));

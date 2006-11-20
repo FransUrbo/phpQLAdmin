@@ -2,7 +2,7 @@
 // control attribute plugin for
 // pbsservers (max number of bytes in message)
 //
-// $Id: attrib.control.pbsservers.inc,v 2.10.4.1 2006-11-13 07:16:05 turbo Exp $
+// $Id: attrib.control.pbsservers.inc,v 2.10.4.2 2006-11-20 19:55:00 turbo Exp $
 
 // {{{ pbsservers_check(type)
 function pbsservers_check($type) {
@@ -154,8 +154,7 @@ function pbsservers_save($type, $host)  {
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid,
-								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								  pql_get_define("PQL_ATTR_PBS_SERVERS"), '', $_REQUEST["pbsservers"]))
 			$success = 1;
 		}
@@ -173,8 +172,7 @@ function pbsservers_save($type, $host)  {
 		// }}}
 
 	  case "del":
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								pql_get_define("PQL_ATTR_PBS_SERVERS"), $_REQUEST["pbsservers"], ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('PBS server options')));

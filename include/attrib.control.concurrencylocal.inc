@@ -3,7 +3,7 @@
 // concurrencylocal (may simultaneous local deliveries)
 // concurrencyremote (may simultaneous remote deliveries)
 //
-// $Id: attrib.control.concurrencylocal.inc,v 2.23.4.1 2006-11-13 07:16:04 turbo Exp $
+// $Id: attrib.control.concurrencylocal.inc,v 2.23.4.2 2006-11-20 19:55:00 turbo Exp $
 
 // {{{ concurrencylocal_check(type)
 function concurrencylocal_check($type) {
@@ -148,8 +148,7 @@ function concurrencylocal_save($type, $host) {
 				  $success = 0;
 			  }
 			} else {
-			  if(pql_modify_attribute($_pql_control->ldap_linkid,
-									  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+			  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 									  $attrib, 1, $_REQUEST[$key]))
 				$success = 1;
 			}

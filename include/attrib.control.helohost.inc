@@ -2,7 +2,7 @@
 // control attribute plugin for
 // helohost (host name used in SMTP HELO command)
 //
-// $Id: attrib.control.helohost.inc,v 2.22.2.1 2006-11-13 07:16:04 turbo Exp $
+// $Id: attrib.control.helohost.inc,v 2.22.2.2 2006-11-20 19:55:00 turbo Exp $
 
 // {{{ helohost_check(type)
 function helohost_check($type) {
@@ -111,8 +111,7 @@ function helohost_save($type, $host) {
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid,
-								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								  pql_get_define("PQL_ATTR_HELOHOST"), 1, $_REQUEST["helohost"]))
 			$success = 1;
 		}

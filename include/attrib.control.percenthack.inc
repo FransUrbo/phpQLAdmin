@@ -2,7 +2,7 @@
 // control attribute plugin for
 // percenthack (allowed domains for %-relaying)
 //
-// $Id: attrib.control.percenthack.inc,v 2.22.4.1 2006-11-13 07:16:05 turbo Exp $
+// $Id: attrib.control.percenthack.inc,v 2.22.4.2 2006-11-20 19:55:00 turbo Exp $
 
 // {{{ percenthack_check(type)
 function percenthack_check($type) {
@@ -133,8 +133,7 @@ function percenthack_save($type, $host) {
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid,
-								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								  pql_get_define("PQL_ATTR_PERCENTHACK"), '', $_REQUEST["percenthack"])) 
 			$success = 1;
 		}
@@ -152,8 +151,7 @@ function percenthack_save($type, $host) {
 		// }}}
 
 	  case "del":
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								pql_get_define("PQL_ATTR_PERCENTHACK"), $_REQUEST["percenthack"], ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('Percent hack options')));

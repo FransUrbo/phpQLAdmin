@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldaplocaldelivery (search for local account, if ldap search is not successful)
 //
-// $Id: attrib.control.ldaplocaldelivery.inc,v 2.19.4.1 2006-11-13 07:16:04 turbo Exp $
+// $Id: attrib.control.ldaplocaldelivery.inc,v 2.19.4.2 2006-11-20 19:55:00 turbo Exp $
 
 // {{{ ldaplocaldelivery_check(type)
 function ldaplocaldelivery_check($type) {
@@ -78,8 +78,7 @@ function ldaplocaldelivery_save($type, $host) {
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid,
-								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								  pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY"), 1, $_REQUEST[$attrib]))
 			$success = 1;
 		}

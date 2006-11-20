@@ -2,7 +2,7 @@
 // control attribute plugin for
 // pbsip (max number of bytes in message)
 //
-// $Id: attrib.control.pbsip.inc,v 2.9.4.1 2006-11-13 07:16:05 turbo Exp $
+// $Id: attrib.control.pbsip.inc,v 2.9.4.2 2006-11-20 19:55:00 turbo Exp $
 
 // {{{ pbsip_check(type)
 function pbsip_check($type) {
@@ -137,8 +137,7 @@ function pbsip_save($type, $host)  {
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid,
-								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								  pql_get_define("PQL_ATTR_PBS_IP"), 1, $_REQUEST["pbsip"]))
 			$success = 1;
 		}

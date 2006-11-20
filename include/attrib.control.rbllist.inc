@@ -2,7 +2,7 @@
 // control attribute plugin for
 // rbllist (max number of bytes in message)
 //
-// $Id: attrib.control.rbllist.inc,v 2.10.4.1 2006-11-13 07:16:05 turbo Exp $
+// $Id: attrib.control.rbllist.inc,v 2.10.4.2 2006-11-20 19:55:00 turbo Exp $
 
 // {{{ rbllist_check(type)
 function rbllist_check($type) {
@@ -173,8 +173,7 @@ function rbllist_save($type, $host)  {
 
 	  case "del":
 		// {{{ delete value
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								pql_get_define("PQL_ATTR_RBLLIST"), $_REQUEST["rbllist"], ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('Blocking list')));

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // badmailfrom (blocked from addresses)
 //
-// $Id: attrib.control.badmailfrom.inc,v 2.25.4.1 2006-11-13 07:16:04 turbo Exp $
+// $Id: attrib.control.badmailfrom.inc,v 2.25.4.2 2006-11-20 19:55:00 turbo Exp $
 
 // {{{ badmailfrom_check(type)
 
@@ -173,8 +173,7 @@ function badmailfrom_save($type, $host) {
 
 	  case "del":
 		// {{{ delete entries
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								pql_get_define("PQL_ATTR_BADMAILFROM"), $_REQUEST["badmailfrom"], ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('Bad mail from options')));

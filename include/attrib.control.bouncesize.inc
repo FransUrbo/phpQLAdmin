@@ -2,7 +2,7 @@
 // control attribute plugin for
 // bouncemaxbytes (max number of bytes in message)
 //
-// $Id: attrib.control.bouncesize.inc,v 2.9.4.1 2006-11-13 07:16:04 turbo Exp $
+// $Id: attrib.control.bouncesize.inc,v 2.9.4.2 2006-11-20 19:55:00 turbo Exp $
 
 // {{{ bouncemaxbytes_check(type)
 function bouncemaxbytes_check($type) {
@@ -42,7 +42,7 @@ function bouncemaxbytes_print_view($host) {
     <th colspan="3" align="left">bouncemaxbytes (<?=$LANG->_('Maximum bounce message size')?>)
 <?php $class=pql_format_table(0); ?>
       <tr>
-        <td class="title">Bytes</td>
+        <td class="title"><?=$LANG->_('Bytes')?></td>
         <td class="<?=$class?>"><?php if(@$_REQUEST["bouncemaxbytes"]) { echo $_REQUEST["bouncemaxbytes"]; } else { echo '<i>'.$LANG->_('Not set').'</i>'; }?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_BOUNCESIZE")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options')?>"></a></td>
       </tr>
@@ -100,8 +100,7 @@ function bouncemaxbytes_save($type, $host)  {
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid,
-								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								  pql_get_define("PQL_ATTR_BOUNCESIZE"), 1, $_REQUEST["bouncemaxbytes"]))
 			$success = 1;
 		}
@@ -129,9 +128,7 @@ function bouncemaxbytes_save($type, $host)  {
 // {{{ bouncemaxbytes_help(void)
 function bouncemaxbytes_help() {
 	global $LANG;
-?>
-    The maximal number of bytes to be included in a bounce message.
-<?php
+	echo $LANG->_('The maximal number of bytes to be included in a bounce message');
 }
 // }}}
 

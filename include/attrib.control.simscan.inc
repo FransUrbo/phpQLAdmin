@@ -2,7 +2,7 @@
 // control attribute plugin for
 // SimScan
 //
-// $Id: attrib.control.simscan.inc,v 2.5.2.1 2006-11-13 07:16:05 turbo Exp $
+// $Id: attrib.control.simscan.inc,v 2.5.2.2 2006-11-20 19:55:00 turbo Exp $
 
 // {{{ simscan_check(type)
 function simscan_check($type) {
@@ -214,7 +214,7 @@ function simscan_save($type, $host) {
 			  $replace = 1;
 
 			// {{{ Make sure the QmailLDAP/Controls object contain the objectclass 'phpQLAdminMXHostAddition'.
-			$ocs = pql_get_attribute($_pql_control->ldap_linkid, pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+			$ocs = pql_get_attribute($_pql_control->ldap_linkid, $host,
 									 pql_get_define("PQL_ATTR_OBJECTCLASS"));
 			if((!is_array($ocs) and !eregi('phpQLAdminMXHostAddition', $ocs)) or
 			   (is_array($ocs) and !in_array('phpQLAdminMXHostAddition', $ocs)))
@@ -238,8 +238,7 @@ function simscan_save($type, $host) {
 					$success = 0;
 				}
 			  } else {
-				if(pql_modify_attribute($_pql_control->ldap_linkid,
-										pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+				if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 										pql_get_define("PQL_ATTR_OBJECTCLASS"), $replace, $ocs))
 				  $success = 1;
 			  }
@@ -269,8 +268,7 @@ function simscan_save($type, $host) {
 				  $success = 0;
 			  }
 			} else {
-			  if(pql_modify_attribute($_pql_control->ldap_linkid,
-									  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+			  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 									  $attrib, $replace, $_REQUEST["set"]))
 				$success = 1;
 			}
@@ -289,7 +287,8 @@ function simscan_save($type, $host) {
 
 		case "delete":
 			// {{{ Remove an entry
-			$old = pql_get_attribute($_pql_control->ldap_linkid, pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"], $attrib);
+			$old = pql_get_attribute($_pql_control->ldap_linkid, $host, $attrib);
+									 
 			if(!is_array($old))
 			  $old = array($old);
 
@@ -298,8 +297,7 @@ function simscan_save($type, $host) {
 				$OLD[] = $old[$i];
 			}
 
-			if(pql_modify_attribute($_pql_control->ldap_linkid,	pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-									$attrib, $replace, $OLD))
+			if(pql_modify_attribute($_pql_control->ldap_linkid,	$host, $attrib, $replace, $OLD))
 			  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 										   array('what' => $LANG->_('SimScan option')));
 			else

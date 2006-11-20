@@ -2,7 +2,7 @@
 // control attribute plugin for
 // rcpthosts (blocked local addresses)
 //
-// $Id: attrib.control.rcpthosts.inc,v 2.32.4.1 2006-11-13 07:16:05 turbo Exp $
+// $Id: attrib.control.rcpthosts.inc,v 2.32.4.2 2006-11-20 19:55:00 turbo Exp $
 
 // {{{ rcpthosts_check(type)
 function rcpthosts_check($type) {
@@ -143,8 +143,7 @@ function rcpthosts_save($type, $host) {
     switch($type) {
       case "replicate":
 		// {{{ Start replication manually
-		if(pql_control_update_domains($_pql_control, $_REQUEST["rootdn"],
-									  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		if(pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $host,
 									  $host, '', pql_get_define("PQL_ATTR_RCPTHOSTS")))
 		  $msg = pql_complete_constant($LANG->_('Successfully replicated %what%'),
 									   array('what' => pql_get_define("PQL_ATTR_RCPTHOSTS")));
@@ -159,8 +158,7 @@ function rcpthosts_save($type, $host) {
 
       case "del":
 		// {{{ remove specified domain from rcpthosts in host object
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								pql_get_define("PQL_ATTR_RCPTHOSTS"), $host, ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully removed %domain% from %what%'),
 									   array('what'   => pql_get_define("PQL_ATTR_RCPTHOSTS"),
@@ -188,8 +186,7 @@ function rcpthosts_save($type, $host) {
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid,
-								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								  $_REQUEST["attrib"], '', $_REQUEST["set"]))
 			$success = 1;
 		}
