@@ -1,7 +1,7 @@
 <?php
 // View information about physical host object
 // (mainly Host ACL's)
-// $Id: host_detail.php,v 1.1.2.8 2006-11-17 17:27:57 turbo Exp $
+// $Id: host_detail.php,v 1.1.2.9 2006-11-21 14:13:45 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -87,6 +87,11 @@ if(($_REQUEST["server"] != 'Global') and !@$_REQUEST["virthost"] and @($_REQUEST
 	$buttons = $buttons + $new;
   }				 
 
+  if(pql_get_define("PQL_CONF_RADIUS_USE")) {
+	$new = array('radius' => 'RADIUS Administration');
+	$buttons = $buttons + $new;
+  }				 
+
   if($_REQUEST["host"] != 'Global') {
 	$new = array('action'  => 'Action');
 	$buttons = $buttons + $new;
@@ -105,6 +110,8 @@ if($_REQUEST["view"] == 'hostacl') {
   pql_header("control_detail.php?host=".urlencode($_REQUEST["host"])."&ref=".$_REQUEST["ref"]);
 } elseif($_REQUEST["view"] == 'websrv') {
   include("./tables/host_details-websrv.inc");
+} elseif($_REQUEST["view"] == 'radius') {
+  include("./tables/host_details-radius.inc");
 } elseif($_REQUEST["view"] == 'action') {
   include("./tables/host_details-action.inc");
 }

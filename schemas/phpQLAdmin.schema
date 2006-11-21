@@ -55,6 +55,7 @@
 #            lockDomainAddress               33
 #            lockPassword                    34
 #            lockAccountType                 35
+#            useRadius                       36
 #
 #          System texts                     2
 #            whoAreWe                         1
@@ -113,13 +114,14 @@
 #            simScanSpamAssassinHits         23
 #            simScanAttachmentSuffix         24
 #            defaultAccountType              25
+#            radiusConfigIdentity            26
 # --------------------------------------------
 #
 # *mod_cfg_ldap => Also defined (with other name) in mod_cfg_ldap
 # availible from http://sourceforge.net/projects/modcfgldap/
 # See doc/README.apache for more information.
 
-# $Id: phpQLAdmin.schema,v 2.65.2.1 2006-11-17 13:53:28 turbo Exp $
+# $Id: phpQLAdmin.schema,v 2.65.2.2 2006-11-21 14:13:58 turbo Exp $
 
 # PQL_ATTR_SHOW_USERS (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.1 NAME 'showUsers'
@@ -364,6 +366,13 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.1.35 NAME 'lockAccountType'
   EQUALITY booleanMatch
   SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
   SINGLE-VALUE )
+
+# PQL_ATTR_RADIUS_USE (true | false)
+attributetype ( 1.3.6.1.4.1.8767.3.2.1.36 NAME 'useRadius'
+        DESC 'Manage RADIUS Informations [True/False]?'
+        EQUALITY booleanMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+        SINGLE-VALUE )
 
 # -----------------------------------------
 
@@ -712,6 +721,13 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.4.25 NAME 'defaultAccountType'
   EQUALITY caseIgnoreMatch
   SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024})
 
+# PQL_ATTR_RADIUS_CONFIG_IDENTITY
+attributetype ( 1.3.6.1.4.1.8767.3.2.4.26 NAME 'radiusConfigIdentity'
+  DESC 'Default account to use in RADIUS config file for retreiving radiusFilterId etc'
+  EQUALITY caseIgnoreMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{1024}
+  SINGLE-VALUE )
+
 # -----------------------------------------
 
 objectclass ( 1.3.6.1.4.1.8767.3.1.1
@@ -729,7 +745,8 @@ objectclass ( 1.3.6.1.4.1.8767.3.1.1
         externalScriptDomain $ minimumUIDNumber $
         minimumGIDNumber $ autoAddRCPTHosts $
         autoAddHostName $ externalScriptUserDelete $
-        externalScriptDomainDelete $ allowAllPasswordChars )
+        externalScriptDomainDelete $ allowAllPasswordChars $
+        radiusConfigIdentity )
   SUP top AUXILIARY )
 
 objectclass ( 1.3.6.1.4.1.8767.3.1.2
@@ -746,7 +763,8 @@ objectclass ( 1.3.6.1.4.1.8767.3.1.2
         ezmlmRemoteRetreiveScript $ useSimScan $ useAutoMount $
         simScanSpamAssassin $ simScanClamAntiVirus $
         simScanTrophie $ simScanSpamAssassinHits $
-        simScanAttachmentSuffix $ defaultAccountType )
+        simScanAttachmentSuffix $ defaultAccountType $
+        useRadius )
   SUP top AUXILIARY )
 
 objectclass ( 1.3.6.1.4.1.8767.3.1.3

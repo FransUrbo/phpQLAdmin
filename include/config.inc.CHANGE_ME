@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.73.2.1 2006-11-17 14:01:07 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.73.2.2 2006-11-21 14:13:51 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -405,7 +405,8 @@ function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $do
 //	
 //	// Non-public entries
 //	if($type == 'user') {
-//		$aci[$i] = "$i#entry#grant;x;cn,mail,mailAlternateAddress#public#"; $i++;
+//		$aci[$i] = "$i#entry#grant;x;cn,mail,mailAlternateAddress#public#"; $i++; // In case we do auth with SASL/EXTERNAL (SSL/TLS certs etc)
+//		$aci[$i] = "$i#entry#grant;x;userPassword,krb5PrincipalName#public#"; $i++;
 //		$aci[$i] = "$i#entry#grant;r,s,c;uid,cn,accountStatus,uidNumber,gidNumber,gecos,homeDirectory,loginShell,trustModel,accessTo,mailMessageStore#public#"; $i++;
 //
 //		# What the Qmail user have access to
@@ -418,7 +419,8 @@ function user_generate_email($ldap_linkid, $surname, $lastname, $domainname, $do
 //		$aci[$i] = "$i#entry#grant;r,s,c;sn,givenName,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,mailMessageStore,o,l,st,telephoneNumber,postalCode,title#users#"; $i++;
 //
 //		# What users themselfs have access to in their own object
-//	$aci[$i] = "$i#entry#grant;w,r,s,c;sn,givenName,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,o,l,st,telephoneNumber,postalCode,title,deliveryMode,userPassword#self#"; $i++;
+//		$aci[$i] = "$i#entry#grant;w,r,s,c;sn,givenName,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,o,l,st,telephoneNumber,postalCode,title,deliveryMode,userPassword#self#"; $i++;
+//		$aci[$i] = "$i#entry#grant;w,r,s,c,x;[all]#access-id#$user"; $i++;
 //	} elseif($type == 'group') {
 //		$aci[$i] = "$i#entry#grant;r,s,c;cn,gidNumber#public#"; $i++;
 //	} elseif($type == 'dnszone') {

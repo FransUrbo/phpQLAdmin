@@ -1,5 +1,5 @@
 <?php
-// $Id: index2.php,v 2.45.2.1 2006-11-21 14:02:17 turbo Exp $
+// $Id: index2.php,v 2.45.2.2 2006-11-21 14:13:45 turbo Exp $
 
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -25,6 +25,7 @@ $_SESSION["USE_WEBSRV"] = 0;
 $_SESSION["USE_HOSTACL"] = 0;
 $_SESSION["USE_SUDO"] = 0;
 $_SESSION["USE_AUTOMOUNT"] = 0;
+$_SESSION["USE_RADIUS"] = 0;
 
 // -----------------
 // Count how many frames we should open
@@ -42,7 +43,8 @@ if($_SESSION["ADVANCED_MODE"] or @$_REQUEST["advanced"]) {
 	  pql_get_define("PQL_CONF_WEBSRV_USE") or
 	  pql_get_define("PQL_CONF_HOSTACL_USE") or
 	  pql_get_define("PQL_CONF_SUDO_USE") or
-	  pql_get_define("PQL_CONF_AUTOMOUNT_USE")))
+	  pql_get_define("PQL_CONF_AUTOMOUNT_USE") or
+	  pql_get_define("PQL_CONF_RADIUS_USE")))
   {
     $frames++;
 
@@ -62,6 +64,9 @@ if($_SESSION["ADVANCED_MODE"] or @$_REQUEST["advanced"]) {
 
 	if(pql_get_define("PQL_CONF_AUTOMOUNT_USE"))
 	  $_SESSION["USE_AUTOMOUNT"] = 1;
+
+	if(pql_get_define("PQL_CONF_RADIUS_USE"))
+	  $_SESSION["USE_RADIUS"] = 1;
   }
 }
 
@@ -109,7 +114,7 @@ if($_SESSION["mozilla"]) {
 <?php   } 
 
         if($_SESSION["USE_CONTROLS"] or $_SESSION["USE_WEBSRV"]    or $_SESSION["USE_HOSTACL"] or
-		   $_SESSION["USE_SUDO"]     or $_SESSION["USE_AUTOMOUNT"])
+		   $_SESSION["USE_SUDO"]     or $_SESSION["USE_AUTOMOUNT"] or $_SESSION["USE_RADIUS"])
 		{
 ?>
       <frame src="left-control.php" name="pqlnavctrl">

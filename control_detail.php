@@ -1,6 +1,6 @@
 <?php
 // Show details on QmailLDAP/Control host
-// $Id: control_detail.php,v 1.49.2.5 2006-11-17 16:40:14 turbo Exp $
+// $Id: control_detail.php,v 1.49.2.6 2006-11-21 14:13:45 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -155,6 +155,11 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 		$new = array('websrv' => 'Webserver Administration');
 		$buttons = $buttons + $new;
 	  }				 
+
+	  if(pql_get_define("PQL_CONF_RADIUS_USE")) {
+		$new = array('radius' => 'RADIUS Administration');
+		$buttons = $buttons + $new;
+	  } 
 
 	  pql_generate_button($buttons, "host=".urlencode($_REQUEST["host"])."&ref=".$_REQUEST["ref"], 'host_detail.php'); echo "    <br>\n";
 

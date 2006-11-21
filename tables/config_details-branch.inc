@@ -120,6 +120,15 @@
 <?php } ?>
         </td>
       </tr>
+<?php if(pql_get_define("PQL_CONF_RADIUS_USE")) { ?>
+
+      <!-- -------------------- -->
+      <tr>
+        <td class="title"><?=$LANG->_('RADIUS configuration identity (DN)')?></td>
+        <td class="<?=$class?>"><?=pql_get_define("PQL_CONF_RADIUS_CONFIG_IDENTITY", $_REQUEST["branch"]); ?>&nbsp;</td>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?rootdn=<?=$_REQUEST["branch"]?>&attrib=<?=pql_get_define("PQL_ATTR_RADIUS_CONFIG_IDENTITY")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_RADIUS_CONFIG_IDENTITY")?>"></a></td>
+      </tr>
+<?php } ?>
 
       <tr><td></td><td></td></tr>
 <?php if($_SESSION["ADVANCED_MODE"]) { ?>

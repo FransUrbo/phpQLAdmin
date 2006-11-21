@@ -1,6 +1,6 @@
 <?php
 // shows details of specified category of attributes
-// $Id: control_cat.php,v 2.23.2.4 2006-11-20 18:56:32 turbo Exp $
+// $Id: control_cat.php,v 2.23.2.5 2006-11-21 14:13:45 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -88,6 +88,11 @@ if($_REQUEST["ref"]) {
 	$new = array('websrv' => 'Webserver Administration');
 	$buttons = $buttons + $new;
   }				 
+
+  if(pql_get_define("PQL_CONF_RADIUS_USE")) {
+	$new = array('radius' => 'RADIUS Administration');
+	$buttons = $buttons + $new;
+  }
 
   pql_generate_button($buttons, "host=".urlencode($_REQUEST["host"])."&ref=".$_REQUEST["ref"], 'host_detail.php'); echo "    <br>\n";
   

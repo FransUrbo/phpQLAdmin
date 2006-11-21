@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.105.2.2 2006-11-17 13:53:25 turbo Exp $
+// $Id: domain_detail.php,v 2.105.2.3 2006-11-21 14:13:45 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -229,6 +229,11 @@ if($_SESSION["ADVANCED_MODE"]) {
 	if(pql_get_define("PQL_CONF_WEBSRV_USE")) {
 		$new = array('websrv'	=> 'Webserver Administration');
 		$buttons = $buttons + $new;
+	}
+
+	if(pql_get_define("PQL_CONF_RADIUS_USE")) {
+	  $new = array('radius' => 'RADIUS Administration');
+	  $buttons = $buttons + $new;
 	}
 }
 

@@ -1,0 +1,23 @@
+RADIUS configuration
+~~~~~~~~~~~~~~~~~~~~
+As of 2.3.5 (CVS 20061121), phpQLAdmin have (rudimentary) support for
+having RADIUS information in the LDAP server.
+
+I have yet to test this (I'm still rumbling through my 'vintage pile
+of junk' to see if I have a device that can do/require RADIUS. But
+I've been reading the HOWTO at http://vuksan.com/linux/dot1x/802-1x-LDAP.html,
+and think I (phpQLAdmin) have what it needs to setup RADIUS on the
+LDAP side.
+
+To enable RADIUS configuration, go to 'HOME->phpQLAdmin Configuration->Global configuration'
+and enable 'RADIUS configuration'. Also, make sure to select (or create)
+the DN that your RADIUS server will use to do LDAP lookups. You do this
+at the 'HOME->phpQLAdmin Configuration->[rootdn]' table.
+
+Then you will need to setup a physical host. After that, just click on
+the 'RADIUS Administration' button and enter a value for the RADIUS
+filter ID (se HOWTO above). Since I've been following the HOWTO, the
+values for this is the version and policy values, and phpQLAdmin will
+generate a 'radiusFilterId' value like in the HOWTO. If this is wrong,
+or you're missing stuff, please give me example on what a value
+can/should look like...
