@@ -1,6 +1,6 @@
 <?php
 // View everything about web servers - virtual hosts and virtual host locations
-// $Id: host_details-websrv.inc,v 1.1.2.8 2006-11-17 17:27:59 turbo Exp $
+// $Id: host_details-websrv.inc,v 1.1.2.9 2006-11-21 16:48:34 turbo Exp $
 
 // {{{ Include Webserver API etc
 require($_SESSION["path"]."/include/pql_websrv.inc");
@@ -39,12 +39,12 @@ if($_REQUEST["host"] == 'Global') {
 
 	if($_REQUEST["server"])
 	  $server_dn = $_REQUEST["server"];
-	else {
+	elseif(is_array($servers)) {
 	  // Take the first server as default one.
 	  foreach($servers as $server_name => $server_dn) break;
 	  $_REQUEST["server"] = $server_dn; // Just in case it's used below (can't remember)
 	}
-  } else {
+  } elseif(is_array($servers)) {
 	// Left host frame/[physical]/Webserver/Virtual host
 	$servers = array($_REQUEST["virthost"] => $_REQUEST["server"]);
 	$server_dn = $_REQUEST["server"];
