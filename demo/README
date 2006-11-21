@@ -1,0 +1,45 @@
+Every night I recreate the demo database with files from this
+directory. The way I do this is with the following script. Note
+that I here show the way I create the BRANCH_HOST_MERGE demo
+database, but the primary demo database is more or less the same
+(it differs in the LDIF's I'm loading - there's a lot less file
+that I load in the primary demo)...
+
+----- s n i p -----
+# Stop LDAP server
+/etc/init.d/slapd.demo stop #> /dev/null
+
+# Remove old database
+pushd /var/lib/ldap.demo || (echo "can't cd to /var/lib/ldap.demo"; exit 1)
+rm -f *
+cat <<EOF > DB_CONFIG
+set_cachesize           0 226492416 3
+set_lg_regionmax        1048576
+set_lg_bsize            2097152
+set_lg_max              8388608
+set_lg_dir              /var/lib/ldap.demo
+EOF
+
+# Create database
+cat <demo base dir>/demo/database-main.ldif \
+    <demo base dir>/demo/computers.ldif \
+    <demo base dir>/demo/automounts.ldif \
+    <demo base dir>/demo/apache.ldif \
+    | slapadd -v -f <demo base dir>/slapd.conf.demo -b c=SE
+popd
+
+# Start LDAP server
+/etc/init.d/slapd.demo start #> /dev/null
+# Do some modifications to the c=SE object
+cat <<EOF | ldapmodify -H ldapi://%2fvar%2frun%2fslapd%2fldapi.demo -x -D 'uid=demo1,o=Main Branch,c=SE' -w demo1
+dn: c=SE
+useRadius: TRUE
+useBind9: TRUE
+useWebSrv: TRUE
+useHostACL: TRUE
+useSudo: TRUE
+useAutoMount: TRUE
+useControls: TRUE
+
+EOF
+----- s n i p -----
