@@ -1,6 +1,6 @@
 <?php
 // Modify Host ACLs
-// $Id: host_modify.php,v 2.6.2.2 2006-11-15 13:38:11 turbo Exp $
+// $Id: host_modify.php,v 2.6.2.3 2006-11-21 13:52:02 turbo Exp $
 
 // {{{ Setup session etc
 if(!@$_SESSION) {
@@ -31,7 +31,7 @@ $computer_results = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR
 			       'ONELEVEL');
 // }}}
 
-if(isset($_REQUEST['action']) {
+if(isset($_REQUEST['action'])) {
   if($_REQUEST['action'] == 'remove_user_from_host') {
     // {{{ Remove user from host
     
