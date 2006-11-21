@@ -52,6 +52,9 @@ phpQLAdmin 2.3.5 TO BE ANNOUNCED
 	      the first, but not in the second, then the value was overwritten...
 	    + Don't show the option (in domain details->default) for Mailinglist administrators
 	      if useEzmlm isn't true.
+	    + The branch links doesn't have the 'view=' value. And instead of having
+	      the root DN twice (first in the 'rootdn=' option and then in the
+	      'view='), 'convert' it in config_detail.php
 
 	GUI layout changes
 	  - RDN and FQDN should not be shown in if we're viewing the 'Global' 
