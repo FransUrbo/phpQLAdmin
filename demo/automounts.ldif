@@ -1,6 +1,6 @@
 dn: ou=Computers,c=SE
 objectClass: organizationalUnit
-ou: Automounts
+ou: Computers
 OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
 OpenLDAPaci: 1#entry#grant;r,s,c;ou#public#
 OpenLDAPaci: 2#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
