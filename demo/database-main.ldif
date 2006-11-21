@@ -79,6 +79,8 @@ gecos: Demo User 1
 userPassword: {MD5}42i5k4dG+gkNav02KDVRMw==
 objectClass: pilotperson
 objectClass: posixaccount
+objectClass: mailRecipient
+mail: demo1@test.org
 OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
 OpenLDAPaci: 1#entry#grant;x;userPassword,krb5PrincipalName#public#
 OpenLDAPaci: 2#entry#grant;r,s,c;uid,cn,accountStatus,uidNumber,gidNumber,gecos,homeDirectory,loginShell,trustModel,accessTo,mailMessageStore#public#
@@ -99,6 +101,8 @@ gecos: Demo User 2
 userPassword: {MD5}EGZybnFgvZyYfJlo4MwnWg==
 objectClass: pilotperson
 objectClass: posixaccount
+objectClass: mailRecipient
+mail: demo2@test.org
 OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
 OpenLDAPaci: 1#entry#grant;x;userPassword,krb5PrincipalName#public#
 OpenLDAPaci: 2#entry#grant;r,s,c;uid,cn,accountStatus,uidNumber,gidNumber,gecos,homeDirectory,loginShell,trustModel,accessTo,mailMessageStore#public#
@@ -120,6 +124,8 @@ gecos: Demo User 3
 userPassword: {MD5}KX5DDUXnv29l9dySnWsHKw==
 objectClass: pilotperson
 objectClass: posixaccount
+objectClass: mailRecipient
+mail: demo3@test.org
 OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
 OpenLDAPaci: 1#entry#grant;x;userPassword,krb5PrincipalName#public#
 OpenLDAPaci: 2#entry#grant;r,s,c;uid,cn,accountStatus,uidNumber,gidNumber,gecos,homeDirectory,loginShell,trustModel,accessTo,mailMessageStore#public#

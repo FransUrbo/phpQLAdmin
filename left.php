@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.121 2006-11-12 21:43:20 turbo Exp $
+// $Id: left.php,v 2.122 2006-11-21 18:17:10 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -279,7 +279,7 @@ if(!isset($domains) or !is_array($domains)) {
 		pql_left_htmlify_userlist($_pql->ldap_linkid, $rootdn, $domain, $subbranch, $users, $links);
 	  
 	  pql_format_tree($d, "domain_detail.php?rootdn=$rootdn&domain=$domain", $links, 0);
-	} elseif((count($branches) < 1))
+	} elseif((count($branches) <= 1))
 	  // This branch don't have any sub units (flat structure)
 	  // -> make sure we still jump into the for loop!
 	  $branches[0] = $domain;

@@ -55,6 +55,12 @@ phpQLAdmin 2.3.5 TO BE ANNOUNCED
 	    + The branch links doesn't have the 'view=' value. And instead of having
 	      the root DN twice (first in the 'rootdn=' option and then in the
 	      'view='), 'convert' it in config_detail.php
+	    + If there's only ONE branch, this is the one we look for users in (previously
+	      it was either MORE than one or LESS than one, not 'less than or equal to one').
+	    + An update to left.php 'previosly' changed the filter for retreiving users:
+	      '(&(uid=*)(|(mail=*)(samaSID=*)))'. If there's no mail accounts and no Samba
+	      accounts, phpQLAdmin won't find users. Update the demo database with some
+	      mail addresses.
 
 	GUI layout changes
 	  - RDN and FQDN should not be shown in if we're viewing the 'Global' 
