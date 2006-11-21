@@ -80,7 +80,15 @@ if($_SESSION["lynx"]) {
 
 <?php
 if(@empty($_REQUEST["view"])) {
-  $_REQUEST["view"] = 'default';
+  if(@$_REQUEST["rootdn"]) {
+	// The branch links doesn't have the 'view=' value.
+	// And instead of having the root DN twice (first
+	// in the 'rootdn=' option and then in the 'view='),
+	// 'convert' it here...
+	$_REQUEST["view"] = $_REQUEST["rootdn"];
+  } else {
+	$_REQUEST["view"] = 'default';
+  }
 }
 
 // Output the buttons to the browser
