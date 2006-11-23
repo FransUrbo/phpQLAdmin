@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.58.2.5 2006-11-19 12:09:37 turbo Exp $
+// $Id: pql_formating.inc,v 2.58.2.6 2006-11-23 22:36:42 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry, extra_newline)
 // Create a LDIF object to print in case of error
@@ -17,7 +17,10 @@ function pql_create_ldif($func, $dn, $entry, $extra_newline = 0) {
 	$nl = '';
   
   if($func)
-	$LDIF .= "<br>\n<pre>\n--- DEBUG: $func($account_type) ---$nl\n";
+	$LDIF .= "<br>\n<pre>\n";
+
+  if(!file_exists($_SESSION["path"]."/.DEBUG_LDIF"))
+	$LDIF .= "--- DEBUG: $func($account_type) ---$nl\n";
   
   if($dn)
 	$LDIF .= "dn: $dn$nl\n";
@@ -76,8 +79,11 @@ function pql_create_ldif($func, $dn, $entry, $extra_newline = 0) {
 	}
   }
   
+  if(!file_exists($_SESSION["path"]."/.DEBUG_LDIF"))
+	$LDIF .= "--- DEBUG ---\n";
+
   if($func)
-	$LDIF .= "--- DEBUG ---\n</pre>\n";
+	$LDIF .= "</pre>\n";
   
   return($LDIF);
 }
