@@ -1,6 +1,6 @@
 <?php
 // configuration file
-// $Id: config.inc.CHANGE_ME,v 2.73.2.2 2006-11-21 14:13:51 turbo Exp $
+// $Id: config.inc.CHANGE_ME,v 2.73.2.3 2006-11-23 22:27:33 turbo Exp $
 //
 // IMPORTANT:
 // If adding or removing defines from this file,
@@ -25,10 +25,6 @@
 //	LDAP port		Port number
 //					NOTE: Use only if not using LDAP URI
 //
-//	Control base	Starting point for the LDAP controls information.
-//					NOTE: This is NOT the base DN, or a login DN.
-//					It's where the QmailLDAP/Controls objects reside!
-//
 // Note1: URI and SSL support were added in PHP v4.0.4.
 // Note2: If using URI, you will have to URL encode the slashes that
 //        shows the path to the socket => ldapi://%2fvar%2frun%2fldapi
@@ -44,9 +40,9 @@
 // These examples works directly with the demo database(s) distributed
 // in the demo directory. Don't use on live server, since my account and
 // password (quite easily cracked though :) is in there...
-//pql_set_define("PQL_CONF_HOST","ldaps://localhost/;;ou=QmailLDAP,c=SE");
-//pql_set_define("PQL_CONF_HOST","ldapi://%2fvar%2frun%2fldapi;;ou=QmailLDAP,c=SE");
-pql_set_define("PQL_CONF_HOST","localhost;389;ou=Computers,c=SE");
+//pql_set_define("PQL_CONF_HOST","ldaps://localhost/");
+//pql_set_define("PQL_CONF_HOST","ldapi://%2fvar%2frun%2fldapi");
+pql_set_define("PQL_CONF_HOST","localhost;389");
 
 // Either you use TLS (=> 'true') or you don't (=> 'false') when connecting
 // to the LDAP database...
