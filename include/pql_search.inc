@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.61.2.2 2006-11-18 13:58:27 turbo Exp $
+// $Id: pql_search.inc,v 2.61.2.3 2006-11-23 21:40:17 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -291,7 +291,7 @@ function pql_get_domains($ldap) {
 		}
 		if(is_array($new)) {
 		  // Yes, there are users here. Add this DN to the domains list
-		  $domains = pql_add2array($domains, $TOP_DN);
+		  pql_add2array($domains, $TOP_DN);
 		  
 		  // Just to be safe - is there any branches here?
 		  $filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN) . "=*)$ocs)";
@@ -300,7 +300,7 @@ function pql_get_domains($ldap) {
 			echo "pql_get_domains(): new (2)"; printr($new);
 		  }
 		  if(is_array($new))
-			$domains = pql_add2array($domains, $new);
+			pql_add2array($domains, $new);
 		}
 	  }
 	}
@@ -326,7 +326,7 @@ function pql_get_domains($ldap) {
 	  echo "pql_get_domains(): new(3)"; printr($new);
 	}
 	if(is_array($new))
-	  $domains = pql_add2array($domains, $new);
+	  pql_add2array($domains, $new);
 	
 	// Just to be safe - is there any branches here?
 	$filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN) . "=*)$ocs)";
@@ -335,7 +335,7 @@ function pql_get_domains($ldap) {
 	  echo "pql_get_domains(): new(4)"; printr($new);
 	}
 	if(is_array($new))
-	  $domains = pql_add2array($domains, $new);
+	  pql_add2array($domains, $new);
 
 	// Now, if the base/root DN is a 'dc' object and domain/branch reference
 	// is 'ou', we MUST use 'organizationalUnit' in the object class filter...
@@ -346,7 +346,7 @@ function pql_get_domains($ldap) {
 	}
 	if(is_array($new)) {
 	  for($i=0; $new[$i]; $i++)
-		$domains = pql_add2array($domains, $new);
+		pql_add2array($domains, $new);
 	}
   }
   
@@ -400,7 +400,7 @@ function pql_get_branch_domains($ldap) {
 	  if(!is_array($default_domain))
 		$default_domain = array($default_domain);
 	  
-	  $domain_names = pql_add2array($domain_names, $default_domain);
+	  pql_add2array($domain_names, $default_domain);
 	}
 	// }}}
 	
@@ -410,7 +410,7 @@ function pql_get_branch_domains($ldap) {
 	  if(!is_array($additional))
 		$additional = array($additional);
 	  
-	  $domain_names = pql_add2array($domain_names, $additional);
+	  pql_add2array($domain_names, $additional);
 	}
 	// }}}
   }
@@ -438,10 +438,8 @@ function pql_get_email_domains($linkid, $host) {
 	for($i=0; $i < count($users); $i++) {
 	  $mails[] = $users[$i][pql_get_define("PQL_ATTR_MAIL")];
 	  
-	  if($users[$i][pql_get_define("PQL_ATTR_MAILALTERNATE")]) {
-		$tmp = $mails; unset($mails);
-		$mails = pql_add2array($tmp, $users[$i][pql_get_define("PQL_ATTR_MAILALTERNATE")]);
-	  }
+	  if($users[$i][pql_get_define("PQL_ATTR_MAILALTERNATE")])
+		pql_add2array($mails, $users[$i][pql_get_define("PQL_ATTR_MAILALTERNATE")]);
 	}
   }
   // }}}

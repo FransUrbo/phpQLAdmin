@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.40.2.1 2006-11-15 13:48:21 turbo Exp $
+// $Id: pql_write.inc,v 2.40.2.2 2006-11-23 21:40:17 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -46,6 +46,7 @@ function pql_write_add($linkid, $dn, $entry, $type, $caller) {
 		pql_cache_add($entry);
 	}
 
+	pql_flush();
 	return(true);
 }
 // }}}
@@ -89,7 +90,7 @@ function pql_write_mod($linkid, $dn, $entry, $caller = NULL, $count = 0) {
 				  $new = array($new);
 
 				// Combine the old with the new.
-				$old = pql_add2array($old, $new);
+				pql_add2array($old, $new);
 				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_uniq($old);
 				
 				// Recursion... Only try five times...

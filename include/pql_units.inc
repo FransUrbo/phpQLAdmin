@@ -3,7 +3,7 @@
 // pql_units.inc
 // Sub units (ou=People, ou=Users, dc=host) etc
 //
-// $Id: pql_units.inc,v 1.17 2006-08-09 08:20:41 turbo Exp $
+// $Id: pql_units.inc,v 1.17.2.1 2006-11-23 21:40:17 turbo Exp $
 //
 
 // {{{ pql_unit_get(linkid, dn, filter)
@@ -22,7 +22,7 @@ function pql_unit_get($linkid, $dn, $filter = 1) {
 	$ocs = pql_get_dn($linkid, $dn, 'objectclass=organizationalUnit', 'ONELEVEL');
 
 	// Join the two values
-	$subd = pql_add2array($subd, $ocs);
+	pql_add2array($subd, $ocs);
 	for($i=0; $i < count($subd); $i++) {
 		if($filter) {
 			// Filter out the most obvious subbranches we don't put users in...

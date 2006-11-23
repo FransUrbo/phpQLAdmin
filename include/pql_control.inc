@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.52 2005-09-24 09:45:58 turbo Exp $
+// $Id: pql_control.inc,v 2.52.6.1 2006-11-23 21:40:17 turbo Exp $
 //
 
 // {{{ control connection class
@@ -49,7 +49,7 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 
 	  // Get all email address domains for users which have this host as MX
 	  $tmp = pql_get_email_domains($ldap->ldap_linkid, $host);
-	  $entry = pql_add2array($entry, $tmp);
+	  pql_add2array($entry, $tmp);
 	  
 	  // {{{ If we're replicating rcptHosts, get all non-primary MX host value(s) in this MX/QLC object
 	  if($type == pql_get_define("PQL_ATTR_RCPTHOSTS")) {
@@ -59,7 +59,7 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 			$nonprimmx = array($nonprimmx);
 		  
 		  // Add the list of domain names to the entry to add
-		  $entry = pql_add2array($entry, $nonprimmx);
+		  pql_add2array($entry, $nonprimmx);
 		}
 	  }
 	  // }}}
