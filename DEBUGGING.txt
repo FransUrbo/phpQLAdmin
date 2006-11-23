@@ -40,6 +40,10 @@ directory to simplify bugfixing. They all start with
 	Shows information about domain/branch retreivals.
 	Use this if you have problem in seeing your domains.
 
+.DEBUG_LDIF
+	Like .DEBUG_ME, but output a clean LDIF instead of
+	the '--- DEBUG*' separators.
+
 When sending in bugreports, please have _at least_
 the .DEBUG_ME file and cut-and-past the resulting
 output. The more information you send, the bigger
