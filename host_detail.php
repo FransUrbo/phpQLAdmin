@@ -1,7 +1,7 @@
 <?php
 // View information about physical host object
 // (mainly Host ACL's)
-// $Id: host_detail.php,v 1.1.2.9 2006-11-21 14:13:45 turbo Exp $
+// $Id: host_detail.php,v 1.1.2.10 2006-11-23 21:35:20 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -12,7 +12,7 @@ require($_SESSION["path"]."/left-head.html");
 // {{{ Retreive and setup physical hosts array
 if($_REQUEST["host"] == 'Global') {
   $hosts = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-					  '(&(cn=*)(|(objectclass=ipHost)(objectclass=device)))',
+					  '(&('.pql_get_define("PQL_ATTR_CN").'=*)(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)))',
 					  'ONELEVEL');
   $host = 'Global';
 } else {
