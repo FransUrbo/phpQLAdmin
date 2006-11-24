@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for web server configuration)
 //
-// $Id: pql_websrv.inc,v 1.19.2.5 2006-11-24 17:32:07 turbo Exp $
+// $Id: pql_websrv.inc,v 1.19.2.6 2006-11-24 19:08:05 turbo Exp $
 //
 
 // {{{ pql_websrv_add_server(linkid, dn, entry, type)
@@ -138,14 +138,20 @@ function pql_websrv_get_virtual_host_objects($linkid, $server) {
 }
 // }}}
 
-// {{{ pql_websrv_get_virtual_host_directories(linkid, server, virtualhost)
-function pql_websrv_get_virtual_host_directories($linkid, $server, $virtualhost) {
+// {{{ pql_websrv_get_virtual_host_directories(linkid, server, virtualhost, virthost_dn)
+function pql_websrv_get_virtual_host_directories($linkid, $server = '', $virtualhost = '', $virthost_dn = '') {
   // Setup the object class filter
   $filter = '(&(objectClass=ApacheSectionObj)(objectClass=ApacheDirectoryObj))';
 
   // Retreive the Apache web server virtual host directories
-  $dn = pql_get_define("PQL_ATTR_WEBSRV_SRV_URL")."=".$virtualhost.",".$server;
-  $result = pql_search($linkid, $dn, $filter, "ONELEVEL");
+  if(!@$virthost_dn and $virthost_dn)
+	$virthost_dn = pql_get_define("PQL_ATTR_WEBSRV_SRV_URL")."=".$virtualhost.",".$server;
+  elseif((!@$server or !@$virtualhost) and !@$virthost_dn)
+	// Jikes! Serious API problem - called with either server OR virtualhost
+	// AND empty virthost_dn!
+	die("BUG: pql_websrv_get_virtual_host_directories(linkid, $server, $virtualhost, $virthost_dn)");
+
+  $result = pql_search($linkid, $virthost_dn, $filter, "ONELEVEL");
   if($result["dn"]) {
 	// Oups, flat object - i.e. only ONE object
 	$tmp = $result;		// Save the array

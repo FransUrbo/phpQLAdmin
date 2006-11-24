@@ -1,6 +1,6 @@
 <?php
 // View and manage web servers accessible from this domain/branch.
-// $Id: domain_details-websrv.inc,v 1.21.2.4 2006-11-24 17:32:05 turbo Exp $
+// $Id: domain_details-websrv.inc,v 1.21.2.5 2006-11-24 19:08:07 turbo Exp $
 
 // This view is different from 'host_details-websrv.inc' in the way that
 // domain/branch (admins etc) is/should be more interested in the virtual
@@ -101,19 +101,49 @@ if(count($VIRTHOSTS)) {
 <?php
 // }}}
 
-  // Extract information about this virtual host
+  // {{{ Setup the virtual host directory buttons
+  // Find any virtual host locations for this virtual host
+  $locations = pql_websrv_get_virtual_host_directories($_pql->ldap_linkid, '', '', $virt_host_dn);
+
+  if(count($locations) >= 1) {
+?>
+  <table cellspacing="0" border="0" width="50%" cellpadding="0">
+    <th colspan="3" align="left">
+<?php foreach($locations as $virt_host_location => $data) {
+		if($virt_host_location == $_REQUEST["hostdir"]) {
+		  $mark = "&mark=yes";
+		} else {
+		  unset($mark);
+		}
+?>
+    <a href="<?=$_SERVER["PHP_SELF"]?>?rootdn=<?=urlencode($_REQUEST["rootdn"])?>&domain=<?=urlencode($_REQUEST["domain"])?>&view=<?=$_REQUEST["view"]?>&host=<?=urlencode($_REQUEST['host'])?>&hostdir=<?=$virt_host_location?>&ref=<?=$_REQUEST["ref"]?>"><img alt="// <?=$virt_host_location?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?=$virt_host_location?><?=$mark?>"></a>
+<?php } ?>
+    </th>
+  </table>
+
+  <br>
+<?php
+  }
+// }}}
+
+  // {{{ Extract information about this virtual host (or virtual host location)
+  if(@$_REQUEST["hostdir"])
+	// Called with a virtual host location. Add that at the beginning of the virtual host DN.
+	$virt_host_dn = pql_get_define("PQL_ATTR_WEBSRV_SRV_IP").'='.$_REQUEST["hostdir"].','.$virt_host_dn;
+
   $virt_host_object = pql_websrv_get_virtual_host($_pql->ldap_linkid, $virt_host_dn);
+// }}}
 
   // {{{ Include tables/host_details-websrv_virt{dir,host}.inc
 ?>
 
   <table cellspacing="0" cellpadding="3" border="0">
 <?php
-//if($_REQUEST["hostdir"]) {
-//  require($_SESSION["path"]."/tables/domain_details-websrv_virtdir.inc");
-//} else {
+if($_REQUEST["hostdir"]) {
+  require($_SESSION["path"]."/tables/domain_details-websrv_virtdir.inc");
+} else {
   require($_SESSION["path"]."/tables/domain_details-websrv_virthost.inc");
-//}
+}
 ?>
   </table>
 
