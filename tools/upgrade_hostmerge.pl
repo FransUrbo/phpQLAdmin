@@ -3,7 +3,7 @@
 # Script to move web-/mailservers and automounts from
 # below branch/dn to new 'concentrated host' view.
 #
-# $Id: upgrade_hostmerge.pl,v 1.1.2.1 2006-11-23 21:00:40 turbo Exp $
+# $Id: upgrade_hostmerge.pl,v 1.1.2.2 2006-11-24 08:58:07 turbo Exp $
 
 @ROOTDN = ('c=SE', 'dc=lantrix,dc=no');
 $SERVER = "-H ldapi://%2fvar%2frun%2fslapd%2fldapi.main";
@@ -213,6 +213,11 @@ if(!$got_computers_object) {
 	}
     }
 
+    if(!$line) {
+	print "Can't find any objects to take ACI's from!\n";
+	exit 1;
+    }
+
     # Retreive the OpenLDAPaci attributes from the ou
     $cmd = "$LDAPSEARCH -b $line -s base openldapaci 2> /dev/null";
     @ACIS = upgrade_hostmerge_ldapsearch($cmd);
@@ -226,7 +231,9 @@ ou: Computers
 objectClass: organizationalUnit
 EOF
     ;
-    for($i=0; $ACIS[$i]; $i++) {
+
+    # $i=1 because 0 is the DN of the object we took the ACI's from!
+    for($i=1; $ACIS[$i]; $i++) {
 	print LDAPADD $ACIS[$i],"\n";
     }
     print LDAPADD "\n";
@@ -322,7 +329,7 @@ if(@DNS2MOVE) {
 		
 		# Add the webserver container
 		print LDAPADD "dn: $webcontainer_dn\n";
-		for($j=0; $entry[$j]; $j++) {
+		for($j=1; $entry[$j]; $j++) {
 		    print LDAPADD $entry[$j]."\n";
 		}
 		print LDAPADD "\n";
@@ -343,7 +350,7 @@ if(@DNS2MOVE) {
 		
 		# Add the webserver container
 		print LDAPADD "dn: $webserver_dn\n";
-		for($j=0; $entry[$j]; $j++) {
+		for($j=1; $entry[$j]; $j++) {
 		    print LDAPADD $entry[$j]."\n";
 		}
 		print LDAPADD "\n";
@@ -367,12 +374,12 @@ if(@DNS2MOVE) {
 
 		if(!upgrade_hostmerge_check_array($location_dn, @ADDED_LOCATION)) {
 		    # Retreive the original location object
-		    $entry = upgrade_hostmerge_get_object($LOCATIONS[$j]);
+		    @entry = upgrade_hostmerge_get_object($LOCATIONS[$j]);
 		    push(@REMOVE, $LOCATIONS[$j]);
 		    
 		    # Add the location object
 		    print LDAPADD "dn: $location_dn\n";
-		    for($k=0; $entry[$k]; $k++) {
+		    for($k=1; $entry[$k]; $k++) {
 			print LDAPADD $entry[$k]."\n";
 		    }
 		    print LDAPADD "\n";
@@ -403,7 +410,7 @@ if(@DNS2MOVE) {
 	    # Add the mailserver in new location
 	    $mailserver_dn = "cn=$physical,$physical_dn";
 	    print LDAPADD "dn: $mailserver_dn\n";
-	    for($j=0; $entry[$j]; $j++) {
+	    for($j=1; $entry[$j]; $j++) {
 		print LDAPADD $entry[$j]."\n";
 	    }
 	    print LDAPADD "\n";
@@ -434,7 +441,7 @@ if(@DNS2MOVE) {
 
 		# {{{ Add the automount
 		print LDAPADD "dn: $automount_dn\n";
-		for($j=0; $entry[$j]; $j++) {
+		for($j=1; $entry[$j]; $j++) {
 		    print LDAPADD $entry[$j]."\n";
 		}
 		print LDAPADD "\n";
@@ -461,7 +468,7 @@ if(@DNS2MOVE) {
 
 			# {{{ Add the automount map
 			print LDAPADD "dn: $automount_entry_dn_1\n";
-			for($k=0; $entry[$k]; $k++) {
+			for($k=1; $entry[$k]; $k++) {
 			    print LDAPADD $entry[$k]."\n";
 			}
 			print LDAPADD "\n";
@@ -488,7 +495,7 @@ if(@DNS2MOVE) {
 				
 				# {{{ Add the automount map
 				print LDAPADD "dn: $automount_entry_dn_2\n";
-				for($m=0; $entry[$m]; $m++) {
+				for($m=1; $entry[$m]; $m++) {
 				    print LDAPADD $entry[$m]."\n";
 				}
 				print LDAPADD "\n";
@@ -517,7 +524,7 @@ $count = $#REMOVE;
 print "\nObjects to remove: '$count'\n";
 for($i=$count; $i >= 0; $i--) {
     print "  ".$REMOVE[$i]."'\n";
-    print LDAPDEL $REMOVE[$i]."'\n";
+    print LDAPDEL $REMOVE[$i]."\n";
 }
 # }}}
 
