@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.88 2006-11-17 16:48:45 turbo Exp $
+// $Id: pql_config.inc,v 1.89 2006-11-24 06:14:57 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -278,8 +278,7 @@ if((empty($_SESSION["ACI_SUPPORT_ENABLED"]) and function_exists("user_generate_a
 
 // 10. Check to see if the cn=Monitor backend is availble/readable
 if(!@$MONITOR_BACKEND_ENABLED) {
-  $sr = @ldap_read($_pql->ldap_linkid, "cn=Monitor", 'objectClass=*');
-  if($sr)
+  if(pql_get_attribute($_pql->ldap_linkid, "cn=Monitor", pql_get_define("PQL_ATTR_CN")))
 	$_SESSION["MONITOR_BACKEND_ENABLED"] = 1;
 }
 

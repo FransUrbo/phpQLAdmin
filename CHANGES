@@ -61,6 +61,8 @@ phpQLAdmin 2.3.5 TO BE ANNOUNCED
 	      '(&(uid=*)(|(mail=*)(samaSID=*)))'. If there's no mail accounts and no Samba
 	      accounts, phpQLAdmin won't find users. Update the demo database with some
 	      mail addresses.
+	    + Don't do a ldap_read() to find out if cn=Monitor exists. It never returns
+	      false it seems! Use pql_get_attribute() instead...
 
 	GUI layout changes
 	  - RDN and FQDN should not be shown in if we're viewing the 'Global' 
