@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.44.2.1 2006-11-18 13:53:52 turbo Exp $
+// $Id: pql_bind9.inc,v 2.44.2.2 2006-11-24 08:51:45 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -17,6 +17,14 @@ function pql_bind9_get_zone($linkid, $branchname, $domainname = '') {
 	  $filter = 'objectClass=dNSZone';
 
 	$objects = pql_search($linkid, $dn, $filter);
+
+	// Catch a flat object - i.e. only ONE domain
+	if(!@$objects[0] and @$objects["dn"]) {
+	  $tmp = $objects;
+	  unset($objects);
+	  $objects[0] = $tmp;
+	}
+
 	for($i=0; @$objects[$i]['zonename']; $i++) {
 		$zone = $objects[$i]['zonename'];
 		$host = $objects[$i]['relativedomainname'];
@@ -190,8 +198,7 @@ function pql_bind9_get_ttl($linkid, $zone) {
 function pql_bind9_add_zone($linkid, $dn, $zone) {
 	$MASTER_DN = pql_maybe_encode(urldecode($dn));
 
-	// ----------------
-	// See if the sub branch exists. If not, create it.
+	// {{{ See if the sub branch exists. If not, create it.
 	$filter = "(&(".pql_get_define("PQL_CONF_SUBTREE_BIND9").")(objectclass=organizationalUnit))";
 
     if(!pql_get_dn($linkid, $_REQUEST["domain"], $filter, 'ONELEVEL')) {
@@ -201,8 +208,8 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 	}
 	$dn = pql_get_define("PQL_CONF_SUBTREE_BIND9").",$MASTER_DN";
 	$DNs[] = $dn;
+// }}}
 
-	// ----------------
 	// Create each of the domain components in the domainname
 	$dc = split('\.', $zone);
 
@@ -210,10 +217,7 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 	$entry['objectclass'][] = 'top';
 	$entry['objectclass'][] = 'domain';
 
-	// Add the OpenLDAPaci attribute (maybe)
-	if(@$_SESSION["ACI_SUPPORT_ENABLED"]) 
-	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($linkid, $_SESSION["USER_DN"], 'dnszone');
-
+	// {{{ Create each and every (leading) part of the domain
 	for($i=count($dc)-1; !empty($dc[$i]); $i--) {
 		$dc_tmp = pql_maybe_idna_encode($dc[$i]);
 
@@ -234,9 +238,9 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 			$DNs[] = $dn;
 		}
 	}
+// }}}
 
-	// ----------------
-	// Create a template SOA record
+	// {{{ Create a template SOA record
 	$zonename = pql_maybe_idna_encode($zone);
 	$date     = date("Ymd01", time());
 	
@@ -253,13 +257,15 @@ function pql_bind9_add_zone($linkid, $dn, $zone) {
 	$entry['nSRecord'][]			= "ns2.$zonename.";
 	$entry['mXRecord']				= "10 mail.$zonename.";
 	$entry['tXTRecord']				= "$zonename";
+// }}}
 	
-	// Add the OpenLDAPaci attribute (maybe)
+	// {{{ Add the OpenLDAPaci attribute (maybe)
 	if(@$_SESSION["ACI_SUPPORT_ENABLED"])
 	  $entry[pql_get_define("PQL_ATTR_LDAPACI")] = user_generate_aci($linkid, $_SESSION["USER_DN"], 'dnszone');
+// }}}
 	
-	$dn = "dNSTTL=".$entry['dNSTTL']." relativeDomainName=".$entry['relativeDomainName'].",$dn";
-	
+	$dn = "dNSTTL=".$entry['dNSTTL']."+relativeDomainName=".$entry['relativeDomainName'].",$dn";
+
 	if(!pql_get_dn($linkid, $dn, 'objectClass=dNSZone', 'BASE')) {
 	  if(!pql_write_add($linkid, $dn, $entry, 'bind9/zone', 'pql_bind9_add_zone')) {
 		// Can't add SOA record
