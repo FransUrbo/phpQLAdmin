@@ -63,6 +63,9 @@ phpQLAdmin 2.3.5 TO BE ANNOUNCED
 	      mail addresses.
 	    + Don't do a ldap_read() to find out if cn=Monitor exists. It never returns
 	      false it seems! Use pql_get_attribute() instead...
+	    + Catch possible flat object from pql_search() in pql_bind9_get_zone().
+	    + The DN of a SOA record object must have a '+' between the dNSTTL section
+	      and relativeDomainName.
 
 	GUI layout changes
 	  - RDN and FQDN should not be shown in if we're viewing the 'Global' 
