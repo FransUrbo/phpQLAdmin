@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.61.2.3 2006-11-23 21:40:17 turbo Exp $
+// $Id: pql_search.inc,v 2.61.2.4 2006-11-24 08:53:37 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -377,7 +377,7 @@ function pql_get_domains($ldap) {
 	unset($tmp); // I'm reusing this variable below...
 	foreach($dom as $dn => $value) {
 	  for($i=0; $i < count($domains); $i++) {
-		if(lc($dn) == lc($domains[$i]))
+		if((lc($dn) == lc($domains[$i])) and !eregi('^ou=computers,', lc($dn)))
 		  $tmp[] = $dn;
 	  }
 	}
