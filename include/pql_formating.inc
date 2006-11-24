@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.58.2.6 2006-11-23 22:36:42 turbo Exp $
+// $Id: pql_formating.inc,v 2.58.2.7 2006-11-24 14:12:14 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry, extra_newline)
 // Create a LDIF object to print in case of error
@@ -426,7 +426,7 @@ function pql_format_tree_other($cnt, $text, $url, $level, $parent, $child) {
   <div id="el<?=$cnt?>Parent" class="parent" <?=$mouse["over"]." ".$mouse["out"]?>>
     <nobr>
       <a class="item" <?=$url?> onclick="if (capable) {expandBase('el<?=$cnt?>', true); return false;}">
-        <?=$nbsp?><img name="imEx" src="images/minus.png" border="0" alt="+" width="9" height="9" id="el<?=$cnt?>Img">
+        <?=$nbsp?><img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$cnt?>Img">
       </a>
 
       <a class="item" <?=$url?> onclick="if (capable) {expandBase('el<?=$cnt?>', false)}">
