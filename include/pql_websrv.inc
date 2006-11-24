@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for web server configuration)
 //
-// $Id: pql_websrv.inc,v 1.19.2.4 2006-11-16 06:19:04 turbo Exp $
+// $Id: pql_websrv.inc,v 1.19.2.5 2006-11-24 17:32:07 turbo Exp $
 //
 
 // {{{ pql_websrv_add_server(linkid, dn, entry, type)
@@ -164,6 +164,22 @@ function pql_websrv_get_virtual_host_directories($linkid, $server, $virtualhost)
 	return($virt_host_dirs);
   } else
 	return(NULL);
+}
+// }}}
+
+// {{{ pql_websrv_get_virtual_host(linkid, virtualhost)
+function pql_websrv_get_virtual_host($linkid, $virtualhost) {
+  $object = pql_search($linkid, $virtualhost, pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', 'BASE');
+  if(is_array($object)) {
+	// Remove some crud...
+	unset($object[pql_get_define("PQL_ATTR_OBJECTCLASS")]);
+	unset($object[pql_get_define("PQL_ATTR_CN")]);
+	unset($object["dn"]);
+
+	return($object);
+  }
+
+  return(NULL);
 }
 // }}}
 
