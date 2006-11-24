@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.40.2.2 2006-11-23 21:40:17 turbo Exp $
+// $Id: pql_write.inc,v 2.40.2.3 2006-11-24 08:55:28 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -13,7 +13,8 @@
 // {{{ pql_write_add(linkid, dn, entry, type, caller)
 // ADD an object - called with an 'ldif' for modification.
 function pql_write_add($linkid, $dn, $entry, $type, $caller) {
-	$dn = pql_maybe_encode(urldecode($dn));
+	if(!eregi("^dNSTTL=", $dn))
+	  $dn = pql_maybe_encode(urldecode($dn));
 
 	// Verify that the object have what it needs to be able to be added
 	$entry = pql_validate_object($linkid, $dn, $entry, $type);
