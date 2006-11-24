@@ -1,6 +1,6 @@
 <?php
 // View and manage web servers accessible from this domain/branch.
-// $Id: domain_details-websrv.inc,v 1.21.2.2 2006-11-18 15:46:26 turbo Exp $
+// $Id: domain_details-websrv.inc,v 1.21.2.3 2006-11-24 13:53:58 turbo Exp $
 
 // {{{ Include Webserver API etc
 require($_SESSION["path"]."/include/pql_websrv.inc");
@@ -35,10 +35,14 @@ if(is_array($virt_hosts)) {
 	$dn_parts = ldap_explode_dn($virt_hosts[$i], 0);
 
 	$virt_host = $dn_parts[0];
-	$physical  = $dn_parts[1];
+	$container = $dn_parts[1];
 
-	// Setup an array, ordered firstly on physical host, then on virtual host
-	$hosts[$physical][$virt_host] = $virt_hosts[$i];
+	// Remove the attribute from the values
+	$virt_host = preg_replace('/.*=/', '', $virt_host);
+	$container = preg_replace('/.*=/', '', $container);
+
+	// Setup an array, ordered firstly on virtual host, then on web container
+	$hosts[$virt_host][$container] = $virt_hosts[$i];
   }
 }
 
