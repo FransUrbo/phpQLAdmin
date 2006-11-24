@@ -66,6 +66,7 @@ phpQLAdmin 2.3.5 TO BE ANNOUNCED
 	    + Catch possible flat object from pql_search() in pql_bind9_get_zone().
 	    + The DN of a SOA record object must have a '+' between the dNSTTL section
 	      and relativeDomainName.
+	    + Managed to swap the minus/plus icons as initial state of the tree view.
 
 	GUI layout changes
 	  - RDN and FQDN should not be shown in if we're viewing the 'Global' 
