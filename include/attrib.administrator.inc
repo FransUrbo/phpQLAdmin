@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for administrator and seealso modification
 // Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
-// $Id: attrib.administrator.inc,v 1.57.2.2 2006-11-25 17:36:24 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.57.2.3 2006-11-25 23:47:50 turbo Exp $
 
 // There is serious problems with this. I fix for one usage and break another
 // one! Let's try to remember (and document) how it's called. It's called from
@@ -349,7 +349,10 @@ function attribute_save($type) {
 	// NOTE: No ACI additions/modifications if we're modifying a qmailGroup object,
 	//       and only if it's an administrator we're adding!
 	if($_SESSION["ACI_SUPPORT_ENABLED"] and function_exists("user_generate_aci") and
-	   ($_REQUEST["view"] != 'group') and ($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR")))
+	   ($_REQUEST["view"] != 'group') and
+	   (($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR")) or
+		($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV")) or
+		($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"))))
 	  $use_aci = 1;
 	
 	if($value and $_REQUEST["oldvalue"] and ($value == $_REQUEST["oldvalue"])) {
@@ -387,7 +390,8 @@ function attribute_save($type) {
 		if(!$_REQUEST["user"] and !$_REQUEST["branchdn"])
 		  unset($_REQUEST[$attrib]);
 
-		if($use_aci)
+		if($use_aci and ($attrib != pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV")) and
+		   ($attrib != pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")))
 		  // Modify the OpenLDAPaci attribute
 		  $ACIs = attribute_setup_aci($_pql->ldap_linkid, $_REQUEST["domain"], array($value), $type);
 		// }}}
@@ -396,7 +400,8 @@ function attribute_save($type) {
 		if($_REQUEST["user"] and ($_REQUEST["view"] != 'group')) {
 			$ADMs[$attrib][] = $_REQUEST["user"];
 			
-			if($use_aci)
+			if($use_aci and ($attrib != pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV")) and
+			   ($attrib != pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")))
 			  // Add the OpenLDAPaci attribute
 			  $ACIs = attribute_setup_aci($_pql->ldap_linkid, $_REQUEST["domain"], array($_REQUEST["user"]), $type);
 		} elseif($value) {
@@ -427,7 +432,7 @@ function attribute_save($type) {
 		$success = 1;
 
 		if($use_aci and ($value or @$_REQUEST["user"]) and ($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR"))) {
-			// We're using ACI's and we're adding/removing an administrator.
+			// {{{ We're using ACI's and we're adding/removing an administrator.
 
 			// Get all the objects below this branch.
 			$branches = pql_get_dn($_pql->ldap_linkid, $DN, 'objectClass=*');
@@ -440,20 +445,82 @@ function attribute_save($type) {
 						$ACIs = attribute_setup_aci($_pql->ldap_linkid, $branches[$i], $admins2add, $type);
 					}
 
-					// What's the highes ACI number?
-					$nr = count($ACIs);
-					$tmp = split('#', $ACIs[$nr-1]);
-					$new_nr = $tmp[0] + 1;
-
-					// Add the user DN to list of ACI's for this leaf.
-					$ACIs[] = $new_nr."#entry#grant;w,r,s,c;[all]#access-id#".$_REQUEST["user"];
-
 					// Modify this object. BUG: Should we care about failure/successes?!
 					pql_modify_attribute($_pql->ldap_linkid, $branches[$i], pql_get_define("PQL_ATTR_LDAPACI"), '', $ACIs);
 				}
 			}
+			// }}}
 		}
 		
+		if($use_aci and ($value or @$_REQUEST["user"]) and ($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV")) and $_SESSION["USER_SEARCH_DN_CTR"]) {
+			// {{{ We're using ACI's and we're adding/removing an webSrvAdministrator.
+
+			// Include Webserver API etc
+			require($_SESSION["path"]."/include/pql_websrv.inc");
+		  
+			// Get all physical hosts
+			$filter = '(&('.pql_get_define("PQL_ATTR_CN").'=*)(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)))';
+			$hosts = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $filter, 'ONELEVEL');
+
+			// For each physical host, try to find the webserver containers
+			$servers = array();
+			foreach($hosts as $host) {
+			  $tmp = pql_websrv_find_servers($_pql->ldap_linkid, $host);
+			  if(is_array($tmp))
+				$servers = $servers + $tmp;
+			}
+
+			// For each webserver container, retreive ALL objects
+			$objects = array();
+			foreach($servers as $srvname => $srvdn) {
+			  $tmp = pql_get_dn($_pql->ldap_linkid, $srvdn, 'objectClass=*');
+			  pql_add2array($objects, $tmp);
+			}
+
+			for($i=0; $i < count($objects); $i++) {
+				if($objects[$i] != $DN) {
+					// Create an ACI entry for this branch.
+					if($type == 'delete')
+					  $ACIs = attribute_setup_aci($_pql->ldap_linkid, $objects[$i], array($value), $type);
+					else
+					  $ACIs = attribute_setup_aci($_pql->ldap_linkid, $objects[$i], $admins2add, $type);
+
+					// Modify this object. BUG: Should we care about failure/successes?!
+					pql_modify_attribute($_pql->ldap_linkid, $objects[$i], pql_get_define("PQL_ATTR_LDAPACI"), '', $ACIs);
+				}
+			}
+			// }}}
+		}
+
+		if($use_aci and ($value or @$_REQUEST["user"]) and ($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")) and $_SESSION["USER_SEARCH_DN_CTR"]) {
+			// {{{ We're using ACI's and we're adding/removing an controlsAdministrator.
+
+			// Get all physical hosts
+			$filter = '(&('.pql_get_define("PQL_ATTR_CN").'=*)(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)))';
+			$hosts = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $filter, 'ONELEVEL');
+
+			// For each physical host, try to find the mailservers
+			$objects = array();
+			for($i=0; $hosts[$i]; $i++) {
+			  $tmp = pql_get_dn($_pql->ldap_linkid, $hosts[$i], '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+			  pql_add2array($objects, $tmp);
+			}
+
+			for($i=0; $i < count($objects); $i++) {
+				if($objects[$i] != $DN) {
+					// Create an ACI entry for this branch.
+					if($type == 'delete')
+					  $ACIs = attribute_setup_aci($_pql->ldap_linkid, $objects[$i], array($value), $type);
+					else
+					  $ACIs = attribute_setup_aci($_pql->ldap_linkid, $objects[$i], $admins2add, $type);
+
+					// Modify this object. BUG: Should we care about failure/successes?!
+					pql_modify_attribute($_pql->ldap_linkid, $objects[$i], pql_get_define("PQL_ATTR_LDAPACI"), '', $ACIs);
+				}
+			}
+			// }}}
+		}
+
 		if($attrib == pql_get_define("PQL_ATTR_SEEALSO"))
 		  $what = $LANG->_('contact person');
 		elseif($attrib == pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR"))
