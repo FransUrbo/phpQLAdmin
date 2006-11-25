@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.98 2006-07-04 20:07:02 turbo Exp $
+// $Id: user_detail.php,v 2.98.2.1 2006-11-25 23:42:50 turbo Exp $
 //
 // {{{ Setup session
 header("Expires: 0");
@@ -197,15 +197,30 @@ if(empty($mailhost)) {
     $mailhost = $LANG->_('None');
 }
 
-$controladmins = pql_get_attribute($_pql->ldap_linkid, $_GET["rootdn"], pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"));
-if(is_array($controladmins)) {
+if($_REQUEST["view"] == 'access') {
+  // Check if user is mailserver admin
+  $controladmins = pql_get_attribute($_pql->ldap_linkid, $_GET["rootdn"], pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"));
+  if(is_array($controladmins)) {
 	foreach($controladmins as $admin)
 	  if($admin == $_GET["user"])
 		$controlsadministrator = 1;
-} elseif($controladmins == $_GET["user"]) {
+  } elseif($controladmins == $_GET["user"]) {
 	$controlsadministrator = 1;
-} else {
-  $controlsadministrator = 0;
+  } else {
+	$controlsadministrator = 0;
+  }
+
+  // Check if user is webserver admin
+  $websrvadmins = pql_get_attribute($_pql->ldap_linkid, $_GET["rootdn"], pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"));
+  if(is_array($websrvadmins)) {
+	foreach($websrvadmins as $admin)
+	  if($admin == $_GET["user"])
+		$webserveradministrator = 1;
+  } elseif($websrvadmins == $_GET["user"]) {
+	$webserveradministrator = 1;
+  } else {
+	$webserveradministrator = 0;
+  }
 }
 // }}}
 
