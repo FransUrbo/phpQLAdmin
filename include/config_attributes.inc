@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.50.2.4 2006-11-21 14:13:51 turbo Exp $
+// $Id: config_attributes.inc,v 2.50.2.5 2006-11-25 17:33:29 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -360,6 +360,8 @@ pql_set_define("PQL_ATTR_LOCK_DOMAINADDRESS",				strtolower('lockDomainAddress')
 pql_set_define("PQL_ATTR_LOCK_PASSWORD",					strtolower('lockPassword'),					false);
 pql_set_define("PQL_ATTR_LOCK_ACCOUNTTYPE",					strtolower('lockAccountType'),				false);
 pql_set_define("PQL_ATTR_RADIUS_CONFIG_IDENTITY",			strtolower("radiusConfigIdentity"),			false);
+pql_set_define("PQL_ATTR_ADMINISTRATOR_WEBSRV",				strtolower("webSrvAdministrator"),			false);
+pql_set_define("PQL_ATTR_ADMINISTRATOR_DNS",				strtolower("dNSAdministrator"),				false);
 // }}}
 
 // {{{ These are the internal phpQLAdmin attributes - USER configuration
@@ -427,6 +429,8 @@ $PQL_ATTRIBUTE["SUFFIX"] = array("PQL_CONF_SHOW_USERS"					=> pql_get_define("PQ
 								 "PQL_CONF_CONTROL_AUTOADDLOCALS"		=> pql_get_define("PQL_ATTR_CONTROL_AUTOADDLOCALS"),
 								 "PQL_CONF_CONTROL_AUTOADDRCPTHOSTS"	=> pql_get_define("PQL_ATTR_CONTROL_AUTOADDRCPTHOSTS"),
 								 "PQL_CONF_ADMINISTRATOR"				=> pql_get_define("PQL_ATTR_ADMINISTRATOR"),
+								 "PQL_CONF_ADMINISTRATOR_WEBSRV"		=> pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"),
+								 "PQL_CONF_ADMINISTRATOR_DNS"			=> pql_get_define("PQL_ATTR_ADMINISTRATOR_DNS"),
 								 "PQL_CONF_SEEALSO"						=> pql_get_define("PQL_ATTR_SEEALSO"),
 								 "PQL_CONF_BASEHOMEDIR"					=> pql_get_define("PQL_ATTR_BASEHOMEDIR"),
 								 "PQL_CONF_BASEMAILDIR"					=> pql_get_define("PQL_ATTR_BASEMAILDIR"),
