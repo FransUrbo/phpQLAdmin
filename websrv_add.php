@@ -1,6 +1,6 @@
 <?php
 // Add a webserver configuration to the LDAP db
-// $Id: websrv_add.php,v 2.19.2.6 2006-11-19 12:09:35 turbo Exp $
+// $Id: websrv_add.php,v 2.19.2.7 2006-11-25 12:16:17 turbo Exp $
 //
 // {{{ Setup session
 require("./include/pql_session.inc");
@@ -172,7 +172,7 @@ if(($error == 'true') or !$_REQUEST["type"] or
 <?php
 		// }}}
 
-	  } elseif($_REQUEST["server"]) {
+	  } elseif($_REQUEST["server"] or ($_REQUEST["ref"] == 'domain')) {
 		// {{{ Input for Virtual Host Object
 		if(empty($_REQUEST["serverip"])) {
 		  // Get the IP from the physical server
@@ -261,7 +261,10 @@ if(($error == 'true') or !$_REQUEST["type"] or
 <?php	} ?>
         <input type="hidden" name="type" value="vrtsrv">
 
-<?php	if(pql_get_define("PQL_CONF_BIND9_USE")) { ?>
+<?php	if(pql_get_define("PQL_CONF_BIND9_USE") and $_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {
+			// Only offer this if super admin - we might need write access to some other domain/branch (i.e. a domain/branch
+			// where the specific DNS domain is located)
+?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Create DNS object')?></td>
           <td><input type="checkbox" name="dns">&nbsp;<?=$LANG->_('Yes')?></td>
