@@ -1,6 +1,6 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.56.2.2 2006-11-17 13:53:25 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.56.2.3 2006-11-25 17:36:23 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -222,6 +222,9 @@ if(@$_REQUEST["submit"] == 1) {
 	//	tables/domain_details-aci.inc
 	//	tables/domain_details-default.inc
 	//	tables/domain_details-owner.inc
+	//	tables/user_details-access.inc
+	// 		Administrate webservers
+	// 		Administrate DNS
 
 	if($_REQUEST["action"])
 	  attribute_save($_REQUEST["action"]);

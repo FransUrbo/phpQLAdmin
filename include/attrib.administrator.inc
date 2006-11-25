@@ -1,12 +1,13 @@
 <?php
 // attribute plugin for administrator and seealso modification
 // Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
-// $Id: attrib.administrator.inc,v 1.57.2.1 2006-11-14 15:53:23 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.57.2.2 2006-11-25 17:36:24 turbo Exp $
 
 // There is serious problems with this. I fix for one usage and break another
 // one! Let's try to remember (and document) how it's called. It's called from
 // the following places:
 // * left.php->[user]->User access->Allow user to create domains below domain
+// * left.php->[user]->User access->Administrate webservers
 // * left.php->[user]->User access->Disallow user to create domains below domain
 // * left.php->[user]->Group stuff->Member DN(s)->Add member
 // * left.php->[user]->Group stuff->Sender DN(s)->Add sender
@@ -153,6 +154,10 @@ function attribute_print_form($action) {
 		  $what = $LANG->_('contact person');
 	  } elseif($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM")) {
 		  $what = $LANG->_('mailinglist administrator');
+	  } elseif($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV")) {
+		  $what = $LANG->_('Webserver administrator');
+	  } elseif($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_DNS")) {
+		  $what = $LANG->_('DNS administrator');
 	  } elseif($attrib == pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR")) {
 		  $what = $LANG->_('group moderator');
 	  } elseif($attrib == pql_get_define("PQL_ATTR_GROUP_DN_MEMBER")) {
@@ -366,7 +371,7 @@ function attribute_save($type) {
 	} elseif($admins)
 	  $ADMs[$attrib][] = $admins;
 	// }}}
-	
+
 	if($type == 'delete') {
 		// {{{ Delete user DN from array of administrators
 		foreach($ADMs[$attrib] as $adm) {
