@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.25 2005-09-16 06:08:40 turbo Exp $
+// $Id: bind9_add.php,v 2.25.6.1 2006-11-25 14:14:03 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -218,7 +218,8 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 			  // we can't figure out zone name etc...
 			  if(!pql_bind9_update_serial($_pql->ldap_linkid, $dn))
 				die("failed to update SOA serial number");
-			}
+			} else
+			  echo $LANG->_("\bCan't update SOA since we're running in DEBUG_ME mode!\B");
 		  } else
 			$msg = "Failed to add ".$_REQUEST["hostname"]." to ".$_REQUEST["domainname"];
 
