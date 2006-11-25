@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.105.2.5 2006-11-25 17:43:33 turbo Exp $
+// $Id: domain_detail.php,v 2.105.2.6 2006-11-25 21:23:31 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -227,15 +227,17 @@ $new = array('users'	=> 'Registred Users',
 $buttons = $buttons + $new;
 
 if($_SESSION["ADVANCED_MODE"]) {
-	if($_SESSION["ACI_SUPPORT_ENABLED"]) {
+	if(pql_validate_administrator($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_DNS"), $_SESSION["USER_DN"]) or
+	   $_SESSION["ALLOW_BRANCH_CREATE"])
+	{
 		$new = array('dnsinfo'	=> 'MX Information');
 		$buttons = $buttons + $new;
+	}
 
-		if($_SESSION["ALLOW_BRANCH_CREATE"]) {
-		  // This is a 'super-admin'.
-		  $new = array('aci'	=> 'Access Control Information');
-		  $buttons = $buttons + $new;
-		}
+	if($_SESSION["ACI_SUPPORT_ENABLED"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {
+		// ACI enabled and this is a 'super-admin'.
+		$new = array('aci'	=> 'Access Control Information');
+		$buttons = $buttons + $new;
 	}
 
 	if(pql_get_define("PQL_CONF_CONTROL_USE") and $_SESSION["ALLOW_CONTROL_CREATE"]) {
@@ -271,8 +273,10 @@ if(pql_get_define("PQL_CONF_SIMSCAN_USE")) {
   $buttons = $buttons + $new;
 }
 
-$new = array('action' => 'Actions');
-$buttons = $buttons + $new;
+if($_SESSION["ALLOW_BRANCH_CREATE"]) {
+  $new = array('action' => 'Actions');
+  $buttons = $buttons + $new;
+}
 
 if($domainname) {
 ?>
