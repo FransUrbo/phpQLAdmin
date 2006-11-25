@@ -1,6 +1,6 @@
 <?php
 // View and manage web servers accessible from this domain/branch.
-// $Id: domain_details-websrv.inc,v 1.21.2.7 2006-11-25 14:18:22 turbo Exp $
+// $Id: domain_details-websrv.inc,v 1.21.2.8 2006-11-25 20:54:40 turbo Exp $
 
 // This view is different from 'host_details-websrv.inc' in the way that
 // domain/branch (admins etc) is/should be more interested in the virtual
@@ -154,7 +154,8 @@ if($_REQUEST["hostdir"]) {
 }
 
 // {{{ If Branch/Domain or SUPER admin - Show 'Add virtual host' link
-if((pql_validate_administrator($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR"), $_SESSION["user"]) or
+if((pql_validate_administrator($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]) or
+	pql_validate_administrator($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"), $_SESSION["USER_DN"]) or
 	$_SESSION["ALLOW_BRANCH_CREATE"]) and $_SESSION["ADVANCED_MODE"])
 {
 ?>
