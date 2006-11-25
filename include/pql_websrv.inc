@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for web server configuration)
 //
-// $Id: pql_websrv.inc,v 1.19.2.6 2006-11-24 19:08:05 turbo Exp $
+// $Id: pql_websrv.inc,v 1.19.2.7 2006-11-25 12:14:07 turbo Exp $
 //
 
 // {{{ pql_websrv_add_server(linkid, dn, entry, type)
@@ -144,7 +144,7 @@ function pql_websrv_get_virtual_host_directories($linkid, $server = '', $virtual
   $filter = '(&(objectClass=ApacheSectionObj)(objectClass=ApacheDirectoryObj))';
 
   // Retreive the Apache web server virtual host directories
-  if(!@$virthost_dn and $virthost_dn)
+  if(!@$virthost_dn)
 	$virthost_dn = pql_get_define("PQL_ATTR_WEBSRV_SRV_URL")."=".$virtualhost.",".$server;
   elseif((!@$server or !@$virtualhost) and !@$virthost_dn)
 	// Jikes! Serious API problem - called with either server OR virtualhost
