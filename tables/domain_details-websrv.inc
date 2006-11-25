@@ -1,6 +1,6 @@
 <?php
 // View and manage web servers accessible from this domain/branch.
-// $Id: domain_details-websrv.inc,v 1.21.2.6 2006-11-25 12:09:52 turbo Exp $
+// $Id: domain_details-websrv.inc,v 1.21.2.7 2006-11-25 14:18:22 turbo Exp $
 
 // This view is different from 'host_details-websrv.inc' in the way that
 // domain/branch (admins etc) is/should be more interested in the virtual
@@ -162,7 +162,7 @@ if((pql_validate_administrator($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_
   <table cellspacing="0" cellpadding="3" border="0">
     <th align="left"><?=$LANG->_('Actions')?></th>
       <tr class="<?php pql_format_table(); ?>">
-        <td><a href="websrv_add.php?view=<?=$_REQUEST["view"]?>&ref=domain"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('virtual host'))); ?></a></td>
+        <td><a href="websrv_add.php?rootdn=<?=urlencode($_REQUEST["rootdn"])?>&domain=<?=urlencode($_REQUEST["domain"])?>&view=<?=$_REQUEST["view"]?>&ref=domain"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('virtual host'))); ?></a></td>
       </tr>
     </th>
   </table>
