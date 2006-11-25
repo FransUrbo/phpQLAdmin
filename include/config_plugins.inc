@@ -17,7 +17,7 @@
 //	file		File that manage the plugin
 //	attribs		Attribute(s) that the plugin manages
 //
-// $Id: config_plugins.inc,v 2.26.2.2 2006-11-25 17:33:29 turbo Exp $
+// $Id: config_plugins.inc,v 2.26.2.3 2006-11-25 23:51:10 turbo Exp $
 
 pql_plugin_register(pql_get_define("PQL_ATTR_ISACTIVE"), "",
 					"attrib.accountstatus.inc",
@@ -247,6 +247,7 @@ pql_plugin_register(pql_get_define("PQL_ATTR_GROUP_OC"), "",
 					array(pql_get_define("PQL_ATTR_GROUP_DN_MEMBER"),
 						  pql_get_define("PQL_ATTR_GROUP_DN_SENDER"),
 						  pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR"),
+						  pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
 						  pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"),
 						  pql_get_define("PQL_ATTR_ADMINISTRATOR_DNS")));
 
