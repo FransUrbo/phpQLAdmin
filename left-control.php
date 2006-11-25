@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.35.4.9 2006-11-18 15:43:57 turbo Exp $
+// $Id: left-control.php,v 2.35.4.10 2006-11-25 12:09:50 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -96,7 +96,7 @@ if((pql_get_define("PQL_CONF_CONTROL_USE") or
 
 	  // {{{ Root of host tree
 	  if($host_dn == 'Global') {
-		pql_format_tree($host, "host_detail.php?host=".urlencode($host_dn)."&ref=left");
+		pql_format_tree($host, "host_detail.php?host=".urlencode($host_dn)."&ref=global");
 	  } else {
 		$links = array();
 		if(pql_get_define("PQL_CONF_CONTROL_USE")) {
@@ -109,7 +109,7 @@ if((pql_get_define("PQL_CONF_CONTROL_USE") or
 		  $links = $links + $new;
 		}
 
-		pql_format_tree($host, "host_detail.php?host=".urlencode($host_dn)."&ref=left", $links, 0);
+		pql_format_tree($host, "host_detail.php?host=".urlencode($host_dn)."&ref=physical", $links, 0);
 	  }
 // }}}
 
@@ -229,14 +229,14 @@ if((pql_get_define("PQL_CONF_CONTROL_USE") or
 				asort($virt_hosts);
 
 				// Add a 'Add virtual server' link
-				$new = array('<i>=> Add virtual server</i>' => "websrv_add.php?view=websrv&host=".urlencode($host_dn)."&server=".urlencode($container_dn));
+				$new = array('<i>=> Add virtual server</i>' => "websrv_add.php?view=websrv&ref=ctrl&host=".urlencode($host_dn)."&server=".urlencode($container_dn));
 				$links = $links + $new;
 				
 				foreach($virt_hosts as $virt_dn) {
 				  $virt = pql_get_attribute($_pql->ldap_linkid, $virt_dn, pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME"));
 				  
 				  // {{{ Setup the branch
-				  $new = array($virt => "host_detail.php?host=".urlencode($host_dn)."&server=".urlencode($container_dn)."&virthost=".urlencode($virt)."&view=websrv&ref=left2");
+				  $new = array($virt => "host_detail.php?host=".urlencode($host_dn)."&server=".urlencode($container_dn)."&virthost=".urlencode($virt)."&view=websrv&ref=virtual");
 				  $links = $links + $new;
 // }}}
 				} // end foreach virt_hosts
@@ -246,7 +246,7 @@ if((pql_get_define("PQL_CONF_CONTROL_USE") or
 				$links = $links + $new;
 
 				// Add a 'Add virtual server' link
-				$new = array('<i>=> Add virtual server</i>' => "websrv_add.php?view=websrv&host=".urlencode($host_dn)."&server=".urlencode($container_dn));
+				$new = array('<i>=> Add virtual server</i>' => "websrv_add.php?view=websrv&ref=ctrl&host=".urlencode($host_dn)."&server=".urlencode($container_dn));
 				$links = $links + $new;
 			  }
 // }}}
@@ -255,8 +255,8 @@ if((pql_get_define("PQL_CONF_CONTROL_USE") or
 			  $links = array('no virtual hosts' => '');
 // }}}
 			} // end if(container != Global)
-			
-			pql_format_tree($container, "host_detail.php?host=".urlencode($host_dn)."&server=".urlencode($container_dn)."&view=websrv&ref=left1", $links, 1);
+
+			pql_format_tree($container, "host_detail.php?host=".urlencode($host_dn)."&server=".urlencode($container_dn)."&view=websrv&ref=container", $links, 1);
 		  } // end foreach($web_containers)
 // }}}
 		} else {

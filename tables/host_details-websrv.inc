@@ -1,6 +1,6 @@
 <?php
 // View everything about web servers - virtual hosts and virtual host locations
-// $Id: host_details-websrv.inc,v 1.1.2.9 2006-11-21 16:48:34 turbo Exp $
+// $Id: host_details-websrv.inc,v 1.1.2.10 2006-11-25 12:09:52 turbo Exp $
 
 // {{{ Include Webserver API etc
 require($_SESSION["path"]."/include/pql_websrv.inc");
@@ -32,7 +32,7 @@ if($_REQUEST["host"] == 'Global') {
   // {{{ Originally called from the physical host link - Get all web servers below this physical host
   // NOTE: The physical host is called with 'ref=left', the web server container 'ref=left1'
   //       and the virtual host 'ref=left2' in the URL.
-  if(!$_REQUEST["virthost"] or ($_REQUEST["ref"] == 'left')) {
+  if(!$_REQUEST["virthost"] or ($_REQUEST["ref"] == 'physical')) {
 	// Left host frame/[physical]->Webserver administration->Webserver
 	// Left host frame/[physical]->Webserver administration->{Webserver->}virtual host
 	$servers = pql_websrv_find_servers($_pql->ldap_linkid, $_REQUEST["host"]);
@@ -44,7 +44,7 @@ if($_REQUEST["host"] == 'Global') {
 	  foreach($servers as $server_name => $server_dn) break;
 	  $_REQUEST["server"] = $server_dn; // Just in case it's used below (can't remember)
 	}
-  } elseif(is_array($servers)) {
+  } else {
 	// Left host frame/[physical]/Webserver/Virtual host
 	$servers = array($_REQUEST["virthost"] => $_REQUEST["server"]);
 	$server_dn = $_REQUEST["server"];
@@ -83,7 +83,7 @@ if(count($servers)) {
 	} else {
 	  // Extract the specific virtual host object
 	  foreach($virt_hosts as $virt_host_name => $virt_host_data) {
-		if($_REQUEST["ref"] == 'left2') {
+		if($_REQUEST["ref"] == 'virtual') {
 		  // Left host frame/[physical]/Webserver/Virtual host
 		  if($virt_host_name != $_REQUEST["virthost"])
 			// This should not be shown, remove it from display.
@@ -107,7 +107,7 @@ if(count($servers)) {
   // If called from Physical host/Webserver						ref='left1'
   // If called from Physical host/Webserver/Virtual host:		ref='left2'
   if(($_REQUEST["host"] == 'Global') or ($_REQUEST["ref"] and
-										 ($_REQUEST["ref"] == 'left') and 
+										 ($_REQUEST["ref"] == 'physical') and 
 										 (count($virt_hosts) > 1)))
   {
 	// Do not show these buttons if
@@ -166,14 +166,14 @@ if(count($servers)) {
 // }}}
 
 	// {{{ -------------- SETUP THE VIRTUAL HOST BUTTONS
-	// If called from web server container:	virt_hosts     >= 1, ref=left1
-	// If called from virtual host:			virt_host_dirs == 1, ref=left2
+	// If called from web server container:	virt_hosts     >= 1, ref=container
+	// If called from virtual host:			virt_host_dirs == 1, ref=virtual
 	if((count($virt_hosts) >= 1) and
-	   ((($_REQUEST["ref"] == 'left1') or ($_REQUEST["ref"] == 'left'))
+	   ((($_REQUEST["ref"] == 'container') or ($_REQUEST["ref"] == 'physical'))
 		or
 		((count($virt_hosts) >= 1) and
 		 (count($virt_host_dirs) >= 1) and
-		 ($_REQUEST["ref"] == 'left2'))))
+		 ($_REQUEST["ref"] == 'virtual'))))
 	{
 	  // Show these buttons if:
 	  //	1. Called from container with one or more virtual host(s)						TODO(?)
@@ -286,7 +286,7 @@ if($_REQUEST["hostdir"]) {
 <?php		}
 		}
 ?>
-<?php	if($_REQUEST["ref"] == 'left') { ?>
+<?php	if($_REQUEST["ref"] == 'physical') { ?>
       <tr class="<?php pql_format_table(); ?>">
         <td><a href="host_del.php?view=<?=$_REQUEST["view"]?>&host=<?=urlencode($_REQUEST["host"])?>&server=<?=urlencode($server_dn)?>"><?php echo pql_complete_constant($LANG->_('Delete %what%'), array('what' => $LANG->_('this web server'))); ?></a></td>
       </tr>
