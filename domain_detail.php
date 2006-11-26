@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.105.2.6 2006-11-25 21:23:31 turbo Exp $
+// $Id: domain_detail.php,v 2.105.2.7 2006-11-26 15:43:24 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -181,7 +181,7 @@ if($_REQUEST["view"] == 'access') {
 
   // Get DNS administrators
   $bind9_admins = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"],
-									pql_get_define("PQL_ATTR_ADMINISTRATOR_DNS"));
+									pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9"));
   if($bind9_admins and !is_array($bind9_admins)) {
 	// It's defined, but it's not an array. Convert it so we don't get into trouble below.
 	$bind9_admins = array($bind9_admins);
@@ -217,7 +217,7 @@ $additionaldomainname = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"
 $buttons = array('default'	=> 'Branch Defaults');
 
 if($_SESSION["ADVANCED_MODE"]) {
-  $new = array('access' => 'Domain access',
+  $new = array('access' => 'Branch access',
 			   'owner'	=> 'Branch Owner Details');
   $buttons = $buttons + $new;
 }
@@ -227,7 +227,7 @@ $new = array('users'	=> 'Registred Users',
 $buttons = $buttons + $new;
 
 if($_SESSION["ADVANCED_MODE"]) {
-	if(pql_validate_administrator($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_DNS"), $_SESSION["USER_DN"]) or
+	if(pql_validate_administrator($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9"), $_SESSION["USER_DN"]) or
 	   $_SESSION["ALLOW_BRANCH_CREATE"])
 	{
 		$new = array('dnsinfo'	=> 'MX Information');
@@ -246,7 +246,7 @@ if($_SESSION["ADVANCED_MODE"]) {
 	}
 
 	if(pql_get_define("PQL_CONF_BIND9_USE") and
-	   (pql_validate_administrator($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_DNS"), $_SESSION["USER_DN"]) or
+	   (pql_validate_administrator($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9"), $_SESSION["USER_DN"]) or
 		pql_validate_administrator($_pql->ldap_linkid, $_REQUEST["rootdn"], pql_get_define("PQL_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"])))
 	{
 		// * DNS administration is enabled
