@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.135 2006-10-24 12:27:44 turbo Exp $
+// $Id: user_add.php,v 2.135.2.1 2006-11-26 15:52:51 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -407,7 +407,7 @@ switch($_REQUEST["page_curr"]) {
 			$error_user = $_REQUEST['uid'];
 		}
 
-		if(pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], $filter, 'BASE')) {
+		if(pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], $filter)) {
 			$error = true;
 			$error_text["uid"] = pql_complete_constant($LANG->_('User %user% already exists'), array("user" => $error_user));
 			unset($_REQUEST['uid']);
