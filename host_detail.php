@@ -1,7 +1,7 @@
 <?php
 // View information about physical host object
 // (mainly Host ACL's)
-// $Id: host_detail.php,v 1.1.2.11 2006-11-25 12:09:50 turbo Exp $
+// $Id: host_detail.php,v 1.1.2.12 2006-11-26 15:44:53 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -57,7 +57,17 @@ if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
 <?php
 // {{{ Setup nav buttons
 if(empty($_REQUEST["view"])) {
-  $_REQUEST["view"] = 'hostacl';
+  if(pql_get_define("PQL_CONF_HOSTACL_USE")) {
+	$_REQUEST["view"] = 'hostacl';
+  } elseif(pql_get_define("PQL_CONF_AUTOMOUNT_USE")) {
+	$_REQUEST["view"] = 'automount';
+  } elseif(pql_get_define("PQL_CONF_CONTROL_USE")) {
+	$_REQUEST["view"] = 'mailsrv';
+  } elseif(pql_get_define("PQL_CONF_WEBSRV_USE")) {
+	$_REQUEST["view"] = 'websrv';
+  } elseif(pql_get_define("PQL_CONF_RADIUS_USE")) {
+	$_REQUEST["view"] = 'radius';
+  }
 }
 
 if(($_REQUEST["server"] != 'Global') and ($_REQUEST["ref"] == 'physical') ) {
