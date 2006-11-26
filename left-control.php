@@ -1,6 +1,6 @@
 <?php
 // navigation bar - controls information
-// $Id: left-control.php,v 2.35.4.10 2006-11-25 12:09:50 turbo Exp $
+// $Id: left-control.php,v 2.35.4.11 2006-11-26 15:51:05 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -173,7 +173,7 @@ if((pql_get_define("PQL_CONF_CONTROL_USE") or
 ?>
   <span id="el<?=$div_counter?>Spn" style="display:''">
 <?php	  } else { ?>
-  <div id="el<?=$div_counter?>Child" class="child">
+  <div id="el<?=$div_counter?>Parent" class="parent">
 <?php	  } ?>
     <nobr>&nbsp;&nbsp;&nbsp;
       <img src="images/navarrow.png" width="9" height="9" border="0">
