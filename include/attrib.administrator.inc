@@ -1,22 +1,36 @@
 <?php
 // attribute plugin for administrator and seealso modification
 // Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
-// $Id: attrib.administrator.inc,v 1.57.2.3 2006-11-25 23:47:50 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.57.2.4 2006-11-26 17:42:54 turbo Exp $
 
 // There is serious problems with this. I fix for one usage and break another
 // one! Let's try to remember (and document) how it's called. It's called from
 // the following places:
-// * left.php->[user]->User access->Allow user to create domains below domain
-// * left.php->[user]->User access->Administrate webservers
-// * left.php->[user]->User access->Disallow user to create domains below domain
-// * left.php->[user]->Group stuff->Member DN(s)->Add member
-// * left.php->[user]->Group stuff->Sender DN(s)->Add sender
-// * left.php->[user]->Group stuff->Moderator DN(s)->Add moderator
-// * left.php->[domain]->Branch Defaults->Add domain administrator domain
-// * left.php->[domain]->Branch Defaults->Add mailinglist administrator for domain
-// * left.php->[domain]->Branch Owner Details->Add contact person for domain
-// * left.php->phpQLAdmin Configuration->[rootdn]->Super administrator->Add administrator
-// [anything else!?]
+// * Via domain_edit_attributes.php
+//   + Execute attribute_print_form():
+//     - left.php->[user]->User access->Administrator in branch
+//     - left.php->[user]->User access->Mailinglist administrator in branch
+//     - left.php->[user]->User access->Webserver administrator in branch
+//     - left.php->[user]->User access->DNS administrator in branch
+//   + Go directly to attribute_save():
+//     - left.php->[user]->User access->Super administrator->[Yes/No]
+//     - left.php->[user]->User access->Administrate global mailservers->[Yes/No]
+//     - left.php->[user]->User access->Administrate global webservers->[Yes/No]
+//
+// * Via user_edit_attributes.php
+//   - left.php->[user]->Group stuff->Member DN(s)->Add member
+//   - left.php->[user]->Group stuff->Sender DN(s)->Add sender
+//   - left.php->[user]->Group stuff->Moderator DN(s)->Add moderator
+//
+// * Via domain_edit_attributes.php
+//   - left.php->[domain]->Branch access->Domain administrators
+//   - left.php->[domain]->Branch Access->Mailinglists administrator
+//   - left.php->[domain]->Branch Access->Webserver administrator
+//   - left.php->[domain]->Branch Access->DNS administrator
+//   - left.php->[domain]->Branch Owner Details->Contact person
+//
+// * Via domain_edit_attributes.php
+//   - left.php->phpQLAdmin Configuration->[rootdn]->Super administrator->Add administrator
 
 // Need some java stuff since I'm showing foldable branches etc.
 require("./left-head.html");
@@ -63,7 +77,7 @@ function attribute_setup_aci($linkid, $dn, $userdn, $action) {
 				// {{{ We're adding an administrator - add the user DN(s) to the '[entry]' ACI list as well.
 				// (Re)create new ACI's.
 				if($old_acis[$i+1]["TYPE"] == "access-id") {
-					if(in_array('[entry]', $old_acis[$i+1]["RIGHTS"]["TARGET"]) and !$added_child) {
+					if((in_array('[entry]', $old_acis[$i+1]["RIGHTS"]["TARGET"]) or in_array('[all]', $old_acis[$i+1]["RIGHTS"]["TARGET"])) and !$added_child) {
 						// Next ACI entry is an 'access-id/entry'. Put the 'access-id/children' here...
 						
 						$new_acis[]  = $line; $oid++;
@@ -91,7 +105,14 @@ function attribute_setup_aci($linkid, $dn, $userdn, $action) {
 			}
 		}
 
-		if(!$added_user_full and ($action == 'add')) {
+		if(!$added_user_full and ($action == 'add') and
+		   (($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_ADMINISTRATOR")) or
+			($dn != $_REQUEST["domain"])))
+		{
+		  // Only do this if it's a branch admin OR it's not the branch DN
+		  // I.e. do it for {web,DNS,mailinglist} admins etc IF it's not
+		  //      the branch DN. Always if it's the 'administrator' attribute
+		  //      though.
 		  for($j=0; $j < count($userdn); $j++) {
 			// Just make sure the user don't already exists in the ACI list...
 			$add_user = 1;
@@ -111,7 +132,6 @@ function attribute_setup_aci($linkid, $dn, $userdn, $action) {
 		return($new_acis);
 	}
 }
-
 // }}}
 
 // {{{ attribute_init(void)
@@ -149,35 +169,39 @@ function attribute_print_form($action) {
 ?>
   <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-<?php // ------------ S H O W  A  H E A D E R ------------
-	  if($attrib == pql_get_define("PQL_ATTR_SEEALSO")) {
-		  $what = $LANG->_('contact person');
-	  } elseif($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM")) {
-		  $what = $LANG->_('mailinglist administrator');
-	  } elseif($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV")) {
-		  $what = $LANG->_('Webserver administrator');
-	  } elseif($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_DNS")) {
-		  $what = $LANG->_('DNS administrator');
-	  } elseif($attrib == pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR")) {
-		  $what = $LANG->_('group moderator');
-	  } elseif($attrib == pql_get_define("PQL_ATTR_GROUP_DN_MEMBER")) {
-		  $what = $LANG->_('group member');
-	  } elseif($attrib == pql_get_define("PQL_ATTR_GROUP_DN_SENDER")) { 
-		  $what - $LANG->_('group allowed sender');
-	  } else {
-		if($_REQUEST["user"]) {
-			$_REQUEST[$attrib] = $_REQUEST["user"];
-			$what = pql_maybe_decode($_REQUEST["user"])." ".$LANG->_('as administrator');
-		} else {
-			$what = $LANG->_('domain administrator');
-		}
-	}
+<?php
+	// {{{ Show a header
+	if($attrib == pql_get_define("PQL_ATTR_SEEALSO"))
+	  $what = $LANG->_('contact person');
+	elseif($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"))
+	  $what = $LANG->_('mailinglist administrator');
+	elseif($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"))
+	  $what = $LANG->_('webserver administrator');
+	elseif($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9"))
+	  $what = $LANG->_('DNS administrator');
+	elseif($attrib == pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR"))
+	  $what = $LANG->_('group moderator');
+	elseif($attrib == pql_get_define("PQL_ATTR_GROUP_DN_MEMBER"))
+	  $what = $LANG->_('group member');
+	elseif($attrib == pql_get_define("PQL_ATTR_GROUP_DN_SENDER"))
+	  $what - $LANG->_('group allowed sender');
+
+	 if($_REQUEST["user"]) {
+	   $_REQUEST[$attrib] = $_REQUEST["user"];
+	   
+	   if(!$what)
+		 $what = pql_maybe_decode($_REQUEST["user"])." ".$LANG->_('as administrator');
+	   else
+		 $what = pql_maybe_decode($_REQUEST["user"])." ".$what;
+	 } elseif(!$what)
+	   $what = $LANG->_('domain administrator');
+	 // }}}
 ?>
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what% for domain %domain%'), array('what' => $what, 'domain' => $_REQUEST["orgname"])); ?></th>
         <tr class="<?php pql_format_table(); ?>">
 <?php if(($_REQUEST["attrib"] == 'dnmember') or
 		 ($_REQUEST["attrib"] == 'dnmoderator') or
-		 ($_REQUEST["attrib"] != 'dnsender'))
+		 ($_REQUEST["attrib"] == 'dnsender'))
 	  {
 		  // We're adding a user dn as subscriber, allowed sender or administrator to a qmailGroup object.
 		  // or:
@@ -202,8 +226,7 @@ function attribute_print_form($action) {
 								 ($attrib == pql_get_define("PQL_ATTR_GROUP_DN_MEMBER")) or
 								 ($attrib == pql_get_define("PQL_ATTR_GROUP_DN_SENDER")))
 		{
-			// ------------ S H O W  B R A N C H E S  A N D  U S E R S ------------
-
+			// {{{ Show branches and users
 			// We're giving user access to a known domain/branch
 			$i = 0; $div_counter = 0;
 
@@ -253,8 +276,10 @@ function attribute_print_form($action) {
 
             <input type="hidden" name="<?=$attrib?>_<?=$i?>" value="on">
             <input type="hidden" name="<?=$attrib?>" value="<?=$i?>">
-<?php	} else {
-			// ------------ S H O W  A  M E N U  W I T H  B R A N C H E S ------------
+<?php
+			// }}}
+		} else {
+			// {{{ Show a menu with branches
 			// We're giving a specific user access to a unknown domain
 ?>
             <select name="branchdn">
@@ -291,7 +316,9 @@ function attribute_print_form($action) {
 			}
 ?>
             </select>
-<?php	}
+<?php
+			// }}}
+		}
 	  }
 ?>
 <?php if($shown_first_rootdn) { ?>
@@ -324,7 +351,6 @@ function attribute_print_form($action) {
   </form>
 <?php
 }
-
 // }}}
 
 // {{{ attribute_save(type)
@@ -335,15 +361,18 @@ function attribute_save($type) {
 	$value = $_REQUEST[$attrib];
 
 	// {{{ Which DN should we use?
-	if($_REQUEST["branchdn"])
-	  $DN = $_REQUEST["branchdn"];
-	elseif(!$_REQUEST["user"])
-	  $DN = $_REQUEST["domain"];
+	if($_REQUEST["branchdn"]) {
+	  if($_REQUEST["branchdn"] == 'superadmin')
+		$DN = $_pql->ldap_basedn;
+	  else
+		$DN = array($_REQUEST["branchdn"]);
+	} elseif(!$_REQUEST["user"])
+	  $DN = array($_REQUEST["domain"]);
 	elseif($_REQUEST["view"] == 'group')
 	  // We're adding a subscriber,allowed sender or moderator to a qmailGroup object.
-	  $DN = $_REQUEST["user"];
+	  $DN = array($_REQUEST["user"]);
 	else
-	  $DN = $_REQUEST["rootdn"];
+	  $DN = array($_REQUEST["rootdn"]);
 	// }}}
 
 	// NOTE: No ACI additions/modifications if we're modifying a qmailGroup object,
@@ -352,7 +381,8 @@ function attribute_save($type) {
 	   ($_REQUEST["view"] != 'group') and
 	   (($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR")) or
 		($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV")) or
-		($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"))))
+		($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")) or
+		($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9"))))
 	  $use_aci = 1;
 	
 	if($value and $_REQUEST["oldvalue"] and ($value == $_REQUEST["oldvalue"])) {
@@ -364,97 +394,271 @@ function attribute_save($type) {
 	
 	// Get the old values, so we can remove the one we're modifying
 	// (delete the one we want to delete, keep the others etc)
-	$admins = pql_get_attribute($_pql->ldap_linkid, $DN, $attrib);
-
-	// {{{ Add the old values to the resulting array.
-	$ADMs[$attrib] = array();
-	if(is_array($admins)) {
-		foreach($admins as $admin)
-		  $ADMs[$attrib][] = $admin;
-	} elseif($admins)
-	  $ADMs[$attrib][] = $admins;
-	// }}}
+	for($i=0; $DN[$i]; $i++) {
+	  $dn = $DN[$i];
+	  $tmp = pql_get_attribute($_pql->ldap_linkid, $dn, $attrib);
+	  if($tmp) {
+		if(!is_array($tmp))
+		  $admins[$dn] = array($tmp);
+		else
+		  $admins[$dn] = $tmp;
+	  } else
+		$admins[$dn] = array();
+	}
 
 	if($type == 'delete') {
-		// {{{ Delete user DN from array of administrators
-		foreach($ADMs[$attrib] as $adm) {
-			if(!eregi($value, $adm))
-			  $adms[] = $adm;
+	  // {{{ Delete user DN from array of administrators
+	  if(!$_REQUEST["user"] and !$_REQUEST["branchdn"])
+		unset($_REQUEST[$attrib]);
+
+	  foreach($admins as $dn => $adm) {
+		if(is_array($adm)) {
+		  for($i=0; $adm[$i]; $i++) {
+			if(!eregi($value, $adm[$i]))
+			  $adms[$dn][] = $adm[$i];
+		  }
+		} else {
+		  if(!eregi($value, $adm))
+			$adms[$dn][] = $adm;
 		}
-		
-		if(is_array($adms))
-		  $ADMs[$attrib] = $adms;
+	  }
+
+	  for($i=0; $DN[$i]; $i++) {
+		$dn = $DN[$i];
+
+		if(is_array($adms[$dn]))
+		  $ADMs[$dn][$attrib] = $adms[$dn];
 		else
-		  $ADMs[$attrib] = array();
-
-		if(!$_REQUEST["user"] and !$_REQUEST["branchdn"])
-		  unset($_REQUEST[$attrib]);
-
-		if($use_aci and ($attrib != pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV")) and
-		   ($attrib != pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")))
+		  $ADMs[$dn][$attrib] = array();
+		
+		if($use_aci and
+		   ($attrib != pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV")) and
+		   ($attrib != pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")) and
+		   ($attrib != pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9")))
 		  // Modify the OpenLDAPaci attribute
-		  $ACIs = attribute_setup_aci($_pql->ldap_linkid, $_REQUEST["domain"], array($value), $type);
-		// }}}
+		  $ACIs[$dn] = attribute_setup_aci($_pql->ldap_linkid, $_REQUEST["domain"], array($value), $type);
+	  }
+	  // }}}
 	} else {
 		// {{{ Add user 
 		if($_REQUEST["user"] and ($_REQUEST["view"] != 'group')) {
-			$ADMs[$attrib][] = $_REQUEST["user"];
+		  for($i=0; $DN[$i]; $i++) {
+			$dn = $DN[$i];
+
+			$ADMs[$dn][$attrib][] = $_REQUEST["user"];
 			
-			if($use_aci and ($attrib != pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV")) and
-			   ($attrib != pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")))
+			if($use_aci and
+			   ($attrib != pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV")) and
+			   ($attrib != pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")) and
+			   ($attrib != pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9")))
 			  // Add the OpenLDAPaci attribute
-			  $ACIs = attribute_setup_aci($_pql->ldap_linkid, $_REQUEST["domain"], array($_REQUEST["user"]), $type);
+			  $ACIs[$dn] = attribute_setup_aci($_pql->ldap_linkid, $_REQUEST["domain"], array($_REQUEST["user"]), $type);
+		  }
 		} elseif($value) {
-			$amount = $value;
-			for($i=0; $i < $amount; $i++) {
+			if(is_numeric($value)) {
+			  // {{{ Numeric value
+			  // Add the previous value(s)
+			  $ADMs[$dn][$attrib] = $admins[$dn];
+
+			  // Add the new value(s) from value '<attrib>_<number(s)>'
+			  $amount = $value;
+			  for($i=0; $i < $amount; $i++) {
 				$var_name = $attrib . "_$i";
 				if($_POST[$var_name])  {
-					$admins2add[] = $_POST[$var_name]; // Remember this for later...
-					$ADMs[$attrib][] = $_POST[$var_name];
+				  for($j=0; $DN[$j]; $j++) {
+					$dn = $DN[$j];
+
+					$admins2add[$dn][] = $_POST[$var_name]; // Remember this for later...
+					$ADMs[$dn][$attrib][] = $_POST[$var_name];
+				  }
 				}
+			  }
+			  // }}}
+			} else {
+			  // {{{ Specified user DN to add
+			  for($i=0; $DN[$i]; $i++) {
+				$dn = $DN[$i];
+
+				$admins2add[$dn][] = $value;
+				$ADMs[$dn][$attrib][] = $value;
+			  }
+			  // }}}
 			}
 
 			// Add the OpenLDAPaci attribute (maybe)
-			if($use_aci and is_array($admins2add)) 
-			  $ACIs  = attribute_setup_aci($_pql->ldap_linkid, $_REQUEST["domain"], $admins2add, $type);
+			if($use_aci) {
+			  for($i=0; $DN[$i]; $i++) {
+				$dn = $DN[$i];
+				
+				if(is_array($admins2add[$dn])) 
+				  $ACIs[$dn] = attribute_setup_aci($_pql->ldap_linkid, $_REQUEST["domain"], $admins2add[$dn], $type);
+			  }
+			}
 			
 			unset($_REQUEST[$attrib]);
 		}
 		// }}}
 	}
 
+	// {{{ Transfer the ACI's from the '$ACIs' array to the '$ADMs' array
+	if($use_aci) {
+	  for($i=0; $DN[$i]; $i++) {
+		$dn = $DN[$i];
+
+		if(is_array($ACIs[$dn]))
+		  $ADMs[$dn][pql_get_define("PQL_ATTR_LDAPACI")] = $ACIs[$dn];
+	  }
+	}
+
+	unset($ACIs); // We're done with this. Any reference to ACIs is NEW values!
+	// }}}
+
 	// {{{ Do the modification(s)
-	if($use_aci and is_array($ACIs))
-	  $ADMs[pql_get_define("PQL_ATTR_LDAPACI")] = $ACIs;
-
 	$success = 0;
-	if(pql_modify_attribute($_pql->ldap_linkid, $DN, '', '', $ADMs)) {
+	for($i=0; $DN[$i]; $i++) {
+	  $dn = $DN[$i];
+
+	  if(pql_modify_attribute($_pql->ldap_linkid, $dn, '', '', $ADMs[$dn]))
 		$success = 1;
+	}
 
-		if($use_aci and ($value or @$_REQUEST["user"]) and ($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR"))) {
-			// {{{ We're using ACI's and we're adding/removing an administrator.
-
+	if($success) {
+		// {{{ Using ACI's and got either <attribute=XXX> or user=XXX?
+		if($use_aci and ($value or @$_REQUEST["user"])) {
+		  // {{{ Adding/removing an administrator?
+		  if($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR")) {
 			// Get all the objects below this branch.
-			$branches = pql_get_dn($_pql->ldap_linkid, $DN, 'objectClass=*');
+			for($i=0; $DN[$i]; $i++) {
+			  $dn = $DN[$i];
+
+			  $tmp = pql_get_dn($_pql->ldap_linkid, $dn, 'objectClass=*');
+
+			  // Unset the first array entry - it's the root dn, and we've already
+			  // fixed this!
+			  unset($tmp[0]);
+
+			  pql_add2array($branches, $tmp);
+			}
+
 			for($i=0; $i < count($branches); $i++) {
-				if($branches[$i] != $DN) {
+			  $skip = 0;
+
+			  // ----------------
+			  // Skip any DNS branches if:
+			  //	* Bind9 management is enabled
+			  //	* The current branch is a DNS branch
+			  //	* The user is DNS admin for this domain/branch
+			  if(pql_get_define("PQL_CONF_BIND9_USE") and
+				 eregi(pql_get_define("PQL_CONF_SUBTREE_BIND9").',', $branches[$i]) and
+				 pql_validate_administrator($_pql->ldap_linkid, $_REQUEST["branchdn"],
+											pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9"), $value))
+				$skip = 1;
+
+			  // ----------------
+			  // Skip any web branches if:
+			  //	* We haven't already desided to skip this branch
+			  //	* Web server management is enabled
+			  //	* The current branch is a webserver branch	Q: Now do I know that?!
+			  //	* The user is web server admin for this domain/branch
+			  //if(!$skip and pql_get_define("PQL_CONF_WEBSRV_USE") and
+			  // eregi(pql_get_define("PQL_CONF_SUBTREE_BIND9").',', $branches[$i]) and
+			  // pql_validate_administrator($_pql->ldap_linkid, $_REQUEST["branchdn"],
+			  //							pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"), $value))
+			  //$skip = 1;
+
+			  // ----------------
+			  if(!$skip) {
+				for($j=0; $DN[$j]; $j++) {
+				  $dn = $DN[$j];
+				  
+				  if($branches[$i] != $dn) {
 					// Create an ACI entry for this branch.
 					if($type == 'delete') {
-						$ACIs = attribute_setup_aci($_pql->ldap_linkid, $branches[$i], array($value), $type);
+					  $ACIs = attribute_setup_aci($_pql->ldap_linkid, $branches[$i], array($value), $type);
 					} else {
-						$ACIs = attribute_setup_aci($_pql->ldap_linkid, $branches[$i], $admins2add, $type);
+					  $ACIs = attribute_setup_aci($_pql->ldap_linkid, $branches[$i], $admins2add[$dn], $type);
 					}
-
+					
 					// Modify this object. BUG: Should we care about failure/successes?!
 					pql_modify_attribute($_pql->ldap_linkid, $branches[$i], pql_get_define("PQL_ATTR_LDAPACI"), '', $ACIs);
+				  }
 				}
+			  }
 			}
-			// }}}
-		}
-		
-		if($use_aci and ($value or @$_REQUEST["user"]) and ($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV")) and $_SESSION["USER_SEARCH_DN_CTR"]) {
-			// {{{ We're using ACI's and we're adding/removing an webSrvAdministrator.
+		  }
+		  // }}}
 
+		  // {{{ Adding/removing an DNS administrator?
+		  if(pql_get_define("PQL_CONF_BIND9_USE") and
+			 ($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9")) and
+			 pql_get_define("PQL_CONF_SUBTREE_BIND9"))
+		  {
+			// Find all ou=DNS objects in all root DN's
+			$filter   = '(&('.pql_get_define("PQL_CONF_SUBTREE_BIND9").')';
+			$filter  .= '('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=*))';
+			$branches = pql_get_dn($_pql->ldap_linkid, $_REQUEST["branchdn"], $filter);
+
+			// Get all the objects below this branch.
+			$objects = array();
+			for($i=0; $branches[$i]; $i++) {
+			  $tmp = pql_get_dn($_pql->ldap_linkid, $branches[$i], 'objectClass=*');
+			  pql_add2array($objects, $tmp);
+			}
+
+			for($i=0; $i < count($objects); $i++) {
+			  for($j=0; $DN[$j]; $j++) {
+				$dn = $DN[$j];
+
+				if($objects[$i] != $dn) {
+				  // Create an ACI entry for this branch.
+				  if($type == 'delete') {
+					$ACIs = attribute_setup_aci($_pql->ldap_linkid, $objects[$i], array($value), $type);
+				  } else {
+					$ACIs = attribute_setup_aci($_pql->ldap_linkid, $objects[$i], $admins2add[$dn], $type);
+				  }
+				  
+				  // Modify this object. BUG: Should we care about failure/successes?!
+				  pql_modify_attribute($_pql->ldap_linkid, $objects[$i], pql_get_define("PQL_ATTR_LDAPACI"), '', $ACIs);
+				}
+			  }
+			}
+		  }
+		  // }}}
+		
+		  // {{{ Adding/removing an controlsAdministrator?
+		  if(($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")) and $_SESSION["USER_SEARCH_DN_CTR"]) {
+			// Get all physical hosts
+			$filter = '(&('.pql_get_define("PQL_ATTR_CN").'=*)(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)))';
+			$hosts = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $filter, 'ONELEVEL');
+
+			// For each physical host, try to find the mailservers
+			$objects = array();
+			for($i=0; $hosts[$i]; $i++) {
+			  $tmp = pql_get_dn($_pql->ldap_linkid, $hosts[$i], '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+			  pql_add2array($objects, $tmp);
+			}
+
+			for($i=0; $i < count($objects); $i++) {
+			  for($j=0; $DN[$j]; $j++) {
+				$dn = $DN[$j];
+				
+				if($objects[$i] != $dn) {
+				  // Create an ACI entry for this branch.
+				  if($type == 'delete')
+					$ACIs = attribute_setup_aci($_pql->ldap_linkid, $objects[$i], array($value), $type);
+				  else
+					$ACIs = attribute_setup_aci($_pql->ldap_linkid, $objects[$i], $admins2add[$dn], $type);
+				  
+				  // Modify this object. BUG: Should we care about failure/successes?!
+				  pql_modify_attribute($_pql->ldap_linkid, $objects[$i], pql_get_define("PQL_ATTR_LDAPACI"), '', $ACIs);
+				}
+			  }
+			}
+		  }
+		  // }}}
+
+		  // {{{ Adding/removing an webSrvAdministrator?
+		  if(($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV")) and $_SESSION["USER_SEARCH_DN_CTR"]) {
 			// Include Webserver API etc
 			require($_SESSION["path"]."/include/pql_websrv.inc");
 		  
@@ -478,49 +682,27 @@ function attribute_save($type) {
 			}
 
 			for($i=0; $i < count($objects); $i++) {
-				if($objects[$i] != $DN) {
-					// Create an ACI entry for this branch.
-					if($type == 'delete')
-					  $ACIs = attribute_setup_aci($_pql->ldap_linkid, $objects[$i], array($value), $type);
-					else
-					  $ACIs = attribute_setup_aci($_pql->ldap_linkid, $objects[$i], $admins2add, $type);
+			  for($j=0; $DN[$j]; $j++) {
+				$dn = $DN[$j];
 
-					// Modify this object. BUG: Should we care about failure/successes?!
-					pql_modify_attribute($_pql->ldap_linkid, $objects[$i], pql_get_define("PQL_ATTR_LDAPACI"), '', $ACIs);
+				if($objects[$i] != $dn) {
+				  // Create an ACI entry for this branch.
+				  if($type == 'delete')
+					$ACIs = attribute_setup_aci($_pql->ldap_linkid, $objects[$i], array($value), $type);
+				  else
+					$ACIs = attribute_setup_aci($_pql->ldap_linkid, $objects[$i], $admins2add[$dn], $type);
+				  
+				  // Modify this object. BUG: Should we care about failure/successes?!
+				  pql_modify_attribute($_pql->ldap_linkid, $objects[$i], pql_get_define("PQL_ATTR_LDAPACI"), '', $ACIs);
 				}
+			  }
 			}
-			// }}}
+		  }
+		  // }}}
 		}
+		// }}}
 
-		if($use_aci and ($value or @$_REQUEST["user"]) and ($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")) and $_SESSION["USER_SEARCH_DN_CTR"]) {
-			// {{{ We're using ACI's and we're adding/removing an controlsAdministrator.
-
-			// Get all physical hosts
-			$filter = '(&('.pql_get_define("PQL_ATTR_CN").'=*)(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)))';
-			$hosts = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $filter, 'ONELEVEL');
-
-			// For each physical host, try to find the mailservers
-			$objects = array();
-			for($i=0; $hosts[$i]; $i++) {
-			  $tmp = pql_get_dn($_pql->ldap_linkid, $hosts[$i], '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
-			  pql_add2array($objects, $tmp);
-			}
-
-			for($i=0; $i < count($objects); $i++) {
-				if($objects[$i] != $DN) {
-					// Create an ACI entry for this branch.
-					if($type == 'delete')
-					  $ACIs = attribute_setup_aci($_pql->ldap_linkid, $objects[$i], array($value), $type);
-					else
-					  $ACIs = attribute_setup_aci($_pql->ldap_linkid, $objects[$i], $admins2add, $type);
-
-					// Modify this object. BUG: Should we care about failure/successes?!
-					pql_modify_attribute($_pql->ldap_linkid, $objects[$i], pql_get_define("PQL_ATTR_LDAPACI"), '', $ACIs);
-				}
-			}
-			// }}}
-		}
-
+		// {{{ Setup message and forward to correct details page
 		if($attrib == pql_get_define("PQL_ATTR_SEEALSO"))
 		  $what = $LANG->_('contact person');
 		elseif($attrib == pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR"))
@@ -539,6 +721,7 @@ function attribute_save($type) {
 			. ": " . ldap_error($_pql->ldap_linkid);
 		
 		attribute_forward($msg);
+		// }}}
 	}
 	// }}}
 }
