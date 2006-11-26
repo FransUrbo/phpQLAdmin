@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.98.2.1 2006-11-25 23:42:50 turbo Exp $
+// $Id: user_detail.php,v 2.98.2.2 2006-11-26 15:54:23 turbo Exp $
 //
 // {{{ Setup session
 header("Expires: 0");
@@ -97,8 +97,10 @@ if($username and is_array($username)) {
   <br><br>
 <?php
 // }}}
-if(empty($_GET["view"]))
-	$_GET["view"] = 'basic';
+if(empty($_GET["view"]) or empty($_REQUEST["view"])) {
+  $_GET["view"] = 'basic';
+  $_REQUEST["view"] = 'basic'; // Just so that initial marking of active button works
+}
 
 /* DLW: Setting all of these variables in the main code is pointless.  Most of them
  *      never get used.  They should be handled by the tables
