@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.86.2.4 2006-11-24 06:13:07 turbo Exp $
+// $Id: pql_config.inc,v 1.86.2.5 2006-11-27 07:26:22 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -117,15 +117,6 @@ if(empty($_SESSION["USER_HOST"])) {
   $_SESSION["USER_HOST"] = $host[0] . ";" . $host[1] . ";" . $host[2];
   unset($host);
 }
-
-// Get the search base - controls database
-if(empty($_SESSION["USER_SEARCH_DN_CTR"])) {
-  $dn = split(';', $_SESSION["USER_HOST"]);
-  $_SESSION["USER_SEARCH_DN_CTR"] = pql_format_normalize_dn($dn[2]);
-
-  unset($dn);
-}
-
 
 if(empty($_pql)) {
   // Open a connection to the LDAP server
