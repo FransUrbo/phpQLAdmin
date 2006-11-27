@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for administrator and seealso modification
 // Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
-// $Id: attrib.administrator.inc,v 1.57.2.4 2006-11-26 17:42:54 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.57.2.5 2006-11-27 07:32:04 turbo Exp $
 
 // There is serious problems with this. I fix for one usage and break another
 // one! Let's try to remember (and document) how it's called. It's called from
@@ -627,13 +627,22 @@ function attribute_save($type) {
 		
 		  // {{{ Adding/removing an controlsAdministrator?
 		  if(($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS")) and $_SESSION["USER_SEARCH_DN_CTR"]) {
+			$objects = array();
+
+			// If we're adding a super admin, he/she needs access to the
+			// ou=Computers,<rootdn> branch as well!
+			if($_REQUEST["branchdn"] == "superadmin")
+			  $objects[] = $_SESSION["USER_SEARCH_DN_CTR"];
+
 			// Get all physical hosts
 			$filter = '(&('.pql_get_define("PQL_ATTR_CN").'=*)(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)))';
 			$hosts = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $filter, 'ONELEVEL');
 
 			// For each physical host, try to find the mailservers
-			$objects = array();
 			for($i=0; $hosts[$i]; $i++) {
+			  // Make sure this physical hosts get ACI changes
+			  $objects[] = $hosts[$i];
+
 			  $tmp = pql_get_dn($_pql->ldap_linkid, $hosts[$i], '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
 			  pql_add2array($objects, $tmp);
 			}
@@ -651,6 +660,14 @@ function attribute_save($type) {
 				  
 				  // Modify this object. BUG: Should we care about failure/successes?!
 				  pql_modify_attribute($_pql->ldap_linkid, $objects[$i], pql_get_define("PQL_ATTR_LDAPACI"), '', $ACIs);
+
+				  if(($_REQUEST["branchdn"] == "superadmin") and
+					 eregi('^'.pql_get_define("PQL_ATTR_OU").'=Computers,', $objects[$i]))
+				  {
+					// This so that we don't add new ACI's to the 'ou=Computers,<rootdn>' object
+					// for each and every entry in $DN!
+					$j = count($DN);
+				  }
 				}
 			  }
 			}
@@ -661,6 +678,12 @@ function attribute_save($type) {
 		  if(($attrib == pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV")) and $_SESSION["USER_SEARCH_DN_CTR"]) {
 			// Include Webserver API etc
 			require($_SESSION["path"]."/include/pql_websrv.inc");
+			$objects = array();
+
+			// If we're adding a super admin, he/she needs access to the
+			// ou=Computers,<rootdn> branch as well!
+			if($_REQUEST["branchdn"] == "superadmin")
+			  $objects[] = $_SESSION["USER_SEARCH_DN_CTR"];
 		  
 			// Get all physical hosts
 			$filter = '(&('.pql_get_define("PQL_ATTR_CN").'=*)(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)))';
@@ -669,14 +692,19 @@ function attribute_save($type) {
 			// For each physical host, try to find the webserver containers
 			$servers = array();
 			foreach($hosts as $host) {
+			  // Make sure this physical hosts get ACI changes
+			  $servers[] = $host;
+
 			  $tmp = pql_websrv_find_servers($_pql->ldap_linkid, $host);
 			  if(is_array($tmp))
 				$servers = $servers + $tmp;
 			}
 
 			// For each webserver container, retreive ALL objects
-			$objects = array();
 			foreach($servers as $srvname => $srvdn) {
+			  // Make sure this container get ACI changes
+			  $servers[] = $srvdn;
+
 			  $tmp = pql_get_dn($_pql->ldap_linkid, $srvdn, 'objectClass=*');
 			  pql_add2array($objects, $tmp);
 			}
@@ -694,6 +722,14 @@ function attribute_save($type) {
 				  
 				  // Modify this object. BUG: Should we care about failure/successes?!
 				  pql_modify_attribute($_pql->ldap_linkid, $objects[$i], pql_get_define("PQL_ATTR_LDAPACI"), '', $ACIs);
+
+				  if(($_REQUEST["branchdn"] == "superadmin") and
+					 eregi('^'.pql_get_define("PQL_ATTR_OU").'=Computers,', $objects[$i]))
+				  {
+					// This so that we don't add new ACI's to the 'ou=Computers,<rootdn>' object
+					// for each and every entry in $DN!
+					$j = count($DN);
+				  }
 				}
 			  }
 			}
