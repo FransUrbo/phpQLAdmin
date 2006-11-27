@@ -63,8 +63,8 @@ if(isset($domains_admins)) {
   $tbl_txt = array('tit' => $LANG->_('Administrator in branch'),
 				   'add' => $LANG->_('Grant user administrator access to domain'),
 				   'del' => $LANG->_('Disallow user administrator access to domain'));
-  $tbl_url = array('add' => $url_tmp."&submit=3&action=add",
-				   'del' => $url_tmp."&submit=4&action=delete");
+  $tbl_url = array('add' => $url_tmp."&user=".$url["user"]."&submit=3&action=add",
+				   'del' => $url_tmp."&".pql_get_define("PQL_ATTR_ADMINISTRATOR").'='.$url["user"]."&submit=4&action=delete");
   pql_format_table_single($_pql->ldap_linkid, $tbl_txt, $tbl_url, $domains_admins,
 						  pql_get_define("PQL_ATTR_ADMINISTRATOR"), $class);
 }
@@ -82,8 +82,8 @@ if(isset($domains_ezmlm)) {
   $tbl_txt = array('tit' => $LANG->_('Mailinglist administrator in branch'),
 				   'add' => $LANG->_('Grant user mailinglist administrator access to domain'),
 				   'del' => $LANG->_('Disallow user mailinglist administrator access to domain'));
-  $tbl_url = array('add' => $url_tmp."&submit=3&action=add",
-				   'del' => $url_tmp."&submit=4&action=delete");
+  $tbl_url = array('add' => $url_tmp."&user=".$url["user"]."&submit=3&action=add",
+				   'del' => $url_tmp."&".pql_get_define("PQL_ATTR_ADMINISTRATOR").'='.$url["user"]."&submit=4&action=delete");
   pql_format_table_single($_pql->ldap_linkid, $tbl_txt, $tbl_url, $domains_ezmlm,
 						  pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"), $class);
 }
@@ -101,8 +101,8 @@ if(isset($domains_websrv)) {
   $tbl_txt = array('tit' => $LANG->_('Webserver administrator in branch'),
 				   'add' => $LANG->_('Grant user webserver administrator access to domain'),
 				   'del' => $LANG->_('Disallow user webserver administrator access to domain'));
-  $tbl_url = array('add' => $url_tmp."&submit=3&action=add",
-				   'del' => $url_tmp."&submit=4&action=delete");
+  $tbl_url = array('add' => $url_tmp."&user=".$url["user"]."&submit=3&action=add",
+				   'del' => $url_tmp."&".pql_get_define("PQL_ATTR_ADMINISTRATOR").'='.$url["user"]."&submit=4&action=delete");
   pql_format_table_single($_pql->ldap_linkid, $tbl_txt, $tbl_url, $domains_websrv,
 						  pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"), $class);
 }
@@ -120,8 +120,8 @@ if(isset($domains_dns)) {
   $tbl_txt = array('tit' => $LANG->_('DNS administrator in branch'),
 				   'add' => $LANG->_('Grant user DNS administrator access to domain'),
 				   'del' => $LANG->_('Disallow user DNS administrator access to domain'));
-  $tbl_url = array('add' => $url_tmp."&submit=3&action=add",
-				   'del' => $url_tmp."&submit=4&action=delete");
+  $tbl_url = array('add' => $url_tmp."&user=".$url["user"]."&submit=3&action=add",
+				   'del' => $url_tmp."&".pql_get_define("PQL_ATTR_ADMINISTRATOR").'='.$url["user"]."&submit=4&action=delete");
   pql_format_table_single($_pql->ldap_linkid, $tbl_txt, $tbl_url, $domains_dns,
 						  pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV_BIND9"), $class);
 }
