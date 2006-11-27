@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.105.2.7 2006-11-26 15:43:24 turbo Exp $
+// $Id: domain_detail.php,v 2.105.2.8 2006-11-27 11:06:38 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -265,6 +265,11 @@ if($_SESSION["ADVANCED_MODE"]) {
 		// * User is super admin
 		$new = array('websrv'	=> 'Webserver Administration');
 		$buttons = $buttons + $new;
+	}
+
+	if(pql_get_define("PQL_CONF_HOSTACL_USE")) {
+	  $new = array('hostacl'	=> 'Host Control');
+	  $buttons = $buttons + $new;
 	}
 }
 
