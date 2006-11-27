@@ -3,11 +3,15 @@
 # Script to move web-/mailservers and automounts from
 # below branch/dn to new 'concentrated host' view.
 #
-# $Id: upgrade_hostmerge.pl,v 1.1.2.2 2006-11-24 08:58:07 turbo Exp $
+# $Id: upgrade_hostmerge.pl,v 1.1.2.3 2006-11-27 07:27:34 turbo Exp $
 
 @ROOTDN = ('c=SE', 'dc=lantrix,dc=no');
 $SERVER = "-H ldapi://%2fvar%2frun%2fslapd%2fldapi.main";
-$ADDITIONAL_SEARCH_OPTIONS="-Y GSSAPI";
+if($ENV{ADDITIONAL_SEARCH_OPTIONS}) {
+    $ADDITIONAL_SEARCH_OPTIONS = $ENV{ADDITIONAL_SEARCH_OPTIONS};
+} else {
+    $ADDITIONAL_SEARCH_OPTIONS="-Y GSSAPI";
+}
 $PRIMARY_SUPERADMIN="uid=turbo,ou=People,o=Fredriksson,c=SE";
 
 $LDAPSEARCH = "ldapsearch -LLL $ADDITIONAL_SEARCH_OPTIONS $SERVER";
