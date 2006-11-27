@@ -1,6 +1,6 @@
 <?php
 // Modify Host ACLs
-// $Id: host_modify.php,v 2.6.2.4 2006-11-27 11:09:12 turbo Exp $
+// $Id: host_modify.php,v 2.6.2.5 2006-11-27 11:22:48 turbo Exp $
 
 // {{{ Setup session etc
 if(!@$_SESSION) {
@@ -104,7 +104,7 @@ if(is_array($computer_results)) {
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_("Host Control Access")?>
         <tr class="c2">
-          <td class="title"><?=$LANG->_("Allow")?></td>
+          <td class="title"><?=$LANG->_("Allow")?>&nbsp;</td>
 <?php
   if(isset($_REQUEST['userdn']) && isset($_REQUEST['uid'])) {
     // {{{ If user info is passed in the request string then their is no need to grab all the users from ldap
@@ -117,7 +117,7 @@ if(is_array($computer_results)) {
 // }}}
   } else {
     // {{{ No user was passed in in request string so make the list
-    print "          <td class='title'>\n";
+    print "          <td>\n";
     print "            <select name='userdn'>\n";
     
     foreach($user_results as $dn => $user)
@@ -129,13 +129,13 @@ if(is_array($computer_results)) {
   // {{{ Host column
 ?>
 
+          <td class="title">&nbsp;<?=$LANG->_("access to physical host")."\n"?>&nbsp;</td>
           <td>
-            <?=$LANG->_("To Access")."\n"?>
             <select name="computer">
 <?php
   foreach($computer_results as $host_dn) {
     $host = pql_get_attribute($_pql->ldap_linkid, $host_dn, pql_get_define("PQL_ATTR_CN"));
-    print "              <option value='" . $host_dndn . "'>" . $host . "</option>\n";
+    print "              <option value='" . $host_dn . "'>" . $host . "</option>\n";
   }
 ?>
             </select>
