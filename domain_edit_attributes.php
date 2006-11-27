@@ -1,6 +1,6 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.56.2.3 2006-11-25 17:36:23 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.56.2.4 2006-11-27 13:00:41 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -45,7 +45,7 @@ function attribute_forward($msg) {
 		. "&domain=" . $url["domain"]
 		. "&view=" . $_REQUEST["view"] . "&msg=$msg";
 
-	if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+	if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 	  if(file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
 		$now = pql_format_return_unixtime();
 		echo "Now: <b>$now</b><br>";
@@ -65,7 +65,7 @@ if(!$plugin) {
 } elseif(!file_exists($_SESSION["path"]."/include/$plugin")) {
     die("<span class=\"error\">ERROR: Plugin file defined for attribute '<i>".$_REQUEST["attrib"]."</i>' does not exists!</span>");
 }
-if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+if(pql_get_define("PQL_CONF_DEBUG_ME")) {
   echo "include: include/$plugin<br>";
 }
 
@@ -163,7 +163,7 @@ if(!$_REQUEST["type"]) {
   }
 }
 
-if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+if(pql_get_define("PQL_CONF_DEBUG_ME")) {
   echo "REQUEST:";
   ksort($_REQUEST);
   printr($_REQUEST);

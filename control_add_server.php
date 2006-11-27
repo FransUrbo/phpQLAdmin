@@ -1,6 +1,6 @@
 <?php
 // Add a new mailserver to the database
-// $Id: control_add_server.php,v 2.32.6.1 2006-11-15 12:56:13 turbo Exp $
+// $Id: control_add_server.php,v 2.32.6.2 2006-11-27 13:00:41 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -81,7 +81,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 		  $msg  = urlencode("Successfully created mailserver ".pql_maybe_idna_decode($_REQUEST["fqdn"]).".");
 		  $link = "control_detail.php?mxhost=".urlencode($dn)."&msg=$msg&rlnb=2";
 		  
-		  if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+		  if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 			echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
 			die("<b>$link</b>");
 		  } else
@@ -127,7 +127,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 		  $msg  = urlencode("Successfully created mailserver ".$_REQUEST["fqdn"].".");
 		  $link = "control_detail.php?mxhost=".urlencode($dn)."&msg=$msg&rlnb=2";
 		  
-		  if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+		  if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 			echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
 			die("<b>$link</b>");
 		  } else

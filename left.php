@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.121.2.2 2006-11-24 14:36:07 turbo Exp $
+// $Id: left.php,v 2.121.2.3 2006-11-27 13:00:41 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -353,7 +353,7 @@ if(!isset($domains) or !is_array($domains)) {
 } // end if(is_array($domains))
 // }}}
 
-if(file_exists($_SESSION["path"]."/.DEBUG_ME") and file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
+if(pql_get_define("PQL_CONF_DEBUG_ME") and file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
   $now = pql_format_return_unixtime();
   echo "Now: <b>$now</b><br>";
 }

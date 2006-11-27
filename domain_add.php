@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: domain_add.php,v 2.65.6.1 2006-11-24 13:51:21 turbo Exp $
+// $Id: domain_add.php,v 2.65.6.2 2006-11-27 13:00:41 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -185,7 +185,7 @@ if(pql_write_add($_pql->ldap_linkid, $dn, $entry, 'branch', 'domain_add.php')) {
 
 		die();
 		// }}}
-	} elseif(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+	} elseif(pql_get_define("PQL_CONF_DEBUG_ME")) {
 	  if(file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
 		$now = pql_format_return_unixtime();
 		echo "Now: <b>$now</b><br>";

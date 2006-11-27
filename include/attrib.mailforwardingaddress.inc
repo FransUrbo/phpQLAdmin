@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailforwardingaddress (forward all mails to this address)
-// $Id: attrib.mailforwardingaddress.inc,v 2.23 2005-06-05 13:06:39 turbo Exp $
+// $Id: attrib.mailforwardingaddress.inc,v 2.23.6.1 2006-11-27 13:00:55 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -144,7 +144,7 @@ function attribute_save($type) {
 								  array('type' => $type, 'file' => __FILE__)));
 	}
 
-	if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+	if(pql_get_define("PQL_CONF_DEBUG_ME"))
 	  die();
 	else
 	  attribute_forward($msg);

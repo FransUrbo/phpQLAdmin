@@ -56,6 +56,7 @@
 #            lockPassword                    34
 #            lockAccountType                 35
 #            useRadius                       36
+#            runInDebugMode                  37
 #
 #          System texts                     2
 #            whoAreWe                         1
@@ -123,7 +124,7 @@
 # availible from http://sourceforge.net/projects/modcfgldap/
 # See doc/README.apache for more information.
 
-# $Id: phpQLAdmin.schema,v 2.65.2.4 2006-11-25 21:24:26 turbo Exp $
+# $Id: phpQLAdmin.schema,v 2.65.2.5 2006-11-27 13:01:04 turbo Exp $
 
 # PQL_ATTR_SHOW_USERS (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.1 NAME 'showUsers'
@@ -372,6 +373,13 @@ attributetype ( 1.3.6.1.4.1.8767.3.2.1.35 NAME 'lockAccountType'
 # PQL_ATTR_RADIUS_USE (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.36 NAME 'useRadius'
         DESC 'Manage RADIUS Informations [True/False]?'
+        EQUALITY booleanMatch
+        SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+        SINGLE-VALUE )
+
+# PQL_ATTR_DEBUG_ME (true | false)
+attributetype ( 1.3.6.1.4.1.8767.3.2.1.37 NAME 'runInDebugMode'
+        DESC 'Run phpQLAdmin in debug mode [True/False]?'
         EQUALITY booleanMatch
         SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
         SINGLE-VALUE )
@@ -776,7 +784,7 @@ objectclass ( 1.3.6.1.4.1.8767.3.1.2
         simScanSpamAssassin $ simScanClamAntiVirus $
         simScanTrophie $ simScanSpamAssassinHits $
         simScanAttachmentSuffix $ defaultAccountType $
-        useRadius $ webSrvAdministrator )
+        useRadius $ webSrvAdministrator $ runInDebugMode )
   SUP top AUXILIARY )
 
 objectclass ( 1.3.6.1.4.1.8767.3.1.3

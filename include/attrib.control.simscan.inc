@@ -2,7 +2,7 @@
 // control attribute plugin for
 // SimScan
 //
-// $Id: attrib.control.simscan.inc,v 2.5.2.2 2006-11-20 19:55:00 turbo Exp $
+// $Id: attrib.control.simscan.inc,v 2.5.2.3 2006-11-27 13:00:54 turbo Exp $
 
 // {{{ simscan_check(type)
 function simscan_check($type) {
@@ -244,7 +244,7 @@ function simscan_save($type, $host) {
 			  }
 
 			  if(!$success) {
-				if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+				if(pql_get_define("PQL_CONF_DEBUG_ME"))
 				  die("<font color=\"red\">Can't add object class 'phpQLAdminMXHostAddition'</font>");
 				else
 				  die("Can't add object class 'phpQLAdminMXHostAddition'");

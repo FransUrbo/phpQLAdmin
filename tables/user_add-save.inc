@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.44 2006-10-03 15:31:45 turbo Exp $
+// $Id: user_add-save.inc,v 1.44.2.1 2006-11-27 13:01:09 turbo Exp $
 require($_SESSION["path"]."/include/pql_krbafs.inc");
 
 // {{{ URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
@@ -302,7 +302,7 @@ if(in_array(pql_get_define("PQL_ATTR_SAMBAOBJECTCLASS"), $template["userobjectcl
 // -------------------------------
 // User object setup done here!
 
-if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+if(pql_get_define("PQL_CONF_DEBUG_ME")) {
   echo "Entry array: "; printr($entry);
 }
 
@@ -337,7 +337,7 @@ $DNs = pql_user_add($_pql->ldap_linkid, $_REQUEST["domain"], $userdn, $entry, 'u
 if(!empty($DNs[0])) {
   // TODO: DNs[1] (the group object) might still be empty -> failed to add it.
 
-  if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+  if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 	echo "DNs added: ";
 	printr($DNs);
 	die();

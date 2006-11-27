@@ -1,6 +1,6 @@
 <?php
 // Modify Host ACLs
-// $Id: host_modify.php,v 2.6.2.5 2006-11-27 11:22:48 turbo Exp $
+// $Id: host_modify.php,v 2.6.2.6 2006-11-27 13:00:41 turbo Exp $
 
 // {{{ Setup session etc
 if(!@$_SESSION) {
@@ -68,7 +68,7 @@ if(isset($_REQUEST['action'])) {
     
     $url = "host_detail.php?host=".urlencode($_REQUEST["host"])."&msg=".urlencode($msg);
     
-    if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+    if(pql_get_define("PQL_CONF_DEBUG_ME")) {
       echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url: '<b>$url</b>'<br>";
       die($msg);
     } else

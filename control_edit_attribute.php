@@ -1,6 +1,6 @@
 <?php
 // edit an attribute of a control option
-// $Id: control_edit_attribute.php,v 2.33.6.1 2006-11-13 07:11:12 turbo Exp $
+// $Id: control_edit_attribute.php,v 2.33.6.2 2006-11-27 13:00:41 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -48,7 +48,7 @@ function attribute_forward($msg) {
 	else
 	  $url = "domain_detail.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"]."&view=".$_REQUEST["view"]."&msg=$msg";
 
-	if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+	if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 	  echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
 	  die("<b>".$_SESSION["URI"].$link."</b>");
 	} else

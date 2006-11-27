@@ -1,6 +1,6 @@
 <?php
 // Add a webserver configuration to the LDAP db
-// $Id: websrv_add.php,v 2.19.2.8 2006-11-25 14:28:06 turbo Exp $
+// $Id: websrv_add.php,v 2.19.2.9 2006-11-27 13:00:42 turbo Exp $
 //
 // {{{ Setup session
 require("./include/pql_session.inc");
@@ -89,7 +89,7 @@ if($_REQUEST["submit"]) {
 	}
 }
 
-if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+if(pql_get_define("PQL_CONF_DEBUG_ME")) {
   echo "_REQUEST:";
   printr($_REQUEST);
 
@@ -438,7 +438,7 @@ if(($error == 'true') or !$_REQUEST["type"] or
 		  $msg .= "<br>Successfully added host $hostname to DNS";
 
 		  // Update the DNS domain SOA record!
-		  if(!file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+		  if(!pql_get_define("PQL_CONF_DEBUG_ME")) {
 			// We can't do this if we're debuging. The object don't exists in the db, hence
 			// we can't figure out zone name etc...
 			if(!pql_bind9_update_serial($_pql->ldap_linkid, $dn))
@@ -577,7 +577,7 @@ if(($error == 'true') or !$_REQUEST["type"] or
 	// Only reload left frame if adding a web server container or a virtual host
 	$url .= "&rlnb=1";
   
-  if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+  if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 	echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
 	die("<b>$url</b>");
   } else

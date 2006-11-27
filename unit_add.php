@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: unit_add.php,v 2.27 2005-06-09 15:05:36 turbo Exp $
+// $Id: unit_add.php,v 2.27.6.1 2006-11-27 13:00:41 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -50,7 +50,7 @@ if($_REQUEST["unit"]) {
 
     // {{{ Add unit to database
     if(pql_unit_add($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["unit"])) {
-      if(!file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+      if(!pql_get_define("PQL_CONF_DEBUG_ME")) {
 	// Redirect to domain-details
 	pql_header($url);
       } else {

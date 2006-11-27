@@ -52,6 +52,26 @@
 <?php } ?>
     </th>
 
+<?php $class=pql_format_table(0); ?>
+      <tr>
+        <td class="title"><?=$LANG->_('Run phpQLAdmin in debug mode')?></td>
+        <td class="<?=$class?>"><?php
+if(pql_get_define("PQL_CONF_DEBUG_ME")) {
+  if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+	echo 'Yes <b>(file!)</b>';
+  } else {
+	echo 'Yes';
+  }
+} else {
+  echo 'No';
+}?>&nbsp;</td>
+<?php if($_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"] and !file_exists($_SESSION["path"]."/.DEBUG_ME")) { ?>
+        <td class="<?=$class?>"><a href="config_edit_attribute.php?toggle=1&attrib=<?=pql_get_define("PQL_ATTR_DEBUG_ME")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="Edit attrib <?=pql_get_define("PQL_ATTR_DEBUG_ME")?>"></a></td>
+<?php } else { ?>
+        <td class="<?=$class?>"></td>
+<?php } ?>
+      </tr>
+
     <tr><th><td></td></th></tr>
 
     <th colspan="3" align="left"><?=$LANG->_('Plugin configuration')?>

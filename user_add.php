@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.135.2.1 2006-11-26 15:52:51 turbo Exp $
+// $Id: user_add.php,v 2.135.2.2 2006-11-27 13:00:41 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -121,7 +121,7 @@ function pql_user_add_retreive_encryption_schemes($linkid, $template, $rootdn) {
 // --------------- Verification and action(s).
 
 // {{{ Verify the input from the current page.  Autogen input for the next page.
-if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+if(pql_get_define("PQL_CONF_DEBUG_ME")) {
   echo "page_curr: '".$_REQUEST["page_curr"]."'<br>";
   echo "page_next: '".$_REQUEST["page_next"]."'<br>";
 }
@@ -359,7 +359,7 @@ switch($_REQUEST["page_curr"]) {
 					die($LDIF);
 				}
 				
-				if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+				if(pql_get_define("PQL_CONF_DEBUG_ME"))
 				  die("Object added: <b>".$_REQUEST["user"].'</b>');
 
 				$msg = urlencode($LANG->_('Successfully created the new user'));
@@ -748,7 +748,7 @@ if($error and !empty($error_text["mkntpw"])) {
 // Select next form to display using 'page_next'.
 // This will be set correctly above if there's
 // an error.
-if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+if(pql_get_define("PQL_CONF_DEBUG_ME")) {
   echo "Request array: "; printr($_REQUEST);
   echo "Error array: "; printr($error_text);
 }
@@ -781,7 +781,7 @@ switch($_REQUEST["page_next"]) {
 	break;
 }
 
-if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+if(pql_get_define("PQL_CONF_DEBUG_ME")) {
   echo "Including file '$include'<br>\n";
 }
 include($include);

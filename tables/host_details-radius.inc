@@ -1,11 +1,11 @@
 <?php
 // View RADIUS details about/for a physical host
-// $Id: host_details-radius.inc,v 1.1.2.1 2006-11-21 14:14:11 turbo Exp $
+// $Id: host_details-radius.inc,v 1.1.2.2 2006-11-27 13:01:07 turbo Exp $
 
 // {{{ Include RADIUS API etc
 //require($_SESSION["path"]."/include/pql_radius.inc");
 
-if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+if(pql_get_define("PQL_CONF_DEBUG_ME")) {
   echo "_REQUEST:";
   printr($_REQUEST);
 }

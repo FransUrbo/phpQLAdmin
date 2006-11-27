@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.52.6.1 2006-11-23 21:40:17 turbo Exp $
+// $Id: pql_control.inc,v 2.52.6.2 2006-11-27 13:00:55 turbo Exp $
 //
 
 // {{{ control connection class
@@ -135,7 +135,7 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 				if($domain[0] and $domain[1]) {
 				  // {{{ We're REPLACING a domainname
 				  if(lc($value) == lc($domain[0])) {
-					if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+					if(pql_get_define("PQL_CONF_DEBUG_ME"))
 					  echo "pql_control_update_domains(): Replacing '<b>$value</b>' with '<b>".$domain[1]."</b>' in QLC '$host:$key'<br>";
 
 					$entry[$key][] = $domain[1];
@@ -148,7 +148,7 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 				  if(lc($domain[0]) != lc($value))
 					$entry[$key][] = $value;
 				  else
-					if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+					if(pql_get_define("PQL_CONF_DEBUG_ME"))
 					  echo "pql_control_update_domains(): Removing domain '<b>".$domain[0]."</b>' from QLC '$host:$key'<br>";
 				  // }}}
 				} elseif(!$domain[0] and $domain[1]) {
@@ -162,7 +162,7 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 
 			if(!$domain[0] and $domain[1]) {
 			  // No previous values and we want to ADD a domain
-			  if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+			  if(pql_get_define("PQL_CONF_DEBUG_ME"))
 				echo "pql_control_update_domains(): Adding domain '<b>".$domain[1]."</b>' to QLC '$host:$key'<br>";
 			  
 			  $entry[$key][] = $domain[1];

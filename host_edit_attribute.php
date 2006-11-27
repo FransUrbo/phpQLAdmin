@@ -1,6 +1,6 @@
 <?php
 // Edit attribute of a physical host
-// $Id: host_edit_attribute.php,v 1.1.2.1 2006-11-21 14:13:45 turbo Exp $
+// $Id: host_edit_attribute.php,v 1.1.2.2 2006-11-27 13:00:41 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -15,7 +15,7 @@ function attribute_forward($msg) {
 
 	$link = "host_detail.php?host=".urlencode($_REQUEST["host"])."&view=".$_REQUEST["view"]."&msg=$msg";
 
-	if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+	if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 	  if(file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
 		$now = pql_format_return_unixtime();
 		echo "Now: <b>$now</b><br>";
@@ -44,7 +44,7 @@ if(@$_REQUEST["submit"]) {
   }  
 }
 
-if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+if(pql_get_define("PQL_CONF_DEBUG_ME")) {
   echo "_REQUEST:";
   printr($_REQUEST);
 }

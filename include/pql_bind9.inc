@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.44.2.2 2006-11-24 08:51:45 turbo Exp $
+// $Id: pql_bind9.inc,v 2.44.2.3 2006-11-27 13:00:55 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -410,7 +410,7 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 
 		// Create a LDIF object to print in case of error
 		$LDIF = pql_create_ldif("pql_bind9_add_host", $dn, $entry);
-		if(@file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+		if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 		  echo $LDIF;
 		} else {
 		  if(!pql_write_mod($linkid, $dn, $entry, "pql_bind9_add_host")) {

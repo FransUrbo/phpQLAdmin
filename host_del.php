@@ -1,6 +1,6 @@
 <?php
 // delete a physical host
-// $Id: host_del.php,v 1.1.2.2 2006-11-19 12:10:40 turbo Exp $
+// $Id: host_del.php,v 1.1.2.3 2006-11-27 13:00:41 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -81,7 +81,7 @@ if(!$_REQUEST["dns"]) {
   echo "    <p>\n";
 }
 
-if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+if(pql_get_define("PQL_CONF_DEBUG_ME")) {
   echo "_REQUEST:";
   printr($_REQUEST);
 }
@@ -146,7 +146,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn))
 	$link .= "&msg=$msg";
   }
 
-  if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+  if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 	echo "<br>If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
 	die("<b>".$link."<b>");
   } else
@@ -157,7 +157,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $rootdn))
 ?>
     <img src="images/info.png" width="16" height="16" border="0">
 <?php
-  if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+  if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 	echo $LANG->_('The following objects will be deleted:')."<p>";
 	for($i=0; $dns[$i]; $i++) {
 	  echo $dns[$i]."<br>";

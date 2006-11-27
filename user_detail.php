@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.98.2.2 2006-11-26 15:54:23 turbo Exp $
+// $Id: user_detail.php,v 2.98.2.3 2006-11-27 13:00:41 turbo Exp $
 //
 // {{{ Setup session
 header("Expires: 0");
@@ -341,7 +341,7 @@ if(!$_SESSION["SINGLE_USER"]) {
 }
 // }}}
 
-if(file_exists($_SESSION["path"]."/.DEBUG_ME") and file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
+if(pql_get_define("PQL_CONF_DEBUG_ME") and file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
   $now = pql_format_return_unixtime();
   echo "Now: <b>$now</b><br>";
 }

@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.86.2.5 2006-11-27 07:26:22 turbo Exp $
+// $Id: pql_config.inc,v 1.86.2.6 2006-11-27 13:00:55 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -16,7 +16,7 @@ require($_SESSION["path"]."/include/pql_units.inc");			// Sub branch API
 // }}}
 
 // {{{ Start profiling - what time is it now?
-if(file_exists($_SESSION["path"]."/.DEBUG_ME") and file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
+if(pql_get_define("PQL_CONF_DEBUG_ME") and file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
   $now = pql_format_return_unixtime(); echo "Now: <b>$now</b><br>";
 }
 // }}}
@@ -62,12 +62,10 @@ function pql_set_define($define, $value, $case_insensitive = false, $dn = NULL) 
 	} else {
 		// Create a site global array with the config values
 		// This variable type is only one dimensional (not DN specific)
-		if(!isset($config[$define])) {
-		  $config[$define] = $value;
+		$config[$define] = $value;
 		  
-		  if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $define))
-			echo "config[$define] = '$value'<br>\n"; // DEBUG
-		}
+		if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $define))
+		  echo "config[$define] = '$value'<br>\n"; // DEBUG
 	}
 }
 // }}}
@@ -290,6 +288,10 @@ if(!@$MONITOR_BACKEND_ENABLED) {
 
 if(@$_SESSION["ACI_SUPPORT_ENABLED"]) {
   require($_SESSION["path"]."/include/pql_aci.inc");
+}
+
+if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+  pql_set_define("PQL_CONF_DEBUG_ME", true);
 }
 
 // Remove some variables so we don't clutter the global variable name space!

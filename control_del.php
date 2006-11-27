@@ -1,6 +1,6 @@
 <?php
 // Delete a mailserver controls object
-// $Id: control_del.php,v 2.24 2005-09-16 06:08:41 turbo Exp $
+// $Id: control_del.php,v 2.24.6.1 2006-11-27 13:00:41 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -168,7 +168,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 		$dn = pql_get_define("PQL_ATTR_CN").'='.$mxhost.','.$_SESSION["USER_SEARCH_DN_CTR"];
 	  }
 
-	  if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+	  if(pql_get_define("PQL_CONF_DEBUG_ME"))
 		die("I'm debugging, so '<b>$dn</b>' isn't deleted!");
 	  else {
 		if(! pql_write_del($_pql_control->ldap_linkid, $dn)) {

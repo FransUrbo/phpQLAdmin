@@ -1,6 +1,6 @@
 <?php
 // Add a user template
-// $Id: config_template_add.php,v 2.6 2005-06-09 15:05:35 turbo Exp $
+// $Id: config_template_add.php,v 2.6.6.1 2006-11-27 13:00:40 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -118,7 +118,7 @@ if(($error == 'true')) {
 	die("pql_write_add(template): failure<br>");
 
   $url =  "config_detail.php?view=template";
-  if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+  if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 	echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
 	die("<b>$url</b>");
   } else

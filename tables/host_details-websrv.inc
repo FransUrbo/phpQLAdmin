@@ -1,11 +1,11 @@
 <?php
 // View everything about web servers - virtual hosts and virtual host locations
-// $Id: host_details-websrv.inc,v 1.1.2.10 2006-11-25 12:09:52 turbo Exp $
+// $Id: host_details-websrv.inc,v 1.1.2.11 2006-11-27 13:01:07 turbo Exp $
 
 // {{{ Include Webserver API etc
 require($_SESSION["path"]."/include/pql_websrv.inc");
 
-if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+if(pql_get_define("PQL_CONF_DEBUG_ME")) {
   echo "_REQUEST:";
   printr($_REQUEST);
 }

@@ -1,6 +1,6 @@
 <?php
 // Add physical host
-// $Id: host_add.php,v 1.1.2.2 2006-11-27 09:43:59 turbo Exp $
+// $Id: host_add.php,v 1.1.2.3 2006-11-27 13:00:41 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -19,7 +19,7 @@ if(isset($_REQUEST['action'])) {
       $_SESSION["USER_SEARCH_DN_CTR"] = $dn;
 
       // Call ourself again to get the 'Add New Computer' form...
-      if(!file_exists($_SESSION["path"]."/.DEBUG_ME"))
+      if(!pql_get_define("PQL_CONF_DEBUG_ME"))
 	pql_header($_SERVER["PHP_SELF"]);
       else
 	die();
@@ -54,7 +54,7 @@ if(isset($_REQUEST['action'])) {
 // }}}
       }
       
-      if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+      if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 	echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url: '<b>$url</b>'<br>";
 	die($msg);
       } else

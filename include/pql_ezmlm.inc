@@ -3,7 +3,7 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_ezmlm.inc,v 1.33 2006-11-11 09:29:03 root Exp $
+// $Id: pql_ezmlm.inc,v 1.33.2.1 2006-11-27 13:00:55 turbo Exp $
 class ezmlm {
 	// {{{ Private section
 	var $_option					= array();
@@ -27,11 +27,11 @@ class ezmlm {
 	  if(pql_get_define("PQL_CONF_EZMLM_REMOTE")) {
 		unset($out); unset($res);
 		if($cmd = $this->_remote_list_setup("chmod $mode $file")) {
-		  if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+		  if(pql_get_define("PQL_CONF_DEBUG_ME"))
 			echo "CMD (_chmod): '$cmd'<br>";
 
 		  $ret = @exec($cmd, $out, $res);
-		  if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+		  if(pql_get_define("PQL_CONF_DEBUG_ME"))
 			printr($out);
 
 		  if(is_array($out) and !$res)
@@ -47,11 +47,11 @@ class ezmlm {
 	  if(pql_get_define("PQL_CONF_EZMLM_REMOTE")) {
 		unset($out); unset($res);
 		if($cmd = $this->_remote_list_setup("chown $user $file")) {
-		  if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+		  if(pql_get_define("PQL_CONF_DEBUG_ME"))
 			echo "CMD (_chown): '$cmd'<br>";
 
 		  $ret = @exec($cmd, $out, $res);
-		  if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+		  if(pql_get_define("PQL_CONF_DEBUG_ME"))
 			printr($out);
 
 		  if(is_array($out) and !$res)
@@ -70,11 +70,11 @@ class ezmlm {
 	  if(pql_get_define("PQL_CONF_EZMLM_REMOTE")) {
 		unset($out); unset($res);
 		if($cmd = $this->_remote_list_setup("find $dir -type d")) {
-		  if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+		  if(pql_get_define("PQL_CONF_DEBUG_ME"))
 			echo "CMD (_getfsentries): '$cmd'<br>";
 
 		  $ret = @exec($cmd, $out, $res);
-		  if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+		  if(pql_get_define("PQL_CONF_DEBUG_ME"))
 			printr($out);
 
 		  if(is_array($out) and !$res)
@@ -130,11 +130,11 @@ class ezmlm {
 		if(pql_get_define("PQL_CONF_EZMLM_REMOTE")) {
 		  unset($out); unset($res);
 		  if($cmd = $this->_remote_list_setup("find $dir -type l")) {
-			if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+			if(pql_get_define("PQL_CONF_DEBUG_ME"))
 			  echo "CMD (_getdotlinks): '$cmd'<br>";
 			
 			$ret = @exec($cmd, $out, $res);
-			if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+			if(pql_get_define("PQL_CONF_DEBUG_ME"))
 			  printr($out);
 			
 			if(is_array($out) and !$res) {
@@ -190,11 +190,11 @@ class ezmlm {
 
 		unset($out); unset($res);
 		if($cmd = $this->_remote_list_setup("find $list_path -type d -maxdepth 0")) {
-		  if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+		  if(pql_get_define("PQL_CONF_DEBUG_ME"))
 			echo "CMD (_readlists): '$cmd'<br>";
 
 		  $ret = @exec($cmd, $out, $res);
-		  if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+		  if(pql_get_define("PQL_CONF_DEBUG_ME"))
 			printr($out);
 
 		  if(is_array($out) and !$res) {
@@ -269,12 +269,12 @@ class ezmlm {
 		if(pql_get_define("PQL_CONF_EZMLM_REMOTE")) {
 		  unset($out); unset($res);
 		  if($cmd = $this->_remote_list_setup("cat ".$list_path."/config")) {
-		  if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+		  if(pql_get_define("PQL_CONF_DEBUG_ME"))
 			echo "CMD (_readlistconfiguration/1): '$cmd'<br>";
 
 			$ret = @exec($cmd, $out, $res);
 
-			if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+			if(pql_get_define("PQL_CONF_DEBUG_ME"))
 			  printr($out);
 			
 			if(is_array($out) and !$res) {
@@ -367,11 +367,11 @@ class ezmlm {
 
 		  unset($out); unset($res);
 		  if($cmd = $this->_remote_list_setup($command)) {
-			if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+			if(pql_get_define("PQL_CONF_DEBUG_ME"))
 			  echo "CMD (_readlistconfiguration/2): '$cmd'<br>";
 			$ret = @exec($cmd, $out, $res);
 
-			if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+			if(pql_get_define("PQL_CONF_DEBUG_ME"))
 			  printr($out);
 		  }
 		} else {
@@ -393,11 +393,11 @@ class ezmlm {
 		if(pql_get_define("PQL_CONF_EZMLM_REMOTE")) {
 		  unset($out); unset($res);
 		  if($cmd = $this->_remote_list_setup("file $list_path/deny/lock")) {
-			if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+			if(pql_get_define("PQL_CONF_DEBUG_ME"))
 			  echo "CMD (_readlistconfiguration/3a): '$cmd'<br>";
 
 			$ret = @exec($cmd, $out, $res);
-			if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+			if(pql_get_define("PQL_CONF_DEBUG_ME"))
 			  printr($out);
 
 			if(eregi('No such file or directory', $out[0])) {
@@ -405,11 +405,11 @@ class ezmlm {
 			} else {
 			  unset($out); unset($res);
 			  if($cmd = $this->_remote_list_setup($this->_paths["list"]." $list_path/deny")) {
-				if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+				if(pql_get_define("PQL_CONF_DEBUG_ME"))
 				  echo "CMD (_readlistconfiguration/3b): '$cmd'<br>";
 
 				$ret = @exec($cmd, $out, $res);
-				if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+				if(pql_get_define("PQL_CONF_DEBUG_ME"))
 				  printr($out);
 			  }
 			}
@@ -462,12 +462,12 @@ class ezmlm {
 		if(pql_get_define("PQL_CONF_EZMLM_REMOTE")) {
 		  unset($out); unset($res);
 		  if($cmd = $this->_remote_list_setup($this->_paths["list"]." $list_path")) {
-			if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+			if(pql_get_define("PQL_CONF_DEBUG_ME"))
 			  echo "CMD (_verifysubscriber): '$cmd'<br>";
 			
 			$ret = @exec($cmd, $out, $res);
 			
-			if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+			if(pql_get_define("PQL_CONF_DEBUG_ME"))
 			  printr($out);
 		  }
 		} else {
@@ -672,11 +672,11 @@ class ezmlm {
 			  if(pql_get_define("PQL_CONF_EZMLM_REMOTE")) {
 				unset($out); unset($res);
 				if($cmd = $this->_remote_list_setup("cat /var/qmail/users/assign")) {
-				  if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+				  if(pql_get_define("PQL_CONF_DEBUG_ME"))
 					echo "CMD (updatelistentry): '$cmd'<br>";
 				  
 				  $ret = @exec($cmd, $out, $res);
-				  if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+				  if(pql_get_define("PQL_CONF_DEBUG_ME"))
 					printr($out);
 				  
 				  if(is_array($out) and !$res) {
@@ -728,7 +728,7 @@ class ezmlm {
 					. " " . $listname
 					. " " . $domain);
 
-		if(!$this->debug and !file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+		if(!$this->debug and !pql_get_define("PQL_CONF_DEBUG_ME")) {
 			$output = do_exec($command, $out, $res);
 			if($res != 0) {
 				// Failed to create list
@@ -773,17 +773,17 @@ class ezmlm {
 		if(pql_get_define("PQL_CONF_EZMLM_REMOTE")) {
 		  unset($out); unset($res);
 
-		  if($this->debug or file_exists($_SESSION["path"]."/.DEBUG_ME"))
+		  if($this->debug or pql_get_define("PQL_CONF_DEBUG_ME"))
 			$command = "echo rm -R $lstpath";
 		  else
 			$command = "echo rm -R $lstpath";
 
 		  if($cmd = $this->_remote_list_setup($command)) {
-			if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+			if(pql_get_define("PQL_CONF_DEBUG_ME"))
 			  echo "CMD (deletelistentry/1): '$cmd'<br>";
 			
 			$ret = @exec($cmd, $out, $res);
-			if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+			if(pql_get_define("PQL_CONF_DEBUG_ME"))
 			  printr($out);
 
 			if($res)
@@ -795,7 +795,7 @@ class ezmlm {
 		  for($i=0; $i < count($files); $i++) {
 			if(is_dir($files[$i])) {
 				// This is a DIRECTORY entry
-				if(!$this->debug and !file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+				if(!$this->debug and !pql_get_define("PQL_CONF_DEBUG_ME")) {
 					if(! rmdir($files[$i]) ) {
 						echo "Could not delete dir $files[$i]<br>";
 						$unsuccessful = 1;
@@ -804,7 +804,7 @@ class ezmlm {
 				  echo "DEBUG: deleting <b>dir</b> : $files[$i]<br>";
 			} else {
 				// This is a FILE entry
-				if(!$this->debug and !file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+				if(!$this->debug and !pql_get_define("PQL_CONF_DEBUG_ME")) {
 					if(! unlink($files[$i]) ) {
 						echo "Could not delete file $files[$i]<br>";
 						$unsuccessful = 1;
@@ -824,7 +824,7 @@ class ezmlm {
 		if(pql_get_define("PQL_CONF_EZMLM_REMOTE")) {
 		  unset($out); unset($res);
 
-		  if($this->debug or file_exists($_SESSION["path"]."/.DEBUG_ME"))
+		  if($this->debug or pql_get_define("PQL_CONF_DEBUG_ME"))
 			$command = "echo rm ";
 		  else
 			$command = "echo rm ";
@@ -833,11 +833,11 @@ class ezmlm {
 			$command .= $links[$i];
 
 		  if($cmd = $this->_remote_list_setup($command)) {
-			if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+			if(pql_get_define("PQL_CONF_DEBUG_ME"))
 			  echo "CMD (deletelistentry/2): '$cmd'<br>";
 			
 			$ret = @exec($cmd, $out, $res);
-			if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+			if(pql_get_define("PQL_CONF_DEBUG_ME"))
 			  printr($out);
 
 			if($res)
@@ -845,7 +845,7 @@ class ezmlm {
 		  }
 		} else {
 		  for($i=0; $i < count($links); $i++) {
-			if(!$this->debug and !file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+			if(!$this->debug and !pql_get_define("PQL_CONF_DEBUG_ME")) {
 				if(! unlink($links[$i]) ) {
 					echo "Could not delete link $links[$i]<br>";
 					$unsuccessful = 1;
@@ -898,11 +898,11 @@ class ezmlm {
 		if(pql_get_define("PQL_CONF_EZMLM_REMOTE")) {
 		  unset($out); unset($res);
 		  if($cmd = $this->_remote_list_setup("rcp $list_path $dest")) {
-			if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+			if(pql_get_define("PQL_CONF_DEBUG_ME"))
 			  echo "CMD (savelistentrytexts): '$cmd'<br>";
 			
 			$ret = @exec($cmd, $out, $res);
-			if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+			if(pql_get_define("PQL_CONF_DEBUG_ME"))
 			  printr($out);
 		  }
 		} else
@@ -941,7 +941,7 @@ class ezmlm {
 		  // {{{ Execute ezmlm-sub
 		  $command = $this->_remote_list_setup($this->_paths["sub"] . " $listpath $subscriber");
 
-		  if(!$this->debug or !file_exists($_SESSION["path"]."/.DEBUG_ME"))
+		  if(!$this->debug or !pql_get_define("PQL_CONF_DEBUG_ME"))
 			$output = do_exec($command, $out, $res);
 		  else {
 			echo "Command:<br><pre>$command</pre><br>";
@@ -952,7 +952,7 @@ class ezmlm {
 		  // {{{ Execute ezmlm-sub
 		  $command = $this->_remote_list_setup($this->_paths["sub"] . " 2>&1 $listpath $subscriber");
 
-		  if(!$this->debug and !file_exists($_SESSION["path"]."/.DEBUG_ME"))
+		  if(!$this->debug and !pql_get_define("PQL_CONF_DEBUG_ME"))
 			$output = do_exec($command, $out, $res);
 		  else {
 			echo "Command:<br><pre>$command</pre><br>";
@@ -996,20 +996,20 @@ class ezmlm {
 		  unset($out); unset($res);
 
 		  $command = $this->_paths["sub"] . " $listpath $subscriber";
-		  if($this->debug or file_exists($_SESSION["path"]."/.DEBUG_ME"))
+		  if($this->debug or pql_get_define("PQL_CONF_DEBUG_ME"))
 			$command = "echo $command";
 
 		  if($cmd = $this->_remote_list_setup($command)) {
-			if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+			if(pql_get_define("PQL_CONF_DEBUG_ME"))
 			  echo "CMD (subscribe): '$cmd'<br>";
 			
 			$ret = @exec($cmd, $out, $res);
-			if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+			if(pql_get_define("PQL_CONF_DEBUG_ME"))
 			  printr($out);
 		  }
 		} else {
 		  $command = $this->_paths["unsub"] . " 2>&1 " . $listpath . " " . $subscriber;
-		  if(!$this->debug and !file_exists($_SESSION["path"]."/.DEBUG_ME"))
+		  if(!$this->debug and !pql_get_define("PQL_CONF_DEBUG_ME"))
 			$output = do_exec($command, $out, $res);
 		  else
 			echo "Command:<br><pre>$command</pre><br>";

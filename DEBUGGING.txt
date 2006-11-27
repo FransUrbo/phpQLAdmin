@@ -5,8 +5,13 @@ directory to simplify bugfixing. They all start with
 .DEBUG_ME
 	General debug information. Will not write
 	to the LDAP server, but instead show you
-	and LDIF on what it (phpQLAdmin) WOULD
+	an LDIF on what it (phpQLAdmin) WOULD
 	send to the LDAP server.
+
+	As of CVS (branch BRANCH_HOST_MERGE), this
+	is now also possible to set via the config
+	interface. Go to 'Home->phpQLAdmin Configuration->
+	Global configuration->Run phpQLAdmin in debug mode'.
 
 .DEBUG_CACHE
 	Shows information about the caching system.
