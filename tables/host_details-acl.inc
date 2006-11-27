@@ -21,6 +21,11 @@ foreach($hosts as $host_dn) {
 
   // {{{ Retreive uniqueMember from this host
   $host_users = pql_get_attribute($_pql->ldap_linkid, $host_dn, pql_get_define("PQL_ATTR_UNIQUE_GROUP"));
+  if($host_users) {
+	if(!is_array($host_users))
+	  $host_users = array($host_users);
+  } else
+	$host_users = array();
 
   if(@$_REQUEST["domain"]) {
 	// If called from the domain view->Host control

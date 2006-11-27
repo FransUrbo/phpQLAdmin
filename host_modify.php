@@ -1,6 +1,6 @@
 <?php
 // Modify Host ACLs
-// $Id: host_modify.php,v 2.6.2.3 2006-11-21 13:52:02 turbo Exp $
+// $Id: host_modify.php,v 2.6.2.4 2006-11-27 11:09:12 turbo Exp $
 
 // {{{ Setup session etc
 if(!@$_SESSION) {
@@ -174,6 +174,12 @@ foreach($users as $user) {
 $filter .= '))';
 
 $hosts = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $filter);
+if($hosts) {
+  if(!is_array($hosts)) 
+    $hosts = array($hosts);
+} else {
+  $hosts = array();
+}
 // }}}
 
 include("./tables/host_details-acl.inc");
