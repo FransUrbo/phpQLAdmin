@@ -1,5 +1,5 @@
 <?php
-// $Id: index2.php,v 2.45.2.2 2006-11-21 14:13:45 turbo Exp $
+// $Id: index2.php,v 2.45.2.3 2006-11-30 19:08:12 turbo Exp $
 
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -38,7 +38,7 @@ if($_SESSION["ADVANCED_MODE"] or @$_REQUEST["advanced"]) {
 
   // Should we show the controls frame (ie, is controls configured
   // in ANY of the namingContexts)?
-  if($_SESSION["ALLOW_CONTROL_CREATE"] and
+  if($_SESSION["ALLOW_CONTROL_CREATE"] or
 	 (pql_get_define("PQL_CONF_CONTROL_USE") or
 	  pql_get_define("PQL_CONF_WEBSRV_USE") or
 	  pql_get_define("PQL_CONF_HOSTACL_USE") or
