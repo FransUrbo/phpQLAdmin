@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.86.2.7 2006-11-27 13:07:28 turbo Exp $
+// $Id: pql_config.inc,v 1.86.2.8 2006-11-30 20:03:14 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -212,11 +212,13 @@ foreach($_pql->ldap_basedn as $dn)  {
 
   // 4e. Find the computer DN
   if(empty($_SESSION["USER_SEARCH_DN_CTR"])) {
-	$tmp = pql_get_dn($_pql->ldap_linkid, $dn,
-					  '(&('.pql_get_define("PQL_ATTR_OU").'=Computers)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=organizationalUnit))',
-					  'ONELEVEL');
+	$filter = '(&('.pql_get_define("PQL_ATTR_OU").'=Computers)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=organizationalUnit))';
+	$tmp = pql_get_dn($_pql->ldap_linkid, $dn, $filter, 'ONELEVEL');
+
 	if(@$tmp[0])
 	  $_SESSION["USER_SEARCH_DN_CTR"] = $tmp[0];
+
+	unset($filter); unset($tmp);
   }
   
   // 4f. Load 'resonable defaults' for each top DN
