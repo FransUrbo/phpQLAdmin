@@ -124,7 +124,7 @@
 # availible from http://sourceforge.net/projects/modcfgldap/
 # See doc/README.apache for more information.
 
-# $Id: phpQLAdmin.schema,v 2.65.2.5 2006-11-27 13:01:04 turbo Exp $
+# $Id: phpQLAdmin.schema,v 2.65.2.6 2006-11-30 19:26:56 turbo Exp $
 
 # PQL_ATTR_SHOW_USERS (true | false)
 attributetype ( 1.3.6.1.4.1.8767.3.2.1.1 NAME 'showUsers'
@@ -828,6 +828,12 @@ objectclass ( 1.3.6.1.4.1.8767.3.1.8
   MAY  ( nonPrimaryRcptHosts $ simScanSpamAssassin $ 
          simScanClamAntiVirus $simScanTrophie $ 
          simScanSpamAssassinHits $ simScanAttachmentSuffix )
+  SUP top AUXILIARY )
+
+objectclass ( 1.3.6.1.4.1.8767.3.1.9
+  NAME 'phpQLAdminWebACL'
+  DESC 'phpQLAdmin version of groupOfUniqueNames'
+  MUST ( cn $ uniqueMember )
   SUP top AUXILIARY )
 
 #
