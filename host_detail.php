@@ -1,11 +1,12 @@
 <?php
 // View information about physical host object
 // (mainly Host ACL's)
-// $Id: host_detail.php,v 1.1.2.12 2006-11-26 15:44:53 turbo Exp $
+// $Id: host_detail.php,v 1.1.2.13 2006-11-30 20:04:53 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
+require($_SESSION["path"]."/include/pql_websrv.inc");
 require($_SESSION["path"]."/left-head.html");
 // }}}
 
@@ -55,16 +56,38 @@ if(isset($_REQUEST["rlnb"]) and pql_get_define("PQL_CONF_AUTO_RELOAD")) {
     <span class="title1"><?=$LANG->_('Computer')?>: <?=pql_maybe_idna_decode(urldecode($host))?></span>
     <p>
 <?php
+// Retreive all necessary web server information (including access control)
+$DATA = pql_websrv_get_data($_pql);
+
+// {{{ Access Control checks
+// Check if user is controls admin in any of the root DN's
+$controls_admin = 0;
+foreach($_pql->ldap_basedn as $dn)  {
+  $dn = pql_format_normalize_dn($dn);
+  if(pql_validate_administrator($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"), $_SESSION["USER_DN"]))
+	$controls_admin = 1;
+}
+// }}}
+
 // {{{ Setup nav buttons
 if(empty($_REQUEST["view"])) {
   if(pql_get_define("PQL_CONF_HOSTACL_USE")) {
 	$_REQUEST["view"] = 'hostacl';
   } elseif(pql_get_define("PQL_CONF_AUTOMOUNT_USE")) {
 	$_REQUEST["view"] = 'automount';
-  } elseif(pql_get_define("PQL_CONF_CONTROL_USE")) {
+  } elseif(pql_get_define("PQL_CONF_CONTROL_USE") and ($_SESSION["ALLOW_BRANCH_CREATE"] or $controls_admin)) {
+	// Only do this if:
+	//	1.  Mail server administration is on
+	//	2a. User is super admin
+	//	2b. User is global controls administrator
 	$_REQUEST["view"] = 'mailsrv';
-  } elseif(pql_get_define("PQL_CONF_WEBSRV_USE")) {
+  } elseif(pql_get_define("PQL_CONF_WEBSRV_USE") and ($_SESSION["ALLOW_BRANCH_CREATE"] or is_array($DATA))) {
+	// Only do this if:
+	//	1.  Mail server administration is on
+	//	2a. User is controls administrator OR
+	//	2b. User is super admin
 	$_REQUEST["view"] = 'websrv';
+
   } elseif(pql_get_define("PQL_CONF_RADIUS_USE")) {
 	$_REQUEST["view"] = 'radius';
   }
@@ -87,12 +110,16 @@ if(($_REQUEST["server"] != 'Global') and ($_REQUEST["ref"] == 'physical') ) {
 	$buttons = $buttons + $new;
   }
 
-  if(pql_get_define("PQL_CONF_CONTROL_USE")) {
+  if(pql_get_define("PQL_CONF_CONTROL_USE") and ($_SESSION["ALLOW_BRANCH_CREATE"] or $controls_admin)) {
+	// Only do this if:
+	//	1.  Mail server administration is on
+	//	2a. User is super admin
+	//	2b. User is global controls administrator
 	$new = array('mailsrv'   => 'Mailserver Administration');
 	$buttons = $buttons + $new;
   }
 
-  if(pql_get_define("PQL_CONF_WEBSRV_USE")) {
+  if(pql_get_define("PQL_CONF_WEBSRV_USE") and ($_SESSION["ALLOW_BRANCH_CREATE"] or $DATA["access"])) {
 	$new = array('websrv' => 'Webserver Administration');
 	$buttons = $buttons + $new;
   }				 
