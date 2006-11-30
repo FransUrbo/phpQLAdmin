@@ -17,7 +17,7 @@
 //	file		File that manage the plugin
 //	attribs		Attribute(s) that the plugin manages
 //
-// $Id: config_plugins.inc,v 2.26.2.4 2006-11-26 15:56:10 turbo Exp $
+// $Id: config_plugins.inc,v 2.26.2.5 2006-11-30 19:14:48 turbo Exp $
 
 pql_plugin_register(pql_get_define("PQL_ATTR_ISACTIVE"), "",
 					"attrib.accountstatus.inc",
@@ -280,6 +280,14 @@ pql_plugin_register(pql_get_define("PQL_ATTR_PHOTO"), "",
 pql_plugin_register(pql_get_define("PQL_ATTR_AUTOMOUNT_INFO"), "",
 					"attrib.automount.inc",
 					pql_get_define("PQL_ATTR_AUTOMOUNT_INFO"));
+
+pql_plugin_register(pql_get_define("PQL_ATTR_RADIUS_FILTERID"), "",
+					"attrib.radiusfilterid.inc",
+					pql_get_define("PQL_ATTR_RADIUS_FILTERID"));
+
+pql_plugin_register(pql_get_define("PQL_ATTR_UNIQUE_GROUP"), "",
+					"attrib.uniquemember.inc",
+					pql_get_define("PQL_ATTR_UNIQUE_GROUP"));
 
 /* This is actually a fake, but it's the easiest way */
 pql_plugin_register("add_header", "",
