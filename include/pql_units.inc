@@ -3,7 +3,7 @@
 // pql_units.inc
 // Sub units (ou=People, ou=Users, dc=host) etc
 //
-// $Id: pql_units.inc,v 1.17.2.1 2006-11-23 21:40:17 turbo Exp $
+// $Id: pql_units.inc,v 1.17.2.2 2006-12-01 08:21:02 turbo Exp $
 //
 
 // {{{ pql_unit_get(linkid, dn, filter)
@@ -31,7 +31,6 @@ function pql_unit_get($linkid, $dn, $filter = 1) {
 			   !eregi('mailinglists',	$subd[$i]) and
 			   !eregi('templates',		$subd[$i]) and
 			   !(pql_get_define("PQL_CONF_SUBTREE_GROUPS")     and eregi(pql_get_define("PQL_CONF_SUBTREE_GROUPS"), 	$subd[$i])) and
-			   !(pql_get_define("PQL_CONF_SUBTREE_APACHE")     and eregi(pql_get_define("PQL_CONF_SUBTREE_APACHE"),		$subd[$i])) and
 			   !(pql_get_define("PQL_CONF_SUBTREE_BIND9")      and eregi(pql_get_define("PQL_CONF_SUBTREE_BIND9"),		$subd[$i])) and
 			   !(pql_get_define("PQL_CONF_SUBTREE_COMPUTERS")  and eregi(pql_get_define("PQL_CONF_SUBTREE_COMPUTERS"),	$subd[$i])) and
 			   !(pql_get_define("PQL_CONF_SUBTREE_SUDOERS")    and eregi(pql_get_define("PQL_CONF_SUBTREE_SUDOERS"),	$subd[$i])) and
