@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for web server configuration)
 //
-// $Id: pql_websrv.inc,v 1.19.2.8 2006-11-30 19:06:35 turbo Exp $
+// $Id: pql_websrv.inc,v 1.19.2.9 2006-12-01 15:13:14 turbo Exp $
 //
 
 // {{{ pql_websrv_add_server(linkid, dn, entry, type)
@@ -280,8 +280,10 @@ function pql_websrv_get_data($_pql) {
 	foreach($HOSTS as $host_dn => $host_data) {
 	  $container_admin = 0;
 	  foreach($host_data as $container_dn => $virt_hosts) {
-		if(pql_validate_administrator($_pql->ldap_linkid, $container_dn, pql_get_define("PQL_ATTR_UNIQUE_GROUP"), $_SESSION["USER_DN"]))
-		  $container_admin = 1;
+		if($host_dn != 'Global') {
+		  if(pql_validate_administrator($_pql->ldap_linkid, $container_dn, pql_get_define("PQL_ATTR_UNIQUE_GROUP"), $_SESSION["USER_DN"]))
+			$container_admin = 1;
+		}
 
 		// Is this user web admin of a domains virtual host(s)?
 		foreach($virt_hosts as $virthost_dn => $virthost_name) {
