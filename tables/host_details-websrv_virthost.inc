@@ -35,20 +35,20 @@
         $new_tr = 1;
 
         foreach($virthost[pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS")] as $srv) {
-           if($new_tr) { $new_tr = 0;
+		  if($new_tr) { $new_tr = 0;
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Server alias')?></td>
-<?php      } else { ?>
+<?php     } else { ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"></td>
-<?php      } ?>
+<?php     } ?>
         <td><?=$srv?></td>
         <td>
           <a href="<?=$LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS")?>&oldvalue=<?=$srv?>"><?=$img["mod"]?></a>
-<?php	   if($srv) { ?>
+<?php	  if($srv) { ?>
           <a href="<?=$LINK_URL?>&action=del&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS")?>&oldvalue=<?=$srv?>"><?=$img["del"]?></a>
-<?php	   } ?>
+<?php	  } ?>
         </td>
       </tr>
 <?php	} // END: foreach ?>
@@ -116,20 +116,20 @@
         $new_tr = 1;
 
         foreach($virthost[pql_get_define("PQL_ATTR_WEBSRV_SRV_REWRITE_OPTIONS")] as $srv) {
-           if($new_tr) { $new_tr = 0;
+		  if($new_tr) { $new_tr = 0;
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"><?=$LANG->_('Additional option')?></td>
-<?php      } else { ?>
+<?php     } else { ?>
       <tr class="<?php pql_format_table(); ?>">
         <td class="title"></td>
-<?php      } ?>
+<?php     } ?>
         <td><?=$srv?></td>
         <td>
           <a href="<?=$LINK_URL?>&action=mod&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_REWRITE_OPTIONS")?>&oldvalue=<?=$srv?>"><?=$img["mod"]?></a>
-<?php	   if($srv) { ?>
+<?php	  if($srv) { ?>
           <a href="<?=$LINK_URL?>&action=del&attrib=<?=pql_get_define("PQL_ATTR_WEBSRV_SRV_REWRITE_OPTIONS")?>&oldvalue=<?=$srv?>"><?=$img["del"]?></a>
-<?php 	   } ?>
+<?php 	  } ?>
         </td>
       </tr>
 <?php	} // END: foreach ?>
@@ -216,4 +216,55 @@
 							  pql_get_define("PQL_ATTR_WEBSRV_SRV_REWRITE_RULE"), $class);
 ?>
 
+      <tr><td></td></tr>
+
+<?php // Show round-robin information
+	  $filter  = '(&('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ApacheSectionObj)(';
+	  $filter .= pql_get_define("PQL_ATTR_OBJECTCLASS").'=ApacheVirtualHostObj)(';
+	  $filter .= pql_get_define("PQL_ATTR_CN").'='.$_REQUEST["virthost"].'))';
+	  $roundrobin = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $filter);
+
+	  $class=pql_format_table(0);
+	  if(count($roundrobin) > 1) {
+		// Got more than one entry - round robin!
+		unset($hosts);
+
+		// Find the physical host and web container
+		for($i=0; $i < count($roundrobin); $i++) {
+		  unset($physical); unset($container);
+		  $dn_parts = split(',', $roundrobin[$i]);
+
+		  // Web container
+		  $tmp = split('=', $dn_parts[1]);
+		  $container = $tmp[1];
+
+		  // Physical host
+		  $tmp = split('=', $dn_parts[2]);
+		  $physical = $tmp[1];
+
+		  $hosts[] = "$physical => $container";
+		}
+
+		if(count($hosts) > 0)
+		  asort($hosts);
+
+		$txt = array('tit' => $LANG->_('Round-robin'));
+		pql_format_table_single($_pql->ldap_linkid, $txt, $link_url,
+								$hosts, '', $class);
+	  } else {
+		$hosts = array('<i>n/a</i>');
+		$txt = array('tit' => $LANG->_('Round-robin'));
+		pql_format_table_single($_pql->ldap_linkid, $txt, $link_url,
+								$hosts, '', $class);
+	  }
+?>
     </th>
+<?php
+/*
+ * Local variables:
+ * mode: php
+ * mode: font-lock
+ * tab-width: 4
+ * End:
+ */
+?>
