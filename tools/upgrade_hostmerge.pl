@@ -3,7 +3,20 @@
 # Script to move web-/mailservers and automounts from
 # below branch/dn to new 'concentrated host' view.
 #
-# $Id: upgrade_hostmerge.pl,v 1.1.2.3 2006-11-27 07:27:34 turbo Exp $
+# $Id: upgrade_hostmerge.pl,v 1.1.2.4 2006-12-01 09:04:57 turbo Exp $
+#
+# -----  N O T E  -----  N O T E  -----  N O T E  -----  N O T E  -----
+# This file will NOT do any modifications to your LDAP database. It
+# will create two files (which will be shown at the end of the run)
+# in temp. One file that starts with 'add.' and one that starts with
+# 'del.'. The add file is added to the LDAP server with the command
+# 'ldapadd -f add.XXX' and if/when you feel ready to delete the old
+# objects, you do this with the command line 'ldapdel -f del.XXX'.
+#
+# Remember to update your Apache and QmailLDAP/Controls files before
+# (!) doing the delete, othervise neither of the systems will find
+# their configuration setup...
+# -----  N O T E  -----  N O T E  -----  N O T E  -----  N O T E  -----
 
 @ROOTDN = ('c=SE', 'dc=lantrix,dc=no');
 $SERVER = "-H ldapi://%2fvar%2frun%2fslapd%2fldapi.main";
