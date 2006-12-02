@@ -3,6 +3,9 @@ phpQLAdmin 2.3 Change Log
 phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	Bug fixes
 	  - Better regexp to try to find out if a value is a DN in include/pql_formating.inc:pql_format_table_single()' 
+	  - If there's no web server containers, we must still return the list of physical hosts in
+	    include/pql_websrv.inc:pql_websrv_get_data(). This so that we can retreive any QLC objects
+	    in those physical hosts.
 
 phpQLAdmin 2.3.5 Dec  2 2006
 	Bug fixes

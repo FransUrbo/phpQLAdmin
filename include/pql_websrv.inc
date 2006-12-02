@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for web server configuration)
 //
-// $Id: pql_websrv.inc,v 1.22 2006-12-02 13:06:50 turbo Exp $
+// $Id: pql_websrv.inc,v 1.23 2006-12-02 17:42:59 turbo Exp $
 //
 
 // {{{ pql_websrv_add_server(linkid, dn, entry, type)
@@ -312,6 +312,18 @@ function pql_websrv_get_data($_pql) {
 	}
   }
   // }}}
+
+  // {{{ Find out if we have any values other than 'Global'
+  $tmp = $HOSTS;
+  unset($tmp["Global"]);
+  if(!count($tmp)) {
+	// Got to have the physical hosts at least!
+	for($i=0; $hosts[$i]; $i++) {
+	  $dn = $hosts[$i];
+	  $HOSTS[$dn] = '';
+	}
+  }
+  // }}} 
 
   if(is_array($HOSTS))
 	return($HOSTS);
