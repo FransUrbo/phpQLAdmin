@@ -1,6 +1,6 @@
 <?php
 // Manage PHP sessions per phpQLAdmin instance
-// $Id: pql_session.inc,v 1.6 2005-09-22 07:32:18 turbo Exp $
+// $Id: pql_session.inc,v 1.8 2006-12-16 12:02:15 turbo Exp $
 
 //echo "_SERVER: "; echo "<pre>"; print_r($_SERVER); echo "</pre>";
 

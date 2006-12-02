@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm.php,v 1.8 2005-06-09 15:05:35 turbo Exp $
+// $Id: ezmlm.php,v 1.10 2006-12-16 12:02:09 turbo Exp $
 //
 require($_SESSION["path"]."/include/pql_config.inc");
 include($_SESSION["path"]."/header.html");

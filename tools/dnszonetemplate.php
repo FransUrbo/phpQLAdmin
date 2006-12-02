@@ -1,6 +1,6 @@
 <?php
 // Create a DNS zone file
-// $Id: dnszonetemplate.php,v 1.13 2006-07-08 10:29:38 turbo Exp $
+// $Id: dnszonetemplate.php,v 1.15 2006-12-16 12:03:17 turbo Exp $
 // {{{ Setup session etc
 require("../include/pql_session.inc");
 require("../include/pql_config.inc");

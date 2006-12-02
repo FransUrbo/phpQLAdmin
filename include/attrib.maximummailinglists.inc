@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // maximumDomainUsers
-// $Id: attrib.maximummailinglists.inc,v 2.11 2005-01-12 13:50:55 turbo Exp $
+// $Id: attrib.maximummailinglists.inc,v 2.13 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type = '') {

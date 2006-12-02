@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-alias.inc,v 1.7 2005-09-16 06:08:54 turbo Exp $ */
+<?php /* $Id: user_add-alias.inc,v 1.9 2006-12-16 12:03:12 turbo Exp $ */
       // Retreive domain branches for this domain (for the subbranch value below)
       $branches = pql_unit_get($_pql->ldap_linkid, $_REQUEST["domain"]);
 ?>

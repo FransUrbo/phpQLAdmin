@@ -135,7 +135,26 @@
 										$class);
 			}
 	  	}
-	 }
+	  }
+
+// {{{ When user do a login, should the advanced mode be loaded?
+?>
+      <tr class="<?=$class?>">
+        <td class="title"><?=$LANG->_('Start in advanced mode')?></td>
+<?php if($startwithadvancedmode) { ?>
+        <td><?=$LANG->_('Yes')?></td>
+        <td>
+          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=pql_get_define("PQL_ATTR_START_ADVANCED")?>&oldvalue=1&view=<?=$_GET["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=$LANG->_('Do not start in advanced mode')?>"></a>
+        </td>
+<?php } else { ?>
+        <td><?=$LANG->_('No')?></td>
+        <td>
+          <a href="user_edit_attribute.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&user=<?=$url["user"]?>&attrib=<?=pql_get_define("PQL_ATTR_START_ADVANCED")?>&oldvalue=0&view=<?=$_GET["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Make sure we start in advanced mode')?>"></a>
+        </td>
+<?php } ?>
+      </tr>
+<?php
+// }}}
 ?>
     </th>
   </table>

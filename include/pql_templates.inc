@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_templates.inc,v 2.9 2005-09-27 14:09:44 turbo Exp $
+// $Id: pql_templates.inc,v 2.11 2006-12-16 12:02:15 turbo Exp $
 //
 
 // {{{ Generate the group template (hardcoded for the moment)

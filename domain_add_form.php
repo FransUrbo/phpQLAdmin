@@ -1,6 +1,6 @@
 <?php
 // Input form page to create a domain branch in database
-// $Id: domain_add_form.php,v 1.26 2005-06-09 15:05:35 turbo Exp $
+// $Id: domain_add_form.php,v 1.28 2006-12-16 12:02:08 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");

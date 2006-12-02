@@ -2,7 +2,7 @@
 // control attribute plugin for
 // mailSizeMax (The maximum size that a single message may have)
 //
-// $Id: attrib.control.mailsizemax.inc,v 2.1 2006-11-20 20:05:25 turbo Exp $
+// $Id: attrib.control.mailsizemax.inc,v 2.3 2006-12-16 12:02:14 turbo Exp $
 //
 
 // {{{ mailsizemax_check(type)

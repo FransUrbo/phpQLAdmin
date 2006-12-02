@@ -1,6 +1,6 @@
 <?php
 // shows details of specified category of attributes
-// $Id: control_cat.php,v 2.23 2006-11-11 14:37:46 turbo Exp $
+// $Id: control_cat.php,v 2.25 2006-12-16 12:02:08 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -26,7 +26,7 @@ if(!is_array($plugins)) {
 }
 // }}}
 
-// {{{ Setup the buttons
+// {{{ Setup the controls view buttons
 // ---- First the 'top' buttons (same as on control_detail.php)
 $buttons1 = array('default' => 'Base values');
 foreach($cats as $cat) {
@@ -56,6 +56,52 @@ if(isset($msg)) {
 // {{{ Load the requested control category
 if(@empty($_REQUEST["view"])) {
   $_REQUEST["view"] = $plugins[0];
+}
+// }}}
+
+// {{{ Setup the host view buttons
+if($_REQUEST["ref"]) {
+  if(@$_REQUEST["view"])
+	// Save this so it doesn't disappear
+	$tmp = $_REQUEST["view"];
+  
+  $_REQUEST["view"] = 'mailsrv';
+
+  $buttons = array();
+
+  if(pql_get_define("PQL_CONF_HOSTACL_USE")) {
+	$new = array('hostacl' => 'Host Control');
+	$buttons = $buttons + $new;
+  }
+
+  if(pql_get_define("PQL_CONF_AUTOMOUNT_USE")) {
+	$new = array('automount' => 'Automount Information');
+	$buttons = $buttons + $new;
+  }
+
+  if(pql_get_define("PQL_CONF_CONTROL_USE")) {
+	$new = array('mailsrv'   => 'Mailserver Administration');
+	$buttons = $buttons + $new;
+  }
+
+  if(pql_get_define("PQL_CONF_WEBSRV_USE")) {
+	$new = array('websrv' => 'Webserver Administration');
+	$buttons = $buttons + $new;
+  }				 
+
+  if(pql_get_define("PQL_CONF_RADIUS_USE")) {
+	$new = array('radius' => 'RADIUS Administration');
+	$buttons = $buttons + $new;
+  }
+
+  pql_generate_button($buttons, "host=".urlencode($_REQUEST["host"])."&ref=".$_REQUEST["ref"], 'host_detail.php'); echo "    <br>\n";
+  
+  if(@$tmp)
+	// Restore the view value
+	$_REQUEST["view"] = $tmp;
+  else
+	// Unset the view value (so it can be set below)
+	unset($_REQUEST["view"]);
 }
 // }}}
 

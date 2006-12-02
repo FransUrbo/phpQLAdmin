@@ -2,7 +2,7 @@
 // ----------------------------
 // pql_update_translations.php
 //
-// $Id: update_translations.php,v 2.9 2006-08-19 08:23:18 turbo Exp $
+// $Id: update_translations.php,v 2.11 2006-12-16 12:03:17 turbo Exp $
 //
 
 // ----------------------------

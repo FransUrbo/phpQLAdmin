@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.98 2006-07-04 20:07:02 turbo Exp $
+// $Id: user_detail.php,v 2.100 2006-12-16 12:02:09 turbo Exp $
 //
 // {{{ Setup session
 header("Expires: 0");
@@ -97,8 +97,10 @@ if($username and is_array($username)) {
   <br><br>
 <?php
 // }}}
-if(empty($_GET["view"]))
-	$_GET["view"] = 'basic';
+if(empty($_GET["view"]) or empty($_REQUEST["view"])) {
+  $_GET["view"] = 'basic';
+  $_REQUEST["view"] = 'basic'; // Just so that initial marking of active button works
+}
 
 /* DLW: Setting all of these variables in the main code is pointless.  Most of them
  *      never get used.  They should be handled by the tables
@@ -197,15 +199,30 @@ if(empty($mailhost)) {
     $mailhost = $LANG->_('None');
 }
 
-$controladmins = pql_get_attribute($_pql->ldap_linkid, $_GET["rootdn"], pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"));
-if(is_array($controladmins)) {
+if($_REQUEST["view"] == 'access') {
+  // Check if user is mailserver admin
+  $controladmins = pql_get_attribute($_pql->ldap_linkid, $_GET["rootdn"], pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"));
+  if(is_array($controladmins)) {
 	foreach($controladmins as $admin)
 	  if($admin == $_GET["user"])
 		$controlsadministrator = 1;
-} elseif($controladmins == $_GET["user"]) {
+  } elseif($controladmins == $_GET["user"]) {
 	$controlsadministrator = 1;
-} else {
-  $controlsadministrator = 0;
+  } else {
+	$controlsadministrator = 0;
+  }
+
+  // Check if user is webserver admin
+  $websrvadmins = pql_get_attribute($_pql->ldap_linkid, $_GET["rootdn"], pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"));
+  if(is_array($websrvadmins)) {
+	foreach($websrvadmins as $admin)
+	  if($admin == $_GET["user"])
+		$webserveradministrator = 1;
+  } elseif($websrvadmins == $_GET["user"]) {
+	$webserveradministrator = 1;
+  } else {
+	$webserveradministrator = 0;
+  }
 }
 // }}}
 
@@ -324,7 +341,7 @@ if(!$_SESSION["SINGLE_USER"]) {
 }
 // }}}
 
-if(file_exists($_SESSION["path"]."/.DEBUG_ME") and file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
+if(pql_get_define("PQL_CONF_DEBUG_ME") and file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
   $now = pql_format_return_unixtime();
   echo "Now: <b>$now</b><br>";
 }

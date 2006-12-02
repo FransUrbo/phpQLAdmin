@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldapdefaultdotmode (default mode how to interpret .qmail files)
 //
-// $Id: attrib.control.ldapdefaultdotmode.inc,v 2.20 2006-05-19 06:55:31 turbo Exp $
+// $Id: attrib.control.ldapdefaultdotmode.inc,v 2.22 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ ldapdefaultdotmode_check(type)
 function ldapdefaultdotmode_check($type) {
@@ -37,14 +37,11 @@ function ldapdefaultdotmode_init($host) {
 	global $_pql_control;
 	
 	// fetch data from ldap server
-	if($host == "Global") {
+	if($host == "Global")
 	  $_REQUEST["ldapdefaultdotmode"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 														  pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"), 0, pql_get_define("PQL_ATTR_CN")."=*");
-	} else {
-	  $_REQUEST["ldapdefaultdotmode"] = pql_get_attribute($_pql_control->ldap_linkid,
-														  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-														  pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"));
-	}
+	else
+	  $_REQUEST["ldapdefaultdotmode"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"));
 	
 	if(@is_null($_REQUEST["ldapdefaultdotmode"]))
 	  return true;
@@ -122,8 +119,7 @@ function ldapdefaultdotmode_save($type, $host) {
 		// {{{ save entries
 		if($host == "Global") {
 			// Get all QLC host
-			$qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-							   '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+			$qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], '(&(cn=*)(objectclass=qmailControl))');
 
 			$success = 1;
 			foreach($qlcs as $host) {
@@ -132,8 +128,7 @@ function ldapdefaultdotmode_save($type, $host) {
 	 				$success = 0;
 			}
 		} else {
-			if(pql_modify_attribute($_pql_control->ldap_linkid,
-									pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+				if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 									pql_get_define("PQL_ATTR_LDAPDEFAULTDOTMODE"), 1, $_REQUEST["ldapdefaultdotmode"]))
 				$success = 1;
 		}

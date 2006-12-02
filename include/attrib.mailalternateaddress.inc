@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailalternateaddress (emailaddress alias)
-// $Id: attrib.mailalternateaddress.inc,v 2.33 2005-04-23 09:12:32 turbo Exp $
+// $Id: attrib.mailalternateaddress.inc,v 2.35 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {

@@ -1,5 +1,5 @@
 <?php
-// $Id: ezmlm_del.php,v 1.29 2005-06-09 15:05:35 turbo Exp $
+// $Id: ezmlm_del.php,v 1.31 2006-12-16 12:02:09 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");

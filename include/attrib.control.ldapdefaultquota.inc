@@ -4,7 +4,7 @@
 // or, if using new style quota
 // 	defaultQuotaSize and defaultQuotaCount
 //
-// $Id: attrib.control.ldapdefaultquota.inc,v 2.22 2006-05-19 06:55:31 turbo Exp $
+// $Id: attrib.control.ldapdefaultquota.inc,v 2.24 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ ldapdefaultquota_check(type)
 function ldapdefaultquota_check($type) {
@@ -69,14 +69,11 @@ function ldapdefaultquota_init($host) {
     global $_pql_control;
 
     // fetch data from ldap server
-	if($host == "Global") {
+	if($host == "Global")
 	  $quota = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 								 pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"), 0, pql_get_define("PQL_ATTR_CN")."=*");
-	} else {
-	  $quota = pql_get_attribute($_pql_control->ldap_linkid,
-								 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-								 pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"));
-	}
+	else
+	  $quota = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_LDAPDEFAULTQUOTA"));
 
     if(!is_null($quota)) {
 		$quota = pql_parse_quota($quota);
@@ -227,7 +224,7 @@ function ldapdefaultquota_save($type, $host) {
 		if($host == "Global") {
 		  // Get all QLC host
 		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {

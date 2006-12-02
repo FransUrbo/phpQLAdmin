@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.53 2005-09-29 05:14:08 turbo Exp $
+// $Id: attrib.config.inc,v 1.55 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ attribute_output_java_window(void)
 function attribute_output_java_window() {
@@ -47,12 +47,18 @@ function attribute_check() {
 
 	$attrib = $_REQUEST["attrib"];
 	if(($attrib != pql_get_define("PQL_ATTR_SCRIPT_CREATE_USER")) and
-	   ($attrib != pql_get_define("PQL_ATTR_SCRIPT_CREATE_DOMAIN"))) {
+	   ($attrib != pql_get_define("PQL_ATTR_SCRIPT_CREATE_DOMAIN")) and
+	   ($attrib != pql_get_define("PQL_ATTR_RADIUS_CONFIG_IDENTITY")))
+	{
 		// Unless it's a 'externalScript{User,Domain}' attribute - is it typed in?
 		if(empty($_REQUEST[$attrib])) {
 			$error[$attrib] = $LANG->_('Missing');
 			return false;
 		}
+	} elseif($attrib != pql_get_define("PQL_ATTR_RADIUS_CONFIG_IDENTITY")) {
+	  // Check to see that the radius_identity value is filled in/choosen
+	  if(!@$_REQUEST['radius_identity_name'] or !@$_REQUEST['radius_identity_dn'])
+		$error[$attrib] = $LANG->_('Missing');
 	}
     
     return true;
@@ -83,9 +89,8 @@ function attribute_print_form() {
 	}
 
 	if(! $rootdn)
-	  $dn = $_SESSION["BASE_DN"][0];
-	else
-	  $dn = $rootdn;
+	  $rootdn = $_SESSION["BASE_DN"][0];
+	$dn = $rootdn;
 
 	// Now, get the old values from the LDAP database,
 	// overwriting the defines if existing in db.
@@ -117,6 +122,7 @@ function attribute_print_form() {
   <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post" name="phpqladmin_modify">
 <?php   if(($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) or
  		   ($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN"))) {
+			 // {{{ Special header/table if it's a '{branch,user}ObjectClass' value
 ?>
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Set/Modify attribute %attribute%'), array('attribute' => $attrib))."\n"; ?>
@@ -131,46 +137,111 @@ function attribute_print_form() {
       </th>
     </table>
 
-<?php	} ?>
+<?php
+// }}}
+		}
+
+		if($attrib == pql_get_define("PQL_ATTR_RADIUS_CONFIG_IDENTITY")) {
+		  // {{{ Changing the RADIUS identity
+		  // Find all 'simpleSecurityObject' or 'account' objects
+		  $filter = '(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=simpleSecurityObject)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=account))';
+		  $dns = pql_get_dn($_pql->ldap_linkid, $dn, $filter);
+		  if(is_array($dns)) {
+			$checked = 0;
+?>
+    <table cellspacing="0" cellpadding="3" border="0">
+      <th colspan="3" align="left">
+        <tr class="<?php pql_format_table(); ?>">
+          <td class="title"><?=$LANG->_('Use existing DN as RADIUS identity')?>:</td>
+          <td class="<?=pql_format_table(1)?>">
+<?php		for($i=0; $dns[$i]; $i++) {
+			  echo '            <input type="radio" name="radius_identity_dn" value="'.$dns[$i].'"';
+			  if(!$checked and (($dns[$i] == $oldvalue) or eregi('radius', $dns[$i]))) {
+				$checked = 1;
+				echo " CHECKED";
+			  }
+			  echo '>'.$dns[$i]."<br>\n";
+			}
+
+			// Find all 'organizationalUnit's for direction on WHERE to put the new user
+			$filter = '(&('.pql_get_define("PQL_ATTR_OU").'=*)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=organizationalUnit))';
+			$ous = pql_get_dn($_pql->ldap_linkid, $dn, $filter);
+			asort($ous);
+?>
+          </td>
+        </tr>
+      </th>
+
+      <th colspan="3" align="left"><?=$LANG->_('or')?>:
+        <tr class="<?php pql_format_table(); ?>">
+          <td class="title"><?=$LANG->_('Create new RADIUS identity')?>:</td>
+          <td class="<?=pql_format_table(1)?>">
+            uid=<input type="text" name="radius_identity_name" value="<?=$_REQUEST["radius_identity_name"]?>" size="10">,
+            <select name="ou_dn">
+<?php		for($i=0; $ous[$i]; $i++) { ?>
+              <option value="<?=$ous[$i]?>"><?=$ous[$i]?></option>
+<?php		} ?>
+            </select>
+          </td>
+        </tr>
+
+        <tr class="<?php pql_format_table(); ?>">
+          <td class="title"><?=$LANG->_('Password')?>:</td>
+          <td class="<?=pql_format_table(1)?>">
+            <input type="text" name="radius_identity_pass" value="<?=$_REQUEST["radius_identity_pass"]?>" size="20">
+            &nbsp;&nbsp;&nbsp;
+            <img src="images/info.png" width="16" height="16" alt="" border="0">
+            <?=$LANG->_('Password will be added using a MD5 encryption.')?>
+          </td>
+        </tr>
+        </tr>
+      </th>
+    </table>
+<?php	  }
+// }}}
+		} else {
+		  // {{{ Other value than RADIUS identity
+?>
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left">
         <tr class="<?php pql_format_table(); ?>">
           <td class="title">
             <?=pql_complete_constant($LANG->_('Add to attribute %attribute%'), array('attribute' => $attrib))."\n"; ?>
           </td>
-<?php	$class=pql_format_table(0); ?>
+<?php		$class=pql_format_table(0); ?>
           <td class="<?=$class?>">
-<?php   if(($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) or
- 		   ($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN"))) {
-            if($attrib == 'userobjectclass')
-                $existing = pql_get_define("PQL_CONF_OBJECTCLASS_USER", $dn);
-            else
-                $existing = pql_get_define("PQL_CONF_OBJECTCLASS_DOMAIN", $dn);
-			if(is_array($existing))
-			  $existing = pql_split_oldvalues($existing); // Convert to array
-			else
-			  $existing = array();
-
-            $objectclasses = pql_get_subschema($_pql->ldap_linkid, "objectclasses");
-			if(is_array($objectclasses)) {
-				$i = 0; $new_tr = 0;
-				$div_counter = 10; // Initialize the global counter
-
-				foreach($objectclasses as $key => $oc) {
-                    $print = 1; $gotit = 0;
-
-					if($key == 'ALIAS')
-					  break;
-
-                    foreach($existing as $e) {
-                        if((($e == $key) or eregi('phpQLAdmin', $key)) and !$gotit) {
-                            $print = 0; $gotit = 1;
-                        }
-                    }
-
-                    if($print) {
-					    $class=pql_format_table(0);
-						if($new_tr) {
+<?php   	if(($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_USER")) or
+			   ($attrib == pql_get_define("PQL_ATTR_OBJECTCLASS_DOMAIN")))
+			{
+				 if($attrib == 'userobjectclass')
+				 $existing = pql_get_define("PQL_CONF_OBJECTCLASS_USER", $dn);
+				 else
+				 $existing = pql_get_define("PQL_CONF_OBJECTCLASS_DOMAIN", $dn);
+				 if(is_array($existing))
+				 $existing = pql_split_oldvalues($existing); // Convert to array
+				 else
+				 $existing = array();
+				 
+				 $objectclasses = pql_get_subschema($_pql->ldap_linkid, "objectclasses");
+				 if(is_array($objectclasses)) {
+				   $i = 0; $new_tr = 0;
+				   $div_counter = 10; // Initialize the global counter
+				   
+				   foreach($objectclasses as $key => $oc) {
+					 $print = 1; $gotit = 0;
+					 
+					 if($key == 'ALIAS')
+					   break;
+					 
+					 foreach($existing as $e) {
+					   if((($e == $key) or eregi('phpQLAdmin', $key)) and !$gotit) {
+						 $print = 0; $gotit = 1;
+					   }
+					 }
+					 
+					 if($print) {
+					   $class=pql_format_table(0);
+					   if($new_tr) {
 ?>
 
         <tr>
@@ -212,30 +283,30 @@ function attribute_print_form() {
           </td>
         </tr>
 <?php					$i++;
-					} // if(print) 
-                } // foreach(objectclasses)
+					 } // if(print) 
+				   } // foreach(objectclasses)
 ?>
       <input type="hidden" name="<?=$attrib?>_<?=$i?>" value="on">
       <input type="hidden" name="<?=$attrib?>" value="<?=$i?>">
-<?php		} else {
+<?php			 } else {
 				// No objectclasses in LDAP!
 ?>
           <td class="<?=$class?>"><i><a href="javascript:errorWindow()"><?=$LANG->_('No objectclasses')?>!</i></a></td
 <?php
-			}
-        } elseif($attrib == pql_get_define("PQL_ATTR_LANG")) {
-			// We're to change the language -> show a select box with existing languages
-			$languages = $LANG->get_supported();
+				 }
+			} elseif($attrib == pql_get_define("PQL_ATTR_LANG")) {
+			  // We're to change the language -> show a select box with existing languages
+			  $languages = $LANG->get_supported();
 ?>
             <select name="<?=$attrib?>">
-<?php		foreach($languages as $l => $lang) { ?>
+<?php			foreach($languages as $l => $lang) { ?>
               <option value="<?=$l?>"><?=$lang?></option>
-<?php		} ?>
+<?php			} ?>
             </select>
 <?php
-        } else {
-			// Not a userObjectClass or branchObjectClass
-			if($attrib == pql_get_define("PQL_ATTR_PASSWORD_SCHEMES")) {
+			} else {
+			  // Not a userObjectClass or branchObjectClass
+			  if($attrib == pql_get_define("PQL_ATTR_PASSWORD_SCHEMES")) {
 				$values = array('CRYPT', 'MD5', 'SHA', 'CLEAR', 'KERBEROS');
 				if(is_array($values)) {
 ?>
@@ -253,17 +324,21 @@ function attribute_print_form() {
             <input type="hidden"   name="<?=$attrib?>"   value="<?=$j?>">
           </td>
 <?php			}
-			} else {
+			  } else {
 ?>
           <td>
             <?php echo pql_format_error_span($error[$attrib]); ?><input type="text" name="<?=$attrib?>" value="<?php if($attrib != 'whoarewe') { echo $oldvalue; } ?>" size="40">
           </td>
-<?php		}
-	   }
+<?php		  }
+			}
 ?>
         </tr>
       </th>
     </table>
+<?php
+// }}}
+		}
+?>
 
     <input type="hidden" name="submit"   value="1">
     <input type="hidden" name="attrib"   value="<?=$attrib?>">
@@ -391,6 +466,13 @@ function attribute_save() {
 	}
 	// }}}
 	// }}}
+  } elseif($attrib == pql_get_define("PQL_ATTR_RADIUS_CONFIG_IDENTITY")) {
+	// {{{ Changing the RADIUS identity
+	if($_REQUEST['radius_identity_name']) 
+	  $entry[$attrib][] = pql_get_define("PQL_ATTR_UID").'='.$_REQUEST["radius_identity_name"].','.$_REQUEST["ou_dn"];
+	else
+	  $entry[$attrib][] = $_REQUEST['radius_identity_dn'];
+// }}}
   } else
 	$entry[$attrib][] = $attrib_val;
 
@@ -420,14 +502,38 @@ function attribute_save() {
 	// }}}
   } else {
 	// {{{ Have a DN
-	if(pql_modify_attribute($_pql->ldap_linkid, $rootdn, '', 1, $entry))
+	if(pql_modify_attribute($_pql->ldap_linkid, $rootdn, '', 1, $entry)) {
 	  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 								   array('what' => $attrib));
-	else
+
+	  if($attrib == pql_get_define("PQL_ATTR_RADIUS_CONFIG_IDENTITY")) {
+		// Check to see if the choosen DN exists
+		$dn = pql_get_dn($_pql->ldap_linkid, $entry[$attrib][0], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*');
+		if(!@$dn) {
+		  // Does not exists - create a simpleSecurityObject/account object
+
+		  // Generate a hashed password
+		  $password = pql_password_hash($_REQUEST['radius_identity_pass'], '{MD5}');
+
+		  // Setup the object array
+		  $dn = $entry[$attrib][0]; unset($entry);
+		  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][]	= 'simpleSecurityObject';
+		  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][]	= 'account';
+		  $entry[pql_get_define("PQL_ATTR_UID")]			= $_REQUEST['radius_identity_name'];
+		  $entry[pql_get_define("PQL_ATTR_PASSWD")]			= $password;
+
+		  // Add object to LDAP database
+		  if(pql_write_add($_pql->ldap_linkid, $dn, $entry, 'radius', 'attrib.config.inc:radius_add'))
+			$msg .= '<br>'.pql_complete_constant($LANG->_('Successfully added %what%'), array('what' => $dn));
+		  else
+			$msg .= '<br>'.pql_complete_constant($LANG->_('Failed to add %what%'), array('what' => $dn));
+		}
+	  }
+	} else
 	  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 								   array('what' => $attrib)) . ": " . ldap_error($_pql->ldap_linkid);
-  }
   // }}}
+  }
 	
   attribute_forward($msg, $rlnb);
   break;

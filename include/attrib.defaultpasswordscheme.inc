@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // defaultPasswordScheme
-// $Id: attrib.defaultpasswordscheme.inc,v 2.13 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.defaultpasswordscheme.inc,v 2.15 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type = '') {

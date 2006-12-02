@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldaplocaldelivery (search for local account, if ldap search is not successful)
 //
-// $Id: attrib.control.ldaplocaldelivery.inc,v 2.19 2006-05-19 06:55:31 turbo Exp $
+// $Id: attrib.control.ldaplocaldelivery.inc,v 2.21 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ ldaplocaldelivery_check(type)
 function ldaplocaldelivery_check($type) {
@@ -16,14 +16,11 @@ function ldaplocaldelivery_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	if($host == "Global") {
+	if($host == "Global")
 	  $_REQUEST["ldaplocaldelivery"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 														 pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY"), 0, pql_get_define("PQL_ATTR_CN")."=*");
-	} else {
-	  $_REQUEST["ldaplocaldelivery"] = pql_get_attribute($_pql_control->ldap_linkid,
-														 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-														 pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY"));
-	}
+	else
+	  $_REQUEST["ldaplocaldelivery"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY"));
 
 	if(@is_null($_REQUEST["ldaplocaldelivery"] ))
 	  return true;
@@ -72,7 +69,7 @@ function ldaplocaldelivery_save($type, $host) {
 		if($host == "Global") {
 		  // Get all QLC host
 		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {
@@ -81,8 +78,7 @@ function ldaplocaldelivery_save($type, $host) {
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid,
-								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								  pql_get_define("PQL_ATTR_LDAPLOCALDELIVERY"), 1, $_REQUEST[$attrib]))
 			$success = 1;
 		}

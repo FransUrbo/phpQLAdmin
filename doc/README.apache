@@ -31,28 +31,37 @@ phpQLAdmin can't (at the moment) handle ALL the values possible, but
 the most common (i.e. the ones _I_ use/need :).
 
 
-There is an example LDIF file in the demo directory ('apache.ldif')
-which will setup one physical server with two virtual machines. One
-listening on FQDN:PORT of 'websrv1.domain.tld:80', the other listens
-on the same FQDN, but on port 443 (SSL).
+There is two example LDIF files in the demo directory ('computers.ldif'
+and 'apache.ldif') which will setup one physical server with two virtual
+machines. One listening on FQDN:PORT of 'websrv1.domain.tld:80', the
+other listens on the same FQDN, but on port 443 (SSL).
 
-As of phpQLAdmin v2.3.3 (CVS commit at July 8, 2006), the organization
-unit for the sub-branch is defined in include/config.inc (the
-PQL_CONF_SUBTREE_APACHE define) so the demo file must be modified
-before use. Replace all occurrences of the following string
+As of phpQLAdmin CVS branch BRANCH_HOST_MERGE, all the host/computer
+handling have been rewritten. All mail and web servers are now located
+beneith a physical machine in what previosly was called the QmailLDAP/Controls
+(QLC) frame. The web information is further devided below the listening
+address/port and then below that are the virtual hosts located.
 
-	%PQL_CONF_SUBTREE_APACHE%
+This required a rewrite/move of where all QLC and webservers are located.
+It is now below the 'ou=Computers,<suffix>' DN. If you're upgrading from
+phpQLAdmin v2.3.3 (CVS commit at July 8, 2006) and you have used the QLC
+and/or the webserver manager, you will have to move all your data.
 
-with the value you've selected in include/config.inc for the 
-PQL_CONF_SUBTREE_APACHE define. This must be done BEFORE any attempt
-of loading the LDIF!
+I've written a script that hopfully will take care of all this. The
+script is in scripts/upgrade_hostmerge.pl. You will have to take a look
+at it and change where your server is and what root DN(s) (i.e. LDAP
+suffix) your LDAP server is using.
 
-Please also make sure to update the 'scripts/extract_webserver_objects.pl'
-script. It also have the '%PQL_CONF_SUBTREE_APACHE%' stuff that needs
-replacing...
+This also means that the QLC DN is no longer needed in the PQL_CONF_HOST
+define (include/config.inc). Even if it's there, it is not used.
 
-The LDIF file will create the webserver branch (below the 'o=Main Branch,c=SE'
-which was/is created with the 'database-main.ldif' LDIF example file)
+Also remove any reference to PQL_CONF_SUBTREE_APACHE from the config.inc
+file (it is no longer used). Also have a look at the script 
+'scripts/extract_webserver_objects.pl' (if you use it) to change the
+LDAP_BASEDN variable.
+
+The LDIF file will create the webserver branch (below the 'ou=Computers,c=SE'
+which was/is created with the 'computers.ldif' LDIF example file)
 where the first 'cn' branch (third object) is like an organizational
 unit, but for this specific (physical) webserver. The FQDN
 'websrv1.domain.tld' is the actual machine name, NOT a vhost name!
@@ -61,8 +70,8 @@ The reason we add ':80' in this 'base' DN is because we must separate
 the non-ssl listener from the ssl enabled one (see the last two objects).
 This is the tree you'll get with that LDIF:
 
-  [o=Main Branch,c=SE]
-    PQL_CONF_SUBTREE_APACHE define
+  [ou=Computers,c=SE - created in computers.ldif]
+    cn=host1.domain.tld
       cn=websrv1.domain.tld:80
         ApacheServerName=websrv1.domain.tld
         ApacheServerName=www1.domain.tld
@@ -71,6 +80,7 @@ This is the tree you'll get with that LDIF:
         ApacheServerName=www3.domain.tld
       cn=websrv1.domain.tld:443
         ApacheServerName=www1.domain.tld
+    cn=host2.domain.tld
       [cn=websrv2.domain.tld:80]
         [ApacheServerName=www4.domain.tld]
         [etc]
@@ -80,32 +90,11 @@ in the DN. We have TWO virtual hosts named 'www1.domain.tld'. One is
 listening on port 80 (normal/non-ssl or 'http://...') and the second
 is listening on port 443 (the ssl or 'https://...'). Without the port,
 the two vhosts whould have the same DN, which wouldn't work (you can't
-put TWO vhosts in the same object!).  Another (DB/branch) idea would
-be to put an extra cn between the PQL_CONF_SUBTREE_APACHE define DN
-and the 'cn=websrv1.domain.tld:XX' DN (named 'cn=websrv1.domain.tld'),
-but that wouldn't be as 'pretty' in the long run :). Besides, as _I_
-see vhosts, it isn't important _where_ the vhost is (what physical
-machine), only the _name_ of the vhost.
+put TWO vhosts in the same object!).
 
-  [o=Main Branch,c=SE - created in database-main.ldif]
-    PQL_CONF_SUBTREE_APACHE define
-      cn=websrv1.domain.tld
-        cn=websrv1.domain.tld:80
-          ApacheServerName=websrv1.domain.tld
-          ApacheServerName=www1.domain.tld
-            ApacheSectionArg=/doc
-          ApacheServerName=www2.domain.tld
-          ApacheServerName=www3.domain.tld
-        cn=websrv1.domain.tld:443
-          ApacheServerName=www1.domain.tld
-      [cn=websrv2.domain.tld]
-        [cn=websrv2.domain.tld:80]
-          [ApacheServerName=www4.domain.tld]
-          [etc]
-
-The branch below 'websrv2.domain.tld' in these two examples isn't
-created here, they're just here to show how it the rest of the
-DB can look like (and where to put the NEXT physical webserver).
+The branch below 'host2.domain.tld' in the example isn't created
+here, they're just here to show how it the rest of the DB can look
+like (and where to put the NEXT physical webserver).
 
 The LDIF will make Apache generate the following configuration
 snippet (for the non-ssl Apache instance):
@@ -144,6 +133,8 @@ snippet (for the non-ssl Apache instance):
 </VirtualHost>
 ----- s n i p -----
 
+Please read the 'demo/README' file for more information about
+the demo LDIF files and how to load them.
 
 The file 'demo/apache.conf' can/should be included from your
 httpd.conf to allow virtual hosting from the LDAP server.
@@ -165,3 +156,57 @@ branch where this (physical) servers vhosts is located,
 and then load EVERYTHING.
 The module is clever enough to figure out what sub DN 
 is part of which parent configuration section.
+
+With the new (as of CVS branch BRANCH_HOST_MERGE) there is
+also much better (i.e. fine grained) support for access
+control in phpQLAdmin. There are three types of access
+to the webserver information which you (as super admin)
+can give a user:
+
+1. Super user => Access to everything 
+2. Global webserver admin => Can view existing servers,
+   add/remove virtual hosts. Can NOT add physical servers
+   or web containers.
+3. Domain web admin => Access to all virtual hosts containing
+   the domain/branch DNS domain(s).
+
+This is all set in the [user]->User access view...
+
+Point one is simply called 'Super administrator [Yes/No]', point two
+is named 'Administrate global webservers [Yes/No]' and point three is
+accomplished by adding the wanted domain/branch DN's to the 'Webserver
+administrator in branch' list entry.
+
+But: Just because a user is 'domain/branch administrator', does NOT
+grant him/her access to the webserver information.  It have to be
+enabled separately!  This is also true (somewhat) to the QLC data,
+although not as fine tuned. The user is either:
+
+1. Super admin => Access to everything
+2. Global mailserver admin => Full access to all QLC information.
+
+Eventually I'll probably fine tune that to...
+
+The way point three above (regarding the webserver information access)
+works is that if a domain/branch have the following default values:
+
+Default domain:		domain1.tld
+Additional domains:	domain2.tld, domain3.tld
+
+then any virtual hosts within these domains (such as www.domain2.tld,
+www.domain3.tld, test.domain1.tld etc) will be manageable by the
+user. The user can SEE the physical host(s) and the corresponding web
+server container(s) (the 'cn=websrv1.domain.tld:80' and
+'cn=websrv1.domain.tld:443' examples from the demo LDIF) in the left
+frame, but can't view it's actual details (such as automount maps or
+the new RADIUS information if any of that is enabled/available) nor
+can he/she add/remove physical or virtual hosts nor any webserver
+containers.
+
+Access level two can see ALL virtual hosts (even those that his/her
+domain/branch doesn't 'own') and all the web server container(s). But
+ONLY those that he/she have access to. This means that the user can
+see the physical host in the left frame, but can't get it's details
+
+Also look at the file doc/README.concentrated_hosts_view for some
+more insight on the new type of computer view.

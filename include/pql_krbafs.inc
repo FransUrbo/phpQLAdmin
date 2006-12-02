@@ -3,7 +3,7 @@
 // pql_ezmlm.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_krbafs.inc,v 1.2 2005-05-27 10:52:48 turbo Exp $
+// $Id: pql_krbafs.inc,v 1.4 2006-12-16 12:02:15 turbo Exp $
 
 // Requires the OpenAFS JavaAPI
 // http://grand.central.org/twiki/bin/view/AFSLore/JavaAPI
@@ -33,7 +33,7 @@ function kadmin_ank($linkid, $principal, $pass) {
 						KADM5_POLICY				=> "default",
 						KADM5_ATTRIBUTES			=> $attributes);
 
-	if(!file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+	if(!pql_get_define("PQL_CONF_DEBUG_ME")) {
 	  if(!kadm5_create_principal($handle, $principal, $pass, $options))
 		return(false);
 	} else
@@ -51,7 +51,7 @@ function kadmin_ank($linkid, $principal, $pass) {
 function kadmin_delprinc($linkid, $principal) {
   if(extension_loaded('kadm5') and function_exists("kadm5_init_with_password")) {
 	$handle = kadmin_init($linkid);
-	if(!file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+	if(!pql_get_define("PQL_CONF_DEBUG_ME")) {
 	  if(!kadm5_delete_principal($handle, $principal))
 		return(false);
 	} else
@@ -71,7 +71,7 @@ function kadmin_cpw($linkid, $principal, $pass) {
 	$handle = kadmin_init($linkid);
 
 	// Change password
-	if(!file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+	if(!pql_get_define("PQL_CONF_DEBUG_ME")) {
 	  if(!kadm5_chpass_principal($handle, $principal, $pass))
 		return(false);
 	} else

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // timeoutsmtpd (how long to wait for smtp client)
 //
-// $Id: attrib.control.timeoutsmtpd.inc,v 2.20 2006-05-19 06:55:32 turbo Exp $
+// $Id: attrib.control.timeoutsmtpd.inc,v 2.22 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ timeoutsmtpd_check(type)
 function timeoutsmtpd_check($type) {
@@ -30,14 +30,11 @@ function timeoutsmtpd_init($host) {
 	global $_pql_control, $timeoutsmtpd;
 	
 	// fetch data from ldap server
-	if($host == "Global") {
+	if($host == "Global")
 	  $_REQUEST["timeoutsmtpd"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 													pql_get_define("PQL_ATTR_TIMEOUTSMTPD"), 0, pql_get_define("PQL_ATTR_CN")."=*");
-	} else {
-	  $_REQUEST["timeoutsmtpd"] = pql_get_attribute($_pql_control->ldap_linkid,
-													pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-													pql_get_define("PQL_ATTR_TIMEOUTSMTPD"));
-	}
+	else
+	  $_REQUEST["timeoutsmtpd"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_TIMEOUTSMTPD"));
 	
 	if(@is_null($_REQUEST["qmqpcip"]))
 	  return true;
@@ -109,7 +106,7 @@ function timeoutsmtpd_save($type, $host) {
 		if($host == "Global") {
 		  // Get all QLC host
 		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {
@@ -118,8 +115,7 @@ function timeoutsmtpd_save($type, $host) {
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid,
-								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								  pql_get_define("PQL_ATTR_TIMEOUTSMTPD"), 1, $_REQUEST["timeoutsmtpd"]))
 			$success = 1;
 		}

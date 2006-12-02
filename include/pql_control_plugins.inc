@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control plugins)
 //
-// $Id: pql_control_plugins.inc,v 2.12 2006-11-20 20:05:25 turbo Exp $
+// $Id: pql_control_plugins.inc,v 2.14 2006-12-16 12:02:15 turbo Exp $
 //
 
 // ----------------------------

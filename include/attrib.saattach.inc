@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // simScanAttachmentSuffix
-// $Id: attrib.saattach.inc,v 2.1 2005-05-26 15:53:18 turbo Exp $
+// $Id: attrib.saattach.inc,v 2.3 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type = '') {
@@ -68,7 +68,7 @@ function attribute_save($type) {
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('attachment suffix'))) . ": ".ldap_error($_pql->ldap_linkid);
 
-		if(!file_exists($_SESSION["path"]."/.DEBUG_ME"))
+		if(!pql_get_define("PQL_CONF_DEBUG_ME"))
 		  attribute_forward($msg);
 		break;
 		

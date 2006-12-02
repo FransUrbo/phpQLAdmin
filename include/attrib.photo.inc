@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // jpegPhoto
-// $Id: attrib.photo.inc,v 2.1 2005-09-28 12:52:21 turbo Exp $
+// $Id: attrib.photo.inc,v 2.2 2006-12-02 13:06:50 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type = '') {
@@ -86,7 +86,7 @@ function attribute_save($type) {
 		else
 		  $msg = $LANG->_('Failed to change JPEG photo');
 
-		if(!file_exists($_SESSION["path"]."/.DEBUG_ME"))
+		if(!pql_get_define("PQL_CONF_DEBUG_ME"))
 		  attribute_forward($msg);
 		break;
 		

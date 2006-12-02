@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.105 2006-10-03 15:31:39 turbo Exp $
+// $Id: domain_detail.php,v 2.107 2006-12-16 12:02:08 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -10,10 +10,6 @@ $url["domain"] = pql_format_urls($_REQUEST["domain"]);
 $url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
 
 include($_SESSION["path"]."/header.html");
-if($_REQUEST["view"] == 'automount') {
-  include($_SESSION["path"]."/left-head.html");
-}
-
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
 // }}}
 
@@ -94,9 +90,6 @@ $attribs = array("autocreatemailaddress"	=> pql_get_define("PQL_ATTR_AUTOCREATE_
 				 "usernameprefixlength"		=> pql_get_define("PQL_ATTR_USERNAME_PREFIX_LENGTH"),
 				 "vatnumber"				=> pql_get_define("PQL_ATTR_VAT_NUMBER"),
 				 "ezmlmvirtualuser"			=> pql_get_define("PQL_ATTR_EZMLM_USER"),
-				 "usehostacl"				=> pql_get_define("PQL_ATTR_HOSTACL_USE"),
-				 "usesudo"					=> pql_get_define("PQL_ATTR_SUDO_USE"),
-				 "useautomount"				=> pql_get_define("PQL_ATTR_AUTOMOUNT_USE"),
 				 "info"						=> pql_get_define("PQL_ATTR_INFO"),
 				 "lockusername"				=> pql_get_define("PQL_ATTR_LOCK_USERNAME"),
 				 "lockemailaddress"			=> pql_get_define("PQL_ATTR_LOCK_EMAILADDRESS"),
@@ -162,17 +155,38 @@ foreach($attribs as $key => $attrib) {
 		. "border=\"0\" alt=\"".$alt1."\"></a>";
 	}
 }
-$domain_admins      = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR"));
-if($domain_admins and !is_array($domain_admins)) {
+if($_REQUEST["view"] == 'access') {
+  // Get domain administrators
+  $domain_admins      = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR"));
+  if($domain_admins and !is_array($domain_admins)) {
 	// It's defined, but it's not an array. Convert it so we don't get into trouble below.
 	$domain_admins = array($domain_admins);
-}
-
-$mailinglist_admins = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"],
-										pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"));
-if($mailinglist_admins and !is_array($mailinglist_admins)) {
+  }
+  
+  // Get mailinglist administrators
+  $mailinglist_admins = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"],
+										  pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"));
+  if($mailinglist_admins and !is_array($mailinglist_admins)) {
 	// It's defined, but it's not an array. Convert it so we don't get into trouble below.
 	$mailinglist_admins = array($mailinglist_admins);
+  }
+
+  // Get webserver administrators
+  $websrv_admins = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"],
+									 pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"));
+  if($websrv_admins and !is_array($websrv_admins)) {
+	// It's defined, but it's not an array. Convert it so we don't get into trouble below.
+	$websrv_admins = array($websrv_admins);
+  }
+
+  // Get DNS administrators
+  $bind9_admins = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"],
+									pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9"));
+  if($bind9_admins and !is_array($bind9_admins)) {
+	// It's defined, but it's not an array. Convert it so we don't get into trouble below.
+	$bind9_admins = array($bind9_admins);
+  }
+
 }
 
 $seealso            = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_SEEALSO"));
@@ -203,8 +217,9 @@ $additionaldomainname = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"
 $buttons = array('default'	=> 'Branch Defaults');
 
 if($_SESSION["ADVANCED_MODE"]) {
-	$new = array('owner'	=> 'Branch Owner Details');
-	$buttons = $buttons + $new;
+  $new = array('access' => 'Branch access',
+			   'owner'	=> 'Branch Owner Details');
+  $buttons = $buttons + $new;
 }
 
 $new = array('users'	=> 'Registred Users',
@@ -212,30 +227,49 @@ $new = array('users'	=> 'Registred Users',
 $buttons = $buttons + $new;
 
 if($_SESSION["ADVANCED_MODE"]) {
-	if($_SESSION["ACI_SUPPORT_ENABLED"]) {
+	if(pql_validate_administrator($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9"), $_SESSION["USER_DN"]) or
+	   $_SESSION["ALLOW_BRANCH_CREATE"])
+	{
 		$new = array('dnsinfo'	=> 'MX Information');
 		$buttons = $buttons + $new;
+	}
 
-		if($_SESSION["ALLOW_BRANCH_CREATE"]) {
-		  // This is a 'super-admin'.
-		  $new = array('aci'	=> 'Access Control Information');
-		  $buttons = $buttons + $new;
-		}
+	if($_SESSION["ACI_SUPPORT_ENABLED"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {
+		// ACI enabled and this is a 'super-admin'.
+		$new = array('aci'	=> 'Access Control Information');
+		$buttons = $buttons + $new;
 	}
 
 	if(pql_get_define("PQL_CONF_CONTROL_USE") and $_SESSION["ALLOW_CONTROL_CREATE"]) {
-		$new = array('options' => 'QmailLDAP/Controls Options');
+		$new = array('options' => 'Mailserver Administration');
 		$buttons = $buttons + $new;
 	}
 
-	if(pql_get_define("PQL_CONF_BIND9_USE")) {
+	if(pql_get_define("PQL_CONF_BIND9_USE") and
+	   (pql_validate_administrator($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9"), $_SESSION["USER_DN"]) or
+		pql_validate_administrator($_pql->ldap_linkid, $_REQUEST["rootdn"], pql_get_define("PQL_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"])))
+	{
+		// * DNS administration is enabled
+		// * User is either webSrvAdministrator for domain OR:
+		// * User is super admin
 		$new = array('dnszone'	=> 'DNS Zone');
 		$buttons = $buttons + $new;
 	}
 
-	if(pql_get_define("PQL_CONF_WEBSRV_USE")) {
+	if(pql_get_define("PQL_CONF_WEBSRV_USE") and
+	   (pql_validate_administrator($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"), $_SESSION["USER_DN"]) or
+		pql_validate_administrator($_pql->ldap_linkid, $_REQUEST["rootdn"], pql_get_define("PQL_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"])))
+	{
+		// * Webserver administration is enabled
+		// * User is either webSrvAdministrator for domain OR:
+		// * User is super admin
 		$new = array('websrv'	=> 'Webserver Administration');
 		$buttons = $buttons + $new;
+	}
+
+	if(pql_get_define("PQL_CONF_HOSTACL_USE")) {
+	  $new = array('hostacl'	=> 'Host Control');
+	  $buttons = $buttons + $new;
 	}
 }
 
@@ -244,28 +278,10 @@ if(pql_get_define("PQL_CONF_SIMSCAN_USE")) {
   $buttons = $buttons + $new;
 }
 
-if($_SESSION["ADVANCED_MODE"]) {
-  $key = pql_get_define("PQL_ATTR_HOSTACL_USE");
-  if($$key) {
-	$new = array('hostacl' => 'Host control');
-	$buttons = $buttons + $new;
-  }
-
-  $key = pql_get_define("PQL_ATTR_SUDO_USE");
-  if($$key) {
-	$new = array('sudo' => 'Sudoers access');
-	$buttons = $buttons + $new;
-  }
-
-  $key = pql_get_define("PQL_ATTR_AUTOMOUNT_USE");
-  if($$key) {
-	$new = array('automount' => 'Automount information');
-	$buttons = $buttons + $new;
-  }
+if($_SESSION["ALLOW_BRANCH_CREATE"]) {
+  $new = array('action' => 'Actions');
+  $buttons = $buttons + $new;
 }
-
-$new = array('action' => 'Actions');
-$buttons = $buttons + $new;
 
 if($domainname) {
 ?>
@@ -311,12 +327,12 @@ if($_REQUEST["view"] == 'owner') {
 	  include("./tables/domain_details-dnszone.inc");
 	elseif($_REQUEST["view"] == 'options')
 	  include("./tables/domain_details-options.inc");
+	elseif($_REQUEST["view"] == 'access')
+	  include("./tables/domain_details-access.inc");
 	elseif($_REQUEST["view"] == 'aci')
 	  include("./tables/domain_details-aci.inc");
 	elseif($_REQUEST["view"] == 'websrv')
 	  include("./tables/domain_details-websrv.inc");
-	elseif($_REQUEST["view"] == 'automount')
-	  include("./tables/domain_details-automount.inc");
 	elseif($_REQUEST["view"] == 'hostacl')
 	  include($_SESSION["path"]."/host_modify.php");
 	elseif($_REQUEST["view"] == 'sudo')

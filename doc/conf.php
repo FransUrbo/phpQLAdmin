@@ -2,7 +2,7 @@
 <head>
 	<title>phpQL</title>
 	<link rel="stylesheet" href="../tools/normal.css" type="text/css">
-	<!-- $Id: conf.php,v 2.9 2005-01-12 20:08:39 turbo Exp $ -->
+	<!-- $Id: conf.php,v 2.11 2006-12-16 12:02:11 turbo Exp $ -->
 </head>
 
 <body bgcolor="#e7e7e7" background="../images/bkg.png">

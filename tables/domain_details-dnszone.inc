@@ -331,11 +331,14 @@
       <tr class="<?php pql_format_table(); ?>">
         <td><a href="bind9_del.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&dns_domain_name=<?=$dns_domain_name?>&action=del&type=domain&view=<?=$_REQUEST["view"]?>"><?php echo pql_complete_constant($LANG->_('Remove this %what%'), array('what' => $LANG->_('DNS zone'))); ?></a></td>
       </tr>
+<?php	if($_SESSION["ALLOW_BRANCH_CREATE"]) { ?>
 
       <tr class="<?php pql_format_table(); ?>">
         <td><a href="tools/dnszonetemplate.php?rootdn=<?=$_REQUEST["rootdn"]?>&domain=<?=$_REQUEST["domain"]?>&defaultdomain=<?=$dns_domain_name?>&view=<?=$_REQUEST["view"]?>"><?=$LANG->_('Create DNS template zone file')?></a></td>
       </tr>
-<?php } ?>
+<?php	}
+	  }
+?>
     </th>
   </table>
 

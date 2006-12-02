@@ -1,6 +1,6 @@
 <?php
 // Attribute plugin for additional group (memberUID)
-// $Id: attrib.additionalgroup.inc,v 2.13 2006-02-16 10:54:16 turbo Exp $
+// $Id: attrib.additionalgroup.inc,v 2.15 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ attribute_init(void)...
 function attribute_init() {

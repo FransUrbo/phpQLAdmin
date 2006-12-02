@@ -1,6 +1,6 @@
 <?php
 // edit attributes of a BIND9 DNS zone
-// $Id: bind9_edit_attributes.php,v 2.13 2005-08-14 10:54:39 turbo Exp $
+// $Id: bind9_edit_attributes.php,v 2.14 2006-12-02 13:06:30 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");

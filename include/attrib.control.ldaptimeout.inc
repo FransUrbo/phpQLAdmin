@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldaptimeout (max number of bytes in message)
 //
-// $Id: attrib.control.ldaptimeout.inc,v 2.9 2006-05-19 06:55:31 turbo Exp $
+// $Id: attrib.control.ldaptimeout.inc,v 2.11 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ ldaptimeout_check(type)
 function ldaptimeout_check($type) {
@@ -19,14 +19,11 @@ function ldaptimeout_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	if($host == "Global") {
+	if($host == "Global")
 	  $_REQUEST["ldaptimeout"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 												   pql_get_define("PQL_ATTR_LDAPTIMEOUT"), 0, pql_get_define("PQL_ATTR_CN")."=*");
-	} else {
-	  $_REQUEST["ldaptimeout"] = pql_get_attribute($_pql_control->ldap_linkid,
-												   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-												   pql_get_define("PQL_ATTR_LDAPTIMEOUT"));
-	}
+	else
+	  $_REQUEST["ldaptimeout"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_LDAPTIMEOUT"));
 
 	if(@is_null($_REQUEST["ldaptimeout"]))
 	  return true;
@@ -103,7 +100,7 @@ function ldaptimeout_save($type, $host)  {
 		if($host == "Global") {
 		  // Get all QLC host
 		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {
@@ -112,8 +109,7 @@ function ldaptimeout_save($type, $host)  {
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid,
-								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								  pql_get_define("PQL_ATTR_LDAPTIMEOUT"), 1, $_REQUEST["ldaptimeout"]))
 			$success = 1;
 		}

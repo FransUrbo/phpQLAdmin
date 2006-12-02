@@ -1,20 +1,4 @@
-dn: ou=%PQL_CONF_SUBTREE_AUTOMOUNTS%,o=Main Branch,c=SE
-objectClass: organizationalUnit
-ou: Automounts
-OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
-OpenLDAPaci: 1#entry#grant;r,s,c;ou#public#
-OpenLDAPaci: 2#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
-OpenLDAPaci: 3#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo2,o=Main Branch,c=SE
-
-dn: cn=host1.domain.tld,ou=%PQL_CONF_SUBTREE_AUTOMOUNTS%,o=Main Branch,c=SE
-cn: host1.domain.tld
-objectClass: device
-OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
-OpenLDAPaci: 1#entry#grant;r,s,c;dc#public#
-OpenLDAPaci: 2#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
-OpenLDAPaci: 3#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo2,o=Main Branch,c=SE
-
-dn: ou=auto.master,cn=host1.domain.tld,ou=%PQL_CONF_SUBTREE_AUTOMOUNTS%,o=Main Branch,c=SE
+dn: ou=auto.master,cn=host1.domain.tld,ou=Computers,c=SE
 objectClass: automountMap
 ou: auto.master
 OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
@@ -22,7 +6,7 @@ OpenLDAPaci: 1#entry#grant;r,s,c;ou#public#
 OpenLDAPaci: 2#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
 OpenLDAPaci: 3#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo2,o=Main Branch,c=SE
 
-dn: cn=/proc,ou=auto.master,cn=host1.domain.tld,ou=%PQL_CONF_SUBTREE_AUTOMOUNTS%,o=Main Branch,c=SE
+dn: cn=/proc,ou=auto.master,cn=host1.domain.tld,ou=Computers,c=SE
 objectClass: automount
 description: The /proc directory
 cn: /proc
@@ -31,15 +15,15 @@ OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
 OpenLDAPaci: 1#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
 OpenLDAPaci: 2#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo2,o=Main Branch,c=SE
 
-dn: cn=/mnt,ou=auto.master,cn=host1.domain.tld,ou=%PQL_CONF_SUBTREE_AUTOMOUNTS%,o=Main Branch,c=SE
+dn: cn=/mnt,ou=auto.master,cn=host1.domain.tld,ou=Computers,c=SE
 objectClass: automount
 cn: /mnt
-automountInformation: ldap ldap1.domain.tld:ou=auto.mnt,cn=host1.domain.tld,ou=%PQL_CONF_SUBTREE_AUTOMOUNTS%,o=Main Branch,c=SE
+automountInformation: ldap ldap1.domain.tld:ou=auto.mnt,cn=host1.domain.tld,ou=Computers,c=SE
 OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
 OpenLDAPaci: 1#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
 OpenLDAPaci: 2#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo2,o=Main Branch,c=SE
 
-dn: ou=auto.mnt,cn=host1.domain.tld,ou=%PQL_CONF_SUBTREE_AUTOMOUNTS%,o=Main Branch,c=SE
+dn: ou=auto.mnt,cn=host1.domain.tld,ou=Computers,c=SE
 objectClass: automountMap
 ou: auto.mnt
 OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
@@ -47,7 +31,7 @@ OpenLDAPaci: 1#entry#grant;r,s,c;ou#public#
 OpenLDAPaci: 2#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
 OpenLDAPaci: 3#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo2,o=Main Branch,c=SE
 
-dn: cn=floppy,ou=auto.mnt,cn=host1.domain.tld,ou=%PQL_CONF_SUBTREE_AUTOMOUNTS%,o=Main Branch,c=SE
+dn: cn=floppy,ou=auto.mnt,cn=host1.domain.tld,ou=Computers,c=SE
 objectClass: automount
 description: The floppy drive
 cn: floppy
@@ -56,7 +40,7 @@ OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
 OpenLDAPaci: 1#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
 OpenLDAPaci: 2#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo2,o=Main Branch,c=SE
 
-dn: cn=chroot,ou=auto.mnt,cn=host1.domain.tld,ou=%PQL_CONF_SUBTREE_AUTOMOUNTS%,o=Main Branch,c=SE
+dn: cn=chroot,ou=auto.mnt,cn=host1.domain.tld,ou=Computers,c=SE
 objectClass: automount
 description: A place where I can play around in a stable release...
 cn: chroot
@@ -65,7 +49,7 @@ OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
 OpenLDAPaci: 1#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
 OpenLDAPaci: 2#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo2,o=Main Branch,c=SE
 
-dn: cn=mp3s,ou=auto.mnt,cn=host1.domain.tld,ou=%PQL_CONF_SUBTREE_AUTOMOUNTS%,o=Main Branch,c=SE
+dn: cn=mp3s,ou=auto.mnt,cn=host1.domain.tld,ou=Computers,c=SE
 objectClass: automount
 description: A IDE disk with MP3's
 cn: mp3s
@@ -74,16 +58,16 @@ OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
 OpenLDAPaci: 1#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
 OpenLDAPaci: 2#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo2,o=Main Branch,c=SE
 
-dn: cn=cdrom,ou=auto.mnt,cn=host1.domain.tld,ou=%PQL_CONF_SUBTREE_AUTOMOUNTS%,o=Main Branch,c=SE
+dn: cn=cdrom,ou=auto.mnt,cn=host1.domain.tld,ou=Computers,c=SE
 objectClass: automount
 description: The CDROM drives, mounted as /mnt/cdrom/[12].
 cn: cdrom
-automountInformation: -fstype=autofs ldap:ou=auto.mnt.cdrom,cn=host1.domain.tld,ou=%PQL_CONF_SUBTREE_AUTOMOUNTS%,o=Main Branch,c=SE
+automountInformation: -fstype=autofs ldap:ou=auto.mnt.cdrom,cn=host1.domain.tld,ou=Computers,c=SE
 OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
 OpenLDAPaci: 1#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
 OpenLDAPaci: 2#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo2,o=Main Branch,c=SE
 
-dn: ou=auto.mnt.cdrom,cn=host1.domain.tld,ou=%PQL_CONF_SUBTREE_AUTOMOUNTS%,o=Main Branch,c=SE
+dn: ou=auto.mnt.cdrom,cn=host1.domain.tld,ou=Computers,c=SE
 objectClass: automountMap
 ou: auto.mnt.cdrom
 OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
@@ -91,7 +75,7 @@ OpenLDAPaci: 1#entry#grant;r,s,c;ou#public#
 OpenLDAPaci: 2#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
 OpenLDAPaci: 3#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo2,o=Main Branch,c=SE
 
-dn: cn=1,ou=auto.mnt.cdrom,cn=host1.domain.tld,ou=%PQL_CONF_SUBTREE_AUTOMOUNTS%,o=Main Branch,c=SE
+dn: cn=1,ou=auto.mnt.cdrom,cn=host1.domain.tld,ou=Computers,c=SE
 objectClass: automount
 description: First SCSI CDROM
 cn: 1
@@ -100,7 +84,7 @@ OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
 OpenLDAPaci: 1#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
 OpenLDAPaci: 2#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo2,o=Main Branch,c=SE
 
-dn: cn=2,ou=auto.mnt.cdrom,cn=host1.domain.tld,ou=%PQL_CONF_SUBTREE_AUTOMOUNTS%,o=Main Branch,c=SE
+dn: cn=2,ou=auto.mnt.cdrom,cn=host1.domain.tld,ou=Computers,c=SE
 objectClass: automount
 description: Second SCSI CDROM
 cn: 2
@@ -109,15 +93,15 @@ OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
 OpenLDAPaci: 1#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
 OpenLDAPaci: 2#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo2,o=Main Branch,c=SE
 
-dn: cn=/smb,ou=auto.master,cn=host1.domain.tld,ou=%PQL_CONF_SUBTREE_AUTOMOUNTS%,o=Main Branch,c=SE
+dn: cn=/smb,ou=auto.master,cn=host1.domain.tld,ou=Computers,c=SE
 objectClass: automount
 cn: /smb
-automountInformation: ldap ldap1.domain.tld:ou=auto.smb,cn=host1.domain.tld,ou=%PQL_CONF_SUBTREE_AUTOMOUNTS%,o=Main Branch,c=SE
+automountInformation: ldap ldap1.domain.tld:ou=auto.smb,cn=host1.domain.tld,ou=Computers,c=SE
 OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
 OpenLDAPaci: 1#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
 OpenLDAPaci: 2#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo2,o=Main Branch,c=SE
 
-dn: ou=auto.smb,cn=host1.domain.tld,ou=%PQL_CONF_SUBTREE_AUTOMOUNTS%,o=Main Branch,c=SE
+dn: ou=auto.smb,cn=host1.domain.tld,ou=Computers,c=SE
 objectClass: automountMap
 ou: auto.smb
 OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
@@ -125,7 +109,7 @@ OpenLDAPaci: 1#entry#grant;r,s,c;ou#public#
 OpenLDAPaci: 2#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
 OpenLDAPaci: 3#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo2,o=Main Branch,c=SE
 
-dn: cn=shared,ou=auto.smb,cn=host1.domain.tld,ou=%PQL_CONF_SUBTREE_AUTOMOUNTS%,o=Main Branch,c=SE
+dn: cn=shared,ou=auto.smb,cn=host1.domain.tld,ou=Computers,c=SE
 objectClass: automount
 description: Shared SMB folder
 cn: shared
@@ -133,3 +117,4 @@ automountInformation: -fstype=smbfs,username=demo1,password=demo1 ://smbhost1/Sh
 OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
 OpenLDAPaci: 1#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
 OpenLDAPaci: 2#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo2,o=Main Branch,c=SE
+

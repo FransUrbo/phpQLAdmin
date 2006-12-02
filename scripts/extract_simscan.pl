@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# $Id: extract_simscan.pl,v 1.2 2005-09-16 06:08:52 turbo Exp $
+# $Id: extract_simscan.pl,v 1.4 2006-12-16 12:03:09 turbo Exp $
 
 $DEBUG		 = 1;
 $SIMSCAN_CONF	 = "/etc/qmail/simcontrol";

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // accountstatus (status of mailaccount)
-// $Id: attrib.accountstatus.inc,v 2.29 2006-05-19 06:33:11 turbo Exp $
+// $Id: attrib.accountstatus.inc,v 2.31 2006-12-16 12:02:14 turbo Exp $
 
 /* DLW:   When the calendar gets a value of 2003.12.25, it gets stored or displayed as 2003/12/24 (@7am)
  *        I think it's having problems with time zones.  Look into it.
@@ -218,7 +218,7 @@ function attribute_save($type) {
 		  $msg = pql_complete_constant($LANG->_('Failed to change %what%'),
 									   array('what' => $LANG->_('Status'))) . ": " . pql_format_error(0);
 		
-		if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+		if(pql_get_define("PQL_CONF_DEBUG_ME"))
 		  die($msg);
 		else
 		  attribute_forward($msg);

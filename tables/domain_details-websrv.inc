@@ -1,55 +1,122 @@
 <?php
+// View and manage web servers accessible from this domain/branch.
+// $Id: domain_details-websrv.inc,v 1.23 2006-12-16 12:03:12 turbo Exp $
+
+// This view is different from 'host_details-websrv.inc' in the way that
+// domain/branch (admins etc) is/should be more interested in the virtual
+// host he/she owns, than what (physical) server and webserver container
+// the virtual host runs on.
+// The idea is to only show the virtual hosts, and then have (if running
+// in advanced mode) a list of webserver containers this virtual host is
+// located on...
+// The domain_details-websrv*.inc files are _very_ similar to the host
+// details counterpart (I actually took the host details pages, saved
+// them as a domain view file and then modified them to fit this different
+// layout...
+
+// {{{ Include Webserver API etc
 require($_SESSION["path"]."/include/pql_websrv.inc");
+// }}}
 
-// {{{ ---------------- GET WEB SERVER OBJECTS
-$servers = pql_websrv_find_servers($_pql->ldap_linkid, $_REQUEST["domain"]);
-if(!$_REQUEST["server"] and count($servers)) {
-  // Take the first server as default one.
-  foreach($servers as $server_name => $_REQUEST["server"]) break;
-  $server = $_REQUEST["server"];
-} else {
-  // We're called with a webserver. Make sure we use this in all following queries.
-  if(eregi('^'.pql_get_define("PQL_ATTR_CN"), $_REQUEST["server"])) {
-	// The server is a DN
-	$server = $_REQUEST["server"];
-	
-    // Extract the name from the DN
-	$tmp = split(',', $server);
-	$tmp = split('=', $tmp[0]);
-	$server_name = $tmp[1];
-  } else {
-	// The server isn't a DN
-	$server_name = $_REQUEST["server"];
-
-	// Generate a server DN
-	$server = pql_get_define("PQL_ATTR_CN")."=".$_REQUEST["server"].",".pql_get_define("PQL_CONF_SUBTREE_APACHE").",".$_REQUEST["domain"];
-  }
+// {{{ Get all domain names - primary and additional - this domain 'own'
+$domain_additional = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
+if(is_array($domain_additional)) {
+  $domains = $domain_additional;
+} elseif($domain_additional) {
+  $domains = array($domain_additional);
 }
-$server_reference = $server_name;
+
+$domain_default    = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_DEFAULTDOMAIN"));
+if($domain_default) {
+  $domains[] = $domain_default;
+}
 // }}}
 
-if(count($servers)) {
-  // {{{ -------------- SETUP THE BASE LINK URL AND IMAGES HTML
-  $img["mod"]  = '<img src="images/edit.png" width="12" height="12" alt="Modify value" border="0">';
-  $img["del"]  = '<img src="images/del.png"  width="12" height="12" alt="Delete value" border="0">';
-
-  $LINK_URL    = "websrv_edit_attributes.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"];
-  $LINK_URL   .= "&server=".urlencode($server)."&view=".$_REQUEST["view"];
+// {{{ Get all virtual hosts which this domain/branch 'own'.
+$filter = "(|";
+for($i=0; $domains[$i]; $i++) {
+  $filter .= "(".pql_get_define("PQL_ATTR_WEBSRV_SRV_NAME")."=*".$domains[$i].")";
+}
+$filter .= ")";
+$virt_hosts = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $filter);
 // }}}
 
-  // {{{ -------------- SETUP THE SERVER BUTTONS
-  if(count($servers)) {
+// {{{ Setup a virtual host array
+if(is_array($virt_hosts)) {
+  for($i=0; $virt_hosts[$i]; $i++) {
+	$dn_parts = ldap_explode_dn($virt_hosts[$i], 0);
+
+	$virt_host = $dn_parts[0];
+	$container = $dn_parts[1];
+
+	// Remove the attribute from the values
+	$virt_host = preg_replace('/.*=/', '', $virt_host);
+	$container = preg_replace('/.*=/', '', $container);
+
+	// Setup an array, ordered firstly on virtual host, then on web container
+	$VIRTHOSTS[$virt_host][$container] = $virt_hosts[$i];
+  }
+} else {
+  // Simplest way to avoid PHP warnings: Invalid argument supplied for foreach()
+  $VIRTHOSTS = array();
+  $host_dn = array();
+}
+// }}}
+
+// {{{ Figure out what part of the virtual hosts array to use
+if(!@$_REQUEST["host"]) {
+  // Take the first virtual host as default one.
+  foreach($VIRTHOSTS as $_REQUEST["host"] => $host_dn) break;
+} else {
+  // Extract only the specific virtual host part of the VIRTHOSTS array.
+  // This so that the next foreach() works in all cases...
+  $virt_host_name = $_REQUEST["host"];
+  $host_dn = $VIRTHOSTS[$virt_host_name];
+}
+
+// For internal use - we MUST know the name of the webserver container
+// of this host - this so that we can retreive the information about
+// this virtual host.
+foreach($host_dn as $container => $virt_host_dn) break;
+// }}}
+
+if(count($VIRTHOSTS)) {
+  // {{{ Setup the server buttons
 ?>
   <table cellspacing="0" border="0" width="50%" cellpadding="0">
     <th colspan="3" align="left">
-<?php foreach($servers as $srv => $dn) {
-		if($dn == $_REQUEST["server"]) {
+<?php foreach($VIRTHOSTS as $name => $dn) {
+		if($name == $_REQUEST["host"]) {
 		  $mark = "&mark=yes";
 		} else {
 		  unset($mark);
 		}
 ?>
-    <a href="<?=$_SERVER["PHP_SELF"]."?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&view=".$_REQUEST["view"]."&server=".urlencode($dn)?>"><img alt="/ <?=$srv?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?=$srv?><?=$mark?>"></a>
+    <a href="<?=$_SERVER["PHP_SELF"]?>?rootdn=<?=urlencode($_REQUEST["rootdn"])?>&domain=<?=urlencode($_REQUEST["domain"])?>&view=<?=$_REQUEST["view"]?>&host=<?=urlencode($name)?>&ref=<?=$_REQUEST["ref"]?>"><img alt="// <?=$name?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?=$name?><?=$mark?>"></a>
+<?php } ?>
+    </th>
+  </table>
+
+  <br>
+<?php
+// }}}
+
+  // {{{ Setup the virtual host directory buttons
+  // Find any virtual host locations for this virtual host
+  $locations = pql_websrv_get_virtual_host_directories($_pql->ldap_linkid, '', '', $virt_host_dn);
+
+  if(count($locations) >= 1) {
+?>
+  <table cellspacing="0" border="0" width="50%" cellpadding="0">
+    <th colspan="3" align="left">
+<?php foreach($locations as $virt_host_location => $data) {
+		if($virt_host_location == $_REQUEST["hostdir"]) {
+		  $mark = "&mark=yes";
+		} else {
+		  unset($mark);
+		}
+?>
+    <a href="<?=$_SERVER["PHP_SELF"]?>?rootdn=<?=urlencode($_REQUEST["rootdn"])?>&domain=<?=urlencode($_REQUEST["domain"])?>&view=<?=$_REQUEST["view"]?>&host=<?=urlencode($_REQUEST['host'])?>&hostdir=<?=$virt_host_location?>&ref=<?=$_REQUEST["ref"]?>"><img alt="// <?=$virt_host_location?> \\" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?=$virt_host_location?><?=$mark?>"></a>
 <?php } ?>
     </th>
   </table>
@@ -59,92 +126,15 @@ if(count($servers)) {
   }
 // }}}
 
+  // {{{ Extract information about this virtual host (or virtual host location)
+  if(@$_REQUEST["hostdir"])
+	// Called with a virtual host location. Add that at the beginning of the virtual host DN.
+	$virt_host_dn = pql_get_define("PQL_ATTR_WEBSRV_SRV_IP").'='.$_REQUEST["hostdir"].','.$virt_host_dn;
 
-  // {{{ -------------- GET VIRTUAL HOST OBJECTS
-  $virt_hosts = pql_websrv_get_virtual_host_objects($_pql->ldap_linkid, $server);
-  if(count($virt_hosts) > 1) {
-    if(empty($_REQUEST["virthost"])) {
-	  // Use the first virtual host as default (ie, if we're not called with a specific virtual host to show)
-	  foreach($virt_hosts as $_REQUEST["virthost"] => $data) break;
-    }
-
-    // Shortcut to simplify referencing the virtual host
-    $virt_host = $_REQUEST["virthost"];
-	$server_reference = $server_name." => ".$virt_host;
-
-    if(file_exists($_SESSION["path"]."/.DEBUG_WEBSRV")) {
-      echo "DEBUG (virtual host): $virt_host";
-      printr($virt_hosts[$virt_host]);
-    }
+  $virt_host_object = pql_websrv_get_virtual_host($_pql->ldap_linkid, $virt_host_dn);
 // }}}
 
-	// {{{ -------------- SETUP THE VIRTUAL HOST BUTTONS
-	if(count($virt_hosts) > 1) {
-?>
-  <table cellspacing="0" border="0" width="50%" cellpadding="0">
-    <th colspan="3" align="left">
-<?php foreach($virt_hosts as $srv => $data) {
-		if($srv == $_REQUEST["virthost"]) {
-		  $mark = "&mark=yes";
-		} else {
-		  unset($mark);
-		}
-?>
-    <a href="<?=$_SERVER["PHP_SELF"]."?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&view=".$_REQUEST["view"]."&server=".urlencode($server)."&virthost=$srv"?>"><img alt="/ <?=$srv?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?=$srv?><?=$mark?>"></a>
-<?php } ?>
-    </th>
-  </table>
-
-  <br>
-<?php
-		$LINK_URL .= "&virthost=".$virt_host;
-	}
-// }}}
-
-
-	// {{{ -------------- GET VIRTUAL HOST DIRECTORIES
-	$virt_host_dirs = pql_websrv_get_virtual_host_directories($_pql->ldap_linkid, $server, $virt_host);
-	if(count($virt_host_dirs) > 1) {
-	  // Shortcut to simplify referencing the virtual host
-	  if(empty($_REQUEST["hostdir"])) {
-		// Use the first virtual host directory as default (ie, if we're not called with a specific virtual host to show)
-		foreach($virt_host_dirs as $_REQUEST["hostdir"] => $data) break;
-	  } else {
-		$virt_host_dir = $_REQUEST["hostdir"];
-		$server_reference = $server_name." => ".$virt_host." => ".$virt_host_dir;
-	  }
-	  
-	  if(file_exists($_SESSION["path"]."/.DEBUG_WEBSRV")) {
-		echo "DEBUG (virtual host directory/-ies): $virt_host_dirs";
-		printr($virt_host_dirs[$virt_host_dir]);
-	  }
-	}
-// }}}
-
-	// {{{ -------------- SETUP THE VIRTUAL HOST DIRECTORY BUTTONS
-	if(count($virt_host_dirs) > 1) {
-?>
-  <table cellspacing="0" border="0" width="50%" cellpadding="0">
-    <th colspan="3" align="left">
-<?php foreach($virt_host_dirs as $srv => $data) {
-		if($srv == $_REQUEST["hostdir"]) {
-		  $mark = "&mark=yes";
-		} else {
-		  unset($mark);
-		}
-?>
-    <a href="<?=$_SERVER["PHP_SELF"]."?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&view=".$_REQUEST["view"]."&server=".urlencode($server)."&virthost=$virt_host&hostdir=$srv"?>"><img alt="/ <?=$srv?> \" vspace="0" hspace="0" border="0" src="tools/navbutton.php?label=<?=$srv?><?=$mark?>"></a>
-<?php } ?>
-    </th>
-  </table>
-
-  <br>
-<?php
-		if($_REQUEST["hostdir"]) {
-			$LINK_URL .= "&hostdir=$virt_host_dir";
-		}
-	}
-// }}}
+  // {{{ Include tables/host_details-websrv_virt{dir,host}.inc
 ?>
 
   <table cellspacing="0" cellpadding="3" border="0">
@@ -157,35 +147,30 @@ if($_REQUEST["hostdir"]) {
 ?>
   </table>
 
-<?php	} else { ?>
-  <?=$LANG->_('No virtual hosts in this server')?>.
-<?php	} ?>
-<?php } else { ?>
+<?php
+// }}}
+} else {
+  echo $LANG->_("No virtual hosts configured for this branch");
+}
+
+// {{{ If Branch/Domain or SUPER admin - Show 'Add virtual host' link
+if((pql_validate_administrator($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR"), $_SESSION["USER_DN"]) or
+	pql_validate_administrator($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"), $_SESSION["USER_DN"]) or
+	$_SESSION["ALLOW_BRANCH_CREATE"]) and $_SESSION["ADVANCED_MODE"])
+{
+?>
   <br>
-
-  <?=$LANG->_('No web servers in this branch')?>.
-<?php } ?>
-
-  <br>
-
   <table cellspacing="0" cellpadding="3" border="0">
     <th align="left"><?=$LANG->_('Actions')?></th>
       <tr class="<?php pql_format_table(); ?>">
-        <td><a href="websrv_add.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&view=<?=$_REQUEST["view"]?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('webserver'))); ?></a></td>
+        <td><a href="websrv_add.php?rootdn=<?=urlencode($_REQUEST["rootdn"])?>&domain=<?=urlencode($_REQUEST["domain"])?>&view=<?=$_REQUEST["view"]?>&ref=domain"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('virtual host'))); ?></a></td>
       </tr>
-<?php if($servers) { ?>
-
-      <tr class="<?php pql_format_table(); ?>">
-        <td><a href="websrv_add.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&view=<?=$_REQUEST["view"]?>&server=<?=urlencode($server)?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('virtual server'))); ?></a></td>
-      </tr>
-
-      <tr class="<?php pql_format_table(); ?>">
-        <td><a href="websrv_add.php?rootdn=<?=$url["rootdn"]?>&domain=<?=$url["domain"]?>&view=<?=$_REQUEST["view"]?>&server=<?=urlencode($server)?>&virthost=<?=$virt_host?>"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('virtual server directory'))); ?></a></td>
-      </tr>
-<?php } ?>
     </th>
   </table>
 <?php
+}
+// }}}
+
 /*
  * Local variables:
  * mode: php

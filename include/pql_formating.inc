@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.62 2006-11-24 14:36:49 turbo Exp $
+// $Id: pql_formating.inc,v 2.63 2006-12-02 13:06:50 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry, extra_newline)
 // Create a LDIF object to print in case of error
@@ -17,7 +17,10 @@ function pql_create_ldif($func, $dn, $entry, $extra_newline = 0) {
 	$nl = '';
   
   if($func)
-	$LDIF .= "<br>\n<pre>\n--- DEBUG: $func($account_type) ---$nl\n";
+	$LDIF .= "<br>\n<pre>\n";
+
+  if(!file_exists($_SESSION["path"]."/.DEBUG_LDIF"))
+	$LDIF .= "--- DEBUG: $func($account_type) ---$nl\n";
   
   if($dn)
 	$LDIF .= "dn: $dn$nl\n";
@@ -76,8 +79,11 @@ function pql_create_ldif($func, $dn, $entry, $extra_newline = 0) {
 	}
   }
   
+  if(!file_exists($_SESSION["path"]."/.DEBUG_LDIF"))
+	$LDIF .= "--- DEBUG ---\n";
+
   if($func)
-	$LDIF .= "--- DEBUG ---\n</pre>\n";
+	$LDIF .= "</pre>\n";
   
   return($LDIF);
 }
@@ -98,10 +104,13 @@ function pql_complete_constant($text, $replacement) {
 // }}}
 
 // {{{ pql_generate_button(button array)
-function pql_generate_button($buttons, $link = '') {
+function pql_generate_button($buttons, $link = '', $url = '') {
   global $LANG, $_REQUEST;
 
-  $url = $_SERVER["PHP_SELF"] . "?";
+  if(empty($url))
+	$url = $_SERVER["PHP_SELF"] . "?";
+  else
+	$url .= '?';
   
   // It's not sure we have a rootdn and/or domain, so only add those
   // it's set
@@ -277,8 +286,8 @@ function pql_format_table_single($linkid, $text, $url, $array, $attrib, $class =
 ?>
         <td class="<?=$class?>"><?=$username?></td>
         <td class="<?=$class?>" align="right">
-          <?php if($url["mod"]) { ?><a href="<?=$url["mod"]?>&<?=$attrib?>=<?=$value?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$text["mod"]?>"></a><?php } ?>
-          <?php if($url["del"]) { ?><a href="<?=$url["del"]?>&<?=$attrib?>=<?=$value?>"><img src="images/del.png"  width="12" height="12" border="0" alt="<?=$text["del"]?>"></a><?php } ?>
+          <?php if($url["mod"]) { ?><a href="<?=$url["mod"]?>&<?=$attrib?>=<?=urlencode($value)?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$text["mod"]?>"></a><?php } ?>
+          <?php if($url["del"]) { ?><a href="<?=$url["del"]?>&<?=$attrib?>=<?=urlencode($value)?>"><img src="images/del.png"  width="12" height="12" border="0" alt="<?=$text["del"]?>"></a><?php } ?>
         </td>
       </tr>
 <?php
@@ -865,6 +874,30 @@ function pql_strip_username($email) {
 	  return $email[1];
     
     return false;
+}
+// }}}
+
+// {{{ pql_separate_host_domain(fqdn)
+// Separate the domainname and hostname from the FQDN
+function pql_separate_host_domain($fqdn) {
+  $fqdn = ereg_replace(':.*', '', $fqdn); // Remove any port
+  $tmp = split('\.', $fqdn);
+  
+  $cnt = count($tmp)-1;
+  
+  // Domain name is/should be the last two parts
+  $domainname = $tmp[$cnt-1].'.'.$tmp[$cnt];
+  unset($tmp[$cnt-1]); unset($tmp[$cnt]);
+  
+  // Hostname is everything UP TO the domainname
+  $hostname = '';
+  for($i=0; $i < $cnt-1; $i++) {
+	$hostname .= $tmp[$i];
+	if($tmp[$i+1])
+	  $hostname .= ".";
+  }
+
+  return(array($hostname, $domainname));
 }
 // }}}
 

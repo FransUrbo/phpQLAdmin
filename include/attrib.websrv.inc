@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for the Webserver Configuration editor
 //
-// $Id: attrib.websrv.inc,v 1.15 2006-07-26 21:31:09 turbo Exp $
+// $Id: attrib.websrv.inc,v 1.17 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {

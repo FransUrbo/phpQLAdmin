@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // sn (Last name)
-// $Id: attrib.sn.inc,v 1.1 2005-08-15 06:16:14 turbo Exp $
+// $Id: attrib.sn.inc,v 1.3 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {

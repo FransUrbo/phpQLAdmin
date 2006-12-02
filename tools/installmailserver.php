@@ -1,7 +1,7 @@
 <?php
 // This creates a script to be executed on the new mailserver,
 // and configures all the nessesary files for QmailLDAP/Controls.
-// $Id: installmailserver.php,v 1.11 2005-03-09 09:59:04 turbo Exp $
+// $Id: installmailserver.php,v 1.13 2006-12-16 12:03:17 turbo Exp $
 //
 // Creates the following files
 //	ldapserver

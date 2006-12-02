@@ -3,7 +3,7 @@
 // pql_hostctrl.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_hostctrl.inc,v 1.3 2006-07-06 18:01:07 turbo Exp $
+// $Id: pql_hostctrl.inc,v 1.5 2006-12-16 12:02:15 turbo Exp $
 
 $LANG = new pql_lang($_pql) or die("Couldn't make a new LANG object");
 require($_SESSION["path"]."/left-head.html");

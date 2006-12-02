@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for spamAssassin
-// $Id: attrib.spamassassin.inc,v 2.4 2006-10-20 12:06:02 turbo Exp $
+// $Id: attrib.spamassassin.inc,v 2.6 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {

@@ -1,6 +1,6 @@
 <?php
 // shows configuration of phpQLAdmin
-// $Id: config_ldap.php,v 1.20 2006-07-19 20:58:40 turbo Exp $
+// $Id: config_ldap.php,v 1.22 2006-12-16 12:02:08 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");

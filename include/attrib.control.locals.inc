@@ -2,7 +2,7 @@
 // control attribute plugin for
 // locals (which domains should be treated as locals)
 //
-// $Id: attrib.control.locals.inc,v 2.39 2006-05-19 06:55:31 turbo Exp $
+// $Id: attrib.control.locals.inc,v 2.41 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ locals_check(type)
 function locals_check($type) {
@@ -36,14 +36,11 @@ function locals_init($host) {
     global $_pql_control;
     
     // fetch data from ldap server
-	if($host == "Global") {
+	if($host == "Global")
 	  $_REQUEST["locals"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 											  pql_get_define("PQL_ATTR_LOCALS"), 0, pql_get_define("PQL_ATTR_CN")."=*");
-	} else {
-	  $_REQUEST["locals"] = pql_get_attribute($_pql_control->ldap_linkid,
-											  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											  pql_get_define("PQL_ATTR_LOCALS"));
-	}
+	else
+	  $_REQUEST["locals"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_LOCALS"));
     
     if(!@$_REQUEST["locals"])
 	  return true;
@@ -60,10 +57,12 @@ function locals_print_view($host) {
     // init data
     locals_init($host);
 
-	$_REQUEST["rootdn"] = pql_get_rootdn(pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"]);
+	// init data
+	$_REQUEST["rootdn"] = pql_get_rootdn($host);
+	$cn = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_CN"));
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
-    <th align="left" colspan="3"><?=pql_complete_constant($LANG->_('Allowed %attrib% for host %host%'), array('host' => $host, 'attrib' => pql_get_define("PQL_ATTR_LOCALS")))?>
+    <th align="left" colspan="3"><?=pql_complete_constant($LANG->_('Allowed %attrib% for host %host%'), array('host' => $cn, 'attrib' => pql_get_define("PQL_ATTR_LOCALS")))?>
       <tr>
         <td class="title" colspan="3"><?=$LANG->_('Mails accepted as local by mail server')?></td>
       </tr>
@@ -116,7 +115,7 @@ function locals_print_form() {
 ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
-      <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain'))); ?></th>
+      <th colspan="3" align="left"><?php echo pql_complete_constant($LANG->_('Add %what%'), array('what' => $LANG->_('domain'))); ?>
         <tr class="<?php pql_format_table(); ?>">
           <td><input type="text" name="set" size="30"></td>
         </tr>
@@ -154,8 +153,7 @@ function locals_save($type, $host) {
     switch($type) {
       case "replicate":
 		// {{{ Start replication manually
-		if(pql_control_update_domains($_pql_control, $_REQUEST["rootdn"],
-									  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		if(pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $host,
 									  $host, '', pql_get_define("PQL_ATTR_LOCALS")))
 		  $msg = pql_complete_constant($LANG->_('Successfully replicated %what%'),
 									   array('what' => pql_get_define("PQL_ATTR_LOCALS")));
@@ -169,8 +167,7 @@ function locals_save($type, $host) {
 
       case "del":
 		// {{{ remove specified domain from locals in host object
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								pql_get_define("PQL_ATTR_LOCALS"), $host, ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully removed %domain% from %what%'),
 									   array('what'   => pql_get_define("PQL_ATTR_LOCALS"),
@@ -189,7 +186,7 @@ function locals_save($type, $host) {
 		if($host == "Global") {
 		  // Get all QLC host
 		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {
@@ -198,8 +195,7 @@ function locals_save($type, $host) {
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid,
-								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								  $_REQUEST["attrib"], '', $_REQUEST["set"]))
 			$success = 1;
 		}

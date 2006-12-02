@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // additional domain name
-// $Id: attrib.additionaldomainname.inc,v 2.34 2006-11-17 14:11:22 turbo Exp $
+// $Id: attrib.additionaldomainname.inc,v 2.35 2006-12-02 13:06:49 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -137,7 +137,7 @@ function attribute_save($type) {
 	return false;
   }
   // }}}
-  
+
   switch($type) {
   case "add":
   case "modify":

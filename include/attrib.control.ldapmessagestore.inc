@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldapmessagestore (default prefix for mailbox paths)
 //
-// $Id: attrib.control.ldapmessagestore.inc,v 2.20 2006-05-19 06:55:31 turbo Exp $
+// $Id: attrib.control.ldapmessagestore.inc,v 2.22 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ ldapmessagestore_check(type)
 function ldapmessagestore_check($type) {
@@ -24,14 +24,11 @@ function ldapmessagestore_init($host) {
 	global $_pql_control;
 	
 	// fetch data from ldap server
-	if($host == "Global") {
+	if($host == "Global")
 	  $_REQUEST["ldapmessagestore"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 														pql_get_define("PQL_ATTR_LDAPMESSAGESTORE"), 0, pql_get_define("PQL_ATTR_CN")."=*");
-	} else {
-	  $_REQUEST["ldapmessagestore"] = pql_get_attribute($_pql_control->ldap_linkid,
-														pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-														pql_get_define("PQL_ATTR_LDAPMESSAGESTORE"));
-	}
+	else
+	  $_REQUEST["ldapmessagestore"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_LDAPMESSAGESTORE"));
 
 	if(@is_null($_REQUEST["ldapmessagestore"]))
 	  return true;
@@ -98,7 +95,7 @@ function ldapmessagestore_save($type, $host) {
 		if($host == "Global") {
 		  // Get all QLC host
 		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {
@@ -107,8 +104,7 @@ function ldapmessagestore_save($type, $host) {
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid,
-								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								  pql_get_define("PQL_ATTR_LDAPMESSAGESTORE"), 1, $_REQUEST["ldapmessagestore"]))
 			$success = 1;
 		}

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldapclusterhosts (max number of bytes in message)
 //
-// $Id: attrib.control.ldapclusterhosts.inc,v 2.9 2006-05-19 06:55:31 turbo Exp $
+// $Id: attrib.control.ldapclusterhosts.inc,v 2.11 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ ldapclusterhosts_check(type)
 function ldapclusterhosts_check($type) {
@@ -19,14 +19,11 @@ function ldapclusterhosts_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	if($host == "Global") {
+	if($host == "Global")
 	  $_REQUEST["ldapclusterhosts"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 														pql_get_define("PQL_ATTR_LDAPCLUSTER_HOSTS"), 0, pql_get_define("PQL_ATTR_CN")."=*");
-	} else {
-	  $_REQUEST["ldapclusterhosts"] = pql_get_attribute($_pql_control->ldap_linkid,
-														pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-														pql_get_define("PQL_ATTR_LDAPCLUSTER_HOSTS"));
-	}
+	else
+	  $_REQUEST["ldapclusterhosts"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_LDAPCLUSTER_HOSTS"));
 
 	if(@$_REQUEST["ldapclusterhosts"])
 	  return true;
@@ -113,7 +110,7 @@ function ldapclusterhosts_save($type, $host)  {
 		if($host == "Global") {
 		  // Get all QLC host
 		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {
@@ -122,8 +119,7 @@ function ldapclusterhosts_save($type, $host)  {
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid,
-								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								  pql_get_define("PQL_ATTR_LDAPCLUSTER_HOSTS"), '', $_REQUEST["ldapclusterhosts"]))
 			$success = 1;
 		}
@@ -142,8 +138,7 @@ function ldapclusterhosts_save($type, $host)  {
 
 	  case "del":
 		// {{{ delete value
-		if(pql_modify_attribute($_pql_control->ldap_linkid,
-								pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								pql_get_define("PQL_ATTR_LDAPCLUSTER_HOSTS"), $_REQUEST["ldapclusterhosts"], ''))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $LANG->_('ldapclusterhosts options')));

@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.216 2006-08-09 08:10:05 turbo Exp $
+// $Id: pql.inc,v 2.217 2006-12-02 13:06:50 turbo Exp $
 //
 
 // ----------------------------
@@ -846,8 +846,8 @@ function pql_fix_path($path) {
 }
 // }}}
 
-// {{{ pql_add2array($old, $new)
-function pql_add2array($old, $new) {
+// {{{ pql_add2array(&$old, $new)
+function pql_add2array(&$old, $new) {
   if(!@$new)
 	return($old);
 

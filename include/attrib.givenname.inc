@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // givenname (First name)
-// $Id: attrib.givenname.inc,v 1.1 2005-08-15 06:16:14 turbo Exp $
+// $Id: attrib.givenname.inc,v 1.3 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {

@@ -1,6 +1,6 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.56 2006-10-03 15:31:39 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.57 2006-12-02 13:06:31 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -45,7 +45,7 @@ function attribute_forward($msg) {
 		. "&domain=" . $url["domain"]
 		. "&view=" . $_REQUEST["view"] . "&msg=$msg";
 
-	if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+	if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 	  if(file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
 		$now = pql_format_return_unixtime();
 		echo "Now: <b>$now</b><br>";
@@ -65,6 +65,10 @@ if(!$plugin) {
 } elseif(!file_exists($_SESSION["path"]."/include/$plugin")) {
     die("<span class=\"error\">ERROR: Plugin file defined for attribute '<i>".$_REQUEST["attrib"]."</i>' does not exists!</span>");
 }
+if(pql_get_define("PQL_CONF_DEBUG_ME")) {
+  echo "include: include/$plugin<br>";
+}
+
 include($_SESSION["path"]."/include/$plugin");
 // }}}
 
@@ -159,7 +163,7 @@ if(!$_REQUEST["type"]) {
   }
 }
 
-if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+if(pql_get_define("PQL_CONF_DEBUG_ME")) {
   echo "REQUEST:";
   ksort($_REQUEST);
   printr($_REQUEST);
@@ -218,6 +222,9 @@ if(@$_REQUEST["submit"] == 1) {
 	//	tables/domain_details-aci.inc
 	//	tables/domain_details-default.inc
 	//	tables/domain_details-owner.inc
+	//	tables/user_details-access.inc
+	// 		Administrate webservers
+	// 		Administrate DNS
 
 	if($_REQUEST["action"])
 	  attribute_save($_REQUEST["action"]);
@@ -234,9 +241,6 @@ if(@$_REQUEST["submit"] == 1) {
 		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_SIMSCAN_SPAM")) or
 		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_SIMSCAN_CLAM")) or
 		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_SIMSCAN_TROPHIE")) or
-		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_HOSTACL_USE")) or
-		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_SUDO_USE")) or
-		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_AUTOMOUNT_USE")) or
 		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_LOCK_USERNAME")) or
 		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_LOCK_EMAILADDRESS")) or
 		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_LOCK_DOMAINADDRESS")) or

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // ezmlmVirtualUser in a domain/branch
-// $Id: attrib.ezmlmuser.inc,v 2.4 2005-01-12 13:50:55 turbo Exp $
+// $Id: attrib.ezmlmuser.inc,v 2.6 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {

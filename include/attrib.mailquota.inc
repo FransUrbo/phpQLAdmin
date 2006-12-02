@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mailquota.inc,v 2.32 2005-09-16 06:08:50 turbo Exp $
+// $Id: attrib.mailquota.inc,v 2.34 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {

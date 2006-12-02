@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: extract_dnsserver_zones.sh,v 1.4 2006-05-19 07:14:45 turbo Exp $
+# $Id: extract_dnsserver_zones.sh,v 1.6 2006-12-16 12:03:09 turbo Exp $
 
 # Uncomment for real live action!!
 # -> BE CAREFULL!!

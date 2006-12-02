@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: domain_add.php,v 2.65 2005-09-16 06:08:41 turbo Exp $
+// $Id: domain_add.php,v 2.66 2006-12-02 13:06:31 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -166,12 +166,12 @@ if(pql_write_add($_pql->ldap_linkid, $dn, $entry, 'branch', 'domain_add.php')) {
 		if(pql_execute(pql_get_define("PQL_CONF_SCRIPT_CREATE_DOMAIN", $_REQUEST["rootdn"]), 0)) {
 			echo pql_complete_constant($LANG->_('The %what% add script failed'),
 									   array('what' => $LANG->_('domain'))) . "!";
-			$msg .= " " . urlencode(pql_complete_constant($LANG->_('The %what% add script failed'),
+			$msg .= "<br>" . urlencode(pql_complete_constant($LANG->_('The %what% add script failed'),
 														  array('what' => $LANG->_('domain'))) . "!");
 		} else {
 			echo "<b>" . pql_complete_constant($LANG->_('Successfully executed the %what% add script'),
 											   array('what' => $LANG->_('domain'))) . "</b><br>";
-			$msg .= " " . urlencode(pql_complete_constant($LANG->_('Successfully executed the %what% add script'),
+			$msg .= "<br>" . urlencode(pql_complete_constant($LANG->_('Successfully executed the %what% add script'),
 														  array('what' => $LANG->_('domain'))));
 		}
 
@@ -185,7 +185,7 @@ if(pql_write_add($_pql->ldap_linkid, $dn, $entry, 'branch', 'domain_add.php')) {
 
 		die();
 		// }}}
-	} elseif(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+	} elseif(pql_get_define("PQL_CONF_DEBUG_ME")) {
 	  if(file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
 		$now = pql_format_return_unixtime();
 		echo "Now: <b>$now</b><br>";

@@ -1,6 +1,6 @@
 <?php
 // Add a ezmlm mailinglist
-// $Id: ezmlm_add.php,v 1.43 2005-09-25 08:07:27 turbo Exp $
+// $Id: ezmlm_add.php,v 1.45 2006-12-16 12:02:09 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -167,7 +167,7 @@ if(!empty($_REQUEST["submit"])) {
 	  
 	  $url  = "ezmlm_detail.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&domainname=".$_REQUEST["domainname"];
 	  $url .= "&listno=".$_REQUEST["listname"]."&msg=$msg&rlnb=3";
-	  if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+	  if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 		echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
 		die("<b>$url</b>");
 	  } else

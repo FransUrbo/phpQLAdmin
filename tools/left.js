@@ -1,4 +1,4 @@
-/* $Id: left.js,v 1.6 2001/12/27 15:06:25 loic1 Exp $ */
+/* $Id: $ */
 
 
 // These scripts were originally found on cooltype.com.

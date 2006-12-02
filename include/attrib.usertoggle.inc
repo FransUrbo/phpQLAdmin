@@ -5,7 +5,7 @@
 // This is the exact same as 'attrib.domaintoggle.inc',
 // just applied for users instead of domains...
 //
-// $Id: attrib.usertoggle.inc,v 2.3 2005-06-11 10:53:13 turbo Exp $
+// $Id: attrib.usertoggle.inc,v 2.5 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ attribute_save(void)
 // It's a toggle. Change value directly.

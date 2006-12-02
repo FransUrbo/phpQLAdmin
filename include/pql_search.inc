@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.62 2006-11-18 14:02:32 turbo Exp $
+// $Id: pql_search.inc,v 2.63 2006-12-02 13:06:50 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -291,7 +291,7 @@ function pql_get_domains($ldap) {
 		}
 		if(is_array($new)) {
 		  // Yes, there are users here. Add this DN to the domains list
-		  $domains = pql_add2array($domains, $TOP_DN);
+		  pql_add2array($domains, $TOP_DN);
 		  
 		  // Just to be safe - is there any branches here?
 		  $filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN) . "=*)$ocs)";
@@ -300,7 +300,7 @@ function pql_get_domains($ldap) {
 			echo "pql_get_domains(): new (2)"; printr($new);
 		  }
 		  if(is_array($new))
-			$domains = pql_add2array($domains, $new);
+			pql_add2array($domains, $new);
 		}
 	  }
 	}
@@ -326,7 +326,7 @@ function pql_get_domains($ldap) {
 	  echo "pql_get_domains(): new(3)"; printr($new);
 	}
 	if(is_array($new))
-	  $domains = pql_add2array($domains, $new);
+	  pql_add2array($domains, $new);
 	
 	// Just to be safe - is there any branches here?
 	$filter = "(&(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $TOP_DN) . "=*)$ocs)";
@@ -335,7 +335,7 @@ function pql_get_domains($ldap) {
 	  echo "pql_get_domains(): new(4)"; printr($new);
 	}
 	if(is_array($new))
-	  $domains = pql_add2array($domains, $new);
+	  pql_add2array($domains, $new);
 
 	// Now, if the base/root DN is a 'dc' object and domain/branch reference
 	// is 'ou', we MUST use 'organizationalUnit' in the object class filter...
@@ -346,7 +346,7 @@ function pql_get_domains($ldap) {
 	}
 	if(is_array($new)) {
 	  for($i=0; $new[$i]; $i++)
-		$domains = pql_add2array($domains, $new);
+		pql_add2array($domains, $new);
 	}
   }
   
@@ -377,7 +377,7 @@ function pql_get_domains($ldap) {
 	unset($tmp); // I'm reusing this variable below...
 	foreach($dom as $dn => $value) {
 	  for($i=0; $i < count($domains); $i++) {
-		if(lc($dn) == lc($domains[$i]))
+		if((lc($dn) == lc($domains[$i])) and !eregi('^ou=computers,', lc($dn)))
 		  $tmp[] = $dn;
 	  }
 	}
@@ -400,7 +400,7 @@ function pql_get_branch_domains($ldap) {
 	  if(!is_array($default_domain))
 		$default_domain = array($default_domain);
 	  
-	  $domain_names = pql_add2array($domain_names, $default_domain);
+	  pql_add2array($domain_names, $default_domain);
 	}
 	// }}}
 	
@@ -410,7 +410,7 @@ function pql_get_branch_domains($ldap) {
 	  if(!is_array($additional))
 		$additional = array($additional);
 	  
-	  $domain_names = pql_add2array($domain_names, $additional);
+	  pql_add2array($domain_names, $additional);
 	}
 	// }}}
   }
@@ -438,10 +438,8 @@ function pql_get_email_domains($linkid, $host) {
 	for($i=0; $i < count($users); $i++) {
 	  $mails[] = $users[$i][pql_get_define("PQL_ATTR_MAIL")];
 	  
-	  if($users[$i][pql_get_define("PQL_ATTR_MAILALTERNATE")]) {
-		$tmp = $mails; unset($mails);
-		$mails = pql_add2array($tmp, $users[$i][pql_get_define("PQL_ATTR_MAILALTERNATE")]);
-	  }
+	  if($users[$i][pql_get_define("PQL_ATTR_MAILALTERNATE")])
+		pql_add2array($mails, $users[$i][pql_get_define("PQL_ATTR_MAILALTERNATE")]);
 	}
   }
   // }}}
@@ -462,20 +460,13 @@ function pql_get_email_domains($linkid, $host) {
 }
 // }}}
 
-// {{{ pql_get_automount_maps(linkid, domain, host)
+// {{{ pql_get_automount_maps(linkid, $computerdn, host)
 // Retreive ALL automount maps (recursivly) for a specific host in a specific domain
-function pql_get_automount_maps($linkid, $domain, $host) {
-  // {{{ Setup the DN for this host
-  if(pql_get_define("PQL_CONF_SUBTREE_AUTOMOUNTS")) {
-	$subrdn =  pql_get_define("PQL_CONF_SUBTREE_AUTOMOUNTS") . ",";
-  }
-  $computerdn = pql_get_define("PQL_ATTR_CN")."=".$host.",".$subrdn.$domain;
-  // }}}
-
+function pql_get_automount_maps($linkid, $computerdn, $host) {
   // {{{ Retreive the base mount points
   // Find the auto.master object
   $filter = '(&(objectClass=autoMountMap)(|('.pql_get_define("PQL_ATTR_CN").'=auto.master)('.pql_get_define("PQL_ATTR_OU").'=auto.master)))';
-  $auto_master = pql_search($linkid, $computerdn, $filter, 'ONELEVEL'); $auto_master = $auto_master["dn"];
+  $auto_master = pql_search($linkid, $computerdn, $filter); $auto_master = $auto_master["dn"];
 
   if(isset($auto_master))
 	// Get automount maps below auto.master
@@ -502,8 +493,11 @@ function pql_get_automount_map($linkid, $dn) {
   $maps = pql_search($linkid, $dn, $filter, 'ONELEVEL');
 
   if(file_exists($_SESSION["path"]."/.DEBUG_AUTOMOUNT")) {
-	echo "pql_get_automount_map(): Maps for DN '<b>$dn</b>'";
-	printr($maps);
+	echo "pql_get_automount_map(): Maps for DN '<b>$dn</b>': ";
+	if($maps) 
+	  printr($maps);
+	else
+	  echo "<i>empty</i><br>";
   }
 
   // Make sure the array is a _numbered_ array...

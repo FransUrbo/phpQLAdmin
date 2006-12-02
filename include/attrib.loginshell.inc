@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // loginshell
-// $Id: attrib.loginshell.inc,v 2.17 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.loginshell.inc,v 2.19 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {

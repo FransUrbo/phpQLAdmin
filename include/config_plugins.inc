@@ -17,7 +17,7 @@
 //	file		File that manage the plugin
 //	attribs		Attribute(s) that the plugin manages
 //
-// $Id: config_plugins.inc,v 2.26 2006-10-20 12:06:02 turbo Exp $
+// $Id: config_plugins.inc,v 2.28 2006-12-16 12:02:14 turbo Exp $
 
 pql_plugin_register(pql_get_define("PQL_ATTR_ISACTIVE"), "",
 					"attrib.accountstatus.inc",
@@ -122,9 +122,6 @@ pql_plugin_register(pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"), "",
 						  pql_get_define("PQL_ATTR_SIMSCAN_SPAM"),
 						  pql_get_define("PQL_ATTR_SIMSCAN_CLAM"),
 						  pql_get_define("PQL_ATTR_SIMSCAN_TROPHIE"),
-						  pql_get_define("PQL_ATTR_HOSTACL_USE"),
-						  pql_get_define("PQL_ATTR_SUDO_USE"),
-						  pql_get_define("PQL_ATTR_AUTOMOUNT_USE"),
 						  pql_get_define("PQL_ATTR_LOCK_USERNAME"),
 						  pql_get_define("PQL_ATTR_LOCK_EMAILADDRESS"),
 						  pql_get_define("PQL_ATTR_LOCK_DOMAINADDRESS"),
@@ -249,7 +246,10 @@ pql_plugin_register(pql_get_define("PQL_ATTR_GROUP_OC"), "",
 					"attrib.administrator.inc",
 					array(pql_get_define("PQL_ATTR_GROUP_DN_MEMBER"),
 						  pql_get_define("PQL_ATTR_GROUP_DN_SENDER"),
-						  pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR")));
+						  pql_get_define("PQL_ATTR_GROUP_DN_MODERATOR"),
+						  pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
+						  pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"),
+						  pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9")));
 
 pql_plugin_register(pql_get_define("PQL_ATTR_GROUP_FILTER_MEMBER"), "",
 					"attrib.qmailgroup.inc",
@@ -280,6 +280,14 @@ pql_plugin_register(pql_get_define("PQL_ATTR_PHOTO"), "",
 pql_plugin_register(pql_get_define("PQL_ATTR_AUTOMOUNT_INFO"), "",
 					"attrib.automount.inc",
 					pql_get_define("PQL_ATTR_AUTOMOUNT_INFO"));
+
+pql_plugin_register(pql_get_define("PQL_ATTR_RADIUS_FILTERID"), "",
+					"attrib.radiusfilterid.inc",
+					pql_get_define("PQL_ATTR_RADIUS_FILTERID"));
+
+pql_plugin_register(pql_get_define("PQL_ATTR_UNIQUE_GROUP"), "",
+					"attrib.uniquemember.inc",
+					pql_get_define("PQL_ATTR_UNIQUE_GROUP"));
 
 /* This is actually a fake, but it's the easiest way */
 pql_plugin_register("add_header", "",

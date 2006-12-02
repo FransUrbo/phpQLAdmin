@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // qmail uid and gid
-// $Id: attrib.ugidnumber.inc,v 2.6 2005-05-18 20:29:16 turbo Exp $
+// $Id: attrib.ugidnumber.inc,v 2.8 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {

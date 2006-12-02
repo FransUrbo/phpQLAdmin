@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-additional.inc,v 1.34 2006-03-13 11:30:03 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.35 2006-12-02 13:07:07 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <!-- Some hidden values from previous page(s) -->
 <?php if(!empty($_REQUEST["surname"]) and pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_CN"))) { ?>

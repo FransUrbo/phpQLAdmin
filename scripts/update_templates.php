@@ -1,7 +1,7 @@
 <?php
 // Convert the old ways of storing 'user template' information
 // 
-// $Id: update_templates.php,v 1.5 2005-09-16 06:08:52 turbo Exp $
+// $Id: update_templates.php,v 1.7 2006-12-16 12:03:09 turbo Exp $
 
 // {{{ Setup session etc
 require("../include/pql_session.inc");
@@ -53,7 +53,7 @@ if(is_array($templates)) {
 $url = 'config_detail.php?view=template';
 
 // {{{ We're all done. Back to the config page...
-if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+if(pql_get_define("PQL_CONF_DEBUG_ME")) {
   echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<p>";
   die("<b>'".$_SESSION["URI"]."'$url</b>");
 } else {

@@ -1,6 +1,6 @@
 <?php
 // Dump either a specific object or a specific LDAP branch
-// $Id: dump_object.php,v 1.3 2006-07-27 05:46:37 turbo Exp $
+// $Id: dump_object.php,v 1.5 2006-12-16 12:02:09 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");

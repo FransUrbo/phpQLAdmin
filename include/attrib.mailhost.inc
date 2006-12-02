@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailhost (host address which resides the mailhost)
-// $Id: attrib.mailhost.inc,v 2.21 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.mailhost.inc,v 2.23 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {

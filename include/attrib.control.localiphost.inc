@@ -2,7 +2,7 @@
 // control attribute plugin for
 // localiphost (name substituted for local IP address)
 //
-// $Id: attrib.control.localiphost.inc,v 2.21 2006-05-19 06:55:31 turbo Exp $
+// $Id: attrib.control.localiphost.inc,v 2.23 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ ocaliphost_check(type)
 function localiphost_check($type) {
@@ -24,14 +24,11 @@ function localiphost_init($host) {
 	global $_pql_control;
 	
 	// fetch data from ldap server
-	if($host == "Global") {
+	if($host == "Global")
 	  $_REQUEST["localiphost"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 												   pql_get_define("PQL_ATTR_LOCALIPHOST"), 0, pql_get_define("PQL_ATTR_CN")."=*");
-	} else {
-	  $_REQUEST["localiphost"] = pql_get_attribute($_pql_control->ldap_linkid,
-												   pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-												   pql_get_define("PQL_ATTR_LOCALIPHOST"));
-	}
+	else
+	  $_REQUEST["localiphost"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_LOCALIPHOST"));
 	
 	if(@is_null($_REQUEST["localiphost"]))
 	  return true;
@@ -45,13 +42,14 @@ function localiphost_print_view($host) {
 	
 	// init data
 	localiphost_init($host);
+	$cn = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_CN"));
 ?>
   <table cellspacing="0" cellpadding="3" border="0">
     <th colspan="3" align="left">localiphost (<?=$LANG->_('Substitution for local IP')?>)</th>
 <?php $class=pql_format_table(0); ?>
       <tr>
         <td class="title"><?=$LANG->_('Host')?></td>
-        <td class="<?=$class?>"><?php if(@$_REQUEST["localiphost"]) { echo pql_maybe_idna_decode($_REQUEST["localiphost"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($host)." (" . $LANG->_('Taken from \'me\'') . ")"; }?></td>
+        <td class="<?=$class?>"><?php if(@$_REQUEST["localiphost"]) { echo pql_maybe_idna_decode($_REQUEST["localiphost"]); } else { echo $LANG->_('Default').': '.pql_maybe_idna_decode($cn)." (" . $LANG->_('Taken from \'me\'') . ")"; }?></td>
         <td class="<?=$class?>" align="right"><a href="control_edit_attribute.php?mxhost=<?=$host?>&attrib=<?=pql_get_define("PQL_ATTR_LOCALIPHOST")?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$LANG->_('Change options').' '.pql_get_define("PQL_ATTR_LOCALIPHOST")?>"></a></td>
       </tr>
     </th>
@@ -102,7 +100,7 @@ function localiphost_save($type, $host) {
 		if($host == "Global") {
 		  // Get all QLC host
 		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {
@@ -111,8 +109,7 @@ function localiphost_save($type, $host) {
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid,
-								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								  pql_get_define("PQL_ATTR_LOCALIPHOST"), 1, $_REQUEST["localiphost"]))
 			$success = 1;
 		}

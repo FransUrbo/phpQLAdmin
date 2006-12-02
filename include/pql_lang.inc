@@ -3,7 +3,7 @@
 // pql_lang.inc
 // phpQLAdmin Language Application Programming Interface (API)
 //
-// $Id: pql_lang.inc,v 2.13 2006-07-26 21:31:09 turbo Exp $
+// $Id: pql_lang.inc,v 2.15 2006-12-16 12:02:15 turbo Exp $
 //
 
 // ----------------------------

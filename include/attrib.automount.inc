@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // automount maps
-// $Id: attrib.automount.inc,v 2.1 2006-08-29 15:22:17 turbo Exp $
+// $Id: attrib.automount.inc,v 2.2 2006-12-02 13:06:49 turbo Exp $
 
 // {{{ Create the automountInformation attribute
 function attribute_setup() {
@@ -174,7 +174,7 @@ function attribute_init() {
 		// Mountpoint with more than one device
 
 		// Add this basemount to the MOUNTS array.
-		$MOUNTS = pql_add2array($MOUNTS, $mntpnt);
+		pql_add2array($MOUNTS, $mntpnt);
 
 		foreach($mntdata as $mount => $mountdata) {
 		  if($mountdata["automountinformation"]) {

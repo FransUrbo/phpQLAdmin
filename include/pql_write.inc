@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.41 2006-11-24 09:01:00 turbo Exp $
+// $Id: pql_write.inc,v 2.42 2006-12-02 13:06:50 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -21,7 +21,7 @@ function pql_write_add($linkid, $dn, $entry, $type, $caller) {
 
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif($caller, $dn, $entry);
-	if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+	if(pql_get_define("PQL_CONF_DEBUG_ME"))
 	  echo $LDIF;
 	else {
 		// Add this object to the database
@@ -47,6 +47,7 @@ function pql_write_add($linkid, $dn, $entry, $type, $caller) {
 		pql_cache_add($entry);
 	}
 
+	pql_flush();
 	return(true);
 }
 // }}}
@@ -63,7 +64,7 @@ function pql_write_mod($linkid, $dn, $entry, $caller = NULL, $count = 0) {
 
 	// Create a LDIF object to print in case of error
 	$LDIF = pql_create_ldif($caller, $dn, $entry);
-	if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+	if(pql_get_define("PQL_CONF_DEBUG_ME"))
 	  echo $LDIF;
 	else {
 		// Modify this object
@@ -90,7 +91,7 @@ function pql_write_mod($linkid, $dn, $entry, $caller = NULL, $count = 0) {
 				  $new = array($new);
 
 				// Combine the old with the new.
-				$old = pql_add2array($old, $new);
+				pql_add2array($old, $new);
 				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")] = pql_uniq($old);
 				
 				// Recursion... Only try five times...
@@ -135,7 +136,7 @@ function pql_write_mod($linkid, $dn, $entry, $caller = NULL, $count = 0) {
 
 // {{{ pql_write_ren(linkid, old, parent, new, keepold)
 function pql_write_ren($linkid, $old, $parent, $new, $keepold = TRUE) {
-  if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+  if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 	echo "Renaming DN: '<b>$old</b>' to '<b>$new,$parent</b>'<br>";
 	return true;
   } else {
@@ -157,7 +158,7 @@ function pql_write_ren($linkid, $old, $parent, $new, $keepold = TRUE) {
 
 // {{{ pql_write_del(linkid, dn)
 function pql_write_del($linkid, $dn) {
-  if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+  if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 	echo "Removing DN: '<b>$dn</b>'<br>";
 	return true;
   } else {
@@ -443,15 +444,10 @@ function pql_user_add($ldap_linkid, $domain, $dn, $entry, $type, $branch) {
 // }}}
 
 // {{{ pql_add_computer(linkid, hostname, ip)
-function pql_add_computer($linkid, $domain, $hostname, $ip) {
-  if(pql_get_define("PQL_CONF_SUBTREE_COMPUTERS"))
-	$subrdn = pql_get_define("PQL_CONF_SUBTREE_COMPUTERS") . ",";
-  
-  $dn = pql_get_define("PQL_ATTR_CN") . "=" . $hostname . "," . $subrdn . $domain;
-  //$entry['dn'] = $dn;
-  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'top';
-  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'groupOfUniqueNames';
+function pql_add_computer($linkid, $hostname, $ip) {
+  $dn = pql_get_define("PQL_ATTR_CN") . "=" . $hostname . "," . $_SESSION["USER_SEARCH_DN_CTR"];
   $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'ipHost';
+  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = 'groupOfUniqueNames';
   $entry[pql_get_define("PQL_ATTR_CN")] = $hostname;
   $entry[pql_get_define("PQL_ATTR_IPHOSTNUMBER")] = $ip;
 
@@ -459,7 +455,7 @@ function pql_add_computer($linkid, $domain, $hostname, $ip) {
   //uniqueMember to satisfy the must requirements of groupofuniquenames
   $entry[pql_get_define("PQL_ATTR_UNIQUE_GROUP")] = $_SESSION['USER_DN'];
   
-  if(!pql_write_add($linkid, $dn, $entry, $type, 'pql_add_computer')) {
+  if(!pql_write_add($linkid, $dn, $entry, 'host', 'pql_add_computer')) {
 	// Failed to add user
 	$failed = 1;
 	pql_format_error(1);
@@ -568,7 +564,7 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 		$dn = ldap_get_dn($linkid, $ed);
 		
 		// delete the group
-		if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+		if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 		  echo "delete (group): '$dn'<br>";
 		  return TRUE;
 		} else
@@ -592,7 +588,7 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
     }
     
     // delete the user
-	if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+	if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 	  echo "delete (user): '$user'<br>";
 	  return TRUE;
 	} else {
@@ -661,7 +657,7 @@ function pql_domain_del($ldap, $domain, $delete_forwards) {
 		}
 	  }
 	  
-	  if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+	  if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 		echo "delete (domain): '$domain'<br>";
 		return TRUE;
 	  } else

@@ -2,7 +2,7 @@
 // control attribute plugin for
 // ldaprebind (don't retrieve password, try to bind to dn)
 //
-// $Id: attrib.control.ldaprebind.inc,v 2.19 2006-05-19 06:55:31 turbo Exp $
+// $Id: attrib.control.ldaprebind.inc,v 2.21 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ ldaprebind_check(type)
 function ldaprebind_check($type) {
@@ -16,14 +16,11 @@ function ldaprebind_init($host) {
 	global $_pql_control;
 	
 	// fetch data from ldap server
-	if($host == "Global") {
+	if($host == "Global")
 	  $_REQUEST["ldaprebind"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 												  pql_get_define("PQL_ATTR_LDAPREBIND"), 0, pql_get_define("PQL_ATTR_CN")."=*");
-	} else {
-	  $_REQUEST["ldaprebind"] = pql_get_attribute($_pql_control->ldap_linkid,
-												  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-												  pql_get_define("PQL_ATTR_LDAPREBIND"));
-	}
+	else
+	  $_REQUEST["ldaprebind"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_LDAPREBIND"));
 
 	if(@is_null($_REQUEST["ldaprebind"]))
 	  return true;
@@ -73,7 +70,7 @@ function ldaprebind_save($type, $host) {
 		  if($host == "Global") {
 			// Get all QLC host
 			$qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-							   '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+							   '(&(cn=*)(objectclass=qmailControl))');
 			
 			$success = 1;
 			foreach($qlcs as $host) {
@@ -82,8 +79,7 @@ function ldaprebind_save($type, $host) {
 				$success = 0;
 			}
 		  } else {
-			if(pql_modify_attribute($_pql_control->ldap_linkid,
-									pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+			if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 									pql_get_define("PQL_ATTR_LDAPREBIND"), 1, $_REQUEST[$attrib]))
 			  $success = 1;
 		  }

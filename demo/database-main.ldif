@@ -30,43 +30,6 @@ OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,o,[entry]#public#
 OpenLDAPaci: 1#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
 OpenLDAPaci: 2#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo2,o=Main Branch,c=SE
 
-dn: o=QmailLDAP,c=SE
-objectClass: organization
-o: QmailLDAP
-OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,o,[entry]#public#
-OpenLDAPaci: 1#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
-OpenLDAPaci: 2#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo2,o=Main Branch,c=SE
-
-dn: uid=qmail,o=QmailLDAP,c=SE
-uid: qmail
-objectClass: simpleSecurityObject
-objectClass: account
-userPassword: {MD5}Xr4ilOzQ4PCOq3aQ0qbuaQ==
-OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
-OpenLDAPaci: 1#entry#grant;x;userPassword,krb5PrincipalName#public#
-OpenLDAPaci: 2#entry#grant;r,s,c;uid,cn,accountStatus,uidNumber,gidNumber,gecos,homeDirectory,loginShell,trustModel,accessTo,mailMessageStore#public#
-OpenLDAPaci: 3#entry#grant;r,s,c;mail,mailAlternateAddress,mailHost,mailQuotaSize,mailQuotaCount,accountStatus,deliveryMode,userPassword,mailMessageStore,deliveryProgramPath#access-id#uid=qmail,o=QmailLDAP,c=SE
-OpenLDAPaci: 4#entry#grant;r,s,c;sn,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,mailMessageStore,o,l,st,telephoneNumber,postalCode,title#users#
-OpenLDAPaci: 5#entry#grant;w,r,s,c;sn,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,o,l,st,telephoneNumber,postalCode,title,deliveryMode,userPassword#self#
-OpenLDAPaci: 6#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
-OpenLDAPaci: 7#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo2,o=Main Branch,c=SE
-
-dn: cn=test.domain.tld,o=QmailLDAP,c=SE
-objectClass: qmailControl
-cn: test.domain.tld
-defaultDomain: domain.tld
-ldapUid: 3000
-ldapServer: localhost
-ldapLogin: uid=qmail,o=QmailLDAP,c=SE
-ldapPassword: secret
-ldapRebind: 1
-ldapBaseDN: c=SE
-locals: test.domain.tld
-rcptHosts: test.domain.tld
-OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,cn,[entry]#public#
-OpenLDAPaci: 1#entry#grant;r,s,c;[all]#access-id#uid=qmail,o=QmailLDAP,c=SE
-OpenLDAPaci: 2#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
-
 dn: uid=demo1,o=Main Branch,c=SE
 cn: Demo User 1
 sn: Demo
@@ -84,7 +47,7 @@ mail: demo1@test.org
 OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
 OpenLDAPaci: 1#entry#grant;x;userPassword,krb5PrincipalName#public#
 OpenLDAPaci: 2#entry#grant;r,s,c;uid,cn,accountStatus,uidNumber,gidNumber,gecos,homeDirectory,loginShell,trustModel,accessTo,mailMessageStore#public#
-OpenLDAPaci: 3#entry#grant;r,s,c;mail,mailAlternateAddress,mailHost,mailQuotaSize,mailQuotaCount,accountStatus,deliveryMode,userPassword,mailMessageStore,deliveryProgramPath#access-id#uid=qmail,o=QmailLDAP,c=SE
+OpenLDAPaci: 3#entry#grant;r,s,c;mail,mailAlternateAddress,mailHost,mailQuotaSize,mailQuotaCount,accountStatus,deliveryMode,userPassword,mailMessageStore,deliveryProgramPath#access-id#uid=qmail,ou=Computers,c=SE
 OpenLDAPaci: 4#entry#grant;r,s,c;sn,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,mailMessageStore,o,l,st,telephoneNumber,postalCode,title#users#
 OpenLDAPaci: 5#entry#grant;w,r,s,c;sn,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,o,l,st,telephoneNumber,postalCode,title,deliveryMode,userPassword#self#
 OpenLDAPaci: 6#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
@@ -106,7 +69,7 @@ mail: demo2@test.org
 OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
 OpenLDAPaci: 1#entry#grant;x;userPassword,krb5PrincipalName#public#
 OpenLDAPaci: 2#entry#grant;r,s,c;uid,cn,accountStatus,uidNumber,gidNumber,gecos,homeDirectory,loginShell,trustModel,accessTo,mailMessageStore#public#
-OpenLDAPaci: 3#entry#grant;r,s,c;mail,mailAlternateAddress,mailHost,mailQuotaSize,mailQuotaCount,accountStatus,deliveryMode,userPassword,mailMessageStore,deliveryProgramPath#access-id#uid=qmail,o=QmailLDAP,c=SE
+OpenLDAPaci: 3#entry#grant;r,s,c;mail,mailAlternateAddress,mailHost,mailQuotaSize,mailQuotaCount,accountStatus,deliveryMode,userPassword,mailMessageStore,deliveryProgramPath#access-id#uid=qmail,ou=Computers,c=SE
 OpenLDAPaci: 4#entry#grant;r,s,c;sn,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,mailMessageStore,o,l,st,telephoneNumber,postalCode,title#users#
 OpenLDAPaci: 5#entry#grant;w,r,s,c;sn,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,o,l,st,telephoneNumber,postalCode,title,deliveryMode,userPassword#self#
 OpenLDAPaci: 6#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE
@@ -129,7 +92,7 @@ mail: demo3@test.org
 OpenLDAPaci: 0#entry#grant;r,s,c;objectClass,[entry]#public#
 OpenLDAPaci: 1#entry#grant;x;userPassword,krb5PrincipalName#public#
 OpenLDAPaci: 2#entry#grant;r,s,c;uid,cn,accountStatus,uidNumber,gidNumber,gecos,homeDirectory,loginShell,trustModel,accessTo,mailMessageStore#public#
-OpenLDAPaci: 3#entry#grant;r,s,c;mail,mailAlternateAddress,mailHost,mailQuotaSize,mailQuotaCount,accountStatus,deliveryMode,userPassword,mailMessageStore,deliveryProgramPath#access-id#uid=qmail,o=QmailLDAP,c=SE
+OpenLDAPaci: 3#entry#grant;r,s,c;mail,mailAlternateAddress,mailHost,mailQuotaSize,mailQuotaCount,accountStatus,deliveryMode,userPassword,mailMessageStore,deliveryProgramPath#access-id#uid=qmail,ou=Computers,c=SE
 OpenLDAPaci: 4#entry#grant;r,s,c;sn,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,mailMessageStore,o,l,st,telephoneNumber,postalCode,title#users#
 OpenLDAPaci: 5#entry#grant;w,r,s,c;sn,homePostalAddress,mobile,homePhone,labeledURI,mailForwardingAddress,street,physicalDeliveryOfficeName,o,l,st,telephoneNumber,postalCode,title,deliveryMode,userPassword#self#
 OpenLDAPaci: 6#entry#grant;w,r,s,c,x;[all]#access-id#uid=demo1,o=Main Branch,c=SE

@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.89 2006-11-24 06:14:57 turbo Exp $
+// $Id: pql_config.inc,v 1.91 2006-12-16 12:02:15 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -16,7 +16,7 @@ require($_SESSION["path"]."/include/pql_units.inc");			// Sub branch API
 // }}}
 
 // {{{ Start profiling - what time is it now?
-if(file_exists($_SESSION["path"]."/.DEBUG_ME") and file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
+if(pql_get_define("PQL_CONF_DEBUG_ME") and file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
   $now = pql_format_return_unixtime(); echo "Now: <b>$now</b><br>";
 }
 // }}}
@@ -57,16 +57,16 @@ function pql_set_define($define, $value, $case_insensitive = false, $dn = NULL) 
 			$config[$define][$dn] = $value;
 
 			if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $define))
-			  echo "config[$define][$dn] = $value<br>"; // DEBUG
+			  echo "config[$define][$dn] = $value<br>\n"; // DEBUG
 		}
 	} else {
 		// Create a site global array with the config values
 		// This variable type is only one dimensional (not DN specific)
-		if(!isset($config[$define])) {
+		if(!isset($config[$define]) or ($define == 'PQL_CONF_DEBUG_ME')) {
 		  $config[$define] = $value;
 		  
 		  if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $define))
-			echo "config[$define] = '$value'<br>"; // DEBUG
+			echo "config[$define] = '$value'<br>\n"; // DEBUG
 		}
 	}
 }
@@ -95,6 +95,9 @@ function pql_get_define($define, $dn = NULL) {
 
 // ----------------------------
 // 1. Load site specific configuration
+if(file_exists("./.DEBUG_DEFINES")) {
+  echo "<b>*</b> Loading base config<br>\n";
+}
 require($_SESSION["path"]."/include/config.inc");
 
 // 2. Include the attribute configuration
@@ -115,15 +118,6 @@ if(empty($_SESSION["USER_HOST"])) {
   unset($host);
 }
 
-// Get the search base - controls database
-if(empty($_SESSION["USER_SEARCH_DN_CTR"])) {
-  $dn = split(';', $_SESSION["USER_HOST"]);
-  $_SESSION["USER_SEARCH_DN_CTR"] = pql_format_normalize_dn($dn[2]);
-
-  unset($dn);
-}
-
-
 if(empty($_pql)) {
   // Open a connection to the LDAP server
   $binddn = (!empty($_SESSION["USER_DN"]))   ? $_SESSION["USER_DN"]   : '';
@@ -143,6 +137,9 @@ $_SESSION["SINGLE_USER"]			= (!empty($_SESSION["SINGLE_USER"]))			? $_SESSION["S
 foreach($_pql->ldap_basedn as $dn)  {
   $dn = pql_format_normalize_dn($dn);
   unset($info);
+
+  if(file_exists("./.DEBUG_DEFINES"))
+	echo "<br>\n<b>*</b> Go through DN: '$dn'<br>\n";
 
   if(@(is_array($_SESSION["BASE_DN"]) and !in_array($dn, $_SESSION["BASE_DN"])) or !@$_SESSION["BASE_DN"])
 	// Remember the base DN's
@@ -189,7 +186,7 @@ foreach($_pql->ldap_basedn as $dn)  {
 	$_SESSION["ALLOW_BRANCH_CREATE"] = pql_validate_administrator($_pql->ldap_linkid, $dn,
 																  pql_get_define("PQL_ATTR_ADMINISTRATOR"),
 																  $_SESSION["USER_DN"]);
-	
+
 	// User is super administrator - allow for administrating QmailLDAP/Control objects and ezmlm lists as well.
 	if($_SESSION["ALLOW_BRANCH_CREATE"]) {
 	  $_SESSION["ALLOW_CONTROL_CREATE"] = 1;
@@ -206,19 +203,32 @@ foreach($_pql->ldap_basedn as $dn)  {
   // 4c. Verify if the user is ezmlmAdministrator in the topmost DN -> Allow administration of Ezmlm lists.
   if(!empty($_SESSION["USER_DN"]) and empty($_SESSION["ALLOW_EZMLM_CREATE"]))
 	$_SESSION["ALLOW_EZMLM_CREATE"] = pql_get_dn($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM").'='.$_SESSION["USER_DN"]);
-  
+
+  // 4d. Find out which attribute to use to reference users with in this root DN
   if(!pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $dn)) {
 	$ref = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_REFERENCE_USERS_WITH"));
 	pql_set_define("PQL_CONF_REFERENCE_USERS_WITH", $ref, false, $dn);
   }
+
+  // 4e. Find the computer DN
+  if(empty($_SESSION["USER_SEARCH_DN_CTR"])) {
+	$filter = '(&('.pql_get_define("PQL_ATTR_OU").'=Computers)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=organizationalUnit))';
+	$tmp = pql_get_dn($_pql->ldap_linkid, $dn, $filter, 'ONELEVEL');
+
+	if(@$tmp[0])
+	  $_SESSION["USER_SEARCH_DN_CTR"] = $tmp[0];
+
+	unset($filter); unset($tmp);
+  }
   
-  // 4d. Load 'resonable defaults' for each top DN
+  // 4f. Load 'resonable defaults' for each top DN
   if(file_exists("./.DEBUG_DEFINES"))
-	echo "<b>Loading 'resonable defaults'<br>";
+	echo "<br>\n<b>*</b> Loading 'resonable defaults'<br>\n";
   require($_SESSION["path"]."/include/defaults.inc");
   if(file_exists("./.DEBUG_DEFINES"))
 	echo "</b><p>";
 }
+unset($dn);
 
 // 5. Check the Control DN if the user is there -> Allow management of Controls information
 if(!empty($_SESSION["USER_DN"]) and empty($_SESSION["ALLOW_CONTROL_CREATE"])) {
@@ -284,6 +294,10 @@ if(!@$MONITOR_BACKEND_ENABLED) {
 
 if(@$_SESSION["ACI_SUPPORT_ENABLED"]) {
   require($_SESSION["path"]."/include/pql_aci.inc");
+}
+
+if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+  pql_set_define("PQL_CONF_DEBUG_ME", true);
 }
 
 // Remove some variables so we don't clutter the global variable name space!

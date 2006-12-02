@@ -1,6 +1,6 @@
 <?php
 // shows results of search
-// $Id: search.php,v 2.38 2006-11-10 14:40:31 turbo Exp $
+// $Id: search.php,v 2.40 2006-12-16 12:02:09 turbo Exp $
 //
 // {{{ Includes
 require("./include/pql_session.inc");

@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.25 2005-09-16 06:08:40 turbo Exp $
+// $Id: bind9_add.php,v 2.26 2006-12-02 13:06:30 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -53,7 +53,7 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 		  $url  = "domain_detail.php?rootdn=".urlencode($_REQUEST["rootdn"])."&domain=".urlencode($_REQUEST["domain"]);
 		  $url .= "&dns_domain_name=".$_REQUEST["dns_domain_name"]."&view=".$_REQUEST["view"]."&msg=".urlencode($msg);
 
-		  if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+		  if(pql_get_define("PQL_CONF_DEBUG_ME"))
 			die($url);
 		  else
 			pql_header($url);
@@ -213,12 +213,13 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 		  if($dn) {
 			$msg = "Successfully added host <u>".$_REQUEST["hostname"].".".pql_maybe_idna_decode($_REQUEST["domainname"])."</u>";
 
-			if(!file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+			if(!pql_get_define("PQL_CONF_DEBUG_ME")) {
 			  // We can't do this if we're debuging. The object don't exists in the db, hence
 			  // we can't figure out zone name etc...
 			  if(!pql_bind9_update_serial($_pql->ldap_linkid, $dn))
 				die("failed to update SOA serial number");
-			}
+			} else
+			  echo $LANG->_("\bCan't update SOA since we're running in DEBUG_ME mode!\B");
 		  } else
 			$msg = "Failed to add ".$_REQUEST["hostname"]." to ".$_REQUEST["domainname"];
 
@@ -226,7 +227,7 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 		  $url  = "domain_detail.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"]."&view=".$_REQUEST["view"];
 		  $url .= "&dns_domain_name=".$_REQUEST["dns_domain_name"]."&msg=$msg";
 
-		  if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+		  if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 			echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
 			die("<b>$url</b>");
 		  } else

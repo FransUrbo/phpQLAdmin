@@ -2,7 +2,7 @@
 // control attribute plugin for
 // queuelifetime (maximum number of RCPT TO's)
 //
-// $Id: attrib.control.queuelifetime.inc,v 2.19 2006-05-19 06:55:31 turbo Exp $
+// $Id: attrib.control.queuelifetime.inc,v 2.21 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ queuelifetime_check(type)
 function queuelifetime_check($type) {
@@ -30,14 +30,11 @@ function queuelifetime_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	if($host == "Global") {
+	if($host == "Global")
 	  $_REQUEST["queuelifetime"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 													 pql_get_define("PQL_ATTR_QUEUELIFETIME"), 0, pql_get_define("PQL_ATTR_CN")."=*");
-	} else {
-	  $_REQUEST["queuelifetime"] = pql_get_attribute($_pql_control->ldap_linkid,
-													 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-													 pql_get_define("PQL_ATTR_QUEUELIFETIME"));
-	}
+	else
+	  $_REQUEST["queuelifetime"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_QUEUELIFETIME"));
 
 	if(@is_null($_REQUEST["queuelifetime"]))
 	  return true;
@@ -109,7 +106,7 @@ function queuelifetime_save($type, $host) {
 		if($host == "Global") {
 		  // Get all QLC host
 		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {
@@ -118,8 +115,7 @@ function queuelifetime_save($type, $host) {
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid,
-								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								  pql_get_define("PQL_ATTR_QUEUELIFETIME"), 1, $_REQUEST["queuelifetime"]))
 			$success = 1;
 		}

@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.52 2006-11-20 20:05:25 turbo Exp $
+// $Id: config_attributes.inc,v 2.54 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -271,6 +271,11 @@ pql_set_define("PQL_ATTR_AUTOMOUNT_USE",					strtolower('useAutoMount'),					fal
 pql_set_define("PQL_ATTR_AUTOMOUNT_INFO",					strtolower('autoMountInformation'),			false);
 // }}}
 
+// {{{ Attributes used by the RADIUS config
+pql_set_define("PQL_ATTR_RADIUS_USE",						strtolower('useRadius'),					false);
+pql_set_define("PQL_ATTR_RADIUS_FILTERID",					strtolower('radiusFilterId'),				false);
+// }}}
+
 // {{{ Miscellaneous external attributes
 pql_set_define("PQL_ATTR_SPAMASSASSIN", 					strtolower('spamAssassin'),					false);
 pql_set_define("PQL_ATTR_PASSWD_CLEAR", 					strtolower('clearTextPassword'),			false);
@@ -287,6 +292,7 @@ pql_set_define("PQL_ATTR_ACI_USE", 							strtolower('useACI'),						false);
 pql_set_define("PQL_ATTR_AUTO_RELOAD", 						strtolower('autoReload'),					false);
 pql_set_define("PQL_ATTR_CHANGE_SERVER", 					strtolower('allowServerChange'),			false);
 pql_set_define("PQL_ATTR_CREATE_MBOX", 						strtolower('useMBox'),						false);
+pql_set_define("PQL_ATTR_DEBUG_ME", 						strtolower('runInDebugMode'),				false);
 
 // Setup
 pql_set_define("PQL_ATTR_WHOAREWE", 						strtolower('whoAreWe'),						false);
@@ -354,6 +360,9 @@ pql_set_define("PQL_ATTR_LOCK_EMAILADDRESS",				strtolower('lockEmailAddress'),	
 pql_set_define("PQL_ATTR_LOCK_DOMAINADDRESS",				strtolower('lockDomainAddress'),			false);
 pql_set_define("PQL_ATTR_LOCK_PASSWORD",					strtolower('lockPassword'),					false);
 pql_set_define("PQL_ATTR_LOCK_ACCOUNTTYPE",					strtolower('lockAccountType'),				false);
+pql_set_define("PQL_ATTR_RADIUS_CONFIG_IDENTITY",			strtolower("radiusConfigIdentity"),			false);
+pql_set_define("PQL_ATTR_ADMINISTRATOR_WEBSRV",				strtolower("webSrvAdministrator"),			false);
+pql_set_define("PQL_ATTR_ADMINISTRATOR_BIND9",				strtolower("dNSAdministrator"),				false);
 // }}}
 
 // {{{ These are the internal phpQLAdmin attributes - USER configuration
@@ -392,9 +401,15 @@ $PQL_ATTRIBUTE["GLOBAL"] = array("PQL_CONF_CONTROL_USE"					=> pql_get_define("P
 								 "PQL_CONF_ADMINISTRATOR"				=> pql_get_define("PQL_ATTR_ADMINISTRATOR"),
 								 "PQL_CONF_ADMINISTRATOR_EZMLM"	    	=> pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM"),
 								 "PQL_CONF_ADMINISTRATOR_CONTROLS"		=> pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
+								 "PQL_CONF_ADMINISTRATOR_WEBSRV"		=> pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"),
 								 "PQL_CONF_VIRTUAL_BASEHOME"			=> pql_get_define("PQL_ATTR_VIRTUAL_BASEHOME"),
 								 "PQL_CONF_ACI_USE"						=> pql_get_define("PQL_ATTR_ACI_USE"),
+								 "PQL_CONF_HOSTACL_USE"					=> pql_get_define("PQL_ATTR_HOSTACL_USE"),
+								 "PQL_CONF_SUDO_USE"					=> pql_get_define("PQL_ATTR_SUDO_USE"),
+								 "PQL_CONF_AUTOMOUNT_USE"				=> pql_get_define("PQL_ATTR_AUTOMOUNT_USE"),
+								 "PQL_CONF_RADIUS_USE"					=> pql_get_define("PQL_ATTR_RADIUS_USE"),
 								 "PQL_CONF_CREATE_MBOX"					=> pql_get_define("PQL_ATTR_CREATE_MBOX"),
+								 "PQL_CONF_DEBUG_ME"					=> pql_get_define("PQL_ATTR_DEBUG_ME"),
 								 "PQL_CONF_EZMLM_REMOTE"				=> pql_get_define("PQL_ATTR_EZMLM_REMOTE"),
 								 "PQL_CONF_EZMLM_REMOTE_HOST"			=> pql_get_define("PQL_ATTR_EZMLM_REMOTE_HOST"),
 								 "PQL_CONF_EZMLM_REMOTE_USER"			=> pql_get_define("PQL_ATTR_EZMLM_REMOTE_USER"),
@@ -417,6 +432,8 @@ $PQL_ATTRIBUTE["SUFFIX"] = array("PQL_CONF_SHOW_USERS"					=> pql_get_define("PQ
 								 "PQL_CONF_CONTROL_AUTOADDLOCALS"		=> pql_get_define("PQL_ATTR_CONTROL_AUTOADDLOCALS"),
 								 "PQL_CONF_CONTROL_AUTOADDRCPTHOSTS"	=> pql_get_define("PQL_ATTR_CONTROL_AUTOADDRCPTHOSTS"),
 								 "PQL_CONF_ADMINISTRATOR"				=> pql_get_define("PQL_ATTR_ADMINISTRATOR"),
+								 "PQL_CONF_ADMINISTRATOR_WEBSRV"		=> pql_get_define("PQL_ATTR_ADMINISTRATOR_WEBSRV"),
+								 "PQL_CONF_ADMINISTRATOR_BIND9"			=> pql_get_define("PQL_ATTR_ADMINISTRATOR_BIND9"),
 								 "PQL_CONF_SEEALSO"						=> pql_get_define("PQL_ATTR_SEEALSO"),
 								 "PQL_CONF_BASEHOMEDIR"					=> pql_get_define("PQL_ATTR_BASEHOMEDIR"),
 								 "PQL_CONF_BASEMAILDIR"					=> pql_get_define("PQL_ATTR_BASEMAILDIR"),
@@ -451,7 +468,7 @@ $PQL_ATTRIBUTE["SUFFIX"] = array("PQL_CONF_SHOW_USERS"					=> pql_get_define("PQ
 								 "PQL_CONF_SIMSCAN_TROPHIE"				=> pql_get_define("PQL_ATTR_SIMSCAN_TROPHIE"),
 								 "PQL_CONF_SIMSCAN_SPAM_HITS"			=> pql_get_define("PQL_ATTR_SIMSCAN_SPAM_HITS"),
 								 "PQL_CONF_SIMSCAN_ATTACHMENTS"			=> pql_get_define("PQL_ATTR_SIMSCAN_ATTACHMENTS"),
-);
+								 "PQL_CONF_RADIUS_CONFIG_IDENTITY"		=> pql_get_define("PQL_ATTR_RADIUS_CONFIG_IDENTITY"));
 // }}}
 
 // {{{ Map attribute to configuration define - USER

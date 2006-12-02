@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mailmessagestore (path to mailbox)
-// $Id: attrib.mailmessagestore.inc,v 2.20 2005-02-01 07:29:39 turbo Exp $
+// $Id: attrib.mailmessagestore.inc,v 2.22 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {

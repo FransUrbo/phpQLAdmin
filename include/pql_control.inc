@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.52 2005-09-24 09:45:58 turbo Exp $
+// $Id: pql_control.inc,v 2.53 2006-12-02 13:06:50 turbo Exp $
 //
 
 // {{{ control connection class
@@ -49,7 +49,7 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 
 	  // Get all email address domains for users which have this host as MX
 	  $tmp = pql_get_email_domains($ldap->ldap_linkid, $host);
-	  $entry = pql_add2array($entry, $tmp);
+	  pql_add2array($entry, $tmp);
 	  
 	  // {{{ If we're replicating rcptHosts, get all non-primary MX host value(s) in this MX/QLC object
 	  if($type == pql_get_define("PQL_ATTR_RCPTHOSTS")) {
@@ -59,7 +59,7 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 			$nonprimmx = array($nonprimmx);
 		  
 		  // Add the list of domain names to the entry to add
-		  $entry = pql_add2array($entry, $nonprimmx);
+		  pql_add2array($entry, $nonprimmx);
 		}
 	  }
 	  // }}}
@@ -135,7 +135,7 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 				if($domain[0] and $domain[1]) {
 				  // {{{ We're REPLACING a domainname
 				  if(lc($value) == lc($domain[0])) {
-					if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+					if(pql_get_define("PQL_CONF_DEBUG_ME"))
 					  echo "pql_control_update_domains(): Replacing '<b>$value</b>' with '<b>".$domain[1]."</b>' in QLC '$host:$key'<br>";
 
 					$entry[$key][] = $domain[1];
@@ -148,7 +148,7 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 				  if(lc($domain[0]) != lc($value))
 					$entry[$key][] = $value;
 				  else
-					if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+					if(pql_get_define("PQL_CONF_DEBUG_ME"))
 					  echo "pql_control_update_domains(): Removing domain '<b>".$domain[0]."</b>' from QLC '$host:$key'<br>";
 				  // }}}
 				} elseif(!$domain[0] and $domain[1]) {
@@ -162,7 +162,7 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 
 			if(!$domain[0] and $domain[1]) {
 			  // No previous values and we want to ADD a domain
-			  if(file_exists($_SESSION["path"]."/.DEBUG_ME"))
+			  if(pql_get_define("PQL_CONF_DEBUG_ME"))
 				echo "pql_control_update_domains(): Adding domain '<b>".$domain[1]."</b>' to QLC '$host:$key'<br>";
 			  
 			  $entry[$key][] = $domain[1];

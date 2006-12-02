@@ -2,7 +2,7 @@
 // ----------------------------
 // Retreive, modify and delete ACIs (per-object access control lists)
 //
-// $Id: pql_aci.inc,v 2.12 2005-09-16 06:08:51 turbo Exp $
+// $Id: pql_aci.inc,v 2.14 2006-12-16 12:02:15 turbo Exp $
 
 // {{{ pql_aci_get(linkid, dn, number)
 // Get ACI entries from object

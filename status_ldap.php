@@ -1,6 +1,6 @@
 <?php
 // Show Connection/Suffixes status of LDAP server
-// $Id: status_ldap.php,v 2.11 2006-11-11 14:57:26 turbo Exp $
+// $Id: status_ldap.php,v 2.13 2006-12-16 12:02:09 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");

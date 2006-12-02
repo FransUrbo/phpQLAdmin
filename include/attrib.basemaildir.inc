@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // base homedirectory for domain
-// $Id: attrib.basemaildir.inc,v 2.10 2005-01-12 13:50:55 turbo Exp $
+// $Id: attrib.basemaildir.inc,v 2.12 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {

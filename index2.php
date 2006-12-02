@@ -1,5 +1,5 @@
 <?php
-// $Id: index2.php,v 2.45 2006-07-18 13:08:35 turbo Exp $
+// $Id: index2.php,v 2.47 2006-12-16 12:02:09 turbo Exp $
 
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -18,7 +18,14 @@ $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PA
 
 // If something changed, make sure we start with these undefined!
 $_SESSION["USE_EZMLM"] = 0;
+
+// All these is located in the 'Computers frame'
 $_SESSION["USE_CONTROLS"] = 0;
+$_SESSION["USE_WEBSRV"] = 0;
+$_SESSION["USE_HOSTACL"] = 0;
+$_SESSION["USE_SUDO"] = 0;
+$_SESSION["USE_AUTOMOUNT"] = 0;
+$_SESSION["USE_RADIUS"] = 0;
 
 // -----------------
 // Count how many frames we should open
@@ -31,12 +38,35 @@ if($_SESSION["ADVANCED_MODE"] or @$_REQUEST["advanced"]) {
 
   // Should we show the controls frame (ie, is controls configured
   // in ANY of the namingContexts)?
-  if(pql_get_define("PQL_CONF_CONTROL_USE") and $_SESSION["ALLOW_CONTROL_CREATE"]) {
+  if($_SESSION["ALLOW_CONTROL_CREATE"] or
+	 (pql_get_define("PQL_CONF_CONTROL_USE") or
+	  pql_get_define("PQL_CONF_WEBSRV_USE") or
+	  pql_get_define("PQL_CONF_HOSTACL_USE") or
+	  pql_get_define("PQL_CONF_SUDO_USE") or
+	  pql_get_define("PQL_CONF_AUTOMOUNT_USE") or
+	  pql_get_define("PQL_CONF_RADIUS_USE")))
+  {
     $frames++;
 
-    // We need this value for the quota change at least/well...
-    // include/attrib.{control.ldapdefaultquota,mailquota}.inc
-    $_SESSION["USE_CONTROLS"] = 1;
+	if(pql_get_define("PQL_CONF_CONTROL_USE"))
+	  // We need this value for the quota change at least/well...
+	  // include/attrib.{control.ldapdefaultquota,mailquota}.inc
+	  $_SESSION["USE_CONTROLS"] = 1;
+
+	if(pql_get_define("PQL_CONF_WEBSRV_USE"))
+	  $_SESSION["USE_WEBSRV"] = 1;
+
+	if(pql_get_define("PQL_CONF_HOSTACL_USE"))
+	  $_SESSION["USE_HOSTACL"] = 1;
+
+	if(pql_get_define("PQL_CONF_SUDO_USE"))
+	  $_SESSION["USE_SUDO"] = 1;
+
+	if(pql_get_define("PQL_CONF_AUTOMOUNT_USE"))
+	  $_SESSION["USE_AUTOMOUNT"] = 1;
+
+	if(pql_get_define("PQL_CONF_RADIUS_USE"))
+	  $_SESSION["USE_RADIUS"] = 1;
   }
 }
 
@@ -83,7 +113,9 @@ if($_SESSION["mozilla"]) {
       <frameset cols="*" rows="50%,*" border="<?=$border?>" frameborder="<?=$border?>"><!-- $frames >= 4 -->
 <?php   } 
 
-        if($_SESSION["USE_CONTROLS"]) {
+        if($_SESSION["USE_CONTROLS"] or $_SESSION["USE_WEBSRV"]    or $_SESSION["USE_HOSTACL"] or
+		   $_SESSION["USE_SUDO"]     or $_SESSION["USE_AUTOMOUNT"] or $_SESSION["USE_RADIUS"])
+		{
 ?>
       <frame src="left-control.php" name="pqlnavctrl">
 <?php   }

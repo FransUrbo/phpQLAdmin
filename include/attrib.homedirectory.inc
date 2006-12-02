@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // homedirectory (path to homedirectory)
-// $Id: attrib.homedirectory.inc,v 2.16 2005-02-01 07:29:39 turbo Exp $
+// $Id: attrib.homedirectory.inc,v 2.18 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.21 2006-11-10 14:42:51 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.22 2006-12-02 13:06:50 turbo Exp $
 
 // {{{ attribute_translate_type(attrib)
 function attribute_translate_type($attrib) {
@@ -251,7 +251,7 @@ function attribute_save($action) {
 				  $parent .= ",";
 			}
 
-			if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+			if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 				echo "Renaming<br>'<b>$dn</b>'<br>to<br>'<b>$new_dn,$parent</b>'<br>";
 				$dn = $new_dn.','.$parent;
 			} else {
@@ -342,7 +342,7 @@ function attribute_save($action) {
 										   array('value' => $_REQUEST["oldvalue"])) . ": " . ldap_error($_pql->ldap_linkid);
 		} else {
 		  // Delete a whole object
-		  if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
+		  if(pql_get_define("PQL_CONF_DEBUG_ME")) {
 			$success = 1;
 			echo "Deleting a whole object (DEBUG): '$dn'<br>";
 		  } else {
@@ -383,7 +383,7 @@ function attribute_save($action) {
 		die("failed to update ".$soa["dn"].":".pql_get_define("PQL_ATTR_SOARECORD")." with value $serial_new<br>");  
 	}
 
-	if(!file_exists($_SESSION["path"]."/.DEBUG_ME")) 
+	if(!pql_get_define("PQL_CONF_DEBUG_ME")) 
 	  attribute_forward($msg);
 	else
 	  echo "$msg";

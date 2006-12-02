@@ -1,6 +1,6 @@
 <?php
 // start page
-// $Id: user_search.php,v 2.14 2006-11-10 14:40:31 turbo Exp $
+// $Id: user_search.php,v 2.16 2006-12-16 12:02:09 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");

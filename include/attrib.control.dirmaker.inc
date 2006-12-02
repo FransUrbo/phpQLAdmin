@@ -2,7 +2,7 @@
 // control attribute plugin for
 // dirmaker (default prefix for mailbox paths)
 //
-// $Id: attrib.control.dirmaker.inc,v 2.20 2006-05-19 06:55:31 turbo Exp $
+// $Id: attrib.control.dirmaker.inc,v 2.22 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ dirmaker_check(type)
 function dirmaker_check($type) {
@@ -30,14 +30,11 @@ function dirmaker_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	if($host == "Global") {
+	if($host == "Global")
 	  $_REQUEST["dirmaker"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 												pql_get_define("PQL_ATTR_DIRMAKER"), 0, pql_get_define("PQL_ATTR_CN")."=*");
-	} else {
-	  $_REQUEST["dirmaker"] = pql_get_attribute($_pql_control->ldap_linkid,
-												pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-												pql_get_define("PQL_ATTR_DIRMAKER"));
-	}
+	else
+	  $_REQUEST["dirmaker"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_DIRMAKER"));
 
 	if(@is_null($_REQUEST["dirmaker"]))
 	  return true;
@@ -104,7 +101,7 @@ function dirmaker_save($type, $host) {
 		if($host == "Global") {
 		  // Get all QLC host
 		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {
@@ -113,8 +110,7 @@ function dirmaker_save($type, $host) {
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid,
-								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								  pql_get_define("PQL_ATTR_DIRMAKER"), 1, $_REQUEST["dirmaker"]))
 			$success = 1;
 		}

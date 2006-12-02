@@ -1,3 +1,29 @@
+Upgrading from <2.3.5
+	+ All host (web- and mailserver) information have been physically
+	  moved. I'm now only looking in the 'ou=Computers,<suffix>' for
+	  QLC and web server information etc. If you've been using the
+	  web-, mailserver (i.e. QmailLDAP/Controls) or automounts manager,
+	  you will have to move those objects. The scripts/upgrade_hostmerge.pl
+	  script will take care of creating LDIF files that can be used to
+	  move all relevant objects. Note that it won't actually CHANGE
+	  your LDAP server database, only create LDIF command files. Have
+	  a look at the first few lines of the script for more information.
+	+ Also read doc/README.apache and doc/README.concentrated_hosts_view
+	  for more information about the change.
+	+ You will also have to update the schema file (schemas/phpQLAdmin.schema).
+	+ Also, the control base in include/config.inc have been removed
+	  (from the PQL_CONF_HOST define). It doesn't matter if it's there,
+	  it's just not used (at all!). I'll (phpQLAdmin) will find the
+	  correct DN in 'include/pql_config.inc'.
+	+ In include/config.inc, the following defines have been removed:
+	  PQL_CONF_SUBTREE_COMPUTERS, PQL_CONF_SUBTREE_SUDOERS,
+	  PQL_CONF_SUBTREE_APACHE and PQL_CONF_SUBTREE_AUTOMOUNTS.
+	+ In include/config.inc, the following functions have been slightly
+	  modified: user_generate_aci().
+	  So if you use that, you might want to take the new function from
+	  include/config.inc.CHANGE_ME and put it into your own copy
+          (include/config.inc).
+
 Upgrading from 2.1.4
 	Support for user/branch deletion script(s). Update your schema at
 	the LDAP server and restart it.

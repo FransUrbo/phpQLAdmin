@@ -2,7 +2,7 @@
 // control attribute plugin for
 // pbsip (max number of bytes in message)
 //
-// $Id: attrib.control.pbsip.inc,v 2.9 2006-05-19 06:55:31 turbo Exp $
+// $Id: attrib.control.pbsip.inc,v 2.11 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ pbsip_check(type)
 function pbsip_check($type) {
@@ -56,14 +56,11 @@ function pbsip_init($host) {
 	global $_pql_control;
 
 	// fetch data from ldap server
-	if($host == "Global") {
+	if($host == "Global")
 	  $_REQUEST["pbsip"] = pql_get_attribute($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 											 pql_get_define("PQL_ATTR_PBS_IP"), 0, pql_get_define("PQL_ATTR_CN")."=*");
-	} else {
-	  $_REQUEST["pbsip"] = pql_get_attribute($_pql_control->ldap_linkid,
-											 pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
-											 pql_get_define("PQL_ATTR_PBS_IP"));
-	}
+	else
+	  $_REQUEST["pbsip"] = pql_get_attribute($_pql_control->ldap_linkid, $host, pql_get_define("PQL_ATTR_PBS_IP"));
 
 	if(@is_null($_REQUEST["pbsip"]))
 	  return true;
@@ -131,7 +128,7 @@ function pbsip_save($type, $host)  {
 		if($host == "Global") {
 		  // Get all QLC host
 		  $qlcs = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-							 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+							 '(&(cn=*)(objectclass=qmailControl))');
 		  
 		  $success = 1;
 		  foreach($qlcs as $host) {
@@ -140,8 +137,7 @@ function pbsip_save($type, $host)  {
 			  $success = 0;
 		  }
 		} else {
-		  if(pql_modify_attribute($_pql_control->ldap_linkid,
-								  pql_get_define("PQL_ATTR_CN")."=$host,".$_SESSION["USER_SEARCH_DN_CTR"],
+		  if(pql_modify_attribute($_pql_control->ldap_linkid, $host,
 								  pql_get_define("PQL_ATTR_PBS_IP"), 1, $_REQUEST["pbsip"]))
 			$success = 1;
 		}

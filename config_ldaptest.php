@@ -1,6 +1,6 @@
 <?php
 // make some simple tests on ldap connection
-// $Id: config_ldaptest.php,v 2.36 2005-09-20 05:14:27 turbo Exp $
+// $Id: config_ldaptest.php,v 2.38 2006-12-16 12:02:08 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");

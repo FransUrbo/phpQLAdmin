@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for OpenLDAPaci
-// $Id: attrib.aci.inc,v 1.11 2005-09-16 06:08:46 turbo Exp $
+// $Id: attrib.aci.inc,v 1.13 2006-12-16 12:02:14 turbo Exp $
 
 /* DLW: This has valid syntax, but I don't know how to test it. */
 

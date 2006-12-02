@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // confirmText and moderatorText (Qmail-GROUP object texts)
-// $Id: attrib.confirmtexts.inc,v 2.4 2004-10-19 10:40:40 turbo Exp $
+// $Id: attrib.confirmtexts.inc,v 2.6 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {

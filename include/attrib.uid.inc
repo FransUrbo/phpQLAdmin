@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // uid (user id)
-// $Id: attrib.uid.inc,v 2.25 2005-01-29 18:46:57 turbo Exp $
+// $Id: attrib.uid.inc,v 2.27 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type){

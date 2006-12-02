@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // deliveryprogrampath (path to program running on delivery)
-// $Id: attrib.deliveryprogrampath.inc,v 2.18 2004-10-19 10:40:41 turbo Exp $
+// $Id: attrib.deliveryprogrampath.inc,v 2.20 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {

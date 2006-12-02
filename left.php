@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.122 2006-11-21 18:17:10 turbo Exp $
+// $Id: left.php,v 2.124 2006-12-16 12:02:09 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -96,8 +96,8 @@ if($_REQUEST["advanced"] == 1) {
 
   <!-- Home branch -->
 <?php
-  // {{{ ---------------- HOME BRANCH (PROJECT URLS ETC)
-  // {{{ Level 1:      phpQLAdmin configuration etc
+// {{{ ---------------- HOME BRANCH (PROJECT URLS ETC)
+// {{{ Level 1:      phpQLAdmin configuration etc
   $div_counter = 10; // Initialize the global counter
 pql_format_tree("<b>".$LANG->_('Home')."</b>", 'home.php');
 // }}}
@@ -353,7 +353,7 @@ if(!isset($domains) or !is_array($domains)) {
 } // end if(is_array($domains))
 // }}}
 
-if(file_exists($_SESSION["path"]."/.DEBUG_ME") and file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
+if(pql_get_define("PQL_CONF_DEBUG_ME") and file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
   $now = pql_format_return_unixtime();
   echo "Now: <b>$now</b><br>";
 }

@@ -1,6 +1,6 @@
 <?php
 // show details of control
-// $Id: control.php,v 2.7 2005-06-09 15:05:35 turbo Exp $
+// $Id: control.php,v 2.9 2006-12-16 12:02:08 turbo Exp $
 //
 //require($_SESSION["path"]."/include/pql_config.inc");
 //include($_SESSION["path"]."/header.html");

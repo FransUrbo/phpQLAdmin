@@ -1,32 +1,29 @@
 <?php
 // Automount information etc
+// $Id: host_details-automount.inc,v 1.2 2006-12-02 13:07:07 turbo Exp $
 
-// {{{ Retreive all hosts
-if(pql_get_define("PQL_CONF_SUBTREE_COMPUTERS")) {
-  $subrdn =  pql_get_define("PQL_CONF_SUBTREE_COMPUTERS") . ",";
-}
-$computerdn = $subrdn . $_GET["domain"];
-$filter = "(&(objectClass=ipHost)(".pql_get_define("PQL_ATTR_CN")."=*))";
-$computer_results = pql_search($_pql->ldap_linkid, $computerdn, $filter);
+// {{{ Retreive automounts
+if($_REQUEST["host"] == 'Global') {
+  // Retreive ALL automounts for ALL hosts
+  foreach($hosts as $host_dn) {
+    // Retreive the FQDN for this host
+    $host = pql_get_attribute($_pql->ldap_linkid, $host_dn, pql_get_define("PQL_ATTR_CN"));
+    
+    // Retreive autoMount maps for this host
+    $automounts[$host] = pql_get_automount_maps($_pql->ldap_linkid, $host_dn, $host);
+    if(!is_array($automounts[$host]))
+      // No autoMount maps for this host, remove the entry from the array
+      unset($automounts[$host]);
+  }
+} else {
+  // Retreive the FQDN for this host
+  $host = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["host"], pql_get_define("PQL_ATTR_CN"));
 
-if(is_array($computer_results) and !@$computer_results[0]) {
-  // Make sure it's a numbered array...
-  $tmp = $computer_results;
-  unset($computer_results);
-  $computer_results[] = $tmp;
-}
-// }}}
-
-// {{{ Retreive all automounts for all hosts
-foreach($computer_results as $computer) {
-  // Extract the FQDN for this object
-  $computer = $computer[pql_get_define("PQL_ATTR_CN")];
-
-  // Retreive autoMount maps for this host
-  $automounts[$computer] = pql_get_automount_maps($_pql->ldap_linkid, $_GET["domain"], $computer);
-  if(!is_array($automounts[$computer]))
+  // Retreive automounts for specific host
+  $automounts[$host] = pql_get_automount_maps($_pql->ldap_linkid, $_REQUEST["host"], $host);
+  if(!is_array($automounts[$host]))
     // No autoMount maps for this host, remove the entry from the array
-    unset($automounts[$computer]);
+    unset($automounts[$host]);
 }
 
 if(file_exists($_SESSION["path"]."/.DEBUG_AUTOMOUNT")) {
@@ -102,16 +99,12 @@ foreach($automounts as $host => $host_data) {
       $MOUNT["Mount option"][]	= $OPTS;
       $MOUNT["Description"][]	= $mnt_data["description"];
 ?>
-            &nbsp;&nbsp;&nbsp;
-            <img src="images/navarrow.png" width="9" height="9" border="0">
-            &nbsp;<?=$MOUNT["Device"]."\n"?>
-            <a class="tblItem" href="domain_edit_attributes.php?rootdn=<?=urlencode($_REQUEST["rootdn"])?>&domain=<?=urlencode($_REQUEST["domain"])?>&attrib=<?=pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?>&host=<?=$host?>&mount=<?=urlencode($mnt_data["dn"])?>&action=delete&submit=2">
-              <img src="images/del.png" align="right" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Delete %mount% from computer"), array('mount' => $mntpnt))?>">
-            </a>
-
-            <a class="tblItem" href="domain_edit_attributes.php?rootdn=<?=urlencode($_REQUEST["rootdn"])?>&domain=<?=urlencode($_REQUEST["domain"])?>&attrib=<?=pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?>&host=<?=$host?>&mount=<?=urlencode($mnt_data["dn"])?>&action=modify&submit=2">
-              <img src="images/edit.png" align="right" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Modify %mount%"), array('mount' => $mntpnt))?>">
-            </a>
+            <nobr>
+              &nbsp;&nbsp;&nbsp;
+              <a class="tblItem" href="host_modify.php?host=<?=urlencode($host)?>&mount=<?=urlencode($mnt_data["dn"])?>&action=delete&submit=2&view=<?=$_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Delete %mount% from computer"), array('mount' => $mntpnt))?>"></a>
+              <a class="tblItem" href="host_modify.php?host=<?=urlencode($host)?>&mount=<?=urlencode($mnt_data["dn"])?>&action=modify&submit=2&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Modify %mount%"), array('mount' => $mntpnt))?>"></a>
+              &nbsp;<?=$MOUNT["Device"]."\n"?>
+            </nobr>
 
             <br>
 
@@ -141,16 +134,12 @@ foreach($automounts as $host => $host_data) {
 	  $MOUNT["Mount option"][]	= $OPTS;
 	  $MOUNT["Description"][]	= $mount_data["description"];
 ?>
-            &nbsp;&nbsp;&nbsp;
-            <img src="images/navarrow.png" width="9" height="9" border="0">
-            &nbsp;<?=$MOUNT["Device"]."\n"?>
-            <a class="tblItem" href="domain_edit_attributes.php?rootdn=<?=urlencode($_REQUEST["rootdn"])?>&domain=<?=urlencode($_REQUEST["domain"])?>&attrib=<?=pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?>&host=<?=$host?>&mount=<?=urlencode($mount_data["dn"])?>&action=delete&submit=2&view=<?=$_REQUEST["view"]?>">
-              <img src="images/del.png" align="right" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Delete %mount% from computer"), array('mount' => $mntpnt.'/'.$mount))?>">
-            </a>
-
-            <a class="tblItem" href="domain_edit_attributes.php?rootdn=<?=urlencode($_REQUEST["rootdn"])?>&domain=<?=urlencode($_REQUEST["domain"])?>&attrib=<?=pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?>&host=<?=$host?>&mount=<?=urlencode($mount_data["dn"])?>&action=modify&submit=2&view=<?=$_REQUEST["view"]?>">
-              <img src="images/edit.png" align="right" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Modify %mount%"), array('mount' => $mntpnt))?>">
-            </a>
+            <nobr>
+              &nbsp;&nbsp;&nbsp;
+              <a class="tblItem" href="host_modify.php?host=<?=urlencode($host)?>&mount=<?=urlencode($mount_data["dn"])?>&action=delete&submit=2&view=<?=$_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Delete %mount% from computer"), array('mount' => $mntpnt.'/'.$mount))?>"></a>
+              <a class="tblItem" href="host_modify.php?host=<?=urlencode($host)?>&mount=<?=urlencode($mount_data["dn"])?>&action=modify&submit=2&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Modify %mount%"), array('mount' => $mntpnt))?>"></a>
+              &nbsp;<?=$MOUNT["Device"]."\n"?>
+            </nobr>
 
             <br>
 
@@ -197,9 +186,8 @@ foreach($automounts as $host => $host_data) {
     }
 
     $data = $MOUNT[$titles[$j]];
-    foreach($data as $mount_point) {
+    foreach($data as $mount_point)
       echo "           $mount_point<br>\n";
-    }
 ?>
         </td>
 <?php
@@ -214,7 +202,7 @@ foreach($automounts as $host => $host_data) {
         <td>
             &nbsp;&nbsp;&nbsp;
             <img src="images/navarrow.png" width="9" height="9" border="0">
-            <a class="tblItem" href="domain_edit_attributes.php?rootdn=<?=urlencode($_REQUEST["rootdn"])?>&domain=<?=urlencode($_REQUEST["domain"])?>&attrib=<?=pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?>&host=<?=$host?>&action=add&view=<?=$_REQUEST["view"]?>&submit=2">
+            <a class="tblItem" href="host_modify.php?host=<?=urlencode($host)?>&action=add&submit=2&view=<?=$_REQUEST["view"]?>">
 	      &nbsp;<?=$LANG->_("Add new mount point")?>
             </a>
 
