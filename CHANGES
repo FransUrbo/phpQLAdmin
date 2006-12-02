@@ -1,5 +1,7 @@
 phpQLAdmin 2.3 Change Log
 
+phpQLAdmin 2.3.6 TO BE ANNOUNCED
+
 phpQLAdmin 2.3.5 Dec  2 2006
 	Bug fixes
 	  - Correctly verify user (different depending on what PQL_CONF_REFERENCE_USERS_WITH
