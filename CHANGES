@@ -1,6 +1,8 @@
 phpQLAdmin 2.3 Change Log
 
 phpQLAdmin 2.3.6 TO BE ANNOUNCED
+	Bug fixes
+	  - Better regexp to try to find out if a value is a DN in include/pql_formating.inc:pql_format_table_single()' 
 
 phpQLAdmin 2.3.5 Dec  2 2006
 	Bug fixes
