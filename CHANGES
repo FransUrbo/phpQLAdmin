@@ -6,6 +6,8 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	  - If there's no web server containers, we must still return the list of physical hosts in
 	    include/pql_websrv.inc:pql_websrv_get_data(). This so that we can retreive any QLC objects
 	    in those physical hosts.
+	  - Enclose all DN's in any ldapsearch command line within citation marks. This to escape any
+	    space(s) in the DN's.
 
 phpQLAdmin 2.3.5 Dec  2 2006
 	Bug fixes

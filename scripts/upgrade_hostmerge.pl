@@ -3,7 +3,7 @@
 # Script to move web-/mailservers and automounts from
 # below branch/dn to new 'concentrated host' view.
 #
-# $Id: upgrade_hostmerge.pl,v 1.1 2006-12-02 13:07:02 turbo Exp $
+# $Id: upgrade_hostmerge.pl,v 1.2 2006-12-02 17:46:33 turbo Exp $
 #
 # -----  N O T E  -----  N O T E  -----  N O T E  -----  N O T E  -----
 # This file will NOT do any modifications to your LDAP database. It
@@ -18,7 +18,7 @@
 # their configuration setup...
 # -----  N O T E  -----  N O T E  -----  N O T E  -----  N O T E  -----
 
-@ROOTDN = ('c=SE', 'dc=lantrix,dc=no');
+@ROOTDN = ('c=SE');
 $SERVER = "-H ldapi://%2fvar%2frun%2fslapd%2fldapi.main";
 if($ENV{ADDITIONAL_SEARCH_OPTIONS}) {
     $ADDITIONAL_SEARCH_OPTIONS = $ENV{ADDITIONAL_SEARCH_OPTIONS};
@@ -93,7 +93,7 @@ sub upgrade_hostmerge_get_object {
     my($cmd, $line, @OBJECT, @ENTRY, $i);
 
     # Retreive the original webserver object
-    $cmd = "$LDAPSEARCH -b $dn -s base \\* OpenLDAPaci 2> /dev/null";
+    $cmd = "$LDAPSEARCH -b '$dn' -s base \\* OpenLDAPaci 2> /dev/null";
     return(upgrade_hostmerge_ldapsearch($cmd));
 }
 # }}}
@@ -122,7 +122,7 @@ sub upgrade_hostmerge_check_physical {
     my($cmd, $line, $added_object, $i, $ip, $fqdn, @dn_parts);
 
     # {{{ Check if the physical host exists at destination
-    $cmd = "$LDAPSEARCH -b $ROOTDN[0] -s base -b $dn 2> /dev/null";
+    $cmd = "$LDAPSEARCH -s base -b '$dn' 2> /dev/null";
     open(LDAPSEARCH, "$cmd |")
 	|| die("Can't find $physical_dn, $!\n");
     $line = <LDAPSEARCH>;
@@ -198,7 +198,7 @@ for($i=0; $ROOTDN[$i]; $i++) {
 	print " ";
     }
 
-    $cmd = "$LDAPSEARCH -b $ROOTDN[$i] -s one ou=Computers 2> /dev/null";
+    $cmd = "$LDAPSEARCH -b '$ROOTDN[$i]' -s one ou=Computers 2> /dev/null";
     open(LDAPSEARCH, "$cmd |")
 	|| die("Can't find ou=Computers, $!\n");
     $line = <LDAPSEARCH>;
@@ -221,7 +221,7 @@ if(!$got_computers_object) {
 	    print " ";
 	}
 
-	$cmd = "$LDAPSEARCH -b ".$ROOTDN[$i]." -s one ou=* dn 2> /dev/null";
+	$cmd = "$LDAPSEARCH -b '".$ROOTDN[$i]."' -s one ou=* dn 2> /dev/null";
 	@tmp = upgrade_hostmerge_ldapsearch($cmd);
 	if($tmp[0]) {
 	    $line = $tmp[0];
@@ -236,7 +236,7 @@ if(!$got_computers_object) {
     }
 
     # Retreive the OpenLDAPaci attributes from the ou
-    $cmd = "$LDAPSEARCH -b $line -s base openldapaci 2> /dev/null";
+    $cmd = "$LDAPSEARCH -b '$line' -s base openldapaci 2> /dev/null";
     @ACIS = upgrade_hostmerge_ldapsearch($cmd);
 
     # Create ou=Computers object
@@ -260,7 +260,7 @@ EOF
 # {{{ Find out if there's any web- and/or mailservers
 print "\nLooking for objects to move:\n";
 for($i=0; $ROOTDN[$i]; $i++) {
-    $cmd = "$LDAPSEARCH -b $computers_dn -s one '(&(cn=*)(|(objectClass=ipHost)(objectClass=device)))' 2> /dev/null";
+    $cmd = "$LDAPSEARCH -b '$computers_dn' -s one '(&(cn=*)(|(objectClass=ipHost)(objectClass=device)))' 2> /dev/null";
     open(LDAPSEARCH, "$cmd |")
 	|| die("Can't find any physical hosts below ou=Computers,$ROOTDN, $!\n");
     $line = <LDAPSEARCH>;
@@ -270,7 +270,7 @@ for($i=0; $ROOTDN[$i]; $i++) {
 
 	# {{{ Find webservers
 	undef(@WEBSERVERS);
-	$cmd = "$LDAPSEARCH -b ".$ROOTDN[$i]." '(&(apacheservername=*)(|(objectclass=ApacheVirtualHostObj)(objectclass=ApacheSectionObj)))' dn 2> /dev/null";
+	$cmd = "$LDAPSEARCH -b '".$ROOTDN[$i]."' '(&(apacheservername=*)(|(objectclass=ApacheVirtualHostObj)(objectclass=ApacheSectionObj)))' dn 2> /dev/null";
 	@WEBSERVERS = upgrade_hostmerge_ldapsearch($cmd);
 
 	@servers = fix_ldif_multiline(@WEBSERVERS);
@@ -281,7 +281,7 @@ for($i=0; $ROOTDN[$i]; $i++) {
 
 	# {{{ Find mailservers
 	undef(@MAILSERVERS);
-	$cmd = "$LDAPSEARCH -b ".$ROOTDN[$i]." '(&(cn=*)(objectclass=qmailControl))' dn 2> /dev/null";
+	$cmd = "$LDAPSEARCH -b '".$ROOTDN[$i]."' '(&(cn=*)(objectclass=qmailControl))' dn 2> /dev/null";
 	@MAILSERVERS = upgrade_hostmerge_ldapsearch($cmd);
 
 	@servers = fix_ldif_multiline(@MAILSERVERS);
@@ -291,7 +291,7 @@ for($i=0; $ROOTDN[$i]; $i++) {
 	# }}}
 
 	# {{{ Find automounts
-	$cmd = "$LDAPSEARCH -b $ROOTDN[$i] 'ou=auto.*' dn 2> /dev/null";
+	$cmd = "$LDAPSEARCH -b '$ROOTDN[$i]' 'ou=auto.*' dn 2> /dev/null";
 	@AUTOMOUNTS = upgrade_hostmerge_ldapsearch($cmd);
 
 	@servers = fix_ldif_multiline(@AUTOMOUNTS);
@@ -380,7 +380,7 @@ if(@DNS2MOVE) {
 	    # {{{ Clone any webserver location objects
 	    # Find all objects below the original webserver object
 	    # (just in case there's virtual host locations)
-	    $cmd = "$LDAPSEARCH -b $DNS2MOVE[$i] -s one 'objectClass=*' dn 2> /dev/null";
+	    $cmd = "$LDAPSEARCH -b '$DNS2MOVE[$i]' -s one 'objectClass=*' dn 2> /dev/null";
 	    @LOCATIONS = upgrade_hostmerge_ldapsearch($cmd);
 	    for($j=0; $LOCATIONS[$j]; $j++) {
 		# Extract the location from the DN
@@ -468,7 +468,7 @@ if(@DNS2MOVE) {
 		# }}}
 
 		# {{{ Find any automount maps below this automount
-		$cmd = "$LDAPSEARCH -b $DNS2MOVE[$i] -s one '(&(cn=*)(objectClass=automount))' dn 2> /dev/null";
+		$cmd = "$LDAPSEARCH -b '$DNS2MOVE[$i]' -s one '(&(cn=*)(objectClass=automount))' dn 2> /dev/null";
 		@AUTOMOUNT_ENTRIES_1 = upgrade_hostmerge_ldapsearch($cmd);
 		for($j=0; $AUTOMOUNT_ENTRIES_1[$j]; $j++) {
 		    # Extract the location from the DN
@@ -495,7 +495,7 @@ if(@DNS2MOVE) {
 			# }}}
 
 			# {{{ Find any automount maps below this automount entry
-			$cmd = "$LDAPSEARCH -b $AUTOMOUNT_ENTRIES_1[$j] -s one '(&(cn=*)(objectClass=automount))' dn 2> /dev/null";
+			$cmd = "$LDAPSEARCH -b '$AUTOMOUNT_ENTRIES_1[$j]' -s one '(&(cn=*)(objectClass=automount))' dn 2> /dev/null";
 			@AUTOMOUNT_ENTRIES_2 = upgrade_hostmerge_ldapsearch($cmd);
 			for($l=0; $AUTOMOUNT_ENTRIES_2[$l]; $l++) {
 			    # Extract the location from the DN
