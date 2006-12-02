@@ -8,6 +8,9 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    in those physical hosts.
 	  - Enclose all DN's in any ldapsearch command line within citation marks. This to escape any
 	    space(s) in the DN's.
+	  - In the file tables/host_details-websrv.inc, we need to check if physical_data is both
+	    an array AND contain more than one entry (count() don't seem to work correctly if the
+	    variable is unset/empty!).
 
 phpQLAdmin 2.3.5 Dec  2 2006
 	Bug fixes
