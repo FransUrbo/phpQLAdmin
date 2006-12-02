@@ -1,8 +1,10 @@
 phpqladmin (2.3.5-1) unstable; urgency=low
 
   * New upstream version.
+    Huge rewrite of QmailLDAP/Controls and webserver information. Please
+    read the CHANGES file!
 
- --
+ -- Turbo Fredriksson <turbo@debian.org>  Sat,  2 Dec 2006 14:12:31 +0100
 
 phpqladmin (2.3.4-1) unstable; urgency=low
 
