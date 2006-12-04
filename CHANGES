@@ -14,6 +14,8 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	  - PHP parse error fixed in tables/host_details-websrv.inc.
 	  - Don't use '$server_dn' in referencing the physical host (in tables/host_details-websrv.inc).
 	    Use '$_REQUEST["host"]' instead (which is always set/correct).
+	  - Make sure the link_url variable is unset before going through the Round-Robin stuff. This
+	    so that we don't get the links from the PREVIOUS table entry (Rewrite Rules).
 
 phpQLAdmin 2.3.5 Dec  2 2006
 	Bug fixes

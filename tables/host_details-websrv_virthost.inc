@@ -223,6 +223,7 @@
 	  $filter .= pql_get_define("PQL_ATTR_OBJECTCLASS").'=ApacheVirtualHostObj)(';
 	  $filter .= pql_get_define("PQL_ATTR_CN").'='.$_REQUEST["virthost"].'))';
 	  $roundrobin = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $filter);
+	  unset($link_url);
 
 	  $class=pql_format_table(0);
 	  if(count($roundrobin) > 1) {
