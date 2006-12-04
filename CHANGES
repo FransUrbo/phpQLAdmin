@@ -17,6 +17,11 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	  - Make sure the link_url variable is unset before going through the Round-Robin stuff. This
 	    so that we don't get the links from the PREVIOUS table entry (Rewrite Rules).
 	  - Remove third param (server FQDN) to include/pql_search.inc:pql_get_automount_maps().
+	  - When moving automount maps (with scripts/upgrade_hostmerge.pl), we must remember each
+	    object DN.
+	    + Before adding a automount map/entry, make sure it's not a LDAP link/reference.
+	    = This so that we can change any 'automountInformation' which is LDAP mountpoints (i.e.
+	      LDAP referenced). Add any LDAP links/references at the end of all addition.
 
 phpQLAdmin 2.3.5 Dec  2 2006
 	Bug fixes

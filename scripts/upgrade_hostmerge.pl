@@ -3,7 +3,7 @@
 # Script to move web-/mailservers and automounts from
 # below branch/dn to new 'concentrated host' view.
 #
-# $Id: upgrade_hostmerge.pl,v 1.2 2006-12-02 17:46:33 turbo Exp $
+# $Id: upgrade_hostmerge.pl,v 1.3 2006-12-04 19:07:21 turbo Exp $
 #
 # -----  N O T E  -----  N O T E  -----  N O T E  -----  N O T E  -----
 # This file will NOT do any modifications to your LDAP database. It
@@ -19,7 +19,7 @@
 # -----  N O T E  -----  N O T E  -----  N O T E  -----  N O T E  -----
 
 @ROOTDN = ('c=SE');
-$SERVER = "-H ldapi://%2fvar%2frun%2fslapd%2fldapi.main";
+$SERVER = "ldapi://%2fvar%2frun%2fslapd%2fldapi.main";
 if($ENV{ADDITIONAL_SEARCH_OPTIONS}) {
     $ADDITIONAL_SEARCH_OPTIONS = $ENV{ADDITIONAL_SEARCH_OPTIONS};
 } else {
@@ -27,7 +27,7 @@ if($ENV{ADDITIONAL_SEARCH_OPTIONS}) {
 }
 $PRIMARY_SUPERADMIN="uid=turbo,ou=People,o=Fredriksson,c=SE";
 
-$LDAPSEARCH = "ldapsearch -LLL $ADDITIONAL_SEARCH_OPTIONS $SERVER";
+$LDAPSEARCH = "ldapsearch -LLL $ADDITIONAL_SEARCH_OPTIONS -H $SERVER";
 
 # {{{ Create a temp file for ldapadd
 $FILE_ADD = `tempfile -p add. -s .ldif`; chomp($FILE_ADD);
@@ -178,6 +178,8 @@ openldapaci: 1#entry#grant;w,r,s,c,x;[all]#access-id#$PRIMARY_SUPERADMIN
 
 EOF
     ;
+	push(@ADDED, $dn);
+
 	print "  Physical host: '$dn'\n";
 	push(@ADDED_PHYSICAL, $dn);
     }
@@ -248,6 +250,7 @@ ou: Computers
 objectClass: organizationalUnit
 EOF
     ;
+    push(@ADDED, "ou=Computers,$ROOTDN[$i]");
 
     # $i=1 because 0 is the DN of the object we took the ACI's from!
     for($i=1; $ACIS[$i]; $i++) {
@@ -257,7 +260,7 @@ EOF
 }
 # }}}
 
-# {{{ Find out if there's any web- and/or mailservers
+# {{{ Find out if there's any web-, mailservers and/or automount maps
 print "\nLooking for objects to move:\n";
 for($i=0; $ROOTDN[$i]; $i++) {
     $cmd = "$LDAPSEARCH -b '$computers_dn' -s one '(&(cn=*)(|(objectClass=ipHost)(objectClass=device)))' 2> /dev/null";
@@ -353,6 +356,7 @@ if(@DNS2MOVE) {
 		
 		print "    webserver container: '$webcontainer_dn'\n";
 		push(@ADDED_CONTAINER, $webcontainer_dn);
+		push(@ADDED, "$webcontainer_dn");
 	    }
 	    # }}}
 
@@ -374,6 +378,7 @@ if(@DNS2MOVE) {
 		
 		print "      webserver object: '$webserver_dn'\n";
 		push(@ADDED_SERVER, $webserver_dn);
+		push(@ADDED, "$webserver_dn");
 	    }
 	    # }}}
 
@@ -403,6 +408,7 @@ if(@DNS2MOVE) {
 		    
 		    print "        webserver location object: '$location_dn'\n";
 		    push(@ADDED_LOCATION, $location_dn);
+		    push(@ADDED, "$location_dn");
 		}
 	    }
 	    # }}}
@@ -433,6 +439,7 @@ if(@DNS2MOVE) {
 	    print LDAPADD "\n";
 
 	    print "    mailserver: '$mailserver_dn'\n";
+	    push(@ADDED, "$mailserver_dn");
 	    # }}}
 
 	} elsif($DNS2MOVE[$i] =~ /^ou=auto\./i) {
@@ -456,15 +463,34 @@ if(@DNS2MOVE) {
 		push(@REMOVE, $DNS2MOVE[$i]);
 		# }}}
 
-		# {{{ Add the automount
-		print LDAPADD "dn: $automount_dn\n";
+		# {{{ Check if we have a LDAP mount map
+		$dont_add = 0;
 		for($j=1; $entry[$j]; $j++) {
-		    print LDAPADD $entry[$j]."\n";
+		    if(($entry[$j] =~ /^automountInformation:.*ldap/) || ($entry[$j] =~ /^automountInformation: ldap /)) {
+			# YES!
+			$dont_add = 1;
+			push(@OBJECT_TO_ADD_LATER, "dn: $automount_dn");
+		    }
 		}
-		print LDAPADD "\n";
-		
-		print "    automount map: '$automount_dn'\n";
-		push(@ADDED_AUTOMOUNTS, $automount_dn);
+		# }}}
+
+		# {{{ Add the automount
+		if(!$dont_add) {
+		    print LDAPADD "dn: $automount_dn\n";
+		    for($j=1; $entry[$j]; $j++) {
+			print LDAPADD $entry[$j]."\n";
+		    }
+		    print LDAPADD "\n";
+		    
+		    print "    automount map: '$automount_dn'\n";
+		    push(@ADDED_AUTOMOUNTS, $automount_dn);
+		    push(@ADDED, "$automount_dn");
+		} else {
+		    for($j=1; $entry[$j]; $j++) {
+			push(@OBJECT_TO_ADD_LATER, $entry[$j]);
+		    }
+		    push(@OBJECT_TO_ADD_LATER, '');
+		}
 		# }}}
 
 		# {{{ Find any automount maps below this automount
@@ -483,15 +509,34 @@ if(@DNS2MOVE) {
 			push(@REMOVE, $AUTOMOUNT_ENTRIES_1[$j]);
 			# }}}
 
-			# {{{ Add the automount map
-			print LDAPADD "dn: $automount_entry_dn_1\n";
+			# {{{ Check if we have a LDAP mount map
+			$dont_add = 0;
 			for($k=1; $entry[$k]; $k++) {
-			    print LDAPADD $entry[$k]."\n";
+			    if(($entry[$k] =~ /^automountInformation:.*ldap/) || ($entry[$k] =~ /^automountInformation: ldap /)) {
+				# YES!
+				$dont_add = 1;
+				push(@OBJECT_TO_ADD_LATER, "dn: $automount_entry_dn_1");
+			    }
 			}
-			print LDAPADD "\n";
+			# }}}
+
+			# {{{ Add the automount map
+			if(!$dont_add) {
+			    print LDAPADD "dn: $automount_entry_dn_1\n";
+			    for($k=1; $entry[$k]; $k++) {
+				print LDAPADD $entry[$k]."\n";
+			    }
+			    print LDAPADD "\n";
 			
-			print "      automount entry: $automount_entry_dn_1\n";
-			push(@ADDED_AUTOMOUNT_ENTRY_1, $automount_entry_dn_1);
+			    print "      automount entry: $automount_entry_dn_1\n";
+			    push(@ADDED_AUTOMOUNT_ENTRY_1, $automount_entry_dn_1);
+			    push(@ADDED, "$automount_entry_dn_1");
+			} else {
+			    for($k=1; $entry[$k]; $k++) {
+				push(@OBJECT_TO_ADD_LATER, $entry[$k]);
+			    }
+			    push(@OBJECT_TO_ADD_LATER, '');
+			}
 			# }}}
 
 			# {{{ Find any automount maps below this automount entry
@@ -510,15 +555,34 @@ if(@DNS2MOVE) {
 				push(@REMOVE, $AUTOMOUNT_ENTRIES_2[$l]);
 				# }}}
 				
-				# {{{ Add the automount map
-				print LDAPADD "dn: $automount_entry_dn_2\n";
+				# {{{ Check if we have a LDAP mount map
+				$dont_add = 0;
 				for($m=1; $entry[$m]; $m++) {
-				    print LDAPADD $entry[$m]."\n";
+				    if(($entry[$m] =~ /^automountInformation:.*ldap/) || ($entry[$m] =~ /^automountInformation: ldap /)) {
+					# YES!
+					$dont_add = 1;
+					push(@OBJECT_TO_ADD_LATER, "dn: $automount_entry_dn_2");
+				    }
 				}
-				print LDAPADD "\n";
-				
-				print "        automount entry: $automount_entry_dn_2\n";
-				push(@ADDED_AUTOMOUNT_ENTRY_2, $automount_entry_dn_2);
+				# }}}
+
+				# {{{ Add the automount map
+				if(!$dont_add) {
+				    print LDAPADD "dn: $automount_entry_dn_2\n";
+				    for($m=1; $entry[$m]; $m++) {
+					print LDAPADD $entry[$m]."\n";
+				    }
+				    print LDAPADD "\n";
+				    
+				    print "        automount entry: $automount_entry_dn_2\n";
+				    push(@ADDED_AUTOMOUNT_ENTRY_2, $automount_entry_dn_2);
+				    push(@ADDED, "$automount_entry_dn_2");
+				} else {
+				    for($m=1; $entry[$m]; $m++) {
+					push(@OBJECT_TO_ADD_LATER, $entry[$m]);
+				    }
+				    push(@OBJECT_TO_ADD_LATER, '');
+				}
 				# }}}
 			    }
 			}
@@ -531,6 +595,45 @@ if(@DNS2MOVE) {
 
 	}
     }
+
+    # {{{ Add any missing objects
+    $count = $#OBJECT_TO_ADD_LATER;
+    for($i=0; $i < $count; $i++) {
+	if($OBJECT_TO_ADD_LATER[$i] =~ /^automountInformation:/i) {
+	    # This line must be modified!
+	    # automountInformation: ldap ldap1.bayour.com:ou=auto.mnt,ou=Automounts,o=Bayour.COM,c=SE
+	    # automountInformation: -fstype=autofs ldap:ou=auto.mnt.cdrom,ou=Automounts,o=Bayour.COM,c=SE
+	    @automountInformation = split(' ', $OBJECT_TO_ADD_LATER[$i]);
+	    @location = split(':', $automountInformation[2]);
+
+	    # Extract LDAP server
+	    #$location_ldapsrv = $location[0];
+	    $location_ldapsrv = $SERVER;
+
+	    # Extract DN
+	    #$location_dn = $location[1];
+	    @dn_parts = split(',', $location[1]);
+
+	    # Go through all DN's scheduled for removal and look for the target
+	    $rm_count = $#ADDED;
+	    for($j=0; $j < $rm_count; $j++) {
+		if($ADDED[$j] =~ /^$dn_parts[0]/i) {
+		    # Got it! I hope! :)
+		    $location_dn = $ADDED[$j];
+		    $j = $rm_count;
+		}
+	    }
+
+	    print LDAPADD "$automountInformation[0] $automountInformation[1] $location_ldapsrv:$location_dn\n";
+	} else {
+	    # This line can be added as-is.
+	    print LDAPADD $OBJECT_TO_ADD_LATER[$i]."\n";
+	    if($OBJECT_TO_ADD_LATER[$i] =~ /^dn: /i) {
+		print "      automount entry (modified): $OBJECT_TO_ADD_LATER[$i]\n";
+	    }
+	}
+    }
+    # }}}
 }
 # }}}
 
