@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // automount maps
-// $Id: attrib.automount.inc,v 2.2 2006-12-02 13:06:49 turbo Exp $
+// $Id: attrib.automount.inc,v 2.3 2006-12-04 18:59:44 turbo Exp $
 
 // {{{ Create the automountInformation attribute
 function attribute_setup() {
@@ -151,7 +151,7 @@ function attribute_init() {
 	$MOUNT_POINT = ereg_replace(pql_get_define("PQL_ATTR_CN").'=', '', $tmp[0]);
 
 	// Retreive autoMount maps for this host
-	$automounts = pql_get_automount_maps($_pql->ldap_linkid, $_REQUEST["domain"], $_REQUEST["host"]);
+	$automounts = pql_get_automount_maps($_pql->ldap_linkid, $_REQUEST["host"]);
 
 	// Find the automount map object for the specified mountpoint to modify
 	// Also find the base mountpoint for that mountpoint.
