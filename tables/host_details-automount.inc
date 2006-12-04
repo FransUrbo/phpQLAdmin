@@ -1,6 +1,6 @@
 <?php
 // Automount information etc
-// $Id: host_details-automount.inc,v 1.2 2006-12-02 13:07:07 turbo Exp $
+// $Id: host_details-automount.inc,v 1.3 2006-12-04 19:02:57 turbo Exp $
 
 // {{{ Retreive automounts
 if($_REQUEST["host"] == 'Global') {
@@ -10,7 +10,7 @@ if($_REQUEST["host"] == 'Global') {
     $host = pql_get_attribute($_pql->ldap_linkid, $host_dn, pql_get_define("PQL_ATTR_CN"));
     
     // Retreive autoMount maps for this host
-    $automounts[$host] = pql_get_automount_maps($_pql->ldap_linkid, $host_dn, $host);
+    $automounts[$host] = pql_get_automount_maps($_pql->ldap_linkid, $host_dn);
     if(!is_array($automounts[$host]))
       // No autoMount maps for this host, remove the entry from the array
       unset($automounts[$host]);
@@ -20,7 +20,7 @@ if($_REQUEST["host"] == 'Global') {
   $host = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["host"], pql_get_define("PQL_ATTR_CN"));
 
   // Retreive automounts for specific host
-  $automounts[$host] = pql_get_automount_maps($_pql->ldap_linkid, $_REQUEST["host"], $host);
+  $automounts[$host] = pql_get_automount_maps($_pql->ldap_linkid, $_REQUEST["host"]);
   if(!is_array($automounts[$host]))
     // No autoMount maps for this host, remove the entry from the array
     unset($automounts[$host]);

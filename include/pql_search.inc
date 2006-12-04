@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.63 2006-12-02 13:06:50 turbo Exp $
+// $Id: pql_search.inc,v 2.64 2006-12-04 19:02:00 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -460,9 +460,9 @@ function pql_get_email_domains($linkid, $host) {
 }
 // }}}
 
-// {{{ pql_get_automount_maps(linkid, $computerdn, host)
+// {{{ pql_get_automount_maps(linkid, $computerdn)
 // Retreive ALL automount maps (recursivly) for a specific host in a specific domain
-function pql_get_automount_maps($linkid, $computerdn, $host) {
+function pql_get_automount_maps($linkid, $computerdn) {
   // {{{ Retreive the base mount points
   // Find the auto.master object
   $filter = '(&(objectClass=autoMountMap)(|('.pql_get_define("PQL_ATTR_CN").'=auto.master)('.pql_get_define("PQL_ATTR_OU").'=auto.master)))';

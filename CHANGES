@@ -16,6 +16,7 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    Use '$_REQUEST["host"]' instead (which is always set/correct).
 	  - Make sure the link_url variable is unset before going through the Round-Robin stuff. This
 	    so that we don't get the links from the PREVIOUS table entry (Rewrite Rules).
+	  - Remove third param (server FQDN) to include/pql_search.inc:pql_get_automount_maps().
 
 phpQLAdmin 2.3.5 Dec  2 2006
 	Bug fixes
