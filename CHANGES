@@ -11,6 +11,9 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	  - In the file tables/host_details-websrv.inc, we need to check if physical_data is both
 	    an array AND contain more than one entry (count() don't seem to work correctly if the
 	    variable is unset/empty!).
+	  - PHP parse error fixed in tables/host_details-websrv.inc.
+	  - Don't use '$server_dn' in referencing the physical host (in tables/host_details-websrv.inc).
+	    Use '$_REQUEST["host"]' instead (which is always set/correct).
 
 phpQLAdmin 2.3.5 Dec  2 2006
 	Bug fixes
