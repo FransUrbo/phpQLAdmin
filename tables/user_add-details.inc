@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-details.inc,v 1.41 2006-12-02 13:07:07 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.42 2006-12-06 17:05:41 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
@@ -134,7 +134,11 @@
 <?php	} ?>
 <?php }
 
-	  if($krb_scheme and !$lockpassword and (!$_REQUEST["defaultpasswordscheme"] or $_SESSION["ADVANCED_MODE"])) {
+	  if($krb_scheme and !$lockpassword and
+		 in_array('KERBEROS', $schemes) and
+		 !(($_REQUEST["template"] == "mail") and ($scheme == "KERBEROS")) and
+		 (!$_REQUEST["defaultpasswordscheme"] or $_SESSION["ADVANCED_MODE"]))
+	  {
 ?>
         <tr class="<?php pql_format_table(); ?>">
           <td><img src="images/info.png" width="16" height="16" alt="" border="0" align="right"></td>
@@ -291,7 +295,7 @@
               <option value="<?=$additional?>"><?=pql_maybe_idna_decode($additional)?></option>
 <?php   		} ?>
             </select>
-<?php 		} else { ?>
+<?php 		} elseif(@$defaultdomain) { ?>
             <b>@<?=pql_maybe_idna_decode($defaultdomain)?></b>
             <input type="hidden" name="email_domain" value="<?=$defaultdomain?>">
 <?php 		} ?>

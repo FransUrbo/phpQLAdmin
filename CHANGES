@@ -28,6 +28,12 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	  - IDNA decode all DN's found in include/pql_search.inc:pql_get_dn().
 	  - IDNA decode the branch DN in the domain/branch details page.
 
+	GUI layout changes
+	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option
+	    to choose from.
+	  - Don't output the '@' separator between recipient part and email domain if there IS no
+	    domain to output in the user add details page.
+
 	Misc changes
 	  - Prettier debug output in include/pql_search.inc:pql_search()
 
