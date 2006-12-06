@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.45 2006-12-02 13:07:07 turbo Exp $
+// $Id: user_add-save.inc,v 1.46 2006-12-06 17:07:18 turbo Exp $
 require($_SESSION["path"]."/include/pql_krbafs.inc");
 
 // {{{ URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
@@ -99,8 +99,10 @@ if(!empty($_REQUEST["mail"]) and
 	if(($_REQUEST["include_additional"] == 'on') and is_array($additionaldomainname) and
 	   pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILALTERNATE")))
 	{
-		foreach($additionaldomainname as $additional)
+		foreach($additionaldomainname as $additional) {
+		  if(!eregi($additional, $_REQUEST["mail"]))
 		  $entry[pql_get_define("PQL_ATTR_MAILALTERNATE")][] = strtolower($email_temp . "@" . $additional);
+	}
 	}
 	// }}}
 }

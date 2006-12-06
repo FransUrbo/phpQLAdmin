@@ -27,6 +27,9 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    objectClass retreived - object).
 	  - IDNA decode all DN's found in include/pql_search.inc:pql_get_dn().
 	  - IDNA decode the branch DN in the domain/branch details page.
+	  - If a domain/branch have a default domain and (multiple) additional domains, the user/admin
+	    chooses one of the domains as his/her primary - make sure we don't add the same domain
+	    TWICE (by making sure it's not equal to the primary mail address domain)!
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option
