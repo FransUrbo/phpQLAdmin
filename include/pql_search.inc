@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.64 2006-12-04 19:02:00 turbo Exp $
+// $Id: pql_search.inc,v 2.65 2006-12-06 17:01:58 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -61,8 +61,20 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
 
   // It's either not a ONE level search or it doesn't exist in the
   // cache. Fetch it...
-  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE"))
-	echo "<b>not</b> cached (or 'level != BASE' or operational). Searching with: $func() below '$dn', filter '$filter'<br>";
+  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE")) {
+	echo "<b>not</b> cached (or 'level != BASE' or operational). Searching with: <b>$func(linkid, $dn, $filter, ";
+	if(is_array($op)) {
+	  echo "array(";
+	  for($i=0; $op[$i]; $i++) {
+	    echo $op[$i];
+	    if($op[$i+1])
+	      echo ", ";
+	  }
+	  echo ")";
+	} else
+	  echo "$op";
+	echo ")</b><br>";
+  }	
   
   $sr = @$func($linkid, $dn, $filter, $op);
   if(!$sr)
@@ -146,7 +158,7 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
 		$entry["dn"] = $dn;
 	  
 	  // -------------
-	  if(($level == "BASE") and !$operational) {
+	  if(($level == "BASE") and !$operational and ($attributes['count'] > 1)) {
 		// Cache this object
 		if($nr_entries > 1)
 		  pql_cache_add($entry[$entries]);
@@ -244,9 +256,9 @@ function pql_get_dn($linkid, $dn, $filter, $level = 'SUBTREE') {
   $objects = pql_search($linkid, $dn, $filter, $level, 1);
   if(!empty($objects[0])) {
 	for($i=0; $i < count($objects); $i++)
-	  $entry[] = pql_format_normalize_dn($objects[$i]['dn']);
+	  $entry[] = pql_maybe_idna_decode(pql_format_normalize_dn($objects[$i]['dn']));
   } elseif($objects and $objects['dn'])
-	$entry[] = pql_format_normalize_dn($objects['dn']);
+	$entry[] = pql_maybe_idna_decode(pql_format_normalize_dn($objects['dn']));
   
   if(@is_array($entry))
 	return($entry);
