@@ -26,6 +26,7 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    one attribute in the retreived object (this so that we don't cache an 'empty' - only
 	    objectClass retreived - object).
 	  - IDNA decode all DN's found in include/pql_search.inc:pql_get_dn().
+	  - IDNA decode the branch DN in the domain/branch details page.
 
 	Misc changes
 	  - Prettier debug output in include/pql_search.inc:pql_search()
