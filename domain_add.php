@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: domain_add.php,v 2.66 2006-12-02 13:06:31 turbo Exp $
+// $Id: domain_add.php,v 2.67 2006-12-11 06:09:02 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -104,7 +104,7 @@ if(function_exists("user_generate_mailstore")) {
 // Add all the super admins with full access.
 $admins = pql_get_attribute($_pql->ldap_linkid, urldecode($_SESSION["BASE_DN"][0]), pql_get_define("PQL_ATTR_ADMINISTRATOR"));
 if(is_array($admins)) {
-	for($j=0; $i < count($admins); $j++)
+	for($i=0; $i < count($admins); $i++)
 	  $entry[pql_get_define("PQL_ATTR_ADMINISTRATOR")][] = $admins[$j];
 } else {
 	$entry[pql_get_define("PQL_ATTR_ADMINISTRATOR")] = $admins;

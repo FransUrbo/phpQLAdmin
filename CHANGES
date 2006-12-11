@@ -30,6 +30,7 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	  - If a domain/branch have a default domain and (multiple) additional domains, the user/admin
 	    chooses one of the domains as his/her primary - make sure we don't add the same domain
 	    TWICE (by making sure it's not equal to the primary mail address domain)!
+	  - In domain_add.php, initialize and increase '$j', but check for '$i < count($admins)'. Oups!
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option
