@@ -44,6 +44,8 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    to choose from.
 	  - Don't output the '@' separator between recipient part and email domain if there IS no
 	    domain to output in the user add details page.
+	  - Change wording of 'Miscellaneous' in tables/domain_details-owner.inc to 'Additional information'
+	    which is ... better.
 
 	Misc changes
 	  - Prettier debug output in include/pql_search.inc:pql_search()

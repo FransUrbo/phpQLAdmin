@@ -73,7 +73,7 @@
       <tr><td></td><td></td></tr>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Miscellaneous')?></td>
+        <td class="title"><?=$LANG->_('Additional information')?></td>
         <td><?php if($info) { echo $info; } else { echo $LANG->_('Not set'); }?></td>
         <td><?=$info_link?></td>
       </tr>
