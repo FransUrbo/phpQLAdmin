@@ -31,6 +31,10 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    chooses one of the domains as his/her primary - make sure we don't add the same domain
 	    TWICE (by making sure it's not equal to the primary mail address domain)!
 	  - In domain_add.php, initialize and increase '$j', but check for '$i < count($admins)'. Oups!
+	    + Also when adding 'admin[$i]' to 'entry[administrator]', '$j' was used.
+	  - In newer PHP (> 4.3), there can be NO (!) output before a header("location: ...") command.
+	    So only include header.html and output a page header in domain_add.php if running in debug
+	    mode.
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option

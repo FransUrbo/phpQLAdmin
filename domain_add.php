@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: domain_add.php,v 2.67 2006-12-11 06:09:02 turbo Exp $
+// $Id: domain_add.php,v 2.68 2006-12-12 12:53:42 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -18,13 +18,17 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 }
 
 $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
-
-include($_SESSION["path"]."/header.html");
 // }}}
+
+// {{{ Include header etc if debugging
+if(pql_get_define("PQL_CONF_DEBUG_ME")) {
+include($_SESSION["path"]."/header.html");
 ?>
   <span class="title1"><?=$LANG->_('Create domain')?>: <?=$_REQUEST["domain"]?></span>
   <br><br>
 <?php
+}
+// }}}
 
 // {{{ Should we enforce a dot in the domainname or not?
 if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $_REQUEST["rootdn"]) == "dc" or
@@ -105,7 +109,7 @@ if(function_exists("user_generate_mailstore")) {
 $admins = pql_get_attribute($_pql->ldap_linkid, urldecode($_SESSION["BASE_DN"][0]), pql_get_define("PQL_ATTR_ADMINISTRATOR"));
 if(is_array($admins)) {
 	for($i=0; $i < count($admins); $i++)
-	  $entry[pql_get_define("PQL_ATTR_ADMINISTRATOR")][] = $admins[$j];
+	  $entry[pql_get_define("PQL_ATTR_ADMINISTRATOR")][] = $admins[$i];
 } else {
 	$entry[pql_get_define("PQL_ATTR_ADMINISTRATOR")] = $admins;
 }
@@ -120,13 +124,13 @@ if(pql_write_add($_pql->ldap_linkid, $dn, $entry, 'branch', 'domain_add.php')) {
     if(pql_get_define("PQL_CONF_SUBTREE_USERS")) {
 		pql_unit_add($_pql->ldap_linkid, $dn, pql_get_define("PQL_CONF_SUBTREE_USERS"));
     }
-	// }}}
+// }}}
 
     // {{{ Add the GROUPS subtree if defined
     if(pql_get_define("PQL_CONF_SUBTREE_GROUPS")) {
 		pql_unit_add($_pql->ldap_linkid, $dn, pql_get_define("PQL_CONF_SUBTREE_GROUPS"));
     }
-	// }}}
+// }}}
 
 	// {{{ Update locals if control patch is enabled
 	if(($_REQUEST["defaultdomain"] != "") and pql_get_define("PQL_CONF_CONTROL_USE") and
@@ -134,7 +138,7 @@ if(pql_write_add($_pql->ldap_linkid, $dn, $entry, 'branch', 'domain_add.php')) {
 		pql_control_update_domains($_pql, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"],
 								   '*', array('', $_REQUEST["defaultdomain"]));
 	}
-	// }}}
+// }}}
 
 	$msg = "";
 	
@@ -145,14 +149,14 @@ if(pql_write_add($_pql->ldap_linkid, $dn, $entry, 'branch', 'domain_add.php')) {
 		if(! pql_bind9_add_zone($_pql->ldap_linkid, $dn, $_REQUEST["defaultdomain"]))
 		  $msg = pql_complete_constant($LANG->_("Failed to add domain %domainname%"), array("domainname" => $_REQUEST["defaultdomain"]));
 	}
-	// }}}
+// }}}
 
 	// {{{ Prepare for redirecting to domain-details
 	if($msg == "")
 	  $msg = urlencode(pql_complete_constant($LANG->_('Domain %domain% successfully created'),
 											 array("domain" => $dn))) . ".";
 	$url = "domain_detail.php?rootdn=".$url["rootdn"]."&domain=".urlencode($dn)."&msg=$msg&rlnb=1";
-	// }}}
+// }}}
 
 	if(pql_get_define("PQL_CONF_SCRIPT_CREATE_DOMAIN", $_REQUEST["rootdn"])) {
 		// {{{ Run the special adddomain script - Setup the environment with the user details
@@ -184,7 +188,7 @@ if(pql_write_add($_pql->ldap_linkid, $dn, $entry, 'branch', 'domain_add.php')) {
 <?php
 
 		die();
-		// }}}
+// }}}
 	} elseif(pql_get_define("PQL_CONF_DEBUG_ME")) {
 	  if(file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
 		$now = pql_format_return_unixtime();
