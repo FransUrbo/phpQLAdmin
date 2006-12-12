@@ -35,6 +35,9 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	  - In newer PHP (> 4.3), there can be NO (!) output before a header("location: ...") command.
 	    So only include header.html and output a page header in domain_add.php if running in debug
 	    mode.
+	  - Simplify addin admin to PQL_CONF_REFERENCE_DOMAINS_WITH attribute ACI in
+	    include/config.inc.CHANGE_ME:user_generate_aci() (branch option).
+	    + There's TWO lines of action when adding an admin to 'full access' ACI lines.
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option
