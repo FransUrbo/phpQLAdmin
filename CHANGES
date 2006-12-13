@@ -55,6 +55,7 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    + More error checking.
 	    + Retreive file from $_FILES, not $_REQUEST.
 	    + Delete uploaded file after loading it into LDAP.
+	    + Add the ./tmp' directory (and a .htaccess which denies read).
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option
