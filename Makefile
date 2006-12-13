@@ -44,7 +44,8 @@ excludelist:
 	    | sed 's@\./@@'  > exclude.list; \
 	  find -type f -name '.cvsignore' -o -name 'README.cvs' \
 	    -o -name '*.new' -o -name '*.orig' -o -name '*~' \
-	    -o -name '.#*' | sed 's@\./@@' >> exclude.list; \
+	    -o -name '.#*' -o -name '*.jpg' -o -name '*.gif' \
+	    -o -name '*.png' | sed 's@\./@@' >> exclude.list; \
 	  cat exclude.list | sort | uniq > new; \
 	  echo	$(INSTDIR)/Makefile $(INSTDIR)/.version.old \
 		$(INSTDIR)/manual $(INSTDIR)/include/config.inc \
