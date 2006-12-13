@@ -1,6 +1,6 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.57 2006-12-02 13:06:31 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.58 2006-12-13 05:51:16 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -158,8 +158,13 @@ $_REQUEST["orgname"] = $orgname;
 if(!$_REQUEST["type"]) {
   if (!empty($_REQUEST["action"])) { // DLW: I'm wingining it here.
 	$_REQUEST["type"] = $_REQUEST["action"];
-  } else {
+  } elseif($_REQUEST['attrib'] == pql_get_define("PQL_ATTR_ISACTIVE") or
+		   $_REQUEST['attrib'] == pql_get_define("PQL_ATTR_MODE") or
+		   $_REQUEST['attrib'] == pql_get_define("PQL_ATTR_MAILALTERNATE") or
+		   $_REQUEST['attrib'] == pql_get_define("PQL_ATTR_QUOTA_VALUE")) {
 	$_REQUEST["type"] = 'fulldomain';
+  } else {
+	$_REQUEST["type"] = 'modify';
   }
 }
 

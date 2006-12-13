@@ -38,6 +38,8 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	  - Simplify addin admin to PQL_CONF_REFERENCE_DOMAINS_WITH attribute ACI in
 	    include/config.inc.CHANGE_ME:user_generate_aci() (branch option).
 	    + There's TWO lines of action when adding an admin to 'full access' ACI lines.
+	  - Fix so that domain_edit_attributes.php knows WHICH attributes (exactly!) that uses
+	    the 'fulldomain' option (there's only four).
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option
