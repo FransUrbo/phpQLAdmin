@@ -45,6 +45,7 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    the HTML header. It dies if data have already been sent (or {ob_}flush() have been called
 	    which it is in pql_flush()). Solution: Don't call {ob_}flush() if headers have already
 	    been sent.
+	  - Redundant retrieval of objectClasses in user_add.php removed.
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option

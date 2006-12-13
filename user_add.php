@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.137 2006-12-13 05:52:56 turbo Exp $
+// $Id: user_add.php,v 2.138 2006-12-13 10:21:35 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -82,10 +82,6 @@ if(empty($_REQUEST["page_next"])) {
   } else
 	$_REQUEST["page_next"] = '';
 }
-
-// {{{ Get all objectclasses the LDAP server understand
-$objectclasses_schema   = pql_get_subschema($_pql->ldap_linkid, 'objectclasses');
-// }}}
 
 // {{{ Retreive the template definition
 if(!empty($_REQUEST["template"]) and !@is_array($template)) {
