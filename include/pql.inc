@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.218 2006-12-13 06:01:10 turbo Exp $
+// $Id: pql.inc,v 2.219 2006-12-13 16:19:21 turbo Exp $
 //
 
 // ----------------------------
@@ -832,7 +832,9 @@ function pql_header($url) {
     if(function_exists("http_redirect"))
 	  http_redirect($uri);
 	else {
-	  ob_clean();
+	  if(function_exists("ob_clean"))
+		ob_clean();
+
 	  header("Location: $uri");
 	}
 
