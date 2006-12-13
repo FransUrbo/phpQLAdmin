@@ -59,6 +59,7 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	  - The include/pql_control.inc:pql_control_update_domains() needs to do a SUB search, not
 	    a ONELEVEL to find all QLC objects.
 	  - Don't add new additional domain name to QLC objects if not PQL_ATTR_CONTROL_USE is set.
+	  - Support _removing_ a value in include/attrib.outlook.inc.
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option

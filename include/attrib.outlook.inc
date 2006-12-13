@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for pilotPerson objects etc
-// $Id: attrib.outlook.inc,v 1.30 2006-12-02 13:06:50 turbo Exp $
+// $Id: attrib.outlook.inc,v 1.31 2006-12-13 22:01:29 turbo Exp $
 
 /*
 	Attributes managed here:
@@ -78,6 +78,11 @@ function attribute_print_form() {
           </td><?php } ?>
 
         </tr>
+
+        <tr class="<?php pql_format_table(); ?>">
+          <td class="title" align="right"><img src="images/info.png" width="16" height="16" alt="" border="0">&nbsp;</td>
+          <td><?=$LANG->_('Leave empty to remove value')?></td>
+        </tr>
       </th>
     </table>
 
@@ -110,7 +115,7 @@ function attribute_save($type) {
       case "add":
 		// DLW: Add drops into modify.  Is this an error?
       case "modify":
-		if($_REQUEST[$attrib] == $_REQUEST["oldvalue"]) {
+		if(($_REQUEST[$attrib] == $_REQUEST["oldvalue"]) and ($_REQUEST[$attrib] != '')) {
 			// don't change if new value equal to old one
 			$msg = pql_complete_constant($LANG->_('%what% unchanged'), array('what' => $attrib));
 			attribute_forward($msg);
@@ -140,7 +145,7 @@ function attribute_save($type) {
 			  $success = 1;
 		} elseif($_REQUEST["user"]) {
 			// Save a user attribute
-			if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], '', $_REQUEST[$attrib]))
+			if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], $_REQUEST["attrib"], 1, $_REQUEST[$attrib]))
 			  $success = 1;
 		}
 
