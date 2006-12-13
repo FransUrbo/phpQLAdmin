@@ -51,6 +51,10 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    + Fix some API use error in include/pql_search.inc:pql_get_subschemas().
 	    + Figure out if to use caching in include/pql_search.inc:pql_search() ONCE, then use that
 	      information in the rest of the function.
+	  - Finish/fix the 'User picture upload':
+	    + More error checking.
+	    + Retreive file from $_FILES, not $_REQUEST.
+	    + Delete uploaded file after loading it into LDAP.
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option

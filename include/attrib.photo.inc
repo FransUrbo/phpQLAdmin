@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // jpegPhoto
-// $Id: attrib.photo.inc,v 2.2 2006-12-02 13:06:50 turbo Exp $
+// $Id: attrib.photo.inc,v 2.3 2006-12-13 11:26:53 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type = '') {
@@ -34,7 +34,7 @@ function attribute_print_form($type = "modify") {
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Filename')?></td>
           <td>
-            <input type="file" name="<?=$attrib?>" size="50">
+            <input type="file" name="<?=$attrib?>" size="70">
           </td>
         </tr>
 
@@ -67,27 +67,46 @@ function attribute_save($type) {
       case "add":
       case "modify":
 	  case "delete":
-		if($type == 'delete')
+		if(($type == 'delete') or ($_FILES[$attrib]["size"] == 0))
 		  $_REQUEST[$attrib] = '';
 		else {
-		  $fp = fopen($_REQUEST[$attrib]["tmp_name"], "r");
-		  if($fp) {
-			$data = fread($fp, $_REQUEST[$attrib]["size"]);
-			fclose($fp);
+			// In PHP versions earlier than 4.1.0, $HTTP_POST_FILES should be used instead
+			// of $_FILES.
+			$uploaddir = '/var/tmp/';
+			$uploadfile = $uploaddir . basename($_FILES[$attrib]['name']);
+			
+			if (move_uploaded_file($_FILES[$attrib]['tmp_name'], $uploadfile)) {
+				if(pql_get_define("PQL_CONF_DEBUG_ME"))
+				  echo "File is valid, and was successfully uploaded.\n";
+				
+				$fp = fopen($uploadfile, "r");
+				if($fp) {
+					$data = fread($fp, $_FILES[$attrib]["size"]);
+					fclose($fp);
 
-			$entry[$attrib] = $data;
-		  } else
-			// No file -> remove attribute
-			$entry[$attrib] = array();
+					// Remove the photo file!
+					if(file_exists($uploadfile)) {
+						unlink($uploadfile);
+					}
+
+					$entry[$attrib] = $data;
+				} else
+				  // No file -> remove attribute
+				  $entry[$attrib] = array();
+			} else {
+				// Could not move/receive file (for some reason).
+				echo "Possible file upload attack/problem!\n";
+				echo "See <a href='http://se2.php.net/manual/en/features.file-upload.errors.php' target='_top'>";
+				echo "the PHP Manual</a> for possible problem/solution<br>";
+			}
 		}
 
 		if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], '', 1, $entry))
 		  $msg = $LANG->_('Successfully changed JPEG photo');
 		else
 		  $msg = $LANG->_('Failed to change JPEG photo');
-
-		if(!pql_get_define("PQL_CONF_DEBUG_ME"))
-		  attribute_forward($msg);
+		
+		attribute_forward($msg);
 		break;
 		
       default:
