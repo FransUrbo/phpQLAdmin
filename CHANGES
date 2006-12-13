@@ -41,6 +41,10 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	  - Fix so that domain_edit_attributes.php knows WHICH attributes (exactly!) that uses
 	    the 'fulldomain' option (there's only four).
 	  - Force additionalDomainName variable in user_add.php to array.
+	  - As of PHP 4.3, the header() function have changed behaviour! It no longer allows overriding
+	    the HTML header. It dies if data have already been sent (or {ob_}flush() have been called
+	    which it is in pql_flush()). Solution: Don't call {ob_}flush() if headers have already
+	    been sent.
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option

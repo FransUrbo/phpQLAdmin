@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.217 2006-12-02 13:06:50 turbo Exp $
+// $Id: pql.inc,v 2.218 2006-12-13 06:01:10 turbo Exp $
 //
 
 // ----------------------------
@@ -828,7 +828,14 @@ function pql_recreate_dnsttl($dn) {
 // {{{ pql_header(url)
 function pql_header($url) {
 	$uri = $_SESSION["URI"].$url;
-	header("Location: $url");
+
+    if(function_exists("http_redirect"))
+	  http_redirect($uri);
+	else {
+	  ob_clean();
+	  header("Location: $uri");
+	}
+
 	exit;
 }
 // }}}
@@ -872,11 +879,13 @@ function pql_add2array(&$old, $new) {
 
 // {{{ pql_flush(void)
 function pql_flush() {
-  if(function_exists("ob_flush"))
-	// Only exists in PHP >= 4.2.0
-	ob_flush();
-
-  flush();
+  if(headers_sent()) {
+	if(function_exists("ob_flush"))
+	  // Only exists in PHP >= 4.2.0
+	  ob_flush();
+	
+	flush();
+  }
 }
 // }}}
 
