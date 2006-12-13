@@ -40,6 +40,7 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    + There's TWO lines of action when adding an admin to 'full access' ACI lines.
 	  - Fix so that domain_edit_attributes.php knows WHICH attributes (exactly!) that uses
 	    the 'fulldomain' option (there's only four).
+	  - Force additionalDomainName variable in user_add.php to array.
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option

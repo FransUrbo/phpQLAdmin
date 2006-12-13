@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.136 2006-12-02 13:06:31 turbo Exp $
+// $Id: user_add.php,v 2.137 2006-12-13 05:52:56 turbo Exp $
 //
 // --------------- Pre-setup etc.
 
@@ -35,6 +35,10 @@ if(!pql_get_dn($_pql->ldap_linkid, $_REQUEST["domain"], '(objectclass=*)', 'BASE
 
 // {{{ Get default domain values for this domain
 $additionaldomainname = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
+if($additionaldomainname and !is_array($additionaldomainname)) {
+	$additionaldomainname = array($additionaldomainname);
+}
+
 $attribs = array("defaultdomain"		=> pql_get_define("PQL_ATTR_DEFAULTDOMAIN"),
 				 "maxusers"				=> pql_get_define("PQL_ATTR_MAXIMUM_DOMAIN_USERS"),
 				 "basehomedir"			=> pql_get_define("PQL_ATTR_BASEHOMEDIR"),
