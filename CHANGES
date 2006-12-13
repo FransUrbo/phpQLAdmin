@@ -46,6 +46,11 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    which it is in pql_flush()). Solution: Don't call {ob_}flush() if headers have already
 	    been sent.
 	  - Redundant retrieval of objectClasses in user_add.php removed.
+	  - Optimize include/pql_search.inc:pql_get_subschemas() by making sure that the cn=Subschema
+	    (or whatever subschemaSubentry in DN '') is cached.
+	    + Fix some API use error in include/pql_search.inc:pql_get_subschemas().
+	    + Figure out if to use caching in include/pql_search.inc:pql_search() ONCE, then use that
+	      information in the rest of the function.
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option

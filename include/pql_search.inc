@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.65 2006-12-06 17:01:58 turbo Exp $
+// $Id: pql_search.inc,v 2.66 2006-12-13 10:25:20 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -29,35 +29,59 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
 	$dn = pql_recreate_dnsttl($dn);
   // }}}
   
-  // {{{ Which ldap_{search,list,read}() function to use
+  // {{{ Which ldap_{search,list,read}() function to use and should cache be used?
   switch($level) {
     case "SUBTREE":		$func = "ldap_search";	break;
     case "ONELEVEL":	$func = "ldap_list";	break;
     default:			$func = "ldap_read";	break;
   }
   
-  if($operational)
+  $subschema_dn = 0; // Can't be NULL (''). Then the 'check if enable cache' don't work...
+  if($operational) {
 	// This works with OpenLDAP at least!!
 	$op = array('+');
-  else
+
+	// If '$operational' != integer then it's the subschema DN
+	// This is done in only ONE place: pql_get_subschema().
+	// We need this to know if we should cache the schemas (which
+	// we should - it doesn't have any non-operational attributes
+	// of interest).
+	if(!is_numeric($operational)) {
+		$subschema_dn = $operational;
+		$operational = 1;
+    }
+  } else
 	$op = array();
+
+  $enable_cache = 0;
+  if(($level == "BASE") and
+	 (!$operational or
+	  ((lc($dn) == lc($subschema_dn)) and
+	   ($level == 'BASE'))))
+	// Check for/retreive cached object if:
+	// 1. level == BASE
+	// 2. not operational
+	// 3. looking (BASE) in 'cn=Subschema' (or whatever subschemaSubentry points to in base NULL).
+	$enable_cache = 1;
   // }}}
   
   // {{{ Search for object(s)
   if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE"))
 	echo "pql_search() - 1: Looking for '<b>$dn</b>': "; // DEBUG
-  
-  if(($level == "BASE") and !$operational) {
+
+  if($enable_cache) {
 	if(pql_cache_get($dn, $object)) {
 	  // The object is cached -> return this (don't look for it in LDAP).
+//echo "<font size=\"+1\">Returning cached object '$dn'.</font><br>";
 	  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE")) {
-		echo "<font size=\"+1\">Returning '$dn':</font>";
+		echo "<font size=\"+1\">Returning cached object '$dn':</font>";
 		printr($object);
 	  }
 	  
 	  return($object);
-	} // else fall through
-  } // else fall through
+	} // not cached => fall through.
+  } // not BASE or is operational => fall through.
+//echo "<b>not cached, retreiving '$dn' (level=$level, operational=$operational)</b><br>";
 
   // It's either not a ONE level search or it doesn't exist in the
   // cache. Fetch it...
@@ -102,8 +126,12 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
 	if(file_exists($_SESSION["path"]."/.DEBUG_CACHE"))
 	  echo "pql_search() - 2: Looking for '<b>$dn</b>': ";
 	  
-	if(!$operational and pql_cache_get($dn, $cached_object)) {
+	if($enable_cache and pql_cache_get($dn, $cached_object)) {
 	  // Object cached. Add it as-is to the resulting array.
+	  // Use cached object if:
+	  // 1. it IS cached in the first place
+	  // 2. not operational
+	  // 3. looking (BASE) in 'cn=Subschema' (or whatever subschemaSubentry points to in base NULL).
 	  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE"))
 		echo "<b>Object cached</b> - add it as-is to the resulting array.<br>";
 
@@ -158,7 +186,7 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
 		$entry["dn"] = $dn;
 	  
 	  // -------------
-	  if(($level == "BASE") and !$operational and ($attributes['count'] > 1)) {
+	  if($enable_cache and ($attributes['count'] > 1)) {
 		// Cache this object
 		if($nr_entries > 1)
 		  pql_cache_add($entry[$entries]);
@@ -582,7 +610,7 @@ function pql_search_forwarders($ldap, $user) {
 	$results = pql_get_dn($linkid, $dn, $filter);
 	for($i=0; $i < count($results); $i++) {
 	  // Retreive this object.
-	  $object = pql_search($linkid, $results[$i], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', 'BASE', 0);
+	  $object = pql_search($linkid, $results[$i], pql_get_define("PQL_ATTR_OBJECTCLASS").'=*', 'BASE');
 	  
 	  $return[] = array("reference" => $object[0]['dn'],
 						$ref		  => $object[0][$ref],
@@ -755,8 +783,6 @@ function pql_validate_object($linkid, $dn, $object, $type) {
 }
 // }}}
 
-// TODO: Verify that these functions are ok (using new API).
-
 // {{{ pql_get_subschemas(ldap_linkid)
 function pql_get_subschemas($ldap_linkid) {
   $attribs = array("ldapsyntaxes", "matchingrules", "attributetypes", "objectclasses");
@@ -783,11 +809,11 @@ function pql_get_subschema($ldap_linkid, $attrib) {
   // CMD: /usr/bin/ldapsearch -x -LLL -h localhost -s base -b '' 'objectClass=*' subschemaSubentry
   //
   // TODO: Reuse the $this->_find_base_option() function here!
-  $entry = pql_get_attribute($ldap_linkid, NULL, 'subschemaSubentry', 'subschemaSubentry');
+  $entry = pql_get_attribute($ldap_linkid, NULL, 'subschemaSubentry', 1);
   if($entry) {
-	// Get the subSchemaAttributes from the subSchema
+	// Get the (operational) attribute subSchemaAttributes from the subSchema
 	// CMD: /usr/bin/ldapsearch -x -LLL -h localhost -s base -b 'cn=Subschema' 'objectClass=subSchema' $attrib
-	$entry = pql_search($ldap_linkid, $entry, pql_get_define("PQL_ATTR_OBJECTCLASS").'=subSchema', 'BASE', 0, $attrib);
+	$entry = pql_search($ldap_linkid, $entry, pql_get_define("PQL_ATTR_OBJECTCLASS").'=subSchema', 'BASE', 0, $entry);
 	if(!empty($entry)) {
 	  // TODO: For some reason (?), I sometimes get it in a '$entry[0]'
 	  //       array, and sometimes flat... !?!?
