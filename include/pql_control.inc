@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.53 2006-12-02 13:06:50 turbo Exp $
+// $Id: pql_control.inc,v 2.54 2006-12-13 19:24:03 turbo Exp $
 //
 
 // {{{ control connection class
@@ -113,7 +113,7 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 	//	NOTE: BOTH can be set but not NULL!
 	
 	// {{{ Retreive and go through each QmailLDAP control object
-	$hosts = pql_get_dn($ldap->ldap_linkid, $dn, '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+	$hosts = pql_get_dn($ldap->ldap_linkid, $dn, '(&(cn=*)(objectclass=qmailControl))');
 	if($hosts) {
 	  if(!is_array($hosts))
 		$hosts = array($hosts);

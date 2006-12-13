@@ -56,6 +56,8 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    + Retreive file from $_FILES, not $_REQUEST.
 	    + Delete uploaded file after loading it into LDAP.
 	    + Add the ./tmp' directory (and a .htaccess which denies read).
+	  - The include/pql_control.inc:pql_control_update_domains() needs to do a SUB search, not
+	    a ONELEVEL to find all QLC objects.
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option
