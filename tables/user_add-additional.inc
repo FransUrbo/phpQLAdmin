@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-additional.inc,v 1.35 2006-12-02 13:07:07 turbo Exp $ */ ?>
+<?php /* $Id: user_add-additional.inc,v 1.36 2006-12-13 10:26:09 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <!-- Some hidden values from previous page(s) -->
 <?php if(!empty($_REQUEST["surname"]) and pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_CN"))) { ?>
@@ -37,7 +37,7 @@
 
     <table cellspacing="0" cellpadding="3" border="0">
 <?php if((!empty($_REQUEST["autogenerate"]) and pql_templates_check_attribute($_pql->ldap_linkid, $template,
-																	  pql_get_define("PQL_ATTR_PASSWD"))) or
+																			  pql_get_define("PQL_ATTR_PASSWD"))) or
 		 pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_HOMEDIR")) or
 		 pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILSTORE")) or
 		 pql_templates_check_attribute($_pql->ldap_linkid, $template, pql_get_define("PQL_ATTR_MAILHOST")))
