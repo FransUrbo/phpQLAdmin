@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // jpegPhoto
-// $Id: attrib.photo.inc,v 2.3 2006-12-13 11:26:53 turbo Exp $
+// $Id: attrib.photo.inc,v 2.4 2006-12-13 11:33:39 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type = '') {
@@ -72,7 +72,7 @@ function attribute_save($type) {
 		else {
 			// In PHP versions earlier than 4.1.0, $HTTP_POST_FILES should be used instead
 			// of $_FILES.
-			$uploaddir = '/var/tmp/';
+			$uploaddir = 'tmp/';
 			$uploadfile = $uploaddir . basename($_FILES[$attrib]['name']);
 			
 			if (move_uploaded_file($_FILES[$attrib]['tmp_name'], $uploadfile)) {
