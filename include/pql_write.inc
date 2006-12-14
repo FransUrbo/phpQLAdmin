@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.42 2006-12-02 13:06:50 turbo Exp $
+// $Id: pql_write.inc,v 2.43 2006-12-14 09:21:16 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -606,14 +606,15 @@ function pql_user_del($ldap, $domain, $user, $delete_forwards) {
 		foreach($forwarders as $forward) {
 			// get the forwarding addresses of this user
 			$fwd_addresses = pql_get_attribute($linkid, $forward['reference'], pql_get_define("PQL_ATTR_FORWARDS"));
-			foreach($addresses as $address) {
-				// does this user forward to the removed user or one of his aliases?
-				$rem_key = array_search($address, $fwd_addresses);
-				if ($rem_key !== false) {
-					// we found a forward -> remove it 
-					pql_modify_attribute($linkid, $forward['reference'], pql_get_define("PQL_ATTR_FORWARDS"), '',
-										 $fwd_addresses[$rem_key]);
-										 
+			if(@$fwd_addresses and is_array($fwd_addresses)) {
+				foreach($addresses as $address) {
+					// does this user forward to the removed user or one of his aliases?
+					$rem_key = array_search($address, $fwd_addresses);
+					if ($rem_key !== false) {
+						// we found a forward -> remove it 
+						pql_modify_attribute($linkid, $forward['reference'], pql_get_define("PQL_ATTR_FORWARDS"), '',
+											 $fwd_addresses[$rem_key]);
+					}
 				}
 			}
 		} 
