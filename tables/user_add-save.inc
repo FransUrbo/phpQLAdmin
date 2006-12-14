@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.46 2006-12-06 17:07:18 turbo Exp $
+// $Id: user_add-save.inc,v 1.47 2006-12-14 09:23:08 turbo Exp $
 require($_SESSION["path"]."/include/pql_krbafs.inc");
 
 // {{{ URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.
@@ -323,10 +323,11 @@ if(!empty($entry[pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["root
 }
 
 if(!empty($_REQUEST["subbranch"])) {
-	$userdn .= urldecode($_REQUEST["subbranch"]);
+	$userdn .= 'ou='.urldecode($_REQUEST["subbranch"].",".$_REQUEST["domain"]);
 } else { 
 	$userdn .= urldecode($_REQUEST["domain"]);
 }
+
 $userdn = pql_maybe_encode($userdn);
 // }}}
 

@@ -63,6 +63,7 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	  - When giving specific user Super admin rights, don't forget to add all the OLD values to
 	    the list/array of administrators in include/attrib.administrator.inc:attribute_save().
 	  - Make sure that there ARE any forwarding addresses to the user to delete in include/pql_write.inc:pql_user_del().
+	  - Add the domain (and 'ou=<subbranch>') to the user DN if subbranch is defined.
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option
