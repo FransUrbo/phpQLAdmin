@@ -1,6 +1,6 @@
 <?php
 // delete a user
-// $Id: user_del.php,v 2.46 2006-12-02 13:06:31 turbo Exp $
+// $Id: user_del.php,v 2.47 2006-12-14 09:20:03 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -41,7 +41,7 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 	$principal = kadmin_get_principal($_pql->ldap_linkid, $_REQUEST["user"]);
 	if($principal)
 	  kadmin_delprinc($_pql->ldap_linkid, $principal);
-	// }}}
+// }}}
 
 	// {{{ Get the users mail addresses before the object gets deleted
 	if($_REQUEST["unsubscribe"]) {
@@ -56,7 +56,6 @@ if(isset($_REQUEST["ok"]) || !pql_get_define("PQL_CONF_VERIFY_DELETE", $_REQUEST
 			  $mails[] = $alias;
 		}
 	}	
-
 // }}}
 
 	// {{{ Delete the user
