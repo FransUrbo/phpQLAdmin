@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for administrator and seealso modification
 // Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
-// $Id: attrib.administrator.inc,v 1.59 2006-12-02 13:06:49 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.60 2006-12-14 06:36:50 turbo Exp $
 
 // There is serious problems with this. I fix for one usage and break another
 // one! Let's try to remember (and document) how it's called. It's called from
@@ -479,6 +479,12 @@ function attribute_save($type) {
 			  for($i=0; $DN[$i]; $i++) {
 				$dn = $DN[$i];
 
+				// First add all the OLD values
+				$adms = $admins[$dn];
+				foreach($adms as $root_dn => $user_dn)
+				  $ADMs[$dn][$attrib][] = $user_dn;
+
+				// Add the NEW value
 				$admins2add[$dn][] = $value;
 				$ADMs[$dn][$attrib][] = $value;
 			  }

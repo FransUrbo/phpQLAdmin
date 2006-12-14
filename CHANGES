@@ -60,6 +60,8 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    a ONELEVEL to find all QLC objects.
 	  - Don't add new additional domain name to QLC objects if not PQL_ATTR_CONTROL_USE is set.
 	  - Support _removing_ a value in include/attrib.outlook.inc.
+	  - When giving specific user Super admin rights, don't forget to add all the OLD values to
+	    the list/array of administrators in include/attrib.administrator.inc:attribute_save().
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option
