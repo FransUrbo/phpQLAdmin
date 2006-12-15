@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.66 2006-12-13 10:25:20 turbo Exp $
+// $Id: pql_search.inc,v 2.67 2006-12-15 10:59:39 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -815,8 +815,7 @@ function pql_get_subschema($ldap_linkid, $attrib) {
 	// CMD: /usr/bin/ldapsearch -x -LLL -h localhost -s base -b 'cn=Subschema' 'objectClass=subSchema' $attrib
 	$entry = pql_search($ldap_linkid, $entry, pql_get_define("PQL_ATTR_OBJECTCLASS").'=subSchema', 'BASE', 0, $entry);
 	if(!empty($entry)) {
-	  // TODO: For some reason (?), I sometimes get it in a '$entry[0]'
-	  //       array, and sometimes flat... !?!?
+	  // Catch a flat object - i.e. only ONE domain
 	  if(empty($entry[0])) {
 		$tmp = $entry; unset($entry);
 		$entry[0] = $tmp; unset($tmp);
