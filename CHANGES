@@ -69,6 +69,7 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	  - Make sure that 'type' is always set as a hidden value (to make sure it survive to
 	    bind9_edit_attributes.php).
 	  - Catch flat object returned by pql_search() in include/pql_bind9.inc:pql_bind9_get_ttl().
+	  - Don't modify a QLC when adding a domain if the domain already exists.
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option

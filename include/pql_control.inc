@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for server control)
 //
-// $Id: pql_control.inc,v 2.54 2006-12-13 19:24:03 turbo Exp $
+// $Id: pql_control.inc,v 2.55 2006-12-15 12:37:54 turbo Exp $
 //
 
 // {{{ control connection class
@@ -119,6 +119,10 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 		$hosts = array($hosts);
 	  
 	  foreach($hosts as $host) {
+		if(!$domain[0] and $domain[1])
+		  // Make sure we don't modify a host unnecessary...
+		  $domain_to_add_already_exists = 0;
+
 		$attribs = array('locals'    => pql_get_define("PQL_ATTR_LOCALS"),
 						 'rcpthosts' => pql_get_define("PQL_ATTR_RCPTHOSTS"));
 		foreach($attribs as $key => $attrib) {
@@ -153,6 +157,9 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 				  // }}}
 				} elseif(!$domain[0] and $domain[1]) {
 				  // {{{ We're ADDING a domainname. Add (all) the old one(s)
+				  if(eregi($value, $domain[1]))
+					$domain_to_add_already_exists = 1;
+
 				  $entry[$key][] = $value;
 				  // }}}
 				}
@@ -160,13 +167,16 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 			  // }}}
 			}
 
-			if(!$domain[0] and $domain[1]) {
-			  // No previous values and we want to ADD a domain
+			if((!$domain[0] and $domain[1]) and !$domain_to_add_already_exists) {
+			  // Add the new domain
 			  if(pql_get_define("PQL_CONF_DEBUG_ME"))
 				echo "pql_control_update_domains(): Adding domain '<b>".$domain[1]."</b>' to QLC '$host:$key'<br>";
 			  
 			  $entry[$key][] = $domain[1];
-			}
+			} else
+			  if(pql_get_define("PQL_CONF_DEBUG_ME"))
+				echo "pql_control_update_domains(): Domain '<b>".$domain[1]."</b>' already exists in QLC '$host:$key'<br>";
+			  
 			// NOTE: If there is no previous values and we want to REMOVE a domain, then we
 			//       don't need to do anything (can't delete something that isn't there! :).
 		  }
@@ -189,7 +199,7 @@ function pql_control_update_domains($ldap, $rootdn, $dn, $host, $domain = "", $t
 		}
 
 		// {{{ Do modification
-		if($entry["locals"][0] or $entry["rcpthosts"][0])
+		if(($entry["locals"][0] or $entry["rcpthosts"][0]) and !$domain_to_add_already_exists)
 		  pql_modify_attribute($ldap->ldap_linkid, $host, '', '', $entry);
 		// }}}
 	  }
