@@ -70,10 +70,6 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    bind9_edit_attributes.php).
 	  - Catch flat object returned by pql_search() in include/pql_bind9.inc:pql_bind9_get_ttl().
 	  - Don't modify a QLC when adding a domain if the domain already exists.
-	  - When adding a webserver or DNS domain to a domain/branch, offer to update additionalDomainName
-	    and QLC object(s).
-	    + 'Update QLC object(s)' checked by default.
-	    + Change 'Create DNS object' to checked by default.
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option
@@ -82,6 +78,10 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    domain to output in the user add details page.
 	  - Change wording of 'Miscellaneous' in tables/domain_details-owner.inc to 'Additional information'
 	    which is ... better.
+	  - When adding a webserver or DNS domain to a domain/branch, offer to update additionalDomainName
+	    and QLC object(s).
+	    + 'Update QLC object(s)' checked by default.
+	    + Change 'Create DNS object' to checked by default.
 
 	Misc changes
 	  - Prettier debug output in include/pql_search.inc:pql_search()
