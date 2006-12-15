@@ -23,6 +23,8 @@ Upgrading from <2.3.5
 	  So if you use that, you might want to take the new function from
 	  include/config.inc.CHANGE_ME and put it into your own copy
           (include/config.inc).
+	* Note that you will have to logout and then login again for the
+	  'Computers' frame to update.
 
 Upgrading from 2.1.4
 	Support for user/branch deletion script(s). Update your schema at
