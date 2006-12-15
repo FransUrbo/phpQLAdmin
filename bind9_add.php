@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.26 2006-12-02 13:06:30 turbo Exp $
+// $Id: bind9_add.php,v 2.27 2006-12-15 10:37:58 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -159,7 +159,7 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
     <input type="submit" value="Save">
   </form>
 <?php
-		// }}}
+// }}}
 	  } else {
 		  // {{{ Add bind9 host
 		  if($_REQUEST["record_type"] == "ptr") {
@@ -232,7 +232,7 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 			die("<b>$url</b>");
 		  } else
 			pql_header($url);
-		  // }}}
+// }}}
 	  }
 }
 ?>
