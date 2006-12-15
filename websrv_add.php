@@ -1,6 +1,6 @@
 <?php
 // Add a webserver configuration to the LDAP db
-// $Id: websrv_add.php,v 2.20 2006-12-02 13:06:31 turbo Exp $
+// $Id: websrv_add.php,v 2.21 2006-12-15 12:41:24 turbo Exp $
 //
 // {{{ Setup session
 require("./include/pql_session.inc");
@@ -281,7 +281,18 @@ if(($error == 'true') or !$_REQUEST["type"] or
 ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Create DNS object')?></td>
-          <td><input type="checkbox" name="dns"<?php if(@$_REQUEST["dns"]) { echo " CHECKED"; }?>>&nbsp;<?=$LANG->_('Yes')?></td>
+          <td><input type="checkbox" name="dns" CHECKED>&nbsp;<?=$LANG->_('Yes')?></td>
+        </tr>
+
+<?php	}
+
+		if(pql_get_define("PQL_CONF_CONTROL_USE") and $_SESSION["ADVANCED_MODE"] and $_SESSION["ALLOW_BRANCH_CREATE"]) {
+			// Only offer this if super admin - we might need write access to some other domain/branch (i.e. a domain/branch
+			// where the specific DNS domain is located)
+?>
+        <tr class="<?php pql_format_table(); ?>">
+          <td class="title"><?=$LANG->_('Update QLC object(s)')?></td>
+          <td><input type="checkbox" name="qlc" CHECKED>&nbsp;<?=$LANG->_('Yes')?></td>
         </tr>
 
 <?php	}
@@ -451,6 +462,48 @@ if(($error == 'true') or !$_REQUEST["type"] or
 		$msg .= "<br>Could not find branch";
 	}
 // }}}
+
+	// {{{ Update additional domain name(s) and QLC object(s)
+	if($_REQUEST["qlc"] and pql_get_define("PQL_CONF_CONTROL_USE")) {
+	  // Separate the domainname and hostname from the FQDN
+	  $tmp = pql_separate_host_domain($_REQUEST["serverurl"]);
+	  $server_domain = $tmp[1];
+
+	  // {{{ Fetch old (attrib) values from DB
+	  unset($entry);
+	  $oldvalues = pql_get_attribute($_pql->ldap_linkid, $_REQUEST["domain"], pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME"));
+	  if($oldvalues) {
+		if(!is_array($oldvalues))
+		  $oldvalues = array($oldvalues);
+		
+		foreach($oldvalues as $val)
+		  $entry[pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME")][] = $val;
+	  } else
+		// No previous values
+		$entry[pql_get_define("PQL_ATTR_ADDITIONAL_DOMAINNAME")][] = $server_domain;
+	  // }}}
+
+	  if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["domain"], '', '', $entry)) {
+		$msg .= "<br>".pql_complete_constant($LANG->_('Successfully changed %what%'),
+											 array('what' => $LANG->_('Additional domain name')));
+	  
+		// {{{ Update locals and/or rcptHosts
+		$_pql_control = new pql_control($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
+		$attribs = array(pql_get_define("PQL_ATTR_LOCALS")    => pql_get_define("PQL_CONF_CONTROL_AUTOADDLOCALS", $_REQUEST["rootdn"]),
+						 pql_get_define("PQL_ATTR_RCPTHOSTS") => pql_get_define("PQL_CONF_CONTROL_AUTOADDLOCALS", $_REQUEST["rootdn"]));
+		foreach($attribs as $attrib => $autoadd) {
+		  if($autoadd)
+			$entry = array('', $server_domain);
+		}
+
+		pql_control_update_domains($_pql_control, $_REQUEST["rootdn"], $_SESSION["USER_SEARCH_DN_CTR"], '*', $entry);
+		// }}}
+	  } else
+		$msg .= "<br>".pql_complete_constant($LANG->_('Failed to change %what%'),
+											 array('what' => $LANG->_('Additional domain name')))
+		  . ": " . ldap_error($_pql->ldap_linkid);
+	}
+	// }}}
 
 	// Fix the DN so that it works with the redirect below
 	$_REQUEST["virthost"] = $_REQUEST["serverurl"];
