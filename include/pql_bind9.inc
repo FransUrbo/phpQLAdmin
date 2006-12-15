@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.47 2006-12-02 13:06:50 turbo Exp $
+// $Id: pql_bind9.inc,v 2.48 2006-12-15 10:58:46 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -185,6 +185,11 @@ function pql_bind9_get_ttl($linkid, $zone) {
   $filter = '(&('.pql_get_define("PQL_ATTR_ZONENAME")."=$zone)(".pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME").'=@))';
   foreach($_SESSION["BASE_DN"] as $base) {
 	$object = pql_search($linkid, $base, $filter);
+	if($object && empty($object[0])) {
+	  $tmp = $object; unset($object);
+	  $object[0] = $tmp; unset($tmp);
+	}
+
 	if(@is_array($object[0]))
 	  return $object[0]['dnsttl'];
   }
