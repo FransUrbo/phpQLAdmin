@@ -1,6 +1,6 @@
 <?php
 // edit attributes of a BIND9 DNS zone
-// $Id: bind9_edit_attributes.php,v 2.14 2006-12-02 13:06:30 turbo Exp $
+// $Id: bind9_edit_attributes.php,v 2.15 2006-12-15 10:57:29 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -19,6 +19,10 @@ function attribute_forward($msg) {
     $url  = "domain_detail.php?rootdn=".$_REQUEST["rootdn"]."&domain=".$_REQUEST["domain"]."&view=".$_REQUEST["view"];
 	$url .= "&dns_domain_name=".$_REQUEST["dns_domain_name"]."&msg=$msg";
 
+	if(pql_get_define("PQL_CONF_DEBUG_ME")) {
+	  echo "<p>If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
+	  die("<b>$url</b>");
+	} else
     pql_header($url);
 }
 // }}}

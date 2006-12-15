@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.22 2006-12-02 13:06:50 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.23 2006-12-15 10:57:30 turbo Exp $
 
 // {{{ attribute_translate_type(attrib)
 function attribute_translate_type($attrib) {
@@ -157,9 +157,8 @@ function attribute_print_form() {
 <?php		} else { ?>
       <input type="hidden" name="oldvalue"        value="<?=$_REQUEST["oldvalue"]?>">
 <?php		} ?>
-<?php	} else { ?>
-      <input type="hidden" name="type"            value="<?=$type?>">
 <?php	} ?>
+      <input type="hidden" name="type"            value="<?=$type?>">
       <input type="hidden" name="domain"          value="<?=urlencode($_REQUEST["domain"])?>">
       <input type="hidden" name="rootdn"          value="<?=urlencode($_REQUEST["rootdn"])?>">
       <input type="hidden" name="view"            value="<?=$_REQUEST["view"]?>">
@@ -383,10 +382,7 @@ function attribute_save($action) {
 		die("failed to update ".$soa["dn"].":".pql_get_define("PQL_ATTR_SOARECORD")." with value $serial_new<br>");  
 	}
 
-	if(!pql_get_define("PQL_CONF_DEBUG_ME")) 
 	  attribute_forward($msg);
-	else
-	  echo "$msg";
 }
 
 // }}}
