@@ -1,7 +1,7 @@
 <?php
 // Attribute plugin for
 // jpegPhoto
-// $Id: attrib.photo.inc,v 2.4 2006-12-13 11:33:39 turbo Exp $
+// $Id: attrib.photo.inc,v 2.5 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type = '') {

@@ -1,5 +1,5 @@
 <?php
-// $Id: user_add-save.inc,v 1.47 2006-12-14 09:23:08 turbo Exp $
+// $Id: user_add-save.inc,v 1.48 2006-12-16 12:03:12 turbo Exp $
 require($_SESSION["path"]."/include/pql_krbafs.inc");
 
 // {{{ URL Decode the surname and lastname values which was/is encoded in tables/user_add-additional.inc.

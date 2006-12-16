@@ -1,6 +1,6 @@
 <?php
 // add a user
-// $Id: user_add.php,v 2.138 2006-12-13 10:21:35 turbo Exp $
+// $Id: user_add.php,v 2.139 2006-12-16 12:02:09 turbo Exp $
 //
 // --------------- Pre-setup etc.
 

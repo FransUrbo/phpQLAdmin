@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for administrator and seealso modification
 // Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
-// $Id: attrib.administrator.inc,v 1.60 2006-12-14 06:36:50 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.61 2006-12-16 12:02:14 turbo Exp $
 
 // There is serious problems with this. I fix for one usage and break another
 // one! Let's try to remember (and document) how it's called. It's called from

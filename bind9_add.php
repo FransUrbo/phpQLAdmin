@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.30 2006-12-16 11:35:02 turbo Exp $
+// $Id: bind9_add.php,v 2.31 2006-12-16 12:02:08 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");

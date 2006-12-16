@@ -1,6 +1,6 @@
 <?php
 // delete a user
-// $Id: user_del.php,v 2.47 2006-12-14 09:20:03 turbo Exp $
+// $Id: user_del.php,v 2.48 2006-12-16 12:02:09 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");

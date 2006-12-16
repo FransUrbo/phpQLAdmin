@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.67 2006-12-15 10:59:39 turbo Exp $
+// $Id: pql_search.inc,v 2.68 2006-12-16 12:02:15 turbo Exp $
 //
 
 // ------------------------------------------------

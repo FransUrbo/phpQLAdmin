@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // automount maps
-// $Id: attrib.automount.inc,v 2.3 2006-12-04 18:59:44 turbo Exp $
+// $Id: attrib.automount.inc,v 2.4 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ Create the automountInformation attribute
 function attribute_setup() {

@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.43 2006-12-14 09:21:16 turbo Exp $
+// $Id: pql_write.inc,v 2.44 2006-12-16 12:02:15 turbo Exp $
 //
 
 // ------------------------------------------------

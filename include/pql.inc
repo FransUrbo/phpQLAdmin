@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.219 2006-12-13 16:19:21 turbo Exp $
+// $Id: pql.inc,v 2.220 2006-12-16 12:02:14 turbo Exp $
 //
 
 // ----------------------------

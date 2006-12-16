@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: domain_add.php,v 2.68 2006-12-12 12:53:42 turbo Exp $
+// $Id: domain_add.php,v 2.69 2006-12-16 12:02:08 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");

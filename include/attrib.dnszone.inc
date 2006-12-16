@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.23 2006-12-15 10:57:30 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.24 2006-12-16 12:02:14 turbo Exp $
 
 // {{{ attribute_translate_type(attrib)
 function attribute_translate_type($attrib) {

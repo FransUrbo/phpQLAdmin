@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-details.inc,v 1.42 2006-12-06 17:05:41 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.43 2006-12-16 12:03:12 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>

@@ -1,6 +1,6 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.58 2006-12-13 05:51:16 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.59 2006-12-16 12:02:08 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");

@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for pilotPerson objects etc
-// $Id: attrib.outlook.inc,v 1.31 2006-12-13 22:01:29 turbo Exp $
+// $Id: attrib.outlook.inc,v 1.32 2006-12-16 12:02:14 turbo Exp $
 
 /*
 	Attributes managed here:
