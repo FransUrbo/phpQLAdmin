@@ -1,4 +1,4 @@
-/* $Id: $ */
+/* $Id: x$ */
 
 
 // These scripts were originally found on cooltype.com.
