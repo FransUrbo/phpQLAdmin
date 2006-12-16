@@ -4,7 +4,7 @@
 // phpQLAdmin Application Programming Interface (API)
 // (special functions for bind9 control - DNS zone in LDAP)
 //
-// $Id: pql_bind9.inc,v 2.48 2006-12-15 10:58:46 turbo Exp $
+// $Id: pql_bind9.inc,v 2.49 2006-12-16 11:14:03 turbo Exp $
 //
 
 // {{{ pql_bind9_get_zone(linkid, branchname, domainname)
@@ -303,7 +303,9 @@ function pql_bind9_add_host($linkid, $basedn, $entry) {
 	// Remember the hostname. Need it when/if a sub-domain 'host' is added...
 	$tmp = $entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")];
 
-	if(ereg('.', $entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")])) {
+	if(ereg('.', $entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")]) and
+	   !eregi('in-addr', $entry[pql_get_define("PQL_ATTR_ZONENAME")]))
+	{
 	  // {{{ This is a sub-zone!
 	  // Create something like this:
 	  //	dn: relativeDomainName=test,dc=domain,dc=tld,PQL_CONF_SUBTREE_BIND9,o=Branch,c=SE
