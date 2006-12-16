@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.28 2006-12-15 12:41:24 turbo Exp $
+// $Id: bind9_add.php,v 2.29 2006-12-16 11:17:51 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -9,10 +9,6 @@ require($_SESSION["path"]."/include/pql_control.inc");
 require($_SESSION["path"]."/include/pql_bind9.inc");
 
 include($_SESSION["path"]."/header.html");
-
-if($_REQUEST["domainname"]) {
-	$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
-}
 // }}}
 
 if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
@@ -213,9 +209,14 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 	if($_REQUEST["record_type"] == "ptr") {
 	  // {{{ Special circumstances - it's a PTR.
 	  // Reverse the hostname ('192.168.156.1').
-	  $tmp  = split('\.', $_REQUEST["hostname"]);
+	  $tmp  = split('\.', $_REQUEST["dest"]);
 	  $count = count($tmp);
-	  for($i=$count-1; $i < count($tmp); $i--) {
+	  if(empty($tmp[$count-1]))
+		$count = $count - 2;
+	  else
+		$count = $count - 1;
+
+	  for($i=$count; $i >= 0; $i--) {
 		$rev .= $tmp[$i];
 		if($tmp[$i-1])
 		  $rev .= ".";
@@ -225,9 +226,11 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 	  // Extract the zone part from the zone/domain name ('168.192.in-addr.arpa').
 	  $zone = preg_replace('/\.in-addr\.arpa/', '', $_REQUEST["domainname"]);
 	  $zone = preg_replace('/\./', '\\\.', $zone, -1); // Just so that next regexp doesn't catch the dot.
+	  // zone='168\.192'
 	  
 	  // Remove the zone ('.168.192') from the reverse ('4.156.168.192') => '4.156'.
 	  $host = preg_replace("/\.$zone/", '', $rev);
+	  // host='4.156'
 	  
 	  $entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")]	= $host;
 // }}}
@@ -252,7 +255,7 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 	  $entry[pql_get_define("PQL_ATTR_NSRECORD")]		= pql_maybe_idna_encode($_REQUEST["dest"]);
 	  break;
 	case "ptr":
-	  $entry[pql_get_define("PQL_ATTR_PTRRECORD")]		= pql_maybe_idna_encode($_REQUEST["dest"]);
+	  $entry[pql_get_define("PQL_ATTR_PTRRECORD")]		= pql_maybe_idna_encode($_REQUEST["hostname"]);
 	  break;
 	}
 	

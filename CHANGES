@@ -72,6 +72,11 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	  - Don't modify a QLC when adding a domain if the domain already exists.
 	  - Only create the sub-zone in include/pql_bind9.inc:pql_bind9_add_host() if it's not a
 	    PTR record we're adding. Function is already called with correct information.
+	  - Fix PTR host additions in bind9_add.php:
+	    + No point in binding to LDAP server again - we're already bound.
+	    + The PTR record (IP address) is in '$_REQUEST["dest"]', not '$_REQUEST["hostname"]'!
+	    + The PTR record (host name) is in '$_REQUEST["hostname"]', not '$_REQUEST["dest"]'!
+	    + Be smarter when setting up the reverse/in-addr.arpa entry from IP address.
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option
