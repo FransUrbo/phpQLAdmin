@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.29 2006-12-16 11:17:51 turbo Exp $
+// $Id: bind9_add.php,v 2.30 2006-12-16 11:35:02 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -208,8 +208,18 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 	// {{{ Add bind9 host
 	if($_REQUEST["record_type"] == "ptr") {
 	  // {{{ Special circumstances - it's a PTR.
+	  // Check if "dest" is IP
+	  $num = "(\\d|[1-9]\\d|1\\d\\d|2[0-4]\\d|25[0-5])";
+	  if(preg_match("/^$num\\.$num\\.$num\\.$num$/", $_REQUEST['dest'])) {
+		$ip = $_REQUEST["dest"];
+		$hn = $_REQUEST["hostname"];
+	  } else {
+		$hn = $_REQUEST["dest"];
+		$ip = $_REQUEST["hostname"];
+	  }
+	  
 	  // Reverse the hostname ('192.168.156.1').
-	  $tmp  = split('\.', $_REQUEST["dest"]);
+	  $tmp  = split('\.', $ip);
 	  $count = count($tmp);
 	  if(empty($tmp[$count-1]))
 		$count = $count - 2;
@@ -255,7 +265,7 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 	  $entry[pql_get_define("PQL_ATTR_NSRECORD")]		= pql_maybe_idna_encode($_REQUEST["dest"]);
 	  break;
 	case "ptr":
-	  $entry[pql_get_define("PQL_ATTR_PTRRECORD")]		= pql_maybe_idna_encode($_REQUEST["hostname"]);
+	  $entry[pql_get_define("PQL_ATTR_PTRRECORD")]		= pql_maybe_idna_encode($hn);
 	  break;
 	}
 	

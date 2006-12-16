@@ -77,6 +77,8 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    + The PTR record (IP address) is in '$_REQUEST["dest"]', not '$_REQUEST["hostname"]'!
 	    + The PTR record (host name) is in '$_REQUEST["hostname"]', not '$_REQUEST["dest"]'!
 	    + Be smarter when setting up the reverse/in-addr.arpa entry from IP address.
+	  - I can't ever remember which is which when creating a PTR record, so allow IP/Hostname
+	    to be set in any of the Source/Destination inputs of bind9_add.php.
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option
