@@ -1,6 +1,6 @@
 <?php
 // make some simple tests on ldap connection
-// $Id: config_ldaptest.php,v 2.38 2006-12-16 12:02:08 turbo Exp $
+// $Id: config_ldaptest.php,v 2.39 2006-12-16 12:20:59 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -10,16 +10,21 @@ require($_SESSION["path"]."/include/pql_control.inc");
 function check_domain_value($linkid, $dn, $attrib, $value) {
 	global $LANG;
 
+	$debugging = pql_get_define("PQL_CONF_DEBUG_ME");
+	if($debugging)
+	  // Debugging enabled - temporarily disable it!
+	  pql_set_define("PQL_CONF_DEBUG_ME", false);
+
 	$entry[$attrib] = $value;
 	if(!pql_write_mod($linkid, $dn, $entry, "config_ldaptest.php:check_domain_value()/1")) {
 		if(ldap_errno($linkid) == 21)
 		  // Invalid syntax
-		  return($LANG->_('No. Reason:')."<b>".$LANG->_('Old phpQLAdmin schema')."</b>");
+		  $msg = $LANG->_('No. Reason:')."<b>".$LANG->_('Old phpQLAdmin schema')."</b>";
 		else {
 			$LDIF = pql_create_ldif('config_ldaptest.php:pql_write_mod', $dn, $entry, 1);
 
-			return("<a href=\"javascript:ldifWindow('".$LDIF."')\">".
-				   $LANG->_('No. Reason:')."<b>".ldap_error($linkid)."</b>'</a>");
+			$msg = "<a href=\"javascript:ldifWindow('".$LDIF."')\">".
+				   $LANG->_('No. Reason:')."<b>".ldap_error($linkid)."</b>'</a>";
 		}
 	} else {
 		// Success - delete it again
@@ -27,8 +32,14 @@ function check_domain_value($linkid, $dn, $attrib, $value) {
 		$entry['test'] = array();
 		pql_write_mod($linkid, $dn, $entry, "config_ldaptest.php:check_domain_value()/2");
 
-		return(0);
+		$msg = 0;
 	}
+
+	if($debugging)
+	  // Debugging have been temporarily disabled - enable it again!
+	  pql_set_define("PQL_CONF_DEBUG_ME", true);
+
+	return($msg);
 }
 // }}}
 
@@ -309,6 +320,8 @@ include($_SESSION["path"]."/header.html");
     </th>
 <?php if($basedn) { ?>
 
+    <th><tr></tr></th>
+
     <th colspan="3" align="left"><?=$LANG->_('Modification access - phpQLAdmin configuration')?>
 <?php    foreach($_SESSION["BASE_DN"] as $dn) { ?>
       <tr>
@@ -319,6 +332,8 @@ include($_SESSION["path"]."/header.html");
 
 <?php    } ?>
     </th>
+
+    <th><tr></tr></th>
 
     <th colspan="3" align="left"><?=$LANG->_('Domain modification access')?>
 <?php    foreach($_SESSION["BASE_DN"] as $dn) { ?>
@@ -338,6 +353,8 @@ include($_SESSION["path"]."/header.html");
 
 <?php    } ?>
     </th>
+
+    <th><tr></tr></th>
 
     <th colspan="3" align="left"><?=$LANG->_('DN modification access - domain DN\'s')?>
 <?php    if(is_array($domains)) {

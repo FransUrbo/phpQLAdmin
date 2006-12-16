@@ -79,6 +79,8 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    + Be smarter when setting up the reverse/in-addr.arpa entry from IP address.
 	  - I can't ever remember which is which when creating a PTR record, so allow IP/Hostname
 	    to be set in any of the Source/Destination inputs of bind9_add.php.
+	  - Disable debugging temporarily in config_ldaptest.php if enabled - this so that a true
+	    test can actually be done even if debugging.
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option
