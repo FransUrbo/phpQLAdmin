@@ -102,6 +102,8 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    + If form is reloaded, make sure that all checkbox/radio buttons selected STAYS selected.
 	    + When saving new automount object, retreive the ACI's from it's parent and use that
 	      (unmodified) for the new automount object as well.
+	  - When creating a new user, it's possible that the subbranch contains ALL that's needed
+	    (ou=People,<domain>,<suffix> etc). Catch this.
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option
