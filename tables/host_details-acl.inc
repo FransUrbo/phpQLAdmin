@@ -31,11 +31,13 @@ foreach($hosts as $host_dn) {
 	// If called from the domain view->Host control
 
 	// Go through the host users, verify that this user IS in this branch
+	unset($tmp);
 	foreach($host_users as $host_user) {
 	  foreach($users as $user) {
-		if($host_user == $user)
+		if(lc($host_user) == $user) {
 		  // Save this
 		  $tmp[] = $user;
+		}
 	  }
 	}
 	
