@@ -1,6 +1,6 @@
 <?php
 // Modify Host ACLs
-// $Id: host_modify.php,v 2.8 2006-12-16 12:02:09 turbo Exp $
+// $Id: host_modify.php,v 2.9 2006-12-18 07:06:04 turbo Exp $
 
 // {{{ Setup session etc
 if(!@$_SESSION) {
@@ -18,17 +18,26 @@ if(pql_get_define("PQL_CONF_SUBTREE_USERS")) {
 $userdn = $subrdn . $_GET["domain"];
 $filter = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."=*";
 $users = pql_get_dn($_pql->ldap_linkid, $userdn, $filter);
+if($users) {
+  sort($users);
+}
 
 // Extract 'human readable' name from the user DN's found
 $user_results = pql_left_htmlify_userlist($_pql->ldap_linkid, $_REQUEST["rootdn"],
 					  $_REQUEST["domain"], $userdn, $users,
 					  ($links = NULL));
+if($user_results) {
+  asort($user_results);
+}
 // }}}
 
 // {{{ Retreive all physical computers
 $computer_results = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
 			       '(&(cn=*)(|(objectclass=ipHost)(objectclass=device)))',
 			       'ONELEVEL');
+if($computer_results) {
+  sort($computer_results);
+}
 // }}}
 
 if(isset($_REQUEST['action'])) {
