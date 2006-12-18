@@ -1,6 +1,6 @@
 <?php
 // Edit attribute of a physical host
-// $Id: host_edit_attribute.php,v 2.1 2006-12-02 13:06:31 turbo Exp $
+// $Id: host_edit_attribute.php,v 2.2 2006-12-18 12:50:09 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -13,9 +13,13 @@ include($_SESSION["path"]."/header.html");
 
 // {{{ Forward back to host detail page
 function attribute_forward($msg) {
-	global $url;
+	global $_pql, $url;
 
-	$link = "host_detail.php?host=".urlencode($_REQUEST["host"])."&view=".$_REQUEST["view"]."&msg=$msg";
+	// Find the physical host DN
+	$filter = '(&('.pql_get_define("PQL_ATTR_CN").'='.$_REQUEST["host"].')(|('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=ipHost)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=device)))';
+	$physical_host_dn = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"], $filter, 'ONELEVEL');
+
+	$link = "host_detail.php?host=".urlencode($physical_host_dn[0])."&view=".$_REQUEST["view"]."&msg=$msg";
 	if($_REQUEST["server"])
 	  $link .= "&server=".$_REQUEST["server"];
 	if($_REQUEST["virthost"])
@@ -53,7 +57,7 @@ include($_SESSION["path"]."/include/$plugin");
 // {{{ Select what to do
 $error_text = array();
 if(@$_REQUEST["submit"]) {
-  if(!attribute_check())
+  if(attribute_check())
 	attribute_save($_REQUEST["action"]);
   else
 	attribute_print_form();
