@@ -1,6 +1,6 @@
 <?php
 // Modify Host ACLs
-// $Id: host_modify.php,v 2.9 2006-12-18 07:06:04 turbo Exp $
+// $Id: host_modify.php,v 2.10 2006-12-18 12:50:53 turbo Exp $
 
 // {{{ Setup session etc
 if(!@$_SESSION) {
@@ -20,6 +20,8 @@ $filter = pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"])."
 $users = pql_get_dn($_pql->ldap_linkid, $userdn, $filter);
 if($users) {
   sort($users);
+} else {
+  $users = array();
 }
 
 // Extract 'human readable' name from the user DN's found
