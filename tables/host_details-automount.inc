@@ -1,6 +1,6 @@
 <?php
 // Automount information etc
-// $Id: host_details-automount.inc,v 1.3 2006-12-04 19:02:57 turbo Exp $
+// $Id: host_details-automount.inc,v 1.4 2006-12-18 12:56:16 turbo Exp $
 
 // {{{ Retreive automounts
 if($_REQUEST["host"] == 'Global') {
@@ -101,8 +101,8 @@ foreach($automounts as $host => $host_data) {
 ?>
             <nobr>
               &nbsp;&nbsp;&nbsp;
-              <a class="tblItem" href="host_modify.php?host=<?=urlencode($host)?>&mount=<?=urlencode($mnt_data["dn"])?>&action=delete&submit=2&view=<?=$_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Delete %mount% from computer"), array('mount' => $mntpnt))?>"></a>
-              <a class="tblItem" href="host_modify.php?host=<?=urlencode($host)?>&mount=<?=urlencode($mnt_data["dn"])?>&action=modify&submit=2&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Modify %mount%"), array('mount' => $mntpnt))?>"></a>
+              <a class="tblItem" href="host_edit_attribute.php?host=<?=urlencode($host)?>&mount=<?=urlencode($mnt_data["dn"])?>&action=delete&attrib=<?=pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?>&view=<?=$_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Delete %mount% from computer"), array('mount' => $mntpnt))?>"></a>
+              <a class="tblItem" href="host_edit_attribute.php?host=<?=urlencode($host)?>&mount=<?=urlencode($mnt_data["dn"])?>&action=modify&attrib=<?=pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Modify %mount%"), array('mount' => $mntpnt))?>"></a>
               &nbsp;<?=$MOUNT["Device"]."\n"?>
             </nobr>
 
@@ -136,8 +136,8 @@ foreach($automounts as $host => $host_data) {
 ?>
             <nobr>
               &nbsp;&nbsp;&nbsp;
-              <a class="tblItem" href="host_modify.php?host=<?=urlencode($host)?>&mount=<?=urlencode($mount_data["dn"])?>&action=delete&submit=2&view=<?=$_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Delete %mount% from computer"), array('mount' => $mntpnt.'/'.$mount))?>"></a>
-              <a class="tblItem" href="host_modify.php?host=<?=urlencode($host)?>&mount=<?=urlencode($mount_data["dn"])?>&action=modify&submit=2&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Modify %mount%"), array('mount' => $mntpnt))?>"></a>
+              <a class="tblItem" href="host_edit_attribute.php?host=<?=urlencode($host)?>&mount=<?=urlencode($mount_data["dn"])?>&action=delete&attrib=<?=pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?>&view=<?=$_REQUEST["view"]?>"><img src="images/del.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Delete %mount% from computer"), array('mount' => $mntpnt.'/'.$mount))?>"></a>
+              <a class="tblItem" href="host_edit_attribute.php?host=<?=urlencode($host)?>&mount=<?=urlencode($mount_data["dn"])?>&action=modify&attrib=<?=pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?>&view=<?=$_REQUEST["view"]?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_("Modify %mount%"), array('mount' => $mntpnt))?>"></a>
               &nbsp;<?=$MOUNT["Device"]."\n"?>
             </nobr>
 
@@ -202,7 +202,7 @@ foreach($automounts as $host => $host_data) {
         <td>
             &nbsp;&nbsp;&nbsp;
             <img src="images/navarrow.png" width="9" height="9" border="0">
-            <a class="tblItem" href="host_modify.php?host=<?=urlencode($host)?>&action=add&submit=2&view=<?=$_REQUEST["view"]?>">
+            <a class="tblItem" href="host_edit_attribute.php?host=<?=urlencode($host)?>&action=add&attrib=<?=pql_get_define("PQL_ATTR_AUTOMOUNT_INFO")?>&view=<?=$_REQUEST["view"]?>">
 	      &nbsp;<?=$LANG->_("Add new mount point")?>
             </a>
 

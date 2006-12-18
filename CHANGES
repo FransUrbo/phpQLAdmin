@@ -89,6 +89,10 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    + Faulty use of ! (not) - s/if(!attribute_check())/if(attribute_check())/.
 	  - When adding a object in include/pql_write.inc:pql_write_add(), make sure that the
 	    DN entry of the object isn't set - ldap_add() refuses to add the object if it is.
+	  - Fix the tables/host_details-automount.inc to call host_edit_attribute.php instead of host_modify.php
+	    (which is used to modify 'Host Control' information).
+	    + Don't call with 'submit=X', it confuses host_edit_attribute.php.
+	    + Call with 'attrib=autoMountInformation' to make sure the correct plugin is used.
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option
