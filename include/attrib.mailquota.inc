@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // mail (standard mail address)
-// $Id: attrib.mailquota.inc,v 2.34 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.mailquota.inc,v 2.35 2006-12-18 12:47:27 turbo Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -201,7 +201,7 @@ function attribute_save($type) {
 
 			// Get all QmailLDAP/Control hosts.
 			$result = pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-								 '(&(cn=*)(objectclass=qmailControl))', 'ONELEVEL');
+								 '(&(cn=*)(objectclass=qmailControl))');
 			for($i=0; $i < count($result); $i++)
 			  $hosts[] = pql_get_attribute($_pql_control->ldap_linkid, $result[$i], pql_get_define("PQL_ATTR_CN"));
 

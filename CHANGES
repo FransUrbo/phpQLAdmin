@@ -83,6 +83,7 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    test can actually be done even if debugging.
 	  - Must lowercase the user DN from 'host_users' when compared to (already lowercased) value
 	    from 'users' in tables/host_details-acl.inc.
+	  - Don't do ONELEVEL search when looking for QLC object(s) - do sub (below ou=Computers,<suffix>).
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option

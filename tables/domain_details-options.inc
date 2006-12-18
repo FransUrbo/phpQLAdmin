@@ -20,7 +20,7 @@
 				  $val = $d;
 
 				if(pql_get_dn($_pql_control->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-							  "(&(cn=*)(objectclass=qmailControl)($attrib=$val))", 'ONELEVEL')) {
+							  "(&(cn=*)(objectclass=qmailControl)($attrib=$val))")) {
 					$DEFINED[$attrib][$d] = $LANG->_('Yes');
 
 					$alt = pql_complete_constant($LANG->_('Remove %domain% from %attribute%'),

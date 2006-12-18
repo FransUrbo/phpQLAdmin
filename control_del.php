@@ -1,6 +1,6 @@
 <?php
 // Delete a mailserver controls object
-// $Id: control_del.php,v 2.26 2006-12-16 12:02:08 turbo Exp $
+// $Id: control_del.php,v 2.27 2006-12-18 12:47:25 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -48,8 +48,7 @@ if(pql_get_define("PQL_CONF_CONTROL_USE")) {
 				// There's users - get MX and QmailLDAP/Controls objects
 				$result = pql_get_dn($_pql_control->ldap_linkid,
 									 $_SESSION["USER_SEARCH_DN_CTR"],
-									 '(&(cn=*)(objectclass=qmailControl))',
-									 'ONELEVEL');
+									 '(&(cn=*)(objectclass=qmailControl))');
 				for($i=0; $i < count($result); $i++)
 				  $hosts[] = pql_get_attribute($_pql_control->ldap_linkid, $result[$i], pql_get_define("PQL_ATTR_CN"));
 ?>
