@@ -93,6 +93,15 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    (which is used to modify 'Host Control' information).
 	    + Don't call with 'submit=X', it confuses host_edit_attribute.php.
 	    + Call with 'attrib=autoMountInformation' to make sure the correct plugin is used.
+	  - Add support for ext2/ext3 in include/attrib.automount.inc:attribute_setup() to create a correct
+	    mount info line with all options choosen.
+	    + Ask for (and insert) the device if it's a filesystem that uses it.
+	    + Setup the DN to mountpoint(s) based on the physical host DN, not $_REQUEST["host"], PQL_CONF_SUBTREE_AUTOMOUNTS
+	      $_REQUEST["domain"] etc. That way it's ALWAYS correct.
+	    + Default filesystem for form is ext3.
+	    + If form is reloaded, make sure that all checkbox/radio buttons selected STAYS selected.
+	    + When saving new automount object, retreive the ACI's from it's parent and use that
+	      (unmodified) for the new automount object as well.
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option
