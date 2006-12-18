@@ -84,6 +84,11 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	  - Must lowercase the user DN from 'host_users' when compared to (already lowercased) value
 	    from 'users' in tables/host_details-acl.inc.
 	  - Don't do ONELEVEL search when looking for QLC object(s) - do sub (below ou=Computers,<suffix>).
+	  - host_edit_attribute.php:attribute_forward() needs to call host=XXX with the DN of the host,
+	    not it's FQDN.
+	    + Faulty use of ! (not) - s/if(!attribute_check())/if(attribute_check())/.
+	  - When adding a object in include/pql_write.inc:pql_write_add(), make sure that the
+	    DN entry of the object isn't set - ldap_add() refuses to add the object if it is.
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option

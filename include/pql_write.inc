@@ -3,7 +3,7 @@
 // pql_write.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_write.inc,v 2.44 2006-12-16 12:02:15 turbo Exp $
+// $Id: pql_write.inc,v 2.45 2006-12-18 12:53:10 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -25,6 +25,9 @@ function pql_write_add($linkid, $dn, $entry, $type, $caller) {
 	  echo $LDIF;
 	else {
 		// Add this object to the database
+		if(@$entry["dn"])
+		  unset($entry["dn"]);
+
 		if(! ldap_add($linkid, $dn, $entry)) {
 			// Failed!
 			$errno = ldap_errno($linkid);
