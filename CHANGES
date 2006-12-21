@@ -104,6 +104,7 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	      (unmodified) for the new automount object as well.
 	  - When creating a new user, it's possible that the subbranch contains ALL that's needed
 	    (ou=People,<domain>,<suffix> etc). Catch this.
+	  - When changing [ug]idNumber, REPLACE value, don't ADD it.
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option
