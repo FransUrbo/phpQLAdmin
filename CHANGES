@@ -120,6 +120,7 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 
 	Misc changes
 	  - Prettier debug output in include/pql_search.inc:pql_search()
+	  - Explain 'null host' in 'include/attrib.control.smtproutes.inc:smtproutes_help()'
 
 phpQLAdmin 2.3.5 Dec  2 2006
 	Bug fixes

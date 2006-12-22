@@ -2,7 +2,7 @@
 // control attribute plugin for
 // smtproutes (max number of bytes in message)
 //
-// $Id: attrib.control.smtproutes.inc,v 2.31 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.control.smtproutes.inc,v 2.32 2006-12-22 19:47:09 turbo Exp $
 
 // {{{ smtproutes_check(type)
 
@@ -589,6 +589,11 @@ function smtproutes_help() {
 	artificial mail loop between machines.  However, you
 	are always safe using smtproutes if you do not accept
 	mail from the network.
+    <p>
+    If you leave the <i>source domain</i> entry empty, <u>all</u>
+    domains will be affected. This can be used to send all mails
+    to another mailserver for (further) processing. This is called
+    a <a href="http://cr.yp.to/qmail/faq/outgoing.html#null-client" target="_new">null host</a>.
 <?php
 }
 // }}}
