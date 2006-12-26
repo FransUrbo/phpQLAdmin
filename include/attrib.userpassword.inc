@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.37 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.userpassword.inc,v 2.38 2006-12-26 21:40:48 aaron Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -11,7 +11,7 @@ function attribute_check($type) {
 	if(empty($_REQUEST["userpassword"])) {
 		$error["userpassword"] = $LANG->_('Missing');
 		return false;
-  	}
+	}
 	
 	// valid - A KERBEROS scheme is ALWAYS valid! We only check
 	// password validity if it ISN'T a kerberos scheme...
@@ -20,8 +20,42 @@ function attribute_check($type) {
 			$error["userpassword"] = $LANG->_('Invalid');
 			return false;
 		}
+		if(pql_get_define("PQL_CONF_STRONGPASSWD_USE")){
+			//Open CrackLib Dictionary
+			$dictionary = crack_opendict('/usr/lib/cracklib_dict')
+			     or die('Unable to open CrackLib dictionary');
+
+			if(!crack_check($dictionary, $_REQUEST["userpassword"]) ){
+				$error["userpassword"] = $LANG->_('Set password failed!\n\nThe input password ".
+							 "is based off dictionary word. Please choose a different password.');
+				// Close dictionary
+				crack_closedict($dictionary);
+				return false;
+			}
+			if(!pql_get_define("PQL_CONF_ALLOW_ALL_CHARS", $_REQUEST["rootdn"]) and preg_match("/[^a-z0-9]/i", $_REQUEST["userpassword"])) {
+				$error["userpassword"] = $LANG->_('Invalid');
+				return false;
+			}
+			if(!preg_match("/[a-z]/i", $_REQUEST["userpassword"])){
+				$error["userpassword"] = $LANG->_('Passwords must have atleast one letter');
+				return false;
+			}
+			if(!preg_match("/[0-9]/i", $_REQUEST["userpassword"])){
+				$error["userpassword"] = $LANG->_('Passwords must have atleast one number');
+				return false;
+			}
+			if( 8 > strlen($_REQUEST["userpassword"]) ){
+				$error["userpassword"] = $LANG->_('Passwords must be atleast 8 characters long');
+				return false;
+			}
+			if(!preg_match("/[^a-zA-Z0-9]/i", $_REQUEST["userpassword"])){
+				$error["userpassword"] = $LANG->_('Passwords must have atleast one symbol');
+				return false;
+			}
+		}
 	}
-	
+
+
 	return true;
 }
 // }}}

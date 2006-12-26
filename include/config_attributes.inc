@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.54 2006-12-16 12:02:14 turbo Exp $
+// $Id: config_attributes.inc,v 2.55 2006-12-26 21:40:48 aaron Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -263,7 +263,11 @@ pql_set_define("PQL_ATTR_SUDOOBJECTCLASS",					strtolower('sudoRole'),						fals
 
 // {{{ Attributes used by the HostACL config
 pql_set_define("PQL_ATTR_HOSTACL_USE",						strtolower('useHostACL'),					false);
-pql_set_define("PQL_ATTR_ACI_USE",							strtolower('useACI'),						false);
+pql_set_define("PQL_ATTR_ACI_USE",						strtolower('useACI'),						false);
+// }}}
+
+// {{{ Attributes used by the Strong Password Enforcement
+pql_set_define("PQL_ATTR_STRONGPASSWD_USE",					strtolower('useStrongPasswd'),					false);
 // }}}
 
 // {{{ Attributes used by the Automount config
@@ -406,6 +410,7 @@ $PQL_ATTRIBUTE["GLOBAL"] = array("PQL_CONF_CONTROL_USE"					=> pql_get_define("P
 								 "PQL_CONF_ACI_USE"						=> pql_get_define("PQL_ATTR_ACI_USE"),
 								 "PQL_CONF_HOSTACL_USE"					=> pql_get_define("PQL_ATTR_HOSTACL_USE"),
 								 "PQL_CONF_SUDO_USE"					=> pql_get_define("PQL_ATTR_SUDO_USE"),
+								 "PQL_CONF_STRONGPASSWD_USE"				=> pql_get_define("PQL_ATTR_STRONGPASSWD_USE"),
 								 "PQL_CONF_AUTOMOUNT_USE"				=> pql_get_define("PQL_ATTR_AUTOMOUNT_USE"),
 								 "PQL_CONF_RADIUS_USE"					=> pql_get_define("PQL_ATTR_RADIUS_USE"),
 								 "PQL_CONF_CREATE_MBOX"					=> pql_get_define("PQL_ATTR_CREATE_MBOX"),
