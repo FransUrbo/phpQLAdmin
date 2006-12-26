@@ -1,5 +1,5 @@
 <?php
-// $Id: index2.php,v 2.47 2006-12-16 12:02:09 turbo Exp $
+// $Id: index2.php,v 2.48 2006-12-26 23:08:10 aaron Exp $
 
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -145,7 +145,21 @@ if($_SESSION["mozilla"]) {
 <?php    }  ?>
 
     <!-- RIGHT frame -->
-    <frame src="home.php?advanced=1" name="pqlmain">
+<?php
+    $value = pql_get_attribute($_pql->ldap_linkid, $_SESSION["BASE_DN"][0], pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT"), 0, pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT").'=*');
+    if($value){
+?>
+   <frame src="user_detail.php?rootdn=<?php
+    if(empty($rootdn) and empty($_REQUEST["rootdn"]))
+      echo pql_get_rootdn($_SESSION["USER_DN"], 'index2.php');
+        $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"], false, 0);
+        ?>&domain=<?php echo 'place domain here'; ?>&user=<?php echo $_SESSION["USER_DN"]; ?>" name="pqlmain">
+
+<?php
+    }else{ ?>
+       <frame src="home.php?advanced=1" name="pqlmain">
+<?php
+    } ?>
   </frameset>
 <?php } else {
           // Not running in advanced mode, don't show the
@@ -153,7 +167,21 @@ if($_SESSION["mozilla"]) {
 ?>
   <frameset cols="250,*" rows="*" border="0" frameborder="0"> 
     <frame src="left.php?advanced=0" name="pqlnav">
-    <frame src="home.php?advanced=0" name="pqlmain">
+<?php
+    $value = pql_get_attribute($_pql->ldap_linkid, $_SESSION["BASE_DN"][0], pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT"), 0, pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT").'=*');
+    if($value){
+?>
+   <frame src="user_detail.php?rootdn=<?php
+    if(empty($rootdn) and empty($_REQUEST["rootdn"]))
+      echo pql_get_rootdn($_SESSION["USER_DN"], 'index2.php');
+        $_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"], false, 0);
+        ?>&domain=<?php echo 'place domain here'; ?>&user=<?php echo $_SESSION["USER_DN"]; ?>" name="pqlmain">
+<?php
+    }else{ ?>
+       <frame src="home.php?advanced=0" name="pqlmain">
+<?php
+    } ?>
+
   </frameset>
 <?php } ?>
 

@@ -1,6 +1,6 @@
 <?php
 // edit attributes of all users of the domain
-// $Id: domain_edit_attributes.php,v 2.59 2006-12-16 12:02:08 turbo Exp $
+// $Id: domain_edit_attributes.php,v 2.60 2006-12-26 23:08:10 aaron Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -250,7 +250,8 @@ if(@$_REQUEST["submit"] == 1) {
 		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_LOCK_EMAILADDRESS")) or
 		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_LOCK_DOMAINADDRESS")) or
 		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_LOCK_PASSWORD")) or
-		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_LOCK_ACCOUNTTYPE")))
+		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_LOCK_ACCOUNTTYPE")) or
+		   ($_REQUEST["attrib"] == pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT")))
 	  // A toggle or boolean change - jump to 'save changes' directly
 	  attribute_save();
 	else

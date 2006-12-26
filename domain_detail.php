@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.108 2006-12-26 19:06:56 aaron Exp $
+// $Id: domain_detail.php,v 2.109 2006-12-26 23:08:10 aaron Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -95,6 +95,7 @@ $attribs = array("autocreatemailaddress"	=> pql_get_define("PQL_ATTR_AUTOCREATE_
 				 "lockemailaddress"			=> pql_get_define("PQL_ATTR_LOCK_EMAILADDRESS"),
 				 "lockdomainaddress"		=> pql_get_define("PQL_ATTR_LOCK_DOMAINADDRESS"),
 				 "lockpassword"				=> pql_get_define("PQL_ATTR_LOCK_PASSWORD"),
+				 "startinmyaccount"			=> pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT"),
 				 "lockaccounttype"			=> pql_get_define("PQL_ATTR_LOCK_ACCOUNTTYPE"));
 foreach($attribs as $key => $attrib) {
 	// Get default value
@@ -119,7 +120,7 @@ foreach($attribs as $key => $attrib) {
 			 ($key == 'autocreatepassword') or ($key == 'usehostacl') or
 			 ($key == 'usesudo') or ($key == 'lockusername') or ($key == 'lockemailaddress') or
 			 ($key == 'lockdomainaddress') or ($key == 'lockpassword') or
-			 ($key == 'lockaccounttype'))
+			 ($key == 'lockaccounttype') or ($key == 'startinmyaccount'))
 	  {
 		// A toggle value
 		if(!$value)

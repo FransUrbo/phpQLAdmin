@@ -16,7 +16,7 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.55 2006-12-26 21:40:48 aaron Exp $
+// $Id: config_attributes.inc,v 2.56 2006-12-26 23:08:11 aaron Exp $
 
 // {{{ These are the QmailLDAP user object attributes
 pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
@@ -325,6 +325,7 @@ pql_set_define("PQL_ATTR_VERIFY_DELETE", 					strtolower('deleteVerification'),	
 pql_set_define("PQL_ATTR_AUTOCREATE_MAILADDRESS",			strtolower('autoCreateMailAddress'),		false);
 pql_set_define("PQL_ATTR_AUTOCREATE_USERNAME",				strtolower('autoCreateUserName'),			false);
 pql_set_define("PQL_ATTR_AUTOCREATE_PASSWORD",				strtolower('autoCreatePassWord'),			false);
+pql_set_define("PQL_ATTR_START_IN_MY_ACCOUNT",				strtolower('startinmyaccount'),				false);
 pql_set_define("PQL_ATTR_CONTROL_AUTOADDHOSTNAME",	 		strtolower('autoAddHostName'),				false);
 pql_set_define("PQL_ATTR_CONTROL_AUTOADDLOCALS", 			strtolower('autoAddLocals'),				false);
 pql_set_define("PQL_ATTR_CONTROL_AUTOADDRCPTHOSTS", 		strtolower('autoAddRCPTHosts'),				false);
@@ -433,6 +434,7 @@ $PQL_ATTRIBUTE["SUFFIX"] = array("PQL_CONF_SHOW_USERS"					=> pql_get_define("PQ
 								 "PQL_CONF_AUTOCREATE_MAILADDRESS"		=> pql_get_define("PQL_ATTR_AUTOCREATE_MAILADDRESS"),
 								 "PQL_CONF_AUTOCREATE_USERNAME"			=> pql_get_define("PQL_ATTR_AUTOCREATE_USERNAME"),
 								 "PQL_CONF_AUTOCREATE_PASSWORD"			=> pql_get_define("PQL_ATTR_AUTOCREATE_PASSWORD"),
+								 "PQL_CONF_START_IN_MY_ACCOUNT"			=> pql_get_define("PQL_ATTR_START_IN_MY_ACCOUNT"),
 								 "PQL_CONF_CONTROL_AUTOADDHOSTNAME"		=> pql_get_define("PQL_ATTR_CONTROL_AUTOADDHOSTNAME"),
 								 "PQL_CONF_CONTROL_AUTOADDLOCALS"		=> pql_get_define("PQL_ATTR_CONTROL_AUTOADDLOCALS"),
 								 "PQL_CONF_CONTROL_AUTOADDRCPTHOSTS"	=> pql_get_define("PQL_ATTR_CONTROL_AUTOADDRCPTHOSTS"),

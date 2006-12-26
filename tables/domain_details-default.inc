@@ -200,6 +200,12 @@
       </tr>
 
 <?php } ?>
+      <tr class="<?php pql_format_table(); ?>">
+        <td class="title"><?=$LANG->_('Start In My Account')?></td>
+        <td><?php if($startinmyaccount){echo $LANG->_('Yes');}else{echo $LANG->_('No');} ?></td>
+        <td><?=$startinmyaccount_link?></td>
+      </tr>
+
     </th>
   </table>
 
