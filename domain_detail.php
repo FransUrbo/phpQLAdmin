@@ -1,6 +1,6 @@
 <?php
 // shows details of a domain
-// $Id: domain_detail.php,v 2.107 2006-12-16 12:02:08 turbo Exp $
+// $Id: domain_detail.php,v 2.108 2006-12-26 19:06:56 aaron Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -271,6 +271,10 @@ if($_SESSION["ADVANCED_MODE"]) {
 	  $new = array('hostacl'	=> 'Host Control');
 	  $buttons = $buttons + $new;
 	}
+        if(pql_get_define("PQL_CONF_SUDO_USE")) {
+          $new = array('sudo'   => 'Sudo');
+          $buttons = $buttons + $new;
+        }
 }
 
 if(pql_get_define("PQL_CONF_SIMSCAN_USE")) {
