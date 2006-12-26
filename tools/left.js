@@ -162,8 +162,10 @@ function initIt()
  */
 function expandBase(el, unexpand)
 {
+
   if (!capable)
     return;
+
 
   if (isDOM) {
     var whichEl = document.getElementById(el + 'Child');

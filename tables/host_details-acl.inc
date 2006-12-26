@@ -58,8 +58,8 @@ foreach($hosts as $host_dn) {
             </div>
 <?php } else { ?>
             <div id="el<?=$i."aParent"?>" class="parent">
-              <a href="<?=$_SERVER['REQUEST_URI']?>" onClick="if (capable) {expandBase('el<?=$i+1?>', true); return false;}">
-                <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$i."Img"?>">
+	      <a class="item" onClick="if (capable) {expandBase('el<?=$i?>a', true); return false;}">
+                <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$i."aImg"?>">
               </a>
               <font color="black" class="heada"><?=$host?></font>
             </div>
@@ -74,7 +74,7 @@ foreach($hosts as $host_dn) {
 ?>
             <span id="el<?=$i?>aSpn" style="display:''">
 <?php	} else { ?>
-            <div id="<?=$i."aChild"?>" class="child">
+            <div id="el<?=$i."aChild"?>" class="child">
 <?php	}
 
 		for($j=0; $j < count($host_users); $j++) {
@@ -87,14 +87,13 @@ foreach($hosts as $host_dn) {
                </a>
                <br>
 <?php
-
-		  if($_SESSION["opera"]) {
+		}
+	  if($_SESSION["opera"]) {
 ?>
             </span>
 <?php	  } else { ?>
             </div>
 <?php	  }
-		}
   }
 ?>
           </td>
@@ -125,8 +124,8 @@ foreach($hosts as $host_dn) {
             <span id="el<?=$i?>bSpn" style="display:''">
 <?php } else { ?>
             <div id="el<?=$i?>bParent" class="parent">
-              <a class="item" onClick="if (capable) {expandBase('el<?=$i?>', true); return false;}">
-                <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$i?>Img">
+              <a class="item" onClick="if (capable) {expandBase('el<?=$i?>b', true); return false;}">
+                <img name="imEx" src="images/plus.png" border="0" alt="+" width="9" height="9" id="el<?=$i?>bImg">
               </a>
               <a class="item"><font color="black" class="heada"><?=$host_ip?></font></a>
             </div>

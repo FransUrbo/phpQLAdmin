@@ -1,6 +1,6 @@
 <?php
 // Modify Host ACLs
-// $Id: host_modify.php,v 2.10 2006-12-18 12:50:53 turbo Exp $
+// $Id: host_modify.php,v 2.11 2006-12-26 20:50:39 aaron Exp $
 
 // {{{ Setup session etc
 if(!@$_SESSION) {
@@ -35,8 +35,7 @@ if($user_results) {
 
 // {{{ Retreive all physical computers
 $computer_results = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
-			       '(&(cn=*)(|(objectclass=ipHost)(objectclass=device)))',
-			       'ONELEVEL');
+			       '(&(cn=*)(|(objectclass=ipHost)(objectclass=device)))');
 if($computer_results) {
   sort($computer_results);
 }
