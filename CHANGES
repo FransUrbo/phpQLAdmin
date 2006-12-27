@@ -2,6 +2,8 @@ phpQLAdmin 2.3 Change Log
 
 phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	Bug fixes
+	  - Fixed the samba code to no longer rely on the mkntpasswd program, you can now download and use Crypt_CHAP from pear
+	  - Fixed sudo plugin to display when selected
 	  - Better regexp to try to find out if a value is a DN in include/pql_formating.inc:pql_format_table_single()' 
 	  - If there's no web server containers, we must still return the list of physical hosts in
 	    include/pql_websrv.inc:pql_websrv_get_data(). This so that we can retreive any QLC objects
@@ -119,6 +121,8 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    + Change 'Create DNS object' to checked by default.
 
 	Misc changes
+	  - Added Strong password option to meet SOX & DSS/PCI compliance
+	  - Added branch option to start in users own account when logging in (this is experimental don't use in production)
 	  - Prettier debug output in include/pql_search.inc:pql_search()
 	  - Explain 'null host' in 'include/attrib.control.smtproutes.inc:smtproutes_help()'
 

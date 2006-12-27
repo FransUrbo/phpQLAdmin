@@ -1,4 +1,6 @@
 Upgrading from <2.3.5
+	+ You no longer need to use the samba projects mkntpwd tool to hash the password
+	  it is done with the Pear projects Crypt_CHAP a Microsoft crypt lib
 	+ All host (web- and mailserver) information have been physically
 	  moved. I'm now only looking in the 'ou=Computers,<suffix>' for
 	  QLC and web server information etc. If you've been using the

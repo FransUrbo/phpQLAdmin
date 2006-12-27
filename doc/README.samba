@@ -1,11 +1,4 @@
 Requirements:
-You need to get the tool mkntpwd from 
-http://www.samba.org/cgi-bin/cvsweb/samba/examples/LDAP/smbldap-tools/mkntpwd/
-This is usally also in your samba 3 source under examples/LDAP/smbldap-tools/mkntpwd/
-
-Once you have this tool compiled place it in /usr/sbin/mkntpwd I hard
-coded that value path for now, I know it should be in the config file
-or ldap but this is the first version of samba support
 
 
 In order to add samba functionality to the phpQLadmin project you have
