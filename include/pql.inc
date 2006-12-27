@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.220 2006-12-16 12:02:14 turbo Exp $
+// $Id: pql.inc,v 2.221 2006-12-27 19:48:04 aaron Exp $
 //
 
 // ----------------------------
@@ -499,6 +499,24 @@ function pql_get_mx($domainname) {
 }
 // }}}
 
+// }}}
+function smbpassword($passwd, $type){
+        //Using Samba Password Support requires pear's Crypt_CHAP
+        require_once 'Crypt/CHAP.php';
+        $hash = &new Crypt_CHAP_MSv2();
+        $hash->password = $passwd;
+        if($type == 'lmPassword'){
+                $passwd = strtoupper(bin2hex($hash->lmPasswordHash()));
+        }elseif($type == 'ntPassword'){
+                $passwd = strtoupper(bin2hex($hash->ntPasswordHash()));
+        }else{
+                $passwd = '**DISABLED**';
+        }
+
+        return($passwd);
+}
+// }}}
+
 // {{{ pql_password_hash(password, hash)
 function pql_password_hash($password, $hash) {
     // creates a hash of a password
@@ -540,22 +558,14 @@ function pql_password_hash($password, $hash) {
 		// Password in the clear (JUCK! :)
 		return $password;
 
-	  case "{ntpasswd}":
-		// NT Password
-		$passwd_cmd = pql_get_define("PQL_CONF_MKNTPW_PATH") . " $password";
-		$HashPass = `$passwd_cmd`;
-		$ntpassword = substr($HashPass, strpos($HashPass, ':')+1);
-		$ntpassword = rtrim($ntpassword);
-		return $ntpassword;
-	  
-	  case "{lmpasswd}":
-		// Lan Manager
-		$passwd_cmd = pql_get_define("PQL_CONF_MKNTPW_PATH") . " $password";
-		$HashPass = `$passwd_cmd`;
-		$lmpassword = substr($HashPass, 0, strpos($HashPass, ':'));
-		$lmpassword = rtrim($lmpassword);
-		return $lmpassword;
-	  
+      case "{ntpasswd}":
+                // NT Password
+                return smbpassword($password, 'ntPassword');
+
+      case "{lmpasswd}":
+                // Lan Manager
+                return smbpassword($password, 'lmPassword');
+
       case "{KERBEROS}":
 		// Kerberos V mapping
 		// NEW FORMAT: '{SASL}principal@REALM.TLD'

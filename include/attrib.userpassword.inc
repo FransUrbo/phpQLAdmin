@@ -1,11 +1,11 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.38 2006-12-26 21:40:48 aaron Exp $
+// $Id: attrib.userpassword.inc,v 2.39 2006-12-27 19:48:03 aaron Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
-	global $error, $LANG;
+	global $error, $LANG, $_pql;
 
 	// is typed in ?
 	if(empty($_REQUEST["userpassword"])) {
@@ -21,6 +21,10 @@ function attribute_check($type) {
 			return false;
 		}
 		if(pql_get_define("PQL_CONF_STRONGPASSWD_USE")){
+			if($_REQUEST['userpassword'] != $_REQUEST['userpassword2']){
+				$error["userpassword"] = $LANG->_('Passwords do not match.');
+				return false;
+			}
 			//Open CrackLib Dictionary
 			$dictionary = crack_opendict('/usr/lib/cracklib_dict')
 			     or die('Unable to open CrackLib dictionary');
@@ -50,6 +54,11 @@ function attribute_check($type) {
 			}
 			if(!preg_match("/[^a-zA-Z0-9]/i", $_REQUEST["userpassword"])){
 				$error["userpassword"] = $LANG->_('Passwords must have atleast one symbol');
+				return false;
+			}
+			$test_pql = new pql($_SESSION["USER_HOST"], '', '');
+			if( $test_pql->bind($_REQUEST["user"], $_REQUEST["userpassword"]) ){
+				$error["userpassword"] = $LANG->_('Error, Password must be different than previous password');
 				return false;
 			}
 		}
@@ -121,11 +130,17 @@ function attribute_print_form() {
 <?php } ?>
         <!-- Password -->
         <tr class="<?php pql_format_table(); ?>">
-          <td class="title"><?=$LANG->_('Password')?></td>
-          <td>
+          <td class="title"><?=$LANG->_('Password')?><br><?=$LANG->_('Re-Type Password')?><br>
             <?php echo pql_format_error_span($error["userpassword"]) . "\n"; ?>
+	  </td>
+          <td>
             <!-- Ugly hack. Should really have type=password here, but what''s the use. Really!? -->
-            <input type="input" name="userpassword" size="40">
+	<?php if(pql_get_define("PQL_CONF_STRONGPASSWD_USE")){ ?> 
+		<input type="password" name="userpassword" size="40"><br>
+		<input type="password" name="userpassword2" size="40">
+	<?php }else{?>
+		<input type="input" name="userpassword" size="40">
+	<?php }?>
           </td>
         </tr>
 <?php if(!pql_get_define("PQL_CONF_ALLOW_ALL_CHARS", $_REQUEST["rootdn"])) { ?>
