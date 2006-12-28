@@ -2,6 +2,8 @@ phpQLAdmin 2.3 Change Log
 
 phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	Bug fixes
+	  - Also removed lan password auth from samba, almost all windows users using at least win2k by this point and the lan man protocol
+	    can be easily cracked
 	  - Fixed the samba code to no longer rely on the mkntpasswd program, you can now download and use Crypt_CHAP from pear
 	  - Fixed sudo plugin to display when selected
 	  - Better regexp to try to find out if a value is a DN in include/pql_formating.inc:pql_format_table_single()' 

@@ -16,33 +16,34 @@
 // * Only (!!) change the value in the SECOND column (in the strtolower()
 //   function).
 //
-// $Id: config_attributes.inc,v 2.56 2006-12-26 23:08:11 aaron Exp $
+// $Id: config_attributes.inc,v 2.57 2006-12-28 02:19:37 aaron Exp $
 
 // {{{ These are the QmailLDAP user object attributes
-pql_set_define("PQL_ATTR_DOTMODE",							strtolower("qmailDotMode"),					false);
-pql_set_define("PQL_ATTR_FORWARDS",							strtolower("mailForwardingAddress"),		false);
-pql_set_define("PQL_ATTR_GECOS",							strtolower("gecos"),						false);
-pql_set_define("PQL_ATTR_HOMEDIR",							strtolower("homeDirectory"),				false);
-pql_set_define("PQL_ATTR_ISACTIVE",							strtolower("accountStatus"),				false);
-pql_set_define("PQL_ATTR_ACCOUNT_PURGE",					strtolower("qmailAccountPurge"),			false);
+pql_set_define("PQL_ATTR_DOTMODE",						strtolower("qmailDotMode"),					false);
+pql_set_define("PQL_ATTR_FORWARDS",						strtolower("mailForwardingAddress"),				false);
+pql_set_define("PQL_ATTR_GECOS",						strtolower("gecos"),						false);
+pql_set_define("PQL_ATTR_HOMEDIR",						strtolower("homeDirectory"),					false);
+pql_set_define("PQL_ATTR_ISACTIVE",						strtolower("accountStatus"),					false);
+pql_set_define("PQL_ATTR_ACCOUNT_PURGE",					strtolower("qmailAccountPurge"),				false);
+pql_set_define("PQL_ATTR_PASSWORD_LASTCHANGED",         			strtolower("shadowLastChange"),                 		false);
 pql_set_define("PQL_ATTR_EXPIRATION",						strtolower("shadowExpire"),					false);
 pql_set_define("PQL_ATTR_LOGINSHELL",						strtolower("loginShell"),					false);
-pql_set_define("PQL_ATTR_MAIL",								strtolower("mail"),							false);
-pql_set_define("PQL_ATTR_MAILALTERNATE",					strtolower("mailAlternateAddress"),			false);
-pql_set_define("PQL_ATTR_MAILHOST",							strtolower("mailHost"),						false);
-pql_set_define("PQL_ATTR_MAILSTORE",						strtolower("mailMessageStore"),				false);
-pql_set_define("PQL_ATTR_MODE",								strtolower("deliveryMode"),					false);
-pql_set_define("PQL_ATTR_PASSWD",							strtolower("userPassword"),					false);
-pql_set_define("PQL_ATTR_PROGRAM",							strtolower("deliveryProgramPath"),			false);
-pql_set_define("PQL_ATTR_PURGE",							strtolower("qmailAccountPurge"),			false);
-pql_set_define("PQL_ATTR_QMAILGID",							strtolower("gidNumber"),					false);
-pql_set_define("PQL_ATTR_QMAILUID",							strtolower("uidNumber"),					false);
+pql_set_define("PQL_ATTR_MAIL",							strtolower("mail"),						false);
+pql_set_define("PQL_ATTR_MAILALTERNATE",					strtolower("mailAlternateAddress"),				false);
+pql_set_define("PQL_ATTR_MAILHOST",						strtolower("mailHost"),						false);
+pql_set_define("PQL_ATTR_MAILSTORE",						strtolower("mailMessageStore"),					false);
+pql_set_define("PQL_ATTR_MODE",							strtolower("deliveryMode"),					false);
+pql_set_define("PQL_ATTR_PASSWD",						strtolower("userPassword"),					false);
+pql_set_define("PQL_ATTR_PROGRAM",						strtolower("deliveryProgramPath"),				false);
+pql_set_define("PQL_ATTR_PURGE",						strtolower("qmailAccountPurge"),				false);
+pql_set_define("PQL_ATTR_QMAILGID",						strtolower("gidNumber"),					false);
+pql_set_define("PQL_ATTR_QMAILUID",						strtolower("uidNumber"),					false);
 pql_set_define("PQL_ATTR_QUOTA_VALUE",						strtolower("mailQuota"),					false);
-pql_set_define("PQL_ATTR_QUOTA_SIZE",						strtolower("mailQuotaSize"),				false);
-pql_set_define("PQL_ATTR_QUOTA_COUNT",						strtolower("mailQuotaCount"),				false);
+pql_set_define("PQL_ATTR_QUOTA_SIZE",						strtolower("mailQuotaSize"),					false);
+pql_set_define("PQL_ATTR_QUOTA_COUNT",						strtolower("mailQuotaCount"),					false);
 pql_set_define("PQL_ATTR_QUOTA_WARNING",					strtolower("quotaWarning"),					false);
-pql_set_define("PQL_ATTR_REPLYTEXT",						strtolower("mailReplyText"),				false);
-pql_set_define("PQL_ATTR_UID",								strtolower("uid"),							false);
+pql_set_define("PQL_ATTR_REPLYTEXT",						strtolower("mailReplyText"),					false);
+pql_set_define("PQL_ATTR_UID",							strtolower("uid"),						false);
 // }}}
 
 // {{{ These are the QmailLDAP/Controls attributes.
@@ -283,6 +284,7 @@ pql_set_define("PQL_ATTR_RADIUS_FILTERID",					strtolower('radiusFilterId'),				
 // {{{ Miscellaneous external attributes
 pql_set_define("PQL_ATTR_SPAMASSASSIN", 					strtolower('spamAssassin'),					false);
 pql_set_define("PQL_ATTR_PASSWD_CLEAR", 					strtolower('clearTextPassword'),			false);
+pql_set_define("PQL_ATTR_DAYSUNTILEXPIRE",      				strtolower('daysuntilexpire'),                  	false);
 pql_set_define("PQL_ATTR_PHOTO",							strtolower('jpegPhoto'),					false);
 // }}}
 

@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // userpassword (password of a user)
-// $Id: attrib.userpassword.inc,v 2.39 2006-12-27 19:48:03 aaron Exp $
+// $Id: attrib.userpassword.inc,v 2.40 2006-12-28 02:19:37 aaron Exp $
 
 // {{{ attribute_check(type)
 function attribute_check($type) {
@@ -204,11 +204,8 @@ function attribute_save($type) {
 		
 		if($USER_IS_SAMBA){
 		  $nt = pql_password_hash($_REQUEST["userpassword"], '{ntpasswd}');
-		  $lm = pql_password_hash($_REQUEST["userpassword"], '{lmpasswd}');
 		  pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"],
 							   pql_get_define("PQL_ATTR_SAMBANTPASSWORD"), 1, $nt);
-		  pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"],
-							   pql_get_define("PQL_ATTR_SAMBALMPASSWORD"), 1, $lm);
 		}
 
 		if($_REQUEST["principal"] and extension_loaded('kadm5') and function_exists("kadm5_init_with_password") and ($_REQUEST["pwscheme"] == '{KERBEROS}')) {
@@ -219,6 +216,17 @@ function attribute_save($type) {
 		  $pw = pql_password_hash($_REQUEST["userpassword"], $_REQUEST["pwscheme"]);
 	
 		  if(pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"], pql_get_define("PQL_ATTR_PASSWD"), 1, $pw))
+			$expiredays = pql_get_attribute($_pql->ldap_linkid, $_REQUEST['rootn'], pql_get_define("PQL_ATTR_DAYSUNTILEXPIRE"));
+                        //Since Password is changeing, I better update the shadowstuff also
+                        if(isset($expiredays)){
+                                $today = floor(time() * (1/60) * (1/60) * (1/24) );
+                                $next = $today + $expiredays;
+                                pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"],
+                                   pql_get_define("PQL_ATTR_EXPIRATION"), 1, $next);
+                                pql_modify_attribute($_pql->ldap_linkid, $_REQUEST["user"],
+                                   pql_get_define("PQL_ATTR_PASSWORD_LASTCHANGED"), 1, $today);
+                        }
+
 			$success = 1;
 		}
 
