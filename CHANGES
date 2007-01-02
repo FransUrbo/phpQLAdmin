@@ -127,6 +127,9 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	  - Added branch option to start in users own account when logging in (this is experimental don't use in production)
 	  - Prettier debug output in include/pql_search.inc:pql_search()
 	  - Explain 'null host' in 'include/attrib.control.smtproutes.inc:smtproutes_help()'
+	  - When adding a branch admin in include/attrib.administrator.inc:attribute_save(), we must make sure that any
+	    user templates' ACI is also updated. This so that a branch admin can READ templates (so he/she will be able
+	    to add users!).
 
 phpQLAdmin 2.3.5 Dec  2 2006
 	Bug fixes

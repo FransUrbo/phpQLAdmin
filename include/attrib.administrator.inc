@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for administrator and seealso modification
 // Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
-// $Id: attrib.administrator.inc,v 1.61 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.62 2007-01-02 19:37:50 turbo Exp $
 
 // There is serious problems with this. I fix for one usage and break another
 // one! Let's try to remember (and document) how it's called. It's called from
@@ -41,6 +41,10 @@ require("./left-head.html");
 //			action	-> 'add' or 'delete' (only!). Changing an RDN for a
 //					   user isn't done with this function, but in
 //					   the file 'attrib.modrdn.inc'.
+//
+// NOTE: user template objects are treated slightly different.
+//       User ($userdn) will only get READ access to the [all]
+//       target. The [children] will not be added...
 function attribute_setup_aci($linkid, $dn, $userdn, $action) {
 	$old_acis = pql_aci_get($linkid, $dn);
 
@@ -74,7 +78,8 @@ function attribute_setup_aci($linkid, $dn, $userdn, $action) {
 			// }}}
 
 			if($action == 'add') {
-				// {{{ We're adding an administrator - add the user DN(s) to the '[entry]' ACI list as well.
+			  // {{{ We're adding an administrator - add the user DN(s) to the '[entry]' ACI list as well.
+			  if(!eregi('usertemplatename', $dn)) {
 				// (Re)create new ACI's.
 				if($old_acis[$i+1]["TYPE"] == "access-id") {
 					if((in_array('[entry]', $old_acis[$i+1]["RIGHTS"]["TARGET"]) or in_array('[all]', $old_acis[$i+1]["RIGHTS"]["TARGET"])) and !$added_child) {
@@ -82,26 +87,28 @@ function attribute_setup_aci($linkid, $dn, $userdn, $action) {
 						
 						$new_acis[]  = $line; $oid++;
 						for($j=0; $j < count($userdn); $j++) {
-							$new_acis[]  = "$oid#entry#grant;w,r,s,c;[children]#access-id#".$userdn[$j];
-							if($userdn[$j+1])
-							  $oid++;
+						  $new_acis[]  = "$oid#entry#grant;w,r,s,c;[children]#access-id#".$userdn[$j];
+						  
+						  if($userdn[$j+1])
+							$oid++;
 						}
 						$added_child = 1;
 					} else
 					  $new_acis[] = $line;
 				} else
 				  $new_acis[] = $line;
-				// }}}
+			  }
+			  // }}}
 			} else {
-				// {{{ We're removing an administrator - find the user(s) and remove them from the ACI list.
-				if($old_acis[$i]['SUBJECT']) {
-					for($j=0; $j < count($userdn); $j++) {
-						if(lc($old_acis[$i]['SUBJECT']) != lc($userdn[$j]))
-						  $new_acis[] = $line;
-					}
-				} else
-				  $new_acis[] = $line;
-				// }}}
+			  // {{{ We're removing an administrator - find the user(s) and remove them from the ACI list.
+			  if($old_acis[$i]['SUBJECT']) {
+				for($j=0; $j < count($userdn); $j++) {
+				  if(lc($old_acis[$i]['SUBJECT']) != lc($userdn[$j]))
+					$new_acis[] = $line;
+				}
+			  } else
+				$new_acis[] = $line;
+			  // }}}
 			}
 		}
 
@@ -123,7 +130,10 @@ function attribute_setup_aci($linkid, $dn, $userdn, $action) {
 			}
 			
 			if($add_user) {
-			  $new_acis[] = "$oid#entry#grant;w,r,s,c;[all]#access-id#".$userdn[$j];
+			  if(eregi('usertemplatename', $dn))
+				$new_acis[] = "$oid#entry#grant;r,s,c;[all]#access-id#".$userdn[$j];
+			  else
+				$new_acis[] = "$oid#entry#grant;w,r,s,c;[all]#access-id#".$userdn[$j];
 			  $oid++;
 			}
 		  }
@@ -543,7 +553,16 @@ function attribute_save($type) {
 			  // fixed this!
 			  unset($tmp[0]);
 
-			  pql_add2array($branches, $tmp);
+			  if($tmp)
+				pql_add2array($branches, $tmp);
+			}
+
+			// A branch admin must have read access to all the templates!
+			$filter = '(&(objectClass=phpQLAdminUserTemplate)('.pql_get_define("PQL_ATTR_USER_TEMPLATE_NAME").'=*))';
+			for($i=0; $_SESSION["BASE_DN"][$i]; $i++) {
+			  $tmp = pql_get_dn($_pql->ldap_linkid, 'ou=Templates,'.$_SESSION["BASE_DN"][$i], $filter, 'ONELEVEL');
+			  if($tmp)
+				pql_add2array($branches, $tmp);
 			}
 
 			for($i=0; $i < count($branches); $i++) {
