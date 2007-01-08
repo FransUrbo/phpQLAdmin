@@ -1,6 +1,6 @@
 <?php
 // add a domain
-// $Id: domain_add.php,v 2.69 2006-12-16 12:02:08 turbo Exp $
+// $Id: domain_add.php,v 2.70 2007-01-08 03:33:11 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -89,7 +89,7 @@ if(function_exists("user_generate_homedir")) {
 	$defaulthomedir = preg_replace('/&_/', '', $defaulthomedir);
 	$defaulthomedir = preg_replace('/&/', '',  $defaulthomedir);
 	
-	$entry[pql_get_define("PQL_ATTR_BASEHOMEDIR")] = $defaulthomedir;
+	$entry[pql_get_define("PQL_ATTR_BASEHOMEDIR")] = lc($defaulthomedir);
   }
 }
 
@@ -101,7 +101,7 @@ if(function_exists("user_generate_mailstore")) {
 	$defaultmaildir = preg_replace('/&_/', '', $defaultmaildir);
 	$defaultmaildir = preg_replace('/&/', '',  $defaultmaildir);
 
-	$entry[pql_get_define("PQL_ATTR_BASEMAILDIR")] = $defaultmaildir;
+	$entry[pql_get_define("PQL_ATTR_BASEMAILDIR")] = lc($defaultmaildir);
   }
 }
 
@@ -155,11 +155,21 @@ if(pql_write_add($_pql->ldap_linkid, $dn, $entry, 'branch', 'domain_add.php')) {
 	if($msg == "")
 	  $msg = urlencode(pql_complete_constant($LANG->_('Domain %domain% successfully created'),
 											 array("domain" => $dn))) . ".";
-	$url = "domain_detail.php?rootdn=".$url["rootdn"]."&domain=".urlencode($dn)."&msg=$msg&rlnb=1";
+	$url = "domain_detail.php?rootdn=".$url["rootdn"]."&domain=".urlencode($dn);
 // }}}
 
-	if(pql_get_define("PQL_CONF_SCRIPT_CREATE_DOMAIN", $_REQUEST["rootdn"])) {
-		// {{{ Run the special adddomain script - Setup the environment with the user details
+	if(pql_get_define("PQL_CONF_DEBUG_ME")) {
+	  if(file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
+		$now = pql_format_return_unixtime();
+		echo "Now: <b>$now</b><br>";
+	  }
+
+	  $url .= "&msg=$msg&rlnb=1";
+
+	  echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
+	  die("<b>$url</b>");
+	} elseif(pql_get_define("PQL_CONF_SCRIPT_CREATE_DOMAIN", $_REQUEST["rootdn"])) {
+		// {{{ Run the special add domain script - Setup the environment with the user details
 		putenv("PQL_DOMAIN=".$_REQUEST["domain"]);
 		putenv("PQL_DOMAINNAME=".$_REQUEST["defaultdomain"]);
 		putenv("PQL_HOMEDIRS=$defaulthomedir");
@@ -175,11 +185,9 @@ if(pql_write_add($_pql->ldap_linkid, $dn, $entry, 'branch', 'domain_add.php')) {
 		} else {
 			echo "<b>" . pql_complete_constant($LANG->_('Successfully executed the %what% add script'),
 											   array('what' => $LANG->_('domain'))) . "</b><br>";
-			$msg .= "<br>" . urlencode(pql_complete_constant($LANG->_('Successfully executed the %what% add script'),
+			$msg .= urlencode("<br>") . urlencode(pql_complete_constant($LANG->_('Successfully executed the %what% add script'),
 														  array('what' => $LANG->_('domain'))));
 		}
-
-		$url = "domain_detail.php?rootdn=".$url["rootdn"]."&domain=".urlencode($dn);
 ?>
 
     <form action="<?=$url?>&msg=<?=$msg?>&rlnb=1" method="post">
@@ -189,16 +197,9 @@ if(pql_write_add($_pql->ldap_linkid, $dn, $entry, 'branch', 'domain_add.php')) {
 
 		die();
 // }}}
-	} elseif(pql_get_define("PQL_CONF_DEBUG_ME")) {
-	  if(file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
-		$now = pql_format_return_unixtime();
-		echo "Now: <b>$now</b><br>";
-	  }
-
-	  echo "If we wheren't debugging (file ./.DEBUG_ME exists), I'd be redirecting you to the url:<br>";
-	  die("<b>$url</b>");
 	} else {
-		pql_header($url);
+	  $url .= "&msg=$msg&rlnb=1";
+	  pql_header($url);
 	}
 } else {
 	$msg = urlencode($LANG->_('Failed to create the domain') . ":&nbsp;" . ldap_error($_pql->ldap_linkid));
