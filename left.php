@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.124 2006-12-16 12:02:09 turbo Exp $
+// $Id: left.php,v 2.125 2007-01-08 03:34:51 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -235,7 +235,7 @@ if(!isset($domains) or !is_array($domains)) {
 	// Three steps because pql_get_domains() and pql_get_dn()
 	// returns normalized DN's which isn't as pretty.
 	// 1. Get each part of the DN
-	$dnparts = ldap_explode_dn($domain, 0);
+	$dnparts = split(',', $domain);
 	
 	// 2. Extract the attribute from the first RDN
 	$tmp = split('=', $dnparts[0]);
