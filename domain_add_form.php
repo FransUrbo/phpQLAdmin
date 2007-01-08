@@ -1,6 +1,6 @@
 <?php
 // Input form page to create a domain branch in database
-// $Id: domain_add_form.php,v 1.28 2006-12-16 12:02:08 turbo Exp $
+// $Id: domain_add_form.php,v 1.29 2007-01-08 03:20:13 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -48,14 +48,14 @@ $server = urldecode($server[0]);
                   <td>
 <?php
 	    if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $_REQUEST["rootdn"]) == "dc") {
-		// We're using a domain object
-		echo $LANG->_('Using domain mode (dc separated). Don\'t use \'.\' (dots) in domain name');
+		  // We're using a domain object
+		  echo $LANG->_('Using domain mode (dc separated). Don\'t use \'.\' (dots) in domain name');
 	    } elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $_REQUEST["rootdn"]) == "o") {
-		// We're using organization layout
-		echo $LANG->_('Using organization layout (o separated)');
+		  // We're using organization layout
+		  echo $LANG->_('Using organization layout (o separated)');
 	    } else {
-		// OrganizationUnit object
-		echo $LANG->_('Using organizationUnit layout (ou separated). Make sure you\'re using \'domain.tld\' for domain name');
+		  // OrganizationUnit object
+		  echo $LANG->_('Using organizationUnit layout (ou separated). Make sure you\'re using \'domain.tld\' for domain name');
 	    }
 ?>
                   </td>
