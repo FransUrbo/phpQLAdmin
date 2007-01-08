@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.221 2006-12-27 19:48:04 aaron Exp $
+// $Id: pql.inc,v 2.222 2007-01-08 03:36:24 turbo Exp $
 //
 
 // ----------------------------
@@ -183,7 +183,10 @@ class pql {
 		}
 
 		// connect to ldap host and bind to root_dn
-		$this->ldap_linkid = @ldap_connect($host, $port);
+		if($port)
+		  $this->ldap_linkid = ldap_connect($host, $port);
+		else
+		  $this->ldap_linkid = ldap_connect($host);
 
 		return true;
 	}
