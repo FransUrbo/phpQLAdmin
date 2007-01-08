@@ -1,4 +1,4 @@
-<?php /* $Id: user_add-details.inc,v 1.43 2006-12-16 12:03:12 turbo Exp $ */ ?>
+<?php /* $Id: user_add-details.inc,v 1.44 2007-01-08 03:40:07 turbo Exp $ */ ?>
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="post" accept-charset="UTF-8">
     <table cellspacing="0" cellpadding="3" border="0">
       <th colspan="3" align="left"><?=$LANG->_('User data')?></th>
@@ -111,7 +111,12 @@
 <?php		  }
 			}
 		} else {
-		  $_REQUEST["pwscheme"] = $schemes[0];
+		  if(!@$_REQUEST["pwscheme"])
+			$_REQUEST["pwscheme"] = $schemes[0];
+		  else {
+			$schemes[0] = preg_replace('/\{/', '', $_REQUEST["pwscheme"]);
+			$schemes[0] = preg_replace('/\}/', '', $schemes[0]);
+		  }
 ?>
             Scheme: <b>{<?=$schemes[0]?>}</b>
             <input type="hidden" name="pwscheme" value="<?=$schemes[0]?>"<?php if($_REQUEST["defaultpasswordscheme"] == $scheme) { echo " CHECKED"; }?>>
