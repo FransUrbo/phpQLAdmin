@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.65 2006-12-16 12:02:15 turbo Exp $
+// $Id: pql_formating.inc,v 2.66 2007-01-08 03:37:54 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry, extra_newline)
 // Create a LDIF object to print in case of error
@@ -23,9 +23,9 @@ function pql_create_ldif($func, $dn, $entry, $extra_newline = 0) {
 	$LDIF .= "--- DEBUG: $func($account_type) ---$nl\n";
   
   if($dn)
-	$LDIF .= "dn: $dn$nl\n";
+	$LDIF .= "dn: ".pql_maybe_decode($dn)."$nl\n";
   elseif($entry["dn"])
-	$LDIF .= "dn: ".$entry["dn"]."$nl\n";
+	$LDIF .= "dn: ".pql_maybe_decode($entry["dn"])."$nl\n";
 
   if(is_array($entry)) {
 	foreach($entry as $key => $e) {
@@ -51,7 +51,7 @@ function pql_create_ldif($func, $dn, $entry, $extra_newline = 0) {
 		} elseif($key != 'dn') {
 		  // We're (probably) ADDING an _object_. Print the values as is.
 		  foreach($entry[$key] as $x)
-			$LDIF .= "$key: $x$nl\n";
+			$LDIF .= "$key: ".pql_maybe_decode($x)."$nl\n";
 		}
 	  } else {
 		// ... not an array, create the LDAP entry
@@ -73,7 +73,7 @@ function pql_create_ldif($func, $dn, $entry, $extra_newline = 0) {
 		  }
 		} elseif($key != 'dn') {
 		  // We're (probably) ADDING an _object_. Print the values as is.
-		  $LDIF .= "$key: $entry[$key]$nl\n";
+		  $LDIF .= "$key: ".pql_maybe_decode($entry[$key])."$nl\n";
 		}
 	  }
 	}
