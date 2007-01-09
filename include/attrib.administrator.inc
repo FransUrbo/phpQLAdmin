@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for administrator and seealso modification
 // Also manages the qmailGroup attributes dnModerator, dnMember and dnSender
-// $Id: attrib.administrator.inc,v 1.62 2007-01-02 19:37:50 turbo Exp $
+// $Id: attrib.administrator.inc,v 1.63 2007-01-09 16:41:23 turbo Exp $
 
 // There is serious problems with this. I fix for one usage and break another
 // one! Let's try to remember (and document) how it's called. It's called from
@@ -202,7 +202,7 @@ function attribute_print_form($action) {
 	   if(!$what)
 		 $what = pql_maybe_decode($_REQUEST["user"])." ".$LANG->_('as administrator');
 	   else
-		 $what = pql_maybe_decode($_REQUEST["user"])." ".$what;
+		 $what = $_REQUEST["user"]." ".$what;
 	 } elseif(!$what)
 	   $what = $LANG->_('domain administrator');
 	 // }}}
