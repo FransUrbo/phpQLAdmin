@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.24 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.25 2007-01-09 16:43:45 turbo Exp $
 
 // {{{ attribute_translate_type(attrib)
 function attribute_translate_type($attrib) {
@@ -55,7 +55,7 @@ function attribute_print_form() {
 		$_REQUEST["oldvalue"] = pql_get_attribute($_pql->ldap_linkid, $dn, $attrib);
 		if(is_array($_REQUEST["oldvalue"])) {
 		  for($i=0; $i < count($_REQUEST["oldvalue"]); $i++) {
-			if(eregi($type_value, $_REQUEST["oldvalue"][$i]))
+			if(@eregi($type_value, $_REQUEST["oldvalue"][$i]))
 			  $oldvalue = $_REQUEST["oldvalue"][$i];
 		  }
 
