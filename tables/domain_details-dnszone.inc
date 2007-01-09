@@ -204,7 +204,7 @@
 <?php } else { ?>
 
       <tr class="<?php pql_format_table(); ?>">
-        <td class="title"><?=$LANG->_('Mail exchanger')?></td>
+        <td class="title"><?=$LANG->_('AFS Database Server')?></td>
 <?php } ?>
 
 <?php if(@$zones[$dns_domain_name]['@']['AFSDB']) { ?>
@@ -281,18 +281,18 @@
 ?>
       <tr class="<?php pql_format_table(); ?>">
         <td>
-          <a href="<?=$HREF?>&type=host"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_('Modify %type% record'), array('type' => "host"))?>"></a>
+          <a href="<?=$HREF?>&type=host&host=<?=$data['HOST']?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_('Modify %type% record'), array('type' => "host"))?>"></a>
           <?=$data['HOST']?>
         </td>
 
         <td>
-          <a href="<?=$HREF?>&type=ttl"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_('Modify %type% record'), array('type' => "TTL"))?>"></a>
+          <a href="<?=$HREF?>&type=ttl&ttl=<?=$data['TTL']?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_('Modify %type% record'), array('type' => "TTL"))?>"></a>
           <?=$data['TTL']?>
         </td>
 
         <td><?=$LANG->_($TYPE)?></td>
         <td>
-          <a href="<?=$HREF?>&type=<?=lc($TYPE)?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_('Modify %type% record'), array('type' => $TYPE))?>"></a>
+          <a href="<?=$HREF?>&type=<?=lc($TYPE)?>&<?=lc($TYPE)?>=<?=$record?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=pql_complete_constant($LANG->_('Modify %type% record'), array('type' => $TYPE))?>"></a>
           <?=$record?>
         </td>
 
