@@ -1,6 +1,8 @@
 phpqladmin (2.3.6-1) unstable; urgency=low
 
   * New upstream version.
+  * Adding German po-debconf template translation. Thanx to Matthias Julius.
+    Closes: #404902
 
  --
 

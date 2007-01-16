@@ -1,0 +1,40 @@
+# translation of po-debconf template to German
+# Copyright (C) 2006, Matthias Julius
+# This file is distributed under the same license as the phpqladmin package.
+#
+# Matthias Julius <mdeb@julius-net.net>, 2006.
+msgid ""
+msgstr ""
+"Project-Id-Version: phpqladmin 2.2.8-2\n"
+"Report-Msgid-Bugs-To: phpqladmin@packages.debian.org\n"
+"POT-Creation-Date: 2006-10-19 01:18+0200\n"
+"PO-Revision-Date: 2006-12-28 20:46-0500\n"
+"Last-Translator: Matthias Julius <mdeb@julius-net.net>\n"
+"Language-Team: German <debian-l10n-german@lists.debian.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.11.4\n"
+
+#. Type: select
+#. Choices
+#: ../templates:1001
+msgid "Apache, Apache-SSL, Both, None"
+msgstr "Apache, Apache-SSL, Beide, Keine"
+
+#. Type: select
+#. Description
+#: ../templates:1002
+msgid "Which web server would you like to reconfigure automatically?"
+msgstr "Welche Webserver sollen automatisch konfiguriert werden?"
+
+#. Type: select
+#. Description
+#: ../templates:1002
+msgid ""
+"phpQLAdmin supports any web server that PHP4 does, but this automatic "
+"configuration process only supports Apache and Apache-SSL."
+msgstr ""
+"phpQLAdmin unterstützt jeden Webserver, der PHP4 unterstützt. Aber dieser "
+"automatische Konfigurationsprozess unterstützt nur Apache und Apache-SSL."
+
