@@ -1,6 +1,6 @@
 <?php
 // add a domain to a bind9 ldap db
-// $Id: bind9_add.php,v 2.31 2006-12-16 12:02:08 turbo Exp $
+// $Id: bind9_add.php,v 2.32 2007-02-02 15:40:42 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -247,7 +247,7 @@ if(($_REQUEST["action"] == 'add') and ($_REQUEST["type"] == 'domain')) {
 	} else
 	  $entry[pql_get_define("PQL_ATTR_RELATIVEDOMAINNAME")]	= pql_maybe_idna_encode($_REQUEST["hostname"]);
 	$entry[pql_get_define("PQL_ATTR_ZONENAME")]			= $_REQUEST["domainname"];
-	$entry[pql_get_define("PQL_ATTR_DNSTTL")]				= pql_bind9_get_ttl($_pql->ldap_linkid, $_REQUEST["domainname"]);
+	$entry[pql_get_define("PQL_ATTR_DNSTTL")]			= pql_bind9_get_ttl($_pql->ldap_linkid, $_REQUEST["domainname"]);
 	switch($_REQUEST["record_type"]) {
 	case "a":
 	  $entry[pql_get_define("PQL_ATTR_ARECORD")]		= pql_maybe_idna_encode($_REQUEST["dest"]);
