@@ -109,6 +109,33 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	  - When creating a new user, it's possible that the subbranch contains ALL that's needed
 	    (ou=People,<domain>,<suffix> etc). Catch this.
 	  - When changing [ug]idNumber, REPLACE value, don't ADD it.
+	  - Rearrange code in domain_add.php - first check if debuging, THEN if to run create domain script.
+	  - Replace ldap_explode_dn() with split() in left.php. The former didn't do the job it was supposed to...
+	  - If port isn't known in class _pql->connect(), then don't call ldap_connect() with it...
+	  - Don't run domain/branch DN through IDNA decode in tables/domain_details-default.inc. Already done.
+	  - If $_REQUEST["pwscheme"] is already known (reload's etc) in tables/user_add-details.inc, then use
+	    that as scheme.
+	  - Don't decode the user DN in include/attrib.administrator.inc:attribute_print_form() - it's already done.
+	  - Don't output error on faulty regexp (in a eregi() call) in include/attrib.dnszone.inc:attribute_print_form().
+	  - For include/attrib.dnszone.inc:attribute_print_form() to work propperly (insert old value), all options
+	    to bind9_edit_attributes.php have a 'type=<type>'. But there must also be a '<type>=<value>' option...
+	  - websrv_edit_attributes.php should call host_detail.php, not domain_detail.php.
+	    + rootdn and domain values are not used/known. Use host instead.
+	  - In include/attrib.dnszone.inc we need to generate/figure out the SOA DN (for updating the SOA
+	    version) for the object we're modifying a LOT earlier. This because if the object is removed,
+	    it's not possible to find the SOA.
+	    + When modifying an object (such as when removing ONE IP from a round-robin host), we shouldn't
+	      remove the whole object, but only the specific value. If there's only one, THEN remove the
+	      whole object...
+	    + Include record type and record value in call to bind9_edit_attributes.php if it's a host AND
+	      action is delete. This so that we should be able to delete ONE entry of a round-robin host.
+	    + Duplicate check for PQL_CONF_DEBUG_ME - it's already done in pql_write_del().
+	  - In include/attrib.websrv.inc, remember the host value. It's needed in the attribute_forward().
+	  - Include physical server in call to websrv_edit_attributes.php in all webserver details links.
+	    This so that any modification is correctly redirected to the correct virtual host etc.
+	    + When showing virtual server aliases, if the value returned isn't an array (as when there's
+	      only ONE alias), then MAKE it an array. This instead of adding more almost-duplicate code
+	      (showing of the value(s)).
 
 	GUI layout changes
 	  - Don't show the Kerberos info in the user add details page if KERBEROS isn't an option
@@ -121,6 +148,7 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    and QLC object(s).
 	    + 'Update QLC object(s)' checked by default.
 	    + Change 'Create DNS object' to checked by default.
+	  - Decode DN and all values in pql_create_ldif().
 
 	Misc changes
 	  - Added Strong password option to meet SOX & DSS/PCI compliance
@@ -130,6 +158,7 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	  - When adding a branch admin in include/attrib.administrator.inc:attribute_save(), we must make sure that any
 	    user templates' ACI is also updated. This so that a branch admin can READ templates (so he/she will be able
 	    to add users!).
+	  - Lowercase home/mail directory values when creating domain.
 
 phpQLAdmin 2.3.5 Dec  2 2006
 	Bug fixes
