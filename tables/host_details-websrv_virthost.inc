@@ -31,7 +31,11 @@
 
       <tr><td></td></tr>
 
-<?php if(@is_array($virthost[pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS")])) {
+<?php if($virthost[pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS")] and !is_array($virthost[pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS")])) {
+		$virthost[pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS")] = array($virthost[pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS")]);
+	  }
+
+	  if(@is_array($virthost[pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS")])) {
         $new_tr = 1;
 
         foreach($virthost[pql_get_define("PQL_ATTR_WEBSRV_SRV_ALIAS")] as $srv) {
