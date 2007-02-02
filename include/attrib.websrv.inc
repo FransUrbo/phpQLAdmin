@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for the Webserver Configuration editor
 //
-// $Id: attrib.websrv.inc,v 1.17 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.websrv.inc,v 1.18 2007-02-02 15:50:43 turbo Exp $
 
 // {{{ attribute_check(void)
 function attribute_check() {
@@ -20,6 +20,7 @@ function attribute_print_form() {
 
 	$url["domain"] = pql_format_urls($_REQUEST["domain"]);
 	$url["rootdn"] = pql_format_urls($_REQUEST["rootdn"]);
+ 	$url["host"]   = pql_format_urls($_REQUEST["host"]);
 	$url["server"] = pql_format_urls($_REQUEST["server"]);
 
 	// Slightly ugly, but what the heck! :)
@@ -54,6 +55,7 @@ function attribute_print_form() {
       <input type="hidden" name="submit"   value="1">
       <input type="hidden" name="rootdn"   value="<?=$url["rootdn"]?>">
       <input type="hidden" name="domain"   value="<?=$url["domain"]?>">
+      <input type="hidden" name="host"     value="<?=$url["host"]?>">
       <input type="hidden" name="server"   value="<?=$url["server"]?>">
 <?php if($_REQUEST["virthost"]) { ?>
       <input type="hidden" name="virthost" value="<?=$_REQUEST["virthost"]?>">
@@ -135,7 +137,7 @@ function attribute_save($action) {
 			$_REQUEST[$attrib] = 'ldapi://' . urlencode($uri);
 		}
 
-		if(pql_modify_attribute($_pql->ldap_linkid, $dn, $attrib, '', $_REQUEST[$attrib]))
+ 		if(pql_modify_attribute($_pql->ldap_linkid, $dn, $attrib, 1, $_REQUEST[$attrib]))
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $attrib));
 		else
