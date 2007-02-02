@@ -1,6 +1,6 @@
 <?php
 // edit attributes of a webserver configuration
-// $Id: websrv_edit_attributes.php,v 2.14 2006-12-16 12:02:09 turbo Exp $
+// $Id: websrv_edit_attributes.php,v 2.15 2007-02-02 15:42:52 turbo Exp $
 //
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -27,7 +27,8 @@ function attribute_forward($msg) {
     // URL Encode the DN values
     $msg    = urlencode($msg);
 
-    $LINK_URL  = "domain_detail.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&server=$server";
+//    $LINK_URL  = "domain_detail.php?rootdn=".$url["rootdn"]."&domain=".$url["domain"]."&server=$server";
+ 	$LINK_URL = "host_detail.php?host=".$_REQUEST["host"]."&server=".$_REQUEST["server"];
 	if($_REQUEST["virthost"]) $LINK_URL .= "&virthost=".$_REQUEST["virthost"];
 	if($_REQUEST["hostdir"])  $LINK_URL .= "&hostdir=".$_REQUEST["hostdir"];
 	$LINK_URL .= "&view=".$_REQUEST["view"]."&msg=$msg";
