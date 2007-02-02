@@ -1,6 +1,6 @@
 <?php
 // View everything about web servers - virtual hosts and virtual host locations
-// $Id: host_details-websrv.inc,v 1.4 2006-12-04 13:42:59 turbo Exp $
+// $Id: host_details-websrv.inc,v 1.5 2007-02-02 15:54:55 turbo Exp $
 
 // {{{ Possibly show some debugging
 if(pql_get_define("PQL_CONF_DEBUG_ME")) {
@@ -97,7 +97,8 @@ if(is_array($physical_data) and count($physical_data)) {
   $img["mod"]  = '<img src="images/edit.png" width="12" height="12" alt="Modify value" border="0">';
   $img["del"]  = '<img src="images/del.png"  width="12" height="12" alt="Delete value" border="0">';
 
-  $LINK_URL    = "websrv_edit_attributes.php?host=".urlencode($_REQUEST["host"])."&view=".$_REQUEST["view"];
+  $LINK_URL    = "websrv_edit_attributes.php?host=".urlencode($_REQUEST["host"]);
+  $LINK_URL   .= "&server=".urlencode($_REQUEST["server"])."&view=".$_REQUEST["view"];
 // }}}
 
   // {{{ Figure out what virtual host to show
