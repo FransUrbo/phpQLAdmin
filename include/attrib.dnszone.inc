@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.25 2007-01-09 16:43:45 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.26 2007-02-02 15:48:14 turbo Exp $
 
 // {{{ attribute_translate_type(attrib)
 function attribute_translate_type($attrib) {
@@ -183,8 +183,10 @@ function attribute_save($action) {
 
 	$dn = urldecode($_REQUEST["rdn"]);
 
-	if($_REQUEST["type"])
+	if($_REQUEST["type"]) {
 	  $attrib = attribute_translate_type($_REQUEST["type"]);
+	  $type = $_REQUEST["type"];
+	}
 
 	if($_REQUEST["old_type"])
 	  $oldtype = attribute_translate_type($_REQUEST["old_type"]);
@@ -208,6 +210,24 @@ function attribute_save($action) {
 		$newvalue = $newvalue * 60 * 60 * 24 * 7;
 	  elseif($_REQUEST["time"] == "months")
 		$newvalue = $newvalue * 60 * 60 * 24 * 7 * 4;
+	}
+	// }}}
+
+	// {{{ Recreate a new DN for pql_bind9_update_serial() below.
+	$dn_parts = split(',', $dn);
+	for($i=1; $i < count($dn_parts); $i++) {
+	  $newdn .= $dn_parts[$i];
+	  if($dn_parts[$i+1])
+		$newdn .= ',';
+	}
+	$dn_soa = 'dNSTTL=3600+relativeDomainName=@,'.$newdn;
+
+	// Verify that this object realy exists
+	if(!pql_get_dn($_pql->ldap_linkid, $dn_soa, 'BASE')) {
+	  // It doesn't! Try without the 'dNSTTL=3600+' part...
+	  if(pql_get_dn($_pql->ldap_linkid, 'relativeDomainName=@,'.$newdn, 'BASE'))
+		// That worked better, use it...
+		$dn_soa = 'relativeDomainName=@,'.$newdn;
 	}
 	// }}}
 
@@ -275,10 +295,18 @@ function attribute_save($action) {
 
 		if((lc($attrib) == 'mxrecord') or (lc($attrib) == 'nsrecord'))
 		  $oldvalue = $_REQUEST["oldvalue"];
-		else
-		  $oldvalue = 1;
 
-		if(pql_modify_attribute($_pql->ldap_linkid, $dn, $attrib, $oldvalue, $newvalue)) {
+		// Get old value
+		$oldvalues = pql_get_attribute($_pql->ldap_linkid, $dn, $attrib);
+		if($oldvalues and !is_array($oldvalues))
+		  $oldvalues = array($oldvalues);
+
+		for($i=0; $i < count($oldvalues); $i++) {
+		  if($oldvalues[$i] == $_REQUEST["oldvalue"])
+			$oldvalues[$i] = $newvalue;
+		}
+
+		if(pql_modify_attribute($_pql->ldap_linkid, $dn, $attrib, '', $oldvalues)) {
 		  $success = 1;
 		  $msg = pql_complete_constant($LANG->_('Successfully changed %what%'),
 									   array('what' => $attrib));
@@ -320,51 +348,57 @@ function attribute_save($action) {
 
 	  case "del":
 		// {{{ del
-		if($_REQUEST["type"] and $_REQUEST["oldvalue"]) {
+		if($_REQUEST["type"] and ($_REQUEST["oldvalue"] or $_REQUEST[$type])) {
 			// Get old value
 			$oldvalues = pql_get_attribute($_pql->ldap_linkid, $dn, $attrib);
 			if($oldvalues and !is_array($oldvalues))
 			$oldvalues = array($oldvalues);
 
 			for($i=0; $i < count($oldvalues); $i++) {
-				// Filter out the value to delete
+			  // Filter out the value to delete
+			  if($_REQUEST["oldvalue"]) {
 				if($oldvalues[$i] != $_REQUEST["oldvalue"])
 				  $entry[$attrib][] = $oldvalues[$i];
+			  } elseif($_REQUEST[$type]) {
+				if($oldvalues[$i] != $_REQUEST[$type])
+				  $entry[$attrib][] = $oldvalues[$i];
+			  }
 			}
 
-			if(pql_modify_attribute($_pql->ldap_linkid, $dn, '', '', $entry)) {
-			  $success = 1;
-			  $msg = pql_complete_constant($LANG->_('Successfully removed %value%'),
-										   array('value' => $_REQUEST["oldvalue"]));
-			} else
-			  $msg = pql_complete_constant($LANG->_('Failed to remove %value%'),
-										   array('value' => $_REQUEST["oldvalue"])) . ": " . ldap_error($_pql->ldap_linkid);
+			if(is_array($entry)) {
+			  if(pql_modify_attribute($_pql->ldap_linkid, $dn, '', '', $entry)) {
+				$success = 1;
+				$msg = pql_complete_constant($LANG->_('Successfully removed %value%'),
+											 array('value' => $_REQUEST["oldvalue"]));
+			  } else
+				$msg = pql_complete_constant($LANG->_('Failed to remove %value%'),
+											 array('value' => $_REQUEST["oldvalue"])) . ": " . ldap_error($_pql->ldap_linkid);
+			} else {
+			  // No more oldvalues - remove the whole object
+
+			  // Extact the host part of the DN
+			  $host = split(',', $dn); $host = split('=', $host[0]); $host = $host[1];
+
+			  if(pql_write_del($_pql->ldap_linkid, $dn)) {
+				$success = 1;
+				$msg = pql_complete_constant($LANG->_('Successfully removed %value%'),
+											 array('value' => $host.'.'.$_REQUEST["dns_domain_name"]));
+			  } else
+				$msg = pql_complete_constant($LANG->_('Failed to remove %value%'),
+											 array('value' => $host.'.'.$_REQUEST["dns_domain_name"]))
+				  . ": " . ldap_error($_pql->ldap_linkid);
+			}
 		} else {
 		  // Delete a whole object
-		  if(pql_get_define("PQL_CONF_DEBUG_ME")) {
+		  if(pql_write_del($_pql->ldap_linkid, $dn))
 			$success = 1;
-			echo "Deleting a whole object (DEBUG): '$dn'<br>";
-		  } else {
-			if(pql_write_del($_pql->ldap_linkid, $dn))
-			  $success = 1;
-			else
-			  pql_format_error(1);
-		  }
+		  else
+			pql_format_error(1);
 
 		  // Extact the host part of the DN
 		  $host = split(',', $dn); $host = split('=', $host[0]); $host = $host[1];
 
 		  if($success) {
-			// {{{ Recreate a new DN for pql_bind9_update_serial() below.
-			$dn_parts = split(',', $dn);
-			for($i=1; $i < count($dn_parts); $i++) {
-			  $newdn .= $dn_parts[$i];
-			  if($dn_parts[$i+1])
-				$newdn .= ',';
-			}
-			$dn = 'dNSTTL=3600+relativeDomainName=@,'.$newdn;
-			// }}}
-
 			$msg = pql_complete_constant($LANG->_('Successfully removed %value%'),
 										 array('value' => $host.'.'.$_REQUEST["dns_domain_name"]));
 		  } else 
@@ -378,11 +412,11 @@ function attribute_save($action) {
 
 	if($success) {
 	  // Successfully modified the zone - update the serial number in the SOA
-	  if(!pql_bind9_update_serial($_pql->ldap_linkid, $dn))
+	  if(!pql_bind9_update_serial($_pql->ldap_linkid, $dn_soa))
 		die("failed to update ".$soa["dn"].":".pql_get_define("PQL_ATTR_SOARECORD")." with value $serial_new<br>");  
 	}
 
-	  attribute_forward($msg);
+	attribute_forward($msg);
 }
 
 // }}}
