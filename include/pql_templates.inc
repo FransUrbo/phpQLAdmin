@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_templates.inc,v 2.11 2006-12-16 12:02:15 turbo Exp $
+// $Id: pql_templates.inc,v 2.12 2007-02-02 15:59:10 turbo Exp $
 //
 
 // {{{ Generate the group template (hardcoded for the moment)
@@ -157,14 +157,17 @@ function pql_templates_attributes($linkid, $objectclasses) {
 // {{{ pql_templates_check_attribute(linkid, template, attribute, type)
 // Template can be either the template array OR a template name
 // Returns '1' if it's a MUST and '2' if it's a MAY.
+//
+// TODO (if/when '$type' is set):
+//	* If looking for a MUST, then return '1' if it's a MUST and '0' if it's a MAY
+//	* If looking for a MAY,  then return '1' if it's a MAY  and '0' if it's a MUST
 function pql_templates_check_attribute($linkid, $template, $attribute, $type = NULL) {
   // This is quite ugly and maybe a little 'fuzzy'. But we're always (?) called from within
   // (or between) forms where the root DN is specified in the request so it should be safe
   // to do it this way...
-  if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == $attribute) {
+  if(pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $_REQUEST["rootdn"]) == $attribute)
 	// We're referencing users with this attribute - require this!
 	return 1;
-  }
 
   if(is_array($template))
 	$template_def = $template;
@@ -179,7 +182,7 @@ function pql_templates_check_attribute($linkid, $template, $attribute, $type = N
 	for($i=0; $i < count($attribs['must']); $i++) {
 	  if(ereg(":", $attribs['must'][$i])){
 		list($real, $alias) = split(":", $attribs['must'][$i]);
-		if( (lc($real) == lc($attribute)) or (lc($alias) == lc($attribute)) )
+		if( (lc($real) == lc($attribute)) or (lc($alias) == lc($attribute)))
 		  return 1;
 	  }
 
@@ -192,7 +195,7 @@ function pql_templates_check_attribute($linkid, $template, $attribute, $type = N
 	for($i=0; $i < count($attribs['may']); $i++) {
 	  if(ereg(":", $attribs['may'][$i])){
 		list($real, $alias) = split(":", $attribs['may'][$i]);
-		if( (lc($real) == lc($attribute)) or (lc($alias) == lc($attribute)) )
+		if( (lc($real) == lc($attribute)) or (lc($alias) == lc($attribute)))
 		  return 2;
 	  }
 
