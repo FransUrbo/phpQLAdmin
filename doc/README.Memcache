@@ -1,0 +1,17 @@
+As of 2.3.6 (CVS Version 20070xyy), phpQLAdmin have support for using
+memcached (http://www.danga.com/memcached/) to speed up the interface.
+
+This require the memcache.so module which can be found at
+http://pecl.php.net/package/memcache
+
+On Debian GNU/Linux, install the following packages:
+  memcached, php4-dev and php4-pear (and c compiler etc).
+
+Then execute the following command:
+  pear install memcache
+
+
+if this module does not exist, it will use the more expensive and
+less effective 'global variable storage'. This is not guaranteed
+to even work (depending on your PHP configuration) so I recommend
+installing the memcached daemon and the PHP pear module.

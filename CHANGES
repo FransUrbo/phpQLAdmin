@@ -159,6 +159,8 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	    user templates' ACI is also updated. This so that a branch admin can READ templates (so he/she will be able
 	    to add users!).
 	  - Lowercase home/mail directory values when creating domain.
+	  - Support for global memory cache for speed increase. Uses memcached and memcache.so
+	    PECL module. See doc/README.Memcache.
 
 phpQLAdmin 2.3.5 Dec  2 2006
 	Bug fixes

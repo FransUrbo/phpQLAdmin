@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.68 2006-12-16 12:02:15 turbo Exp $
+// $Id: pql_search.inc,v 2.69 2007-02-09 12:18:19 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -56,37 +56,39 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
   $enable_cache = 0;
   if(($level == "BASE") and
 	 (!$operational or
-	  ((lc($dn) == lc($subschema_dn)) and
-	   ($level == 'BASE'))))
+	  ((lc($dn) == lc($subschema_dn)) and ($level == 'BASE'))) and
+	 @$_SESSION["USER_DN"])
 	// Check for/retreive cached object if:
 	// 1. level == BASE
 	// 2. not operational
 	// 3. looking (BASE) in 'cn=Subschema' (or whatever subschemaSubentry points to in base NULL).
+	// 4. We're logged in!
 	$enable_cache = 1;
   // }}}
   
-  // {{{ Search for object(s)
-  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE"))
-	echo "pql_search() - 1: Looking for '<b>$dn</b>': "; // DEBUG
+  // {{{ Try to find object in the cache
+  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE")) {
+	echo "<br>";
+	if($level == 'BASE')
+	  echo "pql_search(): Looking for '<b>$dn</b>': ";
+	else
+	  echo "pql_search(): Looking below '<b>$dn</b>':<br>";
+  }
 
-  if($enable_cache) {
-	if(pql_cache_get($dn, $object)) {
-	  // The object is cached -> return this (don't look for it in LDAP).
-//echo "<font size=\"+1\">Returning cached object '$dn'.</font><br>";
-	  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE")) {
-		echo "<font size=\"+1\">Returning cached object '$dn':</font>";
-		printr($object);
-	  }
-	  
-	  return($object);
-	} // not cached => fall through.
-  } // not BASE or is operational => fall through.
-//echo "<b>not cached, retreiving '$dn' (level=$level, operational=$operational)</b><br>";
+  if($enable_cache and pql_cache_get($dn, $object)) {
+	// The object is cached -> return this (don't look for it in LDAP).
+	if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE")) {
+	  echo "<font size=\"+1\">Returning cached object '$dn':</font>";
+	  printr($object);
+	}
+	
+	return($object);
+  } // not BASE, is operational or not cached => fall through.
 
   // It's either not a ONE level search or it doesn't exist in the
   // cache. Fetch it...
   if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and !file_exists($_SESSION["path"]."/.DEBUG_DISABLE_CACHE")) {
-	echo "<b>not</b> cached (or 'level != BASE' or operational). Searching with: <b>$func(linkid, $dn, $filter, ";
+	echo "Searching with: <b>$func(linkid, '$dn', '$filter', ";
 	if(is_array($op)) {
 	  echo "array(";
 	  for($i=0; $op[$i]; $i++) {
@@ -99,7 +101,9 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
 	  echo "$op";
 	echo ")</b><br>";
   }	
-  
+  // }}}
+
+  // {{{ Not found in cache, retreive from LDAP
   $sr = @$func($linkid, $dn, $filter, $op);
   if(!$sr)
 	// No such object - problem with the search string?
@@ -122,77 +126,56 @@ function pql_search($linkid, $dn, $filter, $level = "SUBTREE", $referrals = 0, $
 	// Get the DN of the object
 	$dn = ldap_get_dn($linkid, $object);
 
-	// To cache or not to cache (the object)...
-	if(file_exists($_SESSION["path"]."/.DEBUG_CACHE"))
-	  echo "pql_search() - 2: Looking for '<b>$dn</b>': ";
+	// Get all attributes in this object
+	$attributes = ldap_get_attributes($linkid, $object);
 	  
-	if($enable_cache and pql_cache_get($dn, $cached_object)) {
-	  // Object cached. Add it as-is to the resulting array.
-	  // Use cached object if:
-	  // 1. it IS cached in the first place
-	  // 2. not operational
-	  // 3. looking (BASE) in 'cn=Subschema' (or whatever subschemaSubentry points to in base NULL).
-	  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE"))
-		echo "<b>Object cached</b> - add it as-is to the resulting array.<br>";
-
-	  if($nr_entries > 1)
-		$entry[$entries] = $cached_object;
-	  else
-		$entry = $cached_object;
-	} else {
-	  // Not cached (or cache disabled). Get all attributes in this object
-	  if(file_exists($_SESSION["path"]."/.DEBUG_CACHE") and $operational)
-		echo "<b>Cache disabled</b> - get all attributes in this object.<br>";
-	  $attributes = ldap_get_attributes($linkid, $object);
+	// Go through all attributes in the object and retreive
+	// the value(s). Ignore the 'count' part and values with
+	// a number (remnants from the ldap_get_attributes() call)..
+	for($i=0; $i < $attributes['count']; $i++) {
+	  $key   = lc($attributes[$i]); // Save some typing
+	  $value = ldap_get_values_len($linkid, $object, $attributes[$i]);
 	  
-	  // Go through all attributes in the object and retreive
-	  // the value(s). Ignore the 'count' part and values with
-	  // a number (remnants from the ldap_get_attributes() call)..
-	  for($i=0; $i < $attributes['count']; $i++) {
-		$key   = lc($attributes[$i]); // Save some typing
-		$value = ldap_get_values_len($linkid, $object, $attributes[$i]);
-		
-		if(eregi('^[a-z]', $key) and ($key != 'count')) {
-		  if($key == pql_get_define("PQL_ATTR_PHOTO")) {
-			// A jpegPhoto. Save it in the resulting array as-is.
+	  if(eregi('^[a-z]', $key) and ($key != 'count')) {
+		if($key == pql_get_define("PQL_ATTR_PHOTO")) {
+		  // A jpegPhoto. Save it in the resulting array as-is.
+		  if($nr_entries > 1)
+			$entry[$entries][$key] = $value[0];
+		  else
+			$entry[$key] = $value[0];
+		} elseif(is_array($value) and !empty($value[1])) {
+		  // A multi value - such as 'mailAlternateAddress'
+		  // or 'objectClass' etc. Take ALL values, ignoring
+		  // any empty values that might exists.
+		  for($j=0; $j < $value["count"]; $j++) {
 			if($nr_entries > 1)
-			  $entry[$entries][$key] = $value[0];
+			  $entry[$entries][$key][$j] = pql_maybe_decode($value[$j]);
 			else
-			  $entry[$key] = $value[0];
-		  } elseif(is_array($value) and !empty($value[1])) {
-			// A multi value - such as 'mailAlternateAddress'
-			// or 'objectClass' etc. Take ALL values, ignoring
-			// any empty values that might exists.
-			for($j=0; $j < $value["count"]; $j++) {
-			  if($nr_entries > 1)
-				$entry[$entries][$key][$j] = pql_maybe_decode($value[$j]);
-			  else
-				$entry[$key][$j] = pql_maybe_decode($value[$j]);
-			}
-		  } else
-			// Single valued such as 'uid' and 'mail' etc...
-			// Just take the ONE value
-			if($nr_entries > 1)
-			  $entry[$entries][$key] = pql_maybe_decode($value[0]);
-			else
-			  $entry[$key] = pql_maybe_decode($value[0]);
-		}
+			  $entry[$key][$j] = pql_maybe_decode($value[$j]);
+		  }
+		} else
+		  // Single valued such as 'uid' and 'mail' etc...
+		  // Just take the ONE value
+		  if($nr_entries > 1)
+			$entry[$entries][$key] = pql_maybe_decode($value[0]);
+		  else
+			$entry[$key] = pql_maybe_decode($value[0]);
 	  }
-
-	  // Save the DN in the resulting array.
+	}
+	
+	// Save the DN in the resulting array.
+	if($nr_entries > 1)
+	  $entry[$entries]["dn"] = $dn;
+	else
+	  $entry["dn"] = $dn;
+	
+	// -------------
+	if($enable_cache and ($attributes['count'] > 1)) {
+	  // Cache this object
 	  if($nr_entries > 1)
-		$entry[$entries]["dn"] = $dn;
+		pql_cache_add($entry[$entries]);
 	  else
-		$entry["dn"] = $dn;
-	  
-	  // -------------
-	  if($enable_cache and ($attributes['count'] > 1)) {
-		// Cache this object
-		if($nr_entries > 1)
-		  pql_cache_add($entry[$entries]);
-		else
-		  pql_cache_add($entry);
-	  }
+		pql_cache_add($entry);
 	}
 
 	$entries++;
