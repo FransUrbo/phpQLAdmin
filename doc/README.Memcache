@@ -11,7 +11,50 @@ Then execute the following command:
   pear install memcache
 
 
-if this module does not exist, it will use the more expensive and
-less effective 'global variable storage'. This is not guaranteed
-to even work (depending on your PHP configuration) so I recommend
-installing the memcached daemon and the PHP pear module.
+If this module does not exist, it will use the more expensive and less
+effective 'global variable storage'. This is not guaranteed to even
+work (depending on your PHP configuration) so I recommend installing
+the memcached daemon and the PHP pear module.
+
+
+Just to give you some incentive to install the memcache module, here
+are some number from loading ONLY the left (users) frame.  Timing
+using a stopwatch:
+
+2035 objects (175 branches, 1847 users):
+=> 1 minute,  13 seconds (initial load of memcached)
+              44 seconds (subsequent loads of frame)
+
+3715 objects (315 branches, 3414 users):
+=> 2 minutes, 17 seconds (initial load of memcached)
+   1 minute,  23 seconds (subsequent loads of frame)
+   3 minutes, 59 seconds (using global variable storage)
+   4 minutes, 19 seconds (cache completley disabled)
+
+This is no way any exact, scientific numbers, but it will at least
+give you a clue... The number of objects is what memcached status will
+give after a load. As you can/might see, it doesn't exactly correspond
+with number of branches/users. That's because it also stores objects
+there (such as cn=monitor, the base DN, any ou=People etc).
+
+Roughly tree times as fast comparing no cache and already loaded
+memcached is quite a nice figure, so install the memcache module! :)
+
+3414 users is quite a large database, but in no way a HUGE database
+(I've seen users on mailinglists with MUCH bigger than that) and
+having to wait one and a half minute for a reload of the left frame is
+STILL _way_ to long! The only thing I can do to lower that is by ONLY
+retreive the branches. And then load only one specific branch when
+unfolding it...
+
+But I have no idea how to do that.... Help wanted.
+
+
+To fill the database with test data, I used the script tools/filldb.sh
+which creates three hundred branches with ten users in each branch. I
+already had some data in my database, I just filled it with three
+hundred more 'test' branches, that's why the numbers above is
+different.
+
+If you want more or you don't use ACI's, then just edit the script for
+your usage...
