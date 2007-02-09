@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.125 2007-01-08 03:34:51 turbo Exp $
+// $Id: left.php,v 2.126 2007-02-09 12:09:40 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -138,7 +138,8 @@ if($_SESSION["ADVANCED_MODE"]) {
   $links = $links + $new;
   
   if($_SESSION["ALLOW_BRANCH_CREATE"]) {
-	$new = array($LANG->_('Language translator')	=> 'tools/update_translations.php');
+	$new = array($LANG->_('Language translator')	=> 'tools/update_translations.php',
+				 $LANG->_('PHP Information dump')	=> 'tools/phpinfo.php');
 	$links = $links + $new;
   }
 }
