@@ -51,10 +51,11 @@ But I have no idea how to do that.... Help wanted.
 
 
 To fill the database with test data, I used the script tools/filldb.sh
-which creates three hundred branches with ten users in each branch. I
-already had some data in my database, I just filled it with three
-hundred more 'test' branches, that's why the numbers above is
-different.
+which creates three hundred branches with ten users in each branch
+(the first version actually had a bug that made it create 301 branches
+and 11 users in each branch :). I already had some data in my
+database, I just filled it with three hundred more 'test' branches,
+that's why the numbers above is different.
 
 If you want more or you don't use ACI's, then just edit the script for
 your usage...
