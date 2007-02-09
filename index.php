@@ -1,6 +1,6 @@
 <?php
 // logins to the system
-// $Id: index.php,v 2.53 2007-01-08 03:25:05 turbo Exp $
+// $Id: index.php,v 2.54 2007-02-09 12:12:42 turbo Exp $
 //
 // Start debuging
 // http://www.linuxjournal.com/article.php?sid=7213&mode=thread&order=0
@@ -196,7 +196,11 @@ if(!($whoarewe = pql_get_define("PQL_CONF_WHOAREWE")))
 
 		unset($_POST);
 		session_write_close();
-		pql_header("index.php?msg=$msg");
+
+		if(file_exists($_SESSION["path"]."/.DEBUG_CACHE"))
+		  die($msg);
+		else
+		  pql_header("index.php?msg=$msg");
 	}
 
 	// We made it, so set all the session variables.
