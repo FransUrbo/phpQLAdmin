@@ -3,7 +3,7 @@
 // pql.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql.inc,v 2.222 2007-01-08 03:36:24 turbo Exp $
+// $Id: pql.inc,v 2.223 2007-02-12 15:14:27 turbo Exp $
 //
 
 // ----------------------------
@@ -36,6 +36,8 @@ class pql {
 	var $ldap_error  = 0;					// error message incase of failiure
 	var $ldap_basedn = 0;					// array of base dns for future searches etc
 	
+	// ------------------------------------ PRIVATE
+
 	// {{{ string _find_base_option(attribute)
 	function _find_base_option($attrib) {
 	    $attrib = lc($attrib);
@@ -43,7 +45,6 @@ class pql {
 	    $sr = @ldap_read($this->ldap_linkid, NULL, '(objectClass=*)', array($attrib));
 	    if(! $sr) die("Can't find base dn - ".ldap_error($this->ldap_linkid));
 	    $entry = ldap_get_entries($this->ldap_linkid, $sr);
-//printr($entry); die();
 
 	    // Build an array of base dn's. It's possible to have multiple in a database
 	    for($i=0; $i < $entry["count"]; $i++) {
@@ -79,53 +80,55 @@ class pql {
 	}
 	// }}}
 
-	// {{{ string _find_basedn(void)
-	function _find_basedn() {
+	// {{{ string _find_context_rootdns(void)
+	function _find_context_rootdns() {
 	    // CMD: /usr/bin/ldapsearch -x -LLL -h localhost -s base -b '' objectclass=* namingContexts
 	    return $this->_find_base_option("namingContexts");
 	}
 	// }}}
 
-	// {{{ bool pql(hostname, binddn, bindpw, noconnect, dodie)
-	function pql($host, $binddn = "", $bindpw = "", $no_connect = false, $do_die = 1) {
-		// constructor, connect to ldap host
-		if($no_connect == true)
-		  return false;
+	// {{{ string _find_context_config(void)
+	function _find_context_config() {
+	  // CMD: /usr/bin/ldapsearch -x -LLL -h localhost -s base -b '' objectclass=* configContext
+	  $context = $this->_find_base_option("configContext");
 
-		// Open a connection to the host
-		$this->connect($host) or die("<b>could not connect to ldap server</b>");
-
-		// Setup connection (set options etc)
-		$this->set_options($this->ldap_linkid);
-
-		// It's possible to be called without binddn, but with a password.
-		// Can't use the password in that case...
-		if(!$binddn && $bindpw)
-		  unset($bindpw);
-
-		// Bind to the host
-		if(!$this->bind($binddn, $bindpw)) {
-			$this->ldap_error = "<b>Could not bind to ldap server</b>: ";
-			$this->ldap_error = $this->ldap_error . ldap_error($this->ldap_linkid) . "<p>" .
-			  "Host: $host, Port: $port<br>" .
-			  "Please <a href=\"index.php?logout=1\" target=\"_top\">relogin</a>.<p>" .
-			  "binddn='$binddn', bindpw='$bindpw'.";
-
-			if($do_die)
-			  die($this->ldap_error);
-
-			return false;
-		}
-
-		// Find the base DN(s)
-		$this->ldap_basedn = $this->_find_basedn();
-
-		return true;
+	  if($context[0])
+		return(urldecode($context[0]));
+	  else
+		return(false);
 	}
 	// }}}
 
-	// {{{ bool set_options() {
-	function set_options() {
+	// {{{ string _find_context_monitor(void)
+	function _find_context_monitor() {
+	  // CMD: /usr/bin/ldapsearch -x -LLL -h localhost -s base -b '' objectclass=* monitorContext
+	  global $_SESSION;
+	  $context = $this->_find_base_option("monitorContext");
+
+	  if($context[0] and !$_SESSION["MONITOR_BACKEND_ENABLED"])
+		$_SESSION["MONITOR_BACKEND_ENABLED"] = 1;
+
+	  if($context[0])
+		return(urldecode($context[0]));
+	  else
+		return(false);
+	}
+	// }}}
+
+	// {{{ string _find_context_subschema(void)
+	function _find_context_subschema() {
+	  // CMD: /usr/bin/ldapsearch -x -LLL -h localhost -s base -b '' objectclass=* subschemaSubentry
+	  $context = $this->_find_base_option("subschemaSubentry");
+
+	  if($context[0])
+		return(urldecode($context[0]));
+	  else
+		return(false);
+	}
+	// }}}
+
+	// {{{ bool _set_options() {
+	function _set_options() {
 		// LDAP_OPT_REFERRALS
 		//	Automatically follow referrals returned by LDAP server?
 		//	LDAP_OPT_OFF			 0
@@ -166,7 +169,55 @@ class pql {
 			return true;
 		}
 	}
+	// }}}
 
+	// ------------------------------------ PUBLIC
+
+	// {{{ bool pql(hostname, binddn, bindpw, noconnect, dodie)
+	function pql($host, $binddn = "", $bindpw = "", $no_connect = false, $do_die = 1) {
+		// constructor, connect to ldap host
+		if($no_connect == true)
+		  return false;
+
+		// Open a connection to the host
+		$this->connect($host) or die("<b>could not connect to ldap server</b>");
+
+		// Setup connection (set options etc)
+		$this->_set_options($this->ldap_linkid);
+
+		// It's possible to be called without binddn, but with a password.
+		// Can't use the password in that case...
+		if(!$binddn && $bindpw)
+		  unset($bindpw);
+
+		// Bind to the host
+		if(!$this->bind($binddn, $bindpw)) {
+			$this->ldap_error = "<b>Could not bind to ldap server</b>: ";
+			$this->ldap_error = $this->ldap_error . ldap_error($this->ldap_linkid) . "<p>" .
+			  "Host: $host, Port: $port<br>" .
+			  "Please <a href=\"index.php?logout=1\" target=\"_top\">relogin</a>.<p>" .
+			  "binddn='$binddn', bindpw='$bindpw'.";
+
+			if($do_die)
+			  die($this->ldap_error);
+
+			return false;
+		}
+
+		// Find the base DN(s)
+		$this->ldap_basedn = $this->_find_context_rootdns();
+
+		// Find the config context
+		$this->ldap_config = $this->_find_context_config();
+
+		// Find the monitor context
+		$this->ldap_monitor = $this->_find_context_monitor();
+
+		// Find the subschema context
+		$this->ldap_subschema = $this->_find_context_subschema();
+
+		return true;
+	}
 	// }}}
 
 	// {{{ bool connect(hostname)
@@ -215,6 +266,32 @@ class pql {
 		if($this->ldap_linkid != false){
   			return true;
 		}
+	}
+	// }}}
+
+	// {{{ string find_ldap_version(void)
+	function find_ldap_version() {
+	  $sr = ldap_read($this->ldap_linkid, $this->ldap_monitor, 'objectClass=*', array("description", "monitoredInfo"));
+	  if($sr) {
+		$entry = ldap_get_entries($this->ldap_linkid, $sr);
+
+		if(ereg('\$', $entry[0]['monitoredinfo'][0])) {
+		  // Older OpenLDAP...
+		  $tmp = split('\$', $entry[0]['monitoredinfo'][0]);
+		  $tmp = split(' \(', $tmp[1]);
+		  $version = $tmp[0];
+		} else {
+		  // Newer OpenLDAP (tested: 2.3.32)
+		  $tmp = split(' ', $entry[0]['monitoredinfo'][0]);
+		  $version = $tmp[2];
+		}
+
+		if($version)
+		  return($version);
+		else
+		  return(false);
+	  } else
+		return(false);
 	}
 	// }}}
 }
