@@ -2,9 +2,9 @@
 // phpQLAdmin Application Programming Interface (API)
 //
 // Retreive LDAP connection and database status
-// from the cn=Monitor backend.
+// from the cn=Monitor ($_pql->ldap_monitor) backend.
 //
-// $Id: pql_status.inc,v 1.7 2006-12-16 12:02:15 turbo Exp $
+// $Id: pql_status.inc,v 1.8 2007-02-12 15:40:28 turbo Exp $
 //
 
 // {{{ pql_get_status(linkid, dn, attribute)
@@ -33,8 +33,12 @@ function pql_get_status($linkid, $dn, $attrib) {
 		} else {
 			// Return an array - we got more than one value
 			foreach($attribs as $attrib) {
-			  for($i=0; $i < count($entry[0][$attrib])-1; $i++)
-				$values[$attrib] = $entry[0][$attrib][$i];
+			  for($i=0; $i < $entry[0][$attrib]['count']; $i++) {
+				if($entry[0][$attrib]['count'] > 1)
+				  $values[$attrib][] = $entry[0][$attrib][$i];
+				else
+				  $values[$attrib] = $entry[0][$attrib][$i];
+			  }
 			}
 			
 			if(!empty($values))
@@ -81,14 +85,15 @@ function pql_get_subentries($linkid, $basedn, $attrib = 0, $filter = 0) {
 }
 // }}}
 
-// {{{ pql_get_status_databases(linkid, suffix)
-function pql_get_status_databases($linkid, $suffix = 0) {
+// {{{ pql_get_status_databases(suffix)
+function pql_get_status_databases($suffix = 0) {
+	global $_pql;
 	$filter  = '(&(cn=Database*)(|(namingContexts=*)(monitorContext=*)))';
 	$attribs = array('monitoredInfo', 'namingContexts', 'monitorContext', 'seeAlso');
 
-	$sr1 = ldap_list($linkid, 'cn=Databases,cn=Monitor', $filter, $attribs);
+	$sr1 = ldap_list($_pql->ldap_linkid, 'cn=Databases,'.$_pql->ldap_monitor, $filter, $attribs);
 	if($sr1) {
-		$entry1 = ldap_get_entries($linkid, $sr1);
+		$entry1 = ldap_get_entries($_pql->ldap_linkid, $sr1);
 
 		for($i=0; $i < $entry1['count']; $i++) {
 			foreach($attribs as $attrib) {
@@ -96,10 +101,10 @@ function pql_get_status_databases($linkid, $suffix = 0) {
 				
 				if(($attrib == 'seealso') and $entry1[$i]['seealso'][0]) {
 					// Follow reference to backend information
-					$sr2 = ldap_read($linkid, pql_format_normalize_dn($entry1[$i]['seealso'][0]),
+					$sr2 = ldap_read($_pql->ldap_linkid, pql_format_normalize_dn($entry1[$i]['seealso'][0]),
 									 'objectClass=*', array('supportedControl'));
 					if($sr2) {
-						$entry2 = ldap_get_entries($linkid, $sr2);
+						$entry2 = ldap_get_entries($_pql->ldap_linkid, $sr2);
 						
 						for($j=0; $j < $entry2[0]['supportedcontrol']['count']; $j++) {
 							$values[$entry1[$i]['dn']]['supportedcontrol'][] = $entry2[0]['supportedcontrol'][$j];
