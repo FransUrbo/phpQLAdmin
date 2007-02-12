@@ -3,7 +3,7 @@
 // This file contains what I think is 'resonable defaults'.
 // Don't change here, change any values in the web interface!
 //
-// $Id: defaults.inc,v 2.36 2006-12-16 12:02:14 turbo Exp $
+// $Id: defaults.inc,v 2.37 2007-02-12 15:11:52 turbo Exp $
 
 // NOTE: Some of these defines isn't called with the (root/top)
 //       DN. They are (site) global variables, not per branch.
@@ -214,16 +214,6 @@ pql_set_define("PQL_CONF_WEBSRV_OC", array(strtolower('device'),
 // the full url where phpQLAdmin resides
 // ie: http://www.yourdomain.com/phpQLAdmin/
 pql_set_define("PQL_CONF_URI", "", false);
-
-// ----------------------------
-if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $dn) == "dc") {
-	$objectclass_domain = "domain dcOrganizationNameForm";
-} elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $dn) == "ou") {
-	$objectclass_domain = "organizationalUnit";
-} elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $dn) == "o") {
-	$objectclass_domain = "organization";
-}
-pql_set_define("PQL_CONF_OBJECTCLASS_DOMAIN", $objectclass_domain . " phpQLAdminBranch", false, $dn);
 
 /*
  * Local variables:
