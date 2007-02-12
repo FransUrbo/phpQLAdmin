@@ -19,43 +19,65 @@ the memcached daemon and the PHP pear module.
 
 Just to give you some incentive to install the memcache module, here
 are some number from loading ONLY the left (users) frame.  Timing
-using a stopwatch:
+using the .DEBUG_PROFILING file:
 
-2035 objects (175 branches, 1847 users):
-=> 1 minute,  13 seconds (initial load of memcached)
-              44 seconds (subsequent loads of frame)
+1647 objects (114 branches, 1214 users):
+=>   7 seconds (initial load of memcached)
+     4 seconds (subsequent loads of frame)
 
-3715 objects (315 branches, 3414 users):
-=> 2 minutes, 17 seconds (initial load of memcached)
-   1 minute,  23 seconds (subsequent loads of frame)
-   3 minutes, 59 seconds (using global variable storage)
-   4 minutes, 19 seconds (cache completley disabled)
+2847 objects (214 branches, 2314 users):
+=>  13 seconds (initial load of memcached)
+     8 seconds (subsequent loads of frame)
+
+4047 objects (314 branches, 3414 users):
+=>  20 seconds (initial load of memcached)
+    12 seconds (subsequent loads of frame)
+
+10047 objects (814 branches, 8914 users):
+=>  53 seconds (initial load of memcached)
+    35 seconds (subsequent loads of frame)
+
+NOTE: For this test to be able to finish, I had to increase the PHP
+      config option 'max_execution_time'. It took more than 30 seconds
+      (default value for this option), so it was terminated...
+
+24447 objects (2014 branches, 22114 users):
+=> 168 seconds (initial load of memcached)
+   118 seconds (subsequent loads of frame)
 
 This is no way any exact, scientific numbers, but it will at least
 give you a clue... The number of objects is what memcached status will
 give after a load. As you can/might see, it doesn't exactly correspond
-with number of branches/users. That's because it also stores objects
-there (such as cn=monitor, the base DN, any ou=People etc).
+with number of branches/users. That's because it also stores other
+objects there (such as cn=monitor, the base DN, any organization unit,
+all the define/configuration options etc).
 
-Roughly tree times as fast comparing no cache and already loaded
-memcached is quite a nice figure, so install the memcache module! :)
+Almost twice as fast comparing no cache and already loaded memcached
+is quite a nice figure, so install the memcache module! :) 8914 users
+is quite a large database, but in no way a HUGE database (I've seen
+users on mailinglists with MUCH bigger than that) and having to wait
+almost half a minute for a reload of the left frame is STILL quite
+annoying! 22 thousand users on the other hand is probably a very huge
+database, and waiting two minutes for a frame reload is definitely
+waiting to long!
 
-3414 users is quite a large database, but in no way a HUGE database
-(I've seen users on mailinglists with MUCH bigger than that) and
-having to wait one and a half minute for a reload of the left frame is
-STILL _way_ to long! The only thing I can do to lower that is by ONLY
-retreive the branches. And then load only one specific branch when
-unfolding it...
-
-But I have no idea how to do that.... Help wanted.
+The only thing I can do to lower that is by ONLY retreive the branches.
+And then load only one specific branch when unfolding it... But I have
+no idea how to do that.... Help wanted/appreciated!
 
 
 To fill the database with test data, I used the script tools/filldb.sh
-which creates three hundred branches with ten users in each branch
-(the first version actually had a bug that made it create 301 branches
-and 11 users in each branch :). I already had some data in my
-database, I just filled it with three hundred more 'test' branches,
-that's why the numbers above is different.
+which created hundred, two hundred, three hundred and then _eight_
+hundred branches with ten users in each branch. I already had some data
+in my database, I just filled it with some more 'test' branches, that's
+why the numbers above isn't exactly the same amount as number of branches
+and users the test script created.
 
 If you want more or you don't use ACI's, then just edit the script for
 your usage...
+
+
+These tests was made on my laptop, a Toshiba with a 1.7GHz P4 and 1Gb
+of memory. Not a very fast machine with todays standars, but still
+fast enough so that these numbers should be annoying. Also consider
+that apache, memcached and the browser all ran on localhost!
