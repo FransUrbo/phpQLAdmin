@@ -21,16 +21,23 @@ if(@$_REQUEST["action"] == "clear_session") {
     $_SESSION = array();
     session_destroy();
 
-    // Start a new session
+	// Create a new session
+	$_SESSION["initial_load"] = 1;
     require("./include/pql_session.inc");
-    $_SESSION["USER_HOST"]		= $user_host;
-    $_SESSION["USER_DN"]		= $user_dn;
-    $_SESSION["USER_PASS"]		= $user_pass;
+
+	// Reset the values...
+    $_SESSION["USER_HOST"]			= $user_host;
+    $_SESSION["USER_DN"]			= $user_dn;
+    $_SESSION["USER_PASS"]			= $user_pass;
     $_SESSION["USER_SEARCH_DN_CTR"]	= $user_ctrdn;
     $_SESSION["ADVANCED_MODE"]		= $advanced;
 
     $msg = "Successfully deleted the session variable. Will reload from scratch.";
     $link = "config_detail.php?view=$view&msg=".urlencode($msg);
+
+	// TODO: Try to flush memcached cache...
+	if(class_exists('Memcache') and function_exists("memcache_connect") and @$pql_cache)
+	  $pql_cache->flush();
 
     pql_header($link);
 }
