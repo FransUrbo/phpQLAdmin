@@ -1,7 +1,7 @@
 <?php
 // attribute plugin for
 // BIND9 DNS zone
-// $Id: attrib.dnszone.inc,v 2.26 2007-02-02 15:48:14 turbo Exp $
+// $Id: attrib.dnszone.inc,v 2.27 2007-02-12 15:10:30 turbo Exp $
 
 // {{{ attribute_translate_type(attrib)
 function attribute_translate_type($attrib) {
@@ -223,11 +223,12 @@ function attribute_save($action) {
 	$dn_soa = 'dNSTTL=3600+relativeDomainName=@,'.$newdn;
 
 	// Verify that this object realy exists
-	if(!pql_get_dn($_pql->ldap_linkid, $dn_soa, 'BASE')) {
+	if(!pql_get_dn($_pql->ldap_linkid, $dn_soa, 'objectClass=*', 'BASE')) {
 	  // It doesn't! Try without the 'dNSTTL=3600+' part...
-	  if(pql_get_dn($_pql->ldap_linkid, 'relativeDomainName=@,'.$newdn, 'BASE'))
+	  if(pql_get_dn($_pql->ldap_linkid, 'relativeDomainName=@,'.$newdn, 'objectClass=*', 'BASE')) {
 		// That worked better, use it...
 		$dn_soa = 'relativeDomainName=@,'.$newdn;
+	  }
 	}
 	// }}}
 
