@@ -3,7 +3,7 @@
 // pql_formating.inc
 // Output formating etc
 //
-// $Id: pql_formating.inc,v 2.66 2007-01-08 03:37:54 turbo Exp $
+// $Id: pql_formating.inc,v 2.67 2007-02-12 15:22:14 turbo Exp $
 
 // {{{ pql_create_ldif(func, dn, entry, extra_newline)
 // Create a LDIF object to print in case of error
@@ -199,14 +199,16 @@ function pql_format_error_span($msg) {
 }
 // }}}
 
-// {{{ pql_format_status_msg(msg)
-function pql_format_status_msg($msg){
+// {{{ pql_format_status_msg(msg, dir)
+// dir option is for tools/update_translations.php
+// which need 'img src="../images/info.png"'...
+function pql_format_status_msg($msg, $dir = NULL) {
 ?>
   <table cellpadding="3" cellspacing="0" border="0" width="100%">
     <th colspan="3" align="left">
       <tr class="message">
         <td colspan="2" class="message">
-          <img src="images/info.png" width="16" height="16" border="0" align="left">
+          <img src="<?=$dir?>images/info.png" width="16" height="16" border="0" align="left">
         </td>
 
         <td colspan="2" class="message">
@@ -245,8 +247,8 @@ function pql_format_table($echo = 1) {
 }
 // }}}
 
-// {{{ pql_format_table_single(linkid, text, url, array, attribute, class)
-function pql_format_table_single($linkid, $text, $url, $array, $attrib, $class = 0) {
+// {{{ pql_format_table_single(linkid, text, url, array, attribute, class, spaces)
+function pql_format_table_single($linkid, $text, $url, $array, $attrib, $class = 0, $spaces = 0) {
   // Stop PHP for nagging about undefined index.
   $url["mod"] = (isset($url["mod"])) ? $url["mod"] : 0;
   $url["del"] = (isset($url["del"])) ? $url["del"] : 0;
@@ -254,6 +256,12 @@ function pql_format_table_single($linkid, $text, $url, $array, $attrib, $class =
 
   if(!empty($array) and !is_array($array))
 	$array = array($array);
+
+  $space = "";
+  if($spaces > 0) {
+	for($i=0; $i < $spaces; $i++)
+	  $space .= "&nbsp;";
+  }
 
   if(is_array($array)) { 
 	$new_tr = 0;
@@ -284,7 +292,7 @@ function pql_format_table_single($linkid, $text, $url, $array, $attrib, $class =
 
 	  $new_tr = 1;
 ?>
-        <td class="<?=$class?>"><?=$username?></td>
+        <td class="<?=$class?>"><?=$space?><?=$username?></td>
         <td class="<?=$class?>" align="right">
           <?php if($url["mod"]) { ?><a href="<?=$url["mod"]?>&<?=$attrib?>=<?=urlencode($value)?>"><img src="images/edit.png" width="12" height="12" border="0" alt="<?=$text["mod"]?>"></a><?php } ?>
           <?php if($url["del"]) { ?><a href="<?=$url["del"]?>&<?=$attrib?>=<?=urlencode($value)?>"><img src="images/del.png"  width="12" height="12" border="0" alt="<?=$text["del"]?>"></a><?php } ?>
@@ -305,7 +313,7 @@ function pql_format_table_single($linkid, $text, $url, $array, $attrib, $class =
 <?php } else { ?>
         <td class="title"></td>
 <?php } ?>
-        <td colspan="2"><?php if($url["add"]) { ?><a href="<?=$url["add"]?>"><?=$text["add"]?></a><?php } ?></td>
+        <td colspan="2"><?=$space?><?php if($url["add"]) { ?><a href="<?=$url["add"]?>"><?=$text["add"]?></a><?php } ?></td>
       </tr>
 <?php
 }
