@@ -86,7 +86,7 @@ $tbl_txt = array('tit' => $LANG->_('Domain address'),
                  'add' => $LANG->_('Add domain address'),
                  'del' => $LANG->_('Delete domain address'),
 				 'mod' => $LANG->_('Modify domain address'));
-$tbl_url = array('add' => $url_tmp."&action=modify",
+$tbl_url = array('add' => $url_tmp."&action=add",
                  'del' => $url_tmp."&action=del",
 				 'mod' => $url_tmp."&action=modify");
 pql_format_table_single($_pql->ldap_linkid, $tbl_txt, $tbl_url,
@@ -104,7 +104,7 @@ $tbl_txt = array('tit' => $LANG->_('Name servers'),
                  'add' => $LANG->_('Add SOA value NS'),
                  'del' => $LANG->_('Delete NS'),
 				 'mod' => $LANG->_('Modify NS'));
-$tbl_url = array('add' => $url_tmp."&action=modify",
+$tbl_url = array('add' => $url_tmp."&action=add",
                  'del' => $url_tmp."&action=del",
 				 'mod' => $url_tmp."&action=modify");
 pql_format_table_single($_pql->ldap_linkid, $tbl_txt, $tbl_url,
@@ -122,7 +122,7 @@ $tbl_txt = array('tit' => $LANG->_('Mail exchangers'),
                  'add' => $LANG->_('Add SOA value MX'),
                  'del' => $LANG->_('Delete MX'),
 				 'mod' => $LANG->_('Modify MX'));
-$tbl_url = array('add' => $url_tmp."&action=modify",
+$tbl_url = array('add' => $url_tmp."&action=add",
                  'del' => $url_tmp."&action=del",
 				 'mod' => $url_tmp."&action=modify");
 pql_format_table_single($_pql->ldap_linkid, $tbl_txt, $tbl_url,
@@ -140,7 +140,7 @@ $tbl_txt = array('tit' => $LANG->_('AFS Database servers'),
                  'add' => $LANG->_('Add SOA value AFSDB'),
                  'del' => $LANG->_('Delete AFSDB'),
 				 'mod' => $LANG->_('Modify AFSDB'));
-$tbl_url = array('add' => $url_tmp."&action=modify",
+$tbl_url = array('add' => $url_tmp."&action=ADD",
                  'del' => $url_tmp."&action=del",
 				 'mod' => $url_tmp."&action=modify");
 pql_format_table_single($_pql->ldap_linkid, $tbl_txt, $tbl_url,
