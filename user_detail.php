@@ -1,6 +1,6 @@
 <?php
 // shows details of a user
-// $Id: user_detail.php,v 2.100 2006-12-16 12:02:09 turbo Exp $
+// $Id: user_detail.php,v 2.101 2007-02-12 15:53:55 turbo Exp $
 //
 // {{{ Setup session
 header("Expires: 0");
@@ -242,7 +242,7 @@ if(!empty($uid)) {
 			for($i=0; $i < count($tmp); $i++)
 			  $memberuid[] = $tmp[$i][pql_get_define("PQL_ATTR_CN")];
 		  } else {
-			for($i=0; $i < count($tmp); $i++)
+			for($i=0; $i < count($tmp[pql_get_define("PQL_ATTR_ADDITIONAL_GROUP")]); $i++)
 			  $memberuid[] = $tmp[pql_get_define("PQL_ATTR_ADDITIONAL_GROUP")][$i];
 		  }
 
