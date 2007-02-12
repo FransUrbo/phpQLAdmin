@@ -1,7 +1,7 @@
 <?php
 // Get all database suffixes
 $attribs = array('namingContexts', 'monitorContext', 'subschemaSubentry');
-$database_contexts = pql_get_status($_pql->ldap_linkid, "cn=Databases,cn=Monitor", $attribs);
+$database_contexts = pql_get_status($_pql->ldap_linkid, "cn=Databases,".$_pql->ldap_monitor, $attribs);
 ?>
   <span class="title1"><?=$LANG->_('LDAP Server Database Status')?></span>
 
@@ -19,8 +19,22 @@ $database_contexts = pql_get_status($_pql->ldap_linkid, "cn=Databases,cn=Monitor
 			$attrib = lc($attrib);
 
 			// Get all information about this database/suffix
-			$database_status = pql_get_status_databases($_pql->ldap_linkid, $database_contexts[$attrib]);
-			if(isset($database_status[$attrib])) {
+			if(is_array($database_contexts[$attrib])) {
+			  for($i=0; $database_contexts[$attrib][$i]; $i++) {
+				$database_status = pql_get_status_databases($database_contexts[$attrib][$i]);
+				if(isset($database_status['monitoredinfo'])) {
+?>
+      <tr>
+        <?php $class=pql_format_table(0); ?>
+        <td class="title"><?=$database_contexts[$attrib][$i]?></td>
+        <td class="<?=$class?>"><?=$database_status['monitoredinfo']?></td>
+      </tr>
+<?php
+				}
+			  }
+			} else {
+			  $database_status = pql_get_status_databases($database_contexts[$attrib]);
+			  if(isset($database_status[$attrib])) {
 ?>
       <tr>
         <?php $class=pql_format_table(0); ?>
@@ -28,13 +42,14 @@ $database_contexts = pql_get_status($_pql->ldap_linkid, "cn=Databases,cn=Monitor
         <td class="<?=$class?>"><?=$database_status['monitoredinfo']?></td>
       </tr>
 <?php
+			  }
 			}
 		}
 	  } else {
 		  // NOTE: Will this ever happen?! Don't think so, but...
 
 		  // Get all information about this database/suffix
-		  $database_status = pql_get_status_databases($_pql->ldap_linkid, $database_contexts);
+		  $database_status = pql_get_status_databases($database_contexts);
 		  foreach($database_status as $status) {
 ?>
       <tr>
