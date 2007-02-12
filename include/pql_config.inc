@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.92 2007-02-12 15:20:08 turbo Exp $
+// $Id: pql_config.inc,v 1.93 2007-02-12 16:55:06 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -53,7 +53,7 @@ function pql_set_define($define, $value, $case_insensitive = false, $dn = NULL) 
 	  $dn = pql_format_normalize_dn($dn);
 	  
 	  if(class_exists('Memcache') and function_exists("memcache_connect") and @$pql_cache) {
-		// Use the MemCache extension for this
+		// {{{ Use the MemCache extension for this
 		$val = $pql_cache->get($define.":".$dn); // To catch '0' or 'FALSE' value(s)
 		if($val == '') {
 		  // Nothing previosly known about this define. Set it to called
@@ -71,8 +71,9 @@ function pql_set_define($define, $value, $case_insensitive = false, $dn = NULL) 
 			 !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
 			echo "RPL: config[$define][$dn] = '$value'<br>\n"; // DEBUG
 		}
-	  } elseif(!isset($config[$define][$dn])) {
-		// Create a global two dimensional array with the config values
+		// }}}
+	  } elseif($config[$define][$dn] != $value) {
+		// {{{ Create a global two dimensional array with the config values
 		//	Dimension 1: define name
 		//	Dimension 2: root DN
 		$config[$define][$dn] = $value;
@@ -80,12 +81,13 @@ function pql_set_define($define, $value, $case_insensitive = false, $dn = NULL) 
 		if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $define) and
 		   !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
 		  echo "SET: config[$define][$dn] = '$value'<br>\n"; // DEBUG
+		// }}}
 	  }
 	  // }}}
 	} else {
-	  // Called with global define
+	  // {{{ Called with global define
 	  if(class_exists('Memcache') and function_exists("memcache_connect") and @$pql_cache) {
-		// Use the MemCache extension for this
+		// {{{ Use the MemCache extension for this
 		$val = $pql_cache->get($define);
 		if($val == '') {
 		  // Nothing previosly known about this define...
@@ -106,14 +108,16 @@ function pql_set_define($define, $value, $case_insensitive = false, $dn = NULL) 
 			 !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
 			echo "RPL: config[$define] = '$value'<br>\n"; // DEBUG
 		}
-	  } elseif(!isset($config[$define]) or ($define == 'PQL_CONF_DEBUG_ME')) {
-		// Create a site global array with the config values
+		// }}}
+	  } elseif(($config[$define] != $value) or ($define == 'PQL_CONF_DEBUG_ME')) {
+		// {{{ Create a site global array with the config values
 		// This variable type is only one dimensional (not DN specific)
 		$config[$define] = $value;
 
 		if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $define) and
 		   !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
 		  echo "SET: config[$define] = '$value'<br>\n"; // DEBUG
+		// }}}
 	  }
 	  // }}}
 	}
@@ -297,6 +301,18 @@ foreach($_pql->ldap_basedn as $dn)  {
 
 	unset($filter); unset($tmp);
   }
+
+  // ----------------------------
+  if(!pql_get_define("PQL_CONF_OBJECTCLASS_DOMAIN", $dn)) {
+	if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $dn) == "dc") {
+	  $objectclass_domain = "domain dcOrganizationNameForm";
+	} elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $dn) == "ou") {
+	  $objectclass_domain = "organizationalUnit";
+	} elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $dn) == "o") {
+	  $objectclass_domain = "organization";
+	}
+	pql_set_define("PQL_CONF_OBJECTCLASS_DOMAIN", $objectclass_domain . " phpQLAdminBranch", false, $dn);
+  }
 }
 unset($dn);
 
@@ -362,18 +378,6 @@ if(@$_SESSION["ACI_SUPPORT_ENABLED"]) {
 
 if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
   pql_set_define("PQL_CONF_DEBUG_ME", true);
-}
-
-// ----------------------------
-if(!pql_get_define("PQL_CONF_OBJECTCLASS_DOMAIN", $dn)) {
-  if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $dn) == "dc") {
-	$objectclass_domain = "domain dcOrganizationNameForm";
-  } elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $dn) == "ou") {
-	$objectclass_domain = "organizationalUnit";
-  } elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $dn) == "o") {
-	$objectclass_domain = "organization";
-  }
-  pql_set_define("PQL_CONF_OBJECTCLASS_DOMAIN", $objectclass_domain . " phpQLAdminBranch", false, $dn);
 }
 
 // Remove some variables so we don't clutter the global variable name space!
