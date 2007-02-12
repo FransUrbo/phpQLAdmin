@@ -2,7 +2,7 @@
 // ----------------------------
 // pql_update_translations.php
 //
-// $Id: update_translations.php,v 2.11 2006-12-16 12:03:17 turbo Exp $
+// $Id: update_translations.php,v 2.12 2007-02-12 15:51:13 turbo Exp $
 //
 
 // ----------------------------
@@ -19,9 +19,19 @@ require("../include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
 require($_SESSION["path"]."/include/pql_translations.inc");
 
-$outputFile = "../translations/lang.new.inc";
-	
-$user_lang = isset($_POST['user_lang']) ? $_POST['user_lang'] : '';
+if(isset($_POST["user_lang"])) {
+  $user_lang = $_POST["user_lang"];
+} elseif(isset($_REQUEST["user_lang"])) {
+  $user_lang = $_REQUEST["user_lang"];
+
+} elseif(isset($_POST["lang"])) {
+  $user_lang = $_POST["lang"];
+} elseif(isset($_REQUEST["lang"])) {
+  $user_lang = $_REQUEST["lang"];
+
+} else {
+  $user_lang = 'en';
+}
 
 // Set the OS type, only Linux and Windows known to work for sure
 $os_name = pql_get_os_name();
@@ -34,57 +44,70 @@ $baseDir = $_SESSION["path"]; // were we start searching for strings
 ?>
 <html>
   <head>
-    <link rel="stylesheet" href="tools/normal.css" type="text/css">
+    <link rel="stylesheet" href="../tools/normal.css" type="text/css">
   </head>
 
   <body>
-<?php if (empty($_REQUEST['total_keys'])) { ?>
+<?php
+// {{{ Print status message, if one is available
+if(isset($_GET["msg"])) {
+  pql_format_status_msg($_GET["msg"], "../");
+}
+// }}}
+
+if (empty($_REQUEST['total_keys'])) { ?>
   Before saving the translation, make sure the directory 'translations'
   exists in the phpQLAdmin root and that it's writable by the webserver.
   <p>  
   <form action="<?=$_SERVER["PHP_SELF"]?>" method="POST">
     <input type="hidden" name="mode" value="select">
-<?php
-	if($user_lang)
-	  // read from the form
-	  $lang = $user_lang;
-	else
-	  $lang = $LANG->_choosen;
-?>
-    <select class="field_listbox" name="user_lang" size="1">
+    <select class="field_listbox" name="user_lang" size="1" onchange="this.form.submit()">
 <?php $supp = $LANG->get_supported();
 	  while(list($k, $v) = each($supp)) {
 ?>
-      <option value="<?=$k?>"><?=$v?></option>
+      <option value="<?=$k?>"<?php if($user_lang == $k) { echo " SELECTED"; } ?>><?=$v?></option>
 <?php  } ?>
+      <option value="new"<?php if($user_lang == 'new') { echo " SELECTED"; } ?>><?=$LANG->_('New')?></option>
     </select>
 <?php
-	// Now we should load up the language file select by the user or by browser detection
-	$fp = @fopen($_SESSION["path"]."/translations/lang.$lang.inc", "r");
-	if(!$fp) {
-	  die("<p>Can't open language file 'translations/lang.$lang.inc' for read. Does it exists?");
-	}
-	require($_SESSION["path"]."/translations/lang.$lang.inc");
-	$buffer = fgets($fp, 4096); // chop off the php start part
-	$read = true;
-	$file_text = "";
-	while($read) {
-		$buffer = fgets($fp, 4096);
-		if(preg_match("/the alphabet of the language/", $buffer, $matches))
-		  $read=false;
-		else
-		  $file_text .= $buffer;
-	}
-	fclose ($fp);
+if($user_lang != 'new') {
+  // Now we should load up the language file select by the user or by browser detection
+  $fp = @fopen($_SESSION["path"]."/translations/lang.$user_lang.inc", "r");
+  if(!$fp)
+    die("<p>Can't open language file 'translations/lang.$user_lang.inc' for read. Does it exists?");
+  require($_SESSION["path"]."/translations/lang.$user_lang.inc");
+  $buffer = fgets($fp, 4096); // chop off the php start part
+  $read = true;
+  $file_text = "";
+  while($read) {
+    $buffer = fgets($fp, 4096);
+    if(preg_match("/language = array/", $buffer, $matches))
+      $read=false;
+    else
+      $file_text .= $buffer;
+  }
+  fclose ($fp);
 ?>
-  <input type=submit value="Load File">
+  <input type="submit" value="Load File">
 </form>
+<?php
+} else {
+?>
+  <?=$LANG->_('Language name')?>:
+  <input type="text" name="user_lang">
+  <br>
+<?php
+}
+?>
 
 <form action="<?=$_SERVER["PHP_SELF"]?>" method=POST>
   <input type="hidden" name="mode" value="save">
-  <input type="hidden" name="lang" value="<?php echo $lang;?>">
+  <input type="hidden" name="lang" value="<?=$user_lang?>">
+
   <textarea rows=10 cols=80 name="toptext">
-<?php echo $file_text;?>
+<?php if($user_lang == 'new') { ?>
+// lang.%LANG%.inc
+
 // This is the alphabet of the language. Uppercased characters only at
 // this time. PHP should be able to figure out the lowercased eqvivalent.
 $alphabet = array("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K",
@@ -93,6 +116,10 @@ $alphabet = array("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K",
 
 // If you want HTML tags, you can have that in the translation string
 // (ie, the value AFTER the '=>' character).
+<?php } else {
+	echo $file_text;
+      }
+?>
 </textarea>
 
   <p>
@@ -137,7 +164,7 @@ $alphabet = array("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K",
   <font color=red><u>\b</u></font> will be replaced by a &lt;b&gt;  (beginning of a HTML bold)<br>
   <font color=red><u>\B</u></font> will be replaced by a &lt;/b&gt; (end of a HTML bold)<br><br>
 
-  All entries between % will be translated within the code (replaced with a value). Make sure they are kept.
+  All entries between % will be translated within the code (replaced with a value). Make sure they are kept as-is!
   <p>
 
   <table border=1 cellpadding=2 cellspacing=2>
@@ -184,21 +211,21 @@ $alphabet = array("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K",
 </form>
 <?php } else { 
 	// they have submitted the form	
-	$lang	 = $_REQUEST['lang'];
 	$header  = "<?php\n";
-	$header .= $_REQUEST['toptext']."\n";
+	$header .= preg_replace("/%LANG%/", $user_lang, $_REQUEST['toptext'])."\n";
 	$header  = stripslashes($header);
 
 	// Remove any M$ newlines...
-	$header  = eregi_replace("
-", "", $header);
+	$header  = eregi_replace("", "", $header);
 
 	$total   = $_REQUEST['total_keys'];
 
 	// Prevent refresh from aborting file
 	ignore_user_abort(true);
 
-	$fp      = fopen($outputFile, "w");
+	$outputFile = "../translations/lang.$user_lang.inc";
+
+	$fp = fopen($outputFile, "w");
 	if(!$fp) {
 	  ignore_user_abort(false);
 	  die("<p>Can't open language file '$outputFile' for write. Does the directory exists and is writable by the webserver?");
@@ -236,10 +263,14 @@ $alphabet = array("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K",
 
 	fclose($fp);
 
-	echo "Translation saved as new file: $outputFile<BR>";
-
 	// Put things back to normal
 	ignore_user_abort(false);
+
+	$outputFile = preg_replace("/^\.\.\//", "", $outputFile); // Just for prettyer status msg...
+	$msg = pql_complete_constant($LANG->_("Translation saved in %file%"),
+				     array("file" => $outputFile));
+	$url = "tools/update_translations.php?msg=".urlencode($msg)."&user_lang=$user_lang";
+	pql_header($url);
 }
 
 /*
