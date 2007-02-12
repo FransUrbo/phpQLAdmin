@@ -3,7 +3,7 @@
 // pql_lang.inc
 // phpQLAdmin Language Application Programming Interface (API)
 //
-// $Id: pql_lang.inc,v 2.15 2006-12-16 12:02:15 turbo Exp $
+// $Id: pql_lang.inc,v 2.16 2007-02-12 15:23:26 turbo Exp $
 //
 
 // ----------------------------
@@ -110,7 +110,25 @@ class pql_lang {
 	
 	// {{{ !get_supported()
 	function get_supported() {
-		return $this->_supported;
+	  if(!(($directory = @opendir("./translations")) !=0)) {
+		if(!(($directory = @opendir("../translations")) !=0)) {
+		  echo "could not open the translations directory.<br>";
+		  return false;
+		}
+	  }
+	  
+	  unset($this->_supported);
+	  for(;GetType($entry = readdir($directory)) == "string";) {
+		if(($entry == ".") or ($entry == "..") or ($entry == "CVS"))
+		  continue;
+		
+		$entry = eregi_replace("lang\.", "", $entry);
+		$entry = eregi_replace("\.inc", "", $entry);
+		
+		$this->_supported[$entry] = $entry;
+	  }
+	  
+	  return $this->_supported;
 	}
 	// }}}
 
