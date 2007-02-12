@@ -3,7 +3,7 @@
 // pql_search.inc
 // phpQLAdmin Application Programming Interface (API)
 //
-// $Id: pql_search.inc,v 2.69 2007-02-09 12:18:19 turbo Exp $
+// $Id: pql_search.inc,v 2.70 2007-02-12 15:32:09 turbo Exp $
 //
 
 // ------------------------------------------------
@@ -1117,7 +1117,7 @@ function pql_get_rootdn($dn, $function = '') {
 	  // We have ONE more shot in finding the root DN. Look in the
 	  // 'cn=Databases,cn=Monitor:namingContexts' attribute(s).
 	  require($_SESSION["path"]."/include/pql_status.inc");
-	  $tmp = pql_get_status($_pql->ldap_linkid, "cn=Databases,cn=Monitor", 'namingContexts');
+	  $tmp = pql_get_status($_pql->ldap_linkid, "cn=Databases,".$_pql->ldap_monitor, 'namingContexts');
 	  if(is_array($tmp)) {
 		// We got more than one namingContexts (i.e. an array). Go through each value...
 		foreach($tmp as $base) {

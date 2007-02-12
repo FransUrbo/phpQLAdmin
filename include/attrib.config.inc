@@ -1,10 +1,10 @@
 <?php
 // attribute plugin for phpQLAdmin configuration
-// $Id: attrib.config.inc,v 1.55 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.config.inc,v 1.56 2007-02-12 15:32:09 turbo Exp $
 
 // {{{ attribute_output_java_window(void)
 function attribute_output_java_window() {
-  global $LANG;
+  global $LANG, $_pql;
 ?>
   <script type="text/javascript" language="javascript"><!--
     function errorWindow() {
@@ -19,15 +19,15 @@ function attribute_output_java_window() {
 	  myWindow.document.write("You should retreive something like this back:<p>");
 
 	  myWindow.document.write("<pre>");
-	  myWindow.document.write("dn:\nsubschemaSubentry: cn=Subschema\n");
+	  myWindow.document.write("dn:\nsubschemaSubentry: ".$_pql->ldap_subschema."\n");
 	  myWindow.document.write("</pre>");
 
 	  myWindow.document.write("If this succeeds, then try the following command:");
 	  myWindow.document.write("<pre>");
-	  myWindow.document.write("/usr/bin/ldapsearch -x -LLL -h localhost -s base -b 'cn=Subschema' 'objectClass=*' objectclasses");
+	  myWindow.document.write("/usr/bin/ldapsearch -x -LLL -h localhost -s base -b '".$_pql->ldap_subschema."' 'objectClass=*' objectclasses");
 	  myWindow.document.write("</pre>");
 	  myWindow.document.write("This should return every objectclass and what attributes wanted/required for those. ");
-	  myWindow.document.write("I that didn't work, debug your LDAP server possibly granting access to READ below the DN cn=Subschema");
+	  myWindow.document.write("I that didn't work, debug your LDAP server possibly granting access to READ below the DN ".$_pql->ldap_subschema);
 
       myWindow.document.bgColor="white";
       myWindow.document.close();

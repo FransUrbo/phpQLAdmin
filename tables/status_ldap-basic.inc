@@ -1,9 +1,6 @@
 <?php
 // Get the LDAP server version
-$tmp = pql_get_status($_pql->ldap_linkid, "cn=Monitor", array("description", "monitoredInfo"));
-$tmp = split('\$', $tmp['monitoredinfo']);
-$tmp = split(' \(', $tmp[1]);
-$version = $tmp[0];
+$version = $_pql->find_ldap_version();
 
 // Calculate the uptime
 if($timestamp_current and $timestamp_start) {
@@ -44,7 +41,7 @@ if($timestamp_current and $timestamp_start) {
 
 <?php
 // Get LDAP listeners this server have opened
-$listeners = pql_get_subentries($_pql->ldap_linkid, "cn=Listeners,cn=Monitor", "labeledURI", "cn=Listener*");
+$listeners = pql_get_subentries($_pql->ldap_linkid, "cn=Listeners,".$_pql->ldap_monitor, "labeledURI", "cn=Listener*");
 if(is_array($listeners)) {
 ?>
   <br>
@@ -69,7 +66,7 @@ if(is_array($listeners)) {
 
 <?php
 // Get LDAP overlays this server have opened/started.
-$overlays = pql_get_subentries($_pql->ldap_linkid, "cn=Overlay,cn=Monitor", "monitoredInfo", "cn=Overlay*");
+$overlays = pql_get_subentries($_pql->ldap_linkid, "cn=Overlay,".$_pql->ldap_monitor, "monitoredInfo", "cn=Overlay*");
 if(is_array($overlays)) {
 ?>
   <br>
