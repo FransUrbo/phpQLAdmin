@@ -1,8 +1,22 @@
 <?php
 // Manage PHP sessions per phpQLAdmin instance
-// $Id: pql_session.inc,v 1.8 2006-12-16 12:02:15 turbo Exp $
+// $Id: pql_session.inc,v 1.9 2007-02-12 15:34:35 turbo Exp $
 
 //echo "_SERVER: "; echo "<pre>"; print_r($_SERVER); echo "</pre>";
+//echo "_SESSION: "; print_r($_SESSION);
+
+// {{{ Check if the user session have expired
+if(is_array($_SESSION) and !@$_SESSION["initial_load"] and
+   ((!@$_SESSION["USER_DN"] and !@$_SESSION["USER_ID"]) or !@$_SESSION["USER_PASS"]))
+{
+  $msg = 'Session expired...';
+  if(function_exists("http_redirect"))
+	http_redirect("index.php?msg=" . urlencode($msg) . "&logout=1&reason=sessexpr");
+  else
+	header("Location: index.php?msg=" . urlencode($msg) . "&logout=1&reason=sessexpr");
+  die();
+}
+// }}}
 
 // {{{ Get the path in the filesystem
 $path = preg_replace("@/include/pql_session.inc@", '', __FILE__);
