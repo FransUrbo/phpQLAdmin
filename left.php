@@ -1,6 +1,6 @@
 <?php
 // navigation bar
-// $Id: left.php,v 2.126 2007-02-09 12:09:40 turbo Exp $
+// $Id: left.php,v 2.127 2007-02-12 15:03:21 turbo Exp $
 
 // {{{ Setup session etc
 require("./include/pql_session.inc");
@@ -354,9 +354,15 @@ if(!isset($domains) or !is_array($domains)) {
 } // end if(is_array($domains))
 // }}}
 
-if(pql_get_define("PQL_CONF_DEBUG_ME") and file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
+if(file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
   $now = pql_format_return_unixtime();
   echo "Now: <b>$now</b><br>";
+
+  $time = $now - $start;
+  echo "Time: '$time second";
+  if($time > 1)
+	echo "s";
+  echo "'<br>";
 }
 
 require("./left-trailer.html");
