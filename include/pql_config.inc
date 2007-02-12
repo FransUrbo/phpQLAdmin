@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.91 2006-12-16 12:02:15 turbo Exp $
+// $Id: pql_config.inc,v 1.92 2007-02-12 15:20:08 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -16,8 +16,11 @@ require($_SESSION["path"]."/include/pql_units.inc");			// Sub branch API
 // }}}
 
 // {{{ Start profiling - what time is it now?
-if(pql_get_define("PQL_CONF_DEBUG_ME") and file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
-  $now = pql_format_return_unixtime(); echo "Now: <b>$now</b><br>";
+if(file_exists($_SESSION["path"]."/.DEBUG_PROFILING")) {
+  $now = pql_format_return_unixtime();
+  if(!eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
+	echo "Now: <b>$now</b><br>";
+  $start = $now;
 }
 // }}}
 
@@ -27,66 +30,129 @@ if(pql_get_define("PQL_CONF_DEBUG_ME") and file_exists($_SESSION["path"]."/.DEBU
 //	error_reporting=E_ALL
 // in PHP...
 function pql_set_define($define, $value, $case_insensitive = false, $dn = NULL) {
-	global $config;
+	global $config, $pql_cache;
+	if(empty($value))
+	  return;
 
 	pql_format_bool($value);
 
-	if(! defined($define)) {
-	  if(is_array($value)) {
-		$tmp = '';
-
-		for($i=0; $i < count($value); $i++) {
-		  $tmp .= $value[$i];
-		  if(!empty($value[$i+1]))
-			$tmp .= ',';
-		}
-
-		$value = $tmp;
+	if(is_array($value)) {
+	  $tmp = '';
+	  
+	  for($i=0; $i < count($value); $i++) {
+		$tmp .= $value[$i];
+		if(!empty($value[$i+1]))
+		  $tmp .= ',';
 	  }
-
-	  define($define, $value, $case_insensitive);
+	  
+	  $value = $tmp;
 	}
 
 	if($dn) {
+	  // {{{ Called with a DN
+	  $dn = pql_format_normalize_dn($dn);
+	  
+	  if(class_exists('Memcache') and function_exists("memcache_connect") and @$pql_cache) {
+		// Use the MemCache extension for this
+		$val = $pql_cache->get($define.":".$dn); // To catch '0' or 'FALSE' value(s)
+		if($val == '') {
+		  // Nothing previosly known about this define. Set it to called
+		  // value...
+		  $pql_cache->set($define.":".$dn, $value); // , 1, (60*10));
+		  
+		  if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $define) and
+			 !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
+			echo "SET: config[$define][$dn] = '$value'<br>\n"; // DEBUG
+		} elseif(($val != $value) and !@$_SESSION["loading_resonable_defaults"]) {
+		  // Previous value and the values differ - Replace old with new...
+		  $pql_cache->replace($define.":".$dn, $value); //, 1, (60*10));
+		  
+		  if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $define) and
+			 !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
+			echo "RPL: config[$define][$dn] = '$value'<br>\n"; // DEBUG
+		}
+	  } elseif(!isset($config[$define][$dn])) {
 		// Create a global two dimensional array with the config values
 		//	Dimension 1: define name
 		//	Dimension 2: root DN
-		$dn = pql_format_normalize_dn($dn);
-
-		if(!isset($config[$define][$dn])) {
-			$config[$define][$dn] = $value;
-
-			if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $define))
-			  echo "config[$define][$dn] = $value<br>\n"; // DEBUG
-		}
+		$config[$define][$dn] = $value;
+		
+		if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $define) and
+		   !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
+		  echo "SET: config[$define][$dn] = '$value'<br>\n"; // DEBUG
+	  }
+	  // }}}
 	} else {
+	  // Called with global define
+	  if(class_exists('Memcache') and function_exists("memcache_connect") and @$pql_cache) {
+		// Use the MemCache extension for this
+		$val = $pql_cache->get($define);
+		if($val == '') {
+		  // Nothing previosly known about this define...
+		  $pql_cache->set($define, $value); //, 1, (60*10));
+			
+		  if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $define) and
+			 !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
+			echo "SET: config[$define] = '$value'<br>\n"; // DEBUG
+		} elseif(($val != $value) and ($define == 'PQL_CONF_DEBUG_ME') and
+				 !@$_SESSION["loading_resonable_defaults"])
+		{
+		  // Previous value and we want to change the PQL_CONF_DEBUG_ME
+		  // option (which differ from the value in the cache) - replace
+		  // old value with new...
+		  $pql_cache->replace($define, $value); //, 1, (60*10));
+
+		  if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $define) and
+			 !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
+			echo "RPL: config[$define] = '$value'<br>\n"; // DEBUG
+		}
+	  } elseif(!isset($config[$define]) or ($define == 'PQL_CONF_DEBUG_ME')) {
 		// Create a site global array with the config values
 		// This variable type is only one dimensional (not DN specific)
-		if(!isset($config[$define]) or ($define == 'PQL_CONF_DEBUG_ME')) {
-		  $config[$define] = $value;
-		  
-		  if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $define))
-			echo "config[$define] = '$value'<br>\n"; // DEBUG
-		}
+		$config[$define] = $value;
+
+		if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $define) and
+		   !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
+		  echo "SET: config[$define] = '$value'<br>\n"; // DEBUG
+	  }
+	  // }}}
 	}
 }
 // }}}
 
 // {{{ pql_get_define(define, dn)
 function pql_get_define($define, $dn = NULL) {
-	global $config;
+	global $config, $pql_cache;
 
 	if($dn) {
-		$dn = pql_format_normalize_dn($dn);
-		if(!empty($config[$define][$dn]))
-		  $value = $config[$define][$dn];
-		else
-		  $value = 0;
-	} elseif(!empty($config[$define])) {
-	  if(!is_array($config[$define]))
-		$value = $config[$define];
-	} else
-	  $value = NULL;
+	  $dn = pql_format_normalize_dn($dn);
+	  
+	  if(class_exists('Memcache') and function_exists("memcache_connect") and @$pql_cache)
+		// Use the MemCache extension for this
+		$value = $pql_cache->get($define.":".$dn);
+	  elseif(!empty($config[$define][$dn]))
+		$value = $config[$define][$dn];
+	  else
+		$value = 0;
+
+	  if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $define) and
+		 !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
+		echo "GET: config[$define][$dn] = '$value'<br>\n"; // DEBUG
+	} else {
+	  // Not called with a DN
+	  if(class_exists('Memcache') and function_exists("memcache_connect") and @$pql_cache)
+		// Get the value from MemCache
+		$value = $pql_cache->get($define);
+	  elseif(!empty($config[$define])) {
+		if(!is_array($config[$define]))
+		  $value = $config[$define];
+	  } else
+		$value = NULL;
+
+	  if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $define) and
+		 !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
+		echo "GET: config[$define] = '$value'<br>\n"; // DEBUG
+	}
 	  
 	return($value);
 }
@@ -95,7 +161,7 @@ function pql_get_define($define, $dn = NULL) {
 
 // ----------------------------
 // 1. Load site specific configuration
-if(file_exists("./.DEBUG_DEFINES")) {
+if(file_exists("./.DEBUG_DEFINES") and !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"])) {
   echo "<b>*</b> Loading base config<br>\n";
 }
 require($_SESSION["path"]."/include/config.inc");
@@ -137,15 +203,24 @@ $_SESSION["SINGLE_USER"]			= (!empty($_SESSION["SINGLE_USER"]))			? $_SESSION["S
 foreach($_pql->ldap_basedn as $dn)  {
   $dn = pql_format_normalize_dn($dn);
   unset($info);
+  
+  // 3a. Load 'resonable defaults' for this top DN
+  $_SESSION["loading_resonable_defaults"] = 1;
+  if(file_exists("./.DEBUG_DEFINES") and !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
+	echo "<br>\n<b>*</b> Loading 'resonable defaults'<br>\n";
+  require($_SESSION["path"]."/include/defaults.inc");
+  if(file_exists("./.DEBUG_DEFINES") and !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
+	echo "</b>";
+  unset($_SESSION["loading_resonable_defaults"]);
 
-  if(file_exists("./.DEBUG_DEFINES"))
+  if(file_exists("./.DEBUG_DEFINES") and !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
 	echo "<br>\n<b>*</b> Go through DN: '$dn'<br>\n";
 
   if(@(is_array($_SESSION["BASE_DN"]) and !in_array($dn, $_SESSION["BASE_DN"])) or !@$_SESSION["BASE_DN"])
 	// Remember the base DN's
 	$_SESSION["BASE_DN"][] = $dn;
   
-  // 3. Load configurations from LDAP base DN
+  // 3b. Load configurations from LDAP base DN, override defaults
   $sr = @ldap_read($_pql->ldap_linkid, $dn, ('objectClass=*'))
 	or pql_format_error(1);
   $info = ldap_get_entries($_pql->ldap_linkid, $sr)
@@ -205,12 +280,14 @@ foreach($_pql->ldap_basedn as $dn)  {
 	$_SESSION["ALLOW_EZMLM_CREATE"] = pql_get_dn($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM").'='.$_SESSION["USER_DN"]);
 
   // 4d. Find out which attribute to use to reference users with in this root DN
-  if(!pql_get_define("PQL_CONF_REFERENCE_USERS_WITH", $dn)) {
-	$ref = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_REFERENCE_USERS_WITH"));
-	pql_set_define("PQL_CONF_REFERENCE_USERS_WITH", $ref, false, $dn);
-  }
+  $ref = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_REFERENCE_USERS_WITH"));
+  pql_set_define("PQL_CONF_REFERENCE_USERS_WITH", $ref, false, $dn);
 
-  // 4e. Find the computer DN
+  // 4e. Find out which attribute to use to reference domains with in this root DN
+  $ref = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_REFERENCE_DOMAINS_WITH"));
+  pql_set_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $ref, false, $dn);
+
+  // 4f. Find the computer DN
   if(empty($_SESSION["USER_SEARCH_DN_CTR"])) {
 	$filter = '(&('.pql_get_define("PQL_ATTR_OU").'=Computers)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=organizationalUnit))';
 	$tmp = pql_get_dn($_pql->ldap_linkid, $dn, $filter, 'ONELEVEL');
@@ -220,13 +297,6 @@ foreach($_pql->ldap_basedn as $dn)  {
 
 	unset($filter); unset($tmp);
   }
-  
-  // 4f. Load 'resonable defaults' for each top DN
-  if(file_exists("./.DEBUG_DEFINES"))
-	echo "<br>\n<b>*</b> Loading 'resonable defaults'<br>\n";
-  require($_SESSION["path"]."/include/defaults.inc");
-  if(file_exists("./.DEBUG_DEFINES"))
-	echo "</b><p>";
 }
 unset($dn);
 
@@ -286,18 +356,24 @@ if((empty($_SESSION["ACI_SUPPORT_ENABLED"]) and function_exists("user_generate_a
   }
 }
 
-// 10. Check to see if the cn=Monitor backend is availble/readable
-if(!@$MONITOR_BACKEND_ENABLED) {
-  if(pql_get_attribute($_pql->ldap_linkid, "cn=Monitor", pql_get_define("PQL_ATTR_CN")))
-	$_SESSION["MONITOR_BACKEND_ENABLED"] = 1;
-}
-
 if(@$_SESSION["ACI_SUPPORT_ENABLED"]) {
   require($_SESSION["path"]."/include/pql_aci.inc");
 }
 
 if(file_exists($_SESSION["path"]."/.DEBUG_ME")) {
   pql_set_define("PQL_CONF_DEBUG_ME", true);
+}
+
+// ----------------------------
+if(!pql_get_define("PQL_CONF_OBJECTCLASS_DOMAIN", $dn)) {
+  if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $dn) == "dc") {
+	$objectclass_domain = "domain dcOrganizationNameForm";
+  } elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $dn) == "ou") {
+	$objectclass_domain = "organizationalUnit";
+  } elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $dn) == "o") {
+	$objectclass_domain = "organization";
+  }
+  pql_set_define("PQL_CONF_OBJECTCLASS_DOMAIN", $objectclass_domain . " phpQLAdminBranch", false, $dn);
 }
 
 // Remove some variables so we don't clutter the global variable name space!
