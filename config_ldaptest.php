@@ -1,6 +1,6 @@
 <?php
 // make some simple tests on ldap connection
-// $Id: config_ldaptest.php,v 2.39 2006-12-16 12:20:59 turbo Exp $
+// $Id: config_ldaptest.php,v 2.40 2007-02-12 15:01:39 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -19,12 +19,12 @@ function check_domain_value($linkid, $dn, $attrib, $value) {
 	if(!pql_write_mod($linkid, $dn, $entry, "config_ldaptest.php:check_domain_value()/1")) {
 		if(ldap_errno($linkid) == 21)
 		  // Invalid syntax
-		  $msg = $LANG->_('No. Reason:')."<b>".$LANG->_('Old phpQLAdmin schema')."</b>";
+		  $msg = $LANG->_('No. Reason:\n')."<b>".$LANG->_('Old phpQLAdmin schema')."</b>";
 		else {
 			$LDIF = pql_create_ldif('config_ldaptest.php:pql_write_mod', $dn, $entry, 1);
 
 			$msg = "<a href=\"javascript:ldifWindow('".$LDIF."')\">".
-				   $LANG->_('No. Reason:')."<b>".ldap_error($linkid)."</b>'</a>";
+				   $LANG->_('No. Reason:\n')."<b>".ldap_error($linkid)."</b>'</a>";
 		}
 	} else {
 		// Success - delete it again
@@ -42,6 +42,33 @@ function check_domain_value($linkid, $dn, $attrib, $value) {
 	return($msg);
 }
 // }}}
+
+if(class_exists('Memcache') and function_exists("memcache_connect")) {
+  $memcache_ext = $LANG->_('Built in (loaded)');
+} else {
+  $memcache_ext = $LANG->_('Not available (not required)');
+}
+
+if(function_exists("idn_to_utf8")) {
+  $idn_ext = $LANG->_('Built in (loaded)');
+} else {
+  $idn_ext = $LANG->_('Not available');
+}
+
+if(function_exists("mhash")) {
+  $mhash_ext = $LANG->_('Built in (loaded)');
+} else {
+  $mhash_ext = $LANG->_('Not available');
+}
+
+if((function_exists('ImageCreateFromPng')  && (imagetypes() & IMG_PNG)) or
+   (function_exists('ImageCreateFromGif')  && (imagetypes() & IMG_GIF)) or
+   (function_exists('ImageCreateFromJpeg') && (imagetypes() & IMG_JPG)))
+{
+  $gd_ext = $LANG->_('Built in (loaded)');
+} else {
+  $gd_ext = $LANG->_('Not available');
+}
 
 if(!function_exists("ldap_connect")){
 	// {{{ Not availible
@@ -146,12 +173,6 @@ if(!function_exists("ldap_connect")){
 			}
 			$entry[pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)] = "phpQLAdmin_Branch_Test";
 
-			if(pql_get_define("PQL_CONF_ACI_USE")) {
-			  // Add the ACI entries to the object
-			  $entry[pql_get_define("PQL_ATTR_LDAPACI")] =  "OpenLDAPaci: 0#entry#grant;w,r,s,c;[all]#access-id#";
-			  $entry[pql_get_define("PQL_ATTR_LDAPACI")] .= $_SESSION["USER_DN"];
-			}
-			
 			// Setup the DN
 			$dn = pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)."=phpQLAdmin_Branch_Test,".$basedn;
 
@@ -159,7 +180,7 @@ if(!function_exists("ldap_connect")){
 				$LDIF = pql_create_ldif("config_ldaptest.php:ldap_add", $dn, $entry, 1);
 
 				$TEST["branches"][$basedn] = "<a href=\"javascript:ldifWindow('".$LDIF."')\">".
-				  $LANG->_("No. Reason:")."<b>".ldap_error($_pql->ldap_linkid)."</b>'";
+				  $LANG->_('No. Reason:\n')."<b>".ldap_error($_pql->ldap_linkid)."</b>'";
 			} else {
 				// Success - delete it again
 				ldap_delete($_pql->ldap_linkid, $dn);
@@ -222,7 +243,7 @@ if(!function_exists("ldap_connect")){
 			
 			if(pql_get_define("PQL_CONF_ACI_USE")) {
 			  // Add the ACI entries to the object
-			  $entry[pql_get_define("PQL_ATTR_LDAPACI")] =  "OpenLDAPaci: 0#entry#grant;w,r,s,c;[all]#access-id#";
+			  $entry[pql_get_define("PQL_ATTR_LDAPACI")] =  "0#entry#grant;w,r,s,c;[all]#access-id#";
 			  $entry[pql_get_define("PQL_ATTR_LDAPACI")] .= $_SESSION["USER_DN"];
 			}
 			
@@ -233,7 +254,7 @@ if(!function_exists("ldap_connect")){
 				$LDIF = pql_create_ldif("config_ldaptest.php:ldap_add", $dn, $entry, 1);
 
 				$TEST["acis"][$basedn] = "<a href=\"javascript:ldifWindow('".$LDIF."')\">".
-				  $LANG->_("No. Reason:")."<b>".ldap_error($_pql->ldap_linkid)."</b>'";
+				  $LANG->_('No. Reason:\n')."<b>".ldap_error($_pql->ldap_linkid)."</b>'";
 			} else {
 				// Success - delete it again
 				ldap_delete($_pql->ldap_linkid, $dn);
@@ -267,12 +288,36 @@ include($_SESSION["path"]."/header.html");
   <br><br>
 
   <table cellspacing="0" cellpadding="3" border="0">
-    <th colspan="3" align="left"><?=$LANG->_('LDAP server connection and setup tests')?>
+    <th colspan="3" align="left"><?=$LANG->_('PHP Extensions needed')?>
       <tr>
-        <td class="title"><?=$LANG->_('PHP LDAP extension')?></td>
+        <td class="title"><?=$LANG->_('LDAP')?></td>
         <td class="<?php pql_format_table(); ?>"><?=$ldap_ext?>&nbsp;</td>
       </tr>
 
+      <tr>
+        <td class="title"><?=$LANG->_('IDN')?></td>
+        <td class="<?php pql_format_table(); ?>"><?=$idn_ext?>&nbsp;</td>
+      </tr>
+
+      <tr>
+        <td class="title"><?=$LANG->_('MHASH')?></td>
+        <td class="<?php pql_format_table(); ?>"><?=$idn_ext?>&nbsp;</td>
+      </tr>
+
+      <tr>
+        <td class="title"><?=$LANG->_('MemCache')?></td>
+        <td class="<?php pql_format_table(); ?>"><?=$memcache_ext?>&nbsp;</td>
+      </tr>
+
+      <tr>
+        <td class="title"><?=$LANG->_('GD')?></td>
+        <td class="<?php pql_format_table(); ?>"><?=$gd_ext?>&nbsp;</td>
+      </tr>
+    </th>
+
+    <th><tr></tr></th>
+
+    <th colspan="3" align="left"><?=$LANG->_('LDAP server connection and setup tests')?>
       <tr>
         <td class="title"><?=$LANG->_('User directory connection')?></td>
         <td class="<?php pql_format_table(); ?>"><?=$connection?>&nbsp;</td>
@@ -335,7 +380,7 @@ include($_SESSION["path"]."/header.html");
 
     <th><tr></tr></th>
 
-    <th colspan="3" align="left"><?=$LANG->_('Domain modification access')?>
+    <th colspan="3" align="left"><?=$LANG->_('Branch creation access')?>
 <?php    foreach($_SESSION["BASE_DN"] as $dn) { ?>
       <tr>
         <td class="title"><?php echo pql_complete_constant($LANG->_('Access to create branches in DN %dn%'), array('dn' => $dn)); ?></td>
@@ -382,8 +427,8 @@ include($_SESSION["path"]."/header.html");
                 <td><img src="images/info.png" width="16" height="16" border="0" align="right"></td>
                 <td>
                   <ul>
-                    <li><?=$LANG->_('This is a simple test to show if the ldap extension is loaded and that the connections are working. It also does some rudimentary ACL tests')?>.</li>
-                    <li>NOTE: If you get denied access to create branches but when trying with ACIs, it works. This doesn't mean that you don't have access to create branches, it means that you <u>must</u> use ACIs, <i>otherwise</i> you're not allowed.</li>
+                    <li><?=$LANG->_('This is a simple test to show if the ldap extension is loaded\nand that the connections are working. It also does some\nrudimentary ACL tests')?>.</li>
+                    <li><?=$LANG->_("NOTE: If you get denied access to create branches but when<br>trying with ACIs, it works. This doesn't mean that you don't<br>have access to create branches, it means that you \umust\U use<br>ACIs, otherwise you will not be allowed to create an object<br>(you will receive 'Insufficient access').")?></li>
                   </ul>
                 </td>
               </tr>
