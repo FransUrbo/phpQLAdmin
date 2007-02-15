@@ -2,7 +2,7 @@
 <head>
 	<title>phpQL</title>
 	<link rel="stylesheet" href="../tools/normal.css" type="text/css">
-	<!-- $Id: index.php,v 2.9 2006-12-16 12:02:12 turbo Exp $ -->
+	<!-- $Id: index.php,v 2.10 2007-02-15 12:38:18 turbo Exp $ -->
 </head>
 
 <body bgcolor="#e7e7e7" background="../images/bkg.png">
@@ -10,7 +10,7 @@
 <br>
 <br>
 <img src="../images/arrow.png" width="8" height="8" border="0"><a href="README">README</a><br>
-<img src="../images/arrow.png" width="8" height="8" border="0"><a href="INSTALL">INSTALL (installation guide)</a><br>
+<img src="../images/arrow.png" width="8" height="8" border="0"><a href="../INSTALL">INSTALL (installation guide)</a><br>
 <img src="../images/arrow.png" width="8" height="8" border="0"><a href="conf.php">Configuration</a><br>
 <img src="../images/arrow.png" width="8" height="8" border="0"><a href="troubleshoot.php">Troubleshooting</a><br>
 <img src="../images/arrow.png" width="8" height="8" border="0"><a href="data.php">How phpQLAdmin handles ldap data</a><br>
