@@ -181,6 +181,10 @@ phpQLAdmin 2.3.6 TO BE ANNOUNCED
 	  - Lowercase home/mail directory values when creating domain.
 	  - Support for global memory cache for speed increase. Uses memcached and memcache.so
 	    PECL module. See doc/README.Memcache.
+	  - Find out if we're running OpenLDAP v2.2 or v2.3. This is used in figuring out if the Scope
+	    should/could be changed.
+	    + Add 'public' to the list of actions.
+	    + Take the next number of ACI's as OID.
 
 phpQLAdmin 2.3.5 Dec  2 2006
 	Bug fixes

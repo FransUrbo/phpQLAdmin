@@ -1,6 +1,6 @@
 <?php
 // attribute plugin for OpenLDAPaci
-// $Id: attrib.aci.inc,v 1.13 2006-12-16 12:02:14 turbo Exp $
+// $Id: attrib.aci.inc,v 1.14 2007-02-15 12:41:39 turbo Exp $
 
 /* DLW: This has valid syntax, but I don't know how to test it. */
 
@@ -21,9 +21,9 @@ function attribute_check() {
     } else {
 		// Get the next OID number by retreive the old ACI's.
 		if($_REQUEST["user"])
-		  $acis = pql_aci_get($_pql->ldap_linkid, $_REQUEST["user"]);
+		  $acis = pql_aci_get($_REQUEST["user"]);
 		else 
-		  $acis = pql_aci_get($_pql->ldap_linkid, $_REQUEST["domain"]);
+		  $acis = pql_aci_get($_REQUEST["domain"]);
 		$next_oid = $acis['count'];
 
 		$_REQUEST[$attrib] = "$next_oid#" . $_REQUEST["aci_scope"] . '#' . $_REQUEST["aci_action"] . ";";
@@ -64,16 +64,22 @@ function attribute_print_form($action) {
 
 	if(!$_REQUEST["user"])
 	  // It must be a domain
-	  $aci = pql_aci_get($_pql->ldap_linkid, $_REQUEST["domain"]);
+	  $aci = pql_aci_get($_REQUEST["domain"]);
 	else
 	  // It must be a user
-	  $aci = pql_aci_get($_pql->ldap_linkid, $_REQUEST["user"]);
+	  $aci = pql_aci_get($_REQUEST["user"]);
 
 	if(is_array($aci)) {
-		echo "<u>Current values:</u><p>";
-		for($i=0; $i < count($aci); $i++)
+		echo "<u><b>Current values:</b></u><br>";
+		for($i=0; $i < $aci["count"]; $i++)
 		  echo $aci[$i]["LINE"]."<br>";
+		echo "<p>";
 	}
+
+	if(ereg('^2\.3', $_pql->find_ldap_version()))
+	  $olv = 23;
+	else
+	  $olv = 22;
 ?>
   <form action="<?php echo $_SERVER["PHP_SELF"] ?>" method="post">
     <table cellspacing="0" cellpadding="3" border="0">
@@ -85,15 +91,29 @@ function attribute_print_form($action) {
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('OID')?></td>
-          <td><b>1.2.3</b></td>
+          <td><b><?=$aci["count"]?></b></td>
         </tr>
         <input type="hidden" name="aci_oid" value="1.2.3">
 
+<?php if($olv >= 23) { ?>
+        <tr class="<?php pql_format_table(); ?>">
+          <td class="title"><?=$LANG->_('Scope')?></td>
+          <td>
+            <select name="aci_scope">
+              <option value="entry" SELECTED>Entry itself</option>
+              <option value="children">Sub-objects</option>
+              <option value="onelevel">Level just below this</option>
+              <option value="subtree">All levels below this</option>
+            </select>
+          </td>
+        </tr>
+<?php } else { ?>
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Scope')?></td>
           <td><b>entry</b></td>
         </tr>
         <input type="hidden" name="aci_scope" value="entry">
+<?php } ?>
 
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Action')?></td>
@@ -133,10 +153,13 @@ function attribute_print_form($action) {
               <option value="access-id">Specific DN</option>
               <option value="group">Group</option>
               <option value="self">Self</option>
+              <option value="public">Public</option>
             </select>
           </td>
         </tr>
 
+        <!-- TODO: It would be VERY nice to have a user/object selector
+                   ala attrib.administrator.inc here instead of a input -->
         <tr class="<?php pql_format_table(); ?>">
           <td class="title"><?=$LANG->_('Subject')?></td>
           <td><input type="text" name="aci_subject" size="30"></td>
@@ -176,9 +199,9 @@ function attribute_save($action) {
 
     // Retreive the old values
     if($user)
-      $acis = pql_aci_get($_pql->ldap_linkid, $user);
+      $acis = pql_aci_get($user);
     else 
-      $acis = pql_aci_get($_pql->ldap_linkid, $domain);
+      $acis = pql_aci_get($domain);
 	
     // Extract only the ACI line that's stored in LDAP
     for($i=0; @$acis[$i]["LINE"]; $i++)
@@ -263,10 +286,10 @@ function attribute_save($action) {
 	// {{{ Do the modification
     $success = 0;
 	if($user) {
-		if(pql_modify_attribute($_pql->ldap_linkid, $user, '', '', $acis))
+		if(pql_modify_attribute($user, '', '', $acis))
 		  $success = 1;
 	} else {
-		if(pql_modify_attribute($_pql->ldap_linkid, $domain, '', '', $acis))
+		if(pql_modify_attribute($domain, '', '', $acis))
 		  $success = 1;
 	}
 	// }}}
