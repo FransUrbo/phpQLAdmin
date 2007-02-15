@@ -1,6 +1,6 @@
 <?php
 // make some simple tests on ldap connection
-// $Id: config_ldaptest.php,v 2.41 2007-02-15 12:23:01 turbo Exp $
+// $Id: config_ldaptest.php,v 2.42 2007-02-15 16:16:04 turbo Exp $
 //
 require("./include/pql_session.inc");
 require($_SESSION["path"]."/include/pql_config.inc");
@@ -8,47 +8,48 @@ require($_SESSION["path"]."/include/pql_control.inc");
 
 // {{{ Check a domain value
 function check_domain_value($dn, $attrib, $value) {
-	global $_pql; $LANG;
-
-	$debugging = pql_get_define("PQL_CONF_DEBUG_ME");
-	if($debugging)
-	  // Debugging enabled - temporarily disable it!
-	  pql_set_define("PQL_CONF_DEBUG_ME", false);
-
-	$entry[$attrib] = $value;
-	if(!$_pql->modify($dn, $entry, "config_ldaptest.php:check_domain_value()/1")) {
-		if(ldap_errno($linkid) == 21)
-		  // Invalid syntax
-		  $msg = $LANG->_('No. Reason:\n')."<b>".$LANG->_('Old phpQLAdmin schema')."</b>";
-		else {
-			$LDIF = pql_create_ldif('config_ldaptest.php:pql_write_mod', $dn, $entry, 1);
-
-			$msg = "<a href=\"javascript:ldifWindow('".$LDIF."')\">".
-				   $LANG->_('No. Reason:\n')."<b>".ldap_error($linkid)."</b>'</a>";
-		}
-	} else {
-		// Success - delete it again
-		unset($entry);
-		$entry['test'] = array();
-		$_pql->modify($dn, $entry, "config_ldaptest.php:check_domain_value()/2");
-
-		$msg = 0;
+  global $_pql; $LANG;
+  
+  $debugging = pql_get_define("PQL_CONF_DEBUG_ME");
+  if($debugging)
+	// Debugging enabled - temporarily disable it!
+	pql_set_define("PQL_CONF_DEBUG_ME", false);
+  
+  $entry[$attrib] = $value;
+  if(!$_pql->modify($dn, $entry, "config_ldaptest.php:check_domain_value()/1")) {
+	if(ldap_errno($linkid) == 21)
+	  // Invalid syntax
+	  $msg = $LANG->_('No. Reason:\n')."<b>".$LANG->_('Old phpQLAdmin schema')."</b>";
+	else {
+	  $LDIF = pql_create_ldif('config_ldaptest.php:pql_write_mod', $dn, $entry, 1);
+	  
+	  $msg = "<a href=\"javascript:ldifWindow('".$LDIF."')\">".
+		$LANG->_('No. Reason:\n')."<b>'".ldap_error($linkid)."'</b></a>";
 	}
-
-	if($debugging)
-	  // Debugging have been temporarily disabled - enable it again!
-	  pql_set_define("PQL_CONF_DEBUG_ME", true);
-
-	return($msg);
+  } else {
+	// Success - delete it again
+	unset($entry);
+	$entry['test'] = array();
+	$_pql->modify($dn, $entry, "config_ldaptest.php:check_domain_value()/2");
+	
+	$msg = 0;
+  }
+  
+  if($debugging)
+	// Debugging have been temporarily disabled - enable it again!
+	pql_set_define("PQL_CONF_DEBUG_ME", true);
+  
+  return($msg);
 }
 // }}}
 
+// {{{ Check some extension modules
 if(class_exists('Memcache') and function_exists("memcache_connect")) {
   $memcache_ext = $LANG->_('Built in (loaded)');
 } else {
-  $memcache_ext = $LANG->_('Not available (not required)');
+  $memcache_ext = $LANG->_('Not available');
 }
-
+  
 if(function_exists("idn_to_utf8")) {
   $idn_ext = $LANG->_('Built in (loaded)');
 } else {
@@ -61,7 +62,7 @@ if(function_exists("mhash")) {
   $mhash_ext = $LANG->_('Not available');
 }
 
-if(extension_loaded('kadm5') and function_exists("kadm5_init_with_password")) {	
+if(extension_loaded('kadm5') and function_exists("kadm5_init_with_password")) {
   $krb5_ext = $LANG->_('Built in (loaded)');
 } else {
   $krb5_ext = $LANG->_('Not available');
@@ -75,206 +76,214 @@ if((function_exists('ImageCreateFromPng')  && (imagetypes() & IMG_PNG)) or
 } else {
   $gd_ext = $LANG->_('Not available');
 }
-
+// }}}
+  
 if(!function_exists("ldap_connect")){
-	// {{{ Not availible
-	$ldap_ext = $LANG->_('Not available');
-	$connection = "-";
-	$connection_control = "-";
-	// }}}
+  // {{{ Not availible
+  $ldap_ext = '<font color="red">'.$LANG->_('Not available')."</font>";
+  $connection = "-";
+  $connection_control = "-";
+// }}}
 } else {
-	$ldap_ext = $LANG->_('Built in (loaded)');
+  $ldap_ext = $LANG->_('Built in (loaded)');
+
+  // {{{ User directory connection
+  $_pql = new pql($_SESSION["USER_HOST"], '', '', true);
+  if(!$_pql->connect($_SESSION["USER_HOST"])) {
+	$connection = $LANG->_('Failed');
 	
-	// {{{ User directory connection
-	$_pql = new pql($_SESSION["USER_HOST"], '', '', true);
-	if(!$_pql->connect($_SESSION["USER_HOST"])) {
-		$connection = $LANG->_('Failed');
-
-		$server = split(';', $_SESSION["USER_HOST"]);
-		$server = urldecode($server[0]); 	// If it's an LDAP URI, replace "%2f" with "/" -> URLdecode
-		
-		// do additional tests
-		if(!eregi('^ldap', $_SESSION["USER_HOST"])) {
-			if(!gethostbyname($_SESSION["USER_HOST"]))
-			  // not resolved
-			  $connection .= ", " . pql_complete_constant($LANG->_('The hostname %host% could not be resolved'),
-														  array("host" => $_SESSION["USER_HOST"] ));
-			else {
-				// try to open a connection
-				if(!fsockopen($_SESSION["USER_HOST"], 389))
-				  // impossible to connect
-				  $connection .= ", " . pql_complete_constant($LANG->_('Could not connect to port 389 at %host%, please make sure the service is up and that it\'s not blocked by a firewall'),
-															  array("host" => $_SESSION["USER_HOST"] ));
-			}
-		}
-	} else {
-	  if(!$_pql->bind())
-		  $connection = $LANG->_('Connection ok, but could not bind to the directory anonymously');
-		else
-		  $connection = $LANG->_('Yes');
+	$server = split(';', $_SESSION["USER_HOST"]);
+	$server = urldecode($server[0]); 	// If it's an LDAP URI, replace "%2f" with "/" -> URLdecode
+	
+	// do additional tests
+	if(!eregi('^ldap', $_SESSION["USER_HOST"])) {
+	  if(!gethostbyname($_SESSION["USER_HOST"]))
+		// not resolved
+		$connection .= ", " . pql_complete_constant($LANG->_('The hostname %host% could not be resolved'),
+													array("host" => $_SESSION["USER_HOST"] ));
+	  else {
+		// try to open a connection
+		if(!fsockopen($_SESSION["USER_HOST"], 389))
+		  // impossible to connect
+		  $connection .= ", " . pql_complete_constant($LANG->_('Could not connect to port 389 at %host%, please make sure the service is up and that it\'s not blocked by a firewall'),
+													  array("host" => $_SESSION["USER_HOST"] ));
+	  }
 	}
-	// }}}
-
-	// {{{ Control directory connection
-	if(pql_get_define("PQL_CONF_CONTROL_USE")) {
-		$_pql_control = new pql_control($_SESSION["USER_HOST"], '', '', true);
-		if(!$_pql_control->connect($_SESSION["USER_HOST"])) {
-			$connection_control = $LANG->_('Failed');
-
-			$host = split('\+', pql_get_define("PQL_CONF_HOST"));
-			$host = split(';', $host[0]);
-
-			$fqdn = $host[0];
-			$port = $host[1];
-
-			// do additional tests
-			if(!eregi('^ldap', $_SESSION["USER_HOST"])) {
-				if(!gethostbyname($fqdn)) {
-					// not resolved
-					$connection_control .= ", " . pql_complete_constant($LANG->_('The hostname %host% could not be resolved'),
-																		array("host" => $fqdn ));
-				} else {
-					// try to open a connection
-					if(!fsockopen($fqdn, $port)) {
-						// impossible to connect
-						$connection_control .= ", " . pql_complete_constant($LANG->_('Could not connect to port 389 at %host%, please make sure the service is up and it is not blocked by a firewall'),
-																			array("host" => $_SESSION["USER_HOST"]));
-					}
-				}
-			}
+  } else {
+	if(!$_pql->bind())
+	  $connection = $LANG->_('Connection ok, but could not bind to the directory anonymously');
+	else
+	  $connection = $LANG->_('Yes');
+  }
+// }}}
+  
+  // {{{ Control directory connection
+  if(pql_get_define("PQL_CONF_CONTROL_USE")) {
+	$_pql_control = new pql_control($_SESSION["USER_HOST"], '', '', true);
+	if(!$_pql_control->connect($_SESSION["USER_HOST"])) {
+	  $connection_control = $LANG->_('Failed');
+	  
+	  $host = split('\+', pql_get_define("PQL_CONF_HOST"));
+	  $host = split(';', $host[0]);
+	  
+	  $fqdn = $host[0];
+	  $port = $host[1];
+	  
+	  // do additional tests
+	  if(!eregi('^ldap', $_SESSION["USER_HOST"])) {
+		if(!gethostbyname($fqdn)) {
+		  // not resolved
+		  $connection_control .= ", " . pql_complete_constant($LANG->_('The hostname %host% could not be resolved'),
+															  array("host" => $fqdn ));
 		} else {
-			if(!$_pql_control->bind())
-			  $connection_control = $LANG->_('Connection ok, but could not bind to the directory anonymously');
-			else
-			  $connection_control = $LANG->_('Yes');
+		  // try to open a connection
+		  if(!fsockopen($fqdn, $port)) {
+			// impossible to connect
+			$connection_control .= ", " . pql_complete_constant($LANG->_('Could not connect to port 389 at %host%, please make sure the service is up and it is not blocked by a firewall'),
+																array("host" => $_SESSION["USER_HOST"]));
+		  }
 		}
-	} else
-	  $connection_control = $LANG->_('Control extension deactivated');
-	// }}}
-
-	// {{{ Access rights
-	if($_SESSION["USER_DN"] and $_SESSION["USER_PASS"]) {
-		$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
-		foreach($_SESSION["BASE_DN"] as $basedn) {
-			// {{{ Try to set the attribute 'test' in the top DN
-			$fail = check_domain_value($basedn, 'test', 'TRUE');
-			if($fail)
-			  $TEST["basedn"][$basedn] = $fail;
-			else
-			  $TEST["basedn"][$basedn] = $LANG->_('Yes');
-			// }}}
-			
-			// {{{ Test to see if we have access to create domain/branches by creating a subbranch
-			unset($entry);
-			$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "top";
-			if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "dc") {
-				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "domain";
-				$entry[pql_get_define("PQL_ATTR_DC")] = "test";
-			} elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "ou") {
-				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "organizationalUnit";
-				$entry[pql_get_define("PQL_ATTR_OU")] = "test";
-			} elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "o") {
-				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "organization";
-				$entry[pql_get_define("PQL_ATTR_O")] = "test";
-			}
-			$entry[pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)] = "phpQLAdmin_Branch_Test";
-
-			// Setup the DN
-			$dn = pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)."=phpQLAdmin_Branch_Test,".$basedn;
-
-			if(!@ldap_add($_pql->ldap_linkid, $dn, $entry)) {
-				$LDIF = pql_create_ldif("config_ldaptest.php:ldap_add", $dn, $entry, 1);
-
-				$TEST["branches"][$basedn] = "<a href=\"javascript:ldifWindow('".$LDIF."')\">".
-				  $LANG->_('No. Reason:\n')."<b>".ldap_error($_pql->ldap_linkid)."</b>'";
-			} else {
-				// Success - delete it again
-				ldap_delete($_pql->ldap_linkid, $dn);
-
-				$TEST["branches"][$basedn] = $LANG->_('Yes');
-			}
-			// }}}
-			
-			// {{{ Check write access
-
-			$filter = "(&" . pql_setup_branch_objectclasses(1, $basedn)
-			  . "(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) . "=*))";
-			
-			$sr = @ldap_list($_pql->ldap_linkid, $basedn, $filter)
-			  or pql_format_error(1);
-			$info = @ldap_get_entries($_pql->ldap_linkid, $sr)
-			  or pql_format_error(1);
-
-			if(! $info["count"]) {
-				// Didn't find anything on a one-level search, try a global one...
-				$sr = @ldap_search($_pql->ldap_linkid, $basedn, $filter)
-				  or pql_format_error(1);
-				$info = @ldap_get_entries($_pql->ldap_linkid, $sr)
-				  or pql_format_error(1);
-			}
-
-			for ($i=0; $i<$info["count"]; $i++) {
-				$domains[] = $info[$i]["dn"];
-			}
-
-			// }}}
-		}
-
-		if(is_array($domains)) {
-			foreach($domains as $domain) {
-				// Check write access
-				$fail = check_domain_value($domain, 'test', 'TRUE');
-				if($fail) {
-					$TEST["branches"][$domain] = $fail;
-				} else {
-					$TEST["branches"][$domain] = $LANG->_('Yes');
-				}
-			}
-		}
-
-		// {{{ Check ACI
-		foreach($_SESSION["BASE_DN"] as $basedn) {
-			// Setup the LDIF we're adding
-			unset($entry);
-			$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "top";
-			if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "dc") {
-				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "domain";
-				$entry[pql_get_define("PQL_ATTR_DC")] = "test";
-			} elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "ou") {
-				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "organizationalUnit";
-				$entry[pql_get_define("PQL_ATTR_OU")] = "test";
-			} elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "o") {
-				$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "organization";
-				$entry[pql_get_define("PQL_ATTR_O")] = "test";
-			}
-			$entry[pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)] = "phpQLAdmin_Branch_Test";
-			
-			if(pql_get_define("PQL_CONF_ACI_USE")) {
-			  // Add the ACI entries to the object
-			  $entry[pql_get_define("PQL_ATTR_LDAPACI")] =  "0#entry#grant;w,r,s,c;[all]#access-id#";
-			  $entry[pql_get_define("PQL_ATTR_LDAPACI")] .= $_SESSION["USER_DN"];
-			}
-			
-			// Setup the DN
-			$dn = pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)."=phpQLAdmin_Branch_Test,".$basedn;
-			
-			if(!@ldap_add($_pql->ldap_linkid, $dn, $entry)) {
-				$LDIF = pql_create_ldif("config_ldaptest.php:ldap_add", $dn, $entry, 1);
-
-				$TEST["acis"][$basedn] = "<a href=\"javascript:ldifWindow('".$LDIF."')\">".
-				  $LANG->_('No. Reason:\n')."<b>".ldap_error($_pql->ldap_linkid)."</b>'";
-			} else {
-				// Success - delete it again
-				ldap_delete($_pql->ldap_linkid, $dn);
-				$TEST["acis"][$basedn] = $LANG->_('Yes');
-			}
-			// }}}
-		}
+	  }
+	} else {
+	  if(!$_pql_control->bind())
+		$connection_control = $LANG->_('Connection ok, but could not bind to the directory anonymously');
+	  else
+		$connection_control = $LANG->_('Yes');
 	}
-
-	// }}}
+  } else
+	$connection_control = $LANG->_('Control extension deactivated');
+// }}}
+  
+  // {{{ Access rights
+  if($_SESSION["USER_DN"] and $_SESSION["USER_PASS"]) {
+	$_pql = new pql($_SESSION["USER_HOST"], $_SESSION["USER_DN"], $_SESSION["USER_PASS"]);
+	foreach($_SESSION["BASE_DN"] as $basedn) {
+	  // {{{ Try to set the attribute 'test' in the top DN
+	  $fail = check_domain_value($basedn, 'test', 'TRUE');
+	  if($fail)
+		$TEST["basedn"][$basedn] = $fail;
+	  else
+		$TEST["basedn"][$basedn] = $LANG->_('Yes');
+// }}}
+	  
+	  // {{{ Test to see if we have access to create domain/branches by creating a subbranch
+	  unset($entry);
+	  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "top";
+	  if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "dc") {
+		$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "domain";
+		$entry[pql_get_define("PQL_ATTR_DC")] = "test";
+	  } elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "ou") {
+		$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "organizationalUnit";
+		$entry[pql_get_define("PQL_ATTR_OU")] = "test";
+	  } elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "o") {
+		$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "organization";
+		$entry[pql_get_define("PQL_ATTR_O")] = "test";
+	  }
+	  $entry[pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)] = "phpQLAdmin_Branch_Test";
+	  
+	  // Setup the DN
+	  $dn = pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)."=phpQLAdmin_Branch_Test,".$basedn;
+	  
+	  if(!@ldap_add($_pql->ldap_linkid, $dn, $entry)) {
+		$LDIF = pql_create_ldif("config_ldaptest.php:ldap_add", $dn, $entry, 1);
+		
+		$TEST["branches"][$basedn] = "<a href=\"javascript:ldifWindow('".$LDIF."')\">".
+		  $LANG->_('No. Reason:\n')."<b>'".ldap_error($_pql->ldap_linkid)."'</b>";
+	  } else {
+		// Success - delete it again
+		ldap_delete($_pql->ldap_linkid, $dn);
+		
+		$TEST["branches"][$basedn] = $LANG->_('Yes');
+	  }
+// }}}
+	  
+	  // {{{ Check write access (w/o ACI's)
+	  $filter = "(&" . pql_setup_branch_objectclasses(1, $basedn)
+		. "(" . pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) . "=*))";
+	  
+	  $sr = @ldap_list($_pql->ldap_linkid, $basedn, $filter)
+		or pql_format_error(1);
+	  $info = @ldap_get_entries($_pql->ldap_linkid, $sr)
+		or pql_format_error(1);
+	  
+	  if(! $info["count"]) {
+		// Didn't find anything on a one-level search, try a global one...
+		$sr = @ldap_search($_pql->ldap_linkid, $basedn, $filter)
+		  or pql_format_error(1);
+		$info = @ldap_get_entries($_pql->ldap_linkid, $sr)
+		  or pql_format_error(1);
+	  }
+	  
+	  for ($i=0; $i<$info["count"]; $i++) {
+		$domains[] = $info[$i]["dn"];
+	  }
+// }}}
+	}
+	
+	if(is_array($domains)) {
+	  foreach($domains as $domain) {
+		// Check write access
+		$fail = check_domain_value($domain, 'test', 'TRUE');
+		if($fail) {
+		  $TEST["branches"][$domain] = $fail;
+		} else {
+		  $TEST["branches"][$domain] = $LANG->_('Yes');
+		}
+	  }
+	}
+	
+	// {{{ Check write access (w/ ACI's)
+	if(!empty($_SESSION["ACI_SUPPORT_ENABLED"])) {
+	  foreach($_SESSION["BASE_DN"] as $basedn) {
+		// Setup the LDIF we're adding
+		unset($entry);
+		$entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "top";
+		if(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "dc") {
+		  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "domain";
+		  $entry[pql_get_define("PQL_ATTR_DC")] = "test";
+		} elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "ou") {
+		  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "organizationalUnit";
+		  $entry[pql_get_define("PQL_ATTR_OU")] = "test";
+		} elseif(pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn) == "o") {
+		  $entry[pql_get_define("PQL_ATTR_OBJECTCLASS")][] = "organization";
+		  $entry[pql_get_define("PQL_ATTR_O")] = "test";
+		}
+		$entry[pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)] = "phpQLAdmin_Branch_Test";
+		
+		// Add the ACI entries to the object
+		$ol_ver = $_pql->find_ldap_version();
+		if(ereg('^2\.[34]', $ol_ver))
+		  // Actually this is a little wrong. There was a bug on <2.3.32 which was
+		  // fixed 20070214 (re23), so it should be ok in 2.3.33 when/if that is
+		  // released. Also 2.4 will use this format (fix actually backported from 2.4)...
+		  $entry[pql_get_define("PQL_ATTR_LDAPACI")][] =  "0#entry#grant;w,r,s,c;entry#access-id#".$_SESSION["USER_DN"];
+		else
+		  $entry[pql_get_define("PQL_ATTR_LDAPACI")][] =  "0#entry#grant;w,r,s,c;[entry]#access-id#".$_SESSION["USER_DN"];
+		$entry[pql_get_define("PQL_ATTR_LDAPACI")][] =  "1#entry#grant;w,r,s,c;[all]#access-id#".$_SESSION["USER_DN"];
+		
+		// Setup the DN
+		$dn = pql_get_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $basedn)."=phpQLAdmin_Branch_Test,".$basedn;
+		
+		if(!@ldap_add($_pql->ldap_linkid, $dn, $entry)) {
+		  $LDIF = pql_create_ldif("config_ldaptest.php:ldap_add", $dn, $entry, 1);
+		  
+		  $TEST["acis"][$basedn] = "<a href=\"javascript:ldifWindow('".$LDIF."')\">".
+			$LANG->_('No. Reason:\n')."<b>'".ldap_error($_pql->ldap_linkid)."'</b>";
+		} else {
+		  // Success - delete it again
+		  ldap_delete($_pql->ldap_linkid, $dn);
+		  $TEST["acis"][$basedn] = $LANG->_('Yes');
+		}
+	  }
+	} else {
+	  foreach($_SESSION["BASE_DN"] as $basedn)
+		$TEST["acis"][$basedn] = "".$LANG->_("ACI's deactivated")."";
+	}
+// }}}
+ }
+// }}}
 } // end if(function_exists...
-
+  
 include($_SESSION["path"]."/header.html");
 ?>
   <script type="text/javascript" language="javascript"><!--
