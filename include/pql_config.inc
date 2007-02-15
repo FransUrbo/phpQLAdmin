@@ -3,7 +3,7 @@
 // attributeType (objectclass: phpQLAdminConfig)
 // values
 //
-// $Id: pql_config.inc,v 1.93 2007-02-12 16:55:06 turbo Exp $
+// $Id: pql_config.inc,v 1.94 2007-02-15 12:56:31 turbo Exp $
 //
 
 // {{{ Include the API files
@@ -48,79 +48,10 @@ function pql_set_define($define, $value, $case_insensitive = false, $dn = NULL) 
 	  $value = $tmp;
 	}
 
-	if($dn) {
-	  // {{{ Called with a DN
-	  $dn = pql_format_normalize_dn($dn);
-	  
-	  if(class_exists('Memcache') and function_exists("memcache_connect") and @$pql_cache) {
-		// {{{ Use the MemCache extension for this
-		$val = $pql_cache->get($define.":".$dn); // To catch '0' or 'FALSE' value(s)
-		if($val == '') {
-		  // Nothing previosly known about this define. Set it to called
-		  // value...
-		  $pql_cache->set($define.":".$dn, $value); // , 1, (60*10));
-		  
-		  if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $define) and
-			 !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
-			echo "SET: config[$define][$dn] = '$value'<br>\n"; // DEBUG
-		} elseif(($val != $value) and !@$_SESSION["loading_resonable_defaults"]) {
-		  // Previous value and the values differ - Replace old with new...
-		  $pql_cache->replace($define.":".$dn, $value); //, 1, (60*10));
-		  
-		  if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $define) and
-			 !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
-			echo "RPL: config[$define][$dn] = '$value'<br>\n"; // DEBUG
-		}
-		// }}}
-	  } elseif($config[$define][$dn] != $value) {
-		// {{{ Create a global two dimensional array with the config values
-		//	Dimension 1: define name
-		//	Dimension 2: root DN
-		$config[$define][$dn] = $value;
-		
-		if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $define) and
-		   !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
-		  echo "SET: config[$define][$dn] = '$value'<br>\n"; // DEBUG
-		// }}}
-	  }
-	  // }}}
-	} else {
-	  // {{{ Called with global define
-	  if(class_exists('Memcache') and function_exists("memcache_connect") and @$pql_cache) {
-		// {{{ Use the MemCache extension for this
-		$val = $pql_cache->get($define);
-		if($val == '') {
-		  // Nothing previosly known about this define...
-		  $pql_cache->set($define, $value); //, 1, (60*10));
-			
-		  if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $define) and
-			 !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
-			echo "SET: config[$define] = '$value'<br>\n"; // DEBUG
-		} elseif(($val != $value) and ($define == 'PQL_CONF_DEBUG_ME') and
-				 !@$_SESSION["loading_resonable_defaults"])
-		{
-		  // Previous value and we want to change the PQL_CONF_DEBUG_ME
-		  // option (which differ from the value in the cache) - replace
-		  // old value with new...
-		  $pql_cache->replace($define, $value); //, 1, (60*10));
-
-		  if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $define) and
-			 !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
-			echo "RPL: config[$define] = '$value'<br>\n"; // DEBUG
-		}
-		// }}}
-	  } elseif(($config[$define] != $value) or ($define == 'PQL_CONF_DEBUG_ME')) {
-		// {{{ Create a site global array with the config values
-		// This variable type is only one dimensional (not DN specific)
-		$config[$define] = $value;
-
-		if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $define) and
-		   !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
-		  echo "SET: config[$define] = '$value'<br>\n"; // DEBUG
-		// }}}
-	  }
-	  // }}}
-	}
+	if($dn)
+	  // Called with a DN specific define
+	  $define .= ":".$dn;
+	$pql_cache->add($define, $value);
 }
 // }}}
 
@@ -131,28 +62,13 @@ function pql_get_define($define, $dn = NULL) {
 	if($dn) {
 	  $dn = pql_format_normalize_dn($dn);
 	  
-	  if(class_exists('Memcache') and function_exists("memcache_connect") and @$pql_cache)
-		// Use the MemCache extension for this
-		$value = $pql_cache->get($define.":".$dn);
-	  elseif(!empty($config[$define][$dn]))
-		$value = $config[$define][$dn];
-	  else
-		$value = 0;
-
+	  $value = $pql_cache->get($define.":".$dn);
 	  if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $define) and
 		 !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
 		echo "GET: config[$define][$dn] = '$value'<br>\n"; // DEBUG
 	} else {
 	  // Not called with a DN
-	  if(class_exists('Memcache') and function_exists("memcache_connect") and @$pql_cache)
-		// Get the value from MemCache
-		$value = $pql_cache->get($define);
-	  elseif(!empty($config[$define])) {
-		if(!is_array($config[$define]))
-		  $value = $config[$define];
-	  } else
-		$value = NULL;
-
+	  $value = $pql_cache->get($define);
 	  if(file_exists("./.DEBUG_DEFINES") and ereg('_CONF_', $define) and
 		 !eregi('index2\.php$', $_SERVER["SCRIPT_FILENAME"]))
 		echo "GET: config[$define] = '$value'<br>\n"; // DEBUG
@@ -160,7 +76,6 @@ function pql_get_define($define, $dn = NULL) {
 	  
 	return($value);
 }
-
 // }}}
 
 // ----------------------------
@@ -262,8 +177,7 @@ foreach($_pql->ldap_basedn as $dn)  {
   
   // 4a. Verify if the user is administrator on the topmost DN (i.e. 'super admin') -> Allow creation of domain/branches.
   if(!empty($_SESSION["USER_DN"]) and empty($_SESSION["ALLOW_BRANCH_CREATE"])) {
-	$_SESSION["ALLOW_BRANCH_CREATE"] = pql_validate_administrator($_pql->ldap_linkid, $dn,
-																  pql_get_define("PQL_ATTR_ADMINISTRATOR"),
+	$_SESSION["ALLOW_BRANCH_CREATE"] = pql_validate_administrator($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR"),
 																  $_SESSION["USER_DN"]);
 
 	// User is super administrator - allow for administrating QmailLDAP/Control objects and ezmlm lists as well.
@@ -275,26 +189,25 @@ foreach($_pql->ldap_basedn as $dn)  {
   
   // 4b. Verify if the user is controlsAdministrator in the topmost DN -> Allow administration of QmailLDAP/Control objects.
   if(!empty($_SESSION["USER_DN"]) and empty($_SESSION["ALLOW_CONTROL_CREATE"]))
-	$_SESSION["ALLOW_CONTROL_CREATE"] = pql_validate_administrator($_pql->ldap_linkid, $dn,
-																   pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
+	$_SESSION["ALLOW_CONTROL_CREATE"] = pql_validate_administrator($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
 																   $_SESSION["USER_DN"]);
   
   // 4c. Verify if the user is ezmlmAdministrator in the topmost DN -> Allow administration of Ezmlm lists.
   if(!empty($_SESSION["USER_DN"]) and empty($_SESSION["ALLOW_EZMLM_CREATE"]))
-	$_SESSION["ALLOW_EZMLM_CREATE"] = pql_get_dn($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM").'='.$_SESSION["USER_DN"]);
+	$_SESSION["ALLOW_EZMLM_CREATE"] = $_pql->get_dn($dn, pql_get_define("PQL_ATTR_ADMINISTRATOR_EZMLM").'='.$_SESSION["USER_DN"]);
 
   // 4d. Find out which attribute to use to reference users with in this root DN
-  $ref = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_REFERENCE_USERS_WITH"));
+  $ref = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_REFERENCE_USERS_WITH"));
   pql_set_define("PQL_CONF_REFERENCE_USERS_WITH", $ref, false, $dn);
 
   // 4e. Find out which attribute to use to reference domains with in this root DN
-  $ref = pql_get_attribute($_pql->ldap_linkid, $dn, pql_get_define("PQL_ATTR_REFERENCE_DOMAINS_WITH"));
+  $ref = $_pql->get_attribute($dn, pql_get_define("PQL_ATTR_REFERENCE_DOMAINS_WITH"));
   pql_set_define("PQL_CONF_REFERENCE_DOMAINS_WITH", $ref, false, $dn);
 
   // 4f. Find the computer DN
   if(empty($_SESSION["USER_SEARCH_DN_CTR"])) {
 	$filter = '(&('.pql_get_define("PQL_ATTR_OU").'=Computers)('.pql_get_define("PQL_ATTR_OBJECTCLASS").'=organizationalUnit))';
-	$tmp = pql_get_dn($_pql->ldap_linkid, $dn, $filter, 'ONELEVEL');
+	$tmp = $_pql->get_dn($dn, $filter, 'ONELEVEL');
 
 	if(@$tmp[0])
 	  $_SESSION["USER_SEARCH_DN_CTR"] = $tmp[0];
@@ -318,13 +231,13 @@ unset($dn);
 
 // 5. Check the Control DN if the user is there -> Allow management of Controls information
 if(!empty($_SESSION["USER_DN"]) and empty($_SESSION["ALLOW_CONTROL_CREATE"])) {
-  $_SESSION["ALLOW_CONTROL_CREATE"] = pql_validate_administrator($_pql->ldap_linkid, $_SESSION["USER_SEARCH_DN_CTR"],
+  $_SESSION["ALLOW_CONTROL_CREATE"] = pql_validate_administrator($_SESSION["USER_SEARCH_DN_CTR"],
 																 pql_get_define("PQL_ATTR_ADMINISTRATOR_CONTROLS"),
 																 $_SESSION["USER_DN"]);
 }
 
 // 6. Get user configuration for phpQLAdmin
-$user_object = pql_get_dn($_pql->ldap_linkid, $_SESSION["USER_DN"], "(objectClass=*)", 'BASE');
+$user_object = $_pql->get_dn($_SESSION["USER_DN"], "(objectClass=*)", 'BASE');
 foreach($PQL_ATTRIBUTE["USER"] as $define_name => $attrib) {
   pql_set_define($define_name, $user_object[$attrib][0], true, $_SESSION["USER_DN"]);
 }
@@ -339,13 +252,13 @@ require($_SESSION["path"]."/include/pql_plugins.inc");
 if(!empty($_SESSION["USER_DN"])) {
   // 9. Verify that the user have access to write the global phpQLAdmin config
   //    in the first base DN
-  $_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"] = pql_validate_administrator($_pql->ldap_linkid, $_pql->ldap_basedn[0],
+  $_SESSION["ALLOW_GLOBAL_CONFIG_SAVE"] = pql_validate_administrator($_pql->ldap_basedn[0],
 																	 pql_get_define("PQL_ATTR_ADMINISTRATOR"),
 																	 $_SESSION["USER_DN"]);
 }
 
 if((empty($_SESSION["ACI_SUPPORT_ENABLED"]) and function_exists("user_generate_aci")) or empty($_SESSION["NEW_STYLE_QUOTA"])) {
-  $ocs = pql_get_subschema($_pql->ldap_linkid, 'attributeTypes');
+  $ocs = pql_get_subschema('attributeTypes');
   
   // 9a. Check ifthe attribute OpenLDAPaci exists - ACI support is enabled in the LDAP server.
   //     OR: We've specified (manually) to (en)force the use of ACI's via the baseDN attribute
